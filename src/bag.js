@@ -5,24 +5,20 @@ pzprv3.custom.bag = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputqnum();}
-		else if(k.playmode){
-			if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputBGcolor(true);}
-			}
-			else{ this.inputBGcolor(false);}
-		}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if(!pp.getVal('bgcolor') || this.inputData<10){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputBGcolor(true);}
-			}
-			else{ this.inputBGcolor(false);}
+	inputplay : function(){
+		var inputbg = false;
+		if     (this.mousestart){ inputbg = (!!pp.getVal('bgcolor') && this.inputBGcolor0());}
+		else if(this.mousemove) { inputbg = (!!pp.getVal('bgcolor') && this.inputData>=10);}
+		else{ return;}
+
+		if(!inputbg){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputBGcolor(true);}
 		}
+		else{ this.inputBGcolor(false);}
 	},
 
 	inputBGcolor0 : function(){
@@ -104,7 +100,7 @@ Menu:{
 
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(k.editmode){
+		if(this.owner.editmode){
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";
 		}

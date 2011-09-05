@@ -5,19 +5,22 @@ pzprv3.custom.hanare = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
+			this.inputborder();
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum_hanare();
+		}
+	},
+	inputplay : function(){
+		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqnum_hanare();}
 			else if(this.btn.Right){ this.inputDot();}
 		}
-	},
-	mouseup : function(){
-		if(k.editmode && this.notInputted()){ this.inputqnum_hanare();}
-	},
-	mousemove : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputDot();}
+		else if(this.mousemove){
+			this.inputDot();
+		}
 	},
 
 	inputqnum_hanare : function(){
@@ -57,7 +60,7 @@ KeyEvent:{
 		var cc=tc.getTCC(), val=-1;
 
 		if('0'<=ca && ca<='9'){ val = 1;}
-		else if(ca==='-') { val = (k.playmode?-2:-1);}
+		else if(ca==='-') { val = (this.owner.playmode?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else{ return;}
 
@@ -84,10 +87,10 @@ Board:{
 			for(var i=0;i<clist.length;i++){
 				if(this.isNum(clist[i])){ c2=clist[i]; break;}
 			}
-			if(c===c2){ val=(k.playmode?-2:-1);}
+			if(c===c2){ val=(this.owner.playmode?-2:-1);}
 			else if(c2!==null){
-				if(k.playmode && this.cell[c2].qnum!==-1){ return null;}
-				this.setNum(c2,(k.playmode?-2:-1));
+				if(this.owner.playmode && this.cell[c2].qnum!==-1){ return null;}
+				this.setNum(c2,(this.owner.playmode?-2:-1));
 				pc.paintCell(c2);
 			}
 			else{ /* c2===null */

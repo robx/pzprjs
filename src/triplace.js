@@ -5,26 +5,19 @@ pzprv3.custom.triplace = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.input51();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.input51();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if(!kc.isZ){
 				if     (this.btn.Left) { this.inputborderans();}
 				else if(this.btn.Right){ this.inputQsubLine();}
 			}
 			else{ this.inputBGcolor();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.notInputted()){ this.inputBGcolor();}
-	},
-	mousemove : function(){
-		if(k.playmode){
-			if(!kc.isZ){
-				if     (this.btn.Left) { this.inputborderans();}
-				else if(this.btn.Right){ this.inputQsubLine();}
-			}
-			else{ this.inputBGcolor();}
+		else if(this.mouseend && this.notInputted()){
+			this.inputBGcolor();
 		}
 	},
 

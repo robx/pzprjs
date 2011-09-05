@@ -5,23 +5,21 @@ pzprv3.custom.nanro = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
-			if(this.btn.Left){ this.dragnumber_nanro();}
-		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
+		else if(this.mouseend && this.notInputted()){
 			this.mouseCell=null;
 			this.inputqnum();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.dragnumber_nanro();}
-			else if(this.btn.Right){ this.inputDot_nanro();}
+			else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.mouseCell=null;
+			this.inputqnum();
 		}
 	},
 
@@ -64,7 +62,7 @@ KeyEvent:{
 		this.key_view(ca);
 	},
 	key_view : function(ca){
-		if(k.playmode){
+		if(this.owner.playmode){
 			var cc=tc.getTCC();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}

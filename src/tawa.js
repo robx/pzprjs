@@ -5,12 +5,11 @@ pzprv3.custom.tawa = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputqnum();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mousemove : function(){
-		if(k.playmode){ this.inputcell();}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
 	},
 
 	// マウス入力時のセルID取得系

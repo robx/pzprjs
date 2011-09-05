@@ -5,19 +5,12 @@ pzprv3.custom.loute = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ return this.inputarrow_cell_loute();}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputborderans();}
-			else if(this.btn.Right){ this.inputQsubLine();}
-		}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputarrow_cell_loute();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
 	},
-	mouseup : function(){
-		if(k.editmode && this.notInputted()){ return this.inputqnum_loute();}
-	},
-	mousemove : function(){
-		if     (k.editmode){ return this.inputarrow_cell_loute();}
-		else if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputborderans();}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}

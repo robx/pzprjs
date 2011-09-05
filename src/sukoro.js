@@ -5,23 +5,20 @@ pzprv3.custom.sukoro = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
+	inputedit : function(){
 		if(this.owner.pid==='sukoro' || this.owner.pid==='view'){
-			this.inputqnum();
+			if(this.mousestart){ this.inputqnum();}
 		}
 		else if(this.owner.pid==='sukororoom'){
-			if(k.editmode){ this.inputborder();}
-			if(k.playmode){ this.inputqnum();}
+			if(this.mousestart || (this.mousemove && this.btn.Left)){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
 		}
 	},
-	mouseup : function(){
-		if(this.owner.pid==='sukororoom' && this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-		}
-	},
-	mousemove : function(){
-		if(this.owner.pid==='sukororoom' && k.editmode && this.btn.Left){ this.inputborder();}
-	}
+	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
 },
 
 //---------------------------------------------------------
@@ -34,7 +31,7 @@ KeyEvent:{
 		this.key_sukoro(ca);
 	},
 	key_sukoro : function(ca){
-		if(k.playmode){
+		if(this.owner.playmode){
 			var cc=tc.getTCC();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(bd.QsC(cc)===1?'1':'s1');}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(bd.QsC(cc)===2?'2':'s2');}

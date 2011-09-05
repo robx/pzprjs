@@ -22,7 +22,10 @@ pzprv3.createCommonClass('MouseEvent',
 		this.btn = {};		// 押されているボタン
 
 		this.bordermode;	// 境界線を入力中かどうか
-		this.ismousedown;	// mousedownイベントかどうか
+
+		this.mousestart;	// mousedown/touchstartイベントかどうか
+		this.mousemove;		// mousemove/touchmoveイベントかどうか
+		this.mouseend;		// mouseup/touchendイベントかどうか
 
 		this.mousereset();
 
@@ -45,7 +48,10 @@ pzprv3.createCommonClass('MouseEvent',
 		this.btn = { Left:false, Middle:false, Right:false};
 
 		this.bordermode = false;
-		this.ismousedown = false;
+
+		this.mousestart = false;
+		this.mousemove  = false;
+		this.mouseend   = false;
 
 		if(this.previdlist!==(void 0)){ this.previdlist = new pzprv3.core.IDList();}
 	},
@@ -94,8 +100,7 @@ pzprv3.createCommonClass('MouseEvent',
 				bd.errclear();
 				um.newOperation(true);
 				this.setposition(e);
-				this.ismousedown = true;
-				this.mousedown();	// 各パズルのルーチンへ
+				this.mouseevent(0);	// 各パズルのルーチンへ
 			}
 			else if(this.btn.Middle){ //中ボタン
 				this.modeflip();
@@ -109,8 +114,7 @@ pzprv3.createCommonClass('MouseEvent',
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			this.ismousedown = false;
-			this.mouseup();		// 各パズルのルーチンへ
+			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
 		ee.stopPropagation(e);
@@ -124,8 +128,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
 			this.setposition(e);
-			this.ismousedown = false;
-			this.mousemove();	// 各パズルのルーチンへ
+			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
 		ee.stopPropagation(e);
 		ee.preventDefault(e);
@@ -136,14 +139,39 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.mousedown() Canvas上でマウスのボタンを押した際のイベント処理。各パズルのファイルでオーバーライドされる。
-	// mv.mouseup()   Canvas上でマウスのボタンを放した際のイベント処理。各パズルのファイルでオーバーライドされる。
-	// mv.mousemove() Canvas上でマウスを動かした際のイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.mouseevent() マウスイベント処理
+	//---------------------------------------------------------------------------
+	mouseevent : function(step){
+		this.mousestart = (step===0);
+		this.mousemove  = (step===1);
+		this.mouseend   = (step===2);
+
+		if(this.mousestart && !!pp.flags.dispred && (kc.isZ ^ pp.getVal('dispred'))){
+			this.inputRed();
+			if(!this,mousestart){ return;}
+		}
+
+		if     (this.owner.playmode){ this.inputplay();}
+		else if(this.owner.editmode){ this.inputedit();}
+	},
+
+	//---------------------------------------------------------------------------
+//	// mv.mousedown() Canvas上でマウスのボタンを押した際のイベント処理。各パズルのファイルでオーバーライドされる。
+//	// mv.mouseup()   Canvas上でマウスのボタンを放した際のイベント処理。各パズルのファイルでオーバーライドされる。
+//	// mv.mousemove() Canvas上でマウスを動かした際のイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.inputedit() 問題入力モードのイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.inputplay() 回答入力モードのイベント処理。各パズルのファイルでオーバーライドされる。
+	// 
+	// mv.inputRed()  赤く表示する際などのイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
-	mousedown : function(){ },
-	mouseup   : function(){ },
-	mousemove : function(){ },
+//	mousedown : function(){ },
+//	mouseup   : function(){ },
+//	mousemove : function(){ },
+	inputedit : function(){ },
+	inputplay : function(){ },
+
+	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
 	// mv.getMouseButton() 左/中/右ボタンが押されているかチェックする
@@ -183,7 +211,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	notInputted : function(){ return !um.changeflag;},
-	modeflip    : function(){ if(pzprv3.EDITOR){ pp.setVal('mode', (k.playmode?1:3));} },
+	modeflip    : function(){ if(pzprv3.EDITOR){ pp.setVal('mode', (this.owner.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -303,13 +331,13 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cc===null || cc===this.mouseCell){ return;}
 
 		if(cc===tc.getTCC()){
-			if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
+			if(this.owner.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
 
 			var subtype=0;
-			if     (k.editmode)       { subtype =-1;}
-			else if(bd.numberWithMB)  { subtype = 2;}
-			else if(bd.numberAsObject){ subtype = 1;}
-			if(this.owner.pid==="roma" && k.playmode){ subtype=0;}
+			if     (this.owner.editmode){ subtype =-1;}
+			else if(bd.numberWithMB)    { subtype = 2;}
+			else if(bd.numberAsObject)  { subtype = 1;}
+			if(this.owner.pid==="roma" && this.owner.playmode){ subtype=0;}
 			this.inputqnum_main(cc,subtype);
 		}
 		else{
@@ -322,11 +350,11 @@ pzprv3.createCommonClass('MouseEvent',
 		pc.paintCell(cc);
 	},
 	inputqnum_main : function(cc,subtype){ // subtypeはqsubを0～いくつまで入力可能かの設定
-		if(k.playmode && bd.QnC(cc)!==this.owner.classes.Cell.prototype.qnum){ return;}
+		if(this.owner.playmode && bd.QnC(cc)!==this.owner.classes.Cell.prototype.qnum){ return;}
 
 		var max=bd.nummaxfunc(cc), min=bd.numminfunc(cc);
-		var num=bd.getNum(cc), qs=(k.editmode ? 0 : bd.QsC(cc));
-		var val=-1, ishatena=(k.editmode && !bd.disInputHatena);
+		var num=bd.getNum(cc), qs=(this.owner.editmode ? 0 : bd.QsC(cc));
+		var val=-1, ishatena=(this.owner.editmode && !bd.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る

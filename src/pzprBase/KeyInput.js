@@ -42,7 +42,7 @@ pzprv3.createCommonClass('KeyEvent',
 		this.ca = '';
 	},
 	isenablemode : function(){
-		return ((k.editmode&&this.enablemake)||(k.playmode&&this.enableplay));
+		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
 	},
 
 	//---------------------------------------------------------------------------
@@ -180,8 +180,8 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ ut.startRedo(); this.ca='';}
 
 		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
-			if     (k.editmode && !this.isSHIFT){ pp.setVal('mode',3); this.ca='';}
-			else if(k.playmode &&  this.isSHIFT){ pp.setVal('mode',1); this.ca='';}
+			if     (this.owner.editmode && !this.isSHIFT){ pp.setVal('mode',3); this.ca='';}
+			else if(this.owner.playmode &&  this.isSHIFT){ pp.setVal('mode',1); this.ca='';}
 		}
 
 		if(!this.isZ){ bd.errclear();}
@@ -247,7 +247,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cc = tc.getTCC();
-		if(k.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
+		if(this.owner.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
 
 		if(this.key_inputqnum_main(cc,ca)){
 			this.prev = cc;
@@ -263,7 +263,7 @@ pzprv3.createCommonClass('KeyEvent',
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
 		}
-		else if(ca==='-') { val = ((k.editmode&&!bd.disInputHatena)?-2:-1);}
+		else if(ca==='-') { val = ((this.owner.editmode&&!bd.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else if(ca==='s1'){ val = -2;}
 		else if(ca==='s2'){ val = -3;}
@@ -279,8 +279,8 @@ pzprv3.createCommonClass('KeyEvent',
 	key_inputdirec : function(ca){
 		if(!this.isSHIFT){ return false;}
 
-		var cc = tc.getTCC();
-		if(k.puzzleid==="firefly" || k.puzzleid==="snakes" || k.puzzleid==="yajikazu" || k.puzzleid==="yajirin"){
+		var cc = tc.getTCC(), pid = this.owner.pid;
+		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
 			if(bd.QnC(cc)===-1){ return false;}
 		}
 

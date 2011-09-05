@@ -5,22 +5,17 @@ pzprv3.custom.tilepaint = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputborder();}
 			else if(this.btn.Right){ this.inputBGcolor1();}
 		}
-		else if(k.playmode){ this.inputtile();}
-	},
-	mouseup : function(){
-		if(k.editmode && this.notInputted()){ this.input51();}
-	},
-	mousemove : function(){
-		if(k.editmode){
-			if     (this.btn.Left) { this.inputborder();}
-			else if(this.btn.Right){ this.inputBGcolor1();}
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.input51();}
 		}
-		else if(k.playmode){ this.inputtile();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this,inputtile();}
 	},
 
 	inputBGcolor1 : function(){

@@ -5,15 +5,12 @@ pzprv3.custom.tateyoko = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputqnum();}
-		else if(k.playmode){ this.inputTateyoko();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(k.playmode && this.notInputted()){ this.clickTateyoko();}
-	},
-	mousemove : function(){
-		if(k.playmode){ this.inputTateyoko();}
+	inputplay : function(){
+		if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
+		else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
 	},
 
 	inputTateyoko : function(){

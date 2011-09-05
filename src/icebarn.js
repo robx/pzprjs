@@ -5,32 +5,22 @@ pzprv3.custom.icebarn = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine();}
-		else if(k.editmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputarrow();}
 			else if(this.btn.Right){ this.inputIcebarn();}
 		}
-		else if(k.playmode){
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.editmode){
-			if     (this.btn.Left) { this.inputarrow();}
-			else if(this.btn.Right){ this.inputIcebarn();}
-		}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	},
+	inputRed : function(){ this.dispRedLine();},
 
 	inputIcebarn : function(){
 		var cc = this.cellid();
@@ -46,7 +36,7 @@ MouseEvent:{
 		if(this.prevPos.equals(pos)){ return;}
 
 		var id = this.getnb(this.prevPos, pos);
-		if(id!==null && !this.ismousedown){
+		if(id!==null && !this.mousestart){
 			var dir = this.getdir(this.prevPos, pos);
 
 			if(id<bd.bdinside){

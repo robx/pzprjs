@@ -5,7 +5,8 @@ pzprv3.custom.kakuru = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){ this.inputqnum_kakuru();},
+	inputedit : function(){ if(this.mousedown){ this.inputqnum_kakuru();}},
+	inputplay : function(){ if(this.mousedown){ this.inputqnum_kakuru();}},
 	inputqnum_kakuru : function(){
 		var cc = this.cellid();
 		if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
@@ -30,11 +31,11 @@ KeyEvent:{
 			if(!this.key_inputqnum_main(cc,ca)){ return;}
 		}
 		else if(ca===' '){
-			if(k.editmode){ bd.sQuC(cc,0);}
+			if(this.owner.editmode){ bd.sQuC(cc,0);}
 			bd.setNum(cc,-1);
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
-		else if(k.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
+		else if(this.owner.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
 			if(ca==='q'){ ca = (bd.QuC(cc)!==1?'q1':'q2');}
 			if(ca==='q1'){
 				bd.sQuC(cc, 1);
@@ -83,7 +84,7 @@ Board:{
 	qrows : 7,
 
 	nummaxfunc : function(cc){
-		return (k.editmode?44:9);
+		return (this.owner.editmode?44:9);
 	}
 },
 

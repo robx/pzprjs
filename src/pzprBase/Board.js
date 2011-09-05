@@ -948,7 +948,7 @@ pzprv3.createCommonClass('Board',
 	setNum : function(c,val){
 		if(this.minnum>0 && val===0){ return;}
 		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
-		if(k.editmode){
+		if(this.owner.editmode){
 			val = (((this.numberAsObject||val===-2) && this.cell[c].qnum===val)?-1:val);
 			this.sQnC(c, val);
 			this.sAnC(c, -1);
@@ -984,11 +984,11 @@ pzprv3.createCommonClass('Board',
 		return (!!this.border[id] && (this.border[id].ques>0 || this.border[id].qans>0));
 	},
 	setBorder    : function(id){
-		if(k.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
+		if(this.owner.editmode){ this.sQuB(id,1); this.sQaB(id,0);}
 		else if(this.border[id].ques!==1){ this.sQaB(id,1);}
 	},
 	removeBorder : function(id){
-		if(k.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
+		if(this.owner.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
 		else if(this.border[id].ques!==1){ this.sQaB(id,0);}
 	},
 

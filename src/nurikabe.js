@@ -5,14 +5,13 @@ pzprv3.custom.nurikabe = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(this.owner.pid==='nurikabe' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
-		else if(k.editmode){ this.inputqnum();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mousemove : function(){
-		if(k.playmode){ this.inputcell();}
-	}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
+	},
+	inputRed : function(){ if(this.owner.pid==='nurikabe'){ this.dispRed();}}
 },
 
 //---------------------------------------------------------

@@ -5,25 +5,19 @@ pzprv3.custom.loopsp = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine();}
-		else if(k.editmode){ this.inputLoopsp();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputLoopsp();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	},
+	inputRed : function(){ this.dispRedLine();},
 
 	inputLoopsp : function(){
 		var cc = this.cellid();

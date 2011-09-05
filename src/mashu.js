@@ -5,25 +5,19 @@ pzprv3.custom.mashu = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine();}
-		else if(k.editmode){ this.inputqnum();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	}
+	inputRed : function(){ this.dispRedLine();}
 },
 
 //---------------------------------------------------------

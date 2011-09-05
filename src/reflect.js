@@ -5,25 +5,19 @@ pzprv3.custom.reflect = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-		if(k.editmode){ this.inputQues([0,2,3,4,5,11]);}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputQues([0,2,3,4,5,11]);}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	}
+	inputRed : function(){ this.dispRedLine();}
 },
 
 //---------------------------------------------------------
@@ -36,7 +30,6 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputLineParts : function(ca){
-		if(k.playmode){ return false;}
 		var cc = tc.getTCC();
 
 		if     (ca=='q'){ bd.sQuC(cc,2); bd.sQnC(cc,-1);}

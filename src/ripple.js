@@ -5,17 +5,16 @@ pzprv3.custom.ripple = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputborder();}
-		if(k.playmode){ this.inputqnum();}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
+	inputedit : function(){
+		if(this.mousestart || (this.mousemove && this.btn.Left)){
+			this.inputborder();
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode && this.btn.Left){ this.inputborder();}
+	inputplay : function(){
+		if(this.mousemove){ this.inputqnum();}
 	}
 },
 

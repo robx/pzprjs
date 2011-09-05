@@ -5,15 +5,13 @@ pzprv3.custom.lits = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(this.owner.pid==='lits' && (kc.isZ ^ pp.getVal('dispred'))){ this.dispRed();}
-		else if(k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
 	},
-	mousemove : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
-	}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
+	},
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------

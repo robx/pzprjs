@@ -5,10 +5,8 @@ pzprv3.custom.wagiri = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.playmode){ this.inputslash();}
-		else if(k.editmode){ this.inputquestion();}
-	},
+	inputedit : function(){ if(this.mousedown){ this.inputquestion();}},
+	inputplay : function(){ if(this.mousedown){ this.inputslash();}},
 
 	inputquestion : function(){
 		var pos = this.borderpos(0.33);
@@ -255,7 +253,7 @@ Graphic:{
 
 	drawTarget_wagiri : function(){
 		var islarge = ((tc.pos.x&1)===(tc.pos.y&1));
-		this.drawCursor(islarge,k.editmode);
+		this.drawCursor(islarge,this.owner.editmode);
 	}
 },
 

@@ -5,20 +5,27 @@ pzprv3.custom.kinkonkan = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){
+	inputedit : function(){
+		if(this.mousestart){
 			if(!this.clickexcell()){ this.inputborder();}
 		}
-		else if(k.playmode){
-			this.inputslash();
+		else if(this.mousemove){
+			if(this.btn.Left){ this.inputborder();}
+		}
+		else if(this.mouseend){
+			if(this.inputData==12){ bd.lightclear();}
 		}
 	},
-	mouseup : function(){
-		if(this.inputData==12){ bd.lightclear();}
-	},
-	mousemove : function(){
-		if     (k.editmode && this.btn.Left){ this.inputborder();}
-		else if(k.playmode && this.inputData!==null){ this.inputslash();}
+	inputplay : function(){
+		if(this.mousestart){
+			this.inputslash();
+		}
+		else if(this.mousemove){
+			if(this.inputData!==null){ this.inputslash();}
+		}
+		else if(this.mouseend){
+			if(this.inputData==12){ bd.lightclear();}
+		}
 	},
 
 	inputslash : function(){

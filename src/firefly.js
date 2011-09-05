@@ -5,30 +5,22 @@ pzprv3.custom.firefly = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputdirec();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(!this.notInputted()){ return;}
+		if(this.mousestart || this.mousemove){
+			this.inputdirec();
+		}
+		else if(this.mouseend){
+			if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+		}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode && bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){
-				this.inputqnum();
-			}
-			else if(k.playmode && this.btn.Left){
-				this.inputpeke();
-			}
-		}
-	},
-	mousemove : function(){
-		if(k.editmode){
-			if(this.notInputted()){ this.inputdirec();}
-		}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	}
 },
@@ -234,7 +226,7 @@ AnsCheck:{
 		var c1=room.cells[0], c2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
 
 		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=bd.DiC(c1), qd2=(c2!==null?bd.DiC(c2):k.NONE), qn=-1, err=0;
+		var qd1=bd.DiC(c1), qd2=(c2!==null?bd.DiC(c2):bd.NDIR), qn=-1, err=0;
 		if((dir1===qd1)^(dir2===qd2)){ qn=bd.QnC((dir1===qd1)?c1:c2);}
 
 		if     (c2!==null && (dir1===qd1) && (dir2===qd2)){ err=4;}

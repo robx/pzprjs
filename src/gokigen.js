@@ -5,16 +5,13 @@ pzprv3.custom.gokigen = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.playmode){
-			if(!(kc.isZ ^ pp.getVal('dispred'))){ this.inputslash();}
-			else{ this.dispBlue();}
-		}
-		else if(k.editmode){ this.inputcross();}
-	},
+	inputedit : function(){ if(this.mousestart){ this.inputcross();}},
+	inputplay : function(){ if(this.mousestart){ this.inputslash();}},
+	inputRed : function(){ if(this.owner.playmode){ this.dispBlue();}},
 
 	dispBlue : function(){
 		var cc = this.cellid();
+		this.mousereset();
 		if(cc===null || bd.QaC(cc)===0){ return;}
 
 		var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)===31?-1:1),bd.cell[cc].by-1);

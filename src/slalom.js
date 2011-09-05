@@ -5,30 +5,23 @@ pzprv3.custom.slalom = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-		if(k.editmode){ this.inputGate();}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	},
-	mouseup : function(){
-		if(k.editmode){
-			if(this.inputData==10){ this.inputStartid_up(); }
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputGate();}
+		else if(this.mouseend){
+			if(this.inputData==10){ this.inputStartid_up();}
 			else if(this.notInputted()){ this.inputQues_slalom();}
 		}
-		else if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
-		}
 	},
-	mousemove : function(){
-		if(k.editmode){ this.inputGate();}
-		else if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
+		}
 	},
+	inputRed : function(){ this.dispRedLine();},
 
 	inputQues_slalom : function(){
 		var cc = this.cellid();
@@ -128,7 +121,7 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if(k.editmode && ca!='x'){ return this.moveTCell(ca);}
+		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
 		return false;
 	},
 

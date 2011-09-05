@@ -5,25 +5,19 @@ pzprv3.custom.pipelink = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-		if(k.editmode){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	}
+	inputRed : function(){ this.dispRedLine();}
 },
 
 //---------------------------------------------------------
@@ -35,7 +29,7 @@ KeyEvent:{
 		this.key_inputLineParts(ca);
 	},
 	key_inputLineParts : function(ca){
-		if(k.playmode){ return false;}
+		if(this.owner.playmode){ return false;}
 		var cc = tc.getTCC();
 
 		if     (ca=='q'){ bd.sQuC(cc,11); }
@@ -137,7 +131,7 @@ Menu:{
 
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(k.puzzeid==='pipelinkr'){ pp.funcs['disptype']();}
+		if(this.owner.pid==='pipelinkr'){ pp.funcs['disptype']();}
 	}
 },
 

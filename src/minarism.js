@@ -5,15 +5,16 @@ pzprv3.custom.minarism = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode && this.btn.Left){ this.inputmark_mousemove();}
-		else if(k.playmode){ this.inputqnum();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
+			if(this.btn.Left){ this.inputmark_mousemove();}
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.inputmark_mouseup();
+		}
 	},
-	mouseup : function(){
-		if(k.editmode && this.notInputted()){ this.inputmark_mouseup();}
-	},
-	mousemove : function(){
-		if(k.editmode && this.btn.Left){ this.inputmark_mousemove();}
+	inputplay : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
 
 	inputmark_mousemove : function(){
@@ -72,14 +73,14 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if     (k.editmode){ return this.moveTBorder(ca);}
-		else if(k.playmode){ return this.moveTCell(ca);}
+		if     (this.owner.editmode){ return this.moveTBorder(ca);}
+		else if(this.owner.playmode){ return this.moveTCell(ca);}
 		return false;
 	},
 
 	keyinput : function(ca){
-		if     (k.editmode){ this.key_inputmark(ca);}
-		else if(k.playmode){ this.key_inputqnum(ca);}
+		if     (this.owner.editmode){ this.key_inputmark(ca);}
+		else if(this.owner.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
 		var id = tc.getTBC();
@@ -218,7 +219,7 @@ Graphic:{
 	},
 
 	drawTarget_minarism : function(){
-		this.drawCursor(k.playmode);
+		this.drawCursor(this.owner.playmode);
 	}
 },
 

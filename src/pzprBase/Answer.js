@@ -57,7 +57,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!pp.getVal('autocheck') || k.editmode || this.inCheck){ return;}
+		if(!pp.getVal('autocheck') || this.owner.editmode || this.inCheck){ return;}
 
 		var ret = false;
 

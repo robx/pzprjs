@@ -323,7 +323,7 @@ pzprv3.createCommonClass('Menu',
 		am('setting', "設定", "Setting");
 
 		if(pzprv3.EDITOR){
-			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
+			au('mode','setting',(this.owner.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
 		}
 		else{
@@ -332,7 +332,7 @@ pzprv3.createCommonClass('Menu',
 
 		this.menufix();		// 各パズルごとのメニュー追加
 
-		ac('autocheck','setting', k.playmode, '正答自動判定', 'Auto Answer Check');
+		ac('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 		if(kc.haspanel[1] || kc.haspanel[3]){

@@ -5,17 +5,16 @@ pzprv3.custom.factors = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputborder();}
-		if(k.playmode){ this.inputqnum();}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
+			if(this.btn.Left){ this.inputborder();}
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode && this.btn.Left){ this.inputborder();}
+	inputplay : function(){
+		if(this.mousestart){ this.inputqnum();}
 	}
 },
 
@@ -41,11 +40,11 @@ Board:{
 	disInputHatena : true,
 
 	nummaxfunc : function(cc){
-		return k.editmode?999999:Math.max(this.qcols,this.qrows);
+		return this.owner.editmode?999999:Math.max(this.qcols,this.qrows);
 	},
 	setNum : function(c,val){
 		if(val==0){ return;}
-		if(k.editmode){ this.sQnC(c,val);}else{ this.sAnC(c,val);}
+		if(this.owner.editmode){ this.sQnC(c,val);}else{ this.sAnC(c,val);}
 	}
 },
 

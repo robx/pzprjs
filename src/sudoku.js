@@ -5,7 +5,8 @@ pzprv3.custom.sudoku = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){ this.inputqnum();}
+	inputedit : function(){ if(this.mousedown){ this.inputqnum();}},
+	inputplay : function(){ if(this.mousedown){ this.inputqnum();}}
 },
 
 //---------------------------------------------------------

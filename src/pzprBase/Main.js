@@ -1,19 +1,6 @@
 // Main.js v3.4.0
 
 //---------------------------------------------------------------------------
-// ★グローバル変数
-//---------------------------------------------------------------------------
-pzprv3.createCommonClass('Flags',
-{
-	initialize : function(owner){
-		this.owner = owner;
-
-		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
-		this.playmode = !this.editmode;						// 回答モード
-	}
-});
-
-//---------------------------------------------------------------------------
 // ★Ownerクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 
@@ -26,6 +13,9 @@ pzprv3.createCoreClass('Owner',
 		this.pid     = '';			// パズルのID("creek"など)
 		this.canvas  = null;
 		this.classes = {};
+
+		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
+		this.playmode = !this.editmode;						// 回答モード
 	},
 
 	//---------------------------------------------------------------------------
@@ -55,8 +45,6 @@ pzprv3.createCoreClass('Owner',
 		this.classes = pzprv3.setPuzzleClass(this);	// クラスを取得
 
 		// クラス初期化
-		k = new this.classes.Flags(this);		// フラグの初期化・設定
-
 		bd  = new this.classes.Board(this);			// 盤面オブジェクト
 		ans = new this.classes.AnsCheck(this);		// 正解判定オブジェクト
 		pc  = new this.classes.Graphic(this);		// 描画系オブジェクト

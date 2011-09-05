@@ -5,27 +5,17 @@ pzprv3.custom.bonsan = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
 			if(this.owner.pid==='heyabon'){ this.inputborder();}
 		}
-		else if(k.playmode){
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if(this.btn.Left){ this.inputLine();}
 		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-			else if(k.playmode){ this.inputlight();}
-		}
-	},
-	mousemove : function(){
-		if(k.editmode){
-			if(this.owner.pid==='heyabon'){ this.inputborder();}
-		}
-		else if(k.playmode){
-			if(this.btn.Left){ this.inputLine();}
-		}
+		else if(this.mouseend && this.notInputted()){ this.inputlight();}
 	},
 
 	inputlight : function(){

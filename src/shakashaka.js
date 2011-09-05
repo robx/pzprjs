@@ -5,37 +5,43 @@ pzprv3.custom.shakashaka = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.playmode){
-			if(pp.getVal('use')==3){ this.inputTriangle_onebtn();}
-			else if(this.btn.Left){
-				if     (pp.getVal('use')==1){ this.inputTriangle_corner();}
-				else if(pp.getVal('use')==2){ this.inputTriangle_pull_start();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(pp.getVal('use')==1){
+			if(this.mousestart){
+				if(this.btn.Left) { this.inputTriangle_corner();}
+				if(this.btn.Right){ this.inputDot();}
 			}
-			else if(this.btn.Right){
-				this.inputDot();
+			else if(this.mousemove){
+				if(this.inputData!==null){ this.inputMove();}
 			}
 		}
-		if(k.editmode){ this.inputqnum();}
-	},
-	mouseup : function(){
-		if(k.playmode){
-			if(pp.getVal('use')==2 && this.inputData===null){
+		else if(pp.getVal('use')==2){
+			if(this.mousestart){
+				if(this.btn.Left) { this.inputTriangle_pull_start();}
+				if(this.btn.Right){ this.inputDot();}
+			}
+			else if(this.mousemove){
+				if(this.inputData!==null){ this.inputMove();}
+				else                     { this.inputTriangle_pull_move();}
+			}
+			else if(this.mouseend && this.notInputted()){
 				this.inputTriangle_pull_end();
 			}
 		}
+		else if(pp.getVal('use')==3){
+			if(this.mousestart){ this.inputTriangle_onebtn();}
+		}
 	},
-	mousemove : function(){
-		if(k.playmode){
-			if(this.inputData===null){
-				if(pp.getVal('use')==2){  this.inputTriangle_pull_move();}
-			}
-			else if(this.inputData>=2 && this.inputData<=5){
-				this.inputTriangle_drag();
-			}
-			else{ // this.inputData==0か-1
-				this.inputDot();
-			}
+
+	inputMove : function(){
+		if(this.inputData>=2 && this.inputData<=5){
+			this.inputTriangle_drag();
+		}
+		else if(this.inputData===0 || this.inputData===-1){
+			this.inputDot();
 		}
 	},
 

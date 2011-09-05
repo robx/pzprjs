@@ -5,25 +5,22 @@ pzprv3.custom.snakes = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputdirec();}
-		else if(k.playmode){
-			if(!this.inputDot_snakes()){
-				this.dragnumber_snakes();
-			}
+	inputedit : function(){
+		if(this.mousestart || (this.mousemove && this.notInputted())){
+			this.inputdirec();
 		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
+		else if(this.mouseend && this.notInputted()){
 			this.inputqnum_snakes();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode && this.notInputted()){ this.inputdirec();}
-		else if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if(!this.inputDot_snakes()){
 				this.dragnumber_snakes();
 			}
+		}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum_snakes();
 		}
 	},
 
@@ -70,7 +67,7 @@ MouseEvent:{
 		return true;
 	},
 	inputqnum_snakes : function(){
-		if(k.editmode){ bd.minnum = 1;}
+		if(this.owner.editmode){ bd.minnum = 1;}
 		this.mouseCell=null;
 		this.inputqnum();
 		bd.minnum = 0;
@@ -88,9 +85,9 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(k.editmode && this.key_inputdirec(ca)){ return;}
+		if(this.owner.editmode && this.key_inputdirec(ca)){ return;}
 
-		if(k.playmode && (ca==='q'||ca==='-')){ ca='s1';}
+		if(this.owner.playmode && (ca==='q'||ca==='-')){ ca='s1';}
 		this.key_inputqnum(ca);
 	}
 },

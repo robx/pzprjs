@@ -5,22 +5,12 @@ pzprv3.custom.kramma = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){
-			if(this.owner.pid!=='kramma'){ this.inputcrossMark();}
-		}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputborderans();}
-			else if(this.btn.Right){ this.inputQsubLine();}
-		}
+	inputedit : function(){
+		if(this.mousestart && this.owner.pid!=='kramma'){ this.inputcrossMark();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-		}
-	},
-	mousemove : function(){
-		if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputborderans();}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}

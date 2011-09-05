@@ -5,32 +5,22 @@ pzprv3.custom.barns = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine();}
-		else if(k.editmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputborder();}
 			else if(this.btn.Right){ this.inputIcebarn();}
 		}
-		else if(k.playmode){
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.inputpeke();
+		else if(this.mouseend && this.notInputted()){
+			if(this.btn.Left){ this.inputpeke();}
 		}
 	},
-	mousemove : function(){
-		if(k.editmode){
-			if     (this.btn.Left) { this.inputborder();}
-			else if(this.btn.Right){ this.inputIcebarn();}
-		}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-	},
+	inputRed : function(){ this.dispRedLine();},
 
 	inputIcebarn : function(){
 		var cc = this.cellid();

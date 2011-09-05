@@ -7,15 +7,12 @@ pzprv3.custom.kurochute = {
 MouseEvent:{
 	RBBlackCell : true,
 
-	mousedown : function(){
-		if     (k.editmode){ this.inputqnum();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(k.playmode && this.notInputted()){ this.inputqsub();}
-	},
-	mousemove : function(){
-		if(k.playmode){ this.inputcell();}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
+		else if(this.mouseend && this.notInputted()){ this.inputqsub();}
 	},
 
 	inputqsub : function(){

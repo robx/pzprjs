@@ -5,14 +5,17 @@ pzprv3.custom.goishi = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputstone();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputstone();}
+		else if(this.mouseend){ kc.inUNDO = false; kc.inREDO = false;}
+	},
+	inputplay : function(){
+		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
 			else if(this.btn.Right){ ut.inUNDO = true; ut.start(true);}
 		}
+		else if(this.mouseend){ kc.inUNDO = false; kc.inREDO = false;}
 	},
-	mouseup : function(){ ut.stop();},
 
 	inputstone : function(){
 		var cc = this.cellid();

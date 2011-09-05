@@ -5,15 +5,12 @@ pzprv3.custom.kouchoku = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.playmode){ this.inputsegment();}
-		else if(k.editmode){ this.inputcross_kouchoku();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputcross_kouchoku();}
 	},
-	mouseup : function(){
-		if(k.playmode){ this.inputsegment_up();}
-	},
-	mousemove : function(){
-		if(k.playmode){ this.inputsegment();}
+	inputplay : function(){
+		if(this.mousestart && this.mousemove){ this.inputsegment();}
+		else if(this.mouseend){ this.inputsegment_up();}
 	},
 
 	setEvents : function(){
@@ -41,12 +38,12 @@ MouseEvent:{
 		var cc = this.crossid();
 		if(cc===null || cc===this.mouseCell){ return;}
 
-		if(this.ismousedown){
+		if(this.mousestart){
 			this.inputData = 1;
 			this.targetPoint[0] = cc;
 			pc.paintCross(cc);
 		}
-		else if(this.inputData===1){
+		else if(this.mousemove && this.inputData===1){
 			var old=this.targetPoint[1];
 			this.targetPoint[1] = cc;
 			pc.paintCross(cc);

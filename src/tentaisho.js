@@ -5,28 +5,22 @@ pzprv3.custom.tentaisho = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){
-			if(this.btn.Left){ this.inputstar();}
-			else if(this.btn.Right){ this.inputBGcolor1();}
+	inputedit : function(){
+		if(this.mousestart && this.btn.Left){
+			this.inputstar();
 		}
-		else if(k.playmode){
-			if(this.btn.Left){ this.checkBorderMode();}
+		else if((this.mousestart || this.mousemove) && this.btn.Right){
+			this.inputBGcolor1();
+		}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
+			if(this.mousestart && this.btn.Left){ this.checkBorderMode();}
+
 			if(this.bordermode){ this.inputborder_tentaisho();}
 			else{ this.inputQsubLine();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.notInputted()){ this.inputBGcolor3();}
-	},
-	mousemove : function(){
-		if(k.editmode){
-			if(this.btn.Right){ this.inputBGcolor1();}
-		}
-		else if(k.playmode){
-			if(this.bordermode){ this.inputborder_tentaisho();}
-			else{ this.inputQsubLine();}
-		}
+		else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}
 	},
 
 	inputBGcolor1 : function(){
@@ -333,7 +327,7 @@ Graphic:{
 	},
 
 	drawTarget_tentaisho : function(){
-		this.drawCursor(false,k.editmode);
+		this.drawCursor(false,this.owner.editmode);
 	}
 },
 

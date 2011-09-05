@@ -5,24 +5,17 @@ pzprv3.custom.kaero = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputLine();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if     (k.editmode){ this.inputqnum();}
-			else if(k.playmode){ this.inputlight();}
-		}
-	},
-	mousemove : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
+		else if(this.mouseend && this.notInputted()){
+			this.inputlight();
 		}
 	},
 

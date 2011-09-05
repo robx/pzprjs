@@ -5,18 +5,12 @@ pzprv3.custom.shimaguni = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-		}
-	},
-	mousemove : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
 	}
 },
 

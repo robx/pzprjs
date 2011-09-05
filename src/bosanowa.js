@@ -5,9 +5,8 @@ pzprv3.custom.bosanowa = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		this.inputqnum_bosanowa();
-	},
+	inputedit : function(){ if(this.mousedown){ this.inputqnum_bosanowa();}},
+	inputplay : function(){ if(this.mousedown){ this.inputqnum_bosanowa();}},
 
 	inputqnum_bosanowa : function(){
 		var pos = this.borderpos(0.31);
@@ -19,7 +18,7 @@ MouseEvent:{
 			if((pos.x&1)&&(pos.y&1)){
 				var cc = bd.cnum(pos.x,pos.y);
 				var ques = bd.QuC(cc), num = bd.getNum(cc);
-				if(k.editmode){
+				if(this.owner.editmode){
 					if(this.btn.Left){
 						if     (ques===7) { bd.setNum(cc,-1); bd.sQuC(cc,0);}
 						else if(num===-1) { bd.setNum(cc, 1); bd.sQuC(cc,0);}
@@ -33,7 +32,7 @@ MouseEvent:{
 						else{ bd.setNum(cc,num-1);}
 					}
 				}
-				if(k.playmode && ques===0){
+				if(this.owner.playmode && ques===0){
 					if(this.btn.Left){
 						if     (num===max){ bd.setNum(cc,-1);}
 						else if(num===-1) { bd.setNum(cc, 1);}
@@ -69,11 +68,19 @@ KeyEvent:{
 		var tcp = tc.getTCP();
 		if((tcp.x&1)&&(tcp.y&1)){
 			var cc = tc.getTCC();
-			if(k.editmode && ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!==7?7:0)); bd.setNum(cc,-1);}
-			else if(bd.QuC(cc)==0 && (k.playmode || '0'<=ca && ca<='9')){ this.key_inputqnum(ca);}
-			else if(k.editmode && '0'<=ca && ca<='9'){ bd.sQuC(cc,0); bd.setNum(cc,-1); this.key_inputqnum(ca);}
-			else if(k.editmode && (ca=='-'||ca==' ')){ bd.sQuC(cc,0); bd.setNum(cc,-1);}
-			else{ return;}
+			if(this.owner.editmode){
+				if     (ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!==7?7:0)); bd.setNum(cc,-1);}
+				else if(ca=='-'||ca==' '){ bd.sQuC(cc,0); bd.setNum(cc,-1);}
+				else if('0'<=ca && ca<='9'){
+					if(bd.QuC(cc)!==0){ bd.sQuC(cc,0); bd.setNum(cc,-1);}
+					this.key_inputqnum(ca);
+				}
+				else{ return;}
+			}
+			else if(this.owner.playmode){
+				if(bd.QuC(cc)==0){ this.key_inputqnum(ca);}
+				else{ return;}
+			}
 		}
 		else if((tcp.x+tcp.y)&1){
 			var id = tc.getTBC();

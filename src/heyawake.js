@@ -7,20 +7,14 @@ pzprv3.custom.heyawake = {
 MouseEvent:{
 	RBBlackCell : true,
 
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
-		else if(k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-		}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
 	},
-	mousemove : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputcell();}
-	}
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------

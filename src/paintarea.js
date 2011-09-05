@@ -5,20 +5,14 @@ pzprv3.custom.paintarea = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
-		else if(k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputtile();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){ this.inputborder();}
+		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(k.editmode){ this.inputqnum();}
-		}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputtile();}
 	},
-	mousemove : function(){
-		if     (k.editmode){ this.inputborder();}
-		else if(k.playmode){ this.inputtile();}
-	}
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------

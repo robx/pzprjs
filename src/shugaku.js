@@ -5,22 +5,16 @@ pzprv3.custom.shugaku = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputFuton();}
 			else if(this.btn.Right){ this.inputcell_shugaku();}
 		}
-		else if(k.editmode){ this.inputqnum();}
-	},
-	mouseup : function(){
-		if(k.playmode){
+		else if(this.mouseend){
 			if(this.btn.Left){ this.inputFuton2();}
-		}
-	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputFuton();}
-			else if(this.btn.Right){ this.inputcell_shugaku();}
 		}
 	},
 

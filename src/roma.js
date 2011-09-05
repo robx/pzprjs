@@ -5,27 +5,26 @@ pzprv3.custom.roma = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('disproad')){ this.dispRoad();}
-		else if(k.editmode){
-			this.checkBorderMode();
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
+			if(this.mousestart){ this.checkBorderMode();}
+
 			if(this.bordermode){ this.inputborder();}
 			else               { this.inputarrow_cell();}
 		}
-		else if(k.playmode){ this.inputarrow_cell();}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
-			if(!(kc.isZ ^ pp.getVal('disproad'))){ this.inputqnum();}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode){
-			if(this.bordermode){ this.inputborder();}
-			else               { this.inputarrow_cell();}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
+			this.inputarrow_cell();
 		}
-		else if(k.playmode){ this.inputarrow_cell();}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum();
+		}
 	},
+	inputRed : function(){ this.dispRoad();},
 
 	dispRoad : function(){
 		var cc = this.cellid();
@@ -61,7 +60,7 @@ KeyEvent:{
 		else if(ca==='3'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
 		else if(ca==='4'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
 		else if(ca==='q')                                   { ca='5';}
-		else if(k.editmode && (ca==='5'||ca==='-'))         { ca='s1';}
+		else if(this.owner.editmode && (ca==='5'||ca==='-')){ ca='s1';}
 		else if(ca==='6'||ca===' ')                         { ca=' ';}
 		this.key_inputqnum(ca);
 	}
@@ -78,7 +77,7 @@ Board:{
 	numberAsObject : true,
 
 	nummaxfunc : function(){
-		return (k.editmode?5:4);
+		return (this.owner.editmode?5:4);
 	},
 
 	trackBall1 : function(startcc, ldata){
@@ -129,8 +128,8 @@ MenuExec:{
 
 Menu:{
 	menufix : function(){
-		pp.addCheck('disproad','setting', false, '通り道のチェック', 'Check Road');
-		pp.setLabel('disproad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
+		pp.addCheck('dispred','setting', false, '通り道のチェック', 'Check Road');
+		pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 	}
 },
 

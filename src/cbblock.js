@@ -5,16 +5,13 @@ pzprv3.custom.cbblock = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
-			if     (this.btn.Left) { this.inputborderans();}
-			else if(this.btn.Right){ this.inputQsubLine();}
+	inputedit : function(){
+		if(this.mousestart || this.mousemove){
+			this.inputborder();
 		}
 	},
-	mousemove : function(){
-		if(k.editmode){ this.inputborder();}
-		else if(k.playmode){
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputborderans();}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}

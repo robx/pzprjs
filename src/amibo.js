@@ -5,20 +5,16 @@ pzprv3.custom.amibo = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.inputqnum();}
-		else if(k.playmode){
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputTateyoko();}
 			else if(this.btn.Right){ this.inputpeke();}
 		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.notInputted()){ this.clickTateyoko();}
-	},
-	mousemove : function(){
-		if(k.playmode){
-			if     (this.btn.Left) { this.inputTateyoko();}
-			else if(this.btn.Right){ this.inputpeke();}
+		else if(this.mouseend){
+			if(this.notInputted()){ this.clickTateyoko();}
 		}
 	},
 

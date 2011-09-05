@@ -5,29 +5,22 @@ pzprv3.custom.fillomino = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(k.playmode){
+	inputedit : function(){
+		if(this.mouseend && this.notInputted()){ this.inputqnum();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
 			if(this.btn.Left){
-				this.checkBorderMode();
+				if(this.mousestart){ this.checkBorderMode();}
+
 				if(this.bordermode){ this.inputborderans();}
 				else               { this.dragnumber_fillomino();}
 			}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
-	},
-	mouseup : function(){
-		if(this.notInputted()){
+		else if(this.mouseend && this.notInputted()){
 			this.mouseCell=null;
 			this.inputqnum();
-		}
-	},
-	mousemove : function(){
-		if(k.playmode){
-			if(this.btn.Left){
-				if(this.bordermode){ this.inputborderans();}
-				else               { this.dragnumber_fillomino();}
-			}
-			else if(this.btn.Right){ this.inputQsubLine();}
 		}
 	},
 
@@ -68,7 +61,7 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if(k.playmode && (this.isCTRL || this.isX || this.isZ)){
+		if(this.owner.playmode && (this.isCTRL || this.isX || this.isZ)){
 			return this.move_fillomino(ca);
 		}
 		return this.moveTCell(ca);

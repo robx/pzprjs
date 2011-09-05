@@ -5,12 +5,11 @@ pzprv3.custom.box = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.clickexcell();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart){ this.clickexcell();}
 	},
-	mousemove : function(){
-		if(k.playmode){ this.inputcell();}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
 	},
 
 	clickexcell : function(){

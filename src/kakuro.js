@@ -5,10 +5,8 @@ pzprv3.custom.kakuro = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if     (k.editmode){ this.input51();}
-		else if(k.playmode){ this.inputqnum();}
-	}
+	inputedit : function(){ if(this.mousestart){ this.input51();}},
+	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
 },
 
 //---------------------------------------------------------
@@ -18,8 +16,8 @@ KeyEvent:{
 	enableplay : true,
 
 	keyinput : function(ca){
-		if     (k.editmode){ this.inputnumber51(ca,{2:45,4:45});}
-		else if(k.playmode){ this.key_inputqnum(ca);}
+		if     (this.owner.editmode){ this.inputnumber51(ca,{2:45,4:45});}
+		else if(this.owner.playmode){ this.key_inputqnum(ca);}
 	},
 
 	enablemake_p : true,
@@ -33,7 +31,7 @@ KeyEvent:{
 
 TargetCursor:{
 	adjust_modechange : function(){
-		if(k.playmode){
+		if(this.owner.playmode){
 			if(this.pos.x<1){ this.pos.x = 1;}
 			if(this.pos.y<1){ this.pos.y = 1;}
 		}

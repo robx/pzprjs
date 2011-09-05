@@ -5,32 +5,29 @@ pzprv3.custom.slither = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRedLine(); return;}
-		if(k.editmode){ this.inputqnum();}
-		else if(k.playmode){
-			if(!pp.getVal('bgcolor') || !this.inputBGcolor0()){
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){
+		var inputbg = false;
+		if     (this.mousestart){ inputbg = (!!pp.getVal('bgcolor') && this.inputBGcolor0());}
+		else if(this.mousemove) { inputbg = (!!pp.getVal('bgcolor') && this.inputData>=10);}
+
+		if(!inputbg){
+			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+				else if(this.btn.Right){ this.inputBGcolor();}
 			}
-			else{ this.inputBGcolor();}
-		}
-	},
-	mouseup : function(){
-		if(k.playmode && this.btn.Left && this.notInputted()){
-			this.prevPos.reset();
-			this.inputpeke();
-		}
-	},
-	mousemove : function(){
-		if(k.playmode){
-			if(!pp.getVal('bgcolor') || this.inputData<10){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+			else if(this.mouseend && this.notInputted()){
+				if(this.btn.Left){
+					this.prevPos.reset();
+					this.inputpeke();
+				}
 			}
-			else{ this.inputBGcolor();}
 		}
+		else{ this.inputBGcolor();}
 	},
+	inputRed : function(){ this.dispRedLine();},
 
 	inputBGcolor0 : function(){
 		var pos = this.borderpos(0.25);
@@ -118,7 +115,7 @@ Menu:{
 
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(k.editmode){
+		if(this.owner.editmode){
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";
 		}

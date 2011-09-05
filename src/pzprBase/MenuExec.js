@@ -89,8 +89,8 @@ pzprv3.createCommonClass('MenuExec',
 	// menu.ex.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		k.editmode = (num==1);
-		k.playmode = (num==3);
+		this.owner.editmode = (num==1);
+		this.owner.playmode = (num==3);
 
 		kc.keyreset();
 		bd.errclear();

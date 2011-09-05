@@ -1379,7 +1379,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
 	drawTarget : function(){
-		this.drawCursor(true, k.editmode);
+		this.drawCursor(true, this.owner.editmode);
 	},
 
 	drawCursor : function(islarge,isdraw){
@@ -1397,7 +1397,7 @@ pzprv3.createCommonClass('Graphic',
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
-			g.fillStyle = (k.editmode?this.targetColor1:this.targetColor3);
+			g.fillStyle = (this.owner.editmode?this.targetColor1:this.targetColor3);
 			if(this.vnop("ti1_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   size*2, w);}
 			if(this.vnop("ti2_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   w, size*2);}
 			if(this.vnop("ti3_",this.FILL)){ g.fillRect(cpx-size,   cpy+size-w, size*2, w);}
@@ -1411,7 +1411,7 @@ pzprv3.createCommonClass('Graphic',
 		var vid = "target_triangle";
 		this.vdel([vid]);
 
-		if(k.playmode){ return;}
+		if(this.owner.playmode){ return;}
 
 		var d = this.range;
 		if(tc.pos.x < d.x1 || d.x2 < tc.pos.x){ return;}

@@ -7,14 +7,13 @@ pzprv3.custom.kurodoko = {
 MouseEvent:{
 	RBBlackCell : true,
 
-	mousedown : function(){
-		if(kc.isZ ^ pp.getVal('dispred')){ this.dispRed();}
-		else if(k.editmode){ this.inputqnum();}
-		else if(k.playmode){ this.inputcell();}
+	inputedit : function(){
+		if(this.mousestart){ this.inputqnum();}
 	},
-	mousemove : function(){
-		if(k.playmode){ this.inputcell();}
-	}
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){ this.inputcell();}
+	},
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------
