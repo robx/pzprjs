@@ -161,7 +161,7 @@ Graphic:{
 		var header = "b_tb_";
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], lflag = !(bd.border[id].bx&1);
+			var id = idlist[i], lflag = bd.isVert(id);
 			var qs1 = bd.QuC(bd.border[id].cellcc[0]),
 				qs2 = bd.QuC(bd.border[id].cellcc[1]);
 

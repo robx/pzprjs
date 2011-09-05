@@ -356,7 +356,7 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.setArrow(id,(!!(bd.border[id].bx&1)?bd.UP:bd.LT));}
+				if(id<bd.bdinside){ bd.setArrow(id,(bd.isHorz(id)?bd.UP:bd.LT));}
 				id++;
 			}
 			else{ id+=35;}
@@ -368,7 +368,7 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.setArrow(id,(!!(bd.border[id].bx&1)?bd.DN:bd.RT));}
+				if(id<bd.bdinside){ bd.setArrow(id,(bd.isHorz(id)?bd.DN:bd.RT));}
 				id++;
 			}
 			else{ id+=35;}
@@ -535,11 +535,11 @@ FileIO:{
 		bd.disableInfo();
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
-				var id = bd.bnum(obj.bx, obj.by), val = parseInt(ca);
-				if(val===1&&!!(obj.bx&1)){ bd.setArrow(id,bd.UP);}
-				if(val===2&&!!(obj.bx&1)){ bd.setArrow(id,bd.DN);}
-				if(val===1&& !(obj.bx&1)){ bd.setArrow(id,bd.LT);}
-				if(val===2&& !(obj.bx&1)){ bd.setArrow(id,bd.RT);}
+				var id = bd.bnum(obj.bx, obj.by), val = parseInt(ca), isvert = bd.isVert(id);
+				if(val===1&&!isvert){ bd.setArrow(id,bd.UP);}
+				if(val===2&&!isvert){ bd.setArrow(id,bd.DN);}
+				if(val===1&& isvert){ bd.setArrow(id,bd.LT);}
+				if(val===2&& isvert){ bd.setArrow(id,bd.RT);}
 			}
 		});
 		bd.enableInfo();

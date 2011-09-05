@@ -339,17 +339,17 @@ Graphic:{
 
 		g.fillStyle = "rgb(64,64,64)";
 		var header = "b_qsub2_";
+		var rw = this.bw*0.6;
 
 		var idlist = this.range.borders;
 		for(var i=0;i<idlist.length;i++){
 			var id = idlist[i];
 			if(bd.border[id].qsub===2){
 				if(this.vnop(header+id,this.NONE)){
-					var lw = this.lw + this.addlw, lm = this.lm, mgn=this.ch*0.2;
-					var bx = bd.border[id].bx, by = bd.border[id].by;
+					var lw = this.lw + this.addlw, lm = this.lm;
 					var px = this.border[id].px, py = this.border[id].py;
-					if     (by&1){ g.fillRect(px-lm, py-this.bh-lm+mgn, lw, this.ch+lw-mgn*2);}
-					else if(bx&1){ g.fillRect(px-this.bw-lm+mgn, py-lm, this.cw+lw-mgn*2, lw);}
+					if(bd.isVert(id)){ g.fillRect(px-lm, py-rw-lm, lw, rw*2+lw);}
+					else             { g.fillRect(px-rw-lm, py-lm, rw*2+lw, lw);}
 				}
 			}
 			else{ this.vhide(header+id);}

@@ -92,13 +92,13 @@ Board:{
 	getlinesize : function(id){
 		var bx=this.border[id].bx, by=this.border[id].by;
 		var d = {x1:bx, x2:bx, y1:by, y2:by};
-		if(this.border[id].bx&1){
-			while(d.y1>this.minby && this.noNum(this.cnum(bx,d.y1-1))){d.y1-=2;}
-			while(d.y2<this.maxby && this.noNum(this.cnum(bx,d.y2+1))){d.y2+=2;}
-		}
-		else if(this.border[id].by&1){
+		if(this.isVert(id)){
 			while(d.x1>this.minbx && this.noNum(this.cnum(d.x1-1,by))){d.x1-=2;}
 			while(d.x2<this.maxbx && this.noNum(this.cnum(d.x2+1,by))){d.x2+=2;}
+		}
+		else{
+			while(d.y1>this.minby && this.noNum(this.cnum(bx,d.y1-1))){d.y1-=2;}
+			while(d.y2<this.maxby && this.noNum(this.cnum(bx,d.y2+1))){d.y2+=2;}
 		}
 		return d;
 	}

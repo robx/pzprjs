@@ -348,7 +348,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 	paintBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].bx&1){
+		if(bd.isHorz(id)){
 			this.prepaint(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{
@@ -357,7 +357,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 	paintLine : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].bx&1){
+		if(bd.isHorz(id)){
 			this.prepaint(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
 		}
 		else{
@@ -883,10 +883,9 @@ pzprv3.createCommonClass('Graphic',
 				g.fillStyle = color;
 				if(this.vnop(header+id,this.FILL)){
 					var lw = this.lw + this.addlw, lm = this.lm;
-					var bx = bd.border[id].bx, by = bd.border[id].by;
 					var px = this.border[id].px, py = this.border[id].py;
-					if     (by&1){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-					else if(bx&1){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+					if(bd.isVert(id)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+					else             { g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 				}
 			}
 			else{ this.vhide(header+id);}
@@ -965,8 +964,9 @@ pzprv3.createCommonClass('Graphic',
 			var id = idlist[i];
 			if(bd.border[id].qsub===1){
 				if(this.vnop(header+id,this.NONE)){
-					if     (bd.border[id].bx&1){ g.fillRect(this.border[id].px, this.border[id].py-this.bh+m, 1, this.ch-2*m);}
-					else if(bd.border[id].by&1){ g.fillRect(this.border[id].px-this.bw+m, this.border[id].py, this.cw-2*m, 1);}
+					var px = this.border[id].px, py = this.border[id].py;
+					if(bd.isHorz(id)){ g.fillRect(px, py-this.bh+m, 1, this.ch-2*m);}
+					else             { g.fillRect(px-this.bw+m, py, this.cw-2*m, 1);}
 				}
 			}
 			else{ this.vhide(header+id);}
@@ -1054,10 +1054,10 @@ pzprv3.createCommonClass('Graphic',
 			if(!!color){
 				g.fillStyle = color;
 				if(this.vnop(header+id,this.FILL)){
-					var bx = bd.border[id].bx, by = bd.border[id].by;
+					var isvert = (bd.lines.isCenterLine^bd.isVert(id));
 					var px = this.border[id].px, py = this.border[id].py;
-					if     (bd.lines.isCenterLine===!!(bx&1)){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-					else if(bd.lines.isCenterLine===!!(by&1)){ g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+					if(isvert){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
+					else      { g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
 				}
 			}
 			else{ this.vhide(header+id);}

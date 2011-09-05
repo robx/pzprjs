@@ -140,8 +140,8 @@ Board:{
 	isBorder : function(id){
 		var qa1 = this.QaC(this.border[id].cellcc[0]);
 		var qa2 = this.QaC(this.border[id].cellcc[1]);
-		if(this.border[id].bx&1){ return (!!this.isbdh_cc1[qa1] || !!this.isbdh_cc2[qa2]);}
-		else                    { return (!!this.isbdv_cc1[qa1] || !!this.isbdv_cc2[qa2]);}
+		if(this.isVert(id)){ return (!!this.isbdv_cc1[qa1] || !!this.isbdv_cc2[qa2]);}
+		else               { return (!!this.isbdh_cc1[qa1] || !!this.isbdh_cc2[qa2]);}
 	}
 },
 

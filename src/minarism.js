@@ -44,7 +44,7 @@ MouseEvent:{
 			var id = bd.bnum(pos.x, pos.y);
 			if(id!==null){
 				var qn=bd.QnB(id), qs=bd.DiB(id);
-				var qm=((pos.x&1)?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
+				var qm=(bd.isHorz(id)?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
 				if(this.btn.Left){
 					if     (qn===-1 && qs===0)   { bd.sQnB(id,-1); bd.sDiB(id,qm+1);}
 					else if(qn===-1 && qs===qm+1){ bd.sQnB(id,-1); bd.sDiB(id,qm+2);}
@@ -88,8 +88,8 @@ KeyEvent:{
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
 			var tmp=bd.NDIR;
-			if(ca=='q'){ tmp=((bd.border[id].bx&1)?bd.UP:bd.LT);}
-			if(ca=='w'){ tmp=((bd.border[id].bx&1)?bd.DN:bd.RT);}
+			if(ca=='q'){ tmp=(bd.isHorz(id)?bd.UP:bd.LT);}
+			if(ca=='w'){ tmp=(bd.isHorz(id)?bd.DN:bd.RT);}
 
 			bd.sDiB(id,(bd.DiB(id)!==tmp?tmp:bd.NDIR));
 			bd.sQnB(id,-1);
@@ -255,8 +255,8 @@ Encode:{
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = ((obj.bx&1)?bd.UP:bd.LT);}
-			else if(tmp===2){ obj.qdir = ((obj.bx&1)?bd.DN:bd.RT);}
+			if     (tmp===1){ obj.qdir = (bd.isHorz(obj.id)?bd.UP:bd.LT);}
+			else if(tmp===2){ obj.qdir = (bd.isHorz(obj.id)?bd.DN:bd.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -295,8 +295,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = ((obj.bx&1)?bd.UP:bd.LT);}
-			else if(ca==="b"){ obj.qdir = ((obj.bx&1)?bd.DN:bd.RT);}
+			if     (ca==="a"){ obj.qdir = (bd.isHorz(obj.id)?bd.UP:bd.LT);}
+			else if(ca==="b"){ obj.qdir = (bd.isHorz(obj.id)?bd.DN:bd.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
 			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 		});

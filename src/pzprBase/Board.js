@@ -119,6 +119,8 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	qsub : 0,	// 境界線の補助データを保持する(1:補助線/2:×)
 	color: "",	// 色分けデータを保持する
 
+	isvert: false,	// true:境界線が垂直(縦) false:境界線が水平(横)
+
 	propall : ['ques', 'qans', 'qdir', 'qnum', 'line', 'qsub'],
 	propans : ['qans', 'line', 'qsub'],
 	propsub : ['qsub']
@@ -400,6 +402,7 @@ pzprv3.createCommonClass('Board',
 				if(i>=0 && i<this.qrows){ obj.bx=0;            obj.by=i*2+1;       } i-=this.qrows;
 				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols; obj.by=i*2+1;       } i-=this.qrows;
 			}
+			obj.isvert = !(obj.bx&1);
 
 			obj.id = id;
 
@@ -630,8 +633,8 @@ pzprv3.createCommonClass('Board',
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(id){
 		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return this.border[id].bx&1 ? (this.isLP(cc1,this.DN) && this.isLP(cc2,this.UP)) :
-									  (this.isLP(cc1,this.RT) && this.isLP(cc2,this.LT));
+		return this.isVert(id) ? (this.isLP(cc1,this.RT) && this.isLP(cc2,this.LT)) :
+								 (this.isLP(cc1,this.DN) && this.isLP(cc2,this.UP));
 	},
 	isLP : function(cc,dir){
 		return !!this.isLPobj[dir][this.cell[cc].ques];
@@ -641,8 +644,8 @@ pzprv3.createCommonClass('Board',
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineNG : function(id){
 		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return this.border[id].bx&1 ? (this.noLP(cc1,this.DN) || this.noLP(cc2,this.UP)) :
-									  (this.noLP(cc1,this.RT) || this.noLP(cc2,this.LT));
+		return this.isVert(id) ? (this.noLP(cc1,this.RT) || this.noLP(cc2,this.LT)) :
+								 (this.noLP(cc1,this.DN) || this.noLP(cc2,this.UP));
 	},
 	// ans.checkenableLinePartsからnoLP()関数が直接呼ばれている
 	noLP : function(cc,dir){
@@ -946,6 +949,17 @@ pzprv3.createCommonClass('Board',
 	removeBorder : function(id){
 		if(this.owner.editmode){ this.sQuB(id,0); this.sQaB(id,0);}
 		else if(this.border[id].ques!==1){ this.sQaB(id,0);}
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.isVert()  該当するBorderが垂直(縦)かどうか返す
+	// bd.isHorz()  該当するBorderに水平(横)かどうか返す
+	//---------------------------------------------------------------------------
+	isVert : function(id){
+		return (!!this.border[id] &&  this.border[id].isvert);
+	},
+	isHorz : function(id){
+		return (!!this.border[id] && !this.border[id].isvert);
 	},
 
 	//---------------------------------------------------------------------------

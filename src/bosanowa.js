@@ -249,12 +249,12 @@ Graphic:{
 			if(bd.isValid(cc1) && bd.isValid(cc2)){
 				if(!g.use.canvas){
 					if(this.vnop(header+id,this.NONE)){
-						if(bd.border[id].by&1){
+						if(bd.isVert(id)){
 							var px = this.border[id].px, py1 = this.border[id].py-this.bh, py2 = py1+this.ch+1;
 							g.strokeLine(px, py1, px, py2);
 							g.setDashSize(3);
 						}
-						else if(bd.border[id].bx&1){
+						else{
 							var py = this.border[id].py, px1 = this.border[id].px-this.bw, px2 = px1+this.cw+1;
 							g.strokeLine(px1, py, px2, py);
 							g.setDashSize(3);
@@ -265,12 +265,12 @@ Graphic:{
 					var dotmax = this.cw/10+3;
 					var dotCount = Math.max(this.cw/dotmax, 1);
 					var dotSize  = this.cw/(dotCount*2);
-					if     (bd.border[id].by&1){ 
+					if(bd.isVert(id)){ 
 						for(var j=0;j<this.ch+1;j+=(2*dotSize)){
 							g.fillRect(this.border[id].px, this.border[id].py-this.bh+j, 1, dotSize);
 						}
 					}
-					else if(bd.border[id].bx&1){ 
+					else{ 
 						for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
 							g.fillRect(this.border[id].px-this.bw+j, this.border[id].py, dotSize, 1);
 						}
@@ -291,14 +291,14 @@ Graphic:{
 			if(bd.isValid(cc1) && bd.isValid(cc2)){
 				g.fillStyle=this.gridcolor;
 				if(this.vnop(headers[0]+id,this.NONE)){
-					if     (bd.border[id].by&1){ g.fillRect(this.border[id].px, this.border[id].py-this.bh, 1, this.ch+1);}
-					else if(bd.border[id].bx&1){ g.fillRect(this.border[id].px-this.bw, this.border[id].py, this.cw+1, 1);}
+					if(bd.isVert(id)){ g.fillRect(this.border[id].px, this.border[id].py-this.bh, 1, this.ch+1);}
+					else             { g.fillRect(this.border[id].px-this.bw, this.border[id].py, this.cw+1, 1);}
 				}
 
 				g.fillStyle = ((bd.cell[cc2].error===0) ? "white" : this.errbcolor1);
 				if(this.vnop(headers[1]+id,this.FILL)){
-					if     (bd.border[id].by&1){ g.fillRect(this.border[id].px, this.border[id].py-csize, 1, 2*csize+1);}
-					else if(bd.border[id].bx&1){ g.fillRect(this.border[id].px-csize, this.border[id].py, 2*csize+1, 1);}
+					if(bd.isVert(id)){ g.fillRect(this.border[id].px, this.border[id].py-csize, 1, 2*csize+1);}
+					else             { g.fillRect(this.border[id].px-csize, this.border[id].py, 2*csize+1, 1);}
 				}
 			}
 			else{ this.vhide([headers[0]+id, headers[1]+id]);}

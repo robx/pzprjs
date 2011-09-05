@@ -173,10 +173,10 @@ Graphic:{
 				var px = this.border[id].px, py = this.border[id].py;
 				if(g.use.canvas){
 					g.fillStyle = this.gridcolor;
-					if     (bd.border[id].by&1){
+					if(bd.isVert(id)){
 						for(var t=py-this.bh,max=py+this.bh;t<max;t+=(2*dotSize)){ g.fillRect(px, t, 1, dotSize);}
 					}
-					else if(bd.border[id].bx&1){
+					else{
 						for(var t=px-this.bw,max=px+this.bw;t<max;t+=(2*dotSize)){ g.fillRect(t, py, dotSize, 1);}
 					}
 				}
@@ -186,8 +186,8 @@ Graphic:{
 						g.lineWidth = 1;
 						g.strokeStyle = this.gridcolor;
 
-						if     (bd.border[id].by&1){ g.strokeLine(px+0.5, py-this.bh, px+0.5, py+this.bh);}
-						else if(bd.border[id].bx&1){ g.strokeLine(px-this.bw, py+0.5, px+this.bw, py+0.5);}
+						if(bd.isVert(id)){ g.strokeLine(px+0.5, py-this.bh, px+0.5, py+this.bh);}
+						else             { g.strokeLine(px-this.bw, py+0.5, px+this.bw, py+0.5);}
 						g.setDashSize(dotSize);
 					}
 				}

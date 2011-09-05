@@ -364,7 +364,7 @@ pzprv3.createCommonClass('OperationManager',
 	},
 	stackBorder : function(id){
 		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.border[id].bx&1){
+		if(bd.isHorz(id)){
 			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
 		}
 		else{

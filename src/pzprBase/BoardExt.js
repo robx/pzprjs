@@ -383,7 +383,7 @@ pzprv3.createCommonClass('LineManager',
 			this.data[this.data.max] = {idlist:[]};
 
 			var newid = this.data.max;
-			var stack=((!this.isCenterLine^(bx0&1))?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
+			var stack=((!this.isCenterLine^bd.isHorz(i))?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
 			while(stack.length>0){
 				var dat=stack.pop(), bx=dat[0], by=dat[1], dir=dat[2];
 				while(1){
