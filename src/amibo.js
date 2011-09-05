@@ -90,10 +90,6 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Cell:{
-	color : ""
-},
-
 Board:{
 	isborder : 1,
 
@@ -101,35 +97,6 @@ Board:{
 	qrows : 8,
 
 	numberIsWhite : true,
-
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-
-		this.bars = new owner.classes.BarManager(owner);
-
-		this.posthook.cell.qans = this.setInfo;
-	},
-	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
-
-		this.bars.init();
-	},
-
-	setInfo : function(c,num){
-		this.bars.setCell(c);
-	},
-
-	disableInfo : function(){
-		this.SuperFunc.disableInfo.call(this);
-		this.bars.disableRecord();
-	},
-	enableInfo : function(){
-		this.SuperFunc.enableInfo.call(this);
-		this.bars.enableRecord();
-	},
-	resetInfo : function(){
-		this.bars.resetInfo();
-	},
 
 	nummaxfunc : function(cc){
 		var bx=this.cell[cc].bx, by=this.cell[cc].by;
@@ -200,6 +167,28 @@ Board:{
 	}
 },
 
+AreaManager:{
+	initialize : function(owner){
+		this.owner = owner;
+		this.barinfo = null;
+
+		this.disrec = 0;
+	},
+
+	init : function(){
+		this.barinfo = new this.owner.classes.AreaBarData(this.owner);
+	},
+	resetArea : function(){
+		this.barinfo.reset();
+	},
+
+	setCell : function(cc){
+		if(!this.isenableRecord()){ return;}
+
+		this.barinfo.setCell(cc);
+	}
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
@@ -208,7 +197,7 @@ MenuExec:{
 	},
 
 	irowakeRemake : function(){
-		bd.bars.newIrowake();
+		bd.areas.barinfo.newIrowake();
 		if(pp.getVal('irowake')){ pc.paintAll();}
 	}
 },
@@ -367,11 +356,6 @@ Graphic:{
 			}
 			else{ this.vhide(header+id);}
 		}
-	},
-
-	repaintBars : function(clist){
-		var d = bd.getSizeOfClist(clist);
-		this.paintRange(d.x1,d.y1,d.x2,d.y2);
 	}
 },
 
@@ -442,13 +426,13 @@ AnsCheck:{
 			this.setAlert('白丸に線がつながっていません。','No bar connects to a white circle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.bars.getAreaInfo() ) ){
+		if( !this.checkOneArea( bd.areas.barinfo.getAreaInfo() ) ){
 			this.setAlert('棒が１つに繋がっていません。','Bars are devided.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkOneArea( bd.bars.getAreaInfo() );},
+	check1st : function(){ return this.checkOneArea( bd.areas.barinfo.getAreaInfo() );},
 
 	checkLineCount : function(binfo, type){
 		var result = true;
@@ -499,7 +483,7 @@ AnsCheck:{
 	checkLoop : function(){
 		var result=true, sinfo={cell:[]};
 		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c]=bd.bars.getcid(c, (!bd.isNum(c)?bd.QaC(c):0));
+			sinfo.cell[c] = bd.areas.barinfo.getcid(c, bd.areas.barinfo.cellinfo[c]);
 		}
 
 		var sdata=[];
@@ -555,254 +539,64 @@ AnsCheck:{
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-BarManager:{
-	initialize : function(owner){
-		this.owner = owner;
+"AreaBarData:AreaData":{
 
-		this.cellinfo = {};	// qansを保持しておく
-
-		this.barinfo = {};	// 線の情報を保持する
-		this.disrec = 0;
-	},
+	isvalid : function(c){ return (bd.QaC(c)>0)},
 
 	//--------------------------------------------------------------------------------
-	// bars.disableRecord()  操作の登録を禁止する
-	// bars.enableRecord()   操作の登録を許可する
-	// bars.isenableRecord() 操作の登録できるかを返す
+	// info.reset() 線の情報を初期化する
 	//--------------------------------------------------------------------------------
-	disableRecord : function(){ this.disrec++; },
-	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec===0);},
-
-	//--------------------------------------------------------------------------------
-	// bars.init()      黒マス関連の変数を初期化する
-	// bars.resetInfo() 黒マスの情報をresetして、1から割り当てしなおす
-	//--------------------------------------------------------------------------------
-	init : function(){
-		this.barinfo = {max:0,id:[]};
-		for(var c=0;c<bd.cellmax;c++){
-			this.cellinfo[c] = 0;
-			this.barinfo.id[c] = null;
-		}
-	},
-	resetInfo : function(){
-		this.init();
-		for(var cc=0;cc<bd.cellmax;cc++){
-			this.cellinfo[cc] = bd.QaC(cc);
-			this.barinfo.id[cc]=(this.cellinfo[cc]!==0 ? 0 : null);
-		}
-		for(var cc=0;cc<bd.cellmax;cc++){
-			if(this.barinfo.id[cc]!==0){ continue;}
-			this.barinfo.max++;
-			this.barinfo[this.barinfo.max] = {clist:[]};
-			this.sc0(cc,this.barinfo);
-		}
+	reset : function(){
+		pzprv3.core.AreaData.prototype.reset.call(this);
 		this.newIrowake();
 	},
 
-	//---------------------------------------------------------------------------
-	// bars.newIrowake()  線の情報が再構築された際、線に色をつける
-	//---------------------------------------------------------------------------
-	newIrowake : function(){
-		for(var i=1;i<=this.barinfo.max;i++){
-			var clist = this.barinfo[i].clist;
-			if(clist.length>0){
-				var newColor = pc.getNewLineColor();
-				for(var n=0;n<clist.length;n++){
-					bd.cell[clist[n]].color = newColor;
-				}
-			}
-		}
-	},
-
 	//--------------------------------------------------------------------------------
-	// bars.setCell()        線が入力されたり消された時に、線IDの情報を変更する
-	// bars.setBar()         線が入力されたり消された時に、線IDの情報を変更する
-	// bars.combineBarInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                       できる場合の線idの再設定を行う
-	// bars.remakeBarInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                       可能性がある場合の線idの再設定を行う
-	// bars.sc0()            初期idを含む一つの領域内のareaidを指定されたものにする
+	// info.setCell()        線が入力されたり消された時に、線IDの情報を変更する
+	// info.setCell_main()   線が入力されたり消された時に、線IDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCell : function(cc){
-		if(!this.isenableRecord()){ return;}
-
-		var val = bd.QaC(cc), old = this.cellinfo[cc];
+		var val = this.getlink(cc), old = this.cellinfo[cc];
 		if(val===old){ return;}
-		else if(val===0||val===3||old===0||old===3){
-			this.setBar(cc, val, old);
+		else if(val===0||val===15||old===0||old===15){
+			this.setCell_main(cc, val, old);
 		}
 		else{
-			this.setBar(cc, 0, old);
-			this.setBar(cc, val, 0);
+			this.setCell_main(cc, 0, old);
+			this.setCell_main(cc, val, 0);
 		}
 	},
-	setBar : function(cc, val, old){
+	setCell_main : function(cc, val, old){
 		this.cellinfo[cc] = val;
 
-		var isset = (val>old), data = this.barinfo, dataid = data.id;
-		var cid = this.getcid(cc, (val>old?val:old));
-
-		// 新たに線が引かれた場合
+		var isset = (val>old), cid = this.getcid(cc, (val>old?val:old));
+		// 新たに黒マス(白マス)になった時
 		if(isset){
-			// まわりに線がない時は新しいIDで登録です
-			if(cid.length===0){
-				if(old===0){
-					data.max++;
-					data[data.max] = {clist:[cc]};
-					dataid[cc] = data.max;
-					bd.cell[cc].color = pc.getNewLineColor();
-				}
-			}
-			// 1方向にあるときは、そこにくっつけばよい
-			else if(cid.length===1){
-				data[dataid[cid[0]]].clist.push(cc);
-				dataid[cc] = dataid[cid[0]];
-				bd.cell[cc].color = bd.cell[cid[0]].color;
-			}
-			// 2方向以上の時
-			else{
-				this.combineBarInfo(cc,cid);
-			}
+			if(cid.length===0 && old!==0){ /* nop */ }
+			if(cid.length<=1){ this.assignCell(cc, (cid.length===1?cid[0]:null));}
+			else             { this.combineInfo(cc, cid);}
 		}
-		// 線が消えた場合
+		// 黒マス(白マス)ではなくなった時
 		else{
-			// まわりに線がない時は情報を消去するだけ
-			if(cid.length===0){
-				if(val===0){
-					data[dataid[cc]].clist = [];
-					dataid[cc] = null;
-					bd.cell[cc].color = "";
-				}
-			}
-			// まわり1方向の時も自分を消去するだけでよい
-			else if(cid.length===1 && val===0){
-				var ownid = dataid[cc], clist = data[ownid].clist;
-				for(var i=0;i<clist.length;i++){ if(clist[i]===cc){ clist.splice(i,1); break;} }
-				dataid[cc] = null;
-				bd.cell[cc].color = "";
-			}
-			// 2方向以上の時は考慮が必要
-			else{
-				this.remakeBarInfo(cc,cid);
-			}
+			if(cid.length===0 && val!==0){ /* nop */ }
+			else if(cid.length<=1 && val===0){ this.removeCell(cc);}
+			else                             { this.remakeInfo(cc, cid);}
 		}
-	},
-	combineBarInfo : function(cc, cid){
-		var data=this.barinfo, dataid = data.id;
-
-		// 周りで一番大きな線は？
-		var largeid = dataid[cid[0]];
-		var newColor = bd.cell[cid[0]].color;
-		for(var i=1;i<cid.length;i++){
-			if(data[largeid].clist.length < data[dataid[cid[i]]].clist.length){
-				largeid = dataid[cid[i]];
-				newColor = bd.cell[cid[i]].color;
-			}
-		}
-		// つながった線は全て同じIDにする
-		for(var i=0;i<cid.length;i++){
-			var lineid = dataid[cid[i]];
-			if(lineid===largeid){ continue;}
-			var clist = data[lineid].clist;
-			for(var n=0,len=clist.length;n<len;n++){
-				dataid[clist[n]] = largeid;
-				data[largeid].clist.push(clist[n]);
-			}
-			data[lineid].clist = [];
-		}
-		// 自分をくっつける
-		if(dataid[cc]!==largeid){
-			dataid[cc] = largeid;
-			data[largeid].clist.push(cc);
-		}
-
-		// 色を同じにする
-		for(var i=0,len=data[largeid].clist.length;i<len;i++){
-			bd.cell[data[largeid].clist[i]].color = newColor;
-		}
-		if(pp.getVal('irowake')){ pc.repaintBars(data[largeid].clist);}
-	},
-	remakeBarInfo : function(cc, cid){
-		var data=this.barinfo, dataid = data.id;
-
-		// 一度自分を含む領域の線情報を無効にする
-		var ownid = dataid[cc], org_clist = data[ownid].clist, longColor = bd.cell[cc].color;
-		for(var i=0;i<org_clist.length;i++){ dataid[org_clist[i]] = 0;}
-		data[ownid].clist = [];
-
-		// 自分を線情報から消去 or くっつけなおす
-		if(bd.QaC(cc)===0){
-			dataid[cc] = null;
-			bd.cell[cc].color = "";
-		}
-		else{ cid.unshift(cc);}
-
-		// まわりのIDが0なセルに線IDをセットしていく
-		var ids = [];
-		for(var i=0;i<cid.length;i++){
-			if(dataid[cid[i]]!==0){ continue;}
-			data.max++;
-			data[data.max] = {clist:[]};
-			this.sc0(cid[i],data);
-			ids.push(data.max);
-		}
-
-		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
-		// それ以外の線には新しい色を付加する
-		if(ids.length>1){
-			// できた線の中でもっとも長いものを取得する
-			var longid = ids[0];
-			for(var i=1;i<ids.length;i++){
-				if(data[longid].clist.length < data[ids[i]].clist.length){ longid = ids[i];}
-			}
-
-			// 新しい色の設定
-			for(var i=0;i<ids.length;i++){
-				var newColor = (ids[i]===longid ? longColor : pc.getNewLineColor());
-				var clist = data[ids[i]].clist;
-				for(var n=0,len=clist.length;n<len;n++){ bd.cell[clist[n]].color = newColor;}
-			}
-			if(pp.getVal('irowake')){ pc.repaintBars(org_clist);}
-		}
-	},
-
-	sc0 : function(c,data){
-		data.id[c] = data.max;
-		data[data.max].clist.push(c);
-
-		var cid = this.getcid(c, this.cellinfo[c]);
-		for(var i=0;i<cid.length;i++){ if(data.id[cid[i]]===0){ this.sc0(cid[i],data);}}
-	},
-
-	getcid : function(c,qa){
-		var cid = [], dataid = this.barinfo.id, tc;
-		if(qa!==2){
-			tc=bd.up(c); if(tc!==null && dataid[tc]!==null && bd.QaC(tc)!==2){ cid.push(tc);}
-			tc=bd.dn(c); if(tc!==null && dataid[tc]!==null && bd.QaC(tc)!==2){ cid.push(tc);}
-		}
-		if(qa!==1){
-			tc=bd.lt(c); if(tc!==null && dataid[tc]!==null && bd.QaC(tc)!==1){ cid.push(tc);}
-			tc=bd.rt(c); if(tc!==null && dataid[tc]!==null && bd.QaC(tc)!==1){ cid.push(tc);}
-		}
-		return cid;
 	},
 
 	//--------------------------------------------------------------------------------
-	// bars.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
+	// info.getlink() 上下左右に繋がるかの情報を取得する
 	//--------------------------------------------------------------------------------
-	getAreaInfo : function(block){
-		var data = this.barinfo, info = new pzprv3.core.AreaInfo();
-		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(data.id[c]>0?0:null);}
-		for(var c=0;c<bd.cellmax;c++){
-			if(info.id[c]!==0){ continue;}
-			info.max++;
-			var clist = data[data.id[c]].clist;
-			info.room[info.max] = {idlist:clist}; /* 参照だけなのでconcat()じゃなくてよい */
-			for(var i=0,len=clist.length;i<len;i++){ info.id[clist[i]] = info.max;}
+	getlink : function(cc){
+		return [0,3,12,15][bd.QaC(cc)];
+		var val = 0, qa = bd.QaC(cc);
+		if(qa>0 && this.isvalid(cc)){
+			if(bd.ub(cc)!==null && qa!==2){ val+=1;}
+			if(bd.db(cc)!==null && qa!==2){ val+=2;}
+			if(bd.lb(cc)!==null && qa!==1){ val+=4;}
+			if(bd.rb(cc)!==null && qa!==1){ val+=8;}
 		}
-		return info;
+		return val;
 	}
-
 }
 };

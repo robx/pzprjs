@@ -338,10 +338,11 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
+		var dataobj = new pzprv3.core.AreaData(this.owner);
 		for(var id=1;id<=bd.areas.rinfo.max;id++){
-			var isset = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
-			var data = (new pzprv3.core.AreaData(this.owner, isset)).getAreaInfo();
-			if(data.max>1){
+			dataobj.isvalid = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
+			dataobj.reset();
+			if(dataobj.getAreaInfo().max>1){
 				if(this.inAutoCheck){ return false;}
 				bd.sErC(bd.areas.rinfo[id].clist,1);
 				result = false;

@@ -61,8 +61,11 @@ AreaManager:{
 			this.checkBlackCell = true;
 		}
 	},
-	hasroom    : true,
-	roomNumber : true
+	hasroom    : true
+},
+
+AreaRoomData:{
+	hastop : true
 },
 
 Menu:{

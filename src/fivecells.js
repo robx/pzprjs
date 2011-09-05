@@ -56,8 +56,6 @@ Board:{
 		this.SuperFunc.initialize.call(this, owner);
 
 		this.posthook.cell.ques = function(c){ this.areas.setCell(c);};
-
-		this.akariinfo = []; /* インスタンス化 */
 	},
 
 	initBoardSize : function(col,row){
@@ -96,6 +94,40 @@ AreaManager:{
 	hasroom : true
 },
 
+AreaRoomData:{
+	isvalid : function(c){
+		return (bd.cell[c].ques!==7);
+	},
+
+	setCell : function(cc){
+		var val = this.getlink(cc), old = this.cellinfo[cc];
+		if(val===old){
+			if(val===0){
+				val = this.isvalid(cc); old = (this.id[cc]!==null);
+				if     ( val &&!old){ this.assignCell(cc, null);}
+				else if(!val && old){ this.removeCell(cc);}
+			}
+		}
+		else{
+			this.setCellDir4(cc, val, old);
+		}
+	},
+	// 自分＋上下左右４方向の部屋IDを単純にふり直す
+	setCellDir4 : function(cc, val, old){
+		this.cellinfo[cc] = val;
+
+		var clist = [cc], cblist = bd.getdir4cblist(cc);
+		for(var i=0;i<cblist.length;i++){
+			if(cblist[i][0]!==null){
+				this.cellinfo[cblist[i][0]] = this.getlink(cblist[i][0]);
+				clist.push(cblist[i][0]);
+			}
+			if(cblist[i][1]!==null){ this.setbd(cblist[i][1]);}
+		}
+
+		this.searchClist(this.popRoom(clist));
+	}
+},
 
 //---------------------------------------------------------
 // 画像表示系

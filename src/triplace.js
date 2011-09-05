@@ -97,12 +97,7 @@ Board:{
 	},
 
 	getTileInfo : function(){
-		var self = this;
-		var tinfo = (new pzprv3.core.AreaBorderData(this.owner,
-			function(c){ return (self.QuC(c)!==51);},
-			function(id){ return self.isBorder(id);}
-		)).getAreaInfo();
-
+		var tinfo = new this.owner.classes.AreaTriTileData(this.owner).getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
 			var d = this.getSizeOfClist(tinfo.room[r].idlist);
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
@@ -113,6 +108,11 @@ Board:{
 
 AreaManager:{
 	hasroom : true
+},
+
+"AreaTriTileData:AreaBorderData":{
+	isvalid : function(c){ return (bd.QuC(c)!==51);},
+	bdfunc : function(id){ return bd.isBorder(id);}
 },
 
 MenuExec:{

@@ -60,8 +60,11 @@ Board:{
 
 AreaManager:{
 	hasroom        : true,
-	roomNumber     : true,
 	checkWhiteCell : true
+},
+
+AreaRoomData:{
+	hastop : true
 },
 
 Menu:{

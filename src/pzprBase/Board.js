@@ -78,6 +78,7 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	qnum :-1,	// セルの問題データを保持する(数字/○△□/単体矢印/白丸黒丸/カックロの右側)
 	anum :-1,	// セルの回答データを保持する(数字/○△□/単体矢印)
 	qsub : 0,	// セルの補助データを保持する(1:白マス 1-2:背景色/○× 3:絵になる部分)
+	color: "",	// 色分けデータを保持する
 
 	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub'],
 	propans : ['qans', 'anum', 'qsub'],

@@ -55,8 +55,11 @@ LineManager:{
 },
 
 AreaManager:{
-	hasroom    : true,
-	roomNumber : true
+	hasroom    : true
+},
+
+AreaRoomData:{
+	hastop : true
 },
 
 Menu:{

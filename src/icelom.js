@@ -223,6 +223,10 @@ LineManager:{
 	isLineCross  : true
 },
 
+"AreaIcebarnData:AreaData":{
+	isvalid : function(c){ return (bd.QuC(c)==6);}
+},
+
 MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
@@ -521,7 +525,7 @@ AnsCheck:{
 	},
 
 	checkIgnoreIcebarn : function(){
-		var iarea = (new pzprv3.core.AreaData(this.owner, function(c){ return (bd.QuC(c)==6);})).getAreaInfo();
+		var iarea = new this.owner.classes.AreaIcebarnData(this.owner).getAreaInfo();
 		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
 	},
 

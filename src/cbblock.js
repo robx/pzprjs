@@ -43,9 +43,8 @@ Board:{
 	},
 
 	getBlockInfo : function(){
-		var self = this;
-		var tinfo = (new pzprv3.core.AreaBorderData(this.owner,null,function(id){ return !self.isGround(id);})).getAreaInfo();
-		var cinfo = (new pzprv3.core.AreaBorderData(this.owner,null,function(id){ return self.border[id].qans>0;})).getAreaInfo();
+		var tinfo = new this.owner.classes.AreaTileData(this.owner).getAreaInfo();
+		var cinfo = new this.owner.classes.AreaTile2Data(this.owner).getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, room=cinfo.room[r], clist=room.idlist;
@@ -83,6 +82,14 @@ Board:{
 		for(var i=0;i<8;i++){ shapes.data[i]=data[i].join('');}
 		return shapes;
 	}
+},
+
+"AreaTileData:AreaBorderData":{
+	bdfunc : function(id){ return !bd.isGround(id);}
+},
+
+"AreaTile2Data:AreaBorderData":{
+	bdfunc : function(id){ return bd.border[id].qans>0;}
 },
 
 //---------------------------------------------------------

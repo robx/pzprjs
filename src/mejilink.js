@@ -70,6 +70,10 @@ LineManager:{
 	borderAsLine : true
 },
 
+"AreaTileData:AreaBorderData":{
+	bdfunc : function(id){ return !bd.isGround(id);}
+},
+
 Menu:{
 	menufix : function(){
 		this.addRedLineToFlags();
@@ -214,7 +218,7 @@ AnsCheck:{
 	},
 	checkDotLength : function(){
 		var result = true;
-		var tarea = (new pzprv3.core.AreaBorderData(this.owner,null,function(id){ return !bd.isGround(id);})).getAreaInfo();
+		var tarea = new this.owner.classes.AreaTileData(this.owner).getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}

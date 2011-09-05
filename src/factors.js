@@ -50,8 +50,11 @@ Board:{
 },
 
 AreaManager:{
-	hasroom    : true,
-	roomNumber : true
+	hasroom    : true
+},
+
+AreaRoomData:{
+	hastop : true
 },
 
 //---------------------------------------------------------
