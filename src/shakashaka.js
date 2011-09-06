@@ -57,8 +57,8 @@ MouseEvent:{
 		pc.paintCell(cc);
 	},
 	checkCornerData : function(cc){
-		var dx = this.inputPoint.x - bd.cell[cc].cpx;
-		var dy = this.inputPoint.y - bd.cell[cc].cpy;
+		var dx = this.inputPoint.x - pc.cell[cc].px;
+		var dy = this.inputPoint.y - pc.cell[cc].py;
 		if(dx<=0){ return ((dy<=0)?5:2);}
 		else     { return ((dy<=0)?4:3);}
 	},
