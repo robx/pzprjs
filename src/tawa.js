@@ -18,7 +18,7 @@ MouseEvent:{
 		if(this.inputY%pc.ch==0){ return null;} // 縦方向だけ、ぴったりは無効
 		if(!bd.isinside(pos.x,pos.y)){ return null;}
 
-		var cand = bd.cnum(pos.x, pos.y);
+		var cand = pos.cellid();
 		cand = (cand!==null?cand:bd.cnum(pos.x+1, pos.y));
 		return cand;
 	},
@@ -52,14 +52,14 @@ KeyEvent:{
 TargetCursor:{
 	// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 	adjust_init : function(){
-		if(bd.cnum(this.pos.x,this.pos.y)===null){
+		if(this.pos.cellid()===null){
 			this.pos.x++;
 		}
 	},
-	getTCC : function(){ return bd.cnum(this.pos.x, this.pos.y);},
+	getTCC : function(){ return this.pos.cellid();},
 	setTCC : function(id){
 		if(id<0 || bd.cellmax<=id){ return;}
-		this.pos = new pzprv3.core.Address(bd.cell[id].bx, bd.cell[id].by);
+		this.pos = bd.cell[id].getaddr();
 	},
 	incTCY : function(mv){
 		this.pos.y+=mv;

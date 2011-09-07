@@ -128,6 +128,8 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
+	minnum : 0,
+
 	disInputHatena : true,
 
 	initialize : function(owner){
@@ -148,22 +150,24 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
+		var pos = new pzprv3.core.Address(0,0);
 		for(var id=0;id<this.starmax;id++){
 			this.star[id] = {};
 			var obj = this.star[id];
 			obj.bx = id%(2*col-1)+1;
 			obj.by = ((id/(2*col-1))|0)+1;
-			if((obj.bx&1)===1 && (obj.by&1)===1){
-				obj.group   = this.CELL;
-				obj.groupid = this.cnum(obj.bx, obj.by);
+			pos.initialize(obj.bx, obj.by);
+			if(pos.oncell()){
+				obj.group = this.CELL;
+				obj.groupid = pos.cellid();
 			}
-			else if((obj.bx&1)===0 && (obj.by&1)===0){
-				obj.group   = this.CROSS;
-				obj.groupid = this.xnum(obj.bx, obj.by);
+			else if(pos.oncross()){
+				obj.group = this.CROSS;
+				obj.groupid = pos.crossid();
 			}
 			else{
-				obj.group   = this.BORDER;
-				obj.groupid = this.bnum(obj.bx, obj.by);
+				obj.group = this.BORDER;
+				obj.groupid = pos.borderid();
 			}
 		}
 	},
@@ -181,18 +185,14 @@ Board:{
 	},
 
 	getStar : function(id){
-		if     (this.star[id].group===this.CELL) { return this.QnC(this.star[id].groupid);}
-		else if(this.star[id].group===this.CROSS){ return this.QnX(this.star[id].groupid);}
-		else                                     { return this.QnB(this.star[id].groupid);}
+		return this.getdata(this.star[id].group, this.QNUM, this.star[id].groupid);
 	},
 	isStarError : function(id){
 		return (this.getObject(this.star[id].group, this.star[id].groupid).error!==0);
 	},
 	setStar : function(id,val){
 		um.disCombine = 1;
-		if     (this.star[id].group===this.CELL) { this.sQnC(this.star[id].groupid, val);}
-		else if(this.star[id].group===this.CROSS){ this.sQnX(this.star[id].groupid, val);}
-		else                                     { this.sQnB(this.star[id].groupid, val);}
+		this.setdata(this.star[id].group, this.QNUM, this.star[id].groupid, val);
 		um.disCombine = 0;
 	},
 

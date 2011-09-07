@@ -42,11 +42,11 @@ Board:{
 	},
 
 	getdir4Border : function(cc){
-		var cnt=0, bx=this.cell[cc].bx, by=this.cell[cc].by;
-		if( by===this.minby+1 || this.isBorder(this.bnum(bx  ,by-1)) ){ cnt++;}
-		if( by===this.maxby-1 || this.isBorder(this.bnum(bx  ,by+1)) ){ cnt++;}
-		if( bx===this.minbx+1 || this.isBorder(this.bnum(bx-1,by  )) ){ cnt++;}
-		if( bx===this.maxby-1 || this.isBorder(this.bnum(bx+1,by  )) ){ cnt++;}
+		var cnt=0, pos=this.cell[cc].getaddr();
+		if( pos.y===this.minby+1 || this.isBorder(this.ub(cc)) ){ cnt++;}
+		if( pos.y===this.maxby-1 || this.isBorder(this.db(cc)) ){ cnt++;}
+		if( pos.x===this.minbx+1 || this.isBorder(this.lb(cc)) ){ cnt++;}
+		if( pos.x===this.maxby-1 || this.isBorder(this.rb(cc)) ){ cnt++;}
 		return cnt;
 	}
 },

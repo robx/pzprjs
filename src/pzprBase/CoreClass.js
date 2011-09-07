@@ -113,19 +113,16 @@
 });
 
 //----------------------------------------------------------------------------
-// ★Pointクラス, Addressクラス (x,y)座標を扱う
+// ★Pointクラス  (x,y)pixel座標を扱う
 //---------------------------------------------------------------------------
 // Pointクラス
 pzprv3.createCoreClass('Point',
 {
-	initialize : function(xx,yy){ this.x = xx; this.y = yy;},
+	initialize : function(x,y){ this.x = x; this.y = y;},
 	set : function(pos){ this.x = pos.x; this.y = pos.y;},
 	reset : function(){ this.x = null; this.y = null;},
-	valid : function(){ return (this.x!==null && this.y!==null);},
-	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);}
+	valid : function(){ return (this.x!==null && this.y!==null);}
 });
-// Addressクラス
-pzprv3.createCoreClass('Address:Point',{});
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する

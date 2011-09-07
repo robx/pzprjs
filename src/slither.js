@@ -30,8 +30,7 @@ MouseEvent:{
 	inputRed : function(){ this.dispRedLine();},
 
 	inputBGcolor0 : function(){
-		var pos = this.borderpos(0.25);
-		return ((pos.x&1) && (pos.y&1));
+		return this.borderpos(0.25).oncell();
 	},
 	inputBGcolor : function(){
 		var cc = this.cellid();
@@ -83,11 +82,11 @@ Board:{
 	minnum : 0,
 
 	getdir4BorderLine1 : function(cc){
-		var cnt=0, bx=this.cell[cc].bx, by=this.cell[cc].by;
-		if( this.isLine(this.bnum(bx  ,by-1)) ){ cnt++;}
-		if( this.isLine(this.bnum(bx  ,by+1)) ){ cnt++;}
-		if( this.isLine(this.bnum(bx-1,by  )) ){ cnt++;}
-		if( this.isLine(this.bnum(bx+1,by  )) ){ cnt++;}
+		var cnt=0;
+		if( this.isLine(this.ub(cc)) ){ cnt++;}
+		if( this.isLine(this.db(cc)) ){ cnt++;}
+		if( this.isLine(this.lb(cc)) ){ cnt++;}
+		if( this.isLine(this.rb(cc)) ){ cnt++;}
 		return cnt;
 	}
 },

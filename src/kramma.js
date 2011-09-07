@@ -269,17 +269,20 @@ AnsCheck:{
 		var result = true;
 		var lines = [];
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.QaB(id);}
-		for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
-			for(var by=bd.minby;by<=bd.maxby;by+=2){
+
+		var pos = new pzprv3.core.Address(bd.minbx,bd.minby);
+		for(pos.x=bd.minbx;pos.x<=bd.maxbx;pos.x+=2){
+			for(pos.y=bd.minby;pos.y<=bd.maxby;pos.y+=2){
 				/* 盤面端から探索をスタートする */
-				if((bx===bd.minbx||bx===bd.maxbx)^(by===bd.minby||by===bd.maxby)){
-					if     (by===bd.minby){ this.clearLineInfo(lines,bx,by,2);}
-					else if(by===bd.maxby){ this.clearLineInfo(lines,bx,by,1);}
-					else if(bx===bd.minbx){ this.clearLineInfo(lines,bx,by,4);}
-					else if(bx===bd.maxbx){ this.clearLineInfo(lines,bx,by,3);}
+				if((pos.x===bd.minbx||pos.x===bd.maxbx)^(pos.y===bd.minby||pos.y===bd.maxby)){
+					if     (pos.y===bd.minby){ this.clearLineInfo(lines,pos,2);}
+					else if(pos.y===bd.maxby){ this.clearLineInfo(lines,pos,1);}
+					else if(pos.x===bd.minbx){ this.clearLineInfo(lines,pos,4);}
+					else if(pos.x===bd.maxbx){ this.clearLineInfo(lines,pos,3);}
 				}
 			}
 		}
+
 		for(var id=0;id<bd.bdmax;id++){
 			if(lines[id]!==1){ continue;}
 
@@ -293,23 +296,30 @@ AnsCheck:{
 
 		return result;
 	},
-	clearLineInfo : function(lines,bx,by,dir){
-		while(1){
-			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if(!((bx+by)&1)){
-				var xc = bd.xnum(bx,by), id;
-				if(xc!==null && bd.QnX(xc)===1){
-					id=bd.bnum(bx,by-1); if(id!==null && bd.border[id].qans===1){ this.clearLineInfo(lines,bx,by,1);}
-					id=bd.bnum(bx,by+1); if(id!==null && bd.border[id].qans===1){ this.clearLineInfo(lines,bx,by,2);}
-					id=bd.bnum(bx-1,by); if(id!==null && bd.border[id].qans===1){ this.clearLineInfo(lines,bx,by,3);}
-					id=bd.bnum(bx+1,by); if(id!==null && bd.border[id].qans===1){ this.clearLineInfo(lines,bx,by,4);}
-					break;
+	clearLineInfo : function(lines,pos,dir){
+		var stack = [[pos.clone(),dir]], id = null;
+		while(stack.length>0){
+			var dat = stack.pop();
+			pos = dat[0];
+			dir = dat[1];
+			while(1){
+				pos.move(dir);
+				if(pos.oncross()){
+					var xc = pos.crossid();
+					if(xc!==null && bd.QnX(xc)===1){
+						var bx=pos.x, by=pos.y;
+						id=bd.bnum(bx,by-1); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),1]);}
+						id=bd.bnum(bx,by+1); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),2]);}
+						id=bd.bnum(bx-1,by); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),3]);}
+						id=bd.bnum(bx+1,by); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),4]);}
+						break;
+					}
 				}
-			}
-			else{
-				var id = bd.bnum(bx,by);
-				if(id===null || lines[id]===0){ break;}
-				lines[id]=0;
+				else{
+					id = pos.borderid();
+					if(id===null || lines[id]===0){ break;}
+					lines[id]=0;
+				}
 			}
 		}
 	}

@@ -81,13 +81,15 @@ Board:{
 	},
 
 	trackBall1 : function(startcc, ldata){
-		var bx=this.cell[startcc].bx, by=this.cell[startcc].by;
+		var pos = this.cell[startcc].getaddr();
 		var dir=this.getNum(startcc), result=(dir===5);
 		ldata[startcc]=0;
 
 		while(dir>=1 && dir<=4){
-			switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-			var c=this.cnum(bx,by);
+			pos.move(dir);
+			pos.move(dir);
+
+			var c = pos.cellid();
 			if(c===null){ break;}
 			if(ldata[c]!==-1){ result=(ldata[c]===2); break;}
 

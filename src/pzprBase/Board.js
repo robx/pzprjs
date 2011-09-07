@@ -21,6 +21,8 @@ pzprv3.createCoreClass('BoardPiece',
 	propans : [],
 	propsub : [],
 
+	getaddr : function(){ return new pzprv3.core.Address(this.bx, this.by);},
+
 	//---------------------------------------------------------------------------
 	// allclear() 位置,描画情報以外をクリアする
 	// ansclear() qans,anum,line,qsub,error情報をクリアする
@@ -142,6 +144,40 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 	propall : ['qdir', 'qnum'],
 	propans : [],
 	propsub : []
+});
+
+//----------------------------------------------------------------------------
+// ★Pointクラス, Addressクラス (bx,by)座標を扱う
+//---------------------------------------------------------------------------
+// Addressクラス
+pzprv3.createCoreClass('Address',{
+	initialize : function(x,y){
+		this.x = x;
+		this.y = y;
+	},
+
+	set    : function(pos){ this.x = pos.x; this.y = pos.y;},
+	reset  : function()   { this.x = null;  this.y = null;},
+	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);},
+	clone  : function()   { return new pzprv3.core.Address(this.x, this.y);},
+
+	oncell   : function(){ return ( (this.x&1)&& (this.y&1));},
+	oncross  : function(){ return (!(this.x&1)&&!(this.y&1));},
+	onborder : function(){ return !!((this.x+this.y)&1);},
+	
+	cellid   : function(){ return bd.cnum(this.x, this.y);},
+	crossid  : function(){ return bd.xnum(this.x, this.y);},
+	borderid : function(){ return bd.bnum(this.x, this.y);},
+	excellid : function(){ return bd.exnum(this.x, this.y);},
+	
+	move : function(dir){
+		switch(dir){
+			case 1: this.y--; break; /* bd.UP */
+			case 2: this.y++; break; /* bd.DN */
+			case 3: this.x--; break; /* bd.LT */
+			case 4: this.x++; break; /* bd.RT */
+		}
+	}
 });
 
 //---------------------------------------------------------------------------
@@ -700,7 +736,7 @@ pzprv3.createCommonClass('Board',
 	// bd.getdata() Cell,Cross,Border,EXCellの値を取得する
 	// bd.setdata() Cell,Cross,Border,EXCellの値を設定する
 	//---------------------------------------------------------------------------
-	getdata : function(group, prop, id, num){
+	getdata : function(group, prop, id){
 		return this[group][id][prop];
 	},
 	setdata : function(group, prop, id, num){

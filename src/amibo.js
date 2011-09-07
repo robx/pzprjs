@@ -22,7 +22,7 @@ MouseEvent:{
 		var cc = this.cellid();
 		if(cc===null){ return;}
 
-		var pos = new pzprv3.core.Address(bd.cell[cc].bx, bd.cell[cc].by);
+		var pos = bd.cell[cc].getaddr();
 		var input=false;
 
 		// 初回はこの中に入ってきます。

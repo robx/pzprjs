@@ -19,7 +19,7 @@ MouseEvent:{
 
 	inputmark_mousemove : function(){
 		var pos = this.borderpos(0);
-		if(bd.cnum(pos.x,pos.y)===null){ return;}
+		if(pos.cellid()===null){ return;}
 
 		var id = this.getnb(this.prevPos, pos);
 		if(id!==null){
@@ -41,7 +41,7 @@ MouseEvent:{
 			pc.paintPos(pos);
 		}
 		else{
-			var id = bd.bnum(pos.x, pos.y);
+			var id = pos.borderid();
 			if(id!==null){
 				var qn=bd.QnB(id), qs=bd.DiB(id);
 				var qm=(bd.isHorz(id)?0:2), max=Math.max(bd.qcols,bd.qrows)-1;

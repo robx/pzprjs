@@ -224,18 +224,16 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	cellid : function(){
-		var pos = this.borderpos(0);
 		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return null;} // ぴったりは無効
-		return bd.cnum(pos.x,pos.y);
+		return this.borderpos(0).cellid();
 	},
 	crossid : function(){
 		var pos = this.borderpos(0.5);
-		return bd.xnum(pos.x,pos.y);
+		return this.borderpos(0).crossid();
 	},
 	excellid : function(){
-		var pos = this.borderpos(0);
 		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return null;} // ぴったりは無効
-		return bd.exnum(pos.x,pos.y);
+		return this.borderpos(0).excellid();
 	},
 	borderpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
@@ -274,8 +272,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	checkBorderMode : function(){
-		var pos = this.borderpos(0.25);
-		this.bordermode = (!((pos.x&1)&&(pos.y&1)));
+		this.bordermode = !this.borderpos(0.25).oncell();
 	},
 
 	//---------------------------------------------------------------------------
@@ -435,7 +432,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var cc=bd.cnum(this.prevPos.x, this.prevPos.y);
+		var cc = this.prevPos.cellid();
 		if(cc!==null){
 			if(bd.QnC(cc)!==-1){
 				var dir = this.getdir(this.prevPos, pos);
@@ -451,7 +448,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
-		var dir = bd.NDIR, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
+		var dir = bd.NDIR, cc = this.prevPos.cellid();
 		if(cc!==null){
 			var dir = this.getdir(this.prevPos, pos);
 			if(dir!==bd.NDIR){
@@ -502,7 +499,7 @@ pzprv3.createCommonClass('MouseEvent',
 	input51 : function(){
 		var ec = this.excellid();
 		if(ec!==null){
-			var pos = new pzprv3.core.Address(bd.excell[ec].bx, bd.excell[ec].by);
+			var pos = bd.excell[ec].getaddr();
 			var tcp=tc.getTCP();
 			tc.setTCP(pos);
 			pc.paintPos(tcp);
@@ -557,11 +554,11 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
-		if((pos.x&1) || (pos.y&1)){ return;}
+		if(!pos.oncross()){ return;}
 		var bm = (bd.iscross===2?0:2);
 		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
 
-		var cc = bd.xnum(pos.x,pos.y);
+		var cc = pos.crossid();
 		if(cc===null){ return;}
 
 		um.disCombine = 1;
@@ -605,7 +602,7 @@ pzprv3.createCommonClass('MouseEvent',
 	getborderID : function(base, current){
 		if(((current.x&1)===0 && base.x===current.x && Math.abs(base.y-current.y)===1) ||
 		   ((current.y&1)===0 && base.y===current.y && Math.abs(base.x-current.x)===1) )
-			{ return ((((base.x+base.y)&1)===1) ? bd.bnum(base.x, base.y) : bd.bnum(current.x, current.y));}
+			{ return (base.onborder() ? base : current).borderid();}
 		return null;
 	},
 
@@ -655,7 +652,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var pos = this.borderpos(0.22);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = bd.bnum(pos.x, pos.y);
+		var id = pos.borderid();
 		if(id!==null){
 			if(this.inputData===null){ this.inputData=(bd.QsB(id)===0?2:3);}
 			if     (this.inputData===2){ bd.setPeke(id);}

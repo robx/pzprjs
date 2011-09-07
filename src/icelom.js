@@ -522,10 +522,10 @@ AnsCheck:{
 	},
 
 	checkLine : function(){
-		var bx=bd.border[bd.arrowin].bx, by=bd.border[bd.arrowin].by;
+		var pos = bd.border[bd.arrowin].getaddr();
 		var dir=0, count=1;
-		if     (by===bd.minby){ dir=2;}else if(by===bd.maxby){ dir=1;}
-		else if(bx===bd.minbx){ dir=4;}else if(bx===bd.maxbx){ dir=3;}
+		if     (pos.y===bd.minby){ dir=2;}else if(pos.y===bd.maxby){ dir=1;}
+		else if(pos.x===bd.minbx){ dir=4;}else if(pos.x===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}
 		if(!bd.isLine(bd.arrowin)){ bd.sErB([bd.arrowin],3); return 1;}
 
@@ -533,16 +533,16 @@ AnsCheck:{
 		bd.sErB([bd.arrowin],1);
 
 		while(1){
-			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if(!((bx+by)&1)){
-				var cc = bd.cnum(bx,by);
+			pos.move(dir);
+			if(pos.oncell()){
+				var cc = pos.cellid();
 				if(cc===null){ continue;}
 				if(bd.QuC(cc)!=6){
 					if     (bd.lines.lcntCell(cc)!=2){ dir=dir;}
-					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
-					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
-					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
-					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
+					else if(dir!=1 && bd.isLine(bd.db(cc))){ dir=2;}
+					else if(dir!=2 && bd.isLine(bd.ub(cc))){ dir=1;}
+					else if(dir!=3 && bd.isLine(bd.rb(cc))){ dir=4;}
+					else if(dir!=4 && bd.isLine(bd.lb(cc))){ dir=3;}
 				}
 
 				var num = bd.getNum(cc);
@@ -551,7 +551,7 @@ AnsCheck:{
 				count++;
 			}
 			else{
-				var id = bd.bnum(bx,by);
+				var id = pos.borderid();
 				bd.sErB([id],1);
 				if(!bd.isLine(id)){ return 2;}
 				if(bd.arrowout===id){ break;}

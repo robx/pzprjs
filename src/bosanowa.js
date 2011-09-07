@@ -15,9 +15,8 @@ MouseEvent:{
 		var tcp = tc.getTCP();
 		if(tcp.equals(pos)){
 			var max = bd.nummaxfunc();
-			if((pos.x&1)&&(pos.y&1)){
-				var cc = bd.cnum(pos.x,pos.y);
-				var ques = bd.QuC(cc), num = bd.getNum(cc);
+			if(pos.oncell()){
+				var cc = pos.cellid(), ques = bd.QuC(cc), num = bd.getNum(cc);
 				if(this.owner.editmode){
 					if(this.btn.Left){
 						if     (ques===7) { bd.setNum(cc,-1); bd.sQuC(cc,0);}
@@ -66,7 +65,7 @@ KeyEvent:{
 	},
 	key_inputqnum_bosanowa : function(ca){
 		var tcp = tc.getTCP();
-		if((tcp.x&1)&&(tcp.y&1)){
+		if(tcp.oncell()){
 			var cc = tc.getTCC();
 			if(this.owner.editmode){
 				if     (ca=='w'){ bd.sQuC(cc,(bd.QuC(cc)!==7?7:0)); bd.setNum(cc,-1);}
@@ -82,7 +81,7 @@ KeyEvent:{
 				else{ return;}
 			}
 		}
-		else if((tcp.x+tcp.y)&1){
+		else if(tcp.onborder()){
 			var id = tc.getTBC();
 			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
 			if(bd.isEmpty(cc1) || bd.isEmpty(cc2)){ return;}
@@ -362,7 +361,7 @@ Graphic:{
 	},
 
 	drawTarget_bosanowa : function(){
-		var islarge = !!((tc.pos.x&1)&&(tc.pos.y&1));
+		var islarge = tc.pos.oncell();
 		this.drawCursor(islarge);
 	}
 },

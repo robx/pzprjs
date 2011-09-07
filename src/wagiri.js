@@ -11,10 +11,10 @@ MouseEvent:{
 	inputquestion : function(){
 		var pos = this.borderpos(0.33);
 		if(!bd.isinside(pos.x,pos.y)){ return;}
-		if(!(pos.x&1) && !(pos.y&1)){
+		if(pos.oncross()){
 			this.inputcross();
 		}
-		else if((pos.x&1) && (pos.y&1)){
+		else if(pos.oncell()){
 			var cc0 = tc.getTCC(), cc = this.cellid();
 			if(cc!==cc0){
 				tc.setTCC(cc);
@@ -28,7 +28,7 @@ MouseEvent:{
 			}
 		}
 		else{
-			var id = bd.bnum(pos.x, pos.y);
+			var id = pos.borderid();
 			if(id!==tc.getTBC()){
 				var tcp = tc.getTCP();
 				tc.setTCP(pos);
@@ -60,10 +60,10 @@ KeyEvent:{
 	},
 	key_wagiri : function(ca){
 		var pos = tc.getTCP();
-		if(!(pos.x&1)&&!(pos.y&1)){
+		if(pos.oncross()){
 			this.key_inputcross(ca);
 		}
-		else if((pos.x&1)&&(pos.y&1)){
+		else if(pos.oncell()){
 			var cc = tc.getTCC(), val = 0;
 			if     (ca=='1'){ val= 1;}
 			else if(ca=='2'){ val= 2;}
@@ -253,7 +253,7 @@ Graphic:{
 	},
 
 	drawTarget_wagiri : function(){
-		var islarge = ((tc.pos.x&1)===(tc.pos.y&1));
+		var islarge = tc.pos.oncell();
 		this.drawCursor(islarge,this.owner.editmode);
 	}
 },

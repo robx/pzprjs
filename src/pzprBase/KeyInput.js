@@ -618,30 +618,30 @@ pzprv3.createCommonClass('TargetCursor',
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
 	//---------------------------------------------------------------------------
-	getTCP : function(){ return this.pos;},
+	getTCP : function(){ return this.pos.clone();},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.pos.set(pos);
 	},
-	getTCC : function(){ return bd.cnum(this.pos.x, this.pos.y);},
+	getTCC : function(){ return this.pos.cellid();},
 	setTCC : function(id){
 		if(!bd.cell[id]){ return;}
-		this.pos = new pzprv3.core.Address(bd.cell[id].bx, bd.cell[id].by);
+		this.pos = bd.cell[id].getaddr();
 	},
-	getTXC : function(){ return bd.xnum(this.pos.x, this.pos.y);},
+	getTXC : function(){ return this.pos.crossid();},
 	setTXC : function(id){
 		if(!bd.cross[id]){ return;}
-		this.pos = new pzprv3.core.Address(bd.cross[id].bx, bd.cross[id].by);
+		this.pos = bd.cross[id].getaddr();
 	},
-	getTBC : function(){ return bd.bnum(this.pos.x, this.pos.y);},
+	getTBC : function(){ return this.pos.borderid();},
 	setTBC : function(id){
 		if(!bd.border[id]){ return;}
-		this.pos = new pzprv3.core.Address(bd.border[id].bx, bd.border[id].by);
+		this.pos = bd.border[id].getaddr();
 	},
-	getTEC : function(){ return bd.exnum(this.pos.x, this.pos.y);},
+	getTEC : function(){ return this.pos.excellid();},
 	setTEC : function(id){
 		if(!bd.excell[id]){ return;}
-		this.pos = new pzprv3.core.Address(bd.excell[id].bx, bd.excell[id].by);
+		this.pos = bd.excell[id].getaddr();
 	},
 
 	//---------------------------------------------------------------------------

@@ -232,17 +232,17 @@ Board:{
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cellmax;c++){ ldata[c]=0;}
 
-		var bx=this.excell[startec].bx, by=this.excell[startec].by;
-		var dir=0;
-		if     (by===this.minby+1){ dir=2;}
-		else if(by===this.maxby-1){ dir=1;}
-		else if(bx===this.minbx+1){ dir=4;}
-		else if(bx===this.maxbx-1){ dir=3;}
+		var pos = this.excell[startec].getaddr(), dir=0;
+		if     (pos.y===this.minby+1){ dir=2;}
+		else if(pos.y===this.maxby-1){ dir=1;}
+		else if(pos.x===this.minbx+1){ dir=4;}
+		else if(pos.x===this.maxbx-1){ dir=3;}
 
 		while(dir!==0){
-			switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
+			pos.move(dir);
+			pos.move(dir);
 
-			var cc = this.cnum(bx,by);
+			var cc = pos.cellid();
 			if(cc===null){ break;}
 
 			var qb = this.QaC(cc);
@@ -264,7 +264,7 @@ Board:{
 			if(ccnt>this.cellmax){ break;} // 念のためガード条件(多分引っかからない)
 		}
 
-		var destec = this.exnum(bx,by);
+		var destec = pos.excellid();
 		if(!!setlight){
 			for(var c=0;c<this.excellmax;c++){ this.excell[c].qlight=0;}
 			this.excell[startec].qlight = 1;

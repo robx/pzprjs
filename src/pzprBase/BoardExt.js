@@ -385,11 +385,12 @@ pzprv3.createCommonClass('LineManager',
 			var newid = this.data.max;
 			var stack=((!this.isCenterLine^bd.isHorz(i))?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
 			while(stack.length>0){
-				var dat=stack.pop(), bx=dat[0], by=dat[1], dir=dat[2];
+				var dat=stack.pop(), pos=new pzprv3.core.Address(dat[0], dat[1]), dir=dat[2];
 				while(1){
-					switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-					if((bx+by)%2===0){
-						var cc = (this.isCenterLine?bd.cnum:bd.xnum).call(bd,bx,by);
+					pos.move(dir);
+					var bx=pos.x, by=pos.y;
+					if(!pos.onborder()){
+						var cc = (this.isCenterLine?pos.cellid:pos.crossid).call(pos);
 						if(cc===null){ break;}
 						else if(this.lcnt[cc]>=3){
 							if(!this.iscrossing(cc)){
@@ -409,7 +410,7 @@ pzprv3.createCommonClass('LineManager',
 						}
 					}
 					else{
-						var id = bd.bnum(bx,by);
+						var id = pos.borderid();
 						if(this.data.id[id]!==0){ break;}
 						this.data.id[id] = newid;
 						this.data[newid].idlist.push(id);

@@ -53,7 +53,7 @@ MouseEvent:{
 		var cc = this.cellid();
 		if(cc===null){ return;}
 
-		var pos = new pzprv3.core.Address(bd.cell[cc].bx, bd.cell[cc].by);
+		var pos = bd.cell[cc].getaddr();
 		var input=false;
 
 		// 初回はこの中に入ってきます。
@@ -630,7 +630,7 @@ FileIO:{
 
 	decodeBoard_pzpr : function(){
 		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startid=bd.cnum(obj.bx,obj.by);}
+			if     (ca==="o"){ bd.startid=obj.id;}
 			else if(ca==="i"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="#"){ obj.ques = 1;}
@@ -639,7 +639,7 @@ FileIO:{
 	},
 	encodeBoard_pzpr : function(){
 		this.encodeCell( function(obj){
-			if     (bd.startid===bd.cnum(obj.bx,obj.by)){ return "o ";}
+			if     (bd.startid===obj.id){ return "o ";}
 			else if(obj.ques===21){ return "i ";}
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1){
@@ -651,7 +651,7 @@ FileIO:{
 
 	decodeBoard_kanpen : function(){
 		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ bd.startid=bd.cnum(obj.bx,obj.by);}
+			if     (ca==="+"){ bd.startid=obj.id;}
 			else if(ca==="|"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="0"){ obj.ques = 1;}
@@ -660,7 +660,7 @@ FileIO:{
 	},
 	encodeBoard_kanpen : function(){
 		this.encodeCell( function(obj){
-			if     (bd.startid===bd.cnum(obj.bx,obj.by)){ return "+ ";}
+			if     (bd.startid===obj.id){ return "+ ";}
 			else if(obj.ques===21){ return "| ";}
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1){
@@ -673,7 +673,7 @@ FileIO:{
 	decodeBoard_old : function(){
 		var sv_num = [];
 		this.decodeCell( function(obj,ca){
-			var c = bd.cnum(obj.bx,obj.by);
+			var c = obj.id;
 			sv_num[c]=-1;
 			if     (ca==="#"){ obj.ques = 1;}
 			else if(ca==="o"){ bd.startid=c;}
@@ -776,13 +776,13 @@ AnsCheck:{
 		if(bd.isLine(bd.ub(bd.startid))){ sid.push({id:bd.ub(bd.startid),dir:1});}
 
 		for(var i=0;i<sid.length;i++){
-			var bx=bd.border[sid[i].id].bx, by=bd.border[sid[i].id].by;
+			var pos = bd.border[sid[i].id].getaddr();
 			var dir=sid[i].dir, ordertype=-1, passing=0;
 
 			while(1){
-				switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-				if((bx+by)%2==0){
-					var cc = bd.cnum(bx,by);
+				pos.move(dir);
+				if(pos.oncell()){
+					var cc = pos.cellid();
 					if(cc==bd.startid){ return true;} // ちゃんと戻ってきた
 
 					if(bd.QuC(cc)==21 || bd.QuC(cc)==22){
@@ -808,13 +808,13 @@ AnsCheck:{
 					}
 
 					if     (bd.lines.lcntCell(cc)!=2){ break;}
-					else if(dir!=1 && bd.isLine(bd.bnum(bx,by+1))){ dir=2;}
-					else if(dir!=2 && bd.isLine(bd.bnum(bx,by-1))){ dir=1;}
-					else if(dir!=3 && bd.isLine(bd.bnum(bx+1,by))){ dir=4;}
-					else if(dir!=4 && bd.isLine(bd.bnum(bx-1,by))){ dir=3;}
+					else if(dir!=1 && bd.isLine(bd.db(cc))){ dir=2;}
+					else if(dir!=2 && bd.isLine(bd.ub(cc))){ dir=1;}
+					else if(dir!=3 && bd.isLine(bd.rb(cc))){ dir=4;}
+					else if(dir!=4 && bd.isLine(bd.lb(cc))){ dir=3;}
 				}
 				else{
-					var id = bd.bnum(bx,by);
+					var id = pos.borderid();
 					if(!bd.isLine(id)){ break;} // 途切れてたら、何事もなかったように終了
 				}
 			}

@@ -20,7 +20,7 @@ MouseEvent:{
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var dir = bd.NDIR, cc = bd.cnum(this.prevPos.x, this.prevPos.y);
+		var dir = bd.NDIR, cc = this.prevPos.cellid();
 		if(cc!==null){
 			var dir = this.getdir(this.prevPos, pos);
 			if(dir!==bd.NDIR){

@@ -41,7 +41,7 @@ MouseEvent:{
 	},
 	inputpeke : function(){
 		var pos = this.borderpos(0.22);
-		var id = bd.bnum(pos.x, pos.y);
+		var id = pos.borderid();
 		if(id===null || this.prevPos.equals(pos)){ return;}
 
 		if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}

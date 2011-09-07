@@ -22,8 +22,7 @@ MouseEvent:{
 	},
 
 	inputBGcolor0 : function(){
-		var pos = this.borderpos(0.25);
-		return ((pos.x&1) && (pos.y&1));
+		return this.borderpos(0.25).oncell();
 	},
 	inputBGcolor : function(isnormal){
 		var cc = this.cellid();

@@ -126,10 +126,11 @@ Board:{
 	getViewClist : function(c){
 		var sx=this.cell[c].bx, sy=this.cell[c].by, clist=[];
 		for(var dir=1;dir<=4;dir++){
-			var cc, bx=sx, by=sy;
+			var cc, pos = new pzprv3.core.Address(sx,sy);
 			while(1){
-				switch(dir){ case 1: by-=2; break; case 2: by+=2; break; case 3: bx-=2; break; case 4: bx+=2; break;}
-				cc = this.cnum(bx,by);
+				pos.move(dir);
+				pos.move(dir);
+				cc = pos.cellid();
 				if(cc!==null && this.noNum(cc) && this.cell[cc].qsub!==1){ clist.push(cc);}
 				else{ break;}
 			}

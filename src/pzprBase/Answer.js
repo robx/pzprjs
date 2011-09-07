@@ -549,20 +549,20 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 	searchErrorFlag_line : function(xinfo,areaid){
 		var room=xinfo.room[areaid], dir=room.dir1;
-		var bx=bd.cell[room.cells[0]].bx, by=bd.cell[room.cells[0]].by;
+		var pos = bd.cell[room.cells[0]].getaddr();
 		while(1){
-			switch(dir){ case 1: by--; break; case 2: by++; break; case 3: bx--; break; case 4: bx++; break;}
-			if(((bx+by)&1)===0){
-				var cc = bd.cnum(bx,by);
+			pos.move(dir);
+			if(pos.oncell()){
+				var cc = pos.cellid();
 				if(cc===null || bd.isNum(cc)){ break;}
 				else if(bd.lines.iscrossing(cc) && bd.lines.lcntCell(cc)>=3){ }
-				else if(dir!==1 && bd.isLine(bd.bnum(bx,by+1))){ if(dir!==2){ room.ccnt++;} dir=2;}
-				else if(dir!==2 && bd.isLine(bd.bnum(bx,by-1))){ if(dir!==1){ room.ccnt++;} dir=1;}
-				else if(dir!==3 && bd.isLine(bd.bnum(bx+1,by))){ if(dir!==4){ room.ccnt++;} dir=4;}
-				else if(dir!==4 && bd.isLine(bd.bnum(bx-1,by))){ if(dir!==3){ room.ccnt++;} dir=3;}
+				else if(dir!==1 && bd.isLine(bd.db(cc))){ if(dir!==2){ room.ccnt++;} dir=2;}
+				else if(dir!==2 && bd.isLine(bd.ub(cc))){ if(dir!==1){ room.ccnt++;} dir=1;}
+				else if(dir!==3 && bd.isLine(bd.rb(cc))){ if(dir!==4){ room.ccnt++;} dir=4;}
+				else if(dir!==4 && bd.isLine(bd.lb(cc))){ if(dir!==3){ room.ccnt++;} dir=3;}
 			}
 			else{
-				var id = bd.bnum(bx,by);
+				var id = pos.borderid();
 				if(id===null||xinfo.id[id]!==0){ break;}
 
 				xinfo.id[id] = areaid;
@@ -570,7 +570,7 @@ pzprv3.createCommonClass('AnsCheck',
 				if(isNaN(room.length[room.ccnt])){ room.length[room.ccnt]=0;}else{ room.length[room.ccnt]++;}
 			}
 		}
-		room.cells[1]=bd.cnum(bx,by);
+		room.cells[1]=pos.cellid();
 		room.dir2=[0,2,1,4,3][dir];
 	},
 	isErrorFlag_line : function(xinfo){ }
