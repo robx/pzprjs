@@ -180,13 +180,15 @@ Puzzles.tawa.prototype = {
 
 		pp.funcs.newboard = function(){
 			menu.pop = ee("pop1_1");
-			pp.funcs.clickimg({0:0,1:2,2:3,3:1}[bd.lap]);
+			pp.funcs.setimg({0:0,1:2,2:3,3:1}[bd.lap]);
 			document.newboard.col.value = (k.qcols+(bd.lap==3?1:0));
 			document.newboard.row.value = k.qrows;
 			k.enableKey = false;
 		};
 		pp.funcs.clickimg = function(e){
-			var num = ee.getSrcElement(e).charAt(2);
+			pp.funcs.setimg(ee.getSrcElement(e).id.charAt(2));
+		};
+		pp.funcs.setimg = function(num){
 			ee("nb"+menu.ex.clap).parent.style.backgroundColor = '';
 			ee("nb"+num).parent.style.backgroundColor = 'red';
 			menu.ex.clap = num;

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.2.5β
+// パズル固有スクリプト部 遠い誓い版 toichika.js v3.2.5
 //
 Puzzles.toichika = function(){ };
 Puzzles.toichika.prototype = {
@@ -31,7 +31,7 @@ Puzzles.toichika.prototype = {
 		k.NumberIsWhite = 0;	// 1:数字のあるマスが黒マスにならないパズル
 		k.RBBlackCell   = 0;	// 1:連黒分断禁のパズル
 
-		k.ispzprv3ONLY  = 0;	// 1:ぱずぷれv3にしかないパズル
+		k.ispzprv3ONLY  = 1;	// 1:ぱずぷれv3にしかないパズル
 		k.isKanpenExist = 0;	// 1:pencilbox/カンペンにあるパズル
 
 		//k.def_csize = 36;
@@ -39,8 +39,8 @@ Puzzles.toichika.prototype = {
 		k.area = { bcell:0, wcell:0, number:1};	// areaオブジェクトで領域を生成する
 
 		if(k.EDITOR){
-			base.setExpression("　<span style=\"color:red;\">！！開発途中版です！！</span><br>　キーボードの左側や-キー等で、記号の入力ができます。",
-							   " <span style=\"color:red;\">!!This is developng version.!!</span><br> Press left side of the keyboard or '-' key to input marks.");
+			base.setExpression("　キーボードの左側や-キー等で、記号の入力ができます。",
+							   " Press left side of the keyboard or '-' key to input marks.");
 		}
 		else{
 			base.setExpression("　左クリックで記号が、右ドラッグで補助記号が入力できます。",
@@ -66,8 +66,6 @@ Puzzles.toichika.prototype = {
 		mv.mouseup = function(){
 			if(this.notInputted()){
 				this.inputdirec_mouseup();
-//				if(!kp.enabled()) this.inputqnum();
-//				else if(this.btn.Left){ kp.display();}
 			}
 		};
 		mv.mousemove = function(){
@@ -78,22 +76,19 @@ Puzzles.toichika.prototype = {
 			}
 		};
 
+		mv.bordermode = false;
 		mv.inputdirec_toichika = function(ismousedown){
-			if(this.inputData===2){ return;}
-
 			var pos;
-			if(k.editmode && (this.inputData===1 || ismousedown)){
-				pos = this.crosspos(0.33);
-				if((!(pos.x&1)||!(pos.y&1))||this.inputData===1){
-					this.inputData = 1;
-					this.inputborder();
-					return;
+			if(k.editmode){
+				if(ismousedown){
+					pos = this.crosspos(0.15);
+					this.bordermode = (!((pos.x&1)&&(pos.y&1)));
 				}
+				if(this.bordermode){ this.inputborder(); return;}
 			}
 
-			this.inputData = 0;
 			pos = this.cellpos();
-			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y){ return;}
+			if(pos.x==this.mouseCell.x && pos.y==this.mouseCell.y && this.inputData===1){ return;}
 
 			var inp = 0;
 			var cc = bd.cnum(this.mouseCell.x, this.mouseCell.y);
@@ -104,17 +99,9 @@ Puzzles.toichika.prototype = {
 				else if(pos.x-this.mouseCell.x== 1){ inp=k.RT;}
 				else{ return;}
 
-				if(k.editmode){
-					bd.sDiC(cc, (bd.DiC(cc)!=inp?inp:0));
-					bd.sQaC(cc, -1);
-				}
-				else if(k.playmode && bd.DiC(cc)===0){
-					bd.sQaC(cc, (bd.QaC(cc)!=inp?inp:-1));
-				}
-				bd.sQsC(cc, 0);
-
+				this.inputData=1;
+				bd.setCell(cc,inp);
 				pc.paintCell(cc);
-				this.inputData=2;
 			}
 			this.mouseCell = pos;
 		};
@@ -123,19 +110,10 @@ Puzzles.toichika.prototype = {
 			if(cc==-1 || cc==this.mouseCell){ return;}
 
 			if(cc==tc.getTCC()){
-				var nex = (this.btn.Left ? [k.UP, k.RT, k.LT, 0, k.DN]
-										 : [k.LT, 0, k.RT, k.DN, k.UP]);
-				if(k.editmode){
-					bd.sDiC(cc, nex[bd.DiC(cc)]);
-					bd.sQaC(cc, -1);
-					bd.sQsC(cc, 0);
-				}
-				else if(k.playmode && bd.DiC(cc)===0){
-					var val = nex[(bd.QaC(cc)!==-1?bd.QaC(cc):0)];
-					if(val===0){ val=-1;}
-					bd.sQaC(cc, val);
-					bd.sQsC(cc, 0);
-				}
+				var nex = (this.btn.Left ? [k.UP, k.RT, k.LT, -1, k.DN]
+										 : [k.LT, -1, k.RT, k.DN, k.UP]);
+				if     (k.editmode)    { bd.setCell(cc,nex[bd.DiC(cc)]);}
+				else if(bd.DiC(cc)===0){ bd.setCell(cc,nex[(bd.QaC(cc)!==-1?bd.QaC(cc):0)]);}
 				this.mouseCell = cc;
 			}
 			else{
@@ -155,8 +133,7 @@ Puzzles.toichika.prototype = {
 			if(this.inputData===-1){ this.inputData=(bd.QsC(cc)===1?0:1);}
 			
 			var cc0 = tc.getTCC(); //tc.setTCC(cc);
-			bd.sQaC(cc,-1);
-			bd.sQsC(cc,this.inputData);
+			bd.setCell(cc,-2);
 			this.mouseCell = cc;
 
 			pc.paint(bd.cell[cc0].cx-1, bd.cell[cc0].cy-1, bd.cell[cc0].cx, bd.cell[cc0].cy);
@@ -165,72 +142,69 @@ Puzzles.toichika.prototype = {
 
 		// キーボード入力系
 		kc.keyinput = function(ca){
-			if(this.moveTCell(ca)){ return;}
-			kc.key_hakoiri(ca);
+			if(!this.isSHIFT && this.moveTCell(ca)){ return;}
+			kc.key_toichika(ca);
 		};
-		kc.key_hakoiri = function(ca){
+		kc.key_toichika = function(ca){
 			var cc = tc.getTCC();
 			var flag = false;
 
-			if     ((ca=='1'||ca=='q'||ca=='a'||ca=='z')){
-				bd.setNum(cc,1);
+			if     (ca=='1'||ca=='w'||(this.isSHIFT && ca==k.KEYUP)){
+				bd.setCell(cc,k.UP);
 				flag = true;
 			}
-			else if((ca=='2'||ca=='w'||ca=='s'||ca=='x')){
-				bd.setNum(cc,2);
+			else if(ca=='2'||ca=='s'||(this.isSHIFT && ca==k.KEYRT)){
+				bd.setCell(cc,k.RT);
 				flag = true;
 			}
-			else if((ca=='3'||ca=='e'||ca=='d'||ca=='c')){
-				bd.setNum(cc,3);
+			else if(ca=='3'||ca=='z'||(this.isSHIFT && ca==k.KEYDN)){
+				bd.setCell(cc,k.DN);
 				flag = true;
 			}
-			else if((ca=='4'||ca=='r'||ca=='f'||ca=='v')){
-				bd.setNum(cc,(k.editmode?-2:-1));
+			else if(ca=='4'||ca=='a'||(this.isSHIFT && ca==k.KEYLT)){
+				bd.setCell(cc,k.LT);
 				flag = true;
 			}
-			else if((ca=='5'||ca=='t'||ca=='g'||ca=='b'||ca==' ')){
-				bd.setNum(cc,-1);
+			else if(ca=='5'||ca=='q'){
+				bd.setCell(cc,-2);
 				flag = true;
 			}
-			else if(ca=='-'){
-				if(k.editmode){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); bd.sQaC(cc,-1); bd.sQsC(cc,0);}
-				else if(bd.QnC(cc)==-1){ bd.sQaC(cc,-1); bd.sQsC(cc,(bd.QsC(cc)!=1?1:0));}
+			else if(ca=='6'||ca=='e'||ca==' '||ca=='-'){
+				bd.setCell(cc,-1);
 				flag = true;
 			}
 
-			if(flag){ pc.paint(bd.cell[cc].cx, bd.cell[cc].cy, bd.cell[cc].cx, bd.cell[cc].cy); return true;}
-			return false;
+			if(flag){ pc.paintCell(cc);}
+			return flag;
 		};
 
-		kp.kpgenerate = function(mode){
-			if(mode==1){
-				this.inputcol('num','knum1','1','○');
-				this.inputcol('num','knum2','2','△');
-				this.inputcol('num','knum3','3','□');
-				this.insertrow();
-				this.inputcol('num','knum4','4','?');
-				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','knumx','','');
-				this.insertrow();
+		bd.setCell = function(cc,val){
+			if(cc===-1){ return;}
+
+			if(val>0){
+				// キー・マウス入力しか考えていないので、
+				// 同じのが入力されたら消えるようにしちゃいます。
+				if(k.editmode){
+					bd.sDiC(cc,(this.cell[cc].direc!==val ? val : 0));
+					bd.sQaC(cc, -1);
+				}
+				else if(this.cell[cc].direc===0){
+					bd.sQaC(cc,(this.cell[cc].qans!==val ? val : -1));
+				}
+				bd.sQsC(cc, 0);
 			}
-			else{
-				this.tdcolor = pc.fontAnscolor;
-				this.inputcol('num','qnum1','1','○');
-				this.inputcol('num','qnum2','2','△');
-				this.inputcol('num','qnum3','3','□');
-				this.insertrow();
-				this.tdcolor = "rgb(255, 96, 191)";
-				this.inputcol('num','qnum4','4','・');
-				this.tdcolor = "black";
-				this.inputcol('num','qnum_',' ',' ');
-				this.inputcol('empty','qnumx','','');
-				this.insertrow();
+			else if(val===-1){
+				if(k.editmode){ bd.sDiC(cc,0);}
+				bd.sQaC(cc,-1);
+				bd.sQsC(cc, 0);
+			}
+			else if(val===-2){
+				if(k.playmode && this.cell[cc].direc===0){
+					bd.sQaC(cc,-1);
+					bd.sQsC(cc,(this.cell[cc].qsub!==1 ? 1 : 0));
+				}
 			}
 		};
-		kp.generate(kp.ORIGINAL, true, true, kp.kpgenerate);
-		kp.kpinput = function(ca){ kc.key_hakoiri(ca);};
-
-		bd.maxnum = 3;
 	},
 
 	//---------------------------------------------------------
@@ -323,23 +297,71 @@ Puzzles.toichika.prototype = {
 	encode_init : function(){
 		enc.pzlimport = function(type){
 			this.decodeBorder();
-			this.decodeNumber10();
+			this.decodeDirec4();
 		};
 		enc.pzlexport = function(type){
 			this.encodeBorder();
-			this.encodeNumber10();
+			this.encodeDirec4();
 		};
 
 		//---------------------------------------------------------
 		fio.decodeData = function(){
 			this.decodeAreaRoom();
-			this.decodeCellQnum();
+			this.decodeCellDirec();
 			this.decodeCellQanssub();
 		};
 		fio.encodeData = function(){
 			this.encodeAreaRoom();
-			this.encodeCellQnum();
+			this.encodeCellDirec();
 			this.encodeCellQanssub();
+		};
+
+		//---------------------------------------------------------
+		enc.decodeDirec4 = function(){
+			var c=0, i=0, bstr = this.outbstr;
+			for(i=0;i<bstr.length;i++){
+				var ca = bstr.charAt(i);
+
+				if     (this.include(ca,"1","4")){ bd.sDiC(c, parseInt(bstr.substr(i,1),10)); c++;}
+				else if(this.include(ca,"5","9")){ c += (parseInt(ca,36)-4);}
+				else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-4);}
+				else if(ca == '.'){ bd.sDiC(c, -2); c++;}
+				else{ c++;}
+
+				if(c > bd.cellmax){ break;}
+			}
+			this.outbstr = bstr.substr(i);
+		};
+		enc.encodeDirec4 = function(){
+			var cm="", count=0;
+			for(var i=0;i<bd.cellmax;i++){
+				var pstr = "";
+				var val = bd.DiC(i);
+
+				if     (val==-2          ){ pstr = ".";}
+				else if(val>= 1 && val<=4){ pstr = val.toString(10);}
+				else{ count++;}
+
+				if(count==0){ cm += pstr;}
+				else if(pstr || count==31){ cm+=((4+count).toString(36)+pstr); count=0;}
+			}
+			if(count>0){ cm+=(4+count).toString(36);}
+
+			this.outbstr += cm;
+		};
+
+		fio.decodeCellDirec = function(){
+			this.decodeCell( function(c,ca){
+				if     (ca === "-"){ bd.sDiC(c, -2);}
+				else if(ca !== "."){ bd.sDiC(c, parseInt(ca));}
+			});
+		};
+		fio.encodeCellDirec = function(){
+			this.encodeCell( function(c){
+				if     (bd.DiC(c)>=0)  { return (bd.DiC(c).toString() + " ");}
+				else if(bd.DiC(c)===-2){ return "- ";}
+				else                   { return ". ";}
+			});
 		};
 	},
 
@@ -425,6 +447,7 @@ Puzzles.toichika.prototype = {
 			// ここから実際の判定
 			var result = true;
 			for(var i=0;i<ainfo.length;i++){
+				if(ainfo[i].length===1){ continue;}
 				var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
 				if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])>0){
 					bd.sErC(rinfo.room[r1].idlist,1);

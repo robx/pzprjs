@@ -49,7 +49,6 @@ Encode.prototype = {
 		this.uri.rows = 0;
 		this.uri.bstr = "";
 
-		this.pidKanpen = '';
 		this.outpflag  = '';
 		this.outsize   = '';
 		this.outbstr   = '';

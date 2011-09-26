@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.4
+// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.2.5
 //
 Puzzles.gokigen = function(){ };
 Puzzles.gokigen.prototype = {
@@ -47,6 +47,9 @@ Puzzles.gokigen.prototype = {
 	menufix : function(){
 		menu.addUseToFlags();
 		menu.addRedLineToFlags();
+	},
+	finalfix : function(){
+		ee('btnclear2').el.style.display = 'none';
 	},
 	protoChange : function(){
 	},
@@ -126,8 +129,6 @@ Puzzles.gokigen.prototype = {
 			}
 			um.enableRecord();
 		};
-
-		ee('btnclear2').el.style.display = 'none';
 
 		tc.minx = 0;
 		tc.miny = 0;

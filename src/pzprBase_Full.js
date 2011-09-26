@@ -5,8 +5,8 @@
  * written in JavaScript.
  * 
  * @author  happa.
- * @version v3.2.4p3
- * @date    2009-12-16
+ * @version v3.2.5
+ * @date    2010-03-09
  * 
  * This script uses following library.
  *  uuCanvas.js (version 1.0)
@@ -20,7 +20,7 @@
  * 
  */
 
-var pzprversion="v3.2.4p3";
+var pzprversion="v3.2.5";
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -132,6 +132,11 @@ k.IEMargin = (k.br.IE ? k.IEMargin : new Pos(0,0));
 var g;				// グラフィックコンテキスト
 var Puzzles = [];	// パズル個別クラス
 var _doc = document;
+
+// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+if(typeof localStorage != "object" && typeof globalStorage == "object"){
+	localStorage = globalStorage[location.host];
+}
 
 //---------------------------------------------------------------------------
 // ★共通グローバル関数
@@ -256,12 +261,13 @@ _extend( _ElementManager, {
 
 		var temp = _elp[tid];
 		var el = _doc.createElement(temp.tagName);
-		if(!!temp.parent){ temp.parent.appendChild(el);}
 
 		if(!!id){ el.id = id;}
 		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
 		for(var name in temp.style){ el.style[name] = temp.style[name];}
 		for(var name in temp.func) { el["on"+name]  = temp.func[name]; }
+
+		if(!!temp.parent){ temp.parent.appendChild(el);} // 後ろじゃないとIEでエラーになる。。
 		return el;
 	},
 
@@ -1059,6 +1065,20 @@ Board.prototype = {
 			else if(cx===qc&&cy===qr){ return 2*qc+2*qr+3;}
 		}
 		return -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// bd.getClistByPosition()  指定した範囲に含まれるセルのIDを返す
+	//---------------------------------------------------------------------------
+	getClistByPosition : function(x1,y1,x2,y2){
+		var clist = [];
+		for(var cx=x1;cx<=Math.min(x2,k.qcols-1);cx++){
+			for(var cy=y1;cy<=Math.min(y2,k.qrows-1);cy++){
+				var cc = this.cnum(cx,cy);
+				if(cc!==-1){ clist.push(cc);}
+			}
+		}
+		return clist;
 	},
 
 	//---------------------------------------------------------------------------
@@ -2338,6 +2358,7 @@ Graphic.prototype = {
 	//---------------------------------------------------------------------------
 	// pc.drawQueses41_42()    Cell上の黒丸と白丸をCanvasに書き込む
 	// pc.drawCircledNumbers() Cell上の丸数字を書き込む
+	// pc.drawCircledNumber1() Cell上の丸数字を書き込む(1マスのみ)
 	//---------------------------------------------------------------------------
 	drawQueses41_42 : function(x1,y1,x2,y2){
 		var rsize  = mf(k.cwidth*this.circleratio[0]);
@@ -2372,37 +2393,39 @@ Graphic.prototype = {
 		this.vinc();
 	},
 	drawCircledNumbers : function(x1,y1,x2,y2){
+		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
+		for(var i=0;i<clist.length;i++){ this.drawCircledNumber1(clist[i]);}
+		this.vinc();
+	},
+	drawCircledNumber1 : function(c){
+		if(c===-1){ return;}
+
 		var rsize  = k.cwidth*this.circleratio[0];
 		var rsize2 = k.cwidth*this.circleratio[1];
 		var mgnx = mf(k.cwidth/2), mgny = mf(k.cheight/2);
 		var headers = ["c_cira_", "c_cirb_"];
 
-		g.lineWidth = k.cwidth*0.05;
-		var clist = this.cellinside(x1-2,y1-2,x2+2,y2+2);
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum!=-1){
-				var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
+		if(bd.cell[c].qnum!=-1){
+			var px=bd.cell[c].px+mgnx, py=bd.cell[c].py+mgny;
 
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
-				if(this.vnop(headers[1]+c,1)){
-					g.beginPath();
-					g.arc(px, py, rsize2, 0, Math.PI*2, false);
-					g.fill();
-				}
-
-				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
-				if(this.vnop(headers[0]+c,0)){
-					g.beginPath();
-					g.arc(px, py, rsize , 0, Math.PI*2, false);
-					g.stroke();
-				}
+			g.lineWidth = k.cwidth*0.05;
+			g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : this.circledcolor);
+			if(this.vnop(headers[1]+c,1)){
+				g.beginPath();
+				g.arc(px, py, rsize2, 0, Math.PI*2, false);
+				g.fill();
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
 
-			this.dispnumCell(c);
+			g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.Cellcolor);
+			if(this.vnop(headers[0]+c,0)){
+				g.beginPath();
+				g.arc(px, py, rsize , 0, Math.PI*2, false);
+				g.stroke();
+			}
 		}
-		this.vinc();
+		else{ this.vhide([headers[0]+c, headers[1]+c]);}
+
+		this.dispnumCell(c);
 	},
 
 	//---------------------------------------------------------------------------
@@ -2991,19 +3014,19 @@ Graphic.prototype = {
 			var hgt = el.clientHeight;
 
 			if(type===1||type===6||type===7){
-				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?3:2)-(type===6?mf(k.cwidth *0.1):0);
-				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?3:1)+(type===7?mf(k.cheight*0.1):0);
+				el.style.left = k.cv_oft.x+px+mf((k.cwidth-wid) /2)+(IE?4:2)-(type===6?mf(k.cwidth *0.1):0);
+				el.style.top  = k.cv_oft.y+py+mf((k.cheight-hgt)/2)+(IE?5:1)+(type===7?mf(k.cheight*0.1):0);
 			}
 			else if(type===101){
-				el.style.left = k.cv_oft.x+px-wid/2+(IE?4:2);
-				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?2:1);
+				el.style.left = k.cv_oft.x+px-wid/2+(IE?5:2);
+				el.style.top  = k.cv_oft.y+py-hgt/2+(IE?4:1);
 			}
 			else{
 				if(type==52||type==54){ px--; type-=50;}	// excellの[＼]対応..
-				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?1: 0);}
-				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?5: 4);}
-				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?2:-1);}
-				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?4: 2);}
+				if     (type===3||type===4){ el.style.left = k.cv_oft.x+px+k.cwidth -wid+(IE?2: 0);}
+				else if(type===2||type===5){ el.style.left = k.cv_oft.x+px              +(IE?6: 4);}
+				if     (type===2||type===3){ el.style.top  = k.cv_oft.y+py+k.cheight-hgt+(IE?3:-1);}
+				else if(type===4||type===5){ el.style.top  = k.cv_oft.y+py              +(IE?5: 2);}
 			}
 
 			el.style.color = color;
@@ -3964,7 +3987,7 @@ KeyEvent.prototype = {
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
-			if(k.playmode){ bd.sDiC(cc,0);}
+			if(k.playmode && k.puzzleid!=='snakes'){ bd.sDiC(cc,0);}
 
 			if(bd.getNum(cc)<=0 || this.prev!=cc){
 				if(num<=max){ bd.setNum(cc,num);}
@@ -4389,9 +4412,19 @@ Encode = function(){
 	this.uri.bstr;		// 入力されたURLの盤面部分
 
 	this.pidKanpen = '';
+	this.pidforURL = '';
+
 	this.outpflag  = '';
 	this.outsize   = '';
 	this.outbstr   = '';
+
+	// 定数(URL形式)
+	this.PZPRV3  = 0;
+	this.PZPRV3E = 3;
+	this.PAPRAPP = 1;
+	this.KANPEN  = 2;
+	this.KANPENP = 5;
+	this.HEYAAPP = 4;
 };
 Encode.prototype = {
 	//---------------------------------------------------------------------------
@@ -4401,7 +4434,7 @@ Encode.prototype = {
 	// enc.parseURI_xxx()   pzlURI部をpflag,bstr等の部分に分割する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.uri.type = 0;
+		this.uri.type = this.PZPRV3;
 		this.uri.qdata = "";
 
 		this.uri.pflag = "";
@@ -4409,7 +4442,6 @@ Encode.prototype = {
 		this.uri.rows = 0;
 		this.uri.bstr = "";
 
-		this.pidKanpen = '';
 		this.outpflag  = '';
 		this.outsize   = '';
 		this.outbstr   = '';
@@ -4420,19 +4452,18 @@ Encode.prototype = {
 
 		this.init();
 
-		if(search=="?test" || search.substr(0,6)=="?test+"){
-			k.EDITOR = true; k.editmode = false;
-			k.scriptcheck = true;
-			if(search=="?test"){ search = 'country';}
-			else{ search = search.substr(6);}
-		}
-		else if(search.substr(0,3)=="?m+"){
-			k.EDITOR = k.editmode = true;
-			search = search.substr(3);
-		}
-		else{
-			k.EDITOR = k.editmode = false;
-			search = search.substr(1);
+		var startmode = 'PLAYER';
+
+		if     (search=="?test")       { startmode = 'TEST';   search = 'country';}
+		else if(search.match(/^\?m\+/)){ startmode = 'EDITOR'; search = search.substr(3);}
+		else if(search.match(/_test/)) { startmode = 'TEST';   search = search.substr(1).replace(/_test/, '');}
+		else if(search.match(/_edit/)) { startmode = 'EDITOR'; search = search.substr(1).replace(/_edit/, '');}
+		else if(!search.match(/\//))   { startmode = 'EDITER'; search = search.substr(1);}
+		else                           { startmode = 'PLAYER'; search = search.substr(1);}
+		switch(startmode){
+			case 'PLAYER': k.EDITOR = false; k.editmode = false; break;
+			case 'EDITOR': k.EDITOR = true;  k.editmode = true;  break;
+			case 'TEST'  : k.EDITOR = true;  k.editmode = false; k.scriptcheck = true; break;
 		}
 		k.PLAYER    = !k.EDITOR;
 		k.playmode  = !k.editmode;
@@ -4447,7 +4478,19 @@ Encode.prototype = {
 			search = search.substr(0,qs);
 		}
 
-		k.puzzleid = search;
+		// alias機能
+		var pid = search;
+		switch(pid){
+			case 'yajilin'    : this.pidforURL = 'yajilin'; pid = 'yajirin'; break;
+			case 'akari'      : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'bijutsukan' : this.pidforURL = 'akari';   pid = 'lightup'; break;
+			case 'slitherlink': this.pidforURL = pid = 'slither'; break;
+			case 'numberlink' : this.pidforURL = pid = 'numlin';  break;
+			case 'hakyukoka'  : this.pidforURL = pid = 'ripple';  break;
+			case 'masyu'      : this.pidforURL = pid = 'mashu';   break;
+			default           : this.pidforURL = pid;
+		}
+		k.puzzleid = pid;
 	},
 	parseURI : function(url){
 		this.init();
@@ -4455,20 +4498,8 @@ Encode.prototype = {
 		// なぜかOperaはtextarea上の改行が実際の改行扱いになってしまうっぽい
 		if(k.br.Opera){ url = url.replace(/(\r|\n)/g,"");}
 
-		// ぱずぷれの場合
-		if(url.match(/indi\.s58\.xrea\.com/)){
-			// ぱずぷれv3のURL
-			if(!url.match(/\/(sa|sc)\//)){
-				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
-			}
-			// ぱずぷれアプレットのURL
-			else{
-				this.parseURI_pzpr(url.substr(url.indexOf("?")));
-				this.uri.type = 1; // 1はぱずぷれアプレット/URLジェネレータ
-			}
-		}
 		// カンペンの場合
-		else if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
 				this.parseURI_heyaapp(url.substr(url.indexOf("?heyawake=")+10));
@@ -4485,9 +4516,21 @@ Encode.prototype = {
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 			this.parseURI_heyaapp(url.substr(url.indexOf("?problem=")+9));
 		}
+		// ぱずぷれの場合
+		else{ // if(url.match(/indi\.s58\.xrea\.com/)){
+			// ぱずぷれアプレットのURL
+			if(url.match(/\/(sa|sc)\/pzpr\/v3/)){
+				this.parseURI_pzpr(url.substr(url.indexOf("?")));
+				this.uri.type = this.PZPRAPP; // ぱずぷれアプレット/URLジェネレータ
+			}
+			// ぱずぷれv3のURL
+			else{
+				this.parseURI_pzpr(url.substr(url.indexOf("/", url.indexOf("?"))+1));
+			}
+		}
 	},
 	parseURI_pzpr : function(qstr){
-		this.uri.type = 0; // 0はぱずぷれv3
+		this.uri.type = this.PZPRV3; // ぱずぷれv3
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
@@ -4498,7 +4541,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_kanpen : function(qstr){
-		this.uri.type = 2; // 2はカンペン
+		this.uri.type = this.KANPEN; // カンペン
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -4513,7 +4556,7 @@ Encode.prototype = {
 		this.uri.bstr = inp.join("/");
 	},
 	parseURI_heyaapp : function(qstr){
-		this.uri.type = 4; // 4はへやわけアプレット
+		this.uri.type = this.HEYAAPP; // へやわけアプレット
 		this.uri.qdata = qstr;
 		var inp = qstr.split("/");
 
@@ -4530,9 +4573,7 @@ Encode.prototype = {
 
 	//---------------------------------------------------------------------------
 	// enc.pzlinput()   parseURI()を行った後に呼び出し、各パズルのpzlimport関数を呼び出す
-	// enc.getURLbase() このスクリプトが置いてあるURLを表示する
-	// enc.getDocbase() このスクリプトが置いてあるドメイン名を表示する
-	// enc.kanpenbase() カンペンのドメイン名を表示する
+	// enc.getURLBase() URLの元となる部分を取得する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
@@ -4544,16 +4585,16 @@ Encode.prototype = {
 		if(this.uri.bstr){
 			um.disableRecord(); um.disableInfo();
 			switch(this.uri.type){
-			case 0: case 1: case 3:
+			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
 				this.outbstr = this.uri.bstr;
 				this.pzlimport(this.uri.type);
 				break;
-			case 2:
+			case this.KANPEN:
 				fio.lineseek = 0;
 				fio.dataarray = this.uri.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case 4:
+			case this.HEYAAPP:
 				this.decodeHeyaApp();
 				break;
 			}
@@ -4566,50 +4607,62 @@ Encode.prototype = {
 		}
 	},
 	pzloutput : function(type){
+		if(type===this.KANPEN && k.puzzleid=='lits'){ type = this.KANPENP;}
+		var pdata = '', size = '', ispflag = false;
+
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
 
-		if(type===0 || type===3 || type===1 || (type===2 && k.puzzleid=='lits')){
-			this.pzlexport(((type===0 || type===3)?0:1));
+		switch(type){
+		case this.PZPRV3: case this.PZPRV3E:
+			this.pzlexport(this.PZPRV3);
 
-			var size = [k.qcols,k.qrows].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = (!!this.outpflag);
+			break;
 
-			var pflag = this.outpflag, bstr = this.outbstr;
+		case this.PZPRAPP: case this.KANPENP:
+			this.pzlexport(this.PZPRAPP);
 
-			if(type===0 || type===3){
-				return [this.getURLbase(),(type===3?"m+":""),k.puzzleid,"/",(!!pflag?(pflag+"/"):""),size,"/",bstr].join('');
-			}
-			else if(type===1){
-				return [this.getDocbase(),k.puzzleid,"/sa/m.html?",pflag,"/",size,"/",bstr].join('');
-			}
-			else if(type===2){
-				return [this.kanpenbase(),this.pidKanpen,".html?pzpr=",pflag,"/",size,"/",bstr].join('');
-			}
-		}
-		else if(type===2){
+			size = (!this.outsize ? [k.qcols,k.qrows].join('/') : this.outsize);
+			ispflag = true;
+			break;
+
+		case this.KANPEN:
 			fio.datastr = "";
 			this.encodeKanpen()
-			var bstr = fio.datastr.replace(/ /g, "_");
+			this.outbstr = fio.datastr.replace(/ /g, "_");
 
-			var size = [k.qrows,k.qcols].join('/');
-			if(!!this.outsize){ size = this.outsize;}
+			size = (!this.outsize ? [k.qrows,k.qcols].join('/') : this.outsize);
+			break;
 
-			return [this.kanpenbase(),this.pidKanpen,".html?problem=",size,"/",bstr].join('');
+		case this.HEYAAPP:
+			this.encodeHeyaApp();
+
+			size = [k.qcols,k.qrows].join('x');
+			break;
+
+		default:
+			return '';
 		}
-		else if(type===4){
-			var bstr = this.encodeHeyaApp(bstr);
-			var size = [k.qcols,k.qrows].join('x');
 
-			return ["http://www.geocities.co.jp/heyawake/?problem=",size,"/",bstr].join('');
-		}
+		if(ispflag){ pdata = [this.outpflag, size, this.outbstr].join("/");}
+		else{ pdata = [size, this.outbstr].join("/");}
 
-		return '';
+		return this.getURLBase(type) + pdata;
 	},
-	getURLbase : function(){ return "http://indi.s58.xrea.com/pzpr/v3/p.html?";},
-	getDocbase : function(){ return "http://indi.s58.xrea.com/";},
-	kanpenbase : function(){ return "http://www.kanpen.net/";},
+	getURLBase : function(type){
+		var urls = {};
+		urls[this.PZPRV3]  = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%/";
+		urls[this.PZPRV3E] = "http://indi.s58.xrea.com/pzpr/v3/p.html?%PID%_edit/";
+		urls[this.PZPRAPP] = "http://indi.s58.xrea.com/%PID%/sa/q.html?";
+		urls[this.KANPEN]  = "http://www.kanpen.net/%KID%.html?problem=";
+		urls[this.KANPENP] = "http://www.kanpen.net/%KID%.html?pzpr=";
+		urls[this.HEYAAPP] = "http://www.geocities.co.jp/heyawake/?problem=";
+
+		return urls[type].replace("%PID%",this.pidforURL).replace("%KID%",this.pidKanpen);
+	},
 
 	// オーバーライド用
 	pzlimport : function(type,bstr){ },
@@ -5042,32 +5095,32 @@ FileIO = function(){
 	this.datastr = "";
 	this.urlstr = "";
 
-	this.db = null;
-	this.dbmgr = null;
-	this.DBtype = 0;
-	this.DBsid  = -1;
-	this.DBlist = [];
+	// 定数(ファイル形式)
+	this.PZPR = 1;
+	this.PBOX = 2;
+
+	this.dbm = new DataBaseManager();
 };
 FileIO.prototype = {
 	//---------------------------------------------------------------------------
 	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
 	//                  [menu.ex.fileopen] -> [fileio.xcg@iframe] -> [ここ]
 	//---------------------------------------------------------------------------
-	filedecode : function(datastr, type){
+	filedecode : function(datastr){
 		this.filever = 0;
 		this.lineseek = 0;
 		this.dataarray = datastr.split("/");
+		var type = this.PZPR;
 
 		// ヘッダの処理
-		if(type===1){
-			if(!this.readLine().match(/pzprv3\.?(\d+)?/)){ alert('ぱずぷれv3形式のファイルではありません。'); return;}
+		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-
 			if(this.readLine()!=k.puzzleid){ alert(base.getPuzzleName()+'のファイルではありません。'); return;}
+			type = this.PZPR;
 		}
-		else if(type===2){
-			if(this.readLine().match(/pzprv3/)){ alert('pencilboxのファイルではありません。'); return;}
+		else{
 			this.lineseek = 0;
+			type = this.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -5105,8 +5158,8 @@ FileIO.prototype = {
 		this.urlstr = "";
 
 		// メイン処理
-		if     (type===1){ this.encodeData();}
-		else if(type===2){ this.kanpenSave();}
+		if     (type===this.PZPR){ this.encodeData();}
+		else if(type===this.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [k.qrows, k.qcols].join("/");}
@@ -5121,7 +5174,7 @@ FileIO.prototype = {
 
 		// 末尾のURL追加処理
 		if(type===1){
-			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? 0 : 2);
+			this.urlstr = enc.pzloutput((!k.isKanpenExist || k.puzzleid==="lits") ? enc.PZPRV3 : enc.KANPEN);
 		}
 
 		return bstr;
@@ -5626,176 +5679,134 @@ FileIO.prototype = {
 			var num = (isques ? bd.QnC(area.getTopOfRoom(id)) : -1);
 			this.datastr += (""+d.y1+" "+d.x1+" "+d.y2+" "+d.x2+" "+(num>=0 ? ""+num : "")+"/");
 		}
-	},
+	}
+};
 
 //---------------------------------------------------------------------------
-// ★Local Storage用データベースの設定・管理を行う
+// ★DataBaseManagerクラス Web SQL DataBase用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-	//---------------------------------------------------------------------------
-	// fio.choiceDataBase() LocalStorageが使えるかどうか判定する
-	//---------------------------------------------------------------------------
-	choiceDataBase : function(){
-		if(window.google && google.gears){ this.DBtype=1; return 1;}
-		var factory = 0;
+DataBaseManager = function(){
+	this.dbh    = null;	// データベースハンドラ
 
-		// FireFox
-		if (typeof GearsFactory != 'undefined') { factory=11;}
-		else{
-			try {
-				// IE
-				var axobj = new ActiveXObject('Gears.Factory');
-				factory=21;
-			} catch (e) {
-				// Safari
-				if((typeof navigator.mimeTypes != 'undefined') && navigator.mimeTypes["application/x-googlegears"]){
-					factory=31;
-				}
+	//this.DBtype = 0;
+	this.DBaccept = 0;	// データベースのタイプ 1:Gears 2:WebDB 4:IdxDB 8:localStorage
+
+	this.DBsid  = -1;	// 現在選択されているリスト中のID
+	this.DBlist = [];	// 現在一覧にある問題のリスト
+	this.keys = ['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment']; // キーの並び
+
+	this.selectDBtype();
+};
+DataBaseManager.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.selectDBtype() Web DataBaseが使えるかどうか判定する(起動時)
+	// fio.dbm.requestGears() gears_init.jsを読み出すか判定する
+	//---------------------------------------------------------------------------
+	selectDBtype : function(){
+		// HTML5 - Web localStorage判定用
+		if(!!window.localStorage){
+			// FirefoxはローカルだとlocalStorageが使えない
+			if(!k.br.Gecko || !!location.hostname){ this.DBaccept |= 0x08;}
+		}
+
+		// HTML5 - Web DataBase判定用
+		if(!!window.openDatabase){
+			try{	// Opera10.50対策
+				var dbtmp = openDatabase('pzprv3_manage', '1.0');	// Chrome3対策
+				if(!!dbtmp){ this.DBaccept |= 0x02;}
 			}
+			catch(e){}
 		}
-		this.DBtype=(factory>0?1:0);
-		return factory;
+
+		// 以下はGears用(gears_init.jsの判定ルーチン)
+		// Google Chorme用(既にGearsが存在するか判定)
+		try{
+			if((window.google && google.gears) || 
+			   (k.br.Gecko && (typeof GearsFactory != 'undefined')) || 
+			   (k.br.IE && !!window.ActiveXObject && (!!(new ActiveXObject('Gears.Factory')))) || 
+			   (k.br.WebKit && navigator.mimeTypes["application/x-googlegears"]))
+			{ this.DBaccept |= 0x01;}
+		}
+		catch(e){}
+	},
+	requireGears : function(){
+		return !!(this.DBaccept & 0x01);
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.initDataBase() データベースを新規作成する
-	// fio.dropDataBase() データベースを削除する
-	// fio.remakeDataBase() データベースを再構築する
-	// fio.updateManager() 更新時間を更新する
+	// fio.dbm.openDialog()    データベースダイアログが開いた時の処理
+	// fio.dbm.openHandler()   データベースハンドラを開く
 	//---------------------------------------------------------------------------
-	initDataBase : function(){
-		if(this.DBtype===0){ return false;}
-		else if(this.DBtype===1){
-			this.dbmgr = google.gears.factory.create('beta.database', '1.0');
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
-			this.dbmgr.close();
+	openDialog : function(){
+		this.openHandler();
+		this.update();
+	},
+	openHandler : function(){
+		// データベースを開く
+		var type = 0;
+		if     (this.DBaccept & 0x08){ type = 4;}
+		else if(this.DBaccept & 0x04){ type = 3;}
+		else if(this.DBaccept & 0x02){ type = 2;}
+		else if(this.DBaccept & 0x01){ type = 1;}
 
-//			this.remakeDataBase2();
-
-			this.db    = google.gears.factory.create('beta.database', '1.0');
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-			this.db.close();
+		switch(type){
+			case 1: case 2: this.dbh = new DataBaseHandler_SQL((type===2)); break;
+			case 4:         this.dbh = new DataBaseHandler_LS(); break;
+			default: return;
 		}
-		else if(this.DBtype===2){
-			this.dbmgr = openDataBase('pzprv3_manage', '1.0');
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)');
-			});
-
-			this.db = openDataBase('pzprv3_'+k.puzzleid, '1.0');
-			this.db.transaction(function(tx){
-				tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-			});
-		}
-
-		this.updateManager(false);
+		this.dbh.importDBlist(this);
 
 		var sortlist = { idlist:"ID順", newsave:"保存が新しい順", oldsave:"保存が古い順", size:"サイズ/難易度順"};
 		var str="";
 		for(s in sortlist){ str += ("<option value=\""+s+"\">"+sortlist[s]+"</option>");}
 		document.database.sorts.innerHTML = str;
-
-		return true;
-	},
-	dropDataBase : function(){
-		if(this.DBtype===1){
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
-			this.dbmgr.close();
-
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('DROP TABLE IF EXISTS pzldata');
-			this.db.close();
-		}
-		else if(this.DBtype===2){
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
-			});
-
-			this.db.transaction(function(tx){
-				tx.executeSql('DROP TABLE IF EXISTS pzldata');
-			});
-		}
 	},
 
-	remakeDataBase : function(){
+	//---------------------------------------------------------------------------
+	// fio.dbm.closeDialog()   データベースダイアログが閉じた時の処理
+	// fio.dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
+	closeDialog : function(){
 		this.DBlist = [];
-
-		this.db.open('pzprv3_'+k.puzzleid);
-		var rs = this.db.execute('SELECT * FROM pzldata');
-		while(rs.isValidRow()){
-			var src = {};
-			for(var i=0;i<rs.fieldCount();i++){ src[rs.fieldName(i)] = rs.field(i);}
-			this.DBlist.push(src);
-			rs.next();
-		}
-		rs.close();
-
-		this.db.execute('DROP TABLE IF EXISTS pzldata');
-		this.db.execute('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)');
-
-		for(var r=0;r<this.DBlist.length;r++){
-			var row=this.DBlist[r];
-			this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[row.id,row.col,row.row,row.hard,row.pdata,row.time,row.comment]);
-		}
-
-		this.db.close();
 	},
-
-	updateManager : function(flag){
-		var count = -1;
-		if(this.DBtype===1){
-			if(!flag){
-				this.db.open('pzprv3_'+k.puzzleid);
-				var rs = this.db.execute('SELECT COUNT(*) FROM pzldata');
-				count = (rs.isValidRow()?rs.field(0):0);
-				this.db.close();
-			}
-			else{ count=this.DBlist.length;}
-
-			this.dbmgr.open('pzprv3_manage');
-			this.dbmgr.execute('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
-			this.dbmgr.close();
-		}
-		else if(this.DBtype===2){
-			if(!flag){
-				this.db.transaction(function(tx){
-					tx.executeSql('SELECT COUNT(*) FROM pzldata',function(){},function(tx,rs){ count = rs.rows[0];});
-				});
-			}
-			else{ count=this.DBlist.length;}
-
-			this.dbmgr.transaction(function(tx){
-				tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)',[k.puzzleid,'1.0',count,mf((new Date()).getTime()/1000)]);
-			});
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// fio.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
-	//---------------------------------------------------------------------------
 	clickHandler : function(e){
 		switch(ee.getSrcElement(e).name){
-			case 'sorts'   : this.displayDataTableList(); break;
-			case 'datalist': this.selectDataTable(); break;
-			case 'tableup' : this.upDataTable();     break;
-			case 'tabledn' : this.downDataTable();   break;
-			case 'open'    : this.openDataTable();   break;
-			case 'save'    : this.saveDataTable();   break;
-			case 'comedit' : this.editComment();     break;
-			case 'difedit' : this.editDifficult();   break;
-			case 'del'     : this.deleteDataTable(); break;
+			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
+			case 'datalist': this.selectDataTable();   break;
+			case 'tableup' : this.upDataTable_M();     break;
+			case 'tabledn' : this.downDataTable_M();   break;
+			case 'open'    : this.openDataTable_M();   break;
+			case 'save'    : this.saveDataTable_M();   break;
+			case 'comedit' : this.editComment_M();     break;
+			case 'difedit' : this.editDifficult_M();   break;
+			case 'del'     : this.deleteDataTable_M(); break;
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.displayDataTableList() 保存しているデータの一覧を表示する
-	// fio.ni()                   文字列で1桁なら0をつける
-	// fio.getDataTableList()     保存しているデータの一覧を取得する
+	// fio.dbm.getDataID()  選択中データの(this.DBlistのkeyとなる)IDを取得する
+	// fio.dbm.update()     管理テーブル情報やダイアログの表示を更新する
+	//---------------------------------------------------------------------------
+	getDataID : function(){
+		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
+			for(var i=0;i<this.DBlist.length;i++){
+				if(this.DBlist[i].id==document.database.datalist.value){ return i;}
+			}
+		}
+		return -1;
+	},
+	update : function(){
+		this.dbh.updateManageData(this);
+			this.displayDataTableList();
+			this.selectDataTable();
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.displayDataTableList() 保存しているデータの一覧を表示する
+	// fio.dbm.getRowString()         1データから文字列を生成する
+	// fio.dbm.dateString()           時刻の文字列を生成する
 	//---------------------------------------------------------------------------
 	displayDataTableList : function(){
-		if(this.DBtype>0){
 			switch(document.database.sorts.value){
 				case 'idlist':  this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 				case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
@@ -5806,111 +5817,52 @@ FileIO.prototype = {
 			var html = "";
 			for(var i=0;i<this.DBlist.length;i++){
 				var row = this.DBlist[i];
-				if(!row){ alert(i);}
-				var src = ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-				var dt = new Date(); dt.setTime(row.time*1000);
-				src += (" "+this.ni(dt.getFullYear()%100)+"/"+this.ni(dt.getMonth()+1)+"/"+this.ni(dt.getDate())+" "+this.ni(dt.getHours())+":"+this.ni(dt.getMinutes()) + "&nbsp;&nbsp;");
-				src += (""+row.col+"×"+row.row+"&nbsp;&nbsp;");
-				if     (menu.isLangJP()){ src += ({0:'－',1:'らくらく',2:'おてごろ',3:'たいへん',4:'アゼン'}[row.hard]);}
-				else if(menu.isLangEN()){ src += ({0:'-',1:'Easy',2:'Normal',3:'Hard',4:'Expert'}[row.hard]);}
-				html += ("<option value=\""+row.id+"\""+(this.DBsid==row.id?" selected":"")+">"+src+"</option>\n");
+			if(!row){ continue;}//alert(i);}
+
+			var valstr = " value=\""+row.id+"\"";
+			var selstr = (this.DBsid==row.id?" selected":"");
+			html += ("<option" + valstr + selstr + ">" + this.getRowString(row)+"</option>\n");
 			}
 			html += ("<option value=\"new\""+(this.DBsid==-1?" selected":"")+">&nbsp;&lt;新しく保存する&gt;</option>\n");
 			document.database.datalist.innerHTML = html;
-
-			this.selectDataTable();
-		}
 	},
-	ni : function(num){ return (num<10?"0"+num:""+num);},
-	getDataTableList : function(){
-		this.DBlist = [];
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			var rs = this.db.execute('SELECT * FROM pzldata');
-			while(rs.isValidRow()){
-				var src = {};
-				for(var i=0;i<rs.fieldCount();i++){ src[rs.fieldName(i)] = rs.field(i);}
-				this.DBlist.push(src);
-				rs.next();
-			}
-			rs.close();
-			this.db.close();
-			this.displayDataTableList();
+	getRowString : function(row){
+		var hardstr = [
+			{ja:'－'      , en:'-'     },
+			{ja:'らくらく', en:'Easy'  },
+			{ja:'おてごろ', en:'Normal'},
+			{ja:'たいへん', en:'Hard'  },
+			{ja:'アゼン'  , en:'Expert'}
+		];
+
+		var str = "";
+		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
+		str += (this.dateString(row.time*1000)+" &nbsp;");
+		str += (""+row.col+"×"+row.row+" &nbsp;");
+		if(!!row.hard || row.hard=='0'){
+			str += (hardstr[row.hard][menu.language]);
 		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
-				for(var r=0;r<rs.rows.length;r++){ self.DBlist.push(rs.rows[r]);}
-				self.DBlist = rs;
-				self.displayDataTableList();
-			}); });
-		}
+		return str;
 	},
+	dateString : function(time){
+		var ni   = function(num){ return (num<10?"0":"")+num;};
+		var str  = " ";
+		var date = new Date();
+		date.setTime(time);
 
-	//---------------------------------------------------------------------------
-	// fio.upDataTable()        データの一覧での位置をひとつ上にする
-	// fio.downDataTable()      データの一覧での位置をひとつ下にする
-	// fio.convertDataTableID() データのIDを付け直す
-	//---------------------------------------------------------------------------
-	upDataTable : function(){
-		var selected = this.getDataID();
-		if(this.DBtype===0 || selected===-1 || selected===0){ return;}
-
-		this.convertDataTableID(selected, selected-1);
-	},
-	downDataTable : function(){
-		var selected = this.getDataID();
-		if(this.DBtype===0 || selected===-1 || selected===this.DBlist.length-1){ return;}
-
-		this.convertDataTableID(selected, selected+1);
-	},
-	convertDataTableID : function(selected,target){
-		var sid = this.DBsid;
-		var tid = this.DBlist[target].id;
-		this.DBsid = tid;
-
-		this.DBlist[selected].id = tid;
-		this.DBlist[target].id   = sid;
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
-			this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[tid,  0]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sid]);
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sid,tid]);
-				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tid,  0]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		str += (ni(date.getFullYear()%100) + "/" + ni(date.getMonth()+1) + "/" + ni(date.getDate())+" ");
+		str += (ni(date.getHours()) + ":" + ni(date.getMinutes()));
+		return str;
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.getDataID()       データのIDを取得する
-	// fio.selectDataTable() データを選択して、コメントなどを表示する
+	// fio.dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
-	getDataID : function(){
-		if(document.database.datalist.value!="new" && document.database.datalist.value!=""){
-			for(var i=0;i<this.DBlist.length;i++){
-				if(this.DBlist[i].id===document.database.datalist.value){ return i;}
-			}
-		}
-		return -1;
-	},
 	selectDataTable : function(){
 		var selected = this.getDataID();
 		if(selected>=0){
 			document.database.comtext.value = ""+this.DBlist[selected].comment;
-			this.DBsid = this.DBlist[selected].id;
+			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
 			document.database.comtext.value = "";
@@ -5926,169 +5878,440 @@ FileIO.prototype = {
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.openDataTable()   データの盤面に読み込む
-	// fio.saveDataTable()   データの盤面を保存する
+	// fio.dbm.upDataTable_M()      データの一覧での位置をひとつ上にする
+	// fio.dbm.downDataTable_M()    データの一覧での位置をひとつ下にする
+	// fio.dbm.convertDataTable_M() データの一覧での位置を入れ替える
 	//---------------------------------------------------------------------------
-	openDataTable : function(){
-		var id = this.getDataID();
-		if(id===-1 || !confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			var id = this.getDataID();
-			var rs = this.db.execute('SELECT * FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
-			this.filedecode(rs.field(4),1);
-
-			rs.close();
-			this.db.close();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[self.DBlist[id].id],
-					function(tx,rs){ self.filedecode(rs.rows[0].pdata,1); }
-				);
-			});
-		}
+	upDataTable_M : function(){
+		var selected = this.getDataID();
+		if(selected===-1 || selected===0){ return;}
+		this.convertDataTable_M(selected, selected-1);
 	},
-	saveDataTable : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || (id!==-1 && !confirm("このデータに上書きしますか？"))){ return;}
+	downDataTable_M : function(){
+		var selected = this.getDataID();
+		if(selected===-1 || selected===this.DBlist.length-1){ return;}
+		this.convertDataTable_M(selected, selected+1);
+	},
+	convertDataTable_M : function(sid, tid){
+		this.DBsid = this.DBlist[tid].id;
+		var row = {};
+		for(var c=1;c<7;c++){ row[this.keys[c]]              = this.DBlist[sid][this.keys[c]];}
+		for(var c=1;c<7;c++){ this.DBlist[sid][this.keys[c]] = this.DBlist[tid][this.keys[c]];}
+		for(var c=1;c<7;c++){ this.DBlist[tid][this.keys[c]] = row[this.keys[c]];}
 
-		var time = mf((new Date()).getTime()/1000);
-		var pdata = this.fileencode(1);
-		var str = "";
-		if(id===-1){ str = prompt("コメントがある場合は入力してください。",""); if(str==null){ str="";} }
-		else       { str = this.DBlist[this.getDataID()].comment;}
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-			if(id===-1){
-				id = this.DBlist.length+1;
-				this.db.execute('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-			}
-			else{
-				id = document.database.datalist.value;
-				this.db.execute('INSERT OR REPLACE INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-			}
-			this.db.close();
-			this.getDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			if(id===-1){
-				id = this.DBlist.length+1;
-				this.db.transaction(function(tx){
-					tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-				},f_true,self.getDataTableList);
-			}
-			else{
-				id = document.database.datalist.value;
-				this.db.transaction(function(tx){
-					tx.executeSql('INSERT OR REPLACE INTO pzldata VALUES(?,?,?,?,?,?,?)',[id,k.qcols,k.qrows,0,pdata,time,str]);
-				},f_true,self.getDataTableList);
-			}
-		}
-
-		this.updateManager(true);
+		this.dbh.convertDataTableID(this, sid, tid);
+		this.update();
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.editComment()   データのコメントを更新する
-	// fio.editDifficult() データの難易度を更新する
+	// fio.dbm.openDataTable_M()  データの盤面に読み込む
+	// fio.dbm.saveDataTable_M()  データの盤面を保存する
 	//---------------------------------------------------------------------------
-	editComment : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1){ return;}
+	openDataTable_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
+		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
+
+		this.dbh.openDataTable(this, id);
+	},
+	saveDataTable_M : function(){
+		var id = this.getDataID(), refresh = false;
+			if(id===-1){
+			id = this.DBlist.length;
+			refresh = true;
+
+			this.DBlist[id] = {};
+			var str = prompt("コメントがある場合は入力してください。","");
+			this.DBlist[id].comment = (!!str ? str : '');
+			this.DBlist[id].hard = 0;
+			this.DBlist[id].id = id+1;
+			this.DBsid = this.DBlist[id].id;
+			}
+			else{
+			if(!confirm("このデータに上書きしますか？")){ return;}
+		}
+		this.DBlist[id].col   = k.qcols;
+		this.DBlist[id].row   = k.qrows;
+		this.DBlist[id].time  = mf((new Date()).getTime()/1000);
+
+		this.dbh.saveDataTable(this, id);
+		this.update();
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.editComment_M()   データのコメントを更新する
+	// fio.dbm.editDifficult_M() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	editComment_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
 
 		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
 		if(str==null){ return;}
 
 		this.DBlist[id].comment = str;
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			this.db.execute('UPDATE pzldata SET comment=? WHERE ID==?',[str,this.DBlist[id].id]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[str,self.DBlist[id].id]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		this.dbh.updateComment(this, id);
+		this.update();
 	},
-	editDifficult : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1){ return;}
+	editDifficult_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
 
 		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
 		if(hard==null){ return;}
 
-		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:0);
-
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
-
-			this.db.execute('UPDATE pzldata SET hard=? WHERE ID==?',[hard,this.DBlist[id].id]);
-			this.db.close();
-
-			this.displayDataTableList();
-		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[hard,self.DBlist[id].id]);
-			},f_true,self.displayDataTableList);
-		}
-
-		this.updateManager(true);
+		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		this.dbh.updateDifficult(this, id);
+		this.update();
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.deleteDataTable() 選択している盤面データを削除する
+	// fio.dbm.deleteDataTable_M() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable : function(){
-		var id = this.getDataID();
-		if(this.DBtype===0 || id===-1 || !confirm("このデータを完全に削除しますか？")){ return;}
+	deleteDataTable_M : function(){
+		var id = this.getDataID(); if(id===-1){ return;}
+		if(!confirm("このデータを完全に削除しますか？")){ return;}
 
-		if(this.DBtype===1){
-			this.db.open('pzprv3_'+k.puzzleid);
+		var sID = this.DBlist[id].id, max = this.DBlist.length;
+		for(var i=sID-1;i<max-1;i++){
+			for(var c=1;c<7;c++){ this.DBlist[i][this.keys[c]] = this.DBlist[i+1][this.keys[c]];}
+		}
+		this.DBlist.pop();
 
-			this.db.execute('DELETE FROM pzldata WHERE ID==?',[this.DBlist[id].id]);
+		this.dbh.deleteDataTable(this, sID, max);
+		this.update();
+	}
 
-			this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);});
-			for(var i=id+1;i<this.DBlist.length;i++){
-				this.db.execute('UPDATE pzldata SET id=? WHERE ID==?',[this.DBlist[i].id-1,this.DBlist[i].id]);
-				this.DBlist[i].id--;
-				this.DBlist[i-1] = this.DBlist[i];
+	//---------------------------------------------------------------------------
+	// fio.dbm.convertDataBase() もし将来必要になったら...
+	//---------------------------------------------------------------------------
+/*	convertDataBase : function(){
+		// ここまで旧データベース
+		this.dbh.importDBlist(this);
+		this.dbh.dropDataBase();
+
+		// ここから新データベース
+		this.dbh.createDataBase();
+		this.dbh.setupDBlist(this);
+	}
+*/
+};
+
+//---------------------------------------------------------------------------
+// ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
+//---------------------------------------------------------------------------
+DataBaseHandler_LS = function(){
+	this.pheader = 'pzprv3_' + k.puzzleid + ':puzdata';
+	this.keys = fio.dbm.keys;
+
+	this.initialize();
+};
+DataBaseHandler_LS.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
+	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	//---------------------------------------------------------------------------
+	initialize : function(){
+		this.createManageDataTable();
+		this.createDataBase();
+	},
+	importDBlist : function(parent){
+		parent.DBlist = [];
+		var r=0;
+		while(1){
+			r++; var row = {};
+			for(var c=0;c<7;c++){ row[this.keys[c]] = localStorage[this.pheader+'!'+r+'!'+this.keys[c]];}
+			if(row.id==null){ break;}
+			row.pdata = "";
+			parent.DBlist.push(row);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// fio.dbm.dbh.updateManageData()      管理情報レコードを更新する
+	//---------------------------------------------------------------------------
+	createManageDataTable : function(){
+		localStorage['pzprv3_manage']        = 'DataBase';
+		localStorage['pzprv3_manage:manage'] = 'Table';
+	},
+	updateManageData : function(parent){
+		var mheader = 'pzprv3_manage:manage!'+k.puzzleid;
+		localStorage[mheader+'!count'] = parent.DBlist.length;
+		localStorage[mheader+'!time']  = mf((new Date()).getTime()/1000);
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createDataBase()     テーブルを作成する
+	//---------------------------------------------------------------------------
+	createDataBase : function(){
+		localStorage['pzprv3_'+k.puzzleid]            = 'DataBase';
+		localStorage['pzprv3_'+k.puzzleid+':puzdata'] = 'Table';
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	//---------------------------------------------------------------------------
+	convertDataTableID : function(parent, sid, tid){
+		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
+		var sheader=this.pheader+'!'+sID, theader=this.pheader+'!'+tID, row = {};
+		for(var c=1;c<7;c++){ localStorage[sheader+'!'+this.keys[c]] = parent.DBlist[sid][this.keys[c]];}
+		for(var c=1;c<7;c++){ localStorage[theader+'!'+this.keys[c]] = parent.DBlist[tid][this.keys[c]];}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
+	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	//---------------------------------------------------------------------------
+	openDataTable : function(parent, id){
+		var pdata = localStorage[this.pheader+'!'+parent.DBlist[id].id+'!pdata'];
+		fio.filedecode(pdata);
+	},
+	saveDataTable : function(parent, id){
+		var row = parent.DBlist[id];
+		for(var c=0;c<7;c++){ localStorage[this.pheader+'!'+row.id+'!'+this.keys[c]] = (c!==4 ? row[this.keys[c]] : fio.fileencode(1));}
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.updateComment()   データのコメントを更新する
+	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	updateComment : function(parent, id){
+		var row = parent.DBlist[id];
+		localStorage[this.pheader+'!'+row.id+'!comment'] = row.comment;
+	},
+	updateDifficult : function(parent, id){
+		var row = parent.DBlist[id];
+		localStorage[this.pheader+'!'+row.id+'!hard'] = row.hard;
+	},
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	//---------------------------------------------------------------------------
+	deleteDataTable : function(parent, sID, max){
+		for(var i=parseInt(sID);i<max;i++){
+			var headers = [this.pheader+'!'+(i+1), this.pheader+'!'+i];
+			for(var c=1;c<7;c++){ localStorage[headers[1]+'!'+this.keys[c]] = localStorage[headers[0]+'!'+this.keys[c]];}
+		}
+		var dheader = this.pheader+'!'+max;
+		for(var c=0;c<7;c++){ localStorage.removeItem(dheader+'!'+this.keys[c]);}
+	}
+};
+
+//---------------------------------------------------------------------------
+// ★DataBaseHandler_SQLクラス Web SQL DataBase用 データベースハンドラ
+//---------------------------------------------------------------------------
+DataBaseHandler_SQL = function(isSQLDB){
+	this.db    = null;	// パズル個別のデータベース
+	this.dbmgr = null;	// pzprv3_managerデータベース
+	this.isSQLDB = isSQLDB;
+
+	this.initialize();
+};
+DataBaseHandler_SQL.prototype = {
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.initialize()    初期化時にデータベースを開く
+	// fio.dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
+	// fio.dbm.dbh.setupDBlist()   DBlistのデータをDataBaseに代入する
+	//---------------------------------------------------------------------------
+	initialize : function(){
+		var wrapper1 = new DataBaseObject_SQL(this.isSQLDB);
+		var wrapper2 = new DataBaseObject_SQL(this.isSQLDB);
+
+		this.dbmgr = wrapper1.openDatabase('pzprv3_manage', '1.0');
+		this.db    = wrapper2.openDatabase('pzprv3_'+k.puzzleid, '1.0');
+
+		this.createManageDataTable();
+		this.createDataBase();
+	},
+	importDBlist : function(parent){
+		parent.DBlist = [];
+		this.db.transaction(
+			function(tx){
+				tx.executeSql('SELECT * FROM pzldata',[],function(tx,rs){
+					var i=0, keys=parent.keys;
+					for(var r=0;r<rs.rows.length;r++){
+						parent.DBlist[i] = {};
+						for(var c=0;c<7;c++){ parent.DBlist[i][keys[c]] = rs.rows.item(r)[keys[c]];}
+						parent.DBlist[i].pdata = "";
+						i++;
+					}
+				});
+			},
+			function(){ },
+			function(){ fio.dbm.update();}
+		);
+	},
+/*	setupDBlist : function(parent){
+		for(var r=0;r<parent.DBlist.length;r++){
+			this.saveDataTable(parent, r);
+		}
+	},
+*/
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createManageDataTable() 管理情報テーブルを作成する(消去はなし)
+	// fio.dbm.dbh.updateManageData()      管理情報レコードを作成・更新する
+	// fio.dbm.dbh.deleteManageData()      管理情報レコードを削除する
+	//---------------------------------------------------------------------------
+	createManageDataTable : function(){
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('CREATE TABLE IF NOT EXISTS manage (puzzleid primary key,version,count,lastupdate)',[]);
+		});
+	},
+	updateManageData : function(parent){
+		var count = parent.DBlist.length;
+		var time = mf((new Date()).getTime()/1000);
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('INSERT OR REPLACE INTO manage VALUES(?,?,?,?)', [k.puzzleid, '1.0', count, time]);
+		});
+	},
+/*	deleteManageData : function(){
+		this.dbmgr.transaction( function(tx){
+			tx.executeSql('DELETE FROM manage WHERE puzzleid=?',[k.puzzleid]);
+		});
+	},
+*/
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.createDataBase()      テーブルを作成する
+	// fio.dbm.dbh.dropDataBase()        テーブルを削除する
+	// fio.dbm.dbh.forcedeleteDataBase() テーブルを削除する
+	//---------------------------------------------------------------------------
+	createDataBase : function(){
+		this.db.transaction( function(tx){
+			tx.executeSql('CREATE TABLE IF NOT EXISTS pzldata (id int primary key,col,row,hard,pdata,time,comment)',[]);
+		});
+	},
+/*	dropDataBase : function(){
+		this.db.transaction( function(tx){
+			tx.executeSql('DROP TABLE IF EXISTS pzldata',[]);
+		});
+	},
+	forceDeleteDataBase : function(parent){
+		this.deleteManageData();
+		this.dropDataBase();
+	},*/
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.convertDataTableID() データのIDを付け直す
+	//---------------------------------------------------------------------------
+	convertDataTableID : function(parent, sid, tid){
+		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[0  ,sID]);
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[sID,tID]);
+			tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[tID,  0]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.openDataTable()   データの盤面に読み込む
+	// fio.dbm.dbh.saveDataTable()   データの盤面を保存する
+	//---------------------------------------------------------------------------
+	openDataTable : function(parent, id){
+		this.db.transaction( function(tx){
+			tx.executeSql('SELECT * FROM pzldata WHERE ID==?',[parent.DBlist[id].id],
+				function(tx,rs){ fio.filedecode(rs.rows.item(0)['pdata']);}
+			);
+		});
+	},
+	saveDataTable : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('INSERT INTO pzldata VALUES(?,?,?,?,?,?,?)',[row.id,row.col,row.row,row.hard,fio.fileencode(1),row.time,row.comment]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.updateComment()   データのコメントを更新する
+	// fio.dbm.dbh.updateDifficult() データの難易度を更新する
+	//---------------------------------------------------------------------------
+	updateComment : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET comment=? WHERE ID==?',[row.comment, row.id]);
+		});
+	},
+	updateDifficult : function(parent, id){
+		var row = parent.DBlist[id];
+		this.db.transaction( function(tx){
+			tx.executeSql('UPDATE pzldata SET hard=? WHERE ID==?',[row.hard, row.id]);
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.dbm.dbh.deleteDataTable() 選択している盤面データを削除する
+	//---------------------------------------------------------------------------
+	deleteDataTable : function(parent, sID, max){
+		this.db.transaction( function(tx){
+			tx.executeSql('DELETE FROM pzldata WHERE ID==?',[sID]);
+			for(var i=parseInt(sID);i<max;i++){
+				tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[i,i+1]);
 			}
-			this.DBlist.splice(this.DBlist.length-1,1);
+		});
+	}
+};
 
-			this.db.close();
-			this.displayDataTableList();
+//---------------------------------------------------------------------------
+// ★DataBaseObject_SQLクラス  Web SQL DataBase用 データベースのラッパークラス
+//---------------------------------------------------------------------------
+DataBaseObject_SQL = function(isSQLDB){
+	this.name    = '';
+	this.version = 0;
+	this.isSQLDB = isSQLDB;
+
+	this.object = null;
+};
+DataBaseObject_SQL.prototype = {
+	openDatabase : function(name, ver){
+		this.name    = name;
+		this.version = ver;
+		if(this.isSQLDB){
+			this.object = openDatabase(this.name, this.version);
 		}
-		else if(this.DBtype===2){
-			var self = this;
-			this.db.transaction(function(tx){
-				tx.executeSql('DELETE FROM pzldata WHERE ID==?',[self.DBlist[id].id]);
-				self.DBlist = self.DBlist.sort(function(a,b){ return (a.id-b.id);});
-				for(var i=id+1;i<self.DBlist.length;i++){
-					tx.executeSql('UPDATE pzldata SET id=? WHERE ID==?',[self.DBlist[i].id-1,self.DBlist[i].id]);
-					self.DBlist[i].id--;
-					self.DBlist[i-1] = self.DBlist[i];
+		else{
+			this.object = google.gears.factory.create('beta.database', this.version);
+		}
+		return this;
+	},
+
+	// Gears用ラッパーみたいなもの
+	transaction : function(execfunc, errorfunc, compfunc){
+		if(typeof errorfunc == 'undefined'){ errorfunc = f_true;}
+		if(typeof compfunc  == 'undefined'){ compfunc  = f_true;}
+
+		if(this.isSQLDB){
+			// execfuncの第一引数txはSQLTransactionオブジェクト(tx.executeSqlは下の関数を指さない)
+			this.object.transaction(execfunc, errorfunc, compfunc);
+		}
+		else{
+			this.object.open(this.name);
+			// execfuncの第一引数txはthisにしておく(tx.executeSqlは下の関数を指す)
+			execfunc(this);
+			this.object.close();
+
+			compfunc();
+		}
+	},
+	// Gears用ラッパー
+	executeSql : function(statement, args, callback){
+		var resultSet = this.object.execute(statement, args);
+		// 以下はcallback用
+		if(typeof callback != 'undefined'){
+			var r=0, rows = {};
+			rows.rowarray = [];
+			while(resultSet.isValidRow()){
+				var row = {};
+				for(var i=0,len=resultSet.fieldCount();i<len;i++){
+					row[i] = row[resultSet.fieldName(i)] = resultSet.field(i);
 				}
-				self.DBlist.splice(this.DBlist.length-1,1);
-			},f_true,self.displayDataTableList);
-		}
+				rows.rowarray[r] = row;
+				resultSet.next();
+				r++;
+			}
+			resultSet.close();
 
-		this.updateManager(true);
+			rows.length = r;
+			rows.item = function(r){ return this.rowarray[r];};
+
+			var rs = {rows:rows};
+			callback(this, rs);
+		}
 	}
 };
 
@@ -6215,7 +6438,8 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(func(c)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1); result = false;
+				bd.sErC([c],1);
+				result = false;
 			}
 		}
 		return result;
@@ -6246,44 +6470,16 @@ AnsCheck.prototype = {
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].cx<k.qcols-1 && func(c,c+1)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+1],1); result = false;
+				bd.sErC([c,c+1],1);
+				result = false;
 			}
 			if(bd.cell[c].cy<k.qrows-1 && func(c,c+k.qcols)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,c+k.qcols],1); result = false;
-			}
-		}
-		return result;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkAreaRect()  すべてのfuncを満たすマスで構成されるエリアが四角形であるかどうか判定する
-	// ans.checkAllArea()   すべてのfuncを満たすマスで構成されるエリアがサイズ条件func2を満たすかどうか判定する
-	// ans.getSizeOfClist() 指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの大きさを返す
-	//---------------------------------------------------------------------------
-	checkAreaRect : function(cinfo, func){ return this.checkAllArea(cinfo, func, function(w,h,a){ return (w*h==a)}); },
-	checkAllArea : function(cinfo, func, func2){
-		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
-			if(!func2(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC(cinfo.room[id].idlist,1);
+				bd.sErC([c,c+k.qcols],1);
 				result = false;
 			}
 		}
 		return result;
-	},
-	getSizeOfClist : function(clist, func){
-		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
-		for(var i=0;i<clist.length;i++){
-			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
-			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
-			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
-			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
-			if(func(clist[i])){ d.cnt++;}
-		}
-		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6379,32 +6575,37 @@ AnsCheck.prototype = {
 		for(var i=0;i<bd.cellmax;i++){
 			if(func(i)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([i],1); result = false;
+				bd.sErC([i],1);
+				result = false;
 			}
 		}
 		return result;
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneNumber()      部屋の中のfunc==trueを満たすCellの数がeval()==trueかどうかを調べる
-	//                           部屋のfunc==trueになるセルの数の判定、部屋にある数字と黒マスの数の比較、
-	//                           白マスの面積と入っている数字の比較などに用いられる
-	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
+	// ans.checkAllArea()    すべてのfuncを満たすマスで構成されるエリアがevalfuncを満たすかどうか判定する
+	//
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
-	// ans.checkQnumsInArea()    部屋に数字がいくつ含まれているかの判定を行う
+	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
+	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
+	// ans.checkTripleNumber()   部屋に数字が3つ以上含まれていないように判定を行う
+	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkBlackCellInArea()部屋にある黒マスの数の判定を行う
-	// ans,checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
+	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
+	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
+	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
 	//
-	// ans.getQnumCellInArea()   部屋の中で一番左上にある数字を返す
-	// ans.getCntOfRoom()        部屋の面積を返す
-	// ans.getCellsOfRoom()      部屋の中でfunc==trueとなるセルの数を返す
+	// ans.getQnumCellInArea() 部屋の中で一番左上にある数字を返す
+	// ans.getSizeOfClist()    指定されたCellのリストの上下左右の端と、その中で条件funcを満たすセルの数を返す
 	//---------------------------------------------------------------------------
-	checkOneNumber : function(cinfo, evalfunc, func){
+	checkAllArea : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var top = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0]) : this.getQnumCellInArea(cinfo,id));
-			if( evalfunc(top, this.getCellsOfRoom(cinfo, id, func)) ){
+			var d = this.getSizeOfClist(cinfo.room[id].idlist,func);
+			var n = bd.QnC(k.isOneNumber ? area.getTopOfRoomByCell(cinfo.room[id].idlist[0])
+										 : this.getQnumCellOfClist(cinfo.room[id].idlist));
+			if( !evalfunc(d.x2-d.x1+1, d.y2-d.y1+1, d.cnt, n) ){
 				if(this.inAutoCheck){ return false;}
 				if(this.performAsLine){ if(result){ bd.sErBAll(2);} this.setErrLareaById(cinfo,id,1);}
 				else{ bd.sErC(cinfo.room[id].idlist,(k.puzzleid!="tateyoko"?1:4));}
@@ -6413,27 +6614,37 @@ AnsCheck.prototype = {
 		}
 		return result;
 	},
-	checkBlackCellCount  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top>=0 && top!=cnt);}, bd.isBlack);},
-	checkDisconnectLine  : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top==-1 && cnt==0); }, bd.isNum  );},
-	checkNumberAndSize   : function(cinfo)          { return this.checkOneNumber(cinfo, function(top,cnt){ return (top> 0 && top!=cnt);}, f_true    );},
-	checkQnumsInArea     : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isNum  );},
-	checkBlackCellInArea : function(cinfo, func)    { return this.checkOneNumber(cinfo, function(top,cnt){ return func(cnt);},            bd.isBlack);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkOneNumber(cinfo, function(top,cnt){ return (cnt==0); },            function(c){ return getvalue(c)!=-1;} );},
 
-	getQnumCellInArea : function(cinfo, areaid){
-		var idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){
-			if(bd.QnC(idlist[i])!=-1){ return idlist[i];}
+	checkDisconnectLine  : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (n!=-1 || a>0); } );},
+	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (n<= 0 || n==a);} );},
+
+	checkNoNumber        : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a!=0);}          );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 2);}          );},
+	checkTripleNumber    : function(cinfo){ return this.checkAllArea(cinfo, bd.isNum,   function(w,h,a,n){ return (a< 3);}          );},
+
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return (n<0 || n==a);} );},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, bd.isBlack, function(w,h,a,n){ return evalfunc(a);}     );},
+	checkAreaRect        : function(cinfo)          { return this.checkAllArea(cinfo, f_true,     function(w,h,a,n){ return (w*h==a)});},
+
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllArea(cinfo, function(c){ return line.lcnt[c]>0;}, evalfunc);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllArea(cinfo, function(c){ return getvalue(c)!=-1;}, function(w,h,a,n){ return (a!=0);});},
+
+	getQnumCellOfClist : function(clist){
+		for(var i=0,len=clist.length;i<len;i++){
+			if(bd.QnC(clist[i])!=-1){ return clist[i];}
 		}
 		return -1;
 	},
-	getCntOfRoom : function(cinfo, areaid){
-		return cinfo.room[areaid].idlist.length;
-	},
-	getCellsOfRoom : function(cinfo, areaid, func){
-		var cnt=0, idlist = cinfo.room[areaid].idlist;
-		for(var i=0,len=idlist.length;i<len;i++){ if(func(idlist[i])){ cnt++;}}
-		return cnt;
+	getSizeOfClist : function(clist, func){
+		var d = { x1:k.qcols, x2:-1, y1:k.qrows, y2:-1, cnt:0 };
+		for(var i=0;i<clist.length;i++){
+			if(d.x1>bd.cell[clist[i]].cx){ d.x1=bd.cell[clist[i]].cx;}
+			if(d.x2<bd.cell[clist[i]].cx){ d.x2=bd.cell[clist[i]].cx;}
+			if(d.y1>bd.cell[clist[i]].cy){ d.y1=bd.cell[clist[i]].cy;}
+			if(d.y2<bd.cell[clist[i]].cy){ d.y2=bd.cell[clist[i]].cy;}
+			if(func(clist[i])){ d.cnt++;}
+		}
+		return d;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6552,6 +6763,86 @@ AnsCheck.prototype = {
 			}
 		}
 		return true;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkRowsCols()            タテ列・ヨコ列の数字の判定を行う
+	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
+	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在するか判定する
+	// ans.isDifferentNumberInClist() clistの中に同じ数字が存在するか判定する
+	//---------------------------------------------------------------------------
+	checkRowsCols : function(evalfunc, numfunc){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var clist = bd.getClistByPosition(0,cy,k.qcols-1,cy);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		for(var cx=1;cx<k.qcols;cx++){
+			var clist = bd.getClistByPosition(cx,0,cx,k.qrows-1);
+			if(!evalfunc.apply(this,[clist, numfunc])){
+				if(this.inAutoCheck){ return false;}
+				result = false;
+			}
+		}
+		return result;
+	},
+	checkRowsColsPartly : function(evalfunc, areainfo, termfunc, multierr){
+		var result = true;
+		for(var cy=0;cy<k.qrows;cy++){
+			var cx=0;
+			while(cx<k.qcols){
+				for(var tx=cx;tx<k.qcols;tx++){ if(termfunc.apply(this,[bd.cnum(tx,cy)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,tx-1,cy);
+				var total = (k.isextendcell!=1 ? 0 : (cx==0 ? bd.QnE(bd.exnum(-1,cy)) : bd.QnC(bd.cnum(cx-1,cy))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cx = tx+1;
+			}
+		}
+		for(var cx=0;cx<k.qcols;cx++){
+			var cy=0;
+			while(cy<k.qrows){
+				for(var ty=cy;ty<k.qrows;ty++){ if(termfunc.apply(this,[bd.cnum(cx,ty)])){ break;}}
+				var clist = bd.getClistByPosition(cx,cy,cx,ty-1);
+				var total = (k.isextendcell!=1 ? 0 : (cy==0 ? bd.DiE(bd.exnum(cx,-1)) : bd.DiC(bd.cnum(cx,cy-1))));
+
+				if(!evalfunc.apply(this,[total, clist, areainfo])){
+					if(!multierr || this.inAutoCheck){ return false;}
+					result = false;
+				}
+				cy = ty+1;
+			}
+		}
+		return result;
+	},
+
+	checkDifferentNumberInRoom : function(rinfo, numfunc){
+		var result = true;
+		for(var id=1;id<=rinfo.max;id++){
+			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+				if(this.inAutoCheck){ return false;}
+				bd.sErC(rinfo.room[id].idlist,1);
+				result = false;
+			}
+		}
+		return result;
+	},
+	isDifferentNumberInClist : function(clist, numfunc){
+		var result = true, d = [], num = [], bottom = (!!k.dispzero?1:0);
+		for(var n=bottom,max=bd.nummaxfunc(clist[0]);n<=max;n++){ d[n]=0;}
+		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc.apply(bd,[clist[i]]);}
+
+		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){
+			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+		}
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
@@ -6868,6 +7159,7 @@ Menu = function(){
 	var smenu_funcs  = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout), click:ee.ebinder(this, this.submenuclick)};
 	var select_funcs = {mouseover: ee.ebinder(this, this.submenuhover), mouseout: ee.ebinder(this, this.submenuout)};
 	this.EL_SMENU    = ee.addTemplate('','div' , {className:'smenu'}, null, smenu_funcs);
+	this.EL_SPARENT  = ee.addTemplate('','div' , {className:'smenu'}, null, select_funcs);
 	this.EL_SELECT   = ee.addTemplate('','div' , {className:'smenu'}, {fontWeight :'900', fontSize:'10pt'}, select_funcs);
 	this.EL_SEPARATE = ee.addTemplate('','div' , {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
 	this.EL_CHECK    = ee.addTemplate('','div' , {className:'smenu'}, {paddingLeft:'6pt', fontSize:'10pt'}, smenu_funcs);
@@ -6882,6 +7174,7 @@ Menu = function(){
 
 	// ElementTemplate : ボタン
 	this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
+	this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
 };
 Menu.prototype = {
 	//---------------------------------------------------------------------------
@@ -6957,7 +7250,7 @@ Menu.prototype = {
 			if(!!menu){ menu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
-		case pp.SMENU: case pp.LABEL:
+		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
 			var smenu = ee('ms_'+idname);
 			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
 			break;
@@ -6976,7 +7269,7 @@ Menu.prototype = {
 			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
 				manage.el.innerHTML = cap;
-				manage.el.className = (issel?"flagsel":"flag");
+				manage.el.className = (issel?"childsel":"child");
 			}
 			break;
 
@@ -6997,12 +7290,14 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	menuarea : function(){
 		var am = ee.binder(pp, pp.addMenu),
+			at = ee.binder(pp, pp.addSParent),
 			as = ee.binder(pp, pp.addSmenu),
 			au = ee.binder(pp, pp.addSelect),
 			ac = ee.binder(pp, pp.addCheck),
 			aa = ee.binder(pp, pp.addCaption),
 			ai = ee.binder(pp, pp.addChild),
 			ap = ee.binder(pp, pp.addSeparator),
+			af = ee.binder(pp, pp.addFlagOnly),
 			sl = ee.binder(pp, pp.setLabel);
 
 		// *ファイル ==========================================================
@@ -7011,16 +7306,17 @@ Menu.prototype = {
 		as('newboard', 'file', '新規作成','New Board');
 		as('urlinput', 'file', 'URL入力', 'Import from URL');
 		as('urloutput','file', 'URL出力', 'Export URL');
-		ap('sep_2', 'file');
+		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
-		if(!!fio.DBtype){
-			as('database', 'file', 'データベースの管理', 'Database Management');
+		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
+		if(fio.dbm.DBaccept>0){
+			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
+
+		// *ファイル - ファイル保存 -------------------------------------------
+		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		if(this.ispencilbox){
-			ap('sep_3', 'file');
-			as('fileopen2', 'file', 'pencilboxのファイルを開く', 'Open the pencilbox file');
-			as('filesave2', 'file', 'pencilboxのファイルを保存', 'Save the pencilbox file as ...');
+			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 
 		// *編集 ==============================================================
@@ -7033,12 +7329,12 @@ Menu.prototype = {
 		am('disp', "表示", "Display");
 
 		au('size','disp',k.widthmode,[0,1,2,3,4], '表示サイズ','Cell Size');
-		ap('sep_4',  'disp');
+		ap('sep_disp1',  'disp');
 
 		if(!!k.irowake){
 			ac('irowake','disp',(k.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
-			ap('sep_5', 'disp');
+			ap('sep_disp2', 'disp');
 		}
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -7058,6 +7354,9 @@ Menu.prototype = {
 		if(k.EDITOR){
 			au('mode','setting',(k.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
+		}
+		else{
+			af('mode', 3);
 		}
 
 		puz.menufix();	// 各パズルごとのメニュー追加
@@ -7083,11 +7382,12 @@ Menu.prototype = {
 		am('other', "その他", "Others");
 
 		as('credit',  'other', 'ぱずぷれv3について',   'About PUZ-PRE v3');
-		aa('cap_others1', 'other', 'リンク', 'Link');
-		as('jumpv3',  'other', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		as('jumptop', 'other', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
-		as('jumpblog','other', 'はっぱ日記(blog)へ',   'Jump to my blog');
-		//sm('eval', 'テスト用', 'for Evaluation');
+		ap('sep_other','other');
+		at('link',     'other', 'リンク', 'Link');
+		// *その他 - リンク -----------------------------------------------------
+		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
+		as('jumptop', 'link', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
+		as('jumpblog','link', 'はっぱ日記(blog)へ',   'Jump to my blog');
 
 		this.createAllFloat();
 	},
@@ -7135,6 +7435,10 @@ Menu.prototype = {
 				case pp.SMENU:    smenu = ee.createEL(this.EL_SMENU,   smenuid); break;
 				case pp.CHECK:    smenu = ee.createEL(this.EL_CHECK,   smenuid); break;
 				case pp.CHILD:    smenu = ee.createEL(this.EL_CHILD,   smenuid); break;
+				case pp.SPARENT:
+					var dispnormal = (pp.getMenuStr(id).indexOf("->")>=0);
+					smenu = ee.createEL((dispnormal ? this.EL_SPARENT : this.EL_SELECT), smenuid);
+					break;
 				default: continue; break;
 			}
 
@@ -7198,12 +7502,16 @@ Menu.prototype = {
 	submenuhover : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenu"){ ee.getSrcElement(e).className="smenusel";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuopen(e,idname,this.dispfloat.length);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuopen(e,idname,this.dispfloat.length);
+		}
 	},
 	submenuout   : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
 		if(ee.getSrcElement(e).className==="smenusel"){ ee.getSrcElement(e).className="smenu";}
-		if(pp.flags[idname] && pp.type(idname)===pp.SELECT){ this.floatmenuout(e);}
+		if(pp.flags[idname] && (pp.type(idname)===pp.SELECT || pp.type(idname)===pp.SPARENT)){
+			this.floatmenuout(e);
+		}
 	},
 	submenuclick : function(e){
 		var idname = ee.getSrcElement(e).id.substr(3);
@@ -7351,11 +7659,20 @@ Menu.prototype = {
 		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
 
 		// (Canvas下) ボタンの初期設定
+		ee.createEL(this.EL_UBUTTON, 'btncheck');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnundo');
+		ee.createEL(this.EL_UBUTTON, 'btnredo');
+		ee('btnarea').appendHTML('&nbsp;');
+		ee.createEL(this.EL_UBUTTON, 'btnclear');
+		ee.createEL(this.EL_UBUTTON, 'btnclear2');
+
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo),                "戻",       "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo),                "進",       "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
 		this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+
 		if(k.irowake!=0){
 			var el = ee.createEL(this.EL_BUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -7451,8 +7768,8 @@ Menu.prototype = {
 		btn(document.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(fio, fio.clickHandler);
-		lab(ee('bar1_8').el, "データベースの管理", "Database Management");
+		func = ee.ebinder(fio.dbm, fio.dbm.clickHandler);
+		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		document.database.sorts   .onchange = func;
 		document.database.datalist.onchange = func;
 		document.database.tableup .onclick  = func;
@@ -7529,6 +7846,10 @@ Menu.prototype = {
 	},
 	popclose : function(){
 		if(this.pop){
+			if(this.pop.el.id=='pop1_8'){
+				fio.dbm.closeDialog();
+			}
+
 			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.menuclear();
@@ -7625,6 +7946,7 @@ Properties = function(){
 
 	// const
 	this.MENU     = 6;
+	this.SPARENT  = 7;
 	this.SMENU    = 0;
 	this.SELECT   = 1;
 	this.CHECK    = 2;
@@ -7640,15 +7962,20 @@ Properties.prototype = {
 
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
 	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
 	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
 	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
 	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
 	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
 	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
 		this.addFlags(idname, '', this.MENU, 0, strJP, strEN);
+	},
+	addSParent : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT, 0, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
@@ -7672,6 +7999,10 @@ Properties.prototype = {
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_");
 		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+	},
+
+	addFlagOnly : function(idname, first){
+		this.addFlags(idname, '', '', first, '', '');
 	},
 
 	//---------------------------------------------------------------------------
@@ -7724,9 +8055,10 @@ Properties.prototype = {
 	funcs : {
 		urlinput  : function(){ menu.pop = ee("pop1_2");},
 		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
+		fileopen  : function(){ menu.pop = ee("pop1_4");},
 		filesave  : function(){ menu.ex.filesave(1);},
-		database  : function(){ menu.pop = ee("pop1_8"); fio.getDataTableList();},
-		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(2);}},
+		filesave2 : function(){ if(fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
+		database  : function(){ menu.pop = ee("pop1_8"); fio.dbm.openDialog();},
 		adjust    : function(){ menu.pop = ee("pop2_1");},
 		turn      : function(){ menu.pop = ee("pop2_2");},
 		credit    : function(){ menu.pop = ee("pop3_1");},
@@ -7749,15 +8081,6 @@ Properties.prototype = {
 				document.newboard.row.value = k.qrows;
 			}
 			k.enableKey = false;
-		},
-		fileopen : function(){
-			document.fileform.pencilbox.value = "0";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
-		},
-		fileopen2 : function(){
-			if(!fio.kanpenOpen){ return;}
-			document.fileform.pencilbox.value = "1";
-			if(!menu.pop){ menu.pop = ee("pop1_4");}
 		},
 		dispsize : function(){
 			menu.pop = ee("pop4_1");
@@ -7789,18 +8112,21 @@ var debug = {
 		document.testform.perfload.onclick  = ee.binder(this, this.loadperf);
 
 		document.testform.filesave.onclick  = ee.binder(this, this.filesave);
-		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
 		document.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
-		document.testform.pbfileopen.onclick  = ee.binder(this, this.fileopen_pencilbox);
+
+		document.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
+		document.testform.database.onclick  = ee.binder(this, this.dispdatabase);
 
 		document.testform.erasetext.onclick = ee.binder(this, this.erasetext);
 		document.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
+
+		document.testform.testarea.style.fontSize = '10pt';
 
 		document.testform.starttest.style.display = 'none';
 
 		document.testform.perfload.style.display = (k.puzzleid!=='country' ? 'none' : 'inline');
 		document.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
-		document.testform.pbfileopen.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		document.testform.database.style.display = (!fio.DBaccept<0x08 ? 'none' : 'inline');
 
 		if(k.scriptcheck){ debug.testonly_func();}	// テスト用
 	},
@@ -7823,25 +8149,17 @@ var debug = {
 	},
 
 	filesave : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(1).replace(/\//g,"\n"));
+		this.setTA(fio.fileencode(fio.PZPR).replace(/\//g,"\n"));
 		this.addTA('');
 		this.addTA(fio.urlstr);
 	},
-	fileopen : function(){
-		var dataarray = this.getTA().split("\n");
-		if(!dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),1);
+	filesave_pencilbox : function(){
+		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
 	},
 
-	filesave_pencilbox : function(){
-		this.setTA('');
-		this.setTA(fio.fileencode(2).replace(/\//g,"\n"));
-	},
-	fileopen_pencilbox : function(){
+	fileopen : function(){
 		var dataarray = this.getTA().split("\n");
-		if(dataarray[0].match(/pzprv3/)){ return;}
-		fio.filedecode(dataarray.join("/"),2);
+		fio.filedecode(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -7871,8 +8189,17 @@ var debug = {
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
 
+	dispdatabase : function(){
+		var text = "";
+		for(var i=0;i<localStorage.length;i++){
+			var key = localStorage.key(i);
+			text += (""+key+" "+localStorage[key]+"\n");
+		}
+		this.setTA(text);
+	},
+
 	loadperf : function(){
-		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /",1);
+		fio.filedecode("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
 		pp.setVal('mode',3);
 		pp.setVal('irowake',true);
 	},
@@ -7912,7 +8239,7 @@ MenuExec.prototype = {
 		}
 		else{
 			this.reader = new FileReader();
-			this.reader.onload = ee.ebinder(menu.ex, function(e){
+			this.reader.onload = ee.ebinder(this, function(e){
 				this.fileonload(ee.getSrcElement(e).result);
 			});
 		}
@@ -7974,11 +8301,11 @@ MenuExec.prototype = {
 	urloutput : function(e){
 		if(menu.pop){
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(0); break;
-				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(1); break;
-				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(2); break;
-				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(3); break;
-				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(4); break;
+				case "pzprv3":     document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
+				case "pzprapplet": document.urloutput.ta.value = enc.pzloutput(enc.PAPRAPP); break;
+				case "kanpen":     document.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
+				case "pzprv3edit": document.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
+				case "heyaapp":    document.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
 			}
 		}
 	},
@@ -8021,9 +8348,8 @@ MenuExec.prototype = {
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
-		var ftype = (document.fileform.pencilbox.value=="0" ? 1 : 2);
 
-		fio.filedecode(fstr,ftype);
+		fio.filedecode(fstr);
 
 		document.fileform.reset();
 		tm.reset();
@@ -9545,9 +9871,9 @@ PBase.prototype = {
 			document.writeln("<script type=\"text/javascript\" src=\"src/puzzles.js\"></script>");
 		}
 
-		// Gears_init.jsの読み込み
 		fio = new FileIO();
-		if(fio.choiceDataBase()>0){
+		if(fio.dbm.requireGears()){
+			// 必要な場合、gears_init.jsの読み込み
 			document.writeln("<script type=\"text/javascript\" src=\"src/gears_init.js\"></script>");
 		}
 
@@ -9601,7 +9927,6 @@ PBase.prototype = {
 		area = new AreaManager();	// 部屋情報等管理オブジェクト
 		line = new LineManager();	// 線の情報管理オブジェクト
 
-		fio.initDataBase();		// データベースの設定
 		menu = new Menu();		// メニューを扱うオブジェクト
 		pp = new Properties();	// メニュー関係の設定値を保持するオブジェクト
 
@@ -9627,6 +9952,16 @@ PBase.prototype = {
 			document.onkeydown  = ee.ebinder(kc, kc.e_keydown);
 			document.onkeyup    = ee.ebinder(kc, kc.e_keyup);
 			document.onkeypress = ee.ebinder(kc, kc.e_keypress);
+
+			if(!!menu.ex.reader){
+				var DDhandler = function(e){
+					menu.ex.reader.readAsText(e.dataTransfer.files[0]);
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				window.addEventListener('dragover', function(e){ e.preventDefault();}, true);
+				window.addEventListener('drop', DDhandler, true);
+			}
 		}
 	},
 	initSilverlight : function(sender){
