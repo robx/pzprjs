@@ -63,7 +63,7 @@ sub output_pzprBase{
 	if(!$debug){
 		&output_doc("notices.txt");
 
-		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o ./pzprBase_body.js ./pzprBase_body_Full.js");
+		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar --charset utf-8 -o ./pzprBase_body.js ./pzprBase_body_Full.js");
 		system("copy /Y /B .\\notices.txt + .\\pzprBase_body.js ..\\pzprBase.js");
 		system("copy /Y /B .\\notices.txt + .\\pzprBase_body_Full.js ..\\pzprBase_Full.js");
 
