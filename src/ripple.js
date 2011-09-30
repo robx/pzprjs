@@ -14,7 +14,7 @@ MouseEvent:{
 		}
 	},
 	inputplay : function(){
-		if(this.mousemove){ this.inputqnum();}
+		if(this.mousestart){ this.inputqnum();}
 	}
 },
 

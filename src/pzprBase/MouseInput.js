@@ -575,7 +575,7 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	inputborder : function(){ this.inputBD(0);},
 	inputborderans : function(){
-		if(this.ismousedown){ this.checkBorderMode();}
+		if(this.mousestart){ this.checkBorderMode();}
 		if(this.bordermode){ this.inputBD(1);}
 		else               { this.inputLine1(1);}
 	},

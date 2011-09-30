@@ -5,8 +5,8 @@ pzprv3.custom.kakuru = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousedown){ this.inputqnum_kakuru();}},
-	inputplay : function(){ if(this.mousedown){ this.inputqnum_kakuru();}},
+	inputedit : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
+	inputplay : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
 	inputqnum_kakuru : function(){
 		var cc = this.cellid();
 		if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}

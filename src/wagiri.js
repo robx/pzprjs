@@ -5,8 +5,8 @@ pzprv3.custom.wagiri = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousedown){ this.inputquestion();}},
-	inputplay : function(){ if(this.mousedown){ this.inputslash();}},
+	inputedit : function(){ if(this.mousestart){ this.inputquestion();}},
+	inputplay : function(){ if(this.mousestart){ this.inputslash();}},
 
 	inputquestion : function(){
 		var pos = this.borderpos(0.33);

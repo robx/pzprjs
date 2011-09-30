@@ -9,7 +9,7 @@ MouseEvent:{
 		if(this.mousestart){ this.inputcross_kouchoku();}
 	},
 	inputplay : function(){
-		if(this.mousestart && this.mousemove){ this.inputsegment();}
+		if(this.mousestart || this.mousemove){ this.inputsegment();}
 		else if(this.mouseend){ this.inputsegment_up();}
 	},
 

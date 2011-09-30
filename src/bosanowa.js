@@ -5,8 +5,8 @@ pzprv3.custom.bosanowa = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousedown){ this.inputqnum_bosanowa();}},
-	inputplay : function(){ if(this.mousedown){ this.inputqnum_bosanowa();}},
+	inputedit : function(){ if(this.mousestart){ this.inputqnum_bosanowa();}},
+	inputplay : function(){ if(this.mousestart){ this.inputqnum_bosanowa();}},
 
 	inputqnum_bosanowa : function(){
 		var pos = this.borderpos(0.31);
