@@ -7,14 +7,14 @@ pzprv3.custom.goishi = {
 MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart){ this.inputstone();}
-		else if(this.mouseend){ kc.inUNDO = false; kc.inREDO = false;}
+		else if(this.mouseend){ ut.stop();}
 	},
 	inputplay : function(){
 		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ ut.inUNDO = true; ut.start(true);}
+			else if(this.btn.Right){ ut.startUndo(true);}
 		}
-		else if(this.mouseend){ kc.inUNDO = false; kc.inREDO = false;}
+		else if(this.mouseend){ ut.stop();}
 	},
 
 	inputstone : function(){
@@ -33,8 +33,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cc = this.cellid();
 		if(cc===null || !bd.isStone(cc) || bd.cell[cc].anum!==-1){
-			ut.inREDO = true; 
-			ut.start(true);
+			ut.startRedo(true);
 			return;
 		}
 
@@ -113,24 +112,30 @@ UndoTimer:{
 		this.SuperFunc.initialize.call(this, owner);
 		this.ismouse = false;
 	},
-	start : function(ismouse){
-		this.SuperFunc.start.call(this);
+
+	startUndo : function(ismouse){
 		this.ismouse = !!ismouse;
+		this.SuperFunc.startUndo.call(this);
+	},
+	startRedo : function(ismouse){
+		this.ismouse = !!ismouse;
+		this.SuperFunc.startRedo.call(this);
 	},
 	stop : function(){
 		this.SuperFunc.stop.call(this);
 		this.ismouse = false;
 	},
+
 	exec : function(){
 		if(!this.ismouse){ this.SuperFunc.exec.call(this);}
 		else{
 			if(this.inUNDO){
-				var prop = (um.current>0 ? um.ope[um.current-1].last().property : '');
-				if(prop===bd.ANUM){ um.undo(1);} else{ this.inUNDO = false;}
+				var prop = (um.current>-1 ? um.ope[um.current].property : '');
+				if(prop===bd.ANUM){ um.undo(1);} else{ this.stop();}
 			}
 			else if(this.inREDO){
-				var prop = (um.current<um.ope.length ? um.ope[um.current].last().property : '');
-				if(prop===bd.ANUM){ um.redo(1);} else{ this.inREDO = false;}
+				var prop = (um.current+1<um.ope.length ? um.ope[um.current+1].property : '');
+				if(prop===bd.ANUM){ um.redo(1);} else{ this.stop();}
 			}
 		}
 	}
@@ -236,6 +241,7 @@ Encode:{
 
 	decodeGoishi : function(){
 		var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
+		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -246,6 +252,7 @@ Encode:{
 			}
 			if(c>=bd.qcols*bd.qrows){ break;}
 		}
+		bd.enableInfo();
 		this.outbstr = bstr.substr(i+1);
 	},
 	// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
