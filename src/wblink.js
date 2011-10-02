@@ -19,19 +19,18 @@ MouseEvent:{
 	},
 
 	inputLine : function(){
-		if(this.inputData==2){ return;}
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = this.getnb(this.prevPos, pos);
-		if(id!==null){
-			var d = bd.getlinesize(id);
-			var idlist = new pzprv3.core.IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+		var border = this.getnb(this.prevPos, pos);
+		if(!border.isnull){
+			var d = border.getlinesize();
+			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
 
-			if(this.inputData===null){ this.inputData=(bd.isLine(id)?0:1);}
-			for(var i=0;i<idlist.data.length;i++){
-				if(this.inputData==1){ bd.setLine(idlist.data[i]);}
-				else              { bd.removeLine(idlist.data[i]);}
+			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
+			for(var i=0;i<borders.length;i++){
+				if(this.inputData==1){ borders[i].setLine();}
+				else                 { borders[i].removeLine();}
 			}
 			this.inputData=2;
 
@@ -41,15 +40,15 @@ MouseEvent:{
 	},
 	inputpeke : function(){
 		var pos = this.borderpos(0.22);
-		var id = pos.borderid();
-		if(id===null || this.prevPos.equals(pos)){ return;}
+		var border = pos.getb();
+		if(border.isnull || this.prevPos.equals(pos)){ return;}
 
-		if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
-		bd.sQsB(id, this.inputData);
+		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
+		border.setQsub(this.inputData);
 
-		var d = bd.getlinesize(id);
-		var idlist = new pzprv3.core.IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
-		for(var i=0;i<idlist.data.length;i++){ bd.sLiB(idlist.data[i], 0);}
+		var d = border.getlinesize();
+		var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
 		this.prevPos = pos;
 
 		pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
@@ -65,43 +64,45 @@ KeyEvent:{
 		this.key_inputcircle(ca);
 	},
 	key_inputcircle : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
-		if     (ca=='1'){ bd.sQnC(cc,(bd.QnC(cc)!==1?1:-1));}
-		else if(ca=='2'){ bd.sQnC(cc,(bd.QnC(cc)!==2?2:-1));}
-		else if(ca=='-'){ bd.sQnC(cc,(bd.QnC(cc)!==-2?-2:-1));}
-		else if(ca=='3'||ca==" "){ bd.sQnC(cc,-1);}
+		if     (ca=='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
+		else if(ca=='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}
+		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		else if(ca=='3'||ca==" "){ cell.setQnum(-1);}
 		else{ return;}
 
-		pc.paintCell(cc);
+		pc.paintCell(cell);
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	numberAsObject : true,
+
+	maxnum : 2
+},
+Border:{
+	getlinesize : function(){
+		var pos1 = this.getaddr(), pos2 = pos1.clone();
+		if(this.isVert()){
+			while(pos1.move(-1,0).getc().noNum()){ pos1.move(-1,0);}
+			while(pos2.move( 1,0).getc().noNum()){ pos2.move( 1,0);}
+		}
+		else{
+			while(pos1.move(0,-1).getc().noNum()){ pos1.move(0,-1);}
+			while(pos2.move(0, 1).getc().noNum()){ pos2.move(0, 1);}
+		}
+		return {x1:pos1.x, y1:pos1.y, x2:pos2.x, y2:pos2.y};
+	}
+},
+
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	numberAsObject : true,
-
-	maxnum : 2,
-
-	getlinesize : function(id){
-		var bx=this.border[id].bx, by=this.border[id].by;
-		var d = {x1:bx, x2:bx, y1:by, y2:by};
-		if(this.isVert(id)){
-			while(d.x1>this.minbx && this.noNum(this.cnum(d.x1-1,by))){d.x1-=2;}
-			while(d.x2<this.maxbx && this.noNum(this.cnum(d.x2+1,by))){d.x2+=2;}
-		}
-		else{
-			while(d.y1>this.minby && this.noNum(this.cnum(bx,d.y1-1))){d.y1-=2;}
-			while(d.y2<this.maxby && this.noNum(this.cnum(bx,d.y2+1))){d.y2+=2;}
-		}
-		return d;
-	}
+	isborder : 1
 },
 
 LineManager:{
@@ -182,7 +183,7 @@ AnsCheck:{
 			this.setAlert('黒丸同士が繋がっています。','Two black circles are connected.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.isNum(c) && bd.lines.lcntCell(c)===0);} ) ){
+		if( !this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()===0);} ) ){
 			this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 		}
 
@@ -192,16 +193,17 @@ AnsCheck:{
 	checkWBcircle : function(linfo,val){
 		var result = true;
 		for(var r=1;r<=linfo.max;r++){
-			if(linfo.room[r].idlist.length<=1){ continue;}
+			var clist = linfo.getclist(r);
+			if(clist.length<=1){ continue;}
 
-			var tip1 = linfo.room[r].idlist[0];
-			var tip2 = linfo.room[r].idlist[linfo.room[r].idlist.length-1];
-			if(bd.QnC(tip1)!==val || bd.QnC(tip2)!==val){ continue;}
+			var tip1 = clist[0], tip2 = clist[clist.length-1];
+			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.sErBAll(2);}
-			bd.setErrLareaById(linfo,r,1);
-			bd.sErC([tip1,tip2],1);
+			if(result){ bd.border.seterr(2);}
+			linfo.setErrLareaById(r,1);
+			tip1.seterr(1);
+			tip2.seterr(1);
 			result = false;
 		}
 		return result;

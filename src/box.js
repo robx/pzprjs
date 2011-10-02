@@ -13,20 +13,20 @@ MouseEvent:{
 	},
 
 	clickexcell : function(){
-		var ec = this.excellid();
-		if(ec===null){ return;}
+		var excell = this.getexcell();
+		if(excell.isnull){ return;}
 
-		var ec0 = tc.getTEC();
-		if(ec!==ec0){
-			tc.setTEC(ec);
-			pc.paintEXcell(ec0);
+		var excell0 = tc.getTEC();
+		if(excell!==excell0){
+			tc.setTEC(excell);
+			pc.paintEXCell(excell0);
 		}
 		else{
-			var qn = bd.QnE(ec), max=bd.nummaxfunc(ec);
-			if(this.btn.Left){ bd.sQnE(ec,(qn!==max ? qn+1 : 0));}
-			else if(this.btn.Right){ bd.sQnE(ec,(qn!==0 ? qn-1 : max));}
+			var qn = excell.getQnum(), max=excell.nummaxfunc();
+			if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
+			else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 		}
-		pc.paintEXcell(ec);
+		pc.paintEXCell(excell);
 
 		this.mousereset();
 		return true;
@@ -38,7 +38,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var cc0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
 		switch(ca){
 			case this.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
 			case this.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
@@ -47,8 +47,8 @@ KeyEvent:{
 		}
 
 		if(flag){
-			pc.paintEXcell(cc0);
-			pc.paintEXcell(tc.getTEC());
+			pc.paintEXCell(excell0);
+			pc.paintEXCell(tc.getTEC());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -58,56 +58,56 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var ec = tc.getTEC();
-		var max = bd.nummaxfunc(ec);
+		var excell = tc.getTEC(), qn = excell.getQnum();
+		var max = excell.nummaxfunc();
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 
-			if(bd.QnE(ec)<=0 || this.prev!=ec){
-				if(num<=max){ bd.sQnE(ec,num);}
+			if(qn<=0 || this.prev!==excell){
+				if(num<=max){ excell.setQnum(num);}
 			}
 			else{
-				if(bd.QnE(ec)*10+num<=max){ bd.sQnE(ec,bd.QnE(ec)*10+num);}
-				else if(num<=max){ bd.sQnE(ec,num);}
+				if(qn*10+num<=max){ excell.setQnum(qn*10+num);}
+				else if (num<=max){ excell.setQnum(num);}
 			}
 		}
-		else if(ca==' ' || ca=='-'){ bd.sQnE(ec,0);}
+		else if(ca==' ' || ca=='-'){ excell.setQnum(0);}
 		else{ return;}
 
-		this.prev = ec;
-		pc.paintEXcell(tc.getTEC());
+		this.prev = excell;
+		pc.paintEXCell(tc.getTEC());
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(0);
+		this.setTEC(bd.excell[0]);
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
 EXCell:{
-	qnum : 0
+	qnum : 0,
+
+	disInputHatena : true,
+
+	nummaxfunc : function(){
+		var bx=this.bx, by=this.by, cnt;
+		if(bx===-1 && by===-1){ return;}
+		var sum=0;
+		for(var n=(bx===-1?bd.qrows:bd.qcols);n>0;n--){ sum+=n;}
+		return sum;
+	},
+	minnum : 0
 },
 
 Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isexcell : 1,
-
-	disInputHatena : true,
-
-	nummaxfunc : function(ec){
-		var bx=this.excell[ec].bx, by=this.excell[ec].by, cnt;
-		if(bx===-1 && by===-1){ return;}
-		var sum=0;
-		for(var n=(bx===-1?this.qrows:this.qcols);n>0;n--){ sum+=n;}
-		return sum;
-	},
-	minnum : 0
+	isexcell : 1
 },
 
 MenuExec:{
@@ -116,29 +116,29 @@ MenuExec:{
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.QnE(bd.exnum(-1,by));}
-		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.QnE(bd.exnum(bx,-1));}
+		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).getQnum();}
+		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).getQnum();}
 	},
 	adjustBoardData2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
 
 		switch(key){
 		case this.FLIPY: // 上下反転
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.sQnE(bd.exnum(bx,-1), this.qnumh[bx]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumh[bx]);}
 			break;
 
 		case this.FLIPX: // 左右反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.sQnE(bd.exnum(-1,by), this.qnumw[by]);}
+			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumw[by]);}
 			break;
 
 		case this.TURNR: // 右90°反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.sQnE(bd.exnum(-1,by), this.qnumh[by]);}
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.sQnE(bd.exnum(bx,-1), this.qnumw[xx-bx]);}
+			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[by]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[xx-bx]);}
 			break;
 
 		case this.TURNL: // 左90°反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by]);}
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.sQnE(bd.exnum(bx,-1), this.qnumw[bx]);}
+			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[yy-by]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[bx]);}
 			break;
 		}
 	}
@@ -178,45 +178,44 @@ Graphic:{
 		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i], obj = bd.excell[c], key="excell_"+c;
-			if(c>=bd.qcols+bd.qrows){ continue;}
+			var excell = exlist[i], key="excell_"+excell.id;
+			if(excell.id>=bd.qcols+bd.qrows){ continue;}
 
-			if(obj.bx===-1 && obj.by===-1){ continue;}
-			var color = (obj.error!==1 ? this.fontcolor : this.fontErrcolor);
-			var fontratio = (obj.qnum<10?0.8:0.7);
-			var px = this.excell[c].rpx + this.bw, py = this.excell[c].rpy + this.bh;
-			this.dispnum(key, 1, ""+obj.qnum, fontratio, color, px, py);
+			if(excell.bx===-1 && excell.by===-1){ continue;}
+			var color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
+			var fontratio = (excell.qnum<10?0.8:0.7);
+			this.dispnum(key, 1, ""+excell.qnum, fontratio, color, excell.px, excell.py);
 		}
 	},
 
 	drawCircledNumbers_box : function(){
-		var exlist = [];
+		var list = [];
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ exlist.push([bd.maxbx+1,by]);}}
-		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ exlist.push([bx,bd.maxby+1]);}}
+		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ list.push([bd.maxbx+1,by]);}}
+		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ list.push([bx,bd.maxby+1]);}}
 
 		var g = this.vinc('excell_circle', 'auto');
 		var header = "ex2_cir_", rsize  = this.cw*0.36;
 		g.fillStyle   = this.circledcolor;
 		g.strokeStyle = this.cellcolor;
-		for(var i=0;i<exlist.length;i++){
-			var num = ((exlist[i][0]!==bd.maxbx+1 ? exlist[i][0] : exlist[i][1])+1)>>1;
+		for(var i=0;i<list.length;i++){
+			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
 			if(num<=0){ continue;}
 
-			if(this.vnop([header,exlist[i][0],exlist[i][1]].join("_"),this.NONE)){
-				g.shapeCircle(exlist[i][0]*this.bw, exlist[i][1]*this.bh, rsize);
+			if(this.vnop([header,list[i][0],list[i][1]].join("_"),this.NONE)){
+				g.shapeCircle(list[i][0]*this.bw, list[i][1]*this.bh, rsize);
 			}
 		}
 
 		var g = this.vinc('excell_number2', 'auto');
 		var key = "ex2_cir_";
-		for(var i=0;i<exlist.length;i++){
-			var num = ((exlist[i][0]!==bd.maxbx+1 ? exlist[i][0] : exlist[i][1])+1)>>1;
+		for(var i=0;i<list.length;i++){
+			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
 			if(num<=0){ continue;}
 
-			var key = [header,exlist[i][0],exlist[i][1]].join("_");
+			var key = [header,list[i][0],list[i][1]].join("_");
 			var fontratio = (num<10?0.7:0.6);
-			this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, exlist[i][0]*this.bw, exlist[i][1]*this.bh);
+			this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, list[i][0]*this.bw, list[i][1]*this.bh);
 		}
 	}
 },
@@ -263,32 +262,32 @@ FileIO:{
 			if(ca=="."){ continue;}
 
 			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
-			var ec = bd.exnum(bx,by);
-			if(ec!==null){
-				bd.excell[ec].qnum = parseInt(ca);
+			var excell = bd.getex(bx,by);
+			if(!excell.isnull){
+				excell.qnum = parseInt(ca);
 			}
 
-			var c = bd.cnum(bx,by);
-			if(c!==null){
-				if     (ca==="#"){ bd.cell[c].qans = 1;}
-				else if(ca==="+"){ bd.cell[c].qsub = 1;}
+			var cell = bd.getc(bx,by);
+			if(!cell.isnull){
+				if     (ca==="#"){ cell.qans = 1;}
+				else if(ca==="+"){ cell.qsub = 1;}
 			}
 		}
 	},
 	encodeData : function(){
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
-				var ec = bd.exnum(bx,by);
-				if(ec!==null){
-					this.datastr += (bd.excell[ec].qnum.toString()+" ");
+				var excell = bd.getex(bx,by);
+				if(!excell.isnull){
+					this.datastr += (excell.qnum.toString()+" ");
 					continue;
 				}
 
-				var c = bd.cnum(bx,by);
-				if(c!==null){
-					if     (bd.cell[c].qans===1){ this.datastr += "# ";}
-					else if(bd.cell[c].qsub===1){ this.datastr += "+ ";}
-					else                        { this.datastr += ". ";}
+				var cell = bd.getc(bx,by);
+				if(!cell.isnull){
+					if     (cell.qans===1){ this.datastr += "# ";}
+					else if(cell.qsub===1){ this.datastr += "+ ";}
+					else                  { this.datastr += ". ";}
 					continue;
 				}
 
@@ -314,27 +313,29 @@ AnsCheck:{
 	checkBlackCells : function(type){
 		var result = true;
 		for(var ec=0;ec<bd.excellmax;ec++){
-			var qn=bd.QnE(ec), bx=bd.excell[ec].bx, by=bd.excell[ec].by, val=0, clist=[];
+			var excell = bd.excell[ec];
+			var qn=excell.getQnum(), bx=excell.bx, by=excell.by, val=0;
+			var clist=new pzprv3.core.PieceList(this.owner);
 			if(by===-1 && bx>0 && bx<2*bd.qcols){
 				for(var y=1;y<2*bd.qrows;y+=2){
-					var c = bd.cnum(bx,y);
-					if(bd.cell[c].qans===1){ val+=((y+1)>>1);}
-					clist.push(c);
+					var cell = bd.getc(bx,y);
+					if(cell.qans===1){ val+=((y+1)>>1);}
+					clist.add(cell);
 				}
 			}
 			else if(bx===-1 && by>0 && by<2*bd.qrows){
 				for(var x=1;x<2*bd.qcols;x+=2){
-					var c = bd.cnum(x,by);
-					if(bd.cell[c].qans===1){ val+=((x+1)>>1);}
-					clist.push(c);
+					var cell = bd.getc(x,by);
+					if(cell.qans===1){ val+=((x+1)>>1);}
+					clist.add(cell);
 				}
 			}
 			else{ continue;}
 
 			if(qn!==val){
 				if(this.inAutoCheck){ return false;}
-				bd.sErE([ec],1);
-				bd.sErC(clist,1);
+				excell.seterr(1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

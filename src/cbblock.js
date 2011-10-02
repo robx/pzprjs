@@ -21,7 +21,14 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Border:{
-	ques : 1
+	ques : 1,
+
+	enableLineNG : true,
+
+	// 線を引かせたくないので上書き
+	isLineNG : function(){ return (this.ques===1);},
+
+	isGround : function(){ return (this.ques>0);}
 },
 
 Board:{
@@ -31,47 +38,39 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	// 線を引かせたくないので上書き
-	enableLineNG : true,
-	isLineNG : function(id){ return (this.border[id].ques===1);},
-
-	isGround : function(id){
-		return (!!this.border[id] && this.border[id].ques>0);
-	},
-
 	getBlockInfo : function(){
 		var tinfo = new this.owner.classes.AreaTileData(this.owner).getAreaInfo();
 		var cinfo = new this.owner.classes.AreaTile2Data(this.owner).getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
-			var d=[], cnt=0, room=cinfo.room[r], clist=room.idlist;
-			room.size = room.idlist.length;
+			var d=[], cnt=0, clist=cinfo.getclist(r);
+			cinfo.room[r].size = clist.length;
 
 			for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
-			for(var i=0,len=room.size;i<len;i++){
-				d[ tinfo.id[clist[i]] ]++;
+			for(var i=0;i<clist.length;i++){
+				d[ tinfo.getRoomID(clist[i]) ]++;
 			}
 			for(var i=1;i<=tinfo.max;i++){ if(d[i]>0){ cnt++;}}
-			room.dotcnt = cnt;
+			cinfo.room[r].dotcnt = cnt;
 		}
 		return cinfo;
 	},
 
 	getBlockShapes : function(cinfo, r){
-		var d=this.getSizeOfClist(cinfo.room[r].idlist);
+		var d=cinfo.getclist(r).getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
 		var shapes={cols:d.cols, rows:d.rows, data:[]};
 
 		for(var by=0;by<2*d.rows;by+=2){
 			for(var bx=0;bx<2*d.cols;bx+=2){
-				data[0].push((cinfo.id[this.cnum(d.x1+bx,d.y1+by)]===r?1:0));
-				data[1].push((cinfo.id[this.cnum(d.x1+bx,d.y2-by)]===r?1:0));
+				data[0].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y1+by))===r?1:0);
+				data[1].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y2-by))===r?1:0);
 			}
 		}
 		for(var bx=0;bx<2*d.cols;bx+=2){
 			for(var by=0;by<2*d.rows;by+=2){
-				data[4].push((cinfo.id[this.cnum(d.x1+bx,d.y1+by)]===r?1:0));
-				data[5].push((cinfo.id[this.cnum(d.x1+bx,d.y2-by)]===r?1:0));
+				data[4].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y1+by))===r?1:0);
+				data[5].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y2-by))===r?1:0);
 			}
 		}
 		data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
@@ -82,11 +81,11 @@ Board:{
 },
 
 "AreaTileData:AreaBorderData":{
-	bdfunc : function(id){ return !bd.isGround(id);}
+	bdfunc : function(border){ return !border.isGround();}
 },
 
 "AreaTile2Data:AreaBorderData":{
-	bdfunc : function(id){ return bd.border[id].qans>0;}
+	bdfunc : function(border){ return border.qans>0;}
 },
 
 //---------------------------------------------------------
@@ -113,8 +112,8 @@ Graphic:{
 	// オーバーライド
 	getBorderColor : function(border){
 		if(border.ques===1){
-			var cc2=border.cellcc[1];
-			return ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
+			var cell2=border.sidecell[1];
+			return ((cell2.isnull || cell2.error===0) ? this.borderQuescolor : this.errbcolor1);
 		}
 		else if(border.qans===1){
 			return this.borderQanscolor;
@@ -150,7 +149,7 @@ Encode:{
 	encodeCBBlock : function(){
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=bd.bdmax;id<max;id++){
-			if(bd.isGround(id)){ pass+=twi[num];} num++;
+			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
@@ -213,7 +212,7 @@ AnsCheck:{
 			var cnt=cinfo.room[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(cinfo.room[r].idlist,1);
+				cinfo.getclist(r).seterr(1);
 				result = false;
 			}
 		}
@@ -232,8 +231,8 @@ AnsCheck:{
 
 				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC(cinfo.room[r].idlist,1);
-					bd.sErC(cinfo.room[s].idlist,1);
+					cinfo.getclist(r).seterr(1);
+					cinfo.getclist(s).seterr(1);
 					result = false;
 				}
 			}

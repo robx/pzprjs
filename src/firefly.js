@@ -11,7 +11,7 @@ MouseEvent:{
 			this.inputdirec();
 		}
 		else if(this.mouseend){
-			if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+			if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
 		}
 	},
 	inputplay : function(){
@@ -42,10 +42,11 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	minnum : 0
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -102,36 +103,36 @@ Graphic:{
 		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var cell = clist[i], id = cell.id;
 
-			if(bd.cell[c].qnum!=-1){
-				var px=this.cell[c].px, py=this.cell[c].py;
+			if(cell.qnum!==-1){
+				var px=cell.px, py=cell.py;
 
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[0]+c,this.FILL)){
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(headers[0]+id,this.FILL)){
 					g.shapeCircle(px, py, rsize);
 				}
 
-				this.vdel([headers[1]+c]);
-				if(bd.cell[c].qdir!=0){
+				this.vdel([headers[1]+id]);
+				if(cell.qdir!==0){
 					g.fillStyle = this.cellcolor;
-					switch(bd.cell[c].qdir){
+					switch(cell.qdir){
 						case bd.UP: py-=(rsize-1); break;
 						case bd.DN: py+=(rsize-1); break;
 						case bd.LT: px-=(rsize-1); break;
 						case bd.RT: px+=(rsize-1); break;
 					}
-					if(this.vnop(headers[1]+c,this.NONE)){
+					if(this.vnop(headers[1]+id,this.NONE)){
 						g.fillCircle(px, py, rsize3);
 					}
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+			else{ this.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.drawFireflies();
 		this.drawNumbers();
@@ -204,17 +205,18 @@ AnsCheck:{
 
 	checkLcntCell_firefly : function(val){
 		if(bd.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(c){ return (bd.noNum(c) && bd.lines.lcntCell(c)==val);});
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
 	},
 	checkFireflyBeam : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.noNum(c) || bd.DiC(c)==0){ continue;}
-			if((bd.DiC(c)==bd.UP && !bd.isLine(bd.ub(c))) || (bd.DiC(c)==bd.DN && !bd.isLine(bd.db(c))) ||
-			   (bd.DiC(c)==bd.LT && !bd.isLine(bd.lb(c))) || (bd.DiC(c)==bd.RT && !bd.isLine(bd.rb(c))) )
+			var cell = bd.cell[c], dir=cell.getQdir();
+			if(cell.noNum() || dir===0){ continue;}
+			if((dir===bd.UP && !cell.ub().isLine()) || (dir===bd.DN && !cell.db().isLine()) ||
+			   (dir===bd.LT && !cell.lb().isLine()) || (dir===bd.RT && !cell.rb().isLine()) )
 			{
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}
@@ -223,16 +225,16 @@ AnsCheck:{
 
 	isErrorFlag_line : function(xinfo){
 		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var c1=room.cells[0], c2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
+		var cell1=room.cells[0], cell2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
 
 		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=bd.DiC(c1), qd2=(c2!==null?bd.DiC(c2):bd.NDIR), qn=-1, err=0;
-		if((dir1===qd1)^(dir2===qd2)){ qn=bd.QnC((dir1===qd1)?c1:c2);}
+		var qd1=cell1.getQdir(), qd2=(!cell2.isnull?cell2.getQdir():bd.NDIR), qn=-1, err=0;
+		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1?cell1:cell2).getQnum();}
 
-		if     (c2!==null && (dir1===qd1) && (dir2===qd2)){ err=4;}
-		else if(c2!==null && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
-		else if(c2!==null && qn>=0 && qn!==ccnt){ err=2; room.cells[1]=null;}
-		else if(c2===null){ err=1;}
+		if     (!cell2.isnull && (dir1===qd1) && (dir2===qd2)){ err=4;}
+		else if(!cell2.isnull && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
+		else if(!cell2.isnull && qn>=0 && qn!==ccnt){ err=2; room.cells=[cell1];}
+		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
 }

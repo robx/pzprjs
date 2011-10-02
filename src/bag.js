@@ -25,24 +25,24 @@ MouseEvent:{
 		return this.borderpos(0.25).oncell();
 	},
 	inputBGcolor : function(isnormal){
-		var cc = this.cellid();
-		if(cc===null || cc==this.mouseCell){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
 			if(isnormal || this.btn.Left){
-				if     (bd.cell[cc].qsub===0){ this.inputData=11;}
-				else if(bd.cell[cc].qsub===1){ this.inputData=12;}
-				else                         { this.inputData=10;}
+				if     (cell.qsub===0){ this.inputData=11;}
+				else if(cell.qsub===1){ this.inputData=12;}
+				else                  { this.inputData=10;}
 			}
 			else{
-				if     (bd.cell[cc].qsub===0){ this.inputData=12;}
-				else if(bd.cell[cc].qsub===1){ this.inputData=10;}
-				else                         { this.inputData=11;}
+				if     (cell.qsub===0){ this.inputData=12;}
+				else if(cell.qsub===1){ this.inputData=10;}
+				else                  { this.inputData=11;}
 			}
 		}
-		bd.sQsC(cc, this.inputData-10);
-		pc.paintCell(cc);
+		cell.setQsub(this.inputData-10);
+		pc.paintCell(cell);
 
-		this.mouseCell = cc; 
+		this.mouseCell = cell;
 	}
 },
 
@@ -57,24 +57,26 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 2,
-
-	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, this.qcols+this.qrows-1);
+Cell:{
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, bd.qcols+bd.qrows-1);
 	},
 	minnum : 2,
 
-	getInsideArea : function(){
-		var icheck = [];
-		icheck[0]=(this.lines.lcntCell(0)!==0);
+	inside : false /* 正答判定用 */
+},
+
+Board:{
+	isborder : 2,
+
+	searchInsideArea : function(){
+		this.cell[0].inside = (this.getx(0,0).lcnt()!==0);
 		for(var by=1;by<this.maxby;by+=2){
-			if(by>1){ icheck[this.cnum(1,by)] = !!(icheck[this.cnum(1,by-2)] ^ this.isLine(this.bnum(1,by-1)));}
+			if(by>1){ this.getc(1,by).inside = !!(this.getc(1,by-2).inside ^ this.getb(1,by-1).isLine());}
 			for(var bx=3;bx<this.maxbx;bx+=2){
-				icheck[this.cnum(bx,by)] = !!(icheck[this.cnum(bx-2,by)] ^ this.isLine(this.bnum(bx-1,by)));
+				this.getc(bx,by).inside = !!(this.getc(bx-2,by).inside ^ this.getb(bx-1,by).isLine());
 			}
 		}
-		return icheck;
 	}
 },
 
@@ -168,49 +170,33 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		var icheck = bd.getInsideArea();
-		if( !this.checkNumberInside(icheck) ){
+		bd.searchInsideArea();
+		if( !this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}) ){
 			this.setAlert('輪の内側に入っていない数字があります。','There is an outside number.'); return false;
 		}
-		if( !this.checkCellNumber(icheck) ){
+		if( !this.checkCellNumber() ){
 			this.setAlert('数字と輪の内側になる4方向のマスの合計が違います。','The number and the sum of the inside cells of four direction is different.'); return false;
 		}
 
 		return true;
 	},
 
-	checkNumberInside : function(icheck){
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(!icheck[c] && bd.isNum(c)){
-				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				result = false;
-			}
-		}
-		return result;
-	},
 	checkCellNumber : function(icheck){
 		var result = true;
 		for(var cc=0;cc<bd.cellmax;cc++){
-			if(!bd.isValidNum(cc)){ continue;}
+			var cell=bd.cell[cc];
+			if(!cell.isValidNum()){ continue;}
 
-			var list = [];
-			list.push(cc);
-			var cnt = 1;
-			var tx, ty;
-			tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-			while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx-=2;} else{ break;} }
-			tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-			while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); tx+=2;} else{ break;} }
-			tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-			while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty-=2;} else{ break;} }
-			tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-			while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(icheck[c]){ cnt++; list.push(c); ty+=2;} else{ break;} }
+			var clist = new pzprv3.core.PieceList(this.owner), target;
+			clist.add(cell);
+			target=cell.lt(); while(!target.isnull && target.inside){ clist.add(target); target = target.lt();}
+			target=cell.rt(); while(!target.isnull && target.inside){ clist.add(target); target = target.rt();}
+			target=cell.up(); while(!target.isnull && target.inside){ clist.add(target); target = target.up();}
+			target=cell.dn(); while(!target.isnull && target.inside){ clist.add(target); target = target.dn();}
 
-			if(bd.QnC(cc)!==cnt){
+			if(cell.getQnum()!==clist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(list,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

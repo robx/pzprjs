@@ -94,20 +94,21 @@ pzprv3.createCommonClass('AnsCheck',
 	checkAllCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(func(c)){
+			var cell = bd.cell[c];
+			if(func(cell)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}
 		return result;
 	},
 	checkNoNumCell : function(){
-		return this.checkAllCell( function(c){ return bd.noNum(c);} );
+		return this.checkAllCell( function(cell){ return cell.noNum();} );
 	},
 	checkIceLines : function(){
-		return this.checkAllCell( function(c){
-			return (bd.lines.lcntCell(c)===2 && bd.QuC(c)===6 && !bd.isLineStraight(c));
+		return this.checkAllCell( function(cell){
+			return (cell.lcnt()===2 && cell.ice() && !cell.isLineStraight());
 		});
 	},
 
@@ -119,11 +120,12 @@ pzprv3.createCommonClass('AnsCheck',
 	checkDir4Cell : function(iscount, type){ // 0:違う 1:numより小さい 2:numより大きい
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isValidNum(c)){ continue;}
-			var num = bd.getNum(c), count=bd.countDir4Cell(c,iscount);
+			var cell = bd.cell[c];
+			if(!cell.isValidNum()){ continue;}
+			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
 			if((type!==1 && num<count) || (type!==2 && num>count)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}
@@ -133,14 +135,17 @@ pzprv3.createCommonClass('AnsCheck',
 	checkSideCell : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && func(c,bd.rt(c))){
+			var cell = bd.cell[c];
+			if(cell.bx<bd.maxbx-1 && func(cell,cell.rt())){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,bd.rt(c)],1);
+				cell.seterr(1);
+				cell.rt().seterr(1);
 				result = false;
 			}
-			if(bd.cell[c].by<bd.maxby-1 && func(c,bd.dn(c))){
+			if(cell.by<bd.maxby-1 && func(cell,cell.dn())){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,bd.dn(c)],1);
+				cell.seterr(1);
+				cell.dn().seterr(1);
 				result = false;
 			}
 		}
@@ -150,13 +155,14 @@ pzprv3.createCommonClass('AnsCheck',
 	check2x2Block : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-1 && bd.cell[c].by<bd.maxby-1){
-				var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
+			var cell = bd.cell[c];
+			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
+				var cnt=0, bx=cell.bx, by=cell.by;
 				var clist = bd.cellinside(bx, by, bx+2, by+2);
 				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
 				if(cnt===4){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC(clist,1);
+					clist.seterr(1);
 					result = false;
 				}
 			}
@@ -172,8 +178,8 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
-			if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(cinfo,1,1); }
-			if(!this.performAsLine || this.owner.pid=="firefly"){ bd.sErC(cinfo.room[1].idlist,1);}
+			if(this.performAsLine){ bd.border.seterr(2); cinfo.setErrLareaByCell(bd.cell[1],1); }
+			if(!this.performAsLine || this.owner.pid=="firefly"){ cinfo.getclist(1).seterr(1);}
 			return false;
 		}
 		return true;
@@ -182,8 +188,8 @@ pzprv3.createCommonClass('AnsCheck',
 	checkOneLoop : function(){
 		var xinfo = bd.lines.getLineInfo();
 		if(xinfo.max>1){
-			bd.sErBAll(2);
-			bd.sErB(xinfo.room[1].idlist,1);
+			bd.border.seterr(2);
+			xinfo.getblist(1).seterr(1);
 			return false;
 		}
 		return true;
@@ -193,10 +199,11 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		if(bd.lines.ltotal[val]==0){ return true;}
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.lines.lcnt[c]==val){
+			var cell = bd.cell[c];
+			if(cell.lcnt()==val){
 				if(this.inAutoCheck){ return false;}
-				if(!this.performAsLine){ bd.sErC([c],1);}
-				else{ if(result){ bd.sErBAll(2);} bd.setCellLineError(c,true);}
+				if(!this.performAsLine){ cell.seterr(1);}
+				else{ if(result){ bd.border.seterr(2);} cell.setCellLineError(true);}
 				result = false;
 			}
 		}
@@ -206,13 +213,14 @@ pzprv3.createCommonClass('AnsCheck',
 	checkenableLineParts : function(val){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if( (bd.isLine(bd.ub(c)) && bd.noLP(c,bd.UP)) ||
-				(bd.isLine(bd.db(c)) && bd.noLP(c,bd.DN)) ||
-				(bd.isLine(bd.lb(c)) && bd.noLP(c,bd.LT)) ||
-				(bd.isLine(bd.rb(c)) && bd.noLP(c,bd.RT)) )
+			var cell = bd.cell[c];
+			if( (cell.ub().isLine() && cell.noLP(bd.UP)) ||
+				(cell.db().isLine() && cell.noLP(bd.DN)) ||
+				(cell.lb().isLine() && cell.noLP(bd.LT)) ||
+				(cell.rb().isLine() && cell.noLP(bd.RT)) )
 			{
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}
@@ -224,18 +232,17 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
-			var errclist = [];
-			for(var c=0;c<bd.cellmax;c++){
-				if(!bd.isBlack(c)){ continue;}
-
-				var clist=bd.getdir4clist(c), fid=null;
-				for(var i=0;i<clist.length;i++){
-					var cc=clist[i][0];
-					if(fid===null){ fid=winfo.id[cc];}
-					else if(fid!==winfo.id[cc]){ errclist.push(c); break;}
+			var errclist = new pzprv3.core.PieceList(this.owner);
+			var clist = bd.cell.filter(function(cell){ return cell.isBlack();});
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], list=cell.getdir4clist(), fid=null;
+				for(var n=0;n<list.length;n++){
+					var cell2=list[n][0];
+					if(fid===null){ fid=winfo.getRoomID(cell2);}
+					else if(fid!==winfo.getRoomID(cell2)){ errclist.add(cell); break;}
 				}
 			}
-			bd.sErC(errclist,1);
+			errclist.seterr(1);
 			return false;
 		}
 		return true;
@@ -258,21 +265,20 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
 	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
 	//---------------------------------------------------------------------------
-	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return true;}, evalfunc);},
+	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return true;}, evalfunc);},
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var clist = cinfo.room[id].idlist;
-			var d = bd.getSizeOfClist(clist,func);
+			var clist = cinfo.getclist(id), d = clist.getRectSize();
 			var a = (function(){ var cnt=0; for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}} return cnt;})();
 
-			var cc = (bd.areas.roomNumber ? bd.areas.rinfo.getTopOfRoomByCell(clist[0]) : bd.getQnumCellOfClist(clist));
-			var n = (cc!==null?bd.QnC(cc):-1);
+			var cell = (bd.areas.roomNumber ? bd.areas.rinfo.getTopOfRoom(id) : clist.getQnumCell());
+			var n = (!cell.isnull?cell.getQnum():-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.inAutoCheck){ return false;}
-				if(this.performAsLine){ if(result){ bd.sErBAll(2);} bd.setErrLareaById(cinfo,id,1);}
-				else{ bd.sErC(clist,(this.owner.pid!="tateyoko"?1:4));}
+				if(this.performAsLine){ if(result){ bd.border.seterr(2);} cinfo.setErrLareaById(id,1);}
+				else{ clist.seterr(this.owner.pid!="tateyoko"?1:4);}
 				result = false;
 			}
 		}
@@ -282,17 +288,17 @@ pzprv3.createCommonClass('AnsCheck',
 	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (n<=0 || n===a);} );},
 	checkAreaRect        : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h===a)}      );},
 
-	checkDisconnectLine  : function(linfo){ return this.checkAllBlock(linfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (n!=-1 || a>0); }  );},
+	checkDisconnectLine  : function(linfo){ return this.checkAllBlock(linfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (n!=-1 || a>0); }  );},
 
-	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a!=0);} );},
-	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a< 2);} );},
-	checkTripleNumber    : function(linfo){ return this.checkAllBlock(linfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a< 3);} );},
+	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!=0);} );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 2);} );},
+	checkTripleNumber    : function(linfo){ return this.checkAllBlock(linfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 3);} );},
 
-	checkBlackCellCount  : function(cinfo)          { return this.checkAllBlock(cinfo, function(c){ return bd.isBlack(c);}, function(w,h,a,n){ return (n<0 || n===a);});},
-	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return bd.isBlack(c);}, function(w,h,a,n){ return evalfunc(a);}   );},
+	checkBlackCellCount  : function(cinfo)          { return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkBlackCellInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return evalfunc(a);}   );},
 
-	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(c){ return bd.lines.lcnt[c]>0;}, evalfunc);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(c){ return getvalue(c)!==-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.lcnt()>0;}, evalfunc);},
+	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(cell){ return getvalue(cell)!==-1;}, function(w,h,a,n){ return (a!=0);});},
 
 	//---------------------------------------------------------------------------
 	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
@@ -304,8 +310,8 @@ pzprv3.createCommonClass('AnsCheck',
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
 				if(a1>0 && a2>0 && a1==a2){
-					bd.sErC(rinfo.room[r].idlist,1);
-					bd.sErC(rinfo.room[s].idlist,1);
+					rinfo.getclist(r).seterr(1);
+					rinfo.getclist(s).seterr(1);
 					return false;
 				}
 			}
@@ -315,13 +321,14 @@ pzprv3.createCommonClass('AnsCheck',
 
 	checkSideAreaCell : function(rinfo, func, flag){
 		for(var id=0;id<bd.bdmax;id++){
-			if(!bd.isBorder(id)){ continue;}
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==null && cc2!==null && func(cc1, cc2)){
-				if(!flag){ bd.sErC([cc1,cc2],1);}
+			var border = bd.border[id];
+			if(!border.isBorder()){ continue;}
+			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			if(!cell1.isnull && !cell2.isnull && func(cell1, cell2)){
+				if(!flag){ cell1.seterr(1); cell2.seterr(1);}
 				else{
-					 bd.sErC(bd.areas.rinfo[bd.areas.rinfo.id[cc1]].clist,1);
-					 bd.sErC(bd.areas.rinfo[bd.areas.rinfo.id[cc2]].clist,1);
+					rinfo.getclistbycell(cell1).seterr(1);
+					rinfo.getclistbycell(cell2).seterr(1);
 				}
 				return false;
 			}
@@ -339,12 +346,12 @@ pzprv3.createCommonClass('AnsCheck',
 	checkSeqBlocksInRoom : function(){
 		var result = true;
 		var dataobj = new pzprv3.core.AreaData(this.owner);
-		for(var id=1;id<=bd.areas.rinfo.max;id++){
-			dataobj.isvalid = function(c){ return (bd.areas.rinfo.id[c]===id && bd.isBlack(c));};
+		for(var r=1;r<=bd.areas.rinfo.max;r++){
+			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
 			dataobj.reset();
 			if(dataobj.getAreaInfo().max>1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(bd.areas.rinfo[id].clist,1);
+				bd.areas.rinfo.getClist(r).seterr(1);
 				result = false;
 			}
 		}
@@ -353,7 +360,7 @@ pzprv3.createCommonClass('AnsCheck',
 
 	checkSameObjectInRoom : function(rinfo, getvalue){
 		var result=true, d=[], val=[];
-		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c);}
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]);}
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(rinfo.id[c]===null || val[c]===-1){ continue;}
@@ -361,14 +368,8 @@ pzprv3.createCommonClass('AnsCheck',
 			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.inAutoCheck){ return false;}
 
-				if(this.performAsLine){ bd.sErBAll(2); bd.setErrLareaByCell(rinfo,c,1);}
-				else{ bd.sErC(rinfo.room[rinfo.id[c]].idlist,1);}
-				if(this.owner.pid=="kaero"){
-					for(var cc=0;cc<bd.cellmax;cc++){
-						if(rinfo.id[c]===rinfo.id[cc] && this.getBeforeCell(cc)!==null && rinfo.id[c]!==rinfo.id[this.getBeforeCell(cc)])
-							{ bd.sErC([this.getBeforeCell(cc)],4);}
-					}
-				}
+				if(this.performAsLine){ bd.border.seterr(2); rinfo.setErrLareaByCell(bd.cell[c],1);}
+				else{ rinfo.getclistbycell(bd.cell[c]).seterr(1);}
 				result = false;
 			}
 		}
@@ -376,18 +377,16 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 	checkGatheredObject : function(rinfo, getvalue){
 		var d=[], dmax=0, val=[];
-		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(c); if(dmax<val[c]){ dmax=val[c];} }
+		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(val[c]===-1){ continue;}
 			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
 			else if(d[val[c]]!==rinfo.id[c]){
-				var clist = [];
-				for(var cc=0;cc<bd.cellmax;cc++){
-					if(this.owner.pid=="kaero"){ if(val[c]===bd.QnC(cc)){ clist.push(cc);}}
-					else{ if(rinfo.id[c]===rinfo.id[cc] || d[val[c]]===rinfo.id[cc]){ clist.push(cc);} }
-				}
-				bd.sErC(clist,1);
+				bd.cell.filter((this.owner.pid==="kaero")
+					? function(cell){ return (val[c]===cell.getQnum());}
+					: function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}
+				).seterr(1);
 				return false;
 			}
 		}
@@ -396,10 +395,11 @@ pzprv3.createCommonClass('AnsCheck',
 
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
 		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			if(!this.isDifferentNumberInClist(rinfo.room[id].idlist, numfunc)){
+		for(var r=1;r<=rinfo.max;r++){
+			var clist = rinfo.getclist(r);
+			if(!this.isDifferentNumberInClist(clist, numfunc)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[id].idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -407,13 +407,13 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
 		var result = true, d = [], num = [];
-		var max = bd.nummaxfunc(clist[0]), bottom = bd.numminfunc(clist[0]);
+		var max = clist[0].nummaxfunc(), bottom = clist[0].numminfunc();
 		for(var n=bottom;n<=max;n++){ d[n]=0;}
-		for(var i=0;i<clist.length;i++){ num[clist[i]] = numfunc(clist[i]);}
+		for(var i=0;i<clist.length;i++){ num[clist[i].id] = numfunc(clist[i]);}
 
-		for(var i=0;i<clist.length;i++){ if(num[clist[i]]>=bottom){ d[num[clist[i]]]++;} }
+		for(var i=0;i<clist.length;i++){ if(num[clist[i].id]>=bottom){ d[num[clist[i].id]]++;} }
 		for(var i=0;i<clist.length;i++){
-			if(num[clist[i]]>=bottom && d[num[clist[i]]]>=2){ bd.sErC([clist[i]],1); result = false;}
+			if(num[clist[i].id]>=bottom && d[num[clist[i].id]]>=2){ clist[i].seterr(1); result = false;}
 		}
 		return result;
 	},
@@ -445,8 +445,8 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
-				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.cnum(tx,by))){ break;}}
-				if(!evalfunc.call(this, [bx-2,by,bd.RT], bd.cellinside(bx,by,tx-2,by))){
+				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
+				if(tx>bx && !evalfunc.call(this, [bx-2,by,bd.RT], bd.cellinside(bx,by,tx-2,by))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -455,8 +455,8 @@ pzprv3.createCommonClass('AnsCheck',
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
-				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.cnum(bx,ty))){ break;}}
-				if(!evalfunc.call(this, [bx,by-2,bd.DN], bd.cellinside(bx,by,bx,ty-2))){
+				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
+				if(ty>by && !evalfunc.call(this, [bx,by-2,bd.DN], bd.cellinside(bx,by,bx,ty-2))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -475,9 +475,9 @@ pzprv3.createCommonClass('AnsCheck',
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
 				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.rinfo.bdcnt[id]);
-				if(lcnts==val && (bp==0 || (bp==1&&bd.QnX(bd.xnum(bx,by))==1) || (bp==2&&bd.QnX(bd.xnum(bx,by))!=1) )){
+				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
 					if(this.inAutoCheck){ return false;}
-					if(result){ bd.sErBAll(2);}
+					if(result){ bd.border.seterr(2);}
 					bd.setCrossBorderError(bx,by);
 					result = false;
 				}
@@ -491,11 +491,11 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkErrorFlag_cell : function(rinfo, val){
 		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].error!==val){ continue;}
+		for(var r=1;r<=rinfo.max;r++){
+			if(rinfo.room[r].error!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			bd.sErC(rinfo.room[id].idlist,1);
+			rinfo.getclist(r).seterr(1);
 			result = false;
 		}
 		return result;
@@ -513,9 +513,11 @@ pzprv3.createCommonClass('AnsCheck',
 			if(xinfo.room[id].error!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			bd.sErC(xinfo.room[id].cells,1);
-			if(result){ bd.sErBAll(2);}
-			bd.sErB(xinfo.room[id].idlist,1);
+			var cells = xinfo.room[id].cells;
+			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
+			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
+			if(result){ bd.border.seterr(2);}
+			xinfo.getblist(id).seterr(1);
 			result = false;
 		}
 		return result;
@@ -523,24 +525,23 @@ pzprv3.createCommonClass('AnsCheck',
 
 	// 丸の場所で線を切り離して考える
 	getErrorFlag_line : function(){
-		var xinfo = new pzprv3.core.AreaInfo();
-		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.isLine(id)?0:null);}
+		var xinfo = new pzprv3.core.AreaBorderInfo(this.owner);
+		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.border[id].isLine()?0:null);}
 
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.noNum(c)){ continue;}
-
-			var bx=bd.cell[c].bx, by=bd.cell[c].by;
-			var dir4id = [bd.bnum(bx,by-1),bd.bnum(bx,by+1),bd.bnum(bx-1,by),bd.bnum(bx+1,by)];
+		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var dir4bd = [cell.ub(),cell.db(),cell.lb(),cell.rb()];
 			for(var a=0;a<4;a++){
-				var firstid = dir4id[a];
-				if(firstid==null||xinfo.id[firstid]!==0){ continue;}
+				var firstbd = dir4bd[a];
+				if(firstbd.isnull||!xinfo.emptyCell(bd.cell[firstbd])){ continue;}
 
 				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
 				xinfo.max++;
-				xinfo.room[xinfo.max] = {idlist:[],error:0,cells:[c,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
+				xinfo.room[xinfo.max] = {idlist:[],error:0,cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
 
 				this.searchErrorFlag_line(xinfo,xinfo.max);
-				if(xinfo.room[xinfo.max].idlist.length===0){ continue;}
+				if(xinfo.getblist(xinfo.max).length===0){ continue;}
 
 				this.isErrorFlag_line(xinfo);
 			}
@@ -548,29 +549,28 @@ pzprv3.createCommonClass('AnsCheck',
 		return xinfo;
 	},
 	searchErrorFlag_line : function(xinfo,areaid){
-		var room=xinfo.room[areaid], dir=room.dir1;
-		var pos = bd.cell[room.cells[0]].getaddr();
+		var room = xinfo.room[areaid], dir=room.dir1;
+		var pos = room.cells[0].getaddr();
 		while(1){
-			pos.move(dir);
+			pos.movedir(dir,1);
 			if(pos.oncell()){
-				var cc = pos.cellid();
-				if(cc===null || bd.isNum(cc)){ break;}
-				else if(bd.lines.iscrossing(cc) && bd.lines.lcntCell(cc)>=3){ }
-				else if(dir!==1 && bd.isLine(bd.db(cc))){ if(dir!==2){ room.ccnt++;} dir=2;}
-				else if(dir!==2 && bd.isLine(bd.ub(cc))){ if(dir!==1){ room.ccnt++;} dir=1;}
-				else if(dir!==3 && bd.isLine(bd.rb(cc))){ if(dir!==4){ room.ccnt++;} dir=4;}
-				else if(dir!==4 && bd.isLine(bd.lb(cc))){ if(dir!==3){ room.ccnt++;} dir=3;}
+				var cell = pos.getc();
+				if(cell.isnull || cell.isNum()){ break;}
+				else if(cell.iscrossing() && cell.lcnt()>=3){ }
+				else if(dir!==1 && cell.db().isLine()){ if(dir!==2){ room.ccnt++;} dir=2;}
+				else if(dir!==2 && cell.ub().isLine()){ if(dir!==1){ room.ccnt++;} dir=1;}
+				else if(dir!==3 && cell.rb().isLine()){ if(dir!==4){ room.ccnt++;} dir=4;}
+				else if(dir!==4 && cell.lb().isLine()){ if(dir!==3){ room.ccnt++;} dir=3;}
 			}
 			else{
-				var id = pos.borderid();
-				if(id===null||xinfo.id[id]!==0){ break;}
+				var border = pos.getb();
+				if(border.isnull||xinfo.getRoomID(border)!==0){ break;}
 
-				xinfo.id[id] = areaid;
-				room.idlist.push(id);
+				xinfo.setRoomID(border,areaid);
 				if(isNaN(room.length[room.ccnt])){ room.length[room.ccnt]=0;}else{ room.length[room.ccnt]++;}
 			}
 		}
-		room.cells[1]=pos.cellid();
+		room.cells[1]=pos.getc();
 		room.dir2=[0,2,1,4,3][dir];
 	},
 	isErrorFlag_line : function(xinfo){ }

@@ -30,17 +30,17 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputLineParts : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
-		if     (ca=='q'){ bd.sQuC(cc,2); bd.sQnC(cc,-1);}
-		else if(ca=='w'){ bd.sQuC(cc,3); bd.sQnC(cc,-1);}
-		else if(ca=='e'){ bd.sQuC(cc,4); bd.sQnC(cc,-1);}
-		else if(ca=='r'){ bd.sQuC(cc,5); bd.sQnC(cc,-1);}
-		else if(ca=='t'){ bd.sQuC(cc,11); bd.sQnC(cc,-1);}
-		else if(ca=='y'){ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+		if     (ca=='q'){ cell.setQues(2); cell.setQnum(-1);}
+		else if(ca=='w'){ cell.setQues(3); cell.setQnum(-1);}
+		else if(ca=='e'){ cell.setQues(4); cell.setQnum(-1);}
+		else if(ca=='r'){ cell.setQues(5); cell.setQnum(-1);}
+		else if(ca=='t'){ cell.setQues(11);cell.setQnum(-1);}
+		else if(ca=='y'){ cell.setQues(0); cell.setQnum(-1);}
 		else{ return false;}
 
-		pc.paintCellAround(cc);
+		pc.paintCellAround(cell);
 		return true;
 	},
 
@@ -72,29 +72,27 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	disInputHatena : true,
 
 	minnum : 3,
 
-	enableLineNG : true,
+	getTriLine : function(){
+		var blist=new pzprv3.core.PieceList(this.owner), border;
 
-	getTriLine : function(c){
-		var list = [], bx, by, id;
+		border=this.lb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
+		border=this.rb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}
+		border=this.ub(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0,-2);}
+		border=this.db(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0, 2);}
 
-		bx = this.cell[c].bx-1; by = this.cell[c].by;
-		while(bx>this.minbx){ id=this.bnum(bx,by); if(this.isLine(id)){ list.push(id); bx-=2;} else{ break;} }
-		bx = this.cell[c].bx+1; by = this.cell[c].by;
-		while(bx<this.maxbx){ id=this.bnum(bx,by); if(this.isLine(id)){ list.push(id); bx+=2;} else{ break;} }
-		bx = this.cell[c].bx; by = this.cell[c].by-1;
-		while(by>this.minby){ id=this.bnum(bx,by); if(this.isLine(id)){ list.push(id); by-=2;} else{ break;} }
-		bx = this.cell[c].bx; by = this.cell[c].by+1;
-		while(by<this.maxby){ id=this.bnum(bx,by); if(this.isLine(id)){ list.push(id); by+=2;} else{ break;} }
-
-		return list;
+		return blist;
 	}
+},
+Border:{
+	enableLineNG : true
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -114,8 +112,8 @@ MenuExec:{
 			}
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tques[bd.QuC(c)]; if(!!val){ bd.sQuC(c,val);}
+				var cell = clist[i];
+				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
 			}
 		}
 	}
@@ -159,24 +157,23 @@ Graphic:{
 		var g = this.vinc('cell_triangle_border', 'crispEdges');
 
 		var header = "b_tb_";
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], lflag = bd.isVert(id);
-			var qs1 = bd.QuC(bd.border[id].cellcc[0]),
-				qs2 = bd.QuC(bd.border[id].cellcc[1]);
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i], lflag = border.isVert();
+			var qs1 = border.sidecell[0].ques, qs2 = border.sidecell[1].ques;
 
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
-				if(this.vnop(header+id,this.NONE)){
-					g.fillRect(this.border[id].px, this.border[id].py-this.bh, 1, this.ch);
+				if(this.vnop(header+border.id,this.NONE)){
+					g.fillRect(border.px, border.py-this.bh, 1, this.ch);
 				}
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
-				if(this.vnop(header+id,this.NONE)){
-					g.fillRect(this.border[id].px-this.bw, this.border[id].py, this.cw, 1);
+				if(this.vnop(header+border.id,this.NONE)){
+					g.fillRect(border.px-this.bw, border.py, this.cw, 1);
 				}
 			}
-			else{ this.vhide(header+id);}
+			else{ this.vhide(header+border.id);}
 		}
 	},
 	draw11s : function(){
@@ -185,34 +182,33 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var cell = clist[i], id = cell.id;
 
-			if(bd.cell[c].ques===11){
+			if(cell.ques===11){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
 				g.fillStyle = this.cellcolor;
 
 				// Gridの真ん中＝cpx,cpy+0.5
-				if(this.vnop(headers[0]+c,this.NONE)){
-					g.fillRect(this.cell[c].px+0.5-lm, this.cell[c].py+0.5-ll/2,  lw, ll);
+				if(this.vnop(headers[0]+id,this.NONE)){
+					g.fillRect(cell.px+0.5-lm, cell.py+0.5-ll/2,  lw, ll);
 				}
-				if(this.vnop(headers[1]+c,this.NONE)){
-					g.fillRect(this.cell[c].px+0.5-ll/2, this.cell[c].py+0.5-lm,  ll, lw);
+				if(this.vnop(headers[1]+id,this.NONE)){
+					g.fillRect(cell.px+0.5-ll/2, cell.py+0.5-lm,  ll, lw);
 				}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+			else{ this.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
-	drawNumber1 : function(c){
-		var obj = bd.cell[c], key = ['cell',c].join('_');
-		if((obj.ques>=2 && obj.ques<=5) && obj.qnum>0){
-			var px = this.cell[c].px, py = this.cell[c].py;
-			this.dispnum(key, obj.ques, ""+obj.qnum, 0.45, "white", px, py);
+	drawNumber1 : function(cell){
+		var key = ['cell',cell.id].join('_');
+		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
+			this.dispnum(key, cell.ques, ""+cell.qnum, 0.45, "white", cell.px, cell.py);
 		}
 		else{ this.hideEL(key);}
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.draw11s();
 	}
@@ -307,7 +303,7 @@ AnsCheck:{
 		if( !this.checkLcntCell(3) ){
 			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 		}
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==11);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==11);}) ){
 			this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
 		}
 
@@ -321,7 +317,7 @@ AnsCheck:{
 			this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);}) ){
 			this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
 		}
 
@@ -340,9 +336,10 @@ AnsCheck:{
 	checkTriangle : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.lines.lcntCell(c)==0 && (bd.QuC(c)>=2 && bd.QuC(c)<=5)){
+			var cell = bd.cell[c];
+			if(cell.lcnt()==0 && (cell.getQues()>=2 && cell.getQues()<=5)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],4);
+				cell.seterr(4);
 				result = false;
 			}
 		}
@@ -352,14 +349,15 @@ AnsCheck:{
 	checkTriNumber : function(type){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QuC(c)<2 || bd.QuC(c)>5 || !bd.isValidNum(c)){ continue;}
+			var cell = bd.cell[c];
+			if(cell.getQues()<2 || cell.getQues()>5 || !cell.isValidNum()){ continue;}
 
-			var list = bd.getTriLine(c);
-			if(type==1?bd.QnC(c)<(list.length+1):bd.QnC(c)>(list.length+1)){
+			var blist = cell.getTriLine();
+			if(type==1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],4);
-				if(result){ bd.sErBAll(2);}
-				bd.sErB(list,1);
+				cell.seterr(4);
+				if(result){ bd.border.seterr(2);}
+				blist.seterr(1);
 				result = false;
 			}
 		}

@@ -8,8 +8,8 @@ MouseEvent:{
 	inputedit : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
 	inputplay : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
 	inputqnum_kakuru : function(){
-		var cc = this.cellid();
-		if(cc===null || (bd.QuC(cc)==1 && cc==tc.getTCC())){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || (cell.getQues()===1 && cell===tc.getTCC())){ return;}
 		this.inputqnum();
 	}
 },
@@ -24,29 +24,29 @@ KeyEvent:{
 		this.key_inputqnum_kakuru(ca);
 	},
 	key_inputqnum_kakuru : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
 		if(('0'<=ca && ca<='9') || ca==='-'){
-			if(bd.QuC(cc)===1){ return;}
-			if(!this.key_inputqnum_main(cc,ca)){ return;}
+			if(cell.getQues()===1){ return;}
+			if(!this.key_inputqnum_main(cell,ca)){ return;}
 		}
 		else if(ca===' '){
-			if(this.owner.editmode){ bd.sQuC(cc,0);}
-			bd.setNum(cc,-1);
+			if(this.owner.editmode){ cell.setQues(0);}
+			cell.setNum(-1);
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
 		else if(this.owner.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
-			if(ca==='q'){ ca = (bd.QuC(cc)!==1?'q1':'q2');}
+			if(ca==='q'){ ca = (cell.getQues()!==1?'q1':'q2');}
 			if(ca==='q1'){
-				bd.sQuC(cc, 1);
-				bd.setNum(cc, -1);
+				cell.setQues(1);
+				cell.setNum(-1);
 			}
-			else if(ca=='q2'){ bd.sQuC(cc, 0);}
+			else if(ca=='q2'){ cell.setQues(0);}
 		}
 		else{ return;}
 
-		this.prev=cc;
-		pc.paintCell(cc);
+		this.prev = cell;
+		pc.paintCell(cell);
 	},
 
 	enablemake_p : true,
@@ -79,13 +79,14 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return (bd.owner.editmode?44:9);
+	}
+},
 Board:{
 	qcols : 7,
-	qrows : 7,
-
-	nummaxfunc : function(cc){
-		return (this.owner.editmode?44:9);
-	}
+	qrows : 7
 },
 
 //---------------------------------------------------------
@@ -223,34 +224,36 @@ AnsCheck:{
 			this.setAlert('同じ数字がタテヨコナナメに隣接しています。','Same numbers is adjacent.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());}) ){
 			this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.noNum(c));});},
+	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});},
 
 	checkAroundPrenums : function(type){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
+			var cell = bd.cell[c];
+			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
 
-			var bx=bd.cell[c].bx, by=bd.cell[c].by;
+			var bx=cell.bx, by=cell.by;
 			var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-			var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
-				var cc = clist0[i];
-				if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
-					var qa = bd.cell[cc].anum;
-					if(qa>0){ d[qa]++; clist.push(cc);}
+				var cell2 = clist0[i];
+				if(cell!==cell2 && cell2.ques===0 && cell2.qnum===-1){
+					var qa = cell2.anum;
+					if(qa>0){ d[qa]++; clist.add(cell2);}
 				}
 			}
 			for(var n=1;n<=9;n++){
 				if(d[n]>1){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c],1);
-					for(i=0;i<clist.length;i++){ if(bd.AnC(clist[i])===n){ bd.sErC(clist[i],1);} }
+					cell.seterr(1);
+					for(i=0;i<clist.length;i++){ if(clist[i].getAnum()===n){ clist[i].seterr(1);} }
 					result = false;
 				}
 			}
@@ -260,21 +263,23 @@ AnsCheck:{
 	checkNumber : function(type){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QuC(c)==1 || bd.QnC(c)<=0){ continue;}
+			var cell = bd.cell[c];
+			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
 
-			var cnt=0, bx=bd.cell[c].bx, by=bd.cell[c].by;
-			var clist=[c], clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var cnt=0, bx=cell.bx, by=cell.by;
+			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
-				var cc = clist0[i];
-				if(cc!==c && bd.cell[cc].ques===0 && bd.cell[cc].qnum===-1){
-					var qa = bd.cell[cc].anum;
-					if(qa>0){ cnt+=qa; clist.push(cc);}
-					else    { cnt=bd.QnC(c); break;}
+				var cell2 = clist0[i];
+				if(cell!==cell2 && cell2.ques===0 && cell2.qnum===-1){
+					var qa = cell2.anum;
+					if(qa>0){ cnt+=qa; clist.add(cell2);}
+					else    { cnt=cell.getQnum(); break;}
 				}
 			}
-			if(bd.QnC(c)!==cnt){
+			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1); result = false;
+				clist.seterr(1); result = false;
 			}
 		}
 		return result;
@@ -282,17 +287,19 @@ AnsCheck:{
 	checkAroundNumbers : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.AnC(c)<=0){ continue;}
-			var bx = bd.cell[c].bx, by = bd.cell[c].by;
-			var clist=[c], clist0 = bd.cellinside(bx,by,bx+2,by+2);
-			clist0.push(bd.cnum(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
+			var cell = bd.cell[c];
+			if(cell.getAnum()<=0){ continue;}
+			var bx = cell.bx, by = cell.by;
+			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx,by,bx+2,by+2);
+			clist.add(cell);
+			clist0.add(bd.getc(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
 			for(var i=0;i<clist0.length;i++){
-				var cc = clist0[i];
-				if(cc!==null && cc!==c && bd.cell[c].anum===bd.cell[cc].anum){ clist.push(cc);}
+				var cell2 = clist0[i];
+				if(cell!==cell2 && cell.anum===cell2.anum){ clist.add(cell2);}
 			}
 			if(clist.length>1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1); result = false;
+				clist.seterr(1); result = false;
 			}
 		}
 		return result;

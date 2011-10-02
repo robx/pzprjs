@@ -24,15 +24,16 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	qcols : 8,
-	qrows : 8,
-
+Cell:{
 	disInputHatena : true,
 
-	nummaxfunc : function(cc){
-		return Math.max(this.qcols,this.qrows);
+	nummaxfunc : function(){
+		return Math.max(bd.qcols,bd.qrows);
 	}
+},
+Board:{
+	qcols : 8,
+	qrows : 8
 },
 
 AreaManager:{
@@ -77,11 +78,10 @@ Graphic:{
 
 		if(!bd.haserror && pp.getVal('plred')){
 			ans.inCheck = true;
-			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(c){ return bd.QnC(c);});
+			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
 			ans.inCheck = false;
 
-			var clist = bd.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
-			for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
+			for(var i=0;i<bd.cellmax;i++){ this.drawNumber1(bd.cell[i]);}
 
 			bd.haserror = true;
 			bd.errclear(false);
@@ -176,7 +176,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
+		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
@@ -184,20 +184,16 @@ AnsCheck:{
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(c){ return bd.QnC(c);}) ){
+		if( !this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();}) ){
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
 		return true;
 	},
 
-	isDifferentNumberInClist_hitori : function(clist_all, numfunc){
-		var clist = [];
-		for(var i=0;i<clist_all.length;i++){
-			var c = clist_all[i];
-			if(bd.isWhite(c) && numfunc.call(bd,c)!==-1){ clist.push(c);}
-		}
-		return this.isDifferentNumberInClist(clist, numfunc);
+	isDifferentNumberInClist_hitori : function(clist, numfunc){
+		var clist2 = clist.filter(function(cell){ return (cell.isWhite() && cell.isNum());});
+		return this.isDifferentNumberInClist(clist2, numfunc);
 	}
 }
 };

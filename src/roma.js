@@ -27,15 +27,15 @@ MouseEvent:{
 	inputRed : function(){ this.dispRoad();},
 
 	dispRoad : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
 		var ldata = [];
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
-		bd.trackBall1(cc,ldata);
+		bd.trackBall1(cell.id,ldata);
 		for(var c=0;c<bd.cellmax;c++){
-			if     (ldata[c]===1){ bd.sErC([c],2);}
-			else if(ldata[c]===2){ bd.sErC([c],3);}
+			if     (ldata[c]===1){ bd.cell[c].seterr(2);}
+			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
 		bd.haserror = true;
 		pc.paintAll();
@@ -68,47 +68,47 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	numberAsObject : true,
+
+	nummaxfunc : function(){
+		return (this.owner.editmode?5:4);
+	}
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
 
 	isborder : 1,
 
-	numberAsObject : true,
-
-	nummaxfunc : function(){
-		return (this.owner.editmode?5:4);
-	},
-
 	trackBall1 : function(startcc, ldata){
-		var pos = this.cell[startcc].getaddr();
-		var dir=this.getNum(startcc), result=(dir===5);
-		ldata[startcc]=0;
+		var startcell = this.cell[startcc], pos = startcell.getaddr();
+		var dir=startcell.getNum(), result=(dir===5);
+		ldata[startcell.id]=0;
 
 		while(dir>=1 && dir<=4){
-			pos.move(dir);
-			pos.move(dir);
+			pos.movedir(dir,2);
 
-			var c = pos.cellid();
-			if(c===null){ break;}
-			if(ldata[c]!==-1){ result=(ldata[c]===2); break;}
+			var cell = pos.getc();
+			if(cell.isnull){ break;}
+			if(ldata[cell.id]!==-1){ result=(ldata[cell.id]===2); break;}
 
-			ldata[c]=0;
+			ldata[cell.id]=0;
 
-			dir=this.getNum(c);
+			dir=cell.getNum();
 			if(dir===5){ result=true;}
 		}
 
-		var stack=[startcc];
+		var stack=[startcell];
 		while(stack.length>0){
-			var c=stack.pop();
-			if(c!=startcc && ldata[c]!==-1){ continue;}
-			ldata[c]=0;
-			var tc, dir=this.getNum(c);
-			tc=this.up(c); if( dir!==1 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===2 ){ stack.push(tc);}
-			tc=this.dn(c); if( dir!==2 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===1 ){ stack.push(tc);}
-			tc=this.lt(c); if( dir!==3 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===4 ){ stack.push(tc);}
-			tc=this.rt(c); if( dir!==4 && tc!==null && ldata[tc]===-1 && this.getNum(tc)===3 ){ stack.push(tc);}
+			var cell2=stack.pop();
+			if(cell2!==startcell && ldata[cell2.id]!==-1){ continue;}
+			ldata[cell2.id]=0;
+			var tc, dir=cell2.getNum();
+			tc=cell2.up(); if( dir!==1 && !tc.isnull && ldata[tc.id]===-1 && tc.getNum()===2 ){ stack.push(tc);}
+			tc=cell2.dn(); if( dir!==2 && !tc.isnull && ldata[tc.id]===-1 && tc.getNum()===1 ){ stack.push(tc);}
+			tc=cell2.lt(); if( dir!==3 && !tc.isnull && ldata[tc.id]===-1 && tc.getNum()===4 ){ stack.push(tc);}
+			tc=cell2.rt(); if( dir!==4 && !tc.isnull && ldata[tc.id]===-1 && tc.getNum()===3 ){ stack.push(tc);}
 		}
 
 		for(var c=0;c<this.cellmax;c++){
@@ -172,14 +172,14 @@ Graphic:{
 		var header = "c_cir_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum===5){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(header+c,this.FILL)){
-					g.fillCircle(this.cell[c].px, this.cell[c].py, rsize);
+			var cell = clist[i];
+			if(cell.qnum===5){
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillCircle(cell.px, cell.py, rsize);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	}
 },
@@ -215,7 +215,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkDifferentNumberInRoom(bd.areas.getRoomInfo(), function(c){ var num=bd.getNum(c); return ((num>=1&&num<=4)?num:-1);}) ){
+		if( !this.checkDifferentNumberInRoom(bd.areas.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
 			this.setAlert('1つの領域に2つ以上の同じ矢印が入っています。','An area has plural same arrows.'); return false;
 		}
 
@@ -228,7 +228,7 @@ AnsCheck:{
 
 	checkBalls : function(){
 		var ldata = [];
-		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.getNum(c)===5?2:-1);}
+		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
 			if(!bd.trackBall1(c,ldata) && this.inAutoCheck){ return false;}
@@ -236,7 +236,7 @@ AnsCheck:{
 
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(ldata[c]===1){ bd.sErC([c],1); result=false;}
+			if(ldata[c]===1){ bd.cell[c].seterr(1); result=false;}
 		}
 		return result;
 	}

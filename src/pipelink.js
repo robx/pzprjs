@@ -30,22 +30,22 @@ KeyEvent:{
 	},
 	key_inputLineParts : function(ca){
 		if(this.owner.playmode){ return false;}
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
-		if     (ca=='q'){ bd.sQuC(cc,11); }
-		else if(ca=='w'){ bd.sQuC(cc,12); }
-		else if(ca=='e'){ bd.sQuC(cc,13); }
-		else if(ca=='r'){ bd.sQuC(cc, 0); }
-		else if(ca==' '){ bd.sQuC(cc, 0); }
-		else if(ca=='a'){ bd.sQuC(cc,14); }
-		else if(ca=='s'){ bd.sQuC(cc,15); }
-		else if(ca=='d'){ bd.sQuC(cc,16); }
-		else if(ca=='f'){ bd.sQuC(cc,17); }
-		else if(ca=='-'){ bd.sQuC(cc,(bd.QuC(cc)!==-2?-2:0)); }
-		else if(this.owner.pid==='pipelinkr' && ca=='1'){ bd.sQuC(cc, 6); }
+		if     (ca=='q'){ cell.setQues(11);}
+		else if(ca=='w'){ cell.setQues(12);}
+		else if(ca=='e'){ cell.setQues(13);}
+		else if(ca=='r'){ cell.setQues(0);}
+		else if(ca==' '){ cell.setQues(0);}
+		else if(ca=='a'){ cell.setQues(14);}
+		else if(ca=='s'){ cell.setQues(15);}
+		else if(ca=='d'){ cell.setQues(16);}
+		else if(ca=='f'){ cell.setQues(17);}
+		else if(ca=='-'){ cell.setQues(cell.getQues()!==-2?-2:0);}
+		else if(this.owner.pid==='pipelinkr' && ca=='1'){ cell.setQues(6);}
 		else{ return false;}
 
-		pc.paintCellAround(cc);
+		pc.paintCellAround(cell);
 		return true;
 	},
 
@@ -76,11 +76,12 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Border:{
 	enableLineNG : true,
 	enableLineCombined : true
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -100,8 +101,8 @@ MenuExec:{
 			}
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tques[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
+				var cell = clist[i];
+				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
 			}
 		}
 	}
@@ -131,7 +132,7 @@ Menu:{
 
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(this.owner.pid==='pipelinkr'){ pp.funcs['disptype']();}
+		pp.funcs['disptype']();
 	}
 },
 
@@ -175,8 +176,8 @@ Graphic:{
 	},
 	getBorderColor : function(border){
 		if(pp.getVal('disptype')==2){
-			var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
-			if(cc1!==null && cc2!==null && (bd.cell[cc1].ques===6^bd.cell[cc2].ques===6)){
+			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.cellcolor;
 			}
 		}
@@ -191,24 +192,24 @@ Graphic:{
 		if(isdraw){
 			var rsize  = this.cw*0.40;
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				if(bd.cell[c].ques===6){
+				var cell = clist[i];
+				if(cell.ques===6){
 					g.strokeStyle = this.cellcolor;
-					if(this.vnop(header+c,this.NONE)){
-						g.strokeCircle(this.cell[c].px, this.cell[c].py, rsize);
+					if(this.vnop(header+cell.id,this.NONE)){
+						g.strokeCircle(cell.px, cell.py, rsize);
 					}
 				}
-				else{ this.vhide(header+c);}
+				else{ this.vhide(header+cell.id);}
 			}
 		}
 		else{
 			var header = "c_cir_";
-			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i]);}
+			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i].id);}
 		}
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.drawLineParts();
 	}
@@ -326,7 +327,7 @@ AnsCheck:{
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
 
-		if( (this.owner.pid==='pipelinkr') && !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6 && bd.QuC(c)!==11);}) ){
+		if( (this.owner.pid==='pipelinkr') && !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6 && cell.getQues()!==11);}) ){
 			this.setAlert((pp.getVal('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(pp.getVal('disptype')==1?'circles':'ices')+'.'); return false;
 		}
 		if( (this.owner.pid==='pipelinkr') && !this.checkIceLines() ){
@@ -337,7 +338,7 @@ AnsCheck:{
 			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QuC(c)===11 && bd.lines.lcntCell(c)!==4);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);}) ){
 			this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 		}
 

@@ -26,16 +26,25 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Border:{
+	enableLineNG : true,
+
+	isGround : function(){
+		return this.ques>0;
+	},
+
 	propall : ['line', 'qsub'], /* quesは取り除いておく */
-	allclear : function(id,isrec){
-		var def = (id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
+	allclear : function(isrec){
+		var def = (this.id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
-			if(isrec){ um.addOpe(bd.BORDER, bd.QUES, id, this.ques, def);}
+			if(isrec){ um.addOpe_Object(this, bd.QUES, this.ques, def);}
 			this.ques = def;
 		}
 
-		this.SuperFunc.allclear.call(this,id,isrec);
-	}
+		this.SuperFunc.allclear.call(this,isrec);
+	},
+
+	// 線を引かせたくないので上書き
+	isLineNG : function(){ return (this.ques===1);}
 },
 Board:{
 	qcols : 8,
@@ -48,16 +57,8 @@ Board:{
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
 		for(var id=0;id<this.bdmax;id++){
-			this.border[id].allclear(id,false);
+			this.border[id].allclear(false);
 		}
-	},
-
-	// 線を引かせたくないので上書き
-	isLineNG : function(id){ return (this.border[id].ques===1);},
-	enableLineNG : true,
-
-	isGround : function(id){
-		return (!!this.border[id] && this.border[id].ques>0);
 	}
 },
 
@@ -66,7 +67,7 @@ LineManager:{
 },
 
 "AreaTileData:AreaBorderData":{
-	bdfunc : function(id){ return !bd.isGround(id);}
+	bdfunc : function(border){ return !border.isGround();}
 },
 
 Menu:{
@@ -96,14 +97,14 @@ Graphic:{
 	// オーバーライド
 	getBorderColor : function(border){
 		if(border.ques===1){
-			var cc2=border.cellcc[1];
-			return ((cc2===null || bd.cell[cc2].error===0) ? this.borderQuescolor : this.errbcolor1);
+			var cell2=border.sidecell[1];
+			return ((cell2.isnull || cell2.error===0) ? this.borderQuescolor : this.errbcolor1);
 		}
 		return null;
 	},
 
-	repaintParts : function(idlist){
-		this.range.crosses = bd.lines.getXlistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.crosses = blist.crossinside();
 
 		this.drawBaseMarks();
 	}
@@ -135,10 +136,10 @@ Encode:{
 	},
 	encodeMejilink : function(){
 		var count = 0;
-		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.isGround(id)) count++;}
+		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()) count++;}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
-			if(bd.isGround(id)){ pass+=twi[num];} num++;
+			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
@@ -194,19 +195,17 @@ AnsCheck:{
 
 	checkdir4Line_meji : function(val){
 		var result = true;
-		for(var by=bd.minby;by<=bd.maxby;by+=2){
-			for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
-				var cnt = 0;
-				if(bd.isLine(bd.bnum(bx-1,by  ))){ cnt++;}
-				if(bd.isLine(bd.bnum(bx+1,by  ))){ cnt++;}
-				if(bd.isLine(bd.bnum(bx  ,by-1))){ cnt++;}
-				if(bd.isLine(bd.bnum(bx  ,by+1))){ cnt++;}
-				if(cnt==val){
-					if(this.inAutoCheck){ return false;}
-					if(result){ bd.sErBAll(2);}
-					bd.setCrossBorderError(bx,by);
-					result = false;
-				}
+		for(var c=0;c<bd.crossmax;c++){
+			var cnt = 0, cross = bd.cross[c];
+			if(cross.lb().isLine()){ cnt++;}
+			if(cross.rb().isLine()){ cnt++;}
+			if(cross.ub().isLine()){ cnt++;}
+			if(cross.db().isLine()){ cnt++;}
+			if(cnt==val){
+				if(this.inAutoCheck){ return false;}
+				if(result){ bd.border.seterr(2);}
+				bd.setCrossBorderError(cross.bx,cross.by);
+				result = false;
 			}
 		}
 		return result;
@@ -218,21 +217,21 @@ AnsCheck:{
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}
 		for(var id=0;id<bd.bdmax;id++){
-			if(bd.isGround(id) && id>=bd.bdinside){
-				var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-				if(cc1!==null){ tcount[tarea.id[cc1]] -= numerous_value;}
-				if(cc2!==null){ tcount[tarea.id[cc2]] -= numerous_value;}
-				continue;
+			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			if(border.isGround() && id>=bd.bdinside){
+				if(!cell1.isnull){ tcount[tarea.getRoomID(cell1)] -= numerous_value;}
+				if(!cell2.isnull){ tcount[tarea.getRoomID(cell2)] -= numerous_value;}
 			}
-			else if(bd.isGround(id) || bd.isLine(id)){ continue;}
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==null){ tcount[tarea.id[cc1]]++;}
-			if(cc2!==null){ tcount[tarea.id[cc2]]++;}
+			else if(!border.isGround() && !border.isLine()){
+				if(!cell1.isnull){ tcount[tarea.getRoomID(cell1)]++;}
+				if(!cell2.isnull){ tcount[tarea.getRoomID(cell2)]++;}
+			}
 		}
 		for(var r=1;r<=tarea.max;r++){
-			if(tcount[r]>=0 && tcount[r]!=tarea.room[r].idlist.length){
+			var clist = tarea.getclist(r);
+			if(tcount[r]>=0 && tcount[r]!==clist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(tarea.room[r].idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

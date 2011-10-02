@@ -33,11 +33,12 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	iscross : 2,
-
+Cross:{
 	maxnum : 4,
 	minnum : 0
+},
+Board:{
+	iscross : 2
 },
 
 AreaManager:{
@@ -55,8 +56,6 @@ Menu:{
 Graphic:{
 	bdmargin       : 0.70,
 	bdmargin_image : 0.50,
-
-	hideHatena : true,
 
 	setColors : function(){
 		this.cellcolor = "rgb(96, 96, 96)";
@@ -122,16 +121,16 @@ AnsCheck:{
 	checkQnumCross : function(type){
 		var result = true;
 		for(var c=0;c<bd.crossmax;c++){
-			var qn = bd.QnX(c);
+			var cross = bd.cross[c], qn = cross.getQnum();
 			if(qn<0){ continue;}
 
-			var bx=bd.cross[c].bx, by=bd.cross[c].by;
+			var bx=cross.bx, by=cross.by;
 			var cnt=0, clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
-			for(var i=0;i<clist.length;i++){if(bd.isBlack(clist[i])){ cnt++;}}
+			for(var i=0;i<clist.length;i++){if(clist[i].isBlack()){ cnt++;}}
 
 			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErX([c],1);
+				cross.seterr(1);
 				result = false;
 			}
 		}

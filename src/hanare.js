@@ -24,26 +24,26 @@ MouseEvent:{
 	},
 
 	inputqnum_hanare : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell){ return;}
-		var result = bd.setNum_hanare(cc,1);
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		var result = cell.setNum_hanare(1);
 		if(result!==null){
 			this.inputData = (result===-1?0:1);
-			this.mouseCell = cc;
-			pc.paintCell(cc);
+			this.mouseCell = cell;
+			pc.paintCell(cell);
 		}
 	},
 
 	inputDot : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
 
-		bd.sAnC(cc,-1);
-		bd.sQsC(cc,(this.inputData===1?1:0));
-		this.mouseCell = cc;
-		pc.paintCell(cc);
+		cell.setAnum(-1);
+		cell.setQsub(this.inputData===1?1:0);
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -57,49 +57,50 @@ KeyEvent:{
 		this.key_inputqnum_hanare(ca);
 	},
 	key_inputqnum_hanare : function(ca){
-		var cc=tc.getTCC(), val=-1;
+		var cell=tc.getTCC(), val=-1;
 
 		if('0'<=ca && ca<='9'){ val = 1;}
 		else if(ca==='-') { val = (this.owner.playmode?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else{ return;}
 
-		bd.setNum_hanare(cc,val);
-		this.prev = cc;
-		pc.paintCell(cc);
+		cell.setNum_hanare(val);
+		this.prev = cell;
+		pc.paintCell(cell);
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	setNum_hanare : function(val){
+		if(val>=0){
+			val = bd.areas.rinfo.getCntOfRoomByCell(this);
+			if(val>this.maxnum){ return null;}
+
+			var clist = bd.areas.rinfo.getClistByCell(this), cell2=null;
+			for(var i=0;i<clist.length;i++){
+				if(clist[i].isNum()){ cell2=clist[i]; break;}
+			}
+			if(this===cell2){ val=(this.owner.playmode?-2:-1);}
+			else if(cell2!==null){
+				if(this.owner.playmode && cell2.qnum!==-1){ return null;}
+				cell2.setNum(this.owner.playmode?-2:-1);
+				pc.paintCell(cell2);
+			}
+			else{ /* c2===null */
+				if(this.qsub===1){ val=-1;}
+			}
+		}
+		this.setNum(val);
+		return val;
+	}
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	setNum_hanare : function(c,val){
-		if(val>=0){
-			val = this.areas.rinfo.getCntOfRoomByCell(c);
-			if(val>this.maxnum){ return null;}
-
-			var clist = this.areas.rinfo[this.areas.rinfo.id[c]].clist, c2=null;
-			for(var i=0;i<clist.length;i++){
-				if(this.isNum(clist[i])){ c2=clist[i]; break;}
-			}
-			if(c===c2){ val=(this.owner.playmode?-2:-1);}
-			else if(c2!==null){
-				if(this.owner.playmode && this.cell[c2].qnum!==-1){ return null;}
-				this.setNum(c2,(this.owner.playmode?-2:-1));
-				pc.paintCell(c2);
-			}
-			else{ /* c2===null */
-				if(this.cell[c].qsub===1){ val=-1;}
-			}
-		}
-		this.setNum(c,val);
-		return val;
-	}
+	isborder : 1
 },
 
 AreaManager:{
@@ -180,35 +181,36 @@ AnsCheck:{
 	},
 
 	checkDiffNumber : function(){
-		function eachcell(tc){
+		function eachcell(cell2){
 			distance++;
-			if(!bd.isNum(tc)){ /* nop */ }
-			else if(!bd.isValidNum(tc)){ c=null;}
+			if(!cell2.isNum()){ /* nop */ }
+			else if(!cell2.isValidNum(cell2)){ c=null;}
 			else{
-				if(c!==null){
-					if(Math.abs(num-bd.getNum(tc))!==distance){
+				if(cell!==null){
+					if(Math.abs(num-cell2.getNum())!==distance){
 						if(this.inAutoCheck){ return false;}
-						bd.sErC([c,tc],1);
+						cell.seterr(1);
+						cell2.seterr(1)
 						result = false;
 					}
 				}
-				c=tc;
-				num=bd.getNum(tc);
+				cell=cell2;
+				num=cell2.getNum();
 				distance=-1;
 			}
 		}
 
 		var result = true;
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var c=null, num, distance;
+			var cell=null, num, distance;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-				eachcell(bd.cnum(bx,by));
+				eachcell(bd.getc(bx,by));
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var c=null, num, distance;
+			var cell=null, num, distance;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				eachcell(bd.cnum(bx,by));
+				eachcell(bd.getc(bx,by));
 			}
 		}
 		return result;

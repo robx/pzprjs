@@ -241,6 +241,7 @@ pzprv3.createCommonClass('MenuExec',
 			var pc2 = new this.owner.classes.Graphic(this.owner);
 
 			// 設定値・変数をcanvas用のものに変更
+			pc2.suspendAll();
 			pc2.outputImage = true;
 			pc2.fillTextEmulate = false;
 			pc2.bdmargin = pc.bdmargin_image;
@@ -252,6 +253,7 @@ pzprv3.createCommonClass('MenuExec',
 
 			// canvas要素の設定を適用して、再描画
 			pc2.resize_canvas();
+			pc2.unsuspend();
 
 			// canvasの描画内容をDataURLとして取得する
 			var url = pc2.currentContext.canvas.toDataURL();
@@ -300,7 +302,7 @@ pzprv3.createCommonClass('MenuExec',
 			if(csize>0){ pc.cellsize = (csize|0);}
 
 			menu.popclose();
-			pc.resize_canvas();	// Canvasを更新する
+			pc.forceRedraw();	// Canvasを更新する
 		}
 	},
 
@@ -335,7 +337,7 @@ pzprv3.createCommonClass('MenuExec',
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		pc.resize_canvas();	// canvasの左上座標等を更新して再描画
+		pc.forceRedraw();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = menu.selectStr("管理領域を表示","Show management area");}
@@ -364,14 +366,24 @@ pzprv3.createCommonClass('MenuExec',
 	execadjust : function(name){
 		um.newOperation(true);
 
+		pc.suspendAll();
+
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
+		var key = this.boardtype[name][1], key0 = this.boardtype[name][0];
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
-		if (name.match(/(expand|reduce)/)){ this.expandreduce(this.boardtype[name][1],d);}
-		else if(name.match(/(turn|flip)/)){ this.turnflip    (this.boardtype[name][1],d);}
+		if(key & this.TURNFLIP){
+			this.turnflip(key,d);
+			um.addOpe_BoardFlip(d, key0, key);
+		}
+		else{
+			this.expandreduce(key,d);
+			um.addOpe_BoardAdjust(key0, key);
+		}
 
 		bd.setminmax();
 		bd.resetInfo();
 		pc.resize_canvas();	// Canvasを更新する
+		pc.unsuspend();
 	},
 
 	//------------------------------------------------------------------------------
@@ -407,21 +419,15 @@ pzprv3.createCommonClass('MenuExec',
 
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
-
-		// 処理後にOperationManagerに登録する必要あり
-		if(!um.undoExec && !um.redoExec){
-			var key2 = key;
-			for(var name in this.boardtype){ if(key===this.boardtype[name][1]){ key2=this.boardtype[name][0]; break;}}
-			um.addOpe(bd.BOARD, 'adjust', 0, key2, key);
-		}
 	},
 	expandGroup : function(type,key){
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
 		for(var i=group.length-1;i>=0;i--){
-			if(this.isdel(type,i,key)){
+			if(this.isdel(key,group[i])){
 				group[i] = bd.newObject(type);
-				group[i].allclear(i,false);
+				group[i].id = i;
+				group[i].allclear(false);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
@@ -435,8 +441,9 @@ pzprv3.createCommonClass('MenuExec',
 		var margin=0, group = bd.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
 		if(isrec){ um.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
-			if(this.isdel(type,i,key)){
-				group[i].allclear(i,isrec);
+			if(this.isdel(key,group[i])){
+				group[i].id = i;
+				group[i].allclear(isrec);
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
@@ -444,8 +451,8 @@ pzprv3.createCommonClass('MenuExec',
 		for(var i=0;i<margin;i++){ group.pop();}
 		if(isrec){ um.forceRecord = false;}
 	},
-	isdel : function(type,id,key){
-		return !!this.insex[type][this.distObj(type,id,key)];
+	isdel : function(key,obj){
+		return !!this.insex[obj.group][this.distObj(key,obj)];
 	},
 
 	//------------------------------------------------------------------------------
@@ -476,33 +483,26 @@ pzprv3.createCommonClass('MenuExec',
 
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
-
-		// 処理後にOperationManagerに登録する必要あり
-		if(!um.undoExec && !um.redoExec){
-			var key2 = key;
-			for(var name in this.boardtype){ if(key===this.boardtype[name][1]){ key2=this.boardtype[name][0]; break;}}
-			um.addOpe(bd.BOARD, 'turnflip', d, key2, key);
-		}
 	},
 	turnflipGroup : function(type,key,d){
-		var ch=[], idlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<idlist.length;i++){ ch[idlist[i]]=false;}
+		var ch=[], objlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<objlist.length;i++){ ch[objlist[i].id]=false;}
 
 		var group = bd.getGroup(type);
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 		for(var source=0;source<group.length;source++){
 			if(ch[source]!==false){ continue;}
 
-			var tmp = group[source], target = source;
+			var tmp = group[source], target = source, next;
 			while(ch[target]===false){
 				ch[target]=true;
 				// nextになるものがtargetに移動してくる、、という考えかた。
 				// ここでは移動前のIDを取得しています
 				switch(key){
-					case this.FLIPY: next = bd.idnum(type, group[target].bx, yy-group[target].by); break;
-					case this.FLIPX: next = bd.idnum(type, xx-group[target].bx, group[target].by); break;
-					case this.TURNR: next = bd.idnum(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols); break;
-					case this.TURNL: next = bd.idnum(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols); break;
+					case this.FLIPY: next = bd.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
+					case this.FLIPX: next = bd.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
+					case this.TURNR: next = bd.getObjectPos(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.TURNL: next = bd.getObjectPos(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols).id; break;
 				}
 
 				if(ch[next]===false){
@@ -520,9 +520,8 @@ pzprv3.createCommonClass('MenuExec',
 	//---------------------------------------------------------------------------
 	// menu.ex.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
-	distObj : function(type,id,key){
-		var obj = bd.getObject(type, id);
-		if(!obj){ return -1;}
+	distObj : function(key,obj){
+		if(obj.isnull){ return -1;}
 
 		key &= 0x0F;
 		if     (key===bd.UP){ return obj.by;}
@@ -547,50 +546,52 @@ pzprv3.createCommonClass('MenuExec',
 
 			var dist = (bd.lines.borderAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(bd.BORDER,id,key)!==dist){ continue;}
+				var border = bd.border[id];
+				if(this.distObj(key,border)!==dist){ continue;}
 
 				var source = (bd.lines.borderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
-				this.copyBorder(id,source);
-				if(bd.lines.borderAsLine){ bd.border[source].allclear(source,false);}
+				this.copyBorder(border, source);
+				if(bd.lines.borderAsLine){ source.allclear(false);}
 			}
 		}
 	},
 	reduceborder : function(key){
 		if(bd.lines.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
-				if(this.distObj(bd.BORDER,id,key)!==0){ continue;}
+				var border = bd.border[id];
+				if(this.distObj(key,border)!==0){ continue;}
 
 				var source = this.innerBorder(id,key);
-				this.copyBorder(id,source);
+				this.copyBorder(border, source);
 			}
 		}
 	},
 
-	copyBorder : function(id1,id2){
-		bd.border[id1].ques  = bd.border[id2].ques;
-		bd.border[id1].qans  = bd.border[id2].qans;
+	copyBorder : function(border1,border2){
+		border1.ques  = border2.ques;
+		border1.qans  = border2.qans;
 		if(bd.lines.borderAsLine){
-			bd.border[id1].line  = bd.border[id2].line;
-			bd.border[id1].qsub  = bd.border[id2].qsub;
-			bd.border[id1].color = bd.border[id2].color;
+			border1.line  = border2.line;
+			border1.qsub  = border2.qsub;
+			border1.color = border2.color;
 		}
 	},
 	innerBorder : function(id,key){
-		var bx=bd.border[id].bx, by=bd.border[id].by;
+		var border=bd.border[id];
 		key &= 0x0F;
-		if     (key===bd.UP){ return bd.bnum(bx, by+2);}
-		else if(key===bd.DN){ return bd.bnum(bx, by-2);}
-		else if(key===bd.LT){ return bd.bnum(bx+2, by);}
-		else if(key===bd.RT){ return bd.bnum(bx-2, by);}
+		if     (key===bd.UP){ return border.relbd(0, 2);}
+		else if(key===bd.DN){ return border.relbd(0,-2);}
+		else if(key===bd.LT){ return border.relbd(2, 0);}
+		else if(key===bd.RT){ return border.relbd(-2,0);}
 		return null;
 	},
 	outerBorder : function(id,key){
-		var bx=bd.border[id].bx, by=bd.border[id].by;
+		var border=bd.border[id];
 		key &= 0x0F;
-		if     (key===bd.UP){ return bd.bnum(bx, by-2);}
-		else if(key===bd.DN){ return bd.bnum(bx, by+2);}
-		else if(key===bd.LT){ return bd.bnum(bx-2, by);}
-		else if(key===bd.RT){ return bd.bnum(bx+2, by);}
+		if     (key===bd.UP){ return border.relbd(0,-2);}
+		else if(key===bd.DN){ return border.relbd(0, 2);}
+		else if(key===bd.LT){ return border.relbd(-2,0);}
+		else if(key===bd.RT){ return border.relbd( 2,0);}
 		return null;
 	},
 
@@ -600,12 +601,13 @@ pzprv3.createCommonClass('MenuExec',
 	reduceRoomNumber : function(key,d){
 		var qnums = [];
 		for(var c=0;c<bd.cell.length;c++){
-			if(!!this.insex[bd.CELL][this.distObj(bd.CELL,c,key)]){
-				if(bd.cell[c].qnum!==-1){
-					qnums.push({areaid:bd.areas.rinfo.getRoomID(c), id:c, val:bd.cell[c].qnum});
-					bd.cell[c].qnum=-1;
+			var cell = bd.cell[c];
+			if(!!this.insex[bd.CELL][this.distObj(key,cell)]){
+				if(cell.qnum!==-1){
+					qnums.push({cell:cell, areaid:bd.areas.rinfo.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
+					cell.qnum=-1;
 				}
-				bd.areas.rinfo.removeCell(c);
+				bd.areas.rinfo.removeCell(cell);
 			}
 		}
 		for(var i=0;i<qnums.length;i++){
@@ -614,7 +616,7 @@ pzprv3.createCommonClass('MenuExec',
 			if(top===null){
 				if(!um.undoExec && !um.redoExec){
 					um.forceRecord = true;
-					um.addOpe(bd.CELL, bd.QNUM, qnums[i].id, qnums[i].val, -1);
+					um.addOpe_Object(qnums[i].cell, bd.QNUM, qnums[i].val, -1);
 					um.forceRecord = false;
 				}
 			}
@@ -650,8 +652,8 @@ pzprv3.createCommonClass('MenuExec',
 			}
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tdir[bd.DiC(c)]; if(!!val){ bd.sDiC(c,val);}
+				var cell = clist[i];
+				var val=tdir[cell.getQdir()]; if(!!val){ cell.setQdir(val);}
 			}
 		}
 	},
@@ -667,9 +669,9 @@ pzprv3.createCommonClass('MenuExec',
 			}
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val = trans[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
-				var val = trans[bd.AnC(c)]; if(!!val){ bd.sAnC(c,val);}
+				var cell = clist[i];
+				var val = trans[cell.getQnum()]; if(!!val){ cell.setQnum(val);}
+				var val = trans[cell.getAnum()]; if(!!val){ cell.setAnum(val);}
 			}
 		}
 	},
@@ -683,10 +685,10 @@ pzprv3.createCommonClass('MenuExec',
 				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 				default: return;
 			}
-			var idlist = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<idlist.length;i++){
-				var id=idlist[i], val;
-				val=trans[bd.DiB(id)]; if(!!val){ bd.sDiB(id,val);}
+			var blist = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<blist.length;i++){
+				var border=blist[i], val;
+				val=trans[border.getQdir()]; if(!!val){ border.setQdir(val);}
 			}
 		}
 	},
@@ -697,17 +699,17 @@ pzprv3.createCommonClass('MenuExec',
 		this.qnumh = [];
 
 		for(var by=by1;by<=d.y2;by+=2){
-			this.qnumw[by] = [bd.QnE(bd.exnum(-1,by))];
+			this.qnumw[by] = [bd.getex(-1,by).getQnum()];
 			for(var bx=bx1;bx<=d.x2;bx+=2){
-				var cc = bd.cnum(bx,by);
-				if(cc!==null && bd.QuC(cc)===51){ this.qnumw[by].push(bd.QnC(cc));}
+				var cell = bd.getc(bx,by);
+				if(cell.is51cell()){ this.qnumw[by].push(cell.getQnum());}
 			}
 		}
 		for(var bx=bx1;bx<=d.x2;bx+=2){
-			this.qnumh[bx] = [bd.DiE(bd.exnum(bx,-1))];
+			this.qnumh[bx] = [bd.getex(bx,-1).getQdir()];
 			for(var by=by1;by<=d.y2;by+=2){
-				var cc = bd.cnum(bx,by);
-				if(cc!==null && bd.QuC(cc)===51){ this.qnumh[bx].push(bd.DiC(cc));}
+				var cell = bd.getc(bx,by);
+				if(cell.is51cell()){ this.qnumh[bx].push(cell.getQdir());}
 			}
 		}
 	},
@@ -718,10 +720,10 @@ pzprv3.createCommonClass('MenuExec',
 		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
-				bd.sDiE(bd.exnum(bx,-1), this.qnumh[bx][0]);
+				bd.getex(bx,-1).setQdir(this.qnumh[bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumh[bx][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQdir(this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -729,10 +731,10 @@ pzprv3.createCommonClass('MenuExec',
 		case this.FLIPX: // 左右反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
-				bd.sQnE(bd.exnum(-1,by), this.qnumw[by][0]);
+				bd.getex(-1,by).setQnum(this.qnumw[by][0]);
 				for(var bx=bx1;bx<=d.x2;bx+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumw[by][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQnum(this.qnumw[by][idx]); idx++;}
 				}
 			}
 			break;
@@ -740,18 +742,18 @@ pzprv3.createCommonClass('MenuExec',
 		case this.TURNR: // 右90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
-				bd.sQnE(bd.exnum(-1,by), this.qnumh[by][0]);
+				bd.getex(-1,by).setQnum(this.qnumh[by][0]);
 				for(var bx=bx1;bx<=d.x2;bx+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[by][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQnum(this.qnumh[by][idx]); idx++;}
 				}
 			}
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1;
-				bd.sDiE(bd.exnum(bx,-1), this.qnumw[xx-bx][0]);
+				bd.getex(bx,-1).setQdir(this.qnumw[xx-bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[xx-bx][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQdir(this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -759,28 +761,26 @@ pzprv3.createCommonClass('MenuExec',
 		case this.TURNL: // 左90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1;
-				bd.sQnE(bd.exnum(-1,by), this.qnumh[yy-by][0]);
+				bd.getex(-1,by).setQnum(this.qnumh[yy-by][0]);
 				for(var bx=bx1;bx<=d.x2;bx+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sQnC(cc, this.qnumh[yy-by][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQnum(this.qnumh[yy-by][idx]); idx++;}
 				}
 			}
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
-				bd.sDiE(bd.exnum(bx,-1), this.qnumw[bx][0]);
+				bd.getex(bx,-1).setQdir(this.qnumw[bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
-					var cc = bd.cnum(bx,by);
-					if(cc!==null && bd.QuC(cc)===51){ bd.sDiC(cc, this.qnumw[bx][idx]); idx++;}
+					var cell = bd.getc(bx,by);
+					if(cell.is51cell()){ cell.setQdir(this.qnumw[bx][idx]); idx++;}
 				}
 			}
 			break;
 		}
 	},
 
-	getAfterPos : function(key,d,group,id){
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-
-		var obj=bd.getObject(group,id), bx1=obj.bx, by1=obj.by, bx2, by2;
+	getAfterPos : function(key,d,obj){
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;
 		switch(key){
 			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
 			case this.FLIPX: bx2 = xx-bx1; by2 = by1; break;
@@ -796,7 +796,7 @@ pzprv3.createCommonClass('MenuExec',
 			case this.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
 			default: bx2 = bx1; by2 = by1; break;
 		}
-		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(group,id,key)};
+		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};
 	},
 
 	//------------------------------------------------------------------------------

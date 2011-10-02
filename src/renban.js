@@ -36,7 +36,28 @@ Board:{
 	qcols : 6,
 	qrows : 6,
 
-	isborder : 1
+	isborder : 1,
+
+	// 正答判定用
+	getBorderLengthInfo : function(){
+		var rdata = new pzprv3.core.AreaBorderInfo(this.owner);
+		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
+		for(var i=0;i<this.bdmax;i++){
+			var border0 = this.border[i];
+			if(!rdata.emptyBorder(border0)){ continue;}
+			var pos=border0.getaddr(), isvert=border0.isVert(), blist=[];
+			while(1){
+				var border = pos.getb();
+				if(border.isnull || !rdata.emptyBorder(border)){ break;}
+
+				blist.push(border);
+				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
+			}
+			rdata.addRoom();
+			for(var n=0;n<blist.length;n++){ rdata.addBorder(blist[n]);}
+		}
+		return rdata;
+	}
 },
 
 AreaManager:{
@@ -104,7 +125,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum(cell);}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
@@ -127,20 +148,20 @@ AnsCheck:{
 	checkNumbersInRoom : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var idlist = rinfo.room[r].idlist
-			if(idlist.length<=1){ continue;}
-			var max=-1, min=bd.maxnum, breakflag=false;
-			for(var i=0,len=idlist.length;i<len;i++){
-				var val=bd.getNum(idlist[i]);
+			var clist = rinfo.getclist(r);
+			if(clist.length<=1){ continue;}
+			var max=-1, min=clist[0].maxnum, breakflag=false;
+			for(var i=0,len=clist.length;i<len;i++){
+				var val = clist[i].getNum();
 				if(val===-1 || val===-2){ breakflag=true; break;}
 				if(max<val){ max=val;}
 				if(min>val){ min=val;}
 			}
 			if(breakflag){ break;}
 
-			if(idlist.length !== (max-min)+1){
+			if(clist.length !== (max-min)+1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -150,34 +171,21 @@ AnsCheck:{
 	checkBorderSideNumber : function(){
 		var result = true;
 		// 線の長さを取得する
-		var rdata = new pzprv3.core.AreaInfo();
-		for(var i=0;i<bd.bdmax;i++){ rdata.id[i] = (bd.isBorder(i)?0:null);}
-		for(var i=0;i<bd.bdmax;i++){
-			if(rdata.id[i]!==0){ continue;}
-			var bx=bd.border[i].bx, by=bd.border[i].by, idlist=[];
-			while(1){
-				var id = bd.bnum(bx,by);
-				if(id===null || rdata.id[id]!==0){ break;}
-
-				idlist.push(id);
-				if(bx%2===1){ bx+=2;}else{ by+=2;}
-			}
-			rdata.max++;
-			for(var n=0;n<idlist.length;n++){ rdata.id[idlist[n]]=rdata.max;}
-			rdata.room[rdata.max] = {idlist:idlist};
-		}
+		var rdata = bd.getBorderLengthInfo();
 
 		// 実際に差を調査する
 		for(var i=0;i<bd.bdmax;i++){
 			if(rdata.id[i]===null){ continue;}
-			var cc1 = bd.border[i].cellcc[0], cc2 = bd.border[i].cellcc[1];
-			var val1=bd.getNum(cc1), val2=bd.getNum(cc2);
+			var border = bd.border[i], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			var val1=cell1.getNum(), val2=cell2.getNum();
 			if(val1<=0 || val2<=0){ continue;}
 
-			if(Math.abs(val1-val2)!==rdata.room[rdata.id[i]].idlist.length){
+			var blist = rdata.getblist(rdata.id[i]);
+			if(Math.abs(val1-val2)!==blist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([cc1,cc2],1);
-				bd.sErB(rdata.room[rdata.id[i]].idlist,1);
+				cell1.seterr(1);
+				cell2.seterr(2);
+				blist.seterr(1);
 				result = false;
 			}
 		}

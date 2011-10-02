@@ -15,16 +15,16 @@ MouseEvent:{
 		}
 	},
 	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this,inputtile();}
+		if(this.mousestart || this.mousemove){ this.inputtile();}
 	},
 
 	inputBGcolor1 : function(){
-		var cc = this.cellid();
-		if(cc===null || cc==this.mouseCell || bd.QuC(cc)==51){ return;}
-		if(this.inputData===null){ this.inputData=(bd.QsC(cc)==0)?3:0;}
-		bd.sQsC(cc, this.inputData);
-		this.mouseCell = cc; 
-		pc.paintCell(cc);
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.is51cell()){ return;}
+		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		cell.setQsub(this.inputData);
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -47,43 +47,54 @@ Cell:{
 	qnum: 0,
 	qdir: 0,
 
-	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(id){
-		if(this.qsub===1){
-			um.addOpe(bd.CELL, bd.QSUB, id, 1, 0);
-			this.qsub = 0;
-		}
-		this.error = 0;
-	}
-},
-EXCell:{
-	qnum: 0,
-	qdir: 0
-},
-Board:{
-	isborder : 1,
-	isexcell : 1,
-
 	disInputHatena : true,
 
 	numberIsWhite : true,
 
 	minnum : 0,
 
-	set51cell : function(c){
-		this.sQuC(c,51); this.sQnC(c, 0); this.sDiC(c, 0); this.setWhite(c); this.sQsC(c, 0);
-		this.set51aroundborder(c);
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		if(this.qsub===1){
+			um.addOpe_Object(this, bd.QSUB, 1, 0);
+			this.qsub = 0;
+		}
+		this.error = 0;
 	},
-	remove51cell : function(c){
-		this.sQuC(c, 0); this.sQnC(c, 0); this.sDiC(c, 0); this.setWhite(c); this.sQsC(c, 0);
+
+	set51cell : function(){
+		this.setQues(51);
+		this.setQnum(0);
+		this.setQdir(0);
+		this.setWhite();
+		this.setQsub(0);
+		this.set51aroundborder();
 	},
-	set51aroundborder : function(c){
-		var id, cc;
-		id=this.ub(c),cc=this.up(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.db(c),cc=this.dn(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.lb(c),cc=this.lt(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.rb(c),cc=this.rt(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
+	remove51cell : function(){
+		this.setQues(0);
+		this.setQnum(0);
+		this.setQdir(0);
+		this.setWhite();
+		this.setQsub(0);
+	},
+
+	set51aroundborder : function(){
+		var border, cell2;
+		border=this.ub(), cell2=this.up(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.db(), cell2=this.dn(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.lb(), cell2=this.lt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.rb(), cell2=this.rt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
 	}
+},
+EXCell:{
+	qnum: 0,
+	qdir: 0,
+
+	minnum : 0
+},
+Board:{
+	isborder : 1,
+	isexcell : 1
 },
 
 AreaManager:{
@@ -147,14 +158,14 @@ Encode:{
 
 	decodeTilePaint : function(){
 		// 盤面内数字のデコード
-		var cell=0, a=0, bstr = this.outbstr;
+		var id=0, a=0, bstr = this.outbstr;
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[cell];
+			var ca = bstr.charAt(i), obj=bd.cell[id];
 
-			if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-16);}
+			if(ca>='g' && ca<='z'){ id+=(parseInt(ca,36)-16);}
 			else{
-				bd.set51cell(cell);
+				obj.set51cell();
 				if     (ca==='-'){
 					obj.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
 					obj.qnum = parseInt(bstr.substr(i+2,2),16);
@@ -177,28 +188,28 @@ Encode:{
 				}
 			}
 
-			cell++;
-			if(cell>=bd.cellmax){ a=i+1; break;}
+			id++;
+			if(id>=bd.cellmax){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
 		// 盤面外数字のデコード
-		cell=0;
+		id=0;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[cell].qdir = -1;}
-			else if(ca==='-'){ bd.excell[cell].qdir = parseInt(bstr.substr(i+1,1),16); i+=2;}
-			else             { bd.excell[cell].qdir = parseInt(ca,16);}
-			cell++;
-			if(cell>=bd.qcols){ a=i+1; break;}
+			if     (ca==='.'){ bd.excell[id].qdir = -1;}
+			else if(ca==='-'){ bd.excell[id].qdir = parseInt(bstr.substr(i+1,1),16); i+=2;}
+			else             { bd.excell[id].qdir = parseInt(ca,16);}
+			id++;
+			if(id>=bd.qcols){ a=i+1; break;}
 		}
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[cell].qnum = -1;}
-			else if(ca==='-'){ bd.excell[cell].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { bd.excell[cell].qnum = parseInt(ca,16);}
-			cell++;
-			if(cell>=bd.qcols+bd.qrows){ a=i+1; break;}
+			if     (ca==='.'){ bd.excell[id].qnum = -1;}
+			else if(ca==='-'){ bd.excell[id].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { bd.excell[id].qnum = parseInt(ca,16);}
+			id++;
+			if(id>=bd.qcols+bd.qrows){ a=i+1; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
@@ -271,11 +282,11 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
+		if( !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
 			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 		}
 
-		if( !this.checkRowsColsPartly(this.isBCellCount, function(cc){ return (bd.QuC(cc)==51);}, false) ){
+		if( !this.checkRowsColsPartly(this.isBCellCount, function(cell){ return cell.is51cell();}, false) ){
 			this.setAlert('数字の下か右にある黒マスの数が間違っています。','The number of black cells underward or rightward is not correct.'); return false;
 		}
 
@@ -283,19 +294,17 @@ AnsCheck:{
 	},
 
 	isBCellCount : function(keycellpos, clist){
-		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		if     (dir===bd.RT){ number = keyobj.getQnum();}
+		else if(dir===bd.DN){ number = keyobj.getQdir();}
 
 		var count = 0;
 		for(var i=0;i<clist.length;i++){
-			if(bd.isBlack(clist[i])){ count++;}
+			if(clist[i].isBlack()){ count++;}
 		}
 		if(number>=0 && count!=number){
-			var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
-			if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
-			else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
-			bd.sErC(clist,1);
+			keyobj.seterr(1)
+			clist.seterr(1);
 			return false;
 		}
 		return true;

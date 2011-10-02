@@ -10,29 +10,30 @@ MouseEvent:{
 	inputRed : function(){ if(this.owner.playmode){ this.dispBlue();}},
 
 	dispBlue : function(){
-		var cc = this.cellid();
+		var cell = this.getcell();
 		this.mousereset();
-		if(cc===null || bd.QaC(cc)===0){ return;}
+		if(cell.isnull || cell.getQans()===0){ return;}
 
-		var fc = bd.xnum(bd.cell[cc].bx+(bd.QaC(cc)===31?-1:1),bd.cell[cc].by-1);
-		var check = bd.searchline(fc);
+		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
+		var check = bd.searchline(fcross);
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QaC(c)===31 && check[bd.xnum(bd.cell[c].bx-1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
-			if(bd.QaC(c)===32 && check[bd.xnum(bd.cell[c].bx+1,bd.cell[c].by-1)]===1){ bd.sErC([c],2);}
+			var cell2 = bd.cell[c];
+			if(cell2.getQans()===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
+			if(cell2.getQans()===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
 		}
 
 		bd.haserror = true;
 		pc.paintAll();
 	},
 	inputslash : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		var use = pp.getVal('use'), sl=(this.btn.Left?31:32);
-		if     (use===1){ bd.sQaC(cc, (bd.QaC(cc)!==sl?sl:0));}
-		else if(use===2){ bd.sQaC(cc, (this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[bd.QaC(cc)]);}
+		var use = pp.getVal('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
+		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
+		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
-		pc.paintCellAround(cc);
+		pc.paintCellAround(cell);
 	}
 },
 
@@ -56,24 +57,26 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cross:{
+	maxnum : 4,
+	minnum : 0
+},
 Board:{
 	qcols : 7,
 	qrows : 7,
 
 	iscross : 2,
 
-	maxnum : 4,
-	minnum : 0,
-
 	// 正答判定用
 	getSlashData : function(){
 		var sdata=[], sinfo=this.getSlashInfo();
-		for(var c=0;c<this.cellmax;c++){ sdata[c] =(this.QaC(c)!==0?0:-1);}
+		for(var c=0;c<this.cellmax;c++){ sdata[c] =(this.cell[c].qans!==0?0:-1);}
 		for(var c=0;c<this.cellmax;c++){
 			if(sdata[c]!==0){ continue;}
 
-			var fc = this.xnum(this.cell[c].bx+(this.QaC(c)===31?-1:1), this.cell[c].by-1);
-			this.searchloop(fc, sinfo, sdata);
+			var cell = this.cell[c];
+			var fcross = cell.relcross((cell.qans===31?-1:1), -1);
+			this.searchloop(fcross.id, sinfo, sdata);
 		}
 		for(var c=0;c<this.cellmax;c++){ if(sdata[c]===0){ sdata[c]=2;} }
 		return sdata;
@@ -126,32 +129,32 @@ Board:{
 		for(var c=0;c<this.crossmax;c++){ sinfo.cross[c]=[];}
 		for(var c=0;c<this.cellmax;c++){
 			sinfo.cell[c]=[];
-			var bx=this.cell[c].bx, by=this.cell[c].by, qa=this.QaC(c), xc1, xc2;
-			if     (qa===31){ xc1=this.xnum(bx-1,by-1); xc2=this.xnum(bx+1,by+1);}
-			else if(qa===32){ xc1=this.xnum(bx-1,by+1); xc2=this.xnum(bx+1,by-1);}
+			var cell=this.cell[c], cross1, cross2;
+			if     (cell.qans===31){ cross1=cell.relcross(-1,-1); cross2=cell.relcross(1,1);}
+			else if(cell.qans===32){ cross1=cell.relcross(-1,1); cross2=cell.relcross(1,-1);}
 			else{ continue;}
 
-			sinfo.cell[c] = [xc1,xc2];
-			sinfo.cross[xc1].push(c);
-			sinfo.cross[xc2].push(c);
+			sinfo.cell[c] = [cross1.id,cross2.id];
+			sinfo.cross[cross1.id].push(c);
+			sinfo.cross[cross2.id].push(c);
 		}
 		return sinfo;
 	},
 
-	searchline : function(fc){
-		var check = [], stack=[fc];
-		for(var i=0;i<bd.crossmax;i++){ check[i]=0;}
+	searchline : function(fcross){
+		var check = [], stack=[fcross];
+		for(var i=0;i<this.crossmax;i++){ check[i]=0;}
 
 		while(stack.length>0){
-			var c=stack.pop();
-			if(check[c]!==0){ continue;}
+			var cross=stack.pop();
+			if(check[cross.id]!==0){ continue;}
+			check[cross.id]=1;
 
-			check[c]=1;
-			var nc, tx=this.cross[c].bx, ty=this.cross[c].by;
-			nc=this.xnum(tx-2,ty-2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx-1,ty-1))===31){ stack.push(nc);}
-			nc=this.xnum(tx-2,ty+2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx-1,ty+1))===32){ stack.push(nc);}
-			nc=this.xnum(tx+2,ty-2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx+1,ty-1))===32){ stack.push(nc);}
-			nc=this.xnum(tx+2,ty+2); if(nc!==null && check[nc]===0 && this.QaC(this.cnum(tx+1,ty+1))===31){ stack.push(nc);}
+			var nc;
+			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).getQans()===31){ stack.push(nc);}
+			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).getQans()===32){ stack.push(nc);}
+			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).getQans()===32){ stack.push(nc);}
+			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
 		}
 		return check;
 	}
@@ -160,7 +163,7 @@ Board:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,31:32,32:31}[bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,31:32,32:31}[bd.cell[c].getQans()]);}
 		}
 	}
 },
@@ -179,8 +182,6 @@ Menu:{
 Graphic:{
 	bdmargin       : 0.70,
 	bdmargin_image : 0.50,
-
-	hideHatena : true,
 
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
@@ -249,7 +250,7 @@ AnsCheck:{
 			this.setAlert('数字に繋がる線の数が間違っています。', 'A number is not equal to count of lines that is connected to it.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QaC(c)===0);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQans()===0);}) ){
 			this.setAlert('斜線がないマスがあります。','There is a empty cell.'); return false;
 		}
 
@@ -257,20 +258,18 @@ AnsCheck:{
 	},
 
 	checkLoopLine : function(){
-		var result = true, sdata = bd.getSlashData();
-		for(var c=0;c<bd.cellmax;c++){
-			if(sdata[c]==1){ result = false;}
-		}
-		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===1){ bd.sErC([c],1);} } }
-		return result;
+		var sdata = bd.getSlashData();
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
+		errclist.seterr(1);
+		return (errclist.length===0);
 	},
 	checkQnumCross : function(){
 		var result = true, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
-			var qn = bd.QnX(c);
+			var cross = bd.cross[c], qn = cross.getQnum();
 			if(qn>=0 && qn!=sinfo.cross[c].length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErX([c],1);
+				cross.seterr(1);
 				result = false;
 			}
 		}

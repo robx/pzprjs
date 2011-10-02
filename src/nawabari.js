@@ -27,27 +27,29 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	getdir4BorderCount : function(){
+		var cnt=0, pos=this.getaddr();
+		if( pos.y===bd.minby+1 || this.ub().isBorder() ){ cnt++;}
+		if( pos.y===bd.maxby-1 || this.db().isBorder() ){ cnt++;}
+		if( pos.x===bd.minbx+1 || this.lb().isBorder() ){ cnt++;}
+		if( pos.x===bd.maxby-1 || this.rb().isBorder() ){ cnt++;}
+		return cnt;
+	}
+},
+
 Board:{
 	isborder : 1,
 
 	initialize : function(owner){
 		this.SuperFunc.initialize.call(this, owner);
 		if(owner.pid==='nawabari'){
-			this.maxnum = 4;
-			this.minnum = 0;
+			this.owner.classes.Cell.prototype.maxnum = 4;
+			this.owner.classes.Cell.prototype.minnum = 0;
 		}
 		else if(owner.pid==='fourcells'){
-			this.maxnum = 3;
+			this.owner.classes.Cell.prototype.maxnum = 3;
 		}
-	},
-
-	getdir4Border : function(cc){
-		var cnt=0, pos=this.cell[cc].getaddr();
-		if( pos.y===this.minby+1 || this.isBorder(this.ub(cc)) ){ cnt++;}
-		if( pos.y===this.maxby-1 || this.isBorder(this.db(cc)) ){ cnt++;}
-		if( pos.x===this.minbx+1 || this.isBorder(this.lb(cc)) ){ cnt++;}
-		if( pos.x===this.maxby-1 || this.isBorder(this.rb(cc)) ){ cnt++;}
-		return cnt;
 	}
 },
 
@@ -138,9 +140,10 @@ AnsCheck:{
 	checkdir4BorderAns : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.isValidNum(c) && bd.getdir4Border(c)!=bd.QnC(c)){
+			var cell = bd.cell[c];
+			if(cell.isValidNum() && cell.getdir4BorderCount()!=cell.getQnum()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

@@ -1,24 +1,44 @@
 // Undo.js v3.4.0
 
 //---------------------------------------------------------------------------
-// ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
+// ★Operation(派生)クラス 単体の操作情報を保持する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
 pzprv3.createCommonClass('Operation',
 {
-	initialize : function(owner, group, property, id, old, num, chain){
+	initialize : function(owner){
 		this.owner = owner;
+	},
 
-		this.group = group;
-		this.property = property;
-		this.id = id;
+	chain : false,
+	//---------------------------------------------------------------------------
+	// ope.setData()  オブジェクトのデータを設定する
+	// ope.decode()   ファイル出力された履歴の入力用ルーチン
+	// ope.toString() ファイル出力する履歴の出力用ルーチン
+	//---------------------------------------------------------------------------
+	setData : function(old, num){
 		this.old = old;
 		this.num = num;
-		this.chain = chain;
-		
-		if(arguments.length===2){ this.decode(arguments[0]);}
 	},
+	decode : function(strs){ return false;},
+	toString : function(){ return '';},
+
+	//---------------------------------------------------------------------------
+	// ope.undo()  操作opeを一手前に戻す
+	// ope.redo()  操作opeを一手進める
+	// ope.exec()  操作opeを反映する
+	//---------------------------------------------------------------------------
+	undo : function(){ this.exec(this.old);},
+	redo : function(){ this.exec(this.num);},
+	exec : function(num){}
+});
+
+// ObjectOperationクラス
+pzprv3.createCommonClass('ObjectOperation:Operation',
+{
+	group    : '',
+	property : '',
 
 	/* 変換テーブル */
 	STRGROUP : {
@@ -38,91 +58,149 @@ pzprv3.createCommonClass('Operation',
 	},
 
 	//---------------------------------------------------------------------------
-	// ope.exec()  操作opeを反映する。um.undo(),um.redo()から内部的に呼ばれる
+	// ope.setData()  オブジェクトのデータを設定する
+	// ope.decode()   ファイル出力された履歴の入力用ルーチン
+	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
-	exec : function(num){
-		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			var id = bd.idnum(this.group, this.id[0], this.id[1]);
-			bd.setdata(this.group, this.property, id, num);
-			switch(this.group){
-				case bd.CELL:   um.stackCell(id); break;
-				case bd.CROSS:  um.stackCross(id); break;
-				case bd.BORDER: um.stackBorder(id); break;
-				case bd.EXCELL: um.stackEXCell(id); break;
-			}
-		}
-		else if(this.group === bd.BOARD){
-			if(!(num & menu.ex.TURNFLIP)){
-				var d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
-				menu.ex.expandreduce(num,d);
-			}
-			else{ // とりあえず盤面全部の対応だけ
-				var d = this.id, tmp;
-				if(um.undoExec && (num & menu.ex.TURN)){ tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
-				menu.ex.turnflip(num,d);
-			}
-
-			bd.disableInfo();
-			um.stackAll();
-			um.reqReset = true;
-		}
-		else{ return false;}
+	setData : function(obj, property, old, num, chain){
+		this.group = obj.group;
+		this.property = property;
+		this.bx  = obj.bx;
+		this.by  = obj.by;
+		this.old = old;
+		this.num = num;
+	},
+	decode : function(strs){
+		this.group    = this.STRGROUP[strs[0].charAt(0)];
+		this.property = this.STRPROP[strs[0].charAt(1)];
+		if(!this.group || !this.property){ return false;}
+		this.bx  = +strs[1];
+		this.by  = +strs[2];
+		this.old = +strs[3];
+		this.num = +strs[4];
 		return true;
 	},
+	toString : function(){
+		var prefix = '';
+		for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
+		for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
+		return [prefix, this.bx, this.by, this.old, this.num].join(',');
+	},
 
+	//---------------------------------------------------------------------------
+	// ope.undo()  操作opeを一手前に戻す
+	// ope.redo()  操作opeを一手進める
+	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
+	//---------------------------------------------------------------------------
+	undo : function(){
+		this.exec(this.old);
+		if(this.property!=bd.QSUB){ um.anscount--;}
+	},
+	redo : function(){
+		this.exec(this.num);
+		if(this.property!=bd.QSUB){ um.anscount++;}
+	},
+	exec : function(num){
+		var obj = bd.getObjectPos(this.group, this.bx, this.by);
+		if(this.group!==obj.group){ return true;}
+		obj.setdata(this.property, num);
+		switch(obj.group){
+			case bd.CELL:   pc.paintCell(obj); break;
+			case bd.CROSS:  pc.paintCross(obj); break;
+			case bd.BORDER: pc.paintBorder(obj); break;
+			case bd.EXCELL: pc.paintEXCell(obj); break;
+		}
+	}
+});
+
+// BoardAdjustOperationクラス
+pzprv3.createCommonClass('BoardAdjustOperation:Operation',
+{
+	prefix : 'AJ',
 	//---------------------------------------------------------------------------
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
-	decode : function(str){
-		if(str.charAt(0)==='+'){
-			this.chain = true;
-			str = str.substr(1);
-		}
-
-		var strs = str.split(/,/);
-		if(!!this.STRGROUP[strs[0].charAt(0)]){
-			this.group    = this.STRGROUP[strs[0].charAt(0)];
-			this.property = this.STRPROP[strs[0].charAt(1)];
-			this.id = [+strs[1], +strs[2]];
-			this.old = +strs[3];
-			this.num = +strs[4];
-		}
-		else if(strs[0]==='AJ'){
-			this.group    = bd.BOARD;
-			this.property = 'adjust';
-			this.id = 0;
-			this.old = +strs[1];
-			this.num = +strs[2];
-		}
-		else if(strs[0]==='AT'){
-			this.group    = bd.BOARD;
-			this.property = 'turnflip';
-			this.id = {x1:+strs[1],y1:+strs[2],x2:+strs[3],y2:+strs[4]};
-			this.old = +strs[5];
-			this.num = +strs[6];
-		}
-		else{ return strs;}
-		return '';
+	decode : function(strs){
+		if(strs[0]!==this.prefix){ return false;}
+		this.old = +strs[1];
+		this.num = +strs[2];
+		return true;
 	},
 	toString : function(){
-		if(this.group !== bd.BOARD && this.group !== bd.OTHER){
-			var prefix = (this.chain?'+':'');
-			for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
-			for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
-			return [prefix, this.id[0], this.id[1], this.old, this.num].join(',');
-		}
-		else if(this.group === bd.BOARD){
-			var d = this.id, prepre = (this.chain?'+':'');
-			switch(this.property){
-				case 'adjust':   return [prepre+'AJ', this.old, this.num].join(',');
-				case 'turnflip': return [prepre+'AT', d.x1, d.y1, d.x2, d.y2, this.old, this.num].join(',');
-			}
-		}
-		else{ return '';}
+		return [this.prefix, this.old, this.num].join(',');
+	},
+
+	//---------------------------------------------------------------------------
+	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
+	//---------------------------------------------------------------------------
+	exec : function(num){
+		menu.ex.expandreduce(num,{x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows});
+
+		bd.disableInfo();
+		pc.paintAll();
+		um.reqReset = true;
 	}
 });
 
+// BoardFlipOperationクラス
+pzprv3.createCommonClass('BoardFlipOperation:Operation',
+{
+	prefix : 'AT',
+	area : {},
+	//---------------------------------------------------------------------------
+	// ope.setData()  オブジェクトのデータを設定する
+	// ope.decode()   ファイル出力された履歴の入力用ルーチン
+	// ope.toString() ファイル出力する履歴の出力用ルーチン
+	//---------------------------------------------------------------------------
+	setData : function(d, old, num){
+		this.area = d;
+		this.old = old;
+		this.num = num;
+	},
+	decode : function(strs){
+		if(strs[0]!==this.prefix){ return false;}
+		this.area.x1 = +strs[1];
+		this.area.y1 = +strs[2];
+		this.area.x2 = +strs[3];
+		this.area.y2 = +strs[4];
+		this.old = +strs[5];
+		this.num = +strs[6];
+		return true;
+	},
+	toString : function(){
+		var x1 = this.area.x1, y1 = this.area.y1, x2 = this.area.x2, y2 = this.area.y2;
+		return [this.prefix, x1, y1, x2, y2, this.old, this.num].join(',');
+	},
+
+	//---------------------------------------------------------------------------
+	// ope.undo()  操作opeを一手前に戻す
+	// ope.redo()  操作opeを一手進める
+	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
+	//---------------------------------------------------------------------------
+	undo : function(){
+		// とりあえず盤面全部の対応だけ
+		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
+		if(this.old & menu.ex.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
+		this.exec(this.old,d);
+	},
+	redo : function(){
+		// とりあえず盤面全部の対応だけ
+		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
+		this.exec(this.num,d);
+	},
+	exec : function(num,d){
+		menu.ex.turnflip(num,d);
+
+		bd.disableInfo();
+		pc.paintAll();
+		um.reqReset = true;
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
+//---------------------------------------------------------------------------
 // OperationManagerクラス
 pzprv3.createCommonClass('OperationManager',
 {
@@ -135,7 +213,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
 		this.disrec = 0;		// このクラスからの呼び出し時は1にする
-		this.disCombine = 0;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
+		this.disCombine = false;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
 		this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
 		this.chainflag = false;		// chainされたOperationオブジェクトを登録する
@@ -146,7 +224,6 @@ pzprv3.createCommonClass('OperationManager',
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 	},
 
 	//---------------------------------------------------------------------------
@@ -192,64 +269,130 @@ pzprv3.createCommonClass('OperationManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe() 指定された操作を追加する。id等が同じ場合は最終操作を変更する
+	// um.addOpe_common()      指定された操作を追加する(共通操作)
+	// um.addOpe_Object()      指定された操作を追加する。プロパティ等が同じ場合は最終操作を変更する
+	// um.addOpe_BoardAdjust() 指定された盤面(拡大・縮小)操作を追加する
+	// um.addOpe_BoardFlip()   指定された盤面(回転・反転)操作を追加する
 	//---------------------------------------------------------------------------
-	addOpe : function(group, property, id, old, num){
-		if(!this.isenableRecord() || (old===num && group!==bd.BOARD)){ return;}
+	addOpe_common : function(regist_func, cond_func){
+		if(!this.isenableRecord()){ return;}
 
 		if(this.enableRedo){
 			for(var i=this.ope.length-1;i>this.current;i--){ this.ope.pop();}
 			this.current = this.ope.length-1;
 		}
-		var ref = this.ope[this.current];
 
-		// 前回と同じ場所なら前回の更新のみ
-		if( this.disCombine==0 && !!ref &&
-			ref.group == group && ref.property == property && ref.id == id && ref.num == old &&
-			( (group == bd.CELL && ( property == bd.QNUM || property == bd.ANUM )) || group == bd.CROSS)
-		)
-			{ ref.num = num;}
-		else{
-			this.current++;
-			if(group!==bd.BOARD&&group!==bd.OTHER){ var obj=bd.getObject(group,id); id=[obj.bx,obj.by];}
-			this.ope.push(new this.owner.classes.Operation(this.owner, group, property, id, old, num, this.chainflag));
-		}
+		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
+		var ope = regist_func.call(this);
+		ope.chain = this.chainflag;
 
-		if(property!=bd.QSUB){ this.anscount++;}
+		this.ope.push(ope);
+		this.current++;
+		this.anscount++;
+
 		this.chainflag = true;
 		this.changeflag = true;
 		this.enb_btn();
 	},
 
+	addOpe_Object : function(obj, property, old, num){
+		if(old===num){ return;}
+		var val = pp.getVal('autocheck');
+		pp.setValOnly('autocheck', false);
+
+		this.addOpe_common(function(){
+			if(property===bd.QSUB){ this.anscount--;}
+
+			var ope = new this.owner.classes.ObjectOperation(this.owner);
+			ope.setData(obj, property, old, num);
+			return ope;
+		},
+		function(){
+			var ref = this.ope[this.current];
+
+			// 前回と同じ場所なら前回の更新のみ
+			if( !this.disCombine && !!ref && !!ref.property &&
+				ref.group===obj.group && ref.property===property &&
+				ref.num===old && ref.bx===obj.bx && ref.by===obj.by && 
+				( (obj.iscellobj && ( property===bd.QNUM || property===bd.ANUM )) || obj.iscrossobj)
+			)
+			{
+				ref.num = num;
+				return false;
+			}
+			return true;
+		});
+
+		pp.setValOnly('autocheck', val);
+	},
+	addOpe_BoardAdjust : function(old, num){
+		// 操作を登録する
+		this.addOpe_common(function(){
+			var ope = new this.owner.classes.BoardAdjustOperation(this.owner);
+			ope.setData(old, num);
+			return ope;
+		});
+	},
+	addOpe_BoardFlip : function(d, old, num){
+		// 操作を登録する
+		this.addOpe_common(function(){
+			var ope = new this.owner.classes.BoardFlipOperation(this.owner);
+			ope.setData(d, old, num);
+			return ope;
+		});
+	},
+
 	//---------------------------------------------------------------------------
 	// um.decodeLines() ファイル等から読み込んだ文字列を履歴情報に変換する
-	// um.parse()       文字列を履歴情報に変換する
+	// um.decodeOpe()   1つの履歴を履歴情報に変換する
 	// um.toString()    履歴情報を文字列に変換する
 	//---------------------------------------------------------------------------
 	decodeLines : function(){
 		this.allerase();
-		var linepos = fio.lineseek, data = [], inhistory = false;
+		var linepos = fio.lineseek, datas = [], inhistory = false;
 		while(1){
 			var line = fio.readLine();
 			if(line===(void 0)){ fio.lineseek=linepos; break;}
 			else if(!inhistory){
-				if(line==='history:{'){ inhistory=true; data=['{'];}
+				if(line==='history:{'){ inhistory=true; datas=['{'];}
 			}
 			else if(inhistory){
-				data.push(line);
-				if(line==='}'){ this.parse(data.join('')); break;}
+				datas.push(line);
+				if(line==='}'){ break;}
 			}
 		}
+
+		if(!!window.JSON){
+			try{
+				var str = datas.join(''), data = JSON.parse(str);
+				this.ope = [];
+				this.current = data.current-1;
+				for(var i=0,len=data.datas.length;i<len;i++){
+					var str = data.datas[i], chain = false;
+					if(str.charAt(0)==='+'){ chain = true; str = str.substr(1);}
+					var ope = this.decodeOpe(str.split(/,/));
+					if(!!ope){
+						ope.chain = chain;
+						this.ope.push(ope);
+					}
+				}
+			}
+			catch(e){ /*　デコードできなかったとか　*/ }
+		}
+
 		this.enb_btn();
 	},
-	parse : function(str){
-		if(!window.JSON){ return;}
-		var data = JSON.parse(str);
-		this.ope = [];
-		this.current = data.current-1;
-		for(var i=0,len=data.datas.length;i<len;i++){
-			this.ope[i] = new this.owner.classes.Operation(this.owner, data.datas[i]);
-		}
+	decodeOpe : function(strs){
+		var ope = new this.owner.classes.ObjectOperation(this.owner);
+		if(ope.decode(strs)){ return ope;}
+
+		ope = new this.owner.classes.BoardAdjustOperation(this.owner);
+		if(ope.decode(strs)){ return ope;}
+
+		ope = new this.owner.classes.BoardFlipOperation(this.owner);
+		if(ope.decode(strs)){ return ope;}
+
+		return null;
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
@@ -260,7 +403,8 @@ pzprv3.createCommonClass('OperationManager',
 		data.push('"current":'+(this.current+1)+',');
 		data.push('"datas":[');
 		for(var i=0;i<lastid;i++){
-			datas.push(['"',(this.ope[i].toString()),'"'].join(''));
+			var chain = (this.ope[i].chain?'+':'');
+			datas.push(['"',chain,(this.ope[i].toString()),'"'].join(''));
 		}
 		data.push(datas.join(',/'));
 		data.push(']');
@@ -301,8 +445,7 @@ pzprv3.createCommonClass('OperationManager',
 		for(var i=this.current;i>-1;i--){
 			var ref = this.ope[i];
 			if(!ref){ break;}
-			ref.exec(ref.old);
-			if(ref.property!=bd.QSUB){ this.anscount--;}
+			ref.undo();
 			this.current--;
 			if(!ref.chain){ break;}
 		}
@@ -311,8 +454,7 @@ pzprv3.createCommonClass('OperationManager',
 		for(var i=this.current+1,len=this.ope.length;i<len;i++){
 			var ref = this.ope[i];
 			if(!ref){ break;}
-			ref.exec(ref.num);
-			if(ref.property!=bd.QSUB){ this.anscount++;}
+			ref.redo();
 			this.current++;
 			if(!this.ope[i+1] || !this.ope[i+1].chain){ break;}
 		}
@@ -325,8 +467,8 @@ pzprv3.createCommonClass('OperationManager',
 	preproc : function(){
 		this.reqReset=false;
 
-		this.range = { x1:bd.maxbx+1, y1:bd.maxby+1, x2:bd.minbx-1, y2:bd.minby-1};
 		this.disableRecord();
+		pc.suspend();
 	},
 	postproc : function(){
 		if(this.reqReset){
@@ -338,46 +480,9 @@ pzprv3.createCommonClass('OperationManager',
 			bd.resetInfo();
 			pc.resize_canvas();
 		}
-		else{
-			pc.paintRange(this.range.x1, this.range.y1, this.range.x2, this.range.y2);
-		}
+		pc.unsuspend();
+
 		this.enableRecord();
 		this.enb_btn();
-	},
-
-	//---------------------------------------------------------------------------
-	// um.stackAll()    盤面全部を描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.stackCell()   Cellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.stackCross()  Crossの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.stackBorder() Borderの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.stackEXCell() EXCellの周りを描画するため、どの範囲まで変更が入ったか記憶しておく
-	// um.paintStack()  変更が入った範囲を保持する
-	//---------------------------------------------------------------------------
-	stackAll : function(){
-		this.range = {x1:bd.minbx,y1:bd.minby,x2:bd.maxbx,y2:bd.maxby};
-	},
-	stackCell : function(id){
-		this.paintStack(bd.cell[id].bx-1, bd.cell[id].by-1, bd.cell[id].bx+1, bd.cell[id].by+1);
-	},
-	stackCross : function(id){
-		this.paintStack(bd.cross[id].bx-1, bd.cross[id].by-1, bd.cross[id].bx+1, bd.cross[id].by+1);
-	},
-	stackBorder : function(id){
-		if(isNaN(id) || !bd.border[id]){ return;}
-		if(bd.isHorz(id)){
-			this.paintStack(bd.border[id].bx-2, bd.border[id].by-1, bd.border[id].bx+2, bd.border[id].by+1);
-		}
-		else{
-			this.paintStack(bd.border[id].bx-1, bd.border[id].by-2, bd.border[id].bx+1, bd.border[id].by+2);
-		}
-	},
-	stackEXCell : function(id){
-		this.paintStack(bd.excell[id].bx-1, bd.excell[id].by-1, bd.excell[id].bx+1, bd.excell[id].by+1);
-	},
-	paintStack : function(x1,y1,x2,y2){
-		if(this.range.x1 > x1){ this.range.x1 = x1;}
-		if(this.range.y1 > y1){ this.range.y1 = y1;}
-		if(this.range.x2 < x2){ this.range.x2 = x2;}
-		if(this.range.y2 < y2){ this.range.y2 = y2;}
 	}
 });

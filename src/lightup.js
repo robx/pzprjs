@@ -25,98 +25,94 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0
-},
-
-Board:{
-	maxnum : 4,
-	minnum : 0,
+	qlight : 0,
+	akariinfo : 0, /* 0:なし 1:あかり 2:黒マス */
 
 	numberIsWhite : true,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	maxnum : 4,
+	minnum : 0,
 
-		this.posthook.cell.qnum = this.setAkariInfo;
-		this.posthook.cell.qans = this.setAkariInfo;
-
-		this.akariinfo = []; /* インスタンス化 */
+	posthook : {
+		qnum : function(num){ this.setAkariInfo(num);},
+		qans : function(num){ this.setAkariInfo(num);}
 	},
 
+	isAkari : function(){ return this.qans===1;},
+
+	setAkariInfo : function(num){
+		var val=0, old = this.akariinfo;
+		if     (this.qnum!==-1){ val=2;}
+		else if(this.qans=== 1){ val=1;}
+		if(old===val){ return;}
+
+		this.akariinfo = val;
+		this.setQlight(old, val);
+	},
+	setQlight : function(old, val){
+		var clist = this.akariRangeClist();
+		if(old===0 && val===1){
+			for(var i=0;i<clist.length;i++){ clist[i].qlight=1;}
+		}
+		else{
+			for(var i=0;i<clist.length;i++){
+				var cell2 = clist[i], ql_old=cell2.qlight;
+				if(ql_old===0 && ((old===1 && val===0) || (old===0 && val===2))){ continue;}
+				if(ql_old===1 && (old===2 && val===0)){ continue;}
+
+				var clist2 = cell2.akariRangeClist(), isakari = 0;
+				for(var j=0;j<clist2.length;j++){ if(clist2[j].isAkari()){ isakari=1; break;} }
+				cell2.qlight = isakari;
+			}
+			if(val===2){ this.qlight = 0;}
+		}
+
+		var d=this.akariRange();
+		pc.paintRange(d.x1, this.by, d.x2, this.by);
+		pc.paintRange(this.bx, d.y1, this.bx, d.y2);
+	},
+
+	akariRangeClist : function(){
+		var cell, clist=new pzprv3.core.PieceList(this.owner);
+
+		clist.add(this);
+		cell=this.lt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.lt();}
+		cell=this.rt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.rt();}
+		cell=this.up(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.up();}
+		cell=this.dn(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.dn();}
+		return clist;
+	},
+	akariRange : function(){
+		var cell, cell2, d={};
+
+		cell=cell2=this.lt(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.lt();} d.x1=cell.bx;
+		cell=cell2=this.rt(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.rt();} d.x2=cell.bx;
+		cell=cell2=this.up(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.up();} d.y1=cell.by;
+		cell=cell2=this.dn(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.dn();} d.y2=cell.by;
+		return d;
+	}
+},
+
+Board:{
 	resetInfo : function(){
 		this.initQlight();
 	},
 
-	isAkari : function(c){
-		return (!!this.cell[c] && this.cell[c].qans===1);
-	},
-
-	akariinfo : [], /* 0:なし 1:あかり 2:黒マス */
 	initQlight : function(){
 		for(var c=0;c<this.cellmax;c++){
-			this.cell[c].qlight = 0;
-			this.akariinfo[c] = 0;
-			if     (this.cell[c].qnum!==-1){ this.akariinfo[c]=2;}
-			else if(this.cell[c].qans=== 1){ this.akariinfo[c]=1;}
+			var cell = this.cell[c];
+			cell.qlight = 0;
+			cell.akariinfo = 0;
+			if     (cell.qnum!==-1){ cell.akariinfo=2;}
+			else if(cell.qans=== 1){ cell.akariinfo=1;}
 		}
 		for(var c=0;c<this.cellmax;c++){
-			if(!this.isAkari(c)){ continue;}
+			var cell = this.cell[c];
+			if(cell.akariinfo!==1){ continue;}
 
-			var clist = this.cellRangeClist(c);
-			for(var i=0;i<clist.length;i++){ this.cell[clist[i]].qlight=1;}
+			var clist = cell.akariRangeClist();
+			for(var i=0;i<clist.length;i++){ clist[i].qlight=1;}
 		}
-	},
-	setAkariInfo : function(c,num){
-		var val=0, old=this.akariinfo[c];
-		if     (this.cell[c].qnum!==-1){ val=2;}
-		else if(this.cell[c].qans=== 1){ val=1;}
-		if(old===val){ return;}
-
-		this.akariinfo[c] = val;
-		this.setQlight(c, old, val);
-	},
-	setQlight : function(c, old, val){
-		var clist = this.cellRangeClist(c);
-		if(old===0 && val===1){
-			for(var i=0;i<clist.length;i++){ this.cell[clist[i]].qlight=1;}
-		}
-		else{
-			for(var i=0;i<clist.length;i++){
-				var cc = clist[i], ql_old=this.cell[cc].qlight;
-				if(ql_old===0 && ((old===1 && val===0) || (old===0 && val===2))){ continue;}
-				if(ql_old===1 && (old===2 && val===0)){ continue;}
-
-				var clist2 = this.cellRangeClist(cc), isakari = 0;
-				for(var j=0;j<clist2.length;j++){ if(this.isAkari(clist2[j])){ isakari=1; break;} }
-				this.cell[cc].qlight = isakari;
-			}
-			if(val===2){ this.cell[c].qlight = 0;}
-		}
-
-		if(!!pc.currentContext){
-			var d=this.cellRange(c), bx=this.cell[c].bx, by=this.cell[c].by;
-			pc.paintRange(d.x1, by, d.x2, by);
-			pc.paintRange(bx, d.y1, bx, d.y2);
-		}
-	},
-
-	cellRangeClist : function(c){
-		var bx=this.cell[c].bx, by=this.cell[c].by, cc, clist=[c];
-
-		for(var tx=bx-2,ty=by;tx>this.minbx;tx-=2){ cc=this.cnum(tx,ty); if(this.cell[cc].qnum!==-1){ break;} clist.push(cc);}
-		for(var tx=bx+2,ty=by;tx<this.maxbx;tx+=2){ cc=this.cnum(tx,ty); if(this.cell[cc].qnum!==-1){ break;} clist.push(cc);}
-		for(var tx=bx,ty=by-2;ty>this.minby;ty-=2){ cc=this.cnum(tx,ty); if(this.cell[cc].qnum!==-1){ break;} clist.push(cc);}
-		for(var tx=bx,ty=by+2;ty<this.maxby;ty+=2){ cc=this.cnum(tx,ty); if(this.cell[cc].qnum!==-1){ break;} clist.push(cc);}
-		return clist;
-	},
-	cellRange : function(c){
-		var bx=this.cell[c].bx, by=this.cell[c].by, cc, d={};
-
-		for(var tx=bx-2,ty=by;tx>this.minbx;tx-=2){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ break;}} d.x1=tx+2;
-		for(var tx=bx+2,ty=by;tx<this.maxbx;tx+=2){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ break;}} d.x2=tx-2;
-		for(var tx=bx,ty=by-2;ty>this.minby;ty-=2){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ break;}} d.y1=ty+2;
-		for(var tx=bx,ty=by+2;ty<this.maxby;ty+=2){ if(this.cell[this.cnum(tx,ty)].qnum!==-1){ break;}} d.y2=ty-2;
-		return d;
 	}
 },
 
@@ -171,14 +167,14 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.isAkari(c)){
-				g.fillStyle = (bd.cell[c].error!==4 ? lampcolor : this.errcolor1);
-				if(this.vnop(header+c,this.FILL)){
-					g.fillCircle(this.cell[c].px, this.cell[c].py, rsize);
+			var cell = clist[i];
+			if(cell.isAkari()){
+				g.fillStyle = (cell.error!==4 ? lampcolor : this.errcolor1);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillCircle(cell.px, cell.py, rsize);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	}
 },
@@ -233,15 +229,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsPartly(this.isPluralAkari, function(c){ return bd.isNum(c);}, true) ){
+		if( !this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, true) ){
 			this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.isAkari(c);},0) ){
+		if( !this.checkDir4Cell(function(cell){ return cell.isAkari();},0) ){
 			this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.noNum(c) && bd.cell[c].qlight!==1);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);}) ){
 			this.setAlert('照明に照らされていないセルがあります。','A cell is not shined.'); return false;
 		}
 
@@ -249,13 +245,13 @@ AnsCheck:{
 	},
 
 	isPluralAkari : function(keycellpos, clist){
-		var akaris=[];
+		var akaris=new pzprv3.core.PieceList(this.owner);
 		for(var i=0;i<clist.length;i++){
-			if(bd.isAkari(clist[i])){ akaris.push(clist[i]);}
+			if(clist[i].isAkari()){ akaris.add(clist[i]);}
 		}
 		var result = (akaris.length<=1);
 
-		if(!result){ bd.sErC(akaris,4);}
+		if(!result){ akaris.seterr(4);}
 		return result;
 	}
 }

@@ -20,40 +20,40 @@ MouseEvent:{
 	inputRed : function(){ this.dispRedLine();},
 
 	inputLoopsp : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cc===tc.getTCC()){
-			var qu = bd.QuC(cc), qn = bd.QnC(cc);
+		if(cell===tc.getTCC()){
+			var qu = cell.getQues(), qn = cell.getQnum();
 			if(this.btn.Left){
 				if(qn===-1){
-					if     (qu==0)         { bd.sQuC(cc,11);}
-					else if(qu>=11&&qu<=16){ bd.sQuC(cc,qu+1);}
-					else if(qu==17)        { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+					if     (qu==0)         { cell.setQues(11);}
+					else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
+					else if(qu==17)        { cell.setQues(0); cell.setQnum(-2);}
 				}
-				else if(qn==-2){ bd.sQnC(cc,1);}
-				else if(qn<bd.maxnum){ bd.sQnC(cc,qn+1);}
-				else{ bd.sQuC(cc,0); bd.sQnC(cc,-1);}
+				else if(qn==-2){ cell.setQnum(1);}
+				else if(qn<cell.maxnum){ cell.setQnum(qn+1);}
+				else{ cell.setQues(0); cell.setQnum(-1);}
 			}
 			else if(this.btn.Right){
 				if(qn===-1){
-					if     (qu==0)         { bd.sQuC(cc,0); bd.sQnC(cc,-2);}
-					else if(qu==11)        { bd.sQuC(cc,0); bd.sQnC(cc,-1);}
-					else if(qu>=12&&qs<=17){ bd.sQuC(cc,qu-1);}
+					if     (qu==0)         { cell.setQues(0); cell.setQnum(-2);}
+					else if(qu==11)        { cell.setQues(0); cell.setQnum(-1);}
+					else if(qu>=12&&qs<=17){ cell.setQues(qu-1);}
 				}
-				else if(qn==-2){ bd.sQuC(cc,17); bd.sQnC(cc,-1);}
-				else if(qn>1) { bd.sQnC(cc,qn-1);}
-				else{ bd.sQuC(cc,0); bd.sQnC(cc,-2);}
+				else if(qn==-2){ cell.setQues(17); cell.setQnum(-1);}
+				else if(qn>1) { cell.setQnum(qn-1);}
+				else{ cell.setQues(0); cell.setQnum(-2);}
 			}
 		}
 		else{
-			var cc0 = tc.getTCC();
-			tc.setTCC(cc);
-			pc.paintCell(cc0);
+			var cell0 = tc.getTCC();
+			tc.setTCC(cell);
+			pc.paintCell(cell0);
 		}
-		this.mouseCell = cc;
+		this.mouseCell = cell;
 
-		pc.paintCell(cc);
+		pc.paintCell(cell);
 	}
 },
 
@@ -66,24 +66,24 @@ KeyEvent:{
 		this.key_inputLineParts(ca);
 	},
 	key_inputLineParts : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
-		if     (ca=='q'){ bd.sQuC(cc,11); bd.sQnC(cc,-1);}
-		else if(ca=='w'){ bd.sQuC(cc,12); bd.sQnC(cc,-1);}
-		else if(ca=='e'){ bd.sQuC(cc,13); bd.sQnC(cc,-1);}
-		else if(ca=='r'){ bd.sQuC(cc, 0); bd.sQnC(cc,-1);}
-		else if(ca==' '){ bd.sQuC(cc, 0); bd.sQnC(cc,-1);}
-		else if(ca=='a'){ bd.sQuC(cc,14); bd.sQnC(cc,-1);}
-		else if(ca=='s'){ bd.sQuC(cc,15); bd.sQnC(cc,-1);}
-		else if(ca=='d'){ bd.sQuC(cc,16); bd.sQnC(cc,-1);}
-		else if(ca=='f'){ bd.sQuC(cc,17); bd.sQnC(cc,-1);}
+		if     (ca=='q'){ cell.setQues(11); cell.setQnum(-1);}
+		else if(ca=='w'){ cell.setQues(12); cell.setQnum(-1);}
+		else if(ca=='e'){ cell.setQues(13); cell.setQnum(-1);}
+		else if(ca=='r'){ cell.setQues(0);  cell.setQnum(-1);}
+		else if(ca==' '){ cell.setQues(0);  cell.setQnum(-1);}
+		else if(ca=='a'){ cell.setQues(14); cell.setQnum(-1);}
+		else if(ca=='s'){ cell.setQues(15); cell.setQnum(-1);}
+		else if(ca=='d'){ cell.setQues(16); cell.setQnum(-1);}
+		else if(ca=='f'){ cell.setQues(17); cell.setQnum(-1);}
 		else if((ca>='0' && ca<='9') || ca=='-'){
-			if(this.key_inputqnum_main(cc,ca)){ bd.sQuC(cc,0);}
+			if(this.key_inputqnum_main(cell,ca)){ cell.setQues(0);}
 		}
 		else{ return;}
 
-		this.prev=cc;
-		pc.paintCell(cc);
+		this.prev = cell;
+		pc.paintCell(cell);
 	},
 
 	enablemake_p : true,
@@ -117,11 +117,12 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Border:{
 	enableLineNG : true,
-	enableLineCombined : true,
+	enableLineCombined : true
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -141,8 +142,8 @@ MenuExec:{
 			}
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tques[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
+				var cell = clist[i];
+				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
 			}
 		}
 	}
@@ -189,8 +190,8 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.drawCirclesAtNumber();
 		this.drawNumbers();
@@ -280,7 +281,7 @@ AnsCheck:{
 			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.isNum(c));}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.isNum());}) ){
 			this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
 		}
 
@@ -294,7 +295,7 @@ AnsCheck:{
 			this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)!==4 && bd.QuC(c)===11);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);}) ){
 			this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
 		}
 
@@ -310,12 +311,12 @@ AnsCheck:{
 
 	checkLoopNumber : function(){
 		return this.checkAllLoops(function(cells){
-			var sub = (new pzprv3.core.IDList(cells)).sublist(function(c){ return bd.isValidNum(c);});
+			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
 			var number = null;
-			for(var i=0;i<sub.data.length;i++){
-				if(number===null){ number=bd.QnC(sub.data[i]);}
-				else if(number!==bd.QnC(sub.data[i])){
-					bd.sErC(sub.data,1);
+			for(var n=0;n<sublist.length;n++){
+				if(number===null){ number = sublist[n].getNum();}
+				else if(number!==sublist[n].getNum()){
+					sublist.seterr(1);
 					return false;
 				}
 			}
@@ -324,12 +325,14 @@ AnsCheck:{
 	},
 	checkNumberLoop : function(){
 		return this.checkAllLoops(function(cells){
-			var sub = (new pzprv3.core.IDList(cells)).sublist(function(c){ return bd.isValidNum(c);});
-			if(sub.isnull()){ return true;}
-			var number = bd.QnC(sub.data[0]);
+			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
+			if(sublist.length===0){ return true;}
+			var number = sublist[0].getNum();
+
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.QnC(c)===number && !sub.include(c)){
-					bd.sErC(sub.data,1);
+				var cell = bd.cell[c], included=false;
+				if(cell.getNum()===number && !sublist.include(cell)){
+					sublist.seterr(1);
 					return false;
 				}
 			}
@@ -338,18 +341,19 @@ AnsCheck:{
 	},
 	checkNumberInLoop : function(){
 		return this.checkAllLoops(function(cells){
-			return (!(new pzprv3.core.IDList(cells)).sublist(function(c){ return bd.isNum(c);}).isnull());
+			return (cells.filter(function(cell){ return cell.isNum();}).length > 0);
 		});
 	},
 	checkAllLoops : function(func){
 		var result = true;
 		var linfo = bd.lines.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
-			if(func(bd.lines.getClistFromIdlist(linfo.room[r].idlist))){ continue;}
+			var blist = linfo.getblist(r);
+			if(func(blist.cellinside())){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.sErBAll(2);}
-			bd.sErB(linfo.room[r].idlist,1);
+			if(result){ bd.border.seterr(2);}
+			blist.seterr(1);
 			result = false;
 		}
 		return result;

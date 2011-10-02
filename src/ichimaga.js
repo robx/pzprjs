@@ -27,15 +27,18 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
+Cell:{
+	maxnum : 4,
 
-	maxnum : 4
+	iscrossing : function(){ return this.noNum();}
+},
+
+Board:{
+	isborder : 1
 },
 
 LineManager:{
-	isCenterLine : true,
-	iscrossing : function(cc){ return bd.noNum(cc);}
+	isCenterLine : true
 },
 
 AreaManager:{
@@ -71,8 +74,8 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.drawCirclesAtNumber();
 		this.drawNumbers();
@@ -149,11 +152,11 @@ AnsCheck:{
 			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
 		}
 
-		if( !this.checkAllCell( function(c){ return (bd.isValidNum(c) && bd.QnC(c)!==bd.lines.lcntCell(c)); } ) ){
+		if( !this.checkAllCell( function(cell){ return (cell.isValidNum() && cell.getQnum()!==cell.lcnt()); } ) ){
 			this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
 		}
 
-		if( !this.checkAllCell( function(c){ return( bd.isNum(c) && bd.lines.lcntCell(c)===0); } ) ){
+		if( !this.checkAllCell( function(cell){ return( cell.isNum() && cell.lcnt()===0); } ) ){
 			this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
 		}
 
@@ -162,17 +165,17 @@ AnsCheck:{
 
 	checkLcntCell_firefly : function(val){
 		if(bd.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(c){ return (bd.noNum(c) && bd.lines.lcntCell(c)==val);});
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
 	},
 
 	isErrorFlag_line : function(xinfo){
 		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var c1=room.cells[0], c2=room.cells[1];
+		var cell1=room.cells[0], cell2=room.cells[1];
 
-		var qn1=bd.QnC(c1), qn2=(c2!==null?bd.QnC(c2):-1), err=0;
+		var qn1=cell1.getQnum(), qn2=(!cell2.isnull?cell2.getQnum():-1), err=0;
 		if((this.owner.pid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
-		else if(c2!==null && ccnt>1){ err=2;}
-		else if(c2===null){ err=1;}
+		else if(!cell2.isnull && ccnt>1){ err=2;}
+		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
 }

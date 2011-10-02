@@ -28,12 +28,9 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
-	nummaxfunc : function(cc){
-		var id = this.areas.rinfo.id[cc];
-		var d = this.getSizeOfClist(this.areas.rinfo[id].clist);
+Cell:{
+	nummaxfunc : function(){
+		var d = bd.areas.rinfo.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}
@@ -50,6 +47,9 @@ Board:{
 		}
 	},
 	minnum : 0
+},
+Board:{
+	isborder : 1
 },
 
 AreaManager:{
@@ -134,8 +134,8 @@ Encode:{
 	encodeHeyaApp : function(){
 		var barray=[], rinfo=bd.areas.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
-			var ul = bd.cell[bd.cnum(d.x1,d.y1)].qnum;
+			var d = rinfo.getclist(id).getRectSize();
+			var ul = bd.getc(d.x1,d.y1).qnum;
 			barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 		}
 		this.outbstr = barray.join("/");
@@ -169,7 +169,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
+		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
@@ -186,7 +186,7 @@ AnsCheck:{
 			this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
 		}
 
-		if( !this.checkRowsColsPartly(this.isBorderCount, function(c){ return bd.isBlack(c);}, false) ){
+		if( !this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isBlack();}, false) ){
 			this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
 		}
 
@@ -200,13 +200,13 @@ AnsCheck:{
 	checkFractal : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var d = bd.getSizeOfClist(rinfo.room[r].idlist);
+			var clist = rinfo.getclist(r), d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
-			for(var i=0;i<rinfo.room[r].idlist.length;i++){
-				var c=rinfo.room[r].idlist[i];
-				if(bd.isBlack(c) ^ bd.isBlack(bd.cnum(sx-bd.cell[c].bx, sy-bd.cell[c].by))){
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i], cell2 = bd.getc(sx-cell.bx, sy-cell.by);
+				if(cell.isBlack() ^ cell2.isBlack()){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC(rinfo.room[r].idlist,1);
+					clist.seterr(1);
 					result = false;
 				}
 			}
@@ -215,21 +215,21 @@ AnsCheck:{
 	},
 
 	isBorderCount : function(keycellpos, clist){
-		var d = bd.getSizeOfClist(clist), count = 0, bx, by;
+		var d = clist.getRectSize(), count = 0, bx, by;
 		if(d.x1===d.x2){
 			bx = d.x1;
 			for(by=d.y1+1;by<=d.y2-1;by+=2){
-				if(bd.isBorder(bd.bnum(bx,by))){ count++;}
+				if(bd.getb(bx,by).isBorder()){ count++;}
 			}
 		}
 		else if(d.y1===d.y2){
 			by = d.y1;
 			for(bx=d.x1+1;bx<=d.x2-1;bx+=2){
-				if(bd.isBorder(bd.bnum(bx,by))){ count++;}
+				if(bd.getb(bx,by).isBorder()){ count++;}
 			}
 		}
 
-		if(count>=2){ bd.sErC(clist,1); return false;}
+		if(count>=2){ clist.seterr(1); return false;}
 		return true;
 	}
 }

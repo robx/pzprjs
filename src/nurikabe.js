@@ -25,28 +25,27 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
+Cell:{
 	numberIsWhite : true,
-
+},
+Board:{
 	getdir8WareaInfo : function(){
-		var winfo = new pzprv3.core.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.isWhite(fc)?0:null);}
+		var winfo = new pzprv3.core.AreaCellInfo(this.owner);
+		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isWhite()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(winfo.id[fc]!==0){ continue;}
-			winfo.max++;
-			winfo.room[winfo.max] = {idlist:[]};
+			if(!winfo.emptyCell(this.cell[fc])){ continue;}
+			winfo.addRoom();
 
-			var stack=[fc], id=winfo.max;
+			var stack=[this.cell[fc]];
 			while(stack.length>0){
-				var c=stack.pop();
-				if(winfo.id[c]!==0){ continue;}
-				winfo.id[c] = id;
-				winfo.room[id].idlist.push(c);
+				var cell = stack.pop();
+				if(!winfo.emptyCell(cell)){ continue;}
+				winfo.addCell(cell);
 
-				var bx=this.cell[c].bx, by=this.cell[c].by;
+				var bx=cell.bx, by=cell.by;
 				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
 				for(var i=0;i<clist.length;i++){
-					if(winfo.id[clist[i]]===0){ stack.push(clist[i]);}
+					if(winfo.emptyCell(clist[i])){ stack.push(clist[i]);}
 				}
 			}
 		}
@@ -146,7 +145,7 @@ AnsCheck:{
 	checkAns : function(){
 		var mochi = (this.owner.pid==='mochikoro'||this.owner.pid==='mochinyoro');
 
-		if( (this.owner.pid!=='nuribou') && !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
+		if( (this.owner.pid!=='nuribou') && !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 		}
 
@@ -198,17 +197,18 @@ AnsCheck:{
 	checkCorners : function(binfo){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx===bd.maxbx-1 || bd.cell[c].by===bd.maxby-1){ continue;}
+			var cell = bd.cell[c];
+			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
 
-			var cc1, cc2;
-			if     ( bd.isBlack(c) && bd.isBlack(c+bd.qcols+1) ){ cc1 = c; cc2 = c+bd.qcols+1;}
-			else if( bd.isBlack(c+1) && bd.isBlack(c+bd.qcols) ){ cc1 = c+1; cc2 = c+bd.qcols;}
+			var cell1, cell2;
+			if     ( cell.isBlack() && cell.rt().dn().isBlack() ){ cell1 = cell; cell2 = cell.rt().dn();}
+			else if( cell.rt().isBlack() && cell.dn().isBlack() ){ cell1 = cell.rt(); cell2 = cell.dn();}
 			else{ continue;}
 
-			if(binfo.room[binfo.id[cc1]].idlist.length == binfo.room[binfo.id[cc2]].idlist.length){
+			if(binfo.getclistbycell(cell1).length == binfo.getclistbycell(cell2).length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(binfo.room[binfo.id[cc1]].idlist,1);
-				bd.sErC(binfo.room[binfo.id[cc2]].idlist,1);
+				binfo.getclistbycell(cell1).seterr(1);
+				binfo.getclistbycell(cell2).seterr(1);
 				result = false;
 			}
 		}

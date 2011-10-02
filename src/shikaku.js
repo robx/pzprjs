@@ -70,14 +70,14 @@ Graphic:{
 		var header = "c_cir_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum!=-1){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(header+c,this.FILL)){
-					g.fillCircle(this.cell[c].px, this.cell[c].py, rsize2);
+			var cell = clist[i];
+			if(cell.qnum!==-1){
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillCircle(cell.px, cell.py, rsize2);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	}
 },
@@ -159,25 +159,21 @@ AnsCheck:{
 
 	checkLshapeArea : function(rinfo){
 		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			var cc = bd.getQnumCellOfClist(rinfo.room[id].idlist);
-			if(cc===null){ continue;}
+		for(var areaid=1;areaid<=rinfo.max;areaid++){
+			var clist = rinfo.getclist(areaid);
+			var cell = clist.getQnumCell();
+			if(cell.isnull){ continue;}
 
-			var n = bd.QnC(cc);
+			var n = cell.getQnum();
 			if(n<0 || (n%3)!==0){ continue;}
+			var d = clist.getRectSize();
 
-			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
-			var clist = [];
-			for(var bx=d.x1;bx<=d.x2;bx+=2){
-				for(var by=d.y1;by<=d.y2;by+=2){
-					var cc = bd.cnum(bx,by);
-					if(rinfo.id[cc]!=id){ clist.push(cc);}
-				}
-			}
-			var dl = bd.getSizeOfClist(clist);
-			if( clist.length==0 || (dl.cols*dl.rows!=dl.cnt) || (d.x1!==dl.x1 && d.x2!==dl.x2) || (d.y1!==dl.y1 && d.y2!==dl.y2) ){
+			var clist2 = bd.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==areaid);});
+			var d2 = clist2.getRectSize();
+
+			if( clist2.length===0 || (d2.cols*d2.rows!=d2.cnt) || (d.x1!==d2.x1 && d.x2!==d2.x2) || (d.y1!==d2.y1 && d.y2!==d2.y2) ){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[id].idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

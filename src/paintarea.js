@@ -26,11 +26,12 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	maxnum : 4,
 	minnum : 0
+},
+Board:{
+	isborder : 1
 },
 
 AreaManager:{
@@ -101,7 +102,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( pzprv3.EDITOR && !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(c){ return (bd.isBlack(c)?1:2);}) ){
+		if( pzprv3.EDITOR && !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
 			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 		}
 
@@ -109,15 +110,15 @@ AnsCheck:{
 			this.setAlert('黒マスがひとつながりになっていません。','Black cells are devided.'); return false;
 		}
 
-		if( !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
+		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.isBlack(c);},0 ) ){
+		if( !this.checkDir4Cell(function(cell){ return cell.isBlack();},0 ) ){
 			this.setAlert('数字の上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in four adjacent cells.'); return false;
 		}
 
-		if( !this.check2x2Block( function(c){ return bd.isWhite(c);} ) ){
+		if( !this.check2x2Block( function(cell){ return cell.isWhite();} ) ){
 			this.setAlert('2x2の白マスのかたまりがあります。','There is a 2x2 block of white cells.'); return false;
 		}
 

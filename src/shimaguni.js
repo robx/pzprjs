@@ -25,6 +25,12 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
+	}
+},
+
 Board:{
 	isborder : 1,
 
@@ -35,14 +41,10 @@ Board:{
 		}
 	},
 
-	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, this.areas.rinfo.getCntOfRoomByCell(cc));
-	},
-
-	getLandAreaOfClist : function(clist, func){
+	getLandAreaOfClist : function(clist){
 		var cnt = 0;
 		for(var i=0,len=clist.length;i<len;i++){
-			if(this.isBlack(clist[i])){ cnt++;}
+			if(clist[i].isBlack()){ cnt++;}
 		}
 		return cnt;
 	}
@@ -137,7 +139,7 @@ AnsCheck:{
 	checkAns_shimaguni : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}, true) ){
+		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true) ){
 			this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
 		}
 
@@ -149,7 +151,7 @@ AnsCheck:{
 			this.setAlert('海域内の数字と国のマス数が一致していません。','The number of black cells is not equals to the number.'); return false;
 		}
 
-		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return bd.getLandAreaOfClist(rinfo.room[r].idlist);}) ){
+		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return bd.getLandAreaOfClist(rinfo.getclist(r));}) ){
 			this.setAlert('隣り合う海域にある国の大きさが同じです。','The size of countries that there are in adjacent marine areas are the same.'); return false;
 		}
 

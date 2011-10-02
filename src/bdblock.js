@@ -106,10 +106,10 @@ AnsCheck:{
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 		}
-		if( !this.checkSameObjectInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 		}
-		if( !this.checkGatheredObject(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkGatheredObject(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 		}
 

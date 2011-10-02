@@ -39,12 +39,13 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	numberAsObject : true,
 
 	maxnum : 3
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -79,12 +80,11 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawNumber1 : function(id){
-		var num = bd.cell[id].qnum, key='cell_'+id;
+	drawNumber1 : function(cell){
+		var num = cell.qnum, key='cell_'+cell.id;
 		if(num>=1 && num<=3){
 			var text = ({1:"同",2:"短",3:"長"})[num];
-			var px = this.cell[id].px, py = this.cell[id].py;
-			this.dispnum(key, 1, text, 0.65, this.fontcolor, px, py);
+			this.dispnum(key, 1, text, 0.65, this.fontcolor, cell.px, cell.py);
 		}
 		else{ this.hideEL(key);}
 	}
@@ -160,22 +160,23 @@ AnsCheck:{
 			this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.isNum(c));}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
 			this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===0 && bd.isNum(c));});},
+	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});},
 
-	check2Line : function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)>=2 && bd.isNum(c));}); },
+	check2Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()>=2 && cell.isNum());}); },
 	checkLine : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(func(c)){
+			var cell = bd.cell[c];
+			if(func(cell)){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setCellLineError(c,true);
+				if(result){ bd.border.seterr(2);}
+				cell.setCellLineError(true);
 				result = false;
 			}
 		}
@@ -184,16 +185,16 @@ AnsCheck:{
 
 	isErrorFlag_line : function(xinfo){
 		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var c1=room.cells[0], c2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
+		var cell1=room.cells[0], cell2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
 
-		var qn1=bd.QnC(c1), qn2=(c2!==null?bd.QnC(c2):-1), err=0;
+		var qn1=cell1.getQnum(), qn2=(!cell2.isnull?cell2.getQnum():-1), err=0;
 		if(ccnt===2 && dir1!==dir2){ err=7;}
-		else if(c2!==null && ccnt===2 && !((qn1===1&&qn2===1) || (qn1===2&&qn2===3) || (qn1===3&&qn2===2) || qn1===-2 || qn2===-2)){ err=6;}
+		else if(!cell2.isnull && ccnt===2 && !((qn1===1&&qn2===1) || (qn1===2&&qn2===3) || (qn1===3&&qn2===2) || qn1===-2 || qn2===-2)){ err=6;}
 		else if(ccnt>2){ err=5;}
-		else if(c2!==null && ccnt<2){ err=4;}
-		else if(c2!==null && ccnt===2 && (qn1===1||qn2===1) && length[0]!==length[2]){ err=3;}
-		else if(c2!==null && ccnt===2 && (((qn1===2||qn2===3) && length[0]>=length[2]) || ((qn1===3||qn2===2) && length[0]<=length[2]))){ err=2;}
-		else if(c2===null){ err=1;}
+		else if(!cell2.isnull && ccnt<2){ err=4;}
+		else if(!cell2.isnull && ccnt===2 && (qn1===1||qn2===1) && length[0]!==length[2]){ err=3;}
+		else if(!cell2.isnull && ccnt===2 && (((qn1===2||qn2===3) && length[0]>=length[2]) || ((qn1===3||qn2===2) && length[0]<=length[2]))){ err=2;}
+		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
 }

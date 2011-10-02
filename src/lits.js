@@ -20,46 +20,46 @@ Board:{
 	isborder : 1,
 
 	getTetrominoInfo : function(rinfo){
-		var tinfo = new pzprv3.core.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
+		var tinfo = new pzprv3.core.AreaCellInfo(this.owner); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
-			var bcells = [];
-			for(var i=0;i<rinfo.room[r].idlist.length;i++){ if(this.isBlack(rinfo.room[r].idlist[i])){ bcells.push(rinfo.room[r].idlist[i]);} }
-			if(bcells.length==4){
-				bcells.sort(function(a,b){ return a-b;});
-				var bx0=this.cell[bcells[0]].bx, by0=this.cell[bcells[0]].by, value=0;
-				for(var i=1;i<bcells.length;i++){ value += (((this.cell[bcells[i]].by-by0)>>1)*10+((this.cell[bcells[i]].bx-bx0)>>1));}
+			var bcells = new pzprv3.core.PieceList(this.owner), clist = rinfo.getclist(r);
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				if(cell.isBlack()){ bcells.add(cell);}
+			}
+			if(bcells.length===4){
+				var bx0=bcells[0].bx, by0=bcells[0].by, value=0;
+				for(var i=1;i<bcells.length;i++){ value += (((bcells[i].by-by0)>>1)*10+((bcells[i].bx-bx0)>>1));}
 				switch(value){
 					case 13: case 15: case 27: case 31: case 33: case 49: case 51:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="L";} break;
+						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="L";} break;
 					case 6: case 60:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="I";} break;
+						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="I";} break;
 					case 14: case 30: case 39: case 41:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="T";} break;
+						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="T";} break;
 					case 20: case 24: case 38: case 42:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i]]="S";} break;
+						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="S";} break;
 				}
 			}
 		}
 		return this.getBlockInfo(tinfo);
 	},
 	getBlockInfo : function(tinfo){
-		var dinfo = new pzprv3.core.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
+		var dinfo = new pzprv3.core.AreaCellInfo(this.owner); /* 同じ部屋に含まれる黒マスのつながり情報 */
 		for(var fc=0;fc<this.cellmax;fc++){ dinfo.id[fc]=(tinfo.id[fc]!==null?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(dinfo.id[fc]!==0){ continue;}
-			dinfo.max++;
-			dinfo.room[dinfo.max] = {idlist:[]};
+			if(!dinfo.emptyCell(this.cell[fc])){ continue;}
+			dinfo.addRoom();
 
-			var stack=[fc], id=dinfo.max;
+			var stack=[this.cell[fc]];
 			while(stack.length>0){
-				var c = stack.pop();
-				if(dinfo.id[c]!==0){ continue;}
-				dinfo.id[c] = id;
-				dinfo.room[id].idlist.push(c);
-				var clist = bd.getdir4clist(c);
-				for(var i=0;i<clist.length;i++){
-					if(tinfo.id[c]==tinfo.id[clist[i][0]]){ stack.push(clist[i][0]);}
+				var cell = stack.pop();
+				if(!dinfo.emptyCell(cell)){ continue;}
+				dinfo.addCell(cell);
+				var list = cell.getdir4clist();
+				for(var i=0;i<list.length;i++){
+					if(tinfo.getRoomID(cell)==tinfo.getRoomID(list[i][0])){ stack.push(list[i][0]);}
 				}
 			}
 		}
@@ -143,8 +143,9 @@ Encode:{
 	decodeLITS_old : function(){
 		var bstr = this.outbstr;
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(cc1!==null && cc2!==null && bstr.charAt(cc1)!=bstr.charAt(cc2)){ bd.border[id].ques = 1;}
+			var border = bd.border[id];
+			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!=bstr.charAt(cell2.id)){ border.ques = 1;}
 		}
 		this.outbstr = bstr.substr(bd.cellmax);
 	}
@@ -181,7 +182,7 @@ AnsCheck:{
 
 	checkAns_lits : function(){
 
-		if( !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
+		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 		}
 
@@ -243,9 +244,10 @@ AnsCheck:{
 	checkTetromino : function(rinfo){
 		var dinfo = bd.getTetrominoInfo(rinfo), result = true;
 		for(var r=1;r<=dinfo.max;r++){
-			if(dinfo.room[r].idlist.length<=4){ continue;}
+			var clist = dinfo.getclist(r);
+			if(clist.length<=4){ continue;}
 			if(this.inAutoCheck){ return false;}
-			bd.sErC(dinfo.room[r].idlist,2);
+			clist.seterr(2);
 			result = false;
 		}
 		return result;

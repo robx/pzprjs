@@ -20,13 +20,13 @@ MouseEvent:{
 	},
 
 	inputlight : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
-		else if(bd.QsC(cc)==1){ bd.sQsC(cc, (this.btn.Left?2:0));}
-		else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
-		pc.paintCell(cc);
+		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		pc.paintCell(cell);
 	}
 },
 
@@ -39,52 +39,59 @@ KeyEvent:{
 		this.key_inputqnum_kaero(ca);
 	},
 	key_inputqnum_kaero : function(ca){
-		var c = tc.getTCC();
+		var cell = tc.getTCC();
 
 		if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = bd.QnC(c);
-			if     ((canum-1)%26==num && canum>0 && canum<=26){ bd.sQnC(c,canum+26);}
-			else if((canum-1)%26==num){ bd.sQnC(c,-1);}
-			else{ bd.sQnC(c,num+1);}
+			var canum = cell.getQnum();
+			if     ((canum-1)%26==num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
+			else if((canum-1)%26==num){ cell.setQnum(-1);}
+			else{ cell.setQnum(num+1);}
 		}
-		else if(ca=='-'){ bd.sQnC(c,(bd.QnC(c)!=-2?-2:-1));}
-		else if(ca==' '){ bd.sQnC(c,-1);}
+		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		else if(ca==' '){ cell.setQnum(-1);}
 		else{ return;}
 
-		this.prev = c;
+		this.prev = cell;
 		pc.paintCell(tc.getTCC());
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	maxnum : 52,
+
+	// 正答判定用
+	qnum2 : -1,
+	base : null
+},
+
 Board:{
 	qcols : 6,
 	qrows : 6,
 
 	isborder : 1,
 
-	maxnum : 52,
-
-	getMovedPosition : function(linfo){
-		var minfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<bd.cellmax;c++){ minfo.id[c]=c;}
+	searchMovedPosition : function(linfo){
+		var minfo = new pzprv3.core.AreaCellInfo(this.owner);
+		for(var c=0;c<this.cellmax;c++){ bd.cell[c].qnum2=bd.cell[c].qnum; bd.cell[c].base = null;}
 		for(var r=1;r<=linfo.max;r++){
-			if(linfo.room[r].idlist.length<=1){ continue;}
+			var clist = linfo.getclist(r);
+			if(clist.length<=1){ continue;}
 			var before=null, after=null;
-			for(var i=0;i<linfo.room[r].idlist.length;i++){
-				var c=linfo.room[r].idlist[i];
-				if(bd.lines.lcntCell(c)===1){
-					if(bd.isNum(c)){ before=c;}else{ after=c;}
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i];
+				if(cell.lcnt()===1){
+					if(cell.isNum()){ before=cell;}else{ after=cell;}
 				}
 			}
 			if(before!==null && after!==null){
-				minfo.id[after]=before;
-				minfo.id[before]=null;
+				after.qnum2 = before.qnum;
+				before.qnum2 = -1;
+				after.base = before;
 			}
 		}
-		return minfo;
 	}
 },
 
@@ -123,40 +130,6 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawTip : function(){
-		var g = this.vinc('cell_linetip', 'auto');
-
-		var tsize = this.cw*0.30;
-		var tplus = this.cw*0.05;
-		var header = "c_tip_";
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			this.vdel([header+c]);
-			if(bd.lines.lcntCell(c)===1 && bd.cell[c].qnum===-1){
-				var dir=0, id=null;
-				if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
-				else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
-				else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
-				else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
-
-				g.lineWidth = this.lw; //LineWidth
-				if     (bd.border[id].error===1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-				else if(bd.border[id].error===2){ g.strokeStyle = this.errlinecolor2;}
-				else                            { g.strokeStyle = this.linecolor;}
-
-				if(this.vnop(header+c,this.STROKE)){
-					var px=this.cell[c].px+1, py=this.cell[c].py+1;
-					if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
-					else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
-					else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
-					else if(dir===4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
-					g.stroke();
-				}
-			}
-		}
-	},
 	drawCellSquare : function(){
 		var g = this.vinc('cell_number_base', 'crispEdges');
 
@@ -166,19 +139,19 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj=bd.cell[c];
-			if(obj.qnum!=-1){
-				if     (obj.error===1){ g.fillStyle = this.errbcolor1;}
-				else if(obj.error===2){ g.fillStyle = this.errbcolor2;}
-				else if(obj.qsub ===1){ g.fillStyle = this.qsubcolor1;}
-				else if(obj.qsub ===2){ g.fillStyle = this.qsubcolor2;}
-				else                  { g.fillStyle = "white";}
+			var cell = clist[i];
+			if(cell.qnum!=-1){
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
+				else if(cell.error===2){ g.fillStyle = this.errbcolor2;}
+				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
+				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
+				else                   { g.fillStyle = "white";}
 
-				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	},
 	drawNumbers_kaero : function(){
@@ -186,11 +159,9 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cell[c], key='cell_'+c;
-			if(bd.cell[c].qnum!==-1){
-				var num=bd.cell[c].qnum;
-
-				var color = (bd.cell[c].error===0 ? this.fontcolor : this.fontErrcolor);
+			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum;
+			if(num!==-1){
+				var color = (cell.error===0 ? this.fontcolor : this.fontErrcolor);
 
 				var text="";
 				if     (num==-2)         { text ="?";}
@@ -198,8 +169,7 @@ Graphic:{
 				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
 				else{ text+=num;}
 
-				var px = this.cell[c].px, py = this.cell[c].py;
-				this.dispnum(key, 1, text, 0.85, color, px, py);
+				this.dispnum(key, 1, text, 0.85, color, cell.px, cell.py);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -290,18 +260,17 @@ AnsCheck:{
 			this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo(), minfo = bd.getMovedPosition(linfo);
-		var mfunc = function(c){ return ((c!==null && minfo.id[c]!==null) ? bd.QnC(minfo.id[c]) : -1);};
-		this.getBeforeCell = function(c){ return minfo.id[c];};
+		var rinfo = bd.areas.getRoomInfo();
+		bd.searchMovedPosition(linfo);
 
 		this.performAsLine = false;
-		if( !this.checkSameObjectInRoom(rinfo, mfunc) ){
+		if( !this.checkSameObjectInRoom_kaero(rinfo) ){
 			this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 		}
-		if( !this.checkGatheredObject(rinfo, mfunc) ){
+		if( !this.checkGatheredObject(rinfo, function(cell){ return cell.qnum2;}) ){
 			this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 		}
-		if( !this.checkNoObjectInRoom(rinfo, mfunc) ){
+		if( !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.qnum2;}) ){
 			this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 		}
 
@@ -312,19 +281,44 @@ AnsCheck:{
 
 		return true;
 	},
-	getBeforeCell : function(c){ return 0;}, /* 苦しい... */
 
 	checkLineOverLetter : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.lines.lcntCell(c)>=2 && bd.isNum(c)){
+			var cell = bd.cell[c];
+			if(cell.lcnt()>=2 && cell.isNum()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setCellLineError(c,true);
+				if(result){ bd.border.seterr(2);}
+				cell.setCellLineError(true);
 				result = false;
 			}
 		}
 		return result;
-	}
+	},
+
+	checkSameObjectInRoom_kaero : function(rinfo){
+		var result=true, d=[];
+		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c], val = cell.qnum2;
+			if(rinfo.id[c]===null || val===-1){ continue;}
+			if(d[rinfo.id[c]]===-1 && val!==-1){ d[rinfo.id[c]] = val;}
+			else if(d[rinfo.id[c]]!==val){
+				if(this.inAutoCheck){ return false;}
+
+				if(this.performAsLine){ bd.border.seterr(2); rinfo.setErrLareaByCell(cell,1);}
+				else{ rinfo.getclistbycell(cell).seterr(1);}
+
+				// 違うのはエラー表示部だけ
+				for(var cc=0;cc<bd.cellmax;cc++){
+					var cell2 = bd.cell[cc];
+					if(rinfo.getRoomID(cell)===rinfo.getRoomID(cell2) && cell2.base!==null && rinfo.getRoomInfo(cell)!==rinfo.getRoomInfo(cell2.base))
+						{ cell2.base.seterr(4);}
+				}
+				result = false;
+			}
+		}
+		return result;
+	},
 }
 };

@@ -47,7 +47,7 @@ Board:{
 	initialize : function(owner){
 		this.SuperFunc.initialize.call(this, owner);
 		if(owner.pid==='fillmat'){
-			this.maxnum = 4;
+			this.owner.classes.Cell.prototype.maxnum = 4;
 		}
 		else if(owner.pid==='usotatami'){
 			this.qcols = 8;
@@ -113,7 +113,7 @@ AnsCheck:{
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( (this.owner.pid==='fillmat') && !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].idlist.length;}) ){
+		if( (this.owner.pid==='fillmat') && !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).length;}) ){
 			this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 		}
 

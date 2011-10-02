@@ -940,7 +940,7 @@ pzprv3.createCommonClass('Menu',
 		this.displayAll();
 		this.ex.dispmanstr();
 
-		pc.resize_canvas();
+		pc.forceRedraw();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -1120,10 +1120,10 @@ pzprv3.createCommonClass('Properties',
 		poptest   : function(){ pzprv3.debug.disppoptest();},
 
 		mode      : function(num){ menu.ex.modechange(num);},
-		text      : function(num){ menu.textsize(num); pc.resize_canvas();},
-		size      : function(num){ pc.resize_canvas();},
-		repaint   : function(num){ pc.resize_canvas();},
-		adjsize   : function(num){ pc.resize_canvas();},
+		text      : function(num){ menu.textsize(num); pc.forceRedraw();},
+		size      : function(num){ pc.forceRedraw();},
+		repaint   : function(num){ pc.forceRedraw();},
+		adjsize   : function(num){ pc.forceRedraw();},
 		language  : function(str){ menu.setLang(str);},
 
 		newboard : function(){
@@ -1230,7 +1230,7 @@ pzprv3.debug = {
 		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定",ee.binder(pc, pc.resize_canvas));
+		this.timeeval("resize描画測定",ee.binder(pc, pc.forceRedraw));
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

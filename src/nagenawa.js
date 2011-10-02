@@ -27,16 +27,17 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
+	},
+	minnum : 0
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, this.areas.rinfo.getCntOfRoomByCell(cc));
-	},
-	minnum : 0
+	isborder : 1
 },
 
 LineManager:{
@@ -83,12 +84,11 @@ Graphic:{
 	},
 
 	//オーバーライド
-	drawNumber1 : function(id){
-		var obj = bd.cell[id], key = ['cell',id].join('_');
-		if(obj.qnum!==-1){
-			var text = (obj.qnum>=0 ? ""+obj.qnum : "?");
-			var px = this.cell[id].px, py = this.cell[id].py;
-			this.dispnum(key, 5, text, 0.45, this.fontcolor, px, py);
+	drawNumber1 : function(cell){
+		var key = ['cell',cell.id].join('_');
+		if(cell.qnum!==-1){
+			var text = (cell.qnum>=0 ? ""+cell.qnum : "?");
+			this.dispnum(key, 5, text, 0.45, this.fontcolor, cell.px, cell.py);
 		}
 		else{ this.hideEL(key);}
 	}
@@ -155,32 +155,34 @@ AnsCheck:{
 	},
 
 	checkNoLine : function(){
-		for(var i=0;i<bd.bdmax;i++){ if(bd.isLine(i)){ return true;} }
+		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
 		return false;
 	},
 	checkAllLoopRect : function(){
 		var result = true;
 		var xinfo = bd.lines.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
-			if(this.isLoopRect(xinfo.room[r].idlist)){ continue;}
+			var blist = xinfo.getblist(r);
+			if(this.isLoopRect(blist)){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.sErBAll(2);}
-			bd.sErB(xinfo.room[r].idlist,1);
+			if(result){ bd.border.seterr(2);}
+			blist.seterr(1);
 			result = false;
 		}
 		return result;
 	},
-	isLoopRect : function(list){
+	isLoopRect : function(blist){
 		var x1=bd.maxbx, x2=bd.minbx, y1=bd.maxby, y2=bd.minby;
-		for(var i=0;i<list.length;i++){
-			if(x1>bd.border[list[i]].bx){ x1=bd.border[list[i]].bx;}
-			if(x2<bd.border[list[i]].bx){ x2=bd.border[list[i]].bx;}
-			if(y1>bd.border[list[i]].by){ y1=bd.border[list[i]].by;}
-			if(y2<bd.border[list[i]].by){ y2=bd.border[list[i]].by;}
+		for(var i=0;i<blist.length;i++){
+			if(x1>blist[i].bx){ x1=blist[i].bx;}
+			if(x2<blist[i].bx){ x2=blist[i].bx;}
+			if(y1>blist[i].by){ y1=blist[i].by;}
+			if(y2<blist[i].by){ y2=blist[i].by;}
 		}
-		for(var i=0;i<list.length;i++){
-			if(bd.border[list[i]].bx!=x1 && bd.border[list[i]].bx!=x2 && bd.border[list[i]].by!=y1 && bd.border[list[i]].by!=y2){ return false;}
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i];
+			if(border.bx!==x1 && border.bx!==x2 && border.by!==y1 && border.by!==y2){ return false;}
 		}
 		return true;
 	}

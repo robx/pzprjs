@@ -35,12 +35,13 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
-	nummaxfunc : function(cc){
-		return Math.min(this.maxnum, this.areas.rinfo.getCntOfRoomByCell(cc));
+Cell:{
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
 	}
+},
+Board:{
+	isborder : 1
 },
 
 LineManager:{
@@ -137,7 +138,7 @@ AnsCheck:{
 			this.setAlert('線の通っていない国があります。','There is a country that is not passed any line.'); return false;
 		}
 
-		if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return (bd.lines.lcntCell(c1)==0 && bd.lines.lcntCell(c2)==0);}, false) ){
+		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt()===0 && cell2.lcnt()===0);}, false) ){
 			this.setAlert('線が通らないマスが、太線をはさんでタテヨコにとなりあっています。','The cells that is not passed any line are adjacent over border line.'); return false;
 		}
 
@@ -153,20 +154,19 @@ AnsCheck:{
 	},
 
 	checkRoom2 : function(rinfo){
-		if(rinfo.max<=1){ return true;}
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var cnt=0;
-			for(var i=0;i<rinfo.room[r].idlist.length;i++){
-				var c=rinfo.room[r].idlist[i], id;
-				id=bd.ub(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
-				id=bd.db(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
-				id=bd.lb(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
-				id=bd.rb(c); if(!!bd.border[id] && bd.border[id].ques===1 && bd.border[id].line===1){ cnt++;}
+			var cnt=0, clist=rinfo.getclist(r);
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], border;
+				border=cell.ub(); if(border.ques===1 && border.line===1){ cnt++;}
+				border=cell.db(); if(border.ques===1 && border.line===1){ cnt++;}
+				border=cell.lb(); if(border.ques===1 && border.line===1){ cnt++;}
+				border=cell.rb(); if(border.ques===1 && border.line===1){ cnt++;}
 			}
 			if(cnt>2){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(rinfo.room[r].idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

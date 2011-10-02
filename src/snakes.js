@@ -25,52 +25,57 @@ MouseEvent:{
 	},
 
 	dragnumber_snakes : function(){
-		var cc = this.cellid();
-		if(cc===null||cc===this.mouseCell){ return;}
-		if(this.mouseCell===null){
-			this.inputData = bd.AnC(cc)!==-1?bd.AnC(cc):10;
-			this.mouseCell = cc;
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return;}
+		if(this.mouseCell.isnull){
+			this.inputData = cell.getAnum()!==-1?cell.getAnum():10;
+			this.mouseCell = cell;
 		}
-		else if(bd.QnC(cc)==-1 && this.inputData>=1 && this.inputData<=5){
+		else if(cell.getQnum()==-1 && this.inputData>=1 && this.inputData<=5){
 			if     (this.btn.Left ) this.inputData++;
 			else if(this.btn.Right) this.inputData--;
 			if(this.inputData>=1 && this.inputData<=5){
-				bd.sDiC(cc, 0);
-				bd.sAnC(cc, this.inputData); bd.sQsC(cc,0);
-				this.mouseCell = cc;
-				pc.paintCell(cc);
+				cell.setQdir(0);
+				cell.setAnum(this.inputData);
+				cell.setQsub(0);
+				this.mouseCell = cell;
+				pc.paintCell(cell);
 			}
 		}
-		else if(bd.QnC(cc)==-1 && this.inputData==10){
-			bd.sAnC(cc, -1); bd.sQsC(cc,0);
-			pc.paintCell(cc);
+		else if(cell.getQnum()===-1 && this.inputData==10){
+			cell.setAnum(-1);
+			cell.setQsub(0);
+			pc.paintCell(cell);
 		}
 	},
 	inputDot_snakes : function(){
 		if(!this.btn.Right || (this.inputData!==null && this.inputData>=0)){ return false;}
 
-		var cc = this.cellid();
-		if(cc===null||cc===this.mouseCell){ return (this.inputData<0);}
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return (this.inputData<0);}
 
 		if(this.inputData===null){
-			if(bd.AnC(cc)===-1){
-				this.inputData = (bd.QsC(cc)!==1?-2:-3);
+			if(cell.getAnum()===-1){
+				this.inputData = (cell.getQsub()!==1?-2:-3);
 				return true;
 			}
 			return false;
 		}
 
-		bd.sAnC(cc,-1);
-		bd.sQsC(cc,(this.inputData===-2?1:0));
-		pc.paintCell(cc);
-		this.mouseCell = cc;
+		cell.setAnum(-1);
+		cell.setQsub(this.inputData===-2?1:0);
+		pc.paintCell(cell);
+		this.mouseCell = cell;
 		return true;
 	},
 	inputqnum_snakes : function(){
-		if(this.owner.editmode){ bd.minnum = 1;}
-		this.mouseCell=null;
-		this.inputqnum();
-		bd.minnum = 0;
+		var cell = this.getcell();
+		if(!cell.isnull){
+			if(this.owner.playmode){ cell.minnum = 1;}
+			this.mouseCell = bd.newObject(bd.CELL);
+			this.inputqnum();
+			cell.minnum = 0;
+		}
 	}
 },
 
@@ -94,29 +99,30 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	maxnum : 5,
+	minnum : 0
+},
 Board:{
 	isborder : 1,
 
-	maxnum : 5,
-	minnum : 0,
-
 	getSnakeInfo : function(){
-		var sinfo = new pzprv3.core.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.AnC(fc)>0?0:-1);}
+		var sinfo = new pzprv3.core.AreaCellInfo(this.owner);
+		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(sinfo.id[fc]!==0){ continue;}
-			sinfo.max++;
-			sinfo.room[sinfo.max] = {idlist:[]};
+			if(!sinfo.emptyCell(this.cell[fc])){ continue;}
+			sinfo.addRoom();
 
-			var stack=[fc], id=sinfo.max;
+			var stack=[this.cell[fc]];
 			while(stack.length>0){
-				var c=stack.pop();
-				if(sinfo.id[c]!==0){ continue;}
-				sinfo.id[c] = id;
-				sinfo.room[id].idlist.push(c);
-				var clist = bd.getdir4clist(c);
-				for(var i=0;i<clist.length;i++){
-					if(Math.abs(this.AnC(c)-this.AnC(clist[i][0]))===1){ stack.push(clist[i][0]);}
+				var cell = stack.pop();
+				if(!sinfo.emptyCell(cell)){ continue;}
+				sinfo.addCell(cell);
+
+				var list = cell.getdir4clist();
+				for(var i=0;i<list.length;i++){
+					var cell2 = list[i][0];
+					if(Math.abs(cell.getAnum()-cell2.getAnum())===1){ stack.push(cell2);}
 				}
 			}
 		}
@@ -170,12 +176,11 @@ Graphic:{
 	getBorderColor : function(border){
 		if(!pp.getVal('snakebd')){ return false;}
 
-		var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
-		if(cc1!==null && cc2!==null &&
-		   (bd.cell[cc1].qnum===-1 && bd.cell[cc2].qnum===-1) &&
-		   (bd.cell[cc1].anum!==-1 || bd.cell[cc2].anum!==-1) &&
-		   ( ((bd.cell[cc1].anum===-1)^(bd.cell[cc2].anum===-1)) ||
-			 (Math.abs(bd.cell[cc1].anum-bd.cell[cc2].anum)!==1)) )
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		if(!cell1.isnull && !cell2.isnull &&
+		   (cell1.qnum===-1 && cell2.qnum===-1) &&
+		   (cell1.anum!==-1 || cell2.anum!==-1) &&
+		   ( ((cell1.anum===-1)^(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
 		{
 			return this.borderQanscolor;
 		}
@@ -187,10 +192,9 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cell[c], key='cell_'+c;
-			if(obj.qnum===-1 && obj.anum>0){
-				var px = this.cell[c].px, py = this.cell[c].py;
-				this.dispnum(key, 1, ""+obj.anum, 0.8, this.fontAnscolor, px, py);
+			var cell = clist[i], key='cell_'+cell.id;
+			if(cell.qnum===-1 && cell.anum>0){
+				this.dispnum(key, 1, ""+cell.anum, 0.8, this.fontAnscolor, cell.px, cell.py);
 			}
 			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 		}
@@ -229,7 +233,7 @@ AnsCheck:{
 			this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 		}
 
-		if( !this.checkDifferentNumberInRoom(sinfo, function(c){ return bd.AnC(c);}) ){
+		if( !this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.getAnum();}) ){
 			this.setAlert('同じ数字が入っています。','A Snake has same plural marks.'); return false;
 		}
 
@@ -250,18 +254,23 @@ AnsCheck:{
 
 	checkSideCell2 : function(sinfo){
 		var result = true;
-		var func = function(sinfo,c1,c2){ return (sinfo.id[c1]>0 && sinfo.id[c2]>0 && sinfo.id[c1]!=sinfo.id[c2]);};
+		var func = function(sinfo,cell1,cell2){
+			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
+			return (r1>0 && r2>0 && r1!==r2);
+		};
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].bx<bd.maxbx-2 && func(sinfo,c,c+1)){
+			var cell = bd.cell[c], cell2 = cell.rt();
+			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
-				bd.sErC(sinfo.room[sinfo.id[c+1]].idlist,1);
+				sinfo.getclistbycell(cell).seterr(1);
+				sinfo.getclistbycell(cell2).seterr(1);
 				result = false;
 			}
-			if(bd.cell[c].by<bd.maxby-2 && func(sinfo,c,c+bd.qcols)){
+			cell2 = cell.dn();
+			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(sinfo.room[sinfo.id[c]].idlist,1);
-				bd.sErC(sinfo.room[sinfo.id[c+bd.qcols]].idlist,1);
+				sinfo.getclistbycell(cell).seterr(1);
+				sinfo.getclistbycell(cell2).seterr(1);
 				result = false;
 			}
 		}
@@ -271,37 +280,36 @@ AnsCheck:{
 	checkArrowNumber : function(){
 		var result = true;
 		var gonext = function(){
-			// bx,by,clist,ccは319行目で宣言されてるものと同一です。
-			cc = bd.cnum(bx,by);
-			if(cc!==null){ clist.push(cc);}
-			return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
+			cell2 = pos.getc();
+			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
 		};
-		var noans = function(cc){ return (cc===null || bd.cell[cc].qnum!==-1 || bd.cell[cc].anum===-1);}
+		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);}
 
 		for(var c=0;c<bd.cellmax;c++){
-			var num=bd.QnC(c), dir=bd.DiC(c);
+			var cell=bd.cell[c], num=cell.getQnum(), dir=cell.getQdir();
 			if(num<0 || dir===0){ continue;}
 
-			var bx=bd.cell[c].bx, by=bd.cell[c].by, clist=[c], cc;
+			var cell2, pos=cell.getaddr();
 			switch(dir){
-				case bd.UP: by-=2; while(gonext()){ by-=2;} break;
-				case bd.DN: by+=2; while(gonext()){ by+=2;} break;
-				case bd.LT: bx-=2; while(gonext()){ bx-=2;} break;
-				case bd.RT: bx+=2; while(gonext()){ bx+=2;} break;
+				case bd.UP: pos.move(0,-2); while(gonext()){ pos.move(0,-2);} break;
+				case bd.DN: pos.move(0, 2); while(gonext()){ pos.move(0, 2);} break;
+				case bd.LT: pos.move(-2,0); while(gonext()){ pos.move(-2,0);} break;
+				case bd.RT: pos.move( 2,0); while(gonext()){ pos.move( 2,0);} break;
 			}
-			// ccは数字のあるマスのIDか、null(盤面外)を指す
+			// cell2は数字のあるマスのIDか、null(盤面外)を指す
 
 			// 矢印つき数字が0で、その先に回答の数字がある
-			if(num===0 && !noans(cc)){
+			if(num===0 && !noans(cell2)){
 				if(this.inAutoCheck){ return false;}
-				if(num>0){ bd.sErC(clist,1);}
-				else{ bd.sErC([c,cc],1);}
+				cell.seterr(1);
+				if(num<=0){ cell2.seterr(1);}
 				result = false;
 			}
 			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
-			else if(num>0 && (noans(cc) || bd.cell[cc].anum!==num)){
+			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,cc],1);
+				cell.seterr(1);
+				cell2.seterr(1);
 				result = false;
 			}
 		}
@@ -309,40 +317,35 @@ AnsCheck:{
 	},
 	checkSnakesView : function(sinfo){
 		var result = true;
-		var gonext = function(){
-			// bx,by,clist,ccは366行目で宣言されてるものと同一です。
-			cc = bd.cnum(bx,by);
-			if(cc!==null){ clist.push(cc);}
-			return (cc!==null && bd.cell[cc].qnum===-1 && bd.cell[cc].anum===-1);
-		};
-
 		for(var r=1;r<=sinfo.max;r++){
-			var idlist=sinfo.room[r].idlist, c1=null, dir=bd.NDIR, c2;
+			var clist=sinfo.getclist(r), cell=null;
+			for(var i=0;i<clist.length;i++){ if(clist[i].getAnum()===1){ cell=clist[i]; break;}}
+			if(cell===null){ continue;}
 
-			for(var i=0;i<idlist.length;i++){ if(bd.AnC(idlist[i])===1){ c1=idlist[i]; break;}}
-			if(c1===null){ continue;}
-
-			c2=bd.dn(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.UP;}
-			c2=bd.up(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.DN;}
-			c2=bd.rt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.LT;}
-			c2=bd.lt(c1); if(c2!==null && bd.AnC(c2)===2){ dir=bd.RT;}
+			var cell2, dir=bd.NDIR;
+			cell2=cell.dn(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.UP;}
+			cell2=cell.up(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.DN;}
+			cell2=cell.rt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.LT;}
+			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.RT;}
 			if(dir===bd.NDIR){ continue;}
 
-			var bx = bd.cell[c1].bx, by = bd.cell[c1].by, clist=[c1], cc;
-			switch(dir){
-				case bd.UP: by-=2; while(gonext()){ by-=2;} break;
-				case bd.DN: by+=2; while(gonext()){ by+=2;} break;
-				case bd.LT: bx-=2; while(gonext()){ bx-=2;} break;
-				case bd.RT: bx+=2; while(gonext()){ bx+=2;} break;
-			}
-			// ccは数字のあるマスのIDか、null(盤面外)を指す
+			var pos = cell.getaddr(), clist2 = new pzprv3.core.PieceList(this.owner);
+			clist2.add(cell);
+			while(!cell.isnull){
+				pos.movedir(dir,2);
+				cell = pos.getc();
 
-			var sid=sinfo.id[cc];
-			if(cc!==null && bd.AnC(cc)>0 && bd.QnC(cc)===-1 && sid>0 && r!=sid){
+				if(!cell.isnull){ clist2.add(cell);}
+				if(cell.isnull || cell.qnum!==-1 || cell.anum!==-1){ break;}
+			}
+			// cellは数字のあるマスか、null(盤面外)を指す
+
+			var sid=sinfo.getRoomID(cell);
+			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!=sid){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1);
-				bd.sErC(idlist,1);
-				bd.sErC(sinfo.room[sid].idlist,1);
+				clist2.seterr(1);
+				clist.seterr(1);
+				sinfo.getclist(sid).seterr(1);
 				result = false;
 			}
 		}

@@ -10,7 +10,7 @@ MouseEvent:{
 			this.inputborder();
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell=null;
+			this.mouseCell = bd.newObject(bd.CELL);
 			this.inputqnum();
 		}
 	},
@@ -27,15 +27,15 @@ MouseEvent:{
 	},
 
 	inputDot : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
 
-		bd.sAnC(cc,-1);
-		bd.sQsC(cc,(this.inputData===1?1:0));
-		this.mouseCell = cc;
-		pc.paintCell(cc);
+		cell.setAnum(-1);
+		cell.setQsub(this.inputData===1?1:0);
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -76,12 +76,13 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	numberAsObject : true,
 
 	maxnum : 3
+},
+Board:{
+	isborder : 1
 },
 
 AreaManager:{
@@ -121,13 +122,13 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], num=bd.getNum(c), px, py;
-			this.vhide([headers[0]+c, headers[1]+c, headers[2]+c]);
+			var cell = clist[i], id = cell.id, num=cell.getNum();
+			this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
 			if(num<=0){ continue;}
 
-			g.strokeStyle = this.getCellNumberColor(bd.cell[c]);
-			var px=this.cell[c].px, py=this.cell[c].py;
-			if(this.vnop(headers[(num-1)]+c,this.STROKE)){
+			g.strokeStyle = this.getCellNumberColor(cell);
+			var px=cell.px, py=cell.py;
+			if(this.vnop(headers[(num-1)]+id,this.STROKE)){
 				switch(num){
 				case 1:
 					g.strokeCircle(px, py, rsize);
@@ -181,11 +182,11 @@ AnsCheck:{
 		}
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkAllBlock(rinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a<=3);}) ){
+		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}) ){
 			this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 		}
 
-		if( !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 		}
 
@@ -193,7 +194,7 @@ AnsCheck:{
 			this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 		}
 
-		if( !this.checkAllBlock(rinfo, function(c){ return bd.isNum(c);}, function(w,h,a,n){ return (a>=3);}) ){
+		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}) ){
 			this.setAlert('1つのハコに2つ以下の記号しか入っていません。','A box has tow or less marks.'); return false;
 		}
 
@@ -203,19 +204,20 @@ AnsCheck:{
 	checkAroundMarks : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			var num = bd.getNum(c);
+			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
-			var bx = bd.cell[c].bx, by = bd.cell[c].by, target=0, clist=[c];
-			var func = function(cc){ return (cc!==null && num==bd.getNum(cc));};
+			var bx = cell.bx, by = cell.by, target=0, clist=new pzprv3.core.PieceList(this.owner);
+			var func = function(cell){ return (!cell.isnull && num===cell.getNum());};
 			// 右・左下・下・右下だけチェック
-			target = bd.cnum(bx+2,by  ); if(func(target)){ clist.push(target);}
-			target = bd.cnum(bx  ,by+2); if(func(target)){ clist.push(target);}
-			target = bd.cnum(bx-2,by+2); if(func(target)){ clist.push(target);}
-			target = bd.cnum(bx+2,by+2); if(func(target)){ clist.push(target);}
+			clist.add(cell);
+			target = cell.relcell( 2,0); if(func(target)){ clist.add(target);}
+			target = cell.relcell( 0,2); if(func(target)){ clist.add(target);}
+			target = cell.relcell(-2,2); if(func(target)){ clist.add(target);}
+			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
 
 			if(clist.length>1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

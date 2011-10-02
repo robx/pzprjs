@@ -24,12 +24,12 @@ MouseEvent:{
 	},
 
 	inputBGcolor1 : function(){
-		var cc = this.cellid();
-		if(cc===null || cc==this.mouseCell){ return;}
-		if(this.inputData===null){ this.inputData=(bd.QsC(cc)==0)?3:0;}
-		bd.sQsC(cc, this.inputData);
-		this.mouseCell = cc; 
-		pc.paintCell(cc);
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		cell.setQsub(this.inputData);
+		this.mouseCell = cell; 
+		pc.paintCell(cell);
 	},
 	inputBGcolor3 : function(){
 		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
@@ -38,21 +38,21 @@ MouseEvent:{
 		var id = bd.snum(pos.x, pos.y);
 		if(id===null || bd.getStar(id)===0){ return;}
 
-		var cc=null, group=bd.star[id].group, gid=bd.star[id].groupid;
+		var cell=null, group=bd.star[id].group, gid=bd.star[id].obj.id;
 		if(group===bd.CELL){
-			cc = bd.star[id].groupid;
+			cell = bd.star[id].obj;
 		}
 		else if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]===0){
-			cc = bd.cnum(bd.star[id].bx-1, bd.star[id].by-1);
+			cell = bd.getc(bd.star[id].bx-1, bd.star[id].by-1);
 		}
-		else if(group===bd.BORDER && bd.QaB(gid)===0){
-			cc = bd.border[gid].cellcc[0];
+		else if(group===bd.BORDER && bd.border[gid].getQans()===0){
+			cell = bd.border[gid].sidecell[0];
 		}
 
-		if(cc!==null){
-			var clist = bd.areas.rinfo[bd.areas.rinfo.id[cc]].clist;
+		if(cell!==null){
+			var clist = bd.areas.rinfo.getClistByCell(cell);
 			if(bd.encolor(clist)){
-				var d = bd.getSizeOfClist(clist);
+				var d = clist.getRectSize();
 				pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 			}
 		}
@@ -61,11 +61,11 @@ MouseEvent:{
 		var pos = this.borderpos(0.34);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = this.getborderID(this.prevPos, pos);
-		if(id!==null){
-			if(this.inputData===null){ this.inputData=(bd.QaB(id)===0?1:0);}
-			bd.sQaB(id, this.inputData);
-			pc.paintBorder(id);
+		var border = this.getborderobj(this.prevPos, pos);
+		if(!border.isnull){
+			if(this.inputData===null){ this.inputData=(border.getQans()===0?1:0);}
+			border.setQans(this.inputData);
+			pc.paintBorder(border);
 		}
 		this.prevPos = pos;
 	},
@@ -107,30 +107,31 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	qnum : 0,
+	minnum : 0,
+
+	disInputHatena : true,
 
 	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(id){
+	subclear : function(){
 		if(this.qsub===1){
-			um.addOpe(bd.CELL, bd.QSUB, id, 1, 0);
+			um.addOpe_Object(this, bd.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
 	}
 },
 Cross:{
-	qnum : 0
+	qnum : 0,
+	minnum : 0
 },
 Border:{
-	qnum : 0
+	qnum : 0,
+	minnum : 0
 },
 
 Board:{
 	iscross  : 1,
 	isborder : 1,
-
-	minnum : 0,
-
-	disInputHatena : true,
 
 	initialize : function(owner){
 		this.SuperFunc.initialize.call(this, owner);
@@ -150,24 +151,24 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
-		var pos = new pzprv3.core.Address(0,0);
+		var pos = new pzprv3.core.Address(this.owner,0,0);
 		for(var id=0;id<this.starmax;id++){
 			this.star[id] = {};
 			var obj = this.star[id];
 			obj.bx = id%(2*col-1)+1;
 			obj.by = ((id/(2*col-1))|0)+1;
-			pos.initialize(obj.bx, obj.by);
+			pos.init(obj.bx, obj.by);
 			if(pos.oncell()){
 				obj.group = this.CELL;
-				obj.groupid = pos.cellid();
+				obj.obj = pos.getc();
 			}
 			else if(pos.oncross()){
 				obj.group = this.CROSS;
-				obj.groupid = pos.crossid();
+				obj.obj = pos.getx();
 			}
 			else{
 				obj.group = this.BORDER;
-				obj.groupid = pos.borderid();
+				obj.obj = pos.getb();
 			}
 		}
 	},
@@ -185,31 +186,31 @@ Board:{
 	},
 
 	getStar : function(id){
-		return this.getdata(this.star[id].group, this.QNUM, this.star[id].groupid);
+		return this.star[id].obj.getQnum();
 	},
 	isStarError : function(id){
-		return (this.getObject(this.star[id].group, this.star[id].groupid).error!==0);
+		return (this.star[id].obj.error!==0);
 	},
 	setStar : function(id,val){
-		um.disCombine = 1;
-		this.setdata(this.star[id].group, this.QNUM, this.star[id].groupid, val);
-		um.disCombine = 0;
+		um.disCombine = true;
+		return this.star[id].obj.setQnum(val);
+		um.disCombine = false;
 	},
 
 	// 色をつける系関数
 	encolorall : function(){
 		var rinfo = this.areas.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){ this.encolor(rinfo.room[id].idlist);}
+		for(var id=1;id<=rinfo.max;id++){ this.encolor(rinfo.getclist(id));}
 		pc.paintAll();
 	},
 	encolor : function(clist){
 		var id = this.getAreaStarInfo(clist).id;
 		var flag = false, ret = (id!==null ? this.getStar(id) : 0);
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(pzprv3.EDITOR && this.QsC(c)==3 && ret!=2){ continue;}
-			else if(this.QsC(c)!=(ret>0?ret:0)){
-				this.sQsC(c,(ret>0?ret:0));
+			var cell = clist[i];
+			if(pzprv3.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
+			else if(cell.getQsub()!==(ret>0?ret:0)){
+				cell.setQsub(ret>0?ret:0);
 				flag = true;
 			}
 		}
@@ -220,7 +221,7 @@ Board:{
 	getAreaStarInfoAll : function(){
 		var rinfo = this.areas.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var obj = this.getAreaStarInfo(rinfo.room[id].idlist);
+			var obj = this.getAreaStarInfo(rinfo.getclist(id));
 			rinfo.room[id].starid = obj.id;
 			rinfo.room[id].error  = obj.err;
 		}
@@ -229,14 +230,14 @@ Board:{
 	getAreaStarInfo : function(clist){
 		var cnt=0, ret={id:null, err:-1};
 		for(var i=0;i<clist.length;i++){
-			var c=clist[i], bx=this.cell[c].bx, by=this.cell[c].by;
+			var cell=clist[i], bx=cell.bx, by=cell.by;
 			var idlist = this.starinside(bx,by,bx+1,by+1);
 			for(var n=0;n<idlist.length;n++){
-				var id=idlist[n], group=this.star[id].group, gid=this.star[id].groupid;
+				var id=idlist[n], group=this.star[id].group, gid=this.star[id].obj.id;
 				if(this.getStar(id)>0){
 					if( group===this.CELL ||
 					   (group===this.CROSS && this.areas.rinfo.bdcnt[gid]===0) ||
-					   (group===this.BORDER && this.QaB(gid)===0)
+					   (group===this.BORDER && this.border[gid].getQans()===0)
 					)
 					{ cnt++; ret={id:id, err:0};}
 				}
@@ -468,15 +469,15 @@ AnsCheck:{
 		for(var s=0;s<bd.starmax;s++){
 			if(bd.getStar(s)<=0){ continue;}
 
-			var group=bd.star[s].group, gid=bd.star[s].groupid;
+			var group=bd.star[s].group, gid=bd.star[s].obj.id;
 			if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]!==0){
 				if(this.inAutoCheck){ return false;}
 				bd.setCrossBorderError(bd.star[s].bx, bd.star[s].by);
 				result = false;
 			}
-			else if(group===bd.BORDER && bd.QaB(gid)!==0){
+			else if(group===bd.BORDER && bd.border[gid].getQans()!==0){
 				if(this.inAutoCheck){ return false;}
-				bd.sErB(gid,1);
+				bd.border[gid].seterr(1);
 				result = false;
 			}
 		}
@@ -486,16 +487,16 @@ AnsCheck:{
 	checkFractal : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var room = rinfo.room[r];
-			var id = room.starid;
+			var clist = rinfo.getclist(r);
+			var id = rinfo.room[r].starid;
 			if(id===null){ continue;}
 			var sx=bd.star[id].bx, sy=bd.star[id].by;
-			for(var i=0;i<room.idlist.length;i++){
-				var c=room.idlist[i];
-				var ccopy = bd.cnum(sx*2-bd.cell[c].bx, sy*2-bd.cell[c].by);
-				if(ccopy===null || rinfo.id[c]!=rinfo.id[ccopy]){
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				var ccopy = bd.getc(sx*2-cell.bx, sy*2-cell.by);
+				if(ccopy.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(ccopy)){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC(room.idlist,1); result = false;
+					clist.seterr(1); result = false;
 				}
 			}
 		}
@@ -504,11 +505,11 @@ AnsCheck:{
 
 	checkErrorFlag : function(rinfo, val){
 		var result = true;
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].error!==val){ continue;}
+		for(var r=1;r<=rinfo.max;r++){
+			if(rinfo.room[r].error!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			bd.sErC(rinfo.room[id].idlist,1);
+			rinfo.getclist(r).seterr(1);
 			result = false;
 		}
 		return result;

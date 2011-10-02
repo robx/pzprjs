@@ -16,7 +16,7 @@ MouseEvent:{
 		if(!inputbg){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputBGcolor();}
+				else if(this.btn.Right){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				if(this.btn.Left){
@@ -33,24 +33,24 @@ MouseEvent:{
 		return this.borderpos(0.25).oncell();
 	},
 	inputBGcolor : function(){
-		var cc = this.cellid();
-		if(cc===null || cc==this.mouseCell){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
 			if(this.btn.Left){
-				if     (bd.cell[cc].qsub===0){ this.inputData=11;}
-				else if(bd.cell[cc].qsub===1){ this.inputData=12;}
-				else                         { this.inputData=10;}
+				if     (cell.qsub===0){ this.inputData=11;}
+				else if(cell.qsub===1){ this.inputData=12;}
+				else                  { this.inputData=10;}
 			}
 			else{
-				if     (bd.cell[cc].qsub===0){ this.inputData=12;}
-				else if(bd.cell[cc].qsub===1){ this.inputData=10;}
-				else                         { this.inputData=11;}
+				if     (cell.qsub===0){ this.inputData=12;}
+				else if(cell.qsub===1){ this.inputData=10;}
+				else                  { this.inputData=11;}
 			}
 		}
-		bd.sQsC(cc, this.inputData-10);
-		pc.paintCell(cc);
+		cell.setQsub(this.inputData-10);
+		pc.paintCell(cell);
 
-		this.mouseCell = cc; 
+		this.mouseCell = cell; 
 	}
 },
 
@@ -74,21 +74,23 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	iscross  : 2,
-	isborder : 2,
-
+Cell:{
 	maxnum : 3,
 	minnum : 0,
 
-	getdir4BorderLine1 : function(cc){
+	getdir4BorderLine1 : function(){
 		var cnt=0;
-		if( this.isLine(this.ub(cc)) ){ cnt++;}
-		if( this.isLine(this.db(cc)) ){ cnt++;}
-		if( this.isLine(this.lb(cc)) ){ cnt++;}
-		if( this.isLine(this.rb(cc)) ){ cnt++;}
+		if( this.ub().isLine() ){ cnt++;}
+		if( this.db().isLine() ){ cnt++;}
+		if( this.lb().isLine() ){ cnt++;}
+		if( this.rb().isLine() ){ cnt++;}
 		return cnt;
 	}
+},
+
+Board:{
+	iscross  : 2,
+	isborder : 2
 },
 
 LineManager:{
@@ -143,8 +145,8 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	repaintParts : function(idlist){
-		this.range.crosses = bd.lines.getXlistFromIdlist(idlist);
+	repaintParts : function(blist){
+		this.range.crosses = blist.crossinside();
 
 		this.drawBaseMarks();
 	}
@@ -227,10 +229,10 @@ AnsCheck:{
 	checkdir4BorderLine : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			var qn = bd.QnC(c);
-			if(qn>=0 && qn!==bd.getdir4BorderLine1(c)){
+			var cell = bd.cell[c], qn = cell.getQnum();
+			if(qn>=0 && qn!==cell.getdir4BorderLine1()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

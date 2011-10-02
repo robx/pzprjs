@@ -41,6 +41,7 @@ sub output_pzprBase{
 		'CoreClass.js',
 		'Main.js',
 		'Timer.js',
+		'BoardPiece.js',
 		'Board.js',
 		'BoardExt.js',
 		'Graphic.js',

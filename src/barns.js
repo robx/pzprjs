@@ -23,27 +23,30 @@ MouseEvent:{
 	inputRed : function(){ this.dispRedLine();},
 
 	inputIcebarn : function(){
-		var cc = this.cellid();
-		if(cc===null || cc==this.mouseCell){ return;}
-		if(this.inputData===null){ this.inputData = (bd.QuC(cc)==6?0:6);}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
-		bd.sQuC(cc, this.inputData);
-		pc.paintCell(cc);
-		this.mouseCell = cc;
+		cell.setQues(this.inputData);
+		pc.paintCell(cell);
+		this.mouseCell = cell;
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
+Border:{
+	enableLineNG : true,
+
+	// 線を引かせたくないので上書き
+	isLineNG : function(){ return (this.ques===1);}
+},
+
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	// 線を引かせたくないので上書き
-	enableLineNG : true,
-	isLineNG : function(id){ return this.isBorder(id);}
+	isborder : 1
 },
 
 LineManager:{
@@ -146,7 +149,7 @@ AnsCheck:{
 			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)===4 && bd.QuC(c)!==6);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6);}) ){
 			this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
 		}
 		if( !this.checkIceLines() ){

@@ -31,21 +31,24 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	disInputHatena : true,
+
+	nummaxfunc : function(){
+		return this.owner.editmode?999999:Math.max(bd.qcols,bd.qrows);
+	},
+
+	setNum : function(val){
+		if(val===0){ return;}
+		if(this.owner.editmode){ this.setQnum(val);}else{ this.setAnum(val);}
+	}
+},
+
 Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isborder : 1,
-
-	disInputHatena : true,
-
-	nummaxfunc : function(cc){
-		return this.owner.editmode?999999:Math.max(this.qcols,this.qrows);
-	},
-	setNum : function(c,val){
-		if(val==0){ return;}
-		if(this.owner.editmode){ this.sQnC(c,val);}else{ this.sAnC(c,val);}
-	}
+	isborder : 1
 },
 
 AreaManager:{
@@ -80,23 +83,23 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cell[c];
-			var key_qans = ['cell',c,'qans'].join('_');
-			var key_ques = ['cell',c,'ques'].join('_');
-			var px = this.cell[c].px, py = this.cell[c].py;
+			var cell = clist[i];
+			var key_qans = ['cell',cell.id,'qans'].join('_');
+			var key_ques = ['cell',cell.id,'ques'].join('_');
+			var px = cell.px, py = cell.py;
 
-			if(bd.cell[c].anum!==-1){
-				var color = (bd.cell[c].error==1?this.fontErrcolor:this.fontAnscolor);
-				var size = (bd.cell[c].anum<10?0.8:0.7);
-				this.dispnum(key_qans, 1, (""+bd.cell[c].anum), size, color, px, py);
+			if(cell.anum!==-1){
+				var color = (cell.error==1?this.fontErrcolor:this.fontAnscolor);
+				var size = (cell.anum<10?0.8:0.7);
+				this.dispnum(key_qans, 1, (""+cell.anum), size, color, px, py);
 			}
 			else{ this.hideEL(key_qans);}
 
-			if(bd.cell[c].qnum!==-1){
+			if(cell.qnum!==-1){
 				var size = 0.45;
-				if     (bd.cell[c].qnum>=100000){ size = 0.30;}
-				else if(bd.cell[c].qnum>= 10000){ size = 0.36;}
-				this.dispnum(key_ques, 5, (""+bd.cell[c].qnum), size, this.fontcolor, px, py);
+				if     (cell.qnum>=100000){ size = 0.30;}
+				else if(cell.qnum>= 10000){ size = 0.36;}
+				this.dispnum(key_ques, 5, (""+cell.qnum), size, this.fontcolor, px, py);
 			}
 			else{ this.hideEL(key_ques);}
 		}
@@ -134,7 +137,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(c){ return bd.AnC(c);}) ){
+		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getAnum();}) ){
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
@@ -142,27 +145,29 @@ AnsCheck:{
 			this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.AnC(c)===-1);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getAnum()===-1);}) ){
 			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(function(c){ return (bd.AnC(c)===-1);});},
+	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getAnum()===-1);});},
 
 	checkRoomNumber : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var product = 1, room = rinfo.room[id];
-			for(var i=0;i<room.idlist.length;i++){
-				if(bd.AnC(room.idlist[i])>0){ product *= bd.AnC(room.idlist[i]);}
+			var product = 1, clist = rinfo.getclist(id);
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				if(cell.getAnum()>0){ product *= cell.getAnum();}
 				else{ product = 0;}
 			}
 			if(product==0){ continue;}
 
-			if(product!=bd.QnC(bd.areas.rinfo.getTopOfRoomByCell(room.idlist[0]))){
+			var cell = bd.areas.rinfo.getTopOfRoom(id);
+			if(product!=cell.getQnum()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(room.idlist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

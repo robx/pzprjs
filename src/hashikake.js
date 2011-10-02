@@ -22,43 +22,49 @@ MouseEvent:{
 		var pos = this.borderpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = this.getnb(this.prevPos, pos);
-		if(id!==null){
+		var border = this.getnb(this.prevPos, pos);
+		if(!border.isnull){
 			var dir = this.getdir(this.prevPos, pos);
-			var d = bd.getlinesize(id);
-			var idlist = new pzprv3.core.IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
+			var d = border.getlinesize();
+			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
 
-			if(this.previdlist.isnull() || !this.previdlist.include(id)){ this.inputData=null;}
-			if(this.inputData===null){ this.inputData = [1,2,0][bd.LiB(id)];}
-			if(this.inputData>0 && (dir===bd.UP||dir===bd.LT)){ idlist.reverseData();} // 色分けの都合上の処理
-			for(var i=0;i<idlist.data.length;i++){
-				bd.sLiB(idlist.data[i], this.inputData);
-				bd.sQsB(idlist.data[i], 0);
+			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
+			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
+			if(this.inputData>0 && (dir===bd.UP||dir===bd.LT)){ borders.reverse();} // 色分けの都合上の処理
+			for(var i=0;i<borders.length;i++){
+				borders[i].setLineVal(this.inputData);
+				borders[i].setQsub(0);
 			}
-			this.previdlist = idlist;
+			this.prevblist = borders;
 
 			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
-	previdlist : new pzprv3.core.IDList(),
+	prevblist : null,
 
 	inputpeke : function(){
 		var pos = this.borderpos(0.22);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = pos.borderid();
-		if(id===null){ return;}
+		var border = pos.getb();
+		if(border.isnull){ return;}
 
-		if(this.inputData===null){ this.inputData=(bd.QsB(id)!=2?2:0);}
-		bd.sQsB(id, this.inputData);
+		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
+		border.setQsub(this.inputData);
 
-		var d = bd.getlinesize(id);
-		var idlist = new pzprv3.core.IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
-		for(var i=0;i<idlist.length;i++){ bd.sLiB(idlist.data[i], 0);}
+		var d = border.getlinesize();
+		var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
 		this.prevPos = pos;
 
 		pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+	},
+
+	mousereset : function(){
+		this.SuperFunc.mousereset.call(this);
+
+		this.prevblist = new pzprv3.core.PieceList(this.owner);
 	}
 },
 
@@ -87,41 +93,47 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	maxnum : 8,
+
+	getCountOfBridges : function(){
+		var cnt=0, blist=new pzprv3.core.PieceList(this.owner);
+		blist.addList([this.ub(), this.db(), this.lb(), this.rb()]);
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i];
+			if(!border.isnull && border.line>0){ cnt+=border.line;}
+		}
+		return cnt;
+	},
+
+	iscrossing : function(){ return this.noNum();}
+},
+
+Border:{
+	getlinesize : function(){
+		var pos1 = this.getaddr(), pos2 = pos1.clone();
+		if(this.isVert()){
+			while(pos1.move(-1,0).getc().noNum()){ pos1.move(-1,0);}
+			while(pos2.move( 1,0).getc().noNum()){ pos2.move( 1,0);}
+		}
+		else{
+			while(pos1.move(0,-1).getc().noNum()){ pos1.move(0,-1);}
+			while(pos2.move(0, 1).getc().noNum()){ pos2.move(0, 1);}
+		}
+		return {x1:pos1.x, y1:pos1.y, x2:pos2.x, y2:pos2.y};
+	}
+},
+
 Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isborder : 1,
-
-	maxnum : 8,
-
-	getCountOfBridges : function(cc){
-		var cnt=0, idlist=[this.ub(cc), this.db(cc), this.lb(cc), this.rb(cc)];
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
-			if(!!this.border[id] && this.border[id].line>0){ cnt+=this.border[id].line;}
-		}
-		return cnt;
-	},
-	getlinesize : function(id){
-		var bx=this.border[id].bx, by=this.border[id].by;
-		var d = {x1:bx, x2:bx, y1:by, y2:by};
-		if(this.isVert(id)){
-			while(d.x1>this.minbx && this.noNum(this.cnum(d.x1-1,by))){d.x1-=2;}
-			while(d.x2<this.maxbx && this.noNum(this.cnum(d.x2+1,by))){d.x2+=2;}
-		}
-		else{
-			while(d.y1>this.minby && this.noNum(this.cnum(bx,d.y1-1))){d.y1-=2;}
-			while(d.y2<this.maxby && this.noNum(this.cnum(bx,d.y2+1))){d.y2+=2;}
-		}
-		return d;
-	}
+	isborder : 1
 },
 
 LineManager:{
 	isCenterLine : true,
-	isLineCross  : true,
-	iscrossing : function(cc){ return bd.noNum(cc);}
+	isLineCross  : true
 },
 
 AreaManager:{
@@ -175,15 +187,15 @@ Graphic:{
 		var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
 
 		var headers = ["b_line_","b_dline1_","b_dline2_"];
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], color = this.getLineColor(bd.border[id]);
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i], id = border.id, color = this.getLineColor(border);
 			if(!!color){
 				g.fillStyle = color;
-				var isvert = bd.isVert(id);
-				var px = this.border[id].px, py = this.border[id].py;
+				var isvert = border.isVert();
+				var px = border.px, py = border.py;
 
-				if(bd.border[id].line==1){
+				if(border.line===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
 						if(!isvert){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
 						else       { g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
@@ -191,7 +203,7 @@ Graphic:{
 				}
 				else{ this.vhide(headers[0]+id);}
 
-				if(bd.border[id].line==2){
+				if(border.line===2){
 					if(this.vnop(headers[1]+id,this.FILL)){
 						if(!isvert){ g.fillRect(px-lm-ls, py-this.bh-lm, lw, this.ch+lw);}
 						else       { g.fillRect(px-this.bw-lm, py-lm-ls, this.cw+lw, lw);}
@@ -218,24 +230,30 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var cell = clist[i];
 
-			if(bd.cell[c].qnum!=-1){
-				if (pp.getVal('circolor') && bd.cell[c].qnum===bd.getCountOfBridges(c))
-											 { g.fillStyle = this.bcolor;      }
-				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
-				else                         { g.fillStyle = this.circledcolor;}
+			if(cell.qnum!=-1){
+				if (pp.getVal('circolor') && cell.qnum===cell.getCountOfBridges())
+									   { g.fillStyle = this.bcolor;      }
+				else if(cell.error===1){ g.fillStyle = this.errbcolor1;  }
+				else                   { g.fillStyle = this.circledcolor;}
 
-				if(this.vnop(header+c,this.FILL)){
-					g.shapeCircle(this.cell[c].px, this.cell[c].py, rsize);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.shapeCircle(cell.px, cell.py, rsize);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	},
 
-	repaintParts : function(idlist){
-		this.range.cells = bd.lines.getClistFromIdlist(idlist);
+	repaintLines : function(blist){
+		this.range.borders = blist;
+		this.drawLines_hashikake();
+
+		if(this.use.canvas){ this.repaintParts(blist);}
+	},
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
 
 		this.drawCirclesAtNumber_hashikake();
 		this.drawNumbers();
@@ -280,15 +298,15 @@ FileIO:{
 			var val = parseInt(ca);
 			var datah = (val&3);
 			if(datah>0){
-				var uid=bd.bnum(obj.bx,obj.by-1), did=bd.bnum(obj.bx,obj.by+1);
-				if(uid!==null){ bd.border[uid].line = datah;}
-				if(did!==null){ bd.border[did].line = datah;}
+				var uborder=obj.ub(), dborder=obj.db();
+				if(!uborder.isnull){ uborder.line = datah;}
+				if(!dborder.isnull){ dborder.line = datah;}
 			}
 			var dataw = ((val&12)>>2);
 			if(dataw>0){
-				var lid=bd.bnum(obj.bx-1,obj.by), rid=bd.bnum(obj.bx+1,obj.by);
-				if(lid!==null){ bd.border[lid].line = dataw;}
-				if(rid!==null){ bd.border[rid].line = dataw;}
+				var lborder=obj.lb(), rborder=obj.rb();
+				if(!lborder.isnull){ lborder.line = dataw;}
+				if(!rborder.isnull){ rborder.line = dataw;}
 			}
 		});
 	},
@@ -300,9 +318,9 @@ FileIO:{
 		});
 		this.encodeCell( function(obj){
 			if(obj.qnum!==-1){ return "0 ";}
-			var uid=bd.bnum(obj.bx,obj.by-1), lid=bd.bnum(obj.bx-1,obj.by);
-			var datah = (uid!==null ? bd.border[uid].line : 0);
-			var dataw = (lid!==null ? bd.border[lid].line : 0);
+			var uborder=obj.ub(), lborder=obj.lb();
+			var datah = (!uborder.isnull ? uborder.line : 0);
+			var dataw = (!lborder.isnull ? lborder.line : 0);
 			return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
 		});
 	}
@@ -331,13 +349,13 @@ AnsCheck:{
 	checkCellNumber : function(flag){
 		var result = true;
 		for(var cc=0;cc<bd.cellmax;cc++){
-			var qn = bd.QnC(cc);
+			var cell = bd.cell[cc], qn = cell.getQnum();
 			if(qn<0){ continue;}
 
-			var cnt = bd.getCountOfBridges(cc);
+			var cnt = cell.getCountOfBridges();
 			if((flag===1 && qn<cnt)||(flag===2 && qn>cnt)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([cc],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

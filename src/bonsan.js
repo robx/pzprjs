@@ -19,13 +19,13 @@ MouseEvent:{
 	},
 
 	inputlight : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		if     (bd.QsC(cc)==0){ bd.sQsC(cc, (this.btn.Left?1:2));}
-		else if(bd.QsC(cc)==1){ bd.sQsC(cc, (this.btn.Left?2:0));}
-		else if(bd.QsC(cc)==2){ bd.sQsC(cc, (this.btn.Left?0:1));}
-		pc.paintCell(cc);
+		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		pc.paintCell(cell);
 	}
 },
 
@@ -56,35 +56,39 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return Math.max(bd.qcols,bd.qrows)-1;
+	},
+	minnum : 0,
+
+	qnum2 : -1 // 動いた後のqnum(正答判定用)
+},
+
 Board:{
 	qcols : 8,
 	qrows : 8,
 
 	isborder : 1,
 
-	nummaxfunc : function(cc){
-		return Math.max(this.qcols,this.qrows)-1;
-	},
-	minnum : 0,
-
-	getMovedPosition : function(linfo){
-		var minfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ minfo.id[c]=c;}
+	searchMovedPosition : function(linfo){
+		var minfo = new pzprv3.core.AreaCellInfo(this.owner);
+		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum;}
 		for(var r=1;r<=linfo.max;r++){
-			if(linfo.room[r].idlist.length<=1){ continue;}
+			var clist = linfo.getclist(r);
+			if(clist.length<=1){ continue;}
 			var before=null, after=null;
-			for(var i=0;i<linfo.room[r].idlist.length;i++){
-				var c=linfo.room[r].idlist[i];
-				if(this.lines.lcntCell(c)===1){
-					if(this.isNum(c)){ before=c;}else{ after=c;}
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i];
+				if(cell.lcnt()===1){
+					if(cell.isNum()){ before=cell;}else{ after=cell;}
 				}
 			}
 			if(before!==null && after!==null){
-				minfo.id[after]=before;
-				minfo.id[before]=null;
+				after.qnum2 = before.qnum;
+				before.qnum2 = -1;
 			}
 		}
-		return minfo;
 	}
 },
 
@@ -126,41 +130,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	drawTip : function(){
-		var g = this.vinc('cell_linetip', 'auto');
-
-		var tsize = this.cw*0.30;
-		var tplus = this.cw*0.05;
-		var header = "c_tip_";
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			this.vdel([header+c]);
-			if(bd.lines.lcntCell(c)==1 && bd.cell[c].qnum==-1){
-				var dir=0, id=null;
-				if     (bd.isLine(bd.ub(c))){ dir=2; id=bd.ub(c);}
-				else if(bd.isLine(bd.db(c))){ dir=1; id=bd.db(c);}
-				else if(bd.isLine(bd.lb(c))){ dir=4; id=bd.lb(c);}
-				else if(bd.isLine(bd.rb(c))){ dir=3; id=bd.rb(c);}
-
-				g.lineWidth = this.lw; //LineWidth
-				if     (bd.border[id].error==1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-				else if(bd.border[id].error==2){ g.strokeStyle = this.errlinecolor2;}
-				else                           { g.strokeStyle = this.linecolor;}
-
-				if(this.vnop(header+c,this.STROKE)){
-					var px=this.cell[c].px+1, py=this.cell[c].py+1;
-					if     (dir==1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
-					else if(dir==2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
-					else if(dir==3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
-					else if(dir==4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
-					g.stroke();
-				}
-			}
-		}
 	}
 },
 
@@ -234,19 +203,19 @@ AnsCheck:{
 			this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo(), minfo = bd.getMovedPosition(linfo);
-		var mfunc = function(c){ return ((c!==null && minfo.id[c]!==null) ? bd.QnC(minfo.id[c]) : -1);};
-		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo, mfunc) ){
+		var rinfo = bd.areas.getRoomInfo();
+		bd.searchMovedPosition(linfo);
+		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
 		}
-		if( (this.owner.pid==='heyabon') && !this.checkFractal(rinfo, mfunc) ){
+		if( (this.owner.pid==='heyabon') && !this.checkFractal(rinfo) ){
 			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 		}
-		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, mfunc) ){
+		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.qnum2;}) ){
 			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QnC(c)>=1 && bd.lines.lcntCell(c)==0);} ) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);} ) ){
 			this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
 		}
 
@@ -258,13 +227,14 @@ AnsCheck:{
 		return true;
 	},
 
-	checkLineOverLetter : function(func){
+	checkLineOverLetter : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.lines.lcntCell(c)>=2 && bd.isNum(c)){
+			var cell = bd.cell[c];
+			if(cell.lcnt()>=2 && cell.isNum()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setCellLineError(c,true);
+				if(result){ bd.border.seterr(2);}
+				cell.setCellLineError(true);
 				result = false;
 			}
 		}
@@ -273,15 +243,13 @@ AnsCheck:{
 
 	checkFractal : function(rinfo, getval){
 		for(var id=1;id<=rinfo.max;id++){
-			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
+			var clist = rinfo.getclist(id), d = clist.getRectSize();
 			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
-			for(var i=0;i<rinfo.room[id].idlist.length;i++){
-				var c=rinfo.room[id].idlist[i];
-				if(getval(c)!=-1 ^ getval(bd.cnum(d.xx-bd.cell[c].bx, d.yy-bd.cell[c].by))!=-1){
-					for(var a=0;a<rinfo.room[id].idlist.length;a++){
-						if(getval(rinfo.room[id].idlist[a])!=-1){
-							bd.sErC([rinfo.room[id].idlist[a]],1);
-						}
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				if(cell.qnum2!==-1 ^ bd.getc(d.xx-cell.bx, d.yy-cell.by).qnum2!==-1){
+					for(var a=0;a<clist.length;a++){
+						if(clist[a].qnum2!==-1){ clist[a].seterr(1);}
 					}
 					return false;
 				}

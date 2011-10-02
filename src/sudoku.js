@@ -38,13 +38,14 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return Math.max(bd.qcols,bd.qrows);
+	}
+},
 Board:{
 	qcols : 9,
-	qrows : 9,
-
-	nummaxfunc : function(cc){
-		return Math.max(this.qcols,this.qrows);
-	}
+	qrows : 9
 },
 
 MenuExec:{
@@ -177,7 +178,7 @@ AnsCheck:{
 			this.setAlert('同じブロックに同じ数字が入っています。','There are same numbers in a block.'); return false;
 		}
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();}) ){
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
@@ -195,7 +196,7 @@ AnsCheck:{
 		var blk=((Math.sqrt(max)+0.1)|0);
 		for(var i=0;i<max;i++){
 			var clist = bd.cellinside(((i%blk)*blk)*2+1, (((i/blk)|0)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (((i/blk+1)|0)*blk-1)*2+1);
-			if(!this.isDifferentNumberInClist(clist, function(c){ return bd.getNum(c);})){
+			if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getNum();})){
 				if(this.inAutoCheck){ return false;}
 				result = false;
 			}

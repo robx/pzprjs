@@ -18,38 +18,36 @@ MouseEvent:{
 	},
 
 	inputstone : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		var cc0 = tc.getTCC();
-		if(cc!==cc0){
-			tc.setTCC(cc);
-			pc.paintCell(cc0);
+		var cell0 = tc.getTCC();
+		if(cell!==cell0){
+			tc.setTCC(cell);
+			pc.paintCell(cell0);
 		}
-
-		bd.setStone(cc);
-		pc.paintCell(cc);
+		cell.setStone();
+		pc.paintCell(cell);
 	},
 	inputqans : function(){
-		var cc = this.cellid();
-		if(cc===null || !bd.isStone(cc) || bd.cell[cc].anum!==-1){
+		var cell = this.getcell();
+		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
 			ut.startRedo(true);
 			return;
 		}
 
-		var max=0, bcc=null;
+		var max=0, bcell=bd.newObject(bd.CELL);
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].anum>max){
-				max = bd.cell[c].anum;
-				bcc = c;
+			var cell2 = bd.cell[c];
+			if(cell2.anum>max){
+				max = cell2.anum;
+				bcell = cell2;
 			}
 		}
 
 		// すでに1つ以上の碁石が取られている場合
-		if(bcc!==null){
-			var tmp, d = {x1:-1, y1:-1, x2:-1, y2:-1};
-			d.x1 = bd.cell[cc].bx, d.x2 = bd.cell[bcc].bx;
-			d.y1 = bd.cell[cc].by, d.y2 = bd.cell[bcc].by;
+		if(!bcell.isnull){
+			var tmp, d = {x1:cell.bx, y1:cell.by, x2:bcell.bx, y2:bcell.by};
 
 			// 自分の上下左右にmaxな碁石がない場合は何もしない
 			if(d.x1!==d.x2 && d.y1!==d.y2){ return;}
@@ -63,16 +61,15 @@ MouseEvent:{
 			}
 			// 間に碁石がある場合は何もしない
 			for(var bx=d.x1;bx<=d.x2;bx+=2){ for(var by=d.y1;by<=d.y2;by+=2){
-				var c = bd.cnum(bx,by);
-				if(c!==null && bd.isStone(c)){
-					var qa = bd.cell[c].anum;
-					if(qa===-1 || (max>=2 && qa===max-1)){ return;}
+				var cell2 = bd.getc(bx,by);
+				if(!cell2.isnull && cell2.isStone()){
+					if(cell2.anum===-1 || (max>=2 && cell2.anum===max-1)){ return;}
 				}
 			} }
 		}
 
-		bd.sAnC(cc,max+1);
-		pc.paintCell(cc);
+		cell.setAnum(max+1);
+		pc.paintCell(cell);
 	}
 },
 
@@ -86,9 +83,9 @@ KeyEvent:{
 	},
 	key_inputstone : function(ca){
 		if(ca=='q'){
-			var cc = tc.getTCC();
-			bd.setStone(cc);
-			pc.paintCell(cc);
+			var cell = tc.getTCC();
+			cell.setStone();
+			pc.paintCell(cell);
 		}
 	}
 },
@@ -96,14 +93,12 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	ques : 7
-},
+	ques : 7,
 
-Board:{
-	isStone  : function(c){ return (!!this.cell[c] && this.cell[c].ques!==7)},
-	setStone : function(cc){
-		if     (this.QuC(cc)=== 7){ this.sQuC(cc,0);}
-		else if(this.AnC(cc)===-1){ this.sQuC(cc,7);} // 数字のマスは消せません
+	isStone : function(){ return this.ques!==7;},
+	setStone : function(){
+		if     (this.ques=== 7){ this.setQues(0);}
+		else if(this.anum===-1){ this.setQues(7);} // 数字のマスは消せません
 	}
 },
 
@@ -190,15 +185,15 @@ Graphic:{
 		var header = "c_cir_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.isStone(c) && bd.cell[c].anum===-1){
-				g.strokeStyle = (bd.cell[c].error===1 ? this.errcolor1  : this.cellcolor);
-				g.fillStyle   = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+c,this.FILL_STROKE)){
-					g.shapeCircle(this.cell[c].px, this.cell[c].py, rsize);
+			var cell = clist[i];
+			if(cell.isStone() && cell.anum===-1){
+				g.strokeStyle = (cell.error===1 ? this.errcolor1  : this.cellcolor);
+				g.fillStyle   = (cell.error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(header+cell.id,this.FILL_STROKE)){
+					g.shapeCircle(cell.px, cell.py, rsize);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	},
 	drawCellSquare : function(){
@@ -210,14 +205,14 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.isStone(c) && bd.cell[c].anum!==-1){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
+			var cell = clist[i];
+			if(cell.isStone() && cell.anum!==-1){
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	}
 },
@@ -246,7 +241,7 @@ Encode:{
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
 				if(c<bd.cellmax){
-					bd.sQuC(c,(num&twi[w]?7:0));
+					bd.cell[c].setQues(num&twi[w]?7:0);
 					c++;
 				}
 			}
@@ -262,8 +257,8 @@ Encode:{
 		var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 		for(var by=d.y1;by<=d.y2;by+=2){
 			for(var bx=d.x1;bx<=d.x2;bx+=2){
-				var c=bd.cnum(bx,by);
-				if(c===null || !bd.isStone(c)){ pass+=twi[count];} count++;
+				var cell = bd.getc(bx,by);
+				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
 				if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 			}
 		}
@@ -276,11 +271,12 @@ Encode:{
 	getSizeOfBoard_goishi : function(){
 		var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isStone(c)){ continue;}
-			if(x1>bd.cell[c].bx){ x1=bd.cell[c].bx;}
-			if(x2<bd.cell[c].bx){ x2=bd.cell[c].bx;}
-			if(y1>bd.cell[c].by){ y1=bd.cell[c].by;}
-			if(y2<bd.cell[c].by){ y2=bd.cell[c].by;}
+			var cell = bd.cell[c];
+			if(!cell.isStone()){ continue;}
+			if(x1>cell.bx){ x1=cell.bx;}
+			if(x2<cell.bx){ x2=cell.bx;}
+			if(y1>cell.by){ y1=cell.by;}
+			if(y2<cell.by){ y2=cell.by;}
 			count++;
 		}
 		if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
@@ -331,8 +327,7 @@ FileIO:{
 	encodeGoishi_kanpen : function(){
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var c = bd.cnum(bx,by);
-				this.datastr += (bd.cell[c].ques===0 ? "1 " : ". ");
+				this.datastr += (bd.getc(bx,by).isStone() ? "1 " : ". ");
 			}
 			this.datastr += "/";
 		}
@@ -346,20 +341,20 @@ FileIO:{
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
-				var c=bd.cnum(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
-				bd.cell[c].ques = 0;
-				bd.cell[c].anum = parseInt(item[0]);
+				var cell = bd.getc(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
+				cell.ques = 0;
+				cell.anum = parseInt(item[0]);
 			}
 		}
 	},
 	encodeQansPos_kanpen : function(){
 		var stones = []
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-			var c = bd.cnum(bx,by), obj=bd.cell[c];
-			if(obj.ques!==0 || obj.anum===-1){ continue;}
+			var cell = bd.getc(bx,by);
+			if(cell.ques!==0 || cell.anum===-1){ continue;}
 
 			var pos = [(bx>>1).toString(), (by>>1).toString()];
-			stones[obj.anum-1] = pos;
+			stones[cell.anum-1] = pos;
 		}}
 		for(var i=0,len=stones.length;i<len;i++){
 			var item = [(i+1), stones[i][1], stones[i][0]];
@@ -373,7 +368,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAllCell(function(c){ return (bd.isStone(c) && bd.cell[c].anum===-1);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);}) ){
 			this.setAlert('拾われていない碁石があります。','There is remaining Goishi.'); return false;
 		}
 

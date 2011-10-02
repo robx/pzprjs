@@ -142,7 +142,7 @@ pzprv3.createCommonClass('FileIO',
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(bd.getObject(group, bd.idnum(group,bx,by)), item[i]);
+			func(bd.getObjectPos(group, bx, by), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -183,7 +183,7 @@ pzprv3.createCommonClass('FileIO',
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(bd.getObject(group, bd.idnum(group,bx,by)));
+				this.datastr += func(bd.getObjectPos(group, bx, by));
 			}
 			this.datastr += "/";
 		}
@@ -466,9 +466,9 @@ pzprv3.createCommonClass('FileIO',
 	//---------------------------------------------------------------------------
 	rdata2Border : function(isques, rdata){
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			var isdiff = (cc1!==null && cc2!==null && rdata[cc1]!=rdata[cc2]);
-			bd.border[id][(isques?'ques':'qans')] = (isdiff?1:0);
+			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!=rdata[cell2.id]);
+			border[(isques?'ques':'qans')] = (isdiff?1:0);
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -483,16 +483,16 @@ pzprv3.createCommonClass('FileIO',
 
 			var bx=(i%(bd.qcols+1)-1)*2+1, by=(((i/(bd.qcols+1))|0)-1)*2+1;
 			if(bx===-1 || by===-1){
-				var ec = bd.exnum(bx,by);
-				var property = ((by===-1)?'qdir':'qnum');
-				bd.excell[ec][property] = parseInt(item[i]);
+				var excell = bd.getex(bx,by);
+				var property = ((excell.by===-1)?'qdir':'qnum');
+				excell[property] = parseInt(item[i]);
 			}
 			else{
 				var inp = item[i].split(",");
-				var c = bd.cnum(bx,by);
-				bd.set51cell(c);
-				bd.cell[c].qnum = parseInt(inp[0]);
-				bd.cell[c].qdir = parseInt(inp[1]);
+				var cell = bd.getc(bx,by);
+				cell.set51cell();
+				cell.qnum = parseInt(inp[0]);
+				cell.qdir = parseInt(inp[1]);
 			}
 		}
 		bd.enableInfo(); /* mv.set51cell()用 */
@@ -503,14 +503,14 @@ pzprv3.createCommonClass('FileIO',
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if     (bx===-1 && by===-1){ str += "0 ";}
 				else if(bx===-1 || by===-1){
-					var ec = bd.exnum(bx,by);
-					var property = ((by===-1)?'qdir':'qnum');
-					str += (""+bd.excell[ec][property].toString()+" ");
+					var excell = bd.getex(bx,by);
+					var property = ((excell.by===-1)?'qdir':'qnum');
+					str += (""+excell[property].toString()+" ");
 				}
 				else{
-					var c = bd.cnum(bx,by);
-					if(bd.cell[c].ques===51){
-						str += (""+bd.cell[c].qnum.toString()+","+bd.cell[c].qdir.toString()+" ");
+					var cell = bd.getc(bx,by);
+					if(cell.ques===51){
+						str += (""+cell.qnum.toString()+","+cell.qdir.toString()+" ");
 					}
 					else{ str += ". ";}
 				}
@@ -590,8 +590,8 @@ pzprv3.createCommonClass('FileIO',
 
 			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
 			if(isques && pce[4]!=""){
-				var c = bd.cnum(sp.x1,sp.y1);
-				bd.cell[c].qnum = parseInt(pce[4],10);
+				var cell = bd.getc(sp.x1,sp.y1);
+				cell.qnum = parseInt(pce[4],10);
 			}
 			this.setRdataRect(rdata, i, sp);
 		}
@@ -602,7 +602,7 @@ pzprv3.createCommonClass('FileIO',
 	setRdataRect : function(rdata, i, sp){
 		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
 			for(var by=sp.y1;by<=sp.y2;by+=2){
-				rdata[bd.cnum(bx,by)] = i;
+				rdata[bd.getc(bx,by).id] = i;
 			}
 		}
 	},
@@ -611,8 +611,8 @@ pzprv3.createCommonClass('FileIO',
 
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
-			var d = bd.getSizeOfClist(rinfo.room[id].idlist);
-			var num = (isques ? bd.cell[bd.areas.rinfo.getTopOfRoom(id)].qnum : -1);
+			var d = rinfo.getclist(id).getRectSize();
+			var num = (isques ? bd.areas.rinfo.getTopOfRoom(id).qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}

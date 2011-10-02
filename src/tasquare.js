@@ -40,7 +40,7 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
+Cell:{
 	numberIsWhite : true
 },
 
@@ -88,16 +88,16 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum!==-1){
+			var cell = clist[i];
+			if(cell.qnum!==-1){
 				g.lineWidth = 1;
 				g.strokeStyle = "black";
-				g.fillStyle = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+c,this.FILL)){
-					g.shapeRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.shapeRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	}
 },
@@ -150,17 +150,18 @@ AnsCheck:{
 	checkNumberSquare : function(binfo, flag){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if((flag?(bd.QnC(c)<0):(bd.QnC(c)!==-2))){ continue;}
-			var clist=[];
-			if(bd.isBlack(bd.up(c))){ clist = clist.concat(binfo.room[binfo.id[bd.up(c)]].idlist);}
-			if(bd.isBlack(bd.dn(c))){ clist = clist.concat(binfo.room[binfo.id[bd.dn(c)]].idlist);}
-			if(bd.isBlack(bd.lt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.lt(c)]].idlist);}
-			if(bd.isBlack(bd.rt(c))){ clist = clist.concat(binfo.room[binfo.id[bd.rt(c)]].idlist);}
+			var cell = bd.cell[c];
+			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
+			var clist=new pzprv3.core.PieceList(this.owner);
+			if(cell.up().isBlack()){ clist.addList(binfo.getclistbycell(cell.up()));}
+			if(cell.dn().isBlack()){ clist.addList(binfo.getclistbycell(cell.dn()));}
+			if(cell.lt().isBlack()){ clist.addList(binfo.getclistbycell(cell.lt()));}
+			if(cell.rt().isBlack()){ clist.addList(binfo.getclistbycell(cell.rt()));}
 
-			if(flag?(clist.length!==bd.QnC(c)):(clist.length===0)){
+			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1);
-				bd.sErC([c],1);
+				clist.seterr(1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

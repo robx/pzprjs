@@ -29,53 +29,53 @@ MouseEvent:{
 	},
 
 	inputslash : function(){
-		var cc = this.cellid();
-		if(cc===null){ this.inputflash(); return;}
+		var cell = this.getcell();
+		if(cell.isnull){ this.inputflash(); return;}
 
-		if     (this.inputData===3){ bd.sQaC(cc,0); bd.sQsC(cc,1);}
-		else if(this.inputData===4){ bd.sQaC(cc,0); bd.sQsC(cc,0);}
+		if     (this.inputData===3){ cell.setQans(0); cell.setQsub(1);}
+		else if(this.inputData===4){ cell.setQans(0); cell.setQsub(0);}
 		else if(this.inputData!==null){ return;}
 		else if(this.btn.Left){
-			if     (bd.QaC(cc)===31){ bd.sQaC(cc,32); bd.sQsC(cc,0); this.inputData=2;}
-			else if(bd.QaC(cc)===32){ bd.sQaC(cc, 0); bd.sQsC(cc,1); this.inputData=3;}
-			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc,0); this.inputData=4;}
-			else                    { bd.sQaC(cc,31); bd.sQsC(cc,0); this.inputData=1;}
+			if     (cell.getQans()===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else if(cell.getQans()===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
+			else if(cell.getQsub()=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else                        { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
 		}
 		else if(this.btn.Right){
-			if     (bd.QaC(cc)===31){ bd.sQaC(cc, 0); bd.sQsC(cc,0); this.inputData=4;}
-			else if(bd.QaC(cc)===32){ bd.sQaC(cc,31); bd.sQsC(cc,0); this.inputData=1;}
-			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc,32); bd.sQsC(cc,0); this.inputData=2;}
-			else                    { bd.sQaC(cc, 0); bd.sQsC(cc,1); this.inputData=3;}
+			if     (cell.getQans()===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else if(cell.getQans()===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+			else if(cell.getQsub()=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else                        { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
 		}
 
-		pc.paintCellAround(cc);
+		pc.paintCellAround(cell);
 	},
 	inputflash : function(){
-		var pos = this.borderpos(0), ec = bd.exnum(pos.x,pos.y)
-		if(ec===null || this.mouseCell===ec){ return;}
-		if(ec>=bd.excellmax-4){ return;}
+		var excell = this.borderpos(0).getex();
+		if(excell.isnull || this.mouseCell===excell){ return;}
+		if(excell.id>=bd.excellmax-4){ return;}
 
 		if(this.inputData!=11 && this.inputData!==null){ }
-		else if(this.inputData===null && bd.excell[ec].qlight===1){ this.inputData=12;}
+		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
 		else{
-			bd.flashlight(ec);
+			bd.flashlight(excell.id);
 			pc.paintAll();
 			this.inputData=11;
 		}
-		this.mouseCell=ec;
+		this.mouseCell = excell;
 	},
 	clickexcell : function(){
-		var ec = this.excellid();
-		if(ec===null){ return false;}
+		var excell = this.getexcell();
+		if(excell.isnull){ return false;}
 
-		var ec0 = tc.getTEC();
-		if(ec!==null && ec!=ec0){
-			tc.setTEC(ec);
-			pc.paintEXcell(ec);
-			pc.paintEXcell(ec0);
+		var excell0 = tc.getTEC();
+		if(excell!==excell0){
+			tc.setTEC(excell);
+			pc.paintEXCell(excell);
+			pc.paintEXCell(excell0);
 		}
-		else if(ec!==null && ec===ec0){
-			if(bd.excell[ec].qlight!==1){ bd.flashlight(ec);}
+		else{
+			if(excell.qlight!==1){ bd.flashlight(excell.id);}
 			else{ bd.lightclear();}
 			pc.paintAll();
 		}
@@ -90,7 +90,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var cc0 = tc.getTEC(), tcp = tc.getTCP();
+		var excell0 = tc.getTEC(), tcp = tc.getTCP();
 		var flag = true;
 
 		if     (ca===this.KEYUP){
@@ -112,8 +112,8 @@ KeyEvent:{
 		else{ flag=false;}
 
 		if(flag){
-			pc.paintEXcell(cc0);
-			pc.paintEXcell(tc.getTEC());
+			pc.paintEXCell(excell0);
+			pc.paintEXCell(tc.getTEC());
 			this.tcMoved = true;
 		}
 		return flag;
@@ -123,46 +123,46 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var ec = tc.getTEC();
+		var excell = tc.getTEC(), qn = excell.getQnum();
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 
-			if(bd.QnE(ec)<=0 || this.prev!=ec){
-				if(num<=bd.maxnum){ bd.sQnE(ec,num);}
+			if(qn<=0 || this.prev!==excell){
+				if(num<=excell.maxnum){ excell.setQnum(num);}
 			}
 			else{
-				if(bd.QnE(ec)*10+num<=bd.maxnum){ bd.sQnE(ec,bd.QnE(ec)*10+num);}
-				else if(num<=bd.maxnum){ bd.sQnE(ec,num);}
+				if(qn*10+num<=excell.maxnum){ excell.setQnum(qn*10+num);}
+				else if (num<=excell.maxnum){ excell.setQnum(num);}
 			}
 		}
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = bd.DiE(ec);
-			if     ((canum-1)%26==num && canum>0 && canum<79){ bd.sDiE(ec,canum+26);}
-			else if((canum-1)%26==num){ bd.sDiE(ec,0);}
-			else{ bd.sDiE(ec,num+1);}
+			var canum = excell.getQdir();
+			if     ((canum-1)%26==num && canum>0 && canum<79){ excell.setQdir(canum+26);}
+			else if((canum-1)%26==num){ excell.setQdir(0);}
+			else{ excell.setQdir(num+1);}
 		}
 		else if(ca=='-'){
-			if(bd.QnE(ec)!=-1){ bd.sQnE(ec,-1);}
-			else              { bd.sQnE(ec,-1); bd.sDiE(ec,0);}
+			if(qn!==-1){ excell.setQnum(-1);}
+			else       { excell.setQnum(-1); excell.setQdir(0);}
 		}
 		else if(ca=='F4'){
-			if(bd.excell[ec].qlight!==1){ bd.flashlight(ec);}
+			if(excell.qlight!==1){ bd.flashlight(excell.id);}
 			else{ bd.lightclear();}
 			pc.paintAll();
 		}
-		else if(ca==' '){ bd.sQnE(ec,-1); bd.sDiE(ec,0);}
+		else if(ca==' '){ excell.setQnum(-1); excell.setQdir(0);}
 		else{ return;}
 
-		this.prev = ec;
-		pc.paintEXcell(tc.getTEC());
+		this.prev = excell;
+		pc.paintEXCell(tc.getTEC());
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(0);
+		this.setTEC(bd.excell[0]);
 	}
 },
 
@@ -170,34 +170,36 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qlight : 0,
-	allclear : function(id,isrec){
-		this.SuperFunc.allclear.call(this,id,isrec);
+	allclear : function(isrec){
+		this.SuperFunc.allclear.call(this,isrec);
 		this.qlight = 0;
 	},
-	ansclear : function(id){
-		this.SuperFunc.ansclear.call(this,id);
+	ansclear : function(){
+		this.SuperFunc.ansclear.call(this);
 		this.qlight = 0;
 	},
-	subclear : function(id){
-		this.SuperFunc.subclear.call(this,id);
+	subclear : function(){
+		this.SuperFunc.subclear.call(this);
 		this.qlight = 0;
 	}
 },
 
 EXCell:{
 	qlight : 0,
-	allclear : function(id,isrec){
-		this.SuperFunc.allclear.call(this,id,isrec);
+	allclear : function(isrec){
+		this.SuperFunc.allclear.call(this,isrec);
 		this.qlight = 0;
 	},
-	ansclear : function(id){
-		this.SuperFunc.ansclear.call(this,id);
+	ansclear : function(){
+		this.SuperFunc.ansclear.call(this);
 		this.qlight = 0;
 	},
-	subclear : function(id){
-		this.SuperFunc.subclear.call(this,id);
+	subclear : function(){
+		this.SuperFunc.subclear.call(this);
 		this.qlight = 0;
-	}
+	},
+
+	minnum : 0
 },
 
 Board:{
@@ -206,8 +208,6 @@ Board:{
 
 	isborder : 1,
 	isexcell : 2,
-
-	minnum : 0,
 
 	errclear : function(isrepaint){
 		this.SuperFunc.errclear.call(this,false);
@@ -239,13 +239,12 @@ Board:{
 		else if(pos.x===this.maxbx-1){ dir=3;}
 
 		while(dir!==0){
-			pos.move(dir);
-			pos.move(dir);
+			pos.movedir(dir,2);
 
-			var cc = pos.cellid();
-			if(cc===null){ break;}
+			var cell = pos.getc();
+			if(cell.isnull){ break;}
 
-			var qb = this.QaC(cc);
+			var qb = cell.getQans(), cc = cell.id;
 			if(qb===31){
 				if     (dir===1){ ldata[cc]=(!isNaN({4:1,1:1}[ldata[cc]])?1:2); dir=3;}
 				else if(dir===2){ ldata[cc]=(!isNaN({2:1,1:1}[ldata[cc]])?1:4); dir=4;}
@@ -258,13 +257,13 @@ Board:{
 				else if(dir===3){ ldata[cc]=(!isNaN({5:1,1:1}[ldata[cc]])?1:3); dir=2;}
 				else if(dir===4){ ldata[cc]=(!isNaN({3:1,1:1}[ldata[cc]])?1:5); dir=1;}
 			}
-			else if(cc!==null){ ldata[cc]=1; continue;}
+			else{ ldata[cc]=1; continue;}
 
 			ccnt++;
 			if(ccnt>this.cellmax){ break;} // 念のためガード条件(多分引っかからない)
 		}
 
-		var destec = pos.excellid();
+		var destec = pos.getex().id;
 		if(!!setlight){
 			for(var c=0;c<this.excellmax;c++){ this.excell[c].qlight=0;}
 			this.excell[startec].qlight = 1;
@@ -284,7 +283,7 @@ AreaManager:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,31:32,32:31}[bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,31:32,32:31}[bd.cell[c].getQans()]);}
 		}
 	}
 },
@@ -325,18 +324,18 @@ Graphic:{
 		var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], err = bd.cell[c].error, ql = bd.cell[c].qlight;
+			var cell = clist[i], id = cell.id, err = cell.error, ql = cell.qlight;
 			if(err!==0 || ql!==0){
 				if     (err==1){ g.fillStyle = this.errbcolor1;}
 				else if(ql > 0){ g.fillStyle = this.errbcolor2;}
 				if(err===1 || ql===1){
-					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillRect(this.cell[c].px, this.cell[c].py, this.cw, this.ch);
+					if(this.vnop(headers[0]+id,this.FILL)){
+						g.fillRect(cell.rpx, cell.rpy, this.cw, this.ch);
 					}
 				}
-				else{ this.drawTriangle1(this.cell[c].px, this.cell[c].py, ql, headers[ql-1]+c);}
+				else{ this.drawTriangle1(cell.rpx, cell.rpy, ql, headers[ql-1]+id);}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c, headers[2]+c, headers[3]+c, headers[4]+c, headers[5]+c]);}
+			else{ this.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);}
 		}
 	},
 
@@ -350,13 +349,13 @@ Graphic:{
 		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var c = exlist[i], obj = bd.excell[c], key = 'excell_'+c;
+			var excell = exlist[i], key = 'excell_'+excell.id;
 
-			if(obj.qdir!==0 || obj.qnum!==-1){
-				var num=obj.qnum, canum=obj.qdir;
+			if(excell.qdir!==0 || excell.qnum!==-1){
+				var num=excell.qnum, canum=excell.qdir;
 
 				var color = this.fontErrcolor;
-				if(obj.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
+				if(excell.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
 
 				var fontratio = 0.66;
 				if(canum>0&&num>=10){ fontratio = 0.55;}
@@ -368,8 +367,7 @@ Graphic:{
 				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 				if(num>=0){ text+=num.toString(10);}
 
-				var px = this.excell[c].rpx + this.bw, py = this.excell[c].rpy + this.bh;
-				this.dispnum(key, 1, text, fontratio, color, px, py);
+				this.dispnum(key, 1, text, fontratio, color, excell.px, excell.py);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -452,20 +450,20 @@ FileIO:{
 			if(ca==="."){ continue;}
 
 			var bx = i%(bd.qcols+2)*2-1, by = ((i/(bd.qcols+2))<<1)-1;
-			var ec = bd.exnum(bx,by);
-			if(ec!==null){
+			var excell = bd.getex(bx,by);
+			if(!excell.isnull){
 				var inp = ca.split(",");
-				if(inp[0]!==""){ bd.excell[ec].qdir = parseInt(inp[0]);}
-				if(inp[1]!==""){ bd.excell[ec].qnum = parseInt(inp[1]);}
+				if(inp[0]!==""){ excell.qdir = parseInt(inp[0]);}
+				if(inp[1]!==""){ excell.qnum = parseInt(inp[1]);}
 				continue;
 			}
 
 			if(this.filever==1){
-				var c = bd.cnum(bx,by);
-				if(c!==null){
-					if     (ca==="+"){ bd.cell[c].qsub = 1;}
-					else if(ca==="1"){ bd.cell[c].qans = 31;}
-					else if(ca==="2"){ bd.cell[c].qans = 32;}
+				var cell = bd.getc(bx,by);
+				if(!cell.isnull){
+					if     (ca==="+"){ cell.qsub = 1;}
+					else if(ca==="1"){ cell.qans = 31;}
+					else if(ca==="2"){ cell.qans = 32;}
 				}
 			}
 		}
@@ -484,21 +482,21 @@ FileIO:{
 
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
-				var ec = bd.exnum(bx,by);
-				if(ec!==null){
-					var dir=bd.excell[ec].qdir, qn=bd.excell[ec].qnum;
+				var excell = bd.getex(bx,by);
+				if(!excell.isnull){
+					var dir=excell.qdir, qn=excell.qnum;
 					var str1 = (dir!== 0?dir.toString():"");
 					var str2 = (qn !==-1?qn.toString():"");
 					this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
 					continue;
 				}
 
-				var c = bd.cnum(bx,by);
-				if(c!==null){
-					if     (bd.cell[c].qans===31){ this.datastr += "1 ";}
-					else if(bd.cell[c].qans===32){ this.datastr += "2 ";}
-					else if(bd.cell[c].qsub=== 1){ this.datastr += "+ ";}
-					else                         { this.datastr += ". ";}
+				var cell = bd.getc(bx,by);
+				if(!cell.isnull){
+					if     (cell.qans===31){ this.datastr += "1 ";}
+					else if(cell.qans===32){ this.datastr += "2 ";}
+					else if(cell.qsub=== 1){ this.datastr += "+ ";}
+					else                   { this.datastr += ". ";}
 					continue;
 				}
 
@@ -515,7 +513,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkAllBlock(rinfo, function(c){ return bd.QaC(c)!==0;}, function(w,h,a,n){ return (a<=1);}) ){
+		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 			this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 		}
 
@@ -527,7 +525,7 @@ AnsCheck:{
 			this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
 		}
 
-		if( !this.checkAllBlock(rinfo, function(c){ return bd.QaC(c)!==0;}, function(w,h,a,n){ return (a!=0);}) ){
+		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!=0);}) ){
 			this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
 		}
 
@@ -537,10 +535,11 @@ AnsCheck:{
 	checkMirrors : function(type){
 		var d = [];
 		for(var ec=0;ec<bd.excellmax-4;ec++){
-			if(!isNaN(d[ec]) || bd.QnE(ec)==-1 || bd.DiE(ec)==0){ continue;}
-			var ret = bd.searchLight(ec, (!this.inAutoCheck));
-			if( (type==1&& (bd.DiE(ec)!=bd.DiE(ret.dest)) )||
-				(type==2&&((bd.QnE(ec)!=bd.QnE(ret.dest)) || bd.QnE(ec)!=ret.cnt))
+			var excell = bd.excell[ec];
+			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQdir()===0){ continue;}
+			var ret = bd.searchLight(excell.id, (!this.inAutoCheck)), excell2 = bd.excell[ret.dest];
+			if( (type==1&& (excell.getQdir()!==excell2.getQdir()) )||
+				(type==2&&((excell.getQnum()!==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
 			){
 				return false;
 			}

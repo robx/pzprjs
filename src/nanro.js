@@ -8,7 +8,7 @@ MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart || this.mousemove){ this.inputborder();}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell=null;
+			this.mouseCell = bd.newObject(bd.CELL);
 			this.inputqnum();
 		}
 	},
@@ -18,37 +18,37 @@ MouseEvent:{
 			else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell=null;
+			this.mouseCell = bd.newObject(bd.CELL);
 			this.inputqnum();
 		}
 	},
 
 	dragnumber_nanro : function(){
-		var cc = this.cellid();
-		if(cc===null||cc===this.mouseCell){ return;}
-		if(this.mouseCell===null){
-			this.inputData = bd.getNum(cc);
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return;}
+		if(this.mouseCell.isnull){
+			this.inputData = cell.getNum();
 			if     (this.inputData===-2){ this.inputData=null;}
 			else if(this.inputData===-1){
-				if     (bd.QsC(cc)===1){ this.inputData=-2;}
-				else if(bd.QsC(cc)===2){ this.inputData=-3;}
+				if     (cell.getQsub()===1){ this.inputData=-2;}
+				else if(cell.getQsub()===2){ this.inputData=-3;}
 			}
-			this.mouseCell = cc;
+			this.mouseCell = cell;
 		}
-		else if(bd.QnC(cc)===-1){
-			bd.setNum(cc,this.inputData);
-			this.mouseCell = cc;
-			pc.paintCell(cc);
+		else if(cell.getQnum()===-1){
+			cell.setNum(this.inputData);
+			this.mouseCell = cell;
+			pc.paintCell(cell);
 		}
 	},
 	inputDot_nanro : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
-		if(this.inputData===null){ this.inputData = (bd.QsC(cc)===2?0:2);}
-		if     (this.inputData==2){ bd.sAnC(cc,-1); bd.sQsC(cc,2);}
-		else if(this.inputData==0){ bd.sAnC(cc,-1); bd.sQsC(cc,0);}
-		this.mouseCell = cc;
-		pc.paintCell(cc);
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
+		if(this.inputData===null){ this.inputData = (cell.getQsub()===2?0:2);}
+		if     (this.inputData==2){ cell.setAnum(-1); cell.setQsub(2);}
+		else if(this.inputData==0){ cell.setAnum(-1); cell.setQsub(0);}
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -63,12 +63,12 @@ KeyEvent:{
 	},
 	key_view : function(ca){
 		if(this.owner.playmode){
-			var cc=tc.getTCC();
+			var cell = tc.getTCC();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
-			else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			else if(ca==='1' && cell.getAnum()===1)        { ca='s1';}
+			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	},
@@ -105,17 +105,18 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	numberWithMB : true,
+
+	nummaxfunc : function(){
+		return bd.areas.rinfo.getCntOfRoomByCell(this);
+	}
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	numberWithMB : true,
-
-	nummaxfunc : function(cc){
-		return this.areas.rinfo.getCntOfRoomByCell(cc);
-	}
+	isborder : 1
 },
 
 AreaManager:{
@@ -184,11 +185,11 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.check2x2Block(function(c){ return bd.isNum(c);}) ){
+		if( !this.check2x2Block(function(cell){ return cell.isNum();}) ){
 			this.setAlert('数字が2x2のかたまりになっています。','There is a 2x2 block of numbers.'); return false;
 		}
 
-		if( !this.checkSideAreaCell(rinfo, function(c1,c2){ return bd.sameNumber(c1,c2);}, false) ){
+		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false) ){
 			this.setAlert('同じ数字が境界線を挟んで隣り合っています。','Adjacent blocks have the same number.'); return false;
 		}
 
@@ -219,16 +220,15 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = bd.areas.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
-			var room = rinfo.room[id];
+			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;		// 後でエラー表示するエラーのフラグ
 			room.number = -1;		// そのエリアに入っている数字
 			var nums = [];			// キーの数字が入っている数
 			var numcnt = 0;			// エリアに入っている数字の種類数
 			var emptycell = 0;		// 数字が入っていないセルの数
 			var filled = 0;			// エリアに入っている数字
-			for(var i=0;i<room.idlist.length;i++){
-				var c = room.idlist[i];
-				var num = bd.getNum(c);
+			for(var i=0;i<clist.length;i++){
+				var num = clist[i].getNum();
 				if(num==-1){ emptycell++;}
 				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 				else{ nums[num]++;}

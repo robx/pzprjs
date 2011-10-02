@@ -22,23 +22,23 @@ MouseEvent:{
 	},
 
 	inputBGcolor : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.QuC(cc)==51){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
 			if(this.btn.Left){
-				if     (bd.QsC(cc)==0){ this.inputData=1;}
-				else if(bd.QsC(cc)==1){ this.inputData=2;}
-				else                  { this.inputData=0;}
+				if     (cell.getQsub()===0){ this.inputData=1;}
+				else if(cell.getQsub()===1){ this.inputData=2;}
+				else                       { this.inputData=0;}
 			}
 			else if(this.btn.Right){
-				if     (bd.QsC(cc)==0){ this.inputData=2;}
-				else if(bd.QsC(cc)==1){ this.inputData=0;}
-				else                  { this.inputData=1;}
+				if     (cell.getQsub()===0){ this.inputData=2;}
+				else if(cell.getQsub()===1){ this.inputData=0;}
+				else                       { this.inputData=1;}
 			}
 		}
-		bd.sQsC(cc, this.inputData);
-		this.mouseCell = cc;
-		pc.paintCell(cc);
+		cell.setQsub(this.inputData);
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -59,7 +59,31 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	qnum:-1,
-	qdir:-1
+	qdir:-1,
+
+	disInputHatena : true,
+
+	minnum : 0,
+
+	set51cell : function(){
+		this.setQues(51);
+		this.setQnum(-1);
+		this.setQdir(-1);
+		this.set51aroundborder();
+	},
+	remove51cell : function(){
+		this.setQues(0);
+		this.setQnum(-1);
+		this.setQdir(-1);
+		this.set51aroundborder();
+	},
+	set51aroundborder : function(){
+		var border, cell2;
+		border=this.ub(), cell2=this.up(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.db(), cell2=this.dn(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.lb(), cell2=this.lt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		border=this.rb(), cell2=this.rt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+	}
 },
 EXCell:{
 	qnum:-1,
@@ -69,30 +93,10 @@ Board:{
 	isborder : 1,
 	isexcell : 1,
 
-	disInputHatena : true,
-
-	minnum : 0,
-
-	set51cell : function(c){
-		this.sQuC(c,51); this.sQnC(c,-1); this.sDiC(c,-1);
-		this.set51aroundborder(c);
-	},
-	remove51cell : function(c){
-		this.sQuC(c,0);  this.sQnC(c,-1); this.sDiC(c,-1);
-		this.set51aroundborder(c);
-	},
-	set51aroundborder : function(c){
-		var id, cc;
-		id=this.ub(c),cc=this.up(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.db(c),cc=this.dn(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.lb(c),cc=this.lt(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-		id=this.rb(c),cc=this.rt(c); if(id!==null){ this.sQuB(id, ((cc!==null && this.QuC(cc)!==51)?1:0));}
-	},
-
 	getTileInfo : function(){
 		var tinfo = new this.owner.classes.AreaTriTileData(this.owner).getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
-			var d = this.getSizeOfClist(tinfo.room[r].idlist);
+			var d = tinfo.getclist(r).getRectSize();
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;
@@ -104,8 +108,8 @@ AreaManager:{
 },
 
 "AreaTriTileData:AreaBorderData":{
-	isvalid : function(c){ return (bd.QuC(c)!==51);},
-	bdfunc : function(id){ return bd.isBorder(id);}
+	isvalid : function(cell){ return (!cell.is51cell());},
+	bdfunc : function(border){ return border.isBorder();}
 },
 
 MenuExec:{
@@ -156,14 +160,14 @@ Encode:{
 
 	decodeTriplace : function(){
 		// 盤面内数字のデコード
-		var cell=0, a=0, bstr = this.outbstr;
+		var id=0, a=0, bstr = this.outbstr;
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[cell];
+			var ca = bstr.charAt(i), obj=bd.cell[id];
 
-			if(ca>='g' && ca<='z'){ cell+=(parseInt(ca,36)-16);}
+			if(ca>='g' && ca<='z'){ id+=(parseInt(ca,36)-16);}
 			else{
-				bd.set51cell(cell);
+				obj.set51cell();
 				if     (ca==='_'){}
 				else if(ca==='%'){ obj.qdir = parseInt(bstr.charAt(i+1),36); i++;}
 				else if(ca==='$'){ obj.qnum = parseInt(bstr.charAt(i+1),36); i++;}
@@ -189,28 +193,28 @@ Encode:{
 				}
 			}
 
-			cell++;
-			if(cell>=bd.cellmax){ a=i+1; break;}
+			id++;
+			if(id>=bd.cellmax){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
 		// 盤面外数字のデコード
-		cell=0;
+		id=0;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[cell].qdir = -1;}
-			else if(ca==='-'){ bd.excell[cell].qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { bd.excell[cell].qdir = parseInt(ca,16);}
-			cell++;
-			if(cell>=bd.qcols){ a=i+1; break;}
+			if     (ca==='.'){ bd.excell[id].qdir = -1;}
+			else if(ca==='-'){ bd.excell[id].qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { bd.excell[id].qdir = parseInt(ca,16);}
+			id++;
+			if(id>=bd.qcols){ a=i+1; break;}
 		}
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[cell].qnum = -1;}
-			else if(ca==='-'){ bd.excell[cell].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { bd.excell[cell].qnum = parseInt(ca,16);}
-			cell++;
-			if(cell>=bd.qcols+bd.qrows){ a=i+1; break;}
+			if     (ca==='.'){ bd.excell[id].qnum = -1;}
+			else if(ca==='-'){ bd.excell[id].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { bd.excell[id].qnum = parseInt(ca,16);}
+			id++;
+			if(id>=bd.qcols+bd.qrows){ a=i+1; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
@@ -291,7 +295,7 @@ AnsCheck:{
 			this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
 		}
 
-		if( !this.checkRowsColsPartly(function(pos,clist){ return this.isTileCount(pos,clist,tiles);}, function(cc){ return (bd.QuC(cc)==51);}, false) ){
+		if( !this.checkRowsColsPartly(function(pos,clist){ return this.isTileCount(pos,clist,tiles);}, function(cell){ return cell.is51cell();}, false) ){
 			this.setAlert('数字の下か右にあるまっすぐのブロックの数が間違っています。','The number of straight blocks underward or rightward is not correct.'); return false;
 		}
 
@@ -303,20 +307,18 @@ AnsCheck:{
 	},
 
 	isTileCount : function(keycellpos, clist, tiles){
-		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		if     (dir===bd.RT){ number = keyobj.getQnum();}
+		else if(dir===bd.DN){ number = keyobj.getQdir();}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
-			var tid = tiles.id[clist[i]];
+			var tid = tiles.getRoomID(clist[i]);
 			if(tiles.room[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
 		}
 		if(number>=0 && count!=number){
-			var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
-			if(isex){ bd.sErE(bd.exnum(bx,by),1);}
-			else    { bd.sErC(bd.cnum (bx,by),1);}
-			bd.sErC(clist,1);
+			keyobj.seterr(1);
+			clist.seterr(1);
 			return false;
 		}
 		return true;

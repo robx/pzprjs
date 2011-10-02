@@ -12,7 +12,7 @@ MouseEvent:{
 			if(this.notInputted()){ this.inputdirec();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			if(bd.cnum(this.prevPos.x,this.prevPos.y)===this.cellid()){ this.inputqnum();}
+			if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
 		}
 	},
 	inputplay : function(){
@@ -39,7 +39,7 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
+Cell:{
 	minnum : 0
 },
 
@@ -109,7 +109,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
+		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
@@ -127,20 +127,22 @@ AnsCheck:{
 	checkArrowNumber : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isValidNum(c) || bd.DiC(c)==0 || bd.isBlack(c)){ continue;}
-			var bx = bd.cell[c].bx, by = bd.cell[c].by, dir = bd.DiC(c);
-			var cnt=0, clist = [];
-			if     (dir==bd.UP){ by-=2; while(by>bd.minby){ clist.push(bd.cnum(bx,by)); by-=2;} }
-			else if(dir==bd.DN){ by+=2; while(by<bd.maxby){ clist.push(bd.cnum(bx,by)); by+=2;} }
-			else if(dir==bd.LT){ bx-=2; while(bx>bd.minbx){ clist.push(bd.cnum(bx,by)); bx-=2;} }
-			else if(dir==bd.RT){ bx+=2; while(bx<bd.maxbx){ clist.push(bd.cnum(bx,by)); bx+=2;} }
+			var cell = bd.cell[c];
+			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
+			var pos = cell.getaddr(), dir = cell.getQdir(), cnt=0;
+			var clist = new pzprv3.core.PieceList(this.owner);
+			while(1){
+				pos.movedir(dir,2);
+				var cell2 = pos.getc();
+				if(cell2.isnull){ break;}
+				clist.add(cell2);
+			}
+			for(var i=0;i<clist.length;i++){ if(clist[i].isBlack()){ cnt++;} }
 
-			for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
-
-			if(bd.QnC(c)!=cnt){
+			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				bd.sErC(clist,1);
+				cell.seterr(1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

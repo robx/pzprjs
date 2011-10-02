@@ -6,6 +6,7 @@ document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Library.js
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/CoreClass.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Main.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Timer.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/BoardPiece.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Board.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/BoardExt.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Graphic.js\"></script>");

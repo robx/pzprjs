@@ -14,19 +14,19 @@ MouseEvent:{
 	},
 
 	inputTateyoko : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		var pos = bd.cell[cc].getaddr();
+		var pos = cell.getaddr();
 		var input=false;
 
 		// 初回はこの中に入ってきます。
-		if(this.mouseCell===null){ this.firstPoint.set(this.inputPoint);}
+		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
 		// 黒マス上なら何もしない
-		else if(bd.QuC(cc)==1){ }
+		else if(cell.getQues()===1){ }
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
-			if(cc==this.mouseCell){
+			if(cell===this.mouseCell){
 				var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
 				var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
 				if     (my>=8){ this.inputData=12; input=true;}
@@ -39,12 +39,12 @@ MouseEvent:{
 			}
 
 			if(input){
-				if(bd.QaC(cc)===this.inputData){ this.inputData=0;}
+				if(cell.getQans()===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
 			}
 		}
 		// 入力し続けていて、別のマスに移動した場合
-		else if(cc!==this.mouseCell){
+		else if(cell!==this.mouseCell){
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
@@ -55,18 +55,18 @@ MouseEvent:{
 
 		// 描画・後処理
 		if(input){
-			bd.sQaC(cc,(this.inputData!==0?this.inputData:0));
-			pc.paintCell(cc);
+			cell.setQans(this.inputData!==0?this.inputData:0);
+			pc.paintCell(cell);
 		}
 		this.prevPos   = pos;
-		this.mouseCell = cc;
+		this.mouseCell = cell;
 	},
 	clickTateyoko : function(){
-		var cc  = this.cellid();
-		if(cc===null || bd.QuC(cc)===1){ return;}
+		var cell  = this.getcell();
+		if(cell.isnull || cell.getQues()===1){ return;}
 
-		bd.sQaC(cc, (this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[bd.QaC(cc)]);
-		pc.paintCell(cc);
+		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.getQans()]);
+		pc.paintCell(cell);
 	}
 },
 
@@ -80,20 +80,20 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputqnum_tateyoko : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 		if(ca=='q'||ca=='q1'||ca=='q2'){
-			if(ca=='q'){ ca = (bd.QuC(cc)!=1?'q1':'q2');}
+			if(ca=='q'){ ca = (cell.getQues()!=1?'q1':'q2');}
 			if(ca=='q1'){
-				bd.sQuC(cc,1);
-				bd.sQaC(cc,0);
-				if(bd.QnC(cc)>4){ bd.sQnC(cc,-1);}
+				cell.setQues(1);
+				cell.setQans(0);
+				if(cell.setQnum()>4){ cell.setQnum(-1);}
 			}
-			else if(ca=='q2'){ bd.sQuC(cc, 0);}
+			else if(ca=='q2'){ cell.setQues(0);}
 		}
 		else{ return false;}
 
-		this.prev=cc;
-		pc.paintCell(cc);
+		this.prev=cell;
+		pc.paintCell(cell);
 		return true;
 	},
 
@@ -124,26 +124,29 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	nummaxfunc : function(cc){
-		return (this.cell[cc].ques===1?4:Math.max(this.qcols,this.qrows));
+Cell:{
+	nummaxfunc : function(){
+		return (cell.ques===1?4:Math.max(bd.qcols,bd.qrows));
 	},
-	minnum : 0,
-
+	minnum : 0
+},
+Board:{
 	getBarInfo : function(){
-		var binfo = new pzprv3.core.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ binfo.id[c]=((this.QuC(c)===1||this.QaC(c)===0) ? null : 0);}
+		var binfo = new pzprv3.core.AreaCellInfo(this.owner);
 		for(var c=0;c<this.cellmax;c++){
-			if(binfo.id[c]!==0){ continue;}
-			binfo.max++;
-			binfo.room[binfo.max] = {idlist:[]};
+			var cell = this.cell[c];
+			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);
+		}
+		for(var c=0;c<this.cellmax;c++){
+			var cell = this.cell[c];
+			if(!binfo.emptyCell(cell)){ continue;}
+			binfo.addRoom();
 
-			var bx=this.cell[c].bx, by=this.cell[c].by, val=this.cell[c].qans, cc=c;
-			while(cc!==null && this.cell[cc].qans===val){
-				binfo.room[binfo.max].idlist.push(cc);
-				binfo.id[cc]=binfo.max;
-				if(val===12){ by+=2;}else{ bx+=2;}
-				cc = this.cnum(bx,by);
+			var pos=cell.getaddr(), val=cell.qans;
+			while(!cell.isnull && cell.qans===val){
+				binfo.addCell(cell);
+				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
+				cell = pos.getc();
 			}
 		}
 		return binfo;
@@ -153,7 +156,7 @@ Board:{
 MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
-			for(var c=0;c<bd.cellmax;c++){ bd.sQaC(c,{0:0,12:13,13:12}[bd.QaC(c)]);}
+			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,12:13,13:12}[bd.cell[c].getQans()]);}
 		}
 	}
 },
@@ -187,31 +190,28 @@ Graphic:{
 		var headers = ["c_bar1_", "c_bar2_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
+			var cell = clist[i], id = cell.id;
 			var lw = Math.max(this.cw/6, 3);	//LineWidth
 			var lp = (this.bw-lw/2);			//LinePadding
 
-			var err = bd.cell[c].error;
+			var err = cell.error;
 			if     (err===1||err===4){ g.fillStyle = this.errlinecolor1; lw++;}
 			else if(err===2){ g.fillStyle = this.errlinecolor2;}
 			else{ g.fillStyle = this.linecolor;}
 
-			if(bd.cell[c].qans!==0){
-				if(bd.cell[c].qans===12){
-					if(this.vnop(headers[0]+c,this.FILL)){
-						g.fillRect(this.cell[c].rpx+lp, this.cell[c].rpy, lw, this.ch+1);
-					}
+			if(cell.qans===12){
+				if(this.vnop(headers[0]+id,this.FILL)){
+					g.fillRect(cell.rpx+lp, cell.rpy, lw, this.ch+1);
 				}
-				else{ this.vhide(headers[0]+c);}
-
-				if(bd.cell[c].qans===13){
-					if(this.vnop(headers[1]+c,this.FILL)){
-						g.fillRect(this.cell[c].rpx, this.cell[c].rpy+lp, this.cw+1, lw);
-					}
-				}
-				else{ this.vhide(headers[1]+c);}
 			}
-			else{ this.vhide([headers[0]+c, headers[1]+c]);}
+			else{ this.vhide(headers[0]+id);}
+
+			if(cell.qans===13){
+				if(this.vnop(headers[1]+id,this.FILL)){
+					g.fillRect(cell.rpx, cell.rpy+lp, this.cw+1, lw);
+				}
+			}
+			else{ this.vhide(headers[1]+id);}
 		}
 	},
 
@@ -221,15 +221,14 @@ Graphic:{
 		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c=clist[i];
-			if(bd.cell[c].ques===1){
-				g.fillStyle = (bd.cell[c].error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(header+c,this.FILL)){
-					var rpx = this.cell[c].rpx, rpy = this.cell[c].rpy;
-					g.fillRect(rpx, rpy, this.cw+1, this.ch+1);
+			var cell=clist[i];
+			if(cell.ques===1){
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillRect(cell.rpx, cell.rpy, this.cw+1, this.ch+1);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	},
 	drawNumbers_tateyoko : function(){
@@ -237,12 +236,11 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], key='cell_'+c;
-			var num = bd.cell[c].qnum;
+			var cell = clist[i], key='cell_'+cell.id;
+			var num = cell.qnum;
 			if(num!==-1){
-				var color = (bd.cell[c].ques!==1 ? this.fontcolor : "white");
-				var px = this.cell[c].px, py = this.cell[c].py;
-				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, px, py);
+				var color = (cell.ques!==1 ? this.fontcolor : "white");
+				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, cell.px, cell.py);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -345,7 +343,7 @@ AnsCheck:{
 			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 		}
 
-		for(var i=0;i<bd.cellmax;i++){ bd.sErC([i],2);}
+		bd.cell.seterr(2);
 		var binfo = bd.getBarInfo();
 		if( !this.checkDoubleNumber(binfo) ){
 			this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;
@@ -354,34 +352,35 @@ AnsCheck:{
 		if( !this.checkNumberAndSize(binfo) ){
 			this.setAlert('数字と棒の長さが違います。','The number is different from the length of line.'); return false;
 		}
-		for(var i=0;i<bd.cellmax;i++){ bd.sErC([i],0);}
+		bd.cell.seterr(0);
 
 		if( !this.checkBCell(2) ){
 			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===0);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);}) ){
 			this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)===0 && bd.QaC(c)===0);});},
+	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});},
 
 	checkBCell : function(type){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QuC(c)!==1 || bd.QnC(c)<0){ continue;}
+			var cell = bd.cell[c], num = cell.getQnum();
+			if(cell.getQues()!==1 || num<0){ continue;}
 
-			var cnt1=0, cnt2=0, cc;
-			cc=bd.up(c); if(cc!==null){ if(bd.QaC(cc)===12){ cnt1++;}else if(bd.QaC(cc)===13){ cnt2++;} }
-			cc=bd.dn(c); if(cc!==null){ if(bd.QaC(cc)===12){ cnt1++;}else if(bd.QaC(cc)===13){ cnt2++;} }
-			cc=bd.lt(c); if(cc!==null){ if(bd.QaC(cc)===13){ cnt1++;}else if(bd.QaC(cc)===12){ cnt2++;} }
-			cc=bd.rt(c); if(cc!==null){ if(bd.QaC(cc)===13){ cnt1++;}else if(bd.QaC(cc)===12){ cnt2++;} }
+			var cnt1=0, cnt2=0, cell2;
+			cell2=cell.up(); if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
+			cell2=cell.dn(); if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
+			cell2=cell.lt(); if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
+			cell2=cell.rt(); if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
 
-			if((type===1 && (bd.QnC(c)>4-cnt2 || bd.QnC(c)<cnt1)) || (type===2 && bd.QnC(c)!==cnt1)){
+			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

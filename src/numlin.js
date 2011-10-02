@@ -79,17 +79,17 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			if(bd.cell[c].qnum!==-1){
-				if     (bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;}
-				else if(bd.cell[c].error===2){ g.fillStyle = this.errbcolor2;}
-				else                         { g.fillStyle = "white";}
+			var cell = clist[i];
+			if(cell.qnum!==-1){
+				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
+				else if(cell.error===2){ g.fillStyle = this.errbcolor2;}
+				else                   { g.fillStyle = "white";}
 
-				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	}
 },
@@ -150,7 +150,7 @@ AnsCheck:{
 			this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 		}
 
-		if( !this.checkSameObjectInRoom(linfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
 		}
 
@@ -164,23 +164,24 @@ AnsCheck:{
 			this.setAlert('数字につながっていない線があります。','A line doesn\'t connect any number.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.lines.lcntCell(c)==0 && bd.isNum(c));}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
 			this.setAlert('どこにもつながっていない数字があります。','A number is not connected another number.'); return false;
 		}
 
 		return true;
 	},
 
-	check1Line : function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)===1 && bd.noNum(c));}); },
-	check2Line : function(){ return this.checkLine(function(c){ return (bd.lines.lcntCell(c)>= 2 && bd.isNum(c));}); },
+	check1Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()===1 && cell.noNum());}); },
+	check2Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()>= 2 && cell.isNum());}); },
 	checkLine : function(func){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!func(c)){ continue;}
+			var cell = bd.cell[c];
+			if(!func(cell)){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.sErBAll(2);}
-			bd.setCellLineError(c,true);
+			if(result){ bd.border.seterr(2);}
+			cell.setCellLineError(true);
 			result = false;
 		}
 		return result;

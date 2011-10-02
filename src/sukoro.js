@@ -32,12 +32,12 @@ KeyEvent:{
 	},
 	key_sukoro : function(ca){
 		if(this.owner.playmode){
-			var cc=tc.getTCC();
-			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(bd.QsC(cc)===1?'1':'s1');}
-			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(bd.QsC(cc)===2?'2':'s2');}
+			var cell=tc.getTCC();
+			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(cell.getQsub()===1?'1':'s1');}
+			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(cell.getQsub()===2?'2':'s2');}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && bd.AnC(cc)===1)            { ca='s1';}
-			else if(ca==='2' && bd.AnC(cc)===2)            { ca='s2';}
+			else if(ca==='1' && cell.getAnum()===1)        { ca='s1';}
+			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	},
@@ -100,9 +100,29 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
+Cell:{
 	numberWithMB : true,
 
+	nummaxfunc : function(){
+		return (this.owner.pid==='view' ? Math.min(bd.qcols+bd.qrows-2, this.maxnum) : 4);
+	},
+
+	// 正答判定用
+	getViewClist : function(){
+		var sx=this.bx, sy=this.by, clist=new pzprv3.core.PieceList(this.owner);
+		for(var dir=1;dir<=4;dir++){
+			var pos = new pzprv3.core.Address(this.owner,sx,sy);
+			while(1){
+				pos.movedir(dir,2);
+				var cell = pos.getc();
+				if(!cell.isnull && cell.noNum() && cell.getQsub()!==1){ clist.add(cell);}
+				else{ break;}
+			}
+		}
+		return clist;
+	}
+},
+Board:{
 	initialize : function(owner){
 		this.SuperFunc.initialize.call(this, owner);
 
@@ -111,31 +131,11 @@ Board:{
 			this.qrows = 8;
 		}
 		if(owner.pid==='view'){
-			this.minnum = 0;
+			this.owner.classes.Cell.prototype.minnum = 0;
 		}
 		if(owner.pid==='sukororoom'){
 			this.isborder = 1;
 		}
-	},
-
-	nummaxfunc : function(cc){
-		return (this.puzzleid==='view' ? Math.min(this.qcols+this.qrows-2, this.maxnum) : 4);
-	},
-
-	// 正答判定用
-	getViewClist : function(c){
-		var sx=this.cell[c].bx, sy=this.cell[c].by, clist=[];
-		for(var dir=1;dir<=4;dir++){
-			var cc, pos = new pzprv3.core.Address(sx,sy);
-			while(1){
-				pos.move(dir);
-				pos.move(dir);
-				cc = pos.cellid();
-				if(cc!==null && this.noNum(cc) && this.cell[cc].qsub!==1){ clist.push(cc);}
-				else{ break;}
-			}
-		}
-		return clist;
 	}
 },
 
@@ -214,20 +214,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( (this.owner.pid!=='sukororoom') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
+		if( (this.owner.pid!=='sukororoom') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
 		if(this.owner.pid==='sukororoom'){ var rinfo = bd.areas.getRoomInfo();}
-		if( (this.owner.pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( (this.owner.pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
-		if( (this.owner.pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(c){ return (bd.isNumberObj(c)?1:2);}) ){
+		if( (this.owner.pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);}) ){
 			this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
 		}
 
-		if( (this.owner.pid!=='view') && !this.checkDir4Cell(function(c){ return bd.isNumberObj(c);},0) ){
+		if( (this.owner.pid!=='view') && !this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0) ){
 			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 		}
 
@@ -239,7 +239,7 @@ AnsCheck:{
 			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QsC(c)===1);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQsub()===1);}) ){
 			this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
 		}
 
@@ -249,13 +249,14 @@ AnsCheck:{
 	checkViewNumber : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isValidNum(c)){ continue;}
+			var cell = bd.cell[c];
+			if(!cell.isValidNum()){ continue;}
 
-			var clist = bd.getViewClist(c);
-			if(bd.getNum(c)!==clist.length){
+			var clist = cell.getViewClist();
+			if(cell.getNum()!==clist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				bd.sErC(clist,2);
+				cell.seterr(1);
+				clist.seterr(2);
 				result = false;
 			}
 		}

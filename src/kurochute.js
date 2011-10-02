@@ -16,12 +16,12 @@ MouseEvent:{
 	},
 
 	inputqsub : function(){
-		var cc = this.cellid();
-		if(cc===null){ return;}
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
 
-		if     (bd.QsC(cc)==0){ bd.sQsC(cc,2);}
-		else if(bd.QsC(cc)==2){ bd.sQsC(cc,0);}
-		pc.paintCell(cc);
+		if     (cell.getQsub()===0){ cell.setQsub(2);}
+		else if(cell.getQsub()===2){ cell.setQsub(0);}
+		pc.paintCell(cell);
 	}
 },
 
@@ -33,15 +33,16 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	qcols : 8,
-	qrows : 8,
-
+Cell:{
 	numberIsWhite : true,
 
-	nummaxfunc : function(cc){
-		return Math.max(this.qcols,this.qrows)-1;
+	nummaxfunc : function(){
+		return Math.max(bd.qcols,bd.qrows)-1;
 	}
+},
+Board:{
+	qcols : 8,
+	qrows : 8
 },
 
 AreaManager:{
@@ -116,7 +117,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
+		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
@@ -135,16 +136,18 @@ AnsCheck:{
 		var result = true;
 
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isValidNum(c)){ continue;}
-			var bx=bd.cell[c].bx, by=bd.cell[c].by, num=bd.QnC(c), clist=[];
-			if(bd.isBlack(bd.cnum(bx-num*2,by))){ clist.push(bd.cnum(bx-num*2,by));}
-			if(bd.isBlack(bd.cnum(bx+num*2,by))){ clist.push(bd.cnum(bx+num*2,by));}
-			if(bd.isBlack(bd.cnum(bx,by-num*2))){ clist.push(bd.cnum(bx,by-num*2));}
-			if(bd.isBlack(bd.cnum(bx,by+num*2))){ clist.push(bd.cnum(bx,by+num*2));}
+			var cell = bd.cell[c];
+			if(!cell.isValidNum()){ continue;}
+			var num=cell.getQnum(), cell2;
+			var clist = new pzprv3.core.PieceList(this.owner);
+			cell2=cell.relcell(-num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
+			cell2=cell.relcell( num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
+			cell2=cell.relcell(0,-num*2); if(cell2.isBlack()){ clist.add(cell2);}
+			cell2=cell.relcell(0, num*2); if(cell2.isBlack()){ clist.add(cell2);}
 			if(clist.length!==1){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],4);
-				bd.sErC(clist,1);
+				cell.seterr(4);
+				clist.seterr(1);
 				result = false;
 			}
 		}

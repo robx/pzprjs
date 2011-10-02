@@ -25,17 +25,17 @@ KeyEvent:{
 		this.key_inputMarks(ca);
 	},
 	key_inputMarks : function(ca){
-		var cc = tc.getTCC();
+		var cell = tc.getTCC();
 
-		if     (ca=='q'||ca=='1'){ bd.sQnC(cc, 1); }
-		else if(ca=='w'||ca=='2'){ bd.sQnC(cc, 2); }
-		else if(ca=='e'||ca=='3'){ bd.sQnC(cc, 3); }
-		else if(ca=='r'||ca=='4'){ bd.sQnC(cc,-1); }
-		else if(ca==' '         ){ bd.sQnC(cc,-1); }
-		else if(ca=='-'         ){ bd.sQnC(cc,(bd.QnC(cc)!=-2?-2:-1)); }
+		if     (ca=='q'||ca=='1'){ cell.setQnum(1); }
+		else if(ca=='w'||ca=='2'){ cell.setQnum(2); }
+		else if(ca=='e'||ca=='3'){ cell.setQnum(3); }
+		else if(ca=='r'||ca=='4'){ cell.setQnum(-1); }
+		else if(ca==' '         ){ cell.setQnum(-1); }
+		else if(ca=='-'         ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
 		else{ return;}
 
-		pc.paintCell(cc);
+		pc.paintCell(cell);
 	},
 
 	enablemake_p : true,
@@ -53,12 +53,13 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	numberAsObject : true,
 
 	maxnum : 3
+},
+Board:{
+	isborder : 1
 },
 
 AreaManager:{
@@ -71,8 +72,8 @@ MenuExec:{
 			var tques={2:3,3:2};
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var c = clist[i];
-				var val=tques[bd.QnC(c)]; if(!!val){ bd.sQnC(c,val);}
+				var cell = clist[i];
+				var val=tques[cell.getQnum()]; if(!!val){ cell.setQnum(val);}
 			}
 		}
 	}
@@ -110,21 +111,21 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i];
-			var qn = bd.cell[c].qnum;
+			var cell = clist[i], id = cell.id;
+			var qn = cell.qnum;
 			if(qn===1||qn===2){
-				if(this.vnop(headers[0]+c,this.NONE)){
-					g.fillRect(this.cell[c].px-lw/2, this.cell[c].py-ll/2, lw, ll);
+				if(this.vnop(headers[0]+id,this.NONE)){
+					g.fillRect(cell.px-lw/2, cell.py-ll/2, lw, ll);
 				}
 			}
-			else{ this.vhide(headers[0]+c);}
+			else{ this.vhide(headers[0]+id);}
 
 			if(qn===1||qn===3){
-				if(this.vnop(headers[1]+c,this.NONE)){
-					g.fillRect(this.cell[c].px-ll/2, this.cell[c].py-lw/2, ll, lw);
+				if(this.vnop(headers[1]+id,this.NONE)){
+					g.fillRect(cell.px-ll/2, cell.py-lw/2, ll, lw);
 				}
 			}
-			else{ this.vhide(headers[1]+c);}
+			else{ this.vhide(headers[1]+id);}
 		}
 	}
 },

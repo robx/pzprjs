@@ -13,17 +13,16 @@ MouseEvent:{
 	},
 
 	// マウス入力時のセルID取得系
-	cellid : function(){
+	getcell : function(){
 		var pos = this.borderpos(0);
-		if(this.inputY%pc.ch==0){ return null;} // 縦方向だけ、ぴったりは無効
-		if(!bd.isinside(pos.x,pos.y)){ return null;}
+		if(this.inputY%pc.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
+		if(!bd.isinside(pos.x,pos.y)){ return bd.newObject(bd.CELL);}
 
-		var cand = pos.cellid();
-		cand = (cand!==null?cand:bd.cnum(pos.x+1, pos.y));
-		return cand;
+		var cand = pos.getc();
+		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	borderpos : function(rc){
-		return new pzprv3.core.Address((this.inputPoint.x/pc.bw)|0, ((this.inputPoint.y/pc.ch)|0)*2+1);
+		return new pzprv3.core.Address(this.owner, (this.inputPoint.x/pc.bw)|0, ((this.inputPoint.y/pc.ch)|0)*2+1);
 	}
 },
 
@@ -52,14 +51,13 @@ KeyEvent:{
 TargetCursor:{
 	// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 	adjust_init : function(){
-		if(this.pos.cellid()===null){
+		if(this.pos.getc().isnull){
 			this.pos.x++;
 		}
 	},
-	getTCC : function(){ return this.pos.cellid();},
-	setTCC : function(id){
+	setTCC : function(cell){
 		if(id<0 || bd.cellmax<=id){ return;}
-		this.pos = bd.cell[id].getaddr();
+		this.pos = cell.getaddr();
 	},
 	incTCY : function(mv){
 		this.pos.y+=mv;
@@ -75,6 +73,12 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	numberIsWhite : true,
+
+	maxnum : 6,
+	minnum : 0
+},
 Board:{
 	qcols : 6,	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
 	qrows : 7,
@@ -84,11 +88,6 @@ Board:{
 		this.lap=val;
 		this.setminmax();
 	},
-
-	numberIsWhite : true,
-
-	maxnum : 6,
-	minnum : 0,
 
 	estimateSize : function(type, col, row){
 		var total = 0;
@@ -102,6 +101,9 @@ Board:{
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
+			obj.id = id;
+			obj.isnull = false;
+
 			if(this.lap==0){
 				var row = (((2*id)/(2*this.qcols-1))|0);
 				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
@@ -133,23 +135,24 @@ Board:{
 		tc.setminmax();
 	},
 
-	cnum : function(bx,by,qc,qr){
+	getc : function(bx,by,qc,qr){
+		var id = null;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
-		if(bx<this.minbx+1 || bx>this.maxbx-1 || by<this.minby+1 || by>this.maxby-1){ return null;}
+		if(bx>=this.minbx+1 && bx<=this.maxbx-1 && by>=this.minby+1 && by<=this.maxby-1){
+			var cy = (by>>1);	// 上から数えて何段目か(0～bd.qrows-1)
+			if     (this.lap===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
+			else if(this.lap===1){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
+			else if(this.lap===2){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
+			else if(this.lap===3){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc+1))>>1;}}
+		}
 
-		var cy = (by>>1);	// 上から数えて何段目か(0～bd.qrows-1)
-		if     (this.lap===0){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc-1))>>1;}}
-		else if(this.lap===1){ if(!!((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
-		else if(this.lap===2){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc  ))>>1;}}
-		else if(this.lap===3){ if( !((bx+cy)&1)){ return ((bx-1)+cy*(2*qc+1))>>1;}}
-
-		return null;
+		return (id!==null ? this.cell[id] : this.newObject(this.CELL));
 	},
 	cellinside : function(x1,y1,x2,y2){
-		var clist = [];
+		var clist = new pzprv3.core.PieceList(this.owner);
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
-			var c = this.cnum(bx,by);
-			if(c!==null){ clist.push(c);}
+			var cell = this.getc(bx,by);
+			if(!cell.isnull){ clist.add(cell);}
 		}}
 		return clist;
 	}
@@ -191,8 +194,7 @@ MenuExec:{
 
 		bd.setposAll();
 	},
-	distObj : function(type,id,key){
-		var obj = bd.cell[id];
+	distObj : function(key,obj){
 		key &= 0x0F;
 		if     (key===bd.UP){ return obj.by;}
 		else if(key===bd.DN){ return bd.maxby-obj.by;}
@@ -390,13 +392,12 @@ FileIO:{
 		var n=0, item = this.getItemList(bd.qrows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
-				var cc=bd.cnum(bx,by);
-				if(cc===null){ continue;}
-				var obj = bd.cell[cc];
-				if     (item[n]==="#"){ obj.qans = 1;}
-				else if(item[n]==="+"){ obj.qsub = 1;}
-				else if(item[n]==="-"){ obj.qnum =-2;}
-				else if(item[n]!=="."){ obj.qnum = parseInt(item[n]);}
+				var cell=bd.getc(bx,by);
+				if(cell.isnull){ continue;}
+				else if(item[n]==="#"){ cell.qans = 1;}
+				else if(item[n]==="+"){ cell.qsub = 1;}
+				else if(item[n]==="-"){ cell.qnum =-2;}
+				else if(item[n]!=="."){ cell.qnum = parseInt(item[n]);}
 				n++;
 			}
 		}
@@ -407,13 +408,12 @@ FileIO:{
 		var bstr = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
-				var cc=bd.cnum(bx,by);
-				if(cc===null){ continue;}
-				var obj = bd.cell[cc];
-				if     (obj.qnum===-2){ bstr += "- ";}
-				else if(obj.qnum!==-1){ bstr += (""+obj.qnum+" ");}
-				else if(obj.qans=== 1){ bstr += "# ";}
-				else if(obj.qsub=== 1){ bstr += "+ ";}
+				var cell=bd.getc(bx,by);
+				if(cell.isnull){ continue;}
+				else if(cell.qnum===-2){ bstr += "- ";}
+				else if(cell.qnum!==-1){ bstr += (""+cell.qnum+" ");}
+				else if(cell.qans=== 1){ bstr += "# ";}
+				else if(cell.qsub=== 1){ bstr += "+ ";}
 				else{ bstr += ". ";}
 			}
 			bstr += "/";
@@ -445,19 +445,19 @@ AnsCheck:{
 	checkThreeBlackCells : function(){
 		var result = true;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var clist = [];
+			var clist = new pzprv3.core.PieceList(this.owner);
 			for(var bx=0;bx<=bd.maxbx;bx++){
-				var cc = bd.cnum(bx,by);
-				if(cc===null){ continue;}
-				else if(bd.isWhite(cc) || bd.isNum(cc)){
+				var cell = bd.getc(bx,by);
+				if(cell.isnull){ continue;}
+				else if(cell.isWhite() || cell.isNum()){
 					if(clist.length>=3){ break;}
-					clist=[];
+					clist=new pzprv3.core.PieceList(this.owner);
 				}
-				else{ clist.push(cc);}
+				else{ clist.add(cell);}
 			}
 			if(clist.length>=3){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(clist,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -466,22 +466,23 @@ AnsCheck:{
 	checkNumbers : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!bd.isValidNum(c)){ continue;}
-			var clist = [];
-			clist.push(bd.cnum(bd.cell[c].bx-1,bd.cell[c].by-2));
-			clist.push(bd.cnum(bd.cell[c].bx+1,bd.cell[c].by-2));
-			clist.push(bd.cnum(bd.cell[c].bx-2,bd.cell[c].by  ));
-			clist.push(bd.cnum(bd.cell[c].bx+2,bd.cell[c].by  ));
-			clist.push(bd.cnum(bd.cell[c].bx-1,bd.cell[c].by+2));
-			clist.push(bd.cnum(bd.cell[c].bx+1,bd.cell[c].by+2));
+			var cell = bd.cell[c];
+			if(!cell.isValidNum()){ continue;}
+			var clist = new pzprv3.core.PieceList(this.owner);
+			clist.add(cell.relcell(-1,-2));
+			clist.add(cell.relcell( 1,-2));
+			clist.add(cell.relcell(-2, 0));
+			clist.add(cell.relcell( 2, 0));
+			clist.add(cell.relcell(-1, 2));
+			clist.add(cell.relcell( 1, 2));
 
 			var cnt=0;
-			for(var i=0;i<clist.length;i++){ if(bd.isBlack(clist[i])){ cnt++;} }
+			for(var i=0;i<clist.length;i++){ if(clist[i].isBlack()){ cnt++;} }
 
-			if(bd.QnC(c)!=cnt){
+			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				bd.sErC(clist,1);
+				cell.seterr(1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -490,15 +491,14 @@ AnsCheck:{
 	checkUnderCells : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.isWhite(c) || bd.cell[c].by===bd.maxby-1){ continue;}
+			var cell = bd.cell[c];
+			if(cell.isWhite() || cell.by===bd.maxby-1){ continue;}
 
-			if(bd.isWhite(bd.cnum(bd.cell[c].bx-1,bd.cell[c].by+2)) &&
-			   bd.isWhite(bd.cnum(bd.cell[c].bx+1,bd.cell[c].by+2)))
-			{
+			if(cell.relcell(-1,2).isWhite() && cell.relcell(1,2).isWhite()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
-				bd.sErC([bd.cnum(bd.cell[c].bx-1,bd.cell[c].by+2)],1);
-				bd.sErC([bd.cnum(bd.cell[c].bx+1,bd.cell[c].by+2)],1);
+				cell.seterr(1);
+				cell.relcell(-1,2).seterr(1);
+				cell.relcell(1,2).seterr(1);
 				result = false;
 			}
 		}

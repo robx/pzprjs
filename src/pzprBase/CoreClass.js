@@ -124,66 +124,6 @@ pzprv3.createCoreClass('Point',
 	valid : function(){ return (this.x!==null && this.y!==null);}
 });
 
-//---------------------------------------------------------------------------
-// ★AreaInfoクラス 主に色分けの情報を管理する
-//   id : null   どの部屋にも属さないセル(黒マス情報で白マスのセル、等)
-//         0     どの部屋に属させるかの処理中
-//         1以上 その番号の部屋に属する
-//---------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaInfo',
-{
-	initialize : function(){
-		this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
-		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
-	}
-});
-
-//---------------------------------------------------------------------------
-// ★IDListクラス 複数IDの集合を扱う
-//---------------------------------------------------------------------------
-pzprv3.createCoreClass('IDList',
-{
-	initialize : function(list){
-		this.data = ((list instanceof Array) ? list : []);
-	},
-	push : function(val){
-		this.data.push(val);
-		return this;
-	},
-	reverseData : function(){
-		this.data = this.data.reverse();
-		return this;
-	},
-	unique : function(){
-		var newArray=[], newHash={};
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(!newHash[this.data[i]]){
-				newArray.push(this.data[i]);
-				newHash[this.data[i]] = true;
-			}
-		}
-		this.data = newArray;
-		return this;
-	},
-
-	sublist : function(func){
-		var newList = new pzprv3.core.IDList();
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(!!func(this.data[i])){ newList.data.push(this.data[i]);}
-		}
-		return newList;
-	},
-
-	isnull  : function(){ return (this.data.length===0);},
-	include : function(val){
-		for(var i=0,len=this.data.length;i<len;i++){
-			if(this.data[i]===val){ return true;}
-		}
-		return false;
-	}
-});
-
 /****************************/
 /* 初期化時のみ使用する関数 */
 /****************************/

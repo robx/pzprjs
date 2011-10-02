@@ -21,15 +21,15 @@ MouseEvent:{
 		var pos = this.borderpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = this.getborderID(this.prevPos, pos);
-		if(id!==null){
-			if(this.inputData===null){ this.inputData=(bd.isBorder(id)?0:1);}
+		var border = this.getborderobj(this.prevPos, pos);
+		if(!border.isnull){
+			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
 
-			var d = bd.getlinesize(id);
-			var idlist = new pzprv3.core.IDList(bd.borderinside(d.x1,d.y1,d.x2,d.y2));
-			for(var i=0;i<idlist.data.length;i++){
-				if     (this.inputData===1){ bd.setBorder(idlist.data[i]);}
-				else if(this.inputData===0){ bd.removeBorder(idlist.data[i]);}
+			var d = border.getlinesize();
+			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<borders.length;i++){
+				if     (this.inputData===1){ borders[i].setBorder();}
+				else if(this.inputData===0){ borders[i].removeBorder();}
 			}
 
 			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
@@ -46,13 +46,33 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	iscross  : 1,
-	isborder : 1,
-
+Cell:{
 	numberAsObject : true,
 
 	maxnum : 2,
+},
+Cross:{
+	noNum : function(){ return this.id!==null && this.qnum===-1;}
+},
+
+Border:{
+	getlinesize : function(){
+		var pos1 = this.getaddr(), pos2 = pos1.clone();
+		if(this.isVert()){
+			while(pos1.move(0,-1).getx().noNum()){ pos1.move(0,-1);}
+			while(pos2.move(0, 1).getx().noNum()){ pos2.move(0, 1);}
+		}
+		else{
+			while(pos1.move(-1,0).getx().noNum()){ pos1.move(-1,0);}
+			while(pos2.move( 1,0).getx().noNum()){ pos2.move( 1,0);}
+		}
+		return {x1:pos1.x, y1:pos1.y, x2:pos2.x, y2:pos2.y};
+	}
+},
+
+Board:{
+	iscross  : 1,
+	isborder : 1,
 
 	initialize : function(owner){
 		this.SuperFunc.initialize.call(this, owner);
@@ -61,20 +81,6 @@ Board:{
 			this.qcols = 8;
 			this.qrows = 8;
 		}
-	},
-
-	getlinesize : function(id){
-		var bx=this.border[id].bx, by=this.border[id].by;
-		var d = {x1:bx, x2:bx, y1:by, y2:by};
-		if(this.isVert(id)){
-			while(d.y1>this.minby && this.QnX(this.xnum(bx,d.y1-1))!==1){d.y1-=2;}
-			while(d.y2<this.maxby && this.QnX(this.xnum(bx,d.y2+1))!==1){d.y2+=2;}
-		}
-		else{
-			while(d.x1>this.minbx && this.QnX(this.xnum(d.x1-1,by))!==1){d.x1-=2;}
-			while(d.x2<this.maxbx && this.QnX(this.xnum(d.x2+1,by))!==1){d.x2+=2;}
-		}
-		return d;
 	}
 },
 
@@ -106,6 +112,15 @@ Graphic:{
 			this.imgtile = new pzprv3.core.ImageTile('./src/img/shwolf_obj.png',2,1);
 		}
 	},
+
+	prepaint : function(){
+		if(this.owner.pid==='shwolf' && !this.imgtile.loaded){
+			this.suspendAll();
+		}
+		else{
+			this.SuperFunc.prepaint.call(this);
+		}
+	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
@@ -128,20 +143,12 @@ Graphic:{
 	drawSheepWolf : function(){
 		var g = this.vinc('cell_number_image', 'auto');
 
-		if(!this.imgtile.loaded){
-			var func = arguments.callee, self = this;
-			setTimeout(function(){func.call(self);},10);
-			return;
-		}
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], obj = bd.cell[c];
-			var keyimg = ['cell',c,'quesimg'].join('_');
-			if(obj.qnum>0){
-				var rpx = this.cell[c].rpx, rpy = this.cell[c].rpy;
+			var cell = clist[i], keyimg = ['cell',cell.id,'quesimg'].join('_');
+			if(cell.qnum>0){
 				this.vshow(keyimg);
-				this.imgtile.putImage(obj.qnum-1, g, rpx,rpy,this.cw,this.ch);
+				this.imgtile.putImage(cell.qnum-1, g, cell.rpx,cell.rpy,this.cw,this.ch);
 			}
 			else{ this.vhide(keyimg);}
 		}
@@ -226,7 +233,7 @@ AnsCheck:{
 			return false;
 		}
 
-		if( !this.checkSameObjectInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			if(this.owner.pid!=='shwolf')
 				{ this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.');}
 			else
@@ -249,10 +256,10 @@ AnsCheck:{
 		var result = true;
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
-				var xc = bd.xnum(bx,by);
-				if(bd.areas.rinfo.bdcnt[xc]===2 && bd.QnX(xc)!==1){
-					if(    !(bd.QaB(bd.bnum(bx  ,by-1))===1 && bd.QaB(bd.bnum(bx  ,by+1))===1)
-						&& !(bd.QaB(bd.bnum(bx-1,by  ))===1 && bd.QaB(bd.bnum(bx+1,by  ))===1) )
+				var cross = bd.getx(bx,by);
+				if(bd.areas.rinfo.bdcnt[cross.id]===2 && cross.getQnum()!==1){
+					if(    !(cross.ub().getQans()===1 && cross.db().getQans()===1)
+						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
 					{
 						if(this.inAutoCheck){ return false;}
 						bd.setCrossBorderError(bx,by);
@@ -268,9 +275,9 @@ AnsCheck:{
 	checkLineChassis : function(){
 		var result = true;
 		var lines = [];
-		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.QaB(id);}
+		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
 
-		var pos = new pzprv3.core.Address(bd.minbx,bd.minby);
+		var pos = new pzprv3.core.Address(this.owner, bd.minbx, bd.minby);
 		for(pos.x=bd.minbx;pos.x<=bd.maxbx;pos.x+=2){
 			for(pos.y=bd.minby;pos.y<=bd.maxby;pos.y+=2){
 				/* 盤面端から探索をスタートする */
@@ -287,38 +294,35 @@ AnsCheck:{
 			if(lines[id]!==1){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			var errborder = [];
-			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ errborder.push(i);} }
-			if(result){ bd.sErBAll(2);}
-			bd.sErB(errborder,1);
+			if(result){ bd.border.seterr(2);}
+			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ bd.border[i].seterr(1);} }
 			result = false;
 		}
 
 		return result;
 	},
 	clearLineInfo : function(lines,pos,dir){
-		var stack = [[pos.clone(),dir]], id = null;
+		var stack = [[pos.clone(),dir]];
 		while(stack.length>0){
 			var dat = stack.pop();
 			pos = dat[0];
 			dir = dat[1];
 			while(1){
-				pos.move(dir);
+				pos.movedir(dir,1);
 				if(pos.oncross()){
-					var xc = pos.crossid();
-					if(xc!==null && bd.QnX(xc)===1){
-						var bx=pos.x, by=pos.y;
-						id=bd.bnum(bx,by-1); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),1]);}
-						id=bd.bnum(bx,by+1); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),2]);}
-						id=bd.bnum(bx-1,by); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),3]);}
-						id=bd.bnum(bx+1,by); if(id!==null && bd.border[id].qans===1){ stack.push([pos.clone(),4]);}
+					var cross = pos.getx();
+					if(!cross.isnull && cross.getQnum()===1){
+						if(cross.ub().getQans()){ stack.push([pos.clone(),1]);}
+						if(cross.db().getQans()){ stack.push([pos.clone(),2]);}
+						if(cross.lb().getQans()){ stack.push([pos.clone(),3]);}
+						if(cross.rb().getQans()){ stack.push([pos.clone(),4]);}
 						break;
 					}
 				}
 				else{
-					id = pos.borderid();
-					if(id===null || lines[id]===0){ break;}
-					lines[id]=0;
+					var border = pos.getb();
+					if(border.isnull || lines[border.id]===0){ break;}
+					lines[border.id]=0;
 				}
 			}
 		}
@@ -353,6 +357,7 @@ pzprv3.createCoreClass('ImageTile',
 		this.cw     = this.width/this.cols;
 		this.ch     = this.height/this.rows;
 		this.loaded = true;
+		pc.unsuspend();
 	},
 	putImage : function(id,ctx,dx,dy,dw,dh){
 		if(this.loaded){

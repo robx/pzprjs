@@ -109,7 +109,9 @@ pzprv3.debug.extend({
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
+			pc.suspendAll();
 			fio.filedecode(acsstr[n][1]);
+			pc.unsuspend();
 
 			ans.inCheck = true;
 			ans.alstr = { jp:'' ,en:''};
@@ -133,11 +135,13 @@ pzprv3.debug.extend({
 
 		var bd2 = self.bd_freezecopy();
 
+		pc.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
-		pc.resize_canvas();
 
 		fio.filedecode(outputstr);
+		pc.unsuspend();
+
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
 
@@ -149,11 +153,12 @@ pzprv3.debug.extend({
 
 			var bd2 = self.bd_freezecopy();
 
+			pc.suspendAll();
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
-			pc.resize_canvas();
 
 			fio.filedecode(outputstr);
+			pc.unsuspend();
 
 			self.qsubf = !(self.pid=='fillomino'||self.pid=='hashikake'||self.pid=='kurodoko'||self.pid=='shikaku'||self.pid=='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}

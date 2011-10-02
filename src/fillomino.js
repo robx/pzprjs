@@ -19,39 +19,39 @@ MouseEvent:{
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell=null;
+			this.mouseCell = bd.newObject(bd.CELL);
 			this.inputqnum();
 		}
 	},
 
 	dragnumber_fillomino : function(){
-		var cc = this.cellid();
-		if(cc===null||cc===this.mouseCell){ return;}
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return;}
 
 		if(this.inputData===null){
-			this.inputData = bd.getNum(cc);
+			this.inputData = cell.getNum();
 			if(this.inputData===-1){ this.inputData=-2;}
-			this.mouseCell = cc;
+			this.mouseCell = cell;
 			return;
 		}
 		else if(this.inputData===-2){
-			this.inputData=(bd.getNum(cc)===-1?-3:-1);
+			this.inputData=(cell.getNum()===-1?-3:-1);
 		}
 
 		if(this.inputData>=-1){
-			bd.sAnC(cc, this.inputData);
-			pc.paintCell(cc);
+			cell.setAnum(this.inputData);
+			pc.paintCell(cell);
 		}
 		else if(this.inputData<=-3){
-			var id = bd.bnum(((bd.cell[cc].bx+bd.cell[this.mouseCell].bx)>>1),
-							 ((bd.cell[cc].by+bd.cell[this.mouseCell].by)>>1));
-			if(this.inputData===-3){ this.inputData=(bd.QsB(id)===1?-5:-4);}
-			if(id!==null){
-				bd.sQsB(id, (this.inputData===-4?1:0));
-				pc.paintBorder(id);
+			var cell2 = this.mouseCell;
+			var border = bd.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
+			if(this.inputData===-3){ this.inputData=(border.getQsub()===1?-5:-4);}
+			if(!border.isnull){
+				border.setQsub(this.inputData===-4?1:0);
+				pc.paintBorder(border);
 			}
 		}
-		this.mouseCell = cc;
+		this.mouseCell = cell;
 	}
 },
 
@@ -68,24 +68,24 @@ KeyEvent:{
 	},
 
 	move_fillomino : function(ca){
-		var cc = tc.getTCC();
-		if(cc===null){ return;}
+		var cell = tc.getTCC();
+		if(cell.isnull){ return;}
 
 		var nc, nb, move, flag;
 		switch(ca){
-			case this.KEYUP: nc=bd.up(cc); nb=bd.ub(cc); move=function(){ tc.decTCY(2);}; break;
-			case this.KEYDN: nc=bd.dn(cc); nb=bd.db(cc); move=function(){ tc.incTCY(2);}; break;
-			case this.KEYLT: nc=bd.lt(cc); nb=bd.lb(cc); move=function(){ tc.decTCX(2);}; break;
-			case this.KEYRT: nc=bd.rt(cc); nb=bd.rb(cc); move=function(){ tc.incTCX(2);}; break;
+			case this.KEYUP: nc=cell.up(); nb=cell.ub(); move=function(){ tc.decTCY(2);}; break;
+			case this.KEYDN: nc=cell.dn(); nb=cell.db(); move=function(){ tc.incTCY(2);}; break;
+			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); move=function(){ tc.decTCX(2);}; break;
+			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); move=function(){ tc.incTCX(2);}; break;
 			default: return;
 		}
-		if(nc!==null){
+		if(!nc.isnull){
 			this.tcMoved = (this.isCTRL || this.isX || this.isZ);
-			if(this.isCTRL)  { if(nb!==null){ bd.sQsB(nb,((bd.QsB(nb)===0)?1:0)); move();}}
-			else if(this.isZ){ if(nb!==null){ bd.sQaB(nb,(!bd.isBorder(nb)?1:0));        }}
-			else if(this.isX){ if(nc!==null){ bd.sAnC(nc,bd.getNum(cc));          move();}}
+			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); move();}}
+			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));          }}
+			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          move();}}
 
-			if(this.tcMoved){ pc.paintCell(cc);}
+			if(this.tcMoved){ pc.paintCell(cell);}
 		}
 	},
 
@@ -169,9 +169,12 @@ FileIO:{
 
 		// 境界線を自動入力
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			var bdflag = (cc1!==null && cc2!==null && bd.getNum(cc1)!==-1 && bd.getNum(cc2)!==-1 && bd.getNum(cc1)!==bd.getNum(cc2));
-			bd.border[id].qans = (bdflag?1:0);
+			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			border.qans = 0;
+			if(!cell1.isnull && !cell2.isnull){
+				var qa1 = cell1.getNum(), qa2 = cell2.getNum();
+				if(qa1!==-1 && qa2!==-1 && qa1!==qa2){ border.qans = 1;}
+			}
 		}
 	},
 	kanpenSave : function(){
@@ -221,12 +224,12 @@ AnsCheck:{
 			if(room.error===-1||room.number<=0){ continue;}
 			if     (flag===1 && room.number<room.idlist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(room.idlist,1);
+				rinfo.getclist(id).seterr(1);
 				result = false;
 			}
 			else if(flag===2 && room.number>room.idlist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(room.idlist,1);
+				rinfo.getclist(id).seterr(1);
 				result = false;
 			}
 		}
@@ -236,14 +239,13 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = bd.areas.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
-			var room = rinfo.room[id];
+			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;
 			room.number = -1;
 			var nums = [];
 			var emptycell=0, numcnt=0, filled=0;
-			for(var i=0;i<room.idlist.length;i++){
-				var c = room.idlist[i];
-				var num = bd.getNum(c);
+			for(var i=0;i<clist.length;i++){
+				var num = clist[i].getNum();
 				if(num==-1){ emptycell++;}
 				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 				else{ nums[num]++;}
@@ -257,30 +259,28 @@ AnsCheck:{
 			else{
 				// ここまで来るのはemptycellが0で2種類以上の数字が入っている領域のみ
 				// -> それぞれに別の領域idを割り当てて判定できるようにする
-				var clist = room.idlist;
-				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i]] = 0;}
+				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i].id] = 0;}
 				for(var i=0;i<clist.length;i++){
-					if(rinfo.id[clist[i]]!=0){ continue;}
-					rinfo.max++; max++;
-					rinfo.room[rinfo.max] = {idlist:[]};
-					this.setNewID(rinfo, clist[i], rinfo.max);
+					if(rinfo.getRoomID(clist[i])!==0){ continue;}
+					max++;
+					rinfo.addRoom();
+					this.setNewID(rinfo, clist[i]);
 				}
 				// 最後に自分の情報を無効にする
-				room = {idlist:[], error:0, number:-1};
+				rinfo.room[id] = {idlist:[], error:0, number:-1};
 			}
 		}
 		return rinfo;
 	},
-	setNewID : function(rinfo, fc, areaid){
-		var stack=[fc];
+	setNewID : function(rinfo, cell0){
+		var stack=[cell0];
 		while(stack.length>0){
-			var c=stack.pop();
-			if(rinfo.id[c]!==0){ continue;}
-			rinfo.id[c] = areaid;
-			rinfo.room[areaid].idlist.push(c);
-			var clist = bd.getdir4clist(c);
-			for(var i=0;i<clist.length;i++){
-				if(bd.sameNumber(c,clist[i][0])){ stack.push(clist[i][0]);}
+			var cell=stack.pop();
+			if(!rinfo.emptyCell(cell)){ continue;}
+			rinfo.addCell(cell);
+			var list = cell.getdir4clist();
+			for(var i=0;i<list.length;i++){
+				if(cell.sameNumber(list[i][0])){ stack.push(list[i][0]);}
 			}
 		}
 	}

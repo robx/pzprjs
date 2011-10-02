@@ -31,6 +31,11 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return bd.areas.rinfo.getCntOfRoomByCell(this);
+	}
+},
 Board:{
 	isborder : 1,
 
@@ -41,10 +46,6 @@ Board:{
 			this.qcols = 8;
 			this.qrows = 8;
 		}
-	},
-
-	nummaxfunc : function(cc){
-		return this.areas.rinfo.getCntOfRoomByCell(cc);
 	}
 },
 
@@ -124,7 +125,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkDifferentNumberInRoom(rinfo, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
@@ -132,7 +133,7 @@ AnsCheck:{
 			this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
 		}
 
-		if( (this.owner.pid==='cojun') && !this.checkSideCell(function(c1,c2){ return bd.sameNumber(c1,c2);}) ){
+		if( (this.owner.pid==='cojun') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
@@ -151,21 +152,23 @@ AnsCheck:{
 	checkRippleNumber : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			var num=bd.getNum(c), bx=bd.cell[c].bx, by=bd.cell[c].by;
+			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
 			if(num<=0){ continue;}
 			for(var i=2;i<=num*2;i+=2){
-				var tc = bd.cnum(bx+i,by);
-				if(tc!==null && bd.getNum(tc)===num){
+				var cell2 = bd.getc(bx+i,by);
+				if(!cell2.isnull && cell2.getNum()===num){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,tc],1);
+					cell.seterr(1);
+					cell2.seterr(1);
 					result = false;
 				}
 			}
 			for(var i=2;i<=num*2;i+=2){
-				var tc = bd.cnum(bx,by+i);
-				if(tc!==null && bd.getNum(tc)===num){
+				var cell2 = bd.getc(bx,by+i);
+				if(!cell2.isnull && cell2.getNum()===num){
 					if(this.inAutoCheck){ return false;}
-					bd.sErC([c,tc],1);
+					cell.seterr(1);
+					cell2.seterr(1);
 					result = false;
 				}
 			}
@@ -176,11 +179,12 @@ AnsCheck:{
 	checkUpperNumber : function(rinfo){
 		var result = true;
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
-			var dc = bd.dn(c);
-			if(rinfo.id[c]!=rinfo.id[dc] || !bd.isNum(c) || !bd.isNum(dc)){ continue;}
-			if(bd.getNum(dc)>bd.getNum(c)){
+			var cell=bd.cell[c], cell2=cell.dn(), dc=cell2.id;
+			if(rinfo.id[c]!=rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
+			if(cell2.getNum()>cell.getNum()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,dc],1);
+				cell.seterr(1);
+				cell2.seterr(1);
 				result = false;
 			}
 		}

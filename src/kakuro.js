@@ -42,7 +42,21 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qnum : 0,
-	qdir : 0
+	qdir : 0,
+
+	/* 問題の0入力は↓の特別処理で可能にしてます */
+	disInputHatena : true,
+
+	maxnum : 9,
+
+	// この関数は回答モードでしか呼ばれないはず、
+	getNum : function(){ return this.anum;},
+	setNum : function(val){ this.setAnum(val>0 ? val : -1);},
+
+	// 問題入力モードだけ、、0でも入力できるようにする
+	prehook : {
+		anum : function(num){ return (this.minnum>0 && num===0);}
+	}
 },
 
 EXCell:{
@@ -55,23 +69,7 @@ Board:{
 	qrows : 11,
 
 	isborder : 1,
-	isexcell : 1,
-
-	maxnum : 9,
-
-	/* 問題の0入力は↓の特別処理で可能にしてます */
-	disInputHatena : true,
-
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-
-		// 問題入力モードだけ、、0でも入力できるようにする
-		this.prehook.cell.qnum = null;
-	},
-
-	// この関数は回答モードでしか呼ばれないはず、
-	getNum : function(c){ return this.cell[c].anum;},
-	setNum : function(c,val){ this.sAnC(c, (val>0 ? val : -1));}
+	isexcell : 1
 },
 
 MenuExec:{
@@ -117,8 +115,8 @@ Graphic:{
 	},
 	// オーバーライド 境界線用
 	getBorderColor : function(border){
-		var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
-		if(cc1!==null && cc2!==null && ((bd.cell[cc1].ques===51)^(bd.cell[cc2].ques===51))){
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		if(!cell1.isnull && !cell2.isnull && ((cell1.ques===51)^(cell2.ques===51))){
 			return this.cellcolor;
 		}
 		return null;
@@ -129,13 +127,11 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], key = ['cell',c,'anum'].join('_');
-			if(bd.cell[c].ques!==51 && bd.cell[c].anum>0){
-				var obj = bd.cell[c];
-				var color = (bd.cell[c].error===1 ? this.fontErrcolor : this.fontAnscolor);
-				var text  = ""+bd.cell[c].anum;
-				var px = this.cell[c].px, py = this.cell[c].py;
-				this.dispnum(key, 1, text, 0.80, color, px, py);
+			var cell = clist[i], key = ['cell',cell.id,'anum'].join('_');
+			if(!cell.is51cell() && cell.anum>0){
+				var color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
+				var text  = ""+cell.anum;
+				this.dispnum(key, 1, text, 0.80, color, cell.px, cell.py);
 			}
 			else{ this.hideEL(key);}
 		}
@@ -182,14 +178,14 @@ Encode:{
 		// 盤面外数字のデコード
 		var i=a;
 		for(var bx=1;bx<bd.maxbx;bx+=2){
-			if(bd.cell[bd.cnum(bx,1)].ques!==51){
-				bd.excell[bd.exnum(bx,-1)].qdir = this.decval(bstr.charAt(i));
+			if(!bd.getc(bx,1).is51cell()){
+				bd.getex(bx,-1).qdir = this.decval(bstr.charAt(i));
 				i++;
 			}
 		}
 		for(var by=1;by<bd.maxby;by+=2){
-			if(bd.cell[bd.cnum(1,by)].ques!==51){
-				bd.excell[bd.exnum(-1,by)].qnum = this.decval(bstr.charAt(i));
+			if(!bd.getc(1,by).is51cell()){
+				bd.getex(-1,by).qnum = this.decval(bstr.charAt(i));
 				i++;
 			}
 		}
@@ -217,13 +213,13 @@ Encode:{
 
 		// 盤面外側の数字部分のエンコード
 		for(var bx=1;bx<bd.maxbx;bx+=2){
-			if(bd.cell[bd.cnum(bx,1)].ques!==51){
-				cm+=this.encval(bd.excell[bd.exnum(bx,-1)].qdir);
+			if(!bd.getc(bx,1).is51cell()){
+				cm+=this.encval(bd.getex(bx,-1).qdir);
 			}
 		}
 		for(var by=1;by<bd.maxby;by+=2){
-			if(bd.cell[bd.cnum(1,by)].ques!==51){
-				cm+=this.encval(bd.excell[bd.exnum(-1,by)].qnum);
+			if(!bd.getc(1,by).is51cell()){
+				cm+=this.encval(bd.getex(-1,by).qnum);
 			}
 		}
 
@@ -274,15 +270,15 @@ FileIO:{
 			if(item.length<=1){ return;}
 			else if(item[0]==0 && item[1]==0){ }
 			else if(item[0]==0 || item[1]==0){
-				var ec=bd.exnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==0){ bd.excell[ec].qdir = parseInt(item[3]);}
-				else if(item[1]==0){ bd.excell[ec].qnum = parseInt(item[2]);}
+				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+				if     (item[0]==0){ excell.qdir = parseInt(item[3]);}
+				else if(item[1]==0){ excell.qnum = parseInt(item[2]);}
 			}
 			else{
-				var c=bd.cnum(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				bd.cell[c].ques = 51;
-				bd.cell[c].qdir = parseInt(item[3]);
-				bd.cell[c].qnum = parseInt(item[2]);
+				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+				cell.ques = 51;
+				cell.qdir = parseInt(item[3]);
+				cell.qnum = parseInt(item[2]);
 			}
 		}
 	},
@@ -292,15 +288,15 @@ FileIO:{
 
 			if(bx===-1&&by===-1){ }
 			else if(bx===-1||by===-1){
-				var ec = bd.exnum(bx,by);
-				if(bx===-1){ item[2]=bd.excell[ec].qnum.toString();}
-				if(by===-1){ item[3]=bd.excell[ec].qdir.toString();}
+				var excell = bd.getex(bx,by);
+				if(bx===-1){ item[2]=excell.qnum.toString();}
+				if(by===-1){ item[3]=excell.qdir.toString();}
 			}
 			else{
-				var c = bd.cnum(bx,by);
-				if(bd.cell[c].ques!==51){ continue;}
-				item[2]=bd.cell[c].qnum.toString();
-				item[3]=bd.cell[c].qdir.toString();
+				var cell = bd.getc(bx,by);
+				if(cell.ques!==51){ continue;}
+				item[2]=cell.qnum.toString();
+				item[3]=cell.qdir.toString();
 			}
 			this.datastr += (item.join(" ")+"/");
 		}}
@@ -313,9 +309,9 @@ FileIO:{
 			var arr = barray[(by+1)>>1].split(" ");
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if(arr[(bx+1)>>1]==''){ continue;}
-				var c = bd.cnum(bx,by);
-				if(c!==null && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
-					bd.cell[c].anum = parseInt(arr[(bx+1)>>1]);
+				var cell = bd.getc(bx,by);
+				if(!cell.isnull && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
+					cell.anum = parseInt(arr[(bx+1)>>1]);
 				}
 			}
 		}
@@ -323,11 +319,11 @@ FileIO:{
 	encodeQans_kanpen : function(){
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var c = bd.cnum(bx,by), obj = bd.cell[c];
-				if(c===null){ this.datastr += ". ";}
-				else if(obj.ques===51){ this.datastr += ". ";}
-				else if(obj.anum  > 0){ this.datastr += (obj.anum.toString() + " ");}
-				else                  { this.datastr += "0 ";}
+				var cell = bd.getc(bx,by);
+				if(cell.isnull){ this.datastr += ". ";}
+				else if(cell.ques===51){ this.datastr += ". ";}
+				else if(cell.anum  > 0){ this.datastr += (cell.anum.toString() + " ");}
+				else                   { this.datastr += "0 ";}
 			}
 			if(by<bd.maxby-1){ this.datastr += "/";}
 		}
@@ -339,46 +335,42 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsPartly(this.isSameNumber, function(cc){ return (bd.QuC(cc)==51);}, true) ){
+		if( !this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true) ){
 			this.setAlert('同じ数字が同じ列に入っています。','Same number is in the same row.'); return false;
 		}
 
-		if( !this.checkRowsColsPartly(this.isTotalNumber, function(cc){ return (bd.QuC(cc)==51);}, false) ){
+		if( !this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false) ){
 			this.setAlert('数字の下か右にある数字の合計が間違っています。','The sum of the cells is not correct.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QuC(c)!==51 && bd.AnC(c)<=0);}) ){
+		if( !this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);}) ){
 			this.setAlert('すべてのマスに数字が入っていません。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(function(c){ return (bd.QuC(c)!==51 && bd.AnC(c)<=0);});},
+	check1st : function(){ return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});},
 
 	isSameNumber : function(keycellpos, clist){
-		if(!this.isDifferentNumberInClist(clist, function(c){ return bd.AnC(c);})){
-			var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
-			if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
-			else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
+		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getAnum();})){
+			bd.getobj(keycellpos[0],keycellpos[1]).seterr(1);
 			return false;
 		}
 		return true;
 	},
 	isTotalNumber : function(keycellpos, clist){
-		var number, bx=keycellpos[0], by=keycellpos[1], dir=keycellpos[2];
-		if     (dir===bd.RT){ number = (bx===-1 ? bd.QnE(bd.exnum(-1,by)) : bd.QnC(bd.cnum(bx,by)));}
-		else if(dir===bd.DN){ number = (by===-1 ? bd.DiE(bd.exnum(bx,-1)) : bd.DiC(bd.cnum(bx,by)));}
+		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		if     (dir===bd.RT){ number = keyobj.getQnum();}
+		else if(dir===bd.DN){ number = keyobj.getQdir();}
 
 		var sum = 0;
 		for(var i=0;i<clist.length;i++){
-			if(bd.AnC(clist[i])>0){ sum += bd.AnC(clist[i]);}
+			if(clist[i].getAnum()>0){ sum += clist[i].getAnum();}
 			else{ return true;}
 		}
 		if(number>0 && sum!=number){
-			var isex = (keycellpos[0]===-1 || keycellpos[1]===-1);
-			if(isex){ bd.sErE(bd.exnum(keycellpos[0],keycellpos[1]),1);}
-			else    { bd.sErC(bd.cnum (keycellpos[0],keycellpos[1]),1);}
-			bd.sErC(clist,1);
+			keyobj.seterr(1);
+			clist.seterr(1);
 			return false;
 		}
 		return true;

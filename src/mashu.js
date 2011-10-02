@@ -28,27 +28,30 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	numberAsObject : true,
 
 	maxnum : 2,
 
+	setErrorPearl : function(){
+		this.setCellLineError(1);
+		if(this.ub().isLine()){ this.up().setCellLineError(0);}
+		if(this.db().isLine()){ this.dn().setCellLineError(0);}
+		if(this.lb().isLine()){ this.lt().setCellLineError(0);}
+		if(this.rb().isLine()){ this.rt().setCellLineError(0);}
+	}
+},
+
+Board:{
+	isborder : 1,
+
 	revCircle : function(){
 		if(!pp.getVal('uramashu')){ return;}
 		for(var c=0;c<this.cellmax;c++){
-			if     (this.cell[c].qnum===1){ this.cell[c].qnum = 2;}
-			else if(this.cell[c].qnum===2){ this.cell[c].qnum = 1;}
+			var cell = this.cell[c];
+			if     (cell.qnum===1){ cell.qnum = 2;}
+			else if(cell.qnum===2){ cell.qnum = 1;}
 		}
-	},
-
-	setErrorPearl : function(cc){
-		this.setCellLineError(cc,1);
-		if(this.isLine(this.ub(cc))){ this.setCellLineError(this.up(cc),0);}
-		if(this.isLine(this.db(cc))){ this.setCellLineError(this.dn(cc),0);}
-		if(this.isLine(this.lb(cc))){ this.setCellLineError(this.lt(cc),0);}
-		if(this.isLine(this.rb(cc))){ this.setCellLineError(this.rt(cc),0);}
 	}
 },
 
@@ -62,8 +65,9 @@ Menu:{
 		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		pp.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
-				if     (bd.QnC(c)===1){ bd.sQnC(c,2);}
-				else if(bd.QnC(c)===2){ bd.sQnC(c,1);}
+				var cell = bd.cell[c];
+				if     (cell.getQnum()===1){ cell.setQnum(2);}
+				else if(cell.getQnum()===2){ cell.setQnum(1);}
 			}
 			pc.paintAll();
 		};
@@ -172,7 +176,7 @@ AnsCheck:{
 			this.setAlert('白丸の隣で線が曲がっていません。','Lines go straight next to white pearl on each side.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.isNum(c) && bd.lines.lcntCell(c)==0);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()==0);}) ){
 			this.setAlert('線が上を通っていない丸があります。','Lines don\'t pass some pearls.'); return false;
 		}
 
@@ -190,10 +194,11 @@ AnsCheck:{
 	checkWhitePearl1 : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)===1 && bd.lines.lcntCell(c)===2 && !bd.isLineStraight(c)){
+			var cell = bd.cell[c];
+			if(cell.getQnum()===1 && cell.lcnt()===2 && !cell.isLineStraight()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setCellLineError(c,1);
+				if(result){ bd.border.seterr(2);}
+				cell.setCellLineError(1);
 				result = false;
 			}
 		}
@@ -202,10 +207,11 @@ AnsCheck:{
 	checkBlackPearl1 : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)===2 && bd.lines.lcntCell(c)===2 && bd.isLineStraight(c)){
+			var cell = bd.cell[c];
+			if(cell.getQnum()===2 && cell.lcnt()===2 && cell.isLineStraight()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setCellLineError(c,1);
+				if(result){ bd.border.seterr(2);}
+				cell.setCellLineError(1);
 				result = false;
 			}
 		}
@@ -215,17 +221,18 @@ AnsCheck:{
 	checkWhitePearl2 : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)!==1 || bd.lines.lcntCell(c)!==2){ continue;}
+			var cell = bd.cell[c];
+			if(cell.getQnum()!==1 || cell.lcnt()!==2){ continue;}
 			var stcnt = 0;
-			if(bd.isLine(bd.ub(c)) && bd.lines.lcntCell(bd.up(c))===2 && bd.isLineStraight(bd.up(c))){ stcnt++;}
-			if(bd.isLine(bd.db(c)) && bd.lines.lcntCell(bd.dn(c))===2 && bd.isLineStraight(bd.dn(c))){ stcnt++;}
-			if(bd.isLine(bd.lb(c)) && bd.lines.lcntCell(bd.lt(c))===2 && bd.isLineStraight(bd.lt(c))){ stcnt++;}
-			if(bd.isLine(bd.rb(c)) && bd.lines.lcntCell(bd.rt(c))===2 && bd.isLineStraight(bd.rt(c))){ stcnt++;}
+			if(cell.ub().isLine() && cell.up().lcnt()===2 && cell.up().isLineStraight()){ stcnt++;}
+			if(cell.db().isLine() && cell.dn().lcnt()===2 && cell.dn().isLineStraight()){ stcnt++;}
+			if(cell.lb().isLine() && cell.lt().lcnt()===2 && cell.lt().isLineStraight()){ stcnt++;}
+			if(cell.rb().isLine() && cell.rt().lcnt()===2 && cell.rt().isLineStraight()){ stcnt++;}
 
 			if(stcnt>=2){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setErrorPearl(c);
+				if(result){ bd.border.seterr(2);}
+				cell.setErrorPearl();
 				result = false;
 			}
 		}
@@ -234,15 +241,16 @@ AnsCheck:{
 	checkBlackPearl2 : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QnC(c)!==2 || bd.lines.lcntCell(c)!==2){ continue;}
-			if((bd.isLine(bd.ub(c)) && bd.lines.lcntCell(bd.up(c))===2 && !bd.isLineStraight(bd.up(c))) ||
-			   (bd.isLine(bd.db(c)) && bd.lines.lcntCell(bd.dn(c))===2 && !bd.isLineStraight(bd.dn(c))) ||
-			   (bd.isLine(bd.lb(c)) && bd.lines.lcntCell(bd.lt(c))===2 && !bd.isLineStraight(bd.lt(c))) ||
-			   (bd.isLine(bd.rb(c)) && bd.lines.lcntCell(bd.rt(c))===2 && !bd.isLineStraight(bd.rt(c))) )
+			var cell = bd.cell[c];
+			if(cell.getQnum()!==2 || cell.lcnt()!==2){ continue;}
+			if((cell.ub().isLine() && cell.up().lcnt()===2 && !cell.up().isLineStraight()) ||
+			   (cell.db().isLine() && cell.dn().lcnt()===2 && !cell.dn().isLineStraight()) ||
+			   (cell.lb().isLine() && cell.lt().lcnt()===2 && !cell.lt().isLineStraight()) ||
+			   (cell.rb().isLine() && cell.rt().lcnt()===2 && !cell.rt().isLineStraight()) )
 			{
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.sErBAll(2);}
-				bd.setErrorPearl(c);
+				if(result){ bd.border.seterr(2);}
+				cell.setErrorPearl();
 				result = false;
 			}
 		}

@@ -101,6 +101,7 @@ pzprv3.createCoreClass('Owner',
 		}
 	},
 	decodeBoardData : function(pzl){
+		pc.suspendAll();
 		// ファイルを開く・複製されたデータを開く
 		if(!!pzl.fstr){
 			fio.filedecode(pzl.fstr);
@@ -114,6 +115,7 @@ pzprv3.createCoreClass('Owner',
 			bd.initBoardSize(bd.qcols,bd.qrows);
 			pc.resize_canvas();
 		}
+		pc.unsuspend();
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
 		if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}

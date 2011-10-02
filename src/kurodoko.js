@@ -27,16 +27,17 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	qcols : 9,
-	qrows : 9,
-
+Cell:{
 	numberIsWhite : true,
 
-	nummaxfunc : function(cc){
-		return this.qcols+this.qrows-1;
+	nummaxfunc : function(){
+		return bd.qcols+bd.qrows-1;
 	},
 	minnum : 2
+},
+Board:{
+	qcols : 9,
+	qrows : 9
 },
 
 AreaManager:{
@@ -118,7 +119,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(c1,c2){ return (bd.isBlack(c1) && bd.isBlack(c2));}) ){
+		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
@@ -136,21 +137,19 @@ AnsCheck:{
 	checkCellNumber : function(){
 		var result = true;
 		for(var cc=0;cc<bd.cellmax;cc++){
-			if(!bd.isValidNum(cc)){ continue;}
+			var cell = bd.cell[cc];
+			if(!cell.isValidNum()){ continue;}
 
-			var tx, ty, list = [cc];
-			tx = bd.cell[cc].bx-2; ty = bd.cell[cc].by;
-			while(tx>bd.minbx){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx-=2;} else{ break;} }
-			tx = bd.cell[cc].bx+2; ty = bd.cell[cc].by;
-			while(tx<bd.maxbx){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); tx+=2;} else{ break;} }
-			tx = bd.cell[cc].bx; ty = bd.cell[cc].by-2;
-			while(ty>bd.minby){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty-=2;} else{ break;} }
-			tx = bd.cell[cc].bx; ty = bd.cell[cc].by+2;
-			while(ty<bd.maxby){ var c=bd.cnum(tx,ty); if(bd.isWhite(c)){ list.push(c); ty+=2;} else{ break;} }
+			var clist = new pzprv3.core.PieceList(this.owner), target;
+			clist.add(cell);
+			target=cell.lt(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.lt();}
+			target=cell.rt(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.rt();}
+			target=cell.up(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.up();}
+			target=cell.dn(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.dn();}
 
-			if(bd.QnC(cc)!=list.length){
+			if(cell.getQnum()!==clist.length){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC(list,1);
+				clist.seterr(1);
 				result = false;
 			}
 		}

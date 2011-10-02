@@ -19,13 +19,13 @@ MouseEvent:{
 
 	inputmark_mousemove : function(){
 		var pos = this.borderpos(0);
-		if(pos.cellid()===null){ return;}
+		if(pos.getc().isnull){ return;}
 
-		var id = this.getnb(this.prevPos, pos);
-		if(id!==null){
+		var border = this.getnb(this.prevPos, pos);
+		if(!border.isnull){
 			this.inputData = this.getdir(this.prevPos, pos);
-			bd.sDiB(id,(this.inputData!=bd.DiB(id)?this.inputData:0));
-			pc.paintBorder(id);
+			border.setQdir(this.inputData!==border.getQdir()?this.inputData:0);
+			pc.paintBorder(border);
 			this.mousereset();
 		}
 		this.prevPos = pos;
@@ -41,27 +41,27 @@ MouseEvent:{
 			pc.paintPos(pos);
 		}
 		else{
-			var id = pos.borderid();
-			if(id!==null){
-				var qn=bd.QnB(id), qs=bd.DiB(id);
-				var qm=(bd.isHorz(id)?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
+			var border = pos.getb();
+			if(!border.isnull){
+				var qn=border.getQnum(), qs=border.getQdir();
+				var qm=(border.isHorz()?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
 				if(this.btn.Left){
-					if     (qn===-1 && qs===0)   { bd.sQnB(id,-1); bd.sDiB(id,qm+1);}
-					else if(qn===-1 && qs===qm+1){ bd.sQnB(id,-1); bd.sDiB(id,qm+2);}
-					else if(qn===-1 && qs===qm+2){ bd.sQnB(id, 1); bd.sDiB(id,0);}
-					else if(qn===max)            { bd.sQnB(id,-2); bd.sDiB(id,0);}
-					else if(qn===-2)             { bd.sQnB(id,-1); bd.sDiB(id,0);}
-					else{ bd.sQnB(id,qn+1);}
+					if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
+					else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
+					else if(qn===-1 && qs===qm+2){ border.setQnum(1);  border.setQdir(0);}
+					else if(qn===max)            { border.setQnum(-2); border.setQdir(0);}
+					else if(qn===-2)             { border.setQnum(-1); border.setQdir(0);}
+					else{ border.setQnum(id,qn+1);}
 				}
 				else if(this.btn.Right){
-					if     (qn===-1 && qs===0)   { bd.sQnB(id,-2); bd.sDiB(id,0);}
-					else if(qn===-2)             { bd.sQnB(id,max);bd.sDiB(id,0);}
-					else if(qn=== 1 && qs===0)   { bd.sQnB(id,-1); bd.sDiB(id,qm+2);}
-					else if(qn===-1 && qs===qm+2){ bd.sQnB(id,-1); bd.sDiB(id,qm+1);}
-					else if(qn===-1 && qs===qm+1){ bd.sQnB(id,-1); bd.sDiB(id,0);}
-					else{ bd.sQnB(id,qn-1);}
+					if     (qn===-1 && qs===0)   { border.setQnum(-2); border.setQdir(0);}
+					else if(qn===-2)             { border.setQnum(max);border.setQdir(0);}
+					else if(qn=== 1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+2);}
+					else if(qn===-1 && qs===qm+2){ border.setQnum(-1); border.setQdir(qm+1);}
+					else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
+					else{ border.setQnum(id,qn-1);}
 				}
-				pc.paintBorder(id);
+				pc.paintBorder(border);
 			}
 		}
 	}
@@ -83,31 +83,32 @@ KeyEvent:{
 		else if(this.owner.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
-		var id = tc.getTBC();
-		if(id===null){ return;}
+		var border = tc.getTBC();
+		if(border.isnull){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
 			var tmp=bd.NDIR;
-			if(ca=='q'){ tmp=(bd.isHorz(id)?bd.UP:bd.LT);}
-			if(ca=='w'){ tmp=(bd.isHorz(id)?bd.DN:bd.RT);}
+			if(ca=='q'){ tmp=(border.isHorz()?bd.UP:bd.LT);}
+			if(ca=='w'){ tmp=(border.isHorz()?bd.DN:bd.RT);}
 
-			bd.sDiB(id,(bd.DiB(id)!==tmp?tmp:bd.NDIR));
-			bd.sQnB(id,-1);
+			border.setQdir(border.getQdir()!==tmp?tmp:bd.NDIR);
+			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
+			var num = parseInt(ca), cur = border.getQnum();
 			var max = Math.max(bd.qcols,bd.qrows)-1;
 
-			bd.sDiB(id,bd.NDIR);
-			if(bd.QnB(id)<=0 || this.prev!=id){ if(num<=max){ bd.sQnB(id,num);}}
+			border.setQdir(bd.NDIR);
+			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
 			else{
-				if(bd.QnB(id)*10+num<=max){ bd.sQnB(id,bd.QnB(id)*10+num);}
-				else if(num<=max){ id.sQnB(id,num);}
+				if(cur*10+num<=max){ border.setQnum(cur*10+num);}
+				else if  (num<=max){ border.setQnum(num);}
 			}
 		}
 		else{ return;}
 
-		pc.paintBorder(id);
+		this.prev = border;
+		pc.paintBorder(border);
 	}
 },
 
@@ -120,15 +121,16 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	nummaxfunc : function(){
+		return Math.max(bd.qcols,bd.qrows);
+	}
+},
 Board:{
 	qcols : 7,
 	qrows : 7,
 
-	isborder : 1,
-
-	nummaxfunc : function(cc){
-		return Math.max(this.qcols,this.qrows);
-	}
+	isborder : 1
 },
 
 MenuExec:{
@@ -164,13 +166,13 @@ Graphic:{
 		if(!g.use.canvas){ return;}
 
 		var csize = this.cw*0.29;
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i];
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i];
 
-			if(bd.border[id].qdir!==0 || bd.border[id].qnum!==-1){
+			if(border.qdir!==0 || border.qnum!==-1){
 				g.fillStyle = "white";
-				g.fillRect(this.border[id].px-csize, this.border[id].py-csize, 2*csize+1, 2*csize+1);
+				g.fillRect(border.px-csize, border.py-csize, 2*csize+1, 2*csize+1);
 			}
 		}
 	},
@@ -184,13 +186,13 @@ Graphic:{
 		g.lineWidth = 1;
 		g.strokeStyle = this.cellcolor;
 
-		var idlist = this.range.borders;
-		for(var i=0;i<idlist.length;i++){
-			var id=idlist[i], obj=bd.border[id], key=['border',id].join('_');
-			var px = this.border[id].px, py = this.border[id].py;
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border=blist[i], id=border.id, key=['border',id].join('_');
+			var px = border.px, py = border.py;
 			// ○の描画
-			if(obj.qnum!=-1){
-				g.fillStyle = (obj.error==1 ? this.errcolor1 : "white");
+			if(border.qnum!=-1){
+				g.fillStyle = (border.error===1 ? this.errcolor1 : "white");
 				if(this.vnop(headers[0]+id,this.FILL)){
 					g.shapeCircle(px, py, csize);
 				}
@@ -198,16 +200,16 @@ Graphic:{
 			else{ this.vhide([headers[0]+id]);}
 
 			// 数字の描画
-			if(obj.qnum>0){
-				this.dispnum(key, 1, ""+obj.qnum, 0.45, this.borderfontcolor, px, py);
+			if(border.qnum>0){
+				this.dispnum(key, 1, ""+border.qnum, 0.45, this.borderfontcolor, px, py);
 			}
 			else{ this.hideEL(key);}
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);
-			if(obj.qdir!==bd.NDIR){
-				if(this.vnop(headers[((obj.qdir+1)&1)+1]+id,this.NONE)){
-					switch(obj.qdir){
+			if(border.qdir!==bd.NDIR){
+				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
+					switch(border.qdir){
 						case bd.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
 						case bd.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
 						case bd.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
@@ -255,8 +257,8 @@ Encode:{
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = (bd.isHorz(obj.id)?bd.UP:bd.LT);}
-			else if(tmp===2){ obj.qdir = (bd.isHorz(obj.id)?bd.DN:bd.RT);}
+			if     (tmp===1){ obj.qdir = (obj.isHorz()?bd.UP:bd.LT);}
+			else if(tmp===2){ obj.qdir = (obj.isHorz()?bd.DN:bd.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -295,8 +297,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = (bd.isHorz(obj.id)?bd.UP:bd.LT);}
-			else if(ca==="b"){ obj.qdir = (bd.isHorz(obj.id)?bd.DN:bd.RT);}
+			if     (ca==="a"){ obj.qdir = (obj.isHorz()?bd.UP:bd.LT);}
+			else if(ca==="b"){ obj.qdir = (obj.isHorz()?bd.DN:bd.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
 			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 		});
@@ -320,7 +322,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(c){ return bd.getNum(c);}) ){
+		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();}) ){
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
@@ -332,33 +334,34 @@ AnsCheck:{
 			this.setAlert('不等号と数字が矛盾しています。', 'A inequality sign is not correct.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return bd.noNum(c);}) ){
+		if( !this.checkAllCell(function(cell){ return cell.noNum();}) ){
 			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkAllCell(bd.noNum);},
+	check1st : function(){ return this.checkAllCell(function(cell){ return cell.noNum();});},
 
 	checkBDnumber : function(){
-		return this.checkBDSideCell(function(id,a1,a2){
-			return (bd.QnB(id)>0 && bd.QnB(id)!==Math.abs(a1-a2));
+		return this.checkBDSideCell(function(border,a1,a2){
+			return (border.getQnum()>0 && border.getQnum()!==Math.abs(a1-a2));
 		});
 	},
 	checkBDmark : function(){
-		return this.checkBDSideCell(function(id,a1,a2){
-			var mark = bd.DiB(id);
+		return this.checkBDSideCell(function(border,a1,a2){
+			var mark = border.getQdir();
 			return !(mark==0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
 		});
 	},
 	checkBDSideCell : function(func){
 		var result = true;
 		for(var id=0;id<bd.bdmax;id++){
-			var cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			var num1 = bd.getNum(cc1), num2 = bd.getNum(cc2);
-			if(num1>0 && num2>0 && func(id,num1,num2)){
+			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			var num1 = cell1.getNum(), num2 = cell2.getNum();
+			if(num1>0 && num2>0 && func(border,num1,num2)){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([cc1,cc2],1);
+				cell1.seterr(1);
+				cell2.seterr(2);
 				result = false;
 			}
 		}

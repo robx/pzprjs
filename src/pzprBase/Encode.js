@@ -398,7 +398,7 @@ pzprv3.createCommonClass('Encode',
 		bd.areas.rinfo.reset();
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), c=bd.areas.rinfo.getTopOfRoom(r), obj=bd.cell[c];
+			var ca = bstr.charAt(i), obj=bd.areas.rinfo.getTopOfRoom(r);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							  { obj.qnum = parseInt(ca,16);}
@@ -419,7 +419,7 @@ pzprv3.createCommonClass('Encode',
 		bd.areas.rinfo.reset();
 		var count=0, cm="";
 		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			var pstr = "", qn = bd.cell[bd.areas.rinfo.getTopOfRoom(r)].qnum;
+			var pstr = "", qn = bd.areas.rinfo.getTopOfRoom(r).qnum;
 
 			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
 			else if(qn>=   16 && qn<  256){ pstr = "-" + qn.toString(16);}
@@ -556,7 +556,7 @@ pzprv3.createCommonClass('Encode',
 				var by = ((((cc/cols)|0)+(1-cp))<<1);
 
 				if(by>bd.maxby-2*(1-cp)){ i++; break;}
-				bd.cross[bd.xnum(bx,by)].qnum = 1;
+				bd.getx(bx,by).qnum = 1;
 			}
 			else if(ca == '.'){ cc+=35;}
 
@@ -573,7 +573,7 @@ pzprv3.createCommonClass('Encode',
 			var bx = ((  c%cols    +(1-cp))<<1);
 			var by = ((((c/cols)|0)+(1-cp))<<1);
 
-			if(bd.cross[bd.xnum(bx,by)].qnum===1){ pstr = ".";}
+			if(bd.getx(bx,by).qnum===1){ pstr = ".";}
 			else{ count++;}
 
 			if(pstr){ cm += count.toString(36); count=0;}

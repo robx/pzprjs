@@ -226,50 +226,50 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
-		var cc = tc.getTXC();
-		var max = bd.nummaxfunc(cc), val=-1;
+		var cross = tc.getTXC();
+		var max = cross.nummaxfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = bd.QnX(cc);
+			var num = parseInt(ca), cur = cross.getQnum();
 			if(cur<=0 || cur*10+num>max){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca==='-'){ bd.sQnX(cc,(bd.QnX(cc)!==-2 ? -2 : -1));}
-		else if(ca===' '){ bd.sQnX(cc,-1);}
+		else if(ca==='-'){ cross.setQnum(cross.getQnum()!==-2 ? -2 : -1);}
+		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 
-		bd.sQnX(cc,val);
-		pc.paintCross(cc);
+		cross.setQnum(val);
+		pc.paintCross(cross);
 	},
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
-		var cc = tc.getTCC();
-		if(this.owner.editmode && bd.areas.roomNumber){ cc = bd.areas.rinfo.getTopOfRoomByCell(cc);}
+		var cell = tc.getTCC();
+		if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
 
-		if(this.key_inputqnum_main(cc,ca)){
-			this.prev = cc;
-			pc.paintCell(cc);
+		if(this.key_inputqnum_main(cell,ca)){
+			this.prev = cell;
+			pc.paintCell(cell);
 		}
 	},
-	key_inputqnum_main : function(cc,ca){
-		var max = bd.nummaxfunc(cc), min = bd.numminfunc(cc), val=-1;
+	key_inputqnum_main : function(cell,ca){
+		var max = cell.nummaxfunc(), min = cell.numminfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = bd.getNum(cc);
-			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			var num = parseInt(ca), cur = cell.getNum();
+			if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
 		}
-		else if(ca==='-') { val = ((this.owner.editmode&&!bd.disInputHatena)?-2:-1);}
+		else if(ca==='-') { val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else if(ca==='s1'){ val = -2;}
 		else if(ca==='s2'){ val = -3;}
 		else{ return false;}
 
-		bd.setNum(cc,val);
+		cell.setNum(val);
 		return true;
 	},
 
@@ -279,17 +279,17 @@ pzprv3.createCommonClass('KeyEvent',
 	key_inputdirec : function(ca){
 		if(!this.isSHIFT){ return false;}
 
-		var cc = tc.getTCC(), pid = this.owner.pid;
+		var cell = tc.getTCC(), pid = this.owner.pid;
 		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
-			if(bd.QnC(cc)===-1){ return false;}
+			if(cell.getQnum()===-1){ return false;}
 		}
 
 		var flag = true;
 		switch(ca){
-			case this.KEYUP: bd.sDiC(cc, (bd.DiC(cc)!=bd.UP?bd.UP:0)); break;
-			case this.KEYDN: bd.sDiC(cc, (bd.DiC(cc)!=bd.DN?bd.DN:0)); break;
-			case this.KEYLT: bd.sDiC(cc, (bd.DiC(cc)!=bd.LT?bd.LT:0)); break;
-			case this.KEYRT: bd.sDiC(cc, (bd.DiC(cc)!=bd.RT?bd.RT:0)); break;
+			case this.KEYUP: cell.setQdir(cell.getQdir()!==bd.UP?bd.UP:0); break;
+			case this.KEYDN: cell.setQdir(cell.getQdir()!==bd.DN?bd.DN:0); break;
+			case this.KEYLT: cell.setQdir(cell.getQdir()!==bd.LT?bd.LT:0); break;
+			case this.KEYRT: cell.setQdir(cell.getQdir()!==bd.RT?bd.RT:0); break;
 			default: flag = false;
 		}
 
@@ -308,42 +308,39 @@ pzprv3.createCommonClass('KeyEvent',
 	inputnumber51 : function(ca,max_obj){
 		if(tc.chtarget(ca)){ return;}
 
-		var cc = tc.getTCC(), ex = null;
-		if(cc===null){ ex = tc.getTEC();}
-		var target = tc.detectTarget(cc,ex);
-		if(target===0 || (cc!==null && bd.QuC(cc)===51)){
-			if(ca==='q' && cc!==null){
-				if(bd.QuC(cc)!==51){ bd.set51cell(cc);}
-				else            { bd.remove51cell(cc);}
+		var obj = tc.getOBJ();
+		var target = tc.detectTarget(obj);
+		if(target===0 || (obj.iscellobj && obj.is51cell())){
+			if(ca==='q' && !obj.isnull){
+				if(obj.is51cell()){ obj.set51cell();}
+				else              { obj.remove51cell();}
 				pc.paintPos(tc.getTCP());
 				return;
 			}
 		}
 		if(target==0){ return;}
 
-		var def = this.owner.classes.Cell.prototype[(target==2?'qnum':'qdir')];
+		var def = this.owner.classes.Cell.prototype[(target===2?'qnum':'qdir')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
-			var num=parseInt(ca), cur=this.getnum51(cc,ex,target);
-			if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+			var num=parseInt(ca), cur=this.getnum51(obj,target);
+			if(cur<=0 || cur*10+num>max || this.prev!==(obj.iscellobj ? obj : null)){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
 		else if(ca=='-' || ca==' '){ val=def;}
 		else{ return;}
 
-		this.setnum51(cc,ex,target,val);
-		this.prev = cc;
+		this.setnum51(obj,target,val);
+		this.prev = (obj.iscellobj ? obj : null);
 		pc.paintPos (tc.getTCP());
 	},
-	setnum51 : function(cc,ex,target,val){
-		if(cc!=null){ (target==2 ? bd.sQnC(cc,val) : bd.sDiC(cc,val));}
-		else        { (target==2 ? bd.sQnE(ex,val) : bd.sDiE(ex,val));}
+	setnum51 : function(obj,target,val){
+		(target==2 ? obj.setQnum(val) : obj.setQdir(val));
 	},
-	getnum51 : function(cc,ex,target){
-		if(cc!=null){ return (target==2 ? bd.QnC(cc) : bd.DiC(cc));}
-		else        { return (target==2 ? bd.QnE(ex) : bd.DiE(ex));}
+	getnum51 : function(obj,target){
+		return (target==2 ? bd.getQnum() : bd.getQdir());
 	},
 
 //---------------------------------------------------------------------------
@@ -555,7 +552,7 @@ pzprv3.createCommonClass('TargetCursor',
 		this.owner = owner;
 
 		// 現在入力ターゲットになっている場所(border座標系)
-		this.pos = new pzprv3.core.Address(1,1);
+		this.pos = new pzprv3.core.Address(this.owner,1,1);
 
 		// 有効な範囲(minx,miny)-(maxx,maxy)
 		this.minx;
@@ -583,8 +580,8 @@ pzprv3.createCommonClass('TargetCursor',
 		this.adjust_init();
 	},
 	initCursor : function(){
-		if(this.crosstype){ this.pos = new pzprv3.core.Address(0,0);}
-		else              { this.pos = new pzprv3.core.Address(1,1);}
+		if(this.crosstype){ this.pos = new pzprv3.core.Address(this.owner,0,0);}
+		else              { this.pos = new pzprv3.core.Address(this.owner,1,1);}
 
 		this.adjust_init();
 	},
@@ -617,31 +614,31 @@ pzprv3.createCommonClass('TargetCursor',
 	// tc.setTBC() ターゲットの位置をBorderのIDで設定する
 	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
 	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
+	// tc.getOBJ() ターゲットの位置をオブジェクトで取得する
+	// tc.setOBJ() ターゲットの位置をオブジェクトで設定する
 	//---------------------------------------------------------------------------
 	getTCP : function(){ return this.pos.clone();},
 	setTCP : function(pos){
 		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
 		this.pos.set(pos);
 	},
-	getTCC : function(){ return this.pos.cellid();},
-	setTCC : function(id){
-		if(!bd.cell[id]){ return;}
-		this.pos = bd.cell[id].getaddr();
-	},
-	getTXC : function(){ return this.pos.crossid();},
-	setTXC : function(id){
-		if(!bd.cross[id]){ return;}
-		this.pos = bd.cross[id].getaddr();
-	},
-	getTBC : function(){ return this.pos.borderid();},
-	setTBC : function(id){
-		if(!bd.border[id]){ return;}
-		this.pos = bd.border[id].getaddr();
-	},
-	getTEC : function(){ return this.pos.excellid();},
-	setTEC : function(id){
-		if(!bd.excell[id]){ return;}
-		this.pos = bd.excell[id].getaddr();
+
+	getTCC : function(){ return this.pos.getc();},
+	setTCC : function(cell){ this.pos.set(cell.getaddr());},
+
+	getTXC : function(){ return this.pos.getx();},
+	setTXC : function(cross){ this.pos.set(cross.getaddr());},
+
+	getTBC : function(){ return this.pos.getb();},
+	setTBC : function(border){ this.pos.set(border.getaddr());},
+
+	getTEC : function(){ return this.pos.getex();},
+	setTEC : function(excell){ this.pos.set(excell.getaddr());},
+
+	getOBJ : function(){ return bd.getobj(this.pos.x, this.pos.y);},
+	setOBJ : function(obj){
+		if(obj.isnull){ return;}
+		this.pos.set(obj.getaddr());
 	},
 
 	//---------------------------------------------------------------------------
@@ -656,21 +653,23 @@ pzprv3.createCommonClass('TargetCursor',
 		pc.paintCell(this.getTCC());
 		return true;
 	},
-	detectTarget : function(cc,ex){
-		if((cc===null && ex===null) || (cc!==null && bd.QuC(cc)!==51)){ return 0;}
-		if(cc===bd.cellmax-1 || ex===bd.qcols+bd.qrows){ return 0;}
-		if(cc!==null){
-			if	  ((bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51) &&
-				   (bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51)){ return 0;}
-			else if(bd.rt(cc)===null || bd.QuC(bd.rt(cc))===51){ return 4;}
-			else if(bd.dn(cc)===null || bd.QuC(bd.dn(cc))===51){ return 2;}
+	detectTarget : function(obj){
+		if(obj.isnull){ return 0;}
+		else if(obj.iscellobj){
+			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}
+			else if((obj.rt().isnull || obj.rt().getQues()===51) &&
+				    (obj.dn().isnull || obj.dn().getQues()===51)){ return 0;}
+			else if(obj.rt().isnull || obj.rt().getQues()===51){ return 4;}
+			else if(obj.dn().isnull || obj.dn().getQues()===51){ return 2;}
 		}
-		else if(ex!==null){
-			if	  ((bd.excell[ex].by===-1 && bd.QuC(bd.cnum(bd.excell[ex].bx,1))===51) ||
-				   (bd.excell[ex].bx===-1 && bd.QuC(bd.cnum(1,bd.excell[ex].by))===51)){ return 0;}
-			else if(bd.excell[ex].by===-1){ return 4;}
-			else if(bd.excell[ex].bx===-1){ return 2;}
+		else if(obj.isexcellobj){
+			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
+			else if((obj.by===-1 && obj.relcell(0,2).getQues()===51) ||
+				    (obj.bx===-1 && obj.relcell(2,0).getQues()===51)){ return 0;}
+			else if(obj.by===-1){ return 4;}
+			else if(obj.bx===-1){ return 2;}
 		}
+		else{ return 0;}
 
 		return this.targetdir;
 	}

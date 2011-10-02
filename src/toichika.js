@@ -23,15 +23,15 @@ MouseEvent:{
 	},
 
 	inputDot : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.QnC(cc)!==-1){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(bd.QsC(cc)===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
 		
-		bd.sAnC(cc,-1);
-		bd.sQsC(cc,(this.inputData===1?1:0));
-		this.mouseCell = cc;
-		pc.paintCell(cc);
+		cell.setAnum(-1);
+		cell.setQsub(this.inputData===1?1:0);
+		this.mouseCell = cell;
+		pc.paintCell(cell);
 	}
 },
 
@@ -60,28 +60,29 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	numberAsObject : true,
+
+	maxnum : 4
+},
 Board:{
 	isborder : 1,
 
-	numberAsObject : true,
-
-	maxnum : 4,
-
 	getPairedArrowsInfo : function(){
 		var ainfo=[], isarrow=[];
-		for(var c=0;c<this.cellmax;c++){ isarrow[c]=this.isNum(c);}
+		for(var c=0;c<this.cellmax;c++){ isarrow[c]=this.cell[c].isNum();}
 		for(var c=0;c<this.cellmax;c++){
-			if(this.noNum(c)){ continue;}
-			var bx=this.cell[c].bx, by=this.cell[c].by, tc=c, dir=this.getNum(c);
+			var cell0 = this.cell[c];
+			if(cell0.noNum()){ continue;}
+			var pos=cell0.getaddr(), dir=cell0.getNum();
 
 			while(1){
-				switch(dir){ case this.UP: by-=2; break; case this.DN: by+=2; break; case this.LT: bx-=2; break; case this.RT: bx+=2; break;}
-				tc = this.cnum(bx,by);
-				if(tc===null){ ainfo.push([c]); break;}
-				if(!!isarrow[tc]){
-					var tdir = this.getNum(tc);
-					if(tdir!==[0,this.DN,this.UP,this.RT,this.LT][dir]){ ainfo.push([c]);}
-					else{ ainfo.push([c,tc]);}
+				pos.movedir(dir,2);
+				var cell = pos.getc();
+				if(cell.isnull){ ainfo.push([cell0.id]); break;}
+				if(!!isarrow[cell.id]){
+					if(cell.getNum()!==[0,this.DN,this.UP,this.RT,this.LT][dir]){ ainfo.push([cell0.id]);}
+					else{ ainfo.push([cell.id,cell0.id]);}
 					break;
 				}
 			}
@@ -209,7 +210,7 @@ AnsCheck:{
 		var result = true;
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){
-				bd.sErC(ainfo[i],1);
+				bd.cell[ainfo[i]].seterr(1);
 				result = false;
 			}
 		}
@@ -230,8 +231,8 @@ AnsCheck:{
 			if(ainfo[i].length===1){ continue;}
 			var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
 			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])>0){
-				bd.sErC(rinfo.room[r1].idlist,1);
-				bd.sErC(rinfo.room[r2].idlist,1);
+				rinfo.getclist(r1).seterr(1);
+				rinfo.getclist(r2).seterr(1);
 				result = false;
 			}
 		}

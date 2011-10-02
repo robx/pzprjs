@@ -27,11 +27,11 @@ KeyEvent:{
 	},
 	key_inputvalid : function(ca){
 		if(ca=='w'){
-			var cc = tc.getTCC();
-			if(cc!==null){
-				bd.sQuC(cc,(bd.QuC(cc)!==7?7:0));
-				bd.setNum(cc,-1);
-				pc.paintCell(cc);
+			var cell = tc.getTCC();
+			if(!cell.isnull){
+				cell.setQues(cell.getQues()!==7?7:0);
+				cell.setNum(-1);
+				pc.paintCell(cell);
 			}
 		}
 	},
@@ -42,47 +42,47 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 2,
-
+Cell:{
 	maxnum : 3,
 	minnum : 0,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-
-		this.posthook.cell.ques = function(c){ this.areas.setCell(c);};
+	posthook : {
+		ques : function(num){ bd.areas.setCellInfo(this);}
 	},
+
+	getdir4BorderCount_fivecells : function(){
+		var cnt=0, cblist=this.getdir4cblist();
+		for(var i=0;i<cblist.length;i++){
+			var tcell=cblist[i][0], tborder=cblist[i][1];
+			if(tcell.isnull || tcell.isEmpty() || tborder.isBorder()){ cnt++;}
+		}
+		return cnt;
+	}
+},
+
+Border:{
+	isGrid : function(){
+		return (this.sidecell[0].isValid() && this.sidecell[1].isValid());
+	},
+	isBorder : function(){
+		return ((this.qans>0) || this.isQuesBorder());
+	},
+	isQuesBorder : function(){
+		return !!(this.sidecell[0].isEmpty()^this.sidecell[1].isEmpty());
+	}
+},
+
+Board:{
+	isborder : 2,
 
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
 		var odd = (col*row)%5;
-		if(odd>=1){ this.cell[this.cnum(this.minbx+1,this.minby+1)].ques=7;}
-		if(odd>=2){ this.cell[this.cnum(this.maxbx-1,this.minby+1)].ques=7;}
-		if(odd>=3){ this.cell[this.cnum(this.minbx+1,this.maxby-1)].ques=7;}
-		if(odd>=4){ this.cell[this.cnum(this.maxbx-1,this.maxby-1)].ques=7;}
-	},
-
-	// 入力可能できないマスかどうか
-	isEmpty : function(c){ return ( !this.cell[c] || this.cell[c].ques===7);},
-	isValid : function(c){ return (!!this.cell[c] && this.cell[c].ques===0);},
-
-	isBorder : function(id){
-		return ((!!this.border[id] && (this.border[id].qans>0)) || this.isQuesBorder(id));
-	},
-	isQuesBorder : function(id){
-		var cc1 = this.border[id].cellcc[0], cc2 = this.border[id].cellcc[1];
-		return !!(this.isEmpty(cc1)^this.isEmpty(cc2));
-	},
-
-	getdir4Border_fivecells : function(cc){
-		var cnt=0, cblist=this.getdir4cblist(cc);
-		for(var i=0;i<cblist.length;i++){
-			var tc=cblist[i][0], tid=cblist[i][1];
-			if(tc===null || this.isEmpty(tc) || this.isBorder(tid)){ cnt++;}
-		}
-		return cnt;
+		if(odd>=1){ this.getc(this.minbx+1,this.minby+1).ques=7;}
+		if(odd>=2){ this.getc(this.maxbx-1,this.minby+1).ques=7;}
+		if(odd>=3){ this.getc(this.minbx+1,this.maxby-1).ques=7;}
+		if(odd>=4){ this.getc(this.maxbx-1,this.maxby-1).ques=7;}
 	}
 },
 
@@ -91,34 +91,35 @@ AreaManager:{
 },
 
 AreaRoomData:{
-	isvalid : function(c){
-		return (bd.cell[c].ques!==7);
+	isvalid : function(cell){
+		return (cell.ques!==7);
 	},
 
-	setCell : function(cc){
-		var val = this.getlink(cc), old = this.cellinfo[cc];
+	setCellInfo : function(cell){
+		var val = this.getlink(cell), old = this.cellinfo[cell.id];
 		if(val===old){
 			if(val===0){
-				val = this.isvalid(cc); old = (this.id[cc]!==null);
-				if     ( val &&!old){ this.assignCell(cc, null);}
-				else if(!val && old){ this.removeCell(cc);}
+				val = this.isvalid(cell); old = (this.id[cell.id]!==null);
+				if     ( val &&!old){ this.assignCell(cell, null);}
+				else if(!val && old){ this.removeCell(cell);}
 			}
 		}
 		else{
-			this.setCellDir4(cc, val, old);
+			this.setCellDir4(cell, val, old);
 		}
 	},
 	// 自分＋上下左右４方向の部屋IDを単純にふり直す
-	setCellDir4 : function(cc, val, old){
-		this.cellinfo[cc] = val;
+	setCellDir4 : function(cell, val, old){
+		this.cellinfo[cell.id] = val;
 
-		var clist = [cc], cblist = bd.getdir4cblist(cc);
+		var clist = [cell], cblist = cell.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){
-			if(cblist[i][0]!==null){
-				this.cellinfo[cblist[i][0]] = this.getlink(cblist[i][0]);
-				clist.push(cblist[i][0]);
+			var cell = cblist[i][0], border = cblist[i][1];
+			if(!cell.isnull){
+				this.cellinfo[cell.id] = this.getlink(cell);
+				clist.push(cell);
 			}
-			if(cblist[i][1]!==null){ this.setbd(cblist[i][1]);}
+			if(!border.isnull){ this.setbd(border);}
 		}
 
 		this.searchClist(this.popRoom(clist));
@@ -154,7 +155,7 @@ Graphic:{
 		return null;
 	},
 	getQuesBorderColor : function(border){
-		return (bd.isQuesBorder(border.id) ? this.cellcolor : null);
+		return (border.isQuesBorder() ? this.cellcolor : null);
 	},
 
 	drawValidDashedGrid : function(){
@@ -166,14 +167,14 @@ Graphic:{
 
 		var csize = this.cw*0.20;
 		var header = "b_grid_wari_";
-		var idlist = this.range.borders;
-		for(var n=0;n<idlist.length;n++){
-			var id = idlist[n], cc1 = bd.border[id].cellcc[0], cc2 = bd.border[id].cellcc[1];
-			if(bd.isValid(cc1) && bd.isValid(cc2)){
-				var px = this.border[id].px, py = this.border[id].py;
+		var blist = this.range.borders;
+		for(var n=0;n<blist.length;n++){
+			var border = blist[n];
+			if(border.isGrid()){
+				var px = border.px, py = border.py;
 				if(g.use.canvas){
 					g.fillStyle = this.gridcolor;
-					if(bd.isVert(id)){
+					if(border.isVert()){
 						for(var t=py-this.bh,max=py+this.bh;t<max;t+=(2*dotSize)){ g.fillRect(px, t, 1, dotSize);}
 					}
 					else{
@@ -181,18 +182,18 @@ Graphic:{
 					}
 				}
 				else{
-					if(this.vnop(header+id,this.NONE)){
+					if(this.vnop(header+border.id,this.NONE)){
 						// strokeぶん0.5ずらす
 						g.lineWidth = 1;
 						g.strokeStyle = this.gridcolor;
 
-						if(bd.isVert(id)){ g.strokeLine(px+0.5, py-this.bh, px+0.5, py+this.bh);}
-						else             { g.strokeLine(px-this.bw, py+0.5, px+this.bw, py+0.5);}
+						if(border.isVert()){ g.strokeLine(px+0.5, py-this.bh, px+0.5, py+this.bh);}
+						else               { g.strokeLine(px-this.bw, py+0.5, px+this.bw, py+0.5);}
 						g.setDashSize(dotSize);
 					}
 				}
 			}
-			else{ this.vhide(header+id);}
+			else{ this.vhide(header+border.id);}
 		}
 	}
 },
@@ -292,9 +293,10 @@ AnsCheck:{
 	checkdir4BorderAns : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.isValidNum(c) && bd.getdir4Border_fivecells(c)!==bd.QnC(c)){
+			var cell = bd.cell[c];
+			if(cell.isValidNum() && cell.getdir4BorderCount_fivecells()!==cell.getQnum()){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c],1);
+				cell.seterr(1);
 				result = false;
 			}
 		}

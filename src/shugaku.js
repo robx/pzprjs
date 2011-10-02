@@ -19,92 +19,92 @@ MouseEvent:{
 	},
 
 	inputFuton : function(){
-		var cc = this.cellid();
+		var cell = this.getcell();
 
 		if(!this.firstPoint.valid()){
-			if(cc===null || bd.isNum(cc)){ return;}
-			this.mouseCell = cc;
+			if(cell.isnull || cell.isNum()){ return;}
+			this.mouseCell = cell;
 			this.inputData = 1;
 			this.firstPoint.set(this.inputPoint);
-			pc.paintCell(cc);
+			pc.paintCell(cell);
 		}
 		else{
-			var old = this.inputData, adj;
-			if(cc===null){ /* nop */} // 何もしない
-			else if(this.mouseCell===cc){ this.inputData = 1;} // 入力開始時と同じセルの場合
+			var old = this.inputData, adj = null;
+			if(cell.isnull){ /* nop */} // 何もしない
+			else if(this.mouseCell===cell){ this.inputData = 1;} // 入力開始時と同じセルの場合
 			else{
 				var dx=(this.inputPoint.x-this.firstPoint.x), dy=(this.inputPoint.y-this.firstPoint.y);
-				if     (dx-dy>0 && dx+dy>0){ adj=bd.rt(this.mouseCell); this.inputData=5;}
-				else if(dx-dy>0 && dx+dy<0){ adj=bd.up(this.mouseCell); this.inputData=2;}
-				else if(dx-dy<0 && dx+dy>0){ adj=bd.dn(this.mouseCell); this.inputData=3;}
-				else if(dx-dy<0 && dx+dy<0){ adj=bd.lt(this.mouseCell); this.inputData=4;}
-				if(adj==null || bd.isNum(adj)){ this.inputData=6;}
+				if     (dx-dy>0 && dx+dy>0){ adj=this.mouseCell.rt(); this.inputData=5;}
+				else if(dx-dy>0 && dx+dy<0){ adj=this.mouseCell.up(); this.inputData=2;}
+				else if(dx-dy<0 && dx+dy>0){ adj=this.mouseCell.dn(); this.inputData=3;}
+				else if(dx-dy<0 && dx+dy<0){ adj=this.mouseCell.lt(); this.inputData=4;}
+				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
 			}
 			if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
 		}
 	},
 	inputFuton2 : function(){
-		if(this.mouseCell===null){ return;}
-		var cc = this.mouseCell
+		if(this.mouseCell.isnull){ return;}
+		var cell = this.mouseCell;
 
-		this.changeHalf(cc);
-		if(this.inputData!==1 && this.inputData!==6){ bd.sQaC(cc, 40+this.inputData); bd.sQsC(cc, 0);}
-		else if(this.inputData===6){ bd.sQaC(cc,41); bd.sQsC(cc, 0);}
-		else{
-			if     (bd.QaC(cc)===41){ bd.sQaC(cc,46); bd.sQsC(cc, 0);}
-			else if(bd.QaC(cc)===46){ bd.sQaC(cc, 0); bd.sQsC(cc, 1);}
-//			else if(bd.QsC(cc)=== 1){ bd.sQaC(cc, 0); bd.sQsC(cc, 0);}
-			else                    { bd.sQaC(cc,41); bd.sQsC(cc, 0);}
+		this.changeHalf(cell);
+		if(this.inputData!==1 && this.inputData!==6){ cell.setQans(40+this.inputData); cell.setQsub(0);}
+		else if(this.inputData=== 6){ cell.setQans(41); cell.setQsub(0);}
+		else if(cell.getQans()===41){ cell.setQans(46); cell.setQsub(0);}
+		else if(cell.getQans()===46){ cell.setQans(0);  cell.setQsub(1);}
+//		else if(cell.getQans()=== 1){ cell.setQans(0);  cell.setQsub(0);}
+		else                        { cell.setQans(41); cell.setQsub(0);}
+
+		cell = this.currentTargetADJ();
+		if(!cell.isnull){
+			this.changeHalf(cell);
+			cell.setQans({2:48,3:47,4:50,5:49}[this.inputData]);
+			cell.setQsub(0);
 		}
 
-		cc = this.currentTargetADJ();
-		if(cc!==null){
-			this.changeHalf(cc);
-			bd.sQaC(cc, {2:48,3:47,4:50,5:49}[this.inputData]); bd.sQsC(cc, 0);
-		}
-
-		cc = this.mouseCell;
-		this.mouseCell = null;
-		pc.paintCellAround(cc);
+		var cell0 = this.mouseCell;
+		this.mouseCell = bd.newObject(bd.CELL);
+		pc.paintCellAround(cell0);
 	},
 
 	inputcell_shugaku : function(){
-		var cc = this.cellid();
-		if(cc===null || cc===this.mouseCell || bd.isNum(cc)){ return;}
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
 		if(this.inputData===null){
-			if     (bd.QaC(cc)===1){ this.inputData = 2;}
-			else if(bd.QsC(cc)===1){ this.inputData = 3;}
+			if     (cell.getQans()===1){ this.inputData = 2;}
+			else if(cell.getQsub()===1){ this.inputData = 3;}
 			else{ this.inputData = 1;}
 		}
-		this.changeHalf(cc);
-		this.mouseCell = cc; 
+		this.changeHalf(cell);
+		this.mouseCell = cell;
 
-		bd.sQaC(cc, (this.inputData==1?1:0));
-		bd.sQsC(cc, (this.inputData==2?1:0));
+		cell.setQans(this.inputData==1?1:0);
+		cell.setQsub(this.inputData==2?1:0);
 
-		pc.paintCellAround(cc);
+		pc.paintCellAround(cell);
 	},
 
-	changeHalf : function(cc){
-		var adj=null;
-		if     (bd.QaC(cc)===42 || bd.QaC(cc)===47){ adj=bd.up(cc);}
-		else if(bd.QaC(cc)===43 || bd.QaC(cc)===48){ adj=bd.dn(cc);}
-		else if(bd.QaC(cc)===44 || bd.QaC(cc)===49){ adj=bd.lt(cc);}
-		else if(bd.QaC(cc)===45 || bd.QaC(cc)===50){ adj=bd.rt(cc);}
+	changeHalf : function(cell){
+		var qa=cell.getQans(), adj=null;
+		if     (qa===42 || qa===47){ adj=cell.up();}
+		else if(qa===43 || qa===48){ adj=cell.dn();}
+		else if(qa===44 || qa===49){ adj=cell.lt();}
+		else if(qa===45 || qa===50){ adj=cell.rt();}
 
 		if     (adj===null){ /* nop */ }
-		else if(bd.QaC(adj)>=42 && bd.QaC(adj)<=45){ bd.sQaC(adj,41);}
-		else if(bd.QaC(adj)>=47 && bd.QaC(adj)<=50){ bd.sQaC(adj,46);}
+		else if(adj.getQans()>=42 && adj.getQans()<=45){ adj.setQans(41);}
+		else if(adj.getQans()>=47 && adj.getQans()<=50){ adj.setQans(46);}
 	},
 	currentTargetADJ : function(){
-		if(this.mouseCell===null){ return null;}
+		if(this.mouseCell.isnull){ return bd.newObject(bd.CELL);}
+		var cell = this.mouseCell;
 		switch(this.inputData){
-			case 2: return bd.up(this.mouseCell);
-			case 3: return bd.dn(this.mouseCell);
-			case 4: return bd.lt(this.mouseCell);
-			case 5: return bd.rt(this.mouseCell);
+			case 2: return cell.up();
+			case 3: return cell.dn();
+			case 4: return cell.lt();
+			case 5: return cell.rt();
 		}
-		return null;
+		return bd.newObject(bd.CELL);
 	}
 },
 
@@ -119,30 +119,32 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
-
+Cell:{
 	numberIsWhite : true,
 
 	maxnum : 4,
 	minnum : 0,
 
-	isPillow : function(c){
-		return (!!this.cell[c] && (this.cell[c].qans>=41 && this.cell[c].qans<=45));
-	},
-
+	isPillow : function(){ return (this.qans>=41 && this.qans<=45);}
+},
+Border:{
 	// 41～45:まくらありふとんマス 46～50:まくらなしふとんマス
 	// 42/47,43/48,44/49,45/50:それぞれ上・下・左・右だけ境界線がない
 	isbdh_cc1 : {41:1,42:1,44:1,45:1,46:1,47:1,49:1,50:1},
 	isbdh_cc2 : {41:1,43:1,44:1,45:1,46:1,48:1,49:1,50:1},
 	isbdv_cc1 : {41:1,42:1,43:1,44:1,46:1,47:1,48:1,49:1},
 	isbdv_cc2 : {41:1,42:1,43:1,45:1,46:1,47:1,48:1,50:1},
-	isBorder : function(id){
-		var qa1 = this.QaC(this.border[id].cellcc[0]);
-		var qa2 = this.QaC(this.border[id].cellcc[1]);
-		if(this.isVert(id)){ return (!!this.isbdv_cc1[qa1] || !!this.isbdv_cc2[qa2]);}
-		else               { return (!!this.isbdh_cc1[qa1] || !!this.isbdh_cc2[qa2]);}
+
+	isBorder : function(){
+		var qa1 = this.sidecell[0].qans;
+		var qa2 = this.sidecell[1].qans;
+		if(this.isVert()){ return (!!this.isbdv_cc1[qa1] || !!this.isbdv_cc2[qa2]);}
+		else             { return (!!this.isbdh_cc1[qa1] || !!this.isbdh_cc2[qa2]);}
 	}
+},
+
+Board:{
+	isborder : 1
 },
 
 AreaManager:{
@@ -160,7 +162,7 @@ MenuExec:{
 			default: return;
 		}
 		for(var c=0;c<bd.cellmax;c++){
-			var val=trans[bd.QaC(c)]; if(!!val){ bd.cell[c].qans=val;}
+			var val=trans[bd.cell[c].qans]; if(!!val){ bd.cell[c].qans=val;}
 		}
 	}
 },
@@ -197,7 +199,7 @@ Graphic:{
 	drawFutons : function(){
 		var g = this.vinc('cell_back', 'crispEdges');
 
-		var inputting=(mv.mouseCell!==null && mv.firstPoint.valid()), tc=null, adj=null;
+		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid()), tc=null, adj=null;
 		if(inputting){ // ふとん入力中
 			tc  = mv.mouseCell;
 			adj = mv.currentTargetADJ();
@@ -206,25 +208,25 @@ Graphic:{
 		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], isdraw = (bd.cell[c].qans>=41);
-			var color = (bd.cell[c].error===1 ? this.errbcolor1 : "white");
+			var cell = clist[i], isdraw = (cell.qans>=41);
+			var color = (cell.error===1 ? this.errbcolor1 : "white");
 			if(inputting){
-				if(c===tc || c===adj){ isdraw=true; color=this.targetbgcolor;}
+				if(cell===tc || cell===adj){ isdraw=true; color=this.targetbgcolor;}
 			}
 
 			if(isdraw){
 				g.fillStyle = color;
-				if(this.vnop(header+c,this.FILL)){
-					g.fillRect(this.cell[c].rpx+1, this.cell[c].rpy+1, this.cw-1, this.ch-1);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.fillRect(cell.rpx+1, cell.rpy+1, this.cw-1, this.ch-1);
 				}
 			}
-			else{ this.vhide(header+c);}
+			else{ this.vhide(header+cell.id);}
 		}
 	},
 	drawPillows : function(){
 		var g = this.vinc('cell_pillow', 'crispEdges');
 
-		var inputting=(mv.mouseCell!==null && mv.firstPoint.valid()), tc=null, adj=null;
+		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid()), tc=null, adj=null;
 		if(inputting){ // ふとん入力中
 			tc  = mv.mouseCell;
 			adj = mv.currentTargetADJ();
@@ -234,32 +236,32 @@ Graphic:{
 		var clist = this.range.cells;
 		var rw = this.bw*0.7-1, rh = this.bh*0.7-1;
 		for(var i=0;i<clist.length;i++){
-			var c = clist[i], isdraw = (bd.cell[c].qans>=41 && bd.cell[c].qans<=45);
+			var cell = clist[i], isdraw = (cell.qans>=41 && cell.qans<=45);
 			if(inputting){
-				if     (!isdraw && tc ===c){ isdraw = true;}
-				else if( isdraw && adj===c){ isdraw = false;}
+				if     (!isdraw && tc ===cell){ isdraw = true;}
+				else if( isdraw && adj===cell){ isdraw = false;}
 			}
 
 			if(isdraw){
 				g.lineWidth = 1;
 				g.strokeStyle = "black";
-				if     (inputting && tc===c) { g.fillStyle = this.targetbgcolor;}
-				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;   }
-				else                         { g.fillStyle = "white";}
+				if     (inputting && tc===cell){ g.fillStyle = this.targetbgcolor;}
+				else if(cell.error===1)        { g.fillStyle = this.errbcolor1;   }
+				else                           { g.fillStyle = "white";}
 
-				if(this.vnop(header+c,this.FILL)){
-					g.shapeRect(this.cell[c].px-rw, this.cell[c].py-rh, rw*2+1, rh*2+1);
+				if(this.vnop(header+cell.id,this.FILL)){
+					g.shapeRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
 				}
 			}
-			else{ this.vhide([header+c]);}
+			else{ this.vhide([header+cell.id]);}
 		}
 	},
 
 	getBorderColor : function(border){
-		var isdraw = bd.isBorder(border.id);
+		var isdraw = border.isBorder();
 
-		if(mv.mouseCell!==null && mv.firstPoint.valid()){ // ふとん入力中
-			var cc1 = border.cellcc[0], cc2 = border.cellcc[1];
+		if(!mv.mouseCell.isnull && mv.firstPoint.valid()){ // ふとん入力中
+			var cc1 = border.sidecell[0], cc2 = border.sidecell[1];
 			var tc = mv.mouseCell, adj = mv.currentTargetADJ();
 			var istc  = (cc1===tc  || cc2===tc);
 			var isadj = (cc1===adj || cc2===adj);
@@ -342,15 +344,15 @@ AnsCheck:{
 			this.setAlert('北枕になっている布団があります。', 'There is a \'Kita-makura\' futon.'); return false;
 		}
 
-		if( !this.check2x2Block( function(c){ return bd.isBlack(c);} ) ){
+		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.isPillow(c);},2) ){
+		if( !this.checkDir4Cell(function(cell){ return cell.isPillow();},2) ){
 			this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.QaC(c)===41||bd.QaC(c)===46);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.getQans()===41||cell.getQans()===46);}) ){
 			this.setAlert('布団が2マスになっていません。', 'There is a half-size futon.'); return false;
 		}
 
@@ -362,11 +364,11 @@ AnsCheck:{
 			this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 		}
 
-		if( !this.checkDir4Cell(function(c){ return bd.isPillow(c);},1) ){
+		if( !this.checkDir4Cell(function(cell){ return cell.isPillow();},1) ){
 			this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
 		}
 
-		if( !this.checkAllCell(function(c){ return (bd.noNum(c) && bd.QaC(c)===0);}) ){
+		if( !this.checkAllCell(function(cell){ return (cell.noNum() && cell.getQans()===0);}) ){
 			this.setAlert('布団でも黒マスでもないマスがあります。', 'There is an empty cell.'); return false;
 		}
 
@@ -376,9 +378,11 @@ AnsCheck:{
 	checkKitamakura : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.QaC(c)===43){
+			var cell = bd.cell[c];
+			if(cell.getQans()===43){
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,bd.dn(c)],1);
+				cell.seterr(1);
+				cell.dn().seterr(1);
 				result = false;
 			}
 		}
@@ -388,21 +392,23 @@ AnsCheck:{
 	checkFutonAisle : function(){
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
-			if(bd.isNum(c)){ continue;}
+			var cell = bd.cell[c];
+			if(cell.isNum()){ continue;}
 
 			var adj=null;
-			switch(bd.QaC(c)){
-				case 42: adj = bd.up(c); break;
-				case 43: adj = bd.dn(c); break;
-				case 44: adj = bd.lt(c); break;
-				case 45: adj = bd.rt(c); break;
+			switch(cell.getQans()){
+				case 42: adj = cell.up(); break;
+				case 43: adj = cell.dn(); break;
+				case 44: adj = cell.lt(); break;
+				case 45: adj = cell.rt(); break;
 				default: continue;
 			}
-			if( bd.countDir4Cell(c  ,function(c){ return bd.isBlack(c);})===0 &&
-				bd.countDir4Cell(adj,function(c){ return bd.isBlack(c);})===0 )
+			if( cell.countDir4Cell(function(cell){ return cell.isBlack();})===0 &&
+				adj .countDir4Cell(function(cell){ return cell.isBlack();})===0 )
 			{
 				if(this.inAutoCheck){ return false;}
-				bd.sErC([c,adj],1);
+				cell.seterr(1);
+				adj.seterr(1);
 				result = false;
 			}
 		}
