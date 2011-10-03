@@ -90,28 +90,29 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var excell0 = tc.getTEC(), tcp = tc.getTCP();
-		var flag = true;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = bd.NDIR;
 
 		if     (ca===this.KEYUP){
 			if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.miny;}
-			else if(tcp.y>tc.miny){ tc.decTCY(2);}else{ flag=false;}
+			else if(tcp.y>tc.miny){ dir=bd.UP;}else{ flag=false;}
 		}
 		else if(ca===this.KEYDN){
 			if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.maxy;}
-			else if(tcp.y<tc.maxy){ tc.incTCY(2);}else{ flag=false;}
+			else if(tcp.y<tc.maxy){ dir=bd.DN;}else{ flag=false;}
 		}
 		else if(ca===this.KEYLT){
 			if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.minx;}
-			else if(tcp.x>tc.minx){ tc.decTCX(2);}else{ flag=false;}
+			else if(tcp.x>tc.minx){ dir=bd.LT;}else{ flag=false;}
 		}
 		else if(ca===this.KEYRT){
 			if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.maxx;}
-			else if(tcp.x<tc.maxx){ tc.incTCX(2);}else{ flag=false;}
+			else if(tcp.x<tc.maxx){ dir=bd.RT;}else{ flag=false;}
 		}
 		else{ flag=false;}
 
 		if(flag){
+			if(dir!==bd.NDIR){ tc.pos.movedir(dir,2);}
+
 			excell0.draw();
 			tc.getTCP().draw();
 			this.tcMoved = true;

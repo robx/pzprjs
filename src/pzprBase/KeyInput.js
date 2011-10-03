@@ -206,20 +206,22 @@ pzprv3.createCommonClass('KeyEvent',
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcp = tc.getTCP(), flag = false;
+		var tcp = tc.getTCP(), dir = bd.BDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.y-mv>=tc.miny){ tc.decTCY(mv); flag = true;} break;
-			case this.KEYDN: if(tcp.y+mv<=tc.maxy){ tc.incTCY(mv); flag = true;} break;
-			case this.KEYLT: if(tcp.x-mv>=tc.minx){ tc.decTCX(mv); flag = true;} break;
-			case this.KEYRT: if(tcp.x+mv<=tc.maxx){ tc.incTCX(mv); flag = true;} break;
+			case this.KEYUP: if(tcp.y-mv>=tc.miny){ dir = bd.UP;} break;
+			case this.KEYDN: if(tcp.y+mv<=tc.maxy){ dir = bd.DN;} break;
+			case this.KEYLT: if(tcp.x-mv>=tc.minx){ dir = bd.LT;} break;
+			case this.KEYRT: if(tcp.x+mv<=tc.maxx){ dir = bd.RT;} break;
+			default: return false;
 		}
 
-		if(flag){
-			tcp.draw();
-			tc.getTCP().draw();
-			this.tcMoved = true;
-		}
-		return flag;
+		tc.movedir_cursor(dir,mv);
+
+		tcp.draw();
+		tc.getTCP().draw();
+		this.tcMoved = true;
+
+		return true;
 	},
 
 	//---------------------------------------------------------------------------
@@ -596,12 +598,11 @@ pzprv3.createCommonClass('TargetCursor',
 	adjust_modechange : function(){ },
 
 	//---------------------------------------------------------------------------
-	// tc.incTCX(), incTCY(), decTCX(), decTCY() ターゲットの位置を動かす
+	// tc.movedir_cursor() ターゲットの位置を動かす
 	//---------------------------------------------------------------------------
-	incTCX : function(mv){ this.pos.x+=mv;},
-	incTCY : function(mv){ this.pos.y+=mv;},
-	decTCX : function(mv){ this.pos.x-=mv;},
-	decTCY : function(mv){ this.pos.y-=mv;},
+	movedir_cursor : function(dir,mv){
+		this.pos.movedir(dir,mv);
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する

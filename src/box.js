@@ -38,20 +38,24 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = false;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = bd.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ tc.decTCY(2); flag=true;} break;
-			case this.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ tc.incTCY(2); flag=true;} break;
-			case this.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ tc.decTCX(2); flag=true;} break;
-			case this.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ tc.incTCX(2); flag=true;} break;
+			case this.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ dir=bd.UP;} break;
+			case this.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ dir=bd.DN;} break;
+			case this.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ dir=bd.LT;} break;
+			case this.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ dir=bd.RT;} break;
 		}
 
-		if(flag){
+		if(dir!==bd.NDIR){
+			tc.pos.movedir(dir,2);
+
 			excell0.draw();
 			tc.getTCP().draw();
 			this.tcMoved = true;
+
+			return true;
 		}
-		return flag;
+		return false;
 	},
 
 	keyinput : function(ca){

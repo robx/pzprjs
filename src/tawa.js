@@ -55,19 +55,18 @@ TargetCursor:{
 			this.pos.x++;
 		}
 	},
-	setTCC : function(cell){
-		if(id<0 || bd.cellmax<=id){ return;}
-		this.pos = cell.getaddr();
-	},
-	incTCY : function(mv){
-		this.pos.y+=mv;
-		if(this.pos.x===this.minx || (this.pos.x<this.maxx && (this.pos.y&2)===2)){ this.pos.x++;}
-		else{ this.pos.x--;}
-	},
-	decTCY : function(mv){
-		this.pos.y-=mv;
-		if(this.pos.x===this.maxx || (this.pos.x>this.minx && (this.pos.y&2)===0)){ this.pos.x--;}
-		else{ this.pos.x++;}
+
+	movedir_cursor : function(dir,mv){
+		this.pos.movedir(dir,mv);
+
+		if(dir===bd.UP){
+			if(this.pos.x===this.maxx || (this.pos.x>this.minx && (this.pos.y&2)===0)){ this.pos.x--;}
+			else{ this.pos.x++;}
+		}
+		else if(dir===bd.DN){
+			if(this.pos.x===this.minx || (this.pos.x<this.maxx && (this.pos.y&2)===2)){ this.pos.x++;}
+			else{ this.pos.x--;}
+		}
 	}
 },
 

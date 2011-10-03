@@ -71,19 +71,19 @@ KeyEvent:{
 		var cell = tc.getTCC();
 		if(cell.isnull){ return;}
 
-		var nc, nb, move, flag;
+		var nc, nb, dir=bd.NDIR;
 		switch(ca){
-			case this.KEYUP: nc=cell.up(); nb=cell.ub(); move=function(){ tc.decTCY(2);}; break;
-			case this.KEYDN: nc=cell.dn(); nb=cell.db(); move=function(){ tc.incTCY(2);}; break;
-			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); move=function(){ tc.decTCX(2);}; break;
-			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); move=function(){ tc.incTCX(2);}; break;
+			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=bd.UP; break;
+			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=bd.DN; break;
+			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=bd.LT; break;
+			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=bd.RT; break;
 			default: return;
 		}
 		if(!nc.isnull){
 			this.tcMoved = (this.isCTRL || this.isX || this.isZ);
-			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); move();}}
-			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));          }}
-			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          move();}}
+			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); tc.pos.movedir(dir,2);}}
+			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                         }}
+			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          tc.pos.movedir(dir,2);}}
 
 			if(this.tcMoved){ cell.draw();}
 		}
