@@ -91,7 +91,8 @@
 		wagiri     : 'ごきげんななめ・輪切',
 		wblink     : 'シロクロリンク',
 		yajikazu   : 'やじさんかずさん',
-		yajirin    : 'ヤジリン'
+		yajirin    : 'ヤジリン',
+		yajitatami : 'ヤジタタミ'
 	},
 	/* 英語のパズル名 */
 	en : {
@@ -185,7 +186,8 @@
 		wagiri     : 'Gokigen-naname:wagiri',
 		wblink     : 'Shirokuro-link',
 		yajikazu   : 'Yajisan-Kazusan',
-		yajirin    : 'Yajilin'
+		yajirin    : 'Yajilin',
+		yajitatami : 'Yajitatami'
 	},
 	/* 別名 */
 	alias : {
