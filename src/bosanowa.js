@@ -10,7 +10,7 @@ MouseEvent:{
 
 	inputqnum_bosanowa : function(){
 		var pos = this.borderpos(0.31);
-		if(!bd.isinside(pos.bx,pos.by)){ return;}
+		if(!pos.isinside()){ return;}
 
 		var tcp = tc.getTCP();
 		if(tcp.equals(pos)){

@@ -651,6 +651,14 @@ pzprv3.createCommonClass('Address',
 	draw : function(){
 		pc.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
+
+	//---------------------------------------------------------------------------
+	// pos.isinside() ‚±‚ÌêŠ‚ª”Õ–Ê“à‚©‚Ç‚¤‚©”»’f‚·‚é
+	//---------------------------------------------------------------------------
+	isinside : function(){
+		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
+				this.by>=bd.minby && this.by<=bd.maxby);
+	}
 });
 
 //----------------------------------------------------------------------------

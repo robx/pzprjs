@@ -16,7 +16,7 @@ MouseEvent:{
 	getcell : function(){
 		var pos = this.borderpos(0);
 		if(this.inputY%pc.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
-		if(!bd.isinside(pos.bx,pos.by)){ return bd.newObject(bd.CELL);}
+		if(!pos.isinside()){ return bd.newObject(bd.CELL);}
 
 		var cand = pos.getc();
 		return (!cand.isnull ? cand : pos.move(1,0).getc());

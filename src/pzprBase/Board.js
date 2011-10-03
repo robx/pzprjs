@@ -271,7 +271,6 @@ pzprv3.createCommonClass('Board',
 
 	//---------------------------------------------------------------------------
 	// bd.setminmax()   盤面のbx,byの最小値/最大値をセットする
-	// bd.isinside()    指定された(bx,by)が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	setminmax : function(){
 		var extUL = (this.isexcell===1 || this.isexcell===2);
@@ -282,9 +281,6 @@ pzprv3.createCommonClass('Board',
 		this.maxby = (!extDR ? 2*this.qrows : 2*this.qrows+2);
 
 		tc.setminmax();
-	},
-	isinside : function(bx,by){
-		return (bx>=this.minbx && bx<=this.maxbx && by>=this.minby && by<=this.maxby);
 	},
 
 	//---------------------------------------------------------------------------

@@ -32,7 +32,7 @@ MouseEvent:{
 	},
 	inputmark_mouseup : function(){
 		var pos = this.borderpos(0.33);
-		if(!bd.isinside(pos.bx,pos.by)){ return;}
+		if(!pos.isinside()){ return;}
 
 		if(!tc.pos.equals(pos)){
 			var tcp = tc.getTCP(), flag = false;
