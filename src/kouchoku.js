@@ -310,26 +310,24 @@ OperationManager:{
 	}
 },
 
-MenuExec:{
-	irowakeRemake : function(){
-		bd.segs.newIrowake();
-		if(pp.getVal('irowake')){ pc.paintAll();}
-	}
-},
-
 Menu:{
 	disable_subclear : true,
 
 	menufix : function(){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
-		pp.funcs['circolor'] = function(){ pc.paintAll();};
+		this.funcs['circolor'] = function(){ pc.paintAll();};
 
 		pp.addCheck('enline','setting',true,'線は点の間','Line between points');
 		pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
 
 		pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
 		pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
+	},
+
+	irowakeRemake : function(){
+		bd.segs.newIrowake();
+		if(pp.getVal('irowake')){ pc.paintAll();}
 	}
 },
 

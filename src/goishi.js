@@ -143,7 +143,6 @@ Menu:{
 		if(pzprv3.EDITOR){
 			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
 			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
-			pp.funcs['bdpadding'] = function(){ };
 		}
 	},
 },

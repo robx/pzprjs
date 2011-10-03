@@ -98,7 +98,7 @@ pzprv3.debug.extend({
 
 			document.urlinput.ta.value = enc.pzloutput(pzprv3.KANPEN);
 			menu.pop = ee("pop1_5");
-			menu.ex.urlinput({});
+			menu.urlinput({});
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}

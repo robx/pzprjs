@@ -48,19 +48,6 @@ Board:{
 	qrows : 9
 },
 
-MenuExec:{
-	newboard : function(e){
-		if(menu.pop){
-			var col, row, _doc=document;
-			if     (_doc.newboard.size[1].checked){ col=row=16;}
-			else if(_doc.newboard.size[2].checked){ col=row=25;}
-			else if(_doc.newboard.size[3].checked){ col=row= 4;}
-			else                                  { col=row= 9;}
-			this.newboard_open(col+'/'+row);
-		}
-	}
-},
-
 Menu:{
 	menuinit : function(){
 		this.newboard_html_original = document.newboard.innerHTML;
@@ -80,6 +67,17 @@ Menu:{
 		document.newboard.innerHTML = this.newboard_html_original;
 
 		this.SuperFunc.menureset.call(this);
+	},
+
+	newboard : function(e){
+		if(this.pop){
+			var col, row, _doc=document;
+			if     (_doc.newboard.size[1].checked){ col=row=16;}
+			else if(_doc.newboard.size[2].checked){ col=row=25;}
+			else if(_doc.newboard.size[3].checked){ col=row= 4;}
+			else                                  { col=row= 9;}
+			this.newboard_open(col+'/'+row);
+		}
 	}
 },
 

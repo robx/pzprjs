@@ -145,7 +145,7 @@ Menu:{
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
 
-		pp.funcs['circolor'] = function(){ pc.paintAll();};
+		this.funcs['circolor'] = function(){ pc.paintAll();};
 	}
 },
 

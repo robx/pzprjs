@@ -84,15 +84,6 @@ LineManager:{
 	borderAsLine : true
 },
 
-MenuExec:{
-	modechange : function(num){
-		this.SuperFunc.modechange.call(this,num);
-
-		ee('ck_bgcolor').el.disabled    = (num===3?"":"true");
-		ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
-	}
-},
-
 Menu:{
 	menufix : function(){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
@@ -105,6 +96,13 @@ Menu:{
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";
 		}
+	},
+
+	modechange : function(num){
+		this.SuperFunc.modechange.call(this,num);
+
+		ee('ck_bgcolor').el.disabled    = (num===3?"":"true");
+		ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
 	}
 },
 

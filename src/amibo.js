@@ -227,7 +227,7 @@ AreaManager:{
 	}
 },
 
-MenuExec:{
+Menu:{
 	irowakeRemake : function(){
 		bd.areas.barinfo.newIrowake();
 		if(pp.getVal('irowake')){ pc.paintAll();}

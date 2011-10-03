@@ -148,7 +148,7 @@ Menu:{
 		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
 		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
-		pp.funcs['disptype'] = function(num){
+		this.funcs['disptype'] = function(num){
 			pc.suspendAll();
 			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}

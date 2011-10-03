@@ -47,7 +47,7 @@ Menu:{
 
 		pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
 		pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
-		pp.funcs['plred'] = function(){ pc.paintAll();};
+		this.funcs['plred'] = function(){ pc.paintAll();};
 	}
 },
 

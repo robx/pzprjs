@@ -18,4 +18,3 @@ document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/DataBase.j
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Answer.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Undo.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/Menu.js\"></script>");
-document.writeln("<script type=\"text/javascript\" src=\"src/pzprBase/MenuExec.js\"></script>");

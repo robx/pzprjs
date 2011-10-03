@@ -214,46 +214,13 @@ Board:{
 	}
 },
 
-MenuExec:{
-	// 新規作成で選ぶ時に用いる関数・変数など
-	clap : 3,
-	clicklap : function(e){
-		this.selectlap(ee.getSrcElement(e).id.charAt(2));
-	},
-	selectlap : function(num){
-		ee("nb"+this.clap).parent.style.backgroundColor = '';
-		ee("nb"+num).parent.style.backgroundColor = 'red';
-		this.clap = num;
-	},
-
-	newboard_show : function(){		// "新規盤面作成"を表示するとき
-		menu.pop = ee("pop1_1");
-		this.selectlap([0,2,3,1][bd.lap]);
-		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
-		document.newboard.row.value = bd.qrows;
-		kc.enableKey = false;
-	},
-	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
-		if(menu.pop){
-			var col = ((parseInt(document.newboard.col.value))|0);
-			var row = ((parseInt(document.newboard.row.value))|0);
-			var slap = [0,3,1,2][this.clap];
-
-			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
-				if(slap==3){ col--;}
-
-				this.newboard_open(col+'/'+row+'/'+slap);
-			}
-			menu.popclose();
-		}
-	}
-},
-
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
 		this.addLabels(ee('pop1_1_cap1x').el, "横幅 (黄色の数)", "Width (Yellows)");
 		this.addLabels(ee('pop1_1_cap2x').el, "高さ",            "Height");
+
+		this.funcs.newboard = function(){ menu.newboard_show();};
 	},
 
 	menuinit : function(){
@@ -278,7 +245,7 @@ Menu:{
 			var _img = ee('nb'+i).el;
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			ee.addEvent(_img, "click", ee.ebinder(menu.ex, menu.ex.clicklap));
+			ee.addEvent(_img, "click", ee.ebinder(menu, menu.clicklap));
 			_img.parentNode.style.display = 'block';
 		}
 
@@ -294,12 +261,39 @@ Menu:{
 		document.flip.turnr.disabled = false;
 
 		this.SuperFunc.menureset.call(this);
-	}
-},
-Properties:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		this.funcs.newboard = function(){ menu.ex.newboard_show();};
+	},
+
+	// 新規作成で選ぶ時に用いる関数・変数など
+	clap : 3,
+	clicklap : function(e){
+		this.selectlap(ee.getSrcElement(e).id.charAt(2));
+	},
+	selectlap : function(num){
+		ee("nb"+this.clap).parent.style.backgroundColor = '';
+		ee("nb"+num).parent.style.backgroundColor = 'red';
+		this.clap = num;
+	},
+
+	newboard_show : function(){		// "新規盤面作成"を表示するとき
+		this.pop = ee("pop1_1");
+		this.selectlap([0,2,3,1][bd.lap]);
+		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
+		document.newboard.row.value = bd.qrows;
+		kc.enableKey = false;
+	},
+	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
+		if(this.pop){
+			var col = ((parseInt(document.newboard.col.value))|0);
+			var row = ((parseInt(document.newboard.row.value))|0);
+			var slap = [0,3,1,2][this.clap];
+
+			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
+				if(slap==3){ col--;}
+
+				this.newboard_open(col+'/'+row+'/'+slap);
+			}
+			this.popclose();
+		}
 	}
 },
 

@@ -63,7 +63,7 @@ Menu:{
 	menufix : function(){
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
 		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
-		pp.funcs['uramashu'] = function(){
+		this.funcs['uramashu'] = function(){
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if     (cell.getQnum()===1){ cell.setQnum(2);}

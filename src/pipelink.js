@@ -115,22 +115,19 @@ Menu:{
 
 			pp.addChild('disptype_1', 'disptype', '○', 'Circle');
 			pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
-			pp.funcs['disptype'] = function(num){
+			this.funcs['disptype'] = function(num){
 				if     (num==1){ ee('btncircle').el.value="○";}
 				else if(num==2){ ee('btncircle').el.value="■";}
 				pc.paintAll();
 			};
-			this.ex.toggledisp = function(){ pp.setVal('disptype', (pp.getVal('disptype')==1?2:1));};
+			this.toggledisp = function(){ pp.setVal('disptype', (pp.getVal('disptype')==1?2:1));};
 			
 			var el = ee.createEL(this.EL_BUTTON, 'btncircle');
-			this.addButtons(el, ee.binder(this.ex, this.ex.toggledisp), "○", "○");
+			this.addButtons(el, ee.binder(this, this.toggledisp), "○", "○");
 			ee('btnarea').appendEL(el);
-		}
-	},
 
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
-		pp.funcs['disptype']();
+			this.funcs['disptype'].call(this);
+		}
 	}
 },
 

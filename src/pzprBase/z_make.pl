@@ -52,8 +52,7 @@ sub output_pzprBase{
 		'DataBase.js',
 		'Answer.js',
 		'Undo.js',
-		'Menu.js',
-		'MenuExec.js'
+		'Menu.js'
 	);
 
 	open OUT, ">pzprBase_body_Full.js";

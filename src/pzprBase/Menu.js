@@ -19,10 +19,12 @@ pzprv3.createCommonClass('Menu',
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
-		this.ex = this.owner.newInstance('MenuExec');	// MenuExecオブジェクト用
-
 		var pid = this.owner.pid, pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
+
+		this.displaymanage = true;
+
+		this.reader;	// FileReaderオブジェクト
 
 		// ElementTemplate : メニュー領域
 		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
@@ -58,13 +60,30 @@ pzprv3.createCommonClass('Menu',
 	disable_subclear : false, // "補助消去"ボタンを作らない
 	enableSaveImage  : false, // 画像保存が有効か
 
+	fileio : (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
+	enableReadText : false,
+
 	//---------------------------------------------------------------------------
 	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
 	//                   管理領域、ポップアップメニューの初期設定を行う
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
-		this.ex.init();
+		if(typeof FileReader == 'undefined'){
+			this.reader = null;
+
+			if(typeof FileList != 'undefined' &&
+			   typeof File.prototype.getAsText != 'undefined')
+			{
+				this.enableGetText = true;
+			}
+		}
+		else{
+			this.reader = new FileReader();
+			this.reader.onload = ee.ebinder(this, function(e){
+				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
+			});
+		}
 
 		if(!!ee("divques_sub").el.getContext){
 			this.enableSaveImage = true;
@@ -617,7 +636,7 @@ pzprv3.createCommonClass('Menu',
 		if(pc.irowake){
 			// 横にくっつけたいボタンを追加
 			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
-			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
 			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
 
 			// 色分けのやつを一番下に持ってくる
@@ -630,7 +649,7 @@ pzprv3.createCommonClass('Menu',
 			ee('timerpanel').el.style.display = 'none';
 			ee('separator2').el.style.display = 'none';
 		}
-		if(!!ee('ck_keypopup')){ pp.funcs.keypopup();}
+		if(!!ee('ck_keypopup')){ this.funcs.keypopup.call(this);}
 
 		// (Canvas下) ボタンの初期設定
 		ee.createEL(this.EL_UBUTTON, 'btncheck');
@@ -643,7 +662,7 @@ pzprv3.createCommonClass('Menu',
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),           "戻",       "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),           "進",       "->");
-		this.addButtons(ee("btnclear").el,  ee.binder(menu.ex, menu.ex.ACconfirm), "回答消去", "Erase Answer");
+		this.addButtons(ee("btnclear").el,  ee.binder(this, this.ACconfirm), "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
 		ee('btnundo').el.disabled = true;
@@ -651,12 +670,12 @@ pzprv3.createCommonClass('Menu',
 
 		if(!this.disable_subclear){
 			ee.createEL(this.EL_UBUTTON, 'btnclear2');
-			this.addButtons(ee("btnclear2").el, ee.binder(menu.ex, menu.ex.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+			this.addButtons(ee("btnclear2").el, ee.binder(this, this.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 		}
 
 		if(pc.irowake!=0){
 			var el = ee.createEL(this.EL_UBUTTON, 'btncolor2');
-			this.addButtons(el, ee.binder(menu.ex, menu.ex.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 	},
@@ -712,7 +731,7 @@ pzprv3.createCommonClass('Menu',
 		var func = null;
 
 		// 盤面の新規作成 -----------------------------------------------------
-		func = ee.ebinder(this.ex, this.ex.newboard);
+		func = ee.ebinder(this, this.newboard);
 		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
 		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
 		if(this.owner.pid!=='sudoku' && this.owner.pid!=='tawa'){
@@ -723,18 +742,18 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.newboard.cancel,   close, "キャンセル", "Cancel");
 
 		// URL入力 ------------------------------------------------------------
-		func = ee.ebinder(this.ex, this.ex.urlinput);
+		func = ee.ebinder(this, this.urlinput);
 		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
 		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
 		btn(_doc.urlinput.urlinput, func,  "読み込む",   "Import");
 		btn(_doc.urlinput.cancel,   close, "キャンセル", "Cancel");
 
 		// URL出力 ------------------------------------------------------------
-		func = ee.ebinder(this.ex, this.ex.urloutput);
+		func = ee.ebinder(this, this.urloutput);
 		lab(ee('bar1_3').el, "URL出力", "Export URL");
-		var btt = function(name, strJP, strEN, eval){
+		var self=this, btt = function(name, strJP, strEN, eval){
 			if(eval===false){ return;}
-			var el = ee.createEL(menu.EL_BUTTON,''); el.name = name;
+			var el = ee.createEL(self.EL_BUTTON,''); el.name = name;
 			ee('urlbuttonarea').appendEL(el).appendBR();
 			btn(el, func, strJP, strEN);
 		};
@@ -745,12 +764,12 @@ pzprv3.createCommonClass('Menu',
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (this.owner.pid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
-		func = ee.ebinder(this.ex, this.ex.openurl);
+		func = ee.ebinder(this, this.openurl);
 		btn(_doc.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
 		btn(_doc.urloutput.close,   close, "閉じる", "Close");
 
 		// ファイル入力 -------------------------------------------------------
-		func = ee.ebinder(this.ex, this.ex.fileopen);
+		func = ee.ebinder(this, this.fileopen);
 		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
 		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
 		_doc.fileform.filebox.onchange = func;
@@ -772,7 +791,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.database.close,    close, "閉じる",             "Close");
 
 		// 盤面の調整 ---------------------------------------------------------
-		func = ee.ebinder(this.ex, this.ex.popupadjust);
+		func = ee.ebinder(this, this.popupadjust);
 		lab(ee('bar2_1').el,      "盤面の調整",             "Board Dimension Resizer");
 		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
 		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
@@ -803,7 +822,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
-		func = ee.ebinder(this, this.ex.dispsize);
+		func = ee.ebinder(this, this.dispsize);
 		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
 		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
 		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
@@ -825,7 +844,7 @@ pzprv3.createCommonClass('Menu',
 		this.popclose();
 
 		// この中でmenu.popも設定されます。
-		if(pp.funcs[idname]){ pp.funcs[idname]();}
+		if(this.funcs[idname]){ this.funcs[idname].call(this);}
 
 		// ポップアップメニューを表示する
 		if(this.pop){
@@ -936,194 +955,57 @@ pzprv3.createCommonClass('Menu',
 		this.displayTitle();
 
 		this.displayAll();
-		this.ex.dispmanstr();
+		this.dispmanstr();
 
 		pc.forceRedraw();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
-	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);}
-});
-
-//--------------------------------------------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-// ★Propertiesクラス 設定値の値などを保持する
-//---------------------------------------------------------------------------
-pzprv3.createCommonClass('Properties',
-{
-	initialize : function(){
-		this.flags    = [];	// サブメニュー項目の情報(オブジェクトの配列になる)
-		this.flaglist = [];	// idnameの配列
-	},
-
-	// 定数
-	MENU     : 6,
-	SPARENT  : 7,
-	SPARENT2 : 8,
-	SMENU    : 0,
-	SELECT   : 1,
-	CHECK    : 2,
-	LABEL    : 3,
-	CHILD    : 4,
-	SEPARATE : 5,
-
-	//---------------------------------------------------------------------------
-	// pp.reset()      再読み込みを行うときに初期化を行う
-	//---------------------------------------------------------------------------
-	reset : function(){
-		this.flags    = [];
-		this.flaglist = [];
-	},
-
-	//---------------------------------------------------------------------------
-	// pp.addMenu()      メニュー最上位の情報を登録する
-	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
-	// pp.addSParent2()  フロートメニューを開くサブメニュー項目を登録する
-	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
-	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
-	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
-	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
-	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
-	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
-	// pp.addFlagOnly()  情報のみを登録する
-	//---------------------------------------------------------------------------
-	addMenu : function(idname, strJP, strEN){
-		this.addFlags(idname, '', this.MENU, null, strJP, strEN);
-	},
-	addSParent : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
-	},
-	addSParent2 : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SPARENT2, null, strJP, strEN);
-	},
-
-	addSmenu : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SMENU, null, strJP, strEN);
-	},
-
-	addCaption : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.LABEL, null, strJP, strEN);
-	},
-	addSeparator : function(idname, parent){
-		this.addFlags(idname, parent, this.SEPARATE, null, '', '');
-	},
-
-	addCheck : function(idname, parent, first, strJP, strEN){
-		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
-	},
-	addSelect : function(idname, parent, first, child, strJP, strEN){
-		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
-		this.flags[idname].child = child;
-	},
-	addChild : function(idname, parent, strJP, strEN){
-		var list = idname.split("_");
-		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
-	},
-
-	addFlagOnly : function(idname, first){
-		this.addFlags(idname, '', '', first, '', '');
-	},
-
-	//---------------------------------------------------------------------------
-	// pp.addFlags()  上記関数の内部共通処理
-	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
-	//---------------------------------------------------------------------------
-	addFlags : function(idname, parent, type, first, strJP, strEN){
-		this.flags[idname] = {
-			id     : idname,
-			type   : type,
-			val    : first,
-			parent : parent,
-			str : {
-				ja : { menu:strJP, label:''},
-				en : { menu:strEN, label:''}
-			}
-		};
-		this.flaglist.push(idname);
-	},
-
-	setLabel : function(idname, strJP, strEN){
-		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.label = strJP;
-		this.flags[idname].str.en.label = strEN;
-	},
-
-	//---------------------------------------------------------------------------
-	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
-	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
-	// pp.type()       設定値のサブメニュータイプを返す
-	// pp.haschild()   サブメニューがあるかどうか調べる
-	//
-	// pp.getVal()     各フラグのvalの値を返す
-	// pp.setVal()     各フラグの設定値を設定する
-	// pp.setValOnly() 各フラグの設定値を設定する。設定時に実行される関数は呼ばない
-	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
-	type       : function(idname){ return this.flags[idname].type;},
-	haschild   : function(idname){
-		var flag = this.flags[idname];
-		if(!flag){ return false;}
-		var type = flag.type;
-		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
-	},
-
-	getVal : function(idname){ return this.flags[idname]?this.flags[idname].val:null;},
-	setVal : function(idname, newval, isexecfunc){
-		if(!!this.flags[idname] && (this.flags[idname].type===this.CHECK ||
-									this.flags[idname].type===this.SELECT))
-		{
-			this.flags[idname].val = newval;
-			menu.setdisplay(idname);
-			if(this.funcs[idname] && isexecfunc!==false){ this.funcs[idname](newval);}
-		}
-	},
-	setValOnly : function(idname, newval){ this.setVal(idname, newval, false);},
+	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);},
 
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ menu.pop = ee("pop1_2");},
-		urloutput : function(){ menu.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
-		fileopen  : function(){ menu.pop = ee("pop1_4");},
-		filesave  : function(){ menu.ex.filesave(fio.PZPR);},
-//		filesave3 : function(){ menu.ex.filesave(fio.PZPH);},
-		filesave2 : function(){ if(!!fio.kanpenSave){ menu.ex.filesave(fio.PBOX);}},
-		imagedl   : function(){ menu.ex.imagesave(true,null);},
-		imagesave : function(){ menu.ex.imagesave(false,null);},
-		database  : function(){ menu.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
+		urlinput  : function(){ this.pop = ee("pop1_2");},
+		urloutput : function(){ this.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
+		fileopen  : function(){ this.pop = ee("pop1_4");},
+		filesave  : function(){ this.filesave(fio.PZPR);},
+//		filesave3 : function(){ this.filesave(fio.PZPH);},
+		filesave2 : function(){ if(!!fio.kanpenSave){ this.filesave(fio.PBOX);}},
+		imagedl   : function(){ this.imagesave(true,null);},
+		imagesave : function(){ this.imagesave(false,null);},
+		database  : function(){ this.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
 
 		h_oldest  : function(){ um.undoall();},
 		h_undo    : function(){ um.undo(1);},
 		h_redo    : function(){ um.redo(1);},
 		h_latest  : function(){ um.redoall();},
 		check     : function(){ ans.check();},
-		ansclear  : function(){ menu.ex.ACconfirm();},
-		subclear  : function(){ menu.ex.ASconfirm();},
-		adjust    : function(){ menu.pop = ee("pop2_1");},
-		turn      : function(){ menu.pop = ee("pop2_2");},
-		duplicate : function(){ menu.ex.duplicate();},
+		ansclear  : function(){ this.ACconfirm();},
+		subclear  : function(){ this.ASconfirm();},
+		adjust    : function(){ this.pop = ee("pop2_1");},
+		turn      : function(){ this.pop = ee("pop2_2");},
+		duplicate : function(){ this.duplicate();},
 
-		credit    : function(){ menu.pop = ee("pop3_1");},
+		credit    : function(){ this.pop = ee("pop3_1");},
 		jumpexp   : function(){ window.open('./faq.html?'+this.owner.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
 		irowake   : function(){ pc.paintAll();},
 		cursor    : function(){ pc.paintAll();},
-		manarea   : function(){ menu.ex.dispman();},
+		manarea   : function(){ this.dispman();},
 		poptest   : function(){ pzprv3.debug.disppoptest();},
 
-		mode      : function(num){ menu.ex.modechange(num);},
-		text      : function(num){ menu.textsize(num); pc.forceRedraw();},
+		mode      : function(num){ this.modechange(num);},
+		text      : function(num){ this.textsize(num); pc.forceRedraw();},
 		size      : function(num){ pc.forceRedraw();},
 		repaint   : function(num){ pc.forceRedraw();},
 		adjsize   : function(num){ pc.forceRedraw();},
-		language  : function(str){ menu.setLang(str);},
+		language  : function(str){ this.setLang(str);},
 
 		newboard : function(){
-			menu.pop = ee("pop1_1");
+			this.pop = ee("pop1_1");
 			if(this.owner.pid!="sudoku"){
 				document.newboard.col.value = bd.qcols;
 				document.newboard.row.value = bd.qrows;
@@ -1131,7 +1013,7 @@ pzprv3.createCommonClass('Properties',
 			kc.enableKey = false;
 		},
 		dispsize : function(){
-			menu.pop = ee("pop4_1");
+			this.pop = ee("pop4_1");
 			document.dispsize.cs.value = pc.cellsize;
 			kc.enableKey = false;
 		},
@@ -1141,6 +1023,298 @@ pzprv3.createCommonClass('Properties',
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 
 			kc.display();
+		}
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------
+	// menu.modechange() モード変更時の処理を行う
+	//------------------------------------------------------------------------------
+	modechange : function(num){
+		this.owner.editmode = (num==1);
+		this.owner.playmode = (num==3);
+
+		kc.keyreset();
+		bd.errclear();
+		tc.adjust_modechange();
+		if(kc.haspanel[1] || kc.haspanel[3]){ this.funcs.keypopup.call(this);}
+
+		bd.haserror=true;
+		pc.paintAll();
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.newboard()       新規盤面を作成する
+	// menu.newboard_open()  新規盤面を作成する
+	//------------------------------------------------------------------------------
+	newboard : function(e){
+		if(this.pop){
+			var col = (parseInt(document.newboard.col.value))|0;
+			var row = (parseInt(document.newboard.row.value))|0;
+			if(!!col && !!row){ this.newboard_open(col+'/'+row);}
+		}
+	},
+	newboard_open : function(qdata){
+		this.popclose();
+
+		this.owner.importBoardData({id:this.owner.pid, qdata:qdata});
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.urlinput()   URLを入力する
+	// menu.urloutput()  URLを出力する
+	// menu.openurl()    「このURLを開く」を実行する
+	//------------------------------------------------------------------------------
+	urlinput : function(e){
+		if(this.pop){
+			this.popclose();
+
+			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
+			if(!!pzl.id){ this.owner.importBoardData(pzl);}
+		}
+	},
+	urloutput : function(e){
+		if(this.pop){
+			var _doc = document;
+			switch(ee.getSrcElement(e).name){
+				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(pzprv3.HEYAAPP); break;
+			}
+		}
+	},
+	openurl : function(e){
+		if(this.pop){
+			if(document.urloutput.ta.value!==''){
+				var win = window.open(document.urloutput.ta.value, '', '');
+			}
+		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.fileopen()   ファイルを開く
+	// menu.fileonload() File API用ファイルを開いたイベントの処理
+	// menu.filesave()   ファイルを保存する
+	//------------------------------------------------------------------------------
+	fileopen : function(e){
+		if(this.pop){ this.popclose();}
+		var _doc = document, fileEL = _doc.fileform.filebox;
+
+		if(!!this.reader || this.enableGetText){
+			var fitem = fileEL.files[0];
+			if(!fitem){ return;}
+
+			if(!!this.reader){ this.reader.readAsText(fitem);}
+			else             { this.fileonload(fitem.getAsText(''));}
+		}
+		else{
+			if(!fileEL.value){ return;}
+			_doc.fileform.action = this.fileio
+			_doc.fileform.submit();
+		}
+
+		_doc.fileform.reset();
+	},
+	fileonload : function(data){
+		var farray = data.split(/[\t\r\n\/]+/), fstr = "";
+		for(var i=0;i<farray.length;i++){
+			if(farray[i].match(/^http\:\/\//)){ break;}
+			fstr += (farray[i]+"/");
+		}
+
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.owner.pid);
+		this.owner.importBoardData({id:pid, fstr:fstr});
+
+		document.fileform.reset();
+		timer.reset();
+	},
+
+	filesave : function(ftype){
+		var fname = prompt("保存するファイル名を入力して下さい。", this.owner.pid+".txt");
+		if(!fname){ return;}
+		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
+
+		var _doc = document;
+		_doc.fileform2.filename.value = fname;
+
+		if     (navigator.platform.indexOf("Win")!==-1){ _doc.fileform2.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
+		else                                           { _doc.fileform2.platform.value = "Others";}
+
+		_doc.fileform2.ques.value   = fio.fileencode(ftype);
+		_doc.fileform2.urlstr.value = fio.history;
+		_doc.fileform2.operation.value = 'save';
+
+		_doc.fileform2.action = this.fileio
+		_doc.fileform2.submit();
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
+	//------------------------------------------------------------------------------
+	duplicate : function(){
+		var str = fio.fileencode(fio.PZPH);
+		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
+		if(!ee.br.Opera){
+			var old = sessionStorage['filedata'];
+			sessionStorage['filedata'] = (str+fio.history);
+			window.open(url,'');
+			if(!!old){ sessionStorage['filedata'] = old;}
+			else     { delete sessionStorage['filedata'];}
+		}
+		else{
+			localStorage['pzprv3_filedata'] = (str+fio.history);
+			window.open(url,'');
+		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.imagesave()   画像を保存する
+	// menu.submitimage() "画像をダウンロード"の処理ルーチン
+	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
+	//------------------------------------------------------------------------------
+	imagesave : function(isDL,cellsize){
+		var canvas_sv = this.owner.canvas;
+		try{
+			this.owner.canvas = ee('divques_sub').el;
+			var pc2 = this.owner.newInstance('Graphic');
+
+			// 設定値・変数をcanvas用のものに変更
+			pc2.suspendAll();
+			pc2.outputImage = true;
+			pc2.fillTextEmulate = false;
+			pc2.bdmargin = pc.bdmargin_image;
+			pc2.setcellsize = function(){
+				if(!cellsize){ cellsize = pc.cw;}
+				pc2.cw = cellsize;
+				pc2.ch = cellsize*(pc.ch/pc.cw);
+			};
+
+			// canvas要素の設定を適用して、再描画
+			pc2.resize_canvas();
+			pc2.unsuspend();
+
+			// canvasの描画内容をDataURLとして取得する
+			var url = pc2.currentContext.canvas.toDataURL();
+
+			if(isDL){ this.submitimage(url);}
+			else    { this.openimage(url);}
+		}
+		catch(e){
+			this.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
+		}
+		this.owner.canvas = canvas_sv;
+	},
+
+	submitimage : function(url){
+		var _doc = document;
+		_doc.fileform2.filename.value  = this.owner.pid+'.png';
+		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+		_doc.fileform2.operation.value = 'imagesave';
+
+		_doc.fileform2.action = this.fileio
+		_doc.fileform2.submit();
+	},
+	openimage : function(url){
+		if(!ee.br.IE9){
+			window.open(url, '', '');
+		}
+		else{
+			// IE9だとアドレスバーの長さが2KBだったり、
+			// そもそもDataURL入れても何も起こらなかったりする対策
+			var cdoc = window.open('', '', '').document;
+			cdoc.open();
+			cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
+			cdoc.writeln("<META CHARSET=\"utf-8\">");
+			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
+			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
+			cdoc.close();
+		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.dispsize()  Canvasでのマス目の表示サイズを変更する
+	//------------------------------------------------------------------------------
+	dispsize : function(e){
+		if(this.pop){
+			var csize = parseInt(document.dispsize.cs.value);
+			if(csize>0){ pc.cellsize = (csize|0);}
+
+			this.popclose();
+			pc.forceRedraw();	// Canvasを更新する
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
+	//---------------------------------------------------------------------------
+	irowakeRemake : function(){
+		bd.lines.newIrowake();
+		if(pp.getVal('irowake')){ pc.paintAll();}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.dispman()    管理領域を隠す/表示するが押された時に動作する
+	// menu.dispmanstr() 管理領域を隠す/表示するにどの文字列を表示するか
+	//------------------------------------------------------------------------------
+	dispman : function(e){
+		var idlist = ['usepanel','checkpanel'];
+		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
+
+		if(this.displaymanage){
+			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'none';}
+			if(pc.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			ee('menuboard').el.style.paddingBottom = '0pt';
+		}
+		else{
+			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'block';}
+			if(pc.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			ee('menuboard').el.style.paddingBottom = '8pt';
+		}
+		this.displaymanage = !this.displaymanage;
+		this.dispmanstr();
+
+		pc.forceRedraw();	// canvasの左上座標等を更新して再描画
+	},
+	dispmanstr : function(){
+		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = this.selectStr("管理領域を表示","Show management area");}
+		else                   { ee('ms_manarea').el.innerHTML = this.selectStr("管理領域を隠す","Hide management area");}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に実行条件をチェック
+	//------------------------------------------------------------------------------
+	popupadjust : function(e){
+		if(this.pop){
+			bd.execadjust(ee.getSrcElement(e).name);
+		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.ACconfirm()  「回答消去」ボタンを押したときの処理
+	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
+	//------------------------------------------------------------------------------
+	ACconfirm : function(){
+		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
+			um.newOperation(true);
+
+			bd.ansclear();
+			bd.resetInfo();
+			pc.paintAll();
+		}
+	},
+	ASconfirm : function(){
+		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
+			um.newOperation(true);
+
+			bd.subclear();
+			pc.paintAll();
 		}
 	}
 });
@@ -1211,7 +1385,7 @@ pzprv3.debug = {
 
 	fileopen : function(){
 		var dataarray = this.getTA().replace(/\//g,"[[slash]]").split("\n");
-		menu.ex.fileonload(dataarray.join("/"));
+		menu.fileonload(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -1251,7 +1425,7 @@ pzprv3.debug = {
 	},
 
 	loadperf : function(){
-		menu.ex.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
+		menu.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
 		pp.setVal('mode',3);
 		pp.setVal('irowake',true);
 	},
@@ -1263,7 +1437,7 @@ pzprv3.debug = {
 		else if(bd.qcols<= 8){ size = 24;}
 		else if(bd.qcols<= 9){ size = 21;}
 		else if(bd.qcols<=18){ size = 19;}
-		menu.ex.imagesave(false,size);
+		menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},
