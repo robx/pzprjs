@@ -7,14 +7,14 @@ pzprv3.custom.goishi = {
 MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart){ this.inputstone();}
-		else if(this.mouseend){ ut.stop();}
+		else if(this.mouseend){ this.owner.ut.stop();}
 	},
 	inputplay : function(){
 		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ ut.startUndo(true);}
+			else if(this.btn.Right){ this.owner.ut.startUndo(true);}
 		}
-		else if(this.mouseend){ ut.stop();}
+		else if(this.mouseend){ this.owner.ut.stop();}
 	},
 
 	inputstone : function(){
@@ -32,7 +32,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			ut.startRedo(true);
+			this.owner.ut.startRedo(true);
 			return;
 		}
 

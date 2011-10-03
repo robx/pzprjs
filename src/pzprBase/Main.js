@@ -62,8 +62,8 @@ pzprv3.createCoreClass('Owner',
 		tc  = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
 
 		um = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
-		ut = this.newInstance('UndoTimer');			// Undo用Timerオブジェクト
-		timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
+		this.ut = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
+		this.timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
 
 		enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
@@ -83,7 +83,7 @@ pzprv3.createCoreClass('Owner',
 		this.decodeBoardData(pzl);
 
 		// タイマーリセット(最後)
-		timer.reset();
+		this.timer.reset();
 	},
 
 	clearObjects : function(){

@@ -146,7 +146,11 @@
 		var scriptid = this.PZLINFO.toScript(pid);
 		return (!!pzprv3.custom[scriptid] && Camp.isready() &&
 				(!this.DEBUG || !!this.core.Debug.prototype.urls));
-	}
+	},
+
+	//---------------------------------------------------------------
+	// 現在の時間を取得
+	currentTime : function(){ return (new Date()).getTime();}
 });
 
 //----------------------------------------------------------------------------

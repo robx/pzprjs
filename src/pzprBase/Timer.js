@@ -25,12 +25,10 @@ pzprv3.createCommonClass('Timer',
 	},
 
 	//---------------------------------------------------------------------------
-	// tm.now()        現在の時間を取得する
 	// tm.reset()      タイマーのカウントを0にして、スタートする
 	// tm.start()      update()関数を200ms間隔で呼び出す
 	// tm.update()     200ms単位で呼び出される関数
 	//---------------------------------------------------------------------------
-	now : function(){ return (new Date()).getTime();},
 	reset : function(){
 		this.worstACtime = 0;
 		this.timerEL.innerHTML = this.label()+"00:00";
@@ -39,11 +37,11 @@ pzprv3.createCommonClass('Timer',
 		this.start();
 	},
 	start : function(){
-		this.st = this.now();
+		this.st = pzprv3.currentTime();
 		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
 	},
 	update : function(){
-		this.current = this.now();
+		this.current = pzprv3.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
 		if(pp.getVal('autocheck')){ this.ACcheck();}
@@ -80,7 +78,7 @@ pzprv3.createCommonClass('Timer',
 			this.lastAnsCnt = um.anscount;
 			if(!ans.autocheck()){ return;}
 
-			this.worstACtime = Math.max(this.worstACtime, (this.now()-this.current));
+			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	}

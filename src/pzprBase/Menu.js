@@ -1129,7 +1129,7 @@ pzprv3.createCommonClass('Menu',
 		this.owner.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
-		timer.reset();
+		this.owner.timer.reset();
 	},
 
 	filesave : function(ftype){
@@ -1401,13 +1401,13 @@ pzprv3.createCoreClass('Debug',
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = timer.now();
-		while(timer.now() - old < 3000){
+		var count=0, old = pzprv3.currentTime();
+		while(pzprv3.currentTime() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = timer.now() - old;
+		var time = pzprv3.currentTime() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
