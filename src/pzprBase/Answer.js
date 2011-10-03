@@ -230,7 +230,7 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
-			var errclist = this.owner.newInstance('PieceList');
+			var errclist = this.owner.newInstance('CellList');
 			var clist = bd.cell.filter(function(cell){ return cell.isBlack();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;

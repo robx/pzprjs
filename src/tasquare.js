@@ -152,7 +152,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
-			var clist=this.owner.newInstance('PieceList');
+			var clist=this.owner.newInstance('CellList');
 			if(cell.up().isBlack()){ clist.addList(binfo.getclistbycell(cell.up()));}
 			if(cell.dn().isBlack()){ clist.addList(binfo.getclistbycell(cell.dn()));}
 			if(cell.lt().isBlack()){ clist.addList(binfo.getclistbycell(cell.lt()));}

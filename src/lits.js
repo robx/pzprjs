@@ -23,7 +23,7 @@ Board:{
 		var tinfo = this.owner.newInstance('AreaCellInfo'); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
-			var bcells = this.owner.newInstance('PieceList'), clist = rinfo.getclist(r);
+			var bcells = this.owner.newInstance('CellList'), clist = rinfo.getclist(r);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.isBlack()){ bcells.add(cell);}

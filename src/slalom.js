@@ -863,7 +863,7 @@ HurdleManager:{
 
 	// 旗門の両端にある黒マスの場所のセルを取得する
 	getGatePole : function(gateid){
-		var clist = this.owner.newInstance('PieceList'), cell1, cell2;
+		var clist = this.owner.newInstance('CellList'), cell1, cell2;
 		if(this.data[gateid].val==21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
@@ -888,7 +888,7 @@ HurdleManager:{
 	},
 
 	getclist : function(gateid){
-		var idlist = this.data[gateid].idlist, clist = this.owner.newInstance('PieceList');
+		var idlist = this.data[gateid].idlist, clist = this.owner.newInstance('CellList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	},

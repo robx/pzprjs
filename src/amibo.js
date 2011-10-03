@@ -148,17 +148,6 @@ Board:{
 		return binfo;
 	},
 
-	setErrorBar : function(clist){
-		var vert = clist.vert;
-		for(var i=0;i<clist.length;i++){
-			var cell=clist[i], err=cell.error;
-			if     (err===4){ /* nop */ }
-			else if(err===5){ if(!vert){ cell.seterr(4);}}
-			else if(err===6){ if( vert){ cell.seterr(4);}}
-			else{ cell.seterr(vert?5:6);}
-		}
-	},
-
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.getQans()]);}
@@ -188,12 +177,32 @@ Board:{
 
 	getclist : function(areaid){
 		var room = this.room[areaid], idlist = room.idlist;
-		var clist = this.owner.newInstance('PieceList');
+		var clist = this.owner.newInstance('CellList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		clist.pole = room.pole;
 		clist.link = room.link;
 		clist.vert = room.vert;
 		return clist;
+	}
+},
+CellList:{
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+
+		this.link = [];
+		this.pole = [];
+		this.vert = false
+	},
+
+	setErrorBar : function(){
+		var vert = this.vert;
+		for(var i=0;i<this.length;i++){
+			var cell=this[i], err=cell.error;
+			if     (err===4){ /* nop */ }
+			else if(err===5){ if(!vert){ cell.seterr(4);}}
+			else if(err===6){ if( vert){ cell.seterr(4);}}
+			else{ cell.seterr(vert?5:6);}
+		}
 	}
 },
 
@@ -482,7 +491,7 @@ AnsCheck:{
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
 					if(this.inAutoCheck){ return false;}
 					cell.seterr(1);
-					bd.setErrorBar(clist);
+					clist.setErrorBar();
 					result = false;
 				}
 			}
@@ -498,7 +507,7 @@ AnsCheck:{
 			}
 			if(!check){
 				if(this.inAutoCheck){ return false;}
-				bd.setErrorBar(clist);
+				clist.setErrorBar();
 				result = false;
 			}
 		}

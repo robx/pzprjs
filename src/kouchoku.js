@@ -140,7 +140,7 @@ Cross:{
 
 	initialize : function(){
 		this.SuperFunc.initialize.call(this);
-		this.segment = this.owner.newInstance('PieceList');
+		this.segment = this.owner.newInstance('SegmentList');
 	}
 },
 
@@ -216,7 +216,7 @@ Board:{
 
 	adjustBoardData : function(key,d){
 		if(key & this.REDUCE){
-			var seglist=this.segs.getallsegment(), sublist=this.owner.newInstance('PieceList');
+			var seglist=this.segs.getallsegment(), sublist=this.owner.newInstance('SegmentList');
 			for(var i=0;i<seglist.length;i++){
 				var seg = seglist[i];
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
@@ -255,6 +255,10 @@ Board:{
 			}
 		}
 	}
+},
+
+"SegmentList:PieceList":{
+	name : 'SegmentList'
 },
 
 "SegmentOperation:Operation":{
@@ -725,7 +729,7 @@ AnsCheck:{
 	emptySegment : function(seg){ return (this.id[seg.id]===0);},
 
 	getseglist : function(areaid){
-		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('PieceList');
+		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('SegmentList');
 		for(var i=0;i<idlist.length;i++){ seglist.add(bd.segs.seg[idlist[i]]);}
 		return seglist;
 	},
@@ -899,7 +903,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.resetInfo();
 	},
 	resetInfo : function(){
-		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=this.owner.newInstance('PieceList');}
+		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=this.owner.newInstance('SegmentList');}
 
 		this.lineid = {};
 		this.idlist = {};
@@ -965,14 +969,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
 	//---------------------------------------------------------------------------
 	getallsegment : function(){
-		var seglist = this.owner.newInstance('PieceList');
+		var seglist = this.owner.newInstance('SegmentList');
 		for(var id in this.seg){ seglist.add(this.seg[id]);}
 		return seglist;
 	},
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
 
-		var seglist = this.owner.newInstance('PieceList');
+		var seglist = this.owner.newInstance('SegmentList');
 		for(var id in this.seg){
 			var seg=this.seg[id], cnt=0;
 			if(this.isOverLap(seg.bx1,seg.bx2,x1,x2) && this.isOverLap(seg.by1,seg.by2,y1,y2)){
@@ -1118,7 +1122,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		if(shortid!==null){
 			if(pp.getVal('irowake')){
-				var idlist = this.idlist[longid], seglist = this.owner.newInstance('PieceList');
+				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
 				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 				pc.repaintSegments(seglist);
 			}
@@ -1174,7 +1178,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			}
 		}
 		if(pp.getVal('irowake')){
-			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('PieceList');
+			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('SegmentList');
 			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 			pc.repaintSegments(seglist);
 		}

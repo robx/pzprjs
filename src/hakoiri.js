@@ -206,7 +206,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
-			var bx = cell.bx, by = cell.by, target=0, clist=this.owner.newInstance('PieceList');
+			var bx = cell.bx, by = cell.by, target=0, clist=this.owner.newInstance('CellList');
 			var func = function(cell){ return (!cell.isnull && num===cell.getNum());};
 			// 右・左下・下・右下だけチェック
 			clist.add(cell);

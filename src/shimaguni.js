@@ -39,12 +39,14 @@ Board:{
 		if(this.owner.pid==='chocona'){
 			this.minnum = 0;
 		}
-	},
+	}
+},
 
-	getLandAreaOfClist : function(clist){
+CellList:{
+	getLandAreaOfClist : function(){
 		var cnt = 0;
-		for(var i=0,len=clist.length;i<len;i++){
-			if(clist[i].isBlack()){ cnt++;}
+		for(var i=0,len=this.length;i<len;i++){
+			if(this[i].isBlack()){ cnt++;}
 		}
 		return cnt;
 	}
@@ -151,7 +153,7 @@ AnsCheck:{
 			this.setAlert('海域内の数字と国のマス数が一致していません。','The number of black cells is not equals to the number.'); return false;
 		}
 
-		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return bd.getLandAreaOfClist(rinfo.getclist(r));}) ){
+		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).getLandAreaOfClist();}) ){
 			this.setAlert('隣り合う海域にある国の大きさが同じです。','The size of countries that there are in adjacent marine areas are the same.'); return false;
 		}
 

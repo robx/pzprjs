@@ -658,9 +658,9 @@ pzprv3.createCommonClass('Address',
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('PieceList',
 {
-	initialize : function(){
-		this.length = 0;
-	},
+	length : 0,
+	
+	name : 'PieceList',
 	
 	//--------------------------------------------------------------------------------
 	// list.add()      与えられたオブジェクトを配列の末尾に追加する(push()相当)
@@ -708,7 +708,7 @@ pzprv3.createCommonClass('PieceList',
 		return idlist.join(str);
 	},
 	filter : function(cond){
-		var list = this.owner.newInstance('PieceList');
+		var list = this.owner.newInstance(this.name);
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
 		return list;
 	},
@@ -730,10 +730,18 @@ pzprv3.createCommonClass('PieceList',
 	seterr : function(num){
 		if(!bd.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
-	},
+	}
+});
+
+//----------------------------------------------------------------------------
+// ★CellListクラス Cellの配列を扱う
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('CellList:PieceList',
+{
+	name : 'CellList',
 
 	//---------------------------------------------------------------------------
-	// list.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
+	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0};
@@ -751,21 +759,36 @@ pzprv3.createCommonClass('PieceList',
 	},
 
 	//--------------------------------------------------------------------------------
-	// list.getQnumCell()  指定されたClistの中で一番左上にある数字のあるセルを返す
+	// clist.getQnumCell()  指定されたClistの中で一番左上にある数字のあるセルを返す
 	//--------------------------------------------------------------------------------
 	getQnumCell : function(){
 		for(var i=0,len=this.length;i<len;i++){
 			if(this[i].isNum()){ return this[i];}
 		}
 		return bd.newObject(bd.CELL);
-	},
+	}
+});
+
+//----------------------------------------------------------------------------
+// ★CrossListクラス Crossの配列を扱う
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('CrossList:PieceList',{
+	name : 'CrossList'
+});
+
+//----------------------------------------------------------------------------
+// ★BorderListクラス Borderの配列を扱う
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('BorderList:PieceList',
+{
+	name : 'BorderList',
 
 	//---------------------------------------------------------------------------
-	// list.cellinside()  線が重なるセルのリストを取得する
-	// list.crossinside() 線が重なる交点のリストを取得する
+	// blist.cellinside()  線が重なるセルのリストを取得する
+	// blist.crossinside() 線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(){
-		var clist = this.owner.newInstance('PieceList'), pushed = [];
+		var clist = this.owner.newInstance('CellList'), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cell1=border.sidecell[0], cell2=border.sidecell[1];
 			if(!cell1.isnull && pushed[cell1.id]!==true){ clist.add(cell1); pushed[cell1.id]=true;}
@@ -774,7 +797,7 @@ pzprv3.createCommonClass('PieceList',
 		return clist;
 	},
 	crossinside : function(){
-		var clist = this.owner.newInstance('PieceList'), pushed = [];
+		var clist = this.owner.newInstance('CrossList'), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cross1=border.sidecross[0], cross2=border.sidecross[1];
 			if(!cross1.isnull && pushed[cross1.id]!==true){ clist.add(cross1); pushed[cross1.id]=true;}
@@ -782,6 +805,13 @@ pzprv3.createCommonClass('PieceList',
 		}
 		return clist;
 	}
+});
+
+//----------------------------------------------------------------------------
+// ★EXCellListクラス EXCellの配列を扱う
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('EXCellList:PieceList',{
+	name : 'EXCellList'
 });
 
 //---------------------------------------------------------------------------
@@ -813,7 +843,7 @@ pzprv3.createCommonClass('AreaCellInfo',
 
 	getclistbycell : function(cell)  { return this.getclist(this.id[cell.id]);},
 	getclist : function(areaid){
-		var idlist = this.room[areaid].idlist, clist = this.owner.newInstance('PieceList');
+		var idlist = this.room[areaid].idlist, clist = this.owner.newInstance('CellList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	},
@@ -845,7 +875,7 @@ pzprv3.createCommonClass('AreaBorderInfo:AreaCellInfo',
 	emptyBorder : function(border){ return (this.id[border.id]===0);},
 
 	getblist : function(areaid){
-		var idlist = this.room[areaid].idlist, blist = this.owner.newInstance('PieceList');
+		var idlist = this.room[areaid].idlist, blist = this.owner.newInstance('BorderList');
 		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
 		return blist;
 	},

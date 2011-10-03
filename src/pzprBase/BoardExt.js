@@ -65,7 +65,7 @@ pzprv3.createCommonClass('LineManager',
 		if(this.disableLine){ return;}
 
 		this.init();
-		var blist = this.owner.newInstance('PieceList');
+		var blist = this.owner.newInstance('BorderList');
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
@@ -230,7 +230,7 @@ pzprv3.createCommonClass('LineManager',
 			this.id[border.id] = longid;
 
 			// 色を同じにする
-			var blist = this.owner.newInstance('PieceList');
+			var blist = this.owner.newInstance('BorderList');
 			for(var i=0,len=longidlist.length;i<len;i++){
 				var border = bd.border[longidlist[i]];
 				border.color = newColor;
@@ -302,7 +302,7 @@ pzprv3.createCommonClass('LineManager',
 		// 交差ありでborderAsLine==true(->isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
-		var lines = this.owner.newInstance('PieceList');
+		var lines = this.owner.newInstance('BorderList');
 		if(!obj1.isnull){
 			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt();
 			if(iscrossing && lcnt>=(4-erase)){
@@ -400,7 +400,7 @@ pzprv3.createCommonClass('LineManager',
 	//--------------------------------------------------------------------------------
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
 	getBlist : function(id){
-		var idlist = this.idlist[id], blist = this.owner.newInstance('PieceList');
+		var idlist = this.idlist[id], blist = this.owner.newInstance('BorderList');
 		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
 		return blist;
 	}
@@ -576,7 +576,7 @@ pzprv3.createCommonClass('AreaData',
 	setLongColor : function(assign, longColor){
 		// 色を同じにする
 		if(assign.length===1){
-			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('PieceList');
+			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('CellList');
 			for(var i=0,len=idlist.length;i<len;i++){
 				var cell = bd.cell[idlist[i]];
 				cell.color = longColor;
@@ -594,7 +594,7 @@ pzprv3.createCommonClass('AreaData',
 			}
 
 			// 新しい色の設定
-			var clist = this.owner.newInstance('PieceList');
+			var clist = this.owner.newInstance('CellList');
 			for(var i=0;i<assign.length;i++){
 				var newColor = (assign[i]===longid ? longColor : pc.getNewLineColor());
 				var idlist = this[assign[i]].idlist;
@@ -811,7 +811,7 @@ pzprv3.createCommonClass('AreaData',
 	getClistByCell : function(cell){ return this.getClist(this.id[cell.id]);},
 	getClist : function(areaid){
 		if(!this[areaid]){ alert(areaid);}
-		var idlist = this[areaid].idlist, clist = this.owner.newInstance('PieceList');
+		var idlist = this[areaid].idlist, clist = this.owner.newInstance('CellList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	}

@@ -64,7 +64,7 @@ MouseEvent:{
 	mousereset : function(){
 		this.SuperFunc.mousereset.call(this);
 
-		this.prevblist = this.owner.newInstance('PieceList');
+		this.prevblist = this.owner.newInstance('BorderList');
 	}
 },
 
@@ -97,7 +97,7 @@ Cell:{
 	maxnum : 8,
 
 	getCountOfBridges : function(){
-		var cnt=0, blist=this.owner.newInstance('PieceList');
+		var cnt=0, blist=this.owner.newInstance('BorderList');
 		blist.addList([this.ub(), this.db(), this.lb(), this.rb()]);
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];

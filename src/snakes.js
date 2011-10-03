@@ -327,7 +327,7 @@ AnsCheck:{
 			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.RT;}
 			if(dir===bd.NDIR){ continue;}
 
-			var pos = cell.getaddr(), clist2 = this.owner.newInstance('PieceList');
+			var pos = cell.getaddr(), clist2 = this.owner.newInstance('CellList');
 			clist2.add(cell);
 			while(!cell.isnull){
 				pos.movedir(dir,2);

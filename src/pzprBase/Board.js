@@ -7,10 +7,10 @@
 pzprv3.createCommonClass('Board',
 {
 	initialize : function(){
-		this.cell   = this.owner.newInstance('PieceList');
-		this.cross  = this.owner.newInstance('PieceList');
-		this.border = this.owner.newInstance('PieceList');
-		this.excell = this.owner.newInstance('PieceList');
+		this.cell   = this.owner.newInstance('CellList');
+		this.cross  = this.owner.newInstance('CrossList');
+		this.border = this.owner.newInstance('BorderList');
+		this.excell = this.owner.newInstance('EXCellList');
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
@@ -436,7 +436,7 @@ pzprv3.createCommonClass('Board',
 	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
-		var clist = this.owner.newInstance('PieceList');
+		var clist = this.owner.newInstance('CellList');
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -444,7 +444,7 @@ pzprv3.createCommonClass('Board',
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
-		var clist = this.owner.newInstance('PieceList');
+		var clist = this.owner.newInstance('CrossList');
 		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
 			var cross = this.getx(bx,by);
 			if(!cross.isnull){ clist.add(cross);}
@@ -452,7 +452,7 @@ pzprv3.createCommonClass('Board',
 		return clist;
 	},
 	borderinside : function(x1,y1,x2,y2){
-		var blist = this.owner.newInstance('PieceList');
+		var blist = this.owner.newInstance('BorderList');
 		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 			var border = this.getb(bx,by);
 			if(!border.isnull){ blist.add(border);}
@@ -460,7 +460,7 @@ pzprv3.createCommonClass('Board',
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
-		var exlist = this.owner.newInstance('PieceList');
+		var exlist = this.owner.newInstance('EXCellList');
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var excell = this.getex(bx,by);
 			if(!excell.isnull){ exlist.add(excell);}

@@ -109,7 +109,7 @@ Cell:{
 
 	// 正答判定用
 	getViewClist : function(){
-		var sx=this.bx, sy=this.by, clist=this.owner.newInstance('PieceList');
+		var sx=this.bx, sy=this.by, clist=this.owner.newInstance('CellList');
 		for(var dir=1;dir<=4;dir++){
 			var pos = this.owner.newInstance('Address',[sx,sy]);
 			while(1){
