@@ -16,54 +16,37 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr   = '';
 	},
 
-	// 定数(URL形式)
-	PZPRV3  : 0,
-	PZPRV3E : 3,
-	PZPRAPP : 1,
-	KANPEN  : 2,
-	KANPENP : 5,
-	HEYAAPP : 4,
-
-	urlbase : {
-		0: "http://%DOMAIN%/p.html?%PID%/",                   /* PZPRV3  */
-		3: "http://%DOMAIN%/p.html?%PID%_edit/",              /* PZPRV3E */
-		1: "http://indi.s58.xrea.com/%PID%/sa/q.html?",       /* PZPRAPP */
-		2: "http://www.kanpen.net/%KID%.html?problem=",       /* KANPEN  */
-		5: "http://www.kanpen.net/%KID%.html?pzpr=",          /* KANPENP */
-		4: "http://www.geocities.co.jp/heyawake/?problem="    /* HEYAAPP */
-	},
-
 	//---------------------------------------------------------------------------
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.pzlinput()   parseData()を行い、各パズルのpzlimport関数を呼び出す
-	// enc.getURLBase() URLの元となる部分を取得する
+	// enc.pzlinput()   parseURLData()を行い、各パズルのpzlimport関数を呼び出す
+	// enc.pzloutput()  各パズルのpzlexport関数を呼び出し、URLを出力する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	pzlinput : function(pzl){
-		if(pzl.type===void 0){ pzl.type=this.PZPRV3;}
-		var dat = this.parseData(pzl);
+		if(pzl.type===void 0){ pzl.type=pzprv3.PZPRV3;}
+		var dat = pzprv3.parseURLData(pzl);
 
 		bd.initBoardSize(dat.cols, dat.rows);
 
 		if(!!dat.bstr){
 			this.pflag = dat.pflag;
 			switch(pzl.type){
-			case this.PZPRV3: case this.PZPRAPP: case this.PZPRV3E:
+			case pzprv3.PZPRV3: case pzprv3.PZPRAPP: case pzprv3.PZPRV3E:
 				this.outbstr = dat.bstr;
 				this.pzlimport(pzl.type);
 				break;
-			case this.KANPEN:
+			case pzprv3.KANPEN:
 				fio.lineseek = 0;
 				fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case this.HEYAAPP:
+			case pzprv3.HEYAAPP:
 				this.outbstr = dat.bstr;
 				this.decodeHeyaApp();
 				break;
@@ -74,7 +57,7 @@ pzprv3.createCommonClass('Encode',
 		pc.resize_canvas();
 	},
 	pzloutput : function(type){
-		if(type===this.KANPEN && this.owner.pid=='lits'){ type = this.KANPENP;}
+		if(type===pzprv3.KANPEN && this.owner.pid=='lits'){ type = pzprv3.KANPENP;}
 		var size='', ispflag=false;
 
 		this.outpflag = '';
@@ -82,26 +65,26 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = '';
 
 		switch(type){
-		case this.PZPRV3: case this.PZPRV3E:
-			this.pzlexport(this.PZPRV3);
+		case pzprv3.PZPRV3: case pzprv3.PZPRV3E:
+			this.pzlexport(pzprv3.PZPRV3);
 			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
-		case this.PZPRAPP: case this.KANPENP:
-			this.pzlexport(this.PZPRAPP);
+		case pzprv3.PZPRAPP: case pzprv3.KANPENP:
+			this.pzlexport(pzprv3.PZPRAPP);
 			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
-		case this.KANPEN:
+		case pzprv3.KANPEN:
 			fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = fio.datastr.replace(/ /g, "_");
 			size = (!this.outsize ? [bd.qrows,bd.qcols].join('/') : this.outsize);
 			break;
 
-		case this.HEYAAPP:
+		case pzprv3.HEYAAPP:
 			this.encodeHeyaApp();
 			size = [bd.qcols,bd.qrows].join('x');
 			break;
@@ -111,22 +94,7 @@ pzprv3.createCommonClass('Encode',
 		}
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
-		return this.getURLBase(type) + pdata;
-	},
-	getURLBase : function(type){
-		var str = this.urlbase[type];
-
-		var domain = document.domain;
-		if(!domain){ domain = "pzv.jp";}
-		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
-
-		if(type===this.PZPRAPP){
-			if     (this.owner.pid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
-			else if(this.owner.pid==='heyabon')  { str=str.replace("%PID%","bonsan");}
-		}
-		return str.replace("%DOMAIN%", domain)
-				  .replace("%PID%", pzprv3.PZLINFO.toURLID(this.owner.pid))
-				  .replace("%KID%", pzprv3.PZLINFO.toKanpen(this.owner.pid));
+		return pzprv3.getURLBase(type, this.owner.pid) + pdata;
 	},
 
 	// オーバーライド用
@@ -136,100 +104,6 @@ pzprv3.createCommonClass('Encode',
 	encodeKanpen : function(){ },
 	decodeHeyaApp : function(){ },
 	encodeHeyaApp : function(){ },
-
-	//---------------------------------------------------------------------------
-	// enc.parseURL() 入力されたURLからどのパズルか、およびURLの種類を抽出する
-	//                p.html?(pid)/(qdata)
-	//---------------------------------------------------------------------------
-	parseURL : function(url){
-		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
-
-		var pzl = {id:'',type:0,qdata:''};
-		// カンペンの場合
-		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
-			url.match(/([0-9a-z]+)\.html/);
-			pzl.id = RegExp.$1;
-			// カンペンだけどデータ形式はへやわけアプレット
-			if(url.indexOf("?heyawake=")>=0){
-				pzl.qdata = url.substr(url.indexOf("?heyawake=")+10);
-				pzl.type = this.HEYAAPP;
-			}
-			// カンペンだけどデータ形式はぱずぷれ
-			else if(url.indexOf("?pzpr=")>=0){
-				pzl.qdata = url.substr(url.indexOf("?pzpr=")+6);
-				pzl.type = this.PZPRV3;
-			}
-			else{
-				pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-				pzl.type = this.KANPEN;
-			}
-		}
-		// へやわけアプレットの場合
-		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
-			pzl.id = 'heyawake';
-			pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-			pzl.type = this.HEYAAPP;
-		}
-		// ぱずぷれアプレットの場合
-		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
-			pzl.id = RegExp.$1;
-			pzl.qdata = url.substr(url.indexOf("?"));
-			pzl.type = this.PZPRAPP;
-		}
-		// ぱずぷれv3の場合
-		else{
-			var qs = url.indexOf("/", url.indexOf("?"));
-			if(qs>-1){
-				pzl.id = url.substring(url.indexOf("?")+1,qs);
-				pzl.qdata = url.substr(qs+1);
-			}
-			else{
-				pzl.id = url.substr(1);
-			}
-			pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
-			pzl.type = this.PZPRV3;
-		}
-		pzl.id = pzprv3.PZLINFO.toPID(pzl.id);
-
-		return pzl;
-	},
-
-	//---------------------------------------------------------------------------
-	// enc.parseData() URLを縦横・問題部分などに分解する
-	//                 qdata -> [(pflag)/](cols)/(rows)/(bstr)
-	//---------------------------------------------------------------------------
-	parseData : function(pzl){
-		var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''};
-		switch(pzl.type){
-		case this.KANPEN:
-			if(pzl.id=="sudoku"){
-				dat.rows = dat.cols = parseInt(inp.shift());
-			}
-			else{
-				dat.rows = parseInt(inp.shift());
-				dat.cols = parseInt(inp.shift());
-				if(pzl.id=="kakuro"){ dat.rows--; dat.cols--;}
-			}
-			dat.bstr = inp.join("/");
-			break;
-
-		case this.HEYAAPP:
-			var size = inp.shift().split("x");
-			dat.cols = parseInt(size[0]);
-			dat.rows = parseInt(size[1]);
-			dat.bstr = inp.join("/");
-			break;
-
-		default:
-			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-			dat.pflag = inp.shift();
-			dat.cols = parseInt(inp.shift());
-			dat.rows = parseInt(inp.shift());
-			dat.bstr = inp.join("/");
-			break;
-		}
-		return dat;
-	},
 
 	//---------------------------------------------------------------------------
 	// enc.decode4Cell()  quesが0～4までの場合、デコードする

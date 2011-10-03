@@ -84,8 +84,8 @@ pzprv3.debug.extend({
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = enc.getURLBase(enc.PZPRV3)+self.urls[self.pid];
-		var ta  = enc.pzloutput(enc.PZPRV3);
+		var inp = pzprv3.getURLBase(pzprv3.PZPRV3, self.pid)+self.urls[self.pid];
+		var ta  = enc.pzloutput(pzprv3.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -96,7 +96,7 @@ pzprv3.debug.extend({
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
-			document.urlinput.ta.value = enc.pzloutput(enc.KANPEN);
+			document.urlinput.ta.value = enc.pzloutput(pzprv3.KANPEN);
 			menu.pop = ee("pop1_5");
 			menu.ex.urlinput({});
 

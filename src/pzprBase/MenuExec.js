@@ -81,7 +81,7 @@ pzprv3.createCommonClass('MenuExec',
 		if(menu.pop){
 			menu.popclose();
 
-			var pzl = enc.parseURL(document.urlinput.ta.value);
+			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
 			if(!!pzl.id){ this.owner.importBoardData(pzl);}
 		}
 	},
@@ -89,11 +89,11 @@ pzprv3.createCommonClass('MenuExec',
 		if(menu.pop){
 			var _doc = document;
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRAPP); break;
-				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(enc.KANPEN);  break;
-				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(enc.PZPRV3E); break;
-				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(enc.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(pzprv3.HEYAAPP); break;
 			}
 		}
 	},
