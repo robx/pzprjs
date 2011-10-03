@@ -33,7 +33,7 @@ MouseEvent:{
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 	}
 },
 

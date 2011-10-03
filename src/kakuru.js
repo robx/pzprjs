@@ -46,7 +46,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	enablemake_p : true,

@@ -48,7 +48,7 @@ MouseEvent:{
 			else                        { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
 		}
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 	},
 	inputflash : function(){
 		var excell = this.borderpos(0).getex();
@@ -71,8 +71,8 @@ MouseEvent:{
 		var excell0 = tc.getTEC();
 		if(excell!==excell0){
 			tc.setTEC(excell);
-			pc.paintEXCell(excell);
-			pc.paintEXCell(excell0);
+			excell.draw();
+			excell0.draw();
 		}
 		else{
 			if(excell.qlight!==1){ bd.flashlight(excell.id);}
@@ -112,8 +112,8 @@ KeyEvent:{
 		else{ flag=false;}
 
 		if(flag){
-			pc.paintEXCell(excell0);
-			pc.paintEXCell(tc.getTEC());
+			excell0.draw();
+			tc.getTCP().draw();
 			this.tcMoved = true;
 		}
 		return flag;
@@ -156,7 +156,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		pc.paintEXCell(tc.getTEC());
+		tc.getTCP().draw();
 	}
 },
 

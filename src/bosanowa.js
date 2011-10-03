@@ -47,9 +47,9 @@ MouseEvent:{
 		}
 		else{
 			tc.setTCP(pos);
-			pc.paintPos(tcp);
+			tcp.draw();
 		}
-		pc.paintPos(pos);
+		pos.draw();
 	}
 },
 
@@ -100,7 +100,7 @@ KeyEvent:{
 		}
 		else{ return;}
 
-		pc.paintPos(tcp);
+		tcp.draw();
 	}
 },
 

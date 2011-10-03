@@ -61,7 +61,7 @@ MouseEvent:{
 			else if(this.inputData=== 2){ cell.setQans([2,3,2,3][cell.getQans()]);}
 			else if(this.inputData===-1){ cell.setQans([0,0,2,2][cell.getQans()]);}
 			else if(this.inputData===-2){ cell.setQans([0,1,0,1][cell.getQans()]);}
-			pc.paintCell(cell);
+			cell.draw();
 		}
 		this.prevPos   = pos;
 		this.mouseCell = cell;
@@ -71,7 +71,7 @@ MouseEvent:{
 		if(cell.isnull || cell.isNum()){ return;}
 
 		cell.setQans((this.btn.Left?[1,2,3,0]:[3,0,1,2])[cell.getQans()]);
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

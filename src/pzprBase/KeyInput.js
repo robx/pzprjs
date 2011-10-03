@@ -215,8 +215,8 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 
 		if(flag){
-			pc.paintPos(tcp);
-			pc.paintPos(tc.getTCP());
+			tcp.draw();
+			tc.getTCP().draw();
 			this.tcMoved = true;
 		}
 		return flag;
@@ -240,7 +240,7 @@ pzprv3.createCommonClass('KeyEvent',
 		else{ return;}
 
 		cross.setQnum(val);
-		pc.paintCross(cross);
+		cross.draw();
 	},
 	//---------------------------------------------------------------------------
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
@@ -251,7 +251,7 @@ pzprv3.createCommonClass('KeyEvent',
 
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 	key_inputqnum_main : function(cell,ca){
@@ -294,7 +294,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 
 		if(flag){
-			pc.paintPos(tc.getTCP());
+			tc.getTCP().draw();
 			this.tcMoved = true;
 		}
 		return flag;
@@ -314,7 +314,7 @@ pzprv3.createCommonClass('KeyEvent',
 			if(ca==='q' && !obj.isnull){
 				if(obj.is51cell()){ obj.set51cell();}
 				else              { obj.remove51cell();}
-				pc.paintPos(tc.getTCP());
+				tc.getTCP().draw();
 				return;
 			}
 		}
@@ -334,7 +334,7 @@ pzprv3.createCommonClass('KeyEvent',
 
 		this.setnum51(obj,target,val);
 		this.prev = (obj.iscellobj ? obj : null);
-		pc.paintPos (tc.getTCP());
+		tc.getTCP().draw();
 	},
 	setnum51 : function(obj,target,val){
 		(target==2 ? obj.setQnum(val) : obj.setQdir(val));
@@ -650,7 +650,7 @@ pzprv3.createCommonClass('TargetCursor',
 		if(ca!='shift'){ return false;}
 		if(this.targetdir==2){ this.targetdir=4;}
 		else{ this.targetdir=2;}
-		pc.paintCell(this.getTCC());
+		this.getTCC().draw();
 		return true;
 	},
 	detectTarget : function(obj){

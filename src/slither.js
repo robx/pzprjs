@@ -48,7 +48,7 @@ MouseEvent:{
 			}
 		}
 		cell.setQsub(this.inputData-10);
-		pc.paintCell(cell);
+		cell.draw();
 
 		this.mouseCell = cell; 
 	}

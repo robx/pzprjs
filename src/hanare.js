@@ -30,7 +30,7 @@ MouseEvent:{
 		if(result!==null){
 			this.inputData = (result===-1?0:1);
 			this.mouseCell = cell;
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 
@@ -43,7 +43,7 @@ MouseEvent:{
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -66,7 +66,7 @@ KeyEvent:{
 
 		cell.setNum_hanare(val);
 		this.prev = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -86,7 +86,7 @@ Cell:{
 			else if(cell2!==null){
 				if(this.owner.playmode && cell2.qnum!==-1){ return null;}
 				cell2.setNum(this.owner.playmode?-2:-1);
-				pc.paintCell(cell2);
+				cell2.draw();
 			}
 			else{ /* c2===null */
 				if(this.qsub===1){ val=-1;}

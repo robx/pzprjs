@@ -18,21 +18,21 @@ MouseEvent:{
 			var cell0 = tc.getTCC(), cell = this.getcell();
 			if(cell!==cell0){
 				tc.setTCC(cell);
-				pc.paintCell(cell0);
-				pc.paintCell(cell);
+				cell0.draw();
+				cell.draw();
 			}
 			else if(!cell.isnull){
 				var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
 				cell.setNum(trans[cell.getQnum()+2]);
-				pc.paintCell(cell);
+				cell.draw();
 			}
 		}
 		else{
 			var tcp = tc.getTCP();
 			if(pos.equals(tcp)){
 				tc.setTCP(pos);
-				pc.paintPos(tcp);
-				pc.paintPos(pos);
+				tcp.draw();
+				pos.draw();
 			}
 		}
 	},
@@ -44,7 +44,7 @@ MouseEvent:{
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 	}
 },
 
@@ -71,7 +71,7 @@ KeyEvent:{
 
 			if(!cell.isnull && val!==0){
 				cell.setNum(val);
-				pc.paintCell(cell);
+				cell.draw();
 			}
 		}
 	}

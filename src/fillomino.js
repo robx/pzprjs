@@ -40,7 +40,7 @@ MouseEvent:{
 
 		if(this.inputData>=-1){
 			cell.setAnum(this.inputData);
-			pc.paintCell(cell);
+			cell.draw();
 		}
 		else if(this.inputData<=-3){
 			var cell2 = this.mouseCell;
@@ -48,7 +48,7 @@ MouseEvent:{
 			if(this.inputData===-3){ this.inputData=(border.getQsub()===1?-5:-4);}
 			if(!border.isnull){
 				border.setQsub(this.inputData===-4?1:0);
-				pc.paintBorder(border);
+				border.draw();
 			}
 		}
 		this.mouseCell = cell;
@@ -85,7 +85,7 @@ KeyEvent:{
 			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));          }}
 			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          move();}}
 
-			if(this.tcMoved){ pc.paintCell(cell);}
+			if(this.tcMoved){ cell.draw();}
 		}
 	},
 

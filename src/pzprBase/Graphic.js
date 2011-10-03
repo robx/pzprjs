@@ -348,33 +348,16 @@ pzprv3.createCommonClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.paintRange()  座標(x1,y1)-(x2,y2)を再描画する
-	//
 	// pc.paintAll()    全体を再描画する
-	// pc.paintPos()    指定された(X,Y)を再描画する
-	//
-	// pc.paintCell()   指定されたCellを再描画する
-	// pc.paintCellAround() 指定されたCellの周りを含めて再描画する
-	// pc.paintCross()  指定されたCrossを再描画する
-	// pc.paintBorder() 指定されたBorderの周りを再描画する
-	// pc.paintLine()   指定されたLineの周りを再描画する
-	// pc.paintEXcell() 指定されたEXCellを再描画する
 	//---------------------------------------------------------------------------
 	paintRange : function(x1,y1,x2,y2){
 		this.setRange(x1,y1,x2,y2);
 		this.prepaint();
 	},
-
 	paintAll : function(){
 		if(this.suspended){ this.suspendedAll = true;}
 		this.paintRange(bd.minbx-1,bd.minby-1,bd.maxbx+1,bd.maxby+1);
 	},
-	paintPos : function(pos){ this.paintRange(pos.x-1, pos.y-1, pos.x+1, pos.y+1);},
-
-	paintCell       : function(cell){ this.paintRange(cell.bx-1, cell.by-1, cell.bx+1, cell.by+1);},
-	paintCellAround : function(cell){ this.paintRange(cell.bx-3, cell.by-3, cell.bx+3, cell.by+3);},
-	paintCross     : function(cross){ this.paintRange(cross.bx-1, cross.by-1, cross.bx+1, cross.by+1);},
-	paintBorder   : function(border){ this.paintRange(border.bx-2, border.by-2, border.bx+2, border.by+2);},
-	paintEXCell   : function(excell){ this.paintRange(excell.bx-1, excell.by-1, excell.bx+1, excell.by+1);},
 
 	//---------------------------------------------------------------------------
 	// pc.getNewLineColor() 新しい色を返す

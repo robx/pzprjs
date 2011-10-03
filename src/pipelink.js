@@ -45,7 +45,7 @@ KeyEvent:{
 		else if(this.owner.pid==='pipelinkr' && ca=='1'){ cell.setQues(6);}
 		else{ return false;}
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 		return true;
 	},
 

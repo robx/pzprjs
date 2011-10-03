@@ -39,13 +39,13 @@ MouseEvent:{
 				cell.setAnum(this.inputData);
 				cell.setQsub(0);
 				this.mouseCell = cell;
-				pc.paintCell(cell);
+				cell.draw();
 			}
 		}
 		else if(cell.getQnum()===-1 && this.inputData==10){
 			cell.setAnum(-1);
 			cell.setQsub(0);
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 	inputDot_snakes : function(){
@@ -64,7 +64,7 @@ MouseEvent:{
 
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===-2?1:0);
-		pc.paintCell(cell);
+		cell.draw();
 		this.mouseCell = cell;
 		return true;
 	},

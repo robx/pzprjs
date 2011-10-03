@@ -1036,8 +1036,12 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 		// 消える部屋のほうの数字を消す
 		if(merged.isNum()){
 			// 数字が消える部屋にしかない場合 -> 残るほうに移動させる
-			if(keep.noNum()){ keep.setQnum(merged.getQnum()); pc.paintCell(keep);}
-			merged.setQnum(-1); pc.paintCell(merged);
+			if(keep.noNum()){
+				keep.setQnum(merged.getQnum());
+				keep.draw();
+			}
+			merged.setQnum(-1);
+			merged.draw();
 		}
 	},
 

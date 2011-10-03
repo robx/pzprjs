@@ -26,7 +26,7 @@ MouseEvent:{
 			this.mouseCell = cell;
 			this.inputData = 1;
 			this.firstPoint.set(this.inputPoint);
-			pc.paintCell(cell);
+			cell.draw();
 		}
 		else{
 			var old = this.inputData, adj = null;
@@ -40,7 +40,7 @@ MouseEvent:{
 				else if(dx-dy<0 && dx+dy<0){ adj=this.mouseCell.lt(); this.inputData=4;}
 				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
 			}
-			if(old!=this.inputData){ pc.paintCellAround(this.mouseCell);}
+			if(old!=this.inputData){ this.mouseCell.drawaround();}
 		}
 	},
 	inputFuton2 : function(){
@@ -55,16 +55,16 @@ MouseEvent:{
 //		else if(cell.getQans()=== 1){ cell.setQans(0);  cell.setQsub(0);}
 		else                        { cell.setQans(41); cell.setQsub(0);}
 
-		cell = this.currentTargetADJ();
-		if(!cell.isnull){
-			this.changeHalf(cell);
-			cell.setQans({2:48,3:47,4:50,5:49}[this.inputData]);
-			cell.setQsub(0);
+		var adj = this.currentTargetADJ();
+		if(!adj.isnull){
+			this.changeHalf(adj);
+			adj.setQans({2:48,3:47,4:50,5:49}[this.inputData]);
+			adj.setQsub(0);
 		}
 
-		var cell0 = this.mouseCell;
+		this.mousereset();
+		cell.drawaround();
 		this.mouseCell = bd.newObject(bd.CELL);
-		pc.paintCellAround(cell0);
 	},
 
 	inputcell_shugaku : function(){
@@ -81,7 +81,7 @@ MouseEvent:{
 		cell.setQans(this.inputData==1?1:0);
 		cell.setQsub(this.inputData==2?1:0);
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 	},
 
 	changeHalf : function(cell){

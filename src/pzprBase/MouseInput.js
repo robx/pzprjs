@@ -287,7 +287,7 @@ pzprv3.createCommonClass('MouseEvent',
 		(this.inputData==1?cell.setBlack:cell.setWhite).call(cell);
 		cell.setQsub(this.inputData===2?1:0);
 
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	decIC : function(cell){
 		if(pp.getVal('use')==1){
@@ -331,11 +331,11 @@ pzprv3.createCommonClass('MouseEvent',
 		else{
 			var cell0 = tc.getTCC();
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 		}
 		this.mouseCell = cell;
 
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	inputqnum_main : function(cell,subtype){ // subtypeはqsubを0～いくつまで入力可能かの設定
 		if(this.owner.playmode && cell.qnum!==this.owner.classes.Cell.prototype.qnum){ return;}
@@ -381,7 +381,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cell!==tc.getTCC()){
 			var cell0 = tc.getTCC();
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 			flag = true;
 		}
 		else{
@@ -400,7 +400,7 @@ pzprv3.createCommonClass('MouseEvent',
 			}
 		}
 
-		if(flag){ pc.paintCell(cell);}
+		if(flag){ cell.draw();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -411,7 +411,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cell.isnull){ return;}
 
 		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.getQsub()]);
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -429,7 +429,7 @@ pzprv3.createCommonClass('MouseEvent',
 				var dir = this.getdir(this.prevPos, pos);
 				if(dir!==bd.NDIR){
 					cell.setQdir(cell.getQdir()!==dir?dir:0);
-					pc.paintCell(cell);
+					cell.draw();
 				}
 			}
 		}
@@ -445,7 +445,7 @@ pzprv3.createCommonClass('MouseEvent',
 			if(dir!==bd.NDIR){
 				if(cell.numberAsObject){ cell.setNum(dir);}
 				else{ cell.setQdir(dir);}
-				pc.paintCell(cell);
+				cell.draw();
 				this.mousereset();
 				return;
 			}
@@ -492,8 +492,8 @@ pzprv3.createCommonClass('MouseEvent',
 			var pos = excell.getaddr();
 			var tcp=tc.getTCP();
 			tc.setTCP(pos);
-			pc.paintPos(tcp);
-			pc.paintPos(pos);
+			tcp.draw();
+			pos.draw();
 			return;
 		}
 
@@ -503,7 +503,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(cell!==tc.getTCC()){
 			var tcp=tc.getTCP();
 			tc.setTCC(cell);
-			pc.paintPos(tcp);
+			tcp.draw();
 		}
 		else{
 			if(this.btn.Left){
@@ -512,7 +512,7 @@ pzprv3.createCommonClass('MouseEvent',
 			}
 			else if(this.btn.Right){ cell.remove51cell();}
 		}
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -534,11 +534,11 @@ pzprv3.createCommonClass('MouseEvent',
 		else{
 			var cross0 = tc.getTXC();
 			tc.setTXC(cross);
-			pc.paintCross(cross0);
+			cross0.draw();
 		}
 		this.mouseCell = cross;
 
-		pc.paintCross(cross);
+		cross.draw();
 	},
 	inputcrossMark : function(){
 		var pos = this.borderpos(0.24);
@@ -553,7 +553,7 @@ pzprv3.createCommonClass('MouseEvent',
 		cross.setQnum(cross.getQnum()===1?-1:1);
 		um.disCombine = false;
 
-		pc.paintCross(cross);
+		cross.draw();
 	},
 	//---------------------------------------------------------------------------
 	// mv.inputborder()     盤面境界線の問題データを入力する
@@ -583,7 +583,7 @@ pzprv3.createCommonClass('MouseEvent',
 				if     (this.inputData===1){ border.setLine();}
 				else if(this.inputData===0){ border.removeLine();}
 			}
-			pc.paintBorder(border);
+			border.draw();
 		}
 		this.prevPos = pos;
 	},
@@ -621,7 +621,7 @@ pzprv3.createCommonClass('MouseEvent',
 				if     (this.inputData===1){ border.setQsub(1);}
 				else if(this.inputData===0){ border.setQsub(0);}
 			}
-			pc.paintBorder(border);
+			border.draw();
 		}
 		this.prevPos = pos;
 	},
@@ -645,7 +645,7 @@ pzprv3.createCommonClass('MouseEvent',
 			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
 			if     (this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
-			pc.paintBorder(border);
+			border.draw();
 		}
 		this.prevPos = pos;
 	},

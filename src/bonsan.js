@@ -25,7 +25,7 @@ MouseEvent:{
 		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
 		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
 		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

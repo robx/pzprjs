@@ -38,7 +38,7 @@ MouseEvent:{
 		else if(cell.getQnum()===-1){
 			cell.setNum(this.inputData);
 			this.mouseCell = cell;
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 	inputDot_nanro : function(){
@@ -48,7 +48,7 @@ MouseEvent:{
 		if     (this.inputData==2){ cell.setAnum(-1); cell.setQsub(2);}
 		else if(this.inputData==0){ cell.setAnum(-1); cell.setQsub(0);}
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

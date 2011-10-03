@@ -49,11 +49,11 @@ MouseEvent:{
 		else{
 			var cell0 = tc.getTCC();
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 		}
 		this.mouseCell = cell;
 
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -83,7 +83,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	enablemake_p : true,

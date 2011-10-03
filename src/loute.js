@@ -26,7 +26,7 @@ MouseEvent:{
 			if(dir!==bd.NDIR){
 				cell.setQdir(cell.getQdir()!==dir?dir:0);
 				cell.setQnum(-1);
-				pc.paintCell(cell);
+				cell.draw();
 				this.mousereset();
 				return;
 			}
@@ -77,10 +77,10 @@ MouseEvent:{
 		else{
 			var cell0 = tc.getTCC();
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 		}
 
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -123,7 +123,7 @@ KeyEvent:{
 
 		cell.setQdir(val);
 		this.prev = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	key_inputqnum_sashigane : function(ca){
@@ -146,7 +146,7 @@ KeyEvent:{
 		}
 
 		this.prev = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

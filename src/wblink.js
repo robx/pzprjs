@@ -72,7 +72,7 @@ KeyEvent:{
 		else if(ca=='3'||ca==" "){ cell.setQnum(-1);}
 		else{ return;}
 
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

@@ -30,7 +30,7 @@ MouseEvent:{
 		if(cell!==tc.getTCC()){
 			var cell0 = tc.getTCC();
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 		}
 		else{
 			if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
@@ -39,12 +39,12 @@ MouseEvent:{
 		}
 		bd.hinfo.generateGates();
 
-		pc.paintCell(cell);
+		cell.draw();
 		pc.dispnumStartpos(bd.startcell);
 	},
 	inputStartid_up : function(){
 		this.inputData = null;
-		pc.paintCell(bd.startcell);
+		bd.startcell.draw();
 		if(this.firstCell!==bd.startcell){
 			var cell0 = this.firstCell, cell = bd.startcell;
 			um.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
@@ -70,7 +70,7 @@ MouseEvent:{
 				if(this.firstCell.isnull){ this.firstCell = this.mouseCell;}
 				var cell0 = bd.startcell;
 				bd.startcell = cell;
-				pc.paintCell(cell0);
+				cell0.draw();
 				input=true;
 			}
 		}
@@ -108,7 +108,7 @@ MouseEvent:{
 			if(this.inputData!==10){ cell.setQues(this.inputData);}
 			bd.hinfo.generateGates();
 
-			pc.paintCell(cell);
+			cell.draw();
 			pc.dispnumStartpos(bd.startcell);
 		}
 		this.prevPos   = pos;
@@ -148,7 +148,7 @@ KeyEvent:{
 				if(newques==0){ cell.setNum(-1);}
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
-				pc.paintCell(cell);
+				cell.draw();
 				pc.dispnumStartpos(bd.startcell);
 			}
 		}
@@ -222,8 +222,8 @@ Board:{
 			um.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
 
 			this.startcell = cell;
-			pc.paintCell(cell0);
-			pc.paintCell(cell);
+			cell0.draw();
+			cell.draw();
 		}
 	},
 
@@ -280,8 +280,8 @@ Board:{
 	exec : function(bx, by){
 		var cell0, cell = bd.getc(bx, by);
 		cell0 = bd.startcell; bd.startcell = cell;
-		pc.paintCell(cell0);
-		pc.paintCell(cell);
+		cell0.draw();
+		cell.draw();
 	}
 },
 

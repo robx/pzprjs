@@ -104,12 +104,7 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 		var obj = bd.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==obj.group){ return true;}
 		obj.setdata(this.property, num);
-		switch(obj.group){
-			case bd.CELL:   pc.paintCell(obj); break;
-			case bd.CROSS:  pc.paintCross(obj); break;
-			case bd.BORDER: pc.paintBorder(obj); break;
-			case bd.EXCELL: pc.paintEXCell(obj); break;
-		}
+		obj.draw();
 	}
 });
 

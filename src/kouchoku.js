@@ -26,8 +26,8 @@ MouseEvent:{
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 				this.targetPoint = [null, null];
-				if(cross1!==null){ pc.paintCross(cross1);}
-				if(cross2!==null){ pc.paintCross(cross2);}
+				if(cross1!==null){ cross1.draw();}
+				if(cross2!==null){ cross2.draw();}
 			}
 			this.mousereset();
 		}
@@ -41,13 +41,13 @@ MouseEvent:{
 		if(this.mousestart){
 			this.inputData = 1;
 			this.targetPoint[0] = cross;
-			pc.paintCross(cross);
+			cross.draw();
 		}
 		else if(this.mousemove && this.inputData===1){
 			var cross0=this.targetPoint[1];
 			this.targetPoint[1] = cross;
-			pc.paintCross(cross);
-			if(cross0!==null){ pc.paintCross(cross0);}
+			cross.draw();
+			if(cross0!==null){ cross0.draw();}
 		}
 		
 		this.mouseCell = cross;
@@ -57,8 +57,8 @@ MouseEvent:{
 
 		var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 		this.targetPoint = [null, null];
-		if(cross1!==null){ pc.paintCross(cross1);}
-		if(cross2!==null){ pc.paintCross(cross2);}
+		if(cross1!==null){ cross1.draw();}
+		if(cross2!==null){ cross2.draw();}
 		if(cross1!==null && cross2!==null){
 			if(!pp.getVal('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
@@ -94,11 +94,11 @@ MouseEvent:{
 		else{
 			var cross0 = tc.getTXC();
 			tc.setTXC(cross);
-			pc.paintCross(cross0);
+			cross0.draw();
 		}
 		this.mouseCell = cross;
 
-		pc.paintCross(cross);
+		cross.draw();
 	}
 },
 
@@ -125,7 +125,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = cross;
-		pc.paintCross(cross);
+		cross.draw();
 	}
 },
 

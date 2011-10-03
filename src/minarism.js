@@ -25,7 +25,7 @@ MouseEvent:{
 		if(!border.isnull){
 			this.inputData = this.getdir(this.prevPos, pos);
 			border.setQdir(this.inputData!==border.getQdir()?this.inputData:0);
-			pc.paintBorder(border);
+			border.draw();
 			this.mousereset();
 		}
 		this.prevPos = pos;
@@ -37,8 +37,8 @@ MouseEvent:{
 		if(!tc.pos.equals(pos)){
 			var tcp = tc.getTCP(), flag = false;
 			tc.setTCP(pos);
-			pc.paintPos(tcp);
-			pc.paintPos(pos);
+			tcp.draw();
+			pos.draw();
 		}
 		else{
 			var border = pos.getb();
@@ -61,7 +61,7 @@ MouseEvent:{
 					else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
 					else{ border.setQnum(id,qn-1);}
 				}
-				pc.paintBorder(border);
+				border.draw();
 			}
 		}
 	}
@@ -108,7 +108,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = border;
-		pc.paintBorder(border);
+		border.draw();
 	}
 },
 

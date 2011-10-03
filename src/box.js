@@ -19,14 +19,14 @@ MouseEvent:{
 		var excell0 = tc.getTEC();
 		if(excell!==excell0){
 			tc.setTEC(excell);
-			pc.paintEXCell(excell0);
+			excell0.draw();
 		}
 		else{
 			var qn = excell.getQnum(), max=excell.nummaxfunc();
 			if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
 			else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 		}
-		pc.paintEXCell(excell);
+		excell.draw();
 
 		this.mousereset();
 		return true;
@@ -47,8 +47,8 @@ KeyEvent:{
 		}
 
 		if(flag){
-			pc.paintEXCell(excell0);
-			pc.paintEXCell(tc.getTEC());
+			excell0.draw();
+			tc.getTCP().draw();
 			this.tcMoved = true;
 		}
 		return flag;
@@ -76,7 +76,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		pc.paintEXCell(tc.getTEC());
+		tc.getTCP().draw();
 	}
 },
 

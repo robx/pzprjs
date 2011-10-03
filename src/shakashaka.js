@@ -54,7 +54,7 @@ MouseEvent:{
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	checkCornerData : function(cell){
 		var dx = this.inputPoint.x - cell.px;
@@ -87,7 +87,7 @@ MouseEvent:{
 			if(this.inputData===cell.getQans()){ this.inputData = 0;}
 			cell.setAnswer(this.inputData);
 		}
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	inputTriangle_pull_end : function(){
 		var dx = (this.inputPoint.x-this.firstPoint.x);
@@ -97,7 +97,7 @@ MouseEvent:{
 		if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
 			var cell = this.mouseCell;
 			cell.setAnswer(cell.getQsub()!==1?-1:0);
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 
@@ -141,7 +141,7 @@ MouseEvent:{
 			cell.setAnswer(ret);
 			this.inputData = ret;
 			this.mouseCell = cell;
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	},
 	inputDot : function(){
@@ -152,7 +152,7 @@ MouseEvent:{
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	inputTriangle_onebtn : function(){
@@ -164,7 +164,7 @@ MouseEvent:{
 		else if(this.btn.Right){ this.inputData = [5,-1,1,0,2,3,4][ans+1];}
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

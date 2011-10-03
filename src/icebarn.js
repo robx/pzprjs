@@ -28,7 +28,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
 		cell.setQues(this.inputData);
-		pc.paintCellAround(cell);
+		cell.drawaround();
 		this.mouseCell = cell;
 	},
 	inputarrow : function(){
@@ -46,7 +46,7 @@ MouseEvent:{
 			else{
 				if(this.inputData===null){ this.inputarrow_inout(border,dir);}
 			}
-			pc.paintBorder(border);
+			border.draw();
 		}
 		this.prevPos = pos;
 	},
@@ -55,7 +55,7 @@ MouseEvent:{
 		if     (val===1){ border0 = bd.arrowin;  bd.inputarrowin(border);}
 		else if(val===2){ border0 = bd.arrowout; bd.inputarrowout(border);}
 		if(border0!==null){
-			pc.paintBorder(border0);
+			border0.draw();
 			this.mousereset();
 		}
 	},
@@ -204,8 +204,8 @@ Board:{
 		var border0, border = bd.getb(bx,by);
 		if     (this.property==='in') { border0 = bd.arrowin;  bd.arrowin  = border;}
 		else if(this.property==='out'){ border0 = bd.arrowout; bd.arrowout = border;}
-		pc.paintBorder(border0);
-		pc.paintBorder(border);
+		border0.draw();
+		border.draw();
 	}
 },
 

@@ -24,10 +24,10 @@ MouseEvent:{
 		var cell0 = tc.getTCC();
 		if(cell!==cell0){
 			tc.setTCC(cell);
-			pc.paintCell(cell0);
+			cell0.draw();
 		}
 		cell.setStone();
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	inputqans : function(){
 		var cell = this.getcell();
@@ -69,7 +69,7 @@ MouseEvent:{
 		}
 
 		cell.setAnum(max+1);
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -85,7 +85,7 @@ KeyEvent:{
 		if(ca=='q'){
 			var cell = tc.getTCC();
 			cell.setStone();
-			pc.paintCell(cell);
+			cell.draw();
 		}
 	}
 },

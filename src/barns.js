@@ -28,7 +28,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
 		cell.setQues(this.inputData);
-		pc.paintCell(cell);
+		cell.draw();
 		this.mouseCell = cell;
 	}
 },

@@ -35,7 +35,7 @@ KeyEvent:{
 		else if(ca=='-'         ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
 		else{ return;}
 
-		pc.paintCell(cell);
+		cell.draw();
 	},
 
 	enablemake_p : true,

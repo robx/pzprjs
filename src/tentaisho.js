@@ -29,7 +29,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell; 
-		pc.paintCell(cell);
+		cell.draw();
 	},
 	inputBGcolor3 : function(){
 		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
@@ -65,7 +65,7 @@ MouseEvent:{
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.getQans()===0?1:0);}
 			border.setQans(this.inputData);
-			pc.paintBorder(border);
+			border.draw();
 		}
 		this.prevPos = pos;
 	},
@@ -79,7 +79,7 @@ MouseEvent:{
 			else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
 		}
 		this.prevPos = pos;
-		pc.paintPos(pos);
+		pos.draw();
 	}
 },
 
@@ -98,7 +98,7 @@ KeyEvent:{
 			if     (ca=='1'){ bd.setStar(id,1);}
 			else if(ca=='2'){ bd.setStar(id,2);}
 			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ bd.setStar(id,0);}
-			pc.paintPos(pos);
+			pos.draw();
 		}
 	}
 },

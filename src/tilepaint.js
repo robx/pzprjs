@@ -24,7 +24,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

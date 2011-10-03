@@ -31,7 +31,7 @@ MouseEvent:{
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

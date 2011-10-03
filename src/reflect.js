@@ -40,7 +40,7 @@ KeyEvent:{
 		else if(ca=='y'){ cell.setQues(0); cell.setQnum(-1);}
 		else{ return false;}
 
-		pc.paintCellAround(cell);
+		cell.drawaround();
 		return true;
 	},
 

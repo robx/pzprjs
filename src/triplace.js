@@ -38,7 +38,7 @@ MouseEvent:{
 		}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell;
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

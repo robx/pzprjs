@@ -21,7 +21,7 @@ MouseEvent:{
 
 		if     (cell.getQsub()===0){ cell.setQsub(2);}
 		else if(cell.getQsub()===2){ cell.setQsub(0);}
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 

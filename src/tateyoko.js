@@ -56,7 +56,7 @@ MouseEvent:{
 		// 描画・後処理
 		if(input){
 			cell.setQans(this.inputData!==0?this.inputData:0);
-			pc.paintCell(cell);
+			cell.draw();
 		}
 		this.prevPos   = pos;
 		this.mouseCell = cell;
@@ -66,7 +66,7 @@ MouseEvent:{
 		if(cell.isnull || cell.getQues()===1){ return;}
 
 		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.getQans()]);
-		pc.paintCell(cell);
+		cell.draw();
 	}
 },
 
@@ -93,7 +93,7 @@ KeyEvent:{
 		else{ return false;}
 
 		this.prev=cell;
-		pc.paintCell(cell);
+		cell.draw();
 		return true;
 	},
 
