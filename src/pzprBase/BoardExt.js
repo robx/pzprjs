@@ -615,44 +615,40 @@ pzprv3.createCoreClass('AreaData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.setCell()      黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	// info.setCell_main() setCellから呼び出される本体
+	// info.setCellInfo() 黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCellInfo : function(cell){
 		var val = this.getlink(cell), old = this.cellinfo[cell.id];
-		if(val===old){ return;}
-		else{
-			this.setCell_main(cell, val, old);
+
+		if(val!==old){
+			this.cellinfo[cell.id] = val;
+
+			var isset = ((val&16) && !(old&16)), cid = this.getcid(cell, (val|old));
+			// 新たに黒マス(白マス)になった時
+			if(isset){
+				if(cid.length<=1){ this.assignCell(cell, (cid.length===1?cid[0]:null));}
+				else             { this.combineInfo(cell, cid);}
+			}
+			// 黒マス(白マス)ではなくなった時
+			else{
+				if(cid.length<=1){ this.removeCell(cell);}	// まわりが0か1なら情報or自分を消去するだけ
+				else             { this.remakeInfo(cell, cid);}
+			}
 		}
 	},
-	setCell_main : function(cell, val, old){
-		this.cellinfo[cell.id] = val;
-
-		var isset = (val>old), cid = this.getcid(cell, (val>old?val:old));
-		// 新たに黒マス(白マス)になった時
-		if(isset){
-			if(cid.length<=1){ this.assignCell(cell, (cid.length===1?cid[0]:null));}
-			else             { this.combineInfo(cell, cid);}
-		}
-		// 黒マス(白マス)ではなくなった時
-		else{
-			if(cid.length<=1){ this.removeCell(cell);}	// まわりが0か1なら情報or自分を消去するだけ
-			else             { this.remakeInfo(cell, cid);}
- 		}
- 	},
 
 	//--------------------------------------------------------------------------------
 	// info.getlink() 上下左右にのセルに繋がることが可能かどうかの情報を取得する
 	// info.getcid()  接する最大4箇所のセルのうち、自分に繋がることができるものを返す
+	// info.getcellaround() 今自分が繋がっているセルを返す
 	//--------------------------------------------------------------------------------
 	getlink : function(cell){
 		var val = 0;
-		if(this.isvalid(cell)){
-			if(!cell.up().isnull){ val+=1;}
-			if(!cell.dn().isnull){ val+=2;}
-			if(!cell.lt().isnull){ val+=4;}
-			if(!cell.rt().isnull){ val+=8;}
-		}
+		if(!cell.up().isnull){ val+=1;}
+		if(!cell.dn().isnull){ val+=2;}
+		if(!cell.lt().isnull){ val+=4;}
+		if(!cell.rt().isnull){ val+=8;}
+		if(this.isvalid(cell)){ val+=16;}
 		return val;
 	},
 	getcid : function(cell, link){
@@ -662,6 +658,9 @@ pzprv3.createCoreClass('AreaData',
 			if(this.id[cell2.id]!==null && !!(link & pow[dir]) && !!(link2 & pow2[dir])){ cid.push(cell2.id);}
 		}
 		return cid;
+	},
+	getcellaround : function(cell){
+		return this.getcid(cell, this.cellinfo[cell.id]);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -787,7 +786,7 @@ pzprv3.createCoreClass('AreaData',
 			this.id[cc] = newid;
 			this[newid].idlist.push(cc);
 
-			var cid = this.getcid(bd.cell[cc], this.cellinfo[bd.cell[c].id]);
+			var cid = this.getcellaround(bd.cell[cc]);
 			for(var i=0;i<cid.length;i++){
 				if(this.id[cid[i]]===0){ stack.push(cid[i]);}
 			}
@@ -890,13 +889,29 @@ pzprv3.createCoreClass('AreaBorderData:AreaData',
 	//--------------------------------------------------------------------------------
 	getlink : function(cell){
 		var val = 0;
-		if(this.isvalid(cell)){
-			if(!cell.up().isnull && !this.isbd[cell.ub().id]){ val+=1;}
-			if(!cell.dn().isnull && !this.isbd[cell.db().id]){ val+=2;}
-			if(!cell.lt().isnull && !this.isbd[cell.lb().id]){ val+=4;}
-			if(!cell.rt().isnull && !this.isbd[cell.rb().id]){ val+=8;}
-		}
+		if(!cell.up().isnull && !this.isbd[cell.ub().id]){ val+=1;}
+		if(!cell.dn().isnull && !this.isbd[cell.db().id]){ val+=2;}
+		if(!cell.lt().isnull && !this.isbd[cell.lb().id]){ val+=4;}
+		if(!cell.rt().isnull && !this.isbd[cell.rb().id]){ val+=8;}
+		if(this.isvalid(cell)){ val+=16;}
 		return val;
+	},
+
+	//--------------------------------------------------------------------------------
+	// info.setCellInfo() マスの有効/無効切り替え時などに、IDの情報を変更する
+	//--------------------------------------------------------------------------------
+	setCellInfo : function(cell){
+		var result = false, cblist=cell.getdir4cblist();
+		for(var i=0;i<cblist.length;i++){
+			var cell2=cblist[i][0], border=cblist[i][1];
+			if(this.setbd(border)){
+				this.cellinfo[cell2.id] = this.getlink(cell2);
+				result = true;
+			}
+		}
+		if(!result){ return;}
+
+		pzprv3.core.AreaData.prototype.setCellInfo.call(this, cell);
 	},
 
 	//--------------------------------------------------------------------------------

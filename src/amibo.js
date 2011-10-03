@@ -509,7 +509,7 @@ AnsCheck:{
 	checkLoop : function(){
 		var result=true, sinfo={cell:[]};
 		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.areas.barinfo.getcid(bd.cell[c], bd.areas.barinfo.cellinfo[bd.cell[c].id]);
+			sinfo.cell[c] = bd.areas.barinfo.getcellaround(bd.cell[c]);
 		}
 
 		var sdata=[];
@@ -568,53 +568,11 @@ AnsCheck:{
 "AreaBarData:AreaData":{
 
 	isvalid : function(cell){ return (cell.getQans()>0);},
+	getlink : function(cell){ return (16 + [0,3,12,15][cell.getQans()]);},
 
-	//--------------------------------------------------------------------------------
-	// info.reset() 線の情報を初期化する
-	//--------------------------------------------------------------------------------
 	reset : function(){
 		pzprv3.core.AreaData.prototype.reset.call(this);
 		this.newIrowake();
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.setCellInfo()    線が入力されたり消された時に、線IDの情報を変更する
-	// info.setCell_main()   線が入力されたり消された時に、線IDの情報を変更する
-	//--------------------------------------------------------------------------------
-	setCellInfo : function(cell){
-		var val = this.getlink(cell), old = this.cellinfo[cell.id];
-		if(val===old){ return;}
-		else if(val===0||val===15||old===0||old===15){
-			this.setCell_main(cell, val, old);
-		}
-		else{
-			this.setCell_main(cell, 0, old);
-			this.setCell_main(cell, val, 0);
-		}
-	},
-	setCell_main : function(cell, val, old){
-		this.cellinfo[cell.id] = val;
-
-		var isset = (val>old), cid = this.getcid(cell, (val>old?val:old));
-		// 新たに黒マス(白マス)になった時
-		if(isset){
-			if(cid.length===0 && old!==0){ /* nop */ }
-			if(cid.length<=1){ this.assignCell(cell, (cid.length===1?cid[0]:null));}
-			else             { this.combineInfo(cell, cid);}
-		}
-		// 黒マス(白マス)ではなくなった時
-		else{
-			if(cid.length===0 && val!==0){ /* nop */ }
-			else if(cid.length<=1 && val===0){ this.removeCell(cell);}
-			else                             { this.remakeInfo(cell, cid);}
-		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getlink() 上下左右に繋がるかの情報を取得する
-	//--------------------------------------------------------------------------------
-	getlink : function(cell){
-		return [0,3,12,15][cell.getQans()];
 	}
 }
 };

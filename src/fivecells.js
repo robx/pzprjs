@@ -90,42 +90,6 @@ AreaManager:{
 	hasroom : true
 },
 
-AreaRoomData:{
-	isvalid : function(cell){
-		return (cell.ques!==7);
-	},
-
-	setCellInfo : function(cell){
-		var val = this.getlink(cell), old = this.cellinfo[cell.id];
-		if(val===old){
-			if(val===0){
-				val = this.isvalid(cell); old = (this.id[cell.id]!==null);
-				if     ( val &&!old){ this.assignCell(cell, null);}
-				else if(!val && old){ this.removeCell(cell);}
-			}
-		}
-		else{
-			this.setCellDir4(cell, val, old);
-		}
-	},
-	// 自分＋上下左右４方向の部屋IDを単純にふり直す
-	setCellDir4 : function(cell, val, old){
-		this.cellinfo[cell.id] = val;
-
-		var clist = [cell], cblist = cell.getdir4cblist();
-		for(var i=0;i<cblist.length;i++){
-			var cell = cblist[i][0], border = cblist[i][1];
-			if(!cell.isnull){
-				this.cellinfo[cell.id] = this.getlink(cell);
-				clist.push(cell);
-			}
-			if(!border.isnull){ this.setbd(border);}
-		}
-
-		this.searchClist(this.popRoom(clist));
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
