@@ -30,10 +30,10 @@ KeyEvent:{
 Cell:{
 	getdir4BorderCount : function(){
 		var cnt=0, pos=this.getaddr();
-		if( pos.y===bd.minby+1 || this.ub().isBorder() ){ cnt++;}
-		if( pos.y===bd.maxby-1 || this.db().isBorder() ){ cnt++;}
-		if( pos.x===bd.minbx+1 || this.lb().isBorder() ){ cnt++;}
-		if( pos.x===bd.maxby-1 || this.rb().isBorder() ){ cnt++;}
+		if( pos.by===bd.minby+1 || this.ub().isBorder() ){ cnt++;}
+		if( pos.by===bd.maxby-1 || this.db().isBorder() ){ cnt++;}
+		if( pos.bx===bd.minbx+1 || this.lb().isBorder() ){ cnt++;}
+		if( pos.bx===bd.maxby-1 || this.rb().isBorder() ){ cnt++;}
 		return cnt;
 	}
 },

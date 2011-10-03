@@ -40,10 +40,10 @@ KeyEvent:{
 	moveTarget : function(ca){
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = bd.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.x===tc.minx && tc.miny<tcp.y){ dir=bd.UP;} break;
-			case this.KEYDN: if(tcp.x===tc.minx && tc.maxy>tcp.y){ dir=bd.DN;} break;
-			case this.KEYLT: if(tcp.y===tc.miny && tc.minx<tcp.x){ dir=bd.LT;} break;
-			case this.KEYRT: if(tcp.y===tc.miny && tc.maxx>tcp.x){ dir=bd.RT;} break;
+			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=bd.UP;} break;
+			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=bd.DN;} break;
+			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=bd.LT;} break;
+			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=bd.RT;} break;
 		}
 
 		if(dir!==bd.NDIR){
@@ -316,20 +316,22 @@ AnsCheck:{
 		var result = true;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
-			var qn=excell.getQnum(), bx=excell.bx, by=excell.by, val=0;
+			var qn=excell.getQnum(), pos=excell.getaddr(), val=0, cell;
 			var clist=new pzprv3.core.PieceList(this.owner);
-			if(by===-1 && bx>0 && bx<2*bd.qcols){
-				for(var y=1;y<2*bd.qrows;y+=2){
-					var cell = bd.getc(bx,y);
-					if(cell.qans===1){ val+=((y+1)>>1);}
+			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
+				cell = pos.move(0,2).getc();
+				while(!cell.isnull){
+					if(cell.qans===1){ val+=((pos.by+1)>>1);}
 					clist.add(cell);
+					cell = pos.move(0,2).getc();
 				}
 			}
-			else if(bx===-1 && by>0 && by<2*bd.qrows){
-				for(var x=1;x<2*bd.qcols;x+=2){
-					var cell = bd.getc(x,by);
-					if(cell.qans===1){ val+=((x+1)>>1);}
+			else if(pos.bx===-1 && pos.by>0 && pos.by<2*bd.qrows){
+				cell = pos.move(2,0).getc();
+				while(!cell.isnull){
+					if(cell.qans===1){ val+=((pos.bx+1)>>1);}
 					clist.add(cell);
+					cell = pos.move(2,0).getc();
 				}
 			}
 			else{ continue;}

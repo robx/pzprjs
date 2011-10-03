@@ -647,8 +647,8 @@ AnsCheck:{
 
 	checkLine : function(){
 		var pos = bd.arrowin.getaddr(), dir=0;
-		if     (pos.y===bd.minby){ dir=2;}else if(pos.y===bd.maxby){ dir=1;}
-		else if(pos.x===bd.minbx){ dir=4;}else if(pos.x===bd.maxbx){ dir=3;}
+		if     (pos.by===bd.minby){ dir=2;}else if(pos.by===bd.maxby){ dir=1;}
+		else if(pos.bx===bd.minbx){ dir=4;}else if(pos.bx===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}
 		if(!bd.arrowin.isLine()){ bd.arrowin.seterr(3); return 1;}
 

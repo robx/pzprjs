@@ -616,35 +616,35 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 // AddressƒNƒ‰ƒX
 pzprv3.createCoreClass('Address',
 {
-	initialize : function(owner,x,y){
+	initialize : function(owner,bx,by){
 		this.owner = owner;
-		this.init(x,y);
+		this.init(bx,by);
 	},
 
-	reset  : function()   { this.x = null;  this.y = null;},
-	equals : function(pos){ return (this.x===pos.x && this.y===pos.y);},
-	clone  : function()   { return new pzprv3.core.Address(this.owner, this.x, this.y);},
+	reset  : function()   { this.bx = null;  this.by = null;},
+	equals : function(pos){ return (this.bx===pos.bx && this.by===pos.by);},
+	clone  : function()   { return new pzprv3.core.Address(this.owner, this.bx, this.by);},
 
-	set  : function(pos)  { this.x = pos.x; this.y = pos.y; return this;},
-	init : function(bx,by){ this.x  = bx; this.y  = by; return this;},
-	move : function(dx,dy){ this.x += dx; this.y += dy; return this;},
-	rel  : function(dx,dy){ return new pzprv3.core.Address(this.owner, this.x+dx, this.y+dy);},
+	set  : function(pos)  { this.bx = pos.bx; this.by = pos.by; return this;},
+	init : function(bx,by){ this.bx  = bx; this.by  = by; return this;},
+	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
+	rel  : function(dx,dy){ return new pzprv3.core.Address(this.owner, this.bx+dx, this.by+dy);},
 
-	oncell   : function(){ return !!( (this.x&1)&& (this.y&1));},
-	oncross  : function(){ return !!(!(this.x&1)&&!(this.y&1));},
-	onborder : function(){ return !!((this.x+this.y)&1);},
+	oncell   : function(){ return !!( (this.bx&1)&& (this.by&1));},
+	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
+	onborder : function(){ return !!((this.bx+this.by)&1);},
 	
-	getc  : function(){ return bd.getc(this.x, this.y);},
-	getx  : function(){ return bd.getx(this.x, this.y);},
-	getb  : function(){ return bd.getb(this.x, this.y);},
-	getex : function(){ return bd.getex(this.x, this.y);},
+	getc  : function(){ return bd.getc(this.bx, this.by);},
+	getx  : function(){ return bd.getx(this.bx, this.by);},
+	getb  : function(){ return bd.getb(this.bx, this.by);},
+	getex : function(){ return bd.getex(this.bx, this.by);},
 	
 	movedir : function(dir,dd){
 		switch(dir){
-			case 1: this.y-=dd; break; /* bd.UP */
-			case 2: this.y+=dd; break; /* bd.DN */
-			case 3: this.x-=dd; break; /* bd.LT */
-			case 4: this.x+=dd; break; /* bd.RT */
+			case 1: this.by-=dd; break; /* bd.UP */
+			case 2: this.by+=dd; break; /* bd.DN */
+			case 3: this.bx-=dd; break; /* bd.LT */
+			case 4: this.bx+=dd; break; /* bd.RT */
 		}
 	},
 
@@ -652,7 +652,7 @@ pzprv3.createCoreClass('Address',
 	// pos.draw() ”Õ–Ê‚ÉŽ©•ª‚ÌŽüˆÍ‚ð•`‰æ‚·‚é
 	//---------------------------------------------------------------------------
 	draw : function(){
-		pc.paintRange(this.x-1, this.y-1, this.x+1, this.y+1);
+		pc.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 });
 

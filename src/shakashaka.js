@@ -57,8 +57,8 @@ MouseEvent:{
 		cell.draw();
 	},
 	checkCornerData : function(cell){
-		var dx = this.inputPoint.x - cell.px;
-		var dy = this.inputPoint.y - cell.py;
+		var dx = this.inputPoint.px - cell.px;
+		var dy = this.inputPoint.py - cell.py;
 		if(dx<=0){ return ((dy<=0)?5:2);}
 		else     { return ((dy<=0)?4:3);}
 	},
@@ -73,8 +73,8 @@ MouseEvent:{
 	},
 	inputTriangle_pull_move : function(){
 		var cell = this.mouseCell;
-		var dx = (this.inputPoint.x-this.firstPoint.x);
-		var dy = (this.inputPoint.y-this.firstPoint.y);
+		var dx = (this.inputPoint.px-this.firstPoint.px);
+		var dy = (this.inputPoint.py-this.firstPoint.py);
 
 		// 一定以上動いていたら三角形を入力
 		var diff = 12;
@@ -90,8 +90,8 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputTriangle_pull_end : function(){
-		var dx = (this.inputPoint.x-this.firstPoint.x);
-		var dy = (this.inputPoint.y-this.firstPoint.y);
+		var dx = (this.inputPoint.px-this.firstPoint.px);
+		var dy = (this.inputPoint.py-this.firstPoint.py);
 
 		// ほとんど動いていなかった場合は・を入力
 		if(Math.abs(dx)<=3 && Math.abs(dy)<=3){

@@ -875,8 +875,8 @@ pzprv3.createCommonClass('Menu',
 	titlebardown : function(e){
 		var pop = ee.getSrcElement(e).parentNode;
 		this.movingpop = pop;
-		this.offset.x = ee.pageX(e) - parseInt(pop.style.left);
-		this.offset.y = ee.pageY(e) - parseInt(pop.style.top);
+		this.offset.px = ee.pageX(e) - parseInt(pop.style.left);
+		this.offset.py = ee.pageY(e) - parseInt(pop.style.top);
 	},
 	titlebarup : function(e){
 		var pop = this.movingpop;
@@ -887,8 +887,8 @@ pzprv3.createCommonClass('Menu',
 	titlebarmove : function(e){
 		var pop = this.movingpop;
 		if(!!pop){
-			pop.style.left = ee.pageX(e) - this.offset.x + 'px';
-			pop.style.top  = ee.pageY(e) - this.offset.y + 'px';
+			pop.style.left = ee.pageX(e) - this.offset.px + 'px';
+			pop.style.top  = ee.pageY(e) - this.offset.py + 'px';
 			ee.preventDefault(e);
 		}
 	},

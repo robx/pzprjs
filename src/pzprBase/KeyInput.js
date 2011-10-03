@@ -208,10 +208,10 @@ pzprv3.createCommonClass('KeyEvent',
 	moveTC : function(ca,mv){
 		var tcp = tc.getTCP(), dir = bd.BDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.y-mv>=tc.miny){ dir = bd.UP;} break;
-			case this.KEYDN: if(tcp.y+mv<=tc.maxy){ dir = bd.DN;} break;
-			case this.KEYLT: if(tcp.x-mv>=tc.minx){ dir = bd.LT;} break;
-			case this.KEYRT: if(tcp.x+mv<=tc.maxx){ dir = bd.RT;} break;
+			case this.KEYUP: if(tcp.by-mv>=tc.miny){ dir = bd.UP;} break;
+			case this.KEYDN: if(tcp.by+mv<=tc.maxy){ dir = bd.DN;} break;
+			case this.KEYLT: if(tcp.bx-mv>=tc.minx){ dir = bd.LT;} break;
+			case this.KEYRT: if(tcp.bx+mv<=tc.maxx){ dir = bd.RT;} break;
 			default: return false;
 		}
 
@@ -590,10 +590,10 @@ pzprv3.createCommonClass('TargetCursor',
 
 	adjust_init : function(){
 		if(this.pos===(void 0)){ return;}
-		if(this.pos.x<this.minx){ this.pos.x=this.minx;}
-		if(this.pos.y<this.miny){ this.pos.y=this.miny;}
-		if(this.pos.x>this.maxx){ this.pos.x=this.maxx;}
-		if(this.pos.y>this.maxy){ this.pos.y=this.maxy;}
+		if(this.pos.bx<this.minx){ this.pos.bx=this.minx;}
+		if(this.pos.by<this.miny){ this.pos.by=this.miny;}
+		if(this.pos.bx>this.maxx){ this.pos.bx=this.maxx;}
+		if(this.pos.by>this.maxy){ this.pos.by=this.maxy;}
 	},
 	adjust_modechange : function(){ },
 
@@ -620,7 +620,7 @@ pzprv3.createCommonClass('TargetCursor',
 	//---------------------------------------------------------------------------
 	getTCP : function(){ return this.pos.clone();},
 	setTCP : function(pos){
-		if(pos.x<this.minx || this.maxx<pos.x || pos.y<this.miny || this.maxy<pos.y){ return;}
+		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
 		this.pos.set(pos);
 	},
 
@@ -636,7 +636,7 @@ pzprv3.createCommonClass('TargetCursor',
 	getTEC : function(){ return this.pos.getex();},
 	setTEC : function(excell){ this.pos.set(excell.getaddr());},
 
-	getOBJ : function(){ return bd.getobj(this.pos.x, this.pos.y);},
+	getOBJ : function(){ return bd.getobj(this.pos.bx, this.pos.by);},
 	setOBJ : function(obj){
 		if(obj.isnull){ return;}
 		this.pos.set(obj.getaddr());

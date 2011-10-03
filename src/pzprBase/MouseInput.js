@@ -29,9 +29,9 @@ pzprv3.createCommonClass('MouseEvent',
 
 		this.mousereset();
 
-		this.mouseoffset = {x:0,y:0};
-		if(ee.br.IE6||ee.br.IE7||ee.br.IE8){ this.mouseoffset = {x:2,y:2};}
-		else if(ee.br.WebKit)              { this.mouseoffset = {x:1,y:1};}
+		this.mouseoffset = {px:0,py:0};
+		if(ee.br.IE6||ee.br.IE7||ee.br.IE8){ this.mouseoffset = {px:2,py:2};}
+		else if(ee.br.WebKit)              { this.mouseoffset = {px:1,py:1};}
 	},
 
 	RBBlackCell : false,	// 連黒分断禁のパズル
@@ -198,8 +198,8 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		this.inputPoint.x = ee.pageX(e) - pc.pageX - this.mouseoffset.x;
-		this.inputPoint.y = ee.pageY(e) - pc.pageY - this.mouseoffset.y;
+		this.inputPoint.px = ee.pageX(e) - pc.pageX - this.mouseoffset.px;
+		this.inputPoint.py = ee.pageY(e) - pc.pageY - this.mouseoffset.py;
 	},
 
 	notInputted : function(){ return !um.changeflag;},
@@ -216,19 +216,19 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
-		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
+		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
 		return this.borderpos(0).getc();
 	},
 	getcross : function(){
 		return this.borderpos(0.5).getx();
 	},
 	getexcell : function(){
-		if(this.inputPoint.x%pc.cw===0 || this.inputPoint.y%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
+		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
 		return this.borderpos(0).getex();
 	},
 	borderpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var pm = rc*pc.cw, px=(this.inputPoint.x+pm+2*pc.cw), py=(this.inputPoint.y+pm+2*pc.ch);
+		var pm = rc*pc.cw, px=(this.inputPoint.px+pm+2*pc.cw), py=(this.inputPoint.py+pm+2*pc.ch);
 		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
 		var by = ((py/pc.ch)|0)*2 + ((py%pc.ch<2*pm)?0:1) - 4;
 
@@ -236,8 +236,8 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getborder : function(spc){
-		var bx = ((this.inputPoint.x/pc.cw)<<1)+1, by = ((this.inputPoint.y/pc.ch)<<1)+1;
-		var dx =   this.inputPoint.x%pc.cw,        dy =   this.inputPoint.y%pc.ch;
+		var bx = ((this.inputPoint.px/pc.cw)<<1)+1, by = ((this.inputPoint.py/pc.ch)<<1)+1;
+		var dx =   this.inputPoint.px%pc.cw,        dy =   this.inputPoint.py%pc.ch;
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		if(bd.lines.isLineCross){
@@ -454,10 +454,10 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getdir : function(base, current){
-		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return bd.UP;}
-		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return bd.DN;}
-		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return bd.LT;}
-		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return bd.RT;}
+		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return bd.UP;}
+		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return bd.DN;}
+		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return bd.LT;}
+		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return bd.RT;}
 		return bd.NDIR;
 	},
 
@@ -544,7 +544,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var pos = this.borderpos(0.24);
 		if(!pos.oncross()){ return;}
 		var bm = (bd.iscross===2?0:2);
-		if(pos.x<bd.minbx+bm || pos.x>bd.maxbx-bm || pos.y<bd.minby+bm || pos.y>bd.maxby-bm){ return;}
+		if(pos.bx<bd.minbx+bm || pos.bx>bd.maxbx-bm || pos.by<bd.minby+bm || pos.by>bd.maxby-bm){ return;}
 
 		var cross = pos.getx();
 		if(cross.isnull){ return;}
@@ -588,8 +588,8 @@ pzprv3.createCommonClass('MouseEvent',
 		this.prevPos = pos;
 	},
 	getborderobj : function(base, current){
-		if(((current.x&1)===0 && base.x===current.x && Math.abs(base.y-current.y)===1) ||
-		   ((current.y&1)===0 && base.y===current.y && Math.abs(base.x-current.x)===1) )
+		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
+		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
 		return new pzprv3.core.BoardPiece(null);
 	},
@@ -626,10 +626,10 @@ pzprv3.createCommonClass('MouseEvent',
 		this.prevPos = pos;
 	},
 	getnb : function(base, current){
-		if     (current.x-base.x=== 0 && current.y-base.y===-2){ return base.rel(0,-1).getb();}
-		else if(current.x-base.x=== 0 && current.y-base.y=== 2){ return base.rel(0, 1).getb();}
-		else if(current.x-base.x===-2 && current.y-base.y=== 0){ return base.rel(-1,0).getb();}
-		else if(current.x-base.x=== 2 && current.y-base.y=== 0){ return base.rel( 1,0).getb();}
+		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.rel(0,-1).getb();}
+		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
+		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
+		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
 		return bd.newObject(bd.BORDER);
 	},
 

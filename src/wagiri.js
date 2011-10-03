@@ -10,7 +10,7 @@ MouseEvent:{
 
 	inputquestion : function(){
 		var pos = this.borderpos(0.33);
-		if(!bd.isinside(pos.x,pos.y)){ return;}
+		if(!bd.isinside(pos.bx,pos.by)){ return;}
 		if(pos.oncross()){
 			this.inputcross();
 		}

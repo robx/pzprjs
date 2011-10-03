@@ -93,20 +93,20 @@ KeyEvent:{
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = bd.NDIR;
 
 		if     (ca===this.KEYUP){
-			if(tcp.y===tc.maxy && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.miny;}
-			else if(tcp.y>tc.miny){ dir=bd.UP;}else{ flag=false;}
+			if(tcp.by===tc.maxy && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.miny;}
+			else if(tcp.by>tc.miny){ dir=bd.UP;}else{ flag=false;}
 		}
 		else if(ca===this.KEYDN){
-			if(tcp.y===tc.miny && tc.minx<tcp.x && tcp.x<tc.maxx){ tc.pos.y=tc.maxy;}
-			else if(tcp.y<tc.maxy){ dir=bd.DN;}else{ flag=false;}
+			if(tcp.by===tc.miny && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.maxy;}
+			else if(tcp.by<tc.maxy){ dir=bd.DN;}else{ flag=false;}
 		}
 		else if(ca===this.KEYLT){
-			if(tcp.x===tc.maxx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.minx;}
-			else if(tcp.x>tc.minx){ dir=bd.LT;}else{ flag=false;}
+			if(tcp.bx===tc.maxx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.minx;}
+			else if(tcp.bx>tc.minx){ dir=bd.LT;}else{ flag=false;}
 		}
 		else if(ca===this.KEYRT){
-			if(tcp.x===tc.minx && tc.miny<tcp.y && tcp.y<tc.maxy){ tc.pos.x=tc.maxx;}
-			else if(tcp.x<tc.maxx){ dir=bd.RT;}else{ flag=false;}
+			if(tcp.bx===tc.minx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.maxx;}
+			else if(tcp.bx<tc.maxx){ dir=bd.RT;}else{ flag=false;}
 		}
 		else{ flag=false;}
 
@@ -234,10 +234,10 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){ ldata[c]=0;}
 
 		var pos = this.excell[startec].getaddr(), dir=0;
-		if     (pos.y===this.minby+1){ dir=2;}
-		else if(pos.y===this.maxby-1){ dir=1;}
-		else if(pos.x===this.minbx+1){ dir=4;}
-		else if(pos.x===this.maxbx-1){ dir=3;}
+		if     (pos.by===this.minby+1){ dir=2;}
+		else if(pos.by===this.maxby-1){ dir=1;}
+		else if(pos.bx===this.minbx+1){ dir=4;}
+		else if(pos.bx===this.maxbx-1){ dir=3;}
 
 		while(dir!==0){
 			pos.movedir(dir,2);

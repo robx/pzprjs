@@ -113,15 +113,15 @@
 });
 
 //----------------------------------------------------------------------------
-// ★Pointクラス  (x,y)pixel座標を扱う
+// ★Pointクラス  (px,py)pixel座標を扱う
 //---------------------------------------------------------------------------
 // Pointクラス
 pzprv3.createCoreClass('Point',
 {
-	initialize : function(x,y){ this.x = x; this.y = y;},
-	set : function(pos){ this.x = pos.x; this.y = pos.y;},
-	reset : function(){ this.x = null; this.y = null;},
-	valid : function(){ return (this.x!==null && this.y!==null);}
+	initialize : function(px,py){ this.px = px; this.py = py;},
+	set : function(point){ this.px = point.px; this.py = point.py;},
+	reset : function(){ this.px = null; this.py = null;},
+	valid : function(){ return (this.px!==null && this.py!==null);}
 });
 
 /****************************/

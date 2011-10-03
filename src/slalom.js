@@ -77,8 +77,8 @@ MouseEvent:{
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
-				var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
-				var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
+				var mx=Math.abs(this.inputPoint.px-this.firstPoint.px);
+				var my=Math.abs(this.inputPoint.py-this.firstPoint.py);
 				if     (my>=8){ this.inputData=21; input=true;}
 				else if(mx>=8){ this.inputData=22; input=true;}
 			}
@@ -929,8 +929,8 @@ HurdleManager:{
 			}
 			this.data[this.max].x1 = cell.bx;
 			this.data[this.max].y1 = cell.by;
-			this.data[this.max].x2 = (!isvert?pos.x-2:pos.x);
-			this.data[this.max].y2 = ( isvert?pos.y-2:pos.y);
+			this.data[this.max].x2 = (!isvert?pos.bx-2:pos.bx);
+			this.data[this.max].y2 = ( isvert?pos.by-2:pos.by);
 			this.data[this.max].val = val;
 		}
 	},

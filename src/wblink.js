@@ -94,7 +94,7 @@ Border:{
 			while(pos1.move(0,-1).getc().noNum()){ pos1.move(0,-1);}
 			while(pos2.move(0, 1).getc().noNum()){ pos2.move(0, 1);}
 		}
-		return {x1:pos1.x, y1:pos1.y, x2:pos2.x, y2:pos2.y};
+		return {x1:pos1.bx, y1:pos1.by, x2:pos2.bx, y2:pos2.by};
 	}
 },
 

@@ -32,7 +32,7 @@ MouseEvent:{
 	},
 	inputmark_mouseup : function(){
 		var pos = this.borderpos(0.33);
-		if(!bd.isinside(pos.x,pos.y)){ return;}
+		if(!bd.isinside(pos.bx,pos.by)){ return;}
 
 		if(!tc.pos.equals(pos)){
 			var tcp = tc.getTCP(), flag = false;
@@ -114,8 +114,8 @@ KeyEvent:{
 
 TargetCursor:{
 	adjust_modechange : function(){
-		this.pos.x -= ((this.pos.x+1)%2);
-		this.pos.y -= ((this.pos.y+1)%2);
+		this.pos.bx -= ((this.pos.bx+1)%2);
+		this.pos.by -= ((this.pos.by+1)%2);
 	}
 },
 

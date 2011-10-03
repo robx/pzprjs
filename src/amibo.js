@@ -32,8 +32,8 @@ MouseEvent:{
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
-				var mx=Math.abs(this.inputPoint.x-this.firstPoint.x);
-				var my=Math.abs(this.inputPoint.y-this.firstPoint.y);
+				var mx=Math.abs(this.inputPoint.px-this.firstPoint.px);
+				var my=Math.abs(this.inputPoint.py-this.firstPoint.py);
 				if     (my>=8){ this.inputData=1; input=true;}
 				else if(mx>=8){ this.inputData=2; input=true;}
 			}

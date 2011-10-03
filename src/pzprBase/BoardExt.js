@@ -348,7 +348,7 @@ pzprv3.createCommonClass('LineManager',
 				while(1){
 					pos.movedir(dir,1);
 					if(!pos.onborder()){
-						var bx=pos.x, by=pos.y;
+						var bx=pos.bx, by=pos.by;
 						var obj = (this.isCenterLine ? pos.getc() : pos.getx());
 						if(obj.isnull){ break;}
 						else if(obj.lcnt()>=3){

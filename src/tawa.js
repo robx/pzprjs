@@ -16,13 +16,13 @@ MouseEvent:{
 	getcell : function(){
 		var pos = this.borderpos(0);
 		if(this.inputY%pc.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
-		if(!bd.isinside(pos.x,pos.y)){ return bd.newObject(bd.CELL);}
+		if(!bd.isinside(pos.bx,pos.by)){ return bd.newObject(bd.CELL);}
 
 		var cand = pos.getc();
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	borderpos : function(rc){
-		return new pzprv3.core.Address(this.owner, (this.inputPoint.x/pc.bw)|0, ((this.inputPoint.y/pc.ch)|0)*2+1);
+		return new pzprv3.core.Address(this.owner, (this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1);
 	}
 },
 
@@ -52,7 +52,7 @@ TargetCursor:{
 	// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 	adjust_init : function(){
 		if(this.pos.getc().isnull){
-			this.pos.x++;
+			this.pos.bx++;
 		}
 	},
 
@@ -60,12 +60,12 @@ TargetCursor:{
 		this.pos.movedir(dir,mv);
 
 		if(dir===bd.UP){
-			if(this.pos.x===this.maxx || (this.pos.x>this.minx && (this.pos.y&2)===0)){ this.pos.x--;}
-			else{ this.pos.x++;}
+			if(this.pos.bx===this.maxx || (this.pos.bx>this.minx && (this.pos.by&2)===0)){ this.pos.bx--;}
+			else{ this.pos.bx++;}
 		}
 		else if(dir===bd.DN){
-			if(this.pos.x===this.minx || (this.pos.x<this.maxx && (this.pos.y&2)===2)){ this.pos.x++;}
-			else{ this.pos.x--;}
+			if(this.pos.bx===this.minx || (this.pos.bx<this.maxx && (this.pos.by&2)===2)){ this.pos.bx++;}
+			else{ this.pos.bx--;}
 		}
 	}
 },

@@ -32,8 +32,8 @@ KeyEvent:{
 TargetCursor:{
 	adjust_modechange : function(){
 		if(this.owner.playmode){
-			if(this.pos.x<1){ this.pos.x = 1;}
-			if(this.pos.y<1){ this.pos.y = 1;}
+			if(this.pos.bx<1){ this.pos.bx = 1;}
+			if(this.pos.by<1){ this.pos.by = 1;}
 		}
 	}
 },

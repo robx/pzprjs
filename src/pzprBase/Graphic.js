@@ -1453,11 +1453,11 @@ pzprv3.createCommonClass('Graphic',
 
 		if(isdraw!==false && pp.getVal('cursor') && !this.outputImage){
 			var d = this.range;
-			if(tc.pos.x < d.x1-1 || d.x2+1 < tc.pos.x){ return;}
-			if(tc.pos.y < d.y1-1 || d.y2+1 < tc.pos.y){ return;}
+			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
+			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}
 
-			var cpx = tc.pos.x*this.bw + 0.5;
-			var cpy = tc.pos.y*this.bh + 0.5;
+			var cpx = tc.pos.bx*this.bw + 0.5;
+			var cpy = tc.pos.by*this.bh + 0.5;
 			var w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
@@ -1480,14 +1480,14 @@ pzprv3.createCommonClass('Graphic',
 		if(this.owner.playmode){ return;}
 
 		var d = this.range;
-		if(tc.pos.x < d.x1 || d.x2 < tc.pos.x){ return;}
-		if(tc.pos.y < d.y1 || d.y2 < tc.pos.y){ return;}
+		if(tc.pos.bx < d.x1 || d.x2 < tc.pos.bx){ return;}
+		if(tc.pos.by < d.y1 || d.y2 < tc.pos.by){ return;}
 
 		var target = tc.detectTarget(tc.getOBJ());
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1((tc.pos.x>>1)*this.cw, (tc.pos.y>>1)*this.ch, (target===2?4:2), vid);
+		this.drawTriangle1((tc.pos.bx>>1)*this.cw, (tc.pos.by>>1)*this.ch, (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------

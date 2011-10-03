@@ -35,7 +35,7 @@ MouseEvent:{
 		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
 		var pos = this.borderpos(0.34);
-		var id = bd.snum(pos.x, pos.y);
+		var id = bd.snum(pos.bx, pos.by);
 		if(id===null || bd.getStar(id)===0){ return;}
 
 		var cell=null, group=bd.star[id].group, gid=bd.star[id].obj.id;
@@ -73,7 +73,7 @@ MouseEvent:{
 		var pos = this.borderpos(0.25);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = bd.snum(pos.x, pos.y);
+		var id = bd.snum(pos.bx, pos.by);
 		if(id!==null){
 			if     (this.btn.Left) { bd.setStar(id, {0:1,1:2,2:0}[bd.getStar(id)]);}
 			else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
@@ -93,7 +93,7 @@ KeyEvent:{
 		this.key_inputstar(ca);
 	},
 	key_inputstar : function(ca){
-		var pos = tc.getTCP(), id = bd.snum(pos.x, pos.y);
+		var pos = tc.getTCP(), id = bd.snum(pos.bx, pos.by);
 		if(id!==null){
 			if     (ca=='1'){ bd.setStar(id,1);}
 			else if(ca=='2'){ bd.setStar(id,2);}

@@ -66,7 +66,7 @@ Border:{
 			while(pos1.move(-1,0).getx().noNum()){ pos1.move(-1,0);}
 			while(pos2.move( 1,0).getx().noNum()){ pos2.move( 1,0);}
 		}
-		return {x1:pos1.x, y1:pos1.y, x2:pos2.x, y2:pos2.y};
+		return {x1:pos1.bx, y1:pos1.by, x2:pos2.bx, y2:pos2.by};
 	}
 },
 
@@ -278,14 +278,14 @@ AnsCheck:{
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
 
 		var pos = new pzprv3.core.Address(this.owner, bd.minbx, bd.minby);
-		for(pos.x=bd.minbx;pos.x<=bd.maxbx;pos.x+=2){
-			for(pos.y=bd.minby;pos.y<=bd.maxby;pos.y+=2){
+		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
+			for(pos.by=bd.minby;pos.by<=bd.maxby;pos.by+=2){
 				/* 盤面端から探索をスタートする */
-				if((pos.x===bd.minbx||pos.x===bd.maxbx)^(pos.y===bd.minby||pos.y===bd.maxby)){
-					if     (pos.y===bd.minby){ this.clearLineInfo(lines,pos,2);}
-					else if(pos.y===bd.maxby){ this.clearLineInfo(lines,pos,1);}
-					else if(pos.x===bd.minbx){ this.clearLineInfo(lines,pos,4);}
-					else if(pos.x===bd.maxbx){ this.clearLineInfo(lines,pos,3);}
+				if((pos.bx===bd.minbx||pos.bx===bd.maxbx)^(pos.by===bd.minby||pos.by===bd.maxby)){
+					if     (pos.by===bd.minby){ this.clearLineInfo(lines,pos,2);}
+					else if(pos.by===bd.maxby){ this.clearLineInfo(lines,pos,1);}
+					else if(pos.bx===bd.minbx){ this.clearLineInfo(lines,pos,4);}
+					else if(pos.bx===bd.maxbx){ this.clearLineInfo(lines,pos,3);}
 				}
 			}
 		}
