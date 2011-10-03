@@ -10,8 +10,10 @@ MouseEvent:{
 	},
 	inputplay : function(){
 		if(this.mousestart || this.mousemove){ this.inputcell();}
-	},
-	inputRed : function(){ if(this.owner.pid==='nurikabe'){ this.dispRed();}}
+	}
+},
+"MouseEvent@nurikabe":{
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------
@@ -54,11 +56,11 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid!=='mochikoro'){ this.checkBlackCell = true;}
-	},
+	checkBlackCell : true,
 	checkWhiteCell : true
+},
+"AreaManager@mochikoro":{
+	checkBlackCell : false
 },
 
 Menu:{

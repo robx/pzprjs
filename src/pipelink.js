@@ -109,25 +109,28 @@ LineManager:{
 Menu:{
 	menufix : function(){
 		this.addRedLineToFlags();
+	}
+},
+"Menu@pipelinkr":{
+	menufix : function(){
+		this.addRedLineToFlags();
 
-		if(this.owner.pid==='pipelinkr'){
-			pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
+		pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
 
-			pp.addChild('disptype_1', 'disptype', '○', 'Circle');
-			pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
-			this.funcs['disptype'] = function(num){
-				if     (num==1){ ee('btncircle').el.value="○";}
-				else if(num==2){ ee('btncircle').el.value="■";}
-				pc.paintAll();
-			};
-			this.toggledisp = function(){ pp.setVal('disptype', (pp.getVal('disptype')==1?2:1));};
-			
-			var el = ee.createEL(this.EL_BUTTON, 'btncircle');
-			this.addButtons(el, ee.binder(this, this.toggledisp), "○", "○");
-			ee('btnarea').appendEL(el);
+		pp.addChild('disptype_1', 'disptype', '○', 'Circle');
+		pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
+		this.funcs['disptype'] = function(num){
+			if     (num==1){ ee('btncircle').el.value="○";}
+			else if(num==2){ ee('btncircle').el.value="■";}
+			pc.paintAll();
+		};
+		this.toggledisp = function(){ pp.setVal('disptype', (pp.getVal('disptype')==1?2:1));};
+		
+		var el = ee.createEL(this.EL_BUTTON, 'btncircle');
+		this.addButtons(el, ee.binder(this, this.toggledisp), "○", "○");
+		ee('btnarea').appendEL(el);
 
-			this.funcs['disptype'].call(this);
-		}
+		this.funcs['disptype'].call(this);
 	}
 },
 

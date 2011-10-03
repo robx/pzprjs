@@ -42,7 +42,7 @@ pzprv3.createCoreClass('Owner',
 	initObjects : function(pzl){
 		this.pid     = pzl.id;
 		this.canvas  = ee('divques').unselectable().el;
-		this.classes = pzprv3.setPuzzleClass(this);	// クラスを取得
+		this.classes = pzprv3.getPuzzleClass(pzl.id);	// クラスを取得
 
 		// クラス初期化
 		bd  = this.newInstance('Board');		// 盤面オブジェクト

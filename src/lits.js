@@ -173,14 +173,8 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
+"AnsCheck@lits":{
 	checkAns : function(){
-		if     (this.owner.pid==='lits')    { return this.checkAns_lits();}
-		else if(this.owner.pid==='norinori'){ return this.checkAns_norinori();}
-		return true;
-	},
-
-	checkAns_lits : function(){
 
 		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
@@ -214,7 +208,20 @@ AnsCheck:{
 		return true;
 	},
 
-	checkAns_norinori : function(){
+	checkTetromino : function(rinfo){
+		var dinfo = bd.getTetrominoInfo(rinfo), result = true;
+		for(var r=1;r<=dinfo.max;r++){
+			var clist = dinfo.getclist(r);
+			if(clist.length<=4){ continue;}
+			if(this.inAutoCheck){ return false;}
+			clist.seterr(2);
+			result = false;
+		}
+		return result;
+	}
+},
+"AnsCheck@norinori":{
+	checkAns : function(){
 
 		var binfo = bd.areas.getBCellInfo();
 		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} ) ){
@@ -239,18 +246,6 @@ AnsCheck:{
 		}
 
 		return true;
-	},
-
-	checkTetromino : function(rinfo){
-		var dinfo = bd.getTetrominoInfo(rinfo), result = true;
-		for(var r=1;r<=dinfo.max;r++){
-			var clist = dinfo.getclist(r);
-			if(clist.length<=4){ continue;}
-			if(this.inAutoCheck){ return false;}
-			clist.seterr(2);
-			result = false;
-		}
-		return result;
 	}
 }
 };

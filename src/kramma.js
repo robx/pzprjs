@@ -72,26 +72,21 @@ Border:{
 
 Board:{
 	iscross  : 1,
-	isborder : 1,
-
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-
-		if(this.owner.pid==='kramma'||this.owner.pid==='kramman'){
-			this.qcols = 8;
-			this.qrows = 8;
-		}
-	}
+	isborder : 1
+},
+"Board@kramma,krammar":{
+	qcols : 8,
+	qrows : 8
 },
 
 AreaManager:{
 	hasroom : true
 },
 
-Menu:{
+"Menu@shwolf":{
 	menuinit : function(){
 		this.SuperFunc.menuinit.call(this);
-		if(this.owner.pid==='shwolf' && this.enableSaveImage){
+		if(this.enableSaveImage){
 			if(ee.br.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
 			}

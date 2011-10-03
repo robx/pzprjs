@@ -4,18 +4,19 @@
 pzprv3.custom.sukoro = {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
+"MouseEvent@sukoro,view":{
 	inputedit : function(){
-		if(this.owner.pid==='sukoro' || this.owner.pid==='view'){
-			if(this.mousestart){ this.inputqnum();}
+		if(this.mousestart){ this.inputqnum();}
+	},
+	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
+},
+"MouseEvent@sukororoom":{
+	inputedit : function(){
+		if(this.mousestart || (this.mousemove && this.btn.Left)){
+			this.inputborder();
 		}
-		else if(this.owner.pid==='sukororoom'){
-			if(this.mousestart || (this.mousemove && this.btn.Left)){
-				this.inputborder();
-			}
-			else if(this.mouseend && this.notInputted()){
-				this.inputqnum();
-			}
+		else if(this.mouseend && this.notInputted()){
+			this.inputqnum();
 		}
 	},
 	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
@@ -43,58 +44,59 @@ KeyEvent:{
 	},
 
 	enablemake_p : true,
-	enableplay_p : true,
+	enableplay_p : true
+},
+"KeyEvent@sukoro,sukororoom":{
 	generate : function(mode,type){
-		var mbcolor = this.owner.classes.Graphic.prototype.mbcolor;
-		if(this.owner.pid==='sukoro'||this.owner.pid==='sukororoom'){
-			this.inputcol('num','knum1','1','1');
-			this.inputcol('num','knum2','2','2');
-			this.inputcol('num','knum3','3','3');
-			this.inputcol('num','knum4','4','4');
-			this.insertrow();
-			if(mode==1){
-				this.inputcol('num','knum.','-','?');
-				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','','','');
-				this.inputcol('empty','','','');
-				this.insertrow();
-			}
-			else{
-				this.tdcolor = mbcolor;
-				this.inputcol('num','knumq','q','○');
-				this.inputcol('num','knumw','w','×');
-				this.tdcolor = "black";
-				this.inputcol('num','knum_',' ',' ');
-				this.inputcol('empty','','','');
-				this.insertrow();
-			}
-		}
-		else if(this.owner.pid=='view'){
-			if(mode==3){
-				this.tdcolor = mbcolor;
-				this.inputcol('num','knumq','q','○');
-				this.inputcol('num','knumw','w','×');
-				this.tdcolor = "black";
-				this.inputcol('empty','','','');
-				this.inputcol('empty','','','');
-				this.insertrow();
-			}
-			this.inputcol('num','knum0','0','0');
-			this.inputcol('num','knum1','1','1');
-			this.inputcol('num','knum2','2','2');
-			this.inputcol('num','knum3','3','3');
-			this.insertrow();
-			this.inputcol('num','knum4','4','4');
-			this.inputcol('num','knum5','5','5');
-			this.inputcol('num','knum6','6','6');
-			this.inputcol('num','knum7','7','7');
-			this.insertrow();
-			this.inputcol('num','knum8','8','8');
-			this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.insertrow();
+		if(mode==1){
+			this.inputcol('num','knum.','-','?');
 			this.inputcol('num','knum_',' ',' ');
-			((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','','',''));
+			this.inputcol('empty','','','');
+			this.inputcol('empty','','','');
 			this.insertrow();
 		}
+		else{
+			this.tdcolor = pc.mbcolor;
+			this.inputcol('num','knumq','q','○');
+			this.inputcol('num','knumw','w','×');
+			this.tdcolor = "black";
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('empty','','','');
+			this.insertrow();
+		}
+	}
+},
+"KeyEvent@view":{
+	generate : function(mode,type){
+		if(mode==3){
+			this.tdcolor = pc.mbcolor;
+			this.inputcol('num','knumq','q','○');
+			this.inputcol('num','knumw','w','×');
+			this.tdcolor = "black";
+			this.inputcol('empty','','','');
+			this.inputcol('empty','','','');
+			this.insertrow();
+		}
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','knum7','7','7');
+		this.insertrow();
+		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum_',' ',' ');
+		((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','','',''));
+		this.insertrow();
 	}
 },
 
@@ -103,9 +105,7 @@ KeyEvent:{
 Cell:{
 	numberWithMB : true,
 
-	nummaxfunc : function(){
-		return (this.owner.pid==='view' ? Math.min(bd.qcols+bd.qrows-2, this.maxnum) : 4);
-	},
+	maxnum : 4,
 
 	// 正答判定用
 	getViewClist : function(){
@@ -122,40 +122,35 @@ Cell:{
 		return clist;
 	}
 },
-Board:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-
-		if(this.owner.pid==='view' || this.owner.pid==='sukororoom'){
-			this.qcols = 8;
-			this.qrows = 8;
-		}
-		if(this.owner.pid==='view'){
-			this.owner.classes.Cell.prototype.minnum = 0;
-		}
-		if(this.owner.pid==='sukororoom'){
-			this.isborder = 1;
-		}
+"Cell@view":{
+	maxnum : 255,
+	minnum : 0,
+	nummaxfunc : function(){
+		return Math.min(bd.qcols+bd.qrows-2, this.maxnum);
 	}
 },
 
+"Board@view":{
+	qcols : 8,
+	qrows : 8
+},
+"Board@sukororoom":{
+	qcols : 8,
+	qrows : 8,
+
+	isborder : 1
+},
+
 AreaManager:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid==='sukororoom'){ this.hasroom = true;}
-	},
 	linkNumber : true
+},
+"AreaManager@sukororoom":{
+	hasroom : true
 },
 
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
-		if(this.owner.pid==='view'){
-			this.errbcolor2 = "rgb(255, 255, 127)";
-			this.setBGCellColorFunc('error2');
-		}
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -170,29 +165,39 @@ Graphic:{
 		this.drawCursor();
 	}
 },
+"Graphic@view":{
+	setColors : function(){
+		this.errbcolor2 = "rgb(255, 255, 127)";
+		this.setBGCellColorFunc('error2');
+	}
+},
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@sukoro":{
 	pzlimport : function(type){
-		var pid = this.owner.pid;
-		if(pid==='sukoro'||pid==='sukororoom'){
-			if(pid==='sukororoom'){ this.decodeBorder();}
-			this.decodeNumber10();
-		}
-		else if(pid==='view'){
-			this.decodeNumber16();
-		}
+		this.decodeNumber10();
 	},
 	pzlexport : function(type){
-		var pid = this.owner.pid;
-		if(pid==='sukoro'||pid==='sukororoom'){
-			if(pid==='sukororoom'){ this.encodeBorder();}
-			this.encodeNumber10();
-		}
-		else if(pid==='view'){
-			this.encodeNumber16();
-		}
+		this.encodeNumber10();
+	}
+},
+"Encode@view":{
+	pzlimport : function(type){
+		this.decodeNumber16();
+	},
+	pzlexport : function(type){
+		this.encodeNumber16();
+	}
+},
+"Encode@sukororoom":{
+	pzlimport : function(type){
+		this.decodeBorder();
+		this.decodeNumber10();
+	},
+	pzlexport : function(type){
+		this.encodeBorder();
+		this.encodeNumber10();
 	}
 },
 //---------------------------------------------------------

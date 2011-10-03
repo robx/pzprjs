@@ -294,32 +294,22 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@loute":{
 	pzlimport : function(type){
-		if(this.owner.pid==='loute'){
-			this.decodeLoute();
-		}
-		else if(this.owner.pid==='sashigane'){
-			this.decodeSashigane();
-		}
+		this.decodeLoute();
 	},
 	pzlexport : function(type){
-		if(this.owner.pid==='loute'){
-			this.encodeLoute();
-		}
-		else if(this.owner.pid==='sashigane'){
-			this.encodeSashigane();
-		}
+		this.encodeLoute();
 	},
 
 	decodeLoute : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var cell = bd.cell[c], ca = bstr.charAt(i);
+			var obj = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qdir = parseInt(ca,16);}
-			else if(ca == '.'){ cell.qdir = -2;}
+							  { obj.qdir = parseInt(ca,16);}
+			else if(ca == '.'){ obj.qdir = -2;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
@@ -342,19 +332,27 @@ Encode:{
 		if(count>0){ cm+=(15+count).toString(36);}
 
 		this.outbstr += cm;
+	}
+},
+"Encode@sashigane":{
+	pzlimport : function(type){
+		this.decodeSashigane();
+	},
+	pzlexport : function(type){
+		this.encodeSashigane();
 	},
 
 	decodeSashigane : function(){
 		var c=0, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), cell=bd.cell[c];
+			var ca = bstr.charAt(i), obj=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qdir = 5; cell.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ cell.qdir = 5; cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == '.'){ cell.qdir = 5;}
-			else if(ca == '%'){ cell.qdir = -2;}
-			else if(ca>='g' && ca<='j'){ cell.qdir = (parseInt(ca,20)-15);}
+							  { obj.qdir = 5; obj.qnum = parseInt(ca,16);}
+			else if(ca == '-'){ obj.qdir = 5; obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca == '.'){ obj.qdir = 5;}
+			else if(ca == '%'){ obj.qdir = -2;}
+			else if(ca>='g' && ca<='j'){ obj.qdir = (parseInt(ca,20)-15);}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
 			c++;
@@ -386,25 +384,25 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(cell,ca){
+		this.decodeCell( function(obj,ca){
 			if(ca.charAt(0)==="o"){
-				cell.qdir = 5;
-				if(ca.length>1){ cell.qnum = parseInt(ca.substr(1));}
+				obj.qdir = 5;
+				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
 			}
-			else if(ca==="-"){ cell.qdir = -2;}
-			else if(ca!=="."){ cell.qdir = parseInt(ca);}
+			else if(ca==="-"){ obj.qdir = -2;}
+			else if(ca!=="."){ obj.qdir = parseInt(ca);}
 		});
 
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
 		var pid = this.owner.pid;
-		this.encodeCell( function(cell){
-			if(pid==='sashigane' && cell.qdir===5){
-				return "o"+(cell.qnum!==-1?cell.qnum:'')+" ";
+		this.encodeCell( function(obj){
+			if(pid==='sashigane' && obj.qdir===5){
+				return "o"+(obj.qnum!==-1?obj.qnum:'')+" ";
 			}
-			else if(cell.qdir===-2){ return "- ";}
-			else if(cell.qdir!== 0){ return cell.qdir+" ";}
+			else if(obj.qdir===-2){ return "- ";}
+			else if(obj.qdir!== 0){ return obj.qdir+" ";}
 			else{ return ". ";}
 		});
 

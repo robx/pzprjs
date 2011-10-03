@@ -30,16 +30,12 @@ Cell:{
 		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
 	}
 },
+"Cell@chocona":{
+	minnum : 0
+},
 
 Board:{
-	isborder : 1,
-
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid==='chocona'){
-			this.minnum = 0;
-		}
-	}
+	isborder : 1
 },
 
 CellList:{
@@ -53,13 +49,10 @@ CellList:{
 },
 
 AreaManager:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid==='chocona'){
-			this.checkBlackCell = true;
-		}
-	},
-	hasroom    : true
+	hasroom : true
+},
+"AreaManager@chocona":{
+	checkBlackCell : true
 },
 
 AreaRoomData:{
@@ -131,14 +124,8 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
+"AnsCheck@shimaguni":{
 	checkAns : function(){
-		if     (this.owner.pid==='shimaguni'){ return this.checkAns_shimaguni();}
-		else if(this.owner.pid==='chocona')  { return this.checkAns_chocona();}
-		return true;
-	},
-
-	checkAns_shimaguni : function(){
 
 		var rinfo = bd.areas.getRoomInfo();
 		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true) ){
@@ -162,9 +149,10 @@ AnsCheck:{
 		}
 
 		return true;
-	},
-
-	checkAns_chocona : function(){
+	}
+},
+"AnsCheck@chocona":{
+	checkAns : function(){
 
 		if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
 			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;

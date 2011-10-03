@@ -37,20 +37,16 @@ Cell:{
 		return cnt;
 	}
 },
+"Cell@nawabari":{
+	maxnum : 4,
+	minnum : 0
+},
+"Cell@fourcells":{
+	maxnum : 3
+},
 
 Board:{
-	isborder : 1,
-
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid==='nawabari'){
-			this.owner.classes.Cell.prototype.maxnum = 4;
-			this.owner.classes.Cell.prototype.minnum = 0;
-		}
-		else if(this.owner.pid==='fourcells'){
-			this.owner.classes.Cell.prototype.maxnum = 3;
-		}
-	}
+	isborder : 1
 },
 
 AreaManager:{

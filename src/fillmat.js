@@ -21,39 +21,38 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 
-	enablemake_p : true,
+	enablemake_p : true
+},
+"KeyEvent@fillmat":{
 	generate : function(mode,type){
-		if(this.owner.pid==='fillmat'){
-			this.inputcol('num','knum1','1','1');
-			this.inputcol('num','knum2','2','2');
-			this.inputcol('num','knum3','3','3');
-			this.insertrow();
-			this.inputcol('num','knum4','4','4');
-			this.inputcol('num','knum_',' ',' ');
-			this.inputcol('num','knum.','-','?');
-			this.insertrow();
-		}
-		else if(this.owner.pid==='usotatami'){
-			this.gentable10(mode,10);
-		}
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum.','-','?');
+		this.insertrow();
+	}
+},
+"KeyEvent@usotatami":{
+	generate : function(mode,type){
+		this.gentable10(mode,10);
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
-Board:{
-	isborder : 1,
+"Cell@fillmat":{
+	maxnum : 4
+},
 
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		if(this.owner.pid==='fillmat'){
-			this.owner.classes.Cell.prototype.maxnum = 4;
-		}
-		else if(this.owner.pid==='usotatami'){
-			this.qcols = 8;
-			this.qrows = 8;
-		}
-	}
+Board:{
+	isborder : 1
+},
+"Board@usotatami":{
+	qcols : 8,
+	qrows : 8
 },
 
 AreaManager:{

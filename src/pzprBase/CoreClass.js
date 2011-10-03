@@ -62,31 +62,50 @@
 		return {body:NewClass, name:classname, base:basename};
 	},
 
-	setPuzzleClass : function(owner){
+	getPuzzleClass : function(pid){
 		// 継承させたパズル個別のクラスを設定
-		var scriptid = this.PZLINFO.toScript(owner.pid);
-		if(!this.pclass[scriptid]){
-			this.pclass[scriptid] = {};
+		if(!this.pclass[pid]){
+			var scriptid = this.PZLINFO.toScript(pid);
+			this.preparePuzzleClass(scriptid);
+		}
+		return this.pclass[pid];
+	},
+	preparePuzzleClass : function(scriptid){
+		// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
+		for(var pid in this.PZLINFO.info){
+			if(this.PZLINFO.toScript(pid)!==scriptid || !!this.pclass[pid]){ continue;}
+
+			this.pclass[pid] = {};
 
 			// 追加があるクラス => 残りの共通クラスの順に継承
-			var list = [];
-			for(var classname in this.custom[scriptid]){ list.push(classname);}
-			for(var i=0;i<this.commonlist.length;i++)  { list.push(this.commonlist[i]);}
-			for(var i=0;i<list.length;i++){
-				if(!!this.pclass[scriptid][list[i]]){ continue;}
+			var classlist = [];
+			for(var i=0;i<this.commonlist.length;i++){ classlist.push(this.commonlist[i]);}
+			for(var classname in this.custom[scriptid]){ classlist.push(classname);}
+			for(var i=0;i<classlist.length;i++){
+				var classname = classlist[i], pidcond = [], isexist = false;
+				var proto = this.custom[scriptid][classname]; proto = (!!proto?proto:{});
+				if(classname.match('@')){
+					pidcond   = classname.substr(classname.indexOf('@')+1).split(/,/);
+					classname = classname.substr(0,classname.indexOf('@'));
+					for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
+					if(!isexist){ continue;}
+				}
 
-				var proto = (!!this.custom[scriptid][list[i]]?this.custom[scriptid][list[i]]:{});
-				if(!!this.core[list[i]]){ list[i] = list[i]+":"+list[i];}
+				if(!this.pclass[pid][classname]){
+					if(!!this.core[classname]){ classname = classname+":"+classname;}
 
-				var rel = this._createClass(list[i], proto);
-				this.pclass[scriptid][rel.name] = rel.body;
+					var rel = this._createClass(classname, proto);
+					this.pclass[pid][rel.name] = rel.body;
+				}
+				else{
+					for(var name in proto){ this.pclass[pid][classname].prototype[name] = proto[name];}
+				}
 			}
-
-			// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
-			delete this.custom[scriptid];
-			this.custom[scriptid] = true;
 		}
-		return this.pclass[scriptid];
+
+		// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
+		delete this.custom[scriptid];
+		this.custom[scriptid] = true;
 	},
 
 	//---------------------------------------------------------------

@@ -37,16 +37,11 @@ Cell:{
 	}
 },
 Board:{
-	isborder : 1,
-
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-
-		if(this.owner.pid==='cojun'){
-			this.qcols = 8;
-			this.qrows = 8;
-		}
-	}
+	isborder : 1
+},
+"Board@cojun":{
+	qcols : 8,
+	qrows : 8
 },
 
 AreaManager:{
