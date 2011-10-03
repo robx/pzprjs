@@ -830,7 +830,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.dispsize.cancel,   close, "キャンセル", "Cancel");
 
 		// poptest ------------------------------------------------------------
-		pzprv3.debug.poptest_func();
+		this.owner.debug.poptest_func();
 
 		if(ee("pop1_8").el.style.display=='inline'){ this.pop = ee("pop1_8");}
 	},
@@ -995,7 +995,7 @@ pzprv3.createCommonClass('Menu',
 		irowake   : function(){ pc.paintAll();},
 		cursor    : function(){ pc.paintAll();},
 		manarea   : function(){ this.dispman();},
-		poptest   : function(){ pzprv3.debug.disppoptest();},
+		poptest   : function(){ this.owner.debug.disppoptest();},
 
 		mode      : function(num){ this.modechange(num);},
 		text      : function(num){ this.textsize(num); pc.forceRedraw();},
@@ -1320,13 +1320,10 @@ pzprv3.createCommonClass('Menu',
 });
 
 //---------------------------------------------------------------------------
-// ★debugオブジェクト  poptest関連の関数など
+// ★Debugクラス  poptest関連の関数など
 //---------------------------------------------------------------------------
-pzprv3.debug = {
-	extend : function(object){
-		for(var i in object){ this[i] = object[i];}
-	},
-
+pzprv3.createCoreClass('Debug',
+{
 	poptest_func : function(){
 		var _doc = document;
 
@@ -1351,7 +1348,7 @@ pzprv3.debug = {
 
 		_doc.testform.starttest.style.display = 'none';
 
-		_doc.testform.perfload.style.display = (pzprv3.target.pid!=='country' ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (this.owner.pid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
 
@@ -1443,4 +1440,4 @@ pzprv3.debug = {
 	getTA : function(){ return document.testform.testarea.value;},
 	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
-};
+});

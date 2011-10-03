@@ -1,6 +1,7 @@
 // for_test.js v3.4.0
 
-pzprv3.debug.extend({
+pzprv3.extendCoreClass('Debug',
+{
 	testonly_func : function(){
 		var _doc = document;
 		_doc.testform.starttest.style.display = 'inline';

@@ -16,6 +16,8 @@ pzprv3.createCoreClass('Owner',
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
 		this.playmode = !this.editmode;						// 回答モード
+
+		this.debug = null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -28,7 +30,12 @@ pzprv3.createCoreClass('Owner',
 		var self = this;
 		setTimeout(function(){
 			if(!pzprv3.ready(pzl.id)){ setTimeout(arguments.callee,10); return;}
-			if(pzprv3.DEBUG&&!pzl.qdata){ pzl.qdata=pzprv3.debug.urls[pzl.id];}
+
+			// デバッグ用
+			if(!self.debug){
+				self.debug = new pzprv3.core.Debug();
+				self.debug.owner = self;
+			}
 
 			// 初期化ルーチンへジャンプ
 			self.initObjects.call(self, pzl);
@@ -37,6 +44,7 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	// owner.initObjects()    各オブジェクトの生成などの処理
+	// owner.initDebug()      デバッグ用オブジェクトを設定する
 	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
@@ -114,6 +122,10 @@ pzprv3.createCoreClass('Owner',
 		}
 	},
 	decodeBoardData : function(pzl){
+		if(pzprv3.DEBUG && !pzl.qdata){
+			pzl.qdata = this.debug.urls[pzl.id];
+		}
+
 		pc.suspendAll();
 		// ファイルを開く・複製されたデータを開く
 		if(!!pzl.fstr){
@@ -131,7 +143,7 @@ pzprv3.createCoreClass('Owner',
 		pc.unsuspend();
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && pzprv3.debug.phase===0){ pzprv3.debug.sccheck();}
+		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
 	},
 
 	//---------------------------------------------------------------------------

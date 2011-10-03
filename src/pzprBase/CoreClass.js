@@ -108,6 +108,11 @@
 		this.custom[scriptid] = true;
 	},
 
+	extendCoreClass : function(classname, proto){
+		var base = pzprv3.core[classname].prototype;
+		for(var name in proto){ base[name] = proto[name];}
+	},
+
 	//---------------------------------------------------------------
 	// 定数(URL形式)
 	PZPRV3  : 0,
@@ -140,7 +145,7 @@
 	ready : function(pid){
 		var scriptid = this.PZLINFO.toScript(pid);
 		return (!!pzprv3.custom[scriptid] && Camp.isready() &&
-				(!this.DEBUG || !!this.debug.urls));
+				(!this.DEBUG || !!this.core.Debug.prototype.urls));
 	}
 });
 
