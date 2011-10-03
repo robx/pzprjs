@@ -1,12 +1,25 @@
 //
-// パズル固有スクリプト部 ごきげんななめ版 gokigen.js v3.4.0
+// パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.0
 //
 pzprv3.custom.gokigen = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousestart){ this.inputcross();}},
 	inputplay : function(){ if(this.mousestart){ this.inputslash();}},
+
+	inputslash : function(){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+
+		var use = pp.getVal('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
+		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
+		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
+
+		cell.drawaround();
+	}
+},
+"MouseEvent@gokigen":{
+	inputedit : function(){ if(this.mousestart){ this.inputcross();}},
 	inputRed : function(){ if(this.owner.playmode){ this.dispBlue();}},
 
 	dispBlue : function(){
@@ -24,22 +37,44 @@ MouseEvent:{
 
 		bd.haserror = true;
 		pc.paintAll();
-	},
-	inputslash : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
+	}
+},
+"MouseEvent@wagiri":{
+	inputedit : function(){ if(this.mousestart){ this.inputquestion();}},
 
-		var use = pp.getVal('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
-		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
-		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
-
-		cell.drawaround();
+	inputquestion : function(){
+		var pos = this.borderpos(0.33);
+		if(!bd.isinside(pos.bx,pos.by)){ return;}
+		if(pos.oncross()){
+			this.inputcross();
+		}
+		else if(pos.oncell()){
+			var cell0 = tc.getTCC(), cell = this.getcell();
+			if(cell!==cell0){
+				tc.setTCC(cell);
+				cell0.draw();
+				cell.draw();
+			}
+			else if(!cell.isnull){
+				var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
+				cell.setNum(trans[cell.getQnum()+2]);
+				cell.draw();
+			}
+		}
+		else{
+			var tcp = tc.getTCP();
+			if(pos.equals(tcp)){
+				tc.setTCP(pos);
+				tcp.draw();
+				pos.draw();
+			}
+		}
 	}
 },
 
 //---------------------------------------------------------
 // キーボード入力系
-KeyEvent:{
+"KeyEvent@gokigen":{
 	enablemake : true,
 	moveTarget : function(ca){ return this.moveTCross(ca);},
 
@@ -49,6 +84,32 @@ KeyEvent:{
 
 	enablemake_p : true,
 	paneltype    : 4
+},
+"KeyEvent@wagiri":{
+	enablemake : true,
+	moveTarget : function(ca){ return this.moveTBorder(ca);},
+
+	keyinput : function(ca){
+		this.key_wagiri(ca);
+	},
+	key_wagiri : function(ca){
+		var pos = tc.getTCP();
+		if(pos.oncross()){
+			this.key_inputcross(ca);
+		}
+		else if(pos.oncell()){
+			var cell = tc.getTCC(), val = 0;
+			if     (ca=='1'){ val= 1;}
+			else if(ca=='2'){ val= 2;}
+			else if(ca=='-'){ val=-2;}
+			else if(ca==' '){ val=-1;}
+
+			if(!cell.isnull && val!==0){
+				cell.setNum(val);
+				cell.draw();
+			}
+		}
+	}
 },
 
 TargetCursor:{
@@ -171,7 +232,14 @@ Menu:{
 
 	menufix : function(){
 		this.addUseToFlags();
-		this.addRedLineToFlags();
+		if(this.owner.pid==='gokigen'){
+			this.addRedLineToFlags();
+		}
+		else if(this.owner.pid==='wagiri'){
+			pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
+			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+			this.funcs['colorslash'] = function(){ pc.paintAll();};
+		}
 	}
 },
 
@@ -183,6 +251,10 @@ Graphic:{
 
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
+		this.errcolor1 = "red";
+		if(this.owner.pid==='wagiri'){
+			this.errcolor2 = "rgb(0, 0, 127)";
+		}
 
 		this.crosssize = 0.33;
 	},
@@ -190,6 +262,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid(false);
 
+		if(this.owner.pid==='wagiri'){ this.drawNumbers();}
 		this.drawSlashes();
 
 		this.drawCrosses();
@@ -202,10 +275,50 @@ Graphic:{
 		return null;
 	}
 },
+"Graphic@wagiri":{
+	// オーバーライド
+	paintRange : function(x1,y1,x2,y2){
+		if(!bd.haserror && pp.getVal('colorslash')){
+			this.setRange(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+		}
+		else{
+			this.setRange(x1,y1,x2,y2);
+		}
+		this.prepaint();
+	},
+
+	drawNumber1 : function(cell){
+		var num = cell.qnum, key='cell_'+cell.id;
+		if(num!==-1){
+			var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
+			this.dispnum(key, 1, text, 0.70, this.fontcolor, cell.px, cell.py);
+		}
+		else{ this.hideEL(key);}
+	},
+
+	drawSlashes : function(){
+		if(!bd.haserror && pp.getVal('colorslash')){
+			var sdata=bd.getSlashData();
+			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
+
+			this.SuperFunc.drawSlashes.call(this);
+
+			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(0);} }
+		}
+		else{
+			this.SuperFunc.drawSlashes.call(this);
+		}
+	},
+
+	drawTarget : function(){
+		var islarge = tc.pos.oncell();
+		this.drawCursor(islarge,this.owner.editmode);
+	}
+},
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@gokigen":{
 	pzlimport : function(type){
 		var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
@@ -216,10 +329,21 @@ Encode:{
 		this.encode4Cross();
 	}
 },
+"Encode@wagiri":{
+	pzlimport : function(type){
+		this.decode4Cross();
+		this.decodeNumber10();
+	},
+	pzlexport : function(type){
+		this.encode4Cross();
+		this.encodeNumber10();
+	}
+},
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
 		this.decodeCrossNum();
+		if(this.owner.pid==='wagiri'){ this.decodeCellQnum();}
 		this.decodeCell( function(obj,ca){
 			if     (ca==="1"){ obj.qans = 31;}
 			else if(ca==="2"){ obj.qans = 32;}
@@ -227,6 +351,7 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCrossNum();
+		if(this.owner.pid==='wagiri'){ this.encodeCellQnum();}
 		this.encodeCell( function(obj){
 			if     (obj.qans===31){ return "1 ";}
 			else if(obj.qans===32){ return "2 ";}
@@ -240,12 +365,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLoopLine() ){
+		var sdata=bd.getSlashData();
+		if( (this.owner.pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){
 			this.setAlert('斜線で輪っかができています。', 'There is a loop consisted in some slashes.'); return false;
+		}
+
+		if( (this.owner.pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){
+			this.setAlert('"切"が含まれた線が輪っかになっています。', 'There is a loop that consists "切".'); return false;
 		}
 
 		if( !this.checkQnumCross() ){
 			this.setAlert('数字に繋がる線の数が間違っています。', 'A number is not equal to count of lines that is connected to it.'); return false;
+		}
+
+		if( (this.owner.pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){
+			this.setAlert('"輪"が含まれた線が輪っかになっていません。', 'There is not a loop that consists "輪".'); return false;
 		}
 
 		if( !this.checkAllCell(function(cell){ return (cell.getQans()===0);}) ){
@@ -255,12 +389,21 @@ AnsCheck:{
 		return true;
 	},
 
-	checkLoopLine : function(){
-		var sdata = bd.getSlashData();
+	checkLoopLine_gokigen : function(sdata){
 		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		errclist.seterr(1);
 		return (errclist.length===0);
 	},
+	checkLoopLine_wagiri : function(sdata, checkLoop){
+		var result = true;
+		for(var c=0;c<bd.cellmax;c++){
+			if(!checkLoop && sdata[c]==1 && bd.cell[c].getQnum()===2){ result = false;}
+			if( checkLoop && sdata[c]==2 && bd.cell[c].getQnum()===1){ result = false;}
+		}
+		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} } }
+		return result;
+	},
+
 	checkQnumCross : function(){
 		var result = true, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){

@@ -78,7 +78,7 @@ PZLINFO.register({
 	fivecells :[false, false, 'ファイブセルズ', 'FiveCells', '', {}],
 	fourcells :[false, false, 'フォーセルズ', 'FourCells', 'nawabari', {}],
 	goishi    :[false, true,  '碁石ひろい', 'Goishi', '', {}],
-	gokigen   :[true,  false, 'ごきげんななめ', 'Gokigen-naname', '', {}],
+	gokigen   :[true,  false, 'ごきげんななめ', 'Gokigen-naname', 'gokigen', {}],
 	hakoiri   :[true,  false, 'はこいり○△□', 'Triplets', '', {}],
 	hanare    :[false, false, 'はなれ組', 'Hanare-gumi', 'hanare', {}],
 	hashikake :[false, true,  '橋をかけろ', 'Bridges', '', { kanpen:'hashi'}],
@@ -146,7 +146,7 @@ PZLINFO.register({
 	triplace  :[false, false, 'トリプレイス', 'Tri-place', '', {}],
 	usotatami :[false, false, 'ウソタタミ', 'Uso-tatami', 'fillmat', {}],
 	view      :[true,  false, 'ヴィウ', 'View', 'sukoro', {}],
-	wagiri    :[false, false, 'ごきげんななめ・輪切', 'Gokigen-naname:wagiri', '', {}],
+	wagiri    :[false, false, 'ごきげんななめ・輪切', 'Gokigen-naname:wagiri', 'gokigen', {}],
 	wblink    :[false, false, 'シロクロリンク', 'Shirokuro-link', '', {}],
 	yajikazu  :[true,  false, 'やじさんかずさん', 'Yajisan-Kazusan', '', {}],
 	yajirin   :[false, true,  'ヤジリン', 'Yajilin', '', { pzprurl:'yajilin', kanpen:'yajilin'}]
