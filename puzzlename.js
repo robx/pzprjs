@@ -92,7 +92,8 @@
 		wblink     : 'シロクロリンク',
 		yajikazu   : 'やじさんかずさん',
 		yajirin    : 'ヤジリン',
-		yajitatami : 'ヤジタタミ'
+		yajitatami : 'ヤジタタミ',
+		yosenabe   : 'よせなべ'
 	},
 	/* 英語のパズル名 */
 	en : {
@@ -187,7 +188,8 @@
 		wblink     : 'Shirokuro-link',
 		yajikazu   : 'Yajisan-Kazusan',
 		yajirin    : 'Yajilin',
-		yajitatami : 'Yajitatami'
+		yajitatami : 'Yajitatami',
+		yosenabe   : 'Yosenabe'
 	},
 	/* 別名 */
 	alias : {
