@@ -212,6 +212,48 @@ Board:{
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
 		}
 		return lattice;
+	},
+
+	adjustBoardData : function(key,d){
+		if(key & this.REDUCE){
+			var seglist=this.segs.getallsegment(), sublist=new pzprv3.core.PieceList(this.owner);
+			for(var i=0;i<seglist.length;i++){
+				var seg = seglist[i];
+				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
+				switch(key){
+					case this.REDUCEUP: if(by1<this.minby+2||by2<this.minby+2){ sublist.add(seg);} break;
+					case this.REDUCEDN: if(by1>this.maxby-2||by2>this.maxby-2){ sublist.add(seg);} break;
+					case this.REDUCELT: if(bx1<this.minbx+2||bx2<this.minbx+2){ sublist.add(seg);} break;
+					case this.REDUCERT: if(bx1>this.maxbx-2||bx2>this.maxbx-2){ sublist.add(seg);} break;
+				}
+			}
+
+			var isrec = (!um.undoExec && !um.redoExec);
+			if(isrec){ um.forceRecord = true;}
+			for(var i=0;i<sublist.length;i++){ this.segs.removeSegment(sublist[i]);}
+			if(isrec){ um.forceRecord = false;}
+		}
+	},
+	adjustBoardData2 : function(key,d){
+		var seglist=this.segs.getallsegment();
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		for(var i=0;i<seglist.length;i++){
+			var seg=seglist[i], bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
+			switch(key){
+				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
+				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
+				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
+				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
+				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
+				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
+				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
+				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
+				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+			}
+		}
 	}
 },
 
@@ -265,48 +307,6 @@ OperationManager:{
 },
 
 MenuExec:{
-	adjustBoardData : function(key,d){
-		if(key & this.REDUCE){
-			var seglist=bd.segs.getallsegment(), sublist=new pzprv3.core.PieceList(this.owner);
-			for(var i=0;i<seglist.length;i++){
-				var seg = seglist[i];
-				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
-				switch(key){
-					case this.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.add(seg);} break;
-					case this.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.add(seg);} break;
-					case this.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.add(seg);} break;
-					case this.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.add(seg);} break;
-				}
-			}
-
-			var isrec = (!um.undoExec && !um.redoExec);
-			if(isrec){ um.forceRecord = true;}
-			for(var i=0;i<sublist.length;i++){ bd.segs.removeSegment(sublist[i]);}
-			if(isrec){ um.forceRecord = false;}
-		}
-	},
-	adjustBoardData2 : function(key,d){
-		var seglist=bd.segs.getallsegment();
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		for(var i=0;i<seglist.length;i++){
-			var seg=seglist[i], bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
-			switch(key){
-				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
-				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
-				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
-				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
-				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
-				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
-				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
-				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
-				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-			}
-		}
-	},
-
 	irowakeRemake : function(){
 		bd.segs.newIrowake();
 		if(pp.getVal('irowake')){ pc.paintAll();}

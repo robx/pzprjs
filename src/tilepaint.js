@@ -94,20 +94,18 @@ EXCell:{
 },
 Board:{
 	isborder : 1,
-	isexcell : 1
-},
+	isexcell : 1,
 
-AreaManager:{
-	hasroom : true
-},
-
-MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustQues51_1(key,d);
 	},
 	adjustBoardData2 : function(key,d){
 		this.adjustQues51_2(key,d);
 	}
+},
+
+AreaManager:{
+	hasroom : true
 },
 
 Menu:{

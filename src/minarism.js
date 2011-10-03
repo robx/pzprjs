@@ -130,10 +130,8 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	isborder : 1
-},
+	isborder : 1,
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
 	}

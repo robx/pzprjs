@@ -213,17 +213,15 @@ Board:{
 		}
 		
 		return rinfo;
+	},
+
+	adjustBoardData : function(key,d){
+		this.adjustNumberArrow(key,d);
 	}
 },
 
 AreaManager:{
 	hasroom : true
-},
-
-MenuExec:{
-	adjustBoardData : function(key,d){
-		this.adjustNumberArrow(key,d);
-	}
 },
 
 //---------------------------------------------------------

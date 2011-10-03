@@ -150,13 +150,11 @@ Board:{
 			}
 		}
 		return binfo;
-	}
-},
+	},
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
-			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,12:13,13:12}[bd.cell[c].getQans()]);}
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,12:13,13:12}[this.cell[c].getQans()]);}
 		}
 	}
 },

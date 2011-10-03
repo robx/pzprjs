@@ -81,15 +81,8 @@ Border:{
 	enableLineCombined : true
 },
 Board:{
-	isborder : 1
-},
+	isborder : 1,
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
-},
-
-MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){
 			var tques={};
@@ -99,13 +92,18 @@ MenuExec:{
 				case this.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
 				case this.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
-			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
 			}
 		}
 	}
+},
+
+LineManager:{
+	isCenterLine : true,
+	isLineCross  : true
 },
 
 Menu:{

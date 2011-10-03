@@ -49,17 +49,15 @@ Border:{
 	enableLineNG : true
 },
 Board:{
-	isborder : 1
+	isborder : 1,
+
+	adjustBoardData : function(key,d){
+		this.adjustNumberArrow(key,d);
+	}
 },
 
 LineManager:{
 	isCenterLine : true
-},
-
-MenuExec:{
-	adjustBoardData : function(key,d){
-		this.adjustNumberArrow(key,d);
-	}
 },
 
 Menu:{

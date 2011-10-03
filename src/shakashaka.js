@@ -221,10 +221,8 @@ Board:{
 			}
 		}
 		return winfo;
-	}
-},
+	},
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		var trans = [];
 		switch(key){
@@ -234,8 +232,8 @@ MenuExec:{
 			case this.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
 			default: return;
 		}
-		for(var c=0;c<bd.cellmax;c++){
-			var val=trans[bd.cell[c].qans]; if(!!val){ bd.cell[c].qans=val;}
+		for(var c=0;c<this.cellmax;c++){
+			var val=trans[this.cell[c].qans]; if(!!val){ this.cell[c].qans=val;}
 		}
 	}
 },

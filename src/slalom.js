@@ -225,6 +225,34 @@ Board:{
 			pc.paintCell(cell0);
 			pc.paintCell(cell);
 		}
+	},
+
+	posinfo : {},
+	adjustBoardData : function(key,d){
+		if(key & this.TURN){
+			var tques={21:22,22:21};
+			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
+			}
+		}
+
+		this.posinfo = this.getAfterPos(key,d,this.startcell);
+	},
+	adjustBoardData2 : function(key,d){
+		var info = this.posinfo;
+		this.startcell = this.getc(info.bx2, info.by2);
+
+		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+			um.forceRecord = true;
+			if(info.isdel){
+				um.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
+			}
+			um.forceRecord = false;
+		}
+
+		this.hinfo.generateGates();	// 念のため
 	}
 },
 
@@ -276,36 +304,6 @@ OperationManager:{
 
 LineManager:{
 	isCenterLine : true
-},
-
-MenuExec:{
-	posinfo : {},
-	adjustBoardData : function(key,d){
-		if(key & this.TURN){
-			var tques={21:22,22:21};
-			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
-			}
-		}
-
-		this.posinfo = this.getAfterPos(key,d,bd.startcell);
-	},
-	adjustBoardData2 : function(key,d){
-		var info = this.posinfo;
-		bd.startcell = bd.getc(info.bx2, info.by2);
-
-		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
-			um.forceRecord = true;
-			if(info.isdel){
-				um.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
-			}
-			um.forceRecord = false;
-		}
-
-		bd.hinfo.generateGates();	// 念のため
-	}
 },
 
 Menu:{

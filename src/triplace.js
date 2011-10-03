@@ -100,6 +100,13 @@ Board:{
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;
+	},
+
+	adjustBoardData : function(key,d){
+		this.adjustQues51_1(key,d);
+	},
+	adjustBoardData2 : function(key,d){
+		this.adjustQues51_2(key,d);
 	}
 },
 
@@ -110,15 +117,6 @@ AreaManager:{
 "AreaTriTileData:AreaBorderData":{
 	isvalid : function(cell){ return (!cell.is51cell());},
 	bdfunc : function(border){ return border.isBorder();}
-},
-
-MenuExec:{
-	adjustBoardData : function(key,d){
-		this.adjustQues51_1(key,d);
-	},
-	adjustBoardData2 : function(key,d){
-		this.adjustQues51_2(key,d);
-	}
 },
 
 //---------------------------------------------------------

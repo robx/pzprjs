@@ -155,54 +155,67 @@ Board:{
 			if(!cell.isnull){ clist.add(cell);}
 		}}
 		return clist;
+	},
+
+	// 拡大縮小・回転反転時の関数
+	execadjust : function(name){
+		if(name.indexOf("reduce")===0){
+			if(name==="reduceup"||name==="reducedn"){
+				if(this.qrows<=1){ return;}
+			}
+			else if(name==="reducelt"||name==="reducert"){
+				if(this.qcols<=1 && (this.lap!==3)){ return;}
+			}
+		}
+
+		this.SuperFunc.execadjust.call(this, name);
+	},
+	expandreduce : function(key,d){
+		if(key & this.EXPAND){
+			switch(key & 0x0F){
+				case this.LT: this.qcols+=[0,0,1,1][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
+				case this.RT: this.qcols+=[0,1,0,1][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
+				case this.UP: this.qcols+=[-1,0,0,1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows++; break;
+				case this.DN: this.qrows++; break;
+			}
+			this.setminmax();
+
+			this.expandGroup(this.CELL,key);
+		}
+		else if(key & this.REDUCE){
+			this.reduceGroup(this.CELL,key);
+
+			switch(key & 0x0F){
+				case this.LT: this.qcols-=[1,1,0,0][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
+				case this.RT: this.qcols-=[1,0,1,0][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
+				case this.UP: this.qcols-=[1,0,0,-1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows--; break;
+				case this.DN: this.qrows--; break;
+			}
+		}
+		this.setposAll();
+	},
+
+	turnflip : function(key,d){
+		var d = {x1:this.minbx, y1:this.minby, x2:this.maxbx, y2:this.maxby};
+
+		if     (key===this.FLIPY){ if(!(this.qrows&1)){ this.lap = {0:3,1:2,2:1,3:0}[this.lap];} }
+		else if(key===this.FLIPX){ this.lap = {0:0,1:2,2:1,3:3}[this.lap];}
+
+		this.turnflipGroup(this.CELL, key, d);
+
+		this.setposAll();
+	},
+	distObj : function(key,obj){
+		key &= 0x0F;
+		if     (key===this.UP){ return obj.by;}
+		else if(key===this.DN){ return this.maxby-obj.by;}
+		else if(key===this.LT){ return obj.bx;}
+		else if(key===this.RT){ return this.maxbx-obj.bx;}
+		return -1;
 	}
 },
 
 MenuExec:{
-	expandreduce : function(key,d){
-		if(key & this.EXPAND){
-			switch(key & 0x0F){
-				case bd.LT: bd.qcols+=[0,0,1,1][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case bd.RT: bd.qcols+=[0,1,0,1][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case bd.UP: bd.qcols+=[-1,0,0,1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows++; break;
-				case bd.DN: bd.qrows++; break;
-			}
-			bd.setminmax();
-
-			this.expandGroup(bd.CELL,key);
-		}
-		else if(key & this.REDUCE){
-			this.reduceGroup(bd.CELL,key);
-
-			switch(key & 0x0F){
-				case bd.LT: bd.qcols-=[1,1,0,0][bd.lap];  bd.lap=[2,3,0,1][bd.lap]; break;
-				case bd.RT: bd.qcols-=[1,0,1,0][bd.lap];  bd.lap=[1,0,3,2][bd.lap]; break;
-				case bd.UP: bd.qcols-=[1,0,0,-1][bd.lap]; bd.lap=[3,2,1,0][bd.lap]; bd.qrows--; break;
-				case bd.DN: bd.qrows--; break;
-			}
-		}
-		bd.setposAll();
-	},
-
-	turnflip : function(key,d){
-		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
-
-		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.lap = {0:3,1:2,2:1,3:0}[bd.lap];} }
-		else if(key===this.FLIPX){ bd.lap = {0:0,1:2,2:1,3:3}[bd.lap];}
-
-		this.turnflipGroup(bd.CELL, key, d);
-
-		bd.setposAll();
-	},
-	distObj : function(key,obj){
-		key &= 0x0F;
-		if     (key===bd.UP){ return obj.by;}
-		else if(key===bd.DN){ return bd.maxby-obj.by;}
-		else if(key===bd.LT){ return obj.bx;}
-		else if(key===bd.RT){ return bd.maxbx-obj.bx;}
-		return -1;
-	},
-
 	// 新規作成で選ぶ時に用いる関数・変数など
 	clap : 3,
 	clicklap : function(e){

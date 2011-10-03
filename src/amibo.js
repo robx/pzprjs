@@ -157,6 +157,12 @@ Board:{
 			else if(err===6){ if( vert){ cell.seterr(4);}}
 			else{ cell.seterr(vert?5:6);}
 		}
+	},
+
+	adjustBoardData : function(key,d){
+		if(key & this.TURN){ // 回転だけ
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.getQans()]);}
+		}
 	}
 },
 "AreaBarInfo:AreaCellInfo":{
@@ -214,12 +220,6 @@ AreaManager:{
 },
 
 MenuExec:{
-	adjustBoardData : function(key,d){
-		if(key & this.TURN){ // 回転だけ
-			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans([0,2,1,3][bd.getQans()]);}
-		}
-	},
-
 	irowakeRemake : function(){
 		bd.areas.barinfo.newIrowake();
 		if(pp.getVal('irowake')){ pc.paintAll();}

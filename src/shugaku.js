@@ -144,14 +144,8 @@ Border:{
 },
 
 Board:{
-	isborder : 1
-},
+	isborder : 1,
 
-AreaManager:{
-	checkBlackCell : true
-},
-
-MenuExec:{
 	adjustBoardData : function(key,d){
 		var trans = {};
 		switch(key){
@@ -161,10 +155,14 @@ MenuExec:{
 			case this.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
 			default: return;
 		}
-		for(var c=0;c<bd.cellmax;c++){
-			var val=trans[bd.cell[c].qans]; if(!!val){ bd.cell[c].qans=val;}
+		for(var c=0;c<this.cellmax;c++){
+			var val=trans[this.cell[c].qans]; if(!!val){ this.cell[c].qans=val;}
 		}
 	}
+},
+
+AreaManager:{
+	checkBlackCell : true
 },
 
 //---------------------------------------------------------

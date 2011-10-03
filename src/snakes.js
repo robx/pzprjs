@@ -127,10 +127,8 @@ Board:{
 			}
 		}
 		return sinfo;
-	}
-},
+	},
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}

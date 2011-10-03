@@ -115,17 +115,15 @@ Board:{
 			if(ldata[c]===0){ ldata[c] = (result?2:1)}
 		}
 		return result;
+	},
+
+	adjustBoardData : function(key,d){
+		this.adjustCellArrow(key,d);
 	}
 },
 
 AreaManager:{
 	hasroom : true
-},
-
-MenuExec:{
-	adjustBoardData : function(key,d){
-		this.adjustCellArrow(key,d);
-	}
 },
 
 Menu:{

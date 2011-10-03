@@ -43,14 +43,14 @@ Cell:{
 	minnum : 0
 },
 
-AreaManager:{
-	checkWhiteCell : true
-},
-
-MenuExec:{
+Board:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}
+},
+
+AreaManager:{
+	checkWhiteCell : true
 },
 
 Menu:{

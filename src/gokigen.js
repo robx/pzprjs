@@ -157,13 +157,11 @@ Board:{
 			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
 		}
 		return check;
-	}
-},
+	},
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,31:32,32:31}[bd.cell[c].getQans()]);}
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,31:32,32:31}[this.cell[c].getQans()]);}
 		}
 	}
 },

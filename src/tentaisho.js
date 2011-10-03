@@ -246,17 +246,15 @@ Board:{
 			if(cnt>1){ return {id:null, err:-2};}
 		}
 		return ret;
+	},
+
+	adjustBoardData2 : function(key,d){
+		this.initStar(this.qcols, this.qrows);
 	}
 },
 
 AreaManager:{
 	hasroom : true
-},
-
-MenuExec:{
-	adjustBoardData2 : function(key,d){
-		bd.initStar(bd.qcols, bd.qrows);
-	}
 },
 
 Menu:{

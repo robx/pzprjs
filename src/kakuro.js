@@ -69,10 +69,8 @@ Board:{
 	qrows : 11,
 
 	isborder : 1,
-	isexcell : 1
-},
+	isexcell : 1,
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		this.adjustQues51_1(key,d);
 	},

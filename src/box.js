@@ -107,38 +107,36 @@ Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isexcell : 1
-},
+	isexcell : 1,
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		var bx1=(d.x1|1), by1=(d.y1|1);
 		this.qnumw = [];
 		this.qnumh = [];
 
-		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).getQnum();}
-		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).getQnum();}
+		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = this.getex(-1,by).getQnum();}
+		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = this.getex(bx,-1).getQnum();}
 	},
 	adjustBoardData2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
 
 		switch(key){
 		case this.FLIPY: // 上下反転
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumh[bx]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumh[bx]);}
 			break;
 
 		case this.FLIPX: // 左右反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumw[by]);}
+			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumw[by]);}
 			break;
 
 		case this.TURNR: // 右90°反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[by]);}
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[xx-bx]);}
+			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumh[by]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumw[xx-bx]);}
 			break;
 
 		case this.TURNL: // 左90°反転
-			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[yy-by]);}
-			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[bx]);}
+			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumh[yy-by]);}
+			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumw[bx]);}
 			break;
 		}
 	}

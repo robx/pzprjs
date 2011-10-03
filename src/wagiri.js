@@ -165,13 +165,11 @@ Board:{
 			sinfo.cross[cross2.id].push(c);
 		}
 		return sinfo;
-	}
-},
+	},
 
-MenuExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].setQans({0:0,31:32,32:31}[bd.cell[c].getQans()]);}
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,31:32,32:31}[this.cell[c].getQans()]);}
 		}
 	}
 },

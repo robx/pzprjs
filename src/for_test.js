@@ -170,7 +170,7 @@ pzprv3.debug.extend({
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<4;i++){ menu.ex.execadjust('turnr');}
+		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnR test 1  = pass");}
@@ -189,7 +189,7 @@ pzprv3.debug.extend({
 
 	check_turnL1 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<4;i++){ menu.ex.execadjust('turnl');}
+		for(var i=0;i<4;i++){ bd.execadjust('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnL test 1  = pass");}
@@ -208,7 +208,7 @@ pzprv3.debug.extend({
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<2;i++){ menu.ex.execadjust('flipx');}
+		for(var i=0;i<2;i++){ bd.execadjust('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipX test 1  = pass");}
@@ -227,7 +227,7 @@ pzprv3.debug.extend({
 
 	check_flipY1 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<2;i++){ menu.ex.execadjust('flipy');}
+		for(var i=0;i<2;i++){ bd.execadjust('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipY test 1  = pass");}
@@ -247,7 +247,7 @@ pzprv3.debug.extend({
 	check_adjust1 : function(self){
 		var bd2 = self.bd_freezecopy();
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
-		for(var i=0;i<8;i++){ menu.ex.execadjust(names[i]);}
+		for(var i=0;i<8;i++){ bd.execadjust(names[i]);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Adjust test 1  = pass");}

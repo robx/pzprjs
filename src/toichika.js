@@ -88,17 +88,15 @@ Board:{
 			}
 		}
 		return ainfo;
+	},
+
+	adjustBoardData : function(key,d){
+		this.adjustCellArrow(key,d);
 	}
 },
 
 AreaManager:{
 	hasroom : true
-},
-
-MenuExec:{
-	adjustBoardData : function(key,d){
-		this.adjustCellArrow(key,d);
-	}
 },
 
 //---------------------------------------------------------
