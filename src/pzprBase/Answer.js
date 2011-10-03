@@ -8,9 +8,7 @@
 // AnsCheckクラス
 pzprv3.createCommonClass('AnsCheck',
 {
-	initialize :  function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.performAsLine = false;
 		this.inCheck = false;
 		this.inAutoCheck = false;
@@ -232,7 +230,7 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
-			var errclist = new pzprv3.core.PieceList(this.owner);
+			var errclist = this.owner.newInstance('PieceList');
 			var clist = bd.cell.filter(function(cell){ return cell.isBlack();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;
@@ -345,7 +343,7 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		var dataobj = new pzprv3.core.AreaData(this.owner);
+		var dataobj = this.owner.newInstance('AreaData');
 		for(var r=1;r<=bd.areas.rinfo.max;r++){
 			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
 			dataobj.reset();
@@ -525,7 +523,7 @@ pzprv3.createCommonClass('AnsCheck',
 
 	// 丸の場所で線を切り離して考える
 	getErrorFlag_line : function(){
-		var xinfo = new pzprv3.core.AreaBorderInfo(this.owner);
+		var xinfo = this.owner.newInstance('AreaBorderInfo');
 		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.border[id].isLine()?0:null);}
 
 		var clist = bd.cell.filter(function(cell){ return cell.isNum();});

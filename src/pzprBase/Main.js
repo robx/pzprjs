@@ -45,23 +45,23 @@ pzprv3.createCoreClass('Owner',
 		this.classes = pzprv3.setPuzzleClass(this);	// クラスを取得
 
 		// クラス初期化
-		bd  = new this.classes.Board(this);			// 盤面オブジェクト
-		ans = new this.classes.AnsCheck(this);		// 正解判定オブジェクト
-		pc  = new this.classes.Graphic(this);		// 描画系オブジェクト
+		bd  = this.newInstance('Board');		// 盤面オブジェクト
+		ans = this.newInstance('AnsCheck');		// 正解判定オブジェクト
+		pc  = this.newInstance('Graphic');		// 描画系オブジェクト
 
-		mv  = new this.classes.MouseEvent(this);	// マウス入力オブジェクト
-		kc  = new this.classes.KeyEvent(this);		// キーボード入力オブジェクト
-		tc  = new this.classes.TargetCursor(this);	// 入力用カーソルオブジェクト
+		mv  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
+		kc  = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
+		tc  = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
 
-		um = new this.classes.OperationManager(this);	// 操作情報管理オブジェクト
-		ut = new this.classes.UndoTimer(this);			// Undo用Timerオブジェクト
-		timer = new this.classes.Timer(this);			// 一般タイマー用オブジェクト
+		um = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
+		ut = this.newInstance('UndoTimer');			// Undo用Timerオブジェクト
+		timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
 
-		enc = new this.classes.Encode(this);		// URL入出力用オブジェクト
-		fio = new this.classes.FileIO(this);		// ファイル入出力用オブジェクト
+		enc = this.newInstance('Encode');		// URL入出力用オブジェクト
+		fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
 
-		menu = new this.classes.Menu(this);		// メニューを扱うオブジェクト
-		pp = new this.classes.Properties(this);	// メニュー関係の設定値を保持するオブジェクト
+		menu = this.newInstance('Menu');		// メニューを扱うオブジェクト
+		pp = this.newInstance('Properties');	// メニュー関係の設定値を保持するオブジェクト
 
 		// メニュー関係初期化
 		menu.menuinit();
@@ -84,6 +84,19 @@ pzprv3.createCoreClass('Owner',
 		menu.menureset();
 		ee('numobj_parent').el.innerHTML = '';
 		ee.clean();
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.newInstance()    新しいオブジェクトを生成する
+	//---------------------------------------------------------------------------
+	newInstance : function(classname, args){
+		var self = this;
+		function F(){
+			this.owner = self;
+			return self.classes[classname].apply(this, args);
+		}
+		F.prototype = this.classes[classname].prototype;
+		return new F();
 	},
 
 	//---------------------------------------------------------------------------

@@ -204,9 +204,9 @@ Board:{
 
 	hinfo : null,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		this.hinfo = new owner.classes.HurdleManager(owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.hinfo = this.owner.newInstance('HurdleManager');
 	},
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
@@ -289,13 +289,13 @@ OperationManager:{
 	addOpe_Startpos : function(x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.StartposOperation(this.owner);
+			var ope = this.owner.newInstance('StartposOperation');
 			ope.setData(x1, y1, x2, y2);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.StartposOperation(this.owner);
+		var ope = this.owner.newInstance('StartposOperation');
 		if(ope.decode(strs)){ return ope;}
 
 		return this.SuperFunc.decodeOpe.call(this, strs);
@@ -840,9 +840,7 @@ AnsCheck:{
 //---------------------------------------------------------
 //---------------------------------------------------------
 HurdleData:{
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.idlist = [];		// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
@@ -851,9 +849,7 @@ HurdleData:{
 },
 
 HurdleManager:{
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.max    = 0;
 		this.gateid = [];
 		this.data   = [];
@@ -867,7 +863,7 @@ HurdleManager:{
 
 	// 旗門の両端にある黒マスの場所のセルを取得する
 	getGatePole : function(gateid){
-		var clist = new pzprv3.core.PieceList(this.owner), cell1, cell2;
+		var clist = this.owner.newInstance('PieceList'), cell1, cell2;
 		if(this.data[gateid].val==21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
@@ -892,7 +888,7 @@ HurdleManager:{
 	},
 
 	getclist : function(gateid){
-		var idlist = this.data[gateid].idlist, clist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this.data[gateid].idlist, clist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	},
@@ -918,7 +914,7 @@ HurdleManager:{
 			var pos = cell.getaddr(), isvert=(val===21);
 
 			this.max++;
-			this.data[this.max] = new this.owner.classes.HurdleData(this.owner);
+			this.data[this.max] = this.owner.newInstance('HurdleData');
 			while(1){
 				var cell2 = pos.getc();
 				if(cell2.isnull || cell2.getQues()!==val){ break;}

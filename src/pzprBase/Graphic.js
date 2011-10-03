@@ -7,10 +7,8 @@
 // Graphicクラスの定義
 pzprv3.createCommonClass('Graphic',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
-		this.currentContext = owner.canvas.getContext("2d");
+	initialize : function(){
+		this.currentContext = this.owner.canvas.getContext("2d");
 		var g = this.currentContext;
 
 		// 盤面のCellを分ける色

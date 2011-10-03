@@ -7,10 +7,6 @@
 // Operationクラス
 pzprv3.createCommonClass('Operation',
 {
-	initialize : function(owner){
-		this.owner = owner;
-	},
-
 	chain : false,
 	//---------------------------------------------------------------------------
 	// ope.setData()  オブジェクトのデータを設定する
@@ -201,9 +197,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 // OperationManagerクラス
 pzprv3.createCommonClass('OperationManager',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.lastope;		// this.opeのLasstIndexへのポインタ
 		this.ope;			// Operationクラスを保持する配列
 		this.current;		// 現在の表示操作番号を保持する
@@ -300,7 +294,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.addOpe_common(function(){
 			if(property===bd.QSUB){ this.anscount--;}
 
-			var ope = new this.owner.classes.ObjectOperation(this.owner);
+			var ope = this.owner.newInstance('ObjectOperation');
 			ope.setData(obj, property, old, num);
 			return ope;
 		},
@@ -325,7 +319,7 @@ pzprv3.createCommonClass('OperationManager',
 	addOpe_BoardAdjust : function(old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.BoardAdjustOperation(this.owner);
+			var ope = this.owner.newInstance('BoardAdjustOperation');
 			ope.setData(old, num);
 			return ope;
 		});
@@ -333,7 +327,7 @@ pzprv3.createCommonClass('OperationManager',
 	addOpe_BoardFlip : function(d, old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.BoardFlipOperation(this.owner);
+			var ope = this.owner.newInstance('BoardFlipOperation');
 			ope.setData(d, old, num);
 			return ope;
 		});
@@ -380,13 +374,13 @@ pzprv3.createCommonClass('OperationManager',
 		this.enb_btn();
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.ObjectOperation(this.owner);
+		var ope = this.owner.newInstance('ObjectOperation');
 		if(ope.decode(strs)){ return ope;}
 
-		ope = new this.owner.classes.BoardAdjustOperation(this.owner);
+		ope = this.owner.newInstance('BoardAdjustOperation');
 		if(ope.decode(strs)){ return ope;}
 
-		ope = new this.owner.classes.BoardFlipOperation(this.owner);
+		ope = this.owner.newInstance('BoardFlipOperation');
 		if(ope.decode(strs)){ return ope;}
 
 		return null;

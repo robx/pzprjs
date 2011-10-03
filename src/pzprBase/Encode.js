@@ -7,9 +7,7 @@
 // Encodeクラス
 pzprv3.createCommonClass('Encode',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.pflag = "";
 		this.outpflag  = '';
 		this.outsize   = '';

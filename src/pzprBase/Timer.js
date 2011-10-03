@@ -5,9 +5,7 @@
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('Timer',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		// ** 一般タイマー
 		this.TID;				// タイマーID
 		this.timerInterval = 100;
@@ -93,9 +91,7 @@ pzprv3.createCommonClass('Timer',
 //---------------------------------------------------------------------------
 pzprv3.createCommonClass('UndoTimer',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25

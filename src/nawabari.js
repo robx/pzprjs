@@ -41,13 +41,13 @@ Cell:{
 Board:{
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid==='nawabari'){
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid==='nawabari'){
 			this.owner.classes.Cell.prototype.maxnum = 4;
 			this.owner.classes.Cell.prototype.minnum = 0;
 		}
-		else if(owner.pid==='fourcells'){
+		else if(this.owner.pid==='fourcells'){
 			this.owner.classes.Cell.prototype.maxnum = 3;
 		}
 	}

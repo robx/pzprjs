@@ -72,7 +72,7 @@ Board:{
 	isborder : 1,
 
 	searchMovedPosition : function(linfo){
-		var minfo = new pzprv3.core.AreaCellInfo(this.owner);
+		var minfo = this.owner.newInstance('AreaCellInfo');
 		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum;}
 		for(var r=1;r<=linfo.max;r++){
 			var clist = linfo.getclist(r);

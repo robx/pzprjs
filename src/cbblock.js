@@ -39,8 +39,8 @@ Board:{
 	isborder : 1,
 
 	getBlockInfo : function(){
-		var tinfo = new this.owner.classes.AreaTileData(this.owner).getAreaInfo();
-		var cinfo = new this.owner.classes.AreaTile2Data(this.owner).getAreaInfo();
+		var tinfo = this.owner.newInstance('AreaTileData').getAreaInfo();
+		var cinfo = this.owner.newInstance('AreaTile2Data').getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, clist=cinfo.getclist(r);

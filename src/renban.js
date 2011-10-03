@@ -40,7 +40,7 @@ Board:{
 
 	// 正答判定用
 	getBorderLengthInfo : function(){
-		var rdata = new pzprv3.core.AreaBorderInfo(this.owner);
+		var rdata = this.owner.newInstance('AreaBorderInfo');
 		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
 		for(var i=0;i<this.bdmax;i++){
 			var border0 = this.border[i];

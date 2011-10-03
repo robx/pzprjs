@@ -107,7 +107,7 @@ Board:{
 	isborder : 1,
 
 	getSnakeInfo : function(){
-		var sinfo = new pzprv3.core.AreaCellInfo(this.owner);
+		var sinfo = this.owner.newInstance('AreaCellInfo');
 		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!sinfo.emptyCell(this.cell[fc])){ continue;}
@@ -327,7 +327,7 @@ AnsCheck:{
 			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.RT;}
 			if(dir===bd.NDIR){ continue;}
 
-			var pos = cell.getaddr(), clist2 = new pzprv3.core.PieceList(this.owner);
+			var pos = cell.getaddr(), clist2 = this.owner.newInstance('PieceList');
 			clist2.add(cell);
 			while(!cell.isnull){
 				pos.movedir(dir,2);

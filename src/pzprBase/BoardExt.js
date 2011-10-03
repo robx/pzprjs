@@ -6,9 +6,7 @@
 // LineManagerクラスの定義
 pzprv3.createCommonClass('LineManager',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.lcnt    = [];
 		this.ltotal  = [];
 
@@ -67,7 +65,7 @@ pzprv3.createCommonClass('LineManager',
 		if(this.disableLine){ return;}
 
 		this.init();
-		var blist = new pzprv3.core.PieceList(this.owner);
+		var blist = this.owner.newInstance('PieceList');
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
@@ -232,7 +230,7 @@ pzprv3.createCommonClass('LineManager',
 			this.id[border.id] = longid;
 
 			// 色を同じにする
-			var blist = new pzprv3.core.PieceList(this.owner);
+			var blist = this.owner.newInstance('PieceList');
 			for(var i=0,len=longidlist.length;i<len;i++){
 				var border = bd.border[longidlist[i]];
 				border.color = newColor;
@@ -304,7 +302,7 @@ pzprv3.createCommonClass('LineManager',
 		// 交差ありでborderAsLine==true(->isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
-		var lines = new pzprv3.core.PieceList(this.owner);
+		var lines = this.owner.newInstance('PieceList');
 		if(!obj1.isnull){
 			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt();
 			if(iscrossing && lcnt>=(4-erase)){
@@ -340,7 +338,7 @@ pzprv3.createCommonClass('LineManager',
 			this.idlist[this.max] = [];
 
 			var newid = this.max;
-			var pos = new pzprv3.core.Address(this.owner, null, null);
+			var pos = this.owner.newInstance('Address', [null, null]);
 			var stack=((!this.isCenterLine^border0.isHorz())?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
 			while(stack.length>0){
 				var dat=stack.pop(), dir=dat[2];
@@ -383,7 +381,7 @@ pzprv3.createCommonClass('LineManager',
 	// bd.lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		var info = new pzprv3.core.AreaBorderInfo(this.owner);
+		var info = this.owner.newInstance('AreaBorderInfo');
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.border[id].isLine()?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
@@ -402,7 +400,7 @@ pzprv3.createCommonClass('LineManager',
 	//--------------------------------------------------------------------------------
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
 	getBlist : function(id){
-		var idlist = this.idlist[id], blist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this.idlist[id], blist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
 		return blist;
 	}
@@ -418,9 +416,7 @@ pzprv3.createCommonClass('LineManager',
 // 部屋のTOPに数字を入力する時の、ハンドリング等
 pzprv3.createCommonClass('AreaManager',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.rinfo = null;	// 部屋情報を保持する
 		this.linfo = null;	// 線つながり情報を保持する
 
@@ -456,12 +452,12 @@ pzprv3.createCommonClass('AreaManager',
 	// bd.areas.resetArea()  部屋、黒マス、白マスの情報をresetする
 	//--------------------------------------------------------------------------------
 	init : function(){
-		if(this.hasroom)   { this.rinfo = new this.owner.classes.AreaRoomData(this.owner);}
-		if(this.lineToArea){ this.linfo = new this.owner.classes.AreaLineData(this.owner);}
+		if(this.hasroom)   { this.rinfo = this.owner.newInstance('AreaRoomData');}
+		if(this.lineToArea){ this.linfo = this.owner.newInstance('AreaLineData');}
 
-		if(this.checkBlackCell){ this.bcell = new this.owner.classes.AreaBlackData(this.owner);}
-		if(this.checkWhiteCell){ this.wcell = new this.owner.classes.AreaWhiteData(this.owner);}
-		if(this.linkNumber)    { this.ncell = new this.owner.classes.AreaNumberData(this.owner);}
+		if(this.checkBlackCell){ this.bcell = this.owner.newInstance('AreaBlackData');}
+		if(this.checkWhiteCell){ this.wcell = this.owner.newInstance('AreaWhiteData');}
+		if(this.linkNumber)    { this.ncell = this.owner.newInstance('AreaNumberData');}
 	},
 
 	resetArea : function(){
@@ -514,11 +510,9 @@ pzprv3.createCommonClass('AreaManager',
 //--------------------------------------------------------------------------------
 // ★AreaDataクラス AreaManagerで使用するオブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaData',
+pzprv3.createCommonClass('AreaData',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.max;
 		this.invalid;	// 使わなくなったIDのリスト
 		this.id;		// 各々のセルのid
@@ -582,7 +576,7 @@ pzprv3.createCoreClass('AreaData',
 	setLongColor : function(assign, longColor){
 		// 色を同じにする
 		if(assign.length===1){
-			var idlist = this[assign[0]].idlist, clist = new pzprv3.core.PieceList(this.owner);
+			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('PieceList');
 			for(var i=0,len=idlist.length;i<len;i++){
 				var cell = bd.cell[idlist[i]];
 				cell.color = longColor;
@@ -600,7 +594,7 @@ pzprv3.createCoreClass('AreaData',
 			}
 
 			// 新しい色の設定
-			var clist = new pzprv3.core.PieceList(this.owner);
+			var clist = this.owner.newInstance('PieceList');
 			for(var i=0;i<assign.length;i++){
 				var newColor = (assign[i]===longid ? longColor : pc.getNewLineColor());
 				var idlist = this[assign[i]].idlist;
@@ -797,7 +791,7 @@ pzprv3.createCoreClass('AreaData',
 	// info.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getAreaInfo : function(){
-		var info = new pzprv3.core.AreaCellInfo(this.owner);
+		var info = this.owner.newInstance('AreaCellInfo');
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -817,7 +811,7 @@ pzprv3.createCoreClass('AreaData',
 	getClistByCell : function(cell){ return this.getClist(this.id[cell.id]);},
 	getClist : function(areaid){
 		if(!this[areaid]){ alert(areaid);}
-		var idlist = this[areaid].idlist, clist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this[areaid].idlist, clist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	}
@@ -846,12 +840,12 @@ pzprv3.createCommonClass('AreaNumberData:AreaData',
 //--------------------------------------------------------------------------------
 // ★AreaBorderDataクラス AreaManagerで使用するオブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaBorderData:AreaData',
+pzprv3.createCommonClass('AreaBorderData:AreaData',
 {
-	initialize : function(owner){
+	initialize : function(){
 		this.isbd  = [];		// 境界線に線が引いてあるかどうか
 
-		pzprv3.core.AreaData.prototype.initialize.call(this, owner);
+		pzprv3.core.AreaData.prototype.initialize.call(this);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -946,10 +940,10 @@ pzprv3.createCoreClass('AreaBorderData:AreaData',
 //--------------------------------------------------------------------------------
 pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 {
-	initialize : function(owner){
+	initialize : function(){
 		this.bdcnt = [];		// 格子点の周りの境界線の数
 
-		pzprv3.core.AreaBorderData.prototype.initialize.call(this, owner);
+		pzprv3.core.AreaBorderData.prototype.initialize.call(this);
 	},
 	bdfunc : function(border){ return border.isBorder();},
 
@@ -1104,10 +1098,10 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 //--------------------------------------------------------------------------------
 pzprv3.createCommonClass('AreaLineData:AreaBorderData',
 {
-	initialize : function(owner){
+	initialize : function(){
 		this.bdcnt = [];		// セルの周りの線の数
 
-		pzprv3.core.AreaBorderData.prototype.initialize.call(this, owner);
+		pzprv3.core.AreaBorderData.prototype.initialize.call(this);
 	},
 	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
 	bdfunc : function(border){ return !border.isLine();},

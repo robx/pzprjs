@@ -94,7 +94,7 @@ Board:{
 	isexcell : 1,
 
 	getTileInfo : function(){
-		var tinfo = new this.owner.classes.AreaTriTileData(this.owner).getAreaInfo();
+		var tinfo = this.owner.newInstance('AreaTriTileData').getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
 			var d = tinfo.getclist(r).getRectSize();
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);

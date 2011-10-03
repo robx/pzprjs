@@ -138,9 +138,9 @@ TargetCursor:{
 Cross:{
 	maxnum : 26,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		this.segment = new pzprv3.core.PieceList(owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.segment = this.owner.newInstance('PieceList');
 	}
 },
 
@@ -155,7 +155,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
-		this.segs = new this.owner.classes.SegmentManager(this.owner);
+		this.segs = this.owner.newInstance('SegmentManager');
 		this.segs.init();
 	},
 
@@ -206,7 +206,7 @@ Board:{
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
-		var seg = new this.owner.classes.Segment(this.owner,bx1,by1,bx2,by2), lattice = [];
+		var seg = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]), lattice = [];
 		for(var i=0;i<seg.lattices.length;i++){
 			var xc = seg.lattices[i][2];
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
@@ -216,7 +216,7 @@ Board:{
 
 	adjustBoardData : function(key,d){
 		if(key & this.REDUCE){
-			var seglist=this.segs.getallsegment(), sublist=new pzprv3.core.PieceList(this.owner);
+			var seglist=this.segs.getallsegment(), sublist=this.owner.newInstance('PieceList');
 			for(var i=0;i<seglist.length;i++){
 				var seg = seglist[i];
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
@@ -293,13 +293,13 @@ OperationManager:{
 	addOpe_Segment : function(x1, y1, x2, y2, old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.SegmentOperation(this.owner);
+			var ope = this.owner.newInstance('SegmentOperation');
 			ope.setData(x1, y1, x2, y2, old, num);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.SegmentOperation(this.owner);
+		var ope = this.owner.newInstance('SegmentOperation');
 		if(ope.decode(strs)){ return ope;}
 
 		return this.SuperFunc.decodeOpe.call(this, strs);
@@ -607,7 +607,7 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(seglist){
-		var xinfo = new this.owner.classes.AreaSegmentInfo(this.owner);
+		var xinfo = this.owner.newInstance('AreaSegmentInfo');
 		for(var i=0;i<seglist.length;i++){ xinfo.id[seglist[i].id] = 0;}
 		for(var i=0;i<seglist.length;i++){
 			var seg = seglist[i];
@@ -725,7 +725,7 @@ AnsCheck:{
 	emptySegment : function(seg){ return (this.id[seg.id]===0);},
 
 	getseglist : function(areaid){
-		var idlist = this.room[areaid].idlist, seglist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ seglist.add(bd.segs.seg[idlist[i]]);}
 		return seglist;
 	},
@@ -739,9 +739,7 @@ AnsCheck:{
 //---------------------------------------------------------
 //---------------------------------------------------------
 Segment:{
-	initialize : function(owner, bx1, by1, bx2, by2){
-		this.owner = owner;
-
+	initialize : function(bx1, by1, bx2, by2){
 		this.id = null;
 
 		this.cross1;	// 端点1のIDを保持する
@@ -867,9 +865,7 @@ Segment:{
 },
 
 SegmentManager:{ /* LineManagerクラスを拡張してます */
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.seg    = {};	// segmentの配列
 		this.segmax = 0;
 
@@ -903,7 +899,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.resetInfo();
 	},
 	resetInfo : function(){
-		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=new pzprv3.core.PieceList(this.owner);}
+		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=this.owner.newInstance('PieceList');}
 
 		this.lineid = {};
 		this.idlist = {};
@@ -969,14 +965,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
 	//---------------------------------------------------------------------------
 	getallsegment : function(){
-		var seglist = new pzprv3.core.PieceList(this.owner);
+		var seglist = this.owner.newInstance('PieceList');
 		for(var id in this.seg){ seglist.add(this.seg[id]);}
 		return seglist;
 	},
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
 
-		var seglist = new pzprv3.core.PieceList(this.owner);
+		var seglist = this.owner.newInstance('PieceList');
 		for(var id in this.seg){
 			var seg=this.seg[id], cnt=0;
 			if(this.isOverLap(seg.bx1,seg.bx2,x1,x2) && this.isOverLap(seg.by1,seg.by2,y1,y2)){
@@ -1007,7 +1003,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 	setSegment : function(bx1,by1,bx2,by2){
 		this.segmax++;
-		this.seg[this.segmax] = new this.owner.classes.Segment(this.owner,bx1,by1,bx2,by2);
+		this.seg[this.segmax] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
 		this.seg[this.segmax].id = this.segmax;
 		this.setSegmentInfo(this.seg[this.segmax], true);
 		um.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
@@ -1122,7 +1118,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		if(shortid!==null){
 			if(pp.getVal('irowake')){
-				var idlist = this.idlist[longid], seglist = new pzprv3.core.PieceList(this.owner);
+				var idlist = this.idlist[longid], seglist = this.owner.newInstance('PieceList');
 				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 				pc.repaintSegments(seglist);
 			}
@@ -1178,7 +1174,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			}
 		}
 		if(pp.getVal('irowake')){
-			var idlist = this.idlist[newlongid], seglist = new pzprv3.core.PieceList(this.owner);
+			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('PieceList');
 			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 			pc.repaintSegments(seglist);
 		}

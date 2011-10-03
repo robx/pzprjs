@@ -133,8 +133,8 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
 		this.star = []; /* インスタンス化 */
 	},
@@ -151,7 +151,7 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
-		var pos = new pzprv3.core.Address(this.owner,0,0);
+		var pos = this.owner.newInstance('Address',[0,0]);
 		for(var id=0;id<this.starmax;id++){
 			this.star[id] = {};
 			var obj = this.star[id];

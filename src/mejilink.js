@@ -212,7 +212,7 @@ AnsCheck:{
 	},
 	checkDotLength : function(){
 		var result = true;
-		var tarea = new this.owner.classes.AreaTileData(this.owner).getAreaInfo();
+		var tarea = this.owner.newInstance('AreaTileData').getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}

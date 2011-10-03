@@ -34,9 +34,9 @@ Cell:{
 Board:{
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid==='chocona'){
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid==='chocona'){
 			this.minnum = 0;
 		}
 	},
@@ -51,9 +51,9 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid==='chocona'){
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid==='chocona'){
 			this.checkBlackCell = true;
 		}
 	},

@@ -7,9 +7,7 @@
 // Menuクラス実行部
 pzprv3.createCommonClass('MenuExec',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.displaymanage = true;
 
 		this.reader;	// FileReaderオブジェクト
@@ -192,7 +190,7 @@ pzprv3.createCommonClass('MenuExec',
 		var canvas_sv = this.owner.canvas;
 		try{
 			this.owner.canvas = ee('divques_sub').el;
-			var pc2 = new this.owner.classes.Graphic(this.owner);
+			var pc2 = this.owner.newInstance('Graphic');
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();

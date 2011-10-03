@@ -6,13 +6,11 @@
 // Boardクラスの定義
 pzprv3.createCommonClass('Board',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
-		this.cell   = new pzprv3.core.PieceList(owner);
-		this.cross  = new pzprv3.core.PieceList(owner);
-		this.border = new pzprv3.core.PieceList(owner);
-		this.excell = new pzprv3.core.PieceList(owner);
+	initialize : function(){
+		this.cell   = this.owner.newInstance('PieceList');
+		this.cross  = this.owner.newInstance('PieceList');
+		this.border = this.owner.newInstance('PieceList');
+		this.excell = this.owner.newInstance('PieceList');
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
@@ -34,8 +32,8 @@ pzprv3.createCommonClass('Board',
 		this.haserror = false;
 
 		// 補助オブジェクト
-		this.lines  = new owner.classes.LineManager(owner);		// 線情報管理オブジェクト
-		this.areas  = new owner.classes.AreaManager(owner);		// 領域情報管理オブジェクト
+		this.lines  = this.owner.newInstance('LineManager');	// 線情報管理オブジェクト
+		this.areas  = this.owner.newInstance('AreaManager');	// 領域情報管理オブジェクト
 
 		this.initialize_adjust();
 	},
@@ -137,10 +135,10 @@ pzprv3.createCommonClass('Board',
 		return 0;
 	},
 	newObject : function(type){
-		if     (type===this.CELL)  { return (new this.owner.classes.Cell(this.owner));}
-		else if(type===this.CROSS) { return (new this.owner.classes.Cross(this.owner));}
-		else if(type===this.BORDER){ return (new this.owner.classes.Border(this.owner));}
-		else if(type===this.EXCELL){ return (new this.owner.classes.EXCell(this.owner));}
+		if     (type===this.CELL)  { return this.owner.newInstance('Cell');}
+		else if(type===this.CROSS) { return this.owner.newInstance('Cross');}
+		else if(type===this.BORDER){ return this.owner.newInstance('Border');}
+		else if(type===this.EXCELL){ return this.owner.newInstance('EXCell');}
 		return (void 0);
 	},
 
@@ -438,7 +436,7 @@ pzprv3.createCommonClass('Board',
 	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
-		var clist = new pzprv3.core.PieceList(this.owner);
+		var clist = this.owner.newInstance('PieceList');
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -446,7 +444,7 @@ pzprv3.createCommonClass('Board',
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
-		var clist = new pzprv3.core.PieceList(this.owner);
+		var clist = this.owner.newInstance('PieceList');
 		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
 			var cross = this.getx(bx,by);
 			if(!cross.isnull){ clist.add(cross);}
@@ -454,7 +452,7 @@ pzprv3.createCommonClass('Board',
 		return clist;
 	},
 	borderinside : function(x1,y1,x2,y2){
-		var blist = new pzprv3.core.PieceList(this.owner);
+		var blist = this.owner.newInstance('PieceList');
 		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 			var border = this.getb(bx,by);
 			if(!border.isnull){ blist.add(border);}
@@ -462,7 +460,7 @@ pzprv3.createCommonClass('Board',
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
-		var exlist = new pzprv3.core.PieceList(this.owner);
+		var exlist = this.owner.newInstance('PieceList');
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var excell = this.getex(bx,by);
 			if(!excell.isnull){ exlist.add(excell);}

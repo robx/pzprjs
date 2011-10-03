@@ -106,7 +106,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
-		this.pos = new pzprv3.core.Address(this.owner, bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2);
+		this.pos = this.owner.newInstance('Address', [bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2]);
 	}
 },
 

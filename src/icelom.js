@@ -242,13 +242,13 @@ OperationManager:{
 	addOpe_InOut : function(property, x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.InOutOperation(this.owner);
+			var ope = this.owner.newInstance('InOutOperation');
 			ope.setData(property, x1, y1, x2, y2);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.InOutOperation(this.owner);
+		var ope = this.owner.newInstance('InOutOperation');
 		if(ope.decode(strs)){ return ope;}
 
 		return this.SuperFunc.decodeOpe.call(this, strs);
@@ -537,7 +537,7 @@ AnsCheck:{
 	},
 
 	checkIgnoreIcebarn : function(){
-		var iarea = new this.owner.classes.AreaIcebarnData(this.owner).getAreaInfo();
+		var iarea = this.owner.newInstance('AreaIcebarnData').getAreaInfo();
 		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
 	},
 

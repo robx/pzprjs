@@ -73,7 +73,7 @@ Cell:{
 	},
 
 	akariRangeClist : function(){
-		var cell, clist=new pzprv3.core.PieceList(this.owner);
+		var cell, clist=this.owner.newInstance('PieceList');
 
 		clist.add(this);
 		cell=this.lt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.lt();}
@@ -245,7 +245,7 @@ AnsCheck:{
 	},
 
 	isPluralAkari : function(keycellpos, clist){
-		var akaris=new pzprv3.core.PieceList(this.owner);
+		var akaris=this.owner.newInstance('PieceList');
 		for(var i=0;i<clist.length;i++){
 			if(clist[i].isAkari()){ akaris.add(clist[i]);}
 		}

@@ -119,7 +119,7 @@ Board:{
 			cell2 = cell;
 		}
 
-		var binfo = new this.owner.classes.AreaBarInfo(this.owner);
+		var binfo = this.owner.newInstance('AreaBarInfo');
 		for(var bx=this.minbx+1;bx<=this.maxbx-1;bx+=2){
 			var roomid=null, cell2=null;
 			for(var by=this.minby+1;by<=this.maxby-1;by+=2){
@@ -166,8 +166,8 @@ Board:{
 	}
 },
 "AreaBarInfo:AreaCellInfo":{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this,owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
 		this.pole = [];
 
@@ -188,7 +188,7 @@ Board:{
 
 	getclist : function(areaid){
 		var room = this.room[areaid], idlist = room.idlist;
-		var clist = new pzprv3.core.PieceList(this.owner);
+		var clist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		clist.pole = room.pole;
 		clist.link = room.link;
@@ -198,15 +198,14 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(owner){
-		this.owner = owner;
+	initialize : function(){
 		this.barinfo = null;
 
 		this.disrec = 0;
 	},
 
 	init : function(){
-		this.barinfo = new this.owner.classes.AreaBarData(this.owner);
+		this.barinfo = this.owner.newInstance('AreaBarData');
 	},
 	resetArea : function(){
 		this.barinfo.reset();

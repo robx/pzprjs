@@ -103,8 +103,8 @@ Cell:{
 },
 
 UndoTimer:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 		this.ismouse = false;
 	},
 

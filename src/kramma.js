@@ -74,10 +74,10 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
-		if(owner.pid==='kramma'||owner.pid==='kramman'){
+		if(this.owner.pid==='kramma'||this.owner.pid==='kramman'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}
@@ -109,7 +109,7 @@ Graphic:{
 
 		this.crosssize = 0.15;
 		if(this.owner.pid==='shwolf'){
-			this.imgtile = new pzprv3.core.ImageTile('./src/img/shwolf_obj.png',2,1);
+			this.imgtile = this.owner.newInstance('ImageTile',['./src/img/shwolf_obj.png',2,1]);
 		}
 	},
 
@@ -277,7 +277,7 @@ AnsCheck:{
 		var lines = [];
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
 
-		var pos = new pzprv3.core.Address(this.owner, bd.minbx, bd.minby);
+		var pos = this.owner.newInstance('Address',[0,0]);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
 			for(pos.by=bd.minby;pos.by<=bd.maxby;pos.by+=2){
 				/* 盤面端から探索をスタートする */
@@ -330,7 +330,7 @@ AnsCheck:{
 }
 };
 
-pzprv3.createCoreClass('ImageTile',
+pzprv3.createCommonClass('ImageTile',
 {
 	initialize : function(src,col,row){
 		this.image = new Image();

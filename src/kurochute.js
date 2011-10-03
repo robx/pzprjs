@@ -139,7 +139,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num=cell.getQnum(), cell2;
-			var clist = new pzprv3.core.PieceList(this.owner);
+			var clist = this.owner.newInstance('PieceList');
 			cell2=cell.relcell(-num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
 			cell2=cell.relcell( num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
 			cell2=cell.relcell(0,-num*2); if(cell2.isBlack()){ clist.add(cell2);}

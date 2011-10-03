@@ -130,7 +130,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
 			var pos = cell.getaddr(), dir = cell.getQdir(), cnt=0;
-			var clist = new pzprv3.core.PieceList(this.owner);
+			var clist = this.owner.newInstance('PieceList');
 			while(1){
 				pos.movedir(dir,2);
 				var cell2 = pos.getc();

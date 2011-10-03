@@ -3,11 +3,9 @@
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('BoardPiece',
+pzprv3.createCommonClass('BoardPiece',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.bx;	// X座標(border座標系)を保持する
 		this.by;	// Y座標(border座標系)を保持する
 	},
@@ -35,7 +33,7 @@ pzprv3.createCoreClass('BoardPiece',
 	// getaddr() 自分の盤面中での位置を返す
 	// relcell(), relcross(), relbd(), relexcell() 相対位置に存在するオブジェクトを返す
 	//---------------------------------------------------------------------------
-	getaddr : function(){ return new pzprv3.core.Address(this.owner, this.bx, this.by);},
+	getaddr : function(){ return this.owner.newInstance('Address',[this.bx, this.by]);},
 
 	relcell   : function(dx,dy){ return this.getaddr().move(dx,dy).getc();},
 	relcross  : function(dx,dy){ return this.getaddr().move(dx,dy).getx();},
@@ -435,8 +433,8 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 // Borderクラスの定義
 pzprv3.createCommonClass('Border:BoardPiece',
 {
-	initialize : function(owner){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this, owner);
+	initialize : function(){
+		pzprv3.core.BoardPiece.prototype.initialize.call(this);
 
 		this.sidecell  = [null,null];	// 隣接セルのオブジェクト
 		this.sidecross = [null,null];	// 隣接交点のオブジェクト
@@ -614,21 +612,20 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 // ★Addressクラス (bx,by)座標を扱う
 //---------------------------------------------------------------------------
 // Addressクラス
-pzprv3.createCoreClass('Address',
+pzprv3.createCommonClass('Address',
 {
-	initialize : function(owner,bx,by){
-		this.owner = owner;
+	initialize : function(bx,by){
 		this.init(bx,by);
 	},
 
 	reset  : function()   { this.bx = null;  this.by = null;},
 	equals : function(pos){ return (this.bx===pos.bx && this.by===pos.by);},
-	clone  : function()   { return new pzprv3.core.Address(this.owner, this.bx, this.by);},
+	clone  : function()   { return this.owner.newInstance('Address',[this.bx, this.by]);},
 
 	set  : function(pos)  { this.bx = pos.bx; this.by = pos.by; return this;},
 	init : function(bx,by){ this.bx  = bx; this.by  = by; return this;},
 	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
-	rel  : function(dx,dy){ return new pzprv3.core.Address(this.owner, this.bx+dx, this.by+dy);},
+	rel  : function(dx,dy){ return this.owner.newInstance('Address',[this.bx+dx, this.by+dy]);},
 
 	oncell   : function(){ return !!( (this.bx&1)&& (this.by&1));},
 	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
@@ -659,10 +656,9 @@ pzprv3.createCoreClass('Address',
 //----------------------------------------------------------------------------
 // ★PieceListクラス オブジェクトの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('PieceList',
+pzprv3.createCommonClass('PieceList',
 {
-	initialize : function(owner){
-		this.owner = owner;
+	initialize : function(){
 		this.length = 0;
 	},
 	
@@ -712,7 +708,7 @@ pzprv3.createCoreClass('PieceList',
 		return idlist.join(str);
 	},
 	filter : function(cond){
-		var list = new pzprv3.core.PieceList(this.owner);
+		var list = this.owner.newInstance('PieceList');
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
 		return list;
 	},
@@ -769,7 +765,7 @@ pzprv3.createCoreClass('PieceList',
 	// list.crossinside() 線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(){
-		var clist = new pzprv3.core.PieceList(this.owner), pushed = [];
+		var clist = this.owner.newInstance('PieceList'), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cell1=border.sidecell[0], cell2=border.sidecell[1];
 			if(!cell1.isnull && pushed[cell1.id]!==true){ clist.add(cell1); pushed[cell1.id]=true;}
@@ -778,7 +774,7 @@ pzprv3.createCoreClass('PieceList',
 		return clist;
 	},
 	crossinside : function(){
-		var clist = new pzprv3.core.PieceList(this.owner), pushed = [];
+		var clist = this.owner.newInstance('PieceList'), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cross1=border.sidecross[0], cross2=border.sidecross[1];
 			if(!cross1.isnull && pushed[cross1.id]!==true){ clist.add(cross1); pushed[cross1.id]=true;}
@@ -794,11 +790,9 @@ pzprv3.createCoreClass('PieceList',
 //         0     どの部屋に属させるかの処理中
 //         1以上 その番号の部屋に属する
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('AreaCellInfo',
+pzprv3.createCommonClass('AreaCellInfo',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
@@ -819,7 +813,7 @@ pzprv3.createCoreClass('AreaCellInfo',
 
 	getclistbycell : function(cell)  { return this.getclist(this.id[cell.id]);},
 	getclist : function(areaid){
-		var idlist = this.room[areaid].idlist, clist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this.room[areaid].idlist, clist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	},
@@ -845,13 +839,13 @@ pzprv3.createCoreClass('AreaCellInfo',
 });
 
 // AreaBorderInfoクラス
-pzprv3.createCoreClass('AreaBorderInfo:AreaCellInfo',
+pzprv3.createCommonClass('AreaBorderInfo:AreaCellInfo',
 {
 	addBorder : function(border){ this.setRoomID(border, this.max);},
 	emptyBorder : function(border){ return (this.id[border.id]===0);},
 
 	getblist : function(areaid){
-		var idlist = this.room[areaid].idlist, blist = new pzprv3.core.PieceList(this.owner);
+		var idlist = this.room[areaid].idlist, blist = this.owner.newInstance('PieceList');
 		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
 		return blist;
 	},

@@ -44,12 +44,12 @@ KeyEvent:{
 Board:{
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid==='fillmat'){
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid==='fillmat'){
 			this.owner.classes.Cell.prototype.maxnum = 4;
 		}
-		else if(owner.pid==='usotatami'){
+		else if(this.owner.pid==='usotatami'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}

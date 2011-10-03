@@ -7,9 +7,7 @@
 // MouseEventクラスを定義
 pzprv3.createCommonClass('MouseEvent',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.enableMouse = true;	// マウス入力は有効か
 
 		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
@@ -18,7 +16,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
 		this.firstPoint = new pzprv3.core.Point(null, null);	// mousedownされた時のpixel位置
-		this.prevPos    = new pzprv3.core.Address(owner, null, null);	// 前回のマウス入力イベントのborder座標
+		this.prevPos    = this.owner.newInstance('Address',[null, null]);	// 前回のマウス入力イベントのborder座標
 		this.btn = {};		// 押されているボタン
 
 		this.bordermode;	// 境界線を入力中かどうか
@@ -232,7 +230,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
 		var by = ((py/pc.ch)|0)*2 + ((py%pc.ch<2*pm)?0:1) - 4;
 
-		return new pzprv3.core.Address(this.owner,bx,by);
+		return this.owner.newInstance('Address',[bx,by]);
 	},
 
 	getborder : function(spc){
@@ -591,7 +589,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return new pzprv3.core.BoardPiece(null);
+		return this.owner.newInstance('BoardPiece');
 	},
 
 	//---------------------------------------------------------------------------

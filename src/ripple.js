@@ -39,10 +39,10 @@ Cell:{
 Board:{
 	isborder : 1,
 
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
-		if(owner.pid==='cojun'){
+		if(this.owner.pid==='cojun'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}

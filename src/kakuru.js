@@ -81,7 +81,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return (bd.owner.editmode?44:9);
+		return (this.owner.editmode?44:9);
 	}
 },
 Board:{
@@ -240,7 +240,7 @@ AnsCheck:{
 
 			var bx=cell.bx, by=cell.by;
 			var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var clist=this.owner.newInstance('PieceList'), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
 			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
 				var cell2 = clist0[i];
@@ -267,7 +267,7 @@ AnsCheck:{
 			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
 
 			var cnt=0, bx=cell.bx, by=cell.by;
-			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var clist=this.owner.newInstance('PieceList'), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
 			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
 				var cell2 = clist0[i];
@@ -290,7 +290,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.getAnum()<=0){ continue;}
 			var bx = cell.bx, by = cell.by;
-			var clist=new pzprv3.core.PieceList(this.owner), clist0 = bd.cellinside(bx,by,bx+2,by+2);
+			var clist=this.owner.newInstance('PieceList'), clist0 = bd.cellinside(bx,by,bx+2,by+2);
 			clist.add(cell);
 			clist0.add(bd.getc(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
 			for(var i=0;i<clist0.length;i++){

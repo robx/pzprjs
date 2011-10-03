@@ -22,7 +22,7 @@ MouseEvent:{
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	borderpos : function(rc){
-		return new pzprv3.core.Address(this.owner, (this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1);
+		return this.owner.newInstance('Address',[(this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1]);
 	}
 },
 
@@ -148,7 +148,7 @@ Board:{
 		return (id!==null ? this.cell[id] : this.newObject(this.CELL));
 	},
 	cellinside : function(x1,y1,x2,y2){
-		var clist = new pzprv3.core.PieceList(this.owner);
+		var clist = this.owner.newInstance('PieceList');
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -297,8 +297,8 @@ Menu:{
 	}
 },
 Properties:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 		this.funcs.newboard = function(){ menu.ex.newboard_show();};
 	}
 },
@@ -457,13 +457,13 @@ AnsCheck:{
 	checkThreeBlackCells : function(){
 		var result = true;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var clist = new pzprv3.core.PieceList(this.owner);
+			var clist = this.owner.newInstance('PieceList');
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ continue;}
 				else if(cell.isWhite() || cell.isNum()){
 					if(clist.length>=3){ break;}
-					clist=new pzprv3.core.PieceList(this.owner);
+					clist=this.owner.newInstance('PieceList');
 				}
 				else{ clist.add(cell);}
 			}
@@ -480,7 +480,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			var clist = new pzprv3.core.PieceList(this.owner);
+			var clist = this.owner.newInstance('PieceList');
 			clist.add(cell.relcell(-1,-2));
 			clist.add(cell.relcell( 1,-2));
 			clist.add(cell.relcell(-2, 0));

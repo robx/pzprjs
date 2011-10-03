@@ -30,7 +30,7 @@ Cell:{
 },
 Board:{
 	getdir8WareaInfo : function(){
-		var winfo = new pzprv3.core.AreaCellInfo(this.owner);
+		var winfo = this.owner.newInstance('AreaCellInfo');
 		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isWhite()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!winfo.emptyCell(this.cell[fc])){ continue;}
@@ -54,9 +54,9 @@ Board:{
 },
 
 AreaManager:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid!=='mochikoro'){ this.checkBlackCell = true;}
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid!=='mochikoro'){ this.checkBlackCell = true;}
 	},
 	checkWhiteCell : true
 },

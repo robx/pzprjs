@@ -78,7 +78,7 @@ Cell:{
 	minnum : 3,
 
 	getTriLine : function(){
-		var blist=new pzprv3.core.PieceList(this.owner), border;
+		var blist=this.owner.newInstance('PieceList'), border;
 
 		border=this.lb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
 		border=this.rb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}

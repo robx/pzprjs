@@ -109,9 +109,9 @@ Cell:{
 
 	// 正答判定用
 	getViewClist : function(){
-		var sx=this.bx, sy=this.by, clist=new pzprv3.core.PieceList(this.owner);
+		var sx=this.bx, sy=this.by, clist=this.owner.newInstance('PieceList');
 		for(var dir=1;dir<=4;dir++){
-			var pos = new pzprv3.core.Address(this.owner,sx,sy);
+			var pos = this.owner.newInstance('Address',[sx,sy]);
 			while(1){
 				pos.movedir(dir,2);
 				var cell = pos.getc();
@@ -123,26 +123,26 @@ Cell:{
 	}
 },
 Board:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
-		if(owner.pid==='view' || owner.pid==='sukororoom'){
+		if(this.owner.pid==='view' || this.owner.pid==='sukororoom'){
 			this.qcols = 8;
 			this.qrows = 8;
 		}
-		if(owner.pid==='view'){
+		if(this.owner.pid==='view'){
 			this.owner.classes.Cell.prototype.minnum = 0;
 		}
-		if(owner.pid==='sukororoom'){
+		if(this.owner.pid==='sukororoom'){
 			this.isborder = 1;
 		}
 	}
 },
 
 AreaManager:{
-	initialize : function(owner){
-		this.SuperFunc.initialize.call(this, owner);
-		if(owner.pid==='sukororoom'){ this.hasroom = true;}
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		if(this.owner.pid==='sukororoom'){ this.hasroom = true;}
 	},
 	linkNumber : true
 },

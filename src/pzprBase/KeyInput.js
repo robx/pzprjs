@@ -7,9 +7,7 @@
 // KeyEventクラスを定義
 pzprv3.createCommonClass('KeyEvent',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		this.enableKey = true;	// キー入力は有効か
 		this.keyreset();
 
@@ -550,11 +548,9 @@ pzprv3.createCommonClass('KeyEvent',
 
 pzprv3.createCommonClass('TargetCursor',
 {
-	initialize : function(owner){
-		this.owner = owner;
-
+	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)
-		this.pos = new pzprv3.core.Address(this.owner,1,1);
+		this.pos = this.owner.newInstance('Address',[1,1]);
 
 		// 有効な範囲(minx,miny)-(maxx,maxy)
 		this.minx;
@@ -582,8 +578,8 @@ pzprv3.createCommonClass('TargetCursor',
 		this.adjust_init();
 	},
 	initCursor : function(){
-		if(this.crosstype){ this.pos = new pzprv3.core.Address(this.owner,0,0);}
-		else              { this.pos = new pzprv3.core.Address(this.owner,1,1);}
+		if(this.crosstype){ this.pos = this.owner.newInstance('Address',[0,0]);}
+		else              { this.pos = this.owner.newInstance('Address',[1,1]);}
 
 		this.adjust_init();
 	},

@@ -132,7 +132,7 @@ Cell:{
 },
 Board:{
 	getBarInfo : function(){
-		var binfo = new pzprv3.core.AreaCellInfo(this.owner);
+		var binfo = this.owner.newInstance('AreaCellInfo');
 		for(var c=0;c<this.cellmax;c++){
 			var cell = this.cell[c];
 			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);

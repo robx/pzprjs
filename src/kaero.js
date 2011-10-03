@@ -74,8 +74,8 @@ Board:{
 	isborder : 1,
 
 	searchMovedPosition : function(linfo){
-		var minfo = new pzprv3.core.AreaCellInfo(this.owner);
-		for(var c=0;c<this.cellmax;c++){ bd.cell[c].qnum2=bd.cell[c].qnum; bd.cell[c].base = null;}
+		var minfo = this.owner.newInstance('AreaCellInfo');
+		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum; this.cell[c].base = null;}
 		for(var r=1;r<=linfo.max;r++){
 			var clist = linfo.getclist(r);
 			if(clist.length<=1){ continue;}
