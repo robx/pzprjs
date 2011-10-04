@@ -288,12 +288,8 @@ AnsCheck:{
 			if(num<0 || dir===0){ continue;}
 
 			var cell2, pos=cell.getaddr();
-			switch(dir){
-				case bd.UP: pos.move(0,-2); while(gonext()){ pos.move(0,-2);} break;
-				case bd.DN: pos.move(0, 2); while(gonext()){ pos.move(0, 2);} break;
-				case bd.LT: pos.move(-2,0); while(gonext()){ pos.move(-2,0);} break;
-				case bd.RT: pos.move( 2,0); while(gonext()){ pos.move( 2,0);} break;
-			}
+			pos.movedir(dir,2);
+			while(gonext()){ pos.movedir(dir,2);}
 			// cell2は数字のあるマスのIDか、null(盤面外)を指す
 
 			// 矢印つき数字が0で、その先に回答の数字がある

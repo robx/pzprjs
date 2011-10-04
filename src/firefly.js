@@ -210,9 +210,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir=cell.getQdir();
 			if(cell.noNum() || dir===0){ continue;}
-			if((dir===bd.UP && !cell.ub().isLine()) || (dir===bd.DN && !cell.db().isLine()) ||
-			   (dir===bd.LT && !cell.lb().isLine()) || (dir===bd.RT && !cell.rb().isLine()) )
-			{
+			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);
 				result = false;
