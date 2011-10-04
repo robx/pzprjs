@@ -208,6 +208,22 @@ FileIO:{
 		return true;
 	},
 
+	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
+	checkSeqBlocksInRoom : function(){
+		var result = true;
+		var dataobj = this.owner.newInstance('AreaData');
+		for(var r=1;r<=bd.areas.rinfo.max;r++){
+			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
+			dataobj.reset();
+			if(dataobj.getAreaInfo().max>1){
+				if(this.inAutoCheck){ return false;}
+				bd.areas.rinfo.getClist(r).seterr(1);
+				result = false;
+			}
+		}
+		return result;
+	},
+
 	checkTetromino : function(rinfo){
 		var dinfo = bd.getTetrominoInfo(rinfo), result = true;
 		for(var r=1;r<=dinfo.max;r++){

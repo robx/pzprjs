@@ -267,7 +267,7 @@ AnsCheck:{
 		if( !this.checkSameObjectInRoom_kaero(rinfo) ){
 			this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
 		}
-		if( !this.checkGatheredObject(rinfo, function(cell){ return cell.qnum2;}) ){
+		if( !this.checkGatheredObject(rinfo) ){
 			this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 		}
 		if( !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.qnum2;}) ){
@@ -320,5 +320,21 @@ AnsCheck:{
 		}
 		return result;
 	},
+
+	// 同じ値であれば、同じ部屋に存在することを判定する
+	checkGatheredObject : function(rinfo){
+		var d=[], dmax=0, val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].qnum2; if(dmax<val[c]){ dmax=val[c];} }
+		for(var i=0;i<=dmax;i++){ d[i]=-1;}
+		for(var c=0;c<bd.cellmax;c++){
+			if(val[c]===-1){ continue;}
+			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
+			else if(d[val[c]]!==rinfo.id[c]){
+				bd.cell.filter(function(cell){ return (val[c]===cell.getQnum());}).seterr(1);
+				return false;
+			}
+		}
+		return true;
+	}
 }
 };

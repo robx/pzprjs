@@ -109,7 +109,7 @@ AnsCheck:{
 		if( !this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
 		}
-		if( !this.checkGatheredObject(rinfo, function(cell){ return cell.getNum();}) ){
+		if( !this.checkGatheredObject(rinfo) ){
 			this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
 		}
 
@@ -123,6 +123,22 @@ AnsCheck:{
 			this.setAlert('線が出ていない黒点があります。','A black point has no line.'); return false;
 		}
 
+		return true;
+	},
+
+	// 同じ値であれば、同じ部屋に存在することを判定する
+	checkGatheredObject : function(rinfo){
+		var d=[], dmax=0, val=[];
+		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
+		for(var i=0;i<=dmax;i++){ d[i]=-1;}
+		for(var c=0;c<bd.cellmax;c++){
+			if(val[c]===-1){ continue;}
+			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
+			else if(d[val[c]]!==rinfo.id[c]){
+				bd.cell.filter(function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}).seterr(1);
+				return false;
+			}
+		}
 		return true;
 	}
 }

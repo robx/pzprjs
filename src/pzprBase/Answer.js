@@ -335,27 +335,10 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkSeqBlocksInRoom()   部屋の中限定で、黒マスがひとつながりかどうか判定する
 	// ans.checkSameObjectInRoom()  部屋の中のgetvalueの値が1種類であるか判定する
-	// ans.checkGatheredObject()    同じgetvalueの値であれば、同じ部屋に存在することを判定する
 	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 	//---------------------------------------------------------------------------
-	checkSeqBlocksInRoom : function(){
-		var result = true;
-		var dataobj = this.owner.newInstance('AreaData');
-		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
-			dataobj.reset();
-			if(dataobj.getAreaInfo().max>1){
-				if(this.inAutoCheck){ return false;}
-				bd.areas.rinfo.getClist(r).seterr(1);
-				result = false;
-			}
-		}
-		return result;
-	},
-
 	checkSameObjectInRoom : function(rinfo, getvalue){
 		var result=true, d=[], val=[];
 		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]);}
@@ -372,23 +355,6 @@ pzprv3.createCommonClass('AnsCheck',
 			}
 		}
 		return result;
-	},
-	checkGatheredObject : function(rinfo, getvalue){
-		var d=[], dmax=0, val=[];
-		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]); if(dmax<val[c]){ dmax=val[c];} }
-		for(var i=0;i<=dmax;i++){ d[i]=-1;}
-		for(var c=0;c<bd.cellmax;c++){
-			if(val[c]===-1){ continue;}
-			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
-			else if(d[val[c]]!==rinfo.id[c]){
-				bd.cell.filter((this.owner.pid==="kaero")
-					? function(cell){ return (val[c]===cell.getQnum());}
-					: function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}
-				).seterr(1);
-				return false;
-			}
-		}
-		return true;
 	},
 
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
