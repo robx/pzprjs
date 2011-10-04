@@ -1,10 +1,10 @@
 //
-// パズル固有スクリプト部 なげなわ版 nagenawa.js v3.4.0
+// パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js v3.4.0
 //
 pzprv3.custom.nagenawa = {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
+"MouseEvent@nagenawa":{
 	inputedit : function(){
 		if(this.mousestart || this.mousemove){ this.inputborder();}
 		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
@@ -15,10 +15,29 @@ MouseEvent:{
 	},
 	inputRed : function(){ this.dispRedLine();}
 },
+"MouseEvent@ringring":{
+	inputedit : function(){
+		if(this.mousestart){ this.inputblock();}
+	},
+	inputplay : function(){
+		if(this.mousestart || this.mousemove){
+			if     (this.btn.Left) { this.inputLine();}
+			else if(this.btn.Right){ this.inputpeke();}
+		}
+	},
+
+	inputblock : function(){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+
+		cell.setQues(cell.getQues()===0?1:0);
+		cell.draw();
+	}
+},
 
 //---------------------------------------------------------
 // キーボード入力系
-KeyEvent:{
+"KeyEvent@nagenawa":{
 	enablemake : true,
 
 	enablemake_p : true,
@@ -33,6 +52,9 @@ Cell:{
 	},
 	minnum : 0
 },
+"Border@ringring":{
+	enableLineNG : true,
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
@@ -45,11 +67,11 @@ LineManager:{
 	isLineCross  : true
 },
 
-AreaManager:{
+"AreaManager@nagenawa":{
 	hasroom    : true
 },
 
-AreaRoomData:{
+"AreaRoomData@nagenawa":{
 	hastop : true
 },
 
@@ -70,13 +92,19 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		this.drawNumbers();
-
 		this.drawDashedGrid();
-		this.drawBorders();
 
-		this.drawMBs();
+		if(this.owner.pid==='nagenawa'){
+			this.drawNumbers();
+			this.drawMBs();
+			this.drawBorders();
+		}
+		else if(this.owner.pid==='ringring'){
+			this.drawBlackCells();
+		}
+
 		this.drawLines();
+		if(this.owner.pid==='ringring'){ this.drawPekes(0);}
 
 		this.drawChassis();
 
@@ -93,10 +121,17 @@ Graphic:{
 		else{ this.hideEL(key);}
 	}
 },
+"Graphic@ringring":{
+	getCellColor : function(cell){
+		if(cell.ques===1){ return this.cellcolor;}
+		return null;
+	},
+	drawTarget : function(){}
+},
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@nagenawa":{
 	pzlimport : function(type){
 		this.decodeBorder();
 		this.decodeRoomNumber16();
@@ -106,8 +141,48 @@ Encode:{
 		this.encodeRoomNumber16();
 	}
 },
+"Encode@ringring":{
+	pzlimport : function(type){
+		this.decodeBlockCell();
+	},
+	pzlexport : function(type){
+		this.encodeBlockCell();
+	},
+
+	// 元ネタはencode/decodeCrossMark
+	decodeBlockCell : function(){
+		var cc=0, i=0, bstr = this.outbstr;
+		for(i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+
+			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
+				cc += parseInt(ca,36);
+				bd.cell[cc].ques = 1;
+			}
+			else if(ca == '.'){ cc+=35;}
+
+			cc++;
+			if(cc>=bd.cellmax){ i++; break;}
+		}
+		this.outbstr = bstr.substr(i);
+	},
+	encodeBlockCell : function(){
+		var cm="", count=0;
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr="";
+			if(bd.cell[c].ques===1){ pstr = ".";}
+			else{ count++;}
+
+			if(pstr){ cm += count.toString(36); count=0;}
+			else if(count==36){ cm += "."; count=0;}
+		}
+		//if(count>0){ cm += count.toString(36);}
+
+		this.outbstr += cm;
+	}
+},
 //---------------------------------------------------------
-FileIO:{
+"FileIO@nagenawa":{
 	decodeData : function(){
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
@@ -121,7 +196,27 @@ FileIO:{
 		this.encodeCellQsub();
 	}
 },
+"FileIO@ringring":{
+	decodeData : function(){
+		this.decodeCellBlock();
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		this.encodeCellBlock();
+		this.encodeBorderLine();
+	},
 
+	decodeCellBlock : function(){
+		this.decodeCell( function(cell,ca){
+			if(ca==="1"){ cell.ques = 1;}
+		});
+	},
+	encodeCellBlock : function(){
+		this.encodeCell( function(cell){
+			return (cell.ques===1?"1 ":"0 ");
+		});
+	}
+},
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
@@ -131,8 +226,12 @@ AnsCheck:{
 			this.setAlert('線が引かれていません。','There is no line on the board.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
-		if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
+		if( (this.owner.pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.getQues()===1);}) ){
+			this.setAlert('黒マスの上に線が引かれています。','There is a line on the black cell.'); return false;
+		}
+
+		var rinfo = (this.owner.pid==='nagenawa' ? bd.areas.getRoomInfo() : null);
+		if( (this.owner.pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
 			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 		}
 
@@ -143,12 +242,16 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);}) ){
+		if( (this.owner.pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);}) ){
 			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 		}
 
 		if( !this.checkAllLoopRect() ){
 			this.setAlert('長方形か正方形でない輪っかがあります。','There is a non-rectangle loop.'); return false;
+		}
+
+		if( (this.owner.pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);}) ){
+			this.setAlert('白マスの上に線が引かれていません。','There is no line on the white cell.'); return false;
 		}
 
 		return true;

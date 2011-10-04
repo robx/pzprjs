@@ -110,7 +110,7 @@ PZLINFO.register({
 	minarism  :[true,  false, 'マイナリズム', 'Minarism', '', {}],
 	mochikoro :[true,  false, 'モチコロ', 'Mochikoro', 'nurikabe', {}],
 	mochinyoro:[true,  false, 'モチにょろ', 'Mochinyoro', 'nurikabe', {}],
-	nagenawa  :[false, false, 'なげなわ', 'Nagenawa', '', {}],
+	nagenawa  :[false, false, 'なげなわ', 'Nagenawa', 'nagenawa', {}],
 	nanro     :[false, true,  'ナンロー', 'Nanro', '', {}],
 	nawabari  :[true,  false, 'なわばり', 'Territory', 'nawabari', {}],
 	norinori  :[false, true,  'のりのり', 'Norinori', 'lits', {}],
@@ -122,6 +122,7 @@ PZLINFO.register({
 	pipelinkr :[true,  false, '帰ってきたパイプリンク', 'Pipelink Returns', 'pipelink', {}],
 	reflect   :[true,  false, 'リフレクトリンク', 'Reflect Link', '', {}],
 	renban    :[false, false, '連番窓口', 'Renban-Madoguchi', '', {}],
+	ringring  :[false, false, 'リングリング', 'Ring-ring', 'nagenawa', {}],
 	ripple    :[false, true,  '波及効果', 'Ripple Effect', 'ripple', { kanpen:'hakyukoka'}],
 	roma      :[false, false, 'ろーま', 'Roma', '', {}],
 	sashigane :[false, false, 'さしがね', 'Sashigane', 'loute', {}],
@@ -149,7 +150,9 @@ PZLINFO.register({
 	wagiri    :[false, false, 'ごきげんななめ・輪切', 'Gokigen-naname:wagiri', 'gokigen', {}],
 	wblink    :[false, false, 'シロクロリンク', 'Shirokuro-link', '', {}],
 	yajikazu  :[true,  false, 'やじさんかずさん', 'Yajisan-Kazusan', '', {}],
-	yajirin   :[false, true,  'ヤジリン', 'Yajilin', '', { pzprurl:'yajilin', kanpen:'yajilin'}]
+	yajirin   :[false, true,  'ヤジリン', 'Yajilin', '', { pzprurl:'yajilin', kanpen:'yajilin'}],
+	yajitatami:[false, false, 'ヤジタタミ', 'Yajitatami', '', {}],
+	yosenabe  :[false, false, 'よせなべ', 'Yosenabe', '', {}]
 });
 
 var FBGcolor = function(pid){
@@ -161,7 +164,8 @@ var FBGcolor = function(pid){
 	case 'lits': case 'tasquare': case 'tawa':           col="rgb(64, 64, 64)"; break;
 	case 'kakuro': case 'tilepaint': case 'triplace':
 	case 'box': case 'minarism': case 'kurodoko':        col="rgb(96, 96, 96)"; break;
-	case 'kouchoku': case 'mochinyoro': case 'wblink':   col="rgb(127, 127, 127)"; break;
+	case 'kouchoku': case 'mochinyoro': case 'wblink':   
+	case 'ringring':                                     col="rgb(127, 127, 127)"; break;
 	case 'sukoro': case 'sukororoom': case 'view':       col="rgb(160, 160, 160)"; break;
 
 	case 'chocona':                                      col="rgb(127, 0, 0)"; break;
@@ -187,6 +191,7 @@ var FBGcolor = function(pid){
 
 	case 'bdblock': case 'reflect':                      col="rgb(0, 127, 96)"; break;
 	case 'norinori': case 'shimaguni':                   col="rgb(0, 127, 127)"; break;
+	case 'yajitatami':                                   col="rgb(0, 255, 96)"; break;
 
 	case 'icebarn': case 'icelom': case 'icelom2':       col="rgb(0, 0, 127)"; break;
 	case 'tentaisho':                                    col="rgb(0, 0, 160)"; break;
@@ -194,7 +199,7 @@ var FBGcolor = function(pid){
 	case 'creek': case 'nanro': case 'hanare':           col="rgb(0, 0, 255)"; break;
 	case 'ripple': case 'cojun': case 'renban':          col="rgb(32, 32, 255)"; break;
 	case 'nawabari':                                     col="rgb(64, 64, 255)"; break;
-	case 'slalom':                                       col="rgb(96, 96, 255)"; break;
+	case 'slalom': case 'yosenabe':                      col="rgb(96, 96, 255)"; break;
 
 	case 'snakes': case 'numlin':                        col="rgb(255, 0, 191)"; break;
 	case 'mashu': case 'bosanowa':                       col="rgb(255, 64, 191)"; break;

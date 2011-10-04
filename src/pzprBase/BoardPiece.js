@@ -643,6 +643,7 @@ pzprv3.createCommonClass('Address',
 			case 3: this.bx-=dd; break; /* bd.LT */
 			case 4: this.bx+=dd; break; /* bd.RT */
 		}
+		return this;
 	},
 
 	//---------------------------------------------------------------------------

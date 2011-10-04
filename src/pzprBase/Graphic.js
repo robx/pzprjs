@@ -1286,15 +1286,15 @@ pzprv3.createCommonClass('Graphic',
 		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i], id = cell.id, error = cell.error;
 
 			if(cell.qnum!==-1){
-				g.fillStyle = (cell.error===1 ? this.errbcolor1 : this.circledcolor);
+				g.fillStyle = ((error===1||error===4) ? this.errbcolor1 : this.circledcolor);
 				if(this.vnop(headers[1]+id,this.FILL)){
 					g.fillCircle(cell.px, cell.py, rsize2);
 				}
 
-				g.strokeStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				g.strokeStyle = ((error===1||error===4) ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.STROKE)){
 					g.strokeCircle(cell.px, cell.py, rsize);
 				}

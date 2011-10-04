@@ -426,6 +426,7 @@ var strinfo = {
 	pipelink  : [['pLine', 'pLineCont'],['eLineMark', 'eEXpipelink']],
 	reflect   : [['pLine', 'pLineCont'],['eTriangle']],
 	renban    : [['pNum'],['eBorder', 'eNumCell']],
+	ringring  : [['pLineCont'],['eEXringring']],
 	ripple    : [['pNum'],['eBorder', 'eNumCell']],
 	roma      : [['pEtcArrow', 'pEXroma'],['eBorder', 'eNumArrow']],
 	sashigane : [['pBorder'],['pEtcArrow', 'eNumCircle']],
@@ -453,7 +454,9 @@ var strinfo = {
 	wagiri    : [['pEtcSlash'],['eEXwagiri']],
 	wblink    : [['pLine'],['eShirokuro1']],
 	yajikazu  : [['pBCell', 'pBCellRB'],['eNumCell', 'eArrowNum1']],
-	yajirin   : [['pLineYaji', 'pLineCont'],['eNumCell', 'eArrowNum1']]
+	yajirin   : [['pLineYaji', 'pLineCont'],['eNumCell', 'eArrowNum1']],
+	yajitatami: [['pBorder'],['eNumCell', 'eArrowNum1', 'eBorder']],
+	yosenabe  : [['pLine'],['eEXyosenabe']]
 };
 
 var strdata={};
@@ -525,6 +528,7 @@ strdata.ja = {
 	eTriangle  : "問題の三角形はQWEASの各キーで入力、Tキーや-キーで消去できます。",
 	ePicture   : "マウスの右ボタンで下絵を描くことが出来ます。",
 	ePicture2  : "この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
+	eEXringring  : "マウスで黒マスが入力できます。",
 	eEXloute     : "マウスや5キーで○が入力できます。",
 	eEXtateyoko  : "黒マスはQキーで入力できます。",
 	eEXtentaisho : "クリックで星が入力できます。",
@@ -538,7 +542,11 @@ strdata.ja = {
 	eEXslalom    : "黒マスはQキーかマウスの左クリックで入力、Rキーで消去できます。"
 				  +"旗門はマウスのドラッグかWEキーで入力できます。○はSキーか、マウスドラッグで移動出来ます。"
 				  +"黒マスの上で数字キーを押すことで数字を入力できます。",
-	eEXkouchoku  : "キーボードやマウスで記号が入力できます。-キーで黒点を入力することができます。"
+	eEXkouchoku  : "キーボードやマウスで記号が入力できます。-キーで黒点を入力することができます。",
+	eEXyosenabe  : "右クリックかWキーで鍋となる領域が入力できます。"
+				  +"<br>数字キーで数字を入力できます。鍋の上だと通常の数字に、鍋意外だと丸付き数字になります。"
+				  +"<br>Qキーを押すことで、丸付きとない数字を入れ替えることが出来ます。"
+				  +"<br>ただし、鍋以外の場所にある○なし数字はエラーになります。"
 };
 
 strdata.en = {

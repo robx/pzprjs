@@ -197,9 +197,9 @@ pzprv3.createCommonClass('Encode',
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0;
@@ -237,9 +237,9 @@ pzprv3.createCommonClass('Encode',
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="";
@@ -285,7 +285,7 @@ pzprv3.createCommonClass('Encode',
 			r++;
 			if(r > bd.areas.rinfo.max){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeRoomNumber16 : function(){
 		bd.areas.rinfo.reset();
@@ -333,9 +333,9 @@ pzprv3.createCommonClass('Encode',
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-10);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0;
