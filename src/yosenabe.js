@@ -98,7 +98,7 @@ KeyEvent:{
 
 			if('0'<=ca && ca<='9'){
 				var num = parseInt(ca);
-				if(cur<=0 || cur*10+num>max || this.prev!=cc){ cur=0;}
+				if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 				val = cur*10+num;
 				if(val>max){ return;}
 			}
@@ -176,7 +176,7 @@ LineManager:{
 	isCenterLine : true
 },
 
-Areamanager:{
+AreaManager:{
 	lineToArea : true
 },
 
@@ -214,13 +214,13 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_'), num = (this.qnum>0 ? this.qnum : this.qdir);
-		if(num>0 || (this.qdir===-2)){
+		var key = ['cell',cell.id].join('_'), num = (cell.qnum>0 ? cell.qnum : cell.qdir);
+		if(num>0 || (cell.qdir===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-			var color     = this.getCellNumberColor(c);
-			if(this.qnum!==-1){ fontratio *= 0.9;}
-			this.dispnum(key, 1, text, fontratio, color, this.px, this.py);
+			var color     = this.getCellNumberColor(cell);
+			if(cell.qnum!==-1){ fontratio *= 0.9;}
+			this.dispnum(key, 1, text, fontratio, color, cell.px, cell.py);
 		}
 		else{ this.hidenum(key);}
 	},
