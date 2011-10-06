@@ -500,6 +500,32 @@ pzprv3.createCommonClass('Board',
 	},
 
 	//---------------------------------------------------------------------------
+	// bd.searchMovedPosition() 丸数字を移動させるパズルで、移動後の場所を設定する
+	//---------------------------------------------------------------------------
+	searchMovedPosition : function(linfo){
+		var emptycell = this.newObject(this.CELL);
+		for(var c=0;c<this.cellmax;c++){
+			var cell = this.cell[c];
+			cell.base = (cell.isNum() ? cell : emptycell);
+		}
+		for(var r=1;r<=linfo.max;r++){
+			var clist = linfo.getclist(r);
+			if(clist.length<=1){ continue;}
+			var before=null, after=null;
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i];
+				if(cell.lcnt()===1){
+					if(cell.isNum()){ before=cell;}else{ after=cell;}
+				}
+			}
+			if(before!==null && after!==null){
+				before.base = emptycell;
+				after.base = before;
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// bd.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	setCrossBorderError : function(bx,by){

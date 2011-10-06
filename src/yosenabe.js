@@ -141,35 +141,13 @@ Cell:{
 	qdir : -1, // ○なし数字として扱う
 
 	// 正答判定用
-	qnum2 : -1,
 	base : null
 },
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	searchMovedPosition : function(linfo){
-		var minfo = this.owner.newInstance('AreaCellInfo');
-		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum; this.cell[c].base = null;}
-		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.getclist(r);
-			if(clist.length<=1){ continue;}
-			var before=null, after=null;
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i];
-				if(cell.lcnt()===1){
-					if(cell.isNum()){ before=cell;}else{ after=cell;}
-				}
-			}
-			if(before!==null && after!==null){
-				after.qnum2 = before.qnum;
-				before.qnum2 = -1;
-				after.base = before;
-			}
-		}
-	}
+	isborder : 1
 },
 
 LineManager:{
@@ -381,11 +359,11 @@ AnsCheck:{
 			this.setAlert('具材の合計値が正しくありません。','Sum of filling is not equal to a crock.'); return false;
 		}
 
-		if( !this.checkNoObjectInRoom(iarea, function(cell){ return cell.qnum2;}) ){
+		if( !this.checkNoObjectInRoom(iarea, function(cell){ return cell.base.qnum;}) ){
 			this.setAlert('具材のない鍋があります。','A crock has no circle.'); return false;
 		}
 
-		if( !this.checkAllCell(function(cell){ return (cell.qnum2!==-1 && !cell.ice());} ) ){
+		if( !this.checkAllCell(function(cell){ return (cell.base.isNum() && !cell.ice());} ) ){
 			this.setAlert('鍋に入っていない具材があります。','A filling isn\'t in a crock.'); return false;
 		}
 
@@ -426,7 +404,7 @@ AnsCheck:{
 
 			var count = 0;
 			for(var i=0;i<clist.length;i++){
-				if(clist[i].qnum2>=0){ count += clist[i].qnum2;}
+				if(clist[i].base.isValidNum()){ count += clist[i].base.qnum;}
 			}
 
 			if(count>0 && num!==count){

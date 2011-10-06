@@ -63,7 +63,6 @@ Cell:{
 	maxnum : 52,
 
 	// 正答判定用
-	qnum2 : -1,
 	base : null
 },
 
@@ -71,28 +70,7 @@ Board:{
 	qcols : 6,
 	qrows : 6,
 
-	isborder : 1,
-
-	searchMovedPosition : function(linfo){
-		var minfo = this.owner.newInstance('AreaCellInfo');
-		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum; this.cell[c].base = null;}
-		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.getclist(r);
-			if(clist.length<=1){ continue;}
-			var before=null, after=null;
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i];
-				if(cell.lcnt()===1){
-					if(cell.isNum()){ before=cell;}else{ after=cell;}
-				}
-			}
-			if(before!==null && after!==null){
-				after.qnum2 = before.qnum;
-				before.qnum2 = -1;
-				after.base = before;
-			}
-		}
-	}
+	isborder : 1
 },
 
 LineManager:{
@@ -270,7 +248,7 @@ AnsCheck:{
 		if( !this.checkGatheredObject(rinfo) ){
 			this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
 		}
-		if( !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.qnum2;}) ){
+		if( !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;}) ){
 			this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
 		}
 
@@ -296,24 +274,21 @@ AnsCheck:{
 		return result;
 	},
 
+	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(rinfo){
-		var result=true, d=[];
-		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], val = cell.qnum2;
-			if(rinfo.id[c]===null || val===-1){ continue;}
-			if(d[rinfo.id[c]]===-1 && val!==-1){ d[rinfo.id[c]] = val;}
-			else if(d[rinfo.id[c]]!==val){
+		var result=true;
+		for(var r=1;r<=rinfo.max;r++){
+			var clist = rinfo.getclist(r), rnum=-1;
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], num=cell.base.qnum;
+				if(num===-1 || rnum===num){ continue;}
+				else if(rnum===-1){ rnum=num; continue;}
+
 				if(this.inAutoCheck){ return false;}
-
-				if(this.performAsLine){ bd.border.seterr(2); rinfo.setErrLareaByCell(cell,1);}
-				else{ rinfo.getclistbycell(cell).seterr(1);}
-
-				// 違うのはエラー表示部だけ
-				for(var cc=0;cc<bd.cellmax;cc++){
-					var cell2 = bd.cell[cc];
-					if(rinfo.getRoomID(cell)===rinfo.getRoomID(cell2) && cell2.base!==null && rinfo.getRoomInfo(cell)!==rinfo.getRoomInfo(cell2.base))
-						{ cell2.base.seterr(4);}
+				clist.seterr(1);
+				for(var i=0;i<clist.length;i++){
+					var cell2 = clist[i].base;
+					if(!cell2.isnull && cell2.error===0){ cell2.seterr(4);}
 				}
 				result = false;
 			}
@@ -323,14 +298,20 @@ AnsCheck:{
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(rinfo){
-		var d=[], dmax=0, val=[];
-		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].qnum2; if(dmax<val[c]){ dmax=val[c];} }
-		for(var i=0;i<=dmax;i++){ d[i]=-1;}
-		for(var c=0;c<bd.cellmax;c++){
-			if(val[c]===-1){ continue;}
-			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
-			else if(d[val[c]]!==rinfo.id[c]){
-				bd.cell.filter(function(cell){ return (val[c]===cell.getQnum());}).seterr(1);
+		var max=0;
+		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
+		for(var num=0;num<=max;num++){
+			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], r=rinfo.getRoomID(cell);
+				if(r===null || rid===r){ continue;}
+				else if(rid===null){ rid=r; continue;}
+				
+				clist.seterr(1);
+				for(var i=0;i<clist.length;i++){
+					var cell2 = clist[i].base;
+					if(!cell2.isnull && cell2.error===0){ cell2.seterr(4);}
+				}
 				return false;
 			}
 		}

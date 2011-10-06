@@ -62,34 +62,15 @@ Cell:{
 	},
 	minnum : 0,
 
-	qnum2 : -1 // 動いた後のqnum(正答判定用)
+	// 正答判定用
+	base : null
 },
 
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-
-	searchMovedPosition : function(linfo){
-		var minfo = this.owner.newInstance('AreaCellInfo');
-		for(var c=0;c<this.cellmax;c++){ this.cell[c].qnum2=this.cell[c].qnum;}
-		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.getclist(r);
-			if(clist.length<=1){ continue;}
-			var before=null, after=null;
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i];
-				if(cell.lcnt()===1){
-					if(cell.isNum()){ before=cell;}else{ after=cell;}
-				}
-			}
-			if(before!==null && after!==null){
-				after.qnum2 = before.qnum;
-				before.qnum2 = -1;
-			}
-		}
-	}
+	isborder : 1
 },
 
 LineManager:{
@@ -211,7 +192,7 @@ AnsCheck:{
 		if( (this.owner.pid==='heyabon') && !this.checkFractal(rinfo) ){
 			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
 		}
-		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.qnum2;}) ){
+		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;}) ){
 			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
 		}
 
@@ -247,10 +228,8 @@ AnsCheck:{
 			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.qnum2!==-1 ^ bd.getc(d.xx-cell.bx, d.yy-cell.by).qnum2!==-1){
-					for(var a=0;a<clist.length;a++){
-						if(clist[a].qnum2!==-1){ clist[a].seterr(1);}
-					}
+				if(cell.base.isNum() ^ bd.getc(d.xx-cell.bx, d.yy-cell.by).base.isNum()){
+					clist.filter(function(cell){ return cell.base.isNum();}).seterr(1);
 					return false;
 				}
 			}
