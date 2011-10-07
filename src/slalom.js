@@ -367,9 +367,9 @@ Graphic:{
 
 			if(cell.ques===21){ //たて
 				if(this.vnop([headers[0],id].join("_"),this.FILL)){
-					var px = cell.px-lm+1, py, rpy = cell.rpy;
+					var px = cell.px-lm+1, py, rpy = cell.rpy, max = rpy+this.ch;
 					g.beginPath();
-					for(py=rpy,max=rpy+this.ch;py<max;py+=ll*2){
+					for(py=rpy;py<max;py+=ll*2){
 						g.moveTo(px,   py);
 						g.lineTo(px+lw,py);
 						g.lineTo(px+lw,py+ll);
@@ -384,9 +384,9 @@ Graphic:{
 
 			if(cell.ques===22){ //よこ
 				if(this.vnop([headers[1],id].join("_"),this.FILL)){
-					var px, py = cell.py-lm+1, rpx = cell.rpx;
+					var px, py = cell.py-lm+1, rpx = cell.rpx, max = rpx+this.cw;
 					g.beginPath();
-					for(px=rpx,max=rpx+this.cw;px<max;px+=ll*2){
+					for(px=rpx;px<max;px+=ll*2){
 						g.moveTo(px,   py);
 						g.lineTo(px+ll,py);
 						g.lineTo(px+ll,py+lw);
