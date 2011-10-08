@@ -165,9 +165,6 @@ Graphic:{
 	bdmargin       : 0.70,
 	bdmargin_image : 0.10,
 
-	setColors : function(){
-		this.borderfontcolor = "blue";
-	},
 	paint : function(){
 		this.drawBGCells();
 
@@ -329,7 +326,7 @@ Graphic:{
 			var border=blist[i], key='border_'+border.id;
 			if(border.qsub>=0){
 				var px = border.px, py = border.py;
-				this.dispnum(key, 1, ""+border.qsub, 0.35 ,this.borderfontcolor, border.px, border.py);
+				this.dispnum(key, 1, ""+border.qsub, 0.35, "blue", border.px, border.py);
 			}
 			else{ this.hideEL(key);}
 		}

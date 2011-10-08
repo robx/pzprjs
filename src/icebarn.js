@@ -290,7 +290,7 @@ Graphic:{
 			if(dir>=1 && dir<=4){
 				var px=border.px, py=border.py;
 
-				g.fillStyle = (border.error===3 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
 						case bd.UP: case bd.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
@@ -315,7 +315,7 @@ Graphic:{
 
 		border = bd.arrowin;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===3 ? this.errcolor1 : this.cellcolor);
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = border.px, py = border.py;
 			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py+0.6*this.ch);}
@@ -324,7 +324,7 @@ Graphic:{
 		}
 		border = bd.arrowout;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===3 ? this.errcolor1 : this.cellcolor);
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = border.px, py = border.py;
 			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py+0.6*this.ch);}
@@ -638,7 +638,7 @@ AnsCheck:{
 			var border = bd.border[id];
 			if(border.isArrow() && !border.isLine()){
 				if(this.inAutoCheck){ return false;}
-				border.seterr(3);
+				border.seterr(4);
 				result = false;
 			}
 		}
@@ -650,9 +650,9 @@ AnsCheck:{
 		if     (pos.by===bd.minby){ dir=2;}else if(pos.by===bd.maxby){ dir=1;}
 		else if(pos.bx===bd.minbx){ dir=4;}else if(pos.bx===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}
-		if(!bd.arrowin.isLine()){ bd.arrowin.seterr(3); return 1;}
+		if(!bd.arrowin.isLine()){ bd.arrowin.seterr(4); return 1;}
 
-		bd.border.seterr(2);
+		bd.border.seterr(-1);
 		bd.arrowin.seterr(1);
 
 		while(1){

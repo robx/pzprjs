@@ -289,7 +289,7 @@ AnsCheck:{
 			if(lines[id]!==1){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.border.seterr(2);}
+			if(result){ bd.border.seterr(-1);}
 			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ bd.border[i].seterr(1);} }
 			result = false;
 		}

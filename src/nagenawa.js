@@ -269,7 +269,7 @@ AnsCheck:{
 			if(this.isLoopRect(blist)){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.border.seterr(2);}
+			if(result){ bd.border.seterr(-1);}
 			blist.seterr(1);
 			result = false;
 		}

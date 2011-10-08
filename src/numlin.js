@@ -81,9 +81,8 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(cell.qnum!==-1){
-				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
-				else if(cell.error===2){ g.fillStyle = this.errbcolor2;}
-				else                   { g.fillStyle = "white";}
+				if(cell.error===1){ g.fillStyle = this.errbcolor1;}
+				else              { g.fillStyle = "white";}
 
 				if(this.vnop(header+cell.id,this.FILL)){
 					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
@@ -180,7 +179,7 @@ AnsCheck:{
 			if(!func(cell)){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.border.seterr(2);}
+			if(result){ bd.border.seterr(-1);}
 			cell.setCellLineError(true);
 			result = false;
 		}

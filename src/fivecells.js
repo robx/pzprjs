@@ -112,9 +112,9 @@ Graphic:{
 	getQansBorderColor : function(border){
 		if(border.qans===1){
 			var err = border.error;
-			if     (err===1){ return this.errcolor1;          }
-			else if(err===2){ return this.errborderQanscolor2;}
-			else            { return this.borderQanscolor;    }
+			if     (err=== 1){ return this.errcolor1;       }
+			else if(err===-1){ return this.errborderbgcolor;}
+			else             { return this.borderQanscolor; }
 		}
 		return null;
 	},

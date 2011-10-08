@@ -17,8 +17,6 @@ pzprv3.createCommonClass('Graphic',
 		// セルの色(黒マス)
 		this.cellcolor = "black";
 		this.errcolor1 = "rgb(224, 0, 0)";
-		this.errcolor2 = "rgb(64, 64, 255)";
-		this.errcolor3 = "rgb(0, 191, 0)";
 
 		// セルの丸数字の中に書く色
 		this.circledcolor = "white";
@@ -36,8 +34,6 @@ pzprv3.createCommonClass('Graphic',
 		this.fontErrcolor = "rgb(191, 0, 0)";
 		this.fontBCellcolor = "rgb(224, 224, 224)";
 
-		this.borderfontcolor = "black";
-
 		// セルの背景色(白マス)
 		this.bcolor = "white";
 		this.dotcolor = "black";
@@ -54,7 +50,7 @@ pzprv3.createCommonClass('Graphic',
 		this.borderQanscolor = "rgb(0, 191, 0)";
 		this.borderQsubcolor = "rgb(255, 0, 255)";
 
-		this.errborderQanscolor2 = "rgb(160, 160, 160)";
+		this.errborderbgcolor = "rgb(160, 160, 160)";
 
 		this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
 
@@ -62,8 +58,8 @@ pzprv3.createCommonClass('Graphic',
 		this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
 		this.pekecolor = "rgb(32, 32, 255)";
 
-		this.errlinecolor1 = "rgb(255, 0, 0)";
-		this.errlinecolor2 = "rgb(160, 160, 160)";
+		this.errlinecolor   = "rgb(255, 0, 0)";
+		this.errlinebgcolor = "rgb(160, 160, 160)";
 
 		// 入力ターゲットの色
 		this.targetColor1 = "rgb(255, 64,  64)";
@@ -889,9 +885,9 @@ pzprv3.createCommonClass('Graphic',
 			this.getBorderColor = function(border){
 				var err=border.error;
 				if(border.isBorder()){
-					if     (err===1){ return this.errcolor1;          }
-					else if(err===2){ return this.errborderQanscolor2;}
-					else            { return this.borderQanscolor;    }
+					if     (err=== 1){ return this.errcolor1;       }
+					else if(err===-1){ return this.errborderbgcolor;}
+					else             { return this.borderQanscolor; }
 				}
 				return null;
 			}
@@ -1054,9 +1050,9 @@ pzprv3.createCommonClass('Graphic',
 		if(border.isLine()){
 			if(border.error===1){
 				if(this.currentContext.use.canvas){ this.addlw=1;}
-				return this.errlinecolor1;
+				return this.errlinecolor;
 			}
-			else if(border.error===2){ return this.errlinecolor2;}
+			else if(border.error===-1){ return this.errlinebgcolor;}
 			else if(this.irowake===0 || !pp.getVal('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
@@ -1094,9 +1090,9 @@ pzprv3.createCommonClass('Graphic',
 				else{ continue;}
 
 				g.lineWidth = this.lw; //LineWidth
-				if     (border.error===1){ g.strokeStyle = this.errlinecolor1; g.lineWidth=g.lineWidth+1;}
-				else if(border.error===2){ g.strokeStyle = this.errlinecolor2;}
-				else                     { g.strokeStyle = this.linecolor;}
+				if     (border.error=== 1){ g.strokeStyle = this.errlinecolor; g.lineWidth=g.lineWidth+1;}
+				else if(border.error===-1){ g.strokeStyle = this.errlinebgcolor;}
+				else                      { g.strokeStyle = this.linecolor;}
 
 				if(this.vnop(header+cell.id,this.STROKE)){
 					var px=cell.px+1, py=cell.py+1;

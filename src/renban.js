@@ -184,7 +184,7 @@ AnsCheck:{
 			if(Math.abs(val1-val2)!==blist.length){
 				if(this.inAutoCheck){ return false;}
 				cell1.seterr(1);
-				cell2.seterr(2);
+				cell2.seterr(1);
 				blist.seterr(1);
 				result = false;
 			}

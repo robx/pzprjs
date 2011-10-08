@@ -96,7 +96,6 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 
 		this.errbcolor1 = this.errbcolor1_DARK;
-		this.errbcolor2 = "white";
 	},
 	paint : function(){
 		this.drawBGCells();

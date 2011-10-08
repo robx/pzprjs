@@ -705,7 +705,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(border.isnull){ return;}
 
 		var blist = bd.lines.getBlistByBorder(border);
-		bd.border.seterr(2);
+		bd.border.seterr(-1);
 		blist.seterr(1);
 		bd.haserror = true;
 		pc.paintAll();

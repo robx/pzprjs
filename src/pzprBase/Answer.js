@@ -175,7 +175,7 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
-			if(this.performAsLine){ bd.border.seterr(2); cinfo.setErrLareaByCell(bd.cell[1],1); }
+			if(this.performAsLine){ bd.border.seterr(-1); cinfo.setErrLareaByCell(bd.cell[1],1); }
 			if(!this.performAsLine || this.owner.pid=="firefly"){ cinfo.getclist(1).seterr(1);}
 			return false;
 		}
@@ -185,7 +185,7 @@ pzprv3.createCommonClass('AnsCheck',
 	checkOneLoop : function(){
 		var xinfo = bd.lines.getLineInfo();
 		if(xinfo.max>1){
-			bd.border.seterr(2);
+			bd.border.seterr(-1);
 			xinfo.getblist(1).seterr(1);
 			return false;
 		}
@@ -200,7 +200,7 @@ pzprv3.createCommonClass('AnsCheck',
 			if(cell.lcnt()==val){
 				if(this.inAutoCheck){ return false;}
 				if(!this.performAsLine){ cell.seterr(1);}
-				else{ if(result){ bd.border.seterr(2);} cell.setCellLineError(true);}
+				else{ if(result){ bd.border.seterr(-1);} cell.setCellLineError(true);}
 				result = false;
 			}
 		}
@@ -274,7 +274,7 @@ pzprv3.createCommonClass('AnsCheck',
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.inAutoCheck){ return false;}
-				if(this.performAsLine){ if(result){ bd.border.seterr(2);} cinfo.setErrLareaById(id,1);}
+				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} cinfo.setErrLareaById(id,1);}
 				else{ clist.seterr(this.owner.pid!="tateyoko"?1:4);}
 				result = false;
 			}
@@ -348,7 +348,7 @@ pzprv3.createCommonClass('AnsCheck',
 			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.inAutoCheck){ return false;}
 
-				if(this.performAsLine){ bd.border.seterr(2); rinfo.setErrLareaByCell(bd.cell[c],1);}
+				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} rinfo.setErrLareaByCell(bd.cell[c],1);}
 				else{ rinfo.getclistbycell(bd.cell[c]).seterr(1);}
 				result = false;
 			}
@@ -440,7 +440,7 @@ pzprv3.createCommonClass('AnsCheck',
 				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.rinfo.bdcnt[id]);
 				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
 					if(this.inAutoCheck){ return false;}
-					if(result){ bd.border.seterr(2);}
+					if(result){ bd.border.seterr(-1);}
 					bd.setCrossBorderError(bx,by);
 					result = false;
 				}
@@ -479,7 +479,7 @@ pzprv3.createCommonClass('AnsCheck',
 			var cells = xinfo.room[id].cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
-			if(result){ bd.border.seterr(2);}
+			if(result){ bd.border.seterr(-1);}
 			xinfo.getblist(id).seterr(1);
 			result = false;
 		}

@@ -166,7 +166,6 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
 		this.errbcolor1 = this.errbcolor1_DARK;
-		this.errbcolor2 = "white";
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -193,8 +192,8 @@ Graphic:{
 			var lp = (this.bw-lw/2);			//LinePadding
 
 			var err = cell.error;
-			if     (err===1||err===4){ g.fillStyle = this.errlinecolor1; lw++;}
-			else if(err===2){ g.fillStyle = this.errlinecolor2;}
+			if     (err===1||err===4){ g.fillStyle = this.errlinecolor; lw++;}
+			else if(err===-1){ g.fillStyle = this.errlinebgcolor;}
 			else{ g.fillStyle = this.linecolor;}
 
 			if(cell.qans===12){
@@ -341,7 +340,7 @@ AnsCheck:{
 			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 		}
 
-		bd.cell.seterr(2);
+		bd.cell.seterr(-1);
 		var binfo = bd.getBarInfo();
 		if( !this.checkDoubleNumber(binfo) ){
 			this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;

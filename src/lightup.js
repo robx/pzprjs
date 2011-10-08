@@ -131,7 +131,7 @@ Graphic:{
 		this.dotcolor = this.dotcolor_PINK;
 		this.setCellColorFunc('qnum');
 
-		this.lightcolor = "rgb(224, 255, 127)";
+		this.lightcolor = "rgb(192, 255, 127)";
 	},
 	paint : function(){
 		this.drawBGCells();

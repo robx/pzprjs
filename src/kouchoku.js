@@ -384,8 +384,8 @@ Graphic:{
 
 		var header_id = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
 		if(isdraw){
-			if     (seg.error===1){ g.strokeStyle = this.errlinecolor1;}
-			else if(seg.error===2){ g.strokeStyle = this.errlinecolor2;}
+			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
+			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
 			else if(this.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
@@ -600,7 +600,7 @@ AnsCheck:{
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
 			if(func(cross)){
-				if(result){ bd.segs.getallsegment().seterr(2);}
+				if(result){ bd.segs.getallsegment().seterr(-1);}
 				cross.segment.seterr(1);
 				result = false;
 			}
@@ -622,7 +622,7 @@ AnsCheck:{
 			}
 		}
 		if(xinfo.max>1){
-			bd.segs.getallsegment().seterr(2);
+			bd.segs.getallsegment().seterr(-1);
 			xinfo.getseglist(xinfo.max).seterr(1);
 			return false;
 		}
@@ -635,7 +635,7 @@ AnsCheck:{
 			var seg=seglist[i], tmp;
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
 			for(var n=0;n<lattice.length;n++){
-				if(result){ bd.segs.getallsegment().seterr(2);}
+				if(result){ bd.segs.getallsegment().seterr(-1);}
 				seg.seterr(1);
 				bd.cross[lattice[n]].seterr(1);
 				result = false;
@@ -649,7 +649,7 @@ AnsCheck:{
 		for(var i=0;i<seglist.length;i++){
 			var seg=seglist[i], cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
-				if(result){ bd.segs.getallsegment().seterr(2);}
+				if(result){ bd.segs.getallsegment().seterr(-1);}
 				seg.seterr(1);
 				cross1.seterr(1);
 				cross2.seterr(1);
@@ -698,7 +698,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1.isOverLapSegment(seg2)){
-				if(result){ bd.segs.getallsegment().seterr(2);}
+				if(result){ bd.segs.getallsegment().seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
@@ -712,7 +712,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				if(result){ bd.segs.getallsegment().seterr(2);}
+				if(result){ bd.segs.getallsegment().seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;

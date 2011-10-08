@@ -198,7 +198,7 @@ Graphic:{
 
 			// 数字の描画
 			if(border.qnum>0){
-				this.dispnum(key, 1, ""+border.qnum, 0.45, this.borderfontcolor, px, py);
+				this.dispnum(key, 1, ""+border.qnum, 0.45, "black", px, py);
 			}
 			else{ this.hideEL(key);}
 
@@ -358,7 +358,7 @@ AnsCheck:{
 			if(num1>0 && num2>0 && func(border,num1,num2)){
 				if(this.inAutoCheck){ return false;}
 				cell1.seterr(1);
-				cell2.seterr(2);
+				cell2.seterr(1);
 				result = false;
 			}
 		}

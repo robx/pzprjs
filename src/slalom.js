@@ -323,7 +323,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合
 		this.pekecolor = "rgb(0, 160, 0)";
-		this.errlinecolor2 = "rgb(160, 150, 255)";
+		this.errlinebgcolor = "rgb(160, 150, 255)";
 		this.errbcolor1 = this.errbcolor1_DARK;
 		this.fontcolor = this.fontErrcolor = "white";
 	},

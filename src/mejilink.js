@@ -203,7 +203,7 @@ AnsCheck:{
 			if(cross.db().isLine()){ cnt++;}
 			if(cnt==val){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				bd.setCrossBorderError(cross.bx,cross.by);
 				result = false;
 			}

@@ -197,7 +197,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.getQnum()===1 && cell.lcnt()===2 && !cell.isLineStraight()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
 				result = false;
 			}
@@ -210,7 +210,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.getQnum()===2 && cell.lcnt()===2 && cell.isLineStraight()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
 				result = false;
 			}
@@ -231,7 +231,7 @@ AnsCheck:{
 
 			if(stcnt>=2){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setErrorPearl();
 				result = false;
 			}
@@ -249,7 +249,7 @@ AnsCheck:{
 			   (cell.rb().isLine() && cell.rt().lcnt()===2 && !cell.rt().isLineStraight()) )
 			{
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setErrorPearl();
 				result = false;
 			}

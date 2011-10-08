@@ -120,7 +120,6 @@ Graphic:{
 			var cell = clist[i];
 			if(cell.qnum!=-1){
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
-				else if(cell.error===2){ g.fillStyle = this.errbcolor2;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
 				else                   { g.fillStyle = "white";}
@@ -266,7 +265,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(true);
 				result = false;
 			}

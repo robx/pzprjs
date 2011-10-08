@@ -272,8 +272,8 @@ Graphic:{
 
 	getBarColor : function(cell,vert){
 		var err=cell.error, color="";
-		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor1;}
-		else if(err!==0){ color = this.errlinecolor2;}
+		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor;}
+		else if(err!==0){ color = this.errlinebgcolor;}
 		else if(!pp.getVal('irowake') || !cell.color){ color = this.linecolor;}
 		else{ color = cell.color;}
 		return color;
@@ -437,7 +437,7 @@ AnsCheck:{
 			this.setAlert('白丸に線が2本以上つながっています。','Prural lines connect to a white circle.'); return false;
 		}
 
-		for(var c=0;c<bd.cellmax;c++){ var cell=bd.cell[c]; if(!cell.isNum()){ cell.seterr(2);}}
+		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
 		if( !this.checkLoop() ){
 			this.setAlert('棒で輪っかができています。','There is a looped bars.'); return false;
 		}

@@ -354,7 +354,7 @@ AnsCheck:{
 			if(type==1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(4);
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				blist.seterr(1);
 				result = false;
 			}

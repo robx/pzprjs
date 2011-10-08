@@ -299,7 +299,7 @@ Graphic:{
 		this.errcolor1 = this.cellcolor; // drawSlashes関係
 		this.errcolor2 = this.cellcolor; // drawSlashes関係
 
-		this.errbcolor2 = "rgb(255, 255, 127)";
+		this.lightcolor = "rgb(255, 255, 127)";
 		this.dotcolor = this.dotcolor_PINK;
 	},
 	paint : function(){
@@ -327,7 +327,7 @@ Graphic:{
 			var cell = clist[i], id = cell.id, err = cell.error, ql = cell.qlight;
 			if(err!==0 || ql!==0){
 				if     (err==1){ g.fillStyle = this.errbcolor1;}
-				else if(ql > 0){ g.fillStyle = this.errbcolor2;}
+				else if(ql > 0){ g.fillStyle = this.lightcolor;}
 				if(err===1 || ql===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
 						g.fillRect(cell.rpx, cell.rpy, this.cw, this.ch);
@@ -340,7 +340,7 @@ Graphic:{
 	},
 
 	getBGEXcellColor : function(excell){
-		if(excell.qlight===1){ return this.errbcolor2;}
+		if(excell.qlight===1){ return this.lightcolor;}
 		return null;
 	},
 	drawNumbers_kinkonkan : function(){

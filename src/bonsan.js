@@ -214,7 +214,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(true);
 				result = false;
 			}

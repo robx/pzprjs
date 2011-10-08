@@ -200,7 +200,7 @@ AnsCheck:{
 			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.border.seterr(2);}
+			if(result){ bd.border.seterr(-1);}
 			linfo.setErrLareaById(r,1);
 			tip1.seterr(1);
 			tip2.seterr(1);

@@ -175,7 +175,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(func(cell)){
 				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(2);}
+				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(true);
 				result = false;
 			}
