@@ -60,9 +60,7 @@ Cell:{
 				if(ql_old===0 && ((old===1 && val===0) || (old===0 && val===2))){ continue;}
 				if(ql_old===1 && (old===2 && val===0)){ continue;}
 
-				var clist2 = cell2.akariRangeClist(), isakari = 0;
-				for(var j=0;j<clist2.length;j++){ if(clist2[j].isAkari()){ isakari=1; break;} }
-				cell2.qlight = isakari;
+				cell2.qlight = (cell2.akariRangeClist().some(function(cell){ return cell.isAkari();}) ? 1 : 0);
 			}
 			if(val===2){ this.qlight = 0;}
 		}
@@ -245,14 +243,12 @@ AnsCheck:{
 	},
 
 	isPluralAkari : function(keycellpos, clist){
-		var akaris=this.owner.newInstance('CellList');
-		for(var i=0;i<clist.length;i++){
-			if(clist[i].isAkari()){ akaris.add(clist[i]);}
+		var akaris = clist.filter(function(cell){ return cell.isAkari();});
+		if(akaris.length>1){
+			akaris.seterr(4);
+			return false;
 		}
-		var result = (akaris.length<=1);
-
-		if(!result){ akaris.seterr(4);}
-		return result;
+		return true;
 	}
 }
 };

@@ -36,11 +36,18 @@ Board:{
 	qrows : 8,
 
 	iscross  : 1,
-	isborder : 1,
+	isborder : 1
+},
 
-	getBlockInfo : function(){
+"AreaTileData:AreaBorderData":{
+	bdfunc : function(border){ return !border.isGround();}
+},
+"AreaBlockData:AreaBorderData":{
+	bdfunc : function(border){ return border.qans>0;},
+
+	getAreaInfo : function(){
 		var tinfo = this.owner.newInstance('AreaTileData').getAreaInfo();
-		var cinfo = this.owner.newInstance('AreaTile2Data').getAreaInfo();
+		var cinfo = this.owner.classes.AreaBorderData.prototype.getAreaInfo.call(this);
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, clist=cinfo.getclist(r);
@@ -54,23 +61,24 @@ Board:{
 			cinfo.room[r].dotcnt = cnt;
 		}
 		return cinfo;
-	},
-
-	getBlockShapes : function(cinfo, r){
-		var d=cinfo.getclist(r).getRectSize();
+	}
+},
+AreaCellInfo:{
+	getBlockShapes : function(r){
+		var d=this.getclist(r).getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
 		var shapes={cols:d.cols, rows:d.rows, data:[]};
 
 		for(var by=0;by<2*d.rows;by+=2){
 			for(var bx=0;bx<2*d.cols;bx+=2){
-				data[0].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y1+by))===r?1:0);
-				data[1].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y2-by))===r?1:0);
+				data[0].push(this.getRoomID(bd.getc(d.x1+bx,d.y1+by))===r?1:0);
+				data[1].push(this.getRoomID(bd.getc(d.x1+bx,d.y2-by))===r?1:0);
 			}
 		}
 		for(var bx=0;bx<2*d.cols;bx+=2){
 			for(var by=0;by<2*d.rows;by+=2){
-				data[4].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y1+by))===r?1:0);
-				data[5].push(cinfo.getRoomID(this.getc(d.x1+bx,d.y2-by))===r?1:0);
+				data[4].push(this.getRoomID(bd.getc(d.x1+bx,d.y1+by))===r?1:0);
+				data[5].push(this.getRoomID(bd.getc(d.x1+bx,d.y2-by))===r?1:0);
 			}
 		}
 		data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
@@ -78,14 +86,6 @@ Board:{
 		for(var i=0;i<8;i++){ shapes.data[i]=data[i].join('');}
 		return shapes;
 	}
-},
-
-"AreaTileData:AreaBorderData":{
-	bdfunc : function(border){ return !border.isGround();}
-},
-
-"AreaTile2Data:AreaBorderData":{
-	bdfunc : function(border){ return border.qans>0;}
 },
 
 //---------------------------------------------------------
@@ -186,7 +186,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		// それぞれ点線、境界線で作られる領域の情報
-		var cinfo = bd.getBlockInfo();
+		var cinfo = this.owner.newInstance('AreaBlockData').getAreaInfo();
 		if( !this.checkMiniBlockCount(cinfo, 1) ){
 			this.setAlert('ブロックが1つの点線からなる領域で構成されています。','A block has one area framed by dotted line.'); return false;
 		}
@@ -240,8 +240,8 @@ AnsCheck:{
 		return result;
 	},
 	isDifferentShapeBlock : function(cinfo, r, s, sc){
-		if(!sc[r]){ sc[r]=bd.getBlockShapes(cinfo,r);}
-		if(!sc[s]){ sc[s]=bd.getBlockShapes(cinfo,s);}
+		if(!sc[r]){ sc[r]=cinfo.getBlockShapes(r);}
+		if(!sc[s]){ sc[s]=cinfo.getBlockShapes(s);}
 		var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
 		var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
 		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}

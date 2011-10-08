@@ -156,9 +156,8 @@ pzprv3.createCommonClass('AnsCheck',
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
 				var cnt=0, bx=cell.bx, by=cell.by;
-				var clist = bd.cellinside(bx, by, bx+2, by+2);
-				for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}}
-				if(cnt===4){
+				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(function(cell){ return func(cell);});
+				if(clist.length===4){
 					if(this.inAutoCheck){ return false;}
 					clist.seterr(1);
 					result = false;
@@ -268,7 +267,7 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var clist = cinfo.getclist(id), d = clist.getRectSize();
-			var a = (function(){ var cnt=0; for(var i=0;i<clist.length;i++){ if(func(clist[i])){ cnt++;}} return cnt;})();
+			var a = clist.filter(function(cell){ return func(cell);}).length;
 
 			var cell = (bd.areas.roomNumber ? bd.areas.rinfo.getTopOfRoom(id) : clist.getQnumCell());
 			var n = (!cell.isnull?cell.getQnum():-1);

@@ -129,7 +129,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
-			var pos = cell.getaddr(), dir = cell.getQdir(), cnt=0;
+			var pos = cell.getaddr(), dir = cell.getQdir();
 			var clist = this.owner.newInstance('CellList');
 			while(1){
 				pos.movedir(dir,2);
@@ -137,8 +137,8 @@ AnsCheck:{
 				if(cell2.isnull){ break;}
 				clist.add(cell2);
 			}
-			for(var i=0;i<clist.length;i++){ if(clist[i].isBlack()){ cnt++;} }
 
+			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);

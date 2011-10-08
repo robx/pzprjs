@@ -253,7 +253,7 @@ AnsCheck:{
 				if(d[n]>1){
 					if(this.inAutoCheck){ return false;}
 					cell.seterr(1);
-					for(i=0;i<clist.length;i++){ if(clist[i].getAnum()===n){ clist[i].seterr(1);} }
+					clist.filter(function(cell){ return (cell.getAnum()===n);}).seterr(1);
 					result = false;
 				}
 			}

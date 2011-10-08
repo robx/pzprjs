@@ -312,9 +312,9 @@ AnsCheck:{
 	checkSnakesView : function(sinfo){
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
-			var clist=sinfo.getclist(r), cell=null;
-			for(var i=0;i<clist.length;i++){ if(clist[i].getAnum()===1){ cell=clist[i]; break;}}
-			if(cell===null){ continue;}
+			var clist = sinfo.getclist(r);
+			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
+			if(!cell){ continue;}
 
 			var cell2, dir=bd.NDIR;
 			cell2=cell.dn(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.UP;}

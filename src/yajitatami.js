@@ -156,11 +156,7 @@ AnsCheck:{
 			else if(dir===bd.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
 
-			var count = 0;
-			for(var i=0;i<blist.length;i++){
-				if(blist[i].isBorder()){ count++;}
-			}
-
+			var count = blist.filter(function(border){ return border.isBorder();}).length;
 			if(cell.getQnum()!==count){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);

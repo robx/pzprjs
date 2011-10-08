@@ -482,9 +482,7 @@ AnsCheck:{
 			clist.add(cell.relcell(-1, 2));
 			clist.add(cell.relcell( 1, 2));
 
-			var cnt=0;
-			for(var i=0;i<clist.length;i++){ if(clist[i].isBlack()){ cnt++;} }
-
+			var cnt=clist.filter(function(cell){ return cell.isBlack();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);

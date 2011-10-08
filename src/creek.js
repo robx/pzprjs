@@ -125,8 +125,8 @@ AnsCheck:{
 			if(qn<0){ continue;}
 
 			var bx=cross.bx, by=cross.by;
-			var cnt=0, clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
-			for(var i=0;i<clist.length;i++){if(clist[i].isBlack()){ cnt++;}}
+			var clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
+			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
 
 			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
 				if(this.inAutoCheck){ return false;}

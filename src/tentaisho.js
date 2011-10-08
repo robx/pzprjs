@@ -41,7 +41,7 @@ MouseEvent:{
 		var cell = star.validcell();
 		if(cell!==null){
 			var clist = bd.areas.rinfo.getClistByCell(cell);
-			if(bd.encolor(clist)){
+			if(clist.encolor()){
 				var d = clist.getRectSize();
 				pc.paintRange(d.x1, d.y1, d.x2, d.y2);
 			}
@@ -163,6 +163,36 @@ Address:{
 	gets : function(){ return bd.gets(this.bx, this.by);},
 	getobj : function(){ return bd.getobj(this.bx, this.by);}
 },
+CellList:{
+	encolor : function(){
+		var star = this.getAreaStarInfo().star;
+		var flag = false, ret = (star!==null ? star.getStar() : 0);
+		for(var i=0;i<this.length;i++){
+			var cell = this[i];
+			if(pzprv3.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
+			else if(cell.getQsub()!==(ret>0?ret:0)){
+				cell.setQsub(ret>0?ret:0);
+				flag = true;
+			}
+		}
+		return flag;
+	},
+	getAreaStarInfo : function(){
+		var ret = {star:null, err:-1};
+		for(var i=0;i<this.length;i++){
+			var cell=this[i];
+			var slist = bd.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
+			for(var n=0;n<slist.length;n++){
+				var star=slist[n];
+				if(star.getStar()>0 && star.validcell()!==null){
+					if(ret.err===0){ return {star:null, err:-2};}
+					ret = {star:star, err:0};
+				}
+			}
+		}
+		return ret;
+	}
+},
 
 Board:{
 	iscross  : 1,
@@ -218,47 +248,19 @@ Board:{
 	// 色をつける系関数
 	encolorall : function(){
 		var rinfo = this.areas.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){ this.encolor(rinfo.getclist(id));}
+		for(var id=1;id<=rinfo.max;id++){ rinfo.getclist(id).encolor();}
 		pc.paintAll();
-	},
-	encolor : function(clist){
-		var star = this.getAreaStarInfo(clist).star;
-		var flag = false, ret = (star!==null ? star.getStar() : 0);
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(pzprv3.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
-			else if(cell.getQsub()!==(ret>0?ret:0)){
-				cell.setQsub(ret>0?ret:0);
-				flag = true;
-			}
-		}
-		return flag;
 	},
 
 	// 領域と入っている星を取得する関数
 	getAreaStarInfoAll : function(){
 		var rinfo = this.areas.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var ret = this.getAreaStarInfo(rinfo.getclist(id));
+			var ret = rinfo.getclist(id).getAreaStarInfo();
 			rinfo.room[id].star  = ret.star;
 			rinfo.room[id].error = ret.err;
 		}
 		return rinfo;
-	},
-	getAreaStarInfo : function(clist){
-		var ret={star:null, err:-1};
-		for(var i=0;i<clist.length;i++){
-			var cell=clist[i];
-			var slist = this.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
-			for(var n=0;n<slist.length;n++){
-				var star=slist[n];
-				if(star.getStar()>0 && star.validcell()!==null){
-					if(ret.err===0){ return {star:null, err:-2};}
-					ret = {star:star, err:0};
-				}
-			}
-		}
-		return ret;
 	},
 
 	adjustBoardData2 : function(key,d){

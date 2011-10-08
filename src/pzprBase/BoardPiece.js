@@ -707,6 +707,7 @@ pzprv3.createCommonClass('PieceList',
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクト関連の関数
 	// list.join()     オブジェクトのIDをjoin()して返す
+	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
 	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
 	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	// list.reverse()  保持している配列の順番を逆にする
@@ -715,6 +716,10 @@ pzprv3.createCommonClass('PieceList',
 		var idlist = [];
 		for(var i=0;i<this.length;i++){ idlist.push(this[i].id);}
 		return idlist.join(str);
+	},
+	some : function(cond){
+		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
+		return false;
 	},
 	filter : function(cond){
 		var list = this.owner.newInstance(this.name);

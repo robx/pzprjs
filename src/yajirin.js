@@ -214,8 +214,8 @@ AnsCheck:{
 				if(cell2.isnull){ break;}
 				clist.add(cell2);
 			}
-			for(var i=0;i<clist.length;i++){ if(clist[i].isBlack()){ cnt++;} }
 
+			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);

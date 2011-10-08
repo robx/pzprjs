@@ -350,8 +350,8 @@ AnsCheck:{
 		var result = true;
 		var winfo = bd.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
-			var clist=winfo.getclist(id), d=clist.getRectSize(), cnt=0;
-			for(var i=0;i<clist.length;i++){ if(clist[i].getQans()===0){ cnt++;}}
+			var clist=winfo.getclist(id), d=clist.getRectSize();
+			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;
 			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.inAutoCheck){ return false;}
 				clist.seterr(1);

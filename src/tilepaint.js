@@ -296,10 +296,7 @@ AnsCheck:{
 		if     (dir===bd.RT){ number = keyobj.getQnum();}
 		else if(dir===bd.DN){ number = keyobj.getQdir();}
 
-		var count = 0;
-		for(var i=0;i<clist.length;i++){
-			if(clist[i].isBlack()){ count++;}
-		}
+		var count = clist.filter(function(cell){ return cell.isBlack();}).length;
 		if(number>=0 && count!=number){
 			keyobj.seterr(1)
 			clist.seterr(1);
