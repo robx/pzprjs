@@ -21,10 +21,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var cell0 = tc.getTCC();
-		if(cell!==cell0){
-			tc.setTCC(cell);
-			cell0.draw();
+		if(cell!==tc.getTCC()){
+			this.setcursor(cell);
 		}
 		cell.setStone();
 		cell.draw();

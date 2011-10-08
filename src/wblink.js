@@ -19,7 +19,7 @@ MouseEvent:{
 	},
 
 	inputLine : function(){
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getnb(this.prevPos, pos);
@@ -39,7 +39,7 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputpeke : function(){
-		var pos = this.borderpos(0.22);
+		var pos = this.getpos(0.22);
 		var border = pos.getb();
 		if(border.isnull || this.prevPos.equals(pos)){ return;}
 

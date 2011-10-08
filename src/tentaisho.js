@@ -34,7 +34,7 @@ MouseEvent:{
 	inputBGcolor3 : function(){
 		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
-		var pos = this.borderpos(0.34);
+		var pos = this.getpos(0.34);
 		var id = bd.snum(pos.bx, pos.by);
 		if(id===null || bd.getStar(id)===0){ return;}
 
@@ -58,7 +58,7 @@ MouseEvent:{
 		}
 	},
 	inputborder_tentaisho : function(){
-		var pos = this.borderpos(0.34);
+		var pos = this.getpos(0.34);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getborderobj(this.prevPos, pos);
@@ -70,7 +70,7 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputstar : function(){
-		var pos = this.borderpos(0.25);
+		var pos = this.getpos(0.25);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var id = bd.snum(pos.bx, pos.by);

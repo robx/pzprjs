@@ -37,7 +37,7 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputarrow : function(){
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getnb(this.prevPos, pos);

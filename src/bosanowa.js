@@ -9,47 +9,48 @@ MouseEvent:{
 	inputplay : function(){ if(this.mousestart){ this.inputqnum_bosanowa();}},
 
 	inputqnum_bosanowa : function(){
-		var pos = this.borderpos(0.31);
+		var pos = this.getpos(0.31);
 		if(!pos.isinside()){ return;}
 
-		var tcp = tc.getTCP();
-		if(tcp.equals(pos)){
-			if(pos.oncell()){
-				var cell = pos.getc(), ques = cell.getQues(), num = cell.getNum();
-				var max = cell.nummaxfunc();
-				if(this.owner.editmode){
-					if(this.btn.Left){
-						if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
-						else if(num===-1) { cell.setNum(1);  cell.setQues(0);}
-						else if(num===max){ cell.setNum(-1); cell.setQues(7);}
-						else{ cell.setNum(cc,num+1);}
-					}
-					else if(this.btn.Right){
-						if     (ques===7) { cell.setNum(max); cell.setQues(0);}
-						else if(num=== 1) { cell.setNum(-1);  cell.setQues(0);}
-						else if(num===-1) { cell.setNum(-1);  cell.setQues(7);}
-						else{ cell.setNum(num-1);}
-					}
-				}
-				if(this.owner.playmode && ques===0){
-					if(this.btn.Left){
-						if     (num===max){ cell.setNum(-1);}
-						else if(num===-1) { cell.setNum(1);}
-						else{ cell.setNum(num+1);}
-					}
-					else if(this.btn.Right){
-						if     (num===-1) { cell.setNum(max);}
-						else if(num=== 1) { cell.setNum(-1);}
-						else{ cell.setNum(num-1);}
-					}
-				}
+		if(!tc.pos.equals(pos)){
+			this.setcursorpos(pos);
+		}
+		else if(pos.oncell()){
+			this.inputcell_bosanowa(pos);
+		}
+	},
+	inputcell_bosanowa : function(pos){
+		var cell = pos.getc();
+		if(cell.isnull){ return;}
+
+		var max = cell.nummaxfunc(), ques = cell.getQues(), num = cell.getNum();
+		if(this.owner.editmode){
+			if(this.btn.Left){
+				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
+				else if(num===-1) { cell.setNum(1);  cell.setQues(0);}
+				else if(num===max){ cell.setNum(-1); cell.setQues(7);}
+				else{ cell.setNum(num+1);}
+			}
+			else if(this.btn.Right){
+				if     (ques===7) { cell.setNum(max); cell.setQues(0);}
+				else if(num=== 1) { cell.setNum(-1);  cell.setQues(0);}
+				else if(num===-1) { cell.setNum(-1);  cell.setQues(7);}
+				else{ cell.setNum(num-1);}
 			}
 		}
-		else{
-			tc.setTCP(pos);
-			tcp.draw();
+		if(this.owner.playmode && ques===0){
+			if(this.btn.Left){
+				if     (num===max){ cell.setNum(-1);}
+				else if(num===-1) { cell.setNum(1);}
+				else{ cell.setNum(num+1);}
+			}
+			else if(this.btn.Right){
+				if     (num===-1) { cell.setNum(max);}
+				else if(num=== 1) { cell.setNum(-1);}
+				else{ cell.setNum(num-1);}
+			}
 		}
-		pos.draw();
+		cell.draw();
 	}
 },
 

@@ -37,35 +37,36 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell===tc.getTCC()){
-			var max = cell.nummaxfunc(), num, type, val=-1;
-
-			if     (cell.getQnum()!==-1){ num=cell.getQnum(); type=1;} /* ○数字 */
-			else if(cell.getQdir()!==-1){ num=cell.getQdir(); type=2;} /* なべの数字 */
-			else{ num=-1; type=(cell.ice()?2:1);}
-
-			if(this.btn.Left){
-				if     (num===max){ val = -1;}
-				else if(num===-1) { val = -2;}
-				else if(num===-2) { val = 1;}
-				else              { val = num+1;}
-			}
-			else if(this.btn.Right){
-				if     (num===-1){ val = max;}
-				else if(num===-2){ val = -1;}
-				else if(num=== 1){ val = -2;}
-				else             { val = num-1;}
-			}
-
-			if     (type===1){ cell.setQnum(val);}
-			else if(type===2){ cell.setQdir(val);}
+		if(cell!==tc.getTCC()){
+			this.setcursor(cell);
 		}
 		else{
-			var cell0 = tc.getTCC();
-			tc.setTCC(cell);
-			cell0.draw();
+			this.inputnumber_yosenabe(cell);
 		}
 		this.mouseCell = cell;
+	},
+	inputnumber_yosenabe : function(cell){
+		var max = cell.nummaxfunc(), num, type, val=-1;
+
+		if     (cell.getQnum()!==-1){ num=cell.getQnum(); type=1;} /* ○数字 */
+		else if(cell.getQdir()!==-1){ num=cell.getQdir(); type=2;} /* なべの数字 */
+		else{ num=-1; type=(cell.ice()?2:1);}
+
+		if(this.btn.Left){
+			if     (num===max){ val = -1;}
+			else if(num===-1) { val = -2;}
+			else if(num===-2) { val = 1;}
+			else              { val = num+1;}
+		}
+		else if(this.btn.Right){
+			if     (num===-1){ val = max;}
+			else if(num===-2){ val = -1;}
+			else if(num=== 1){ val = -2;}
+			else             { val = num-1;}
+		}
+
+		if     (type===1){ cell.setQnum(val);}
+		else if(type===2){ cell.setQdir(val);}
 
 		cell.draw();
 	}

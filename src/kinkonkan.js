@@ -7,7 +7,7 @@ pzprv3.custom.kinkonkan = {
 MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart){
-			if(!this.clickexcell()){ this.inputborder();}
+			this.input_onstart();
 		}
 		else if(this.mousemove){
 			if(this.btn.Left){ this.inputborder();}
@@ -51,7 +51,7 @@ MouseEvent:{
 		cell.drawaround();
 	},
 	inputflash : function(){
-		var excell = this.borderpos(0).getex();
+		var excell = this.getpos(0).getex();
 		if(excell.isnull || this.mouseCell===excell){ return;}
 		if(excell.id>=bd.excellmax-4){ return;}
 
@@ -64,24 +64,25 @@ MouseEvent:{
 		}
 		this.mouseCell = excell;
 	},
-	clickexcell : function(){
-		var excell = this.getexcell();
-		if(excell.isnull){ return false;}
+	input_onstart : function(){
+		var obj = this.getcell_excell();
+		if(obj.isnull){ return;}
 
-		var excell0 = tc.getTEC();
-		if(excell!==excell0){
-			tc.setTEC(excell);
-			excell.draw();
-			excell0.draw();
+		if(!obj.isexcellobj){
+			this.inputborder();
+		}
+		else if(obj!==tc.getOBJ()){
+			this.setcursor(obj);
+			this.mousereset();
 		}
 		else{
+			var excell = obj;
 			if(excell.qlight!==1){ bd.flashlight(excell.id);}
 			else{ bd.lightclear();}
 			pc.paintAll();
-		}
 
-		this.btn.Left = false;
-		return true;
+			this.mousereset();
+		}
 	}
 },
 

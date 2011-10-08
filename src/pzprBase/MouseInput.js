@@ -206,25 +206,25 @@ pzprv3.createCommonClass('MouseEvent',
 	// 共通関数
 	//---------------------------------------------------------------------------
 	// mv.getcell()    入力された位置がどのセルに該当するかを返す
+	// mv.getcell_excell()  入力された位置がどのセル/EXCELLに該当するかを返す
 	// mv.getcross()   入力された位置がどの交差点に該当するかを返す
 	// mv.getborder()  入力された位置がどの境界線・Lineに該当するかを返す(クリック用)
-	// mv.getexcell()  入力された位置がどのEXCELLに該当するかを返す
-	// mv.borderpos() 入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
+	// mv.getpos()    入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//                外枠の左上が(0,0)で右下は(bd.qcols*2,bd.qrows*2)。rcは0～0.5のパラメータ。
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
 		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
-		return this.borderpos(0).getc();
+		return this.getpos(0).getc();
+	},
+	getcell_excell : function(){
+		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
+		return this.getpos(0).getex();
 	},
 	getcross : function(){
-		return this.borderpos(0.5).getx();
+		return this.getpos(0.5).getx();
 	},
-	getexcell : function(){
-		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
-		return this.borderpos(0).getex();
-	},
-	borderpos : function(rc){
+	getpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
 		var pm = rc*pc.cw, px=(this.inputPoint.px+pm+2*pc.cw), py=(this.inputPoint.py+pm+2*pc.ch);
 		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
@@ -261,7 +261,24 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	checkBorderMode : function(){
-		this.bordermode = !this.borderpos(0.25).oncell();
+		this.bordermode = !this.getpos(0.25).oncell();
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.setcursor()    TargetCursorの場所を移動する
+	// mv.setcursorpos() TargetCursorの場所を移動する
+	//---------------------------------------------------------------------------
+	setcursor : function(obj){
+		var obj0 = tc.getOBJ();
+		tc.setOBJ(obj);
+		obj0.draw();
+		obj.draw();
+	},
+	setcursorpos : function(pos){
+		var pos0 = tc.getTCP();
+		tc.setTCP(pos);
+		pos0.draw();
+		pos.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -316,26 +333,23 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell===tc.getTCC()){
-			if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
-
-			var subtype=0;
-			if     (this.owner.editmode){ subtype =-1;}
-			else if(cell.numberWithMB)  { subtype = 2;}
-			else if(cell.numberAsObject){ subtype = 1;}
-			if(this.owner.pid==="roma" && this.owner.playmode){ subtype=0;}
-			this.inputqnum_main(cell,subtype);
+		if(cell!==tc.getTCC()){
+			this.setcursor(cell);
 		}
 		else{
-			var cell0 = tc.getTCC();
-			tc.setTCC(cell);
-			cell0.draw();
+			this.inputqnum_main(cell);
 		}
 		this.mouseCell = cell;
-
-		cell.draw();
 	},
-	inputqnum_main : function(cell,subtype){ // subtypeはqsubを0～いくつまで入力可能かの設定
+	inputqnum_main : function(cell){
+		if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
+
+		var subtype=0; // qsubを0～いくつまで入力可能かの設定
+		if     (this.owner.editmode){ subtype =-1;}
+		else if(cell.numberWithMB)  { subtype = 2;}
+		else if(cell.numberAsObject){ subtype = 1;}
+		if(this.owner.pid==="roma" && this.owner.playmode){ subtype=0;}
+
 		if(this.owner.playmode && cell.qnum!==this.owner.classes.Cell.prototype.qnum){ return;}
 
 		var max=cell.nummaxfunc(), min=cell.numminfunc();
@@ -366,6 +380,8 @@ pzprv3.createCommonClass('MouseEvent',
 			else             { val = num-1;}
 		}
 		cell.setNum(val);
+
+		cell.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -375,30 +391,32 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var flag=false;
 		if(cell!==tc.getTCC()){
-			var cell0 = tc.getTCC();
-			tc.setTCC(cell);
-			cell0.draw();
-			flag = true;
+			this.setcursor(cell);
 		}
 		else{
-			var qu = cell.getQues();
-			if(this.btn.Left){
-				for(var i=0;i<array.length-1;i++){
-					if(!flag && qu===array[i]){ cell.setQues(array[i+1]); flag=true;}
+			inputQues_main(array,cell);
+		}
+	},
+	inputQues_main : function(array,cell){
+		var qu = cell.getQues(), len = array.length;
+		if(this.btn.Left){
+			for(var i=0;i<=len-1;i++){
+				if(qu===array[i]){
+					cell.setQues(array[((i<len-1)?i+1:0)]);
+					break;
 				}
-				if(!flag && qu===array[array.length-1]){ cell.setQues(array[0]); flag=true;}
-			}
-			else if(this.btn.Right){
-				for(var i=array.length;i>0;i--){
-					if(!flag && qu===array[i]){ cell.setQues(array[i-1]); flag=true;}
-				}
-				if(!flag && qu===array[0]){ cell.setQues(array[array.length-1]); flag=true;}
 			}
 		}
-
-		if(flag){ cell.draw();}
+		else if(this.btn.Right){
+			for(var i=len-1;i>=0;i--){
+				if(qu===array[i]){
+					cell.setQues(array[((i>0)?i-1:len-1)]);
+					break;
+				}
+			}
+		}
+		cell.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -418,7 +436,7 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.getdir()          入力がどの方向になるか取得する
 	//---------------------------------------------------------------------------
 	inputdirec : function(){
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var cell = this.prevPos.getc();
@@ -434,7 +452,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.prevPos = pos;
 	},
 	inputarrow_cell : function(){
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
 		var dir = bd.NDIR, cell = this.prevPos.getc();
@@ -485,31 +503,24 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.input51()   [＼]を作ったり消したりする
 	//---------------------------------------------------------------------------
 	input51 : function(){
-		var excell = this.getexcell();
-		if(!excell.isnull){
-			var pos = excell.getaddr();
-			var tcp=tc.getTCP();
-			tc.setTCP(pos);
-			tcp.draw();
-			pos.draw();
-			return;
-		}
+		var obj = this.getcell_excell();
+		if(obj.isnull){ return;}
 
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
+		if(obj.isexcellobj || (obj.iscellobj && cell!==tc.getTCC())){
+			this.setcursor(obj);
+		}
+		else if(obj.iscellobj){
+			this.input51_main(cell);
+		}
+	},
+	input51_main : function(cell){
+		var cell = obj;
+		if(this.btn.Left){
+			if(!cell.is51cell()){ cell.set51cell();}
+			else{ tc.chtarget('shift');}
+		}
+		else if(this.btn.Right){ cell.remove51cell();}
 
-		if(cell!==tc.getTCC()){
-			var tcp=tc.getTCP();
-			tc.setTCC(cell);
-			tcp.draw();
-		}
-		else{
-			if(this.btn.Left){
-				if(!cell.is51cell()){ cell.set51cell();}
-				else{ tc.chtarget('shift');}
-			}
-			else if(this.btn.Right){ cell.remove51cell();}
-		}
 		cell.draw();
 	},
 
@@ -521,25 +532,25 @@ pzprv3.createCommonClass('MouseEvent',
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross===tc.getTXC()){
-			if(this.btn.Left){
-				cross.setQnum(cross.getQnum()!==4 ? cross.getQnum()+1 : -2);
-			}
-			else if(this.btn.Right){
-				cross.setQnum(cross.getQnum()!==-2 ? cross.getQnum()-1 : 4);
-			}
+		if(cross!==tc.getTXC()){
+			this.setcursor(cross);
 		}
 		else{
-			var cross0 = tc.getTXC();
-			tc.setTXC(cross);
-			cross0.draw();
+			this.inputcross_main(cross);
 		}
 		this.mouseCell = cross;
-
+	},
+	inputcross_main : function(cross){
+		if(this.btn.Left){
+			cross.setQnum(cross.getQnum()!==4 ? cross.getQnum()+1 : -2);
+		}
+		else if(this.btn.Right){
+			cross.setQnum(cross.getQnum()!==-2 ? cross.getQnum()-1 : 4);
+		}
 		cross.draw();
 	},
 	inputcrossMark : function(){
-		var pos = this.borderpos(0.24);
+		var pos = this.getpos(0.24);
 		if(!pos.oncross()){ return;}
 		var bm = (bd.iscross===2?0:2);
 		if(pos.bx<bd.minbx+bm || pos.bx>bd.maxbx-bm || pos.by<bd.minby+bm || pos.by>bd.maxby-bm){ return;}
@@ -566,7 +577,7 @@ pzprv3.createCommonClass('MouseEvent',
 		else               { this.inputLine1(1);}
 	},
 	inputBD : function(flag){ // 0:問題の境界線 1:回答の境界線 2:borderAsLine
-		var pos = this.borderpos(0.35);
+		var pos = this.getpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getborderobj(this.prevPos, pos);
@@ -604,7 +615,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){ // 0:line 1:borderQsub
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getnb(this.prevPos, pos);
@@ -635,7 +646,7 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.inputpeke()   盤面の線が通らないことを示す×を入力する
 	//---------------------------------------------------------------------------
 	inputpeke : function(){
-		var pos = this.borderpos(0.22);
+		var pos = this.getpos(0.22);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = pos.getb();

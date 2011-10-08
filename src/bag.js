@@ -22,7 +22,7 @@ MouseEvent:{
 	},
 
 	inputBGcolor0 : function(){
-		return this.borderpos(0.25).oncell();
+		return this.getpos(0.25).oncell();
 	},
 	inputBGcolor : function(isnormal){
 		var cell = this.getcell();

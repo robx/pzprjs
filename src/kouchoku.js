@@ -76,28 +76,28 @@ MouseEvent:{
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross===tc.getTXC()){
-			var qn = cross.getQnum();
-			if(this.btn.Left){
-				if     (qn===26){ cross.setQnum(-1);}
-				else if(qn===-1){ cross.setQnum(-2);}
-				else if(qn===-2){ cross.setQnum(1);}
-				else{ cross.setQnum(qn+1);}
-			}
-			else if(this.btn.Right){
-				if     (qn===-2){ cross.setQnum(-1);}
-				else if(qn===-1){ cross.setQnum(26);}
-				else if(qn=== 1){ cross.setQnum(-2);}
-				else{ cross.setQnum(qn-1);}
-			}
+		if(cross!==tc.getTXC()){
+			this.setcursor(cross);
 		}
 		else{
-			var cross0 = tc.getTXC();
-			tc.setTXC(cross);
-			cross0.draw();
+			this.inputnumber(cross);
 		}
 		this.mouseCell = cross;
-
+	},
+	inputnumber : function(cross){
+		var qn = cross.getQnum();
+		if(this.btn.Left){
+			if     (qn===26){ cross.setQnum(-1);}
+			else if(qn===-1){ cross.setQnum(-2);}
+			else if(qn===-2){ cross.setQnum(1);}
+			else{ cross.setQnum(qn+1);}
+		}
+		else if(this.btn.Right){
+			if     (qn===-2){ cross.setQnum(-1);}
+			else if(qn===-1){ cross.setQnum(26);}
+			else if(qn=== 1){ cross.setQnum(-2);}
+			else{ cross.setQnum(qn-1);}
+		}
 		cross.draw();
 	}
 },

@@ -18,7 +18,7 @@ MouseEvent:{
 	},
 
 	inputmark_mousemove : function(){
-		var pos = this.borderpos(0);
+		var pos = this.getpos(0);
 		if(pos.getc().isnull){ return;}
 
 		var border = this.getnb(this.prevPos, pos);
@@ -27,42 +27,41 @@ MouseEvent:{
 			border.setQdir(this.inputData!==border.getQdir()?this.inputData:0);
 			border.draw();
 			this.mousereset();
+			return;
 		}
 		this.prevPos = pos;
 	},
 	inputmark_mouseup : function(){
-		var pos = this.borderpos(0.33);
+		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
 		if(!tc.pos.equals(pos)){
-			var tcp = tc.getTCP(), flag = false;
-			tc.setTCP(pos);
-			tcp.draw();
+			this.setcursorpos(pos);
 			pos.draw();
 		}
 		else{
 			var border = pos.getb();
-			if(!border.isnull){
-				var qn=border.getQnum(), qs=border.getQdir();
-				var qm=(border.isHorz()?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
-				if(this.btn.Left){
-					if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
-					else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
-					else if(qn===-1 && qs===qm+2){ border.setQnum(1);  border.setQdir(0);}
-					else if(qn===max)            { border.setQnum(-2); border.setQdir(0);}
-					else if(qn===-2)             { border.setQnum(-1); border.setQdir(0);}
-					else{ border.setQnum(id,qn+1);}
-				}
-				else if(this.btn.Right){
-					if     (qn===-1 && qs===0)   { border.setQnum(-2); border.setQdir(0);}
-					else if(qn===-2)             { border.setQnum(max);border.setQdir(0);}
-					else if(qn=== 1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+2);}
-					else if(qn===-1 && qs===qm+2){ border.setQnum(-1); border.setQdir(qm+1);}
-					else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
-					else{ border.setQnum(id,qn-1);}
-				}
-				border.draw();
+			if(!border.isnull){ return;}
+
+			var qn=border.getQnum(), qs=border.getQdir();
+			var qm=(border.isHorz()?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
+			if(this.btn.Left){
+				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
+				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
+				else if(qn===-1 && qs===qm+2){ border.setQnum(1);  border.setQdir(0);}
+				else if(qn===max)            { border.setQnum(-2); border.setQdir(0);}
+				else if(qn===-2)             { border.setQnum(-1); border.setQdir(0);}
+				else{ border.setQnum(id,qn+1);}
 			}
+			else if(this.btn.Right){
+				if     (qn===-1 && qs===0)   { border.setQnum(-2); border.setQdir(0);}
+				else if(qn===-2)             { border.setQnum(max);border.setQdir(0);}
+				else if(qn=== 1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+2);}
+				else if(qn===-1 && qs===qm+2){ border.setQnum(-1); border.setQdir(qm+1);}
+				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
+				else{ border.setQnum(id,qn-1);}
+			}
+			border.draw();
 		}
 	}
 },

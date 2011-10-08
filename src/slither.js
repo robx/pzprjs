@@ -30,7 +30,7 @@ MouseEvent:{
 	inputRed : function(){ this.dispRedLine();},
 
 	inputBGcolor0 : function(){
-		return this.borderpos(0.25).oncell();
+		return this.getpos(0.25).oncell();
 	},
 	inputBGcolor : function(){
 		var cell = this.getcell();

@@ -8,8 +8,8 @@ MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart || this.mousemove){ this.inputGate();}
 		else if(this.mouseend){
-			if(this.inputData==10){ this.inputStartid_up();}
-			else if(this.notInputted()){ this.inputQues_slalom();}
+			if(this.inputData==10){ this.inputStartid();}
+			else if(this.notInputted()){ this.inputGate_end();}
 		}
 	},
 	inputplay : function(){
@@ -23,26 +23,28 @@ MouseEvent:{
 	},
 	inputRed : function(){ this.dispRedLine();},
 
-	inputQues_slalom : function(){
+	inputGate_end : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
 		if(cell!==tc.getTCC()){
-			var cell0 = tc.getTCC();
-			tc.setTCC(cell);
-			cell0.draw();
+			this.setcursor(cell);
 		}
 		else{
-			if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
-			else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
-			cell.setNum(-1);
+			this.inputGate_end_main(cell);
 		}
+	},
+	inputGate_end_main : function(cell){
+		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
+		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
+		cell.setNum(-1);
 		bd.hinfo.generateGates();
 
 		cell.draw();
-		pc.dispnumStartpos(bd.startcell);
+		bd.startcell.draw();
 	},
-	inputStartid_up : function(){
+
+	inputStartid : function(){
 		this.inputData = null;
 		bd.startcell.draw();
 		if(this.firstCell!==bd.startcell){
@@ -109,7 +111,7 @@ MouseEvent:{
 			bd.hinfo.generateGates();
 
 			cell.draw();
-			pc.dispnumStartpos(bd.startcell);
+			bd.startcell.draw();
 		}
 		this.prevPos   = pos;
 		this.mouseCell = cell;
@@ -149,7 +151,7 @@ KeyEvent:{
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
 				cell.draw();
-				pc.dispnumStartpos(bd.startcell);
+				bd.startcell.draw();
 			}
 		}
 		else if(cell.getQues()===1){
@@ -419,12 +421,12 @@ Graphic:{
 			g.shapeCircle(cell.px, cell.py, csize);
 		}
 
-		this.dispnumStartpos(cell);
+		this.dispnumStartpos();
 	},
-	dispnumStartpos : function(cell){
+	dispnumStartpos : function(){
 		var g = this.vinc('cell_numberpos', 'auto');
 
-		var num = bd.hinfo.max;
+		var cell = bd.startcell, num = bd.hinfo.max;
 		if(num>=0){
 			var fontratio = (num<10?0.75:0.66);
 			this.dispnum('stpos', 1, ""+num, fontratio, "black", cell.px, cell.py);

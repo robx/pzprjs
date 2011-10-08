@@ -6,30 +6,29 @@ pzprv3.custom.box = {
 // マウス入力系
 MouseEvent:{
 	inputedit : function(){
-		if(this.mousestart){ this.clickexcell();}
+		if(this.mousestart){ this.input_onstart();}
 	},
 	inputplay : function(){
 		if(this.mousestart || this.mousemove){ this.inputcell();}
 	},
 
-	clickexcell : function(){
-		var excell = this.getexcell();
-		if(excell.isnull){ return;}
+	input_onstart : function(){
+		var excell = this.getcell_excell();
+		if(excell.isnull || !excell.isexcellobj){ return;}
 
-		var excell0 = tc.getTEC();
-		if(excell!==excell0){
-			tc.setTEC(excell);
-			excell0.draw();
+		if(excell!==tc.getTEC()){
+			this.setcursor(excell);
 		}
 		else{
-			var qn = excell.getQnum(), max=excell.nummaxfunc();
-			if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
-			else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
+			this.inputnumber(excell);
 		}
-		excell.draw();
+	},
+	inputnumber : function(excell){
+		var qn = excell.getQnum(), max=excell.nummaxfunc();
+		if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
+		else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 
-		this.mousereset();
-		return true;
+		excell.draw();
 	}
 },
 

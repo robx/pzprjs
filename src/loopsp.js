@@ -23,36 +23,36 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell===tc.getTCC()){
-			var qu = cell.getQues(), qn = cell.getQnum();
-			if(this.btn.Left){
-				if(qn===-1){
-					if     (qu==0)         { cell.setQues(11);}
-					else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
-					else if(qu==17)        { cell.setQues(0); cell.setQnum(-2);}
-				}
-				else if(qn==-2){ cell.setQnum(1);}
-				else if(qn<cell.maxnum){ cell.setQnum(qn+1);}
-				else{ cell.setQues(0); cell.setQnum(-1);}
-			}
-			else if(this.btn.Right){
-				if(qn===-1){
-					if     (qu==0)         { cell.setQues(0); cell.setQnum(-2);}
-					else if(qu==11)        { cell.setQues(0); cell.setQnum(-1);}
-					else if(qu>=12&&qs<=17){ cell.setQues(qu-1);}
-				}
-				else if(qn==-2){ cell.setQues(17); cell.setQnum(-1);}
-				else if(qn>1) { cell.setQnum(qn-1);}
-				else{ cell.setQues(0); cell.setQnum(-2);}
-			}
+		if(cell!==tc.getTCC()){
+			this.setcursor(cell);
 		}
 		else{
-			var cell0 = tc.getTCC();
-			tc.setTCC(cell);
-			cell0.draw();
+			this.inputcell_loopsp(cell);
 		}
 		this.mouseCell = cell;
-
+	},
+	inputcell_loopsp : function(cell){
+		var qu = cell.getQues(), qn = cell.getQnum();
+		if(this.btn.Left){
+			if(qn===-1){
+				if     (qu==0)         { cell.setQues(11);}
+				else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
+				else if(qu==17)        { cell.setQues(0); cell.setQnum(-2);}
+			}
+			else if(qn==-2){ cell.setQnum(1);}
+			else if(qn<cell.maxnum){ cell.setQnum(qn+1);}
+			else{ cell.setQues(0); cell.setQnum(-1);}
+		}
+		else if(this.btn.Right){
+			if(qn===-1){
+				if     (qu==0)         { cell.setQues(0); cell.setQnum(-2);}
+				else if(qu==11)        { cell.setQues(0); cell.setQnum(-1);}
+				else if(qu>=12&&qu<=17){ cell.setQues(qu-1);}
+			}
+			else if(qn==-2){ cell.setQues(17); cell.setQnum(-1);}
+			else if(qn>1) { cell.setQnum(qn-1);}
+			else{ cell.setQues(0); cell.setQnum(-2);}
+		}
 		cell.draw();
 	}
 },

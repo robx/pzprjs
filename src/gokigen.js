@@ -43,32 +43,26 @@ MouseEvent:{
 	inputedit : function(){ if(this.mousestart){ this.inputquestion();}},
 
 	inputquestion : function(){
-		var pos = this.borderpos(0.33);
+		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
-		if(pos.oncross()){
+
+		if(!tc.pos.equals(pos)){
+			this.setcursorpos(pos);
+		}
+		else if(pos.oncross()){
 			this.inputcross();
 		}
 		else if(pos.oncell()){
-			var cell0 = tc.getTCC(), cell = this.getcell();
-			if(cell!==cell0){
-				tc.setTCC(cell);
-				cell0.draw();
-				cell.draw();
-			}
-			else if(!cell.isnull){
-				var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
-				cell.setNum(trans[cell.getQnum()+2]);
-				cell.draw();
-			}
+			this.inputwagiri(pos);
 		}
-		else{
-			var tcp = tc.getTCP();
-			if(pos.equals(tcp)){
-				tc.setTCP(pos);
-				tcp.draw();
-				pos.draw();
-			}
-		}
+	},
+	inputwagiri : function(pos){
+		var cell = pos.getc();
+		if(cell.isnull){ return;}
+
+		var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
+		cell.setNum(trans[cell.getQnum()+2]);
+		cell.draw();
 	}
 },
 
@@ -311,7 +305,7 @@ Graphic:{
 	},
 
 	drawTarget : function(){
-		var islarge = tc.pos.oncell();
+		var islarge = !tc.pos.onborder();
 		this.drawCursor(islarge,this.owner.editmode);
 	}
 },
