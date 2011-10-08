@@ -60,7 +60,7 @@ KeyEvent:{
 	enablemake_p : true,
 	enableplay_p : true,
 	generate : function(mode,type){
-		if(mode==3){ this.tdcolor = pc.fontAnscolor;}
+		if(mode==3){ this.tdcolor = this.owner.painter.fontAnscolor;}
 		this.inputcol('num','knum1','1','○');
 		this.inputcol('num','knum2','2','△');
 		this.inputcol('num','knum3','3','□');

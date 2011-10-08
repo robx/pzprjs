@@ -122,7 +122,7 @@ Menu:{
 		this.funcs['disptype'] = function(num){
 			if     (num==1){ ee('btncircle').el.value="○";}
 			else if(num==2){ ee('btncircle').el.value="■";}
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		};
 		this.toggledisp = function(){ this.owner.setConfig('disptype', (this.owner.getConfig('disptype')==1?2:1));};
 		

@@ -59,7 +59,7 @@ MouseEvent:{
 		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
 		else{
 			bd.flashlight(excell.id);
-			pc.paintAll();
+			this.owner.painter.paintAll();
 			this.inputData=11;
 		}
 		this.mouseCell = excell;
@@ -79,7 +79,7 @@ MouseEvent:{
 			var excell = obj;
 			if(excell.qlight!==1){ bd.flashlight(excell.id);}
 			else{ bd.lightclear();}
-			pc.paintAll();
+			this.owner.painter.paintAll();
 
 			this.mousereset();
 		}
@@ -153,7 +153,7 @@ KeyEvent:{
 		else if(ca=='F4'){
 			if(excell.qlight!==1){ bd.flashlight(excell.id);}
 			else{ bd.lightclear();}
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		}
 		else if(ca==' '){ excell.setQnum(-1); excell.setQdir(0);}
 		else{ return;}
@@ -216,7 +216,7 @@ Board:{
 		this.SuperFunc.errclear.call(this,false);
 
 		this.lightclear();
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	},
 
 	haslight : false,

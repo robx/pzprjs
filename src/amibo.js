@@ -228,7 +228,7 @@ AreaManager:{
 Menu:{
 	irowakeRemake : function(){
 		bd.areas.barinfo.newIrowake();
-		if(this.owner.getConfig('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	}
 },
 

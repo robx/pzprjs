@@ -52,7 +52,7 @@ pzprv3.createCommonClass('Encode',
 		}
 
 		bd.resetInfo();
-		pc.resize_canvas();
+		this.owner.painter.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===pzprv3.KANPEN && this.owner.pid=='lits'){ type = pzprv3.KANPENP;}

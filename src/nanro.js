@@ -77,7 +77,7 @@ KeyEvent:{
 	enableplay_p : true,
 	generate : function(mode,type){
 		if(mode==3){
-			this.tdcolor = pc.mbcolor;
+			this.tdcolor = this.owner.painter.mbcolor;
 			this.inputcol('num','knumq','q','○');
 			this.inputcol('num','knumw','w','×');
 			this.tdcolor = "black";

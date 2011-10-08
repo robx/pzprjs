@@ -135,7 +135,7 @@ pzprv3.createCommonClass('BoardAdjustOperation:Operation',
 
 		bd.expandreduce(num,{x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows});
 
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	}
 });
 
@@ -191,7 +191,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 
 		bd.turnflip(num,d);
 
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	}
 });
 
@@ -463,7 +463,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.reqReset=false;
 
 		this.disableRecord();
-		pc.suspend();
+		this.owner.painter.suspend();
 	},
 	postproc : function(){
 		if(this.reqReset){
@@ -473,9 +473,9 @@ pzprv3.createCommonClass('OperationManager',
 			bd.setminmax();
 			bd.enableInfo();
 			bd.resetInfo();
-			pc.resize_canvas();
+			this.owner.painter.resize_canvas();
 		}
-		pc.unsuspend();
+		this.owner.painter.unsuspend();
 
 		this.enableRecord();
 		this.enb_btn();

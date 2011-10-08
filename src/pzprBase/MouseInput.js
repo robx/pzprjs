@@ -198,6 +198,7 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
+		var pc = this.owner.painter;
 		this.inputPoint.px = ee.pageX(e) - pc.pageX - this.mouseoffset.px;
 		this.inputPoint.py = ee.pageY(e) - pc.pageY - this.mouseoffset.py;
 	},
@@ -216,10 +217,12 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
+		var pc = this.owner.painter;
 		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
+		var pc = this.owner.painter;
 		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
 		return this.getpos(0).getex();
 	},
@@ -228,7 +231,8 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	getpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var pm = rc*pc.cw, px=(this.inputPoint.px+pm+2*pc.cw), py=(this.inputPoint.py+pm+2*pc.ch);
+		var pc = this.owner.painter, pm = rc*pc.cw;
+		var px=(this.inputPoint.px+pm+2*pc.cw), py=(this.inputPoint.py+pm+2*pc.ch);
 		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
 		var by = ((py/pc.ch)|0)*2 + ((py%pc.ch<2*pm)?0:1) - 4;
 
@@ -236,6 +240,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getborder : function(spc){
+		var pc = this.owner.painter;
 		var bx = ((this.inputPoint.px/pc.cw)<<1)+1, by = ((this.inputPoint.py/pc.ch)<<1)+1;
 		var dx =   this.inputPoint.px%pc.cw,        dy =   this.inputPoint.py%pc.ch;
 
@@ -294,7 +299,7 @@ pzprv3.createCommonClass('MouseEvent',
 
 		this.mouseCell = cell;
 
-		if(cell.numberIsWhite && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && pc.bcolor==="white"))){ return;}
+		if(cell.numberIsWhite && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
 		if(this.RBBlackCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
@@ -498,7 +503,7 @@ pzprv3.createCommonClass('MouseEvent',
 		}
 		var d = clist.getRectSize();
 
-		pc.paintRange(d.x1, d.y1, d.x2, d.y2);
+		this.owner.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
 	},
 
 	//---------------------------------------------------------------------------
@@ -673,7 +678,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!this.RBBlackCell){ bd.areas.bcell.getClistByCell(cell).seterr(1);}
 		else{ this.dispRed8(cell);}
 		bd.haserror = true;
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	},
 	dispRed8 : function(cell0){
 		var stack=[cell0];
@@ -710,6 +715,6 @@ pzprv3.createCommonClass('MouseEvent',
 		bd.border.seterr(-1);
 		blist.seterr(1);
 		bd.haserror = true;
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	}
 });

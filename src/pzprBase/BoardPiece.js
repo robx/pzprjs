@@ -78,7 +78,7 @@ pzprv3.createCommonClass('BoardPiece',
 	// draw()   ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é
 	//---------------------------------------------------------------------------
 	draw : function(){
-		pc.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -212,7 +212,7 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	// cell.drawaround() ”Õ–Ê‚É©•ª‚ÌüˆÍ1ƒ}ƒX‚ğŠÜ‚ß‚Ä•`‰æ‚·‚é
 	//---------------------------------------------------------------------------
 	drawaround : function(){
-		pc.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
+		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
 	},
 
 	//---------------------------------------------------------------------------
@@ -239,7 +239,7 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 			this.setQnum(val);
 			this.setAnum(-1);
 			if(this.numberIsWhite) { this.setQans(0);}
-			if(pc.bcolor==="white"){ this.setQsub(0);}
+			if(this.owner.painter.bcolor==="white"){ this.setQsub(0);}
 		}
 		// playmode val>=0‚Í”š val=-1‚ÍÁ‹ numberAsObject‚ÌE‚Íval=-2 numberWithMB‚Ì›~‚Íval=-2,-3
 		else if(this.qnum===-1){
@@ -505,7 +505,7 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	// border.draw() ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é (Border‚Í‚¿‚å‚Á‚Æ”ÍˆÍ‚ªL‚¢)
 	//---------------------------------------------------------------------------
 	draw : function(){
-		pc.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
+		this.owner.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
 	},
 
 	//-----------------------------------------------------------------------
@@ -650,7 +650,7 @@ pzprv3.createCommonClass('Address',
 	// pos.draw() ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é
 	//---------------------------------------------------------------------------
 	draw : function(){
-		pc.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 
 	//---------------------------------------------------------------------------

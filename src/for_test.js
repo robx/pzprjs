@@ -31,6 +31,7 @@ pzprv3.extendCoreClass('Debug',
 
 	accheck1 : function(){
 		var outputstr = this.owner.fio.fileencode(this.owner.fio.PZPH);
+		var ans = this.owner.checker;
 
 		bd.disableSetError();
 		ans.inCheck = true;
@@ -111,6 +112,7 @@ pzprv3.extendCoreClass('Debug',
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
+			var pc = this.owner.painter, ans = this.owner.checker;
 			pc.suspendAll();
 			this.owner.fio.filedecode(acsstr[n][1]);
 			pc.unsuspend();
@@ -137,12 +139,12 @@ pzprv3.extendCoreClass('Debug',
 
 		var bd2 = self.bd_freezecopy();
 
-		pc.suspendAll();
+		this.owner.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
 		this.owner.fio.filedecode(outputstr);
-		pc.unsuspend();
+		this.owner.painter.unsuspend();
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
@@ -155,12 +157,12 @@ pzprv3.extendCoreClass('Debug',
 
 			var bd2 = self.bd_freezecopy();
 
-			pc.suspendAll();
+			this.owner.painter.suspendAll();
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
 			this.owner.fio.filedecode(outputstr);
-			pc.unsuspend();
+			this.owner.painter.unsuspend();
 
 			self.qsubf = !(self.pid=='fillomino'||self.pid=='hashikake'||self.pid=='kurodoko'||self.pid=='shikaku'||self.pid=='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}

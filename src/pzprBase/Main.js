@@ -54,8 +54,8 @@ pzprv3.createCoreClass('Owner',
 
 		// クラス初期化
 		bd  = this.newInstance('Board');		// 盤面オブジェクト
-		ans = this.newInstance('AnsCheck');		// 正解判定オブジェクト
-		pc  = this.newInstance('Graphic');		// 描画系オブジェクト
+		this.checker = this.newInstance('AnsCheck');	// 正解判定オブジェクト
+		this.painter = this.newInstance('Graphic');		// 描画系オブジェクト
 
 		this.cursor = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
 		this.mouse  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
@@ -126,7 +126,7 @@ pzprv3.createCoreClass('Owner',
 			pzl.qdata = this.debug.urls[pzl.id];
 		}
 
-		pc.suspendAll();
+		this.painter.suspendAll();
 		// ファイルを開く・複製されたデータを開く
 		if(!!pzl.fstr){
 			this.fio.filedecode(pzl.fstr);
@@ -138,9 +138,9 @@ pzprv3.createCoreClass('Owner',
 		// 何もないとき
 		else{
 			bd.initBoardSize(bd.qcols,bd.qrows);
-			pc.resize_canvas();
+			this.painter.resize_canvas();
 		}
-		pc.unsuspend();
+		this.painter.unsuspend();
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
 		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
@@ -175,7 +175,7 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(pc, pc.resize_canvas),250);
+		this.resizetimer = setTimeout(ee.binder(this,painter, this,painter.resize_canvas),250);
 	},
 	onblur_func : function(){
 		this.key.keyreset();

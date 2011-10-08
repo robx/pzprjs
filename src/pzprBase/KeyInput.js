@@ -54,7 +54,7 @@ pzprv3.createCommonClass('KeyEvent',
 		ee.addEvent(document, 'keyup',    ee.ebinder(this, this.e_keyup));
 		ee.addEvent(document, 'keypress', ee.ebinder(this, this.e_keypress));
 		// Silverlightのキー入力イベント設定
-		var g = pc.currentContext;
+		var g = this.owner.painter.currentContext;
 		if(g.use.sl){
 			var sender = g.content.findName(g.canvasid);
 			sender.AddEventListener("KeyDown", ee.ebinder(this, this.e_SLkeydown));
@@ -525,7 +525,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
 	resizepanel : function(){
-		var cellsize = Math.min(pc.cw, 120);
+		var cellsize = Math.min(this.owner.painter.cw, 120);
 		if(cellsize<20){ cellsize=20;}
 
 		var dsize = (cellsize*0.90)|0, tsize = (cellsize*0.70)|0;

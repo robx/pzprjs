@@ -69,7 +69,7 @@ Menu:{
 				if     (cell.getQnum()===1){ cell.setQnum(2);}
 				else if(cell.getQnum()===2){ cell.setQnum(1);}
 			}
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		};
 
 		this.addRedLineToFlags();

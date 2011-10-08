@@ -33,7 +33,7 @@ pzprv3.createCommonClass('AnsCheck',
 		if(!this.checkresult){
 			this.owner.menu.alertStr(this.alstr.jp, this.alstr.en);
 			bd.haserror = true;
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		}
 		else{
 			this.owner.menu.alertStr("正解です！","Complete!");

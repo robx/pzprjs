@@ -66,7 +66,7 @@ MouseEvent:{
 					bd.segs.input(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-					pc.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+					this.owner.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 				}
 			}
 		}
@@ -177,7 +177,7 @@ Board:{
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){
-				pc.eraseSegment1(seglist[i]);
+				this.owner.painter.eraseSegment1(seglist[i]);
 			}
 			this.segs.allclear();
 		}
@@ -188,7 +188,7 @@ Board:{
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){
-				pc.eraseSegment1(seglist[i]);
+				this.owner.painter.eraseSegment1(seglist[i]);
 				this.segs.removeSegment(seglist[i]);
 			}
 			this.segs.allclear();
@@ -289,7 +289,7 @@ Board:{
 		if     (num===1){ bd.segs.setSegment   (bx1,by1,bx2,by2);}
 		else if(num===0){ bd.segs.removeSegment(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-		pc.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+		this.owner.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
 },
 
@@ -316,7 +316,7 @@ Menu:{
 	menufix : function(pp){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
-		this.funcs['circolor'] = function(){ pc.paintAll();};
+		this.funcs['circolor'] = function(){ this.owner.painter.paintAll();};
 
 		pp.addCheck('enline','setting',true,'線は点の間','Line between points');
 		pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
@@ -327,7 +327,7 @@ Menu:{
 
 	irowakeRemake : function(){
 		bd.segs.newIrowake();
-		if(this.owner.getConfig('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	}
 },
 
@@ -922,12 +922,12 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seg.cross2.segment.add(seg);
 		}
 		this.reassignId(ids);
-		if(pc.irowake!==0){ this.newIrowake();}
+		if(this.owner.painter.irowake!==0){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){
 			if(this.idlist[i].length>0){
-				var newColor = pc.getNewLineColor();
+				var newColor = this.owner.painter.getNewLineColor();
 				for(var n=0;n<this.idlist[i].length;n++){
 					this.seg[this.idlist[i][n]].color = newColor;
 				}
@@ -1016,7 +1016,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(by1!==(void 0)){ seg = this.getSegment(bx1,by1,bx2,by2);}
 		this.setSegmentInfo(seg, false);
 		this.owner.undo.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
-		pc.eraseSegment1(seg);
+		this.owner.painter.eraseSegment1(seg);
 		delete this.seg[seg.id];
 	},
 
@@ -1044,7 +1044,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				this.linemax++;
 				this.idlist[this.linemax] = [id];
 				this.lineid[id] = this.linemax;
-				seg.color = pc.getNewLineColor();
+				seg.color = this.owner.painter.getNewLineColor();
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
 			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
@@ -1123,7 +1123,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			if(this.owner.getConfig('irowake')){
 				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
 				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
-				pc.repaintSegments(seglist);
+				this.owner.painter.repaintSegments(seglist);
 			}
 		}
 	},
@@ -1170,7 +1170,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		// 新しい色の設定
 		var idlist = [];
 		for(var current=oldmax+1;current<=this.linemax;current++){
-			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
+			var newColor = (current===newlongid ? longColor : this.owner.painter.getNewLineColor());
 			for(var n=0,len=this.idlist[current].length;n<len;n++){
 				this.seg[this.idlist[current][n]].color = newColor;
 				idlist.push(this.idlist[current][n]);
@@ -1179,7 +1179,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(this.owner.getConfig('irowake')){
 			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('SegmentList');
 			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
-			pc.repaintSegments(seglist);
+			this.owner.painter.repaintSegments(seglist);
 		}
 	},
 

@@ -320,7 +320,7 @@ pzprv3.createCommonClass('Board',
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		this.haserror = false;
-		if(isrepaint!==false){ pc.paintAll();}
+		if(isrepaint!==false){ this.owner.painter.paintAll();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -602,7 +602,7 @@ pzprv3.createCommonClass('Board',
 
 		this.owner.undo.newOperation(true);
 
-		pc.suspendAll();
+		this.owner.painter.suspendAll();
 
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var key = this.boardtype[name][1], key0 = this.boardtype[name][0];
@@ -618,8 +618,8 @@ pzprv3.createCommonClass('Board',
 
 		this.setminmax();
 		this.resetInfo();
-		pc.resize_canvas();	// Canvasを更新する
-		pc.unsuspend();
+		this.owner.painter.resize_canvas();	// Canvasを更新する
+		this.owner.painter.unsuspend();
 	},
 
 	//------------------------------------------------------------------------------

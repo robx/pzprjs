@@ -15,13 +15,14 @@ MouseEvent:{
 	// マウス入力時のセルID取得系
 	getcell : function(){
 		var pos = this.getpos(0);
-		if(this.inputY%pc.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
+		if(this.inputY%this.owner.painter.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
 		if(!pos.isinside()){ return bd.newObject(bd.CELL);}
 
 		var cand = pos.getc();
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	getpos : function(rc){
+		var pc = this.owner.painter;
 		return this.owner.newInstance('Address',[(this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1]);
 	}
 },

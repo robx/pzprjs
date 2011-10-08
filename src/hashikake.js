@@ -37,7 +37,7 @@ MouseEvent:{
 			}
 			this.prevblist = borders;
 
-			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
@@ -58,7 +58,7 @@ MouseEvent:{
 		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
 		this.prevPos = pos;
 
-		pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 	},
 
 	mousereset : function(){
@@ -145,7 +145,7 @@ Menu:{
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
 
-		this.funcs['circolor'] = function(){ pc.paintAll();};
+		this.funcs['circolor'] = function(){ this.owner.painter.paintAll();};
 	}
 },
 

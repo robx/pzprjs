@@ -129,7 +129,7 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(ca=='x'){ pc.drawNumbersOnGate(true); return;}
+		if(ca=='x'){ this.owner.painter.drawNumbersOnGate(true); return;}
 		this.key_inputqnum_slalom(ca);
 	},
 	key_inputqnum_slalom : function(ca){
@@ -159,7 +159,7 @@ KeyEvent:{
 		}
 	},
 	keyup : function(ca){
-		if(ca=='x'){ pc.drawNumbersOnGate(false);}
+		if(ca=='x'){ this.owner.painter.drawNumbersOnGate(false);}
 	},
 
 	enablemake_p : true,

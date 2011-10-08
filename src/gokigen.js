@@ -36,7 +36,7 @@ MouseEvent:{
 		}
 
 		bd.haserror = true;
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	}
 },
 "MouseEvent@wagiri":{
@@ -232,7 +232,7 @@ Menu:{
 		else if(this.owner.pid==='wagiri'){
 			pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
-			this.funcs['colorslash'] = function(){ pc.paintAll();};
+			this.funcs['colorslash'] = function(){ this.owner.painter.paintAll();};
 		}
 	}
 },

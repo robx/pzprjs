@@ -140,7 +140,7 @@ Menu:{
 
 		pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
 		pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
-		this.funcs['snakebd'] = function(){ pc.paintAll();};
+		this.funcs['snakebd'] = function(){ this.owner.painter.paintAll();};
 	}
 },
 

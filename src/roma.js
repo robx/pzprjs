@@ -38,7 +38,7 @@ MouseEvent:{
 			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
 		bd.haserror = true;
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	}
 },
 

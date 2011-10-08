@@ -81,13 +81,13 @@ pzprv3.createCommonClass('LineManager',
 			}
 		}
 		this.reassignId(blist);
-		if(pc.irowake!==0){ this.newIrowake();}
+		if(this.owner.painter.irowake!==0){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
 			var idlist = this.idlist[i];
 			if(idlist.length>0){
-				var newColor = pc.getNewLineColor();
+				var newColor = this.owner.painter.getNewLineColor();
 				for(var n=0;n<idlist.length;n++){ bd.border[idlist[n]].color = newColor;}
 			}
 		}
@@ -160,7 +160,7 @@ pzprv3.createCommonClass('LineManager',
 				this.max++;
 				this.idlist[this.max] = [border.id];
 				this.id[border.id] = this.max;
-				border.color = pc.getNewLineColor();
+				border.color = this.owner.painter.getNewLineColor();
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
 			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
@@ -236,7 +236,7 @@ pzprv3.createCommonClass('LineManager',
 				border.color = newColor;
 				blist.add(border);
 			}
-			if(this.owner.getConfig('irowake')){ pc.repaintLines(blist);}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
 		}
 		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
@@ -284,10 +284,10 @@ pzprv3.createCommonClass('LineManager',
 
 		// 新しい色の設定
 		for(var current=oldmax+1;current<=this.max;current++){
-			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
+			var newColor = (current===newlongid ? longColor : this.owner.painter.getNewLineColor());
 			var blist = this.getBlist(current);
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
-			if(this.owner.getConfig('irowake')){ pc.repaintLines(blist);}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
 		}
 	},
 
@@ -547,7 +547,7 @@ pzprv3.createCommonClass('AreaData',
 		for(var i=1;i<=this.max;i++){
 			var idlist = this[i].idlist;
 			if(idlist.length>0){
-				var newColor = pc.getNewLineColor();
+				var newColor = this.owner.painter.getNewLineColor();
 				for(var n=0;n<idlist.length;n++){
 					bd.cell[idlist[n]].color = newColor;
 				}
@@ -582,7 +582,7 @@ pzprv3.createCommonClass('AreaData',
 				cell.color = longColor;
 				clist.add(cell);
 			}
-			if(this.owner.getConfig('irowake')){ pc.repaintBlocks(clist);}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
 		}
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -596,7 +596,7 @@ pzprv3.createCommonClass('AreaData',
 			// 新しい色の設定
 			var clist = this.owner.newInstance('CellList');
 			for(var i=0;i<assign.length;i++){
-				var newColor = (assign[i]===longid ? longColor : pc.getNewLineColor());
+				var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
 				var idlist = this[assign[i]].idlist;
 				for(var n=0,len=idlist.length;n<len;n++){
 					var cell = bd.cell[idlist[n]];
@@ -604,7 +604,7 @@ pzprv3.createCommonClass('AreaData',
 					clist.add(cell);
 				}
 			}
-			if(this.owner.getConfig('irowake')){ pc.repaintBlocks(clist);}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
 		}
 	},
 
@@ -668,11 +668,11 @@ pzprv3.createCommonClass('AreaData',
 		if(c2===null){
 			newid = this.getnewid();
 			this[newid].idlist = [];
-			if(!!pc.irowake){ cell.color = pc.getNewLineColor();}
+			if(!!this.owner.painter.irowake){ cell.color = this.owner.painter.getNewLineColor();}
 		}
 		else{
 			newid = this.id[c2];
-			if(!!pc.irowake){ cell.color = bd.cell[c2].color;}
+			if(!!this.owner.painter.irowake){ cell.color = bd.cell[c2].color;}
 		}
 		this[newid].idlist.push(cell.id);
 		this.id[cell.id] = newid;
@@ -690,7 +690,7 @@ pzprv3.createCommonClass('AreaData',
 
 		if(idlist.length===0){ this.invalidid(areaid);}
 		this.id[cell.id] = null;
-		if(!!pc.irowake){ cell.color = "";}
+		if(!!this.owner.painter.irowake){ cell.color = "";}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -736,21 +736,21 @@ pzprv3.createCommonClass('AreaData',
 	// info.remakeInfo()  線が引かれたり消された時、線が分かれるときのidの再設定を行う
 	//--------------------------------------------------------------------------------
 	combineInfo : function(cell, cid){
-		var longColor = (!!pc.irowake ? this.getLongColor(cid) : "");
+		var longColor = (!!this.owner.painter.irowake ? this.getLongColor(cid) : "");
 
 		var idlist = this.popRoom(cid);
 		idlist.push(cell.id);
 		var assign = this.searchIdlist(idlist);
 
-		if(!!pc.irowake){ this.setLongColor(assign, longColor);}
+		if(!!this.owner.painter.irowake){ this.setLongColor(assign, longColor);}
 	},
 	remakeInfo : function(cell, cid){
-		var longColor = (!!pc.irowake ? this.getLongColor(cid) : "");
+		var longColor = (!!this.owner.painter.irowake ? this.getLongColor(cid) : "");
 
 		var idlist = this.popRoom(cid);
 		var assign = this.searchIdlist(idlist);
 
-		if(!!pc.irowake){ this.setLongColor(assign, longColor);}
+		if(!!this.owner.painter.irowake){ this.setLongColor(assign, longColor);}
 	},
 
 	//--------------------------------------------------------------------------------

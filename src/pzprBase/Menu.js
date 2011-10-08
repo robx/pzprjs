@@ -316,8 +316,8 @@ pzprv3.createCommonClass('Menu',
 		au('text','disp',(!ee.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!pc.irowake){
-			ac('irowake','disp',(pc.irowake==2?true:false),'線の色分け','Color coding');
+		if(!!this.owner.painter.irowake){
+			ac('irowake','disp',(this.owner.painter.irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp',true,'カーソルの表示','Display cursor');
@@ -645,7 +645,7 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(pc.irowake){
+		if(this.owner.painter.irowake){
 			// 横にくっつけたいボタンを追加
 			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
 			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
@@ -671,7 +671,7 @@ pzprv3.createCommonClass('Menu',
 		ee('btnarea').appendHTML('&nbsp;');
 		ee.createEL(this.EL_UBUTTON, 'btnclear');
 
-		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
+		this.addButtons(ee("btncheck").el,  ee.binder(this.owner.checker, this.owner.checker.check), "チェック", "Check");
 		this.addButtons(ee("btnundo").el,   ee.binder(this.owner.undo, this.owner.undo.undo, [1]), "戻", "<-");
 		this.addButtons(ee("btnredo").el,   ee.binder(this.owner.undo, this.owner.undo.redo, [1]), "進", "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(this, this.ACconfirm), "回答消去", "Erase Answer");
@@ -685,7 +685,7 @@ pzprv3.createCommonClass('Menu',
 			this.addButtons(ee("btnclear2").el, ee.binder(this, this.ASconfirm), "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(pc.irowake!=0){
+		if(this.owner.painter.irowake!=0){
 			var el = ee.createEL(this.EL_UBUTTON, 'btncolor2');
 			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
@@ -969,7 +969,7 @@ pzprv3.createCommonClass('Menu',
 		this.displayAll();
 		this.dispmanstr();
 
-		pc.forceRedraw();
+		this.owner.painter.forceRedraw();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -992,7 +992,7 @@ pzprv3.createCommonClass('Menu',
 		h_undo    : function(){ this.owner.undo.undo(1);},
 		h_redo    : function(){ this.owner.undo.redo(1);},
 		h_latest  : function(){ this.owner.undo.redoall();},
-		check     : function(){ ans.check();},
+		check     : function(){ this.owner.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
 		adjust    : function(){ this.pop = ee("pop2_1");},
@@ -1004,16 +1004,16 @@ pzprv3.createCommonClass('Menu',
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ pc.paintAll();},
-		cursor    : function(){ pc.paintAll();},
+		irowake   : function(){ this.owner.painter.paintAll();},
+		cursor    : function(){ this.owner.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
 		poptest   : function(){ this.owner.debug.disppoptest();},
 
 		mode      : function(num){ this.modechange(num);},
-		text      : function(num){ this.textsize(num); pc.forceRedraw();},
-		size      : function(num){ pc.forceRedraw();},
-		repaint   : function(num){ pc.forceRedraw();},
-		adjsize   : function(num){ pc.forceRedraw();},
+		text      : function(num){ this.textsize(num); this.owner.painter.forceRedraw();},
+		size      : function(num){ this.owner.painter.forceRedraw();},
+		repaint   : function(num){ this.owner.painter.forceRedraw();},
+		adjsize   : function(num){ this.owner.painter.forceRedraw();},
 		language  : function(str){ this.setLang(str);},
 
 		newboard : function(){
@@ -1026,7 +1026,7 @@ pzprv3.createCommonClass('Menu',
 		},
 		dispsize : function(){
 			this.pop = ee("pop4_1");
-			document.dispsize.cs.value = pc.cellsize;
+			document.dispsize.cs.value = this.owner.painter.cellsize;
 			this.owner.key.enableKey = false;
 		},
 		keypopup : function(){
@@ -1053,7 +1053,7 @@ pzprv3.createCommonClass('Menu',
 		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){ this.funcs.keypopup.call(this);}
 
 		bd.haserror=true;
-		pc.paintAll();
+		this.owner.painter.paintAll();
 	},
 
 	//------------------------------------------------------------------------------
@@ -1193,7 +1193,7 @@ pzprv3.createCommonClass('Menu',
 		var canvas_sv = this.owner.canvas;
 		try{
 			this.owner.canvas = ee('divques_sub').el;
-			var pc2 = this.owner.newInstance('Graphic');
+			var pc = this.owner.painter, pc2 = this.owner.newInstance('Graphic');
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
@@ -1254,10 +1254,10 @@ pzprv3.createCommonClass('Menu',
 	dispsize : function(e){
 		if(this.pop){
 			var csize = parseInt(document.dispsize.cs.value);
-			if(csize>0){ pc.cellsize = (csize|0);}
+			if(csize>0){ this.owner.painter.cellsize = (csize|0);}
 
 			this.popclose();
-			pc.forceRedraw();	// Canvasを更新する
+			this.owner.painter.forceRedraw();	// Canvasを更新する
 		}
 	},
 
@@ -1266,7 +1266,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
 		bd.lines.newIrowake();
-		if(this.owner.getConfig('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	},
 
 	//------------------------------------------------------------------------------
@@ -1277,22 +1277,19 @@ pzprv3.createCommonClass('Menu',
 		var idlist = ['usepanel','checkpanel'];
 		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
 
-		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++) { ee(idlist[i])  .el.style.display = 'none';}
-			for(var i=0;i<seplist.length;i++){ ee(seplist[i]) .el.style.display = 'none';}
-			if(pc.irowake!=0 && this.owner.getConfig('irowake')){ ee('btncolor2').el.style.display = 'inline';}
-			ee('menuboard').el.style.paddingBottom = '0pt';
-		}
-		else{
-			for(var i=0;i<idlist.length;i++) { ee(idlist[i])  .el.style.display = 'block';}
-			for(var i=0;i<seplist.length;i++){ ee(seplist[i]) .el.style.display = 'block';}
-			if(pc.irowake!=0 && this.owner.getConfig('irowake')){ ee("btncolor2").el.style.display = 'none';}
-			ee('menuboard').el.style.paddingBottom = '8pt';
-		}
+		var mandisp  = (this.displaymanage ? 'none' : 'block');
+		var btn2disp = (this.displaymanage ? 'inline' : 'none');
+		var mbpad = (this.displaymanage ? '0pt' : '8pt');
+
+		for(var i=0;i<idlist.length;i++) { ee(idlist[i])  .el.style.display = mandisp;}
+		for(var i=0;i<seplist.length;i++){ ee(seplist[i]) .el.style.display = mandisp;}
+		if(this.owner.painter.irowake!=0 && this.owner.getConfig('irowake')){ ee('btncolor2').el.style.display = btn2disp;}
+		ee('menuboard').el.style.paddingBottom = mbpad;
+
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		pc.forceRedraw();	// canvasの左上座標等を更新して再描画
+		this.owner.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ ee('ms_manarea').el.innerHTML = this.selectStr("管理領域を表示","Show management area");}
@@ -1318,7 +1315,7 @@ pzprv3.createCommonClass('Menu',
 
 			bd.ansclear();
 			bd.resetInfo();
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		}
 	},
 	ASconfirm : function(){
@@ -1326,7 +1323,7 @@ pzprv3.createCommonClass('Menu',
 			this.owner.undo.newOperation(true);
 
 			bd.subclear();
-			pc.paintAll();
+			this.owner.painter.paintAll();
 		}
 	}
 });
@@ -1404,13 +1401,13 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	perfeval : function(){
-		this.timeeval("正答判定測定",ee.binder(ans, ans.checkAns));
+		this.timeeval("正答判定測定",ee.binder(this.owner.checker, this.owner.checker.checkAns));
 	},
 	painteval : function(){
-		this.timeeval("描画時間測定",ee.binder(pc, pc.paintAll));
+		this.timeeval("描画時間測定",ee.binder(this.owner.painter, this.owner.painter.paintAll));
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定",ee.binder(pc, pc.forceRedraw));
+		this.timeeval("resize描画測定",ee.binder(this.owner.painter, this.owner.painter.forceRedraw));
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

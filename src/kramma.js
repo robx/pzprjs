@@ -32,7 +32,7 @@ MouseEvent:{
 				else if(this.inputData===0){ borders[i].removeBorder();}
 			}
 
-			pc.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	}
@@ -352,7 +352,7 @@ pzprv3.createCommonClass('ImageTile',
 		this.cw     = this.width/this.cols;
 		this.ch     = this.height/this.rows;
 		this.loaded = true;
-		pc.unsuspend();
+		this.owner.painter.unsuspend();
 	},
 	putImage : function(id,ctx,dx,dy,dw,dh){
 		if(this.loaded){
