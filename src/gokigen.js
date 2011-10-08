@@ -46,7 +46,7 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!tc.pos.equals(pos)){
+		if(!this.cursor.pos.equals(pos)){
 			this.setcursorpos(pos);
 		}
 		else if(pos.oncross()){
@@ -87,12 +87,12 @@ MouseEvent:{
 		this.key_wagiri(ca);
 	},
 	key_wagiri : function(ca){
-		var pos = tc.getTCP();
+		var pos = this.cursor.getTCP();
 		if(pos.oncross()){
 			this.key_inputcross(ca);
 		}
 		else if(pos.oncell()){
-			var cell = tc.getTCC(), val = 0;
+			var cell = this.cursor.getTCC(), val = 0;
 			if     (ca=='1'){ val= 1;}
 			else if(ca=='2'){ val= 2;}
 			else if(ca=='-'){ val=-2;}
@@ -305,7 +305,7 @@ Graphic:{
 	},
 
 	drawTarget : function(){
-		var islarge = !tc.pos.onborder();
+		var islarge = !this.owner.cursor.pos.onborder();
 		this.drawCursor(islarge,this.owner.editmode);
 	}
 },

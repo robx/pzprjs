@@ -27,7 +27,7 @@ KeyEvent:{
 	},
 	key_inputvalid : function(ca){
 		if(ca=='w'){
-			var cell = tc.getTCC();
+			var cell = this.cursor.getTCC();
 			if(!cell.isnull){
 				cell.setQues(cell.getQues()!==7?7:0);
 				cell.setNum(-1);

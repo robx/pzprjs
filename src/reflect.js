@@ -30,7 +30,7 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputLineParts : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if     (ca=='q'){ cell.setQues(2); cell.setQnum(-1);}
 		else if(ca=='w'){ cell.setQues(3); cell.setQnum(-1);}

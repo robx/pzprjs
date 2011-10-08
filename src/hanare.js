@@ -57,7 +57,7 @@ KeyEvent:{
 		this.key_inputqnum_hanare(ca);
 	},
 	key_inputqnum_hanare : function(ca){
-		var cell=tc.getTCC(), val=-1;
+		var cell=this.cursor.getTCC(), val=-1;
 
 		if('0'<=ca && ca<='9'){ val = 1;}
 		else if(ca==='-') { val = (this.owner.playmode?-2:-1);}

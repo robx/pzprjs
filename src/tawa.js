@@ -131,7 +131,7 @@ Board:{
 		this.maxbx = 2*this.qcols + [0,1,1,2][this.lap];
 		this.maxby = 2*this.qrows;
 
-		tc.setminmax();
+		this.owner.cursor.setminmax();
 	},
 
 	getc : function(bx,by,qc,qr){
@@ -279,7 +279,7 @@ Menu:{
 		this.selectlap([0,2,3,1][bd.lap]);
 		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
 		document.newboard.row.value = bd.qrows;
-		kc.enableKey = false;
+		this.owner.key.enableKey = false;
 	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
 		if(this.pop){

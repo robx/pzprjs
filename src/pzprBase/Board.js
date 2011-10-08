@@ -85,7 +85,7 @@ pzprv3.createCommonClass('Board',
 		this.areas.init();
 		this.lines.init();
 
-		tc.initCursor();
+		this.owner.cursor.initCursor();
 		this.owner.undo.allerase();
 	},
 
@@ -280,7 +280,7 @@ pzprv3.createCommonClass('Board',
 		this.maxbx = (!extDR ? 2*this.qcols : 2*this.qcols+2);
 		this.maxby = (!extDR ? 2*this.qrows : 2*this.qrows+2);
 
-		tc.setminmax();
+		this.owner.cursor.setminmax();
 	},
 
 	//---------------------------------------------------------------------------

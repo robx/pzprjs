@@ -189,7 +189,7 @@ pzprv3.createCommonClass('Graphic',
 		// Cellなどの座標設定
 		this.setcoordAll();
 
-		kc.resizepanel();
+		this.owner.key.resizepanel();
 	},
 	setcellsize : function(cols, rows){
 		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
@@ -1446,7 +1446,7 @@ pzprv3.createCommonClass('Graphic',
 		var g = this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && pp.getVal('cursor') && !this.outputImage){
-			var d = this.range;
+			var d = this.range, tc = this.owner.cursor;
 			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
 			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}
 
@@ -1473,7 +1473,7 @@ pzprv3.createCommonClass('Graphic',
 
 		if(this.owner.playmode){ return;}
 
-		var d = this.range;
+		var d = this.range, tc = this.owner.cursor;
 		if(tc.pos.bx < d.x1 || d.x2 < tc.pos.bx){ return;}
 		if(tc.pos.by < d.y1 || d.y2 < tc.pos.by){ return;}
 

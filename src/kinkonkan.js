@@ -71,7 +71,7 @@ MouseEvent:{
 		if(!obj.isexcellobj){
 			this.inputborder();
 		}
-		else if(obj!==tc.getOBJ()){
+		else if(obj!==this.cursor.getOBJ()){
 			this.setcursor(obj);
 			this.mousereset();
 		}
@@ -91,6 +91,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
+		var tc = this.cursor;
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = bd.NDIR;
 
 		if     (ca===this.KEYUP){
@@ -125,7 +126,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = tc.getTEC(), qn = excell.getQnum();
+		var excell = this.cursor.getTEC(), qn = excell.getQnum();
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
@@ -158,7 +159,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		tc.getTCP().draw();
+		this.cursor.getTCP().draw();
 	}
 },
 

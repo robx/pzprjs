@@ -39,7 +39,7 @@ KeyEvent:{
 		this.key_inputqnum_kaero(ca);
 	},
 	key_inputqnum_kaero : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;

@@ -83,7 +83,7 @@ KeyEvent:{
 		this.key_inputstar(ca);
 	},
 	key_inputstar : function(ca){
-		var pos = tc.getTCP(), star = pos.gets();
+		var pos = this.cursor.getTCP(), star = pos.gets();
 		if(star!==null){
 			if     (ca=='1'){ star.setStar(1);}
 			else if(ca=='2'){ star.setStar(2);}

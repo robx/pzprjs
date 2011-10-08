@@ -35,7 +35,7 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!tc.pos.equals(pos)){
+		if(!this.cursor.pos.equals(pos)){
 			this.setcursorpos(pos);
 			pos.draw();
 		}
@@ -82,7 +82,7 @@ KeyEvent:{
 		else if(this.owner.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
-		var border = tc.getTBC();
+		var border = this.cursor.getTBC();
 		if(border.isnull){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){

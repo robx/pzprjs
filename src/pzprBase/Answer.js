@@ -25,8 +25,8 @@ pzprv3.createCommonClass('AnsCheck',
 	check : function(){
 		this.inCheck = true;
 		this.alstr = { jp:'' ,en:''};
-		kc.keyreset();
-		mv.mousereset();
+		this.owner.key.keyreset();
+		this.owner.mouse.mousereset();
 
 		this.checkresult = true;
 		this.checkAns()
@@ -66,7 +66,7 @@ pzprv3.createCommonClass('AnsCheck',
 			this.checkresult = true;
 			this.checkAns();
 			if(this.checkresult && this.inCheck){
-				mv.mousereset();
+				this.owner.mouse.mousereset();
 				menu.alertStr("正解です！","Complete!");
 				ret = true;
 				pp.setVal('autocheck',false);

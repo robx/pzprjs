@@ -33,7 +33,7 @@ KeyEvent:{
 	},
 	key_sukoro : function(ca){
 		if(this.owner.playmode){
-			var cell=tc.getTCC();
+			var cell=this.cursor.getTCC();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(cell.getQsub()===1?'1':'s1');}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(cell.getQsub()===2?'2':'s2');}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }

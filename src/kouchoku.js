@@ -76,7 +76,7 @@ MouseEvent:{
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross!==tc.getTXC()){
+		if(cross!==this.cursor.getTXC()){
 			this.setcursor(cross);
 		}
 		else{
@@ -112,7 +112,7 @@ KeyEvent:{
 		this.key_inputqnum_kouchoku(ca);
 	},
 	key_inputqnum_kouchoku : function(ca){
-		var cross = tc.getTXC();
+		var cross = this.cursor.getTXC();
 
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){
@@ -448,7 +448,8 @@ Graphic:{
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
-			if(mv.targetPoint[0]===cross || mv.targetPoint[1]===cross){
+			if(this.owner.mouse.targetPoint[0]===cross ||
+			   this.owner.mouse.targetPoint[1]===cross){
 				if(this.vnop(header+cross.id,this.STROKE)){
 					g.strokeCircle(cross.px, cross.py, csize);
 				}

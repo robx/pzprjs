@@ -12,7 +12,7 @@ MouseEvent:{
 		var pos = this.getpos(0.31);
 		if(!pos.isinside()){ return;}
 
-		if(!tc.pos.equals(pos)){
+		if(!this.cursor.pos.equals(pos)){
 			this.setcursorpos(pos);
 		}
 		else if(pos.oncell()){
@@ -65,9 +65,9 @@ KeyEvent:{
 		this.key_inputqnum_bosanowa(ca);
 	},
 	key_inputqnum_bosanowa : function(ca){
-		var tcp = tc.getTCP();
+		var tcp = this.cursor.getTCP();
 		if(tcp.oncell()){
-			var cell = tc.getTCC();
+			var cell = this.cursor.getTCC();
 			if(this.owner.editmode){
 				if     (ca=='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
 				else if(ca=='-'||ca==' '){ cell.setQues(0); cell.setNum(-1);}
@@ -135,7 +135,7 @@ Board:{
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
 		if(pzprv3.EDITOR){
-			var cell = tc.getTCC(); /* 真ん中にあるはず */
+			var cell = this.owner.cursor.getTCC(); /* 真ん中にあるはず */
 			if(!cell.isnull){ cell.ques = 0;}
 		}
 	}
@@ -357,7 +357,7 @@ Graphic:{
 	},
 
 	drawTarget_bosanowa : function(){
-		var islarge = tc.pos.oncell();
+		var islarge = this.owner.cursor.pos.oncell();
 		this.drawCursor(islarge);
 	}
 },

@@ -30,7 +30,7 @@ KeyEvent:{
 	},
 	key_inputLineParts : function(ca){
 		if(this.owner.playmode){ return false;}
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if     (ca=='q'){ cell.setQues(11);}
 		else if(ca=='w'){ cell.setQues(12);}

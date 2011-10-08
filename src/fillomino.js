@@ -68,7 +68,7 @@ KeyEvent:{
 	},
 
 	move_fillomino : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 		if(cell.isnull){ return;}
 
 		var nc, nb, dir=bd.NDIR;
@@ -81,9 +81,9 @@ KeyEvent:{
 		}
 		if(!nc.isnull){
 			this.tcMoved = (this.isCTRL || this.isX || this.isZ);
-			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); tc.pos.movedir(dir,2);}}
-			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                         }}
-			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          tc.pos.movedir(dir,2);}}
+			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); this.cursor.pos.movedir(dir,2);}}
+			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                                  }}
+			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          this.cursor.pos.movedir(dir,2);}}
 
 			if(this.tcMoved){ cell.draw();}
 		}

@@ -352,7 +352,7 @@ pzprv3.createCommonClass('Menu',
 		ac('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-		if(kc.haspanel[1] || kc.haspanel[3]){
+		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){
 			ac('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
@@ -869,7 +869,7 @@ pzprv3.createCommonClass('Menu',
 			this.pop.el.style.display = "none";
 			this.pop = '';
 			this.movingpop = "";
-			kc.enableKey = true;
+			this.owner.key.enableKey = true;
 		}
 	},
 
@@ -1010,19 +1010,19 @@ pzprv3.createCommonClass('Menu',
 				document.newboard.col.value = bd.qcols;
 				document.newboard.row.value = bd.qrows;
 			}
-			kc.enableKey = false;
+			this.owner.key.enableKey = false;
 		},
 		dispsize : function(){
 			this.pop = ee("pop4_1");
 			document.dispsize.cs.value = pc.cellsize;
-			kc.enableKey = false;
+			this.owner.key.enableKey = false;
 		},
 		keypopup : function(){
-			var f = kc.haspanel[pp.flags['mode'].val];
+			var f = this.owner.key.haspanel[pp.flags['mode'].val];
 			ee('ck_keypopup').el.disabled    = (f?"":"true");
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 
-			kc.display();
+			this.owner.key.display();
 		}
 	},
 
@@ -1035,10 +1035,10 @@ pzprv3.createCommonClass('Menu',
 		this.owner.editmode = (num==1);
 		this.owner.playmode = (num==3);
 
-		kc.keyreset();
+		this.owner.key.keyreset();
 		bd.errclear();
-		tc.adjust_modechange();
-		if(kc.haspanel[1] || kc.haspanel[3]){ this.funcs.keypopup.call(this);}
+		this.owner.cursor.adjust_modechange();
+		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){ this.funcs.keypopup.call(this);}
 
 		bd.haserror=true;
 		pc.paintAll();
@@ -1364,6 +1364,7 @@ pzprv3.createCoreClass('Debug',
 
 	// pzprv3.DEBUG===true時はオーバーライドされます
 	keydown : function(ca){
+		var kc = this.owner.key;
 		if(kc.isCTRL && ca=='F8'){
 			this.disppoptest();
 			kc.tcMoved = true;

@@ -18,6 +18,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	keydown : function(ca){
+		var kc = this.owner.key;
 		if(ca=='F7'){ this.accheck1();}
 		else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
 		else if(kc.isCTRL && ca=='F9'){ this.starttest();}

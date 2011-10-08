@@ -38,7 +38,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==tc.getTCC()){
+		if(cell!==this.cursor.getTCC()){
 			this.setcursor(cell);
 		}
 		else{
@@ -116,7 +116,7 @@ KeyEvent:{
 		else if(ca==='5'||ca==='q'){ ca='q';}
 		else if(ca==='6'||ca===' '){ ca=' ';}
 
-		var cell = tc.getTCC(), val=-1;
+		var cell = this.cursor.getTCC(), val=-1;
 
 		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (cell.getQdir()!==val?val:0);}
 		else if(ca==='-') { val = (cell.getQdir()!==-2?-2:0);}
@@ -131,7 +131,7 @@ KeyEvent:{
 	},
 
 	key_inputqnum_sashigane : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 		if(ca==='q'){
 			cell.setQdir((cell.getQdir()!==5)?5:0);
 			cell.setQnum(-1);

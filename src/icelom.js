@@ -84,7 +84,7 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputIcebarn : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if(ca==='q'){
 			cell.getQues(cell.ice()?0:6);

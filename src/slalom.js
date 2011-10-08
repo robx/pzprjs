@@ -27,7 +27,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==tc.getTCC()){
+		if(cell!==this.cursor.getTCC()){
 			this.setcursor(cell);
 		}
 		else{
@@ -133,7 +133,7 @@ KeyEvent:{
 		this.key_inputqnum_slalom(ca);
 	},
 	key_inputqnum_slalom : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
 			var old=cell.getQues(), newques=-1;
@@ -417,7 +417,7 @@ Graphic:{
 
 		g.lineWidth = (csize2>=1 ? csize2 : 1);
 		g.strokeStyle = this.cellcolor;
-		g.fillStyle = (mv.inputData==10 ? this.errbcolor1 : "white");
+		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
 		if(this.vnop(vids[0],this.FILL)){
 			g.shapeCircle(cell.px, cell.py, csize);
 		}

@@ -10,7 +10,7 @@ MouseEvent:{
 	},
 	inputplay : function(){
 		if(this.mousestart || this.mousemove){
-			if(!kc.isZ){
+			if(!this.owner.key.isZ){
 				if     (this.btn.Left) { this.inputborderans();}
 				else if(this.btn.Right){ this.inputQsubLine();}
 			}
@@ -48,7 +48,7 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,{2:(bd.qcols-(tc.pos.bx>>1)-1), 4:(bd.qrows-(tc.pos.by>>1)-1)});
+		this.inputnumber51(ca,{2:(bd.qcols-(this.cursor.pos.bx>>1)-1), 4:(bd.qrows-(this.cursor.pos.by>>1)-1)});
 	},
 
 	enablemake_p : true,

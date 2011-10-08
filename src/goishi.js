@@ -21,7 +21,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==tc.getTCC()){
+		if(cell!==this.cursor.getTCC()){
 			this.setcursor(cell);
 		}
 		cell.setStone();
@@ -81,7 +81,7 @@ KeyEvent:{
 	},
 	key_inputstone : function(ca){
 		if(ca=='q'){
-			var cell = tc.getTCC();
+			var cell = this.cursor.getTCC();
 			cell.setStone();
 			cell.draw();
 		}

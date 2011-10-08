@@ -16,7 +16,7 @@ MouseEvent:{
 		var excell = this.getcell_excell();
 		if(excell.isnull || !excell.isexcellobj){ return;}
 
-		if(excell!==tc.getTEC()){
+		if(excell!==this.cursor.getTEC()){
 			this.setcursor(excell);
 		}
 		else{
@@ -37,6 +37,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
+		var tc = this.cursor;
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = bd.NDIR;
 		switch(ca){
 			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=bd.UP;} break;
@@ -61,7 +62,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = tc.getTEC(), qn = excell.getQnum();
+		var excell = this.cursor.getTEC(), qn = excell.getQnum();
 		var max = excell.nummaxfunc();
 
 		if('0'<=ca && ca<='9'){
@@ -79,7 +80,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		tc.getTCP().draw();
+		this.cursor.getTCP().draw();
 	}
 },
 

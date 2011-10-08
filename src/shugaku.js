@@ -195,7 +195,7 @@ Graphic:{
 	},
 
 	drawFutons : function(){
-		var g = this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges'), mv = this.owner.mouse;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid()), tc=null, adj=null;
 		if(inputting){ // ふとん入力中
@@ -222,7 +222,7 @@ Graphic:{
 		}
 	},
 	drawPillows : function(){
-		var g = this.vinc('cell_pillow', 'crispEdges');
+		var g = this.vinc('cell_pillow', 'crispEdges'), mv = this.owner.mouse;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid()), tc=null, adj=null;
 		if(inputting){ // ふとん入力中
@@ -256,7 +256,7 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		var isdraw = border.isBorder();
+		var isdraw = border.isBorder(), mv = this.owner.mouse;
 
 		if(!mv.mouseCell.isnull && mv.firstPoint.valid()){ // ふとん入力中
 			var cc1 = border.sidecell[0], cc2 = border.sidecell[1];

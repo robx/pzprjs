@@ -8,6 +8,8 @@
 pzprv3.createCommonClass('MouseEvent',
 {
 	initialize : function(){
+		this.cursor = this.owner.cursor;
+
 		this.enableMouse = true;	// マウス入力は有効か
 
 		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
@@ -142,7 +144,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
 
-		if(this.mousestart && !!pp.flags.dispred && (kc.isZ ^ pp.getVal('dispred'))){
+		if(this.mousestart && !!pp.flags.dispred && (this.owner.key.isZ ^ pp.getVal('dispred'))){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}
@@ -183,8 +185,8 @@ pzprv3.createCommonClass('MouseEvent',
 		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
-		kc.checkmodifiers(e);
-		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
+		this.owner.key.checkmodifiers(e);
+		if(((this.owner.key.isSHIFT || this.owner.key.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
 			{ left=!left; right=!right;}
 
 		return {Left:left, Middle:mid, Right:right};
@@ -269,14 +271,14 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.setcursorpos() TargetCursorの場所を移動する
 	//---------------------------------------------------------------------------
 	setcursor : function(obj){
-		var obj0 = tc.getOBJ();
-		tc.setOBJ(obj);
+		var obj0 = this.cursor.getOBJ();
+		this.cursor.setOBJ(obj);
 		obj0.draw();
 		obj.draw();
 	},
 	setcursorpos : function(pos){
-		var pos0 = tc.getTCP();
-		tc.setTCP(pos);
+		var pos0 = this.cursor.getTCP();
+		this.cursor.setTCP(pos);
 		pos0.draw();
 		pos.draw();
 	},
@@ -333,7 +335,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==tc.getTCC()){
+		if(cell!==this.cursor.getTCC()){
 			this.setcursor(cell);
 		}
 		else{
@@ -391,7 +393,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==tc.getTCC()){
+		if(cell!==this.cursor.getTCC()){
 			this.setcursor(cell);
 		}
 		else{
@@ -506,7 +508,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(obj.isexcellobj || (obj.iscellobj && cell!==tc.getTCC())){
+		if(obj.isexcellobj || (obj.iscellobj && cell!==this.cursor.getTCC())){
 			this.setcursor(obj);
 		}
 		else if(obj.iscellobj){
@@ -517,7 +519,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = obj;
 		if(this.btn.Left){
 			if(!cell.is51cell()){ cell.set51cell();}
-			else{ tc.chtarget('shift');}
+			else{ this.cursor.chtarget('shift');}
 		}
 		else if(this.btn.Right){ cell.remove51cell();}
 
@@ -532,7 +534,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross!==tc.getTXC()){
+		if(cross!==this.cursor.getTXC()){
 			this.setcursor(cross);
 		}
 		else{

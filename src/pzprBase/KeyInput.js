@@ -8,6 +8,8 @@
 pzprv3.createCommonClass('KeyEvent',
 {
 	initialize : function(){
+		this.cursor = this.owner.cursor;
+
 		this.enableKey = true;	// キー入力は有効か
 		this.keyreset();
 
@@ -204,19 +206,19 @@ pzprv3.createCommonClass('KeyEvent',
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcp = tc.getTCP(), dir = bd.BDIR;
+		var tcp = this.cursor.getTCP(), dir = bd.BDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.by-mv>=tc.miny){ dir = bd.UP;} break;
-			case this.KEYDN: if(tcp.by+mv<=tc.maxy){ dir = bd.DN;} break;
-			case this.KEYLT: if(tcp.bx-mv>=tc.minx){ dir = bd.LT;} break;
-			case this.KEYRT: if(tcp.bx+mv<=tc.maxx){ dir = bd.RT;} break;
+			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = bd.UP;} break;
+			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = bd.DN;} break;
+			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = bd.LT;} break;
+			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = bd.RT;} break;
 			default: return false;
 		}
 
-		tc.movedir_cursor(dir,mv);
+		this.cursor.movedir_cursor(dir,mv);
 
 		tcp.draw();
-		tc.getTCP().draw();
+		this.cursor.getTCP().draw();
 		this.tcMoved = true;
 
 		return true;
@@ -226,7 +228,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
-		var cross = tc.getTXC();
+		var cross = this.cursor.getTXC();
 		var max = cross.nummaxfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
@@ -246,7 +248,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 		if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
 
 		if(this.key_inputqnum_main(cell,ca)){
@@ -279,7 +281,7 @@ pzprv3.createCommonClass('KeyEvent',
 	key_inputdirec : function(ca){
 		if(!this.isSHIFT){ return false;}
 
-		var cell = tc.getTCC(), pid = this.owner.pid;
+		var cell = this.cursor.getTCC(), pid = this.owner.pid;
 		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
 			if(cell.getQnum()===-1){ return false;}
 		}
@@ -294,7 +296,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 
 		if(flag){
-			tc.getTCP().draw();
+			this.cursor.getTCP().draw();
 			this.tcMoved = true;
 		}
 		return flag;
@@ -306,6 +308,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.getnum51()      モード別に数字を取得する
 	//---------------------------------------------------------------------------
 	inputnumber51 : function(ca,max_obj){
+		var tc = this.cursor;
 		if(tc.chtarget(ca)){ return;}
 
 		var obj = tc.getOBJ();

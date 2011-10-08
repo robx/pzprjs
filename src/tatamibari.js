@@ -25,7 +25,7 @@ KeyEvent:{
 		this.key_inputMarks(ca);
 	},
 	key_inputMarks : function(ca){
-		var cell = tc.getTCC();
+		var cell = this.cursor.getTCC();
 
 		if     (ca=='q'||ca=='1'){ cell.setQnum(1); }
 		else if(ca=='w'||ca=='2'){ cell.setQnum(2); }

@@ -57,9 +57,9 @@ pzprv3.createCoreClass('Owner',
 		ans = this.newInstance('AnsCheck');		// 正解判定オブジェクト
 		pc  = this.newInstance('Graphic');		// 描画系オブジェクト
 
-		mv  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
-		kc  = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
-		tc  = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
+		this.cursor = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
+		this.mouse  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
+		this.key    = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
 
 		this.undo  = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
 		this.ut    = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
@@ -75,8 +75,8 @@ pzprv3.createCoreClass('Owner',
 		menu.menuinit();
 
 		// イベントをくっつける
-		mv.setEvents();
-		kc.setEvents();
+		this.mouse.setEvents();
+		this.key.setEvents();
 		this.setEvents();
 
 		// URL・ファイルデータの読み込み
@@ -178,8 +178,8 @@ pzprv3.createCoreClass('Owner',
 		this.resizetimer = setTimeout(ee.binder(pc, pc.resize_canvas),250);
 	},
 	onblur_func : function(){
-		kc.keyreset();
-		mv.mousereset();
+		this.key.keyreset();
+		this.mouse.mousereset();
 	}
 });
 
