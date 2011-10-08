@@ -617,16 +617,18 @@ pzprv3.createCommonClass('AreaData',
 		if(val!==old){
 			this.cellinfo[cell.id] = val;
 
-			var isset = ((val&16) && !(old&16)), cid = this.getcid(cell, (val|old));
-			// 新たに黒マス(白マス)になった時
-			if(isset){
-				if(cid.length<=1){ this.assignCell(cell, (cid.length===1?cid[0]:null));}
-				else             { this.combineInfo(cell, cid);}
+			var cid = this.getcid(cell, (val|old));
+			var isadd = !!((val&16)&&!(old&16)), isremove = !!(!(val&16)&&(old&16));
+			// 新たに黒マス(白マス)くっつける場合 => 自分に領域IDを設定するだけ
+			if(isadd && (cid.length<=1)){
+				this.assignCell(cell, (cid.length===1?cid[0]:null));
 			}
-			// 黒マス(白マス)ではなくなった時
+			// 端の黒マス(白マス)ではなくなった時 => まわりの数が0か1なら情報or自分を消去するだけ
+			else if(isremove && (cid.length<=1)){
+				this.removeCell(cell);
+			}
 			else{
-				if(cid.length<=1){ this.removeCell(cell);}	// まわりが0か1なら情報or自分を消去するだけ
-				else             { this.remakeInfo(cell, cid);}
+				this.remakeInfo(cell, cid);
 			}
 		}
 	},
@@ -732,22 +734,14 @@ pzprv3.createCommonClass('AreaData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.combineInfo() 周りの線がくっついて1つの線ができる場合のidの再設定を行う
 	// info.remakeInfo()  線が引かれたり消された時、線が分かれるときのidの再設定を行う
 	//--------------------------------------------------------------------------------
-	combineInfo : function(cell, cid){
-		var longColor = (!!this.owner.painter.irowake ? this.getLongColor(cid) : "");
-
-		var idlist = this.popRoom(cid);
-		idlist.push(cell.id);
-		var assign = this.searchIdlist(idlist);
-
-		if(!!this.owner.painter.irowake){ this.setLongColor(assign, longColor);}
-	},
 	remakeInfo : function(cell, cid){
 		var longColor = (!!this.owner.painter.irowake ? this.getLongColor(cid) : "");
 
+		if(this.id[cell.id]!==null){ cid.push([cell.id]);}
 		var idlist = this.popRoom(cid);
+		if(this.id[cell.id]===null){ idlist.push(cell.id);}
 		var assign = this.searchIdlist(idlist);
 
 		if(!!this.owner.painter.irowake){ this.setLongColor(assign, longColor);}

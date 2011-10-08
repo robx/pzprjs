@@ -574,7 +574,10 @@ AnsCheck:{
 "AreaBarData:AreaData":{
 
 	isvalid : function(cell){ return (cell.getQans()>0);},
-	getlink : function(cell){ return (16 + [0,3,12,15][cell.getQans()]);},
+	getlink : function(cell){
+		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
+		return (qa>0?16:0) + link;
+	},
 
 	reset : function(){
 		pzprv3.core.AreaData.prototype.reset.call(this);
