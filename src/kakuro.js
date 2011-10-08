@@ -147,12 +147,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellQnum51_kanpen();
+		this.owner.fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
 		this.outsize = [bd.qrows+1, bd.qcols+1].join("/");
 
-		fio.encodeCellQnum51_kanpen();
+		this.owner.fio.encodeCellQnum51_kanpen();
 	},
 
 	decodeKakuro : function(){

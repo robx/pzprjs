@@ -356,10 +356,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeStarFile();
+		this.owner.fio.decodeStarFile();
 	},
 	encodeKanpen : function(){
-		fio.encodeStarFile();
+		this.owner.fio.encodeStarFile();
 	},
 
 	decodeStar : function(bstr){

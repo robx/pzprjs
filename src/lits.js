@@ -134,10 +134,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeAreaRoom();
+		this.owner.fio.decodeAreaRoom();
 	},
 	encodeKanpen : function(){
-		fio.encodeAreaRoom();
+		this.owner.fio.encodeAreaRoom();
 	},
 
 	decodeLITS_old : function(){

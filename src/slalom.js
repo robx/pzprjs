@@ -484,11 +484,11 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeBoard_kanpen();
+		this.owner.fio.decodeBoard_kanpen();
 		bd.hinfo.generateGates();
 	},
 	encodeKanpen : function(){
-		fio.encodeBoard_kanpen();
+		this.owner.fio.encodeBoard_kanpen();
 	},
 
 	decodeSlalom : function(ver){
@@ -614,12 +614,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(fio.filever==1){
+		if(this.filever==1){
 			this.decodeBoard_pzpr();
 			this.decodeBorderLine();
 			bd.hinfo.generateGates();
 		}
-		else if(fio.filever==0){
+		else if(this.filever==0){
 			this.decodeBoard_old();
 			this.decodeBorderLine();
 		}

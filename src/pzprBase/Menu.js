@@ -969,9 +969,9 @@ pzprv3.createCommonClass('Menu',
 		urlinput  : function(){ this.pop = ee("pop1_2");},
 		urloutput : function(){ this.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ this.pop = ee("pop1_4");},
-		filesave  : function(){ this.filesave(fio.PZPR);},
-//		filesave3 : function(){ this.filesave(fio.PZPH);},
-		filesave2 : function(){ if(!!fio.kanpenSave){ this.filesave(fio.PBOX);}},
+		filesave  : function(){ this.filesave(this.owner.fio.PZPR);},
+//		filesave3 : function(){ this.filesave(this.owner.fio.PZPH);},
+		filesave2 : function(){ if(!!this.owner.fio.kanpenSave){ this.filesave(this.owner.fio.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
 		database  : function(){ this.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
@@ -1078,11 +1078,11 @@ pzprv3.createCommonClass('Menu',
 		if(this.pop){
 			var _doc = document;
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRAPP); break;
-				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(pzprv3.KANPEN);  break;
-				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(pzprv3.PZPRV3E); break;
-				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(pzprv3.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.HEYAAPP); break;
 			}
 		}
 	},
@@ -1145,8 +1145,8 @@ pzprv3.createCommonClass('Menu',
 		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
 		else                                           { _doc.fileform2.platform.value = "Others";}
 
-		_doc.fileform2.ques.value   = fio.fileencode(ftype);
-		_doc.fileform2.urlstr.value = fio.history;
+		_doc.fileform2.ques.value   = this.owner.fio.fileencode(ftype);
+		_doc.fileform2.urlstr.value = this.owner.fio.history;
 		_doc.fileform2.operation.value = 'save';
 
 		_doc.fileform2.action = this.fileio
@@ -1157,17 +1157,17 @@ pzprv3.createCommonClass('Menu',
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var str = fio.fileencode(fio.PZPH);
+		var str = this.owner.fio.fileencode(this.owner.fio.PZPH);
 		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
 		if(!ee.br.Opera){
 			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = (str+fio.history);
+			sessionStorage['filedata'] = (str+this.owner.fio.history);
 			window.open(url,'');
 			if(!!old){ sessionStorage['filedata'] = old;}
 			else     { delete sessionStorage['filedata'];}
 		}
 		else{
-			localStorage['pzprv3_filedata'] = (str+fio.history);
+			localStorage['pzprv3_filedata'] = (str+this.owner.fio.history);
 			window.open(url,'');
 		}
 	},
@@ -1374,11 +1374,11 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	filesave : function(){
-		this.setTA(fio.fileencode(fio.PZPH).replace(/\//g,"\n"));
-		this.addTA(fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
+		this.setTA(this.owner.fio.fileencode(this.owner.fio.PZPH).replace(/\//g,"\n"));
+		this.addTA(this.owner.fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){
-		this.setTA(fio.fileencode(fio.PBOX).replace(/\//g,"\n"));
+		this.setTA(this.owner.fio.fileencode(this.owner.fio.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){

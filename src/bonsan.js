@@ -145,7 +145,7 @@ FileIO:{
 		this.decodeBorderQues();
 		this.decodeBorderLine();
 
-		enc.checkPuzzleid();
+		this.owner.enc.checkPuzzleid();
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

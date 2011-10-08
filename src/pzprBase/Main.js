@@ -65,8 +65,8 @@ pzprv3.createCoreClass('Owner',
 		this.ut    = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
 		this.timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
 
-		enc = this.newInstance('Encode');		// URL入出力用オブジェクト
-		fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
+		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
+		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
 
 		menu = this.newInstance('Menu');		// メニューを扱うオブジェクト
 		pp = this.newInstance('Properties');	// メニュー関係の設定値を保持するオブジェクト
@@ -129,11 +129,11 @@ pzprv3.createCoreClass('Owner',
 		pc.suspendAll();
 		// ファイルを開く・複製されたデータを開く
 		if(!!pzl.fstr){
-			fio.filedecode(pzl.fstr);
+			this.fio.filedecode(pzl.fstr);
 		}
 		// URLからパズルのデータを読み出す
 		else if(!!pzl.qdata){
-			enc.pzlinput(pzl);
+			this.enc.pzlinput(pzl);
 		}
 		// 何もないとき
 		else{

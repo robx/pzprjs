@@ -30,7 +30,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	accheck1 : function(){
-		var outputstr = fio.fileencode(fio.PZPH);
+		var outputstr = this.owner.fio.fileencode(this.owner.fio.PZPH);
 
 		bd.disableSetError();
 		ans.inCheck = true;
@@ -87,7 +87,7 @@ pzprv3.extendCoreClass('Debug',
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
 		var inp = pzprv3.getURLBase(pzprv3.PZPRV3, self.pid)+self.urls[self.pid];
-		var ta  = enc.pzloutput(pzprv3.PZPRV3);
+		var ta  = this.owner.enc.pzloutput(pzprv3.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -98,7 +98,7 @@ pzprv3.extendCoreClass('Debug',
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
-			document.urlinput.ta.value = enc.pzloutput(pzprv3.KANPEN);
+			document.urlinput.ta.value = this.owner.enc.pzloutput(pzprv3.KANPEN);
 			menu.pop = ee("pop1_5");
 			menu.urlinput({});
 
@@ -112,7 +112,7 @@ pzprv3.extendCoreClass('Debug',
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
 			pc.suspendAll();
-			fio.filedecode(acsstr[n][1]);
+			this.owner.fio.filedecode(acsstr[n][1]);
 			pc.unsuspend();
 
 			ans.inCheck = true;
@@ -133,7 +133,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var outputstr = fio.fileencode(fio.PZPR);
+		var outputstr = this.owner.fio.fileencode(this.owner.fio.PZPR);
 
 		var bd2 = self.bd_freezecopy();
 
@@ -141,7 +141,7 @@ pzprv3.extendCoreClass('Debug',
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		fio.filedecode(outputstr);
+		this.owner.fio.filedecode(outputstr);
 		pc.unsuspend();
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
@@ -151,7 +151,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_file_pbox : function(self){
 		if(menu.ispencilbox){
-			var outputstr = fio.fileencode(fio.PBOX);
+			var outputstr = this.owner.fio.fileencode(this.owner.fio.PBOX);
 
 			var bd2 = self.bd_freezecopy();
 
@@ -159,7 +159,7 @@ pzprv3.extendCoreClass('Debug',
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
-			fio.filedecode(outputstr);
+			this.owner.fio.filedecode(outputstr);
 			pc.unsuspend();
 
 			self.qsubf = !(self.pid=='fillomino'||self.pid=='hashikake'||self.pid=='kurodoko'||self.pid=='shikaku'||self.pid=='tentaisho');

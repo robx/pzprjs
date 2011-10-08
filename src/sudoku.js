@@ -134,12 +134,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellQnum_kanpen();
+		this.owner.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
 		this.outsize = [bd.qcols].join('/');
 
-		fio.encodeCellQnum_kanpen();
+		this.owner.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

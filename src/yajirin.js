@@ -104,10 +104,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellDirecQnum_kanpen(true);
+		this.owner.fio.decodeCellDirecQnum_kanpen(true);
 	},
 	encodeKanpen : function(){
-		fio.encodeCellDirecQnum_kanpen(true);
+		this.owner.fio.encodeCellDirecQnum_kanpen(true);
 	}
 },
 //---------------------------------------------------------

@@ -107,10 +107,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeSquareRoom();
+		this.owner.fio.decodeSquareRoom();
 	},
 	encodeKanpen : function(){
-		fio.encodeSquareRoom();
+		this.owner.fio.encodeSquareRoom();
 	},
 
 	decodeHeyaApp : function(){
@@ -125,11 +125,11 @@ Encode:{
 				if(RegExp.$1.length>0){ bd.cell[c].qnum = parseInt(RegExp.$1);}
 				var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
 				var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
-				fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
+				this.owner.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;
 		}
-		fio.rdata2Border(true, rdata);
+		this.owner.fio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
 		var barray=[], rinfo=bd.areas.getRoomInfo();

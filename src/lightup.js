@@ -188,10 +188,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellQnumb();
+		this.owner.fio.decodeCellQnumb();
 	},
 	encodeKanpen : function(){
-		fio.encodeCellQnumb();
+		this.owner.fio.encodeCellQnumb();
 	}
 },
 //---------------------------------------------------------

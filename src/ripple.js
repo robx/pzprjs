@@ -81,12 +81,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeAreaRoom();
-		fio.decodeCellQnum_kanpen();
+		this.owner.fio.decodeAreaRoom();
+		this.owner.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		fio.encodeAreaRoom();
-		fio.encodeCellQnum_kanpen();
+		this.owner.fio.encodeAreaRoom();
+		this.owner.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

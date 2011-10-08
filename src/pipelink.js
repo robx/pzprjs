@@ -296,7 +296,7 @@ FileIO:{
 		});
 		this.decodeBorderLine();
 
-		enc.checkPuzzleid();
+		this.owner.enc.checkPuzzleid();
 		if(this.owner.pid==='pipelinkr'){ pp.setValOnly('disptype', (disptype=="circle"?1:2));}
 	},
 	encodeData : function(){

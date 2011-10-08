@@ -344,10 +344,10 @@ pzprv3.createCommonClass('OperationManager',
 	//---------------------------------------------------------------------------
 	decodeLines : function(){
 		this.allerase();
-		var linepos = fio.lineseek, datas = [], inhistory = false;
+		var linepos = this.owner.fio.lineseek, datas = [], inhistory = false;
 		while(1){
-			var line = fio.readLine();
-			if(line===(void 0)){ fio.lineseek=linepos; break;}
+			var line = this.owner.fio.readLine();
+			if(line===(void 0)){ this.owner.fio.lineseek=linepos; break;}
 			else if(!inhistory){
 				if(line==='history:{'){ inhistory=true; datas=['{'];}
 			}

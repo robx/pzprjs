@@ -114,12 +114,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellQnum_kanpen();
+		this.owner.fio.decodeCellQnum_kanpen();
 		bd.revCircle();
 	},
 	encodeKanpen : function(){
 		bd.revCircle();
-		fio.encodeCellQnum_kanpen();
+		this.owner.fio.encodeCellQnum_kanpen();
 		bd.revCircle();
 	}
 },

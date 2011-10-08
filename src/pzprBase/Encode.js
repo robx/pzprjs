@@ -40,8 +40,8 @@ pzprv3.createCommonClass('Encode',
 				this.pzlimport(pzl.type);
 				break;
 			case pzprv3.KANPEN:
-				fio.lineseek = 0;
-				fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
+				this.owner.fio.lineseek = 0;
+				this.owner.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
 			case pzprv3.HEYAAPP:
@@ -76,9 +76,9 @@ pzprv3.createCommonClass('Encode',
 			break;
 
 		case pzprv3.KANPEN:
-			fio.datastr = "";
+			this.owner.fio.datastr = "";
 			this.encodeKanpen()
-			this.outbstr = fio.datastr.replace(/ /g, "_");
+			this.outbstr = this.owner.fio.datastr.replace(/ /g, "_");
 			size = (!this.outsize ? [bd.qrows,bd.qcols].join('/') : this.outsize);
 			break;
 

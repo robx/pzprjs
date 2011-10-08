@@ -191,7 +191,7 @@ FileIO:{
 		this.decodeCrossNum();
 		this.decodeBorderAns();
 
-		enc.checkPuzzleid();
+		this.owner.enc.checkPuzzleid();
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

@@ -226,10 +226,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeGoishi_kanpen();
+		this.owner.fio.decodeGoishi_kanpen();
 	},
 	encodeKanpen : function(){
-		fio.encodeGoishi_kanpen();
+		this.owner.fio.encodeGoishi_kanpen();
 	},
 
 	decodeGoishi : function(){

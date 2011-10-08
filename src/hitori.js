@@ -133,10 +133,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		fio.decodeCellQnum_kanpen_hitori();
+		this.owner.fio.decodeCellQnum_kanpen_hitori();
 	},
 	encodeKanpen : function(){
-		fio.encodeCellQnum_kanpen_hitori();
+		this.owner.fio.encodeCellQnum_kanpen_hitori();
 	}
 },
 //---------------------------------------------------------
