@@ -35,20 +35,10 @@ MouseEvent:{
 		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
 
 		var pos = this.getpos(0.34);
-		var id = bd.snum(pos.bx, pos.by);
-		if(id===null || bd.getStar(id)===0){ return;}
+		var star = pos.gets();
+		if(star===null || star.getStar()===0){ return;}
 
-		var cell=null, group=bd.star[id].group, gid=bd.star[id].obj.id;
-		if(group===bd.CELL){
-			cell = bd.star[id].obj;
-		}
-		else if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]===0){
-			cell = bd.getc(bd.star[id].bx-1, bd.star[id].by-1);
-		}
-		else if(group===bd.BORDER && bd.border[gid].getQans()===0){
-			cell = bd.border[gid].sidecell[0];
-		}
-
+		var cell = star.validcell();
 		if(cell!==null){
 			var clist = bd.areas.rinfo.getClistByCell(cell);
 			if(bd.encolor(clist)){
@@ -73,13 +63,13 @@ MouseEvent:{
 		var pos = this.getpos(0.25);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var id = bd.snum(pos.bx, pos.by);
-		if(id!==null){
-			if     (this.btn.Left) { bd.setStar(id, {0:1,1:2,2:0}[bd.getStar(id)]);}
-			else if(this.btn.Right){ bd.setStar(id, {0:2,1:0,2:1}[bd.getStar(id)]);}
+		var star = pos.gets();
+		if(star!==null){
+			if     (this.btn.Left) { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
+			else if(this.btn.Right){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
+			star.draw();
 		}
 		this.prevPos = pos;
-		pos.draw();
 	}
 },
 
@@ -93,12 +83,12 @@ KeyEvent:{
 		this.key_inputstar(ca);
 	},
 	key_inputstar : function(ca){
-		var pos = tc.getTCP(), id = bd.snum(pos.bx, pos.by);
-		if(id!==null){
-			if     (ca=='1'){ bd.setStar(id,1);}
-			else if(ca=='2'){ bd.setStar(id,2);}
-			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ bd.setStar(id,0);}
-			pos.draw();
+		var pos = tc.getTCP(), star = pos.gets();
+		if(star!==null){
+			if     (ca=='1'){ star.setStar(1);}
+			else if(ca=='2'){ star.setStar(2);}
+			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ star.setStar(0);}
+			star.draw();
 		}
 	}
 },
@@ -129,6 +119,51 @@ Border:{
 	minnum : 0
 },
 
+Star:{
+	bx : null,
+	by : null,
+
+	isnull : true,
+	id : null,
+
+	obj : null,
+
+	getStar : function(){
+		return this.obj.getQnum();
+	},
+	setStar : function(val){
+		um.disCombine = true;
+		return this.obj.setQnum(val);
+		um.disCombine = false;
+	},
+	iserror : function(){
+		return (this.obj.error>0);
+	},
+
+	// 星に線が通っていないなら、近くのセルを返す
+	validcell : function(){
+		var obj = this.obj, cell = null;
+		if(obj.iscellobj)
+			{ cell = obj;}
+		else if(obj.iscrossobj && bd.areas.rinfo.bdcnt[obj.id]===0)
+			{ cell = obj.relcell(-1,-1);}
+		else if(obj.isborderobj && obj.getQans()===0)
+			{ cell = obj.sidecell[0];}
+		return cell;
+	},
+
+	draw : function(){
+		pc.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+	},
+	getaddr : function(){
+		return this.owner.newInstance('Address',[this.bx, this.by]);
+	}
+},
+Address:{
+	gets : function(){ return bd.gets(this.bx, this.by);},
+	getobj : function(){ return bd.getobj(this.bx, this.by);}
+},
+
 Board:{
 	iscross  : 1,
 	isborder : 1,
@@ -153,48 +188,31 @@ Board:{
 		this.star = [];
 		var pos = this.owner.newInstance('Address',[0,0]);
 		for(var id=0;id<this.starmax;id++){
-			this.star[id] = {};
-			var obj = this.star[id];
-			obj.bx = id%(2*col-1)+1;
-			obj.by = ((id/(2*col-1))|0)+1;
-			pos.init(obj.bx, obj.by);
-			if(pos.oncell()){
-				obj.group = this.CELL;
-				obj.obj = pos.getc();
-			}
-			else if(pos.oncross()){
-				obj.group = this.CROSS;
-				obj.obj = pos.getx();
-			}
-			else{
-				obj.group = this.BORDER;
-				obj.obj = pos.getb();
-			}
+			this.star[id] = this.owner.newInstance('Star');
+			var star = this.star[id];
+			star.id = id;
+			star.isnull = false;
+
+			star.bx = id%(2*col-1)+1;
+			star.by = ((id/(2*col-1))|0)+1;
+			star.obj = star.getaddr().getobj();
 		}
 	},
-	snum : function(sx,sy){
-		if(sx<=this.minbx || this.maxbx<=sx || sy<=this.minby || this.maxby<=sy){ return null;}
-		return ((sx-1)+(sy-1)*(2*this.qcols-1));
+	gets : function(bx,by,qc,qr){
+		var id = null;
+		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ }
+		else{ id = (bx-1)+(by-1)*(2*qc-1);}
+
+		return (id!==null ? this.star[id] : null);
 	},
 	starinside : function(x1,y1,x2,y2){
-		var idlist = [];
+		var slist = this.owner.newInstance('PieceList');
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			var id = this.snum(bx,by);
-			if(id!==null){ idlist.push(id);}
+			var star = this.gets(bx,by);
+			if(star!==null){ slist.add(star);}
 		}}
-		return idlist;
-	},
-
-	getStar : function(id){
-		return this.star[id].obj.getQnum();
-	},
-	isStarError : function(id){
-		return (this.star[id].obj.error!==0);
-	},
-	setStar : function(id,val){
-		um.disCombine = true;
-		return this.star[id].obj.setQnum(val);
-		um.disCombine = false;
+		return slist;
 	},
 
 	// 色をつける系関数
@@ -204,8 +222,8 @@ Board:{
 		pc.paintAll();
 	},
 	encolor : function(clist){
-		var id = this.getAreaStarInfo(clist).id;
-		var flag = false, ret = (id!==null ? this.getStar(id) : 0);
+		var star = this.getAreaStarInfo(clist).star;
+		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(pzprv3.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
@@ -221,29 +239,24 @@ Board:{
 	getAreaStarInfoAll : function(){
 		var rinfo = this.areas.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var obj = this.getAreaStarInfo(rinfo.getclist(id));
-			rinfo.room[id].starid = obj.id;
-			rinfo.room[id].error  = obj.err;
+			var ret = this.getAreaStarInfo(rinfo.getclist(id));
+			rinfo.room[id].star  = ret.star;
+			rinfo.room[id].error = ret.err;
 		}
 		return rinfo;
 	},
 	getAreaStarInfo : function(clist){
-		var cnt=0, ret={id:null, err:-1};
+		var ret={star:null, err:-1};
 		for(var i=0;i<clist.length;i++){
-			var cell=clist[i], bx=cell.bx, by=cell.by;
-			var idlist = this.starinside(bx,by,bx+1,by+1);
-			for(var n=0;n<idlist.length;n++){
-				var id=idlist[n], group=this.star[id].group, gid=this.star[id].obj.id;
-				if(this.getStar(id)>0){
-					if( group===this.CELL ||
-					   (group===this.CROSS && this.areas.rinfo.bdcnt[gid]===0) ||
-					   (group===this.BORDER && this.border[gid].getQans()===0)
-					)
-					{ cnt++; ret={id:id, err:0};}
+			var cell=clist[i];
+			var slist = this.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
+			for(var n=0;n<slist.length;n++){
+				var star=slist[n];
+				if(star.getStar()>0 && star.validcell()!==null){
+					if(ret.err===0){ return {star:null, err:-2};}
+					ret = {star:star, err:0};
 				}
 			}
-
-			if(cnt>1){ return {id:null, err:-2};}
 		}
 		return ret;
 	},
@@ -302,12 +315,12 @@ Graphic:{
 		var headers = ["s_star1_", "s_star2_"];
 
 		var d = this.range;
-		var idlist = bd.starinside(d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<idlist.length;i++){
-			var id = idlist[i], bx=bd.star[id].bx, by=bd.star[id].by;
+		var slist = bd.starinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<slist.length;i++){
+			var star = slist[i], id=star.id, bx=star.bx, by=star.by;
 
-			if(bd.getStar(id)===1){
-				g.strokeStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
+			if(star.getStar()===1){
+				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.cellcolor);
 				g.fillStyle   = "white";
 				if(this.vnop(headers[0]+id,this.STROKE)){
 					g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
@@ -315,8 +328,8 @@ Graphic:{
 			}
 			else{ this.vhide(headers[0]+id);}
 
-			if(bd.getStar(id)===2){
-				g.fillStyle = (bd.isStarError(id) ? this.errcolor1 : this.cellcolor);
+			if(star.getStar()===2){
+				g.fillStyle = (star.iserror() ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[1]+id,this.FILL)){
 					g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 				}
@@ -351,10 +364,10 @@ Encode:{
 		bd.disableInfo();
 		var s=0, bstr = this.outbstr;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var star = bd.star[s], ca = bstr.charAt(i);
 			if(this.include(ca,"0","f")){
 				var val = parseInt(ca,16);
-				bd.setStar(s,val%2+1);
+				star.setStar(val%2+1);
 				s+=((val>>1)+1);
 			}
 			else if(this.include(ca,"g","z")){ s+=(parseInt(ca,36)-15);}
@@ -369,15 +382,16 @@ Encode:{
 		var cm = "";
 
 		for(var s=0;s<bd.starmax;s++){
-			var pstr = "";
-			if(bd.getStar(s)>0){
+			var pstr = "", star = bd.star[s];
+			if(star.getStar()>0){
 				for(var i=1;i<=7;i++){
-					if(!!bd.star[s+i] && bd.getStar(s+i)>0){
-						pstr=""+(2*(i-1)+(bd.getStar(s)-1)).toString(16);
+					var star2 = bd.star[s+i];
+					if(!!star2 && star2.getStar()>0){
+						pstr=""+(2*(i-1)+(star.getStar()-1)).toString(16);
 						s+=(i-1); break;
 					}
 				}
-				if(pstr===""){ pstr=(13+bd.getStar(s)).toString(16); s+=7;}
+				if(pstr===""){ pstr=(13+star.getStar()).toString(16); s+=7;}
 			}
 			else{ count++;}
 
@@ -416,8 +430,9 @@ FileIO:{
 		bd.disableInfo();
 		for(var i=0;i<array.length;i++){
 			for(var c=0;c<array[i].length;c++){
-				if     (array[i].charAt(c)==="1"){ bd.setStar(s, 1);}
-				else if(array[i].charAt(c)==="2"){ bd.setStar(s, 2);}
+				var star = bd.star[s];
+				if     (array[i].charAt(c)==="1"){ star.setStar(1);}
+				else if(array[i].charAt(c)==="2"){ star.setStar(2);}
 				s++;
 			}
 		}
@@ -427,9 +442,10 @@ FileIO:{
 		var s=0;
 		for(var by=1;by<=2*bd.qrows-1;by++){
 			for(var bx=1;bx<=2*bd.qcols-1;bx++){
-				if     (bd.getStar(s)===1){ this.datastr += "1";}
-				else if(bd.getStar(s)===2){ this.datastr += "2";}
-				else                      { this.datastr += ".";}
+				var star = bd.star[s];
+				if     (star.getStar()===1){ this.datastr += "1";}
+				else if(star.getStar()===2){ this.datastr += "2";}
+				else                       { this.datastr += ".";}
 				s++;
 			}
 			this.datastr += "/";
@@ -465,17 +481,15 @@ AnsCheck:{
 	checkStarOnLine : function(){
 		var result = true;
 		for(var s=0;s<bd.starmax;s++){
-			if(bd.getStar(s)<=0){ continue;}
+			var star = bd.star[s];
+			if(star.getStar()<=0){ continue;}
 
-			var group=bd.star[s].group, gid=bd.star[s].obj.id;
-			if(group===bd.CROSS && bd.areas.rinfo.bdcnt[gid]!==0){
+			if(star.validcell()===null){
 				if(this.inAutoCheck){ return false;}
-				bd.setCrossBorderError(bd.star[s].bx, bd.star[s].by);
-				result = false;
-			}
-			else if(group===bd.BORDER && bd.border[gid].getQans()!==0){
-				if(this.inAutoCheck){ return false;}
-				bd.border[gid].seterr(1);
+				if(star.obj.iscrossobj)
+					{ bd.setCrossBorderError(star.bx, star.by);}
+				else if(star.obj.isborderobj)
+					{ star.obj.seterr(1);}
 				result = false;
 			}
 		}
@@ -486,15 +500,15 @@ AnsCheck:{
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.getclist(r);
-			var id = rinfo.room[r].starid;
-			if(id===null){ continue;}
-			var sx=bd.star[id].bx, sy=bd.star[id].by;
+			var star = rinfo.room[r].star;
+			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				var ccopy = bd.getc(sx*2-cell.bx, sy*2-cell.by);
-				if(ccopy.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(ccopy)){
+				var cell2 = bd.getc(star.bx*2-cell.bx, star.by*2-cell.by);
+				if(cell2.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(cell2)){
 					if(this.inAutoCheck){ return false;}
-					clist.seterr(1); result = false;
+					clist.seterr(1);
+					result = false;
 				}
 			}
 		}
