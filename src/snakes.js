@@ -135,7 +135,7 @@ Board:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		this.addUseToFlags();
 
 		pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
@@ -172,7 +172,7 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		if(!pp.getVal('snakebd')){ return false;}
+		if(!this.owner.getConfig('snakebd')){ return false;}
 
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 		if(!cell1.isnull && !cell2.isnull &&

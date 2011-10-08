@@ -44,7 +44,7 @@ pzprv3.createCommonClass('Timer',
 		this.current = pzprv3.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
-		if(pp.getVal('autocheck')){ this.ACcheck();}
+		if(this.owner.getConfig('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ pzprv3.createCommonClass('Timer',
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return menu.selectStr("経過時間：","Time: ");
+		return this.owner.menu.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------

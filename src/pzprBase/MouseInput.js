@@ -121,7 +121,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	e_mousemove : function(e){
 		// ポップアップメニュー移動中は当該処理が最優先
-		if(!!menu.movingpop){ return true;}
+		if(!!this.owner.menu.movingpop){ return true;}
 
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			this.owner.undo.newOperation(false);
@@ -144,7 +144,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
 
-		if(this.mousestart && !!pp.flags.dispred && (this.owner.key.isZ ^ pp.getVal('dispred'))){
+		if(this.mousestart && !!pp.flags.dispred && (this.owner.key.isZ ^ this.owner.getConfig('dispred'))){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}
@@ -186,7 +186,7 @@ pzprv3.createCommonClass('MouseEvent',
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		this.owner.key.checkmodifiers(e);
-		if(((this.owner.key.isSHIFT || this.owner.key.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
+		if(((this.owner.key.isSHIFT || this.owner.key.isMETA)^this.owner.getConfig('lrcheck'))&&(left!==right))
 			{ left=!left; right=!right;}
 
 		return {Left:left, Middle:mid, Right:right};
@@ -203,7 +203,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	notInputted : function(){ return !this.owner.undo.changeflag;},
-	modeflip    : function(){ if(pzprv3.EDITOR){ pp.setVal('mode', (this.owner.playmode?1:3));} },
+	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -307,11 +307,11 @@ pzprv3.createCommonClass('MouseEvent',
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(pp.getVal('use')==1){
+		if(this.owner.getConfig('use')==1){
 			if     (this.btn.Left) { this.inputData=(cell.isWhite()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
-		else if(pp.getVal('use')==2){
+		else if(this.owner.getConfig('use')==2){
 			if(cell.numberIsWhite && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}

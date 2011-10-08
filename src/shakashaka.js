@@ -9,7 +9,7 @@ MouseEvent:{
 		if(this.mousestart){ this.inputqnum();}
 	},
 	inputplay : function(){
-		if(pp.getVal('use')==1){
+		if(this.owner.getConfig('use')==1){
 			if(this.mousestart){
 				if(this.btn.Left) { this.inputTriangle_corner();}
 				if(this.btn.Right){ this.inputDot();}
@@ -18,7 +18,7 @@ MouseEvent:{
 				if(this.inputData!==null){ this.inputMove();}
 			}
 		}
-		else if(pp.getVal('use')==2){
+		else if(this.owner.getConfig('use')==2){
 			if(this.mousestart){
 				if(this.btn.Left) { this.inputTriangle_pull_start();}
 				if(this.btn.Right){ this.inputDot();}
@@ -31,7 +31,7 @@ MouseEvent:{
 				this.inputTriangle_pull_end();
 			}
 		}
-		else if(pp.getVal('use')==3){
+		else if(this.owner.getConfig('use')==3){
 			if(this.mousestart){ this.inputTriangle_onebtn();}
 		}
 	},
@@ -239,7 +239,7 @@ Board:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
 

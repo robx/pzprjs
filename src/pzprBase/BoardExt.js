@@ -236,7 +236,7 @@ pzprv3.createCommonClass('LineManager',
 				border.color = newColor;
 				blist.add(border);
 			}
-			if(pp.getVal('irowake')){ pc.repaintLines(blist);}
+			if(this.owner.getConfig('irowake')){ pc.repaintLines(blist);}
 		}
 		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
@@ -287,7 +287,7 @@ pzprv3.createCommonClass('LineManager',
 			var newColor = (current===newlongid ? longColor : pc.getNewLineColor());
 			var blist = this.getBlist(current);
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
-			if(pp.getVal('irowake')){ pc.repaintLines(blist);}
+			if(this.owner.getConfig('irowake')){ pc.repaintLines(blist);}
 		}
 	},
 
@@ -582,7 +582,7 @@ pzprv3.createCommonClass('AreaData',
 				cell.color = longColor;
 				clist.add(cell);
 			}
-			if(pp.getVal('irowake')){ pc.repaintBlocks(clist);}
+			if(this.owner.getConfig('irowake')){ pc.repaintBlocks(clist);}
 		}
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -604,7 +604,7 @@ pzprv3.createCommonClass('AreaData',
 					clist.add(cell);
 				}
 			}
-			if(pp.getVal('irowake')){ pc.repaintBlocks(clist);}
+			if(this.owner.getConfig('irowake')){ pc.repaintBlocks(clist);}
 		}
 	},
 

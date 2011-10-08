@@ -84,8 +84,8 @@ AreaManager:{
 },
 
 "Menu@shwolf":{
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
+	menuinit : function(pp){
+		this.SuperFunc.menuinit.call(this,pp);
 		if(this.enableSaveImage){
 			if(ee.br.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
@@ -180,7 +180,7 @@ Encode:{
 			for(var c=0;c<bd.crossmax;c++){
 				if(bd.cross[c].qnum===1){ this.owner.pid='kramman'; break;}
 			}
-			menu.displayDesign();
+			this.owner.menu.displayDesign();
 		}
 	}
 },

@@ -60,9 +60,9 @@ MouseEvent:{
 		if(cross1!==null){ cross1.draw();}
 		if(cross2!==null){ cross2.draw();}
 		if(cross1!==null && cross2!==null){
-			if(!pp.getVal('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
+			if(!this.owner.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
-				if(!pp.getVal('lattice') || bd.getLatticePoint(bx1,by1,bx2,by2).length===0){
+				if(!this.owner.getConfig('lattice') || bd.getLatticePoint(bx1,by1,bx2,by2).length===0){
 					bd.segs.input(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
@@ -313,7 +313,7 @@ OperationManager:{
 Menu:{
 	disable_subclear : true,
 
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
 		this.funcs['circolor'] = function(){ pc.paintAll();};
@@ -327,7 +327,7 @@ Menu:{
 
 	irowakeRemake : function(){
 		bd.segs.newIrowake();
-		if(pp.getVal('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ pc.paintAll();}
 	}
 },
 
@@ -386,7 +386,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(this.irowake===0 || !pp.getVal('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(this.irowake===0 || !this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -401,7 +401,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto');
 
-		var isgray = pp.getVal('circolor');
+		var isgray = this.owner.getConfig('circolor');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;
@@ -1120,7 +1120,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.seg[id].color = newColor;
 
 		if(shortid!==null){
-			if(pp.getVal('irowake')){
+			if(this.owner.getConfig('irowake')){
 				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
 				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 				pc.repaintSegments(seglist);
@@ -1176,7 +1176,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				idlist.push(this.idlist[current][n]);
 			}
 		}
-		if(pp.getVal('irowake')){
+		if(this.owner.getConfig('irowake')){
 			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('SegmentList');
 			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
 			pc.repaintSegments(seglist);

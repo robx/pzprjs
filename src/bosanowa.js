@@ -142,7 +142,7 @@ Board:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');
 		pp.setLabel ('disptype', '表示形式', 'Display');
 
@@ -168,16 +168,16 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		if(pp.getVal('disptype')==1){
+		if(this.owner.getConfig('disptype')==1){
 			this.drawCircles_bosanowa();
 			this.drawBDnumbase();
 		}
-		else if(pp.getVal('disptype')==2){
+		else if(this.owner.getConfig('disptype')==2){
 			this.drawOutside_souko();
 			this.drawGrid_souko();
 			this.drawBDnumbase();
 		}
-		else if(pp.getVal('disptype')==3){
+		else if(this.owner.getConfig('disptype')==3){
 			this.drawBorders();
 			this.drawGrid_waritai();
 		}
@@ -369,14 +369,14 @@ Encode:{
 		this.decodeBoard();
 		this.decodeNumber16();
 
-		if     (this.checkpflag("h")){ pp.setValOnly('disptype',2);}
-		else if(this.checkpflag("t")){ pp.setValOnly('disptype',3);}
+		if     (this.checkpflag("h")){ this.owner.setConfigOnly('disptype',2);}
+		else if(this.checkpflag("t")){ this.owner.setConfigOnly('disptype',3);}
 	},
 	pzlexport : function(type){
 		this.encodeBosanowa();
 
-		if     (pp.getVal('disptype')==2){ this.outpflag="h";}
-		else if(pp.getVal('disptype')==3){ this.outpflag="t";}
+		if     (this.owner.getConfig('disptype')==2){ this.outpflag="h";}
+		else if(this.owner.getConfig('disptype')==3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){

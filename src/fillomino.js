@@ -105,7 +105,7 @@ AreaManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
 		pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
 	}
@@ -209,13 +209,13 @@ AnsCheck:{
 			this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
 		}
 
-		if( !pp.getVal('enbnonum') && !this.checkNoNumCell() ){
+		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){
 			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return (pp.getVal('enbnonum') || this.checkNoNumCell());},
+	check1st : function(){ return (this.owner.getConfig('enbnonum') || this.checkNoNumCell());},
 
 	checkAreaSize : function(rinfo, flag){
 		var result = true;

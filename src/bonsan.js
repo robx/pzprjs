@@ -133,7 +133,7 @@ Encode:{
 			for(var id=0;id<bd.bdmax;id++){
 				if(bd.border[id].ques===1){ this.owner.pid='heyabon'; break;}
 			}
-			menu.displayDesign();
+			this.owner.menu.displayDesign();
 		}
 	}
 },

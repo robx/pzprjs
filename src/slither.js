@@ -10,8 +10,8 @@ MouseEvent:{
 	},
 	inputplay : function(){
 		var inputbg = false;
-		if     (this.mousestart){ inputbg = (!!pp.getVal('bgcolor') && this.inputBGcolor0());}
-		else if(this.mousemove) { inputbg = (!!pp.getVal('bgcolor') && this.inputData>=10);}
+		if     (this.mousestart){ inputbg = (!!this.owner.getConfig('bgcolor') && this.inputBGcolor0());}
+		else if(this.mousemove) { inputbg = (!!this.owner.getConfig('bgcolor') && this.inputData>=10);}
 
 		if(!inputbg){
 			if(this.mousestart || this.mousemove){
@@ -98,15 +98,15 @@ LineManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
 		pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 
 		this.addRedLineToFlags();
 	},
 
-	menuinit : function(){
-		this.SuperFunc.menuinit.call(this);
+	menuinit : function(pp){
+		this.SuperFunc.menuinit.call(this,pp);
 		if(this.owner.editmode){
 			ee('ck_bgcolor').el.disabled    = "true";
 			ee('cl_bgcolor').el.style.color = "silver";

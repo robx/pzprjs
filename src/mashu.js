@@ -46,7 +46,7 @@ Board:{
 	isborder : 1,
 
 	revCircle : function(){
-		if(!pp.getVal('uramashu')){ return;}
+		if(!this.owner.getConfig('uramashu')){ return;}
 		for(var c=0;c<this.cellmax;c++){
 			var cell = this.cell[c];
 			if     (cell.qnum===1){ cell.qnum = 2;}
@@ -60,7 +60,7 @@ LineManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
 		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		this.funcs['uramashu'] = function(){

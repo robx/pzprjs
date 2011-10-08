@@ -49,7 +49,7 @@ Board:{
 },
 
 Menu:{
-	menuinit : function(){
+	menuinit : function(pp){
 		this.newboard_html_original = document.newboard.innerHTML;
 
 		document.newboard.innerHTML =
@@ -61,7 +61,7 @@ Menu:{
 			 "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
 			].join('');
 
-		this.SuperFunc.menuinit.call(this);
+		this.SuperFunc.menuinit.call(this,pp);
 	},
 	menureset : function(){
 		document.newboard.innerHTML = this.newboard_html_original;

@@ -127,7 +127,7 @@ AreaManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('dispred','setting', false, '通り道のチェック', 'Check Road');
 		pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 	}

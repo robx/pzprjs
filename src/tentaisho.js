@@ -32,7 +32,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
-		if(pzprv3.EDITOR){ if(pp.getVal('discolor')){ return;} }
+		if(pzprv3.EDITOR && this.owner.getConfig('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
 		var star = pos.gets();
@@ -273,7 +273,7 @@ AreaManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		if(pzprv3.EDITOR){
 			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
 			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');

@@ -9,6 +9,8 @@
 pzprv3.createCommonClass('Menu',
 {
 	initialize : function(){
+		this.config = null;
+
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 		this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
@@ -68,7 +70,9 @@ pzprv3.createCommonClass('Menu',
 	//                   管理領域、ポップアップメニューの初期設定を行う
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
-	menuinit : function(){
+	menuinit : function(pp){
+		this.config = pp;
+
 		if(typeof FileReader == 'undefined'){
 			this.reader = null;
 
@@ -124,7 +128,7 @@ pzprv3.createCommonClass('Menu',
 		ee('usepanel')  .el.innerHTML = '';
 		ee('checkpanel').el.innerHTML = '';
 
-		pp.reset();
+		this.owner.config.reset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -145,7 +149,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	displayAll : function(){
-		for(var i in pp.flags){ this.setdisplay(i);}
+		for(var i in this.config.flags){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[this.language];
@@ -157,6 +161,7 @@ pzprv3.createCommonClass('Menu',
 		this.owner.undo.enb_btn();
 	},
 	setdisplay : function(idname){
+		var pp = this.config;
 		switch(pp.type(idname)){
 		case pp.MENU:
 			var pmenu = ee('ms_'+idname);
@@ -177,7 +182,7 @@ pzprv3.createCommonClass('Menu',
 
 		case pp.CHILD:
 			var smenu = ee('ms_'+idname), manage = ee('up_'+idname);
-			var issel = (pp.getVal(idname) == pp.getVal(pp.flags[idname].parent));
+			var issel = (this.owner.getConfig(idname) == this.owner.getConfig(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
 			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
@@ -188,7 +193,7 @@ pzprv3.createCommonClass('Menu',
 
 		case pp.CHECK:
 			var smenu = ee('ms_'+idname), check = ee('ck_'+idname), label = ee('cl_'+idname);
-			var flag = pp.getVal(idname);
+			var flag = this.owner.getConfig(idname);
 			if(!!smenu){ smenu.el.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
 			if(!!check){ check.el.checked   = flag;}					// 管理領域(チェックボックス)
 			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
@@ -229,6 +234,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.menufix()    各パズルの設定を追加する
 	//---------------------------------------------------------------------------
 	menuarea : function(){
+		var pp = this.config;
 		var am = ee.binder(pp, pp.addMenu),
 			at = ee.binder(pp, pp.addSParent),
 			an = ee.binder(pp, pp.addSParent2),
@@ -334,7 +340,7 @@ pzprv3.createCommonClass('Menu',
 		ai('text_1', 'text', '大きい',       'Big');
 		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
 		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
-		this.textsize(pp.getVal('text'));
+		this.textsize(this.owner.getConfig('text'));
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
@@ -347,7 +353,7 @@ pzprv3.createCommonClass('Menu',
 			af('mode', 3);
 		}
 
-		this.menufix();		// 各パズルごとのメニュー追加
+		this.menufix(pp);		// 各パズルごとのメニュー追加
 
 		ac('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
 		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
@@ -385,7 +391,7 @@ pzprv3.createCommonClass('Menu',
 
 		this.createAllFloat();
 	},
-	menufix : function(){},
+	menufix : function(pp){},
 
 	//---------------------------------------------------------------------------
 	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
@@ -394,6 +400,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
+		var pp = this.config;
 		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
@@ -401,14 +408,17 @@ pzprv3.createCommonClass('Menu',
 		pp.addChild('use_2','use','1ボタン',   'One Button');
 	},
 	addRedLineToFlags : function(){
+		var pp = this.config;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
 	},
 	addRedBlockToFlags : function(){
+		var pp = this.config;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 	},
 	addRedBlockRBToFlags : function(){
+		var pp = this.config;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 	},
@@ -417,6 +427,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
+		var pp = this.config;
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
@@ -492,14 +503,14 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(pp.haschild(ee.getSrcElement(e).id.substr(3))){
+		if(this.config.haschild(ee.getSrcElement(e).id.substr(3))){
 			if(ee.getSrcElement(e).className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(pp.haschild(ee.getSrcElement(e).id.substr(3))){
+		if(this.config.haschild(ee.getSrcElement(e).id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -512,11 +523,11 @@ pzprv3.createCommonClass('Menu',
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
-			var idname = el.id.substr(3);
+			var idname = el.id.substr(3), pp = this.config;
 			switch(pp.type(idname)){
 				case pp.SMENU: this.popopen(e, idname); break;
-				case pp.CHILD: pp.setVal(pp.flags[idname].parent, pp.getVal(idname)); break;
-				case pp.CHECK: pp.setVal(idname, !pp.getVal(idname)); break;
+				case pp.CHILD: this.owner.setConfig(pp.flags[idname].parent, this.owner.getConfig(idname)); break;
+				case pp.CHECK: this.owner.setConfig(idname, !this.owner.getConfig(idname)); break;
 			}
 		}
 	},
@@ -601,6 +612,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	managearea : function(){
 		// usearea & checkarea
+		var pp = this.config;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
@@ -683,11 +695,11 @@ pzprv3.createCommonClass('Menu',
 	checkclick : function(e){
 		var el = ee.getSrcElement(e);
 		var idname = el.id.substr(3);
-		pp.setVal(idname, !!el.checked);
+		this.owner.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = ee.getSrcElement(e).id.split('_');
-		pp.setVal(list[1], list[2]);
+		this.owner.setConfig(list[1], list[2]);
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -948,7 +960,7 @@ pzprv3.createCommonClass('Menu',
 	//--------------------------------------------------------------------------------
 	checkUserLang : function(){
 		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		if(userlang.substr(0,2)!=='ja'){ pp.setVal('language','en');}
+		if(userlang.substr(0,2)!=='ja'){ this.owner.setConfig('language','en');}
 	},
 	setLang : function(ln){
 		this.language = ln;
@@ -1018,7 +1030,7 @@ pzprv3.createCommonClass('Menu',
 			this.owner.key.enableKey = false;
 		},
 		keypopup : function(){
-			var f = this.owner.key.haspanel[pp.flags['mode'].val];
+			var f = this.owner.key.haspanel[this.config.flags['mode'].val];
 			ee('ck_keypopup').el.disabled    = (f?"":"true");
 			ee('cl_keypopup').el.style.color = (f?"black":"silver");
 
@@ -1254,7 +1266,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
 		bd.lines.newIrowake();
-		if(pp.getVal('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ pc.paintAll();}
 	},
 
 	//------------------------------------------------------------------------------
@@ -1266,15 +1278,15 @@ pzprv3.createCommonClass('Menu',
 		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
 
 		if(this.displaymanage){
-			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'none';}
-			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'none';}
-			if(pc.irowake!=0 && pp.getVal('irowake')){ ee('btncolor2').el.style.display = 'inline';}
+			for(var i=0;i<idlist.length;i++) { ee(idlist[i])  .el.style.display = 'none';}
+			for(var i=0;i<seplist.length;i++){ ee(seplist[i]) .el.style.display = 'none';}
+			if(pc.irowake!=0 && this.owner.getConfig('irowake')){ ee('btncolor2').el.style.display = 'inline';}
 			ee('menuboard').el.style.paddingBottom = '0pt';
 		}
 		else{
-			for(var i=0;i<idlist.length;i++)         { ee(idlist[i])  .el.style.display = 'block';}
-			for(var i=0;i<seplist.length;i++)        { ee(seplist[i]) .el.style.display = 'block';}
-			if(pc.irowake!=0 && pp.getVal('irowake')){ ee("btncolor2").el.style.display = 'none';}
+			for(var i=0;i<idlist.length;i++) { ee(idlist[i])  .el.style.display = 'block';}
+			for(var i=0;i<seplist.length;i++){ ee(seplist[i]) .el.style.display = 'block';}
+			if(pc.irowake!=0 && this.owner.getConfig('irowake')){ ee("btncolor2").el.style.display = 'none';}
 			ee('menuboard').el.style.paddingBottom = '8pt';
 		}
 		this.displaymanage = !this.displaymanage;
@@ -1327,7 +1339,7 @@ pzprv3.createCoreClass('Debug',
 	poptest_func : function(){
 		var _doc = document;
 
-		menu.titlebarfunc(ee('bartest').el);
+		this.owner.menu.titlebarfunc(ee('bartest').el);
 
 		_doc.testform.t1.onclick        = ee.binder(this, this.perfeval);
 		_doc.testform.t2.onclick        = ee.binder(this, this.painteval);
@@ -1349,7 +1361,7 @@ pzprv3.createCoreClass('Debug',
 		_doc.testform.starttest.style.display = 'none';
 
 		_doc.testform.perfload.style.display = (this.owner.pid!=='country' ? 'none' : 'inline');
-		_doc.testform.pbfilesave.style.display = (!menu.ispencilbox ? 'none' : 'inline');
+		_doc.testform.pbfilesave.style.display = (!this.owner.menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
 
 		if(pzprv3.DEBUG){ this.testonly_func();}	// テスト用
@@ -1383,7 +1395,7 @@ pzprv3.createCoreClass('Debug',
 
 	fileopen : function(){
 		var dataarray = this.getTA().replace(/\//g,"[[slash]]").split("\n");
-		menu.fileonload(dataarray.join("/"));
+		this.owner.menu.fileonload(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -1423,9 +1435,9 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	loadperf : function(){
-		menu.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
-		pp.setVal('mode',3);
-		pp.setVal('irowake',true);
+		this.owner.menu.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
+		this.owner.setConfig('mode',3);
+		this.owner.setConfig('irowake',true);
 	},
 
 	adjustimage : function(){
@@ -1435,7 +1447,7 @@ pzprv3.createCoreClass('Debug',
 		else if(bd.qcols<= 8){ size = 24;}
 		else if(bd.qcols<= 9){ size = 21;}
 		else if(bd.qcols<=18){ size = 19;}
-		menu.imagesave(false,size);
+		this.owner.menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},

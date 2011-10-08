@@ -41,7 +41,7 @@ AreaManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		this.addUseToFlags();
 		this.addRedBlockRBToFlags();
 
@@ -76,7 +76,7 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		this.drawNumbers();
 
-		if(!bd.haserror && pp.getVal('plred')){
+		if(!bd.haserror && this.owner.getConfig('plred')){
 			ans.inCheck = true;
 			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
 			ans.inCheck = false;

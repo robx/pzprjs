@@ -228,7 +228,7 @@ AreaManager:{
 Menu:{
 	irowakeRemake : function(){
 		bd.areas.barinfo.newIrowake();
-		if(pp.getVal('irowake')){ pc.paintAll();}
+		if(this.owner.getConfig('irowake')){ pc.paintAll();}
 	}
 },
 
@@ -272,7 +272,7 @@ Graphic:{
 		var err=cell.error, color="";
 		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor;}
 		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!pp.getVal('irowake') || !cell.color){ color = this.linecolor;}
+		else if(!this.owner.getConfig('irowake') || !cell.color){ color = this.linecolor;}
 		else{ color = cell.color;}
 		return color;
 	},

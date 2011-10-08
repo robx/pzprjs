@@ -141,7 +141,7 @@ AreaManager:{
 },
 
 Menu:{
-	menufix : function(){
+	menufix : function(pp){
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
 
@@ -233,7 +233,7 @@ Graphic:{
 			var cell = clist[i];
 
 			if(cell.qnum!=-1){
-				if (pp.getVal('circolor') && cell.qnum===cell.getCountOfBridges())
+				if (this.owner.getConfig('circolor') && cell.qnum===cell.getCountOfBridges())
 									   { g.fillStyle = this.bcolor;      }
 				else if(cell.error===1){ g.fillStyle = this.errbcolor1;  }
 				else                   { g.fillStyle = this.circledcolor;}

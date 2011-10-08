@@ -68,11 +68,11 @@ pzprv3.createCoreClass('Owner',
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
 
-		menu = this.newInstance('Menu');		// メニューを扱うオブジェクト
-		pp = this.newInstance('Properties');	// メニュー関係の設定値を保持するオブジェクト
+		this.menu   = this.newInstance('Menu');			// メニューを扱うオブジェクト
+		this.config = this.newInstance('Properties');	// パズルの設定値を保持するオブジェクト
 
 		// メニュー関係初期化
-		menu.menuinit();
+		this.menu.menuinit(this.config);
 
 		// イベントをくっつける
 		this.mouse.setEvents();
@@ -89,7 +89,7 @@ pzprv3.createCoreClass('Owner',
 	clearObjects : function(){
 		ee.removeAllEvents();
 
-		menu.menureset();
+		this.menu.menureset();
 		ee('numobj_parent').el.innerHTML = '';
 		ee.clean();
 	},
@@ -151,9 +151,9 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// File API＋Drag&Drop APIの設定
-		if(!!menu.reader){
+		if(!!this.menu.reader){
 			var DDhandler = function(e){
-				menu.reader.readAsText(e.dataTransfer.files[0]);
+				this.menu.reader.readAsText(e.dataTransfer.files[0]);
 				e.preventDefault();
 				e.stopPropagation();
 			};
@@ -180,7 +180,12 @@ pzprv3.createCoreClass('Owner',
 	onblur_func : function(){
 		this.key.keyreset();
 		this.mouse.mousereset();
-	}
+	},
+
+	//---------------------------------------------------------------------------
+	getConfig : function(idname){ return this.config.getVal(idname);},
+	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
+	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);}
 });
 
 //--------------------------------------------------------------------------------------------------------------
@@ -191,6 +196,8 @@ pzprv3.createCoreClass('Owner',
 pzprv3.createCommonClass('Properties',
 {
 	initialize : function(){
+		this.menu = this.owner.menu;
+
 		this.flags    = [];	// サブメニュー項目の情報(オブジェクトの配列になる)
 		this.flaglist = [];	// idnameの配列
 	},
@@ -297,8 +304,8 @@ pzprv3.createCommonClass('Properties',
 	// pp.setVal()     各フラグの設定値を設定する
 	// pp.setValOnly() 各フラグの設定値を設定する。設定時に実行される関数は呼ばない
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[menu.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[menu.language].label;},
+	getMenuStr : function(idname){ return this.flags[idname].str[this.menu.language].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[this.menu.language].label;},
 	type       : function(idname){ return this.flags[idname].type;},
 	haschild   : function(idname){
 		var flag = this.flags[idname];
@@ -313,9 +320,8 @@ pzprv3.createCommonClass('Properties',
 									this.flags[idname].type===this.SELECT))
 		{
 			this.flags[idname].val = newval;
-			menu.setdisplay(idname);
-			if(menu.funcs[idname] && isexecfunc!==false){ menu.funcs[idname].call(menu,newval);}
+			this.menu.setdisplay(idname);
+			if(this.menu.funcs[idname] && isexecfunc!==false){ this.menu.funcs[idname].call(this.menu,newval);}
 		}
-	},
-	setValOnly : function(idname, newval){ this.setVal(idname, newval, false);}
+	}
 });

@@ -220,10 +220,10 @@ Menu:{
 		this.addLabels(ee('pop1_1_cap1x').el, "横幅 (黄色の数)", "Width (Yellows)");
 		this.addLabels(ee('pop1_1_cap2x').el, "高さ",            "Height");
 
-		this.funcs.newboard = function(){ menu.newboard_show();};
+		this.funcs.newboard = function(){ this.owner.menu.newboard_show();};
 	},
 
-	menuinit : function(){
+	menuinit : function(pp){
 		this.newboard_html_original = document.newboard.innerHTML;
 
 		document.newboard.innerHTML =
@@ -245,11 +245,11 @@ Menu:{
 			var _img = ee('nb'+i).el;
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			ee.addEvent(_img, "click", ee.ebinder(menu, menu.clicklap));
+			ee.addEvent(_img, "click", ee.ebinder(this.owner.menu, this.owner.menu.clicklap));
 			_img.parentNode.style.display = 'block';
 		}
 
-		this.SuperFunc.menuinit.call(this);
+		this.SuperFunc.menuinit.call(this,pp);
 
 		document.flip.turnl.disabled = true;
 		document.flip.turnr.disabled = true;

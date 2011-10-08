@@ -31,12 +31,12 @@ pzprv3.createCommonClass('AnsCheck',
 		this.checkresult = true;
 		this.checkAns()
 		if(!this.checkresult){
-			menu.alertStr(this.alstr.jp, this.alstr.en);
+			this.owner.menu.alertStr(this.alstr.jp, this.alstr.en);
 			bd.haserror = true;
 			pc.paintAll();
 		}
 		else{
-			menu.alertStr("正解です！","Complete!");
+			this.owner.menu.alertStr("正解です！","Complete!");
 		}
 
 		this.inCheck = false;
@@ -55,7 +55,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
 	//---------------------------------------------------------------------------
 	autocheck : function(){
-		if(!pp.getVal('autocheck') || this.owner.editmode || this.inCheck){ return;}
+		if(!this.owner.getConfig('autocheck') || this.owner.editmode || this.inCheck){ return;}
 
 		var ret = false;
 
@@ -67,9 +67,9 @@ pzprv3.createCommonClass('AnsCheck',
 			this.checkAns();
 			if(this.checkresult && this.inCheck){
 				this.owner.mouse.mousereset();
-				menu.alertStr("正解です！","Complete!");
+				this.owner.menu.alertStr("正解です！","Complete!");
 				ret = true;
-				pp.setVal('autocheck',false);
+				this.owner.setConfig('autocheck',false);
 			}
 		}
 		bd.enableSetError();

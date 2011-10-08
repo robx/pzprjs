@@ -77,7 +77,7 @@ pzprv3.extendCoreClass('Debug',
 
 	fails : 0,
 	sccheck : function(){
-		if(pp.getVal('autocheck')){ pp.setVal('autocheck',false);}
+		if(this.owner.getConfig('autocheck')){ this.owner.setConfig('autocheck',false);}
 		var self = this;
 
 		self.fails = 0;
@@ -99,8 +99,8 @@ pzprv3.extendCoreClass('Debug',
 			var bd2 = self.bd_freezecopy();
 
 			document.urlinput.ta.value = this.owner.enc.pzloutput(pzprv3.KANPEN);
-			menu.pop = ee("pop1_5");
-			menu.urlinput({});
+			this.owner.menu.pop = ee("pop1_5");
+			this.owner.menu.urlinput({});
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -150,7 +150,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_file_pbox(self);},0);
 	},
 	check_file_pbox : function(self){
-		if(menu.ispencilbox){
+		if(this.owner.menu.ispencilbox){
 			var outputstr = this.owner.fio.fileencode(this.owner.fio.PBOX);
 
 			var bd2 = self.bd_freezecopy();

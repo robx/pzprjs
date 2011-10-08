@@ -158,7 +158,7 @@ pzprv3.createCoreClass('DataBaseManager',
 		str += (pzprv3.PZLINFO.info[row.pid].ja+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][menu.language]+"&nbsp;");
+			str += (hardstr[row.hard][pzprv3.taget.menu.language]+"&nbsp;");
 		}
 		str += ("("+this.dateString(row.time*1000)+")");
 		return str;
@@ -354,7 +354,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback){
 		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		menu.fileonload(data.pdata);
+		pzprv3.target.menu.fileonload(data.pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){

@@ -194,7 +194,7 @@ pzprv3.createCommonClass('Graphic',
 	setcellsize : function(cols, rows){
 		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[pp.getVal('size')];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.owner.getConfig('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(this.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(this.cellsize*cr.limit);
@@ -206,7 +206,7 @@ pzprv3.createCommonClass('Graphic',
 			if(this.cw < this.cellsize){ this.cw = this.ch = this.cellsize;}
 		}
 		// 縮小が必要ない場合
-		else if(!pp.getVal('adjsize') || cols < ci[0]){
+		else if(!this.owner.getConfig('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			this.cw = this.ch = (this.cellsize*cr.base)|0;
 		}
@@ -1053,7 +1053,7 @@ pzprv3.createCommonClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
-			else if(this.irowake===0 || !pp.getVal('irowake') || !border.color){ return this.linecolor;}
+			else if(this.irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;
@@ -1445,7 +1445,7 @@ pzprv3.createCommonClass('Graphic',
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false && pp.getVal('cursor') && !this.outputImage){
+		if(isdraw!==false && this.owner.getConfig('cursor') && !this.outputImage){
 			var d = this.range, tc = this.owner.cursor;
 			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
 			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}

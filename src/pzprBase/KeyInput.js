@@ -180,8 +180,8 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ this.owner.ut.startRedo(); this.ca='';}
 
 		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
-			if     (this.owner.editmode && !this.isSHIFT){ pp.setVal('mode',3); this.ca='';}
-			else if(this.owner.playmode &&  this.isSHIFT){ pp.setVal('mode',1); this.ca='';}
+			if     (this.owner.editmode && !this.isSHIFT){ this.owner.setConfig('mode',3); this.ca='';}
+			else if(this.owner.playmode &&  this.isSHIFT){ this.owner.setConfig('mode',1); this.ca='';}
 		}
 
 		if(!this.isZ){ bd.errclear();}
@@ -390,8 +390,8 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = pp.getVal('mode');
-		if(this.element && this.haspanel[mode] && pp.getVal('keypopup')){
+		var mode = this.owner.getConfig('mode');
+		if(this.element && this.haspanel[mode] && this.owner.getConfig('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -414,7 +414,7 @@ pzprv3.createCommonClass('KeyEvent',
 			this.element.style.left   = (rect.left+48)+'px';
 			this.element.style.top    = (rect.top +48)+'px';
 			this.element.style.zIndex = 100;
-			ee('barkeypopup').el.ondblclick = function(){ pp.setVal('keypopup',false)};
+			ee('barkeypopup').el.ondblclick = function(){ this.owner.setConfig('keypopup',false)};
 		}
 
 		if(this.enablemake_p && pzprv3.EDITOR){ this.createtable(1);}
@@ -538,7 +538,7 @@ pzprv3.createCommonClass('KeyEvent',
 			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
 
-		menu.modifyCSS({
+		this.owner.menu.modifyCSS({
 			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});

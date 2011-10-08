@@ -386,7 +386,7 @@ Encode:{
 
 		if(this.owner.pid==='icelom'){
 			this.owner.pid = (this.checkpflag("a")?'icelom':'icelom2');
-			menu.displayDesign();
+			this.owner.menu.displayDesign();
 		}
 	},
 	pzlexport : function(type){
@@ -447,7 +447,7 @@ FileIO:{
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
 			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
-			menu.displayDesign();
+			this.owner.menu.displayDesign();
 		}
 
 		this.decodeCell( function(obj,ca){
