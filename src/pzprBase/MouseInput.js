@@ -94,7 +94,7 @@ pzprv3.createCommonClass('MouseEvent',
 			this.btn = this.getMouseButton(e);
 			if(this.btn.Left || this.btn.Right){
 				bd.errclear();
-				um.newOperation(true);
+				this.owner.undo.newOperation(true);
 				this.setposition(e);
 				this.mouseevent(0);	// 各パズルのルーチンへ
 			}
@@ -109,7 +109,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			um.newOperation(false);
+			this.owner.undo.newOperation(false);
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -122,7 +122,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!!menu.movingpop){ return true;}
 
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			um.newOperation(false);
+			this.owner.undo.newOperation(false);
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
@@ -131,7 +131,7 @@ pzprv3.createCommonClass('MouseEvent',
 		return false;
 	},
 	e_mouseout : function(e) {
-		um.newOperation(false);
+		this.owner.undo.newOperation(false);
 	},
 
 	//---------------------------------------------------------------------------
@@ -200,7 +200,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.inputPoint.py = ee.pageY(e) - pc.pageY - this.mouseoffset.py;
 	},
 
-	notInputted : function(){ return !um.changeflag;},
+	notInputted : function(){ return !this.owner.undo.changeflag;},
 	modeflip    : function(){ if(pzprv3.EDITOR){ pp.setVal('mode', (this.owner.playmode?1:3));} },
 
 	// 共通関数
@@ -558,9 +558,9 @@ pzprv3.createCommonClass('MouseEvent',
 		var cross = pos.getx();
 		if(cross.isnull){ return;}
 
-		um.disCombine = true;
+		this.owner.undo.disCombine = true;
 		cross.setQnum(cross.getQnum()===1?-1:1);
-		um.disCombine = false;
+		this.owner.undo.disCombine = false;
 
 		cross.draw();
 	},

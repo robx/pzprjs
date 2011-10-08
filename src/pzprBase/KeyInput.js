@@ -68,7 +68,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	e_keydown : function(e){
 		if(this.enableKey){
-			um.newOperation(true);
+			this.owner.undo.newOperation(true);
 			this.checkmodifiers(e);
 			this.ca = this.getchar(e);
 
@@ -82,7 +82,7 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 	e_keyup : function(e){
 		if(this.enableKey){
-			um.newOperation(false);
+			this.owner.undo.newOperation(false);
 			this.checkmodifiers(e);
 			this.ca = this.getchar(e);
 
@@ -92,7 +92,7 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 	e_keypress : function(e){
 		if(this.enableKey){
-			um.newOperation(false);
+			this.owner.undo.newOperation(false);
 			this.checkmodifiers(e);
 			this.ca = this.getcharp(e);
 

@@ -74,8 +74,8 @@ pzprv3.createCommonClass('Timer',
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		if(this.current>this.nextACtime && this.lastAnsCnt!=um.anscount && !ans.inCheck){
-			this.lastAnsCnt = um.anscount;
+		if(this.current>this.nextACtime && this.lastAnsCnt!=this.owner.undo.anscount && !ans.inCheck){
+			this.lastAnsCnt = this.owner.undo.anscount;
 			if(!ans.autocheck()){ return;}
 
 			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
@@ -136,7 +136,7 @@ pzprv3.createCommonClass('UndoTimer',
 		else{ this.exec();}
 	},
 	exec : function(){
-		if     (this.inUNDO){ um.undo(1);}
-		else if(this.inREDO){ um.redo(1);}
+		if     (this.inUNDO){ this.owner.undo.undo(1);}
+		else if(this.inREDO){ this.owner.undo.redo(1);}
 	}
 });

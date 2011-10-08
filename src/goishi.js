@@ -122,6 +122,7 @@ UndoTimer:{
 	exec : function(){
 		if(!this.ismouse){ this.SuperFunc.exec.call(this);}
 		else{
+			var um = this.owner.undo;
 			if(this.inUNDO){
 				var prop = (um.current>-1 ? um.ope[um.current].property : '');
 				if(prop===bd.ANUM){ um.undo(1);} else{ this.stop();}

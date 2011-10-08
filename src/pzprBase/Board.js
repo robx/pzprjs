@@ -86,7 +86,7 @@ pzprv3.createCommonClass('Board',
 		this.lines.init();
 
 		tc.initCursor();
-		um.allerase();
+		this.owner.undo.allerase();
 	},
 
 	//---------------------------------------------------------------------------
@@ -148,12 +148,12 @@ pzprv3.createCommonClass('Board',
 	// bd.resetInfo()    AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
 	//---------------------------------------------------------------------------
 	disableInfo : function(){
-		um.disableRecord();
+		this.owner.undo.disableRecord();
 		this.lines.disableRecord();
 		this.areas.disableRecord();
 	},
 	enableInfo : function(){
-		um.enableRecord();
+		this.owner.undo.enableRecord();
 		this.lines.enableRecord();
 		this.areas.enableRecord();
 	},
@@ -600,7 +600,7 @@ pzprv3.createCommonClass('Board',
 			}
 		}
 
-		um.newOperation(true);
+		this.owner.undo.newOperation(true);
 
 		pc.suspendAll();
 
@@ -609,11 +609,11 @@ pzprv3.createCommonClass('Board',
 		var d = {x1:0, y1:0, x2:2*this.qcols, y2:2*this.qrows}; // 範囲が必要なのturnflipだけかも..
 		if(key & this.TURNFLIP){
 			this.turnflip(key,d);
-			um.addOpe_BoardFlip(d, key0, key);
+			this.owner.undo.addOpe_BoardFlip(d, key0, key);
 		}
 		else{
 			this.expandreduce(key,d);
-			um.addOpe_BoardAdjust(key0, key);
+			this.owner.undo.addOpe_BoardAdjust(key0, key);
 		}
 
 		this.setminmax();
@@ -674,6 +674,7 @@ pzprv3.createCommonClass('Board',
 	reduceGroup : function(type,key){
 		if(type===this.BORDER){ this.reduceborder(key);}
 
+		var um = this.owner.undo;
 		var margin=0, group = this.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
 		if(isrec){ um.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
@@ -773,7 +774,7 @@ pzprv3.createCommonClass('Board',
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
-		if(this.lines.borderAsLine || !um.undoExec){
+		if(this.lines.borderAsLine || !this.owner.undo.undoExec){
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			this.setposBorders();
 
@@ -852,6 +853,7 @@ pzprv3.createCommonClass('Board',
 			var areaid = qnums[i].areaid;
 			var top = this.areas.rinfo.calcTopOfRoom(areaid);
 			if(top===null){
+				var um = this.owner.undo;
 				if(!um.undoExec && !um.redoExec){
 					um.forceRecord = true;
 					um.addOpe_Object(qnums[i].cell, this.QNUM, qnums[i].val, -1);

@@ -228,7 +228,7 @@ Board:{
 				}
 			}
 
-			var isrec = (!um.undoExec && !um.redoExec);
+			var um = this.owner.undo, isrec = (!um.undoExec && !um.redoExec);
 			if(isrec){ um.forceRecord = true;}
 			for(var i=0;i<sublist.length;i++){ this.segs.removeSegment(sublist[i]);}
 			if(isrec){ um.forceRecord = false;}
@@ -1008,13 +1008,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.seg[this.segmax] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
 		this.seg[this.segmax].id = this.segmax;
 		this.setSegmentInfo(this.seg[this.segmax], true);
-		um.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
+		this.owner.undo.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
 	},
 	removeSegment : function(bx1,by1,bx2,by2){
 		var seg = bx1;
 		if(by1!==(void 0)){ seg = this.getSegment(bx1,by1,bx2,by2);}
 		this.setSegmentInfo(seg, false);
-		um.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
+		this.owner.undo.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
 		pc.eraseSegment1(seg);
 		delete this.seg[seg.id];
 	},

@@ -49,7 +49,7 @@ MouseEvent:{
 		bd.startcell.draw();
 		if(this.firstCell!==bd.startcell){
 			var cell0 = this.firstCell, cell = bd.startcell;
-			um.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
+			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
 		}
 	},
 	inputGate : function(){
@@ -221,7 +221,7 @@ Board:{
 	inputstartid : function(cell){
 		if(cell!==this.startcell){
 			var cell0 = this.startcell;
-			um.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
+			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
 
 			this.startcell = cell;
 			cell0.draw();
@@ -246,6 +246,7 @@ Board:{
 		var info = this.posinfo;
 		this.startcell = this.getc(info.bx2, info.by2);
 
+		var um = this.owner.undo;
 		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
 			um.forceRecord = true;
 			if(info.isdel){

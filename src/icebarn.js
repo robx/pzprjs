@@ -118,8 +118,8 @@ Board:{
 	},
 
 	setarrowin : function(border){
-		if(um.isenableRecord()){
-			um.addOpe_InOut('in', this.arrowin.bx,this.arrowin.by, border.bx,border.by);
+		if(this.owner.undo.isenableRecord()){
+			this.owner.undo.addOpe_InOut('in', this.arrowin.bx,this.arrowin.by, border.bx,border.by);
 		}
 		this.arrowin = border;
 
@@ -133,8 +133,8 @@ Board:{
 	},
 
 	setarrowout : function(border){
-		if(um.isenableRecord()){
-			um.addOpe_InOut('out', this.arrowout.bx,this.arrowout.by, border.bx,border.by);
+		if(this.owner.undo.isenableRecord()){
+			this.owner.undo.addOpe_InOut('out', this.arrowout.bx,this.arrowout.by, border.bx,border.by);
 		}
 		this.arrowout = border;
 
@@ -160,6 +160,7 @@ Board:{
 		this.arrowin  = this.getb(info1.bx2, info1.by2);
 		this.arrowout = this.getb(info2.bx2, info2.by2);
 
+		var um = this.owner.undo;
 		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
 			um.forceRecord = true;
 			if(info1.isdel){

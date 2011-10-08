@@ -104,7 +104,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			um.addOpe_Object(this, bd.QSUB, 1, 0);
+			this.owner.undo.addOpe_Object(this, bd.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -132,9 +132,9 @@ Star:{
 		return this.obj.getQnum();
 	},
 	setStar : function(val){
-		um.disCombine = true;
-		return this.obj.setQnum(val);
-		um.disCombine = false;
+		this.owner.undo.disCombine = true;
+		this.obj.setQnum(val);
+		this.owner.undo.disCombine = false;
 	},
 	iserror : function(){
 		return (this.obj.error>0);

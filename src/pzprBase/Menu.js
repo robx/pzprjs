@@ -154,7 +154,7 @@ pzprv3.createCommonClass('Menu',
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
-		um.enb_btn();
+		this.owner.undo.enb_btn();
 	},
 	setdisplay : function(idname){
 		switch(pp.type(idname)){
@@ -660,8 +660,8 @@ pzprv3.createCommonClass('Menu',
 		ee.createEL(this.EL_UBUTTON, 'btnclear');
 
 		this.addButtons(ee("btncheck").el,  ee.binder(ans, ans.check),             "チェック", "Check");
-		this.addButtons(ee("btnundo").el,   ee.binder(um, um.undo, [1]),           "戻",       "<-");
-		this.addButtons(ee("btnredo").el,   ee.binder(um, um.redo, [1]),           "進",       "->");
+		this.addButtons(ee("btnundo").el,   ee.binder(this.owner.undo, this.owner.undo.undo, [1]), "戻", "<-");
+		this.addButtons(ee("btnredo").el,   ee.binder(this.owner.undo, this.owner.undo.redo, [1]), "進", "->");
 		this.addButtons(ee("btnclear").el,  ee.binder(this, this.ACconfirm), "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
@@ -976,10 +976,10 @@ pzprv3.createCommonClass('Menu',
 		imagesave : function(){ this.imagesave(false,null);},
 		database  : function(){ this.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
 
-		h_oldest  : function(){ um.undoall();},
-		h_undo    : function(){ um.undo(1);},
-		h_redo    : function(){ um.redo(1);},
-		h_latest  : function(){ um.redoall();},
+		h_oldest  : function(){ this.owner.undo.undoall();},
+		h_undo    : function(){ this.owner.undo.undo(1);},
+		h_redo    : function(){ this.owner.undo.redo(1);},
+		h_latest  : function(){ this.owner.undo.redoall();},
 		check     : function(){ ans.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
@@ -1302,7 +1302,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			um.newOperation(true);
+			this.owner.undo.newOperation(true);
 
 			bd.ansclear();
 			bd.resetInfo();
@@ -1311,7 +1311,7 @@ pzprv3.createCommonClass('Menu',
 	},
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			um.newOperation(true);
+			this.owner.undo.newOperation(true);
 
 			bd.subclear();
 			pc.paintAll();

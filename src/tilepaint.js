@@ -56,7 +56,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			um.addOpe_Object(this, bd.QSUB, 1, 0);
+			this.owner.undo.addOpe_Object(this, bd.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;

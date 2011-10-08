@@ -7,6 +7,10 @@
 // Operationクラス
 pzprv3.createCommonClass('Operation',
 {
+	initialize : function(){
+		this.manager = this.owner.undo;
+	},
+
 	chain : false,
 	//---------------------------------------------------------------------------
 	// ope.setData()  オブジェクトのデータを設定する
@@ -90,11 +94,11 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		this.exec(this.old);
-		if(this.property!=bd.QSUB){ um.anscount--;}
+		if(this.property!=bd.QSUB){ this.manager.anscount--;}
 	},
 	redo : function(){
 		this.exec(this.num);
-		if(this.property!=bd.QSUB){ um.anscount++;}
+		if(this.property!=bd.QSUB){ this.manager.anscount++;}
 	},
 	exec : function(num){
 		var obj = bd.getObjectPos(this.group, this.bx, this.by);
@@ -127,7 +131,7 @@ pzprv3.createCommonClass('BoardAdjustOperation:Operation',
 	//---------------------------------------------------------------------------
 	exec : function(num){
 		bd.disableInfo();
-		um.reqReset = true;
+		this.manager.reqReset = true;
 
 		bd.expandreduce(num,{x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows});
 
@@ -183,7 +187,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 	},
 	exec : function(num,d){
 		bd.disableInfo();
-		um.reqReset = true;
+		this.manager.reqReset = true;
 
 		bd.turnflip(num,d);
 

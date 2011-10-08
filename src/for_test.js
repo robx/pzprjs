@@ -180,7 +180,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_turnR2 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<4;i++){ um.undo(1);}
+		for(var i=0;i<4;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnR test 2  = pass");}
@@ -199,7 +199,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_turnL2 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<4;i++){ um.undo(1);}
+		for(var i=0;i<4;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnL test 2  = pass");}
@@ -218,7 +218,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_flipX2 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<2;i++){ um.undo(1);}
+		for(var i=0;i<2;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipX test 2  = pass");}
@@ -237,7 +237,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_flipY2 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<2;i++){ um.undo(1);}
+		for(var i=0;i<2;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipY test 2  = pass");}
@@ -257,7 +257,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_adjust2 : function(self){
 		var bd2 = self.bd_freezecopy();
-		for(var i=0;i<8;i++){ um.undo(1);}
+		for(var i=0;i<8;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Adjust test 2  = pass");}

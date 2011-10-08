@@ -61,8 +61,8 @@ pzprv3.createCoreClass('Owner',
 		kc  = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
 		tc  = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
 
-		um = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
-		this.ut = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
+		this.undo  = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
+		this.ut    = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
 		this.timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
 
 		enc = this.newInstance('Encode');		// URL入出力用オブジェクト

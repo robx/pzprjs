@@ -36,7 +36,7 @@ Border:{
 	allclear : function(isrec){
 		var def = (this.id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
-			if(isrec){ um.addOpe_Object(this, bd.QUES, this.ques, def);}
+			if(isrec){ this.owner.undo.addOpe_Object(this, bd.QUES, this.ques, def);}
 			this.ques = def;
 		}
 
