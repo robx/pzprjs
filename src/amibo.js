@@ -187,8 +187,6 @@ Board:{
 },
 CellList:{
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-
 		this.link = [];
 		this.pole = [];
 		this.vert = false
