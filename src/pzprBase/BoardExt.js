@@ -541,6 +541,42 @@ pzprv3.createCommonClass('AreaData',
 	},
 
 	//--------------------------------------------------------------------------------
+	// info.getnewid()  新しく割り当てるidを取得する
+	// info.invalidid() 部屋idを無効にする
+	// info.popRoom()   指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す
+	//--------------------------------------------------------------------------------
+	getnewid : function(){
+		var newid;
+		if(this.invalid.length>0){ newid = this.invalid.shift();}
+		else{ this.max++; newid=this.max;}
+
+		this[newid] = {idlist:[]};
+		return newid;
+	},
+	invalidid : function(id){
+		var idlist = this[id].idlist.concat();
+		this[id] = {idlist:[]};
+		this.invalid.push(id);
+		return idlist;
+	},
+
+	popRoom : function(ccs){
+		var idlist = [];
+		for(var n=0;n<ccs.length;n++){
+			var r = this.id[ccs[n]];
+			if(r!==null && r!==0){
+				var idlist2 = this.invalidid(r);
+				for(var i=0,len=idlist2.length;i<len;i++){
+					idlist.push(idlist2[i]);
+					this.id[idlist2[i]] = 0;
+				}
+			}
+			else if(r===null){ idlist.push(ccs[n]);}
+		}
+		return idlist;
+	},
+
+	//--------------------------------------------------------------------------------
 	// info.newIrowake()  線の情報が再構築された際、ブロックに色をつける
 	//--------------------------------------------------------------------------------
 	newIrowake : function(){
@@ -552,59 +588,6 @@ pzprv3.createCommonClass('AreaData',
 					bd.cell[idlist[n]].color = newColor;
 				}
 			}
-		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
-	// info.setLongColor() ブロックに色をつけなおす
-	//--------------------------------------------------------------------------------
-	getLongColor : function(cid){
-		var longColor = bd.cell[cid[0]].color;
-		// 周りで一番大きな線は？
-		if(cid.length>1){
-			var largeid = this.id[cid[0]];
-			for(var i=1;i<cid.length;i++){
-				if(this[largeid].idlist.length < this[this.id[cid[i]]].idlist.length){
-					largeid = this.id[cid[0]];
-					longColor = bd.cell[cid[i]].color;
-				}
-			}
-		}
-		return longColor;
-	},
-	setLongColor : function(assign, longColor){
-		// 色を同じにする
-		if(assign.length===1){
-			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('CellList');
-			for(var i=0,len=idlist.length;i<len;i++){
-				var cell = bd.cell[idlist[i]];
-				cell.color = longColor;
-				clist.add(cell);
-			}
-			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
-		}
-		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
-		// それ以外の線には新しい色を付加する
-		else if(assign.length>1){
-			// できた線の中でもっとも長いものを取得する
-			var longid = assign[0];
-			for(var i=1;i<assign.length;i++){
-				if(this[longid].idlist.length < this[assign[i]].idlist.length){ longid = assign[i];}
-			}
-
-			// 新しい色の設定
-			var clist = this.owner.newInstance('CellList');
-			for(var i=0;i<assign.length;i++){
-				var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
-				var idlist = this[assign[i]].idlist;
-				for(var n=0,len=idlist.length;n<len;n++){
-					var cell = bd.cell[idlist[n]];
-					cell.color = newColor;
-					clist.add(cell);
-				}
-			}
-			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
 		}
 	},
 
@@ -664,20 +647,19 @@ pzprv3.createCommonClass('AreaData',
 	// info.removeCell() 指定されたセルを無効なセルとして設定する
 	//--------------------------------------------------------------------------------
 	assignCell : function(cell, c2){
-		var newid, areaid = this.id[cell.id];
+		var areaid = this.id[cell.id];
 		if(areaid!==null && areaid!==0){ return;}
 
 		if(c2===null){
-			newid = this.getnewid();
-			this[newid].idlist = [];
+			areaid = this.getnewid();
 			if(!!this.owner.painter.irowake){ cell.color = this.owner.painter.getNewLineColor();}
 		}
 		else{
-			newid = this.id[c2];
+			areaid = this.id[c2];
 			if(!!this.owner.painter.irowake){ cell.color = bd.cell[c2].color;}
 		}
-		this[newid].idlist.push(cell.id);
-		this.id[cell.id] = newid;
+		this[areaid].idlist.push(cell.id);
+		this.id[cell.id] = areaid;
 	},
 	removeCell : function(cell){
 		var areaid = this.id[cell.id];
@@ -696,45 +678,9 @@ pzprv3.createCommonClass('AreaData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.getnewid()   新しく割り当てるidを取得する
-	// info.invalidid()  部屋idを無効にする
-	//--------------------------------------------------------------------------------
-	getnewid : function(){
-		var newid;
-		if(this.invalid.length>0){ newid = this.invalid.shift();}
-		else{ this.max++; newid=this.max;}
-
-		this[newid] = {idlist:[]};
-		return newid;
-	},
-	invalidid : function(id){
-		var idlist = this[id].idlist.concat();
-		this[id] = {idlist:[]};
-		this.invalid.push(id);
-		return idlist;
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.popRoom() 指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す
-	//--------------------------------------------------------------------------------
-	popRoom : function(ccs){
-		var idlist = [];
-		for(var n=0;n<ccs.length;n++){
-			var r = this.id[ccs[n]];
-			if(r!==null && r!==0){
-				var idlist2 = this.invalidid(r);
-				for(var i=0,len=idlist2.length;i<len;i++){
-					idlist.push(idlist2[i]);
-					this.id[idlist2[i]] = 0;
-				}
-			}
-			else if(r===null){ idlist.push(ccs[n]);}
-		}
-		return idlist;
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.remakeInfo()  線が引かれたり消された時、線が分かれるときのidの再設定を行う
+	// info.remakeInfo()   線が引かれたり消された時、線が分かれるときのidの再設定を行う
+	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
+	// info.setLongColor() ブロックに色をつけなおす
 	//--------------------------------------------------------------------------------
 	remakeInfo : function(cell, cid){
 		var longColor = (!!this.owner.painter.irowake ? this.getLongColor(cid) : "");
@@ -745,6 +691,55 @@ pzprv3.createCommonClass('AreaData',
 		var assign = this.searchIdlist(idlist);
 
 		if(!!this.owner.painter.irowake){ this.setLongColor(assign, longColor);}
+	},
+
+	getLongColor : function(cid){
+		var longColor = bd.cell[cid[0]].color;
+		// 周りで一番大きな線は？
+		if(cid.length>1){
+			var largeid = this.id[cid[0]];
+			for(var i=1;i<cid.length;i++){
+				if(this[largeid].idlist.length < this[this.id[cid[i]]].idlist.length){
+					largeid = this.id[cid[0]];
+					longColor = bd.cell[cid[i]].color;
+				}
+			}
+		}
+		return longColor;
+	},
+	setLongColor : function(assign, longColor){
+		// 色を同じにする
+		if(assign.length===1){
+			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('CellList');
+			for(var i=0,len=idlist.length;i<len;i++){
+				var cell = bd.cell[idlist[i]];
+				cell.color = longColor;
+				clist.add(cell);
+			}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
+		}
+		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
+		// それ以外の線には新しい色を付加する
+		else if(assign.length>1){
+			// できた線の中でもっとも長いものを取得する
+			var longid = assign[0];
+			for(var i=1;i<assign.length;i++){
+				if(this[longid].idlist.length < this[assign[i]].idlist.length){ longid = assign[i];}
+			}
+
+			// 新しい色の設定
+			var clist = this.owner.newInstance('CellList');
+			for(var i=0;i<assign.length;i++){
+				var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+				var idlist = this[assign[i]].idlist;
+				for(var n=0,len=idlist.length;n<len;n++){
+					var cell = bd.cell[idlist[n]];
+					cell.color = newColor;
+					clist.add(cell);
+				}
+			}
+			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintBlocks(clist);}
+		}
 	},
 
 	//--------------------------------------------------------------------------------
