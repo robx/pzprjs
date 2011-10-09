@@ -165,7 +165,7 @@ AnsCheck:{
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A room has plural numbers.'); return false;
 		}
 
-		if( !this.checkNumberAndSize(rinfo) ){
+		if( !this.checkAnsNumberAndSize(rinfo) ){
 			this.setAlert('数字と部屋の大きさが違います。','The size of the room is not equal to the number.'); return false;
 		}
 
@@ -211,6 +211,21 @@ AnsCheck:{
 			var cell=null, num, distance;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 				eachcell(bd.getc(bx,by));
+			}
+		}
+		return result;
+	},
+
+	checkAnsNumberAndSize : function(rinfo){
+		var result = true;
+		for(var r=1;r<=rinfo.max;r++){
+			var clist = rinfo.getclist(r), num = -1;
+			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
+
+			if( num!==-1 && num!==clist.length ){
+				if(this.inAutoCheck){ return false;}
+				clist.seterr(1);
+				result = false;
 			}
 		}
 		return result;

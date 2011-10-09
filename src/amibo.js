@@ -150,7 +150,7 @@ Board:{
 
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
-			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.getQans()]);}
+			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.cell[c].getQans()]);}
 		}
 	}
 },
@@ -498,7 +498,7 @@ AnsCheck:{
 	},
 	checkCrossedLength : function(binfo){
 		var result=true;
-		for(var id=1,max=binfo.max;id<max;id++){
+		for(var id=1,max=binfo.max;id<=max;id++){
 			var check = false, linkid = binfo.room[id].link, clist = binfo.getclist(id);
 			for(var i=0,len=linkid.length;i<len;i++){
 				if(clist.length===binfo.getclist(linkid[i]).length){ check=true; break;}
@@ -513,7 +513,7 @@ AnsCheck:{
 	},
 
 	checkLoop : function(){
-		var result=true, sinfo={cell:[]};
+		var sinfo={cell:[]};
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.areas.barinfo.getcellaround(bd.cell[c]);
 		}
@@ -525,14 +525,12 @@ AnsCheck:{
 			this.searchloop(c, sinfo, sdata);
 		}
 
-		for(var c=0;c<bd.cellmax;c++){
-			if(sdata[c]===1){
-				if(this.inAutoCheck){ return false;}
-				bd.cell[c].seterr(4);
-				result = false;
-			}
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1)});
+		if(errclist.length>0){
+			errclist.seterr(4);
+			return false;
 		}
-		return result;
+		return true;
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];

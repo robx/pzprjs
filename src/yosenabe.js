@@ -228,7 +228,7 @@ Encode:{
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
 				if(c<bd.cellmax){
-					bd.cell[c].setQues(c,(num&twi[w]?6:0));
+					bd.cell[c].setQues(num&twi[w]?6:0);
 					c++;
 				}
 			}
@@ -344,16 +344,17 @@ AnsCheck:{
 			this.setAlert('曲がっている線があります。','A line has curve.'); return false;
 		}
 
-		// 問題のチェック
+		// 問題のチェック (1)
 		if( !this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQdir()!==-1);} ) ){
 			this.setAlert('鍋の外に数字が書いてあります。','There is a number out of a crock.'); return false;
 		}
 
-		if( !this.checkAllBlock(linfo, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);}) ){
+		var iarea = this.owner.newInstance('AreaCrockData').getAreaInfo();
+		// 問題のチェック (2)
+		if( !this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);}) ){
 			this.setAlert('鍋に数字が２つ以上書いてあります。','There is a number out of a crock.'); return false;
 		}
 
-		var iarea = this.owner.newInstance('AreaCrockData').getAreaInfo();
 		bd.searchMovedPosition(linfo);
 
 		if( !this.checkFillingCount(iarea) ){
