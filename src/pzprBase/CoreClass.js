@@ -34,15 +34,15 @@
 	require_accesslog : true,	// アクセスログを記録するかどうか
 
 	createCoreClass : function(classname, proto){
-		var rel = this._createClass(classname, proto);
+		var rel = this._createClass(classname, proto, false);
 		this.core[rel.name] = rel.body;
 	},
 	createCommonClass : function(classname, proto){
-		var rel = this._createClass(classname, proto);
+		var rel = this._createClass(classname, proto, true);
 		this.core[rel.name] = rel.body;
 		this.commonlist.push(rel.name);
 	},
-	_createClass : function(classname, proto){
+	_createClass : function(classname, proto, iscommon){
 		classname = classname.replace(/\s+/g,'');
 		var colon = classname.indexOf(':'), basename = '';
 		if(colon>=0){
@@ -50,7 +50,16 @@
 			classname = classname.substr(0,colon);
 		}
 
-		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
+		var NewClass = ((iscommon) ?
+			function(owner, args){
+				this.owner = owner;
+				if(!!this.initialize){ this.initialize.apply(this,args);}
+			}
+		:
+			function(){
+				if(!!this.initialize){ this.initialize.apply(this,arguments);}
+			}
+		);
 		if(!!basename && !!this.core[basename]){
 			var BaseClass = this.core[basename];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
@@ -94,7 +103,7 @@
 				if(!this.pclass[pid][classname]){
 					if(!!this.core[classname]){ classname = classname+":"+classname;}
 
-					var rel = this._createClass(classname, proto);
+					var rel = this._createClass(classname, proto, true);
 					this.pclass[pid][rel.name] = rel.body;
 				}
 				else{

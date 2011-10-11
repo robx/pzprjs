@@ -98,13 +98,7 @@ pzprv3.createCoreClass('Owner',
 	// owner.newInstance()    新しいオブジェクトを生成する
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
-		var self = this;
-		function F(){
-			this.owner = self;
-			return self.classes[classname].apply(this, args);
-		}
-		F.prototype = this.classes[classname].prototype;
-		return new F();
+		return (new this.classes[classname](this, args));
 	},
 
 	//---------------------------------------------------------------------------
