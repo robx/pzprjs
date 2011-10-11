@@ -169,7 +169,7 @@ Graphic:{
 			if(cell.isAkari()){
 				g.fillStyle = (cell.error!==4 ? lampcolor : this.errcolor1);
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle(cell.px, cell.py, rsize);
+					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 				}
 			}
 			else{ this.vhide(header+cell.id);}

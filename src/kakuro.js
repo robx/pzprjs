@@ -129,7 +129,8 @@ Graphic:{
 			if(!cell.is51cell() && cell.anum>0){
 				var color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
 				var text  = ""+cell.anum;
-				this.dispnum(key, 1, text, 0.80, color, cell.px, cell.py);
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				this.dispnum(key, 1, text, 0.80, color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

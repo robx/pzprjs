@@ -135,7 +135,7 @@ Graphic:{
 		for(var n=0;n<blist.length;n++){
 			var border = blist[n];
 			if(border.isGrid()){
-				var px = border.px, py = border.py;
+				var px = border.bx*this.bw, py = border.by*this.bh;
 				if(g.use.canvas){
 					g.fillStyle = this.gridcolor;
 					if(border.isVert()){

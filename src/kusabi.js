@@ -84,7 +84,8 @@ Graphic:{
 		var num = cell.qnum, key='cell_'+cell.id;
 		if(num>=1 && num<=3){
 			var text = ({1:"同",2:"短",3:"長"})[num];
-			this.dispnum(key, 1, text, 0.65, this.fontcolor, cell.px, cell.py);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum(key, 1, text, 0.65, this.fontcolor, px, py);
 		}
 		else{ this.hideEL(key);}
 	}

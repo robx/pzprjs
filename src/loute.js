@@ -274,7 +274,7 @@ Graphic:{
 			if(cell.isCircle()){
 				g.strokeStyle = this.cellcolor;
 				if(this.vnop(header+cell.id,this.STROKE)){
-					g.strokeCircle(cell.px, cell.py, rsize2);
+					g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize2);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}
@@ -289,7 +289,8 @@ Graphic:{
 			var cell = clist[i], key = 'cell_h_'+cell.id;
 			if(cell.qdir===-2){
 				var color = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
-				this.dispnum(key, 1, "?", ratio, color, cell.px, cell.py);
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				this.dispnum(key, 1, "?", ratio, color, px, py);
 			}
 			else{ this.hidenum(key);}
 		}

@@ -159,16 +159,17 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], lflag = border.isVert();
 			var qs1 = border.sidecell[0].ques, qs2 = border.sidecell[1].ques;
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
 				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRect(border.px, border.py-this.bh, 1, this.ch);
+					g.fillRect(px, py-this.bh, 1, this.ch);
 				}
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
 				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRect(border.px-this.bw, border.py, this.cw, 1);
+					g.fillRect(px-this.bw, py, this.cw, 1);
 				}
 			}
 			else{ this.vhide(header+border.id);}
@@ -184,14 +185,15 @@ Graphic:{
 
 			if(cell.ques===11){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				g.fillStyle = this.cellcolor;
 
 				// Gridの真ん中＝cpx,cpy+0.5
 				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRect(cell.px+0.5-lm, cell.py+0.5-ll/2,  lw, ll);
+					g.fillRect(px+0.5-lm, py+0.5-ll/2,  lw, ll);
 				}
 				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRect(cell.px+0.5-ll/2, cell.py+0.5-lm,  ll, lw);
+					g.fillRect(px+0.5-ll/2, py+0.5-lm,  ll, lw);
 				}
 			}
 			else{ this.vhide([headers[0]+id, headers[1]+id]);}
@@ -200,7 +202,8 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_');
 		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
-			this.dispnum(key, cell.ques, ""+cell.qnum, 0.45, "white", cell.px, cell.py);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum(key, cell.ques, ""+cell.qnum, 0.45, "white", px, py);
 		}
 		else{ this.hideEL(key);}
 	},

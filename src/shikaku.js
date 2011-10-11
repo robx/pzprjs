@@ -74,7 +74,7 @@ Graphic:{
 			if(cell.qnum!==-1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle(cell.px, cell.py, rsize2);
+					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize2);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}

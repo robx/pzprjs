@@ -289,10 +289,11 @@ Graphic:{
 
 			var qa=cell.qans;
 			if(qa!==-1){
+				var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
 				if(qa===1 || qa===3){
 					g.fillStyle = this.getBarColor(cell,true);
 					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRect(cell.rpx+lp, cell.rpy, lw, this.ch+1);
+						g.fillRect(rpx+lp, rpy, lw, this.ch+1);
 					}
 				}
 				else{ this.vhide(headers[0]+id);}
@@ -300,7 +301,7 @@ Graphic:{
 				if(qa===2 || qa===3){
 					g.fillStyle = this.getBarColor(cell,false);
 					if(this.vnop(headers[1]+id,this.FILL)){
-						g.fillRect(cell.rpx, cell.rpy+lp, this.cw+1, lw);
+						g.fillRect(rpx, rpy+lp, this.cw+1, lw);
 					}
 				}
 				else{ this.vhide(headers[1]+id);}
@@ -327,7 +328,7 @@ Graphic:{
 
 			var lw = Math.max(this.cw/6, 3);	//LineWidth
 			var lp = (this.bw-lw/2);			//LinePadding
-			var px = cell.px, py = cell.py;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
 			var cell2 = cell.up(), qa = cell2.qans;
 			if(qa===1||qa===3){
@@ -380,7 +381,7 @@ Graphic:{
 			if(border.qsub===2){
 				if(this.vnop(header+border.id,this.NONE)){
 					var lw = this.lw + this.addlw, lm = this.lm;
-					var px = border.px, py = border.py;
+					var px = border.bx*this.bw, py = border.by*this.bh;
 					if(border.isVert()){ g.fillRect(px-lm, py-rw-lm, lw, rw*2+lw);}
 					else               { g.fillRect(px-rw-lm, py-lm, rw*2+lw, lw);}
 				}

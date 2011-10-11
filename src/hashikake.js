@@ -193,7 +193,7 @@ Graphic:{
 			if(!!color){
 				g.fillStyle = color;
 				var isvert = border.isVert();
-				var px = border.px, py = border.py;
+				var px = border.bx*this.bw, py = border.by*this.bh;
 
 				if(border.line===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
@@ -239,7 +239,7 @@ Graphic:{
 				else                   { g.fillStyle = this.circledcolor;}
 
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.shapeCircle(cell.px, cell.py, rsize);
+					g.shapeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}

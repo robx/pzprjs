@@ -370,7 +370,7 @@ Graphic:{
 
 			if(cell.ques===21){ //たて
 				if(this.vnop([headers[0],id].join("_"),this.FILL)){
-					var px = cell.px-lm+1, py, rpy = cell.rpy, max = rpy+this.ch;
+					var px = (cell.bx*this.bw)-lm+1, py, rpy = (cell.by-1)*this.bh, max = rpy+this.ch;
 					g.beginPath();
 					for(py=rpy;py<max;py+=ll*2){
 						g.moveTo(px,   py);
@@ -387,7 +387,7 @@ Graphic:{
 
 			if(cell.ques===22){ //よこ
 				if(this.vnop([headers[1],id].join("_"),this.FILL)){
-					var px, py = cell.py-lm+1, rpx = cell.rpx, max = rpx+this.cw;
+					var px, py = (cell.by*this.bh)-lm+1, rpx = (cell.bx-1)*this.bw, max = rpx+this.cw;
 					g.beginPath();
 					for(px=rpx;px<max;px+=ll*2){
 						g.moveTo(px,   py);
@@ -419,7 +419,7 @@ Graphic:{
 		g.strokeStyle = this.cellcolor;
 		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
 		if(this.vnop(vids[0],this.FILL)){
-			g.shapeCircle(cell.px, cell.py, csize);
+			g.shapeCircle((cell.bx*this.bw), (cell.by*this.bh), csize);
 		}
 
 		this.dispnumStartpos();
@@ -430,7 +430,8 @@ Graphic:{
 		var cell = bd.startcell, num = bd.hinfo.max;
 		if(num>=0){
 			var fontratio = (num<10?0.75:0.66);
-			this.dispnum('stpos', 1, ""+num, fontratio, "black", cell.px, cell.py);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum('stpos', 1, ""+num, fontratio, "black", px, py);
 		}
 		else{ this.hidenum(key);}
 	},
@@ -462,7 +463,8 @@ Graphic:{
 			var num = (r>0?bd.hinfo.data[r].number:-1);
 			if(keydown && num>0){
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				this.dispnum(key, 1, ""+num, fontratio ,"tomato", cell.px, cell.py);
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				this.dispnum(key, 1, ""+num, fontratio ,"tomato", px, py);
 			}
 			else{ this.hidenum(key);}
 		}

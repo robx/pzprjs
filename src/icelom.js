@@ -324,7 +324,7 @@ Graphic:{
 
 			this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
 			if(dir>=1 && dir<=4){
-				var px=border.px, py=border.py;
+				var px = border.bx*this.bw, py = border.by*this.bh;
 
 				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
@@ -352,7 +352,7 @@ Graphic:{
 		border = bd.arrowin;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
-			var bx = border.bx, by = border.by, px = border.px, py = border.py;
+			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py+0.6*this.ch);}
 			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
@@ -361,7 +361,7 @@ Graphic:{
 		border = bd.arrowout;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
-			var bx = border.bx, by = border.by, px = border.px, py = border.py;
+			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}
 			else if(by===bd.maxby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py+0.6*this.ch);}
 			else if(bx===bd.minbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px-0.7*this.cw, py-0.3*this.ch);}

@@ -186,7 +186,8 @@ Graphic:{
 			if(excell.bx===-1 && excell.by===-1){ continue;}
 			var color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
 			var fontratio = (excell.qnum<10?0.8:0.7);
-			this.dispnum(key, 1, ""+excell.qnum, fontratio, color, excell.px, excell.py);
+			var px = excell.bx*this.bw, py = excell.by*this.bh;
+			this.dispnum(key, 1, ""+excell.qnum, fontratio, color, px, py);
 		}
 	},
 

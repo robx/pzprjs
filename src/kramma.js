@@ -142,8 +142,9 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], keyimg = ['cell',cell.id,'quesimg'].join('_');
 			if(cell.qnum>0){
+				var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
 				this.vshow(keyimg);
-				this.imgtile.putImage(cell.qnum-1, g, cell.rpx,cell.rpy,this.cw,this.ch);
+				this.imgtile.putImage(cell.qnum-1, g, rpx,rpy,this.cw,this.ch);
 			}
 			else{ this.vhide(keyimg);}
 		}

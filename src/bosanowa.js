@@ -203,7 +203,8 @@ Graphic:{
 			var cell = clist[i];
 			if(cell.error===1){
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillRect(cell.rpx, cell.rpy, this.cw, this.ch);
+					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
+					g.fillRect(rpx, rpy, this.cw, this.ch);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}
@@ -224,7 +225,7 @@ Graphic:{
 			if(cell.isValid() && !cell.isNum()){
 				g.strokeStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+cell.id,this.STROKE)){
-					g.strokeCircle(cell.px, cell.py, rsize);
+					g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}
@@ -243,15 +244,16 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
 			if(border.isGrid()){
+				var px = border.bx*this.bw, py = border.by*this.bh;
 				if(!g.use.canvas){
 					if(this.vnop(header+border.id,this.NONE)){
 						if(border.isVert()){
-							var px = border.px, py1 = border.py-this.bh, py2 = py1+this.ch+1;
+							var py1 = py-this.bh, py2 = py+this.bh+1;
 							g.strokeLine(px, py1, px, py2);
 							g.setDashSize(3);
 						}
 						else{
-							var py = border.py, px1 = border.px-this.bw, px2 = px1+this.cw+1;
+							var px1 = px-this.bw, px2 = px+this.bw+1;
 							g.strokeLine(px1, py, px2, py);
 							g.setDashSize(3);
 						}
@@ -263,12 +265,12 @@ Graphic:{
 					var dotSize  = this.cw/(dotCount*2);
 					if(border.isVert()){ 
 						for(var j=0;j<this.ch+1;j+=(2*dotSize)){
-							g.fillRect(border.px, border.py-this.bh+j, 1, dotSize);
+							g.fillRect(px, py-this.bh+j, 1, dotSize);
 						}
 					}
 					else{ 
 						for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
-							g.fillRect(border.px-this.bw+j, border.py, dotSize, 1);
+							g.fillRect(px-this.bw+j, py, dotSize, 1);
 						}
 					}
 				}
@@ -285,16 +287,17 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], id = border.id;
 			if(border.isGrid()){
+				var px = border.bx*this.bw, py = border.by*this.bh;
 				g.fillStyle=this.gridcolor;
 				if(this.vnop(headers[0]+id,this.NONE)){
-					if(border.isVert()){ g.fillRect(border.px, border.py-this.bh, 1, this.ch+1);}
-					else               { g.fillRect(border.px-this.bw, border.py, this.cw+1, 1);}
+					if(border.isVert()){ g.fillRect(px, py-this.bh, 1, this.ch+1);}
+					else               { g.fillRect(px-this.bw, py, this.cw+1, 1);}
 				}
 
 				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
 				if(this.vnop(headers[1]+id,this.FILL)){
-					if(border.isVert()){ g.fillRect(border.px, border.py-csize, 1, 2*csize+1);}
-					else               { g.fillRect(border.px-csize, border.py, 2*csize+1, 1);}
+					if(border.isVert()){ g.fillRect(px, py-csize, 1, 2*csize+1);}
+					else               { g.fillRect(px-csize, py, 2*csize+1, 1);}
 				}
 			}
 			else{ this.vhide([headers[0]+id, headers[1]+id]);}
@@ -313,7 +316,8 @@ Graphic:{
 			if(border.qsub>=0 && border.isGrid()){
 				g.fillStyle = "white";
 				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRect(border.px-csize, border.py-csize, 2*csize+1, 2*csize+1);
+					var px = border.bx*this.bw, py = border.by*this.bh;
+					g.fillRect(px-csize, py-csize, 2*csize+1, 2*csize+1);
 				}
 			}
 			else{ this.vhide(header+border.id);}
@@ -326,8 +330,8 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], key='border_'+border.id;
 			if(border.qsub>=0){
-				var px = border.px, py = border.py;
-				this.dispnum(key, 1, ""+border.qsub, 0.35, "blue", border.px, border.py);
+				var px = border.bx*this.bw, py = border.by*this.bh;
+				this.dispnum(key, 1, ""+border.qsub, 0.35, "blue", px, py);
 			}
 			else{ this.hideEL(key);}
 		}

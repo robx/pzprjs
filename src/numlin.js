@@ -85,7 +85,8 @@ Graphic:{
 				else              { g.fillStyle = "white";}
 
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.fillRect(px-rw, py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide(header+cell.id);}

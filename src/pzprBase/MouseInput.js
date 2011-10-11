@@ -217,13 +217,13 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.checkBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
-		var pc = this.owner.painter;
-		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
+		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
-		var pc = this.owner.painter;
-		if(this.inputPoint.px%pc.cw===0 || this.inputPoint.py%pc.ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
+		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
 		return this.getpos(0).getex();
 	},
 	getcross : function(){
@@ -231,32 +231,32 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	getpos : function(rc){
 		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var pc = this.owner.painter, pm = rc*pc.cw;
-		var px=(this.inputPoint.px+pm+2*pc.cw), py=(this.inputPoint.py+pm+2*pc.ch);
-		var bx = ((px/pc.cw)|0)*2 + ((px%pc.cw<2*pm)?0:1) - 4;
-		var by = ((py/pc.ch)|0)*2 + ((py%pc.ch<2*pm)?0:1) - 4;
+		var cw = this.owner.painter.cw, ch = this.owner.painter.ch, pm = rc*cw;
+		var px=(this.inputPoint.px+pm+2*cw), py=(this.inputPoint.py+pm+2*ch);
+		var bx = ((px/cw)|0)*2 + ((px%cw<2*pm)?0:1) - 4;
+		var by = ((py/ch)|0)*2 + ((py%ch<2*pm)?0:1) - 4;
 
 		return this.owner.newInstance('Address',[bx,by]);
 	},
 
 	getborder : function(spc){
-		var pc = this.owner.painter;
-		var bx = ((this.inputPoint.px/pc.cw)<<1)+1, by = ((this.inputPoint.py/pc.ch)<<1)+1;
-		var dx =   this.inputPoint.px%pc.cw,        dy =   this.inputPoint.py%pc.ch;
+		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
+		var bx = ((this.inputPoint.px/cw)<<1)+1, by = ((this.inputPoint.py/ch)<<1)+1;
+		var dx =   this.inputPoint.px%cw,        dy =   this.inputPoint.py%ch;
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		if(bd.lines.isLineCross){
 			if(!bd.lines.borderAsLine){
-				var m1=spc*pc.cw, m2=(1-spc)*pc.cw;
+				var m1=spc*cw, m2=(1-spc)*cw;
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.newObject(bd.BORDER);}
 			}
 			else{
-				var m1=(0.5-spc)*pc.cw, m2=(0.5+spc)*pc.cw;
+				var m1=(0.5-spc)*cw, m2=(0.5+spc)*cw;
 				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return bd.newObject(bd.BORDER);}
 			}
 		}
 
-		if(dx<pc.cw-dy){	//左上
+		if(dx<cw-dy){	//左上
 			if(dx>dy){ return bd.getb(bx  ,by-1);}	//左上＆右上 -> 上
 			else     { return bd.getb(bx-1,by  );}	//左上＆左下 -> 左
 		}

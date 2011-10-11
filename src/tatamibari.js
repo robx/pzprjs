@@ -109,18 +109,18 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
-			var qn = cell.qnum;
+			var cell = clist[i], id = cell.id, qn = cell.qnum;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			if(qn===1||qn===2){
 				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRect(cell.px-lw/2, cell.py-ll/2, lw, ll);
+					g.fillRect(px-lw/2, py-ll/2, lw, ll);
 				}
 			}
 			else{ this.vhide(headers[0]+id);}
 
 			if(qn===1||qn===3){
 				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRect(cell.px-ll/2, cell.py-lw/2, ll, lw);
+					g.fillRect(px-ll/2, py-lw/2, ll, lw);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}

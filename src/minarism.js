@@ -168,8 +168,9 @@ Graphic:{
 			var border = blist[i];
 
 			if(border.qdir!==0 || border.qnum!==-1){
+				var px = border.bx*this.bw, py = border.by*this.bh;
 				g.fillStyle = "white";
-				g.fillRect(border.px-csize, border.py-csize, 2*csize+1, 2*csize+1);
+				g.fillRect(px-csize, py-csize, 2*csize+1, 2*csize+1);
 			}
 		}
 	},
@@ -186,7 +187,7 @@ Graphic:{
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], id=border.id, key=['border',id].join('_');
-			var px = border.px, py = border.py;
+			var px = border.bx*this.bw, py = border.by*this.bh;
 			// ○の描画
 			if(border.qnum!=-1){
 				g.fillStyle = (border.error===1 ? this.errcolor1 : "white");

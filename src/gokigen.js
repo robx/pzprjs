@@ -285,7 +285,8 @@ Graphic:{
 		var num = cell.qnum, key='cell_'+cell.id;
 		if(num!==-1){
 			var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
-			this.dispnum(key, 1, text, 0.70, this.fontcolor, cell.px, cell.py);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum(key, 1, text, 0.70, this.fontcolor, px, py);
 		}
 		else{ this.hideEL(key);}
 	},

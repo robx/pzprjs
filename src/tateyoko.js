@@ -188,6 +188,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
+			var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
 			var lw = Math.max(this.cw/6, 3);	//LineWidth
 			var lp = (this.bw-lw/2);			//LinePadding
 
@@ -198,14 +199,14 @@ Graphic:{
 
 			if(cell.qans===12){
 				if(this.vnop(headers[0]+id,this.FILL)){
-					g.fillRect(cell.rpx+lp, cell.rpy, lw, this.ch+1);
+					g.fillRect(rpx+lp, rpy, lw, this.ch+1);
 				}
 			}
 			else{ this.vhide(headers[0]+id);}
 
 			if(cell.qans===13){
 				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillRect(cell.rpx, cell.rpy+lp, this.cw+1, lw);
+					g.fillRect(rpx, rpy+lp, this.cw+1, lw);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
@@ -222,7 +223,8 @@ Graphic:{
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillRect(cell.rpx, cell.rpy, this.cw+1, this.ch+1);
+					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
+					g.fillRect(rpx, rpy, this.cw+1, this.ch+1);
 				}
 			}
 			else{ this.vhide(header+cell.id);}
@@ -237,7 +239,8 @@ Graphic:{
 			var num = cell.qnum;
 			if(num!==-1){
 				var color = (cell.ques!==1 ? this.fontcolor : "white");
-				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, cell.px, cell.py);
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, px, py);
 			}
 			else{ this.hideEL(key);}
 		}

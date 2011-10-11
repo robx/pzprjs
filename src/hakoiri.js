@@ -127,7 +127,7 @@ Graphic:{
 			if(num<=0){ continue;}
 
 			g.strokeStyle = this.getCellNumberColor(cell);
-			var px=cell.px, py=cell.py;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			if(this.vnop(headers[(num-1)]+id,this.STROKE)){
 				switch(num){
 				case 1:

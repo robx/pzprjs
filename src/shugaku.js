@@ -215,7 +215,8 @@ Graphic:{
 			if(isdraw){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillRect(cell.rpx+1, cell.rpy+1, this.cw-1, this.ch-1);
+					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
+					g.fillRect(rpx+1, rpy+1, this.cw-1, this.ch-1);
 				}
 			}
 			else{ this.vhide(header+cell.id);}
@@ -248,7 +249,8 @@ Graphic:{
 				else                           { g.fillStyle = "white";}
 
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.shapeRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.shapeRect(px-rw, py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}

@@ -86,7 +86,7 @@ Graphic:{
 			var cell = clist[i];
 			var key_qans = ['cell',cell.id,'qans'].join('_');
 			var key_ques = ['cell',cell.id,'ques'].join('_');
-			var px = cell.px, py = cell.py;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
 			if(cell.anum!==-1){
 				var color = (cell.error==1?this.fontErrcolor:this.fontAnscolor);

@@ -199,7 +199,8 @@ Graphic:{
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(cell);
 			if(cell.qnum!==-1){ fontratio *= 0.9;}
-			this.dispnum(key, 1, text, fontratio, color, cell.px, cell.py);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum(key, 1, text, fontratio, color, px, py);
 		}
 		else{ this.hidenum(key);}
 	},

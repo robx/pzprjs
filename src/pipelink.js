@@ -194,7 +194,7 @@ Graphic:{
 				if(cell.ques===6){
 					g.strokeStyle = this.cellcolor;
 					if(this.vnop(header+cell.id,this.NONE)){
-						g.strokeCircle(cell.px, cell.py, rsize);
+						g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 					}
 				}
 				else{ this.vhide(header+cell.id);}

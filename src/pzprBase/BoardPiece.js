@@ -131,11 +131,6 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 
 	iscellobj : true,
 
-	px : null,
-	py : null,
-	rpx : null,
-	rpy : null,
-
 	// デフォルト値
 	ques : 0,	// セルの問題データを保持する(1:黒マス 2-5:三角形 6:アイス 7:盤面外 11-17:十字型 21-22:旗門 51:カックロ)
 	qans : 0,	// セルの回答データを保持する(1:黒マス/あかり 2-5:三角形 11-13:棒 31-32:斜線 41-50:ふとん)
@@ -398,9 +393,6 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 
 	iscrossobj : true,
 
-	px : null,
-	py : null,
-
 	// デフォルト値
 	ques : 0,	// 交差点の問題データ(黒点)を保持する
 	qnum :-1,	// 交差点の問題データ(数字)を保持する
@@ -443,9 +435,6 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	group : 'border',
 
 	isborderobj : true,
-
-	px : null,
-	py : null,
 
 	// デフォルト値
 	ques : 0,	// 境界線の問題データを保持する(問題境界線)
@@ -584,11 +573,6 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 	group : 'excell',
 
 	isexcellobj : true,
-
-	px : null,
-	py : null,
-	rpx : null,
-	rpy : null,
 
 	// デフォルト値
 	qdir : 0,	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)

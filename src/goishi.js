@@ -188,7 +188,8 @@ Graphic:{
 				g.strokeStyle = (cell.error===1 ? this.errcolor1  : this.cellcolor);
 				g.fillStyle   = (cell.error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(header+cell.id,this.FILL_STROKE)){
-					g.shapeCircle(cell.px, cell.py, rsize);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.shapeCircle(px, py, rsize);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}
@@ -207,7 +208,8 @@ Graphic:{
 			if(cell.isStone() && cell.anum!==-1){
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillRect(cell.px-rw, cell.py-rh, rw*2+1, rh*2+1);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.fillRect(px-rw, py-rh, rw*2+1, rh*2+1);
 				}
 			}
 			else{ this.vhide([header+cell.id]);}

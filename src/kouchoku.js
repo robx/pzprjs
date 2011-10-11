@@ -410,7 +410,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i], id = cross.id, key = ['cross',id].join('_');
 			var graydisp = (isgray && cross.error===0 && cross.segment.length>=2);
-			var px = cross.px, py = cross.py;
+			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			if(cross.qnum>0){
 				// ○の描画
 				g.fillStyle = (cross.error===1 ? this.errbcolor1 : "white");
@@ -451,7 +451,8 @@ Graphic:{
 			if(this.owner.mouse.targetPoint[0]===cross ||
 			   this.owner.mouse.targetPoint[1]===cross){
 				if(this.vnop(header+cross.id,this.STROKE)){
-					g.strokeCircle(cross.px, cross.py, csize);
+					var px = cross.bx*this.bw, py = cross.by*this.bh;
+					g.strokeCircle(px, py, csize);
 				}
 			}
 			else{ this.vhide(header+cross.id);}
