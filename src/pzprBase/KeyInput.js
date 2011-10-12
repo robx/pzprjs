@@ -624,21 +624,21 @@ pzprv3.createCommonClass('TargetCursor',
 	},
 
 	getTCC : function(){ return this.pos.getc();},
-	setTCC : function(cell){ this.pos.set(cell.getaddr());},
+	setTCC : function(cell){ this.pos.init(cell.bx,cell.by);},
 
 	getTXC : function(){ return this.pos.getx();},
-	setTXC : function(cross){ this.pos.set(cross.getaddr());},
+	setTXC : function(cross){ this.pos.init(cross.bx,cross.by);},
 
 	getTBC : function(){ return this.pos.getb();},
-	setTBC : function(border){ this.pos.set(border.getaddr());},
+	setTBC : function(border){ this.pos.init(border.bx,border.by);},
 
 	getTEC : function(){ return this.pos.getex();},
-	setTEC : function(excell){ this.pos.set(excell.getaddr());},
+	setTEC : function(excell){ this.pos.init(excell.bx,excell.by);},
 
 	getOBJ : function(){ return bd.getobj(this.pos.bx, this.pos.by);},
 	setOBJ : function(obj){
 		if(obj.isnull){ return;}
-		this.pos.set(obj.getaddr());
+		this.pos.init(obj.bx,obj.by);
 	},
 
 	//---------------------------------------------------------------------------

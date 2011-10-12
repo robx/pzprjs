@@ -12,6 +12,12 @@ pzprv3.createCommonClass('Board',
 		this.border = this.owner.newInstance('BorderList');
 		this.excell = this.owner.newInstance('EXCellList');
 
+		this.nullobj = this.owner.newInstance('BoardPiece');
+		this.emptycell   = this.owner.newInstance('Cell');
+		this.emptycross  = this.owner.newInstance('Cross');
+		this.emptyborder = this.owner.newInstance('Border');
+		this.emptyexcell = this.owner.newInstance('EXCell');
+
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
 		this.bdmax     = 0;	// 境界線の数
@@ -139,7 +145,7 @@ pzprv3.createCommonClass('Board',
 		else if(type===this.CROSS) { return this.owner.newInstance('Cross');}
 		else if(type===this.BORDER){ return this.owner.newInstance('Border');}
 		else if(type===this.EXCELL){ return this.owner.newInstance('EXCell');}
-		return (void 0);
+		return this.nullobj;
 	},
 
 	//---------------------------------------------------------------------------
@@ -347,19 +353,19 @@ pzprv3.createCommonClass('Board',
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*qc;}
 
-		return (id!==null ? this.cell[id] : this.newObject(this.CELL));
+		return (id!==null ? this.cell[id] : this.emptycell);
 	},
 	getx : function(bx,by,qc,qr){
-		var id = null, cross;
+		var id = null, cross = this.emptycross;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*(qc+1);}
 
 		if(this.iscross!==0 && id!==null){ cross = this.cross[id];}
 		else{
-			cross = this.newObject(this.CROSS);
 			if(this.iscross===0){
 				/* LineManager用 */
+				cross = this.newObject(this.CROSS);
 				cross.id = id
 				cross.isnull = false;
 				cross.bx = bx;
@@ -382,7 +388,7 @@ pzprv3.createCommonClass('Board',
 			else if(bx===2*qc&&(by&1)&&(by>=1&&by<=2*qr-1)){ id = (qc-1)*qr+qc*(qr-1)+2*qc+qr+(by>>1);}
 		}
 
-		return (id!==null ? this.border[id] : this.newObject(this.BORDER));
+		return (id!==null ? this.border[id] : this.emptyborder);
 	},
 	getex : function(bx,by,qc,qr){
 		var id = null;
@@ -403,7 +409,7 @@ pzprv3.createCommonClass('Board',
 			else if(bx===2*qc+1&&by===2*qr+1){ id = 2*qc+2*qr+3;}
 		}
 
-		return (id!==null ? this.excell[id] : this.newObject(this.EXCELL));
+		return (id!==null ? this.excell[id] : this.emptyexcell);
 	},
 
 	getobj : function(bx,by,qc,qr){

@@ -35,18 +35,18 @@ pzprv3.createCommonClass('BoardPiece',
 	//---------------------------------------------------------------------------
 	getaddr : function(){ return this.owner.newInstance('Address',[this.bx, this.by]);},
 
-	relcell   : function(dx,dy){ return this.getaddr().move(dx,dy).getc();},
-	relcross  : function(dx,dy){ return this.getaddr().move(dx,dy).getx();},
-	relbd     : function(dx,dy){ return this.getaddr().move(dx,dy).getb();},
-	relexcell : function(dx,dy){ return this.getaddr().move(dx,dy).getex();},
+	relcell   : function(dx,dy){ return bd.getc(this.bx+dx,this.by+dy);},
+	relcross  : function(dx,dy){ return bd.getx(this.bx+dx,this.by+dy);},
+	relbd     : function(dx,dy){ return bd.getb(this.bx+dx,this.by+dy);},
+	relexcell : function(dx,dy){ return bd.getex(this.bx+dx,this.by+dy);},
 	
 	//---------------------------------------------------------------------------
 	// ub() db() lb() rb()  セルや交点の上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
-	ub : function(){ return this.relbd(0,-1);},
-	db : function(){ return this.relbd(0, 1);},
-	lb : function(){ return this.relbd(-1,0);},
-	rb : function(){ return this.relbd( 1,0);},
+	ub : function(){ return bd.getb(this.bx,this.by-1);},
+	db : function(){ return bd.getb(this.bx,this.by+1);},
+	lb : function(){ return bd.getb(this.bx-1,this.by);},
+	rb : function(){ return bd.getb(this.bx+1,this.by);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -154,10 +154,10 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	//---------------------------------------------------------------------------
 	// cell.up() dn() lt() rt()  セルの上下左右に接するセルのIDを返す
 	//---------------------------------------------------------------------------
-	up : function(){ return this.relcell(0,-2);},
-	dn : function(){ return this.relcell(0, 2);},
-	lt : function(){ return this.relcell(-2,0);},
-	rt : function(){ return this.relcell( 2,0);},
+	up : function(){ return bd.getc(this.bx,this.by-2);},
+	dn : function(){ return bd.getc(this.bx,this.by+2);},
+	lt : function(){ return bd.getc(this.bx-2,this.by);},
+	rt : function(){ return bd.getc(this.bx+2,this.by);},
 
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
