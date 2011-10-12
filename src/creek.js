@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クリーク版 creek.js v3.4.0
 //
-pzprv3.custom.creek = {
+pzprv3.createCustoms('creek', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -137,4 +137,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

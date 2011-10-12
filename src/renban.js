@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 連番窓口版 renban.js v3.4.0
 //
-pzprv3.custom.renban = {
+pzprv3.createCustoms('renban', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -192,4 +192,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

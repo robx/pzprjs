@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ボックス版 box.js v3.4.0
 //
-pzprv3.custom.box = {
+pzprv3.createCustoms('box', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -347,4 +347,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

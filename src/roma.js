@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ろーま版 roma.js v3.4.0
 //
-pzprv3.custom.roma = {
+pzprv3.createCustoms('roma', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -239,4 +239,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

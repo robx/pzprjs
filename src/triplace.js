@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 トリプレイス版 triplace.js v3.4.0
 //
-pzprv3.custom.triplace = {
+pzprv3.createCustoms('triplace', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -322,4 +322,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

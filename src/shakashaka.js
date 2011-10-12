@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.4.0
 //
-pzprv3.custom.shakashaka = {
+pzprv3.createCustoms('shakashaka', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -377,4 +377,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

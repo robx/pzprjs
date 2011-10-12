@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 あみぼー版 amibo.js v3.4.0
 //
-pzprv3.custom.amibo = {
+pzprv3.createCustoms('amibo', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -583,4 +583,4 @@ AnsCheck:{
 		this.newIrowake();
 	}
 }
-};
+});

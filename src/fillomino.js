@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.4.0
 //
-pzprv3.custom.fillomino = {
+pzprv3.createCustoms('fillomino', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -285,4 +285,4 @@ AnsCheck:{
 		}
 	}
 }
-};
+});

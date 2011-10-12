@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.0
 //
-pzprv3.custom.gokigen = {
+pzprv3.createCustoms('gokigen', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -412,4 +412,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

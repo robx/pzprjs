@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.4.0
 //
-pzprv3.custom.paintarea = {
+pzprv3.createCustoms('paintarea', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -125,4 +125,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

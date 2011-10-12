@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.0
 //
-pzprv3.custom.lits = {
+pzprv3.createCustoms('lits', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -264,4 +264,4 @@ FileIO:{
 		return true;
 	}
 }
-};
+});

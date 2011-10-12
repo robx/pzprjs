@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js v3.4.0
 //
-pzprv3.custom.slalom = {
+pzprv3.createCustoms('slalom', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -1026,4 +1026,4 @@ HurdleManager:{
 		}
 	}
 }
-};
+});

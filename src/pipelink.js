@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.0
 //
-pzprv3.custom.pipelink = {
+pzprv3.createCustoms('pipelink', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -351,4 +351,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

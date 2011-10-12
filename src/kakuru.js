@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 カックル版 kakuru.js v3.4.0
 //
-pzprv3.custom.kakuru = {
+pzprv3.createCustoms('kakuru', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -304,4 +304,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

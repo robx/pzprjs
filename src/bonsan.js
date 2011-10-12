@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.0
 //
-pzprv3.custom.bonsan = {
+pzprv3.createCustoms('bonsan', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -237,4 +237,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

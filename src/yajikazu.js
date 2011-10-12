@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.4.0
 //
-pzprv3.custom.yajikazu = {
+pzprv3.createCustoms('yajikazu', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -149,4 +149,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

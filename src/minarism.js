@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.0
 //
-pzprv3.custom.minarism = {
+pzprv3.createCustoms('minarism', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -366,4 +366,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

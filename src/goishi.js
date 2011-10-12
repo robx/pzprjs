@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 碁石ひろい版 goishi.js v3.4.0
 //
-pzprv3.custom.goishi = {
+pzprv3.createCustoms('goishi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -375,4 +375,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

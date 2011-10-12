@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 天体ショー版 tentaisho.js v3.4.0
 //
-pzprv3.custom.tentaisho = {
+pzprv3.createCustoms('tentaisho', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -529,4 +529,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

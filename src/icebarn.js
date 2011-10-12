@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 アイスバーン版 icebarn.js v3.4.0
 //
-pzprv3.custom.icebarn = {
+pzprv3.createCustoms('icebarn', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -684,4 +684,4 @@ AnsCheck:{
 		return 0;
 	}
 }
-};
+});

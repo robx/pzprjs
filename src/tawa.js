@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 たわむれんが版 tawa.js v3.4.0
 //
-pzprv3.custom.tawa = {
+pzprv3.createCustoms('tawa', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -510,4 +510,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

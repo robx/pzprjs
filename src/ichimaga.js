@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 イチマガ・磁石イチマガ・一回曲がって交差もするの版 ichimaga.js v3.4.0
 //
-pzprv3.custom.ichimaga = {
+pzprv3.createCustoms('ichimaga', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -179,4 +179,4 @@ AnsCheck:{
 		room.error = err;
 	}
 }
-};
+});

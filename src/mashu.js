@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ましゅ版 mashu.js v3.4.0
 //
-pzprv3.custom.mashu = {
+pzprv3.createCustoms('mashu', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -257,4 +257,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

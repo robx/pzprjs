@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.4.0
 //
-pzprv3.custom.loopsp = {
+pzprv3.createCustoms('loopsp', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -357,4 +357,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

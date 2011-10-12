@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 メジリンク版 mejilink.js v3.4.0
 //
-pzprv3.custom.mejilink = {
+pzprv3.createCustoms('mejilink', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -238,4 +238,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

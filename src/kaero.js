@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.4.0
 //
-pzprv3.custom.kaero = {
+pzprv3.createCustoms('kaero', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -319,4 +319,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

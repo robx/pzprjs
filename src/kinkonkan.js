@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.4.0
 //
-pzprv3.custom.kinkonkan = {
+pzprv3.createCustoms('kinkonkan', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -551,4 +551,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

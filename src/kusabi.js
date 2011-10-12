@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クサビリンク版 kusabi.js v3.4.0
 //
-pzprv3.custom.kusabi = {
+pzprv3.createCustoms('kusabi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -199,4 +199,4 @@ AnsCheck:{
 		room.error = err;
 	}
 }
-};
+});

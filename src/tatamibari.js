@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.0
 //
-pzprv3.custom.tatamibari = {
+pzprv3.createCustoms('tatamibari', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -238,4 +238,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

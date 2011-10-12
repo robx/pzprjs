@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.4.0
 //
-pzprv3.custom.hakoiri = {
+pzprv3.createCustoms('hakoiri', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -224,4 +224,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

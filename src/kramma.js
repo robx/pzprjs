@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.0
 //
-pzprv3.custom.kramma = {
+(function(){ var custombase = {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -365,3 +365,7 @@ pzprv3.createCommonClass('ImageTile',
 		return false;
 	}
 });
+
+pzprv3.createCustoms('kramma', custombase);
+
+})();

@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ファイブセルズ版 fivecells.js v3.4.0
 //
-pzprv3.custom.fivecells = {
+pzprv3.createCustoms('fivecells', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -267,4 +267,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

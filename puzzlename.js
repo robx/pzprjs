@@ -30,6 +30,13 @@ var PZLINFO = {
 	toKanpen : function(pid){
 		return (!!this.info[pid].alias.kanpen ? !!this.info[pid].alias.kanpen : pid);
 	},
+	PIDlist : function(scriptid){
+		var list = [];
+		for(var pid in this.info){
+			if(this.info[pid].script===scriptid){ list.push(pid);}
+		}
+		return list;
+	},
 
 	toFBGcolor : function(pid){
 		return FBGcolor(pid);

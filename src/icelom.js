@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 アイスローム・アイスローム２版 icelom.js v3.4.0
 //
-pzprv3.custom.icelom = {
+pzprv3.createCustoms('icelom', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -584,4 +584,4 @@ AnsCheck:{
 		return 0;
 	}
 }
-};
+});

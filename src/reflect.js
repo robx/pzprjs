@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
 //
-pzprv3.custom.reflect = {
+pzprv3.createCustoms('reflect', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -365,4 +365,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

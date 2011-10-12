@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js v3.4.0
 //
-pzprv3.custom.kurodoko = {
+pzprv3.createCustoms('kurodoko', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -156,4 +156,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

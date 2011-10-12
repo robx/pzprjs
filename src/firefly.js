@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ホタルビーム版 firefly.js v3.4.0
 //
-pzprv3.custom.firefly = {
+pzprv3.createCustoms('firefly', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -234,4 +234,4 @@ AnsCheck:{
 		room.error = err;
 	}
 }
-};
+});

@@ -26,13 +26,15 @@
 	DEBUG  : false,	// for_test用(デバッグモード)
 
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
-	pclass : {},	// パズル別クラス保存用
-	custom : {},	// パズル別クラスのスーパークラスからの差分
+	custom : {},	// パズル別クラス保存用
 
 	commonlist : [],	// パズル別クラスのスーパークラスになるクラスを保存
 
 	require_accesslog : true,	// アクセスログを記録するかどうか
 
+	//---------------------------------------------------------------
+	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
+	//---------------------------------------------------------------
 	createCoreClass : function(classname, proto){
 		var rel = this._createClass(classname, proto, false);
 		this.core[rel.name] = rel.body;
@@ -42,6 +44,11 @@
 		this.core[rel.name] = rel.body;
 		this.commonlist.push(rel.name);
 	},
+	extendCoreClass : function(classname, proto){
+		var base = pzprv3.core[classname].prototype;
+		for(var name in proto){ base[name] = proto[name];}
+	},
+
 	_createClass : function(classname, proto, iscommon){
 		classname = classname.replace(/\s+/g,'');
 		var colon = classname.indexOf(':'), basename = '';
@@ -68,58 +75,64 @@
 		}
 		for(var name in proto){ NewClass.prototype[name] = proto[name];}
 		NewClass.prototype.constructor = NewClass;
-		return {body:NewClass, name:classname, base:basename};
+		return {body:NewClass, name:classname};
 	},
 
-	getPuzzleClass : function(pid){
-		// 継承させたパズル個別のクラスを設定
-		if(!this.pclass[pid]){
-			var scriptid = this.PZLINFO.toScript(pid);
-			this.preparePuzzleClass(scriptid);
-		}
-		return this.pclass[pid];
+	//---------------------------------------------------------------
+	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
+	//---------------------------------------------------------------
+	createCustoms : function(scriptid, custombase0){
+		var pidlist = this.PZLINFO.PIDlist(scriptid);
+		this.createCustomsPlural(pidlist, custombase0);
 	},
-	preparePuzzleClass : function(scriptid){
-		// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
-		for(var pid in this.PZLINFO.info){
-			if(this.PZLINFO.toScript(pid)!==scriptid || !!this.pclass[pid]){ continue;}
-
-			this.pclass[pid] = {};
-
-			// 追加があるクラス => 残りの共通クラスの順に継承
-			var classlist = [];
-			for(var i=0;i<this.commonlist.length;i++){ classlist.push(this.commonlist[i]);}
-			for(var classname in this.custom[scriptid]){ classlist.push(classname);}
-			for(var i=0;i<classlist.length;i++){
-				var classname = classlist[i], pidcond = [], isexist = false;
-				var proto = this.custom[scriptid][classname]; proto = (!!proto?proto:{});
-				if(classname.match('@')){
-					pidcond   = classname.substr(classname.indexOf('@')+1).split(/,/);
-					classname = classname.substr(0,classname.indexOf('@'));
-					for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
-					if(!isexist){ continue;}
-				}
-
-				if(!this.pclass[pid][classname]){
-					if(!!this.core[classname]){ classname = classname+":"+classname;}
-
-					var rel = this._createClass(classname, proto, true);
-					this.pclass[pid][rel.name] = rel.body;
-				}
-				else{
-					for(var name in proto){ this.pclass[pid][classname].prototype[name] = proto[name];}
+	createCustomsPlural : function(pidlist, custombase0){
+		for(var i=0;i<pidlist.length;i++){
+			var pid = pidlist[i], custombase = {};
+			for(var classname0 in custombase0){
+				var classname = this.checkPID(classname0, pid);
+				if(!!classname){
+					var proto = custombase0[classname0];
+					if(!custombase[classname]){ custombase[classname]={};}
+					for(var name in proto){ custombase[classname][name] = proto[name];}
 				}
 			}
+			this.createCustomSingle(pid, custombase);
 		}
-
-		// 継承済みなので、メモリから消しておく ※空はダメなので、trueだけ代入
-		delete this.custom[scriptid];
-		this.custom[scriptid] = true;
+	},
+	checkPID : function(classname, pid){
+		var pidcond = [], isexist = false;
+		if(classname.match('@')){
+			pidcond   = classname.substr(classname.indexOf('@')+1).split(/,/);
+			classname = classname.substr(0,classname.indexOf('@'));
+			for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
+			if(!isexist){ classname = '';}
+		}
+		return classname;
 	},
 
-	extendCoreClass : function(classname, proto){
-		var base = pzprv3.core[classname].prototype;
-		for(var name in proto){ base[name] = proto[name];}
+	createCustomSingle : function(pid, custombase){
+		var custom = {};
+
+		// 追加があるクラス => 残りの共通クラスの順に継承
+		for(var classname in custombase){
+			var proto = custombase[classname];
+
+			if(!custom[classname]){
+				if(!!this.core[classname]){ classname = classname+":"+classname;}
+
+				var rel = this._createClass(classname, proto, true);
+				custom[rel.name] = rel.body;
+			}
+			else{
+				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
+			}
+		}
+		for(var i=0;i<this.commonlist.length;i++){
+			var classname = this.commonlist[i];
+			if(!custom[classname]){ custom[classname] = this.core[classname];}
+		}
+
+		this.custom[pid] = custom;
 	},
 
 	//---------------------------------------------------------------
@@ -146,14 +159,12 @@
 
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
-		var scriptid = this.PZLINFO.toScript(pid);
-		if(!this.custom[scriptid]){
-			this.includeFile("src/"+scriptid+".js");
+		if(!this.custom[pid]){
+			this.includeFile("src/"+this.PZLINFO.toScript(pid)+".js");
 		}
 	},
 	ready : function(pid){
-		var scriptid = this.PZLINFO.toScript(pid);
-		return (!!pzprv3.custom[scriptid] && Camp.isready() &&
+		return (!!pzprv3.custom[pid] && Camp.isready() &&
 				(!this.DEBUG || !!this.core.Debug.prototype.urls));
 	},
 

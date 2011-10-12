@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.4.0
 //
-pzprv3.custom.shugaku = {
+pzprv3.createCustoms('shugaku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -415,4 +415,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

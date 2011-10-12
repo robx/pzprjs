@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 エルート・さしがね版 loute.js v3.4.0
 //
-pzprv3.custom.loute = {
+pzprv3.createCustoms('loute', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -522,4 +522,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

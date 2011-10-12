@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.4.0
 //
-pzprv3.custom.numlin = {
+pzprv3.createCustoms('numlin', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -187,4 +187,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

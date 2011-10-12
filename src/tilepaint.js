@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.4.0
 //
-pzprv3.custom.tilepaint = {
+pzprv3.createCustoms('tilepaint', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -305,4 +305,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

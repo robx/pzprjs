@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 カントリーロード版 country.js v3.4.0
 //
-pzprv3.custom.country = {
+pzprv3.createCustoms('country', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -173,4 +173,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

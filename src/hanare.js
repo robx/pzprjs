@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 はなれ組版 hanare.js v3.4.0
 //
-pzprv3.custom.hanare = {
+pzprv3.createCustoms('hanare', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -231,4 +231,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

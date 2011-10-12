@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajirin.js v3.4.0
 // 
-pzprv3.custom.yajirin = {
+pzprv3.createCustoms('yajirin', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -226,4 +226,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

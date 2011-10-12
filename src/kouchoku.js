@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.4.0
 //
-pzprv3.custom.kouchoku = {
+pzprv3.createCustoms('kouchoku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -1221,4 +1221,4 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		}
 	}
 }
-};
+});

@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 遠い誓い版 toichika.js v3.4.0
 //
-pzprv3.custom.toichika = {
+pzprv3.createCustoms('toichika', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -237,4 +237,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

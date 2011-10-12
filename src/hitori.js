@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.4.0
 //
-pzprv3.custom.hitori = {
+pzprv3.createCustoms('hitori', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -197,4 +197,4 @@ AnsCheck:{
 		return this.isDifferentNumberInClist(clist2, numfunc);
 	}
 }
-};
+});

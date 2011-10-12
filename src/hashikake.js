@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.0
 //
-pzprv3.custom.hashikake = {
+pzprv3.createCustoms('hashikake', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -362,4 +362,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

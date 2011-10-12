@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js v3.4.0
 //
-pzprv3.custom.heyawake = {
+pzprv3.createCustoms('heyawake', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -233,4 +233,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

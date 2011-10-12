@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.4.0
 //
-pzprv3.custom.bdblock = {
+pzprv3.createCustoms('bdblock', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -142,4 +142,4 @@ AnsCheck:{
 		return true;
 	}
 }
-};
+});

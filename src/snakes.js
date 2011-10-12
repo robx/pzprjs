@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 へびいちご版 snakes.js v3.4.0
 //
-pzprv3.custom.snakes = {
+pzprv3.createCustoms('snakes', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -347,4 +347,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

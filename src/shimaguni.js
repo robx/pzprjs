@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 島国・チョコナ版 shimaguni.js v3.4.0
 //
-pzprv3.custom.shimaguni = {
+pzprv3.createCustoms('shimaguni', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -181,4 +181,4 @@ FileIO:{
 		return true;
 	}
 }
-};
+});

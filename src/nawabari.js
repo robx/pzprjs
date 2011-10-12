@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 なわばり・フォーセルズ版 nawabari.js v3.4.0
 //
-pzprv3.custom.nawabari = {
+pzprv3.createCustoms('nawabari', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -146,4 +146,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});

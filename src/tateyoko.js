@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.4.0
 //
-pzprv3.custom.tateyoko = {
+pzprv3.createCustoms('tateyoko', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -387,4 +387,4 @@ AnsCheck:{
 		return result;
 	}
 }
-};
+});
