@@ -15,8 +15,8 @@ MouseEvent:{
 	// マウス入力時のセルID取得系
 	getcell : function(){
 		var pos = this.getpos(0);
-		if(this.inputY%this.owner.painter.ch===0){ return bd.newObject(bd.CELL);} // 縦方向だけ、ぴったりは無効
-		if(!pos.isinside()){ return bd.newObject(bd.CELL);}
+		if(this.inputY%this.owner.painter.ch===0){ return bd.emptycell;} // 縦方向だけ、ぴったりは無効
+		if(!pos.isinside()){ return bd.emptycell;}
 
 		var cand = pos.getc();
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
@@ -146,7 +146,7 @@ Board:{
 			else if(this.lap===3){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc+1))>>1;}}
 		}
 
-		return (id!==null ? this.cell[id] : this.newObject(this.CELL));
+		return (id!==null ? this.cell[id] : this.emptycell);
 	},
 	cellinside : function(x1,y1,x2,y2){
 		var clist = this.owner.newInstance('CellList');

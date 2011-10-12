@@ -10,7 +10,7 @@ MouseEvent:{
 			this.inputborder();
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.newObject(bd.CELL);
+			this.mouseCell = bd.emptycell;
 			this.inputqnum();
 		}
 	},

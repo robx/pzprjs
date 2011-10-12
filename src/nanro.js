@@ -8,7 +8,7 @@ MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart || this.mousemove){ this.inputborder();}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.newObject(bd.CELL);
+			this.mouseCell = bd.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -18,7 +18,7 @@ MouseEvent:{
 			else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.newObject(bd.CELL);
+			this.mouseCell = bd.emptycell;
 			this.inputqnum();
 		}
 	},

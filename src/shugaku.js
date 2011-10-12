@@ -64,7 +64,7 @@ MouseEvent:{
 
 		this.mousereset();
 		cell.drawaround();
-		this.mouseCell = bd.newObject(bd.CELL);
+		this.mouseCell = bd.emptycell;
 	},
 
 	inputcell_shugaku : function(){
@@ -96,7 +96,7 @@ MouseEvent:{
 		else if(adj.getQans()>=47 && adj.getQans()<=50){ adj.setQans(46);}
 	},
 	currentTargetADJ : function(){
-		if(this.mouseCell.isnull){ return bd.newObject(bd.CELL);}
+		if(this.mouseCell.isnull){ return bd.emptycell;}
 		var cell = this.mouseCell;
 		switch(this.inputData){
 			case 2: return cell.up();
@@ -104,7 +104,7 @@ MouseEvent:{
 			case 4: return cell.lt();
 			case 5: return cell.rt();
 		}
-		return bd.newObject(bd.CELL);
+		return bd.emptycell;
 	}
 },
 

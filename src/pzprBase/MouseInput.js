@@ -41,8 +41,8 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	mousereset : function(){
 		this.inputData = null;
-		this.mouseCell = bd.newObject(bd.CELL);
-		this.firstCell = bd.newObject(bd.CELL);
+		this.mouseCell = bd.emptycell;
+		this.firstCell = bd.emptycell;
 		this.firstPoint.reset();
 		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
@@ -218,12 +218,12 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	getcell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.newObject(bd.CELL);} // ぴったりは無効
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.emptycell;} // ぴったりは無効
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.newObject(bd.EXCELL);} // ぴったりは無効
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.emptyexcell;} // ぴったりは無効
 		return this.getpos(0).getex();
 	},
 	getcross : function(){
@@ -248,11 +248,11 @@ pzprv3.createCommonClass('MouseEvent',
 		if(bd.lines.isLineCross){
 			if(!bd.lines.borderAsLine){
 				var m1=spc*cw, m2=(1-spc)*cw;
-				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.newObject(bd.BORDER);}
+				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.emptyborder;}
 			}
 			else{
 				var m1=(0.5-spc)*cw, m2=(0.5+spc)*cw;
-				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return bd.newObject(bd.BORDER);}
+				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return bd.emptyborder;}
 			}
 		}
 
@@ -264,7 +264,7 @@ pzprv3.createCommonClass('MouseEvent',
 			if(dx>dy){ return bd.getb(bx+1,by  );}	//右下＆右上 -> 右
 			else     { return bd.getb(bx,  by+1);}	//右下＆左下 -> 下
 		}
-		return bd.newObject(bd.BORDER);
+		return bd.emptyborder;
 	},
 
 	checkBorderMode : function(){
@@ -646,7 +646,7 @@ pzprv3.createCommonClass('MouseEvent',
 		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
 		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
 		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
-		return bd.newObject(bd.BORDER);
+		return bd.emptyborder;
 	},
 
 	//---------------------------------------------------------------------------

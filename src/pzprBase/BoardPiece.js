@@ -763,7 +763,7 @@ pzprv3.createCommonClass('CellList:PieceList',
 		for(var i=0,len=this.length;i<len;i++){
 			if(this[i].isNum()){ return this[i];}
 		}
-		return bd.newObject(bd.CELL);
+		return bd.emptycell;
 	}
 });
 

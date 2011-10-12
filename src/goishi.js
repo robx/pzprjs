@@ -34,7 +34,7 @@ MouseEvent:{
 			return;
 		}
 
-		var max=0, bcell=bd.newObject(bd.CELL);
+		var max=0, bcell=bd.emptycell;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.anum>max){

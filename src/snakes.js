@@ -72,7 +72,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(!cell.isnull){
 			if(this.owner.playmode){ cell.minnum = 1;}
-			this.mouseCell = bd.newObject(bd.CELL);
+			this.mouseCell = bd.emptycell;
 			this.inputqnum();
 			cell.minnum = 0;
 		}

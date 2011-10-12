@@ -213,7 +213,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
-		this.startcell = this.newObject(this.CELL);
+		this.startcell = this.emptycell;
 		this.hinfo.init();
 	},
 

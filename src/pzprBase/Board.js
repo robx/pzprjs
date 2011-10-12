@@ -509,10 +509,9 @@ pzprv3.createCommonClass('Board',
 	// bd.searchMovedPosition() 丸数字を移動させるパズルで、移動後の場所を設定する
 	//---------------------------------------------------------------------------
 	searchMovedPosition : function(linfo){
-		var emptycell = this.newObject(this.CELL);
 		for(var c=0;c<this.cellmax;c++){
 			var cell = this.cell[c];
-			cell.base = (cell.isNum() ? cell : emptycell);
+			cell.base = (cell.isNum() ? cell : this.emptycell);
 		}
 		for(var r=1;r<=linfo.max;r++){
 			var clist = linfo.getclist(r);
@@ -525,7 +524,7 @@ pzprv3.createCommonClass('Board',
 				}
 			}
 			if(before!==null && after!==null){
-				before.base = emptycell;
+				before.base = this.emptycell;
 				after.base = before;
 			}
 		}
