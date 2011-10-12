@@ -169,7 +169,7 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this,painter, this,painter.resize_canvas),250);
+		this.resizetimer = setTimeout(ee.binder(this.painter, this.painter.resize_canvas),250);
 	},
 	onblur_func : function(){
 		this.key.keyreset();
