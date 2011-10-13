@@ -186,6 +186,61 @@ pzprv3.addConsts({
 	HEYAAPP : 4
 });
 
+//---------------------------------------------------------------------------
+// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+//---------------------------------------------------------------------------
+try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
+	localStorage = globalStorage[location.host];
+}}catch(e){}
+
+/******************/
+/* 環境変数の定義 */
+/******************/
+pzprv3.browser = (function(){
+	var UA  = navigator.userAgent;
+	return {
+		IE    : (!!document.uniqueID),
+		Opera : (!!window.opera),
+		WebKit: (UA.indexOf('AppleWebKit/') > -1),
+		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
+
+		IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
+		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
+		IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
+	};
+})();
+pzprv3.OS = (function(){
+	var UA  = navigator.userAgent;
+	var ios     = (UA.indexOf('like Mac OS X') > -1);
+	var android = (UA.indexOf('Android') > -1);
+	return {
+		iOS    : (ios),
+		mobile : (ios || android)
+	};
+})();
+pzprv3.storage = (function(){
+	var val = 0x00;
+	try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
+	try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
+	try{ if(!!window.indexedDB)     { val |= 0x04;}}catch(e){}
+	try{ if(!!window.openDatabase){ // Opera10.50対策
+		var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
+		if(!!dbtmp){ val |= 0x02;}
+	}}catch(e){}
+
+	// Firefoxはローカルだとデータベース系は使えない
+	if(!pzprv3.browser.Gecko || !!location.hostname){ val = 0;}
+
+	return {
+		session : !!(val & 0x10),
+		localST : !!(val & 0x08),
+		WebIDB  : !!(val & 0x04),
+		WebSQL  : !!(val & 0x02)
+	};
+})();
+
 //----------------------------------------------------------------------------
 // ★Pointクラス  (px,py)pixel座標を扱う
 //---------------------------------------------------------------------------

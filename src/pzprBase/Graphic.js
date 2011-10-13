@@ -160,7 +160,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.setcellsize()      pc.cw, pc.chのサイズを設定する
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
-		if(ee.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
+		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
 		var cols = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
 		var rows = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
 		if(this.owner.pid==='box'){ cols++; rows++;}
@@ -201,7 +201,7 @@ pzprv3.createCommonClass('Graphic',
 		ci[1] = (wwidth*ws.limit)/(this.cellsize*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(ee.mobile){
+		if(pzprv3.OS.mobile){
 			mwidth = wwidth*0.98;
 			this.cw = this.ch = ((mwidth*0.92)/cols)|0;
 			if(this.cw < this.cellsize){ this.cw = this.ch = this.cellsize;}
@@ -226,7 +226,7 @@ pzprv3.createCommonClass('Graphic',
 		// mainのサイズ変更
 		if(!this.outputImage){
 			ee('main').el.style.width = ''+(mwidth|0)+'px';
-			if(ee.mobile){ ee('menuboard').el.style.width = '90%';}
+			if(pzprv3.OS.mobile){ ee('menuboard').el.style.width = '90%';}
 		}
 	},
 
@@ -1884,7 +1884,7 @@ pzprv3.createCommonClass('Graphic',
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 		if(this.fillTextEmulate){
-			if(ee.br.IE6 || ee.br.IE7){ py+=2;}
+			if(pzprv3.browser.IE6 || pzprv3.browser.IE7){ py+=2;}
 
 			// エレメントを取得
 			var el = this.numobj[key];
@@ -1933,7 +1933,7 @@ pzprv3.createCommonClass('Graphic',
 
 			this.vshow("text_"+key);
 			g.fillText(text, px, py);
-			if(ee.br.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+			if(pzprv3.browser.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 		}
 	}
 });

@@ -33,8 +33,8 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousereset();
 
 		this.mouseoffset = {px:0,py:0};
-		if(ee.br.IE6||ee.br.IE7||ee.br.IE8){ this.mouseoffset = {px:2,py:2};}
-		else if(ee.br.WebKit)              { this.mouseoffset = {px:1,py:1};}
+		if(pzprv3.browser.IE6||pzprv3.browser.IE7||pzprv3.browser.IE8){ this.mouseoffset = {px:2,py:2};}
+		else if(pzprv3.browser.WebKit){ this.mouseoffset = {px:1,py:1};}
 	},
 
 	RBBlackCell : false,	// 連黒分断禁のパズル
@@ -63,7 +63,7 @@ pzprv3.createCommonClass('MouseEvent',
 	setEvents : function(){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!ee.mobile){
+		if(!pzprv3.OS.mobile){
 			ee.addEvent(canvas, "mousedown", ee.ebinder(this, this.e_mousedown));
 			ee.addEvent(canvas, "mousemove", ee.ebinder(this, this.e_mousemove));
 			ee.addEvent(canvas, "mouseup",   ee.ebinder(this, this.e_mouseup));
@@ -173,8 +173,8 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!ee.mobile){
-			if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){
+		if(!pzprv3.OS.mobile){
+			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
 				right = (e.button===2);

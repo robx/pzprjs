@@ -87,7 +87,7 @@ AreaManager:{
 	menuinit : function(pp){
 		this.SuperFunc.menuinit.call(this,pp);
 		if(this.enableSaveImage){
-			if(ee.br.Gecko && !location.hostname){
+			if(pzprv3.browser.Gecko && !location.hostname){
 				ee('ms_imagesavep').el.className = 'smenunull';
 			}
 		}

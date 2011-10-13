@@ -159,7 +159,7 @@ pzprv3.createCoreClass('Owner',
 		ee.addEvent(document, 'blur', ee.ebinder(this, this.onblur_func));
 
 		// onresizeイベントを割り当てる
-		ee.addEvent(window, (!ee.os.iPhoneOS ? 'resize' : 'orientationchange'),
+		ee.addEvent(window, (!pzprv3.OS.iOS ? 'resize' : 'orientationchange'),
 										ee.ebinder(this, this.onresize_func));
 	},
 

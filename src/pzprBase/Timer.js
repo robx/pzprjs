@@ -9,7 +9,7 @@ pzprv3.createCommonClass('Timer',
 		// ** 一般タイマー
 		this.TID;				// タイマーID
 		this.timerInterval = 100;
-		if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){ this.timerInterval *= 2;}
+		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
 
 		this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
 		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
@@ -93,7 +93,7 @@ pzprv3.createCommonClass('UndoTimer',
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
-		if(ee.br.IE6 || ee.br.IE7 || ee.br.IE8){ this.timerInterval *= 2;}
+		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
 
 		this.inUNDO = false;
 		this.inREDO = false;

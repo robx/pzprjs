@@ -278,7 +278,7 @@ pzprv3.extendCoreClass('Debug',
 
 	taenable : true,
 	addTextarea : function(str){
-		if(!ee.br.Gecko){ ee('testarea').el.value += (str+"\n");}
+		if(!pzprv3.browser.Gecko){ ee('testarea').el.value += (str+"\n");}
 		else{ ee('testdiv').appendHTML(str).appendBR();}
 	},
 

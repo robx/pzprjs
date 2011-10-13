@@ -96,7 +96,7 @@ pzprv3.createCommonClass('Menu',
 			this.enableSaveImage = true;
 		}
 
-		if(ee.br.IE6){
+		if(pzprv3.browser.IE6){
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 
@@ -212,7 +212,7 @@ pzprv3.createCommonClass('Menu',
 	displayDesign : function(){
 		this.displayTitle();
 		document.body.style.backgroundImage = "url(./bg/"+this.owner.pid+".gif)";
-		if(ee.br.IE6){
+		if(pzprv3.browser.IE6){
 			ee('title2').el.style.marginTop = "24px";
 			ee('separator2').el.style.margin = '0pt';
 		}
@@ -259,7 +259,7 @@ pzprv3.createCommonClass('Menu',
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(ee.storage.localST){
+		if(pzprv3.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(this.enableSaveImage){
@@ -289,7 +289,7 @@ pzprv3.createCommonClass('Menu',
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(ee.storage.session){
+		if(pzprv3.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -316,7 +316,7 @@ pzprv3.createCommonClass('Menu',
 		ap('sep_disp0',  'disp');
 
 		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
-		au('text','disp',(!ee.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
+		au('text','disp',(!pzprv3.OS.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!this.owner.painter.irowake){
@@ -404,7 +404,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
 		var pp = this.config;
-		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!pzprv3.OS.mobile?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -555,7 +555,7 @@ pzprv3.createCommonClass('Menu',
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!ee.br.IE6){
+			if(!pzprv3.browser.IE6){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
@@ -729,7 +729,7 @@ pzprv3.createCommonClass('Menu',
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		if(!ee.mobile){
+		if(!pzprv3.OS.mobile){
 			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
 			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
 		}
@@ -864,7 +864,7 @@ pzprv3.createCommonClass('Menu',
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			if(!ee.mobile){
+			if(!pzprv3.OS.mobile){
 				_pop.style.left = ee.pageX(e) - 8 + 'px';
 				_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			}
@@ -895,7 +895,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!ee.mobile){
+		if(!pzprv3.OS.mobile){
 			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
 		}
 		else{
@@ -1174,7 +1174,7 @@ pzprv3.createCommonClass('Menu',
 	duplicate : function(){
 		var str = this.owner.fio.fileencode(k.PZPH);
 		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
-		if(!ee.br.Opera){
+		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = (str+this.owner.fio.history);
 			window.open(url,'');
@@ -1235,7 +1235,7 @@ pzprv3.createCommonClass('Menu',
 		_doc.fileform2.submit();
 	},
 	openimage : function(url){
-		if(!ee.br.IE9){
+		if(!pzprv3.browser.IE9){
 			window.open(url, '', '');
 		}
 		else{
@@ -1362,7 +1362,7 @@ pzprv3.createCoreClass('Debug',
 
 		_doc.testform.perfload.style.display = (this.owner.pid!=='country' ? 'none' : 'inline');
 		_doc.testform.pbfilesave.style.display = (!this.owner.menu.ispencilbox ? 'none' : 'inline');
-		_doc.testform.database.style.display = (ee.storage.localST ? 'none' : 'inline');
+		_doc.testform.database.style.display = (pzprv3.storage.localST ? 'none' : 'inline');
 
 		if(pzprv3.DEBUG){ this.testonly_func();}	// テスト用
 	},

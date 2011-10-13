@@ -245,7 +245,7 @@ Board:{
 
 Menu:{
 	menufix : function(pp){
-		pp.addSelect('use','setting',(!ee.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+		pp.addSelect('use','setting',(!pzprv3.OS.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
 
 		pp.addChild('use_1', 'use', 'クリックした位置', 'Corner-side');
