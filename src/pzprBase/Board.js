@@ -1,4 +1,52 @@
 // Board.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
+pzprv3.addConsts({
+	// const値
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
+
+	NDIR : 0,	// 方向なし
+	UP   : 1,	// up
+	DN   : 2,	// down
+	LT   : 3,	// left
+	RT   : 4,	// right
+});
+pzprv3.addConsts({
+	// 拡大縮小・回転反転用定数
+	EXPAND : 0x10,
+	REDUCE : 0x20,
+	TURN   : 0x40,
+	FLIP   : 0x80,
+	TURNFLIP: 0xC0, // (TURN|FLIP),
+
+	EXPANDUP: 0x11, // (EXPAND|UP),
+	EXPANDDN: 0x12, // (EXPAND|DN),
+	EXPANDLT: 0x13, // (EXPAND|LT),
+	EXPANDRT: 0x14, // (EXPAND|RT),
+
+	REDUCEUP: 0x21, // (REDUCE|UP),
+	REDUCEDN: 0x22, // (REDUCE|DN),
+	REDUCELT: 0x23, // (REDUCE|LT),
+	REDUCERT: 0x24, // (REDUCE|RT),
+
+	TURNL: 0x41, // (TURN|1),
+	TURNR: 0x42, // (TURN|2),
+
+	FLIPX: 0x81, // (FLIP|1),
+	FLIPY: 0x82, // (FLIP|2),
+});
 
 //---------------------------------------------------------------------------
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
@@ -51,36 +99,16 @@ pzprv3.createCommonClass('Board',
 	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
-	// const値
-	CELL   : 'cell',
-	CROSS  : 'cross',
-	BORDER : 'border',
-	EXCELL : 'excell',
-
-	QUES : 'ques',
-	QNUM : 'qnum',
-	QDIR : 'qdir',
-	QANS : 'qans',
-	ANUM : 'anum',
-	LINE : 'line',
-	QSUB : 'qsub',
-
-	NDIR : 0,	// 方向なし
-	UP   : 1,	// up
-	DN   : 2,	// down
-	LT   : 3,	// left
-	RT   : 4,	// right
-
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
 		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
 
-						   { this.initGroup(this.CELL,   col, row);}
-		if(!!this.iscross) { this.initGroup(this.CROSS,  col, row);}
-		if(!!this.isborder){ this.initGroup(this.BORDER, col, row);}
-		if(!!this.isexcell){ this.initGroup(this.EXCELL, col, row);}
+						   { this.initGroup(k.CELL,   col, row);}
+		if(!!this.iscross) { this.initGroup(k.CROSS,  col, row);}
+		if(!!this.isborder){ this.initGroup(k.BORDER, col, row);}
+		if(!!this.isexcell){ this.initGroup(k.EXCELL, col, row);}
 
 		this.qcols = col;
 		this.qrows = row;
@@ -121,30 +149,30 @@ pzprv3.createCommonClass('Board',
 		return (len-clen);
 	},
 	getGroup : function(type){
-		if     (type===this.CELL)  { return this.cell;}
-		else if(type===this.CROSS) { return this.cross;}
-		else if(type===this.BORDER){ return this.border;}
-		else if(type===this.EXCELL){ return this.excell;}
+		if     (type===k.CELL)  { return this.cell;}
+		else if(type===k.CROSS) { return this.cross;}
+		else if(type===k.BORDER){ return this.border;}
+		else if(type===k.EXCELL){ return this.excell;}
 		return [];
 	},
 	estimateSize : function(type, col, row){
-		if     (type===this.CELL)  { return col*row;}
-		else if(type===this.CROSS) { return (col+1)*(row+1);}
-		else if(type===this.BORDER){
+		if     (type===k.CELL)  { return col*row;}
+		else if(type===k.CROSS) { return (col+1)*(row+1);}
+		else if(type===k.BORDER){
 			if     (this.isborder===1){ return 2*col*row-(col+row);}
 			else if(this.isborder===2){ return 2*col*row+(col+row);}
 		}
-		else if(type===this.EXCELL){
+		else if(type===k.EXCELL){
 			if     (this.isexcell===1){ return col+row+1;}
 			else if(this.isexcell===2){ return 2*col+2*row+4;}
 		}
 		return 0;
 	},
 	newObject : function(type){
-		if     (type===this.CELL)  { return this.owner.newInstance('Cell');}
-		else if(type===this.CROSS) { return this.owner.newInstance('Cross');}
-		else if(type===this.BORDER){ return this.owner.newInstance('Border');}
-		else if(type===this.EXCELL){ return this.owner.newInstance('EXCell');}
+		if     (type===k.CELL)  { return this.owner.newInstance('Cell');}
+		else if(type===k.CROSS) { return this.owner.newInstance('Cross');}
+		else if(type===k.BORDER){ return this.owner.newInstance('Border');}
+		else if(type===k.EXCELL){ return this.owner.newInstance('EXCell');}
 		return this.nullobj;
 	},
 
@@ -188,10 +216,10 @@ pzprv3.createCommonClass('Board',
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 	},
 	setposGroup : function(type){
-		if     (type===this.CELL)  { this.setposCells();}
-		else if(type===this.CROSS) { this.setposCrosses();}
-		else if(type===this.BORDER){ this.setposBorders();}
-		else if(type===this.EXCELL){ this.setposEXcells();}
+		if     (type===k.CELL)  { this.setposCells();}
+		else if(type===k.CROSS) { this.setposCrosses();}
+		else if(type===k.BORDER){ this.setposBorders();}
+		else if(type===k.EXCELL){ this.setposEXcells();}
 	},
 
 	setposCells : function(){
@@ -333,10 +361,10 @@ pzprv3.createCommonClass('Board',
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	getObjectPos : function(type,bx,by,qc,qr){
-		if     (type===this.CELL)  { return this.getc(bx,by,qc,qr);}
-		else if(type===this.CROSS) { return this.getx(bx,by,qc,qr);}
-		else if(type===this.BORDER){ return this.getb(bx,by,qc,qr);}
-		else if(type===this.EXCELL){ return this.getex(bx,by,qc,qr);}
+		if     (type===k.CELL)  { return this.getc(bx,by,qc,qr);}
+		else if(type===k.CROSS) { return this.getx(bx,by,qc,qr);}
+		else if(type===k.BORDER){ return this.getb(bx,by,qc,qr);}
+		else if(type===k.EXCELL){ return this.getex(bx,by,qc,qr);}
 		return null;
 	},
 
@@ -365,7 +393,7 @@ pzprv3.createCommonClass('Board',
 		else{
 			if(this.iscross===0){
 				/* LineManager用 */
-				cross = this.newObject(this.CROSS);
+				cross = this.newObject(k.CROSS);
 				cross.id = id
 				cross.isnull = false;
 				cross.bx = bx;
@@ -424,10 +452,10 @@ pzprv3.createCommonClass('Board',
 	// bd.objectinside() 座標(x1,y1)-(x2,y2)に含まれるオブジェクトのリストを取得する
 	//---------------------------------------------------------------------------
 	objectinside : function(type,x1,y1,x2,y2){
-		if     (type===this.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
-		else if(type===this.CROSS) { return this.crossinside (x1,y1,x2,y2);}
-		else if(type===this.BORDER){ return this.borderinside(x1,y1,x2,y2);}
-		else if(type===this.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
+		if     (type===k.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
+		else if(type===k.CROSS) { return this.crossinside (x1,y1,x2,y2);}
+		else if(type===k.BORDER){ return this.borderinside(x1,y1,x2,y2);}
+		else if(type===k.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
 		return [];
 	},
 
@@ -541,40 +569,19 @@ pzprv3.createCommonClass('Board',
 //------------------------------------------------------------------------------
 // ★ 拡大縮小・回転反転処理用 (MenuExec.jsから移動)
 //------------------------------------------------------------------------------
-	// 定数
-	EXPAND : 0x10,
-	REDUCE : 0x20,
-	TURN   : 0x40,
-	FLIP   : 0x80,
-	TURNFLIP: 0xC0, // (TURN|FLIP),
-
-	EXPANDUP: 0x11, // (EXPAND|UP),
-	EXPANDDN: 0x12, // (EXPAND|DN),
-	EXPANDLT: 0x13, // (EXPAND|LT),
-	EXPANDRT: 0x14, // (EXPAND|RT),
-
-	REDUCEUP: 0x21, // (REDUCE|UP),
-	REDUCEDN: 0x22, // (REDUCE|DN),
-	REDUCELT: 0x23, // (REDUCE|LT),
-	REDUCERT: 0x24, // (REDUCE|RT),
-
-	TURNL: 0x41, // (TURN|1),
-	TURNR: 0x42, // (TURN|2),
-
-	FLIPX: 0x81, // (FLIP|1),
-	FLIPY: 0x82, // (FLIP|2),
-
 	boardtype : {
-		expandup: [0x21, 0x11],
-		expanddn: [0x22, 0x12],
-		expandlt: [0x23, 0x13],
-		expandrt: [0x24, 0x14],
-		reduceup: [0x11, 0x21],
-		reducedn: [0x12, 0x22],
-		reducelt: [0x13, 0x23],
-		reducert: [0x14, 0x24],
-		turnl: [0x42, 0x41], turnr: [0x41, 0x42],
-		flipy: [0x82, 0x82], flipx: [0x81, 0x81]
+		expandup: [k.REDUCEUP, k.EXPANDUP],
+		expanddn: [k.REDUCEDN, k.EXPANDDN],
+		expandlt: [k.REDUCELT, k.EXPANDLT],
+		expandrt: [k.REDUCERT, k.EXPANDRT],
+		reduceup: [k.EXPANDUP, k.REDUCEUP],
+		reducedn: [k.EXPANDDN, k.REDUCEDN],
+		reducelt: [k.EXPANDLT, k.REDUCELT],
+		reducert: [k.EXPANDRT, k.REDUCERT],
+		turnl: [k.TURNR, k.TURNL],
+		turnr: [k.TURNL, k.TURNR],
+		flipy: [k.FLIPY, k.FLIPX],
+		flipx: [k.FLIPY, k.FLIPX]
 	},
 
 	// expand/reduce処理用
@@ -612,7 +619,7 @@ pzprv3.createCommonClass('Board',
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var key = this.boardtype[name][1], key0 = this.boardtype[name][0];
 		var d = {x1:0, y1:0, x2:2*this.qcols, y2:2*this.qrows}; // 範囲が必要なのturnflipだけかも..
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			this.turnflip(key,d);
 			this.owner.undo.addOpe_BoardFlip(d, key0, key);
 		}
@@ -636,25 +643,25 @@ pzprv3.createCommonClass('Board',
 	expandreduce : function(key,d){
 		this.disableInfo();
 		this.adjustBoardData(key,d);
-		if(this.areas.roomNumber && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
+		if(this.areas.roomNumber && (key & k.REDUCE)){ this.reduceRoomNumber(key,d);}
 
-		if(key & this.EXPAND){
-			if     (key===this.EXPANDUP||key===this.EXPANDDN){ this.qrows++;}
-			else if(key===this.EXPANDLT||key===this.EXPANDRT){ this.qcols++;}
+		if(key & k.EXPAND){
+			if     (key===k.EXPANDUP||key===k.EXPANDDN){ this.qrows++;}
+			else if(key===k.EXPANDLT||key===k.EXPANDRT){ this.qcols++;}
 
-							   { this.expandGroup(this.CELL,   key);}
-			if(!!this.iscross) { this.expandGroup(this.CROSS,  key);}
-			if(!!this.isborder){ this.expandGroup(this.BORDER, key);}
-			if(!!this.isexcell){ this.expandGroup(this.EXCELL, key);}
+							   { this.expandGroup(k.CELL,   key);}
+			if(!!this.iscross) { this.expandGroup(k.CROSS,  key);}
+			if(!!this.isborder){ this.expandGroup(k.BORDER, key);}
+			if(!!this.isexcell){ this.expandGroup(k.EXCELL, key);}
 		}
-		else if(key & this.REDUCE){
-							   { this.reduceGroup(this.CELL,   key);}
-			if(!!this.iscross) { this.reduceGroup(this.CROSS,  key);}
-			if(!!this.isborder){ this.reduceGroup(this.BORDER, key);}
-			if(!!this.isexcell){ this.reduceGroup(this.EXCELL, key);}
+		else if(key & k.REDUCE){
+							   { this.reduceGroup(k.CELL,   key);}
+			if(!!this.iscross) { this.reduceGroup(k.CROSS,  key);}
+			if(!!this.isborder){ this.reduceGroup(k.BORDER, key);}
+			if(!!this.isexcell){ this.reduceGroup(k.EXCELL, key);}
 
-			if     (key===this.REDUCEUP||key===this.REDUCEDN){ this.qrows--;}
-			else if(key===this.REDUCELT||key===this.REDUCERT){ this.qcols--;}
+			if     (key===k.REDUCEUP||key===k.REDUCEDN){ this.qrows--;}
+			else if(key===k.REDUCELT||key===k.REDUCERT){ this.qcols--;}
 		}
 		this.setposAll();
 
@@ -674,10 +681,10 @@ pzprv3.createCommonClass('Board',
 			else if(margin>0){ group[i] = group[i-margin];}
 		}
 
-		if(type===this.BORDER){ this.expandborder(key);}
+		if(type===k.BORDER){ this.expandborder(key);}
 	},
 	reduceGroup : function(type,key){
-		if(type===this.BORDER){ this.reduceborder(key);}
+		if(type===k.BORDER){ this.reduceborder(key);}
 
 		var um = this.owner.undo;
 		var margin=0, group = this.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
@@ -705,21 +712,21 @@ pzprv3.createCommonClass('Board',
 		this.disableInfo();
 		this.adjustBoardData(key,d);
 
-		if(key & this.TURN){
+		if(key & k.TURN){
 			var tmp = this.qcols; this.qcols = this.qrows; this.qrows = tmp;
 			this.setposAll();
 			d = {x1:0, y1:0, x2:2*this.qcols, y2:2*this.qrows};
 		}
 
-							 { this.turnflipGroup(this.CELL,   key, d);}
-		if(!!this.iscross)   { this.turnflipGroup(this.CROSS,  key, d);}
-		if(!!this.isborder)  { this.turnflipGroup(this.BORDER, key, d);}
-		if(this.isexcell===2){ this.turnflipGroup(this.EXCELL, key, d);}
-		else if(this.isexcell===1 && (key & this.FLIP)){
+							 { this.turnflipGroup(k.CELL,   key, d);}
+		if(!!this.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
+		if(!!this.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
+		if(this.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+		else if(this.isexcell===1 && (key & k.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
-			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
-			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
-			this.turnflipGroup(this.EXCELL, key, d2);
+			if     (key===k.FLIPY){ d2.x1 = d2.x2 = -1;}
+			else if(key===k.FLIPX){ d2.y1 = d2.y2 = -1;}
+			this.turnflipGroup(k.EXCELL, key, d2);
 		}
 		this.setposAll();
 
@@ -741,10 +748,10 @@ pzprv3.createCommonClass('Board',
 				// nextになるものがtargetに移動してくる、、という考えかた。
 				// ここでは移動前のIDを取得しています
 				switch(key){
-					case this.FLIPY: next = this.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
-					case this.FLIPX: next = this.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
-					case this.TURNR: next = this.getObjectPos(type, group[target].by, xx-group[target].bx, this.qrows, this.qcols).id; break;
-					case this.TURNL: next = this.getObjectPos(type, yy-group[target].by, group[target].bx, this.qrows, this.qcols).id; break;
+					case k.FLIPY: next = this.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
+					case k.FLIPX: next = this.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
+					case k.TURNR: next = this.getObjectPos(type, group[target].by, xx-group[target].bx, this.qrows, this.qcols).id; break;
+					case k.TURNL: next = this.getObjectPos(type, yy-group[target].by, group[target].bx, this.qrows, this.qcols).id; break;
 				}
 
 				if(ch[next]===false){
@@ -766,10 +773,10 @@ pzprv3.createCommonClass('Board',
 		if(obj.isnull){ return -1;}
 
 		key &= 0x0F;
-		if     (key===this.UP){ return obj.by;}
-		else if(key===this.DN){ return 2*this.qrows-obj.by;}
-		else if(key===this.LT){ return obj.bx;}
-		else if(key===this.RT){ return 2*this.qcols-obj.bx;}
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return 2*this.qrows-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return 2*this.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -823,19 +830,19 @@ pzprv3.createCommonClass('Board',
 	innerBorder : function(id,key){
 		var border=this.border[id];
 		key &= 0x0F;
-		if     (key===this.UP){ return border.relbd(0, 2);}
-		else if(key===this.DN){ return border.relbd(0,-2);}
-		else if(key===this.LT){ return border.relbd(2, 0);}
-		else if(key===this.RT){ return border.relbd(-2,0);}
+		if     (key===k.UP){ return border.relbd(0, 2);}
+		else if(key===k.DN){ return border.relbd(0,-2);}
+		else if(key===k.LT){ return border.relbd(2, 0);}
+		else if(key===k.RT){ return border.relbd(-2,0);}
 		return null;
 	},
 	outerBorder : function(id,key){
 		var border=this.border[id];
 		key &= 0x0F;
-		if     (key===this.UP){ return border.relbd(0,-2);}
-		else if(key===this.DN){ return border.relbd(0, 2);}
-		else if(key===this.LT){ return border.relbd(-2,0);}
-		else if(key===this.RT){ return border.relbd( 2,0);}
+		if     (key===k.UP){ return border.relbd(0,-2);}
+		else if(key===k.DN){ return border.relbd(0, 2);}
+		else if(key===k.LT){ return border.relbd(-2,0);}
+		else if(key===k.RT){ return border.relbd( 2,0);}
 		return null;
 	},
 
@@ -846,7 +853,7 @@ pzprv3.createCommonClass('Board',
 		var qnums = [];
 		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
-			if(!!this.insex[this.CELL][this.distObj(key,cell)]){
+			if(!!this.insex[k.CELL][this.distObj(key,cell)]){
 				if(cell.qnum!==-1){
 					qnums.push({cell:cell, areaid:this.areas.rinfo.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
 					cell.qnum=-1;
@@ -861,7 +868,7 @@ pzprv3.createCommonClass('Board',
 				var um = this.owner.undo;
 				if(!um.undoExec && !um.redoExec){
 					um.forceRecord = true;
-					um.addOpe_Object(qnums[i].cell, this.QNUM, qnums[i].val, -1);
+					um.addOpe_Object(qnums[i].cell, k.QNUM, qnums[i].val, -1);
 					um.forceRecord = false;
 				}
 			}
@@ -887,13 +894,13 @@ pzprv3.createCommonClass('Board',
 	adjustBoardData2 : function(key,d){ },
 
 	adjustNumberArrow : function(key,d){
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			var tdir={};
 			switch(key){
-				case this.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
-				case this.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
-				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
-				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
+				case k.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
+				case k.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
+				case k.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
+				case k.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
 			}
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -903,13 +910,13 @@ pzprv3.createCommonClass('Board',
 		}
 	},
 	adjustCellArrow : function(key,d){
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			var trans = {};
 			switch(key){
-				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				case k.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case k.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case k.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case k.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 				default: return;
 			}
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
@@ -921,13 +928,13 @@ pzprv3.createCommonClass('Board',
 		}
 	},
 	adjustBorderArrow : function(key,d){
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			var trans = {};
 			switch(key){
-				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				case k.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case k.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case k.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case k.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 				default: return;
 			}
 			var blist = this.borderinside(d.x1,d.y1,d.x2,d.y2);
@@ -962,7 +969,7 @@ pzprv3.createCommonClass('Board',
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1), idx;
 
 		switch(key){
-		case this.FLIPY: // 上下反転
+		case k.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				this.getex(bx,-1).setQdir(this.qnumh[bx][0]);
@@ -973,7 +980,7 @@ pzprv3.createCommonClass('Board',
 			}
 			break;
 
-		case this.FLIPX: // 左右反転
+		case k.FLIPX: // 左右反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				this.getex(-1,by).setQnum(this.qnumw[by][0]);
@@ -984,7 +991,7 @@ pzprv3.createCommonClass('Board',
 			}
 			break;
 
-		case this.TURNR: // 右90°反転
+		case k.TURNR: // 右90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				this.getex(-1,by).setQnum(this.qnumh[by][0]);
@@ -1003,7 +1010,7 @@ pzprv3.createCommonClass('Board',
 			}
 			break;
 
-		case this.TURNL: // 左90°反転
+		case k.TURNL: // 左90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1;
 				this.getex(-1,by).setQnum(this.qnumh[yy-by][0]);
@@ -1027,20 +1034,22 @@ pzprv3.createCommonClass('Board',
 	getAfterPos : function(key,d,obj){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;
 		switch(key){
-			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
-			case this.FLIPX: bx2 = xx-bx1; by2 = by1; break;
-			case this.TURNR: bx2 = yy-by1; by2 = bx1; break;
-			case this.TURNL: bx2 = by1; by2 = xx-bx1; break;
-			case this.EXPANDUP: bx2 = bx1; by2 = by1+(by1===this.minby?0:2); break;
-			case this.EXPANDDN: bx2 = bx1; by2 = by1+(by1===this.maxby?2:0); break;
-			case this.EXPANDLT: bx2 = bx1+(bx1===this.minbx?0:2); by2 = by1; break;
-			case this.EXPANDRT: bx2 = bx1+(bx1===this.maxbx?2:0); by2 = by1; break;
-			case this.REDUCEUP: bx2 = bx1; by2 = by1-(by1<=this.minby+2?0:2); break;
-			case this.REDUCEDN: bx2 = bx1; by2 = by1-(by1>=this.maxby-2?2:0); break;
-			case this.REDUCELT: bx2 = bx1-(bx1<=this.minbx+2?0:2); by2 = by1; break;
-			case this.REDUCERT: bx2 = bx1-(bx1>=this.maxbx-2?2:0); by2 = by1; break;
+			case k.FLIPY: bx2 = bx1; by2 = yy-by1; break;
+			case k.FLIPX: bx2 = xx-bx1; by2 = by1; break;
+			case k.TURNR: bx2 = yy-by1; by2 = bx1; break;
+			case k.TURNL: bx2 = by1; by2 = xx-bx1; break;
+			case k.EXPANDUP: bx2 = bx1; by2 = by1+(by1===this.minby?0:2); break;
+			case k.EXPANDDN: bx2 = bx1; by2 = by1+(by1===this.maxby?2:0); break;
+			case k.EXPANDLT: bx2 = bx1+(bx1===this.minbx?0:2); by2 = by1; break;
+			case k.EXPANDRT: bx2 = bx1+(bx1===this.maxbx?2:0); by2 = by1; break;
+			case k.REDUCEUP: bx2 = bx1; by2 = by1-(by1<=this.minby+2?0:2); break;
+			case k.REDUCEDN: bx2 = bx1; by2 = by1-(by1>=this.maxby-2?2:0); break;
+			case k.REDUCELT: bx2 = bx1-(bx1<=this.minbx+2?0:2); by2 = by1; break;
+			case k.REDUCERT: bx2 = bx1-(bx1>=this.maxbx-2?2:0); by2 = by1; break;
 			default: bx2 = bx1; by2 = by1; break;
 		}
 		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};
 	}
 });
+
+})();

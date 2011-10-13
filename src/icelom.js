@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 アイスローム・アイスローム２版 icelom.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('icelom', {
 //---------------------------------------------------------
 // マウス入力系
@@ -66,10 +70,10 @@ MouseEvent:{
 	checkinout : function(border,dir){
 		if(border.isnull){ return 0;}
 		var bx=border.bx, by=border.by;
-		if     ((bx===bd.minbx && dir===bd.RT)||(bx===bd.maxbx && dir===bd.LT)||
-				(by===bd.minby && dir===bd.DN)||(by===bd.maxby && dir===bd.UP)){ return 1;}
-		else if((bx===bd.minbx && dir===bd.LT)||(bx===bd.maxbx && dir===bd.RT)||
-				(by===bd.minby && dir===bd.UP)||(by===bd.maxby && dir===bd.DN)){ return 2;}
+		if     ((bx===bd.minbx && dir===k.RT)||(bx===bd.maxbx && dir===k.LT)||
+				(by===bd.minby && dir===k.DN)||(by===bd.maxby && dir===k.UP)){ return 1;}
+		else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
+				(by===bd.minby && dir===k.UP)||(by===bd.maxby && dir===k.DN)){ return 2;}
 		return 0;
 	}
 },
@@ -155,10 +159,10 @@ Board:{
 		this.setarrowin_arrow(border);
 	},
 	setarrowin_arrow : function(border){
-		if     (border.by===this.maxby){ border.setArrow(this.UP);}
-		else if(border.by===this.minby){ border.setArrow(this.DN);}
-		else if(border.bx===this.maxbx){ border.setArrow(this.LT);}
-		else if(border.bx===this.minbx){ border.setArrow(this.RT);}
+		if     (border.by===this.maxby){ border.setArrow(k.UP);}
+		else if(border.by===this.minby){ border.setArrow(k.DN);}
+		else if(border.bx===this.maxbx){ border.setArrow(k.LT);}
+		else if(border.bx===this.minbx){ border.setArrow(k.RT);}
 	},
 
 	setarrowout : function(border){
@@ -170,10 +174,10 @@ Board:{
 		this.setarrowout_arrow(border);
 	},
 	setarrowout_arrow : function(border){
-		if     (border.by===this.minby){ border.setArrow(this.UP);}
-		else if(border.by===this.maxby){ border.setArrow(this.DN);}
-		else if(border.bx===this.minbx){ border.setArrow(this.LT);}
-		else if(border.bx===this.maxbx){ border.setArrow(this.RT);}
+		if     (border.by===this.minby){ border.setArrow(k.UP);}
+		else if(border.by===this.maxby){ border.setArrow(k.DN);}
+		else if(border.bx===this.minbx){ border.setArrow(k.LT);}
+		else if(border.bx===this.maxbx){ border.setArrow(k.RT);}
 	},
 
 	posinfo_in  : {},
@@ -190,7 +194,7 @@ Board:{
 		this.arrowout = this.getb(info2.bx2, info2.by2);
 
 		var um = this.owner.undo;
-		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+		if((key & k.REDUCE) && !um.undoExec && !um.redoExec){
 			um.forceRecord = true;
 			if(info1.isdel){
 				um.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
@@ -329,17 +333,17 @@ Graphic:{
 				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
-						case bd.UP: case bd.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
-						case bd.LT: case bd.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+						case k.UP: case k.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+						case k.LT: case k.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
 					}
 				}
 
 				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
 					switch(dir){
-						case bd.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-						case bd.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-						case bd.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-						case bd.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+						case k.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+						case k.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+						case k.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+						case k.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
 					}
 					g.fill();
 				}
@@ -585,3 +589,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

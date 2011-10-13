@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('reflect', {
 //---------------------------------------------------------
 // マウス入力系
@@ -95,13 +99,13 @@ Board:{
 	isborder : 1,
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){
-				case this.FLIPY: tques={2:5,3:4,4:3,5:2}; break;
-				case this.FLIPX: tques={2:3,3:2,4:5,5:4}; break;
-				case this.TURNR: tques={2:5,3:2,4:3,5:4}; break;
-				case this.TURNL: tques={2:3,3:4,4:5,5:2}; break;
+				case k.FLIPY: tques={2:5,3:4,4:3,5:2}; break;
+				case k.FLIPX: tques={2:3,3:2,4:5,5:4}; break;
+				case k.TURNR: tques={2:5,3:2,4:3,5:4}; break;
+				case k.TURNL: tques={2:3,3:4,4:5,5:2}; break;
 			}
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -366,3 +370,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

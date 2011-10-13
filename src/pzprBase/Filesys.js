@@ -1,4 +1,13 @@
 // Filesys.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
+pzprv3.addConsts({
+	// 定数(ファイル形式)
+	PZPR : 1,
+	PBOX : 2,
+	PZPH : 3
+});
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -13,11 +22,6 @@ pzprv3.createCommonClass('FileIO',
 		this.history = "";
 		this.currentType = 1;
 	},
-
-	// 定数(ファイル形式)
-	PZPR : 1,
-	PBOX : 2,
-	PZPH : 3,
 
 	//---------------------------------------------------------------------------
 	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
@@ -35,11 +39,11 @@ pzprv3.createCommonClass('FileIO',
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている(fileonload()で処理) */
-			this.currentType = this.PZPR;
+			this.currentType = k.PZPR;
 		}
 		else{
 			this.lineseek = 0;
-			this.currentType = this.PBOX;
+			this.currentType = k.PBOX;
 		}
 
 		// サイズを表す文字列
@@ -47,7 +51,7 @@ pzprv3.createCommonClass('FileIO',
 		if(this.owner.pid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(this.currentType===this.PBOX && this.owner.pid==="kakuro"){ row--; col--;}
+			if(this.currentType===k.PBOX && this.owner.pid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -56,8 +60,8 @@ pzprv3.createCommonClass('FileIO',
 		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
-		if     (this.currentType===this.PZPR){ this.decodeData();}
-		else if(this.currentType===this.PBOX){ this.kanpenOpen();}
+		if     (this.currentType===k.PZPR){ this.decodeData();}
+		else if(this.currentType===k.PBOX){ this.kanpenOpen();}
 
 		this.owner.undo.decodeLines();
 
@@ -78,25 +82,25 @@ pzprv3.createCommonClass('FileIO',
 		this.datastr = "";
 		this.history = "";
 		this.currentType = type;
-		if(this.currentType===this.PZPH){ this.currentType = this.PZPR;}
+		if(this.currentType===k.PZPH){ this.currentType = k.PZPR;}
 
 		// メイン処理
-		if     (this.currentType===this.PZPR){ this.encodeData();}
-		else if(this.currentType===this.PBOX){ this.kanpenSave();}
+		if     (this.currentType===k.PZPR){ this.encodeData();}
+		else if(this.currentType===k.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [bd.qrows, bd.qcols].join("/");}
 		this.datastr = [this.sizestr, this.datastr].join("/");
 
 		// ヘッダの処理
-		if(this.currentType===this.PZPR){
+		if(this.currentType===k.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, this.owner.pid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(type===this.PZPH){ this.history = this.owner.undo.toString();}
+		if(type===k.PZPH){ this.history = this.owner.undo.toString();}
 
 		return bstr;
 	},
@@ -148,25 +152,25 @@ pzprv3.createCommonClass('FileIO',
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, bd.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
+		this.decodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, bd.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
+		this.decodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	decodeBorder : function(func){
 		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
-			this.decodeObj(func, bd.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
-			this.decodeObj(func, bd.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
+			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.isborder===2){
-			if(this.currentType===this.PZPR){
-				this.decodeObj(func, bd.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
-				this.decodeObj(func, bd.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+			if(this.currentType===k.PZPR){
+				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===this.PBOX){
-				this.decodeObj(func, bd.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
-				this.decodeObj(func, bd.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+			else if(this.currentType===k.PBOX){
+				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	},
@@ -187,25 +191,25 @@ pzprv3.createCommonClass('FileIO',
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, bd.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
+		this.encodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, bd.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
+		this.encodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	encodeBorder : function(func){
 		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
-			this.encodeObj(func, bd.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
-			this.encodeObj(func, bd.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
+			this.encodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.isborder===2){
-			if(this.currentType===this.PZPR){
-				this.encodeObj(func, bd.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
-				this.encodeObj(func, bd.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+			if(this.currentType===k.PZPR){
+				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===this.PBOX){
-				this.encodeObj(func, bd.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
-				this.encodeObj(func, bd.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+			else if(this.currentType===k.PBOX){
+				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	},
@@ -615,3 +619,5 @@ pzprv3.createCommonClass('FileIO',
 		}
 	}
 });
+
+})();

@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('slalom', {
 //---------------------------------------------------------
 // マウス入力系
@@ -86,8 +90,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===bd.UP || dir===bd.DN){ this.inputData=21; input=true;}
-				else if(dir===bd.LT || dir===bd.RT){ this.inputData=22; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
 			}
 
 			if(input){
@@ -100,8 +104,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===bd.UP || dir===bd.DN){ this.inputData=21; input=true;}
-				else if(dir===bd.LT || dir===bd.RT){ this.inputData=22; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
 			}
 		}
 
@@ -231,7 +235,7 @@ Board:{
 
 	posinfo : {},
 	adjustBoardData : function(key,d){
-		if(key & this.TURN){
+		if(key & k.TURN){
 			var tques={21:22,22:21};
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -247,7 +251,7 @@ Board:{
 		this.startcell = this.getc(info.bx2, info.by2);
 
 		var um = this.owner.undo;
-		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+		if((key & k.REDUCE) && !um.undoExec && !um.redoExec){
 			um.forceRecord = true;
 			if(info.isdel){
 				um.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
@@ -1027,3 +1031,5 @@ HurdleManager:{
 	}
 }
 });
+
+})();

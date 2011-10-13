@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('kinkonkan', {
 //---------------------------------------------------------
 // マウス入力系
@@ -92,28 +96,28 @@ KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
 		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = bd.NDIR;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = k.NDIR;
 
 		if     (ca===this.KEYUP){
 			if(tcp.by===tc.maxy && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.miny;}
-			else if(tcp.by>tc.miny){ dir=bd.UP;}else{ flag=false;}
+			else if(tcp.by>tc.miny){ dir=k.UP;}else{ flag=false;}
 		}
 		else if(ca===this.KEYDN){
 			if(tcp.by===tc.miny && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.maxy;}
-			else if(tcp.by<tc.maxy){ dir=bd.DN;}else{ flag=false;}
+			else if(tcp.by<tc.maxy){ dir=k.DN;}else{ flag=false;}
 		}
 		else if(ca===this.KEYLT){
 			if(tcp.bx===tc.maxx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.minx;}
-			else if(tcp.bx>tc.minx){ dir=bd.LT;}else{ flag=false;}
+			else if(tcp.bx>tc.minx){ dir=k.LT;}else{ flag=false;}
 		}
 		else if(ca===this.KEYRT){
 			if(tcp.bx===tc.minx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.maxx;}
-			else if(tcp.bx<tc.maxx){ dir=bd.RT;}else{ flag=false;}
+			else if(tcp.bx<tc.maxx){ dir=k.RT;}else{ flag=false;}
 		}
 		else{ flag=false;}
 
 		if(flag){
-			if(dir!==bd.NDIR){ tc.pos.movedir(dir,2);}
+			if(dir!==k.NDIR){ tc.pos.movedir(dir,2);}
 
 			excell0.draw();
 			tc.getTCP().draw();
@@ -279,7 +283,7 @@ Board:{
 	},
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURNFLIP){ // 反転・回転全て
+		if(key & k.TURNFLIP){ // 反転・回転全て
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,31:32,32:31}[this.cell[c].getQans()]);}
 		}
 	}
@@ -552,3 +556,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 遠い誓い版 toichika.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('toichika', {
 //---------------------------------------------------------
 // マウス入力系
@@ -81,7 +85,7 @@ Board:{
 				var cell = pos.getc();
 				if(cell.isnull){ ainfo.push([cell0.id]); break;}
 				if(!!isarrow[cell.id]){
-					if(cell.getNum()!==[0,this.DN,this.UP,this.RT,this.LT][dir]){ ainfo.push([cell0.id]);}
+					if(cell.getNum()!==[0,k.DN,k.UP,k.RT,k.LT][dir]){ ainfo.push([cell0.id]);}
 					else{ ainfo.push([cell.id,cell0.id]);}
 					break;
 				}
@@ -238,3 +242,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

@@ -1,4 +1,7 @@
 // KeyInput.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -208,10 +211,10 @@ pzprv3.createCommonClass('KeyEvent',
 	moveTC : function(ca,mv){
 		var tcp = this.cursor.getTCP(), dir = bd.BDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = bd.UP;} break;
-			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = bd.DN;} break;
-			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = bd.LT;} break;
-			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = bd.RT;} break;
+			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = k.UP;} break;
+			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = k.DN;} break;
+			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = k.LT;} break;
+			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = k.RT;} break;
 			default: return false;
 		}
 
@@ -288,10 +291,10 @@ pzprv3.createCommonClass('KeyEvent',
 
 		var flag = true;
 		switch(ca){
-			case this.KEYUP: cell.setQdir(cell.getQdir()!==bd.UP?bd.UP:0); break;
-			case this.KEYDN: cell.setQdir(cell.getQdir()!==bd.DN?bd.DN:0); break;
-			case this.KEYLT: cell.setQdir(cell.getQdir()!==bd.LT?bd.LT:0); break;
-			case this.KEYRT: cell.setQdir(cell.getQdir()!==bd.RT?bd.RT:0); break;
+			case this.KEYUP: cell.setQdir(cell.getQdir()!==k.UP?k.UP:0); break;
+			case this.KEYDN: cell.setQdir(cell.getQdir()!==k.DN?k.DN:0); break;
+			case this.KEYLT: cell.setQdir(cell.getQdir()!==k.LT?k.LT:0); break;
+			case this.KEYRT: cell.setQdir(cell.getQdir()!==k.RT?k.RT:0); break;
 			default: flag = false;
 		}
 
@@ -674,3 +677,5 @@ pzprv3.createCommonClass('TargetCursor',
 		return this.targetdir;
 	}
 });
+
+})();

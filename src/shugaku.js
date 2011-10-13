@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('shugaku', {
 //---------------------------------------------------------
 // マウス入力系
@@ -149,10 +153,10 @@ Board:{
 	adjustBoardData : function(key,d){
 		var trans = {};
 		switch(key){
-			case this.FLIPY: trans={42:43,43:42,47:48,48:47}; break;	// 上下反転
-			case this.FLIPX: trans={44:45,45:44,49:50,50:49}; break;	// 左右反転
-			case this.TURNR: trans={42:45,45:43,43:44,44:42,47:50,50:48,48:49,49:47}; break;	// 右90°回転
-			case this.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
+			case k.FLIPY: trans={42:43,43:42,47:48,48:47}; break;	// 上下反転
+			case k.FLIPX: trans={44:45,45:44,49:50,50:49}; break;	// 左右反転
+			case k.TURNR: trans={42:45,45:43,43:44,44:42,47:50,50:48,48:49,49:47}; break;	// 右90°回転
+			case k.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
 			default: return;
 		}
 		for(var c=0;c<this.cellmax;c++){
@@ -416,3 +420,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

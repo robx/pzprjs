@@ -1,4 +1,7 @@
 // Encode.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -27,7 +30,7 @@ pzprv3.createCommonClass('Encode',
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	pzlinput : function(pzl){
-		if(pzl.type===void 0){ pzl.type=pzprv3.PZPRV3;}
+		if(pzl.type===void 0){ pzl.type=k.PZPRV3;}
 		var dat = pzprv3.parseURLData(pzl);
 
 		bd.initBoardSize(dat.cols, dat.rows);
@@ -35,16 +38,16 @@ pzprv3.createCommonClass('Encode',
 		if(!!dat.bstr){
 			this.pflag = dat.pflag;
 			switch(pzl.type){
-			case pzprv3.PZPRV3: case pzprv3.PZPRAPP: case pzprv3.PZPRV3E:
+			case k.PZPRV3: case k.PZPRAPP: case k.PZPRV3E:
 				this.outbstr = dat.bstr;
 				this.pzlimport(pzl.type);
 				break;
-			case pzprv3.KANPEN:
+			case k.KANPEN:
 				this.owner.fio.lineseek = 0;
 				this.owner.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case pzprv3.HEYAAPP:
+			case k.HEYAAPP:
 				this.outbstr = dat.bstr;
 				this.decodeHeyaApp();
 				break;
@@ -55,7 +58,7 @@ pzprv3.createCommonClass('Encode',
 		this.owner.painter.resize_canvas();
 	},
 	pzloutput : function(type){
-		if(type===pzprv3.KANPEN && this.owner.pid=='lits'){ type = pzprv3.KANPENP;}
+		if(type===k.KANPEN && this.owner.pid=='lits'){ type = k.KANPENP;}
 		var size='', ispflag=false;
 
 		this.outpflag = '';
@@ -63,26 +66,26 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = '';
 
 		switch(type){
-		case pzprv3.PZPRV3: case pzprv3.PZPRV3E:
-			this.pzlexport(pzprv3.PZPRV3);
+		case k.PZPRV3: case k.PZPRV3E:
+			this.pzlexport(k.PZPRV3);
 			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
-		case pzprv3.PZPRAPP: case pzprv3.KANPENP:
-			this.pzlexport(pzprv3.PZPRAPP);
+		case k.PZPRAPP: case k.KANPENP:
+			this.pzlexport(k.PZPRAPP);
 			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
-		case pzprv3.KANPEN:
+		case k.KANPEN:
 			this.owner.fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = this.owner.fio.datastr.replace(/ /g, "_");
 			size = (!this.outsize ? [bd.qrows,bd.qcols].join('/') : this.outsize);
 			break;
 
-		case pzprv3.HEYAAPP:
+		case k.HEYAAPP:
 			this.encodeHeyaApp();
 			size = [bd.qcols,bd.qrows].join('x');
 			break;
@@ -510,3 +513,5 @@ pzprv3.createCommonClass('Encode',
 		return (bottom <= ca && ca <= up);
 	}
 });
+
+})();

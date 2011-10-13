@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 エルート・さしがね版 loute.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('loute', {
 //---------------------------------------------------------
 // マウス入力系
@@ -20,10 +24,10 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var dir = bd.NDIR, cell = this.prevPos.getc();
+		var dir = k.NDIR, cell = this.prevPos.getc();
 		if(!cell.isnull){
 			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==bd.NDIR){
+			if(dir!==k.NDIR){
 				cell.setQdir(cell.getQdir()!==dir?dir:0);
 				cell.setQnum(-1);
 				cell.draw();
@@ -476,10 +480,10 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 &&
-				   ((num===bd.UP && cell.ub().isBorder()) ||
-					(num===bd.DN && cell.db().isBorder()) ||
-					(num===bd.LT && cell.lb().isBorder()) ||
-					(num===bd.RT && cell.rb().isBorder())) )
+				   ((num===k.UP && cell.ub().isBorder()) ||
+					(num===k.DN && cell.db().isBorder()) ||
+					(num===k.LT && cell.lb().isBorder()) ||
+					(num===k.RT && cell.rb().isBorder())) )
 				{
 					if(this.inAutoCheck){ return false;}
 					clist.seterr(1);
@@ -523,3 +527,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

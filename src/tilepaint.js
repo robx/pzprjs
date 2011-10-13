@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('tilepaint', {
 //---------------------------------------------------------
 // マウス入力系
@@ -56,7 +60,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			this.owner.undo.addOpe_Object(this, bd.QSUB, 1, 0);
+			this.owner.undo.addOpe_Object(this, k.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -293,8 +297,8 @@ AnsCheck:{
 
 	isBCellCount : function(keycellpos, clist){
 		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===bd.RT){ number = keyobj.getQnum();}
-		else if(dir===bd.DN){ number = keyobj.getQdir();}
+		if     (dir===k.RT){ number = keyobj.getQnum();}
+		else if(dir===k.DN){ number = keyobj.getQdir();}
 
 		var count = clist.filter(function(cell){ return cell.isBlack();}).length;
 		if(number>=0 && count!=number){
@@ -306,3 +310,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

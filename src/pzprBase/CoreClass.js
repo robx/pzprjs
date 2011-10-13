@@ -33,6 +33,16 @@
 	require_accesslog : true,	// アクセスログを記録するかどうか
 
 	//---------------------------------------------------------------
+	// スクリプトで使用する定数を定義する
+	//---------------------------------------------------------------
+	consts : {},
+	addConsts : function(defines){
+		for(var name in defines){
+			if(!this.consts[name]){ this.consts[name] = defines[name];}
+		}
+	},
+
+	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
 	createCoreClass : function(classname, proto){
@@ -135,14 +145,6 @@
 	},
 
 	//---------------------------------------------------------------
-	// 定数(URL形式)
-	PZPRV3  : 0,
-	PZPRV3E : 3,
-	PZPRAPP : 1,
-	KANPEN  : 2,
-	KANPENP : 5,
-	HEYAAPP : 4,
-
 	parseURLType : function(url){ return parseURLType(url);},
 	parseURLData : function(pzl){ return parseURLData(pzl);},
 	getURLBase : function(type,pid){ return getURLBase(type,pid);},
@@ -170,6 +172,18 @@
 	//---------------------------------------------------------------
 	// 現在の時間を取得
 	currentTime : function(){ return (new Date()).getTime();}
+});
+
+// 定数の定義
+var k = pzprv3.consts;
+pzprv3.addConsts({
+	// 定数(URL形式)
+	PZPRV3  : 0,
+	PZPRV3E : 3,
+	PZPRAPP : 1,
+	KANPEN  : 2,
+	KANPENP : 5,
+	HEYAAPP : 4
 });
 
 //----------------------------------------------------------------------------
@@ -345,29 +359,29 @@ function parseURLType(url){
 		// カンペンだけどデータ形式はへやわけアプレット
 		if(url.indexOf("?heyawake=")>=0){
 			pzl.qdata = url.substr(url.indexOf("?heyawake=")+10);
-			pzl.type = pzprv3.HEYAAPP;
+			pzl.type = k.HEYAAPP;
 		}
 		// カンペンだけどデータ形式はぱずぷれ
 		else if(url.indexOf("?pzpr=")>=0){
 			pzl.qdata = url.substr(url.indexOf("?pzpr=")+6);
-			pzl.type = pzprv3.PZPRV3;
+			pzl.type = k.PZPRV3;
 		}
 		else{
 			pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-			pzl.type = pzprv3.KANPEN;
+			pzl.type = k.KANPEN;
 		}
 	}
 	// へやわけアプレットの場合
 	else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 		pzl.id = 'heyawake';
 		pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-		pzl.type = pzprv3.HEYAAPP;
+		pzl.type = k.HEYAAPP;
 	}
 	// ぱずぷれアプレットの場合
 	else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
 		pzl.id = RegExp.$1;
 		pzl.qdata = url.substr(url.indexOf("?"));
-		pzl.type = pzprv3.PZPRAPP;
+		pzl.type = k.PZPRAPP;
 	}
 	// ぱずぷれv3の場合
 	else{
@@ -380,7 +394,7 @@ function parseURLType(url){
 			pzl.id = url.substr(1);
 		}
 		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
-		pzl.type = pzprv3.PZPRV3;
+		pzl.type = k.PZPRV3;
 	}
 	pzl.id = pzprv3.PZLINFO.toPID(pzl.id);
 
@@ -394,7 +408,7 @@ function parseURLType(url){
 function parseURLData(pzl){
 	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''};
 	switch(pzl.type){
-	case pzprv3.KANPEN:
+	case k.KANPEN:
 		if(pzl.id=="sudoku"){
 			dat.rows = dat.cols = parseInt(inp.shift());
 		}
@@ -406,7 +420,7 @@ function parseURLData(pzl){
 		dat.bstr = inp.join("/");
 		break;
 
-	case pzprv3.HEYAAPP:
+	case k.HEYAAPP:
 		var size = inp.shift().split("x");
 		dat.cols = parseInt(size[0]);
 		dat.rows = parseInt(size[1]);
@@ -441,7 +455,7 @@ function getURLBase(type, pid){
 	if(!domain){ domain = "pzv.jp";}
 	else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
-	if(type===pzprv3.PZPRAPP){
+	if(type===k.PZPRAPP){
 		if     (pid==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
 		else if(pid==='heyabon')  { str=str.replace("%PID%","bonsan");}
 	}

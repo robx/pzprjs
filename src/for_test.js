@@ -1,4 +1,7 @@
 // for_test.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 pzprv3.extendCoreClass('Debug',
 {
@@ -30,7 +33,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	accheck1 : function(){
-		var outputstr = this.owner.fio.fileencode(this.owner.fio.PZPH);
+		var outputstr = this.owner.fio.fileencode(k.PZPH);
 		var ans = this.owner.checker;
 
 		bd.disableSetError();
@@ -87,8 +90,8 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzprv3.getURLBase(pzprv3.PZPRV3, self.pid)+self.urls[self.pid];
-		var ta  = this.owner.enc.pzloutput(pzprv3.PZPRV3);
+		var inp = pzprv3.getURLBase(k.PZPRV3, self.pid)+self.urls[self.pid];
+		var ta  = this.owner.enc.pzloutput(k.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -99,7 +102,7 @@ pzprv3.extendCoreClass('Debug',
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var bd2 = self.bd_freezecopy();
 
-			document.urlinput.ta.value = this.owner.enc.pzloutput(pzprv3.KANPEN);
+			document.urlinput.ta.value = this.owner.enc.pzloutput(k.KANPEN);
 			this.owner.menu.pop = ee("pop1_5");
 			this.owner.menu.urlinput({});
 
@@ -135,7 +138,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var outputstr = this.owner.fio.fileencode(this.owner.fio.PZPR);
+		var outputstr = this.owner.fio.fileencode(k.PZPR);
 
 		var bd2 = self.bd_freezecopy();
 
@@ -153,7 +156,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_file_pbox : function(self){
 		if(this.owner.menu.ispencilbox){
-			var outputstr = this.owner.fio.fileencode(this.owner.fio.PBOX);
+			var outputstr = this.owner.fio.fileencode(k.PBOX);
 
 			var bd2 = self.bd_freezecopy();
 
@@ -1277,3 +1280,5 @@ pzprv3.extendCoreClass('Debug',
 		yosenabe   : '5/5/d1hgm1i3j2i5k5ki2o1l2k3'
 	}
 });
+
+})();

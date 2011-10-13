@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 あみぼー版 amibo.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('amibo', {
 //---------------------------------------------------------
 // マウス入力系
@@ -39,8 +43,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===bd.UP || dir===bd.DN){ this.inputData=1; input=true;}
-				else if(dir===bd.LT || dir===bd.RT){ this.inputData=2; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
 			}
 
 			if(input){
@@ -51,8 +55,8 @@ MouseEvent:{
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cell!==this.mouseCell){
 			var dir = this.getdir(this.prevPos, pos);
-			if     (dir===bd.UP || dir===bd.DN){ this.inputData=(this.inputData>0?1:-1); input=true;}
-			else if(dir===bd.LT || dir===bd.RT){ this.inputData=(this.inputData>0?2:-2); input=true;}
+			if     (dir===k.UP || dir===k.DN){ this.inputData=(this.inputData>0?1:-1); input=true;}
+			else if(dir===k.LT || dir===k.RT){ this.inputData=(this.inputData>0?2:-2); input=true;}
 		}
 
 		// 描画・後処理
@@ -149,7 +153,7 @@ Board:{
 	},
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURN){ // 回転だけ
+		if(key & k.TURN){ // 回転だけ
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.cell[c].getQans()]);}
 		}
 	}
@@ -584,3 +588,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

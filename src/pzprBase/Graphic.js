@@ -1,4 +1,7 @@
 // Graphic.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -571,10 +574,10 @@ pzprv3.createCommonClass('Graphic',
 				if(this.vnop(headers[(dir-1)]+id,this.FILL)){
 					var px = cell.bx*this.bw, py = cell.by*this.bh;
 					switch(dir){
-						case bd.UP: g.setOffsetLinePath(px,py, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
-						case bd.DN: g.setOffsetLinePath(px,py, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
-						case bd.LT: g.setOffsetLinePath(px,py, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
-						case bd.RT: g.setOffsetLinePath(px,py,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
+						case k.UP: g.setOffsetLinePath(px,py, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
+						case k.DN: g.setOffsetLinePath(px,py, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
+						case k.LT: g.setOffsetLinePath(px,py, -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
+						case k.RT: g.setOffsetLinePath(px,py,  al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
 					}
 					g.fill();
 				}
@@ -681,21 +684,21 @@ pzprv3.createCommonClass('Graphic',
 				else                   { g.fillStyle = this.fontcolor;}
 
 				// 矢印の描画(上下向き)
-				if(dir===bd.UP||dir===bd.DN){
+				if(dir===k.UP||dir===k.DN){
 					// 矢印の線の描画
 					ax+=(this.cw-ls*1.5-lm); ay+=(ls+1);
 					if(this.vnop(headers[0]+id,this.FILL)){ g.fillRect(ax, ay, lw, ll);}
 					ax+=lw/2;
 
 					// 矢じりの描画
-					if(dir===bd.UP){
+					if(dir===k.UP){
 						if(this.vnop(headers[1]+id,this.FILL)){
 							g.setOffsetLinePath(ax,ay, 0,0, -ll/6,ll/3, ll/6,ll/3, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[1]+id);}
-					if(dir===bd.DN){
+					if(dir===k.DN){
 						if(this.vnop(headers[2]+id,this.FILL)){
 							g.setOffsetLinePath(ax,ay+ll, 0,0, -ll/6,-ll/3, ll/6,-ll/3, true);
 							g.fill();
@@ -706,21 +709,21 @@ pzprv3.createCommonClass('Graphic',
 				else{ this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
 
 				// 矢印の描画(左右向き)
-				if(dir===bd.LT||dir===bd.RT){
+				if(dir===k.LT||dir===k.RT){
 					// 矢印の線の描画
 					ax+=(ls+1); ay+=(ls*1.5-lm);
 					if(this.vnop(headers[3]+id,this.FILL)){ g.fillRect(ax, ay, ll, lw);}
 					ay+=lw/2;
 
 					// 矢じりの描画
-					if(dir===bd.LT){
+					if(dir===k.LT){
 						if(this.vnop(headers[4]+id,this.FILL)){
 							g.setOffsetLinePath(ax,ay, 0,0, ll/3,-ll/6, ll/3,ll/6, true);
 							g.fill();
 						}
 					}
 					else{ this.vhide(headers[4]+id);}
-					if(dir===bd.RT){
+					if(dir===k.RT){
 						if(this.vnop(headers[5]+id,this.FILL)){
 							g.setOffsetLinePath(ax+ll,ay, 0,0, -ll/3,-ll/6, -ll/3,ll/6, true);
 							g.fill();
@@ -736,8 +739,8 @@ pzprv3.createCommonClass('Graphic',
 				var color = g.fillStyle;
 
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if     (dir===bd.UP||dir===bd.DN){ fontratio *= 0.85; px-=this.cw*0.1;}
-				else if(dir===bd.LT||dir===bd.RT){ fontratio *= 0.85; py+=this.ch*0.1;}
+				if     (dir===k.UP||dir===k.DN){ fontratio *= 0.85; px-=this.cw*0.1;}
+				else if(dir===k.LT||dir===k.RT){ fontratio *= 0.85; py+=this.ch*0.1;}
 
 				this.dispnum('cell_'+id, 1, text, fontratio, color, px, py);
 			}
@@ -1934,3 +1937,5 @@ pzprv3.createCommonClass('Graphic',
 		}
 	}
 });
+
+})();

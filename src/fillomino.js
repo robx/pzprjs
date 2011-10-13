@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('fillomino', {
 //---------------------------------------------------------
 // マウス入力系
@@ -71,12 +75,12 @@ KeyEvent:{
 		var cell = this.cursor.getTCC();
 		if(cell.isnull){ return;}
 
-		var nc, nb, dir=bd.NDIR;
+		var nc, nb, dir=k.NDIR;
 		switch(ca){
-			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=bd.UP; break;
-			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=bd.DN; break;
-			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=bd.LT; break;
-			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=bd.RT; break;
+			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=k.UP; break;
+			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=k.DN; break;
+			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=k.LT; break;
+			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=k.RT; break;
 			default: return;
 		}
 		if(!nc.isnull){
@@ -286,3 +290,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

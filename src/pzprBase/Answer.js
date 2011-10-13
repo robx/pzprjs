@@ -1,4 +1,7 @@
 // Answer.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -211,10 +214,10 @@ pzprv3.createCommonClass('AnsCheck',
 		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if( (cell.ub().isLine() && cell.noLP(bd.UP)) ||
-				(cell.db().isLine() && cell.noLP(bd.DN)) ||
-				(cell.lb().isLine() && cell.noLP(bd.LT)) ||
-				(cell.rb().isLine() && cell.noLP(bd.RT)) )
+			if( (cell.ub().isLine() && cell.noLP(k.UP)) ||
+				(cell.db().isLine() && cell.noLP(k.DN)) ||
+				(cell.lb().isLine() && cell.noLP(k.LT)) ||
+				(cell.rb().isLine() && cell.noLP(k.RT)) )
 			{
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);
@@ -409,7 +412,7 @@ pzprv3.createCommonClass('AnsCheck',
 		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
-				if(tx>bx && !evalfunc.call(this, [bx-2,by,bd.RT], bd.cellinside(bx,by,tx-2,by))){
+				if(tx>bx && !evalfunc.call(this, [bx-2,by,k.RT], bd.cellinside(bx,by,tx-2,by))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -419,7 +422,7 @@ pzprv3.createCommonClass('AnsCheck',
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
-				if(ty>by && !evalfunc.call(this, [bx,by-2,bd.DN], bd.cellinside(bx,by,bx,ty-2))){
+				if(ty>by && !evalfunc.call(this, [bx,by-2,k.DN], bd.cellinside(bx,by,bx,ty-2))){
 					if(!multierr || this.inAutoCheck){ return false;}
 					result = false;
 				}
@@ -538,3 +541,5 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 	isErrorFlag_line : function(xinfo){ }
 });
+
+})();

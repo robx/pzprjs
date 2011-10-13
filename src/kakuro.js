@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 カックロ版 kakuro.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('kakuro', {
 //---------------------------------------------------------
 // マウス入力系
@@ -359,8 +363,8 @@ AnsCheck:{
 	},
 	isTotalNumber : function(keycellpos, clist){
 		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===bd.RT){ number = keyobj.getQnum();}
-		else if(dir===bd.DN){ number = keyobj.getQdir();}
+		if     (dir===k.RT){ number = keyobj.getQnum();}
+		else if(dir===k.DN){ number = keyobj.getQdir();}
 
 		var sum = 0;
 		for(var i=0;i<clist.length;i++){
@@ -376,3 +380,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

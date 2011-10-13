@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('hashikake', {
 //---------------------------------------------------------
 // マウス入力系
@@ -30,7 +34,7 @@ MouseEvent:{
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
-			if(this.inputData>0 && (dir===bd.UP||dir===bd.LT)){ borders.reverse();} // 色分けの都合上の処理
+			if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ borders.reverse();} // 色分けの都合上の処理
 			for(var i=0;i<borders.length;i++){
 				borders[i].setLineVal(this.inputData);
 				borders[i].setQsub(0);
@@ -363,3 +367,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

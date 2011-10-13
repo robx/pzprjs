@@ -1,4 +1,7 @@
 // Undo.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Operation(派生)クラス 単体の操作情報を保持する
@@ -42,19 +45,19 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 
 	/* 変換テーブル */
 	STRGROUP : {
-		C: 'cell',   // bd.CELL,
-		X: 'cross',  // bd.CROSS,
-		B: 'border', // bd.BORDER,
-		E: 'excell'  // bd.EXCELL
+		C: 'cell',   // k.CELL,
+		X: 'cross',  // k.CROSS,
+		B: 'border', // k.BORDER,
+		E: 'excell'  // k.EXCELL
 	},
 	STRPROP : {
-		U: 'ques',   // bd.QUES
-		N: 'qnum',   // bd.QNUM
-		M: 'anum',   // bd.ANUM
-		D: 'qdir',   // bd.QDIR
-		A: 'qans',   // bd.QANS
-		S: 'qsub',   // bd.QSUB
-		L: 'line'    // bd.LINE
+		U: 'ques',   // k.QUES
+		N: 'qnum',   // k.QNUM
+		M: 'anum',   // k.ANUM
+		D: 'qdir',   // k.QDIR
+		A: 'qans',   // k.QANS
+		S: 'qsub',   // k.QSUB
+		L: 'line'    // k.LINE
 	},
 
 	//---------------------------------------------------------------------------
@@ -94,11 +97,11 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		this.exec(this.old);
-		if(this.property!=bd.QSUB){ this.manager.anscount--;}
+		if(this.property!=k.QSUB){ this.manager.anscount--;}
 	},
 	redo : function(){
 		this.exec(this.num);
-		if(this.property!=bd.QSUB){ this.manager.anscount++;}
+		if(this.property!=k.QSUB){ this.manager.anscount++;}
 	},
 	exec : function(num){
 		var obj = bd.getObjectPos(this.group, this.bx, this.by);
@@ -177,7 +180,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 	undo : function(){
 		// とりあえず盤面全部の対応だけ
 		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
-		if(this.old & bd.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
+		if(this.old & k.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
 		this.exec(this.old,d);
 	},
 	redo : function(){
@@ -296,7 +299,7 @@ pzprv3.createCommonClass('OperationManager',
 		this.owner.setConfigOnly('autocheck', false);
 
 		this.addOpe_common(function(){
-			if(property===bd.QSUB){ this.anscount--;}
+			if(property===k.QSUB){ this.anscount--;}
 
 			var ope = this.owner.newInstance('ObjectOperation');
 			ope.setData(obj, property, old, num);
@@ -309,7 +312,7 @@ pzprv3.createCommonClass('OperationManager',
 			if( !this.disCombine && !!ref && !!ref.property &&
 				ref.group===obj.group && ref.property===property &&
 				ref.num===old && ref.bx===obj.bx && ref.by===obj.by && 
-				( (obj.iscellobj && ( property===bd.QNUM || property===bd.ANUM )) || obj.iscrossobj)
+				( (obj.iscellobj && ( property===k.QNUM || property===k.ANUM )) || obj.iscrossobj)
 			)
 			{
 				ref.num = num;
@@ -481,3 +484,5 @@ pzprv3.createCommonClass('OperationManager',
 		this.enb_btn();
 	}
 });
+
+})();

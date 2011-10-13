@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('tateyoko', {
 //---------------------------------------------------------
 // マウス入力系
@@ -34,8 +38,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===bd.UP || dir===bd.DN){ this.inputData=12; input=true;}
-				else if(dir===bd.LT || dir===bd.RT){ this.inputData=13; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
 			}
 
 			if(input){
@@ -48,8 +52,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===bd.UP || dir===bd.DN){ this.inputData=12; input=true;}
-				else if(dir===bd.LT || dir===bd.RT){ this.inputData=13; input=true;}
+				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
+				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
 			}
 		}
 
@@ -153,7 +157,7 @@ Board:{
 	},
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURN){ // 回転だけ
+		if(key & k.TURN){ // 回転だけ
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,12:13,13:12}[this.cell[c].getQans()]);}
 		}
 	}
@@ -388,3 +392,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

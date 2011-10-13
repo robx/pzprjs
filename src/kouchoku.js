@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('kouchoku', {
 //---------------------------------------------------------
 // マウス入力系
@@ -215,16 +219,16 @@ Board:{
 	},
 
 	adjustBoardData : function(key,d){
-		if(key & this.REDUCE){
+		if(key & k.REDUCE){
 			var seglist=this.segs.getallsegment(), sublist=this.owner.newInstance('SegmentList');
 			for(var i=0;i<seglist.length;i++){
 				var seg = seglist[i];
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
-					case this.REDUCEUP: if(by1<this.minby+2||by2<this.minby+2){ sublist.add(seg);} break;
-					case this.REDUCEDN: if(by1>this.maxby-2||by2>this.maxby-2){ sublist.add(seg);} break;
-					case this.REDUCELT: if(bx1<this.minbx+2||bx2<this.minbx+2){ sublist.add(seg);} break;
-					case this.REDUCERT: if(bx1>this.maxbx-2||bx2>this.maxbx-2){ sublist.add(seg);} break;
+					case k.REDUCEUP: if(by1<this.minby+2||by2<this.minby+2){ sublist.add(seg);} break;
+					case k.REDUCEDN: if(by1>this.maxby-2||by2>this.maxby-2){ sublist.add(seg);} break;
+					case k.REDUCELT: if(bx1<this.minbx+2||bx2<this.minbx+2){ sublist.add(seg);} break;
+					case k.REDUCERT: if(bx1>this.maxbx-2||bx2>this.maxbx-2){ sublist.add(seg);} break;
 				}
 			}
 
@@ -240,18 +244,18 @@ Board:{
 		for(var i=0;i<seglist.length;i++){
 			var seg=seglist[i], bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 			switch(key){
-				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
-				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
-				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
-				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
-				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
-				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
-				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
-				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
-				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case k.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
+				case k.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
+				case k.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
+				case k.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
+				case k.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
+				case k.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case k.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
+				case k.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case k.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
+				case k.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case k.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
+				case k.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
 			}
 		}
 	}
@@ -1222,3 +1226,5 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	}
 }
 });
+
+})();

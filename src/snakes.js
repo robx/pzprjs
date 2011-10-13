@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 へびいちご版 snakes.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('snakes', {
 //---------------------------------------------------------
 // マウス入力系
@@ -317,12 +321,12 @@ AnsCheck:{
 			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
 			if(!cell){ continue;}
 
-			var cell2, dir=bd.NDIR;
-			cell2=cell.dn(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.UP;}
-			cell2=cell.up(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.DN;}
-			cell2=cell.rt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.LT;}
-			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=bd.RT;}
-			if(dir===bd.NDIR){ continue;}
+			var cell2, dir=k.NDIR;
+			cell2=cell.dn(); if(!cell2.isnull && cell2.getAnum()===2){ dir=k.UP;}
+			cell2=cell.up(); if(!cell2.isnull && cell2.getAnum()===2){ dir=k.DN;}
+			cell2=cell.rt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=k.LT;}
+			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=k.RT;}
+			if(dir===k.NDIR){ continue;}
 
 			var pos = cell.getaddr(), clist2 = this.owner.newInstance('CellList');
 			clist2.add(cell);
@@ -348,3 +352,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

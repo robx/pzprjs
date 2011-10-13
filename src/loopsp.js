@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('loopsp', {
 //---------------------------------------------------------
 // マウス入力系
@@ -125,13 +129,13 @@ Board:{
 	isborder : 1,
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURNFLIP){
+		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){
-				case this.FLIPY: tques={14:17,15:16,16:15,17:14}; break;
-				case this.FLIPX: tques={14:15,15:14,16:17,17:16}; break;
-				case this.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
-				case this.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
+				case k.FLIPY: tques={14:17,15:16,16:15,17:14}; break;
+				case k.FLIPX: tques={14:15,15:14,16:17,17:16}; break;
+				case k.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
+				case k.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -358,3 +362,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

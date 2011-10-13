@@ -1,4 +1,7 @@
 // Menu.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -981,9 +984,9 @@ pzprv3.createCommonClass('Menu',
 		urlinput  : function(){ this.pop = ee("pop1_2");},
 		urloutput : function(){ this.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
 		fileopen  : function(){ this.pop = ee("pop1_4");},
-		filesave  : function(){ this.filesave(this.owner.fio.PZPR);},
-//		filesave3 : function(){ this.filesave(this.owner.fio.PZPH);},
-		filesave2 : function(){ if(!!this.owner.fio.kanpenSave){ this.filesave(this.owner.fio.PBOX);}},
+		filesave  : function(){ this.filesave(k.PZPR);},
+//		filesave3 : function(){ this.filesave(k.PZPH);},
+		filesave2 : function(){ if(!!this.owner.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
 		database  : function(){ this.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
@@ -1090,11 +1093,11 @@ pzprv3.createCommonClass('Menu',
 		if(this.pop){
 			var _doc = document;
 			switch(ee.getSrcElement(e).name){
-				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRAPP); break;
-				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.KANPEN);  break;
-				case "pzprv3edit": _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.PZPRV3E); break;
-				case "heyaapp":    _doc.urloutput.ta.value = this.owner.enc.pzloutput(pzprv3.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.HEYAAPP); break;
 			}
 		}
 	},
@@ -1169,7 +1172,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var str = this.owner.fio.fileencode(this.owner.fio.PZPH);
+		var str = this.owner.fio.fileencode(k.PZPH);
 		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
 		if(!ee.br.Opera){
 			var old = sessionStorage['filedata'];
@@ -1383,11 +1386,11 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	filesave : function(){
-		this.setTA(this.owner.fio.fileencode(this.owner.fio.PZPH).replace(/\//g,"\n"));
+		this.setTA(this.owner.fio.fileencode(k.PZPH).replace(/\//g,"\n"));
 		this.addTA(this.owner.fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){
-		this.setTA(this.owner.fio.fileencode(this.owner.fio.PBOX).replace(/\//g,"\n"));
+		this.setTA(this.owner.fio.fileencode(k.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){
@@ -1451,3 +1454,5 @@ pzprv3.createCoreClass('Debug',
 	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
 });
+
+})();

@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 ボックス版 box.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('box', {
 //---------------------------------------------------------
 // マウス入力系
@@ -38,15 +42,15 @@ KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
 		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = bd.NDIR;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = k.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=bd.UP;} break;
-			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=bd.DN;} break;
-			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=bd.LT;} break;
-			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=bd.RT;} break;
+			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=k.UP;} break;
+			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=k.DN;} break;
+			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=k.LT;} break;
+			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=k.RT;} break;
 		}
 
-		if(dir!==bd.NDIR){
+		if(dir!==k.NDIR){
 			tc.pos.movedir(dir,2);
 
 			excell0.draw();
@@ -125,20 +129,20 @@ Board:{
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
 
 		switch(key){
-		case this.FLIPY: // 上下反転
+		case k.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumh[bx]);}
 			break;
 
-		case this.FLIPX: // 左右反転
+		case k.FLIPX: // 左右反転
 			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumw[by]);}
 			break;
 
-		case this.TURNR: // 右90°反転
+		case k.TURNR: // 右90°反転
 			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumh[by]);}
 			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumw[xx-bx]);}
 			break;
 
-		case this.TURNL: // 左90°反転
+		case k.TURNL: // 左90°反転
 			for(var by=by1;by<=d.y2;by+=2){ this.getex(-1,by).setQnum(this.qnumh[yy-by]);}
 			for(var bx=bx1;bx<=d.x2;bx+=2){ this.getex(bx,-1).setQnum(this.qnumw[bx]);}
 			break;
@@ -348,3 +352,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

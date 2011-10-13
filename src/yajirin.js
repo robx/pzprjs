@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajirin.js v3.4.0
 // 
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('yajirin', {
 //---------------------------------------------------------
 // マウス入力系
@@ -133,7 +137,7 @@ FileIO:{
 	},
 
 	decodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [bd.UP, bd.LT, bd.DN, bd.RT];
+		var dirs = [k.UP, k.LT, k.DN, k.RT];
 		this.decodeCell( function(obj,ca){
 			if     (ca==="#" && !isurl){ obj.qans = 1;}
 			else if(ca==="+" && !isurl){ obj.qsub = 1;}
@@ -145,10 +149,10 @@ FileIO:{
 		});
 	},
 	encodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [bd.UP, bd.LT, bd.DN, bd.RT];
+		var dirs = [k.UP, k.LT, k.DN, k.RT];
 		this.encodeCell( function(obj){
 			var num = ((obj.qnum>=0&&obj.qnum<16) ? obj.qnum : -1), dir;
-			if(num!==-1 && obj.qdir!==bd.NDIR){
+			if(num!==-1 && obj.qdir!==k.NDIR){
 				for(dir=0;dir<4;dir++){ if(dirs[dir]===obj.qdir){ break;}}
 				return (""+((dir<<4)+(num&0x0F))+" ");
 			}
@@ -227,3 +231,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

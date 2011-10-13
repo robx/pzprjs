@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 ヤジタタミ版 yajitatami.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('yajitatami', {
 //---------------------------------------------------------
 // マウス入力系
@@ -150,10 +154,10 @@ AnsCheck:{
 			if(!cell.isValidNum()){ continue;}
 
 			var bx = cell.bx, by = cell.by, dir = cell.getQdir(), blist;
-			if     (dir===bd.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
-			else if(dir===bd.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
-			else if(dir===bd.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
-			else if(dir===bd.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
+			if     (dir===k.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
+			else if(dir===k.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
+			else if(dir===k.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
+			else if(dir===k.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
 
 			var count = blist.filter(function(border){ return border.isBorder();}).length;
@@ -182,3 +186,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

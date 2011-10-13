@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 天体ショー版 tentaisho.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('tentaisho', {
 //---------------------------------------------------------
 // マウス入力系
@@ -104,7 +108,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			this.owner.undo.addOpe_Object(this, bd.QSUB, 1, 0);
+			this.owner.undo.addOpe_Object(this, k.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -530,3 +534,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 碁石ひろい版 goishi.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('goishi', {
 //---------------------------------------------------------
 // マウス入力系
@@ -125,11 +129,11 @@ UndoTimer:{
 			var um = this.owner.undo;
 			if(this.inUNDO){
 				var prop = (um.current>-1 ? um.ope[um.current].property : '');
-				if(prop===bd.ANUM){ um.undo(1);} else{ this.stop();}
+				if(prop===k.ANUM){ um.undo(1);} else{ this.stop();}
 			}
 			else if(this.inREDO){
 				var prop = (um.current+1<um.ope.length ? um.ope[um.current+1].property : '');
-				if(prop===bd.ANUM){ um.redo(1);} else{ this.stop();}
+				if(prop===k.ANUM){ um.redo(1);} else{ this.stop();}
 			}
 		}
 	}
@@ -376,3 +380,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

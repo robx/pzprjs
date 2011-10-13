@@ -1,4 +1,7 @@
 // DataBase.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
@@ -23,7 +26,7 @@ pzprv3.createCoreClass('ProblemData',
 		this.col = bd.qcols;
 		this.row = bd.qrows;
 		this.hard = 0;
-		this.pdata = pzprv3.target.fio.fileencode(pzprv3.target.fio.PZPH);
+		this.pdata = pzprv3.target.fio.fileencode(k.PZPH);
 		this.time = (pzprv3.currentTime()/1000)|0;
 		this.comment = '';
 	},
@@ -358,7 +361,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback){
-		parent.DBlist[id].pdata = pzprv3.target.fio.fileencode(pzprv3.target.fio.PZPH);
+		parent.DBlist[id].pdata = pzprv3.target.fio.fileencode(k.PZPH);
 		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},
@@ -435,3 +438,5 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 		}
 	}
 });
+
+})();

@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('shakashaka', {
 //---------------------------------------------------------
 // マウス入力系
@@ -227,10 +231,10 @@ Board:{
 	adjustBoardData : function(key,d){
 		var trans = [];
 		switch(key){
-			case this.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
-			case this.FLIPX: trans=[0,1,3,2,5,4]; break;	// 左右反転
-			case this.TURNR: trans=[0,1,5,2,3,4]; break;	// 右90°回転
-			case this.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
+			case k.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
+			case k.FLIPX: trans=[0,1,3,2,5,4]; break;	// 左右反転
+			case k.TURNR: trans=[0,1,5,2,3,4]; break;	// 右90°回転
+			case k.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
 			default: return;
 		}
 		for(var c=0;c<this.cellmax;c++){
@@ -378,3 +382,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

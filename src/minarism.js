@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('minarism', {
 //---------------------------------------------------------
 // マウス入力系
@@ -86,18 +90,18 @@ KeyEvent:{
 		if(border.isnull){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
-			var tmp=bd.NDIR;
-			if(ca=='q'){ tmp=(border.isHorz()?bd.UP:bd.LT);}
-			if(ca=='w'){ tmp=(border.isHorz()?bd.DN:bd.RT);}
+			var tmp=k.NDIR;
+			if(ca=='q'){ tmp=(border.isHorz()?k.UP:k.LT);}
+			if(ca=='w'){ tmp=(border.isHorz()?k.DN:k.RT);}
 
-			border.setQdir(border.getQdir()!==tmp?tmp:bd.NDIR);
+			border.setQdir(border.getQdir()!==tmp?tmp:k.NDIR);
 			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = border.getQnum();
 			var max = Math.max(bd.qcols,bd.qrows)-1;
 
-			border.setQdir(bd.NDIR);
+			border.setQdir(k.NDIR);
 			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
 			else{
 				if(cur*10+num<=max){ border.setQnum(cur*10+num);}
@@ -205,13 +209,13 @@ Graphic:{
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);
-			if(border.qdir!==bd.NDIR){
+			if(border.qdir!==k.NDIR){
 				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
 					switch(border.qdir){
-						case bd.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case bd.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case bd.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case bd.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+						case k.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+						case k.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+						case k.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
+						case k.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
 					}
 					g.stroke();
 				}
@@ -255,8 +259,8 @@ Encode:{
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===1 && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = (obj.isHorz()?bd.UP:bd.LT);}
-			else if(tmp===2){ obj.qdir = (obj.isHorz()?bd.DN:bd.RT);}
+			if     (tmp===1){ obj.qdir = (obj.isHorz()?k.UP:k.LT);}
+			else if(tmp===2){ obj.qdir = (obj.isHorz()?k.DN:k.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -274,8 +278,8 @@ Encode:{
 			if(id<bd.bdmax){
 				var pstr="", dir=bd.border[id].qdir, qnum=bd.border[id].qnum;
 
-				if     (dir===bd.UP||dir===bd.LT){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
-				else if(dir===bd.DN||dir===bd.RT){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
+				if     (dir===k.UP||dir===k.LT){ pstr = ((type===0 || id<bd.cellmax)?"g":"h");}
+				else if(dir===k.DN||dir===k.RT){ pstr = ((type===0 || id<bd.cellmax)?"h":"g");}
 				else if(qnum===-2){ pstr = ".";}
 				else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
 				else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}
@@ -295,8 +299,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = (obj.isHorz()?bd.UP:bd.LT);}
-			else if(ca==="b"){ obj.qdir = (obj.isHorz()?bd.DN:bd.RT);}
+			if     (ca==="a"){ obj.qdir = (obj.isHorz()?k.UP:k.LT);}
+			else if(ca==="b"){ obj.qdir = (obj.isHorz()?k.DN:k.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
 			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 		});
@@ -305,8 +309,8 @@ FileIO:{
 	encodeData : function(){
 		this.encodeBorder( function(obj){
 			var dir=obj.qdir;
-			if     (dir===bd.UP||dir===bd.LT){ return "a ";}
-			else if(dir===bd.DN||dir===bd.RT){ return "b ";}
+			if     (dir===k.UP||dir===k.LT){ return "a ";}
+			else if(dir===k.DN||dir===k.RT){ return "b ";}
 			else if(obj.qnum===-2){ return ". ";}
 			else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
 			else                  { return "0 ";}
@@ -367,3 +371,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

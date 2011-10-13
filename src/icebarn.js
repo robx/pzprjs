@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 アイスバーン版 icebarn.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('icebarn', {
 //---------------------------------------------------------
 // マウス入力系
@@ -63,10 +67,10 @@ MouseEvent:{
 	checkinout : function(border,dir){
 		if(border.isnull){ return 0;}
 		var bx=border.bx, by=border.by;
-		if     ((bx===bd.minbx && dir===bd.RT)||(bx===bd.maxbx && dir===bd.LT)||
-				(by===bd.minby && dir===bd.DN)||(by===bd.maxby && dir===bd.UP)){ return 1;}
-		else if((bx===bd.minbx && dir===bd.LT)||(bx===bd.maxbx && dir===bd.RT)||
-				(by===bd.minby && dir===bd.UP)||(by===bd.maxby && dir===bd.DN)){ return 2;}
+		if     ((bx===bd.minbx && dir===k.RT)||(bx===bd.maxbx && dir===k.LT)||
+				(by===bd.minby && dir===k.DN)||(by===bd.maxby && dir===k.UP)){ return 1;}
+		else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
+				(by===bd.minby && dir===k.UP)||(by===bd.maxby && dir===k.DN)){ return 2;}
 		return 0;
 	}
 },
@@ -126,10 +130,10 @@ Board:{
 		this.setarrowin_arrow(border);
 	},
 	setarrowin_arrow : function(border){
-		if     (border.by===this.maxby){ border.setArrow(this.UP);}
-		else if(border.by===this.minby){ border.setArrow(this.DN);}
-		else if(border.bx===this.maxbx){ border.setArrow(this.LT);}
-		else if(border.bx===this.minbx){ border.setArrow(this.RT);}
+		if     (border.by===this.maxby){ border.setArrow(k.UP);}
+		else if(border.by===this.minby){ border.setArrow(k.DN);}
+		else if(border.bx===this.maxbx){ border.setArrow(k.LT);}
+		else if(border.bx===this.minbx){ border.setArrow(k.RT);}
 	},
 
 	setarrowout : function(border){
@@ -141,10 +145,10 @@ Board:{
 		this.setarrowout_arrow(border);
 	},
 	setarrowout_arrow : function(border){
-		if     (border.by===this.minby){ border.setArrow(this.UP);}
-		else if(border.by===this.maxby){ border.setArrow(this.DN);}
-		else if(border.bx===this.minbx){ border.setArrow(this.LT);}
-		else if(border.bx===this.maxbx){ border.setArrow(this.RT);}
+		if     (border.by===this.minby){ border.setArrow(k.UP);}
+		else if(border.by===this.maxby){ border.setArrow(k.DN);}
+		else if(border.bx===this.minbx){ border.setArrow(k.LT);}
+		else if(border.bx===this.maxbx){ border.setArrow(k.RT);}
 	},
 
 	posinfo_in  : {},
@@ -161,7 +165,7 @@ Board:{
 		this.arrowout = this.getb(info2.bx2, info2.by2);
 
 		var um = this.owner.undo;
-		if((key & this.REDUCE) && !um.undoExec && !um.redoExec){
+		if((key & k.REDUCE) && !um.undoExec && !um.redoExec){
 			um.forceRecord = true;
 			if(info1.isdel){
 				um.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
@@ -294,17 +298,17 @@ Graphic:{
 				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
-						case bd.UP: case bd.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
-						case bd.LT: case bd.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+						case k.UP: case k.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+						case k.LT: case k.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
 					}
 				}
 
 				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
 					switch(dir){
-						case bd.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-						case bd.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-						case bd.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-						case bd.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+						case k.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+						case k.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+						case k.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+						case k.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
 					}
 					g.fill();
 				}
@@ -377,7 +381,7 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?bd.UP:bd.LT);}
+				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?k.UP:k.LT);}
 				id++;
 			}
 			else{ id+=35;}
@@ -389,7 +393,7 @@ Encode:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?bd.DN:bd.RT);}
+				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?k.DN:k.RT);}
 				id++;
 			}
 			else{ id+=35;}
@@ -413,7 +417,7 @@ Encode:{
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
 			var dir = bd.border[id].getArrow();
-			if(dir===bd.UP||dir===bd.LT){ cm+=num.toString(36); num=0;}
+			if(dir===k.UP||dir===k.LT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -424,7 +428,7 @@ Encode:{
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
 			var dir = bd.border[id].getArrow();
-			if(dir===bd.DN||dir===bd.RT){ cm+=num.toString(36); num=0;}
+			if(dir===k.DN||dir===k.RT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -456,7 +460,7 @@ Encode:{
 		var id=0;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?bd.UP:bd.DN)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?k.UP:k.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
@@ -464,7 +468,7 @@ Encode:{
 		id=(bd.qcols-1)*bd.qrows;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?bd.LT:bd.RT)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?k.LT:k.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=bd.bdinside){ break;}
@@ -494,19 +498,19 @@ Encode:{
 		bd.disableInfo();
 		if(barray[1]!=""){
 			var array = barray[1].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(bd.UP);}
+			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(k.UP);}
 		}
 		if(barray[2]!=""){
 			var array = barray[2].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(bd.DN);}
+			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(k.DN);}
 		}
 		if(barray[3]!=""){
 			var array = barray[3].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(bd.LT);}
+			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(k.LT);}
 		}
 		if(barray[4]!=""){
 			var array = barray[4].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(bd.RT);}
+			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(k.RT);}
 		}
 
 		bd.inputarrowin (bd.border[parseInt(barray[5])+bd.bdinside]);
@@ -524,10 +528,10 @@ Encode:{
 		if(num>0){ cm += pass.toString(16);}
 		cm += "/";
 
-		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===bd.UP);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===bd.DN);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===bd.LT);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===bd.RT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===k.UP);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===k.DN);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===k.LT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===k.RT);}).join("+") + "/");
 
 		cm += ((bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
 
@@ -549,10 +553,10 @@ FileIO:{
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
 				var val = parseInt(ca), isvert = obj.isVert();
-				if(val===1&&!isvert){ obj.setArrow(bd.UP);}
-				if(val===2&&!isvert){ obj.setArrow(bd.DN);}
-				if(val===1&& isvert){ obj.setArrow(bd.LT);}
-				if(val===2&& isvert){ obj.setArrow(bd.RT);}
+				if(val===1&&!isvert){ obj.setArrow(k.UP);}
+				if(val===2&&!isvert){ obj.setArrow(k.DN);}
+				if(val===1&& isvert){ obj.setArrow(k.LT);}
+				if(val===2&& isvert){ obj.setArrow(k.RT);}
 			}
 		});
 		bd.enableInfo();
@@ -568,9 +572,9 @@ FileIO:{
 		});
 		this.encodeBorder( function(obj){
 			var dir = obj.getArrow();
-			if     (dir===bd.UP||dir===bd.LT){ return "1 ";}
-			else if(dir===bd.DN||dir===bd.RT){ return "2 ";}
-			else                             { return "0 ";}
+			if     (dir===k.UP||dir===k.LT){ return "1 ";}
+			else if(dir===k.DN||dir===k.RT){ return "2 ";}
+			else                           { return "0 ";}
 		});
 		this.encodeBorder( function(obj){
 			if     (obj.line===1){ return "1 ";}
@@ -685,3 +689,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

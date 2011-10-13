@@ -1,4 +1,7 @@
 // BoardPiece.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
@@ -163,22 +166,22 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(bd.QUES, val);},
+	setQues : function(val){ this.setdata(k.QUES, val);},
 
 	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata(bd.QANS, val);},
+	setQans : function(val){ this.setdata(k.QANS, val);},
 
 	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(bd.QDIR, val);},
+	setQdir : function(val){ this.setdata(k.QDIR, val);},
 
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(bd.QNUM, val);},
+	setQnum : function(val){ this.setdata(k.QNUM, val);},
 
 	getAnum : function(){ return this.anum;},
-	setAnum : function(val){ this.setdata(bd.ANUM, val);},
+	setAnum : function(val){ this.setdata(k.ANUM, val);},
 
 	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata(bd.QSUB, val);},
+	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -319,16 +322,16 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 
 	// 下記の関数で用いる定数
 	isLPobj : {
-		1 : {11:1,12:1,14:1,15:1}, /* bd.UP */
-		2 : {11:1,12:1,16:1,17:1}, /* bd.DN */
-		3 : {11:1,13:1,15:1,16:1}, /* bd.LT */
-		4 : {11:1,13:1,14:1,17:1}  /* bd.RT */
+		1 : {11:1,12:1,14:1,15:1}, /* k.UP */
+		2 : {11:1,12:1,16:1,17:1}, /* k.DN */
+		3 : {11:1,13:1,15:1,16:1}, /* k.LT */
+		4 : {11:1,13:1,14:1,17:1}  /* k.RT */
 	},
 	noLPobj : {
-		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* bd.UP */
-		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* bd.DN */
-		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* bd.LT */
-		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* bd.RT */
+		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* k.UP */
+		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* k.DN */
+		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* k.LT */
+		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* k.RT */
 	},
 
 	isLP : function(dir){
@@ -357,18 +360,18 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
 		var cell, list=[];
-		cell=this.up(); if(!cell.isnull){ list.push([cell,bd.UP]);}
-		cell=this.dn(); if(!cell.isnull){ list.push([cell,bd.DN]);}
-		cell=this.lt(); if(!cell.isnull){ list.push([cell,bd.LT]);}
-		cell=this.rt(); if(!cell.isnull){ list.push([cell,bd.RT]);}
+		cell=this.up(); if(!cell.isnull){ list.push([cell,k.UP]);}
+		cell=this.dn(); if(!cell.isnull){ list.push([cell,k.DN]);}
+		cell=this.lt(); if(!cell.isnull){ list.push([cell,k.LT]);}
+		cell=this.rt(); if(!cell.isnull){ list.push([cell,k.RT]);}
 		return list;
 	},
 	getdir4cblist : function(){
 		var cell, border, cblist=[];
-		cell=this.up(); border=this.ub(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,bd.UP]);}
-		cell=this.dn(); border=this.db(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,bd.DN]);}
-		cell=this.lt(); border=this.lb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,bd.LT]);}
-		cell=this.rt(); border=this.rb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,bd.RT]);}
+		cell=this.up(); border=this.ub(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.UP]);}
+		cell=this.dn(); border=this.db(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.DN]);}
+		cell=this.lt(); border=this.lb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.LT]);}
+		cell=this.rt(); border=this.rb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.RT]);}
 		return cblist;
 	},
 
@@ -405,10 +408,10 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(bd.QUES, val);},
+	setQues : function(val){ this.setdata(k.QUES, val);},
 
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(bd.QNUM, val);},
+	setQnum : function(val){ this.setdata(k.QNUM, val);},
 
 	//---------------------------------------------------------------------------
 	// cross.lcnt()       交点に存在する線の本数を返す
@@ -459,22 +462,22 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(bd.QUES, val);},
+	setQues : function(val){ this.setdata(k.QUES, val);},
 
 	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata(bd.QANS, val);},
+	setQans : function(val){ this.setdata(k.QANS, val);},
 
 	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(bd.QDIR, val);},
+	setQdir : function(val){ this.setdata(k.QDIR, val);},
 
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(bd.QNUM, val);},
+	setQnum : function(val){ this.setdata(k.QNUM, val);},
 
 	getLineVal : function(){ return this.line;},
-	setLineVal : function(val){ this.setdata(bd.LINE, val);},
+	setLineVal : function(val){ this.setdata(k.LINE, val);},
 
 	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata(bd.QSUB, val);},
+	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -551,15 +554,15 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.isLP(bd.RT) && cell2.isLP(bd.LT)) :
-							   (cell1.isLP(bd.DN) && cell2.isLP(bd.UP));
+		return this.isVert() ? (cell1.isLP(k.RT) && cell2.isLP(k.LT)) :
+							   (cell1.isLP(k.DN) && cell2.isLP(k.UP));
 	},
 	// bd.sLiB => bd.checkStableLineから呼ばれる関数
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineNG : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.noLP(bd.RT) || cell2.noLP(bd.LT)) :
-							   (cell1.noLP(bd.DN) || cell2.noLP(bd.UP));
+		return this.isVert() ? (cell1.noLP(k.RT) || cell2.noLP(k.LT)) :
+							   (cell1.noLP(k.DN) || cell2.noLP(k.UP));
 	}
 });
 
@@ -586,10 +589,10 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
 	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(bd.QDIR, val);},
+	setQdir : function(val){ this.setdata(k.QDIR, val);},
 
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(bd.QNUM, val);}
+	setQnum : function(val){ this.setdata(k.QNUM, val);}
 });
 
 //----------------------------------------------------------------------------
@@ -622,10 +625,10 @@ pzprv3.createCommonClass('Address',
 	
 	movedir : function(dir,dd){
 		switch(dir){
-			case 1: this.by-=dd; break; /* bd.UP */
-			case 2: this.by+=dd; break; /* bd.DN */
-			case 3: this.bx-=dd; break; /* bd.LT */
-			case 4: this.bx+=dd; break; /* bd.RT */
+			case 1: this.by-=dd; break; /* k.UP */
+			case 2: this.by+=dd; break; /* k.DN */
+			case 3: this.bx-=dd; break; /* k.LT */
+			case 4: this.bx+=dd; break; /* k.RT */
 		}
 		return this;
 	},
@@ -883,3 +886,5 @@ pzprv3.createCommonClass('AreaBorderInfo:AreaCellInfo',
 	getclistbycell : function(cell){ },
 	getclist : function(areaid){ }
 });
+
+})();

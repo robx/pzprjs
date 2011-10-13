@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 たわむれんが版 tawa.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('tawa', {
 //---------------------------------------------------------
 // マウス入力系
@@ -60,11 +64,11 @@ TargetCursor:{
 	movedir_cursor : function(dir,mv){
 		this.pos.movedir(dir,mv);
 
-		if(dir===bd.UP){
+		if(dir===k.UP){
 			if(this.pos.bx===this.maxx || (this.pos.bx>this.minx && (this.pos.by&2)===0)){ this.pos.bx--;}
 			else{ this.pos.bx++;}
 		}
-		else if(dir===bd.DN){
+		else if(dir===k.DN){
 			if(this.pos.bx===this.minx || (this.pos.bx<this.maxx && (this.pos.by&2)===2)){ this.pos.bx++;}
 			else{ this.pos.bx--;}
 		}
@@ -171,25 +175,25 @@ Board:{
 		this.SuperFunc.execadjust.call(this, name);
 	},
 	expandreduce : function(key,d){
-		if(key & this.EXPAND){
+		if(key & k.EXPAND){
 			switch(key & 0x0F){
-				case this.LT: this.qcols+=[0,0,1,1][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
-				case this.RT: this.qcols+=[0,1,0,1][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
-				case this.UP: this.qcols+=[-1,0,0,1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows++; break;
-				case this.DN: this.qrows++; break;
+				case k.LT: this.qcols+=[0,0,1,1][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
+				case k.RT: this.qcols+=[0,1,0,1][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
+				case k.UP: this.qcols+=[-1,0,0,1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows++; break;
+				case k.DN: this.qrows++; break;
 			}
 			this.setminmax();
 
-			this.expandGroup(this.CELL,key);
+			this.expandGroup(k.CELL,key);
 		}
-		else if(key & this.REDUCE){
-			this.reduceGroup(this.CELL,key);
+		else if(key & k.REDUCE){
+			this.reduceGroup(k.CELL,key);
 
 			switch(key & 0x0F){
-				case this.LT: this.qcols-=[1,1,0,0][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
-				case this.RT: this.qcols-=[1,0,1,0][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
-				case this.UP: this.qcols-=[1,0,0,-1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows--; break;
-				case this.DN: this.qrows--; break;
+				case k.LT: this.qcols-=[1,1,0,0][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
+				case k.RT: this.qcols-=[1,0,1,0][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
+				case k.UP: this.qcols-=[1,0,0,-1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows--; break;
+				case k.DN: this.qrows--; break;
 			}
 		}
 		this.setposAll();
@@ -198,19 +202,19 @@ Board:{
 	turnflip : function(key,d){
 		var d = {x1:this.minbx, y1:this.minby, x2:this.maxbx, y2:this.maxby};
 
-		if     (key===this.FLIPY){ if(!(this.qrows&1)){ this.lap = {0:3,1:2,2:1,3:0}[this.lap];} }
-		else if(key===this.FLIPX){ this.lap = {0:0,1:2,2:1,3:3}[this.lap];}
+		if     (key===k.FLIPY){ if(!(this.qrows&1)){ this.lap = {0:3,1:2,2:1,3:0}[this.lap];} }
+		else if(key===k.FLIPX){ this.lap = {0:0,1:2,2:1,3:3}[this.lap];}
 
-		this.turnflipGroup(this.CELL, key, d);
+		this.turnflipGroup(k.CELL, key, d);
 
 		this.setposAll();
 	},
 	distObj : function(key,obj){
 		key &= 0x0F;
-		if     (key===this.UP){ return obj.by;}
-		else if(key===this.DN){ return this.maxby-obj.by;}
-		else if(key===this.LT){ return obj.bx;}
-		else if(key===this.RT){ return this.maxbx-obj.bx;}
+		if     (key===k.UP){ return obj.by;}
+		else if(key===k.DN){ return this.maxby-obj.by;}
+		else if(key===k.LT){ return obj.bx;}
+		else if(key===k.RT){ return this.maxbx-obj.bx;}
 		return -1;
 	}
 },
@@ -511,3 +515,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

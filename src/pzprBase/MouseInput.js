@@ -1,4 +1,7 @@
 // MouseInput.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -450,7 +453,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!cell.isnull){
 			if(cell.getQnum()!==-1){
 				var dir = this.getdir(this.prevPos, pos);
-				if(dir!==bd.NDIR){
+				if(dir!==k.NDIR){
 					cell.setQdir(cell.getQdir()!==dir?dir:0);
 					cell.draw();
 				}
@@ -462,10 +465,10 @@ pzprv3.createCommonClass('MouseEvent',
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
-		var dir = bd.NDIR, cell = this.prevPos.getc();
+		var dir = k.NDIR, cell = this.prevPos.getc();
 		if(!cell.isnull){
 			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==bd.NDIR){
+			if(dir!==k.NDIR){
 				if(cell.numberAsObject){ cell.setNum(dir);}
 				else{ cell.setQdir(dir);}
 				cell.draw();
@@ -477,11 +480,11 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getdir : function(base, current){
-		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return bd.UP;}
-		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return bd.DN;}
-		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return bd.LT;}
-		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return bd.RT;}
-		return bd.NDIR;
+		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return k.UP;}
+		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return k.DN;}
+		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return k.LT;}
+		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return k.RT;}
+		return k.NDIR;
 	},
 
 	//---------------------------------------------------------------------------
@@ -718,3 +721,5 @@ pzprv3.createCommonClass('MouseEvent',
 		this.owner.painter.paintAll();
 	}
 });
+
+})();

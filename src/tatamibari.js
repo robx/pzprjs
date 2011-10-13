@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('tatamibari', {
 //---------------------------------------------------------
 // マウス入力系
@@ -62,7 +66,7 @@ Board:{
 	isborder : 1,
 
 	adjustBoardData : function(key,d){
-		if(key & this.TURN){
+		if(key & k.TURN){
 			var tques={2:3,3:2};
 			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -239,3 +243,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();
