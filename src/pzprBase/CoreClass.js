@@ -81,39 +81,38 @@
 	//---------------------------------------------------------------
 	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
 	//---------------------------------------------------------------
-	createCustoms : function(scriptid, custombase0){
-		var pidlist = this.PZLINFO.PIDlist(scriptid);
-		this.createCustomsPlural(pidlist, custombase0);
+	createCustoms : function(scriptid, custombase){
+		this.createCustomsPlural(this.PZLINFO.PIDlist(scriptid), custombase);
 	},
-	createCustomsPlural : function(pidlist, custombase0){
+	createCustomsPlural : function(pidlist, custombase){
 		for(var i=0;i<pidlist.length;i++){
-			var pid = pidlist[i], custombase = {};
-			for(var classname0 in custombase0){
-				var classname = this.checkPID(classname0, pid);
-				if(!!classname){
-					var proto = custombase0[classname0];
-					if(!custombase[classname]){ custombase[classname]={};}
-					for(var name in proto){ custombase[classname][name] = proto[name];}
-				}
-			}
-			this.createCustomSingle(pid, custombase);
+			this.createCustomSingle(pidlist[i], custombase);
 		}
 	},
-	checkPID : function(classname, pid){
-		var pidcond = [], isexist = false;
-		if(classname.match('@')){
-			pidcond   = classname.substr(classname.indexOf('@')+1).split(/,/);
-			classname = classname.substr(0,classname.indexOf('@'));
-			for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
-			if(!isexist){ classname = '';}
+	PIDfilter : function(pid, custombase){
+		var _custombase = {};
+		for(var hashkey in custombase){
+			var name = hashkey, pidcond = [], isexist = false;
+			if(hashkey.match('@')){
+				pidcond = hashkey.substr(hashkey.indexOf('@')+1).split(/,/);
+				name    = hashkey.substr(0,hashkey.indexOf('@'));
+				for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
+				if(!isexist){ name = '';}
+			}
+			if(!!name){
+				var proto = custombase[hashkey];
+				if(!_custombase[name]){ _custombase[name]={};}
+				for(var key in proto){ _custombase[name][key] = proto[key];}
+			}
 		}
-		return classname;
+		return _custombase;
 	},
 
 	createCustomSingle : function(pid, custombase){
-		var custom = {};
+		custombase = this.PIDfilter(pid, custombase);
 
 		// 追加があるクラス => 残りの共通クラスの順に継承
+		var custom = {};
 		for(var classname in custombase){
 			var proto = custombase[classname];
 
