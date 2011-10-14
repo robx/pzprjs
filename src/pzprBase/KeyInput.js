@@ -369,11 +369,21 @@ pzprv3.createCommonClass('KeyEvent',
 		this.clearflag = false;
 
 		// ElementTemplate
-		this.EL_KPEMPTY = ee.addTemplate('','div', {unselectable:'on', className:'kpcell kpcellempty'}, null, null);
-		this.EL_KPDIV   = ee.addTemplate('','div', {unselectable:'on', className:'kpcell kpcellvalid'}, null, null);
-
-		this.EL_KPNUM_SP = ee.addTemplate('','span', {unselectable:'on', className:'kpnum'}, null, null);
-		this.EL_KPIMG_IMG = ee.addTemplate('','img', {unselectable:'on', className:'kpimg'}, null, null);
+		this.node_empty = pzprv3.createEL('div');
+		this.node_empty.className = 'kpcell kpcellempty';
+		pzprv3.unselectable(this.node_empty);
+		
+		this.node_div = pzprv3.createEL('div');
+		this.node_div.className = 'kpcell kpcellvalid';
+		pzprv3.unselectable(this.node_div);
+		
+		this.node_num = pzprv3.createEL('span');
+		this.node_num.className = 'kpnum';
+		pzprv3.unselectable(this.node_num);
+		
+		this.node_img = pzprv3.createEL('img');
+		this.node_img.className = 'kpimg';
+		pzprv3.unselectable(this.node_img);
 
 		this.create();
 	},
@@ -500,18 +510,21 @@ pzprv3.createCommonClass('KeyEvent',
 	inputcol : function(type, id, ca, disp){
 		var _div = null, _child = null, self = this;
 		if(type!=='empty'){
-			_div = ee.createEL(this.EL_KPDIV, this.prefix+id);
+			_div = this.node_div.cloneNode(false);
+			_div.id = this.prefix+id;
 			_div.onclick = function(){ self.kpinput(ca);};
 		}
-		else{ _div = ee.createEL(this.EL_KPEMPTY, '');}
+		else{ _div = this.node_empty.cloneNode(false);}
 
 		if(type==='num'){
-			_child = ee.createEL(this.EL_KPNUM_SP, this.prefix+id+"_s");
+			_child = this.node_num.cloneNode(false);
+			_child.id = this.prefix+id+"_s";
 			_child.style.color = this.tdcolor;
 			_child.innerHTML   = disp;
 		}
 		else if(type==='image'){
-			_child = ee.createEL(this.EL_KPIMG_IMG, this.prefix+id+"_i");
+			_child = this.node_img.cloneNode(false);
+			_child.id = this.prefix+id+"_i";
 			_child.src = "./src/img/"+this.owner.pid+"_kp.gif";
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}

@@ -34,8 +34,6 @@ var
 		return ((!!el) ? new _ELx(el) : null);
 	},
 	_elx = _ElementManager._cache    = {},
-	_elp = _ElementManager._template = [],
-	_elpcnt = _ElementManager._tempcnt = 0,
 
 	// define and map _ElementManager.ElementExt class
 	_ELx = _ElementManager.ElementExt = function(el){
@@ -43,23 +41,10 @@ var
 		this.parent = el.parentNode;
 		this.pdisp  = 'none';
 	},
-	_ELp = _ElementManager.ElementTemplate = function(parent, tag, attr, style, func){
-		this.parent  = parent;
-		this.tagName = tag;
-		this.attr    = attr;
-		this.style   = style;
-		this.func    = func;
-	},
 
 	// Utility functions
 	_extend = function(obj, ads){
 		for(var name in ads){ obj[name] = ads[name];}
-	},
-	_toArray = function(args){
-		if(!args){ return [];}
-		var array = [];
-		for(var i=0,len=args.length;i<len;i++){ array[i]=args[i];}
-		return array;
 	}
 ;
 
@@ -75,51 +60,6 @@ _extend( _ElementManager, {
 	clean : function(){
 		_elx = null;
 		_elx = {};
-		_elpcnt  = 0;
-		_elp = null;
-		_elp = [];
-	},
-
-	//----------------------------------------------------------------------
-	// ee.addTemplate()  指定した内容のElementTemplateを作成してIDを返す
-	// ee.createEL()     ElementTemplateからエレメントを作成して返す
-	//----------------------------------------------------------------------
-	addTemplate : function(parent, tag, attr_i, style_i, func_i){
-		if(!tag){ return;}
-
-		if(!parent){ parent = null;}
-		else if(typeof parent == 'string'){ parent = ee(parent).el;}
-
-		var attr  = {};
-		var style = (style_i || {});
-		var func  = (func_i  || {});
-
-		if(!!attr_i){
-			for(var name in attr_i){
-				if(name==='unselectable' && attr_i[name]==='on'){
-					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = 'none';
-					attr['unselectable'] = 'on';
-				}
-				else{ attr[name] = attr_i[name];}
-			}
-		}
-
-		_elp[_elpcnt++] = new _ELp(parent, tag, attr, style, func_i);
-		return (_elpcnt-1);
-	},
-	createEL : function(tid, id){
-		if(!_elp[tid]){ return null;}
-
-		var temp = _elp[tid];
-		var el = _doc.createElement(temp.tagName);
-
-		if(!!id){ el.id = id;}
-		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
-		for(var name in temp.style){ el.style[name] = temp.style[name];}
-		// for(var name in temp.func) { pzprv3.target.addEvent(el, name, temp.func[name], true); }
-
-		if(!!temp.parent){ temp.parent.appendChild(el);} // 後ろじゃないとIEでエラーになる。。
-		return el;
 	}
 });
 

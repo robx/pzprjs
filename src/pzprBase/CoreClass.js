@@ -165,7 +165,24 @@
 
 	//---------------------------------------------------------------
 	// 現在の時間を取得
-	currentTime : function(){ return (new Date()).getTime();}
+	currentTime : function(){ return (new Date()).getTime();},
+
+	//---------------------------------------------------------------
+	// Elementの生成関連
+	//---------------------------------------------------------------
+	unselectable : function(el){
+		el.style.MozUserSelect   = 'none';
+		el.style.KhtmlUserSelect = 'none';
+		el.style.userSelect      = 'none';
+		el.unselectable = "on";
+		return this;
+	},
+	getEL : function(id){
+		return document.getElementById(id);
+	},
+	createEL : function(tagName){
+		return document.createElement(tagName);
+	}
 });
 
 // 定数の定義

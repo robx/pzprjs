@@ -283,7 +283,8 @@ Menu:{
 			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
 
-		var el = ee.createEL(this.EL_BUTTON, 'btncolor');
+		var el = this.el_button.cloneNode(false), self = this;
+		el.id = 'btncolor';
 		this.addButtons(el, function(){ bd.encolorall();}, "色をつける","Color up");
 		ee('btnarea').appendEL(el);
 	}

@@ -121,8 +121,6 @@ pzprv3.createCommonClass('Graphic',
 		this.zidx = 1;
 		this.zidx_array=[];
 
-		this.EL_NUMOBJ = ee.addTemplate('numobj_parent', 'div', {className:'divnum', unselectable:'on'}, null, null);
-
 		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
 		for(var type in g.use){ this.use[type] = g.use[type];}
 
@@ -1909,7 +1907,13 @@ pzprv3.createCommonClass('Graphic',
 
 			// エレメントを取得
 			var el = this.numobj[key];
-			if(!el){ el = this.numobj[key] = ee.createEL(this.EL_NUMOBJ,'');}
+			if(!el){
+				el = pzprv3.createEL('div');
+				el.className = 'divnum';
+				pzprv3.unselectable(el);
+				pzprv3.getEL('numobj_parent').appendChild(el);
+				this.numobj[key] = el;
+			}
 
 			el.innerHTML = text;
 

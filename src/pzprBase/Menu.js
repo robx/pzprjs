@@ -31,31 +31,9 @@ pzprv3.createCommonClass('Menu',
 
 		this.reader;	// FileReaderオブジェクト
 
-		// ElementTemplate : メニュー領域
-		this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, null);
-
-		// ElementTemplate : フロートメニュー
-		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(pid)}, null);
-
-		// ElementTemplate : フロートメニュー(中身)
-		this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, null);
-		this.EL_SPARENT  = this.EL_SMENU;
-		this.EL_SPARENT2 = ee.addTemplate('','li', {className:'smenu'}, {fontWeight :'900', fontSize:'0.9em'}, null);
-		this.EL_SELECT   = this.EL_SPARENT2;
-		this.EL_CHECK    = ee.addTemplate('','li', {className:'smenu'}, {paddingLeft:'6pt', fontSize:'0.9em'}, null);
-		this.EL_CHILD    = this.EL_CHECK;
-		this.EL_SEPARATE = ee.addTemplate('','li', {className:'smenusep', innerHTML:'&nbsp;'}, null, null);
-		this.EL_LABEL    = ee.addTemplate('','li', {className:'smenulabel'}, null, null);
-
-		// ElementTemplate : 管理領域
-		this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
-		this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
-		this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, null);
-		this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, null);
-
 		// ElementTemplate : ボタン
-		this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
-		this.EL_UBUTTON = ee.addTemplate('btnarea','input', {type:'button'}, null, null);
+		this.el_button = pzprv3.createEL('input');
+		this.el_button.type = 'button';
 	},
 
 	language : 'ja',
@@ -427,26 +405,60 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var pp = this.config;
+
+		// ElementTemplate : メニュー領域
+		var el_menu = pzprv3.createEL('li');
+		el_menu.className = 'menu';
+
+		// ElementTemplate : フロートメニュー
+		var el_float = pzprv3.createEL('menu');
+		el_float.className = 'floatmenu';
+		el_float.style.backgroundColor = pzprv3.PZLINFO.toFBGcolor(this.owner.pid);
+
+		// ElementTemplate : フロートメニュー(中身)
+		var el_smenu = pzprv3.createEL('li');
+		el_smenu.className = 'smenu';
+		var el_sparent  = el_smenu.cloneNode(false);
+
+		var el_sparent2 = el_smenu.cloneNode(false);
+		el_sparent2.style.fontWeight = '900';
+		el_sparent2.style.fontSize = '0.9em';
+		var el_select = el_sparent2.cloneNode(false);
+
+		var el_check  = el_smenu.cloneNode(false);
+		el_check.style.paddingLeft = '6pt';
+		el_check.style.fontSize = '0.9em';
+		var el_child = el_check.cloneNode(false);
+
+		var el_separate = pzprv3.createEL('li');
+		el_separate.className = 'smenusep';
+		el_separate.innerHTML = '&nbsp;';
+
+		var el_label = pzprv3.createEL('li');
+		el_label.className = 'smenulabel';
+
 		for(var i=0;i<pp.flaglist.length;i++){
 			var id = pp.flaglist[i];
 			if(!pp.flags[id]){ continue;}
 
-			var eltype=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
+			var temp=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
 			switch(pp.type(id)){
-				case pp.MENU:     eltype = this.EL_MENU;     break;
-				case pp.SEPARATE: eltype = this.EL_SEPARATE; break;
-				case pp.LABEL:    eltype = this.EL_LABEL;    break;
-				case pp.SELECT:   eltype = this.EL_SELECT;   sfunc = true; break;
-				case pp.SPARENT:  eltype = this.EL_SPARENT;  sfunc = true; break;
-				case pp.SPARENT2: eltype = this.EL_SPARENT2; sfunc = true; break;
-				case pp.SMENU:    eltype = this.EL_SMENU;    sfunc = cfunc = true; break;
-				case pp.CHECK:    eltype = this.EL_CHECK;    sfunc = cfunc = true; break;
-				case pp.CHILD:    eltype = this.EL_CHILD;    sfunc = cfunc = true; break;
+				case pp.MENU:     temp = el_menu;     break;
+				case pp.SEPARATE: temp = el_separate; break;
+				case pp.LABEL:    temp = el_label;    break;
+				case pp.SELECT:   temp = el_select;   sfunc = true; break;
+				case pp.SPARENT:  temp = el_sparent;  sfunc = true; break;
+				case pp.SPARENT2: temp = el_sparent2; sfunc = true; break;
+				case pp.SMENU:    temp = el_smenu;    sfunc = cfunc = true; break;
+				case pp.CHECK:    temp = el_check;    sfunc = cfunc = true; break;
+				case pp.CHILD:    temp = el_child;    sfunc = cfunc = true; break;
 				default: continue; break;
 			}
 
-			var smenu = ee.createEL(eltype, smenuid);
+			var smenu = temp.cloneNode(temp===el_separate?true:false);
+			smenu.id = smenuid;
 			if(pp.type(id)===pp.MENU){
+				pzprv3.getEL('menupanel').appendChild(smenu);
 				this.owner.addEvent(smenu, "mouseover", this, this.menuhover);
 				this.owner.addEvent(smenu, "mouseout",  this, this.menuout);
 				continue;
@@ -459,8 +471,11 @@ pzprv3.createCommonClass('Menu',
 
 			var parentid = pp.flags[id].parent;
 			if(!this.floatpanel[parentid]){
-				this.floatpanel[parentid] = ee.createEL(this.EL_FLOAT, 'float_'+parentid);
-				this.owner.addEvent(this.floatpanel[parentid], "mouseout", this, this.floatmenuout);
+				var panel = el_float.cloneNode(false);
+				panel.id = 'float_'+parentid;
+				pzprv3.getEL('float_parent').appendChild(panel);
+				this.owner.addEvent(panel, "mouseout", this, this.floatmenuout);
+				this.floatpanel[parentid] = panel;
 			}
 			this.floatpanel[parentid].appendChild(smenu);
 		}
@@ -470,7 +485,7 @@ pzprv3.createCommonClass('Menu',
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
-				var smenu = ee.createEL(this.EL_SEPARATE,'');
+				var smenu = el_separate.cloneNode(true);
 				ee(smenu).insertBefore(node);
 				i++; len++; // 追加したので1たしておく
 			}
@@ -616,21 +631,39 @@ pzprv3.createCommonClass('Menu',
 	// menu.selectclick()  選択型サブメニュー項目がクリックされたときの動作
 	//---------------------------------------------------------------------------
 	managearea : function(){
+		// ElementTemplate : 管理領域
+		var el_div = pzprv3.createEL('div');
+
+		var el_span = pzprv3.createEL('span');
+		pzprv3.unselectable(el_span);
+
+		var el_checkbox = pzprv3.createEL('input');
+		el_checkbox.type = 'checkbox';
+		el_checkbox.check = '';
+
+		var el_selchild = pzprv3.createEL('div');
+		el_selchild.className = 'flag';
+		pzprv3.unselectable(el_selchild);
+
 		// usearea & checkarea
 		var pp = this.config;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
-			var _div = ee(ee.createEL(this.EL_DIVPACK,'div_'+idname));
+			var _div = ee(el_div.cloneNode(false));
+			_div.el.id = 'div_'+idname;
 			//_div.el.innerHTML = "";
 
 			switch(pp.type(idname)){
 			case pp.SELECT:
-				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				var span = el_span.cloneNode(false);
+				span.id = 'cl_'+idname;
+				_div.appendEL(span);
 				_div.appendHTML("&nbsp;|&nbsp;");
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					var sel = ee.createEL(this.EL_SELCHILD, ['up',idname,num].join("_"));
+					var sel = el_selchild.cloneNode(false);
+					sel.id = ['up',idname,num].join("_");
 					this.owner.addEvent(sel, "click", this, this.selectclick);
 					_div.appendEL(sel);
 					_div.appendHTML('&nbsp;');
@@ -641,11 +674,14 @@ pzprv3.createCommonClass('Menu',
 				break;
 
 			case pp.CHECK:
-				var box = ee.createEL(this.EL_CHECKBOX, 'ck_'+idname);
+				var box = el_checkbox.cloneNode(false);
+				box.id = 'ck_'+idname;
 				this.owner.addEvent(box, "click", this, this.checkclick);
 				_div.appendEL(box);
 				_div.appendHTML("&nbsp;");
-				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
+				var span = el_span.cloneNode(false);
+				span.id = 'cl_'+idname;
+				_div.appendEL(span);
 				_div.appendBR();
 
 				ee('checkpanel').appendEL(_div.el);
@@ -656,7 +692,8 @@ pzprv3.createCommonClass('Menu',
 		// 色分けチェックボックス用の処理
 		if(this.owner.painter.irowake){
 			// 横にくっつけたいボタンを追加
-			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake'), self = this;
+			var el = this.el_button.cloneNode(false), self = this;
+			el.id = "ck_btn_irowake";
 			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
 
@@ -673,30 +710,37 @@ pzprv3.createCommonClass('Menu',
 		if(!!ee('ck_keypopup')){ this.funcs.keypopup.call(this);}
 
 		// (Canvas下) ボタンの初期設定
-		ee.createEL(this.EL_UBUTTON, 'btncheck');
+		var btncheck = this.el_button.cloneNode(false); btncheck.id = "btncheck";
+		var btnundo = this.el_button.cloneNode(false);  btnundo.id = "btnundo";
+		var btnredo = this.el_button.cloneNode(false);  btnredo.id = "btnredo";
+		var btnclear = this.el_button.cloneNode(false); btnclear.id = "btnclear";
+
+		ee('btnarea').appendEL(btncheck);
 		ee('btnarea').appendHTML('&nbsp;');
-		ee.createEL(this.EL_UBUTTON, 'btnundo');
-		ee.createEL(this.EL_UBUTTON, 'btnredo');
+		ee('btnarea').appendEL(btnundo);
+		ee('btnarea').appendEL(btnredo);
 		ee('btnarea').appendHTML('&nbsp;');
-		ee.createEL(this.EL_UBUTTON, 'btnclear');
+		ee('btnarea').appendEL(btnclear);
 
 		var self = this;
-		this.addButtons(ee("btncheck").el, function(){ self.owner.checker.check();}, "チェック", "Check");
-		this.addButtons(ee("btnundo").el,  function(){ self.owner.undo.undo(1);}, "戻", "<-");
-		this.addButtons(ee("btnredo").el,  function(){ self.owner.undo.redo(1);}, "進", "->");
-		this.addButtons(ee("btnclear").el, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
+		this.addButtons(btncheck, function(){ self.owner.checker.check();}, "チェック", "Check");
+		this.addButtons(btnundo,  function(){ self.owner.undo.undo(1);}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ self.owner.undo.redo(1);}, "進", "->");
+		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
 		ee('btnundo').el.disabled = true;
 		ee('btnredo').el.disabled = true;
 
 		if(!this.disable_subclear){
-			ee.createEL(this.EL_UBUTTON, 'btnclear2');
-			this.addButtons(ee("btnclear2").el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
+			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
+			ee('btnarea').appendEL(el);
+			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
 		if(this.owner.painter.irowake!=0){
-			var el = ee.createEL(this.EL_UBUTTON, 'btncolor2');
+			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
+			ee('btnarea').appendEL(el);
 			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
@@ -775,7 +819,7 @@ pzprv3.createCommonClass('Menu',
 		lab(ee('bar1_3').el, "URL出力", "Export URL");
 		var btt = function(name, strJP, strEN, eval){
 			if(eval===false){ return;}
-			var el = ee.createEL(self.EL_BUTTON,''); el.name = name;
+			var el = self.el_button.cloneNode(false); el.name = name;
 			ee('urlbuttonarea').appendEL(el).appendBR();
 			btn(el, func, strJP, strEN);
 		};

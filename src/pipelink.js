@@ -130,7 +130,8 @@ Menu:{
 		};
 		this.toggledisp = function(){ this.owner.setConfig('disptype', (this.owner.getConfig('disptype')==1?2:1));};
 		
-		var el = ee.createEL(this.EL_BUTTON, 'btncircle'), self = this;
+		var el = this.el_button.cloneNode(false), self = this;
+		el.id = 'btncircle';
 		this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
 		ee('btnarea').appendEL(el);
 
