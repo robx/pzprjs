@@ -20,13 +20,13 @@ pzprv3.createCoreClass('ProblemData',
 
 		if(arguments.length>0){ this.parse(arguments[0]);}
 	},
-	setnewData : function(id){
+	setnewData : function(id, owner){
 		this.id = id;
-		this.pid = pzprv3.target.pid;
+		this.pid = owner.pid;
 		this.col = bd.qcols;
 		this.row = bd.qrows;
 		this.hard = 0;
-		this.pdata = pzprv3.target.fio.fileencode(k.PZPH);
+		this.pdata = owner.fio.fileencode(k.PZPH);
 		this.time = (pzprv3.currentTime()/1000)|0;
 		this.comment = '';
 	},
@@ -83,15 +83,15 @@ pzprv3.createCoreClass('DataBaseManager',
 	closeDialog : function(){
 		this.DBlist = [];
 	},
-	clickHandler : function(name){
+	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
 			case 'tableup' : this.upDataTable_M();     break;
 			case 'tabledn' : this.downDataTable_M();   break;
-			case 'open'    : this.openDataTable_M();   break;
-			case 'save'    : this.saveDataTable_M();   break;
+			case 'open'    : this.openDataTable_M(owner); break;
+			case 'save'    : this.saveDataTable_M(owner); break;
 			case 'comedit' : this.editComment_M();     break;
 			case 'difedit' : this.editDifficult_M();   break;
 			case 'del'     : this.deleteDataTable_M(); break;
@@ -231,20 +231,20 @@ pzprv3.createCoreClass('DataBaseManager',
 	// dbm.openDataTable_M()  データの盤面に読み込む
 	// dbm.saveDataTable_M()  データの盤面を保存する
 	//---------------------------------------------------------------------------
-	openDataTable_M : function(){
+	openDataTable_M : function(owner){
 		var id = this.getDataID(); if(id===-1){ return;}
 		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
 
-		this.dbh.openDataTable(this, id, null);
+		this.dbh.openDataTable(this, id, null, owner);
 	},
-	saveDataTable_M : function(){
+	saveDataTable_M : function(owner){
 		var id = this.getDataID(), refresh = false;
 		if(id===-1){
 			id = this.DBlist.length;
 			refresh = true;
 
 			this.DBlist[id] = new pzprv3.core.ProblemData();
-			this.DBlist[id].setnewData(id+1);
+			this.DBlist[id].setnewData(id+1, owner);
 			var str = prompt("コメントがある場合は入力してください。","");
 			this.DBlist[id].comment = (!!str ? str : '');
 			this.DBsid = this.DBlist[id].id;
@@ -254,7 +254,7 @@ pzprv3.createCoreClass('DataBaseManager',
 		}
 
 		this.sync = false;
-		this.dbh.saveDataTable(this, id, this.update);
+		this.dbh.saveDataTable(this, id, this.update, owner);
 	},
 
 	//---------------------------------------------------------------------------
@@ -355,13 +355,13 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	// dbm.dbh.openDataTable()   データの盤面に読み込む
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
-	openDataTable : function(parent, id, callback){
+	openDataTable : function(parent, id, callback, owner){
 		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		pzprv3.target.menu.fileonload(data.pdata);
+		owner.menu.fileonload(data.pdata);
 		if(!!callback){ callback();}
 	},
-	saveDataTable : function(parent, id, callback){
-		parent.DBlist[id].pdata = pzprv3.target.fio.fileencode(k.PZPH);
+	saveDataTable : function(parent, id, callback, owner){
+		parent.DBlist[id].pdata = owner.fio.fileencode(k.PZPH);
 		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},

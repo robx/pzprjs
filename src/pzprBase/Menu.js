@@ -844,7 +844,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = function(e){ pzprv3.dbm.clickHandler(self.getSrcElement(e||window.event).name);};
+		func = function(e){ pzprv3.dbm.clickHandler(self.getSrcElement(e||window.event).name, self.owner);};
 		lab(getEL('bar1_8'), "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;

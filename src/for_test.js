@@ -65,7 +65,7 @@ pzprv3.extendCoreClass('Debug',
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			pzprv3.target.importBoardData({id:newid});
+			self.owner.importBoardData({id:newid});
 
 			if(pnum >= term){ clearInterval(self.alltimer);}
 
@@ -85,7 +85,7 @@ pzprv3.extendCoreClass('Debug',
 		var self = this;
 
 		self.fails = 0;
-		self.pid = pzprv3.target.pid;
+		self.pid = this.owner.pid;
 		setTimeout(function(){ self.check_encode(self);},0);
 	},
 	//Encode test--------------------------------------------------------------
