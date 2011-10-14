@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
 
 var PZLINFO = {
 	info   : {},
@@ -82,7 +82,7 @@ PZLINFO.register({
 	fillmat   :[true,  false, 'フィルマット', 'Fillmat', 'fillmat', {}],
 	fillomino :[false, true,  'フィルオミノ', 'Fillomino', '', { kanpen2:'fillomino01'}],
 	firefly   :[true,  false, 'ホタルビーム', 'Hotaru Beam (Glow of Fireflies)', '', {}],
-	fivecells :[false, false, 'ファイブセルズ', 'FiveCells', '', {}],
+	fivecells :[false, false, 'ファイブセルズ', 'FiveCells', 'nawabari', {}],
 	fourcells :[false, false, 'フォーセルズ', 'FourCells', 'nawabari', {}],
 	goishi    :[false, true,  '碁石ひろい', 'Goishi', '', {}],
 	gokigen   :[true,  false, 'ごきげんななめ', 'Gokigen-naname', 'gokigen', {}],

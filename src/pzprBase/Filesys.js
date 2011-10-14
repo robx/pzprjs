@@ -158,7 +158,7 @@ pzprv3.createCommonClass('FileIO',
 		this.decodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
 	},
 	decodeBorder : function(func){
-		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
+		if(bd.isborder===1 || this.owner.pid==='bosanowa' || (this.owner.pid==='fourcells' && this.filever===0)){
 			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
