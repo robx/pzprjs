@@ -37,7 +37,6 @@ sub input_flags{
 sub output_pzprBase{
 	my @files = (
 		'Camp.js',
-		'Library.js',
 		'CoreClass.js',
 		'Main.js',
 		'Timer.js',

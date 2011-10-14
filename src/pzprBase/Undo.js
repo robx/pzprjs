@@ -247,13 +247,13 @@ pzprv3.createCommonClass('OperationManager',
 		this.enableUndo = (this.current>-1);
 		this.enableRedo = (this.current<this.ope.length-1);
 
-		ee('btnundo').el.disabled = (!this.enableUndo ? 'disabled' : '');
-		ee('btnredo').el.disabled = (!this.enableRedo ? 'disabled' : '');
+		pzprv3.getEL('btnundo').disabled = (!this.enableUndo ? 'disabled' : '');
+		pzprv3.getEL('btnredo').disabled = (!this.enableRedo ? 'disabled' : '');
 
-		ee('ms_h_oldest').el.className = (this.enableUndo ? 'smenu' : 'smenunull');
-		ee('ms_h_undo').el.className   = (this.enableUndo ? 'smenu' : 'smenunull');
-		ee('ms_h_redo').el.className   = (this.enableRedo ? 'smenu' : 'smenunull');
-		ee('ms_h_latest').el.className = (this.enableRedo ? 'smenu' : 'smenunull');
+		pzprv3.getEL('ms_h_oldest').className = (this.enableUndo ? 'smenu' : 'smenunull');
+		pzprv3.getEL('ms_h_undo').className   = (this.enableUndo ? 'smenu' : 'smenunull');
+		pzprv3.getEL('ms_h_redo').className   = (this.enableRedo ? 'smenu' : 'smenunull');
+		pzprv3.getEL('ms_h_latest').className = (this.enableRedo ? 'smenu' : 'smenunull');
 	},
 	allerase : function(){
 		this.ope      = [];

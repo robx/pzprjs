@@ -408,8 +408,8 @@ pzprv3.createCommonClass('KeyEvent',
 
 			this.element.style.display = 'block';
 
-			ee('panelbase1').el.style.display = (mode==1?'block':'none');
-			ee('panelbase3').el.style.display = (mode==3?'block':'none');
+			pzprv3.getEL('panelbase1').style.display = (mode==1?'block':'none');
+			pzprv3.getEL('panelbase3').style.display = (mode==3?'block':'none');
 		}
 		else{
 			this.element.style.display = 'none';
@@ -423,11 +423,11 @@ pzprv3.createCommonClass('KeyEvent',
 	create : function(){
 		if(!this.element){
 			var rect = this.owner.menu.getRect(pzprv3.getEL('divques'));
-			this.element = ee('keypopup').el;
+			this.element = pzprv3.getEL('keypopup');
 			this.element.style.left   = (rect.left+48)+'px';
 			this.element.style.top    = (rect.top +48)+'px';
 			this.element.style.zIndex = 100;
-			ee('barkeypopup').el.ondblclick = function(){ this.owner.setConfig('keypopup',false)};
+			pzprv3.getEL('barkeypopup').ondblclick = function(){ this.owner.setConfig('keypopup',false)};
 		}
 
 		if(this.enablemake_p && pzprv3.EDITOR){ this.createtable(1);}
@@ -437,7 +437,7 @@ pzprv3.createCommonClass('KeyEvent',
 		this.haspanel[mode] = true;
 		this.prefix = ['kp',mode,'_'].join('');
 
-		this.basetmp = ee('panelbase'+mode).el;
+		this.basetmp = pzprv3.getEL('panelbase'+mode);
 		this.basetmp.innerHTML = '';
 
 		this.generate(mode,this.paneltype);

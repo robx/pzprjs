@@ -88,7 +88,7 @@ AreaManager:{
 		this.SuperFunc.menuinit.call(this,pp);
 		if(this.enableSaveImage){
 			if(pzprv3.browser.Gecko && !location.hostname){
-				ee('ms_imagesavep').el.className = 'smenunull';
+				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
 			}
 		}
 	}

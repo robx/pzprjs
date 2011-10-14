@@ -124,8 +124,8 @@ Menu:{
 		pp.addChild('disptype_1', 'disptype', '○', 'Circle');
 		pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
 		this.funcs['disptype'] = function(num){
-			if     (num==1){ ee('btncircle').el.value="○";}
-			else if(num==2){ ee('btncircle').el.value="■";}
+			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
+			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
 			this.owner.painter.paintAll();
 		};
 		this.toggledisp = function(){ this.owner.setConfig('disptype', (this.owner.getConfig('disptype')==1?2:1));};
@@ -133,7 +133,7 @@ Menu:{
 		var el = this.el_button.cloneNode(false), self = this;
 		el.id = 'btncircle';
 		this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
-		ee('btnarea').el.appendChild(el);
+		pzprv3.getEL('btnarea').appendChild(el);
 
 		this.funcs['disptype'].call(this);
 	}

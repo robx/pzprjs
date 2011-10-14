@@ -223,8 +223,8 @@ pzprv3.createCommonClass('Graphic',
 
 		// mainのサイズ変更
 		if(!this.outputImage){
-			ee('main').el.style.width = ''+(mwidth|0)+'px';
-			if(pzprv3.OS.mobile){ ee('menuboard').el.style.width = '90%';}
+			pzprv3.getEL('main').style.width = ''+(mwidth|0)+'px';
+			if(pzprv3.OS.mobile){ pzprv3.getEL('menuboard').style.width = '90%';}
 		}
 	},
 
@@ -1717,7 +1717,7 @@ pzprv3.createCommonClass('Graphic',
 		this.flushCanvasAll = ((this.use.canvas) ?
 			function(){
 				this.numobj = {};
-				ee('numobj_parent').el.innerHTML = '';
+				pzprv3.getEL('numobj_parent').innerHTML = '';
 			}
 		:
 			function(){
@@ -1727,7 +1727,7 @@ pzprv3.createCommonClass('Graphic',
 				this.zidx_array=[];
 
 				this.numobj = {};
-				ee('numobj_parent').el.innerHTML = '';
+				pzprv3.getEL('numobj_parent').innerHTML = '';
 
 				var g = this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);

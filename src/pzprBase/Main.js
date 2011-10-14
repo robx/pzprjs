@@ -92,8 +92,7 @@ pzprv3.createCoreClass('Owner',
 		this.removeAllEvents();
 
 		this.menu.menureset();
-		ee('numobj_parent').el.innerHTML = '';
-		ee.clean();
+		pzprv3.getEL('numobj_parent').innerHTML = '';
 	},
 
 	//---------------------------------------------------------------------------

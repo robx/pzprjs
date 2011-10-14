@@ -16,7 +16,7 @@ pzprv3.createCommonClass('Timer',
 
 		// 経過時間表示用変数
 		this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-		this.timerEL = ee('timerpanel').el;
+		this.timerEL = pzprv3.getEL('timerpanel');
 
 		// 自動正答判定用変数
 		this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント

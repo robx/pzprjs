@@ -62,7 +62,7 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
+		var canvas = pzprv3.getEL('divques'), numparent = pzprv3.getEL('numobj_parent');
 		if(!pzprv3.OS.mobile){
 			this.owner.addEvent(canvas, "mousedown", this, this.e_mousedown);
 			this.owner.addEvent(canvas, "mousemove", this, this.e_mousemove);

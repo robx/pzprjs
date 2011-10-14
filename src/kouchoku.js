@@ -20,7 +20,7 @@ MouseEvent:{
 	setEvents : function(){
 		this.SuperFunc.setEvents.call(this);
 
-		var canvas = ee('divques').el;
+		var canvas = pzprv3.getEL('divques');
 		this.owner.addEvent(canvas, "mouseout", this, this.e_mouseout);
 	},
 	e_mouseout : function(e){

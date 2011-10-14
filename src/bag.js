@@ -93,16 +93,16 @@ Menu:{
 	menuinit : function(pp){
 		this.SuperFunc.menuinit.call(this,pp);
 		if(this.owner.editmode){
-			ee('ck_bgcolor').el.disabled    = "true";
-			ee('cl_bgcolor').el.style.color = "silver";
+			pzprv3.getEL('ck_bgcolor').disabled    = "true";
+			pzprv3.getEL('cl_bgcolor').style.color = "silver";
 		}
 	},
 
 	modechange : function(num){
 		this.SuperFunc.modechange.call(this,num);
 
-		ee('ck_bgcolor').el.disabled    = (num===3?"":"true");
-		ee('cl_bgcolor').el.style.color = (num===3?"black":"silver");
+		pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
+		pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");
 	}
 },
 

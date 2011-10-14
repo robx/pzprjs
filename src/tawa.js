@@ -222,8 +222,8 @@ Board:{
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
-		this.addLabels(ee('pop1_1_cap1x').el, "横幅 (黄色の数)", "Width (Yellows)");
-		this.addLabels(ee('pop1_1_cap2x').el, "高さ",            "Height");
+		this.addLabels(pzprv3.getEL('pop1_1_cap1x'), "横幅 (黄色の数)", "Width (Yellows)");
+		this.addLabels(pzprv3.getEL('pop1_1_cap2x'), "高さ",            "Height");
 
 		this.funcs.newboard = function(){ this.owner.menu.newboard_show();};
 	},
@@ -247,7 +247,7 @@ Menu:{
 
 		/* sc8.cssにも定義があります */
 		for(var i=0;i<=3;i++){
-			var _img = ee('nb'+i).el;
+			var _img = pzprv3.getEL('nb'+i);
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
 			this.owner.addEvent(_img, "click", this, this.clicklap);
@@ -274,13 +274,13 @@ Menu:{
 		this.selectlap(this.getSrcElement(e).id.charAt(2));
 	},
 	selectlap : function(num){
-		ee("nb"+this.clap).el.parentNode.style.backgroundColor = '';
-		ee("nb"+num).el.parentNode.style.backgroundColor = 'red';
+		pzprv3.getEL("nb"+this.clap).parentNode.style.backgroundColor = '';
+		pzprv3.getEL("nb"+num).parentNode.style.backgroundColor = 'red';
 		this.clap = num;
 	},
 
 	newboard_show : function(){		// "新規盤面作成"を表示するとき
-		this.popel = ee("pop1_1").el;
+		this.popel = pzprv3.getEL("pop1_1");
 		this.selectlap([0,2,3,1][bd.lap]);
 		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
 		document.newboard.row.value = bd.qrows;

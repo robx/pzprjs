@@ -10,7 +10,7 @@ pzprv3.extendCoreClass('Debug',
 		_doc.testform.starttest.style.display = 'inline';
 		_doc.testform.starttest.onclick = function(){ self.starttest();};
 		
-		if(!ee('testdiv').el){
+		if(!pzprv3.getEL('testdiv')){
 			var el = _doc.createElement('div');
 			el.id = 'testdiv';
 			el.style.textAlign  = 'left';
@@ -103,7 +103,7 @@ pzprv3.extendCoreClass('Debug',
 			var bd2 = self.bd_freezecopy();
 
 			document.urlinput.ta.value = this.owner.enc.pzloutput(k.KANPEN);
-			this.owner.menu.popel = ee("pop1_5").el;
+			this.owner.menu.popel = pzprv3.getEL("pop1_5");
 			this.owner.menu.urlinput({});
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -278,10 +278,10 @@ pzprv3.extendCoreClass('Debug',
 
 	taenable : true,
 	addTextarea : function(str){
-		if(!pzprv3.browser.Gecko){ ee('testarea').el.value += (str+"\n");}
+		if(!pzprv3.browser.Gecko){ pzprv3.getEL('testarea').value += (str+"\n");}
 		else{
-			ee('testdiv').el.appendChild(document.createTextNode(str));
-			ee('testdiv').el.appendChild(document.createElement('br'));
+			pzprv3.getEL('testdiv').appendChild(document.createTextNode(str));
+			pzprv3.getEL('testdiv').appendChild(document.createElement('br'));
 		}
 	},
 
