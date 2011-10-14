@@ -274,20 +274,20 @@ Menu:{
 		this.selectlap(this.getSrcElement(e).id.charAt(2));
 	},
 	selectlap : function(num){
-		ee("nb"+this.clap).parent.style.backgroundColor = '';
-		ee("nb"+num).parent.style.backgroundColor = 'red';
+		ee("nb"+this.clap).el.parentNode.style.backgroundColor = '';
+		ee("nb"+num).el.parentNode.style.backgroundColor = 'red';
 		this.clap = num;
 	},
 
 	newboard_show : function(){		// "新規盤面作成"を表示するとき
-		this.pop = ee("pop1_1");
+		this.popel = ee("pop1_1").el;
 		this.selectlap([0,2,3,1][bd.lap]);
 		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
 		document.newboard.row.value = bd.qrows;
 		this.owner.key.enableKey = false;
 	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
-		if(this.pop){
+		if(this.popel){
 			var col = ((parseInt(document.newboard.col.value))|0);
 			var row = ((parseInt(document.newboard.row.value))|0);
 			var slap = [0,3,1,2][this.clap];

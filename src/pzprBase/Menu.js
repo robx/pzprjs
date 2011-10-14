@@ -16,9 +16,9 @@ pzprv3.createCommonClass('Menu',
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
-		this.pop        = "";			// 現在表示しているポップアップウィンドウ(オブジェクト)
+		this.popel      = null;			// 現在表示しているポップアップウィンドウ(オブジェクト)
 
-		this.movingpop  = "";			// 移動中のポップアップメニュー
+		this.movingpop  = null;			// 移動中のポップアップメニュー
 		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
 
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
@@ -87,7 +87,7 @@ pzprv3.createCommonClass('Menu',
 	menureset : function(){
 		this.dispfloat  = [];
 		this.floatpanel = [];
-		this.pop        = "";
+		this.popel      = null;
 		this.btnstack   = [];
 		this.labelstack = [];
 		this.managestack = [];
@@ -141,39 +141,39 @@ pzprv3.createCommonClass('Menu',
 		var pp = this.config;
 		switch(pp.type(idname)){
 		case pp.MENU:
-			var pmenu = ee('ms_'+idname);
-			if(!!pmenu){ pmenu.el.innerHTML = "["+pp.getMenuStr(idname)+"]";}
+			var pmenu = ee('ms_'+idname).el;
+			if(!!pmenu){ pmenu.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
 		case pp.SMENU: case pp.LABEL: case pp.SPARENT: case pp.SPARENT2:
-			var smenu = ee('ms_'+idname);
-			if(!!smenu){ smenu.el.innerHTML = pp.getMenuStr(idname);}
+			var smenu = ee('ms_'+idname).el;
+			if(!!smenu){ smenu.innerHTML = pp.getMenuStr(idname);}
 			break;
 
 		case pp.SELECT:
-			var smenu = ee('ms_'+idname), label = ee('cl_'+idname);
-			if(!!smenu){ smenu.el.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
+			var smenu = ee('ms_'+idname).el, label = ee('cl_'+idname).el;
+			if(!!smenu){ smenu.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
+			if(!!label){ label.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
 			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
 			break;
 
 		case pp.CHILD:
-			var smenu = ee('ms_'+idname), manage = ee('up_'+idname);
+			var smenu = ee('ms_'+idname).el, manage = ee('up_'+idname).el;
 			var issel = (this.owner.getConfig(idname) == this.owner.getConfig(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
-			if(!!smenu){ smenu.el.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
+			if(!!smenu){ smenu.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
-				manage.el.innerHTML = cap;
-				manage.el.className = (issel?"childsel":"child");
+				manage.innerHTML = cap;
+				manage.className = (issel?"childsel":"child");
 			}
 			break;
 
 		case pp.CHECK:
-			var smenu = ee('ms_'+idname), check = ee('ck_'+idname), label = ee('cl_'+idname);
+			var smenu = ee('ms_'+idname).el, check = ee('ck_'+idname).el, label = ee('cl_'+idname).el;
 			var flag = this.owner.getConfig(idname);
-			if(!!smenu){ smenu.el.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
-			if(!!check){ check.el.checked   = flag;}					// 管理領域(チェックボックス)
-			if(!!label){ label.el.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
+			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
+			if(!!check){ check.checked   = flag;}					// 管理領域(チェックボックス)
+			if(!!label){ label.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
 			break;
 		}
 	},
@@ -650,41 +650,41 @@ pzprv3.createCommonClass('Menu',
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
-			var _div = ee(el_div.cloneNode(false));
-			_div.el.id = 'div_'+idname;
-			//_div.el.innerHTML = "";
+			var _div = el_div.cloneNode(false);
+			_div.id = 'div_'+idname;
+			//_div.innerHTML = "";
 
 			switch(pp.type(idname)){
 			case pp.SELECT:
 				var span = el_span.cloneNode(false);
 				span.id = 'cl_'+idname;
-				_div.el.appendChild(span);
-				_div.el.appendChild(document.createTextNode(" | "));
+				_div.appendChild(span);
+				_div.appendChild(document.createTextNode(" | "));
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
 					this.owner.addEvent(sel, "click", this, this.selectclick);
-					_div.el.appendChild(sel);
-					_div.el.appendChild(document.createTextNode(' '));
+					_div.appendChild(sel);
+					_div.appendChild(document.createTextNode(' '));
 				}
-				_div.el.appendChild(document.createElement('br'));
+				_div.appendChild(document.createElement('br'));
 
-				ee('usepanel').el.appendChild(_div.el);
+				ee('usepanel').el.appendChild(_div);
 				break;
 
 			case pp.CHECK:
 				var box = el_checkbox.cloneNode(false);
 				box.id = 'ck_'+idname;
 				this.owner.addEvent(box, "click", this, this.checkclick);
-				_div.el.appendChild(box);
-				_div.el.appendChild(document.createTextNode(" "));
+				_div.appendChild(box);
+				_div.appendChild(document.createTextNode(" "));
 				var span = el_span.cloneNode(false);
 				span.id = 'cl_'+idname;
-				_div.el.appendChild(span);
-				_div.el.appendChild(document.createElement('br'));
+				_div.appendChild(span);
+				_div.appendChild(document.createElement('br'));
 
-				ee('checkpanel').el.appendChild(_div.el);
+				ee('checkpanel').el.appendChild(_div);
 				break;
 			}
 		}
@@ -708,7 +708,7 @@ pzprv3.createCommonClass('Menu',
 			ee('timerpanel').el.style.display = 'none';
 			ee('separator2').el.style.display = 'none';
 		}
-		if(!!ee('ck_keypopup')){ this.funcs.keypopup.call(this);}
+		if(!!ee('ck_keypopup').el){ this.funcs.keypopup.call(this);}
 
 		// (Canvas下) ボタンの初期設定
 		var btncheck = this.el_button.cloneNode(false); btncheck.id = "btncheck";
@@ -767,9 +767,9 @@ pzprv3.createCommonClass('Menu',
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
-		var pop = ee('popup_parent').el.firstChild;
-		while(!!pop){
-			var _el = pop.firstChild;
+		var popel = ee('popup_parent').el.firstChild;
+		while(!!popel){
+			var _el = popel.firstChild;
 			while(!!_el){
 				if(_el.className==='titlebar'){
 					this.titlebarfunc(_el);
@@ -777,7 +777,7 @@ pzprv3.createCommonClass('Menu',
 				}
 				_el = _el.nextSibling;
 			}
-			pop = pop.nextSibling;
+			popel = popel.nextSibling;
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
@@ -900,7 +900,7 @@ pzprv3.createCommonClass('Menu',
 		// poptest ------------------------------------------------------------
 		this.owner.debug.poptest_func();
 
-		if(ee("pop1_8").el.style.display=='inline'){ this.pop = ee("pop1_8");}
+		if(ee("pop1_8").el.style.display=='inline'){ this.popel = ee("pop1_8").el;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -911,32 +911,32 @@ pzprv3.createCommonClass('Menu',
 		// 表示しているウィンドウがある場合は閉じる
 		this.popclose();
 
-		// この中でmenu.popも設定されます。
+		// この中でmenu.popelも設定されます。
 		if(this.funcs[idname]){ this.funcs[idname].call(this);}
 
 		// ポップアップメニューを表示する
-		if(this.pop){
-			var _pop = this.pop.el;
+		if(this.popel){
+			var _popel = this.popel;
 			if(!pzprv3.OS.mobile){
-				_pop.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
-				_pop.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
+				_popel.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
+				_popel.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
 			}
 			else{
-				_pop.style.left = e.pageX - 8 + 'px';
-				_pop.style.top  = e.pageY - 8 + 'px';
+				_popel.style.left = e.pageX - 8 + 'px';
+				_popel.style.top  = e.pageY - 8 + 'px';
 			}
-			_pop.style.display = 'inline';
+			_popel.style.display = 'inline';
 		}
 	},
 	popclose : function(){
-		if(this.pop){
-			if(this.pop.el.id=='pop1_8'){
+		if(this.popel){
+			if(this.popel.id=='pop1_8'){
 				pzprv3.dbm.closeDialog();
 			}
 
-			this.pop.el.style.display = "none";
-			this.pop = '';
-			this.movingpop = "";
+			this.popel.style.display = "none";
+			this.popel = null;
+			this.movingpop = null;
 			this.owner.key.enableKey = true;
 		}
 	},
@@ -953,22 +953,22 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	titlebardown : function(e){
-		var pop = this.getSrcElement(e).parentNode;
-		this.movingpop = pop;
-		this.offset.px = this.owner.mouse.pageX(e) - parseInt(pop.style.left);
-		this.offset.py = this.owner.mouse.pageY(e) - parseInt(pop.style.top);
+		var popel = this.getSrcElement(e).parentNode;
+		this.movingpop = popel;
+		this.offset.px = this.owner.mouse.pageX(e) - parseInt(popel.style.left);
+		this.offset.py = this.owner.mouse.pageY(e) - parseInt(popel.style.top);
 	},
 	titlebarup : function(e){
-		var pop = this.movingpop;
-		if(!!pop){
-			this.movingpop = "";
+		var popel = this.movingpop;
+		if(!!popel){
+			this.movingpop = null;
 		}
 	},
 	titlebarmove : function(e){
-		var pop = this.movingpop;
-		if(!!pop){
-			pop.style.left = this.owner.mouse.pageX(e) - this.offset.px + 'px';
-			pop.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
+		var popel = this.movingpop;
+		if(!!popel){
+			popel.style.left = this.owner.mouse.pageX(e) - this.offset.px + 'px';
+			popel.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
 			this.owner.preventDefault(e);
 		}
 	},
@@ -1071,15 +1071,15 @@ pzprv3.createCommonClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ this.pop = ee("pop1_2");},
-		urloutput : function(){ this.pop = ee("pop1_3"); document.urloutput.ta.value = "";},
-		fileopen  : function(){ this.pop = ee("pop1_4");},
+		urlinput  : function(){ this.popel = ee("pop1_2").el;},
+		urloutput : function(){ this.popel = ee("pop1_3").el; document.urloutput.ta.value = "";},
+		fileopen  : function(){ this.popel = ee("pop1_4").el;},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
 		filesave2 : function(){ if(!!this.owner.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
-		database  : function(){ this.pop = ee("pop1_8"); pzprv3.dbm.openDialog();},
+		database  : function(){ this.popel = ee("pop1_8").el; pzprv3.dbm.openDialog();},
 
 		h_oldest  : function(){ this.owner.undo.undoall();},
 		h_undo    : function(){ this.owner.undo.undo(1);},
@@ -1088,11 +1088,11 @@ pzprv3.createCommonClass('Menu',
 		check     : function(){ this.owner.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
-		adjust    : function(){ this.pop = ee("pop2_1");},
-		turn      : function(){ this.pop = ee("pop2_2");},
+		adjust    : function(){ this.popel = ee("pop2_1").el;},
+		turn      : function(){ this.popel = ee("pop2_2").el;},
 		duplicate : function(){ this.duplicate();},
 
-		credit    : function(){ this.pop = ee("pop3_1");},
+		credit    : function(){ this.popel = ee("pop3_1").el;},
 		jumpexp   : function(){ window.open('./faq.html?'+this.owner.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
@@ -1110,7 +1110,7 @@ pzprv3.createCommonClass('Menu',
 		language  : function(str){ this.setLang(str);},
 
 		newboard : function(){
-			this.pop = ee("pop1_1");
+			this.popel = ee("pop1_1").el;
 			if(this.owner.pid!="sudoku"){
 				document.newboard.col.value = bd.qcols;
 				document.newboard.row.value = bd.qrows;
@@ -1118,7 +1118,7 @@ pzprv3.createCommonClass('Menu',
 			this.owner.key.enableKey = false;
 		},
 		dispsize : function(){
-			this.pop = ee("pop4_1");
+			this.popel = ee("pop4_1").el;
 			document.dispsize.cs.value = this.owner.painter.cellsize;
 			this.owner.key.enableKey = false;
 		},
@@ -1154,7 +1154,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.newboard_open()  新規盤面を作成する
 	//------------------------------------------------------------------------------
 	newboard : function(e){
-		if(this.pop){
+		if(this.popel){
 			var col = (parseInt(document.newboard.col.value))|0;
 			var row = (parseInt(document.newboard.row.value))|0;
 			if(!!col && !!row){ this.newboard_open(col+'/'+row);}
@@ -1172,7 +1172,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.openurl()    「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urlinput : function(e){
-		if(this.pop){
+		if(this.popel){
 			this.popclose();
 
 			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
@@ -1180,7 +1180,7 @@ pzprv3.createCommonClass('Menu',
 		}
 	},
 	urloutput : function(e){
-		if(this.pop){
+		if(this.popel){
 			var _doc = document;
 			switch(this.getSrcElement(e).name){
 				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3);  break;
@@ -1192,7 +1192,7 @@ pzprv3.createCommonClass('Menu',
 		}
 	},
 	openurl : function(e){
-		if(this.pop){
+		if(this.popel){
 			if(document.urloutput.ta.value!==''){
 				var win = window.open(document.urloutput.ta.value, '', '');
 			}
@@ -1205,7 +1205,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
-		if(this.pop){ this.popclose();}
+		if(this.popel){ this.popclose();}
 		var _doc = document, fileEL = _doc.fileform.filebox;
 
 		if(!!this.reader || this.enableGetText){
@@ -1345,7 +1345,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.dispsize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
-		if(this.pop){
+		if(this.popel){
 			var csize = parseInt(document.dispsize.cs.value);
 			if(csize>0){ this.owner.painter.cellsize = (csize|0);}
 
@@ -1393,7 +1393,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に実行条件をチェック
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
-		if(this.pop){
+		if(this.popel){
 			bd.execadjust(this.getSrcElement(e).name);
 		}
 	},

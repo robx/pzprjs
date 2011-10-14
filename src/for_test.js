@@ -10,7 +10,7 @@ pzprv3.extendCoreClass('Debug',
 		_doc.testform.starttest.style.display = 'inline';
 		_doc.testform.starttest.onclick = function(){ self.starttest();};
 		
-		if(!ee('testdiv')){
+		if(!ee('testdiv').el){
 			var el = _doc.createElement('div');
 			el.id = 'testdiv';
 			el.style.textAlign  = 'left';
@@ -103,7 +103,7 @@ pzprv3.extendCoreClass('Debug',
 			var bd2 = self.bd_freezecopy();
 
 			document.urlinput.ta.value = this.owner.enc.pzloutput(k.KANPEN);
-			this.owner.menu.pop = ee("pop1_5");
+			this.owner.menu.popel = ee("pop1_5").el;
 			this.owner.menu.urlinput({});
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}

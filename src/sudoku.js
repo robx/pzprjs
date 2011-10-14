@@ -70,7 +70,7 @@ Menu:{
 	},
 
 	newboard : function(e){
-		if(this.pop){
+		if(this.popel){
 			var col, row, _doc=document;
 			if     (_doc.newboard.size[1].checked){ col=row=16;}
 			else if(_doc.newboard.size[2].checked){ col=row=25;}
