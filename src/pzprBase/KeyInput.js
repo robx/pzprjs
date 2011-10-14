@@ -358,7 +358,7 @@ pzprv3.createCommonClass('KeyEvent',
 // キー入力用Popupウィンドウ
 
 	initialize_panel : function(){
-		this.haspanel = {1:false, 3:false};	// 有効かどうか
+		this.haspanel = {1:(this.enablemake_p && pzprv3.EDITOR), 3:this.enableplay_p};	// 有効かどうか
 		this.element = null;				// キーポップアップのエレメント
 
 		this.prefix;
@@ -393,13 +393,6 @@ pzprv3.createCommonClass('KeyEvent',
 	paneltype    : 10,
 
 	//---------------------------------------------------------------------------
-	// kp.kpinput()     キーポップアップから入力された時の処理をオーバーライドで記述する
-	//---------------------------------------------------------------------------
-	kpinput : function(e, ca){
-		this.keyinput(ca);
-	},
-
-	//---------------------------------------------------------------------------
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
@@ -411,7 +404,7 @@ pzprv3.createCommonClass('KeyEvent',
 			pzprv3.getEL('panelbase1').style.display = (mode==1?'block':'none');
 			pzprv3.getEL('panelbase3').style.display = (mode==3?'block':'none');
 		}
-		else{
+		else if(!!this.element){
 			this.element.style.display = 'none';
 		}
 	},
@@ -434,7 +427,6 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.enableplay_p)                 { this.createtable(3);}
 	},
 	createtable : function(mode){
-		this.haspanel[mode] = true;
 		this.prefix = ['kp',mode,'_'].join('');
 
 		this.basetmp = pzprv3.getEL('panelbase'+mode);
@@ -512,7 +504,7 @@ pzprv3.createCommonClass('KeyEvent',
 		if(type!=='empty'){
 			_div = this.node_div.cloneNode(false);
 			_div.id = this.prefix+id;
-			_div.onclick = function(){ self.kpinput(ca);};
+			_div.onclick = function(){ self.keyinput(ca);};
 		}
 		else{ _div = this.node_empty.cloneNode(false);}
 
