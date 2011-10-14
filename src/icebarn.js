@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 アイスバーン版 icebarn.js v3.4.0
+// パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js v3.4.0
 //
 (function(){
 
@@ -13,6 +13,9 @@ MouseEvent:{
 		if(this.mousestart || this.mousemove){
 			if     (this.btn.Left) { this.inputarrow();}
 			else if(this.btn.Right){ this.inputIcebarn();}
+		}
+		else if(this.owner.pid!=='icebarn' && this.mouseend && this.notInputted()){
+			this.inputqnum();
 		}
 	},
 	inputplay : function(){
@@ -29,6 +32,8 @@ MouseEvent:{
 	inputIcebarn : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(this.owner.pid!=='icebarn' && cell.isNum()){ this.inputqnum(); return;}
+
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
 		cell.setQues(this.inputData);
@@ -40,12 +45,14 @@ MouseEvent:{
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getnb(this.prevPos, pos);
-		if(border.id!==null && !this.mousestart){
+		if(!border.isnull && !this.mousestart){
 			var dir = this.getdir(this.prevPos, pos);
 
 			if(border.id<bd.bdinside){
-				if(this.inputData===null){ this.inputData=((border.getArrow()!==dir)?1:0);}
-				border.setArrow((this.inputData===1)?dir:0);
+				if(this.owner.pid==='icebarn'){
+					if(this.inputData===null){ this.inputData=((border.getArrow()!==dir)?1:0);}
+					border.setArrow((this.inputData===1)?dir:0);
+				}
 			}
 			else{
 				if(this.inputData===null){ this.inputarrow_inout(border,dir);}
@@ -72,6 +79,32 @@ MouseEvent:{
 		else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
 				(by===bd.minby && dir===k.UP)||(by===bd.maxby && dir===k.DN)){ return 2;}
 		return 0;
+	}
+},
+
+//---------------------------------------------------------
+// キーボード入力系
+"KeyEvent@icelom,icelom2":{
+	enablemake : true,
+
+	keyinput : function(ca){
+		if(this.key_inputIcebarn(ca)){ return;}
+		this.key_inputqnum(ca);
+	},
+	key_inputIcebarn : function(ca){
+		var cell = this.cursor.getTCC();
+
+		if(ca==='q'){
+			cell.getQues(cell.ice()?0:6);
+		}
+		else if(ca===' ' && cell.noNum()){
+			cell.setQues(0);
+		}
+		else{ return false;}
+
+		cell.drawaround();
+		this.prev = cell;
+		return true;
 	}
 },
 
@@ -258,6 +291,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
 		this.errcolor1 = "red";
+		if(this.owner.pid!=='icebarn'){ this.fontBCellcolor = this.fontcolor;}
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
 
@@ -272,9 +306,13 @@ Graphic:{
 		this.drawLines();
 		this.drawPekes(1);
 
+		if(this.owner.pid!=='icebarn'){ this.drawNumbers();}
+
 		this.drawBorderArrows();
 
 		this.drawChassis();
+
+		if(this.owner.pid!=='icebarn'){ this.drawTarget();}
 
 		this.drawInOut();
 	},
@@ -347,7 +385,7 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@icebarn":{
 	pzlimport : function(type){
 		if     (type==0){ this.decodeIcebarn();}
 		else if(type==1){
@@ -538,8 +576,68 @@ Encode:{
 		this.outbstr += cm;
 	}
 },
+"Encode@icelom,icelom2":{
+	pzlimport : function(type){
+		this.decodeIcelom();
+		this.decodeNumber16();
+		this.decodeInOut();
+
+		if(this.owner.pid==='icelom'){
+			this.owner.pid = (this.checkpflag("a")?'icelom':'icelom2');
+			this.owner.menu.displayDesign();
+		}
+	},
+	pzlexport : function(type){
+		this.encodeIcelom();
+		this.encodeNumber16();
+		this.encodeInOut();
+
+		if(this.owner.pid==='icelom'){ this.outpflag="a";}
+	},
+
+	decodeIcelom : function(){
+		var bstr = this.outbstr;
+
+		var a=0, c=0, twi=[16,8,4,2,1];
+		for(var i=0;i<bstr.length;i++){
+			var num = parseInt(bstr.charAt(i),32);
+			for(var w=0;w<5;w++){
+				if(c<bd.cellmax){
+					bd.cell[c].setQues(num&twi[w]?6:0);
+					c++;
+				}
+			}
+			if(c>=bd.cellmax){ a=i+1; break;}
+		}
+		this.outbstr = bstr.substr(a);
+	},
+	encodeIcelom : function(){
+		var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+		}
+		if(num>0){ cm += pass.toString(32);}
+
+		this.outbstr += cm;
+	},
+
+	decodeInOut : function(){
+		var barray = this.outbstr.substr(1).split("/");
+
+		bd.disableInfo();
+		bd.inputarrowin (bd.border[parseInt(barray[0])+bd.bdinside]);
+		bd.inputarrowout(bd.border[parseInt(barray[1])+bd.bdinside]);
+		bd.enableInfo();
+
+		this.outbstr = "";
+	},
+	encodeInOut : function(){
+		this.outbstr += ("/"+(bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
+	}
+},
 //---------------------------------------------------------
-FileIO:{
+"FileIO@icebarn":{
 	decodeData : function(){
 		bd.disableInfo();
 		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
@@ -583,6 +681,47 @@ FileIO:{
 		});
 	}
 },
+"FileIO@icelom,icelom2":{
+	decodeData : function(){
+		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
+		bd.inputarrowout(bd.border[parseInt(this.readLine())]);
+
+		var pzltype = this.readLine();
+		if(this.owner.pid==='icelom'){
+			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
+			this.owner.menu.displayDesign();
+		}
+
+		this.decodeCell( function(obj,ca){
+			if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
+
+			if(ca!=='' && ca!=='.'){
+				obj.qnum = (ca!=='?' ? parseInt(ca) : -2);
+			}
+		});
+		this.decodeBorder( function(obj,ca){
+			if     (ca==="1" ){ obj.line = 1;}
+			else if(ca==="-1"){ obj.qsub = 2;}
+		});
+	},
+	encodeData : function(){
+		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
+
+		this.datastr += (bd.arrowin.id+"/"+bd.arrowout.id+"/"+pzltype+"/");
+		this.encodeCell( function(obj){
+			var istr = (obj.ques===6 ? "i" : ""), qstr='';
+			if     (obj.qnum===-1){ qstr = (istr==="" ? ". " : " ");}
+			else if(obj.qnum===-2){ qstr = "? ";}
+			else{ qstr = obj.qnum+" ";}
+			return istr+qstr;
+		});
+		this.encodeBorder( function(obj){
+			if     (obj.line===1){ return "1 "; }
+			else if(obj.qsub===2){ return "-1 ";}
+			else                 { return "0 "; }
+		});
+	}
+},
 
 //---------------------------------------------------------
 // 正解判定処理実行部
@@ -613,21 +752,31 @@ AnsCheck:{
 		if( flag==3 ){
 			this.setAlert('盤面の外に出てしまった線があります。', 'A line is not reached out the \'OUT\' arrow.'); return false;
 		}
-		if( flag==4 ){
+		if( this.owner.pid==='icebarn' && flag==4 ){
 			this.setAlert('矢印を逆に通っています。', 'A line goes through an arrow reverse.'); return false;
+		}
+		if( this.owner.pid!=='icebarn' && flag==5 ){
+			this.setAlert('数字の通過順が間違っています。', 'A line goes through an arrow reverse.'); return false;
 		}
 
 		if( !this.checkOneLoop() ){
 			this.setAlert('線がひとつながりではありません。', 'Lines are not countinuous.'); return false;
 		}
 
-		var iarea = this.owner.newInstance('AreaIcebarnData').getAreaInfo();
-		if( !this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);}) ){
+		if( (this.owner.pid==='icelom') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.ice());}) ){
+			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
+		}
+
+		if( (this.owner.pid!=='icelom') && !this.checkIgnoreIcebarn() ){
 			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
 		}
 
-		if( !this.checkAllArrow() ){
+		if( (this.owner.pid==='icebarn') && !this.checkAllArrow() ){
 			this.setAlert('線が通っていない矢印があります。', 'A line doesn\'t go through some arrows.'); return false;
+		}
+
+		if( (this.owner.pid!=='icebarn') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
+			this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
 		}
 
 		if( !this.checkLcntCell(1) ){
@@ -635,6 +784,11 @@ AnsCheck:{
 		}
 
 		return true;
+	},
+
+	checkIgnoreIcebarn : function(){
+		var iarea = this.owner.newInstance('AreaIcebarnData').getAreaInfo();
+		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
 	},
 
 	checkAllArrow : function(){
@@ -651,7 +805,7 @@ AnsCheck:{
 	},
 
 	checkLine : function(){
-		var pos = bd.arrowin.getaddr(), dir=0;
+		var pos = bd.arrowin.getaddr(), dir=0, count=1;
 		if     (pos.by===bd.minby){ dir=2;}else if(pos.by===bd.maxby){ dir=1;}
 		else if(pos.bx===bd.minbx){ dir=4;}else if(pos.bx===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}
@@ -671,6 +825,13 @@ AnsCheck:{
 					else if(dir!=2 && cell.ub().isLine()){ dir=1;}
 					else if(dir!=3 && cell.rb().isLine()){ dir=4;}
 					else if(dir!=4 && cell.lb().isLine()){ dir=3;}
+				}
+
+				if(this.owner.pid!=='icebarn'){
+					var num = cell.getNum();
+					if(num===-1){ continue;}
+					if(num!==-2 && num!==count){ cell.seterr(1); return 5;}
+					count++;
 				}
 			}
 			else{
