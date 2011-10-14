@@ -286,7 +286,7 @@ Menu:{
 		var el = this.el_button.cloneNode(false), self = this;
 		el.id = 'btncolor';
 		this.addButtons(el, function(){ bd.encolorall();}, "色をつける","Color up");
-		ee('btnarea').appendEL(el);
+		ee('btnarea').el.appendChild(el);
 	}
 },
 

@@ -50,7 +50,8 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
 		this.pid     = pzl.id;
-		this.canvas  = ee('divques').unselectable().el;
+		this.canvas  = pzprv3.getEL('divques');
+		pzprv3.unselectable(this.canvas);
 		this.classes = pzprv3.custom[pzl.id];	// クラスを取得
 
 		// クラス初期化

@@ -133,7 +133,7 @@ Menu:{
 		var el = this.el_button.cloneNode(false), self = this;
 		el.id = 'btncircle';
 		this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
-		ee('btnarea').appendEL(el);
+		ee('btnarea').el.appendChild(el);
 
 		this.funcs['disptype'].call(this);
 	}

@@ -63,6 +63,8 @@ pzprv3.createCommonClass('KeyEvent',
 			sender.AddEventListener("KeyDown", function(s,a){ kc.e_SLkeydown(s,a);});
 			sender.AddEventListener("KeyUp",   function(s,a){ kc.e_SLkeyup(s,a);});
 		}
+
+		this.create();
 	},
 
 	//---------------------------------------------------------------------------
@@ -384,8 +386,6 @@ pzprv3.createCommonClass('KeyEvent',
 		this.node_img = pzprv3.createEL('img');
 		this.node_img.className = 'kpimg';
 		pzprv3.unselectable(this.node_img);
-
-		this.create();
 	},
 
 	enablemake_p : false,
@@ -422,7 +422,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	create : function(){
 		if(!this.element){
-			var rect = ee('divques').getRect();
+			var rect = this.owner.menu.getRect(pzprv3.getEL('divques'));
 			this.element = ee('keypopup').el;
 			this.element.style.left   = (rect.left+48)+'px';
 			this.element.style.top    = (rect.top +48)+'px';

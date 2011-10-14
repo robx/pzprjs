@@ -114,7 +114,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	addButtons : function(el, func, strJP, strEN){
 		if(!!func) el.onclick = func;
-		ee(el).unselectable();
+		pzprv3.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 	addLabels  : function(el, strJP, strEN){
@@ -486,7 +486,7 @@ pzprv3.createCommonClass('Menu',
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
 				var smenu = el_separate.cloneNode(true);
-				ee(smenu).insertBefore(node);
+				node.parentNode.insertBefore(smenu, node);
 				i++; len++; // 追加したので1たしておく
 			}
 			fw=node.style.fontWeight;
@@ -564,7 +564,7 @@ pzprv3.createCommonClass('Menu',
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = ee(this.getSrcElement(e).id).getRect();
+		var rect = this.getRect(this.getSrcElement(e));
 		var idname = this.getSrcElement(e).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
@@ -613,13 +613,13 @@ pzprv3.createCommonClass('Menu',
 	insideOf : function(el, e){
 		var ex = this.owner.mouse.pageX(e);
 		var ey = this.owner.mouse.pageY(e);
-		var rect = ee(el.id).getRect();
+		var rect = this.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
 		var ex = this.owner.mouse.pageX(e);
 		var ey = this.owner.mouse.pageY(e);
-		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
+		var rect_f = this.getRect(pzprv3.getEL('ms_file')), rect_o = this.getRect(pzprv3.getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
 
@@ -658,33 +658,33 @@ pzprv3.createCommonClass('Menu',
 			case pp.SELECT:
 				var span = el_span.cloneNode(false);
 				span.id = 'cl_'+idname;
-				_div.appendEL(span);
-				_div.appendHTML("&nbsp;|&nbsp;");
+				_div.el.appendChild(span);
+				_div.el.appendChild(document.createTextNode(" | "));
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
 					this.owner.addEvent(sel, "click", this, this.selectclick);
-					_div.appendEL(sel);
-					_div.appendHTML('&nbsp;');
+					_div.el.appendChild(sel);
+					_div.el.appendChild(document.createTextNode(' '));
 				}
-				_div.appendBR();
+				_div.el.appendChild(document.createElement('br'));
 
-				ee('usepanel').appendEL(_div.el);
+				ee('usepanel').el.appendChild(_div.el);
 				break;
 
 			case pp.CHECK:
 				var box = el_checkbox.cloneNode(false);
 				box.id = 'ck_'+idname;
 				this.owner.addEvent(box, "click", this, this.checkclick);
-				_div.appendEL(box);
-				_div.appendHTML("&nbsp;");
+				_div.el.appendChild(box);
+				_div.el.appendChild(document.createTextNode(" "));
 				var span = el_span.cloneNode(false);
 				span.id = 'cl_'+idname;
-				_div.appendEL(span);
-				_div.appendBR();
+				_div.el.appendChild(span);
+				_div.el.appendChild(document.createElement('br'));
 
-				ee('checkpanel').appendEL(_div.el);
+				ee('checkpanel').el.appendChild(_div.el);
 				break;
 			}
 		}
@@ -695,7 +695,8 @@ pzprv3.createCommonClass('Menu',
 			var el = this.el_button.cloneNode(false), self = this;
 			el.id = "ck_btn_irowake";
 			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
-			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
+			var node = ee('cl_irowake').el;
+			node.parentNode.insertBefore(el, node.nextSibling);
 
 			// 色分けのやつを一番下に持ってくる
 			var el = ee('checkpanel').el.removeChild(ee('div_irowake').el);
@@ -715,12 +716,12 @@ pzprv3.createCommonClass('Menu',
 		var btnredo = this.el_button.cloneNode(false);  btnredo.id = "btnredo";
 		var btnclear = this.el_button.cloneNode(false); btnclear.id = "btnclear";
 
-		ee('btnarea').appendEL(btncheck);
-		ee('btnarea').appendHTML('&nbsp;');
-		ee('btnarea').appendEL(btnundo);
-		ee('btnarea').appendEL(btnredo);
-		ee('btnarea').appendHTML('&nbsp;');
-		ee('btnarea').appendEL(btnclear);
+		ee('btnarea').el.appendChild(btncheck);
+		ee('btnarea').el.appendChild(document.createTextNode(' '));
+		ee('btnarea').el.appendChild(btnundo);
+		ee('btnarea').el.appendChild(btnredo);
+		ee('btnarea').el.appendChild(document.createTextNode(' '));
+		ee('btnarea').el.appendChild(btnclear);
 
 		var self = this;
 		this.addButtons(btncheck, function(){ self.owner.checker.check();}, "チェック", "Check");
@@ -734,13 +735,13 @@ pzprv3.createCommonClass('Menu',
 
 		if(!this.disable_subclear){
 			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
-			ee('btnarea').appendEL(el);
+			ee('btnarea').el.appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
 		if(this.owner.painter.irowake!=0){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
-			ee('btnarea').appendEL(el);
+			ee('btnarea').el.appendChild(el);
 			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
@@ -820,7 +821,8 @@ pzprv3.createCommonClass('Menu',
 		var btt = function(name, strJP, strEN, eval){
 			if(eval===false){ return;}
 			var el = self.el_button.cloneNode(false); el.name = name;
-			ee('urlbuttonarea').appendEL(el).appendBR();
+			ee('urlbuttonarea').el.appendChild(el);
+			ee('urlbuttonarea').el.appendChild(document.createElement('br'));
 			btn(el, func, strJP, strEN);
 		};
 		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
@@ -829,7 +831,7 @@ pzprv3.createCommonClass('Menu',
 		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              pinfo.exists.kanpen);
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (this.owner.pid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
-		ee("urlbuttonarea").appendBR();
+		ee("urlbuttonarea").el.appendChild(document.createElement('br'));
 		func = function(e){ self.openurl(e||window.event);};
 		btn(_doc.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
 		btn(_doc.urloutput.close,   close, "閉じる", "Close");
@@ -947,7 +949,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
 		this.owner.addEvent(bar, (!pzprv3.OS.mobile?"mousedown":"touchstart"), this, this.titlebardown);
-		ee(bar).unselectable().el;
+		pzprv3.unselectable(bar);
 	},
 
 	titlebardown : function(e){
@@ -973,9 +975,44 @@ pzprv3.createCommonClass('Menu',
 
 	//--------------------------------------------------------------------------------
 	// menu.getSrcElement() イベントが起こったエレメントを返す
+	// menu.getRect()       エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getSrcElement : function(e){
 		return e.target || e.srcElement;
+	},
+	getRect : function(el){
+		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
+			function(el){
+				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!window.scrollX==void 0){
+					scrollLeft = window.scrollX;
+					scrollTop  = window.scrollY;
+				}
+				else{
+					_html = document.documentElement; _body = document.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
+				}
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		:
+			function(el){
+				var left = 0, top = 0, el2 = el;
+				while(!!el2){
+					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
+					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
+					el2 = el2.offsetParent;
+				}
+				var right  = left + (el.offsetWidth  || el.clientWidth);
+				var bottom = top  + (el.offsetHeight || el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		);
+		return this.getRect(el);
 	},
 
 //--------------------------------------------------------------------------------------------------------------

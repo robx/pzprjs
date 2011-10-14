@@ -181,7 +181,7 @@ pzprv3.createCommonClass('Graphic',
 		this.currentContext.translate(x0, y0);
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
-		var rect = ee('divques').getRect();
+		var rect = this.owner.menu.getRect(pzprv3.getEL('divques'));
 		this.pageX = (x0 + rect.left);
 		this.pageY = (y0 + rect.top);
 
