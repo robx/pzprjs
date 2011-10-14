@@ -250,7 +250,7 @@ Menu:{
 			var _img = ee('nb'+i).el;
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			ee.addEvent(_img, "click", ee.ebinder(this.owner.menu, this.owner.menu.clicklap));
+			this.owner.addEvent(_img, "click", this, this.clicklap);
 			_img.parentNode.style.display = 'block';
 		}
 
@@ -271,7 +271,7 @@ Menu:{
 	// 新規作成で選ぶ時に用いる関数・変数など
 	clap : 3,
 	clicklap : function(e){
-		this.selectlap(ee.getSrcElement(e).id.charAt(2));
+		this.selectlap(this.getSrcElement(e).id.charAt(2));
 	},
 	selectlap : function(num){
 		ee("nb"+this.clap).parent.style.backgroundColor = '';

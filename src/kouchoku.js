@@ -21,11 +21,11 @@ MouseEvent:{
 		this.SuperFunc.setEvents.call(this);
 
 		var canvas = ee('divques').el;
-		ee.addEvent(canvas, "mouseout", ee.ebinder(this, this.e_mouseout));
+		this.owner.addEvent(canvas, "mouseout", this, this.e_mouseout);
 	},
 	e_mouseout : function(e){
 		// 子要素に入ってもイベントが起きてしまうので、サイズを確認する
-		var ex=ee.pageX(e), ey=ee.pageY(e), rect=ee('divques').getRect();
+		var ex=this.pageX(e), ey=this.pageY(e), rect=ee('divques').getRect();
 		if(ex<=rect.left || ex>=rect.right || ey<=rect.top || ey>=rect.bottom){
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];

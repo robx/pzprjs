@@ -32,12 +32,10 @@ pzprv3.createCommonClass('Menu',
 		this.reader;	// FileReaderオブジェクト
 
 		// ElementTemplate : メニュー領域
-		var menu_funcs = {mouseover : ee.ebinder(this, this.menuhover), mouseout  : ee.ebinder(this, this.menuout)};
-		this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, menu_funcs);
+		this.EL_MENU  = ee.addTemplate('menupanel','li', {className:'menu'}, null, null);
 
 		// ElementTemplate : フロートメニュー
-		var float_funcs = {mouseout:ee.ebinder(this, this.floatmenuout)};
-		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(pid)}, float_funcs);
+		this.EL_FLOAT = ee.addTemplate('float_parent','menu', {className:'floatmenu'}, {backgroundColor:pzprv3.PZLINFO.toFBGcolor(pid)}, null);
 
 		// ElementTemplate : フロートメニュー(中身)
 		this.EL_SMENU    = ee.addTemplate('','li', {className:'smenu'}, null, null);
@@ -52,8 +50,8 @@ pzprv3.createCommonClass('Menu',
 		// ElementTemplate : 管理領域
 		this.EL_DIVPACK  = ee.addTemplate('','div',  null, null, null);
 		this.EL_SPAN     = ee.addTemplate('','span', {unselectable:'on'}, null, null);
-		this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, {click:ee.ebinder(this, this.checkclick)});
-		this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, {click:ee.ebinder(this, this.selectclick)});
+		this.EL_CHECKBOX = ee.addTemplate('','input',{type:'checkbox', check:''}, null, null);
+		this.EL_SELCHILD = ee.addTemplate('','div',  {className:'flag',unselectable:'on'}, null, null);
 
 		// ElementTemplate : ボタン
 		this.EL_BUTTON = ee.addTemplate('','input', {type:'button'}, null, null);
@@ -87,9 +85,7 @@ pzprv3.createCommonClass('Menu',
 		}
 		else{
 			this.reader = new FileReader();
-			this.reader.onload = ee.ebinder(this, function(e){
-				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
-			});
+			this.reader.onload = function(e){ this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));};
 		}
 
 		if(!!ee("divques_sub").el.getContext){
@@ -238,17 +234,17 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	menuarea : function(){
 		var pp = this.config;
-		var am = ee.binder(pp, pp.addMenu),
-			at = ee.binder(pp, pp.addSParent),
-			an = ee.binder(pp, pp.addSParent2),
-			as = ee.binder(pp, pp.addSmenu),
-			au = ee.binder(pp, pp.addSelect),
-			ac = ee.binder(pp, pp.addCheck),
-			aa = ee.binder(pp, pp.addCaption),
-			ai = ee.binder(pp, pp.addChild),
-			ap = ee.binder(pp, pp.addSeparator),
-			af = ee.binder(pp, pp.addFlagOnly),
-			sl = ee.binder(pp, pp.setLabel);
+		var am = function(){ pp.addMenu.apply(pp,arguments);},
+			at = function(){ pp.addSParent.apply(pp,arguments);},
+			an = function(){ pp.addSParent2.apply(pp,arguments);},
+			as = function(){ pp.addSmenu.apply(pp,arguments);},
+			au = function(){ pp.addSelect.apply(pp,arguments);},
+			ac = function(){ pp.addCheck.apply(pp,arguments);},
+			aa = function(){ pp.addCaption.apply(pp,arguments);},
+			ai = function(){ pp.addChild.apply(pp,arguments);},
+			ap = function(){ pp.addSeparator.apply(pp,arguments);},
+			af = function(){ pp.addFlagOnly.apply(pp,arguments);},
+			sl = function(){ pp.setLabel.apply(pp,arguments);};
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -437,7 +433,7 @@ pzprv3.createCommonClass('Menu',
 
 			var eltype=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
 			switch(pp.type(id)){
-				case pp.MENU:     ee.createEL(this.EL_MENU, smenuid); continue; break;
+				case pp.MENU:     eltype = this.EL_MENU;     break;
 				case pp.SEPARATE: eltype = this.EL_SEPARATE; break;
 				case pp.LABEL:    eltype = this.EL_LABEL;    break;
 				case pp.SELECT:   eltype = this.EL_SELECT;   sfunc = true; break;
@@ -450,15 +446,21 @@ pzprv3.createCommonClass('Menu',
 			}
 
 			var smenu = ee.createEL(eltype, smenuid);
-			if(sfunc){
-				ee.addEvent(smenu, "mouseover", ee.ebinder(this, this.submenuhover));
-				ee.addEvent(smenu, "mouseout",  ee.ebinder(this, this.submenuout));
-				if(cfunc){ ee.addEvent(smenu, "click", ee.ebinder(this, this.submenuclick));}
+			if(pp.type(id)===pp.MENU){
+				this.owner.addEvent(smenu, "mouseover", this, this.menuhover);
+				this.owner.addEvent(smenu, "mouseout",  this, this.menuout);
+				continue;
+			}
+			else if(sfunc){
+				this.owner.addEvent(smenu, "mouseover", this, this.submenuhover);
+				this.owner.addEvent(smenu, "mouseout",  this, this.submenuout);
+				if(cfunc){ this.owner.addEvent(smenu, "click", this, this.submenuclick);}
 			}
 
 			var parentid = pp.flags[id].parent;
 			if(!this.floatpanel[parentid]){
 				this.floatpanel[parentid] = ee.createEL(this.EL_FLOAT, 'float_'+parentid);
+				this.owner.addEvent(this.floatpanel[parentid], "mouseout", this, this.floatmenuout);
 			}
 			this.floatpanel[parentid].appendChild(smenu);
 		}
@@ -506,14 +508,14 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(this.config.haschild(ee.getSrcElement(e).id.substr(3))){
-			if(ee.getSrcElement(e).className==='smenu'){
+		if(this.config.haschild(this.getSrcElement(e).id.substr(3))){
+			if(this.getSrcElement(e).className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(this.config.haschild(ee.getSrcElement(e).id.substr(3))){
+		if(this.config.haschild(this.getSrcElement(e).id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -522,7 +524,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
-		var el = ee.getSrcElement(e);
+		var el = this.getSrcElement(e);
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
@@ -547,8 +549,8 @@ pzprv3.createCommonClass('Menu',
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = ee(ee.getSrcElement(e).id).getRect();
-		var idname = ee.getSrcElement(e).id.substr(3);
+		var rect = ee(this.getSrcElement(e).id).getRect();
+		var idname = this.getSrcElement(e).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
 			_float.style.left = rect.left   + 1 + 'px';
@@ -560,7 +562,7 @@ pzprv3.createCommonClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = ee.pageX(e)  + 'px';
+				_float.style.left = this.owner.mouse.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -594,14 +596,14 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = ee.pageX(e);
-		var ey = ee.pageY(e);
+		var ex = this.owner.mouse.pageX(e);
+		var ey = this.owner.mouse.pageY(e);
 		var rect = ee(el.id).getRect();
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = ee.pageX(e);
-		var ey = ee.pageY(e);
+		var ex = this.owner.mouse.pageX(e);
+		var ey = this.owner.mouse.pageY(e);
 		var rect_f = ee('ms_file').getRect(), rect_o = ee('ms_other').getRect();
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
@@ -628,7 +630,9 @@ pzprv3.createCommonClass('Menu',
 				_div.appendHTML("&nbsp;|&nbsp;");
 				for(var i=0;i<pp.flags[idname].child.length;i++){
 					var num = pp.flags[idname].child[i];
-					_div.appendEL(ee.createEL(this.EL_SELCHILD, ['up',idname,num].join("_")));
+					var sel = ee.createEL(this.EL_SELCHILD, ['up',idname,num].join("_"));
+					this.owner.addEvent(sel, "click", this, this.selectclick);
+					_div.appendEL(sel);
 					_div.appendHTML('&nbsp;');
 				}
 				_div.appendBR();
@@ -637,7 +641,9 @@ pzprv3.createCommonClass('Menu',
 				break;
 
 			case pp.CHECK:
-				_div.appendEL(ee.createEL(this.EL_CHECKBOX, 'ck_'+idname));
+				var box = ee.createEL(this.EL_CHECKBOX, 'ck_'+idname);
+				this.owner.addEvent(box, "click", this, this.checkclick);
+				_div.appendEL(box);
 				_div.appendHTML("&nbsp;");
 				_div.appendEL(ee.createEL(this.EL_SPAN, 'cl_'+idname));
 				_div.appendBR();
@@ -650,8 +656,8 @@ pzprv3.createCommonClass('Menu',
 		// 色分けチェックボックス用の処理
 		if(this.owner.painter.irowake){
 			// 横にくっつけたいボタンを追加
-			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake');
-			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			var el = ee.createEL(this.EL_BUTTON, 'ck_btn_irowake'), self = this;
+			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			ee('ck_btn_irowake').insertAfter(ee('cl_irowake').el);
 
 			// 色分けのやつを一番下に持ってくる
@@ -674,10 +680,11 @@ pzprv3.createCommonClass('Menu',
 		ee('btnarea').appendHTML('&nbsp;');
 		ee.createEL(this.EL_UBUTTON, 'btnclear');
 
-		this.addButtons(ee("btncheck").el,  ee.binder(this.owner.checker, this.owner.checker.check), "チェック", "Check");
-		this.addButtons(ee("btnundo").el,   ee.binder(this.owner.undo, this.owner.undo.undo, [1]), "戻", "<-");
-		this.addButtons(ee("btnredo").el,   ee.binder(this.owner.undo, this.owner.undo.redo, [1]), "進", "->");
-		this.addButtons(ee("btnclear").el,  ee.binder(this, this.ACconfirm), "回答消去", "Erase Answer");
+		var self = this;
+		this.addButtons(ee("btncheck").el, function(){ self.owner.checker.check();}, "チェック", "Check");
+		this.addButtons(ee("btnundo").el,  function(){ self.owner.undo.undo(1);}, "戻", "<-");
+		this.addButtons(ee("btnredo").el,  function(){ self.owner.undo.redo(1);}, "進", "->");
+		this.addButtons(ee("btnclear").el, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
 		ee('btnundo').el.disabled = true;
@@ -685,23 +692,23 @@ pzprv3.createCommonClass('Menu',
 
 		if(!this.disable_subclear){
 			ee.createEL(this.EL_UBUTTON, 'btnclear2');
-			this.addButtons(ee("btnclear2").el, ee.binder(this, this.ASconfirm), "補助消去", "Erase Auxiliary Marks");
+			this.addButtons(ee("btnclear2").el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
 		if(this.owner.painter.irowake!=0){
 			var el = ee.createEL(this.EL_UBUTTON, 'btncolor2');
-			this.addButtons(el, ee.binder(this, this.irowakeRemake), "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 	},
 
 	checkclick : function(e){
-		var el = ee.getSrcElement(e);
+		var el = this.getSrcElement(e);
 		var idname = el.id.substr(3);
 		this.owner.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
-		var list = ee.getSrcElement(e).id.split('_');
+		var list = this.getSrcElement(e).id.split('_');
 		this.owner.setConfig(list[1], list[2]);
 	},
 
@@ -711,7 +718,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	poparea : function(){
-		var _doc = document;
+		var _doc = document, self=this;
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
@@ -730,23 +737,23 @@ pzprv3.createCommonClass('Menu',
 		this.titlebarfunc(ee('credit3_1').el);
 
 		if(!pzprv3.OS.mobile){
-			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
+			this.owner.addEvent(_doc, "mousemove", this, this.titlebarmove);
+			this.owner.addEvent(_doc, "mouseup",   this, this.titlebarup);
 		}
 		else{
-			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
+			this.owner.addEvent(_doc, "touchmove", this, this.titlebarmove);
+			this.owner.addEvent(_doc, "touchend",  this, this.titlebarup);
 		}
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
-		var btn = ee.binder(this, this.addButtons);
-		var lab = ee.binder(this, this.addLabels);
-		var close = ee.ebinder(this, this.popclose);
+		var btn = function(el, func, strJP, strEN){ self.addButtons(el, func, strJP, strEN);};
+		var lab = function(el, strJP, strEN){ self.addLabels(el, strJP, strEN);};
+		var close = function(e){ self.popclose();};
 		var func = null;
 
 		// 盤面の新規作成 -----------------------------------------------------
-		func = ee.ebinder(this, this.newboard);
+		func = function(e){ self.newboard(e||window.event);};
 		lab(ee('bar1_1').el,      "盤面の新規作成",         "Createing New Board");
 		lab(ee('pop1_1_cap0').el, "盤面を新規作成します。", "Create New Board.");
 		if(this.owner.pid!=='sudoku' && this.owner.pid!=='tawa'){
@@ -757,16 +764,16 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.newboard.cancel,   close, "キャンセル", "Cancel");
 
 		// URL入力 ------------------------------------------------------------
-		func = ee.ebinder(this, this.urlinput);
+		func = function(e){ self.urlinput(e||window.event);};
 		lab(ee('bar1_2').el,      "URL入力",                     "Import from URL");
 		lab(ee('pop1_2_cap0').el, "URLから問題を読み込みます。", "Import a question from URL.");
 		btn(_doc.urlinput.urlinput, func,  "読み込む",   "Import");
 		btn(_doc.urlinput.cancel,   close, "キャンセル", "Cancel");
 
 		// URL出力 ------------------------------------------------------------
-		func = ee.ebinder(this, this.urloutput);
+		func = function(e){ self.urloutput(e||window.event);};
 		lab(ee('bar1_3').el, "URL出力", "Export URL");
-		var self=this, btt = function(name, strJP, strEN, eval){
+		var btt = function(name, strJP, strEN, eval){
 			if(eval===false){ return;}
 			var el = ee.createEL(self.EL_BUTTON,''); el.name = name;
 			ee('urlbuttonarea').appendEL(el).appendBR();
@@ -779,19 +786,19 @@ pzprv3.createCommonClass('Menu',
 		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (this.owner.pid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		ee("urlbuttonarea").appendBR();
-		func = ee.ebinder(this, this.openurl);
+		func = function(e){ self.openurl(e||window.event);};
 		btn(_doc.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
 		btn(_doc.urloutput.close,   close, "閉じる", "Close");
 
 		// ファイル入力 -------------------------------------------------------
-		func = ee.ebinder(this, this.fileopen);
+		func = function(e){ self.fileopen(e||window.event);};
 		lab(ee('bar1_4').el,      "ファイルを開く", "Open file");
 		lab(ee('pop1_4_cap0').el, "ファイル選択",   "Choose file");
 		_doc.fileform.filebox.onchange = func;
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = ee.ebinder(pzprv3.dbm, pzprv3.dbm.clickHandler);
+		func = function(e){ pzprv3.dbm.clickHandler(self.getSrcElement(e||window.event).name);};
 		lab(ee('bar1_8').el, "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;
@@ -806,7 +813,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.database.close,    close, "閉じる",             "Close");
 
 		// 盤面の調整 ---------------------------------------------------------
-		func = ee.ebinder(this, this.popupadjust);
+		func = function(e){ self.popupadjust(e||window.event)};
 		lab(ee('bar2_1').el,      "盤面の調整",             "Board Dimension Resizer");
 		lab(ee('pop2_1_cap0').el, "盤面の調整を行います。", "Adjust the board.");
 		lab(ee('pop2_1_cap1').el, "拡大",  "Expand");
@@ -837,7 +844,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.credit.close,  close, "閉じる", "OK");
 
 		// 表示サイズ ---------------------------------------------------------
-		func = ee.ebinder(this, this.dispsize);
+		func = function(e){ self.dispsize(e||window.event);};
 		lab(ee('bar4_1').el,      "表示サイズの変更",         "Change size");
 		lab(ee('pop4_1_cap0').el, "表示サイズを変更します。", "Change the display size.");
 		lab(ee('pop4_1_cap1').el, "表示サイズ",               "Display size");
@@ -865,8 +872,8 @@ pzprv3.createCommonClass('Menu',
 		if(this.pop){
 			var _pop = this.pop.el;
 			if(!pzprv3.OS.mobile){
-				_pop.style.left = ee.pageX(e) - 8 + 'px';
-				_pop.style.top  = ee.pageY(e) - 8 + 'px';
+				_pop.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
+				_pop.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
 			}
 			else{
 				_pop.style.left = e.pageX - 8 + 'px';
@@ -895,20 +902,15 @@ pzprv3.createCommonClass('Menu',
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!pzprv3.OS.mobile){
-			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
-		}
-		else{
-			ee.addEvent(bar, "touchstart", ee.ebinder(this, this.titlebardown));
-		}
+		this.owner.addEvent(bar, (!pzprv3.OS.mobile?"mousedown":"touchstart"), this, this.titlebardown);
 		ee(bar).unselectable().el;
 	},
 
 	titlebardown : function(e){
-		var pop = ee.getSrcElement(e).parentNode;
+		var pop = this.getSrcElement(e).parentNode;
 		this.movingpop = pop;
-		this.offset.px = ee.pageX(e) - parseInt(pop.style.left);
-		this.offset.py = ee.pageY(e) - parseInt(pop.style.top);
+		this.offset.px = this.owner.mouse.pageX(e) - parseInt(pop.style.left);
+		this.offset.py = this.owner.mouse.pageY(e) - parseInt(pop.style.top);
 	},
 	titlebarup : function(e){
 		var pop = this.movingpop;
@@ -919,10 +921,17 @@ pzprv3.createCommonClass('Menu',
 	titlebarmove : function(e){
 		var pop = this.movingpop;
 		if(!!pop){
-			pop.style.left = ee.pageX(e) - this.offset.px + 'px';
-			pop.style.top  = ee.pageY(e) - this.offset.py + 'px';
-			ee.preventDefault(e);
+			pop.style.left = this.owner.mouse.pageX(e) - this.offset.px + 'px';
+			pop.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
+			this.owner.preventDefault(e);
 		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// menu.getSrcElement() イベントが起こったエレメントを返す
+	//--------------------------------------------------------------------------------
+	getSrcElement : function(e){
+		return e.target || e.srcElement;
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1092,7 +1101,7 @@ pzprv3.createCommonClass('Menu',
 	urloutput : function(e){
 		if(this.pop){
 			var _doc = document;
-			switch(ee.getSrcElement(e).name){
+			switch(this.getSrcElement(e).name){
 				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3);  break;
 				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRAPP); break;
 				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.KANPEN);  break;
@@ -1304,7 +1313,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(this.pop){
-			bd.execadjust(ee.getSrcElement(e).name);
+			bd.execadjust(this.getSrcElement(e).name);
 		}
 	},
 
@@ -1337,23 +1346,23 @@ pzprv3.createCommonClass('Menu',
 pzprv3.createCoreClass('Debug',
 {
 	poptest_func : function(){
-		var _doc = document;
+		var _doc = document, debug = this;
 
 		this.owner.menu.titlebarfunc(ee('bartest').el);
 
-		_doc.testform.t1.onclick        = ee.binder(this, this.perfeval);
-		_doc.testform.t2.onclick        = ee.binder(this, this.painteval);
-		_doc.testform.t3.onclick        = ee.binder(this, this.resizeeval);
-		_doc.testform.perfload.onclick  = ee.binder(this, this.loadperf);
-		_doc.testform.adjimage.onclick  = ee.binder(this, this.adjustimage);
+		_doc.testform.t1.onclick        = function(){ debug.perfeval();};
+		_doc.testform.t2.onclick        = function(){ debug.painteval();};
+		_doc.testform.t3.onclick        = function(){ debug.resizeeval();};
+		_doc.testform.perfload.onclick  = function(){ debug.loadperf();};
+		_doc.testform.adjimage.onclick  = function(){ debug.adjustimage();};
 
-		_doc.testform.filesave.onclick  = ee.binder(this, this.filesave);
-		_doc.testform.pbfilesave.onclick  = ee.binder(this, this.filesave_pencilbox);
+		_doc.testform.filesave.onclick  = function(){ debug.filesave();};
+		_doc.testform.pbfilesave.onclick  = function(){ debug.filesave_pencilbox();};
 
-		_doc.testform.fileopen.onclick  = ee.binder(this, this.fileopen);
-		_doc.testform.database.onclick  = ee.binder(this, this.dispdatabase);
+		_doc.testform.fileopen.onclick  = function(){ debug.fileopen();};
+		_doc.testform.database.onclick  = function(){ debug.dispdatabase();};
 
-		_doc.testform.erasetext.onclick = ee.binder(this, this.erasetext);
+		_doc.testform.erasetext.onclick = function(){ debug.erasetext();};
 		_doc.testform.close.onclick     = function(e){ ee('poptest').el.style.display = 'none';};
 
 		_doc.testform.testarea.style.fontSize = '10pt';
@@ -1404,13 +1413,16 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	perfeval : function(){
-		this.timeeval("正答判定測定",ee.binder(this.owner.checker, this.owner.checker.checkAns));
+		var ans = this.owner.checker;
+		this.timeeval("正答判定測定", function(){ ans.checkAns();});
 	},
 	painteval : function(){
-		this.timeeval("描画時間測定",ee.binder(this.owner.painter, this.owner.painter.paintAll));
+		var pc = this.owner.painter;
+		this.timeeval("描画時間測定", function(){ pc.paintAll();});
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定",ee.binder(this.owner.painter, this.owner.painter.forceRedraw));
+		var pc = this.owner.painter;
+		this.timeeval("resize描画測定", function(){ pc.forceRedraw();});
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

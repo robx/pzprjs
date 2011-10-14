@@ -10,14 +10,8 @@
 	for(var name in obj){ self[name] = obj[name];}
 	window.pzprv3 = self;
 
-	ee.addEvent(window, "load", function(e){
-		// puzzlename.jsの読み込みを確認
-		if(!self.PZLINFO){ self.includeFile("puzzlename.js");}
-		setTimeout(function(){
-			if(!self.PZLINFO){ setTimeout(arguments.callee,10); return;}
-			onload_func(self);
-		},10);
-	});
+	if(!!window.addEventListener){ window.addEventListener("load",onload_func,false);}
+	else{ window.attachEvent("onload", onload_func);}
 })({
 	version : 'v3.4.0pre',
 
@@ -257,16 +251,23 @@ pzprv3.createCoreClass('Point',
 /* 初期化時のみ使用する関数 */
 /****************************/
 //---------------------------------------------------------------------------
-// ★onload_func() onload直後の処理 (self=pzprv3)
+// ★onload_func() onload直後の処理
 //---------------------------------------------------------------------------
-function onload_func(self){
+function onload_func(){
+	if(!pzprv3.PZLINFO){ pzprv3.includeFile("puzzlename.js");}
+	onload_func2();
+}
+function onload_func2(){
+	// 読み込み待ち
+	if(!pzprv3.PZLINFO){ setTimeout(arguments.callee,10); return;}
+
 	// 1) 盤面複製・index.htmlからのファイル入力/Database入力か
 	// 2) URL(?以降)をチェック
 	var pzl = (importFileData() || importURL());
 	if(!pzl.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
 
 	// 必要な場合、ファイルのinclude
-	if(self.DEBUG){ self.includeFile("src/for_test.js");}
+	if(pzprv3.DEBUG){ pzprv3.includeFile("src/for_test.js");}
 
 	// 描画wrapperの設定
 	Camp('divques');
@@ -275,11 +276,11 @@ function onload_func(self){
 	}
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
-	self.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+	pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 	// 単体初期化処理のルーチンへ
-	self.target = new pzprv3.core.Owner();
-	self.target.reload_func(pzl);
+	pzprv3.target = new pzprv3.core.Owner();
+	pzprv3.target.reload_func(pzl);
 
 	// アクセスログをとってみる
 	if(!!pzprv3.require_accesslog){ accesslog(pzl);}

@@ -193,7 +193,7 @@ pzprv3.createCommonClass('Graphic',
 		this.owner.key.resizepanel();
 	},
 	setcellsize : function(cols, rows){
-		var wwidth = ee.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
+		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.owner.getConfig('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
@@ -229,6 +229,27 @@ pzprv3.createCommonClass('Graphic',
 			if(pzprv3.OS.mobile){ ee('menuboard').el.style.width = '90%';}
 		}
 	},
+
+	//----------------------------------------------------------------------
+	// pc.windowWidth()   ウィンドウの幅を返す
+	// pc.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	windowWidth : function(){
+		this.windowWidth = ((!pzprv3.OS.iOS) ?
+			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : document.body.clientWidth);}
+		:
+			function(){ return 980;}
+		);
+		return this.windowWidth();
+	},
+	// windowHeight : function(){
+	//	this.windowHeight = ((!pzprv3.OS.iOS) ?
+	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : document.body.clientHeight);}
+	//	:
+	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
+	//	);
+	//	return this.windowHeight();
+	// },
 
 	//---------------------------------------------------------------------------
 	// pc.suspend()     描画処理を一時停止する

@@ -53,15 +53,15 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// キー入力イベントの設定
-		ee.addEvent(document, 'keydown',  ee.ebinder(this, this.e_keydown));
-		ee.addEvent(document, 'keyup',    ee.ebinder(this, this.e_keyup));
-		ee.addEvent(document, 'keypress', ee.ebinder(this, this.e_keypress));
+		this.owner.addEvent(document, 'keydown',  this, this.e_keydown);
+		this.owner.addEvent(document, 'keyup',    this, this.e_keyup);
+		this.owner.addEvent(document, 'keypress', this, this.e_keypress);
 		// Silverlightのキー入力イベント設定
 		var g = this.owner.painter.currentContext;
 		if(g.use.sl){
-			var sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", ee.ebinder(this, this.e_SLkeydown));
-			sender.AddEventListener("KeyUp",   ee.ebinder(this, this.e_SLkeyup));
+			var kc = this, sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", function(s,a){ kc.e_SLkeydown(s,a);});
+			sender.AddEventListener("KeyUp",   function(s,a){ kc.e_SLkeyup(s,a);});
 		}
 	},
 
@@ -82,7 +82,7 @@ pzprv3.createCommonClass('KeyEvent',
 			if(this.isenablemode() && !this.moveTarget(this.ca)){
 				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 			}
-			if(this.tcMoved){ ee.preventDefault(e); return false;}
+			if(this.tcMoved){ this.owner.preventDefault(e); return false;}
 		}
 	},
 	e_keyup : function(e){
@@ -498,10 +498,10 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, id, ca, disp){
-		var _div = null, _child = null;
+		var _div = null, _child = null, self = this;
 		if(type!=='empty'){
 			_div = ee.createEL(this.EL_KPDIV, this.prefix+id);
-			_div.onclick = ee.ebinder(this, this.kpinput, [ca]);
+			_div.onclick = function(){ self.kpinput(ca);};
 		}
 		else{ _div = ee.createEL(this.EL_KPEMPTY, '');}
 

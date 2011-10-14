@@ -6,9 +6,9 @@ var k = pzprv3.consts;
 pzprv3.extendCoreClass('Debug',
 {
 	testonly_func : function(){
-		var _doc = document;
+		var _doc = document,  self = this;
 		_doc.testform.starttest.style.display = 'inline';
-		_doc.testform.starttest.onclick = ee.binder(this, this.starttest);
+		_doc.testform.starttest.onclick = function(){ self.starttest();};
 		
 		if(!ee('testdiv')){
 			var el = _doc.createElement('div');

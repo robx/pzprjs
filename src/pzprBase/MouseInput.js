@@ -64,25 +64,25 @@ pzprv3.createCommonClass('MouseEvent',
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
 		if(!pzprv3.OS.mobile){
-			ee.addEvent(canvas, "mousedown", ee.ebinder(this, this.e_mousedown));
-			ee.addEvent(canvas, "mousemove", ee.ebinder(this, this.e_mousemove));
-			ee.addEvent(canvas, "mouseup",   ee.ebinder(this, this.e_mouseup));
+			this.owner.addEvent(canvas, "mousedown", this, this.e_mousedown);
+			this.owner.addEvent(canvas, "mousemove", this, this.e_mousemove);
+			this.owner.addEvent(canvas, "mouseup",   this, this.e_mouseup);
 			canvas.oncontextmenu = function(){ return false;};
 
-			ee.addEvent(numparent, "mousedown", ee.ebinder(this, this.e_mousedown));
-			ee.addEvent(numparent, "mousemove", ee.ebinder(this, this.e_mousemove));
-			ee.addEvent(numparent, "mouseup",   ee.ebinder(this, this.e_mouseup));
+			this.owner.addEvent(numparent, "mousedown", this, this.e_mousedown);
+			this.owner.addEvent(numparent, "mousemove", this, this.e_mousemove);
+			this.owner.addEvent(numparent, "mouseup",   this, this.e_mouseup);
 			numparent.oncontextmenu = function(){ return false;};
 		}
 		// iPhoneOS用のタッチイベント設定
 		else{
-			ee.addEvent(canvas, "touchstart", ee.ebinder(this, this.e_mousedown));
-			ee.addEvent(canvas, "touchmove",  ee.ebinder(this, this.e_mousemove));
-			ee.addEvent(canvas, "touchend",   ee.ebinder(this, this.e_mouseup));
+			this.owner.addEvent(canvas, "touchstart", this, this.e_mousedown);
+			this.owner.addEvent(canvas, "touchmove",  this, this.e_mousemove);
+			this.owner.addEvent(canvas, "touchend",   this, this.e_mouseup);
 
-			ee.addEvent(numparent, "touchstart", ee.ebinder(this, this.e_mousedown));
-			ee.addEvent(numparent, "touchmove",  ee.ebinder(this, this.e_mousemove));
-			ee.addEvent(numparent, "touchend",   ee.ebinder(this, this.e_mouseup));
+			this.owner.addEvent(numparent, "touchstart", this, this.e_mousedown);
+			this.owner.addEvent(numparent, "touchmove",  this, this.e_mousemove);
+			this.owner.addEvent(numparent, "touchend",   this, this.e_mouseup);
 		}
 	},
 
@@ -108,8 +108,8 @@ pzprv3.createCommonClass('MouseEvent',
 				this.btn.Middle = false;
 			}
 		}
-		ee.stopPropagation(e);
-		ee.preventDefault(e);
+		this.owner.stopPropagation(e);
+		this.owner.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
@@ -118,8 +118,8 @@ pzprv3.createCommonClass('MouseEvent',
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
-		ee.stopPropagation(e);
-		ee.preventDefault(e);
+		this.owner.stopPropagation(e);
+		this.owner.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
@@ -131,8 +131,8 @@ pzprv3.createCommonClass('MouseEvent',
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
-		ee.stopPropagation(e);
-		ee.preventDefault(e);
+		this.owner.stopPropagation(e);
+		this.owner.preventDefault(e);
 		return false;
 	},
 	e_mouseout : function(e) {
@@ -202,12 +202,57 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	setposition : function(e){
 		var pc = this.owner.painter;
-		this.inputPoint.px = ee.pageX(e) - pc.pageX - this.mouseoffset.px;
-		this.inputPoint.py = ee.pageY(e) - pc.pageY - this.mouseoffset.py;
+		this.inputPoint.px = this.pageX(e) - pc.pageX - this.mouseoffset.px;
+		this.inputPoint.py = this.pageY(e) - pc.pageY - this.mouseoffset.py;
 	},
 
 	notInputted : function(){ return !this.owner.undo.changeflag;},
 	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
+
+	//----------------------------------------------------------------------
+	// mv.pageX() イベントが起こったページ上のX座標を返す
+	// mv.pageY() イベントが起こったページ上のY座標を返す
+	//----------------------------------------------------------------------
+	pageX : function(e){
+		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
+		this.pageX = ((!pzprv3.OS.iOS) ?
+			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+						return pos/len;
+					}
+				}
+				else if(!isNaN(e.pageX)){ return e.pageX;}
+				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
+				return 0;
+			}
+		);
+		return this.pageX(e);
+	},
+	pageY : function(e){
+		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
+		this.pageY = ((!pzprv3.OS.iOS) ?
+			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
+		:
+			function(e){
+				if(!!e.touches){
+					var len=e.touches.length, pos=0;
+					if(len>0){
+						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+						return pos/len;
+					}
+				}
+				else if(!isNaN(e.pageY)){ return e.pageY;}
+				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
+				return 0;
+			}
+		);
+		return this.pageY(e);
+	},
 
 	// 共通関数
 	//---------------------------------------------------------------------------

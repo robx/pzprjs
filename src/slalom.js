@@ -958,11 +958,11 @@ HurdleManager:{
 		}
 
 		// セットされた数字を全てのnumsから消す関数
-		var delnum = ee.binder(this, function(dn){ for(var r=1;r<=this.max;r++){
+		var self = this, delnum = function(dn){ for(var r=1;r<=self.max;r++){
 			var atmp = [];
 			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;
-		} });
+		} };
 		var decnumber = [];
 		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
 

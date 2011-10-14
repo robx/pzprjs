@@ -36,7 +36,6 @@ var
 	_elx = _ElementManager._cache    = {},
 	_elp = _ElementManager._template = [],
 	_elpcnt = _ElementManager._tempcnt = 0,
-	_elf = _ElementManager._funcs    = [],
 
 	// define and map _ElementManager.ElementExt class
 	_ELx = _ElementManager.ElementExt = function(el){
@@ -117,129 +116,10 @@ _extend( _ElementManager, {
 		if(!!id){ el.id = id;}
 		for(var name in temp.attr) { el[name]       = temp.attr[name]; }
 		for(var name in temp.style){ el.style[name] = temp.style[name];}
-		for(var name in temp.func) { this.addEvent(el, name, temp.func[name], true); }
+		// for(var name in temp.func) { pzprv3.target.addEvent(el, name, temp.func[name], true); }
 
 		if(!!temp.parent){ temp.parent.appendChild(el);} // 後ろじゃないとIEでエラーになる。。
 		return el;
-	},
-
-	//----------------------------------------------------------------------
-	// ee.getSrcElement() イベントが起こったエレメントを返す
-	// ee.pageX()         イベントが起こったページ上のX座標を返す
-	// ee.pageY()         イベントが起こったページ上のY座標を返す
-	// ee.scrollLeft()    ウィンドウのXスクロール量を返す
-	// ee.scrollTop()     ウィンドウのYスクロール量を返す
-	// ee.windowWidth()   ウィンドウの幅を返す
-	// ee.windowHeight()  ウィンドウの高さを返す
-	//----------------------------------------------------------------------
-	getSrcElement : function(e){
-		return e.target || e.srcElement;
-	},
-	pageX : function(e){
-		_ElementManager.pageX = ((!_iOS) ?
-			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageX)){ return e.pageX;}
-				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageX(e);
-	},
-	pageY : function(e){
-		_ElementManager.pageY = ((!_iOS) ?
-			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageY)){ return e.pageY;}
-				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageY(e);
-	},
-	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
-	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
-
-	windowWidth : function(){
-		_ElementManager.windowWidth = ((!_iOS) ?
-			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
-		:
-			function(){ return 980;}
-		);
-		return _ElementManager.windowWidth();
-	},
-	windowHeight : function(){
-		_ElementManager.windowHeight = ((!_iOS) ?
-			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
-		:
-			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
-		);
-		return _ElementManager.windowHeight();
-	},
-
-	//----------------------------------------------------------------------
-	// ee.binder()   thisをbindする
-	// ee.ebinder()  thisとイベントをbindする
-	//----------------------------------------------------------------------
-	binder : function(){
-		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift();
-		return function(){
-			return __method.apply(obj, (args.length>0?args[0]:[]).concat(_toArray(arguments)));
-		}
-	},
-	ebinder : function(){
-		var args=_toArray(arguments); var obj = args.shift(), __method = args.shift(), rest = (args.length>0?args[0]:[]);
-		return function(e){
-			return __method.apply(obj, [e||_win.event].concat(args.length>0?args[0]:[]).concat(_toArray(arguments)));
-		}
-	},
-
-	//----------------------------------------------------------------------
-	// ee.addEvent()        addEventListener(など)を呼び出す
-	// ee.removeAllEvents() removeEventListener(など)を呼び出す
-	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                      伝播させないようにする
-	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                      イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	addEvent : function(el, event, func, capt){
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
-		_elf.push({el:el, event:event, func:func, capt:!!capt});
-	},
-	removeAllEvents : function(){
-		var islt = !!_doc.removeEventListener;
-		for(var i=0,len=_elf.length;i<len;i++){
-			var e=_elf[i];
-			if(islt){ e.el.removeEventListener(e.event, e.func, e.capt);}
-			else    { e.el.detachEvent('on'+e.event, e.func);}
-		}
-		_elf=[];
-	},
-
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
 	}
 });
 

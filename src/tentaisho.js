@@ -284,7 +284,7 @@ Menu:{
 		}
 
 		var el = ee.createEL(this.EL_BUTTON, 'btncolor');
-		this.addButtons(el, ee.binder(bd, bd.encolorall), "色をつける","Color up");
+		this.addButtons(el, function(){ bd.encolorall();}, "色をつける","Color up");
 		ee('btnarea').appendEL(el);
 	}
 },

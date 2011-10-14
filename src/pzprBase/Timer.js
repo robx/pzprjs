@@ -38,7 +38,8 @@ pzprv3.createCommonClass('Timer',
 	},
 	start : function(){
 		this.st = pzprv3.currentTime();
-		this.TID = setInterval(ee.binder(this, this.update), this.timerInterval);
+		var self = this;
+		this.TID = setInterval(function(){ self.update();}, this.timerInterval);
 	},
 	update : function(){
 		this.current = pzprv3.currentTime();
@@ -114,7 +115,8 @@ pzprv3.createCommonClass('UndoTimer',
 	startRedo : function(){ if(!this.inREDO){ this.inREDO=true; this.startProc();}},
 	startProc : function(){
 		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
-		if(!this.TID){ this.TID = setInterval(ee.binder(this, this.proc), this.timerInterval);}
+		var self = this;
+		if(!this.TID){ this.TID = setInterval(function(){ self.proc();}, this.timerInterval);}
 		this.exec();
 	},
 

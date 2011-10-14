@@ -83,9 +83,9 @@ pzprv3.createCoreClass('DataBaseManager',
 	closeDialog : function(){
 		this.DBlist = [];
 	},
-	clickHandler : function(e){
+	clickHandler : function(name){
 		if(this.sync===false){ return;}
-		switch(ee.getSrcElement(e).name){
+		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
 			case 'tableup' : this.upDataTable_M();     break;

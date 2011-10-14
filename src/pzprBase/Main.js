@@ -19,6 +19,7 @@ pzprv3.createCoreClass('Owner',
 
 		this.debug = null;
 	},
+	evlist : [],
 
 	//---------------------------------------------------------------------------
 	// owner.reload_func()  個別パズルのファイルを読み込み、初期化する関数
@@ -87,7 +88,7 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	clearObjects : function(){
-		ee.removeAllEvents();
+		this.removeAllEvents();
 
 		this.menu.menureset();
 		ee('numobj_parent').el.innerHTML = '';
@@ -151,16 +152,16 @@ pzprv3.createCoreClass('Owner',
 				e.preventDefault();
 				e.stopPropagation();
 			};
-			ee.addEvent(window, 'dragover', function(e){ e.preventDefault();}, true);
-			ee.addEvent(window, 'drop', DDhandler, true);
+			this.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
+			this.addEvent(window, 'drop', this, DDhandler, true);
 		}
 
 		// onBlurにイベントを割り当てる
-		ee.addEvent(document, 'blur', ee.ebinder(this, this.onblur_func));
+		this.addEvent(document, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
-		ee.addEvent(window, (!pzprv3.OS.iOS ? 'resize' : 'orientationchange'),
-										ee.ebinder(this, this.onresize_func));
+		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
+		this.addEvent(window, evname, this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -169,11 +170,47 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(ee.binder(this.painter, this.painter.resize_canvas),250);
+		var self = this;
+		this.resizetimer = setTimeout(function(){ self.painter.resize_canvas();},250);
 	},
 	onblur_func : function(){
 		this.key.keyreset();
 		this.mouse.mousereset();
+	},
+
+	//----------------------------------------------------------------------
+	// owner.addEvent()        addEventListener(など)を呼び出す
+	// owner.removeAllEvents() removeEventListener(など)を呼び出す
+	//----------------------------------------------------------------------
+	addEvent : function(el, event, self, callback, capt){
+		var func = function(e){ callback.call(self, (e||window.event));};
+		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
+		else                     { el.attachEvent('on'+event, func);}
+		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
+	},
+	removeAllEvents : function(){
+		var islt = !!document.removeEventListener;
+		for(var i=0,len=this.evlist.length;i<len;i++){
+			var e=this.evlist[i];
+			if(islt){ e.el.removeEventListener(e.event, e.func, e.capt);}
+			else    { e.el.detachEvent('on'+e.event, e.func);}
+		}
+		this.evlist=[];
+	},
+
+	//----------------------------------------------------------------------
+	// owner.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// owner.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = false;}
 	},
 
 	//---------------------------------------------------------------------------
