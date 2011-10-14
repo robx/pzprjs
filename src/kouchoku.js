@@ -507,12 +507,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-			this.decodeCrossNum();
-			this.decodeSegment();
+		this.decodeCrossNum();
+		this.decodeSegment();
 	},
 	encodeData : function(){
-			this.encodeCrossNum();
-			this.encodeSegment();
+		this.encodeCrossNum();
+		this.encodeSegment();
 	},
 
 	decodeSegment : function(){

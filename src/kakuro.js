@@ -244,12 +244,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-			this.decodeCellQnum51();
-			this.decodeCellAnumsub();
+		this.decodeCellQnum51();
+		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-			this.encodeCellQnum51();
-			this.encodeCellAnumsub();
+		this.encodeCellQnum51();
+		this.encodeCellAnumsub();
 	},
 
 	kanpenOpen : function(){

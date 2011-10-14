@@ -479,14 +479,14 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-			this.decodeSlalom((this.checkpflag("p")?1:0));
+		this.decodeSlalom((this.checkpflag("p")?1:0));
 	},
 	pzlexport : function(type){
-			bd.hinfo.generateAll();
+		bd.hinfo.generateAll();
 
-			if(type===0){ this.outpflag='p';}
+		if(type===0){ this.outpflag='p';}
 
-			return this.encodeSlalom((type===0?1:0));
+		return this.encodeSlalom((type===0?1:0));
 	},
 
 	decodeKanpen : function(){

@@ -118,10 +118,10 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	pzlimport : function(type){
-			this.decodeMejilink();
+		this.decodeMejilink();
 	},
 	pzlexport : function(type){
-			this.encodeMejilink();
+		this.encodeMejilink();
 	},
 
 	decodeMejilink : function(){

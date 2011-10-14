@@ -114,12 +114,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-			this.decodeCellQnum();
-			this.decodeBorderLine();
+		this.decodeCellQnum();
+		this.decodeBorderLine();
 	},
 	encodeData : function(){
-			this.encodeCellQnum();
-			this.encodeBorderLine();
+		this.encodeCellQnum();
+		this.encodeBorderLine();
 	},
 
 	kanpenOpen : function(){
