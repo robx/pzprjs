@@ -29,8 +29,8 @@ MouseEvent:{
 
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
 			for(var i=0;i<borders.length;i++){
-				if(this.inputData==1){ borders[i].setLine();}
-				else                 { borders[i].removeLine();}
+				if     (this.inputData===1){ borders[i].setLine();}
+				else if(this.inputData===0){ borders[i].removeLine();}
 			}
 			this.inputData=2;
 

@@ -83,11 +83,13 @@ Cell:{
 	},
 
 	set51aroundborder : function(){
-		var border, cell2;
-		border=this.ub(), cell2=this.up(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
-		border=this.db(), cell2=this.dn(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
-		border=this.lb(), cell2=this.lt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
-		border=this.rb(), cell2=this.rt(); if(!border.isnull){ border.setQues((!cell2.isnull && !cell2.is51cell())?1:0);}
+		var list = this.getdir4cblist();
+		for(var i=0;i<list.length;i++){
+			var cell2=list[i][0], border=list[i][1];
+			if(!border.isnull){
+				border.setQues((this.is51cell()^cell2.is51cell())?1:0);
+			}
+		}
 	}
 },
 EXCell:{

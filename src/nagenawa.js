@@ -53,7 +53,7 @@ Cell:{
 	minnum : 0
 },
 "Border@ringring":{
-	enableLineNG : true,
+	enableLineNG : true
 },
 Board:{
 	qcols : 8,

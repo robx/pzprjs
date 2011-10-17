@@ -77,7 +77,7 @@ Graphic:{
 		this.drawNumbers();
 
 		if(!bd.haserror && this.owner.getConfig('plred')){
-			var ans = this.owner.painter;
+			var ans = this.owner.checker;
 			ans.inCheck = true;
 			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
 			ans.inCheck = false;

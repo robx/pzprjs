@@ -211,8 +211,8 @@ Board:{
 
 			var nc;
 			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).getQans()===31){ stack.push(nc);}
-			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).getQans()===32){ stack.push(nc);}
-			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).getQans()===32){ stack.push(nc);}
+			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).getQans()===32){ stack.push(nc);}
+			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).getQans()===32){ stack.push(nc);}
 			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
 		}
 		return check;
@@ -250,7 +250,10 @@ Graphic:{
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.errcolor1 = "red";
-		if(this.owner.pid==='wagiri'){
+		if(this.owner.pid==='gokigen'){
+			this.errcolor2 = "rgb(32, 32, 255)";
+		}
+		else if(this.owner.pid==='wagiri'){
 			this.errcolor2 = "rgb(0, 0, 127)";
 		}
 

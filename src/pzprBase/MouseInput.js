@@ -272,7 +272,8 @@ pzprv3.createCommonClass('MouseEvent',
 	getcell_excell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
 		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.emptyexcell;} // ぴったりは無効
-		return this.getpos(0).getex();
+		var pos = this.getpos(0), obj = pos.getex();
+		return (!obj.isnull ? obj : pos.getc());
 	},
 	getcross : function(){
 		return this.getpos(0.5).getx();
@@ -561,15 +562,14 @@ pzprv3.createCommonClass('MouseEvent',
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(obj.isexcellobj || (obj.iscellobj && cell!==this.cursor.getTCC())){
+		if(obj.isexcellobj || (obj.iscellobj && obj!==this.cursor.getTCC())){
 			this.setcursor(obj);
 		}
 		else if(obj.iscellobj){
-			this.input51_main(cell);
+			this.input51_main(obj);
 		}
 	},
 	input51_main : function(cell){
-		var cell = obj;
 		if(this.btn.Left){
 			if(!cell.is51cell()){ cell.set51cell();}
 			else{ this.cursor.chtarget('shift');}

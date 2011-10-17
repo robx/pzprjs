@@ -61,9 +61,9 @@ MouseEvent:{
 		cell.draw();
 	},
 	checkCornerData : function(cell){
-		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		var dx = this.inputPoint.px - cell.bx*cw;
-		var dy = this.inputPoint.py - cell.by*ch;
+		var bw = this.owner.painter.bw, bh = this.owner.painter.bh;
+		var dx = this.inputPoint.px - cell.bx*bw;
+		var dy = this.inputPoint.py - cell.by*bh;
 		if(dx<=0){ return ((dy<=0)?5:2);}
 		else     { return ((dy<=0)?4:3);}
 	},
