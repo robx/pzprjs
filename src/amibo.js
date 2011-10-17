@@ -30,7 +30,7 @@ MouseEvent:{
 		var input=false;
 
 		// 初回はこの中に入ってきます。
-		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
+		if(!this.mouseCell || this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
 		// 黒マス上なら何もしない
 		else if(cell.isNum()){ }
 		// まだ入力されていない(1つめの入力の)場合
@@ -107,6 +107,11 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.barinfo = this.owner.newInstance('AreaBarManager');
+	},
+
 	getBarInfo : function(){
 		var self = this;
 		function eachcell(cell, qa_chk, vert){
@@ -156,6 +161,21 @@ Board:{
 		if(key & k.TURN){ // 回転だけ
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.cell[c].getQans()]);}
 		}
+	}
+},
+
+"AreaBarManager:AreaCellManager":{
+	enabled : true,
+	relation : ['cell'],
+	isvalid : function(cell){ return (cell.getQans()>0);},
+	getlink : function(cell){
+		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
+		return (qa>0?16:0) + link;
+	},
+
+	rebuild : function(){
+		pzprv3.core.AreaCellManager.prototype.rebuild.call(this);
+		this.newIrowake();
 	}
 },
 "AreaBarInfo:AreaCellInfo":{
@@ -208,30 +228,9 @@ CellList:{
 	}
 },
 
-AreaManager:{
-	initialize : function(){
-		this.barinfo = null;
-
-		this.disrec = 0;
-	},
-
-	init : function(){
-		this.barinfo = this.owner.newInstance('AreaBarData');
-	},
-	resetArea : function(){
-		this.barinfo.reset();
-	},
-
-	setCellInfo : function(cell){
-		if(!this.isenableRecord()){ return;}
-
-		this.barinfo.setCellInfo(cell);
-	}
-},
-
 Menu:{
 	irowakeRemake : function(){
-		bd.areas.barinfo.newIrowake();
+		bd.barinfo.newIrowake();
 		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	}
 },
@@ -462,13 +461,13 @@ AnsCheck:{
 			this.setAlert('白丸に線がつながっていません。','No bar connects to a white circle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.barinfo.getAreaInfo() ) ){
+		if( !this.checkOneArea( bd.barinfo.getAreaInfo() ) ){
 			this.setAlert('棒が１つに繋がっていません。','Bars are devided.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkOneArea( bd.areas.barinfo.getAreaInfo() );},
+	check1st : function(){ return this.checkOneArea( bd.barinfo.getAreaInfo() );},
 
 	checkLineCount : function(binfo, type){
 		var result = true;
@@ -520,7 +519,7 @@ AnsCheck:{
 	checkLoop : function(){
 		var sinfo={cell:[]};
 		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.areas.barinfo.getcellaround(bd.cell[c]);
+			sinfo.cell[c] = bd.barinfo.getcellaround(bd.cell[c]);
 		}
 
 		var sdata=[];
@@ -569,22 +568,6 @@ AnsCheck:{
 				if(sdata[cell]===0){ sdata[cell]=2;}
 			}
 		}
-	}
-},
-
-//---------------------------------------------------------
-//---------------------------------------------------------
-"AreaBarData:AreaData":{
-
-	isvalid : function(cell){ return (cell.getQans()>0);},
-	getlink : function(cell){
-		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
-		return (qa>0?16:0) + link;
-	},
-
-	reset : function(){
-		pzprv3.core.AreaData.prototype.reset.call(this);
-		this.newIrowake();
 	}
 }
 });

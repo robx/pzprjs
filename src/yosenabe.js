@@ -148,18 +148,24 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1
+	isborder : 1,
+
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.iceinfo = this.owner.newInstance('AreaCrockManager');
+	}
 },
 
 LineManager:{
 	isCenterLine : true
 },
 
-AreaManager:{
-	lineToArea : true
+AreaLineManager:{
+	enabled : true
 },
-
-"AreaCrockData:AreaData":{
+"AreaCrockManager:AreaCellManager":{
+	enabled : true,
+	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}
 },
 
@@ -332,7 +338,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = false;
-		var linfo = bd.areas.getLareaInfo();
+		var linfo = bd.getLareaInfo();
 
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('具材が繋がっています。','There are connected fillings.'); return false;
@@ -350,7 +356,7 @@ AnsCheck:{
 			this.setAlert('鍋の外に数字が書いてあります。','There is a number out of a crock.'); return false;
 		}
 
-		var iarea = this.owner.newInstance('AreaCrockData').getAreaInfo();
+		var iarea = bd.iceinfo.getAreaInfo();
 		// 問題のチェック (2)
 		if( !this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);}) ){
 			this.setAlert('鍋に数字が２つ以上書いてあります。','There is a number out of a crock.'); return false;

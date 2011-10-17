@@ -141,11 +141,11 @@ Cell:{
 	isborder : 1
 },
 
-AreaManager:{
-	linkNumber : true
+AreaNumberManager:{
+	enabled : true
 },
-"AreaManager@sukororoom":{
-	hasroom : true
+"AreaRoomManager@sukororoom":{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -223,7 +223,7 @@ AnsCheck:{
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
-		if(this.owner.pid==='sukororoom'){ var rinfo = bd.areas.getRoomInfo();}
+		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
 		if( (this.owner.pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
@@ -240,7 +240,7 @@ AnsCheck:{
 			this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
+		if( !this.checkOneArea( bd.getNumberInfo() ) ){
 			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 		}
 

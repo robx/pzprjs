@@ -85,9 +85,11 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom    : true,
-	linkNumber : true
+AreaNumberManager:{
+	enabled : true
+},
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -181,7 +183,7 @@ AnsCheck:{
 			this.setAlert('同じ記号がタテヨコナナメに隣接しています。','Same marks are adjacent.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}) ){
 			this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 		}
@@ -190,7 +192,7 @@ AnsCheck:{
 			this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
+		if( !this.checkOneArea( bd.getNumberInfo() ) ){
 			this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 		}
 

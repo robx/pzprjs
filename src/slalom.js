@@ -210,8 +210,8 @@ Board:{
 
 	hinfo : null,
 
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
 		this.hinfo = this.owner.newInstance('HurdleManager');
 	},
 	initBoardSize : function(col,row){
@@ -858,12 +858,6 @@ HurdleData:{
 },
 
 HurdleManager:{
-	initialize : function(){
-		this.max    = 0;
-		this.gateid = [];
-		this.data   = [];
-	},
-
 	// 旗門が持つ旗門IDを取得する
 	getGateid : function(cc){
 		if(cc<0 || cc>=bd.cellmax){ return -1;}
@@ -905,6 +899,7 @@ HurdleManager:{
 	//---------------------------------------------------------
 	init : function(){
 		this.max=0;
+		this.gateid=[];
 		for(var c=0;c<bd.cellmax;c++){ this.gateid[c] = -1;}
 		this.data=[];
 	},

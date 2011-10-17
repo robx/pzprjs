@@ -61,8 +61,8 @@ LineManager:{
 	isCenterLine : true
 },
 
-AreaManager:{
-	lineToArea : true
+AreaLineManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -190,7 +190,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( bd.areas.getLareaInfo() ) ){
+		if( !this.checkOneArea( bd.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
 		}
 

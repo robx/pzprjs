@@ -104,8 +104,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 Menu:{
@@ -241,7 +241,7 @@ AnsCheck:{
 	},
 
 	getErrorFlag_cell : function(){
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
 			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;

@@ -55,8 +55,8 @@ Board:{
 	qrows : 8
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -111,7 +111,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( (this.owner.pid==='fillmat') && !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).length;}) ){
 			this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 		}

@@ -75,10 +75,10 @@ KeyEvent:{
 Cell:{
 	setNum_hanare : function(val){
 		if(val>=0){
-			val = bd.areas.rinfo.getCntOfRoomByCell(this);
+			val = bd.rooms.getCntOfRoomByCell(this);
 			if(val>this.maxnum){ return null;}
 
-			var clist = bd.areas.rinfo.getClistByCell(this), cell2=null;
+			var clist = bd.rooms.getClistByCell(this), cell2=null;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].isNum()){ cell2=clist[i]; break;}
 			}
@@ -103,8 +103,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -160,7 +160,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A room has plural numbers.'); return false;
 		}

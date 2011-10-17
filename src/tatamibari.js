@@ -77,8 +77,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -212,7 +212,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border lines,'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
 		}

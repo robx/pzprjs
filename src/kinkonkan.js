@@ -289,8 +289,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -519,7 +519,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 			this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 		}

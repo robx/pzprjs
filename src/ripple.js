@@ -33,7 +33,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return bd.areas.rinfo.getCntOfRoomByCell(this);
+		return bd.rooms.getCntOfRoomByCell(this);
 	}
 },
 Board:{
@@ -44,8 +44,8 @@ Board:{
 	qrows : 8
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -119,7 +119,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}

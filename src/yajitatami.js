@@ -55,8 +55,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -123,7 +123,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkArrowNumber_border() ){
 			this.setAlert('矢印の方向に境界線がありません。','There is no border in front of the arrowed number.'); return false;
 		}

@@ -193,10 +193,10 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 		anum : function(num){ return (this.minnum>0 && num===0);},
 	},
 	posthook : {
-		qnum : function(num){ bd.areas.setCellInfo(this);},
-		anum : function(num){ bd.areas.setCellInfo(this);},
-		qans : function(num){ bd.areas.setCellInfo(this);},
-		qsub : function(num){ if(this.numberWithMB){ bd.areas.setCellInfo(this);}} /* bd.numberWithMBÇÃÅõÇï∂éöàµÇ¢ */
+		qnum : function(num){ bd.setCellInfoAll(this);},
+		anum : function(num){ bd.setCellInfoAll(this);},
+		qans : function(num){ bd.setCellInfoAll(this);},
+		qsub : function(num){ if(this.numberWithMB){ bd.setCellInfoAll(this);}} /* bd.numberWithMBÇÃÅõÇï∂éöàµÇ¢ */
 	},
 
 	//---------------------------------------------------------------------------
@@ -488,9 +488,9 @@ pzprv3.createCommonClass('Border:BoardPiece',
 		line : function(num){ return (this.checkStableLine(num));}
 	},
 	posthook : {
-		ques : function(num){ bd.areas.setBorderInfo(this);},
-		qans : function(num){ bd.areas.setBorderInfo(this);},
-		line : function(num){ bd.lines.setLineInfo(this); bd.areas.setBorderInfo(this);}
+		ques : function(num){ bd.setBorderInfoAll(this);},
+		qans : function(num){ bd.setBorderInfoAll(this);},
+		line : function(num){ bd.setLineInfoAll(this);}
 	},
 
 	//---------------------------------------------------------------------------

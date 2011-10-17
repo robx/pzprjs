@@ -83,7 +83,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}
-		if((bd.lines.isCenterLine && !bd.areas.lineToArea && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
+		if((bd.lines.isCenterLine && !bd.linfo.enabled && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
 
@@ -186,7 +186,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkOneLoop : function(){
-		var xinfo = bd.lines.getLineInfo();
+		var xinfo = bd.getLineInfo();
 		if(xinfo.max>1){
 			bd.border.seterr(-1);
 			xinfo.getblist(1).seterr(1);
@@ -272,7 +272,7 @@ pzprv3.createCommonClass('AnsCheck',
 			var clist = cinfo.getclist(id), d = clist.getRectSize();
 			var a = clist.filter(function(cell){ return func(cell);}).length;
 
-			var cell = (bd.areas.roomNumber ? bd.areas.rinfo.getTopOfRoom(id) : clist.getQnumCell());
+			var cell = (bd.rooms.hastop ? bd.rooms.getTopOfRoom(id) : clist.getQnumCell());
 			var n = (!cell.isnull?cell.getQnum():-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
@@ -440,7 +440,7 @@ pzprv3.createCommonClass('AnsCheck',
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.areas.rinfo.bdcnt[id]);
+				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.rooms.bdcnt[id]);
 				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
 					if(this.inAutoCheck){ return false;}
 					if(result){ bd.border.seterr(-1);}

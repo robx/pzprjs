@@ -77,9 +77,11 @@ LineManager:{
 	isCenterLine : true
 },
 
-AreaManager:{
-	hasroom : true,
-	lineToArea : true
+AreaRoomManager:{
+	enabled : true
+},
+AreaLineManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -231,7 +233,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.areas.getLareaInfo();
+		var linfo = bd.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 		}
@@ -239,7 +241,7 @@ AnsCheck:{
 			this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		bd.searchMovedPosition(linfo);
 
 		this.performAsLine = false;

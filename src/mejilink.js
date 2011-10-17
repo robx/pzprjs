@@ -57,6 +57,10 @@ Board:{
 	iscross  : 2,
 	isborder : 2,
 
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.tiles = this.owner.newInstance('AreaTileManager');
+	},
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -69,8 +73,9 @@ Board:{
 LineManager:{
 	borderAsLine : true
 },
-
-"AreaTileData:AreaBorderData":{
+"AreaTileManager:AreaBorderManager":{
+	enabled : true,
+	relation : ['border'],
 	bdfunc : function(border){ return !border.isGround();}
 },
 
@@ -216,7 +221,7 @@ AnsCheck:{
 	},
 	checkDotLength : function(){
 		var result = true;
-		var tarea = this.owner.newInstance('AreaTileData').getAreaInfo();
+		var tarea = bd.tiles.getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;
 		for(var r=1;r<=tarea.max;r++){ tcount[r]=0;}

@@ -109,7 +109,7 @@ Cell:{
 	numberWithMB : true,
 
 	nummaxfunc : function(){
-		return bd.areas.rinfo.getCntOfRoomByCell(this);
+		return bd.rooms.getCntOfRoomByCell(this);
 	}
 },
 Board:{
@@ -119,9 +119,11 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom    : true,
-	linkNumber : true
+AreaNumberManager:{
+	enabled : true
+},
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -202,7 +204,7 @@ AnsCheck:{
 			this.setAlert('入っている数字の数が数字より多いです。','A number is bigger than the size of block.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.getNumberInfo() ) ){
+		if( !this.checkOneArea( bd.getNumberInfo() ) ){
 			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 		}
 
@@ -218,7 +220,7 @@ AnsCheck:{
 	},
 
 	getErrorFlag_cell : function(){
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
 			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;		// 後でエラー表示するエラーのフラグ

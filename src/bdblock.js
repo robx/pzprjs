@@ -33,8 +33,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -102,7 +102,7 @@ AnsCheck:{
 			this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 		}

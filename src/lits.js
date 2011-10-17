@@ -67,9 +67,29 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom        : true,
-	checkBlackCell : true
+CellList:{
+	isSeqBlock : function(){
+		var stack=(this.length>0?[this[0]]:[]), count=this.length, passed={};
+		for(var i=0;i<count;i++){ passed[this[i].id]=0;}
+		while(stack.length>0){
+			var cell=stack.pop();
+			if(passed[cell.id]===1){ continue;}
+			count--;
+			passed[cell.id]=1;
+			var list = cell.getdir4clist();
+			for(var i=0;i<list.length;i++){
+				if(passed[list[i][0].id]===0){ stack.push(list[i][0]);}
+			}
+		}
+		return (count===0);
+	}
+},
+
+AreaBlackManager:{
+	enabled : true
+},
+AreaRoomManager:{
+	enabled : true
 },
 
 Menu:{
@@ -180,7 +200,7 @@ FileIO:{
 			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);}) ){
 			this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
 		}
@@ -193,7 +213,7 @@ FileIO:{
 			this.setAlert('同じ形のテトロミノが接しています。', 'Some Tetrominos that are the same shape are Adjacent.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.getBCellInfo() ) ){
+		if( !this.checkOneArea( bd.getBCellInfo() ) ){
 			this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
 		}
 
@@ -211,13 +231,11 @@ FileIO:{
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		var dataobj = this.owner.newInstance('AreaData');
-		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
-			dataobj.reset();
-			if(dataobj.getAreaInfo().max>1){
+		for(var r=1;r<=bd.rooms.max;r++){
+			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
+			if(!clist.isSeqBlock()){
 				if(this.inAutoCheck){ return false;}
-				bd.areas.rinfo.getClist(r).seterr(1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -239,12 +257,12 @@ FileIO:{
 "AnsCheck@norinori":{
 	checkAns : function(){
 
-		var binfo = bd.areas.getBCellInfo();
+		var binfo = bd.getBCellInfo();
 		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} ) ){
 			this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);}) ){
 			this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
 		}

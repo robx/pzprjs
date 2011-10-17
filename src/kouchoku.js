@@ -156,23 +156,15 @@ Board:{
 
 	segs : null,
 
-	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
-
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
 		this.segs = this.owner.newInstance('SegmentManager');
-		this.segs.init();
 	},
+	initBoardSize : function(col,row){
+		this.segs.seg    = {};	// segmentの配列
+		this.segs.segmax = 0;
 
-	disableInfo : function(){
-		this.SuperFunc.disableInfo.call(this);
-		this.segs.disableRecord();
-	},
-	enableInfo : function(){
-		this.SuperFunc.enableInfo.call(this);
-		this.segs.enableRecord();
-	},
-	resetInfo : function(){
-		this.segs.reset();
+		this.SuperFunc.initBoardSize.call(this,col,row);
 	},
 
 	allclear : function(isrec){
@@ -183,7 +175,6 @@ Board:{
 			for(var i=0;i<seglist.length;i++){
 				this.owner.painter.eraseSegment1(seglist[i]);
 			}
-			this.segs.allclear();
 		}
 	},
 	ansclear : function(){
@@ -195,18 +186,17 @@ Board:{
 				this.owner.painter.eraseSegment1(seglist[i]);
 				this.segs.removeSegment(seglist[i]);
 			}
-			this.segs.allclear();
 		}
 	},
 	errclear : function(){
 		if(!this.haserror){ return;}
 
+		this.SuperFunc.errclear.call(this);
+
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){ seglist[i].error=0;}
 		}
-
-		this.SuperFunc.errclear.call(this);
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
@@ -884,37 +874,29 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.typeA = 'A';
 		this.typeB = 'B';
 
-		this.disrec = 0;
+		bd.validinfo.all.push(this);
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.init()           変数の起動時の初期化を行う
-	// segs.allclear()       データを消去する
-	// segs.resetInfo()      segment以外の変数の起動時の初期化を行う
-	// segs.reset()          lcnts等の変数の初期化を行う
-	// segs.newIrowake()     reset()時などに色情報を設定しなおす
-	//
-	// segs.disableRecord()  操作の登録を禁止する
-	// segs.enableRecord()   操作の登録を許可する
-	// segs.isenableRecord() 操作の登録できるかを返す
+	// segs.reset()      lcnts等の変数の初期化を行う
+	// segs.rebuild()    情報の再設定を行う
+	// segs.newIrowake() reset()時などに色情報を設定しなおす
 	//---------------------------------------------------------------------------
-	init : function(){
-		this.allclear();
-	},
-	allclear : function(){
-		this.seg    = {};
-		this.segmax = 0;
-		this.resetInfo();
-	},
-	resetInfo : function(){
-		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ bd.cross[c].segment=this.owner.newInstance('SegmentList');}
-
+	reset : function(){
+		// 変数の初期化
 		this.lineid = {};
 		this.idlist = {};
 		this.linemax = 0;
+
+		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){
+			bd.cross[c].segment=this.owner.newInstance('SegmentList');
+		}
+
+		this.rebuild();
 	},
-	reset : function(){
-		this.resetInfo();
+	rebuild : function(){
+		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
+
 		var ids = [];
 		for(var id in this.seg){
 			var seg = this.seg[id];
@@ -939,10 +921,6 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			}
 		}
 	},
-
-	disableRecord : function(){ this.disrec++; },
-	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec===0);},
 
 	//---------------------------------------------------------------------------
 	// segs.getSegment() 位置情報からsegmentを取得する
@@ -1013,13 +991,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.segmax++;
 		this.seg[this.segmax] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
 		this.seg[this.segmax].id = this.segmax;
-		this.setSegmentInfo(this.seg[this.segmax], true);
+		if(bd.isenableInfo()){ this.setSegmentInfo(this.seg[this.segmax], true);}
 		this.owner.undo.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
 	},
 	removeSegment : function(bx1,by1,bx2,by2){
 		var seg = bx1;
 		if(by1!==(void 0)){ seg = this.getSegment(bx1,by1,bx2,by2);}
-		this.setSegmentInfo(seg, false);
+		if(bd.isenableInfo()){ this.setSegmentInfo(seg, false);}
 		this.owner.undo.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
 		this.owner.painter.eraseSegment1(seg);
 		delete this.seg[seg.id];
@@ -1029,7 +1007,6 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.setSegmentInfo()    線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
 	setSegmentInfo : function(seg, isset){
-		if(!this.isenableRecord()){ return;}
 		if(!isset && (this.lineid[seg.id]===null)){ return;}
 
 		var self = this;

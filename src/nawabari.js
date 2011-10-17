@@ -46,7 +46,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	posthook : {
-		ques : function(num){ bd.areas.setCellInfo(this);}
+		ques : function(num){ bd.setCellInfoAll(this);}
 	},
 
 	getdir4BorderCount : function(){
@@ -99,8 +99,8 @@ Cell:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -258,7 +258,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( (this.owner.pid==='nawabari') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 		}

@@ -49,8 +49,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	checkWhiteCell : true
+AreaWhiteManager:{
+	enabled : true
 },
 
 Menu:{
@@ -113,7 +113,7 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.areas.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 

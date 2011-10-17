@@ -55,6 +55,34 @@ pzprv3.addConsts({
 pzprv3.createCommonClass('Board',
 {
 	initialize : function(){
+		// 盤面の範囲
+		this.minbx;
+		this.minby;
+		this.maxbx;
+		this.maxby;
+
+		// エラー設定可能状態かどうか
+		this.diserror = 0;
+
+		// エラー表示中かどうか
+		this.haserror = false;
+
+		// 補助オブジェクト
+		this.disrec = 0;
+		this.validinfo = {cell:[],border:[],line:[],all:[]};
+	},
+
+	qcols : 10,		/* 盤面の横幅(デフォルト) */
+	qrows : 10,		/* 盤面の縦幅(デフォルト) */
+
+	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+
+	//---------------------------------------------------------------------------
+	// bd.initialize2()  オブジェクト生成後の処理
+	//---------------------------------------------------------------------------
+	initialize2 : function(){
 		this.cell   = this.owner.newInstance('CellList');
 		this.cross  = this.owner.newInstance('CrossList');
 		this.border = this.owner.newInstance('BorderList');
@@ -73,31 +101,16 @@ pzprv3.createCommonClass('Board',
 
 		this.bdinside = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
 
-		// 盤面の範囲
-		this.minbx;
-		this.minby;
-		this.maxbx;
-		this.maxby;
-
-		// エラー設定可能状態かどうか
-		this.diserror = 0;
-
-		// エラー表示中かどうか
-		this.haserror = false;
-
 		// 補助オブジェクト
-		this.lines  = this.owner.newInstance('LineManager');	// 線情報管理オブジェクト
-		this.areas  = this.owner.newInstance('AreaManager');	// 領域情報管理オブジェクト
+		this.lines = this.owner.newInstance('LineManager');		// 線情報管理オブジェクト
 
-		this.initialize_adjust();
+		this.rooms = this.owner.newInstance('AreaRoomManager');		// 部屋情報を保持する
+		this.linfo = this.owner.newInstance('AreaLineManager');		// 線つながり情報を保持する
+
+		this.bcell = this.owner.newInstance('AreaBlackManager');	// 黒マス情報を保持する
+		this.wcell = this.owner.newInstance('AreaWhiteManager');	// 白マス情報を保持する
+		this.ncell = this.owner.newInstance('AreaNumberManager');	// 数字情報を保持する
 	},
-
-	qcols : 10,		/* 盤面の横幅(デフォルト) */
-	qrows : 10,		/* 盤面の縦幅(デフォルト) */
-
-	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
@@ -116,8 +129,7 @@ pzprv3.createCommonClass('Board',
 		this.setminmax();
 		this.setposAll();
 
-		this.areas.init();
-		this.lines.init();
+		this.resetInfo();
 
 		this.owner.cursor.initCursor();
 		this.owner.undo.allerase();
@@ -175,27 +187,7 @@ pzprv3.createCommonClass('Board',
 		else if(type===k.EXCELL){ return this.owner.newInstance('EXCell');}
 		return this.nullobj;
 	},
-
-	//---------------------------------------------------------------------------
-	// bd.disableInfo()  Area/LineManagerへの登録を禁止する
-	// bd.enableInfo()   Area/LineManagerへの登録を許可する
-	// bd.resetInfo()    AreaInfo等、盤面読み込み時に初期化される情報を呼び出す
-	//---------------------------------------------------------------------------
-	disableInfo : function(){
-		this.owner.undo.disableRecord();
-		this.lines.disableRecord();
-		this.areas.disableRecord();
-	},
-	enableInfo : function(){
-		this.owner.undo.enableRecord();
-		this.lines.enableRecord();
-		this.areas.enableRecord();
-	},
-	resetInfo : function(){
-		this.areas.resetArea();
-		this.lines.resetLcnts();
-	},
-
+ 
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
@@ -499,13 +491,62 @@ pzprv3.createCommonClass('Board',
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする
-	// bd.enableSetError()   盤面のオブジェクトにエラーフラグを設定できるようにする
-	// bd.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
+	// bd.disableInfo()  Area/LineManagerへの登録を禁止する
+	// bd.enableInfo()   Area/LineManagerへの登録を許可する
+	// bd.isenableInfo() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
-	disableSetError  : function(){ this.diserror++;},
-	enableSetError   : function(){ this.diserror--;},
-	isenableSetError : function(){ return (this.diserror<=0); },
+	disableInfo : function(){
+		this.owner.undo.disableRecord();
+		this.disrec++;
+	},
+	enableInfo : function(){
+		this.owner.undo.enableRecord();
+		if(this.disrec>0){ this.disrec--;}
+	},
+	isenableInfo : function(){
+		return (this.disrec===0);
+	},
+
+	//--------------------------------------------------------------------------------
+	// bd.resetInfo()        部屋、黒マス、白マスの情報をresetする
+	// bd.setCellInfoAll()   黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
+	// bd.setBorderInfoAll() 境界線が引かれたり消されてたりした時に、部屋情報を更新する
+	// bd.setLineInfoAll()   線が引かれたり消されてたりした時に、線情報を更新する
+	//--------------------------------------------------------------------------------
+	resetInfo : function(){
+		for(var i=0,len=this.validinfo.all.length;i<len;i++)
+			{ this.validinfo.all[i].reset();}
+	},
+	setCellInfoAll : function(cell){
+		if(!this.isenableInfo()){ return;}
+		for(var i=0,len=this.validinfo.cell.length;i<len;i++)
+			{ this.validinfo.cell[i].setCellInfo(cell);}
+	},
+	setBorderInfoAll : function(border){
+		if(!this.isenableInfo()){ return;}
+		for(var i=0,len=this.validinfo.border.length;i<len;i++)
+			{ this.validinfo.border[i].setBorderInfo(border);}
+	},
+	setLineInfoAll : function(border){
+		if(!this.isenableInfo()){ return;}
+		for(var i=0,len=this.validinfo.line.length;i<len;i++)
+			{ this.validinfo.line[i].setLineInfo(border);}
+	},
+
+	//--------------------------------------------------------------------------------
+	// bd.getLineInfo()  線情報をAreaInfo型のオブジェクトで返す
+	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
+	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
+	// bd.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
+	// bd.getWCellInfo() 白マス情報をAreaInfo型のオブジェクトで返す
+	// bd.getNumberInfo() 数字情報をAreaInfo型のオブジェクトで返す
+	//--------------------------------------------------------------------------------
+	getLineInfo  : function(){ return this.lines.getLineInfo();},
+	getRoomInfo  : function(){ return this.rooms.getAreaInfo();},
+	getLareaInfo : function(){ return this.linfo.getAreaInfo();},
+	getBCellInfo : function(){ return this.bcell.getAreaInfo();},
+	getWCellInfo : function(){ return this.wcell.getAreaInfo();},
+	getNumberInfo : function(){ return this.ncell.getAreaInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
@@ -532,6 +573,15 @@ pzprv3.createCommonClass('Board',
 		}
 		return sides;
 	},
+
+	//---------------------------------------------------------------------------
+	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする
+	// bd.enableSetError()   盤面のオブジェクトにエラーフラグを設定できるようにする
+	// bd.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す
+	//---------------------------------------------------------------------------
+	disableSetError  : function(){ this.diserror++;},
+	enableSetError   : function(){ this.diserror--;},
+	isenableSetError : function(){ return (this.diserror<=0); },
 
 	//---------------------------------------------------------------------------
 	// bd.searchMovedPosition() 丸数字を移動させるパズルで、移動後の場所を設定する
@@ -589,14 +639,12 @@ pzprv3.createCommonClass('Board',
 	qnumh : null,	// ques==51の回転･反転用
 	qnums : null,	// reduceでisOneNumber時の後処理用
 
-	initialize_adjust : function(){
-		// expand/reduce処理用
-		this.insex = {
-			cell   : {1:true},
-			cross  : (this.iscross===1 ? {2:true} : {0:true}),
-			border : {1:true, 2:true},
-			excell : {1:true}
-		};
+	// expand/reduce処理で消える/増えるオブジェクトの判定用
+	insex : {
+		cell   : {1:true},
+		cross  : (this.iscross===1 ? {2:true} : {0:true}),
+		border : {1:true, 2:true},
+		excell : {1:true}
 	},
 
 	//------------------------------------------------------------------------------
@@ -643,7 +691,7 @@ pzprv3.createCommonClass('Board',
 	expandreduce : function(key,d){
 		this.disableInfo();
 		this.adjustBoardData(key,d);
-		if(this.areas.roomNumber && (key & k.REDUCE)){ this.reduceRoomNumber(key,d);}
+		if(this.rooms.hastop && (key & k.REDUCE)){ this.reduceRoomNumber(key,d);}
 
 		if(key & k.EXPAND){
 			if     (key===k.EXPANDUP||key===k.EXPANDDN){ this.qrows++;}
@@ -855,15 +903,15 @@ pzprv3.createCommonClass('Board',
 			var cell = this.cell[c];
 			if(!!this.insex[k.CELL][this.distObj(key,cell)]){
 				if(cell.qnum!==-1){
-					qnums.push({cell:cell, areaid:this.areas.rinfo.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
+					qnums.push({cell:cell, areaid:this.rooms.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
 					cell.qnum=-1;
 				}
-				this.areas.rinfo.removeCell(cell);
+				this.rooms.removeCell(cell);
 			}
 		}
 		for(var i=0;i<qnums.length;i++){
 			var areaid = qnums[i].areaid;
-			var top = this.areas.rinfo.calcTopOfRoom(areaid);
+			var top = this.rooms.calcTopOfRoom(areaid);
 			if(top===null){
 				var um = this.owner.undo;
 				if(!um.undoExec && !um.redoExec){

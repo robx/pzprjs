@@ -110,8 +110,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 Menu:{
@@ -286,7 +286,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSameObjectInRoom(bd.areas.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
+		if( !this.checkSameObjectInRoom(bd.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
 			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 		}
 

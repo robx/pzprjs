@@ -14,9 +14,14 @@ pzprv3.createCommonClass('LineManager',
 		this.id = [];
 		this.max = 0;
 
-		this.disableLine = (!this.isCenterLine && !this.borderAsLine);
-		this.disrec = 0;
+		this.enabled = (this.isCenterLine || this.borderAsLine);
+
+		if(this.enabled){
+			bd.validinfo.line.push(this);
+			bd.validinfo.all.push(this);
+		}
 	},
+	// relation : ['line'],
 
 	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
 	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
@@ -30,14 +35,11 @@ pzprv3.createCommonClass('LineManager',
 	typeC : 'C',
 
 	//---------------------------------------------------------------------------
-	// bd.lines.init()           変数の起動時の初期化を行う
-	// bd.lines.disableRecord()  操作の登録を禁止する
-	// bd.lines.enableRecord()   操作の登録を許可する
-	// bd.lines.isenableRecord() 操作の登録できるかを返す
+	// bd.lines.reset()       lcnts等の変数の初期化を行う
+	// bd.lines.rebuild()     既存の情報からデータを再設定する
+	// bd.lines.newIrowake()  線の情報が再構築された際、線に色をつける
 	//---------------------------------------------------------------------------
-	init : function(){
-		if(this.disableLine){ return;}
-
+	reset : function(){
 		// lcnt, ltotal変数(配列)初期化
 		if(this.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
@@ -51,20 +53,12 @@ pzprv3.createCommonClass('LineManager',
 		// その他の変数初期化
 		this.max = 0;
 		for(var id=0;id<bd.bdmax;id++){ this.id[id] = null;}
+
+		this.rebuild();
 	},
+	rebuild : function(){
+		if(!this.enabled){ return;}
 
-	disableRecord : function(){ this.disrec++; },
-	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec===0);},
-
-	//---------------------------------------------------------------------------
-	// bd.lines.resetLcnts()  lcnts等の変数の初期化を行う
-	// bd.lines.newIrowake()  線の情報が再構築された際、線に色をつける
-	//---------------------------------------------------------------------------
-	resetLcnts : function(){
-		if(this.disableLine){ return;}
-
-		this.init();
 		var blist = this.owner.newInstance('BorderList');
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
@@ -80,6 +74,7 @@ pzprv3.createCommonClass('LineManager',
 				this.id[border.id] = null;
 			}
 		}
+
 		this.reassignId(blist);
 		if(this.owner.painter.irowake!==0){ this.newIrowake();}
 	},
@@ -128,7 +123,8 @@ pzprv3.createCommonClass('LineManager',
 	//                            可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLineInfo : function(border){
-		if(this.disableLine || !this.isenableRecord()){ return;}
+		if(!this.enabled){ return;}
+
 		var border = border, isset = border.isLine();
 		if(isset===(this.id[border.id]!==null)){ return;}
 
@@ -407,110 +403,13 @@ pzprv3.createCommonClass('LineManager',
 });
 
 //--------------------------------------------------------------------------------
-// ★AreaManagerクラス 部屋のTOP-Cellの位置等の情報を扱う
+// ★AreaCellManagerクラス セルの部屋情報などを保持するクラス
 //   ※このクラスで管理しているareaidは、処理を簡略化するために
 //     領域に属するIDがなくなっても情報としては消していません。
 //     そのため、1～maxまで全て中身が存在しているとは限りません。
 //     回答チェックやファイル出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
-// 部屋のTOPに数字を入力する時の、ハンドリング等
-pzprv3.createCommonClass('AreaManager',
-{
-	initialize : function(){
-		this.rinfo = null;	// 部屋情報を保持する
-		this.linfo = null;	// 線つながり情報を保持する
-
-		this.bcell = null;	// 黒マス情報を保持する
-		this.wcell = null;	// 白マス情報を保持する
-		this.ncell = null;	// 数字情報を保持する
-
-		// 問題の数字が部屋の左上に1つだけ入るパズル
-		this.roomNumber = (!!this.owner.classes.AreaRoomData.prototype.hastop);
-
-		this.disrec = 0;
-	},
-	roomNumber     : false,	// initialize()で初期化
-
-	hasroom        : false,	// いくつかの領域に分かれている/分けるパズル
-	lineToArea     : false,	// 線のつながりを部屋情報として取得するパズル
-
-	checkBlackCell : false,	// 正答判定で黒マスの情報をチェックするパズル
-	checkWhiteCell : false,	// 正答判定で白マスの情報をチェックするパズル
-	linkNumber     : false,	// 数字がひとつながりになるパズル
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.disableRecord()  操作の登録を禁止する
-	// bd.areas.enableRecord()   操作の登録を許可する
-	// bd.areas.isenableRecord() 操作の登録できるかを返す
-	//--------------------------------------------------------------------------------
-	disableRecord : function(){ this.disrec++; },
-	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.disrec===0);},
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.init()       起動時に変数を初期化する
-	// bd.areas.resetArea()  部屋、黒マス、白マスの情報をresetする
-	//--------------------------------------------------------------------------------
-	init : function(){
-		if(this.hasroom)   { this.rinfo = this.owner.newInstance('AreaRoomData');}
-		if(this.lineToArea){ this.linfo = this.owner.newInstance('AreaLineData');}
-
-		if(this.checkBlackCell){ this.bcell = this.owner.newInstance('AreaBlackData');}
-		if(this.checkWhiteCell){ this.wcell = this.owner.newInstance('AreaWhiteData');}
-		if(this.linkNumber)    { this.ncell = this.owner.newInstance('AreaNumberData');}
-	},
-
-	resetArea : function(){
-		if(!!this.bcell){ this.bcell.reset();}
-		if(!!this.wcell){ this.wcell.reset();}
-		if(!!this.ncell){ this.ncell.reset();}
-
-		if(!!this.rinfo){ this.rinfo.reset();}
-		if(!!this.linfo){ this.linfo.reset();}
-	},
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.setBorderInfo()  境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	//--------------------------------------------------------------------------------
-	setBorderInfo : function(border){
-		if(!this.isenableRecord()){ return;}
-
-		if(!!this.rinfo){ this.rinfo.setBorderInfo(border);}
-		if(!!this.linfo){ this.linfo.setBorderInfo(border);}
-	},
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.setCellInfo() 黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	//--------------------------------------------------------------------------------
-	setCellInfo : function(cell){
-		if(!this.isenableRecord()){ return;}
-
-		if(!!this.bcell){ this.bcell.setCellInfo(cell);}
-		if(!!this.wcell){ this.wcell.setCellInfo(cell);}
-		if(!!this.ncell){ this.ncell.setCellInfo(cell);}
-
-		if(!!this.rinfo){ this.rinfo.setCellInfo(cell);}
-		if(!!this.linfo){ this.linfo.setCellInfo(cell);}
-	},
-
-	//--------------------------------------------------------------------------------
-	// bd.areas.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
-	// bd.areas.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
-	// bd.areas.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
-	// bd.areas.getWCellInfo() 白マス情報をAreaInfo型のオブジェクトで返す
-	// bd.areas.getNumberInfo() 数字情報をAreaInfo型のオブジェクトで返す
-	//--------------------------------------------------------------------------------
-	getRoomInfo  : function(){ return this.rinfo.getAreaInfo();},
-	getLareaInfo : function(){ return this.linfo.getAreaInfo();},
-	getBCellInfo : function(){ return this.bcell.getAreaInfo();},
-	getWCellInfo : function(){ return this.wcell.getAreaInfo();},
-	getNumberInfo : function(){ return this.ncell.getAreaInfo();}
-});
-
-//--------------------------------------------------------------------------------
-// ★AreaDataクラス AreaManagerで使用するオブジェクトのクラス
-//--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaData',
+pzprv3.createCommonClass('AreaCellManager',
 {
 	initialize : function(){
 		this.max;
@@ -518,12 +417,21 @@ pzprv3.createCommonClass('AreaData',
 		this.id;		// 各々のセルのid
 		this.cellinfo;	// セルの情報を保持しておく
 
-		this.reset();
+		if(this.enabled){
+			for(var i=0;i<this.relation.length;i++){
+				bd.validinfo[this.relation[i]].push(this);
+				bd.validinfo.all.push(this);
+			}
+		}
 	},
+	enabled : false,
+	relation : ['cell'],
+
 	isvalid : function(cell){ return (cell.ques!==7);},
 
 	//--------------------------------------------------------------------------------
-	// info.reset() ファイル読み込み時などに、保持している情報を再構築する
+	// info.reset()   ファイル読み込み時などに、保持している情報を再構築する
+	// info.rebuild() 既存の情報からデータを再設定する
 	//--------------------------------------------------------------------------------
 	reset : function(){
 		this.max      = 0;
@@ -531,12 +439,18 @@ pzprv3.createCommonClass('AreaData',
 		this.id       = [];
 		this.cellinfo = [];
 
+		this.rebuild();
+	},
+	rebuild : function(){
+		if(!this.enabled){ return;}
+
 		var idlist = [];
 		for(var cc=0;cc<bd.cellmax;cc++){
 			this.cellinfo[cc] = this.getlink(bd.cell[cc]);
 			this.id[cc] = 0;
 			idlist.push(cc);
 		}
+
 		this.searchIdlist(idlist);
 	},
 
@@ -595,6 +509,8 @@ pzprv3.createCommonClass('AreaData',
 	// info.setCellInfo() 黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCellInfo : function(cell){
+		if(!this.enabled){ return;}
+
 		var val = this.getlink(cell), old = this.cellinfo[cell.id];
 
 		if(val!==old){
@@ -807,50 +723,55 @@ pzprv3.createCommonClass('AreaData',
 });
 
 //--------------------------------------------------------------------------------
-// ☆AreaBlackDataクラス  AreaManagerで使用する黒マスオブジェクトのクラス
-// ☆AreaWhiteDataクラス  AreaManagerで使用する白マスオブジェクトのクラス
-// ☆AreaNumberDataクラス AreaManagerで使用する数字オブジェクトのクラス
+// ☆AreaBlackManagerクラス  黒マス情報オブジェクトのクラス
+// ☆AreaWhiteManagerクラス  白マス情報オブジェクトのクラス
+// ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaBlackData:AreaData',
+pzprv3.createCommonClass('AreaBlackManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isBlack();}
 });
 
-pzprv3.createCommonClass('AreaWhiteData:AreaData',
+pzprv3.createCommonClass('AreaWhiteManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isWhite();}
 });
 
-pzprv3.createCommonClass('AreaNumberData:AreaData',
+pzprv3.createCommonClass('AreaNumberManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isNumberObj();}
 });
 
 //--------------------------------------------------------------------------------
-// ★AreaBorderDataクラス AreaManagerで使用するオブジェクトのクラス
+// ★AreaBorderManagerクラス セル＋境界線情報が必要な情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaBorderData:AreaData',
+pzprv3.createCommonClass('AreaBorderManager:AreaCellManager',
 {
 	initialize : function(){
 		this.isbd  = [];		// 境界線に線が引いてあるかどうか
 
-		pzprv3.core.AreaData.prototype.initialize.call(this);
+		pzprv3.core.AreaCellManager.prototype.initialize.call(this);
 	},
+	relation : ['cell', 'border'],
 
 	//--------------------------------------------------------------------------------
-	// info.reset()         ファイル読み込み時などに、保持している情報を再構築する
-	// info.reset_bdcount() 境界線情報の再設定を行う
+	// info.reset()   ファイル読み込み時などに、保持している情報を再構築する
+	// info.rebuild() 境界線情報の再設定を行う
 	//--------------------------------------------------------------------------------
 	reset : function(){
-		this.reset_bdcount();
-		pzprv3.core.AreaData.prototype.reset.call(this);
-	},
-	reset_bdcount : function(){
 		this.isbd = [];
+
+		pzprv3.core.AreaCellManager.prototype.reset.call(this);
+	},
+	rebuild : function(){
+		if(!this.enabled){ return;}
+
 		for(var id=0;id<bd.bdmax;id++){
 			this.isbd[id]=false;
 			this.setbd(bd.border[id]);
 		}
+
+		pzprv3.core.AreaCellManager.prototype.rebuild.call(this);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -884,6 +805,8 @@ pzprv3.createCommonClass('AreaBorderData:AreaData',
 	// info.setCellInfo() マスの有効/無効切り替え時などに、IDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCellInfo : function(cell){
+		if(!this.enabled){ return;}
+
 		var result = false, cblist=cell.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){
 			var cell2=cblist[i][0], border=cblist[i][1];
@@ -894,7 +817,7 @@ pzprv3.createCommonClass('AreaBorderData:AreaData',
 		}
 		if(!result){ return;}
 
-		pzprv3.core.AreaData.prototype.setCellInfo.call(this, cell);
+		pzprv3.core.AreaCellManager.prototype.setCellInfo.call(this, cell);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -902,6 +825,7 @@ pzprv3.createCommonClass('AreaBorderData:AreaData',
 	// info.checkExecSearch() 部屋情報が変化したかsearch前にチェックする
 	//--------------------------------------------------------------------------------
 	setBorderInfo : function(border){
+		if(!this.enabled){ return;}
 		if(!this.setbd(border)){ return;}
 
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
@@ -925,45 +849,46 @@ pzprv3.createCommonClass('AreaBorderData:AreaData',
 });
 
 //--------------------------------------------------------------------------------
-// ☆AreaRoomDataクラス AreaManagerで使用するオブジェクトのクラス
+// ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
+pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 {
 	initialize : function(){
 		this.bdcnt = [];		// 格子点の周りの境界線の数
 
-		pzprv3.core.AreaBorderData.prototype.initialize.call(this);
+		pzprv3.core.AreaBorderManager.prototype.initialize.call(this);
 	},
+	relation : ['cell', 'border'],
 	bdfunc : function(border){ return border.isBorder();},
 
 	hastop : false,
 
 	//--------------------------------------------------------------------------------
-	// rinfo.reset() ファイル読み込み時などに、保持している情報を再構築する
+	// rooms.reset()   ファイル読み込み時などに、保持している情報を再構築する
+	// rooms.rebuild() 部屋情報の再設定を行う
 	//--------------------------------------------------------------------------------
 	reset : function(){
-		pzprv3.core.AreaBorderData.prototype.reset.call(this);
-
-		if(this.hastop){ this.resetRoomNumber();}
-	},
-
-	//--------------------------------------------------------------------------------
-	// rinfo.reset_bdcount() 境界線情報の再設定を行う
-	//--------------------------------------------------------------------------------
-	reset_bdcount : function(){
-		/* 外枠のカウントをあらかじめ足しておく */
 		this.bdcnt = [];
+
+		pzprv3.core.AreaBorderManager.prototype.reset.call(this);
+	},
+	rebuild : function(){
+		if(!this.enabled){ return;}
+
+		/* 外枠のカウントをあらかじめ足しておく */
 		for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 			var c = (bx>>1)+(by>>1)*(bd.qcols+1);
 			var ischassis = (bd.isborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
 			this.bdcnt[c]=(ischassis?2:0);
 		}}
 
-		pzprv3.core.AreaBorderData.prototype.reset_bdcount.call(this);
+		pzprv3.core.AreaBorderManager.prototype.rebuild.call(this);
+
+		if(this.enabled && this.hastop){ this.resetRoomNumber();}
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.setbd()  境界線情報と実際の境界線の差異を調べて設定する
+	// rooms.setbd()  境界線情報と実際の境界線の差異を調べて設定する
 	//--------------------------------------------------------------------------------
 	setbd : function(border){
 		var isbd = this.bdfunc(border);
@@ -978,18 +903,18 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.checkExecSearch() 部屋情報が変化したかsearch前にチェックする
+	// rooms.checkExecSearch() 部屋情報が変化したかsearch前にチェックする
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	checkExecSearch : function(border){
-		if(!pzprv3.core.AreaBorderData.prototype.checkExecSearch.call(this,border)){ return false;}
+		if(!pzprv3.core.AreaBorderManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
 		var xc1 = border.sidecross[0].id, xc2 = border.sidecross[1].id;
 		if     ( this.isbd[border.id] && (this.bdcnt[xc1]===1 || this.bdcnt[xc2]===1)){ return false;}
 		else if(!this.isbd[border.id] && (this.bdcnt[xc1]===0 || this.bdcnt[xc2]===0)){ return false;}
 
-		// roomNumberの時 どっちの数字を残すかは、TOP同士の位置で比較する
+		// TOPがある場合 どっちの数字を残すかは、TOP同士の位置で比較する
 		var cell1 = border.sidecell[0],  cell2 = border.sidecell[1];
 		if(!this.isbd[border.id] && this.hastop){this.setTopOfRoom_combine(cell1,cell2);}
 
@@ -997,17 +922,17 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	// rooms.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	searchSingle : function(c, newid){
-		pzprv3.core.AreaBorderData.prototype.searchSingle.call(this, c, newid);
+		pzprv3.core.AreaBorderManager.prototype.searchSingle.call(this, c, newid);
 
 		if(this.hastop){ this.setTopOfRoom(newid);}
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
+	// rooms.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
 	//--------------------------------------------------------------------------------
 	setTopOfRoom_combine : function(cell1,cell2){
 		var merged, keep;
@@ -1029,9 +954,9 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.calcTopOfRoom()   部屋のTOPになりそうなセルのIDを返す
-	// rinfo.setTopOfRoom()    部屋のTOPを設定する
-	// rinfo.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
+	// rooms.calcTopOfRoom()   部屋のTOPになりそうなセルのIDを返す
+	// rooms.setTopOfRoom()    部屋のTOPを設定する
+	// rooms.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
 	//--------------------------------------------------------------------------------
 	calcTopOfRoom : function(roomid){
 		var cc=null, bx=bd.maxbx, by=bd.maxby;
@@ -1065,12 +990,12 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 	},
 
 	//--------------------------------------------------------------------------------
-	// rinfo.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
-	// rinfo.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
-	// rinfo.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
-	// rinfo.getTopOfRoom()       指定した領域のTOPの部屋を取得する
-	// rinfo.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
-	// rinfo.getCntOfRoom()       指定した領域の大きさを抽出する
+	// rooms.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
+	// rooms.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
+	// rooms.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
+	// rooms.getTopOfRoom()       指定した領域のTOPの部屋を取得する
+	// rooms.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
+	// rooms.getCntOfRoom()       指定した領域の大きさを抽出する
 	//--------------------------------------------------------------------------------
 	getRoomID : function(cell){ return this.id[cell.id];},
 //	setRoomID : function(cell,val){ this.id[cell.id] = val;},
@@ -1083,24 +1008,32 @@ pzprv3.createCommonClass('AreaRoomData:AreaBorderData',
 });
 
 //--------------------------------------------------------------------------------
-// ☆AreaLineDataクラス AreaManagerで使用するオブジェクトのクラス
+// ☆AreaLineManagerクラス 線つながり情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaLineData:AreaBorderData',
+pzprv3.createCommonClass('AreaLineManager:AreaBorderManager',
 {
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの線の数
 
-		pzprv3.core.AreaBorderData.prototype.initialize.call(this);
+		pzprv3.core.AreaBorderManager.prototype.initialize.call(this);
 	},
+	relation : ['cell', 'line'],
 	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
 	bdfunc : function(border){ return !border.isLine();},
 
 	//--------------------------------------------------------------------------------
-	// linfo.reset_bdcount() 境界線情報の再設定を行う
+	// linfo.reset()   ファイル読み込み時などに、保持している情報を再構築する
+	// linfo.rebuild() 境界線情報の再設定を行う
 	//--------------------------------------------------------------------------------
-	reset_bdcount : function(){
-		/* 外枠のカウントをあらかじめ足しておく */
+	reset : function(){
 		this.bdcnt = [];
+
+		pzprv3.core.AreaBorderManager.prototype.reset.call(this);
+	},
+	rebuild : function(){
+		if(!this.enabled){ return;}
+
+		/* 外枠のカウントをあらかじめ足しておく */
 		for(var c=0;c<bd.cellmax;c++){
 			var bx=bd.cell[c].bx, by=bd.cell[c].by;
 			this.bdcnt[c]=0;
@@ -1108,7 +1041,7 @@ pzprv3.createCommonClass('AreaLineData:AreaBorderData',
 			if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
 		}
 
-		pzprv3.core.AreaBorderData.prototype.reset_bdcount.call(this);
+		pzprv3.core.AreaBorderManager.prototype.rebuild.call(this);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -1124,5 +1057,12 @@ pzprv3.createCommonClass('AreaLineData:AreaBorderData',
 			if(border.id<bd.bdinside){ return true;}
 		}
 		return false;
+	},
+
+	//--------------------------------------------------------------------------------
+	// info.setLineInfo()  線が引かれたり消されてたりした時に、部屋情報を更新する
+	//--------------------------------------------------------------------------------
+	setLineInfo : function(border){
+		this.setBorderInfo(border);
 	}
 });

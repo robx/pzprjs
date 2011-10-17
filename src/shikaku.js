@@ -31,8 +31,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -125,7 +125,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 		}

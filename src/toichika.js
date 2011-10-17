@@ -99,8 +99,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -187,7 +187,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの国に2つ以上の矢印が入っています。','A country has plural arrows.'); return false;
 		}

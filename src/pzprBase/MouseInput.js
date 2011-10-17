@@ -30,8 +30,6 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove;		// mousemove/touchmoveイベントかどうか
 		this.mouseend;		// mouseup/touchendイベントかどうか
 
-		this.mousereset();
-
 		this.mouseoffset = {px:0,py:0};
 		if(pzprv3.browser.IE6||pzprv3.browser.IE7||pzprv3.browser.IE8){ this.mouseoffset = {px:2,py:2};}
 		else if(pzprv3.browser.WebKit){ this.mouseoffset = {px:1,py:1};}
@@ -84,6 +82,7 @@ pzprv3.createCommonClass('MouseEvent',
 			this.owner.addEvent(numparent, "touchmove",  this, this.e_mousemove);
 			this.owner.addEvent(numparent, "touchend",   this, this.e_mouseup);
 		}
+		this.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -398,7 +397,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mouseCell = cell;
 	},
 	inputqnum_main : function(cell){
-		if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
+		if(this.owner.editmode && bd.rooms.hastop){ cell = bd.rooms.getTopOfRoomByCell(cell);}
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
 		if     (this.owner.editmode){ subtype =-1;}
@@ -542,7 +541,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		var clist = bd.areas.rinfo.getClistByCell(cell);
+		var clist = bd.rooms.getClistByCell(cell);
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			if(this.inputData===1 || cell2.getQsub()!==3){
@@ -723,7 +722,7 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isBlack()){ return;}
-		if(!this.RBBlackCell){ bd.areas.bcell.getClistByCell(cell).seterr(1);}
+		if(!this.RBBlackCell){ bd.bcell.getClistByCell(cell).seterr(1);}
 		else{ this.dispRed8(cell);}
 		bd.haserror = true;
 		this.owner.painter.paintAll();

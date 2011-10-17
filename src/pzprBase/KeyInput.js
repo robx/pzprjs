@@ -14,7 +14,6 @@ pzprv3.createCommonClass('KeyEvent',
 		this.cursor = this.owner.cursor;
 
 		this.enableKey = true;	// キー入力は有効か
-		this.keyreset();
 
 		this.initialize_panel();
 	},
@@ -64,6 +63,7 @@ pzprv3.createCommonClass('KeyEvent',
 			sender.AddEventListener("KeyUp",   function(s,a){ kc.e_SLkeyup(s,a);});
 		}
 
+		this.keyreset();
 		this.create();
 	},
 
@@ -254,7 +254,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cell = this.cursor.getTCC();
-		if(this.owner.editmode && bd.areas.roomNumber){ cell = bd.areas.rinfo.getTopOfRoomByCell(cell);}
+		if(this.owner.editmode && bd.rooms.hastop){ cell = bd.rooms.getTopOfRoomByCell(cell);}
 
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;

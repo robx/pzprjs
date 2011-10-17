@@ -44,9 +44,11 @@ Cell:{
 	numberIsWhite : true
 },
 
-AreaManager:{
-	checkBlackCell : true,
-	checkWhiteCell : true
+AreaBlackManager:{
+	enabled : true
+},
+AreaWhiteManager:{
+	enabled : true
 },
 
 Menu:{
@@ -128,12 +130,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var binfo = bd.areas.getBCellInfo();
+		var binfo = bd.getBCellInfo();
 		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
 			this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
+		if( !this.checkOneArea( bd.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 

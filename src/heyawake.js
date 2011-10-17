@@ -30,7 +30,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		var d = bd.areas.rinfo.getClistByCell(this).getRectSize();
+		var d = bd.rooms.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}
@@ -52,12 +52,11 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom        : true,
-	checkWhiteCell : true
+AreaWhiteManager:{
+	enabled : true
 },
-
-AreaRoomData:{
+AreaRoomManager:{
+	enabled : true,
 	hastop : true
 },
 
@@ -132,7 +131,7 @@ Encode:{
 		this.owner.fio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
-		var barray=[], rinfo=bd.areas.getRoomInfo();
+		var barray=[], rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.getclist(id).getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
@@ -173,11 +172,11 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.areas.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){
 			this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
 		}

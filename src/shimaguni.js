@@ -27,7 +27,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
+		return Math.min(this.maxnum, bd.rooms.getCntOfRoomByCell(this));
 	}
 },
 "Cell@chocona":{
@@ -45,17 +45,30 @@ CellList:{
 			if(this[i].isBlack()){ cnt++;}
 		}
 		return cnt;
+	},
+
+	isSeqBlock : function(){
+		var stack=(this.length>0?[this[0]]:[]), count=this.length, passed={};
+		for(var i=0;i<count;i++){ passed[this[i].id]=0;}
+		while(stack.length>0){
+			var cell=stack.pop();
+			if(passed[cell.id]===1){ continue;}
+			count--;
+			passed[cell.id]=1;
+			var list = cell.getdir4clist();
+			for(var i=0;i<list.length;i++){
+				if(passed[list[i][0].id]===0){ stack.push(list[i][0]);}
+			}
+		}
+		return (count===0);
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaBlackManager:{
+	enabled : true
 },
-"AreaManager@chocona":{
-	checkBlackCell : true
-},
-
-AreaRoomData:{
+AreaRoomManager:{
+	enabled : true,
 	hastop : true
 },
 
@@ -127,7 +140,7 @@ FileIO:{
 "AnsCheck@shimaguni":{
 	checkAns : function(){
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true) ){
 			this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
 		}
@@ -154,13 +167,11 @@ FileIO:{
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		var dataobj = this.owner.newInstance('AreaData');
-		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			dataobj.isvalid = function(cell){ return (bd.areas.rinfo.getRoomID(cell)===r && cell.isBlack());};
-			dataobj.reset();
-			if(dataobj.getAreaInfo().max>1){
+		for(var r=1;r<=bd.rooms.max;r++){
+			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
+			if(!clist.isSeqBlock()){
 				if(this.inAutoCheck){ return false;}
-				bd.areas.rinfo.getClist(r).seterr(1);
+				clist.seterr(1);
 				result = false;
 			}
 		}
@@ -170,11 +181,11 @@ FileIO:{
 "AnsCheck@chocona":{
 	checkAns : function(){
 
-		if( !this.checkAreaRect(bd.areas.getBCellInfo()) ){
+		if( !this.checkAreaRect(bd.getBCellInfo()) ){
 			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
 		}
 
-		if( !this.checkBlackCellCount( bd.areas.getRoomInfo() ) ){
+		if( !this.checkBlackCellCount( bd.getRoomInfo() ) ){
 			this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
 		}
 

@@ -125,6 +125,10 @@ Board:{
 	arrowin  : null,
 	arrowout : null,
 
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.iceinfo = this.owner.newInstance('AreaIcebarnManager');
+	},
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 
@@ -269,7 +273,9 @@ LineManager:{
 	isLineCross  : true
 },
 
-"AreaIcebarnData:AreaData":{
+"AreaIcebarnManager:AreaCellManager":{
+	enabled : true,
+	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}
 },
 
@@ -787,8 +793,7 @@ AnsCheck:{
 	},
 
 	checkIgnoreIcebarn : function(){
-		var iarea = this.owner.newInstance('AreaIcebarnData').getAreaInfo();
-		return this.checkLinesInArea(iarea, function(w,h,a,n){ return (a!=0);})
+		return this.checkLinesInArea(bd.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
 	},
 
 	checkAllArrow : function(){

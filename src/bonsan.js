@@ -77,9 +77,11 @@ LineManager:{
 	isCenterLine : true
 },
 
-AreaManager:{
-	hasroom : true,
-	lineToArea : true
+AreaRoomManager:{
+	enabled : true
+},
+AreaLineManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -169,7 +171,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = false;
-		var linfo = bd.areas.getLareaInfo();
+		var linfo = bd.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 		}
@@ -184,7 +186,7 @@ AnsCheck:{
 			this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		bd.searchMovedPosition(linfo);
 		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;

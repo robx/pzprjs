@@ -122,8 +122,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 Menu:{
@@ -213,7 +213,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkDifferentNumberInRoom(bd.areas.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
+		if( !this.checkDifferentNumberInRoom(bd.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
 			this.setAlert('1つの領域に2つ以上の同じ矢印が入っています。','An area has plural same arrows.'); return false;
 		}
 

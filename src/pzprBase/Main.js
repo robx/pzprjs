@@ -81,6 +81,9 @@ pzprv3.createCoreClass('Owner',
 		this.key.setEvents();
 		this.setEvents();
 
+		// 盤面保持用データ生成処理
+		bd.initialize2();
+
 		// URL・ファイルデータの読み込み
 		this.decodeBoardData(pzl);
 

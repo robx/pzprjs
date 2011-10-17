@@ -36,18 +36,17 @@ Board:{
 	qrows : 8,
 
 	iscross  : 1,
-	isborder : 1
-},
+	isborder : 1,
 
-"AreaTileData:AreaBorderData":{
-	bdfunc : function(border){ return !border.isGround();}
-},
-"AreaBlockData:AreaBorderData":{
-	bdfunc : function(border){ return border.qans>0;},
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.tiles = this.owner.newInstance('AreaTileManager');
+		this.blocks = this.owner.newInstance('AreaBlockManager');
+	},
 
-	getAreaInfo : function(){
-		var tinfo = this.owner.newInstance('AreaTileData').getAreaInfo();
-		var cinfo = this.owner.classes.AreaBorderData.prototype.getAreaInfo.call(this);
+	getBlockInfo : function(){
+		var tinfo = bd.tiles.getAreaInfo();
+		var cinfo = bd.blocks.getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, clist=cinfo.getclist(r);
@@ -62,6 +61,17 @@ Board:{
 		}
 		return cinfo;
 	}
+},
+
+"AreaTileManager:AreaBorderManager":{
+	enabled : true,
+	relation : ['border'],
+	bdfunc : function(border){ return !border.isGround();}
+},
+"AreaBlockManager:AreaBorderManager":{
+	enabled : true,
+	relation : ['border'],
+	bdfunc : function(border){ return border.qans>0;}
 },
 AreaCellInfo:{
 	getBlockShapes : function(r){
@@ -186,7 +196,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		// それぞれ点線、境界線で作られる領域の情報
-		var cinfo = this.owner.newInstance('AreaBlockData').getAreaInfo();
+		var cinfo = bd.getBlockInfo();
 		if( !this.checkMiniBlockCount(cinfo, 1) ){
 			this.setAlert('ブロックが1つの点線からなる領域で構成されています。','A block has one area framed by dotted line.'); return false;
 		}

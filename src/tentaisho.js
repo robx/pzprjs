@@ -44,7 +44,7 @@ MouseEvent:{
 
 		var cell = star.validcell();
 		if(cell!==null){
-			var clist = bd.areas.rinfo.getClistByCell(cell);
+			var clist = bd.rooms.getClistByCell(cell);
 			if(clist.encolor()){
 				var d = clist.getRectSize();
 				this.owner.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
@@ -149,7 +149,7 @@ Star:{
 		var obj = this.obj, cell = null;
 		if(obj.iscellobj)
 			{ cell = obj;}
-		else if(obj.iscrossobj && bd.areas.rinfo.bdcnt[obj.id]===0)
+		else if(obj.iscrossobj && bd.rooms.bdcnt[obj.id]===0)
 			{ cell = obj.relcell(-1,-1);}
 		else if(obj.isborderobj && obj.getQans()===0)
 			{ cell = obj.sidecell[0];}
@@ -202,8 +202,8 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
 
 		this.star = []; /* インスタンス化 */
 	},
@@ -251,14 +251,14 @@ Board:{
 
 	// 色をつける系関数
 	encolorall : function(){
-		var rinfo = this.areas.getRoomInfo();
+		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){ rinfo.getclist(id).encolor();}
 		this.owner.painter.paintAll();
 	},
 
 	// 領域と入っている星を取得する関数
 	getAreaStarInfoAll : function(){
-		var rinfo = this.areas.getRoomInfo();
+		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var ret = rinfo.getclist(id).getAreaStarInfo();
 			rinfo.room[id].star  = ret.star;
@@ -272,8 +272,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 Menu:{

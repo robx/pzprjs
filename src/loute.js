@@ -183,7 +183,7 @@ Board:{
 	isborder : 1,
 
 	getLblockInfo : function(){
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		rinfo.place = [];
 
 		for(var r=1;r<=rinfo.max;r++){
@@ -228,8 +228,8 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------

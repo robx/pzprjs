@@ -452,10 +452,10 @@ pzprv3.createCommonClass('FileIO',
 		this.readLine();
 		this.rdata2Border(isques, this.getItemList(bd.qrows));
 
-		bd.areas.rinfo.reset();
+		bd.rooms.reset();
 	},
 	encodeAreaRoom_com : function(isques){
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var c=0;c<bd.cellmax;c++){
@@ -599,7 +599,7 @@ pzprv3.createCommonClass('FileIO',
 		}
 		this.rdata2Border(isques, rdata);
 
-		bd.areas.rinfo.reset();
+		bd.rooms.reset();
 	},
 	setRdataRect : function(rdata, i, sp){
 		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
@@ -609,12 +609,12 @@ pzprv3.createCommonClass('FileIO',
 		}
 	},
 	encodeSquareRoom_com : function(isques){
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.getclist(id).getRectSize();
-			var num = (isques ? bd.areas.rinfo.getTopOfRoom(id).qnum : -1);
+			var num = (isques ? bd.rooms.getTopOfRoom(id).qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
 		}
 	}

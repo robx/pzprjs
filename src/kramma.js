@@ -79,8 +79,8 @@ Board:{
 	qrows : 8
 },
 
-AreaManager:{
-	hasroom : true
+AreaRoomManager:{
+	enabled : true
 },
 
 "Menu@shwolf":{
@@ -220,7 +220,7 @@ AnsCheck:{
 			this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 		}
 
-		var rinfo = bd.areas.getRoomInfo();
+		var rinfo = bd.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			if(this.owner.pid!=='shwolf')
 				{ this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.');}
@@ -253,7 +253,7 @@ AnsCheck:{
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 				var cross = bd.getx(bx,by);
-				if(bd.areas.rinfo.bdcnt[cross.id]===2 && cross.getQnum()!==1){
+				if(bd.rooms.bdcnt[cross.id]===2 && cross.getQnum()!==1){
 					if(    !(cross.ub().getQans()===1 && cross.db().getQans()===1)
 						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
 					{

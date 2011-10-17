@@ -48,7 +48,7 @@ pzprv3.createCustoms('nagenawa', {
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.areas.rinfo.getCntOfRoomByCell(this));
+		return Math.min(this.maxnum, bd.rooms.getCntOfRoomByCell(this));
 	},
 	minnum : 0
 },
@@ -67,11 +67,8 @@ LineManager:{
 	isLineCross  : true
 },
 
-"AreaManager@nagenawa":{
-	hasroom    : true
-},
-
-"AreaRoomData@nagenawa":{
+"AreaRoomManager@nagenawa":{
+	enabled : true,
 	hastop : true
 },
 
@@ -231,7 +228,7 @@ AnsCheck:{
 			this.setAlert('黒マスの上に線が引かれています。','There is a line on the black cell.'); return false;
 		}
 
-		var rinfo = (this.owner.pid==='nagenawa' ? bd.areas.getRoomInfo() : null);
+		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
 		if( (this.owner.pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
 			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 		}
@@ -264,7 +261,7 @@ AnsCheck:{
 	},
 	checkAllLoopRect : function(){
 		var result = true;
-		var xinfo = bd.lines.getLineInfo();
+		var xinfo = bd.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
 			var blist = xinfo.getblist(r);
 			if(this.isLoopRect(blist)){ continue;}

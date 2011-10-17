@@ -270,10 +270,10 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
-		bd.areas.rinfo.reset();
+		bd.rooms.reset();
 		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.areas.rinfo.getTopOfRoom(r);
+			var ca = bstr.charAt(i), obj=bd.rooms.getTopOfRoom(r);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							  { obj.qnum = parseInt(ca,16);}
@@ -286,15 +286,15 @@ pzprv3.createCommonClass('Encode',
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
-			if(r > bd.areas.rinfo.max){ break;}
+			if(r > bd.rooms.max){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeRoomNumber16 : function(){
-		bd.areas.rinfo.reset();
+		bd.rooms.reset();
 		var count=0, cm="";
-		for(var r=1;r<=bd.areas.rinfo.max;r++){
-			var pstr = "", qn = bd.areas.rinfo.getTopOfRoom(r).qnum;
+		for(var r=1;r<=bd.rooms.max;r++){
+			var pstr = "", qn = bd.rooms.getTopOfRoom(r).qnum;
 
 			if     (qn>=    0 && qn<   16){ pstr =       qn.toString(16);}
 			else if(qn>=   16 && qn<  256){ pstr = "-" + qn.toString(16);}
@@ -392,7 +392,7 @@ pzprv3.createCommonClass('Encode',
 			}
 		}
 
-		if(!!bd.areas.rinfo){ bd.areas.rinfo.reset();}
+		bd.rooms.reset();
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){

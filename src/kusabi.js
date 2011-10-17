@@ -52,8 +52,8 @@ LineManager:{
 	isCenterLine : true
 },
 
-AreaManager:{
-	lineToArea : true
+AreaLineManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -126,7 +126,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.areas.getLareaInfo();
+		var linfo = bd.getLareaInfo();
 		if( !this.checkTripleNumber(linfo) ){
 			this.setAlert('3つ以上の丸がつながっています。','Three or more objects are connected.'); return false;
 		}

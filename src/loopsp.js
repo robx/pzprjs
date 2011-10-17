@@ -348,7 +348,7 @@ AnsCheck:{
 	},
 	checkAllLoops : function(func){
 		var result = true;
-		var linfo = bd.lines.getLineInfo();
+		var linfo = bd.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
 			var blist = linfo.getblist(r);
 			if(func(blist.cellinside())){ continue;}

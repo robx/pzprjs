@@ -51,11 +51,8 @@ Board:{
 	isborder : 1
 },
 
-AreaManager:{
-	hasroom    : true
-},
-
-AreaRoomData:{
+AreaRoomManager:{
+	enabled : true,
 	hastop : true
 },
 
@@ -141,7 +138,7 @@ AnsCheck:{
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
-		if( !this.checkRoomNumber(bd.areas.getRoomInfo()) ){
+		if( !this.checkRoomNumber(bd.getRoomInfo()) ){
 			this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 		}
 
@@ -164,7 +161,7 @@ AnsCheck:{
 			}
 			if(product==0){ continue;}
 
-			var cell = bd.areas.rinfo.getTopOfRoom(id);
+			var cell = bd.rooms.getTopOfRoom(id);
 			if(product!=cell.getQnum()){
 				if(this.inAutoCheck){ return false;}
 				clist.seterr(1);

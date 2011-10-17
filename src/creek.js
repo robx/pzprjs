@@ -41,8 +41,8 @@ Board:{
 	iscross : 2
 },
 
-AreaManager:{
-	checkWhiteCell : true
+AreaWhiteManager:{
+	enabled : true
 },
 
 Menu:{
@@ -108,7 +108,7 @@ AnsCheck:{
 		if( !this.checkQnumCross(1) ){
 			this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
 		}
-		if( !this.checkOneArea( bd.areas.getWCellInfo() ) ){
+		if( !this.checkOneArea( bd.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 		if( !this.checkQnumCross(2) ){

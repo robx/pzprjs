@@ -55,12 +55,14 @@ Board:{
 	}
 },
 
-AreaManager:{
-	checkBlackCell : true,
-	checkWhiteCell : true
+AreaBlackManager:{
+	enabled : true
 },
-"AreaManager@mochikoro":{
-	checkBlackCell : false
+"AreaBlackManager@mochikoro":{
+	enabled : false
+},
+AreaWhiteManager:{
+	enabled : true
 },
 
 Menu:{
@@ -151,7 +153,7 @@ AnsCheck:{
 			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 		}
 
-		if(this.owner.pid!=='mochikoro'){ var binfo = bd.areas.getBCellInfo();}
+		if(this.owner.pid!=='mochikoro'){ var binfo = bd.getBCellInfo();}
 		if( (this.owner.pid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
 			this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 		}
@@ -164,7 +166,7 @@ AnsCheck:{
 			this.setAlert('孤立した白マスのブロックがあります。','White cells are devided.'); return false;
 		}
 
-		var winfo = bd.areas.getWCellInfo();
+		var winfo = bd.getWCellInfo();
 		if( (mochi) && !this.checkAreaRect(winfo) ){
 			this.setAlert('四角形でない白マスのブロックがあります。','There is a block of white cells that is not rectangle.'); return false;
 		}

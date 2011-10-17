@@ -99,8 +99,13 @@ Board:{
 	isborder : 1,
 	isexcell : 1,
 
+	initialize2 : function(){
+		this.SuperFunc.initialize2.call(this);
+		this.tiles = this.owner.newInstance('AreaTriTileManager');
+	},
+
 	getTileInfo : function(){
-		var tinfo = this.owner.newInstance('AreaTriTileData').getAreaInfo();
+		var tinfo = this.tiles.getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
 			var d = tinfo.getclist(r).getRectSize();
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
@@ -116,11 +121,9 @@ Board:{
 	}
 },
 
-AreaManager:{
-	hasroom : true
-},
-
-"AreaTriTileData:AreaBorderData":{
+"AreaTriTileManager:AreaBorderManager":{
+	enabled : true,
+	relation : ['cell','border'],
 	isvalid : function(cell){ return (!cell.is51cell());},
 	bdfunc : function(border){ return border.isBorder();}
 },
