@@ -201,7 +201,7 @@ Graphic:{
 	drawFutons : function(){
 		var g = this.vinc('cell_back', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
 
-		var inputting=(!!mv.mouseCell && !mv.mouseCell.isnull && mv.firstPoint.valid());
+		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid());
 		if(inputting){ // ふとん入力中
 			tc  = mv.mouseCell;
 			adj = mv.currentTargetADJ();
@@ -229,7 +229,7 @@ Graphic:{
 	drawPillows : function(){
 		var g = this.vinc('cell_pillow', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
 
-		var inputting=(!!mv.mouseCell && !mv.mouseCell.isnull && mv.firstPoint.valid());
+		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.valid());
 		if(inputting){ // ふとん入力中
 			tc  = mv.mouseCell;
 			adj = mv.currentTargetADJ();
@@ -264,7 +264,7 @@ Graphic:{
 	getBorderColor : function(border){
 		var isdraw = border.isBorder(), mv = this.owner.mouse;
 
-		if(!!mv.mouseCell && !mv.mouseCell.isnull && mv.firstPoint.valid()){ // ふとん入力中
+		if(!mv.mouseCell.isnull && mv.firstPoint.valid()){ // ふとん入力中
 			var cc1 = border.sidecell[0], cc2 = border.sidecell[1];
 			var tc = mv.mouseCell, adj = mv.currentTargetADJ();
 			var istc  = (cc1===tc  || cc2===tc);

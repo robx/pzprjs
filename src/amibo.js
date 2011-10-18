@@ -30,7 +30,7 @@ MouseEvent:{
 		var input=false;
 
 		// 初回はこの中に入ってきます。
-		if(!this.mouseCell || this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
+		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
 		// 黒マス上なら何もしない
 		else if(cell.isNum()){ }
 		// まだ入力されていない(1つめの入力の)場合

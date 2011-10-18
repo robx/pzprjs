@@ -67,6 +67,13 @@ pzprv3.createCommonClass('Board',
 		// エラー表示中かどうか
 		this.haserror = false;
 
+		// 空オブジェクト
+		this.nullobj = this.owner.newInstance('BoardPiece');
+		this.emptycell   = this.owner.newInstance('Cell');
+		this.emptycross  = this.owner.newInstance('Cross');
+		this.emptyborder = this.owner.newInstance('Border');
+		this.emptyexcell = this.owner.newInstance('EXCell');
+
 		// 補助オブジェクト
 		this.disrec = 0;
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
@@ -87,12 +94,6 @@ pzprv3.createCommonClass('Board',
 		this.cross  = this.owner.newInstance('CrossList');
 		this.border = this.owner.newInstance('BorderList');
 		this.excell = this.owner.newInstance('EXCellList');
-
-		this.nullobj = this.owner.newInstance('BoardPiece');
-		this.emptycell   = this.owner.newInstance('Cell');
-		this.emptycross  = this.owner.newInstance('Cross');
-		this.emptyborder = this.owner.newInstance('Border');
-		this.emptyexcell = this.owner.newInstance('EXCell');
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
