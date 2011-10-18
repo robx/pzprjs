@@ -108,6 +108,7 @@ Graphic:{
 		if(this.owner.pid==='lits'){
 			this.gridcolor = "rgb(48, 48, 48)";
 			this.cellcolor = "rgb(96, 96, 96)";
+			this.errcolor2 = "rgb(32, 32, 255)";
 			this.setBGCellColorFunc('qans2');
 		}
 		else if(this.owner.pid==='norinori'){

@@ -168,18 +168,16 @@ Board:{
 	},
 
 	allclear : function(isrec){
-		this.SuperFunc.allclear.call(this,isrec);
-
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){
 				this.owner.painter.eraseSegment1(seglist[i]);
 			}
 		}
+
+		this.SuperFunc.allclear.call(this,isrec);
 	},
 	ansclear : function(){
-		this.SuperFunc.ansclear.call(this);
-
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){
@@ -187,16 +185,18 @@ Board:{
 				this.segs.removeSegment(seglist[i]);
 			}
 		}
+
+		this.SuperFunc.ansclear.call(this);
 	},
 	errclear : function(){
 		if(!this.haserror){ return;}
-
-		this.SuperFunc.errclear.call(this);
 
 		if(!!this.segs){
 			var seglist = this.segs.getallsegment();
 			for(var i=0;i<seglist.length;i++){ seglist[i].error=0;}
 		}
+
+		this.SuperFunc.errclear.call(this);
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
@@ -1108,7 +1108,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(shortid!==null){
 			if(this.owner.getConfig('irowake')){
 				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
-				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
+				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
 				this.owner.painter.repaintSegments(seglist);
 			}
 		}
@@ -1163,8 +1163,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			}
 		}
 		if(this.owner.getConfig('irowake')){
-			var idlist = this.idlist[newlongid], seglist = this.owner.newInstance('SegmentList');
-			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[id]);}}
+			var seglist = this.owner.newInstance('SegmentList');
+			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
 			this.owner.painter.repaintSegments(seglist);
 		}
 	},
