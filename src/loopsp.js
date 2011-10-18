@@ -212,7 +212,7 @@ Encode:{
 	},
 
 	decodeLoopsp : function(){
-		var c=0, bstr = this.outbstr;
+		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj = bd.cell[c];
 
@@ -224,13 +224,13 @@ Encode:{
 			else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
 
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeLoopsp : function(){
-		var cm="", pstr="", count=0;
+		var cm="", pstr="", count=0, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 			if     (qn===-2)       { pstr = ".";}
@@ -326,6 +326,7 @@ AnsCheck:{
 		});
 	},
 	checkNumberLoop : function(){
+		var bd = this.owner.board;
 		return this.checkAllLoops(function(cells){
 			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
 			if(sublist.length===0){ return true;}
@@ -347,7 +348,7 @@ AnsCheck:{
 		});
 	},
 	checkAllLoops : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var linfo = bd.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
 			var blist = linfo.getblist(r);

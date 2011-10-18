@@ -145,7 +145,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.getLareaInfo();
+		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkTripleNumber(linfo) ){
 			this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
 		}
@@ -174,7 +174,7 @@ AnsCheck:{
 	check1Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()===1 && cell.noNum());}); },
 	check2Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()>= 2 && cell.isNum());}); },
 	checkLine : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!func(cell)){ continue;}

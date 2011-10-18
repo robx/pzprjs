@@ -17,8 +17,8 @@ pzprv3.createCommonClass('LineManager',
 		this.enabled = (this.isCenterLine || this.borderAsLine);
 
 		if(this.enabled){
-			bd.validinfo.line.push(this);
-			bd.validinfo.all.push(this);
+			this.owner.board.validinfo.line.push(this);
+			this.owner.board.validinfo.all.push(this);
 		}
 	},
 	// relation : ['line'],
@@ -35,12 +35,13 @@ pzprv3.createCommonClass('LineManager',
 	typeC : 'C',
 
 	//---------------------------------------------------------------------------
-	// bd.lines.reset()       lcnts等の変数の初期化を行う
-	// bd.lines.rebuild()     既存の情報からデータを再設定する
-	// bd.lines.newIrowake()  線の情報が再構築された際、線に色をつける
+	// lines.reset()       lcnts等の変数の初期化を行う
+	// lines.rebuild()     既存の情報からデータを再設定する
+	// lines.newIrowake()  線の情報が再構築された際、線に色をつける
 	//---------------------------------------------------------------------------
 	reset : function(){
 		// lcnt, ltotal変数(配列)初期化
+		var bd = this.owner.board;
 		if(this.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
 			this.ltotal=[(bd.qcols*bd.qrows), 0, 0, 0, 0];
@@ -59,7 +60,7 @@ pzprv3.createCommonClass('LineManager',
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var blist = this.owner.newInstance('BorderList');
+		var bd = this.owner.board, blist = this.owner.newInstance('BorderList');
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
@@ -83,14 +84,14 @@ pzprv3.createCommonClass('LineManager',
 			var idlist = this.idlist[i];
 			if(idlist.length>0){
 				var newColor = this.owner.painter.getNewLineColor();
-				for(var n=0;n<idlist.length;n++){ bd.border[idlist[n]].color = newColor;}
+				for(var n=0;n<idlist.length;n++){ this.owner.board.border[idlist[n]].color = newColor;}
 			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.lines.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
-	// bd.lines.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
+	// lines.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
+	// lines.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
 	//---------------------------------------------------------------------------
 	gettype : function(obj,border,isset){
 		var erase = (isset?0:1);
@@ -111,16 +112,16 @@ pzprv3.createCommonClass('LineManager',
 		//   │ ←id                    
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
-		return !bd.getb( 2*obj.bx-border.bx, 2*obj.by-border.by ).isLine();
+		return !this.owner.board.getb( 2*obj.bx-border.bx, 2*obj.by-border.by ).isLine();
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.lines.setLineInfo()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// lines.setLineInfo()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	// 
-	// bd.lines.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                            できる場合の線idの再設定を行う
-	// bd.lines.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                            可能性がある場合の線idの再設定を行う
+	// lines.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
+	//                         できる場合の線idの再設定を行う
+	// lines.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                         可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLineInfo : function(border){
 		if(!this.enabled){ return;}
@@ -228,7 +229,7 @@ pzprv3.createCommonClass('LineManager',
 			// 色を同じにする
 			var blist = this.owner.newInstance('BorderList');
 			for(var i=0,len=longidlist.length;i<len;i++){
-				var border = bd.border[longidlist[i]];
+				var border = this.owner.board.border[longidlist[i]];
 				border.color = newColor;
 				blist.add(border);
 			}
@@ -288,8 +289,8 @@ pzprv3.createCommonClass('LineManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.lines.getbid()     自分に線が存在するものとして、自分に繋がる線(最大6箇所)を全て取得する
-	// bd.lines.reassignId() ひとつながりの線にlineidを設定する
+	// lines.getbid()     自分に線が存在するものとして、自分に繋がる線(最大6箇所)を全て取得する
+	// lines.reassignId() ひとつながりの線にlineidを設定する
 	//---------------------------------------------------------------------------
 	getbid : function(border){
 		var dx=((this.isCenterLine^border.isVert())?2:0), dy=(2-dx);	// (dx,dy) = 縦(2,0) or 横(0,2)
@@ -374,10 +375,10 @@ pzprv3.createCommonClass('LineManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// bd.lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
+	// lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		var info = this.owner.newInstance('AreaBorderInfo');
+		var bd = this.owner.board, info = this.owner.newInstance('AreaBorderInfo');
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.border[id].isLine()?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
@@ -397,7 +398,7 @@ pzprv3.createCommonClass('LineManager',
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
 	getBlist : function(id){
 		var idlist = this.idlist[id], blist = this.owner.newInstance('BorderList');
-		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ blist.add(this.owner.board.border[idlist[i]]);}
 		return blist;
 	}
 });
@@ -419,8 +420,8 @@ pzprv3.createCommonClass('AreaCellManager',
 
 		if(this.enabled){
 			for(var i=0;i<this.relation.length;i++){
-				bd.validinfo[this.relation[i]].push(this);
-				bd.validinfo.all.push(this);
+				this.owner.board.validinfo[this.relation[i]].push(this);
+				this.owner.board.validinfo.all.push(this);
 			}
 		}
 	},
@@ -445,8 +446,8 @@ pzprv3.createCommonClass('AreaCellManager',
 		if(!this.enabled){ return;}
 
 		var idlist = [];
-		for(var cc=0;cc<bd.cellmax;cc++){
-			this.cellinfo[cc] = this.getlink(bd.cell[cc]);
+		for(var cc=0;cc<this.owner.board.cellmax;cc++){
+			this.cellinfo[cc] = this.getlink(this.owner.board.cell[cc]);
 			this.id[cc] = 0;
 			idlist.push(cc);
 		}
@@ -499,7 +500,7 @@ pzprv3.createCommonClass('AreaCellManager',
 			if(idlist.length>0){
 				var newColor = this.owner.painter.getNewLineColor();
 				for(var n=0;n<idlist.length;n++){
-					bd.cell[idlist[n]].color = newColor;
+					this.owner.board.cell[idlist[n]].color = newColor;
 				}
 			}
 		}
@@ -572,7 +573,7 @@ pzprv3.createCommonClass('AreaCellManager',
 		}
 		else{
 			areaid = this.id[c2];
-			if(!!this.owner.painter.irowake){ cell.color = bd.cell[c2].color;}
+			if(!!this.owner.painter.irowake){ cell.color = this.owner.board.cell[c2].color;}
 		}
 		this[areaid].idlist.push(cell.id);
 		this.id[cell.id] = areaid;
@@ -610,14 +611,14 @@ pzprv3.createCommonClass('AreaCellManager',
 	},
 
 	getLongColor : function(cid){
-		var longColor = bd.cell[cid[0]].color;
+		var longColor = this.owner.board.cell[cid[0]].color;
 		// 周りで一番大きな線は？
 		if(cid.length>1){
 			var largeid = this.id[cid[0]];
 			for(var i=1;i<cid.length;i++){
 				if(this[largeid].idlist.length < this[this.id[cid[i]]].idlist.length){
 					largeid = this.id[cid[0]];
-					longColor = bd.cell[cid[i]].color;
+					longColor = this.owner.board.cell[cid[i]].color;
 				}
 			}
 		}
@@ -628,7 +629,7 @@ pzprv3.createCommonClass('AreaCellManager',
 		if(assign.length===1){
 			var idlist = this[assign[0]].idlist, clist = this.owner.newInstance('CellList');
 			for(var i=0,len=idlist.length;i<len;i++){
-				var cell = bd.cell[idlist[i]];
+				var cell = this.owner.board.cell[idlist[i]];
 				cell.color = longColor;
 				clist.add(cell);
 			}
@@ -649,7 +650,7 @@ pzprv3.createCommonClass('AreaCellManager',
 				var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
 				var idlist = this[assign[i]].idlist;
 				for(var n=0,len=idlist.length;n<len;n++){
-					var cell = bd.cell[idlist[n]];
+					var cell = this.owner.board.cell[idlist[n]];
 					cell.color = newColor;
 					clist.add(cell);
 				}
@@ -666,7 +667,7 @@ pzprv3.createCommonClass('AreaCellManager',
 		var assign = [];
 		for(var i=0;i<idlist.length;i++){
 			var cc = idlist[i];
-			this.id[cc] = (this.isvalid(bd.cell[cc])?0:null);
+			this.id[cc] = (this.isvalid(this.owner.board.cell[cc])?0:null);
 		}
 		for(var i=0;i<idlist.length;i++){
 			var cc = idlist[i];
@@ -685,7 +686,7 @@ pzprv3.createCommonClass('AreaCellManager',
 			this.id[cc] = newid;
 			this[newid].idlist.push(cc);
 
-			var cid = this.getcellaround(bd.cell[cc]);
+			var cid = this.getcellaround(this.owner.board.cell[cc]);
 			for(var i=0;i<cid.length;i++){
 				if(this.id[cid[i]]===0){ stack.push(cid[i]);}
 			}
@@ -696,7 +697,7 @@ pzprv3.createCommonClass('AreaCellManager',
 	// info.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getAreaInfo : function(){
-		var info = this.owner.newInstance('AreaCellInfo');
+		var bd = this.owner.board, info = this.owner.newInstance('AreaCellInfo');
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -717,7 +718,7 @@ pzprv3.createCommonClass('AreaCellManager',
 	getClist : function(areaid){
 		if(!this[areaid]){ alert(areaid);}
 		var idlist = this[areaid].idlist, clist = this.owner.newInstance('CellList');
-		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ clist.add(this.owner.board.cell[idlist[i]]);}
 		return clist;
 	}
 });
@@ -766,9 +767,9 @@ pzprv3.createCommonClass('AreaBorderManager:AreaCellManager',
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<this.owner.board.bdmax;id++){
 			this.isbd[id]=false;
-			this.setbd(bd.border[id]);
+			this.setbd(this.owner.board.border[id]);
 		}
 
 		pzprv3.core.AreaCellManager.prototype.rebuild.call(this);
@@ -876,6 +877,7 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 		if(!this.enabled){ return;}
 
 		/* 外枠のカウントをあらかじめ足しておく */
+		var bd = this.owner.board;
 		for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 			var c = (bx>>1)+(by>>1)*(bd.qcols+1);
 			var ischassis = (bd.isborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
@@ -897,7 +899,7 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 			if(cc1!==null){ this.bdcnt[cc1]+=(isbd?1:-1);}
 			if(cc2!==null){ this.bdcnt[cc2]+=(isbd?1:-1);}
 			this.isbd[border.id]=isbd;
-			if(border.id<bd.bdinside){ return true;}
+			if(border.id<this.owner.board.bdinside){ return true;}
 		}
 		return false;
 	},
@@ -959,7 +961,7 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 	// rooms.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
 	//--------------------------------------------------------------------------------
 	calcTopOfRoom : function(roomid){
-		var cc=null, bx=bd.maxbx, by=bd.maxby;
+		var bd=this.owner.board, cc=null, bx=bd.maxbx, by=bd.maxby;
 		var idlist = this[roomid].idlist;
 		for(var i=0;i<idlist.length;i++){
 			var cell = bd.cell[idlist[i]];
@@ -977,7 +979,7 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 		for(var r=1;r<=this.max;r++){
 			var val = -1, idlist = this[r].idlist, top = this.getTopOfRoom(r);
 			for(var i=0,len=idlist.length;i<len;i++){
-				var c = idlist[i], cell = bd.cell[c];
+				var c = idlist[i], cell = this.owner.board.cell[c];
 				if(this.id[c]===r && cell.qnum!==-1){
 					if(val===-1){ val = cell.qnum;}
 					if(top!==c){ cell.qnum = -1;}
@@ -1000,8 +1002,8 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 	getRoomID : function(cell){ return this.id[cell.id];},
 //	setRoomID : function(cell,val){ this.id[cell.id] = val;},
 
-	getTopOfRoomByCell : function(cell){ return bd.cell[this[this.id[cell.id]].top];},
-	getTopOfRoom       : function(id)  { return bd.cell[this[id].top];},
+	getTopOfRoomByCell : function(cell){ return this.owner.board.cell[this[this.id[cell.id]].top];},
+	getTopOfRoom       : function(id)  { return this.owner.board.cell[this[id].top];},
 
 	getCntOfRoomByCell : function(cell){ return this[this.id[cell.id]].idlist.length;}
 //	getCntOfRoom       : function(id)  { return this[id].idlist.length;},
@@ -1034,6 +1036,7 @@ pzprv3.createCommonClass('AreaLineManager:AreaBorderManager',
 		if(!this.enabled){ return;}
 
 		/* 外枠のカウントをあらかじめ足しておく */
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var bx=bd.cell[c].bx, by=bd.cell[c].by;
 			this.bdcnt[c]=0;
@@ -1054,7 +1057,7 @@ pzprv3.createCommonClass('AreaLineManager:AreaBorderManager',
 			if(cc1!==null){ this.bdcnt[cc1]+=(isbd?1:-1);}
 			if(cc2!==null){ this.bdcnt[cc2]+=(isbd?1:-1);}
 			this.isbd[border.id]=isbd;
-			if(border.id<bd.bdinside){ return true;}
+			if(border.id<this.owner.board.bdinside){ return true;}
 		}
 		return false;
 	},

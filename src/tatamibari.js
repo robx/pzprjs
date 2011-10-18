@@ -143,14 +143,14 @@ Encode:{
 	},
 
 	decodeTatamibari : function(){
-		var c=0, bstr = this.outbstr;
+		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var ca = bstr.charAt(i), cell = bd.cell[c];
 
-			if     (ca==='.'){ bd.cell[c].qnum = -2;}
-			else if(ca==='1'){ bd.cell[c].qnum = 2;}
-			else if(ca==='2'){ bd.cell[c].qnum = 3;}
-			else if(ca==='3'){ bd.cell[c].qnum = 1;}
+			if     (ca==='.'){ cell.qnum = -2;}
+			else if(ca==='1'){ cell.qnum = 2;}
+			else if(ca==='2'){ cell.qnum = 3;}
+			else if(ca==='3'){ cell.qnum = 1;}
 			else if(ca>='g' && ca<='z'){ c+=(parseInt(ca,36)-16);}
 			else{ c++;}
 
@@ -161,9 +161,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTatamibari : function(){
-		var count, pass, cm="";
-
-		count=0;
+		var count=0, pass, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 			if     (qn===-2){ pstr = ".";}
@@ -212,7 +210,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border lines,'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
 		}

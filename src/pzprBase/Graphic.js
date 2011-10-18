@@ -158,10 +158,11 @@ pzprv3.createCommonClass('Graphic',
 	// pc.setcellsize()      pc.cw, pc.chのサイズを設定する
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
+		var o = this.owner;
 		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
-		var cols = (bd.maxbx-bd.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
-		var rows = (bd.maxby-bd.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
-		if(this.owner.pid==='box'){ cols++; rows++;}
+		var cols = (o.board.maxbx-o.board.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
+		var rows = (o.board.maxby-o.board.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
+		if(o.pid==='box'){ cols++; rows++;}
 
 		this.setcellsize(cols,rows);
 
@@ -174,21 +175,21 @@ pzprv3.createCommonClass('Graphic',
 		// 盤面のセルID:0が描画される左上の位置の設定
 		var x0, y0; x0 = y0 = (this.cw*this.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!bd.isexcell){ x0 += this.cw; y0 += this.ch;}
+		if(!!o.board.isexcell){ x0 += this.cw; y0 += this.ch;}
 
 		// Canvasのサイズ・Offset変更
 		this.currentContext.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
 		this.currentContext.translate(x0, y0);
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
-		var rect = this.owner.menu.getRect(pzprv3.getEL('divques'));
+		var rect = o.menu.getRect(pzprv3.getEL('divques'));
 		this.pageX = (x0 + rect.left);
 		this.pageY = (y0 + rect.top);
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
 
-		this.owner.key.resizepanel();
+		o.key.resizepanel();
 	},
 	setcellsize : function(cols, rows){
 		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
@@ -211,7 +212,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
-			var ws_tmp = ws.base+(ws.limit-ws.base)*((bd.qcols-ci[0])/(ci[1]-ci[0]));
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((this.owner.board.qcols-ci[0])/(ci[1]-ci[0]));
 			mwidth = wwidth*ws_tmp-4;
 			this.cw = this.ch = (mwidth/cols)|0; // 外枠ぎりぎりにする
 		}
@@ -292,6 +293,7 @@ pzprv3.createCommonClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1>x2 || y1>y2){ return;}
 
+		var bd = this.owner.board;
 						   this.range.cells   = bd.cellinside(x1,y1,x2,y2);
 		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
 		if(!!bd.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
@@ -311,6 +313,7 @@ pzprv3.createCommonClass('Graphic',
 		if(this.range.y2 < y2){ this.range.y2 = y2;}
 	},
 	resetRange : function(){
+		var bd = this.owner.board;
 		this.range.x1 = bd.maxbx+1;
 		this.range.y1 = bd.maxby+1;
 		this.range.x2 = bd.minbx-1;
@@ -331,6 +334,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 	paintAll : function(){
 		if(this.suspended){ this.suspendedAll = true;}
+		var bd = this.owner.board;
 		this.paintRange(bd.minbx-1,bd.minby-1,bd.maxbx+1,bd.maxby+1);
 	},
 
@@ -966,10 +970,10 @@ pzprv3.createCommonClass('Graphic',
 			var px1 = px+lm+1, px2 = px+cw-lm-1;
 			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
-			// この関数を呼ぶ場合は全てbd.isborder===1なので
+			// この関数を呼ぶ場合は全てisborder===1なので
 			// 外枠用の考慮部分を削除しています。
-			var UPin = (cell.by>2), DNin = (cell.by<2*bd.qrows-2);
-			var LTin = (cell.bx>2), RTin = (cell.bx<2*bd.qcols-2);
+			var UPin = (cell.by>2), DNin = (cell.by<2*this.owner.board.qrows-2);
+			var LTin = (cell.bx>2), RTin = (cell.bx<2*this.owner.board.qcols-2);
 
 			var isUP = (!UPin || cell.ub().ques===1);
 			var isDN = (!DNin || cell.db().ques===1);
@@ -1025,7 +1029,7 @@ pzprv3.createCommonClass('Graphic',
 			if(!!color){
 				g.fillStyle = color;
 				if(this.vnop(header+border.id,this.FILL)){
-					var isvert = (bd.lines.isCenterLine^border.isVert());
+					var isvert = (this.owner.board.lines.isCenterLine^border.isVert());
 					var px = border.bx*this.bw, py = border.by*this.bh;
 					if(isvert){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
 					else      { g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
@@ -1373,13 +1377,13 @@ pzprv3.createCommonClass('Graphic',
 			var excell = exlist[i], id = excell.id;
 			var px = (excell.bx-1)*this.bw, py = (excell.by-1)*this.bh;
 
-			if(excell.by===-1 && excell.bx<bd.maxbx){
+			if(excell.by===-1 && excell.bx<this.owner.board.maxbx){
 				if(this.vnop(headers[0]+id,this.NONE)){
 					g.fillRect(px+this.cw, py, 1, this.ch);
 				}
 			}
 
-			if(excell.bx===-1 && excell.by<bd.maxby){
+			if(excell.bx===-1 && excell.by<this.owner.board.maxby){
 				if(this.vnop(headers[1]+id,this.NONE)){
 					g.fillRect(px, py+this.ch, this.cw, 1);
 				}
@@ -1397,7 +1401,7 @@ pzprv3.createCommonClass('Graphic',
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
-				var obj = bd.getobj(bx,by);
+				var obj = this.owner.board.getobj(bx,by);
 				if(!obj.isnull){ this.drawNumbersOn51_1(obj);}
 			}
 		}
@@ -1482,7 +1486,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------
 	drawDashedCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges');
+		var g = this.vinc('centerline', 'crispEdges'), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -1524,7 +1528,7 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 
 	drawGrid : function(haschassis, isdraw){
-		var g = this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges'), bd = this.owner.board;
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1549,7 +1553,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawDashedGrid : function(haschassis){
-		var g = this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges'), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -1601,7 +1605,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.drawChassis_ex1() bd.isexcell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawChassis : function(){
-		var g = this.vinc('chassis', 'crispEdges');
+		var g = this.vinc('chassis', 'crispEdges'), bd = this.owner.board;
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1626,7 +1630,7 @@ pzprv3.createCommonClass('Graphic',
 		}
 	},
 	drawChassis_ex1 : function(boldflag){
-		var g = this.vinc('chassis_ex1', 'crispEdges');
+		var g = this.vinc('chassis_ex1', 'crispEdges'), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<=0){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -1732,7 +1736,7 @@ pzprv3.createCommonClass('Graphic',
 				var g = this.vinc('board_base', 'crispEdges');
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
 				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(0, 0, bd.qcols*this.cw, bd.qrows*this.ch);
+					g.fillRect(0, 0, this.owner.board.qcols*this.cw, this.owner.board.qrows*this.ch);
 				}
 			}
 		);

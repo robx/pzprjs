@@ -10,7 +10,7 @@ MouseEvent:{
 			this.inputborder();
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.emptycell;
+			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -183,7 +183,7 @@ AnsCheck:{
 			this.setAlert('同じ記号がタテヨコナナメに隣接しています。','Same marks are adjacent.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}) ){
 			this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
 		}
@@ -192,7 +192,7 @@ AnsCheck:{
 			this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getNumberInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getNumberInfo() ) ){
 			this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
 		}
 
@@ -204,7 +204,7 @@ AnsCheck:{
 	},
 
 	checkAroundMarks : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}

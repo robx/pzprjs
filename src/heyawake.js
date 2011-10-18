@@ -30,7 +30,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		var d = bd.rooms.getClistByCell(this).getRectSize();
+		var d = this.owner.board.rooms.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}
@@ -113,17 +113,18 @@ Encode:{
 	},
 
 	decodeHeyaApp : function(){
-		var c=0, rdata=[];
-		while(c<bd.cellmax){ rdata[c]=null; c++;}
+		var c=0, rdata=[], bd = this.owner.board;
+		for(var c=0;c<bd.cellmax;c++){ rdata[c]=null;}
 
 		var i=0, inp=this.outbstr.split("/");
 		for(var c=0;c<bd.cellmax;c++){
 			if(rdata[c]!==null){ continue;}
 
+			var cell = bd.cell[c];
 			if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-				if(RegExp.$1.length>0){ bd.cell[c].qnum = parseInt(RegExp.$1);}
-				var x1 = bd.cell[c].bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
-				var y1 = bd.cell[c].by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
+				if(RegExp.$1.length>0){ cell.qnum = parseInt(RegExp.$1);}
+				var x1 = cell.bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
+				var y1 = cell.by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
 				this.owner.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;
@@ -131,7 +132,7 @@ Encode:{
 		this.owner.fio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
-		var barray=[], rinfo=bd.getRoomInfo();
+		var barray=[], bd=this.owner.board, rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.getclist(id).getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
@@ -172,11 +173,11 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){
 			this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
 		}
@@ -202,7 +203,7 @@ AnsCheck:{
 			var clist = rinfo.getclist(r), d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], cell2 = bd.getc(sx-cell.bx, sy-cell.by);
+				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isBlack() ^ cell2.isBlack()){
 					if(this.inAutoCheck){ return false;}
 					clist.seterr(1);
@@ -214,7 +215,7 @@ AnsCheck:{
 	},
 
 	isBorderCount : function(keycellpos, clist){
-		var d = clist.getRectSize(), count = 0, bx, by;
+		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;
 		if(d.x1===d.x2){
 			bx = d.x1;
 			for(by=d.y1+1;by<=d.y2-1;by+=2){

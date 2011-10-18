@@ -37,7 +37,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.rooms.getCntOfRoomByCell(this));
+		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Board:{
@@ -123,7 +123,7 @@ AnsCheck:{
 			this.setAlert('交差している線があります。','There is a crossing line.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkRoom2( rinfo ) ){
 			this.setAlert('線が１つの国を２回以上通っています。','A line passes a country twice or more.'); return false;
 		}

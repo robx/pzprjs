@@ -26,7 +26,7 @@ MouseEvent:{
 			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
 
 			var d = border.getlinesize();
-			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<borders.length;i++){
 				if     (this.inputData===1){ borders[i].setBorder();}
 				else if(this.inputData===0){ borders[i].removeBorder();}
@@ -177,11 +177,12 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(this.owner.pid==='kramma'){
+		var o=this.owner, bd=o.board;
+		if(o.pid==='kramma'){
 			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ this.owner.pid='kramman'; break;}
+				if(bd.cross[c].qnum===1){ o.pid='kramman'; break;}
 			}
-			this.owner.menu.displayDesign();
+			o.menu.displayDesign();
 		}
 	}
 },
@@ -220,7 +221,7 @@ AnsCheck:{
 			this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			if(this.owner.pid!=='shwolf')
 				{ this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.');}
@@ -249,7 +250,7 @@ AnsCheck:{
 	check1st : function(){ return (this.owner.pid==='kramma') || this.checkLcntCross(1,0);},
 
 	checkLcntCurve : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 				var cross = bd.getx(bx,by);
@@ -269,7 +270,7 @@ AnsCheck:{
 
 	// ヤギとオオカミ用
 	checkLineChassis : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var lines = [];
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
 

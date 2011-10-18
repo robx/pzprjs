@@ -55,7 +55,7 @@ pzprv3.createCoreClass('Owner',
 		this.classes = pzprv3.custom[pzl.id];	// クラスを取得
 
 		// クラス初期化
-		bd  = this.newInstance('Board');		// 盤面オブジェクト
+		this.board   = this.newInstance('Board');		// 盤面オブジェクト
 		this.checker = this.newInstance('AnsCheck');	// 正解判定オブジェクト
 		this.painter = this.newInstance('Graphic');		// 描画系オブジェクト
 
@@ -82,7 +82,7 @@ pzprv3.createCoreClass('Owner',
 		this.setEvents();
 
 		// 盤面保持用データ生成処理
-		bd.initialize2();
+		this.board.initialize2();
 
 		// URL・ファイルデータの読み込み
 		this.decodeBoardData(pzl);
@@ -135,7 +135,7 @@ pzprv3.createCoreClass('Owner',
 		}
 		// 何もないとき
 		else{
-			bd.initBoardSize(bd.qcols,bd.qrows);
+			this.board.initBoardSize();
 			this.painter.resize_canvas();
 		}
 		this.painter.unsuspend();

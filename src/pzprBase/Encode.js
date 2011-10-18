@@ -31,9 +31,9 @@ pzprv3.createCommonClass('Encode',
 	//---------------------------------------------------------------------------
 	pzlinput : function(pzl){
 		if(pzl.type===void 0){ pzl.type=k.PZPRV3;}
-		var dat = pzprv3.parseURLData(pzl);
+		var dat = pzprv3.parseURLData(pzl), o = this.owner;
 
-		bd.initBoardSize(dat.cols, dat.rows);
+		o.board.initBoardSize(dat.cols, dat.rows);
 
 		if(!!dat.bstr){
 			this.pflag = dat.pflag;
@@ -43,8 +43,8 @@ pzprv3.createCommonClass('Encode',
 				this.pzlimport(pzl.type);
 				break;
 			case k.KANPEN:
-				this.owner.fio.lineseek = 0;
-				this.owner.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
+				o.fio.lineseek = 0;
+				o.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
 			case k.HEYAAPP:
@@ -54,12 +54,12 @@ pzprv3.createCommonClass('Encode',
 			}
 		}
 
-		bd.resetInfo();
-		this.owner.painter.resize_canvas();
+		o.board.resetInfo();
+		o.painter.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===k.KANPEN && this.owner.pid=='lits'){ type = k.KANPENP;}
-		var size='', ispflag=false;
+		var size='', ispflag=false, col = this.owner.board.qcols, row = this.owner.board.qrows;
 
 		this.outpflag = '';
 		this.outsize = '';
@@ -68,13 +68,13 @@ pzprv3.createCommonClass('Encode',
 		switch(type){
 		case k.PZPRV3: case k.PZPRV3E:
 			this.pzlexport(k.PZPRV3);
-			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
+			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
 		case k.PZPRAPP: case k.KANPENP:
 			this.pzlexport(k.PZPRAPP);
-			size = (!this.outsize ? [bd.qcols,bd.qrows].join('/') : this.outsize);
+			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
@@ -82,12 +82,12 @@ pzprv3.createCommonClass('Encode',
 			this.owner.fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = this.owner.fio.datastr.replace(/ /g, "_");
-			size = (!this.outsize ? [bd.qrows,bd.qcols].join('/') : this.outsize);
+			size = (!this.outsize ? [row,col].join('/') : this.outsize);
 			break;
 
 		case k.HEYAAPP:
 			this.encodeHeyaApp();
-			size = [bd.qcols,bd.qrows].join('x');
+			size = [col,row].join('x');
 			break;
 
 		default:
@@ -111,14 +111,14 @@ pzprv3.createCommonClass('Encode',
 	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cell : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cell[c], ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ obj.qnum = parseInt(ca,16);}
-			else if(this.include(ca,"5","9")){ obj.qnum = parseInt(ca,16)-5;  c++; }
-			else if(this.include(ca,"a","e")){ obj.qnum = parseInt(ca,16)-10; c+=2;}
+			var cell = bd.cell[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ cell.qnum = parseInt(ca,16);}
+			else if(this.include(ca,"5","9")){ cell.qnum = parseInt(ca,16)-5;  c++; }
+			else if(this.include(ca,"a","e")){ cell.qnum = parseInt(ca,16)-10; c+=2;}
 			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
-			else if(ca=="."){ obj.qnum=-2;}
+			else if(ca=="."){ cell.qnum=-2;}
 
 			c++;
 			if(c>=bd.cellmax){ break;}
@@ -126,7 +126,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cell : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
@@ -151,14 +151,14 @@ pzprv3.createCommonClass('Encode',
 	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cross : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cross[c], ca = bstr.charAt(i);
-			if     (this.include(ca,"0","4")){ obj.qnum = parseInt(ca,16);}
-			else if(this.include(ca,"5","9")){ obj.qnum = parseInt(ca,16)-5;  c++; }
-			else if(this.include(ca,"a","e")){ obj.qnum = parseInt(ca,16)-10; c+=2;}
+			var cross = bd.cross[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"0","4")){ cross.qnum = parseInt(ca,16);}
+			else if(this.include(ca,"5","9")){ cross.qnum = parseInt(ca,16)-5;  c++; }
+			else if(this.include(ca,"a","e")){ cross.qnum = parseInt(ca,16)-10; c+=2;}
 			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
-			else if(ca=="."){ obj.qnum=-2;}
+			else if(ca=="."){ cross.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}
@@ -166,7 +166,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cross : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
@@ -191,12 +191,12 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeNumber10()  quesが0～9までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber10 : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cell[c], ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
-			if     (ca == '.')				 { obj.qnum = -2;}
-			else if(this.include(ca,"0","9")){ obj.qnum = parseInt(ca,10);}
+			if     (ca == '.')				 { cell.qnum = -2;}
+			else if(this.include(ca,"0","9")){ cell.qnum = parseInt(ca,10);}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
@@ -205,7 +205,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber10 : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
@@ -226,17 +226,17 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber16 : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cell[c], ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { obj.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
-			else if(ca == '+'){ obj.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
-			else if(ca == '='){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
-			else if(ca == '%'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
-			else if(ca == '.'){ obj.qnum = -2;}
+							  { cell.qnum = parseInt(ca,16);}
+			else if(ca == '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
+			else if(ca == '+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
+			else if(ca == '='){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
+			else if(ca == '%'){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
+			else if(ca == '.'){ cell.qnum = -2;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
@@ -245,7 +245,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16 : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum;
 
@@ -270,19 +270,19 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
+		var r=1, i=0, bstr = this.outbstr, bd = this.owner.board;
 		bd.rooms.reset();
-		var r=1, i=0, bstr = this.outbstr;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.rooms.getTopOfRoom(r);
+			var ca = bstr.charAt(i), top=bd.rooms.getTopOfRoom(r);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { obj.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16);       i+=2;}
-			else if(ca == '+'){ obj.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
-			else if(ca == '='){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
-			else if(ca == '%'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
-			else if(ca == '*'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
-			else if(ca == '$'){ obj.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
+							  { top.qnum = parseInt(ca,16);}
+			else if(ca == '-'){ top.qnum = parseInt(bstr.substr(i+1,2),16);       i+=2;}
+			else if(ca == '+'){ top.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
+			else if(ca == '='){ top.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
+			else if(ca == '%'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
+			else if(ca == '*'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
+			else if(ca == '$'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
@@ -291,8 +291,8 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeRoomNumber16 : function(){
+		var count=0, cm="", bd = this.owner.board;
 		bd.rooms.reset();
-		var count=0, cm="";
 		for(var r=1;r<=bd.rooms.max;r++){
 			var pstr = "", qn = bd.rooms.getTopOfRoom(r).qnum;
 
@@ -318,19 +318,19 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeArrowNumber16()  矢印付きquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeArrowNumber16 : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[c];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
 			if(this.include(ca,"0","4")){
 				var ca1 = bstr.charAt(i+1);
-				obj.qdir = parseInt(ca,16);
-				obj.qnum = (ca1!="." ? parseInt(ca1,16) : -2);
+				cell.qdir = parseInt(ca,16);
+				cell.qnum = (ca1!="." ? parseInt(ca1,16) : -2);
 				i++;
 			}
 			else if(this.include(ca,"5","9")){
-				obj.qdir = parseInt(ca,16)-5;
-				obj.qnum = parseInt(bstr.substr(i+1,2),16);
+				cell.qdir = parseInt(ca,16)-5;
+				cell.qnum = parseInt(bstr.substr(i+1,2),16);
 				i+=2;
 			}
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-10);}
@@ -341,7 +341,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeArrowNumber16 : function(){
-		var cm = "", count = 0;
+		var cm = "", count = 0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if     (qn===-2)        { pstr=(dir  )+".";}
@@ -363,6 +363,7 @@ pzprv3.createCommonClass('Encode',
 	//---------------------------------------------------------------------------
 	decodeBorder : function(){
 		var pos1, pos2, bstr = this.outbstr, id, twi=[16,8,4,2,1];
+		var bd = this.owner.board;
 
 		if(bstr){
 			pos1 = Math.min(((((bd.qcols-1)*bd.qrows+4)/5)|0)     , bstr.length);
@@ -396,9 +397,9 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(pos2);
 	},
 	encodeBorder : function(){
-		var cm="", twi=[16,8,4,2,1], num, pass;
+		var cm="", twi=[16,8,4,2,1], num = 0, pass = 0;
+		var bd = this.owner.board;
 
-		num = 0; pass = 0;
 		for(var id=0;id<(bd.qcols-1)*bd.qrows;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
@@ -420,7 +421,8 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeCrossMark() 黒点をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
-		var cc=0, i=0, bstr = this.outbstr, cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var cp=(bd.iscross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
@@ -441,7 +443,8 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
-		var cm="", count=0, cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var cm="", count=0, bd = this.owner.board;
+		var cp=(bd.iscross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(var c=0,max=cols*rows;c<max;c++){
 			var pstr="";
@@ -464,6 +467,7 @@ pzprv3.createCommonClass('Encode',
 	// enc.encodeCircle() 白丸・黒丸をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCircle : function(){
+		var bd = this.owner.board;
 		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.qcols*bd.qrows);
 		var pos = (bstr ? Math.min(((bd.qcols*bd.qrows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
@@ -479,6 +483,7 @@ pzprv3.createCommonClass('Encode',
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeCircle : function(){
+		var bd = this.owner.board;
 		var cm="", num=0, pass=0, tri=[9,3,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].qnum>0){ pass+=(bd.cell[c].qnum*tri[num]);}
@@ -494,7 +499,7 @@ pzprv3.createCommonClass('Encode',
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(){
-		var bstr = this.outbstr, c=0;
+		var bstr = this.outbstr, c=0, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca);}

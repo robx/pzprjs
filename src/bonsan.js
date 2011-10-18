@@ -58,7 +58,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.max(bd.qcols,bd.qrows)-1;
+		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 	},
 	minnum : 0,
 
@@ -131,11 +131,12 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(this.owner.pid==='bonsan'){
+		var o=this.owner, bd=o.board;
+		if(o.pid==='bonsan'){
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ this.owner.pid='heyabon'; break;}
+				if(bd.border[id].ques===1){ o.pid='heyabon'; break;}
 			}
-			this.owner.menu.displayDesign();
+			o.menu.displayDesign();
 		}
 	}
 },
@@ -171,7 +172,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = false;
-		var linfo = bd.getLareaInfo();
+		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('○が繋がっています。','There are connected circles.'); return false;
 		}
@@ -186,8 +187,8 @@ AnsCheck:{
 			this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
-		bd.searchMovedPosition(linfo);
+		var rinfo = this.owner.board.getRoomInfo();
+		this.owner.board.searchMovedPosition(linfo);
 		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo) ){
 			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
 		}
@@ -211,7 +212,7 @@ AnsCheck:{
 	},
 
 	checkLineOverLetter : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){
@@ -230,7 +231,7 @@ AnsCheck:{
 			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.base.isNum() ^ bd.getc(d.xx-cell.bx, d.yy-cell.by).base.isNum()){
+				if(cell.base.isNum() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).base.isNum()){
 					clist.filter(function(cell){ return cell.base.isNum();}).seterr(1);
 					return false;
 				}

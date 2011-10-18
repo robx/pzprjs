@@ -161,7 +161,7 @@ Encode:{
 	},
 
 	decodeLITS_old : function(){
-		var bstr = this.outbstr;
+		var bstr = this.outbstr, bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
@@ -200,7 +200,7 @@ FileIO:{
 			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);}) ){
 			this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
 		}
@@ -213,7 +213,7 @@ FileIO:{
 			this.setAlert('同じ形のテトロミノが接しています。', 'Some Tetrominos that are the same shape are Adjacent.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getBCellInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getBCellInfo() ) ){
 			this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
 		}
 
@@ -230,7 +230,7 @@ FileIO:{
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
 			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
 			if(!clist.isSeqBlock()){
@@ -243,7 +243,7 @@ FileIO:{
 	},
 
 	checkTetromino : function(rinfo){
-		var dinfo = bd.getTetrominoInfo(rinfo), result = true;
+		var dinfo = this.owner.board.getTetrominoInfo(rinfo), result = true;
 		for(var r=1;r<=dinfo.max;r++){
 			var clist = dinfo.getclist(r);
 			if(clist.length<=4){ continue;}
@@ -257,12 +257,12 @@ FileIO:{
 "AnsCheck@norinori":{
 	checkAns : function(){
 
-		var binfo = bd.getBCellInfo();
+		var binfo = this.owner.board.getBCellInfo();
 		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} ) ){
 			this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);}) ){
 			this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
 		}

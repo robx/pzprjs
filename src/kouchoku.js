@@ -59,18 +59,18 @@ MouseEvent:{
 	inputsegment_up : function(){
 		if(this.inputData!==1){ return;}
 
-		var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
+		var o=this.owner, cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 		this.targetPoint = [null, null];
 		if(cross1!==null){ cross1.draw();}
 		if(cross2!==null){ cross2.draw();}
 		if(cross1!==null && cross2!==null){
-			if(!this.owner.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
+			if(!o.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
-				if(!this.owner.getConfig('lattice') || bd.getLatticePoint(bx1,by1,bx2,by2).length===0){
-					bd.segs.input(bx1,by1,bx2,by2);
+				if(!o.getConfig('lattice') || o.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
+					o.board.segs.input(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-					this.owner.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+					o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 				}
 			}
 		}
@@ -279,11 +279,11 @@ Board:{
 	},
 
 	exec : function(num){
-		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, tmp;
-		if     (num===1){ bd.segs.setSegment   (bx1,by1,bx2,by2);}
-		else if(num===0){ bd.segs.removeSegment(bx1,by1,bx2,by2);}
+		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, o=this.owner, tmp;
+		if     (num===1){ o.board.segs.setSegment   (bx1,by1,bx2,by2);}
+		else if(num===0){ o.board.segs.removeSegment(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-		this.owner.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+		o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
 },
 
@@ -320,8 +320,9 @@ Menu:{
 	},
 
 	irowakeRemake : function(){
-		bd.segs.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
+		var o=this.owner;
+		o.board.segs.newIrowake();
+		if(o.getConfig('irowake')){ o.painter.paintAll();}
 	}
 },
 
@@ -355,7 +356,7 @@ Graphic:{
 	},
 
 	drawSegments : function(){
-		var g = this.vinc('segment', 'auto');
+		var g = this.vinc('segment', 'auto'), bd = this.owner.board;
 
 		var seglist;
 		/* 全領域の30%以下なら範囲指定 */
@@ -465,7 +466,7 @@ Encode:{
 	},
 
 	decodeCrossABC : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var obj = bd.cross[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
@@ -478,7 +479,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeCrossABC : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
@@ -509,11 +510,11 @@ FileIO:{
 		var len = parseInt(this.readLine(),10);
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
-			bd.segs.input(+data[0], +data[1], +data[2], +data[3]);
+			this.owner.board.segs.input(+data[0], +data[1], +data[2], +data[3]);
 		}
 	},
 	encodeSegment : function(){
-		var seglist = bd.segs.getallsegment();
+		var seglist = this.owner.board.segs.getallsegment();
 		this.datastr += (seglist.length+"/");
 		for(var i=0;i<seglist.length;i++){
 			var seg = seglist[i];
@@ -527,7 +528,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var seglist = bd.segs.getallsegment();
+		var seglist = this.owner.board.segs.getallsegment();
 		if( !this.checkSegmentExist(seglist) ){
 			this.setAlert('線が存在していません。', 'There is no segment.'); return false;
 		}
@@ -592,7 +593,7 @@ AnsCheck:{
 		return this.checkSegment(function(cross){ return (cross.segment.length===1);});
 	},
 	checkSegment : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
 			if(func(cross)){
@@ -605,7 +606,7 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(seglist){
-		var xinfo = this.owner.newInstance('AreaSegmentInfo');
+		var bd = this.owner.board, xinfo = this.owner.newInstance('AreaSegmentInfo');
 		for(var i=0;i<seglist.length;i++){ xinfo.id[seglist[i].id] = 0;}
 		for(var i=0;i<seglist.length;i++){
 			var seg = seglist[i];
@@ -626,7 +627,7 @@ AnsCheck:{
 	},
 
 	checkSegmentOverPoint : function(seglist){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var i=0;i<seglist.length;i++){
 			var seg=seglist[i], tmp;
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
@@ -645,7 +646,7 @@ AnsCheck:{
 		for(var i=0;i<seglist.length;i++){
 			var seg=seglist[i], cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
-				if(result){ bd.segs.getallsegment().seterr(-1);}
+				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
 				seg.seterr(1);
 				cross1.seterr(1);
 				cross2.seterr(1);
@@ -656,7 +657,7 @@ AnsCheck:{
 	},
 
 	checkConsequentLetter : function(seglist){
-		var result = true, count = {}, qnlist = [];
+		var result = true, count = {}, qnlist = [], bd = this.owner.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
 		for(var c=0;c<bd.crossmax;c++){
@@ -694,7 +695,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1.isOverLapSegment(seg2)){
-				if(result){ bd.segs.getallsegment().seterr(-1);}
+				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
@@ -708,7 +709,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				if(result){ bd.segs.getallsegment().seterr(-1);}
+				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
@@ -724,7 +725,7 @@ AnsCheck:{
 
 	getseglist : function(areaid){
 		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('SegmentList');
-		for(var i=0;i<idlist.length;i++){ seglist.add(bd.segs.seg[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ seglist.add(this.owner.board.segs.seg[idlist[i]]);}
 		return seglist;
 	},
 
@@ -759,8 +760,8 @@ Segment:{
 		this.setpos(bx1,by1,bx2,by2);
 	},
 	setpos : function(bx1,by1,bx2,by2){
-		this.cross1 = bd.getx(bx1,by1);
-		this.cross2 = bd.getx(bx2,by2);
+		this.cross1 = this.owner.board.getx(bx1,by1);
+		this.cross2 = this.owner.board.getx(bx2,by2);
 
 		this.bx1 = bx1;
 		this.by1 = by1;
@@ -784,7 +785,7 @@ Segment:{
 		for(var a=1;a<div;a++){
 			var bx=this.bx1+this.dx*(a/div);
 			var by=this.by1+this.dy*(a/div);
-			var cross=bd.getx(bx,by);
+			var cross=this.owner.board.getx(bx,by);
 			this.lattices.push([bx,by,cross.id]);
 		}
 	},
@@ -794,7 +795,7 @@ Segment:{
 	},
 
 	seterr : function(num){
-		if(!bd.isenableSetError()){ return;}
+		if(!this.owner.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
 	},
 
@@ -826,7 +827,8 @@ Segment:{
 		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy, tmp;
 
 		/* X座標,Y座標が重なっているかどうか調べる */
-		if(!bd.segs.isOverLap(bx11,bx12,bx21,bx22) || !bd.segs.isOverLap(by11,by12,by21,by22)){ return false;}
+		if(!this.owner.board.segs.isOverLap(bx11,bx12,bx21,bx22) ||
+		   !this.owner.board.segs.isOverLap(by11,by12,by21,by22)){ return false;}
 
 		/* 交差している位置を調べる */
 		if     (dx1===0){ // 片方の線だけ垂直
@@ -850,12 +852,12 @@ Segment:{
 		if(!this.isParallel(seg)){ return false;}
 		if(this.dx===0 && seg.dx===0){ // 2本とも垂直の時
 			if(this.bx1===seg.bx1){ // 垂直で両方同じX座標
-				if(bd.segs.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
+				if(this.owner.board.segs.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
 			}
 		}
 		else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
 			if((this.dx*this.by1-this.bx1*this.dy)*seg.dx===(seg.dx*seg.by1-seg.bx1*seg.dy)*this.dx){
-				if(bd.segs.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
+				if(this.owner.board.segs.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
 			}
 		}
 		return false;
@@ -874,7 +876,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.typeA = 'A';
 		this.typeB = 'B';
 
-		bd.validinfo.all.push(this);
+		this.owner.board.validinfo.all.push(this);
 	},
 
 	//---------------------------------------------------------------------------
@@ -888,8 +890,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.idlist = {};
 		this.linemax = 0;
 
+		var o = this.owner, bd=o.board;
 		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){
-			bd.cross[c].segment=this.owner.newInstance('SegmentList');
+			bd.cross[c].segment=o.newInstance('SegmentList');
 		}
 
 		this.rebuild();
@@ -926,7 +929,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.getSegment() 位置情報からsegmentを取得する
 	//---------------------------------------------------------------------------
 	getSegment : function(bx1,by1,bx2,by2){
-		var cross = bd.getx(bx1,by1), seg = null;
+		var cross = this.owner.board.getx(bx1,by1), seg = null;
 		for(var i=0,len=cross.segment.length;i<len;i++){
 			var search = cross.segment[i];
 			if(search.bx2===bx2 && search.by2===by2){
@@ -956,6 +959,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		return seglist;
 	},
 	segmentinside : function(x1,y1,x2,y2){
+		var bd = this.owner.board;
 		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
 
 		var seglist = this.owner.newInstance('SegmentList');
@@ -991,13 +995,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.segmax++;
 		this.seg[this.segmax] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
 		this.seg[this.segmax].id = this.segmax;
-		if(bd.isenableInfo()){ this.setSegmentInfo(this.seg[this.segmax], true);}
+		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(this.seg[this.segmax], true);}
 		this.owner.undo.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
 	},
 	removeSegment : function(bx1,by1,bx2,by2){
 		var seg = bx1;
 		if(by1!==(void 0)){ seg = this.getSegment(bx1,by1,bx2,by2);}
-		if(bd.isenableInfo()){ this.setSegmentInfo(seg, false);}
+		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(seg, false);}
 		this.owner.undo.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
 		this.owner.painter.eraseSegment1(seg);
 		delete this.seg[seg.id];

@@ -117,6 +117,8 @@ pzprv3.createCommonClass('Board',
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
+		if(col===(void 0)){ col=this.qcols; row=this.qrows;}
+
 		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
 
 						   { this.initGroup(k.CELL,   col, row);}

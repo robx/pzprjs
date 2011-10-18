@@ -17,7 +17,7 @@ MouseEvent:{
 			if(this.btn.Left){ this.inputborder();}
 		}
 		else if(this.mouseend){
-			if(this.inputData==12){ bd.lightclear();}
+			if(this.inputData==12){ this.owner.board.lightclear();}
 		}
 	},
 	inputplay : function(){
@@ -28,7 +28,7 @@ MouseEvent:{
 			if(this.inputData!==null){ this.inputslash();}
 		}
 		else if(this.mouseend){
-			if(this.inputData==12){ bd.lightclear();}
+			if(this.inputData==12){ this.owner.board.lightclear();}
 		}
 	},
 
@@ -57,12 +57,12 @@ MouseEvent:{
 	inputflash : function(){
 		var excell = this.getpos(0).getex();
 		if(excell.isnull || this.mouseCell===excell){ return;}
-		if(excell.id>=bd.excellmax-4){ return;}
+		if(excell.id>=this.owner.board.excellmax-4){ return;}
 
 		if(this.inputData!=11 && this.inputData!==null){ }
 		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
 		else{
-			bd.flashlight(excell.id);
+			this.owner.board.flashlight(excell.id);
 			this.owner.painter.paintAll();
 			this.inputData=11;
 		}
@@ -81,8 +81,8 @@ MouseEvent:{
 		}
 		else{
 			var excell = obj;
-			if(excell.qlight!==1){ bd.flashlight(excell.id);}
-			else{ bd.lightclear();}
+			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
+			else{ this.owner.board.lightclear();}
 			this.owner.painter.paintAll();
 
 			this.mousereset();
@@ -155,8 +155,8 @@ KeyEvent:{
 			else       { excell.setQnum(-1); excell.setQdir(0);}
 		}
 		else if(ca=='F4'){
-			if(excell.qlight!==1){ bd.flashlight(excell.id);}
-			else{ bd.lightclear();}
+			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
+			else{ this.owner.board.lightclear();}
 			this.owner.painter.paintAll();
 		}
 		else if(ca==' '){ excell.setQnum(-1); excell.setQdir(0);}
@@ -169,7 +169,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(bd.excell[0]);
+		this.setTEC(this.owner.board.excell[0]);
 	}
 },
 
@@ -396,7 +396,7 @@ Encode:{
 	decodeKinkonkan : function(){
 		// 盤面外数字のデコード
 		var subint = [];
-		var ec=0, a=0, bstr = this.outbstr;
+		var ec=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.excell[ec];
 
@@ -421,7 +421,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeKinkonkan : function(){
-		var cm="", cm2="";
+		var cm="", cm2="", bd = this.owner.board;
 
 		// 盤面外部分のエンコード
 		var count=0;
@@ -451,7 +451,7 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 
-		var item = this.getItemList(bd.qrows+2);
+		var bd = this.owner.board, item = this.getItemList(bd.qrows+2);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
@@ -487,6 +487,7 @@ FileIO:{
 		this.filever = 1;
 		this.encodeAreaRoom();
 
+		var bd = this.owner.board;
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
@@ -519,7 +520,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);}) ){
 			this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
 		}
@@ -540,7 +541,7 @@ AnsCheck:{
 	},
 
 	checkMirrors : function(type){
-		var d = [];
+		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQdir()===0){ continue;}

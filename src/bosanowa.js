@@ -107,6 +107,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
+		var bd = this.owner.board;
 		this.pos = this.owner.newInstance('Address', [bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2]);
 	}
 },
@@ -344,7 +345,7 @@ Graphic:{
 		var header = "c_full_", d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
-				var cell=bd.getc(bx,by), addr=cell.getaddr();
+				var cell=this.owner.board.getc(bx,by), addr=cell.getaddr();
 				if( cell.isEmpty() && (
 					addr.rel(-2, 0).getc().ques===0 || addr.rel(2, 0).getc().ques===0 || 
 					addr.rel( 0,-2).getc().ques===0 || addr.rel(0, 2).getc().ques===0 || 
@@ -385,7 +386,7 @@ Encode:{
 	},
 
 	decodeBoard : function(){
-		var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, c=0, bd = this.owner.board, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -401,7 +402,7 @@ Encode:{
 
 	// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 	encodeBosanowa : function(type){
-		var x1=9999, x2=-1, y1=9999, y2=-1;
+		var x1=9999, x2=-1, y1=9999, y2=-1, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty()){ continue;}
@@ -489,7 +490,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});},
 
 	checkSubsNumber : function(){
-		var subs=[], UNDEF=-1;
+		var subs=[], bd=this.owner.board, UNDEF=-1;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(border.isGrid()){

@@ -133,7 +133,7 @@ Encode:{
 	},
 
 	decodeKakuru : function(){
-		var cell=0, i=0, bstr = this.outbstr;
+		var cell=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[cell];
 
@@ -147,7 +147,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeKakuru : function(type){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", obj=bd.cell[c];
 			if     (obj.ques=== 1){ pstr = "+";}
@@ -232,7 +232,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});},
 
 	checkAroundPrenums : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
@@ -260,7 +260,7 @@ AnsCheck:{
 		return result;
 	},
 	checkNumber : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
@@ -284,7 +284,7 @@ AnsCheck:{
 		return result;
 	},
 	checkAroundNumbers : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getAnum()<=0){ continue;}

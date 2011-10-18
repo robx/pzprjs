@@ -38,6 +38,7 @@ Border:{
 
 	propall : ['line', 'qsub'], /* quesは取り除いておく */
 	allclear : function(isrec){
+		var bd = this.owner.board;
 		var def = (this.id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
 			if(isrec){ this.owner.undo.addOpe_Object(this, k.QUES, this.ques, def);}
@@ -130,7 +131,7 @@ Encode:{
 	},
 
 	decodeMejilink : function(){
-		var bstr = this.outbstr, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, bd = this.owner.board, twi=[16,8,4,2,1];
 		var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),32);
@@ -144,7 +145,7 @@ Encode:{
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeMejilink : function(){
-		var count = 0;
+		var count = 0, bd = this.owner.board;
 		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()) count++;}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
@@ -203,7 +204,7 @@ AnsCheck:{
 	},
 
 	checkdir4Line_meji : function(val){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cnt = 0, cross = bd.cross[c];
 			if(cross.lb().isLine()){ cnt++;}
@@ -220,7 +221,7 @@ AnsCheck:{
 		return result;
 	},
 	checkDotLength : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var tarea = bd.tiles.getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;

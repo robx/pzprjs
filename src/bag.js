@@ -59,7 +59,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.qcols+bd.qrows-1);
+		return Math.min(this.maxnum, this.owner.board.qcols+this.owner.board.qrows-1);
 	},
 	minnum : 2,
 
@@ -168,7 +168,7 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		bd.searchInsideArea();
+		this.owner.board.searchInsideArea();
 		if( !this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}) ){
 			this.setAlert('輪の内側に入っていない数字があります。','There is an outside number.'); return false;
 		}
@@ -180,7 +180,7 @@ AnsCheck:{
 	},
 
 	checkCellNumber : function(icheck){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}

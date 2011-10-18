@@ -23,8 +23,8 @@ pzprv3.createCoreClass('ProblemData',
 	setnewData : function(id, owner){
 		this.id = id;
 		this.pid = owner.pid;
-		this.col = bd.qcols;
-		this.row = bd.qrows;
+		this.col = owner.board.qcols;
+		this.row = owner.board.qrows;
 		this.hard = 0;
 		this.pdata = owner.fio.fileencode(k.PZPH);
 		this.time = (pzprv3.currentTime()/1000)|0;

@@ -46,7 +46,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	posthook : {
-		ques : function(num){ bd.setCellInfoAll(this);}
+		ques : function(num){ this.owner.board.setCellInfoAll(this);}
 	},
 
 	getdir4BorderCount : function(){
@@ -197,7 +197,7 @@ Encode:{
 
 	// decode/encodeNumber10関数の改造版にします
 	decodeFivecells : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var obj = bd.cell[c], ca = bstr.charAt(i);
 
@@ -213,7 +213,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeFivecells : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 
@@ -257,24 +257,25 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var o=this.owner, bd=o.board, pid=o.pid;
 
 		var rinfo = bd.getRoomInfo();
-		if( (this.owner.pid==='nawabari') && !this.checkAreaRect(rinfo) ){
+		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){
 			this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
 		}
 
-		if( (this.owner.pid==='nawabari') && !this.checkNoNumber(rinfo) ){
+		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
 		}
 
-		if( (this.owner.pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
+		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
 		}
 
-		if( (this.owner.pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
+		if( (pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
 			this.setAlert('サイズが4マスより小さいブロックがあります。','The size of block is smaller than four.'); return false;
 		}
-		if( (this.owner.pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);} ) ){
+		if( (pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);} ) ){
 			this.setAlert('サイズが5マスより小さいブロックがあります。','The size of block is smaller than five.'); return false;
 		}
 
@@ -286,10 +287,10 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
 		}
 
-		if( (this.owner.pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
+		if( (pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
 			this.setAlert('サイズが4マスより大きいブロックがあります。','The size of block is larger than four.'); return false;
 		}
-		if( (this.owner.pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);} ) ){
+		if( (pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);} ) ){
 			this.setAlert('サイズが5マスより大きいブロックがあります。','The size of block is larger than five.'); return false;
 		}
 
@@ -297,7 +298,7 @@ AnsCheck:{
 	},
 
 	checkdir4BorderAns : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isValidNum() && cell.getdir4BorderCount()!=cell.getQnum()){

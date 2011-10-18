@@ -30,7 +30,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var ldata = [];
+		var ldata = [], bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
 		for(var c=0;c<bd.cellmax;c++){
@@ -213,7 +213,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkDifferentNumberInRoom(bd.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
+		if( !this.checkDifferentNumberInRoom(this.owner.board.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
 			this.setAlert('1つの領域に2つ以上の同じ矢印が入っています。','An area has plural same arrows.'); return false;
 		}
 
@@ -225,7 +225,7 @@ AnsCheck:{
 	},
 
 	checkBalls : function(){
-		var ldata = [];
+		var ldata = [], bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}

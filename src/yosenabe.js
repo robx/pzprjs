@@ -228,7 +228,7 @@ Encode:{
 	},
 
 	decodeIcelom : function(){
-		var bstr = this.outbstr;
+		var bstr = this.outbstr, bd = this.owner.board;
 
 		var a=0, c=0, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
@@ -244,7 +244,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeIcelom : function(){
-		var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
@@ -255,7 +255,7 @@ Encode:{
 	},
 
 	decodeNumber16_yosenabe : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -274,7 +274,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16_yosenabe : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qdir;
 
@@ -328,6 +328,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var bd = this.owner.board;
 		this.performAsLine = true;
 
 		if( !this.checkLcntCell(3) ){
@@ -385,7 +386,7 @@ AnsCheck:{
 	},
 
 	checkLineOverLetter : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){

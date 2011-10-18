@@ -76,7 +76,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(!cell.isnull){
 			if(this.owner.playmode){ cell.minnum = 1;}
-			this.mouseCell = bd.emptycell;
+			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 			cell.minnum = 0;
 		}
@@ -231,7 +231,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var sinfo = bd.getSnakeInfo();
+		var sinfo = this.owner.board.getSnakeInfo();
 		if( !this.checkAllArea(sinfo, function(w,h,a,n){ return (a==5);} ) ){
 			this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
 		}
@@ -256,7 +256,7 @@ AnsCheck:{
 	},
 
 	checkSideCell2 : function(sinfo){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var func = function(sinfo,cell1,cell2){
 			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
 			return (r1>0 && r2>0 && r1!==r2);
@@ -281,7 +281,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var gonext = function(){
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);

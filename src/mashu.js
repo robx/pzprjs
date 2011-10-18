@@ -64,6 +64,7 @@ Menu:{
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
 		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		this.funcs['uramashu'] = function(){
+			var bd = this.owner.board;
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if     (cell.getQnum()===1){ cell.setQnum(2);}
@@ -105,22 +106,22 @@ Graphic:{
 Encode:{
 	pzlimport : function(type){
 		this.decodeCircle();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 	pzlexport : function(type){
-		bd.revCircle();
+		this.owner.board.revCircle();
 		this.encodeCircle();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 
 	decodeKanpen : function(){
 		this.owner.fio.decodeCellQnum_kanpen();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 	encodeKanpen : function(){
-		bd.revCircle();
+		this.owner.board.revCircle();
 		this.owner.fio.encodeCellQnum_kanpen();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	}
 },
 //---------------------------------------------------------
@@ -128,25 +129,25 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
 		this.decodeBorderLine();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 	encodeData : function(){
-		bd.revCircle();
+		this.owner.board.revCircle();
 		this.encodeCellQnum();
 		this.encodeBorderLine();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 
 	kanpenOpen : function(){
 		this.decodeCellQnum_kanpen();
 		this.decodeBorderLine();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	},
 	kanpenSave : function(){
-		bd.revCircle();
+		this.owner.board.revCircle();
 		this.encodeCellQnum_kanpen();
 		this.encodeBorderLine();
-		bd.revCircle();
+		this.owner.board.revCircle();
 	}
 },
 
@@ -192,7 +193,7 @@ AnsCheck:{
 	},
 
 	checkWhitePearl1 : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()===1 && cell.lcnt()===2 && !cell.isLineStraight()){
@@ -205,7 +206,7 @@ AnsCheck:{
 		return result;
 	},
 	checkBlackPearl1 : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()===2 && cell.lcnt()===2 && cell.isLineStraight()){
@@ -219,7 +220,7 @@ AnsCheck:{
 	},
 
 	checkWhitePearl2 : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()!==1 || cell.lcnt()!==2){ continue;}
@@ -239,7 +240,7 @@ AnsCheck:{
 		return result;
 	},
 	checkBlackPearl2 : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()!==2 || cell.lcnt()!==2){ continue;}

@@ -353,7 +353,7 @@ AnsCheck:{
 
 	checkWhiteArea : function(){
 		var result = true;
-		var winfo = bd.getSlopeWareaInfo();
+		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.getclist(id), d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;

@@ -170,7 +170,7 @@ Encode:{
 	},
 
 	decodeKaero : function(){
-		var c=0, a=0, bstr = this.outbstr;
+		var c=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[c];
 
@@ -187,7 +187,7 @@ Encode:{
 		this.outbstr = bstr.substring(a);
 	},
 	encodeKaero : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qnum = bd.cell[c].qnum;
 			if     (qnum==-2){ pstr = ".";}
@@ -233,7 +233,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.getLareaInfo();
+		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkDoubleNumber(linfo) ){
 			this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
 		}
@@ -241,8 +241,8 @@ AnsCheck:{
 			this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
-		bd.searchMovedPosition(linfo);
+		var rinfo = this.owner.board.getRoomInfo();
+		this.owner.board.searchMovedPosition(linfo);
 
 		this.performAsLine = false;
 		if( !this.checkSameObjectInRoom_kaero(rinfo) ){
@@ -264,7 +264,7 @@ AnsCheck:{
 	},
 
 	checkLineOverLetter : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){
@@ -301,7 +301,7 @@ AnsCheck:{
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(rinfo){
-		var max=0;
+		var max=0, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;

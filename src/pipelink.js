@@ -233,7 +233,7 @@ Encode:{
 	},
 
 	decodePipelink : function(){
-		var c=0, bstr = this.outbstr;
+		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -254,7 +254,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodePipelink : function(type){
-		var count, pass, cm="";
+		var count, pass, cm="", bd = this.owner.board;
 
 		count=0;
 		for(var c=0;c<bd.cellmax;c++){
@@ -282,11 +282,12 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		if(this.owner.pid==='pipelink'){
+		var o=this.owner, bd=o.board;
+		if(o.pid==='pipelink'){
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques===6){ this.owner.pid='pipelinkr'; break;}
+				if(bd.cell[c].ques===6){ o.pid='pipelinkr'; break;}
 			}
-			this.owner.menu.displayDesign();
+			o.menu.displayDesign();
 		}
 	}
 },

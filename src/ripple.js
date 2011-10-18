@@ -33,7 +33,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return bd.rooms.getCntOfRoomByCell(this);
+		return this.owner.board.rooms.getCntOfRoomByCell(this);
 	}
 },
 Board:{
@@ -119,7 +119,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
@@ -145,7 +145,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkNoNumCell();},
 
 	checkRippleNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
 			if(num<=0){ continue;}
@@ -172,7 +172,7 @@ AnsCheck:{
 	},
 
 	checkUpperNumber : function(rinfo){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var cell=bd.cell[c], cell2=cell.dn(), dc=cell2.id;
 			if(rinfo.id[c]!=rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}

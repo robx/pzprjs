@@ -52,11 +52,12 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// キー入力イベントの設定
-		this.owner.addEvent(document, 'keydown',  this, this.e_keydown);
-		this.owner.addEvent(document, 'keyup',    this, this.e_keyup);
-		this.owner.addEvent(document, 'keypress', this, this.e_keypress);
+		var o = this.owner;
+		o.addEvent(document, 'keydown',  this, this.e_keydown);
+		o.addEvent(document, 'keyup',    this, this.e_keyup);
+		o.addEvent(document, 'keypress', this, this.e_keypress);
 		// Silverlightのキー入力イベント設定
-		var g = this.owner.painter.currentContext;
+		var g = o.painter.currentContext;
 		if(g.use.sl){
 			var kc = this, sender = g.content.findName(g.canvasid);
 			sender.AddEventListener("KeyDown", function(s,a){ kc.e_SLkeydown(s,a);});
@@ -178,19 +179,20 @@ pzprv3.createCommonClass('KeyEvent',
 	// kc.keyup_common()   キーを離した際のイベント共通処理(Undo等)
 	//---------------------------------------------------------------------------
 	keydown_common : function(e){
+		var o = this.owner;
 		if(this.ca==='z' && !this.isZ){ this.isZ=true;}
 		if(this.ca==='x' && !this.isX){ this.isX=true;}
 
-		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ this.owner.ut.startUndo(); this.ca='';}
-		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ this.owner.ut.startRedo(); this.ca='';}
+		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ o.ut.startUndo(); this.ca='';}
+		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ o.ut.startRedo(); this.ca='';}
 
 		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
-			if     (this.owner.editmode && !this.isSHIFT){ this.owner.setConfig('mode',3); this.ca='';}
-			else if(this.owner.playmode &&  this.isSHIFT){ this.owner.setConfig('mode',1); this.ca='';}
+			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); this.ca='';}
+			else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); this.ca='';}
 		}
 
-		if(!this.isZ){ bd.errclear();}
-		if(this.owner.debug.keydown(this.ca)){ this.ca='';}
+		if(!this.isZ){ o.board.errclear();}
+		if(o.debug.keydown(this.ca)){ this.ca='';}
 	},
 	keyup_common : function(e){
 		if(this.ca==='z' && this.isZ){ this.isZ=false;}
@@ -211,7 +213,7 @@ pzprv3.createCommonClass('KeyEvent',
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcp = this.cursor.getTCP(), dir = bd.BDIR;
+		var tcp = this.cursor.getTCP(), dir = this.owner.board.BDIR;
 		switch(ca){
 			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = k.UP;} break;
 			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = k.DN;} break;
@@ -254,7 +256,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cell = this.cursor.getTCC();
-		if(this.owner.editmode && bd.rooms.hastop){ cell = bd.rooms.getTopOfRoomByCell(cell);}
+		if(this.owner.editmode && this.owner.board.rooms.hastop){ cell = this.owner.board.rooms.getTopOfRoomByCell(cell);}
 
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;
@@ -348,7 +350,7 @@ pzprv3.createCommonClass('KeyEvent',
 		(target==2 ? obj.setQnum(val) : obj.setQdir(val));
 	},
 	getnum51 : function(obj,target){
-		return (target==2 ? bd.getQnum() : bd.getQdir());
+		return (target==2 ? this.owner.board.getQnum() : this.owner.board.getQdir());
 	},
 
 //---------------------------------------------------------------------------
@@ -358,7 +360,10 @@ pzprv3.createCommonClass('KeyEvent',
 // キー入力用Popupウィンドウ
 
 	initialize_panel : function(){
-		this.haspanel = {1:(this.enablemake_p && pzprv3.EDITOR), 3:this.enableplay_p};	// 有効かどうか
+		this.haspanel = {	// 有効かどうか
+			1 : (this.enablemake_p && pzprv3.EDITOR),
+			3 : this.enableplay_p
+		};
 		this.element = null;				// キーポップアップのエレメント
 
 		this.prefix;
@@ -580,7 +585,7 @@ pzprv3.createCommonClass('TargetCursor',
 	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
 	//---------------------------------------------------------------------------
 	setminmax : function(){
-		var bm = (!this.crosstype?1:0);
+		var bd = this.owner.board, bm = (!this.crosstype?1:0);
 		this.minx = bd.minbx + bm;
 		this.miny = bd.minby + bm;
 		this.maxx = bd.maxbx - bm;
@@ -643,7 +648,7 @@ pzprv3.createCommonClass('TargetCursor',
 	getTEC : function(){ return this.pos.getex();},
 	setTEC : function(excell){ this.pos.init(excell.bx,excell.by);},
 
-	getOBJ : function(){ return bd.getobj(this.pos.bx, this.pos.by);},
+	getOBJ : function(){ return this.owner.board.getobj(this.pos.bx, this.pos.by);},
 	setOBJ : function(obj){
 		if(obj.isnull){ return;}
 		this.pos.init(obj.bx,obj.by);
@@ -662,6 +667,7 @@ pzprv3.createCommonClass('TargetCursor',
 		return true;
 	},
 	detectTarget : function(obj){
+		var bd = this.owner.board;
 		if(obj.isnull){ return 0;}
 		else if(obj.iscellobj){
 			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}

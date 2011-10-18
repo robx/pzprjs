@@ -48,7 +48,7 @@ MouseEvent:{
 		if(!border.isnull && !this.mousestart){
 			var dir = this.getdir(this.prevPos, pos);
 
-			if(border.id<bd.bdinside){
+			if(border.id<this.owner.board.bdinside){
 				if(this.owner.pid==='icebarn'){
 					if(this.inputData===null){ this.inputData=((border.getArrow()!==dir)?1:0);}
 					border.setArrow((this.inputData===1)?dir:0);
@@ -62,7 +62,7 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputarrow_inout : function(border,dir){
-		var val = this.checkinout(border,dir), border0=null;
+		var val = this.checkinout(border,dir), bd = this.owner.board, border0=null;
 		if     (val===1){ border0 = bd.arrowin;  bd.inputarrowin(border);}
 		else if(val===2){ border0 = bd.arrowout; bd.inputarrowout(border);}
 		if(border0!==null){
@@ -73,7 +73,7 @@ MouseEvent:{
 	/* 0:どちらでもない 1:IN 2:OUT */
 	checkinout : function(border,dir){
 		if(border.isnull){ return 0;}
-		var bx=border.bx, by=border.by;
+		var bd=this.owner.board, bx=border.bx, by=border.by;
 		if     ((bx===bd.minbx && dir===k.RT)||(bx===bd.maxbx && dir===k.LT)||
 				(by===bd.minby && dir===k.DN)||(by===bd.maxby && dir===k.UP)){ return 1;}
 		else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
@@ -243,7 +243,7 @@ Board:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var border0, border = bd.getb(bx,by);
+		var bd = this.owner.board, border = bd.getb(bx,by), border0;
 		if     (this.property==='in') { border0 = bd.arrowin;  bd.arrowin  = border;}
 		else if(this.property==='out'){ border0 = bd.arrowout; bd.arrowout = border;}
 		border0.draw();
@@ -360,7 +360,7 @@ Graphic:{
 		}
 	},
 	drawInOut : function(){
-		var g = this.currentContext, border;
+		var g = this.currentContext, bd = this.owner.board, border;
 
 		border = bd.arrowin;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
@@ -407,7 +407,7 @@ Graphic:{
 	decodeIcebarn : function(){
 		var barray = this.outbstr.split("/");
 
-		var a=0, c=0, twi=[16,8,4,2,1];
+		var a=0, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		for(var i=0;i<barray[0].length;i++){
 			var num = parseInt(barray[0].charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -451,7 +451,7 @@ Graphic:{
 		this.outbstr = "";
 	},
 	encodeIcebarn : function(){
-		var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+		var cm = "", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
@@ -488,7 +488,7 @@ Graphic:{
 	decodeIcebarn_old2 : function(){
 		var barray = this.outbstr.split("/");
 
-		var a=0, c=0, twi=[16,8,4,2,1];
+		var a=0, c=0, bd = this.owner.board, twi=[16,8,4,2,1];
 		for(var i=0;i<barray[0].length;i++){
 			var num = parseInt(barray[0].charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -527,7 +527,7 @@ Graphic:{
 	decodeIcebarn_old1 : function(){
 		var barray = this.outbstr.split("/");
 
-		var a=0, c=0, twi=[8,4,2,1];
+		var a=0, c=0, bd = this.owner.board, twi=[8,4,2,1];
 		for(var i=0;i<barray[0].length;i++){
 			var num = parseInt(barray[0].charAt(i),32);
 			for(var w=0;w<4;w++){
@@ -564,7 +564,7 @@ Graphic:{
 		this.outbstr = "";
 	},
 	encodeIcebarn_old1 : function(){
-		var cm = "", num=0, pass=0, twi=[8,4,2,1];
+		var cm = "", num=0, pass=0, bd = this.owner.board, twi=[8,4,2,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num===4){ cm += pass.toString(16); num=0; pass=0;}
@@ -604,7 +604,7 @@ Graphic:{
 	decodeIcelom : function(){
 		var bstr = this.outbstr;
 
-		var a=0, c=0, twi=[16,8,4,2,1];
+		var a=0, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -618,7 +618,7 @@ Graphic:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeIcelom : function(){
-		var cm = "", num=0, pass=0, twi=[16,8,4,2,1];
+		var cm = "", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
@@ -631,6 +631,7 @@ Graphic:{
 	decodeInOut : function(){
 		var barray = this.outbstr.substr(1).split("/");
 
+		var bd = this.owner.board;
 		bd.disableInfo();
 		bd.inputarrowin (bd.border[parseInt(barray[0])+bd.bdinside]);
 		bd.inputarrowout(bd.border[parseInt(barray[1])+bd.bdinside]);
@@ -639,12 +640,14 @@ Graphic:{
 		this.outbstr = "";
 	},
 	encodeInOut : function(){
+		var bd = this.owner.board;
 		this.outbstr += ("/"+(bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
 	}
 },
 //---------------------------------------------------------
 "FileIO@icebarn":{
 	decodeData : function(){
+		var bd = this.owner.board;
 		bd.disableInfo();
 		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
 		bd.inputarrowout(bd.border[parseInt(this.readLine())]);
@@ -670,6 +673,7 @@ Graphic:{
 		});
 	},
 	encodeData : function(){
+		var bd = this.owner.board;
 		this.datastr += (bd.arrowin.id+"/"+bd.arrowout.id+"/");
 		this.encodeCell( function(obj){
 			return (obj.ques===6?"1 ":"0 ");
@@ -689,6 +693,7 @@ Graphic:{
 },
 "FileIO@icelom,icelom2":{
 	decodeData : function(){
+		var bd = this.owner.board;
 		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
 		bd.inputarrowout(bd.border[parseInt(this.readLine())]);
 
@@ -711,6 +716,7 @@ Graphic:{
 		});
 	},
 	encodeData : function(){
+		var bd = this.owner.board;
 		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
 
 		this.datastr += (bd.arrowin.id+"/"+bd.arrowout.id+"/"+pzltype+"/");
@@ -793,11 +799,11 @@ AnsCheck:{
 	},
 
 	checkIgnoreIcebarn : function(){
-		return this.checkLinesInArea(bd.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
+		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
 	},
 
 	checkAllArrow : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isArrow() && !border.isLine()){
@@ -810,7 +816,7 @@ AnsCheck:{
 	},
 
 	checkLine : function(){
-		var pos = bd.arrowin.getaddr(), dir=0, count=1;
+		var bd = this.owner.board, pos = bd.arrowin.getaddr(), dir=0, count=1;
 		if     (pos.by===bd.minby){ dir=2;}else if(pos.by===bd.maxby){ dir=1;}
 		else if(pos.bx===bd.minbx){ dir=4;}else if(pos.bx===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}

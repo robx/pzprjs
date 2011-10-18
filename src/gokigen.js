@@ -32,7 +32,7 @@ MouseEvent:{
 		if(cell.isnull || cell.getQans()===0){ return;}
 
 		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
-		var check = bd.searchline(fcross);
+		var bd = this.owner.board, check = bd.searchline(fcross);
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.getQans()===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
@@ -279,7 +279,8 @@ Graphic:{
 "Graphic@wagiri":{
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
-		if(!bd.haserror && this.owner.getConfig('colorslash')){
+		var o = this.owner, bd = o.board;
+		if(!bd.haserror && o.getConfig('colorslash')){
 			this.setRange(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
 		}
 		else{
@@ -299,7 +300,8 @@ Graphic:{
 	},
 
 	drawSlashes : function(){
-		if(!bd.haserror && this.owner.getConfig('colorslash')){
+		var o = this.owner, bd = o.board;
+		if(!bd.haserror && o.getConfig('colorslash')){
 			var sdata=bd.getSlashData();
 			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
 
@@ -367,7 +369,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var sdata=bd.getSlashData();
+		var sdata=this.owner.board.getSlashData();
 		if( (this.owner.pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){
 			this.setAlert('斜線で輪っかができています。', 'There is a loop consisted in some slashes.'); return false;
 		}
@@ -392,12 +394,12 @@ AnsCheck:{
 	},
 
 	checkLoopLine_gokigen : function(sdata){
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
+		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		errclist.seterr(1);
 		return (errclist.length===0);
 	},
 	checkLoopLine_wagiri : function(sdata, checkLoop){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			if(!checkLoop && sdata[c]==1 && bd.cell[c].getQnum()===2){ result = false;}
 			if( checkLoop && sdata[c]==2 && bd.cell[c].getQnum()===1){ result = false;}
@@ -407,7 +409,7 @@ AnsCheck:{
 	},
 
 	checkQnumCross : function(){
-		var result = true, sinfo = bd.getSlashInfo();
+		var result = true, bd = this.owner.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.getQnum();
 			if(qn>=0 && qn!=sinfo.cross[c].length){

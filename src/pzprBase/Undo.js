@@ -104,7 +104,7 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 		if(this.property!=k.QSUB){ this.manager.anscount++;}
 	},
 	exec : function(num){
-		var obj = bd.getObjectPos(this.group, this.bx, this.by);
+		var obj = this.owner.board.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==obj.group){ return true;}
 		obj.setdata(this.property, num);
 		obj.draw();
@@ -133,12 +133,13 @@ pzprv3.createCommonClass('BoardAdjustOperation:Operation',
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	exec : function(num){
-		bd.disableInfo();
+		var o = this.owner;
+		o.board.disableInfo();
 		this.manager.reqReset = true;
 
-		bd.expandreduce(num,{x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows});
+		o.board.expandreduce(num,{x1:0,y1:0,x2:2*o.board.qcols,y2:2*o.board.qrows});
 
-		this.owner.painter.paintAll();
+		o.painter.paintAll();
 	}
 });
 
@@ -189,10 +190,10 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 		this.exec(this.num,d);
 	},
 	exec : function(num,d){
-		bd.disableInfo();
+		this.owner.board.disableInfo();
 		this.manager.reqReset = true;
 
-		bd.turnflip(num,d);
+		this.owner.board.turnflip(num,d);
 
 		this.owner.painter.paintAll();
 	}
@@ -235,7 +236,7 @@ pzprv3.createCommonClass('OperationManager',
 
 	// 今この関数でレコード禁止になるのは、UndoRedo時、URLdecode、fileopen、adjustGeneral/Special時
 	// 連動して実行しなくなるのはaddOpe().
-	//  -> ここで使っているUndo/RedoとaddOpe以外はbd.QuC系関数を使用しないように変更
+	//  -> ここで使っているUndo/RedoとaddOpe以外はsetQues系関数を使用しないように変更
 	//     変な制限事項がなくなるし、動作速度にもかなり効くしね
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
@@ -469,16 +470,17 @@ pzprv3.createCommonClass('OperationManager',
 		this.owner.painter.suspend();
 	},
 	postproc : function(){
+		var o = this.owner;
 		if(this.reqReset){
 			this.reqReset=false;
 
-			bd.setposAll();
-			bd.setminmax();
-			bd.enableInfo();
-			bd.resetInfo();
-			this.owner.painter.resize_canvas();
+			o.board.setposAll();
+			o.board.setminmax();
+			o.board.enableInfo();
+			o.board.resetInfo();
+			o.painter.resize_canvas();
 		}
-		this.owner.painter.unsuspend();
+		o.painter.unsuspend();
 
 		this.enableRecord();
 		this.enb_btn();

@@ -130,12 +130,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var binfo = bd.getBCellInfo();
+		var binfo = this.owner.board.getBCellInfo();
 		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
 			this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getWCellInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
@@ -151,7 +151,7 @@ AnsCheck:{
 	},
 
 	checkNumberSquare : function(binfo, flag){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}

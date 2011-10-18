@@ -33,16 +33,14 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	accheck1 : function(){
-		var outputstr = this.owner.fio.fileencode(k.PZPH);
-		var ans = this.owner.checker;
-
-		bd.disableSetError();
-		ans.inCheck = true;
-		ans.alstr = { jp:'' ,en:''};
-		ans.checkresult = true;
-		ans.checkAns();
-		ans.inCheck = false;
-		bd.enableSetError();
+		var o = this.owner, outputstr = o.fio.fileencode(k.PZPH);
+		o.board.disableSetError();
+		o.checker.inCheck = true;
+		o.checker.alstr = { jp:'' ,en:''};
+		o.checker.checkresult = true;
+		o.checker.checkAns();
+		o.checker.inCheck = false;
+		o.board.enableSetError();
 
 		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
 	},
@@ -100,11 +98,11 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_encode_kanpen : function(self){
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
-			var bd2 = self.bd_freezecopy();
+			var o = this.owner, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			document.urlinput.ta.value = this.owner.enc.pzloutput(k.KANPEN);
-			this.owner.menu.popel = pzprv3.getEL("pop1_5");
-			this.owner.menu.urlinput({});
+			document.urlinput.ta.value = o.enc.pzloutput(k.KANPEN);
+			o.menu.popel = pzprv3.getEL("pop1_5");
+			o.menu.urlinput({});
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -138,16 +136,15 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var outputstr = this.owner.fio.fileencode(k.PZPR);
+		var o = this.owner, bd = o.board, outputstr = o.fio.fileencode(k.PZPR);
+		var bd2 = self.bd_freezecopy(bd);
 
-		var bd2 = self.bd_freezecopy();
-
-		this.owner.painter.suspendAll();
+		o.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		this.owner.fio.filedecode(outputstr);
-		this.owner.painter.unsuspend();
+		o.fio.filedecode(outputstr);
+		o.painter.unsuspend();
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
@@ -156,18 +153,17 @@ pzprv3.extendCoreClass('Debug',
 	},
 	check_file_pbox : function(self){
 		if(this.owner.menu.ispencilbox){
-			var outputstr = this.owner.fio.fileencode(k.PBOX);
+			var o = this.owner, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.PBOX);
+			var bd2 = self.bd_freezecopy(bd);
 
-			var bd2 = self.bd_freezecopy();
-
-			this.owner.painter.suspendAll();
+			o.painter.suspendAll();
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
-			this.owner.fio.filedecode(outputstr);
-			this.owner.painter.unsuspend();
+			o.fio.filedecode(outputstr);
+			o.painter.unsuspend();
 
-			self.qsubf = !(self.pid=='fillomino'||self.pid=='hashikake'||self.pid=='kurodoko'||self.pid=='shikaku'||self.pid=='tentaisho');
+			self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
 			self.qsubf = true;
@@ -176,7 +172,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 1  = failure..."); self.fails++;}
@@ -185,7 +181,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_turnR2(self);},0);
 	},
 	check_turnR2 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 2  = failure..."); self.fails++;}
@@ -195,7 +191,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	check_turnL1 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 1  = failure..."); self.fails++;}
@@ -204,7 +200,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_turnL2(self);},0);
 	},
 	check_turnL2 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 2  = failure..."); self.fails++;}
@@ -214,7 +210,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.execadjust('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 1  = failure..."); self.fails++;}
@@ -223,7 +219,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_flipX2(self);},0);
 	},
 	check_flipX2 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 2  = failure..."); self.fails++;}
@@ -233,7 +229,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	check_flipY1 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.execadjust('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 1  = failure..."); self.fails++;}
@@ -242,7 +238,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_flipY2(self);},0);
 	},
 	check_flipY2 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 2  = failure..."); self.fails++;}
@@ -252,7 +248,7 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//Adjust test--------------------------------------------------------------
 	check_adjust1 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
 		for(var i=0;i<8;i++){ bd.execadjust(names[i]);}
 
@@ -262,7 +258,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_adjust2(self);},0);
 	},
 	check_adjust2 : function(self){
-		var bd2 = self.bd_freezecopy();
+		var bd = self.owner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<8;i++){ this.owner.undo.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 2  = failure..."); self.fails++;}
@@ -286,39 +282,39 @@ pzprv3.extendCoreClass('Debug',
 	},
 
 	qsubf : true,
-	bd_freezecopy : function(){
-		var bd2 = {cell:[],excell:[],cross:[],border:[]};
-		for(var c=0;c<bd.cellmax;c++){
+	bd_freezecopy : function(bd1){
+		var bd2 = {cell:[],cross:[],border:[],excell:[]};
+		for(var c=0;c<bd1.cellmax;c++){
 			bd2.cell[c] = {};
-			bd2.cell[c].ques=bd.cell[c].ques;
-			bd2.cell[c].qnum=bd.cell[c].qnum;
-			bd2.cell[c].qdir=bd.cell[c].qdir;
-			bd2.cell[c].anum=bd.cell[c].anum;
-			bd2.cell[c].qans=bd.cell[c].qans;
-			bd2.cell[c].qsub=bd.cell[c].qsub;
+			bd2.cell[c].ques=bd1.cell[c].ques;
+			bd2.cell[c].qnum=bd1.cell[c].qnum;
+			bd2.cell[c].qdir=bd1.cell[c].qdir;
+			bd2.cell[c].anum=bd1.cell[c].anum;
+			bd2.cell[c].qans=bd1.cell[c].qans;
+			bd2.cell[c].qsub=bd1.cell[c].qsub;
 		}
-		if(!!bd.isexcell){
-			for(var c=0;c<bd.excellmax;c++){
+		if(!!bd1.isexcell){
+			for(var c=0;c<bd1.excellmax;c++){
 				bd2.excell[c] = {};
-				bd2.excell[c].qnum=bd.excell[c].qnum;
-				bd2.excell[c].qdir=bd.excell[c].qdir;
+				bd2.excell[c].qnum=bd1.excell[c].qnum;
+				bd2.excell[c].qdir=bd1.excell[c].qdir;
 			}
 		}
-		if(!!bd.iscross){
-			for(var c=0;c<bd.crossmax;c++){
+		if(!!bd1.iscross){
+			for(var c=0;c<bd1.crossmax;c++){
 				bd2.cross[c] = {};
-				bd2.cross[c].ques=bd.cross[c].ques;
-				bd2.cross[c].qnum=bd.cross[c].qnum;
+				bd2.cross[c].ques=bd1.cross[c].ques;
+				bd2.cross[c].qnum=bd1.cross[c].qnum;
 			}
 		}
-		if(!!bd.isborder){
-			for(var i=0;i<bd.bdmax;i++){
+		if(!!bd1.isborder){
+			for(var i=0;i<bd1.bdmax;i++){
 				bd2.border[i] = {};
-				bd2.border[i].ques=bd.border[i].ques;
-				bd2.border[i].qnum=bd.border[i].qnum;
-				bd2.border[i].qans=bd.border[i].qans;
-				bd2.border[i].qsub=bd.border[i].qsub;
-				bd2.border[i].line=bd.border[i].line;
+				bd2.border[i].ques=bd1.border[i].ques;
+				bd2.border[i].qnum=bd1.border[i].qnum;
+				bd2.border[i].qans=bd1.border[i].qans;
+				bd2.border[i].qsub=bd1.border[i].qsub;
+				bd2.border[i].line=bd1.border[i].line;
 			}
 		}
 		return bd2;
@@ -337,19 +333,19 @@ pzprv3.extendCoreClass('Debug',
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
-		if(!!bd.isexcell){
+		if(!!bd1.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
 				if(bd1.excell[c].qnum!=bd2.excell[c].qnum ){ result = false;}
 				if(bd1.excell[c].qdir!=bd2.excell[c].qdir){ result = false;}
 			}
 		}
-		if(!!bd.iscross){
+		if(!!bd1.iscross){
 			for(var c=0;c<bd1.cross.length;c++){
 				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
 				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
 			}
 		}
-		if(!!bd.isborder){
+		if(!!bd1.isborder){
 			for(var i=0;i<bd1.border.length;i++){
 				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; this.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
 				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; this.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}

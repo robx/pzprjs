@@ -130,7 +130,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return (cell.ques===1?4:Math.max(bd.qcols,bd.qrows));
+		return (cell.ques===1?4:Math.max(this.owner.board.qcols,this.owner.board.qrows));
 	},
 	minnum : 0
 },
@@ -262,7 +262,7 @@ Encode:{
 	},
 
 	decodeTateyoko : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[c];
 
@@ -278,7 +278,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTateyoko : function(type){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qu=bd.cell[c].ques, qn=bd.cell[c].qnum;
 			if(qu===0){
@@ -347,8 +347,8 @@ AnsCheck:{
 			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
 		}
 
-		bd.cell.seterr(-1);
-		var binfo = bd.getBarInfo();
+		this.owner.board.cell.seterr(-1);
+		var binfo = this.owner.board.getBarInfo();
 		if( !this.checkDoubleNumber(binfo) ){
 			this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;
 		}
@@ -356,7 +356,7 @@ AnsCheck:{
 		if( !this.checkNumberAndSize(binfo) ){
 			this.setAlert('数字と棒の長さが違います。','The number is different from the length of line.'); return false;
 		}
-		bd.cell.seterr(0);
+		this.owner.board.cell.seterr(0);
 
 		if( !this.checkBCell(2) ){
 			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
@@ -371,7 +371,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});},
 
 	checkBCell : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getQnum();
 			if(cell.getQues()!==1 || num<0){ continue;}

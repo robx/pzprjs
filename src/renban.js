@@ -124,7 +124,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum(cell);}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
@@ -169,7 +169,7 @@ AnsCheck:{
 	},
 
 	checkBorderSideNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		// 線の長さを取得する
 		var rdata = bd.getBorderLengthInfo();
 

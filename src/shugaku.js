@@ -68,7 +68,7 @@ MouseEvent:{
 
 		this.mousereset();
 		cell.drawaround();
-		this.mouseCell = bd.emptycell;
+		this.mouseCell = this.owner.board.emptycell;
 	},
 
 	inputcell_shugaku : function(){
@@ -100,15 +100,16 @@ MouseEvent:{
 		else if(adj.getQans()>=47 && adj.getQans()<=50){ adj.setQans(46);}
 	},
 	currentTargetADJ : function(){
-		if(this.mouseCell.isnull){ return bd.emptycell;}
-		var cell = this.mouseCell;
-		switch(this.inputData){
-			case 2: return cell.up();
-			case 3: return cell.dn();
-			case 4: return cell.lt();
-			case 5: return cell.rt();
+		if(!this.mouseCell.isnull){
+			var cell = this.mouseCell;
+			switch(this.inputData){
+				case 2: return cell.up();
+				case 3: return cell.dn();
+				case 4: return cell.lt();
+				case 5: return cell.rt();
+			}
 		}
-		return bd.emptycell;
+		return this.owner.board.emptycell;
 	}
 },
 
@@ -288,20 +289,20 @@ Encode:{
 	},
 
 	decodeShugaku : function(){
-		var c=0, bstr = this.outbstr;
+		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (ca>='0' && ca<='4'){ bd.cell[c].qnum = parseInt(ca,36);}
-			else if(ca==='5')          { bd.cell[c].qnum = -2;}
+			var ca = bstr.charAt(i), cell = bd.cell[c];
+			if     (ca>='0' && ca<='4'){ cell.qnum = parseInt(ca,36);}
+			else if(ca==='5')          { cell.qnum = -2;}
 			else{ c+=(parseInt(ca,36)-6);}
 
 			c++;
 			if(c>=bd.cellmax){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeShugaku : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
@@ -364,7 +365,7 @@ AnsCheck:{
 			this.setAlert('通路に接していない布団があります。', 'There is a futon separated to aisle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getBCellInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getBCellInfo() ) ){
 			this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
 		}
 
@@ -380,7 +381,7 @@ AnsCheck:{
 	},
 
 	checkKitamakura : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQans()===43){
@@ -394,7 +395,7 @@ AnsCheck:{
 	},
 
 	checkFutonAisle : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}

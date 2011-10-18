@@ -94,7 +94,7 @@ Cell:{
 	numberIsWhite : true,
 
 	nummaxfunc : function(){
-		var bx=this.bx, by=this.by;
+		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
 		return Math.max(col, row);
@@ -184,7 +184,7 @@ Board:{
 
 		this.pole = [];
 
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0,len=this.owner.board.cellmax;c<len;c++){
 			this.id[c]=[];
 			this.pole[c]=[];
 		}
@@ -202,7 +202,7 @@ Board:{
 	getclist : function(areaid){
 		var room = this.room[areaid], idlist = room.idlist;
 		var clist = this.owner.newInstance('CellList');
-		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ clist.add(this.owner.board.cell[idlist[i]]);}
 		clist.pole = room.pole;
 		clist.link = room.link;
 		clist.vert = room.vert;
@@ -230,7 +230,7 @@ CellList:{
 
 Menu:{
 	irowakeRemake : function(){
-		bd.barinfo.newIrowake();
+		this.owner.board.barinfo.newIrowake();
 		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	}
 },
@@ -434,12 +434,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var binfo = bd.getBarInfo();
+		var binfo = this.owner.board.getBarInfo();
 		if( !this.checkLineCount(binfo, 1) ){
 			this.setAlert('白丸に線が2本以上つながっています。','Prural lines connect to a white circle.'); return false;
 		}
 
-		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
+		this.owner.board.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
 		if( !this.checkLoop() ){
 			this.setAlert('棒で輪っかができています。','There is a looped bars.'); return false;
 		}
@@ -455,22 +455,22 @@ AnsCheck:{
 		if( !this.checkPoleLength(binfo,2) ){
 			this.setAlert('白丸から出る棒の長さが短いです。','The length of the bar is short.'); return false;
 		}
-		bd.cell.seterr(0);
+		this.owner.board.cell.seterr(0);
 
 		if( !this.checkLineCount(binfo, 2) ){
 			this.setAlert('白丸に線がつながっていません。','No bar connects to a white circle.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.barinfo.getAreaInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.barinfo.getAreaInfo() ) ){
 			this.setAlert('棒が１つに繋がっていません。','Bars are devided.'); return false;
 		}
 
 		return true;
 	},
-	check1st : function(){ return this.checkOneArea( bd.barinfo.getAreaInfo() );},
+	check1st : function(){ return this.checkOneArea( this.owner.board.barinfo.getAreaInfo() );},
 
 	checkLineCount : function(binfo, type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
@@ -484,7 +484,7 @@ AnsCheck:{
 		return result;
 	},
 	checkPoleLength : function(binfo,type){
-		var result=true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -517,7 +517,7 @@ AnsCheck:{
 	},
 
 	checkLoop : function(){
-		var sinfo={cell:[]};
+		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.barinfo.getcellaround(bd.cell[c]);
 		}
@@ -538,7 +538,7 @@ AnsCheck:{
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
-		for(var c=0;c<bd.cellmax;c++){ passed[c]=false;}
+		for(var c=0;c<this.owner.board.cellmax;c++){ passed[c]=false;}
 
 		while(history.length>0){
 			var c = history[history.length-1];

@@ -125,7 +125,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
 		}
@@ -168,7 +168,7 @@ AnsCheck:{
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 
-			var clist2 = bd.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==areaid);});
+			var clist2 = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==areaid);});
 			var d2 = clist2.getRectSize();
 
 			if( clist2.length===0 || (d2.cols*d2.rows!=d2.cnt) || (d.x1!==d2.x1 && d.x2!==d2.x2) || (d.y1!==d2.y1 && d.y2!==d2.y2) ){

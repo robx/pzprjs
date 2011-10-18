@@ -126,7 +126,7 @@ Cell:{
 	maxnum : 255,
 	minnum : 0,
 	nummaxfunc : function(){
-		return Math.min(bd.qcols+bd.qrows-2, this.maxnum);
+		return Math.min(this.owner.board.qcols+this.owner.board.qrows-2, this.maxnum);
 	}
 },
 
@@ -218,25 +218,26 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var o = this.owner, bd = o.board, pid = o.pid;
 
-		if( (this.owner.pid!=='sukororoom') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
+		if( (pid!=='sukororoom') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
 			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
 		}
 
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (this.owner.pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
+		if( (pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
 			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
 		}
 
-		if( (this.owner.pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);}) ){
+		if( (pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);}) ){
 			this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
 		}
 
-		if( (this.owner.pid!=='view') && !this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0) ){
+		if( (pid!=='view') && !this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0) ){
 			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
 		}
 
-		if( (this.owner.pid==='view') && !this.checkViewNumber() ){
+		if( (pid==='view') && !this.checkViewNumber() ){
 			this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
 		}
 
@@ -252,7 +253,7 @@ AnsCheck:{
 	},
 
 	checkViewNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}

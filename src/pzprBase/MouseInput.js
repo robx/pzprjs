@@ -42,8 +42,8 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	mousereset : function(){
 		this.inputData = null;
-		this.mouseCell = bd.emptycell;
-		this.firstCell = bd.emptycell;
+		this.mouseCell = this.owner.board.emptycell;
+		this.firstCell = this.owner.board.emptycell;
 		this.firstPoint.reset();
 		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
@@ -60,27 +60,27 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var canvas = pzprv3.getEL('divques'), numparent = pzprv3.getEL('numobj_parent');
+		var o = this.owner, canvas = pzprv3.getEL('divques'), numparent = pzprv3.getEL('numobj_parent');
 		if(!pzprv3.OS.mobile){
-			this.owner.addEvent(canvas, "mousedown", this, this.e_mousedown);
-			this.owner.addEvent(canvas, "mousemove", this, this.e_mousemove);
-			this.owner.addEvent(canvas, "mouseup",   this, this.e_mouseup);
+			o.addEvent(canvas, "mousedown", this, this.e_mousedown);
+			o.addEvent(canvas, "mousemove", this, this.e_mousemove);
+			o.addEvent(canvas, "mouseup",   this, this.e_mouseup);
 			canvas.oncontextmenu = function(){ return false;};
 
-			this.owner.addEvent(numparent, "mousedown", this, this.e_mousedown);
-			this.owner.addEvent(numparent, "mousemove", this, this.e_mousemove);
-			this.owner.addEvent(numparent, "mouseup",   this, this.e_mouseup);
+			o.addEvent(numparent, "mousedown", this, this.e_mousedown);
+			o.addEvent(numparent, "mousemove", this, this.e_mousemove);
+			o.addEvent(numparent, "mouseup",   this, this.e_mouseup);
 			numparent.oncontextmenu = function(){ return false;};
 		}
 		// iPhoneOS用のタッチイベント設定
 		else{
-			this.owner.addEvent(canvas, "touchstart", this, this.e_mousedown);
-			this.owner.addEvent(canvas, "touchmove",  this, this.e_mousemove);
-			this.owner.addEvent(canvas, "touchend",   this, this.e_mouseup);
+			o.addEvent(canvas, "touchstart", this, this.e_mousedown);
+			o.addEvent(canvas, "touchmove",  this, this.e_mousemove);
+			o.addEvent(canvas, "touchend",   this, this.e_mouseup);
 
-			this.owner.addEvent(numparent, "touchstart", this, this.e_mousedown);
-			this.owner.addEvent(numparent, "touchmove",  this, this.e_mousemove);
-			this.owner.addEvent(numparent, "touchend",   this, this.e_mouseup);
+			o.addEvent(numparent, "touchstart", this, this.e_mousedown);
+			o.addEvent(numparent, "touchmove",  this, this.e_mousemove);
+			o.addEvent(numparent, "touchend",   this, this.e_mouseup);
 		}
 		this.mousereset();
 	},
@@ -94,11 +94,12 @@ pzprv3.createCommonClass('MouseEvent',
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
+		var o = this.owner;
 		if(this.enableMouse){
 			this.btn = this.getMouseButton(e);
 			if(this.btn.Left || this.btn.Right){
-				bd.errclear();
-				this.owner.undo.newOperation(true);
+				o.board.errclear();
+				o.undo.newOperation(true);
 				this.setposition(e);
 				this.mouseevent(0);	// 各パズルのルーチンへ
 			}
@@ -107,31 +108,33 @@ pzprv3.createCommonClass('MouseEvent',
 				this.btn.Middle = false;
 			}
 		}
-		this.owner.stopPropagation(e);
-		this.owner.preventDefault(e);
+		o.stopPropagation(e);
+		o.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
+		var o = this.owner;
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			this.owner.undo.newOperation(false);
+			o.undo.newOperation(false);
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
-		this.owner.stopPropagation(e);
-		this.owner.preventDefault(e);
+		o.stopPropagation(e);
+		o.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
 		// ポップアップメニュー移動中は当該処理が最優先
-		if(!!this.owner.menu.movingpop){ return true;}
+		var o = this.owner;
+		if(!!o.menu.movingpop){ return true;}
 
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			this.owner.undo.newOperation(false);
+			o.undo.newOperation(false);
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
-		this.owner.stopPropagation(e);
-		this.owner.preventDefault(e);
+		o.stopPropagation(e);
+		o.preventDefault(e);
 		return false;
 	},
 	e_mouseout : function(e) {
@@ -146,13 +149,14 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
 
-		if(this.mousestart && !!this.owner.config.flags.dispred && (this.owner.key.isZ ^ this.owner.getConfig('dispred'))){
+		var o = this.owner;
+		if(this.mousestart && !!o.config.flags.dispred && (o.key.isZ ^ o.getConfig('dispred'))){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}
 
-		if     (this.owner.playmode){ this.inputplay();}
-		else if(this.owner.editmode){ this.inputedit();}
+		if     (o.playmode){ this.inputplay();}
+		else if(o.editmode){ this.inputedit();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -265,12 +269,12 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	getcell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.emptycell;} // ぴったりは無効
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return this.owner.board.emptycell;} // ぴったりは無効
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return bd.emptyexcell;} // ぴったりは無効
+		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return this.owner.board.emptyexcell;} // ぴったりは無効
 		var pos = this.getpos(0), obj = pos.getex();
 		return (!obj.isnull ? obj : pos.getc());
 	},
@@ -288,7 +292,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getborder : function(spc){
-		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
+		var bd = this.owner.board, cw = this.owner.painter.cw, ch = this.owner.painter.ch;
 		var bx = ((this.inputPoint.px/cw)<<1)+1, by = ((this.inputPoint.py/ch)<<1)+1;
 		var dx =   this.inputPoint.px%cw,        dy =   this.inputPoint.py%ch;
 
@@ -397,7 +401,9 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mouseCell = cell;
 	},
 	inputqnum_main : function(cell){
-		if(this.owner.editmode && bd.rooms.hastop){ cell = bd.rooms.getTopOfRoomByCell(cell);}
+		if(this.owner.editmode && this.owner.board.rooms.hastop){
+			cell = this.owner.board.rooms.getTopOfRoomByCell(cell);
+		}
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
 		if     (this.owner.editmode){ subtype =-1;}
@@ -525,10 +531,11 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	getdir : function(base, current){
-		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return k.UP;}
-		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return k.DN;}
-		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return k.LT;}
-		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return k.RT;}
+		var dx = (current.bx-base.bx), dy = (current.by-base.by);
+		if     (dx=== 0 && dy===-2){ return k.UP;}
+		else if(dx=== 0 && dy=== 2){ return k.DN;}
+		else if(dx===-2 && dy=== 0){ return k.LT;}
+		else if(dx=== 2 && dy=== 0){ return k.RT;}
 		return k.NDIR;
 	},
 
@@ -541,7 +548,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		var clist = bd.rooms.getClistByCell(cell);
+		var clist = this.owner.board.rooms.getClistByCell(cell);
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			if(this.inputData===1 || cell2.getQsub()!==3){
@@ -606,7 +613,7 @@ pzprv3.createCommonClass('MouseEvent',
 	inputcrossMark : function(){
 		var pos = this.getpos(0.24);
 		if(!pos.oncross()){ return;}
-		var bm = (bd.iscross===2?0:2);
+		var bd = this.owner.board, bm = (bd.iscross===2?0:2);
 		if(pos.bx<bd.minbx+bm || pos.bx>bd.maxbx-bm || pos.by<bd.minby+bm || pos.by>bd.maxby-bm){ return;}
 
 		var cross = pos.getx();
@@ -664,8 +671,8 @@ pzprv3.createCommonClass('MouseEvent',
 	// mv.getnb()         上下左右に隣接する境界線のIDを取得する
 	//---------------------------------------------------------------------------
 	inputLine : function(){
-		if(bd.lines.isCenterLine){ this.inputLine1(0);}
-		else                     { this.inputBD(2);}
+		if(this.owner.board.lines.isCenterLine){ this.inputLine1(0);}
+		else                                   { this.inputBD(2);}
 	},
 	inputQsubLine : function(){ this.inputLine1(1);},
 	inputLine1 : function(flag){ // 0:line 1:borderQsub
@@ -693,7 +700,7 @@ pzprv3.createCommonClass('MouseEvent',
 		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
 		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
 		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
-		return bd.emptyborder;
+		return this.owner.board.emptyborder;
 	},
 
 	//---------------------------------------------------------------------------
@@ -722,9 +729,9 @@ pzprv3.createCommonClass('MouseEvent',
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isBlack()){ return;}
-		if(!this.RBBlackCell){ bd.bcell.getClistByCell(cell).seterr(1);}
+		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).seterr(1);}
 		else{ this.dispRed8(cell);}
-		bd.haserror = true;
+		this.owner.board.haserror = true;
 		this.owner.painter.paintAll();
 	},
 	dispRed8 : function(cell0){
@@ -734,7 +741,7 @@ pzprv3.createCommonClass('MouseEvent',
 			if(cell.error!==0){ continue;}
 
 			cell.seterr(1);
-			var bx=cell.bx, by=cell.by, clist=bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var bx=cell.bx, by=cell.by, clist=this.owner.board.cellinside(bx-2,by-2,bx+2,by+2);
 			for(var i=0;i<clist.length;i++){
 				var cell2 = clist[i];
 				if(cell2.error===0 && cell2.isBlack()){ stack.push(cell2);}
@@ -743,7 +750,7 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 
 	dispRedLine : function(){
-		var border = this.getborder(0.15);
+		var bd = this.owner.board, border = this.getborder(0.15);
 		this.mousereset();
 		if(border.isnull){ return;}
 

@@ -40,7 +40,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.max(bd.qcols,bd.qrows);
+		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },
 Board:{
@@ -97,7 +97,7 @@ Graphic:{
 	},
 
 	drawBlockBorders : function(){
-		var g = this.vinc('border_block', 'crispEdges');
+		var g = this.vinc('border_block', 'crispEdges'), bd = this.owner.board;
 
 		var lw = this.lw, lm = this.lm;
 
@@ -137,7 +137,7 @@ Encode:{
 		this.owner.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.outsize = [bd.qcols].join('/');
+		this.outsize = [this.owner.board.qcols].join('/');
 
 		this.owner.fio.encodeCellQnum_kanpen();
 	}
@@ -149,7 +149,7 @@ FileIO:{
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		this.sizestr = [bd.qcols].join("/");
+		this.sizestr = [this.owner.board.qcols].join("/");
 
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
@@ -160,7 +160,7 @@ FileIO:{
 		this.decodeCellAnum_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [bd.qcols].join("/");
+		this.sizestr = [this.owner.board.qcols].join("/");
 
 		this.encodeCellQnum_kanpen();
 		this.encodeCellAnum_kanpen();
@@ -189,7 +189,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkNoNumCell();},
 
 	checkRoomNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var max=bd.qcols;
 		var blk=((Math.sqrt(max)+0.1)|0);
 		for(var i=0;i<max;i++){

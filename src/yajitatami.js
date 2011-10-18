@@ -95,8 +95,8 @@ Encode:{
 	},
 
 	encodeBorder_if_exist : function(){
-		for(var id=0;id<bd.bdmax;id++){
-			if(bd.border[id].ques===1){ this.encodeBorder(); break;}
+		for(var id=0;id<this.owner.board.bdmax;id++){
+			if(this.owner.board.border[id].ques===1){ this.encodeBorder(); break;}
 		}
 	}
 },
@@ -123,7 +123,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkArrowNumber_border() ){
 			this.setAlert('矢印の方向に境界線がありません。','There is no border in front of the arrowed number.'); return false;
 		}
@@ -148,7 +148,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -171,7 +171,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_border : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir = cell.getQdir();
 			if(!cell.isValidNum() || !dir){ continue;}

@@ -23,7 +23,7 @@ MouseEvent:{
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.emptycell;
+			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -48,7 +48,7 @@ MouseEvent:{
 		}
 		else if(this.inputData<=-3){
 			var cell2 = this.mouseCell;
-			var border = bd.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
+			var border = this.owner.board.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
 			if(this.inputData===-3){ this.inputData=(border.getQsub()===1?-5:-4);}
 			if(!border.isnull){
 				border.setQsub(this.inputData===-4?1:0);
@@ -172,6 +172,7 @@ FileIO:{
 		this.decodeCellAnum_kanpen();
 
 		// 境界線を自動入力
+		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			border.qans = 0;
@@ -241,7 +242,7 @@ AnsCheck:{
 	},
 
 	getErrorFlag_cell : function(){
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
 			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;

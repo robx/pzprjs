@@ -138,12 +138,12 @@ Encode:{
 	},
 
 	decode4Cell_toichika : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd=this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
-			if(this.include(ca,"1","4")){ bd.cell[c].qnum = parseInt(bstr.substr(i,1),10);}
-			else if(ca==='.')           { bd.cell[c].qnum = -2;}
+			if(this.include(ca,"1","4")){ cell.qnum = parseInt(bstr.substr(i,1),10);}
+			else if(ca==='.')           { cell.qnum = -2;}
 			else                        { c += (parseInt(ca,36)-5);}
 
 			c++;
@@ -152,7 +152,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encode4Cell_toichika : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
@@ -187,12 +187,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの国に2つ以上の矢印が入っています。','A country has plural arrows.'); return false;
 		}
 
-		var ainfo = bd.getPairedArrowsInfo();
+		var ainfo = this.owner.board.getPairedArrowsInfo();
 		if( !this.checkAdjacentCountries(rinfo, ainfo) ){
 			this.setAlert('辺を共有する国にペアとなる矢印が入っています。','There are paired arrows in adjacent countries.'); return false;
 		}
@@ -212,7 +212,7 @@ AnsCheck:{
 		var result = true;
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){
-				bd.cell[ainfo[i]].seterr(1);
+				this.owner.board.cell[ainfo[i]].seterr(1);
 				result = false;
 			}
 		}
@@ -220,7 +220,7 @@ AnsCheck:{
 	},
 	checkAdjacentCountries : function(rinfo, ainfo){
 		// 隣接エリア情報を取得して、形式を変換
-		var sides=bd.getSideAreaInfo(rinfo), adjs=[];
+		var sides=this.owner.board.getSideAreaInfo(rinfo), adjs=[];
 		for(var r=1;r<=rinfo.max-1;r++){
 			adjs[r]=[];
 			for(var i=0;i<sides[r].length;i++){ adjs[r][sides[r][i]]=true;}

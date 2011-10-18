@@ -30,7 +30,7 @@ MouseEvent:{
 		if(!border.isnull){
 			var dir = this.getdir(this.prevPos, pos);
 			var d = border.getlinesize();
-			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
@@ -58,7 +58,7 @@ MouseEvent:{
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+		var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
 		this.prevPos = pos;
 
@@ -340,7 +340,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( bd.getLareaInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and numbers are not connected each other.'); return false;
 		}
 
@@ -351,7 +351,7 @@ AnsCheck:{
 	},
 
 	checkCellNumber : function(flag){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell = bd.cell[cc], qn = cell.getQnum();
 			if(qn<0){ continue;}

@@ -162,13 +162,13 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		var bx=this.bx, by=this.by;
+		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx+2):bx+2)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by+2):by+2)>>1);
 		return (col+row-1);
 	},
 	numminfunc : function(){
-		return ((bd.qcols>=2?2:1)+(bd.qrows>=2?2:1)-1);
+		return ((this.owner.board.qcols>=2?2:1)+(this.owner.board.qrows>=2?2:1)-1);
 	},
 	minnum : 3,
 
@@ -183,7 +183,7 @@ Board:{
 	isborder : 1,
 
 	getLblockInfo : function(){
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.getRoomInfo();
 		rinfo.place = [];
 
 		for(var r=1;r<=rinfo.max;r++){
@@ -191,7 +191,7 @@ Board:{
 
 			/* 四角形のうち別エリアとなっている部分を調べる */
 			/* 幅が1なので座標自体は調べなくてよいはず      */
-			var subclist = bd.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
+			var subclist = this.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var dl = subclist.getRectSize();
 			if( subclist.length==0 || (dl.cols*dl.rows!=dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
 				rinfo.room[r].shape = 0;
@@ -204,18 +204,18 @@ Board:{
 				/* 端のセル */
 				var edge1=null, edge2=null;
 				if     ((d.x1===dl.x1&&d.y1===dl.y1)||(d.x2===dl.x2&&d.y2===dl.y2))
-							{ edge1 = bd.getc(d.x1,d.y2).id; edge2 = bd.getc(d.x2,d.y1).id;}
+							{ edge1 = this.getc(d.x1,d.y2).id; edge2 = this.getc(d.x2,d.y1).id;}
 				else if((d.x1===dl.x1&&d.y2===dl.y2)||(d.x2===dl.x2&&d.y1===dl.y1))
-							{ edge1 = bd.getc(d.x1,d.y1).id; edge2 = bd.getc(d.x2,d.y2).id;}
+							{ edge1 = this.getc(d.x1,d.y1).id; edge2 = this.getc(d.x2,d.y2).id;}
 				rinfo.place[edge1] = 2;
 				rinfo.place[edge2] = 2;
 
 				/* 角のセル */
 				var corner=null;
-				if     (d.x1===dl.x1 && d.y1===dl.y1){ corner = bd.getc(d.x2,d.y2).id;}
-				else if(d.x1===dl.x1 && d.y2===dl.y2){ corner = bd.getc(d.x2,d.y1).id;}
-				else if(d.x2===dl.x2 && d.y1===dl.y1){ corner = bd.getc(d.x1,d.y2).id;}
-				else if(d.x2===dl.x2 && d.y2===dl.y2){ corner = bd.getc(d.x1,d.y1).id;}
+				if     (d.x1===dl.x1 && d.y1===dl.y1){ corner = this.getc(d.x2,d.y2).id;}
+				else if(d.x1===dl.x1 && d.y2===dl.y2){ corner = this.getc(d.x2,d.y1).id;}
+				else if(d.x2===dl.x2 && d.y1===dl.y1){ corner = this.getc(d.x1,d.y2).id;}
+				else if(d.x2===dl.x2 && d.y2===dl.y2){ corner = this.getc(d.x1,d.y1).id;}
 				rinfo.place[corner] = 3;
 			}
 		}
@@ -312,7 +312,7 @@ Graphic:{
 	},
 
 	decodeLoute : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var obj = bd.cell[c], ca = bstr.charAt(i);
 
@@ -327,7 +327,7 @@ Graphic:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeLoute : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", dir = bd.cell[c].qdir;
 
@@ -352,7 +352,7 @@ Graphic:{
 	},
 
 	decodeSashigane : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[c];
 
@@ -365,12 +365,12 @@ Graphic:{
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
-		this.outbstr = bstr.substr(i);
+		this.outbstr = bstr.substr(i+1);
 	},
 	encodeSashigane : function(){
-		var cm = "", count = 0;
+		var cm = "", count = 0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if(dir===5){
@@ -424,7 +424,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getLblockInfo();
+		var rinfo = this.owner.board.getLblockInfo();
 		if( !this.checkArrowCorner1(rinfo) ){
 			this.setAlert('矢印がブロックの端にありません。','An arrow is not at the edge of the block.'); return false;
 		}

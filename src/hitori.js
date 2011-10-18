@@ -28,7 +28,7 @@ Cell:{
 	disInputHatena : true,
 
 	nummaxfunc : function(){
-		return Math.max(bd.qcols,bd.qrows);
+		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },
 Board:{
@@ -76,11 +76,11 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		this.drawNumbers();
 
-		if(!bd.haserror && this.owner.getConfig('plred')){
-			var ans = this.owner.checker;
-			ans.inCheck = true;
-			ans.checkRowsCols(ans.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
-			ans.inCheck = false;
+		var o=this.owner, bd=o.board;
+		if(!bd.haserror && o.getConfig('plred')){
+			o.checker.inCheck = true;
+			o.checker.checkRowsCols(o.checker.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
+			o.checker.inCheck = false;
 
 			for(var i=0;i<bd.cellmax;i++){ this.drawNumber1(bd.cell[i]);}
 
@@ -101,22 +101,22 @@ Encode:{
 	},
 
 	decodeHitori : function(){
-		var c=0, i=0, bstr = this.outbstr;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z"))
-							 { bd.cell[c].qnum = parseInt(ca,36);}
-			else if(ca==='-'){ bd.cell[c].qnum = parseInt(bstr.substr(i+1,2),36); i+=2;}
-			else if(ca==='%'){ bd.cell[c].qnum = -2;}
+							 { cell.qnum = parseInt(ca,36);}
+			else if(ca==='-'){ cell.qnum = parseInt(bstr.substr(i+1,2),36); i+=2;}
+			else if(ca==='%'){ cell.qnum = -2;}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c>=bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeHitori : function(){
-		var count=0, cm="";
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn= bd.cell[c].qnum;
 
@@ -181,7 +181,7 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 

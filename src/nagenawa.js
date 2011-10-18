@@ -48,7 +48,7 @@ pzprv3.createCustoms('nagenawa', {
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.rooms.getCntOfRoomByCell(this));
+		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
 	},
 	minnum : 0
 },
@@ -149,7 +149,7 @@ Graphic:{
 
 	// 元ネタはencode/decodeCrossMark
 	decodeBlockCell : function(){
-		var cc=0, i=0, bstr = this.outbstr;
+		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -165,7 +165,7 @@ Graphic:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeBlockCell : function(){
-		var cm="", count=0;
+		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="";
 			if(bd.cell[c].ques===1){ pstr = ".";}
@@ -219,17 +219,18 @@ Graphic:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var o=this.owner, bd=o.board, pid=o.pid;
 
 		if( !this.checkNoLine() ){
 			this.setAlert('線が引かれていません。','There is no line on the board.'); return false;
 		}
 
-		if( (this.owner.pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.getQues()===1);}) ){
+		if( (pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.getQues()===1);}) ){
 			this.setAlert('黒マスの上に線が引かれています。','There is a line on the black cell.'); return false;
 		}
 
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (this.owner.pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
+		if( (pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
 			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 		}
 
@@ -240,7 +241,7 @@ AnsCheck:{
 			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
 		}
 
-		if( (this.owner.pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);}) ){
+		if( (pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);}) ){
 			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
 		}
 
@@ -248,7 +249,7 @@ AnsCheck:{
 			this.setAlert('長方形か正方形でない輪っかがあります。','There is a non-rectangle loop.'); return false;
 		}
 
-		if( (this.owner.pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);}) ){
+		if( (pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);}) ){
 			this.setAlert('白マスの上に線が引かれていません。','There is no line on the white cell.'); return false;
 		}
 
@@ -256,11 +257,12 @@ AnsCheck:{
 	},
 
 	checkNoLine : function(){
+		var bd = this.owner.board;
 		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
 		return false;
 	},
 	checkAllLoopRect : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		var xinfo = bd.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
 			var blist = xinfo.getblist(r);
@@ -274,6 +276,7 @@ AnsCheck:{
 		return result;
 	},
 	isLoopRect : function(blist){
+		var bd = this.owner.board;
 		var x1=bd.maxbx, x2=bd.minbx, y1=bd.maxby, y2=bd.minby;
 		for(var i=0;i<blist.length;i++){
 			if(x1>blist[i].bx){ x1=blist[i].bx;}

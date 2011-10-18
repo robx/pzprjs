@@ -90,7 +90,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(bd.excell[0]);
+		this.setTEC(this.owner.board.excell[0]);
 	}
 },
 
@@ -105,7 +105,7 @@ EXCell:{
 		var bx=this.bx, by=this.by, cnt;
 		if(bx===-1 && by===-1){ return;}
 		var sum=0;
-		for(var n=(bx===-1?bd.qrows:bd.qcols);n>0;n--){ sum+=n;}
+		for(var n=(bx===-1?this.owner.board.qrows:this.owner.board.qcols);n>0;n--){ sum+=n;}
 		return sum;
 	},
 	minnum : 0
@@ -185,7 +185,7 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], key="excell_"+excell.id;
-			if(excell.id>=bd.qcols+bd.qrows){ continue;}
+			if(excell.id>=this.owner.board.qcols+this.owner.board.qrows){ continue;}
 
 			if(excell.bx===-1 && excell.by===-1){ continue;}
 			var color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
@@ -196,7 +196,7 @@ Graphic:{
 	},
 
 	drawCircledNumbers_box : function(){
-		var list = [];
+		var list = [], bd = this.owner.board;
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ list.push([bd.maxbx+1,by]);}}
 		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ list.push([bx,bd.maxby+1]);}}
@@ -238,7 +238,7 @@ Encode:{
 	},
 
 	decodeBox : function(){
-		var cm="", ec=0, bstr = this.outbstr;
+		var cm="", ec=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var a=0;a<bstr.length;a++){
 			var ca=bstr.charAt(a), obj=bd.excell[ec];
 			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
@@ -250,7 +250,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeBox : function(){
-		var cm="";
+		var cm="", bd = this.owner.board;
 		for(var ec=0,len=bd.qcols+bd.qrows;ec<len;ec++){
 			var qnum=bd.excell[ec].qnum;
 			if(qnum<32){ cm+=("" +qnum.toString(32));}
@@ -263,7 +263,7 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var item = this.getItemList(bd.qrows+1);
+		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca=="."){ continue;}
@@ -282,6 +282,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
+		var bd = this.owner.board;
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
@@ -318,7 +319,7 @@ AnsCheck:{
 	},
 
 	checkBlackCells : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
 			var qn=excell.getQnum(), pos=excell.getaddr(), val=0, cell;

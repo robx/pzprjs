@@ -75,17 +75,18 @@ KeyEvent:{
 Cell:{
 	setNum_hanare : function(val){
 		if(val>=0){
-			val = bd.rooms.getCntOfRoomByCell(this);
+			var o=this.owner, rooms=o.board.rooms;
+			val = rooms.getCntOfRoomByCell(this);
 			if(val>this.maxnum){ return null;}
 
-			var clist = bd.rooms.getClistByCell(this), cell2=null;
+			var clist = rooms.getClistByCell(this), cell2=null;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].isNum()){ cell2=clist[i]; break;}
 			}
-			if(this===cell2){ val=(this.owner.playmode?-2:-1);}
+			if(this===cell2){ val=(o.playmode?-2:-1);}
 			else if(cell2!==null){
-				if(this.owner.playmode && cell2.qnum!==-1){ return null;}
-				cell2.setNum(this.owner.playmode?-2:-1);
+				if(o.playmode && cell2.qnum!==-1){ return null;}
+				cell2.setNum(o.playmode?-2:-1);
 				cell2.draw();
 			}
 			else{ /* c2===null */
@@ -160,7 +161,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkDoubleNumber(rinfo) ){
 			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A room has plural numbers.'); return false;
 		}
@@ -200,7 +201,7 @@ AnsCheck:{
 			}
 		}
 
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 			var cell=null, num, distance;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){

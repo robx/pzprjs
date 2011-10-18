@@ -31,7 +31,7 @@ Cell:{
 	numberIsWhite : true,
 
 	nummaxfunc : function(){
-		return bd.qcols+bd.qrows-1;
+		return this.owner.board.qcols+this.owner.board.qrows-1;
 	},
 	minnum : 2
 },
@@ -123,7 +123,7 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
@@ -135,7 +135,7 @@ AnsCheck:{
 	},
 
 	checkCellNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell = bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}

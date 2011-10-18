@@ -38,7 +38,9 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,{2:(bd.qcols-(this.cursor.pos.bx>>1)-1), 4:(bd.qrows-(this.cursor.pos.by>>1)-1)});
+		this.inputnumber51(ca,
+			{2 : (this.owner.board.qcols-(this.cursor.pos.bx>>1)-1),
+			 4 : (this.owner.board.qrows-(this.cursor.pos.by>>1)-1)});
 	},
 
 	enablemake_p : true,
@@ -162,32 +164,32 @@ Encode:{
 
 	decodeTilePaint : function(){
 		// 盤面内数字のデコード
-		var id=0, a=0, bstr = this.outbstr;
+		var id=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[id];
+			var ca = bstr.charAt(i), cell=bd.cell[id];
 
 			if(ca>='g' && ca<='z'){ id+=(parseInt(ca,36)-16);}
 			else{
-				obj.set51cell();
+				cell.set51cell();
 				if     (ca==='-'){
-					obj.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
-					obj.qnum = parseInt(bstr.substr(i+2,2),16);
+					cell.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+					cell.qnum = parseInt(bstr.substr(i+2,2),16);
 					i+=3;
 				}
 				else if(ca==='+'){
-					obj.qdir = parseInt(bstr.substr(i+1,2),16);
-					obj.qnum = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
+					cell.qdir = parseInt(bstr.substr(i+1,2),16);
+					cell.qnum = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
 					i+=3;
 				}
 				else if(ca==='='){
-					obj.qdir = parseInt(bstr.substr(i+1,2),16);
-					obj.qnum = parseInt(bstr.substr(i+3,2),16);
+					cell.qdir = parseInt(bstr.substr(i+1,2),16);
+					cell.qnum = parseInt(bstr.substr(i+3,2),16);
 					i+=4;
 				}
 				else{
-					obj.qdir = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
-					obj.qnum = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+					cell.qdir = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
+					cell.qnum = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
 					i+=1;
 				}
 			}
@@ -200,18 +202,18 @@ Encode:{
 		// 盤面外数字のデコード
 		id=0;
 		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[id].qdir = -1;}
-			else if(ca==='-'){ bd.excell[id].qdir = parseInt(bstr.substr(i+1,1),16); i+=2;}
-			else             { bd.excell[id].qdir = parseInt(ca,16);}
+			var ca = bstr.charAt(i), excell = bd.excell[id];
+			if     (ca==='.'){ excell.qdir = -1;}
+			else if(ca==='-'){ excell.qdir = parseInt(bstr.substr(i+1,1),16); i+=2;}
+			else             { excell.qdir = parseInt(ca,16);}
 			id++;
 			if(id>=bd.qcols){ a=i+1; break;}
 		}
 		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i);
-			if     (ca==='.'){ bd.excell[id].qnum = -1;}
-			else if(ca==='-'){ bd.excell[id].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { bd.excell[id].qnum = parseInt(ca,16);}
+			var ca = bstr.charAt(i), excell = bd.excell[id];
+			if     (ca==='.'){ excell.qnum = -1;}
+			else if(ca==='-'){ excell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { excell.qnum = parseInt(ca,16);}
 			id++;
 			if(id>=bd.qcols+bd.qrows){ a=i+1; break;}
 		}
@@ -219,20 +221,20 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeTilePaint : function(type){
-		var cm="";
+		var cm="", bd = this.owner.board;
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr = "", obj=bd.cell[c];
+			var pstr = "", cell=bd.cell[c];
 
-			if(obj.ques===51){
-				pstr+=obj.qdir.toString(16);
-				pstr+=obj.qnum.toString(16);
+			if(cell.ques===51){
+				pstr+=cell.qdir.toString(16);
+				pstr+=cell.qnum.toString(16);
 
-				if     (obj.qnum>=16 && obj.qdir>=16){ pstr = ("="+pstr);}
-				else if(obj.qnum>=16){ pstr = ("-"+pstr);}
-				else if(obj.qdir>=16){ pstr = ("+"+pstr);}
+				if     (cell.qnum>=16 && cell.qdir>=16){ pstr = ("="+pstr);}
+				else if(cell.qnum>=16){ pstr = ("-"+pstr);}
+				else if(cell.qdir>=16){ pstr = ("+"+pstr);}
 			}
 			else{ count++;}
 
@@ -286,7 +288,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSameObjectInRoom(bd.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
+		if( !this.checkSameObjectInRoom(this.owner.board.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
 			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 		}
 
@@ -298,7 +300,7 @@ AnsCheck:{
 	},
 
 	isBCellCount : function(keycellpos, clist){
-		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}
 		else if(dir===k.DN){ number = keyobj.getQdir();}
 

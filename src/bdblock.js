@@ -102,7 +102,7 @@ AnsCheck:{
 			this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){
 			this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
 		}
@@ -128,7 +128,7 @@ AnsCheck:{
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(rinfo){
-		var d=[], dmax=0, val=[];
+		var d=[], dmax=0, val=[], bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){

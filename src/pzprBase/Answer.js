@@ -26,20 +26,21 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.setAlert()  check()から戻ってきたときに返す、エラー内容を表示するalert文を設定する
 	//---------------------------------------------------------------------------
 	check : function(){
+		var o = this.owner;
 		this.inCheck = true;
 		this.alstr = { jp:'' ,en:''};
-		this.owner.key.keyreset();
-		this.owner.mouse.mousereset();
+		o.key.keyreset();
+		o.mouse.mousereset();
 
 		this.checkresult = true;
 		this.checkAns()
 		if(!this.checkresult){
-			this.owner.menu.alertStr(this.alstr.jp, this.alstr.en);
-			bd.haserror = true;
-			this.owner.painter.paintAll();
+			o.menu.alertStr(this.alstr.jp, this.alstr.en);
+			o.board.haserror = true;
+			o.painter.paintAll();
 		}
 		else{
-			this.owner.menu.alertStr("正解です！","Complete!");
+			o.menu.alertStr("正解です！","Complete!");
 		}
 
 		this.inCheck = false;
@@ -63,7 +64,7 @@ pzprv3.createCommonClass('AnsCheck',
 		var ret = false;
 
 		this.inCheck = this.inAutoCheck = true;
-		bd.disableSetError();
+		this.owner.board.disableSetError();
 
 		if(this.autocheck1st()){
 			this.checkresult = true;
@@ -75,7 +76,7 @@ pzprv3.createCommonClass('AnsCheck',
 				this.owner.setConfig('autocheck',false);
 			}
 		}
-		bd.enableSetError();
+		this.owner.board.enableSetError();
 		this.inCheck = this.inAutoCheck = false;
 
 		return ret;
@@ -83,7 +84,9 @@ pzprv3.createCommonClass('AnsCheck',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}
-		if((bd.lines.isCenterLine && !bd.linfo.enabled && !this.checkLcntCell(1)) || (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
+		var bd = this.owner.board;
+		if((bd.lines.isCenterLine && !bd.linfo.enabled && !this.checkLcntCell(1)) ||
+		   (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return false;}
 		return true;
 	},
 
@@ -94,8 +97,8 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func){
 		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
+		for(var c=0;c<this.owner.board.cellmax;c++){
+			var cell = this.owner.board.cell[c];
 			if(func(cell)){
 				if(this.inAutoCheck){ return false;}
 				cell.seterr(1);
@@ -120,8 +123,8 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkDir4Cell : function(iscount, type){ // 0:違う 1:numより小さい 2:numより大きい
 		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
+		for(var c=0;c<this.owner.board.cellmax;c++){
+			var cell = this.owner.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
 			if((type!==1 && num<count) || (type!==2 && num>count)){
@@ -134,7 +137,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkSideCell : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && func(cell,cell.rt())){
@@ -154,7 +157,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	check2x2Block : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
@@ -177,6 +180,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
+		var bd = this.owner.board;
 		if(cinfo.max>1){
 			if(this.performAsLine){ bd.border.seterr(-1); cinfo.setErrLareaByCell(bd.cell[1],1); }
 			if(!this.performAsLine || this.owner.pid=="firefly"){ cinfo.getclist(1).seterr(1);}
@@ -186,7 +190,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkOneLoop : function(){
-		var xinfo = bd.getLineInfo();
+		var bd = this.owner.board, xinfo = bd.getLineInfo();
 		if(xinfo.max>1){
 			bd.border.seterr(-1);
 			xinfo.getblist(1).seterr(1);
@@ -196,7 +200,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkLcntCell : function(val){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		if(bd.lines.ltotal[val]==0){ return true;}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -211,7 +215,7 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkenableLineParts : function(val){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if( (cell.ub().isLine() && cell.noLP(k.UP)) ||
@@ -233,7 +237,7 @@ pzprv3.createCommonClass('AnsCheck',
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
 			var errclist = this.owner.newInstance('CellList');
-			var clist = bd.cell.filter(function(cell){ return cell.isBlack();});
+			var clist = this.owner.board.cell.filter(function(cell){ return cell.isBlack();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;
 				for(var n=0;n<list.length;n++){
@@ -272,6 +276,7 @@ pzprv3.createCommonClass('AnsCheck',
 			var clist = cinfo.getclist(id), d = clist.getRectSize();
 			var a = clist.filter(function(cell){ return func(cell);}).length;
 
+			var bd = this.owner.board;
 			var cell = (bd.rooms.hastop ? bd.rooms.getTopOfRoom(id) : clist.getQnumCell());
 			var n = (!cell.isnull?cell.getQnum():-1);
 
@@ -305,7 +310,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
-		var sides = bd.getSideAreaInfo(rinfo);
+		var sides = this.owner.board.getSideAreaInfo(rinfo);
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
@@ -320,8 +325,8 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	checkSideAreaCell : function(rinfo, func, flag){
-		for(var id=0;id<bd.bdmax;id++){
-			var border = bd.border[id];
+		for(var id=0;id<this.owner.board.bdmax;id++){
+			var border = this.owner.board.border[id];
 			if(!border.isBorder()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && func(cell1, cell2)){
@@ -342,7 +347,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 	//---------------------------------------------------------------------------
 	checkSameObjectInRoom : function(rinfo, getvalue){
-		var result=true, d=[], val=[];
+		var result=true, d=[], val=[], bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]);}
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
@@ -390,7 +395,7 @@ pzprv3.createCommonClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	/* ともにevalfuncはAnswerクラスの関数限定 */
 	checkRowsCols : function(evalfunc, numfunc){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var by=1;by<=bd.maxby;by+=2){
 			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.call(this, clist, numfunc)){
@@ -408,7 +413,7 @@ pzprv3.createCommonClass('AnsCheck',
 		return result;
 	},
 	checkRowsColsPartly : function(evalfunc, termfunc, multierr){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
@@ -436,7 +441,7 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.checkLcntCross()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
 	checkLcntCross : function(val, bp){
-		var result=true, mm=(bd.iscross===1?2:0);
+		var result=true, bd=this.owner.board, mm=(bd.iscross===1?2:0);
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
@@ -482,7 +487,7 @@ pzprv3.createCommonClass('AnsCheck',
 			var cells = xinfo.room[id].cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
-			if(result){ bd.border.seterr(-1);}
+			if(result){ this.owner.board.border.seterr(-1);}
 			xinfo.getblist(id).seterr(1);
 			result = false;
 		}
@@ -491,7 +496,7 @@ pzprv3.createCommonClass('AnsCheck',
 
 	// 丸の場所で線を切り離して考える
 	getErrorFlag_line : function(){
-		var xinfo = this.owner.newInstance('AreaBorderInfo');
+		var bd = this.owner.board, xinfo = this.owner.newInstance('AreaBorderInfo');
 		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.border[id].isLine()?0:null);}
 
 		var clist = bd.cell.filter(function(cell){ return cell.isNum();});

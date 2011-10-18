@@ -42,18 +42,19 @@ MouseEvent:{
 		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
 		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
 		cell.setNum(-1);
-		bd.hinfo.generateGates();
+		this.owner.board.hinfo.generateGates();
 
 		cell.draw();
-		bd.startcell.draw();
+		this.owner.board.startcell.draw();
 	},
 
 	inputStartid : function(){
 		this.inputData = null;
-		bd.startcell.draw();
-		if(this.firstCell!==bd.startcell){
-			var cell0 = this.firstCell, cell = bd.startcell;
-			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
+		var st = this.owner.board.startcell;
+		st.draw();
+		if(this.firstCell!==st){
+			var cell0 = this.firstCell;
+			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, st.bx,st.by);
 		}
 	},
 	inputGate : function(){
@@ -61,7 +62,7 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var pos = cell.getaddr();
-		var input=false;
+		var input=false, bd = this.owner.board;
 
 		// 初回はこの中に入ってきます。
 		if(this.mouseCell.isnull){
@@ -137,7 +138,7 @@ KeyEvent:{
 		this.key_inputqnum_slalom(ca);
 	},
 	key_inputqnum_slalom : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getTCC(), bd = this.owner.board;
 
 		if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
 			var old=cell.getQues(), newques=-1;
@@ -199,7 +200,7 @@ Cell:{
 	disInputHatena : true,
 
 	nummaxfunc : function(){
-		return Math.min(bd.hinfo.max, this.maxnum);
+		return Math.min(this.owner.board.hinfo.max, this.maxnum);
 	}
 },
 Border:{
@@ -285,7 +286,7 @@ Board:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var cell0, cell = bd.getc(bx, by);
+		var bd = this.owner.board, cell = bd.getc(bx, by), cell0;
 		cell0 = bd.startcell; bd.startcell = cell;
 		cell0.draw();
 		cell.draw();
@@ -411,7 +412,7 @@ Graphic:{
 	drawStartpos : function(){
 		var g = this.vinc('cell_circle', 'auto');
 
-		var cell = bd.startcell, d = this.range;
+		var cell = this.owner.board.startcell, d = this.range;
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
 		var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
@@ -429,7 +430,7 @@ Graphic:{
 		this.dispnumStartpos();
 	},
 	dispnumStartpos : function(){
-		var g = this.vinc('cell_numberpos', 'auto');
+		var g = this.vinc('cell_numberpos', 'auto'), bd = this.owner.board;
 
 		var cell = bd.startcell, num = bd.hinfo.max;
 		if(num>=0){
@@ -444,7 +445,7 @@ Graphic:{
 		var clist = blist.cellinside();
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			if(cell!==bd.startcell){ continue;}
+			if(cell!==this.owner.board.startcell){ continue;}
 
 			this.range = {x1:cell.bx,y1:cell.by,x2:cell.bx,y2:cell.by};
 			this.drawStartpos();
@@ -456,6 +457,7 @@ Graphic:{
 
 	// Xキー押した時に数字を表示するメソッド
 	drawNumbersOnGate : function(keydown){
+		var bd = this.owner.board;
 		if(keydown){ bd.hinfo.generateGateNumber();}
 
 		for(var c=0;c<bd.cellmax;c++){
@@ -482,7 +484,7 @@ Encode:{
 		this.decodeSlalom((this.checkpflag("p")?1:0));
 	},
 	pzlexport : function(type){
-		bd.hinfo.generateAll();
+		this.owner.board.hinfo.generateAll();
 
 		if(type===0){ this.outpflag='p';}
 
@@ -491,7 +493,7 @@ Encode:{
 
 	decodeKanpen : function(){
 		this.owner.fio.decodeBoard_kanpen();
-		bd.hinfo.generateGates();
+		this.owner.board.hinfo.generateGates();
 	},
 	encodeKanpen : function(){
 		this.owner.fio.encodeBoard_kanpen();
@@ -501,13 +503,13 @@ Encode:{
 		var bstr = this.outbstr;
 		var array = bstr.split("/");
 
-		var c=0, i=0;
+		var c=0, i=0, bd = this.owner.board;
 		for(i=0;i<array[0].length;i++){
-			var ca = array[0].charAt(i);
+			var ca = array[0].charAt(i), cell = bd.cell[c];
 
-			if     (ca==='1'){ bd.cell[c].ques = 1;}
-			else if(ca==='2'){ bd.cell[c].ques = 21;}
-			else if(ca==='3'){ bd.cell[c].ques = 22;}
+			if     (ca==='1'){ cell.ques = 1;}
+			else if(ca==='2'){ cell.ques = 21;}
+			else if(ca==='3'){ cell.ques = 22;}
 			else if(this.include(ca,"4","9")||this.include(ca,"a","z")){ c+=(parseInt(ca,36)-4);}
 
 			c++;
@@ -544,16 +546,17 @@ Encode:{
 		else if(ver===1){
 			var c=0, spare=0;
 			for(i=i+1;i<array[0].length;i++){
-				if(bd.cell[c].ques!==1){ i--;}
+				var cell = bd.cell[c];
+				if(cell.ques!==1){ i--;}
 				else if(spare>0){ i--; spare--;}
 				else{
 					var ca = array[0].charAt(i);
 
 					if(this.include(ca,"0","9")||this.include(ca,"a","f")){
-						bd.cell[c].qnum = parseInt(ca,16);
+						cell.qnum = parseInt(ca,16);
 					}
 					else if(ca=='-'){
-						bd.cell[c].qnum = parseInt(bstr.substr(i+1,2),16); i+=2;
+						cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;
 					}
 					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
 				}
@@ -567,12 +570,12 @@ Encode:{
 		this.outbstr = array[0].substr(i);
 	},
 	encodeSlalom : function(ver){
-		var cm="", count=0;
+		var cm="", count=0, bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr="";
-			if     (bd.cell[c].ques=== 1){ pstr = "1";}
-			else if(bd.cell[c].ques===21){ pstr = "2";}
-			else if(bd.cell[c].ques===22){ pstr = "3";}
+			var pstr="", cell=bd.cell[c];
+			if     (cell.ques=== 1){ pstr = "1";}
+			else if(cell.ques===21){ pstr = "2";}
+			else if(cell.ques===22){ pstr = "3";}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
@@ -597,11 +600,10 @@ Encode:{
 		}
 		else if(ver===1){
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques!==1){ continue;}
+				var cell = bd.cell[c];
+				if(cell.ques!==1){ continue;}
 
-				var pstr = "";
-				var val = bd.cell[c].qnum;
-
+				var pstr = "", val = cell.qnum;
 				if     (val>= 1 && val< 16){ pstr =       val.toString(16);}
 				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
 				else{ count++;}
@@ -623,7 +625,7 @@ FileIO:{
 		if(this.filever==1){
 			this.decodeBoard_pzpr();
 			this.decodeBorderLine();
-			bd.hinfo.generateGates();
+			this.owner.board.hinfo.generateGates();
 		}
 		else if(this.filever==0){
 			this.decodeBoard_old();
@@ -631,7 +633,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		bd.hinfo.generateAll();
+		this.owner.board.hinfo.generateAll();
 
 		this.filever = 1;
 		this.encodeBoard_pzpr();
@@ -642,16 +644,17 @@ FileIO:{
 		this.decodeBoard_kanpen();
 		this.decodeBorderLine();
 
-		bd.hinfo.generateGates();
+		this.owner.board.hinfo.generateGates();
 	},
 	kanpenSave : function(){
-		bd.hinfo.generateAll();
+		this.owner.board.hinfo.generateAll();
 
 		this.encodeBoard_kanpen();
 		this.encodeBorderLine();
 	},
 
 	decodeBoard_pzpr : function(){
+		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
 			if     (ca==="o"){ bd.startcell = obj;}
 			else if(ca==="i"){ obj.ques = 21;}
@@ -661,6 +664,7 @@ FileIO:{
 		});
 	},
 	encodeBoard_pzpr : function(){
+		var bd = this.owner.board;
 		this.encodeCell( function(obj){
 			if     (bd.startcell===obj){ return "o ";}
 			else if(obj.ques===21){ return "i ";}
@@ -673,6 +677,7 @@ FileIO:{
 	},
 
 	decodeBoard_kanpen : function(){
+		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
 			if     (ca==="+"){ bd.startcell = obj;}
 			else if(ca==="|"){ obj.ques = 21;}
@@ -682,6 +687,7 @@ FileIO:{
 		});
 	},
 	encodeBoard_kanpen : function(){
+		var bd = this.owner.board;
 		this.encodeCell( function(obj){
 			if     (bd.startcell===obj){ return "+ ";}
 			else if(obj.ques===21){ return "| ";}
@@ -694,7 +700,7 @@ FileIO:{
 	},
 
 	decodeBoard_old : function(){
-		var sv_num = [];
+		var sv_num = [], bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
 			var c = obj.id;
 			sv_num[c]=-1;
@@ -726,7 +732,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		bd.hinfo.generateAll();
+		this.owner.board.hinfo.generateAll();
 
 		if( !this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);}) ){
 			this.setAlert('黒マスに線が通っています。','A line is over a black cell.'); return false;
@@ -769,7 +775,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkLcntCell(1);},
 
 	checkStartid : function(){
-		var start = bd.startcell;
+		var start = this.owner.board.startcell;
 		if(start.lcnt()!=2){
 			start.seterr(1);
 			return false;
@@ -777,7 +783,7 @@ AnsCheck:{
 		return true;
 	},
 	checkGateLine : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.getclist(r);
 			for(var i=0;i<clist.length;i++){
@@ -793,7 +799,7 @@ AnsCheck:{
 		return result;
 	},
 	checkGateNumber : function(){
-		var sid = [], startcell = bd.startcell;
+		var sid = [], bd = this.owner.board, startcell = bd.startcell;
 		if(startcell.rb().isLine()){ sid.push({obj:startcell.rb(),dir:4});}
 		if(startcell.db().isLine()){ sid.push({obj:startcell.db(),dir:2});}
 		if(startcell.lb().isLine()){ sid.push({obj:startcell.lb(),dir:3});}
@@ -860,12 +866,13 @@ HurdleData:{
 HurdleManager:{
 	// 旗門が持つ旗門IDを取得する
 	getGateid : function(cc){
-		if(cc<0 || cc>=bd.cellmax){ return -1;}
+		if(cc<0 || cc>=this.owner.board.cellmax){ return -1;}
 		return this.gateid[cc];
 	},
 
 	// 旗門の両端にある黒マスの場所のセルを取得する
 	getGatePole : function(gateid){
+		var bd = this.owner.board;
 		var clist = this.owner.newInstance('CellList'), cell1, cell2;
 		if(this.data[gateid].val==21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
@@ -882,7 +889,7 @@ HurdleManager:{
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(c){
-		var cell=bd.cell[c], cell2, idlist=[];
+		var bd = this.owner.board, cell=bd.cell[c], cell2, idlist=[];
 		cell2=cell.up(); if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
 		cell2=cell.dn(); if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
 		cell2=cell.lt(); if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
@@ -891,7 +898,8 @@ HurdleManager:{
 	},
 
 	getclist : function(gateid){
-		var idlist = this.data[gateid].idlist, clist = this.owner.newInstance('CellList');
+		var o = this.owner, bd = o.board;
+		var idlist = this.data[gateid].idlist, clist = o.newInstance('CellList');
 		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
 		return clist;
 	},
@@ -900,7 +908,7 @@ HurdleManager:{
 	init : function(){
 		this.max=0;
 		this.gateid=[];
-		for(var c=0;c<bd.cellmax;c++){ this.gateid[c] = -1;}
+		for(var c=0;c<this.owner.board.cellmax;c++){ this.gateid[c] = -1;}
 		this.data=[];
 	},
 
@@ -910,6 +918,7 @@ HurdleManager:{
 	},
 
 	generateGates : function(){
+		var bd = this.owner.board;
 		this.init();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], val = cell.getQues();
@@ -940,7 +949,7 @@ HurdleManager:{
 		for(var r=1;r<=this.max;r++){ this.data[r].number=-1;}
 
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
-		var nums = [];
+		var nums = [], bd = this.owner.board;
 		for(var r=1;r<=this.max;r++){ nums[r] = [];}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];

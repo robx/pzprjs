@@ -206,7 +206,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkLcntCell(1);},
 
 	checkArrowNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}

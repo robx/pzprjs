@@ -155,14 +155,14 @@ Encode:{
 		this.owner.fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
-		this.outsize = [bd.qrows+1, bd.qcols+1].join("/");
+		this.outsize = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("/");
 
 		this.owner.fio.encodeCellQnum51_kanpen();
 	},
 
 	decodeKakuro : function(){
 		// 盤面内数字のデコード
-		var cell=0, a=0, bstr = this.outbstr;
+		var cell=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[cell];
 			if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
@@ -196,7 +196,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeKakuro : function(type){
-		var cm="";
+		var cm="", bd = this.owner.board;
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;
@@ -257,7 +257,7 @@ FileIO:{
 		this.decodeQans_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [bd.qrows+1, bd.qcols+1].join("/");
+		this.sizestr = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("/");
 
 		this.encodeCellQnum51_kanpen();
 		this.datastr += "/";
@@ -265,6 +265,7 @@ FileIO:{
 	},
 
 	decodeCellQnum51_kanpen : function(){
+		var bd = this.owner.board;
 		for(;;){
 			var data = this.readLine();
 			if(!data){ break;}
@@ -286,6 +287,7 @@ FileIO:{
 		}
 	},
 	encodeCellQnum51_kanpen : function(){
+		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 			var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
 
@@ -306,7 +308,7 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		var barray = this.readLines(bd.qrows+1);
+		var bd = this.owner.board, barray = this.readLines(bd.qrows+1);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");
@@ -320,6 +322,7 @@ FileIO:{
 		}
 	},
 	encodeQans_kanpen : function(){
+		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				var cell = bd.getc(bx,by);
@@ -356,13 +359,13 @@ AnsCheck:{
 
 	isSameNumber : function(keycellpos, clist){
 		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getAnum();})){
-			bd.getobj(keycellpos[0],keycellpos[1]).seterr(1);
+			this.owner.board.getobj(keycellpos[0],keycellpos[1]).seterr(1);
 			return false;
 		}
 		return true;
 	},
 	isTotalNumber : function(keycellpos, clist){
-		var number, keyobj=bd.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}
 		else if(dir===k.DN){ number = keyobj.getQdir();}
 

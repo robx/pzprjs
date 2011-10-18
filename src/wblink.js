@@ -25,7 +25,7 @@ MouseEvent:{
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
 			var d = border.getlinesize();
-			var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
 			for(var i=0;i<borders.length;i++){
@@ -47,7 +47,7 @@ MouseEvent:{
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		var borders = bd.borderinside(d.x1,d.y1,d.x2,d.y2);
+		var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
 		this.prevPos = pos;
 
@@ -171,7 +171,7 @@ AnsCheck:{
 			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
 		}
 
-		var linfo = bd.getLareaInfo();
+		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkTripleNumber(linfo) ){
 			this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
 		}
@@ -200,7 +200,7 @@ AnsCheck:{
 			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
 
 			if(this.inAutoCheck){ return false;}
-			if(result){ bd.border.seterr(-1);}
+			if(result){ this.owner.board.border.seterr(-1);}
 			linfo.setErrLareaById(r,1);
 			tip1.seterr(1);
 			tip2.seterr(1);

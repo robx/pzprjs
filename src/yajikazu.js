@@ -113,7 +113,7 @@ AnsCheck:{
 			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
 		}
 
-		if( !this.checkRBBlackCell( bd.getWCellInfo() ) ){
+		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 
@@ -125,7 +125,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}

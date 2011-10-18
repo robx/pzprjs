@@ -8,7 +8,7 @@ MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart || this.mousemove){ this.inputborder();}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.emptycell;
+			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -18,7 +18,7 @@ MouseEvent:{
 			else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = bd.emptycell;
+			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -109,7 +109,7 @@ Cell:{
 	numberWithMB : true,
 
 	nummaxfunc : function(){
-		return bd.rooms.getCntOfRoomByCell(this);
+		return this.owner.board.rooms.getCntOfRoomByCell(this);
 	}
 },
 Board:{
@@ -204,7 +204,7 @@ AnsCheck:{
 			this.setAlert('入っている数字の数が数字より多いです。','A number is bigger than the size of block.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getNumberInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getNumberInfo() ) ){
 			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
 		}
 
@@ -220,7 +220,7 @@ AnsCheck:{
 	},
 
 	getErrorFlag_cell : function(){
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
 			var room = rinfo.room[id], clist = rinfo.getclist(id);
 			room.error  =  0;		// 後でエラー表示するエラーのフラグ

@@ -225,7 +225,7 @@ AnsCheck:{
 	},
 	
 	checkdir4BorderLine : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], qn = cell.getQnum();
 			if(qn>=0 && qn!==cell.getdir4BorderLine1()){

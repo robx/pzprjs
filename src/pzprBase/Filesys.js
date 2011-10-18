@@ -29,6 +29,7 @@ pzprv3.createCommonClass('FileIO',
 	//               -> [menu.fileonload] -> [base.importData] -> [ここ]
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
+		var o = this.owner;
 		datastr = datastr.replace(/[\r\n]/g,"");
 
 		this.filever = 0;
@@ -48,25 +49,25 @@ pzprv3.createCommonClass('FileIO',
 
 		// サイズを表す文字列
 		var row, col;
-		if(this.owner.pid!=="sudoku"){
+		if(o.pid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(this.currentType===k.PBOX && this.owner.pid==="kakuro"){ row--; col--;}
+			if(this.currentType===k.PBOX && o.pid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
 		}
 		if(row<=0 || col<=0){ return '';}
-		bd.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
+		this.owner.board.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
 		if     (this.currentType===k.PZPR){ this.decodeData();}
 		else if(this.currentType===k.PBOX){ this.kanpenOpen();}
 
-		this.owner.undo.decodeLines();
+		o.undo.decodeLines();
 
-		bd.resetInfo();
-		this.owner.painter.resize_canvas();
+		o.board.resetInfo();
+		o.painter.resize_canvas();
 
 		this.dataarray = null;
 
@@ -85,22 +86,23 @@ pzprv3.createCommonClass('FileIO',
 		if(this.currentType===k.PZPH){ this.currentType = k.PZPR;}
 
 		// メイン処理
+		var o = this.owner;
 		if     (this.currentType===k.PZPR){ this.encodeData();}
 		else if(this.currentType===k.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
-		if(!this.sizestr){ this.sizestr = [bd.qrows, bd.qcols].join("/");}
+		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("/");}
 		this.datastr = [this.sizestr, this.datastr].join("/");
 
 		// ヘッダの処理
 		if(this.currentType===k.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
-			this.datastr = [header, this.owner.pid, this.datastr].join("/");
+			this.datastr = [header, o.pid, this.datastr].join("/");
 		}
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(type===k.PZPH){ this.history = this.owner.undo.toString();}
+		if(type===k.PZPH){ this.history = o.undo.toString();}
 
 		return bstr;
 	},
@@ -144,7 +146,7 @@ pzprv3.createCommonClass('FileIO',
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(bd.getObjectPos(group, bx, by), item[i]);
+			func(this.owner.board.getObjectPos(group, bx, by), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -152,13 +154,14 @@ pzprv3.createCommonClass('FileIO',
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
+		this.decodeObj(func, k.CELL, 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
+		this.decodeObj(func, k.CROSS, 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
 	},
 	decodeBorder : function(func){
-		if(bd.isborder===1 || this.owner.pid==='bosanowa' || (this.owner.pid==='fourcells' && this.filever===0)){
+		var o = this.owner, bd = o.board;
+		if(bd.isborder===1 || o.pid==='bosanowa' || (o.pid==='fourcells' && this.filever===0)){
 			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
@@ -185,19 +188,20 @@ pzprv3.createCommonClass('FileIO',
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(bd.getObjectPos(group, bx, by));
+				this.datastr += func(this.owner.board.getObjectPos(group, bx, by));
 			}
 			this.datastr += "/";
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, k.CELL, 1, 1, 2*bd.qcols-1, 2*bd.qrows-1);
+		this.encodeObj(func, k.CELL, 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, k.CROSS, 0, 0, 2*bd.qcols,   2*bd.qrows  );
+		this.encodeObj(func, k.CROSS, 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
 	},
 	encodeBorder : function(func){
-		if(bd.isborder===1 || this.owner.pid==='bosanowa'){
+		var o = this.owner, bd = o.board;
+		if(bd.isborder===1 || o.pid==='bosanowa'){
 			this.encodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
@@ -450,12 +454,12 @@ pzprv3.createCommonClass('FileIO',
 
 	decodeAreaRoom_com : function(isques){
 		this.readLine();
-		this.rdata2Border(isques, this.getItemList(bd.qrows));
+		this.rdata2Border(isques, this.getItemList(this.owner.board.qrows));
 
-		bd.rooms.reset();
+		this.owner.board.rooms.reset();
 	},
 	encodeAreaRoom_com : function(isques){
-		var rinfo = bd.getRoomInfo();
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var c=0;c<bd.cellmax;c++){
@@ -467,6 +471,7 @@ pzprv3.createCommonClass('FileIO',
 	// fio.rdata2Border() 入力された配列から境界線を入力する
 	//---------------------------------------------------------------------------
 	rdata2Border : function(isques, rdata){
+		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!=rdata[cell2.id]);
@@ -478,7 +483,7 @@ pzprv3.createCommonClass('FileIO',
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
-		var item = this.getItemList(bd.qrows+1);
+		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
 		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
 			if(item[i]=="."){ continue;}
@@ -500,7 +505,7 @@ pzprv3.createCommonClass('FileIO',
 		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
-		var str = "";
+		var bd = this.owner.board, str = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if     (bx===-1 && by===-1){ str += "0 ";}
@@ -592,24 +597,24 @@ pzprv3.createCommonClass('FileIO',
 
 			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
 			if(isques && pce[4]!=""){
-				var cell = bd.getc(sp.x1,sp.y1);
+				var cell = this.owner.board.getc(sp.x1,sp.y1);
 				cell.qnum = parseInt(pce[4],10);
 			}
 			this.setRdataRect(rdata, i, sp);
 		}
 		this.rdata2Border(isques, rdata);
 
-		bd.rooms.reset();
+		this.owner.board.rooms.reset();
 	},
 	setRdataRect : function(rdata, i, sp){
 		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
 			for(var by=sp.y1;by<=sp.y2;by+=2){
-				rdata[bd.getc(bx,by).id] = i;
+				rdata[this.owner.board.getc(bx,by).id] = i;
 			}
 		}
 	},
 	encodeSquareRoom_com : function(isques){
-		var rinfo = bd.getRoomInfo();
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
 
 		this.datastr += (rinfo.max+"/");
 		for(var id=1;id<=rinfo.max;id++){

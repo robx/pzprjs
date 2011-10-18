@@ -27,7 +27,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.min(this.maxnum, bd.rooms.getCntOfRoomByCell(this));
+		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 "Cell@chocona":{
@@ -140,7 +140,7 @@ FileIO:{
 "AnsCheck@shimaguni":{
 	checkAns : function(){
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true) ){
 			this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
 		}
@@ -167,8 +167,8 @@ FileIO:{
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
 		var result = true;
-		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
+		for(var r=1;r<=this.owner.board.rooms.max;r++){
+			var clist = this.owner.board.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
 			if(!clist.isSeqBlock()){
 				if(this.inAutoCheck){ return false;}
 				clist.seterr(1);
@@ -181,11 +181,11 @@ FileIO:{
 "AnsCheck@chocona":{
 	checkAns : function(){
 
-		if( !this.checkAreaRect(bd.getBCellInfo()) ){
+		if( !this.checkAreaRect(this.owner.board.getBCellInfo()) ){
 			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
 		}
 
-		if( !this.checkBlackCellCount( bd.getRoomInfo() ) ){
+		if( !this.checkBlackCellCount( this.owner.board.getRoomInfo() ) ){
 			this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
 		}
 

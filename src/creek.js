@@ -108,7 +108,7 @@ AnsCheck:{
 		if( !this.checkQnumCross(1) ){
 			this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
 		}
-		if( !this.checkOneArea( bd.getWCellInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getWCellInfo() ) ){
 			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
 		}
 		if( !this.checkQnumCross(2) ){
@@ -119,7 +119,7 @@ AnsCheck:{
 	},
 
 	checkQnumCross : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.getQnum();
 			if(qn<0){ continue;}

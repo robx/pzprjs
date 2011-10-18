@@ -1112,8 +1112,8 @@ pzprv3.createCommonClass('Menu',
 		newboard : function(){
 			this.popel = getEL("pop1_1");
 			if(this.owner.pid!="sudoku"){
-				document.newboard.col.value = bd.qcols;
-				document.newboard.row.value = bd.qrows;
+				document.newboard.col.value = this.owner.board.qcols;
+				document.newboard.row.value = this.owner.board.qrows;
 			}
 			this.owner.key.enableKey = false;
 		},
@@ -1137,16 +1137,17 @@ pzprv3.createCommonClass('Menu',
 	// menu.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		this.owner.editmode = (num==1);
-		this.owner.playmode = (num==3);
+		var o = this.owner;
+		o.editmode = (num==1);
+		o.playmode = (num==3);
 
-		this.owner.key.keyreset();
-		bd.errclear();
-		this.owner.cursor.adjust_modechange();
-		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){ this.funcs.keypopup.call(this);}
+		o.key.keyreset();
+		o.board.errclear();
+		o.cursor.adjust_modechange();
+		if(o.key.haspanel[1] || o.haspanel[3]){ this.funcs.keypopup.call(this);}
 
-		bd.haserror=true;
-		this.owner.painter.paintAll();
+		o.board.haserror=true;
+		o.painter.paintAll();
 	},
 
 	//------------------------------------------------------------------------------
@@ -1358,7 +1359,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		bd.lines.newIrowake();
+		this.owner.board.lines.newIrowake();
 		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	},
 
@@ -1394,7 +1395,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(this.popel){
-			bd.execadjust(this.getSrcElement(e).name);
+			this.owner.board.execadjust(this.getSrcElement(e).name);
 		}
 	},
 
@@ -1404,19 +1405,21 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			this.owner.undo.newOperation(true);
+			var o = this.owner;
+			o.undo.newOperation(true);
 
-			bd.ansclear();
-			bd.resetInfo();
-			this.owner.painter.paintAll();
+			o.board.ansclear();
+			o.board.resetInfo();
+			o.painter.paintAll();
 		}
 	},
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			this.owner.undo.newOperation(true);
+			var o = this.owner;
+			o.undo.newOperation(true);
 
-			bd.subclear();
-			this.owner.painter.paintAll();
+			o.board.subclear();
+			o.painter.paintAll();
 		}
 	}
 });
@@ -1534,12 +1537,12 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	adjustimage : function(){
-		var size = 17;
-		if     (bd.qcols<= 6){ size = 28;}
-		else if(bd.qcols<= 8){ size = 27;}
-		else if(bd.qcols<= 8){ size = 24;}
-		else if(bd.qcols<= 9){ size = 21;}
-		else if(bd.qcols<=18){ size = 19;}
+		var col = this.owner.board.qcols, size = 17;
+		if     (col<= 6){ size = 28;}
+		else if(col<= 8){ size = 27;}
+		else if(col<= 8){ size = 24;}
+		else if(col<= 9){ size = 21;}
+		else if(col<=18){ size = 19;}
 		this.owner.menu.imagesave(false,size);
 	},
 

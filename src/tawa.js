@@ -18,8 +18,8 @@ MouseEvent:{
 
 	// マウス入力時のセルID取得系
 	getcell : function(){
-		var pos = this.getpos(0);
-		if(this.inputY%this.owner.painter.ch===0){ return bd.emptycell;} // 縦方向だけ、ぴったりは無効
+		var o = this.owner, bd = o.board, pos = this.getpos(0);
+		if(this.inputY%o.painter.ch===0){ return bd.emptycell;} // 縦方向だけ、ぴったりは無効
 		if(!pos.isinside()){ return bd.emptycell;}
 
 		var cand = pos.getc();
@@ -143,7 +143,7 @@ Board:{
 		var id = null;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if(bx>=this.minbx+1 && bx<=this.maxbx-1 && by>=this.minby+1 && by<=this.maxby-1){
-			var cy = (by>>1);	// 上から数えて何段目か(0～bd.qrows-1)
+			var cy = (by>>1);	// 上から数えて何段目か(0～qrows-1)
 			if     (this.lap===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
 			else if(this.lap===1){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
 			else if(this.lap===2){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
@@ -280,11 +280,12 @@ Menu:{
 	},
 
 	newboard_show : function(){		// "新規盤面作成"を表示するとき
+		var o = this.owner, bd = o.board;
 		this.popel = pzprv3.getEL("pop1_1");
 		this.selectlap([0,2,3,1][bd.lap]);
 		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
 		document.newboard.row.value = bd.qrows;
-		this.owner.key.enableKey = false;
+		o.key.enableKey = false;
 	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
 		if(this.popel){
@@ -320,7 +321,7 @@ Graphic:{
 	flushCanvas : function(){
 		this.flushCanvas = ((this.use.canvas) ?
 			function(){
-				var g = this.currentContext
+				var g = this.currentContext, bd = this.owner.board;
 				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
 					this.flushCanvasAll();
 				}
@@ -336,7 +337,7 @@ Graphic:{
 	},
 
 	drawGrid_tawa : function(){
-		var g = this.vinc('grid', 'crispEdges');
+		var g = this.vinc('grid', 'crispEdges'), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -383,7 +384,7 @@ Encode:{
 	},
 
 	decodeTawamurenga : function(){
-		var barray = this.outbstr.split("/");
+		var barray = this.outbstr.split("/"), bd = this.owner.board;
 
 		bd.setLap(parseInt(barray[0]));
 		bd.initBoardSize(bd.qcols, bd.qrows);
@@ -392,13 +393,14 @@ Encode:{
 		this.decodeNumber10();
 	},
 	encodeTawamurenga : function(){
-		this.outbstr = (bd.lap+"/");
+		this.outbstr = (this.owner.board.lap+"/");
 		this.encodeNumber10();
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
+		var bd = this.owner.board;
 		bd.setLap(parseInt(this.readLine()));
 		var n=0, item = this.getItemList(bd.qrows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
@@ -414,6 +416,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
+		var bd = this.owner.board;
 		this.datastr = bd.lap+"/";
 
 		var bstr = "";
@@ -454,7 +457,7 @@ AnsCheck:{
 	},
 
 	checkThreeBlackCells : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			var clist = this.owner.newInstance('CellList');
 			for(var bx=0;bx<=bd.maxbx;bx++){
@@ -475,7 +478,7 @@ AnsCheck:{
 		return result;
 	},
 	checkNumbers : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -498,7 +501,7 @@ AnsCheck:{
 		return result;
 	},
 	checkUnderCells : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isWhite() || cell.by===bd.maxby-1){ continue;}

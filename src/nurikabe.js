@@ -147,18 +147,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var mochi = (this.owner.pid==='mochikoro'||this.owner.pid==='mochinyoro');
+		var o=this.owner, bd=o.board, pid=o.pid, mochi=(pid==='mochikoro'||pid==='mochinyoro');
 
-		if( (this.owner.pid!=='nuribou') && !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
+		if( (pid!=='nuribou') && !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
 			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
 		}
 
-		if(this.owner.pid!=='mochikoro'){ var binfo = bd.getBCellInfo();}
-		if( (this.owner.pid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
+		if(pid!=='mochikoro'){ var binfo = bd.getBCellInfo();}
+		if( (pid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
 			this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
 		}
 
-		if( (this.owner.pid==='nuribou') && !this.checkCorners(binfo) ){
+		if( (pid==='nuribou') && !this.checkCorners(binfo) ){
 			this.setAlert('同じ面積の黒マスのカタマリが、角を共有しています。','Masses of black cells whose length is the same share a corner.'); return false;
 		}
 
@@ -175,7 +175,7 @@ AnsCheck:{
 			this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
 		}
 
-		if( (this.owner.pid==='nurikabe') && !this.checkOneArea( binfo ) ){
+		if( (pid==='nurikabe') && !this.checkOneArea( binfo ) ){
 			this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
 		}
 
@@ -191,7 +191,7 @@ AnsCheck:{
 			return false;
 		}
 
-		if( this.owner.pid==='mochinyoro' && !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!=a);} ) ){
+		if( pid==='mochinyoro' && !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!=a);} ) ){
 			this.setAlert('四角形になっている黒マスのブロックがあります。','There is a block of black cells that is rectangle.'); return false;
 		}
 
@@ -199,7 +199,7 @@ AnsCheck:{
 	},
 
 	checkCorners : function(binfo){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}

@@ -144,7 +144,7 @@ AnsCheck:{
 		}
 
 		this.performAsLine = true
-		if( !this.checkOneArea( bd.getLareaInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getLareaInfo() ) ){
 			this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
 		}
 
@@ -164,7 +164,7 @@ AnsCheck:{
 	},
 
 	checkLcntCell_firefly : function(val){
-		if(bd.lines.ltotal[val]==0){ return true;}
+		if(this.owner.board.lines.ltotal[val]==0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
 	},
 

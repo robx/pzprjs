@@ -44,7 +44,7 @@ MouseEvent:{
 
 		var cell = star.validcell();
 		if(cell!==null){
-			var clist = bd.rooms.getClistByCell(cell);
+			var clist = this.owner.board.rooms.getClistByCell(cell);
 			if(clist.encolor()){
 				var d = clist.getRectSize();
 				this.owner.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
@@ -149,7 +149,7 @@ Star:{
 		var obj = this.obj, cell = null;
 		if(obj.iscellobj)
 			{ cell = obj;}
-		else if(obj.iscrossobj && bd.rooms.bdcnt[obj.id]===0)
+		else if(obj.iscrossobj && this.owner.board.rooms.bdcnt[obj.id]===0)
 			{ cell = obj.relcell(-1,-1);}
 		else if(obj.isborderobj && obj.getQans()===0)
 			{ cell = obj.sidecell[0];}
@@ -164,8 +164,8 @@ Star:{
 	}
 },
 Address:{
-	gets : function(){ return bd.gets(this.bx, this.by);},
-	getobj : function(){ return bd.getobj(this.bx, this.by);}
+	gets : function(){ return this.owner.board.gets(this.bx, this.by);},
+	getobj : function(){ return this.owner.board.getobj(this.bx, this.by);}
 },
 CellList:{
 	encolor : function(){
@@ -185,7 +185,7 @@ CellList:{
 		var ret = {star:null, err:-1};
 		for(var i=0;i<this.length;i++){
 			var cell=this[i];
-			var slist = bd.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
+			var slist = this.owner.board.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
 			for(var n=0;n<slist.length;n++){
 				var star=slist[n];
 				if(star.getStar()>0 && star.validcell()!==null){
@@ -285,7 +285,7 @@ Menu:{
 
 		var el = this.el_button.cloneNode(false), self = this;
 		el.id = 'btncolor';
-		this.addButtons(el, function(){ bd.encolorall();}, "色をつける","Color up");
+		this.addButtons(el, function(){ self.owner.board.encolorall();}, "色をつける","Color up");
 		pzprv3.getEL('btnarea').appendChild(el);
 	}
 },
@@ -322,7 +322,7 @@ Graphic:{
 		var headers = ["s_star1_", "s_star2_"];
 
 		var d = this.range;
-		var slist = bd.starinside(d.x1,d.y1,d.x2,d.y2);
+		var slist = this.owner.board.starinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<slist.length;i++){
 			var star = slist[i], id=star.id, bx=star.bx, by=star.by;
 
@@ -368,6 +368,7 @@ Encode:{
 	},
 
 	decodeStar : function(bstr){
+		var bd = this.owner.board;
 		bd.disableInfo();
 		var s=0, bstr = this.outbstr;
 		for(var i=0;i<bstr.length;i++){
@@ -385,9 +386,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeStar : function(){
-		var count = 0;
-		var cm = "";
-
+		var count = 0, cm = "", bd = this.owner.board;
 		for(var s=0;s<bd.starmax;s++){
 			var pstr = "", star = bd.star[s];
 			if(star.getStar()>0){
@@ -433,7 +432,7 @@ FileIO:{
 	},
 
 	decodeStarFile : function(){
-		var array = this.readLines(2*bd.qrows-1), s=0;
+		var bd = this.owner.board, array = this.readLines(2*bd.qrows-1), s=0;
 		bd.disableInfo();
 		for(var i=0;i<array.length;i++){
 			for(var c=0;c<array[i].length;c++){
@@ -446,7 +445,7 @@ FileIO:{
 		bd.enableInfo();
 	},
 	encodeStarFile : function(){
-		var s=0;
+		var bd = this.owner.board, s=0;
 		for(var by=1;by<=2*bd.qrows-1;by++){
 			for(var bx=1;bx<=2*bd.qcols-1;bx++){
 				var star = bd.star[s];
@@ -469,7 +468,7 @@ AnsCheck:{
 			this.setAlert('星を線が通過しています。', 'A line goes over the star.'); return false;
 		}
 
-		var rinfo = bd.getAreaStarInfoAll();
+		var rinfo = this.owner.board.getAreaStarInfoAll();
 		if( !this.checkErrorFlag(rinfo, -1) ){
 			this.setAlert('星が含まれていない領域があります。','A block has no stars.'); return false;
 		}
@@ -486,7 +485,7 @@ AnsCheck:{
 	},
 
 	checkStarOnLine : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s];
 			if(star.getStar()<=0){ continue;}
@@ -511,7 +510,7 @@ AnsCheck:{
 			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				var cell2 = bd.getc(star.bx*2-cell.bx, star.by*2-cell.by);
+				var cell2 = this.owner.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
 				if(cell2.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(cell2)){
 					if(this.inAutoCheck){ return false;}
 					clist.seterr(1);

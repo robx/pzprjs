@@ -38,7 +38,7 @@ MouseEvent:{
 			return;
 		}
 
-		var max=0, bcell=bd.emptycell;
+		var max=0, bd = this.owner.board, bcell=bd.emptycell;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.anum>max){
@@ -168,7 +168,7 @@ Graphic:{
 	},
 
 	drawCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges');
+		var g = this.vinc('centerline', 'crispEdges'), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -239,7 +239,7 @@ Encode:{
 	},
 
 	decodeGoishi : function(){
-		var bstr = this.outbstr, c=0, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
@@ -261,7 +261,7 @@ Encode:{
 		var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 		for(var by=d.y1;by<=d.y2;by+=2){
 			for(var bx=d.x1;bx<=d.x2;bx+=2){
-				var cell = bd.getc(bx,by);
+				var cell = this.owner.board.getc(bx,by);
 				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
 				if(count==5){ cm += pass.toString(32); count=0; pass=0;}
 			}
@@ -273,7 +273,7 @@ Encode:{
 	},
 
 	getSizeOfBoard_goishi : function(){
-		var x1=9999, x2=-1, y1=9999, y2=-1, count=0;
+		var x1=9999, x2=-1, y1=9999, y2=-1, count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isStone()){ continue;}
@@ -329,6 +329,7 @@ FileIO:{
 		});
 	},
 	encodeGoishi_kanpen : function(){
+		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				this.datastr += (bd.getc(bx,by).isStone() ? "1 " : ". ");
@@ -345,14 +346,14 @@ FileIO:{
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
-				var cell = bd.getc(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
+				var cell = this.owner.board.getc(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
 				cell.ques = 0;
 				cell.anum = parseInt(item[0]);
 			}
 		}
 	},
 	encodeQansPos_kanpen : function(){
-		var stones = []
+		var stones = [], bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 			var cell = bd.getc(bx,by);
 			if(cell.ques!==0 || cell.anum===-1){ continue;}

@@ -45,8 +45,8 @@ Board:{
 	},
 
 	getBlockInfo : function(){
-		var tinfo = bd.tiles.getAreaInfo();
-		var cinfo = bd.blocks.getAreaInfo();
+		var tinfo = this.tiles.getAreaInfo();
+		var cinfo = this.blocks.getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
 			var d=[], cnt=0, clist=cinfo.getclist(r);
@@ -75,6 +75,7 @@ Board:{
 },
 AreaCellInfo:{
 	getBlockShapes : function(r){
+		var bd=this.owner.board;
 		var d=this.getclist(r).getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
 		var shapes={cols:d.cols, rows:d.rows, data:[]};
@@ -143,7 +144,7 @@ Encode:{
 	},
 
 	decodeCBBlock : function(){
-		var bstr = this.outbstr, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, bd = this.owner.board, twi=[16,8,4,2,1];
 		var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),32);
@@ -157,7 +158,7 @@ Encode:{
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeCBBlock : function(){
-		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
+		var num=0, pass=0, cm="", bd = this.owner.board, twi=[16,8,4,2,1];
 		for(var id=0,max=bd.bdmax;id<max;id++){
 			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
@@ -196,7 +197,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		// それぞれ点線、境界線で作られる領域の情報
-		var cinfo = bd.getBlockInfo();
+		var cinfo = this.owner.board.getBlockInfo();
 		if( !this.checkMiniBlockCount(cinfo, 1) ){
 			this.setAlert('ブロックが1つの点線からなる領域で構成されています。','A block has one area framed by dotted line.'); return false;
 		}
@@ -230,7 +231,7 @@ AnsCheck:{
 	},
 
 	checkDifferentShapeBlock : function(cinfo){
-		var result=true, sides=bd.getSideAreaInfo(cinfo), sc={};
+		var result=true, sides=this.owner.board.getSideAreaInfo(cinfo), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
 			if(cinfo.room[r].dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){

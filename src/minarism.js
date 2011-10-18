@@ -47,8 +47,8 @@ MouseEvent:{
 			var border = pos.getb();
 			if(!border.isnull){ return;}
 
-			var qn=border.getQnum(), qs=border.getQdir();
-			var qm=(border.isHorz()?0:2), max=Math.max(bd.qcols,bd.qrows)-1;
+			var qn=border.getQnum(), qs=border.getQdir(), qm=(border.isHorz()?0:2);
+			var max=Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 			if(this.btn.Left){
 				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
 				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
@@ -99,7 +99,7 @@ KeyEvent:{
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = border.getQnum();
-			var max = Math.max(bd.qcols,bd.qrows)-1;
+			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 
 			border.setQdir(k.NDIR);
 			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
@@ -126,7 +126,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return Math.max(bd.qcols,bd.qrows);
+		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },
 Board:{
@@ -240,7 +240,7 @@ Encode:{
 
 	decodeMinarism : function(type){
 		// 盤面外数字のデコード
-		var id=0, a=0, mgn=0, bstr = this.outbstr;
+		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -268,7 +268,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
-		var cm="", count=0, mgn=0;
+		var cm="", count=0, mgn=0, bd=this.owner.board;
 		for(var id=0,max=bd.bdmax+(type===0?0:bd.qcols);id<max;id++){
 			if(type===1){
 				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)==0){ count++;}
@@ -356,7 +356,7 @@ AnsCheck:{
 		});
 	},
 	checkBDSideCell : function(func){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();

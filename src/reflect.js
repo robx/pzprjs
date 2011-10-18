@@ -230,7 +230,7 @@ Encode:{
 	},
 
 	decodeReflectlink : function(){
-		var c=0, bstr = this.outbstr;
+		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.cell[c];
 
@@ -255,7 +255,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeReflectlink : function(type){
-		var cm="", pstr="", count=0;
+		var cm="", pstr="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var qu=bd.cell[c].ques;
 			if     (qu===11){ pstr = "5";}
@@ -339,7 +339,7 @@ AnsCheck:{
 	check1st : function(){ return this.checkLcntCell(1);},
 
 	checkTriangle : function(){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()==0 && (cell.getQues()>=2 && cell.getQues()<=5)){
@@ -352,7 +352,7 @@ AnsCheck:{
 	},
 
 	checkTriNumber : function(type){
-		var result = true;
+		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQues()<2 || cell.getQues()>5 || !cell.isValidNum()){ continue;}

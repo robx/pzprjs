@@ -111,7 +111,7 @@ AnsCheck:{
 			this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
 		}
 
-		var rinfo = bd.getRoomInfo();
+		var rinfo = this.owner.board.getRoomInfo();
 		if( (this.owner.pid==='fillmat') && !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).length;}) ){
 			this.setAlert('隣り合うタタミの大きさが同じです。','The same size Tatami are adjacent.'); return false;
 		}

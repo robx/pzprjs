@@ -104,11 +104,11 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( pzprv3.EDITOR && !this.checkSameObjectInRoom(bd.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
+		if( pzprv3.EDITOR && !this.checkSameObjectInRoom(this.owner.board.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
 			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
 		}
 
-		if( !this.checkOneArea( bd.getBCellInfo() ) ){
+		if( !this.checkOneArea( this.owner.board.getBCellInfo() ) ){
 			this.setAlert('黒マスがひとつながりになっていません。','Black cells are devided.'); return false;
 		}
 

@@ -38,18 +38,18 @@ pzprv3.createCommonClass('BoardPiece',
 	//---------------------------------------------------------------------------
 	getaddr : function(){ return this.owner.newInstance('Address',[this.bx, this.by]);},
 
-	relcell   : function(dx,dy){ return bd.getc(this.bx+dx,this.by+dy);},
-	relcross  : function(dx,dy){ return bd.getx(this.bx+dx,this.by+dy);},
-	relbd     : function(dx,dy){ return bd.getb(this.bx+dx,this.by+dy);},
-	relexcell : function(dx,dy){ return bd.getex(this.bx+dx,this.by+dy);},
+	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
+	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
+	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
+	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
 	
 	//---------------------------------------------------------------------------
 	// ub() db() lb() rb()  セルや交点の上下左右にある境界線のIDを返す
 	//---------------------------------------------------------------------------
-	ub : function(){ return bd.getb(this.bx,this.by-1);},
-	db : function(){ return bd.getb(this.bx,this.by+1);},
-	lb : function(){ return bd.getb(this.bx-1,this.by);},
-	rb : function(){ return bd.getb(this.bx+1,this.by);},
+	ub : function(){ return this.owner.board.getb(this.bx,this.by-1);},
+	db : function(){ return this.owner.board.getb(this.bx,this.by+1);},
+	lb : function(){ return this.owner.board.getb(this.bx-1,this.by);},
+	rb : function(){ return this.owner.board.getb(this.bx+1,this.by);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -88,7 +88,7 @@ pzprv3.createCommonClass('BoardPiece',
 	// seterr() error値を設定する
 	//---------------------------------------------------------------------------
 	seterr : function(num){
-		if(bd.isenableSetError()){ this.error = num;}
+		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -157,10 +157,10 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	//---------------------------------------------------------------------------
 	// cell.up() dn() lt() rt()  セルの上下左右に接するセルのIDを返す
 	//---------------------------------------------------------------------------
-	up : function(){ return bd.getc(this.bx,this.by-2);},
-	dn : function(){ return bd.getc(this.bx,this.by+2);},
-	lt : function(){ return bd.getc(this.bx-2,this.by);},
-	rt : function(){ return bd.getc(this.bx+2,this.by);},
+	up : function(){ return this.owner.board.getc(this.bx,this.by-2);},
+	dn : function(){ return this.owner.board.getc(this.bx,this.by+2);},
+	lt : function(){ return this.owner.board.getc(this.bx-2,this.by);},
+	rt : function(){ return this.owner.board.getc(this.bx+2,this.by);},
 
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
@@ -193,18 +193,18 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 		anum : function(num){ return (this.minnum>0 && num===0);},
 	},
 	posthook : {
-		qnum : function(num){ bd.setCellInfoAll(this);},
-		anum : function(num){ bd.setCellInfoAll(this);},
-		qans : function(num){ bd.setCellInfoAll(this);},
-		qsub : function(num){ if(this.numberWithMB){ bd.setCellInfoAll(this);}} /* bd.numberWithMBの○を文字扱い */
+		qnum : function(num){ this.owner.board.setCellInfoAll(this);},
+		anum : function(num){ this.owner.board.setCellInfoAll(this);},
+		qans : function(num){ this.owner.board.setCellInfoAll(this);},
+		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setCellInfoAll(this);}} /* numberWithMBの○を文字扱い */
 	},
 
 	//---------------------------------------------------------------------------
 	// cell.lcnt()       セルに存在する線の本数を返す
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	lcnt       : function(){ return (!!bd.lines.lcnt[this.id]?bd.lines.lcnt[this.id]:0);},
-	iscrossing : function(){ return bd.lines.isLineCross;},
+	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
+	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// cell.drawaround() 盤面に自分の周囲1マスを含めて描画する
@@ -307,10 +307,10 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	// cell.isLP()  線が必ず存在するセルの条件を判定する
 	// cell.noLP()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
-	setCombinedLine : function(){	// bd.sQuCから呼ばれる
+	setCombinedLine : function(){	// cell.setQuesから呼ばれる
 		if(this.owner.classes.Border.prototype.enableLineCombined){
 			var bx=this.bx, by=this.by;
-			var blist = bd.borderinside(bx-1,by-1,bx+1,by+1);
+			var blist = this.owner.board.borderinside(bx-1,by-1,bx+1,by+1);
 			for(var i=0;i<blist.length;i++){
 				var border=blist[i];
 				if        (border.line===0 && border.isLineEX()){ border.setLineVal(1);}
@@ -381,7 +381,7 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 	setCellLineError : function(flag){
 		var bx=this.bx, by=this.by;
 		if(flag){ this.seterr(1);}
-		bd.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
+		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 });
 
@@ -417,8 +417,8 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 	// cross.lcnt()       交点に存在する線の本数を返す
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	lcnt       : function(){ return (!!bd.lines.lcnt[this.id]?bd.lines.lcnt[this.id]:0);},
-	iscrossing : function(){ return bd.lines.isLineCross;}
+	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
+	iscrossing : function(){ return this.owner.board.lines.isLineCross;}
 });
 
 //---------------------------------------------------------------------------
@@ -488,9 +488,9 @@ pzprv3.createCommonClass('Border:BoardPiece',
 		line : function(num){ return (this.checkStableLine(num));}
 	},
 	posthook : {
-		ques : function(num){ bd.setBorderInfoAll(this);},
-		qans : function(num){ bd.setBorderInfoAll(this);},
-		line : function(num){ bd.setLineInfoAll(this);}
+		ques : function(num){ this.owner.board.setBorderInfoAll(this);},
+		qans : function(num){ this.owner.board.setBorderInfoAll(this);},
+		line : function(num){ this.owner.board.setLineInfoAll(this);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -539,7 +539,7 @@ pzprv3.createCommonClass('Border:BoardPiece',
 	// border.isLineNG() 線が引けないborderの条件を判定する
 	//---------------------------------------------------------------------------
 	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]で呼ばれる関数
-	checkStableLine : function(num){	// bd.sLiBから呼ばれる
+	checkStableLine : function(num){	// border.setLineから呼ばれる
 		if(this.enableLineNG){
 			if(this.enableLineCombined){
 				return ( (num!==0 && this.isLineNG()) ||
@@ -550,14 +550,14 @@ pzprv3.createCommonClass('Border:BoardPiece',
 		return false;
 	},
 
-	// bd.sQuC => bd.setCombinedLineから呼ばれる関数 (exist->ex)
+	// cell.setQues => setCombinedLineから呼ばれる関数 (exist->ex)
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
 		return this.isVert() ? (cell1.isLP(k.RT) && cell2.isLP(k.LT)) :
 							   (cell1.isLP(k.DN) && cell2.isLP(k.UP));
 	},
-	// bd.sLiB => bd.checkStableLineから呼ばれる関数
+	// border.setLineCal => checkStableLineから呼ばれる関数
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineNG : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
@@ -618,10 +618,10 @@ pzprv3.createCommonClass('Address',
 	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
 	onborder : function(){ return !!((this.bx+this.by)&1);},
 	
-	getc  : function(){ return bd.getc(this.bx, this.by);},
-	getx  : function(){ return bd.getx(this.bx, this.by);},
-	getb  : function(){ return bd.getb(this.bx, this.by);},
-	getex : function(){ return bd.getex(this.bx, this.by);},
+	getc  : function(){ return this.owner.board.getc(this.bx, this.by);},
+	getx  : function(){ return this.owner.board.getx(this.bx, this.by);},
+	getb  : function(){ return this.owner.board.getb(this.bx, this.by);},
+	getex : function(){ return this.owner.board.getex(this.bx, this.by);},
 	
 	movedir : function(dir,dd){
 		switch(dir){
@@ -644,6 +644,7 @@ pzprv3.createCommonClass('Address',
 	// pos.isinside() この場所が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	isinside : function(){
+		var bd = this.owner.board;
 		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
 				this.by>=bd.minby && this.by<=bd.maxby);
 	}
@@ -729,7 +730,7 @@ pzprv3.createCommonClass('PieceList',
 	// list.seterr()  保持しているオブジェクトにerror値を設定する
 	//--------------------------------------------------------------------------------
 	seterr : function(num){
-		if(!bd.isenableSetError()){ return;}
+		if(!this.owner.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
 	}
 });
@@ -745,6 +746,7 @@ pzprv3.createCommonClass('CellList:PieceList',
 	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
+		var bd = this.owner.board;
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0};
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
@@ -766,7 +768,7 @@ pzprv3.createCommonClass('CellList:PieceList',
 		for(var i=0,len=this.length;i<len;i++){
 			if(this[i].isNum()){ return this[i];}
 		}
-		return bd.emptycell;
+		return this.owner.board.emptycell;
 	}
 });
 
@@ -845,7 +847,7 @@ pzprv3.createCommonClass('AreaCellInfo',
 	getclistbycell : function(cell)  { return this.getclist(this.id[cell.id]);},
 	getclist : function(areaid){
 		var idlist = this.room[areaid].idlist, clist = this.owner.newInstance('CellList');
-		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ clist.add(this.owner.board.cell[idlist[i]]);}
 		return clist;
 	},
 
@@ -858,12 +860,12 @@ pzprv3.createCommonClass('AreaCellInfo',
 	},
 	setErrLareaById : function(areaid, val){
 		var self = this;
-		bd.border.filter(function(border){
+		this.owner.board.border.filter(function(border){
 			var cc1 = border.sidecell[0].id, cc2 = border.sidecell[1].id;
 			return (border.isLine() && self.id[cc1]===areaid && self.id[cc2]===areaid);
 		}).seterr(val);
 
-		bd.cell.filter(function(cell){
+		this.owner.board.cell.filter(function(cell){
 			return (self.id[cell.id]===areaid && cell.isNum());
 		}).seterr(4);
 	}
@@ -877,7 +879,7 @@ pzprv3.createCommonClass('AreaBorderInfo:AreaCellInfo',
 
 	getblist : function(areaid){
 		var idlist = this.room[areaid].idlist, blist = this.owner.newInstance('BorderList');
-		for(var i=0;i<idlist.length;i++){ blist.add(bd.border[idlist[i]]);}
+		for(var i=0;i<idlist.length;i++){ blist.add(this.owner.board.border[idlist[i]]);}
 		return blist;
 	},
 

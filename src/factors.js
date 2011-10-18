@@ -35,7 +35,7 @@ Cell:{
 	disInputHatena : true,
 
 	nummaxfunc : function(){
-		return this.owner.editmode?999999:Math.max(bd.qcols,bd.qrows);
+		return this.owner.editmode?999999:Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	},
 
 	setNum : function(val){
@@ -138,7 +138,7 @@ AnsCheck:{
 			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
 		}
 
-		if( !this.checkRoomNumber(bd.getRoomInfo()) ){
+		if( !this.checkRoomNumber(this.owner.board.getRoomInfo()) ){
 			this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
 		}
 
@@ -161,7 +161,7 @@ AnsCheck:{
 			}
 			if(product==0){ continue;}
 
-			var cell = bd.rooms.getTopOfRoom(id);
+			var cell = this.owner.board.rooms.getTopOfRoom(id);
 			if(product!=cell.getQnum()){
 				if(this.inAutoCheck){ return false;}
 				clist.seterr(1);
