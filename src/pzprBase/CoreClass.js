@@ -158,10 +158,6 @@
 			this.includeFile("src/"+this.PZLINFO.toScript(pid)+".js");
 		}
 	},
-	ready : function(pid){
-		return (!!pzprv3.custom[pid] && Candle.allready() &&
-				(!this.DEBUG || !!this.core.Debug.prototype.urls));
-	},
 
 	//---------------------------------------------------------------
 	// 現在の時間を取得
@@ -303,18 +299,22 @@ function onload_func2(){
 	// 必要な場合、ファイルのinclude
 	if(pzprv3.DEBUG){ pzprv3.includeFile("src/for_test.js");}
 
-	// 描画wrapperの設定
-	Candle.start('divques', 'canvas');
-	if(Candle.enable.canvas){
-		Candle.start('divques_sub', 'canvas');
-	}
-
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
 	pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
+	// 描画wrapperの設定
+	var puzzle = new pzprv3.core.Owner();
+	Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); puzzle.canvas = g.canvas;});
+	if(Candle.enable.canvas){
+		Candle.start('divques_sub', 'canvas',  function(g){ puzzle.canvas2 = g.canvas;});
+	}
+	else{ puzzle.canvas2 = true;}
+
+	// 外部から参照できるようにする
+	window.puzzle = puzzle;
+
 	// 単体初期化処理のルーチンへ
-	window.puzzle = new pzprv3.core.Owner();
-	window.puzzle.reload_func(pzl);
+	puzzle.importBoardData(pzl);
 
 	// アクセスログをとってみる
 	if(!!pzprv3.require_accesslog){ accesslog(pzl);}

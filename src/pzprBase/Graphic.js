@@ -11,8 +11,9 @@ var k = pzprv3.consts;
 pzprv3.createCommonClass('Graphic',
 {
 	initialize : function(){
-		this.currentContext = this.owner.canvas.getContext("2d");
-		this.subContext = (Candle.enable.canvas ? pzprv3.getEL('divques_sub').getContext("2d") : null);
+		var o = this.owner;
+		this.currentContext = (!!o.canvas  ? o.canvas.getContext("2d")  : null);
+		this.subContext     = (!!o.canvas2 ? o.canvas2.getContext("2d") : null);
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -133,6 +134,7 @@ pzprv3.createCommonClass('Graphic',
 					 = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
 
 		this.outputImage = false;			// 画像保存中
+		this.useBuffer = !!g.use.canvas;	// Buffer描画を行うか
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
@@ -309,7 +311,7 @@ pzprv3.createCommonClass('Graphic',
 		if(x1>x2 || y1>y2){ return;}
 
 		var bd = this.owner.board, g = this.currentContext;
-		var enableBuffer = (g.use.canvas && !this.outputImage);
+		var enableBuffer = (this.useBuffer && !this.outputImage);
 		if(enableBuffer){ x1--; y1--; x2++; y2++;}
 						   this.range.cells   = bd.cellinside(x1,y1,x2,y2);
 		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}

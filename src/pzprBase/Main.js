@@ -9,8 +9,11 @@ pzprv3.createCoreClass('Owner',
 {
 	initialize : function(){
 		this.pid     = '';			// パズルのID("creek"など)
-		this.canvas  = null;
+		this.canvas  = null;		// 描画canvas本体
+		this.canvas2 = null;		// 補助canvas
 		this.classes = {};
+
+		this.ready = false;
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
 		this.playmode = !this.editmode;						// 回答モード
@@ -20,25 +23,58 @@ pzprv3.createCoreClass('Owner',
 	evlist : [],
 
 	//---------------------------------------------------------------------------
-	// owner.reload_func()  個別パズルのファイルを読み込み、初期化する関数
+	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
+	// owner.decodeBoardData() URLや複製されたデータを読み出す
+	// owner.isready()         初期化処理が実行可能かどうかを返す
 	//---------------------------------------------------------------------------
-	reload_func : function(pzl){
-		pzprv3.includeCustomFile(pzl.id);
+	importBoardData : function(pzl){
+		this.ready = false;
 
-		// 中身を読み取れるまでwait
-		var self = this;
-		setTimeout(function(){
-			if(!pzprv3.ready(pzl.id)){ setTimeout(arguments.callee,10); return;}
+		// 今のパズルと別idの時
+		if(this.pid != pzl.id){
+			if(!!this.pid){ this.clearObjects();}
+			pzprv3.includeCustomFile(pzl.id);
+		}
 
-			// デバッグ用
-			if(!self.debug){
-				self.debug = new pzprv3.core.Debug();
-				self.debug.owner = self;
-			}
+		// URL・ファイルデータの読み込み
+		this.decodeBoardData(pzl);
+	},
+	decodeBoardData : function(pzl){
+		// Classが用意できるまで待つ
+		var self = this, callback = arguments.callee;
+		if(!this.isready(pzl)){ setTimeout(function(){ callback.call(self,pzl);},10); return;}
 
-			// 初期化ルーチンへジャンプ
-			self.initObjects.call(self, pzl);
-		},10);
+		// クラスなどを初期化
+		this.initObjects(pzl);
+
+		if(pzprv3.DEBUG && !pzl.qdata){
+			pzl.qdata = this.debug.urls[pzl.id];
+		}
+
+		this.painter.suspendAll();
+		// ファイルを開く・複製されたデータを開く
+		if(!!pzl.fstr){
+			this.fio.filedecode(pzl.fstr);
+		}
+		// URLからパズルのデータを読み出す
+		else if(!!pzl.qdata){
+			this.enc.pzlinput(pzl);
+		}
+		// 何もないとき
+		else{
+			this.board.initBoardSize();
+			this.painter.resize_canvas();
+		}
+		this.painter.unsuspend();
+
+		this.ready = true;
+
+		// デバッグのスクリプトチェック時は、ここで発火させる
+		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
+	},
+	isready : function(pzl){
+		return (!!pzprv3.custom[pzl.id] && (!pzprv3.DEBUG || !!pzprv3.core.Debug.prototype.urls)
+				&& !!this.canvas && !!this.canvas2);
 	},
 
 	//---------------------------------------------------------------------------
@@ -47,10 +83,18 @@ pzprv3.createCoreClass('Owner',
 	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(pzl){
-		this.pid     = pzl.id;
-		this.canvas  = pzprv3.getEL('divques');
-		pzprv3.unselectable(this.canvas);
-		this.classes = pzprv3.custom[pzl.id];	// クラスを取得
+		// パズルIDが同じなら以下の処理は必要なし
+		if(this.pid===pzl.id){ return;}
+
+		// パズルIDを設定
+		this.pid = pzl.id;
+		this.classes = pzprv3.custom[pzl.id];
+
+		// デバッグ用
+		if(!this.debug){
+			this.debug = new pzprv3.core.Debug();
+			this.debug.owner = this;
+		}
 
 		// クラス初期化
 		this.board   = this.newInstance('Board');		// 盤面オブジェクト
@@ -82,9 +126,6 @@ pzprv3.createCoreClass('Owner',
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
 
-		// URL・ファイルデータの読み込み
-		this.decodeBoardData(pzl);
-
 		// タイマーリセット(最後)
 		this.timer.reset();
 	},
@@ -93,7 +134,6 @@ pzprv3.createCoreClass('Owner',
 		this.removeAllEvents();
 
 		this.menu.menureset();
-		pzprv3.getEL('numobj_parent').innerHTML = '';
 	},
 
 	//---------------------------------------------------------------------------
@@ -101,45 +141,6 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
 		return (new this.classes[classname](this, args));
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
-	// owner.decodeBoardData() URLや複製されたデータを読み出す
-	//---------------------------------------------------------------------------
-	importBoardData : function(pzl){
-		// 今のパズルと別idの時
-		if(this.pid != pzl.id){
-			this.clearObjects();
-			this.reload_func(pzl);
-		}
-		else{
-			this.decodeBoardData(pzl);
-		}
-	},
-	decodeBoardData : function(pzl){
-		if(pzprv3.DEBUG && !pzl.qdata){
-			pzl.qdata = this.debug.urls[pzl.id];
-		}
-
-		this.painter.suspendAll();
-		// ファイルを開く・複製されたデータを開く
-		if(!!pzl.fstr){
-			this.fio.filedecode(pzl.fstr);
-		}
-		// URLからパズルのデータを読み出す
-		else if(!!pzl.qdata){
-			this.enc.pzlinput(pzl);
-		}
-		// 何もないとき
-		else{
-			this.board.initBoardSize();
-			this.painter.resize_canvas();
-		}
-		this.painter.unsuspend();
-
-		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
 	},
 
 	//----------------------------------------------------------------------
