@@ -219,7 +219,7 @@ pzprv3.createCommonClass('MouseEvent',
 	pageX : function(e){
 		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
 		this.pageX = ((!pzprv3.OS.iOS) ?
-			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
+			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + scrollLeft());}
 		:
 			function(e){
 				if(!!e.touches){
@@ -230,7 +230,7 @@ pzprv3.createCommonClass('MouseEvent',
 					}
 				}
 				else if(!isNaN(e.pageX)){ return e.pageX;}
-				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
+				else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
 				return 0;
 			}
 		);
@@ -239,7 +239,7 @@ pzprv3.createCommonClass('MouseEvent',
 	pageY : function(e){
 		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
 		this.pageY = ((!pzprv3.OS.iOS) ?
-			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
+			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + scrollTop());}
 		:
 			function(e){
 				if(!!e.touches){
@@ -250,7 +250,7 @@ pzprv3.createCommonClass('MouseEvent',
 					}
 				}
 				else if(!isNaN(e.pageY)){ return e.pageY;}
-				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
+				else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
 				return 0;
 			}
 		);

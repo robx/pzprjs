@@ -64,7 +64,7 @@
 		var NewClass = ((iscommon) ?
 			function(owner, args){
 				this.owner = owner;
-				if(!!this.initialize){ this.initialize.apply(this,args);}
+				if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}
 			}
 		:
 			function(){
