@@ -8,8 +8,6 @@
 pzprv3.createCoreClass('Owner',
 {
 	initialize : function(){
-		this.resizetimer  = null;	// resizeタイマー
-
 		this.pid     = '';			// パズルのID("creek"など)
 		this.canvas  = null;
 		this.classes = {};
@@ -79,7 +77,7 @@ pzprv3.createCoreClass('Owner',
 		// イベントをくっつける
 		this.mouse.setEvents();
 		this.key.setEvents();
-		this.setEvents();
+		this.menu.setWindowEvents();
 
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
@@ -142,43 +140,6 @@ pzprv3.createCoreClass('Owner',
 
 		// デバッグのスクリプトチェック時は、ここで発火させる
 		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.setEvents()       マウス入力、キー入力以外のイベントの設定を行う
-	//---------------------------------------------------------------------------
-	setEvents : function(){
-		// File API＋Drag&Drop APIの設定
-		if(!!this.menu.reader){
-			var DDhandler = function(e){
-				this.menu.reader.readAsText(e.dataTransfer.files[0]);
-				e.preventDefault();
-				e.stopPropagation();
-			};
-			this.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
-			this.addEvent(window, 'drop', this, DDhandler, true);
-		}
-
-		// onBlurにイベントを割り当てる
-		this.addEvent(document, 'blur', this, this.onblur_func);
-
-		// onresizeイベントを割り当てる
-		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
-		this.addEvent(window, evname, this, this.onresize_func);
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.onresize_func() ウィンドウリサイズ時に呼ばれる関数
-	// owner.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
-	//---------------------------------------------------------------------------
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		var self = this;
-		this.resizetimer = setTimeout(function(){ self.painter.forceRedraw();},250);
-	},
-	onblur_func : function(){
-		this.key.keyreset();
-		this.mouse.mousereset();
 	},
 
 	//----------------------------------------------------------------------

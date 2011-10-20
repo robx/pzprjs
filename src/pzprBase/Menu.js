@@ -31,6 +31,8 @@ pzprv3.createCommonClass('Menu',
 
 		this.reader;	// FileReaderオブジェクト
 
+		this.resizetimer  = null;	// resizeタイマー
+
 		// ElementTemplate : ボタン
 		this.el_button = pzprv3.createEL('input');
 		this.el_button.type = 'button';
@@ -202,6 +204,43 @@ pzprv3.createCommonClass('Menu',
 	getPuzzleName : function(){
 		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
 		return this.selectStr(pinfo.ja, pinfo.en);
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.setWindowEvents()  マウス入力、キー入力以外のイベントの設定を行う
+	//---------------------------------------------------------------------------
+	setWindowEvents : function(){
+		// File API＋Drag&Drop APIの設定
+		if(!!this.reader){
+			var DDhandler = function(e){
+				this.reader.readAsText(e.dataTransfer.files[0]);
+				e.preventDefault();
+				e.stopPropagation();
+			};
+			this.owner.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
+			this.owner.addEvent(window, 'drop', this, DDhandler, true);
+		}
+
+		// onBlurにイベントを割り当てる
+		this.owner.addEvent(document, 'blur', this, this.onblur_func);
+
+		// onresizeイベントを割り当てる
+		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
+		this.owner.addEvent(window, evname, this, this.onresize_func);
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.onresize_func() ウィンドウリサイズ時に呼ばれる関数
+	// menu.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onresize_func : function(){
+		if(this.resizetimer){ clearTimeout(this.resizetimer);}
+		var self = this;
+		this.resizetimer = setTimeout(function(){ self.owner.painter.forceRedraw();},250);
+	},
+	onblur_func : function(){
+		this.owner.key.keyreset();
+		this.owner.mouse.mousereset();
 	},
 
 //--------------------------------------------------------------------------------------------------------------
