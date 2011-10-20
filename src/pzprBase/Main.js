@@ -162,21 +162,6 @@ pzprv3.createCoreClass('Owner',
 		this.evlist=[];
 	},
 
-	//----------------------------------------------------------------------
-	// owner.stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                      伝播させないようにする
-	// owner.preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                      イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
-	},
-
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},

@@ -1008,7 +1008,7 @@ pzprv3.createCommonClass('Menu',
 		if(!!popel){
 			popel.style.left = this.owner.mouse.pageX(e) - this.offset.px + 'px';
 			popel.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
-			this.owner.preventDefault(e);
+			pzprv3.preventDefault(e);
 		}
 	},
 

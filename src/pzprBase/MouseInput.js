@@ -108,8 +108,8 @@ pzprv3.createCommonClass('MouseEvent',
 				this.btn.Middle = false;
 			}
 		}
-		o.stopPropagation(e);
-		o.preventDefault(e);
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
@@ -119,8 +119,8 @@ pzprv3.createCommonClass('MouseEvent',
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
-		o.stopPropagation(e);
-		o.preventDefault(e);
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
@@ -133,8 +133,8 @@ pzprv3.createCommonClass('MouseEvent',
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
-		o.stopPropagation(e);
-		o.preventDefault(e);
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
 		return false;
 	},
 	e_mouseout : function(e) {

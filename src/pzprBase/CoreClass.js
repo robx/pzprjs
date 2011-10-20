@@ -182,6 +182,23 @@
 	},
 	createEL : function(tagName){
 		return document.createElement(tagName);
+	},
+
+	//----------------------------------------------------------------------
+	// Eventオブジェクト関連
+	// 
+	// stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                   伝播させないようにする
+	// preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                   イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = false;}
 	}
 });
 

@@ -85,7 +85,7 @@ pzprv3.createCommonClass('KeyEvent',
 			if(this.isenablemode() && !this.moveTarget(this.ca)){
 				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
 			}
-			if(this.tcMoved){ this.owner.preventDefault(e); return false;}
+			if(this.tcMoved){ pzprv3.preventDefault(e); return false;}
 		}
 	},
 	e_keyup : function(e){
