@@ -177,14 +177,20 @@ pzprv3.createCommonClass('Graphic',
 		// extendxell==0でない時は位置をずらす
 		if(!!o.board.isexcell){ x0 += this.cw; y0 += this.ch;}
 
-		// Canvasのサイズ・Offset変更
-		this.currentContext.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
-		this.currentContext.translate(x0, y0);
+		// Canvasのサイズ変更
+		var g = this.currentContext;
+		g.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
+		var rect = o.menu.getRect(g.canvas);
+
+		// CanvasのOffset変更 (小数点以下の端数の調整込み)
+		if(g.use.canvas)
+			{ g.translate(x0, y0);}
+		else
+			{ g.translate(x0-(rect.left%1), y0-(rect.top%1));}
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
-		var rect = o.menu.getRect(pzprv3.getEL('divques'));
-		this.pageX = (x0 + rect.left);
-		this.pageY = (y0 + rect.top);
+		this.pageX = x0 + (rect.left|0);
+		this.pageY = y0 + (rect.top|0);
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
