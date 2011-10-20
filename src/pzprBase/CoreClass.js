@@ -288,7 +288,7 @@ function onload_func2(){
 
 	// 描画wrapperの設定
 	Candle.start('divques', 'canvas');
-	if(Candle.enable.canvas && !!document.createElement('canvas').toDataURL){
+	if(Candle.enable.canvas){
 		Candle.start('divques_sub', 'canvas');
 	}
 

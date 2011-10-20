@@ -328,7 +328,7 @@ Graphic:{
 				}
 				else{
 					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(x1*this.bw, y1*this.bh, (x2-x1+1)*this.bw, (y2-y1+1)*this.bh);
+					g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw+1, (y2-y1)*this.bh+1);
 				}
 			}
 		:

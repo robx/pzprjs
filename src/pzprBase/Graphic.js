@@ -12,7 +12,7 @@ pzprv3.createCommonClass('Graphic',
 {
 	initialize : function(){
 		this.currentContext = this.owner.canvas.getContext("2d");
-		var g = this.currentContext;
+		this.subContext = (Candle.enable.canvas ? pzprv3.getEL('divques_sub').getContext("2d") : null);
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -101,6 +101,9 @@ pzprv3.createCommonClass('Graphic',
 		this.pageX = 0;
 		this.pageY = 0;
 
+		this.x0 = 0;
+		this.y0 = 0;
+
 		// 描画単位(ここはデフォルト)
 		this.cellsize = 36;		// デフォルトのセルサイズ
 		this.cw = 36; 			// セルの横幅
@@ -122,6 +125,7 @@ pzprv3.createCommonClass('Graphic',
 		this.zidx_array=[];
 
 		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
+		var g = this.currentContext;
 		for(var type in g.use){ this.use[type] = g.use[type];}
 
 		this.numobj = {};					// エレメントへの参照を保持する
@@ -173,24 +177,29 @@ pzprv3.createCommonClass('Graphic',
 		this.lm = (this.lw-1)/2;
 
 		// 盤面のセルID:0が描画される左上の位置の設定
-		var x0, y0; x0 = y0 = (this.cw*this.bdmargin)|0;
+		this.x0 = this.y0 = (this.cw*this.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!o.board.isexcell){ x0 += this.cw; y0 += this.ch;}
+		if(!!o.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
 
 		// Canvasのサイズ変更
-		var g = this.currentContext;
-		g.changeSize((cols*this.cw)|0, (rows*this.ch)|0);
-		var rect = o.menu.getRect(g.canvas);
+		var cwid = (cols*this.cw)|0, chgt = (rows*this.ch)|0;
+		this.currentContext.changeSize(cwid, chgt);
+		this.subContext.changeSize(cwid, chgt);
+		var rect = o.menu.getRect(this.currentContext.canvas);
 
-		// CanvasのOffset変更 (小数点以下の端数の調整込み)
-		if(g.use.canvas)
-			{ g.translate(x0, y0);}
-		else
-			{ g.translate(x0-(rect.left%1), y0-(rect.top%1));}
+		var gs = [this.currentContext, this.subContext];
+		for(var i=0;i<2;i++){
+			var g = gs[i];
+			// CanvasのOffset変更 (小数点以下の端数の調整込み)
+			if(g.use.canvas)
+				{ g.translate(this.x0, this.y0);}
+			else
+				{ g.translate(this.x0-(rect.left%1), this.y0-(rect.top%1));}
+		}
 
 		// 盤面のページ内座標を設定(fillTextEmurate用)
-		this.pageX = x0 + (rect.left|0);
-		this.pageY = y0 + (rect.top|0);
+		this.pageX = this.x0 + (rect.left|0);
+		this.pageY = this.y0 + (rect.top|0);
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
@@ -299,14 +308,32 @@ pzprv3.createCommonClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1>x2 || y1>y2){ return;}
 
-		var bd = this.owner.board;
+		var bd = this.owner.board, g = this.currentContext;
+		var enableBuffer = (g.use.canvas && !this.outputImage);
+		if(enableBuffer){ x1--; y1--; x2++; y2++;}
 						   this.range.cells   = bd.cellinside(x1,y1,x2,y2);
 		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
 		if(!!bd.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
 		if(!!bd.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
 
 		this.flushCanvas();
-		this.paint();
+		if(!enableBuffer){
+			this.paint();
+		}
+		else{
+			var g2 = this.subContext;
+			this.currentContext = g2;
+			this.flushCanvasAll();
+			this.paint();
+			this.currentContext = g;
+
+			var dx = x1*this.bw, dy = y1*this.bh, dw = (x2-x1)*this.bw+1, dh = (y2-y1)*this.bh+1;
+			// source側はtaranslateのぶん足されていないので、手動で足します
+			var sx = this.x0+dx, sy = this.y0+dy, sx2 = sx+dw, sy2 = sy+dh;
+			if(sx<0){ sx=0; dx=sx-this.x0;} if(sx2>g2.child.width) { sx2 = g2.child.width; }
+			if(sy<0){ sy=0; dy=sy-this.y0;} if(sy2>g2.child.height){ sy2 = g2.child.height;}
+			g.drawImage(g2.child, sx, sy, (sx2-sx), (sy2-sy), dx, dy, (sx2-sx), (sy2-sy));
+		}
 
 		this.resetRange();
 	},
@@ -1726,6 +1753,7 @@ pzprv3.createCommonClass('Graphic',
 	flushCanvasAll : function(){
 		this.flushCanvasAll = ((this.use.canvas) ?
 			function(){
+				this.currentContext.clear();
 				this.numobj = {};
 				pzprv3.getEL('numobj_parent').innerHTML = '';
 			}
@@ -1755,7 +1783,7 @@ pzprv3.createCommonClass('Graphic',
 				var d = this.range;
 				var g = this.currentContext
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(d.x1*this.bw, d.y1*this.bh, (d.x2-d.x1)*this.bw, (d.y2-d.y1)*this.bh);
+				g.fillRect(d.x1*this.bw, d.y1*this.bh, (d.x2-d.x1)*this.bw+1, (d.y2-d.y1)*this.bh+1);
 			}
 		:
 			function(){ this.zidx=1;}

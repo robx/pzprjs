@@ -66,7 +66,7 @@ pzprv3.createCommonClass('Menu',
 			this.reader.onload = function(e){ this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));};
 		}
 
-		if(!!getEL("divques_sub").getContext){
+		if(!!getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 		}
 
