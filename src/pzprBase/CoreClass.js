@@ -296,8 +296,8 @@ function onload_func2(){
 	pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 
 	// 単体初期化処理のルーチンへ
-	var puzzle = new pzprv3.core.Owner();
-	puzzle.reload_func(pzl);
+	window.puzzle = new pzprv3.core.Owner();
+	window.puzzle.reload_func(pzl);
 
 	// アクセスログをとってみる
 	if(!!pzprv3.require_accesslog){ accesslog(pzl);}
