@@ -1218,7 +1218,7 @@ _extend( Camp, {
 	Camp.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
 	Camp.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
 	Camp.enable.flash  = false;
-	Camp.enable.vml    = _IE;
+	Camp.enable.vml    = (function(){ try{ _doc.namespaces.add("v", "urn:schemas-microsoft-com:vml"); return true;}catch(e){} return false;})();
 
 //	/* Camp.current設定 */
 	for(var i=0;i<_types.length;i++){ Camp.current[_types[i]]=false;}
@@ -1231,7 +1231,7 @@ _extend( Camp, {
 	/* 初期設定 for VML */
 	if(Camp.enable.vml){
 		/* addNameSpace for VML */
-		_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+		/* Camp.enable.add設定時にadd済みです */
 
 		/* addStyleSheet for VML */
 		var text = [];
