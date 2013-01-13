@@ -150,42 +150,24 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = ((!k.touchevent) ?
-			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageX)){ return e.pageX;}
-				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageX(e);
+		if(k.touchevent && e.touches.length>0){
+			var et=e.touches, len=et.length, pos=0;
+			for(var i=0;i<len;i++){ pos += et[i].pageX;}
+			return pos/len;
+		}
+		else if(e.pageX!==void 0){ return e.pageX;}
+		else if(e.clientX!==void 0){ return e.clientX + this.scrollLeft();}
+		return 0;
 	},
 	pageY : function(e){
-		_ElementManager.pageY = ((!k.touchevent) ?
-			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageY)){ return e.pageY;}
-				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageY(e);
+		if(k.touchevent && e.touches.length>0){
+			var et=e.touches, len=et.length, pos=0;
+			for(var i=0;i<len;i++){ pos += et[i].pageY;}
+			return pos/len;
+		}
+		else if(e.pageY!==void 0){ return e.pageY;}
+		else if(e.clientY!==void 0){ return e.clientY + this.scrollTop();}
+		return 0;
 	},
 	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
 	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},

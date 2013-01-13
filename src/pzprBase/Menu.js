@@ -417,7 +417,7 @@ Menu.prototype = {
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!k.touchevent?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -741,7 +741,7 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		if(!k.mobile){
+		if(!k.touchevent){
 			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
 			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
 		}
@@ -875,14 +875,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			if(!k.mobile){
-				_pop.style.left = ee.pageX(e) - 8 + 'px';
-				_pop.style.top  = ee.pageY(e) - 8 + 'px';
-			}
-			else{
-				_pop.style.left = e.pageX - 8 + 'px';
-				_pop.style.top  = e.pageY - 8 + 'px';
-			}
+			_pop.style.left = e.pageX - 8 + 'px';
+			_pop.style.top  = e.pageY - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -907,7 +901,7 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!k.mobile){
+		if(!k.touchevent){
 			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
 		}
 		else{

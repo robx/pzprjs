@@ -20,7 +20,7 @@ Puzzles.shakashaka.prototype = {
 		base.setFloatbgcolor("rgb(32, 32, 32)");
 	},
 	menufix : function(){
-		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+		pp.addSelect('use','setting',(!k.touchevent?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
 
 		pp.addChild('use_1', 'use', 'クリックした位置', 'Corner-side');
