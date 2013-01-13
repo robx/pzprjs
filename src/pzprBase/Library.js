@@ -1,4 +1,4 @@
-// Library.js v3.3.3
+// Library.js v3.3.6
 
 //---------------------------------------------------------------------------
 // ★ElementManagerクラス Element関係の処理
@@ -77,6 +77,7 @@ var
 	};
 	_ElementManager.os = { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)};
 	_ElementManager.mobile = (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1);
+	_ElementManager.touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
 
 	_win.ee = _ElementManager;
 
@@ -149,7 +150,7 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = ((!k.mobile) ?
+		_ElementManager.pageX = ((!k.touchevent) ?
 			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
 		:
 			function(e){
@@ -168,7 +169,7 @@ _extend( _ElementManager, {
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = ((!k.mobile) ?
+		_ElementManager.pageY = ((!k.touchevent) ?
 			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
 		:
 			function(e){

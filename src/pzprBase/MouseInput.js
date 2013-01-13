@@ -1,4 +1,4 @@
-// MouseInput.js v3.3.3
+// MouseInput.js v3.3.6
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -116,7 +116,7 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!k.mobile){
+		if(!k.touchevent){
 			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);

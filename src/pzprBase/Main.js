@@ -1,4 +1,4 @@
-// Main.js v3.3.3
+// Main.js v3.3.6
 
 //----------------------------------------------------------------------------
 // ★グローバル変数
@@ -77,6 +77,7 @@ var k = {
 	br     : ee.br,
 	os     : ee.os,
 	mobile : ee.mobile,
+	touchevent : ee.touchevent,
 
 	// const値
 	BOARD  : 'board',

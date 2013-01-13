@@ -1,4 +1,4 @@
-// Menu.js v3.3.3
+// Menu.js v3.3.6
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -118,7 +118,7 @@ Menu.prototype = {
 	setEvents : function(){
 		// マウス入力イベントの設定
 		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!k.mobile){
+		if(!k.touchevent){
 			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
 			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
 			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
