@@ -79,7 +79,6 @@ var
 	_ElementManager.mobile = (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1);
 
 	_win.ee = _ElementManager;
-	var _iOS = ee.os.iPhoneOS;
 
 // implementation of _ElementManage class
 _extend( _ElementManager, {
@@ -150,7 +149,7 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = ((!_iOS) ?
+		_ElementManager.pageX = ((!k.mobile) ?
 			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
 		:
 			function(e){
@@ -169,7 +168,7 @@ _extend( _ElementManager, {
 		return _ElementManager.pageX(e);
 	},
 	pageY : function(e){
-		_ElementManager.pageY = ((!_iOS) ?
+		_ElementManager.pageY = ((!k.mobile) ?
 			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
 		:
 			function(e){
@@ -191,7 +190,7 @@ _extend( _ElementManager, {
 	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = ((!_iOS) ?
+		_ElementManager.windowWidth = ((!k.mobile) ?
 			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
@@ -199,7 +198,7 @@ _extend( _ElementManager, {
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = ((!_iOS) ?
+		_ElementManager.windowHeight = ((!k.mobile) ?
 			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
 		:
 			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
