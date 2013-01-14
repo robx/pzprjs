@@ -21,9 +21,9 @@ Puzzles.kurotto.prototype = {
 	menufix : function(){
 		menu.addUseToFlags();
 
-		pp.addCheck('plred','setting',false, '正しくない数字を表示', 'Show illegal number');
-		pp.setLabel('plred', '正しくない数字を赤くする', 'Show illegal number as red.');
-		pp.funcs['plred'] = function(){ pc.paintAll();};
+		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+		pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
+		pp.funcs['circolor'] = function(){ pc.paintAll();};
 	},
 
 	//---------------------------------------------------------
@@ -61,6 +61,7 @@ Puzzles.kurotto.prototype = {
 	//画像表示系関数オーバーライド
 	graphic_init : function(){
 		pc.gridcolor = pc.gridcolor_DLIGHT;
+		pc.bcolor    = "silver";
 		pc.setBGCellColorFunc('qsub1');
 
 		pc.fontsizeratio = 0.85;
@@ -73,26 +74,50 @@ Puzzles.kurotto.prototype = {
 			this.drawGrid();
 			this.drawBlackCells();
 
-			if(pp.getVal('plred') && !ans.errDisp){
-				ans.inCheck = true;
-				ans.checkCellNumber_kurotto( area.getBCellInfo() );
-				ans.inCheck = false;
-				cells_sv = this.range.cells;
-				this.range.cells = bd.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
-			}
-
-			this.drawCirclesAtNumber();
+			this.drawCirclesAtNumber_kurotto();
 			this.drawNumbers();
-
-			if(pp.getVal('plred') && !ans.errDisp){
-				ans.errDisp = true;
-				bd.errclear(false);
-				this.range.cells = cells_sv;
-			}
 
 			this.drawChassis();
 
 			this.drawTarget();
+		};
+		
+		// 背景色をつけるため
+		pc.drawCirclesAtNumber_kurotto = function(c){
+			this.vinc('cell_circle', 'auto');
+
+			if(!pp.getVal('circolor')){
+				var clist = this.range.cells;
+				for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber(clist[i]);}
+			}
+			else{
+				var clist = bd.cellinside(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+				var binfo = area.getBCellInfo();
+				for(var i=0;i<clist.length;i++){ this.drawCircle1AtNumber_kurotto(binfo, clist[i]);}
+			}
+		};
+		pc.drawCircle1AtNumber_kurotto = function(cinfo,c){
+			if(c===null){ return;}
+
+			var rsize = this.cw*0.44;
+			var header = "c_cir_";
+			var qn = bd.cell[c].qnum;
+
+			if(qn!=-1){
+				g.lineWidth   = this.cw*0.05;
+				g.strokeStyle = this.cellcolor;
+
+				var cnt = (qn>=0 ? ans.countAdjacentCells_kurotto(cinfo,c) : -2);
+				if (pp.getVal('circolor') && qn===cnt)
+											 { g.fillStyle = this.bcolor;      }
+				else if(bd.cell[c].error===1){ g.fillStyle = this.errbcolor1;  }
+				else                         { g.fillStyle = this.circledcolor;}
+
+				if(this.vnop(header+c,this.FILL)){
+					g.shapeCircle(bd.cell[c].cpx, bd.cell[c].cpy, rsize);
+				}
+			}
+			else{ this.vhide([header+c]);}
 		};
 	},
 
