@@ -1,4 +1,4 @@
-﻿var PZLNAME = {
+var PZLNAME = {
 	/* 日本語のパズル名 */
 	ja : {
 		aho        : 'アホになり切れ',
@@ -45,6 +45,7 @@
 		kusabi     : 'クサビリンク',
 		lightup    : '美術館',
 		lits       : 'ＬＩＴＳ',
+		lookair    : 'るっくえあ',
 		loopsp     : '環状線スペシャル',
 		loute      : 'エルート',
 		mashu      : 'ましゅ',
@@ -141,6 +142,7 @@
 		kusabi     : 'Kusabi',
 		lightup    : 'Akari (Light Up)',
 		lits       : 'LITS',
+		lookair    : 'Look-Air',
 		loopsp     : 'Loop Special',
 		loute      : 'L-route',
 		mashu      : 'Masyu (Pearl Puzzle)',
