@@ -856,8 +856,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			_pop.style.left = e.pageX - 8 + 'px';
-			_pop.style.top  = e.pageY - 8 + 'px';
+			_pop.style.left = ee.pageX(e) - 8 + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
