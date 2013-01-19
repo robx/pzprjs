@@ -117,27 +117,20 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!k.touchevent){
-			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			canvas.oncontextmenu = function(){ return false;};
-
-			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			numparent.oncontextmenu = function(){ return false;};
-		}
-		// iPhoneOS用のタッチイベント設定
-		else{
-			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-
-			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+		var elements = [ee('divques').el];
+		if(pc.fillTextEmulate){ elements.push(ee('numobj_parent').el);}
+		for(var i=0;i<elements.length;i++){
+			var el = elements[i];
+			ee.addEvent(el, "mousedown", ee.ebinder(mv, mv.e_mousedown));
+			ee.addEvent(el, "mousemove", ee.ebinder(mv, mv.e_mousemove));
+			ee.addEvent(el, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
+			el.oncontextmenu = function(){ return false;};
+			// touchイベント設定
+			if(k.touchevent){
+				ee.addEvent(el, "touchstart", ee.ebinder(mv, mv.e_mousedown));
+				ee.addEvent(el, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
+				ee.addEvent(el, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+			}
 		}
 
 		// キー入力イベントの設定
@@ -741,11 +734,9 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		if(!k.touchevent){
-			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
-		}
-		else{
+		ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
+		ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
+		if(k.touchevent){
 			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
 			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
 		}
@@ -901,10 +892,8 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!k.touchevent){
-			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
-		}
-		else{
+		ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
+		if(k.touchevent){
 			ee.addEvent(bar, "touchstart", ee.ebinder(this, this.titlebardown));
 		}
 		ee(bar).unselectable().el;

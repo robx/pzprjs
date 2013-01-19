@@ -116,7 +116,12 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!k.touchevent){
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
 			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
@@ -128,7 +133,6 @@ MouseEvent.prototype = {
 				right = (!!e.which ? e.which===3 : e.button===2);
 			}
 		}
-		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))

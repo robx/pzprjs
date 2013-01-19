@@ -150,7 +150,7 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		if(k.touchevent && e.touches.length>0){
+		if(e.touches!==(void 0) && e.touches.length>0){
 			var et=e.touches, len=et.length, pos=0;
 			for(var i=0;i<len;i++){ pos += et[i].pageX;}
 			return pos/len;
@@ -160,7 +160,7 @@ _extend( _ElementManager, {
 		return 0;
 	},
 	pageY : function(e){
-		if(k.touchevent && e.touches.length>0){
+		if(e.touches!==(void 0) && e.touches.length>0){
 			var et=e.touches, len=et.length, pos=0;
 			for(var i=0;i<len;i++){ pos += et[i].pageY;}
 			return pos/len;
