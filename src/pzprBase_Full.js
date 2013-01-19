@@ -5,15 +5,15 @@
  * written in JavaScript.
  * 
  * @author  dk22
- * @version v3.3.4
- * @date    2011-06-11
+ * @version v3.3.6
+ * @date    2013-01-20
  * 
  * This script is licensed under the MIT license. See below,
  * http://www.opensource.org/licenses/mit-license.php
  * 
  */
 
-var pzprversion="v3.3.4";
+var pzprversion="v3.3.6";
  
 (function(){
 
@@ -1233,7 +1233,7 @@ _extend( Camp, {
 	Camp.enable.svg    = (!!_doc.createElementNS && !!_doc.createElementNS(SVGNS, 'svg').suspendRedraw);
 	Camp.enable.sl     = (function(){ try{ return (new ActiveXObject("AgControl.AgControl")).IsVersionSupported("1.0");}catch(e){} return false;})();
 	Camp.enable.flash  = false;
-	Camp.enable.vml    = _IE;
+	Camp.enable.vml    = (function(){ try{ _doc.namespaces.add("v", "urn:schemas-microsoft-com:vml"); return true;}catch(e){} return false;})();
 
 //	/* Camp.current設定 */
 	for(var i=0;i<_types.length;i++){ Camp.current[_types[i]]=false;}
@@ -1246,7 +1246,7 @@ _extend( Camp, {
 	/* 初期設定 for VML */
 	if(Camp.enable.vml){
 		/* addNameSpace for VML */
-		_doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+		/* Camp.enable.add設定時にadd済みです */
 
 		/* addStyleSheet for VML */
 		var text = [];
@@ -1348,9 +1348,10 @@ var
 	};
 	_ElementManager.os = { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)};
 	_ElementManager.mobile = (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1);
+	_ElementManager.touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
+	_ElementManager.mspointerevent = (!!navigator.msPointerEnabled);
 
 	_win.ee = _ElementManager;
-	var _iOS = ee.os.iPhoneOS;
 
 // implementation of _ElementManage class
 _extend( _ElementManager, {
@@ -1383,7 +1384,7 @@ _extend( _ElementManager, {
 		if(!!attr_i){
 			for(var name in attr_i){
 				if(name==='unselectable' && attr_i[name]==='on'){
-					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = 'none';
+					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = style['webkitUserSelect'] = style['msUserSelect'] = 'none';
 					attr['unselectable'] = 'on';
 				}
 				else{ attr[name] = attr_i[name];}
@@ -1421,48 +1422,30 @@ _extend( _ElementManager, {
 		return e.target || e.srcElement;
 	},
 	pageX : function(e){
-		_ElementManager.pageX = ((!_iOS) ?
-			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + this.scrollLeft());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageX)){ return e.pageX;}
-				else if(!isNaN(e.clientX)){ return e.clientX + this.scrollLeft();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageX(e);
+		if(e.touches!==(void 0) && e.touches.length>0){
+			var et=e.touches, len=et.length, pos=0;
+			for(var i=0;i<len;i++){ pos += et[i].pageX;}
+			return pos/len;
+		}
+		else if(e.pageX!==void 0){ return e.pageX;}
+		else if(e.clientX!==void 0){ return e.clientX + this.scrollLeft();}
+		return 0;
 	},
 	pageY : function(e){
-		_ElementManager.pageY = ((!_iOS) ?
-			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + this.scrollTop());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageY)){ return e.pageY;}
-				else if(!isNaN(e.clientY)){ return e.clientY + this.scrollTop();}
-				return 0;
-			}
-		);
-		return _ElementManager.pageY(e);
+		if(e.touches!==(void 0) && e.touches.length>0){
+			var et=e.touches, len=et.length, pos=0;
+			for(var i=0;i<len;i++){ pos += et[i].pageY;}
+			return pos/len;
+		}
+		else if(e.pageY!==void 0){ return e.pageY;}
+		else if(e.clientY!==void 0){ return e.clientY + this.scrollTop();}
+		return 0;
 	},
 	scrollLeft : function(){ return (_doc.documentElement.scrollLeft || _doc.body.scrollLeft);},
 	scrollTop  : function(){ return (_doc.documentElement.scrollTop  || _doc.body.scrollTop );},
 
 	windowWidth : function(){
-		_ElementManager.windowWidth = ((!_iOS) ?
+		_ElementManager.windowWidth = ((!k.mobile) ?
 			function(){ return ((_win.innerHeight!==void 0) ? _win.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
@@ -1470,7 +1453,7 @@ _extend( _ElementManager, {
 		return _ElementManager.windowWidth();
 	},
 	windowHeight : function(){
-		_ElementManager.windowHeight = ((!_iOS) ?
+		_ElementManager.windowHeight = ((!k.mobile) ?
 			function(){ return ((_win.innerHeight!==void 0) ? _win.innerHeight : _doc.body.clientHeight);}
 		:
 			function(){ return (980*(_win.innerHeight/_win.innerWidth))|0;}
@@ -1497,17 +1480,57 @@ _extend( _ElementManager, {
 
 	//----------------------------------------------------------------------
 	// ee.addEvent()        addEventListener(など)を呼び出す
-	// ee.removeAllEvents() removeEventListener(など)を呼び出す
-	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                      伝播させないようにする
-	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                      イベントが起こらないようにする
+	// ee.addMouseDownEvent マウスを押したときのイベントを設定する
+	// ee.addMouseMoveEvent マウスを動かしたときのイベントを設定する
+	// ee.addMouseUpEvent   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, func, capt){
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 		_elf.push({el:el, event:event, func:func, capt:!!capt});
 	},
+
+	addMouseDownEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerDown", func);
+		}
+		else{
+			this.addEvent(el, "mousedown", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchstart", func);
+			}
+		}
+	},
+	addMouseMoveEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerMove", func);
+		}
+		else{
+			this.addEvent(el, "mousemove", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchmove",  func);
+			}
+		}
+	},
+	addMouseUpEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerUp", func);
+		}
+		else{
+			this.addEvent(el, "mouseup", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchend", func);
+			}
+		}
+	},
+
+	//----------------------------------------------------------------------
+	// ee.removeAllEvents() removeEventListener(など)を呼び出す
+	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
 	removeAllEvents : function(){
 		var islt = !!_doc.removeEventListener;
 		for(var i=0,len=_elf.length;i<len;i++){
@@ -1579,9 +1602,11 @@ _ElementManager.ElementExt.prototype = {
 	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
 	//----------------------------------------------------------------------
 	unselectable : function(){
-		this.el.style.MozUserSelect   = 'none';
-		this.el.style.KhtmlUserSelect = 'none';
-		this.el.style.userSelect      = 'none';
+		this.el.style.MozUserSelect    = 'none';
+		this.el.style.KhtmlUserSelect  = 'none';
+		this.el.style.webkitUserSelect = 'none';
+		this.el.style.msUserSelect     = 'none';
+		this.el.style.userSelect       = 'none';
 		this.el.unselectable = "on";
 		return this;
 	},
@@ -1729,6 +1754,8 @@ var k = {
 	br     : ee.br,
 	os     : ee.os,
 	mobile : ee.mobile,
+	touchevent : ee.touchevent,
+	mspointerevent : ee.mspointerevent,
 
 	// const値
 	BOARD  : 'board',
@@ -6211,7 +6238,7 @@ MouseEvent.prototype = {
 	e_mouseup   : function(e){
 		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
 			um.newOperation(false);
-			if(!k.mobile){ this.setposition(e);}
+			if(!k.touchevent){ this.setposition(e);}
 			this.ismousedown = false;
 			this.mouseup();		// 各パズルのルーチンへ
 			this.mousereset();
@@ -6253,7 +6280,12 @@ MouseEvent.prototype = {
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!k.mobile){
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
 			if(k.br.IE6 || k.br.IE7 || k.br.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
@@ -6265,7 +6297,6 @@ MouseEvent.prototype = {
 				right = (!!e.which ? e.which===3 : e.button===2);
 			}
 		}
-		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		if(((kc.isSHIFT || kc.isMETA)^pp.getVal('lrcheck'))&&(left!==right))
@@ -10108,27 +10139,14 @@ Menu.prototype = {
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var canvas = ee('divques').el, numparent = ee('numobj_parent').el;
-		if(!k.mobile){
-			ee.addEvent(canvas, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			canvas.oncontextmenu = function(){ return false;};
-
-			ee.addEvent(numparent, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
-			numparent.oncontextmenu = function(){ return false;};
-		}
-		// iPhoneOS用のタッチイベント設定
-		else{
-			ee.addEvent(canvas, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(canvas, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(canvas, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-
-			ee.addEvent(numparent, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(numparent, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(numparent, "touchend",   ee.ebinder(mv, mv.e_mouseup));
+		var elements = [ee('divques').el];
+		if(pc.fillTextEmulate){ elements.push(ee('numobj_parent').el);}
+		for(var i=0;i<elements.length;i++){
+			var el = elements[i];
+			ee.addMouseDownEvent(el, ee.ebinder(mv, mv.e_mousedown));
+			ee.addMouseMoveEvent(el, ee.ebinder(mv, mv.e_mousemove));
+			ee.addMouseUpEvent  (el, ee.ebinder(mv, mv.e_mouseup));
+			el.oncontextmenu = function(){ return false;};
 		}
 
 		// キー入力イベントの設定
@@ -10408,7 +10426,7 @@ Menu.prototype = {
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		pp.addSelect('use','setting',(!k.mobile?1:2),[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!k.touchevent?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -10732,14 +10750,8 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		if(!k.mobile){
-			ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
-		}
-		else{
-			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
-		}
+		ee.addMouseMoveEvent(_doc, ee.ebinder(this, this.titlebarmove));
+		ee.addMouseUpEvent  (_doc, ee.ebinder(this, this.titlebarup));
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -10866,14 +10878,8 @@ Menu.prototype = {
 		// ポップアップメニューを表示する
 		if(this.pop){
 			var _pop = this.pop.el;
-			if(!k.mobile){
-				_pop.style.left = ee.pageX(e) - 8 + 'px';
-				_pop.style.top  = ee.pageY(e) - 8 + 'px';
-			}
-			else{
-				_pop.style.left = e.pageX - 8 + 'px';
-				_pop.style.top  = e.pageY - 8 + 'px';
-			}
+			_pop.style.left = ee.pageX(e) - 8 + 'px';
+			_pop.style.top  = ee.pageY(e) - 8 + 'px';
 			_pop.style.display = 'inline';
 		}
 	},
@@ -10898,12 +10904,7 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		if(!k.mobile){
-			ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
-		}
-		else{
-			ee.addEvent(bar, "touchstart", ee.ebinder(this, this.titlebardown));
-		}
+		ee.addMouseDownEvent(bar, ee.ebinder(this, this.titlebardown));
 		ee(bar).unselectable().el;
 	},
 
