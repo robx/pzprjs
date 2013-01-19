@@ -78,6 +78,7 @@ var
 	_ElementManager.os = { iPhoneOS : (navigator.userAgent.indexOf('like Mac OS X') > -1)};
 	_ElementManager.mobile = (navigator.userAgent.indexOf('like Mac OS X') > -1 || navigator.userAgent.indexOf('Android') > -1);
 	_ElementManager.touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
+	_ElementManager.mspointerevent = (!!navigator.msPointerEnabled);
 
 	_win.ee = _ElementManager;
 
@@ -112,7 +113,7 @@ _extend( _ElementManager, {
 		if(!!attr_i){
 			for(var name in attr_i){
 				if(name==='unselectable' && attr_i[name]==='on'){
-					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = 'none';
+					style['userSelect'] = style['MozUserSelect'] = style['KhtmlUserSelect'] = style['webkitUserSelect'] = style['msUserSelect'] = 'none';
 					attr['unselectable'] = 'on';
 				}
 				else{ attr[name] = attr_i[name];}
@@ -208,17 +209,57 @@ _extend( _ElementManager, {
 
 	//----------------------------------------------------------------------
 	// ee.addEvent()        addEventListener(など)を呼び出す
-	// ee.removeAllEvents() removeEventListener(など)を呼び出す
-	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                      伝播させないようにする
-	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                      イベントが起こらないようにする
+	// ee.addMouseDownEvent マウスを押したときのイベントを設定する
+	// ee.addMouseMoveEvent マウスを動かしたときのイベントを設定する
+	// ee.addMouseUpEvent   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, func, capt){
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 		_elf.push({el:el, event:event, func:func, capt:!!capt});
 	},
+
+	addMouseDownEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerDown", func);
+		}
+		else{
+			this.addEvent(el, "mousedown", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchstart", func);
+			}
+		}
+	},
+	addMouseMoveEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerMove", func);
+		}
+		else{
+			this.addEvent(el, "mousemove", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchmove",  func);
+			}
+		}
+	},
+	addMouseUpEvent : function(el, func){
+		if(k.mspointerevent){
+			this.addEvent(el, "MSPointerUp", func);
+		}
+		else{
+			this.addEvent(el, "mouseup", func);
+			if(k.touchevent){
+				this.addEvent(el, "touchend", func);
+			}
+		}
+	},
+
+	//----------------------------------------------------------------------
+	// ee.removeAllEvents() removeEventListener(など)を呼び出す
+	// ee.stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                      伝播させないようにする
+	// ee.preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                      イベントが起こらないようにする
+	//----------------------------------------------------------------------
 	removeAllEvents : function(){
 		var islt = !!_doc.removeEventListener;
 		for(var i=0,len=_elf.length;i<len;i++){
@@ -290,9 +331,11 @@ _ElementManager.ElementExt.prototype = {
 	// ee.removeNextAll()        同じ親要素を持ち、自分より後ろにあるエレメントを削除する
 	//----------------------------------------------------------------------
 	unselectable : function(){
-		this.el.style.MozUserSelect   = 'none';
-		this.el.style.KhtmlUserSelect = 'none';
-		this.el.style.userSelect      = 'none';
+		this.el.style.MozUserSelect    = 'none';
+		this.el.style.KhtmlUserSelect  = 'none';
+		this.el.style.webkitUserSelect = 'none';
+		this.el.style.msUserSelect     = 'none';
+		this.el.style.userSelect       = 'none';
 		this.el.unselectable = "on";
 		return this;
 	},

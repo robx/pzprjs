@@ -121,16 +121,10 @@ Menu.prototype = {
 		if(pc.fillTextEmulate){ elements.push(ee('numobj_parent').el);}
 		for(var i=0;i<elements.length;i++){
 			var el = elements[i];
-			ee.addEvent(el, "mousedown", ee.ebinder(mv, mv.e_mousedown));
-			ee.addEvent(el, "mousemove", ee.ebinder(mv, mv.e_mousemove));
-			ee.addEvent(el, "mouseup",   ee.ebinder(mv, mv.e_mouseup));
+			ee.addMouseDownEvent(el, ee.ebinder(mv, mv.e_mousedown));
+			ee.addMouseMoveEvent(el, ee.ebinder(mv, mv.e_mousemove));
+			ee.addMouseUpEvent  (el, ee.ebinder(mv, mv.e_mouseup));
 			el.oncontextmenu = function(){ return false;};
-			// touchイベント設定
-			if(k.touchevent){
-				ee.addEvent(el, "touchstart", ee.ebinder(mv, mv.e_mousedown));
-				ee.addEvent(el, "touchmove",  ee.ebinder(mv, mv.e_mousemove));
-				ee.addEvent(el, "touchend",   ee.ebinder(mv, mv.e_mouseup));
-			}
 		}
 
 		// キー入力イベントの設定
@@ -734,12 +728,8 @@ Menu.prototype = {
 		}
 		this.titlebarfunc(ee('credit3_1').el);
 
-		ee.addEvent(_doc, "mousemove", ee.ebinder(this, this.titlebarmove));
-		ee.addEvent(_doc, "mouseup",   ee.ebinder(this, this.titlebarup));
-		if(k.touchevent){
-			ee.addEvent(_doc, "touchmove", ee.ebinder(this, this.titlebarmove));
-			ee.addEvent(_doc, "touchend",  ee.ebinder(this, this.titlebarup));
-		}
+		ee.addMouseMoveEvent(_doc, ee.ebinder(this, this.titlebarmove));
+		ee.addMouseUpEvent  (_doc, ee.ebinder(this, this.titlebarup));
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -892,10 +882,7 @@ Menu.prototype = {
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		ee.addEvent(bar, "mousedown", ee.ebinder(this, this.titlebardown));
-		if(k.touchevent){
-			ee.addEvent(bar, "touchstart", ee.ebinder(this, this.titlebardown));
-		}
+		ee.addMouseDownEvent(bar, ee.ebinder(this, this.titlebardown));
 		ee(bar).unselectable().el;
 	},
 

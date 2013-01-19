@@ -78,6 +78,7 @@ var k = {
 	os     : ee.os,
 	mobile : ee.mobile,
 	touchevent : ee.touchevent,
+	mspointerevent : ee.mspointerevent,
 
 	// const値
 	BOARD  : 'board',
