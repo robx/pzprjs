@@ -159,7 +159,7 @@
 		}
 	},
 	ready : function(pid){
-		return (!!pzprv3.custom[pid] && Camp.isready() &&
+		return (!!pzprv3.custom[pid] && Candle.allready() &&
 				(!this.DEBUG || !!this.core.Debug.prototype.urls));
 	},
 
@@ -287,9 +287,9 @@ function onload_func2(){
 	if(pzprv3.DEBUG){ pzprv3.includeFile("src/for_test.js");}
 
 	// 描画wrapperの設定
-	Camp('divques');
-	if(Camp.enable.canvas && !!document.createElement('canvas').toDataURL){
-		Camp('divques_sub', 'canvas');
+	Candle.start('divques', 'canvas');
+	if(Candle.enable.canvas && !!document.createElement('canvas').toDataURL){
+		Candle.start('divques_sub', 'canvas');
 	}
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
