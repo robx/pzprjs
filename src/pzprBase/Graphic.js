@@ -372,7 +372,7 @@ pzprv3.createCommonClass('Graphic',
 	paintAll : function(){
 		if(this.suspended){ this.suspendedAll = true;}
 		var bd = this.owner.board;
-		this.paintRange(bd.minbx-1,bd.minby-1,bd.maxbx+1,bd.maxby+1);
+		this.paintRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 	},
 
 	//---------------------------------------------------------------------------
