@@ -66,7 +66,7 @@ Graphic:{
 		this.drawDashedCenterLines();
 		this.drawLines();
 
-		this.drawPekes(0);
+		this.drawPekes();
 
 		this.drawCirclesAtNumber();
 		this.drawNumbers();

@@ -89,7 +89,7 @@ Graphic:{
 		this.drawArrowNumbers();
 
 		this.drawLines();
-		this.drawPekes(1);
+		this.drawPekes();
 
 		this.drawChassis();
 

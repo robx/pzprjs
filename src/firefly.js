@@ -85,7 +85,7 @@ Graphic:{
 		this.drawDashedCenterLines();
 		this.drawLines();
 
-		this.drawPekes(0);
+		this.drawPekes();
 
 		this.drawFireflies();
 		this.drawNumbers();

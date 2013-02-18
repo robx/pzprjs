@@ -342,7 +342,7 @@ Graphic:{
 		this.drawBlackCells();
 		this.drawNumbers();
 
-		this.drawPekes(1);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawStartpos();

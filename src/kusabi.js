@@ -69,7 +69,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawPekes(0);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawCirclesAtNumber();

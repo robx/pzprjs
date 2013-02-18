@@ -105,7 +105,6 @@ Graphic:{
 
 		this.drawTip();
 		this.drawLines();
-		//this.drawPekes(0);
 
 		this.drawCirclesAtNumber();
 		this.drawNumbers();

@@ -141,7 +141,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawPekes(0);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawTriangle();

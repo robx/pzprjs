@@ -79,7 +79,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawLines();
-		this.drawPekes(0);
+		this.drawPekes();
 
 		this.drawChassis();
 	}

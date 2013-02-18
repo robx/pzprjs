@@ -99,7 +99,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawTip();
-		this.drawPekes(0);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawCellSquare();

@@ -130,7 +130,7 @@ Graphic:{
 	paint : function(){
 		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
 
-		this.drawPekes(0);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawQnumCircles();

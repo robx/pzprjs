@@ -310,7 +310,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawLines();
-		this.drawPekes(1);
+		this.drawPekes();
 
 		if(this.owner.pid!=='icebarn'){ this.drawNumbers();}
 

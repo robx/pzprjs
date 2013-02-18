@@ -1140,38 +1140,24 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.drawPekes()    境界線上の×をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawPekes : function(flag){
+	drawPekes : function(){
 		var g = this.vinc('border_peke', 'auto');
 
-		if(!g.use.canvas && flag===2){ return;}
-
 		var size = this.cw*0.15+1; if(size<4){ size=4;}
-		var headers = ["b_peke0_", "b_peke1_"];
+		var header = "b_peke_";
 		g.fillStyle = "white";
 		g.strokeStyle = this.pekecolor;
-		g.lineWidth = 1;
+		g.lineWidth = 1 + (this.cw/40)|0;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id;
-			if(border.qsub!==2){ this.vhide([headers[0]+id, headers[1]+id]); continue;}
-
-			var px = border.bx*this.bw, py = border.by*this.bh;
-			if(g.use.canvas){
-				if(flag===0 || flag===2){
-					if(this.vnop(headers[0]+id,this.NONE)){
-						g.fillRect(px-size, py-size, 2*size+1, 2*size+1);
-					}
-				}
-				else{ this.vhide(headers[0]+id);}
-			}
-
-			if(flag===0 || flag===1){
-				if(this.vnop(headers[1]+id,this.NONE)){
-					g.strokeCross(px, py, size-1);
+			var border = blist[i];
+			if(border.qsub===2){
+				if(this.vnop(header+border.id,this.NONE)){
+					g.strokeCross(border.bx*this.bw, border.by*this.bh, size-1);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ this.vhide(header+border.id);}
 		}
 	},
 

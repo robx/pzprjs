@@ -175,7 +175,6 @@ Graphic:{
 	},
 	paint : function(){
 		this.drawBGCells();
-		this.drawPekes(2);
 		this.drawDashedGrid();
 
 		this.drawLines();
@@ -183,7 +182,7 @@ Graphic:{
 		this.drawCirclesAtNumber();
 		this.drawNumbers();
 
-		this.drawPekes(1);
+		this.drawPekes();
 
 		this.drawLineParts();
 

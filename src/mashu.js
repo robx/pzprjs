@@ -92,7 +92,7 @@ Graphic:{
 		this.drawQnumCircles();
 		this.drawHatenas();
 
-		this.drawPekes(0);
+		this.drawPekes();
 		this.drawLines();
 
 		this.drawChassis();

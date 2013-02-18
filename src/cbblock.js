@@ -117,7 +117,7 @@ Graphic:{
 
 		this.drawChassis();
 
-		this.drawPekes(0);
+		this.drawPekes();
 	},
 
 	// オーバーライド

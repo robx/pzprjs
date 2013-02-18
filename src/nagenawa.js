@@ -101,7 +101,7 @@ Graphic:{
 		}
 
 		this.drawLines();
-		if(this.owner.pid==='ringring'){ this.drawPekes(0);}
+		if(this.owner.pid==='ringring'){ this.drawPekes();}
 
 		this.drawChassis();
 

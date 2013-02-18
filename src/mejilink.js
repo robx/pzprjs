@@ -101,7 +101,7 @@ Graphic:{
 
 		this.drawBaseMarks();
 
-		this.drawPekes(0);
+		this.drawPekes();
 	},
 
 	// オーバーライド

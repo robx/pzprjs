@@ -138,7 +138,7 @@ Graphic:{
 
 		this.drawNumbers();
 
-		this.drawPekes(0);
+		this.drawPekes();
 
 		this.drawTarget();
 	},
