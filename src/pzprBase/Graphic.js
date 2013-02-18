@@ -317,24 +317,26 @@ pzprv3.createCommonClass('Graphic',
 		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
 		if(!!bd.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
 		if(!!bd.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
+		if(enableBuffer){ x1++; y1++; x2--; y2--;}
 
-		this.flushCanvas();
 		if(!enableBuffer){
+			this.flushCanvas();
 			this.paint();
 		}
 		else{
 			var g2 = this.subContext;
 			this.currentContext = g2;
-			this.flushCanvasAll();
+			// this.flushCanvasAll();
+			this.flushCanvas();
 			this.paint();
 			this.currentContext = g;
 
-			var dx = x1*this.bw, dy = y1*this.bh, dw = (x2-x1)*this.bw+1, dh = (y2-y1)*this.bh+1;
+			var dx1 = x1*this.bw-1, dy1 = y1*this.bh-1, dx2 = x2*this.bw+2, dy2 = y2*this.bh+2;
 			// source側はtaranslateのぶん足されていないので、手動で足します
-			var sx = this.x0+dx, sy = this.y0+dy, sx2 = sx+dw, sy2 = sy+dh;
-			if(sx<0){ sx=0; dx=sx-this.x0;} if(sx2>g2.child.width) { sx2 = g2.child.width; }
-			if(sy<0){ sy=0; dy=sy-this.y0;} if(sy2>g2.child.height){ sy2 = g2.child.height;}
-			g.drawImage(g2.child, sx, sy, (sx2-sx), (sy2-sy), dx, dy, (sx2-sx), (sy2-sy));
+			var sx1 = this.x0+dx1, sy1 = this.y0+dy1, sx2 = this.x0+dx2, sy2 = this.y0+dy2;
+			if(sx1<0){ sx1=0; dx1=sx1-this.x0;} if(sx2>g2.child.width) { sx2=g2.child.width;  dx2=sx2-this.x0;}
+			if(sy1<0){ sy1=0; dy1=sy1-this.y0;} if(sy2>g2.child.height){ sy2=g2.child.height; dy2=sy2-this.y0;}
+			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), dx1, dy1, (dx2-dx1), (dy2-dy1));
 		}
 
 		this.resetRange();
@@ -1758,6 +1760,10 @@ pzprv3.createCommonClass('Graphic',
 				this.currentContext.clear();
 				this.numobj = {};
 				pzprv3.getEL('numobj_parent').innerHTML = '';
+
+				var g = this.currentContext;
+				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(0, 0, this.owner.board.qcols*this.cw, this.owner.board.qrows*this.ch);
 			}
 		:
 			function(){
@@ -1783,9 +1789,12 @@ pzprv3.createCommonClass('Graphic',
 		this.flushCanvas = ((this.use.canvas) ?
 			function(){
 				var d = this.range;
-				var g = this.currentContext
+				var g = this.currentContext;
+				var px=d.x1*this.bw, py=d.y1*this.bh, pw=(d.x2-d.x1)*this.bw+1, ph=(d.y2-d.y1)*this.bh+1;
+				var pxmax=this.owner.board.qcols*this.cw, pymax=this.owner.board.qrows*this.ch;
+				px=(px>=0?px:0); py=(py>=0?py:0); pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(d.x1*this.bw, d.y1*this.bh, (d.x2-d.x1)*this.bw+1, (d.y2-d.y1)*this.bh+1);
+				g.fillRect(px, py, pw, ph);
 			}
 		:
 			function(){ this.zidx=1;}
