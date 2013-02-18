@@ -251,7 +251,7 @@ pzprv3.createCommonClass('Graphic',
 	// pc.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
 	windowWidth : function(){
-		this.windowWidth = ((!pzprv3.OS.iOS) ?
+		this.windowWidth = ((!pzprv3.OS.mobile) ?
 			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : document.body.clientWidth);}
 		:
 			function(){ return 980;}
@@ -259,7 +259,7 @@ pzprv3.createCommonClass('Graphic',
 		return this.windowWidth();
 	},
 	// windowHeight : function(){
-	//	this.windowHeight = ((!pzprv3.OS.iOS) ?
+	//	this.windowHeight = ((!pzprv3.OS.mobile) ?
 	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : document.body.clientHeight);}
 	//	:
 	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}

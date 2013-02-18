@@ -144,8 +144,11 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//----------------------------------------------------------------------
-	// owner.addEvent()        addEventListener(など)を呼び出す
-	// owner.removeAllEvents() removeEventListener(など)を呼び出す
+	// owner.addEvent()          addEventListener(など)を呼び出す
+	// owner.addMouseDownEvent() マウスを押したときのイベントを設定する
+	// owner.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
+	// owner.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	// owner.removeAllEvents()   removeEventListener(など)を呼び出す
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
 		var func = function(e){ callback.call(self, (e||window.event));};
@@ -153,6 +156,41 @@ pzprv3.createCoreClass('Owner',
 		else                     { el.attachEvent('on'+event, func);}
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
+
+	addMouseDownEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerDown", self, func);
+		}
+		else{
+			this.addEvent(el, "mousedown", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchstart", self, func);
+			}
+		}
+	},
+	addMouseMoveEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerMove", self, func);
+		}
+		else{
+			this.addEvent(el, "mousemove", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchmove",  self, func);
+			}
+		}
+	},
+	addMouseUpEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerUp", self, func);
+		}
+		else{
+			this.addEvent(el, "mouseup", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchend", self, func);
+			}
+		}
+	},
+
 	removeAllEvents : function(){
 		var islt = !!document.removeEventListener;
 		for(var i=0,len=this.evlist.length;i<len;i++){

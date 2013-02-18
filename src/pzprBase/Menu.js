@@ -417,7 +417,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
 		var pp = this.config;
-		pp.addSelect('use','setting',(!pzprv3.OS.mobile?1:2),[1,2], '操作方法', 'Input Type');
+		pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
 		pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -820,14 +820,8 @@ pzprv3.createCommonClass('Menu',
 		}
 		this.titlebarfunc(getEL('credit3_1'));
 
-		if(!pzprv3.OS.mobile){
-			this.owner.addEvent(_doc, "mousemove", this, this.titlebarmove);
-			this.owner.addEvent(_doc, "mouseup",   this, this.titlebarup);
-		}
-		else{
-			this.owner.addEvent(_doc, "touchmove", this, this.titlebarmove);
-			this.owner.addEvent(_doc, "touchend",  this, this.titlebarup);
-		}
+		this.owner.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		this.owner.addMouseUpEvent  (_doc, this, this.titlebarup);
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -956,14 +950,8 @@ pzprv3.createCommonClass('Menu',
 		// ポップアップメニューを表示する
 		if(this.popel){
 			var _popel = this.popel;
-			if(!pzprv3.OS.mobile){
-				_popel.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
-				_popel.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
-			}
-			else{
-				_popel.style.left = e.pageX - 8 + 'px';
-				_popel.style.top  = e.pageY - 8 + 'px';
-			}
+			_popel.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
+			_popel.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
 			_popel.style.display = 'inline';
 		}
 	},
@@ -987,7 +975,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		this.owner.addEvent(bar, (!pzprv3.OS.mobile?"mousedown":"touchstart"), this, this.titlebardown);
+		this.owner.addMouseDownEvent(bar, this, this.titlebardown);
 		pzprv3.unselectable(bar);
 	},
 

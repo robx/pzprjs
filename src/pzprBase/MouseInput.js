@@ -176,7 +176,12 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
-		if(!pzprv3.OS.mobile){
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
 			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
@@ -188,7 +193,6 @@ pzprv3.createCommonClass('MouseEvent',
 				right = (!!e.which ? e.which===3 : e.button===2);
 			}
 		}
-		else{ left=(e.touches.length===1); right=(e.touches.length>1);}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		this.owner.key.checkmodifiers(e);
@@ -218,43 +222,29 @@ pzprv3.createCommonClass('MouseEvent',
 	//----------------------------------------------------------------------
 	pageX : function(e){
 		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
-		this.pageX = ((!pzprv3.OS.iOS) ?
-			function(e){ return ((e.pageX!==void 0) ? e.pageX : e.clientX + scrollLeft());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageX)){ return e.pageX;}
-				else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
-				return 0;
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+				return pos/len;
 			}
-		);
-		return this.pageX(e);
+		}
+		else if(!isNaN(e.pageX)){ return e.pageX;}
+		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
+		return 0;
 	},
 	pageY : function(e){
 		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
-		this.pageY = ((!pzprv3.OS.iOS) ?
-			function(e){ return ((e.pageY!==void 0) ? e.pageY : e.clientY + scrollTop());}
-		:
-			function(e){
-				if(!!e.touches){
-					var len=e.touches.length, pos=0;
-					if(len>0){
-						for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-						return pos/len;
-					}
-				}
-				else if(!isNaN(e.pageY)){ return e.pageY;}
-				else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
-				return 0;
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+				return pos/len;
 			}
-		);
-		return this.pageY(e);
+		}
+		else if(!isNaN(e.pageY)){ return e.pageY;}
+		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
+		return 0;
 	},
 
 	// 共通関数

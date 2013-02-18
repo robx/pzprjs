@@ -167,9 +167,11 @@
 	// Elementの生成関連
 	//---------------------------------------------------------------
 	unselectable : function(el){
-		el.style.MozUserSelect   = 'none';
-		el.style.KhtmlUserSelect = 'none';
-		el.style.userSelect      = 'none';
+		el.style.MozUserSelect    = 'none';
+		el.style.KhtmlUserSelect  = 'none';
+		el.style.webkitUserSelect = 'none';
+		el.style.msUserSelect     = 'none';
+		el.style.userSelect       = 'none';
 		el.unselectable = "on";
 		return this;
 	},
@@ -242,6 +244,14 @@ pzprv3.OS = (function(){
 	return {
 		iOS    : (ios),
 		mobile : (ios || android)
+	};
+})();
+pzprv3.env = (function(){
+ 	var touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
+	var mspointerevent = (!!navigator.msPointerEnabled);
+	return {
+		touchevent     : touchevent,
+		mspointerevent : mspointerevent
 	};
 })();
 pzprv3.storage = (function(){

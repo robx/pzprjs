@@ -107,9 +107,11 @@ PZLINFO.register({
 	kramman   :[false, false, '新・快刀乱麻', 'New KaitoRamma', 'kramma', {}],
 	kurochute :[false, true,  'クロシュート', 'Kurochute', '', {}],
 	kurodoko  :[false, true,  '黒どこ(黒マスはどこだ)', 'Kurodoko', '', {}],
+	kurotto   :[false, false, 'クロット', 'Kurotto', '', {}],
 	kusabi    :[false, false, 'クサビリンク', 'Kusabi', '', {}],
 	lightup   :[false, true,  '美術館', 'Akari (Light Up)', '', { pzprurl:'akari', kanpen:'bijutsukan'}],
 	lits      :[true,  true,  'ＬＩＴＳ', 'LITS', 'lits', {}],
+	lookair   :[false, false, 'るっくえあ', 'Look-Air', '', {}],
 	loopsp    :[true,  false, '環状線スペシャル', 'Loop Special', '', {}],
 	loute     :[false, false, 'エルート', 'L-route', '', {}],
 	mashu     :[false, true,  'ましゅ', 'Masyu (Pearl Puzzle)', '', { kanpen:'masyu'}],
@@ -170,7 +172,8 @@ var FBGcolor = function(pid){
 	case 'fillomino': case 'factors': case 'mochikoro':
 	case 'lits': case 'tasquare': case 'tawa':           col="rgb(64, 64, 64)"; break;
 	case 'kakuro': case 'tilepaint': case 'triplace':
-	case 'box': case 'minarism': case 'kurodoko':        col="rgb(96, 96, 96)"; break;
+	case 'box': case 'minarism': case 'kurodoko':
+	case 'lookair':                                      col="rgb(96, 96, 96)"; break;
 	case 'kouchoku': case 'mochinyoro': case 'wblink':   
 	case 'ringring':                                     col="rgb(127, 127, 127)"; break;
 	case 'sukoro': case 'sukororoom': case 'view':       col="rgb(160, 160, 160)"; break;
@@ -182,6 +185,7 @@ var FBGcolor = function(pid){
 
 	case 'goishi': case 'kusabi':  case 'kurochute':     col="rgb(224, 160, 0)"; break;
 	case 'bonsan': case 'heyabon': case 'kaero':         col="rgb(127, 96, 64)"; break;
+	case 'kurotto':                                      col="rgb(127, 127, 96)"; break;
 	case 'hakoiri': case 'roma': case 'toichika':        col="rgb(127, 160, 96)"; break;
 	case 'shikaku': case 'aho':  case 'loute':           col="rgb(127, 191, 0)"; break;
 	case 'fillmat': case 'tatamibari': case 'usotatami': col="rgb(96, 224, 0)"; break;
