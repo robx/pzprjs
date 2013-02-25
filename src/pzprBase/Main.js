@@ -15,8 +15,8 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = false;
 
-		this.editmode = (pzprv3.EDITOR && !pzprv3.DEBUG);	// 問題配置モード
-		this.playmode = !this.editmode;						// 回答モード
+		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
+		this.playmode = !this.editmode;							// 回答モード
 
 		this.debug = null;
 	},
