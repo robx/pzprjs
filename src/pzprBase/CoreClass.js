@@ -144,18 +144,21 @@
 	//---------------------------------------------------------------
 	// 単体ファイルの読み込み
 	includeFile : function(filename){
-		var _script = document.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = filename;
-		document.body.appendChild(_script);
+		if(!this.includedFile[filename]){
+			var _script = document.createElement('script');
+			_script.type = 'text/javascript';
+			_script.src = filename;
+			document.body.appendChild(_script);
+			this.includedFile[filename] = true;
+		}
 	},
-
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
 		if(!this.custom[pid]){
 			this.includeFile("src/"+this.PZLINFO.toScript(pid)+".js");
 		}
 	},
+	includedFile : {},
 
 	//---------------------------------------------------------------
 	// 現在の時間を取得
@@ -289,23 +292,35 @@ pzprv3.createCoreClass('Point',
 /* 初期化時のみ使用する関数 */
 /****************************/
 //---------------------------------------------------------------------------
-// ★onload_func() onload直後の処理
+// ★onload_func() window.onload直後の処理
 //---------------------------------------------------------------------------
+var onload_pzl = null;
 function onload_func(){
-	if(!pzprv3.PZLINFO){ pzprv3.includeFile("puzzlename.js");}
-	onload_func2();
-}
-function onload_func2(){
-	// 読み込み待ち
-	if(!pzprv3.PZLINFO){ setTimeout(arguments.callee,10); return;}
+	/* 先に読まないとimportURL()が動作しないため読み込み待ち */
+	if(!pzprv3.PZLINFO){
+		pzprv3.includeFile("puzzlename.js");
+		setTimeout(arguments.callee,10);
+		return;
+	}
 
-	// 1) 盤面複製・index.htmlからのファイル入力/Database入力か
-	// 2) URL(?以降)をチェック
-	var pzl = (importFileData() || importURL());
-	if(!pzl.id){ location.href = "./";} // 指定されたパズルがない場合はさようなら～
+	if(!onload_pzl){
+		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
+		/* 2) URL(?以降)をチェック */
+		onload_pzl = (importFileData() || importURL());
+		if(!onload_pzl.id){ location.href = "./";} /* 指定されたパズルがない場合はさようなら～ */
+	}
 
-	// 必要な場合、ファイルのinclude
-	if(pzprv3.DEBUG){ pzprv3.includeFile("src/for_test.js");}
+	/* 必要な場合、テスト用ファイルのinclude         */
+	/* importURL()後でないと必要かどうか判定できない */
+	if(pzprv3.DEBUG && !pzprv3.core.Debug.prototype.urls){
+		pzprv3.includeFile("src/for_test.js");
+		setTimeout(arguments.callee,10);
+		return;
+	}
+
+	if(pzprv3.DEBUG && !onload_pzl.qdata){
+		onload_pzl.qdata = pzprv3.core.Debug.prototype.urls[onload_pzl.id];
+	}
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
 	pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
@@ -322,10 +337,10 @@ function onload_func2(){
 	window.puzzle = puzzle;
 
 	// 単体初期化処理のルーチンへ
-	puzzle.importBoardData(pzl);
+	puzzle.importBoardData(onload_pzl);
 
 	// アクセスログをとってみる
-	if(!!pzprv3.require_accesslog){ accesslog(pzl);}
+	if(!!pzprv3.require_accesslog){ accesslog(onload_pzl);}
 	pzprv3.require_accesslog = false;
 }
 

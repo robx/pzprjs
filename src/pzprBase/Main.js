@@ -24,32 +24,33 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
-	// owner.decodeBoardData() URLや複製されたデータを読み出す
-	// owner.isready()         初期化処理が実行可能かどうかを返す
 	//---------------------------------------------------------------------------
 	importBoardData : function(pzl){
 		this.ready = false;
 
-		// 今のパズルと別idの時
+		/* canvasが用意できるまでwait */
+		if(!this.canvas || !this.canvas2){
+			var self = this;
+			setTimeout(function(){ self.importBoardData.call(self,pzl);},10);
+			return;
+		}
+
+		/* 今のパズルと別idの時 */
 		if(this.pid != pzl.id){
 			if(!!this.pid){ this.clearObjects();}
-			pzprv3.includeCustomFile(pzl.id);
+			this.pid = pzl.id;
+			pzprv3.includeCustomFile(this.pid);
+		}
+		/* Classが用意できるまで待つ */
+		if(!pzprv3.custom[this.pid]){
+			var self = this;
+			setTimeout(function(){ self.importBoardData.call(self,pzl);},10);
+			return;
 		}
 
-		// URL・ファイルデータの読み込み
-		this.decodeBoardData(pzl);
-	},
-	decodeBoardData : function(pzl){
-		// Classが用意できるまで待つ
-		var self = this, callback = arguments.callee;
-		if(!this.isready(pzl)){ setTimeout(function(){ callback.call(self,pzl);},10); return;}
-
-		// クラスなどを初期化
-		this.initObjects(pzl);
-
-		if(pzprv3.DEBUG && !pzl.qdata){
-			pzl.qdata = this.debug.urls[pzl.id];
-		}
+		/* クラスなどを初期化 */
+		this.classes = pzprv3.custom[this.pid];
+		this.initObjects();
 
 		this.painter.suspendAll();
 		// ファイルを開く・複製されたデータを開く
@@ -69,24 +70,13 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = true;
 	},
-	isready : function(pzl){
-		return (!!pzprv3.custom[pzl.id] && (!pzprv3.DEBUG || !!pzprv3.core.Debug.prototype.urls)
-				&& !!this.canvas && !!this.canvas2);
-	},
 
 	//---------------------------------------------------------------------------
 	// owner.initObjects()    各オブジェクトの生成などの処理
 	// owner.initDebug()      デバッグ用オブジェクトを設定する
 	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
-	initObjects : function(pzl){
-		// パズルIDが同じなら以下の処理は必要なし
-		if(this.pid===pzl.id){ return;}
-
-		// パズルIDを設定
-		this.pid = pzl.id;
-		this.classes = pzprv3.custom[pzl.id];
-
+	initObjects : function(){
 		// デバッグ用
 		if(!this.debug){
 			this.debug = new pzprv3.core.Debug();
