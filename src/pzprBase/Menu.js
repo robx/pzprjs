@@ -931,7 +931,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.dispsize.cancel,   close, "キャンセル", "Cancel");
 
 		// poptest ------------------------------------------------------------
-		this.owner.debug.poptest_func();
+		pzprv3.debug.poptest_func();
 
 		if(getEL("pop1_8").style.display=='inline'){ this.popel = getEL("pop1_8");}
 	},
@@ -1130,7 +1130,7 @@ pzprv3.createCommonClass('Menu',
 		irowake   : function(){ this.owner.painter.paintAll();},
 		cursor    : function(){ this.owner.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
-		poptest   : function(){ this.owner.debug.disppoptest();},
+		poptest   : function(){ pzprv3.debug.disppoptest();},
 
 		mode      : function(num){ this.modechange(num);},
 		text      : function(num){ this.textsize(num); this.owner.painter.forceRedraw();},

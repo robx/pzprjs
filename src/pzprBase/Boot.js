@@ -40,12 +40,13 @@ function onload_func(){
 		return;
 	}
 
-	if(debugmode && !onload_pzl.qdata){
-		onload_pzl.qdata = pzprv3.core.Debug.prototype.urls[onload_pzl.id];
-	}
-
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
-	pzprv3.dbm = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+	pzprv3.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+	pzprv3.debug = new pzprv3.core.Debug();
+
+	if(debugmode && !onload_pzl.qdata){
+		onload_pzl.qdata = pzprv3.debug.urls[onload_pzl.id];
+	}
 
 	// 描画wrapperの設定
 	var puzzle = new pzprv3.core.Owner();
@@ -57,6 +58,9 @@ function onload_func(){
 
 	// 外部から参照できるようにする
 	window.puzzle = puzzle;
+	
+	/* デバッグ対象に設定 */
+	pzprv3.debug.settarget(puzzle);
 
 	// 単体初期化処理のルーチンへ
 	puzzle.importBoardData(onload_pzl);
@@ -187,10 +191,15 @@ function accesslog(pzl){
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('Debug',
 {
+	targetowner : null,
+	settarget : function(puzzle){
+		this.targetowner = puzzle;
+	},
+
 	poptest_func : function(){
 		var _doc = document, debug = this;
 
-		this.owner.menu.titlebarfunc(pzprv3.getEL('bartest'));
+		this.targetowner.menu.titlebarfunc(pzprv3.getEL('bartest'));
 
 		_doc.testform.t1.onclick        = function(){ debug.perfeval();};
 		_doc.testform.t2.onclick        = function(){ debug.painteval();};
@@ -211,8 +220,8 @@ pzprv3.createCoreClass('Debug',
 
 		_doc.testform.starttest.style.display = 'none';
 
-		_doc.testform.perfload.style.display = (this.owner.pid!=='country' ? 'none' : 'inline');
-		_doc.testform.pbfilesave.style.display = (!this.owner.menu.ispencilbox ? 'none' : 'inline');
+		_doc.testform.perfload.style.display = (this.targetowner.pid!=='country' ? 'none' : 'inline');
+		_doc.testform.pbfilesave.style.display = (!this.targetowner.menu.ispencilbox ? 'none' : 'inline');
 		_doc.testform.database.style.display = (pzprv3.storage.localST ? 'none' : 'inline');
 
 		if(debugmode){ this.testonly_func();}	// テスト用
@@ -227,7 +236,7 @@ pzprv3.createCoreClass('Debug',
 
 	// debugmode===true時はオーバーライドされます
 	keydown : function(ca){
-		var kc = this.owner.key;
+		var kc = this.targetowner.key;
 		if(kc.isCTRL && ca=='F8'){
 			this.disppoptest();
 			kc.tcMoved = true;
@@ -237,16 +246,16 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	filesave : function(){
-		this.setTA(this.owner.fio.fileencode(k.PZPH).replace(/\//g,"\n"));
-		this.addTA(this.owner.fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
+		this.setTA(this.targetowner.fio.fileencode(k.PZPH).replace(/\//g,"\n"));
+		this.addTA(this.targetowner.fio.history.replace(/\//g,"\n").replace(/\[\[slash\]\]/g,"/"));
 	},
 	filesave_pencilbox : function(){
-		this.setTA(this.owner.fio.fileencode(k.PBOX).replace(/\//g,"\n"));
+		this.setTA(this.targetowner.fio.fileencode(k.PBOX).replace(/\//g,"\n"));
 	},
 
 	fileopen : function(){
 		var dataarray = this.getTA().replace(/\//g,"[[slash]]").split("\n");
-		this.owner.menu.fileonload(dataarray.join("/"));
+		this.targetowner.menu.fileonload(dataarray.join("/"));
 	},
 
 	erasetext : function(){
@@ -255,15 +264,15 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	perfeval : function(){
-		var ans = this.owner.checker;
+		var ans = this.targetowner.checker;
 		this.timeeval("正答判定測定", function(){ ans.checkAns();});
 	},
 	painteval : function(){
-		var pc = this.owner.painter;
+		var pc = this.targetowner.painter;
 		this.timeeval("描画時間測定", function(){ pc.paintAll();});
 	},
 	resizeeval : function(){
-		var pc = this.owner.painter;
+		var pc = this.targetowner.painter;
 		this.timeeval("resize描画測定", function(){ pc.forceRedraw();});
 	},
 	timeeval : function(text,func){
@@ -289,19 +298,19 @@ pzprv3.createCoreClass('Debug',
 	},
 
 	loadperf : function(){
-		this.owner.menu.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
-		this.owner.setConfig('mode',3);
-		this.owner.setConfig('irowake',true);
+		this.targetowner.menu.fileonload("pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /");
+		this.targetowner.setConfig('mode',3);
+		this.targetowner.setConfig('irowake',true);
 	},
 
 	adjustimage : function(){
-		var col = this.owner.board.qcols, size = 17;
+		var col = this.targetowner.board.qcols, size = 17;
 		if     (col<= 6){ size = 28;}
 		else if(col<= 8){ size = 27;}
 		else if(col<= 8){ size = 24;}
 		else if(col<= 9){ size = 21;}
 		else if(col<=18){ size = 19;}
-		this.owner.menu.imagesave(false,size);
+		this.targetowner.menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},

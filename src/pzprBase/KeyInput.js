@@ -192,7 +192,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 
 		if(!this.isZ){ o.board.errclear();}
-		if(o.debug.keydown(this.ca)){ this.ca='';}
+		if(pzprv3.debug.keydown(this.ca)){ this.ca='';}
 	},
 	keyup_common : function(e){
 		if(this.ca==='z' && this.isZ){ this.isZ=false;}

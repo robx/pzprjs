@@ -17,8 +17,6 @@ pzprv3.createCoreClass('Owner',
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
 		this.playmode = !this.editmode;							// 回答モード
-
-		this.debug = null;
 	},
 	evlist : [],
 
@@ -77,12 +75,6 @@ pzprv3.createCoreClass('Owner',
 	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
 	//---------------------------------------------------------------------------
 	initObjects : function(){
-		// デバッグ用
-		if(!this.debug){
-			this.debug = new pzprv3.core.Debug();
-			this.debug.owner = this;
-		}
-
 		// クラス初期化
 		this.board   = this.newInstance('Board');		// 盤面オブジェクト
 		this.checker = this.newInstance('AnsCheck');	// 正解判定オブジェクト
