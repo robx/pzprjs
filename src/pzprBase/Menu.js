@@ -965,6 +965,7 @@ pzprv3.createCommonClass('Menu',
 			this.popel = null;
 			this.movingpop = null;
 			this.owner.key.enableKey = true;
+			this.owner.mouse.enableMouse = true;
 		}
 	},
 
@@ -984,11 +985,13 @@ pzprv3.createCommonClass('Menu',
 		this.movingpop = popel;
 		this.offset.px = this.owner.mouse.pageX(e) - parseInt(popel.style.left);
 		this.offset.py = this.owner.mouse.pageY(e) - parseInt(popel.style.top);
+		this.owner.mouse.enableMouse = false;
 	},
 	titlebarup : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
 			this.movingpop = null;
+			this.owner.mouse.enableMouse = true;
 		}
 	},
 	titlebarmove : function(e){

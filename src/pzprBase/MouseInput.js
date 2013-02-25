@@ -60,27 +60,14 @@ pzprv3.createCommonClass('MouseEvent',
 	//---------------------------------------------------------------------------
 	setEvents : function(){
 		// マウス入力イベントの設定
-		var o = this.owner, canvas = pzprv3.getEL('divques'), numparent = pzprv3.getEL('numobj_parent');
-		if(!pzprv3.OS.mobile){
-			o.addEvent(canvas, "mousedown", this, this.e_mousedown);
-			o.addEvent(canvas, "mousemove", this, this.e_mousemove);
-			o.addEvent(canvas, "mouseup",   this, this.e_mouseup);
-			canvas.oncontextmenu = function(){ return false;};
-
-			o.addEvent(numparent, "mousedown", this, this.e_mousedown);
-			o.addEvent(numparent, "mousemove", this, this.e_mousemove);
-			o.addEvent(numparent, "mouseup",   this, this.e_mouseup);
-			numparent.oncontextmenu = function(){ return false;};
-		}
-		// iPhoneOS用のタッチイベント設定
-		else{
-			o.addEvent(canvas, "touchstart", this, this.e_mousedown);
-			o.addEvent(canvas, "touchmove",  this, this.e_mousemove);
-			o.addEvent(canvas, "touchend",   this, this.e_mouseup);
-
-			o.addEvent(numparent, "touchstart", this, this.e_mousedown);
-			o.addEvent(numparent, "touchmove",  this, this.e_mousemove);
-			o.addEvent(numparent, "touchend",   this, this.e_mouseup);
+		var elements = [pzprv3.getEL('divques')];
+		if(this.owner.painter.fillTextEmulate){ elements.push(pzprv3.getEL('numobj_parent'));}
+		for(var i=0;i<elements.length;i++){
+			var el = elements[i];
+			this.owner.addMouseDownEvent(el, this, this.e_mousedown);
+			this.owner.addMouseMoveEvent(el, this, this.e_mousemove);
+			this.owner.addMouseUpEvent  (el, this, this.e_mouseup);
+			el.oncontextmenu = function(){ return false;};
 		}
 		this.mousereset();
 	},
@@ -94,28 +81,28 @@ pzprv3.createCommonClass('MouseEvent',
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
-		var o = this.owner;
-		if(this.enableMouse){
-			this.btn = this.getMouseButton(e);
-			if(this.btn.Left || this.btn.Right){
-				o.board.errclear();
-				o.undo.newOperation(true);
-				this.setposition(e);
-				this.mouseevent(0);	// 各パズルのルーチンへ
-			}
-			else if(this.btn.Middle){ //中ボタン
-				this.modeflip();
-				this.btn.Middle = false;
-			}
+		if(!this.enableMouse){ return true;}
+		
+		this.btn = this.getMouseButton(e);
+		if(this.btn.Left || this.btn.Right){
+			this.owner.board.errclear();
+			this.owner.undo.newOperation(true);
+			this.setposition(e);
+			this.mouseevent(0);	// 各パズルのルーチンへ
+		}
+		else if(this.btn.Middle){ //中ボタン
+			this.modeflip();
+			this.mousereset();
 		}
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
-		var o = this.owner;
-		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			o.undo.newOperation(false);
+		if(!this.enableMouse){ return true;}
+		
+		if(this.btn.Left || this.btn.Right){
+			this.owner.undo.newOperation(false);
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -125,11 +112,10 @@ pzprv3.createCommonClass('MouseEvent',
 	},
 	e_mousemove : function(e){
 		// ポップアップメニュー移動中は当該処理が最優先
-		var o = this.owner;
-		if(!!o.menu.movingpop){ return true;}
-
-		if(this.enableMouse && (this.btn.Left || this.btn.Right)){
-			o.undo.newOperation(false);
+		if(!this.enableMouse){ return true;}
+		
+		if(this.btn.Left || this.btn.Right){
+			this.owner.undo.newOperation(false);
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
