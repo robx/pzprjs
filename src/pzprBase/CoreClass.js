@@ -86,15 +86,15 @@
 	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
 	//---------------------------------------------------------------
 	createCustoms : function(scriptid, custombase){
-		this.createCustomsPlural(this.PZLINFO.PIDlist(scriptid), custombase);
-	},
-	createCustomsPlural : function(pidlist, custombase){
+		var pidlist = this.PZLINFO.PIDlist(scriptid);
 		for(var i=0;i<pidlist.length;i++){
-			this.createCustomSingle(pidlist[i], custombase);
+			var pid=pidlist[i], customclass=this.PIDfilter(pid, custombase);
+			this.createCustomSingle(pid, customclass);
 		}
 	},
+
 	PIDfilter : function(pid, custombase){
-		var _custombase = {};
+		var customclass = {};
 		for(var hashkey in custombase){
 			var name = hashkey, pidcond = [], isexist = false;
 			if(hashkey.match('@')){
@@ -105,20 +105,18 @@
 			}
 			if(!!name){
 				var proto = custombase[hashkey];
-				if(!_custombase[name]){ _custombase[name]={};}
-				for(var key in proto){ _custombase[name][key] = proto[key];}
+				if(!customclass[name]){ customclass[name]={};}
+				for(var key in proto){ customclass[name][key] = proto[key];}
 			}
 		}
-		return _custombase;
+		return customclass
 	},
 
-	createCustomSingle : function(pid, custombase){
-		custombase = this.PIDfilter(pid, custombase);
-
+	createCustomSingle : function(pid, customclass){
 		// 追加があるクラス => 残りの共通クラスの順に継承
 		var custom = {};
-		for(var classname in custombase){
-			var proto = custombase[classname];
+		for(var classname in customclass){
+			var proto = customclass[classname];
 
 			if(!custom[classname]){
 				if(!!this.core[classname]){ classname = classname+":"+classname;}
