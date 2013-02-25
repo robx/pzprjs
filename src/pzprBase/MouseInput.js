@@ -432,7 +432,7 @@ pzprv3.createCommonClass('MouseEvent',
 			this.setcursor(cell);
 		}
 		else{
-			inputQues_main(array,cell);
+			this.inputQues_main(array,cell);
 		}
 	},
 	inputQues_main : function(array,cell){

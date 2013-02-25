@@ -1174,7 +1174,7 @@ pzprv3.createCommonClass('Menu',
 		o.key.keyreset();
 		o.board.errclear();
 		o.cursor.adjust_modechange();
-		if(o.key.haspanel[1] || o.haspanel[3]){ this.funcs.keypopup.call(this);}
+		if(o.key.haspanel[1] || o.key.haspanel[3]){ this.funcs.keypopup.call(this);}
 
 		o.board.haserror=true;
 		o.painter.paintAll();
