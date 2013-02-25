@@ -63,12 +63,16 @@ pzprv3.extendCoreClass('Debug',
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			self.owner.importBoardData({id:newid});
+			self.owner.importBoardData({id:newid, qdata:self.urls[newid]});
 
-			if(pnum >= term){ clearInterval(self.alltimer);}
-
-			self.addTextarea("Test ("+pnum+", "+newid+") start.");
-			pnum++;
+			/* スクリプトチェック開始 */
+			setTimeout(function(){
+				if(!self.owner.ready){ setTimeout(arguments.callee, 10); return;}
+				self.sccheck();
+				self.addTextarea("Test ("+pnum+", "+newid+") start.");
+				pnum++;
+				if(pnum >= term){ clearInterval(self.alltimer);}
+			},10);
 		},500);
 	},
 

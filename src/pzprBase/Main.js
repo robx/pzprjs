@@ -68,9 +68,6 @@ pzprv3.createCoreClass('Owner',
 		this.painter.unsuspend();
 
 		this.ready = true;
-
-		// デバッグのスクリプトチェック時は、ここで発火させる
-		if(pzprv3.DEBUG && this.debug.phase===0){ this.debug.sccheck();}
 	},
 	isready : function(pzl){
 		return (!!pzprv3.custom[pzl.id] && (!pzprv3.DEBUG || !!pzprv3.core.Debug.prototype.urls)
