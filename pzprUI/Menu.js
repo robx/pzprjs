@@ -747,7 +747,7 @@ pzprv3.createCommonClass('Menu',
 			// 横にくっつけたいボタンを追加
 			var el = this.el_button.cloneNode(false), self = this;
 			el.id = "ck_btn_irowake";
-			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			var node = getEL('cl_irowake');
 			node.parentNode.insertBefore(el, node.nextSibling);
 
@@ -795,7 +795,7 @@ pzprv3.createCommonClass('Menu',
 		if(this.owner.painter.irowake!=0){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ self.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 	},
@@ -1397,14 +1397,6 @@ pzprv3.createCommonClass('Menu',
 			this.popclose();
 			this.owner.painter.forceRedraw();	// Canvasを更新する
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.irowakeRemake() 「色分けしなおす」ボタンを押した時に色分けしなおす
-	//---------------------------------------------------------------------------
-	irowakeRemake : function(){
-		this.owner.board.lines.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	},
 
 	//------------------------------------------------------------------------------

@@ -112,6 +112,11 @@ Board:{
 		this.barinfo = this.owner.newInstance('AreaBarManager');
 	},
 
+	irowakeRemake : function(){
+		this.barinfo.newIrowake();
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
+	},
+
 	getBarInfo : function(){
 		var self = this;
 		function eachcell(cell, qa_chk, vert){
@@ -225,13 +230,6 @@ CellList:{
 			else if(err===6){ if( vert){ cell.seterr(4);}}
 			else{ cell.seterr(vert?5:6);}
 		}
-	}
-},
-
-Menu:{
-	irowakeRemake : function(){
-		this.owner.board.barinfo.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
 	}
 },
 

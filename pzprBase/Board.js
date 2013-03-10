@@ -536,6 +536,14 @@ pzprv3.createCommonClass('Board',
 			{ this.validinfo.line[i].setLineInfo(border);}
 	},
 
+	//---------------------------------------------------------------------------
+	// bd.irowakeRemake() 「色分けしなおす」ボタンを押した時などに色分けしなおす
+	//---------------------------------------------------------------------------
+	irowakeRemake : function(){
+		this.lines.newIrowake();
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
+	},
+
 	//--------------------------------------------------------------------------------
 	// bd.getLineInfo()  線情報をAreaInfo型のオブジェクトで返す
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す

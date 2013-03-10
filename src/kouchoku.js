@@ -199,6 +199,11 @@ Board:{
 		this.SuperFunc.errclear.call(this);
 	},
 
+	irowakeRemake : function(){
+		this.segs.newIrowake();
+		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
+	},
+
 	getLatticePoint : function(bx1,by1,bx2,by2){
 		var seg = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]), lattice = [];
 		for(var i=0;i<seg.lattices.length;i++){
@@ -331,12 +336,6 @@ Menu:{
 
 		pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
 		pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
-	},
-
-	irowakeRemake : function(){
-		var o=this.owner;
-		o.board.segs.newIrowake();
-		if(o.getConfig('irowake')){ o.painter.paintAll();}
 	}
 },
 
