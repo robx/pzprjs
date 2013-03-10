@@ -11,9 +11,10 @@ pzprv3.createCoreClass('Owner',
 		this.pid     = '';			// パズルのID("creek"など)
 		this.canvas  = null;		// 描画canvas本体
 		this.canvas2 = null;		// 補助canvas
-		this.classes = {};
+		this.classes = null;
 
 		this.ready = false;
+		this.reqinit = true;
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
 		this.playmode = !this.editmode;							// 回答モード
@@ -37,6 +38,7 @@ pzprv3.createCoreClass('Owner',
 		if(this.pid != pzl.id){
 			if(!!this.pid){ this.clearObjects();}
 			this.pid = pzl.id;
+			this.classes = null;
 			pzprv3.includeCustomFile(this.pid);
 		}
 		/* Classが用意できるまで待つ */
@@ -46,9 +48,11 @@ pzprv3.createCoreClass('Owner',
 			return;
 		}
 
-		/* クラスなどを初期化 */
-		this.classes = pzprv3.custom[this.pid];
-		this.initObjects();
+		if(!this.classes){
+			/* クラスなどを初期化 */
+			this.classes = pzprv3.custom[this.pid];
+			this.initObjects();
+		}
 
 		this.painter.suspendAll();
 		// ファイルを開く・複製されたデータを開く
