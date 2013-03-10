@@ -86,7 +86,6 @@ pzprv3.createCoreClass('Owner',
 
 		this.undo  = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
 		this.ut    = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
-		this.timer = this.newInstance('Timer');			// 一般タイマー用オブジェクト
 
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
@@ -106,7 +105,7 @@ pzprv3.createCoreClass('Owner',
 		this.board.initialize2();
 
 		// タイマーリセット(最後)
-		this.timer.reset();
+		pzprv3.timer.reset();
 	},
 
 	clearObjects : function(){

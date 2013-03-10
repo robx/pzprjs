@@ -1266,7 +1266,7 @@ pzprv3.createCommonClass('Menu',
 		this.owner.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
-		this.owner.timer.reset();
+		pzprv3.timer.reset();
 	},
 
 	filesave : function(ftype){

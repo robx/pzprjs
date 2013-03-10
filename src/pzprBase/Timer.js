@@ -3,13 +3,15 @@
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('Timer',
+pzprv3.createCoreClass('Timer',
 {
-	initialize : function(){
+	initialize : function(targetpuzzle){
 		// ** 一般タイマー
 		this.TID;				// タイマーID
 		this.timerInterval = 100;
 		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
+
+		this.targetpuzzle = targetpuzzle;
 
 		this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
 		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
@@ -45,7 +47,7 @@ pzprv3.createCommonClass('Timer',
 		this.current = pzprv3.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
-		if(this.owner.getConfig('autocheck')){ this.ACcheck();}
+		if(this.targetpuzzle.getConfig('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -68,16 +70,16 @@ pzprv3.createCommonClass('Timer',
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return this.owner.menu.selectStr("経過時間：","Time: ");
+		return this.targetpuzzle.menu.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		if(this.current>this.nextACtime && this.lastAnsCnt!=this.owner.undo.anscount && !this.owner.checker.inCheck){
-			this.lastAnsCnt = this.owner.undo.anscount;
-			if(!this.owner.checker.autocheck()){ return;}
+		if(this.current>this.nextACtime && this.lastAnsCnt!=this.targetpuzzle.undo.anscount && !this.targetpuzzle.checker.inCheck){
+			this.lastAnsCnt = this.targetpuzzle.undo.anscount;
+			if(!this.targetpuzzle.checker.autocheck()){ return;}
 
 			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);

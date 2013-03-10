@@ -40,7 +40,10 @@ function onload_func(){
 		return;
 	}
 
+	var puzzle = new pzprv3.core.Owner();
+
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
+	pzprv3.timer = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
 	pzprv3.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 	pzprv3.debug = new pzprv3.core.Debug();
 
@@ -49,7 +52,6 @@ function onload_func(){
 	}
 
 	// 描画wrapperの設定
-	var puzzle = new pzprv3.core.Owner();
 	Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); puzzle.canvas = g.canvas;});
 	if(Candle.enable.canvas){
 		Candle.start('divques_sub', 'canvas',  function(g){ puzzle.canvas2 = g.canvas;});
