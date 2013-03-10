@@ -40,7 +40,7 @@ function onload_func(){
 		return;
 	}
 
-	var puzzle = new pzprv3.core.Owner();
+	var puzzle = pzprv3.createPuzzle();
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
 	pzprv3.timer     = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
