@@ -1512,18 +1512,25 @@ pzprv3.createCommonClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1|=1, y1|=1;
+		x1-=((x1+1)&1), y1-=((y1+1)&1), x2+=((x2+1)&1), y2+=((y2+1)&1);
+
+		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
+		var dotSize  = this.cw/(dotCount*2);
 
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=x1;i<=x2;i+=2){
-				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=6){
-					g.fillRect(i*this.bw, j, 1, 3);
+				var px = i*this.bw, py = y1*this.bh;
+				for(var j=0;j<dotCount*((y2-y1)>>1);j++){
+					g.fillRect(px, py, 1, dotSize);
+					py += 2*dotSize;
 				}
 			}
 			for(var i=y1;i<=y2;i+=2){
-				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=6){
-					g.fillRect(j, i*this.bh, 3, 1);
+				var py = i*this.bh, px = x1*this.bw;
+				for(var j=0;j<dotCount*((x2-x1)>>1);j++){
+					g.fillRect(px, py, dotSize, 1);
+					px += 2*dotSize;
 				}
 			}
 		}
@@ -1533,12 +1540,12 @@ pzprv3.createCommonClass('Graphic',
 			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
 				var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
 				g.strokeLine(px, py1, px, py2);
-				g.setDashSize(3);
+				g.setDashSize(dotSize);
 			}}
 			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
 				var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
 				g.strokeLine(px1, py, px2, py);
-				g.setDashSize(3);
+				g.setDashSize(dotSize);
 			}}
 		}
 	},
@@ -1579,10 +1586,9 @@ pzprv3.createCommonClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
-		x1-=(x1&1), y1-=(y1&1);
+		x1-=(x1&1), y1-=(y1&1), x2+=(x2&1), y2+=(y2&1);
 
-		var dotmax   = this.cw/10+3;
-		var dotCount = Math.max(this.cw/dotmax, 1);
+		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
 
 		var bs = ((haschassis!==false)?2:0);
@@ -1592,15 +1598,17 @@ pzprv3.createCommonClass('Graphic',
 		if(g.use.canvas){
 			g.fillStyle = this.gridcolor;
 			for(var i=xa;i<=xb;i+=2){
-				var px = i*this.bw;
-				for(var j=(y1*this.bh),len=(y2*this.bh);j<len;j+=(2*dotSize)){
-					g.fillRect(px, j, 1, dotSize);
+				var px = i*this.bw, py = y1*this.bh;
+				for(var j=0;j<dotCount*((y2-y1)>>1);j++){
+					g.fillRect(px, py, 1, dotSize);
+					py += 2*dotSize
 				}
 			}
 			for(var i=ya;i<=yb;i+=2){
-				var py = i*this.bh;
-				for(var j=(x1*this.bw),len=(x2*this.bw);j<len;j+=(2*dotSize)){
-					g.fillRect(j, py, dotSize, 1);
+				var py = i*this.bh, px = x1*this.bw;
+				for(var j=0;j<dotCount*((x2-x1)>>1);j++){
+					g.fillRect(px, py, dotSize, 1);
+					px += 2*dotSize
 				}
 			}
 		}
