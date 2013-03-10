@@ -64,6 +64,10 @@ LineManager:{
 	isCenterLine : true
 },
 
+Properties:{
+	flag_irowake : 1
+},
+
 Menu:{
 	menufix : function(){
 		this.addUseToFlags();
@@ -74,8 +78,6 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	irowake : 1,
-
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.dotcolor = "rgb(255, 96, 191)";

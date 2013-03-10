@@ -144,6 +144,10 @@ AreaLineManager:{
 	enabled : true
 },
 
+Properties:{
+	flag_irowake : 1
+},
+
 Menu:{
 	menufix : function(pp){
 		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
@@ -158,8 +162,6 @@ Menu:{
 Graphic:{
 	bdmargin       : 0.50,
 	bdmargin_image : 0.10,
-
-	irowake : 1,
 
 	hideHatena : true,
 

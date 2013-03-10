@@ -280,7 +280,8 @@ LineManager:{
 },
 
 Properties:{
-	flag_redline : true
+	flag_redline : true,
+	flag_irowake : 1
 },
 
 //---------------------------------------------------------
@@ -288,8 +289,6 @@ Properties:{
 Graphic:{
 	bdmargin       : 1.00,
 	bdmargin_image : 1.00,
-
-	irowake : 1,
 
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;

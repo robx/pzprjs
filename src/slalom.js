@@ -315,14 +315,13 @@ LineManager:{
 },
 
 Properties:{
-	flag_redline : true
+	flag_redline : true,
+	flag_irowake : 1
 },
 
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	irowake : 1,
-
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合

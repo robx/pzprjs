@@ -146,8 +146,6 @@ pzprv3.createCommonClass('Graphic',
 	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
 	bdmargin_image : 0.15,	// 画像出力時のbdmargin値
 
-	irowake : 0,		// 0:色分け設定無し 1:色分けしない 2:色分けする
-
 	hideHatena : false,	// Cellのqnumが-2のときに？を表示しない
 
 	/* vnop関数用 */
@@ -1082,7 +1080,7 @@ pzprv3.createCommonClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
-			else if(this.irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
+			else if(this.owner.config.flag_irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;

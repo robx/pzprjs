@@ -98,15 +98,14 @@ LineManager:{
 },
 
 Properties:{
-	flag_use : true
+	flag_redline : true,
+	flag_irowake : 2
 },
 
 Menu:{
 	menufix : function(pp){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
 		pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
-
-		this.addRedLineToFlags();
 	},
 
 	menuinit : function(pp){
@@ -128,8 +127,6 @@ Menu:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	irowake : 1,
-
 	setColors : function(){
 		this.setBGCellColorFunc('qsub2');
 	},

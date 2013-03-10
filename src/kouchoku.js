@@ -324,7 +324,8 @@ OperationManager:{
 },
 
 Properties:{
-	disable_subclear : true
+	disable_subclear : true,
+	flag_irowake : 1
 },
 
 Menu:{
@@ -346,8 +347,6 @@ Menu:{
 Graphic:{
 	bdmargin       : 0.70,
 	bdmargin_image : 0.50,
-
-	irowake : 1,
 
 	hideHatena : true,
 
@@ -401,7 +400,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(this.irowake===0 || !this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(!this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -932,7 +931,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seg.cross2.segment.add(seg);
 		}
 		this.reassignId(ids);
-		if(this.owner.painter.irowake!==0){ this.newIrowake();}
+		if(!!this.owner.config.flag_irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){
@@ -1126,7 +1125,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.seg[id].color = newColor;
 
 		if(shortid!==null){
-			if(this.owner.getConfig('irowake')){
+			if(!!this.owner.getConfig('irowake')){
 				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
 				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
 				this.owner.painter.repaintSegments(seglist);
@@ -1182,7 +1181,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				idlist.push(this.idlist[current][n]);
 			}
 		}
-		if(this.owner.getConfig('irowake')){
+		if(!!this.owner.getConfig('irowake')){
 			var seglist = this.owner.newInstance('SegmentList');
 			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
 			this.owner.painter.repaintSegments(seglist);

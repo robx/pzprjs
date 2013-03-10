@@ -333,8 +333,8 @@ pzprv3.createCommonClass('Menu',
 		au('text','disp',(!pzprv3.OS.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!this.owner.painter.irowake){
-			ac('irowake','disp',(this.owner.painter.irowake==2?true:false),'線の色分け','Color coding');
+		if(!!this.owner.config.flag_irowake){
+			ac('irowake','disp',(this.owner.config.flag_irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp',true,'カーソルの表示','Display cursor');
@@ -742,7 +742,7 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(this.owner.painter.irowake){
+		if(this.owner.config.flag_irowake){
 			// 横にくっつけたいボタンを追加
 			var el = this.el_button.cloneNode(false), self = this;
 			el.id = "ck_btn_irowake";
@@ -791,7 +791,7 @@ pzprv3.createCommonClass('Menu',
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(this.owner.painter.irowake!=0){
+		if(!!this.owner.config.flag_irowake){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
@@ -1412,7 +1412,7 @@ pzprv3.createCommonClass('Menu',
 
 		for(var i=0;i<idlist.length;i++) { getEL(idlist[i]) .style.display = mandisp;}
 		for(var i=0;i<seplist.length;i++){ getEL(seplist[i]).style.display = mandisp;}
-		if(this.owner.painter.irowake!=0 && this.owner.getConfig('irowake')){ getEL('btncolor2').style.display = btn2disp;}
+		if(this.owner.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
 		getEL('menuboard').style.paddingBottom = mbpad;
 
 		this.displaymanage = !this.displaymanage;

@@ -45,13 +45,15 @@ AreaLineManager:{
 	enabled : true
 },
 
+Properties:{
+	flag_irowake : 1
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	bdmargin       : 0.50,
 	bdmargin_image : 0.10,
-
-	irowake : 1,
 
 	hideHatena : true,
 
