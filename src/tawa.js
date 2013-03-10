@@ -224,13 +224,6 @@ Properties:{
 },
 
 Menu:{
-	menufix : function(){
-		this.addLabels(pzprv3.getEL('pop1_1_cap1x'), "横幅 (黄色の数)", "Width (Yellows)");
-		this.addLabels(pzprv3.getEL('pop1_1_cap2x'), "高さ",            "Height");
-
-		this.funcs.newboard = function(){ this.owner.menu.newboard_show();};
-	},
-
 	menuinit : function(pp){
 		this.newboard_html_original = document.newboard.innerHTML;
 
@@ -282,14 +275,6 @@ Menu:{
 		this.clap = num;
 	},
 
-	newboard_show : function(){		// "新規盤面作成"を表示するとき
-		var o = this.owner, bd = o.board;
-		this.popel = pzprv3.getEL("pop1_1");
-		this.selectlap([0,2,3,1][bd.lap]);
-		document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
-		document.newboard.row.value = bd.qrows;
-		o.key.enableKey = false;
-	},
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
 		if(this.popel){
 			var col = ((parseInt(document.newboard.col.value))|0);

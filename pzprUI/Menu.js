@@ -867,6 +867,10 @@ pzprv3.createCommonClass('Menu',
 			lab(getEL('pop1_1_cap1'), "よこ",                   "Cols");
 			lab(getEL('pop1_1_cap2'), "たて",                   "Rows");
 		}
+		else if(this.owner.pid==='tawa'){
+			lab(pzprv3.getEL('pop1_1_cap1x'), "横幅 (黄色の数)", "Width (Yellows)");
+			lab(pzprv3.getEL('pop1_1_cap2x'), "高さ",            "Height");
+		}
 		btn(_doc.newboard.newboard, func,  "新規作成",   "Create");
 		btn(_doc.newboard.cancel,   close, "キャンセル", "Cancel");
 
@@ -1170,7 +1174,13 @@ pzprv3.createCommonClass('Menu',
 
 		newboard : function(){
 			this.popel = getEL("pop1_1");
-			if(this.owner.pid!="sudoku"){
+			if(this.owner.pid==='tawa'){
+				var bd = this.owner.board;
+				this.selectlap([0,2,3,1][bd.lap]);
+				document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
+				document.newboard.row.value = bd.qrows;
+			}
+			else if(this.owner.pid!=="sudoku"){
 				document.newboard.col.value = this.owner.board.qcols;
 				document.newboard.row.value = this.owner.board.qrows;
 			}
