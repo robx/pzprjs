@@ -106,6 +106,15 @@ pzprv3.createCommonClass('Menu',
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
 
+		if(!!this.newboard_html_original){
+			document.newboard.innerHTML = this.newboard_html_original;
+			this.newboard_html_original = '';
+		}
+		if(this.owner.pid==='tawa'){
+			document.flip.turnl.disabled = false;
+			document.flip.turnr.disabled = false;
+		}
+
 		this.items.reset();
 	},
 
@@ -860,7 +869,9 @@ pzprv3.createCommonClass('Menu',
 		var func = null;
 
 		// 盤面の新規作成 -----------------------------------------------------
-		func = function(e){ self.newboard(e||window.event);};
+		this.poparea_newboard();
+		
+		func = function(e){ self.newboard_exec(e||window.event);};
 		lab(getEL('bar1_1'),      "盤面の新規作成",         "Createing New Board");
 		lab(getEL('pop1_1_cap0'), "盤面を新規作成します。", "Create New Board.");
 		if(this.owner.pid!=='sudoku' && this.owner.pid!=='tawa'){
@@ -948,6 +959,10 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.flip.flipy,  func,  "上下反転",   "Flip upside down");
 		btn(_doc.flip.flipx,  func,  "左右反転",   "Flip leftside right");
 		btn(_doc.flip.close,  close, "閉じる",     "Close");
+		if(this.owner.pid==='tawa'){
+			document.flip.turnl.disabled = true;
+			document.flip.turnr.disabled = true;
+		}
 
 		// credit -------------------------------------------------------------
 		lab(getEL('bar3_1'),   "credit", "credit");
@@ -967,6 +982,62 @@ pzprv3.createCommonClass('Menu',
 		pzprv3.debug.poptest_func();
 
 		if(getEL("pop1_8").style.display=='inline'){ this.popel = getEL("pop1_8");}
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.poparea_newboard() ポップアップメニューの初期設定を行う
+	//---------------------------------------------------------------------------
+	newboard_html_original : '',
+	poparea_newboard : function(){
+		if(this.owner.pid==='sudoku'){
+			this.newboard_html_original = document.newboard.innerHTML;
+			document.newboard.innerHTML =
+				["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
+				 "<input type=\"radio\" name=\"size\" value=\"4\">4×4<br>\n",
+				 "<input type=\"radio\" name=\"size\" value=\"9\" checked>9×9<br>\n",
+				 "<input type=\"radio\" name=\"size\" value=\"16\">16×16<br>\n",
+				 "<input type=\"radio\" name=\"size\" value=\"25\">25×25<br>\n",
+				 "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+				].join('');
+		}
+		else if(this.owner.pid==='tawa'){
+			this.newboard_html_original = document.newboard.innerHTML;
+			document.newboard.innerHTML =
+				["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
+				 "<input type=\"number\" name=\"col\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap1x\">横幅 (黄色の数)</span><br>\n",
+				 "<input type=\"number\" name=\"row\" value=\"\" size=\"4\" maxlength=\"3\" min=\"1\" max=\"999\" /> <span id=\"pop1_1_cap2x\">高さ</span><br>\n",
+				 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"2\" style=\"margin-top:4pt;margin-bottom:4pt;\">",
+				 "<tr id=\"laps\" style=\"padding-bottom:2px;\">\n",
+				 "<td><div><img id=\"nb0\" src=\"src/img/tawa_nb.gif\"></div></td>\n",
+				 "<td><div><img id=\"nb1\" src=\"src/img/tawa_nb.gif\"></div></td>\n",
+				 "<td><div><img id=\"nb2\" src=\"src/img/tawa_nb.gif\"></div></td>\n",
+				 "<td><div><img id=\"nb3\" src=\"src/img/tawa_nb.gif\"></div></td>\n",
+				 "</tr></table>\n",
+				 "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
+				].join('');
+
+			/* sc8.cssにも定義があります */
+			for(var i=0;i<=3;i++){
+				var _img = pzprv3.getEL('nb'+i);
+				_img.style.left = "-"+(i*32)+"px";
+				_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
+				this.owner.addEvent(_img, "click", this, this.clicklap);
+				_img.parentNode.style.display = 'block';
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.clicklap()  たわむれんがの新規盤面選択時に形状の選択を行う
+	// menu.selectlap() たわむれんがの新規盤面選択時に形状の選択を行う
+	//---------------------------------------------------------------------------
+	clicklap : function(e){
+		this.selectlap(this.getSrcElement(e).id.charAt(2));
+	},
+	selectlap : function(num){
+		for(var i=0;i<=3;i++){
+			pzprv3.getEL("nb"+i).parentNode.style.backgroundColor = (i==num?'red':'');
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1174,16 +1245,7 @@ pzprv3.createCommonClass('Menu',
 
 		newboard : function(){
 			this.popel = getEL("pop1_1");
-			if(this.owner.pid==='tawa'){
-				var bd = this.owner.board;
-				this.selectlap([0,2,3,1][bd.lap]);
-				document.newboard.col.value = (bd.qcols+(bd.lap==3?1:0));
-				document.newboard.row.value = bd.qrows;
-			}
-			else if(this.owner.pid!=="sudoku"){
-				document.newboard.col.value = this.owner.board.qcols;
-				document.newboard.row.value = this.owner.board.qrows;
-			}
+			this.newboard_open();
 			this.owner.key.enableKey = false;
 		},
 		dispsize : function(){
@@ -1225,20 +1287,62 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.newboard()       新規盤面を作成する
-	// menu.newboard_open()  新規盤面を作成する
+	// menu.newboard_open()  新規盤面を作成するダイアログを表示したときの処理を行う
+	// menu.newboard_exec()  新規盤面を作成するボタンを押したときの処理を行う
 	//------------------------------------------------------------------------------
-	newboard : function(e){
-		if(this.popel){
-			var col = (parseInt(document.newboard.col.value))|0;
-			var row = (parseInt(document.newboard.row.value))|0;
-			if(!!col && !!row){ this.newboard_open(col+'/'+row);}
+	newboard_open : function(){
+		var bd = this.owner.board, NB=document.newboard;
+		var col = bd.qcols, row = bd.qrows;
+		if(this.owner.pid==='tawa'){
+			this.selectlap([0,2,3,1][bd.lap]);
+			if(bd.lap===3){ col++;}
+		}
+		
+		if(this.owner.pid!=='sudoku'){
+			NB.col.value = col;
+			NB.row.value = row;
+		}
+		else{
+			var idx=1;
+			if    (col!==row){ idx=1;}
+			else if(col===16){ idx=2;}
+			else if(col===25){ idx=3;}
+			else if(col=== 4){ idx=0;}
+			NB.size[idx].checked=true;
 		}
 	},
-	newboard_open : function(qdata){
-		this.popclose();
-
-		this.owner.importBoardData({id:this.owner.pid, qdata:qdata});
+	newboard_exec : function(e){
+		if(this.popel){
+			var col, row, slap=null, url=[], NB=document.newboard;
+			
+			if(this.owner.pid!=='sudoku'){
+				col = (parseInt(NB.col.value))|0;
+				row = (parseInt(NB.row.value))|0;
+			}
+			else{
+				if     (NB.size[2].checked){ col=row=16;}
+				else if(NB.size[3].checked){ col=row=25;}
+				else if(NB.size[0].checked){ col=row= 4;}
+				else                       { col=row= 9;}
+			}
+			if(!!col && !!row){ url = [col, row];}
+			
+			if(url.length>0 && this.owner.pid==='tawa'){
+				for(var i=0;i<=3;i++){
+					if(pzprv3.getEL("nb"+i).parentNode.style.backgroundColor==='red'){ slap=[0,3,1,2][i]; break;}
+				}
+				if(!isNaN(slap) && !(col==1 && (slap==0||slap==3))){
+					if(slap===3){ col--; url=[col,row];}
+					url.push(slap);
+				}
+				else{ url=[];}
+			}
+			
+			this.popclose();
+			if(url.length>0){
+				this.owner.importBoardData({id:this.owner.pid, qdata:url.join('/')});
+			}
+		}
 	},
 
 	//------------------------------------------------------------------------------
