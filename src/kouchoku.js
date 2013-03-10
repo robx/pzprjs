@@ -252,7 +252,21 @@ Board:{
 },
 
 "SegmentList:PieceList":{
-	name : 'SegmentList'
+	name : 'SegmentList',
+
+	getRange : function(){
+		if(this.length==0){ return null;}
+		var bd = this.owner.board;
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
+		for(var i=0;i<this.length;i++){
+			var seg=this[i];
+			if(d.x1>seg.bx1){ d.x1=seg.bx1;}
+			if(d.x2<seg.bx2){ d.x2=seg.bx2;}
+			if(d.y1>seg.by1){ d.y1=seg.by1;}
+			if(d.y2<seg.by2){ d.y2=seg.by2;}
+		}
+		return d;
+	}
 },
 
 "SegmentOperation:Operation":{
@@ -350,9 +364,14 @@ Graphic:{
 	},
 
 	repaintSegments : function(seglist){
-		var g = this.vinc('segment', 'auto');
-
-		for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
+		if(!this.use.canvas){
+			var g = this.vinc('segment', 'auto');
+			for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
+		}
+		else{
+			var d = seglist.getRange();
+			this.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		}
 	},
 
 	drawSegments : function(){
