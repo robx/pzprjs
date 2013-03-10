@@ -5,7 +5,7 @@
 //----------------------------------------------------------------------------
 // ★pzprv3オブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-var pzprv3 = {
+var pzprv3_base = {
 	version : 'v3.4.0pre',
 
 	EDITOR : true,	// エディタモード
@@ -238,7 +238,12 @@ var pzprv3 = {
 };
 
 /* extern */
-window.pzprv3 = pzprv3;
+if(!window.pzprv3){
+	window.pzprv3 = pzprv3_base;
+}
+else{
+	for(name in pzprv3_base){ window.pzprv3[name] = pzprv3_base[name];}
+}
 
 // 定数の定義
 var k = pzprv3.consts;
