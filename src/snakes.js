@@ -142,14 +142,6 @@ Properties:{
 	flag_use : true
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
-		pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
-		this.funcs['snakebd'] = function(){ this.owner.painter.paintAll();};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

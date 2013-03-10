@@ -328,20 +328,6 @@ Properties:{
 	flag_irowake : 1
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
-		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');
-		this.funcs['circolor'] = function(){ this.owner.painter.paintAll();};
-
-		pp.addCheck('enline','setting',true,'線は点の間','Line between points');
-		pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
-
-		pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
-		pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

@@ -62,14 +62,6 @@ Properties:{
 	flag_use : true
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
-		pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
-		this.funcs['circolor'] = function(){ this.owner.painter.paintAll();};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

@@ -13,7 +13,7 @@ MouseEvent:{
 		if(this.mousestart){ this.inputqnum();}
 	},
 	inputplay : function(){
-		if(this.owner.getConfig('use')==1){
+		if(this.owner.getConfig('use_tri')==1){
 			if(this.mousestart){
 				if(this.btn.Left) { this.inputTriangle_corner();}
 				if(this.btn.Right){ this.inputDot();}
@@ -22,7 +22,7 @@ MouseEvent:{
 				if(this.inputData!==null){ this.inputMove();}
 			}
 		}
-		else if(this.owner.getConfig('use')==2){
+		else if(this.owner.getConfig('use_tri')==2){
 			if(this.mousestart){
 				if(this.btn.Left) { this.inputTriangle_pull_start();}
 				if(this.btn.Right){ this.inputDot();}
@@ -35,7 +35,7 @@ MouseEvent:{
 				this.inputTriangle_pull_end();
 			}
 		}
-		else if(this.owner.getConfig('use')==3){
+		else if(this.owner.getConfig('use_tri')==3){
 			if(this.mousestart){ this.inputTriangle_onebtn();}
 		}
 	},
@@ -240,17 +240,6 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){
 			var val=trans[this.cell[c].qans]; if(!!val){ this.cell[c].qans=val;}
 		}
-	}
-},
-
-Menu:{
-	menufix : function(pp){
-		pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
-		pp.setLabel ('use', '三角形の入力方法', 'Input Triangle Type');
-
-		pp.addChild('use_1', 'use', 'クリックした位置', 'Corner-side');
-		pp.addChild('use_2', 'use', '引っ張り入力', 'Pull-to-Input');
-		pp.addChild('use_3', 'use', '1ボタン', 'One Button');
 	}
 },
 

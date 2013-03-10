@@ -276,15 +276,6 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(pp){
-		if(pzprv3.EDITOR){
-			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
-			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
-		}
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

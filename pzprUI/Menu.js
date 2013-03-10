@@ -273,6 +273,7 @@ pzprv3.createCommonClass('Menu',
 			ap = function(){ pp.addSeparator.apply(pp,arguments);},
 			af = function(){ pp.addFlagOnly.apply(pp,arguments);},
 			sl = function(){ pp.setLabel.apply(pp,arguments);};
+		var pid = this.owner.pid;
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -379,42 +380,10 @@ pzprv3.createCommonClass('Menu',
 		else{
 			af('mode', 3);
 		}
-
-		if(this.owner.config.flag_use){
-			this.addUseToFlags();
-		}
-		if(this.owner.config.flag_redline){
-			this.addRedLineToFlags();
-		}
-		if(this.owner.config.flag_redblk){
-			this.addRedBlockToFlags();
-		}
-		if(this.owner.config.flag_redblkrb){
-			this.addRedBlockRBToFlags();
-		}
-		if(this.owner.config.flag_bgcolor){
-			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
-			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
-		}
-
-		this.menufix(pp);		// 各パズルごとのメニュー追加
-
-		ac('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
-		ac('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
-		sl('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
-		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){
-			ac('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
-			sl('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
-		}
-		au('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
-
-		// *設定 - モード -----------------------------------------------------
 		ai('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
 		ai('mode_3', 'mode', '回答モード',     'Answer mode');
 
-		// *設定 - 言語 -------------------------------------------------------
-		ai('language_ja', 'language', '日本語',  '日本語');
-		ai('language_en', 'language', 'English', 'English');
+		this.menuconfig(pp);		// コンフィグ関連のメニュー追加
 
 		// *その他 ============================================================
 		am('other', "その他", "Others");
@@ -435,36 +404,139 @@ pzprv3.createCommonClass('Menu',
 
 		this.createAllFloat();
 	},
-	menufix : function(pp){},
+	menuconfig : function(pp){
+		var pid = this.owner.pid;
+
+		if(this.owner.config.flag_use){
+			this.addUseToFlags();
+		}
+		if(pid==='shakashaka'){
+			pp.addSelect('use_tri','setting',(!pzprv3.env.touchevent?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
+			pp.setLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
+			pp.addChild('use_tri_1', 'use', 'クリックした位置', 'Corner-side');
+			pp.addChild('use_tri_2', 'use', '引っ張り入力', 'Pull-to-Input');
+			pp.addChild('use_tri_3', 'use', '1ボタン', 'One Button');
+		}
+
+		if(this.owner.config.flag_redline || this.owner.config.flag_redblk || this.owner.config.flag_redblkrb || pid==='roma'){
+			this.addDispRedToFlags();
+		}
+
+		if(this.owner.config.flag_bgcolor){
+			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
+			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		}
+
+		if(pid==='hashikake'||pid==='kurotto'||pid==='kouchoku'){
+			if(pid==='hashikake'||pid==='kurotto'){
+				pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+				pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
+			}
+			else if(pid==='kouchoku'){
+				pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
+				pp.setLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+			}
+		}
+		if(pid==='hitori'){
+			pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
+			pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
+		}
+
+		if(pid==='fillomino'){
+			pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
+			pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
+		}
+
+		if(pid==='wagiri'){
+			pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
+			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		}
+
+		if(pid==='kouchoku'){
+			pp.addCheck('enline','setting',true,'線は点の間','Line between points');
+			pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
+
+			pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
+			pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
+		}
+
+		if(pid==='mashu'){
+			pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
+			pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
+		}
+
+		if(pid==='pipelinkr'){
+			pp.addSelect('disptype_pipelinkr','setting',1,[1,2],'表示形式','Display');
+			pp.addChild('disptype_pipelinkr_1', 'disptype', '○', 'Circle');
+			pp.addChild('disptype_pipelinkr_2', 'disptype', '■', 'Icebarn');
+		}
+
+		if(pid==='bosanowa'){
+			pp.addSelect('disptype_bosanowa','setting',1,[1,2,3],'表示形式','Display');
+			pp.setLabel('disptype_bosanowa', '表示形式', 'Display');
+			pp.addChild('disptype_bosanowa_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
+			pp.addChild('disptype_bosanowa_2', 'disptype', '倉庫番形式',     'Sokoban Type');
+			pp.addChild('disptype_bosanowa_3', 'disptype', 'ワリタイ形式',   'Waritai type');
+		}
+
+		if(pid==='snakebd'){
+			pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
+			pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
+		}
+
+		if(pzprv3.EDITOR && pid==='goishi'){
+			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
+			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
+		}
+		if(pzprv3.EDITOR && pid==='tentaisho'){
+			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
+			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+		}
+
+		pp.addCheck('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
+
+		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
+		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
+
+		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){
+			pp.addCheck('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
+			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
+		}
+
+		pp.addSelect('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
+		pp.addChild('language_ja', 'language', '日本語',  '日本語');
+		pp.addChild('language_en', 'language', 'English', 'English');
+	},
 
 	//---------------------------------------------------------------------------
 	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
-	// menu.addRedLineToFlags()   「線のつながりをチェック」サブメニュー登録用共通関数
-	// menu.addRedBlockToFlags()  「黒マスのつながりをチェック」サブメニュー登録用共通関数
-	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
+	// menu.addDispRedToFlags()   「つながりをチェック」系サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
 		var pp = this.items;
 		pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
-		pp.setLabel ('use', '操作方法', 'Input Type');
-
+		pp.setLabel('use', '操作方法', 'Input Type');
 		pp.addChild('use_1','use','左右ボタン','LR Button');
 		pp.addChild('use_2','use','1ボタン',   'One Button');
 	},
-	addRedLineToFlags : function(){
+	addDispRedToFlags : function(){
 		var pp = this.items;
-		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-		pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
-	},
-	addRedBlockToFlags : function(){
-		var pp = this.items;
-		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-		pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-	},
-	addRedBlockRBToFlags : function(){
-		var pp = this.items;
-		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-		pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+		if(this.owner.config.flag_redline){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
+		}
+		else if(this.owner.config.flag_redblk){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+		}
+		else if(this.owner.config.flag_redblkrb){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+		}
+		else if(this.owner.pid==='roma'){
+			pp.addCheck('dispred','setting', false, '通り道のチェック', 'Check Road');
+			pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1222,6 +1294,33 @@ pzprv3.createCommonClass('Menu',
 		repaint   : function(num){ this.owner.painter.forceRedraw();},
 		adjsize   : function(num){ this.owner.painter.forceRedraw();},
 		language  : function(str){ this.setLang(str);},
+
+		circolor   : function(){ this.owner.painter.paintAll();},
+		plred      : function(){ this.owner.painter.paintAll();},
+		colorslash : function(){ this.owner.painter.paintAll();},
+		snakebd    : function(){ this.owner.painter.paintAll();},
+		uramashu   : function(){
+			var bd = this.owner.board;
+			for(var c=0;c<bd.cellmax;c++){
+				var cell = bd.cell[c];
+				if     (cell.getQnum()===1){ cell.setQnum(2);}
+				else if(cell.getQnum()===2){ cell.setQnum(1);}
+			}
+			this.owner.painter.paintAll();
+		},
+		disptype_pipelinkr : function(num){
+			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
+			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
+			this.owner.painter.paintAll();
+		},
+		disptype_bosanowa : function(num){
+			var pc = this.owner.painter;
+			pc.suspendAll();
+			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
+			else if(num==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			pc.unsuspend();
+		},
 
 		newboard : function(){
 			this.popel = getEL("pop1_1");

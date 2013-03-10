@@ -148,15 +148,6 @@ Properties:{
 	flag_irowake : 1
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
-		pp.setLabel('circolor', '数字と同じ本数がかかったらグレーにする', 'Grey if the number is equal to linked bridges.');
-
-		this.funcs['circolor'] = function(){ this.owner.painter.paintAll();};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

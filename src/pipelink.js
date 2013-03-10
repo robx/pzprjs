@@ -115,20 +115,6 @@ Properties:{
 	flag_irowake : 1
 },
 
-"Menu@pipelinkr":{
-	menufix : function(pp){
-		pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
-
-		pp.addChild('disptype_1', 'disptype', '○', 'Circle');
-		pp.addChild('disptype_2', 'disptype', '■', 'Icebarn');
-		this.funcs['disptype'] = function(num){
-			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
-			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
-			this.owner.painter.paintAll();
-		};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

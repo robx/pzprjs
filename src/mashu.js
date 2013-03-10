@@ -64,22 +64,6 @@ Properties:{
 	flag_irowake : 1
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
-		pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
-		this.funcs['uramashu'] = function(){
-			var bd = this.owner.board;
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
-				if     (cell.getQnum()===1){ cell.setQnum(2);}
-				else if(cell.getQnum()===2){ cell.setQnum(1);}
-			}
-			this.owner.painter.paintAll();
-		};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

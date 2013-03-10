@@ -142,25 +142,6 @@ Board:{
 	}
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addSelect('disptype','setting',1,[1,2,3],'表示形式','Display');
-		pp.setLabel ('disptype', '表示形式', 'Display');
-
-		pp.addChild('disptype_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
-		pp.addChild('disptype_2', 'disptype', '倉庫番形式',     'Sokoban Type');
-		pp.addChild('disptype_3', 'disptype', 'ワリタイ形式',   'Waritai type');
-		this.funcs['disptype'] = function(num){
-			var pc = this.owner.painter;
-			pc.suspendAll();
-			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
-			else if(num==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			pc.unsuspend();
-		};
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

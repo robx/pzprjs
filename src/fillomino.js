@@ -108,13 +108,6 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
-		pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
-	}
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
