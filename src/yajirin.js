@@ -65,14 +65,9 @@ LineManager:{
 },
 
 Properties:{
+	flag_use     : true,
+	flag_redline : true,
 	flag_irowake : 1
-},
-
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		this.addRedLineToFlags();
-	}
 },
 
 //---------------------------------------------------------
