@@ -29,7 +29,12 @@ function onload_func(){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 		/* 2) URL(?以降)をチェック */
 		onload_pzl = (importFileData() || importURL());
-		if(!onload_pzl.id){ location.href = "./";} /* 指定されたパズルがない場合はさようなら～ */
+		
+		/* 指定されたパズルがない場合はさようなら～ */
+		if(!onload_pzl.id){
+			location.href = "./";
+			return;
+		}
 	}
 
 	/* 必要な場合、テスト用ファイルのinclude         */
