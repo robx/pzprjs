@@ -265,22 +265,22 @@ Menu:{
 	},
 
 	// 新規作成で選ぶ時に用いる関数・変数など
-	clap : 3,
 	clicklap : function(e){
 		this.selectlap(this.getSrcElement(e).id.charAt(2));
 	},
 	selectlap : function(num){
-		pzprv3.getEL("nb"+this.clap).parentNode.style.backgroundColor = '';
-		pzprv3.getEL("nb"+num).parentNode.style.backgroundColor = 'red';
-		this.clap = num;
+		for(var i=0;i<=3;i++){
+			pzprv3.getEL("nb"+i).parentNode.style.backgroundColor = (i==num?'red':'');
+		}
 	},
 
 	newboard : function(e){			// "新規盤面作成"ボタンが押されたとき
 		if(this.popel){
 			var col = ((parseInt(document.newboard.col.value))|0);
 			var row = ((parseInt(document.newboard.row.value))|0);
-			var slap = [0,3,1,2][this.clap];
-
+			var clap = 0;
+			for(clap=0;clap<3;clap++){ if(pzprv3.getEL("nb"+clap).parentNode.style.backgroundColor==='red'){ break;}}
+			var slap = [0,3,1,2][clap];
 			if(!!col && !!row && !isNaN(slap) && !(col==1 && (slap==0||slap==3))){
 				if(slap==3){ col--;}
 
@@ -373,8 +373,10 @@ Encode:{
 		bd.setLap(parseInt(barray[0]));
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
-		this.outbstr = barray[1];
-		this.decodeNumber10();
+		if(!!barray[1]){
+			this.outbstr = barray[1];
+			this.decodeNumber10();
+		}
 	},
 	encodeTawamurenga : function(){
 		this.outbstr = (this.owner.board.lap+"/");
