@@ -171,7 +171,7 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey;  this.ca='';}
 		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;   this.ca='';}
 
-		if(!(this.isCTRL || this.isMETA)){ this.owner.ut.stop();}
+		if(!(this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -183,8 +183,8 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.ca==='z' && !this.isZ){ this.isZ=true;}
 		if(this.ca==='x' && !this.isX){ this.isX=true;}
 
-		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ o.ut.startUndo(); this.ca='';}
-		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ o.ut.startRedo(); this.ca='';}
+		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startUndo(); this.ca='';}
+		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startRedo(); this.ca='';}
 
 		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
 			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); this.ca='';}
@@ -198,8 +198,8 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.ca==='z' && this.isZ){ this.isZ=false;}
 		if(this.ca==='x' && this.isX){ this.isX=false;}
 
-		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ this.owner.ut.stop(); this.ca='';}
-		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ this.owner.ut.stop(); this.ca='';}
+		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); this.ca='';}
+		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); this.ca='';}
 	},
 	//---------------------------------------------------------------------------
 	// kc.moveTarget()  キーボードからの入力対象を矢印キーで動かす

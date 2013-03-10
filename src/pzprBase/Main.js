@@ -89,7 +89,6 @@ pzprv3.createCoreClass('Owner',
 		this.key    = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
 
 		this.undo  = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
-		this.ut    = this.newInstance('UndoTimer');		// Undo用Timerオブジェクト
 
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト

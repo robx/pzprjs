@@ -43,9 +43,10 @@ function onload_func(){
 	var puzzle = new pzprv3.core.Owner();
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
-	pzprv3.timer = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
-	pzprv3.dbm   = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
-	pzprv3.debug = new pzprv3.core.Debug();
+	pzprv3.timer     = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
+	pzprv3.undotimer = new pzprv3.core.UndoTimer(puzzle);	// Undo用Timerオブジェクト
+	pzprv3.dbm       = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
+	pzprv3.debug     = new pzprv3.core.Debug();
 
 	if(debugmode && !onload_pzl.qdata){
 		onload_pzl.qdata = pzprv3.debug.urls[onload_pzl.id];

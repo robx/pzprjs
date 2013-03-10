@@ -1,4 +1,7 @@
 // Timer.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
@@ -90,16 +93,19 @@ pzprv3.createCoreClass('Timer',
 //---------------------------------------------------------------------------
 // ★UndoTimerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('UndoTimer',
+pzprv3.createCoreClass('UndoTimer',
 {
-	initialize : function(){
+	initialize : function(targetpuzzle){
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
 		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
 
+		this.targetpuzzle = targetpuzzle;
+
 		this.inUNDO = false;
 		this.inREDO = false;
+		this.ismouse = false;
 
 		// Undo/Redo用変数
 		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
@@ -125,10 +131,18 @@ pzprv3.createCommonClass('UndoTimer',
 	stop : function(){
 		this.inUNDO = false;
 		this.inREDO = false;
+		this.ismouse = false;
 
 		clearInterval(this.TID);
 		this.TID = null;
 	},
+
+	//---------------------------------------------------------------------------
+	// ut.startMouseUndo() 碁石拾いの石がない場所のマウスクリックでUndoする
+	// ut.startMouseRedo() 碁石拾いの石がない場所のマウスクリックでRedoする
+	//---------------------------------------------------------------------------
+	startMouseUndo : function(){ this.ismouse=true; this.startUndo();},
+	startMouseRedo : function(){ this.ismouse=true; this.startRedo();},
 
 	//---------------------------------------------------------------------------
 	// ut.proc()  Undo/Redo呼び出しを実行する
@@ -140,7 +154,29 @@ pzprv3.createCommonClass('UndoTimer',
 		else{ this.exec();}
 	},
 	exec : function(){
-		if     (this.inUNDO){ this.owner.undo.undo(1);}
-		else if(this.inREDO){ this.owner.undo.redo(1);}
+		var opemgr = this.targetpuzzle.undo;
+		if(!!this.ismouse && this.targetpuzzle.pid==='goishi'){
+			if(this.inUNDO){
+				var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');
+				if(prop!==k.ANUM){ this.stop();}
+			}
+			else if(this.inREDO){
+				var prop = (opemgr.current+1<opemgr.ope.length ? opemgr.ope[opemgr.current+1].property : '');
+				if(prop!==k.ANUM){ this.stop();}
+			}
+		}
+		
+		if(!!this.TID){
+			if(this.inUNDO){
+				opemgr.undo(1);
+				if(!opemgr.enableUndo){ this.stop();}
+			}
+			else if(this.inREDO){
+				opemgr.redo(1);
+				if(!opemgr.enableRedo){ this.stop();}
+			}
+		}
 	}
 });
+
+})();

@@ -11,14 +11,14 @@ pzprv3.createCustoms('goishi', {
 MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart){ this.inputstone();}
-		else if(this.mouseend){ this.owner.ut.stop();}
+		else if(this.mouseend){ pzprv3.undotimer.stop();}
 	},
 	inputplay : function(){
 		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ this.owner.ut.startUndo(true);}
+			else if(this.btn.Right){ pzprv3.undotimer.startMouseUndo();}
 		}
-		else if(this.mouseend){ this.owner.ut.stop();}
+		else if(this.mouseend){ pzprv3.undotimer.stop();}
 	},
 
 	inputstone : function(){
@@ -34,7 +34,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			this.owner.ut.startRedo(true);
+			pzprv3.undotimer.startMouseRedo();
 			return;
 		}
 
@@ -101,41 +101,6 @@ Cell:{
 	setStone : function(){
 		if     (this.ques=== 7){ this.setQues(0);}
 		else if(this.anum===-1){ this.setQues(7);} // 数字のマスは消せません
-	}
-},
-
-UndoTimer:{
-	initialize : function(){
-		this.SuperFunc.initialize.call(this);
-		this.ismouse = false;
-	},
-
-	startUndo : function(ismouse){
-		this.ismouse = !!ismouse;
-		this.SuperFunc.startUndo.call(this);
-	},
-	startRedo : function(ismouse){
-		this.ismouse = !!ismouse;
-		this.SuperFunc.startRedo.call(this);
-	},
-	stop : function(){
-		this.SuperFunc.stop.call(this);
-		this.ismouse = false;
-	},
-
-	exec : function(){
-		if(!this.ismouse){ this.SuperFunc.exec.call(this);}
-		else{
-			var um = this.owner.undo;
-			if(this.inUNDO){
-				var prop = (um.current>-1 ? um.ope[um.current].property : '');
-				if(prop===k.ANUM){ um.undo(1);} else{ this.stop();}
-			}
-			else if(this.inREDO){
-				var prop = (um.current+1<um.ope.length ? um.ope[um.current+1].property : '');
-				if(prop===k.ANUM){ um.redo(1);} else{ this.stop();}
-			}
-		}
 	}
 },
 
