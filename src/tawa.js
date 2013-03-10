@@ -301,7 +301,6 @@ Encode:{
 
 	decodeTawamurenga : function(){
 		var barray = this.outbstr.split("/"), bd = this.owner.board;
-
 		bd.setLap(parseInt(barray[0]));
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
@@ -320,6 +319,8 @@ FileIO:{
 	decodeData : function(){
 		var bd = this.owner.board;
 		bd.setLap(parseInt(this.readLine()));
+		bd.initBoardSize(bd.qcols, bd.qrows);
+
 		var n=0, item = this.getItemList(bd.qrows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
