@@ -12,7 +12,7 @@ var k = pzprv3.consts;
 pzprv3.createCommonClass('Menu',
 {
 	initialize : function(){
-		this.config = null;
+		this.items = null;
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
@@ -51,7 +51,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(pp){
-		this.config = pp;
+		this.items = new pzprv3.core.MenuList(this);
 
 		if(typeof FileReader == 'undefined'){
 			this.reader = null;
@@ -106,7 +106,7 @@ pzprv3.createCommonClass('Menu',
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
 
-		this.owner.config.reset();
+		this.items.reset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -127,7 +127,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	displayAll : function(){
-		for(var i in this.config.flags){ this.setdisplay(i);}
+		for(var i in this.items.flags){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[this.language];
@@ -139,7 +139,7 @@ pzprv3.createCommonClass('Menu',
 		this.owner.opemgr.enb_btn();
 	},
 	setdisplay : function(idname){
-		var pp = this.config;
+		var pp = this.items;
 		switch(pp.type(idname)){
 		case pp.MENU:
 			var pmenu = getEL('ms_'+idname);
@@ -251,7 +251,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.menufix()    各パズルの設定を追加する
 	//---------------------------------------------------------------------------
 	menuarea : function(){
-		var pp = this.config;
+		var pp = this.items;
 		var am = function(){ pp.addMenu.apply(pp,arguments);},
 			at = function(){ pp.addSParent.apply(pp,arguments);},
 			an = function(){ pp.addSParent2.apply(pp,arguments);},
@@ -434,7 +434,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.addRedBlockRBToFlags()「ナナメ黒マスのつながりをチェック」サブメニュー登録用共通関数
 	//---------------------------------------------------------------------------
 	addUseToFlags : function(){
-		var pp = this.config;
+		var pp = this.items;
 		pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
 		pp.setLabel ('use', '操作方法', 'Input Type');
 
@@ -442,17 +442,17 @@ pzprv3.createCommonClass('Menu',
 		pp.addChild('use_2','use','1ボタン',   'One Button');
 	},
 	addRedLineToFlags : function(){
-		var pp = this.config;
+		var pp = this.items;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
 	},
 	addRedBlockToFlags : function(){
-		var pp = this.config;
+		var pp = this.items;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 	},
 	addRedBlockRBToFlags : function(){
-		var pp = this.config;
+		var pp = this.items;
 		pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 		pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 	},
@@ -461,7 +461,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
-		var pp = this.config;
+		var pp = this.items;
 
 		// ElementTemplate : メニュー領域
 		var el_menu = pzprv3.createEL('li');
@@ -585,14 +585,14 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(this.config.haschild(this.getSrcElement(e).id.substr(3))){
+		if(this.items.haschild(this.getSrcElement(e).id.substr(3))){
 			if(this.getSrcElement(e).className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(this.config.haschild(this.getSrcElement(e).id.substr(3))){
+		if(this.items.haschild(this.getSrcElement(e).id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -605,7 +605,7 @@ pzprv3.createCommonClass('Menu',
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
-			var idname = el.id.substr(3), pp = this.config;
+			var idname = el.id.substr(3), pp = this.items;
 			switch(pp.type(idname)){
 				case pp.SMENU: this.popopen(e, idname); break;
 				case pp.CHILD: this.owner.setConfig(pp.flags[idname].parent, this.owner.getConfig(idname)); break;
@@ -708,7 +708,7 @@ pzprv3.createCommonClass('Menu',
 		pzprv3.unselectable(el_selchild);
 
 		// usearea & checkarea
-		var pp = this.config;
+		var pp = this.items;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
@@ -1182,7 +1182,7 @@ pzprv3.createCommonClass('Menu',
 			this.owner.key.enableKey = false;
 		},
 		keypopup : function(){
-			var f = this.owner.key.haspanel[this.config.flags['mode'].val];
+			var f = this.owner.key.haspanel[this.items.flags['mode'].val];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
 			getEL('cl_keypopup').style.color = (f?"black":"silver");
 
@@ -1477,6 +1477,134 @@ pzprv3.createCommonClass('Menu',
 			o.board.subclear();
 			o.painter.paintAll();
 		}
+	}
+});
+
+// MenuListクラス
+pzprv3.createCoreClass('MenuList',
+{
+	initialize : function(menu){
+		this.menu = menu;
+
+		this.reset();
+	},
+
+	flags    : [],	// サブメニュー項目の情報(オブジェクトの配列になる)
+	flaglist : [],	// idnameの配列
+
+	// 定数
+	MENU     : 6,
+	SPARENT  : 7,
+	SPARENT2 : 8,
+	SMENU    : 0,
+	SELECT   : 1,
+	CHECK    : 2,
+	LABEL    : 3,
+	CHILD    : 4,
+	SEPARATE : 5,
+
+	//---------------------------------------------------------------------------
+	// pp.reset()      再読み込みを行うときに初期化を行う
+	//---------------------------------------------------------------------------
+	reset : function(){
+		this.flags    = [];
+		this.flaglist = [];
+	},
+
+	//---------------------------------------------------------------------------
+	// pp.addMenu()      メニュー最上位の情報を登録する
+	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
+	// pp.addSParent2()  フロートメニューを開くサブメニュー項目を登録する
+	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
+	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
+	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
+	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
+	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
+	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
+	// pp.addFlagOnly()  情報のみを登録する
+	//---------------------------------------------------------------------------
+	addMenu : function(idname, strJP, strEN){
+		this.addFlags(idname, '', this.MENU, null, strJP, strEN);
+	},
+	addSParent : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
+	},
+	addSParent2 : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SPARENT2, null, strJP, strEN);
+	},
+
+	addSmenu : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.SMENU, null, strJP, strEN);
+	},
+
+	addCaption : function(idname, parent, strJP, strEN){
+		this.addFlags(idname, parent, this.LABEL, null, strJP, strEN);
+	},
+	addSeparator : function(idname, parent){
+		this.addFlags(idname, parent, this.SEPARATE, null, '', '');
+	},
+
+	addCheck : function(idname, parent, first, strJP, strEN){
+		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
+	},
+	addSelect : function(idname, parent, first, child, strJP, strEN){
+		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
+		this.flags[idname].child = child;
+	},
+	addChild : function(idname, parent, strJP, strEN){
+		var list = idname.split("_");
+		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+	},
+
+	addFlagOnly : function(idname, first){
+		this.addFlags(idname, '', '', first, '', '');
+	},
+
+	//---------------------------------------------------------------------------
+	// pp.addFlags()  上記関数の内部共通処理
+	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
+	//---------------------------------------------------------------------------
+	addFlags : function(idname, parent, type, first, strJP, strEN){
+		this.flags[idname] = {
+			id     : idname,
+			type   : type,
+			val    : first,
+			parent : parent,
+			str : {
+				ja : { menu:strJP, label:''},
+				en : { menu:strEN, label:''}
+			}
+		};
+		this.flaglist.push(idname);
+	},
+
+	setLabel : function(idname, strJP, strEN){
+		if(!this.flags[idname]){ return;}
+		this.flags[idname].str.ja.label = strJP;
+		this.flags[idname].str.en.label = strEN;
+	},
+
+	//---------------------------------------------------------------------------
+	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
+	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
+	// pp.type()       設定値のサブメニュータイプを返す
+	// pp.haschild()   サブメニューがあるかどうか調べる
+	//---------------------------------------------------------------------------
+	getMenuStr : function(idname){ return this.flags[idname].str[this.menu.language].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[this.menu.language].label;},
+	type       : function(idname){ return this.flags[idname].type;},
+	haschild   : function(idname){
+		var flag = this.flags[idname];
+		if(!flag){ return false;}
+		var type = flag.type;
+		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
+	}
+});
+
+// MenuItemクラス
+pzprv3.createCoreClass('MenuItem',
+{
+	initialize : function(){
 	}
 });
 
