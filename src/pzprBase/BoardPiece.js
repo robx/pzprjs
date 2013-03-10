@@ -57,7 +57,7 @@ pzprv3.createCommonClass('BoardPiece',
 	setdata : function(prop, num){
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
 
-		this.owner.undo.addOpe_Object(this, prop, this[prop], num);
+		this.owner.opemgr.addOpe_Object(this, prop, this[prop], num);
 		this[prop] = num;
 
 		if(!!this.posthook[prop]){ this.posthook[prop].call(this,num);}
@@ -116,7 +116,7 @@ pzprv3.createCommonClass('BoardPiece',
 		for(var i=0;i<props.length;i++){
 			var def = this.constructor.prototype[props[i]];
 			if(this[props[i]]!==def){
-				if(isrec){ this.owner.undo.addOpe_Object(this, props[i], this[props[i]], def);}
+				if(isrec){ this.owner.opemgr.addOpe_Object(this, props[i], this[props[i]], def);}
 				this[props[i]] = def;
 			}
 		}

@@ -11,7 +11,7 @@ var k = pzprv3.consts;
 pzprv3.createCommonClass('Operation',
 {
 	initialize : function(){
-		this.manager = this.owner.undo;
+		this.manager = this.owner.opemgr;
 	},
 
 	chain : false,

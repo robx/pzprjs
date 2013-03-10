@@ -88,7 +88,7 @@ pzprv3.createCoreClass('Owner',
 		this.mouse  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
 		this.key    = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
 
-		this.undo  = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
+		this.opemgr = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
 
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト

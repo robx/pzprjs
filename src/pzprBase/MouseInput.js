@@ -86,7 +86,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.btn = this.getMouseButton(e);
 		if(this.btn.Left || this.btn.Right){
 			this.owner.board.errclear();
-			this.owner.undo.newOperation(true);
+			this.owner.opemgr.newOperation(true);
 			this.setposition(e);
 			this.mouseevent(0);	// 各パズルのルーチンへ
 		}
@@ -102,7 +102,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!this.enableMouse){ return true;}
 		
 		if(this.btn.Left || this.btn.Right){
-			this.owner.undo.newOperation(false);
+			this.owner.opemgr.newOperation(false);
 			this.mouseevent(2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
@@ -115,7 +115,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!this.enableMouse){ return true;}
 		
 		if(this.btn.Left || this.btn.Right){
-			this.owner.undo.newOperation(false);
+			this.owner.opemgr.newOperation(false);
 			this.setposition(e);
 			this.mouseevent(1);	// 各パズルのルーチンへ
 		}
@@ -124,7 +124,7 @@ pzprv3.createCommonClass('MouseEvent',
 		return false;
 	},
 	e_mouseout : function(e) {
-		this.owner.undo.newOperation(false);
+		this.owner.opemgr.newOperation(false);
 	},
 
 	//---------------------------------------------------------------------------
@@ -199,7 +199,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.inputPoint.py = this.pageY(e) - pc.pageY - this.mouseoffset.py;
 	},
 
-	notInputted : function(){ return !this.owner.undo.changeflag;},
+	notInputted : function(){ return !this.owner.opemgr.changeflag;},
 	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
 
 	//----------------------------------------------------------------------
@@ -595,9 +595,9 @@ pzprv3.createCommonClass('MouseEvent',
 		var cross = pos.getx();
 		if(cross.isnull){ return;}
 
-		this.owner.undo.disCombine = true;
+		this.owner.opemgr.disCombine = true;
 		cross.setQnum(cross.getQnum()===1?-1:1);
-		this.owner.undo.disCombine = false;
+		this.owner.opemgr.disCombine = false;
 
 		cross.draw();
 	},

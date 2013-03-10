@@ -159,8 +159,8 @@ Board:{
 	},
 
 	setarrowin : function(border){
-		if(this.owner.undo.isenableRecord()){
-			this.owner.undo.addOpe_InOut('in', this.arrowin.bx,this.arrowin.by, border.bx,border.by);
+		if(this.owner.opemgr.isenableRecord()){
+			this.owner.opemgr.addOpe_InOut('in', this.arrowin.bx,this.arrowin.by, border.bx,border.by);
 		}
 		this.arrowin = border;
 
@@ -174,8 +174,8 @@ Board:{
 	},
 
 	setarrowout : function(border){
-		if(this.owner.undo.isenableRecord()){
-			this.owner.undo.addOpe_InOut('out', this.arrowout.bx,this.arrowout.by, border.bx,border.by);
+		if(this.owner.opemgr.isenableRecord()){
+			this.owner.opemgr.addOpe_InOut('out', this.arrowout.bx,this.arrowout.by, border.bx,border.by);
 		}
 		this.arrowout = border;
 
@@ -201,18 +201,18 @@ Board:{
 		this.arrowin  = this.getb(info1.bx2, info1.by2);
 		this.arrowout = this.getb(info2.bx2, info2.by2);
 
-		var um = this.owner.undo;
-		if((key & k.REDUCE) && !um.undoExec && !um.redoExec){
-			um.forceRecord = true;
+		var opemgr = this.owner.opemgr;
+		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
+			opemgr.forceRecord = true;
 			if(info1.isdel){
-				um.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
+				opemgr.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
 				this.setarrowin_arrow (this.arrowin);
 			}
 			if(info2.isdel){
-				um.addOpe_InOut('out', info2.bx1,info2.by1, info2.bx2,info2.by2);
+				opemgr.addOpe_InOut('out', info2.bx1,info2.by1, info2.bx2,info2.by2);
 				this.setarrowout_arrow(this.arrowout);
 			}
-			um.forceRecord = false;
+			opemgr.forceRecord = false;
 		}
 	}
 },

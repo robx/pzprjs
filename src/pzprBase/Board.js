@@ -135,7 +135,7 @@ pzprv3.createCommonClass('Board',
 		this.resetInfo();
 
 		this.owner.cursor.initCursor();
-		this.owner.undo.allerase();
+		this.owner.opemgr.allerase();
 	},
 
 	//---------------------------------------------------------------------------
@@ -499,11 +499,11 @@ pzprv3.createCommonClass('Board',
 	// bd.isenableInfo() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
 	disableInfo : function(){
-		this.owner.undo.disableRecord();
+		this.owner.opemgr.disableRecord();
 		this.disrec++;
 	},
 	enableInfo : function(){
-		this.owner.undo.enableRecord();
+		this.owner.opemgr.enableRecord();
 		if(this.disrec>0){ this.disrec--;}
 	},
 	isenableInfo : function(){
@@ -663,7 +663,7 @@ pzprv3.createCommonClass('Board',
 			}
 		}
 
-		this.owner.undo.newOperation(true);
+		this.owner.opemgr.newOperation(true);
 
 		this.owner.painter.suspendAll();
 
@@ -672,11 +672,11 @@ pzprv3.createCommonClass('Board',
 		var d = {x1:0, y1:0, x2:2*this.qcols, y2:2*this.qrows}; // 範囲が必要なのturnflipだけかも..
 		if(key & k.TURNFLIP){
 			this.turnflip(key,d);
-			this.owner.undo.addOpe_BoardFlip(d, key0, key);
+			this.owner.opemgr.addOpe_BoardFlip(d, key0, key);
 		}
 		else{
 			this.expandreduce(key,d);
-			this.owner.undo.addOpe_BoardAdjust(key0, key);
+			this.owner.opemgr.addOpe_BoardAdjust(key0, key);
 		}
 
 		this.setminmax();
@@ -737,9 +737,9 @@ pzprv3.createCommonClass('Board',
 	reduceGroup : function(type,key){
 		if(type===k.BORDER){ this.reduceborder(key);}
 
-		var um = this.owner.undo;
-		var margin=0, group = this.getGroup(type), isrec=(!um.undoExec && !um.redoExec);
-		if(isrec){ um.forceRecord = true;}
+		var opemgr = this.owner.opemgr;
+		var margin=0, group = this.getGroup(type), isrec=(!opemgr.undoExec && !opemgr.redoExec);
+		if(isrec){ opemgr.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
 			if(this.isdel(key,group[i])){
 				group[i].id = i;
@@ -749,7 +749,7 @@ pzprv3.createCommonClass('Board',
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
-		if(isrec){ um.forceRecord = false;}
+		if(isrec){ opemgr.forceRecord = false;}
 	},
 	isdel : function(key,obj){
 		return !!this.insex[obj.group][this.distObj(key,obj)];
@@ -837,7 +837,7 @@ pzprv3.createCommonClass('Board',
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
-		if(this.lines.borderAsLine || !this.owner.undo.undoExec){
+		if(this.lines.borderAsLine || !this.owner.opemgr.undoExec){
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			this.setposBorders();
 
@@ -916,11 +916,11 @@ pzprv3.createCommonClass('Board',
 			var areaid = qnums[i].areaid;
 			var top = this.rooms.calcTopOfRoom(areaid);
 			if(top===null){
-				var um = this.owner.undo;
-				if(!um.undoExec && !um.redoExec){
-					um.forceRecord = true;
-					um.addOpe_Object(qnums[i].cell, k.QNUM, qnums[i].val, -1);
-					um.forceRecord = false;
+				var opemgr = this.owner.opemgr;
+				if(!opemgr.undoExec && !opemgr.redoExec){
+					opemgr.forceRecord = true;
+					opemgr.addOpe_Object(qnums[i].cell, k.QNUM, qnums[i].val, -1);
+					opemgr.forceRecord = false;
 				}
 			}
 			else{

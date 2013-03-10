@@ -54,7 +54,7 @@ MouseEvent:{
 		st.draw();
 		if(this.firstCell!==st){
 			var cell0 = this.firstCell;
-			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, st.bx,st.by);
+			this.owner.opemgr.addOpe_Startpos(cell0.bx,cell0.by, st.bx,st.by);
 		}
 	},
 	inputGate : function(){
@@ -226,7 +226,7 @@ Board:{
 	inputstartid : function(cell){
 		if(cell!==this.startcell){
 			var cell0 = this.startcell;
-			this.owner.undo.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
+			this.owner.opemgr.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
 
 			this.startcell = cell;
 			cell0.draw();
@@ -251,13 +251,13 @@ Board:{
 		var info = this.posinfo;
 		this.startcell = this.getc(info.bx2, info.by2);
 
-		var um = this.owner.undo;
-		if((key & k.REDUCE) && !um.undoExec && !um.redoExec){
-			um.forceRecord = true;
+		var opemgr = this.owner.opemgr;
+		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
+			opemgr.forceRecord = true;
 			if(info.isdel){
-				um.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
+				opemgr.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
 			}
-			um.forceRecord = false;
+			opemgr.forceRecord = false;
 		}
 
 		this.hinfo.generateGates();	// 念のため

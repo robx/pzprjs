@@ -80,8 +80,8 @@ pzprv3.createCoreClass('Timer',
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		if(this.current>this.nextACtime && this.lastAnsCnt!=this.targetpuzzle.undo.anscount && !this.targetpuzzle.checker.inCheck){
-			this.lastAnsCnt = this.targetpuzzle.undo.anscount;
+		if(this.current>this.nextACtime && this.lastAnsCnt!=this.targetpuzzle.opemgr.anscount && !this.targetpuzzle.checker.inCheck){
+			this.lastAnsCnt = this.targetpuzzle.opemgr.anscount;
 			if(!this.targetpuzzle.checker.autocheck()){ return;}
 
 			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
@@ -154,7 +154,7 @@ pzprv3.createCoreClass('UndoTimer',
 		else{ this.exec();}
 	},
 	exec : function(){
-		var opemgr = this.targetpuzzle.undo;
+		var opemgr = this.targetpuzzle.opemgr;
 		if(!!this.ismouse && this.targetpuzzle.pid==='goishi'){
 			if(this.inUNDO){
 				var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');

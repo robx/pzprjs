@@ -64,7 +64,7 @@ pzprv3.createCommonClass('FileIO',
 		if     (this.currentType===k.PZPR){ this.decodeData();}
 		else if(this.currentType===k.PBOX){ this.kanpenOpen();}
 
-		o.undo.decodeLines();
+		o.opemgr.decodeLines();
 
 		o.board.resetInfo();
 
@@ -101,7 +101,7 @@ pzprv3.createCommonClass('FileIO',
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(type===k.PZPH){ this.history = o.undo.toString();}
+		if(type===k.PZPH){ this.history = o.opemgr.toString();}
 
 		return bstr;
 	},

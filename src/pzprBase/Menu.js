@@ -137,7 +137,7 @@ pzprv3.createCommonClass('Menu',
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
-		this.owner.undo.enb_btn();
+		this.owner.opemgr.enb_btn();
 	},
 	setdisplay : function(idname){
 		var pp = this.config;
@@ -765,8 +765,8 @@ pzprv3.createCommonClass('Menu',
 
 		var self = this;
 		this.addButtons(btncheck, function(){ self.owner.checker.check();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ self.owner.undo.undo(1);}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ self.owner.undo.redo(1);}, "進", "->");
+		this.addButtons(btnundo,  function(){ self.owner.opemgr.undo(1);}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ self.owner.opemgr.redo(1);}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
@@ -1112,10 +1112,10 @@ pzprv3.createCommonClass('Menu',
 		imagesave : function(){ this.imagesave(false,null);},
 		database  : function(){ this.popel = getEL("pop1_8"); pzprv3.dbm.openDialog();},
 
-		h_oldest  : function(){ this.owner.undo.undoall();},
-		h_undo    : function(){ this.owner.undo.undo(1);},
-		h_redo    : function(){ this.owner.undo.redo(1);},
-		h_latest  : function(){ this.owner.undo.redoall();},
+		h_oldest  : function(){ this.owner.opemgr.undoall();},
+		h_undo    : function(){ this.owner.opemgr.undo(1);},
+		h_redo    : function(){ this.owner.opemgr.redo(1);},
+		h_latest  : function(){ this.owner.opemgr.redoall();},
 		check     : function(){ this.owner.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
@@ -1437,7 +1437,7 @@ pzprv3.createCommonClass('Menu',
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
 			var o = this.owner;
-			o.undo.newOperation(true);
+			o.opemgr.newOperation(true);
 
 			o.board.ansclear();
 			o.board.resetInfo();
@@ -1447,7 +1447,7 @@ pzprv3.createCommonClass('Menu',
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
 			var o = this.owner;
-			o.undo.newOperation(true);
+			o.opemgr.newOperation(true);
 
 			o.board.subclear();
 			o.painter.paintAll();
