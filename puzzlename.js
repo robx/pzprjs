@@ -38,9 +38,6 @@ var PZLINFO = {
 		return list;
 	},
 
-	toFBGcolor : function(pid){
-		return FBGcolor(pid);
-	},
 	toBGimage : function(pid){
 		return BGimage(pid);
 	}
@@ -166,61 +163,6 @@ PZLINFO.register({
 	yajitatami:[false, false, 'ヤジタタミ', 'Yajitatami', '', {}],
 	yosenabe  :[false, false, 'よせなべ', 'Yosenabe', '', {}]
 });
-
-var FBGcolor = function(pid){
-	var col = "black";
-	switch(pid){
-	case 'slither': case 'lightup': case 'shakashaka':
-	case 'mejilink': case 'cbblock': case 'shugaku':     col="rgb(32, 32, 32)"; break;
-	case 'fillomino': case 'factors': case 'mochikoro':
-	case 'lits': case 'tasquare': case 'tawa':           col="rgb(64, 64, 64)"; break;
-	case 'kakuro': case 'tilepaint': case 'triplace':
-	case 'box': case 'minarism': case 'kurodoko':
-	case 'lookair':                                      col="rgb(96, 96, 96)"; break;
-	case 'kouchoku': case 'mochinyoro': case 'wblink':   
-	case 'ringring':                                     col="rgb(127, 127, 127)"; break;
-	case 'sukoro': case 'sukororoom': case 'view':       col="rgb(160, 160, 160)"; break;
-
-	case 'chocona':                                      col="rgb(127, 0, 0)"; break;
-	case 'bag': case 'paintarea':                        col="rgb(160, 0, 0)"; break;
-	case 'country':                                      col="rgb(191, 0, 0)"; break;
-	case 'kramma': case 'kramman': case 'shwolf':        col="rgb(255, 0, 0)"; break;
-
-	case 'goishi': case 'kusabi':  case 'kurochute':     col="rgb(224, 160, 0)"; break;
-	case 'bonsan': case 'heyabon': case 'kaero':         col="rgb(127, 96, 64)"; break;
-	case 'kurotto':                                      col="rgb(127, 127, 96)"; break;
-	case 'hakoiri': case 'roma': case 'toichika':        col="rgb(127, 160, 96)"; break;
-	case 'shikaku': case 'aho':  case 'loute':           col="rgb(127, 191, 0)"; break;
-	case 'fillmat': case 'tatamibari': case 'usotatami': col="rgb(96, 224, 0)"; break;
-	case 'kinkonkan': case 'sashigane':                  col="rgb(160, 191, 0)"; break;
-	case 'sudoku': case 'hitori': case 'hashikake':      col="rgb(191, 191, 0)"; break;
-
-	case 'gokigen': case 'wagiri': case 'nagenawa':      col="rgb(0, 127, 0)"; break;
-	case 'ichimaga': case 'ichimagax': case 'ichimagam': col="rgb(0, 160, 0)"; break;
-	case 'heyawake': case 'ayeheya':                     col="rgb(0, 191, 0)"; break;
-	case 'yajirin': case 'yajikazu': case 'firefly':     col="rgb(0, 224, 0)"; break;
-	case 'pipelink': case 'pipelinkr': case 'loopsp':    col="rgb(0, 255, 0)"; break;
-	case 'fourcells': case 'fivecells':                  col="rgb(64, 255, 64)"; break;
-	case 'tateyoko': case 'amibo': case 'kakuru':        col="rgb(96, 255, 96)"; break;
-
-	case 'bdblock': case 'reflect':                      col="rgb(0, 127, 96)"; break;
-	case 'norinori': case 'shimaguni':                   col="rgb(0, 127, 127)"; break;
-	case 'yajitatami':                                   col="rgb(0, 255, 96)"; break;
-
-	case 'icebarn': case 'icelom': case 'icelom2':       col="rgb(0, 0, 127)"; break;
-	case 'tentaisho':                                    col="rgb(0, 0, 160)"; break;
-	case 'barns':                                        col="rgb(0, 0, 191)"; break;
-	case 'creek': case 'nanro': case 'hanare':           col="rgb(0, 0, 255)"; break;
-	case 'ripple': case 'cojun': case 'renban':          col="rgb(32, 32, 255)"; break;
-	case 'nawabari':                                     col="rgb(64, 64, 255)"; break;
-	case 'slalom': case 'yosenabe':                      col="rgb(96, 96, 255)"; break;
-
-	case 'snakes': case 'numlin':                        col="rgb(255, 0, 191)"; break;
-	case 'mashu': case 'bosanowa':                       col="rgb(255, 64, 191)"; break;
-	case 'nurikabe': case 'nuribou':                     col="rgb(255, 127, 224)"; break;
-	}
-	return col;
-};
 
 var BGimage = function(pid){
 	var header;

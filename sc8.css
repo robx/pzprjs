@@ -24,7 +24,7 @@
 
 	/* フロートメニュー */
 	menu.floatmenu  { visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
-					  list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:blue; z-index:101;}
+					  list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:#7f7f7f; z-index:101;}
 	/* フロートメニュー - サブメニュー項目 */
 	menu.floatmenu li { display:block; margin:0pt; padding:1pt 8pt 0pt 4pt; text-align:left; color:black; cursor:default;}
 	menu.floatmenu li.smenu       { background-color:white; cursor:pointer;}

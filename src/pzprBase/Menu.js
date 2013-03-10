@@ -454,7 +454,6 @@ pzprv3.createCommonClass('Menu',
 		// ElementTemplate : フロートメニュー
 		var el_float = pzprv3.createEL('menu');
 		el_float.className = 'floatmenu';
-		el_float.style.backgroundColor = pzprv3.PZLINFO.toFBGcolor(this.owner.pid);
 
 		// ElementTemplate : フロートメニュー(中身)
 		var el_smenu = pzprv3.createEL('li');
