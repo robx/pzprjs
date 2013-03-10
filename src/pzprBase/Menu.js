@@ -187,7 +187,9 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		document.body.style.backgroundImage = "url(./bg/"+this.owner.pid+".gif)";
+		var imageurl = pzprv3.PZLINFO.toBGimage(this.owner.pid);
+		if(!imageurl){ imageurl="./bg/"+this.owner.pid+".gif";}
+		document.body.style.backgroundImage = "url("+imageurl+")";
 		if(pzprv3.browser.IE6){
 			getEL('title2').style.marginTop = "24px";
 			getEL('separator2').style.margin = '0pt';

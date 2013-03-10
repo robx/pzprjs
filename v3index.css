@@ -1,6 +1,7 @@
 
 	/* commmon */
-	body{ background:url(./bg/index.gif); color:black; line-height:120%; text-align:center;}
+	body{ background:url(data:image/gif;base64,R0lGODdhEAAQAIACAMD/wPD/8CwAAAAAEAAQAAACKYQTpogKnFxbMDpa7W18yjhp1yGO1OidW5mSKFuaTyy585t0ctZ+EFAAADs=);
+		color:black; line-height:120%; text-align:center;}
 
 	p.back{ text-align:left; margin: 4pt auto 6pt 12pt;}
 
