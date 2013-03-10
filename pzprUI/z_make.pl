@@ -1,7 +1,7 @@
 
 our $debug = 0;
 our $filech = 1;
-our $version = 'v3.3.0p2';
+our $version = 'v3.4.0';
 
 &main();
 exit(0);
@@ -11,10 +11,10 @@ sub main{
 
 	if(!$debug){
 		&eraseLOG();
-		&printLOG("pzprBase.js $version contents\n");
+		&printLOG("pzprUI.js $version contents\n");
 	}
 
-	&output_pzprBase();
+	&output_pzprUI();
 	if(!$debug){
 		&output_puzzles(); # contents.txtにファイル名出力するだけ
 	}
@@ -34,48 +34,35 @@ sub input_flags{
 	}
 }
 
-sub output_pzprBase{
+sub output_pzprUI{
 	my @files = (
-		'Camp.js',
-		'CoreClass.js',
-		'Main.js',
+		'Boot.js',
 		'Timer.js',
-		'BoardPiece.js',
-		'Board.js',
-		'BoardExt.js',
-		'Graphic.js',
-		'MouseInput.js',
-		'KeyInput.js',
-		'Encode.js',
-		'Filesys.js',
 		'DataBase.js',
-		'Answer.js',
-		'Undo.js',
 		'Menu.js'
 	);
 
-	open OUT, ">pzprBase_body_Full.js";
+	open OUT, ">pzprUI_body_Full.js";
 	if($debug){
-		print OUT "// pzplBase.js テスト用\n";
+		print OUT "// pzplUI.js テスト用\n";
 	}
-	print OUT "\nvar pzprv3={version:\"$version\"};\n";
 	&printfiles(\@files,1);
 	close OUT;
 
 	if(!$debug){
 		&output_doc("notices.txt");
 
-		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar --charset utf-8 -o ./pzprBase_body.js ./pzprBase_body_Full.js");
-		system("cat ./notices.txt ./pzprBase_body.js > ../pzprBase.js");
-		system("cat ./notices.txt ./pzprBase_body_Full.js > ../pzprBase_Full.js");
+		system("java -jar ../../../yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar --charset utf-8 -o ./pzprUI_body.js ./pzprUI_body_Full.js");
+		system("cat ./notices.txt ./pzprUI_body.js > ../pzprUI.js");
+		system("cat ./notices.txt ./pzprUI_body_Full.js > ../pzprUI_Full.js");
 
 		unlink("notices.txt");
-		unlink("pzprBase_body.js");
-		unlink("pzprBase_body_Full.js");
+		unlink("pzprUI_body.js");
+		unlink("pzprUI_body_Full.js");
 	}
 	else{
-		system("cp /Y ./pzprBase_body_Full.js ../pzprBase.js");
-		unlink("pzprBase_body_Full.js");
+		system("cp ./pzprUI_body_Full.js ../pzprUI.js");
+		unlink("pzprUI_body_Full.js");
 	}
 }
 
@@ -110,9 +97,9 @@ sub output_doc{
 
 	print DOC <<"EOR";
 /* 
- * pzprBase.js
+ * pzprUI.js
  * 
- * pzprBase.js is a base script for playing nikoli puzzles on Web
+ * pzprUI.js is a U/I script for playing nikoli puzzles on PUZ-PRE v3 Website
  * written in JavaScript.
  * 
  * \@author  dk22
@@ -138,7 +125,7 @@ sub printfiles{
 		my $filename = $_;
 
 		if($debug){
-			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprBase/$_\\\"></script>\");\n";
+			print OUT "document.writeln(\"<script type=\\\"text/javascript\\\" src=\\\"src/pzprUI/$_\\\"></script>\");\n";
 			next;
 		}
 
@@ -154,7 +141,7 @@ sub printfiles{
 		# 実際の出力部
 		open SRC, $filename;
 		{
-			if($type==1){ <SRC>;}	# pzprBaseのファイルはヘッダ部を出力しない
+			if($type==1){ <SRC>;}	# pzprUIのファイルはヘッダ部を出力しない
 
 			# 変換をかけたい場合は、、この中に変換処理を入れるべし
 			while(<SRC>){
@@ -173,7 +160,7 @@ sub get_version{
 	my @ret = ();
 
 	open SRC, $filename;
-	# pzprBaseフォルダのファイルはversionが1行目
+	# pzprUIフォルダのファイルはversionが1行目
 	if($type == 1){
 		$_ = <SRC>;
 		/\/\/ +([^ ]+) +([^ \r\n]+)[\r\n]*/;
