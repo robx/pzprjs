@@ -80,10 +80,8 @@ LineManager:{
 	bdfunc : function(border){ return !border.isGround();}
 },
 
-Menu:{
-	menufix : function(){
-		this.addRedLineToFlags();
-	}
+Properties:{
+	flag_redline : true
 },
 
 //---------------------------------------------------------

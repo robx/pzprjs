@@ -97,6 +97,10 @@ LineManager:{
 	borderAsLine : true
 },
 
+Properties:{
+	flag_use : true
+},
+
 Menu:{
 	menufix : function(pp){
 		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');

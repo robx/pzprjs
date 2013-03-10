@@ -150,10 +150,8 @@ Board:{
 	}
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-	}
+Properties:{
+	flag_use : true
 },
 
 //---------------------------------------------------------

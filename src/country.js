@@ -53,10 +53,8 @@ AreaRoomManager:{
 	hastop : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addRedLineToFlags();
-	}
+Properties:{
+	flag_redline : true
 },
 
 //---------------------------------------------------------

@@ -92,13 +92,12 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		if(this.owner.pid==='lits'){
-			this.addRedBlockToFlags();
-		}
-	}
+Properties:{
+	flag_use : true
+},
+"Properties@lits":{
+	flag_use    : true,
+	flag_redblk : true
 },
 
 //---------------------------------------------------------

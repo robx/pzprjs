@@ -56,10 +56,8 @@ AreaBlackManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(pp){
-		this.addUseToFlags();
-	}
+Properties:{
+	flag_use : true
 },
 
 //---------------------------------------------------------

@@ -279,10 +279,8 @@ LineManager:{
 	isvalid : function(cell){ return cell.ice();}
 },
 
-Menu:{
-	menufix : function(){
-		this.addRedLineToFlags();
-	}
+Properties:{
+	flag_redline : true
 },
 
 //---------------------------------------------------------

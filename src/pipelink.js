@@ -110,15 +110,12 @@ LineManager:{
 	isLineCross  : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addRedLineToFlags();
-	}
+Properties:{
+	flag_redline : true
 },
+
 "Menu@pipelinkr":{
 	menufix : function(pp){
-		this.addRedLineToFlags();
-
 		pp.addSelect('disptype','setting',1,[1,2],'表示形式','Display');
 
 		pp.addChild('disptype_1', 'disptype', '○', 'Circle');

@@ -65,13 +65,12 @@ AreaWhiteManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		if(this.owner.pid==='nurikabe'){
-			this.addRedBlockToFlags();
-		}
-	}
+Properties:{
+	flag_use : true
+},
+"Properties@nurikabe":{
+	flag_use    : true,
+	flag_redblk : true
 },
 
 //---------------------------------------------------------

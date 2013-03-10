@@ -41,11 +41,9 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		this.addRedBlockToFlags();
-	}
+Properties:{
+	flag_use    : true,
+	flag_redblk : true
 },
 
 //---------------------------------------------------------

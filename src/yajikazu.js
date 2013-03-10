@@ -53,11 +53,9 @@ AreaWhiteManager:{
 	enabled : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		this.addRedLineToFlags();
-	}
+Properties:{
+	flag_use     : true,
+	flag_redline : true
 },
 
 //---------------------------------------------------------

@@ -219,9 +219,12 @@ Board:{
 	}
 },
 
+Properties:{
+	flag_use : true
+},
+
 Menu:{
 	menufix : function(){
-		this.addUseToFlags();
 		this.addLabels(pzprv3.getEL('pop1_1_cap1x'), "横幅 (黄色の数)", "Width (Yellows)");
 		this.addLabels(pzprv3.getEL('pop1_1_cap2x'), "高さ",            "Height");
 

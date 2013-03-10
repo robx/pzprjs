@@ -40,11 +40,13 @@ AreaWhiteManager:{
 	enabled : true
 },
 
+Properties:{
+	flag_use      : true,
+	flag_redblkrb : true
+},
+
 Menu:{
 	menufix : function(pp){
-		this.addUseToFlags();
-		this.addRedBlockRBToFlags();
-
 		pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
 		pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
 		this.funcs['plred'] = function(){ this.owner.painter.paintAll();};

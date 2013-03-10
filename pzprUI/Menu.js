@@ -371,6 +371,19 @@ pzprv3.createCommonClass('Menu',
 			af('mode', 3);
 		}
 
+		if(this.owner.config.flag_use){
+			this.addUseToFlags();
+		}
+		if(this.owner.config.flag_redline){
+			this.addRedLineToFlags();
+		}
+		if(this.owner.config.flag_redblk){
+			this.addRedBlockToFlags();
+		}
+		if(this.owner.config.flag_redblkrb){
+			this.addRedBlockRBToFlags();
+		}
+
 		this.menufix(pp);		// 各パズルごとのメニュー追加
 
 		ac('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');

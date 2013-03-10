@@ -59,6 +59,10 @@ LineManager:{
 	isCenterLine : true
 },
 
+Properties:{
+	flag_redline : true
+},
+
 Menu:{
 	menufix : function(pp){
 		pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
@@ -72,8 +76,6 @@ Menu:{
 			}
 			this.owner.painter.paintAll();
 		};
-
-		this.addRedLineToFlags();
 	}
 },
 

@@ -60,11 +60,9 @@ AreaRoomManager:{
 	hastop : true
 },
 
-Menu:{
-	menufix : function(){
-		this.addUseToFlags();
-		this.addRedBlockRBToFlags();
-	}
+Properties:{
+	flag_use      : true,
+	flag_redblkrb : true
 },
 
 //---------------------------------------------------------

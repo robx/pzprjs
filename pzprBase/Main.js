@@ -213,6 +213,12 @@ pzprv3.createCommonClass('Properties',
 	CHILD    : 4,
 	SEPARATE : 5,
 
+	// 仮
+	flag_use      : false,
+	flag_redline  : false,
+	flag_redblk   : false,
+	flag_redblkrb : false,
+
 	//---------------------------------------------------------------------------
 	// pp.reset()      再読み込みを行うときに初期化を行う
 	//---------------------------------------------------------------------------

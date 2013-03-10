@@ -225,19 +225,24 @@ Board:{
 	}
 },
 
+Properties:{
+	flag_use     : true,
+	flag_redline : true
+},
+"Properties@wagiri":{
+	flag_use : true
+},
+
 Menu:{
+	disable_subclear : true
+},
+"Menu@wagiri":{
 	disable_subclear : true,
 
 	menufix : function(pp){
-		this.addUseToFlags();
-		if(this.owner.pid==='gokigen'){
-			this.addRedLineToFlags();
-		}
-		else if(this.owner.pid==='wagiri'){
-			pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
-			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
-			this.funcs['colorslash'] = function(){ this.owner.painter.paintAll();};
-		}
+		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
+		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		this.funcs['colorslash'] = function(){ this.owner.painter.paintAll();};
 	}
 },
 
