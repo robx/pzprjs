@@ -174,6 +174,44 @@ var pzprv3 = {
 		return document.createElement(tagName);
 	},
 
+	//--------------------------------------------------------------------------------
+	// pzprv3.getRect()   エレメントの四辺の座標を返す
+	//--------------------------------------------------------------------------------
+	getRect : function(el){
+		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
+			function(el){
+				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!window.scrollX==void 0){
+					scrollLeft = window.scrollX;
+					scrollTop  = window.scrollY;
+				}
+				else{
+					_html = document.documentElement; _body = document.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
+				}
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		:
+			function(el){
+				var left = 0, top = 0, el2 = el;
+				while(!!el2){
+					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
+					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
+					el2 = el2.offsetParent;
+				}
+				var right  = left + (el.offsetWidth  || el.clientWidth);
+				var bottom = top  + (el.offsetHeight || el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		);
+		return this.getRect(el);
+	},
+
 	//----------------------------------------------------------------------
 	// Eventオブジェクト関連
 	// 
@@ -260,7 +298,7 @@ pzprv3.storage = (function(){
 	}}catch(e){}
 
 	// Firefoxはローカルだとデータベース系は使えない
-	if(!pzprv3.browser.Gecko || !!location.hostname){ val = 0;}
+	if(pzprv3.browser.Gecko && !location.hostname){ val = 0;}
 
 	return {
 		session : !!(val & 0x10),

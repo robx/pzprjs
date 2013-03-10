@@ -185,7 +185,7 @@ pzprv3.createCommonClass('Graphic',
 		var cwid = (cols*this.cw)|0, chgt = (rows*this.ch)|0;
 		this.currentContext.changeSize(cwid, chgt);
 		this.subContext.changeSize(cwid, chgt);
-		var rect = o.menu.getRect(this.currentContext.canvas);
+		var rect = pzprv3.getRect(this.currentContext.canvas);
 
 		var gs = [this.currentContext, this.subContext];
 		for(var i=0;i<2;i++){

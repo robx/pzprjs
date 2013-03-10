@@ -61,6 +61,7 @@ pzprv3.createCoreClass('DataBaseManager',
 		var self    = this;
 		this.update = function(){ self.updateDialog.call(self);};
 		this.sync   = false;
+		this.lang   = null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -85,6 +86,7 @@ pzprv3.createCoreClass('DataBaseManager',
 	},
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
+		this.lang = owner.menu.language;
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -161,7 +163,7 @@ pzprv3.createCoreClass('DataBaseManager',
 		str += (pzprv3.PZLINFO.info[row.pid].ja+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][pzprv3.taget.menu.language]+"&nbsp;");
+			str += (hardstr[row.hard][this.lang]+"&nbsp;");
 		}
 		str += ("("+this.dateString(row.time*1000)+")");
 		return str;

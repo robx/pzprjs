@@ -594,14 +594,14 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(this.items.haschild(this.getSrcElement(e).id.substr(3))){
-			if(this.getSrcElement(e).className==='smenu'){
+		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
+			if((e.target||e.srcElement).className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(this.items.haschild(this.getSrcElement(e).id.substr(3))){
+		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -610,7 +610,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
-		var el = this.getSrcElement(e);
+		var el = (e.target||e.srcElement);
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
@@ -635,8 +635,8 @@ pzprv3.createCommonClass('Menu',
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = this.getRect(this.getSrcElement(e));
-		var idname = this.getSrcElement(e).id.substr(3);
+		var rect = pzprv3.getRect(e.target||e.srcElement);
+		var idname = (e.target||e.srcElement).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
 			_float.style.left = rect.left   + 1 + 'px';
@@ -684,13 +684,13 @@ pzprv3.createCommonClass('Menu',
 	insideOf : function(el, e){
 		var ex = this.owner.mouse.pageX(e);
 		var ey = this.owner.mouse.pageY(e);
-		var rect = this.getRect(el);
+		var rect = pzprv3.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
 		var ex = this.owner.mouse.pageX(e);
 		var ey = this.owner.mouse.pageY(e);
-		var rect_f = this.getRect(getEL('ms_file')), rect_o = this.getRect(getEL('ms_other'));
+		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
 
@@ -825,12 +825,12 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	checkclick : function(e){
-		var el = this.getSrcElement(e);
+		var el = (e.target||e.srcElement);
 		var idname = el.id.substr(3);
 		this.owner.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
-		var list = this.getSrcElement(e).id.split('_');
+		var list = (e.target||e.srcElement).id.split('_');
 		this.owner.setConfig(list[1], list[2]);
 	},
 
@@ -921,7 +921,7 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.fileform.close,    close, "閉じる",     "Close");
 
 		// データベースを開く -------------------------------------------------
-		func = function(e){ pzprv3.dbm.clickHandler(self.getSrcElement(e||window.event).name, self.owner);};
+		func = function(e){ self.database_handler(e||window.event);};
 		lab(getEL('bar1_8'), "一時保存/戻す", "Temporary Stack");
 		_doc.database.sorts   .onchange = func;
 		_doc.database.datalist.onchange = func;
@@ -983,7 +983,7 @@ pzprv3.createCommonClass('Menu',
 
 		if(getEL("pop1_8").style.display=='inline'){ this.popel = getEL("pop1_8");}
 	},
-
+	
 	//---------------------------------------------------------------------------
 	// menu.poparea_newboard() ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
@@ -1032,7 +1032,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.selectlap() たわむれんがの新規盤面選択時に形状の選択を行う
 	//---------------------------------------------------------------------------
 	clicklap : function(e){
-		this.selectlap(this.getSrcElement(e).id.charAt(2));
+		this.selectlap((e.target||e.srcElement).id.charAt(2));
 	},
 	selectlap : function(num){
 		for(var i=0;i<=3;i++){
@@ -1085,7 +1085,7 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	titlebardown : function(e){
-		var popel = this.getSrcElement(e).parentNode;
+		var popel = (e.target||e.srcElement).parentNode;
 		this.movingpop = popel;
 		this.offset.px = this.owner.mouse.pageX(e) - parseInt(popel.style.left);
 		this.offset.py = this.owner.mouse.pageY(e) - parseInt(popel.style.top);
@@ -1105,48 +1105,6 @@ pzprv3.createCommonClass('Menu',
 			popel.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
 			pzprv3.preventDefault(e);
 		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// menu.getSrcElement() イベントが起こったエレメントを返す
-	// menu.getRect()       エレメントの四辺の座標を返す
-	//--------------------------------------------------------------------------------
-	getSrcElement : function(e){
-		return e.target || e.srcElement;
-	},
-	getRect : function(el){
-		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			function(el){
-				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
-				if(!window.scrollX==void 0){
-					scrollLeft = window.scrollX;
-					scrollTop  = window.scrollY;
-				}
-				else{
-					_html = document.documentElement; _body = document.body;
-					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
-					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
-				}
-				var left   = rect.left   + scrollLeft;
-				var top    = rect.top    + scrollTop;
-				var right  = rect.right  + scrollLeft;
-				var bottom = rect.bottom + scrollTop;
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		:
-			function(el){
-				var left = 0, top = 0, el2 = el;
-				while(!!el2){
-					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
-					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
-					el2 = el2.offsetParent;
-				}
-				var right  = left + (el.offsetWidth  || el.clientWidth);
-				var bottom = top  + (el.offsetHeight || el.clientHeight);
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		);
-		return this.getRect(el);
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1361,7 +1319,7 @@ pzprv3.createCommonClass('Menu',
 	urloutput : function(e){
 		if(this.popel){
 			var _doc = document;
-			switch(this.getSrcElement(e).name){
+			switch((e.target||e.srcElement).name){
 				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3);  break;
 				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRAPP); break;
 				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.KANPEN);  break;
@@ -1520,6 +1478,16 @@ pzprv3.createCommonClass('Menu',
 		}
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.database_handler() データベースmanagerへ処理を渡します
+	//---------------------------------------------------------------------------
+	database_handler : function(e){
+		if(this.popel){
+			var operation = (e.target||e.srcElement).name;
+			pzprv3.dbm.clickHandler(operation, this.owner);
+		}
+	},
+
 	//------------------------------------------------------------------------------
 	// menu.dispsize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
@@ -1565,7 +1533,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(this.popel){
-			this.owner.board.execadjust(this.getSrcElement(e).name);
+			this.owner.board.execadjust((e.target||e.srcElement).name);
 		}
 	},
 

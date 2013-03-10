@@ -420,7 +420,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	create : function(){
 		if(!this.element){
-			var rect = this.owner.menu.getRect(pzprv3.getEL('divques'));
+			var rect = pzprv3.getRect(pzprv3.getEL('divques'));
 			this.element = pzprv3.getEL('keypopup');
 			this.element.style.left   = (rect.left+48)+'px';
 			this.element.style.top    = (rect.top +48)+'px';
