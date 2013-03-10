@@ -311,13 +311,8 @@ Graphic:{
 			function(){
 				var g = this.currentContext, bd = this.owner.board;
 				var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-				if(x1<=bd.minbx && y1<=bd.minby && x2>=bd.maxbx && y2>=bd.maxby){
-					this.flushCanvasAll();
-				}
-				else{
-					g.fillStyle = "rgb(255, 255, 255)";
-					g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw+1, (y2-y1)*this.bh+1);
-				}
+				g.fillStyle = "rgb(255, 255, 255)";
+				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw+1, (y2-y1)*this.bh+1);
 			}
 		:
 			function(){ this.zidx=1;}
