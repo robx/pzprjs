@@ -94,7 +94,7 @@ Encode:{
 			if     (this.checkpflag("m")){ this.owner.pid="ichimagam";}
 			else if(this.checkpflag("x")){ this.owner.pid="ichimagax";}
 			else                         { this.owner.pid="ichimaga"; }
-			this.owner.menu.displayDesign();
+			this.owner.regenerateMenu();
 		}
 	},
 	pzlexport : function(type){
@@ -109,7 +109,7 @@ FileIO:{
 			if     (pzlflag=="mag")  { this.owner.pid="ichimagam";}
 			else if(pzlflag=="cross"){ this.owner.pid="ichimagax";}
 			else                     { this.owner.pid="ichimaga"; }
-			this.owner.menu.displayDesign();
+			this.owner.regenerateMenu();
 		}
 
 		this.decodeCellQnum();

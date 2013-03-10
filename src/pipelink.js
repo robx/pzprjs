@@ -261,7 +261,7 @@ Encode:{
 			for(var c=0;c<bd.cellmax;c++){
 				if(bd.cell[c].ques===6){ o.pid='pipelinkr'; break;}
 			}
-			o.menu.displayDesign();
+			o.regenerateMenu();
 		}
 	}
 },

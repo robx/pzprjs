@@ -173,7 +173,7 @@ Encode:{
 			for(var c=0;c<bd.crossmax;c++){
 				if(bd.cross[c].qnum===1){ o.pid='kramman'; break;}
 			}
-			o.menu.displayDesign();
+			o.regenerateMenu();
 		}
 	}
 },

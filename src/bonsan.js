@@ -135,7 +135,7 @@ Encode:{
 			for(var id=0;id<bd.bdmax;id++){
 				if(bd.border[id].ques===1){ o.pid='heyabon'; break;}
 			}
-			o.menu.displayDesign();
+			o.regenerateMenu();
 		}
 	}
 },

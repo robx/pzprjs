@@ -185,7 +185,11 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
-	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);}
+	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
+	
+	regenerateMenu : function(){
+		this.menu.displayDesign();
+	}
 });
 
 //--------------------------------------------------------------------------------------------------------------
