@@ -382,6 +382,10 @@ pzprv3.createCommonClass('Menu',
 		if(this.owner.config.flag_redblkrb){
 			this.addRedBlockRBToFlags();
 		}
+		if(this.owner.config.flag_bgcolor){
+			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
+			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		}
 
 		this.menufix(pp);		// 各パズルごとのメニュー追加
 
@@ -753,6 +757,12 @@ pzprv3.createCommonClass('Menu',
 			// 色分けのやつを一番下に持ってくる
 			var el = getEL('checkpanel').removeChild(getEL('div_irowake'));
 			getEL('checkpanel').appendChild(el);
+		}
+
+		// 背景色のクリック入力用の処理
+		if(this.owner.config.flag_bgcolor && this.owner.editmode){
+			pzprv3.getEL('ck_bgcolor').disabled    = "true";
+			pzprv3.getEL('cl_bgcolor').style.color = "silver";
 		}
 
 		// 管理領域の表示/非表示設定
@@ -1187,10 +1197,15 @@ pzprv3.createCommonClass('Menu',
 		o.key.keyreset();
 		o.board.errclear();
 		o.cursor.adjust_modechange();
-		if(o.key.haspanel[1] || o.key.haspanel[3]){ this.funcs.keypopup.call(this);}
 
 		o.board.haserror=true;
 		o.painter.paintAll();
+
+		if(o.key.haspanel[1] || o.key.haspanel[3]){ this.funcs.keypopup.call(this);}
+		if(o.config.flag_bgcolor){
+			pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
+			pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");
+		}
 	},
 
 	//------------------------------------------------------------------------------

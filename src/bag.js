@@ -84,26 +84,8 @@ LineManager:{
 	borderAsLine : true
 },
 
-Menu:{
-	menufix : function(pp){
-		pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
-		pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
-	},
-
-	menuinit : function(pp){
-		this.SuperFunc.menuinit.call(this,pp);
-		if(this.owner.editmode){
-			pzprv3.getEL('ck_bgcolor').disabled    = "true";
-			pzprv3.getEL('cl_bgcolor').style.color = "silver";
-		}
-	},
-
-	modechange : function(num){
-		this.SuperFunc.modechange.call(this,num);
-
-		pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
-		pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");
-	}
+Properties:{
+	flag_bgcolor : true
 },
 
 //---------------------------------------------------------

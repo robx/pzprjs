@@ -218,6 +218,7 @@ pzprv3.createCommonClass('Properties',
 	flag_redline  : false,
 	flag_redblk   : false,
 	flag_redblkrb : false,
+	flag_bgcolor  : false,
 	flag_irowake : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 	disable_subclear : false, // "補助消去"ボタンを作らない
