@@ -77,6 +77,7 @@ pzprv3.createCommonClass('Menu',
 
 		this.menuarea();
 		this.managearea();
+		this.buttonarea();
 		this.poparea();
 
 		this.displayAll();
@@ -786,7 +787,23 @@ pzprv3.createCommonClass('Menu',
 			getEL('separator2').style.display = 'none';
 		}
 		if(!!getEL('ck_keypopup')){ this.funcs.keypopup.call(this);}
+	},
 
+	checkclick : function(e){
+		var el = (e.target||e.srcElement);
+		var idname = el.id.substr(3);
+		this.owner.setConfig(idname, !!el.checked);
+	},
+	selectclick : function(e){
+		var list = (e.target||e.srcElement).id.split('_');
+		this.owner.setConfig(list[1], list[2]);
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.buttonarea()   盤面下のボタンエリアの初期化を行う
+	// menu.toggledisp()   アイスと○などの表示切り替え時の処理を行う
+	//---------------------------------------------------------------------------
+	buttonarea : function(){
 		// (Canvas下) ボタンの初期設定
 		var btncheck = this.el_button.cloneNode(false); btncheck.id = "btncheck";
 		var btnundo = this.el_button.cloneNode(false);  btnundo.id = "btnundo";
@@ -822,16 +839,21 @@ pzprv3.createCommonClass('Menu',
 			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
-	},
 
-	checkclick : function(e){
-		var el = (e.target||e.srcElement);
-		var idname = el.id.substr(3);
-		this.owner.setConfig(idname, !!el.checked);
+		if(this.owner.pid==='pipelinkr'){
+			var el = this.el_button.cloneNode(false); el.id = 'btncircle';
+			getEL('btnarea').appendChild(el);
+			this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
+		}
+
+		if(this.owner.pid==='tentaisho'){
+			var el = this.el_button.cloneNode(false); el.id = 'btncolor';
+			getEL('btnarea').appendChild(el);
+			this.addButtons(el, function(){ self.owner.board.encolorall();}, "色をつける","Color up");
+		}
 	},
-	selectclick : function(e){
-		var list = (e.target||e.srcElement).id.split('_');
-		this.owner.setConfig(list[1], list[2]);
+	toggledisp : function(){
+		this.owner.setConfig('disptype', (this.owner.getConfig('disptype')==1?2:1));
 	},
 
 //--------------------------------------------------------------------------------------------------------------
