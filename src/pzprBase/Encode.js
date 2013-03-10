@@ -55,7 +55,6 @@ pzprv3.createCommonClass('Encode',
 		}
 
 		o.board.resetInfo();
-		o.painter.resize_canvas();
 	},
 	pzloutput : function(type){
 		if(type===k.KANPEN && this.owner.pid=='lits'){ type = k.KANPENP;}

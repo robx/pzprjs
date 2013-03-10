@@ -67,7 +67,6 @@ pzprv3.createCommonClass('FileIO',
 		o.undo.decodeLines();
 
 		o.board.resetInfo();
-		o.painter.resize_canvas();
 
 		this.dataarray = null;
 

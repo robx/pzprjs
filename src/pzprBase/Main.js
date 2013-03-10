@@ -62,8 +62,8 @@ pzprv3.createCoreClass('Owner',
 		// 何もないとき
 		else{
 			this.board.initBoardSize();
-			this.painter.resize_canvas();
 		}
+		this.painter.resize_canvas();
 		this.painter.unsuspend();
 
 		this.ready = true;
