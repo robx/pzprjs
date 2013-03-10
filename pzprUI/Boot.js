@@ -31,7 +31,7 @@ function onload_func(){
 		onload_pzl = (importFileData() || importURL());
 		
 		/* 指定されたパズルがない場合はさようなら～ */
-		if(!onload_pzl.id){
+		if(!onload_pzl || !onload_pzl.id){
 			location.href = "./";
 			return;
 		}
