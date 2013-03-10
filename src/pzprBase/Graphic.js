@@ -282,9 +282,8 @@ pzprv3.createCommonClass('Graphic',
 	},
 	unsuspend : function(){
 		if(this.suspendedAll){
-			// 再描画
-			this.flushCanvasAll();
-			this.paintAll();
+			var bd = this.owner.board;
+			this.setRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 			this.suspendedAll = false;
 		}
 		this.suspended = false;
@@ -326,17 +325,16 @@ pzprv3.createCommonClass('Graphic',
 		else{
 			var g2 = this.subContext;
 			this.currentContext = g2;
-			// this.flushCanvasAll();
 			this.flushCanvas();
 			this.paint();
 			this.currentContext = g;
 
-			var dx1 = x1*this.bw-1, dy1 = y1*this.bh-1, dx2 = x2*this.bw+2, dy2 = y2*this.bh+2;
-			// source側はtaranslateのぶん足されていないので、手動で足します
-			var sx1 = this.x0+dx1, sy1 = this.y0+dy1, sx2 = this.x0+dx2, sy2 = this.y0+dy2;
-			if(sx1<0){ sx1=0; dx1=sx1-this.x0;} if(sx2>g2.child.width) { sx2=g2.child.width;  dx2=sx2-this.x0;}
-			if(sy1<0){ sy1=0; dy1=sy1-this.y0;} if(sy2>g2.child.height){ sy2=g2.child.height; dy2=sy2-this.y0;}
-			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), dx1, dy1, (dx2-dx1), (dy2-dy1));
+			// source側はtaranslateのぶん足されていないので、加算しておきます
+			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1;
+			var sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
+			if(sx1<0){ sx1=0;} if(sx2>g2.child.width) { sx2=g2.child.width;}
+			if(sy1<0){ sy1=0;} if(sy2>g2.child.height){ sy2=g2.child.height;}
+			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 		}
 
 		this.resetRange();
@@ -1728,11 +1726,9 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.resetVectorFunctions() flushCanvas, vnop系関数をリセットする
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
-	// pc.flushCanvasAll() Canvas全面を白で塗りつぶす
 	//---------------------------------------------------------------------------
 	resetVectorFunctions : function(){
 		var proto = this.owner.classes.Graphic.prototype;
-		this.flushCanvasAll = proto.flushCanvasAll;
 		this.flushCanvas    = proto.flushCanvas;
 		this.vnop  = proto.vnop;
 		this.vhide = proto.vhide;
@@ -1740,36 +1736,6 @@ pzprv3.createCommonClass('Graphic',
 		this.vinc  = proto.vinc;
 	},
 
-	flushCanvasAll : function(){
-		this.flushCanvasAll = ((this.use.canvas) ?
-			function(){
-				this.currentContext.clear();
-				this.numobj = {};
-				pzprv3.getEL('numobj_parent').innerHTML = '';
-
-				var g = this.currentContext;
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(0, 0, this.owner.board.qcols*this.cw, this.owner.board.qrows*this.ch);
-			}
-		:
-			function(){
-				var g = this.currentContext
-				g.clear();
-				this.zidx=0;
-				this.zidx_array=[];
-
-				this.numobj = {};
-				pzprv3.getEL('numobj_parent').innerHTML = '';
-
-				var g = this.vinc('board_base', 'crispEdges');
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				if(this.vnop("boardfull",this.NONE)){
-					g.fillRect(0, 0, this.owner.board.qcols*this.cw, this.owner.board.qrows*this.ch);
-				}
-			}
-		);
-		this.flushCanvasAll();
-	},
 	flushCanvas : function(){
 		var g = this.currentContext
 		this.flushCanvas = ((this.use.canvas) ?
@@ -1777,9 +1743,11 @@ pzprv3.createCommonClass('Graphic',
 				var d = this.range;
 				var g = this.currentContext;
 				var px=d.x1*this.bw, py=d.y1*this.bh, pw=(d.x2-d.x1)*this.bw+1, ph=(d.y2-d.y1)*this.bh+1;
-				var pxmax=this.owner.board.qcols*this.cw, pymax=this.owner.board.qrows*this.ch;
-				px=(px>=0?px:0); py=(py>=0?py:0); pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
+				var pxmin=-this.x0, pymin=-this.y0, pxmax=g.canvas.clientWidth, pymax=g.canvas.clientHeight;
+				px=(px>=pxmin?px:pxmin); py=(py>=pymin?py:pymin);
+				pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillRect(pxmin, pymin, pxmax, pymax);
 				g.fillRect(px, py, pw, ph);
 			}
 		:
