@@ -104,9 +104,11 @@ Cell:{
 	}
 },
 
-Menu:{
-	disable_subclear : true,
+Properties:{
+	disable_subclear : true
+},
 
+Menu:{
 	menufix : function(pp){
 		if(pzprv3.EDITOR){
 			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');

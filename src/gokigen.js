@@ -227,18 +227,15 @@ Board:{
 
 Properties:{
 	flag_use     : true,
-	flag_redline : true
-},
-"Properties@wagiri":{
-	flag_use : true
-},
-
-Menu:{
+	flag_redline : true,
 	disable_subclear : true
 },
-"Menu@wagiri":{
-	disable_subclear : true,
+"Properties@wagiri":{
+	flag_use     : true,
+	disable_subclear : true
+},
 
+"Menu@wagiri":{
 	menufix : function(pp){
 		pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
 		pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');

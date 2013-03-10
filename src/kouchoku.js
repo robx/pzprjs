@@ -323,9 +323,11 @@ OperationManager:{
 	}
 },
 
-Menu:{
-	disable_subclear : true,
+Properties:{
+	disable_subclear : true
+},
 
+Menu:{
 	menufix : function(pp){
 		pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
 		pp.setLabel('circolor', '線が2本になったら点をグレーにする', 'Grey if the number of linked segment is two.');

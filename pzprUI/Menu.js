@@ -40,7 +40,6 @@ pzprv3.createCommonClass('Menu',
 
 	language : 'ja',
 
-	disable_subclear : false, // "補助消去"ボタンを作らない
 	enableSaveImage  : false, // 画像保存が有効か
 
 	fileio : (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
@@ -320,7 +319,7 @@ pzprv3.createCommonClass('Menu',
 		aa('cap_board','board', '盤面','Display mode');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
-		if(!this.disable_subclear){
+		if(!this.owner.config.disable_subclear){
 			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 		}
 
@@ -786,7 +785,7 @@ pzprv3.createCommonClass('Menu',
 		getEL('btnundo').disabled = true;
 		getEL('btnredo').disabled = true;
 
-		if(!this.disable_subclear){
+		if(!this.owner.config.disable_subclear){
 			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
