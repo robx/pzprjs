@@ -557,6 +557,12 @@ pzprv3.createCommonClass('Menu',
 		getEL('ms_jumpv3')  .style.fontSize = '0.9em'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
+
+		if(this.enableSaveImage && !!this.owner.classes.ImageTile){
+			if(pzprv3.browser.Gecko && !location.hostname){
+				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------

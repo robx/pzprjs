@@ -1,7 +1,9 @@
 //
 // パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.0
 //
-(function(){ var custombase = {
+(function(){
+
+pzprv3.createCustoms('kramma', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -81,17 +83,6 @@ Board:{
 
 AreaRoomManager:{
 	enabled : true
-},
-
-"Menu@shwolf":{
-	menuinit : function(pp){
-		this.SuperFunc.menuinit.call(this,pp);
-		if(this.enableSaveImage){
-			if(pzprv3.browser.Gecko && !location.hostname){
-				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
-			}
-		}
-	}
 },
 
 //---------------------------------------------------------
@@ -324,11 +315,9 @@ AnsCheck:{
 			}
 		}
 	}
-}
-};
+},
 
-pzprv3.createCommonClass('ImageTile',
-{
+ImageTile:{
 	initialize : function(src,col,row){
 		this.image = new Image();
 		this.image.src = src;
@@ -365,8 +354,7 @@ pzprv3.createCommonClass('ImageTile',
 		}
 		return false;
 	}
+}
 });
-
-pzprv3.createCustoms('kramma', custombase);
 
 })();
