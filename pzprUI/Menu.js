@@ -407,8 +407,12 @@ pzprv3.createCommonClass('Menu',
 	menuconfig : function(pp){
 		var pid = this.owner.pid;
 
+		/* 操作方法の設定値 */
 		if(this.owner.config.flag_use){
-			this.addUseToFlags();
+			pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
+			pp.setLabel('use', '操作方法', 'Input Type');
+			pp.addChild('use_1','use','左右ボタン','LR Button');
+			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
 		if(pid==='shakashaka'){
 			pp.addSelect('use_tri','setting',(!pzprv3.env.touchevent?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
@@ -418,33 +422,43 @@ pzprv3.createCommonClass('Menu',
 			pp.addChild('use_tri_3', 'use', '1ボタン', 'One Button');
 		}
 
-		if(this.owner.config.flag_redline || this.owner.config.flag_redblk || this.owner.config.flag_redblkrb || pid==='roma'){
-			this.addDispRedToFlags();
+		/* 盤面チェックの設定値 */
+		if(this.owner.config.flag_redline){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
+		}
+		else if(this.owner.config.flag_redblk){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+		}
+		else if(this.owner.config.flag_redblkrb){
+			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
+			pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+		}
+		else if(this.owner.pid==='roma'){
+			pp.addCheck('dispred','setting',false,'通り道のチェック', 'Check Road');
+			pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 		}
 
+		/* 背景色入力の設定値 */
 		if(this.owner.config.flag_bgcolor){
 			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
 			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
 
-		if(pid==='hashikake'||pid==='kurotto'||pid==='kouchoku'){
-			if(pid==='hashikake'||pid==='kurotto'){
-				pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
-				pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
-			}
-			else if(pid==='kouchoku'){
-				pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
-				pp.setLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
-			}
+		/* 文字別正解表示の設定値 */
+		if(pid==='hashikake'||pid==='kurotto'){
+			pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+			pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
+		else if(pid==='kouchoku'){
+			pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
+			pp.setLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+		}
+
 		if(pid==='hitori'){
 			pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
 			pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
-		}
-
-		if(pid==='fillomino'){
-			pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
-			pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
 		}
 
 		if(pid==='wagiri'){
@@ -452,6 +466,13 @@ pzprv3.createCommonClass('Menu',
 			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
 		}
 
+		/* 正当判定方法の設定値 */
+		if(pid==='fillomino'){
+			pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
+			pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
+		}
+
+		/* 線の引き方の設定値 */
 		if(pid==='kouchoku'){
 			pp.addCheck('enline','setting',true,'線は点の間','Line between points');
 			pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
@@ -460,11 +481,13 @@ pzprv3.createCommonClass('Menu',
 			pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
 		}
 
+		/* 問題形式の設定値 */
 		if(pid==='mashu'){
 			pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
 			pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		}
 
+		/* 盤面表示形式の設定値 */
 		if(pid==='pipelinkr'){
 			pp.addSelect('disptype_pipelinkr','setting',1,[1,2],'表示形式','Display');
 			pp.addChild('disptype_pipelinkr_1', 'disptype', '○', 'Circle');
@@ -484,6 +507,7 @@ pzprv3.createCommonClass('Menu',
 			pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
 		}
 
+		/* EDITOR時の設定値 */
 		if(pzprv3.EDITOR && pid==='goishi'){
 			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
 			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
@@ -493,6 +517,7 @@ pzprv3.createCommonClass('Menu',
 			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
 
+		/* 共通設定値 */
 		pp.addCheck('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
 
 		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
@@ -506,37 +531,6 @@ pzprv3.createCommonClass('Menu',
 		pp.addSelect('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.addUseToFlags()       「操作方法」サブメニュー登録用共通関数
-	// menu.addDispRedToFlags()   「つながりをチェック」系サブメニュー登録用共通関数
-	//---------------------------------------------------------------------------
-	addUseToFlags : function(){
-		var pp = this.items;
-		pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
-		pp.setLabel('use', '操作方法', 'Input Type');
-		pp.addChild('use_1','use','左右ボタン','LR Button');
-		pp.addChild('use_2','use','1ボタン',   'One Button');
-	},
-	addDispRedToFlags : function(){
-		var pp = this.items;
-		if(this.owner.config.flag_redline){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
-		}
-		else if(this.owner.config.flag_redblk){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-		}
-		else if(this.owner.config.flag_redblkrb){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
-		}
-		else if(this.owner.pid==='roma'){
-			pp.addCheck('dispred','setting', false, '通り道のチェック', 'Check Road');
-			pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
-		}
 	},
 
 	//---------------------------------------------------------------------------
