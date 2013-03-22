@@ -1148,15 +1148,27 @@ pzprv3.createCoreClass('Menu',
 		var sheet = document.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
+		var modified = this.modifyCSS_sub(rules, input);
+		if(!modified){
+			var sel = ''; for(sel in input){ break;}
+			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
+			else if(!!sheet.addRule){ sheet.addRule(sel, "");}
+			rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+			this.modifyCSS_sub(rules, input);
+		}
+	},
+	modifyCSS_sub : function(rules, input){
+		var modified = false;
 		for(var i=0,len=rules.length;i<len;i++){
 			var rule = rules[i];
 			if(!rule.selectorText){ continue;}
-			var pps = input[rule.selectorText.toLowerCase()]
+			var pps = input[rule.selectorText];
 			if(!!pps){
-				var pps = input[rule.selectorText.toLowerCase()];
 				for(var p in pps){ rule.style[p]=pps[p];}
+				modified = true;
 			}
 		}
+		return modified;
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1254,8 +1266,7 @@ pzprv3.createCoreClass('Menu',
 		},
 
 		newboard : function(){
-			this.popel = getEL("pop1_1");
-			this.newboard_createpop();
+			this.popel = this.newboard_createpop();
 			this.targetpuzzle.key.enableKey = false;
 		},
 		dispsize : function(){
@@ -1303,67 +1314,38 @@ pzprv3.createCoreClass('Menu',
 	//---------------------------------------------------------------------------
 	newboard_createpop : function(){
 		var puzzle = this.targetpuzzle, bd = puzzle.board, pid = puzzle.pid;
-		var _doc = document, pop = _doc.getElementById("pop1_1");
+		var pop = new pzprv3.core.PopupMenu(getEL("pop1_1"), 'newboard');
+		pop.settitle("盤面の新規作成", "Createing New Board");
 		
-		pop.innerHTML = '';
-		
-		/* Titlebar */
-		var bar = _doc.createElement('div');
-		bar.className = 'titlebar';
-		bar.appendChild(_doc.createTextNode(this.selectStr("盤面の新規作成", "Createing New Board")));
-		this.titlebarfunc(bar);
-		pop.appendChild(bar);
-		
-		/* Form */
-		var form = _doc.createElement('form');
-		form.name = 'newboard';
-		pop.appendChild(form);
-		
-		/* Caption */
-		var el = _doc.createElement('span');
-		el.appendChild(_doc.createTextNode(this.selectStr("盤面を新規作成します。", "Create New Board.")));
-		form.appendChild(el);
-		form.appendChild(_doc.createElement('br'));
+		pop.addText("盤面を新規作成します。", "Create New Board.");
+		pop.addBR();
 		
 		/* タテヨコのサイズ指定部分 */
 		var col = bd.qcols, row = bd.qrows;
 		if(pid==='tawa' && bd.lap===3){ col++;}
 		
 		if(pid!=='sudoku'){
-			el = _doc.createElement('span');
+			var attr = {name:'col', value:''+col, size:'4', maxlength:'3', min:'1', max:'999'};
 			if(pid!=='tawa'){
-				el.appendChild(_doc.createTextNode(this.selectStr("よこ", "Cols")));
+				pop.addText("よこ", "Cols");
+				pop.addInput('number', attr);
 			}
 			else{
-				el.appendChild(_doc.createTextNode(this.selectStr("横幅 (黄色の数)", "Width (Yellows)")));
+				pop.addInput('number', attr);
+				pop.addText("横幅 (黄色の数)", "Width (Yellows)");
 			}
-			form.appendChild(el);
+			pop.addBR();
 			
-			var numel = _doc.createElement('input');
-			numel.type = 'number';
-			numel.name = 'col';
-			numel.value = ''+col;
-			numel.size = '4';
-			numel.maxlength = '3';
-			numel.min = '1';
-			numel.max = '999';
-			form.appendChild(numel);
-			form.appendChild(_doc.createElement('br'));
-			
-			el = _doc.createElement('span');
+			attr.name='row'; attr.value=''+row;
 			if(pid!=='tawa'){
-				el.appendChild(_doc.createTextNode(this.selectStr("たて", "Rows")));
+				pop.addText("たて", "Rows");
+				pop.addInput('number', attr);
 			}
 			else{
-				el.appendChild(_doc.createTextNode(this.selectStr("高さ", "Height")));
+				pop.addInput('number', attr);
+				pop.addText("高さ", "Height");
 			}
-			form.appendChild(el);
-			
-			numel = numel.cloneNode(numel, false);
-			numel.name = 'row';
-			numel.value = ''+row;
-			form.appendChild(numel);
-			form.appendChild(_doc.createElement('br'));
+			pop.addBR();
 		}
 		else{
 			var sizelist = [4,9,16,25], idx=1;
@@ -1373,83 +1355,58 @@ pzprv3.createCoreClass('Menu',
 			else if(col=== 4){ idx=0;}
 			
 			for(var i=0;i<4;i++){
-				var size = sizelist[i];
-				var radio = _doc.createElement('input');
-				radio.type = 'radio';
-				radio.name = 'size';
-				radio.value = ''+size;
-				radio.checked = ((idx===i) ? 'checked' : '');
-				form.appendChild(radio);
-				
-				el = _doc.createElement('span');
-				el.appendChild(_doc.createTextNode(""+size+"x"+size));
-				form.appendChild(el);
-				form.appendChild(_doc.createElement('br'));
+				var size = sizelist[i], text = ""+size+"x"+size;
+				pop.addInput('radio', {name:'size', value:''+size, checked:((idx===i)?'checked':'')});
+				pop.addText(text, text);
+				pop.addBR();
 			}
 		}
 		
 		/* たわむレンガの形状指定ルーチン */
-		if(pid==='tawa'){ this.newboard_createpop_tawa_lap(form);}
+		if(pid==='tawa'){
+			pop.addElement(this.newboard_createpop_tawa_lap());
+		}
 		
 		/* 新規作成 or Cancel */
-		el = _doc.createElement('input');
-		el.type = 'button';
-		el.value = this.selectStr("新規作成", "Create");
-		el.onclick = function(e){ pzprv3.ui.newboard_exec(e||window.event);};
-		form.appendChild(el);
+		pop.addExecButton("新規作成", "Create", function(e){ pzprv3.ui.newboard_exec(e||window.event);});
+		pop.addCancelButton();
 		
-		el = _doc.createElement('input');
-		el.type = 'button';
-		el.value = this.selectStr("キャンセル", "Cancel");
-		el.onclick = function(e){ pzprv3.ui.popclose();};
-		form.appendChild(el);
+		return pop.getElement();
 	},
 	newboard_createpop_tawa_lap : function(form){
-		var table = _doc.createElement('table');
-		table.border = '0';
-		table.cellPadding = '0';
-		table.cellSpacing = '2';
-		table.style.marginTop = '4pt';
-		table.style.marginBottom = '4pt';
-		form.appendChild(table);
-		
-		var tbody = _doc.createElement('tbody');
-		table.appendChild(tbody);
-		
-		var trow = _doc.createElement('tr');
-		trow.style.paddingBottom = '2px';
-		tbody.appendChild(trow);
-		
-		var clicklap = function(e){
-			var idx = (e.target||e.srcElement).parentNode.id.charAt(2);
-			for(var i=0;i<=3;i++){
-				pzprv3.getEL("nb"+i).style.backgroundColor = (i==idx?'red':'');
-			}
-		};
+		var table = new pzprv3.core.TableElement();
+		table.init({id:'NB_lap', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
+		table.initRow({},{paddingBottom:'2px'});
 		
 		/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
+		this.modifyCSS({'#NB_lap div':{display:'block', position:'relative', width:'36px', height:'36px'}});
+		this.modifyCSS({'#NB_lap img':{position:'absolute', margin:'2px'}});
+		
+		var clicklap = function(e){
+			e = (e||window.event);
+			var _div = (e.target||e.srcElement).parentNode;
+			var idx = _div.id.charAt(2);
+			for(var i=0;i<=3;i++){ pzprv3.getEL("nb"+i).style.backgroundColor = '';}
+			_div.style.backgroundColor = 'red';
+		};
+		
+		var idx = [0,2,3,1][this.targetpuzzle.board.lap];
 		for(var i=0;i<=3;i++){
-			var tcell = _doc.createElement('td');
-			trow.appendChild(tcell);
-			
-			var _div = _doc.createElement('div');
-			_div.id = "nb"+i;
-			_div.style.display  = 'block';
-			_div.style.position = 'relative';
-			_div.style.width    = '36px';
-			_div.style.height   = '36px';
-			_div.style.backgroundColor = (i==[0,2,3,1][this.targetpuzzle.board.lap]?'red':'');
-			tcell.appendChild(_div);
-			
 			var _img = _doc.createElement('img');
 			_img.src = "src/img/tawa_nb.gif";
-			_img.style.position = 'absolute';
-			_img.style.margin   = '2px';
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
 			_img.onclick = clicklap;
+			
+			var _div = _doc.createElement('div');
+			_div.id = "nb"+i;
+			_div.style.backgroundColor = (i==idx?'red':'');
 			_div.appendChild(_img);
+			
+			table.addCell(_div);
 		}
+		
+		return table.getElement();
 	},
 	newboard_exec : function(e){
 		if(this.popel){
@@ -1745,6 +1702,102 @@ pzprv3.createCoreClass('Menu',
 			o.board.subclear();
 			o.painter.paintAll();
 		}
+	}
+});
+
+// PopupMenuクラス
+pzprv3.createCoreClass('PopupMenu',
+{
+	initialize :function(pop, formname){
+		this.pop = pop;
+		this.pop.innerHTML = '';
+		
+		var bar = document.createElement('div');
+		bar.className = 'titlebar';
+		pzprv3.ui.titlebarfunc(bar);
+		this.pop.appendChild(bar);
+		this.titlebar = bar;
+		
+		this.form = _doc.createElement('form');
+		this.form.name = formname;
+		this.pop.appendChild(this.form);
+	},
+
+	pop      : null,
+	titlebar : null,
+	form     : null,
+
+	settitle : function(str_jp, str_en){
+		this.titlebar.appendChild(document.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
+	},
+
+	addText : function(str_jp, str_en){
+		var el = document.createElement('span');
+		el.appendChild(document.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
+		this.form.appendChild(el);
+	},
+	addBR : function(){
+		this.form.appendChild(document.createElement('br'));
+	},
+	addInput : function(type, attr){
+		var el = document.createElement('input');
+		el.type = type;
+		for(var att in attr){ el[att]=attr[att];}
+		this.form.appendChild(el);
+	},
+	addElement : function(el){
+		this.form.appendChild(el);
+	},
+
+	addExecButton : function(str_jp, str_en, func){
+		el = document.createElement('input');
+		el.type = 'button';
+		el.value = pzprv3.ui.selectStr(str_jp, str_en);
+		el.onclick = func;
+		this.form.appendChild(el);
+	},
+	addCancelButton : function(){
+		this.addExecButton("キャンセル", "Cancel", function(){ pzprv3.ui.popclose();})
+	},
+
+	getElement : function(){
+		return this.pop;
+	}
+});
+
+
+// TableElementクラス
+pzprv3.createCoreClass('TableElement',
+{
+	table : null,
+	tbody : null,
+	trow  : null,
+
+	init : function(attr, style){
+		this.table = document.createElement('table');
+		if(!!attr) { for(var att in attr){ this.table[att]=attr[att];}}
+		if(!!style){ for(var name in style){ this.table.style[name]=style[name];}}
+		
+		this.tbody = document.createElement('tbody');
+		this.table.appendChild(this.tbody);
+	},
+	
+	initRow : function(attr, style){
+		this.trow = document.createElement('tr');
+		if(!!attr) { for(var att in attr){ this.trow[att]=attr[att];}}
+		if(!!style){ for(var name in style){ this.trow.style[name]=style[name];}}
+		
+		this.tbody.appendChild(this.trow);
+	},
+	
+	addCell : function(el){
+		var tcell = document.createElement('td');
+		tcell.appendChild(el);
+		this.trow.appendChild(tcell);
+	},
+	
+	getElement : function(){
+		return this.table;
 	}
 });
 
