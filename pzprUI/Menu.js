@@ -966,32 +966,8 @@ pzprv3.createCoreClass('Menu',
 		// 盤面の新規作成 -----------------------------------------------------
 
 		// URL入力 ------------------------------------------------------------
-		func = function(e){ self.urlinput(e||window.event);};
-		lab(getEL('bar1_2'),      "URL入力",                     "Import from URL");
-		lab(getEL('pop1_2_cap0'), "URLから問題を読み込みます。", "Import a question from URL.");
-		btn(_doc.urlinput.urlinput, func,  "読み込む",   "Import");
-		btn(_doc.urlinput.cancel,   close, "キャンセル", "Cancel");
 
 		// URL出力 ------------------------------------------------------------
-		func = function(e){ self.urloutput(e||window.event);};
-		lab(getEL('bar1_3'), "URL出力", "Export URL");
-		var btt = function(name, strJP, strEN, eval){
-			if(eval===false){ return;}
-			var el = self.el_button.cloneNode(false); el.name = name;
-			getEL('urlbuttonarea').appendChild(el);
-			getEL('urlbuttonarea').appendChild(document.createElement('br'));
-			btn(el, func, strJP, strEN);
-		};
-		var pinfo = pzprv3.PZLINFO.info[pid];
-		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
-		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", pinfo.exists.pzprapp);
-		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              pinfo.exists.kanpen);
-		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (pid==="heyawake"));
-		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
-		getEL("urlbuttonarea").appendChild(document.createElement('br'));
-		func = function(e){ self.openurl(e||window.event);};
-		btn(_doc.urloutput.openurl, func,  "このURLを開く", "Open this URL on another window/tab");
-		btn(_doc.urloutput.close,   close, "閉じる", "Close");
 
 		// ファイル入力 -------------------------------------------------------
 		func = function(e){ self.fileopen(e||window.event);};
@@ -1200,8 +1176,8 @@ pzprv3.createCoreClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ this.popel = getEL("pop1_2");},
-		urloutput : function(){ this.popel = getEL("pop1_3"); document.urloutput.ta.value = "";},
+		urlinput  : function(){ this.popel = this.urlinput_createpop();},
+		urloutput : function(){ this.popel = this.urloutput_createpop();},
 		fileopen  : function(){ this.popel = getEL("pop1_4");},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
@@ -1368,7 +1344,7 @@ pzprv3.createCoreClass('Menu',
 		}
 		
 		/* 新規作成 or Cancel */
-		pop.addExecButton("新規作成", "Create", function(e){ pzprv3.ui.newboard_exec(e||window.event);});
+		pop.addExecButton("新規作成", "Create", function(){ pzprv3.ui.newboard_exec();});
 		pop.addCancelButton();
 		
 		return pop.getElement();
@@ -1408,7 +1384,7 @@ pzprv3.createCoreClass('Menu',
 		
 		return table.getElement();
 	},
-	newboard_exec : function(e){
+	newboard_exec : function(){
 		if(this.popel){
 			var puzzle = this.targetpuzzle, pid = puzzle.pid;
 			var col, row, slap=null, url=[], NB=document.newboard;
@@ -1444,17 +1420,63 @@ pzprv3.createCoreClass('Menu',
 	},
 
 	//------------------------------------------------------------------------------
+	// menu.urlinput_createpop() URL入力のポップアップメニューを作成する
 	// menu.urlinput()   URLを入力する
-	// menu.urloutput()  URLを出力する
-	// menu.openurl()    「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
-	urlinput : function(e){
+	urlinput_createpop : function(){
+		var pop = new pzprv3.core.PopupMenu(getEL("pop1_2"), 'urlinput');
+		pop.settitle("URL入力", "Import from URL");
+		
+		pop.addText("URLから問題を読み込みます。", "Import a question from URL.");
+		pop.addBR();
+		
+		pop.addTextArea({name:"ta", cols:'48', rows:'8', wrap:'hard'});
+		pop.addBR();
+		
+		pop.addExecButton("読み込む", "Import", function(){ pzprv3.ui.urlinput();});
+		pop.addCancelButton();
+		
+		return pop.getElement();
+	},
+	urlinput : function(){
 		if(this.popel){
 			this.popclose();
 
 			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
 			if(!!pzl.id){ this.targetpuzzle.importBoardData(pzl);}
 		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menu.urloutput_createpop() URL入力のポップアップメニューを作成する
+	// menu.urloutput()  URLを出力する
+	// menu.openurl()    「このURLを開く」を実行する
+	//------------------------------------------------------------------------------
+	urloutput_createpop : function(){
+		var outputurl = function(e){ pzprv3.ui.urloutput(e||window.event);};
+		var openurl   = function(e){ pzprv3.ui.openurl();};
+		
+		var pop = new pzprv3.core.PopupMenu(getEL("pop1_3"), 'urloutput');
+		pop.settitle("URL出力", "Export URL");
+		
+		var pid = this.targetpuzzle.pid, exists = pzprv3.PZLINFO.info[pid].exists;
+			{ pop.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); pop.addBR();}
+		if(exists.pzprapp)
+			{ pop.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); pop.addBR();}
+		if(exists.kanpen)
+			{ pop.addExecButton("カンペンのURLを出力する", "Output Kanpen URL", outputurl, {name:'kanpen'}); pop.addBR();}
+		if(pid==="heyawake")
+			{ pop.addExecButton("へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", outputurl, {name:'heyaapp'}); pop.addBR();}
+			{ pop.addExecButton("ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", outputurl, {name:'pzprv3edit'}); pop.addBR();}
+		pop.addBR();
+		
+		pop.addTextArea({name:"ta", cols:'48', rows:'8', wrap:'hard', value:'', readonly:'readonly'});
+		pop.addBR();
+		
+		pop.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl);
+		pop.addCancelButton();
+		
+		return pop.getElement();
 	},
 	urloutput : function(e){
 		if(this.popel){
@@ -1745,14 +1767,20 @@ pzprv3.createCoreClass('PopupMenu',
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
 	},
+	addTextArea : function(attr){
+		var el = document.createElement('textarea');
+		for(var att in attr){ el[att]=attr[att];}
+		this.form.appendChild(el);
+	},
 	addElement : function(el){
 		this.form.appendChild(el);
 	},
 
-	addExecButton : function(str_jp, str_en, func){
+	addExecButton : function(str_jp, str_en, func, attr){
 		el = document.createElement('input');
 		el.type = 'button';
 		el.value = pzprv3.ui.selectStr(str_jp, str_en);
+		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
 		el.onclick = func;
 		this.form.appendChild(el);
 	},
