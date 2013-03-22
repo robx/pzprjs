@@ -93,16 +93,15 @@ pzprv3.createCoreClass('Owner',
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
 
-		this.menu   = this.newInstance('Menu');			// メニューを扱うオブジェクト
 		this.config = this.newInstance('Properties');	// パズルの設定値を保持するオブジェクト
 
 		// メニュー関係初期化
-		this.menu.menuinit(this.config);
+		pzprv3.ui.menuinit(this.config);
 
 		// イベントをくっつける
 		this.mouse.setEvents();
 		this.key.setEvents();
-		this.menu.setWindowEvents();
+		pzprv3.ui.setWindowEvents();
 
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
@@ -114,7 +113,7 @@ pzprv3.createCoreClass('Owner',
 	clearObjects : function(){
 		this.removeAllEvents();
 
-		this.menu.menureset();
+		pzprv3.ui.menureset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -188,7 +187,7 @@ pzprv3.createCoreClass('Owner',
 	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
 	
 	regenerateMenu : function(){
-		this.menu.displayDesign();
+		pzprv3.ui.displayDesign();
 	}
 });
 
@@ -217,18 +216,18 @@ pzprv3.createCommonClass('Properties',
 	// config.setVal()  各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getVal : function(idname){
-		var items = this.owner.menu.items;
+		var items = pzprv3.ui.items;
 		return items.flags[idname]?items.flags[idname].val:null;
 	},
 	setVal : function(idname, newval, isexecfunc){
-		var items = this.owner.menu.items;
+		var items = pzprv3.ui.items;
 		if(!!items.flags[idname] && (items.flags[idname].type===items.CHECK ||
 									 items.flags[idname].type===items.SELECT))
 		{
 			items.flags[idname].val = newval;
-			this.owner.menu.setdisplay(idname);
-			if(this.owner.menu.funcs[idname] && isexecfunc!==false){
-				this.owner.menu.funcs[idname].call(this.owner.menu,newval);
+			pzprv3.ui.setdisplay(idname);
+			if(pzprv3.ui.funcs[idname] && isexecfunc!==false){
+				pzprv3.ui.funcs[idname].call(pzprv3.ui,newval);
 			}
 		}
 	}

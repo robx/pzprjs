@@ -551,7 +551,7 @@ pzprv3.createCommonClass('KeyEvent',
 			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
 
-		this.owner.menu.modifyCSS({
+		pzprv3.ui.modifyCSS({
 			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});

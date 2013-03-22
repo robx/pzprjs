@@ -9,9 +9,9 @@ var k = pzprv3.consts;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-pzprv3.createCommonClass('Menu',
+pzprv3.createCoreClass('Menu',
 {
-	initialize : function(){
+	initialize : function(targetpuzzle){
 		this.items = null;
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
@@ -24,8 +24,9 @@ pzprv3.createCommonClass('Menu',
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
-		var pid = this.owner.pid, pinfo = pzprv3.PZLINFO.info[pid];
-		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
+		this.targetpuzzle = targetpuzzle;
+
+		this.ispencilbox = false;
 
 		this.displaymanage = true;
 
@@ -51,7 +52,10 @@ pzprv3.createCommonClass('Menu',
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(pp){
-		this.items = new pzprv3.core.MenuList(this);
+		var pid = this.targetpuzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
+		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
+
+		this.items = new pzprv3.core.MenuList();
 
 		if(typeof FileReader == 'undefined'){
 			this.reader = null;
@@ -111,7 +115,7 @@ pzprv3.createCommonClass('Menu',
 			document.newboard.innerHTML = this.newboard_html_original;
 			this.newboard_html_original = '';
 		}
-		if(this.owner.pid==='tawa'){
+		if(this.targetpuzzle.pid==='tawa'){
 			document.flip.turnl.disabled = false;
 			document.flip.turnr.disabled = false;
 		}
@@ -146,10 +150,10 @@ pzprv3.createCommonClass('Menu',
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
-		this.owner.opemgr.enb_btn();
+		this.targetpuzzle.opemgr.enb_btn();
 	},
 	setdisplay : function(idname){
-		var pp = this.items;
+		var pp = this.items, puzzle = this.targetpuzzle;
 		switch(pp.type(idname)){
 		case pp.MENU:
 			var pmenu = getEL('ms_'+idname);
@@ -170,7 +174,7 @@ pzprv3.createCommonClass('Menu',
 
 		case pp.CHILD:
 			var smenu = getEL('ms_'+idname), manage = getEL('up_'+idname);
-			var issel = (this.owner.getConfig(idname) == this.owner.getConfig(pp.flags[idname].parent));
+			var issel = (puzzle.getConfig(idname) == puzzle.getConfig(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
 			if(!!smenu){ smenu.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
@@ -181,7 +185,7 @@ pzprv3.createCommonClass('Menu',
 
 		case pp.CHECK:
 			var smenu = getEL('ms_'+idname), check = getEL('ck_'+idname), label = getEL('cl_'+idname);
-			var flag = this.owner.getConfig(idname);
+			var flag = puzzle.getConfig(idname);
 			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
 			if(!!check){ check.checked   = flag;}					// 管理領域(チェックボックス)
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
@@ -196,8 +200,9 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		var imageurl = pzprv3.PZLINFO.toBGimage(this.owner.pid);
-		if(!imageurl){ imageurl="./bg/"+this.owner.pid+".gif";}
+		var pid = this.targetpuzzle.pid;
+		var imageurl = pzprv3.PZLINFO.toBGimage(pid);
+		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		document.body.style.backgroundImage = "url("+imageurl+")";
 		if(pzprv3.browser.IE6){
 			getEL('title2').style.marginTop = "24px";
@@ -213,7 +218,7 @@ pzprv3.createCommonClass('Menu',
 		getEL('title2').innerHTML = title;
 	},
 	getPuzzleName : function(){
-		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
+		var pinfo = pzprv3.PZLINFO.info[this.targetpuzzle.pid];
 		return this.selectStr(pinfo.ja, pinfo.en);
 	},
 
@@ -221,6 +226,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.setWindowEvents()  マウス入力、キー入力以外のイベントの設定を行う
 	//---------------------------------------------------------------------------
 	setWindowEvents : function(){
+		var puzzle = this.targetpuzzle;
 		// File API＋Drag&Drop APIの設定
 		if(!!this.reader){
 			var DDhandler = function(e){
@@ -228,16 +234,16 @@ pzprv3.createCommonClass('Menu',
 				e.preventDefault();
 				e.stopPropagation();
 			};
-			this.owner.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
-			this.owner.addEvent(window, 'drop', this, DDhandler, true);
+			puzzle.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
+			puzzle.addEvent(window, 'drop', this, DDhandler, true);
 		}
 
 		// onBlurにイベントを割り当てる
-		this.owner.addEvent(document, 'blur', this, this.onblur_func);
+		puzzle.addEvent(document, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
 		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
-		this.owner.addEvent(window, evname, this, this.onresize_func);
+		puzzle.addEvent(window, evname, this, this.onresize_func);
 	},
 
 	//---------------------------------------------------------------------------
@@ -247,11 +253,11 @@ pzprv3.createCommonClass('Menu',
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
 		var self = this;
-		this.resizetimer = setTimeout(function(){ self.owner.painter.forceRedraw();},250);
+		this.resizetimer = setTimeout(function(){ self.targetpuzzle.painter.forceRedraw();},250);
 	},
 	onblur_func : function(){
-		this.owner.key.keyreset();
-		this.owner.mouse.mousereset();
+		this.targetpuzzle.key.keyreset();
+		this.targetpuzzle.mouse.mousereset();
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -273,7 +279,7 @@ pzprv3.createCommonClass('Menu',
 			ap = function(){ pp.addSeparator.apply(pp,arguments);},
 			af = function(){ pp.addFlagOnly.apply(pp,arguments);},
 			sl = function(){ pp.setLabel.apply(pp,arguments);};
-		var pid = this.owner.pid;
+		var puzzle = this.targetpuzzle, pid = puzzle.pid;
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -330,7 +336,7 @@ pzprv3.createCommonClass('Menu',
 		aa('cap_board','board', '盤面','Display mode');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
-		if(!this.owner.config.disable_subclear){
+		if(!puzzle.config.disable_subclear){
 			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 		}
 
@@ -344,8 +350,8 @@ pzprv3.createCommonClass('Menu',
 		au('text','disp',(!pzprv3.OS.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!this.owner.config.flag_irowake){
-			ac('irowake','disp',(this.owner.config.flag_irowake==2?true:false),'線の色分け','Color coding');
+		if(!!puzzle.config.flag_irowake){
+			ac('irowake','disp',(puzzle.config.flag_irowake==2?true:false),'線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp',true,'カーソルの表示','Display cursor');
@@ -368,13 +374,13 @@ pzprv3.createCommonClass('Menu',
 		ai('text_1', 'text', '大きい',       'Big');
 		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
 		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
-		this.textsize(this.owner.getConfig('text'));
+		this.textsize(puzzle.getConfig('text'));
 
 		// *設定 ==============================================================
 		am('setting', "設定", "Setting");
 
 		if(pzprv3.EDITOR){
-			au('mode','setting',(this.owner.editmode?1:3),[1,3],'モード', 'mode');
+			au('mode','setting',(puzzle.editmode?1:3),[1,3],'モード', 'mode');
 			sl('mode','モード', 'mode');
 		}
 		else{
@@ -405,10 +411,10 @@ pzprv3.createCommonClass('Menu',
 		this.createAllFloat();
 	},
 	menuconfig : function(pp){
-		var pid = this.owner.pid;
+		var puzzle = this.targetpuzzle, pid = puzzle.pid;
 
 		/* 操作方法の設定値 */
-		if(this.owner.config.flag_use){
+		if(puzzle.config.flag_use){
 			pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
 			pp.setLabel('use', '操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -423,25 +429,25 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		/* 盤面チェックの設定値 */
-		if(this.owner.config.flag_redline){
+		if(puzzle.config.flag_redline){
 			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 			pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
 		}
-		else if(this.owner.config.flag_redblk){
+		else if(puzzle.config.flag_redblk){
 			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 			pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 		}
-		else if(this.owner.config.flag_redblkrb){
+		else if(puzzle.config.flag_redblkrb){
 			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
 			pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 		}
-		else if(this.owner.pid==='roma'){
+		else if(pid==='roma'){
 			pp.addCheck('dispred','setting',false,'通り道のチェック', 'Check Road');
 			pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 		}
 
 		/* 背景色入力の設定値 */
-		if(this.owner.config.flag_bgcolor){
+		if(puzzle.config.flag_bgcolor){
 			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
 			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
@@ -518,12 +524,12 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		/* 共通設定値 */
-		pp.addCheck('autocheck','setting', this.owner.playmode, '正答自動判定', 'Auto Answer Check');
+		pp.addCheck('autocheck','setting', puzzle.playmode, '正答自動判定', 'Auto Answer Check');
 
 		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
-		if(this.owner.key.haspanel[1] || this.owner.key.haspanel[3]){
+		if(puzzle.key.haspanel[1] || puzzle.key.haspanel[3]){
 			pp.addCheck('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
@@ -538,6 +544,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var pp = this.items;
+		var puzzle = this.targetpuzzle;
 
 		// ElementTemplate : メニュー領域
 		var el_menu = pzprv3.createEL('li');
@@ -591,14 +598,14 @@ pzprv3.createCommonClass('Menu',
 			smenu.id = smenuid;
 			if(pp.type(id)===pp.MENU){
 				pzprv3.getEL('menupanel').appendChild(smenu);
-				this.owner.addEvent(smenu, "mouseover", this, this.menuhover);
-				this.owner.addEvent(smenu, "mouseout",  this, this.menuout);
+				puzzle.addEvent(smenu, "mouseover", this, this.menuhover);
+				puzzle.addEvent(smenu, "mouseout",  this, this.menuout);
 				continue;
 			}
 			else if(sfunc){
-				this.owner.addEvent(smenu, "mouseover", this, this.submenuhover);
-				this.owner.addEvent(smenu, "mouseout",  this, this.submenuout);
-				if(cfunc){ this.owner.addEvent(smenu, "click", this, this.submenuclick);}
+				puzzle.addEvent(smenu, "mouseover", this, this.submenuhover);
+				puzzle.addEvent(smenu, "mouseout",  this, this.submenuout);
+				if(cfunc){ puzzle.addEvent(smenu, "click", this, this.submenuclick);}
 			}
 
 			var parentid = pp.flags[id].parent;
@@ -606,7 +613,7 @@ pzprv3.createCommonClass('Menu',
 				var panel = el_float.cloneNode(false);
 				panel.id = 'float_'+parentid;
 				pzprv3.getEL('float_parent').appendChild(panel);
-				this.owner.addEvent(panel, "mouseout", this, this.floatmenuout);
+				puzzle.addEvent(panel, "mouseout", this, this.floatmenuout);
 				this.floatpanel[parentid] = panel;
 			}
 			this.floatpanel[parentid].appendChild(smenu);
@@ -634,7 +641,7 @@ pzprv3.createCommonClass('Menu',
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 
-		if(this.enableSaveImage && !!this.owner.classes.ImageTile){
+		if(this.enableSaveImage && !!puzzle.classes.ImageTile){
 			if(pzprv3.browser.Gecko && !location.hostname){
 				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
 			}
@@ -682,10 +689,11 @@ pzprv3.createCommonClass('Menu',
 			this.floatmenuclose(0);
 
 			var idname = el.id.substr(3), pp = this.items;
+			var puzzle = this.targetpuzzle;
 			switch(pp.type(idname)){
 				case pp.SMENU: this.popopen(e, idname); break;
-				case pp.CHILD: this.owner.setConfig(pp.flags[idname].parent, this.owner.getConfig(idname)); break;
-				case pp.CHECK: this.owner.setConfig(idname, !this.owner.getConfig(idname)); break;
+				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, puzzle.getConfig(idname)); break;
+				case pp.CHECK: puzzle.setConfig(idname, !puzzle.getConfig(idname)); break;
 			}
 		}
 	},
@@ -715,7 +723,7 @@ pzprv3.createCommonClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = this.owner.mouse.pageX(e)  + 'px';
+				_float.style.left = this.targetpuzzle.mouse.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -749,14 +757,14 @@ pzprv3.createCommonClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = this.owner.mouse.pageX(e);
-		var ey = this.owner.mouse.pageY(e);
+		var ex = this.targetpuzzle.mouse.pageX(e);
+		var ey = this.targetpuzzle.mouse.pageY(e);
 		var rect = pzprv3.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = this.owner.mouse.pageX(e);
-		var ey = this.owner.mouse.pageY(e);
+		var ex = this.targetpuzzle.mouse.pageX(e);
+		var ey = this.targetpuzzle.mouse.pageY(e);
 		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
@@ -785,6 +793,7 @@ pzprv3.createCommonClass('Menu',
 
 		// usearea & checkarea
 		var pp = this.items;
+		var puzzle = this.targetpuzzle;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
@@ -802,7 +811,7 @@ pzprv3.createCommonClass('Menu',
 					var num = pp.flags[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
-					this.owner.addEvent(sel, "click", this, this.selectclick);
+					puzzle.addEvent(sel, "click", this, this.selectclick);
 					_div.appendChild(sel);
 					_div.appendChild(document.createTextNode(' '));
 				}
@@ -814,7 +823,7 @@ pzprv3.createCommonClass('Menu',
 			case pp.CHECK:
 				var box = el_checkbox.cloneNode(false);
 				box.id = 'ck_'+idname;
-				this.owner.addEvent(box, "click", this, this.checkclick);
+				puzzle.addEvent(box, "click", this, this.checkclick);
 				_div.appendChild(box);
 				_div.appendChild(document.createTextNode(" "));
 				var span = el_span.cloneNode(false);
@@ -828,11 +837,11 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(this.owner.config.flag_irowake){
+		if(puzzle.config.flag_irowake){
 			// 横にくっつけたいボタンを追加
-			var el = this.el_button.cloneNode(false), self = this;
+			var el = this.el_button.cloneNode(false);
 			el.id = "ck_btn_irowake";
-			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ puzzle.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			var node = getEL('cl_irowake');
 			node.parentNode.insertBefore(el, node.nextSibling);
 
@@ -842,7 +851,7 @@ pzprv3.createCommonClass('Menu',
 		}
 
 		// 背景色のクリック入力用の処理
-		if(this.owner.config.flag_bgcolor && this.owner.editmode){
+		if(puzzle.config.flag_bgcolor && puzzle.editmode){
 			pzprv3.getEL('ck_bgcolor').disabled    = "true";
 			pzprv3.getEL('cl_bgcolor').style.color = "silver";
 		}
@@ -858,11 +867,11 @@ pzprv3.createCommonClass('Menu',
 	checkclick : function(e){
 		var el = (e.target||e.srcElement);
 		var idname = el.id.substr(3);
-		this.owner.setConfig(idname, !!el.checked);
+		this.targetpuzzle.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = (e.target||e.srcElement).id.split('_');
-		this.owner.setConfig(list[1], list[2]);
+		this.targetpuzzle.setConfig(list[1], list[2]);
 	},
 
 	//---------------------------------------------------------------------------
@@ -883,43 +892,44 @@ pzprv3.createCommonClass('Menu',
 		getEL('btnarea').appendChild(document.createTextNode(' '));
 		getEL('btnarea').appendChild(btnclear);
 
-		var self = this;
-		this.addButtons(btncheck, function(){ self.owner.checker.check();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ self.owner.opemgr.undo(1);}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ self.owner.opemgr.redo(1);}, "進", "->");
+		var puzzle = this.targetpuzzle, self = this;
+		this.addButtons(btncheck, function(){ puzzle.checker.check();}, "チェック", "Check");
+		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1);}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1);}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
 		getEL('btnundo').disabled = true;
 		getEL('btnredo').disabled = true;
 
-		if(!this.owner.config.disable_subclear){
+		if(!puzzle.config.disable_subclear){
 			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(!!this.owner.config.flag_irowake){
+		if(!!puzzle.config.flag_irowake){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ self.owner.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ puzzle.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 
-		if(this.owner.pid==='pipelinkr'){
+		if(puzzle.pid==='pipelinkr'){
 			var el = this.el_button.cloneNode(false); el.id = 'btncircle';
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
 		}
 
-		if(this.owner.pid==='tentaisho'){
+		if(puzzle.pid==='tentaisho'){
 			var el = this.el_button.cloneNode(false); el.id = 'btncolor';
 			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ self.owner.board.encolorall();}, "色をつける","Color up");
+			this.addButtons(el, function(){ puzzle.board.encolorall();}, "色をつける","Color up");
 		}
 	},
 	toggledisp : function(){
-		this.owner.setConfig('disptype', (this.owner.getConfig('disptype')==1?2:1));
+		var puzzle = this.targetpuzzle;
+		puzzle.setConfig('disptype', (puzzle.getConfig('disptype')==1?2:1));
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -929,6 +939,7 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	poparea : function(){
 		var _doc = document, self=this;
+		var puzzle = this.targetpuzzle, pid = puzzle.pid;
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
@@ -946,8 +957,8 @@ pzprv3.createCommonClass('Menu',
 		}
 		this.titlebarfunc(getEL('credit3_1'));
 
-		this.owner.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		this.owner.addMouseUpEvent  (_doc, this, this.titlebarup);
+		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
 
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
@@ -962,11 +973,11 @@ pzprv3.createCommonClass('Menu',
 		func = function(e){ self.newboard_exec(e||window.event);};
 		lab(getEL('bar1_1'),      "盤面の新規作成",         "Createing New Board");
 		lab(getEL('pop1_1_cap0'), "盤面を新規作成します。", "Create New Board.");
-		if(this.owner.pid!=='sudoku' && this.owner.pid!=='tawa'){
+		if(pid!=='sudoku' && pid!=='tawa'){
 			lab(getEL('pop1_1_cap1'), "よこ",                   "Cols");
 			lab(getEL('pop1_1_cap2'), "たて",                   "Rows");
 		}
-		else if(this.owner.pid==='tawa'){
+		else if(puzzle.pid==='tawa'){
 			lab(pzprv3.getEL('pop1_1_cap1x'), "横幅 (黄色の数)", "Width (Yellows)");
 			lab(pzprv3.getEL('pop1_1_cap2x'), "高さ",            "Height");
 		}
@@ -990,11 +1001,11 @@ pzprv3.createCommonClass('Menu',
 			getEL('urlbuttonarea').appendChild(document.createElement('br'));
 			btn(el, func, strJP, strEN);
 		};
-		var pinfo = pzprv3.PZLINFO.info[this.owner.pid];
+		var pinfo = pzprv3.PZLINFO.info[pid];
 		btt('pzprv3',     "ぱずぷれv3のURLを出力する",           "Output PUZ-PRE v3 URL",          true);
 		btt('pzprapplet', "ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", pinfo.exists.pzprapp);
 		btt('kanpen',     "カンペンのURLを出力する",             "Output Kanpen URL",              pinfo.exists.kanpen);
-		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (this.owner.pid==="heyawake"));
+		btt('heyaapp',    "へやわけアプレットのURLを出力する",   "Output Heyawake-Applet URL",     (pid==="heyawake"));
 		btt('pzprv3edit', "ぱずぷれv3の再編集用URLを出力する",   "Output PUZ-PRE v3 Re-Edit URL",  true);
 		getEL("urlbuttonarea").appendChild(document.createElement('br'));
 		func = function(e){ self.openurl(e||window.event);};
@@ -1047,9 +1058,9 @@ pzprv3.createCommonClass('Menu',
 		btn(_doc.flip.flipy,  func,  "上下反転",   "Flip upside down");
 		btn(_doc.flip.flipx,  func,  "左右反転",   "Flip leftside right");
 		btn(_doc.flip.close,  close, "閉じる",     "Close");
-		if(this.owner.pid==='tawa'){
-			document.flip.turnl.disabled = true;
-			document.flip.turnr.disabled = true;
+		if(pid==='tawa'){
+			_doc.flip.turnl.disabled = true;
+			_doc.flip.turnr.disabled = true;
 		}
 
 		// credit -------------------------------------------------------------
@@ -1077,7 +1088,8 @@ pzprv3.createCommonClass('Menu',
 	//---------------------------------------------------------------------------
 	newboard_html_original : '',
 	poparea_newboard : function(){
-		if(this.owner.pid==='sudoku'){
+		var puzzle = this.targetpuzzle, pid = puzzle.pid;
+		if(pid==='sudoku'){
 			this.newboard_html_original = document.newboard.innerHTML;
 			document.newboard.innerHTML =
 				["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
@@ -1088,7 +1100,7 @@ pzprv3.createCommonClass('Menu',
 				 "<input type=\"button\" name=\"newboard\" value=\"新規作成\" /><input type=\"button\" name=\"cancel\" value=\"キャンセル\" />\n"
 				].join('');
 		}
-		else if(this.owner.pid==='tawa'){
+		else if(pid==='tawa'){
 			this.newboard_html_original = document.newboard.innerHTML;
 			document.newboard.innerHTML =
 				["<span id=\"pop1_1_cap0\">盤面を新規作成します。</span><br>\n",
@@ -1109,7 +1121,7 @@ pzprv3.createCommonClass('Menu',
 				var _img = pzprv3.getEL('nb'+i);
 				_img.style.left = "-"+(i*32)+"px";
 				_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-				this.owner.addEvent(_img, "click", this, this.clicklap);
+				puzzle.addEvent(_img, "click", this, this.clicklap);
 				_img.parentNode.style.display = 'block';
 			}
 		}
@@ -1142,8 +1154,8 @@ pzprv3.createCommonClass('Menu',
 		// ポップアップメニューを表示する
 		if(this.popel){
 			var _popel = this.popel;
-			_popel.style.left = this.owner.mouse.pageX(e) - 8 + 'px';
-			_popel.style.top  = this.owner.mouse.pageY(e) - 8 + 'px';
+			_popel.style.left = this.targetpuzzle.mouse.pageX(e) - 8 + 'px';
+			_popel.style.top  = this.targetpuzzle.mouse.pageY(e) - 8 + 'px';
 			_popel.style.display = 'inline';
 		}
 	},
@@ -1156,8 +1168,8 @@ pzprv3.createCommonClass('Menu',
 			this.popel.style.display = "none";
 			this.popel = null;
 			this.movingpop = null;
-			this.owner.key.enableKey = true;
-			this.owner.mouse.enableMouse = true;
+			this.targetpuzzle.key.enableKey = true;
+			this.targetpuzzle.mouse.enableMouse = true;
 		}
 	},
 
@@ -1168,29 +1180,30 @@ pzprv3.createCommonClass('Menu',
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebarfunc : function(bar){
-		this.owner.addMouseDownEvent(bar, this, this.titlebardown);
+		this.targetpuzzle.addMouseDownEvent(bar, this, this.titlebardown);
 		pzprv3.unselectable(bar);
 	},
 
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
+		var puzzle = this.targetpuzzle;
 		this.movingpop = popel;
-		this.offset.px = this.owner.mouse.pageX(e) - parseInt(popel.style.left);
-		this.offset.py = this.owner.mouse.pageY(e) - parseInt(popel.style.top);
-		this.owner.mouse.enableMouse = false;
+		this.offset.px = puzzle.mouse.pageX(e) - parseInt(popel.style.left);
+		this.offset.py = puzzle.mouse.pageY(e) - parseInt(popel.style.top);
+		puzzle.mouse.enableMouse = false;
 	},
 	titlebarup : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
 			this.movingpop = null;
-			this.owner.mouse.enableMouse = true;
+			this.targetpuzzle.mouse.enableMouse = true;
 		}
 	},
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			popel.style.left = this.owner.mouse.pageX(e) - this.offset.px + 'px';
-			popel.style.top  = this.owner.mouse.pageY(e) - this.offset.py + 'px';
+			popel.style.left = this.targetpuzzle.mouse.pageX(e) - this.offset.px + 'px';
+			popel.style.top  = this.targetpuzzle.mouse.pageY(e) - this.offset.py + 'px';
 			pzprv3.preventDefault(e);
 		}
 	},
@@ -1233,7 +1246,7 @@ pzprv3.createCommonClass('Menu',
 	//--------------------------------------------------------------------------------
 	checkUserLang : function(){
 		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		if(userlang.substr(0,2)!=='ja'){ this.owner.setConfig('language','en');}
+		if(userlang.substr(0,2)!=='ja'){ this.targetpuzzle.setConfig('language','en');}
 	},
 	setLang : function(ln){
 		this.language = ln;
@@ -1242,7 +1255,7 @@ pzprv3.createCommonClass('Menu',
 		this.displayAll();
 		this.dispmanstr();
 
-		this.owner.painter.forceRedraw();
+		this.targetpuzzle.painter.forceRedraw();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -1256,16 +1269,16 @@ pzprv3.createCommonClass('Menu',
 		fileopen  : function(){ this.popel = getEL("pop1_4");},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
-		filesave2 : function(){ if(!!this.owner.fio.kanpenSave){ this.filesave(k.PBOX);}},
+		filesave2 : function(){ if(!!this.targetpuzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
 		database  : function(){ this.popel = getEL("pop1_8"); pzprv3.dbm.openDialog();},
 
-		h_oldest  : function(){ this.owner.opemgr.undoall();},
-		h_undo    : function(){ this.owner.opemgr.undo(1);},
-		h_redo    : function(){ this.owner.opemgr.redo(1);},
-		h_latest  : function(){ this.owner.opemgr.redoall();},
-		check     : function(){ this.owner.checker.check();},
+		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall();},
+		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);},
+		h_redo    : function(){ this.targetpuzzle.opemgr.redo(1);},
+		h_latest  : function(){ this.targetpuzzle.opemgr.redoall();},
+		check     : function(){ this.targetpuzzle.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
 		adjust    : function(){ this.popel = getEL("pop2_1");},
@@ -1273,42 +1286,42 @@ pzprv3.createCommonClass('Menu',
 		duplicate : function(){ this.duplicate();},
 
 		credit    : function(){ this.popel = getEL("pop3_1");},
-		jumpexp   : function(){ window.open('./faq.html?'+this.owner.pid+(pzprv3.EDITOR?"_edit":""), '');},
+		jumpexp   : function(){ window.open('./faq.html?'+this.targetpuzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ this.owner.painter.paintAll();},
-		cursor    : function(){ this.owner.painter.paintAll();},
+		irowake   : function(){ this.targetpuzzle.painter.paintAll();},
+		cursor    : function(){ this.targetpuzzle.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
 		poptest   : function(){ pzprv3.debug.disppoptest();},
 
 		mode      : function(num){ this.modechange(num);},
-		text      : function(num){ this.textsize(num); this.owner.painter.forceRedraw();},
-		size      : function(num){ this.owner.painter.forceRedraw();},
-		repaint   : function(num){ this.owner.painter.forceRedraw();},
-		adjsize   : function(num){ this.owner.painter.forceRedraw();},
+		text      : function(num){ this.textsize(num); this.targetpuzzle.painter.forceRedraw();},
+		size      : function(num){ this.targetpuzzle.painter.forceRedraw();},
+		repaint   : function(num){ this.targetpuzzle.painter.forceRedraw();},
+		adjsize   : function(num){ this.targetpuzzle.painter.forceRedraw();},
 		language  : function(str){ this.setLang(str);},
 
-		circolor   : function(){ this.owner.painter.paintAll();},
-		plred      : function(){ this.owner.painter.paintAll();},
-		colorslash : function(){ this.owner.painter.paintAll();},
-		snakebd    : function(){ this.owner.painter.paintAll();},
+		circolor   : function(){ this.targetpuzzle.painter.paintAll();},
+		plred      : function(){ this.targetpuzzle.painter.paintAll();},
+		colorslash : function(){ this.targetpuzzle.painter.paintAll();},
+		snakebd    : function(){ this.targetpuzzle.painter.paintAll();},
 		uramashu   : function(){
-			var bd = this.owner.board;
+			var bd = this.targetpuzzle.board;
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if     (cell.getQnum()===1){ cell.setQnum(2);}
 				else if(cell.getQnum()===2){ cell.setQnum(1);}
 			}
-			this.owner.painter.paintAll();
+			this.targetpuzzle.painter.paintAll();
 		},
 		disptype_pipelinkr : function(num){
 			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
 			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
-			this.owner.painter.paintAll();
+			this.targetpuzzle.painter.paintAll();
 		},
 		disptype_bosanowa : function(num){
-			var pc = this.owner.painter;
+			var pc = this.targetpuzzle.painter;
 			pc.suspendAll();
 			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
@@ -1319,19 +1332,19 @@ pzprv3.createCommonClass('Menu',
 		newboard : function(){
 			this.popel = getEL("pop1_1");
 			this.newboard_open();
-			this.owner.key.enableKey = false;
+			this.targetpuzzle.key.enableKey = false;
 		},
 		dispsize : function(){
 			this.popel = getEL("pop4_1");
-			document.dispsize.cs.value = this.owner.painter.cellsize;
-			this.owner.key.enableKey = false;
+			document.dispsize.cs.value = this.targetpuzzle.painter.cellsize;
+			this.targetpuzzle.key.enableKey = false;
 		},
 		keypopup : function(){
-			var f = this.owner.key.haspanel[this.items.flags['mode'].val];
+			var f = this.targetpuzzle.key.haspanel[this.items.flags['mode'].val];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
 			getEL('cl_keypopup').style.color = (f?"black":"silver");
 
-			this.owner.key.display();
+			this.targetpuzzle.key.display();
 		}
 	},
 
@@ -1341,7 +1354,7 @@ pzprv3.createCommonClass('Menu',
 	// menu.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		var o = this.owner;
+		var o = this.targetpuzzle;
 		o.editmode = (num==1);
 		o.playmode = (num==3);
 
@@ -1364,14 +1377,15 @@ pzprv3.createCommonClass('Menu',
 	// menu.newboard_exec()  新規盤面を作成するボタンを押したときの処理を行う
 	//------------------------------------------------------------------------------
 	newboard_open : function(){
-		var bd = this.owner.board, NB=document.newboard;
+		var puzzle = this.targetpuzzle, bd = puzzle.board, pid = puzzle.pid;
+		var NB=document.newboard;
 		var col = bd.qcols, row = bd.qrows;
-		if(this.owner.pid==='tawa'){
+		if(pid==='tawa'){
 			this.selectlap([0,2,3,1][bd.lap]);
 			if(bd.lap===3){ col++;}
 		}
 		
-		if(this.owner.pid!=='sudoku'){
+		if(pid!=='sudoku'){
 			NB.col.value = col;
 			NB.row.value = row;
 		}
@@ -1386,9 +1400,10 @@ pzprv3.createCommonClass('Menu',
 	},
 	newboard_exec : function(e){
 		if(this.popel){
+			var puzzle = this.targetpuzzle, pid = puzzle.pid;
 			var col, row, slap=null, url=[], NB=document.newboard;
 			
-			if(this.owner.pid!=='sudoku'){
+			if(pid!=='sudoku'){
 				col = (parseInt(NB.col.value))|0;
 				row = (parseInt(NB.row.value))|0;
 			}
@@ -1400,7 +1415,7 @@ pzprv3.createCommonClass('Menu',
 			}
 			if(!!col && !!row){ url = [col, row];}
 			
-			if(url.length>0 && this.owner.pid==='tawa'){
+			if(url.length>0 && pid==='tawa'){
 				for(var i=0;i<=3;i++){
 					if(pzprv3.getEL("nb"+i).parentNode.style.backgroundColor==='red'){ slap=[0,3,1,2][i]; break;}
 				}
@@ -1413,7 +1428,7 @@ pzprv3.createCommonClass('Menu',
 			
 			this.popclose();
 			if(url.length>0){
-				this.owner.importBoardData({id:this.owner.pid, qdata:url.join('/')});
+				puzzle.importBoardData({id:pid, qdata:url.join('/')});
 			}
 		}
 	},
@@ -1428,18 +1443,18 @@ pzprv3.createCommonClass('Menu',
 			this.popclose();
 
 			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
-			if(!!pzl.id){ this.owner.importBoardData(pzl);}
+			if(!!pzl.id){ this.targetpuzzle.importBoardData(pzl);}
 		}
 	},
 	urloutput : function(e){
 		if(this.popel){
-			var _doc = document;
+			var _doc = document, enc = this.targetpuzzle.enc;
 			switch((e.target||e.srcElement).name){
-				case "pzprv3":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRAPP); break;
-				case "kanpen":     _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.KANPEN);  break;
-				case "pzprv3edit": _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.PZPRV3E); break;
-				case "heyaapp":    _doc.urloutput.ta.value = this.owner.enc.pzloutput(k.HEYAAPP); break;
+				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(k.PZPRV3);  break;
+				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(k.PZPRAPP); break;
+				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(k.KANPEN);  break;
+				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(k.PZPRV3E); break;
+				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(k.HEYAAPP); break;
 			}
 		}
 	},
@@ -1482,15 +1497,16 @@ pzprv3.createCommonClass('Menu',
 			fstr += (farray[i]+"/");
 		}
 
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.owner.pid);
-		this.owner.importBoardData({id:pid, fstr:fstr});
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
+		this.targetpuzzle.importBoardData({id:pid, fstr:fstr});
 
 		document.fileform.reset();
 		pzprv3.timer.reset();
 	},
 
 	filesave : function(ftype){
-		var fname = prompt("保存するファイル名を入力して下さい。", this.owner.pid+".txt");
+		var puzzle = this.targetpuzzle;
+		var fname = prompt("保存するファイル名を入力して下さい。", puzzle.pid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
@@ -1502,8 +1518,8 @@ pzprv3.createCommonClass('Menu',
 		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
 		else                                           { _doc.fileform2.platform.value = "Others";}
 
-		_doc.fileform2.ques.value   = this.owner.fio.fileencode(ftype);
-		_doc.fileform2.urlstr.value = this.owner.fio.history;
+		_doc.fileform2.ques.value   = puzzle.fio.fileencode(ftype);
+		_doc.fileform2.urlstr.value = puzzle.fio.history;
 		_doc.fileform2.operation.value = 'save';
 
 		_doc.fileform2.action = this.fileio
@@ -1514,17 +1530,18 @@ pzprv3.createCommonClass('Menu',
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var str = this.owner.fio.fileencode(k.PZPH);
-		var url = './p.html?'+this.owner.pid+(pzprv3.PLAYER?"_play":"");
+		var puzzle = this.targetpuzzle, fio = puzzle.fio;
+		var str = fio.fileencode(k.PZPH);
+		var url = './p.html?'+puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = (str+this.owner.fio.history);
+			sessionStorage['filedata'] = (str+fio.history);
 			window.open(url,'');
 			if(!!old){ sessionStorage['filedata'] = old;}
 			else     { delete sessionStorage['filedata'];}
 		}
 		else{
-			localStorage['pzprv3_filedata'] = (str+this.owner.fio.history);
+			localStorage['pzprv3_filedata'] = (str+fio.history);
 			window.open(url,'');
 		}
 	},
@@ -1535,10 +1552,10 @@ pzprv3.createCommonClass('Menu',
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var canvas_sv = this.owner.canvas;
+		var puzzle = this.targetpuzzle, canvas_sv = puzzle.canvas;
 		try{
-			this.owner.canvas = getEL('divques_sub');
-			var pc = this.owner.painter, pc2 = this.owner.newInstance('Graphic');
+			puzzle.canvas = getEL('divques_sub');
+			var pc = puzzle.painter, pc2 = puzzle.newInstance('Graphic');
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
@@ -1564,12 +1581,12 @@ pzprv3.createCommonClass('Menu',
 		catch(e){
 			this.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
-		this.owner.canvas = canvas_sv;
+		puzzle.canvas = canvas_sv;
 	},
 
 	submitimage : function(url){
 		var _doc = document;
-		_doc.fileform2.filename.value  = this.owner.pid+'.png';
+		_doc.fileform2.filename.value  = this.targetpuzzle.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 		_doc.fileform2.operation.value = 'imagesave';
 
@@ -1599,7 +1616,7 @@ pzprv3.createCommonClass('Menu',
 	database_handler : function(e){
 		if(this.popel){
 			var operation = (e.target||e.srcElement).name;
-			pzprv3.dbm.clickHandler(operation, this.owner);
+			pzprv3.dbm.clickHandler(operation, this.targetpuzzle);
 		}
 	},
 
@@ -1608,11 +1625,12 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
 		if(this.popel){
+			var pc = this.targetpuzzle.painter;
 			var csize = parseInt(document.dispsize.cs.value);
-			if(csize>0){ this.owner.painter.cellsize = (csize|0);}
+			if(csize>0){ pc.cellsize = (csize|0);}
 
 			this.popclose();
-			this.owner.painter.forceRedraw();	// Canvasを更新する
+			pc.forceRedraw();	// Canvasを更新する
 		}
 	},
 
@@ -1630,13 +1648,13 @@ pzprv3.createCommonClass('Menu',
 
 		for(var i=0;i<idlist.length;i++) { getEL(idlist[i]) .style.display = mandisp;}
 		for(var i=0;i<seplist.length;i++){ getEL(seplist[i]).style.display = mandisp;}
-		if(this.owner.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
+		if(this.targetpuzzle.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
 		getEL('menuboard').style.paddingBottom = mbpad;
 
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		this.owner.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
+		this.targetpuzzle.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ getEL('ms_manarea').innerHTML = this.selectStr("管理領域を表示","Show management area");}
@@ -1648,7 +1666,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
 		if(this.popel){
-			this.owner.board.execadjust((e.target||e.srcElement).name);
+			this.targetpuzzle.board.execadjust((e.target||e.srcElement).name);
 		}
 	},
 
@@ -1658,7 +1676,7 @@ pzprv3.createCommonClass('Menu',
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			var o = this.owner;
+			var o = this.targetpuzzle;
 			o.opemgr.newOperation(true);
 
 			o.board.ansclear();
@@ -1668,7 +1686,7 @@ pzprv3.createCommonClass('Menu',
 	},
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			var o = this.owner;
+			var o = this.targetpuzzle;
 			o.opemgr.newOperation(true);
 
 			o.board.subclear();
@@ -1680,9 +1698,7 @@ pzprv3.createCommonClass('Menu',
 // MenuListクラス
 pzprv3.createCoreClass('MenuList',
 {
-	initialize : function(menu){
-		this.menu = menu;
-
+	initialize : function(){
 		this.reset();
 	},
 
@@ -1787,8 +1803,8 @@ pzprv3.createCoreClass('MenuList',
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[this.menu.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[this.menu.language].label;},
+	getMenuStr : function(idname){ return this.flags[idname].str[pzprv3.ui.language].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[pzprv3.ui.language].label;},
 	type       : function(idname){ return this.flags[idname].type;},
 	haschild   : function(idname){
 		var flag = this.flags[idname];

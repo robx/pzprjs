@@ -35,12 +35,12 @@ pzprv3.createCommonClass('AnsCheck',
 		this.checkresult = true;
 		this.checkAns()
 		if(!this.checkresult){
-			o.menu.alertStr(this.alstr.jp, this.alstr.en);
+			pzprv3.ui.alertStr(this.alstr.jp, this.alstr.en);
 			o.board.haserror = true;
 			o.painter.paintAll();
 		}
 		else{
-			o.menu.alertStr("正解です！","Complete!");
+			pzprv3.ui.alertStr("正解です！","Complete!");
 		}
 
 		this.inCheck = false;
@@ -71,7 +71,7 @@ pzprv3.createCommonClass('AnsCheck',
 			this.checkAns();
 			if(this.checkresult && this.inCheck){
 				this.owner.mouse.mousereset();
-				this.owner.menu.alertStr("正解です！","Complete!");
+				pzprv3.ui.alertStr("正解です！","Complete!");
 				ret = true;
 				this.owner.setConfig('autocheck',false);
 			}

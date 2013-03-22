@@ -73,7 +73,7 @@ pzprv3.createCoreClass('Timer',
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return this.targetpuzzle.menu.selectStr("経過時間：","Time: ");
+		return pzprv3.ui.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------

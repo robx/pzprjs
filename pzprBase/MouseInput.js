@@ -136,7 +136,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mouseend   = (step===2);
 
 		var o = this.owner;
-		if(this.mousestart && !!o.menu.items.flags.dispred && (o.key.isZ ^ o.getConfig('dispred'))){
+		if(this.mousestart && !!pzprv3.ui.items.flags.dispred && (o.key.isZ ^ o.getConfig('dispred'))){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}

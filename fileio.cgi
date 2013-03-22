@@ -48,8 +48,8 @@ sub fileopen{
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
 var filestr = "$str";
-if(!!parent.base){
-	var errmsg = parent.menu.ex.fileonload(filestr);
+if(!!parent.pzprv3 && !!parent.pzprv3.ui){
+	var errmsg = parent.pzprv3.ui.fileonload(filestr);
 	if(!!errmsg){ alert(errmsg);}
 }
 if(!!parent.v3index){

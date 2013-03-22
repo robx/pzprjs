@@ -86,7 +86,7 @@ pzprv3.createCoreClass('DataBaseManager',
 	},
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = owner.menu.language;
+		this.lang = pzprv3.ui.language;
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -359,7 +359,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
 		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		owner.menu.fileonload(data.pdata);
+		pzprv3.ui.fileonload(data.pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){
