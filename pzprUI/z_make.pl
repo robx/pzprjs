@@ -39,7 +39,8 @@ sub output_pzprUI{
 		'Boot.js',
 		'Timer.js',
 		'DataBase.js',
-		'Menu.js'
+		'Menu.js',
+		'PopupMenu.js'
 	);
 
 	open OUT, ">pzprUI_body_Full.js";

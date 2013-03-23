@@ -17,6 +17,7 @@ pzprv3.createCoreClass('Menu',
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 		this.popel      = null;			// 現在表示しているポップアップウィンドウ(オブジェクト)
+		this.popup      = null;			// 現在表示しているポップアップオブジェクト
 
 		this.movingpop  = null;			// 移動中のポップアップメニュー
 		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
@@ -38,6 +39,8 @@ pzprv3.createCoreClass('Menu',
 		this.el_button = pzprv3.createEL('input');
 		this.el_button.type = 'button';
 	},
+
+	popups : {},
 
 	language : 'ja',
 
@@ -94,6 +97,7 @@ pzprv3.createCoreClass('Menu',
 		this.dispfloat  = [];
 		this.floatpanel = [];
 		this.popel      = null;
+		this.popup      = null;
 		this.btnstack   = [];
 		this.labelstack = [];
 		this.managestack = [];
@@ -101,11 +105,12 @@ pzprv3.createCoreClass('Menu',
 		this.popclose();
 		this.floatmenuclose(0);
 
+		for(var name in this.popups){ this.popups[name].remove();}
+		this.popups = {};
+
 		getEL('float_parent').innerHTML = '';
 
 		getEL('btnarea').innerHTML = '';
-
-		getEL('urlbuttonarea').innerHTML = '';
 
 		getEL('menupanel') .innerHTML = '';
 		getEL('usepanel')  .innerHTML = '';
@@ -956,6 +961,8 @@ pzprv3.createCoreClass('Menu',
 		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
 		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
 
+		this.popups = {};
+
 		//=====================================================================
 		//// formボタンの動作設定・その他のCaption設定
 		var btn = function(el, func, strJP, strEN){ self.addButtons(el, func, strJP, strEN);};
@@ -964,10 +971,13 @@ pzprv3.createCoreClass('Menu',
 		var func = null;
 
 		// 盤面の新規作成 -----------------------------------------------------
+		this.popups.newboard = new pzprv3.core.Popup_Newboard(puzzle);
 
 		// URL入力 ------------------------------------------------------------
+		this.popups.urlinput = new pzprv3.core.Popup_URLInput(puzzle);
 
 		// URL出力 ------------------------------------------------------------
+		this.popups.urloutput = new pzprv3.core.Popup_URLOutput(puzzle);
 
 		// ファイル入力 -------------------------------------------------------
 		func = function(e){ self.fileopen(e||window.event);};
@@ -1058,6 +1068,9 @@ pzprv3.createCoreClass('Menu',
 			_popel.style.top  = this.targetpuzzle.mouse.pageY(e) - 8 + 'px';
 			_popel.style.display = 'inline';
 		}
+		else if(this.popup){
+			this.popup.show(e);
+		}
 	},
 	popclose : function(){
 		if(this.popel){
@@ -1070,6 +1083,9 @@ pzprv3.createCoreClass('Menu',
 			this.movingpop = null;
 			this.targetpuzzle.key.enableKey = true;
 			this.targetpuzzle.mouse.enableMouse = true;
+		}
+		else if(this.popup){
+			this.popup.hide();
 		}
 	},
 
@@ -1176,8 +1192,9 @@ pzprv3.createCoreClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		urlinput  : function(){ this.popel = this.urlinput_createpop();},
-		urloutput : function(){ this.popel = this.urloutput_createpop();},
+		newboard  : function(){ this.popup = this.popups.newboard;},
+		urlinput  : function(){ this.popup = this.popups.urlinput;},
+		urloutput : function(){ this.popup = this.popups.urloutput;},
 		fileopen  : function(){ this.popel = getEL("pop1_4");},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
@@ -1241,10 +1258,6 @@ pzprv3.createCoreClass('Menu',
 			pc.unsuspend();
 		},
 
-		newboard : function(){
-			this.popel = this.newboard_createpop();
-			this.targetpuzzle.key.enableKey = false;
-		},
 		dispsize : function(){
 			this.popel = getEL("pop4_1");
 			document.dispsize.cs.value = this.targetpuzzle.painter.cellsize;
@@ -1283,228 +1296,13 @@ pzprv3.createCoreClass('Menu',
 		}
 	},
 
-	//---------------------------------------------------------------------------
-	// menu.newboard_createpop() 新規盤面作成のポップアップメニューを作成する
-	// menu.newboard_createpop_tawa_lap() たわむれんがの形状入力用部
-	// menu.newboard_exec()      新規盤面を作成するボタンを押したときの処理を行う
-	//---------------------------------------------------------------------------
-	newboard_createpop : function(){
-		var puzzle = this.targetpuzzle, bd = puzzle.board, pid = puzzle.pid;
-		var pop = new pzprv3.core.PopupMenu(getEL("pop1_1"), 'newboard');
-		pop.settitle("盤面の新規作成", "Createing New Board");
-		
-		pop.addText("盤面を新規作成します。", "Create New Board.");
-		pop.addBR();
-		
-		/* タテヨコのサイズ指定部分 */
-		var col = bd.qcols, row = bd.qrows;
-		if(pid==='tawa' && bd.lap===3){ col++;}
-		
-		if(pid!=='sudoku'){
-			var attr = {name:'col', value:''+col, size:'4', maxlength:'3', min:'1', max:'999'};
-			if(pid!=='tawa'){
-				pop.addText("よこ", "Cols");
-				pop.addInput('number', attr);
-			}
-			else{
-				pop.addInput('number', attr);
-				pop.addText("横幅 (黄色の数)", "Width (Yellows)");
-			}
-			pop.addBR();
-			
-			attr.name='row'; attr.value=''+row;
-			if(pid!=='tawa'){
-				pop.addText("たて", "Rows");
-				pop.addInput('number', attr);
-			}
-			else{
-				pop.addInput('number', attr);
-				pop.addText("高さ", "Height");
-			}
-			pop.addBR();
-		}
-		else{
-			var sizelist = [4,9,16,25], idx=1;
-			if    (col!==row){ idx=1;}
-			else if(col===16){ idx=2;}
-			else if(col===25){ idx=3;}
-			else if(col=== 4){ idx=0;}
-			
-			for(var i=0;i<4;i++){
-				var size = sizelist[i], text = ""+size+"x"+size;
-				pop.addInput('radio', {name:'size', value:''+size, checked:((idx===i)?'checked':'')});
-				pop.addText(text, text);
-				pop.addBR();
-			}
-		}
-		
-		/* たわむレンガの形状指定ルーチン */
-		if(pid==='tawa'){
-			pop.addElement(this.newboard_createpop_tawa_lap());
-		}
-		
-		/* 新規作成 or Cancel */
-		pop.addExecButton("新規作成", "Create", function(){ pzprv3.ui.newboard_exec();});
-		pop.addCancelButton();
-		
-		return pop.getElement();
-	},
-	newboard_createpop_tawa_lap : function(form){
-		var table = new pzprv3.core.TableElement();
-		table.init({id:'NB_lap', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
-		table.initRow({},{paddingBottom:'2px'});
-		
-		/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
-		this.modifyCSS({'#NB_lap div':{display:'block', position:'relative', width:'36px', height:'36px'}});
-		this.modifyCSS({'#NB_lap img':{position:'absolute', margin:'2px'}});
-		
-		var clicklap = function(e){
-			e = (e||window.event);
-			var _div = (e.target||e.srcElement).parentNode;
-			var idx = _div.id.charAt(2);
-			for(var i=0;i<=3;i++){ pzprv3.getEL("nb"+i).style.backgroundColor = '';}
-			_div.style.backgroundColor = 'red';
-		};
-		
-		var idx = [0,2,3,1][this.targetpuzzle.board.lap];
-		for(var i=0;i<=3;i++){
-			var _img = _doc.createElement('img');
-			_img.src = "src/img/tawa_nb.gif";
-			_img.style.left = "-"+(i*32)+"px";
-			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			_img.onclick = clicklap;
-			
-			var _div = _doc.createElement('div');
-			_div.id = "nb"+i;
-			_div.style.backgroundColor = (i==idx?'red':'');
-			_div.appendChild(_img);
-			
-			table.addCell(_div);
-		}
-		
-		return table.getElement();
-	},
-	newboard_exec : function(){
-		if(this.popel){
-			var puzzle = this.targetpuzzle, pid = puzzle.pid;
-			var col, row, slap=null, url=[], NB=document.newboard;
-			
-			if(pid!=='sudoku'){
-				col = (parseInt(NB.col.value))|0;
-				row = (parseInt(NB.row.value))|0;
-			}
-			else{
-				if     (NB.size[2].checked){ col=row=16;}
-				else if(NB.size[3].checked){ col=row=25;}
-				else if(NB.size[0].checked){ col=row= 4;}
-				else                       { col=row= 9;}
-			}
-			if(!!col && !!row){ url = [col, row];}
-			
-			if(url.length>0 && pid==='tawa'){
-				for(var i=0;i<=3;i++){
-					if(pzprv3.getEL("nb"+i).style.backgroundColor==='red'){ slap=[0,3,1,2][i]; break;}
-				}
-				if(!isNaN(slap) && !(col==1 && (slap==0||slap==3))){
-					if(slap===3){ col--; url=[col,row];}
-					url.push(slap);
-				}
-				else{ url=[];}
-			}
-			
-			this.popclose();
-			if(url.length>0){
-				puzzle.importBoardData({id:pid, qdata:url.join('/')});
-			}
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.urlinput_createpop() URL入力のポップアップメニューを作成する
-	// menu.urlinput()   URLを入力する
-	//------------------------------------------------------------------------------
-	urlinput_createpop : function(){
-		var pop = new pzprv3.core.PopupMenu(getEL("pop1_2"), 'urlinput');
-		pop.settitle("URL入力", "Import from URL");
-		
-		pop.addText("URLから問題を読み込みます。", "Import a question from URL.");
-		pop.addBR();
-		
-		pop.addTextArea({name:"ta", cols:'48', rows:'8', wrap:'hard'});
-		pop.addBR();
-		
-		pop.addExecButton("読み込む", "Import", function(){ pzprv3.ui.urlinput();});
-		pop.addCancelButton();
-		
-		return pop.getElement();
-	},
-	urlinput : function(){
-		if(this.popel){
-			this.popclose();
-
-			var pzl = pzprv3.parseURLType(document.urlinput.ta.value);
-			if(!!pzl.id){ this.targetpuzzle.importBoardData(pzl);}
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.urloutput_createpop() URL入力のポップアップメニューを作成する
-	// menu.urloutput()  URLを出力する
-	// menu.openurl()    「このURLを開く」を実行する
-	//------------------------------------------------------------------------------
-	urloutput_createpop : function(){
-		var outputurl = function(e){ pzprv3.ui.urloutput(e||window.event);};
-		var openurl   = function(e){ pzprv3.ui.openurl();};
-		
-		var pop = new pzprv3.core.PopupMenu(getEL("pop1_3"), 'urloutput');
-		pop.settitle("URL出力", "Export URL");
-		
-		var pid = this.targetpuzzle.pid, exists = pzprv3.PZLINFO.info[pid].exists;
-			{ pop.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); pop.addBR();}
-		if(exists.pzprapp)
-			{ pop.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); pop.addBR();}
-		if(exists.kanpen)
-			{ pop.addExecButton("カンペンのURLを出力する", "Output Kanpen URL", outputurl, {name:'kanpen'}); pop.addBR();}
-		if(pid==="heyawake")
-			{ pop.addExecButton("へやわけアプレットのURLを出力する", "Output Heyawake-Applet URL", outputurl, {name:'heyaapp'}); pop.addBR();}
-			{ pop.addExecButton("ぱずぷれv3の再編集用URLを出力する", "Output PUZ-PRE v3 Re-Edit URL", outputurl, {name:'pzprv3edit'}); pop.addBR();}
-		pop.addBR();
-		
-		pop.addTextArea({name:"ta", cols:'48', rows:'8', wrap:'hard', value:'', readonly:'readonly'});
-		pop.addBR();
-		
-		pop.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl);
-		pop.addCancelButton();
-		
-		return pop.getElement();
-	},
-	urloutput : function(e){
-		if(this.popel){
-			var _doc = document, enc = this.targetpuzzle.enc;
-			switch((e.target||e.srcElement).name){
-				case "pzprv3":     _doc.urloutput.ta.value = enc.pzloutput(k.PZPRV3);  break;
-				case "pzprapplet": _doc.urloutput.ta.value = enc.pzloutput(k.PZPRAPP); break;
-				case "kanpen":     _doc.urloutput.ta.value = enc.pzloutput(k.KANPEN);  break;
-				case "pzprv3edit": _doc.urloutput.ta.value = enc.pzloutput(k.PZPRV3E); break;
-				case "heyaapp":    _doc.urloutput.ta.value = enc.pzloutput(k.HEYAAPP); break;
-			}
-		}
-	},
-	openurl : function(e){
-		if(this.popel){
-			if(document.urloutput.ta.value!==''){
-				var win = window.open(document.urloutput.ta.value, '', '');
-			}
-		}
-	},
-
 	//------------------------------------------------------------------------------
 	// menu.fileopen()   ファイルを開く
 	// menu.fileonload() File API用ファイルを開いたイベントの処理
 	// menu.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
-		if(this.popel){ this.popclose();}
+		if(this.popel || this.popup){ this.popclose();}
 		var _doc = document, fileEL = _doc.fileform.filebox;
 
 		if(!!this.reader || this.enableGetText){
@@ -1646,7 +1444,7 @@ pzprv3.createCoreClass('Menu',
 	// menu.database_handler() データベースmanagerへ処理を渡します
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
-		if(this.popel){
+		if(this.popel || this.popup){
 			var operation = (e.target||e.srcElement).name;
 			pzprv3.dbm.clickHandler(operation, this.targetpuzzle);
 		}
@@ -1656,7 +1454,7 @@ pzprv3.createCoreClass('Menu',
 	// menu.dispsize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	dispsize : function(e){
-		if(this.popel){
+		if(this.popel || this.popup){
 			var pc = this.targetpuzzle.painter;
 			var csize = parseInt(document.dispsize.cs.value);
 			if(csize>0){ pc.cellsize = (csize|0);}
@@ -1697,7 +1495,7 @@ pzprv3.createCoreClass('Menu',
 	// menu.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に実行条件をチェック
 	//------------------------------------------------------------------------------
 	popupadjust : function(e){
-		if(this.popel){
+		if(this.popel || this.popup){
 			this.targetpuzzle.board.execadjust((e.target||e.srcElement).name);
 		}
 	},
@@ -1724,108 +1522,6 @@ pzprv3.createCoreClass('Menu',
 			o.board.subclear();
 			o.painter.paintAll();
 		}
-	}
-});
-
-// PopupMenuクラス
-pzprv3.createCoreClass('PopupMenu',
-{
-	initialize :function(pop, formname){
-		this.pop = pop;
-		this.pop.innerHTML = '';
-		
-		var bar = document.createElement('div');
-		bar.className = 'titlebar';
-		pzprv3.ui.titlebarfunc(bar);
-		this.pop.appendChild(bar);
-		this.titlebar = bar;
-		
-		this.form = _doc.createElement('form');
-		this.form.name = formname;
-		this.pop.appendChild(this.form);
-	},
-
-	pop      : null,
-	titlebar : null,
-	form     : null,
-
-	settitle : function(str_jp, str_en){
-		this.titlebar.appendChild(document.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
-	},
-
-	addText : function(str_jp, str_en){
-		var el = document.createElement('span');
-		el.appendChild(document.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
-		this.form.appendChild(el);
-	},
-	addBR : function(){
-		this.form.appendChild(document.createElement('br'));
-	},
-	addInput : function(type, attr){
-		var el = document.createElement('input');
-		el.type = type;
-		for(var att in attr){ el[att]=attr[att];}
-		this.form.appendChild(el);
-	},
-	addTextArea : function(attr){
-		var el = document.createElement('textarea');
-		for(var att in attr){ el[att]=attr[att];}
-		this.form.appendChild(el);
-	},
-	addElement : function(el){
-		this.form.appendChild(el);
-	},
-
-	addExecButton : function(str_jp, str_en, func, attr){
-		el = document.createElement('input');
-		el.type = 'button';
-		el.value = pzprv3.ui.selectStr(str_jp, str_en);
-		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
-		el.onclick = func;
-		this.form.appendChild(el);
-	},
-	addCancelButton : function(){
-		this.addExecButton("キャンセル", "Cancel", function(){ pzprv3.ui.popclose();})
-	},
-
-	getElement : function(){
-		return this.pop;
-	}
-});
-
-
-// TableElementクラス
-pzprv3.createCoreClass('TableElement',
-{
-	table : null,
-	tbody : null,
-	trow  : null,
-
-	init : function(attr, style){
-		this.table = document.createElement('table');
-		if(!!attr) { for(var att in attr){ this.table[att]=attr[att];}}
-		if(!!style){ for(var name in style){ this.table.style[name]=style[name];}}
-		
-		this.tbody = document.createElement('tbody');
-		this.table.appendChild(this.tbody);
-	},
-	
-	initRow : function(attr, style){
-		this.trow = document.createElement('tr');
-		if(!!attr) { for(var att in attr){ this.trow[att]=attr[att];}}
-		if(!!style){ for(var name in style){ this.trow.style[name]=style[name];}}
-		
-		this.tbody.appendChild(this.trow);
-	},
-	
-	addCell : function(el){
-		var tcell = document.createElement('td');
-		tcell.appendChild(el);
-		this.trow.appendChild(tcell);
-	},
-	
-	getElement : function(){
-		return this.table;
 	}
 });
 
