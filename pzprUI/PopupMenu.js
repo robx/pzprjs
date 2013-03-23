@@ -346,6 +346,144 @@ pzprv3.createCoreClass('Popup_URLOutput:PopupMenu',
 });
 
 //---------------------------------------------------------------------------
+// ★Popup_FileOpenクラス ファイル入力のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
+{
+	formname : 'fileform',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("ファイルを開く", "Open file");
+		
+		this.form.action = 'fileio.cgi';
+		this.form.method = 'post';
+		this.form.target = "fileiopanel";
+		this.form.enctype = 'multipart/form-data';
+		this.form.onsubmit = function(e){ pzprv3.preventDefault(e||window.event); return false;};
+		
+		this.addText("ファイル選択", "Choose file");
+		this.addBR();
+		
+		this.addInput('file', {name:"filebox", id:"filebox"});
+		this.addInput('hidden', {name:"pencilbox", value:"0"});
+		this.addInput('hidden', {name:"operation", value:"open"});
+		this.addBR();
+		
+		var popup = this;
+		this.form.filebox.onchange = function(e){ popup.fileopen(e||window.event);};
+		
+		this.addCancelButton();
+	},
+	
+	//------------------------------------------------------------------------------
+	// fileopen()  ファイルを開く
+	//------------------------------------------------------------------------------
+	fileopen : function(e){
+		var fileEL = this.form.filebox;
+		if(!!pzprv3.ui.reader || pzprv3.ui.enableGetText){
+			var fitem = fileEL.files[0];
+			if(!fitem){ return;}
+			
+			if(!!pzprv3.ui.reader){ pzprv3.ui.reader.readAsText(fitem);}
+			else                  { pzprv3.ui.fileonload(fitem.getAsText(''));}
+		}
+		else{
+			if(!fileEL.value){ return;}
+			this.form.action = pzprv3.ui.fileio;
+			this.form.submit();
+		}
+		this.form.reset();
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_Adjustクラス 盤面の調整のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_Adjust:PopupMenu',
+{
+	formname : 'adjust',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("盤面の調整", "Board Dimension Resizer");
+		
+		this.addText("盤面の調整を行います。", "Adjust the board.");
+		this.addBR();
+		
+		var popup = this;
+		adjust = function(e){ popup.adjust(e||window.event);};
+		
+		this.addText("拡大", "Expand");
+		this.addExecButton("上", "Top", adjust, {name:'expandup'});
+		this.addExecButton("下", "Bottom", adjust, {name:'expanddn'});
+		this.addText(" ", " ");
+		this.addExecButton("左", "Left", adjust, {name:'expandlt'});
+		this.addExecButton("右", "right", adjust, {name:'expandrt'});
+		this.addBR();
+		
+		this.addText("縮小", "Reduce");
+		this.addExecButton("上", "Top", adjust, {name:'reduceup'});
+		this.addExecButton("下", "Bottom", adjust, {name:'reducedn'});
+		this.addText(" ", " ");
+		this.addExecButton("左", "Left", adjust, {name:'reducelt'});
+		this.addExecButton("右", "right", adjust, {name:'reducert'});
+		this.addBR();
+		
+		this.addCancelButton();
+	},
+	
+	//------------------------------------------------------------------------------
+	// adjust() 盤面の調整を行う
+	//------------------------------------------------------------------------------
+	adjust : function(e){
+		this.puzzle.board.execadjust((e.target||e.srcElement).name);
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_turnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
+{
+	formname : 'turnflip',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("反転・回転", "Flip/Turn the board");
+		
+		this.addText("盤面の回転・反転を行います。","Flip/Turn the board.");
+		this.addBR();
+		
+		var popup = this;
+		adjust = function(e){ popup.adjust(e||window.event);};
+		
+		this.addExecButton("左90°回転", "Turn left by 90 degree", adjust, {name:'turnl'});
+		this.addExecButton("右90°回転", "Turn right by 90 degree", adjust, {name:'turnr'});
+		this.addBR();
+		this.addExecButton("上下反転", "Flip upside down", adjust, {name:'flipy'});
+		this.addExecButton("左右反転", "Flip leftside right", adjust, {name:'flipx'});
+		this.addBR();
+		this.addBR();
+		
+		this.addCancelButton();
+	},
+	
+	//------------------------------------------------------------------------------
+	// adjust() 盤面の調整を行う
+	//------------------------------------------------------------------------------
+	adjust : function(e){
+		this.puzzle.board.execadjust((e.target||e.srcElement).name);
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★TableElementクラス テーブル作成用のクラスです
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('TableElement',

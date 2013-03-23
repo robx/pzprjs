@@ -60,19 +60,7 @@ pzprv3.createCoreClass('Menu',
 
 		this.items = new pzprv3.core.MenuList();
 
-		if(typeof FileReader == 'undefined'){
-			this.reader = null;
-
-			if(typeof FileList != 'undefined' &&
-			   typeof File.prototype.getAsText != 'undefined')
-			{
-				this.enableGetText = true;
-			}
-		}
-		else{
-			this.reader = new FileReader();
-			this.reader.onload = function(e){ this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));};
-		}
+		this.initReader();
 
 		if(!!getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
@@ -122,6 +110,41 @@ pzprv3.createCoreClass('Menu',
 		}
 
 		this.items.reset();
+	},
+
+	//---------------------------------------------------------------------------
+	// initReader() File Reader (あれば)の初期化処理
+	// fileonload() File API用ファイルを開いたイベントの処理
+	//---------------------------------------------------------------------------
+	initReader : function(){
+		if(typeof FileReader == 'undefined'){
+			this.reader = null;
+
+			if(typeof FileList != 'undefined' &&
+			   typeof File.prototype.getAsText != 'undefined')
+			{
+				this.enableGetText = true;
+			}
+		}
+		else{
+			this.reader = new FileReader();
+			this.reader.onload = function(e){
+				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
+			};
+		}
+	},
+	fileonload : function(data){
+		var farray = data.split(/[\t\r\n\/]+/), fstr = "";
+		for(var i=0;i<farray.length;i++){
+			if(farray[i].match(/^http\:\/\//)){ break;}
+			fstr += (farray[i]+"/");
+		}
+		
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
+		this.targetpuzzle.importBoardData({id:pid, fstr:fstr});
+		
+		_doc.fileform.reset();
+		pzprv3.timer.reset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -980,11 +1003,7 @@ pzprv3.createCoreClass('Menu',
 		this.popups.urloutput = new pzprv3.core.Popup_URLOutput(puzzle);
 
 		// ファイル入力 -------------------------------------------------------
-		func = function(e){ self.fileopen(e||window.event);};
-		lab(getEL('bar1_4'),      "ファイルを開く", "Open file");
-		lab(getEL('pop1_4_cap0'), "ファイル選択",   "Choose file");
-		_doc.fileform.filebox.onchange = func;
-		btn(_doc.fileform.close,    close, "閉じる",     "Close");
+		this.popups.fileopen = new pzprv3.core.Popup_FileOpen(puzzle);
 
 		// データベースを開く -------------------------------------------------
 		func = function(e){ self.database_handler(e||window.event);};
@@ -1002,33 +1021,10 @@ pzprv3.createCoreClass('Menu',
 		btn(_doc.database.close,    close, "閉じる",             "Close");
 
 		// 盤面の調整 ---------------------------------------------------------
-		func = function(e){ self.popupadjust(e||window.event)};
-		lab(getEL('bar2_1'),      "盤面の調整",             "Board Dimension Resizer");
-		lab(getEL('pop2_1_cap0'), "盤面の調整を行います。", "Adjust the board.");
-		lab(getEL('pop2_1_cap1'), "拡大",  "Expand");
-		btn(_doc.adjust.expandup,   func,  "上",     "Top");
-		btn(_doc.adjust.expanddn,   func,  "下",     "Bottom");
-		btn(_doc.adjust.expandlt,   func,  "左",     "Left");
-		btn(_doc.adjust.expandrt,   func,  "右",     "Right");
-		lab(getEL('pop2_1_cap2'), "縮小", "Reduce");
-		btn(_doc.adjust.reduceup,   func,  "上",     "Top");
-		btn(_doc.adjust.reducedn,   func,  "下",     "Bottom");
-		btn(_doc.adjust.reducelt,   func,  "左",     "Left");
-		btn(_doc.adjust.reducert,   func,  "右",     "Right");
-		btn(_doc.adjust.close,      close, "閉じる", "Close");
+		this.popups.adjust = new pzprv3.core.Popup_Adjust(puzzle);
 
 		// 反転・回転 ---------------------------------------------------------
-		lab(getEL('bar2_2'),      "反転・回転",                  "Flip/Turn the board");
-		lab(getEL('pop2_2_cap0'), "盤面の回転・反転を行います。","Flip/Turn the board.");
-		btn(_doc.flip.turnl,  func,  "左90°回転", "Turn left by 90 degree");
-		btn(_doc.flip.turnr,  func,  "右90°回転", "Turn right by 90 degree");
-		btn(_doc.flip.flipy,  func,  "上下反転",   "Flip upside down");
-		btn(_doc.flip.flipx,  func,  "左右反転",   "Flip leftside right");
-		btn(_doc.flip.close,  close, "閉じる",     "Close");
-		if(pid==='tawa'){
-			_doc.flip.turnl.disabled = true;
-			_doc.flip.turnr.disabled = true;
-		}
+		this.popups.turnflip = new pzprv3.core.Popup_TurnFlip(puzzle);
 
 		// credit -------------------------------------------------------------
 		lab(getEL('bar3_1'),   "credit", "credit");
@@ -1195,7 +1191,7 @@ pzprv3.createCoreClass('Menu',
 		newboard  : function(){ this.popup = this.popups.newboard;},
 		urlinput  : function(){ this.popup = this.popups.urlinput;},
 		urloutput : function(){ this.popup = this.popups.urloutput;},
-		fileopen  : function(){ this.popel = getEL("pop1_4");},
+		fileopen  : function(){ this.popup = this.popups.fileopen;},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
 		filesave2 : function(){ if(!!this.targetpuzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
@@ -1210,8 +1206,8 @@ pzprv3.createCoreClass('Menu',
 		check     : function(){ this.targetpuzzle.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
-		adjust    : function(){ this.popel = getEL("pop2_1");},
-		turn      : function(){ this.popel = getEL("pop2_2");},
+		adjust    : function(){ this.popup = this.popups.adjust;},
+		turn      : function(){ this.popup = this.popups.turnflip;},
 		duplicate : function(){ this.duplicate();},
 
 		credit    : function(){ this.popel = getEL("pop3_1");},
@@ -1297,43 +1293,8 @@ pzprv3.createCoreClass('Menu',
 	},
 
 	//------------------------------------------------------------------------------
-	// menu.fileopen()   ファイルを開く
-	// menu.fileonload() File API用ファイルを開いたイベントの処理
 	// menu.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
-	fileopen : function(e){
-		if(this.popel || this.popup){ this.popclose();}
-		var _doc = document, fileEL = _doc.fileform.filebox;
-
-		if(!!this.reader || this.enableGetText){
-			var fitem = fileEL.files[0];
-			if(!fitem){ return;}
-
-			if(!!this.reader){ this.reader.readAsText(fitem);}
-			else             { this.fileonload(fitem.getAsText(''));}
-		}
-		else{
-			if(!fileEL.value){ return;}
-			_doc.fileform.action = this.fileio
-			_doc.fileform.submit();
-		}
-
-		_doc.fileform.reset();
-	},
-	fileonload : function(data){
-		var farray = data.split(/[\t\r\n\/]+/), fstr = "";
-		for(var i=0;i<farray.length;i++){
-			if(farray[i].match(/^http\:\/\//)){ break;}
-			fstr += (farray[i]+"/");
-		}
-
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
-		this.targetpuzzle.importBoardData({id:pid, fstr:fstr});
-
-		document.fileform.reset();
-		pzprv3.timer.reset();
-	},
-
 	filesave : function(ftype){
 		var puzzle = this.targetpuzzle;
 		var fname = prompt("保存するファイル名を入力して下さい。", puzzle.pid+".txt");
@@ -1489,15 +1450,6 @@ pzprv3.createCoreClass('Menu',
 	dispmanstr : function(){
 		if(!this.displaymanage){ getEL('ms_manarea').innerHTML = this.selectStr("管理領域を表示","Show management area");}
 		else                   { getEL('ms_manarea').innerHTML = this.selectStr("管理領域を隠す","Hide management area");}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.popupadjust()  "盤面の調整""回転・反転"でボタンが押された時に実行条件をチェック
-	//------------------------------------------------------------------------------
-	popupadjust : function(e){
-		if(this.popel || this.popup){
-			this.targetpuzzle.board.execadjust((e.target||e.srcElement).name);
-		}
 	},
 
 	//------------------------------------------------------------------------------

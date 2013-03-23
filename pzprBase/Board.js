@@ -641,7 +641,7 @@ pzprv3.createCommonClass('Board',
 		reducert: [k.EXPANDRT, k.REDUCERT],
 		turnl: [k.TURNR, k.TURNL],
 		turnr: [k.TURNL, k.TURNR],
-		flipy: [k.FLIPY, k.FLIPX],
+		flipy: [k.FLIPX, k.FLIPY],
 		flipx: [k.FLIPY, k.FLIPX]
 	},
 

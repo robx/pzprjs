@@ -37,18 +37,6 @@
 <!-- ここから下はポップアップメニュー(＋キーポップアップ/for_test)用です -->
 <div id="popup_parent" class="outofboard">
 
-<div class="popup" id="pop1_4">
-  <div class="titlebar" id="bar1_4">ファイルを開く</div>
-  <form name="fileform" id="fileform" action="fileio.cgi" method="post"
-        target="fileiopanel" enctype="multipart/form-data" onsubmit="return false;">
-    <span id="pop1_4_cap0">ファイル選択</span><br>
-    <input type="file" name="filebox" id="filebox"><br>
-    <input type="button" name="close" value="閉じる" />
-    <input type="hidden" name="pencilbox" value="0">
-    <input type="hidden" name="operation" value="open">
-  </form>
-</div>
-
 <div class="popup" id="pop1_8">
   <div class="titlebar" id="bar1_8">一時保存/戻す</div>
   <form name="database">
@@ -82,32 +70,6 @@
       <input type="button" name="close" value="閉じる" />
     </td></tr>
     </table>
-  </form>
-</div>
-
-<div class="popup" id="pop2_1">
-  <div class="titlebar" id="bar2_1">盤面の調整</div>
-  <form name="adjust">
-    <span id="pop2_1_cap0">盤面の調整を行います。</span><br>
-    <span id="pop2_1_cap1">拡大</span>
-    <input type="button" name="expandup" value="上" /><input type="button" name="expanddn" value="下" />
-    <input type="button" name="expandlt" value="左" /><input type="button" name="expandrt" value="右" /><br>
-    <span id="pop2_1_cap2">縮小</span>
-    <input type="button" name="reduceup" value="上" /><input type="button" name="reducedn" value="下" />
-    <input type="button" name="reducelt" value="左" /><input type="button" name="reducert" value="右" /><br>
-    <br>
-    <input type="button" name="close" value="閉じる" />
-  </form>
-</div>
-
-<div class="popup" id="pop2_2">
-  <div class="titlebar" id="bar2_2">反転・回転</div>
-  <form name="flip">
-    <span id="pop2_2_cap0">盤面の回転・反転を行います。</span><br>
-    <input type="button" name="turnl" value="左90°回転" /><input type="button" name="turnr" value="右90°回転" /><br>
-    <input type="button" name="flipy" value="上下反転" /><input type="button" name="flipx" value="左右反転" /><br>
-    <br>
-    <input type="button" name="close" value="閉じる" />
   </form>
 </div>
 
