@@ -37,42 +37,6 @@
 <!-- ここから下はポップアップメニュー(＋キーポップアップ/for_test)用です -->
 <div id="popup_parent" class="outofboard">
 
-<div class="popup" id="pop1_8">
-  <div class="titlebar" id="bar1_8">一時保存/戻す</div>
-  <form name="database">
-    <table border="0"><tr>
-    <td rowspan="3" style="padding-right:12pt;">
-      <select name="sorts">
-        <option value="idlist">ID順</option>
-        <option value="newsave">保存が新しい順</option>
-        <option value="oldsave">保存が古い順</option>
-        <option value="size">サイズ/難易度順</option>
-      </select>
-      <input type="button" name="tableup" value="▲" />
-      <input type="button" name="tabledn" value="▼" />
-      <br><br>
-      <select name="datalist" size="8" style="width:100%;"></select>
-    </td>
-    <td colspan="2" style="vertical-align:middle;">
-      <span id="pop1_8_com">コメント:</span><br>
-      <textarea name="comtext" cols="24" rows="3" wrap="hard" style="background-color:#dfdfdf;" readonly></textarea><br>
-    </td></tr>
-    <tr><td rowspan="2" style="vertical-align:bottom;padding-right:8pt;">
-      <input type="button" name="save" value="盤面を保存" /><br>
-      <input type="button" name="comedit" value="コメントを編集する" /><br>
-      <input type="button" name="difedit" value="難易度を設定する" /><br>
-      <input type="button" name="open" value="データを読み込む" />
-    </td>
-    <td style="vertical-align:top;padding-top:4pt;">
-      <input type="button" name="del" value="削除" style="color:red;" /><br>
-    </td></tr>
-    <tr><td style="vertical-align:bottom;">
-      <input type="button" name="close" value="閉じる" />
-    </td></tr>
-    </table>
-  </form>
-</div>
-
 <div class="popup" id="poptest">
   <div class="titlebar" id="bartest">pop_test</div>
   <form name="testform">

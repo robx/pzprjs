@@ -48,6 +48,140 @@ pzprv3.createCoreClass('ProblemData',
 });
 
 //---------------------------------------------------------------------------
+// ★Popup_DataBaseクラス データベース用ポップアップメニューの作成を行う
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
+{
+	formname : 'database',
+	
+	//------------------------------------------------------------------------------
+	// 要素作成用関数
+	//------------------------------------------------------------------------------
+	createElement : function(tagname, attr, style){
+		var el = document.createElement(tagname);
+		if(!!attr) { for(var att in attr){ el[att]=attr[att];}}
+		if(!!style){ for(var name in style){ el.style[name]=style[name];}}
+		return el;
+	},
+	addSelect : function(attr, options){
+		var sel = this.createElement('select', attr);
+		this.form.appendChild(sel);
+		for(var i=0;i<options.length;i++){
+			var op = document.createElement('option');
+			op.value = options[i].name;
+			op.appendChild(document.createTextNode(pzprv3.ui.selectStr(options[i].str_jp, options[i].str_en)));
+			sel.appendChild(op);
+		}
+	},
+	
+	//------------------------------------------------------------------------------
+	// テーブルレイアウト作成用の関数
+	//------------------------------------------------------------------------------
+	table : null,
+	tbody : null,
+	trow  : null,
+	initTable : function(attr, style){
+		this.table = this.createElement('table', attr, style);
+		this.addElement(this.table);
+		
+		this.tbody = this.createElement('tbody');
+		this.table.appendChild(this.tbody);
+	},
+	initRow : function(attr, style){
+		this.trow = this.createElement('tr', attr, style);
+		this.tbody.appendChild(this.trow);
+	},
+	initCell : function(attr, style){
+		this.form = this.createElement('td', attr, style);
+		this.trow.appendChild(this.form);
+	},
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		var popup = this, handler = function(e){ popup.database_handler(e||window.event);};
+		var form = this.form;
+		
+		this.settitle("一時保存/戻す", "Temporary Stack");
+		
+		this.initTable({},{borderCollapse:'collapse'});
+		/* ----------------------------------------------------------------- */
+		this.initRow();
+		this.initCell({rowSpan:3},{paddingRight:'12pt'});
+		
+		var sortitem = [
+			{name:'idlist',  str_jp:"ID順",            str_en:"ID order"},
+			{name:'newsave', str_jp:"保存が新しい順",  str_en:"Latest Save"},
+			{name:'oldsave', str_jp:"保存が古い順",    str_en:"Oldest Save"},
+			{name:'size',    str_jp:"サイズ/難易度順", str_en:"Size, Dif. order"}
+		];
+		this.addSelect({name:'sorts'},sortitem);
+		form.sorts.onchange = handler;
+		this.addExecButton('▲', 'Up',   handler, {name:'tableup'});
+		this.addExecButton('▼', 'Down', handler, {name:'tabledn'});
+		this.addBR();
+		this.addBR();
+		
+		this.addSelect({name:'datalist', size:'8'}, []);
+		form.datalist.style.width = '100%';
+		form.datalist.onchange = handler;
+		
+		/* ----------------------------------------------------------------- */
+		this.initCell({colSpan:2},{verticalAlign:'middle'});
+		
+		this.addText("コメント:", "Comment:");
+		this.addBR();
+		this.addTextArea({name:"comtext", cols:'24', rows:'3', wrap:'hard', readonly:'readonly'});
+		form.comtext.style.backgroundColor = '#dfdfdf';
+		
+		/* ----------------------------------------------------------------- */
+		this.initRow();
+		this.initCell({rowSpan:2},{verticalAlign:'bottom',paddingRight:'8pt'});
+		
+		this.addExecButton("盤面を保存",         "Save",           handler, {name:'save'});
+		this.addBR();
+		this.addExecButton("コメントを編集する", "Edit Comment",   handler, {name:'comedit'});
+		this.addBR();
+		this.addExecButton("難易度を設定する",   "Set difficulty", handler, {name:'difedit'});
+		this.addBR();
+		this.addExecButton("データを読み込む",   "Load",           handler, {name:'open'});
+		
+		/* ----------------------------------------------------------------- */
+		this.initCell({},{verticalAlign:'top',paddingRight:'4pt'});
+		
+		this.addExecButton("削除", "Delete", handler, {name:'del'});
+		form.del.style.color = 'red';
+		
+		/* ----------------------------------------------------------------- */
+		this.initRow();
+		this.initCell({},{verticalAlign:'bottom'});
+		
+		this.addCancelButton();
+		/* ----------------------------------------------------------------- */
+		
+		this.form = form;
+	},
+	
+	show : function(e){
+		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+		pzprv3.dbm.openDialog();
+	},
+	hide : function(){
+		pzprv3.dbm.closeDialog();
+		pzprv3.core.PopupMenu.prototype.hide.call(this);
+	},
+
+	//---------------------------------------------------------------------------
+	// database_handler() データベースmanagerへ処理を渡します
+	//---------------------------------------------------------------------------
+	database_handler : function(e){
+		var operation = (e.target||e.srcElement).name;
+		pzprv3.dbm.clickHandler(operation, this.puzzle);
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('DataBaseManager',
@@ -65,7 +199,8 @@ pzprv3.createCoreClass('DataBaseManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.openDialog() データベースダイアログが開いた時の処理
+	// dbm.openDialog()   データベースダイアログが開いた時の処理
+	// dbm.closeDialog()  データベースダイアログが閉じた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
@@ -76,14 +211,13 @@ pzprv3.createCoreClass('DataBaseManager',
 		this.dbh.convert();
 		this.dbh.importDBlist(this, this.update);
 	},
-
-	//---------------------------------------------------------------------------
-	// dbm.closeDialog()   データベースダイアログが閉じた時の処理
-	// dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
-	//---------------------------------------------------------------------------
 	closeDialog : function(){
 		this.DBlist = [];
 	},
+
+	//---------------------------------------------------------------------------
+	// dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
+	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
 		this.lang = pzprv3.ui.language;

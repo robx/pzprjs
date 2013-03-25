@@ -962,8 +962,7 @@ pzprv3.createCoreClass('Menu',
 	// menu.poparea()       ポップアップメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	poparea : function(){
-		var _doc = document, self=this;
-		var puzzle = this.targetpuzzle, pid = puzzle.pid;
+		var puzzle = this.targetpuzzle;
 
 		//=====================================================================
 		//// 各タイトルバーの動作設定
@@ -986,12 +985,6 @@ pzprv3.createCoreClass('Menu',
 		this.popups = {};
 
 		//=====================================================================
-		//// formボタンの動作設定・その他のCaption設定
-		var btn = function(el, func, strJP, strEN){ self.addButtons(el, func, strJP, strEN);};
-		var lab = function(el, strJP, strEN){ self.addLabels(el, strJP, strEN);};
-		var close = function(e){ self.popclose();};
-		var func = null;
-
 		// 盤面の新規作成 -----------------------------------------------------
 		this.popups.newboard = new pzprv3.core.Popup_Newboard(puzzle);
 
@@ -1005,19 +998,7 @@ pzprv3.createCoreClass('Menu',
 		this.popups.fileopen = new pzprv3.core.Popup_FileOpen(puzzle);
 
 		// データベースを開く -------------------------------------------------
-		func = function(e){ self.database_handler(e||window.event);};
-		lab(getEL('bar1_8'), "一時保存/戻す", "Temporary Stack");
-		_doc.database.sorts   .onchange = func;
-		_doc.database.datalist.onchange = func;
-		_doc.database.tableup .onclick  = func;
-		_doc.database.tabledn .onclick  = func;
-		btn(_doc.database.open,     func,  "データを読み込む",   "Load");
-		btn(_doc.database.save,     func,  "盤面を保存",         "Save");
-		lab(getEL('pop1_8_com'), "コメント:", "Comment:");
-		btn(_doc.database.comedit,  func,  "コメントを編集する", "Edit Comment");
-		btn(_doc.database.difedit,  func,  "難易度を設定する",   "Set difficulty");
-		btn(_doc.database.del,      func,  "削除",               "Delete");
-		btn(_doc.database.close,    close, "閉じる",             "Close");
+		this.popups.database = new pzprv3.core.Popup_DataBase(puzzle);
 
 		// 盤面の調整 ---------------------------------------------------------
 		this.popups.adjust = new pzprv3.core.Popup_Adjust(puzzle);
@@ -1033,8 +1014,6 @@ pzprv3.createCoreClass('Menu',
 
 		// poptest ------------------------------------------------------------
 		pzprv3.debug.poptest_func();
-
-		if(getEL("pop1_8").style.display=='inline'){ this.popel = getEL("pop1_8");}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1061,10 +1040,6 @@ pzprv3.createCoreClass('Menu',
 	},
 	popclose : function(){
 		if(this.popel){
-			if(this.popel.id=='pop1_8'){
-				pzprv3.dbm.closeDialog();
-			}
-
 			this.popel.style.display = "none";
 			this.popel = null;
 			this.movingpop = null;
@@ -1188,7 +1163,7 @@ pzprv3.createCoreClass('Menu',
 		filesave2 : function(){ if(!!this.targetpuzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
-		database  : function(){ this.popel = getEL("pop1_8"); pzprv3.dbm.openDialog();},
+		database  : function(){ this.popup = this.popups.database;},
 
 		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall();},
 		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);},
@@ -1385,16 +1360,6 @@ pzprv3.createCoreClass('Menu',
 			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
 			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
 			cdoc.close();
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.database_handler() データベースmanagerへ処理を渡します
-	//---------------------------------------------------------------------------
-	database_handler : function(e){
-		if(this.popel || this.popup){
-			var operation = (e.target||e.srcElement).name;
-			pzprv3.dbm.clickHandler(operation, this.targetpuzzle);
 		}
 	},
 
