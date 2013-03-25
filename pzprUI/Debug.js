@@ -16,6 +16,7 @@ pzprv3.createCoreClass('Popup_Debug:PopupMenu',
 		pzprv3.core.PopupMenu.prototype.initialize.call(this,puzzle);
 		this.makeElement();
 		this.makeForm();
+		this.setEvent();
 	},
 	
 	//------------------------------------------------------------------------------

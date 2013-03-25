@@ -16,10 +16,7 @@ pzprv3.createCoreClass('Menu',
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
-		this.popup      = null;			// 現在表示しているポップアップオブジェクト
-
-		this.movingpop  = null;			// 移動中のポップアップメニュー
-		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
+		this.popupmgr   = null;			// ポップアップウィンドウ管理オブジェクト
 
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
@@ -39,8 +36,6 @@ pzprv3.createCoreClass('Menu',
 		this.el_button.type = 'button';
 	},
 
-	popups : {},
-
 	language : 'ja',
 
 	enableSaveImage  : false, // 画像保存が有効か
@@ -58,6 +53,7 @@ pzprv3.createCoreClass('Menu',
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items = new pzprv3.core.MenuList();
+		this.popupmgr = new pzprv3.core.PopupManager();
 
 		this.initReader();
 
@@ -72,7 +68,7 @@ pzprv3.createCoreClass('Menu',
 		this.menuarea();
 		this.managearea();
 		this.buttonarea();
-		this.poparea();
+		this.popupmgr.init();
 
 		this.displayAll();
 
@@ -83,18 +79,15 @@ pzprv3.createCoreClass('Menu',
 	menureset : function(){
 		this.dispfloat  = [];
 		this.floatpanel = [];
-		this.popup      = null;
 		this.btnstack   = [];
 		this.labelstack = [];
 		this.managestack = [];
 
-		this.popclose();
+		this.popupmgr.reset();
+
 		this.floatmenuclose(0);
 
-		this.popups = {};
-
 		getEL('float_parent').innerHTML = '';
-		getEL('popup_parent').innerHTML = '';
 
 		getEL('btnarea').innerHTML = '';
 
@@ -266,6 +259,9 @@ pzprv3.createCoreClass('Menu',
 		// onresizeイベントを割り当てる
 		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
 		puzzle.addEvent(window, evname, this, this.onresize_func);
+
+		// ポップアップメニューにイベントを割り当てる
+		this.popupmgr.setEvents();
 	},
 
 	//---------------------------------------------------------------------------
@@ -704,6 +700,7 @@ pzprv3.createCoreClass('Menu',
 
 	//---------------------------------------------------------------------------
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
+	// menu.submenuexec(e)  通常サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
 		var el = (e.target||e.srcElement);
@@ -713,11 +710,15 @@ pzprv3.createCoreClass('Menu',
 			var idname = el.id.substr(3), pp = this.items;
 			var puzzle = this.targetpuzzle;
 			switch(pp.type(idname)){
-				case pp.SMENU: this.popopen(e, idname); break;
+				case pp.SMENU: this.submenuexec(e, idname); break;
 				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, puzzle.getConfig(idname)); break;
 				case pp.CHECK: puzzle.setConfig(idname, !puzzle.getConfig(idname)); break;
 			}
 		}
+	},
+	submenuexec : function(e, idname){
+		if(this.popupmgr.open(e, idname)){ /* ポップアップメニュー表示なら何もしない */ }
+		else if(this.funcs[idname]){ this.funcs[idname].call(this);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -956,99 +957,6 @@ pzprv3.createCoreClass('Menu',
 
 //--------------------------------------------------------------------------------------------------------------
 
-	//---------------------------------------------------------------------------
-	// menu.poparea()       ポップアップメニューの初期設定を行う
-	//---------------------------------------------------------------------------
-	poparea : function(){
-		var puzzle = this.targetpuzzle;
-
-		//=====================================================================
-		this.popups = {};
-
-		// 盤面の新規作成 -----------------------------------------------------
-		this.popups.newboard = new pzprv3.core.Popup_Newboard(puzzle);
-
-		// URL入力 ------------------------------------------------------------
-		this.popups.urlinput = new pzprv3.core.Popup_URLInput(puzzle);
-
-		// URL出力 ------------------------------------------------------------
-		this.popups.urloutput = new pzprv3.core.Popup_URLOutput(puzzle);
-
-		// ファイル入力 -------------------------------------------------------
-		this.popups.fileopen = new pzprv3.core.Popup_FileOpen(puzzle);
-
-		// データベースを開く -------------------------------------------------
-		this.popups.database = new pzprv3.core.Popup_DataBase(puzzle);
-
-		// 盤面の調整 ---------------------------------------------------------
-		this.popups.adjust = new pzprv3.core.Popup_Adjust(puzzle);
-
-		// 反転・回転 ---------------------------------------------------------
-		this.popups.turnflip = new pzprv3.core.Popup_TurnFlip(puzzle);
-
-		// credit -------------------------------------------------------------
-		this.popups.credit = new pzprv3.core.Popup_Credit(puzzle);
-
-		// 表示サイズ ---------------------------------------------------------
-		this.popups.dispsize = new pzprv3.core.Popup_DispSize(puzzle);
-
-		// poptest ------------------------------------------------------------
-		this.popups.debug = new pzprv3.core.Popup_Debug(puzzle);
-
-		//=====================================================================
-		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.popopen()  ポップアップメニューを開く
-	// menu.popclose() ポップアップメニューを閉じる
-	//---------------------------------------------------------------------------
-	popopen : function(e, idname){
-		// 表示しているウィンドウがある場合は閉じる
-		this.popclose();
-
-		// この中でmenu.popupも設定されます。
-		if(this.funcs[idname]){ this.funcs[idname].call(this);}
-
-		// ポップアップメニューを表示する
-		if(this.popup){ this.popup.show(e);}
-	},
-	popclose : function(){
-		if(this.popup){ this.popup.hide();}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
-	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
-	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
-	//---------------------------------------------------------------------------
-	titlebardown : function(e){
-		var popel = (e.target||e.srcElement).parentNode;
-		var puzzle = this.targetpuzzle;
-		this.movingpop = popel;
-		this.offset.px = puzzle.mouse.pageX(e) - parseInt(popel.style.left);
-		this.offset.py = puzzle.mouse.pageY(e) - parseInt(popel.style.top);
-		puzzle.mouse.enableMouse = false;
-	},
-	titlebarup : function(e){
-		var popel = this.movingpop;
-		if(!!popel){
-			this.movingpop = null;
-			this.targetpuzzle.mouse.enableMouse = true;
-		}
-	},
-	titlebarmove : function(e){
-		var popel = this.movingpop;
-		if(!!popel){
-			popel.style.left = this.targetpuzzle.mouse.pageX(e) - this.offset.px + 'px';
-			popel.style.top  = this.targetpuzzle.mouse.pageY(e) - this.offset.py + 'px';
-			pzprv3.preventDefault(e);
-		}
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-
 	//--------------------------------------------------------------------------------
 	// menu.textsize()  テキストのサイズを設定する
 	// menu.modifyCSS() スタイルシートの中身を変更する
@@ -1115,16 +1023,11 @@ pzprv3.createCoreClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	funcs : {
-		newboard  : function(){ this.popup = this.popups.newboard;},
-		urlinput  : function(){ this.popup = this.popups.urlinput;},
-		urloutput : function(){ this.popup = this.popups.urloutput;},
-		fileopen  : function(){ this.popup = this.popups.fileopen;},
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
 		filesave2 : function(){ if(!!this.targetpuzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
-		database  : function(){ this.popup = this.popups.database;},
 
 		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall();},
 		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);},
@@ -1133,11 +1036,8 @@ pzprv3.createCoreClass('Menu',
 		check     : function(){ this.targetpuzzle.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
-		adjust    : function(){ this.popup = this.popups.adjust;},
-		turn      : function(){ this.popup = this.popups.turnflip;},
 		duplicate : function(){ this.duplicate();},
 
-		credit    : function(){ this.popup = this.popups.credit;},
 		jumpexp   : function(){ window.open('./faq.html?'+this.targetpuzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
@@ -1145,9 +1045,7 @@ pzprv3.createCoreClass('Menu',
 		irowake   : function(){ this.targetpuzzle.painter.paintAll();},
 		cursor    : function(){ this.targetpuzzle.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
-		poptest   : function(){ this.popups.debug.show();},
 
-		dispsize  : function(){ this.popup = this.popups.dispsize;},
 		mode      : function(num){ this.modechange(num);},
 		text      : function(num){ this.textsize(num); this.targetpuzzle.painter.forceRedraw();},
 		size      : function(num){ this.targetpuzzle.painter.forceRedraw();},

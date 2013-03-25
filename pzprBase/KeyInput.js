@@ -458,7 +458,7 @@ pzprv3.createCommonClass('KeyEvent',
 		bar.appendChild(_doc.createTextNode("panel"));
 		pzprv3.unselectable(bar);
 		keypopup.appendChild(bar);
-		o.addMouseDownEvent(bar, pzprv3.ui, pzprv3.ui.titlebardown);
+		o.addMouseDownEvent(bar, pzprv3.ui.popupmgr, pzprv3.ui.popupmgr.titlebardown);
 		o.addEvent(bar, 'dblclick', o, function(){ o.setConfig('keypopup',false)});
 		
 		var panel = _doc.createElement('div');

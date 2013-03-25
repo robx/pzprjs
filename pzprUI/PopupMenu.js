@@ -6,6 +6,119 @@ var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 
 //---------------------------------------------------------------------------
+// ★PopupManagerクラス ポップアップメニューを管理します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('PopupManager',
+{
+	initialize : function(){
+		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
+
+		this.reset();
+	},
+	
+	puzzle    : null,
+	popup     : null, /* 表示中のポップアップメニュー */
+	popups    : {},   /* 管理しているポップアップメニュー */
+	movingpop : null, /* 移動中のポップアップメニュー */
+	
+	//---------------------------------------------------------------------------
+	// popupmgr.init()       ポップアップメニューの設定を初期化する
+	// popupmgr.reset()      ポップアップメニューの設定をクリアする
+	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
+	//---------------------------------------------------------------------------
+	init : function(){
+		var puzzle = this.puzzle = pzprv3.ui.targetpuzzle;
+		this.popups = {
+			newboard  : (new pzprv3.core.Popup_Newboard(puzzle)),	/* 盤面の新規作成 */
+			urlinput  : (new pzprv3.core.Popup_URLInput(puzzle)),	/* URL入力 */
+			urloutput : (new pzprv3.core.Popup_URLOutput(puzzle)),	/* URL出力 */
+			fileopen  : (new pzprv3.core.Popup_FileOpen(puzzle)),	/* ファイル入力 */
+			database  : (new pzprv3.core.Popup_DataBase(puzzle)),	/* データベースを開く */
+			adjust    : (new pzprv3.core.Popup_Adjust(puzzle)),		/* 盤面の調整 */
+			turnflip  : (new pzprv3.core.Popup_TurnFlip(puzzle)),	/* 反転・回転 */
+			dispsize  : (new pzprv3.core.Popup_DispSize(puzzle)),	/* 表示サイズ */
+			credit    : (new pzprv3.core.Popup_Credit(puzzle)),		/* credit */
+			debug     : (new pzprv3.core.Popup_Debug(puzzle))		/* poptest */
+		};
+	},
+	
+	reset : function(){
+		this.puzzle = pzprv3.ui.targetpuzzle;
+		this.popup  = null;
+		this.popups = {};
+		getEL('popup_parent').innerHTML = '';
+	},
+	
+	setEvents : function(){
+		for(var name in this.popups){ this.popups[name].setEvent();}
+		this.puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		this.puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
+	},
+
+	//---------------------------------------------------------------------------
+	// popupmgr.open()  ポップアップメニューを開く
+	//---------------------------------------------------------------------------
+	open : function(e, idname){
+		if(idname==='poptest'){
+			this.popups.debug.show(e);
+			return true;
+		}
+
+		var target = null;
+		switch(idname){
+			case 'newboard':  target = this.popups.newboard; break;
+			case 'urlinput':  target = this.popups.urlinput; break;
+			case 'urloutput': target = this.popups.urloutput; break;
+			case 'fileopen':  target = this.popups.fileopen; break;
+			case 'database':  target = this.popups.database; break;
+			case 'adjust':    target = this.popups.adjust; break;
+			case 'turn':      target = this.popups.turnflip; break;
+			case 'credit':    target = this.popups.credit; break;
+			case 'dispsize':  target = this.popups.dispsize; break;
+		}
+		if(target!==null){
+			/* 表示しているウィンドウがある場合は閉じる */
+			if(this.popup){ this.popup.hide();}
+			
+			/* ポップアップメニューを表示する */
+			this.popup = target;
+			this.popup.show(e);
+			return true;
+		}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
+	// popupmgr.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
+	// popupmgr.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
+	// popupmgr.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
+	//---------------------------------------------------------------------------
+	titlebardown : function(e){
+		var popel = (e.target||e.srcElement).parentNode;
+		var puzzle = this.puzzle;
+		this.movingpop = popel;
+		this.offset.px = puzzle.mouse.pageX(e) - parseInt(popel.style.left);
+		this.offset.py = puzzle.mouse.pageY(e) - parseInt(popel.style.top);
+		puzzle.mouse.enableMouse = false;
+	},
+	titlebarup : function(e){
+		var popel = this.movingpop;
+		if(!!popel){
+			this.movingpop = null;
+			this.puzzle.mouse.enableMouse = true;
+		}
+	},
+	titlebarmove : function(e){
+		var popel = this.movingpop;
+		if(!!popel){
+			popel.style.left = this.puzzle.mouse.pageX(e) - this.offset.px + 'px';
+			popel.style.top  = this.puzzle.mouse.pageY(e) - this.offset.py + 'px';
+			pzprv3.preventDefault(e);
+		}
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★PopupMenuクラス ポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('PopupMenu',
@@ -31,7 +144,6 @@ pzprv3.createCoreClass('PopupMenu',
 		
 		var bar = _doc.createElement('div');
 		bar.className = 'titlebar';
-		this.puzzle.addMouseDownEvent(bar, pzprv3.ui, pzprv3.ui.titlebardown);
 		pzprv3.unselectable(bar);
 		this.pop.appendChild(bar);
 		this.titlebar = bar;
@@ -42,17 +154,19 @@ pzprv3.createCoreClass('PopupMenu',
 	},
 	makeForm : function(){
 	},
-	remove : function(){
-		if(!this.pop){ return;}
-		var pop = this.pop;
-		this.reset();
-		this.popparent.removeChild(pop);
+
+	setEvent :function(){
+		if(!!this.titlebar){
+			var mgr = pzprv3.ui.popupmgr;
+			this.puzzle.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
+		}
 	},
 
 	show : function(e){
 		if(!this.pop){
 			this.makeElement();
 			this.makeForm();
+			this.setEvent();
 		}
 		this.pop.style.left = this.puzzle.mouse.pageX(e) - 8 + 'px';
 		this.pop.style.top  = this.puzzle.mouse.pageY(e) - 8 + 'px';
