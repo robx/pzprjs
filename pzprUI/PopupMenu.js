@@ -58,9 +58,9 @@ pzprv3.createCoreClass('PopupManager',
 	//---------------------------------------------------------------------------
 	// popupmgr.open()  ポップアップメニューを開く
 	//---------------------------------------------------------------------------
-	open : function(e, idname){
+	open : function(idname, px, py){
 		if(idname==='poptest'){
-			this.popups.debug.show(e);
+			this.popups.debug.show(px, py);
 			return true;
 		}
 
@@ -82,7 +82,7 @@ pzprv3.createCoreClass('PopupManager',
 			
 			/* ポップアップメニューを表示する */
 			this.popup = target;
-			this.popup.show(e);
+			this.popup.show(px, py);
 			return true;
 		}
 		return false;
@@ -96,9 +96,10 @@ pzprv3.createCoreClass('PopupManager',
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
 		var puzzle = this.puzzle;
+		var pagePos = pzprv3.ui.getPagePos(e);
 		this.movingpop = popel;
-		this.offset.px = puzzle.mouse.pageX(e) - parseInt(popel.style.left);
-		this.offset.py = puzzle.mouse.pageY(e) - parseInt(popel.style.top);
+		this.offset.px = pagePos.px - parseInt(popel.style.left);
+		this.offset.py = pagePos.py - parseInt(popel.style.top);
 		puzzle.mouse.enableMouse = false;
 	},
 	titlebarup : function(e){
@@ -111,8 +112,9 @@ pzprv3.createCoreClass('PopupManager',
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			popel.style.left = this.puzzle.mouse.pageX(e) - this.offset.px + 'px';
-			popel.style.top  = this.puzzle.mouse.pageY(e) - this.offset.py + 'px';
+			var pagePos = pzprv3.ui.getPagePos(e);
+			popel.style.left = pagePos.px - this.offset.px + 'px';
+			popel.style.top  = pagePos.py - this.offset.py + 'px';
 			pzprv3.preventDefault(e);
 		}
 	}
@@ -162,14 +164,14 @@ pzprv3.createCoreClass('PopupMenu',
 		}
 	},
 
-	show : function(e){
+	show : function(px,py){
 		if(!this.pop){
 			this.makeElement();
 			this.makeForm();
 			this.setEvent();
 		}
-		this.pop.style.left = this.puzzle.mouse.pageX(e) - 8 + 'px';
-		this.pop.style.top  = this.puzzle.mouse.pageY(e) - 8 + 'px';
+		this.pop.style.left = px + 'px';
+		this.pop.style.top  = py + 'px';
 		this.pop.style.display = 'inline';
 	},
 	hide : function(){
@@ -329,8 +331,8 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		this.addElement(table.getElement());
 	},
 	
-	show : function(e){
-		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+	show : function(px,py){
+		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
 		this.puzzle.key.enableKey = false;
 	},
 	//---------------------------------------------------------------------------
@@ -623,8 +625,8 @@ pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
 		this.addCancelButton();
 	},
 	
-	show : function(e){
-		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+	show : function(px,py){
+		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
 		
 		this.form.cs.value = this.puzzle.painter.cellsize;
 		this.puzzle.key.enableKey = false;

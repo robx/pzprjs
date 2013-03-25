@@ -717,8 +717,11 @@ pzprv3.createCoreClass('Menu',
 		}
 	},
 	submenuexec : function(e, idname){
-		if(this.popupmgr.open(e, idname)){ /* ポップアップメニュー表示なら何もしない */ }
-		else if(this.funcs[idname]){ this.funcs[idname].call(this);}
+		if(this.funcs[idname]){ this.funcs[idname].call(this);}
+		else{
+			var pagePos = this.getPagePos(e);
+			this.popupmgr.open(idname, pagePos.px - 8, pagePos.py - 8);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -746,7 +749,7 @@ pzprv3.createCoreClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = this.targetpuzzle.mouse.pageX(e)  + 'px';
+				_float.style.left = this.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -780,14 +783,12 @@ pzprv3.createCoreClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = this.targetpuzzle.mouse.pageX(e);
-		var ey = this.targetpuzzle.mouse.pageY(e);
+		var ex = this.pageX(e), ey = this.pageY(e);
 		var rect = pzprv3.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = this.targetpuzzle.mouse.pageX(e);
-		var ey = this.targetpuzzle.mouse.pageY(e);
+		var ex = this.pageX(e), ey = this.pageY(e);
 		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
@@ -1271,6 +1272,76 @@ pzprv3.createCoreClass('Menu',
 			o.board.subclear();
 			o.painter.paintAll();
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.getMouseButton() 左/中/右ボタンが押されているかチェックする
+	//---------------------------------------------------------------------------
+	getMouseButton : function(e){
+		var left=false, mid=false, right=false;
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
+			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
+			}
+			else{
+				left  = (!!e.which ? e.which===1 : e.button===0);
+				mid   = (!!e.which ? e.which===2 : e.button===1);
+				right = (!!e.which ? e.which===3 : e.button===2);
+			}
+		}
+
+		// SHIFTキー/Commandキーを押している時は左右ボタン反転
+		var o = this.targetpuzzle;
+		o.key.checkmodifiers(e);
+		if(((o.key.isSHIFT || o.key.isMETA)^o.getConfig('lrcheck'))&&(left!==right))
+			{ left=!left; right=!right;}
+
+		return {Left:left, Middle:mid, Right:right};
+	},
+
+	//----------------------------------------------------------------------
+	// menu.getPagePos() イベントが起こったページ上の座標を返す
+	// menu.pageX() イベントが起こったページ上のX座標を返す
+	// menu.pageY() イベントが起こったページ上のY座標を返す
+	//----------------------------------------------------------------------
+	getPagePos : function(e){
+		var pos = new pzprv3.core.Point(0, 0);
+		pos.px = this.pageX(e);
+		pos.py = this.pageY(e);
+		return pos;
+	},
+	pageX : function(e){
+		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageX)){ return e.pageX;}
+		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
+		return 0;
+	},
+	pageY : function(e){
+		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageY)){ return e.pageY;}
+		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
+		return 0;
 	}
 });
 

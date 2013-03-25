@@ -163,8 +163,8 @@ pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
 		this.form = form;
 	},
 	
-	show : function(e){
-		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+	show : function(px,py){
+		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
 		pzprv3.dbm.openDialog();
 	},
 	hide : function(){

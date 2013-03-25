@@ -83,7 +83,7 @@ pzprv3.createCommonClass('MouseEvent',
 	e_mousedown : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		this.btn = this.getMouseButton(e);
+		this.btn = pzprv3.ui.getMouseButton(e);
 		if(this.btn.Left || this.btn.Right){
 			this.owner.board.errclear();
 			this.owner.opemgr.newOperation(true);
@@ -158,80 +158,18 @@ pzprv3.createCommonClass('MouseEvent',
 	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
-	// mv.getMouseButton() 左/中/右ボタンが押されているかチェックする
-	//---------------------------------------------------------------------------
-	getMouseButton : function(e){
-		var left=false, mid=false, right=false;
-		if(e.touches!==void 0){
-			/* touchイベントだった場合 */
-			left  = (e.touches.length===1);
-			right = (e.touches.length>1);
-		}
-		else{
-			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
-				left  = (e.button===1);
-				mid   = (e.button===4);
-				right = (e.button===2);
-			}
-			else{
-				left  = (!!e.which ? e.which===1 : e.button===0);
-				mid   = (!!e.which ? e.which===2 : e.button===1);
-				right = (!!e.which ? e.which===3 : e.button===2);
-			}
-		}
-
-		// SHIFTキー/Commandキーを押している時は左右ボタン反転
-		this.owner.key.checkmodifiers(e);
-		if(((this.owner.key.isSHIFT || this.owner.key.isMETA)^this.owner.getConfig('lrcheck'))&&(left!==right))
-			{ left=!left; right=!right;}
-
-		return {Left:left, Middle:mid, Right:right};
-	},
-
-	//---------------------------------------------------------------------------
 	// mv.setposition()   イベントが起こった座標をinputPointに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		var pc = this.owner.painter;
-		this.inputPoint.px = this.pageX(e) - pc.pageX - this.mouseoffset.px;
-		this.inputPoint.py = this.pageY(e) - pc.pageY - this.mouseoffset.py;
+		var pc = this.owner.painter, pagePos = pzprv3.ui.getPagePos(e);
+		this.inputPoint.px = pagePos.px - pc.pageX - this.mouseoffset.px;
+		this.inputPoint.py = pagePos.py - pc.pageY - this.mouseoffset.py;
 	},
 
 	notInputted : function(){ return !this.owner.opemgr.changeflag;},
 	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
-
-	//----------------------------------------------------------------------
-	// mv.pageX() イベントが起こったページ上のX座標を返す
-	// mv.pageY() イベントが起こったページ上のY座標を返す
-	//----------------------------------------------------------------------
-	pageX : function(e){
-		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageX)){ return e.pageX;}
-		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
-		return 0;
-	},
-	pageY : function(e){
-		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageY)){ return e.pageY;}
-		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
-		return 0;
-	},
 
 	// 共通関数
 	//---------------------------------------------------------------------------

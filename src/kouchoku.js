@@ -25,8 +25,8 @@ MouseEvent:{
 	},
 	e_mouseout : function(e){
 		// 子要素に入ってもイベントが起きてしまうので、サイズを確認する
-		var ex=this.pageX(e), ey=this.pageY(e), rect=pzprv3.getRect(pzprv3.getEL('divques'));
-		if(ex<=rect.left || ex>=rect.right || ey<=rect.top || ey>=rect.bottom){
+		var pos = pzprv3.ui.getPagePos(e), rect=pzprv3.getRect(pzprv3.getEL('divques'));
+		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 				this.targetPoint = [null, null];

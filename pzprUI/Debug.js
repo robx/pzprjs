@@ -61,7 +61,7 @@ pzprv3.createCoreClass('Popup_Debug:PopupMenu',
 		if(pzprv3.debugmode){ this.testonly_func();}	/* テスト用 */
 	},
 	
-	show : function(e){
+	show : function(px,py){
 		var _pop_style = this.pop.style;
 		_pop_style.display = 'inline';
 		_pop_style.left = '40px';
