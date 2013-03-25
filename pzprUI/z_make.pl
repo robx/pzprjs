@@ -37,6 +37,7 @@ sub input_flags{
 sub output_pzprUI{
 	my @files = (
 		'Boot.js',
+		'Events.js',
 		'Menu.js',
 		'PopupMenu.js',
 		'DataBase.js',

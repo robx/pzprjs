@@ -48,6 +48,7 @@ function onload_func(){
 	var puzzle = pzprv3.createPuzzle();
 
 	// パズルが入力しなおされても、共通で使用されるオブジェクト
+	pzprv3.event     = new pzprv3.core.Events(puzzle);		// イベント管理用オブジェクト
 	pzprv3.ui        = new pzprv3.core.Menu(puzzle);		// メニューを扱うオブジェクト
 	pzprv3.timer     = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
 	pzprv3.undotimer = new pzprv3.core.UndoTimer(puzzle);	// Undo用Timerオブジェクト

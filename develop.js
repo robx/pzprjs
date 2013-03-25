@@ -20,6 +20,7 @@ document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Answer.js\">
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Operation.js\"></script>");
 
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Boot.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Events.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Menu.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/PopupMenu.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/DataBase.js\"></script>");

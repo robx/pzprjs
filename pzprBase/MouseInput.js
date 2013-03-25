@@ -13,8 +13,6 @@ pzprv3.createCommonClass('MouseEvent',
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
-		this.enableMouse = true;	// マウス入力は有効か
-
 		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
 
 		this.mouseCell;		// 入力されたセル等のID
@@ -29,10 +27,7 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousestart;	// mousedown/touchstartイベントかどうか
 		this.mousemove;		// mousemove/touchmoveイベントかどうか
 		this.mouseend;		// mouseup/touchendイベントかどうか
-
-		this.mouseoffset = {px:0,py:0};
-		if(pzprv3.browser.IE6||pzprv3.browser.IE7||pzprv3.browser.IE8){ this.mouseoffset = {px:2,py:2};}
-		else if(pzprv3.browser.WebKit){ this.mouseoffset = {px:1,py:1};}
+		this.mouseout;		// mouseoutイベントかどうか
 	},
 
 	RBBlackCell : false,	// 連黒分断禁のパズル
@@ -53,94 +48,30 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousestart = false;
 		this.mousemove  = false;
 		this.mouseend   = false;
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.setEvents() マウス入力に関するイベントを設定する
-	//---------------------------------------------------------------------------
-	setEvents : function(){
-		// マウス入力イベントの設定
-		var elements = [pzprv3.getEL('divques')];
-		if(this.owner.painter.fillTextEmulate){ elements.push(pzprv3.getEL('numobj_parent'));}
-		for(var i=0;i<elements.length;i++){
-			var el = elements[i];
-			this.owner.addMouseDownEvent(el, this, this.e_mousedown);
-			this.owner.addMouseMoveEvent(el, this, this.e_mousemove);
-			this.owner.addMouseUpEvent  (el, this, this.e_mouseup);
-			el.oncontextmenu = function(){ return false;};
-		}
-		this.mousereset();
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.e_mousedown() Canvas上でマウスのボタンを押した際のイベント共通処理
-	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
-	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
-	// mv.e_mouseout()  マウスカーソルがウィンドウから離れた際のイベント共通処理
-	//---------------------------------------------------------------------------
-	//イベントハンドラから呼び出される
-	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
-	e_mousedown : function(e){
-		if(!this.enableMouse){ return true;}
-		
-		this.btn = pzprv3.ui.getMouseButton(e);
-		if(this.btn.Left || this.btn.Right){
-			this.owner.board.errclear();
-			this.owner.opemgr.newOperation(true);
-			this.setposition(e);
-			this.mouseevent(0);	// 各パズルのルーチンへ
-		}
-		else if(this.btn.Middle){ //中ボタン
-			this.modeflip();
-			this.mousereset();
-		}
-		pzprv3.stopPropagation(e);
-		pzprv3.preventDefault(e);
-		return false;
-	},
-	e_mouseup   : function(e){
-		if(!this.enableMouse){ return true;}
-		
-		if(this.btn.Left || this.btn.Right){
-			this.owner.opemgr.newOperation(false);
-			this.mouseevent(2);	// 各パズルのルーチンへ
-			this.mousereset();
-		}
-		pzprv3.stopPropagation(e);
-		pzprv3.preventDefault(e);
-		return false;
-	},
-	e_mousemove : function(e){
-		// ポップアップメニュー移動中は当該処理が最優先
-		if(!this.enableMouse){ return true;}
-		
-		if(this.btn.Left || this.btn.Right){
-			this.owner.opemgr.newOperation(false);
-			this.setposition(e);
-			this.mouseevent(1);	// 各パズルのルーチンへ
-		}
-		pzprv3.stopPropagation(e);
-		pzprv3.preventDefault(e);
-		return false;
-	},
-	e_mouseout : function(e) {
-		this.owner.opemgr.newOperation(false);
+		this.mouseout   = false;
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
 	//---------------------------------------------------------------------------
-	mouseevent : function(step){
+	mouseevent : function(px, py, step){
+		this.inputPoint.px = px;
+		this.inputPoint.py = py;
+		
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
-
+		this.mouseout   = (step===3);
+		
 		var o = this.owner;
+		if(this.mousestart){ o.board.errclear();}
+		o.opemgr.newOperation(this.mousestart?true:false);
+		
 		if(this.mousestart && !!pzprv3.ui.items.flags.dispred && (o.key.isZ ^ o.getConfig('dispred'))){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}
-
+		
 		if     (o.playmode){ this.inputplay();}
 		else if(o.editmode){ this.inputedit();}
 	},
@@ -158,16 +89,9 @@ pzprv3.createCommonClass('MouseEvent',
 	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
-	// mv.setposition()   イベントが起こった座標をinputPointに代入
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
 	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
-	setposition : function(e){
-		var pc = this.owner.painter, pagePos = pzprv3.ui.getPagePos(e);
-		this.inputPoint.px = pagePos.px - pc.pageX - this.mouseoffset.px;
-		this.inputPoint.py = pagePos.py - pc.pageY - this.mouseoffset.py;
-	},
-
 	notInputted : function(){ return !this.owner.opemgr.changeflag;},
 	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
 

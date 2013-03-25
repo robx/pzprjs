@@ -182,7 +182,7 @@ var pzprv3_base = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// pzprv3.getRect()   エレメントの四辺の座標を返す
+	// event.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
@@ -217,23 +217,6 @@ var pzprv3_base = {
 			}
 		);
 		return this.getRect(el);
-	},
-
-	//----------------------------------------------------------------------
-	// Eventオブジェクト関連
-	// 
-	// stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                   伝播させないようにする
-	// preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                   イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
 	}
 };
 

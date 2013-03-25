@@ -13,8 +13,6 @@ pzprv3.createCommonClass('KeyEvent',
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
-		this.enableKey = true;	// キー入力は有効か
-
 		this.initialize_panel();
 	},
 
@@ -48,158 +46,67 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.setEvents() キーボード入力に関するイベントを設定する
+	// kc.keydown()  キーを押した際のイベント共通処理
+	// kc.keyup()    キーを離した際のイベント共通処理
 	//---------------------------------------------------------------------------
-	setEvents : function(){
-		// キー入力イベントの設定
-		var o = this.owner;
-		o.addEvent(document, 'keydown',  this, this.e_keydown);
-		o.addEvent(document, 'keyup',    this, this.e_keyup);
-		o.addEvent(document, 'keypress', this, this.e_keypress);
-		// Silverlightのキー入力イベント設定
-		var g = o.painter.currentContext;
-		if(g.use.sl){
-			var kc = this, sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", function(s,a){ kc.e_SLkeydown(s,a);});
-			sender.AddEventListener("KeyUp",   function(s,a){ kc.e_SLkeyup(s,a);});
-		}
-
-		this.keyreset();
-		this.create();
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.e_keydown()  キーを押した際のイベント共通処理
-	// kc.e_keyup()    キーを離した際のイベント共通処理
-	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
-	//---------------------------------------------------------------------------
-	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
-	e_keydown : function(e){
-		if(this.enableKey){
-			this.owner.opemgr.newOperation(true);
-			this.checkmodifiers(e);
-			this.ca = this.getchar(e);
-
-			this.tcMoved = false;
-			this.keydown_common(e);
-			if(this.isenablemode() && !this.moveTarget(this.ca)){
-				if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+	keydown : function(c){
+		this.tcMoved = false;
+		this.owner.opemgr.newOperation(true);
+		if(!this.keydown_common(c)){
+			if(!this.isenablemode()){ return true;}
+			if(this.moveTarget(c)){
+				return false;
 			}
-			if(this.tcMoved){ pzprv3.preventDefault(e); return false;}
+			else{
+				if(c){ this.keyinput(c,0);}	// 各パズルのルーチンへ
+			}
 		}
+		return true;
 	},
-	e_keyup : function(e){
-		if(this.enableKey){
-			this.owner.opemgr.newOperation(false);
-			this.checkmodifiers(e);
-			this.ca = this.getchar(e);
-
-			this.keyup_common(e);
-			if(this.ca){ this.keyup(this.ca);}	// 各パズルのルーチンへ
-		}
-	},
-	e_keypress : function(e){
-		if(this.enableKey){
-			this.owner.opemgr.newOperation(false);
-			this.checkmodifiers(e);
-			this.ca = this.getcharp(e);
-
-			if(this.ca){ this.keyinput(this.ca);}	// 各パズルのルーチンへ
+	keyup : function(c){
+		this.owner.opemgr.newOperation(false);
+		if(!this.keyup_common(c)){
+			if(c){ this.keyinput(c,1);}	// 各パズルのルーチンへ
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.e_SLkeydown() Silverlightオブジェクトにフォーカスがある時、キーを押した際のイベント共通処理
-	// kc.e_SLkeyup()   Silverlightオブジェクトにフォーカスがある時、キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	e_SLkeydown : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:function(){} };
-		return this.e_keydown(emulate);
-	},
-	e_SLkeyup : function(sender, keyEventArgs){
-		var emulate = { keyCode : keyEventArgs.platformKeyCode, shiftKey:keyEventArgs.shift, ctrlKey:keyEventArgs.ctrl,
-						altKey:false, returnValue:false, preventDefault:function(){} };
-		return this.e_keyup(emulate);
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.keyinput() キーを押した際のイベント処理。各パズルのファイルでオーバーライドされる。
-	// kc.keyup()    キーを離した際のイベント処理。各パズルのファイルでオーバーライドされる。
+	// kc.keyinput() キーを押した/離した際のイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	// オーバーライド用
-	keyinput : function(ca){
-		this.key_inputqnum(ca); /* デフォルトはCell数字入力 */
-	},
-	keyup : function(ca){ },
-
-	//---------------------------------------------------------------------------
-	// kc.getchar()  入力されたキーを表す文字列を返す
-	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
-	//---------------------------------------------------------------------------
-	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
-	getchar : function(e){
-		if     (e.keyCode==38){ return this.KEYUP;}
-		else if(e.keyCode==40){ return this.KEYDN;}
-		else if(e.keyCode==37){ return this.KEYLT;}
-		else if(e.keyCode==39){ return this.KEYRT;}
-
-		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
-		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
-		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
-		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);}
-		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                  { return 'BS';}
-
-		else if(e.shiftKey){ return 'shift';}
-
-		return '';
-	},
-	// (keypressのみ)45は-(マイナス)
-	getcharp : function(e){
-		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
-		return '';
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.checkmodifiers()  Shift, Ctrl, Alt, Metaキーをチェックする
-	//---------------------------------------------------------------------------
-	checkmodifiers : function(e){
-		if(this.isSHIFT ^ e.shiftKey){ this.isSHIFT = e.shiftKey; if(!this.isSHIFT){ this.ca='';}}
-		if(this.isCTRL  ^ e.ctrlKey) { this.isCTRL  = e.ctrlKey;  this.ca='';}
-		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey;  this.ca='';}
-		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;   this.ca='';}
-
-		if(!(this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop();}
+	keyinput : function(c,step){
+		this.key_inputqnum(c); /* デフォルトはCell数字入力 */
 	},
 
 	//---------------------------------------------------------------------------
 	// kc.keydown_common() キーを押した際のイベント共通処理(Undo,F2等)
 	// kc.keyup_common()   キーを離した際のイベント共通処理(Undo等)
 	//---------------------------------------------------------------------------
-	keydown_common : function(e){
-		var o = this.owner;
-		if(this.ca==='z' && !this.isZ){ this.isZ=true;}
-		if(this.ca==='x' && !this.isX){ this.isX=true;}
+	keydown_common : function(c){
+		var o = this.owner, ret = false;
+		if(c==='z' && !this.isZ){ this.isZ=true;}
+		if(c==='x' && !this.isX){ this.isX=true;}
 
-		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startUndo(); this.ca='';}
-		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startRedo(); this.ca='';}
+		if(c==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startUndo(); ret = true;}
+		if(c==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startRedo(); ret = true;}
 
-		if(this.ca==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
-			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); this.ca='';}
-			else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); this.ca='';}
+		if(c==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
+			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); ret = true;}
+			else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); ret = true;}
 		}
 
 		if(!this.isZ){ o.board.errclear();}
-		if(pzprv3.debug.keydown(this.ca)){ this.ca='';}
+		if(pzprv3.debug.keydown(c)){ ret = true;}
+		return ret;
 	},
-	keyup_common : function(e){
-		if(this.ca==='z' && this.isZ){ this.isZ=false;}
-		if(this.ca==='x' && this.isX){ this.isX=false;}
+	keyup_common : function(c){
+		var ret = false;
+		if(c==='z' && this.isZ){ this.isZ=false;}
+		if(c==='x' && this.isX){ this.isX=false;}
 
-		if(this.ca==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); this.ca='';}
-		if(this.ca==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); this.ca='';}
+		if(c==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); ret = true;}
+		if(c==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); ret = true;}
+		return ret;
 	},
 	//---------------------------------------------------------------------------
 	// kc.moveTarget()  キーボードからの入力対象を矢印キーで動かす
@@ -419,7 +326,7 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.createtable() キーポップアップのポップアップを作成する
 	//---------------------------------------------------------------------------
 	create : function(){
-		if(!this.haspanel[1] && !this.hanpanel[3]){ return;}
+		if(!this.haspanel[1] && !this.haspanel[3]){ return;}
 		
 		if(!this.element){
 			this.element = this.makeKeyPopup();
@@ -458,8 +365,8 @@ pzprv3.createCommonClass('KeyEvent',
 		bar.appendChild(_doc.createTextNode("panel"));
 		pzprv3.unselectable(bar);
 		keypopup.appendChild(bar);
-		o.addMouseDownEvent(bar, pzprv3.ui.popupmgr, pzprv3.ui.popupmgr.titlebardown);
-		o.addEvent(bar, 'dblclick', o, function(){ o.setConfig('keypopup',false)});
+		pzprv3.event.addMouseDownEvent(bar, pzprv3.ui.popupmgr, pzprv3.ui.popupmgr.titlebardown);
+		pzprv3.event.addEvent(bar, 'dblclick', o, function(){ o.setConfig('keypopup',false)});
 		
 		var panel = _doc.createElement('div');
 		panel.className = 'panelbase';

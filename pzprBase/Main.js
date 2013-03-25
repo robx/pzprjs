@@ -19,7 +19,6 @@ pzprv3.createCoreClass('Owner',
 		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
 		this.playmode = !this.editmode;							// 回答モード
 	},
-	evlist : [],
 
 	//---------------------------------------------------------------------------
 	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
@@ -99,9 +98,7 @@ pzprv3.createCoreClass('Owner',
 		pzprv3.ui.menuinit(this.config);
 
 		// イベントをくっつける
-		this.mouse.setEvents();
-		this.key.setEvents();
-		pzprv3.ui.setWindowEvents();
+		pzprv3.event.setEvents();
 
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
@@ -111,8 +108,7 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	clearObjects : function(){
-		this.removeAllEvents();
-
+		pzprv3.event.removeAllEvents();
 		pzprv3.ui.menureset();
 	},
 
@@ -121,64 +117,6 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
 		return (new this.classes[classname](this, args));
-	},
-
-	//----------------------------------------------------------------------
-	// owner.addEvent()          addEventListener(など)を呼び出す
-	// owner.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// owner.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// owner.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
-	// owner.removeAllEvents()   removeEventListener(など)を呼び出す
-	//----------------------------------------------------------------------
-	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
-		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
-	},
-
-	addMouseDownEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerDown", self, func);
-		}
-		else{
-			this.addEvent(el, "mousedown", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchstart", self, func);
-			}
-		}
-	},
-	addMouseMoveEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerMove", self, func);
-		}
-		else{
-			this.addEvent(el, "mousemove", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchmove",  self, func);
-			}
-		}
-	},
-	addMouseUpEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerUp", self, func);
-		}
-		else{
-			this.addEvent(el, "mouseup", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchend", self, func);
-			}
-		}
-	},
-
-	removeAllEvents : function(){
-		var islt = !!document.removeEventListener;
-		for(var i=0,len=this.evlist.length;i<len;i++){
-			var e=this.evlist[i];
-			if(islt){ e.el.removeEventListener(e.event, e.func, e.capt);}
-			else    { e.el.detachEvent('on'+e.event, e.func);}
-		}
-		this.evlist=[];
 	},
 
 	//---------------------------------------------------------------------------

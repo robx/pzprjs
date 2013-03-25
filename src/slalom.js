@@ -133,9 +133,18 @@ KeyEvent:{
 		return false;
 	},
 
-	keyinput : function(ca){
-		if(ca=='x'){ this.owner.painter.drawNumbersOnGate(true); return;}
-		this.key_inputqnum_slalom(ca);
+	keyinput : function(ca,step){
+		if(ca!=='x'){
+			this.key_inputqnum_slalom(ca);
+		}
+		else{
+			if(step===0){ /* 押した時 */
+				this.owner.painter.drawNumbersOnGate(true);
+			}
+			else if(step===1){ /* 離した時 */
+				this.owner.painter.drawNumbersOnGate(false);
+			}
+		}
 	},
 	key_inputqnum_slalom : function(ca){
 		var cell = this.cursor.getTCC(), bd = this.owner.board;
@@ -162,9 +171,6 @@ KeyEvent:{
 		else if(cell.getQues()===1){
 			this.key_inputqnum(ca);
 		}
-	},
-	keyup : function(ca){
-		if(ca=='x'){ this.owner.painter.drawNumbersOnGate(false);}
 	},
 
 	enablemake_p : true,

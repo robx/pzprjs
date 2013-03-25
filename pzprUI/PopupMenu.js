@@ -51,8 +51,8 @@ pzprv3.createCoreClass('PopupManager',
 	
 	setEvents : function(){
 		for(var name in this.popups){ this.popups[name].setEvent();}
-		this.puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		this.puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
+		pzprv3.event.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		pzprv3.event.addMouseUpEvent  (_doc, this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
@@ -96,26 +96,26 @@ pzprv3.createCoreClass('PopupManager',
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
 		var puzzle = this.puzzle;
-		var pagePos = pzprv3.ui.getPagePos(e);
+		var pagePos = pzprv3.event.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pagePos.px - parseInt(popel.style.left);
 		this.offset.py = pagePos.py - parseInt(popel.style.top);
-		puzzle.mouse.enableMouse = false;
+		pzprv3.event.enableMouse = false;
 	},
 	titlebarup : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
 			this.movingpop = null;
-			this.puzzle.mouse.enableMouse = true;
+			pzprv3.event.enableMouse = true;
 		}
 	},
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			var pagePos = pzprv3.ui.getPagePos(e);
+			var pagePos = pzprv3.event.getPagePos(e);
 			popel.style.left = pagePos.px - this.offset.px + 'px';
 			popel.style.top  = pagePos.py - this.offset.py + 'px';
-			pzprv3.preventDefault(e);
+			pzprv3.event.preventDefault(e);
 		}
 	}
 });
@@ -160,7 +160,7 @@ pzprv3.createCoreClass('PopupMenu',
 	setEvent :function(){
 		if(!!this.titlebar){
 			var mgr = pzprv3.ui.popupmgr;
-			this.puzzle.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
+			pzprv3.event.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
 		}
 	},
 
@@ -177,8 +177,8 @@ pzprv3.createCoreClass('PopupMenu',
 	hide : function(){
 		this.pop.style.display = "none";
 		
-		this.puzzle.key.enableKey = true;
-		this.puzzle.mouse.enableMouse = true;
+		pzprv3.event.enableKey = true;
+		pzprv3.event.enableMouse = true;
 		
 		pzprv3.ui.movingpop = null;
 		pzprv3.ui.popup = null;
@@ -333,7 +333,7 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 	
 	show : function(px,py){
 		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
-		this.puzzle.key.enableKey = false;
+		pzprv3.event.enableKey = false;
 	},
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
@@ -481,7 +481,7 @@ pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ pzprv3.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzprv3.event.preventDefault(e||window.event); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
@@ -629,7 +629,7 @@ pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
 		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
 		
 		this.form.cs.value = this.puzzle.painter.cellsize;
-		this.puzzle.key.enableKey = false;
+		pzprv3.event.enableKey = false;
 	},
 	
 	//------------------------------------------------------------------------------

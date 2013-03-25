@@ -29,8 +29,6 @@ pzprv3.createCoreClass('Menu',
 
 		this.reader;	// FileReaderオブジェクト
 
-		this.resizetimer  = null;	// resizeタイマー
-
 		// ElementTemplate : ボタン
 		this.el_button = pzprv3.createEL('input');
 		this.el_button.type = 'button';
@@ -235,47 +233,6 @@ pzprv3.createCoreClass('Menu',
 	getPuzzleName : function(){
 		var pinfo = pzprv3.PZLINFO.info[this.targetpuzzle.pid];
 		return this.selectStr(pinfo.ja, pinfo.en);
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.setWindowEvents()  マウス入力、キー入力以外のイベントの設定を行う
-	//---------------------------------------------------------------------------
-	setWindowEvents : function(){
-		var puzzle = this.targetpuzzle;
-		// File API＋Drag&Drop APIの設定
-		if(!!this.reader){
-			var DDhandler = function(e){
-				this.reader.readAsText(e.dataTransfer.files[0]);
-				e.preventDefault();
-				e.stopPropagation();
-			};
-			puzzle.addEvent(window, 'dragover', this, function(e){ e.preventDefault();}, true);
-			puzzle.addEvent(window, 'drop', this, DDhandler, true);
-		}
-
-		// onBlurにイベントを割り当てる
-		puzzle.addEvent(document, 'blur', this, this.onblur_func);
-
-		// onresizeイベントを割り当てる
-		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
-		puzzle.addEvent(window, evname, this, this.onresize_func);
-
-		// ポップアップメニューにイベントを割り当てる
-		this.popupmgr.setEvents();
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.onresize_func() ウィンドウリサイズ時に呼ばれる関数
-	// menu.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
-	//---------------------------------------------------------------------------
-	onresize_func : function(){
-		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		var self = this;
-		this.resizetimer = setTimeout(function(){ self.targetpuzzle.painter.forceRedraw();},250);
-	},
-	onblur_func : function(){
-		this.targetpuzzle.key.keyreset();
-		this.targetpuzzle.mouse.mousereset();
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -616,14 +573,14 @@ pzprv3.createCoreClass('Menu',
 			smenu.id = smenuid;
 			if(pp.type(id)===pp.MENU){
 				pzprv3.getEL('menupanel').appendChild(smenu);
-				puzzle.addEvent(smenu, "mouseover", this, this.menuhover);
-				puzzle.addEvent(smenu, "mouseout",  this, this.menuout);
+				pzprv3.event.addEvent(smenu, "mouseover", this, this.menuhover);
+				pzprv3.event.addEvent(smenu, "mouseout",  this, this.menuout);
 				continue;
 			}
 			else if(sfunc){
-				puzzle.addEvent(smenu, "mouseover", this, this.submenuhover);
-				puzzle.addEvent(smenu, "mouseout",  this, this.submenuout);
-				if(cfunc){ puzzle.addEvent(smenu, "click", this, this.submenuclick);}
+				pzprv3.event.addEvent(smenu, "mouseover", this, this.submenuhover);
+				pzprv3.event.addEvent(smenu, "mouseout",  this, this.submenuout);
+				if(cfunc){ pzprv3.event.addEvent(smenu, "click", this, this.submenuclick);}
 			}
 
 			var parentid = pp.flags[id].parent;
@@ -631,7 +588,7 @@ pzprv3.createCoreClass('Menu',
 				var panel = el_float.cloneNode(false);
 				panel.id = 'float_'+parentid;
 				pzprv3.getEL('float_parent').appendChild(panel);
-				puzzle.addEvent(panel, "mouseout", this, this.floatmenuout);
+				pzprv3.event.addEvent(panel, "mouseout", this, this.floatmenuout);
 				this.floatpanel[parentid] = panel;
 			}
 			this.floatpanel[parentid].appendChild(smenu);
@@ -719,7 +676,7 @@ pzprv3.createCoreClass('Menu',
 	submenuexec : function(e, idname){
 		if(this.funcs[idname]){ this.funcs[idname].call(this);}
 		else{
-			var pagePos = this.getPagePos(e);
+			var pagePos = pzprv3.event.getPagePos(e);
 			this.popupmgr.open(idname, pagePos.px - 8, pagePos.py - 8);
 		}
 	},
@@ -749,7 +706,7 @@ pzprv3.createCoreClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = this.pageX(e)  + 'px';
+				_float.style.left = pzprv3.event.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -783,12 +740,12 @@ pzprv3.createCoreClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = this.pageX(e), ey = this.pageY(e);
+		var ex = pzprv3.event.pageX(e), ey = pzprv3.event.pageY(e);
 		var rect = pzprv3.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = this.pageX(e), ey = this.pageY(e);
+		var ex = pzprv3.event.pageX(e), ey = pzprv3.event.pageY(e);
 		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
@@ -835,7 +792,7 @@ pzprv3.createCoreClass('Menu',
 					var num = pp.flags[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
-					puzzle.addEvent(sel, "click", this, this.selectclick);
+					pzprv3.event.addEvent(sel, "click", this, this.selectclick);
 					_div.appendChild(sel);
 					_div.appendChild(document.createTextNode(' '));
 				}
@@ -847,7 +804,7 @@ pzprv3.createCoreClass('Menu',
 			case pp.CHECK:
 				var box = el_checkbox.cloneNode(false);
 				box.id = 'ck_'+idname;
-				puzzle.addEvent(box, "click", this, this.checkclick);
+				pzprv3.event.addEvent(box, "click", this, this.checkclick);
 				_div.appendChild(box);
 				_div.appendChild(document.createTextNode(" "));
 				var span = el_span.cloneNode(false);
@@ -1272,76 +1229,6 @@ pzprv3.createCoreClass('Menu',
 			o.board.subclear();
 			o.painter.paintAll();
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.getMouseButton() 左/中/右ボタンが押されているかチェックする
-	//---------------------------------------------------------------------------
-	getMouseButton : function(e){
-		var left=false, mid=false, right=false;
-		if(e.touches!==void 0){
-			/* touchイベントだった場合 */
-			left  = (e.touches.length===1);
-			right = (e.touches.length>1);
-		}
-		else{
-			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
-				left  = (e.button===1);
-				mid   = (e.button===4);
-				right = (e.button===2);
-			}
-			else{
-				left  = (!!e.which ? e.which===1 : e.button===0);
-				mid   = (!!e.which ? e.which===2 : e.button===1);
-				right = (!!e.which ? e.which===3 : e.button===2);
-			}
-		}
-
-		// SHIFTキー/Commandキーを押している時は左右ボタン反転
-		var o = this.targetpuzzle;
-		o.key.checkmodifiers(e);
-		if(((o.key.isSHIFT || o.key.isMETA)^o.getConfig('lrcheck'))&&(left!==right))
-			{ left=!left; right=!right;}
-
-		return {Left:left, Middle:mid, Right:right};
-	},
-
-	//----------------------------------------------------------------------
-	// menu.getPagePos() イベントが起こったページ上の座標を返す
-	// menu.pageX() イベントが起こったページ上のX座標を返す
-	// menu.pageY() イベントが起こったページ上のY座標を返す
-	//----------------------------------------------------------------------
-	getPagePos : function(e){
-		var pos = new pzprv3.core.Point(0, 0);
-		pos.px = this.pageX(e);
-		pos.py = this.pageY(e);
-		return pos;
-	},
-	pageX : function(e){
-		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageX)){ return e.pageX;}
-		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
-		return 0;
-	},
-	pageY : function(e){
-		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageY)){ return e.pageY;}
-		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
-		return 0;
 	}
 });
 
