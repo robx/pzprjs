@@ -3,12 +3,12 @@
 
 var k = pzprv3.consts;
 
-pzprv3.extendCoreClass('Debug',
+pzprv3.extendCoreClass('Popup_Debug',
 {
 	testonly_func : function(){
-		var _doc = document,  self = this;
+		var _doc = document, debug = pzprv3.debug;
 		_doc.testform.starttest.style.display = 'inline';
-		_doc.testform.starttest.onclick = function(){ self.starttest();};
+		_doc.testform.starttest.onclick = function(){ debug.starttest();};
 		
 		if(!pzprv3.getEL('testdiv')){
 			var el = _doc.createElement('div');
@@ -18,8 +18,11 @@ pzprv3.extendCoreClass('Debug',
 			el.style.lineHeight = '100%';
 			_doc.body.appendChild(el);
 		}
-	},
+	}
+});
 
+pzprv3.extendCoreClass('Debug',
+{
 	keydown : function(ca){
 		var kc = this.targetowner.key;
 		if(ca=='F7'){ this.accheck1();}
@@ -104,9 +107,8 @@ pzprv3.extendCoreClass('Debug',
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var o = this.targetowner, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			document.urlinput.ta.value = o.enc.pzloutput(k.KANPEN);
-			pzprv3.ui.popel = pzprv3.getEL("pop1_5");
-			pzprv3.ui.urlinput({});
+			var pzl = pzprv3.parseURLType(o.enc.pzloutput(k.KANPEN));
+			if(!!pzl.id){ this.targetowner.importBoardData(pzl);}
 
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}

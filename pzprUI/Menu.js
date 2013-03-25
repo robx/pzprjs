@@ -1013,7 +1013,7 @@ pzprv3.createCoreClass('Menu',
 		this.popups.dispsize = new pzprv3.core.Popup_DispSize(puzzle);
 
 		// poptest ------------------------------------------------------------
-		pzprv3.debug.poptest_func();
+		this.popups.debug = new pzprv3.core.Popup_Debug(puzzle);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1184,7 +1184,7 @@ pzprv3.createCoreClass('Menu',
 		irowake   : function(){ this.targetpuzzle.painter.paintAll();},
 		cursor    : function(){ this.targetpuzzle.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
-		poptest   : function(){ pzprv3.debug.disppoptest();},
+		poptest   : function(){ this.popups.debug.show();},
 
 		dispsize  : function(){ this.popup = this.popups.dispsize;},
 		mode      : function(num){ this.modechange(num);},
