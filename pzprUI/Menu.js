@@ -979,7 +979,6 @@ pzprv3.createCoreClass('Menu',
 			}
 			popel = popel.nextSibling;
 		}
-		this.titlebarfunc(getEL('credit3_1'));
 
 		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
 		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
@@ -1027,18 +1026,10 @@ pzprv3.createCoreClass('Menu',
 		this.popups.turnflip = new pzprv3.core.Popup_TurnFlip(puzzle);
 
 		// credit -------------------------------------------------------------
-		lab(getEL('bar3_1'),   "credit", "credit");
-		lab(getEL('credit3_1'),"ぱずぷれv3 "+pzprv3.version+"<br>\n<br>\nぱずぷれv3は はっぱ/連続発破が作成しています。<br>\n",
-							   "PUZ-PRE v3 "+pzprv3.version+"<br>\n<br>\nPUZ-PRE v3 id made by happa.<br>\n");
-		btn(_doc.credit.close,  close, "閉じる", "OK");
+		this.popups.credit = new pzprv3.core.Popup_Credit(puzzle);
 
 		// 表示サイズ ---------------------------------------------------------
-		func = function(e){ self.dispsize(e||window.event);};
-		lab(getEL('bar4_1'),      "表示サイズの変更",         "Change size");
-		lab(getEL('pop4_1_cap0'), "表示サイズを変更します。", "Change the display size.");
-		lab(getEL('pop4_1_cap1'), "表示サイズ",               "Display size");
-		btn(_doc.dispsize.dispsize, func,  "変更する",   "Change");
-		btn(_doc.dispsize.cancel,   close, "キャンセル", "Cancel");
+		this.popups.dispsize = new pzprv3.core.Popup_DispSize(puzzle);
 
 		// poptest ------------------------------------------------------------
 		pzprv3.debug.poptest_func();
@@ -1210,7 +1201,7 @@ pzprv3.createCoreClass('Menu',
 		turn      : function(){ this.popup = this.popups.turnflip;},
 		duplicate : function(){ this.duplicate();},
 
-		credit    : function(){ this.popel = getEL("pop3_1");},
+		credit    : function(){ this.popup = this.popups.credit;},
 		jumpexp   : function(){ window.open('./faq.html?'+this.targetpuzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
@@ -1220,6 +1211,7 @@ pzprv3.createCoreClass('Menu',
 		manarea   : function(){ this.dispman();},
 		poptest   : function(){ pzprv3.debug.disppoptest();},
 
+		dispsize  : function(){ this.popup = this.popups.dispsize;},
 		mode      : function(num){ this.modechange(num);},
 		text      : function(num){ this.textsize(num); this.targetpuzzle.painter.forceRedraw();},
 		size      : function(num){ this.targetpuzzle.painter.forceRedraw();},
@@ -1254,11 +1246,6 @@ pzprv3.createCoreClass('Menu',
 			pc.unsuspend();
 		},
 
-		dispsize : function(){
-			this.popel = getEL("pop4_1");
-			document.dispsize.cs.value = this.targetpuzzle.painter.cellsize;
-			this.targetpuzzle.key.enableKey = false;
-		},
 		keypopup : function(){
 			var f = this.targetpuzzle.key.haspanel[this.items.flags['mode'].val];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
@@ -1408,20 +1395,6 @@ pzprv3.createCoreClass('Menu',
 		if(this.popel || this.popup){
 			var operation = (e.target||e.srcElement).name;
 			pzprv3.dbm.clickHandler(operation, this.targetpuzzle);
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.dispsize()  Canvasでのマス目の表示サイズを変更する
-	//------------------------------------------------------------------------------
-	dispsize : function(e){
-		if(this.popel || this.popup){
-			var pc = this.targetpuzzle.painter;
-			var csize = parseInt(document.dispsize.cs.value);
-			if(csize>0){ pc.cellsize = (csize|0);}
-
-			this.popclose();
-			pc.forceRedraw();	// Canvasを更新する
 		}
 	},
 

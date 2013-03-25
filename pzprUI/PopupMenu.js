@@ -177,8 +177,6 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		var popup = this;
 		this.addExecButton("新規作成", "Create", function(){ popup.execute();});
 		this.addCancelButton();
-		
-		this.puzzle.key.enableKey = false;
 	},
 	makeForm_tawa_lap : function(form){
 		var table = new pzprv3.core.TableElement();
@@ -216,6 +214,10 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		this.addElement(table.getElement());
 	},
 	
+	show : function(e){
+		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+		this.puzzle.key.enableKey = false;
+	},
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
 	//---------------------------------------------------------------------------
@@ -415,8 +417,7 @@ pzprv3.createCoreClass('Popup_Adjust:PopupMenu',
 		this.addText("盤面の調整を行います。", "Adjust the board.");
 		this.addBR();
 		
-		var popup = this;
-		adjust = function(e){ popup.adjust(e||window.event);};
+		var popup = this, adjust = function(e){ popup.adjust(e||window.event);};
 		
 		this.addText("拡大", "Expand");
 		this.addExecButton("上", "Top", adjust, {name:'expandup'});
@@ -446,7 +447,7 @@ pzprv3.createCoreClass('Popup_Adjust:PopupMenu',
 });
 
 //---------------------------------------------------------------------------
-// ★Popup_turnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
+// ★Popup_TurnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
 pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
 {
@@ -461,8 +462,7 @@ pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
 		this.addText("盤面の回転・反転を行います。","Flip/Turn the board.");
 		this.addBR();
 		
-		var popup = this;
-		adjust = function(e){ popup.adjust(e||window.event);};
+		var popup = this, adjust = function(e){ popup.adjust(e||window.event);};
 		
 		this.addExecButton("左90°回転", "Turn left by 90 degree", adjust, {name:'turnl'});
 		this.addExecButton("右90°回転", "Turn right by 90 degree", adjust, {name:'turnr'});
@@ -480,6 +480,76 @@ pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
 	//------------------------------------------------------------------------------
 	adjust : function(e){
 		this.puzzle.board.execadjust((e.target||e.srcElement).name);
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_DispSizeクラス 回転・反転のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
+{
+	formname : 'dispsize',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("表示サイズの変更", "Change size");
+		
+		this.addText("表示サイズを変更します。", "Change the display size.");
+		this.addBR();
+		
+		this.addText("表示サイズ", "Display size");
+		this.addInput('number', {name:'cs', value:'', size:'4', maxlength:'3', min:'8', max:'999'});
+		this.addBR();
+		
+		var popup = this;
+		this.addExecButton("変更する", "Change", function(){ popup.changesize();});
+		this.addCancelButton();
+	},
+	
+	show : function(e){
+		pzprv3.core.PopupMenu.prototype.show.call(this,e);
+		
+		this.form.cs.value = this.puzzle.painter.cellsize;
+		this.puzzle.key.enableKey = false;
+	},
+	
+	//------------------------------------------------------------------------------
+	// changesize()  Canvasでのマス目の表示サイズを変更する
+	//------------------------------------------------------------------------------
+	changesize : function(e){
+		var pc = this.puzzle.painter;
+		var csize = parseInt(this.form.cs.value);
+		if(csize>0){ pc.cellsize = (csize|0);}
+		
+		this.hide();
+		pc.forceRedraw();	// Canvasを更新する
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_Creditクラス Creditやバージョン情報を表示します
+//---------------------------------------------------------------------------
+pzprv3.createCoreClass('Popup_Credit:PopupMenu',
+{
+	formname : 'credit',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("credit", "credit");
+		
+		this.addText("ぱずぷれv3 "+pzprv3.version, "PUZ-PRE v3 "+pzprv3.version);
+		this.addBR();
+		this.addBR();
+		
+		this.addText("ぱずぷれv3は はっぱ/連続発破が作成しています。", "PUZ-PRE v3 id made by happa.");
+		this.addBR();
+		
+		var popup = this;
+		this.addExecButton("閉じる", "Close", function(){ popup.hide();});
 	}
 });
 
