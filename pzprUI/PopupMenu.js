@@ -31,7 +31,8 @@ pzprv3.createCoreClass('PopupMenu',
 		
 		var bar = _doc.createElement('div');
 		bar.className = 'titlebar';
-		pzprv3.ui.titlebarfunc(bar);
+		this.puzzle.addMouseDownEvent(bar, pzprv3.ui, pzprv3.ui.titlebardown);
+		pzprv3.unselectable(bar);
 		this.pop.appendChild(bar);
 		this.titlebar = bar;
 		

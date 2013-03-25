@@ -419,15 +419,12 @@ pzprv3.createCommonClass('KeyEvent',
 	// kp.createtable() キーポップアップのポップアップを作成する
 	//---------------------------------------------------------------------------
 	create : function(){
+		if(!this.haspanel[1] && !this.hanpanel[3]){ return;}
+		
 		if(!this.element){
-			var rect = pzprv3.getRect(pzprv3.getEL('divques'));
-			this.element = pzprv3.getEL('keypopup');
-			this.element.style.left   = (rect.left+48)+'px';
-			this.element.style.top    = (rect.top +48)+'px';
-			this.element.style.zIndex = 100;
-			pzprv3.getEL('barkeypopup').ondblclick = function(){ this.owner.setConfig('keypopup',false)};
+			this.element = this.makeKeyPopup();
 		}
-
+		
 		if(this.enablemake_p && pzprv3.EDITOR){ this.createtable(1);}
 		if(this.enableplay_p)                 { this.createtable(3);}
 	},
@@ -438,6 +435,43 @@ pzprv3.createCommonClass('KeyEvent',
 		this.basetmp.innerHTML = '';
 
 		this.generate(mode,this.paneltype);
+	},
+
+	//---------------------------------------------------------------------------
+	// kp.makeKeyPopup() キーポップアップのパネルを作成する
+	//---------------------------------------------------------------------------
+	makeKeyPopup : function(){
+		var keypopup, bar, _doc = document, o = this.owner;
+		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
+		
+		keypopup = _doc.createElement('div');
+		keypopup.className = 'popup';
+		keypopup.id = 'keypopup';
+		keypopup.style.left   = (rect.left+48)+'px';
+		keypopup.style.top    = (rect.top +48)+'px';
+		keypopup.style.zIndex = 100;
+		pzprv3.getEL("popup_parent").appendChild(keypopup);
+		
+		bar = _doc.createElement('div');
+		bar.className = 'titlebar';
+		bar.id = 'barkeypopup';
+		bar.appendChild(_doc.createTextNode("panel"));
+		pzprv3.unselectable(bar);
+		keypopup.appendChild(bar);
+		o.addMouseDownEvent(bar, pzprv3.ui, pzprv3.ui.titlebardown);
+		o.addEvent(bar, 'dblclick', o, function(){ o.setConfig('keypopup',false)});
+		
+		var panel = _doc.createElement('div');
+		panel.className = 'panelbase';
+		panel.id = 'panelbase1';
+		keypopup.appendChild(panel);
+		
+		panel = _doc.createElement('div');
+		panel.className = 'panelbase';
+		panel.id = 'panelbase3';
+		keypopup.appendChild(panel);
+		
+		return keypopup;
 	},
 
 	//---------------------------------------------------------------------------

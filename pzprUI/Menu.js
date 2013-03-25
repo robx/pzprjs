@@ -16,7 +16,6 @@ pzprv3.createCoreClass('Menu',
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
-		this.popel      = null;			// 現在表示しているポップアップウィンドウ(オブジェクト)
 		this.popup      = null;			// 現在表示しているポップアップオブジェクト
 
 		this.movingpop  = null;			// 移動中のポップアップメニュー
@@ -84,7 +83,6 @@ pzprv3.createCoreClass('Menu',
 	menureset : function(){
 		this.dispfloat  = [];
 		this.floatpanel = [];
-		this.popel      = null;
 		this.popup      = null;
 		this.btnstack   = [];
 		this.labelstack = [];
@@ -93,10 +91,10 @@ pzprv3.createCoreClass('Menu',
 		this.popclose();
 		this.floatmenuclose(0);
 
-		for(var name in this.popups){ this.popups[name].remove();}
 		this.popups = {};
 
 		getEL('float_parent').innerHTML = '';
+		getEL('popup_parent').innerHTML = '';
 
 		getEL('btnarea').innerHTML = '';
 
@@ -965,26 +963,8 @@ pzprv3.createCoreClass('Menu',
 		var puzzle = this.targetpuzzle;
 
 		//=====================================================================
-		//// 各タイトルバーの動作設定
-		var popel = getEL('popup_parent').firstChild;
-		while(!!popel){
-			var _el = popel.firstChild;
-			while(!!_el){
-				if(_el.className==='titlebar'){
-					this.titlebarfunc(_el);
-					break;
-				}
-				_el = _el.nextSibling;
-			}
-			popel = popel.nextSibling;
-		}
-
-		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
-
 		this.popups = {};
 
-		//=====================================================================
 		// 盤面の新規作成 -----------------------------------------------------
 		this.popups.newboard = new pzprv3.core.Popup_Newboard(puzzle);
 
@@ -1014,6 +994,10 @@ pzprv3.createCoreClass('Menu',
 
 		// poptest ------------------------------------------------------------
 		this.popups.debug = new pzprv3.core.Popup_Debug(puzzle);
+
+		//=====================================================================
+		puzzle.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		puzzle.addMouseUpEvent  (_doc, this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1024,44 +1008,21 @@ pzprv3.createCoreClass('Menu',
 		// 表示しているウィンドウがある場合は閉じる
 		this.popclose();
 
-		// この中でmenu.popelも設定されます。
+		// この中でmenu.popupも設定されます。
 		if(this.funcs[idname]){ this.funcs[idname].call(this);}
 
 		// ポップアップメニューを表示する
-		if(this.popel){
-			var _popel = this.popel;
-			_popel.style.left = this.targetpuzzle.mouse.pageX(e) - 8 + 'px';
-			_popel.style.top  = this.targetpuzzle.mouse.pageY(e) - 8 + 'px';
-			_popel.style.display = 'inline';
-		}
-		else if(this.popup){
-			this.popup.show(e);
-		}
+		if(this.popup){ this.popup.show(e);}
 	},
 	popclose : function(){
-		if(this.popel){
-			this.popel.style.display = "none";
-			this.popel = null;
-			this.movingpop = null;
-			this.targetpuzzle.key.enableKey = true;
-			this.targetpuzzle.mouse.enableMouse = true;
-		}
-		else if(this.popup){
-			this.popup.hide();
-		}
+		if(this.popup){ this.popup.hide();}
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.titlebarfunc()  下の4つのイベントをイベントハンドラにくっつける
 	// menu.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
 	// menu.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
 	// menu.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
-	titlebarfunc : function(bar){
-		this.targetpuzzle.addMouseDownEvent(bar, this, this.titlebardown);
-		pzprv3.unselectable(bar);
-	},
-
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
 		var puzzle = this.targetpuzzle;
