@@ -377,10 +377,10 @@ pzprv3.createCoreClass('Events',
 	//---------------------------------------------------------------------------
 	checkmodifiers : function(e){
 		var kc = this.puzzle.key;
-		if(kc.isSHIFT ^ e.shiftKey){ kc.isSHIFT = e.shiftKey; if(!kc.isSHIFT){ kc.ca='';}}
-		if(kc.isCTRL  ^ e.ctrlKey) { kc.isCTRL  = e.ctrlKey;  kc.ca='';}
-		if(kc.isMETA  ^ e.metaKey) { kc.isMETA  = e.metaKey;  kc.ca='';}
-		if(kc.isALT   ^ e.altKey)  { kc.isALT   = e.altKey;   kc.ca='';}
+		if(kc.isSHIFT ^ e.shiftKey){ kc.isSHIFT = e.shiftKey;}
+		if(kc.isCTRL  ^ e.ctrlKey) { kc.isCTRL  = e.ctrlKey; }
+		if(kc.isMETA  ^ e.metaKey) { kc.isMETA  = e.metaKey; }
+		if(kc.isALT   ^ e.altKey)  { kc.isALT   = e.altKey;  }
 
 		if(!(kc.isCTRL || kc.isMETA)){ pzprv3.undotimer.stop();}
 	},

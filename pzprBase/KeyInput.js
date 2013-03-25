@@ -39,7 +39,6 @@ pzprv3.createCommonClass('KeyEvent',
 
 		this.tcMoved = false;	// カーソル移動時にスクロールさせない
 		this.prev = null;
-		this.ca = '';
 	},
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
