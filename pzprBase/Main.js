@@ -57,7 +57,6 @@ pzprv3.createCoreClass('Owner',
 			this.initObjects();
 		}
 
-		this.painter.suspendAll();
 		// ファイルを開く・複製されたデータを開く
 		if(!!pzl.fstr){
 			this.fio.filedecode(pzl.fstr);
@@ -70,8 +69,6 @@ pzprv3.createCoreClass('Owner',
 		else{
 			this.board.initBoardSize();
 		}
-		this.painter.resize_canvas();
-		this.painter.unsuspend();
 
 		this.resetTime();
 

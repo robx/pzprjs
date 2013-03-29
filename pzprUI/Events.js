@@ -421,12 +421,80 @@ pzprv3.createCoreClass('Events',
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
 		var self = this;
-		this.resizetimer = setTimeout(function(){ self.puzzle.painter.forceRedraw();},250);
+		this.resizetimer = setTimeout(function(){
+			self.setcellsize();
+			self.puzzle.painter.forceRedraw();
+			self.puzzle.key.resizepanel();
+		},250);
 	},
 	onblur_func : function(){
 		this.puzzle.key.keyreset();
 		this.puzzle.mouse.mousereset();
 	},
+
+	//---------------------------------------------------------------------------
+	// event.setcellsize()   pc.cw, pc.chのサイズを設定する
+	//---------------------------------------------------------------------------
+	setcellsize : function(){
+		var o = this.puzzle, bd = o.board, pc = o.painter;
+		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
+		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
+
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.puzzle.getConfig('size')];
+		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
+		ci[0] = (wwidth*ws.base )/(pc.cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(pc.cellsize*cr.limit);
+
+		// 横幅いっぱいに広げたい場合
+		if(pzprv3.OS.mobile){
+			mwidth = wwidth*0.98;
+			pc.cw = pc.ch = ((mwidth*0.92)/cols)|0;
+			if(pc.cw < pc.cellsize){ pc.cw = pc.ch = pc.cellsize;}
+		}
+		// 縮小が必要ない場合
+		else if(!this.puzzle.getConfig('adjsize') || cols < ci[0]){
+			mwidth = wwidth*ws.base-4;
+			pc.cw = pc.ch = (pc.cellsize*cr.base)|0;
+		}
+		// base～limit間でサイズを自動調節する場合
+		else if(cols < ci[1]){
+			var ws_tmp = ws.base+(ws.limit-ws.base)*((bd.qcols-ci[0])/(ci[1]-ci[0]));
+			mwidth = wwidth*ws_tmp-4;
+			pc.cw = pc.ch = (mwidth/cols)|0; // 外枠ぎりぎりにする
+		}
+		// 自動調整の下限値を超える場合
+		else{
+			mwidth = wwidth*ws.limit-4;
+			pc.cw = pc.ch = (pc.cellsize*cr.limit)|0;
+		}
+
+		// mainのサイズ変更
+		if(!pc.outputImage){
+			pzprv3.getEL('main').style.width = ''+(mwidth|0)+'px';
+			if(pzprv3.OS.mobile){ pzprv3.getEL('menuboard').style.width = '90%';}
+		}
+	},
+
+	//----------------------------------------------------------------------
+	// pc.windowWidth()   ウィンドウの幅を返す
+	// pc.windowHeight()  ウィンドウの高さを返す
+	//----------------------------------------------------------------------
+	windowWidth : function(){
+		this.windowWidth = ((!pzprv3.OS.mobile) ?
+			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : document.body.clientWidth);}
+		:
+			function(){ return 980;}
+		);
+		return this.windowWidth();
+	},
+	// windowHeight : function(){
+	//	this.windowHeight = ((!pzprv3.OS.mobile) ?
+	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : document.body.clientHeight);}
+	//	:
+	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
+	//	);
+	//	return this.windowHeight();
+	// },
 
 	//----------------------------------------------------------------------
 	// Eventオブジェクト関連

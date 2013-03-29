@@ -159,17 +159,8 @@ pzprv3.createCommonClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
 	//                       Canvas/表示するマス目の大きさを設定する。
-	// pc.setcellsize()      pc.cw, pc.chのサイズを設定する
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
-		var o = this.owner;
-		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
-		var cols = (o.board.maxbx-o.board.minbx)/2+2*this.bdmargin; // canvasの横幅がセル何個分に相当するか
-		var rows = (o.board.maxby-o.board.minby)/2+2*this.bdmargin; // canvasの縦幅がセル何個分に相当するか
-		if(o.pid==='box'){ cols++; rows++;}
-
-		this.setcellsize(cols,rows);
-
 		this.bw = this.cw/2;
 		this.bh = this.ch/2;
 
@@ -179,10 +170,11 @@ pzprv3.createCommonClass('Graphic',
 		// 盤面のセルID:0が描画される左上の位置の設定
 		this.x0 = this.y0 = (this.cw*this.bdmargin)|0;
 		// extendxell==0でない時は位置をずらす
-		if(!!o.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
+		if(!!this.owner.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
 
 		// Canvasのサイズ変更
-		var cwid = (cols*this.cw)|0, chgt = (rows*this.ch)|0;
+		var cwid = (this.getCanvasCols()*this.cw)|0;
+		var chgt = (this.getCanvasRows()*this.ch)|0;
 		this.currentContext.changeSize(cwid, chgt);
 		this.subContext.changeSize(cwid, chgt);
 		var rect = pzprv3.getRect(this.currentContext.canvas);
@@ -203,67 +195,21 @@ pzprv3.createCommonClass('Graphic',
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
-
-		o.key.resizepanel();
 	},
-	setcellsize : function(cols, rows){
-		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
-
-		var cratio = (this.owner.ready ? {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.owner.getConfig('size')] : 1.0);
-		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(this.cellsize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(this.cellsize*cr.limit);
-
-		// 横幅いっぱいに広げたい場合
-		if(pzprv3.OS.mobile){
-			mwidth = wwidth*0.98;
-			this.cw = this.ch = ((mwidth*0.92)/cols)|0;
-			if(this.cw < this.cellsize){ this.cw = this.ch = this.cellsize;}
-		}
-		// 縮小が必要ない場合
-		else if((this.owner.ready && !this.owner.getConfig('adjsize')) || cols < ci[0]){
-			mwidth = wwidth*ws.base-4;
-			this.cw = this.ch = (this.cellsize*cr.base)|0;
-		}
-		// base～limit間でサイズを自動調節する場合
-		else if(cols < ci[1]){
-			var ws_tmp = ws.base+(ws.limit-ws.base)*((this.owner.board.qcols-ci[0])/(ci[1]-ci[0]));
-			mwidth = wwidth*ws_tmp-4;
-			this.cw = this.ch = (mwidth/cols)|0; // 外枠ぎりぎりにする
-		}
-		// 自動調整の下限値を超える場合
-		else{
-			mwidth = wwidth*ws.limit-4;
-			this.cw = this.ch = (this.cellsize*cr.limit)|0;
-		}
-
-		// mainのサイズ変更
-		if(!this.outputImage){
-			pzprv3.getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzprv3.OS.mobile){ pzprv3.getEL('menuboard').style.width = '90%';}
-		}
+	//---------------------------------------------------------------------------
+	// pc.getCanvasCols()  Canvasの横幅としてセル何個分が必要か返す
+	// pc.getCanvasRows()  Canvasの縦幅としてセル何個分が必要か返す
+	//---------------------------------------------------------------------------
+	getCanvasCols : function(){
+		var bd = this.owner.board;
+		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
+		return ((bd.maxbx-bd.minbx)>>1)+2*this.bdmargin;
 	},
-
-	//----------------------------------------------------------------------
-	// pc.windowWidth()   ウィンドウの幅を返す
-	// pc.windowHeight()  ウィンドウの高さを返す
-	//----------------------------------------------------------------------
-	windowWidth : function(){
-		this.windowWidth = ((!pzprv3.OS.mobile) ?
-			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : document.body.clientWidth);}
-		:
-			function(){ return 980;}
-		);
-		return this.windowWidth();
+	getCanvasRows : function(){
+		var bd = this.owner.board;
+		if(pzprv3.OS.mobile && !pc.outputImage){ this.bdmargin = this.bdmargin_image;}
+		return ((bd.maxby-bd.minby)>>1)+2*this.bdmargin;
 	},
-	// windowHeight : function(){
-	//	this.windowHeight = ((!pzprv3.OS.mobile) ?
-	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : document.body.clientHeight);}
-	//	:
-	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
-	//	);
-	//	return this.windowHeight();
-	// },
 
 	//---------------------------------------------------------------------------
 	// pc.suspend()     描画処理を一時停止する

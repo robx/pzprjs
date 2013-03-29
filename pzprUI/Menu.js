@@ -75,6 +75,7 @@ pzprv3.createCoreClass('Menu',
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
+		pzprv3.event.setcellsize();
 		this.targetpuzzle.painter.forceRedraw();
 	},
 
@@ -1145,11 +1146,10 @@ pzprv3.createCoreClass('Menu',
 			pc2.outputImage = true;
 			pc2.fillTextEmulate = false;
 			pc2.bdmargin = pc.bdmargin_image;
-			pc2.setcellsize = function(){
-				if(!cellsize){ cellsize = pc.cw;}
-				pc2.cw = cellsize;
-				pc2.ch = cellsize*(pc.ch/pc.cw);
-			};
+
+			if(!cellsize){ cellsize = pc.cw;}
+			pc2.cw = cellsize;
+			pc2.ch = cellsize*(pc.ch/pc.cw);
 
 			// canvas要素の設定を適用して、再描画
 			pc2.resize_canvas();
