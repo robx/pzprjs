@@ -16,7 +16,6 @@ pzprv3.createCoreClass('Timer',
 
 		this.targetpuzzle = targetpuzzle;
 
-		this.st       = 0;		// タイマースタート時のgetTime()取得値(ミリ秒)
 		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
 		// 経過時間表示用変数
@@ -42,7 +41,6 @@ pzprv3.createCoreClass('Timer',
 		this.start();
 	},
 	start : function(){
-		this.st = pzprv3.currentTime();
 		var self = this;
 		this.TID = setInterval(function(){ self.update();}, this.timerInterval);
 	},
@@ -58,7 +56,7 @@ pzprv3.createCoreClass('Timer',
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var seconds = ((this.current - this.st)/1000)|0;
+		var seconds = (this.targetpuzzle.getTime()/1000)|0;
 		if(this.bseconds == seconds){ return;}
 
 		var hours   = (seconds/3600)|0;

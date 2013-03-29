@@ -18,6 +18,9 @@ pzprv3.createCoreClass('Owner',
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
 		this.playmode = !this.editmode;							// 回答モード
+
+		this.starttime = 0;
+		this.resetTime();
 	},
 
 	//---------------------------------------------------------------------------
@@ -70,6 +73,8 @@ pzprv3.createCoreClass('Owner',
 		this.painter.resize_canvas();
 		this.painter.unsuspend();
 
+		this.resetTime();
+
 		this.ready = true;
 	},
 	
@@ -117,6 +122,17 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
 		return (new this.classes[classname](this, args));
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.resetTime()      開始時間をリセットする
+	// owner.getTime()        開始からの時間をミリ秒単位で取得する
+	//---------------------------------------------------------------------------
+	resetTime : function(){
+		this.starttime = pzprv3.currentTime();
+	},
+	getTime : function(){
+		return (pzprv3.currentTime() - this.starttime);
 	},
 
 	//---------------------------------------------------------------------------
