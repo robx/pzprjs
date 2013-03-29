@@ -36,6 +36,7 @@ pzprv3.createCommonClass('KeyEvent',
 		this.isSHIFT = false;
 		this.isZ = false;
 		this.isX = false;
+		this.isY = false;
 
 		this.tcMoved = false;	// カーソル移動時にスクロールさせない
 		this.prev = null;
@@ -85,9 +86,10 @@ pzprv3.createCommonClass('KeyEvent',
 		var o = this.owner, ret = false;
 		if(c==='z' && !this.isZ){ this.isZ=true;}
 		if(c==='x' && !this.isX){ this.isX=true;}
+		if(c==='y' && !this.isY){ this.isY=true;}
 
-		if(c==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startUndo(); ret = true;}
-		if(c==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.startRedo(); ret = true;}
+		if(c==='z' && (this.isCTRL || this.isMETA)){ ret = true;}
+		if(c==='y' && (this.isCTRL || this.isMETA)){ ret = true;}
 
 		if(c==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
 			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); ret = true;}
@@ -102,9 +104,10 @@ pzprv3.createCommonClass('KeyEvent',
 		var ret = false;
 		if(c==='z' && this.isZ){ this.isZ=false;}
 		if(c==='x' && this.isX){ this.isX=false;}
+		if(c==='y' && this.isY){ this.isY=false;}
 
-		if(c==='z' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); ret = true;}
-		if(c==='y' && (this.isCTRL || this.isMETA)){ pzprv3.undotimer.stop(); ret = true;}
+		if(c==='z' && (this.isCTRL || this.isMETA)){ ret = true;}
+		if(c==='y' && (this.isCTRL || this.isMETA)){ ret = true;}
 		return ret;
 	},
 	//---------------------------------------------------------------------------
