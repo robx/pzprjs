@@ -24,16 +24,34 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
-	// owner.waitReady()       準備ができたら実行する処理を記述する
+	// owner.openByURL()      URLを入力して盤面を開く
+	// owner.openByFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
-	importBoardData : function(pzl){
+	openByURL : function(url){
+		var pzl = pzprv3.parseURLType(url);
+		if(!!pzl.id){ this.open(pzl);}
+	},
+	openByFileData : function(filedata){
+		var farray = filedata.split(/[\t\r\n\/]+/), fstr = "";
+		for(var i=0;i<farray.length;i++){
+			if(farray[i].match(/^http\:\/\//)){ break;}
+			fstr += (farray[i]+"/");
+		}
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
+		this.open({id:pid, fstr:fstr});
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.open()      新しくパズルのファイルを開く時の処理
+	// owner.waitReady() 準備ができたら実行する処理を記述する
+	//---------------------------------------------------------------------------
+	open : function(pzl){
 		this.ready = false;
 
 		/* canvasが用意できるまでwait */
 		if(!this.canvas || !this.canvas2){
 			var self = this;
-			setTimeout(function(){ self.importBoardData.call(self,pzl);},10);
+			setTimeout(function(){ self.open.call(self,pzl);},10);
 			return;
 		}
 
@@ -47,7 +65,7 @@ pzprv3.createCoreClass('Owner',
 		/* Classが用意できるまで待つ */
 		if(!pzprv3.custom[this.pid]){
 			var self = this;
-			setTimeout(function(){ self.importBoardData.call(self,pzl);},10);
+			setTimeout(function(){ self.open.call(self,pzl);},10);
 			return;
 		}
 

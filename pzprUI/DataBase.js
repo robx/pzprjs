@@ -493,7 +493,12 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
 		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		pzprv3.ui.fileonload(data.pdata);
+		owner.openByFileData(data.pdata);
+		owner.waitReady(function(){
+			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
+			pzprv3.event.setEvents();			/* イベントをくっつける */
+			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+		});
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){

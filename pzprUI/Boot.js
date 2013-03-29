@@ -73,7 +73,8 @@ function onload_func(){
 	pzprv3.debug.settarget(puzzle);
  
 	// 単体初期化処理のルーチンへ
-	puzzle.importBoardData(onload_pzl);
+	if     (!!onload_pzl.fstr) { puzzle.openByFileData(onload_pzl.fstr);}
+	else if(!!onload_pzl.qdata){ puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
 	puzzle.waitReady(function(){
 		pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
 		pzprv3.event.setEvents();			/* イベントをくっつける */

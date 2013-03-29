@@ -67,9 +67,9 @@ pzprv3.extendCoreClass('Debug',
 			var newid = idlist[pnum];
 			self.pid = newid;
 			var owner = self.targetowner;
-			owner.importBoardData({id:newid, qdata:self.urls[newid]});
+			owner.openByURL("?"+newid+"/"+self.urls[newid]);
 			owner.waitReady(function(){
-				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+				pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
 				pzprv3.event.setEvents();			/* イベントをくっつける */
 				pzprv3.timer.reset();				/* タイマーリセット(最後) */
 
@@ -110,11 +110,11 @@ pzprv3.extendCoreClass('Debug',
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var o = this.targetowner, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			var pzl = pzprv3.parseURLType(o.enc.pzloutput(k.KANPEN));
-			if(!!pzl.id){ o.importBoardData(pzl);}
-
+			o.openByURL(o.enc.pzloutput(k.KANPEN));
 			o.waitReady(function(){
-				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
+
+				pzprv3.ui.menuinit(o.config);		/* メニュー関係初期化 */
 				pzprv3.event.setEvents();			/* イベントをくっつける */
 				pzprv3.timer.reset();				/* タイマーリセット(最後) */
 
@@ -187,6 +187,8 @@ pzprv3.extendCoreClass('Debug',
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
+		if(this.targetowner.getConfig('autocheck')){ this.targetowner.setConfig('autocheck',false);}
+
 		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
 

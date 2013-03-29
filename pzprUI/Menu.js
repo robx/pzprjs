@@ -115,6 +115,7 @@ pzprv3.createCoreClass('Menu',
 			}
 		}
 		else{
+			var puzzle = this.targetpuzzle;
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
 				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
@@ -122,18 +123,10 @@ pzprv3.createCoreClass('Menu',
 		}
 	},
 	fileonload : function(data){
-		var farray = data.split(/[\t\r\n\/]+/), fstr = "";
-		for(var i=0;i<farray.length;i++){
-			if(farray[i].match(/^http\:\/\//)){ break;}
-			fstr += (farray[i]+"/");
-		}
-		
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
-		this.targetpuzzle.importBoardData({id:pid, fstr:fstr});
-		this.targetpuzzle.waitReady(function(){
-			_doc.fileform.reset();
-			
-			pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+		var owner = this.targetpuzzle;
+		owner.openByFileData(data);
+		owner.waitReady(function(){
+			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
 			pzprv3.event.setEvents();			/* イベントをくっつける */
 			pzprv3.timer.reset();				/* タイマーリセット(最後) */
 		});

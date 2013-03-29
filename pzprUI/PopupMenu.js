@@ -368,9 +368,9 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		
 		this.hide();
 		if(url.length>0){
-			puzzle.importBoardData({id:pid, qdata:url.join('/')});
+			puzzle.openByURL("?"+pid+"/"+url.join('/'));
 			puzzle.waitReady(function(){
-				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+				pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
 				pzprv3.event.setEvents();			/* イベントをくっつける */
 				pzprv3.timer.reset();				/* タイマーリセット(最後) */
 			});
@@ -408,15 +408,13 @@ pzprv3.createCoreClass('Popup_URLInput:PopupMenu',
 	urlinput : function(){
 		this.hide();
 		
-		var pzl = pzprv3.parseURLType(this.form.ta.value);
-		if(!!pzl.id){
-			this.puzzle.importBoardData(pzl);
-			this.puzzle.waitReady(function(){
-				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
-				pzprv3.event.setEvents();			/* イベントをくっつける */
-				pzprv3.timer.reset();				/* タイマーリセット(最後) */
-			});
-		}
+		var puzzle = this.puzzle;
+		puzzle.openByURL(this.form.ta.value);
+		puzzle.waitReady(function(){
+			pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
+			pzprv3.event.setEvents();			/* イベントをくっつける */
+			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+		});
 	}
 });
 
