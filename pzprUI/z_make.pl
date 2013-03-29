@@ -40,6 +40,7 @@ sub output_pzprUI{
 		'Events.js',
 		'Menu.js',
 		'PopupMenu.js',
+		'KeyPopup.js',
 		'DataBase.js',
 		'Timer.js',
 		'Debug.js'

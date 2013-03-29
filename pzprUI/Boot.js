@@ -52,6 +52,7 @@ function onload_func(){
 	pzprv3.ui        = new pzprv3.core.Menu(puzzle);		// メニューを扱うオブジェクト
 	pzprv3.timer     = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
 	pzprv3.undotimer = new pzprv3.core.UndoTimer(puzzle);	// Undo用Timerオブジェクト
+	pzprv3.keypopup  = new pzprv3.core.KeyPopup(puzzle);	// キーポップアップ用オブジェクト
 	pzprv3.dbm       = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
 	pzprv3.debug     = new pzprv3.core.Debug();
 

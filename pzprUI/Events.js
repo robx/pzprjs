@@ -290,7 +290,6 @@ pzprv3.createCoreClass('Events',
 		
 		var kc = this.puzzle.key;
 		kc.keyreset();
-		kc.create();
 	},
 
 	//---------------------------------------------------------------------------
@@ -424,7 +423,7 @@ pzprv3.createCoreClass('Events',
 		this.resizetimer = setTimeout(function(){
 			self.setcellsize();
 			self.puzzle.painter.forceRedraw();
-			self.puzzle.key.resizepanel();
+			pzprv3.keypopup.resizepanel();
 		},250);
 	},
 	onblur_func : function(){
