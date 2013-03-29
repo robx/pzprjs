@@ -229,7 +229,7 @@ pzprv3.createCommonClass('OperationManager',
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する
 	// um.isenableRecord() 操作の登録できるかを返す
-	// um.enb_btn()        html上の[戻][進]ボタンを押すことが可能か設定する
+	// um.checkexec()      html上の[戻][進]ボタンを押すことが可能か設定する
 	// um.allerase()       記憶していた操作を全て破棄する
 	// um.newOperation()   マウス、キー入力開始時に呼び出す
 	//---------------------------------------------------------------------------
@@ -242,25 +242,17 @@ pzprv3.createCommonClass('OperationManager',
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
 	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
 
-	enb_btn : function(){
+	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
 
 		this.enableUndo = (this.current>-1);
 		this.enableRedo = (this.current<this.ope.length-1);
-
-		pzprv3.getEL('btnundo').disabled = (!this.enableUndo ? 'disabled' : '');
-		pzprv3.getEL('btnredo').disabled = (!this.enableRedo ? 'disabled' : '');
-
-		pzprv3.getEL('ms_h_oldest').className = (this.enableUndo ? 'smenu' : 'smenunull');
-		pzprv3.getEL('ms_h_undo').className   = (this.enableUndo ? 'smenu' : 'smenunull');
-		pzprv3.getEL('ms_h_redo').className   = (this.enableRedo ? 'smenu' : 'smenunull');
-		pzprv3.getEL('ms_h_latest').className = (this.enableRedo ? 'smenu' : 'smenunull');
 	},
 	allerase : function(){
 		this.ope      = [];
 		this.current  = -1;
 		this.anscount = 0;
-		this.enb_btn();
+		this.checkexec();
 	},
 	newOperation : function(flag){	// キー、ボタンを押し始めたときはtrue
 		this.chainflag = false;
@@ -291,7 +283,7 @@ pzprv3.createCommonClass('OperationManager',
 
 		this.chainflag = true;
 		this.changeflag = true;
-		this.enb_btn();
+		this.checkexec();
 	},
 
 	addOpe_Object : function(obj, property, old, num){
@@ -379,7 +371,7 @@ pzprv3.createCommonClass('OperationManager',
 			catch(e){ /*　デコードできなかったとか　*/ }
 		}
 
-		this.enb_btn();
+		this.checkexec();
 	},
 	decodeOpe : function(strs){
 		var ope = this.owner.newInstance('ObjectOperation');
@@ -481,7 +473,7 @@ pzprv3.createCommonClass('OperationManager',
 		o.painter.unsuspend();
 
 		this.enableRecord();
-		this.enb_btn();
+		this.checkexec();
 	}
 });
 

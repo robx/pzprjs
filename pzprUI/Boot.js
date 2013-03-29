@@ -74,10 +74,15 @@ function onload_func(){
  
 	// 単体初期化処理のルーチンへ
 	puzzle.importBoardData(onload_pzl);
+	puzzle.waitReady(function(){
+		pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+		pzprv3.event.setEvents();			/* イベントをくっつける */
+		pzprv3.timer.reset();				/* タイマーリセット(最後) */
 
-	// アクセスログをとってみる
-	if(!!require_accesslog){ accesslog(onload_pzl);}
-	require_accesslog = false;
+		// アクセスログをとってみる
+		if(!!require_accesslog){ accesslog(onload_pzl);}
+		require_accesslog = false;
+	});
 }
 
 if(!!window.addEventListener){ window.addEventListener("load", onload_func, false);}

@@ -47,6 +47,8 @@ pzprv3.createCoreClass('Menu',
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(pp){
+		this.menureset();
+		
 		var pid = this.targetpuzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
@@ -72,6 +74,8 @@ pzprv3.createCoreClass('Menu',
 
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
+
+		this.targetpuzzle.painter.forceRedraw();
 	},
 
 	menureset : function(){
@@ -80,8 +84,6 @@ pzprv3.createCoreClass('Menu',
 		this.btnstack   = [];
 		this.labelstack = [];
 		this.managestack = [];
-
-		this.popupmgr.reset();
 
 		this.floatmenuclose(0);
 
@@ -93,12 +95,8 @@ pzprv3.createCoreClass('Menu',
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
 
-		if(this.targetpuzzle.pid==='tawa'){
-			document.flip.turnl.disabled = false;
-			document.flip.turnr.disabled = false;
-		}
-
-		this.items.reset();
+		if(!!this.items){ this.items.reset();}
+		if(!!this.popupmgr){ this.popupmgr.reset();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -131,9 +129,13 @@ pzprv3.createCoreClass('Menu',
 		
 		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
 		this.targetpuzzle.importBoardData({id:pid, fstr:fstr});
-		
-		_doc.fileform.reset();
-		pzprv3.timer.reset();
+		this.targetpuzzle.waitReady(function(){
+			_doc.fileform.reset();
+			
+			pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+			pzprv3.event.setEvents();			/* イベントをくっつける */
+			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+		});
 	},
 
 	//---------------------------------------------------------------------------
@@ -163,7 +165,7 @@ pzprv3.createCoreClass('Menu',
 			if(!this.labelstack[i].el){ continue;}
 			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
-		this.targetpuzzle.opemgr.enb_btn();
+		this.enb_btn();
 	},
 	setdisplay : function(idname){
 		var pp = this.items, puzzle = this.targetpuzzle;
@@ -858,6 +860,7 @@ pzprv3.createCoreClass('Menu',
 	//---------------------------------------------------------------------------
 	// menu.buttonarea()   盤面下のボタンエリアの初期化を行う
 	// menu.toggledisp()   アイスと○などの表示切り替え時の処理を行う
+	// menu.checkexec()    html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
 	buttonarea : function(){
 		// (Canvas下) ボタンの初期設定
@@ -875,8 +878,8 @@ pzprv3.createCoreClass('Menu',
 
 		var puzzle = this.targetpuzzle, self = this;
 		this.addButtons(btncheck, function(){ puzzle.checker.check();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1);}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1);}, "進", "->");
+		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1); self.enb_btn();}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1); self.enb_btn();}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
@@ -911,6 +914,16 @@ pzprv3.createCoreClass('Menu',
 	toggledisp : function(){
 		var puzzle = this.targetpuzzle;
 		puzzle.setConfig('disptype', (puzzle.getConfig('disptype')==1?2:1));
+	},
+	enb_btn : function(){
+		var opemgr = this.targetpuzzle.opemgr;
+		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
+		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+
+		getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+		getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+		getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+		getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -987,10 +1000,10 @@ pzprv3.createCoreClass('Menu',
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
 
-		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall();},
-		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);},
-		h_redo    : function(){ this.targetpuzzle.opemgr.redo(1);},
-		h_latest  : function(){ this.targetpuzzle.opemgr.redoall();},
+		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall(); this.enb_btn();},
+		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);   this.enb_btn();},
+		h_redo    : function(){ this.targetpuzzle.opemgr.redo(1);   this.enb_btn();},
+		h_latest  : function(){ this.targetpuzzle.opemgr.redoall(); this.enb_btn();},
 		check     : function(){ this.targetpuzzle.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},

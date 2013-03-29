@@ -22,6 +22,7 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	// owner.importBoardData() 新しくパズルのファイルを開く時の処理
+	// owner.waitReady()       準備ができたら実行する処理を記述する
 	//---------------------------------------------------------------------------
 	importBoardData : function(pzl){
 		this.ready = false;
@@ -71,6 +72,14 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = true;
 	},
+	
+	waitReady : function(func){
+		if(this.ready){ func();}
+		else{
+			var owner = this;
+			setTimeout(function(){ owner.waitReady.call(owner,func);},10);
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// owner.initObjects()    各オブジェクトの生成などの処理
@@ -94,17 +103,8 @@ pzprv3.createCoreClass('Owner',
 
 		this.config = this.newInstance('Properties');	// パズルの設定値を保持するオブジェクト
 
-		// メニュー関係初期化
-		pzprv3.ui.menuinit(this.config);
-
-		// イベントをくっつける
-		pzprv3.event.setEvents();
-
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
-
-		// タイマーリセット(最後)
-		pzprv3.timer.reset();
 	},
 
 	clearObjects : function(){

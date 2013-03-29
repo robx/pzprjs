@@ -141,6 +141,7 @@ pzprv3.createCoreClass('Events',
 			mv.modeflip();
 			mv.mousereset();
 		}
+		pzprv3.ui.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -153,6 +154,7 @@ pzprv3.createCoreClass('Events',
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 2);	// 各パズルのルーチンへ
 			mv.mousereset();
 		}
+		pzprv3.ui.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -166,6 +168,7 @@ pzprv3.createCoreClass('Events',
 			this.setposition(e);
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 1);	// 各パズルのルーチンへ
 		}
+		pzprv3.ui.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -305,12 +308,14 @@ pzprv3.createCoreClass('Events',
 			var sts = this.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
+		pzprv3.ui.enb_btn();
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
 		
 		var c = this.getchar(e);
 		if(c){ this.puzzle.key.keyup(c);}	/* 各パズルのルーチンへ */
+		pzprv3.ui.enb_btn();
 	},
 	e_keypress : function(e){
 		if(!this.enableKey){ return;}
@@ -321,6 +326,7 @@ pzprv3.createCoreClass('Events',
 			var sts = this.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
+		pzprv3.ui.enb_btn();
 	},
 
 	//---------------------------------------------------------------------------

@@ -209,7 +209,7 @@ pzprv3.createCommonClass('Graphic',
 	setcellsize : function(cols, rows){
 		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.owner.getConfig('size')];
+		var cratio = (this.owner.ready ? {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.owner.getConfig('size')] : 1.0);
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(this.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(this.cellsize*cr.limit);
@@ -221,7 +221,7 @@ pzprv3.createCommonClass('Graphic',
 			if(this.cw < this.cellsize){ this.cw = this.ch = this.cellsize;}
 		}
 		// 縮小が必要ない場合
-		else if(!this.owner.getConfig('adjsize') || cols < ci[0]){
+		else if((this.owner.ready && !this.owner.getConfig('adjsize')) || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			this.cw = this.ch = (this.cellsize*cr.base)|0;
 		}

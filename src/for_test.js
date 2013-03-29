@@ -66,16 +66,19 @@ pzprv3.extendCoreClass('Debug',
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			self.targetowner.importBoardData({id:newid, qdata:self.urls[newid]});
+			var owner = self.targetowner;
+			owner.importBoardData({id:newid, qdata:self.urls[newid]});
+			owner.waitReady(function(){
+				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+				pzprv3.event.setEvents();			/* イベントをくっつける */
+				pzprv3.timer.reset();				/* タイマーリセット(最後) */
 
-			/* スクリプトチェック開始 */
-			setTimeout(function(){
-				if(!self.targetowner.ready){ setTimeout(arguments.callee, 10); return;}
+				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
 				pnum++;
 				if(pnum >= term){ clearInterval(self.alltimer);}
-			},10);
+			});
 		},500);
 	},
 
@@ -108,10 +111,16 @@ pzprv3.extendCoreClass('Debug',
 			var o = this.targetowner, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			var pzl = pzprv3.parseURLType(o.enc.pzloutput(k.KANPEN));
-			if(!!pzl.id){ this.targetowner.importBoardData(pzl);}
+			if(!!pzl.id){ o.importBoardData(pzl);}
 
-			if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
-			else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
+			o.waitReady(function(){
+				pzprv3.ui.menuinit(this.config);	/* メニュー関係初期化 */
+				pzprv3.event.setEvents();			/* イベントをくっつける */
+				pzprv3.timer.reset();				/* タイマーリセット(最後) */
+
+				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
+				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
+			});
 		}
 		setTimeout(function(){ self.check_answer(self);},0);
 	},
