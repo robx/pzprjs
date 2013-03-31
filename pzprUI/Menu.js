@@ -1,6 +1,9 @@
 // Menu.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
@@ -9,7 +12,7 @@ var k = pzprv3.consts;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-pzprv3.createCoreClass('Menu',
+ui.createClass('Menu',
 {
 	initialize : function(targetpuzzle){
 		this.items = null;
@@ -52,8 +55,8 @@ pzprv3.createCoreClass('Menu',
 		var pid = this.targetpuzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
-		this.items = new pzprv3.core.MenuList();
-		this.popupmgr = new pzprv3.core.PopupManager();
+		this.items    = new ui.classes.MenuList();
+		this.popupmgr = new ui.classes.PopupManager();
 
 		this.initReader();
 
@@ -65,7 +68,7 @@ pzprv3.createCoreClass('Menu',
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 
-		pzprv3.keypopup.create();
+		ui.keypopup.create();
 
 		this.menuarea();
 		this.managearea();
@@ -77,7 +80,7 @@ pzprv3.createCoreClass('Menu',
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
 
-		pzprv3.event.setcellsize();
+		ui.event.setcellsize();
 		this.targetpuzzle.painter.forceRedraw();
 	},
 
@@ -128,9 +131,9 @@ pzprv3.createCoreClass('Menu',
 		var owner = this.targetpuzzle;
 		owner.openByFileData(data);
 		owner.waitReady(function(){
-			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
-			pzprv3.event.setEvents();			/* イベントをくっつける */
-			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 		});
 	},
 
@@ -502,7 +505,7 @@ pzprv3.createCoreClass('Menu',
 		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
-		if(pzprv3.keypopup.paneltype[1]!==0 || pzprv3.keypopup.paneltype[3]!==0){
+		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
 			pp.addCheck('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
@@ -571,14 +574,14 @@ pzprv3.createCoreClass('Menu',
 			smenu.id = smenuid;
 			if(pp.type(id)===pp.MENU){
 				pzprv3.getEL('menupanel').appendChild(smenu);
-				pzprv3.event.addEvent(smenu, "mouseover", this, this.menuhover);
-				pzprv3.event.addEvent(smenu, "mouseout",  this, this.menuout);
+				ui.event.addEvent(smenu, "mouseover", this, this.menuhover);
+				ui.event.addEvent(smenu, "mouseout",  this, this.menuout);
 				continue;
 			}
 			else if(sfunc){
-				pzprv3.event.addEvent(smenu, "mouseover", this, this.submenuhover);
-				pzprv3.event.addEvent(smenu, "mouseout",  this, this.submenuout);
-				if(cfunc){ pzprv3.event.addEvent(smenu, "click", this, this.submenuclick);}
+				ui.event.addEvent(smenu, "mouseover", this, this.submenuhover);
+				ui.event.addEvent(smenu, "mouseout",  this, this.submenuout);
+				if(cfunc){ ui.event.addEvent(smenu, "click", this, this.submenuclick);}
 			}
 
 			var parentid = pp.flags[id].parent;
@@ -586,7 +589,7 @@ pzprv3.createCoreClass('Menu',
 				var panel = el_float.cloneNode(false);
 				panel.id = 'float_'+parentid;
 				pzprv3.getEL('float_parent').appendChild(panel);
-				pzprv3.event.addEvent(panel, "mouseout", this, this.floatmenuout);
+				ui.event.addEvent(panel, "mouseout", this, this.floatmenuout);
 				this.floatpanel[parentid] = panel;
 			}
 			this.floatpanel[parentid].appendChild(smenu);
@@ -626,7 +629,7 @@ pzprv3.createCoreClass('Menu',
 	// menu.menuout(e)   メニューからマウスが外れた時の表示設定を行う
 	//---------------------------------------------------------------------------
 	menuhover : function(e){
-		if(!!this.movingpop){ return true;}
+		if(!!this.popupmgr.popup){ return true;}
 
 		this.floatmenuopen(e, 0);
 	},
@@ -674,7 +677,7 @@ pzprv3.createCoreClass('Menu',
 	submenuexec : function(e, idname){
 		if(this.funcs[idname]){ this.funcs[idname].call(this);}
 		else{
-			var pagePos = pzprv3.event.getPagePos(e);
+			var pagePos = ui.event.getPagePos(e);
 			this.popupmgr.open(idname, pagePos.px - 8, pagePos.py - 8);
 		}
 	},
@@ -704,7 +707,7 @@ pzprv3.createCoreClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = pzprv3.event.pageX(e)  + 'px';
+				_float.style.left = ui.event.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -738,12 +741,12 @@ pzprv3.createCoreClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = pzprv3.event.pageX(e), ey = pzprv3.event.pageY(e);
+		var ex = ui.event.pageX(e), ey = ui.event.pageY(e);
 		var rect = pzprv3.getRect(el);
 		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = pzprv3.event.pageX(e), ey = pzprv3.event.pageY(e);
+		var ex = ui.event.pageX(e), ey = ui.event.pageY(e);
 		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
 		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
 	},
@@ -790,7 +793,7 @@ pzprv3.createCoreClass('Menu',
 					var num = pp.flags[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
-					pzprv3.event.addEvent(sel, "click", this, this.selectclick);
+					ui.event.addEvent(sel, "click", this, this.selectclick);
 					_div.appendChild(sel);
 					_div.appendChild(document.createTextNode(' '));
 				}
@@ -802,7 +805,7 @@ pzprv3.createCoreClass('Menu',
 			case pp.CHECK:
 				var box = el_checkbox.cloneNode(false);
 				box.id = 'ck_'+idname;
-				pzprv3.event.addEvent(box, "click", this, this.checkclick);
+				ui.event.addEvent(box, "click", this, this.checkclick);
 				_div.appendChild(box);
 				_div.appendChild(document.createTextNode(" "));
 				var span = el_span.cloneNode(false);
@@ -1048,11 +1051,11 @@ pzprv3.createCoreClass('Menu',
 		},
 
 		keypopup : function(){
-			var f = !!pzprv3.keypopup.paneltype[this.items.flags['mode'].val];
+			var f = !!ui.keypopup.paneltype[this.items.flags['mode'].val];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
 			getEL('cl_keypopup').style.color = (f?"black":"silver");
 
-			pzprv3.keypopup.display();
+			ui.keypopup.display();
 		}
 	},
 
@@ -1073,7 +1076,7 @@ pzprv3.createCoreClass('Menu',
 		o.board.haserror=true;
 		o.painter.paintAll();
 
-		if(pzprv3.keypopup.paneltype[1]!==0 || pzprv3.keypopup.paneltype[3]!==0){ this.funcs.keypopup.call(this);}
+		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){ this.funcs.keypopup.call(this);}
 		if(o.config.flag_bgcolor){
 			pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
 			pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");
@@ -1241,7 +1244,7 @@ pzprv3.createCoreClass('Menu',
 });
 
 // MenuListクラス
-pzprv3.createCoreClass('MenuList',
+ui.createClass('MenuList',
 {
 	initialize : function(){
 		this.reset();
@@ -1348,8 +1351,8 @@ pzprv3.createCoreClass('MenuList',
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[pzprv3.ui.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[pzprv3.ui.language].label;},
+	getMenuStr : function(idname){ return this.flags[idname].str[ui.menu.language].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[ui.menu.language].label;},
 	type       : function(idname){ return this.flags[idname].type;},
 	haschild   : function(idname){
 		var flag = this.flags[idname];
@@ -1360,7 +1363,7 @@ pzprv3.createCoreClass('MenuList',
 });
 
 // MenuItemクラス
-pzprv3.createCoreClass('MenuItem',
+ui.createClass('MenuItem',
 {
 	initialize : function(){
 	}

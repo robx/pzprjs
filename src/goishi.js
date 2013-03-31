@@ -11,14 +11,14 @@ pzprv3.createCustoms('goishi', {
 MouseEvent:{
 	inputedit : function(){
 		if(this.mousestart){ this.inputstone();}
-		else if(this.mouseend){ pzprv3.undotimer.stop();}
+		else if(this.mouseend){ ui.undotimer.stop();}
 	},
 	inputplay : function(){
 		if(this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ pzprv3.undotimer.startMouseUndo();}
+			else if(this.btn.Right){ ui.undotimer.startMouseUndo();}
 		}
-		else if(this.mouseend){ pzprv3.undotimer.stop();}
+		else if(this.mouseend){ ui.undotimer.stop();}
 	},
 
 	inputstone : function(){
@@ -34,7 +34,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			pzprv3.undotimer.startMouseRedo();
+			ui.undotimer.startMouseRedo();
 			return;
 		}
 

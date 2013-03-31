@@ -2,18 +2,20 @@
 
 (function(){
 
-var k = pzprv3.consts;
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_Debug:PopupMenu',
+ui.createClass('Popup_Debug:PopupMenu',
 {
 	formname : 'testform',
 	
 	initialize : function(puzzle){
-		pzprv3.core.PopupMenu.prototype.initialize.call(this,puzzle);
+		ui.classes.PopupMenu.prototype.initialize.call(this,puzzle);
 		this.makeElement();
 		this.makeForm();
 		this.setEvent();
@@ -29,7 +31,7 @@ pzprv3.createCoreClass('Popup_Debug:PopupMenu',
 		this.form.testarea.style.fontSize = '10pt';
 		this.addBR();
 		
-		var debug = pzprv3.debug;
+		var debug = ui.debug;
 		this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
 		this.form.starttest.style.display = 'none';
 		this.addText(" ", " ");
@@ -49,7 +51,7 @@ pzprv3.createCoreClass('Popup_Debug:PopupMenu',
 		this.addBR();
 		
 		this.addExecButton("Save", "Save", function(){ debug.filesave()});
-		if(pzprv3.ui.ispencilbox){
+		if(ui.menu.ispencilbox){
 			this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox()});
 		}
 		this.addText(" ", " ");
@@ -68,14 +70,14 @@ pzprv3.createCoreClass('Popup_Debug:PopupMenu',
 		_pop_style.top  = '80px';
 
 		/* デバッグ対象に設定 */
-		pzprv3.debug.settarget(this.puzzle);
+		ui.debug.settarget(this.puzzle);
 	}
 });
 
 //---------------------------------------------------------------------------
 // ★Debugクラス  poptest関連の実行関数など
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Debug',
+ui.createClass('Debug',
 {
 	targetowner : null,
 	settarget : function(puzzle){
@@ -86,7 +88,7 @@ pzprv3.createCoreClass('Debug',
 	keydown : function(ca){
 		var kc = this.targetowner.key;
 		if(kc.isCTRL && ca=='F8'){
-			pzprv3.ui.popups.debug.show();
+			ui.menu.popups.debug.show();
 			kc.tcMoved = true;
 			return true;
 		}
@@ -106,9 +108,9 @@ pzprv3.createCoreClass('Debug',
 		var owner = this.targetowner;
 		owner.openByFileData(data.pdata);
 		owner.waitReady(function(){
-			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
-			pzprv3.event.setEvents();			/* イベントをくっつける */
-			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 		});
 	},
 
@@ -158,9 +160,9 @@ pzprv3.createCoreClass('Debug',
 			owner.setConfig('mode',3);
 			owner.setConfig('irowake',true);
 			
-			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
-			pzprv3.event.setEvents();			/* イベントをくっつける */
-			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 		});
 	},
 
@@ -171,7 +173,7 @@ pzprv3.createCoreClass('Debug',
 		else if(col<= 8){ size = 24;}
 		else if(col<= 9){ size = 21;}
 		else if(col<=18){ size = 19;}
-		pzprv3.ui.imagesave(false,size);
+		ui.menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},

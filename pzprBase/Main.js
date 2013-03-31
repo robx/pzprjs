@@ -128,8 +128,8 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	clearObjects : function(){
-		pzprv3.event.removeAllEvents();
-		pzprv3.ui.menureset();
+		ui.event.removeAllEvents();
+		ui.menu.menureset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -156,7 +156,7 @@ pzprv3.createCoreClass('Owner',
 	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
 	
 	regenerateMenu : function(){
-		pzprv3.ui.displayDesign();
+		ui.menu.displayDesign();
 	}
 });
 
@@ -185,18 +185,18 @@ pzprv3.createCommonClass('Properties',
 	// config.setVal()  各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getVal : function(idname){
-		var items = pzprv3.ui.items;
+		var items = ui.menu.items;
 		return items.flags[idname]?items.flags[idname].val:null;
 	},
 	setVal : function(idname, newval, isexecfunc){
-		var items = pzprv3.ui.items;
+		var items = ui.menu.items;
 		if(!!items.flags[idname] && (items.flags[idname].type===items.CHECK ||
 									 items.flags[idname].type===items.SELECT))
 		{
 			items.flags[idname].val = newval;
-			pzprv3.ui.setdisplay(idname);
-			if(pzprv3.ui.funcs[idname] && isexecfunc!==false){
-				pzprv3.ui.funcs[idname].call(pzprv3.ui,newval);
+			ui.menu.setdisplay(idname);
+			if(ui.menu.funcs[idname] && isexecfunc!==false){
+				ui.menu.funcs[idname].call(ui.menu,newval);
 			}
 		}
 	}

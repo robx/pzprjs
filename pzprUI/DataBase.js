@@ -1,12 +1,15 @@
 // DataBase.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('ProblemData',
+ui.createClass('ProblemData',
 {
 	initialize : function(){
 		this.id = null;
@@ -50,7 +53,7 @@ pzprv3.createCoreClass('ProblemData',
 //---------------------------------------------------------------------------
 // ★Popup_DataBaseクラス データベース用ポップアップメニューの作成を行う
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
+ui.createClass('Popup_DataBase:PopupMenu',
 {
 	formname : 'database',
 	
@@ -69,7 +72,7 @@ pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
 		for(var i=0;i<options.length;i++){
 			var op = document.createElement('option');
 			op.value = options[i].name;
-			op.appendChild(document.createTextNode(pzprv3.ui.selectStr(options[i].str_jp, options[i].str_en)));
+			op.appendChild(document.createTextNode(ui.menu.selectStr(options[i].str_jp, options[i].str_en)));
 			sel.appendChild(op);
 		}
 	},
@@ -164,12 +167,12 @@ pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
 	},
 	
 	show : function(px,py){
-		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
-		pzprv3.dbm.openDialog();
+		ui.classes.PopupMenu.prototype.show.call(this,px,py);
+		ui.database.openDialog();
 	},
 	hide : function(){
-		pzprv3.dbm.closeDialog();
-		pzprv3.core.PopupMenu.prototype.hide.call(this);
+		ui.database.closeDialog();
+		ui.classes.PopupMenu.prototype.hide.call(this);
 	},
 
 	//---------------------------------------------------------------------------
@@ -177,14 +180,14 @@ pzprv3.createCoreClass('Popup_DataBase:PopupMenu',
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
 		var operation = (e.target||e.srcElement).name;
-		pzprv3.dbm.clickHandler(operation, this.puzzle);
+		ui.database.clickHandler(operation, this.puzzle);
 	}
 });
 
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('DataBaseManager',
+ui.createClass('DataBaseManager',
 {
 	initialize : function(){
 		this.dbh    = null;	// データベースハンドラ
@@ -204,7 +207,7 @@ pzprv3.createCoreClass('DataBaseManager',
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzprv3.storage.localST){ this.dbh = new pzprv3.core.DataBaseHandler_LS();}
+		if(pzprv3.storage.localST){ this.dbh = new ui.classes.DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;
@@ -220,7 +223,7 @@ pzprv3.createCoreClass('DataBaseManager',
 	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = pzprv3.ui.language;
+		this.lang = ui.menu.language;
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -379,7 +382,7 @@ pzprv3.createCoreClass('DataBaseManager',
 			id = this.DBlist.length;
 			refresh = true;
 
-			this.DBlist[id] = new pzprv3.core.ProblemData();
+			this.DBlist[id] = new ui.classes.ProblemData();
 			this.DBlist[id].setnewData(id+1, owner);
 			var str = prompt("コメントがある場合は入力してください。","");
 			this.DBlist[id].comment = (!!str ? str : '');
@@ -437,7 +440,7 @@ pzprv3.createCoreClass('DataBaseManager',
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('DataBaseHandler_LS',
+ui.createClass('DataBaseHandler_LS',
 {
 	//---------------------------------------------------------------------------
 	// dbm.dbh.initialize()    初期化時にデータベースを開く
@@ -452,7 +455,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		for(var i=1;true;i++){
-			var row = new pzprv3.core.ProblemData(localStorage[this.pheader+i]);
+			var row = new ui.classes.ProblemData(localStorage[this.pheader+i]);
 			if(row.id==null){ break;}
 			parent.DBlist.push(row);
 		}
@@ -492,12 +495,12 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
-		var data = new pzprv3.core.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
+		var data = new ui.classes.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
 		owner.openByFileData(data.pdata);
 		owner.waitReady(function(){
-			pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
-			pzprv3.event.setEvents();			/* イベントをくっつける */
-			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 		});
 		if(!!callback){ callback();}
 	},
@@ -524,7 +527,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			var data = new pzprv3.core.ProblemData(localStorage[this.pheader+(i+1)]);
+			var data = new ui.classes.ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();
 		}
@@ -559,7 +562,7 @@ pzprv3.createCoreClass('DataBaseHandler_LS',
 			delete localStorage['pzprv3_'+pid+':puzdata'];
 			for(var i=0;i<count;i++){
 				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
-				var row = new pzprv3.core.ProblemData();
+				var row = new ui.classes.ProblemData();
 				row.pid = pid;
 				for(var c=0;c<7;c++){
 					row[keys[c]] = localStorage[pheader+keys[c]];

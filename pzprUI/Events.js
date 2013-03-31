@@ -1,15 +1,18 @@
 // Events.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
-// ★Eventsクラス イベント設定の管理を行う
+// ★UIEventsクラス イベント設定の管理を行う
 //---------------------------------------------------------------------------
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-pzprv3.createCoreClass('Events',
+ui.createClass('UIEvent',
 {
 	initialize : function(puzzle){
 		this.puzzle = puzzle;
@@ -95,7 +98,7 @@ pzprv3.createCoreClass('Events',
 		this.setWindowEvents();
 		
 		// ポップアップメニューにイベントを割り当てる
-		pzprv3.ui.popupmgr.setEvents();
+		ui.menu.popupmgr.setEvents();
 	},
 
 	//---------------------------------------------------------------------------
@@ -141,7 +144,7 @@ pzprv3.createCoreClass('Events',
 			mv.modeflip();
 			mv.mousereset();
 		}
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -154,7 +157,7 @@ pzprv3.createCoreClass('Events',
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 2);	// 各パズルのルーチンへ
 			mv.mousereset();
 		}
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -168,7 +171,7 @@ pzprv3.createCoreClass('Events',
 			this.setposition(e);
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 1);	// 各パズルのルーチンへ
 		}
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 		this.stopPropagation(e);
 		this.preventDefault(e);
 		return false;
@@ -307,14 +310,14 @@ pzprv3.createCoreClass('Events',
 			var sts = this.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
 		
 		var c = this.getchar(e);
 		if(c){ this.puzzle.key.keyup(c);}	/* 各パズルのルーチンへ */
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 	},
 	e_keypress : function(e){
 		if(!this.enableKey){ return;}
@@ -325,7 +328,7 @@ pzprv3.createCoreClass('Events',
 			var sts = this.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
-		pzprv3.ui.enb_btn();
+		ui.menu.enb_btn();
 	},
 
 	//---------------------------------------------------------------------------
@@ -387,7 +390,7 @@ pzprv3.createCoreClass('Events',
 		if(kc.isMETA  ^ e.metaKey) { kc.isMETA  = e.metaKey; }
 		if(kc.isALT   ^ e.altKey)  { kc.isALT   = e.altKey;  }
 
-		if(!(kc.isCTRL || kc.isMETA)){ pzprv3.undotimer.stop();}
+		if(!(kc.isCTRL || kc.isMETA)){ ui.undotimer.stop();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -395,9 +398,9 @@ pzprv3.createCoreClass('Events',
 	//---------------------------------------------------------------------------
 	setWindowEvents : function(){
 		// File API＋Drag&Drop APIの設定
-		if(!!pzprv3.ui.reader){
+		if(!!ui.menu.reader){
 			var DDhandler = function(e){
-				pzprv3.ui.reader.readAsText(e.dataTransfer.files[0]);
+				ui.menu.reader.readAsText(e.dataTransfer.files[0]);
 				e.preventDefault();
 				e.stopPropagation();
 			};
@@ -423,7 +426,7 @@ pzprv3.createCoreClass('Events',
 		this.resizetimer = setTimeout(function(){
 			self.setcellsize();
 			self.puzzle.painter.forceRedraw();
-			pzprv3.keypopup.resizepanel();
+			ui.keypopup.resizepanel();
 		},250);
 	},
 	onblur_func : function(){

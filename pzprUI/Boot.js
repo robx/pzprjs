@@ -14,81 +14,118 @@ var debugmode = false;
 /* 初期化時のみ使用する関数 */
 /****************************/
 //---------------------------------------------------------------------------
-// ★onload_func() window.onload直後の処理
+// ★ui.boot() window.onload直後の処理
 //---------------------------------------------------------------------------
 var onload_pzl = null;
-function onload_func(){
-	/* 先に読まないとimportURL()が動作しないため読み込み待ち */
-	if(!pzprv3.PZLINFO){
-		pzprv3.includeFile("puzzlename.js");
-		setTimeout(arguments.callee,10);
-		return;
-	}
+var ui = {
+	//---------------------------------------------------------------
+	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
+	//---------------------------------------------------------------
+	classes : {},
+	extendClass : function(classname, proto){
+		var base = ui.classes[classname].prototype;
+		for(var name in proto){ base[name] = proto[name];}
+	},
+	createClass : function(classname, proto){
+		classname = classname.replace(/\s+/g,'');
+		var colon = classname.indexOf(':'), basename = '';
+		if(colon>=0){
+			basename  = classname.substr(colon+1);
+			classname = classname.substr(0,colon);
+		}
 
-	if(!onload_pzl){
-		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
-		/* 2) URL(?以降)をチェック */
-		onload_pzl = (importFileData() || importURL());
+		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
+		if(!!basename && !!this.classes[basename]){
+			var BaseClass = this.classes[basename];
+			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
+			NewClass.prototype.SuperClass = BaseClass;
+			NewClass.prototype.SuperFunc  = BaseClass.prototype;
+		}
+		for(var name in proto){ NewClass.prototype[name] = proto[name];}
+		NewClass.prototype.constructor = NewClass;
 		
-		/* 指定されたパズルがない場合はさようなら～ */
-		if(!onload_pzl || !onload_pzl.id){
-			location.href = "./";
+		this.classes[classname] = NewClass;
+	},
+
+	/* ---------- */
+	/* onload処理 */
+	/* ---------- */
+	boot : function(){
+		/* 先に読まないとimportURL()が動作しないため読み込み待ち */
+		if(!pzprv3.PZLINFO){
+			pzprv3.includeFile("puzzlename.js");
+			setTimeout(arguments.callee,10);
 			return;
 		}
-	}
 
-	/* 必要な場合、テスト用ファイルのinclude         */
-	/* importURL()後でないと必要かどうか判定できない */
-	if(debugmode && !pzprv3.core.Debug.prototype.urls){
-		pzprv3.includeFile("src/for_test.js");
-		setTimeout(arguments.callee,10);
-		return;
-	}
+		if(!onload_pzl){
+			/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
+			/* 2) URL(?以降)をチェック */
+			onload_pzl = (importFileData() || importURL());
+			
+			/* 指定されたパズルがない場合はさようなら～ */
+			if(!onload_pzl || !onload_pzl.id){
+				location.href = "./";
+				return;
+			}
+		}
 
-	var puzzle = pzprv3.createPuzzle();
+		/* 必要な場合、テスト用ファイルのinclude         */
+		/* importURL()後でないと必要かどうか判定できない */
+		if(debugmode && !ui.classes.Debug.prototype.urls){
+			pzprv3.includeFile("src/for_test.js");
+			setTimeout(arguments.callee,10);
+			return;
+		}
 
-	// パズルが入力しなおされても、共通で使用されるオブジェクト
-	pzprv3.event     = new pzprv3.core.Events(puzzle);		// イベント管理用オブジェクト
-	pzprv3.ui        = new pzprv3.core.Menu(puzzle);		// メニューを扱うオブジェクト
-	pzprv3.timer     = new pzprv3.core.Timer(puzzle);		// 一般タイマー用オブジェクト
-	pzprv3.undotimer = new pzprv3.core.UndoTimer(puzzle);	// Undo用Timerオブジェクト
-	pzprv3.keypopup  = new pzprv3.core.KeyPopup(puzzle);	// キーポップアップ用オブジェクト
-	pzprv3.dbm       = new pzprv3.core.DataBaseManager();	// データベースアクセス用オブジェクト
-	pzprv3.debug     = new pzprv3.core.Debug();
+		var puzzle = pzprv3.createPuzzle();
 
-	if(debugmode && !onload_pzl.qdata){
-		onload_pzl.qdata = pzprv3.debug.urls[onload_pzl.id];
-	}
+		// パズルが入力しなおされても、共通で使用されるオブジェクト
+		ui.event     = new ui.classes.UIEvent(puzzle);		// イベント管理用オブジェクト
+		ui.menu      = new ui.classes.Menu(puzzle);			// メニューを扱うオブジェクト
+		ui.timer     = new ui.classes.Timer(puzzle);		// 一般タイマー用オブジェクト
+		ui.undotimer = new ui.classes.UndoTimer(puzzle);	// Undo用Timerオブジェクト
+		ui.keypopup  = new ui.classes.KeyPopup(puzzle);		// キーポップアップ用オブジェクト
+		ui.database  = new ui.classes.DataBaseManager();	// データベースアクセス用オブジェクト
+		ui.debug     = new ui.classes.Debug();
 
-	// 描画wrapperの設定
-	Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); puzzle.canvas = g.canvas;});
-	if(Candle.enable.canvas){
-		Candle.start('divques_sub', 'canvas',  function(g){ puzzle.canvas2 = g.canvas;});
-	}
-	else{ puzzle.canvas2 = true;}
+		if(debugmode && !onload_pzl.qdata){
+			onload_pzl.qdata = ui.debug.urls[onload_pzl.id];
+		}
 
-	// 外部から参照できるようにする
-	window.puzzle = puzzle;
+		// 描画wrapperの設定
+		Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); puzzle.canvas = g.canvas;});
+		if(Candle.enable.canvas){
+			Candle.start('divques_sub', 'canvas',  function(g){ puzzle.canvas2 = g.canvas;});
+		}
+		else{ puzzle.canvas2 = true;}
 
-	/* デバッグ対象に設定 */
-	pzprv3.debug.settarget(puzzle);
+		// 外部から参照できるようにする
+		window.puzzle = puzzle;
+
+		/* デバッグ対象に設定 */
+		ui.debug.settarget(puzzle);
  
-	// 単体初期化処理のルーチンへ
-	if     (!!onload_pzl.fstr) { puzzle.openByFileData(onload_pzl.fstr);}
-	else if(!!onload_pzl.qdata){ puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
-	puzzle.waitReady(function(){
-		pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
-		pzprv3.event.setEvents();			/* イベントをくっつける */
-		pzprv3.timer.reset();				/* タイマーリセット(最後) */
+		// 単体初期化処理のルーチンへ
+		if     (!!onload_pzl.fstr) { puzzle.openByFileData(onload_pzl.fstr);}
+		else if(!!onload_pzl.qdata){ puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
+		puzzle.waitReady(function(){
+			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 
-		// アクセスログをとってみる
-		if(!!require_accesslog){ accesslog(onload_pzl);}
-		require_accesslog = false;
-	});
-}
+			// アクセスログをとってみる
+			if(!!require_accesslog){ accesslog(onload_pzl);}
+			require_accesslog = false;
+		});
+	}
+};
 
-if(!!window.addEventListener){ window.addEventListener("load", onload_func, false);}
-else{ window.attachEvent("onload", onload_func);}
+/* extern */
+window.ui = ui;
+
+if(!!window.addEventListener){ window.addEventListener("load", ui.boot, false);}
+else{ window.attachEvent("onload", ui.boot);}
 
 //---------------------------------------------------------------------------
 // ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う

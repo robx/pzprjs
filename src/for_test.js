@@ -3,10 +3,10 @@
 
 var k = pzprv3.consts;
 
-pzprv3.extendCoreClass('Popup_Debug',
+ui.extendClass('Popup_Debug',
 {
 	testonly_func : function(){
-		var _doc = document, debug = pzprv3.debug;
+		var _doc = document, debug = ui.debug;
 		_doc.testform.starttest.style.display = 'inline';
 		_doc.testform.starttest.onclick = function(){ debug.starttest();};
 		
@@ -21,7 +21,7 @@ pzprv3.extendCoreClass('Popup_Debug',
 	}
 });
 
-pzprv3.extendCoreClass('Debug',
+ui.extendClass('Debug',
 {
 	keydown : function(ca){
 		var kc = this.targetowner.key;
@@ -69,9 +69,9 @@ pzprv3.extendCoreClass('Debug',
 			var owner = self.targetowner;
 			owner.openByURL("?"+newid+"/"+self.urls[newid]);
 			owner.waitReady(function(){
-				pzprv3.ui.menuinit(owner.config);	/* メニュー関係初期化 */
-				pzprv3.event.setEvents();			/* イベントをくっつける */
-				pzprv3.timer.reset();				/* タイマーリセット(最後) */
+				ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
+				ui.event.setEvents();			/* イベントをくっつける */
+				ui.timer.reset();				/* タイマーリセット(最後) */
 
 				/* スクリプトチェック開始 */
 				self.sccheck();
@@ -114,9 +114,9 @@ pzprv3.extendCoreClass('Debug',
 			o.waitReady(function(){
 				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
 
-				pzprv3.ui.menuinit(o.config);		/* メニュー関係初期化 */
-				pzprv3.event.setEvents();			/* イベントをくっつける */
-				pzprv3.timer.reset();				/* タイマーリセット(最後) */
+				ui.menu.menuinit(o.config);		/* メニュー関係初期化 */
+				ui.event.setEvents();			/* イベントをくっつける */
+				ui.timer.reset();				/* タイマーリセット(最後) */
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -167,7 +167,7 @@ pzprv3.extendCoreClass('Debug',
 		setTimeout(function(){ self.check_file_pbox(self);},0);
 	},
 	check_file_pbox : function(self){
-		if(pzprv3.ui.ispencilbox){
+		if(ui.menu.ispencilbox){
 			var o = this.targetowner, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 

@@ -1,12 +1,15 @@
 // Timer.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Timerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Timer',
+ui.createClass('Timer',
 {
 	initialize : function(targetpuzzle){
 		// ** 一般タイマー
@@ -71,7 +74,7 @@ pzprv3.createCoreClass('Timer',
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return pzprv3.ui.selectStr("経過時間：","Time: ");
+		return ui.menu.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------
@@ -91,7 +94,7 @@ pzprv3.createCoreClass('Timer',
 //---------------------------------------------------------------------------
 // ★UndoTimerクラス
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('UndoTimer',
+ui.createClass('UndoTimer',
 {
 	initialize : function(targetpuzzle){
 		// ** Undoタイマー

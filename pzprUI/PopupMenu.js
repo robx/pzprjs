@@ -1,6 +1,9 @@
 // Menu.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
@@ -8,7 +11,7 @@ function getEL(id){ return _doc.getElementById(id);}
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('PopupManager',
+ui.createClass('PopupManager',
 {
 	initialize : function(){
 		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
@@ -27,23 +30,23 @@ pzprv3.createCoreClass('PopupManager',
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
 	init : function(){
-		var puzzle = this.puzzle = pzprv3.ui.targetpuzzle;
+		var puzzle = this.puzzle = ui.menu.targetpuzzle;
 		this.popups = {
-			newboard  : (new pzprv3.core.Popup_Newboard(puzzle)),	/* 盤面の新規作成 */
-			urlinput  : (new pzprv3.core.Popup_URLInput(puzzle)),	/* URL入力 */
-			urloutput : (new pzprv3.core.Popup_URLOutput(puzzle)),	/* URL出力 */
-			fileopen  : (new pzprv3.core.Popup_FileOpen(puzzle)),	/* ファイル入力 */
-			database  : (new pzprv3.core.Popup_DataBase(puzzle)),	/* データベースを開く */
-			adjust    : (new pzprv3.core.Popup_Adjust(puzzle)),		/* 盤面の調整 */
-			turnflip  : (new pzprv3.core.Popup_TurnFlip(puzzle)),	/* 反転・回転 */
-			dispsize  : (new pzprv3.core.Popup_DispSize(puzzle)),	/* 表示サイズ */
-			credit    : (new pzprv3.core.Popup_Credit(puzzle)),		/* credit */
-			debug     : (new pzprv3.core.Popup_Debug(puzzle))		/* poptest */
+			newboard  : (new ui.classes.Popup_Newboard(puzzle)),	/* 盤面の新規作成 */
+			urlinput  : (new ui.classes.Popup_URLInput(puzzle)),	/* URL入力 */
+			urloutput : (new ui.classes.Popup_URLOutput(puzzle)),	/* URL出力 */
+			fileopen  : (new ui.classes.Popup_FileOpen(puzzle)),	/* ファイル入力 */
+			database  : (new ui.classes.Popup_DataBase(puzzle)),	/* データベースを開く */
+			adjust    : (new ui.classes.Popup_Adjust(puzzle)),		/* 盤面の調整 */
+			turnflip  : (new ui.classes.Popup_TurnFlip(puzzle)),	/* 反転・回転 */
+			dispsize  : (new ui.classes.Popup_DispSize(puzzle)),	/* 表示サイズ */
+			credit    : (new ui.classes.Popup_Credit(puzzle)),		/* credit */
+			debug     : (new ui.classes.Popup_Debug(puzzle))		/* poptest */
 		};
 	},
 	
 	reset : function(){
-		this.puzzle = pzprv3.ui.targetpuzzle;
+		this.puzzle = ui.menu.targetpuzzle;
 		this.popup  = null;
 		this.popups = {};
 		getEL('popup_parent').innerHTML = '';
@@ -51,8 +54,8 @@ pzprv3.createCoreClass('PopupManager',
 	
 	setEvents : function(){
 		for(var name in this.popups){ this.popups[name].setEvent();}
-		pzprv3.event.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		pzprv3.event.addMouseUpEvent  (_doc, this, this.titlebarup);
+		ui.event.addMouseMoveEvent(_doc, this, this.titlebarmove);
+		ui.event.addMouseUpEvent  (_doc, this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
@@ -96,26 +99,26 @@ pzprv3.createCoreClass('PopupManager',
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
 		var puzzle = this.puzzle;
-		var pagePos = pzprv3.event.getPagePos(e);
+		var pagePos = ui.event.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pagePos.px - parseInt(popel.style.left);
 		this.offset.py = pagePos.py - parseInt(popel.style.top);
-		pzprv3.event.enableMouse = false;
+		ui.event.enableMouse = false;
 	},
 	titlebarup : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
 			this.movingpop = null;
-			pzprv3.event.enableMouse = true;
+			ui.event.enableMouse = true;
 		}
 	},
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			var pagePos = pzprv3.event.getPagePos(e);
+			var pagePos = ui.event.getPagePos(e);
 			popel.style.left = pagePos.px - this.offset.px + 'px';
 			popel.style.top  = pagePos.py - this.offset.py + 'px';
-			pzprv3.event.preventDefault(e);
+			ui.event.preventDefault(e);
 		}
 	}
 });
@@ -123,7 +126,7 @@ pzprv3.createCoreClass('PopupManager',
 //---------------------------------------------------------------------------
 // ★PopupMenuクラス ポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('PopupMenu',
+ui.createClass('PopupMenu',
 {
 	initialize : function(puzzle){
 		this.puzzle    = puzzle;
@@ -159,8 +162,8 @@ pzprv3.createCoreClass('PopupMenu',
 
 	setEvent :function(){
 		if(!!this.titlebar){
-			var mgr = pzprv3.ui.popupmgr;
-			pzprv3.event.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
+			var mgr = ui.menu.popupmgr;
+			ui.event.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
 		}
 	},
 
@@ -177,20 +180,17 @@ pzprv3.createCoreClass('PopupMenu',
 	hide : function(){
 		this.pop.style.display = "none";
 		
-		pzprv3.event.enableKey = true;
-		pzprv3.event.enableMouse = true;
-		
-		pzprv3.ui.movingpop = null;
-		pzprv3.ui.popup = null;
+		ui.event.enableKey = true;
+		ui.event.enableMouse = true;
 	},
 
 	settitle : function(str_jp, str_en){
-		this.titlebar.appendChild(_doc.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
+		this.titlebar.appendChild(_doc.createTextNode(ui.menu.selectStr(str_jp, str_en)));
 	},
 
 	addText : function(str_jp, str_en){
 		var el = _doc.createElement('span');
-		el.appendChild(_doc.createTextNode(pzprv3.ui.selectStr(str_jp, str_en)));
+		el.appendChild(_doc.createTextNode(ui.menu.selectStr(str_jp, str_en)));
 		this.form.appendChild(el);
 	},
 	addBR : function(){
@@ -214,7 +214,7 @@ pzprv3.createCoreClass('PopupMenu',
 	addExecButton : function(str_jp, str_en, func, attr){
 		el = _doc.createElement('input');
 		el.type = 'button';
-		el.value = pzprv3.ui.selectStr(str_jp, str_en);
+		el.value = ui.menu.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
 		el.onclick = func;
 		this.form.appendChild(el);
@@ -228,7 +228,7 @@ pzprv3.createCoreClass('PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_NewBoardクラス 新規盤面作成のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
+ui.createClass('Popup_Newboard:PopupMenu',
 {
 	formname : 'newboard',
 	
@@ -296,13 +296,13 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		this.addCancelButton();
 	},
 	makeForm_tawa_lap : function(form){
-		var table = new pzprv3.core.TableElement();
+		var table = new ui.classes.TableElement();
 		table.init({id:'NB_lap', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
 		
 		/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
-		pzprv3.ui.modifyCSS({'#NB_lap div':{display:'block', position:'relative', width:'36px', height:'36px'}});
-		pzprv3.ui.modifyCSS({'#NB_lap img':{position:'absolute', margin:'2px'}});
+		ui.menu.modifyCSS({'#NB_lap div':{display:'block', position:'relative', width:'36px', height:'36px'}});
+		ui.menu.modifyCSS({'#NB_lap img':{position:'absolute', margin:'2px'}});
 		
 		var clicklap = function(e){
 			e = (e||window.event);
@@ -332,8 +332,8 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 	},
 	
 	show : function(px,py){
-		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
-		pzprv3.event.enableKey = false;
+		ui.classes.PopupMenu.prototype.show.call(this,px,py);
+		ui.event.enableKey = false;
 	},
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
@@ -370,9 +370,9 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 		if(url.length>0){
 			puzzle.openByURL("?"+pid+"/"+url.join('/'));
 			puzzle.waitReady(function(){
-				pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
-				pzprv3.event.setEvents();			/* イベントをくっつける */
-				pzprv3.timer.reset();				/* タイマーリセット(最後) */
+				ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
+				ui.event.setEvents();			/* イベントをくっつける */
+				ui.timer.reset();				/* タイマーリセット(最後) */
 			});
 		}
 	}
@@ -381,7 +381,7 @@ pzprv3.createCoreClass('Popup_Newboard:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_URLInputクラス URL入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_URLInput:PopupMenu',
+ui.createClass('Popup_URLInput:PopupMenu',
 {
 	formname : 'urlinput',
 	
@@ -411,9 +411,9 @@ pzprv3.createCoreClass('Popup_URLInput:PopupMenu',
 		var puzzle = this.puzzle;
 		puzzle.openByURL(this.form.ta.value);
 		puzzle.waitReady(function(){
-			pzprv3.ui.menuinit(puzzle.config);	/* メニュー関係初期化 */
-			pzprv3.event.setEvents();			/* イベントをくっつける */
-			pzprv3.timer.reset();				/* タイマーリセット(最後) */
+			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
 		});
 	}
 });
@@ -421,7 +421,7 @@ pzprv3.createCoreClass('Popup_URLInput:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_URLOutputクラス URL出力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_URLOutput:PopupMenu',
+ui.createClass('Popup_URLOutput:PopupMenu',
 {
 	formname : 'urloutput',
 	
@@ -477,7 +477,7 @@ pzprv3.createCoreClass('Popup_URLOutput:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_FileOpenクラス ファイル入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
+ui.createClass('Popup_FileOpen:PopupMenu',
 {
 	formname : 'fileform',
 	
@@ -491,7 +491,7 @@ pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ pzprv3.event.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ ui.event.preventDefault(e||window.event); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
@@ -512,16 +512,16 @@ pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		var fileEL = this.form.filebox;
-		if(!!pzprv3.ui.reader || pzprv3.ui.enableGetText){
+		if(!!ui.menu.reader || ui.menu.enableGetText){
 			var fitem = fileEL.files[0];
 			if(!fitem){ return;}
 			
-			if(!!pzprv3.ui.reader){ pzprv3.ui.reader.readAsText(fitem);}
-			else                  { pzprv3.ui.fileonload(fitem.getAsText(''));}
+			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
+			else                { ui.menu.fileonload(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}
-			this.form.action = pzprv3.ui.fileio;
+			this.form.action = ui.menu.fileio;
 			this.form.submit();
 		}
 		this.form.reset();
@@ -531,7 +531,7 @@ pzprv3.createCoreClass('Popup_FileOpen:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_Adjustクラス 盤面の調整のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_Adjust:PopupMenu',
+ui.createClass('Popup_Adjust:PopupMenu',
 {
 	formname : 'adjust',
 	
@@ -576,7 +576,7 @@ pzprv3.createCoreClass('Popup_Adjust:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_TurnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
+ui.createClass('Popup_TurnFlip:PopupMenu',
 {
 	formname : 'turnflip',
 	
@@ -618,7 +618,7 @@ pzprv3.createCoreClass('Popup_TurnFlip:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_DispSizeクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
+ui.createClass('Popup_DispSize:PopupMenu',
 {
 	formname : 'dispsize',
 	
@@ -641,10 +641,10 @@ pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
 	},
 	
 	show : function(px,py){
-		pzprv3.core.PopupMenu.prototype.show.call(this,px,py);
+		ui.classes.PopupMenu.prototype.show.call(this,px,py);
 		
 		this.form.cs.value = this.puzzle.painter.cellsize;
-		pzprv3.event.enableKey = false;
+		ui.event.enableKey = false;
 	},
 	
 	//------------------------------------------------------------------------------
@@ -663,7 +663,7 @@ pzprv3.createCoreClass('Popup_DispSize:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_Creditクラス Creditやバージョン情報を表示します
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Popup_Credit:PopupMenu',
+ui.createClass('Popup_Credit:PopupMenu',
 {
 	formname : 'credit',
 	
@@ -688,7 +688,7 @@ pzprv3.createCoreClass('Popup_Credit:PopupMenu',
 //---------------------------------------------------------------------------
 // ★TableElementクラス テーブル作成用のクラスです
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('TableElement',
+ui.createClass('TableElement',
 {
 	table : null,
 	tbody : null,

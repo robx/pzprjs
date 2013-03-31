@@ -95,7 +95,7 @@ pzprv3.createCommonClass('KeyEvent',
 		}
 
 		if(!this.isZ){ o.board.errclear();}
-		if(pzprv3.debug.keydown(c)){ ret = true;}
+		if(ui.debug.keydown(c)){ ret = true;}
 		return ret;
 	},
 	keyup_common : function(c){

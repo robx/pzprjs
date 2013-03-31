@@ -1,13 +1,16 @@
 // KeyPopup.js v3.4.0
 (function(){
 
+/* uiオブジェクト生成待ち */
+if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
 //---------------------------------------------------------------------------
 // キー入力用Popupウィンドウ
-pzprv3.createCoreClass('KeyPopup',
+ui.createClass('KeyPopup',
 {
 	initialize : function(puzzle){
 		this.puzzle = puzzle;
@@ -175,8 +178,8 @@ pzprv3.createCoreClass('KeyPopup',
 		bar.appendChild(_doc.createTextNode("panel"));
 		pzprv3.unselectable(bar);
 		keypopup.appendChild(bar);
-		pzprv3.event.addMouseDownEvent(bar, pzprv3.ui.popupmgr, pzprv3.ui.popupmgr.titlebardown);
-		pzprv3.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
+		ui.event.addMouseDownEvent(bar, ui.menu.popupmgr, ui.menu.popupmgr.titlebardown);
+		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
 		
 		var panel = _doc.createElement('div');
 		panel.className = 'panelbase';
@@ -549,7 +552,7 @@ pzprv3.createCoreClass('KeyPopup',
 			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
 
-		pzprv3.ui.modifyCSS({
+		ui.menu.modifyCSS({
 			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});
