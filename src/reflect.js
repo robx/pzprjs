@@ -46,31 +46,6 @@ KeyEvent:{
 
 		cell.drawaround();
 		return true;
-	},
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.imgCR = [4,1];
-		this.inputcol('image','knumq','q',[0,0]);
-		this.inputcol('image','knumw','w',[1,0]);
-		this.inputcol('image','knume','e',[2,0]);
-		this.inputcol('image','knumr','r',[3,0]);
-		this.inputcol('num','knumt','t','╋');
-		this.inputcol('num','knumy','y',' ');
-		this.insertrow();
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
-		this.insertrow();
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum.','-','-');
-		this.insertrow();
 	}
 },
 

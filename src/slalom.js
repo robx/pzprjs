@@ -135,7 +135,9 @@ KeyEvent:{
 
 	keyinput : function(ca,step){
 		if(ca!=='x'){
-			this.key_inputqnum_slalom(ca);
+			if(step===0 && this.owner.editmode){
+				this.key_inputqnum_slalom(ca);
+			}
 		}
 		else{
 			if(step===0){ /* 押した時 */
@@ -171,32 +173,6 @@ KeyEvent:{
 		else if(cell.getQues()===1){
 			this.key_inputqnum(ca);
 		}
-	},
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.imgCR = [4,1];
-		this.inputcol('image','knumq','q',[0,0]);
-		this.inputcol('image','knums','s',[1,0]);
-		this.inputcol('image','knumw','w',[2,0]);
-		this.inputcol('image','knume','e',[3,0]);
-		this.inputcol('num','knumr','r',' ');
-		this.insertrow();
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.insertrow();
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
-		this.insertrow();
-		this.inputcol('num','knum.','-','-');
-		this.inputcol('num','knum_',' ',' ');
-		this.insertrow();
 	}
 },
 

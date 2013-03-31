@@ -40,10 +40,7 @@ KeyEvent:{
 	keyinput : function(ca){
 		if(this.key_inputdirec(ca)){ return;}
 		this.key_inputqnum(ca);
-	},
-
-	enablemake_p : true,
-	paneltype    : 10
+	}
 },
 
 //---------------------------------------------------------

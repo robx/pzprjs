@@ -71,35 +71,6 @@ KeyEvent:{
 			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
 		}
 		this.key_inputqnum(ca);
-	},
-
-	enablemake_p : true,
-	enableplay_p : true,
-	generate : function(mode,type){
-		if(mode==3){
-			this.tdcolor = this.owner.painter.mbcolor;
-			this.inputcol('num','knumq','q','○');
-			this.inputcol('num','knumw','w','×');
-			this.tdcolor = "black";
-			this.inputcol('num','knum_',' ',' ');
-			this.inputcol('empty','','','');
-			this.insertrow();
-		}
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.insertrow();
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.insertrow();
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
-		((mode==1)?this.inputcol('num','knum.','-','?'):this.inputcol('empty','','',''));
-		((mode==1)?this.inputcol('num','knumc',' ','') :this.inputcol('empty','','',''));
-		this.insertrow();
 	}
 },
 

@@ -78,10 +78,7 @@ MouseEvent:{
 
 	keyinput : function(ca){
 		this.key_inputcross(ca);
-	},
-
-	enablemake_p : true,
-	paneltype    : 4
+	}
 },
 "KeyEvent@wagiri":{
 	enablemake : true,

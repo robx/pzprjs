@@ -12,11 +12,8 @@ pzprv3.createCoreClass('KeyPopup',
 	initialize : function(puzzle){
 		this.puzzle = puzzle;
 
-		this.haspanel = {	// 有効かどうか
-			1 : (this.enablemake_p && pzprv3.EDITOR),
-			3 : this.enableplay_p
-		};
-		this.element = null;				// キーポップアップのエレメント
+		this.paneltype = {1:0, 3:0};	// パネルのタイプ
+		this.element = null;			// キーポップアップのエレメント
 
 		this.prefix;
 		this.tdcolor = "black";
@@ -45,16 +42,83 @@ pzprv3.createCoreClass('KeyPopup',
 		pzprv3.unselectable(this.node_img);
 	},
 
-	enablemake_p : true,
-	enableplay_p : false,
-	paneltype    : 10,
+	type : {
+		slither    : [3,0],
+		nawabari   : [4,0],
+		fourcells  : [4,0],
+		fivecells  : [4,0],
+		fillmat    : [4,0],
+		paintarea  : [4,0],
+		lightup    : [4,0],
+		shakashaka : [4,0],
+		gokigen    : [4,0],
+		wagiri     : [4,0],
+		shugaku    : [4,0],
+		creek      : [4,0],
+		ichimaga   : [4,0],
+		ichimagam  : [4,0],
+		ichimagax  : [4,0],
+		sukoro     : [4,4],
+		sukororoom : [4,4],
+		lookair    : [5,0],
+		tawa       : [6,0],
+		hashikake  : [8,0],
+		amibo      : [10,0],
+		bag        : [10,0],
+		bdblock    : [10,0],
+		country    : [10,0],
+		usotatami  : [10,0],
+		heyawake   : [10,0],
+		ayeheya    : [10,0],
+		kurodoko   : [10,0],
+		nagenawa   : [10,0],
+		ringring   : [10,0],
+		numlin     : [10,0],
+		nurikabe   : [10,0],
+		nuribou    : [10,0],
+		mochikoro  : [10,0],
+		mochinyoro : [10,0],
+		shikaku    : [10,0],
+		aho        : [10,0],
+		shimaguni  : [10,0],
+		chocona    : [10,0],
+		yajitatami : [10,0],
+		tasquare   : [10,0],
+		kurotto    : [10,0],
+		bonsan     : [10,0],
+		heyabon    : [10,0],
+		yosenabe   : [10,0],
+		firefly    : [10,0],
+		tateyoko   : [10,0],
+		factors    : [10,10],
+		fillomino  : [10,10],
+		renban     : [10,10],
+		ripple     : [10,10],
+		cojun      : [10,10],
+		sudoku     : [10,10],
+		nanro      : [10,10],
+		view       : [10,10],
+		kakuru     : [10,10],
+		tilepaint  : [51,0],
+		triplace   : [51,0],
+		kakuro     : [51,10],
+		
+		slalom     : [101,0],
+		reflect    : [102,0],
+		pipelink   : [111,0],
+		pipelinkr  : [111,0],
+		loopsp     : [111,0],
+		tatamibari : [112,0],
+		hakoiri    : [113,0],
+		husabi     : [114,0]
+	},
 
 	//---------------------------------------------------------------------------
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = this.owner.getConfig('mode');
-		if(this.element && this.haspanel[mode] && this.owner.getConfig('keypopup')){
+		var mode = this.puzzle.getConfig('mode');
+		if(this.element && !!this.paneltype[mode] && this.puzzle.getConfig('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -71,29 +135,33 @@ pzprv3.createCoreClass('KeyPopup',
 	// kp.createtable() キーポップアップのポップアップを作成する
 	//---------------------------------------------------------------------------
 	create : function(){
-		if(!this.haspanel[1] && !this.haspanel[3]){ return;}
+		var type = this.type[this.puzzle.pid];
+		if(!type){ type=[0,0];}
 		
-		if(!this.element){
-			this.element = this.makeKeyPopup();
-		}
+		this.paneltype = { 1:(pzprv3.EDITOR?type[0]:0), 3:(type[1])};
+		if(!this.paneltype[1] && !this.paneltype[3]){ return;}
 		
-		if(this.enablemake_p && pzprv3.EDITOR){ this.createtable(1);}
-		if(this.enableplay_p)                 { this.createtable(3);}
+		this.element = this.makeKeyPopup();
+		
+		if(this.paneltype[1]!==0){ this.createtable(1);}
+		if(this.paneltype[3]!==0){ this.createtable(3);}
+		
+		this.resizepanel();
 	},
-	createtable : function(mode){
+	createtable : function(mode,type){
 		this.prefix = ['kp',mode,'_'].join('');
 
 		this.basetmp = pzprv3.getEL('panelbase'+mode);
 		this.basetmp.innerHTML = '';
 
-		this.generate(mode,this.paneltype);
+		this.generate(mode);
 	},
 
 	//---------------------------------------------------------------------------
 	// kp.makeKeyPopup() キーポップアップのパネルを作成する
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
-		var keypopup, bar, _doc = document, o = this.owner;
+		var keypopup, bar, _doc = document, puzzle = this.puzzle;
 		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
 		
 		keypopup = _doc.createElement('div');
@@ -111,7 +179,7 @@ pzprv3.createCoreClass('KeyPopup',
 		pzprv3.unselectable(bar);
 		keypopup.appendChild(bar);
 		pzprv3.event.addMouseDownEvent(bar, pzprv3.ui.popupmgr, pzprv3.ui.popupmgr.titlebardown);
-		pzprv3.event.addEvent(bar, 'dblclick', o, function(){ o.setConfig('keypopup',false)});
+		pzprv3.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
 		
 		var panel = _doc.createElement('div');
 		panel.className = 'panelbase';
@@ -132,26 +200,76 @@ pzprv3.createCoreClass('KeyPopup',
 	// kp.gentable10()  キーポップアップの0～9を入力できるテーブルを作成する
 	// kp.gentable51()  キーポップアップの[＼],0～9を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
-	generate : function(mode,type){
-		if     (type===10){ this.gentable10(mode,type);}
-		else if(type===51){ this.gentable51(mode,type);}
-		else              { this.gentable4 (mode,type);} // 1,2,4の場合
+	generate : function(mode){
+		var type = this.paneltype[mode];
+		if     (type===4) { this.gentable4 (mode);}
+		else if(type===10){ this.gentable10(mode);}
+		else if(type===51){ this.gentable51(mode);}
+
+		else if(type===3) { this.gentable3(mode);}
+		else if(type===5) { this.gentable5(mode);}
+		else if(type===6) { this.gentable6(mode);}
+		else if(type===8) { this.gentable8(mode);}
+
+		else if(type===101){ this.generate_slalom(mode);}
+		else if(type===102){ this.generate_reflect(mode);}
+		else if(type===111){ this.generate_pipelink(mode);}
+		else if(type===112){ this.generate_tatamibari(mode);}
+		else if(type===113){ this.generate_hakoiri(mode);}
+		else if(type===114){ this.generate_kusabi(mode);}
 	},
-	gentable4 : function(mode,type){
-		this.inputcol('num','knum0','0','0');
+	gentable4 : function(mode){
+		var pid=this.puzzle.pid;
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
 		this.inputcol('num','knum3','3','3');
-		this.insertrow();
 		this.inputcol('num','knum4','4','4');
-		this.inputcol('empty','','','');
-		this.inputcol('num','knum_',' ',' ');
-		if     (type==1){ this.inputcol('num','knum.','-','?');}
-		else if(type==2){ this.inputcol('num','knum.','-','■');}
-		else if(type==4){ this.inputcol('num','knum.','-','○');}
+		this.insertrow();
+		if((mode==3)&&(pid==='sukoro'||pid==='sukororoom')){
+			this.tdcolor = this.puzzle.painter.mbcolor;
+			this.inputcol('num','knumq','q','○');
+			this.inputcol('num','knumw','w','×');
+			this.tdcolor = "black";
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('empty','','','');
+		}
+		else{
+			this.inputcol('num','knum0','0','0');
+			this.inputcol('empty','','','');
+			this.inputcol('num','knum_',' ',' ');
+			if(!this.puzzle.painter.hideHatena){
+				this.inputcol('num','knum.','-','?');
+			}
+			else{
+				var cap = '?';
+				switch(pid){
+					case 'lightup': case 'shakashaka':                           cap='■'; break;
+					case 'gokigen': case 'wagiri': case 'shugaku': case 'creek': cap='○'; break;
+				}
+				this.inputcol('num','knum.','-',cap);
+			}
+		}
 		this.insertrow();
 	},
-	gentable10 : function(mode,type){
+	gentable10 : function(mode){
+		var pid = this.puzzle.pid;
+		if((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB)){
+			this.tdcolor = this.puzzle.painter.mbcolor;
+			this.inputcol('num','knumq','q','○');
+			this.inputcol('num','knumw','w','×');
+			this.tdcolor = "black";
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('empty','','','');
+			this.insertrow();
+		}
+		if((mode==1)&&(pid==='kakuru'||pid==='tateyoko')){
+			this.inputcol('num','knumq1','q1','■');
+			this.inputcol('num','knumq2','q2','□');
+			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('num','knum.','-','?');
+			this.insertrow();
+		}
+		
 		this.inputcol('num','knum0','0','0');
 		this.inputcol('num','knum1','1','1');
 		this.inputcol('num','knum2','2','2');
@@ -164,11 +282,27 @@ pzprv3.createCoreClass('KeyPopup',
 		this.insertrow();
 		this.inputcol('num','knum8','8','8');
 		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum_',' ',' ');
-		if(mode==1){ this.inputcol('num','knum.','-','?');}else{ this.inputcol('empty','','','');}
+		if(!((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB))){
+			this.inputcol('num','knum_',' ',' ');
+		}
+		else{
+			this.inputcol('empty','','','');
+		}
+		if((mode===3)||(pid==='kakuru'||pid==='tateyoko')){
+			this.inputcol('empty','','','');
+		}
+		else if(!this.puzzle.painter.hideHatena){
+			this.inputcol('num','knum.','-','?');
+		}
+		else if(pid==='tasquare'){
+			this.inputcol('num','knum.','-','□');
+		}
+		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
+			this.inputcol('num','knum.','-','○');
+		}
 		this.insertrow();
 	},
-	gentable51 : function(mode,type){
+	gentable51 : function(mode){
 		this.inputcol('image','knumq','q',[0,0]);
 		this.inputcol('num','knum_',' ',' ');
 		this.inputcol('num','knum1','1','1');
@@ -183,6 +317,190 @@ pzprv3.createCoreClass('KeyPopup',
 		this.inputcol('num','knum8','8','8');
 		this.inputcol('num','knum9','9','9');
 		this.inputcol('num','knum0','0','0');
+		this.insertrow();
+	},
+
+	//---------------------------------------------------------------------------
+	// kp.gentable3()  キーポップアップの0～4を入力できるテーブルを作成する
+	// kp.gentable5()  キーポップアップの0～5を入力できるテーブルを作成する
+	// kp.gentable6()  キーポップアップの0～6を入力できるテーブルを作成する
+	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
+	//---------------------------------------------------------------------------
+	gentable3 : function(mode){
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum.','-','?');
+		this.insertrow();
+	},
+	gentable5: function(mode){
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('empty','','','');
+		this.insertrow();
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum.','-','?');
+		this.insertrow();
+	},
+	gentable6 : function(mode){
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.insertrow();
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.insertrow();
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum.','-','?');
+		this.insertrow();
+	},
+	gentable8 : function(mode){
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.insertrow();
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','knum8','8','8');
+		this.insertrow();
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','knum.','-','○');
+		this.insertrow();
+	},
+
+	//---------------------------------------------------------------------------
+	// kp.generate_slalom()     スラローム用のテーブルを作成する
+	// kp.generate_reflect()    リフレクトリンク用のテーブルを作成する
+	//---------------------------------------------------------------------------
+	generate_slalom : function(mode){
+		this.imgCR = [4,1];
+		this.inputcol('image','knumq','q',[0,0]);
+		this.inputcol('image','knums','s',[1,0]);
+		this.inputcol('image','knumw','w',[2,0]);
+		this.inputcol('image','knume','e',[3,0]);
+		this.inputcol('num','knumr','r',' ');
+		this.insertrow();
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.insertrow();
+		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum0','0','0');
+		this.insertrow();
+		this.inputcol('num','knum.','-','-');
+		this.inputcol('num','knum_',' ',' ');
+		this.insertrow();
+	},
+	generate_reflect : function(mode){
+		this.imgCR = [4,1];
+		this.inputcol('image','knumq','q',[0,0]);
+		this.inputcol('image','knumw','w',[1,0]);
+		this.inputcol('image','knume','e',[2,0]);
+		this.inputcol('image','knumr','r',[3,0]);
+		this.inputcol('num','knumt','t','╋');
+		this.inputcol('num','knumy','y',' ');
+		this.insertrow();
+		this.inputcol('num','knum1','1','1');
+		this.inputcol('num','knum2','2','2');
+		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','knum6','6','6');
+		this.insertrow();
+		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','knum.','-','-');
+		this.insertrow();
+	},
+
+	//---------------------------------------------------------------------------
+	// kp.generate_pipelink()   パイプリンク、帰ってきたパイプリンク、環状線スペシャル用のテーブルを作成する
+	// kp.generate_tatamibari() タタミバリ用のテーブルを作成する
+	// kp.generate_hakoiri()    はこいり○△□用のテーブルを作成する
+	// kp.generate_kusabi()     クサビリンク用のテーブルを作成する
+	//---------------------------------------------------------------------------
+	generate_pipelink : function(mode){
+		var pid = this.puzzle.pid;
+		this.inputcol('num','knumq','q','╋');
+		this.inputcol('num','knumw','w','┃');
+		this.inputcol('num','knume','e','━');
+		this.inputcol('num','knumr','r',' ');
+		if     (pid==='pipelink') { this.inputcol('empty','','','');}
+		else if(pid==='pipelinkr'){ this.inputcol('num','knum.','1','○');}
+		else if(pid==='loopsp')   { this.inputcol('num','knum.','-','○');}
+		this.insertrow();
+		this.inputcol('num','knuma','a','┗');
+		this.inputcol('num','knums','s','┛');
+		this.inputcol('num','knumd','d','┓');
+		this.inputcol('num','knumf','f','┏');
+		if(pid!=='loopsp'){ this.inputcol('num','knum_','-','?');}
+		this.insertrow();
+		
+		if(pid==='loopsp'){
+			this.inputcol('num','knum1','1','1');
+			this.inputcol('num','knum2','2','2');
+			this.inputcol('num','knum3','3','3');
+			this.inputcol('num','knum4','4','4');
+			this.inputcol('num','knum5','5','5');
+			this.insertrow();
+			this.inputcol('num','knum6','6','6');
+			this.inputcol('num','knum7','7','7');
+			this.inputcol('num','knum8','8','8');
+			this.inputcol('num','knum9','9','9');
+			this.inputcol('num','knum0','0','0');
+			this.insertrow();
+		}
+	},
+	generate_tatamibari : function(mode){
+		this.inputcol('num','knumq','q','╋');
+		this.inputcol('num','knumw','w','┃');
+		this.inputcol('num','knume','e','━');
+		this.insertrow();
+		this.inputcol('num','knumr','r',' ');
+		this.inputcol('num','knum.','-','?');
+		this.inputcol('empty','','','');
+		this.insertrow();
+	},
+	generate_hakoiri : function(mode){
+		if(mode==3){ this.tdcolor = this.puzzle.painter.fontAnscolor;}
+		this.inputcol('num','knum1','1','○');
+		this.inputcol('num','knum2','2','△');
+		this.inputcol('num','knum3','3','□');
+		this.insertrow();
+		if(mode==3){ this.tdcolor = "rgb(255, 96, 191)";}
+		this.inputcol('num','knum4','4',(mode===1 ? '?' : '・'));
+		if(mode==3){ this.tdcolor = "black";}
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('empty','','','');
+		this.insertrow();
+	},
+	generate_kusabi : function(mode){
+		this.inputcol('num','knum1','1','同');
+		this.inputcol('num','knum2','2','短');
+		this.inputcol('num','knum3','3','長');
+		this.insertrow();
+		this.inputcol('num','knum.','-','○');
+		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('empty','','','');
 		this.insertrow();
 	},
 
@@ -208,7 +526,7 @@ pzprv3.createCoreClass('KeyPopup',
 		else if(type==='image'){
 			_child = this.node_img.cloneNode(false);
 			_child.id = this.prefix+id+"_i";
-			_child.src = "./src/img/"+this.owner.pid+"_kp.gif";
+			_child.src = "./src/img/"+this.puzzle.pid+"_kp.gif";
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 
@@ -224,7 +542,7 @@ pzprv3.createCoreClass('KeyPopup',
 	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
 	resizepanel : function(){
-		var cellsize = Math.min(this.owner.painter.cw, 120);
+		var cellsize = Math.min(this.puzzle.painter.cw, 120);
 		if(cellsize<20){ cellsize=20;}
 
 		var dsize = (cellsize*0.90)|0, tsize = (cellsize*0.70)|0;

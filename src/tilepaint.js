@@ -41,10 +41,7 @@ KeyEvent:{
 		this.inputnumber51(ca,
 			{2 : (this.owner.board.qcols-(this.cursor.pos.bx>>1)-1),
 			 4 : (this.owner.board.qrows-(this.cursor.pos.by>>1)-1)});
-	},
-
-	enablemake_p : true,
-	paneltype    : 51
+	}
 },
 
 //---------------------------------------------------------

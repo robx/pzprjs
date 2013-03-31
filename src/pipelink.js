@@ -51,30 +51,6 @@ KeyEvent:{
 
 		cell.drawaround();
 		return true;
-	},
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.inputcol('num','knumq','q','╋');
-		this.inputcol('num','knumw','w','┃');
-		this.inputcol('num','knume','e','━');
-		this.inputcol('num','knumr','r',' ');
-		this.insertrow();
-		this.inputcol('num','knuma','a','┗');
-		this.inputcol('num','knums','s','┛');
-		this.inputcol('num','knumd','d','┓');
-		this.inputcol('num','knumf','f','┏');
-		this.insertrow();
-		this.inputcol('num','knum_','-','?');
-		this.inputcol('empty','','','');
-		this.inputcol('empty','','','');
-		if(this.owner.pid==='pipelink'){
-			this.inputcol('empty','','','');
-		}
-		else{
-			this.inputcol('num','knum.','1','○');
-		}
-		this.insertrow();
 	}
 },
 

@@ -22,19 +22,7 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true,
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.inputcol('num','knum1','1','同');
-		this.inputcol('num','knum2','2','短');
-		this.inputcol('num','knum3','3','長');
-		this.insertrow();
-		this.inputcol('num','knum.','-','○');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('empty','','','');
-		this.insertrow();
-	}
+	enablemake : true
 },
 
 //---------------------------------------------------------

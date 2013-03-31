@@ -38,10 +38,7 @@ pzprv3.createCustoms('nagenawa', {
 //---------------------------------------------------------
 // キーボード入力系
 "KeyEvent@nagenawa":{
-	enablemake : true,
-
-	enablemake_p : true,
-	paneltype    : 10
+	enablemake : true
 },
 
 //---------------------------------------------------------

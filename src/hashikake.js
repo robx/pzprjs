@@ -75,24 +75,7 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true,
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.insertrow();
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.insertrow();
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','○');
-		this.insertrow();
-	}
+	enablemake : true
 },
 
 //---------------------------------------------------------

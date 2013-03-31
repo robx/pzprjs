@@ -19,26 +19,7 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true,
-
-	enablemake_p : true
-},
-"KeyEvent@fillmat":{
-	generate : function(mode,type){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','?');
-		this.insertrow();
-	}
-},
-"KeyEvent@usotatami":{
-	generate : function(mode,type){
-		this.gentable10(mode,10);
-	}
+	enablemake : true
 },
 
 //---------------------------------------------------------

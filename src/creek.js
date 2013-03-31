@@ -21,10 +21,7 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.key_inputcross(ca);
-	},
-
-	enablemake_p : true,
-	paneltype    : 10
+	}
 },
 
 TargetCursor:{

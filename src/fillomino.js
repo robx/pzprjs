@@ -91,11 +91,7 @@ KeyEvent:{
 
 			if(this.tcMoved){ cell.draw();}
 		}
-	},
-
-	enablemake_p : true,
-	enableplay_p : true,
-	paneltype    : 10
+	}
 },
 
 //---------------------------------------------------------

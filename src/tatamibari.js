@@ -40,18 +40,6 @@ KeyEvent:{
 		else{ return;}
 
 		cell.draw();
-	},
-
-	enablemake_p : true,
-	generate : function(mode,type){
-		this.inputcol('num','knumq','q','╋');
-		this.inputcol('num','knumw','w','┃');
-		this.inputcol('num','knume','e','━');
-		this.insertrow();
-		this.inputcol('num','knumr','r',' ');
-		this.inputcol('num','knum.','-','?');
-		this.inputcol('empty','','','');
-		this.insertrow();
 	}
 },
 

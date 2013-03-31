@@ -65,6 +65,8 @@ pzprv3.createCoreClass('Menu',
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 
+		pzprv3.keypopup.create();
+
 		this.menuarea();
 		this.managearea();
 		this.buttonarea();
@@ -77,8 +79,6 @@ pzprv3.createCoreClass('Menu',
 
 		pzprv3.event.setcellsize();
 		this.targetpuzzle.painter.forceRedraw();
-		
-		pzprv3.keypopup.create();
 	},
 
 	menureset : function(){
@@ -502,7 +502,7 @@ pzprv3.createCoreClass('Menu',
 		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
-		if(pzprv3.keypopup.haspanel[1] || pzprv3.keypopup.haspanel[3]){
+		if(pzprv3.keypopup.paneltype[1]!==0 || pzprv3.keypopup.paneltype[3]!==0){
 			pp.addCheck('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
@@ -1048,7 +1048,7 @@ pzprv3.createCoreClass('Menu',
 		},
 
 		keypopup : function(){
-			var f = pzprv3.keypopup.haspanel[this.items.flags['mode'].val];
+			var f = !!pzprv3.keypopup.paneltype[this.items.flags['mode'].val];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
 			getEL('cl_keypopup').style.color = (f?"black":"silver");
 
@@ -1073,7 +1073,7 @@ pzprv3.createCoreClass('Menu',
 		o.board.haserror=true;
 		o.painter.paintAll();
 
-		if(pzprv3.keypopup.haspanel[1] || pzprv3.keypopup.haspanel[3]){ this.funcs.keypopup.call(this);}
+		if(pzprv3.keypopup.paneltype[1]!==0 || pzprv3.keypopup.paneltype[3]!==0){ this.funcs.keypopup.call(this);}
 		if(o.config.flag_bgcolor){
 			pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
 			pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");

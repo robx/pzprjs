@@ -55,22 +55,6 @@ KeyEvent:{
 		else if(ca==='4'||ca==='r'||ca==='f'||ca==='v'){ ca='s1';}
 		else if(ca==='5'||ca==='t'||ca==='g'||ca==='b'){ ca=' ';}
 		this.key_inputqnum(ca);
-	},
-
-	enablemake_p : true,
-	enableplay_p : true,
-	generate : function(mode,type){
-		if(mode==3){ this.tdcolor = this.owner.painter.fontAnscolor;}
-		this.inputcol('num','knum1','1','○');
-		this.inputcol('num','knum2','2','△');
-		this.inputcol('num','knum3','3','□');
-		this.insertrow();
-		if(mode==3){ this.tdcolor = "rgb(255, 96, 191)";}
-		this.inputcol('num','knum4','4',(mode===1 ? '?' : '・'));
-		if(mode==3){ this.tdcolor = "black";}
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('empty','','','');
-		this.insertrow();
 	}
 },
 

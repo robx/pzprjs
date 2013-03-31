@@ -22,14 +22,6 @@ KeyEvent:{
 	keyinput : function(ca){
 		if     (this.owner.editmode){ this.inputnumber51(ca,{2:45,4:45});}
 		else if(this.owner.playmode){ this.key_inputqnum(ca);}
-	},
-
-	enablemake_p : true,
-	enableplay_p : true,
-	paneltype    : 51,
-	generate : function(mode,type){
-		if(mode===3){ this.gentable10(mode,type);}
-		else        { this.gentable51(mode,type);}
 	}
 },
 

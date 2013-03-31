@@ -22,11 +22,7 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	enableplay : true,
-
-	enablemake_p : true,
-	enableplay_p : true,
-	paneltype    : 10
+	enableplay : true
 },
 
 //---------------------------------------------------------
