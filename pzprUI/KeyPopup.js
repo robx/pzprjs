@@ -15,7 +15,6 @@ pzprv3.createCoreClass('KeyPopup',
 		this.paneltype = {1:0, 3:0};	// パネルのタイプ
 		this.element = null;			// キーポップアップのエレメント
 
-		this.prefix;
 		this.tdcolor = "black";
 		this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
 
@@ -149,8 +148,6 @@ pzprv3.createCoreClass('KeyPopup',
 		this.resizepanel();
 	},
 	createtable : function(mode,type){
-		this.prefix = ['kp',mode,'_'].join('');
-
 		this.basetmp = pzprv3.getEL('panelbase'+mode);
 		this.basetmp.innerHTML = '';
 
@@ -220,25 +217,25 @@ pzprv3.createCoreClass('KeyPopup',
 	},
 	gentable4 : function(mode){
 		var pid=this.puzzle.pid;
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
+		this.inputcol('num','4','4');
 		this.insertrow();
 		if((mode==3)&&(pid==='sukoro'||pid==='sukororoom')){
 			this.tdcolor = this.puzzle.painter.mbcolor;
-			this.inputcol('num','knumq','q','○');
-			this.inputcol('num','knumw','w','×');
+			this.inputcol('num','q','○');
+			this.inputcol('num','w','×');
 			this.tdcolor = "black";
-			this.inputcol('num','knum_',' ',' ');
-			this.inputcol('empty','','','');
+			this.inputcol('num',' ',' ');
+			this.inputcol('empty','','');
 		}
 		else{
-			this.inputcol('num','knum0','0','0');
-			this.inputcol('empty','','','');
-			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('num','0','0');
+			this.inputcol('empty','','');
+			this.inputcol('num',' ',' ');
 			if(!this.puzzle.painter.hideHatena){
-				this.inputcol('num','knum.','-','?');
+				this.inputcol('num','-','?');
 			}
 			else{
 				var cap = '?';
@@ -246,7 +243,7 @@ pzprv3.createCoreClass('KeyPopup',
 					case 'lightup': case 'shakashaka':                           cap='■'; break;
 					case 'gokigen': case 'wagiri': case 'shugaku': case 'creek': cap='○'; break;
 				}
-				this.inputcol('num','knum.','-',cap);
+				this.inputcol('num','-',cap);
 			}
 		}
 		this.insertrow();
@@ -255,68 +252,68 @@ pzprv3.createCoreClass('KeyPopup',
 		var pid = this.puzzle.pid;
 		if((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB)){
 			this.tdcolor = this.puzzle.painter.mbcolor;
-			this.inputcol('num','knumq','q','○');
-			this.inputcol('num','knumw','w','×');
+			this.inputcol('num','q','○');
+			this.inputcol('num','w','×');
 			this.tdcolor = "black";
-			this.inputcol('num','knum_',' ',' ');
-			this.inputcol('empty','','','');
+			this.inputcol('num',' ',' ');
+			this.inputcol('empty','','');
 			this.insertrow();
 		}
 		if((mode==1)&&(pid==='kakuru'||pid==='tateyoko')){
-			this.inputcol('num','knumq1','q1','■');
-			this.inputcol('num','knumq2','q2','□');
-			this.inputcol('num','knum_',' ',' ');
-			this.inputcol('num','knum.','-','?');
+			this.inputcol('num','q1','■');
+			this.inputcol('num','q2','□');
+			this.inputcol('num',' ',' ');
+			this.inputcol('num','-','?');
 			this.insertrow();
 		}
 		
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','0','0');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
 		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
+		this.inputcol('num','6','6');
+		this.inputcol('num','7','7');
 		this.insertrow();
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
+		this.inputcol('num','8','8');
+		this.inputcol('num','9','9');
 		if(!((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB))){
-			this.inputcol('num','knum_',' ',' ');
+			this.inputcol('num',' ',' ');
 		}
 		else{
-			this.inputcol('empty','','','');
+			this.inputcol('empty','','');
 		}
 		if((mode===3)||(pid==='kakuru'||pid==='tateyoko')){
 			this.inputcol('empty','','','');
 		}
 		else if(!this.puzzle.painter.hideHatena){
-			this.inputcol('num','knum.','-','?');
+			this.inputcol('num','-','?');
 		}
 		else if(pid==='tasquare'){
-			this.inputcol('num','knum.','-','□');
+			this.inputcol('num','-','□');
 		}
 		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
-			this.inputcol('num','knum.','-','○');
+			this.inputcol('num','-','○');
 		}
 		this.insertrow();
 	},
 	gentable51 : function(mode){
-		this.inputcol('image','knumq','q',[0,0]);
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
+		this.inputcol('image','q',[0,0]);
+		this.inputcol('num',' ',' ');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
 		this.insertrow();
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','3','3');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
+		this.inputcol('num','6','6');
 		this.insertrow();
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','7','7');
+		this.inputcol('num','8','8');
+		this.inputcol('num','9','9');
+		this.inputcol('num','0','0');
 		this.insertrow();
 	},
 
@@ -327,56 +324,56 @@ pzprv3.createCoreClass('KeyPopup',
 	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	gentable3 : function(mode){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
 		this.insertrow();
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','?');
+		this.inputcol('num','0','0');
+		this.inputcol('num',' ',' ');
+		this.inputcol('num','-','?');
 		this.insertrow();
 	},
 	gentable5: function(mode){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
 		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('empty','','','');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
+		this.inputcol('empty','','');
 		this.insertrow();
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','?');
+		this.inputcol('num','0','0');
+		this.inputcol('num',' ',' ');
+		this.inputcol('num','-','?');
 		this.insertrow();
 	},
 	gentable6 : function(mode){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
 		this.insertrow();
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
+		this.inputcol('num','6','6');
 		this.insertrow();
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','?');
+		this.inputcol('num','0','0');
+		this.inputcol('num',' ',' ');
+		this.inputcol('num','-','?');
 		this.insertrow();
 	},
 	gentable8 : function(mode){
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
+		this.inputcol('num','4','4');
 		this.insertrow();
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
+		this.inputcol('num','5','5');
+		this.inputcol('num','6','6');
+		this.inputcol('num','7','7');
+		this.inputcol('num','8','8');
 		this.insertrow();
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('num','knum.','-','○');
+		this.inputcol('num',' ',' ');
+		this.inputcol('num','-','○');
 		this.insertrow();
 	},
 
@@ -386,49 +383,49 @@ pzprv3.createCoreClass('KeyPopup',
 	//---------------------------------------------------------------------------
 	generate_slalom : function(mode){
 		this.imgCR = [4,1];
-		this.inputcol('image','knumq','q',[0,0]);
-		this.inputcol('image','knums','s',[1,0]);
-		this.inputcol('image','knumw','w',[2,0]);
-		this.inputcol('image','knume','e',[3,0]);
-		this.inputcol('num','knumr','r',' ');
+		this.inputcol('image','q',[0,0]);
+		this.inputcol('image','s',[1,0]);
+		this.inputcol('image','w',[2,0]);
+		this.inputcol('image','e',[3,0]);
+		this.inputcol('num','r',' ');
 		this.insertrow();
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
 		this.insertrow();
-		this.inputcol('num','knum6','6','6');
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
+		this.inputcol('num','6','6');
+		this.inputcol('num','7','7');
+		this.inputcol('num','8','8');
+		this.inputcol('num','9','9');
+		this.inputcol('num','0','0');
 		this.insertrow();
-		this.inputcol('num','knum.','-','-');
-		this.inputcol('num','knum_',' ',' ');
+		this.inputcol('num','-','-');
+		this.inputcol('num',' ',' ');
 		this.insertrow();
 	},
 	generate_reflect : function(mode){
 		this.imgCR = [4,1];
-		this.inputcol('image','knumq','q',[0,0]);
-		this.inputcol('image','knumw','w',[1,0]);
-		this.inputcol('image','knume','e',[2,0]);
-		this.inputcol('image','knumr','r',[3,0]);
-		this.inputcol('num','knumt','t','╋');
-		this.inputcol('num','knumy','y',' ');
+		this.inputcol('image','q',[0,0]);
+		this.inputcol('image','w',[1,0]);
+		this.inputcol('image','e',[2,0]);
+		this.inputcol('image','r',[3,0]);
+		this.inputcol('num','t','╋');
+		this.inputcol('num','y',' ');
 		this.insertrow();
-		this.inputcol('num','knum1','1','1');
-		this.inputcol('num','knum2','2','2');
-		this.inputcol('num','knum3','3','3');
-		this.inputcol('num','knum4','4','4');
-		this.inputcol('num','knum5','5','5');
-		this.inputcol('num','knum6','6','6');
+		this.inputcol('num','1','1');
+		this.inputcol('num','2','2');
+		this.inputcol('num','3','3');
+		this.inputcol('num','4','4');
+		this.inputcol('num','5','5');
+		this.inputcol('num','6','6');
 		this.insertrow();
-		this.inputcol('num','knum7','7','7');
-		this.inputcol('num','knum8','8','8');
-		this.inputcol('num','knum9','9','9');
-		this.inputcol('num','knum0','0','0');
-		this.inputcol('num','knum.','-','-');
+		this.inputcol('num','7','7');
+		this.inputcol('num','8','8');
+		this.inputcol('num','9','9');
+		this.inputcol('num','0','0');
+		this.inputcol('num','-','-');
 		this.insertrow();
 	},
 
@@ -440,67 +437,67 @@ pzprv3.createCoreClass('KeyPopup',
 	//---------------------------------------------------------------------------
 	generate_pipelink : function(mode){
 		var pid = this.puzzle.pid;
-		this.inputcol('num','knumq','q','╋');
-		this.inputcol('num','knumw','w','┃');
-		this.inputcol('num','knume','e','━');
-		this.inputcol('num','knumr','r',' ');
-		if     (pid==='pipelink') { this.inputcol('empty','','','');}
-		else if(pid==='pipelinkr'){ this.inputcol('num','knum.','1','○');}
-		else if(pid==='loopsp')   { this.inputcol('num','knum.','-','○');}
+		this.inputcol('num','q','╋');
+		this.inputcol('num','w','┃');
+		this.inputcol('num','e','━');
+		this.inputcol('num','r',' ');
+		if     (pid==='pipelink') { this.inputcol('empty','','');}
+		else if(pid==='pipelinkr'){ this.inputcol('num','1','○');}
+		else if(pid==='loopsp')   { this.inputcol('num','-','○');}
 		this.insertrow();
-		this.inputcol('num','knuma','a','┗');
-		this.inputcol('num','knums','s','┛');
-		this.inputcol('num','knumd','d','┓');
-		this.inputcol('num','knumf','f','┏');
-		if(pid!=='loopsp'){ this.inputcol('num','knum_','-','?');}
+		this.inputcol('num','a','┗');
+		this.inputcol('num','s','┛');
+		this.inputcol('num','d','┓');
+		this.inputcol('num','f','┏');
+		if(pid!=='loopsp'){ this.inputcol('num','-','?');}
 		this.insertrow();
 		
 		if(pid==='loopsp'){
-			this.inputcol('num','knum1','1','1');
-			this.inputcol('num','knum2','2','2');
-			this.inputcol('num','knum3','3','3');
-			this.inputcol('num','knum4','4','4');
-			this.inputcol('num','knum5','5','5');
+			this.inputcol('num','1','1');
+			this.inputcol('num','2','2');
+			this.inputcol('num','3','3');
+			this.inputcol('num','4','4');
+			this.inputcol('num','5','5');
 			this.insertrow();
-			this.inputcol('num','knum6','6','6');
-			this.inputcol('num','knum7','7','7');
-			this.inputcol('num','knum8','8','8');
-			this.inputcol('num','knum9','9','9');
-			this.inputcol('num','knum0','0','0');
+			this.inputcol('num','6','6');
+			this.inputcol('num','7','7');
+			this.inputcol('num','8','8');
+			this.inputcol('num','9','9');
+			this.inputcol('num','0','0');
 			this.insertrow();
 		}
 	},
 	generate_tatamibari : function(mode){
-		this.inputcol('num','knumq','q','╋');
-		this.inputcol('num','knumw','w','┃');
-		this.inputcol('num','knume','e','━');
+		this.inputcol('num','q','╋');
+		this.inputcol('num','w','┃');
+		this.inputcol('num','e','━');
 		this.insertrow();
-		this.inputcol('num','knumr','r',' ');
-		this.inputcol('num','knum.','-','?');
-		this.inputcol('empty','','','');
+		this.inputcol('num','r',' ');
+		this.inputcol('num','-','?');
+		this.inputcol('empty','','');
 		this.insertrow();
 	},
 	generate_hakoiri : function(mode){
 		if(mode==3){ this.tdcolor = this.puzzle.painter.fontAnscolor;}
-		this.inputcol('num','knum1','1','○');
-		this.inputcol('num','knum2','2','△');
-		this.inputcol('num','knum3','3','□');
+		this.inputcol('num','1','○');
+		this.inputcol('num','2','△');
+		this.inputcol('num','3','□');
 		this.insertrow();
 		if(mode==3){ this.tdcolor = "rgb(255, 96, 191)";}
-		this.inputcol('num','knum4','4',(mode===1 ? '?' : '・'));
+		this.inputcol('num','4',(mode===1 ? '?' : '・'));
 		if(mode==3){ this.tdcolor = "black";}
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('empty','','','');
+		this.inputcol('num',' ',' ');
+		this.inputcol('empty','','');
 		this.insertrow();
 	},
 	generate_kusabi : function(mode){
-		this.inputcol('num','knum1','1','同');
-		this.inputcol('num','knum2','2','短');
-		this.inputcol('num','knum3','3','長');
+		this.inputcol('num','1','同');
+		this.inputcol('num','2','短');
+		this.inputcol('num','3','長');
 		this.insertrow();
-		this.inputcol('num','knum.','-','○');
-		this.inputcol('num','knum_',' ',' ');
-		this.inputcol('empty','','','');
+		this.inputcol('num','-','○');
+		this.inputcol('num',' ',' ');
+		this.inputcol('empty','','');
 		this.insertrow();
 	},
 
@@ -508,24 +505,21 @@ pzprv3.createCoreClass('KeyPopup',
 	// kp.inputcol()  テーブルのセルを追加する
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
-	inputcol : function(type, id, ca, disp){
+	inputcol : function(type, ca, disp){
 		var _div = null, _child = null, self = this;
 		if(type!=='empty'){
 			_div = this.node_div.cloneNode(false);
-			_div.id = this.prefix+id;
-			_div.onclick = function(){ self.puzzle.key.keyinput(ca);};
+			_div.onclick = function(){ self.puzzle.key.keyinput(ca,0);};
 		}
 		else{ _div = this.node_empty.cloneNode(false);}
 
 		if(type==='num'){
 			_child = this.node_num.cloneNode(false);
-			_child.id = this.prefix+id+"_s";
 			_child.style.color = this.tdcolor;
 			_child.innerHTML   = disp;
 		}
 		else if(type==='image'){
 			_child = this.node_img.cloneNode(false);
-			_child.id = this.prefix+id+"_i";
 			_child.src = "./src/img/"+this.puzzle.pid+"_kp.gif";
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
