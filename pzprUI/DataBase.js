@@ -497,11 +497,7 @@ ui.createClass('DataBaseHandler_LS',
 	openDataTable : function(parent, id, callback, owner){
 		var data = new ui.classes.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
 		owner.openByFileData(data.pdata);
-		owner.waitReady(function(){
-			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
-			ui.event.setEvents();			/* イベントをくっつける */
-			ui.timer.reset();				/* タイマーリセット(最後) */
-		});
+		ui.waitReady(owner);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){

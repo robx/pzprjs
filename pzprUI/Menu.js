@@ -130,11 +130,7 @@ ui.createClass('Menu',
 	fileonload : function(data){
 		var owner = this.targetpuzzle;
 		owner.openByFileData(data);
-		owner.waitReady(function(){
-			ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
-			ui.event.setEvents();			/* イベントをくっつける */
-			ui.timer.reset();				/* タイマーリセット(最後) */
-		});
+		ui.waitReady(owner);
 	},
 
 	//---------------------------------------------------------------------------

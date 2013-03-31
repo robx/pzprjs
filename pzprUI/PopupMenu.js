@@ -369,11 +369,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		this.hide();
 		if(url.length>0){
 			puzzle.openByURL("?"+pid+"/"+url.join('/'));
-			puzzle.waitReady(function(){
-				ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
-				ui.event.setEvents();			/* イベントをくっつける */
-				ui.timer.reset();				/* タイマーリセット(最後) */
-			});
+			ui.waitReady(puzzle);
 		}
 	}
 });
@@ -410,11 +406,7 @@ ui.createClass('Popup_URLInput:PopupMenu',
 		
 		var puzzle = this.puzzle;
 		puzzle.openByURL(this.form.ta.value);
-		puzzle.waitReady(function(){
-			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
-			ui.event.setEvents();			/* イベントをくっつける */
-			ui.timer.reset();				/* タイマーリセット(最後) */
-		});
+		ui.waitReady(puzzle);
 	}
 });
 

@@ -109,15 +109,36 @@ var ui = {
 		// 単体初期化処理のルーチンへ
 		if     (!!onload_pzl.fstr) { puzzle.openByFileData(onload_pzl.fstr);}
 		else if(!!onload_pzl.qdata){ puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
-		puzzle.waitReady(function(){
-			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
-			ui.event.setEvents();			/* イベントをくっつける */
-			ui.timer.reset();				/* タイマーリセット(最後) */
-
+		
+		ui.waitReady(puzzle, function(){
 			// アクセスログをとってみる
 			if(!!require_accesslog){ accesslog(onload_pzl);}
 			require_accesslog = false;
 		});
+	},
+	
+	//---------------------------------------------------------------------------
+	// ui.clearObjects() パズル準備前に設定をクリア
+	//---------------------------------------------------------------------------
+	clearObjects : function(){
+		ui.event.removeAllEvents();
+		ui.menu.menureset();
+	},
+	
+	//---------------------------------------------------------------------------
+	// ui.waitReady() パズルの準備完了を待つ
+	//---------------------------------------------------------------------------
+	waitReady : function(puzzle, func){
+		if(puzzle.ready){
+			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
+			ui.event.setEvents();			/* イベントをくっつける */
+			ui.timer.reset();				/* タイマーリセット(最後) */
+			
+			if(!!func){ func();}
+		}
+		else{
+			setTimeout(function(){ ui.waitReady(puzzle,func);},10);
+		}
 	}
 };
 

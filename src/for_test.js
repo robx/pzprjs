@@ -68,11 +68,7 @@ ui.extendClass('Debug',
 			self.pid = newid;
 			var owner = self.targetowner;
 			owner.openByURL("?"+newid+"/"+self.urls[newid]);
-			owner.waitReady(function(){
-				ui.menu.menuinit(owner.config);	/* メニュー関係初期化 */
-				ui.event.setEvents();			/* イベントをくっつける */
-				ui.timer.reset();				/* タイマーリセット(最後) */
-
+			ui.waitReady(owner, function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
@@ -111,12 +107,8 @@ ui.extendClass('Debug',
 			var o = this.targetowner, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			o.openByURL(o.enc.pzloutput(k.KANPEN));
-			o.waitReady(function(){
+			ui.waitReady(o, function(){
 				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
-
-				ui.menu.menuinit(o.config);		/* メニュー関係初期化 */
-				ui.event.setEvents();			/* イベントをくっつける */
-				ui.timer.reset();				/* タイマーリセット(最後) */
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}

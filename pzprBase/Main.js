@@ -43,7 +43,6 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	// owner.open()      新しくパズルのファイルを開く時の処理
-	// owner.waitReady() 準備ができたら実行する処理を記述する
 	//---------------------------------------------------------------------------
 	open : function(pzl){
 		this.ready = false;
@@ -57,7 +56,7 @@ pzprv3.createCoreClass('Owner',
 
 		/* 今のパズルと別idの時 */
 		if(this.pid != pzl.id){
-			if(!!this.pid){ this.clearObjects();}
+			if(!!this.pid){ ui.clearObjects();}
 			this.pid = pzl.id;
 			this.classes = null;
 			pzprv3.includeCustomFile(this.pid);
@@ -92,19 +91,9 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = true;
 	},
-	
-	waitReady : function(func){
-		if(this.ready){ func();}
-		else{
-			var owner = this;
-			setTimeout(function(){ owner.waitReady.call(owner,func);},10);
-		}
-	},
 
 	//---------------------------------------------------------------------------
-	// owner.initObjects()    各オブジェクトの生成などの処理
-	// owner.initDebug()      デバッグ用オブジェクトを設定する
-	// owner.clearObjects()   イベントやメニューの設定を設定前に戻す
+	// owner.initObjects()   各オブジェクトの生成などの処理
 	//---------------------------------------------------------------------------
 	initObjects : function(){
 		// クラス初期化
@@ -125,11 +114,6 @@ pzprv3.createCoreClass('Owner',
 
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
-	},
-
-	clearObjects : function(){
-		ui.event.removeAllEvents();
-		ui.menu.menureset();
 	},
 
 	//---------------------------------------------------------------------------
