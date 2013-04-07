@@ -140,6 +140,7 @@ pzprv3.createCommonClass('Graphic',
 		this.isdrawBD = false;
 
 		this.setColors();
+		this.clear_numobj_parent();
 	},
 	setColors : function(){ },
 
@@ -1857,64 +1858,88 @@ pzprv3.createCommonClass('Graphic',
 	},
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
+
 		if(this.fillTextEmulate){
-			if(pzprv3.browser.IE6 || pzprv3.browser.IE7){ py+=2;}
-
-			// エレメントを取得
-			var el = this.numobj[key];
-			if(!el){
-				el = pzprv3.createEL('div');
-				el.className = 'divnum';
-				pzprv3.unselectable(el);
-				pzprv3.getEL('numobj_parent').appendChild(el);
-				this.numobj[key] = el;
-			}
-
-			el.innerHTML = text;
-
-			el.style.fontSize = ("" + fontsize + 'px');
-			el.style.color = color;
-
-			// 先に表示しないとwid,hgt=0になって位置がずれる
-			this.numobj[key].style.display = 'inline';
-
-			var wid = el.offsetWidth; // 横位置の調整
-			switch(type){
-				case 1:         px-=wid/2; px+=2;          break; //ちょっとずれる
-				case 2: case 5:            px+=-this.bw+3; break;
-				case 3: case 4: px-=wid;   px+= this.bw-1; break;
-			}
-			var hgt = el.offsetHeight; // 縦位置の調整
-			switch(type){
-				case 1:         py-=hgt/2;                 break;
-				case 4: case 5:            py+=-this.bh+1; break;
-				case 2: case 3: py-=hgt;   py+= this.bh+2; break;
-			}
-			el.style.left = (this.pageX + px) + 'px';
-			el.style.top  = (this.pageY + py) + 'px';
+			this.dispnum_emulate(key, type, text, fontratio, color, px, py, fontsize);
+			return;
 		}
-		else{
-			var g = this.currentContext;
 
-			g.font = ("" + fontsize + "px 'Serif'");
-			g.fillStyle = color;
+		var g = this.currentContext;
 
-			switch(type){
-				case 1:         g.textAlign='center';                break;
-				case 2: case 5: g.textAlign='left';  px+=-this.bw+3; break;
-				case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
-			}
-			switch(type){
-				case 1:         g.textBaseline='middle';                     break;
-				case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
-				case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
-			}
-			if(!g.use.canvas && (type===1||type===4||type===5)){py++;}
+		g.font = ("" + fontsize + "px 'Serif'");
+		g.fillStyle = color;
 
-			this.vshow("text_"+key);
-			g.fillText(text, px, py);
-			if(pzprv3.browser.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+		switch(type){
+			case 1:         g.textAlign='center';                break;
+			case 2: case 5: g.textAlign='left';  px+=-this.bw+3; break;
+			case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
 		}
+		switch(type){
+			case 1:         g.textBaseline='middle';                     break;
+			case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
+			case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
+		}
+		if(!g.use.canvas && (type===1||type===4||type===5)){py++;}
+
+		this.vshow("text_"+key);
+		g.fillText(text, px, py);
+		if(pzprv3.browser.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.dispnum_emulate()   g.fillText()が使えない時用のフォールバック関数
+	// pc.get_numobj_parent() 文字を配置するオブジェクトを返し、無い場合は作る
+	// pc.clear_numobj_parent() 文字を配置するオブジェクトの中身を消去する
+	//---------------------------------------------------------------------------
+	dispnum_emulate : function(key, type, text, fontratio, color, px, py, fontsize){
+		if(pzprv3.browser.IE6 || pzprv3.browser.IE7){ py+=2;}
+
+		// エレメントを取得
+		var el = this.numobj[key];
+		if(!el){
+			el = pzprv3.createEL('div');
+			el.className = 'divnum';
+			pzprv3.unselectable(el);
+			
+			this.get_numobj_parent().appendChild(el)
+			this.numobj[key] = el;
+		}
+
+		el.innerHTML = text;
+
+		el.style.fontSize = ("" + fontsize + 'px');
+		el.style.color = color;
+
+		// 先に表示しないとwid,hgt=0になって位置がずれる
+		this.numobj[key].style.display = 'inline';
+
+		var wid = el.offsetWidth; // 横位置の調整
+		switch(type){
+			case 1:         px-=wid/2; px+=2;          break; //ちょっとずれる
+			case 2: case 5:            px+=-this.bw+3; break;
+			case 3: case 4: px-=wid;   px+= this.bw-1; break;
+		}
+		var hgt = el.offsetHeight; // 縦位置の調整
+		switch(type){
+			case 1:         py-=hgt/2;                 break;
+			case 4: case 5:            py+=-this.bh+1; break;
+			case 2: case 3: py-=hgt;   py+= this.bh+2; break;
+		}
+		el.style.left = (this.pageX + px) + 'px';
+		el.style.top  = (this.pageY + py) + 'px';
+	},
+	get_numobj_parent : function(){
+		var parent = pzprv3.getEL('numobj_parent');
+		if(!parent){
+			parent = document.createElement('div');
+			parent.id = "numobj_parent";
+			document.body.appendChild(parent);
+		}
+		return parent;
+	},
+	clear_numobj_parent : function(){
+		var parent = pzprv3.getEL('numobj_parent');
+		if(!!parent){ parent.innerHTML = "";}
 	}
 });
 

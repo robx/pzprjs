@@ -108,7 +108,7 @@ ui.createClass('UIEvent',
 		// マウス入力イベントの設定
 		var mv = this.puzzle.mouse;
 		var elements = [pzprv3.getEL('divques')];
-		if(this.puzzle.painter.fillTextEmulate){ elements.push(pzprv3.getEL('numobj_parent'));}
+		if(this.puzzle.painter.fillTextEmulate){ elements.push(this.puzzle.painter.get_numobj_parent());}
 		for(var i=0;i<elements.length;i++){
 			var el = elements[i];
 			this.addMouseDownEvent(el, this, this.e_mousedown);
