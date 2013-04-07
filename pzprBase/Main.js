@@ -133,6 +133,21 @@ pzprv3.createCoreClass('Owner',
 		return (pzprv3.currentTime() - this.starttime);
 	},
 
+	//------------------------------------------------------------------------------
+	// owner.modechange() モード変更時の処理を行う
+	//------------------------------------------------------------------------------
+	modechange : function(num){
+		this.editmode = (num==1);
+		this.playmode = (num==3);
+
+		this.key.keyreset();
+		this.board.errclear();
+		this.cursor.adjust_modechange();
+
+		this.board.haserror=true;
+		this.painter.paintAll();
+	},
+
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
@@ -170,6 +185,24 @@ pzprv3.createCommonClass('Properties',
 
 	/* 設定値 */
 	val : {},
+
+	//---------------------------------------------------------------------------
+	// config.getVal()  各フラグのvalの値を返す
+	// config.setVal()  各フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	getVal : function(name){
+		return this.val[name]?this.val[name].val:null;
+	},
+	setVal : function(name, newval, isexecfunc){
+		if(!!this.val[name]){
+			this.val[name].val = newval;
+			ui.menu.setcaption(name,newval);
+			if(isexecfunc!==false){
+				this.onchange_event(name,newval);
+				ui.menu.menuexec(name,newval);
+			}
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// config.init()  各設定値を初期化する
@@ -229,16 +262,60 @@ pzprv3.createCommonClass('Properties',
 	},
 
 	//---------------------------------------------------------------------------
-	// config.getVal()  各フラグのvalの値を返す
-	// config.setVal()  各フラグの設定値を設定する
+	// config.onchange_event()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
-	getVal : function(name){
-		return this.val[name]?this.val[name].val:null;
-	},
-	setVal : function(name, newval, isexecfunc){
-		if(!!this.val[name]){
-			this.val[name].val = newval;
-			ui.menu.setcaption(name);
+	onchange_event : function(name, val){
+		var result = true, pc = this.owner.painter;
+		switch(name){
+		case 'irowake': case 'cursor': case 'circolor': case 'plred':
+		case 'colorslash': case 'snakebd': case 'disptype_pipelinkr':
+			pc.paintAll();
+			break;
+		
+		case 'mode':
+			this.owner.modechange(val);
+			break;
+		
+		case 'text':
+			ui.menu.textsize(val);
+			pc.forceRedraw();	/* pageX/Yの位置がずれる */
+			break;
+		
+		case 'size':
+			ui.event.setcellsize(val);
+			pc.forceRedraw();	/* pageX/Yの位置がずれる */
+			break;
+		
+		case 'adjsize':
+			pc.forceRedraw();
+			break;
+		
+		case 'language':
+			ui.menu.setLang(val);
+			break;
+		
+		case 'uramashu':
+			var bd = this.owner.board;
+			for(var c=0;c<bd.cellmax;c++){
+				var cell = bd.cell[c];
+				if     (cell.getQnum()===1){ cell.setQnum(2);}
+				else if(cell.getQnum()===2){ cell.setQnum(1);}
+			}
+			pc.paintAll();
+			break;
+		
+		case 'disptype_bosanowa':
+			pc.suspendAll();
+			if     (val==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			else if(val==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
+			else if(val==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			pc.unsuspend();
+			break;
+		
+		default:
+			result = false;
+			break;
 		}
+		return result;
 	}
 });

@@ -197,16 +197,9 @@ ui.createClass('Menu',
 			break;
 		}
 	},
-	setcaption : function(idname){
+	setcaption : function(idname,val,isexecfunc){
 		var items = this.items;
-		if(!items || !items.flags[idname]){ return;}
-		var type = items.flags[idname].type;
-		if(type===items.CHECK || type===items.SELECT){
-			this.setdisplay(idname);
-			if(this.funcs[idname] && isexecfunc!==false){
-				this.funcs[idname].call(this,newval);
-			}
-		}
+		if(!!items && !!items.flags[idname]){ this.setdisplay(idname);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -672,8 +665,8 @@ ui.createClass('Menu',
 		}
 	},
 	submenuexec : function(e, idname){
-		if(this.funcs[idname]){ this.funcs[idname].call(this);}
-		else{
+		var result = (this.menuexec(idname) || ui.puzzle.config.onchange_event(idname,null));
+		if(!result){
 			var pagePos = ui.event.getPagePos(e);
 			this.popupmgr.open(idname, pagePos.px - 8, pagePos.py - 8);
 		}
@@ -830,17 +823,14 @@ ui.createClass('Menu',
 		}
 
 		// 背景色のクリック入力用の処理
-		if(puzzle.config.flag_bgcolor && puzzle.editmode){
-			pzprv3.getEL('ck_bgcolor').disabled    = "true";
-			pzprv3.getEL('cl_bgcolor').style.color = "silver";
-		}
+		this.menuexec('keypopup',null);
+		this.menuexec('bgcolor',null);
 
 		// 管理領域の表示/非表示設定
 		if(pzprv3.EDITOR){
 			getEL('timerpanel').style.display = 'none';
 			getEL('separator2').style.display = 'none';
 		}
-		if(!!getEL('ck_keypopup')){ this.funcs.keypopup.call(this);}
 	},
 
 	checkclick : function(e){
@@ -989,96 +979,68 @@ ui.createClass('Menu',
 
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
-	funcs : {
-		filesave  : function(){ this.filesave(k.PZPR);},
-//		filesave3 : function(){ this.filesave(k.PZPH);},
-		filesave2 : function(){ if(!!ui.puzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
-		imagedl   : function(){ this.imagesave(true,null);},
-		imagesave : function(){ this.imagesave(false,null);},
-
-		h_oldest  : function(){ ui.puzzle.opemgr.undoall(); this.enb_btn();},
-		h_undo    : function(){ ui.puzzle.opemgr.undo(1);   this.enb_btn();},
-		h_redo    : function(){ ui.puzzle.opemgr.redo(1);   this.enb_btn();},
-		h_latest  : function(){ ui.puzzle.opemgr.redoall(); this.enb_btn();},
-		check     : function(){ ui.puzzle.checker.check();},
-		ansclear  : function(){ this.ACconfirm();},
-		subclear  : function(){ this.ASconfirm();},
-		duplicate : function(){ this.duplicate();},
-
-		jumpexp   : function(){ window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
-		jumpv3    : function(){ window.open('./', '', '');},
-		jumptop   : function(){ window.open('../../', '', '');},
-		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ ui.puzzle.painter.paintAll();},
-		cursor    : function(){ ui.puzzle.painter.paintAll();},
-		manarea   : function(){ this.dispman();},
-
-		mode      : function(num){ this.modechange(num);},
-		text      : function(num){ this.textsize(num); ui.puzzle.painter.forceRedraw();},
-		size      : function(num){ ui.event.setcellsize(); ui.puzzle.painter.forceRedraw();},
-		repaint   : function(num){ ui.puzzle.painter.forceRedraw();},
-		adjsize   : function(num){ ui.puzzle.painter.forceRedraw();},
-		language  : function(str){ this.setLang(str);},
-
-		circolor   : function(){ ui.puzzle.painter.paintAll();},
-		plred      : function(){ ui.puzzle.painter.paintAll();},
-		colorslash : function(){ ui.puzzle.painter.paintAll();},
-		snakebd    : function(){ ui.puzzle.painter.paintAll();},
-		uramashu   : function(){
-			var bd = ui.puzzle.board;
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
-				if     (cell.getQnum()===1){ cell.setQnum(2);}
-				else if(cell.getQnum()===2){ cell.setQnum(1);}
+	menuexec : function(idname, val){
+		var result = true;
+		switch(idname){
+		case 'filesave'  : this.filesave(k.PZPR); break;
+//		case 'filesave3' : this.filesave(k.PZPH); break;
+		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ this.filesave(k.PBOX);} break;
+		case 'imagedl'   : this.imagesave(true,null); break;
+		case 'imagesave' : this.imagesave(false,null); break;
+		
+		case 'h_oldest'  : ui.puzzle.opemgr.undoall(); this.enb_btn(); break;
+		case 'h_undo'    : ui.puzzle.opemgr.undo(1);   this.enb_btn(); break;
+		case 'h_redo'    : ui.puzzle.opemgr.redo(1);   this.enb_btn(); break;
+		case 'h_latest'  : ui.puzzle.opemgr.redoall(); this.enb_btn(); break;
+		case 'check'     : ui.puzzle.checker.check(); break;
+		case 'ansclear'  : this.ACconfirm(); break;
+		case 'subclear'  : this.ASconfirm(); break;
+		case 'duplicate' : this.duplicate(); break;
+		
+		case 'manarea'   : this.dispman(); break;
+		case 'repaint'   : ui.puzzle.painter.forceRedraw(); break;
+		
+		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
+		case 'jumpv3'    : window.open('./', '', ''); break;
+		case 'jumptop'   : window.open('../../', '', ''); break;
+		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
+		
+		case 'keypopup' :
+			var kp = ui.keypopup;
+			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
+				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
+				getEL('ck_keypopup').disabled    = (f?"":"true");
+				getEL('cl_keypopup').style.color = (f?"black":"silver");
+				ui.keypopup.display();
 			}
-			ui.puzzle.painter.paintAll();
-		},
-		disptype_pipelinkr : function(num){
-			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
-			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
-			ui.puzzle.painter.paintAll();
-		},
-		disptype_bosanowa : function(num){
-			var pc = ui.puzzle.painter;
-			pc.suspendAll();
-			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
-			else if(num==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			pc.unsuspend();
-		},
-
-		keypopup : function(){
-			var f = !!ui.keypopup.paneltype[ui.puzzle.getConfig('mode')];
-			getEL('ck_keypopup').disabled    = (f?"":"true");
-			getEL('cl_keypopup').style.color = (f?"black":"silver");
-
-			ui.keypopup.display();
+			break;
+		
+		case 'bgcolor':
+			if(ui.puzzle.config.flag_bgcolor){
+				var mode = ui.puzzle.getConfig('mode');
+				pzprv3.getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
+				pzprv3.getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
+			}
+			break;
+		
+		case 'disptype_pipelinkr':
+			if     (val==1){ pzprv3.getEL('btncircle').value="○";}
+			else if(val==2){ pzprv3.getEL('btncircle').value="■";}
+			break;
+		
+		case 'mode':
+			this.menuexec('keypopup',val);
+			this.menuexec('bgcolor',val);
+			break;
+		
+		default:
+			result = false;
+			break;
 		}
+		return result;
 	},
 
 //--------------------------------------------------------------------------------------------------------------
-
-	//------------------------------------------------------------------------------
-	// menu.modechange() モード変更時の処理を行う
-	//------------------------------------------------------------------------------
-	modechange : function(num){
-		var o = ui.puzzle;
-		o.editmode = (num==1);
-		o.playmode = (num==3);
-
-		o.key.keyreset();
-		o.board.errclear();
-		o.cursor.adjust_modechange();
-
-		o.board.haserror=true;
-		o.painter.paintAll();
-
-		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){ this.funcs.keypopup.call(this);}
-		if(o.config.flag_bgcolor){
-			pzprv3.getEL('ck_bgcolor').disabled    = (num===3?"":"true");
-			pzprv3.getEL('cl_bgcolor').style.color = (num===3?"black":"silver");
-		}
-	},
 
 	//------------------------------------------------------------------------------
 	// menu.filesave()   ファイルを保存する
