@@ -14,7 +14,7 @@ var k = pzprv3.consts;
 // Menuクラス
 ui.createClass('Menu',
 {
-	initialize : function(targetpuzzle){
+	initialize : function(){
 		this.items = null;
 
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
@@ -23,8 +23,6 @@ ui.createClass('Menu',
 
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
-
-		this.targetpuzzle = targetpuzzle;
 
 		this.ispencilbox = false;
 
@@ -52,7 +50,7 @@ ui.createClass('Menu',
 	menuinit : function(pp){
 		this.menureset();
 		
-		var pid = this.targetpuzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
+		var pid = ui.puzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items    = new ui.classes.MenuList();
@@ -79,9 +77,6 @@ ui.createClass('Menu',
 
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
-
-		ui.event.setcellsize();
-		this.targetpuzzle.painter.forceRedraw();
 	},
 
 	menureset : function(){
@@ -120,7 +115,6 @@ ui.createClass('Menu',
 			}
 		}
 		else{
-			var puzzle = this.targetpuzzle;
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
 				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
@@ -128,9 +122,9 @@ ui.createClass('Menu',
 		}
 	},
 	fileonload : function(data){
-		var owner = this.targetpuzzle;
+		var owner = ui.puzzle;
 		owner.openByFileData(data);
-		ui.waitReady(owner);
+		ui.waitReady();
 	},
 
 	//---------------------------------------------------------------------------
@@ -163,7 +157,7 @@ ui.createClass('Menu',
 		this.enb_btn();
 	},
 	setdisplay : function(idname){
-		var pp = this.items, puzzle = this.targetpuzzle;
+		var pp = this.items, puzzle = ui.puzzle;
 		switch(pp.type(idname)){
 		case pp.MENU:
 			var pmenu = getEL('ms_'+idname);
@@ -210,7 +204,7 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	displayDesign : function(){
 		this.displayTitle();
-		var pid = this.targetpuzzle.pid;
+		var pid = ui.puzzle.pid;
 		var imageurl = pzprv3.PZLINFO.toBGimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		document.body.style.backgroundImage = "url("+imageurl+")";
@@ -228,7 +222,7 @@ ui.createClass('Menu',
 		getEL('title2').innerHTML = title;
 	},
 	getPuzzleName : function(){
-		var pinfo = pzprv3.PZLINFO.info[this.targetpuzzle.pid];
+		var pinfo = pzprv3.PZLINFO.info[ui.puzzle.pid];
 		return this.selectStr(pinfo.ja, pinfo.en);
 	},
 
@@ -251,7 +245,7 @@ ui.createClass('Menu',
 			ap = function(){ pp.addSeparator.apply(pp,arguments);},
 			af = function(){ pp.addFlagOnly.apply(pp,arguments);},
 			sl = function(){ pp.setLabel.apply(pp,arguments);};
-		var puzzle = this.targetpuzzle, pid = puzzle.pid;
+		var puzzle = ui.puzzle, pid = puzzle.pid;
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -383,7 +377,7 @@ ui.createClass('Menu',
 		this.createAllFloat();
 	},
 	menuconfig : function(pp){
-		var puzzle = this.targetpuzzle, pid = puzzle.pid;
+		var puzzle = ui.puzzle, pid = puzzle.pid;
 
 		/* 操作方法の設定値 */
 		if(puzzle.config.flag_use){
@@ -516,7 +510,7 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var pp = this.items;
-		var puzzle = this.targetpuzzle;
+		var puzzle = ui.puzzle;
 
 		// ElementTemplate : メニュー領域
 		var el_menu = pzprv3.createEL('li');
@@ -662,11 +656,10 @@ ui.createClass('Menu',
 			this.floatmenuclose(0);
 
 			var idname = el.id.substr(3), pp = this.items;
-			var puzzle = this.targetpuzzle;
 			switch(pp.type(idname)){
 				case pp.SMENU: this.submenuexec(e, idname); break;
-				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, puzzle.getConfig(idname)); break;
-				case pp.CHECK: puzzle.setConfig(idname, !puzzle.getConfig(idname)); break;
+				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, ui.puzzle.getConfig(idname)); break;
+				case pp.CHECK: puzzle.setConfig(idname, !ui.puzzle.getConfig(idname)); break;
 			}
 		}
 	},
@@ -771,7 +764,7 @@ ui.createClass('Menu',
 
 		// usearea & checkarea
 		var pp = this.items;
-		var puzzle = this.targetpuzzle;
+		var puzzle = ui.puzzle;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
@@ -845,11 +838,11 @@ ui.createClass('Menu',
 	checkclick : function(e){
 		var el = (e.target||e.srcElement);
 		var idname = el.id.substr(3);
-		this.targetpuzzle.setConfig(idname, !!el.checked);
+		ui.puzzle.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = (e.target||e.srcElement).id.split('_');
-		this.targetpuzzle.setConfig(list[1], list[2]);
+		ui.puzzle.setConfig(list[1], list[2]);
 	},
 
 	//---------------------------------------------------------------------------
@@ -871,7 +864,7 @@ ui.createClass('Menu',
 		getEL('btnarea').appendChild(document.createTextNode(' '));
 		getEL('btnarea').appendChild(btnclear);
 
-		var puzzle = this.targetpuzzle, self = this;
+		var puzzle = ui.puzzle, self = this;
 		this.addButtons(btncheck, function(){ puzzle.checker.check();}, "チェック", "Check");
 		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1); self.enb_btn();}, "戻", "<-");
 		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1); self.enb_btn();}, "進", "->");
@@ -907,11 +900,11 @@ ui.createClass('Menu',
 		}
 	},
 	toggledisp : function(){
-		var puzzle = this.targetpuzzle;
+		var puzzle = ui.puzzle;
 		puzzle.setConfig('disptype', (puzzle.getConfig('disptype')==1?2:1));
 	},
 	enb_btn : function(){
-		var opemgr = this.targetpuzzle.opemgr;
+		var opemgr = ui.puzzle.opemgr;
 		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
 		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
 
@@ -971,7 +964,7 @@ ui.createClass('Menu',
 	//--------------------------------------------------------------------------------
 	checkUserLang : function(){
 		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		if(userlang.substr(0,2)!=='ja'){ this.targetpuzzle.setConfig('language','en');}
+		if(userlang.substr(0,2)!=='ja'){ ui.puzzle.setConfig('language','en');}
 	},
 	setLang : function(ln){
 		this.language = ln;
@@ -980,7 +973,7 @@ ui.createClass('Menu',
 		this.displayAll();
 		this.dispmanstr();
 
-		this.targetpuzzle.painter.forceRedraw();
+		ui.puzzle.painter.forceRedraw();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -991,54 +984,54 @@ ui.createClass('Menu',
 	funcs : {
 		filesave  : function(){ this.filesave(k.PZPR);},
 //		filesave3 : function(){ this.filesave(k.PZPH);},
-		filesave2 : function(){ if(!!this.targetpuzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
+		filesave2 : function(){ if(!!ui.puzzle.fio.kanpenSave){ this.filesave(k.PBOX);}},
 		imagedl   : function(){ this.imagesave(true,null);},
 		imagesave : function(){ this.imagesave(false,null);},
 
-		h_oldest  : function(){ this.targetpuzzle.opemgr.undoall(); this.enb_btn();},
-		h_undo    : function(){ this.targetpuzzle.opemgr.undo(1);   this.enb_btn();},
-		h_redo    : function(){ this.targetpuzzle.opemgr.redo(1);   this.enb_btn();},
-		h_latest  : function(){ this.targetpuzzle.opemgr.redoall(); this.enb_btn();},
-		check     : function(){ this.targetpuzzle.checker.check();},
+		h_oldest  : function(){ ui.puzzle.opemgr.undoall(); this.enb_btn();},
+		h_undo    : function(){ ui.puzzle.opemgr.undo(1);   this.enb_btn();},
+		h_redo    : function(){ ui.puzzle.opemgr.redo(1);   this.enb_btn();},
+		h_latest  : function(){ ui.puzzle.opemgr.redoall(); this.enb_btn();},
+		check     : function(){ ui.puzzle.checker.check();},
 		ansclear  : function(){ this.ACconfirm();},
 		subclear  : function(){ this.ASconfirm();},
 		duplicate : function(){ this.duplicate();},
 
-		jumpexp   : function(){ window.open('./faq.html?'+this.targetpuzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
+		jumpexp   : function(){ window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), '');},
 		jumpv3    : function(){ window.open('./', '', '');},
 		jumptop   : function(){ window.open('../../', '', '');},
 		jumpblog  : function(){ window.open('http://d.hatena.ne.jp/sunanekoroom/', '', '');},
-		irowake   : function(){ this.targetpuzzle.painter.paintAll();},
-		cursor    : function(){ this.targetpuzzle.painter.paintAll();},
+		irowake   : function(){ ui.puzzle.painter.paintAll();},
+		cursor    : function(){ ui.puzzle.painter.paintAll();},
 		manarea   : function(){ this.dispman();},
 
 		mode      : function(num){ this.modechange(num);},
-		text      : function(num){ this.textsize(num); this.targetpuzzle.painter.forceRedraw();},
-		size      : function(num){ this.targetpuzzle.painter.forceRedraw();},
-		repaint   : function(num){ this.targetpuzzle.painter.forceRedraw();},
-		adjsize   : function(num){ this.targetpuzzle.painter.forceRedraw();},
+		text      : function(num){ this.textsize(num); ui.puzzle.painter.forceRedraw();},
+		size      : function(num){ ui.puzzle.painter.forceRedraw();},
+		repaint   : function(num){ ui.puzzle.painter.forceRedraw();},
+		adjsize   : function(num){ ui.puzzle.painter.forceRedraw();},
 		language  : function(str){ this.setLang(str);},
 
-		circolor   : function(){ this.targetpuzzle.painter.paintAll();},
-		plred      : function(){ this.targetpuzzle.painter.paintAll();},
-		colorslash : function(){ this.targetpuzzle.painter.paintAll();},
-		snakebd    : function(){ this.targetpuzzle.painter.paintAll();},
+		circolor   : function(){ ui.puzzle.painter.paintAll();},
+		plred      : function(){ ui.puzzle.painter.paintAll();},
+		colorslash : function(){ ui.puzzle.painter.paintAll();},
+		snakebd    : function(){ ui.puzzle.painter.paintAll();},
 		uramashu   : function(){
-			var bd = this.targetpuzzle.board;
+			var bd = ui.puzzle.board;
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if     (cell.getQnum()===1){ cell.setQnum(2);}
 				else if(cell.getQnum()===2){ cell.setQnum(1);}
 			}
-			this.targetpuzzle.painter.paintAll();
+			ui.puzzle.painter.paintAll();
 		},
 		disptype_pipelinkr : function(num){
 			if     (num==1){ pzprv3.getEL('btncircle').value="○";}
 			else if(num==2){ pzprv3.getEL('btncircle').value="■";}
-			this.targetpuzzle.painter.paintAll();
+			ui.puzzle.painter.paintAll();
 		},
 		disptype_bosanowa : function(num){
-			var pc = this.targetpuzzle.painter;
+			var pc = ui.puzzle.painter;
 			pc.suspendAll();
 			if     (num==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			else if(num==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
@@ -1061,7 +1054,7 @@ ui.createClass('Menu',
 	// menu.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		var o = this.targetpuzzle;
+		var o = ui.puzzle;
 		o.editmode = (num==1);
 		o.playmode = (num==3);
 
@@ -1083,7 +1076,7 @@ ui.createClass('Menu',
 	// menu.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	filesave : function(ftype){
-		var puzzle = this.targetpuzzle;
+		var puzzle = ui.puzzle;
 		var fname = prompt("保存するファイル名を入力して下さい。", puzzle.pid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -1108,7 +1101,7 @@ ui.createClass('Menu',
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var puzzle = this.targetpuzzle, fio = puzzle.fio;
+		var puzzle = ui.puzzle, fio = puzzle.fio;
 		var str = fio.fileencode(k.PZPH);
 		var url = './p.html?'+puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
@@ -1130,7 +1123,7 @@ ui.createClass('Menu',
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var puzzle = this.targetpuzzle, canvas_sv = puzzle.canvas;
+		var puzzle = ui.puzzle, canvas_sv = puzzle.canvas;
 		try{
 			puzzle.canvas = getEL('divques_sub');
 			var pc = puzzle.painter, pc2 = puzzle.newInstance('Graphic');
@@ -1163,7 +1156,7 @@ ui.createClass('Menu',
 
 	submitimage : function(url){
 		var _doc = document;
-		_doc.fileform2.filename.value  = this.targetpuzzle.pid+'.png';
+		_doc.fileform2.filename.value  = ui.puzzle.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 		_doc.fileform2.operation.value = 'imagesave';
 
@@ -1201,13 +1194,13 @@ ui.createClass('Menu',
 
 		for(var i=0;i<idlist.length;i++) { getEL(idlist[i]) .style.display = mandisp;}
 		for(var i=0;i<seplist.length;i++){ getEL(seplist[i]).style.display = mandisp;}
-		if(this.targetpuzzle.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
+		if(ui.puzzle.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
 		getEL('menuboard').style.paddingBottom = mbpad;
 
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		this.targetpuzzle.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
+		ui.puzzle.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ getEL('ms_manarea').innerHTML = this.selectStr("管理領域を表示","Show management area");}
@@ -1220,7 +1213,7 @@ ui.createClass('Menu',
 	//------------------------------------------------------------------------------
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			var o = this.targetpuzzle;
+			var o = ui.puzzle;
 			o.opemgr.newOperation(true);
 
 			o.board.ansclear();
@@ -1230,7 +1223,7 @@ ui.createClass('Menu',
 	},
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			var o = this.targetpuzzle;
+			var o = ui.puzzle;
 			o.opemgr.newOperation(true);
 
 			o.board.subclear();

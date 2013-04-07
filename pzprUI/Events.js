@@ -14,9 +14,7 @@ var k = pzprv3.consts;
 // Menuクラス
 ui.createClass('UIEvent',
 {
-	initialize : function(puzzle){
-		this.puzzle = puzzle;
-		
+	initialize : function(){
 		this.enableMouse = true;	// マウス入力は有効か
 		this.enableKey = true;		// キー入力は有効か
 		
@@ -106,9 +104,9 @@ ui.createClass('UIEvent',
 	//---------------------------------------------------------------------------
 	setMouseEvents : function(){
 		// マウス入力イベントの設定
-		var mv = this.puzzle.mouse;
+		var mv = ui.puzzle.mouse;
 		var elements = [pzprv3.getEL('divques')];
-		if(this.puzzle.painter.fillTextEmulate){ elements.push(this.puzzle.painter.get_numobj_parent());}
+		if(ui.puzzle.painter.fillTextEmulate){ elements.push(ui.puzzle.painter.get_numobj_parent());}
 		for(var i=0;i<elements.length;i++){
 			var el = elements[i];
 			this.addMouseDownEvent(el, this, this.e_mousedown);
@@ -116,7 +114,7 @@ ui.createClass('UIEvent',
 			this.addMouseUpEvent  (el, this, this.e_mouseup);
 			el.oncontextmenu = function(){ return false;};
 		}
-		if(this.puzzle.pid==='kouchoku'){
+		if(ui.puzzle.pid==='kouchoku'){
 			var canvas = pzprv3.getEL('divques');
 			this.addEvent(canvas, "mouseout", this, this.e_mouseout);
 		}
@@ -134,7 +132,7 @@ ui.createClass('UIEvent',
 	e_mousedown : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		var mv = this.puzzle.mouse;
+		var mv = ui.puzzle.mouse;
 		mv.btn = this.getMouseButton(e);
 		if(mv.btn.Left || mv.btn.Right){
 			this.setposition(e);
@@ -152,7 +150,7 @@ ui.createClass('UIEvent',
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		var mv = this.puzzle.mouse;
+		var mv = ui.puzzle.mouse;
 		if(mv.btn.Left || mv.btn.Right){
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 2);	// 各パズルのルーチンへ
 			mv.mousereset();
@@ -166,7 +164,7 @@ ui.createClass('UIEvent',
 		// ポップアップメニュー移動中は当該処理が最優先
 		if(!this.enableMouse){ return true;}
 		
-		var mv = this.puzzle.mouse;
+		var mv = ui.puzzle.mouse;
 		if(mv.btn.Left || mv.btn.Right){
 			this.setposition(e);
 			mv.mouseevent(this.currentpos.px, this.currentpos.py, 1);	// 各パズルのルーチンへ
@@ -177,13 +175,13 @@ ui.createClass('UIEvent',
 		return false;
 	},
 	e_mouseout : function(e) {
-		if(this.puzzle.pid!=='kouchoku'){
+		if(ui.puzzle.pid!=='kouchoku'){
 			this.mouseevent(this.currentpos.px, this.currentpos.py, 3);
 		}
 		else{
 			// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
 			var pos = this.getPagePos(e), rect=pzprv3.getRect(pzprv3.getEL('divques'));
-			var mv = this.puzzle.mouse;
+			var mv = ui.puzzle.mouse;
 			if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
 				if(this.inputData===1){
 					var cross1=mv.targetPoint[0], cross2=mv.targetPoint[1];
@@ -200,7 +198,7 @@ ui.createClass('UIEvent',
 	// mv.setposition()   イベントが起こった座標を代入
 	//---------------------------------------------------------------------------
 	setposition : function(e){
-		var pc = this.puzzle.painter, pagePos = this.getPagePos(e);
+		var pc = ui.puzzle.painter, pagePos = this.getPagePos(e);
 		this.currentpos.px = (pagePos.px - pc.pageX - this.mouseoffset.px);
 		this.currentpos.py = (pagePos.py - pc.pageY - this.mouseoffset.py);
 	},
@@ -229,7 +227,7 @@ ui.createClass('UIEvent',
 		}
 
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
-		var o = this.puzzle;
+		var o = ui.puzzle;
 		this.checkmodifiers(e);
 		if(((o.key.isSHIFT || o.key.isMETA)^o.getConfig('lrcheck'))&&(left!==right))
 			{ left=!left; right=!right;}
@@ -284,14 +282,14 @@ ui.createClass('UIEvent',
 		this.addEvent(document, 'keyup',    this, this.e_keyup);
 		this.addEvent(document, 'keypress', this, this.e_keypress);
 		// Silverlightのキー入力イベント設定
-		var g = this.puzzle.painter.currentContext;
+		var g = ui.puzzle.painter.currentContext;
 		if(g.use.sl){
 			var receiver = this, sender = g.content.findName(g.canvasid);
 			sender.AddEventListener("KeyDown", function(s,a){ receiver.e_SLkeydown(s,a);});
 			sender.AddEventListener("KeyUp",   function(s,a){ receiver.e_SLkeyup(s,a);});
 		}
 		
-		var kc = this.puzzle.key;
+		var kc = ui.puzzle.key;
 		kc.keyreset();
 	},
 
@@ -307,7 +305,7 @@ ui.createClass('UIEvent',
 		var c = this.getchar(e);
 		if(c){
 			/* 各パズルのルーチンへ */
-			var sts = this.puzzle.key.keydown(c);
+			var sts = ui.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
 		ui.menu.enb_btn();
@@ -316,7 +314,7 @@ ui.createClass('UIEvent',
 		if(!this.enableKey){ return;}
 		
 		var c = this.getchar(e);
-		if(c){ this.puzzle.key.keyup(c);}	/* 各パズルのルーチンへ */
+		if(c){ ui.puzzle.key.keyup(c);}	/* 各パズルのルーチンへ */
 		ui.menu.enb_btn();
 	},
 	e_keypress : function(e){
@@ -325,7 +323,7 @@ ui.createClass('UIEvent',
 		var c = this.getcharp(e);
 		if(c){
 			/* 各パズルのルーチンへ */
-			var sts = this.puzzle.key.keydown(c);
+			var sts = ui.puzzle.key.keydown(c);
 			if(!sts){ this.preventDefault(e);}
 		}
 		ui.menu.enb_btn();
@@ -354,7 +352,7 @@ ui.createClass('UIEvent',
 	getchar : function(e){
 		this.checkmodifiers(e);
 
-		var kc = this.puzzle.key;
+		var kc = ui.puzzle.key;
 		if     (e.keyCode==38){ return kc.KEYUP;}
 		else if(e.keyCode==40){ return kc.KEYDN;}
 		else if(e.keyCode==37){ return kc.KEYLT;}
@@ -384,7 +382,7 @@ ui.createClass('UIEvent',
 	// event.checkmodifiers()  Shift, Ctrl, Alt, Metaキーをチェックする
 	//---------------------------------------------------------------------------
 	checkmodifiers : function(e){
-		var kc = this.puzzle.key;
+		var kc = ui.puzzle.key;
 		if(kc.isSHIFT ^ e.shiftKey){ kc.isSHIFT = e.shiftKey;}
 		if(kc.isCTRL  ^ e.ctrlKey) { kc.isCTRL  = e.ctrlKey; }
 		if(kc.isMETA  ^ e.metaKey) { kc.isMETA  = e.metaKey; }
@@ -430,19 +428,19 @@ ui.createClass('UIEvent',
 		},250);
 	},
 	onblur_func : function(){
-		this.puzzle.key.keyreset();
-		this.puzzle.mouse.mousereset();
+		ui.puzzle.key.keyreset();
+		ui.puzzle.mouse.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
 	// event.setcellsize()   pc.cw, pc.chのサイズを設定する
 	//---------------------------------------------------------------------------
 	setcellsize : function(){
-		var o = this.puzzle, bd = o.board, pc = o.painter;
+		var o = ui.puzzle, bd = o.board, pc = o.painter;
 		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
 		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[this.puzzle.getConfig('size')];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[ui.puzzle.getConfig('size')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(pc.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(pc.cellsize*cr.limit);
@@ -454,7 +452,7 @@ ui.createClass('UIEvent',
 			if(pc.cw < pc.cellsize){ pc.cw = pc.ch = pc.cellsize;}
 		}
 		// 縮小が必要ない場合
-		else if(!this.puzzle.getConfig('adjsize') || cols < ci[0]){
+		else if(!ui.puzzle.getConfig('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			pc.cw = pc.ch = (pc.cellsize*cr.base)|0;
 		}

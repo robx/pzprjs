@@ -30,23 +30,21 @@ ui.createClass('PopupManager',
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
 	init : function(){
-		var puzzle = this.puzzle = ui.menu.targetpuzzle;
 		this.popups = {
-			newboard  : (new ui.classes.Popup_Newboard(puzzle)),	/* 盤面の新規作成 */
-			urlinput  : (new ui.classes.Popup_URLInput(puzzle)),	/* URL入力 */
-			urloutput : (new ui.classes.Popup_URLOutput(puzzle)),	/* URL出力 */
-			fileopen  : (new ui.classes.Popup_FileOpen(puzzle)),	/* ファイル入力 */
-			database  : (new ui.classes.Popup_DataBase(puzzle)),	/* データベースを開く */
-			adjust    : (new ui.classes.Popup_Adjust(puzzle)),		/* 盤面の調整 */
-			turnflip  : (new ui.classes.Popup_TurnFlip(puzzle)),	/* 反転・回転 */
-			dispsize  : (new ui.classes.Popup_DispSize(puzzle)),	/* 表示サイズ */
-			credit    : (new ui.classes.Popup_Credit(puzzle)),		/* credit */
-			debug     : (new ui.classes.Popup_Debug(puzzle))		/* poptest */
+			newboard  : (new ui.classes.Popup_Newboard()),	/* 盤面の新規作成 */
+			urlinput  : (new ui.classes.Popup_URLInput()),	/* URL入力 */
+			urloutput : (new ui.classes.Popup_URLOutput()),	/* URL出力 */
+			fileopen  : (new ui.classes.Popup_FileOpen()),	/* ファイル入力 */
+			database  : (new ui.classes.Popup_DataBase()),	/* データベースを開く */
+			adjust    : (new ui.classes.Popup_Adjust()),	/* 盤面の調整 */
+			turnflip  : (new ui.classes.Popup_TurnFlip()),	/* 反転・回転 */
+			dispsize  : (new ui.classes.Popup_DispSize()),	/* 表示サイズ */
+			credit    : (new ui.classes.Popup_Credit()),	/* credit */
+			debug     : (new ui.classes.Popup_Debug())		/* poptest */
 		};
 	},
 	
 	reset : function(){
-		this.puzzle = ui.menu.targetpuzzle;
 		this.popup  = null;
 		this.popups = {};
 		getEL('popup_parent').innerHTML = '';
@@ -98,7 +96,6 @@ ui.createClass('PopupManager',
 	//---------------------------------------------------------------------------
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
-		var puzzle = this.puzzle;
 		var pagePos = ui.event.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pagePos.px - parseInt(popel.style.left);
@@ -128,8 +125,7 @@ ui.createClass('PopupManager',
 //---------------------------------------------------------------------------
 ui.createClass('PopupMenu',
 {
-	initialize : function(puzzle){
-		this.puzzle    = puzzle;
+	initialize : function(){
 		this.popparent = getEL("popup_parent");
 		this.reset();
 	},
@@ -237,7 +233,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 	// makeForm_tawa_lap() たわむれんがの形状入力用部
 	//---------------------------------------------------------------------------
 	makeForm : function(){
-		var puzzle = this.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
 		this.settitle("盤面の新規作成", "Createing New Board");
 		
 		this.addText("盤面を新規作成します。", "Create New Board.");
@@ -312,7 +308,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 			_div.style.backgroundColor = 'red';
 		};
 		
-		var idx = [0,2,3,1][this.puzzle.board.lap];
+		var idx = [0,2,3,1][ui.puzzle.board.lap];
 		for(var i=0;i<=3;i++){
 			var _img = _doc.createElement('img');
 			_img.src = "src/img/tawa_nb.gif";
@@ -339,7 +335,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
 	//---------------------------------------------------------------------------
 	execute : function(){
-		var puzzle = this.puzzle, pid = puzzle.pid;
+		var pid = ui.puzzle.pid;
 		var col, row, url=[], NB=this.form;
 		
 		if(pid!=='sudoku'){
@@ -368,8 +364,8 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		
 		this.hide();
 		if(url.length>0){
-			puzzle.openByURL("?"+pid+"/"+url.join('/'));
-			ui.waitReady(puzzle);
+			ui.puzzle.openByURL("?"+pid+"/"+url.join('/'));
+			ui.waitReady();
 		}
 	}
 });
@@ -404,9 +400,8 @@ ui.createClass('Popup_URLInput:PopupMenu',
 	urlinput : function(){
 		this.hide();
 		
-		var puzzle = this.puzzle;
-		puzzle.openByURL(this.form.ta.value);
-		ui.waitReady(puzzle);
+		ui.puzzle.openByURL(this.form.ta.value);
+		ui.waitReady();
 	}
 });
 
@@ -427,7 +422,7 @@ ui.createClass('Popup_URLOutput:PopupMenu',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = this.puzzle.pid, exists = pzprv3.PZLINFO.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzprv3.PZLINFO.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}
@@ -450,7 +445,7 @@ ui.createClass('Popup_URLOutput:PopupMenu',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = this.puzzle.enc;
+		var enc = ui.puzzle.enc;
 		switch((e.target||e.srcElement).name){
 			case "pzprv3":     this.form.ta.value = enc.pzloutput(k.PZPRV3);  break;
 			case "pzprapplet": this.form.ta.value = enc.pzloutput(k.PZPRAPP); break;
@@ -561,7 +556,7 @@ ui.createClass('Popup_Adjust:PopupMenu',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		this.puzzle.board.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.execadjust((e.target||e.srcElement).name);
 	}
 });
 
@@ -591,7 +586,7 @@ ui.createClass('Popup_TurnFlip:PopupMenu',
 		this.addBR();
 		this.addBR();
 		
-		if(this.puzzle.pid==='tawa'){
+		if(ui.puzzle.pid==='tawa'){
 			this.form.turnl.disabled = true;
 			this.form.turnr.disabled = true;
 		}
@@ -603,7 +598,7 @@ ui.createClass('Popup_TurnFlip:PopupMenu',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		this.puzzle.board.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.execadjust((e.target||e.srcElement).name);
 	}
 });
 
@@ -635,7 +630,7 @@ ui.createClass('Popup_DispSize:PopupMenu',
 	show : function(px,py){
 		ui.classes.PopupMenu.prototype.show.call(this,px,py);
 		
-		this.form.cs.value = this.puzzle.painter.cellsize;
+		this.form.cs.value = ui.puzzle.painter.cellsize;
 		ui.event.enableKey = false;
 	},
 	
@@ -643,7 +638,7 @@ ui.createClass('Popup_DispSize:PopupMenu',
 	// changesize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	changesize : function(e){
-		var pc = this.puzzle.painter;
+		var pc = ui.puzzle.painter;
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){ pc.cellsize = (csize|0);}
 		

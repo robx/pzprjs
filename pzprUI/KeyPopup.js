@@ -12,9 +12,7 @@ var k = pzprv3.consts;
 // キー入力用Popupウィンドウ
 ui.createClass('KeyPopup',
 {
-	initialize : function(puzzle){
-		this.puzzle = puzzle;
-
+	initialize : function(){
 		this.paneltype = {1:0, 3:0};	// パネルのタイプ
 		this.element = null;			// キーポップアップのエレメント
 
@@ -119,8 +117,8 @@ ui.createClass('KeyPopup',
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = this.puzzle.getConfig('mode');
-		if(this.element && !!this.paneltype[mode] && this.puzzle.getConfig('keypopup')){
+		var mode = ui.puzzle.getConfig('mode');
+		if(this.element && !!this.paneltype[mode] && ui.puzzle.getConfig('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -137,7 +135,7 @@ ui.createClass('KeyPopup',
 	// kp.createtable() キーポップアップのポップアップを作成する
 	//---------------------------------------------------------------------------
 	create : function(){
-		var type = this.type[this.puzzle.pid];
+		var type = this.type[ui.puzzle.pid];
 		if(!type){ type=[0,0];}
 		
 		this.paneltype = { 1:(pzprv3.EDITOR?type[0]:0), 3:(type[1])};
@@ -161,7 +159,7 @@ ui.createClass('KeyPopup',
 	// kp.makeKeyPopup() キーポップアップのパネルを作成する
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
-		var keypopup, bar, _doc = document, puzzle = this.puzzle;
+		var keypopup, bar, _doc = document, puzzle = ui.puzzle;
 		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
 		
 		keypopup = _doc.createElement('div');
@@ -219,14 +217,14 @@ ui.createClass('KeyPopup',
 		else if(type===114){ this.generate_kusabi(mode);}
 	},
 	gentable4 : function(mode){
-		var pid=this.puzzle.pid;
+		var pid=ui.puzzle.pid;
 		this.inputcol('num','1','1');
 		this.inputcol('num','2','2');
 		this.inputcol('num','3','3');
 		this.inputcol('num','4','4');
 		this.insertrow();
 		if((mode==3)&&(pid==='sukoro'||pid==='sukororoom')){
-			this.tdcolor = this.puzzle.painter.mbcolor;
+			this.tdcolor = ui.puzzle.painter.mbcolor;
 			this.inputcol('num','q','○');
 			this.inputcol('num','w','×');
 			this.tdcolor = "black";
@@ -237,7 +235,7 @@ ui.createClass('KeyPopup',
 			this.inputcol('num','0','0');
 			this.inputcol('empty','','');
 			this.inputcol('num',' ',' ');
-			if(!this.puzzle.painter.hideHatena){
+			if(!ui.puzzle.painter.hideHatena){
 				this.inputcol('num','-','?');
 			}
 			else{
@@ -252,9 +250,9 @@ ui.createClass('KeyPopup',
 		this.insertrow();
 	},
 	gentable10 : function(mode){
-		var pid = this.puzzle.pid;
-		if((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB)){
-			this.tdcolor = this.puzzle.painter.mbcolor;
+		var pid = ui.puzzle.pid;
+		if((mode==3)&&(ui.puzzle.classes.Cell.prototype.numberWithMB)){
+			this.tdcolor = ui.puzzle.painter.mbcolor;
 			this.inputcol('num','q','○');
 			this.inputcol('num','w','×');
 			this.tdcolor = "black";
@@ -282,7 +280,7 @@ ui.createClass('KeyPopup',
 		this.insertrow();
 		this.inputcol('num','8','8');
 		this.inputcol('num','9','9');
-		if(!((mode==3)&&(this.puzzle.classes.Cell.prototype.numberWithMB))){
+		if(!((mode==3)&&(ui.puzzle.classes.Cell.prototype.numberWithMB))){
 			this.inputcol('num',' ',' ');
 		}
 		else{
@@ -291,7 +289,7 @@ ui.createClass('KeyPopup',
 		if((mode===3)||(pid==='kakuru'||pid==='tateyoko')){
 			this.inputcol('empty','','','');
 		}
-		else if(!this.puzzle.painter.hideHatena){
+		else if(!ui.puzzle.painter.hideHatena){
 			this.inputcol('num','-','?');
 		}
 		else if(pid==='tasquare'){
@@ -439,7 +437,7 @@ ui.createClass('KeyPopup',
 	// kp.generate_kusabi()     クサビリンク用のテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate_pipelink : function(mode){
-		var pid = this.puzzle.pid;
+		var pid = ui.puzzle.pid;
 		this.inputcol('num','q','╋');
 		this.inputcol('num','w','┃');
 		this.inputcol('num','e','━');
@@ -481,7 +479,7 @@ ui.createClass('KeyPopup',
 		this.insertrow();
 	},
 	generate_hakoiri : function(mode){
-		if(mode==3){ this.tdcolor = this.puzzle.painter.fontAnscolor;}
+		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 		this.inputcol('num','1','○');
 		this.inputcol('num','2','△');
 		this.inputcol('num','3','□');
@@ -509,10 +507,10 @@ ui.createClass('KeyPopup',
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
 	inputcol : function(type, ca, disp){
-		var _div = null, _child = null, self = this;
+		var _div = null, _child = null;
 		if(type!=='empty'){
 			_div = this.node_div.cloneNode(false);
-			_div.onclick = function(){ self.puzzle.key.keyinput(ca,0);};
+			_div.onclick = function(){ ui.puzzle.key.keyinput(ca,0);};
 		}
 		else{ _div = this.node_empty.cloneNode(false);}
 
@@ -523,7 +521,7 @@ ui.createClass('KeyPopup',
 		}
 		else if(type==='image'){
 			_child = this.node_img.cloneNode(false);
-			_child.src = "./src/img/"+this.puzzle.pid+"_kp.gif";
+			_child.src = "./src/img/"+ui.puzzle.pid+"_kp.gif";
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 
@@ -539,7 +537,7 @@ ui.createClass('KeyPopup',
 	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
 	resizepanel : function(){
-		var cellsize = Math.min(this.puzzle.painter.cw, 120);
+		var cellsize = Math.min(ui.puzzle.painter.cw, 120);
 		if(cellsize<20){ cellsize=20;}
 
 		var dsize = (cellsize*0.90)|0, tsize = (cellsize*0.70)|0;

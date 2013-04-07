@@ -11,13 +11,11 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 ui.createClass('Timer',
 {
-	initialize : function(targetpuzzle){
+	initialize : function(){
 		// ** 一般タイマー
 		this.TID;				// タイマーID
 		this.timerInterval = 100;
 		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
-
-		this.targetpuzzle = targetpuzzle;
 
 		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
 
@@ -51,7 +49,7 @@ ui.createClass('Timer',
 		this.current = pzprv3.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
-		if(this.targetpuzzle.getConfig('autocheck')){ this.ACcheck();}
+		if(ui.puzzle.getConfig('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -59,7 +57,7 @@ ui.createClass('Timer',
 	// tm.label()      経過時間に表示する文字列を返す
 	//---------------------------------------------------------------------------
 	updatetime : function(){
-		var seconds = (this.targetpuzzle.getTime()/1000)|0;
+		var seconds = (ui.puzzle.getTime()/1000)|0;
 		if(this.bseconds == seconds){ return;}
 
 		var hours   = (seconds/3600)|0;
@@ -81,9 +79,9 @@ ui.createClass('Timer',
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		if(this.current>this.nextACtime && this.lastAnsCnt!=this.targetpuzzle.opemgr.anscount && !this.targetpuzzle.checker.inCheck){
-			this.lastAnsCnt = this.targetpuzzle.opemgr.anscount;
-			if(!this.targetpuzzle.checker.autocheck()){ return;}
+		if(this.current>this.nextACtime && this.lastAnsCnt!=ui.puzzle.opemgr.anscount && !ui.puzzle.checker.inCheck){
+			this.lastAnsCnt = ui.puzzle.opemgr.anscount;
+			if(!ui.puzzle.checker.autocheck()){ return;}
 
 			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
@@ -96,15 +94,13 @@ ui.createClass('Timer',
 //---------------------------------------------------------------------------
 ui.createClass('UndoTimer',
 {
-	initialize : function(targetpuzzle){
+	initialize : function(){
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
 		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
 
 		this.CTID          = null;	// キーボードチェック用タイマーID
-
-		this.targetpuzzle = targetpuzzle;
 
 		this.inUNDO = false;
 		this.inREDO = false;
@@ -118,8 +114,8 @@ ui.createClass('UndoTimer',
 	},
 
 	check_keyevent : function(){
-		if(!this.targetpuzzle || !this.targetpuzzle.key){ return;}
-		var kc = this.targetpuzzle.key;
+		if(!ui.puzzle || !ui.puzzle.key){ return;}
+		var kc = ui.puzzle.key;
 		if     (kc.isZ && (kc.isCTRL || kc.isMETA)){ this.startUndo();}
 		else if(kc.isY && (kc.isCTRL || kc.isMETA)){ this.startRedo();}
 	},
@@ -174,13 +170,13 @@ ui.createClass('UndoTimer',
 		else{ this.exec();}
 	},
 	exec : function(){
-		var opemgr = this.targetpuzzle.opemgr;
+		var opemgr = ui.puzzle.opemgr;
 		if(!this.ismouse){
-			var kc = this.targetpuzzle.key;
+			var kc = ui.puzzle.key;
 			if     (this.inUndo && !(kc.isZ && (kc.isCTRL || kc.isMETA))){ this.stop();}
 			else if(this.inRedo && !(kc.isY && (kc.isCTRL || kc.isMETA))){ this.stop();}
 		}
-		else if(this.targetpuzzle.pid==='goishi'){
+		else if(ui.puzzle.pid==='goishi'){
 			if(this.inUNDO){
 				var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');
 				if(prop!==k.ANUM){ this.stop();}

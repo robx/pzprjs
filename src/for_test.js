@@ -24,7 +24,7 @@ ui.extendClass('Popup_Debug',
 ui.extendClass('Debug',
 {
 	keydown : function(ca){
-		var kc = this.targetowner.key;
+		var kc = ui.puzzle.key;
 		if(ca=='F7'){ this.accheck1();}
 		else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
 		else if(kc.isCTRL && ca=='F9'){ this.starttest();}
@@ -36,7 +36,7 @@ ui.extendClass('Debug',
 	},
 
 	accheck1 : function(){
-		var o = this.targetowner, outputstr = o.fio.fileencode(k.PZPH);
+		var o = ui.puzzle, outputstr = o.fio.fileencode(k.PZPH);
 		o.board.disableSetError();
 		o.checker.inCheck = true;
 		o.checker.alstr = { jp:'' ,en:''};
@@ -66,9 +66,8 @@ ui.extendClass('Debug',
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			var owner = self.targetowner;
-			owner.openByURL("?"+newid+"/"+self.urls[newid]);
-			ui.waitReady(owner, function(){
+			ui.puzzle.openByURL("?"+newid+"/"+self.urls[newid]);
+			ui.waitReady(function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
@@ -85,17 +84,17 @@ ui.extendClass('Debug',
 
 	fails : 0,
 	sccheck : function(){
-		if(this.targetowner.getConfig('autocheck')){ this.targetowner.setConfig('autocheck',false);}
+		if(ui.puzzle.getConfig('autocheck')){ ui.puzzle.setConfig('autocheck',false);}
 		var self = this;
 
 		self.fails = 0;
-		self.pid = this.targetowner.pid;
+		self.pid = ui.puzzle.pid;
 		setTimeout(function(){ self.check_encode(self);},0);
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
 		var inp = pzprv3.getURLBase(k.PZPRV3, self.pid)+self.urls[self.pid];
-		var ta  = this.targetowner.enc.pzloutput(k.PZPRV3);
+		var ta  = ui.puzzle.enc.pzloutput(k.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -104,10 +103,10 @@ ui.extendClass('Debug',
 	},
 	check_encode_kanpen : function(self){
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
-			var o = this.targetowner, bd = o.board, bd2 = self.bd_freezecopy(bd);
+			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			o.openByURL(o.enc.pzloutput(k.KANPEN));
-			ui.waitReady(o, function(){
+			ui.waitReady(function(){
 				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -120,9 +119,9 @@ ui.extendClass('Debug',
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
-			var pc = this.targetowner.painter, ans = this.targetowner.checker;
+			var pc = ui.puzzle.painter, ans = ui.puzzle.checker;
 			pc.suspendAll();
-			this.targetowner.fio.filedecode(acsstr[n][1]);
+			ui.puzzle.fio.filedecode(acsstr[n][1]);
 			pc.unsuspend();
 
 			ans.inCheck = true;
@@ -143,7 +142,7 @@ ui.extendClass('Debug',
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var o = this.targetowner, bd = o.board, outputstr = o.fio.fileencode(k.PZPR);
+		var o = ui.puzzle, bd = o.board, outputstr = o.fio.fileencode(k.PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
 		o.painter.suspendAll();
@@ -160,7 +159,7 @@ ui.extendClass('Debug',
 	},
 	check_file_pbox : function(self){
 		if(ui.menu.ispencilbox){
-			var o = this.targetowner, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.PBOX);
+			var o = ui.puzzle, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 
 			o.painter.suspendAll();
@@ -179,9 +178,9 @@ ui.extendClass('Debug',
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		if(this.targetowner.getConfig('autocheck')){ this.targetowner.setConfig('autocheck',false);}
+		if(ui.puzzle.getConfig('autocheck')){ ui.puzzle.setConfig('autocheck',false);}
 
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 1  = failure..."); self.fails++;}
@@ -190,8 +189,8 @@ ui.extendClass('Debug',
 		setTimeout(function(){ self.check_turnR2(self);},0);
 	},
 	check_turnR2 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ this.targetowner.opemgr.undo(1);}
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<4;i++){ ui.puzzle.opemgr.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnR test 2  = pass");}
@@ -200,7 +199,7 @@ ui.extendClass('Debug',
 	},
 
 	check_turnL1 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 1  = failure..."); self.fails++;}
@@ -209,8 +208,8 @@ ui.extendClass('Debug',
 		setTimeout(function(){ self.check_turnL2(self);},0);
 	},
 	check_turnL2 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ this.targetowner.opemgr.undo(1);}
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<4;i++){ ui.puzzle.opemgr.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnL test 2  = pass");}
@@ -219,7 +218,7 @@ ui.extendClass('Debug',
 	},
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.execadjust('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 1  = failure..."); self.fails++;}
@@ -228,8 +227,8 @@ ui.extendClass('Debug',
 		setTimeout(function(){ self.check_flipX2(self);},0);
 	},
 	check_flipX2 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ this.targetowner.opemgr.undo(1);}
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<2;i++){ ui.puzzle.opemgr.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipX test 2  = pass");}
@@ -238,7 +237,7 @@ ui.extendClass('Debug',
 	},
 
 	check_flipY1 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.execadjust('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 1  = failure..."); self.fails++;}
@@ -247,8 +246,8 @@ ui.extendClass('Debug',
 		setTimeout(function(){ self.check_flipY2(self);},0);
 	},
 	check_flipY2 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ this.targetowner.opemgr.undo(1);}
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<2;i++){ ui.puzzle.opemgr.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipY test 2  = pass");}
@@ -257,7 +256,7 @@ ui.extendClass('Debug',
 	},
 	//Adjust test--------------------------------------------------------------
 	check_adjust1 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
 		for(var i=0;i<8;i++){ bd.execadjust(names[i]);}
 
@@ -267,8 +266,8 @@ ui.extendClass('Debug',
 		setTimeout(function(){ self.check_adjust2(self);},0);
 	},
 	check_adjust2 : function(self){
-		var bd = self.targetowner.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<8;i++){ this.targetowner.opemgr.undo(1);}
+		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<8;i++){ ui.puzzle.opemgr.undo(1);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Adjust test 2  = pass");}

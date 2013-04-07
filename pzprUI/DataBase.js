@@ -180,7 +180,7 @@ ui.createClass('Popup_DataBase:PopupMenu',
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
 		var operation = (e.target||e.srcElement).name;
-		ui.database.clickHandler(operation, this.puzzle);
+		ui.database.clickHandler(operation, ui.puzzle);
 	}
 });
 
@@ -497,7 +497,7 @@ ui.createClass('DataBaseHandler_LS',
 	openDataTable : function(parent, id, callback, owner){
 		var data = new ui.classes.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
 		owner.openByFileData(data.pdata);
-		ui.waitReady(owner);
+		ui.waitReady();
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){

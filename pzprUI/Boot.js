@@ -18,6 +18,8 @@ var debugmode = false;
 //---------------------------------------------------------------------------
 var onload_pzl = null;
 var ui = {
+	puzzle : null,
+	
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
@@ -78,14 +80,14 @@ var ui = {
 			return;
 		}
 
-		var puzzle = pzprv3.createPuzzle();
+		ui.puzzle = pzprv3.createPuzzle();
 
 		// パズルが入力しなおされても、共通で使用されるオブジェクト
-		ui.event     = new ui.classes.UIEvent(puzzle);		// イベント管理用オブジェクト
-		ui.menu      = new ui.classes.Menu(puzzle);			// メニューを扱うオブジェクト
-		ui.timer     = new ui.classes.Timer(puzzle);		// 一般タイマー用オブジェクト
-		ui.undotimer = new ui.classes.UndoTimer(puzzle);	// Undo用Timerオブジェクト
-		ui.keypopup  = new ui.classes.KeyPopup(puzzle);		// キーポップアップ用オブジェクト
+		ui.event     = new ui.classes.UIEvent();			// イベント管理用オブジェクト
+		ui.menu      = new ui.classes.Menu();				// メニューを扱うオブジェクト
+		ui.timer     = new ui.classes.Timer();				// 一般タイマー用オブジェクト
+		ui.undotimer = new ui.classes.UndoTimer();			// Undo用Timerオブジェクト
+		ui.keypopup  = new ui.classes.KeyPopup();			// キーポップアップ用オブジェクト
 		ui.database  = new ui.classes.DataBaseManager();	// データベースアクセス用オブジェクト
 		ui.debug     = new ui.classes.Debug();
 
@@ -94,23 +96,20 @@ var ui = {
 		}
 
 		// 描画wrapperの設定
-		Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); puzzle.canvas = g.canvas;});
+		Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); ui.puzzle.canvas = g.canvas;});
 		if(Candle.enable.canvas){
-			Candle.start('divques_sub', 'canvas',  function(g){ puzzle.canvas2 = g.canvas;});
+			Candle.start('divques_sub', 'canvas',  function(g){ ui.puzzle.canvas2 = g.canvas;});
 		}
-		else{ puzzle.canvas2 = true;}
+		else{ ui.puzzle.canvas2 = true;}
 
 		// 外部から参照できるようにする
-		window.puzzle = puzzle;
-
-		/* デバッグ対象に設定 */
-		ui.debug.settarget(puzzle);
+		window.puzzle = ui.puzzle;
  
 		// 単体初期化処理のルーチンへ
-		if     (!!onload_pzl.fstr) { puzzle.openByFileData(onload_pzl.fstr);}
-		else if(!!onload_pzl.qdata){ puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
+		if     (!!onload_pzl.fstr) { ui.puzzle.openByFileData(onload_pzl.fstr);}
+		else if(!!onload_pzl.qdata){ ui.puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
 		
-		ui.waitReady(puzzle, function(){
+		ui.waitReady(function(){
 			// アクセスログをとってみる
 			if(!!require_accesslog){ accesslog(onload_pzl);}
 			require_accesslog = false;
@@ -128,16 +127,19 @@ var ui = {
 	//---------------------------------------------------------------------------
 	// ui.waitReady() パズルの準備完了を待つ
 	//---------------------------------------------------------------------------
-	waitReady : function(puzzle, func){
-		if(puzzle.ready){
-			ui.menu.menuinit(puzzle.config);	/* メニュー関係初期化 */
-			ui.event.setEvents();			/* イベントをくっつける */
-			ui.timer.reset();				/* タイマーリセット(最後) */
+	waitReady : function(func){
+		if(ui.puzzle.ready){
+			ui.menu.menuinit(ui.puzzle.config);	/* メニュー関係初期化 */
+			ui.event.setcellsize();
+			ui.event.setEvents();				/* イベントをくっつける */
+			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!func){ func();}
+			
+			ui.puzzle.painter.forceRedraw();
 		}
 		else{
-			setTimeout(function(){ ui.waitReady(puzzle,func);},10);
+			setTimeout(function(){ ui.waitReady(func);},10);
 		}
 	}
 };
