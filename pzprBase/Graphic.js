@@ -169,9 +169,13 @@ pzprv3.createCommonClass('Graphic',
 		this.lm = (this.lw-1)/2;
 
 		// 盤面のセルID:0が描画される左上の位置の設定
-		this.x0 = this.y0 = (this.cw*this.bdmargin)|0;
+		this.x0 = this.cw*this.bdmargin;
+		this.y0 = this.ch*this.bdmargin;
 		// extendxell==0でない時は位置をずらす
 		if(!!this.owner.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
+		if(this.owner.pid==='box'){ this.x0 -= this.cw/2; this.y0 -= this.ch/2;}
+		this.x0 = this.x0|0;
+		this.y0 = this.y0|0;
 
 		// Canvasのサイズ変更
 		var cwid = (this.getCanvasCols()*this.cw)|0;

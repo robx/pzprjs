@@ -157,15 +157,8 @@ Properties:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 1.15,
-	bdmargin_image : 1.10,
-
-	getCanvasCols : function(){
-		
-	},
-	getCanvasRows : function(){
-		
-	},
+	bdmargin       : 0.65,
+	bdmargin_image : 0.60,
 
 	paint : function(){
 		this.drawBGCells();
