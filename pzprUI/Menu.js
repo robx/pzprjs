@@ -96,6 +96,8 @@ ui.createClass('Menu',
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
 
+		ui.keypopup.clear();
+
 		if(!!this.items){ this.items.reset();}
 		if(!!this.popupmgr){ this.popupmgr.reset();}
 	},

@@ -133,6 +133,7 @@ ui.createClass('KeyPopup',
 	//---------------------------------------------------------------------------
 	// kp.create()      キーポップアップを生成して初期化する
 	// kp.createtable() キーポップアップのポップアップを作成する
+	// kp.clear()       キーポップアップを削除する
 	//---------------------------------------------------------------------------
 	create : function(){
 		var type = this.type[ui.puzzle.pid];
@@ -141,18 +142,28 @@ ui.createClass('KeyPopup',
 		this.paneltype = { 1:(pzprv3.EDITOR?type[0]:0), 3:(type[1])};
 		if(!this.paneltype[1] && !this.paneltype[3]){ return;}
 		
-		this.element = this.makeKeyPopup();
+		if(!this.element){ this.element = this.makeKeyPopup();}
 		
 		if(this.paneltype[1]!==0){ this.createtable(1);}
 		if(this.paneltype[3]!==0){ this.createtable(3);}
 		
 		this.resizepanel();
+		
+		var bar = pzprv3.getEL('barkeypopup');
+		ui.event.addMouseDownEvent(bar, ui.menu.popupmgr, ui.menu.popupmgr.titlebardown);
+		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
 	},
 	createtable : function(mode,type){
 		this.basetmp = pzprv3.getEL('panelbase'+mode);
 		this.basetmp.innerHTML = '';
 
 		this.generate(mode);
+	},
+	clear : function(){
+		if(!!this.element){
+			pzprv3.getEL('panelbase1').innerHTML = '';
+			pzprv3.getEL('panelbase3').innerHTML = '';
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -176,8 +187,6 @@ ui.createClass('KeyPopup',
 		bar.appendChild(_doc.createTextNode("panel"));
 		pzprv3.unselectable(bar);
 		keypopup.appendChild(bar);
-		ui.event.addMouseDownEvent(bar, ui.menu.popupmgr, ui.menu.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
 		
 		var panel = _doc.createElement('div');
 		panel.className = 'panelbase';
