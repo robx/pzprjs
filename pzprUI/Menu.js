@@ -1007,7 +1007,7 @@ ui.createClass('Menu',
 
 		mode      : function(num){ this.modechange(num);},
 		text      : function(num){ this.textsize(num); ui.puzzle.painter.forceRedraw();},
-		size      : function(num){ ui.puzzle.painter.forceRedraw();},
+		size      : function(num){ ui.event.setcellsize(); ui.puzzle.painter.forceRedraw();},
 		repaint   : function(num){ ui.puzzle.painter.forceRedraw();},
 		adjsize   : function(num){ ui.puzzle.painter.forceRedraw();},
 		language  : function(str){ this.setLang(str);},
