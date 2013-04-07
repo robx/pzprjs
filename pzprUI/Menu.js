@@ -619,8 +619,6 @@ ui.createClass('Menu',
 	// menu.menuout(e)   メニューからマウスが外れた時の表示設定を行う
 	//---------------------------------------------------------------------------
 	menuhover : function(e){
-		if(!!this.popupmgr.popup){ return true;}
-
 		this.floatmenuopen(e, 0);
 	},
 	menuout   : function(e){

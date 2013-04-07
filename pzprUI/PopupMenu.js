@@ -85,8 +85,7 @@ ui.createClass('PopupManager',
 			if(this.popup){ this.popup.hide();}
 			
 			/* ポップアップメニューを表示する */
-			this.popup = target;
-			this.popup.show(px, py);
+			target.show(px, py);
 			return true;
 		}
 		return false;
@@ -182,9 +181,11 @@ ui.createClass('PopupMenu',
 		this.pop.style.left = px + 'px';
 		this.pop.style.top  = py + 'px';
 		this.pop.style.display = 'inline';
+		ui.menu.popupmgr.popup = this;
 	},
 	hide : function(){
 		this.pop.style.display = "none";
+		ui.menu.popupmgr.popup = null;
 		
 		ui.event.enableKey = true;
 		ui.event.enableMouse = true;
