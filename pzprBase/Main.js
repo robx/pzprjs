@@ -136,7 +136,15 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
-	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);}
+	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
+	
+	isDispred : function(){
+		if     (this.config.flag_redline  && this.config.getVal('redline')) { return true;}
+		else if(this.config.flag_redblk   && this.config.getVal('redblk'))  { return true;}
+		else if(this.config.flag_redblkrb && this.config.getVal('redblkrb')){ return true;}
+		else if(this.pid==='roma'         && this.config.getVal('redroad')) { return true;}
+		return false;
+	}
 });
 
 //--------------------------------------------------------------------------------------------------------------
@@ -147,9 +155,10 @@ pzprv3.createCoreClass('Owner',
 pzprv3.createCommonClass('Properties',
 {
 	initialize : function(){
+		this.init();
 	},
 
-	// 仮
+	/* フラグ */
 	flag_use      : false,
 	flag_redline  : false,
 	flag_redblk   : false,
@@ -159,25 +168,77 @@ pzprv3.createCommonClass('Properties',
 
 	disable_subclear : false,	// "補助消去"ボタンを作らない
 
+	/* 設定値 */
+	val : {},
+
+	//---------------------------------------------------------------------------
+	// config.init()  各設定値を初期化する
+	//---------------------------------------------------------------------------
+	init : function(){
+		/* 全般的な設定 */
+		this.add('mode', (puzzle.editmode?1:3), [1,3]);			/* モード */
+		this.add('autocheck', puzzle.playmode);					/* 正解自動判定機能 */
+		this.add('language', 'ja', ['ja','en']);				/* 言語設定 */
+
+		/* 表示形式設定 */
+		this.add('adjsize', true);								/* 自動横幅調節 */
+		this.add('size', 2, [0,1,2,3,4]);						/* 表示サイズ */
+		this.add('text', (!pzprv3.OS.mobile?0:2), [0,1,2,3]);	/* テキストのサイズ */
+
+		this.add('cursor', true);								/* カーソルの表示 */
+		this.add('irowake', (this.flag_irowake===2));			/* 線の色分け */
+
+		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
+		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
+
+		/* 入力方法設定 */
+		this.add('use', (!pzprv3.env.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
+		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
+
+		this.add('lrcheck', false);			/* マウス左右反転 */
+		this.add('keypopup', false);		/* 数字などのパネル入力 */
+
+		this.add('bgcolor', false);			/* 背景色入力 */
+		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
+		this.add('lattice', true);			/* kouchoku: 格子点チェック */
+
+		/* 補助入力設定 */
+		this.add('redline', false);			/* 自動横幅調節 */
+		this.add('redblk', false);			/* 黒マスつながりチェック */
+		this.add('redblkbd', false);		/* 連黒分断禁黒マス繋がりチェック */
+		this.add('redroad', false);			/* roma: ローマの通り道チェック */
+
+		/* 回答お助け機能 */
+		this.add('circolor', false);		/* 数字 or kouchokuの正解の点をグレーにする */
+		this.add('plred', false);			/* hitori:ひとくれの重複した数字を表示 */
+		this.add('colorslash', false);		/* wagiri: 斜線の色分け */
+
+		/* 正解判定 */
+		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
+
+		this.add('uramashu', false);		/* mashu: 裏ましゅ */
+		this.add('snakebd', false);			/* snakes: へびの境界線を表示する */
+
+		/* EDITORのみ */
+		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
+		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
+	},
+	add : function(name, defvalue, option){
+		if(!option){ this.val[name] = {val:defvalue};}
+		else{ this.val[name] = {val:defvalue, option:option};}
+	},
+
 	//---------------------------------------------------------------------------
 	// config.getVal()  各フラグのvalの値を返す
 	// config.setVal()  各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
-	getVal : function(idname){
-		var items = ui.menu.items;
-		return items.flags[idname]?items.flags[idname].val:null;
+	getVal : function(name){
+		return this.val[name]?this.val[name].val:null;
 	},
-	setVal : function(idname, newval, isexecfunc){
-		var items = ui.menu.items;
-		if(!items){ return;}
-		if(!!items.flags[idname] && (items.flags[idname].type===items.CHECK ||
-									 items.flags[idname].type===items.SELECT))
-		{
-			items.flags[idname].val = newval;
-			ui.menu.setdisplay(idname);
-			if(ui.menu.funcs[idname] && isexecfunc!==false){
-				ui.menu.funcs[idname].call(ui.menu,newval);
-			}
+	setVal : function(name, newval, isexecfunc){
+		if(!!this.val[name]){
+			this.val[name].val = newval;
+			ui.menu.setcaption(name);
 		}
 	}
 });

@@ -67,7 +67,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(this.mousestart){ o.board.errclear();}
 		o.opemgr.newOperation(this.mousestart?true:false);
 		
-		if(this.mousestart && !!ui.menu.items.flags.dispred && (o.key.isZ ^ o.getConfig('dispred'))){
+		if(this.mousestart && (o.key.isZ ^ o.isDispred())){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}

@@ -143,6 +143,7 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
+	// menu.setcaption() 設定変更された場合にメニューなどのデータを作り直す
 	//---------------------------------------------------------------------------
 	displayAll : function(){
 		for(var i in this.items.flags){ this.setdisplay(i);}
@@ -178,7 +179,7 @@ ui.createClass('Menu',
 
 		case pp.CHILD:
 			var smenu = getEL('ms_'+idname), manage = getEL('up_'+idname);
-			var issel = (puzzle.getConfig(idname) == puzzle.getConfig(pp.flags[idname].parent));
+			var issel = (pp.flags[idname].val == puzzle.getConfig(pp.flags[idname].parent));
 			var cap = pp.getMenuStr(idname);
 			if(!!smenu){ smenu.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
 			if(!!manage){													// 管理領域の項目
@@ -194,6 +195,17 @@ ui.createClass('Menu',
 			if(!!check){ check.checked   = flag;}					// 管理領域(チェックボックス)
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
 			break;
+		}
+	},
+	setcaption : function(idname){
+		var items = this.items;
+		if(!items || !items.flags[idname]){ return;}
+		var type = items.flags[idname].type;
+		if(type===items.CHECK || type===items.SELECT){
+			this.setdisplay(idname);
+			if(this.funcs[idname] && isexecfunc!==false){
+				this.funcs[idname].call(this,newval);
+			}
 		}
 	},
 
@@ -312,16 +324,16 @@ ui.createClass('Menu',
 		as('dispsize', 'disp','サイズ指定','Cell Size');
 		ap('sep_disp0',  'disp');
 
-		au('size','disp',2,[0,1,2,3,4], '表示サイズ','Cell Size');
-		au('text','disp',(!pzprv3.OS.mobile?0:2),[0,1,2,3], 'テキストのサイズ','Text Size');
+		au('size','disp', '表示サイズ','Cell Size');
+		au('text','disp', 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!puzzle.config.flag_irowake){
-			ac('irowake','disp',(puzzle.config.flag_irowake==2?true:false),'線の色分け','Color coding');
+			ac('irowake','disp', '線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
-		ac('cursor','disp',true,'カーソルの表示','Display cursor');
-		ac('adjsize', 'disp', true, '自動横幅調節', 'Auto Size Adjust');
+		ac('cursor','disp','カーソルの表示','Display cursor');
+		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -346,7 +358,7 @@ ui.createClass('Menu',
 		am('setting', "設定", "Setting");
 
 		if(pzprv3.EDITOR){
-			au('mode','setting',(puzzle.editmode?1:3),[1,3],'モード', 'mode');
+			au('mode','setting', 'モード', 'mode');
 			sl('mode','モード', 'mode');
 		}
 		else{
@@ -381,13 +393,12 @@ ui.createClass('Menu',
 
 		/* 操作方法の設定値 */
 		if(puzzle.config.flag_use){
-			pp.addSelect('use','setting',(!pzprv3.env.touchevent?1:2),[1,2], '操作方法', 'Input Type');
+			pp.addSelect('use','setting','操作方法', 'Input Type');
 			pp.setLabel('use', '操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
 			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
 		if(pid==='shakashaka'){
-			pp.addSelect('use_tri','setting',(!pzprv3.env.touchevent?1:2),[1,2,3], '三角形の入力方法', 'Input Triangle Type');
 			pp.setLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
 			pp.addChild('use_tri_1', 'use', 'クリックした位置', 'Corner-side');
 			pp.addChild('use_tri_2', 'use', '引っ張り入力', 'Pull-to-Input');
@@ -396,111 +407,110 @@ ui.createClass('Menu',
 
 		/* 盤面チェックの設定値 */
 		if(puzzle.config.flag_redline){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', '線のつながりをチェックする', 'Check countinuous lines');
+			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
+			pp.setLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
 		}
 		else if(puzzle.config.flag_redblk){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', '黒マスのつながりをチェックする', 'Check countinuous black cells');
+			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
+			pp.setLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 		}
 		else if(puzzle.config.flag_redblkrb){
-			pp.addCheck('dispred','setting',false,'繋がりチェック','Continuous Check');
-			pp.setLabel('dispred', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
+			pp.setLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 		}
 		else if(pid==='roma'){
-			pp.addCheck('dispred','setting',false,'通り道のチェック', 'Check Road');
-			pp.setLabel('dispred', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
+			pp.addCheck('redroad','setting','通り道のチェック', 'Check Road');
+			pp.setLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 		}
 
 		/* 背景色入力の設定値 */
 		if(puzzle.config.flag_bgcolor){
-			pp.addCheck('bgcolor','setting',false, '背景色入力', 'Background-color');
+			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
 			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
 
 		/* 文字別正解表示の設定値 */
 		if(pid==='hashikake'||pid==='kurotto'){
-			pp.addCheck('circolor','setting',false,'数字をグレーにする','Set Grey Color');
+			pp.addCheck('circolor','setting','数字をグレーにする','Set Grey Color');
 			pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='kouchoku'){
-			pp.addCheck('circolor','setting',true,'点をグレーにする','Set Grey Color');
+			pp.addCheck('circolor','setting','点をグレーにする','Set Grey Color');
 			pp.setLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
 
 		if(pid==='hitori'){
-			pp.addCheck('plred','setting',false, '重複した数字を表示', 'Show overlapped number');
+			pp.addCheck('plred','setting', '重複した数字を表示', 'Show overlapped number');
 			pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
 		}
 
 		if(pid==='wagiri'){
-			pp.addCheck('colorslash','setting',false, '斜線の色分け', 'Slash with color');
+			pp.addCheck('colorslash','setting', '斜線の色分け', 'Slash with color');
 			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
 		}
 
 		/* 正当判定方法の設定値 */
 		if(pid==='fillomino'){
-			pp.addCheck('enbnonum','setting',false,'未入力で正答判定','Allow Empty cell');
+			pp.addCheck('enbnonum','setting','未入力で正答判定','Allow Empty cell');
 			pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
 		}
 
 		/* 線の引き方の設定値 */
 		if(pid==='kouchoku'){
-			pp.addCheck('enline','setting',true,'線は点の間','Line between points');
+			pp.addCheck('enline','setting','線は点の間','Line between points');
 			pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
 
-			pp.addCheck('lattice','setting',true,'格子点チェック','Check lattice point');
+			pp.addCheck('lattice','setting','格子点チェック','Check lattice point');
 			pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
 		}
 
 		/* 問題形式の設定値 */
 		if(pid==='mashu'){
-			pp.addCheck('uramashu','setting',false, '裏ましゅ', 'Ura-Mashu');
+			pp.addCheck('uramashu','setting', '裏ましゅ', 'Ura-Mashu');
 			pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		}
 
 		/* 盤面表示形式の設定値 */
 		if(pid==='pipelinkr'){
-			pp.addSelect('disptype_pipelinkr','setting',1,[1,2],'表示形式','Display');
+			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
 			pp.addChild('disptype_pipelinkr_1', 'disptype', '○', 'Circle');
 			pp.addChild('disptype_pipelinkr_2', 'disptype', '■', 'Icebarn');
 		}
-
 		if(pid==='bosanowa'){
-			pp.addSelect('disptype_bosanowa','setting',1,[1,2,3],'表示形式','Display');
+			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
 			pp.setLabel('disptype_bosanowa', '表示形式', 'Display');
 			pp.addChild('disptype_bosanowa_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
 			pp.addChild('disptype_bosanowa_2', 'disptype', '倉庫番形式',     'Sokoban Type');
 			pp.addChild('disptype_bosanowa_3', 'disptype', 'ワリタイ形式',   'Waritai type');
 		}
 
-		if(pid==='snakebd'){
-			pp.addCheck('snakebd','setting',false,'へび境界線有効','Enable snake border');
+		if(pid==='snakes'){
+			pp.addCheck('snakebd','setting','へび境界線有効','Enable snake border');
 			pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
 		}
 
 		/* EDITOR時の設定値 */
 		if(pzprv3.EDITOR && pid==='goishi'){
-			pp.addCheck('bdpadding','setting',true, '空隙つきURL', 'URL with Padding');
+			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
 			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
 		}
 		if(pzprv3.EDITOR && pid==='tentaisho'){
-			pp.addCheck('discolor','setting',false,'色分け無効化','Disable color');
+			pp.addCheck('discolor','setting','色分け無効化','Disable color');
 			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
 
 		/* 共通設定値 */
-		pp.addCheck('autocheck','setting', puzzle.playmode, '正答自動判定', 'Auto Answer Check');
+		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
 
-		pp.addCheck('lrcheck',  'setting', false, 'マウス左右反転', 'Mouse button inversion');
+		pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
 		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
-			pp.addCheck('keypopup', 'setting', false, 'パネル入力', 'Panel inputting');
+			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 
-		pp.addSelect('language', 'setting', 'ja', ['ja','en'], '言語', 'Language');
+		pp.addSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');
 	},
@@ -656,7 +666,7 @@ ui.createClass('Menu',
 			var idname = el.id.substr(3), pp = this.items;
 			switch(pp.type(idname)){
 				case pp.SMENU: this.submenuexec(e, idname); break;
-				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, ui.puzzle.getConfig(idname)); break;
+				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, pp.flags[idname].val); break;
 				case pp.CHECK: puzzle.setConfig(idname, !ui.puzzle.getConfig(idname)); break;
 			}
 		}
@@ -1038,7 +1048,7 @@ ui.createClass('Menu',
 		},
 
 		keypopup : function(){
-			var f = !!ui.keypopup.paneltype[this.items.flags['mode'].val];
+			var f = !!ui.keypopup.paneltype[ui.puzzle.getConfig('mode')];
 			getEL('ck_keypopup').disabled    = (f?"":"true");
 			getEL('cl_keypopup').style.color = (f?"black":"silver");
 
@@ -1292,10 +1302,13 @@ ui.createClass('MenuList',
 		this.addFlags(idname, parent, this.SEPARATE, null, '', '');
 	},
 
-	addCheck : function(idname, parent, first, strJP, strEN){
+	addCheck : function(idname, parent, strJP, strEN){
+		var first = ui.puzzle.config.val[idname];
 		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
 	},
-	addSelect : function(idname, parent, first, child, strJP, strEN){
+	addSelect : function(idname, parent, strJP, strEN){
+		var first = ui.puzzle.config.val[idname].val;
+		var child = ui.puzzle.config.val[idname].option;
 		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
 		this.flags[idname].child = child;
 	},
