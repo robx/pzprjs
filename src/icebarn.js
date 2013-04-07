@@ -587,7 +587,6 @@ Graphic:{
 
 		if(this.owner.pid==='icelom'){
 			this.owner.pid = (this.checkpflag("a")?'icelom':'icelom2');
-			this.owner.regenerateMenu();
 		}
 	},
 	pzlexport : function(type){
@@ -697,7 +696,6 @@ Graphic:{
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
 			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
-			this.owner.regenerateMenu();
 		}
 
 		this.decodeCell( function(obj,ca){

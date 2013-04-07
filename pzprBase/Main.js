@@ -14,7 +14,6 @@ pzprv3.createCoreClass('Owner',
 		this.classes = null;
 
 		this.ready = false;
-		this.reqinit = true;
 
 		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
 		this.playmode = !this.editmode;							// 回答モード
@@ -45,11 +44,12 @@ pzprv3.createCoreClass('Owner',
 	// owner.open()      新しくパズルのファイルを開く時の処理
 	//---------------------------------------------------------------------------
 	open : function(pzl){
+		var self = this;
+
 		this.ready = false;
 
 		/* canvasが用意できるまでwait */
 		if(!this.canvas || !this.canvas2){
-			var self = this;
 			setTimeout(function(){ self.open.call(self,pzl);},10);
 			return;
 		}
@@ -63,7 +63,6 @@ pzprv3.createCoreClass('Owner',
 		}
 		/* Classが用意できるまで待つ */
 		if(!pzprv3.custom[this.pid]){
-			var self = this;
 			setTimeout(function(){ self.open.call(self,pzl);},10);
 			return;
 		}
@@ -137,11 +136,7 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
-	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
-	
-	regenerateMenu : function(){
-		ui.menu.displayDesign();
-	}
+	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);}
 });
 
 //--------------------------------------------------------------------------------------------------------------
@@ -174,6 +169,7 @@ pzprv3.createCommonClass('Properties',
 	},
 	setVal : function(idname, newval, isexecfunc){
 		var items = ui.menu.items;
+		if(!items){ return;}
 		if(!!items.flags[idname] && (items.flags[idname].type===items.CHECK ||
 									 items.flags[idname].type===items.SELECT))
 		{
