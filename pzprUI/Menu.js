@@ -54,7 +54,7 @@ ui.createClass('Menu',
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items    = new ui.classes.MenuList();
-		this.popupmgr = new ui.classes.PopupManager();
+		if(!this.popupmgr){ this.popupmgr = new ui.classes.PopupManager();}
 
 		this.initReader();
 

@@ -56,6 +56,7 @@ ui.createClass('ProblemData',
 ui.createClass('Popup_DataBase:PopupMenu',
 {
 	formname : 'database',
+	disable_remove : true,
 	
 	//------------------------------------------------------------------------------
 	// 要素作成用関数

@@ -21,7 +21,7 @@ ui.createClass('PopupManager',
 	
 	puzzle    : null,
 	popup     : null, /* 表示中のポップアップメニュー */
-	popups    : {},   /* 管理しているポップアップメニュー */
+	popups    : null, /* 管理しているポップアップメニュー */
 	movingpop : null, /* 移動中のポップアップメニュー */
 	
 	//---------------------------------------------------------------------------
@@ -30,6 +30,7 @@ ui.createClass('PopupManager',
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
 	init : function(){
+		if(!!this.popups){ return;}
 		this.popups = {
 			newboard  : (new ui.classes.Popup_Newboard()),	/* 盤面の新規作成 */
 			urlinput  : (new ui.classes.Popup_URLInput()),	/* URL入力 */
@@ -45,9 +46,11 @@ ui.createClass('PopupManager',
 	},
 	
 	reset : function(){
-		this.popup  = null;
-		this.popups = {};
-		getEL('popup_parent').innerHTML = '';
+		if(!this.popups){ return;}
+		for(var name in this.popups){
+			var popup = this.popups[name];
+			if(!popup.disable_remove){ popup.remove();}
+		}
 	},
 	
 	setEvents : function(){
@@ -134,9 +137,16 @@ ui.createClass('PopupMenu',
 		this.titlebar  = null;
 		this.form      = null;
 	},
+	remove : function(){
+		if(!!this.pop){
+			this.popparent.removeChild(this.pop);
+			this.reset();
+		}
+	},
 
 	puzzle   : null,
 	formname : '',
+	disable_remove : false,
 
 	makeElement : function(){
 		this.pop = _doc.createElement('div');

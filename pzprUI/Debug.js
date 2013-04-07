@@ -13,6 +13,7 @@ var k = pzprv3.consts;
 ui.createClass('Popup_Debug:PopupMenu',
 {
 	formname : 'testform',
+	disable_remove : true,
 	
 	initialize : function(){
 		ui.classes.PopupMenu.prototype.initialize.call(this);
