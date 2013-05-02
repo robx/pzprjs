@@ -83,6 +83,23 @@ MouseEvent:{
 			else{ cross.setQnum(qn-1);}
 		}
 		cross.draw();
+	},
+
+	e_mouseout : function(e){
+		this.mouseout_kouchoku(e, this.inputPoint.px, this.inputPoint.py);
+	},
+	mouseout_kouchoku : function(e, px, py){
+		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
+		var pos = pzprv3.getPagePos(e), rect=pzprv3.getRect(pzprv3.getEL('divques'));
+		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
+			if(this.inputData===1){
+				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
+				this.targetPoint = [null, null];
+				if(cross1!==null){ cross1.draw();}
+				if(cross2!==null){ cross2.draw();}
+			}
+			this.mousereset();
+		}
 	}
 },
 

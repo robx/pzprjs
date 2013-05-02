@@ -669,8 +669,8 @@ ui.createClass('Menu',
 	submenuexec : function(e, idname){
 		var result = (this.menuexec(idname) || ui.puzzle.config.onchange_event(idname,null));
 		if(!result){
-			var pagePos = ui.event.getPagePos(e);
-			this.popupmgr.open(idname, pagePos.px - 8, pagePos.py - 8);
+			var pos = pzprv3.getPagePos(e);
+			this.popupmgr.open(idname, pos.px-8, pos.py-8);
 		}
 	},
 
@@ -699,7 +699,7 @@ ui.createClass('Menu',
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = ui.event.pageX(e)  + 'px';
+				_float.style.left = pzprv3.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -733,14 +733,14 @@ ui.createClass('Menu',
 	},
 
 	insideOf : function(el, e){
-		var ex = ui.event.pageX(e), ey = ui.event.pageY(e);
+		var pos = pzprv3.getPagePos(e);
 		var rect = pzprv3.getRect(el);
-		return (ex>=rect.left && ex<=rect.right && ey>=rect.top && ey<=rect.bottom);
+		return (pos.px>=rect.left && pos.px<=rect.right && pos.py>=rect.top && pos.py<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var ex = ui.event.pageX(e), ey = ui.event.pageY(e);
+		var pos = pzprv3.getPagePos(e);
 		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
-		return (ey>= rect_f.bottom || (ex>=rect_f.left && ex<=rect_o.right && ey>=rect_f.top));
+		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
 	},
 
 //--------------------------------------------------------------------------------------------------------------

@@ -181,8 +181,117 @@ var pzprv3_base = {
 		return document.createElement(tagName);
 	},
 
+	//----------------------------------------------------------------------
+	// pzprv3.addEvent()          addEventListener(など)を呼び出す
+	// pzprv3.addMouseDownEvent() マウスを押したときのイベントを設定する
+	// pzprv3.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
+	// pzprv3.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	//----------------------------------------------------------------------
+	addEvent : function(el, event, self, callback, capt){
+		var func = function(e){ callback.call(self, (e||window.event));};
+		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
+		else                     { el.attachEvent('on'+event, func);}
+	},
+	addMouseDownEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerDown", self, func);
+		}
+		else{
+			this.addEvent(el, "mousedown", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchstart", self, func);
+			}
+		}
+	},
+	addMouseMoveEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerMove", self, func);
+		}
+		else{
+			this.addEvent(el, "mousemove", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchmove",  self, func);
+			}
+		}
+	},
+	addMouseUpEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerUp", self, func);
+		}
+		else{
+			this.addEvent(el, "mouseup", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchend", self, func);
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pzprv3.getMouseButton() 左/中/右ボタンが押されているかチェックする
+	//---------------------------------------------------------------------------
+	getMouseButton : function(e){
+		var left=false, mid=false, right=false;
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
+			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
+			}
+			else{
+				left  = (!!e.which ? e.which===1 : e.button===0);
+				mid   = (!!e.which ? e.which===2 : e.button===1);
+				right = (!!e.which ? e.which===3 : e.button===2);
+			}
+		}
+
+		return {Left:left, Middle:mid, Right:right};
+	},
+
+	//----------------------------------------------------------------------
+	// pzprv3.getPagePos() イベントが起こったページ上の座標を返す
+	// pzprv3.pageX()      イベントが起こったページ上のX座標を返す
+	// pzprv3.pageY()      イベントが起こったページ上のY座標を返す
+	//----------------------------------------------------------------------
+	getPagePos : function(e){
+		var pos = new pzprv3.core.Point(0, 0);
+		pos.px = this.pageX(e);
+		pos.py = this.pageY(e);
+		return pos;
+	},
+	pageX : function(e){
+		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageX)){ return e.pageX;}
+		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
+		return 0;
+	},
+	pageY : function(e){
+		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageY)){ return e.pageY;}
+		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
+		return 0;
+	},
+
 	//--------------------------------------------------------------------------------
-	// event.getRect()   エレメントの四辺の座標を返す
+	// pzprv3.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
@@ -217,6 +326,23 @@ var pzprv3_base = {
 			}
 		);
 		return this.getRect(el);
+	},
+
+	//----------------------------------------------------------------------
+	// Eventオブジェクト関連
+	// 
+	// stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                   伝播させないようにする
+	// preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                   イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = false;}
 	}
 };
 

@@ -12,6 +12,10 @@ pzprv3.createCommonClass('KeyEvent',
 {
 	initialize : function(){
 		this.cursor = this.owner.cursor;
+
+		this.enableKey = true;		// キー入力は有効か
+
+		this.keyreset();
 	},
 
 	enablemake : false,
@@ -41,6 +45,87 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.e_keydown()  キーを押した際のイベント共通処理
+	// kc.e_keyup()    キーを離した際のイベント共通処理
+	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
+	//---------------------------------------------------------------------------
+	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
+	e_keydown : function(e){
+		if(!this.enableKey){ return;}
+		
+		var c = this.getchar(e);
+		if(c){
+			/* 各パズルのルーチンへ */
+			var sts = this.keydown(c);
+			if(!sts){ pzprv3.preventDefault(e);}
+		}
+		ui.menu.enb_btn();
+	},
+	e_keyup : function(e){
+		if(!this.enableKey){ return;}
+		
+		var c = this.getchar(e);
+		if(c){ this.keyup(c);}	/* 各パズルのルーチンへ */
+		ui.menu.enb_btn();
+	},
+	e_keypress : function(e){
+		if(!this.enableKey){ return;}
+		
+		var c = this.getcharp(e);
+		if(c){
+			/* 各パズルのルーチンへ */
+			var sts = this.keydown(c);
+			if(!sts){ pzprv3.preventDefault(e);}
+		}
+		ui.menu.enb_btn();
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.getchar()  入力されたキーを表す文字列を返す
+	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
+	//---------------------------------------------------------------------------
+	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
+	getchar : function(e){
+		this.checkmodifiers(e);
+
+		if     (e.keyCode==38){ return this.KEYUP;}
+		else if(e.keyCode==40){ return this.KEYDN;}
+		else if(e.keyCode==37){ return this.KEYLT;}
+		else if(e.keyCode==39){ return this.KEYRT;}
+
+		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
+		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
+		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
+		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
+		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);}
+		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode==8)                  { return 'BS';}
+
+		else if(e.shiftKey){ return 'shift';}
+
+		return '';
+	},
+	// (keypressのみ)45は-(マイナス)
+	getcharp : function(e){
+		this.checkmodifiers(e);
+
+		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
+		return '';
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.checkmodifiers()  Shift, Ctrl, Alt, Metaキーをチェックする
+	//---------------------------------------------------------------------------
+	checkmodifiers : function(e){
+		if(this.isSHIFT ^ e.shiftKey){ this.isSHIFT = e.shiftKey;}
+		if(this.isCTRL  ^ e.ctrlKey) { this.isCTRL  = e.ctrlKey; }
+		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
+		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
+
+		if(!(this.isCTRL || this.isMETA)){ ui.undotimer.stop();}
 	},
 
 	//---------------------------------------------------------------------------

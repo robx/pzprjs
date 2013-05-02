@@ -13,7 +13,15 @@ pzprv3.createCommonClass('MouseEvent',
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
+		this.enableMouse = true;	// マウス入力は有効か
+
 		this.inputPoint = new pzprv3.core.Point(null, null);	// 入力イベントが発生したpixel位置
+
+		this.currentpos = {px:0,py:0};
+		
+		this.mouseoffset = {px:0,py:0};
+		if(pzprv3.browser.IE6||pzprv3.browser.IE7||pzprv3.browser.IE8){ this.mouseoffset = {px:2,py:2};}
+		else if(pzprv3.browser.WebKit){ this.mouseoffset = {px:1,py:1};}
 
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)
@@ -28,6 +36,8 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove;		// mousemove/touchmoveイベントかどうか
 		this.mouseend;		// mouseup/touchendイベントかどうか
 		this.mouseout;		// mouseoutイベントかどうか
+
+		this.mousereset();
 	},
 
 	RBBlackCell : false,	// 連黒分断禁のパズル
@@ -49,6 +59,84 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mousemove  = false;
 		this.mouseend   = false;
 		this.mouseout   = false;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.e_mousedown() Canvas上でマウスのボタンを押した際のイベント共通処理
+	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
+	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
+	// mv.e_mouseout()  マウスカーソルがウィンドウから離れた際のイベント共通処理
+	//---------------------------------------------------------------------------
+	//イベントハンドラから呼び出される
+	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
+	e_mousedown : function(e){
+		if(!this.enableMouse){ return true;}
+		
+		// どのボタンが押されたか取得する
+		this.setMouseButton(e);
+
+		if(this.btn.Left || this.btn.Right){
+			var pos = this.getPosition(e);
+			this.mouseevent(pos.px, pos.py, 0);	// 各パズルのルーチンへ
+		}
+		else if(this.btn.Middle){ //中ボタン
+			this.modeflip();
+			this.mousereset();
+		}
+		ui.menu.enb_btn();
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
+		return false;
+	},
+	e_mouseup   : function(e){
+		if(!this.enableMouse){ return true;}
+		
+		if(this.btn.Left || this.btn.Right){
+			/* 座標は前のイベントのものを使用する */
+			this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);	// 各パズルのルーチンへ
+			this.mousereset();
+		}
+		ui.menu.enb_btn();
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
+		return false;
+	},
+	e_mousemove : function(e){
+		// ポップアップメニュー移動中は当該処理が最優先
+		if(!this.enableMouse){ return true;}
+		
+		if(this.btn.Left || this.btn.Right){
+			var pos = this.getPosition(e);
+			this.mouseevent(pos.px, pos.py, 1);	// 各パズルのルーチンへ
+		}
+		ui.menu.enb_btn();
+		pzprv3.stopPropagation(e);
+		pzprv3.preventDefault(e);
+		return false;
+	},
+	e_mouseout : function(e){ },
+
+	//---------------------------------------------------------------------------
+	// mv.setMouseButton() イベントが起こったボタンを設定する
+	// mv.getPosition()    イベントが起こったcanvas内の座標を取得する
+	//---------------------------------------------------------------------------
+	setMouseButton : function(e){
+		this.btn = pzprv3.getMouseButton(e);
+		
+		// SHIFTキー/Commandキーを押している時は左右ボタン反転
+		var kc = this.owner.key;
+		kc.checkmodifiers(e);
+		if((kc.isSHIFT || kc.isMETA)^this.owner.getConfig('lrcheck')){
+			if(this.btn.Left !== this.btn.Right){
+				this.btn.Left  = !this.btn.Left;
+				this.btn.Right = !this.btn.Right;
+			}
+		}
+	},
+	getPosition : function(e){
+		var pc = this.owner.painter, pagePos = pzprv3.getPagePos(e);
+		return { px: (pagePos.px - pc.pageX - this.mouseoffset.px),
+				 py: (pagePos.py - pc.pageY - this.mouseoffset.py)};
 	},
 
 	//---------------------------------------------------------------------------

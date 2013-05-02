@@ -98,10 +98,10 @@ ui.createClass('PopupManager',
 	//---------------------------------------------------------------------------
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
-		var pagePos = ui.event.getPagePos(e);
+		var pos = pzprv3.getPagePos(e);
 		this.movingpop = popel;
-		this.offset.px = pagePos.px - parseInt(popel.style.left);
-		this.offset.py = pagePos.py - parseInt(popel.style.top);
+		this.offset.px = pos.px - parseInt(popel.style.left);
+		this.offset.py = pos.py - parseInt(popel.style.top);
 		ui.event.enableMouse = false;
 	},
 	titlebarup : function(e){
@@ -114,10 +114,10 @@ ui.createClass('PopupManager',
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			var pagePos = ui.event.getPagePos(e);
-			popel.style.left = pagePos.px - this.offset.px + 'px';
-			popel.style.top  = pagePos.py - this.offset.py + 'px';
-			ui.event.preventDefault(e);
+			var pos = pzprv3.getPagePos(e);
+			popel.style.left = pos.px - this.offset.px + 'px';
+			popel.style.top  = pos.py - this.offset.py + 'px';
+			pzprv3.preventDefault(e);
 		}
 	}
 });
@@ -489,7 +489,7 @@ ui.createClass('Popup_FileOpen:PopupMenu',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ ui.event.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzprv3.preventDefault(e||window.event); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();

@@ -130,6 +130,8 @@ pzprv3.createCoreClass('Owner',
 			pzprv3.unselectable(g.canvas);
 			o.canvas = g.canvas;
 		});
+
+		this.setMouseEvents(el);
 	},
 	setSubCanvas :function(el, type){
 		var o = this;
@@ -138,6 +140,69 @@ pzprv3.createCoreClass('Owner',
 		Candle.start(el.id, type, function(g){
 			o.canvas2 = g.canvas;
 		});
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.setMouseEvents() マウス入力に関するイベントを設定する
+	// owner.exec????()       マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
+	//---------------------------------------------------------------------------
+	setMouseEvents : function(canvas){
+		var o = this;
+		if(!this.painter){ setTimeout(function(){o.setMouseEvents(canvas);},10); return;}
+
+		// マウス入力イベントの設定
+		var pc = this.painter;
+		var elements = [canvas];
+		if(pc.fillTextEmulate){ elements.push(pc.get_numobj_parent());}
+		for(var i=0;i<elements.length;i++){
+			var el = elements[i];
+			pzprv3.addMouseDownEvent(el, o, o.execMouseDown);
+			pzprv3.addMouseMoveEvent(el, o, o.execMouseMove);
+			pzprv3.addMouseUpEvent  (el, o, o.execMouseUp);
+			el.oncontextmenu = function(){ return false;};
+		}
+		pzprv3.addEvent(canvas, "mouseout", o, o.execMouseOut);
+	},
+	execMouseDown : function(e){ this.mouse.e_mousedown(e);},
+	execMouseMove : function(e){ this.mouse.e_mousemove(e);},
+	execMouseUp   : function(e){ this.mouse.e_mouseup(e);},
+	execMouseOut  : function(e){ this.mouse.e_mouseout(e);},
+
+	//---------------------------------------------------------------------------
+	// owner.setKeyEvents() キーボード入力に関するイベントを設定する
+	// owner.exec????()     キー入力へ分岐する(this.keyが不変でないためバイパスする)
+	//---------------------------------------------------------------------------
+	setKeyEvents : function(){
+		var o = this;
+		if(!this.painter){ setTimeout(function(){o.setKeyEvents();},10); return;}
+
+		// キー入力イベントの設定
+		var pc = this.painter;
+		pzprv3.addEvent(document, 'keydown',  o, o.execKeyDown);
+		pzprv3.addEvent(document, 'keyup',    o, o.execKeyUp);
+		pzprv3.addEvent(document, 'keypress', o, o.execKeyPress);
+		// Silverlightのキー入力イベント設定
+		var g = pc.currentContext;
+		if(g.use.sl){
+			var receiver = o, sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
+			sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
+		}
+	},
+	execKeyDown  : function(e){ this.key.e_keydown(e);},
+	execKeyUp    : function(e){ this.key.e_keyup(e);},
+	execKeyPress : function(e){ this.key.e_keypress(e);},
+	execSLKeyDown : function(sender, keyEventArgs){
+		var a = keyEventArgs;
+		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
+						altKey:false, returnValue:false, preventDefault:function(){} };
+		return this.key.e_keydown(emulate);
+	},
+	execSLKeyUp : function(sender, keyEventArgs){
+		var a = keyEventArgs;
+		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
+						altKey:false, returnValue:false, preventDefault:function(){} };
+		return this.key.e_keyup(emulate);
 	},
 
 	//---------------------------------------------------------------------------

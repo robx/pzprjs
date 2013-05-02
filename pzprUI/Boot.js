@@ -100,6 +100,7 @@ var ui = {
 		if(Candle.enable.canvas){
 			ui.puzzle.setSubCanvas(document.getElementById('divques_sub'), 'canvas');
 		}
+		ui.puzzle.setKeyEvents();
 
 		// 外部から参照できるようにする
 		window.puzzle = ui.puzzle;
@@ -120,7 +121,7 @@ var ui = {
 	// ui.clearObjects() パズル準備前に設定をクリア
 	//---------------------------------------------------------------------------
 	clearObjects : function(){
-		ui.event.removeAllEvents();
+		ui.event.removeUIEvents();
 		ui.menu.menureset();
 	},
 	
@@ -131,7 +132,7 @@ var ui = {
 		if(ui.puzzle.ready){
 			ui.menu.menuinit(ui.puzzle.config);	/* メニュー関係初期化 */
 			ui.event.setcellsize();
-			ui.event.setEvents();				/* イベントをくっつける */
+			ui.event.setUIEvents();				/* イベントをくっつける */
 			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!func){ func();}
