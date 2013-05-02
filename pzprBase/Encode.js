@@ -29,8 +29,8 @@ pzprv3.createCommonClass('Encode',
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
-	pzlinput : function(pzl){
-		if(pzl.type===void 0){ pzl.type=k.PZPRV3;}
+	pzlinput : function(url){
+		var pzl = pzprv3.parseURLType(url);
 		var dat = pzprv3.parseURLData(pzl), o = this.owner;
 
 		o.board.initBoardSize(dat.cols, dat.rows);

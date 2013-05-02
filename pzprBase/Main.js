@@ -28,7 +28,15 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	openByURL : function(url){
 		var pzl = pzprv3.parseURLType(url);
-		if(!!pzl.id){ this.open(pzl);}
+		if(!pzl.id){ return;}
+
+		this.ready = false;
+
+		this.initPuzzle(pzl.id, function(){
+			this.enc.pzlinput(url);
+			this.resetTime();
+			this.ready = true;
+		});
 	},
 	openByFileData : function(filedata){
 		var farray = filedata.split(/[\t\r\n\/]+/), fstr = "";
@@ -36,34 +44,39 @@ pzprv3.createCoreClass('Owner',
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"/");
 		}
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.targetpuzzle.pid);
-		this.open({id:pid, fstr:fstr});
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.open()      新しくパズルのファイルを開く時の処理
-	//---------------------------------------------------------------------------
-	open : function(pzl){
-		var self = this;
+		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.pid);
 
 		this.ready = false;
 
+		this.initPuzzle(pid, function(){
+			this.fio.filedecode(fstr);
+			this.resetTime();
+			this.ready = true;
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.initPuzzle() 新しくパズルのファイルを開く時の処理
+	//---------------------------------------------------------------------------
+	initPuzzle : function(newpid, callback){
+		var self = this;
+
 		/* canvasが用意できるまでwait */
 		if(!this.canvas || !this.canvas2){
-			setTimeout(function(){ self.open.call(self,pzl);},10);
+			setTimeout(function(){ self.initPuzzle.call(self,newpid,callback);},10);
 			return;
 		}
 
 		/* 今のパズルと別idの時 */
-		if(this.pid != pzl.id){
+		if(this.pid != newpid){
 			if(!!this.pid){ ui.clearObjects();}
-			this.pid = pzl.id;
+			this.pid = newpid;
 			this.classes = null;
 			pzprv3.includeCustomFile(this.pid);
 		}
 		/* Classが用意できるまで待つ */
 		if(!pzprv3.custom[this.pid]){
-			setTimeout(function(){ self.open.call(self,pzl);},10);
+			setTimeout(function(){ self.initPuzzle.call(self,newpid,callback);},10);
 			return;
 		}
 
@@ -73,22 +86,7 @@ pzprv3.createCoreClass('Owner',
 			this.initObjects();
 		}
 
-		// ファイルを開く・複製されたデータを開く
-		if(!!pzl.fstr){
-			this.fio.filedecode(pzl.fstr);
-		}
-		// URLからパズルのデータを読み出す
-		else if(!!pzl.qdata){
-			this.enc.pzlinput(pzl);
-		}
-		// 何もないとき
-		else{
-			this.board.initBoardSize();
-		}
-
-		this.resetTime();
-
-		this.ready = true;
+		callback.call(this);
 	},
 
 	//---------------------------------------------------------------------------
