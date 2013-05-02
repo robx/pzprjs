@@ -402,11 +402,7 @@ ui.createClass('Menu',
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		as('dispsize', 'disp','サイズ指定','Cell Size');
-		ap('sep_disp0',  'disp');
-
 		pp.addMenuSelect('cellsize','disp', '表示サイズ','Cell Size');
-		pp.addMenuSelect('textsize','disp', 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!puzzle.config.flag_irowake){
@@ -420,20 +416,13 @@ ui.createClass('Menu',
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
 		// *表示 - 表示サイズ -------------------------------------------------
-		aa('cap_dispmode','cellsize','表示モード','Display mode');
+		as('dispsize', 'cellsize','数値指定','Cell Size');
+		aa('cap_dispmode','cellsize','表示倍率','Display mode');
 		ai('cellsize_0', 'cellsize', 'サイズ 極小', 'Ex Small');
 		ai('cellsize_1', 'cellsize', 'サイズ 小',   'Small');
 		ai('cellsize_2', 'cellsize', 'サイズ 標準', 'Normal');
 		ai('cellsize_3', 'cellsize', 'サイズ 大',   'Large');
 		ai('cellsize_4', 'cellsize', 'サイズ 特大', 'Ex Large');
-
-		// *表示 - テキストのサイズ -------------------------------------------
-		aa('cap_textmode','textsize','テキストのサイズ','Text Size');
-		ai('textsize_0', 'textsize', '通常',         'Normal');
-		ai('textsize_1', 'textsize', '大きい',       'Big');
-		ai('textsize_2', 'textsize', 'かなり大きい', 'Ex Big');
-		ai('textsize_3', 'textsize', 'とても大きい', 'Ex Big 2');
-		this.settextsize(this.getMenuConfig('textsize'));
 
 		// *設定 ==============================================================
 		this.menuarea_setting(pp);		// コンフィグ関連のメニュー追加
@@ -1027,6 +1016,7 @@ ui.createClass('Menu',
 
 		/* テキストのサイズ */
 		this.menuconfig.textsize = {val:(!pzprv3.OS.mobile?0:2), option:[0,1,2,3]};
+		this.settextsize(this.menuconfig.textsize.val);
 	},
 	setMenuConfig : function(idname, newval){
 		this.menuconfig[idname].val = newval;
@@ -1356,7 +1346,7 @@ ui.createClass('MenuList',
 		this.reset();
 	},
 
-	flags    : [],	// サブメニュー項目の情報(オブジェクトの配列になる)
+	flags    : {},	// サブメニュー項目の情報
 	flaglist : [],	// idnameの配列
 
 	// 定数
@@ -1374,7 +1364,7 @@ ui.createClass('MenuList',
 	// pp.reset()      再読み込みを行うときに初期化を行う
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.flags    = [];
+		this.flags    = {};
 		this.flaglist = [];
 	},
 

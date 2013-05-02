@@ -322,7 +322,7 @@ pzprv3.createCommonClass('Properties',
 		/* 補助入力設定 */
 		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック */
-		this.add('redblkbd', false);		/* 連黒分断禁黒マス繋がりチェック */
+		this.add('redblkrb', false);		/* 連黒分断禁黒マス繋がりチェック */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
 
 		/* 回答お助け機能 */
