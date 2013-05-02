@@ -79,9 +79,15 @@ ui.createClass('Timer',
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		if(this.current>this.nextACtime && this.lastAnsCnt!=ui.puzzle.opemgr.anscount && !ui.puzzle.checker.inCheck){
-			this.lastAnsCnt = ui.puzzle.opemgr.anscount;
-			if(!ui.puzzle.checker.autocheck()){ return;}
+		var o = ui.puzzle;
+		if(this.current>this.nextACtime && this.lastAnsCnt != o.opemgr.anscount && !o.checker.inCheck){
+			this.lastAnsCnt = o.opemgr.anscount;
+			if(o.checker.autocheck()){
+				o.mouse.mousereset();
+				o.setConfig('autocheck',false);
+				ui.menu.alertStr("正解です！","Complete!");
+				return;
+			}
 
 			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);

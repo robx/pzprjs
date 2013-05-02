@@ -877,7 +877,7 @@ ui.createClass('Menu',
 		getEL('btnarea').appendChild(btnclear);
 
 		var puzzle = ui.puzzle, self = this;
-		this.addButtons(btncheck, function(){ puzzle.checker.check();}, "チェック", "Check");
+		this.addButtons(btncheck, function(){ self.answercheck();}, "チェック", "Check");
 		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1); self.enb_btn();}, "戻", "<-");
 		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1); self.enb_btn();}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
@@ -1006,7 +1006,7 @@ ui.createClass('Menu',
 		case 'h_undo'    : ui.puzzle.opemgr.undo(1);   this.enb_btn(); break;
 		case 'h_redo'    : ui.puzzle.opemgr.redo(1);   this.enb_btn(); break;
 		case 'h_latest'  : ui.puzzle.opemgr.redoall(); this.enb_btn(); break;
-		case 'check'     : ui.puzzle.checker.check(); break;
+		case 'check'     : this.answercheck(); break;
 		case 'ansclear'  : this.ACconfirm(); break;
 		case 'subclear'  : this.ASconfirm(); break;
 		case 'duplicate' : this.duplicate(); break;
@@ -1192,9 +1192,19 @@ ui.createClass('Menu',
 	},
 
 	//------------------------------------------------------------------------------
+	// menu.answercheck()「正答判定」ボタンを押したときの処理
 	// menu.ACconfirm()  「回答消去」ボタンを押したときの処理
 	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
+	answercheck : function(){
+		var o = ui.puzzle;
+		if(!o.checker.check()){
+			this.alertStr(o.checker.alstr.jp, o.checker.alstr.en);
+		}
+		else{
+			this.alertStr("正解です！","Complete!");
+		}
+	},
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
 			var o = ui.puzzle;
