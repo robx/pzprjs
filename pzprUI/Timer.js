@@ -110,6 +110,8 @@ ui.createClass('UndoTimer',
 		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
 		this.undoWaitCount = 0;
 
+		this.lastCurrentOpe = 0;	// 盤面の状態が変わっていない場合、ボタンの有効/無効を切り替えない
+
 		this.stop();
 	},
 
@@ -118,6 +120,11 @@ ui.createClass('UndoTimer',
 		var kc = ui.puzzle.key;
 		if     (kc.isZ && (kc.isCTRL || kc.isMETA)){ this.startUndo();}
 		else if(kc.isY && (kc.isCTRL || kc.isMETA)){ this.startRedo();}
+
+		if(this.lastCurrentOpe !== ui.puzzle.opemgr.current){
+			ui.menu.enb_btn();
+			this.lastCurrentOpe = ui.puzzle.opemgr.current;
+		}
 	},
 
 	//---------------------------------------------------------------------------

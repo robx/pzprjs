@@ -83,7 +83,6 @@ pzprv3.createCommonClass('MouseEvent',
 			this.modeflip();
 			this.mousereset();
 		}
-		ui.menu.enb_btn();
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
@@ -96,7 +95,6 @@ pzprv3.createCommonClass('MouseEvent',
 			this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);	// 各パズルのルーチンへ
 			this.mousereset();
 		}
-		ui.menu.enb_btn();
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
@@ -109,7 +107,6 @@ pzprv3.createCommonClass('MouseEvent',
 			var pos = this.getPosition(e);
 			this.mouseevent(pos.px, pos.py, 1);	// 各パズルのルーチンへ
 		}
-		ui.menu.enb_btn();
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;

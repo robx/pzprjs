@@ -62,14 +62,12 @@ pzprv3.createCommonClass('KeyEvent',
 			var sts = this.keydown(c);
 			if(!sts){ pzprv3.preventDefault(e);}
 		}
-		ui.menu.enb_btn();
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
 		
 		var c = this.getchar(e);
 		if(c){ this.keyup(c);}	/* 各パズルのルーチンへ */
-		ui.menu.enb_btn();
 	},
 	e_keypress : function(e){
 		if(!this.enableKey){ return;}
@@ -80,7 +78,6 @@ pzprv3.createCommonClass('KeyEvent',
 			var sts = this.keydown(c);
 			if(!sts){ pzprv3.preventDefault(e);}
 		}
-		ui.menu.enb_btn();
 	},
 
 	//---------------------------------------------------------------------------
