@@ -9,16 +9,22 @@ pzprv3.createCustoms('goishi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	initialize : function(){
+		pzprv3.core.MouseEvent.prototype.initialize.call(this);
+		
+		this.ut = this.owner.newInstance('UndoTimer_goishi');
+	},
+
 	mouseinput : function(){
 		if(this.owner.playmode && this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ ui.undotimer.startMouseUndo();}
+			else if(this.btn.Right){ this.ut.startMouseUndo();}
 		}
 		else if(this.owner.editmode && this.mousestart){
 			this.inputstone();
 		}
 		
-		if(this.mouseend){ ui.undotimer.stop();}
+		if(this.mouseend){ this.ut.stop();}
 	},
 
 	inputstone : function(){
@@ -34,7 +40,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			ui.undotimer.startMouseRedo();
+			this.ut.startMouseRedo();
 			return;
 		}
 
@@ -336,6 +342,84 @@ AnsCheck:{
 		}
 
 		return true;
+	}
+},
+
+//---------------------------------------------------------
+// 碁石拾い用の特殊UndiTimer
+UndoTimer_goishi:{
+	initialize : function(){
+		// ** Undoタイマー
+		this.TID           = null;	// タイマーID
+		this.timerInterval = 25
+		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
+
+		this.inUNDO = false;
+		this.inREDO = false;
+
+		// Undo/Redo用変数
+		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
+		this.undoWaitCount = 0;
+
+		this.stop();
+	},
+
+	//---------------------------------------------------------------------------
+	// ut.startMouseUndo() 碁石拾いの石がない場所のマウスクリックでUndoする
+	// ut.startMouseRedo() 碁石拾いの石がない場所のマウスクリックでRedoする
+	// ut.startProc() Undo/Redo呼び出しを開始する
+	// 
+	// ut.stop()      Undo/Redo呼び出しを終了する
+	//---------------------------------------------------------------------------
+	startMouseUndo : function(){ if(!this.inUNDO){ this.inUNDO=true; this.startProc();}},
+	startMouseRedo : function(){ if(!this.inREDO){ this.inREDO=true; this.startProc();}},
+	startProc : function(){
+		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
+		if(!this.TID){
+			var self = this;
+			this.TID = setInterval(function(){ self.proc();}, this.timerInterval);
+		}
+		this.exec();
+	},
+
+	stop : function(){
+		this.inUNDO = false;
+		this.inREDO = false;
+
+		clearInterval(this.TID);
+		this.TID = null;
+	},
+
+	//---------------------------------------------------------------------------
+	// ut.proc()  Undo/Redo呼び出しを実行する
+	// ut.exec()  Undo/Redo関数を呼び出す
+	//---------------------------------------------------------------------------
+	proc : function(){
+		if (!this.inUNDO && !this.inREDO){ this.stop();}
+		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
+		else{ this.exec();}
+	},
+	exec : function(){
+		var opemgr = this.owner.opemgr;
+		if(this.inUNDO){
+			var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');
+			if(prop!==k.ANUM){ this.stop();}
+		}
+		else if(this.inREDO){
+			var prop = (opemgr.current+1<opemgr.ope.length ? opemgr.ope[opemgr.current+1].property : '');
+			if(prop!==k.ANUM){ this.stop();}
+		}
+		
+		if(!!this.TID){
+			if(this.inUNDO){
+				opemgr.undo(1);
+				if(!opemgr.enableUndo){ this.stop();}
+			}
+			else if(this.inREDO){
+				opemgr.redo(1);
+				if(!opemgr.enableRedo){ this.stop();}
+			}
+		}
 	}
 }
 });

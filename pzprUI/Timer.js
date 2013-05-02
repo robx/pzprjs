@@ -110,7 +110,6 @@ ui.createClass('UndoTimer',
 
 		this.inUNDO = false;
 		this.inREDO = false;
-		this.ismouse = false;
 
 		// Undo/Redo用変数
 		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
@@ -154,7 +153,6 @@ ui.createClass('UndoTimer',
 	stop : function(){
 		this.inUNDO = false;
 		this.inREDO = false;
-		this.ismouse = false;
 
 		if(!this.CTID){
 			clearInterval(this.TID);
@@ -164,13 +162,6 @@ ui.createClass('UndoTimer',
 			this.CTID = setInterval(function(){ self.check_keyevent();}, 16);
 		}
 	},
-
-	//---------------------------------------------------------------------------
-	// ut.startMouseUndo() 碁石拾いの石がない場所のマウスクリックでUndoする
-	// ut.startMouseRedo() 碁石拾いの石がない場所のマウスクリックでRedoする
-	//---------------------------------------------------------------------------
-	startMouseUndo : function(){ this.ismouse=true; this.startUndo();},
-	startMouseRedo : function(){ this.ismouse=true; this.startRedo();},
 
 	//---------------------------------------------------------------------------
 	// ut.proc()  Undo/Redo呼び出しを実行する
@@ -183,22 +174,10 @@ ui.createClass('UndoTimer',
 	},
 	exec : function(){
 		var opemgr = ui.puzzle.opemgr;
-		if(!this.ismouse){
-			var kc = ui.puzzle.key;
-			if(!kc.isCTRL && !kc.isMETA)   { this.stop();}
-			else if(this.inUNDO && !kc.isZ){ this.stop();}
-			else if(this.inREDO && !kc.isY){ this.stop();}
-		}
-		else if(ui.puzzle.pid==='goishi'){
-			if(this.inUNDO){
-				var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');
-				if(prop!==k.ANUM){ this.stop();}
-			}
-			else if(this.inREDO){
-				var prop = (opemgr.current+1<opemgr.ope.length ? opemgr.ope[opemgr.current+1].property : '');
-				if(prop!==k.ANUM){ this.stop();}
-			}
-		}
+		var kc = ui.puzzle.key;
+		if(!kc.isCTRL && !kc.isMETA)   { this.stop();}
+		else if(this.inUNDO && !kc.isZ){ this.stop();}
+		else if(this.inREDO && !kc.isY){ this.stop();}
 		
 		if(!!this.TID){
 			if(this.inUNDO){
