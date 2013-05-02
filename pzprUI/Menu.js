@@ -19,6 +19,9 @@ ui.createClass('Menu',
 
 		this.menupid = '';				// どの種類のパズルのメニューを表示しているか
 
+		this.menuconfig = {};
+		this.initMenuConfig();
+
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 		this.popupmgr   = null;			// ポップアップウィンドウ管理オブジェクト
@@ -86,8 +89,9 @@ ui.createClass('Menu',
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
 
-		ui.puzzle.key.uievent   = ui.menu.key_common;
-		ui.puzzle.mouse.uievent = ui.menu.mouse_common;
+		ui.puzzle.key.uievent    = ui.menu.key_common;
+		ui.puzzle.mouse.uievent  = ui.menu.mouse_common;
+		ui.puzzle.config.uievent = ui.menu.config_common;
 
 		this.menupid = pid;
 	},
@@ -155,6 +159,11 @@ ui.createClass('Menu',
 		}
 		return false;
 	},
+	config_common : function(idname, newval){
+		/* this === ui.puzzle.config になります */
+		ui.menu.setcaption(idname, newval);
+		ui.menu.menuexec(idname, newval);
+	},
 
 	//---------------------------------------------------------------------------
 	// initReader() File Reader (あれば)の初期化処理
@@ -217,43 +226,67 @@ ui.createClass('Menu',
 		var pp = this.items, puzzle = ui.puzzle;
 		switch(pp.type(idname)){
 		case pp.MENU:
+			/* メニューの表記の設定 */
 			var pmenu = getEL('ms_'+idname);
 			if(!!pmenu){ pmenu.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
 		case pp.SMENU: case pp.LABEL: case pp.SPARENT: case pp.SPARENT2:
+			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = pp.getMenuStr(idname);}
 			break;
 
 		case pp.SELECT:
-			var smenu = getEL('ms_'+idname), label = getEL('cl_'+idname);
+			/* メニューの表記の設定 */
+			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			if(!!label){ label.innerHTML = pp.getLabel(idname);}			// 管理領域上の表記の設定
-			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){ this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);}
+			/* 管理領域の表記の設定 */
+			var label = getEL('cl_'+idname);
+			if(!!label){ label.innerHTML = pp.getLabel(idname);}
+			
+			/* 子要素の設定も行う */
+			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){
+				this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);
+			}
 			break;
 
 		case pp.CHILD:
-			var smenu = getEL('ms_'+idname), manage = getEL('up_'+idname);
-			var issel = (pp.flags[idname].val == puzzle.getConfig(pp.flags[idname].parent));
-			var cap = pp.getMenuStr(idname);
-			if(!!smenu){ smenu.innerHTML = (issel?"+":"&nbsp;")+cap;}	// メニューの項目
-			if(!!manage){													// 管理領域の項目
-				manage.innerHTML = cap;
+			var val = puzzle.getConfig(pp.flags[idname].parent);
+			if(val===null){ val = this.getMenuConfig(pp.flags[idname].parent);}
+			
+			var issel = (pp.flags[idname].val == val);	/* 選択されているかどうか */
+			
+			/* メニューの表記の設定 */
+			var smenu = getEL('ms_'+idname);
+			if(!!smenu){
+				smenu.innerHTML = (issel?"+":"&nbsp;")+pp.getMenuStr(idname);
+			}
+			/* 管理領域の表記の設定 */
+			var manage = getEL('up_'+idname);
+			if(!!manage){
+				manage.innerHTML = pp.getMenuStr(idname);
 				manage.className = (issel?"childsel":"child");
 			}
 			break;
 
 		case pp.CHECK:
-			var smenu = getEL('ms_'+idname), check = getEL('ck_'+idname), label = getEL('cl_'+idname);
 			var flag = puzzle.getConfig(idname);
-			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}	// メニュー
-			if(!!check){ check.checked   = flag;}					// 管理領域(チェックボックス)
-			if(!!label){ label.innerHTML = pp.getLabel(idname);}		// 管理領域(ラベル)
+			if(flag===null){ flag = this.getMenuConfig(idname);}
+			
+			/* メニューの表記の設定 */
+			var smenu = getEL('ms_'+idname);
+			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}
+			/* 管理領域(チェックボックス)の表記の設定 */
+			var check = getEL('ck_'+idname);
+			if(!!check){ check.checked = flag;}
+			/* 管理領域(ラベル)の表記の設定 */
+			var label = getEL('cl_'+idname);
+			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			break;
 		}
 	},
-	setcaption : function(idname,val,isexecfunc){
+	setcaption : function(idname, val){
 		var items = this.items;
 		if(!!items && !!items.flags[idname]){ this.setdisplay(idname);}
 	},
@@ -304,7 +337,6 @@ ui.createClass('Menu',
 			aa = function(){ pp.addCaption.apply(pp,arguments);},
 			ai = function(){ pp.addChild.apply(pp,arguments);},
 			ap = function(){ pp.addSeparator.apply(pp,arguments);},
-			af = function(){ pp.addFlagOnly.apply(pp,arguments);},
 			sl = function(){ pp.setLabel.apply(pp,arguments);};
 		var puzzle = ui.puzzle, pid = puzzle.pid;
 
@@ -373,8 +405,8 @@ ui.createClass('Menu',
 		as('dispsize', 'disp','サイズ指定','Cell Size');
 		ap('sep_disp0',  'disp');
 
-		au('size','disp', '表示サイズ','Cell Size');
-		au('text','disp', 'テキストのサイズ','Text Size');
+		pp.addMenuSelect('cellsize','disp', '表示サイズ','Cell Size');
+		pp.addMenuSelect('textsize','disp', 'テキストのサイズ','Text Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!puzzle.config.flag_irowake){
@@ -382,41 +414,29 @@ ui.createClass('Menu',
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
-		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
+		pp.addMenuCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
 		// *表示 - 表示サイズ -------------------------------------------------
-		aa('cap_dispmode','size','表示モード','Display mode');
-		ai('size_0', 'size', 'サイズ 極小', 'Ex Small');
-		ai('size_1', 'size', 'サイズ 小',   'Small');
-		ai('size_2', 'size', 'サイズ 標準', 'Normal');
-		ai('size_3', 'size', 'サイズ 大',   'Large');
-		ai('size_4', 'size', 'サイズ 特大', 'Ex Large');
+		aa('cap_dispmode','cellsize','表示モード','Display mode');
+		ai('cellsize_0', 'cellsize', 'サイズ 極小', 'Ex Small');
+		ai('cellsize_1', 'cellsize', 'サイズ 小',   'Small');
+		ai('cellsize_2', 'cellsize', 'サイズ 標準', 'Normal');
+		ai('cellsize_3', 'cellsize', 'サイズ 大',   'Large');
+		ai('cellsize_4', 'cellsize', 'サイズ 特大', 'Ex Large');
 
 		// *表示 - テキストのサイズ -------------------------------------------
-		aa('cap_textmode','text','テキストのサイズ','Text Size');
-		ai('text_0', 'text', '通常',         'Normal');
-		ai('text_1', 'text', '大きい',       'Big');
-		ai('text_2', 'text', 'かなり大きい', 'Ex Big');
-		ai('text_3', 'text', 'とても大きい', 'Ex Big 2');
-		this.textsize(puzzle.getConfig('text'));
+		aa('cap_textmode','textsize','テキストのサイズ','Text Size');
+		ai('textsize_0', 'textsize', '通常',         'Normal');
+		ai('textsize_1', 'textsize', '大きい',       'Big');
+		ai('textsize_2', 'textsize', 'かなり大きい', 'Ex Big');
+		ai('textsize_3', 'textsize', 'とても大きい', 'Ex Big 2');
+		this.settextsize(this.getMenuConfig('textsize'));
 
 		// *設定 ==============================================================
-		am('setting', "設定", "Setting");
-
-		if(pzprv3.EDITOR){
-			au('mode','setting', 'モード', 'mode');
-			sl('mode','モード', 'mode');
-		}
-		else{
-			af('mode', 3);
-		}
-		ai('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
-		ai('mode_3', 'mode', '回答モード',     'Answer mode');
-
-		this.menuconfig(pp);		// コンフィグ関連のメニュー追加
+		this.menuarea_setting(pp);		// コンフィグ関連のメニュー追加
 
 		// *その他 ============================================================
 		am('other', "その他", "Others");
@@ -437,8 +457,17 @@ ui.createClass('Menu',
 
 		this.createAllFloat();
 	},
-	menuconfig : function(pp){
+	menuarea_setting : function(pp){
 		var puzzle = ui.puzzle, pid = puzzle.pid;
+
+		pp.addMenu('setting', "設定", "Setting");
+
+		if(pzprv3.EDITOR){
+			pp.addSelect('mode','setting', 'モード', 'mode');
+			pp.setLabel('mode','モード', 'mode');
+			pp.addChild('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
+			pp.addChild('mode_3', 'mode', '回答モード',     'Answer mode');
+		}
 
 		/* 操作方法の設定値 */
 		if(puzzle.config.flag_use){
@@ -713,11 +742,22 @@ ui.createClass('Menu',
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
-			var idname = el.id.substr(3), pp = this.items;
-			switch(pp.type(idname)){
-				case pp.SMENU: this.submenuexec(e, idname); break;
-				case pp.CHILD: puzzle.setConfig(pp.flags[idname].parent, pp.flags[idname].val); break;
-				case pp.CHECK: puzzle.setConfig(idname, !ui.puzzle.getConfig(idname)); break;
+			var idname = el.id.substr(3), val, pp = this.items, menutype = pp.type(idname);
+			if(menutype===pp.SMENU){ this.submenuexec(e, idname);}
+			else if(menutype===pp.CHILD || menutype===pp.CHECK){
+				if(menutype===pp.CHILD){
+					val    = pp.flags[idname].val;
+					idname = pp.flags[idname].parent;
+				}
+				
+				if(!!this.menuconfig[idname]){
+					if(menutype===pp.CHECK){ val = !this.getMenuConfig(idname);}
+					this.setMenuConfig(idname, val);
+				}
+				else{
+					if(menutype===pp.CHECK){ val = !ui.puzzle.getConfig(idname);}
+					ui.puzzle.setConfig(idname, val);
+				}
 			}
 		}
 	},
@@ -905,7 +945,7 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	// menu.buttonarea()   盤面下のボタンエリアの初期化を行う
 	// menu.toggledisp()   アイスと○などの表示切り替え時の処理を行う
-	// menu.checkexec()    html上の[戻][進]ボタンを押すことが可能か設定する
+	// menu.enb_btn()      html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
 	buttonarea : function(){
 		// (Canvas下) ボタンの初期設定
@@ -971,13 +1011,49 @@ ui.createClass('Menu',
 		getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.initMenuConfig()  盤面下のボタンエリアの初期化を行う
+	// menu.setMenuConfig()   アイスと○などの表示切り替え時の処理を行う
+	// menu.getMenuConfig()   html上の[戻][進]ボタンを押すことが可能か設定する
+	//---------------------------------------------------------------------------
+	initMenuConfig : function(){
+		this.menuconfig = {};
+
+		/* 自動横幅調節 */
+		this.menuconfig.adjsize = {val:true};
+
+		/* 表示サイズ */
+		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
+
+		/* テキストのサイズ */
+		this.menuconfig.textsize = {val:(!pzprv3.OS.mobile?0:2), option:[0,1,2,3]};
+	},
+	setMenuConfig : function(idname, newval){
+		this.menuconfig[idname].val = newval;
+		this.setcaption(idname, newval);
+		if(idname==='adjsize'){
+			ui.puzzle.refreshCanvas();
+		}
+		else if(idname==='cellsize'){
+			ui.event.adjustcellsize();
+			ui.puzzle.refreshCanvas();	/* pageX/Yの位置がずれる */
+		}
+		else if(idname==='textsize'){
+			this.settextsize(newval);
+			ui.puzzle.refreshCanvas();	/* pageX/Yの位置がずれる */
+		}
+	},
+	getMenuConfig : function(idname){
+		return this.menuconfig[idname].val;
+	},
+
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.textsize()  テキストのサイズを設定する
-	// menu.modifyCSS() スタイルシートの中身を変更する
+	// menu.settextsize() テキストのサイズを設定する
+	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
-	textsize : function(num){
+	settextsize : function(num){
 		this.modifyCSS({'.outofboard':{
 			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
 			lineHeight:['1.2','1.1','1.1','1.1'][num]
@@ -1063,6 +1139,8 @@ ui.createClass('Menu',
 		case 'jumpv3'    : window.open('./', '', ''); break;
 		case 'jumptop'   : window.open('../../', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
+		
+		case 'language'  : this.setLang(val); break;
 		
 		case 'keypopup' :
 			var kp = ui.keypopup;
@@ -1310,7 +1388,6 @@ ui.createClass('MenuList',
 	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
 	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
 	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
-	// pp.addFlagOnly()  情報のみを登録する
 	//---------------------------------------------------------------------------
 	addMenu : function(idname, strJP, strEN){
 		this.addFlags(idname, '', this.MENU, null, strJP, strEN);
@@ -1348,8 +1425,15 @@ ui.createClass('MenuList',
 		this.addFlags(idname, parent, this.CHILD, first, strJP, strEN);
 	},
 
-	addFlagOnly : function(idname, first){
-		this.addFlags(idname, '', '', first, '', '');
+	addMenuCheck : function(idname, parent, strJP, strEN){
+		var first = ui.menu.menuconfig[idname].val;
+		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
+	},
+	addMenuSelect : function(idname, parent, strJP, strEN){
+		var first = ui.menu.menuconfig[idname].val;
+		var child = ui.menu.menuconfig[idname].option;
+		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
+		this.flags[idname].child = child;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1390,13 +1474,6 @@ ui.createClass('MenuList',
 		if(!flag){ return false;}
 		var type = flag.type;
 		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
-	}
-});
-
-// MenuItemクラス
-ui.createClass('MenuItem',
-{
-	initialize : function(){
 	}
 });
 

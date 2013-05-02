@@ -123,7 +123,7 @@ var ui = {
 	waitReady : function(func){
 		if(ui.puzzle.ready){
 			ui.menu.menuinit();					/* メニュー関係初期化 */
-			ui.event.setcellsize();
+			ui.event.adjustcellsize();
 			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!func){ func();}

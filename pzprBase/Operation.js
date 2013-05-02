@@ -289,7 +289,7 @@ pzprv3.createCommonClass('OperationManager',
 	addOpe_Object : function(obj, property, old, num){
 		if(old===num){ return;}
 		var val = this.owner.getConfig('autocheck');
-		this.owner.setConfigOnly('autocheck', false);
+		this.owner.setConfig('autocheck', false);
 
 		this.addOpe_common(function(){
 			if(property===k.QSUB){ this.anscount--;}
@@ -314,7 +314,7 @@ pzprv3.createCommonClass('OperationManager',
 			return true;
 		});
 
-		this.owner.setConfigOnly('autocheck', val);
+		this.owner.setConfig('autocheck', val);
 	},
 	addOpe_BoardAdjust : function(old, num){
 		// 操作を登録する

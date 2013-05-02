@@ -652,7 +652,7 @@ ui.createClass('Popup_DispSize:PopupMenu',
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){
 			ui.puzzle.painter.cellsize = (csize|0);
-			ui.event.setcellsize();
+			ui.event.adjustcellsize();
 		}
 		
 		this.hide();

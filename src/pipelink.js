@@ -107,7 +107,7 @@ Graphic:{
 		this.drawDashedGrid();
 
 		if(this.owner.pid==='pipelinkr'){
-			this.drawCircles_pipelink((this.owner.getConfig('disptype')==1));
+			this.drawCircles_pipelink((this.owner.getConfig('disptype_pipelinkr')==1));
 			this.drawBorders();
 		}
 
@@ -125,12 +125,12 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
-		if     (cell.error===1)                                      { return this.errbcolor1;}
-		else if(cell.ques===6 && this.owner.getConfig('disptype')==2){ return this.icecolor;}
+		if     (cell.error===1)                                                { return this.errbcolor1;}
+		else if(cell.ques===6 && this.owner.getConfig('disptype_pipelinkr')==2){ return this.icecolor;}
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.owner.getConfig('disptype')==2){
+		if(this.owner.getConfig('disptype_pipelinkr')==2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.cellcolor;
@@ -177,10 +177,12 @@ Encode:{
 		this.decodePipelink();
 
 		this.checkPuzzleid();
-		if(this.owner.pid==='pipelinkr'){ this.owner.setConfigOnly('disptype', (!this.checkpflag('i')?1:2));}
+		if(this.owner.pid==='pipelinkr'){
+			this.owner.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
+		}
 	},
 	pzlexport : function(type){
-		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.getConfig('disptype')==2)?"i":"");
+		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.getConfig('disptype_pipelinkr')==2)?"i":"");
 		this.encodePipelink(type);
 	},
 
@@ -254,11 +256,13 @@ FileIO:{
 		this.decodeBorderLine();
 
 		this.owner.enc.checkPuzzleid();
-		if(this.owner.pid==='pipelinkr'){ this.owner.setConfigOnly('disptype', (disptype=="circle"?1:2));}
+		if(this.owner.pid==='pipelinkr'){
+			this.owner.setConfig('disptype_pipelinkr', (disptype=="circle"?1:2));
+		}
 	},
 	encodeData : function(){
 		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe/';}
-		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.getConfig('disptype')==1?"circle/":"ice/");}
+		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.getConfig('disptype_pipelinkr')==1?"circle/":"ice/");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}
@@ -283,10 +287,10 @@ AnsCheck:{
 		}
 
 		if( (this.owner.pid==='pipelinkr') && !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6 && cell.getQues()!==11);}) ){
-			this.setAlert((this.owner.getConfig('disptype')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(this.owner.getConfig('disptype')==1?'circles':'ices')+'.'); return false;
+			this.setAlert((this.owner.getConfig('disptype_pipelinkr')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(this.owner.getConfig('disptype_pipelinkr')==1?'circles':'ices')+'.'); return false;
 		}
 		if( (this.owner.pid==='pipelinkr') && !this.checkIceLines() ){
-			this.setAlert((this.owner.getConfig('disptype')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(this.owner.getConfig('disptype')==1?'circles':'ices')+'.'); return false;
+			this.setAlert((this.owner.getConfig('disptype_pipelinkr')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(this.owner.getConfig('disptype_pipelinkr')==1?'circles':'ices')+'.'); return false;
 		}
 
 		if( !this.checkOneLoop() ){

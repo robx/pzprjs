@@ -241,8 +241,7 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
-	setConfig : function(idname,val){ return this.config.setVal(idname,val,true);},
-	setConfigOnly : function(idname,val){ return this.config.setVal(idname,val,false);},
+	setConfig : function(idname,val){ return this.config.setVal(idname,val);},
 	
 	isDispred : function(){
 		if     (this.config.flag_redline  && this.config.getVal('redline')) { return true;}
@@ -284,14 +283,12 @@ pzprv3.createCommonClass('Properties',
 	getVal : function(name){
 		return this.val[name]?this.val[name].val:null;
 	},
-	setVal : function(name, newval, isexecfunc){
+	setVal : function(name, newval){
 		if(!!this.val[name]){
 			this.val[name].val = newval;
-			ui.menu.setcaption(name,newval);
-			if(isexecfunc!==false){
-				this.onchange_event(name,newval);
-				ui.menu.menuexec(name,newval);
-			}
+			
+			this.onchange_event(name, newval);
+			this.uievent(name, newval);
 		}
 	},
 
@@ -304,11 +301,7 @@ pzprv3.createCommonClass('Properties',
 		this.add('autocheck', puzzle.playmode);					/* 正解自動判定機能 */
 		this.add('language', 'ja', ['ja','en']);				/* 言語設定 */
 
-		/* 表示形式設定 */
-		this.add('adjsize', true);								/* 自動横幅調節 */
-		this.add('size', 2, [0,1,2,3,4]);						/* 表示サイズ */
-		this.add('text', (!pzprv3.OS.mobile?0:2), [0,1,2,3]);	/* テキストのサイズ */
-
+		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
 		this.add('irowake', (this.flag_irowake===2));			/* 線の色分け */
 
@@ -327,7 +320,7 @@ pzprv3.createCommonClass('Properties',
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
-		this.add('redline', false);			/* 自動横幅調節 */
+		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック */
 		this.add('redblkbd', false);		/* 連黒分断禁黒マス繋がりチェック */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
@@ -353,6 +346,13 @@ pzprv3.createCommonClass('Properties',
 	},
 
 	//---------------------------------------------------------------------------
+	// config.uievent()  設定変更の際のイベント共通処理 (UIEvent系)
+	//---------------------------------------------------------------------------
+	uievent : function(){
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.onchange_event()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	onchange_event : function(name, val){
@@ -365,24 +365,6 @@ pzprv3.createCommonClass('Properties',
 		
 		case 'mode':
 			o.modechange(val);
-			break;
-		
-		case 'text':
-			ui.menu.textsize(val);
-			o.refreshCanvas();	/* pageX/Yの位置がずれる */
-			break;
-		
-		case 'size':
-			ui.event.setcellsize(val);
-			o.refreshCanvas();	/* pageX/Yの位置がずれる */
-			break;
-		
-		case 'adjsize':
-			o.refreshCanvas();
-			break;
-		
-		case 'language':
-			ui.menu.setLang(val);
 			break;
 		
 		case 'uramashu':

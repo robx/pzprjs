@@ -86,7 +86,7 @@ ui.createClass('UIEvent',
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
 		var self = this;
 		this.resizetimer = setTimeout(function(){
-			self.setcellsize();
+			self.adjustcellsize();
 			ui.puzzle.refreshCanvas();
 			ui.keypopup.resizepanel();
 		},250);
@@ -97,14 +97,14 @@ ui.createClass('UIEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// event.setcellsize()   pc.cw, pc.chのサイズを設定する
+	// event.adjustcellsize()  pc.cw, pc.chのサイズを(自動)調節する
 	//---------------------------------------------------------------------------
-	setcellsize : function(){
+	adjustcellsize : function(){
 		var o = ui.puzzle, bd = o.board, pc = o.painter;
 		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
 		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[ui.puzzle.getConfig('size')];
+		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[ui.menu.getMenuConfig('cellsize')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(pc.cellsize*cr.base );
 		ci[1] = (wwidth*ws.limit)/(pc.cellsize*cr.limit);
@@ -116,7 +116,7 @@ ui.createClass('UIEvent',
 			if(pc.cw < pc.cellsize){ pc.cw = pc.ch = pc.cellsize;}
 		}
 		// 縮小が必要ない場合
-		else if(!ui.puzzle.getConfig('adjsize') || cols < ci[0]){
+		else if(!ui.menu.getMenuConfig('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
 			pc.cw = pc.ch = (pc.cellsize*cr.base)|0;
 		}
