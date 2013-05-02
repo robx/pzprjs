@@ -436,10 +436,11 @@ ui.createClass('Menu',
 			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
 		if(pid==='shakashaka'){
+			pp.addSelect('use_tri','setting','操作方法', 'Input Type');
 			pp.setLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
-			pp.addChild('use_tri_1', 'use', 'クリックした位置', 'Corner-side');
-			pp.addChild('use_tri_2', 'use', '引っ張り入力', 'Pull-to-Input');
-			pp.addChild('use_tri_3', 'use', '1ボタン', 'One Button');
+			pp.addChild('use_tri_1', 'use_tri', 'クリックした位置', 'Corner-side');
+			pp.addChild('use_tri_2', 'use_tri', '引っ張り入力', 'Pull-to-Input');
+			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
 		}
 
 		/* 盤面チェックの設定値 */
@@ -516,9 +517,9 @@ ui.createClass('Menu',
 		if(pid==='bosanowa'){
 			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
 			pp.setLabel('disptype_bosanowa', '表示形式', 'Display');
-			pp.addChild('disptype_bosanowa_1', 'disptype', 'ニコリ紙面形式', 'Original Type');
-			pp.addChild('disptype_bosanowa_2', 'disptype', '倉庫番形式',     'Sokoban Type');
-			pp.addChild('disptype_bosanowa_3', 'disptype', 'ワリタイ形式',   'Waritai type');
+			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
+			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
+			pp.addChild('disptype_bosanowa_3', 'disptype_bosanowa', 'ワリタイ形式',   'Waritai type');
 		}
 
 		if(pid==='snakes'){
@@ -884,7 +885,9 @@ ui.createClass('Menu',
 	},
 	selectclick : function(e){
 		var list = (e.target||e.srcElement).id.split('_');
-		ui.puzzle.setConfig(list[1], list[2]);
+		list.shift();
+		var child = list.pop(), idname = list.join("_");
+		ui.puzzle.setConfig(idname, child);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1319,7 +1322,7 @@ ui.createClass('MenuList',
 	},
 
 	addCheck : function(idname, parent, strJP, strEN){
-		var first = ui.puzzle.config.val[idname];
+		var first = ui.puzzle.config.val[idname].val;
 		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
 	},
 	addSelect : function(idname, parent, strJP, strEN){
@@ -1329,8 +1332,8 @@ ui.createClass('MenuList',
 		this.flags[idname].child = child;
 	},
 	addChild : function(idname, parent, strJP, strEN){
-		var list = idname.split("_");
-		this.addFlags(idname, list[0], this.CHILD, list[1], strJP, strEN);
+		var list = idname.split("_"), first = list.pop();
+		this.addFlags(idname, parent, this.CHILD, first, strJP, strEN);
 	},
 
 	addFlagOnly : function(idname, first){
