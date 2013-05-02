@@ -17,6 +17,8 @@ ui.createClass('Menu',
 	initialize : function(){
 		this.items = null;
 
+		this.menupid = '';				// どの種類のパズルのメニューを表示しているか
+
 		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 		this.popupmgr   = null;			// ポップアップウィンドウ管理オブジェクト
@@ -47,10 +49,14 @@ ui.createClass('Menu',
 	//                   管理領域、ポップアップメニューの初期設定を行う
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
-	menuinit : function(pp){
+	menuinit : function(){
+		var pid = ui.puzzle.pid, pp = ui.puzzle.config;
+		
+		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
+		
 		this.menureset();
 		
-		var pid = ui.puzzle.pid, pinfo = pzprv3.PZLINFO.info[pid];
+		var pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items    = new ui.classes.MenuList();
@@ -77,6 +83,10 @@ ui.createClass('Menu',
 
 		this.displayDesign();	// デザイン変更関連関数の呼び出し
 		this.checkUserLang();	// 言語のチェック
+
+		ui.event.setUIEvents();				/* イベントをくっつける */
+
+		this.menupid = pid;
 	},
 
 	menureset : function(){
@@ -100,6 +110,8 @@ ui.createClass('Menu',
 
 		if(!!this.items){ this.items.reset();}
 		if(!!this.popupmgr){ this.popupmgr.reset();}
+		
+		ui.event.removeUIEvents();
 	},
 
 	//---------------------------------------------------------------------------

@@ -118,21 +118,12 @@ var ui = {
 	},
 	
 	//---------------------------------------------------------------------------
-	// ui.clearObjects() パズル準備前に設定をクリア
-	//---------------------------------------------------------------------------
-	clearObjects : function(){
-		ui.event.removeUIEvents();
-		ui.menu.menureset();
-	},
-	
-	//---------------------------------------------------------------------------
 	// ui.waitReady() パズルの準備完了を待つ
 	//---------------------------------------------------------------------------
 	waitReady : function(func){
 		if(ui.puzzle.ready){
-			ui.menu.menuinit(ui.puzzle.config);	/* メニュー関係初期化 */
+			ui.menu.menuinit();					/* メニュー関係初期化 */
 			ui.event.setcellsize();
-			ui.event.setUIEvents();				/* イベントをくっつける */
 			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!func){ func();}

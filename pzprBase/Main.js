@@ -67,7 +67,6 @@ pzprv3.createCoreClass('Owner',
 
 		/* 今のパズルと別idの時 */
 		if(this.pid != newpid){
-			if(!!this.pid){ ui.clearObjects();}
 			this.pid = newpid;
 			this.classes = null;
 			pzprv3.includeCustomFile(this.pid);
