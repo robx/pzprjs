@@ -96,11 +96,10 @@ var ui = {
 		}
 
 		// 描画wrapperの設定
-		Candle.start('divques', 'canvas', function(g){ pzprv3.unselectable(g.canvas); ui.puzzle.canvas = g.canvas;});
+		ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
 		if(Candle.enable.canvas){
-			Candle.start('divques_sub', 'canvas',  function(g){ ui.puzzle.canvas2 = g.canvas;});
+			ui.puzzle.setSubCanvas(document.getElementById('divques_sub'), 'canvas');
 		}
-		else{ ui.puzzle.canvas2 = true;}
 
 		// 外部から参照できるようにする
 		window.puzzle = ui.puzzle;

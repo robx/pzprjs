@@ -9,8 +9,6 @@ pzprv3.createCoreClass('Owner',
 {
 	initialize : function(){
 		this.pid     = '';			// パズルのID("creek"など)
-		this.canvas  = null;		// 描画canvas本体
-		this.canvas2 = null;		// 補助canvas
 		this.classes = null;
 
 		this.ready = false;
@@ -20,6 +18,10 @@ pzprv3.createCoreClass('Owner',
 
 		this.starttime = 0;
 		this.resetTime();
+
+		this.canvas  = null;		// 描画canvas本体
+		this.canvas2 = null;		// 補助canvas
+		this.usecanvas2 = false;	// 補助canvasがあるかどうか
 	},
 
 	//---------------------------------------------------------------------------
@@ -115,6 +117,27 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
 		return (new this.classes[classname](this, args));
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.setCanvas()    描画キャンバスをセットする
+	// owner.setSubCanvas() 補助用キャンバスをセットする
+	//---------------------------------------------------------------------------
+	setCanvas : function(el, type){
+		var o = this;
+		if(!type){ type = '';}
+		Candle.start(el.id, type, function(g){
+			pzprv3.unselectable(g.canvas);
+			o.canvas = g.canvas;
+		});
+	},
+	setSubCanvas :function(el, type){
+		var o = this;
+		o.usecanvas2 = true;
+		if(!type){ type = '';}
+		Candle.start(el.id, type, function(g){
+			o.canvas2 = g.canvas;
+		});
 	},
 
 	//---------------------------------------------------------------------------

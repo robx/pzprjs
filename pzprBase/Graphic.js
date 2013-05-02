@@ -144,16 +144,20 @@ pzprv3.createCommonClass('Graphic',
 	},
 	onCanvasReady_fun : function(){
 		var o = this.owner;
-		if(!o.canvas || !o.canvas2){ var pc=this; setTimeout(function(){ pc.onCanvasReady_fun();},10); return;}
+		if(!o.canvas || (o.usecanvas2 && !o.canvas2)){
+			var pc = this;
+			setTimeout(function(){ pc.onCanvasReady_fun();},10);
+			return;
+		}
 
 		this.currentContext = (!!o.canvas  ? o.canvas.getContext("2d")  : null);
-		this.subContext     = (!!o.canvas2 ? o.canvas2.getContext("2d") : null);
+		this.subContext     = ((o.usecanvas2 && !!o.canvas2) ? o.canvas2.getContext("2d") : null);
 
 		var g = this.currentContext;
 		for(var type in g.use){ this.use[type] = g.use[type];}
 
 		this.fillTextEmulate = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
-		this.useBuffer = !!g.use.canvas;
+		this.useBuffer = (!!g.use.canvas && !!this.subContext);
 
 		this.ready = true;
 	},
@@ -196,12 +200,13 @@ pzprv3.createCommonClass('Graphic',
 		var cwid = (this.getCanvasCols()*this.cw)|0;
 		var chgt = (this.getCanvasRows()*this.ch)|0;
 		this.currentContext.changeSize(cwid, chgt);
-		this.subContext.changeSize(cwid, chgt);
+		if(!!this.subContext){ this.subContext.changeSize(cwid, chgt);}
 		var rect = pzprv3.getRect(this.currentContext.canvas);
 
 		var gs = [this.currentContext, this.subContext];
 		for(var i=0;i<2;i++){
 			var g = gs[i];
+			if(!g){ continue;}
 			// CanvasのOffset変更 (小数点以下の端数の調整込み)
 			if(g.use.canvas)
 				{ g.translate(this.x0, this.y0);}
@@ -1719,7 +1724,6 @@ pzprv3.createCommonClass('Graphic',
 				px=(px>=pxmin?px:pxmin); py=(py>=pymin?py:pymin);
 				pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
 				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
-				g.fillRect(pxmin, pymin, pxmax, pymax);
 				g.fillRect(px, py, pw, ph);
 			}
 		:
