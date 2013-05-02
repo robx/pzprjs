@@ -128,6 +128,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	enableplay : true,
+	keyup_event : true,
 	moveTarget : function(ca){
 		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
 		return false;

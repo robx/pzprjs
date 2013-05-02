@@ -20,6 +20,7 @@ pzprv3.createCommonClass('KeyEvent',
 
 	enablemake : false,
 	enableplay : false,
+	keyup_event : false,	/* keyupイベントでもパズル個別のキーイベント関数を呼び出す */
 
 	// const値
 	KEYUP : 'up',
@@ -137,7 +138,8 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.keyevent() キーイベント処理
+	// kc.keyevent()  キーイベント処理
+	// kc.stopEvent() カーソル移動時などに、ウィンドウがスクロールしないようにする
 	//---------------------------------------------------------------------------
 	keyevent : function(c, step){
 		this.keydown = (step===0);
@@ -153,7 +155,7 @@ pzprv3.createCommonClass('KeyEvent',
 		if(this.uievent(c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}
-		this.keyinput(c);				/* 各パズルのルーチンへ */
+		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
 	},
 	stopEvent : function(){
 		pzprv3.preventDefault(this.event);
@@ -166,9 +168,7 @@ pzprv3.createCommonClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	// オーバーライド用
 	keyinput : function(c){
-		if(this.keydown){
-			this.key_inputqnum(c); /* デフォルトはCell数字入力 */
-		}
+		this.key_inputqnum(c); /* デフォルトはCell数字入力 */
 	},
 
 	//---------------------------------------------------------------------------
@@ -327,7 +327,7 @@ pzprv3.createCommonClass('KeyEvent',
 		(target==2 ? obj.setQnum(val) : obj.setQdir(val));
 	},
 	getnum51 : function(obj,target){
-		return (target==2 ? this.owner.board.getQnum() : this.owner.board.getQdir());
+		return (target==2 ? obj.getQnum() : obj.getQdir());
 	}
 });
 
