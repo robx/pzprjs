@@ -261,6 +261,7 @@ pzprv3.createCommonClass('Graphic',
 
 	forceRedraw : function(){
 		this.suspendAll();
+		this.currentContext.clear();
 		this.resize_canvas();
 		this.unsuspend();
 	},
