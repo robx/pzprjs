@@ -9,7 +9,20 @@ pzprv3.createCustoms('gokigen', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputplay : function(){ if(this.mousestart){ this.inputslash();}},
+	mouseinput : function(){
+		if(this.owner.playmode && this.mousestart){
+			this.inputslash();
+		}
+		else if(this.owner.editmode && this.mousestart){
+			if(this.owner.pid==='gokigen')    { this.inputcross();}
+			else if(this.owner.pid==='wagiri'){ this.inputquestion();}
+		}
+	},
+	inputRed : function(){
+		if(this.owner.playmode){
+			if(this.owner.pid==='gokigen'){ this.dispBlue();}
+		}
+	},
 
 	inputslash : function(){
 		var cell = this.getcell();
@@ -23,9 +36,6 @@ MouseEvent:{
 	}
 },
 "MouseEvent@gokigen":{
-	inputedit : function(){ if(this.mousestart){ this.inputcross();}},
-	inputRed : function(){ if(this.owner.playmode){ this.dispBlue();}},
-
 	dispBlue : function(){
 		var cell = this.getcell();
 		this.mousereset();
@@ -44,8 +54,6 @@ MouseEvent:{
 	}
 },
 "MouseEvent@wagiri":{
-	inputedit : function(){ if(this.mousestart){ this.inputquestion();}},
-
 	inputquestion : function(){
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}

@@ -5,21 +5,24 @@ pzprv3.createCustoms('sukoro', {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{
-	inputedit : function(){
+	mouseinput : function(){
 		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
+	}
 },
 "MouseEvent@sukororoom":{
-	inputedit : function(){
-		if(this.mousestart || (this.mousemove && this.btn.Left)){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum();
+		else if(this.owner.editmode){
+			if(this.mousestart || (this.mousemove && this.btn.Left)){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
 		}
-	},
-	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
+	}
 },
 
 //---------------------------------------------------------

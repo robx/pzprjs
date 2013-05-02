@@ -9,12 +9,14 @@ pzprv3.createCustoms('tateyoko', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
-		else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
+			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
+		}
 	},
 
 	inputTateyoko : function(){

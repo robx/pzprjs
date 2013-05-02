@@ -5,20 +5,22 @@ pzprv3.createCustoms('bag', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		var inputbg = false;
-		if     (this.mousestart){ inputbg = (!!this.owner.getConfig('bgcolor') && this.inputBGcolor0());}
-		else if(this.mousemove) { inputbg = (!!this.owner.getConfig('bgcolor') && this.inputData>=10);}
-		else{ return;}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			var inputbg = false;
+			if     (this.mousestart){ inputbg = (!!this.owner.getConfig('bgcolor') && this.inputBGcolor0());}
+			else if(this.mousemove) { inputbg = (!!this.owner.getConfig('bgcolor') && this.inputData>=10);}
+			else{ return;}
 
-		if(!inputbg){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputBGcolor(true);}
+			if(!inputbg){
+				if     (this.btn.Left) { this.inputLine();}
+				else if(this.btn.Right){ this.inputBGcolor(true);}
+			}
+			else{ this.inputBGcolor(false);}
 		}
-		else{ this.inputBGcolor(false);}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
+		}
 	},
 
 	inputBGcolor0 : function(){

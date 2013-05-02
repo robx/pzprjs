@@ -72,17 +72,10 @@ pzprv3.createCommonClass('MouseEvent',
 	e_mousedown : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		// どのボタンが押されたか取得する
-		this.setMouseButton(e);
-
-		if(this.btn.Left || this.btn.Right){
-			var pos = this.getPosition(e);
-			this.mouseevent(pos.px, pos.py, 0);	// 各パズルのルーチンへ
-		}
-		else if(this.btn.Middle){ //中ボタン
-			this.modeflip();
-			this.mousereset();
-		}
+		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
+		var pos = this.getPosition(e);	/* 座標を取得 */
+		this.mouseevent(pos.px, pos.py, 0);
+		
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
@@ -90,23 +83,20 @@ pzprv3.createCommonClass('MouseEvent',
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		if(this.btn.Left || this.btn.Right){
-			/* 座標は前のイベントのものを使用する */
-			this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);	// 各パズルのルーチンへ
-			this.mousereset();
-		}
+		/* 座標は前のイベントのものを使用する */
+		this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);
+		this.mousereset();
+		
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
-		// ポップアップメニュー移動中は当該処理が最優先
 		if(!this.enableMouse){ return true;}
 		
-		if(this.btn.Left || this.btn.Right){
-			var pos = this.getPosition(e);
-			this.mouseevent(pos.px, pos.py, 1);	// 各パズルのルーチンへ
-		}
+		var pos = this.getPosition(e);	/* 座標を取得 */
+		this.mouseevent(pos.px, pos.py, 1);
+		
 		pzprv3.stopPropagation(e);
 		pzprv3.preventDefault(e);
 		return false;
@@ -148,37 +138,41 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mouseend   = (step===2);
 		this.mouseout   = (step===3);
 		
+		if(this.uievent()){ return;}
+		
+		if(!this.btn.Left && !this.btn.Right){ return;}
+		
 		var o = this.owner;
+		o.opemgr.newOperation(!!this.mousestart);
 		if(this.mousestart){ o.board.errclear();}
-		o.opemgr.newOperation(this.mousestart?true:false);
 		
 		if(this.mousestart && (o.key.isZ ^ o.isDispred())){
 			this.inputRed();
 			if(!this.mousestart){ return;}
 		}
 		
-		if     (o.playmode){ this.inputplay();}
-		else if(o.editmode){ this.inputedit();}
+		this.mouseinput();		/* 各パズルのルーチンへ */
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.inputedit() 問題入力モードのイベント処理。各パズルのファイルでオーバーライドされる。
-	// mv.inputplay() 回答入力モードのイベント処理。各パズルのファイルでオーバーライドされる。
-	// 
+	// mv.uievent()  マウスイベントの際のイベント共通処理 (UIEvent系)
+	//---------------------------------------------------------------------------
+	uievent : function(){
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.mouseinput() マウスイベント処理。各パズルのファイルでオーバーライドされる。
 	// mv.inputRed()  赤く表示する際などのイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
-	inputedit : function(){ },
-	inputplay : function(){ },
-
+	mouseinput : function(){ },
 	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
-	// mv.modeflip()      中ボタンでモードを変更するときの処理
 	//---------------------------------------------------------------------------
 	notInputted : function(){ return !this.owner.opemgr.changeflag;},
-	modeflip    : function(){ if(pzprv3.EDITOR){ this.owner.setConfig('mode', (this.owner.playmode?1:3));} },
 
 	// 共通関数
 	//---------------------------------------------------------------------------

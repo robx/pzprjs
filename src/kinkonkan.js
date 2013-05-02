@@ -9,25 +9,25 @@ pzprv3.createCustoms('kinkonkan', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){
-			this.input_onstart();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){
+				this.inputslash();
+			}
+			else if(this.mousemove){
+				if(this.inputData!==null){ this.inputslash();}
+			}
 		}
-		else if(this.mousemove){
-			if(this.btn.Left){ this.inputborder();}
+		else if(this.owner.editmode){
+			if(this.mousestart){
+				this.input_onstart();
+			}
+			else if(this.mousemove){
+				if(this.btn.Left){ this.inputborder();}
+			}
 		}
-		else if(this.mouseend){
-			if(this.inputData==12){ this.owner.board.lightclear();}
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart){
-			this.inputslash();
-		}
-		else if(this.mousemove){
-			if(this.inputData!==null){ this.inputslash();}
-		}
-		else if(this.mouseend){
+		
+		if(this.mouseend){
 			if(this.inputData==12){ this.owner.board.lightclear();}
 		}
 	},

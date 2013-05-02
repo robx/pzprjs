@@ -9,21 +9,21 @@ pzprv3.createCustoms('snakes', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || (this.mousemove && this.notInputted())){
-			this.inputdirec();
-		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum_snakes();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if(!this.inputDot_snakes()){
-				this.dragnumber_snakes();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if(!this.inputDot_snakes()){
+					this.dragnumber_snakes();
+				}
 			}
 		}
-		else if(this.mouseend && this.notInputted()){
+		else if(this.owner.editmode){
+			if(this.mousestart || (this.mousemove && this.notInputted())){
+				this.inputdirec();
+			}
+		}
+		
+		if(this.mouseend && this.notInputted()){
 			this.inputqnum_snakes();
 		}
 	},

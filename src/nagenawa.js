@@ -5,24 +5,28 @@ pzprv3.createCustoms('nagenawa', {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@nagenawa":{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){ this.inputborder();}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ if(this.btn.Left){ this.inputLine();}}
-		else if(this.mouseend && this.notInputted()){ this.inputMB();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ if(this.btn.Left){ this.inputLine();}}
+			else if(this.mouseend && this.notInputted()){ this.inputMB();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){ this.inputborder();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+		}
 	},
 	inputRed : function(){ this.dispRedLine();}
 },
 "MouseEvent@ringring":{
-	inputedit : function(){
-		if(this.mousestart){ this.inputblock();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputLine();}
+				else if(this.btn.Right){ this.inputpeke();}
+			}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputblock();}
 		}
 	},
 

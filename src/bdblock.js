@@ -5,14 +5,16 @@ pzprv3.createCustoms('bdblock', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if     (this.mousestart){ this.inputcrossMark();}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputborderans();}
-			else if(this.btn.Right){ this.inputQsubLine();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if     (this.mousestart){ this.inputcrossMark();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputborderans();}
+				else if(this.btn.Right){ this.inputQsubLine();}
+			}
 		}
 	}
 },

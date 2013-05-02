@@ -9,16 +9,18 @@ pzprv3.createCustoms('amibo', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputTateyoko();}
-			else if(this.btn.Right){ this.inputpeke();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputTateyoko();}
+				else if(this.btn.Right){ this.inputpeke();}
+			}
+			if(this.mouseend && this.notInputted()){
+				this.clickTateyoko();
+			}
 		}
-		else if(this.mouseend){
-			if(this.notInputted()){ this.clickTateyoko();}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
 	},
 

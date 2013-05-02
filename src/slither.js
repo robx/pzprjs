@@ -5,27 +5,29 @@ pzprv3.createCustoms('slither', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		var inputbg = false;
-		if     (this.mousestart){ inputbg = (!!this.owner.getConfig('bgcolor') && this.inputBGcolor0());}
-		else if(this.mousemove) { inputbg = (!!this.owner.getConfig('bgcolor') && this.inputData>=10);}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			var inputbg = false;
+			if     (this.mousestart){ inputbg = (!!this.owner.getConfig('bgcolor') && this.inputBGcolor0());}
+			else if(this.mousemove) { inputbg = (!!this.owner.getConfig('bgcolor') && this.inputData>=10);}
 
-		if(!inputbg){
-			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputpeke();}
-			}
-			else if(this.mouseend && this.notInputted()){
+			if(!inputbg){
 				if(this.btn.Left){
-					this.prevPos.reset();
-					this.inputpeke();
+					if(this.mousestart || this.mousemove){ this.inputLine();}
+					else if(this.mouseend && this.notInputted()){
+						this.prevPos.reset();
+						this.inputpeke();
+					}
+				}
+				else if(this.btn.Right){
+					if(this.mousestart || this.mousemove){ this.inputpeke();}
 				}
 			}
+			else{ this.inputBGcolor();}
 		}
-		else{ this.inputBGcolor();}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
+		}
 	},
 	inputRed : function(){ this.dispRedLine();},
 

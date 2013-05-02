@@ -5,11 +5,13 @@ pzprv3.createCustoms('creek', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputcross();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputcell();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputcell();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputcross();}
+		}
 	}
 },
 

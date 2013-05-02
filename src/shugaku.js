@@ -9,16 +9,18 @@ pzprv3.createCustoms('shugaku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputFuton();}
-			else if(this.btn.Right){ this.inputcell_shugaku();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart || this.mousemove){ this.inputFuton();}
+				else if(this.mouseend){ this.inputFuton2();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputcell_shugaku();}
+			}
 		}
-		else if(this.mouseend){
-			if(this.btn.Left){ this.inputFuton2();}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
 	},
 

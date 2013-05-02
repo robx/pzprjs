@@ -5,24 +5,24 @@ pzprv3.createCustoms('hakoiri', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart){ this.inputqnum();}
+			}
+			else if(this.btn.Right){
+				if(this.mousemove){ this.inputDot();}
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				this.inputborder();
+			}
+		}
+		
+		if(this.mouseend && this.notInputted()){
 			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart){
-			if(this.btn.Left){ this.inputqnum();}
-		}
-		else if(this.mousemove){
-			if(this.btn.Right){ this.inputDot();}
-		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.btn.Right){ this.inputqnum();}
 		}
 	},
 

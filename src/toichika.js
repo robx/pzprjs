@@ -9,21 +9,23 @@ pzprv3.createCustoms('toichika', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.mousestart){ this.checkBorderMode();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputarrow_cell();}
+				else if(this.btn.Right){ this.inputDot();}
+			}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if(this.mousestart){ this.checkBorderMode();}
 
-			if(this.bordermode){ this.inputborder();}
-			else               { this.inputarrow_cell();}
+				if(this.bordermode){ this.inputborder();}
+				else               { this.inputarrow_cell();}
+			}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputarrow_cell();}
-			else if(this.btn.Right){ this.inputDot();}
-		}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 	},
 
 	inputDot : function(){

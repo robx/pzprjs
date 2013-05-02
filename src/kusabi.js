@@ -5,16 +5,18 @@ pzprv3.createCustoms('kusabi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart || this.mousemove){ this.inputLine();}
+				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputpeke();}
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.btn.Left){ this.inputpeke();}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
 	}
 },

@@ -5,21 +5,23 @@ pzprv3.createCustoms('nanro', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){ this.inputborder();}
-		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = this.owner.board.emptycell;
-			this.inputqnum();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.dragnumber_nanro();}
+				else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.mouseCell = this.owner.board.emptycell;
+				this.inputqnum();
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.dragnumber_nanro();}
-			else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
-		}
-		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = this.owner.board.emptycell;
-			this.inputqnum();
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){ this.inputborder();}
+			else if(this.mouseend && this.notInputted()){
+				this.mouseCell = this.owner.board.emptycell;
+				this.inputqnum();
+			}
 		}
 	},
 

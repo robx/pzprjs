@@ -9,8 +9,14 @@ pzprv3.createCustoms('kakuro', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousestart){ this.input51();}},
-	inputplay : function(){ if(this.mousestart){ this.inputqnum();}}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){ this.inputqnum();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.input51();}
+		}
+	}
 },
 
 //---------------------------------------------------------

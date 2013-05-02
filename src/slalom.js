@@ -9,20 +9,22 @@ pzprv3.createCustoms('slalom', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){ this.inputGate();}
-		else if(this.mouseend){
-			if(this.inputData==10){ this.inputStartid();}
-			else if(this.notInputted()){ this.inputGate_end();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart || this.mousemove){ this.inputLine();}
+				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputpeke();}
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.btn.Left){ this.inputpeke();}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){ this.inputGate();}
+			else if(this.mouseend){
+				if(this.inputData==10){ this.inputStartid();}
+				else if(this.notInputted()){ this.inputGate_end();}
+			}
 		}
 	},
 	inputRed : function(){ this.dispRedLine();},

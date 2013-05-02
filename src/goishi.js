@@ -9,16 +9,16 @@ pzprv3.createCustoms('goishi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputstone();}
-		else if(this.mouseend){ ui.undotimer.stop();}
-	},
-	inputplay : function(){
-		if(this.mousestart){
+	mouseinput : function(){
+		if(this.owner.playmode && this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
 			else if(this.btn.Right){ ui.undotimer.startMouseUndo();}
 		}
-		else if(this.mouseend){ ui.undotimer.stop();}
+		else if(this.owner.editmode && this.mousestart){
+			this.inputstone();
+		}
+		
+		if(this.mouseend){ ui.undotimer.stop();}
 	},
 
 	inputstone : function(){

@@ -9,11 +9,8 @@ pzprv3.createCustoms('fillomino', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
+	mouseinput : function(){
+		if(this.owner.playmode && (this.mousestart || this.mousemove)){
 			if(this.btn.Left){
 				if(this.mousestart){ this.checkBorderMode();}
 
@@ -22,7 +19,8 @@ MouseEvent:{
 			}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
-		else if(this.mouseend && this.notInputted()){
+
+		if(this.mouseend && this.notInputted()){
 			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}

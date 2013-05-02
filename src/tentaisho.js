@@ -9,22 +9,24 @@ pzprv3.createCustoms('tentaisho', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart && this.btn.Left){
-			this.inputstar();
-		}
-		else if((this.mousestart || this.mousemove) && this.btn.Right){
-			this.inputBGcolor1();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.mousestart && this.btn.Left){ this.checkBorderMode();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if(this.mousestart && this.btn.Left){ this.checkBorderMode();}
 
-			if(this.bordermode){ this.inputborder_tentaisho();}
-			else{ this.inputQsubLine();}
+				if(this.bordermode){ this.inputborder_tentaisho();}
+				else{ this.inputQsubLine();}
+			}
+			else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}
 		}
-		else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}
+		else if(this.owner.editmode){
+			if(this.mousestart && this.btn.Left){
+				this.inputstar();
+			}
+			else if((this.mousestart || this.mousemove) && this.btn.Right){
+				this.inputBGcolor1();
+			}
+		}
 	},
 
 	inputBGcolor1 : function(){

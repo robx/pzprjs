@@ -9,34 +9,44 @@ pzprv3.createCustoms('shakashaka', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.owner.getConfig('use_tri')==1){
-			if(this.mousestart){
-				if(this.btn.Left) { this.inputTriangle_corner();}
-				if(this.btn.Right){ this.inputDot();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.owner.getConfig('use_tri')==1){
+				if(this.btn.Left){
+					if(this.mousestart){ this.inputTriangle_corner();}
+					else if(this.mousemove && this.inputData!==null){
+						this.inputMove();
+					}
+				}
+				else if(this.btn.Right){
+					if(this.mousestart || this.mousemove){ this.inputDot();}
+				}
 			}
-			else if(this.mousemove){
-				if(this.inputData!==null){ this.inputMove();}
+			else if(this.owner.getConfig('use_tri')==2){
+				if(this.btn.Left){
+					if(this.mousestart){
+						this.inputTriangle_pull_start();
+					}
+					else if(this.mousemove && this.inputData===null){
+						this.inputTriangle_pull_move();
+					}
+					else if(this.mousemove && this.inputData!==null){
+						this.inputMove();
+					}
+					else if(this.mouseend && this.notInputted()){
+						this.inputTriangle_pull_end();
+					}
+				}
+				else if(this.btn.Right){
+					if(this.mousestart || this.mousemove){ this.inputDot();}
+				}
+			}
+			else if(this.owner.getConfig('use_tri')==3){
+				if(this.mousestart){ this.inputTriangle_onebtn();}
 			}
 		}
-		else if(this.owner.getConfig('use_tri')==2){
-			if(this.mousestart){
-				if(this.btn.Left) { this.inputTriangle_pull_start();}
-				if(this.btn.Right){ this.inputDot();}
-			}
-			else if(this.mousemove){
-				if(this.inputData!==null){ this.inputMove();}
-				else                     { this.inputTriangle_pull_move();}
-			}
-			else if(this.mouseend && this.notInputted()){
-				this.inputTriangle_pull_end();
-			}
-		}
-		else if(this.owner.getConfig('use_tri')==3){
-			if(this.mousestart){ this.inputTriangle_onebtn();}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
 	},
 

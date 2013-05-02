@@ -5,15 +5,17 @@ pzprv3.createCustoms('cbblock', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputborderans();}
+				else if(this.btn.Right){ this.inputQsubLine();}
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputborderans();}
-			else if(this.btn.Right){ this.inputQsubLine();}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				this.inputborder();
+			}
 		}
 	}
 },

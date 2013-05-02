@@ -9,17 +9,19 @@ pzprv3.createCustoms('tilepaint', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputborder();}
-			else if(this.btn.Right){ this.inputBGcolor1();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.btn.Left){ this.input51();}
+		else if(this.owner.editmode){
+			if(this.btn.Left){
+				if(this.mousestart || this.mousemove){ this.inputborder();}
+				else if(this.mouseend && this.notInputted()){ this.input51();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputBGcolor1();}
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputtile();}
 	},
 
 	inputBGcolor1 : function(){

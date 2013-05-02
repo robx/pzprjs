@@ -5,18 +5,20 @@ pzprv3.createCustoms('yosenabe', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.btn.Right){ this.inputNabe();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputLine();}
+				else if(this.btn.Right){ this.inputpeke();}
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum_yosenabe();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if(this.btn.Right){ this.inputNabe();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum_yosenabe();
+			}
 		}
 	},
 

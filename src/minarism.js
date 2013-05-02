@@ -9,16 +9,18 @@ pzprv3.createCustoms('minarism', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.btn.Left){ this.inputmark_mousemove();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputmark_mouseup();
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if(this.btn.Left){ this.inputmark_mousemove();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputmark_mouseup();
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart){ this.inputqnum();}
 	},
 
 	inputmark_mousemove : function(){

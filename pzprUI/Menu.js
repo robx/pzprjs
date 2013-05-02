@@ -86,7 +86,8 @@ ui.createClass('Menu',
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
 
-		ui.puzzle.key.uievent = ui.menu.key_common;
+		ui.puzzle.key.uievent   = ui.menu.key_common;
+		ui.puzzle.mouse.uievent = ui.menu.mouse_common;
 
 		this.menupid = pid;
 	},
@@ -142,6 +143,17 @@ ui.createClass('Menu',
 			if(c==='y' && (this.isCTRL || this.isMETA)){ ui.undotimer.stop(); result = true;}
 		}
 		return result;
+	},
+	mouse_common : function(){
+		/* this === ui.puzzle.mouse になります */
+		if(this.mousestart && this.btn.Middle){ /* 中ボタン */
+			if(pzprv3.EDITOR){
+				this.owner.setConfig('mode', (this.owner.playmode?1:3));
+			}
+			this.mousereset();
+			return true;
+		}
+		return false;
 	},
 
 	//---------------------------------------------------------------------------

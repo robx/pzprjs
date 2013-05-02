@@ -9,16 +9,18 @@ pzprv3.createCustoms('yajirin', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){ this.inputdirec();}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputcell();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputLine();}
+				else if(this.btn.Right){ this.inputcell();}
+			}
+			else if(this.mouseend && this.notInputted()){ this.inputcell();}
 		}
-		else if(this.mouseend && this.notInputted()){ this.inputcell();}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){ this.inputdirec();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+		}
 	},
 	inputRed : function(){ this.dispRedLine();}
 },

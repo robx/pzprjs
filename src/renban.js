@@ -5,17 +5,19 @@ pzprv3.createCustoms('renban', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputborder();}
-			else if(this.btn.Right){ this.inputQsubLine();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum();
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if     (this.btn.Left) { this.inputborder();}
+				else if(this.btn.Right){ this.inputQsubLine();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart){ this.inputqnum();}
 	}
 },
 

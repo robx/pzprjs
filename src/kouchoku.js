@@ -9,12 +9,14 @@ pzprv3.createCustoms('kouchoku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.inputcross_kouchoku();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputsegment();}
-		else if(this.mouseend){ this.inputsegment_up();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputsegment();}
+			else if(this.mouseend){ this.inputsegment_up();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputcross_kouchoku();}
+		}
 	},
 
 	targetPoint : [null, null],

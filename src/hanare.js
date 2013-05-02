@@ -5,21 +5,23 @@ pzprv3.createCustoms('hanare', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart){ this.inputqnum_hanare();}
+				else if(this.mousemove){ this.inputDot();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputDot();}
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum_hanare();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart){
-			if     (this.btn.Left) { this.inputqnum_hanare();}
-			else if(this.btn.Right){ this.inputDot();}
-		}
-		else if(this.mousemove){
-			this.inputDot();
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum_hanare();
+			}
 		}
 	},
 

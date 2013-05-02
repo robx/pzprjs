@@ -7,12 +7,14 @@ pzprv3.createCustoms('kurochute', {
 MouseEvent:{
 	RBBlackCell : true,
 
-	inputedit : function(){
-		if(this.mousestart){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputcell();}
-		else if(this.mouseend && this.notInputted()){ this.inputqsub();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputcell();}
+			else if(this.mouseend && this.notInputted()){ this.inputqsub();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.inputqnum();}
+		}
 	},
 
 	inputqsub : function(){

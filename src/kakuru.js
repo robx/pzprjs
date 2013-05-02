@@ -5,8 +5,9 @@ pzprv3.createCustoms('kakuru', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
-	inputplay : function(){ if(this.mousestart){ this.inputqnum_kakuru();}},
+	mouseinput : function(){
+		if(this.mousestart){ this.inputqnum_kakuru();}
+	},
 	inputqnum_kakuru : function(){
 		var cell = this.getcell();
 		if(cell.isnull || (cell.getQues()===1 && cell===this.cursor.getTCC())){ return;}

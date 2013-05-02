@@ -7,16 +7,18 @@ pzprv3.createCustoms('yajikazu', {
 MouseEvent:{
 	RBBlackCell : true,
 
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.notInputted()){ this.inputdirec();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				if(this.notInputted()){ this.inputdirec();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputcell();}
 	},
 	inputRed : function(){ this.dispRed();},
 },

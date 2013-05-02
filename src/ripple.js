@@ -5,16 +5,18 @@ pzprv3.createCustoms('ripple', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || (this.mousemove && this.btn.Left)){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum();
+		else if(this.owner.editmode){
+			if(this.mousestart || (this.mousemove && this.btn.Left)){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
 		}
-	},
-	inputplay : function(){
-		if(this.mousestart){ this.inputqnum();}
 	}
 },
 

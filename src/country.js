@@ -5,20 +5,22 @@ pzprv3.createCustoms('country', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){
-			this.inputborder();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if(this.btn.Left){ this.inputLine();}
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputMB();
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputqnum();
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if(this.btn.Left){ this.inputLine();}
-		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputMB();
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
 		}
 	},
 	inputRed : function(){ this.dispRedLine();}

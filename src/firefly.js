@@ -9,22 +9,24 @@ pzprv3.createCustoms('firefly', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(!this.notInputted()){ return;}
-		if(this.mousestart || this.mousemove){
-			this.inputdirec();
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.btn.Left){
+				if(this.mousestart || this.mousemove){ this.inputLine();}
+				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
+			}
+			else if(this.btn.Right){
+				if(this.mousestart || this.mousemove){ this.inputpeke();}
+			}
 		}
-		else if(this.mouseend){
-			if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
-		}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if     (this.btn.Left) { this.inputLine();}
-			else if(this.btn.Right){ this.inputpeke();}
-		}
-		else if(this.mouseend && this.notInputted()){
-			if(this.btn.Left){ this.inputpeke();}
+		else if(this.owner.editmode){
+			if(!this.notInputted()){ return;}
+			if(this.mousestart || this.mousemove){
+				this.inputdirec();
+			}
+			else if(this.mouseend){
+				if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
+			}
 		}
 	}
 },

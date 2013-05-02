@@ -5,12 +5,14 @@ pzprv3.createCustoms('shimaguni', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart || this.mousemove){ this.inputborder();}
-		else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){ this.inputcell();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){ this.inputcell();}
+		}
+		else if(this.owner.editmode){
+			if(this.mousestart || this.mousemove){ this.inputborder();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+		}
 	}
 },
 

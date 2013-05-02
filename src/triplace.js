@@ -9,19 +9,21 @@ pzprv3.createCustoms('triplace', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputedit : function(){
-		if(this.mousestart){ this.input51();}
-	},
-	inputplay : function(){
-		if(this.mousestart || this.mousemove){
-			if(!this.owner.key.isZ){
-				if     (this.btn.Left) { this.inputborderans();}
-				else if(this.btn.Right){ this.inputQsubLine();}
+	mouseinput : function(){
+		if(this.owner.playmode){
+			if(this.mousestart || this.mousemove){
+				if(!this.owner.key.isZ){
+					if     (this.btn.Left) { this.inputborderans();}
+					else if(this.btn.Right){ this.inputQsubLine();}
+				}
+				else{ this.inputBGcolor();}
 			}
-			else{ this.inputBGcolor();}
+			else if(this.mouseend && this.notInputted()){
+				this.inputBGcolor();
+			}
 		}
-		else if(this.mouseend && this.notInputted()){
-			this.inputBGcolor();
+		else if(this.owner.editmode){
+			if(this.mousestart){ this.input51();}
 		}
 	},
 
