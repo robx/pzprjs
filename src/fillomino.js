@@ -73,7 +73,7 @@ KeyEvent:{
 
 	move_fillomino : function(ca){
 		var cell = this.cursor.getTCC();
-		if(cell.isnull){ return;}
+		if(cell.isnull){ return false;}
 
 		var nc, nb, dir=k.NDIR;
 		switch(ca){
@@ -81,16 +81,21 @@ KeyEvent:{
 			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=k.DN; break;
 			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=k.LT; break;
 			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=k.RT; break;
-			default: return;
+			default: return false;
 		}
 		if(!nc.isnull){
-			this.tcMoved = (this.isCTRL || this.isX || this.isZ);
+			var isMoved = (this.isCTRL || this.isX || this.isZ);
+			if(!isMoved){ return false;}
+
 			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); this.cursor.pos.movedir(dir,2);}}
 			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                                  }}
 			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          this.cursor.pos.movedir(dir,2);}}
 
-			if(this.tcMoved){ cell.draw();}
+			cell.draw();
+			this.stopEvent();	/* カーソルを移動させない */
+			return true;
 		}
+		return false;
 	}
 },
 

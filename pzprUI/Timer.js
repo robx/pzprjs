@@ -123,9 +123,6 @@ ui.createClass('UndoTimer',
 
 	check_keyevent : function(){
 		if(!ui.puzzle || !ui.puzzle.key){ return;}
-		var kc = ui.puzzle.key;
-		if     (kc.isZ && (kc.isCTRL || kc.isMETA)){ this.startUndo();}
-		else if(kc.isY && (kc.isCTRL || kc.isMETA)){ this.startRedo();}
 
 		if(this.lastCurrentOpe !== ui.puzzle.opemgr.current){
 			ui.menu.enb_btn();
@@ -188,8 +185,9 @@ ui.createClass('UndoTimer',
 		var opemgr = ui.puzzle.opemgr;
 		if(!this.ismouse){
 			var kc = ui.puzzle.key;
-			if     (this.inUndo && !(kc.isZ && (kc.isCTRL || kc.isMETA))){ this.stop();}
-			else if(this.inRedo && !(kc.isY && (kc.isCTRL || kc.isMETA))){ this.stop();}
+			if(!kc.isCTRL && !kc.isMETA)   { this.stop();}
+			else if(this.inUNDO && !kc.isZ){ this.stop();}
+			else if(this.inREDO && !kc.isY){ this.stop();}
 		}
 		else if(ui.puzzle.pid==='goishi'){
 			if(this.inUNDO){

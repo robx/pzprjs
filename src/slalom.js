@@ -133,19 +133,15 @@ KeyEvent:{
 		return false;
 	},
 
-	keyinput : function(ca,step){
+	keyinput : function(ca){
 		if(ca!=='x'){
-			if(step===0 && this.owner.editmode){
+			if(this.keydown && this.owner.editmode){
 				this.key_inputqnum_slalom(ca);
 			}
 		}
 		else{
-			if(step===0){ /* 押した時 */
-				this.owner.painter.drawNumbersOnGate(true);
-			}
-			else if(step===1){ /* 離した時 */
-				this.owner.painter.drawNumbersOnGate(false);
-			}
+			/* 押した時:true, 離したとき:false */
+			this.owner.painter.drawNumbersOnGate(!!this.keydown);
 		}
 	},
 	key_inputqnum_slalom : function(ca){

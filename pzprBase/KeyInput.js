@@ -40,7 +40,12 @@ pzprv3.createCommonClass('KeyEvent',
 		this.isX = false;
 		this.isY = false;
 
-		this.tcMoved = false;	// カーソル移動時にスクロールさせない
+		this.keydown = false;
+		this.keyup   = false;
+
+		this.ca = '';
+		this.event = null;
+
 		this.prev = null;
 	},
 	isenablemode : function(){
@@ -56,27 +61,45 @@ pzprv3.createCommonClass('KeyEvent',
 	e_keydown : function(e){
 		if(!this.enableKey){ return;}
 		
+		this.event = e;
 		var c = this.getchar(e);
-		if(c){
-			/* 各パズルのルーチンへ */
-			var sts = this.keydown(c);
-			if(!sts){ pzprv3.preventDefault(e);}
-		}
+		if(c){ this.keyevent(c,0);}
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
 		
+		this.event = e;
 		var c = this.getchar(e);
-		if(c){ this.keyup(c);}	/* 各パズルのルーチンへ */
+		if(c){ this.keyevent(c,1);}
 	},
 	e_keypress : function(e){
 		if(!this.enableKey){ return;}
 		
+		this.event = e;
 		var c = this.getcharp(e);
-		if(c){
-			/* 各パズルのルーチンへ */
-			var sts = this.keydown(c);
-			if(!sts){ pzprv3.preventDefault(e);}
+		if(c){ this.keyevent(c,0);}
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.checkmodifiers()  Shift, Ctrl, Alt, Metaキーをチェックする
+	// kc.checkbutton()     Z, X, Yキーの押下状況をチェックする
+	//---------------------------------------------------------------------------
+	checkmodifiers : function(e){
+		if(this.isSHIFT ^ e.shiftKey){ this.isSHIFT = e.shiftKey;}
+		if(this.isCTRL  ^ e.ctrlKey) { this.isCTRL  = e.ctrlKey; }
+		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
+		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
+	},
+	checkbutton : function(c){
+		if(this.keydown){
+			if(c==='z' && !this.isZ){ this.isZ=true;}
+			if(c==='x' && !this.isX){ this.isX=true;}
+			if(c==='y' && !this.isY){ this.isY=true;}
+		}
+		else{
+			if(c==='z' && this.isZ){ this.isZ=false;}
+			if(c==='x' && this.isX){ this.isX=false;}
+			if(c==='y' && this.isY){ this.isY=false;}
 		}
 	},
 
@@ -97,7 +120,7 @@ pzprv3.createCommonClass('KeyEvent',
 		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
 		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
 		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);}
+		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
 		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode==8)                  { return 'BS';}
 
@@ -114,82 +137,47 @@ pzprv3.createCommonClass('KeyEvent',
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.checkmodifiers()  Shift, Ctrl, Alt, Metaキーをチェックする
+	// kc.keyevent() キーイベント処理
 	//---------------------------------------------------------------------------
-	checkmodifiers : function(e){
-		if(this.isSHIFT ^ e.shiftKey){ this.isSHIFT = e.shiftKey;}
-		if(this.isCTRL  ^ e.ctrlKey) { this.isCTRL  = e.ctrlKey; }
-		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
-		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
+	keyevent : function(c, step){
+		this.keydown = (step===0);
+		this.keyup   = (step===1);
 
-		if(!(this.isCTRL || this.isMETA)){ ui.undotimer.stop();}
+		this.owner.opemgr.newOperation(!!this.keydown);
+
+		this.ca = c;
+		this.checkbutton(c);
+
+		if(this.keydown && !this.isZ){ this.owner.board.errclear();}
+
+		if(this.uievent(c)){ return;}
+		if(!this.isenablemode()){ return;}
+		if(this.keydown && this.moveTarget(c)){ return;}
+		this.keyinput(c);				/* 各パズルのルーチンへ */
+	},
+	stopEvent : function(){
+		pzprv3.preventDefault(this.event);
+		this.keyreset();
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.keydown()  キーを押した際のイベント共通処理
-	// kc.keyup()    キーを離した際のイベント共通処理
-	//---------------------------------------------------------------------------
-	keydown : function(c){
-		this.tcMoved = false;
-		this.owner.opemgr.newOperation(true);
-		if(!this.keydown_common(c)){
-			if(!this.isenablemode()){ return true;}
-			if(this.moveTarget(c)){
-				return false;
-			}
-			else{
-				if(c){ this.keyinput(c,0);}	// 各パズルのルーチンへ
-			}
-		}
-		return true;
-	},
-	keyup : function(c){
-		this.owner.opemgr.newOperation(false);
-		if(!this.keyup_common(c)){
-			if(c){ this.keyinput(c,1);}	// 各パズルのルーチンへ
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.keyinput() キーを押した/離した際のイベント処理。各パズルのファイルでオーバーライドされる。
+	// kc.keyinput() キーを押した/離した際の各パズルごとのイベント処理。
+	//               各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	// オーバーライド用
-	keyinput : function(c,step){
-		this.key_inputqnum(c); /* デフォルトはCell数字入力 */
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.keydown_common() キーを押した際のイベント共通処理(Undo,F2等)
-	// kc.keyup_common()   キーを離した際のイベント共通処理(Undo等)
-	//---------------------------------------------------------------------------
-	keydown_common : function(c){
-		var o = this.owner, ret = false;
-		if(c==='z' && !this.isZ){ this.isZ=true;}
-		if(c==='x' && !this.isX){ this.isX=true;}
-		if(c==='y' && !this.isY){ this.isY=true;}
-
-		if(c==='z' && (this.isCTRL || this.isMETA)){ ret = true;}
-		if(c==='y' && (this.isCTRL || this.isMETA)){ ret = true;}
-
-		if(c==='F2' && pzprv3.EDITOR){ // 112～123はF1～F12キー
-			if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); ret = true;}
-			else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); ret = true;}
+	keyinput : function(c){
+		if(this.keydown){
+			this.key_inputqnum(c); /* デフォルトはCell数字入力 */
 		}
-
-		if(!this.isZ){ o.board.errclear();}
-		if(ui.debug.keydown(c)){ ret = true;}
-		return ret;
 	},
-	keyup_common : function(c){
-		var ret = false;
-		if(c==='z' && this.isZ){ this.isZ=false;}
-		if(c==='x' && this.isX){ this.isX=false;}
-		if(c==='y' && this.isY){ this.isY=false;}
 
-		if(c==='z' && (this.isCTRL || this.isMETA)){ ret = true;}
-		if(c==='y' && (this.isCTRL || this.isMETA)){ ret = true;}
-		return ret;
+	//---------------------------------------------------------------------------
+	// kc.uievent()  キーイベントの際のイベント共通処理 (UIEvent系)
+	//---------------------------------------------------------------------------
+	uievent : function(c){
+		return false;
 	},
+
 	//---------------------------------------------------------------------------
 	// kc.moveTarget()  キーボードからの入力対象を矢印キーで動かす
 	// kc.moveTCell()   Cellのキーボードからの入力対象を矢印キーで動かす
@@ -215,7 +203,7 @@ pzprv3.createCommonClass('KeyEvent',
 
 		tcp.draw();
 		this.cursor.getTCP().draw();
-		this.tcMoved = true;
+		this.stopEvent();	/* カーソルを移動させない */
 
 		return true;
 	},
@@ -293,7 +281,7 @@ pzprv3.createCommonClass('KeyEvent',
 
 		if(flag){
 			this.cursor.getTCP().draw();
-			this.tcMoved = true;
+			this.stopEvent();	/* カーソルを移動させない */
 		}
 		return flag;
 	},

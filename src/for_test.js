@@ -31,7 +31,7 @@ ui.extendClass('Debug',
 		else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
 		else{ return false;}
 
-		kc.tcMoved = true;
+		kc.stopEvent();	/* カーソルを移動させない */
 		return true;
 	},
 

@@ -82,7 +82,7 @@ ui.createClass('Debug',
 		var kc = ui.puzzle.key;
 		if(kc.isCTRL && ca=='F8'){
 			ui.menu.popups.debug.show();
-			kc.tcMoved = true;
+			kc.stopEvent();	/* カーソルを移動させない */
 			return true;
 		}
 		return false;

@@ -55,7 +55,7 @@ KeyEvent:{
 
 			excell0.draw();
 			tc.getTCP().draw();
-			this.tcMoved = true;
+			this.stopEvent();	/* カーソルを移動させない */
 
 			return true;
 		}

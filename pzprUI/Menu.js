@@ -86,6 +86,8 @@ ui.createClass('Menu',
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
 
+		ui.puzzle.key.uievent = ui.menu.key_common;
+
 		this.menupid = pid;
 	},
 
@@ -112,6 +114,34 @@ ui.createClass('Menu',
 		if(!!this.popupmgr){ this.popupmgr.reset();}
 		
 		ui.event.removeUIEvents();
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.key_common()  キー入力時に呼び出される関数
+	//---------------------------------------------------------------------------
+	key_common : function(c){
+		/* this === ui.puzzle.key になります */
+		var o = this.owner, result = false;
+		if(this.keydown){
+			/* TimerでUndo/Redoする */
+			if(c==='z' && (this.isCTRL || this.isMETA)){ ui.undotimer.startUndo(); result = true;}
+			if(c==='y' && (this.isCTRL || this.isMETA)){ ui.undotimer.startRedo(); result = true;}
+
+			/* F2で回答モード Shift+F2で問題作成モード */
+			if(c==='F2' && pzprv3.EDITOR){
+				if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); result = true;}
+				else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); result = true;}
+			}
+
+			/* デバッグ用ルーチンを通す */
+			if(ui.debug.keydown(c)){ result = true;}
+		}
+		else if(this.keyup){
+			/* TimerのUndo/Redoを停止する */
+			if(c==='z' && (this.isCTRL || this.isMETA)){ ui.undotimer.stop(); result = true;}
+			if(c==='y' && (this.isCTRL || this.isMETA)){ ui.undotimer.stop(); result = true;}
+		}
+		return result;
 	},
 
 	//---------------------------------------------------------------------------
