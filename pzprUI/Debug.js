@@ -112,12 +112,10 @@ ui.createClass('Debug',
 		this.timeeval("正答判定測定", function(){ ans.checkAns();});
 	},
 	painteval : function(){
-		var pc = ui.puzzle.painter;
-		this.timeeval("描画時間測定", function(){ pc.paintAll();});
+		this.timeeval("描画時間測定", function(){ ui.puzzle.drawCanvas();});
 	},
 	resizeeval : function(){
-		var pc = ui.puzzle.painter;
-		this.timeeval("resize描画測定", function(){ pc.forceRedraw();});
+		this.timeeval("resize描画測定", function(){ ui.puzzle.refreshCanvas();});
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

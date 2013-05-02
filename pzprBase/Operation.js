@@ -139,7 +139,7 @@ pzprv3.createCommonClass('BoardAdjustOperation:Operation',
 
 		o.board.expandreduce(num,{x1:0,y1:0,x2:2*o.board.qcols,y2:2*o.board.qrows});
 
-		o.painter.paintAll();
+		o.drawCanvas();
 	}
 });
 
@@ -195,7 +195,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 
 		this.owner.board.turnflip(num,d);
 
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	}
 });
 

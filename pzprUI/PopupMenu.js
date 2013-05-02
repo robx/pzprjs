@@ -649,15 +649,14 @@ ui.createClass('Popup_DispSize:PopupMenu',
 	// changesize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	changesize : function(e){
-		var pc = ui.puzzle.painter;
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){
-			pc.cellsize = (csize|0);
+			ui.puzzle.painter.cellsize = (csize|0);
 			ui.event.setcellsize();
 		}
 		
 		this.hide();
-		pc.forceRedraw();	// Canvasを更新する
+		ui.puzzle.refreshCanvas();	// Canvasを更新する
 	}
 });
 

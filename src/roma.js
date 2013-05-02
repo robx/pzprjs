@@ -40,7 +40,7 @@ MouseEvent:{
 			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
 		bd.haserror = true;
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	}
 },
 

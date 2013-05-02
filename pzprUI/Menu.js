@@ -1030,7 +1030,7 @@ ui.createClass('Menu',
 		this.displayAll();
 		this.dispmanstr();
 
-		ui.puzzle.painter.forceRedraw();
+		ui.puzzle.refreshCanvas();
 	},
 	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
 	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
@@ -1057,7 +1057,7 @@ ui.createClass('Menu',
 		case 'duplicate' : this.duplicate(); break;
 		
 		case 'manarea'   : this.dispman(); break;
-		case 'repaint'   : ui.puzzle.painter.forceRedraw(); break;
+		case 'repaint'   : ui.puzzle.refreshCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
 		case 'jumpv3'    : window.open('./', '', ''); break;
@@ -1229,7 +1229,7 @@ ui.createClass('Menu',
 		this.displaymanage = !this.displaymanage;
 		this.dispmanstr();
 
-		ui.puzzle.painter.forceRedraw();	// canvasの左上座標等を更新して再描画
+		ui.puzzle.refreshCanvas();	// canvasの左上座標等を更新して再描画
 	},
 	dispmanstr : function(){
 		if(!this.displaymanage){ getEL('ms_manarea').innerHTML = this.selectStr("管理領域を表示","Show management area");}
@@ -1257,7 +1257,7 @@ ui.createClass('Menu',
 
 			o.board.ansclear();
 			o.board.resetInfo();
-			o.painter.paintAll();
+			o.drawCanvas();
 		}
 	},
 	ASconfirm : function(){
@@ -1266,7 +1266,7 @@ ui.createClass('Menu',
 			o.opemgr.newOperation(true);
 
 			o.board.subclear();
-			o.painter.paintAll();
+			o.drawCanvas();
 		}
 	}
 });

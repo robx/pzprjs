@@ -87,7 +87,7 @@ ui.createClass('UIEvent',
 		var self = this;
 		this.resizetimer = setTimeout(function(){
 			self.setcellsize();
-			ui.puzzle.painter.forceRedraw();
+			ui.puzzle.refreshCanvas();
 			ui.keypopup.resizepanel();
 		},250);
 	},

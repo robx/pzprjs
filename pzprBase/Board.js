@@ -349,7 +349,7 @@ pzprv3.createCommonClass('Board',
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		this.haserror = false;
-		if(isrepaint!==false){ this.owner.painter.paintAll();}
+		if(isrepaint!==false){ this.owner.drawCanvas();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -541,7 +541,7 @@ pzprv3.createCommonClass('Board',
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
 		this.lines.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.painter.paintAll();}
+		if(this.owner.getConfig('irowake')){ this.owner.drawCanvas();}
 	},
 
 	//--------------------------------------------------------------------------------

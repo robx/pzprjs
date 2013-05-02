@@ -121,6 +121,8 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	// owner.setCanvas()    描画キャンバスをセットする
 	// owner.setSubCanvas() 補助用キャンバスをセットする
+	// owner.drawCanvas()    盤面の再描画を行う
+	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
 		var o = this;
@@ -139,6 +141,13 @@ pzprv3.createCoreClass('Owner',
 		Candle.start(el.id, type, function(g){
 			o.canvas2 = g.canvas;
 		});
+	},
+
+	drawCanvas : function(){
+		this.painter.paintAll();
+	},
+	refreshCanvas : function(){
+		this.painter.forceRedraw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -227,7 +236,7 @@ pzprv3.createCoreClass('Owner',
 		this.cursor.adjust_modechange();
 
 		this.board.haserror=true;
-		this.painter.paintAll();
+		this.drawCanvas();
 	},
 
 	//---------------------------------------------------------------------------
@@ -347,29 +356,29 @@ pzprv3.createCommonClass('Properties',
 	// config.onchange_event()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	onchange_event : function(name, val){
-		var result = true, pc = this.owner.painter;
+		var result = true, o = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'circolor': case 'plred':
 		case 'colorslash': case 'snakebd': case 'disptype_pipelinkr':
-			pc.paintAll();
+			o.drawCanvas();
 			break;
 		
 		case 'mode':
-			this.owner.modechange(val);
+			o.modechange(val);
 			break;
 		
 		case 'text':
 			ui.menu.textsize(val);
-			pc.forceRedraw();	/* pageX/Yの位置がずれる */
+			o.refreshCanvas();	/* pageX/Yの位置がずれる */
 			break;
 		
 		case 'size':
 			ui.event.setcellsize(val);
-			pc.forceRedraw();	/* pageX/Yの位置がずれる */
+			o.refreshCanvas();	/* pageX/Yの位置がずれる */
 			break;
 		
 		case 'adjsize':
-			pc.forceRedraw();
+			o.refreshCanvas();
 			break;
 		
 		case 'language':
@@ -377,16 +386,17 @@ pzprv3.createCommonClass('Properties',
 			break;
 		
 		case 'uramashu':
-			var bd = this.owner.board;
+			var bd = o.board;
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if     (cell.getQnum()===1){ cell.setQnum(2);}
 				else if(cell.getQnum()===2){ cell.setQnum(1);}
 			}
-			pc.paintAll();
+			o.drawCanvas();
 			break;
 		
 		case 'disptype_bosanowa':
+			var pc = o.painter;
 			pc.suspendAll();
 			if     (val==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			else if(val==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}

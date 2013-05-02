@@ -50,7 +50,7 @@ MouseEvent:{
 		}
 
 		bd.haserror = true;
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	}
 },
 "MouseEvent@wagiri":{

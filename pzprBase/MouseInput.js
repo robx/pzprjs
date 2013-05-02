@@ -649,7 +649,7 @@ pzprv3.createCommonClass('MouseEvent',
 		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).seterr(1);}
 		else{ this.dispRed8(cell);}
 		this.owner.board.haserror = true;
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	},
 	dispRed8 : function(cell0){
 		var stack=[cell0];
@@ -686,7 +686,7 @@ pzprv3.createCommonClass('MouseEvent',
 		bd.border.seterr(-1);
 		blist.seterr(1);
 		bd.haserror = true;
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	}
 });
 

@@ -255,7 +255,7 @@ Board:{
 	encolorall : function(){
 		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){ rinfo.getclist(id).encolor();}
-		this.owner.painter.paintAll();
+		this.owner.drawCanvas();
 	},
 
 	// 領域と入っている星を取得する関数

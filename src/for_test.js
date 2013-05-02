@@ -129,7 +129,7 @@ ui.extendClass('Debug',
 			ans.checkresult = true;
 			ans.checkAns();
 			var iserror = !ans.checkresult;
-			pc.paintAll();
+			ui.puzzle.drawCanvas();
 			ans.inCheck = false;
 
 			if(acsstr[n][0] != ""){ iserror = !iserror;}

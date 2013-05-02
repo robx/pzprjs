@@ -128,7 +128,7 @@ var ui = {
 			
 			if(!!func){ func();}
 			
-			ui.puzzle.painter.forceRedraw();
+			ui.puzzle.refreshCanvas();
 		}
 		else{
 			setTimeout(function(){ ui.waitReady(func);},10);

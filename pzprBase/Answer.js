@@ -36,7 +36,7 @@ pzprv3.createCommonClass('AnsCheck',
 		this.checkAns()
 		if(!this.checkresult){
 			o.board.haserror = true;
-			o.painter.paintAll();
+			o.drawCanvas();
 		}
 
 		this.inCheck = false;
