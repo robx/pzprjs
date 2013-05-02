@@ -32,10 +32,11 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = false;
 
+		var o = this;
 		this.initPuzzle(pzl.id, function(){
-			this.enc.pzlinput(url);
-			this.resetTime();
-			this.ready = true;
+			o.enc.pzlinput(url);
+			o.resetTime();
+			o.ready = true;
 		});
 	},
 	openByFileData : function(filedata){
@@ -48,10 +49,11 @@ pzprv3.createCoreClass('Owner',
 
 		this.ready = false;
 
+		var o = this;
 		this.initPuzzle(pid, function(){
-			this.fio.filedecode(fstr);
-			this.resetTime();
-			this.ready = true;
+			o.fio.filedecode(fstr);
+			o.resetTime();
+			o.ready = true;
 		});
 	},
 
@@ -61,12 +63,6 @@ pzprv3.createCoreClass('Owner',
 	initPuzzle : function(newpid, callback){
 		var self = this;
 
-		/* canvasが用意できるまでwait */
-		if(!this.canvas || !this.canvas2){
-			setTimeout(function(){ self.initPuzzle.call(self,newpid,callback);},10);
-			return;
-		}
-
 		/* 今のパズルと別idの時 */
 		if(this.pid != newpid){
 			if(!!this.pid){ ui.clearObjects();}
@@ -74,7 +70,7 @@ pzprv3.createCoreClass('Owner',
 			this.classes = null;
 			pzprv3.includeCustomFile(this.pid);
 		}
-		/* Classが用意できるまで待つ */
+		/* Classおよびcanvasが用意できるまで待つ */
 		if(!pzprv3.custom[this.pid]){
 			setTimeout(function(){ self.initPuzzle.call(self,newpid,callback);},10);
 			return;
@@ -86,7 +82,8 @@ pzprv3.createCoreClass('Owner',
 			this.initObjects();
 		}
 
-		callback.call(this);
+		/* canvasが用意できたらcallbackを呼ぶ */
+		if(!!this.painter.ready){callback();}else{setTimeout(callback,10);}
 	},
 
 	//---------------------------------------------------------------------------

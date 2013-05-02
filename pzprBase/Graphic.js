@@ -11,9 +11,10 @@ var k = pzprv3.consts;
 pzprv3.createCommonClass('Graphic',
 {
 	initialize : function(){
-		var o = this.owner;
-		this.currentContext = (!!o.canvas  ? o.canvas.getContext("2d")  : null);
-		this.subContext     = (!!o.canvas2 ? o.canvas2.getContext("2d") : null);
+		this.ready = false;
+
+		this.currentContext = null;
+		this.subContext     = null;
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -126,21 +127,35 @@ pzprv3.createCommonClass('Graphic',
 		this.zidx_array=[];
 
 		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
-		var g = this.currentContext;
-		for(var type in g.use){ this.use[type] = g.use[type];}
 
 		this.numobj = {};					// エレメントへの参照を保持する
-		this.fillTextEmulate				// 数字をg.fillText()で描画しない
-					 = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
+		this.useBuffer = false;				// Buffer描画を行うか
+		this.fillTextEmulate = false;		// 数字をg.fillText()で描画しない
 
 		this.outputImage = false;			// 画像保存中
-		this.useBuffer = !!g.use.canvas;	// Buffer描画を行うか
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
 
 		this.setColors();
 		this.clear_numobj_parent();
+
+		this.onCanvasReady_fun();
+	},
+	onCanvasReady_fun : function(){
+		var o = this.owner;
+		if(!o.canvas || !o.canvas2){ var pc=this; setTimeout(function(){ pc.onCanvasReady_fun();},10); return;}
+
+		this.currentContext = (!!o.canvas  ? o.canvas.getContext("2d")  : null);
+		this.subContext     = (!!o.canvas2 ? o.canvas2.getContext("2d") : null);
+
+		var g = this.currentContext;
+		for(var type in g.use){ this.use[type] = g.use[type];}
+
+		this.fillTextEmulate = (this.use.canvas && !document.createElement('canvas').getContext('2d').fillText);
+		this.useBuffer = !!g.use.canvas;
+
+		this.ready = true;
 	},
 	setColors : function(){ },
 
@@ -212,7 +227,7 @@ pzprv3.createCommonClass('Graphic',
 	},
 	getCanvasRows : function(){
 		var bd = this.owner.board;
-		if(pzprv3.OS.mobile && !pc.outputImage){ this.bdmargin = this.bdmargin_image;}
+		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
 		return ((bd.maxby-bd.minby)>>1)+2*this.bdmargin;
 	},
 
