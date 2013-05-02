@@ -24,9 +24,7 @@ pzprv3.createCommonClass('FileIO',
 	},
 
 	//---------------------------------------------------------------------------
-	// fio.filedecode() ファイルを開く時、ファイルデータからのデコード実行関数
-	//                  [ui.fileopen] -> [fileio.cgi@iframe]
-	//               -> [ui.fileonload] -> [base.importData] -> [ここ]
+	// fio.filedecode()  ファイルデータ(文字列)からのデコード実行関数
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
 		var o = this.owner;
@@ -73,8 +71,7 @@ pzprv3.createCommonClass('FileIO',
 		return '';
 	},
 	//---------------------------------------------------------------------------
-	// fio.fileencode() ファイル文字列へのエンコード、ファイル保存実行関数
-	//                  [[ui.filesave] -> [ここ]] -> [fileio.cgi@iframe]
+	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
 		this.filever = 0;
