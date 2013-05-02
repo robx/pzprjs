@@ -108,6 +108,7 @@ var ui = {
 		// 単体初期化処理のルーチンへ
 		if     (!!onload_pzl.fstr) { ui.puzzle.openByFileData(onload_pzl.fstr);}
 		else if(!!onload_pzl.qdata){ ui.puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
+		else if(!!onload_pzl.id)   { ui.puzzle.openByURL("?"+onload_pzl.id);}
 		
 		ui.waitReady(function(){
 			// アクセスログをとってみる
