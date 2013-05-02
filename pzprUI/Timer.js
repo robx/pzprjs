@@ -146,11 +146,13 @@ ui.createClass('UndoTimer',
 		this.inREDO = false;
 		this.ismouse = false;
 
-		clearInterval(this.TID);
-		this.TID = null;
+		if(!this.CTID){
+			clearInterval(this.TID);
+			this.TID = null;
 
-		var self = this;
-		this.CTID = setInterval(function(){ self.check_keyevent();}, 16);
+			var self = this;
+			this.CTID = setInterval(function(){ self.check_keyevent();}, 16);
+		}
 	},
 
 	//---------------------------------------------------------------------------
