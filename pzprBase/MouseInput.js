@@ -128,6 +128,7 @@ pzprv3.createCommonClass('MouseEvent',
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
+	// mv.isDispred()  inputRed()処理を呼び出すかどうか判定する
 	//---------------------------------------------------------------------------
 	mouseevent : function(px, py, step){
 		this.inputPoint.px = px;
@@ -144,14 +145,20 @@ pzprv3.createCommonClass('MouseEvent',
 		
 		var o = this.owner;
 		o.opemgr.newOperation(!!this.mousestart);
-		if(this.mousestart){ o.board.errclear();}
-		
-		if(this.mousestart && (o.key.isZ ^ o.isDispred())){
-			this.inputRed();
-			if(!this.mousestart){ return;}
+		if(this.mousestart){
+			o.board.errclear();
+			if(this.isDispred()){ this.inputRed(); return;}
 		}
 		
 		this.mouseinput();		/* 各パズルのルーチンへ */
+	},
+	isDispred : function(){
+		var o = this.owner, cf = o.config, flag = false;
+		if     (cf.flag_redline  && o.getConfig('redline')) { flag = true;}
+		else if(cf.flag_redblk   && o.getConfig('redblk'))  { flag = true;}
+		else if(cf.flag_redblkrb && o.getConfig('redblkrb')){ flag = true;}
+		else if(o.pid==='roma'   && o.getConfig('redroad')) { flag = true;}
+		return o.key.isZ ^ flag;
 	},
 
 	//---------------------------------------------------------------------------

@@ -119,38 +119,6 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.setCanvas()    描画キャンバスをセットする
-	// owner.setSubCanvas() 補助用キャンバスをセットする
-	// owner.drawCanvas()    盤面の再描画を行う
-	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
-	//---------------------------------------------------------------------------
-	setCanvas : function(el, type){
-		var o = this;
-		if(!type){ type = '';}
-		Candle.start(el.id, type, function(g){
-			pzprv3.unselectable(g.canvas);
-			o.canvas = g.canvas;
-		});
-
-		this.setMouseEvents(el);
-	},
-	setSubCanvas :function(el, type){
-		var o = this;
-		o.usecanvas2 = true;
-		if(!type){ type = '';}
-		Candle.start(el.id, type, function(g){
-			o.canvas2 = g.canvas;
-		});
-	},
-
-	drawCanvas : function(){
-		this.painter.paintAll();
-	},
-	refreshCanvas : function(){
-		this.painter.forceRedraw();
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.setMouseEvents() マウス入力に関するイベントを設定する
 	// owner.exec????()       マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
@@ -200,17 +168,46 @@ pzprv3.createCoreClass('Owner',
 	execKeyDown  : function(e){ this.key.e_keydown(e);},
 	execKeyUp    : function(e){ this.key.e_keyup(e);},
 	execKeyPress : function(e){ this.key.e_keypress(e);},
-	execSLKeyDown : function(sender, keyEventArgs){
-		var a = keyEventArgs;
+	execSLKeyDown : function(sender, a){ /* a: keyEventArgs */
 		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
 						altKey:false, returnValue:false, preventDefault:function(){} };
 		return this.key.e_keydown(emulate);
 	},
-	execSLKeyUp : function(sender, keyEventArgs){
-		var a = keyEventArgs;
+	execSLKeyUp : function(sender, a){ /* a: keyEventArgs */
 		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
 						altKey:false, returnValue:false, preventDefault:function(){} };
 		return this.key.e_keyup(emulate);
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.setCanvas()    描画キャンバスをセットする
+	// owner.setSubCanvas() 補助用キャンバスをセットする
+	// owner.drawCanvas()    盤面の再描画を行う
+	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
+	//---------------------------------------------------------------------------
+	setCanvas : function(el, type){
+		var o = this;
+		if(!type){ type = '';}
+		Candle.start(el.id, type, function(g){
+			pzprv3.unselectable(g.canvas);
+			o.canvas = g.canvas;
+		});
+		this.setMouseEvents(el);
+	},
+	setSubCanvas :function(el, type){
+		var o = this;
+		o.usecanvas2 = true;
+		if(!type){ type = '';}
+		Candle.start(el.id, type, function(g){
+			o.canvas2 = g.canvas;
+		});
+	},
+
+	drawCanvas : function(){
+		this.painter.paintAll();
+	},
+	refreshCanvas : function(){
+		this.painter.forceRedraw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -260,15 +257,7 @@ pzprv3.createCoreClass('Owner',
 
 	//---------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
-	setConfig : function(idname,val){ return this.config.setVal(idname,val);},
-	
-	isDispred : function(){
-		if     (this.config.flag_redline  && this.config.getVal('redline')) { return true;}
-		else if(this.config.flag_redblk   && this.config.getVal('redblk'))  { return true;}
-		else if(this.config.flag_redblkrb && this.config.getVal('redblkrb')){ return true;}
-		else if(this.pid==='roma'         && this.config.getVal('redroad')) { return true;}
-		return false;
-	}
+	setConfig : function(idname,val){ return this.config.setVal(idname,val);}
 });
 
 //--------------------------------------------------------------------------------------------------------------
