@@ -72,17 +72,17 @@ Cell:{
 Board:{
 	qcols : 6,	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
 	qrows : 7,
-	lap   : 3,	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
+	shape : 3,	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
 
-	setLap : function(val){
-		this.lap=val;
+	setShape : function(val){
+		this.shape=val;
 		this.setminmax();
 	},
 
 	estimateSize : function(type, col, row){
 		var total = 0;
-		if     (this.lap==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
-		else if(this.lap==3 || this.lap==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
+		if     (this.shape==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
+		else if(this.shape==3 || this.shape==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
 		else{ total = col*row;}
 
 		return total;
@@ -94,22 +94,22 @@ Board:{
 			obj.id = id;
 			obj.isnull = false;
 
-			if(this.lap==0){
+			if(this.shape==0){
 				var row = (((2*id)/(2*this.qcols-1))|0);
 				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.lap==1){
+			else if(this.shape==1){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.lap==2){
+			else if(this.shape==2){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.lap==3){
+			else if(this.shape==3){
 				var row = (((2*id+1)/(2*this.qcols+1))|0);
 				obj.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
 				obj.by = row*2+1;
@@ -119,7 +119,7 @@ Board:{
 	setminmax : function(){
 		this.minbx = 0;
 		this.minby = 0;
-		this.maxbx = 2*this.qcols + [0,1,1,2][this.lap];
+		this.maxbx = 2*this.qcols + [0,1,1,2][this.shape];
 		this.maxby = 2*this.qrows;
 
 		this.owner.cursor.setminmax();
@@ -130,10 +130,10 @@ Board:{
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if(bx>=this.minbx+1 && bx<=this.maxbx-1 && by>=this.minby+1 && by<=this.maxby-1){
 			var cy = (by>>1);	// 上から数えて何段目か(0～qrows-1)
-			if     (this.lap===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
-			else if(this.lap===1){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
-			else if(this.lap===2){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
-			else if(this.lap===3){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc+1))>>1;}}
+			if     (this.shape===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
+			else if(this.shape===1){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
+			else if(this.shape===2){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
+			else if(this.shape===3){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc+1))>>1;}}
 		}
 
 		return (id!==null ? this.cell[id] : this.emptycell);
@@ -154,7 +154,7 @@ Board:{
 				if(this.qrows<=1){ return;}
 			}
 			else if(name==="reducelt"||name==="reducert"){
-				if(this.qcols<=1 && (this.lap!==3)){ return;}
+				if(this.qcols<=1 && (this.shape!==3)){ return;}
 			}
 		}
 
@@ -163,9 +163,9 @@ Board:{
 	expandreduce : function(key,d){
 		if(key & k.EXPAND){
 			switch(key & 0x0F){
-				case k.LT: this.qcols+=[0,0,1,1][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
-				case k.RT: this.qcols+=[0,1,0,1][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
-				case k.UP: this.qcols+=[-1,0,0,1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows++; break;
+				case k.LT: this.qcols+=[0,0,1,1][this.shape];  this.shape=[2,3,0,1][this.shape]; break;
+				case k.RT: this.qcols+=[0,1,0,1][this.shape];  this.shape=[1,0,3,2][this.shape]; break;
+				case k.UP: this.qcols+=[-1,0,0,1][this.shape]; this.shape=[3,2,1,0][this.shape]; this.qrows++; break;
 				case k.DN: this.qrows++; break;
 			}
 			this.setminmax();
@@ -176,9 +176,9 @@ Board:{
 			this.reduceGroup(k.CELL,key);
 
 			switch(key & 0x0F){
-				case k.LT: this.qcols-=[1,1,0,0][this.lap];  this.lap=[2,3,0,1][this.lap]; break;
-				case k.RT: this.qcols-=[1,0,1,0][this.lap];  this.lap=[1,0,3,2][this.lap]; break;
-				case k.UP: this.qcols-=[1,0,0,-1][this.lap]; this.lap=[3,2,1,0][this.lap]; this.qrows--; break;
+				case k.LT: this.qcols-=[1,1,0,0][this.shape];  this.shape=[2,3,0,1][this.shape]; break;
+				case k.RT: this.qcols-=[1,0,1,0][this.shape];  this.shape=[1,0,3,2][this.shape]; break;
+				case k.UP: this.qcols-=[1,0,0,-1][this.shape]; this.shape=[3,2,1,0][this.shape]; this.qrows--; break;
 				case k.DN: this.qrows--; break;
 			}
 		}
@@ -188,8 +188,8 @@ Board:{
 	turnflip : function(key,d){
 		var d = {x1:this.minbx, y1:this.minby, x2:this.maxbx, y2:this.maxby};
 
-		if     (key===k.FLIPY){ if(!(this.qrows&1)){ this.lap = {0:3,1:2,2:1,3:0}[this.lap];} }
-		else if(key===k.FLIPX){ this.lap = {0:0,1:2,2:1,3:3}[this.lap];}
+		if     (key===k.FLIPY){ if(!(this.qrows&1)){ this.shape = {0:3,1:2,2:1,3:0}[this.shape];} }
+		else if(key===k.FLIPX){ this.shape = {0:0,1:2,2:1,3:3}[this.shape];}
 
 		this.turnflipGroup(k.CELL, key, d);
 
@@ -257,15 +257,15 @@ Graphic:{
 			var cy = (by>>1);
 			if(this.vnop(headers[0]+by,this.NONE)){
 				var redx = 0, redw = 0;
-				if     ((bd.lap===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
-				else if((bd.lap===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
-				else if((bd.lap===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.lap===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
+				if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
+				else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
+				else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
 				g.fillRect((x1+redx)*this.bw-lm, by*this.bh-lm, (x2-x1-redw)*this.bw+1, lw);
 			}
 			if(by>=bd.maxby){ break;}
 
 			var xs = xa;
-			if((bd.lap===2 || bd.lap===3) ^ ((cy&1)!==(xs&1))){ xs++;}
+			if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
 			for(var bx=xs;bx<=xb;bx+=2){
 				if(this.vnop([headers[1],bx,by].join("_"),this.NONE)){
 					g.fillRect(bx*this.bw-lm, by*this.bh-lm, lw, this.ch+1);
@@ -287,7 +287,7 @@ Encode:{
 
 	decodeTawamurenga : function(){
 		var barray = this.outbstr.split("/"), bd = this.owner.board;
-		bd.setLap(parseInt(barray[0]));
+		bd.setShape(parseInt(barray[0]));
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
 		if(!!barray[1]){
@@ -296,7 +296,7 @@ Encode:{
 		}
 	},
 	encodeTawamurenga : function(){
-		this.outbstr = (this.owner.board.lap+"/");
+		this.outbstr = (this.owner.board.shape+"/");
 		this.encodeNumber10();
 	}
 },
@@ -304,7 +304,7 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.setLap(parseInt(this.readLine()));
+		bd.setShape(parseInt(this.readLine()));
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
 		var n=0, item = this.getItemList(bd.qrows);
@@ -322,7 +322,7 @@ FileIO:{
 	},
 	encodeData : function(){
 		var bd = this.owner.board;
-		this.datastr = bd.lap+"/";
+		this.datastr = bd.shape+"/";
 
 		var bstr = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){

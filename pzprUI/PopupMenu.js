@@ -240,8 +240,8 @@ ui.createClass('Popup_Newboard:PopupMenu',
 	formname : 'newboard',
 	
 	//---------------------------------------------------------------------------
-	// makeForm()          新規盤面作成のポップアップメニューを作成する
-	// makeForm_tawa_lap() たわむれんがの形状入力用部
+	// makeForm()            新規盤面作成のポップアップメニューを作成する
+	// makeForm_tawa_shape() たわむれんがの形状入力用部
 	//---------------------------------------------------------------------------
 	makeForm : function(){
 		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
@@ -252,7 +252,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		
 		/* タテヨコのサイズ指定部分 */
 		var col = bd.qcols, row = bd.qrows;
-		if(pid==='tawa' && bd.lap===3){ col++;}
+		if(pid==='tawa' && bd.shape===3){ col++;}
 		
 		if(pid!=='sudoku'){
 			var attr = {name:'col', value:''+col, size:'4', maxlength:'3', min:'1', max:'999'};
@@ -294,7 +294,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		
 		/* たわむレンガの形状指定ルーチン */
 		if(pid==='tawa'){
-			this.makeForm_tawa_lap();
+			this.makeForm_tawa_shape();
 		}
 		
 		/* 新規作成 or Cancel */
@@ -302,16 +302,16 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		this.addExecButton("新規作成", "Create", function(){ popup.execute();});
 		this.addCancelButton();
 	},
-	makeForm_tawa_lap : function(form){
+	makeForm_tawa_shape : function(form){
 		var table = new ui.classes.TableElement();
-		table.init({id:'NB_lap', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
+		table.init({id:'NB_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
 		
 		/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
-		ui.menu.modifyCSS({'#NB_lap div':{display:'block', position:'relative', width:'36px', height:'36px'}});
-		ui.menu.modifyCSS({'#NB_lap img':{position:'absolute', margin:'2px'}});
+		ui.menu.modifyCSS({'#NB_shape div':{display:'block', position:'relative', width:'36px', height:'36px'}});
+		ui.menu.modifyCSS({'#NB_shape img':{position:'absolute', margin:'2px'}});
 		
-		var clicklap = function(e){
+		var clickshape = function(e){
 			e = (e||window.event);
 			var _div = (e.target||e.srcElement).parentNode;
 			var idx = _div.id.charAt(2);
@@ -319,13 +319,13 @@ ui.createClass('Popup_Newboard:PopupMenu',
 			_div.style.backgroundColor = 'red';
 		};
 		
-		var idx = [0,2,3,1][ui.puzzle.board.lap];
+		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		for(var i=0;i<=3;i++){
 			var _img = _doc.createElement('img');
 			_img.src = "src/img/tawa_nb.gif";
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			_img.onclick = clicklap;
+			_img.onclick = clickshape;
 			
 			var _div = _doc.createElement('div');
 			_div.id = "nb"+i;
@@ -362,13 +362,13 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		if(!!col && !!row){ url = [col, row];}
 		
 		if(url.length>0 && pid==='tawa'){
-			var slap=null;
+			var selected=null;
 			for(var i=0;i<=3;i++){
-				if(pzprv3.getEL("nb"+i).style.backgroundColor==='red'){ slap=[0,3,1,2][i]; break;}
+				if(pzprv3.getEL("nb"+i).style.backgroundColor==='red'){ selected=[0,3,1,2][i]; break;}
 			}
-			if(!isNaN(slap) && !(col==1 && (slap==0||slap==3))){
-				if(slap===3){ col--; url=[col,row];}
-				url.push(slap);
+			if(!isNaN(selected) && !(col==1 && (selected==0||selected==3))){
+				if(selected===3){ col--; url=[col,row];}
+				url.push(selected);
 			}
 			else{ url=[];}
 		}
