@@ -245,12 +245,12 @@ pzprv3.createCommonClass('OperationManager',
 	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
 
-		this.enableUndo = (this.current>-1);
-		this.enableRedo = (this.current<this.ope.length-1);
+		this.enableUndo = (this.current>0);
+		this.enableRedo = (this.current<this.ope.length);
 	},
 	allerase : function(){
 		this.ope      = [];
-		this.current  = -1;
+		this.current  = 0;
 		this.anscount = 0;
 		this.checkexec();
 	},
@@ -269,8 +269,8 @@ pzprv3.createCommonClass('OperationManager',
 		if(!this.isenableRecord()){ return;}
 
 		if(this.enableRedo){
-			for(var i=this.ope.length-1;i>this.current;i--){ this.ope.pop();}
-			this.current = this.ope.length-1;
+			for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
+			this.current = this.ope.length;
 		}
 
 		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
@@ -299,7 +299,7 @@ pzprv3.createCommonClass('OperationManager',
 			return ope;
 		},
 		function(){
-			var ref = this.ope[this.current];
+			var ref = this.ope[this.current-1];
 
 			// 前回と同じ場所なら前回の更新のみ
 			if( !this.disCombine && !!ref && !!ref.property &&
@@ -357,7 +357,7 @@ pzprv3.createCommonClass('OperationManager',
 			try{
 				var str = datas.join(''), data = JSON.parse(str);
 				this.ope = [];
-				this.current = data.current-1;
+				this.current = data.current;
 				for(var i=0,len=data.datas.length;i<len;i++){
 					var str = data.datas[i], chain = false;
 					if(str.charAt(0)==='+'){ chain = true; str = str.substr(1);}
@@ -391,7 +391,7 @@ pzprv3.createCommonClass('OperationManager',
 		var data = ['','history:{'], datas = [];
 		data.push('"version":0.2,');
 		data.push('"history":'+lastid+',');
-		data.push('"current":'+(this.current+1)+',');
+		data.push('"current":'+(this.current)+',');
 		data.push('"datas":[');
 		for(var i=0;i<lastid;i++){
 			var chain = (this.ope[i].chain?'+':'');
@@ -427,11 +427,11 @@ pzprv3.createCommonClass('OperationManager',
 		this.postproc();
 		this.redoExec = false;
 	},
-	undoall : function(){ this.undo(this.current+1);},
-	redoall : function(){ this.redo(this.ope.length-this.current);},
+	undoall : function(){ this.undo(this.current);},
+	redoall : function(){ this.redo(this.ope.length-this.current-1);},
 
 	undoSingle : function(){
-		for(var i=this.current;i>-1;i--){
+		for(var i=this.current-1;i>=0;i--){
 			var ref = this.ope[i];
 			if(!ref){ break;}
 			ref.undo();
@@ -440,7 +440,7 @@ pzprv3.createCommonClass('OperationManager',
 		}
 	},
 	redoSingle : function(){
-		for(var i=this.current+1,len=this.ope.length;i<len;i++){
+		for(var i=this.current,len=this.ope.length;i<len;i++){
 			var ref = this.ope[i];
 			if(!ref){ break;}
 			ref.redo();

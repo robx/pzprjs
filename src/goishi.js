@@ -402,11 +402,11 @@ UndoTimer_goishi:{
 	exec : function(){
 		var opemgr = this.owner.opemgr;
 		if(this.inUNDO){
-			var prop = (opemgr.current>-1 ? opemgr.ope[opemgr.current].property : '');
+			var prop = (opemgr.enableUndo ? opemgr.ope[opemgr.current-1].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		else if(this.inREDO){
-			var prop = (opemgr.current+1<opemgr.ope.length ? opemgr.ope[opemgr.current+1].property : '');
+			var prop = (opemgr.enableRedo ? opemgr.ope[opemgr.current].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		
