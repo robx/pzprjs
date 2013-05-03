@@ -224,7 +224,7 @@ ui.createClass('DataBaseManager',
 	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = ui.menu.language;
+		this.lang = ui.puzzle.getConfig('language');
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;

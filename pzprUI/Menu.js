@@ -30,7 +30,7 @@ ui.createClass('Menu',
 
 		this.ispencilbox = false;
 
-		this.displaymanage = true;
+		this.displaymanage = true;		// メニューの下の管理領域を表示しているか
 
 		this.reader;	// FileReaderオブジェクト
 
@@ -38,8 +38,6 @@ ui.createClass('Menu',
 		this.el_button = pzprv3.createEL('input');
 		this.el_button.type = 'button';
 	},
-
-	language : 'ja',
 
 	enableSaveImage  : false, // 画像保存が有効か
 
@@ -82,9 +80,6 @@ ui.createClass('Menu',
 		this.popupmgr.init();
 
 		this.displayAll();
-
-		this.displayDesign();	// デザイン変更関連関数の呼び出し
-		this.checkUserLang();	// 言語のチェック
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
 
@@ -208,9 +203,13 @@ ui.createClass('Menu',
 		for(var i in this.items.flags){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[this.language];
+			this.btnstack[i].el.value = this.btnstack[i].str[ui.puzzle.getConfig('language')];
 		}
 		this.enb_btn();
+		this.displayManage();
+		this.displayDesign();
+
+		ui.puzzle.refreshCanvas();	// canvasの左上座標等を更新して再描画
 	},
 	setdisplay : function(idname){
 		var pp = this.items, puzzle = ui.puzzle;
@@ -275,6 +274,12 @@ ui.createClass('Menu',
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			break;
 		}
+
+		if(idname==='manarea'){
+			if(!this.displaymanage){ str = this.selectStr("管理領域を表示","Show management area");}
+			else                   { str = this.selectStr("管理領域を隠す","Hide management area");}
+			getEL('ms_manarea').innerHTML = str;
+		}
 		
 		if(idname==='disptype_pipelinkr'){
 			getEL('btncircle').value = ((puzzle.getConfig(idname)==1)?"○":"■");
@@ -286,13 +291,32 @@ ui.createClass('Menu',
 	},
 
 	//---------------------------------------------------------------------------
+	// menu.displayManage()  管理領域の表示するかしないか設定する
 	// menu.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
-	// menu.displayTitle()   タイトルに文字列を設定する
-	// menu.getPuzzleName()  現在開いているパズルの名前を返す
 	//---------------------------------------------------------------------------
+	displayManage : function(e){
+		var mandisp  = (this.displaymanage ? 'block' : 'none');
+
+		getEL('usepanel').style.display = mandisp;
+		getEL('checkpanel').style.display = mandisp;
+		if(!pzprv3.EDITOR){ getEL('separator2').style.display = mandisp;}
+
+		if(ui.puzzle.flags.irowake){
+			/* ボタンエリアのボタンは、管理領域が消えている時に表示 */
+			getEL('btncolor2').style.display = (this.displaymanage ? 'none' : 'inline');
+		}
+		getEL('menuboard').style.paddingBottom = (this.displaymanage ? '8pt' : '0pt');
+	},
 	displayDesign : function(){
-		this.displayTitle();
 		var pid = ui.puzzle.pid;
+		var pinfo = pzprv3.PZLINFO.info[pid];
+		var title = this.selectStr(pinfo.ja, pinfo.en);
+		if(pzprv3.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else			 { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+
+		document.title = title;
+		getEL('title2').innerHTML = title;
+
 		var imageurl = pzprv3.PZLINFO.toBGimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		document.body.style.backgroundImage = "url("+imageurl+")";
@@ -300,18 +324,6 @@ ui.createClass('Menu',
 			getEL('title2').style.marginTop = "24px";
 			getEL('separator2').style.margin = '0pt';
 		}
-	},
-	displayTitle : function(){
-		var title;
-		if(pzprv3.EDITOR){ title = ""+this.getPuzzleName()+this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else			 { title = ""+this.getPuzzleName()+this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
-
-		document.title = title;
-		getEL('title2').innerHTML = title;
-	},
-	getPuzzleName : function(){
-		var pinfo = pzprv3.PZLINFO.info[ui.puzzle.pid];
-		return this.selectStr(pinfo.ja, pinfo.en);
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1075,28 +1087,19 @@ ui.createClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.checkUserLang() 言語環境をチェックして日本語でない場合英語表示にする
-	// menu.setLang()    言語を設定する
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
-	checkUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		if(userlang.substr(0,2)!=='ja'){ ui.puzzle.setConfig('language','en');}
+	selectStr : function(strJP, strEN){
+		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
-	setLang : function(ln){
-		this.language = ln;
-		this.displayTitle();
-
-		this.displayAll();
-		this.dispmanstr();
-
-		ui.puzzle.refreshCanvas();
+	alertStr : function(strJP, strEN){
+		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
-	selectStr  : function(strJP, strEN){ return (this.language==='ja' ? strJP : strEN);},
-	alertStr   : function(strJP, strEN){ alert(this.language==='ja' ? strJP : strEN);},
-	confirmStr : function(strJP, strEN){ return confirm(this.language==='ja' ? strJP : strEN);},
+	confirmStr : function(strJP, strEN){
+		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+	},
 
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
@@ -1120,7 +1123,7 @@ ui.createClass('Menu',
 		case 'subclear'  : this.ASconfirm(); break;
 		case 'duplicate' : this.duplicate(); break;
 		
-		case 'manarea'   : this.dispman(); break;
+		case 'manarea'   : this.displaymanage = !this.displaymanage; this.displayAll(); break;
 		case 'repaint'   : ui.puzzle.refreshCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
@@ -1128,7 +1131,7 @@ ui.createClass('Menu',
 		case 'jumptop'   : window.open('../../', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
 		
-		case 'language'  : this.setLang(val); break;
+		case 'language'  : this.displayAll(); break;
 		
 		case 'keypopup' :
 			var kp = ui.keypopup;
@@ -1268,33 +1271,6 @@ ui.createClass('Menu',
 			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
 			cdoc.close();
 		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.dispman()    管理領域を隠す/表示するが押された時に動作する
-	// menu.dispmanstr() 管理領域を隠す/表示するにどの文字列を表示するか
-	//------------------------------------------------------------------------------
-	dispman : function(e){
-		var idlist = ['usepanel','checkpanel'];
-		var seplist = pzprv3.EDITOR ? [] : ['separator2'];
-
-		var mandisp  = (this.displaymanage ? 'none' : 'block');
-		var btn2disp = (this.displaymanage ? 'inline' : 'none');
-		var mbpad = (this.displaymanage ? '0pt' : '8pt');
-
-		for(var i=0;i<idlist.length;i++) { getEL(idlist[i]) .style.display = mandisp;}
-		for(var i=0;i<seplist.length;i++){ getEL(seplist[i]).style.display = mandisp;}
-		if(ui.puzzle.flags.irowake){ getEL('btncolor2').style.display = btn2disp;}
-		getEL('menuboard').style.paddingBottom = mbpad;
-
-		this.displaymanage = !this.displaymanage;
-		this.dispmanstr();
-
-		ui.puzzle.refreshCanvas();	// canvasの左上座標等を更新して再描画
-	},
-	dispmanstr : function(){
-		if(!this.displaymanage){ getEL('ms_manarea').innerHTML = this.selectStr("管理領域を表示","Show management area");}
-		else                   { getEL('ms_manarea').innerHTML = this.selectStr("管理領域を隠す","Hide management area");}
 	},
 
 	//------------------------------------------------------------------------------
@@ -1449,8 +1425,8 @@ ui.createClass('MenuList',
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[ui.menu.language].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[ui.menu.language].label;},
+	getMenuStr : function(idname){ return this.flags[idname].str[ui.puzzle.getConfig('language')].menu; },
+	getLabel   : function(idname){ return this.flags[idname].str[ui.puzzle.getConfig('language')].label;},
 	type       : function(idname){ return this.flags[idname].type;},
 	haschild   : function(idname){
 		var flag = this.flags[idname];
