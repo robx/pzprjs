@@ -27,7 +27,6 @@ ui.createClass('Menu',
 		this.popupmgr   = null;			// ポップアップウィンドウ管理オブジェクト
 
 		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
-		this.labelstack = [];			// span等の文字列の情報(idnameと文字列のリスト)
 
 		this.ispencilbox = false;
 
@@ -100,7 +99,6 @@ ui.createClass('Menu',
 		this.dispfloat  = [];
 		this.floatpanel = [];
 		this.btnstack   = [];
-		this.labelstack = [];
 		this.managestack = [];
 
 		this.floatmenuclose(0);
@@ -194,15 +192,11 @@ ui.createClass('Menu',
 
 	//---------------------------------------------------------------------------
 	// menu.addButtons() ボタンの情報を変数に登録する
-	// menu.addLabels()  ラベルの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	addButtons : function(el, func, strJP, strEN){
 		if(!!func) el.onclick = func;
 		pzprv3.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
-	},
-	addLabels  : function(el, strJP, strEN){
-		this.labelstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 
 	//---------------------------------------------------------------------------
@@ -215,10 +209,6 @@ ui.createClass('Menu',
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[this.language];
-		}
-		for(var i=0,len=this.labelstack.length;i<len;i++){
-			if(!this.labelstack[i].el){ continue;}
-			this.labelstack[i].el.innerHTML = this.labelstack[i].str[this.language];
 		}
 		this.enb_btn();
 	},
