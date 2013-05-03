@@ -25,22 +25,25 @@ pzprv3.createCommonClass('AnsCheck',
 	// ans.check1st()  オートチェック時に初めに判定を行う(オーバーライド用)
 	// ans.setAlert()  check()から戻ってきたときに返す、エラー内容を表示するalert文を設定する
 	//---------------------------------------------------------------------------
-	check : function(){
-		var o = this.owner;
+	check : function(activemode){
+		var result = false;
 		this.inCheck = true;
-		this.alstr = { jp:'' ,en:''};
-		o.key.keyreset();
-		o.mouse.mousereset();
-
 		this.checkresult = true;
-		this.checkAns()
-		if(!this.checkresult){
-			o.board.haserror = true;
-			o.drawCanvas();
+		this.alstr = { jp:'' ,en:''};
+		if(activemode){
+			this.checkAns()
+			result = this.checkresult;
 		}
-
+		else{
+			this.inAutoCheck = true;
+			if(this.autocheck1st()){
+				this.checkAns();
+				if(this.checkresult && this.inCheck){ result = true;}
+			}
+			this.inAutoCheck = false;
+		}
 		this.inCheck = false;
-		return this.checkresult;
+		return result;
 	},
 	checkAns : function(){ return true;},	//オーバーライド用
 	check1st : function(){ return true;},	//オーバーライド用
@@ -51,27 +54,8 @@ pzprv3.createCommonClass('AnsCheck',
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.autocheck()    答えの自動チェックを行う(alertがでなかったり、エラー表示を行わない)
 	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
 	//---------------------------------------------------------------------------
-	autocheck : function(){
-		if(!this.owner.getConfig('autocheck') || this.owner.editmode || this.inCheck){ return;}
-
-		var ret = false;
-
-		this.inCheck = this.inAutoCheck = true;
-		this.owner.board.disableSetError();
-
-		if(this.autocheck1st()){
-			this.checkresult = true;
-			this.checkAns();
-			if(this.checkresult && this.inCheck){ ret = true;}
-		}
-		this.owner.board.enableSetError();
-		this.inCheck = this.inAutoCheck = false;
-
-		return ret;
-	},
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		if(!this.check1st()){ return false;}

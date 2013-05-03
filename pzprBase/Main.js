@@ -245,6 +245,40 @@ pzprv3.createCoreClass('Owner',
 	},
 
 	//------------------------------------------------------------------------------
+	// owner.anscheck()       正答判定処理を行う
+	// owner.anscheckSilent() 自動判定処理用の正答判定処理を行う
+	// owner.ansclear()       回答を消去する
+	// owner.subclear()       補助記号を消去する
+	//------------------------------------------------------------------------------
+	anscheck : function(){
+		var result = false;
+		this.key.keyreset();
+		this.mouse.mousereset();
+		result = this.checker.check(true);
+		if(!result){
+			this.board.haserror = true;
+			this.drawCanvas();
+		}
+		return result;
+	},
+	anscheckSilent : function(){
+		var result = false;
+		this.board.disableSetError();
+		result = this.checker.check(false);
+		this.board.enableSetError();
+		return result;
+	},
+	ansclear : function(){
+		this.board.ansclear();
+		this.board.resetInfo();
+		this.drawCanvas();
+	},
+	subclear : function(){
+		this.board.subclear();
+		this.drawCanvas();
+	},
+
+	//------------------------------------------------------------------------------
 	// owner.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){

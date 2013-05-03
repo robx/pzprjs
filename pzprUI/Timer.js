@@ -80,9 +80,9 @@ ui.createClass('Timer',
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
 		var o = ui.puzzle;
-		if(this.current>this.nextACtime && this.lastAnsCnt != o.opemgr.anscount && !o.checker.inCheck){
+		if(this.current>this.nextACtime && this.lastAnsCnt != o.opemgr.anscount && o.playmode && !o.checker.inCheck){
 			this.lastAnsCnt = o.opemgr.anscount;
-			if(o.checker.autocheck()){
+			if(o.anscheckSilent()){
 				o.mouse.mousereset();
 				o.setConfig('autocheck',false);
 				ui.menu.alertStr("正解です！","Complete!");

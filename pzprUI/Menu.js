@@ -1175,19 +1175,19 @@ ui.createClass('Menu',
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
-		var _doc = document;
-		_doc.fileform2.filename.value = fname;
+		var form = document.fileform2;
+		form.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!==-1){ _doc.fileform2.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!==-1){ _doc.fileform2.platform.value = "Mac";}
-		else                                           { _doc.fileform2.platform.value = "Others";}
+		if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
+		else                                           { form.platform.value = "Others";}
 
-		_doc.fileform2.ques.value   = puzzle.fio.fileencode(ftype);
-		_doc.fileform2.urlstr.value = puzzle.fio.history;
-		_doc.fileform2.operation.value = 'save';
+		form.ques.value   = puzzle.fio.fileencode(ftype);
+		form.urlstr.value = puzzle.fio.history;
+		form.operation.value = 'save';
 
-		_doc.fileform2.action = this.fileio
-		_doc.fileform2.submit();
+		form.action = this.fileio
+		form.submit();
 	},
 
 	//------------------------------------------------------------------------------
@@ -1280,7 +1280,7 @@ ui.createClass('Menu',
 	//------------------------------------------------------------------------------
 	answercheck : function(){
 		var o = ui.puzzle;
-		if(!o.checker.check()){
+		if(!ui.puzzle.anscheck()){
 			this.alertStr(o.checker.alstr.jp, o.checker.alstr.en);
 		}
 		else{
@@ -1289,21 +1289,12 @@ ui.createClass('Menu',
 	},
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			var o = ui.puzzle;
-			o.opemgr.newOperation(true);
-
-			o.board.ansclear();
-			o.board.resetInfo();
-			o.drawCanvas();
+			ui.puzzle.ansclear();
 		}
 	},
 	ASconfirm : function(){
 		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			var o = ui.puzzle;
-			o.opemgr.newOperation(true);
-
-			o.board.subclear();
-			o.drawCanvas();
+			ui.puzzle.subclear();
 		}
 	}
 });
