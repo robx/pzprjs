@@ -1052,7 +1052,7 @@ pzprv3.createCommonClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
-			else if(this.owner.config.flag_irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
+			else if(this.owner.flags.irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;

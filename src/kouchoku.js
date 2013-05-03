@@ -322,9 +322,9 @@ OperationManager:{
 	}
 },
 
-Properties:{
+Flags:{
 	disable_subclear : true,
-	flag_irowake : 1
+	irowake : 1
 },
 
 //---------------------------------------------------------
@@ -916,7 +916,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seg.cross2.segment.add(seg);
 		}
 		this.reassignId(ids);
-		if(!!this.owner.config.flag_irowake){ this.newIrowake();}
+		if(!!this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){

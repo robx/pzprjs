@@ -55,9 +55,9 @@ AreaWhiteManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_use      : true,
-	flag_redblkrb : true
+Flags:{
+	use      : true,
+	redblkrb : true
 },
 
 //---------------------------------------------------------

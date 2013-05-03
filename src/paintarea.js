@@ -40,9 +40,9 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_use    : true,
-	flag_redblk : true
+Flags:{
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------

@@ -153,11 +153,11 @@ pzprv3.createCommonClass('MouseEvent',
 		this.mouseinput();		/* 各パズルのルーチンへ */
 	},
 	isDispred : function(){
-		var o = this.owner, cf = o.config, flag = false;
-		if     (cf.flag_redline  && o.getConfig('redline')) { flag = true;}
-		else if(cf.flag_redblk   && o.getConfig('redblk'))  { flag = true;}
-		else if(cf.flag_redblkrb && o.getConfig('redblkrb')){ flag = true;}
-		else if(o.pid==='roma'   && o.getConfig('redroad')) { flag = true;}
+		var o = this.owner, cf = o.flags, flag = false;
+		if     (cf.redline     && o.getConfig('redline')) { flag = true;}
+		else if(cf.redblk      && o.getConfig('redblk'))  { flag = true;}
+		else if(cf.redblkrb    && o.getConfig('redblkrb')){ flag = true;}
+		else if(o.pid==='roma' && o.getConfig('redroad')) { flag = true;}
 		return o.key.isZ ^ flag;
 	},
 

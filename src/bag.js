@@ -83,8 +83,8 @@ LineManager:{
 	borderAsLine : true
 },
 
-Properties:{
-	flag_bgcolor : true
+Flags:{
+	bgcolor : true
 },
 
 //---------------------------------------------------------

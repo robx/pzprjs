@@ -53,7 +53,7 @@ ui.createClass('Menu',
 	// menu.menureset()  メニュー用の設定を消去する
 	//---------------------------------------------------------------------------
 	menuinit : function(){
-		var pid = ui.puzzle.pid, pp = ui.puzzle.config;
+		var pid = ui.puzzle.pid;
 		
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
 		
@@ -285,6 +285,10 @@ ui.createClass('Menu',
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			break;
 		}
+		
+		if(idname==='disptype_pipelinkr'){
+			getEL('btncircle').value = ((puzzle.getConfig(idname)==1)?"○":"■");
+		}
 	},
 	setcaption : function(idname, val){
 		var items = this.items;
@@ -395,7 +399,7 @@ ui.createClass('Menu',
 		aa('cap_board','board', '盤面','Display mode');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
-		if(!puzzle.config.disable_subclear){
+		if(!puzzle.flags.disable_subclear){
 			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 		}
 
@@ -405,7 +409,7 @@ ui.createClass('Menu',
 		pp.addMenuSelect('cellsize','disp', '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!puzzle.config.flag_irowake){
+		if(!!puzzle.flags.irowake){
 			ac('irowake','disp', '線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
@@ -459,7 +463,7 @@ ui.createClass('Menu',
 		}
 
 		/* 操作方法の設定値 */
-		if(puzzle.config.flag_use){
+		if(puzzle.flags.use){
 			pp.addSelect('use','setting','操作方法', 'Input Type');
 			pp.setLabel('use', '操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -474,15 +478,15 @@ ui.createClass('Menu',
 		}
 
 		/* 盤面チェックの設定値 */
-		if(puzzle.config.flag_redline){
+		if(puzzle.flags.redline){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
 		}
-		else if(puzzle.config.flag_redblk){
+		else if(puzzle.flags.redblk){
 			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 		}
-		else if(puzzle.config.flag_redblkrb){
+		else if(puzzle.flags.redblkrb){
 			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 		}
@@ -492,7 +496,7 @@ ui.createClass('Menu',
 		}
 
 		/* 背景色入力の設定値 */
-		if(puzzle.config.flag_bgcolor){
+		if(puzzle.flags.bgcolor){
 			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
 			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
@@ -541,8 +545,8 @@ ui.createClass('Menu',
 		/* 盤面表示形式の設定値 */
 		if(pid==='pipelinkr'){
 			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
-			pp.addChild('disptype_pipelinkr_1', 'disptype', '○', 'Circle');
-			pp.addChild('disptype_pipelinkr_2', 'disptype', '■', 'Icebarn');
+			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
+			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
 		}
 		if(pid==='bosanowa'){
 			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
@@ -895,7 +899,7 @@ ui.createClass('Menu',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(puzzle.config.flag_irowake){
+		if(puzzle.flags.irowake){
 			// 横にくっつけたいボタンを追加
 			var el = this.el_button.cloneNode(false);
 			el.id = "ck_btn_irowake";
@@ -960,13 +964,13 @@ ui.createClass('Menu',
 		getEL('btnundo').disabled = true;
 		getEL('btnredo').disabled = true;
 
-		if(!puzzle.config.disable_subclear){
+		if(!puzzle.flags.disable_subclear){
 			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(!!puzzle.config.flag_irowake){
+		if(!!puzzle.flags.irowake){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ puzzle.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
@@ -975,8 +979,9 @@ ui.createClass('Menu',
 
 		if(puzzle.pid==='pipelinkr'){
 			var el = this.el_button.cloneNode(false); el.id = 'btncircle';
+			pzprv3.unselectable(el);
+			el.onclick = function(){ self.toggledisp();};
 			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ self.toggledisp();}, "○", "○");
 		}
 
 		if(puzzle.pid==='tentaisho'){
@@ -986,8 +991,8 @@ ui.createClass('Menu',
 		}
 	},
 	toggledisp : function(){
-		var puzzle = ui.puzzle;
-		puzzle.setConfig('disptype', (puzzle.getConfig('disptype')==1?2:1));
+		var puzzle = ui.puzzle, current = puzzle.getConfig('disptype_pipelinkr');
+		puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
 	},
 	enb_btn : function(){
 		var opemgr = ui.puzzle.opemgr;
@@ -1019,6 +1024,7 @@ ui.createClass('Menu',
 		this.settextsize(this.menuconfig.textsize.val);
 	},
 	setMenuConfig : function(idname, newval){
+		if(!!this.menuconfig[idname]){ return;}
 		this.menuconfig[idname].val = newval;
 		this.setcaption(idname, newval);
 		if(idname==='adjsize'){
@@ -1034,7 +1040,7 @@ ui.createClass('Menu',
 		}
 	},
 	getMenuConfig : function(idname){
-		return this.menuconfig[idname].val;
+		return (!!this.menuconfig[idname]?this.menuconfig[idname].val:null);
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1105,6 +1111,8 @@ ui.createClass('Menu',
 //--------------------------------------------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	menuexec : function(idname, val){
+		if(!ui.puzzle.ready){ return true;}
+		
 		var result = true;
 		switch(idname){
 		case 'filesave'  : this.filesave(k.PZPR); break;
@@ -1143,16 +1151,11 @@ ui.createClass('Menu',
 			break;
 		
 		case 'bgcolor':
-			if(ui.puzzle.config.flag_bgcolor){
+			if(ui.puzzle.flags.bgcolor){
 				var mode = ui.puzzle.getConfig('mode');
-				pzprv3.getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
-				pzprv3.getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
+				getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
+				getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
 			}
-			break;
-		
-		case 'disptype_pipelinkr':
-			if     (val==1){ pzprv3.getEL('btncircle').value="○";}
-			else if(val==2){ pzprv3.getEL('btncircle').value="■";}
 			break;
 		
 		case 'mode':
@@ -1291,7 +1294,7 @@ ui.createClass('Menu',
 
 		for(var i=0;i<idlist.length;i++) { getEL(idlist[i]) .style.display = mandisp;}
 		for(var i=0;i<seplist.length;i++){ getEL(seplist[i]).style.display = mandisp;}
-		if(ui.puzzle.config.flag_irowake){ getEL('btncolor2').style.display = btn2disp;}
+		if(ui.puzzle.flags.irowake){ getEL('btncolor2').style.display = btn2disp;}
 		getEL('menuboard').style.paddingBottom = mbpad;
 
 		this.displaymanage = !this.displaymanage;
@@ -1401,12 +1404,12 @@ ui.createClass('MenuList',
 	},
 
 	addCheck : function(idname, parent, strJP, strEN){
-		var first = ui.puzzle.config.val[idname].val;
+		var first = ui.puzzle.config.list[idname].val;
 		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
 	},
 	addSelect : function(idname, parent, strJP, strEN){
-		var first = ui.puzzle.config.val[idname].val;
-		var child = ui.puzzle.config.val[idname].option;
+		var first = ui.puzzle.config.list[idname].val;
+		var child = ui.puzzle.config.list[idname].option;
 		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
 		this.flags[idname].child = child;
 	},

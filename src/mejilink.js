@@ -82,8 +82,8 @@ LineManager:{
 	bdfunc : function(border){ return !border.isGround();}
 },
 
-Properties:{
-	flag_redline : true
+Flags:{
+	redline : true
 },
 
 //---------------------------------------------------------

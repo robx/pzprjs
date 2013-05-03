@@ -44,8 +44,8 @@ AreaWhiteManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_use : true
+Flags:{
+	use : true
 },
 
 //---------------------------------------------------------

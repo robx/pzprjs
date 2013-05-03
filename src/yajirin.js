@@ -66,10 +66,10 @@ LineManager:{
 	isCenterLine : true
 },
 
-Properties:{
-	flag_use     : true,
-	flag_redline : true,
-	flag_irowake : 1
+Flags:{
+	use     : true,
+	redline : true,
+	irowake : 1
 },
 
 //---------------------------------------------------------

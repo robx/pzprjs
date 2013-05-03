@@ -110,7 +110,7 @@ Cell:{
 	}
 },
 
-Properties:{
+Flags:{
 	disable_subclear : true
 },
 

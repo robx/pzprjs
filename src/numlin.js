@@ -42,8 +42,8 @@ AreaLineManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_redline : true
+Flags:{
+	redline : true
 },
 
 //---------------------------------------------------------

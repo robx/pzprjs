@@ -230,13 +230,13 @@ Board:{
 	}
 },
 
-Properties:{
-	flag_use     : true,
-	flag_redline : true,
+Flags:{
+	use     : true,
+	redline : true,
 	disable_subclear : true
 },
-"Properties@wagiri":{
-	flag_use     : true,
+"Flags@wagiri":{
+	use     : true,
 	disable_subclear : true
 },
 

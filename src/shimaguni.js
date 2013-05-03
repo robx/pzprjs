@@ -71,8 +71,8 @@ AreaRoomManager:{
 	hastop : true
 },
 
-Properties:{
-	flag_use : true
+Flags:{
+	use : true
 },
 
 //---------------------------------------------------------

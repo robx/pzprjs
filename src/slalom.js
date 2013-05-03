@@ -295,9 +295,9 @@ LineManager:{
 	isCenterLine : true
 },
 
-Properties:{
-	flag_redline : true,
-	flag_irowake : 1
+Flags:{
+	redline : true,
+	irowake : 1
 },
 
 //---------------------------------------------------------

@@ -64,12 +64,12 @@ AreaWhiteManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_use : true
+Flags:{
+	use : true
 },
-"Properties@nurikabe":{
-	flag_use    : true,
-	flag_redblk : true
+"Flags@nurikabe":{
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------

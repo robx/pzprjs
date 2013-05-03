@@ -22,6 +22,10 @@ pzprv3.createCoreClass('Owner',
 		this.canvas  = null;		// 描画canvas本体
 		this.canvas2 = null;		// 補助canvas
 		this.usecanvas2 = false;	// 補助canvasがあるかどうか
+
+		this.config = new pzprv3.core.Config();
+		this.config.owner = this;
+		this.config.init();
 	},
 
 	//---------------------------------------------------------------------------
@@ -105,7 +109,7 @@ pzprv3.createCoreClass('Owner',
 		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
 		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
 
-		this.config = this.newInstance('Properties');	// パズルの設定値を保持するオブジェクト
+		this.flags = this.newInstance('Flags');		// パズルの初期設定値を保持するオブジェクト
 
 		// 盤面保持用データ生成処理
 		this.board.initialize2();
@@ -255,7 +259,10 @@ pzprv3.createCoreClass('Owner',
 		this.drawCanvas();
 	},
 
-	//---------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
+	// owner.getConfig()  設定値の取得を行う
+	// owner.setConfig()  設定値の設定を行う
+	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.getVal(idname);},
 	setConfig : function(idname,val){ return this.config.setVal(idname,val);}
 });
@@ -263,37 +270,23 @@ pzprv3.createCoreClass('Owner',
 //--------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-// ★Propertiesクラス 設定値の値などを保持する
+// ★Configクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('Properties',
+pzprv3.createCoreClass('Config',
 {
-	initialize : function(){
-		this.init();
-	},
-
-	/* フラグ */
-	flag_use      : false,
-	flag_redline  : false,
-	flag_redblk   : false,
-	flag_redblkrb : false,
-	flag_bgcolor  : false,
-	flag_irowake : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
-
-	disable_subclear : false,	// "補助消去"ボタンを作らない
-
 	/* 設定値 */
-	val : {},
+	list : {},
 
 	//---------------------------------------------------------------------------
-	// config.getVal()  各フラグのvalの値を返す
+	// config.getVal()  各フラグの設定値を返す
 	// config.setVal()  各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
 	getVal : function(name){
-		return this.val[name]?this.val[name].val:null;
+		return this.list[name]?this.list[name].val:null;
 	},
 	setVal : function(name, newval){
-		if(!!this.val[name]){
-			this.val[name].val = newval;
+		if(!!this.list[name]){
+			this.list[name].val = newval;
 			
 			this.onchange_event(name, newval);
 			this.uievent(name, newval);
@@ -305,13 +298,13 @@ pzprv3.createCommonClass('Properties',
 	//---------------------------------------------------------------------------
 	init : function(){
 		/* 全般的な設定 */
-		this.add('mode', (puzzle.editmode?1:3), [1,3]);			/* モード */
-		this.add('autocheck', puzzle.playmode);					/* 正解自動判定機能 */
+		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
+		this.add('autocheck', this.owner.playmode);				/* 正解自動判定機能 */
 		this.add('language', 'ja', ['ja','en']);				/* 言語設定 */
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
-		this.add('irowake', (this.flag_irowake===2));			/* 線の色分け */
+		this.add('irowake', (this.owner.irowake===2));			/* 線の色分け */
 
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
@@ -349,8 +342,8 @@ pzprv3.createCommonClass('Properties',
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 	},
 	add : function(name, defvalue, option){
-		if(!option){ this.val[name] = {val:defvalue};}
-		else{ this.val[name] = {val:defvalue, option:option};}
+		if(!option){ this.list[name] = {val:defvalue};}
+		else{ this.list[name] = {val:defvalue, option:option};}
 	},
 
 	//---------------------------------------------------------------------------
@@ -400,4 +393,20 @@ pzprv3.createCommonClass('Properties',
 		}
 		return result;
 	}
+});
+
+//---------------------------------------------------------------------------
+// ★Flagsクラス 設定値の値などを保持する
+//---------------------------------------------------------------------------
+pzprv3.createCommonClass('Flags',
+{
+	/* フラグ */
+	use      : false,
+	redline  : false,
+	redblk   : false,
+	redblkrb : false,
+	bgcolor  : false,
+	irowake : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+
+	disable_subclear : false	// "補助消去"ボタンを作らない
 });

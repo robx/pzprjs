@@ -87,10 +87,10 @@ LineManager:{
 	borderAsLine : true
 },
 
-Properties:{
-	flag_redline : true,
-	flag_bgcolor : true,
-	flag_irowake : 1
+Flags:{
+	redline : true,
+	bgcolor : true,
+	irowake : 1
 },
 
 //---------------------------------------------------------

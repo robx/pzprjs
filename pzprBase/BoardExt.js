@@ -77,7 +77,7 @@ pzprv3.createCommonClass('LineManager',
 		}
 
 		this.reassignId(blist);
-		if(this.owner.config.flag_irowake){ this.newIrowake();}
+		if(this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
@@ -569,11 +569,11 @@ pzprv3.createCommonClass('AreaCellManager',
 
 		if(c2===null){
 			areaid = this.getnewid();
-			if(!!this.owner.config.flag_irowake){ cell.color = this.owner.painter.getNewLineColor();}
+			if(!!this.owner.flags.irowake){ cell.color = this.owner.painter.getNewLineColor();}
 		}
 		else{
 			areaid = this.id[c2];
-			if(!!this.owner.config.flag_irowake){ cell.color = this.owner.board.cell[c2].color;}
+			if(!!this.owner.flags.irowake){ cell.color = this.owner.board.cell[c2].color;}
 		}
 		this[areaid].idlist.push(cell.id);
 		this.id[cell.id] = areaid;
@@ -591,7 +591,7 @@ pzprv3.createCommonClass('AreaCellManager',
 
 		if(idlist.length===0){ this.invalidid(areaid);}
 		this.id[cell.id] = null;
-		if(!!this.owner.config.flag_irowake){ cell.color = "";}
+		if(!!this.owner.flags.irowake){ cell.color = "";}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -600,14 +600,14 @@ pzprv3.createCommonClass('AreaCellManager',
 	// info.setLongColor() ブロックに色をつけなおす
 	//--------------------------------------------------------------------------------
 	remakeInfo : function(cell, cid){
-		var longColor = (!!this.owner.config.flag_irowake ? this.getLongColor(cid) : "");
+		var longColor = (!!this.owner.flags.irowake ? this.getLongColor(cid) : "");
 
 		if(this.id[cell.id]!==null){ cid.push([cell.id]);}
 		var idlist = this.popRoom(cid);
 		if(this.id[cell.id]===null){ idlist.push(cell.id);}
 		var assign = this.searchIdlist(idlist);
 
-		if(!!this.owner.config.flag_irowake){ this.setLongColor(assign, longColor);}
+		if(!!this.owner.flags.irowake){ this.setLongColor(assign, longColor);}
 	},
 
 	getLongColor : function(cid){

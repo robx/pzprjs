@@ -67,8 +67,8 @@ AreaLineManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_irowake : 1
+Flags:{
+	irowake : 1
 },
 
 //---------------------------------------------------------

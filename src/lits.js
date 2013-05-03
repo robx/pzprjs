@@ -94,12 +94,12 @@ AreaRoomManager:{
 	enabled : true
 },
 
-Properties:{
-	flag_use : true
+Flags:{
+	use : true
 },
-"Properties@lits":{
-	flag_use    : true,
-	flag_redblk : true
+"Flags@lits":{
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------
