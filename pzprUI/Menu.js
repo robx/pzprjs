@@ -952,8 +952,8 @@ ui.createClass('Menu',
 
 		var puzzle = ui.puzzle, self = this;
 		this.addButtons(btncheck, function(){ self.answercheck();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(1); self.enb_btn();}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(1); self.enb_btn();}, "進", "->");
+		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(); self.enb_btn();}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(); self.enb_btn();}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
@@ -1113,10 +1113,10 @@ ui.createClass('Menu',
 		case 'imagedl'   : this.imagesave(true,null); break;
 		case 'imagesave' : this.imagesave(false,null); break;
 		
-		case 'h_oldest'  : ui.puzzle.opemgr.undoall(); this.enb_btn(); break;
-		case 'h_undo'    : ui.puzzle.opemgr.undo(1);   this.enb_btn(); break;
-		case 'h_redo'    : ui.puzzle.opemgr.redo(1);   this.enb_btn(); break;
-		case 'h_latest'  : ui.puzzle.opemgr.redoall(); this.enb_btn(); break;
+		case 'h_oldest'  : ui.puzzle.undoall(); this.enb_btn(); break;
+		case 'h_undo'    : ui.puzzle.undo();    this.enb_btn(); break;
+		case 'h_redo'    : ui.puzzle.redo();    this.enb_btn(); break;
+		case 'h_latest'  : ui.puzzle.redoall(); this.enb_btn(); break;
 		case 'check'     : this.answercheck(); break;
 		case 'ansclear'  : this.ACconfirm(); break;
 		case 'subclear'  : this.ASconfirm(); break;

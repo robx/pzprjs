@@ -400,24 +400,22 @@ UndoTimer_goishi:{
 		else{ this.exec();}
 	},
 	exec : function(){
-		var opemgr = this.owner.opemgr;
+		var o = this.owner, opemgr = o.opemgr;
 		if(this.inUNDO){
-			var prop = (opemgr.enableUndo ? opemgr.ope[opemgr.current-1].property : '');
+			var prop = (opemgr.enableUndo ? opemgr.ope[opemgr.position-1].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		else if(this.inREDO){
-			var prop = (opemgr.enableRedo ? opemgr.ope[opemgr.current].property : '');
+			var prop = (opemgr.enableRedo ? opemgr.ope[opemgr.position].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		
 		if(!!this.TID){
 			if(this.inUNDO){
-				opemgr.undo(1);
-				if(!opemgr.enableUndo){ this.stop();}
+				if(!o.undo()){ this.stop();}
 			}
 			else if(this.inREDO){
-				opemgr.redo(1);
-				if(!opemgr.enableRedo){ this.stop();}
+				if(!o.redo()){ this.stop();}
 			}
 		}
 	}

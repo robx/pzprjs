@@ -208,7 +208,7 @@ pzprv3.createCommonClass('OperationManager',
 	initialize : function(){
 		this.lastope;		// this.opeのLasstIndexへのポインタ
 		this.ope;			// Operationクラスを保持する配列
-		this.current;		// 現在の表示操作番号を保持する
+		this.position;		// 現在の表示操作番号を保持する
 		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
 		this.disrec = 0;		// このクラスからの呼び出し時は1にする
@@ -245,12 +245,12 @@ pzprv3.createCommonClass('OperationManager',
 	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
 
-		this.enableUndo = (this.current>0);
-		this.enableRedo = (this.current<this.ope.length);
+		this.enableUndo = (this.position>0);
+		this.enableRedo = (this.position<this.ope.length);
 	},
 	allerase : function(){
 		this.ope      = [];
-		this.current  = 0;
+		this.position = 0;
 		this.anscount = 0;
 		this.checkexec();
 	},
@@ -269,8 +269,8 @@ pzprv3.createCommonClass('OperationManager',
 		if(!this.isenableRecord()){ return;}
 
 		if(this.enableRedo){
-			for(var i=this.ope.length-1;i>=this.current;i--){ this.ope.pop();}
-			this.current = this.ope.length;
+			for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
+			this.position = this.ope.length;
 		}
 
 		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
@@ -278,7 +278,7 @@ pzprv3.createCommonClass('OperationManager',
 		ope.chain = this.chainflag;
 
 		this.ope.push(ope);
-		this.current++;
+		this.position++;
 		this.anscount++;
 
 		this.chainflag = true;
@@ -299,7 +299,7 @@ pzprv3.createCommonClass('OperationManager',
 			return ope;
 		},
 		function(){
-			var ref = this.ope[this.current-1];
+			var ref = this.ope[this.position-1];
 
 			// 前回と同じ場所なら前回の更新のみ
 			if( !this.disCombine && !!ref && !!ref.property &&
@@ -357,7 +357,7 @@ pzprv3.createCommonClass('OperationManager',
 			try{
 				var str = datas.join(''), data = JSON.parse(str);
 				this.ope = [];
-				this.current = data.current;
+				this.position = data.current;
 				for(var i=0,len=data.datas.length;i<len;i++){
 					var str = data.datas[i], chain = false;
 					if(str.charAt(0)==='+'){ chain = true; str = str.substr(1);}
@@ -391,7 +391,7 @@ pzprv3.createCommonClass('OperationManager',
 		var data = ['','history:{'], datas = [];
 		data.push('"version":0.2,');
 		data.push('"history":'+lastid+',');
-		data.push('"current":'+(this.current)+',');
+		data.push('"current":'+(this.position)+',');
 		data.push('"datas":[');
 		for(var i=0;i<lastid;i++){
 			var chain = (this.ope[i].chain?'+':'');
@@ -404,49 +404,40 @@ pzprv3.createCommonClass('OperationManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// um.undo()  Undoを指定された回数実行する
-	// um.redo()  Redoを指定された回数実行する
-	// um.undoall()  Undoを最後まで実行する
-	// um.redoall()  Redoを最後まで実行する
-	// um.undoSingle()  Undoを実行する
-	// um.redoSingle()  Redoを実行する
+	// um.undo()  Undoを実行する
+	// um.redo()  Redoを実行する
 	//---------------------------------------------------------------------------
-	undo : function(num){
-		if(!this.enableUndo){ return;}
+	undo : function(){
+		if(!this.enableUndo){ return false;}
 		this.undoExec = true;
 		this.preproc();
-		for(var i=0;i<num;i++){ this.undoSingle();}
-		this.postproc();
-		this.undoExec = false;
-	},
-	redo : function(num){
-		if(!this.enableRedo){ return;}
-		this.redoExec = true;
-		this.preproc();
-		for(var i=0;i<num;i++){ this.redoSingle();}
-		this.postproc();
-		this.redoExec = false;
-	},
-	undoall : function(){ this.undo(this.current);},
-	redoall : function(){ this.redo(this.ope.length-this.current-1);},
-
-	undoSingle : function(){
-		for(var i=this.current-1;i>=0;i--){
+		for(var i=this.position-1;i>=0;i--){
 			var ref = this.ope[i];
 			if(!ref){ break;}
 			ref.undo();
-			this.current--;
+			this.position--;
 			if(!ref.chain){ break;}
 		}
+		this.postproc();
+		this.undoExec = false;
+		this.checkexec();
+		return this.enableUndo;
 	},
-	redoSingle : function(){
-		for(var i=this.current,len=this.ope.length;i<len;i++){
+	redo : function(){
+		if(!this.enableRedo){ return false;}
+		this.redoExec = true;
+		this.preproc();
+		for(var i=this.position,len=this.ope.length;i<len;i++){
 			var ref = this.ope[i];
 			if(!ref){ break;}
 			ref.redo();
-			this.current++;
+			this.position++;
 			if(!this.ope[i+1] || !this.ope[i+1].chain){ break;}
 		}
+		this.postproc();
+		this.redoExec = false;
+		this.checkexec();
+		return this.enableRedo;
 	},
 
 	//---------------------------------------------------------------------------

@@ -190,7 +190,7 @@ ui.extendClass('Debug',
 	},
 	check_turnR2 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ ui.puzzle.opemgr.undo(1);}
+		for(var i=0;i<4;i++){ ui.puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnR test 2  = pass");}
@@ -209,7 +209,7 @@ ui.extendClass('Debug',
 	},
 	check_turnL2 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ ui.puzzle.opemgr.undo(1);}
+		for(var i=0;i<4;i++){ ui.puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnL test 2  = pass");}
@@ -228,7 +228,7 @@ ui.extendClass('Debug',
 	},
 	check_flipX2 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ ui.puzzle.opemgr.undo(1);}
+		for(var i=0;i<2;i++){ ui.puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipX test 2  = pass");}
@@ -247,7 +247,7 @@ ui.extendClass('Debug',
 	},
 	check_flipY2 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ ui.puzzle.opemgr.undo(1);}
+		for(var i=0;i<2;i++){ ui.puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipY test 2  = pass");}
@@ -267,7 +267,7 @@ ui.extendClass('Debug',
 	},
 	check_adjust2 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<8;i++){ ui.puzzle.opemgr.undo(1);}
+		for(var i=0;i<8;i++){ ui.puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Adjust test 2  = pass");}

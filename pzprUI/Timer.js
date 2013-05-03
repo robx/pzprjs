@@ -123,9 +123,9 @@ ui.createClass('UndoTimer',
 	check_keyevent : function(){
 		if(!ui.puzzle || !ui.puzzle.key){ return;}
 
-		if(this.lastCurrentOpe !== ui.puzzle.opemgr.current){
+		if(this.lastCurrentOpe !== ui.puzzle.opemgr.position){
 			ui.menu.enb_btn();
-			this.lastCurrentOpe = ui.puzzle.opemgr.current;
+			this.lastCurrentOpe = ui.puzzle.opemgr.position;
 		}
 	},
 
@@ -173,20 +173,17 @@ ui.createClass('UndoTimer',
 		else{ this.exec();}
 	},
 	exec : function(){
-		var opemgr = ui.puzzle.opemgr;
-		var kc = ui.puzzle.key;
+		var o = ui.puzzle, kc = o.key;
 		if(!kc.isCTRL && !kc.isMETA)   { this.stop();}
 		else if(this.inUNDO && !kc.isZ){ this.stop();}
 		else if(this.inREDO && !kc.isY){ this.stop();}
 		
 		if(!!this.TID){
 			if(this.inUNDO){
-				opemgr.undo(1);
-				if(!opemgr.enableUndo){ this.stop();}
+				if(!o.undo()){ this.stop();}
 			}
 			else if(this.inREDO){
-				opemgr.redo(1);
-				if(!opemgr.enableRedo){ this.stop();}
+				if(!o.redo()){ this.stop();}
 			}
 		}
 	}

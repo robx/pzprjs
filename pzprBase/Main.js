@@ -224,6 +224,25 @@ pzprv3.createCoreClass('Owner',
 		return (pzprv3.currentTime() - this.starttime);
 	},
 
+	//---------------------------------------------------------------------------
+	// owner.undo()  Undoを実行する
+	// owner.redo()  Redoを実行する
+	// owner.undoall()  Undoを最後まで実行する
+	// owner.redoall()  Redoを最後まで実行する
+	//---------------------------------------------------------------------------
+	undo : function(){
+		return this.opemgr.undo();
+	},
+	redo : function(){
+		return this.opemgr.redo();
+	},
+	undoall : function(){
+		while(this.opemgr.undo()){ }
+	},
+	redoall : function(){
+		while(this.opemgr.redo()){ }
+	},
+
 	//------------------------------------------------------------------------------
 	// owner.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
