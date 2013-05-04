@@ -35,6 +35,8 @@ var Menu = function(){
 
 	this.fileio = (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	this.enableReadText = false;
+
+	this.items = new MenuList();
 };
 Menu.prototype =
 {
@@ -53,7 +55,7 @@ Menu.prototype =
 		var pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
-		this.items = new MenuList();
+		this.items.reset();
 
 		this.initReader();
 
@@ -100,7 +102,6 @@ Menu.prototype =
 
 		ui.keypopup.clear();
 
-		if(!!this.items){ this.items.reset();}
 		if(!!ui.popupmgr){ ui.popupmgr.reset();}
 		
 		ui.event.removeUIEvents();
