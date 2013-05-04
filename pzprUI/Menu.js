@@ -33,10 +33,6 @@ ui.createClass('Menu',
 		this.displaymanage = true;		// メニューの下の管理領域を表示しているか
 
 		this.reader;	// FileReaderオブジェクト
-
-		// ElementTemplate : ボタン
-		this.el_button = pzprv3.createEL('input');
-		this.el_button.type = 'button';
 	},
 
 	enableSaveImage  : false, // 画像保存が有効か
@@ -199,7 +195,7 @@ ui.createClass('Menu',
 	// menu.setcaption() 設定変更された場合にメニューなどのデータを作り直す
 	//---------------------------------------------------------------------------
 	displayAll : function(){
-		for(var i in this.items.flags){ this.setdisplay(i);}
+		for(var i in this.items.item){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[ui.puzzle.getConfig('language')];
@@ -234,16 +230,16 @@ ui.createClass('Menu',
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			
 			/* 子要素の設定も行う */
-			for(var i=0,len=pp.flags[idname].child.length;i<len;i++){
-				this.setdisplay(""+idname+"_"+pp.flags[idname].child[i]);
+			for(var i=0,len=pp.item[idname].child.length;i<len;i++){
+				this.setdisplay(""+idname+"_"+pp.item[idname].child[i]);
 			}
 			break;
 
 		case pp.CHILD:
-			var val = ui.puzzle.getConfig(pp.flags[idname].parent);
-			if(val===null){ val = this.getMenuConfig(pp.flags[idname].parent);}
+			var val = ui.puzzle.getConfig(pp.item[idname].parent);
+			if(val===null){ val = this.getMenuConfig(pp.item[idname].parent);}
 			
-			var issel = (pp.flags[idname].val == val);	/* 選択されているかどうか */
+			var issel = (pp.item[idname].val == val);	/* 選択されているかどうか */
 			
 			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
@@ -285,8 +281,8 @@ ui.createClass('Menu',
 		}
 	},
 	setcaption : function(idname, val){
-		var items = this.items;
-		if(!!items && !!items.flags[idname]){ this.setdisplay(idname);}
+		var pp = this.items;
+		if(!!pp && !!pp.item[idname]){ this.setdisplay(idname);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -624,10 +620,7 @@ ui.createClass('Menu',
 		var el_label = pzprv3.createEL('li');
 		el_label.className = 'smenulabel';
 
-		for(var i=0;i<pp.flaglist.length;i++){
-			var id = pp.flaglist[i];
-			if(!pp.flags[id]){ continue;}
-
+		for(var id in pp.item){
 			var temp=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
 			switch(pp.type(id)){
 				case pp.MENU:     temp = el_menu;     break;
@@ -656,7 +649,7 @@ ui.createClass('Menu',
 				if(cfunc){ ui.event.addEvent(smenu, "click", this, this.submenuclick);}
 			}
 
-			var parentid = pp.flags[id].parent;
+			var parentid = pp.item[id].parent;
 			if(!this.floatpanel[parentid]){
 				var panel = el_float.cloneNode(false);
 				panel.id = 'float_'+parentid;
@@ -739,8 +732,8 @@ ui.createClass('Menu',
 			if(menutype===pp.SMENU){ this.submenuexec(e, idname);}
 			else if(menutype===pp.CHILD || menutype===pp.CHECK){
 				if(menutype===pp.CHILD){
-					val    = pp.flags[idname].val;
-					idname = pp.flags[idname].parent;
+					val    = pp.item[idname].val;
+					idname = pp.item[idname].parent;
 				}
 				
 				if(!!this.menuconfig[idname]){
@@ -855,9 +848,8 @@ ui.createClass('Menu',
 
 		// usearea & checkarea
 		var pp = this.items;
-		for(var n=0;n<pp.flaglist.length;n++){
-			var idname = pp.flaglist[n];
-			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
+		for(var idname in pp.item){
+			if(!pp.getLabel(idname)){ continue;}
 			var _div = el_div.cloneNode(false);
 			_div.id = 'div_'+idname;
 			//_div.innerHTML = "";
@@ -868,8 +860,8 @@ ui.createClass('Menu',
 				span.id = 'cl_'+idname;
 				_div.appendChild(span);
 				_div.appendChild(document.createTextNode(" | "));
-				for(var i=0;i<pp.flags[idname].child.length;i++){
-					var num = pp.flags[idname].child[i];
+				for(var i=0;i<pp.item[idname].child.length;i++){
+					var num = pp.item[idname].child[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
 					ui.event.addEvent(sel, "click", this, this.selectclick);
@@ -900,7 +892,7 @@ ui.createClass('Menu',
 		// 色分けチェックボックス用の処理
 		if(ui.puzzle.flags.irowake){
 			// 横にくっつけたいボタンを追加
-			var el = this.el_button.cloneNode(false);
+			var el = createButton();
 			el.id = "ck_btn_irowake";
 			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
 			var node = getEL('cl_irowake');
@@ -941,10 +933,10 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	buttonarea : function(){
 		// (Canvas下) ボタンの初期設定
-		var btncheck = this.el_button.cloneNode(false); btncheck.id = "btncheck";
-		var btnundo = this.el_button.cloneNode(false);  btnundo.id = "btnundo";
-		var btnredo = this.el_button.cloneNode(false);  btnredo.id = "btnredo";
-		var btnclear = this.el_button.cloneNode(false); btnclear.id = "btnclear";
+		var btncheck = createButton(); btncheck.id = "btncheck";
+		var btnundo  = createButton(); btnundo.id  = "btnundo";
+		var btnredo  = createButton(); btnredo.id  = "btnredo";
+		var btnclear = createButton(); btnclear.id = "btnclear";
 
 		getEL('btnarea').appendChild(btncheck);
 		getEL('btnarea').appendChild(document.createTextNode(' '));
@@ -964,27 +956,27 @@ ui.createClass('Menu',
 		getEL('btnredo').disabled = true;
 
 		if(!ui.puzzle.flags.disable_subclear){
-			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
+			var el = createButton(); el.id = "btnclear2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
 		if(!!ui.puzzle.flags.irowake){
-			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
+			var el = createButton(); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 
 		if(ui.puzzle.pid==='pipelinkr'){
-			var el = this.el_button.cloneNode(false); el.id = 'btncircle';
+			var el = createButton(); el.id = 'btncircle';
 			pzprv3.unselectable(el);
 			el.onclick = function(){ self.toggledisp();};
 			getEL('btnarea').appendChild(el);
 		}
 
 		if(ui.puzzle.pid==='tentaisho'){
-			var el = this.el_button.cloneNode(false); el.id = 'btncolor';
+			var el = createButton(); el.id = 'btncolor';
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ puzzle.board.encolorall();}, "色をつける","Color up");
 		}
@@ -1296,12 +1288,7 @@ ui.createClass('Menu',
 // MenuListクラス
 ui.createClass('MenuList',
 {
-	initialize : function(){
-		this.reset();
-	},
-
-	flags    : {},	// サブメニュー項目の情報
-	flaglist : [],	// idnameの配列
+	item : {},	// サブメニュー項目の情報
 
 	// 定数
 	MENU     : 6,
@@ -1318,8 +1305,7 @@ ui.createClass('MenuList',
 	// pp.reset()      再読み込みを行うときに初期化を行う
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.flags    = {};
-		this.flaglist = [];
+		this.item = {};
 	},
 
 	//---------------------------------------------------------------------------
@@ -1362,7 +1348,7 @@ ui.createClass('MenuList',
 		var first = ui.puzzle.config.list[idname].val;
 		var child = ui.puzzle.config.list[idname].option;
 		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
-		this.flags[idname].child = child;
+		this.item[idname].child = child;
 	},
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_"), first = list.pop();
@@ -1377,7 +1363,7 @@ ui.createClass('MenuList',
 		var first = ui.menu.menuconfig[idname].val;
 		var child = ui.menu.menuconfig[idname].option;
 		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
-		this.flags[idname].child = child;
+		this.item[idname].child = child;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1385,7 +1371,7 @@ ui.createClass('MenuList',
 	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
 	//---------------------------------------------------------------------------
 	addFlags : function(idname, parent, type, first, strJP, strEN){
-		this.flags[idname] = {
+		this.item[idname] = {
 			id     : idname,
 			type   : type,
 			val    : first,
@@ -1395,13 +1381,12 @@ ui.createClass('MenuList',
 				en : { menu:strEN, label:''}
 			}
 		};
-		this.flaglist.push(idname);
 	},
 
 	setLabel : function(idname, strJP, strEN){
-		if(!this.flags[idname]){ return;}
-		this.flags[idname].str.ja.label = strJP;
-		this.flags[idname].str.en.label = strEN;
+		if(!this.item[idname]){ return;}
+		this.item[idname].str.ja.label = strJP;
+		this.item[idname].str.en.label = strEN;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1410,11 +1395,11 @@ ui.createClass('MenuList',
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.flags[idname].str[ui.puzzle.getConfig('language')].menu; },
-	getLabel   : function(idname){ return this.flags[idname].str[ui.puzzle.getConfig('language')].label;},
-	type       : function(idname){ return this.flags[idname].type;},
+	getMenuStr : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].menu; },
+	getLabel   : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].label;},
+	type       : function(idname){ return this.item[idname].type;},
 	haschild   : function(idname){
-		var flag = this.flags[idname];
+		var flag = this.item[idname];
 		if(!flag){ return false;}
 		var type = flag.type;
 		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
@@ -1423,5 +1408,10 @@ ui.createClass('MenuList',
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
+function createButton(){
+	button = pzprv3.createEL('input');
+	button.type = 'button';
+	return button;
+}
 
 })();
