@@ -49,7 +49,7 @@ sub fileopen{
 <script type="text/javascript">
 var filestr = "$str";
 if(!!parent.pzprv3 && !!parent.pzprv3.ui){
-	var errmsg = parent.pzprv3.ui.fileonload(filestr);
+	var errmsg = parent.ui.openFileData(filestr);
 	if(!!errmsg){ alert(errmsg);}
 }
 if(!!parent.v3index){

@@ -152,7 +152,6 @@ Menu.prototype =
 
 	//---------------------------------------------------------------------------
 	// initReader() File Reader (あれば)の初期化処理
-	// fileonload() File API用ファイルを開いたイベントの処理
 	//---------------------------------------------------------------------------
 	initReader : function(){
 		if(typeof FileReader == 'undefined'){
@@ -167,12 +166,9 @@ Menu.prototype =
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
-				this.fileonload(e.target.result.replace(/\//g, "[[slash]]"));
+				ui.openFileData(e.target.result.replace(/\//g, "[[slash]]"));
 			};
 		}
-	},
-	fileonload : function(data){
-		ui.openFileData(data);
 	},
 
 	//---------------------------------------------------------------------------

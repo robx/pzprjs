@@ -37,7 +37,7 @@ pzprv3.createPuzzleClass('FileIO',
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている(fileonload()で処理) */
+			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている */
 			this.currentType = k.PZPR;
 		}
 		else{

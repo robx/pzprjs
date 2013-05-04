@@ -503,7 +503,7 @@ ui.popupmgr.addpopup('fileopen',
 			if(!fitem){ return;}
 			
 			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
-			else                { ui.menu.fileonload(fitem.getAsText(''));}
+			else                { ui.openFileData(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}
