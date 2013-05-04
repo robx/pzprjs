@@ -7,7 +7,7 @@ var k = pzprv3.consts;
 ui.debug.extend(
 {
 	accheck1 : function(){
-		var outputstr = ui.puzzle.fio.fileencode(k.PZPH);
+		var outputstr = ui.puzzle.fio.fileencode(k.PZPH).replace(/[\r\n]+/g, "/");
 		ui.puzzle.anscheckSilent();
 		this.addTextarea("\t\t\t[\""+ui.puzzle.checker.alstr.jp+"\",\""+outputstr+"\"],");
 	},
@@ -81,11 +81,9 @@ ui.debug.extend(
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
-			var pc = ui.puzzle.painter, ans = ui.puzzle.checker;
-			pc.suspendAll();
-			ui.puzzle.fio.filedecode(acsstr[n][1]);
-			pc.unsuspend();
+			ui.openFileData(acsstr[n][1].replace(/\//g,"\n"));
 
+			var ans = ui.puzzle.checker;
 			ans.inCheck = true;
 			ans.alstr = { jp:'' ,en:''};
 			ans.checkresult = true;

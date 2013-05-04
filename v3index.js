@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
 
 /* variables */
 var v3index = {
@@ -194,7 +194,7 @@ v3index.fileif.extend({
 		if(typeof FileReader != 'undefined'){
 			var reader = new FileReader();
 			reader.onload = function(e){
-				self.fileonload.call(self, e.target.result.replace(/\//g, "[[slash]]"));
+				self.fileonload.call(self, e.target.result);
 			};
 			reader.readAsText(fileEL.files[0]);
 		}
@@ -218,7 +218,7 @@ v3index.fileif.extend({
 			var fstr = "", fheader = ['',''];
 			for(var i=0;i<farray.length;i++){
 				if(farray[i].match(/^http\:\/\//)){ break;}
-				fstr += (farray[i]+"/");
+				fstr += (farray[i]+"\n");
 			}
 
 			localStorage['pzprv3_filedata'] = fstr;
@@ -341,7 +341,7 @@ v3index.dbif.extend({
 	open : function(){
 		var selected = self.getvalue();
 		if(selected>=0){
-			var str = DBlist[selected].pdata;
+			var str = DBlist[selected].pdata.replace(/\//g,"\n");
 			if(!!str){
 				localStorage['pzprv3_filedata'] = str;
 				window.open('./p.html', '');

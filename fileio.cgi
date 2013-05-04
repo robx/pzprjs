@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 use CGI;
 use MIME::Base64;
@@ -37,9 +37,8 @@ sub fileopen{
 	}
 	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
 
-	$str =~ s/[\r\n]+/\t/g;
+	$str =~ s/[\r\n]+/\n/g;
 	$str =~ s/\"/\\\"/g;
-	$str =~ s/\//\[\[slash\]\]/g;
 
 	print <<"EOL";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -79,14 +78,14 @@ sub filesave{
 
 	$rn = "\012";
 
-	my @lines = split(/\//, $q->param('ques'));
+	my @lines = split(/[\r\n]+/, $q->param('ques'));
 	if($#lines>=3){
 		foreach(@lines){ printf "$_$rn";}
 	}
 
 	if($q->param('urlstr')){
-		@lines = split(/\//, $q->param('urlstr'));
-		foreach(@lines){ s/\[\[slash\]\]/\//g; printf "$_$rn";}
+		@lines = split(/[\r\n]+/, $q->param('urlstr'));
+		foreach(@lines){ printf "$_$rn";}
 	}
 }
 

@@ -298,7 +298,7 @@ FileIO:{
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				this.datastr += (bd.getc(bx,by).isStone() ? "1 " : ". ");
 			}
-			this.datastr += "/";
+			this.datastr += "\n";
 		}
 	},
 
@@ -327,7 +327,7 @@ FileIO:{
 		}}
 		for(var i=0,len=stones.length;i<len;i++){
 			var item = [(i+1), stones[i][1], stones[i][0]];
-			this.datastr += (item.join(" ")+"/");
+			this.datastr += (item.join(" ")+"\n");
 		}
 	}
 },

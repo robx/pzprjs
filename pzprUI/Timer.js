@@ -117,8 +117,12 @@ ui.undotimer =
 	lastCurrentOpe : 0,		/* 盤面の状態が変わっていない場合、ボタンの有効/無効を切り替えない */
 
 	//---------------------------------------------------------------------------
+	// ut.reset()          タイマーをスタートする
 	// ut.check_keyevent() Undo/Redoボタンを有効にするか判定する
 	//---------------------------------------------------------------------------
+	reset : function(){
+		this.stop();
+	},
 	check_keyevent : function(){
 		if(!ui.puzzle || !ui.puzzle.key){ return;}
 

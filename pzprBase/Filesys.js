@@ -28,11 +28,10 @@ pzprv3.createPuzzleClass('FileIO',
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
 		var o = this.owner;
-		datastr = datastr.replace(/[\r\n]/g,"");
 
 		this.filever = 0;
 		this.lineseek = 0;
-		this.dataarray = datastr.split("/");
+		this.dataarray = datastr.split("\n");
 
 		// ヘッダの処理
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
@@ -87,13 +86,13 @@ pzprv3.createPuzzleClass('FileIO',
 		else if(this.currentType===k.PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
-		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("/");}
-		this.datastr = [this.sizestr, this.datastr].join("/");
+		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("\n");}
+		this.datastr = [this.sizestr, this.datastr].join("\n");
 
 		// ヘッダの処理
 		if(this.currentType===k.PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
-			this.datastr = [header, o.pid, this.datastr].join("/");
+			this.datastr = [header, o.pid, this.datastr].join("\n");
 		}
 		var bstr = this.datastr;
 
@@ -186,7 +185,7 @@ pzprv3.createPuzzleClass('FileIO',
 			for(var bx=startbx;bx<=endbx;bx+=step){
 				this.datastr += func(this.owner.board.getObjectPos(group, bx, by));
 			}
-			this.datastr += "/";
+			this.datastr += "\n";
 		}
 	},
 	encodeCell   : function(func){
@@ -457,10 +456,10 @@ pzprv3.createPuzzleClass('FileIO',
 	encodeAreaRoom_com : function(isques){
 		var bd = this.owner.board, rinfo = bd.getRoomInfo();
 
-		this.datastr += (rinfo.max+"/");
+		this.datastr += (rinfo.max+"\n");
 		for(var c=0;c<bd.cellmax;c++){
 			this.datastr += (""+(rinfo.id[c]-1)+" ");
-			if((c+1)%bd.qcols===0){ this.datastr += "/";}
+			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -518,7 +517,7 @@ pzprv3.createPuzzleClass('FileIO',
 					else{ str += ". ";}
 				}
 			}
-			str += "/";
+			str += "\n";
 		}
 		this.datastr += str;
 	},
@@ -612,11 +611,11 @@ pzprv3.createPuzzleClass('FileIO',
 	encodeSquareRoom_com : function(isques){
 		var bd = this.owner.board, rinfo = bd.getRoomInfo();
 
-		this.datastr += (rinfo.max+"/");
+		this.datastr += (rinfo.max+"\n");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.getclist(id).getRectSize();
 			var num = (isques ? bd.rooms.getTopOfRoom(id).qnum : -1);
-			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"/");
+			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
 		}
 	}
 });

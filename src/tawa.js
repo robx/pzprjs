@@ -322,7 +322,7 @@ FileIO:{
 	},
 	encodeData : function(){
 		var bd = this.owner.board;
-		this.datastr = bd.shape+"/";
+		this.datastr = bd.shape+"\n";
 
 		var bstr = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
@@ -335,7 +335,7 @@ FileIO:{
 				else if(cell.qsub=== 1){ bstr += "+ ";}
 				else{ bstr += ". ";}
 			}
-			bstr += "/";
+			bstr += "\n";
 		}
 		this.datastr += bstr;
 	}

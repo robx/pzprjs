@@ -510,7 +510,7 @@ FileIO:{
 
 				this.datastr += ". ";
 			}
-			this.datastr += "/";
+			this.datastr += "\n";
 		}
 	}
 },

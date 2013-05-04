@@ -672,7 +672,7 @@ Graphic:{
 	},
 	encodeData : function(){
 		var bd = this.owner.board;
-		this.datastr += (bd.arrowin.id+"/"+bd.arrowout.id+"/");
+		this.datastr += (bd.arrowin.id+"\n"+bd.arrowout.id+"\n");
 		this.encodeCell( function(obj){
 			return (obj.ques===6?"1 ":"0 ");
 		});
@@ -716,7 +716,7 @@ Graphic:{
 		var bd = this.owner.board;
 		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
 
-		this.datastr += (bd.arrowin.id+"/"+bd.arrowout.id+"/"+pzltype+"/");
+		this.datastr += (bd.arrowin.id+"\n"+bd.arrowout.id+"\n"+pzltype+"\n");
 		this.encodeCell( function(obj){
 			var istr = (obj.ques===6 ? "i" : ""), qstr='';
 			if     (obj.qnum===-1){ qstr = (istr==="" ? ". " : " ");}

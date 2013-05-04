@@ -48,10 +48,10 @@ pzprv3.createCoreClass('Puzzle',
 		});
 	},
 	openByFileData : function(filedata, callback){
-		var farray = filedata.split(/[\t\r\n\/]+/), fstr = "";
+		var farray = filedata.split(/[\t\r\n]+/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
-			fstr += (farray[i]+"/");
+			fstr += (farray[i]+"\n");
 		}
 		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.pid);
 

@@ -442,7 +442,7 @@ FileIO:{
 				else                       { this.datastr += ".";}
 				s++;
 			}
-			this.datastr += "/";
+			this.datastr += "\n";
 		}
 	}
 },

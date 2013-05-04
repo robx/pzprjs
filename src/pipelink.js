@@ -261,8 +261,8 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe/';}
-		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.getConfig('disptype_pipelinkr')==1?"circle/":"ice/");}
+		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe\n';}
+		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.getConfig('disptype_pipelinkr')==1?"circle\n":"ice\n");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}

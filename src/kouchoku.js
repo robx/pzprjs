@@ -518,10 +518,10 @@ FileIO:{
 	},
 	encodeSegment : function(){
 		var seglist = this.owner.board.segs.getallsegment();
-		this.datastr += (seglist.length+"/");
+		this.datastr += (seglist.length+"\n");
 		for(var i=0;i<seglist.length;i++){
 			var seg = seglist[i];
-			this.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"/");
+			this.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
 		}
 	}
 },

@@ -134,8 +134,9 @@ function importFileData(){
 	}
 
 	str = sessionStorage['filedata'];
+
 	if(!!str){
-		var lines = str.split('/');
+		var lines = str.split(/[\r\n]+/);
 		var id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
 		if(!id){ return null;}
 

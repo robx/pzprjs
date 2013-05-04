@@ -51,6 +51,7 @@ ui.event =
 		return function(){
 			ui.menu.menuinit();					/* メニュー関係初期化 */
 			ui.event.adjustcellsize();
+			ui.undotimer.reset();
 			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!callback){ callback();}

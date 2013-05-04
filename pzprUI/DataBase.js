@@ -29,7 +29,7 @@ ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.fio.fileencode(k.PZPH);
+		this.pdata = owner.fio.fileencode(k.PZPH).replace(/[\r\n]+/g,"/");
 		this.time = (pzprv3.currentTime()/1000)|0;
 		this.comment = '';
 	},
@@ -495,11 +495,10 @@ DataBaseHandler_LS.prototype =
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
 		var data = new ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		ui.openFileData(data.pdata);
+		ui.openFileData(data.pdata.replace(/\//g,"\n"));
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){
-		parent.DBlist[id].pdata = owner.fio.fileencode(k.PZPH);
 		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
 		if(!!callback){ callback();}
 	},

@@ -360,6 +360,7 @@ pzprv3.createPuzzleClass('OperationManager',
 				this.position = data.current;
 				for(var i=0,len=data.datas.length;i<len;i++){
 					var str = data.datas[i], chain = false;
+			console.log(str);
 					if(str.charAt(0)==='+'){ chain = true; str = str.substr(1);}
 					var ope = this.decodeOpe(str.split(/,/));
 					if(!!ope){
@@ -397,10 +398,10 @@ pzprv3.createPuzzleClass('OperationManager',
 			var chain = (this.ope[i].chain?'+':'');
 			datas.push(['"',chain,(this.ope[i].toString()),'"'].join(''));
 		}
-		data.push(datas.join(',/'));
+		data.push(datas.join(',\n'));
 		data.push(']');
 		data.push('}');
-		return data.join('/');
+		return data.join('\n');
 	},
 
 	//---------------------------------------------------------------------------

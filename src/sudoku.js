@@ -97,7 +97,7 @@ FileIO:{
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		this.sizestr = [this.owner.board.qcols].join("/");
+		this.sizestr = [this.owner.board.qcols].join("\n");
 
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
@@ -108,7 +108,7 @@ FileIO:{
 		this.decodeCellAnum_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [this.owner.board.qcols].join("/");
+		this.sizestr = [this.owner.board.qcols].join("\n");
 
 		this.encodeCellQnum_kanpen();
 		this.encodeCellAnum_kanpen();

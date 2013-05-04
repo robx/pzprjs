@@ -166,7 +166,7 @@ Menu.prototype =
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
-				ui.openFileData(e.target.result.replace(/\//g, "[[slash]]"));
+				ui.openFileData(e.target.result);
 			};
 		}
 	},

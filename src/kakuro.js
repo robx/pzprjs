@@ -255,10 +255,10 @@ FileIO:{
 		this.decodeQans_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("/");
+		this.sizestr = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("\n");
 
 		this.encodeCellQnum51_kanpen();
-		this.datastr += "/";
+		this.datastr += "\n";
 		this.encodeQans_kanpen();
 	},
 
@@ -301,7 +301,7 @@ FileIO:{
 				item[2]=cell.qnum.toString();
 				item[3]=cell.qdir.toString();
 			}
-			this.datastr += (item.join(" ")+"/");
+			this.datastr += (item.join(" ")+"\n");
 		}}
 	},
 
@@ -329,7 +329,7 @@ FileIO:{
 				else if(cell.anum  > 0){ this.datastr += (cell.anum.toString() + " ");}
 				else                   { this.datastr += "0 ";}
 			}
-			if(by<bd.maxby-1){ this.datastr += "/";}
+			if(by<bd.maxby-1){ this.datastr += "\n";}
 		}
 	}
 },

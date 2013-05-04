@@ -116,9 +116,9 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		if     (this.owner.pid==="ichimagam"){ this.datastr+="mag/";}
-		else if(this.owner.pid==="ichimagax"){ this.datastr+="cross/";}
-		else                                 { this.datastr+="def/";}
+		if     (this.owner.pid==="ichimagam"){ this.datastr+="mag\n";}
+		else if(this.owner.pid==="ichimagax"){ this.datastr+="cross\n";}
+		else                                 { this.datastr+="def\n";}
 
 		this.encodeCellQnum();
 		this.encodeBorderLine();
