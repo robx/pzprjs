@@ -1,113 +1,77 @@
 // Boot.js v3.4.0
 
 (function(){
-
-/* pzprv3オブジェクト生成待ち */
-if(!pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
-
-var k = pzprv3.consts;
-
+/********************************/
+/* 初期化時のみ使用するルーチン */
+/********************************/
 var require_accesslog = true;
-
-/****************************/
-/* 初期化時のみ使用する関数 */
-/****************************/
-//---------------------------------------------------------------------------
-// ★ui.boot() window.onload直後の処理
-//---------------------------------------------------------------------------
 var onload_pzl = null;
-var ui = {
-	puzzle : null,
-	debugmode : false,
+//---------------------------------------------------------------------------
+// ★boot() window.onload直後の処理
+//---------------------------------------------------------------------------
+function boot(){
+	/* pzprv3, uiオブジェクト生成待ち */
+	if(!pzprv3 || !ui){
+		setTimeout(setTimeout(arguments.callee),15);
+		return;
+	}
 
-	/* ---------- */
-	/* onload処理 */
-	/* ---------- */
-	boot : function(){
-		/* 先に読まないとimportURL()が動作しないため読み込み待ち */
-		if(!pzprv3.PZLINFO){
-			pzprv3.includeFile("puzzlename.js");
-			setTimeout(arguments.callee,10);
-			return;
-		}
+	/* 先にpuzzlename.jsを読まないとimportURL()が動作しないため読み込み待ち */
+	if(!pzprv3.PZLINFO){
+		pzprv3.includeFile("puzzlename.js");
+		setTimeout(arguments.callee,10);
+		return;
+	}
 
-		if(!onload_pzl){
-			/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
-			/* 2) URL(?以降)をチェック */
-			onload_pzl = (importFileData() || importURL());
-			
-			/* 指定されたパズルがない場合はさようなら～ */
-			if(!onload_pzl || !onload_pzl.id){
-				location.href = "./";
-				return;
-			}
-		}
-
-		/* 必要な場合、テスト用ファイルのinclude         */
-		/* importURL()後でないと必要かどうか判定できない */
-		if(ui.debugmode && !ui.debug.urls){
-			pzprv3.includeFile("src/for_test.js");
-			setTimeout(arguments.callee,10);
-			return;
-		}
-
-		/* パズルオブジェクトの作成 */
-		ui.puzzle = pzprv3.createPuzzle();
-
-		/* debugmode時の設定 */
-		if(ui.debugmode){
-			ui.puzzle.editmode = false;
-			ui.puzzle.playmode = true;
-			ui.puzzle.setConfig('autocheck', true);
-		}
-
-		// 描画wrapperの設定
-		ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
-		if(Candle.enable.canvas){
-			ui.puzzle.setSubCanvas(document.getElementById('divques_sub'), 'canvas');
-		}
-		ui.puzzle.setKeyEvents();
-
-		// 外部から参照できるようにする
-		window.puzzle = ui.puzzle;
- 
-		// 単体初期化処理のルーチンへ
-		if     (!!onload_pzl.fstr) { ui.puzzle.openByFileData(onload_pzl.fstr);}
-		else if(!!onload_pzl.qdata){ ui.puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
-		else if(ui.debugmode)      { ui.puzzle.openByURL("?"+onload_pzl.id+"/"+ui.debug.urls[onload_pzl.id]);}
-		else if(!!onload_pzl.id)   { ui.puzzle.openByURL("?"+onload_pzl.id);}
+	if(!onload_pzl){
+		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
+		/* 2) URL(?以降)をチェック */
+		onload_pzl = (importFileData() || importURL());
 		
-		ui.waitReady(function(){
-			// アクセスログをとってみる
-			if(!!require_accesslog){ accesslog(onload_pzl);}
-			require_accesslog = false;
-		});
-	},
-	
-	//---------------------------------------------------------------------------
-	// ui.waitReady() パズルの準備完了を待つ
-	//---------------------------------------------------------------------------
-	waitReady : function(func){
-		if(ui.puzzle.ready){
-			ui.menu.menuinit();					/* メニュー関係初期化 */
-			ui.event.adjustcellsize();
-			ui.timer.reset();					/* タイマーリセット(最後) */
-			
-			if(!!func){ func();}
-			
-			ui.puzzle.refreshCanvas();
-		}
-		else{
-			setTimeout(function(){ ui.waitReady(func);},10);
+		/* 指定されたパズルがない場合はさようなら～ */
+		if(!onload_pzl || !onload_pzl.id){
+			location.href = "./";
+			return;
 		}
 	}
-};
 
-/* extern */
-window.ui = ui;
+	/* 必要な場合、テスト用ファイルのinclude         */
+	/* importURL()後でないと必要かどうか判定できない */
+	if(ui.debugmode && !ui.debug.urls){
+		pzprv3.includeFile("src/for_test.js");
+		setTimeout(arguments.callee,10);
+		return;
+	}
 
-if(!!window.addEventListener){ window.addEventListener("load", ui.boot, false);}
-else{ window.attachEvent("onload", ui.boot);}
+	/* パズルオブジェクトの作成 */
+	ui.puzzle = pzprv3.createPuzzle();
+
+	/* debugmode時の設定 */
+	if(ui.debugmode){
+		ui.puzzle.editmode = false;
+		ui.puzzle.playmode = true;
+		ui.puzzle.setConfig('autocheck', true);
+	}
+
+	// 描画wrapperの設定
+	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
+	if(Candle.enable.canvas){
+		ui.puzzle.setSubCanvas(document.getElementById('divques_sub'), 'canvas');
+	}
+	ui.puzzle.setKeyEvents();
+
+	// 外部から参照できるようにする
+	window.puzzle = ui.puzzle;
+ 
+	// 単体初期化処理のルーチンへ
+	if     (!!onload_pzl.fstr) { ui.openFileData(onload_pzl.fstr, accesslog);}
+	else if(!!onload_pzl.qdata){ ui.openURL("?"+onload_pzl.id+"/"+onload_pzl.qdata, accesslog);}
+	else if(ui.debugmode)      { ui.openURL("?"+onload_pzl.id+"/"+ui.debug.urls[onload_pzl.id], accesslog);}
+	else if(!!onload_pzl.id)   { ui.openURL("?"+onload_pzl.id, accesslog);}
+}
+
+if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
+else{ window.attachEvent("onload", boot);}
 
 //---------------------------------------------------------------------------
 // ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う
@@ -188,8 +152,8 @@ function importFileData(){
 //---------------------------------------------------------------------------
 // ★accesslog() playerのアクセスログをとる
 //---------------------------------------------------------------------------
-function accesslog(pzl){
-	if(pzprv3.EDITOR || !pzl.id){ return;}
+function accesslog(){
+	if(pzprv3.EDITOR || !onload_pzl.id || !require_accesslog){ return;}
 
 	if(document.domain!=='indi.s58.xrea.com' &&
 	   document.domain!=='pzprv3.sakura.ne.jp' &&
@@ -209,9 +173,9 @@ function accesslog(pzl){
 									 .replace(/\=/g,"%3d").replace(/\//g,"%2f");
 		var data = [
 			("scr="     + "pzprv3"),
-			("pid="     + pzl.id),
+			("pid="     + onload_pzl.id),
 			("referer=" + refer),
-			("pzldata=" + pzl.qdata)
+			("pzldata=" + onload_pzl.qdata)
 		].join('&');
 
 		xmlhttp.open("POST", "./record.cgi");
@@ -219,6 +183,7 @@ function accesslog(pzl){
 		xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
 		xmlhttp.send(data);
 	}
+	require_accesslog = false;
 }
 
 })();

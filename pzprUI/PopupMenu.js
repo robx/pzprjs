@@ -365,8 +365,7 @@ ui.popupmgr.addpopup('newboard',
 		
 		this.hide();
 		if(url.length>0){
-			ui.puzzle.openByURL("?"+pid+"/"+url.join('/'));
-			ui.waitReady();
+			ui.openURL("?"+pid+"/"+url.join('/'));
 		}
 	}
 });
@@ -401,8 +400,7 @@ ui.popupmgr.addpopup('urlinput',
 	urlinput : function(){
 		this.hide();
 		
-		ui.puzzle.openByURL(this.form.ta.value);
-		ui.waitReady();
+		ui.openURL(this.form.ta.value);
 	}
 });
 

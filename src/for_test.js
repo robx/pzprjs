@@ -30,8 +30,7 @@ ui.debug.extend(
 
 			var newid = idlist[pnum];
 			self.pid = newid;
-			ui.puzzle.openByURL("?"+newid+"/"+self.urls[newid]);
-			ui.waitReady(function(){
+			ui.openURL("?"+newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
@@ -69,8 +68,7 @@ ui.debug.extend(
 		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			o.openByURL(o.enc.pzloutput(k.KANPEN));
-			ui.waitReady(function(){
+			ui.openURL(o.enc.pzloutput(k.KANPEN), function(){
 				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}

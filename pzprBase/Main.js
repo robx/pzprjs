@@ -32,7 +32,7 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.openByURL()      URLを入力して盤面を開く
 	// owner.openByFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
-	openByURL : function(url){
+	openByURL : function(url, callback){
 		var pzl = pzprv3.parseURLType(url);
 		if(!pzl.id){ return;}
 
@@ -43,9 +43,11 @@ pzprv3.createCoreClass('Puzzle',
 			o.enc.pzlinput(url);
 			o.resetTime();
 			o.ready = true;
+			
+			if(!!callback){ callback();}
 		});
 	},
-	openByFileData : function(filedata){
+	openByFileData : function(filedata, callback){
 		var farray = filedata.split(/[\t\r\n\/]+/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
@@ -60,6 +62,8 @@ pzprv3.createCoreClass('Puzzle',
 			o.fio.filedecode(fstr);
 			o.resetTime();
 			o.ready = true;
+			
+			if(!!callback){ callback();}
 		});
 	},
 

@@ -495,8 +495,7 @@ DataBaseHandler_LS.prototype =
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
 		var data = new ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		owner.openByFileData(data.pdata);
-		ui.waitReady();
+		ui.openFileData(data.pdata);
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){

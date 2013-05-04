@@ -172,8 +172,7 @@ Menu.prototype =
 		}
 	},
 	fileonload : function(data){
-		ui.puzzle.openByFileData(data);
-		ui.waitReady();
+		ui.openFileData(data);
 	},
 
 	//---------------------------------------------------------------------------

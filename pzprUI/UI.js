@@ -1,21 +1,63 @@
-// Events.js v3.4.0
+// UI.js v3.4.0
 (function(){
 
-/* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+/* pzprv3オブジェクト生成待ち */
+if(!pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
+//---------------------------------------------------------------------------
+// ★uiオブジェクト UserInterface側のオブジェクト
+//---------------------------------------------------------------------------
+/* extern */
+window.ui = ui = {
+	/* このサイトで使用するパズルのオブジェクト */
+	puzzle    : null,
+	
+	/* メンバオブジェクト */
+	event     : null,
+	menu      : null,
+	popupmgr  : null,
+	keypopup  : null,
+	timer     : null,
+	undotimer : null,
+	
+	debugmode : false,
+	
+	//---------------------------------------------------------------------------
+	// ui.openURL()      ui.puzzleオブジェクトにURLを読みこませる
+	// ui.openFileData() ui.puzzleオブジェクトにファイルを読みこませる
+	//---------------------------------------------------------------------------
+	openURL : function(url, callback){
+		ui.puzzle.openByURL(url, ui.event.afterReady(callback));
+	},
+	openFileData : function(filestr, callback){
+		ui.puzzle.openByFileData(filestr, ui.event.afterReady(callback));
+	}
+};
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
 //---------------------------------------------------------------------------
-
 // メニュー描画/取得/html表示系
 ui.event =
 {
 	resizetimer : null,	// resizeタイマー
 
 	evlist : [],
+
+	//---------------------------------------------------------------------------
+	// event.afterReady()   パズルの準備完了後に呼び出す関数を作成する
+	//---------------------------------------------------------------------------
+	afterReady : function(callback){
+		return function(){
+			ui.menu.menuinit();					/* メニュー関係初期化 */
+			ui.event.adjustcellsize();
+			ui.timer.reset();					/* タイマーリセット(最後) */
+			
+			if(!!callback){ callback();}
+			
+			ui.puzzle.refreshCanvas();
+		};
+	},
 
 	//----------------------------------------------------------------------
 	// event.addEvent()          addEventListener(など)を呼び出す
