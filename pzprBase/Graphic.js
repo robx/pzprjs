@@ -8,7 +8,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // パズル共通 Canvas/DOM制御部
 // Graphicクラスの定義
-pzprv3.createCommonClass('Graphic',
+pzprv3.createPuzzleClass('Graphic',
 {
 	initialize : function(){
 		this.ready = false;

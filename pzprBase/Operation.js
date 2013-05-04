@@ -8,7 +8,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
-pzprv3.createCommonClass('Operation',
+pzprv3.createPuzzleClass('Operation',
 {
 	initialize : function(){
 		this.manager = this.owner.opemgr;
@@ -38,7 +38,7 @@ pzprv3.createCommonClass('Operation',
 });
 
 // ObjectOperationクラス
-pzprv3.createCommonClass('ObjectOperation:Operation',
+pzprv3.createPuzzleClass('ObjectOperation:Operation',
 {
 	group    : '',
 	property : '',
@@ -112,7 +112,7 @@ pzprv3.createCommonClass('ObjectOperation:Operation',
 });
 
 // BoardAdjustOperationクラス
-pzprv3.createCommonClass('BoardAdjustOperation:Operation',
+pzprv3.createPuzzleClass('BoardAdjustOperation:Operation',
 {
 	prefix : 'AJ',
 	//---------------------------------------------------------------------------
@@ -144,7 +144,7 @@ pzprv3.createCommonClass('BoardAdjustOperation:Operation',
 });
 
 // BoardFlipOperationクラス
-pzprv3.createCommonClass('BoardFlipOperation:Operation',
+pzprv3.createPuzzleClass('BoardFlipOperation:Operation',
 {
 	prefix : 'AT',
 	area : {},
@@ -203,7 +203,7 @@ pzprv3.createCommonClass('BoardFlipOperation:Operation',
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // OperationManagerクラス
-pzprv3.createCommonClass('OperationManager',
+pzprv3.createPuzzleClass('OperationManager',
 {
 	initialize : function(){
 		this.lastope;		// this.opeのLasstIndexへのポインタ

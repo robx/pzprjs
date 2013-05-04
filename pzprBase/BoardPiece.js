@@ -6,7 +6,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('BoardPiece',
+pzprv3.createPuzzleClass('BoardPiece',
 {
 	initialize : function(){
 		this.bx;	// X座標(border座標系)を保持する
@@ -128,7 +128,7 @@ pzprv3.createCommonClass('BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
-pzprv3.createCommonClass('Cell:BoardPiece',
+pzprv3.createPuzzleClass('Cell:BoardPiece',
 {
 	group : 'cell',
 
@@ -390,7 +390,7 @@ pzprv3.createCommonClass('Cell:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
-pzprv3.createCommonClass('Cross:BoardPiece',
+pzprv3.createPuzzleClass('Cross:BoardPiece',
 {
 	group : 'cross',
 
@@ -426,7 +426,7 @@ pzprv3.createCommonClass('Cross:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
-pzprv3.createCommonClass('Border:BoardPiece',
+pzprv3.createPuzzleClass('Border:BoardPiece',
 {
 	initialize : function(){
 		pzprv3.core.BoardPiece.prototype.initialize.call(this);
@@ -571,7 +571,7 @@ pzprv3.createCommonClass('Border:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(4)
 // EXCellクラスの定義
-pzprv3.createCommonClass('EXCell:BoardPiece',
+pzprv3.createPuzzleClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
@@ -599,7 +599,7 @@ pzprv3.createCommonClass('EXCell:BoardPiece',
 // ★Addressクラス (bx,by)座標を扱う
 //---------------------------------------------------------------------------
 // Addressクラス
-pzprv3.createCommonClass('Address',
+pzprv3.createPuzzleClass('Address',
 {
 	initialize : function(bx,by){
 		this.init(bx,by);
@@ -653,7 +653,7 @@ pzprv3.createCommonClass('Address',
 //----------------------------------------------------------------------------
 // ★PieceListクラス オブジェクトの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('PieceList',
+pzprv3.createPuzzleClass('PieceList',
 {
 	length : 0,
 	
@@ -738,7 +738,7 @@ pzprv3.createCommonClass('PieceList',
 //----------------------------------------------------------------------------
 // ★CellListクラス Cellの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('CellList:PieceList',
+pzprv3.createPuzzleClass('CellList:PieceList',
 {
 	name : 'CellList',
 
@@ -775,14 +775,14 @@ pzprv3.createCommonClass('CellList:PieceList',
 //----------------------------------------------------------------------------
 // ★CrossListクラス Crossの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('CrossList:PieceList',{
+pzprv3.createPuzzleClass('CrossList:PieceList',{
 	name : 'CrossList'
 });
 
 //----------------------------------------------------------------------------
 // ★BorderListクラス Borderの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('BorderList:PieceList',
+pzprv3.createPuzzleClass('BorderList:PieceList',
 {
 	name : 'BorderList',
 
@@ -813,7 +813,7 @@ pzprv3.createCommonClass('BorderList:PieceList',
 //----------------------------------------------------------------------------
 // ★EXCellListクラス EXCellの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('EXCellList:PieceList',{
+pzprv3.createPuzzleClass('EXCellList:PieceList',{
 	name : 'EXCellList'
 });
 
@@ -823,7 +823,7 @@ pzprv3.createCommonClass('EXCellList:PieceList',{
 //         0     どの部屋に属させるかの処理中
 //         1以上 その番号の部屋に属する
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaCellInfo',
+pzprv3.createPuzzleClass('AreaCellInfo',
 {
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1～maxまで存在するよう構成してください)
@@ -872,7 +872,7 @@ pzprv3.createCommonClass('AreaCellInfo',
 });
 
 // AreaBorderInfoクラス
-pzprv3.createCommonClass('AreaBorderInfo:AreaCellInfo',
+pzprv3.createPuzzleClass('AreaBorderInfo:AreaCellInfo',
 {
 	addBorder : function(border){ this.setRoomID(border, this.max);},
 	emptyBorder : function(border){ return (this.id[border.id]===0);},

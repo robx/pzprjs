@@ -52,7 +52,7 @@ pzprv3.addConsts({
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
 //---------------------------------------------------------------------------
 // Boardクラスの定義
-pzprv3.createCommonClass('Board',
+pzprv3.createPuzzleClass('Board',
 {
 	initialize : function(){
 		// 盤面の範囲

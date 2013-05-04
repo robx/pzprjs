@@ -15,13 +15,13 @@ var pzprv3_base = {
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用
 
-	commonlist : [],	// パズル別クラスのスーパークラスになるクラスを保存
+	pclasslist : [],	// パズル別クラスのスーパークラスになるクラスを保存
 
 	//---------------------------------------------------------------
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(){
-		return new pzprv3.core.Owner();
+		return new pzprv3.core.Puzzle();
 	},
 
 	//---------------------------------------------------------------
@@ -41,10 +41,10 @@ var pzprv3_base = {
 		var rel = this._createClass(classname, proto, false);
 		this.core[rel.name] = rel.body;
 	},
-	createCommonClass : function(classname, proto){
+	createPuzzleClass : function(classname, proto){
 		var rel = this._createClass(classname, proto, true);
 		this.core[rel.name] = rel.body;
-		this.commonlist.push(rel.name);
+		this.pclasslist.push(rel.name);
 	},
 	extendCoreClass : function(classname, proto){
 		var base = pzprv3.core[classname].prototype;
@@ -126,8 +126,8 @@ var pzprv3_base = {
 				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
 			}
 		}
-		for(var i=0;i<this.commonlist.length;i++){
-			var classname = this.commonlist[i];
+		for(var i=0;i<this.pclasslist.length;i++){
+			var classname = this.pclasslist[i];
 			if(!custom[classname]){ custom[classname] = this.core[classname];}
 		}
 

@@ -8,7 +8,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
-pzprv3.createCommonClass('KeyEvent',
+pzprv3.createPuzzleClass('KeyEvent',
 {
 	initialize : function(){
 		this.cursor = this.owner.cursor;
@@ -335,7 +335,7 @@ pzprv3.createCommonClass('KeyEvent',
 // ★TargetCursorクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
 
-pzprv3.createCommonClass('TargetCursor',
+pzprv3.createPuzzleClass('TargetCursor',
 {
 	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)

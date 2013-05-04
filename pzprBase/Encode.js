@@ -8,7 +8,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzprv3.createCommonClass('Encode',
+pzprv3.createPuzzleClass('Encode',
 {
 	initialize : function(){
 		this.pflag = "";

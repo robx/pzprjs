@@ -4,7 +4,7 @@
 // ★LineManagerクラス 主に色分けの情報を管理する
 //---------------------------------------------------------------------------
 // LineManagerクラスの定義
-pzprv3.createCommonClass('LineManager',
+pzprv3.createPuzzleClass('LineManager',
 {
 	initialize : function(){
 		this.lcnt    = [];
@@ -410,7 +410,7 @@ pzprv3.createCommonClass('LineManager',
 //     そのため、1～maxまで全て中身が存在しているとは限りません。
 //     回答チェックやファイル出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaCellManager',
+pzprv3.createPuzzleClass('AreaCellManager',
 {
 	initialize : function(){
 		this.max;
@@ -728,17 +728,17 @@ pzprv3.createCommonClass('AreaCellManager',
 // ☆AreaWhiteManagerクラス  白マス情報オブジェクトのクラス
 // ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaBlackManager:AreaCellManager',
+pzprv3.createPuzzleClass('AreaBlackManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isBlack();}
 });
 
-pzprv3.createCommonClass('AreaWhiteManager:AreaCellManager',
+pzprv3.createPuzzleClass('AreaWhiteManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isWhite();}
 });
 
-pzprv3.createCommonClass('AreaNumberManager:AreaCellManager',
+pzprv3.createPuzzleClass('AreaNumberManager:AreaCellManager',
 {
 	isvalid : function(cell){ return cell.isNumberObj();}
 });
@@ -746,7 +746,7 @@ pzprv3.createCommonClass('AreaNumberManager:AreaCellManager',
 //--------------------------------------------------------------------------------
 // ★AreaBorderManagerクラス セル＋境界線情報が必要な情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaBorderManager:AreaCellManager',
+pzprv3.createPuzzleClass('AreaBorderManager:AreaCellManager',
 {
 	initialize : function(){
 		this.isbd  = [];		// 境界線に線が引いてあるかどうか
@@ -852,7 +852,7 @@ pzprv3.createCommonClass('AreaBorderManager:AreaCellManager',
 //--------------------------------------------------------------------------------
 // ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
+pzprv3.createPuzzleClass('AreaRoomManager:AreaBorderManager',
 {
 	initialize : function(){
 		this.bdcnt = [];		// 格子点の周りの境界線の数
@@ -1012,7 +1012,7 @@ pzprv3.createCommonClass('AreaRoomManager:AreaBorderManager',
 //--------------------------------------------------------------------------------
 // ☆AreaLineManagerクラス 線つながり情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createCommonClass('AreaLineManager:AreaBorderManager',
+pzprv3.createPuzzleClass('AreaLineManager:AreaBorderManager',
 {
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの線の数

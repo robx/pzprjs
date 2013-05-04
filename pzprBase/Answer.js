@@ -9,7 +9,7 @@ var k = pzprv3.consts;
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzprv3.createCommonClass('AnsCheck',
+pzprv3.createPuzzleClass('AnsCheck',
 {
 	initialize : function(){
 		this.performAsLine = false;

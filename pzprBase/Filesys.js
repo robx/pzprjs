@@ -12,7 +12,7 @@ pzprv3.addConsts({
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
 //---------------------------------------------------------------------------
-pzprv3.createCommonClass('FileIO',
+pzprv3.createPuzzleClass('FileIO',
 {
 	initialize : function(){
 		this.filever = 0;

@@ -8,7 +8,7 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzprv3.createCommonClass('MouseEvent',
+pzprv3.createPuzzleClass('MouseEvent',
 {
 	initialize : function(){
 		this.cursor = this.owner.cursor;
