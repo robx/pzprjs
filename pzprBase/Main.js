@@ -186,8 +186,6 @@ pzprv3.createCoreClass('Owner',
 	//---------------------------------------------------------------------------
 	// owner.setCanvas()    描画キャンバスをセットする
 	// owner.setSubCanvas() 補助用キャンバスをセットする
-	// owner.drawCanvas()    盤面の再描画を行う
-	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
 		var o = this;
@@ -207,11 +205,23 @@ pzprv3.createCoreClass('Owner',
 		});
 	},
 
+	//---------------------------------------------------------------------------
+	// owner.drawCanvas()    盤面の再描画を行う
+	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
+	// owner.irowake()       色分けをする場合、色をふり直すルーチンを呼び出す
+	//---------------------------------------------------------------------------
 	drawCanvas : function(){
 		this.painter.paintAll();
 	},
 	refreshCanvas : function(){
 		this.painter.forceRedraw();
+	},
+
+	irowake : function(){
+		this.board.irowakeRemake();
+		if(this.owner.getConfig('irowake')){
+			this.owner.drawCanvas();
+		}
 	},
 
 	//---------------------------------------------------------------------------

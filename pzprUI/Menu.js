@@ -180,8 +180,7 @@ ui.createClass('Menu',
 		}
 	},
 	fileonload : function(data){
-		var owner = ui.puzzle;
-		owner.openByFileData(data);
+		ui.puzzle.openByFileData(data);
 		ui.waitReady();
 	},
 
@@ -212,7 +211,7 @@ ui.createClass('Menu',
 		ui.puzzle.refreshCanvas();	// canvasの左上座標等を更新して再描画
 	},
 	setdisplay : function(idname){
-		var pp = this.items, puzzle = ui.puzzle;
+		var pp = this.items;
 		switch(pp.type(idname)){
 		case pp.MENU:
 			/* メニューの表記の設定 */
@@ -241,7 +240,7 @@ ui.createClass('Menu',
 			break;
 
 		case pp.CHILD:
-			var val = puzzle.getConfig(pp.flags[idname].parent);
+			var val = ui.puzzle.getConfig(pp.flags[idname].parent);
 			if(val===null){ val = this.getMenuConfig(pp.flags[idname].parent);}
 			
 			var issel = (pp.flags[idname].val == val);	/* 選択されているかどうか */
@@ -260,7 +259,7 @@ ui.createClass('Menu',
 			break;
 
 		case pp.CHECK:
-			var flag = puzzle.getConfig(idname);
+			var flag = ui.puzzle.getConfig(idname);
 			if(flag===null){ flag = this.getMenuConfig(idname);}
 			
 			/* メニューの表記の設定 */
@@ -282,7 +281,7 @@ ui.createClass('Menu',
 		}
 		
 		if(idname==='disptype_pipelinkr'){
-			getEL('btncircle').value = ((puzzle.getConfig(idname)==1)?"○":"■");
+			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 		}
 	},
 	setcaption : function(idname, val){
@@ -344,7 +343,7 @@ ui.createClass('Menu',
 			ai = function(){ pp.addChild.apply(pp,arguments);},
 			ap = function(){ pp.addSeparator.apply(pp,arguments);},
 			sl = function(){ pp.setLabel.apply(pp,arguments);};
-		var puzzle = ui.puzzle, pid = puzzle.pid;
+		var pid = ui.puzzle.pid;
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -401,7 +400,7 @@ ui.createClass('Menu',
 		aa('cap_board','board', '盤面','Display mode');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
-		if(!puzzle.flags.disable_subclear){
+		if(!ui.puzzle.flags.disable_subclear){
 			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
 		}
 
@@ -411,7 +410,7 @@ ui.createClass('Menu',
 		pp.addMenuSelect('cellsize','disp', '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!puzzle.flags.irowake){
+		if(!!ui.puzzle.flags.irowake){
 			ac('irowake','disp', '線の色分け','Color coding');
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
@@ -453,7 +452,7 @@ ui.createClass('Menu',
 		this.createAllFloat();
 	},
 	menuarea_setting : function(pp){
-		var puzzle = ui.puzzle, pid = puzzle.pid;
+		var flags = ui.puzzle.flags, pid = ui.puzzle.pid;
 
 		pp.addMenu('setting', "設定", "Setting");
 
@@ -465,7 +464,7 @@ ui.createClass('Menu',
 		}
 
 		/* 操作方法の設定値 */
-		if(puzzle.flags.use){
+		if(flags.use){
 			pp.addSelect('use','setting','操作方法', 'Input Type');
 			pp.setLabel('use', '操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
@@ -480,15 +479,15 @@ ui.createClass('Menu',
 		}
 
 		/* 盤面チェックの設定値 */
-		if(puzzle.flags.redline){
+		if(flags.redline){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
 		}
-		else if(puzzle.flags.redblk){
+		else if(flags.redblk){
 			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 		}
-		else if(puzzle.flags.redblkrb){
+		else if(flags.redblkrb){
 			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
 			pp.setLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 		}
@@ -498,7 +497,7 @@ ui.createClass('Menu',
 		}
 
 		/* 背景色入力の設定値 */
-		if(puzzle.flags.bgcolor){
+		if(flags.bgcolor){
 			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
 			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
@@ -594,7 +593,6 @@ ui.createClass('Menu',
 	//---------------------------------------------------------------------------
 	createAllFloat : function(){
 		var pp = this.items;
-		var puzzle = ui.puzzle;
 
 		// ElementTemplate : メニュー領域
 		var el_menu = pzprv3.createEL('li');
@@ -691,7 +689,7 @@ ui.createClass('Menu',
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 
-		if(this.enableSaveImage && !!puzzle.classes.ImageTile){
+		if(this.enableSaveImage && !!ui.puzzle.classes.ImageTile){
 			if(pzprv3.browser.Gecko && !location.hostname){
 				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
 			}
@@ -857,7 +855,6 @@ ui.createClass('Menu',
 
 		// usearea & checkarea
 		var pp = this.items;
-		var puzzle = ui.puzzle;
 		for(var n=0;n<pp.flaglist.length;n++){
 			var idname = pp.flaglist[n];
 			if(!pp.flags[idname] || !pp.getLabel(idname)){ continue;}
@@ -901,11 +898,11 @@ ui.createClass('Menu',
 		}
 
 		// 色分けチェックボックス用の処理
-		if(puzzle.flags.irowake){
+		if(ui.puzzle.flags.irowake){
 			// 横にくっつけたいボタンを追加
 			var el = this.el_button.cloneNode(false);
 			el.id = "ck_btn_irowake";
-			this.addButtons(el, function(){ puzzle.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
 			var node = getEL('cl_irowake');
 			node.parentNode.insertBefore(el, node.nextSibling);
 
@@ -956,45 +953,45 @@ ui.createClass('Menu',
 		getEL('btnarea').appendChild(document.createTextNode(' '));
 		getEL('btnarea').appendChild(btnclear);
 
-		var puzzle = ui.puzzle, self = this;
+		var self = this;
 		this.addButtons(btncheck, function(){ self.answercheck();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ puzzle.opemgr.undo(); self.enb_btn();}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ puzzle.opemgr.redo(); self.enb_btn();}, "進", "->");
+		this.addButtons(btnundo,  function(){ ui.puzzle.opemgr.undo(); self.enb_btn();}, "戻", "<-");
+		this.addButtons(btnredo,  function(){ ui.puzzle.opemgr.redo(); self.enb_btn();}, "進", "->");
 		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
 
 		// 初期値ではどっちも押せない
 		getEL('btnundo').disabled = true;
 		getEL('btnredo').disabled = true;
 
-		if(!puzzle.flags.disable_subclear){
+		if(!ui.puzzle.flags.disable_subclear){
 			var el = this.el_button.cloneNode(false); el.id = "btnclear2";
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(!!puzzle.flags.irowake){
+		if(!!ui.puzzle.flags.irowake){
 			var el = this.el_button.cloneNode(false); el.id = "btncolor2";
 			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ puzzle.board.irowakeRemake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
 			el.style.display = 'none';
 		}
 
-		if(puzzle.pid==='pipelinkr'){
+		if(ui.puzzle.pid==='pipelinkr'){
 			var el = this.el_button.cloneNode(false); el.id = 'btncircle';
 			pzprv3.unselectable(el);
 			el.onclick = function(){ self.toggledisp();};
 			getEL('btnarea').appendChild(el);
 		}
 
-		if(puzzle.pid==='tentaisho'){
+		if(ui.puzzle.pid==='tentaisho'){
 			var el = this.el_button.cloneNode(false); el.id = 'btncolor';
 			getEL('btnarea').appendChild(el);
 			this.addButtons(el, function(){ puzzle.board.encolorall();}, "色をつける","Color up");
 		}
 	},
 	toggledisp : function(){
-		var puzzle = ui.puzzle, current = puzzle.getConfig('disptype_pipelinkr');
-		puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
+		var current = ui.puzzle.getConfig('disptype_pipelinkr');
+		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
 	},
 	enb_btn : function(){
 		var opemgr = ui.puzzle.opemgr;
@@ -1169,8 +1166,7 @@ ui.createClass('Menu',
 	// menu.filesave()   ファイルを保存する
 	//------------------------------------------------------------------------------
 	filesave : function(ftype){
-		var puzzle = ui.puzzle;
-		var fname = prompt("保存するファイル名を入力して下さい。", puzzle.pid+".txt");
+		var fname = prompt("保存するファイル名を入力して下さい。", ui.puzzle.pid+".txt");
 		if(!fname){ return;}
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
@@ -1182,8 +1178,8 @@ ui.createClass('Menu',
 		else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
 		else                                           { form.platform.value = "Others";}
 
-		form.ques.value   = puzzle.fio.fileencode(ftype);
-		form.urlstr.value = puzzle.fio.history;
+		form.ques.value   = ui.puzzle.fio.fileencode(ftype);
+		form.urlstr.value = ui.puzzle.fio.history;
 		form.operation.value = 'save';
 
 		form.action = this.fileio
@@ -1194,18 +1190,17 @@ ui.createClass('Menu',
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var puzzle = ui.puzzle, fio = puzzle.fio;
-		var str = fio.fileencode(k.PZPH);
-		var url = './p.html?'+puzzle.pid+(pzprv3.PLAYER?"_play":"");
+		var str = ui.puzzle.fio.fileencode(k.PZPH);
+		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = (str+fio.history);
+			sessionStorage['filedata'] = (str+ui.puzzle.fio.history);
 			window.open(url,'');
 			if(!!old){ sessionStorage['filedata'] = old;}
 			else     { delete sessionStorage['filedata'];}
 		}
 		else{
-			localStorage['pzprv3_filedata'] = (str+fio.history);
+			localStorage['pzprv3_filedata'] = (str+ui.puzzle.fio.history);
 			window.open(url,'');
 		}
 	},
@@ -1216,10 +1211,10 @@ ui.createClass('Menu',
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var puzzle = ui.puzzle, canvas_sv = puzzle.canvas;
+		var canvas_sv = ui.puzzle.canvas;
 		try{
-			puzzle.canvas = getEL('divques_sub');
-			var pc = puzzle.painter, pc2 = puzzle.newInstance('Graphic');
+			ui.puzzle.canvas = getEL('divques_sub');
+			var pc = ui.puzzle.painter, pc2 = ui.puzzle.newInstance('Graphic');
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
@@ -1244,7 +1239,7 @@ ui.createClass('Menu',
 		catch(e){
 			this.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
 		}
-		puzzle.canvas = canvas_sv;
+		ui.puzzle.canvas = canvas_sv;
 	},
 
 	submitimage : function(url){
@@ -1279,9 +1274,8 @@ ui.createClass('Menu',
 	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		var o = ui.puzzle;
 		if(!ui.puzzle.anscheck()){
-			this.alertStr(o.checker.alstr.jp, o.checker.alstr.en);
+			this.alertStr(ui.puzzle.checker.alstr.jp, ui.puzzle.checker.alstr.en);
 		}
 		else{
 			this.alertStr("正解です！","Complete!");

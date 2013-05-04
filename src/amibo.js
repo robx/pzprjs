@@ -113,7 +113,6 @@ Board:{
 
 	irowakeRemake : function(){
 		this.barinfo.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.drawCanvas();}
 	},
 
 	getBarInfo : function(){

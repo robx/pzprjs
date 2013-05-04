@@ -200,7 +200,6 @@ Board:{
 
 	irowakeRemake : function(){
 		this.segs.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.drawCanvas();}
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){

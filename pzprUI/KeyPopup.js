@@ -170,7 +170,7 @@ ui.createClass('KeyPopup',
 	// kp.makeKeyPopup() キーポップアップのパネルを作成する
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
-		var keypopup, bar, _doc = document, puzzle = ui.puzzle;
+		var keypopup, bar, _doc = document;
 		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
 		
 		keypopup = _doc.createElement('div');

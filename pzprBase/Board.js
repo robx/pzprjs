@@ -543,7 +543,6 @@ pzprv3.createCommonClass('Board',
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
 		this.lines.newIrowake();
-		if(this.owner.getConfig('irowake')){ this.owner.drawCanvas();}
 	},
 
 	//--------------------------------------------------------------------------------
