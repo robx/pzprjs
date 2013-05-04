@@ -12,34 +12,32 @@ var k = pzprv3.consts;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-ui.createClass('Menu',
+var Menu = function(){
+	this.items = null;
+
+	this.menupid = '';				// どの種類のパズルのメニューを表示しているか
+
+	this.menuconfig = {};
+	this.initMenuConfig();
+
+	this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
+	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
+
+	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
+
+	this.ispencilbox = false;
+
+	this.displaymanage = true;		// メニューの下の管理領域を表示しているか
+
+	this.reader;	// FileReaderオブジェクト
+
+	this.enableSaveImage = false; // 画像保存が有効か
+
+	this.fileio = (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+	this.enableReadText = false;
+};
+Menu.prototype =
 {
-	initialize : function(){
-		this.items = null;
-
-		this.menupid = '';				// どの種類のパズルのメニューを表示しているか
-
-		this.menuconfig = {};
-		this.initMenuConfig();
-
-		this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
-		this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
-		this.popupmgr   = null;			// ポップアップウィンドウ管理オブジェクト
-
-		this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
-
-		this.ispencilbox = false;
-
-		this.displaymanage = true;		// メニューの下の管理領域を表示しているか
-
-		this.reader;	// FileReaderオブジェクト
-	},
-
-	enableSaveImage  : false, // 画像保存が有効か
-
-	fileio : (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi"),
-	enableReadText : false,
-
 	//---------------------------------------------------------------------------
 	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
 	//                   管理領域、ポップアップメニューの初期設定を行う
@@ -55,8 +53,7 @@ ui.createClass('Menu',
 		var pinfo = pzprv3.PZLINFO.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
-		this.items    = new ui.classes.MenuList();
-		if(!this.popupmgr){ this.popupmgr = new ui.classes.PopupManager();}
+		this.items = new MenuList();
 
 		this.initReader();
 
@@ -73,7 +70,6 @@ ui.createClass('Menu',
 		this.menuarea();
 		this.managearea();
 		this.buttonarea();
-		this.popupmgr.init();
 
 		this.displayAll();
 
@@ -105,7 +101,7 @@ ui.createClass('Menu',
 		ui.keypopup.clear();
 
 		if(!!this.items){ this.items.reset();}
-		if(!!this.popupmgr){ this.popupmgr.reset();}
+		if(!!ui.popupmgr){ ui.popupmgr.reset();}
 		
 		ui.event.removeUIEvents();
 	},
@@ -751,7 +747,7 @@ ui.createClass('Menu',
 		var result = (this.menuexec(idname) || ui.puzzle.config.onchange_event(idname,null));
 		if(!result){
 			var pos = pzprv3.getPagePos(e);
-			this.popupmgr.open(idname, pos.px-8, pos.py-8);
+			ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 		}
 	},
 
@@ -1283,10 +1279,11 @@ ui.createClass('Menu',
 			ui.puzzle.subclear();
 		}
 	}
-});
+};
 
 // MenuListクラス
-ui.createClass('MenuList',
+var MenuList = function(){};
+MenuList.prototype =
 {
 	item : {},	// サブメニュー項目の情報
 
@@ -1404,7 +1401,7 @@ ui.createClass('MenuList',
 		var type = flag.type;
 		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
 	}
-});
+};
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
@@ -1413,5 +1410,8 @@ function createButton(){
 	button.type = 'button';
 	return button;
 }
+
+/* extern */
+ui.menu = new Menu();
 
 })();

@@ -3,24 +3,17 @@
 (function(){
 
 /* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
 //---------------------------------------------------------------------------
-ui.createClass('Popup_Debug:PopupMenu',
+ui.popupmgr.addpopup('debug',
 {
 	formname : 'testform',
 	disable_remove : true,
-	
-	initialize : function(){
-		ui.classes.PopupMenu.prototype.initialize.call(this);
-		this.makeElement();
-		this.makeForm();
-		this.setEvent();
-	},
 	
 	//------------------------------------------------------------------------------
 	// makeForm() URL入力のポップアップメニューを作成する
@@ -33,9 +26,10 @@ ui.createClass('Popup_Debug:PopupMenu',
 		this.addBR();
 		
 		var debug = ui.debug;
-		this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
-		this.form.starttest.style.display = 'none';
-		this.addText(" ", " ");
+		if(ui.debugmode){
+			this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
+			this.addText(" ", " ");
+		}
 		
 		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
 		this.addExecButton("T2", "T2", function(){ debug.painteval()});
@@ -61,32 +55,60 @@ ui.createClass('Popup_Debug:PopupMenu',
 		this.addExecButton("消去", "Cls", function(){ debug.erasetext();});
 		this.addCancelButton();
 
-		if(pzprv3.debugmode){ this.testonly_func();}	/* テスト用 */
+		/* テスト用文字列出力要素を追加 */
+		if(ui.debugmode && !pzprv3.getEL('testdiv')){
+			var el = document.createElement('div');
+			el.id = 'testdiv';
+			el.style.textAlign  = 'left';
+			el.style.fontSize   = '8pt';
+			el.style.lineHeight = '100%';
+			document.body.appendChild(el);
+		}
 	},
 	
 	show : function(px,py){
-		var _pop_style = this.pop.style;
-		_pop_style.display = 'inline';
-		_pop_style.left = '40px';
-		_pop_style.top  = '80px';
+		if(!this.pop){
+			this.makeElement();
+			this.makeForm();
+			this.setEvent();
+		}
+		this.pop.style.display = 'inline';
+		this.pop.style.left = '40px';
+		this.pop.style.top  = '80px';
 	}
 });
 
 //---------------------------------------------------------------------------
 // ★Debugクラス  poptest関連の実行関数など
 //---------------------------------------------------------------------------
-ui.createClass('Debug',
+ui.debug =
 {
+	extend : function(proto){
+		for(var name in proto){ this[name] = proto[name];}
+	},
+
 	// debugmode===true時はオーバーライドされます
 	keydown : function(ca){
 		var kc = ui.puzzle.key;
-		if(kc.isCTRL && ca=='F8'){
-			ui.menu.popups.debug.show();
-			kc.stopEvent();	/* カーソルを移動させない */
-			return true;
+		if(!ui.debugmode){
+			if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
+			else{ return false;}
 		}
-		return false;
+		else{
+			if(ca=='F7'){ this.accheck1();}
+			else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
+			else if(kc.isCTRL && ca=='F9'){ this.starttest();}
+			else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
+			else{ return false;}
+		}
+		kc.stopEvent();	/* カーソルを移動させない */
+		return true;
 	},
+	disppoptest : function(){
+		ui.menu.popups.debug.show();
+	},
+
+	starttest : function(){},
 
 	filesave : function(){
 		this.setTA(ui.puzzle.fio.fileencode(k.PZPH).replace(/\//g,"\n"));
@@ -104,7 +126,7 @@ ui.createClass('Debug',
 
 	erasetext : function(){
 		this.setTA('');
-		if(pzprv3.debugmode){ pzprv3.getEL('testdiv').innerHTML = '';}
+		if(ui.debugmode){ pzprv3.getEL('testdiv').innerHTML = '';}
 	},
 
 	perfeval : function(){
@@ -160,6 +182,6 @@ ui.createClass('Debug',
 	getTA : function(){ return document.testform.testarea.value;},
 	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
-});
+};
 
 })();

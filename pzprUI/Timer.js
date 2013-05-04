@@ -6,28 +6,28 @@ if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 var k = pzprv3.consts;
 
+/* タイマー割り込み間隔を短くするUA */
+var slowUA = (pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8);
+
 //---------------------------------------------------------------------------
-// ★Timerクラス
+// ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)
 //---------------------------------------------------------------------------
-ui.createClass('Timer',
+ui.timer =
 {
-	initialize : function(){
-		// ** 一般タイマー
-		this.TID;				// タイマーID
-		this.timerInterval = 100;
-		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
+	/* メンバ変数 */
+	TID           : null,					/* タイマーID */
+	timerInterval : (!slowUA ? 100 : 200),	/* タイマー割り込み間隔 */
 
-		this.current  = 0;		// 現在のgetTime()取得値(ミリ秒)
+	current  : 0,		/* 現在のgetTime()取得値(ミリ秒) */
 
-		// 経過時間表示用変数
-		this.bseconds = 0;		// 前回ラベルに表示した時間(秒数)
-		this.timerEL = pzprv3.getEL('timerpanel');
+	/* 経過時間表示用変数 */
+	bseconds : 0,		/* 前回ラベルに表示した時間(秒数) */
+	timerEL  : null,	/* 経過時間表示用要素 */
 
-		// 自動正答判定用変数
-		this.lastAnsCnt  = 0;	// 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント
-		this.worstACtime = 0;	// 正答判定にかかった時間の最悪値(ミリ秒)
-		this.nextACtime  = 0;	// 次に自動正答判定ルーチンに入ることが可能になる時間
-	},
+	/* 自動正答判定用変数 */
+	lastAnsCnt  : 0,	/* 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント */
+	worstACtime : 0,	/* 正答判定にかかった時間の最悪値(ミリ秒) */
+	nextACtime  : 0,	/* 次に自動正答判定ルーチンに入ることが可能になる時間 */
 
 	//---------------------------------------------------------------------------
 	// tm.reset()      タイマーのカウントを0にして、スタートする
@@ -36,6 +36,7 @@ ui.createClass('Timer',
 	//---------------------------------------------------------------------------
 	reset : function(){
 		this.worstACtime = 0;
+		this.timerEL = pzprv3.getEL('timerpanel');
 		this.timerEL.innerHTML = this.label()+"00:00";
 
 		clearInterval(this.TID);
@@ -93,33 +94,31 @@ ui.createClass('Timer',
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	}
-});
+};
 
 //---------------------------------------------------------------------------
-// ★UndoTimerクラス
+// ★UndoTimerクラス   Undo/Redo用タイマー
 //---------------------------------------------------------------------------
-ui.createClass('UndoTimer',
+ui.undotimer =
 {
-	initialize : function(){
-		// ** Undoタイマー
-		this.TID           = null;	// タイマーID
-		this.timerInterval = 25
-		if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){ this.timerInterval *= 2;}
+	/* メンバ変数 */
+	TID           : null,	/* タイマーID */
+	timerInterval : (!slowUA ? 25 : 50),
 
-		this.CTID          = null;	// キーボードチェック用タイマーID
+	CTID          : null,	/* キーボードチェック用タイマーID */
 
-		this.inUNDO = false;
-		this.inREDO = false;
+	inUNDO        : false,	/* Undo実行中 */
+	inREDO        : false,	/* Redo実行中 */
 
-		// Undo/Redo用変数
-		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
-		this.undoWaitCount = 0;
+	/* Undo/Redo用変数 */
+	undoWaitTime  : 300,	/* 1回目にwaitを多く入れるための値 */
+	undoWaitCount : 0,
 
-		this.lastCurrentOpe = 0;	// 盤面の状態が変わっていない場合、ボタンの有効/無効を切り替えない
+	lastCurrentOpe : 0,		/* 盤面の状態が変わっていない場合、ボタンの有効/無効を切り替えない */
 
-		this.stop();
-	},
-
+	//---------------------------------------------------------------------------
+	// ut.check_keyevent() Undo/Redoボタンを有効にするか判定する
+	//---------------------------------------------------------------------------
 	check_keyevent : function(){
 		if(!ui.puzzle || !ui.puzzle.key){ return;}
 
@@ -187,6 +186,6 @@ ui.createClass('UndoTimer',
 			}
 		}
 	}
-});
+};
 
 })();

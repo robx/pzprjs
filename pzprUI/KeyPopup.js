@@ -10,38 +10,21 @@ var k = pzprv3.consts;
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
 //---------------------------------------------------------------------------
 // キー入力用Popupウィンドウ
-ui.createClass('KeyPopup',
+ui.keypopup =
 {
-	initialize : function(){
-		this.paneltype = {1:0, 3:0};	// パネルのタイプ
-		this.element = null;			// キーポップアップのエレメント
+	/* メンバ変数 */
+	paneltype : {1:0, 3:0},	/* パネルのタイプ */
+	element : null,			/* キーポップアップのエレメント */
 
-		this.tdcolor = "black";
-		this.imgCR = [1,1];		// img表示用画像の横×縦のサイズ
+	tdcolor : "black",	/* 文字の色 */
+	imgCR : [1,1],		/* img表示用画像の横×縦のサイズ */
 
-		this.imgs  = [];			// resize用
+	imgs  : [],			/* resize用 */
 
-		this.basetmp   = null;
-		this.clearflag = false;
+	basepanel : null,
+	clearflag : false,
 
-		// ElementTemplate
-		this.node_empty = pzprv3.createEL('div');
-		this.node_empty.className = 'kpcell kpcellempty';
-		pzprv3.unselectable(this.node_empty);
-		
-		this.node_div = pzprv3.createEL('div');
-		this.node_div.className = 'kpcell kpcellvalid';
-		pzprv3.unselectable(this.node_div);
-		
-		this.node_num = pzprv3.createEL('span');
-		this.node_num.className = 'kpnum';
-		pzprv3.unselectable(this.node_num);
-		
-		this.node_img = pzprv3.createEL('img');
-		this.node_img.className = 'kpimg';
-		pzprv3.unselectable(this.node_img);
-	},
-
+	/* どの文字配置を作成するかのテーブル */
 	type : {
 		slither    : [3,0],
 		nawabari   : [4,0],
@@ -136,6 +119,8 @@ ui.createClass('KeyPopup',
 	// kp.clear()       キーポップアップを削除する
 	//---------------------------------------------------------------------------
 	create : function(){
+		this.imgs = [];			// resize用
+		
 		var type = this.type[ui.puzzle.pid];
 		if(!type){ type=[0,0];}
 		
@@ -150,12 +135,12 @@ ui.createClass('KeyPopup',
 		this.resizepanel();
 		
 		var bar = pzprv3.getEL('barkeypopup');
-		ui.event.addMouseDownEvent(bar, ui.menu.popupmgr, ui.menu.popupmgr.titlebardown);
+		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
 		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
 	},
 	createtable : function(mode,type){
-		this.basetmp = pzprv3.getEL('panelbase'+mode);
-		this.basetmp.innerHTML = '';
+		this.basepanel = pzprv3.getEL('panelbase'+mode);
+		this.basepanel.innerHTML = '';
 
 		this.generate(mode);
 	},
@@ -518,25 +503,35 @@ ui.createClass('KeyPopup',
 	inputcol : function(type, ca, disp){
 		var _div = null, _child = null;
 		if(type!=='empty'){
-			_div = this.node_div.cloneNode(false);
+			_div = pzprv3.createEL('div');
+			_div.className = 'kpcell kpcellvalid';
 			_div.onclick = function(){ ui.puzzle.key.keyinput(ca,0);};
+			pzprv3.unselectable(_div);
 		}
-		else{ _div = this.node_empty.cloneNode(false);}
+		else{
+			_div = pzprv3.createEL('div');
+			_div.className = 'kpcell kpcellempty';
+			pzprv3.unselectable(_div);
+		}
 
 		if(type==='num'){
-			_child = this.node_num.cloneNode(false);
+			_child = pzprv3.createEL('span');
+			_child.className   = 'kpnum';
 			_child.style.color = this.tdcolor;
 			_child.innerHTML   = disp;
+			pzprv3.unselectable(_child);
 		}
 		else if(type==='image'){
-			_child = this.node_img.cloneNode(false);
+			_child = pzprv3.createEL('img');
+			_child.className = 'kpimg';
 			_child.src = "./src/img/"+ui.puzzle.pid+"_kp.gif";
+			pzprv3.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 
 		if(this.clearflag){ _div.style.clear='both'; this.clearflag=false;}
 		if(!!_child){ _div.appendChild(_child);}
-		this.basetmp.appendChild(_div);
+		this.basepanel.appendChild(_div);
 	},
 	insertrow : function(){
 		this.clearflag = true;
@@ -564,6 +559,6 @@ ui.createClass('KeyPopup',
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});
 	}
-});
+};
 
 })();

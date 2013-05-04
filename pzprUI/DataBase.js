@@ -2,27 +2,27 @@
 (function(){
 
 /* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
-ui.createClass('ProblemData',
-{
-	initialize : function(){
-		this.id = null;
-		this.pid = '';
-		this.col = '';
-		this.row = '';
-		this.hard = 0;
-		this.pdata = '';
-		this.time = 0;
-		this.comment = '';
+var ProblemData = function(){
+	this.id = null;
+	this.pid = '';
+	this.col = '';
+	this.row = '';
+	this.hard = 0;
+	this.pdata = '';
+	this.time = 0;
+	this.comment = '';
 
-		if(arguments.length>0){ this.parse(arguments[0]);}
-	},
+	if(arguments.length>0){ this.parse(arguments[0]);}
+};
+ProblemData.prototype =
+{
 	setnewData : function(id, owner){
 		this.id = id;
 		this.pid = owner.pid;
@@ -48,12 +48,12 @@ ui.createClass('ProblemData',
 		for(var key in data){ this[key]=data[key];}
 		return this;
 	}
-});
+};
 
 //---------------------------------------------------------------------------
 // ★Popup_DataBaseクラス データベース用ポップアップメニューの作成を行う
 //---------------------------------------------------------------------------
-ui.createClass('Popup_DataBase:PopupMenu',
+ui.popupmgr.addpopup('database',
 {
 	formname : 'database',
 	disable_remove : true,
@@ -168,12 +168,12 @@ ui.createClass('Popup_DataBase:PopupMenu',
 	},
 	
 	show : function(px,py){
-		ui.classes.PopupMenu.prototype.show.call(this,px,py);
+		ui.popupmgr.popups.template.show.call(this,px,py);
 		ui.database.openDialog();
 	},
 	hide : function(){
 		ui.database.closeDialog();
-		ui.classes.PopupMenu.prototype.hide.call(this);
+		ui.popupmgr.popups.template.hide.call(this);
 	},
 
 	//---------------------------------------------------------------------------
@@ -188,27 +188,26 @@ ui.createClass('Popup_DataBase:PopupMenu',
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-ui.createClass('DataBaseManager',
+var DataBaseManager = function(){
+	this.dbh    = null;	// データベースハンドラ
+
+	this.DBsid  = -1;	// 現在選択されているリスト中のID
+	this.DBlist = [];	// 現在一覧にある問題のリスト
+
+	var self    = this;
+	this.update = function(){ self.updateDialog.call(self);};
+	this.sync   = false;
+	this.lang   = null;
+};
+DataBaseManager.prototype =
 {
-	initialize : function(){
-		this.dbh    = null;	// データベースハンドラ
-
-		this.DBsid  = -1;	// 現在選択されているリスト中のID
-		this.DBlist = [];	// 現在一覧にある問題のリスト
-
-		var self    = this;
-		this.update = function(){ self.updateDialog.call(self);};
-		this.sync   = false;
-		this.lang   = null;
-	},
-
 	//---------------------------------------------------------------------------
 	// dbm.openDialog()   データベースダイアログが開いた時の処理
 	// dbm.closeDialog()  データベースダイアログが閉じた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzprv3.storage.localST){ this.dbh = new ui.classes.DataBaseHandler_LS();}
+		if(pzprv3.storage.localST){ this.dbh = new DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;
@@ -383,7 +382,7 @@ ui.createClass('DataBaseManager',
 			id = this.DBlist.length;
 			refresh = true;
 
-			this.DBlist[id] = new ui.classes.ProblemData();
+			this.DBlist[id] = new ProblemData();
 			this.DBlist[id].setnewData(id+1, owner);
 			var str = prompt("コメントがある場合は入力してください。","");
 			this.DBlist[id].comment = (!!str ? str : '');
@@ -436,27 +435,26 @@ ui.createClass('DataBaseManager',
 		this.sync = false;
 		this.dbh.deleteDataTable(this, sID, max, this.update);
 	}
-});
+};
 
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-ui.createClass('DataBaseHandler_LS',
+var DataBaseHandler_LS = function(){
+	this.pheader = 'pzprv3_storage:data:';
+
+	this.createManageDataTable();
+	this.createDataBase();
+};
+DataBaseHandler_LS.prototype =
 {
 	//---------------------------------------------------------------------------
-	// dbm.dbh.initialize()    初期化時にデータベースを開く
 	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
 	//---------------------------------------------------------------------------
-	initialize : function(){
-		this.pheader = 'pzprv3_storage:data:';
-
-		this.createManageDataTable();
-		this.createDataBase();
-	},
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		for(var i=1;true;i++){
-			var row = new ui.classes.ProblemData(localStorage[this.pheader+i]);
+			var row = new ProblemData(localStorage[this.pheader+i]);
 			if(row.id==null){ break;}
 			parent.DBlist.push(row);
 		}
@@ -496,7 +494,7 @@ ui.createClass('DataBaseHandler_LS',
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
-		var data = new ui.classes.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
+		var data = new ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
 		owner.openByFileData(data.pdata);
 		ui.waitReady();
 		if(!!callback){ callback();}
@@ -524,7 +522,7 @@ ui.createClass('DataBaseHandler_LS',
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			var data = new ui.classes.ProblemData(localStorage[this.pheader+(i+1)]);
+			var data = new ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();
 		}
@@ -559,7 +557,7 @@ ui.createClass('DataBaseHandler_LS',
 			delete localStorage['pzprv3_'+pid+':puzdata'];
 			for(var i=0;i<count;i++){
 				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
-				var row = new ui.classes.ProblemData();
+				var row = new ProblemData();
 				row.pid = pid;
 				for(var c=0;c<7;c++){
 					row[keys[c]] = localStorage[pheader+keys[c]];
@@ -578,6 +576,9 @@ ui.createClass('DataBaseHandler_LS',
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();
 		}
 	}
-});
+};
+
+/* extern */
+ui.database = new DataBaseManager();
 
 })();

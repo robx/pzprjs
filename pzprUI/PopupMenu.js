@@ -11,52 +11,44 @@ function getEL(id){ return _doc.getElementById(id);}
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
 //---------------------------------------------------------------------------
-ui.createClass('PopupManager',
+ui.popupmgr =
 {
-	initialize : function(){
-		this.offset = new pzprv3.core.Point(0, 0);	// ポップアップウィンドウの左上からの位置
-
-		this.reset();
-	},
+	popup     : null,	/* 表示中のポップアップメニュー */
 	
-	puzzle    : null,
-	popup     : null, /* 表示中のポップアップメニュー */
-	popups    : null, /* 管理しているポップアップメニュー */
-	movingpop : null, /* 移動中のポップアップメニュー */
+	popups    : {},		/* 管理しているポップアップメニューのオブジェクト一覧 */
+	
+	movingpop : null,	/* 移動中のポップアップメニュー */
+	offset : {px:0, py:0},	/* 移動中ポップアップメニューのページ左上からの位置 */
 	
 	//---------------------------------------------------------------------------
-	// popupmgr.init()       ポップアップメニューの設定を初期化する
 	// popupmgr.reset()      ポップアップメニューの設定をクリアする
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
-	init : function(){
-		if(!!this.popups){ return;}
-		this.popups = {
-			newboard  : (new ui.classes.Popup_Newboard()),	/* 盤面の新規作成 */
-			urlinput  : (new ui.classes.Popup_URLInput()),	/* URL入力 */
-			urloutput : (new ui.classes.Popup_URLOutput()),	/* URL出力 */
-			fileopen  : (new ui.classes.Popup_FileOpen()),	/* ファイル入力 */
-			database  : (new ui.classes.Popup_DataBase()),	/* データベースを開く */
-			adjust    : (new ui.classes.Popup_Adjust()),	/* 盤面の調整 */
-			turnflip  : (new ui.classes.Popup_TurnFlip()),	/* 反転・回転 */
-			dispsize  : (new ui.classes.Popup_DispSize()),	/* 表示サイズ */
-			credit    : (new ui.classes.Popup_Credit()),	/* credit */
-			debug     : (new ui.classes.Popup_Debug())		/* poptest */
-		};
-	},
-	
 	reset : function(){
-		if(!this.popups){ return;}
 		for(var name in this.popups){
 			var popup = this.popups[name];
 			if(!popup.disable_remove){ popup.remove();}
 		}
+		/* デバッグ用だけは作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
+		this.popups.debug.show(0,0);
+		this.popups.debug.hide();
 	},
 	
 	setEvents : function(){
 		for(var name in this.popups){ this.popups[name].setEvent();}
 		ui.event.addMouseMoveEvent(_doc, this, this.titlebarmove);
 		ui.event.addMouseUpEvent  (_doc, this, this.titlebarup);
+	},
+
+	//---------------------------------------------------------------------------
+	// popupmgr.addpopup()   ポップアップメニューを追加する
+	//---------------------------------------------------------------------------
+	addpopup : function(idname, proto){
+		var NewPopup = {}, template = this.popups.template;
+		if(!template){ template = {};}
+		for(var name in template){ NewPopup[name] = template[name];}
+		for(var name in proto)   { NewPopup[name] = proto[name];}
+		this.popups[idname] = NewPopup;
 	},
 
 	//---------------------------------------------------------------------------
@@ -120,18 +112,15 @@ ui.createClass('PopupManager',
 			pzprv3.preventDefault(e);
 		}
 	}
-});
+};
 
 //---------------------------------------------------------------------------
-// ★PopupMenuクラス ポップアップメニューを作成したり表示します
+// ★PopupMenuクラス ポップアップメニューを作成表示するベースのオブジェクトです
 //---------------------------------------------------------------------------
-ui.createClass('PopupMenu',
+ui.popupmgr.addpopup('template',
 {
-	initialize : function(){
-		this.popparent = getEL("popup_parent");
-		this.reset();
-	},
 	reset : function(){
+		this.popparent = getEL("popup_parent");
 		this.pop       = null;
 		this.titlebar  = null;
 		this.form      = null;
@@ -143,11 +132,12 @@ ui.createClass('PopupMenu',
 		}
 	},
 
-	puzzle   : null,
 	formname : '',
 	disable_remove : false,
 
 	makeElement : function(){
+		this.reset();
+		
 		this.pop = _doc.createElement('div');
 		this.pop.className = 'popup';
 		this.popparent.appendChild(this.pop);
@@ -167,7 +157,7 @@ ui.createClass('PopupMenu',
 
 	setEvent :function(){
 		if(!!this.titlebar){
-			var mgr = ui.menu.popupmgr;
+			var mgr = ui.popupmgr;
 			ui.event.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
 		}
 	},
@@ -181,11 +171,11 @@ ui.createClass('PopupMenu',
 		this.pop.style.left = px + 'px';
 		this.pop.style.top  = py + 'px';
 		this.pop.style.display = 'inline';
-		ui.menu.popupmgr.popup = this;
+		ui.popupmgr.popup = this;
 	},
 	hide : function(){
 		this.pop.style.display = "none";
-		ui.menu.popupmgr.popup = null;
+		ui.popupmgr.popup = null;
 		
 		ui.event.enableKey = true;
 		ui.event.enableMouse = true;
@@ -235,7 +225,7 @@ ui.createClass('PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_NewBoardクラス 新規盤面作成のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_Newboard:PopupMenu',
+ui.popupmgr.addpopup('newboard',
 {
 	formname : 'newboard',
 	
@@ -303,7 +293,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 		this.addCancelButton();
 	},
 	makeForm_tawa_shape : function(form){
-		var table = new ui.classes.TableElement();
+		var table = new TableElement();
 		table.init({id:'NB_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
 		
@@ -339,7 +329,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 	},
 	
 	show : function(px,py){
-		ui.classes.PopupMenu.prototype.show.call(this,px,py);
+		ui.popupmgr.popups.template.show.call(this,px,py);
 		ui.event.enableKey = false;
 	},
 	//---------------------------------------------------------------------------
@@ -384,7 +374,7 @@ ui.createClass('Popup_Newboard:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_URLInputクラス URL入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_URLInput:PopupMenu',
+ui.popupmgr.addpopup('urlinput',
 {
 	formname : 'urlinput',
 	
@@ -419,7 +409,7 @@ ui.createClass('Popup_URLInput:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_URLOutputクラス URL出力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_URLOutput:PopupMenu',
+ui.popupmgr.addpopup('urloutput',
 {
 	formname : 'urloutput',
 	
@@ -475,7 +465,7 @@ ui.createClass('Popup_URLOutput:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_FileOpenクラス ファイル入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_FileOpen:PopupMenu',
+ui.popupmgr.addpopup('fileopen',
 {
 	formname : 'fileform',
 	
@@ -529,7 +519,7 @@ ui.createClass('Popup_FileOpen:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_Adjustクラス 盤面の調整のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_Adjust:PopupMenu',
+ui.popupmgr.addpopup('adjust',
 {
 	formname : 'adjust',
 	
@@ -574,7 +564,7 @@ ui.createClass('Popup_Adjust:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_TurnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_TurnFlip:PopupMenu',
+ui.popupmgr.addpopup('turnflip',
 {
 	formname : 'turnflip',
 	
@@ -616,7 +606,7 @@ ui.createClass('Popup_TurnFlip:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_DispSizeクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_DispSize:PopupMenu',
+ui.popupmgr.addpopup('dispsize',
 {
 	formname : 'dispsize',
 	
@@ -639,7 +629,7 @@ ui.createClass('Popup_DispSize:PopupMenu',
 	},
 	
 	show : function(px,py){
-		ui.classes.PopupMenu.prototype.show.call(this,px,py);
+		ui.popupmgr.popups.template.show.call(this,px,py);
 		
 		this.form.cs.value = ui.puzzle.painter.cellsize;
 		ui.event.enableKey = false;
@@ -663,7 +653,7 @@ ui.createClass('Popup_DispSize:PopupMenu',
 //---------------------------------------------------------------------------
 // ★Popup_Creditクラス Creditやバージョン情報を表示します
 //---------------------------------------------------------------------------
-ui.createClass('Popup_Credit:PopupMenu',
+ui.popupmgr.addpopup('credit',
 {
 	formname : 'credit',
 	
@@ -688,7 +678,8 @@ ui.createClass('Popup_Credit:PopupMenu',
 //---------------------------------------------------------------------------
 // ★TableElementクラス テーブル作成用のクラスです
 //---------------------------------------------------------------------------
-ui.createClass('TableElement',
+var TableElement = function(){};
+TableElement.prototype =
 {
 	table : null,
 	tbody : null,
@@ -720,6 +711,6 @@ ui.createClass('TableElement',
 	getElement : function(){
 		return this.table;
 	}
-});
+};
 
 })();

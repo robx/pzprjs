@@ -3,49 +3,13 @@
 
 var k = pzprv3.consts;
 
-ui.extendClass('Popup_Debug',
+/* Debug用オブジェクトに関数などを追加する */
+ui.debug.extend(
 {
-	testonly_func : function(){
-		var _doc = document, debug = ui.debug;
-		_doc.testform.starttest.style.display = 'inline';
-		_doc.testform.starttest.onclick = function(){ debug.starttest();};
-		
-		if(!pzprv3.getEL('testdiv')){
-			var el = _doc.createElement('div');
-			el.id = 'testdiv';
-			el.style.textAlign  = 'left';
-			el.style.fontSize   = '8pt';
-			el.style.lineHeight = '100%';
-			_doc.body.appendChild(el);
-		}
-	}
-});
-
-ui.extendClass('Debug',
-{
-	keydown : function(ca){
-		var kc = ui.puzzle.key;
-		if(ca=='F7'){ this.accheck1();}
-		else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
-		else if(kc.isCTRL && ca=='F9'){ this.starttest();}
-		else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
-		else{ return false;}
-
-		kc.stopEvent();	/* カーソルを移動させない */
-		return true;
-	},
-
 	accheck1 : function(){
-		var o = ui.puzzle, outputstr = o.fio.fileencode(k.PZPH);
-		o.board.disableSetError();
-		o.checker.inCheck = true;
-		o.checker.alstr = { jp:'' ,en:''};
-		o.checker.checkresult = true;
-		o.checker.checkAns();
-		o.checker.inCheck = false;
-		o.board.enableSetError();
-
-		this.addTextarea("\t\t\t[\""+ans.alstr.jp+"\",\""+outputstr+"\"],");
+		var outputstr = ui.puzzle.fio.fileencode(k.PZPH);
+		ui.puzzle.anscheckSilent();
+		this.addTextarea("\t\t\t[\""+ui.puzzle.checker.alstr.jp+"\",\""+outputstr+"\"],");
 	},
 
 	alltimer : null,

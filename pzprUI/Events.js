@@ -11,12 +11,10 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 
 // メニュー描画/取得/html表示系
-// Menuクラス
-ui.createClass('UIEvent',
+ui.event =
 {
-	initialize : function(){
-		this.resizetimer = null;	// resizeタイマー
-	},
+	resizetimer : null,	// resizeタイマー
+
 	evlist : [],
 
 	//----------------------------------------------------------------------
@@ -43,7 +41,7 @@ ui.createClass('UIEvent',
 		this.setWindowEvents();
 		
 		// ポップアップメニューにイベントを割り当てる
-		ui.menu.popupmgr.setEvents();
+		ui.popupmgr.setEvents();
 	},
 	removeUIEvents : function(){
 		var islt = !!document.removeEventListener;
@@ -159,6 +157,6 @@ ui.createClass('UIEvent',
 	//	);
 	//	return this.windowHeight();
 	// }
-});
+};
 
 })();

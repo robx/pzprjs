@@ -13,8 +13,8 @@ pzprv3.createCoreClass('Puzzle',
 
 		this.ready = false;
 
-		this.editmode = (pzprv3.EDITOR && !pzprv3.debugmode);	// 問題配置モード
-		this.playmode = !this.editmode;							// 回答モード
+		this.editmode = pzprv3.EDITOR;		// 問題配置モード
+		this.playmode = !this.editmode;		// 回答モード
 
 		this.starttime = 0;
 		this.resetTime();

@@ -10,7 +10,6 @@ var pzprv3_base = {
 
 	EDITOR : true,	// エディタモード
 	PLAYER : false,	// playerモード
-	debugmode : false,	// デバッグ用モード
 
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用

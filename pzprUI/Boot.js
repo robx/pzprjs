@@ -8,7 +8,6 @@ if(!pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
 var k = pzprv3.consts;
 
 var require_accesslog = true;
-var debugmode = false;
 
 /****************************/
 /* 初期化時のみ使用する関数 */
@@ -19,35 +18,7 @@ var debugmode = false;
 var onload_pzl = null;
 var ui = {
 	puzzle : null,
-	
-	//---------------------------------------------------------------
-	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
-	//---------------------------------------------------------------
-	classes : {},
-	extendClass : function(classname, proto){
-		var base = ui.classes[classname].prototype;
-		for(var name in proto){ base[name] = proto[name];}
-	},
-	createClass : function(classname, proto){
-		classname = classname.replace(/\s+/g,'');
-		var colon = classname.indexOf(':'), basename = '';
-		if(colon>=0){
-			basename  = classname.substr(colon+1);
-			classname = classname.substr(0,colon);
-		}
-
-		var NewClass = function(){ if(!!this.initialize){ this.initialize.apply(this,arguments);}};
-		if(!!basename && !!this.classes[basename]){
-			var BaseClass = this.classes[basename];
-			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
-			NewClass.prototype.SuperClass = BaseClass;
-			NewClass.prototype.SuperFunc  = BaseClass.prototype;
-		}
-		for(var name in proto){ NewClass.prototype[name] = proto[name];}
-		NewClass.prototype.constructor = NewClass;
-		
-		this.classes[classname] = NewClass;
-	},
+	debugmode : false,
 
 	/* ---------- */
 	/* onload処理 */
@@ -74,25 +45,20 @@ var ui = {
 
 		/* 必要な場合、テスト用ファイルのinclude         */
 		/* importURL()後でないと必要かどうか判定できない */
-		if(debugmode && !ui.classes.Debug.prototype.urls){
+		if(ui.debugmode && !ui.debug.urls){
 			pzprv3.includeFile("src/for_test.js");
 			setTimeout(arguments.callee,10);
 			return;
 		}
 
+		/* パズルオブジェクトの作成 */
 		ui.puzzle = pzprv3.createPuzzle();
 
-		// パズルが入力しなおされても、共通で使用されるオブジェクト
-		ui.event     = new ui.classes.UIEvent();			// イベント管理用オブジェクト
-		ui.menu      = new ui.classes.Menu();				// メニューを扱うオブジェクト
-		ui.timer     = new ui.classes.Timer();				// 一般タイマー用オブジェクト
-		ui.undotimer = new ui.classes.UndoTimer();			// Undo用Timerオブジェクト
-		ui.keypopup  = new ui.classes.KeyPopup();			// キーポップアップ用オブジェクト
-		ui.database  = new ui.classes.DataBaseManager();	// データベースアクセス用オブジェクト
-		ui.debug     = new ui.classes.Debug();
-
-		if(debugmode && !onload_pzl.qdata){
-			onload_pzl.qdata = ui.debug.urls[onload_pzl.id];
+		/* debugmode時の設定 */
+		if(ui.debugmode){
+			ui.puzzle.editmode = false;
+			ui.puzzle.playmode = true;
+			ui.puzzle.setConfig('autocheck', true);
 		}
 
 		// 描画wrapperの設定
@@ -108,6 +74,7 @@ var ui = {
 		// 単体初期化処理のルーチンへ
 		if     (!!onload_pzl.fstr) { ui.puzzle.openByFileData(onload_pzl.fstr);}
 		else if(!!onload_pzl.qdata){ ui.puzzle.openByURL("?"+onload_pzl.id+"/"+onload_pzl.qdata);}
+		else if(ui.debugmode)      { ui.puzzle.openByURL("?"+onload_pzl.id+"/"+ui.debug.urls[onload_pzl.id]);}
 		else if(!!onload_pzl.id)   { ui.puzzle.openByURL("?"+onload_pzl.id);}
 		
 		ui.waitReady(function(){
@@ -159,8 +126,8 @@ function importURL(){
 
 	// エディタモードかplayerモードか、等を判定する
 	var startmode = '';
-	if     (search=="?test")       { startmode = 'DEBUG'; search = '?country';}
-	else if(search.match(/_test/)) { startmode = 'DEBUG';}
+	if     (search=="?test")       { startmode = 'EDITOR'; ui.debugmode = true; search = '?country';}
+	else if(search.match(/_test/)) { startmode = 'EDITOR'; ui.debugmode = true;}
 	else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
 	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
@@ -174,7 +141,6 @@ function importURL(){
 	switch(startmode){
 		case 'PLAYER': pzprv3.EDITOR = false; break;
 		case 'EDITOR': pzprv3.EDITOR = true;  break;
-		case 'DEBUG' : pzprv3.EDITOR = true;  pzprv3.debugmode = debugmode = true; break;
 	}
 	pzprv3.PLAYER = !pzprv3.EDITOR;
 
