@@ -311,11 +311,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBlackCells() ){
-			this.setAlert('数字と黒マスになった数字の合計が正しくありません。', 'A number is not equal to the sum of the number of black cells.'); return false;
-		}
+		if( !this.checkBlackCells() ){ return 90001;}
 
-		return true;
+		return 0;
 	},
 
 	checkBlackCells : function(type){

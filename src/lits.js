@@ -195,39 +195,38 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+AnsCheck:{
+	checkBlackCellInArea : function(cinfo, evalfunc){
+		return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return evalfunc(a);});
+	}
+},
 "AnsCheck@lits":{
 	checkAns : function(){
 
-		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
-			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
-		}
+		if( !this.check2x2BlackCell() ){ return 10001;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);}) ){
-			this.setAlert('５マス以上の黒マスがある部屋が存在します。', 'A room has five or more black cells.'); return false;
-		}
+		if( !this.checkOverBlackCellInArea(rinfo) ){ return 30081;}
 
-		if( !this.checkSeqBlocksInRoom() ){
-			this.setAlert('1つの部屋に入る黒マスが2つ以上に分裂しています。', 'Black cells are devided in one room.'); return false;
-		}
+		if( !this.checkSeqBlocksInRoom() ){ return 30032;}
 
-		if( !this.checkTetromino(rinfo) ){
-			this.setAlert('同じ形のテトロミノが接しています。', 'Some Tetrominos that are the same shape are Adjacent.'); return false;
-		}
+		if( !this.checkTetromino(rinfo) ){ return 90031;}
 
-		if( !this.checkOneArea( this.owner.board.getBCellInfo() ) ){
-			this.setAlert('黒マスが分断されています。', 'Black cells are not continued.'); return false;
-		}
+		var binfo = this.owner.board.getBCellInfo();
+		if( !this.checkOneArea(binfo) ){ return 10005;}
 
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
-			this.setAlert('黒マスがない部屋があります。', 'A room has no black cells.'); return false;
-		}
+		if( !this.checkNoBlackCellInArea(rinfo) ){ return 30041;}
 
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>=4);}) ){
-			this.setAlert('黒マスのカタマリが４マス未満の部屋があります。', 'A room has three or less black cells.'); return false;
-		}
+		if( !this.checkLessBlackCellInArea(rinfo) ){ return 30071;}
 
-		return true;
+		return 0;
+	},
+
+	checkOverBlackCellInArea : function(rinfo){
+		return this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);});
+	},
+	checkLessBlackCellInArea : function(rinfo){
+		return this.checkBlackCellInArea(rinfo, function(a){ return (a>=4);});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -260,28 +259,32 @@ FileIO:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} ) ){
-			this.setAlert('２マスより大きい黒マスのカタマリがあります。','The size of a mass of black cells is over two.'); return false;
-		}
+		if( !this.checkOverBlackCell(binfo) ){ return 10031;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);}) ){
-			this.setAlert('２マス以上の黒マスがある部屋が存在します。','A room has three or mode black cells.'); return false;
-		}
+		if( !this.checkOverBlackCellInArea(rinfo) ){ return 30061;}
 
-		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (a>=2);} ) ){
-			this.setAlert('１マスだけの黒マスのカタマリがあります。','There is a single black cell.'); return false;
-		}
+		if( !this.checkSingleBlackCell(binfo) ){ return 10030;}
 
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a!=1);}) ){
-			this.setAlert('１マスしか黒マスがない部屋があります。','A room has only one black cell.'); return false;
-		}
+		if( !this.checkSingleBlackCellInArea(rinfo) ){ return 30051;}
 
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
-			this.setAlert('黒マスがない部屋があります。','A room has no black cell.'); return false;
-		}
+		if( !this.checkNoBlackCellInArea(rinfo) ){ return 30041;}
 
-		return true;
+		return 0;
+	},
+
+	checkOverBlackCell : function(binfo){
+		return this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} );
+	},
+	checkSingleBlackCell : function(binfo){
+		return this.checkAllArea(binfo, function(w,h,a,n){ return (a>=2);} );
+	},
+
+	checkOverBlackCellInArea : function(rinfo){
+		return this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);});
+	},
+	checkSingleBlackCellInArea : function(rinfo){
+		return this.checkBlackCellInArea(rinfo, function(a){ return (a!=1);});
 	}
 }
 });

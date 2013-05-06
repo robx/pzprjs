@@ -208,15 +208,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkDifferentNumberInRoom(this.owner.board.getRoomInfo(), function(cell){ var num=cell.getNum(); return ((num>=1&&num<=4)?num:-1);}) ){
-			this.setAlert('1つの領域に2つ以上の同じ矢印が入っています。','An area has plural same arrows.'); return false;
-		}
+		if( !this.checkSingleArrowInArea() ){ return 31015;}
+		if( !this.checkBalls() ){ return 91401;}
 
-		if( !this.checkBalls() ){
-			this.setAlert('ゴールにたどり着かないセルがあります。','A cell cannot reach a goal.'); return false;
-		}
+		return 0;
+	},
 
-		return true;
+	checkSingleArrowInArea : function(){
+		var rinfo = this.owner.board.getRoomInfo();
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
 	},
 
 	checkBalls : function(){

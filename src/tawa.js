@@ -346,19 +346,13 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkThreeBlackCells() ){
-			this.setAlert('黒マスが横に3マス以上続いています。','Three or more black cells continue horizonally.'); return false;
-		}
+		if( !this.checkThreeBlackCells() ){ return 90011;}
 
-		if( !this.checkUnderCells() ){
-			this.setAlert('黒マスの下に黒マスがありません。','There are no black cells under a black cell..'); return false;
-		}
+		if( !this.checkUnderCells() ){ return 90021;}
 
-		if( !this.checkNumbers() ){
-			this.setAlert('数字の周りに入っている黒マスの数が違います。','The number of black cells around a number is not correct.'); return false;
-		}
+		if( !this.checkNumbers() ){ return 10024;}
 
-		return true;
+		return 0;
 	},
 
 	checkThreeBlackCells : function(){

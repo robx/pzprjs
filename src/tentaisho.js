@@ -452,24 +452,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkStarOnLine() ){
-			this.setAlert('星を線が通過しています。', 'A line goes over the star.'); return false;
-		}
+		if( !this.checkStarOnLine() ){ return 39201;}
 
 		var rinfo = this.owner.board.getAreaStarInfoAll();
-		if( !this.checkErrorFlag(rinfo, -1) ){
-			this.setAlert('星が含まれていない領域があります。','A block has no stars.'); return false;
-		}
+		if( !this.checkErrorFlag(rinfo, -1) ){ return 39211;}
+		if( !this.checkFractal(rinfo) ){ return 39221;}
+		if( !this.checkErrorFlag(rinfo, -2) ){ return 39231;}
 
-		if( !this.checkFractal(rinfo) ){
-			this.setAlert('領域が星を中心に点対称になっていません。', 'A area is not point symmetric about the star.'); return false;
-		}
-
-		if( !this.checkErrorFlag(rinfo, -2) ){
-			this.setAlert('星が複数含まれる領域があります。','A block has two or more stars.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
 	checkStarOnLine : function(){
@@ -521,6 +511,13 @@ AnsCheck:{
 		return result;
 	}
 }
+});
+
+pzprv3.addFailCode({
+	39201 : ["星が含まれていない領域があります。","A block has no stars."],
+	39211 : ["星を線が通過しています。", "A line goes over the star."],
+	39221 : ["領域が星を中心に点対称になっていません。", "A area is not point symmetric about the star."],
+	39231 : ["星が複数含まれる領域があります。","A block has two or more stars."]
 });
 
 })();

@@ -314,19 +314,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkCellNumber(1) ){
-			this.setAlert('数字につながる橋の数が違います。','The number of connecting bridges to a number is not correct.'); return false;
-		}
+		if( !this.checkCellNumber(1) ){ return 49801;}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( this.owner.board.getLareaInfo() ) ){
-			this.setAlert('線が全体で一つながりになっていません。', 'All lines and numbers are not connected each other.'); return false;
-		}
+		var linfo = this.owner.board.getLareaInfo();
+		if( !this.checkOneArea(linfo) ){ return 43601;}
 
-		if( !this.checkCellNumber(2) ){
-			this.setAlert('数字につながる橋の数が違います。','The number of connecting bridges to a number is not correct.'); return false;
-		}
-		return true;
+		if( !this.checkCellNumber(2) ){ return 49811;}
+
+		return 0;
 	},
 
 	checkCellNumber : function(flag){

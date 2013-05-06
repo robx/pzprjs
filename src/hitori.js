@@ -173,21 +173,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
-			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
-		}
+		if( !this.checkAdjacentBlackCell() ){ return 10021;}
 
-		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
-			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
-		}
+		var winfo = this.owner.board.getWCellInfo();
+		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();}) ){
-			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
-		}
+		if( !this.checkRowsColsSameNumber() ){ return 90201;}
 
-		return true;
+		return 0;
 	},
 
+	checkRowsColsSameNumber : function(){
+		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
+	},
 	isDifferentNumberInClist_hitori : function(clist, numfunc){
 		var clist2 = clist.filter(function(cell){ return (cell.isWhite() && cell.isNum());});
 		return this.isDifferentNumberInClist(clist2, numfunc);

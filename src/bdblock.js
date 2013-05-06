@@ -94,35 +94,23 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(3,2) ){
-			this.setAlert('黒点以外のところで線が分岐しています。','Lines are branched out of the black point.'); return false;
-		}
-		if( !this.checkLcntCross(4,2) ){
-			this.setAlert('黒点以外のところで線が交差しています。','Lines are crossed out of the black point.'); return false;
-		}
+		if( !this.checkLcntCross(3,2) ){ return 32501;}
+		if( !this.checkLcntCross(4,2) ){ return 32511;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){
-			this.setAlert('数字のないブロックがあります。','A block has no number.'); return false;
-		}
-		if( !this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();}) ){
-			this.setAlert('１つのブロックに異なる数字が入っています。','A block has dirrerent numbers.'); return false;
-		}
-		if( !this.checkGatheredObject(rinfo) ){
-			this.setAlert('同じ数字が異なるブロックに入っています。','One kind of numbers is included in dirrerent blocks.'); return false;
-		}
+		if( !this.checkNoNumber(rinfo) ){ return 30002;}
+		if( !this.checkDiffNumberInBlock(rinfo) ){ return 30028;}
+		if( !this.checkGatheredObject(rinfo) ){ return 30402;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
-		if( !this.checkLcntCross(2,1) ){
-			this.setAlert('線が３本以上出ていない黒点があります。','A black point has two or less lines.'); return false;
-		}
-		if( !this.checkLcntCross(0,1) ){
-			this.setAlert('線が出ていない黒点があります。','A black point has no line.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 32101;}
+		if( !this.checkLcntCross(2,1) ){ return 32611;}
+		if( !this.checkLcntCross(0,1) ){ return 32621;}
 
-		return true;
+		return 0;
+	},
+
+	checkDiffNumberInBlock : function(rinfo){
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する

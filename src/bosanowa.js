@@ -459,17 +459,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSubsNumber() ){
-			this.setAlert('数字とその隣の数字の差の合計が合っていません。', 'Sum of the differences between the number and adjacent numbers is not equal to the number.'); return false;
-		}
+		if( !this.checkSubsNumber() ){ return 69401;}
+		if( !this.checkValidFillCell() ){ return 50201;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());}) ){
-			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});},
+
+	checkValidFillCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});
+	},
 
 	checkSubsNumber : function(){
 		var subs=[], bd=this.owner.board, UNDEF=-1;

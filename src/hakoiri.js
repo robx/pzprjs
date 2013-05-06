@@ -163,28 +163,28 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAroundMarks() ){
-			this.setAlert('同じ記号がタテヨコナナメに隣接しています。','Same marks are adjacent.'); return false;
-		}
+		if( !this.checkAroundMarks() ){ return 60211;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}) ){
-			this.setAlert('1つのハコに4つ以上の記号が入っています。','A box has four or more marks.'); return false;
-		}
+		if( !this.checkOverFourMarksInBox(rinfo) ){ return 31013;}
+		if( !this.checkDiffMarkInBox(rinfo) ){ return 30423;}
 
-		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
-			this.setAlert('1つのハコに同じ記号が複数入っています。','A box has same plural marks.'); return false;
-		}
+		var numinfo = this.owner.board.getNumberInfo();
+		if( !this.checkOneArea(numinfo) ){ return 10010;}
 
-		if( !this.checkOneArea( this.owner.board.getNumberInfo() ) ){
-			this.setAlert('タテヨコにつながっていない記号があります。','Marks are devided.'); return false;
-		}
+		if( !this.checkAllMarkInBox(rinfo) ){ return 31014;}
 
-		if( !this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}) ){
-			this.setAlert('1つのハコに2つ以下の記号しか入っていません。','A box has tow or less marks.'); return false;
-		}
+		return 0;
+	},
 
-		return true;
+	checkOverFourMarksInBox : function(rinfo){
+		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
+	},
+	checkDiffMarkInBox : function(rinfo){
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
+	checkAllMarkInBox : function(rinfo){
+		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});
 	},
 
 	checkAroundMarks : function(){

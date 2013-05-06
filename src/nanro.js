@@ -160,36 +160,28 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.check2x2Block(function(cell){ return cell.isNum();}) ){
-			this.setAlert('数字が2x2のかたまりになっています。','There is a 2x2 block of numbers.'); return false;
-		}
+		if( !this.check2x2NumberCell() ){ return 10003;}
 
-		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false) ){
-			this.setAlert('同じ数字が境界線を挟んで隣り合っています。','Adjacent blocks have the same number.'); return false;
-		}
+		if( !this.checkSideAreaNumber() ){ return 30111;}
 
 		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){
-			this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 31004;}
+		if( !this.checkErrorFlag_cell(rinfo, 1) ){ return 69701;}
 
-		if( !this.checkErrorFlag_cell(rinfo, 1) ){
-			this.setAlert('入っている数字の数が数字より多いです。','A number is bigger than the size of block.'); return false;
-		}
+		var numinfo = this.owner.board.getNumberInfo();
+		if( !this.checkOneArea(numinfo) ){ return 10009;}
 
-		if( !this.checkOneArea( this.owner.board.getNumberInfo() ) ){
-			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 69711;}
+		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 31007;}
 
-		if( !this.checkErrorFlag_cell(rinfo, 2) ){
-			this.setAlert('入っている数字の数が数字より少ないです。','A number is smaller than the size of block.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){
-			this.setAlert('数字が含まれていないブロックがあります。','A block has no number.'); return false;
-		}
-
-		return true;
+	check2x2NumberCell : function(){
+		return this.check2x2Block(function(cell){ return cell.isNum();});
+	},
+	checkSideAreaNumber : function(rinfo){
+		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
 	},
 
 	getErrorFlag_cell : function(){

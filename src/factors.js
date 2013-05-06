@@ -132,21 +132,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getAnum();}) ){
-			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
-		}
+		if( !this.checkRowsColsSameAnsNumber() ){ return 10038;}
 
-		if( !this.checkRoomNumber(this.owner.board.getRoomInfo()) ){
-			this.setAlert('ブロックの数字と数字の積が同じではありません。','A number of room is not equal to the product of these numbers.'); return false;
-		}
+		var rinfo = this.owner.board.getRoomInfo();
+		if( !this.checkRoomNumber(rinfo) ){ return 69601;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getAnum()===-1);}) ){
-			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
+		if( !this.checkNoNumCell() ){ return 50171;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getAnum()===-1);});},
+
+	checkRowsColsSameAnsNumber : function(){
+		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getAnum();});
+	},
 
 	checkRoomNumber : function(rinfo){
 		var result = true;

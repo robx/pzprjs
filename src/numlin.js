@@ -135,46 +135,35 @@ AnsCheck:{
 	checkAns : function(){
 		this.performAsLine = true;
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleNumber(linfo) ){
-			this.setAlert('3つ以上の数字がつながっています。','Three or more numbers are connected.'); return false;
-		}
+		if( !this.checkTripleNumber(linfo) ){ return 43303;}
 
-		if( !this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();}) ){
-			this.setAlert('異なる数字がつながっています。','Different numbers are connected.'); return false;
-		}
+		if( !this.checkLinkDiffNumber(linfo) ){ return 30029;}
 
-		if( !this.check2Line() ){
-			this.setAlert('数字の上を線が通過しています。','A line goes through a number.'); return false;
-		}
-		if( !this.check1Line() ){
-			this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
-		if( !this.checkDisconnectLine(linfo) ){
-			this.setAlert('数字につながっていない線があります。','A line doesn\'t connect any number.'); return false;
-		}
+		if( !this.checkLineOverLetter() ){ return 43103;}
+		if( !this.checkDeadendLine() ){ return 43401;}
+		if( !this.checkDisconnectLine(linfo) ){ return 43203;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
-			this.setAlert('どこにもつながっていない数字があります。','A number is not connected another number.'); return false;
-		}
+		if( !this.checkAloneNumber() ){ return 43503;}
 
-		return true;
+		return 0;
 	},
 
-	check1Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()===1 && cell.noNum());}); },
-	check2Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()>= 2 && cell.isNum());}); },
-	checkLine : function(func){
+	checkLinkDiffNumber : function(linfo){
+		return this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();});
+	},
+	checkAloneNumber : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
+	},
+
+	checkDeadendLine : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!func(cell)){ continue;}
+			if(!(cell.lcnt()===1 && cell.noNum())){ continue;}
 
 			if(this.inAutoCheck){ return false;}
 			if(result){ bd.border.seterr(-1);}

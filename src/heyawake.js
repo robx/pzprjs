@@ -166,32 +166,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
-			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
-		}
+		if( !this.checkAdjacentBlackCell() ){ return 10021;}
 
-		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
-			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
-		}
+		var winfo = this.owner.board.getWCellInfo();
+		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){
-			this.setAlert('部屋の中の黒マスが点対称に配置されていません。', 'Position of black cells in the room is not point symmetric.'); return false;
-		}
+		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 90111;}
 
-		if( !this.checkBlackCellCount(rinfo) ){
-			this.setAlert('部屋の数字と黒マスの数が一致していません。','The number of Black cells in the room and The number written in the room is different.'); return false;
-		}
+		if( !this.checkBlackCellCount(rinfo) ){ return 30091;}
 
-		if( !this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isBlack();}, false) ){
-			this.setAlert('白マスが3部屋連続で続いています。','White cells are continued for three consecutive room.'); return false;
-		}
+		if( !this.checkCountinuousWhiteCell() ){ return 90101;}
 
-		if( !this.checkAreaRect(rinfo) ){
-			this.setAlert('四角形ではない部屋があります。','There is a room whose shape is not square.'); return false;
-		}
+		if( !this.checkAreaRect(rinfo) ){ return 20010;}
 
-		return true;
+		return 0;
 	},
 
 	checkFractal : function(rinfo){
@@ -211,6 +200,9 @@ AnsCheck:{
 		return result;
 	},
 
+	checkCountinuousWhiteCell : function(){
+		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isBlack();}, false);
+	},
 	isBorderCount : function(keycellpos, clist){
 		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;
 		if(d.x1===d.x2){

@@ -120,21 +120,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRoomNumber() ){
-			this.setAlert('同じブロックに同じ数字が入っています。','There are same numbers in a block.'); return false;
-		}
+		if( !this.checkRoomNumber() ){ return 30422;}
+		if( !this.checkRowsColsSameNumber() ){ return 10037;}
+		if( !this.checkNoNumCell() ){ return 50171;}
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();}) ){
-			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
-		}
-
-		if( !this.checkNoNumCell() ){
-			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkNoNumCell();},
+
+	checkRowsColsSameNumber : function(){
+		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
+	},
 
 	checkRoomNumber : function(){
 		var result = true, bd = this.owner.board;

@@ -112,38 +112,32 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('交差している線があります。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoom2( rinfo ) ){
-			this.setAlert('線が１つの国を２回以上通っています。','A line passes a country twice or more.'); return false;
-		}
+		if( !this.checkRoom2(rinfo) ){ return 39001;}
 
-		if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);}) ){
-			this.setAlert('数字のある国と線が通過するマスの数が違います。','The number of the cells that is passed any line in the country and the number written in the country is diffrerent.'); return false;
-		}
-		if( !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!=0);}) ){
-			this.setAlert('線の通っていない国があります。','There is a country that is not passed any line.'); return false;
-		}
+		if( !this.checkRoadCount(rinfo) ){ return 30301;}
+		if( !this.checkNoRoadCountry(rinfo) ){ return 30311;}
 
-		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt()===0 && cell2.lcnt()===0);}, false) ){
-			this.setAlert('線が通らないマスが、太線をはさんでタテヨコにとなりあっています。','The cells that is not passed any line are adjacent over border line.'); return false;
-		}
+		if( !this.checkSideAreaGrass(rinfo) ){ return 30121;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are two or more loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		return true;
+		return 0;
+	},
+
+	checkRoadCount : function(rinfo){
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);});
+	},
+	checkNoRoadCountry : function(rinfo){
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!=0);});
+	},
+	checkSideAreaGrass : function(rinfo){
+		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt()===0 && cell2.lcnt()===0);}, false);
 	},
 
 	checkRoom2 : function(rinfo){

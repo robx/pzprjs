@@ -109,69 +109,32 @@ AnsCheck:{
 	checkAns : function(){
 		this.performAsLine = true;
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleNumber(linfo) ){
-			this.setAlert('3つ以上の丸がつながっています。','Three or more objects are connected.'); return false;
-		}
-		if( !this.check2Line() ){
-			this.setAlert('丸の上を線が通過しています。','A line goes through a circle.'); return false;
-		}
+		if( !this.checkTripleNumber(linfo) ){ return 43302;}
+		if( !this.checkLineOverLetter() ){ return 43102;}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,7) ){
-			this.setAlert('丸がコの字型に繋がっていません。','The shape of a line is not correct.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,6) ){
-			this.setAlert('繋がる丸が正しくありません。','The type of connected circle is wrong.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,5) ){
-			this.setAlert('線が2回以上曲がっています。','A line turns twice or more.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,4) ){
-			this.setAlert('線が2回曲がっていません。','A line turns only once or lower.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,3) ){
-			this.setAlert('線の長さが同じではありません。','The length of lines is differnet.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,2) ){
-			this.setAlert('線の長短の指示に反してます。','The length of lines is not suit for the label of object.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,1) ){
-			this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkErrorFlag_line(xinfo,7) ){ return 48201;}
+		if( !this.checkErrorFlag_line(xinfo,6) ){ return 48211;}
+		if( !this.checkErrorFlag_line(xinfo,5) ){ return 48221;}
+		if( !this.checkErrorFlag_line(xinfo,4) ){ return 48231;}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48241;}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 48251;}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 
-		if( !this.checkDisconnectLine(linfo) ){
-			this.setAlert('丸につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
-		}
+		if( !this.checkDisconnectLine(linfo) ){ return 43202;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
-			this.setAlert('どこにもつながっていない丸があります。','A circle is not connected another object.'); return false;
-		}
+		if( !this.checkAloneCircle() ){ return 43502;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});},
 
-	check2Line : function(){ return this.checkLine(function(cell){ return (cell.lcnt()>=2 && cell.isNum());}); },
-	checkLine : function(func){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(func(cell)){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(true);
-				result = false;
-			}
-		}
-		return result;
+	checkAloneCircle : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
 	},
 
 	isErrorFlag_line : function(xinfo){

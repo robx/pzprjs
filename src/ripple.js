@@ -116,31 +116,28 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
-			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
-		}
+		if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
 
-		if( (this.owner.pid==='ripple') && !this.checkRippleNumber() ){
-			this.setAlert('数字よりもその間隔が短いところがあります。','The gap of the same kind of number is smaller than the number.'); return false;
-		}
+		if( (pid==='ripple') && !this.checkRippleNumber() ){ return 69501;}
 
-		if( (this.owner.pid==='cojun') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
-			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
-		}
+		if( (pid==='cojun') && !this.checkAdjacentDiffNumber() ){ return 60101;}
+		if( (pid==='cojun') && !this.checkUpperNumber(rinfo) ){ return 69511;}
 
-		if( (this.owner.pid==='cojun') && !this.checkUpperNumber(rinfo) ){
-			this.setAlert('同じ部屋で上に小さい数字が乗っています。','There is an small number on big number in a room.'); return false;
-		}
+		if( !this.checkNoNumCell() ){ return 50171;}
 
-		if( !this.checkNoNumCell() ){
-			this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkNoNumCell();},
+
+	checkDiffNumberInRoom : function(rinfo){
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
+	checkAdjacentDiffNumber : function(){
+		return this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);});
+	},
 
 	checkRippleNumber : function(){
 		var result = true, bd = this.owner.board;

@@ -170,27 +170,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleNumber(linfo) ){
-			this.setAlert('3つ以上の○が繋がっています。','Three or more objects are connected.'); return false;
-		}
+		if( !this.checkTripleNumber(linfo) ){ return 43302;}
 
-		if( !this.checkWBcircle(linfo, 1) ){
-			this.setAlert('白丸同士が繋がっています。','Two white circles are connected.'); return false;
-		}
-		if( !this.checkWBcircle(linfo, 2) ){
-			this.setAlert('黒丸同士が繋がっています。','Two black circles are connected.'); return false;
-		}
+		if( !this.checkWBcircle(linfo, 1) ){ return 48001;}
+		if( !this.checkWBcircle(linfo, 2) ){ return 48011;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()===0);} ) ){
-			this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
-		}
+		if( !this.checkAloneCircle() ){ return 43505;}
 
-		return true;
+		return 0;
+	},
+
+	checkAloneCircle : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
 	},
 
 	checkWBcircle : function(linfo,val){

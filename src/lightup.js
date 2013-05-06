@@ -224,21 +224,23 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, true) ){
-			this.setAlert('照明に別の照明の光が当たっています。','Akari is shined from another Akari.'); return false;
-		}
+		if( !this.checkNotDuplicateAkari() ){ return 90801;}
+		if( !this.checkDir4Akari() ){ return 10039;}
+		if( !this.checkShinedCell() ){ return 90811;}
 
-		if( !this.checkDir4Cell(function(cell){ return cell.isAkari();},0) ){
-			this.setAlert('数字のまわりにある照明の数が間違っています。','The number is not equal to the number of Akari around it.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);}) ){
-			this.setAlert('照明に照らされていないセルがあります。','A cell is not shined.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
+	checkDir4Akari : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isAkari();},0);
+	},
+	checkShinedCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);});
+	},
+
+	checkNotDuplicateAkari : function(){
+		return this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, true);
+	},
 	isPluralAkari : function(keycellpos, clist){
 		var akaris = clist.filter(function(cell){ return cell.isAkari();});
 		if(akaris.length>1){

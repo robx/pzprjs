@@ -181,26 +181,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkdir4Line_meji(3) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
-		if( !this.checkdir4Line_meji(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkdir4Line_meji(3) ){ return 40201;}
+		if( !this.checkdir4Line_meji(4) ){ return 40301;}
 
-		if( !this.checkDotLength() ){
-			this.setAlert('タイルと周囲の線が引かれない点線の長さが異なります。','The size of the tile is not equal to the total of length of lines that is remained dotted around the tile.'); return false;
-		}
+		if( !this.checkDotLength() ){ return 39101;}
 
-		if( !this.checkdir4Line_meji(1) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkdir4Line_meji(1) ){ return 40101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		return true;
+		return 0;
 	},
 
 	checkdir4Line_meji : function(val){

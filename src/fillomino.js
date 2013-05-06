@@ -186,34 +186,25 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){
-			this.setAlert('数字が含まれていないブロックがあります。','A block has no number.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 30002;}
 
-		if( !this.checkErrorFlag_cell(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){
-			this.setAlert('ブロックの大きさより数字のほうが大きいです。','A number is bigger than the size of block.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){ return 31005;}
 
-		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;}) ){
-			this.setAlert('同じ数字のブロックが辺を共有しています。','Adjacent blocks have the same number.'); return false;
-		}
+		if( !this.checkSideAreaNumberSize(rinfo) ){ return 30201;}
 
-		if( !this.checkErrorFlag_cell(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){
-			this.setAlert('ブロックの大きさよりも数字が小さいです。','A number is smaller than the size of block.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){ return 31006;}
 
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){
-			this.setAlert('複数種類の数字が入っているブロックがあります。','A block has two or more kinds of numbers.'); return false;
-		}
+		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 31004;}
 
-		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){
-			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
+		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){ return 50171;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return (this.owner.getConfig('enbnonum') || this.checkNoNumCell());},
 
+	checkSideAreaNumberSize : function(rinfo){
+		return this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;});
+	},
 	checkAreaSize : function(rinfo, flag){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){

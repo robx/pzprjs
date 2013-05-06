@@ -94,29 +94,22 @@ AnsCheck:{
 	checkAns : function(){
 
 		/* 自動チェック時は最初にチェックする */
-		if( this.inAutoCheck && !this.checkDir5Cell( function(cell){ return cell.isBlack();} ) ){
-			this.setAlert('数字およびその上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in the cell and four adjacent cells.'); return false;
-		}
+		if( this.inAutoCheck && !this.checkDir5BlackCell() ){ return 10025;}
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
-			this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
-		}
+		if( !this.checkAreaSquare(binfo) ){ return 10016;}
 
-		if( !this.checkLookair(binfo) ){
-			this.setAlert('同じ大きさの黒マスのカタマリの間に他の黒マスのカタマリがありません。','A mass of black cells can looks other same size mass of black cells.'); return false;
-		}
+		if( !this.checkLookair(binfo) ){ return 19001;}
 
 			/* チェック時は最後にチェックする */
-		if( !this.inAutoCheck && !this.checkDir5Cell( function(cell){ return cell.isBlack();} ) ){
-			this.setAlert('数字およびその上下左右にある黒マスの数が間違っています。','The number is not equal to the number of black cells in the cell and four adjacent cells.'); return false;
-		}
+		if( !this.inAutoCheck && !this.checkDir5BlackCell() ){ return 10025;}
 
-		return true;
+		return 0;
 	},
 
-	checkDir5Cell : function(iscount){
+	checkDir5BlackCell : function(){
 		var result = true;
+		var iscount = function(cell){ return cell.isBlack();};
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(!cell.isValidNum()){ continue;}

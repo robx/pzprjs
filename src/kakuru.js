@@ -185,25 +185,18 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAroundPrenums() ){
-			this.setAlert('初めから出ている数字の周りに同じ数字が入っています。','There are same numbers around the pre-numbered cell.'); return false;
-		}
+		if( !this.checkAroundPrenums() ){ return 69301;}
+		if( !this.checkNumber() ){ return 69311;}
+		if( !this.checkAroundNumbers() ){ return 60201;}
+		if( !this.checkEmptyCell_kakuru() ){ return 50191;}
 
-		if( !this.checkNumber() ){
-			this.setAlert('初めから出ている数字の周りに入る数の合計が正しくありません。','A sum of numbers around the pre-numbered cell is incorrect.'); return false;
-		}
-
-		if( !this.checkAroundNumbers() ){
-			this.setAlert('同じ数字がタテヨコナナメに隣接しています。','Same numbers is adjacent.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());}) ){
-			this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});},
+
+	checkEmptyCell_kakuru : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});
+	},
 
 	checkAroundPrenums : function(type){
 		var result = true, bd = this.owner.board;

@@ -167,36 +167,39 @@ AnsCheck:{
 	checkAns : function(){
 		var o = this.owner, bd = o.board, pid = o.pid;
 
-		if( (pid!=='sukororoom') && !this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}) ){
-			this.setAlert('同じ数字がタテヨコに連続しています。','Same numbers are adjacent.'); return false;
+		if( (pid!=='sukororoom') && !this.checkAdjacentDiffNumber() ){ return 60101;}
+
+		if(pid==='sukororoom'){
+			var rinfo = bd.getRoomInfo();
+			if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
+			if( !this.checkNumberOrNotInRoom(rinfo) ){ return 31003;}
 		}
 
-		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (pid==='sukororoom') && !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();}) ){
-			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
-		}
+		if( (pid!=='view') && !this.checkDir4NumberCount() ){ return 69201;}
+		if( (pid==='view') && !this.checkViewNumber() ){ return 69211;}
 
-		if( (pid==='sukororoom') && !this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);}) ){
-			this.setAlert('数字のあるなしが混在した部屋があります。','A room includes both numbered and non-numbered cells.'); return false;
-		}
+		var numinfo = bd.getNumberInfo();
+		if( !this.checkOneArea(numinfo) ){ return 10009;}
 
-		if( (pid!=='view') && !this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0) ){
-			this.setAlert('数字と、その数字の上下左右に入る数字の数が一致していません。','The number of numbers placed in four adjacent cells is not equal to the number.'); return false;
-		}
+		if( !this.checkNoSuspendCell() ){ return 50181;}
 
-		if( (pid==='view') && !this.checkViewNumber() ){
-			this.setAlert('数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。','Sum of four-way gaps to another number is not equal to the number.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkOneArea( bd.getNumberInfo() ) ){
-			this.setAlert('タテヨコにつながっていない数字があります。','Numbers are devided.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (cell.getQsub()===1);}) ){
-			this.setAlert('数字の入っていないマスがあります。','There is a cell that is not filled in number.'); return false;
-		}
-
-		return true;
+	checkAdjacentDiffNumber : function(){
+		return this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);});
+	},
+	checkDiffNumberInRoom : function(rinfo){
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
+	checkNumberOrNotInRoom : function(rinfo){
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);});
+	},
+	checkDir4NumberCount : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0);
+	},
+	checkNoSuspendCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQsub()===1);});
 	},
 
 	checkViewNumber : function(){

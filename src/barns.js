@@ -144,30 +144,22 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6);}) ){
-			this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
-		}
-		if( !this.checkIceLines() ){
-			this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
-		}
+		if( !this.checkCrossOutOfIce() ){ return 40501;}
+		if( !this.checkIceLines() ){ return 40601;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are two or more loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkLcntCell(0) ){
-			this.setAlert('線が引かれていないマスがあります。','There is a line-less cell.'); return false;
-		}
+		if( !this.checkLcntCell(0) ){ return 50151;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		return true;
+		return 0;
+	},
+
+	checkCrossOutOfIce : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());});
 	}
 }
 });

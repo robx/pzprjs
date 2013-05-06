@@ -521,23 +521,19 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);}) ){
-			this.setAlert('斜線が複数引かれた部屋があります。', 'A room has plural mirrors.'); return false;
-		}
+		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 31011;}
+		if( !this.checkMirrors(1) ){ return 91201;}
+		if( !this.checkMirrors(2) ){ return 91211;}
+		if( !this.checkExistMirrorInRoom(rinfo) ){ return 31012;}
 
-		if( !this.checkMirrors(1) ){
-			this.setAlert('光が同じ文字の場所へ到達しません。', 'Beam from a light doesn\'t reach one\'s pair.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkMirrors(2) ){
-			this.setAlert('光の反射回数が正しくありません。', 'The count of refrection is wrong.'); return false;
-		}
-
-		if( !this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!=0);}) ){
-			this.setAlert('斜線の引かれていない部屋があります。', 'A room has no mirrors.'); return false;
-		}
-
-		return true;
+	checkNoPluralMirrorsInRoom : function(rinfo){
+		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);});
+	},
+	checkExistMirrorInRoom : function(rinfo){
+		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!=0);});
 	},
 
 	checkMirrors : function(type){

@@ -112,23 +112,16 @@ AnsCheck:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h==a && w==h);} ) ){
-			this.setAlert('正方形でない黒マスのカタマリがあります。','A mass of black cells is not regular rectangle.'); return false;
-		}
+		if( !this.checkAreaSquare(binfo) ){ return 10016;}
 
-		if( !this.checkOneArea( this.owner.board.getWCellInfo() ) ){
-			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
-		}
+		var winfo = this.owner.board.getWCellInfo();
+		if( !this.checkOneArea(winfo) ){ return 10007;}
 
-		if( !this.checkNumberSquare(binfo,true) ){
-			this.setAlert('数字とそれに接する黒マスの大きさの合計が一致しません。','Sum of the adjacent masses of black cells is not equal to the number.'); return false;
-		}
+		if( !this.checkNumberSquare(binfo,true) ){ return 10022;}
 
-		if( !this.checkNumberSquare(binfo,false) ){
-			this.setAlert('数字のない□に黒マスが接していません。','No black cells are adjacent to square mark without numbers.'); return false;
-		}
+		if( !this.checkNumberSquare(binfo,false) ){ return 10023;}
 
-		return true;
+		return 0;
 	},
 
 	checkNumberSquare : function(binfo, flag){

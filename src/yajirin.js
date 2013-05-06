@@ -169,40 +169,31 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('交差している線があります。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.isBlack());}) ){
-			this.setAlert('黒マスの上に線が引かれています。','Theer is a line on the black cell.'); return false;
-		}
+		if( !this.checkLineOnBlackCell() ){ return 50101;}
 
-		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
-			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
-		}
+		if( !this.checkAdjacentBlackCell() ){ return 10021;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkArrowNumber() ){
-			this.setAlert('矢印の方向にある黒マスの数が正しくありません。','The number of black cells are not correct.'); return false;
-		}
+		if( !this.checkArrowNumber() ){ return 10028;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.isBlack() && cell.noNum());}) ){
-			this.setAlert('黒マスも線も引かれていないマスがあります。','Theer is an empty cell.'); return false;
-		}
+		if( !this.checkBlankCell() ){ return 50111;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkLcntCell(1);},
+
+	checkLineOnBlackCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.isBlack());});
+	},
+	checkBlankCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.isBlack() && cell.noNum());});
+	},
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.owner.board;

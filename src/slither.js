@@ -172,26 +172,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(3,0) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
-		if( !this.checkLcntCross(4,0) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCross(3,0) ){ return 40201;}
+		if( !this.checkLcntCross(4,0) ){ return 40301;}
 
-		if( !this.checkdir4BorderLine() ){
-			this.setAlert('数字の周りにある線の本数が違います。','The number is not equal to the number of lines around it.'); return false;
-		}
+		if( !this.checkdir4BorderLine() ){ return 49101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 40101;}
 
-		return true;
+		return 0;
 	},
 	
 	checkdir4BorderLine : function(){

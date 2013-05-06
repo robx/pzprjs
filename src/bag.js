@@ -134,32 +134,23 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(3,0) ){
-			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCross(4,0) ){
-			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCross(3,0) ){ return 40201;}
+		if( !this.checkLcntCross(4,0) ){ return 40301;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are two or more loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 40101;}
 
-		this.owner.board.searchInsideArea();
-		if( !this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}) ){
-			this.setAlert('輪の内側に入っていない数字があります。','There is an outside number.'); return false;
-		}
-		if( !this.checkCellNumber() ){
-			this.setAlert('数字と輪の内側になる4方向のマスの合計が違います。','The number and the sum of the inside cells of four direction is different.'); return false;
-		}
+		if( !this.checkOutsideNumber() ){ return 29101;}
+		if( !this.checkCellNumber() ){ return 29111;}
 
-		return true;
+		return 0;
 	},
 
+	checkOutsideNumber : function(){
+		this.owner.board.searchInsideArea();	/* cell.insideを設定する */
+		return this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());});
+	},
 	checkCellNumber : function(icheck){
 		var result = true, bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){

@@ -532,51 +532,29 @@ AnsCheck:{
 	checkAns : function(){
 
 		var seglist = this.owner.board.segs.getallsegment();
-		if( !this.checkSegmentExist(seglist) ){
-			this.setAlert('線が存在していません。', 'There is no segment.'); return false;
-		}
+		if( !this.checkSegmentExist(seglist) ){ return 42111;}
 
-		if( !this.checkSegmentPoint() ){
-			this.setAlert('線が丸のないところから出ています。','A segment comes from out of circle.'); return false;
-		}
+		if( !this.checkSegmentPoint() ){ return 49701;}
 
-		if( !this.checkSegmentBranch() ){
-			this.setAlert('分岐している線があります。','There is a branched segment.'); return false;
-		}
+		if( !this.checkSegmentBranch() ){ return 40211;}
 
-		if( !this.checkSegmentOverPoint(seglist) ){
-			this.setAlert('線が丸を通過しています。','A segment passes over a circle.'); return false;
-		}
+		if( !this.checkSegmentOverPoint(seglist) ){ return 49711;}
 
-		if( !this.checkDuplicateSegment(seglist) ){
-			this.setAlert('線が同一直線上で重なっています。','Plural segments are overlapped.'); return false;
-		}
+		if( !this.checkDuplicateSegment(seglist) ){ return 49721;}
 
-		if( !this.checkDifferentLetter(seglist) ){
-			this.setAlert('異なる文字が直接繋がっています。','Different Letters are connected directly.'); return false;
-		}
+		if( !this.checkDifferentLetter(seglist) ){ return 49731;}
 
-		if( !this.checkRightAngle(seglist) ){
-			this.setAlert('線が直角に交差していません。','Segments don\'n intersect at a right angle.'); return false;
-		}
+		if( !this.checkRightAngle(seglist) ){ return 49741;}
 
-		if( !this.checkOneSegmentLoop(seglist) ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkOneSegmentLoop(seglist) ){ return 41111;}
 
-		if( !this.checkSegmentDeadend() ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end segment.'); return false;
-		}
+		if( !this.checkSegmentDeadend() ){ return 40111;}
 
-		if( !this.checkAlonePoint() ){
-			this.setAlert('線が2本出ていない丸があります。','A circle doesn\'t have two segments.'); return false;
-		}
+		if( !this.checkAlonePoint() ){ return 49751;}
 
-		if( !this.checkConsequentLetter(seglist) ){
-			this.setAlert('同じ文字がひとつながりになっていません。','Same Letters are not consequent.'); return false;
-		}
+		if( !this.checkConsequentLetter(seglist) ){ return 49761;}
 
-		return true;
+		return 0;
 	},
 
 	checkSegmentExist : function(seglist){

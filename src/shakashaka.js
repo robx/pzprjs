@@ -332,19 +332,18 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkDir4Cell(function(cell){ return cell.isTri();},2) ){
-			this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is bigger than it.'); return false;
-		}
+		if( !this.checkOverTriangle() ){ return 10040;}
+		if( !this.checkWhiteArea() ){ return 90901;}
+		if( !this.checkLessTriangle() ){ return 10041;}
 
-		if( !this.checkWhiteArea() ){
-			this.setAlert('白マスが長方形(正方形)ではありません。','A mass of white cells is not rectangle.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkDir4Cell(function(cell){ return cell.isTri();},1) ){
-			this.setAlert('数字のまわりにある黒い三角形の数が間違っています。','The number of triangles in four adjacent cells is smaller than it.'); return false;
-		}
-
-		return true;
+	checkOverTriangle : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isTri();},2);
+	},
+	checkLessTriangle : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isTri();},1);
 	},
 
 	checkWhiteArea : function(){

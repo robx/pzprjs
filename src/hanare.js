@@ -164,23 +164,15 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){
-			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A room has plural numbers.'); return false;
-		}
+		if( !this.checkDoubleNumber(rinfo) ){ return 30011;}
 
-		if( !this.checkAnsNumberAndSize(rinfo) ){
-			this.setAlert('数字と部屋の大きさが違います。','The size of the room is not equal to the number.'); return false;
-		}
+		if( !this.checkAnsNumberAndSize(rinfo) ){ return 31008;}
 
-		if( !this.checkDiffNumber() ){
-			this.setAlert('２つの数字の差とその間隔が正しくありません。','The distance of the paired numbers is not equal to the diff of them.'); return false;
-		}
+		if( !this.checkDiffNumber() ){ return 69901;}
 
-		if( !this.checkNoNumber(rinfo) ){
-			this.setAlert('数字の入っていない部屋があります。','A room has no numbers.'); return false;
-		}
+		if( !this.checkNoNumber(rinfo) ){ return 30003;}
 
-		return true;
+		return 0;
 	},
 
 	checkDiffNumber : function(){

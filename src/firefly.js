@@ -172,41 +172,24 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell_firefly(3) ){
-			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell_firefly(4) ){
-			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell_firefly(3) ){ return 40201;}
+		if( !this.checkLcntCell_firefly(4) ){ return 40301;}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,4) ){
-			this.setAlert('黒点同士が線で繋がっています。', 'Black points are connected each other.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,3) ){
-			this.setAlert('白丸の、黒点でない部分どうしがくっついています。', 'Fireflies are connected without a line starting from black point.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,2) ){
-			this.setAlert('線の曲がった回数が数字と違っています。', 'The number of curves is different from a firefly\'s number.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,1) ){
-			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkErrorFlag_line(xinfo,4) ){ return 49911;}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 49921;}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 49931;}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 
 		this.performAsLine = true;
-		if( !this.checkOneArea( this.owner.board.getLareaInfo() ) ){
-			this.setAlert('線が全体で一つながりになっていません。', 'All lines and fireflies are not connected each other.'); return false;
-		}
+		var linfo = this.owner.board.getLareaInfo();
+		if( !this.checkOneArea(linfo) ){ return 43601;}
 
-		if( !this.checkLcntCell_firefly(1) ){
-			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell_firefly(1) ){ return 40101;}
 
-		if( !this.checkFireflyBeam() ){
-			this.setAlert('ホタルから線が出ていません。', 'There is a lonely firefly.'); return false;
-		}
+		if( !this.checkFireflyBeam() ){ return 49901;}
 
-		return true;
+		return 0;
 	},
 
 	checkLcntCell_firefly : function(val){

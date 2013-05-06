@@ -198,48 +198,29 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
-		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(3,0) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
-		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(4,1) ){
-			this.setAlert('線が黒点上で交差しています。','There is a crossing line on the black point.'); return false;
-		}
-		if( (this.owner.pid!=='kramma') && !this.checkLcntCurve() ){
-			this.setAlert('線が黒点以外で曲がっています。','A line curves out of the black points.'); return false;
-		}
+		if( (pid!=='kramma') && !this.checkLcntCross(3,0) ){ return 32201;}
+		if( (pid!=='kramma') && !this.checkLcntCross(4,1) ){ return 32601;}
+		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 32521;}
 
-		if( (this.owner.pid==='shwolf') && !this.checkLineChassis() ){
-			this.setAlert('外枠につながっていない線があります。','A line doesn\'t connect to the chassis.'); return false;
-		}
+		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 32701;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){
-			if(this.owner.pid!=='shwolf')
-				{ this.setAlert('白丸も黒丸も含まれない領域があります。','An area has no marks.');}
-			else
-				{ this.setAlert('ヤギもオオカミもいない領域があります。','An area has neither sheeps nor wolves.');}
-			return false;
-		}
+		if( !this.checkNoNumber(rinfo) ){ return (this.owner.pid!=='shwolf' ? 30007 : 30008);}
 
-		if( !this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();}) ){
-			if(this.owner.pid!=='shwolf')
-				{ this.setAlert('白丸と黒丸が両方含まれる領域があります。','An area has both white and black circles.');}
-			else
-				{ this.setAlert('ヤギとオオカミが両方いる領域があります。','An area has both sheeps and wolves.');}
-			return false;
-		}
+		if( !this.checkDiffObjectInArea(rinfo) ){ return (this.owner.pid!=='shwolf' ? 30026 : 30027);}
 
-		if( (this.owner.pid!=='kramma') && !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
-		if( (this.owner.pid==='kramman') && !this.checkLcntCross(0,1) ){
-			this.setAlert('黒点上を線が通過していません。','No lines on the black point.'); return false;
-		}
+		if( (pid!=='kramma') && !this.checkLcntCross(1,0) ){ return 32101;}
+		if( (pid==='kramman') && !this.checkLcntCross(0,1) ){ return 32621;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return (this.owner.pid==='kramma') || this.checkLcntCross(1,0);},
+
+	checkDiffObjectInArea : function(rinfo){
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
 
 	checkLcntCurve : function(){
 		var result = true, bd = this.owner.board;

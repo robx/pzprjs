@@ -278,38 +278,32 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkenableLineParts(1) ){
-			this.setAlert('最初から引かれている線があるマスに線が足されています。','Lines are added to the cell that the mark lie in by the question.'); return false;
+		if( !this.checkenableLineParts(1) ){ return 50121;}
+
+		if( !this.checkLcntCell(3) ){ return 40201;}
+
+		if(this.owner.pid==='pipelinkr'){
+			var isdispice = (this.owner.getConfig('disptype_pipelinkr')==2);
+			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 40501 : 40502);}
+			if( !this.checkIceLines() ){ return (isdispice ? 40601 : 40602);}
 		}
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( (this.owner.pid==='pipelinkr') && !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6 && cell.getQues()!==11);}) ){
-			this.setAlert((this.owner.getConfig('disptype_pipelinkr')==2?'氷':'○')+'の部分以外で線が交差しています。','There is a crossing line out of '+(this.owner.getConfig('disptype_pipelinkr')==1?'circles':'ices')+'.'); return false;
-		}
-		if( (this.owner.pid==='pipelinkr') && !this.checkIceLines() ){
-			this.setAlert((this.owner.getConfig('disptype_pipelinkr')==2?'氷':'○')+'の部分で線が曲がっています。','A line curves on '+(this.owner.getConfig('disptype_pipelinkr')==1?'circles':'ices')+'.'); return false;
-		}
+		if( !this.checkCrossLineOnCross() ){ return 40421;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkLcntCell(0) ){ return 50151;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);}) ){
-			this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkLcntCell(0) ){
-			this.setAlert('線が引かれていないマスがあります。','There is an empty cell.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
-
-		return true;
+	checkCrossOutOfMark : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6 && cell.getQues()!==11);});
+	},
+	checkCrossLineOnCross : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
 	}
 }
 });

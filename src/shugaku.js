@@ -344,39 +344,32 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkKitamakura() ){
-			this.setAlert('北枕になっている布団があります。', 'There is a \'Kita-makura\' futon.'); return false;
-		}
+		if( !this.checkKitamakura() ){ return 91301;}
+		if( !this.check2x2BlackCell() ){ return 10001;}
+		if( !this.checkDir4PillowOver() ){ return 10042;}
+		if( !this.checkFullSizeFuton() ){ return 91311;}
+		if( !this.checkFutonAisle() ){ return 91321;}
 
-		if( !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
-			this.setAlert('2x2の黒マスのかたまりがあります。', 'There is a 2x2 block of black cells.'); return false;
-		}
+		var binfo = this.owner.board.getBCellInfo();
+		if( !this.checkOneArea(binfo) ){ return 10006;}
 
-		if( !this.checkDir4Cell(function(cell){ return cell.isPillow();},2) ){
-			this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
-		}
+		if( !this.checkDir4PillowLess() ){ return 10043;}
+		if( !this.checkEmptyCell_shugaku() ){ return 50211;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQans()===41||cell.getQans()===46);}) ){
-			this.setAlert('布団が2マスになっていません。', 'There is a half-size futon.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkFutonAisle() ){
-			this.setAlert('通路に接していない布団があります。', 'There is a futon separated to aisle.'); return false;
-		}
-
-		if( !this.checkOneArea( this.owner.board.getBCellInfo() ) ){
-			this.setAlert('黒マスが分断されています。', 'Aisle is divided.'); return false;
-		}
-
-		if( !this.checkDir4Cell(function(cell){ return cell.isPillow();},1) ){
-			this.setAlert('柱のまわりにある枕の数が間違っています。', 'The number of pillows around the number is wrong.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (cell.noNum() && cell.getQans()===0);}) ){
-			this.setAlert('布団でも黒マスでもないマスがあります。', 'There is an empty cell.'); return false;
-		}
-
-		return true;
+	checkDir4PillowOver : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2)
+	},
+	checkDir4PillowLess : function(){
+		return this.checkDir4Cell(function(cell){ return cell.isPillow();},1);
+	},
+	checkFullSizeFuton : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQans()===41||cell.getQans()===46);});
+	},
+	checkEmptyCell_shugaku : function(){
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.getQans()===0);});
 	},
 
 	checkKitamakura : function(){

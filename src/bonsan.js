@@ -143,67 +143,47 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
+
 		this.performAsLine = true;
-
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
-
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 		this.performAsLine = false;
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkDoubleNumber(linfo) ){
-			this.setAlert('○が繋がっています。','There are connected circles.'); return false;
-		}
-		if( !this.checkLineOverLetter() ){
-			this.setAlert('○の上を線が通過しています。','A line goes through a circle.'); return false;
-		}
 
-		if( !this.checkAllArea(linfo, function(w,h,a,n){ return (w==1||h==1);}) ){
-			this.setAlert('曲がっている線があります。','A line has curve.'); return false;
-		}
-		if( !this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||n==a-1);}) ){
-			this.setAlert('数字と線の長さが違います。','The length of a line is wrong.'); return false;
-		}
+		var linfo = this.owner.board.getLareaInfo();
+		if( !this.checkDoubleNumber(linfo) ){ return 30016;}
+		if( !this.checkLineOverLetter() ){ return 43102;}
+
+		if( !this.checkCurveLine(linfo) ){ return 20013;}
+
+		if( !this.checkLineLength(linfo) ){ return 50401;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		this.owner.board.searchMovedPosition(linfo);
-		if( (this.owner.pid==='bonsan') && !this.checkFractal(rinfo) ){
-			this.setAlert('○が点対称に配置されていません。', 'Position of circles is not point symmetric.'); return false;
-		}
-		if( (this.owner.pid==='heyabon') && !this.checkFractal(rinfo) ){
-			this.setAlert('部屋の中の○が点対称に配置されていません。', 'Position of circles in the room is not point symmetric.'); return false;
-		}
-		if( (this.owner.pid==='heyabon') && !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;}) ){
-			this.setAlert('○のない部屋があります。','A room has no circle.'); return false;
-		}
+		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 30501;}
+		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 30511;}
+		if( (pid==='heyabon') && !this.checkNoCircleRoom(rinfo) ){ return 30025;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);} ) ){
-			this.setAlert('○から線が出ていません。','A circle doesn\'t start any line.'); return false;
-		}
+		if( !this.checkNoLineCircle() ){ return 50411;}
 
 		this.performAsLine = true;
-		if( !this.checkDisconnectLine(linfo) ){
-			this.setAlert('○につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
-		}
+		if( !this.checkDisconnectLine(linfo) ){ return 43202;}
+		this.performAsLine = false;
 
-		return true;
+		return 0;
 	},
 
-	checkLineOverLetter : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.lcnt()>=2 && cell.isNum()){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(true);
-				result = false;
-			}
-		}
-		return result;
+	checkCurveLine : function(linfo){
+		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
+	},
+	checkLineLength : function(linfo){
+		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||n===a-1);});
+	},
+	checkNoCircleRoom : function(rinfo){
+		return this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;});
+	},
+	checkNoLineCircle : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);});
 	},
 
 	checkFractal : function(rinfo, getval){

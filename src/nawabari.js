@@ -259,41 +259,36 @@ AnsCheck:{
 		var o=this.owner, bd=o.board, pid=o.pid;
 
 		var rinfo = bd.getRoomInfo();
-		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){
-			this.setAlert('部屋の形が長方形ではありません。','There is not rectangle territory.'); return false;
-		}
+		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){ return 20010;}
 
-		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){
-			this.setAlert('数字の入っていない部屋があります。','A territory has no numbers.'); return false;
-		}
+		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){ return 30003;}
 
-		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){
-			this.setAlert('1つの部屋に2つ以上の数字が入っています。','A territory has plural numbers.'); return false;
-		}
+		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){ return 30011;}
 
-		if( (pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);} ) ){
-			this.setAlert('サイズが4マスより小さいブロックがあります。','The size of block is smaller than four.'); return false;
-		}
-		if( (pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);} ) ){
-			this.setAlert('サイズが5マスより小さいブロックがあります。','The size of block is smaller than five.'); return false;
-		}
+		if( (pid==='fourcells') && !this.checkOverFourCells(rinfo) ){ return 30035;}
+		if( (pid==='fivecells') && !this.checkOverFiveCells(rinfo) ){ return 30036;}
 
-		if( !this.checkdir4BorderAns() ){
-			this.setAlert('数字の周りにある境界線の本数が違います。','The number is not equal to the number of border lines around it.'); return false;
-		}
+		if( !this.checkdir4BorderAns() ){ return 32401;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 32101;}
 
-		if( (pid==='fourcells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);} ) ){
-			this.setAlert('サイズが4マスより大きいブロックがあります。','The size of block is larger than four.'); return false;
-		}
-		if( (pid==='fivecells') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);} ) ){
-			this.setAlert('サイズが5マスより大きいブロックがあります。','The size of block is larger than five.'); return false;
-		}
+		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 30037;}
+		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 30038;}
 
-		return true;
+		return 0;
+	},
+
+	checkOverFourCells : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);});
+	},
+	checkLessFourCells : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);});
+	},
+	checkOverFiveCells : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);});
+	},
+	checkLessFiveCells : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);});
 	},
 
 	checkdir4BorderAns : function(){

@@ -285,17 +285,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSameObjectInRoom(this.owner.board.getRoomInfo(), function(cell){ return (cell.isBlack()?1:2);}) ){
-			this.setAlert('白マスと黒マスの混在したタイルがあります。','A tile includes both black and white cells.'); return false;
-		}
+		if( !this.checkSameColorTile() ){ return 30030;}
 
-		if( !this.checkRowsColsPartly(this.isBCellCount, function(cell){ return cell.is51cell();}, false) ){
-			this.setAlert('数字の下か右にある黒マスの数が間違っています。','The number of black cells underward or rightward is not correct.'); return false;
-		}
+		if( !this.checkRowsColsBlackCell() ){ return 10029;}
 
-		return true;
+		return 0;
 	},
 
+	checkSameColorTile : function(){
+		var rinfo = this.owner.board.getRoomInfo();
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isBlack()?1:2);});
+	},
+	checkRowsColsBlackCell : function(){
+		return this.checkRowsColsPartly(this.isBCellCount, function(cell){ return cell.is51cell();}, false);
+	},
 	isBCellCount : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}

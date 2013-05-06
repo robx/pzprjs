@@ -116,19 +116,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}) ){
-			this.setAlert('黒マスがタテヨコに連続しています。','Black cells are adjacent.'); return false;
-		}
+		if( !this.checkAdjacentBlackCell() ){ return 10021;}
 
-		if( !this.checkRBBlackCell( this.owner.board.getWCellInfo() ) ){
-			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
-		}
+		var winfo = this.owner.board.getWCellInfo();
+		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
 
-		if( !this.checkCellNumber() ){
-			this.setAlert('数字と黒マスにぶつかるまでの4方向のマスの合計が違います。','The number and the sum of the coutinuous white cells of four direction is different.'); return false;
-		}
+		if( !this.checkCellNumber() ){ return 90301;}
 
-		return true;
+		return 0;
 	},
 
 	checkCellNumber : function(){

@@ -326,25 +326,18 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();}) ){
-			this.setAlert('同じ列に同じ数字が入っています。','There are same numbers in a row.'); return false;
-		}
+		if( !this.checkRowsColsSameNumber() ){ return 10037;}
+		if( !this.checkBDnumber() ){ return 69101;}
+		if( !this.checkBDmark() ){ return 69111;}
+		if( !this.checkNoNumCell() ){ return 50171;}
 
-		if( !this.checkBDnumber() ){
-			this.setAlert('丸付き数字とその両側の数字の差が一致していません。', 'The Difference between two Adjacent cells is not equal to the number on circle.'); return false;
-		}
-
-		if( !this.checkBDmark() ){
-			this.setAlert('不等号と数字が矛盾しています。', 'A inequality sign is not correct.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return cell.noNum();}) ){
-			this.setAlert('数字の入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return cell.noNum();});},
+
+	checkRowsColsSameNumber : function(){
+		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
+	},
 
 	checkBDnumber : function(){
 		return this.checkBDSideCell(function(border,a1,a2){

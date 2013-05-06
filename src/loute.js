@@ -427,31 +427,17 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getLblockInfo();
-		if( !this.checkArrowCorner1(rinfo) ){
-			this.setAlert('矢印がブロックの端にありません。','An arrow is not at the edge of the block.'); return false;
-		}
+		if( !this.checkArrowCorner1(rinfo) ){ return 39501;}
+		if( !this.checkArrowCorner2(rinfo) ){ return 39511;}
+		if( !this.checkCircleCorner(rinfo) ){ return 39521;}
 
-		if( !this.checkArrowCorner2(rinfo) ){
-			this.setAlert('矢印の先にブロックの角がありません。','An arrow doesn\'t indicate the corner of a block.'); return false;
-		}
+		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 30022;}
 
-		if( !this.checkCircleCorner(rinfo) ){
-			this.setAlert('白丸がブロックの角にありません。','A circle is out of the corner.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 32101;}
 
-		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){
-			this.setAlert('数字とブロックのサイズが違います。','The size of the block is not equal to the number.'); return false;
-		}
+		if( !this.checkLblock(rinfo) ){ return 30039;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
-
-		if( !this.checkLblock(rinfo) ){
-			this.setAlert('ブロックが幅1のL字型になっていません。','A block is not L-shape or whose width is not one.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
 	checkArrowCorner1 : function(rinfo){

@@ -279,38 +279,29 @@ AnsCheck:{
 	checkAns : function(){
 		this.performAsLine = true;
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==11);}) ){
-			this.setAlert('十字以外の場所で線が交差しています。','There is a crossing line out of cross mark.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkCrossOutOfMark() ){ return 40401;}
 
-		if( !this.checkTriNumber(1) ){
-			this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
-		}
-		if( !this.checkTriangle() ){
-			this.setAlert('線が三角形を通過していません。','A line doesn\'t goes through a triangle.'); return false;
-		}
-		if( !this.checkTriNumber(2) ){
-			this.setAlert('三角形の数字とそこから延びる線の長さが一致していません。','A number on triangle is not equal to sum of the length of lines from it.'); return false;
-		}
+		if( !this.checkTriNumber(1) ){ return 19111;}
+		if( !this.checkTriangle() ){ return 19101;}
+		if( !this.checkTriNumber(2) ){ return 19121;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);}) ){
-			this.setAlert('十字の場所で線が交差していません。','There isn\'t a crossing line on a cross mark.'); return false;
-		}
+		if( !this.checkNotCrossOnMark() ){ return 40411;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('線が途中で途切れています。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are two or more loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkLcntCell(1);},
+
+	checkCrossOutOfMark : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==11);});
+	},
+	checkNotCrossOnMark : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);});
+	},
 
 	checkTriangle : function(){
 		var result = true, bd = this.owner.board;

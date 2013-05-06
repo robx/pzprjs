@@ -200,23 +200,16 @@ AnsCheck:{
 
 		// それぞれ点線、境界線で作られる領域の情報
 		var cinfo = this.owner.board.getBlockInfo();
-		if( !this.checkMiniBlockCount(cinfo, 1) ){
-			this.setAlert('ブロックが1つの点線からなる領域で構成されています。','A block has one area framed by dotted line.'); return false;
-		}
+		if( !this.checkMiniBlockCount(cinfo, 1) ){ return 39401;}
+		if( !this.checkBlockNotRect(cinfo) ){ return 10017;}
+		if( !this.checkDifferentShapeBlock(cinfo) ){ return 39411;}
+		if( !this.checkMiniBlockCount(cinfo, 3) ){ return 39421;}
 
-		if( !this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h!==a);} ) ){
-			this.setAlert('ブロックが四角形になっています。','A block is rectangle.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkDifferentShapeBlock(cinfo) ){
-			this.setAlert('同じ形のブロックが接しています。','The blocks that has the same shape are adjacent.'); return false;
-		}
-
-		if( !this.checkMiniBlockCount(cinfo, 3) ){
-			this.setAlert('ブロックが3つ以上の点線からなる領域で構成されています。','A block has three or more areas framed by dotted line.'); return false;
-		}
-
-		return true;
+	checkBlockNotRect : function(cinfo){
+		return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h!==a);});
 	},
 
 	checkMiniBlockCount : function(cinfo, flag){

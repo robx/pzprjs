@@ -123,39 +123,31 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){
-			this.setAlert('数字の入っていない領域があります。','An area has no numbers.'); return false;
+		if( !this.checkNoNumber(rinfo) ){ return 30004;}
+
+		if( !this.checkDoubleNumber(rinfo) ){ return 30012;}
+
+		if(pid==='shikaku'){
+			if(!this.checkAreaRect(rinfo) ){ return 20011;}
+		}
+		else if(pid==='aho'){
+			if( !this.checkAhoSquare(rinfo) ){ return 39301;}
+			if( !this.checkLshapeArea(rinfo) ){ return 39311;}
 		}
 
-		if( !this.checkDoubleNumber(rinfo) ){
-			this.setAlert('1つの領域に2つ以上の数字が入っています。','An area has plural numbers.'); return false;
-		}
+		if( !this.checkNumberAndSize(rinfo) ){ return 30021;}
 
-		if( (this.owner.pid==='shikaku') && !this.checkAreaRect(rinfo) ){
-			this.setAlert('四角形ではない領域があります。','An area is not rectangle.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 32101;}
 
-		if( (this.owner.pid==='aho') && !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)==0 || w*h==a);} ) ){
-			this.setAlert('大きさが3の倍数ではないのに四角形ではない領域があります。','An area whose size is not multiples of three is not rectangle.'); return false;
-		}
-
-		if( (this.owner.pid==='aho') && !this.checkLshapeArea(rinfo) ){
-			this.setAlert('大きさが3の倍数である領域がL字型になっていません。','An area whose size is multiples of three is not L-shape.'); return false;
-		}
-
-		if( !this.checkNumberAndSize(rinfo) ){
-			this.setAlert('数字と領域の大きさが違います。','The size of the area is not equal to the number.'); return false;
-		}
-
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途切れている線があります。','There is a dead-end line.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
+	checkAhoSquare : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});
+	},
 	checkLshapeArea : function(rinfo){
 		var result = true;
 		for(var areaid=1;areaid<=rinfo.max;areaid++){
@@ -179,4 +171,9 @@ AnsCheck:{
 		return result;
 	}
 }
+});
+
+pzprv3.addFailCode({
+	39301 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
+	39311 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."]
 });

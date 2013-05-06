@@ -219,39 +219,23 @@ AnsCheck:{
 	checkAns : function(){
 		var o=this.owner, bd=o.board, pid=o.pid;
 
-		if( !this.checkNoLine() ){
-			this.setAlert('線が引かれていません。','There is no line on the board.'); return false;
-		}
+		if( !this.checkNoLine() ){ return 42101;}
 
-		if( (pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.getQues()===1);}) ){
-			this.setAlert('黒マスの上に線が引かれています。','There is a line on the black cell.'); return false;
-		}
+		if( (pid==='ringring') && !this.checkLineOnBlackCell() ){ return 50102;}
 
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);}) ){
-			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
-		}
+		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 30331;}
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( (pid==='nagenawa') && !this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);}) ){
-			this.setAlert('数字のある部屋と線が通過するマスの数が違います。','The number of the cells that is passed any line in the room and the number written in the room is diffrerent.'); return false;
-		}
+		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 30341;}
 
-		if( !this.checkAllLoopRect() ){
-			this.setAlert('長方形か正方形でない輪っかがあります。','There is a non-rectangle loop.'); return false;
-		}
+		if( !this.checkAllLoopRect() ){ return 49501;}
 
-		if( (pid==='ringring') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);}) ){
-			this.setAlert('白マスの上に線が引かれていません。','There is no line on the white cell.'); return false;
-		}
+		if( (pid==='ringring') && !this.checkUnreachedWhiteCell() ){ return 50311;}
 
-		return true;
+		return 0;
 	},
 
 	checkNoLine : function(){
@@ -259,6 +243,19 @@ AnsCheck:{
 		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
 		return false;
 	},
+	checkLineOnBlackCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);});
+	},
+	checkOverLineCount : function(rinfo){
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);});
+	},
+	checkLessLineCount : function(rinfo){
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);});
+	},
+	checkUnreachedWhiteCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);});
+	},
+
 	checkAllLoopRect : function(){
 		var result = true, bd = this.owner.board;
 		var xinfo = bd.getLineInfo();

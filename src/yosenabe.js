@@ -312,76 +312,56 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
+
 		this.performAsLine = true;
-
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
-
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 		this.performAsLine = false;
+
 		var linfo = bd.getLareaInfo();
 
-		if( !this.checkDoubleNumber(linfo) ){
-			this.setAlert('具材が繋がっています。','There are connected fillings.'); return false;
-		}
-		if( !this.checkLineOverLetter() ){
-			this.setAlert('具材の上を線が通過しています。','A line goes through a filling.'); return false;
-		}
+		if( !this.checkDoubleNumber(linfo) ){ return 30017;}
+		if( !this.checkLineOverLetter() ){ return 43104;}
 
-		if( !this.checkAllArea(linfo, function(w,h,a,n){ return (w==1||h==1);}) ){
-			this.setAlert('曲がっている線があります。','A line has curve.'); return false;
-		}
+		if( !this.checkCurveLine(linfo) ){ return 20013;}
 
 		// 問題のチェック (1)
-		if( !this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQdir()!==-1);} ) ){
-			this.setAlert('鍋の外に数字が書いてあります。','There is a number out of a crock.'); return false;
-		}
+		if( !this.checkQuesNumber() ){ return 90701;}
 
 		var iarea = bd.iceinfo.getAreaInfo();
 		// 問題のチェック (2)
-		if( !this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);}) ){
-			this.setAlert('鍋に数字が２つ以上書いてあります。','There is a number out of a crock.'); return false;
-		}
+		if( !this.checkDoubleNumberInNabe(iarea) ){ return 90711;}
 
 		bd.searchMovedPosition(linfo);
 
-		if( !this.checkFillingCount(iarea) ){
-			this.setAlert('具材の合計値が正しくありません。','Sum of filling is not equal to a crock.'); return false;
-		}
-
-		if( !this.checkNoObjectInRoom(iarea, function(cell){ return cell.base.qnum;}) ){
-			this.setAlert('具材のない鍋があります。','A crock has no circle.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (cell.base.isNum() && !cell.ice());} ) ){
-			this.setAlert('鍋に入っていない具材があります。','A filling isn\'t in a crock.'); return false;
-		}
+		if( !this.checkFillingCount(iarea) ){ return 90721;}
+		if( !this.checkEmptyNabe(iarea) ){ return 90731;}
+		if( !this.checkFillingOutOfNabe() ){ return 90741;}
 
 		this.performAsLine = true;
-		if( !this.checkDisconnectLine(linfo) ){
-			this.setAlert('○につながっていない線があります。','A line doesn\'t connect any circle.'); return false;
-		}
+		if( !this.checkDisconnectLine(linfo) ){ return 43204;}
+		this.performAsLine = false;
 
-		return true;
+		return 0;
 	},
 
-	checkLineOverLetter : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.lcnt()>=2 && cell.isNum()){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(true);
-				result = false;
-			}
-		}
-		return result;
+	checkCurveLine : function(linfo){
+		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
-	
+	checkQuesNumber : function(){
+		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQdir()!==-1);});
+	},
+
+	checkDoubleNumberInNabe : function(iarea){
+		return this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);});
+	},
+	checkEmptyNabe : function(iarea){
+		return this.checkNoObjectInRoom(iarea, function(cell){ return cell.base.qnum;});
+	},
+	checkFillingOutOfNabe : function(){
+		return this.checkAllCell(function(cell){ return (cell.base.isNum() && !cell.ice());});
+	},
+
 	checkFillingCount : function(iarea){
 		var result = true;
 		for(var id=1;id<=iarea.max;id++){

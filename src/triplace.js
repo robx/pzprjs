@@ -299,21 +299,24 @@ AnsCheck:{
 	checkAns : function(){
 
 		var tiles = this.owner.board.getTileInfo();
-		if( !this.checkAllArea(tiles, function(w,h,a,n){ return (a>=3);} ) ){
-			this.setAlert('サイズが3マスより小さいブロックがあります。','The size of block is smaller than two.'); return false;
-		}
+		if( !this.checkOverThreeCells(tiles) ){ return 31001;}
+		if( !this.checkRowsColsTileCount(tiles) ){ return 10034;}
+		if( !this.checkLessThreeCells(tiles) ){ return 31002;}
 
-		if( !this.checkRowsColsPartly(function(pos,clist){ return this.isTileCount(pos,clist,tiles);}, function(cell){ return cell.is51cell();}, false) ){
-			this.setAlert('数字の下か右にあるまっすぐのブロックの数が間違っています。','The number of straight blocks underward or rightward is not correct.'); return false;
-		}
-
-		if( !this.checkAllArea(tiles, function(w,h,a,n){ return (a<=3);} ) ){
-			this.setAlert('サイズが3マスより大きいブロックがあります。','The size of block is bigger than four.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
+	checkOverThreeCells : function(tiles){
+		return this.checkAllArea(tiles, function(w,h,a,n){ return (a>=3);});
+	},
+	checkLessThreeCells : function(tiles){
+		return this.checkAllArea(tiles, function(w,h,a,n){ return (a<=3);});
+	},
+
+	checkRowsColsTileCount : function(tiles){
+		var evalfunc = function(pos,clist){ return this.isTileCount(pos,clist,tiles);};
+		return this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, false)
+	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}

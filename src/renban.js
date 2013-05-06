@@ -123,25 +123,19 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum(cell);}) ){
-			this.setAlert('1つの部屋に同じ数字が複数入っています。','A room has two or more same numbers.'); return false;
-		}
+		if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
+		if( !this.checkNumbersInRoom(rinfo) ){ return 69801;}
 
-		if( !this.checkNumbersInRoom(rinfo) ){
-			this.setAlert('部屋に入る数字が正しくありません。','The numbers in the room are wrong.'); return false;
-		}
+		if( !this.checkBorderSideNumber() ){ return 69811;}
+		if( !this.checkNoNumCell() ){ return 50171;}
 
-		if( !this.checkBorderSideNumber() ){
-			this.setAlert('数字の差がその間にある線の長さと等しくありません。','The differnece between two numbers is not equal to the length of the line between them.'); return false;
-		}
-
-		if( !this.checkNoNumCell() ){
-			this.setAlert('数字の入っていないマスがあります。','There is an empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkNoNumCell();},
+
+	checkDiffNumberInRoom : function(rinfo){
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
 
 	checkNumbersInRoom : function(rinfo){
 		var result = true;

@@ -736,67 +736,47 @@ Graphic:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());}) ){
-			this.setAlert('氷の部分以外で線が交差しています。', 'A Line is crossed outside of ice.'); return false;
-		}
-		if( !this.checkIceLines() ){
-			this.setAlert('氷の部分で線が曲がっています。', 'A Line curve on ice.'); return false;
-		}
+		if( !this.checkCrossOutOfIce() ){ return 40501;}
+		if( !this.checkIceLines() ){ return 40601;}
 
 		var flag = this.checkLine();
-		if( flag==-1 ){
-			this.setAlert('スタート位置を特定できませんでした。', 'The system can\'t detect start position.'); return false;
-		}
-		if( flag==1 ){
-			this.setAlert('INに線が通っていません。', 'The line doesn\'t go through the \'IN\' arrow.'); return false;
-		}
-		if( flag==2 ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
-		if( flag==3 ){
-			this.setAlert('盤面の外に出てしまった線があります。', 'A line is not reached out the \'OUT\' arrow.'); return false;
-		}
-		if( this.owner.pid==='icebarn' && flag==4 ){
-			this.setAlert('矢印を逆に通っています。', 'A line goes through an arrow reverse.'); return false;
-		}
-		if( this.owner.pid!=='icebarn' && flag==5 ){
-			this.setAlert('数字の通過順が間違っています。', 'A line goes through an arrow reverse.'); return false;
-		}
+		if( flag==-1 ){ return 49401;}
+		if( flag==1 ){ return 49411;}
+		if( flag==2 ){ return 49421;}
+		if( flag==3 ){ return 49431;}
+		if( pid==='icebarn' && flag==4 ){ return 49441;}
+		if( pid!=='icebarn' && flag==5 ){ return 49451;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('線がひとつながりではありません。', 'Lines are not countinuous.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41102;}
 
-		if( (this.owner.pid==='icelom') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.ice());}) ){
-			this.setAlert('通過していない白マスがあります。', 'The line doesn\'t pass all of the white cell.'); return false;
-		}
+		if( (pid==='icelom') && !this.checkUnreachedWhiteCell() ){ return 50301;}
 
-		if( (this.owner.pid!=='icelom') && !this.checkIgnoreIcebarn() ){
-			this.setAlert('すべてのアイスバーンを通っていません。', 'A icebarn is not gone through.'); return false;
-		}
+		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 30321;}
 
-		if( (this.owner.pid==='icebarn') && !this.checkAllArrow() ){
-			this.setAlert('線が通っていない矢印があります。', 'A line doesn\'t go through some arrows.'); return false;
-		}
+		if( (pid==='icebarn') && !this.checkAllArrow() ){ return 49461;}
 
-		if( (this.owner.pid!=='icebarn') && !this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());}) ){
-			this.setAlert('通過していない数字があります。', 'The line doesn\'t pass all of the number.'); return false;
-		}
+		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 49471;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		return true;
+		return 0;
 	},
 
+	checkCrossOutOfIce : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());});
+	},
+	checkUnreachedWhiteCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.ice());});
+	},
 	checkIgnoreIcebarn : function(){
 		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
+	},
+	checkNoLineNumber : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
 	},
 
 	checkAllArrow : function(){

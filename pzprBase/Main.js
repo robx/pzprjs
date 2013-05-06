@@ -265,20 +265,18 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.subclear()       補助記号を消去する
 	//------------------------------------------------------------------------------
 	anscheck : function(){
-		var result = false;
 		this.key.keyreset();
 		this.mouse.mousereset();
-		result = this.checker.check(true);
-		if(!result){
+		var result = this.checker.check(true);
+		if(result!==0){
 			this.board.haserror = true;
 			this.drawCanvas();
 		}
 		return result;
 	},
 	anscheckSilent : function(){
-		var result = false;
 		this.board.disableSetError();
-		result = this.checker.check(false);
+		var result = this.checker.check(false);
 		this.board.enableSetError();
 		return result;
 	},

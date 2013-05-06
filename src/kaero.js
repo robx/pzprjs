@@ -228,55 +228,25 @@ AnsCheck:{
 	checkAns : function(){
 		this.performAsLine = true;
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkDoubleNumber(linfo) ){
-			this.setAlert('アルファベットが繋がっています。','There are connected letters.'); return false;
-		}
-		if( !this.checkLineOverLetter() ){
-			this.setAlert('アルファベットの上を線が通過しています。','A line goes through a letter.'); return false;
-		}
+		if( !this.checkDoubleNumber(linfo) ){ return 30015;}
+		if( !this.checkLineOverLetter() ){ return 43101;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		this.owner.board.searchMovedPosition(linfo);
 
 		this.performAsLine = false;
-		if( !this.checkSameObjectInRoom_kaero(rinfo) ){
-			this.setAlert('１つのブロックに異なるアルファベットが入っています。','A block has plural kinds of letters.'); return false;
-		}
-		if( !this.checkGatheredObject(rinfo) ){
-			this.setAlert('同じアルファベットが異なるブロックに入っています。','Same kinds of letters are placed different blocks.'); return false;
-		}
-		if( !this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;}) ){
-			this.setAlert('アルファベットのないブロックがあります。','A block has no letters.'); return false;
-		}
-
+		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 30031;}
+		if( !this.checkGatheredObject(rinfo) ){ return 30401;}
+		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 30411;}
 		this.performAsLine = true;
-		if( !this.checkDisconnectLine(linfo) ){
-			this.setAlert('アルファベットにつながっていない線があります。','A line doesn\'t connect any letter.'); return false;
-		}
 
-		return true;
-	},
+		if( !this.checkDisconnectLine(linfo) ){ return 43201;}
 
-	checkLineOverLetter : function(func){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.lcnt()>=2 && cell.isNum()){
-				if(this.inAutoCheck){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(true);
-				result = false;
-			}
-		}
-		return result;
+		return 0;
 	},
 
 	// checkSameObjectInRoom()にbaseを付加した関数
@@ -321,6 +291,10 @@ AnsCheck:{
 			}
 		}
 		return true;
+	},
+
+	checkNoMovedObjectInRoom : function(rinfo){
+		return this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;});
 	}
 }
 });

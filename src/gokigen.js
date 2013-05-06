@@ -367,29 +367,20 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
 		var sdata=this.owner.board.getSlashData();
-		if( (this.owner.pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){
-			this.setAlert('斜線で輪っかができています。', 'There is a loop consisted in some slashes.'); return false;
-		}
+		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 90501;}
 
-		if( (this.owner.pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){
-			this.setAlert('"切"が含まれた線が輪っかになっています。', 'There is a loop that consists "切".'); return false;
-		}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){ return 90521;}
 
-		if( !this.checkQnumCross() ){
-			this.setAlert('数字に繋がる線の数が間違っています。', 'A number is not equal to count of lines that is connected to it.'); return false;
-		}
+		if( !this.checkQnumCross() ){ return 90511;}
 
-		if( (this.owner.pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){
-			this.setAlert('"輪"が含まれた線が輪っかになっていません。', 'There is not a loop that consists "輪".'); return false;
-		}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){ return 90531;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQans()===0);}) ){
-			this.setAlert('斜線がないマスがあります。','There is a empty cell.'); return false;
-		}
+		if( !this.checkNoSlashCell() ){ return 50131;}
 
-		return true;
+		return 0;
 	},
 
 	checkLoopLine_gokigen : function(sdata){
@@ -418,6 +409,10 @@ AnsCheck:{
 			}
 		}
 		return result;
+	},
+
+	checkNoSlashCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQans()===0);});
 	}
 }
 });

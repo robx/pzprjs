@@ -102,17 +102,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkQnumCross(1) ){
-			this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is big.'); return false;
-		}
-		if( !this.checkOneArea( this.owner.board.getWCellInfo() ) ){
-			this.setAlert('白マスが分断されています。','White cells are devided.'); return false;
-		}
-		if( !this.checkQnumCross(2) ){
-			this.setAlert('数字のまわりにある黒マスの数が間違っています。','The number of black cells around a number on crossing is small.'); return false;
-		}
+		if( !this.checkQnumCross(1) ){ return 10018;}
+		var winfo = this.owner.board.getWCellInfo();
+		if( !this.checkOneArea(winfo) ){ return 10007;}
+		if( !this.checkQnumCross(2) ){ return 10019;}
 
-		return true;
+		return 0;
 	},
 
 	checkQnumCross : function(type){

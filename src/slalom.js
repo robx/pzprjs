@@ -712,45 +712,31 @@ AnsCheck:{
 	checkAns : function(){
 		this.owner.board.hinfo.generateAll();
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);}) ){
-			this.setAlert('黒マスに線が通っています。','A line is over a black cell.'); return false;
-		}
+		if( !this.checkLineOnBlackCell() ){ return 50102;}
 
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('交差している線があります。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branch line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
 
-		if( !this.checkGateLine(1) ){
-			this.setAlert('線が２回以上通過している旗門があります。','A line goes through a gate twice or more.'); return false;
-		}
+		if( !this.checkGateLine(1) ){ return 49301;}
 
-		if( !this.checkStartid() ){
-			this.setAlert('○から線が２本出ていません。','A line goes through a gate twice or more.'); return false;
-		}
+		if( !this.checkStartid() ){ return 49311;}
 
-		if( !this.checkGateNumber() ){
-			this.setAlert('旗門を通過する順番が間違っています。','The order of passing the gate is wrong.'); return false;
-		}
+		if( !this.checkGateNumber() ){ return 49321;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('線が途中で途切れています。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are two or more loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkGateLine(2) ){
-			this.setAlert('線が通過していない旗門があります。','There is a gate that the line is not passing.'); return false;
-		}
+		if( !this.checkGateLine(2) ){ return 49331;}
 
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkLcntCell(1);},
+
+	checkLineOnBlackCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);});
+	},
 
 	checkStartid : function(){
 		var start = this.owner.board.startcell;

@@ -431,39 +431,24 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var bd = this.owner.board;
 
-		var binfo = this.owner.board.getBarInfo();
-		if( !this.checkLineCount(binfo, 1) ){
-			this.setAlert('白丸に線が2本以上つながっています。','Prural lines connect to a white circle.'); return false;
-		}
+		var binfo = bd.getBarInfo();
+		if( !this.checkLineCount(binfo, 1) ){ return 48301;}
 
-		this.owner.board.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
-		if( !this.checkLoop() ){
-			this.setAlert('棒で輪っかができています。','There is a looped bars.'); return false;
-		}
+		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
+		if( !this.checkLoop() ){ return 48311;}
+		if( !this.checkPoleLength(binfo,1) ){ return 50421;}
+		if( !this.checkCrossedLength(binfo) ){ return 48321;}
+		if( !this.checkPoleLength(binfo,2) ){ return 50431;}
+		bd.cell.seterr(0);
 
-		if( !this.checkPoleLength(binfo,1) ){
-			this.setAlert('白丸から出る棒の長さが長いです。','The length of the bar is long.'); return false;
-		}
+		if( !this.checkLineCount(binfo, 2) ){ return 43511;}
 
-		if( !this.checkCrossedLength(binfo) ){
-			this.setAlert('同じ長さの棒と交差していません。','A bar doesn\'t cross the bar whose length is the same.'); return false;
-		}
+		var areainfo = bd.barinfo.getAreaInfo();
+		if( !this.checkOneArea(areainfo) ){ return 43611;}
 
-		if( !this.checkPoleLength(binfo,2) ){
-			this.setAlert('白丸から出る棒の長さが短いです。','The length of the bar is short.'); return false;
-		}
-		this.owner.board.cell.seterr(0);
-
-		if( !this.checkLineCount(binfo, 2) ){
-			this.setAlert('白丸に線がつながっていません。','No bar connects to a white circle.'); return false;
-		}
-
-		if( !this.checkOneArea( this.owner.board.barinfo.getAreaInfo() ) ){
-			this.setAlert('棒が１つに繋がっていません。','Bars are devided.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkOneArea( this.owner.board.barinfo.getAreaInfo() );},
 

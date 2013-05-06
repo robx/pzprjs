@@ -320,31 +320,21 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var bd = this.owner.board;
 
-		if( !this.checkBCell(1) ){
-			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
-		}
+		if( !this.checkBCell(1) ){ return 90601;}
 
-		this.owner.board.cell.seterr(-1);
-		var binfo = this.owner.board.getBarInfo();
-		if( !this.checkDoubleNumber(binfo) ){
-			this.setAlert('1つの棒に2つ以上の数字が入っています。','A line passes plural numbers.'); return false;
-		}
+		var binfo = bd.getBarInfo();
+		bd.cell.seterr(-1);
+		if( !this.checkDoubleNumber(binfo) ){ return 30018;}
+		if( !this.checkNumberAndSize(binfo) ){ return 30024;}
+		bd.cell.seterr(0);
 
-		if( !this.checkNumberAndSize(binfo) ){
-			this.setAlert('数字と棒の長さが違います。','The number is different from the length of line.'); return false;
-		}
-		this.owner.board.cell.seterr(0);
+		if( !this.checkBCell(2) ){ return 90611;}
 
-		if( !this.checkBCell(2) ){
-			this.setAlert('黒マスに繋がる線の数が正しくありません。','The number of lines connected to a black cell is wrong.'); return false;
-		}
+		if( !this.checkEmptyCell() ){ return 50141;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);}) ){
-			this.setAlert('何も入っていないマスがあります。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});},
 
@@ -367,6 +357,10 @@ AnsCheck:{
 			}
 		}
 		return result;
+	},
+	
+	checkEmptyCell : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});
 	}
 }
 });

@@ -130,44 +130,35 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell_firefly(3) ){
-			this.setAlert('分岐している線があります。', 'There is a branch line.'); return false;
-		}
-		if( (this.owner.pid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){
-			this.setAlert('線が交差しています。', 'There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell_firefly(3) ){ return 40201;}
+		if( (this.owner.pid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){ return 40301;}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,3) ){
-			this.setAlert('同じ数字同士が線で繋がっています。', 'Same numbers are connected each other.'); return false;
-		}
-		if( !this.checkErrorFlag_line(xinfo,2) ){
-			this.setAlert('線が2回以上曲がっています。', 'The number of curves is twice or more.'); return false;
-		}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48111;}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 48121;}
 
 		this.performAsLine = true
-		if( !this.checkOneArea( this.owner.board.getLareaInfo() ) ){
-			this.setAlert('線が全体で一つながりになっていません。', 'All lines and circles are not connected each other.'); return false;
-		}
+		var linfo = this.owner.board.getLareaInfo();
+		if( !this.checkOneArea(linfo) ){ return 43601;}
 
-		if( !this.checkErrorFlag_line(xinfo,1) ){
-			this.setAlert('線が途中で途切れています。', 'There is a dead-end line.'); return false;
-		}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 
-		if( !this.checkAllCell( function(cell){ return (cell.isValidNum() && cell.getQnum()!==cell.lcnt()); } ) ){
-			this.setAlert('○から出る線の本数が正しくありません。', 'The number is not equal to the number of lines out of the circle.'); return false;
-		}
+		if( !this.checkLineCount() ){ return 48101;}
 
-		if( !this.checkAllCell( function(cell){ return( cell.isNum() && cell.lcnt()===0); } ) ){
-			this.setAlert('○から線が出ていません。', 'There is a lonely circle.'); return false;
-		}
+		if( !this.checkNoLineObject() ){ return 50411;}
 
-		return true;
+		return 0;
 	},
 
 	checkLcntCell_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
+	},
+	checkNoLineObject : function(){
+		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()===0);});
+	},
+	checkLineCount : function(){
+		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getQnum()!==cell.lcnt());});
 	},
 
 	isErrorFlag_line : function(xinfo){

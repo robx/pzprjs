@@ -339,28 +339,31 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true) ){
-			this.setAlert('同じ数字が同じ列に入っています。','Same number is in the same row.'); return false;
-		}
+		if( !this.checkRowsColsSameNumber() ){ return 10035;}
+		if( !this.checkRowsColsTotalNumber() ){ return 10036;}
+		if( !this.checkEmptyCell_kakuro() ){ return 50161;}
 
-		if( !this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false) ){
-			this.setAlert('数字の下か右にある数字の合計が間違っています。','The sum of the cells is not correct.'); return false;
-		}
-
-		if( !this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);}) ){
-			this.setAlert('すべてのマスに数字が入っていません。','There is a empty cell.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 	check1st : function(){ return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});},
 
+	checkEmptyCell_kakuro : function(){
+		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});
+	},
+
+	checkRowsColsSameNumber : function(){
+		return this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true);
+	},
 	isSameNumber : function(keycellpos, clist){
 		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getAnum();})){
 			this.owner.board.getobj(keycellpos[0],keycellpos[1]).seterr(1);
 			return false;
 		}
 		return true;
+	},
+
+	checkRowsColsTotalNumber : function(){
+		return this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false);
 	},
 	isTotalNumber : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];

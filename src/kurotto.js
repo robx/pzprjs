@@ -151,11 +151,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkCellNumber_kurotto() ){
-			this.setAlert('隣り合う黒マスの個数の合計が数字と違います。','The number is not equal to sum of adjacent masses of black cells.'); return false;
-		}
+		if( !this.checkCellNumber_kurotto() ){ return 10026;}
 
-		return true;
+		return 0;
 	},
 
 	checkCellNumber_kurotto : function(){

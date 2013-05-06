@@ -138,27 +138,24 @@ FileIO:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true) ){
-			this.setAlert('異なる海域にある国どうしが辺を共有しています。','Countries in other marine area share the side over border line.'); return false;
-		}
+		if( !this.checkSideAreaBlackCell(rinfo) ){ return 30101;}
 
-		if( !this.checkSeqBlocksInRoom() ){
-			this.setAlert('1つの海域に入る国が2つ以上に分裂しています。','Countries in one marine area are devided to plural ones.'); return false;
-		}
+		if( !this.checkSeqBlocksInRoom() ){ return 30033;}
 
-		if( !this.checkBlackCellCount(rinfo) ){
-			this.setAlert('海域内の数字と国のマス数が一致していません。','The number of black cells is not equals to the number.'); return false;
-		}
+		if( !this.checkBlackCellCount(rinfo) ){ return 30093;}
 
-		if( !this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).getLandAreaOfClist();}) ){
-			this.setAlert('隣り合う海域にある国の大きさが同じです。','The size of countries that there are in adjacent marine areas are the same.'); return false;
-		}
+		if( !this.checkSideAreaLandSide(rinfo) ){ return 30211;}
 
-		if( !this.checkBlackCellInArea(rinfo, function(a){ return (a>0);}) ){
-			this.setAlert('黒マスのカタマリがない海域があります。','A marine area has no black cells.'); return false;
-		}
+		if( !this.checkNoBlackCellInArea(rinfo) ){ return 30042;}
 
-		return true;
+		return 0;
+	},
+
+	checkSideAreaBlackCell : function(rinfo){
+		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true);
+	},
+	checkSideAreaLandSide : function(rinfo){
+		return this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).getLandAreaOfClist();});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -178,15 +175,13 @@ FileIO:{
 "AnsCheck@chocona":{
 	checkAns : function(){
 
-		if( !this.checkAreaRect(this.owner.board.getBCellInfo()) ){
-			this.setAlert('黒マスのカタマリが正方形か長方形ではありません。','A mass of black cells is not rectangle.'); return false;
-		}
+		var binfo = this.owner.board.getBCellInfo();
+		if( !this.checkAreaRect(binfo) ){ return 10011;}
 
-		if( !this.checkBlackCellCount( this.owner.board.getRoomInfo() ) ){
-			this.setAlert('数字のある領域と、領域の中にある黒マスの数が違います。','The number of Black cells in the area and the number written in the area is different.'); return false;
-		}
+		var rinfo = this.owner.board.getRoomInfo();
+		if( !this.checkBlackCellCount(rinfo) ){ return 30092;}
 
-		return true;
+		return 0;
 	}
 }
 });

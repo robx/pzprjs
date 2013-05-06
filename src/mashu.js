@@ -143,40 +143,26 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
-		if( !this.checkLcntCell(4) ){
-			this.setAlert('線が交差しています。','There is a crossing line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLcntCell(4) ){ return 40301;}
 
-		if( !this.checkWhitePearl1() ){
-			this.setAlert('白丸の上で線が曲がっています。','Lines curve on white pearl.'); return false;
-		}
-		if( !this.checkBlackPearl1() ){
-			this.setAlert('黒丸の上で線が直進しています。','Lines go straight on black pearl.'); return false;
-		}
+		if( !this.checkWhitePearl1() ){ return 49211;}
+		if( !this.checkBlackPearl1() ){ return 49231;}
 
-		if( !this.checkBlackPearl2() ){
-			this.setAlert('黒丸の隣で線が曲がっています。','Lines curve next to black pearl.'); return false;
-		}
-		if( !this.checkWhitePearl2() ){
-			this.setAlert('白丸の隣で線が曲がっていません。','Lines go straight next to white pearl on each side.'); return false;
-		}
+		if( !this.checkBlackPearl2() ){ return 49241;}
+		if( !this.checkWhitePearl2() ){ return 49221;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()==0);}) ){
-			this.setAlert('線が上を通っていない丸があります。','Lines don\'t pass some pearls.'); return false;
-		}
+		if( !this.checkNoLinePearl() ){ return 49201;}
 
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('線が途中で途切れています。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		if( !this.checkOneLoop() ){
-			this.setAlert('輪っかが一つではありません。','There are plural loops.'); return false;
-		}
+		if( !this.checkOneLoop() ){ return 41101;}
 
-		return true;
+		return 0;
+	},
+
+	checkNoLinePearl : function(){
+		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()==0);});
 	},
 
 	checkWhitePearl1 : function(){

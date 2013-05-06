@@ -196,38 +196,32 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(4,0) ){
-			this.setAlert('十字の交差点があります。','There is a crossing border lines,'); return false;
-		}
+		if( !this.checkLcntCross(4,0) ){ return 32301;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){
-			this.setAlert('記号の入っていないタタミがあります。','A tatami has no marks.'); return false;
-		}
+		if( !this.checkNoNumber(rinfo) ){ return 30006;}
 
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=1||a<=0||(w*h!=a)||w==h);} ) ){
-			this.setAlert('正方形でないタタミがあります。','A tatami is not regular rectangle.'); return false;
-		}
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=3||a<=0||(w*h!=a)||w>h);} ) ){
-			this.setAlert('横長ではないタタミがあります。','A tatami is not horizontally long rectangle.'); return false;
-		}
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);} ) ){
-			this.setAlert('縦長ではないタタミがあります。','A tatami is not vertically long rectangle.'); return false;
-		}
+		if( !this.checkSquareTatami(rinfo) ){ return 33101;}
+		if( !this.checkHorizonLongTatami(rinfo) ){ return 33111;}
+		if( !this.checkVertLongTatami(rinfo) ){ return 33121;}
 
-		if( !this.checkDoubleNumber(rinfo) ){
-			this.setAlert('1つのタタミに2つ以上の記号が入っています。','A tatami has plural marks.'); return false;
-		}
+		if( !this.checkDoubleNumber(rinfo) ){ return 30014;}
 
-		if( !this.checkAreaRect(rinfo) ){
-			this.setAlert('タタミの形が長方形ではありません。','A tatami is not rectangle.'); return false;
-		}
+		if( !this.checkAreaRect(rinfo) ){ return 20012;}
 
-		if( !this.checkLcntCross(1,0) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCross(1,0) ){ return 32101;}
 
-		return true;
+		return 0;
+	},
+
+	checkSquareTatami : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=1||a<=0||(w*h!=a)||w==h);});
+	},
+	checkHorizonLongTatami : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=3||a<=0||(w*h!=a)||w>h);});
+	},
+	checkVertLongTatami : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);});
 	}
 }
 });

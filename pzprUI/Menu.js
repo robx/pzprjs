@@ -1258,12 +1258,9 @@ Menu.prototype =
 	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		if(!ui.puzzle.anscheck()){
-			this.alertStr(ui.puzzle.checker.alstr.jp, ui.puzzle.checker.alstr.en);
-		}
-		else{
-			this.alertStr("正解です！","Complete!");
-		}
+		var failcode = ui.puzzle.anscheck();
+		var strs = pzprv3.failcode[failcode];
+		this.alertStr(strs[0], strs[1]);
 	},
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){

@@ -245,40 +245,26 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkenableLineParts(1) ){
-			this.setAlert('最初から引かれている線があるマスに線が足されています。','Lines are added to the cell that the mark lie in by the question.'); return false;
-		}
+		if( !this.checkenableLineParts(1) ){ return 50121;}
 
-		if( !this.checkLcntCell(3) ){
-			this.setAlert('分岐している線があります。','There is a branched line.'); return false;
-		}
+		if( !this.checkLcntCell(3) ){ return 40201;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.isNum());}) ){
-			this.setAlert('○の部分で線が交差しています。','The lines are crossed on the number.'); return false;
-		}
+		if( !this.checkCrossOnNumber() ){ return 49341;}
 
-		if( !this.checkLoopNumber() ){
-			this.setAlert('異なる数字を含んだループがあります。','A loop has plural kinds of number.'); return false;
-		}
-		if( !this.checkNumberLoop() ){
-			this.setAlert('同じ数字が異なるループに含まれています。','A kind of numbers are in differernt loops.'); return false;
-		}
-		if( !this.checkNumberInLoop() ){
-			this.setAlert('○を含んでいないループがあります。','A loop has no numbers.'); return false;
-		}
+		if( !this.checkLoopNumber() ){ return 49601;}
+		if( !this.checkNumberLoop() ){ return 49611;}
+		if( !this.checkNumberInLoop() ){ return 49621;}
 
-		if( !this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);}) ){
-			this.setAlert('┼のマスから線が4本出ていません。','A cross-joint cell doesn\'t have four-way lines.'); return false;
-		}
+		if( !this.checkCrossLineOnCross() ){ return 40421;}
 
-		if( !this.checkLcntCell(0) ){
-			this.setAlert('線が引かれていないマスがあります。','There is an empty cell.'); return false;
-		}
-		if( !this.checkLcntCell(1) ){
-			this.setAlert('途中で途切れている線があります。','There is a dead-end line.'); return false;
-		}
+		if( !this.checkLcntCell(0) ){ return 50151;}
+		if( !this.checkLcntCell(1) ){ return 40101;}
 
-		return true;
+		return 0;
+	},
+
+	checkCrossOnNumber : function(){
+		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.isNum());});
 	},
 
 	checkLoopNumber : function(){
@@ -330,6 +316,9 @@ AnsCheck:{
 			result = false;
 		}
 		return result;
+	},
+	checkCrossLineOnCross : function(){
+		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
 	}
 }
 });

@@ -226,27 +226,20 @@ AnsCheck:{
 	checkAns : function(){
 
 		var sinfo = this.owner.board.getSnakeInfo();
-		if( !this.checkAllArea(sinfo, function(w,h,a,n){ return (a==5);} ) ){
-			this.setAlert('大きさが５ではない蛇がいます。','The size of a snake is not five.'); return false;
-		}
+		if( !this.checkSnakeSize(sinfo) ){ return 31009;}
+		if( !this.checkDiffAnsNumberInRoom(sinfo) ){ return 31010;}
+		if( !this.checkSideCell2(sinfo) ){ return 30231;}
+		if( !this.checkArrowNumber() ){ return 50511;}
+		if( !this.checkSnakesView(sinfo) ){ return 91101;}
 
-		if( !this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.getAnum();}) ){
-			this.setAlert('同じ数字が入っています。','A Snake has same plural marks.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkSideCell2(sinfo) ){
-			this.setAlert('別々の蛇が接しています。','Other snakes are adjacent.'); return false;
-		}
-
-		if( !this.checkArrowNumber() ){
-			this.setAlert('矢印の方向にある数字が正しくありません。','The number in the direction of the arrow is not correct.'); return false;
-		}
-
-		if( !this.checkSnakesView(sinfo) ){
-			this.setAlert('蛇の視線の先に別の蛇がいます。','A snake can see another snake.'); return false;
-		}
-
-		return true;
+	checkSnakeSize : function(sinfo){
+		return this.checkAllArea(sinfo, function(w,h,a,n){ return (a===5);});
+	},
+	checkDiffAnsNumberInRoom : function(sinfo){
+		return this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.getAnum();});
 	},
 
 	checkSideCell2 : function(sinfo){

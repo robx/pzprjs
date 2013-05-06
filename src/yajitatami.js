@@ -118,32 +118,26 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(4,0) ){
-			this.setAlert('十字の交差点があります。','There is a crossing border line.'); return false;
-		}
+		if( !this.checkLcntCross(4,0) ){ return 32301;}
+		if( !this.checkArrowNumber_border() ){ return 50501;}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkArrowNumber_border() ){
-			this.setAlert('矢印の方向に境界線がありません。','There is no border in front of the arrowed number.'); return false;
-		}
+		if( !this.checkTatamiLength(rinfo) ){ return 10033;}
+		if( !this.checkArrowNumber_tatami() ){ return 33201;}
+		if( !this.checkTatamiSize(rinfo) ){ return 30023;}
+		if( !this.checkTatamiBreadth(rinfo) ){ return 30001;}
 
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);} ) ){
-			this.setAlert('長さが１マスのタタミがあります。','The length of the tatami is one.'); return false;
-		}
+		return 0;
+	},
 
-		if( !this.checkArrowNumber_tatami() ){
-			this.setAlert('矢印の方向にあるたたみの数が正しくありません。','The number of tatamis are not correct.'); return false;
-		}
-
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n===a);}) ){
-			this.setAlert('数字とタタミの大きさが違います。','The size of the tatami and the number is different.'); return false;
-		}
-
-		if( !this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);} ) ){
-			this.setAlert('幅が１マスではないタタミがあります。','The width of the tatami is not one.'); return false;
-		}
-
-		return true;
+	checkTatamiLength : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
+	},
+	checkTatamiSize : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n===a);});
+	},
+	checkTatamiBreadth : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
 
 	checkArrowNumber_tatami : function(){

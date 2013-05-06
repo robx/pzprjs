@@ -143,59 +143,41 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
+"AnsCheck@nurikabe":{
 	checkAns : function(){
-		var o=this.owner, bd=o.board, pid=o.pid, mochi=(pid==='mochikoro'||pid==='mochinyoro');
+		var bd=this.owner.board;
 
-		if( (pid!=='nuribou') && !this.check2x2Block( function(cell){ return cell.isBlack();} ) ){
-			this.setAlert('2x2の黒マスのかたまりがあります。','There is a 2x2 block of black cells.'); return false;
-		}
-
-		if(pid!=='mochikoro'){ var binfo = bd.getBCellInfo();}
-		if( (pid==='nuribou') && !this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);} ) ){
-			this.setAlert('「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。','There is a mass of black cells, whose width is more than two.'); return false;
-		}
-
-		if( (pid==='nuribou') && !this.checkCorners(binfo) ){
-			this.setAlert('同じ面積の黒マスのカタマリが、角を共有しています。','Masses of black cells whose length is the same share a corner.'); return false;
-		}
-
-		if( (mochi) && !this.checkOneArea( bd.getdir8WareaInfo() ) ){
-			this.setAlert('孤立した白マスのブロックがあります。','White cells are devided.'); return false;
-		}
+		if( !this.check2x2BlackCell() ){ return 10001;}
 
 		var winfo = bd.getWCellInfo();
-		if( (mochi) && !this.checkAreaRect(winfo) ){
-			this.setAlert('四角形でない白マスのブロックがあります。','There is a block of white cells that is not rectangle.'); return false;
-		}
+		if( !this.checkNoNumber(winfo) ){ return 10014;}
+		var binfo = bd.getBCellInfo();
+		if( !this.checkOneArea(binfo) ){ return 10005;}
+		if( !this.checkDoubleNumber(winfo) ){ return 30009;}
+		if( !this.checkNumberAndSize(winfo) ){ return 30019;}
 
-		if( (!mochi) && !this.checkNoNumber(winfo) ){
-			this.setAlert('数字の入っていないシマがあります。','An area of white cells has no numbers.'); return false;
-		}
+		return 0;
+	}
+},
+"AnsCheck@nuribou":{
+	checkAns : function(){
+		var bd=this.owner.board;
 
-		if( (pid==='nurikabe') && !this.checkOneArea( binfo ) ){
-			this.setAlert('黒マスが分断されています。','Black cells are devided,'); return false;
-		}
+		var binfo = bd.getBCellInfo();
+		if( !this.checkBou(binfo) ){ return 10004;}
+		if( !this.checkCorners(binfo) ){ return 10005;}
 
-		if( !this.checkDoubleNumber(winfo) ){
-			if(!mochi){ this.setAlert('1つのシマに2つ以上の数字が入っています。','An area of white cells has plural numbers.');}
-			else      { this.setAlert('1つのブロックに2つ以上の数字が入っています。','A block has plural numbers.');}
-			return false;
-		}
+		var winfo = bd.getWCellInfo();
+		if( !this.checkNoNumber(winfo) ){ return 10014;}
+		if( !this.checkDoubleNumber(winfo) ){ return 30009;}
+		if( !this.checkNumberAndSize(winfo) ){ return 30019;}
 
-		if( !this.checkNumberAndSize(winfo) ){
-			if(!mochi){ this.setAlert('数字とシマの面積が違います。','The number is not equal to the number of the size of the area.');}
-			else      { this.setAlert('数字とブロックの面積が違います。','A size of tha block and the number written in the block is differrent.');}
-			return false;
-		}
-
-		if( pid==='mochinyoro' && !this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!=a);} ) ){
-			this.setAlert('四角形になっている黒マスのブロックがあります。','There is a block of black cells that is rectangle.'); return false;
-		}
-
-		return true;
+		return 0;
 	},
 
+	checkBou : function(binfo){
+		return this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);});
+	},
 	checkCorners : function(binfo){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
@@ -215,6 +197,30 @@ AnsCheck:{
 			}
 		}
 		return result;
+	}
+},
+"AnsCheck@mochikoro,mochinyoro":{
+	checkAns : function(){
+		var bd=this.owner.board;
+
+		if( !this.check2x2BlackCell() ){ return 10001;}
+		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 10008;}
+
+		var winfo = bd.getWCellInfo();
+		if( !this.checkAreaRect(winfo) ){ return 10012;}
+		if( !this.checkDoubleNumber(winfo) ){ return 30010;}
+		if( !this.checkNumberAndSize(winfo) ){ return 30020;}
+
+		if(this.owner.pid==='mochinyoro'){
+			var binfo = bd.getBCellInfo();
+			if( !this.checkAreaNotRect(binfo) ){ return 10013;}
+		}
+
+		return 0;
+	},
+
+	checkAreaNotRect : function(binfo){
+		return this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!==a);});
 	}
 }
 });
