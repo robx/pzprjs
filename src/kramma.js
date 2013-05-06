@@ -216,7 +216,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return (this.owner.pid==='kramma') || this.checkLcntCross(1,0);},
+	check1st : function(){
+		return ((this.owner.pid==='kramma' || this.checkLcntCross(1,0)) ? 0 : 32101);
+	},
 
 	checkDiffObjectInArea : function(rinfo){
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});

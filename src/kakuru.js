@@ -192,7 +192,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});},
+	check1st : function(){
+		return (this.checkEmptyCell_kakuru() ? 0 : 50191);
+	},
 
 	checkEmptyCell_kakuru : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});

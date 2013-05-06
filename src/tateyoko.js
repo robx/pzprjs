@@ -336,7 +336,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});},
+	check1st : function(){
+		return (this.checkEmptyCell() ? 0 : 50141);
+	},
 
 	checkBCell : function(type){
 		var result = true, bd = this.owner.board;

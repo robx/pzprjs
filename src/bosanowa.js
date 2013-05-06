@@ -464,7 +464,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});},
+	check1st : function(){
+		return (this.checkValidFillCell() ? 0 : 50201);
+	},
 
 	checkValidFillCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});

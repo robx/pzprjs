@@ -200,7 +200,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return (this.owner.getConfig('enbnonum') || this.checkNoNumCell());},
+	check1st : function(){
+		return ((this.owner.getConfig('enbnonum') || this.checkNoNumCell()) ? 0 : 50171);
+	},
 
 	checkSideAreaNumberSize : function(rinfo){
 		return this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;});

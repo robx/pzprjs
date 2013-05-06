@@ -732,7 +732,6 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkLcntCell(1);},
 
 	checkLineOnBlackCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);});

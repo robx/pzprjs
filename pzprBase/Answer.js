@@ -39,17 +39,21 @@ pzprv3.createPuzzleClass('AnsCheck',
 		return failcode;
 	},
 	checkAns : function(){ return 0;},	//オーバーライド用
-	check1st : function(){ return true;},	//オーバーライド用
+	check1st : function(){ return 0;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
 	//---------------------------------------------------------------------------
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
-		if(!this.check1st()){ return 99999;}
 		var bd = this.owner.board;
-		if((bd.lines.isCenterLine && !bd.linfo.enabled && !this.checkLcntCell(1)) ||
-		   (bd.lines.borderAsLine && !this.checkLcntCross(1,0))){ return 99999;}
+		if(bd.linfo.enabled){
+			if(bd.lines.isCenterLine && !this.checkLcntCell(1)){ return 40101;}
+			if(bd.lines.borderAsLine && !this.checkLcntCross(1,0)){ return 40101;}
+		}
+		
+		var failcode = this.check1st();
+		if(failcode!==0){ return failcode;}
 		return 0;
 	},
 

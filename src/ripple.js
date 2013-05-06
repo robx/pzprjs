@@ -130,7 +130,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkNoNumCell();},
+	check1st : function(){
+		return (this.checkNoNumCell() ? 0 : 50171);
+	},
 
 	checkDiffNumberInRoom : function(rinfo){
 		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});

@@ -345,7 +345,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});},
+	check1st : function(){
+		return (this.checkEmptyCell_kakuro() ? 0 : 50161);
+	},
 
 	checkEmptyCell_kakuro : function(){
 		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});

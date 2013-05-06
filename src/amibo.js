@@ -450,7 +450,10 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkOneArea( this.owner.board.barinfo.getAreaInfo() );},
+	check1st : function(){
+		var areainfo = this.owner.bord.barinfo.getAreaInfo();
+		return (this.checkOneArea(areainfo) ? 0 : 43611);
+	},
 
 	checkLineCount : function(binfo, type){
 		var result = true, bd = this.owner.board;

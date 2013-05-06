@@ -131,7 +131,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});},
+	check1st : function(){
+		return (this.checkAloneCircle() ? 0 : 43502);
+	},
 
 	checkAloneCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});

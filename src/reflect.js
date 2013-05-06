@@ -294,7 +294,6 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkLcntCell(1);},
 
 	checkCrossOutOfMark : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==11);});

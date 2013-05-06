@@ -126,7 +126,9 @@ AnsCheck:{
 
 		return 0;
 	},
-	check1st : function(){ return this.checkNoNumCell();},
+	check1st : function(){
+		return (this.checkNoNumCell() ? 0 : 50171);
+	},
 
 	checkRowsColsSameNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
