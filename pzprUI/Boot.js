@@ -10,18 +10,22 @@ var onload_pzl = null;
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
 function boot(){
-	/* pzprv3, uiオブジェクト生成待ち */
-	if(!pzprv3 || !ui){
-		setTimeout(setTimeout(arguments.callee),15);
-		return;
-	}
-
-	/* 先にpuzzlename.jsを読まないとimportURL()が動作しないため読み込み待ち */
-	if(!pzprv3.PZLINFO){
-		pzprv3.includeFile("puzzlename.js");
+	if(!includePzprFile() || !includeDebugFile()){
 		setTimeout(arguments.callee,10);
 		return;
 	}
+
+	openPuzzle();
+}
+if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
+else{ window.attachEvent("onload", boot);}
+
+function includePzprFile(){
+	/* pzprv3, uiオブジェクト生成待ち */
+	if(!pzprv3 || !ui){ return false;}
+
+	/* 先にpuzzlename.jsを読まないとimportURL()が動作しないため読み込み待ち */
+	if(!pzprv3.PZLINFO){ pzprv3.includeFile("puzzlename.js"); return false;}
 
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
@@ -31,18 +35,37 @@ function boot(){
 		/* 指定されたパズルがない場合はさようなら～ */
 		if(!onload_pzl || !onload_pzl.id){
 			location.href = "./";
-			return;
+			return false;
 		}
 	}
 
+	return true;
+}
+
+function includeDebugFile(){
+	var pid = onload_pzl.id;
+	
 	/* 必要な場合、テスト用ファイルのinclude         */
 	/* importURL()後でないと必要かどうか判定できない */
-	if(ui.debugmode && !ui.debug.urls){
-		pzprv3.includeFile("src/for_test.js");
-		setTimeout(arguments.callee,10);
-		return;
+	if(ui.debugmode){
+		if(!ui.debug.urls){
+			pzprv3.includeFile("tests/for_test.js");
+			setTimeout(arguments.callee,10);
+			return false;
+		}
+		if(!ui.debug.urls[pid]){
+			pzprv3.includeFile("tests/test_"+pid+".js");
+			setTimeout(arguments.callee,10);
+			return false;
+		}
 	}
+	
+	return true;
+}
 
+function openPuzzle(){
+	var pzl = onload_pzl, pid = pzl.id;
+	
 	/* パズルオブジェクトの作成 */
 	ui.puzzle = pzprv3.createPuzzle();
 
@@ -64,14 +87,13 @@ function boot(){
 	window.puzzle = ui.puzzle;
  
 	// 単体初期化処理のルーチンへ
-	if     (!!onload_pzl.fstr) { ui.openFileData(onload_pzl.fstr, accesslog);}
-	else if(!!onload_pzl.qdata){ ui.openURL("?"+onload_pzl.id+"/"+onload_pzl.qdata, accesslog);}
-	else if(ui.debugmode)      { ui.openURL("?"+onload_pzl.id+"/"+ui.debug.urls[onload_pzl.id], accesslog);}
-	else if(!!onload_pzl.id)   { ui.openURL("?"+onload_pzl.id, accesslog);}
+	if     (!!pzl.fstr)  { ui.openFileData(pzl.fstr, accesslog);}
+	else if(!!pzl.qdata) { ui.openURL("?"+pid+"/"+pzl.qdata, accesslog);}
+	else if(ui.debugmode){ ui.openURL("?"+pid+"/"+ui.debug.urls[pid], accesslog);}
+	else if(!!pid)       { ui.openURL("?"+pid, accesslog);}
+	
+	return true;
 }
-
-if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
-else{ window.attachEvent("onload", boot);}
 
 //---------------------------------------------------------------------------
 // ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う
