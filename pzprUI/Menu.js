@@ -150,7 +150,7 @@ Menu.prototype =
 	},
 	config_common : function(idname, newval){
 		/* this === ui.puzzle.config になります */
-		ui.menu.setcaption(idname, newval);
+		ui.menu.setcaption(idname);
 		ui.menu.menuexec(idname, newval);
 	},
 
@@ -271,11 +271,28 @@ Menu.prototype =
 			getEL('ms_manarea').innerHTML = str;
 		}
 		
+		if(idname==='keypopup'){
+			var kp = ui.keypopup;
+			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
+				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
+				getEL('ck_keypopup').disabled    = (f?"":"true");
+				getEL('cl_keypopup').style.color = (f?"black":"silver");
+			}
+		}
+		
+		if(idname==='bgcolor'){
+			if(ui.puzzle.flags.bgcolor){
+				var mode = ui.puzzle.getConfig('mode');
+				getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
+				getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
+			}
+		}
+		
 		if(idname==='disptype_pipelinkr'){
 			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 		}
 	},
-	setcaption : function(idname, val){
+	setcaption : function(idname){
 		var pp = this.items;
 		if(!!pp && !!pp.item[idname]){ this.setdisplay(idname);}
 	},
@@ -574,7 +591,7 @@ Menu.prototype =
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
 		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
-			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
+			pp.addMenuCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 
@@ -902,10 +919,6 @@ Menu.prototype =
 			getEL('checkpanel').appendChild(el);
 		}
 
-		// 背景色のクリック入力用の処理
-		this.menuexec('keypopup',null);
-		this.menuexec('bgcolor',null);
-
 		// 管理領域の表示/非表示設定
 		if(pzprv3.EDITOR){
 			getEL('timerpanel').style.display = 'none';
@@ -916,13 +929,23 @@ Menu.prototype =
 	checkclick : function(e){
 		var el = (e.target||e.srcElement);
 		var idname = el.id.substr(3);
-		ui.puzzle.setConfig(idname, !!el.checked);
+		if(!!this.menuconfig[idname]){
+			this.setMenuConfig(idname, !!el.checked);
+		}
+		else{
+			ui.puzzle.setConfig(idname, !!el.checked);
+		}
 	},
 	selectclick : function(e){
 		var list = (e.target||e.srcElement).id.split('_');
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
-		ui.puzzle.setConfig(idname, child);
+		if(!!this.menuconfig[idname]){
+			this.setMenuConfig(idname, child);
+		}
+		else{
+			ui.puzzle.setConfig(idname, child);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1003,6 +1026,9 @@ Menu.prototype =
 	initMenuConfig : function(){
 		this.menuconfig = {};
 
+		/* キーポップアップ */
+		this.menuconfig.keypopup = {val:false};	/* 数字などのパネル入力 */
+
 		/* 自動横幅調節 */
 		this.menuconfig.adjsize = {val:true};
 
@@ -1014,10 +1040,13 @@ Menu.prototype =
 		this.settextsize(this.menuconfig.textsize.val);
 	},
 	setMenuConfig : function(idname, newval){
-		if(!!this.menuconfig[idname]){ return;}
+		if(!this.menuconfig[idname]){ return;}
 		this.menuconfig[idname].val = newval;
-		this.setcaption(idname, newval);
-		if(idname==='adjsize'){
+		this.setcaption(idname);
+		if(idname==='keypopup'){
+			ui.keypopup.display();
+		}
+		else if(idname==='adjsize'){
 			ui.puzzle.refreshCanvas();
 		}
 		else if(idname==='cellsize'){
@@ -1121,27 +1150,9 @@ Menu.prototype =
 		
 		case 'language'  : this.displayAll(); break;
 		
-		case 'keypopup' :
-			var kp = ui.keypopup;
-			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
-				getEL('ck_keypopup').disabled    = (f?"":"true");
-				getEL('cl_keypopup').style.color = (f?"black":"silver");
-				ui.keypopup.display();
-			}
-			break;
-		
-		case 'bgcolor':
-			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.getConfig('mode');
-				getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
-				getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
-			}
-			break;
-		
 		case 'mode':
-			this.menuexec('keypopup',val);
-			this.menuexec('bgcolor',val);
+			this.setcaption('keypopup');
+			this.setcaption('bgcolor');
 			break;
 		
 		default:

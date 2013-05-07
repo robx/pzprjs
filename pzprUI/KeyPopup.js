@@ -101,7 +101,7 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	display : function(){
 		var mode = ui.puzzle.getConfig('mode');
-		if(this.element && !!this.paneltype[mode] && ui.puzzle.getConfig('keypopup')){
+		if(this.element && !!this.paneltype[mode] && ui.menu.getMenuConfig('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -136,7 +136,7 @@ ui.keypopup =
 		
 		var bar = pzprv3.getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ puzzle.setConfig('keypopup',false)});
+		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ ui.menu.setMenuConfig('keypopup',false)});
 	},
 	createtable : function(mode,type){
 		this.basepanel = pzprv3.getEL('panelbase'+mode);

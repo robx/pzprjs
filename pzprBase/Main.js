@@ -374,7 +374,6 @@ pzprv3.createCoreClass('Config',
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
-		this.add('keypopup', false);		/* 数字などのパネル入力 */
 
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
