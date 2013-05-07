@@ -1170,7 +1170,7 @@ Menu.prototype =
 		else                                           { form.platform.value = "Others";}
 
 		form.ques.value   = ui.puzzle.fio.fileencode(ftype);
-		form.urlstr.value = ui.puzzle.fio.history;
+		form.urlstr.value = "";
 		form.operation.value = 'save';
 
 		form.action = this.fileio
@@ -1181,17 +1181,17 @@ Menu.prototype =
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var str = ui.puzzle.fio.fileencode(k.FILE_PZPH);
+		var filestr = ui.puzzle.fio.fileencode(k.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = (str+ui.puzzle.fio.history);
+			sessionStorage['filedata'] = filestr;
 			window.open(url,'');
 			if(!!old){ sessionStorage['filedata'] = old;}
 			else     { delete sessionStorage['filedata'];}
 		}
 		else{
-			localStorage['pzprv3_filedata'] = (str+ui.puzzle.fio.history);
+			localStorage['pzprv3_filedata'] = filestr;
 			window.open(url,'');
 		}
 	},

@@ -19,7 +19,6 @@ pzprv3.createPuzzleClass('FileIO',
 		this.lineseek = 0;
 		this.dataarray = [];
 		this.datastr = "";
-		this.history = "";
 		this.currentType = 1;
 	},
 
@@ -76,7 +75,6 @@ pzprv3.createPuzzleClass('FileIO',
 		this.filever = 0;
 		this.sizestr = "";
 		this.datastr = "";
-		this.history = "";
 		this.currentType = type;
 		if(this.currentType===k.FILE_PZPH){ this.currentType = k.FILE_PZPR;}
 
@@ -97,7 +95,7 @@ pzprv3.createPuzzleClass('FileIO',
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(type===k.FILE_PZPH){ this.history = o.opemgr.toString();}
+		if(type===k.FILE_PZPH){ bstr += o.opemgr.toString();}
 
 		return bstr;
 	},
