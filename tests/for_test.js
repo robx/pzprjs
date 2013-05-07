@@ -14,8 +14,8 @@ ui.debug.extend(
 	},
 	
 	accheck1 : function(){
-		var outputstr = ui.puzzle.fio.fileencode(k.FILE_PZPH).replace(/[\r\n]+/g, "/");
-		var failcode = ui.puzzle.anscheckSilent();
+		var outputstr = ui.puzzle.getFileData(k.FILE_PZPH).replace(/[\r\n]+/g, "/");
+		var failcode  = ui.puzzle.anscheckSilent();
 		this.addTextarea("\t\t\t["+failcode+",\""+outputstr+"\"],");
 	},
 
@@ -115,37 +115,37 @@ ui.debug.extend(
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var o = ui.puzzle, bd = o.board, outputstr = o.fio.fileencode(k.FILE_PZPR);
+		var o = ui.puzzle, bd = o.board;
+		var outputstr = o.getFileData(k.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
 		o.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		o.fio.filedecode(outputstr);
-		o.painter.unsuspend();
-
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
+		ui.openFileData(outputstr, function(){
+			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
+		});
 
 		setTimeout(function(){ self.check_file_pbox(self);},0);
 	},
 	check_file_pbox : function(self){
 		if(ui.menu.ispencilbox){
-			var o = ui.puzzle, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.FILE_PBOX);
+			var o = ui.puzzle, bd = o.board, pid = o.pid;
+			var outputstr = o.getFileData(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 
 			o.painter.suspendAll();
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
-			o.fio.filedecode(outputstr);
-			o.painter.unsuspend();
-
-			self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
-			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
-			else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
-			self.qsubf = true;
+			ui.openFileData(outputstr, function(){
+				self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
+				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
+				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
+				self.qsubf = true;
+			});
 		}
 		setTimeout(function(){ self.check_turnR1(self);},0);
 	},

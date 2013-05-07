@@ -111,10 +111,10 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.fio.fileencode(k.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(k.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		this.setTA(ui.puzzle.fio.fileencode(k.FILE_PBOX));
+		this.setTA(ui.puzzle.getFileData(k.FILE_PBOX));
 	},
 
 	fileopen : function(){

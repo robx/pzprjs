@@ -69,10 +69,15 @@ pzprv3.createCoreClass('Puzzle',
 
 	//---------------------------------------------------------------------------
 	// owner.getURL()      URLを取得する
+	// owner.getFileData() ファイルデータを取得する
 	//---------------------------------------------------------------------------
 	getURL : function(type){
-		if(isNaN(type)){ type=pzprurl.PZPRV3;}
+		if(isNaN(type)){ type=pzprurl.AUTO;}
 		return this.enc.encodeURL(type);
+	},
+	getFileData : function(type){
+		if(isNaN(type)){ type=k.FILE_AUTO;}
+		return this.fio.fileencode(type);
 	},
 
 	//---------------------------------------------------------------------------

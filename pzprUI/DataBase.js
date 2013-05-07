@@ -29,7 +29,7 @@ ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.fio.fileencode(k.FILE_PZPH).replace(/[\r\n]+/g,"/");
+		this.pdata = owner.getFileData(k.FILE_PZPH).replace(/[\r\n]+/g,"/");
 		this.time = (pzprv3.currentTime()/1000)|0;
 		this.comment = '';
 	},

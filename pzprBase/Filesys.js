@@ -4,6 +4,7 @@
 var k = pzprv3.consts;
 pzprv3.addConsts({
 	// 定数(ファイル形式)
+	FILE_AUTO : 0,
 	FILE_PZPR : 1,
 	FILE_PBOX : 2,
 	FILE_PZPH : 3
@@ -72,6 +73,8 @@ pzprv3.createPuzzleClass('FileIO',
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
+		if(isNaN(type) || type===k.FILE_AUTO){ type=k.FILE_PZPR;}
+
 		this.filever = 0;
 		this.sizestr = "";
 		this.datastr = "";

@@ -1169,7 +1169,7 @@ Menu.prototype =
 		else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
 		else                                           { form.platform.value = "Others";}
 
-		form.ques.value   = ui.puzzle.fio.fileencode(ftype);
+		form.ques.value   = ui.puzzle.getFileData(ftype);
 		form.urlstr.value = "";
 		form.operation.value = 'save';
 
@@ -1181,7 +1181,7 @@ Menu.prototype =
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var filestr = ui.puzzle.fio.fileencode(k.FILE_PZPH);
+		var filestr = ui.puzzle.getFileData(k.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
