@@ -111,11 +111,11 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.fio.fileencode(k.PZPH));
+		this.setTA(ui.puzzle.fio.fileencode(k.FILE_PZPH));
 		this.addTA(ui.puzzle.fio.history);
 	},
 	filesave_pencilbox : function(){
-		this.setTA(ui.puzzle.fio.fileencode(k.PBOX));
+		this.setTA(ui.puzzle.fio.fileencode(k.FILE_PBOX));
 	},
 
 	fileopen : function(){

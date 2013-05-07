@@ -4,9 +4,9 @@
 var k = pzprv3.consts;
 pzprv3.addConsts({
 	// 定数(ファイル形式)
-	PZPR : 1,
-	PBOX : 2,
-	PZPH : 3
+	FILE_PZPR : 1,
+	FILE_PBOX : 2,
+	FILE_PZPH : 3
 });
 
 //---------------------------------------------------------------------------
@@ -37,11 +37,11 @@ pzprv3.createPuzzleClass('FileIO',
 		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
 			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
 			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている */
-			this.currentType = k.PZPR;
+			this.currentType = k.FILE_PZPR;
 		}
 		else{
 			this.lineseek = 0;
-			this.currentType = k.PBOX;
+			this.currentType = k.FILE_PBOX;
 		}
 
 		// サイズを表す文字列
@@ -49,7 +49,7 @@ pzprv3.createPuzzleClass('FileIO',
 		if(o.pid!=="sudoku"){
 			row = parseInt(this.readLine(), 10);
 			col = parseInt(this.readLine(), 10);
-			if(this.currentType===k.PBOX && o.pid==="kakuro"){ row--; col--;}
+			if(this.currentType===k.FILE_PBOX && o.pid==="kakuro"){ row--; col--;}
 		}
 		else{
 			row = col = parseInt(this.readLine(), 10);
@@ -58,8 +58,8 @@ pzprv3.createPuzzleClass('FileIO',
 		this.owner.board.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
 
 		// メイン処理
-		if     (this.currentType===k.PZPR){ this.decodeData();}
-		else if(this.currentType===k.PBOX){ this.kanpenOpen();}
+		if     (this.currentType===k.FILE_PZPR){ this.decodeData();}
+		else if(this.currentType===k.FILE_PBOX){ this.kanpenOpen();}
 
 		o.opemgr.decodeLines();
 
@@ -78,26 +78,26 @@ pzprv3.createPuzzleClass('FileIO',
 		this.datastr = "";
 		this.history = "";
 		this.currentType = type;
-		if(this.currentType===k.PZPH){ this.currentType = k.PZPR;}
+		if(this.currentType===k.FILE_PZPH){ this.currentType = k.FILE_PZPR;}
 
 		// メイン処理
 		var o = this.owner;
-		if     (this.currentType===k.PZPR){ this.encodeData();}
-		else if(this.currentType===k.PBOX){ this.kanpenSave();}
+		if     (this.currentType===k.FILE_PZPR){ this.encodeData();}
+		else if(this.currentType===k.FILE_PBOX){ this.kanpenSave();}
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("\n");}
 		this.datastr = [this.sizestr, this.datastr].join("\n");
 
 		// ヘッダの処理
-		if(this.currentType===k.PZPR){
+		if(this.currentType===k.FILE_PZPR){
 			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
 			this.datastr = [header, o.pid, this.datastr].join("\n");
 		}
 		var bstr = this.datastr;
 
 		// 末尾の履歴情報追加処理
-		if(type===k.PZPH){ this.history = o.opemgr.toString();}
+		if(type===k.FILE_PZPH){ this.history = o.opemgr.toString();}
 
 		return bstr;
 	},
@@ -161,12 +161,12 @@ pzprv3.createPuzzleClass('FileIO',
 			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.isborder===2){
-			if(this.currentType===k.PZPR){
+			if(this.currentType===k.FILE_PZPR){
 				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===k.PBOX){
+			else if(this.currentType===k.FILE_PBOX){
 				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
@@ -201,12 +201,12 @@ pzprv3.createPuzzleClass('FileIO',
 			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.isborder===2){
-			if(this.currentType===k.PZPR){
+			if(this.currentType===k.FILE_PZPR){
 				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===k.PBOX){
+			else if(this.currentType===k.FILE_PBOX){
 				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}

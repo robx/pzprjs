@@ -14,7 +14,7 @@ ui.debug.extend(
 	},
 	
 	accheck1 : function(){
-		var outputstr = ui.puzzle.fio.fileencode(k.PZPH).replace(/[\r\n]+/g, "/");
+		var outputstr = ui.puzzle.fio.fileencode(k.FILE_PZPH).replace(/[\r\n]+/g, "/");
 		var failcode = ui.puzzle.anscheckSilent();
 		this.addTextarea("\t\t\t["+failcode+",\""+outputstr+"\"],");
 	},
@@ -115,7 +115,7 @@ ui.debug.extend(
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var o = ui.puzzle, bd = o.board, outputstr = o.fio.fileencode(k.PZPR);
+		var o = ui.puzzle, bd = o.board, outputstr = o.fio.fileencode(k.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
 		o.painter.suspendAll();
@@ -132,7 +132,7 @@ ui.debug.extend(
 	},
 	check_file_pbox : function(self){
 		if(ui.menu.ispencilbox){
-			var o = ui.puzzle, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.PBOX);
+			var o = ui.puzzle, bd = o.board, pid = o.pid, outputstr = o.fio.fileencode(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 
 			o.painter.suspendAll();

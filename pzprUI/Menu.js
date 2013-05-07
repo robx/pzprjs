@@ -1096,9 +1096,9 @@ Menu.prototype =
 		
 		var result = true;
 		switch(idname){
-		case 'filesave'  : this.filesave(k.PZPR); break;
-//		case 'filesave3' : this.filesave(k.PZPH); break;
-		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ this.filesave(k.PBOX);} break;
+		case 'filesave'  : this.filesave(k.FILE_PZPR); break;
+//		case 'filesave3' : this.filesave(k.FILE_PZPH); break;
+		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ this.filesave(k.FILE_PBOX);} break;
 		case 'imagedl'   : this.imagesave(true,null); break;
 		case 'imagesave' : this.imagesave(false,null); break;
 		
@@ -1181,7 +1181,7 @@ Menu.prototype =
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var str = ui.puzzle.fio.fileencode(k.PZPH);
+		var str = ui.puzzle.fio.fileencode(k.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];
