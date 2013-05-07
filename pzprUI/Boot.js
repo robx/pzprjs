@@ -38,6 +38,10 @@ function includePzprFile(){
 			return false;
 		}
 	}
+	
+	/* ui.menu読み込み待ち */
+	if(!ui.menu){ return false;}
+	ui.menu.init();
 
 	return true;
 }
