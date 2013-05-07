@@ -461,10 +461,10 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeCrossABC();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeCrossABC();
 	},
 

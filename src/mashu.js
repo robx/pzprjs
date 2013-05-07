@@ -91,11 +91,11 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeCircle();
 		this.owner.board.revCircle();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.owner.board.revCircle();
 		this.encodeCircle();
 		this.owner.board.revCircle();

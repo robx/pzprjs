@@ -306,10 +306,10 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 "Encode@loute":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeLoute();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeLoute();
 	},
 
@@ -346,10 +346,10 @@ Graphic:{
 	}
 },
 "Encode@sashigane":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeSashigane();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeSashigane();
 	},
 

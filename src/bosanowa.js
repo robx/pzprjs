@@ -353,14 +353,14 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBoard();
 		this.decodeNumber16();
 
 		if     (this.checkpflag("h")){ this.owner.setConfig('disptype_bosanowa',2);}
 		else if(this.checkpflag("t")){ this.owner.setConfig('disptype_bosanowa',3);}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBosanowa();
 
 		if     (this.owner.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}

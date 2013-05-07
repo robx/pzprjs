@@ -23,11 +23,11 @@ pzprv3.createPuzzleClass('Encode',
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeURL()  parseURLData()を行い、各パズルのpzlimport関数を呼び出す
-	// enc.encodeURL()  各パズルのpzlexport関数を呼び出し、URLを出力する
+	// enc.decodeURL()   parseURLData()を行い、各種各パズルのdecode関数を呼び出す
+	// enc.encodeURL()   各種各パズルのencode関数を呼び出し、URLを出力する
 	// 
-	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
-	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
+	// enc.decodePzpr()  各パズルのURL入力用(オーバーライド用)
+	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
 		var pzl = pzprurl.parseURL(url);
@@ -40,7 +40,7 @@ pzprv3.createPuzzleClass('Encode',
 			switch(pzl.type){
 			case pzprurl.PZPRV3: case pzprurl.PZPRAPP: case pzprurl.PZPRV3E:
 				this.outbstr = dat.bstr;
-				this.pzlimport(pzl.type);
+				this.decodePzpr(pzl.type);
 				break;
 			case pzprurl.KANPEN:
 				o.fio.lineseek = 0;
@@ -69,13 +69,13 @@ pzprv3.createPuzzleClass('Encode',
 
 		switch(type){
 		case pzprurl.PZPRV3: case pzprurl.PZPRV3E:
-			this.pzlexport(pzprurl.PZPRV3);
+			this.encodePzpr(pzprurl.PZPRV3);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
 		case pzprurl.PZPRAPP: case pzprurl.KANPENP:
-			this.pzlexport(pzprurl.PZPRAPP);
+			this.encodePzpr(pzprurl.PZPRAPP);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = true;
 			break;
@@ -101,8 +101,8 @@ pzprv3.createPuzzleClass('Encode',
 	},
 
 	// オーバーライド用
-	pzlimport : function(type){ },
-	pzlexport : function(type){ },
+	decodePzpr : function(type){ },
+	encodePzpr : function(type){ },
 	decodeKanpen : function(){ },
 	encodeKanpen : function(){ },
 	decodeHeyaApp : function(){ },

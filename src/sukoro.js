@@ -122,27 +122,27 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 "Encode@sukoro":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeNumber10();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeNumber10();
 	}
 },
 "Encode@view":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeNumber16();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeNumber16();
 	}
 },
 "Encode@sukororoom":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBorder();
 		this.decodeNumber10();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBorder();
 		this.encodeNumber10();
 	}

@@ -101,13 +101,13 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		if(!this.checkpflag("c")){ this.decodeBorder();}
 		this.decodeNumber16();
 
 		this.checkPuzzleid();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		if(type===1 || this.owner.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 		this.encodeNumber16();
 	},

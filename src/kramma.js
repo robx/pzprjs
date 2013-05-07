@@ -147,7 +147,7 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		if(this.owner.pid==='shwolf' || !this.checkpflag("c")){
 			this.decodeCrossMark();
 			this.decodeCircle();
@@ -158,7 +158,7 @@ Encode:{
 
 		this.checkPuzzleid();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		if(this.owner.pid!=='kramma'){
 			this.encodeCrossMark();
 			this.encodeCircle();

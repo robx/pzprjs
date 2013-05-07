@@ -64,12 +64,12 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeCrossMark();
 		this.outbstr = this.outbstr.substr(1); // /を消しておく
 		this.decodeNumber16();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeCrossMark();
 		this.outbstr += "/";
 		this.encodeNumber16();

@@ -173,7 +173,7 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodePipelink();
 
 		this.checkPuzzleid();
@@ -181,7 +181,7 @@ Encode:{
 			this.owner.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
 		}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.getConfig('disptype_pipelinkr')==2)?"i":"");
 		this.encodePipelink(type);
 	},

@@ -89,7 +89,7 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decode4Cell();
 
 		if(this.owner.pid==='ichimaga'){
@@ -98,7 +98,7 @@ Encode:{
 			else                         { this.owner.pid="ichimaga"; }
 		}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encode4Cell();
 	}
 },

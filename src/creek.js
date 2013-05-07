@@ -75,12 +75,12 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		if(type==1){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}

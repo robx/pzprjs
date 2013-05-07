@@ -84,11 +84,11 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeArrowNumber16();
 		this.decodeBorder();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeArrowNumber16();
 		this.encodeBorder_if_exist();
 	},

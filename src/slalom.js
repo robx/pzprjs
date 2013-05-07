@@ -458,10 +458,10 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeSlalom((this.checkpflag("p")?1:0));
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.owner.board.hinfo.generateAll();
 
 		if(type===0){ this.outpflag='p';}

@@ -136,7 +136,7 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		var oldflag = ((type===0 && this.checkpflag("d"))||(type===1 && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
@@ -145,7 +145,7 @@ Encode:{
 			this.decodeLITS_old();
 		}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		if(type==0 || this.owner.pid==='norinori'){
 			this.encodeBorder();
 		}

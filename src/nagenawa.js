@@ -128,20 +128,20 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 "Encode@nagenawa":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBorder();
 		this.decodeRoomNumber16();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBorder();
 		this.encodeRoomNumber16();
 	}
 },
 "Encode@ringring":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBlockCell();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBlockCell();
 	},
 

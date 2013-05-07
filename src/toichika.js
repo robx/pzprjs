@@ -130,11 +130,11 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBorder();
 		this.decode4Cell_toichika();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBorder();
 		this.encode4Cell_toichika();
 	},

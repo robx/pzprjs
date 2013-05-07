@@ -230,10 +230,10 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeBox();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeBox();
 	},
 

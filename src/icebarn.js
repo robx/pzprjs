@@ -391,14 +391,14 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 "Encode@icebarn":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		if     (type==0){ this.decodeIcebarn();}
 		else if(type==1){
 			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
 			else                    { this.decodeIcebarn_old1();}
 		}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		if     (type==0){ return this.encodeIcebarn();}
 		else if(type==1){ return this.encodeIcebarn_old1();}
 	},
@@ -582,7 +582,7 @@ Graphic:{
 	}
 },
 "Encode@icelom,icelom2":{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeIcelom();
 		this.decodeNumber16();
 		this.decodeInOut();
@@ -591,7 +591,7 @@ Graphic:{
 			this.owner.pid = (this.checkpflag("a")?'icelom':'icelom2');
 		}
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeIcelom();
 		this.encodeNumber16();
 		this.encodeInOut();

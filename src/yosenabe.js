@@ -201,11 +201,11 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	pzlimport : function(type){
+	decodePzpr : function(type){
 		this.decodeIcelom();
 		this.decodeNumber16_yosenabe();
 	},
-	pzlexport : function(type){
+	encodePzpr : function(type){
 		this.encodeIcelom();
 		this.encodeNumber16_yosenabe();
 	},
