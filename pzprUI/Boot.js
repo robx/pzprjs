@@ -25,7 +25,7 @@ function includePzprFile(){
 	if(!pzprv3 || !ui){ return false;}
 
 	/* 先にpuzzlename.jsを読まないとimportURL()が動作しないため読み込み待ち */
-	if(!pzprv3.PZLINFO){ pzprv3.includeFile("puzzlename.js"); return false;}
+	if(!window.pzprurl){ pzprv3.includeFile("puzzlename.js"); return false;}
 
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */

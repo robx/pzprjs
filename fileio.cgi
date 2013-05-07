@@ -47,7 +47,7 @@ sub fileopen{
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
 var filestr = "$str";
-if(!!parent.pzprv3 && !!parent.pzprv3.ui){
+if(!!parent.pzprv3 && !!parent.ui){
 	var errmsg = parent.ui.openFileData(filestr);
 	if(!!errmsg){ alert(errmsg);}
 }

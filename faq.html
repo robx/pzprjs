@@ -286,6 +286,7 @@
 <script type="text/javascript">
 var expression_p="", expression_e="";
 var langcode='ja', puzzleid='', EDITOR=false, PLAYER=false;
+window.pzprfaq = true;
 
 function getEL(id){ return document.getElementById(id);}
 function hideEL(id){ document.getElementById(id).style.display = "none";}
@@ -297,7 +298,10 @@ function addStr_e(str){ expression_e += str;}
 
 function onload_include_FAQ(){
 	setTimeout(function(){
-		if(!pzprv3.v3index.complete){ setTimeout(arguments.callee,50); return;}
+		if(!window.v3index ||!window.v3index.complete){
+			setTimeout(arguments.callee,50);
+			return;
+		}
 		onload_func_FAQ();
 	},50);
 }
@@ -316,7 +320,7 @@ function onload_func_FAQ(){
 	if(!EDITOR && !PLAYER){
 		removeEL('puzmenu_expression');
 		removeEL('table_expression');
-		pzprv3.v3index.reset_func();
+		v3index.reset_func();
 	}
 
 	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
@@ -336,7 +340,7 @@ function dispExpression(){
 	setText("title", title);
 
 	if(EDITOR || PLAYER){
-		document.getElementById('pzlname').innerHTML = pzprv3.PZLINFO.info[puzzleid][langcode]
+		document.getElementById('pzlname').innerHTML = pzprurl.info[puzzleid][langcode]
 										+ {ja:"の操作方法", en:" - How to Input"}[langcode];
 
 		setText("puzmenu_expression", {ja:"パズルの操作説明",   en:"How to Input the board"}[langcode]);
@@ -362,7 +366,7 @@ function dispExpression(){
 	removeEL({ja:"menu2_en", en:"menu2_ja"}[langcode]);
 }
 
-pzprv3.v3index.addEvent(window, 'load', onload_include_FAQ);
+v3index.addEvent(window, 'load', onload_include_FAQ);
 
 /* *********************************************************************** */
 

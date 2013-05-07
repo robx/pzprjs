@@ -421,7 +421,7 @@ ui.popupmgr.addpopup('urloutput',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = ui.puzzle.pid, exists = pzprv3.PZLINFO.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzprurl.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}

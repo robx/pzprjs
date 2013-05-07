@@ -52,7 +52,7 @@ Menu.prototype =
 		
 		this.menureset();
 		
-		var pinfo = pzprv3.PZLINFO.info[pid];
+		var pinfo = pzprurl.info[pid];
 		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items.reset();
@@ -296,7 +296,7 @@ Menu.prototype =
 	},
 	displayDesign : function(){
 		var pid = ui.puzzle.pid;
-		var pinfo = pzprv3.PZLINFO.info[pid];
+		var pinfo = pzprurl.info[pid];
 		var title = this.selectStr(pinfo.ja, pinfo.en);
 		if(pzprv3.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
 		else			 { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
@@ -304,7 +304,7 @@ Menu.prototype =
 		document.title = title;
 		getEL('title2').innerHTML = title;
 
-		var imageurl = pzprv3.PZLINFO.toBGimage(pid);
+		var imageurl = pzprurl.toBGimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		document.body.style.backgroundImage = "url("+imageurl+")";
 		if(pzprv3.browser.IE6){

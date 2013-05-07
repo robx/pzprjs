@@ -34,7 +34,7 @@ ui.debug.extend(
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
-		for(var id in pzprv3.PZLINFO.info){ idlist.push(id);}
+		for(var id in pzprurl.info){ idlist.push(id);}
 		idlist.sort();
 		term = idlist.length;
 
@@ -83,7 +83,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzprv3.PZLINFO.info[self.pid].exists.kanpen){
+		if(pzprurl.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			ui.openURL(o.enc.pzloutput(k.KANPEN), function(){

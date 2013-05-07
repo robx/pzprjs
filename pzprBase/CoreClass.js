@@ -93,7 +93,7 @@ var pzprv3_base = {
 	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
 	//---------------------------------------------------------------
 	createCustoms : function(scriptid, custombase){
-		var pidlist = this.PZLINFO.PIDlist(scriptid);
+		var pidlist = pzprurl.PIDlist(scriptid);
 		for(var i=0;i<pidlist.length;i++){
 			var pid=pidlist[i], customclass=this.PIDfilter(pid, custombase);
 			this.createCustomSingle(pid, customclass);
@@ -162,7 +162,7 @@ var pzprv3_base = {
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
 		if(!this.custom[pid]){
-			this.includeFile("src/"+this.PZLINFO.toScript(pid)+".js");
+			this.includeFile("src/"+pzprurl.toScript(pid)+".js");
 		}
 	},
 	includedFile : {},
@@ -491,7 +491,7 @@ function parseURLType(url){
 		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
 		pzl.type = k.PZPRV3;
 	}
-	pzl.id = pzprv3.PZLINFO.toPID(pzl.id);
+	pzl.id = pzprurl.toPID(pzl.id);
 
 	return pzl;
 }
@@ -555,8 +555,8 @@ function getURLBase(type, pid){
 		else if(pid==='heyabon')  { str=str.replace("%PID%","bonsan");}
 	}
 	return str.replace("%DOMAIN%", domain)
-			  .replace("%PID%", pzprv3.PZLINFO.toURLID(pid))
-			  .replace("%KID%", pzprv3.PZLINFO.toKanpen(pid));
+			  .replace("%PID%", pzprurl.toURLID(pid))
+			  .replace("%KID%", pzprurl.toKanpen(pid));
 }
 
 //----------------------------------------------------------------------------

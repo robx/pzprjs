@@ -1,11 +1,11 @@
 (function(){
 
-var PZLINFO = {
+var pzprurl = {
 	info   : {},
 
 	register : function(obj){
 		for(var pzprid in obj){
-			PZLINFO.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
+			pzprurl.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
 		}
 	},
 	exists : function(name){
@@ -63,7 +63,7 @@ PZLDATA.prototype = {
 	}
 };
 
-PZLINFO.register({
+pzprurl.register({
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
@@ -280,7 +280,6 @@ var BGimage = function(pid){
 };
 
 /* extern */
-if(!window.pzprv3){ window.pzprv3={};}
-window.pzprv3.PZLINFO = PZLINFO;
+window.pzprurl = pzprurl;
 
 })();

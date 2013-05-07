@@ -31,16 +31,16 @@ v3index.extend({
 
 	/* onload function */
 	onload_include : function(){
-		if(!pzprv3.PZLINFO){ self.includeFile("puzzlename.js");}
+		if(!window.pzprurl){ self.includeFile("puzzlename.js");}
 		setTimeout(function(){
-			if(!pzprv3.PZLINFO){ setTimeout(arguments.callee,50); return;}
+			if(!window.pzprurl){ setTimeout(arguments.callee,50); return;}
 			self.onload_func();
 			self.complete = true;
 		},50);
 	},
 	onload_func : function(){
 		if(!self.current){
-			if(!self.input_init()){
+			if(!window.pzprfaq && !self.input_init()){
 				var el = _doc.getElementById("puzmenu_input");
 				el.parentNode.removeChild(el);
 				_doc.getElementById("table_input").style.display = 'none';
@@ -112,8 +112,7 @@ v3index.extend({
 self.addEvent(window, 'load', self.onload_include);
 
 /* extern */
-if(!window.pzprv3){ window.pzprv3={};}
-window.pzprv3.v3index = v3index;
+window.v3index = v3index;
 
 })();
 
@@ -122,7 +121,7 @@ window.pzprv3.v3index = v3index;
 /*********************/
 (function(){
 
-var v3index = window.pzprv3.v3index;
+var v3index = window.v3index;
 
 v3index.urlif = {
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
@@ -163,7 +162,7 @@ v3index.urlif.extend({
 /*********************/
 (function(){
 
-var v3index = window.pzprv3.v3index;
+var v3index = window.v3index;
 
 v3index.fileif = {
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
@@ -234,7 +233,7 @@ v3index.fileif.extend({
 /*********************/
 (function(){
 
-var v3index = window.pzprv3.v3index;
+var v3index = window.v3index;
 
 v3index.dbif = {
 	list   : [],
@@ -325,7 +324,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzprv3.PZLINFO.info[row.pid][v3index.language]+"&nbsp;");
+		str += (pzprurl.info[row.pid][v3index.language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][v3index.language]+"&nbsp;");
