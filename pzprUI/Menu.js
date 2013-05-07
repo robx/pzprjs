@@ -283,8 +283,8 @@ Menu.prototype =
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
 				var mode = ui.puzzle.getConfig('mode');
-				getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
-				getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
+				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
+				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}
 		}
 		
