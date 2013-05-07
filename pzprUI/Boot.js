@@ -122,7 +122,7 @@ function importURL(){
 	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
-	var pzl = pzprv3.parseURLType(search);
+	var pzl = pzprurl.parseURL(search);
 
 	if(!startmode){
 		var dat = pzprv3.parseURLData(pzl);

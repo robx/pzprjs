@@ -33,7 +33,7 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.openByFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	openByURL : function(url, callback){
-		var pzl = pzprv3.parseURLType(url);
+		var pzl = pzprurl.parseURL(url);
 		if(!pzl.id){ return;}
 
 		this.ready = false;

@@ -36,6 +36,13 @@ var pzprurl = {
 			if(this.info[pid].script===scriptid){ list.push(pid);}
 		}
 		return list;
+	},
+
+	parseURL : function(url){
+		return parseURLType(url);
+	},
+	constructURL : function(pzl){
+		return constructURLType(pzl);
 	}
 };
 
@@ -159,6 +166,94 @@ pzprurl.register({
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
+
+//---------------------------------------------------------------------------
+// ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
+//                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
+//                   出力={id:パズル種類, type:URL種類, qdata:タテヨコ以下のデータ}
+//---------------------------------------------------------------------------
+function parseURLType(url){
+	var k = pzprv3.consts;
+
+	url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
+
+	var pzl = {id:'',type:0,qdata:''};
+	// カンペンの場合
+	if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
+		url.match(/([0-9a-z]+)\.html/);
+		pzl.id = RegExp.$1;
+		// カンペンだけどデータ形式はへやわけアプレット
+		if(url.indexOf("?heyawake=")>=0){
+			pzl.qdata = url.substr(url.indexOf("?heyawake=")+10);
+			pzl.type = k.HEYAAPP;
+		}
+		// カンペンだけどデータ形式はぱずぷれ
+		else if(url.indexOf("?pzpr=")>=0){
+			pzl.qdata = url.substr(url.indexOf("?pzpr=")+6);
+			pzl.type = k.PZPRV3;
+		}
+		else{
+			pzl.qdata = url.substr(url.indexOf("?problem=")+9);
+			pzl.type = k.KANPEN;
+		}
+	}
+	// へやわけアプレットの場合
+	else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
+		pzl.id = 'heyawake';
+		pzl.qdata = url.substr(url.indexOf("?problem=")+9);
+		pzl.type = k.HEYAAPP;
+	}
+	// ぱずぷれアプレットの場合
+	else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
+		pzl.id = RegExp.$1;
+		pzl.qdata = url.substr(url.indexOf("?"));
+		pzl.type = k.PZPRAPP;
+	}
+	// ぱずぷれv3の場合
+	else{
+		var qs = url.indexOf("/", url.indexOf("?"));
+		if(qs>-1){
+			pzl.id = url.substring(url.indexOf("?")+1,qs);
+			pzl.qdata = url.substr(qs+1);
+		}
+		else{
+			pzl.id = url.substr(1);
+		}
+		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
+		pzl.type = k.PZPRV3;
+	}
+	pzl.id = pzprurl.toPID(pzl.id);
+
+	return pzl;
+}
+
+//---------------------------------------------------------------------------
+// ★ constructURLType() パズル種類, URL種類, qdataからURLを生成する
+//---------------------------------------------------------------------------
+function constructURLType(pzl){
+	var k = pzprv3.consts;
+
+	var str='', type=pzl.type;;
+	if     (type===k.PZPRV3) { str = "http://%DOMAIN%/p.html?%PID%/";}
+	else if(type===k.PZPRV3E){ str = "http://%DOMAIN%/p.html?%PID%_edit/";}
+	else if(type===k.PZPRAPP){ str = "http://indi.s58.xrea.com/%PID%/sa/q.html?";}
+	else if(type===k.KANPEN) { str = "http://www.kanpen.net/%KID%.html?problem=";}
+	else if(type===k.KANPENP){ str = "http://www.kanpen.net/%KID%.html?pzpr=";}
+	else if(type===k.HEYAAPP){ str = "http://www.geocities.co.jp/heyawake/?problem=";}
+
+	var domain = document.domain;
+	if(!domain){ domain = "pzv.jp";}
+	else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+
+	if(type===k.PZPRAPP){
+		if     (pzl.id==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
+		else if(pzl.id==='heyabon')  { str=str.replace("%PID%","bonsan");}
+	}
+	var urlbase = str.replace("%DOMAIN%", domain)
+					 .replace("%PID%", pzprurl.toURLID(pzl.id))
+					 .replace("%KID%", pzprurl.toKanpen(pzl.id));
+	return urlbase + pzl.qdata;
+}
 
 /* extern */
 window.pzprurl = pzprurl;

@@ -74,7 +74,7 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzprv3.getURLBase(k.PZPRV3, self.pid)+self.urls[self.pid];
+		var inp = pzprurl.constructURL({id:self.pid, type:k.PZPRV3, qdata:self.urls[self.pid]});
 		var ta  = ui.puzzle.enc.pzloutput(k.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
