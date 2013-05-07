@@ -444,14 +444,15 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc;
+		var enc = ui.puzzle.enc, url = '';
 		switch((e.target||e.srcElement).name){
-			case "pzprv3":     this.form.ta.value = enc.pzloutput(pzprurl.PZPRV3);  break;
-			case "pzprapplet": this.form.ta.value = enc.pzloutput(pzprurl.PZPRAPP); break;
-			case "kanpen":     this.form.ta.value = enc.pzloutput(pzprurl.KANPEN);  break;
-			case "pzprv3edit": this.form.ta.value = enc.pzloutput(pzprurl.PZPRV3E); break;
-			case "heyaapp":    this.form.ta.value = enc.pzloutput(pzprurl.HEYAAPP); break;
+			case "pzprv3":     url = ui.puzzle.getURL(pzprurl.PZPRV3);  break;
+			case "pzprapplet": url = ui.puzzle.getURL(pzprurl.PZPRAPP); break;
+			case "kanpen":     url = ui.puzzle.getURL(pzprurl.KANPEN);  break;
+			case "pzprv3edit": url = ui.puzzle.getURL(pzprurl.PZPRV3E); break;
+			case "heyaapp":    url = ui.puzzle.getURL(pzprurl.HEYAAPP); break;
 		}
+		this.form.ta.value = url;
 	},
 	openurl : function(e){
 		if(this.form.ta.value!==''){

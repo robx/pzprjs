@@ -75,7 +75,7 @@ ui.debug.extend(
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
 		var inp = pzprurl.constructURL({id:self.pid, type:pzprurl.PZPRV3, qdata:self.urls[self.pid]});
-		var ta  = ui.puzzle.enc.pzloutput(pzprurl.PZPRV3);
+		var ta  = ui.puzzle.getURL(pzprurl.PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -86,7 +86,7 @@ ui.debug.extend(
 		if(pzprurl.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			ui.openURL(o.enc.pzloutput(pzprurl.KANPEN), function(){
+			ui.openURL(o.getURL(pzprurl.KANPEN), function(){
 				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}

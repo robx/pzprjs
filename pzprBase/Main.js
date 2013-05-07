@@ -40,7 +40,7 @@ pzprv3.createCoreClass('Puzzle',
 
 		var o = this;
 		this.initPuzzle(pzl.id, function(){
-			o.enc.pzlinput(url);
+			o.enc.decodeURL(url);
 			o.resetTime();
 			o.ready = true;
 			
@@ -65,6 +65,14 @@ pzprv3.createCoreClass('Puzzle',
 			
 			if(!!callback){ callback();}
 		});
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.getURL()      URLを取得する
+	//---------------------------------------------------------------------------
+	getURL : function(type){
+		if(isNaN(type)){ type=pzprurl.PZPRV3;}
+		return this.enc.encodeURL(type);
 	},
 
 	//---------------------------------------------------------------------------

@@ -23,13 +23,13 @@ pzprv3.createPuzzleClass('Encode',
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.pzlinput()   parseURLData()を行い、各パズルのpzlimport関数を呼び出す
-	// enc.pzloutput()  各パズルのpzlexport関数を呼び出し、URLを出力する
+	// enc.decodeURL()  parseURLData()を行い、各パズルのpzlimport関数を呼び出す
+	// enc.encodeURL()  各パズルのpzlexport関数を呼び出し、URLを出力する
 	// 
 	// enc.pzlimport()    各パズルのURL入力用(オーバーライド用)
 	// enc.pzlexport()    各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
-	pzlinput : function(url){
+	decodeURL : function(url){
 		var pzl = pzprurl.parseURL(url);
 		var dat = pzprv3.parseURLData(pzl), o = this.owner;
 
@@ -56,10 +56,12 @@ pzprv3.createPuzzleClass('Encode',
 
 		o.board.resetInfo();
 	},
-	pzloutput : function(type){
+	encodeURL : function(type){
 		var o = this.owner;
-		if(type===pzprurl.KANPEN && o.pid=='lits'){ type = pzprurl.KANPENP;}
 		var size='', ispflag=false, col = o.board.qcols, row = o.board.qrows;
+		
+		if(isNaN(type) || type===pzprurl.AUTO){ type=pzprurl.PZPRV3;}
+		if(type===pzprurl.KANPEN && o.pid=='lits'){ type = pzprurl.KANPENP;}
 
 		this.outpflag = '';
 		this.outsize = '';
