@@ -482,7 +482,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		}
 		var d = clist.getRectSize();
 
-		this.owner.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
+		this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
 	},
 
 	//---------------------------------------------------------------------------
