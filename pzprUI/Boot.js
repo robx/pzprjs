@@ -75,8 +75,7 @@ function openPuzzle(){
 
 	/* debugmode時の設定 */
 	if(ui.debugmode){
-		ui.puzzle.editmode = false;
-		ui.puzzle.playmode = true;
+		ui.puzzle.setConfig('mode',3);
 		ui.puzzle.setConfig('autocheck', true);
 	}
 

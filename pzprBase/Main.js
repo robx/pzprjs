@@ -309,6 +309,7 @@ pzprv3.createCoreClass('Puzzle',
 	modechange : function(num){
 		this.editmode = (num==1);
 		this.playmode = (num==3);
+		if(!this.ready){ return;}
 
 		this.key.keyreset();
 		this.board.errclear();
