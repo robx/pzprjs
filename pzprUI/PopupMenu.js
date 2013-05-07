@@ -446,11 +446,11 @@ ui.popupmgr.addpopup('urloutput',
 	urloutput : function(e){
 		var enc = ui.puzzle.enc;
 		switch((e.target||e.srcElement).name){
-			case "pzprv3":     this.form.ta.value = enc.pzloutput(k.PZPRV3);  break;
-			case "pzprapplet": this.form.ta.value = enc.pzloutput(k.PZPRAPP); break;
-			case "kanpen":     this.form.ta.value = enc.pzloutput(k.KANPEN);  break;
-			case "pzprv3edit": this.form.ta.value = enc.pzloutput(k.PZPRV3E); break;
-			case "heyaapp":    this.form.ta.value = enc.pzloutput(k.HEYAAPP); break;
+			case "pzprv3":     this.form.ta.value = enc.pzloutput(pzprurl.PZPRV3);  break;
+			case "pzprapplet": this.form.ta.value = enc.pzloutput(pzprurl.PZPRAPP); break;
+			case "kanpen":     this.form.ta.value = enc.pzloutput(pzprurl.KANPEN);  break;
+			case "pzprv3edit": this.form.ta.value = enc.pzloutput(pzprurl.PZPRV3E); break;
+			case "heyaapp":    this.form.ta.value = enc.pzloutput(pzprurl.HEYAAPP); break;
 		}
 	},
 	openurl : function(e){

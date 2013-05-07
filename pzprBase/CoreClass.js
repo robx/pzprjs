@@ -5,7 +5,8 @@
 //----------------------------------------------------------------------------
 // ★pzprv3オブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-var pzprv3_base = {
+/* extern */
+window.pzprv3 = {
 	version : 'v3.4.0pre',
 
 	EDITOR : true,	// エディタモード
@@ -355,26 +356,6 @@ var pzprv3_base = {
 	}
 };
 
-/* extern */
-if(!window.pzprv3){
-	window.pzprv3 = pzprv3_base;
-}
-else{
-	for(name in pzprv3_base){ window.pzprv3[name] = pzprv3_base[name];}
-}
-
-// 定数の定義
-var k = pzprv3.consts;
-pzprv3.addConsts({
-	// 定数(URL形式)
-	PZPRV3  : 0,
-	PZPRV3E : 3,
-	PZPRAPP : 1,
-	KANPEN  : 2,
-	KANPENP : 5,
-	HEYAAPP : 4
-});
-
 //---------------------------------------------------------------------------
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
 //---------------------------------------------------------------------------
@@ -445,7 +426,7 @@ pzprv3.storage = (function(){
 function parseURLData(pzl){
 	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''};
 	switch(pzl.type){
-	case k.KANPEN:
+	case pzprurl.KANPEN:
 		if(pzl.id=="sudoku"){
 			dat.rows = dat.cols = parseInt(inp.shift());
 		}
@@ -457,7 +438,7 @@ function parseURLData(pzl){
 		dat.bstr = inp.join("/");
 		break;
 
-	case k.HEYAAPP:
+	case pzprurl.HEYAAPP:
 		var size = inp.shift().split("x");
 		dat.cols = parseInt(size[0]);
 		dat.rows = parseInt(size[1]);

@@ -38,16 +38,16 @@ pzprv3.createPuzzleClass('Encode',
 		if(!!dat.bstr){
 			this.pflag = dat.pflag;
 			switch(pzl.type){
-			case k.PZPRV3: case k.PZPRAPP: case k.PZPRV3E:
+			case pzprurl.PZPRV3: case pzprurl.PZPRAPP: case pzprurl.PZPRV3E:
 				this.outbstr = dat.bstr;
 				this.pzlimport(pzl.type);
 				break;
-			case k.KANPEN:
+			case pzprurl.KANPEN:
 				o.fio.lineseek = 0;
 				o.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case k.HEYAAPP:
+			case pzprurl.HEYAAPP:
 				this.outbstr = dat.bstr;
 				this.decodeHeyaApp();
 				break;
@@ -57,34 +57,35 @@ pzprv3.createPuzzleClass('Encode',
 		o.board.resetInfo();
 	},
 	pzloutput : function(type){
-		if(type===k.KANPEN && this.owner.pid=='lits'){ type = k.KANPENP;}
-		var size='', ispflag=false, col = this.owner.board.qcols, row = this.owner.board.qrows;
+		var o = this.owner;
+		if(type===pzprurl.KANPEN && o.pid=='lits'){ type = pzprurl.KANPENP;}
+		var size='', ispflag=false, col = o.board.qcols, row = o.board.qrows;
 
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
 
 		switch(type){
-		case k.PZPRV3: case k.PZPRV3E:
-			this.pzlexport(k.PZPRV3);
+		case pzprurl.PZPRV3: case pzprurl.PZPRV3E:
+			this.pzlexport(pzprurl.PZPRV3);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
-		case k.PZPRAPP: case k.KANPENP:
-			this.pzlexport(k.PZPRAPP);
+		case pzprurl.PZPRAPP: case pzprurl.KANPENP:
+			this.pzlexport(pzprurl.PZPRAPP);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
-		case k.KANPEN:
-			this.owner.fio.datastr = "";
+		case pzprurl.KANPEN:
+			o.fio.datastr = "";
 			this.encodeKanpen()
-			this.outbstr = this.owner.fio.datastr.replace(/[\r\n]+/g,"/").replace(/ /g, "_");
+			this.outbstr = o.fio.datastr.replace(/[\r\n]+/g,"/").replace(/ /g, "_");
 			size = (!this.outsize ? [row,col].join('/') : this.outsize);
 			break;
 
-		case k.HEYAAPP:
+		case pzprurl.HEYAAPP:
 			this.encodeHeyaApp();
 			size = [col,row].join('x');
 			break;
@@ -94,7 +95,7 @@ pzprv3.createPuzzleClass('Encode',
 		}
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
-		return pzprurl.constructURL({id:this.owner.pid, type:type, qdata:pdata});
+		return pzprurl.constructURL({id:o.pid, type:type, qdata:pdata});
 	},
 
 	// オーバーライド用
