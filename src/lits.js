@@ -137,7 +137,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var oldflag = ((type===0 && this.checkpflag("d"))||(type===1 && !this.checkpflag("c")));
+		var oldflag = ((type===pzprurl.PZPRV3 && this.checkpflag("d"))||(type===pzprurl.PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}
@@ -146,7 +146,7 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type==0 || this.owner.pid==='norinori'){
+		if(type===pzprurl.PZPRV3 || this.owner.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{

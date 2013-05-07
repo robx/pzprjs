@@ -323,12 +323,12 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@gokigen":{
 	decodePzpr : function(type){
-		var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
+		var oldflag = ((type===pzprurl.PZPRAPP && !this.checkpflag("c")) || (type===pzprurl.PZPRV3 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type==1){ this.outpflag = 'c';}
+		if(type===pzprurl.PZPRAPP){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },

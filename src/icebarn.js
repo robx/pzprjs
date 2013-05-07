@@ -392,15 +392,15 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@icebarn":{
 	decodePzpr : function(type){
-		if     (type==0){ this.decodeIcebarn();}
-		else if(type==1){
+		if     (type===pzprurl.PZPRV3){ this.decodeIcebarn();}
+		else if(type===pzprurl.PZPRAPP){
 			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
 			else                    { this.decodeIcebarn_old1();}
 		}
 	},
 	encodePzpr : function(type){
-		if     (type==0){ return this.encodeIcebarn();}
-		else if(type==1){ return this.encodeIcebarn_old1();}
+		if     (type===pzprurl.PZPRV3){ return this.encodeIcebarn();}
+		else if(type===pzprurl.PZPRAPP){ return this.encodeIcebarn_old1();}
 	},
 
 	decodeIcebarn : function(){

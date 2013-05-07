@@ -20,7 +20,7 @@ pzprv3.createPuzzleClass('FileIO',
 		this.lineseek = 0;
 		this.dataarray = [];
 		this.datastr = "";
-		this.currentType = 1;
+		this.currentType = k.FILE_PZPR;
 	},
 
 	//---------------------------------------------------------------------------
