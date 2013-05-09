@@ -102,7 +102,7 @@ ui.debug.extend(
 			ui.openFileData(acsstr[n][1].replace(/\//g,"\n"));
 			var failcode = ui.puzzle.anscheck(), compcode = acsstr[n][0];
 			var iserror = (failcode !== compcode);
-			var errdesc = "("+compcode+":"+pzprv3.failcode[compcode][0]+")";
+			var errdesc = "("+compcode+":"+pzprv3.failcode[compcode].ja+")";
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}

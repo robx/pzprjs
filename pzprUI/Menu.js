@@ -1281,7 +1281,7 @@ Menu.prototype =
 	answercheck : function(){
 		var failcode = ui.puzzle.anscheck();
 		var strs = pzprv3.failcode[failcode];
-		this.alertStr(strs[0], strs[1]);
+		this.alertStr(strs.ja, strs.en);
 	},
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){

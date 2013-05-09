@@ -40,7 +40,9 @@ window.pzprv3 = {
 	failcode : {},
 	addFailCode : function(codes){
 		for(var code in codes){
-			if(!this.failcode[code]){ this.failcode[code] = codes[code];}
+			if(!this.failcode[code]){
+				this.failcode[code] = {ja:codes[code][0],en:codes[code][1]};
+			}
 		}
 	},
 
