@@ -107,7 +107,6 @@ pzprv3.createPuzzleClass('Graphic',
 		this.y0 = 0;
 
 		// 描画単位(ここはデフォルト)
-		this.cellsize = 36;		// デフォルトのセルサイズ
 		this.cw = 36; 			// セルの横幅
 		this.ch = 36; 			// セルの縦幅
 		this.bw = 18; 			// セルの横幅

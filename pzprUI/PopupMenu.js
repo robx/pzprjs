@@ -630,7 +630,7 @@ ui.popupmgr.addpopup('dispsize',
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		
-		this.form.cs.value = ui.puzzle.painter.cellsize;
+		this.form.cs.value = ui.menu.getMenuConfig('cellsizeval');
 		ui.event.enableKey = false;
 	},
 	
@@ -640,7 +640,7 @@ ui.popupmgr.addpopup('dispsize',
 	changesize : function(e){
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){
-			ui.puzzle.painter.cellsize = (csize|0);
+			ui.menu.setMenuConfig('cellsizeval', (csize|0));
 			ui.event.adjustcellsize();
 		}
 		

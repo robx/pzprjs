@@ -1038,6 +1038,9 @@ Menu.prototype =
 		/* テキストのサイズ */
 		this.menuconfig.textsize = {val:(!pzprv3.OS.mobile?0:2), option:[0,1,2,3]};
 		this.settextsize(this.menuconfig.textsize.val);
+
+		/* セルのサイズ設定用 */
+		this.menuconfig.cellsizeval = {val:36};
 	},
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}

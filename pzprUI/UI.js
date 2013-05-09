@@ -145,21 +145,22 @@ ui.event =
 		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
 		var wwidth = this.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 
+		var cellsize = ui.menu.getMenuConfig('cellsizeval');
 		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[ui.menu.getMenuConfig('cellsize')];
 		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(pc.cellsize*cr.base );
-		ci[1] = (wwidth*ws.limit)/(pc.cellsize*cr.limit);
+		ci[0] = (wwidth*ws.base )/(cellsize*cr.base );
+		ci[1] = (wwidth*ws.limit)/(cellsize*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
 		if(pzprv3.OS.mobile){
 			mwidth = wwidth*0.98;
 			pc.cw = pc.ch = ((mwidth*0.92)/cols)|0;
-			if(pc.cw < pc.cellsize){ pc.cw = pc.ch = pc.cellsize;}
+			if(pc.cw < cellsize){ pc.cw = pc.ch = cellsize;}
 		}
 		// 縮小が必要ない場合
 		else if(!ui.menu.getMenuConfig('adjsize') || cols < ci[0]){
 			mwidth = wwidth*ws.base-4;
-			pc.cw = pc.ch = (pc.cellsize*cr.base)|0;
+			pc.cw = pc.ch = (cellsize*cr.base)|0;
 		}
 		// base～limit間でサイズを自動調節する場合
 		else if(cols < ci[1]){
@@ -170,7 +171,7 @@ ui.event =
 		// 自動調整の下限値を超える場合
 		else{
 			mwidth = wwidth*ws.limit-4;
-			pc.cw = pc.ch = (pc.cellsize*cr.limit)|0;
+			pc.cw = pc.ch = (cellsize*cr.limit)|0;
 		}
 
 		// mainのサイズ変更
