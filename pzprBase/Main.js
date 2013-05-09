@@ -223,6 +223,17 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	//---------------------------------------------------------------------------
+	// owner.setCanvasSize()           盤面のサイズを設定する
+	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
+	//---------------------------------------------------------------------------
+	setCanvasSize : function(width, height){
+		this.painter.setCanvasSize(width, height);
+	},
+	setCanvasSizeByCellSize : function(cellsize){
+		this.painter.adjustCanvasSize(cellsize);
+	},
+
+	//---------------------------------------------------------------------------
 	// owner.drawCanvas()    盤面の再描画を行う
 	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
 	// owner.irowake()       色分けをする場合、色をふり直すルーチンを呼び出す
@@ -369,6 +380,9 @@ pzprv3.createCoreClass('Config',
 
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
+
+		this.add('squarecell', true);							/* セルは正方形にする */
+		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 入力方法設定 */
 		this.add('use', (!pzprv3.env.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */

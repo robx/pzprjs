@@ -643,9 +643,7 @@ ui.popupmgr.addpopup('dispsize',
 			ui.menu.setMenuConfig('cellsizeval', (csize|0));
 			ui.event.adjustcellsize();
 		}
-		
 		this.hide();
-		ui.puzzle.refreshCanvas();	// Canvasを更新する
 	}
 });
 

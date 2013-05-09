@@ -460,7 +460,10 @@ pzprv3.createPuzzleClass('OperationManager',
 			o.board.setminmax();
 			o.board.enableInfo();
 			o.board.resetInfo();
-			o.painter.resize_canvas();
+			if(!this.owner.getConfig('fixsize'))
+				{ o.setCanvasSizeByCell();}
+			else
+				{ o.setCanvasSize();}
 		}
 		o.painter.unsuspend();
 

@@ -99,10 +99,15 @@ pzprv3.createPuzzleClass('Graphic',
 		this.suspended = true;
 		this.suspendedAll = true;
 
+		// canvasの大きさを保持する
+		this.canvasWidth  = 240;
+		this.canvasHeight = 240;
+
 		// 盤面のページ内の左上座標
 		this.pageX = 0;
 		this.pageY = 0;
 
+		// canvas内での盤面の左上座標
 		this.x0 = 0;
 		this.y0 = 0;
 
@@ -180,32 +185,48 @@ pzprv3.createPuzzleClass('Graphic',
 	//                       Canvas/表示するマス目の大きさを設定する。
 	//---------------------------------------------------------------------------
 	resize_canvas : function(){
+		var cwid = this.canvasWidth, chgt = this.canvasHeight;
+		var cols = this.getCanvasCols(), rows = this.getCanvasRows();
+		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
+
+		// セルのサイズなどを取得・設定
+		if(this.owner.getConfig('squarecell')){
+			this.cw = this.ch = Math.min(cw,ch);
+		}
+		else{
+			this.cw = cw; this.ch = ch;
+		}
+
 		this.bw = this.cw/2;
 		this.bh = this.ch/2;
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
 
+		var rect = pzprv3.getRect(this.currentContext.canvas);
+
 		// 盤面のセルID:0が描画される左上の位置の設定
-		this.x0 = this.cw*this.bdmargin;
-		this.y0 = this.ch*this.bdmargin;
+		var bd = this.owner.board;
+		this.x0 = (cwid-this.cw*((bd.maxbx-bd.minbx)>>1))/2;
+		this.y0 = (chgt-this.ch*((bd.maxby-bd.minby)>>1))/2;
 		// extendxell==0でない時は位置をずらす
 		if(!!this.owner.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
 		if(this.owner.pid==='box'){ this.x0 -= this.cw/2; this.y0 -= this.ch/2;}
 		this.x0 = this.x0|0;
 		this.y0 = this.y0|0;
 
-		// Canvasのサイズ変更
-		var cwid = (this.getCanvasCols()*this.cw)|0;
-		var chgt = (this.getCanvasRows()*this.ch)|0;
-		this.currentContext.changeSize(cwid, chgt);
-		if(!!this.subContext){ this.subContext.changeSize(cwid, chgt);}
-		var rect = pzprv3.getRect(this.currentContext.canvas);
+		// 盤面のページ内座標を設定
+		this.pageX = this.x0 + (rect.left|0);
+		this.pageY = this.y0 + (rect.top|0);
 
+		// canvas要素のサイズを変更する
 		var gs = [this.currentContext, this.subContext];
 		for(var i=0;i<2;i++){
 			var g = gs[i];
 			if(!g){ continue;}
+			// Canvasのサイズ変更
+			g.changeSize(cwid|0, chgt|0);
+			
 			// CanvasのOffset変更 (小数点以下の端数の調整込み)
 			if(g.use.canvas)
 				{ g.translate(this.x0, this.y0);}
@@ -213,13 +234,37 @@ pzprv3.createPuzzleClass('Graphic',
 				{ g.translate(this.x0-(rect.left%1), this.y0-(rect.top%1));}
 		}
 
-		// 盤面のページ内座標を設定(fillTextEmurate用)
-		this.pageX = this.x0 + (rect.left|0);
-		this.pageY = this.y0 + (rect.top|0);
-
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
 	},
+
+	//---------------------------------------------------------------------------
+	// pc.setCanvasSize()    キャンバスのサイズを設定する
+	//                       (指定なしの場合は、前のキャンバスのサイズを用いる)
+	// pc.adjustCanvasSize() セルのサイズを指定してキャンバスのサイズを変える
+	//                       (指定なしの場合は、前のセルのサイズを用いる)
+	// pc.forceRedraw()      盤面の設定をして再描画する
+	//---------------------------------------------------------------------------
+	setCanvasSize : function(cwid, chgt){
+		this.canvasWidth  = cwid || this.canvasWidth;
+		this.canvasHeight = chgt || this.canvasHeight;
+		this.forceRedraw();
+	},
+	adjustCanvasSize : function(cellsize){
+		this.cw = cellsize || this.cw;
+		this.ch = cellsize || this.ch;
+		this.canvasWidth  = this.cw*this.getCanvasCols();
+		this.canvasHeight = this.ch*this.getCanvasRows();
+		this.forceRedraw();
+	},
+
+	forceRedraw : function(){
+		this.suspendAll();
+		this.currentContext.clear();
+		this.resize_canvas();
+		this.unsuspend();
+	},
+
 	//---------------------------------------------------------------------------
 	// pc.getCanvasCols()  Canvasの横幅としてセル何個分が必要か返す
 	// pc.getCanvasRows()  Canvasの縦幅としてセル何個分が必要か返す
@@ -239,7 +284,6 @@ pzprv3.createPuzzleClass('Graphic',
 	// pc.suspend()     描画処理を一時停止する
 	// pc.suspendAll()  全盤面の描画処理を一時停止する
 	// pc.unsuspend()   描画処理を再開する
-	// pc.forceRedraw() 盤面の設定をして再描画する
 	//---------------------------------------------------------------------------
 	suspend : function(){
 		this.suspended = true;
@@ -256,13 +300,6 @@ pzprv3.createPuzzleClass('Graphic',
 		}
 		this.suspended = false;
 		this.prepaint();
-	},
-
-	forceRedraw : function(){
-		this.suspendAll();
-		this.currentContext.clear();
-		this.resize_canvas();
-		this.unsuspend();
 	},
 
 	//---------------------------------------------------------------------------

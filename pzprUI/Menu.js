@@ -199,7 +199,7 @@ Menu.prototype =
 		this.displayManage();
 		this.displayDesign();
 
-		ui.puzzle.refreshCanvas();	// canvasの左上座標等を更新して再描画
+		ui.puzzle.setCanvasSize();	// canvasの左上座標等を更新して再描画
 	},
 	setdisplay : function(idname){
 		var pp = this.items;
@@ -1054,11 +1054,11 @@ Menu.prototype =
 		}
 		else if(idname==='cellsize'){
 			ui.event.adjustcellsize();
-			ui.puzzle.refreshCanvas();	/* pageX/Yの位置がずれる */
+			ui.puzzle.refreshCanvas();
 		}
 		else if(idname==='textsize'){
 			this.settextsize(newval);
-			ui.puzzle.refreshCanvas();	/* pageX/Yの位置がずれる */
+			ui.puzzle.setCanvasSize();	/* pageX/Yの位置がずれる */
 		}
 	},
 	getMenuConfig : function(idname){
@@ -1144,7 +1144,7 @@ Menu.prototype =
 		case 'duplicate' : this.duplicate(); break;
 		
 		case 'manarea'   : this.displaymanage = !this.displaymanage; this.displayAll(); break;
-		case 'repaint'   : ui.puzzle.refreshCanvas(); break;
+		case 'repaint'   : ui.puzzle.drawCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
 		case 'jumpv3'    : window.open('./', '', ''); break;
@@ -1232,7 +1232,7 @@ Menu.prototype =
 			pc2.ch = cellsize*(pc.ch/pc.cw);
 
 			// canvas要素の設定を適用して、再描画
-			pc2.resize_canvas();
+			pc2.adjustCanvasSize();
 			pc2.unsuspend();
 
 			// canvasの描画内容をDataURLとして取得する

@@ -690,7 +690,12 @@ pzprv3.createPuzzleClass('Board',
 
 		this.setminmax();
 		this.resetInfo();
-		this.owner.painter.resize_canvas();	// Canvasを更新する
+
+		// Canvasを更新する
+		if(!this.owner.getConfig('fixsize'))
+			{ this.owner.setCanvasSizeByCell();}
+		else
+			{ this.owner.setCanvasSize();}
 		this.owner.painter.unsuspend();
 	},
 
