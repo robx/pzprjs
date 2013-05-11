@@ -142,6 +142,8 @@ pzprv3.createPuzzleClass('Graphic',
 		this.isdrawBD = false;
 
 		this.setColors();
+	},
+	init : function(){
 		this.clear_numobj_parent();
 
 		this.onCanvasReady_fun();

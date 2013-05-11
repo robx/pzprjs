@@ -15,13 +15,11 @@ pzprv3.addConsts({
 //---------------------------------------------------------------------------
 pzprv3.createPuzzleClass('FileIO',
 {
-	initialize : function(){
-		this.filever = 0;
-		this.lineseek = 0;
-		this.dataarray = [];
-		this.datastr = "";
-		this.currentType = k.FILE_PZPR;
-	},
+	filever   : 0,
+	lineseek  : 0,
+	dataarray : null,
+	datastr   : "",
+	currentType : k.FILE_PZPR,
 
 	//---------------------------------------------------------------------------
 	// fio.filedecode()  ファイルデータ(文字列)からのデコード実行関数

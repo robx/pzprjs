@@ -128,8 +128,8 @@ pzprv3.createCoreClass('Puzzle',
 
 		this.flags = this.newInstance('Flags');		// パズルの初期設定値を保持するオブジェクト
 
-		// 盤面保持用データ生成処理
-		this.board.initialize2();
+		this.board.init();
+		this.painter.init();
 	},
 
 	//---------------------------------------------------------------------------

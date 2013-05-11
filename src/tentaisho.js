@@ -204,8 +204,8 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 
 		this.star = []; /* インスタンス化 */
 	},

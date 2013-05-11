@@ -8,10 +8,8 @@ var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 pzprv3.createPuzzleClass('BoardPiece',
 {
-	initialize : function(){
-		this.bx;	// X座標(border座標系)を保持する
-		this.by;	// Y座標(border座標系)を保持する
-	},
+	bx : -1,	// X座標(border座標系)を保持する
+	by : -1,	// Y座標(border座標系)を保持する
 
 	group : 'none',
 	isnull : true,
@@ -429,8 +427,6 @@ pzprv3.createPuzzleClass('Cross:BoardPiece',
 pzprv3.createPuzzleClass('Border:BoardPiece',
 {
 	initialize : function(){
-		pzprv3.core.BoardPiece.prototype.initialize.call(this);
-
 		this.sidecell  = [null,null];	// 隣接セルのオブジェクト
 		this.sidecross = [null,null];	// 隣接交点のオブジェクト
 		this.lineedge  = [];			// LineManager用
@@ -602,7 +598,8 @@ pzprv3.createPuzzleClass('EXCell:BoardPiece',
 pzprv3.createPuzzleClass('Address',
 {
 	initialize : function(bx,by){
-		this.init(bx,by);
+		this.bx = bx;
+		this.by = by;
 	},
 
 	reset  : function()   { this.bx = null;  this.by = null;},

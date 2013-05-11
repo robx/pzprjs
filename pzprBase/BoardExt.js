@@ -15,7 +15,8 @@ pzprv3.createPuzzleClass('LineManager',
 		this.max = 0;
 
 		this.enabled = (this.isCenterLine || this.borderAsLine);
-
+	},
+	init : function(){
 		if(this.enabled){
 			this.owner.board.validinfo.line.push(this);
 			this.owner.board.validinfo.all.push(this);
@@ -417,7 +418,8 @@ pzprv3.createPuzzleClass('AreaCellManager',
 		this.invalid;	// 使わなくなったIDのリスト
 		this.id;		// 各々のセルのid
 		this.cellinfo;	// セルの情報を保持しておく
-
+	},
+	init : function(){
 		if(this.enabled){
 			for(var i=0;i<this.relation.length;i++){
 				this.owner.board.validinfo[this.relation[i]].push(this);

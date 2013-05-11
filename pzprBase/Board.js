@@ -67,29 +67,6 @@ pzprv3.createPuzzleClass('Board',
 		// エラー表示中かどうか
 		this.haserror = false;
 
-		// 空オブジェクト
-		this.nullobj = this.owner.newInstance('BoardPiece');
-		this.emptycell   = this.owner.newInstance('Cell');
-		this.emptycross  = this.owner.newInstance('Cross');
-		this.emptyborder = this.owner.newInstance('Border');
-		this.emptyexcell = this.owner.newInstance('EXCell');
-
-		// 補助オブジェクト
-		this.disrec = 0;
-		this.validinfo = {cell:[],border:[],line:[],all:[]};
-	},
-
-	qcols : 10,		/* 盤面の横幅(デフォルト) */
-	qrows : 10,		/* 盤面の縦幅(デフォルト) */
-
-	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
-
-	//---------------------------------------------------------------------------
-	// bd.initialize2()  オブジェクト生成後の処理
-	//---------------------------------------------------------------------------
-	initialize2 : function(){
 		this.cell   = this.owner.newInstance('CellList');
 		this.cross  = this.owner.newInstance('CrossList');
 		this.border = this.owner.newInstance('BorderList');
@@ -100,17 +77,50 @@ pzprv3.createPuzzleClass('Board',
 		this.bdmax     = 0;	// 境界線の数
 		this.excellmax = 0;	// 拡張セルの数
 
-		this.bdinside = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
+		this.bdinside  = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
+
+		// 空オブジェクト
+		this.nullobj = this.owner.newInstance('BoardPiece');
+		this.emptycell   = this.owner.newInstance('Cell');
+		this.emptycross  = this.owner.newInstance('Cross');
+		this.emptyborder = this.owner.newInstance('Border');
+		this.emptyexcell = this.owner.newInstance('EXCell');
 
 		// 補助オブジェクト
-		this.lines = this.owner.newInstance('LineManager');		// 線情報管理オブジェクト
+		this.disrec = 0;
+		this.validinfo = {cell:[],border:[],line:[],all:[]};
+		this.infolist = [];
 
-		this.rooms = this.owner.newInstance('AreaRoomManager');		// 部屋情報を保持する
-		this.linfo = this.owner.newInstance('AreaLineManager');		// 線つながり情報を保持する
+		this.lines = this.addInfoList('LineManager');		// 線情報管理オブジェクト
 
-		this.bcell = this.owner.newInstance('AreaBlackManager');	// 黒マス情報を保持する
-		this.wcell = this.owner.newInstance('AreaWhiteManager');	// 白マス情報を保持する
-		this.ncell = this.owner.newInstance('AreaNumberManager');	// 数字情報を保持する
+		this.rooms = this.addInfoList('AreaRoomManager');		// 部屋情報を保持する
+		this.linfo = this.addInfoList('AreaLineManager');		// 線つながり情報を保持する
+
+		this.bcell = this.addInfoList('AreaBlackManager');	// 黒マス情報を保持する
+		this.wcell = this.addInfoList('AreaWhiteManager');	// 白マス情報を保持する
+		this.ncell = this.addInfoList('AreaNumberManager');	// 数字情報を保持する
+	},
+	addInfoList : function(classname){
+		var instance = this.owner.newInstance(classname);
+		this.infolist.push(instance);
+		return instance;
+	},
+	infolist : [],
+
+	qcols : 10,		/* 盤面の横幅(デフォルト) */
+	qrows : 10,		/* 盤面の縦幅(デフォルト) */
+
+	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+
+	//---------------------------------------------------------------------------
+	// bd.init()  オブジェクト生成後の処理
+	//---------------------------------------------------------------------------
+	init : function(){
+		for(var i=0;i<this.infolist.length;i++){
+			this.infolist[i].init();
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -693,7 +703,7 @@ pzprv3.createPuzzleClass('Board',
 
 		// Canvasを更新する
 		if(!this.owner.getConfig('fixsize'))
-			{ this.owner.setCanvasSizeByCell();}
+			{ this.owner.setCanvasSizeByCellSize();}
 		else
 			{ this.owner.setCanvasSize();}
 		this.owner.painter.unsuspend();

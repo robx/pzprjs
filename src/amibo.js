@@ -106,9 +106,9 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.barinfo = this.owner.newInstance('AreaBarManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.barinfo = this.addInfoList('AreaBarManager');
 	},
 
 	irowakeRemake : function(){

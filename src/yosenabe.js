@@ -133,9 +133,9 @@ Board:{
 
 	isborder : 1,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.iceinfo = this.owner.newInstance('AreaCrockManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.iceinfo = this.addInfoList('AreaCrockManager');
 	}
 },
 

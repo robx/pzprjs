@@ -127,10 +127,11 @@ Board:{
 	arrowin  : null,
 	arrowout : null,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.iceinfo = this.owner.newInstance('AreaIcebarnManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.iceinfo = this.addInfoList('AreaIcebarnManager');
 	},
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 

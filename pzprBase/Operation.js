@@ -457,7 +457,7 @@ pzprv3.createPuzzleClass('OperationManager',
 			o.board.enableInfo();
 			o.board.resetInfo();
 			if(!this.owner.getConfig('fixsize'))
-				{ o.setCanvasSizeByCell();}
+				{ o.setCanvasSizeByCellSize();}
 			else
 				{ o.setCanvasSize();}
 		}

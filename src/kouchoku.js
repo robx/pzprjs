@@ -142,7 +142,6 @@ Cross:{
 	maxnum : 26,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
 		this.segment = this.owner.newInstance('SegmentList');
 	}
 },
@@ -155,10 +154,11 @@ Board:{
 
 	segs : null,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.segs = this.owner.newInstance('SegmentManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.segs = this.addInfoList('SegmentManager');
 	},
+
 	initBoardSize : function(col,row){
 		this.segs.seg    = {};	// segmentの配列
 		this.segs.segmax = 0;
@@ -856,7 +856,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		this.typeA = 'A';
 		this.typeB = 'B';
-
+	},
+	init : function(){
 		this.owner.board.validinfo.all.push(this);
 	},
 

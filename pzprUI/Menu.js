@@ -734,7 +734,6 @@ Menu.prototype =
 
 	//---------------------------------------------------------------------------
 	// menu.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
-	// menu.submenuexec(e)  通常サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
 		var el = (e.target||e.srcElement);
@@ -742,7 +741,12 @@ Menu.prototype =
 			this.floatmenuclose(0);
 
 			var idname = el.id.substr(3), val, pp = this.items, menutype = pp.type(idname);
-			if(menutype===pp.SMENU){ this.submenuexec(e, idname);}
+			if(menutype===pp.SMENU){
+				if(!this.menuexec(idname)){
+					var pos = pzprv3.getPagePos(e);
+					ui.popupmgr.open(idname, pos.px-8, pos.py-8);
+				}
+			}
 			else if(menutype===pp.CHILD || menutype===pp.CHECK){
 				if(menutype===pp.CHILD){
 					val    = pp.item[idname].val;
@@ -753,13 +757,6 @@ Menu.prototype =
 				}
 				this.setConfigVal(idname, val);
 			}
-		}
-	},
-	submenuexec : function(e, idname){
-		var result = (this.menuexec(idname) || ui.puzzle.config.onchange_event(idname,null));
-		if(!result){
-			var pos = pzprv3.getPagePos(e);
-			ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 		}
 	},
 

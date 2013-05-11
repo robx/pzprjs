@@ -60,10 +60,11 @@ Board:{
 	iscross  : 2,
 	isborder : 2,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.tiles = this.owner.newInstance('AreaTileManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.tiles = this.addInfoList('AreaTileManager');
 	},
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 

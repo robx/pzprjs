@@ -40,10 +40,10 @@ Board:{
 	iscross  : 1,
 	isborder : 1,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.tiles = this.owner.newInstance('AreaTileManager');
-		this.blocks = this.owner.newInstance('AreaBlockManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.tiles = this.addInfoList('AreaTileManager');
+		this.blocks = this.addInfoList('AreaBlockManager');
 	},
 
 	getBlockInfo : function(){

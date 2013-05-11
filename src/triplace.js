@@ -100,9 +100,9 @@ Board:{
 	isborder : 1,
 	isexcell : 1,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
-		this.tiles = this.owner.newInstance('AreaTriTileManager');
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
+		this.tiles = this.addInfoList('AreaTriTileManager');
 	},
 
 	getTileInfo : function(){

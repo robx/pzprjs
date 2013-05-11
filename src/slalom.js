@@ -192,10 +192,11 @@ Board:{
 
 	hinfo : null,
 
-	initialize2 : function(){
-		this.SuperFunc.initialize2.call(this);
+	initialize : function(){
+		this.SuperFunc.initialize.call(this);
 		this.hinfo = this.owner.newInstance('HurdleManager');
 	},
+
 	initBoardSize : function(col,row){
 		this.SuperFunc.initBoardSize.call(this,col,row);
 

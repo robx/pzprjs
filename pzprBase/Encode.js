@@ -10,12 +10,10 @@ var k = pzprv3.consts;
 // Encodeクラス
 pzprv3.createPuzzleClass('Encode',
 {
-	initialize : function(){
-		this.pflag = "";
-		this.outpflag  = '';
-		this.outsize   = '';
-		this.outbstr   = '';
-	},
+	pflag    : "",
+	outpflag : '',
+	outsize  : '',
+	outbstr  : '',
 
 	//---------------------------------------------------------------------------
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
