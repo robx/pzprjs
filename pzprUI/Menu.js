@@ -24,8 +24,6 @@ var Menu = function(){
 
 	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
 
-	this.ispencilbox = false;
-
 	this.displaymanage = true;		// メニューの下の管理領域を表示しているか
 
 	this.reader;	// FileReaderオブジェクト
@@ -54,9 +52,6 @@ Menu.prototype =
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
 		
 		this.menureset();
-		
-		var pinfo = pzprurl.info[pid];
-		this.ispencilbox = (pinfo.exists.kanpen && (pid!=="nanro" && pid!=="ayeheya" && pid!=="kurochute"));
 
 		this.items.reset();
 
@@ -374,7 +369,7 @@ Menu.prototype =
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
-		if(this.ispencilbox){
+		if(pzprurl.info[pid].exists.pencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 

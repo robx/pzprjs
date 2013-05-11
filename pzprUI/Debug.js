@@ -112,7 +112,12 @@ ui.debug =
 		this.setTA(ui.puzzle.getFileData(k.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		this.setTA(ui.puzzle.getFileData(k.FILE_PBOX));
+		if(pzprurl.info[ui.puzzle.pid].exists.kanpen){
+			this.setTA(ui.puzzle.getFileData(k.FILE_PBOX));
+		}
+		else{
+			this.setTA("");
+		}
 	},
 
 	fileopen : function(){

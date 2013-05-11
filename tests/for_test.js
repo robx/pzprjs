@@ -83,7 +83,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzprurl.info[self.pid].exists.kanpen){
+		if(pzprurl.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			ui.openURL(o.getURL(pzprurl.KANPEN), function(){
@@ -131,7 +131,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_file_pbox(self);},0);
 	},
 	check_file_pbox : function(self){
-		if(ui.menu.ispencilbox){
+		if(pzprurl.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
 			var outputstr = o.getFileData(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);

@@ -66,8 +66,11 @@ PZLDATA.prototype = {
 		this.en     = datalist[3];	/* 英語パズル名 */
 		this.exists = {
 			pzprapp : !!datalist[0],
-			kanpen  : !!datalist[1]
+			kanpen  : !!datalist[1],
+			pencilbox : !!datalist[1]
 		};
+		this.exists.kanpen = this.exists.kanpen &&
+							 (pzprid!=="nanro" && pzprid!=="ayeheya" && pzprid!=="kurochute");
 		/* pzprurl : ぱずぷれID(URL出力用) */
 		/* kanpen  : カンペンID            */
 		/* kanpen2 : カンペンID(入力のみ)  */
