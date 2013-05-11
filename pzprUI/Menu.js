@@ -22,10 +22,6 @@ var Menu = function(){
 	this.dispfloat  = [];			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	this.floatpanel = [];			// (2段目含む)フロートメニューオブジェクトのリスト
 
-	this.btnstack   = [];			// ボタンの情報(idnameと文字列のリスト)
-
-	this.displaymanage = true;		// メニューの下の管理領域を表示しているか
-
 	this.reader;	// FileReaderオブジェクト
 
 	this.enableSaveImage = false; // 画像保存が有効か
@@ -68,7 +64,7 @@ Menu.prototype =
 		ui.keypopup.create();
 
 		this.menuarea();
-		this.managearea();
+		if(!!ui.managearea){ ui.managearea.init();}
 		if(!!ui.buttonarea){ ui.buttonarea.init();}
 
 		this.displayAll();
@@ -85,17 +81,13 @@ Menu.prototype =
 	menureset : function(){
 		this.dispfloat  = [];
 		this.floatpanel = [];
-		this.btnstack   = [];
-		this.managestack = [];
 
 		this.floatmenuclose(0);
 
 		getEL('float_parent').innerHTML = '';
-
 		getEL('menupanel') .innerHTML = '';
-		getEL('usepanel')  .innerHTML = '';
-		getEL('checkpanel').innerHTML = '';
 
+		if(!!ui.managearea){ ui.managearea.reset();}
 		if(!!ui.buttonarea){ ui.buttonarea.reset();}
 
 		ui.keypopup.clear();
@@ -170,28 +162,15 @@ Menu.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.addButtons() ボタンの情報を変数に登録する
-	//---------------------------------------------------------------------------
-	addButtons : function(el, func, strJP, strEN){
-		if(!!func) el.onclick = func;
-		pzprv3.unselectable(el);
-		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
-	},
-
-	//---------------------------------------------------------------------------
 	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	displayAll : function(){
 		for(var i in this.items.item){ this.setdisplay(i);}
-		for(var i=0,len=this.btnstack.length;i<len;i++){
-			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[this.getMenuConfig('language')];
-		}
 		
-		this.displayManage();
 		this.displayDesign();
-
+		
+		ui.managearea.display();
 		ui.buttonarea.display();
 		ui.popupmgr.translate();
 
@@ -217,12 +196,8 @@ Menu.prototype =
 			break;
 
 		case pp.SELECT:
-			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			/* 管理領域の表記の設定 */
-			var label = getEL('cl_'+idname);
-			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			
 			/* 子要素の設定も行う */
 			for(var i=0,len=pp.item[idname].children.length;i<len;i++){
@@ -233,81 +208,32 @@ Menu.prototype =
 		case pp.CHILD:
 			var val = this.getConfigVal(pp.item[idname].parent);
 			var issel = (pp.item[idname].val == val);	/* 選択されているかどうか */
-			
-			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){
 				smenu.innerHTML = (issel?"+":"&nbsp;")+pp.getMenuStr(idname);
-			}
-			/* 管理領域の表記の設定 */
-			var manage = getEL('up_'+idname);
-			if(!!manage){
-				manage.innerHTML = pp.getMenuStr(idname);
-				manage.className = (issel?"childsel":"child");
 			}
 			break;
 
 		case pp.CHECK:
 			var flag = this.getConfigVal(idname);
-			
-			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}
-			/* 管理領域(チェックボックス)の表記の設定 */
-			var check = getEL('ck_'+idname);
-			if(!!check){ check.checked = flag;}
-			/* 管理領域(ラベル)の表記の設定 */
-			var label = getEL('cl_'+idname);
-			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			break;
 		}
 
 		if(idname==='manarea'){
-			if(!this.displaymanage){ str = this.selectStr("管理領域を表示","Show management area");}
-			else                   { str = this.selectStr("管理領域を隠す","Hide management area");}
+			if(!ui.managearea.isdisp){ str = this.selectStr("管理領域を表示","Show management area");}
+			else                     { str = this.selectStr("管理領域を隠す","Hide management area");}
 			getEL('ms_manarea').innerHTML = str;
 		}
 		
-		if(idname==='keypopup'){
-			var kp = ui.keypopup;
-			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
-				getEL('ck_keypopup').disabled    = (f?"":"true");
-				getEL('cl_keypopup').style.color = (f?"black":"silver");
-			}
-		}
-		
-		if(idname==='bgcolor'){
-			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.getConfig('mode');
-				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
-				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
-			}
-		}
-		
-		if(idname==='disptype_pipelinkr'){
-			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
-		}
+		ui.managearea.setdisplay(idname);
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.displayManage()  管理領域の表示するかしないか設定する
 	// menu.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
 	// menu.bgimage()        背景画像を返す
 	//---------------------------------------------------------------------------
-	displayManage : function(e){
-		var mandisp  = (this.displaymanage ? 'block' : 'none');
-
-		getEL('usepanel').style.display = mandisp;
-		getEL('checkpanel').style.display = mandisp;
-		if(!pzprv3.EDITOR){ getEL('separator2').style.display = mandisp;}
-
-		if(ui.puzzle.flags.irowake){
-			/* ボタンエリアのボタンは、管理領域が消えている時に表示 */
-			getEL('btncolor2').style.display = (this.displaymanage ? 'none' : 'inline');
-		}
-		getEL('menuboard').style.paddingBottom = (this.displaymanage ? '8pt' : '0pt');
-	},
 	displayDesign : function(){
 		var pid = ui.puzzle.pid;
 		var pinfo = pzprurl.info[pid];
@@ -323,7 +249,6 @@ Menu.prototype =
 		document.body.style.backgroundImage = "url("+imageurl+")";
 		if(pzprv3.browser.IE6){
 			getEL('title2').style.marginTop = "24px";
-			getEL('separator2').style.margin = '0pt';
 		}
 	},
 	bgimage : function(pid){
@@ -825,104 +750,6 @@ Menu.prototype =
 		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
 	},
 
-//--------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------
-	// menu.managearea()   管理領域の初期化を行う(内容はサブメニューのものを参照)
-	// menu.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
-	// menu.selectclick()  選択型サブメニュー項目がクリックされたときの動作
-	//---------------------------------------------------------------------------
-	managearea : function(){
-		// ElementTemplate : 管理領域
-		var el_div = pzprv3.createEL('div');
-
-		var el_span = pzprv3.createEL('span');
-		pzprv3.unselectable(el_span);
-
-		var el_checkbox = pzprv3.createEL('input');
-		el_checkbox.type = 'checkbox';
-		el_checkbox.check = '';
-
-		var el_selchild = pzprv3.createEL('div');
-		el_selchild.className = 'flag';
-		pzprv3.unselectable(el_selchild);
-
-		// usearea & checkarea
-		var pp = this.items;
-		for(var idname in pp.item){
-			if(!pp.getLabel(idname)){ continue;}
-			var _div = el_div.cloneNode(false);
-			_div.id = 'div_'+idname;
-			//_div.innerHTML = "";
-
-			switch(pp.type(idname)){
-			case pp.SELECT:
-				var span = el_span.cloneNode(false);
-				span.id = 'cl_'+idname;
-				_div.appendChild(span);
-				_div.appendChild(document.createTextNode(" | "));
-				for(var i=0;i<pp.item[idname].children.length;i++){
-					var num = pp.item[idname].children[i];
-					var sel = el_selchild.cloneNode(false);
-					sel.id = ['up',idname,num].join("_");
-					ui.event.addEvent(sel, "click", this, this.selectclick);
-					_div.appendChild(sel);
-					_div.appendChild(document.createTextNode(' '));
-				}
-				_div.appendChild(document.createElement('br'));
-
-				getEL('usepanel').appendChild(_div);
-				break;
-
-			case pp.CHECK:
-				var box = el_checkbox.cloneNode(false);
-				box.id = 'ck_'+idname;
-				ui.event.addEvent(box, "click", this, this.checkclick);
-				_div.appendChild(box);
-				_div.appendChild(document.createTextNode(" "));
-				var span = el_span.cloneNode(false);
-				span.id = 'cl_'+idname;
-				_div.appendChild(span);
-				_div.appendChild(document.createElement('br'));
-
-				getEL('checkpanel').appendChild(_div);
-				break;
-			}
-		}
-
-		// 色分けチェックボックス用の処理
-		if(ui.puzzle.flags.irowake){
-			// 横にくっつけたいボタンを追加
-			var el = createButton();
-			el.id = "ck_btn_irowake";
-			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
-			var node = getEL('cl_irowake');
-			node.parentNode.insertBefore(el, node.nextSibling);
-
-			// 色分けのやつを一番下に持ってくる
-			var el = getEL('checkpanel').removeChild(getEL('div_irowake'));
-			getEL('checkpanel').appendChild(el);
-		}
-
-		// 管理領域の表示/非表示設定
-		if(pzprv3.EDITOR){
-			getEL('timerpanel').style.display = 'none';
-			getEL('separator2').style.display = 'none';
-		}
-	},
-
-	checkclick : function(e){
-		var el = (e.target||e.srcElement);
-		var idname = el.id.substr(3);
-		this.setConfigVal(idname, !!el.checked);
-	},
-	selectclick : function(e){
-		var list = (e.target||e.srcElement).id.split('_');
-		list.shift();
-		var child = list.pop(), idname = list.join("_");
-		this.setConfigVal(idname, child);
-	},
-
 	//---------------------------------------------------------------------------
 	// menu.enb_btn()     html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
@@ -1104,7 +931,7 @@ Menu.prototype =
 		case 'subclear'  : this.ASconfirm(); break;
 		case 'duplicate' : this.duplicate(); break;
 		
-		case 'manarea'   : this.displaymanage = !this.displaymanage; this.displayAll(); break;
+		case 'manarea'   : ui.managearea.isdisp = !ui.managearea.isdisp; this.displayAll(); break;
 		case 'repaint'   : ui.puzzle.drawCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
@@ -1374,11 +1201,6 @@ MenuList.prototype =
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
-function createButton(){
-	button = pzprv3.createEL('input');
-	button.type = 'button';
-	return button;
-}
 
 function toBGimage(pid){
 	var header;
