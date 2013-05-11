@@ -56,8 +56,7 @@ Menu.prototype =
 		ui.keypopup.create();
 
 		if(!!ui.menuarea){ ui.menuarea.init();}
-		if(!!ui.managearea){ ui.managearea.init();}
-		if(!!ui.buttonarea){ ui.buttonarea.init();}
+		if(!!ui.toolarea){ ui.toolarea.init();}
 
 		this.displayAll();
 
@@ -72,8 +71,7 @@ Menu.prototype =
 
 	menureset : function(){
 		if(!!ui.menuarea){ ui.menuarea.reset();}
-		if(!!ui.managearea){ ui.managearea.reset();}
-		if(!!ui.buttonarea){ ui.buttonarea.reset();}
+		if(!!ui.toolarea){ ui.toolarea.reset();}
 
 		ui.keypopup.clear();
 		if(!!ui.popupmgr){ ui.popupmgr.reset();}
@@ -162,8 +160,7 @@ Menu.prototype =
 	//---------------------------------------------------------------------------
 	displayAll : function(){
 		ui.menuarea.display();
-		ui.managearea.display();
-		ui.buttonarea.display();
+		ui.toolarea.display();
 		ui.popupmgr.translate();
 
 		this.displayDesign();
@@ -172,7 +169,7 @@ Menu.prototype =
 	},
 	setdisplay : function(idname){
 		ui.menuarea.setdisplay(idname);
-		ui.managearea.setdisplay(idname);
+		ui.toolarea.setdisplay(idname);
 	},
 
 	displayDesign : function(){
@@ -197,11 +194,11 @@ Menu.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.enb_btn()     html上の[戻][進]ボタンを押すことが可能か設定する
+	// menu.enb_undo()     html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
-	enb_btn : function(){
+	enb_undo : function(){
 		ui.menuarea.enb_undo();
-		ui.buttonarea.enb_undo();
+		ui.toolarea.enb_undo();
 	},
 
 	//---------------------------------------------------------------------------

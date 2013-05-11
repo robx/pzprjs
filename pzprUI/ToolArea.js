@@ -1,4 +1,4 @@
-// ManageArea.js v3.4.0
+// ToolArea.js v3.4.0
 (function(){
 
 /* uiオブジェクト生成待ち */
@@ -7,18 +7,19 @@ if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 var k = pzprv3.consts;
 
 // メニュー描画/取得/html表示系
-// ManageAreaオブジェクト
+// toolareaオブジェクト
 /* extern */
-ui.managearea = {
+ui.toolarea = {
 
 	isdisp : true,		// 表示しているか
 
 	//---------------------------------------------------------------------------
-	// managearea.init()   管理領域の初期設定を行う
-	// managearea.reset()  管理領域用の設定を消去する
+	// toolarea.init()   管理領域の初期設定を行う
+	// toolarea.reset()  管理領域用の設定を消去する
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.createArea();
+		this.createButtonArea();
 	},
 
 	reset : function(){
@@ -26,19 +27,21 @@ ui.managearea = {
 
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
+
+		if(!!this.area){ this.area.innerHTML = '';}
 	},
 
 	//---------------------------------------------------------------------------
-	// managearea.addButtons() ボタンの情報を変数に登録する
+	// toolarea.addButtons() ボタンの情報を変数に登録する
 	//---------------------------------------------------------------------------
-	addButtons : function(el, func, strJP, strEN){
-		if(!!func) el.onclick = func;
+	addButtons : function(el, strJP, strEN){
+		ui.event.addEvent(el, "click", this, this.buttonclick);
 		pzprv3.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 
 	//---------------------------------------------------------------------------
-	// managearea.createArea()  管理領域を初期化する
+	// toolarea.createArea()  管理領域を初期化する
 	//---------------------------------------------------------------------------
 	createArea : function(){
 		// ElementTemplate : 管理領域
@@ -102,7 +105,7 @@ ui.managearea = {
 			// 横にくっつけたいボタンを追加
 			var el = createButton();
 			el.id = "ck_btn_irowake";
-			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
+			this.addButtons(el, "色分けしなおす", "Change the color of Line");
 			var node = getEL('cl_irowake');
 			node.parentNode.insertBefore(el, node.nextSibling);
 
@@ -119,17 +122,74 @@ ui.managearea = {
 	},
 
 	//---------------------------------------------------------------------------
-	// managearea.display()    全てのラベルに対して文字列を設定する
-	// managearea.setdisplay() 管理パネルに表示する文字列を個別に設定する
+	// toolarea.createButtonArea()   ボタン用の初期設定を行う
+	//---------------------------------------------------------------------------
+	createButtonArea : function(){
+		this.area = pzprv3.getEL('btnarea');
+
+		// (Canvas下) ボタンの初期設定
+		var btncheck = createButton(); btncheck.id = "btncheck";
+		var btnundo  = createButton(); btnundo.id  = "btnundo";
+		var btnredo  = createButton(); btnredo.id  = "btnredo";
+		var btnclear = createButton(); btnclear.id = "btnclear";
+
+		this.area.appendChild(btncheck);
+		this.area.appendChild(document.createTextNode(' '));
+		this.area.appendChild(btnundo);
+		this.area.appendChild(btnredo);
+		this.area.appendChild(document.createTextNode(' '));
+		this.area.appendChild(btnclear);
+
+		this.addButtons(btncheck, "チェック", "Check");
+		this.addButtons(btnundo,  "戻", "<-");
+		this.addButtons(btnredo,  "進", "->");
+		this.addButtons(btnclear, "回答消去", "Erase Answer");
+
+		// 初期値ではどっちも押せない
+		getEL('btnundo').disabled = true;
+		getEL('btnredo').disabled = true;
+
+		if(!ui.puzzle.flags.disable_subclear){
+			var el = createButton(); el.id = "btnclear2";
+			this.area.appendChild(el);
+			this.addButtons(el, "補助消去", "Erase Auxiliary Marks");
+		}
+
+		if(!!ui.puzzle.flags.irowake){
+			var el = createButton(); el.id = "btncolor2";
+			this.area.appendChild(el);
+			this.addButtons(el, "色分けしなおす", "Change the color of Line");
+			el.style.display = 'none';
+		}
+
+		if(ui.puzzle.pid==='pipelinkr'){
+			var el = createButton(); el.id = 'btncircle';
+			pzprv3.unselectable(el);
+			ui.event.addEvent(el, "click", this, this.toggledisp);
+			this.area.appendChild(el);
+		}
+
+		if(ui.puzzle.pid==='tentaisho'){
+			var el = createButton(); el.id = 'btncolor';
+			this.area.appendChild(el);
+			this.addButtons(el, "色をつける","Color up");
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// toolarea.display()    全てのラベルに対して文字列を設定する
+	// toolarea.setdisplay() 管理パネルに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	display : function(){
 		for(var i in ui.menuarea.items.item){
 			this.setdisplay(i);
 		}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
-			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[ui.menu.getMenuConfig('language')];
+			var obj = this.btnstack[i];
+			if(!obj.el){ continue;}
+			obj.el.value = obj.str[ui.menu.getMenuConfig('language')];
 		}
+		this.enb_undo();
 		
 		var mandisp  = (this.isdisp ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
@@ -197,11 +257,30 @@ ui.managearea = {
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}
 		}
+		
+		if(ui.puzzle.pid==='pipelinkr'){
+			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
+		}
 	},
 
 	//---------------------------------------------------------------------------
-	// managearea.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
-	// managearea.selectclick()  選択型サブメニュー項目がクリックされたときの動作
+	// toolarea.toggledisp()   アイスと○などの表示切り替え時の処理を行う
+	// toolarea.enb_undo()     html上の[戻][進]ボタンを押すことが可能か設定する
+	//---------------------------------------------------------------------------
+	toggledisp : function(){
+		var current = ui.puzzle.getConfig('disptype_pipelinkr');
+		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
+	},
+	enb_undo : function(){
+		var opemgr = ui.puzzle.opemgr;
+		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
+		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+	},
+
+	//---------------------------------------------------------------------------
+	// toolarea.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
+	// toolarea.selectclick()  選択型サブメニュー項目がクリックされたときの動作
+	// toolarea.buttonclick()  ボタンがクリックされたときの動作
 	//---------------------------------------------------------------------------
 	checkclick : function(e){
 		var el = (e.target||e.srcElement);
@@ -213,6 +292,18 @@ ui.managearea = {
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
 		ui.menu.setConfigVal(idname, child);
+	},
+	buttonclick : function(e){
+		var id = (e.target||e.srcElement).id;
+		switch(id){
+		case 'btncheck':  ui.menu.answercheck(); break;
+		case 'btnundo':   ui.puzzle.undo(); ui.menu.enb_undo(); break;
+		case 'btnredo':   ui.puzzle.redo(); ui.menu.enb_undo(); break;
+		case 'btnclear':  ui.menu.ACconfirm(); break;
+		case 'btnclear2': ui.menu.ASconfirm(); break;
+		case 'btncolor2': case 'ck_btn_irowake': ui.puzzle.irowake(); break;
+		case 'btncolor': ui.puzzle.board.encolorall(); break; /* 天体ショーのボタン */
+		}
 	}
 };
 

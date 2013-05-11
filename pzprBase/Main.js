@@ -247,8 +247,8 @@ pzprv3.createCoreClass('Puzzle',
 
 	irowake : function(){
 		this.board.irowakeRemake();
-		if(this.owner.getConfig('irowake')){
-			this.owner.drawCanvas();
+		if(this.getConfig('irowake')){
+			this.drawCanvas();
 		}
 	},
 

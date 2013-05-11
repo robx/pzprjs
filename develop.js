@@ -24,8 +24,7 @@ document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/UI.js\"></scri
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Menu.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/MenuArea.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/PopupMenu.js\"></script>");
-document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ManageArea.js\"></script>");
-document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ButtonArea.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ToolArea.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/KeyPopup.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/DataBase.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Timer.js\"></script>");

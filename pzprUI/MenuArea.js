@@ -11,6 +11,7 @@ var k = pzprv3.consts;
 ui.menuarea = {
 	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
+	area : null,				// ボタン表示領域の要素を保持する
 	
 	//---------------------------------------------------------------------------
 	// menuarea.init()   メニュー、サブメニュー、フロートメニューの初期設定を行う
@@ -82,8 +83,8 @@ ui.menuarea = {
 		}
 
 		if(idname==='manarea'){
-			if(!ui.managearea.isdisp){ str = ui.menu.selectStr("管理領域を表示","Show management area");}
-			else                     { str = ui.menu.selectStr("管理領域を隠す","Hide management area");}
+			if(!ui.toolarea.isdisp){ str = ui.menu.selectStr("管理領域を表示","Show management area");}
+			else                   { str = ui.menu.selectStr("管理領域を隠す","Hide management area");}
 			getEL('ms_manarea').innerHTML = str;
 		}
 	},
@@ -506,16 +507,16 @@ ui.menuarea = {
 		case 'imagedl'   : ui.menu.imagesave(true,null); break;
 		case 'imagesave' : ui.menu.imagesave(false,null); break;
 		
-		case 'h_oldest'  : ui.puzzle.undoall(); ui.menu.enb_btn(); break;
-		case 'h_undo'    : ui.puzzle.undo();    ui.menu.enb_btn(); break;
-		case 'h_redo'    : ui.puzzle.redo();    ui.menu.enb_btn(); break;
-		case 'h_latest'  : ui.puzzle.redoall(); ui.menu.enb_btn(); break;
+		case 'h_oldest'  : ui.puzzle.undoall(); ui.menu.enb_undo(); break;
+		case 'h_undo'    : ui.puzzle.undo();    ui.menu.enb_undo(); break;
+		case 'h_redo'    : ui.puzzle.redo();    ui.menu.enb_undo(); break;
+		case 'h_latest'  : ui.puzzle.redoall(); ui.menu.enb_undo(); break;
 		case 'check'     : ui.menu.answercheck(); break;
 		case 'ansclear'  : ui.menu.ACconfirm(); break;
 		case 'subclear'  : ui.menu.ASconfirm(); break;
 		case 'duplicate' : ui.menu.duplicate(); break;
 		
-		case 'manarea'   : ui.managearea.isdisp = !ui.managearea.isdisp; ui.menu.displayAll(); break;
+		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.menu.displayAll(); break;
 		case 'repaint'   : ui.puzzle.drawCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;

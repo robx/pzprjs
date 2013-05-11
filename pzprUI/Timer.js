@@ -127,7 +127,7 @@ ui.undotimer =
 		if(!ui.puzzle || !ui.puzzle.key){ return;}
 
 		if(this.lastCurrentOpe !== ui.puzzle.opemgr.position){
-			ui.menu.enb_btn();
+			ui.menu.enb_undo();
 			this.lastCurrentOpe = ui.puzzle.opemgr.position;
 		}
 	},
