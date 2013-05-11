@@ -9,8 +9,8 @@
 window.pzprv3 = {
 	version : 'v3.4.0pre',
 
-	EDITOR : true,	// エディタモード
-	PLAYER : false,	// playerモード
+	EDITOR : false,	// エディタモード
+	PLAYER : true,	// playerモード
 
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用

@@ -223,7 +223,7 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = ui.puzzle.getConfig('language');
+		this.lang = ui.menu.getMenuConfig('language');
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;

@@ -193,7 +193,7 @@ Menu.prototype =
 		for(var i in this.items.item){ this.setdisplay(i);}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
-			this.btnstack[i].el.value = this.btnstack[i].str[ui.puzzle.getConfig('language')];
+			this.btnstack[i].el.value = this.btnstack[i].str[this.getMenuConfig('language')];
 		}
 		this.enb_btn();
 		this.displayManage();
@@ -585,7 +585,7 @@ Menu.prototype =
 		}
 
 		/* 共通設定値 */
-		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
+		pp.addMenuCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
 
 		pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
@@ -595,7 +595,7 @@ Menu.prototype =
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 
-		pp.addSelect('language', 'setting', '言語', 'Language');
+		pp.addMenuSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');
 	},
@@ -1026,6 +1026,9 @@ Menu.prototype =
 	initMenuConfig : function(){
 		this.menuconfig = {};
 
+		/* 正解自動判定機能 */
+		this.menuconfig.autocheck = {val:pzprv3.PLAYER};
+
 		/* キーポップアップ */
 		this.menuconfig.keypopup = {val:false};	/* 数字などのパネル入力 */
 
@@ -1041,6 +1044,9 @@ Menu.prototype =
 
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
+
+		/* 言語設定 */
+		this.menuconfig.language = {val:this.getUserLang(), option:['ja','en']};
 	},
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}
@@ -1059,6 +1065,9 @@ Menu.prototype =
 		else if(idname==='textsize'){
 			this.settextsize(newval);
 			ui.puzzle.setCanvasSize();	/* pageX/Yの位置がずれる */
+		}
+		else if(idname==='language'){
+			this.displayAll();
 		}
 	},
 	getMenuConfig : function(idname){
@@ -1110,15 +1119,21 @@ Menu.prototype =
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
+	// menu.getUserLang() 言語環境をチェックして日本語かどうか判定する
 	//--------------------------------------------------------------------------------
 	selectStr : function(strJP, strEN){
-		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		return (this.getMenuConfig('language')==='ja' ? strJP : strEN);
 	},
 	alertStr : function(strJP, strEN){
-		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		alert(this.getMenuConfig('language')==='ja' ? strJP : strEN);
 	},
 	confirmStr : function(strJP, strEN){
-		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		return confirm(this.getMenuConfig('language')==='ja' ? strJP : strEN);
+	},
+
+	getUserLang : function(){
+		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+		return ((userlang.substr(0,2)==='ja')?'ja':'en');
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1150,8 +1165,6 @@ Menu.prototype =
 		case 'jumpv3'    : window.open('./', '', ''); break;
 		case 'jumptop'   : window.open('../../', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
-		
-		case 'language'  : this.displayAll(); break;
 		
 		case 'mode':
 			this.setcaption('keypopup');
@@ -1406,8 +1419,8 @@ MenuList.prototype =
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].menu; },
-	getLabel   : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].label;},
+	getMenuStr : function(idname){ return this.item[idname].str[ui.menu.getMenuConfig('language')].menu; },
+	getLabel   : function(idname){ return this.item[idname].str[ui.menu.getMenuConfig('language')].label;},
 	type       : function(idname){ return this.item[idname].type;},
 	haschild   : function(idname){
 		var flag = this.item[idname];

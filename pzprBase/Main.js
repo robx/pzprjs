@@ -366,13 +366,10 @@ pzprv3.createCoreClass('Config',
 
 	//---------------------------------------------------------------------------
 	// config.init()        各設定値を初期化する
-	// config.getUserLang() 言語環境をチェックして日本語でない場合英語表示にする
 	//---------------------------------------------------------------------------
 	init : function(){
 		/* 全般的な設定 */
 		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
-		this.add('autocheck', this.owner.playmode);				/* 正解自動判定機能 */
-		this.add('language', this.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
@@ -418,11 +415,6 @@ pzprv3.createCoreClass('Config',
 	add : function(name, defvalue, option){
 		if(!option){ this.list[name] = {val:defvalue};}
 		else{ this.list[name] = {val:defvalue, option:option};}
-	},
-
-	getUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		return ((userlang.substr(0,2)==='ja')?'ja':'en');
 	},
 
 	//---------------------------------------------------------------------------

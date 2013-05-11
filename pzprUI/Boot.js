@@ -76,7 +76,7 @@ function openPuzzle(){
 	/* debugmode時の設定 */
 	if(ui.debugmode){
 		ui.puzzle.setConfig('mode',3);
-		ui.puzzle.setConfig('autocheck', true);
+		ui.menu.setMenuConfig('autocheck', true);
 	}
 
 	// 描画wrapperの設定

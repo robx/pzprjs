@@ -50,7 +50,7 @@ ui.timer =
 		this.current = pzprv3.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
-		if(ui.puzzle.getConfig('autocheck')){ this.ACcheck();}
+		if(ui.menu.getMenuConfig('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ ui.timer =
 			this.lastAnsCnt = o.opemgr.anscount;
 			if(o.anscheckSilent()===0){
 				o.mouse.mousereset();
-				o.setConfig('autocheck',false);
+				ui.menu.setMenuConfig('autocheck',false);
 				ui.menu.alertStr("正解です！","Complete!");
 				return;
 			}

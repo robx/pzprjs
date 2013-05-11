@@ -65,7 +65,7 @@ ui.debug.extend(
 
 	fails : 0,
 	sccheck : function(){
-		if(ui.puzzle.getConfig('autocheck')){ ui.puzzle.setConfig('autocheck',false);}
+		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 		var self = this;
 
 		self.fails = 0;
@@ -87,7 +87,7 @@ ui.debug.extend(
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			ui.openURL(o.getURL(pzprurl.KANPEN), function(){
-				if(o.getConfig('autocheck')){ o.setConfig('autocheck',false);}
+				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -151,7 +151,7 @@ ui.debug.extend(
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		if(ui.puzzle.getConfig('autocheck')){ ui.puzzle.setConfig('autocheck',false);}
+		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
