@@ -84,6 +84,13 @@ ui.popupmgr =
 	},
 
 	//---------------------------------------------------------------------------
+	// popupmgr.translate()  言語切り替え時にキャプションを変更する
+	//---------------------------------------------------------------------------
+	translate : function(){
+		for(var name in this.popups){ this.popups[name].translate();}
+	},
+
+	//---------------------------------------------------------------------------
 	// popupmgr.titlebardown()  タイトルバーをクリックしたときの動作を行う(タイトルバーにbind)
 	// popupmgr.titlebarup()    タイトルバーでボタンを離したときの動作を行う(documentにbind)
 	// popupmgr.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
@@ -124,12 +131,28 @@ ui.popupmgr.addpopup('template',
 		this.pop       = null;
 		this.titlebar  = null;
 		this.form      = null;
+		this.captions  = [];
 	},
 	remove : function(){
 		if(!!this.pop){
 			this.popparent.removeChild(this.pop);
 			this.reset();
 		}
+	},
+
+	translate : function(){
+		if(!this.captions){ return;}
+		for(var i=0;i<this.captions.length;i++){
+			var obj  = this.captions[i];
+			var text = ui.menu.selectStr(obj.str_jp, obj.str_en);
+			if   (!!obj.textnode){ obj.textnode.data = text;}
+			else if(!!obj.button){ obj.button.value  = text;}
+		}
+	},
+	createTextNode : function(str_jp, str_en){
+		var textnode = _doc.createTextNode(ui.menu.selectStr(str_jp, str_en));
+		this.captions.push({textnode:textnode, str_jp:str_jp, str_en:str_en});
+		return textnode;
 	},
 
 	formname : '',
@@ -182,12 +205,12 @@ ui.popupmgr.addpopup('template',
 	},
 
 	settitle : function(str_jp, str_en){
-		this.titlebar.appendChild(_doc.createTextNode(ui.menu.selectStr(str_jp, str_en)));
+		this.titlebar.appendChild(this.createTextNode(str_jp, str_en));
 	},
 
 	addText : function(str_jp, str_en){
 		var el = _doc.createElement('span');
-		el.appendChild(_doc.createTextNode(ui.menu.selectStr(str_jp, str_en)));
+		el.appendChild(this.createTextNode(str_jp, str_en));
 		this.form.appendChild(el);
 	},
 	addBR : function(){
@@ -215,6 +238,7 @@ ui.popupmgr.addpopup('template',
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
 		el.onclick = func;
 		this.form.appendChild(el);
+		this.captions.push({button:el, str_jp:str_jp, str_en:str_en});
 	},
 	addCancelButton : function(){
 		var popup = this;

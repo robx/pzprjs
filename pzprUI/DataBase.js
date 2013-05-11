@@ -73,7 +73,7 @@ ui.popupmgr.addpopup('database',
 		for(var i=0;i<options.length;i++){
 			var op = document.createElement('option');
 			op.value = options[i].name;
-			op.appendChild(document.createTextNode(ui.menu.selectStr(options[i].str_jp, options[i].str_en)));
+			op.appendChild(this.addTextNode(options[i].str_jp, options[i].str_en));
 			sel.appendChild(op);
 		}
 	},

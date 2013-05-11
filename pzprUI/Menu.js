@@ -193,6 +193,7 @@ Menu.prototype =
 		this.enb_btn();
 		this.displayManage();
 		this.displayDesign();
+		ui.popupmgr.translate();
 
 		ui.puzzle.setCanvasSize();	// canvasの左上座標等を更新して再描画
 	},
