@@ -56,7 +56,7 @@ ui.managearea = {
 		pzprv3.unselectable(el_selchild);
 
 		// usearea & checkarea
-		var pp = ui.menu.items;
+		var pp = ui.menuarea.items;
 		for(var idname in pp.item){
 			if(!pp.getLabel(idname)){ continue;}
 			var _div = el_div.cloneNode(false);
@@ -123,7 +123,9 @@ ui.managearea = {
 	// managearea.setdisplay() 管理パネルに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	display : function(){
-		for(var i in ui.menu.items.item){ this.setdisplay(i);}
+		for(var i in ui.menuarea.items.item){
+			this.setdisplay(i);
+		}
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[ui.menu.getMenuConfig('language')];
@@ -146,7 +148,7 @@ ui.managearea = {
 		}
 	},
 	setdisplay : function(idname){
-		var pp = ui.menu.items;
+		var pp = ui.menuarea.items;
 		if(!pp || !pp.item[idname]){ return;}
 		
 		switch(pp.type(idname)){

@@ -39,6 +39,7 @@ sub output_pzprUI{
 		'Boot.js',
 		'UI.js',
 		'Menu.js',
+		'MenuArea.js',
 		'PopupMenu.js',
 		'ManageArea.js',
 		'ButtonArea.js',

@@ -22,6 +22,7 @@ document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Operation.js
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Boot.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/UI.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Menu.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/MenuArea.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/PopupMenu.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ManageArea.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ButtonArea.js\"></script>");
