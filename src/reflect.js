@@ -277,7 +277,6 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		this.performAsLine = true;
 
 		if( !this.checkLcntCell(3) ){ return 40201;}
 		if( !this.checkCrossOutOfMark() ){ return 40401;}

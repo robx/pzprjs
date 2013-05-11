@@ -137,9 +137,8 @@ AnsCheck:{
 		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48111;}
 		if( !this.checkErrorFlag_line(xinfo,2) ){ return 48121;}
 
-		this.performAsLine = true
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneArea(linfo) ){ return 43601;}
+		if( !this.checkOneLine(linfo) ){ return 43601;}
 
 		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 

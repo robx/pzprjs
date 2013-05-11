@@ -181,7 +181,6 @@ AnsCheck:{
 		if( !this.checkErrorFlag_line(xinfo,2) ){ return 49931;}
 		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 
-		this.performAsLine = true;
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkOneArea(linfo) ){ return 43601;}
 

@@ -145,13 +145,11 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		this.performAsLine = true;
 		if( !this.checkLcntCell(3) ){ return 40201;}
 		if( !this.checkLcntCell(4) ){ return 40301;}
-		this.performAsLine = false;
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkDoubleNumber(linfo) ){ return 30016;}
+		if( !this.checkDoubleObject(linfo) ){ return 30016;}
 		if( !this.checkLineOverLetter() ){ return 43102;}
 
 		if( !this.checkCurveLine(linfo) ){ return 20013;}
@@ -162,13 +160,11 @@ AnsCheck:{
 		this.owner.board.searchMovedPosition(linfo);
 		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 30501;}
 		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 30511;}
-		if( (pid==='heyabon') && !this.checkNoCircleRoom(rinfo) ){ return 30025;}
+		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 30025;}
 
 		if( !this.checkNoLineCircle() ){ return 50411;}
 
-		this.performAsLine = true;
 		if( !this.checkDisconnectLine(linfo) ){ return 43202;}
-		this.performAsLine = false;
 
 		return 0;
 	},
@@ -178,9 +174,6 @@ AnsCheck:{
 	},
 	checkLineLength : function(linfo){
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||n===a-1);});
-	},
-	checkNoCircleRoom : function(rinfo){
-		return this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;});
 	},
 	checkNoLineCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);});

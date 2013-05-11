@@ -173,7 +173,7 @@ AnsCheck:{
 		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleNumber(linfo) ){ return 43302;}
+		if( !this.checkTripleObject(linfo) ){ return 43302;}
 
 		if( !this.checkWBcircle(linfo, 1) ){ return 48001;}
 		if( !this.checkWBcircle(linfo, 2) ){ return 48011;}

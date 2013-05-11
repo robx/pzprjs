@@ -226,23 +226,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		this.performAsLine = true;
-
 		if( !this.checkLcntCell(3) ){ return 40201;}
 		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkDoubleNumber(linfo) ){ return 30015;}
+		if( !this.checkDoubleObject(linfo) ){ return 30015;}
 		if( !this.checkLineOverLetter() ){ return 43101;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		this.owner.board.searchMovedPosition(linfo);
 
-		this.performAsLine = false;
 		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 30031;}
 		if( !this.checkGatheredObject(rinfo) ){ return 30401;}
 		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 30411;}
-		this.performAsLine = true;
 
 		if( !this.checkDisconnectLine(linfo) ){ return 43201;}
 
@@ -291,10 +287,6 @@ AnsCheck:{
 			}
 		}
 		return true;
-	},
-
-	checkNoMovedObjectInRoom : function(rinfo){
-		return this.checkNoObjectInRoom(rinfo, function(cell){ return cell.base.qnum;});
 	}
 }
 });

@@ -133,13 +133,12 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		this.performAsLine = true;
 
 		if( !this.checkLcntCell(3) ){ return 40201;}
 		if( !this.checkLcntCell(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleNumber(linfo) ){ return 43303;}
+		if( !this.checkTripleObject(linfo) ){ return 43303;}
 
 		if( !this.checkLinkDiffNumber(linfo) ){ return 30029;}
 

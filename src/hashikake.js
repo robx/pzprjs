@@ -316,9 +316,8 @@ AnsCheck:{
 
 		if( !this.checkCellNumber(1) ){ return 49801;}
 
-		this.performAsLine = true;
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneArea(linfo) ){ return 43601;}
+		if( !this.checkOneLine(linfo) ){ return 43601;}
 
 		if( !this.checkCellNumber(2) ){ return 49811;}
 

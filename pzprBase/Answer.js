@@ -12,7 +12,6 @@ var k = pzprv3.consts;
 pzprv3.createPuzzleClass('AnsCheck',
 {
 	initialize : function(){
-		this.performAsLine = false;
 		this.inCheck = false;
 		this.checkOnly = false;
 	},
@@ -154,6 +153,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 
 	//---------------------------------------------------------------------------
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
+	// ans.checkOneLine()  線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLcntCell() セルから出ている線の本数について判定する
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
@@ -161,8 +161,16 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkOneArea : function(cinfo){
 		var bd = this.owner.board;
 		if(cinfo.max>1){
-			if(this.performAsLine){ bd.border.seterr(-1); cinfo.setErrLareaByCell(bd.cell[1],1); }
-			if(!this.performAsLine || this.owner.pid=="firefly"){ cinfo.getclist(1).seterr(1);}
+			cinfo.getclist(1).seterr(1);
+			return false;
+		}
+		return true;
+	},
+	checkOneLine : function(cinfo){
+		var bd = this.owner.board;
+		if(cinfo.max>1){
+			bd.border.seterr(-1);
+			cinfo.setErrLareaByCell(bd.cell[1],1);
 			return false;
 		}
 		return true;
@@ -185,8 +193,8 @@ pzprv3.createPuzzleClass('AnsCheck',
 			var cell = bd.cell[c];
 			if(cell.lcnt()==val){
 				if(this.checkOnly){ return false;}
-				if(!this.performAsLine){ cell.seterr(1);}
-				else{ if(result){ bd.border.seterr(-1);} cell.setCellLineError(true);}
+				if(result){ bd.border.seterr(-1);}
+				cell.setCellLineError(true);
 				result = false;
 			}
 		}
@@ -249,8 +257,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.checkOnly){ return false;}
-				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} cinfo.setErrLareaById(id,1);}
-				else{ clist.seterr(this.owner.pid!="tateyoko"?1:4);}
+				clist.seterr(this.owner.pid!="tateyoko"?1:4);
 				result = false;
 			}
 		}
@@ -267,18 +274,11 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkAreaSquare      : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h===a && w===h);});},
 
 	//---------------------------------------------------------------------------
-	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
-	//---------------------------------------------------------------------------
-	checkDisconnectLine  : function(linfo){ return this.checkAllBlock(linfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (n!=-1 || a>0); }  );},
-
-	//---------------------------------------------------------------------------
 	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
 	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
-	// ans.checkTripleNumber()   部屋に数字が3つ以上含まれていないように判定を行う
 	//---------------------------------------------------------------------------
 	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!=0);} );},
 	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 2);} );},
-	checkTripleNumber    : function(linfo){ return this.checkAllBlock(linfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 3);} );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
@@ -288,11 +288,37 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkNoBlackCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return (a>0);}         );},
 
 	//---------------------------------------------------------------------------
-	// ans.checkLinesInArea()    領域の中で線が通っているセルの数を判定する
-	// ans.checkNoObjectInRoom() エリアに指定されたオブジェクトがないと判定する
+	// ans.checkLinesInArea()  領域の中で線が通っているセルの数を判定する
 	//---------------------------------------------------------------------------
-	checkLinesInArea     : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.lcnt()>0;}, evalfunc);},
-	checkNoObjectInRoom  : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(cell){ return getvalue(cell)!==-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkLinesInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.lcnt()>0;}, evalfunc);},
+
+	//---------------------------------------------------------------------------
+	// ans.checkNoMovedObjectInRoom() 領域に移動後のオブジェクトがないと判定する
+	//---------------------------------------------------------------------------
+	checkNoMovedObjectInRoom : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(cell){ return cell.base.qnum!==-1;}, function(w,h,a,n){ return (a!=0);});},
+
+	//---------------------------------------------------------------------------
+	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
+	// ans.checkDoubleObject()   数字が線で2つ以上繋がっていないように判定を行う
+	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
+	// ans.checkConnectObjectCount() 上記関数の共通処理
+	//---------------------------------------------------------------------------
+	checkDisconnectLine : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a>0)});},
+	checkDoubleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<2);});},
+	checkTripleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<3);});},
+	checkConnectObjectCount : function(linfo, evalfunc){
+		var result = true;
+		for(var id=1;id<=linfo.max;id++){
+			var count = linfo.getclist(id).filter(function(cell){ return cell.isNum(cell);}).length;
+			if( !evalfunc(count) ){
+				if(this.checkOnly){ return false;}
+				if(result){ this.owner.board.border.seterr(-1);}
+				linfo.setErrLareaById(id,1);
+				result = false;
+			}
+		}
+		return result;
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
@@ -345,8 +371,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.checkOnly){ return false;}
 
-				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} rinfo.setErrLareaByCell(bd.cell[c],1);}
-				else{ rinfo.getclistbycell(bd.cell[c]).seterr(1);}
+				rinfo.getclistbycell(bd.cell[c]).seterr(1);
 				result = false;
 			}
 		}

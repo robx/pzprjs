@@ -313,14 +313,12 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		this.performAsLine = true;
 		if( !this.checkLcntCell(3) ){ return 40201;}
 		if( !this.checkLcntCell(4) ){ return 40301;}
-		this.performAsLine = false;
 
 		var linfo = bd.getLareaInfo();
 
-		if( !this.checkDoubleNumber(linfo) ){ return 30017;}
+		if( !this.checkDoubleObject(linfo) ){ return 30017;}
 		if( !this.checkLineOverLetter() ){ return 43104;}
 
 		if( !this.checkCurveLine(linfo) ){ return 20013;}
@@ -333,14 +331,11 @@ AnsCheck:{
 		if( !this.checkDoubleNumberInNabe(iarea) ){ return 90711;}
 
 		bd.searchMovedPosition(linfo);
-
 		if( !this.checkFillingCount(iarea) ){ return 90721;}
-		if( !this.checkEmptyNabe(iarea) ){ return 90731;}
+		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 90731;}
 		if( !this.checkFillingOutOfNabe() ){ return 90741;}
 
-		this.performAsLine = true;
 		if( !this.checkDisconnectLine(linfo) ){ return 43204;}
-		this.performAsLine = false;
 
 		return 0;
 	},
@@ -354,9 +349,6 @@ AnsCheck:{
 
 	checkDoubleNumberInNabe : function(iarea){
 		return this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);});
-	},
-	checkEmptyNabe : function(iarea){
-		return this.checkNoObjectInRoom(iarea, function(cell){ return cell.base.qnum;});
 	},
 	checkFillingOutOfNabe : function(){
 		return this.checkAllCell(function(cell){ return (cell.base.isNum() && !cell.ice());});
