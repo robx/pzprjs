@@ -23,6 +23,7 @@ document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Boot.js\"></sc
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/UI.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Menu.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/PopupMenu.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/ButtonArea.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/KeyPopup.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/DataBase.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprUI/Timer.js\"></script>");

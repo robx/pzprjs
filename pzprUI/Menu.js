@@ -38,6 +38,16 @@ Menu.prototype =
 	init : function(){
 		this.initMenuConfig();
 		
+		this.initReader();
+
+		if(!!getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
+			this.enableSaveImage = true;
+		}
+
+		if(pzprv3.browser.IE6){
+			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
+		}
+		
 		this.items = new MenuList();
 	},
 	
@@ -55,21 +65,11 @@ Menu.prototype =
 
 		this.items.reset();
 
-		this.initReader();
-
-		if(!!getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
-			this.enableSaveImage = true;
-		}
-
-		if(pzprv3.browser.IE6){
-			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
-		}
-
 		ui.keypopup.create();
 
 		this.menuarea();
 		this.managearea();
-		this.buttonarea();
+		if(!!ui.buttonarea){ ui.buttonarea.init();}
 
 		this.displayAll();
 
@@ -92,14 +92,13 @@ Menu.prototype =
 
 		getEL('float_parent').innerHTML = '';
 
-		getEL('btnarea').innerHTML = '';
-
 		getEL('menupanel') .innerHTML = '';
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
 
-		ui.keypopup.clear();
+		if(!!ui.buttonarea){ ui.buttonarea.reset();}
 
+		ui.keypopup.clear();
 		if(!!ui.popupmgr){ ui.popupmgr.reset();}
 		
 		ui.event.removeUIEvents();
@@ -145,7 +144,7 @@ Menu.prototype =
 	},
 	config_common : function(idname, newval){
 		/* this === ui.puzzle.config になります */
-		ui.menu.setcaption(idname);
+		ui.menu.setdisplay(idname);
 		ui.menu.menuexec(idname, newval);
 	},
 
@@ -182,7 +181,6 @@ Menu.prototype =
 	//---------------------------------------------------------------------------
 	// menu.displayAll() 全てのメニュー、ボタン、ラベルに対して文字列を設定する
 	// menu.setdisplay() 管理パネルとサブメニューに表示する文字列を個別に設定する
-	// menu.setcaption() 設定変更された場合にメニューなどのデータを作り直す
 	//---------------------------------------------------------------------------
 	displayAll : function(){
 		for(var i in this.items.item){ this.setdisplay(i);}
@@ -190,15 +188,21 @@ Menu.prototype =
 			if(!this.btnstack[i].el){ continue;}
 			this.btnstack[i].el.value = this.btnstack[i].str[this.getMenuConfig('language')];
 		}
-		this.enb_btn();
+		
 		this.displayManage();
 		this.displayDesign();
+
+		ui.buttonarea.display();
 		ui.popupmgr.translate();
+
+		this.enb_btn();
 
 		ui.puzzle.setCanvasSize();	// canvasの左上座標等を更新して再描画
 	},
 	setdisplay : function(idname){
 		var pp = this.items;
+		if(!pp || !pp.item[idname]){ return;}
+		
 		switch(pp.type(idname)){
 		case pp.MENU:
 			/* メニューの表記の設定 */
@@ -284,10 +288,6 @@ Menu.prototype =
 		if(idname==='disptype_pipelinkr'){
 			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 		}
-	},
-	setcaption : function(idname){
-		var pp = this.items;
-		if(!!pp && !!pp.item[idname]){ this.setdisplay(idname);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -924,69 +924,12 @@ Menu.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.buttonarea()   盤面下のボタンエリアの初期化を行う
-	// menu.toggledisp()   アイスと○などの表示切り替え時の処理を行う
-	// menu.enb_btn()      html上の[戻][進]ボタンを押すことが可能か設定する
+	// menu.enb_btn()     html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
-	buttonarea : function(){
-		// (Canvas下) ボタンの初期設定
-		var btncheck = createButton(); btncheck.id = "btncheck";
-		var btnundo  = createButton(); btnundo.id  = "btnundo";
-		var btnredo  = createButton(); btnredo.id  = "btnredo";
-		var btnclear = createButton(); btnclear.id = "btnclear";
-
-		getEL('btnarea').appendChild(btncheck);
-		getEL('btnarea').appendChild(document.createTextNode(' '));
-		getEL('btnarea').appendChild(btnundo);
-		getEL('btnarea').appendChild(btnredo);
-		getEL('btnarea').appendChild(document.createTextNode(' '));
-		getEL('btnarea').appendChild(btnclear);
-
-		var self = this;
-		this.addButtons(btncheck, function(){ self.answercheck();}, "チェック", "Check");
-		this.addButtons(btnundo,  function(){ ui.puzzle.opemgr.undo(); self.enb_btn();}, "戻", "<-");
-		this.addButtons(btnredo,  function(){ ui.puzzle.opemgr.redo(); self.enb_btn();}, "進", "->");
-		this.addButtons(btnclear, function(){ self.ACconfirm();}, "回答消去", "Erase Answer");
-
-		// 初期値ではどっちも押せない
-		getEL('btnundo').disabled = true;
-		getEL('btnredo').disabled = true;
-
-		if(!ui.puzzle.flags.disable_subclear){
-			var el = createButton(); el.id = "btnclear2";
-			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ self.ASconfirm();}, "補助消去", "Erase Auxiliary Marks");
-		}
-
-		if(!!ui.puzzle.flags.irowake){
-			var el = createButton(); el.id = "btncolor2";
-			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ ui.puzzle.irowake();}, "色分けしなおす", "Change the color of Line");
-			el.style.display = 'none';
-		}
-
-		if(ui.puzzle.pid==='pipelinkr'){
-			var el = createButton(); el.id = 'btncircle';
-			pzprv3.unselectable(el);
-			el.onclick = function(){ self.toggledisp();};
-			getEL('btnarea').appendChild(el);
-		}
-
-		if(ui.puzzle.pid==='tentaisho'){
-			var el = createButton(); el.id = 'btncolor';
-			getEL('btnarea').appendChild(el);
-			this.addButtons(el, function(){ puzzle.board.encolorall();}, "色をつける","Color up");
-		}
-	},
-	toggledisp : function(){
-		var current = ui.puzzle.getConfig('disptype_pipelinkr');
-		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
-	},
 	enb_btn : function(){
-		var opemgr = ui.puzzle.opemgr;
-		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
-		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+		ui.buttonarea.enb_undo();
 
+		var opemgr = ui.puzzle.opemgr;
 		getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
 		getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
 		getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
@@ -1054,7 +997,7 @@ Menu.prototype =
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}
 		this.menuconfig[idname].val = newval;
-		this.setcaption(idname);
+		this.setdisplay(idname);
 		if(idname==='keypopup'){
 			ui.keypopup.display();
 		}
@@ -1170,8 +1113,8 @@ Menu.prototype =
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
 		
 		case 'mode':
-			this.setcaption('keypopup');
-			this.setcaption('bgcolor');
+			this.setdisplay('keypopup');
+			this.setdisplay('bgcolor');
 			break;
 		
 		case 'uramashu':
