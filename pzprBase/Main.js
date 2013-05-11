@@ -356,12 +356,8 @@ pzprv3.createCoreClass('Config',
 		return this.list[name]?this.list[name].val:null;
 	},
 	setVal : function(name, newval){
-		if(!!this.list[name]){
-			this.list[name].val = newval;
-			
-			this.onchange_event(name, newval);
-			this.uievent(name, newval);
-		}
+		this.configevent(name, newval);
+		this.uievent(name, newval);
 	},
 
 	//---------------------------------------------------------------------------
@@ -377,6 +373,7 @@ pzprv3.createCoreClass('Config',
 
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
+		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
 		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
@@ -405,9 +402,6 @@ pzprv3.createCoreClass('Config',
 		/* 正解判定 */
 		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
 
-		this.add('uramashu', false);		/* mashu: 裏ましゅ */
-		this.add('snakebd', false);			/* snakes: へびの境界線を表示する */
-
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
@@ -420,14 +414,18 @@ pzprv3.createCoreClass('Config',
 	//---------------------------------------------------------------------------
 	// config.uievent()  設定変更の際のイベント共通処理 (UIEvent系)
 	//---------------------------------------------------------------------------
-	uievent : function(){
+	uievent : function(name, newval){
 		return false;
 	},
 
 	//---------------------------------------------------------------------------
-	// config.onchange_event()  設定変更時の動作を記述する
+	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
-	onchange_event : function(name, val){
+	configevent : function(name, newval){
+		if(!this.list[name]){ return;}
+		
+		this.list[name].val = newval;
+
 		var result = true, o = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'circolor': case 'plred':
@@ -436,25 +434,15 @@ pzprv3.createCoreClass('Config',
 			break;
 		
 		case 'mode':
-			o.modechange(val);
-			break;
-		
-		case 'uramashu':
-			var bd = o.board;
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
-				if     (cell.getQnum()===1){ cell.setQnum(2);}
-				else if(cell.getQnum()===2){ cell.setQnum(1);}
-			}
-			o.drawCanvas();
+			o.modechange(newval);
 			break;
 		
 		case 'disptype_bosanowa':
 			var pc = o.painter;
 			pc.suspendAll();
-			if     (val==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			else if(val==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
-			else if(val==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			if     (newval==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
+			else if(newval==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
+			else if(newval==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
 			pc.unsuspend();
 			break;
 		

@@ -225,15 +225,13 @@ Menu.prototype =
 			if(!!label){ label.innerHTML = pp.getLabel(idname);}
 			
 			/* 子要素の設定も行う */
-			for(var i=0,len=pp.item[idname].child.length;i<len;i++){
-				this.setdisplay(""+idname+"_"+pp.item[idname].child[i]);
+			for(var i=0,len=pp.item[idname].children.length;i<len;i++){
+				this.setdisplay(""+idname+"_"+pp.item[idname].children[i]);
 			}
 			break;
 
 		case pp.CHILD:
-			var val = ui.puzzle.getConfig(pp.item[idname].parent);
-			if(val===null){ val = this.getMenuConfig(pp.item[idname].parent);}
-			
+			var val = this.getConfigVal(pp.item[idname].parent);
 			var issel = (pp.item[idname].val == val);	/* 選択されているかどうか */
 			
 			/* メニューの表記の設定 */
@@ -250,8 +248,7 @@ Menu.prototype =
 			break;
 
 		case pp.CHECK:
-			var flag = ui.puzzle.getConfig(idname);
-			if(flag===null){ flag = this.getMenuConfig(idname);}
+			var flag = this.getConfigVal(idname);
 			
 			/* メニューの表記の設定 */
 			var smenu = getEL('ms_'+idname);
@@ -419,7 +416,7 @@ Menu.prototype =
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		pp.addMenuSelect('cellsize','disp', '表示サイズ','Cell Size');
+		pp.addSelect('cellsize','disp', '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
 		if(!!ui.puzzle.flags.irowake){
@@ -427,7 +424,7 @@ Menu.prototype =
 			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
-		pp.addMenuCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
+		pp.addCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -585,17 +582,17 @@ Menu.prototype =
 		}
 
 		/* 共通設定値 */
-		pp.addMenuCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
+		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
 
 		pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
 		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
 		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
-			pp.addMenuCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
+			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 
-		pp.addMenuSelect('language', 'setting', '言語', 'Language');
+		pp.addSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');
 	},
@@ -751,15 +748,10 @@ Menu.prototype =
 					val    = pp.item[idname].val;
 					idname = pp.item[idname].parent;
 				}
-				
-				if(!!this.menuconfig[idname]){
-					if(menutype===pp.CHECK){ val = !this.getMenuConfig(idname);}
-					this.setMenuConfig(idname, val);
+				else if(menutype===pp.CHECK){
+					val = !this.getConfigVal(idname);
 				}
-				else{
-					if(menutype===pp.CHECK){ val = !ui.puzzle.getConfig(idname);}
-					ui.puzzle.setConfig(idname, val);
-				}
+				this.setConfigVal(idname, val);
 			}
 		}
 	},
@@ -876,8 +868,8 @@ Menu.prototype =
 				span.id = 'cl_'+idname;
 				_div.appendChild(span);
 				_div.appendChild(document.createTextNode(" | "));
-				for(var i=0;i<pp.item[idname].child.length;i++){
-					var num = pp.item[idname].child[i];
+				for(var i=0;i<pp.item[idname].children.length;i++){
+					var num = pp.item[idname].children[i];
 					var sel = el_selchild.cloneNode(false);
 					sel.id = ['up',idname,num].join("_");
 					ui.event.addEvent(sel, "click", this, this.selectclick);
@@ -929,23 +921,13 @@ Menu.prototype =
 	checkclick : function(e){
 		var el = (e.target||e.srcElement);
 		var idname = el.id.substr(3);
-		if(!!this.menuconfig[idname]){
-			this.setMenuConfig(idname, !!el.checked);
-		}
-		else{
-			ui.puzzle.setConfig(idname, !!el.checked);
-		}
+		this.setConfigVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = (e.target||e.srcElement).id.split('_');
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
-		if(!!this.menuconfig[idname]){
-			this.setMenuConfig(idname, child);
-		}
-		else{
-			ui.puzzle.setConfig(idname, child);
-		}
+		this.setConfigVal(idname, child);
 	},
 
 	//---------------------------------------------------------------------------
@@ -1016,6 +998,34 @@ Menu.prototype =
 		getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
 		getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
 		getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.setConfigVal()   値設定の共通処理
+	// menu.getConfigVal()   値設定の共通処理
+	//---------------------------------------------------------------------------
+	setConfigVal : function(idname, newval){
+		if(!!this.menuconfig[idname]){
+			this.setMenuConfig(idname, newval);
+		}
+		else if(!!ui.puzzle.config.list[idname]){
+			ui.puzzle.setConfig(idname, newval);
+		}
+		else if(idname==='uramashu'){
+			ui.puzzle.board.uramashu = newval;
+			this.config_common(idname, newval);
+		}
+	},
+	getConfigVal : function(idname){
+		if(!!this.menuconfig[idname]){
+			return this.getMenuConfig(idname);
+		}
+		else if(!!ui.puzzle.config.list[idname]){
+			return ui.puzzle.getConfig(idname);
+		}
+		else if(idname==='uramashu'){
+			return ui.puzzle.board.uramashu;
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1169,6 +1179,11 @@ Menu.prototype =
 		case 'mode':
 			this.setcaption('keypopup');
 			this.setcaption('bgcolor');
+			break;
+		
+		case 'uramashu':
+			ui.puzzle.board.revCircleMain();
+			ui.puzzle.drawCanvas();
 			break;
 		
 		default:
@@ -1365,29 +1380,20 @@ MenuList.prototype =
 	},
 
 	addCheck : function(idname, parent, strJP, strEN){
-		var first = ui.puzzle.config.list[idname].val;
-		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
+		this.addFlags(idname, parent, this.CHECK, null, strJP, strEN);
 	},
 	addSelect : function(idname, parent, strJP, strEN){
-		var first = ui.puzzle.config.list[idname].val;
-		var child = ui.puzzle.config.list[idname].option;
-		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
-		this.item[idname].child = child;
+		this.addFlags(idname, parent, this.SELECT, null, strJP, strEN);
+		if(!!ui.menu.menuconfig[idname]){
+			this.item[idname].children = ui.menu.menuconfig[idname].option;
+		}
+		else if(!!ui.puzzle.config.list[idname]){
+			this.item[idname].children = ui.puzzle.config.list[idname].option;
+		}
 	},
 	addChild : function(idname, parent, strJP, strEN){
-		var list = idname.split("_"), first = list.pop();
-		this.addFlags(idname, parent, this.CHILD, first, strJP, strEN);
-	},
-
-	addMenuCheck : function(idname, parent, strJP, strEN){
-		var first = ui.menu.menuconfig[idname].val;
-		this.addFlags(idname, parent, this.CHECK, first, strJP, strEN);
-	},
-	addMenuSelect : function(idname, parent, strJP, strEN){
-		var first = ui.menu.menuconfig[idname].val;
-		var child = ui.menu.menuconfig[idname].option;
-		this.addFlags(idname, parent, this.SELECT, first, strJP, strEN);
-		this.item[idname].child = child;
+		var list = idname.split("_"), val = list.pop();
+		this.addFlags(idname, parent, this.CHILD, val, strJP, strEN);
 	},
 
 	//---------------------------------------------------------------------------

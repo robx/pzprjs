@@ -47,12 +47,17 @@ Cell:{
 Board:{
 	isborder : 1,
 
+	uramashu : false,
+
 	revCircle : function(){
-		if(!this.owner.getConfig('uramashu')){ return;}
+		if(!this.uramashu){ return;}
+		this.revCircleMain();
+	},
+	revCircleMain : function(){
 		for(var c=0;c<this.cellmax;c++){
 			var cell = this.cell[c];
-			if     (cell.qnum===1){ cell.qnum = 2;}
-			else if(cell.qnum===2){ cell.qnum = 1;}
+			if     (cell.qnum===1){ cell.setQnum(2);}
+			else if(cell.qnum===2){ cell.setQnum(1);}
 		}
 	}
 },
