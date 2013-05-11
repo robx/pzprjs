@@ -341,7 +341,7 @@ AnsCheck:{
 			else{ continue;}
 
 			if(qn!==val){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				excell.seterr(1);
 				clist.seterr(1);
 				result = false;

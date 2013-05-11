@@ -381,7 +381,7 @@ AnsCheck:{
 			}
 
 			if(count>0 && num!==count){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				for(var i=0;i<clist.length;i++){ clist[i].base.seterr(4);}
 				result = false;

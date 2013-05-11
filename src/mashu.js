@@ -175,7 +175,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()===1 && cell.lcnt()===2 && !cell.isLineStraight()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
 				result = false;
@@ -188,7 +188,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()===2 && cell.lcnt()===2 && cell.isLineStraight()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
 				result = false;
@@ -209,7 +209,7 @@ AnsCheck:{
 			if(cell.rb().isLine() && cell.rt().lcnt()===2 && cell.rt().isLineStraight()){ stcnt++;}
 
 			if(stcnt>=2){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setErrorPearl();
 				result = false;
@@ -227,7 +227,7 @@ AnsCheck:{
 			   (cell.lb().isLine() && cell.lt().lcnt()===2 && !cell.lt().isLineStraight()) ||
 			   (cell.rb().isLine() && cell.rt().lcnt()===2 && !cell.rt().isLineStraight()) )
 			{
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setErrorPearl();
 				result = false;

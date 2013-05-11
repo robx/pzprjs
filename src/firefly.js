@@ -202,7 +202,7 @@ AnsCheck:{
 			var cell = bd.cell[c], dir=cell.getQdir();
 			if(cell.noNum() || dir===0){ continue;}
 			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

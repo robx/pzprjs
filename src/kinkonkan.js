@@ -541,7 +541,7 @@ AnsCheck:{
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQdir()===0){ continue;}
-			var ret = bd.searchLight(excell.id, (!this.inAutoCheck)), excell2 = bd.excell[ret.dest];
+			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
 			if( (type==1&& (excell.getQdir()!==excell2.getQdir()) )||
 				(type==2&&((excell.getQnum()!==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
 			){

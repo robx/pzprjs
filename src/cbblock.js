@@ -217,7 +217,7 @@ AnsCheck:{
 		for(var r=1;r<=cinfo.max;r++){
 			var cnt=cinfo.room[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cinfo.getclist(r).seterr(1);
 				result = false;
 			}
@@ -236,7 +236,7 @@ AnsCheck:{
 				if(cinfo.room[r].size!==cinfo.room[s].size){ continue;}
 
 				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					cinfo.getclist(r).seterr(1);
 					cinfo.getclist(s).seterr(1);
 					result = false;

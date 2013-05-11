@@ -469,7 +469,7 @@ AnsCheck:{
 			if(star.getStar()<=0){ continue;}
 
 			if(star.validcell()===null){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(star.obj.iscrossobj)
 					{ bd.setCrossBorderError(star.bx, star.by);}
 				else if(star.obj.isborderobj)
@@ -490,7 +490,7 @@ AnsCheck:{
 				var cell = clist[i];
 				var cell2 = this.owner.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
 				if(cell2.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(cell2)){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 				}
@@ -504,7 +504,7 @@ AnsCheck:{
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.room[r].error!==val){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			rinfo.getclist(r).seterr(1);
 			result = false;
 		}

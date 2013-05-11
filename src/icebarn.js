@@ -785,7 +785,7 @@ AnsCheck:{
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isArrow() && !border.isLine()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				border.seterr(4);
 				result = false;
 			}

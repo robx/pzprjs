@@ -136,7 +136,7 @@ AnsCheck:{
 			if(cell.rt().isBlack()){ clist.addList(binfo.getclistbycell(cell.rt()));}
 
 			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				cell.seterr(1);
 				result = false;

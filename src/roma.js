@@ -224,7 +224,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
-			if(!bd.trackBall1(c,ldata) && this.inAutoCheck){ return false;}
+			if(!bd.trackBall1(c,ldata) && this.checkOnly){ return false;}
 		}
 
 		var result = true;

@@ -164,7 +164,7 @@ FileIO:{
 		for(var r=1;r<=this.owner.board.rooms.max;r++){
 			var clist = this.owner.board.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
 			if(!clist.isSeqBlock()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

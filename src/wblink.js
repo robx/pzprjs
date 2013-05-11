@@ -196,7 +196,7 @@ AnsCheck:{
 			var tip1 = clist[0], tip2 = clist[clist.length-1];
 			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			if(result){ this.owner.board.border.seterr(-1);}
 			linfo.setErrLareaById(r,1);
 			tip1.seterr(1);

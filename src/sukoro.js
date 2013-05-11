@@ -210,7 +210,7 @@ AnsCheck:{
 
 			var clist = cell.getViewClist();
 			if(cell.getNum()!==clist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				clist.seterr(2);
 				result = false;

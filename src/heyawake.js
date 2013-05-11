@@ -191,7 +191,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isBlack() ^ cell2.isBlack()){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 				}

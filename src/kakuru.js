@@ -219,7 +219,7 @@ AnsCheck:{
 			}
 			for(var n=1;n<=9;n++){
 				if(d[n]>1){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					cell.seterr(1);
 					clist.filter(function(cell){ return (cell.getAnum()===n);}).seterr(1);
 					result = false;
@@ -246,7 +246,7 @@ AnsCheck:{
 				}
 			}
 			if(cell.getQnum()!==cnt){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1); result = false;
 			}
 		}
@@ -266,7 +266,7 @@ AnsCheck:{
 				if(cell!==cell2 && cell.anum===cell2.anum){ clist.add(cell2);}
 			}
 			if(clist.length>1){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1); result = false;
 			}
 		}

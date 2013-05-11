@@ -141,7 +141,7 @@ AnsCheck:{
 		for(var i=0;i<max;i++){
 			var clist = bd.cellinside(((i%blk)*blk)*2+1, (((i/blk)|0)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (((i/blk+1)|0)*blk-1)*2+1);
 			if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getNum();})){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				result = false;
 			}
 		}

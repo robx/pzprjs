@@ -154,7 +154,7 @@ AnsCheck:{
 			if(breakflag){ break;}
 
 			if(clist.length !== (max-min)+1){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}
@@ -176,7 +176,7 @@ AnsCheck:{
 
 			var blist = rdata.getblist(rdata.id[i]);
 			if(Math.abs(val1-val2)!==blist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell1.seterr(1);
 				cell2.seterr(1);
 				blist.seterr(1);

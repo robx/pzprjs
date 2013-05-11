@@ -449,7 +449,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 					break;
@@ -473,7 +473,7 @@ AnsCheck:{
 					(num===k.LT && cell.lb().isBorder()) ||
 					(num===k.RT && cell.rb().isBorder())) )
 				{
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 					break;
@@ -492,7 +492,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.isCircle() && rinfo.place[cell.id]!==3){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 					break;
@@ -506,7 +506,7 @@ AnsCheck:{
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.room[id].shape===0){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				rinfo.getclist(id).seterr(1);
 				result = false;
 			}

@@ -353,7 +353,7 @@ AnsCheck:{
 			var clist=winfo.getclist(id), d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;
 			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

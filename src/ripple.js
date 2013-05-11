@@ -149,7 +149,7 @@ AnsCheck:{
 			for(var i=2;i<=num*2;i+=2){
 				var cell2 = bd.getc(bx+i,by);
 				if(!cell2.isnull && cell2.getNum()===num){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					cell.seterr(1);
 					cell2.seterr(1);
 					result = false;
@@ -158,7 +158,7 @@ AnsCheck:{
 			for(var i=2;i<=num*2;i+=2){
 				var cell2 = bd.getc(bx,by+i);
 				if(!cell2.isnull && cell2.getNum()===num){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					cell.seterr(1);
 					cell2.seterr(1);
 					result = false;
@@ -174,7 +174,7 @@ AnsCheck:{
 			var cell=bd.cell[c], cell2=cell.dn(), dc=cell2.id;
 			if(rinfo.id[c]!=rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell2.getNum()>cell.getNum()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell2.seterr(1);
 				result = false;

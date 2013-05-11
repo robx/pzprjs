@@ -307,7 +307,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()==0 && (cell.getQues()>=2 && cell.getQues()<=5)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				result = false;
 			}
@@ -323,7 +323,7 @@ AnsCheck:{
 
 			var blist = cell.getTriLine();
 			if(type==1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				if(result){ bd.border.seterr(-1);}
 				blist.seterr(1);

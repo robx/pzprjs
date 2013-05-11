@@ -139,7 +139,7 @@ AnsCheck:{
 			cell2=cell.relcell(0,-num*2); if(cell2.isBlack()){ clist.add(cell2);}
 			cell2=cell.relcell(0, num*2); if(cell2.isBlack()){ clist.add(cell2);}
 			if(clist.length!==1){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				clist.seterr(1);
 				result = false;

@@ -233,7 +233,7 @@ AnsCheck:{
 					if(    !(cross.ub().getQans()===1 && cross.db().getQans()===1)
 						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
 					{
-						if(this.inAutoCheck){ return false;}
+						if(this.checkOnly){ return false;}
 						bd.setCrossBorderError(bx,by);
 						result = false;
 					}
@@ -265,7 +265,7 @@ AnsCheck:{
 		for(var id=0;id<bd.bdmax;id++){
 			if(lines[id]!==1){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			if(result){ bd.border.seterr(-1);}
 			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ bd.border[i].seterr(1);} }
 			result = false;

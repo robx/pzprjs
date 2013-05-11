@@ -251,14 +251,14 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.rt();
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				sinfo.getclistbycell(cell).seterr(1);
 				sinfo.getclistbycell(cell2).seterr(1);
 				result = false;
 			}
 			cell2 = cell.dn();
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				sinfo.getclistbycell(cell).seterr(1);
 				sinfo.getclistbycell(cell2).seterr(1);
 				result = false;
@@ -286,14 +286,14 @@ AnsCheck:{
 
 			// 矢印つき数字が0で、その先に回答の数字がある
 			if(num===0 && !noans(cell2)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				if(num<=0){ cell2.seterr(1);}
 				result = false;
 			}
 			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
 			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell2.seterr(1);
 				result = false;
@@ -328,7 +328,7 @@ AnsCheck:{
 
 			var sid=sinfo.getRoomID(cell);
 			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!=sid){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist2.seterr(1);
 				clist.seterr(1);
 				sinfo.getclist(sid).seterr(1);

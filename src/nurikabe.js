@@ -190,7 +190,7 @@ FileIO:{
 			else{ continue;}
 
 			if(binfo.getclistbycell(cell1).length == binfo.getclistbycell(cell2).length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				binfo.getclistbycell(cell1).seterr(1);
 				binfo.getclistbycell(cell2).seterr(1);
 				result = false;

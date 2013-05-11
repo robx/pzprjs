@@ -162,7 +162,7 @@ AnsCheck:{
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(cell.isValidNum() && !cell.checkComplete(cinfo)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

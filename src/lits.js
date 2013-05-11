@@ -235,7 +235,7 @@ AnsCheck:{
 		for(var r=1;r<=bd.rooms.max;r++){
 			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
 			if(!clist.isSeqBlock()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}
@@ -248,7 +248,7 @@ AnsCheck:{
 		for(var r=1;r<=dinfo.max;r++){
 			var clist = dinfo.getclist(r);
 			if(clist.length<=4){ continue;}
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			clist.seterr(2);
 			result = false;
 		}

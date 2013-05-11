@@ -121,7 +121,7 @@ AnsCheck:{
 			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
 
 			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cross.seterr(1);
 				result = false;
 			}

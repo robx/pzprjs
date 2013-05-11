@@ -203,7 +203,7 @@ AnsCheck:{
 			if(cross.ub().isLine()){ cnt++;}
 			if(cross.db().isLine()){ cnt++;}
 			if(cnt==val){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				bd.setCrossBorderError(cross.bx,cross.by);
 				result = false;
@@ -231,7 +231,7 @@ AnsCheck:{
 		for(var r=1;r<=tarea.max;r++){
 			var clist = tarea.getclist(r);
 			if(tcount[r]>=0 && tcount[r]!==clist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

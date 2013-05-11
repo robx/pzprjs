@@ -140,7 +140,7 @@ AnsCheck:{
 			target=cell.dn(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.dn();}
 
 			if(cell.getQnum()!==clist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

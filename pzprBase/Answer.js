@@ -14,7 +14,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	initialize : function(){
 		this.performAsLine = false;
 		this.inCheck = false;
-		this.inAutoCheck = false;
+		this.checkOnly = false;
 	},
 
 	//---------------------------------------------------------------------------
@@ -27,12 +27,12 @@ pzprv3.createPuzzleClass('AnsCheck',
 		this.inCheck = true;
 		
 		if(activemode){
+			this.checkOnly = false;
 			failcode = this.checkAns();
 		}
 		else{
-			this.inAutoCheck = true;
+			this.checkOnly = true;
 			failcode = (this.autocheck1st() || this.checkAns());
-			this.inAutoCheck = false;
 		}
 		
 		this.inCheck = false;
@@ -67,7 +67,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(func(cell)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -93,7 +93,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
 			if((type!==1 && num<count) || (type!==2 && num>count)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -110,13 +110,13 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && func(cell,cell.rt())){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell.rt().seterr(1);
 				result = false;
 			}
 			if(cell.by<bd.maxby-1 && func(cell,cell.dn())){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell.dn().seterr(1);
 				result = false;
@@ -140,7 +140,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 				var cnt=0, bx=cell.bx, by=cell.by;
 				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(function(cell){ return func(cell);});
 				if(clist.length===4){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
 				}
@@ -184,7 +184,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()==val){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(!this.performAsLine){ cell.seterr(1);}
 				else{ if(result){ bd.border.seterr(-1);} cell.setCellLineError(true);}
 				result = false;
@@ -202,7 +202,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 				(cell.lb().isLine() && cell.noLP(k.LT)) ||
 				(cell.rb().isLine() && cell.noLP(k.RT)) )
 			{
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -248,7 +248,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			var n = (!cell.isnull?cell.getQnum():-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} cinfo.setErrLareaById(id,1);}
 				else{ clist.seterr(this.owner.pid!="tateyoko"?1:4);}
 				result = false;
@@ -343,7 +343,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			if(rinfo.id[c]===null || val[c]===-1){ continue;}
 			if(d[rinfo.id[c]]===-1 && val[c]!==-1){ d[rinfo.id[c]] = val[c];}
 			else if(d[rinfo.id[c]]!==val[c]){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 
 				if(this.performAsLine){ if(result){ bd.border.seterr(-1);} rinfo.setErrLareaByCell(bd.cell[c],1);}
 				else{ rinfo.getclistbycell(bd.cell[c]).seterr(1);}
@@ -358,7 +358,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.getclist(r);
 			if(!this.isDifferentNumberInClist(clist, numfunc)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}
@@ -388,14 +388,14 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var by=1;by<=bd.maxby;by+=2){
 			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 			if(!evalfunc.call(this, clist, numfunc)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				result = false;
 			}
 		}
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
 			if(!evalfunc.call(this, clist, numfunc)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				result = false;
 			}
 		}
@@ -407,7 +407,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
 				if(tx>bx && !evalfunc.call(this, [bx-2,by,k.RT], bd.cellinside(bx,by,tx-2,by))){
-					if(!multierr || this.inAutoCheck){ return false;}
+					if(!multierr || this.checkOnly){ return false;}
 					result = false;
 				}
 				bx = tx; /* 次のループはbx=tx+2 */
@@ -417,7 +417,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			for(var by=1;by<=bd.maxby;by+=2){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
 				if(ty>by && !evalfunc.call(this, [bx,by-2,k.DN], bd.cellinside(bx,by,bx,ty-2))){
-					if(!multierr || this.inAutoCheck){ return false;}
+					if(!multierr || this.checkOnly){ return false;}
 					result = false;
 				}
 				by = ty; /* 次のループはbx=ty+2 */
@@ -436,7 +436,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
 				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.rooms.bdcnt[id]);
 				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					if(result){ bd.border.seterr(-1);}
 					bd.setCrossBorderError(bx,by);
 					result = false;
@@ -454,7 +454,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt()>=2 && cell.isNum()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(true);
 				result = false;
@@ -471,7 +471,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.room[r].error!==val){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			rinfo.getclist(r).seterr(1);
 			result = false;
 		}
@@ -489,7 +489,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var id=1;id<=xinfo.max;id++){
 			if(xinfo.room[id].error!==val){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			var cells = xinfo.room[id].cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}

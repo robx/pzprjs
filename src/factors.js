@@ -162,7 +162,7 @@ AnsCheck:{
 
 			var cell = this.owner.board.rooms.getTopOfRoom(id);
 			if(product!=cell.getQnum()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

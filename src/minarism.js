@@ -358,7 +358,7 @@ AnsCheck:{
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();
 			if(num1>0 && num2>0 && func(border,num1,num2)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell1.seterr(1);
 				cell2.seterr(1);
 				result = false;

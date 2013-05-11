@@ -333,7 +333,7 @@ AnsCheck:{
 
 			var cnt = cell.getCountOfBridges();
 			if((flag===1 && qn<cnt)||(flag===2 && qn>cnt)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

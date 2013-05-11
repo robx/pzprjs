@@ -310,7 +310,7 @@ AnsCheck:{
 			var blist = linfo.getblist(r);
 			if(func(blist.cellinside())){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			if(result){ bd.border.seterr(-1);}
 			blist.seterr(1);
 			result = false;

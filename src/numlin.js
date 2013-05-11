@@ -165,7 +165,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!(cell.lcnt()===1 && cell.noNum())){ continue;}
 
-			if(this.inAutoCheck){ return false;}
+			if(this.checkOnly){ return false;}
 			if(result){ bd.border.seterr(-1);}
 			cell.setCellLineError(true);
 			result = false;

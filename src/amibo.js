@@ -462,7 +462,7 @@ AnsCheck:{
 			if(!cell.isNum()){ continue;}
 			var cid = binfo.pole[c];
 			if((type===1 && cid.length>1) || (type===2 && cid.length===0)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -477,7 +477,7 @@ AnsCheck:{
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
 				var qn=cell.getNum(), id=binfo.pole[c][i], clist = binfo.getclist(id), llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
-					if(this.inAutoCheck){ return false;}
+					if(this.checkOnly){ return false;}
 					cell.seterr(1);
 					clist.setErrorBar();
 					result = false;
@@ -494,7 +494,7 @@ AnsCheck:{
 				if(clist.length===binfo.getclist(linkid[i]).length){ check=true; break;}
 			}
 			if(!check){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.setErrorBar();
 				result = false;
 			}

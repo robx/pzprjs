@@ -152,7 +152,7 @@ AnsCheck:{
 				border=cell.rb(); if(border.ques===1 && border.line===1){ cnt++;}
 			}
 			if(cnt>2){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

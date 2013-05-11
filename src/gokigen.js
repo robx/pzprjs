@@ -403,7 +403,7 @@ AnsCheck:{
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.getQnum();
 			if(qn>=0 && qn!=sinfo.cross[c].length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cross.seterr(1);
 				result = false;
 			}

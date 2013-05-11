@@ -94,7 +94,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		/* 自動チェック時は最初にチェックする */
-		if( this.inAutoCheck && !this.checkDir5BlackCell() ){ return 10025;}
+		if( this.checkOnly && !this.checkDir5BlackCell() ){ return 10025;}
 
 		var binfo = this.owner.board.getBCellInfo();
 		if( !this.checkAreaSquare(binfo) ){ return 10016;}
@@ -102,7 +102,7 @@ AnsCheck:{
 		if( !this.checkLookair(binfo) ){ return 19001;}
 
 			/* チェック時は最後にチェックする */
-		if( !this.inAutoCheck && !this.checkDir5BlackCell() ){ return 10025;}
+		if( !this.checkOnly && !this.checkDir5BlackCell() ){ return 10025;}
 
 		return 0;
 	},
@@ -114,7 +114,7 @@ AnsCheck:{
 			var cell = this.owner.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			if(cell.getNum()!==cell.countDir5Cell(iscount)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -132,7 +132,7 @@ AnsCheck:{
 			
 			var target = cinfo.getclistbycell(cell);
 			if(base.length === target.length){
-				if(this.inAutoCheck){ return 2;}
+				if(this.checkOnly){ return 2;}
 				base.seterr(1);
 				target.seterr(1);
 				result = false;

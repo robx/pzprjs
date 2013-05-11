@@ -213,12 +213,12 @@ AnsCheck:{
 			var room = rinfo.room[id];
 			if(room.error===-1||room.number<=0){ continue;}
 			if     (flag===1 && room.number<room.idlist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				rinfo.getclist(id).seterr(1);
 				result = false;
 			}
 			else if(flag===2 && room.number>room.idlist.length){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				rinfo.getclist(id).seterr(1);
 				result = false;
 			}

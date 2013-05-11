@@ -189,7 +189,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], qn = cell.getQnum();
 			if(qn>=0 && qn!==cell.getdir4BorderLine1()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

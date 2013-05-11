@@ -505,7 +505,7 @@ AnsCheck:{
 			sub=subs[cell.lb().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[cell.rb().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			if(num!==sum){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

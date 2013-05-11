@@ -353,7 +353,7 @@ AnsCheck:{
 			cell2=cell.rt(); if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
 
 			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

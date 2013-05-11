@@ -259,7 +259,7 @@ AnsCheck:{
 				if(num===-1 || rnum===num){ continue;}
 				else if(rnum===-1){ rnum=num; continue;}
 
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				for(var i=0;i<clist.length;i++){
 					var cell2 = clist[i].base;

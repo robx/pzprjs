@@ -155,7 +155,7 @@ AnsCheck:{
 
 			var count = blist.filter(function(border){ return border.isBorder();}).length;
 			if(cell.getQnum()!==count){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}
@@ -170,7 +170,7 @@ AnsCheck:{
 			if(!cell.isValidNum() || !dir){ continue;}
 
 			if(!cell.getaddr().movedir(dir,1).getb().isBorder()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
 			}

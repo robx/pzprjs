@@ -369,7 +369,7 @@ AnsCheck:{
 				else{ clist.add(cell);}
 			}
 			if(clist.length>=3){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}
@@ -391,7 +391,7 @@ AnsCheck:{
 
 			var cnt=clist.filter(function(cell){ return cell.isBlack();}).length;
 			if(cell.getQnum()!==cnt){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				clist.seterr(1);
 				result = false;
@@ -406,7 +406,7 @@ AnsCheck:{
 			if(cell.isWhite() || cell.by===bd.maxby-1){ continue;}
 
 			if(cell.relcell(-1,2).isWhite() && cell.relcell(1,2).isWhite()){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell.relcell(-1,2).seterr(1);
 				cell.relcell(1,2).seterr(1);

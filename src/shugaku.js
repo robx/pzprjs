@@ -377,7 +377,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQans()===43){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell.dn().seterr(1);
 				result = false;
@@ -403,7 +403,7 @@ AnsCheck:{
 			if( cell.countDir4Cell(function(cell){ return cell.isBlack();})===0 &&
 				adj .countDir4Cell(function(cell){ return cell.isBlack();})===0 )
 			{
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				adj.seterr(1);
 				result = false;

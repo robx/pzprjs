@@ -754,7 +754,7 @@ AnsCheck:{
 				if(clist[i].lcnt()>0){ cnt++;}
 			}
 			if((type==1 && cnt>1)||(type==2 && cnt==0)){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(4);
 				bd.hinfo.getGatePole(r).seterr(1)
 				result = false;

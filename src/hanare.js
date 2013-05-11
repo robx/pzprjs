@@ -183,7 +183,7 @@ AnsCheck:{
 			else{
 				if(cell!==null){
 					if(Math.abs(num-cell2.getNum())!==distance){
-						if(this.inAutoCheck){ return false;}
+						if(this.checkOnly){ return false;}
 						cell.seterr(1);
 						cell2.seterr(1)
 						result = false;
@@ -218,7 +218,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
 			if( num!==-1 && num!==clist.length ){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}

@@ -135,7 +135,7 @@ AnsCheck:{
 
 			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
 			if(cell.getQnum()!==cnt){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				clist.seterr(1);
 				result = false;

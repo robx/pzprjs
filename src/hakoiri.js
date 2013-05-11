@@ -202,7 +202,7 @@ AnsCheck:{
 			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
 
 			if(clist.length>1){
-				if(this.inAutoCheck){ return false;}
+				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
 			}
