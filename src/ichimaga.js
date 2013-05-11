@@ -149,6 +149,8 @@ AnsCheck:{
 		return 0;
 	},
 
+	deadEndOK : true,
+
 	checkLcntCell_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});

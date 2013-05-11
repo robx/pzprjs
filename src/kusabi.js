@@ -133,6 +133,8 @@ AnsCheck:{
 		return (this.checkAloneCircle() ? 0 : 43502);
 	},
 
+	deadEndOK : true,
+
 	checkAloneCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
 	},
