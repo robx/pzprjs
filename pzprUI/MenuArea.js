@@ -114,8 +114,7 @@ ui.menuarea = {
 			ac = function(){ pp.addCheck.apply(pp,arguments);},
 			aa = function(){ pp.addCaption.apply(pp,arguments);},
 			ai = function(){ pp.addChild.apply(pp,arguments);},
-			ap = function(){ pp.addSeparator.apply(pp,arguments);},
-			sl = function(){ pp.setLabel.apply(pp,arguments);};
+			ap = function(){ pp.addSeparator.apply(pp,arguments);}
 		var pid = ui.puzzle.pid;
 
 		// *ファイル ==========================================================
@@ -185,7 +184,6 @@ ui.menuarea = {
 
 		if(!!ui.puzzle.flags.irowake){
 			ac('irowake','disp', '線の色分け','Color coding');
-			sl('irowake', '線の色分けをする', 'Color each lines');
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		pp.addCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
@@ -229,7 +227,6 @@ ui.menuarea = {
 
 		if(pzprv3.EDITOR){
 			pp.addSelect('mode','setting', 'モード', 'mode');
-			pp.setLabel('mode','モード', 'mode');
 			pp.addChild('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
 			pp.addChild('mode_3', 'mode', '回答モード',     'Answer mode');
 		}
@@ -237,13 +234,11 @@ ui.menuarea = {
 		/* 操作方法の設定値 */
 		if(flags.use){
 			pp.addSelect('use','setting','操作方法', 'Input Type');
-			pp.setLabel('use', '操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
 			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
 		if(pid==='shakashaka'){
 			pp.addSelect('use_tri','setting','操作方法', 'Input Type');
-			pp.setLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
 			pp.addChild('use_tri_1', 'use_tri', 'クリックした位置', 'Corner-side');
 			pp.addChild('use_tri_2', 'use_tri', '引っ張り入力', 'Pull-to-Input');
 			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
@@ -252,66 +247,52 @@ ui.menuarea = {
 		/* 盤面チェックの設定値 */
 		if(flags.redline){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
-			pp.setLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
 		}
 		else if(flags.redblk){
 			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
-			pp.setLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
 		}
 		else if(flags.redblkrb){
 			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
-			pp.setLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
 		}
 		else if(pid==='roma'){
 			pp.addCheck('redroad','setting','通り道のチェック', 'Check Road');
-			pp.setLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 		}
 
 		/* 背景色入力の設定値 */
 		if(flags.bgcolor){
 			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
-			pp.setLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 		}
 
 		/* 文字別正解表示の設定値 */
 		if(pid==='hashikake'||pid==='kurotto'){
 			pp.addCheck('circolor','setting','数字をグレーにする','Set Grey Color');
-			pp.setLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='kouchoku'){
 			pp.addCheck('circolor','setting','点をグレーにする','Set Grey Color');
-			pp.setLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
 
 		if(pid==='hitori'){
 			pp.addCheck('plred','setting', '重複した数字を表示', 'Show overlapped number');
-			pp.setLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
 		}
 
 		if(pid==='wagiri'){
 			pp.addCheck('colorslash','setting', '斜線の色分け', 'Slash with color');
-			pp.setLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
 		}
 
 		/* 正当判定方法の設定値 */
 		if(pid==='fillomino'){
 			pp.addCheck('enbnonum','setting','未入力で正答判定','Allow Empty cell');
-			pp.setLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
 		}
 
 		/* 線の引き方の設定値 */
 		if(pid==='kouchoku'){
 			pp.addCheck('enline','setting','線は点の間','Line between points');
-			pp.setLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
-
 			pp.addCheck('lattice','setting','格子点チェック','Check lattice point');
-			pp.setLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
 		}
 
 		/* 問題形式の設定値 */
 		if(pid==='mashu'){
 			pp.addCheck('uramashu','setting', '裏ましゅ', 'Ura-Mashu');
-			pp.setLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
 		}
 
 		/* 盤面表示形式の設定値 */
@@ -322,7 +303,6 @@ ui.menuarea = {
 		}
 		if(pid==='bosanowa'){
 			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
-			pp.setLabel('disptype_bosanowa', '表示形式', 'Display');
 			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
 			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
 			pp.addChild('disptype_bosanowa_3', 'disptype_bosanowa', 'ワリタイ形式',   'Waritai type');
@@ -330,28 +310,23 @@ ui.menuarea = {
 
 		if(pid==='snakes'){
 			pp.addCheck('snakebd','setting','へび境界線有効','Enable snake border');
-			pp.setLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
 		}
 
 		/* EDITOR時の設定値 */
 		if(pzprv3.EDITOR && pid==='goishi'){
 			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
-			pp.setLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
 		}
 		if(pzprv3.EDITOR && pid==='tentaisho'){
 			pp.addCheck('discolor','setting','色分け無効化','Disable color');
-			pp.setLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
 		}
 
 		/* 共通設定値 */
 		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
 
 		pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
-		pp.setLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
 
 		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
 			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
-			pp.setLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 		}
 
 		pp.addSelect('language', 'setting', '言語', 'Language');
@@ -706,7 +681,6 @@ MenuList.prototype =
 
 	//---------------------------------------------------------------------------
 	// pp.addFlags()  上記関数の内部共通処理
-	// pp.setLabel()  管理領域に表記するラベル文字列を設定する
 	//---------------------------------------------------------------------------
 	addFlags : function(idname, parent, type, first, strJP, strEN){
 		this.item[idname] = {
@@ -721,21 +695,13 @@ MenuList.prototype =
 		};
 	},
 
-	setLabel : function(idname, strJP, strEN){
-		if(!this.item[idname]){ return;}
-		this.item[idname].str.ja.label = strJP;
-		this.item[idname].str.en.label = strEN;
-	},
-
 	//---------------------------------------------------------------------------
-	// pp.getMenuStr() 管理パネルと選択型/チェック型サブメニューに表示する文字列を返す
-	// pp.getLabel()   管理パネルとチェック型サブメニューに表示する文字列を返す
+	// pp.getMenuStr() 選択型/チェック型サブメニューに表示する文字列を返す
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
 	getMenuStr : function(idname){ return this.item[idname].str[ui.menu.getMenuConfig('language')].menu; },
-	getLabel   : function(idname){ return this.item[idname].str[ui.menu.getMenuConfig('language')].label;},
-	type       : function(idname){ return this.item[idname].type;},
+	type       : function(idname){ return (this.item[idname]?this.item[idname].type:null);},
 	haschild   : function(idname){
 		var flag = this.item[idname];
 		if(!flag){ return false;}
