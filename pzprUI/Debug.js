@@ -46,9 +46,7 @@ ui.popupmgr.addpopup('debug',
 		this.addBR();
 		
 		this.addExecButton("Save", "Save", function(){ debug.filesave()});
-		if(ui.menu.ispencilbox){
-			this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox()});
-		}
+		this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox()});
 		this.addText(" ", " ");
 		
 		this.addExecButton("Load", "Load", function(){ debug.fileopen();});

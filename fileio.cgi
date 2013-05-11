@@ -37,7 +37,7 @@ sub fileopen{
 	}
 	close ($FH) if ($CGI::OS ne 'UNIX'); # Windowsプラットフォーム用
 
-	$str =~ s/[\r\n]+/\n/g;
+	$str =~ s/\r?\n/\n/g;
 	$str =~ s/\"/\\\"/g;
 
 	print <<"EOL";
@@ -78,13 +78,13 @@ sub filesave{
 
 	$rn = "\012";
 
-	my @lines = split(/[\r\n]+/, $q->param('ques'));
+	my @lines = split(/\r?\n/, $q->param('ques'));
 	if($#lines>=3){
 		foreach(@lines){ printf "$_$rn";}
 	}
 
 	if($q->param('urlstr')){
-		@lines = split(/[\r\n]+/, $q->param('urlstr'));
+		@lines = split(/\r?\n/, $q->param('urlstr'));
 		foreach(@lines){ printf "$_$rn";}
 	}
 }

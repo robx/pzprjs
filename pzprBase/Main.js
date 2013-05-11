@@ -48,7 +48,7 @@ pzprv3.createCoreClass('Puzzle',
 		});
 	},
 	openByFileData : function(filedata, callback){
-		var farray = filedata.split(/[\t\r\n]+/), fstr = "";
+		var farray = filedata.replace(/[\t\r]*\n/g,"\n").split(/\n/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"\n");

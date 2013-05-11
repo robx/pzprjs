@@ -213,7 +213,7 @@ v3index.fileif.extend({
 	},
 	fileonload : function(str){
 		if(!!str){
-			var farray = str.split(/[\t\r\n]+/);
+			var farray = str.replace(/[\t\r]*\n/g,"\n").split(/\n/);
 			var fstr = "", fheader = ['',''];
 			for(var i=0;i<farray.length;i++){
 				if(farray[i].match(/^http\:\/\//)){ break;}

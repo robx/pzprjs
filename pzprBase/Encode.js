@@ -81,7 +81,7 @@ pzprv3.createPuzzleClass('Encode',
 		case pzprurl.KANPEN:
 			o.fio.datastr = "";
 			this.encodeKanpen()
-			this.outbstr = o.fio.datastr.replace(/[\r\n]+/g,"/").replace(/ /g, "_");
+			this.outbstr = o.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
 			size = (!this.outsize ? [row,col].join('/') : this.outsize);
 			break;
 
