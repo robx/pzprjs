@@ -129,7 +129,7 @@ ui.menuarea = {
 		if(pzprv3.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
-		if(this.enableSaveImage){
+		if(ui.menu.enableSaveImage){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
@@ -142,7 +142,7 @@ ui.menuarea = {
 		}
 
 		// *ファイル - 画像を保存 -------------------------------------------
-		if(this.enableSaveImage){
+		if(ui.menu.enableSaveImage){
 			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
 			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}

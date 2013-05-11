@@ -24,6 +24,8 @@ var Menu = function(){
 
 	this.fileio = (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	this.enableReadText = false;
+	
+	this.enableSaveBlob = false;
 };
 Menu.prototype =
 {
@@ -32,13 +34,12 @@ Menu.prototype =
 		
 		this.initReader();
 
-		if(!!pzprv3.getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
-			this.enableSaveImage = true;
-		}
-
 		if(pzprv3.browser.IE6){
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
+		
+		window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
+		this.enableSaveBlob = (!!window.navigator.saveBlob);
 	},
 	
 	//---------------------------------------------------------------------------
@@ -50,6 +51,10 @@ Menu.prototype =
 		var pid = ui.puzzle.pid;
 		
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
+		
+		if(!!pzprv3.getEL("divques_sub").getContext && !!document.createElement('canvas').toDataURL){
+			this.enableSaveImage = true;
+		}
 		
 		this.menureset();
 
@@ -358,19 +363,25 @@ Menu.prototype =
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
-		var form = document.fileform2;
-		form.filename.value = fname;
+		if(!this.enableSaveBlob){
+			var form = document.fileform2;
+			form.filename.value = fname;
 
-		if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
-		else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
-		else                                           { form.platform.value = "Others";}
+			if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
+			else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
+			else                                           { form.platform.value = "Others";}
 
-		form.ques.value   = ui.puzzle.getFileData(ftype);
-		form.urlstr.value = "";
-		form.operation.value = 'save';
+			form.ques.value   = ui.puzzle.getFileData(ftype);
+			form.urlstr.value = "";
+			form.operation.value = 'save';
 
-		form.action = this.fileio
-		form.submit();
+			form.action = this.fileio
+			form.submit();
+		}
+		else{
+			var blob = new Blob([ui.puzzle.getFileData(ftype)], {type:'text/plain'});
+			navigator.saveBlob(blob, fname);
+		}
 	},
 
 	//------------------------------------------------------------------------------
@@ -400,8 +411,9 @@ Menu.prototype =
 	imagesave : function(isDL,cellsize){
 		var canvas_sv = ui.puzzle.canvas;
 		try{
-			ui.puzzle.canvas = pzprvv3.getEL('divques_sub');
+			ui.puzzle.canvas = pzprv3.getEL('divques_sub');
 			var pc = ui.puzzle.painter, pc2 = ui.puzzle.newInstance('Graphic');
+			pc2.init();
 
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
