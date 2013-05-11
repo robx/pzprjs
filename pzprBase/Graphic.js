@@ -561,7 +561,7 @@ pzprv3.createPuzzleClass('Graphic',
 	//---------------------------------------------------------------------------
 	repaintBlocks : function(clist){
 		var d = clist.getRectSize();
-		this.paintRange(d.x1,d.y1,d.x2,d.y2);
+		this.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 	},
 
 	//---------------------------------------------------------------------------

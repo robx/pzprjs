@@ -65,8 +65,8 @@ Cell:{
 		}
 
 		var d=this.akariRange();
-		this.owner.painter.paintRange(d.x1, this.by, d.x2, this.by);
-		this.owner.painter.paintRange(this.bx, d.y1, this.bx, d.y2);
+		this.owner.painter.paintRange(d.x1-1, this.by-1, d.x2+1, this.by+1);
+		this.owner.painter.paintRange(this.bx-1, d.y1-1, this.bx+1, d.y2+1);
 	},
 
 	akariRangeClist : function(){
