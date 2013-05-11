@@ -438,12 +438,7 @@ pzprv3.createCoreClass('Config',
 			break;
 		
 		case 'disptype_bosanowa':
-			var pc = o.painter;
-			pc.suspendAll();
-			if     (newval==1){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			else if(newval==2){ pc.bdmargin = 1.20; pc.bdmargin_image = 1.10;}
-			else if(newval==3){ pc.bdmargin = 0.70; pc.bdmargin_image = 0.10;}
-			pc.unsuspend();
+			o.painter.dispchange_bosanowa();
 			break;
 		
 		default:

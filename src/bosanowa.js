@@ -176,6 +176,15 @@ Graphic:{
 		this.drawTarget_bosanowa();
 	},
 
+	dispchange_bosanowa : function(){
+		var newval = this.owner.getConfig('disptype_bosanowa');
+		this.suspendAll();
+		if     (newval==1){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
+		else if(newval==2){ this.bdmargin = 1.20; this.bdmargin_image = 1.10;}
+		else if(newval==3){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
+		this.unsuspend();
+	},
+
 	drawErrorCells_bosanowa : function(){
 		var g = this.vinc('cell_back', 'crispEdges');
 
