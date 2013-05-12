@@ -406,15 +406,16 @@ Menu.prototype =
 	//------------------------------------------------------------------------------
 	// menu.imagesave()   画像を保存する
 	// menu.submitimage() "画像をダウンロード"の処理ルーチン
+	// menu.saveimage()   "画像をダウンロード"の処理ルーチン (IE10用)
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var canvas_sv = ui.puzzle.canvas;
+		var o = ui.puzzle, canvas_sv = o.canvas;
+		var pc  = o.painter, pc2 = o.newInstance('Graphic');
+		
+		o.canvas = pzprv3.getEL('divques_sub');
+		pc2.init();
 		try{
-			ui.puzzle.canvas = pzprv3.getEL('divques_sub');
-			var pc = ui.puzzle.painter, pc2 = ui.puzzle.newInstance('Graphic');
-			pc2.init();
-
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
 			pc2.outputImage = true;
@@ -428,20 +429,28 @@ Menu.prototype =
 			// canvas要素の設定を適用して、再描画
 			pc2.adjustCanvasSize();
 			pc2.unsuspend();
-
-			// canvasの描画内容をDataURLとして取得する
-			var url = pc2.currentContext.canvas.toDataURL();
-
-			if(isDL){ this.submitimage(url);}
-			else    { this.openimage(url);}
 		}
 		catch(e){
-			this.alertStr('画像の出力に失敗しました..','Fail to Output the Image..');
+			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			o.canvas = canvas_sv;
+			return;
 		}
-		ui.puzzle.canvas = canvas_sv;
+
+		try{
+			if(!isDL){ this.openimage(pc2);}
+			else{
+				if(!this.enableSaveBlob){ this.submitimage(pc2);}
+				else                    { this.saveimage(pc2);}
+			}
+		}
+		catch(e){
+			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
+		}
+		o.canvas = canvas_sv;
 	},
 
-	submitimage : function(url){
+	submitimage : function(pc2){
+		var url = pc2.currentContext.canvas.toDataURL();
 		var _doc = document;
 		_doc.fileform2.filename.value  = ui.puzzle.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
@@ -450,7 +459,12 @@ Menu.prototype =
 		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
 	},
-	openimage : function(url){
+	saveimage : function(pc2){
+		var blob = pc2.currentContext.canvas.toBlob();
+		navigator.saveBlob(blob, ui.puzzle.pid+'.png');
+	},
+	openimage : function(pc2){
+		var url = pc2.currentContext.canvas.toDataURL();
 		if(!pzprv3.browser.IE9){
 			window.open(url, '', '');
 		}
