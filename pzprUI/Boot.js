@@ -80,10 +80,7 @@ function openPuzzle(){
 	}
 
 	// 描画wrapperの設定
-	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
-	if(Candle.enable.canvas){
-		ui.puzzle.setSubCanvas(document.getElementById('divques_sub'), 'canvas');
-	}
+	ui.puzzle.setCanvas('canvas', pzprv3.getEL('divques'), pzprv3.getEL('divques_sub'));
 	ui.puzzle.setKeyEvents();
 
 	// 外部から参照できるようにする

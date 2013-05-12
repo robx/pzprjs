@@ -202,24 +202,23 @@ pzprv3.createCoreClass('Puzzle',
 
 	//---------------------------------------------------------------------------
 	// owner.setCanvas()    描画キャンバスをセットする
-	// owner.setSubCanvas() 補助用キャンバスをセットする
 	//---------------------------------------------------------------------------
-	setCanvas : function(el, type){
+	setCanvas : function(type, el, el2){
 		var o = this;
 		if(!type){ type = '';}
-		Candle.start(el.id, type, function(g){
-			pzprv3.unselectable(g.canvas);
-			o.canvas = g.canvas;
-		});
-		this.setMouseEvents(el);
-	},
-	setSubCanvas :function(el, type){
-		var o = this;
-		o.usecanvas2 = true;
-		if(!type){ type = '';}
-		Candle.start(el.id, type, function(g){
-			o.canvas2 = g.canvas;
-		});
+		if(!!el){
+			Candle.start(el.id, type, function(g){
+				pzprv3.unselectable(g.canvas);
+				o.canvas = g.canvas;
+			});
+			this.setMouseEvents(el);
+		}
+		if(!!el2 && Candle.enable.canvas){
+			o.usecanvas2 = true;
+			Candle.start(el2.id, 'canvas', function(g){
+				o.canvas2 = g.canvas;
+			});
+		}
 	},
 
 	//---------------------------------------------------------------------------
