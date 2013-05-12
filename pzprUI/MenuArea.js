@@ -19,6 +19,7 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.items = new MenuList();
+		this.items.reset();
 		
 		this.createArea();
 		this.createAllFloat();

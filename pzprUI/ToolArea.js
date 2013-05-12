@@ -25,7 +25,7 @@ ui.toolarea = {
 
 	reset : function(){
 		this.btnstack = [];
-		this.labels   = [];
+		this.labels   = {};
 
 		getEL('usepanel')  .innerHTML = '';
 		getEL('checkpanel').innerHTML = '';
