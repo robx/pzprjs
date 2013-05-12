@@ -12,6 +12,8 @@ window.pzprv3 = {
 	EDITOR : false,	// エディタモード
 	PLAYER : true,	// playerモード
 
+	puzzles : [],	// createPuzzle()で生成したパズルを保存する
+
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用
 
@@ -21,7 +23,14 @@ window.pzprv3 = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(){
-		return new pzprv3.core.Puzzle();
+		var puzzle = new pzprv3.core.Puzzle();
+		this.puzzles.push(puzzle);
+		return puzzle;
+	},
+	deletePuzzle : function(puzzle){
+		for(var i=0,len=this.puzzles.length;i<len;i++){
+			if(this.puzzles[i]===puzzle){ this.puzzles[i]=null;}
+		}
 	},
 
 	//---------------------------------------------------------------
