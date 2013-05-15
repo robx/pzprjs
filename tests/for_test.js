@@ -154,7 +154,7 @@ ui.debug.extend(
 		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ bd.execadjust('turnr');}
+		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnR test 1  = pass");}
@@ -173,7 +173,7 @@ ui.debug.extend(
 
 	check_turnL1 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ bd.execadjust('turnl');}
+		for(var i=0;i<4;i++){ bd.exec.execadjust('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("TurnL test 1  = pass");}
@@ -192,7 +192,7 @@ ui.debug.extend(
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ bd.execadjust('flipx');}
+		for(var i=0;i<2;i++){ bd.exec.execadjust('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipX test 1  = pass");}
@@ -211,7 +211,7 @@ ui.debug.extend(
 
 	check_flipY1 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ bd.execadjust('flipy');}
+		for(var i=0;i<2;i++){ bd.exec.execadjust('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("FlipY test 1  = pass");}
@@ -231,7 +231,7 @@ ui.debug.extend(
 	check_adjust1 : function(self){
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
-		for(var i=0;i<8;i++){ bd.execadjust(names[i]);}
+		for(var i=0;i<8;i++){ bd.exec.execadjust(names[i]);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Adjust test 1  = pass");}

@@ -40,6 +40,7 @@ sub output_pzprBase{
 		'Main.js',
 		'BoardPiece.js',
 		'Board.js',
+		'BoardExec.js',
 		'LineManager.js',
 		'AreaManager.js',
 		'Graphic.js',

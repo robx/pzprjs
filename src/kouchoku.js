@@ -209,30 +209,32 @@ Board:{
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
 		}
 		return lattice;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
+		var bd=this.owner.board;
 		if(key & k.REDUCE){
-			var seglist=this.segs.getallsegment(), sublist=this.owner.newInstance('SegmentList');
+			var seglist=bd.segs.getallsegment(), sublist=this.owner.newInstance('SegmentList');
 			for(var i=0;i<seglist.length;i++){
 				var seg = seglist[i];
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
-					case k.REDUCEUP: if(by1<this.minby+2||by2<this.minby+2){ sublist.add(seg);} break;
-					case k.REDUCEDN: if(by1>this.maxby-2||by2>this.maxby-2){ sublist.add(seg);} break;
-					case k.REDUCELT: if(bx1<this.minbx+2||bx2<this.minbx+2){ sublist.add(seg);} break;
-					case k.REDUCERT: if(bx1>this.maxbx-2||bx2>this.maxbx-2){ sublist.add(seg);} break;
+					case k.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.add(seg);} break;
+					case k.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.add(seg);} break;
+					case k.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.add(seg);} break;
+					case k.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.add(seg);} break;
 				}
 			}
 
 			var opemgr = this.owner.opemgr, isrec = (!opemgr.undoExec && !opemgr.redoExec);
 			if(isrec){ opemgr.forceRecord = true;}
-			for(var i=0;i<sublist.length;i++){ this.segs.removeSegment(sublist[i]);}
+			for(var i=0;i<sublist.length;i++){ bd.segs.removeSegment(sublist[i]);}
 			if(isrec){ opemgr.forceRecord = false;}
 		}
 	},
 	adjustBoardData2 : function(key,d){
-		var seglist=this.segs.getallsegment();
+		var seglist=this.owner.board.segs.getallsegment();
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 		for(var i=0;i<seglist.length;i++){
 			var seg=seglist[i], bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;

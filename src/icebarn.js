@@ -189,31 +189,34 @@ Board:{
 		else if(border.by===this.maxby){ border.setArrow(k.DN);}
 		else if(border.bx===this.minbx){ border.setArrow(k.LT);}
 		else if(border.bx===this.maxbx){ border.setArrow(k.RT);}
-	},
-
+	}
+},
+BoardExec:{
 	posinfo_in  : {},
 	posinfo_out : {},
 	adjustBoardData : function(key,d){
+		var bd = this.owner.board;
 		this.adjustBorderArrow(key,d);
 
-		this.posinfo_in  = this.getAfterPos(key,d,this.arrowin);
-		this.posinfo_out = this.getAfterPos(key,d,this.arrowout);
+		this.posinfo_in  = this.getAfterPos(key,d,bd.arrowin);
+		this.posinfo_out = this.getAfterPos(key,d,bd.arrowout);
 	},
 	adjustBoardData2 : function(key,d){
+		var bd = this.owner.board;
 		var info1 = this.posinfo_in, info2 = this.posinfo_out;
-		this.arrowin  = this.getb(info1.bx2, info1.by2);
-		this.arrowout = this.getb(info2.bx2, info2.by2);
+		bd.arrowin  = bd.getb(info1.bx2, info1.by2);
+		bd.arrowout = bd.getb(info2.bx2, info2.by2);
 
 		var opemgr = this.owner.opemgr;
 		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
 			opemgr.forceRecord = true;
 			if(info1.isdel){
 				opemgr.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
-				this.setarrowin_arrow (this.arrowin);
+				bd.setarrowin_arrow (bd.arrowin);
 			}
 			if(info2.isdel){
 				opemgr.addOpe_InOut('out', info2.bx1,info2.by1, info2.bx2,info2.by2);
-				this.setarrowout_arrow(this.arrowout);
+				bd.setarrowout_arrow(bd.arrowout);
 			}
 			opemgr.forceRecord = false;
 		}

@@ -148,8 +148,9 @@ Border:{
 },
 
 Board:{
-	isborder : 1,
-
+	isborder : 1
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		var trans = {};
 		switch(key){
@@ -159,8 +160,10 @@ Board:{
 			case k.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
 			default: return;
 		}
-		for(var c=0;c<this.cellmax;c++){
-			var val=trans[this.cell[c].qans]; if(!!val){ this.cell[c].qans=val;}
+		var clist = this.owner.board.cell;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], val = trans[cell.qans];
+			if(!!val){ cell.qans=val;}
 		}
 	}
 },

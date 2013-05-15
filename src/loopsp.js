@@ -100,8 +100,9 @@ Border:{
 	enableLineCombined : true
 },
 Board:{
-	isborder : 1,
-
+	isborder : 1
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & k.TURNFLIP){
 			var tques={};
@@ -111,10 +112,10 @@ Board:{
 				case k.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
 				case k.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
-			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
+				var cell = clist[i], val = tques[cell.getQues()];
+				if(!!val){ cell.setQues(val);}
 			}
 		}
 	}

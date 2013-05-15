@@ -45,7 +45,7 @@ Cell:{
 	minnum : 0
 },
 
-Board:{
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}

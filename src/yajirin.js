@@ -55,8 +55,9 @@ Border:{
 	enableLineNG : true
 },
 Board:{
-	isborder : 1,
-
+	isborder : 1
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}

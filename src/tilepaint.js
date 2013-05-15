@@ -101,8 +101,9 @@ EXCell:{
 },
 Board:{
 	isborder : 1,
-	isexcell : 1,
-
+	isexcell : 1
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustQues51_1(key,d);
 	},

@@ -94,8 +94,9 @@ Board:{
 			}
 		}
 		return ainfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustCellArrow(key,d);
 	}

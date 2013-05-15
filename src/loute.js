@@ -223,8 +223,9 @@ Board:{
 		}
 		
 		return rinfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}

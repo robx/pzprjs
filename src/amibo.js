@@ -158,11 +158,16 @@ Board:{
 			else{ binfo.pole[c] = [];}
 		}
 		return binfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & k.TURN){ // 回転だけ
-			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans([0,2,1,3][this.cell[c].getQans()]);}
+			var clist = this.owner.board.cell;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				cell.setQans([0,2,1,3][cell.getQans()]);
+			}
 		}
 	}
 },

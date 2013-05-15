@@ -117,8 +117,9 @@ Board:{
 			if(ldata[c]===0){ ldata[c] = (result?2:1)}
 		}
 		return result;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustCellArrow(key,d);
 	}

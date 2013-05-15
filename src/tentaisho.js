@@ -267,10 +267,12 @@ Board:{
 			rinfo.room[id].error = ret.err;
 		}
 		return rinfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData2 : function(key,d){
-		this.initStar(this.qcols, this.qrows);
+		var bd = this.owner.board;
+		bd.initStar(bd.qcols, bd.qrows);
 	}
 },
 

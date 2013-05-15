@@ -112,8 +112,9 @@ Board:{
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustQues51_1(key,d);
 	},

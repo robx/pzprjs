@@ -53,15 +53,16 @@ Cell:{
 	maxnum : 3
 },
 Board:{
-	isborder : 1,
-
+	isborder : 1
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & k.TURN){
-			var tques={2:3,3:2};
-			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var tques = {2:3,3:2};
+			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val=tques[cell.getQnum()]; if(!!val){ cell.setQnum(val);}
+				var cell = clist[i], val = tques[cell.getQnum()];
+				if(!!val){ cell.setQnum(val);}
 			}
 		}
 	}

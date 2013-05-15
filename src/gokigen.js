@@ -221,11 +221,17 @@ Board:{
 			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
 		}
 		return check;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
+		var bd = this.owner.board;
 		if(key & k.TURNFLIP){ // 反転・回転全て
-			for(var c=0;c<this.cellmax;c++){ this.cell[c].setQans({0:0,31:32,32:31}[this.cell[c].getQans()]);}
+			var clist = this.owner.board.cell;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				cell.setQans({0:0,31:32,32:31}[cell.getQans()]);
+			}
 		}
 	}
 },

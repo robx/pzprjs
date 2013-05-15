@@ -233,8 +233,9 @@ Board:{
 			}
 		}
 		return winfo;
-	},
-
+	}
+},
+BoardExec:{
 	adjustBoardData : function(key,d){
 		var trans = [];
 		switch(key){
@@ -244,8 +245,10 @@ Board:{
 			case k.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
 			default: return;
 		}
-		for(var c=0;c<this.cellmax;c++){
-			var val=trans[this.cell[c].qans]; if(!!val){ this.cell[c].qans=val;}
+		var clist = this.owner.board.cell;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], val = trans[cell.qans];
+			if(!!val){ cell.qans=val;}
 		}
 	}
 },

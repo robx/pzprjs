@@ -10,6 +10,7 @@ document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/CoreClass.js
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Main.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/BoardPiece.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Board.js\"></script>");
+document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/BoardExec.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/LineManager.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/AreaManager.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./pzprBase/Graphic.js\"></script>");

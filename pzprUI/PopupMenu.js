@@ -580,7 +580,7 @@ ui.popupmgr.addpopup('adjust',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		ui.puzzle.board.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.exec.execadjust((e.target||e.srcElement).name);
 	}
 });
 
@@ -622,7 +622,7 @@ ui.popupmgr.addpopup('turnflip',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		ui.puzzle.board.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.exec.execadjust((e.target||e.srcElement).name);
 	}
 });
 

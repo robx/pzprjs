@@ -145,30 +145,33 @@ Board:{
 			if(!cell.isnull){ clist.add(cell);}
 		}}
 		return clist;
-	},
-
+	}
+},
+BoardExec:{
 	// 拡大縮小・回転反転時の関数
 	execadjust : function(name){
+		var bd = this.owner.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
-				if(this.qrows<=1){ return;}
+				if(bd.qrows<=1){ return;}
 			}
 			else if(name==="reducelt"||name==="reducert"){
-				if(this.qcols<=1 && (this.shape!==3)){ return;}
+				if(bd.qcols<=1 && (bd.shape!==3)){ return;}
 			}
 		}
 
 		this.SuperFunc.execadjust.call(this, name);
 	},
 	expandreduce : function(key,d){
+		var bd = this.owner.board;
 		if(key & k.EXPAND){
 			switch(key & 0x0F){
-				case k.LT: this.qcols+=[0,0,1,1][this.shape];  this.shape=[2,3,0,1][this.shape]; break;
-				case k.RT: this.qcols+=[0,1,0,1][this.shape];  this.shape=[1,0,3,2][this.shape]; break;
-				case k.UP: this.qcols+=[-1,0,0,1][this.shape]; this.shape=[3,2,1,0][this.shape]; this.qrows++; break;
-				case k.DN: this.qrows++; break;
+				case k.LT: bd.qcols+=[0,0,1,1][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
+				case k.RT: bd.qcols+=[0,1,0,1][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
+				case k.UP: bd.qcols+=[-1,0,0,1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.qrows++; break;
+				case k.DN: bd.qrows++; break;
 			}
-			this.setminmax();
+			bd.setminmax();
 
 			this.expandGroup(k.CELL,key);
 		}
@@ -176,31 +179,33 @@ Board:{
 			this.reduceGroup(k.CELL,key);
 
 			switch(key & 0x0F){
-				case k.LT: this.qcols-=[1,1,0,0][this.shape];  this.shape=[2,3,0,1][this.shape]; break;
-				case k.RT: this.qcols-=[1,0,1,0][this.shape];  this.shape=[1,0,3,2][this.shape]; break;
-				case k.UP: this.qcols-=[1,0,0,-1][this.shape]; this.shape=[3,2,1,0][this.shape]; this.qrows--; break;
-				case k.DN: this.qrows--; break;
+				case k.LT: bd.qcols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
+				case k.RT: bd.qcols-=[1,0,1,0][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
+				case k.UP: bd.qcols-=[1,0,0,-1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.qrows--; break;
+				case k.DN: bd.qrows--; break;
 			}
 		}
-		this.setposAll();
+		bd.setposAll();
 	},
 
 	turnflip : function(key,d){
-		var d = {x1:this.minbx, y1:this.minby, x2:this.maxbx, y2:this.maxby};
+		var bd = this.owner.board;
+		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
-		if     (key===k.FLIPY){ if(!(this.qrows&1)){ this.shape = {0:3,1:2,2:1,3:0}[this.shape];} }
-		else if(key===k.FLIPX){ this.shape = {0:0,1:2,2:1,3:3}[this.shape];}
+		if     (key===k.FLIPY){ if(!(bd.qrows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
+		else if(key===k.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
 
 		this.turnflipGroup(k.CELL, key, d);
 
-		this.setposAll();
+		bd.setposAll();
 	},
 	distObj : function(key,obj){
+		var bd = this.owner.board;
 		key &= 0x0F;
 		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return this.maxby-obj.by;}
+		else if(key===k.DN){ return bd.maxby-obj.by;}
 		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return this.maxbx-obj.bx;}
+		else if(key===k.RT){ return bd.maxbx-obj.bx;}
 		return -1;
 	}
 },

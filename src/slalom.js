@@ -214,24 +214,27 @@ Board:{
 			cell0.draw();
 			cell.draw();
 		}
-	},
-
+	}
+},
+BoardExec:{
 	posinfo : {},
 	adjustBoardData : function(key,d){
+		var bd = this.owner.board;
 		if(key & k.TURN){
-			var tques={21:22,22:21};
-			var clist = this.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var tques = {21:22,22:21};
+			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val=tques[cell.getQues()]; if(!!val){ cell.setQues(val);}
+				var cell = clist[i], val = tques[cell.getQues()];
+				if(!!val){ cell.setQues(val);}
 			}
 		}
 
-		this.posinfo = this.getAfterPos(key,d,this.startcell);
+		this.posinfo = this.getAfterPos(key,d,bd.startcell);
 	},
 	adjustBoardData2 : function(key,d){
+		var bd = this.owner.board;
 		var info = this.posinfo;
-		this.startcell = this.getc(info.bx2, info.by2);
+		bd.startcell = bd.getc(info.bx2, info.by2);
 
 		var opemgr = this.owner.opemgr;
 		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
@@ -242,7 +245,7 @@ Board:{
 			opemgr.forceRecord = false;
 		}
 
-		this.hinfo.generateGates();	// 念のため
+		bd.hinfo.generateGates();	// 念のため
 	}
 },
 
