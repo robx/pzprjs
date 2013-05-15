@@ -82,6 +82,7 @@ ui.menuarea = {
 		}
 
 		if(idname==='manarea'){
+			var str;
 			if(!ui.toolarea.isdisp){ str = ui.menu.selectStr("管理領域を表示","Show management area");}
 			else                   { str = ui.menu.selectStr("管理領域を隠す","Hide management area");}
 			getEL('ms_manarea').innerHTML = str;

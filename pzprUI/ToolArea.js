@@ -390,7 +390,7 @@ ui.toolarea = {
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 function createButton(){
-	button = pzprv3.createEL('input');
+	var button = pzprv3.createEL('input');
 	button.type = 'button';
 	return button;
 }

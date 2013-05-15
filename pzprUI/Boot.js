@@ -82,9 +82,6 @@ function openPuzzle(){
 	// 描画wrapperの設定
 	ui.puzzle.setCanvas('canvas', pzprv3.getEL('divques'), pzprv3.getEL('divques_sub'));
 	ui.puzzle.setKeyEvents();
-
-	// 外部から参照できるようにする
-	window.puzzle = ui.puzzle;
  
 	// 単体初期化処理のルーチンへ
 	if     (!!pzl.fstr)  { ui.openFileData(pzl.fstr, accesslog);}

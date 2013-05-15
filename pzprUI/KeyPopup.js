@@ -134,7 +134,7 @@ ui.keypopup =
 		
 		var bar = pzprv3.getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', puzzle, function(){ ui.menu.setMenuConfig('keypopup',false)});
+		ui.event.addEvent(bar, 'dblclick', ui.menu, function(){ this.setMenuConfig('keypopup',false)});
 	},
 	createtable : function(mode,type){
 		this.basepanel = pzprv3.getEL('panelbase'+mode);

@@ -231,7 +231,7 @@ ui.popupmgr.addpopup('template',
 	},
 
 	addExecButton : function(str_jp, str_en, func, attr){
-		el = _doc.createElement('input');
+		var el = _doc.createElement('input');
 		el.type = 'button';
 		el.value = ui.menu.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
