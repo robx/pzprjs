@@ -93,10 +93,7 @@ pzprv3.createPuzzleClass('BoardExec',
 		bd.resetInfo();
 
 		// Canvasを更新する
-		if(!this.owner.getConfig('fixsize'))
-			{ this.owner.setCanvasSizeByCellSize();}
-		else
-			{ this.owner.setCanvasSize();}
+		this.owner.adjustCanvasSize();
 		this.owner.painter.unsuspend();
 	},
 

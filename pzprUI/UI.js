@@ -49,14 +49,15 @@ ui.event =
 	//---------------------------------------------------------------------------
 	afterReady : function(callback){
 		return function(){
+			ui.puzzle.painter.suspendAll();		/* adjustcellsize()で描画される */
+			
 			ui.menu.menuinit();					/* メニュー関係初期化 */
 			ui.event.adjustcellsize();
-			ui.undotimer.reset();
-			ui.timer.reset();					/* タイマーリセット(最後) */
 			
 			if(!!callback){ callback();}
 			
-			ui.puzzle.refreshCanvas();
+			ui.undotimer.reset();
+			ui.timer.reset();					/* タイマーリセット(最後) */
 		};
 	},
 
@@ -173,13 +174,13 @@ ui.event =
 			cellsize = cellsizeval*cr.limit;
 		}
 
-		o.setCanvasSizeByCellSize(cellsize);
-
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			pzprv3.getEL('main').style.width = ''+(mwidth|0)+'px';
 			if(pzprv3.OS.mobile){ pzprv3.getEL('menuboard').style.width = '90%';}
 		}
+
+		o.setCanvasSizeByCellSize(cellsize);
 	},
 
 	//----------------------------------------------------------------------

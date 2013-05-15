@@ -492,7 +492,7 @@ ui.menuarea = {
 		case 'subclear'  : ui.menu.ASconfirm(); break;
 		case 'duplicate' : ui.menu.duplicate(); break;
 		
-		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.menu.displayAll(); break;
+		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.menu.displayAll(); ui.puzzle.adjustCanvasSize(); break;
 		case 'repaint'   : ui.puzzle.drawCanvas(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;

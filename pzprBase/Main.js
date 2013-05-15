@@ -224,26 +224,31 @@ pzprv3.createCoreClass('Puzzle',
 	//---------------------------------------------------------------------------
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
+	// owner.adjustCanvasSize()  サイズの再設定を含めて盤面の再描画を行う
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
-		this.painter.setCanvasSize(width, height);
+		this.painter.resizeCanvas(width, height);
 	},
 	setCanvasSizeByCellSize : function(cellsize){
-		this.painter.adjustCanvasSize(cellsize);
+		this.painter.resizeCanvasByCellSize(cellsize);
+	},
+
+	adjustCanvasSize : function(){
+		if(!this.getConfig('fixsize')){
+			this.painter.resizeCanvasByCellSize();
+		}
+		else{
+			this.painter.resizeCanvas();
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// owner.drawCanvas()    盤面の再描画を行う
-	// owner.refreshCanvas() サイズの再設定を含めて盤面の再描画を行う
 	// owner.irowake()       色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	drawCanvas : function(){
 		this.painter.paintAll();
 	},
-	refreshCanvas : function(){
-		this.painter.forceRedraw();
-	},
-
 	irowake : function(){
 		this.board.irowakeRemake();
 		if(this.getConfig('irowake')){
@@ -375,7 +380,7 @@ pzprv3.createCoreClass('Config',
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
-		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
+		this.add('fixsize', true);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 入力方法設定 */
 		this.add('use', (!pzprv3.env.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */

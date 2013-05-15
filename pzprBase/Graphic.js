@@ -183,10 +183,37 @@ pzprv3.createPuzzleClass('Graphic',
 	vnop_STROKE : [true,false,true,false],
 
 	//---------------------------------------------------------------------------
-	// pc.resize_canvas()    ウィンドウのLoad/Resize時の処理。
-	//                       Canvas/表示するマス目の大きさを設定する。
+	// pc.resizeCanvas()    キャンバスのサイズを設定する
+	//                      (指定なしの場合は、前のキャンバスのサイズを用いる)
+	// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
+	//                             (指定なしの場合は、前のセルのサイズを用いる)
 	//---------------------------------------------------------------------------
-	resize_canvas : function(){
+	resizeCanvas : function(cwid, chgt){
+		this.suspendAll();
+		
+		this.canvasWidth  = cwid || this.canvasWidth;
+		this.canvasHeight = chgt || this.canvasHeight;
+		this.resize_canvas_main();
+		
+		this.unsuspend();
+	},
+	resizeCanvasByCellSize : function(cellsize){
+		this.suspendAll();
+		
+		this.cw = cellsize || this.cw;
+		this.ch = cellsize || this.ch;
+		this.canvasWidth  = this.cw*this.getCanvasCols();
+		this.canvasHeight = this.ch*this.getCanvasRows();
+		this.resize_canvas_main();
+		
+		this.unsuspend();
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.resize_canvas_main() ウィンドウのLoad/Resize時の処理。
+	//                         Canvas/表示するマス目の大きさを設定する。
+	//---------------------------------------------------------------------------
+	resize_canvas_main : function(){
 		var cwid = this.canvasWidth, chgt = this.canvasHeight;
 		var cols = this.getCanvasCols(), rows = this.getCanvasRows();
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
@@ -238,33 +265,8 @@ pzprv3.createPuzzleClass('Graphic',
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
-	},
 
-	//---------------------------------------------------------------------------
-	// pc.setCanvasSize()    キャンバスのサイズを設定する
-	//                       (指定なしの場合は、前のキャンバスのサイズを用いる)
-	// pc.adjustCanvasSize() セルのサイズを指定してキャンバスのサイズを変える
-	//                       (指定なしの場合は、前のセルのサイズを用いる)
-	// pc.forceRedraw()      盤面の設定をして再描画する
-	//---------------------------------------------------------------------------
-	setCanvasSize : function(cwid, chgt){
-		this.canvasWidth  = cwid || this.canvasWidth;
-		this.canvasHeight = chgt || this.canvasHeight;
-		this.forceRedraw();
-	},
-	adjustCanvasSize : function(cellsize){
-		this.cw = cellsize || this.cw;
-		this.ch = cellsize || this.ch;
-		this.canvasWidth  = this.cw*this.getCanvasCols();
-		this.canvasHeight = this.ch*this.getCanvasRows();
-		this.forceRedraw();
-	},
-
-	forceRedraw : function(){
-		this.suspendAll();
 		this.currentContext.clear();
-		this.resize_canvas();
-		this.unsuspend();
 	},
 
 	//---------------------------------------------------------------------------

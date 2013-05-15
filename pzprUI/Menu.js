@@ -63,6 +63,7 @@ Menu.prototype =
 		if(!!ui.menuarea){ ui.menuarea.init();}
 		if(!!ui.toolarea){ ui.toolarea.init();}
 
+		this.settextsize();
 		this.displayAll();
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
@@ -169,8 +170,6 @@ Menu.prototype =
 		ui.popupmgr.translate();
 
 		this.displayDesign();
-
-		ui.puzzle.setCanvasSize();	// canvasの左上座標等を更新して再描画
 	},
 	setdisplay : function(idname){
 		ui.menuarea.setdisplay(idname);
@@ -256,7 +255,6 @@ Menu.prototype =
 
 		/* テキストのサイズ */
 		this.menuconfig.textsize = {val:(!pzprv3.OS.mobile?0:2), option:[0,1,2,3]};
-		this.settextsize(this.menuconfig.textsize.val);
 
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
@@ -271,19 +269,16 @@ Menu.prototype =
 		if(idname==='keypopup'){
 			ui.keypopup.display();
 		}
-		else if(idname==='adjsize'){
-			ui.puzzle.refreshCanvas();
-		}
-		else if(idname==='cellsize'){
+		else if(idname==='adjsize' || idname==='cellsize'){
 			ui.event.adjustcellsize();
-			ui.puzzle.refreshCanvas();
 		}
 		else if(idname==='textsize'){
-			this.settextsize(newval);
-			ui.puzzle.setCanvasSize();	/* pageX/Yの位置がずれる */
+			this.settextsize();
+			ui.puzzle.adjustCanvasSize();	/* pageX/Yの位置がずれる */
 		}
 		else if(idname==='language'){
 			this.displayAll();
+			ui.puzzle.adjustCanvasSize();	/* canvasの左上座標等を更新して再描画 */
 		}
 	},
 	getMenuConfig : function(idname){
@@ -297,6 +292,7 @@ Menu.prototype =
 	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	settextsize : function(num){
+		var val = this.menuconfig.textsize.val;
 		this.modifyCSS({'.outofboard':{
 			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
 			lineHeight:['1.2','1.1','1.1','1.1'][num]
@@ -427,7 +423,7 @@ Menu.prototype =
 			pc2.ch = cellsize*(pc.ch/pc.cw);
 
 			// canvas要素の設定を適用して、再描画
-			pc2.adjustCanvasSize();
+			pc2.resizeCanvasByCellSize();
 			pc2.unsuspend();
 		}
 		catch(e){
