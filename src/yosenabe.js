@@ -122,10 +122,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	qnum : -1, // ○つき数字として扱う
-	qdir : -1, // ○なし数字として扱う
-
-	// 正答判定用
-	base : null
+	qdir : -1  // ○なし数字として扱う
 },
 Board:{
 	qcols : 8,

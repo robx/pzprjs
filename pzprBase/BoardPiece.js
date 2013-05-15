@@ -141,6 +141,8 @@ pzprv3.createPuzzleClass('Cell:BoardPiece',
 	qsub : 0,	// セルの補助データを保持する(1:白マス 1-2:背景色/○× 3:絵になる部分)
 	color: "",	// 色分けデータを保持する
 
+	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
+
 	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub'],
 	propans : ['qans', 'anum', 'qsub'],
 	propsub : ['qsub'],

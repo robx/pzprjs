@@ -43,10 +43,7 @@ Cell:{
 	nummaxfunc : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 	},
-	minnum : 0,
-
-	// 正答判定用
-	base : null
+	minnum : 0
 },
 
 Board:{
