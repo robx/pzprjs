@@ -166,8 +166,6 @@ AnsCheck:{
 		return 0;
 	},
 
-	deadEndOK : true,
-
 	checkCurveLine : function(linfo){
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
 	},

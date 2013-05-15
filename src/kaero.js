@@ -242,8 +242,6 @@ AnsCheck:{
 		return 0;
 	},
 
-	deadEndOK : true,
-
 	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(rinfo){
 		var result=true;

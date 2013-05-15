@@ -151,8 +151,6 @@ AnsCheck:{
 		return 0;
 	},
 
-	deadEndOK : true,
-
 	checkLinkDiffNumber : function(linfo){
 		return this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();});
 	},

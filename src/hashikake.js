@@ -322,8 +322,6 @@ AnsCheck:{
 		return 0;
 	},
 
-	deadEndOK : true,
-
 	checkCellNumber : function(flag){
 		var result = true, bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){

@@ -46,7 +46,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
 		var bd = this.owner.board;
-		if(bd.linfo.enabled && !this.deadEndOK){
+		if(bd.lines.enabled && !bd.linfo.enabled){
 			if(bd.lines.isCenterLine && !this.checkLcntCell(1)){ return 40101;}
 			if(bd.lines.borderAsLine && !this.checkLcntCross(1,0)){ return 40101;}
 		}
@@ -55,7 +55,6 @@ pzprv3.createPuzzleClass('AnsCheck',
 		if(failcode!==0){ return failcode;}
 		return 0;
 	},
-	deadEndOK : false,
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
