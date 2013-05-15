@@ -63,7 +63,7 @@ pzprv3.createPuzzleClass('Board',
 		this.emptyexcell = this.owner.newInstance('EXCell');
 
 		// 補助オブジェクト
-		this.disrec = 0;
+		this.disrecinfo = 0;
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
@@ -490,14 +490,14 @@ pzprv3.createPuzzleClass('Board',
 	//---------------------------------------------------------------------------
 	disableInfo : function(){
 		this.owner.opemgr.disableRecord();
-		this.disrec++;
+		this.disrecinfo++;
 	},
 	enableInfo : function(){
 		this.owner.opemgr.enableRecord();
-		if(this.disrec>0){ this.disrec--;}
+		if(this.disrecinfo>0){ this.disrecinfo--;}
 	},
 	isenableInfo : function(){
-		return (this.disrec===0);
+		return (this.disrecinfo===0);
 	},
 
 	//--------------------------------------------------------------------------------
