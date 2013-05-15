@@ -624,10 +624,10 @@ pzprv3.createPuzzleClass('Address',
 	
 	movedir : function(dir,dd){
 		switch(dir){
-			case 1: this.by-=dd; break; /* k.UP */
-			case 2: this.by+=dd; break; /* k.DN */
-			case 3: this.bx-=dd; break; /* k.LT */
-			case 4: this.bx+=dd; break; /* k.RT */
+			case k.UP: this.by-=dd; break;
+			case k.DN: this.by+=dd; break;
+			case k.LT: this.bx-=dd; break;
+			case k.RT: this.bx+=dd; break;
 		}
 		return this;
 	},

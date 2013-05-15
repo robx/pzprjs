@@ -4,8 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-
 /* タイマー割り込み間隔を短くするUA */
 var slowUA = (pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8);
 

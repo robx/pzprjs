@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 天体ショー版 tentaisho.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('tentaisho', {
 //---------------------------------------------------------
@@ -110,7 +107,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			this.owner.opemgr.addOpe_Object(this, k.QSUB, 1, 0);
+			this.owner.opemgr.addOpe_Object(this, pzprv3.consts.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -521,5 +518,3 @@ pzprv3.addFailCode({
 	39221 : ["領域が星を中心に点対称になっていません。", "A area is not point symmetric about the star."],
 	39231 : ["星が複数含まれる領域があります。","A block has two or more stars."]
 });
-
-})();

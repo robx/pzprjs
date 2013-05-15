@@ -5,8 +5,6 @@
 /* uiオブジェクト生成待ち */
 if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
 //---------------------------------------------------------------------------
@@ -109,11 +107,11 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(k.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
 		if(pzprurl.info[ui.puzzle.pid].exists.kanpen){
-			this.setTA(ui.puzzle.getFileData(k.FILE_PBOX));
+			this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PBOX));
 		}
 		else{
 			this.setTA("");

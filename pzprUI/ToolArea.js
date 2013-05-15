@@ -4,8 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
 /* extern */

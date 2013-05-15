@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 ヤジタタミ版 yajitatami.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('yajitatami', {
 //---------------------------------------------------------
@@ -141,6 +138,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
+		var k = pzprv3.consts;
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -179,5 +177,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('shakashaka', {
 //---------------------------------------------------------
@@ -237,6 +234,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
+		var k = pzprv3.consts;
 		var trans = [];
 		switch(key){
 			case k.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
@@ -380,5 +378,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

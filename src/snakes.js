@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 へびいちご版 snakes.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('snakes', {
 //---------------------------------------------------------
@@ -303,6 +300,7 @@ AnsCheck:{
 		return result;
 	},
 	checkSnakesView : function(sinfo){
+		var k = pzprv3.consts;
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.getclist(r);
@@ -340,5 +338,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

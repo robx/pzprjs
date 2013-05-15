@@ -1,7 +1,4 @@
 // Encode.js v3.4.0
-(function(){
-
-var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -518,5 +515,3 @@ pzprv3.createPuzzleClass('Encode',
 		return (bottom <= ca && ca <= up);
 	}
 });
-
-})();

@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 トリプレイス版 triplace.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('triplace', {
 //---------------------------------------------------------
@@ -320,6 +317,7 @@ AnsCheck:{
 	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
+		var k = pzprv3.consts;
 		if     (dir===k.RT){ number = keyobj.getQnum();}
 		else if(dir===k.DN){ number = keyobj.getQdir();}
 
@@ -337,5 +335,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

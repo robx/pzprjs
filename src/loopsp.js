@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('loopsp', {
 //---------------------------------------------------------
@@ -104,6 +101,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
+		var k = pzprv3.consts;
 		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){
@@ -323,5 +321,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

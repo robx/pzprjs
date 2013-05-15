@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('gokigen', {
 //---------------------------------------------------------
@@ -226,7 +223,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd = this.owner.board;
-		if(key & k.TURNFLIP){ // 反転・回転全て
+		if(key & pzprv3.consts.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
@@ -422,5 +419,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

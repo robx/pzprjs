@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 メジリンク版 mejilink.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('mejilink', {
 //---------------------------------------------------------
@@ -43,7 +40,7 @@ Border:{
 		var bd = this.owner.board;
 		var def = (this.id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
 		if(this.ques!==def){
-			if(isrec){ this.owner.opemgr.addOpe_Object(this, k.QUES, this.ques, def);}
+			if(isrec){ this.owner.opemgr.addOpe_Object(this, pzprv3.consts.QUES, this.ques, def);}
 			this.ques = def;
 		}
 
@@ -240,5 +237,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

@@ -4,7 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
 var _doc = document;
 
 //---------------------------------------------------------------------------
@@ -384,7 +383,7 @@ Menu.prototype =
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var filestr = ui.puzzle.getFileData(k.FILE_PZPH);
+		var filestr = ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
 		if(!pzprv3.browser.Opera){
 			var old = sessionStorage['filedata'];

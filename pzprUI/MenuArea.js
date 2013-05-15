@@ -4,8 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-
 // メニュー描画/取得/html表示系
 /* extern */
 ui.menuarea = {
@@ -475,7 +473,7 @@ ui.menuarea = {
 	submenuexec : function(idname, val){
 		if(!ui.puzzle.ready){ return true;}
 		
-		var result = true;
+		var result = true, k = pzprv3.consts;;
 		switch(idname){
 		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
 //		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;

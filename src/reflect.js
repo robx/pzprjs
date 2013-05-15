@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('reflect', {
 //---------------------------------------------------------
@@ -77,6 +74,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
+		var k = pzprv3.consts;
 		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){
@@ -334,5 +332,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

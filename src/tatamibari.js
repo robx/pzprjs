@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('tatamibari', {
 //---------------------------------------------------------
@@ -57,7 +54,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		if(key & k.TURN){
+		if(key & pzprv3.consts.TURN){
 			var tques = {2:3,3:2};
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -226,5 +223,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

@@ -4,7 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 

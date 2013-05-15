@@ -1,9 +1,6 @@
 //
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.4.0
 //
-(function(){
-
-var k = pzprv3.consts;
 
 pzprv3.createCustoms('shugaku', {
 //---------------------------------------------------------
@@ -152,6 +149,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
+		var k = pzprv3.consts;
 		var trans = {};
 		switch(key){
 			case k.FLIPY: trans={42:43,43:42,47:48,48:47}; break;	// 上下反転
@@ -416,5 +414,3 @@ AnsCheck:{
 	}
 }
 });
-
-})();

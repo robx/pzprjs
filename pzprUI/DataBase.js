@@ -4,8 +4,6 @@
 /* uiオブジェクト生成待ち */
 if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
@@ -29,7 +27,7 @@ ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.getFileData(k.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.pdata = owner.getFileData(pzprv3.consts.FILE_PZPH).replace(/\r?\n/g,"/");
 		this.time = (pzprv3.currentTime()/1000)|0;
 		this.comment = '';
 	},
