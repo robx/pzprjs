@@ -38,7 +38,7 @@ Board:{
 
 	// 正答判定用
 	getBorderLengthInfo : function(){
-		var rdata = this.owner.newInstance('AreaBorderInfo');
+		var rdata = this.owner.newInstance('BorderInfo');
 		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
 		for(var i=0;i<this.bdmax;i++){
 			var border0 = this.border[i];
@@ -60,6 +60,9 @@ Board:{
 
 AreaRoomManager:{
 	enabled : true
+},
+
+"BorderInfo:LineInfo":{
 },
 
 //---------------------------------------------------------

@@ -167,7 +167,7 @@ Board:{
 	}
 },
 
-"AreaBarManager:AreaCellManager":{
+"AreaBarManager:AreaManager":{
 	enabled : true,
 	relation : ['cell'],
 	isvalid : function(cell){ return (cell.getQans()>0);},
@@ -177,11 +177,11 @@ Board:{
 	},
 
 	rebuild : function(){
-		pzprv3.core.AreaCellManager.prototype.rebuild.call(this);
+		pzprv3.core.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
 	}
 },
-"AreaBarInfo:AreaCellInfo":{
+"AreaBarInfo:AreaInfo":{
 	initialize : function(){
 		this.SuperFunc.initialize.call(this);
 

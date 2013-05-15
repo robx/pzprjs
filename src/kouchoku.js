@@ -587,7 +587,7 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(seglist){
-		var bd = this.owner.board, xinfo = this.owner.newInstance('AreaSegmentInfo');
+		var bd = this.owner.board, xinfo = this.owner.newInstance('SegmentInfo');
 		for(var i=0;i<seglist.length;i++){ xinfo.id[seglist[i].id] = 0;}
 		for(var i=0;i<seglist.length;i++){
 			var seg = seglist[i];
@@ -700,7 +700,7 @@ AnsCheck:{
 	}
 },
 
-"AreaSegmentInfo:AreaCellInfo":{
+"SegmentInfo:LineInfo":{
 	addSegment : function(seg){ this.setRoomID(seg, this.max);},
 	emptySegment : function(seg){ return (this.id[seg.id]===0);},
 
@@ -708,12 +708,7 @@ AnsCheck:{
 		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('SegmentList');
 		for(var i=0;i<idlist.length;i++){ seglist.add(this.owner.board.segs.seg[idlist[i]]);}
 		return seglist;
-	},
-
-	addCell   : function(cell){ },
-	emptyCell : function(cell){ return true;},
-	getclistbycell : function(cell){ },
-	getclist : function(areaid){ }
+	}
 },
 
 //---------------------------------------------------------

@@ -75,23 +75,24 @@ Board:{
 	relation : ['border'],
 	bdfunc : function(border){ return border.qans>0;}
 },
-AreaCellInfo:{
-	getBlockShapes : function(r){
+
+CellList:{
+	getBlockShapes : function(){
 		var bd=this.owner.board;
-		var d=this.getclist(r).getRectSize();
+		var d=this.getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
 		var shapes={cols:d.cols, rows:d.rows, data:[]};
 
 		for(var by=0;by<2*d.rows;by+=2){
 			for(var bx=0;bx<2*d.cols;bx+=2){
-				data[0].push(this.getRoomID(bd.getc(d.x1+bx,d.y1+by))===r?1:0);
-				data[1].push(this.getRoomID(bd.getc(d.x1+bx,d.y2-by))===r?1:0);
+				data[0].push(this.include(bd.getc(d.x1+bx,d.y1+by))?1:0);
+				data[1].push(this.include(bd.getc(d.x1+bx,d.y2-by))?1:0);
 			}
 		}
 		for(var bx=0;bx<2*d.cols;bx+=2){
 			for(var by=0;by<2*d.rows;by+=2){
-				data[4].push(this.getRoomID(bd.getc(d.x1+bx,d.y1+by))===r?1:0);
-				data[5].push(this.getRoomID(bd.getc(d.x1+bx,d.y2-by))===r?1:0);
+				data[4].push(this.include(bd.getc(d.x1+bx,d.y1+by))?1:0);
+				data[5].push(this.include(bd.getc(d.x1+bx,d.y2-by))?1:0);
 			}
 		}
 		data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
@@ -246,8 +247,8 @@ AnsCheck:{
 		return result;
 	},
 	isDifferentShapeBlock : function(cinfo, r, s, sc){
-		if(!sc[r]){ sc[r]=cinfo.getBlockShapes(r);}
-		if(!sc[s]){ sc[s]=cinfo.getBlockShapes(s);}
+		if(!sc[r]){ sc[r]=cinfo.getclist(r).getBlockShapes();}
+		if(!sc[s]){ sc[s]=cinfo.getclist(s).getBlockShapes();}
 		var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
 		var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
 		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}

@@ -276,7 +276,7 @@ LineManager:{
 	isLineCross  : true
 },
 
-"AreaIcebarnManager:AreaCellManager":{
+"AreaIcebarnManager:AreaManager":{
 	enabled : true,
 	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}

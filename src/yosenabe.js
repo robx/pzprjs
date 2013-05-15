@@ -143,7 +143,7 @@ LineManager:{
 AreaLineManager:{
 	enabled : true
 },
-"AreaCrockManager:AreaCellManager":{
+"AreaCrockManager:AreaManager":{
 	enabled : true,
 	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}

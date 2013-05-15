@@ -111,7 +111,7 @@ Board:{
 	isborder : 1,
 
 	getSnakeInfo : function(){
-		var sinfo = this.owner.newInstance('AreaCellInfo');
+		var sinfo = this.owner.newInstance('AreaInfo');
 		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!sinfo.emptyCell(this.cell[fc])){ continue;}
