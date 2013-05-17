@@ -118,6 +118,15 @@ Border:{
 	isArrow  : function(){ return (this.qdir>0);}
 },
 
+"CellList@icebarn":{
+	/* list.join() オブジェクトのIDをjoin()して返す */
+	join : function(str){
+		var idlist = [];
+		for(var i=0;i<this.length;i++){ idlist.push(this[i].id);}
+		return idlist.join(str);
+	}
+},
+
 Board:{
 	qcols : 8,
 	qrows : 8,

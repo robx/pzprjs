@@ -145,6 +145,26 @@ Cross:{
 		this.segment = this.owner.newInstance('SegmentList');
 	}
 },
+CrossList:{
+	/* list.indexOf()  与えられたオブジェクトの配列上の位置を取得する */
+	/* list.remove()   与えられたオブジェクトを配列から取り除く       */
+	indexOf : function(obj){
+		this.constructor.prototype.indexOf =
+		((!!Array.prototype.indexOf) ? 
+			Array.prototype.indexOf
+		:
+			function(obj){
+				for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}
+				return -1;
+			}
+		);
+		return this.indexOf(obj);
+	},
+	remove : function(obj){
+		var idx = this.indexOf(obj);
+		if(idx>=0){ Array.prototype.splice.call(this, idx, 1);}
+	}
+},
 
 Board:{
 	qcols : 7,

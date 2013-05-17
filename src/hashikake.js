@@ -85,7 +85,7 @@ Cell:{
 
 	getCountOfBridges : function(){
 		var cnt=0, blist=this.owner.newInstance('BorderList');
-		blist.addList([this.ub(), this.db(), this.lb(), this.rb()]);
+		blist.add(this.ub(), this.db(), this.lb(), this.rb());
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
 			if(!border.isnull && border.line>0){ cnt+=border.line;}

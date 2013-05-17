@@ -659,70 +659,43 @@ pzprv3.createPuzzleClass('PieceList',
 	name : 'PieceList',
 	
 	//--------------------------------------------------------------------------------
+	// ☆Arrayオブジェクト関連の関数
 	// list.add()      与えられたオブジェクトを配列の末尾に追加する(push()相当)
-	// list.addList()  与えられた配列を配列の末尾に追加する(concat()に近い)
 	// list.unshift()  与えられたオブジェクトを配列の先頭に入れる
 	// list.pop()      配列の最後のオブジェクトを取り除いて返す
-	// list.remove()   与えられたオブジェクトを配列から取り除く
-	//--------------------------------------------------------------------------------
-	add : function(obj){
-		this[this.length] = obj;
-		this.length++;
-	},
-	addList : function(objs){
-		for(var i=0;i<objs.length;i++){ this[this.length+i] = objs[i];}
-		this.length += objs.length;
-	},
-	unshift : function(obj){
-		for(var i=this.length;i>=0;i--){ this[i+1] = this[i];}
-		this[0] = obj;
-		this.length++;
-	},
-	
-	pop : function(){
-		this.length--;
-		delete this[this.length];
-	},
-	remove : function(obj){
-		for(var n=0,i=0;i<this.length;i++){
-			if(this[i]!==obj){ this[n]=this[i]; n++;}
-		}
-		this.length--;
-		delete this[this.length];
-	},
-	
-	//--------------------------------------------------------------------------------
-	// ☆Arrayオブジェクト関連の関数
-	// list.join()     オブジェクトのIDをjoin()して返す
-	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
-	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
-	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	// list.reverse()  保持している配列の順番を逆にする
 	//--------------------------------------------------------------------------------
-	join : function(str){
-		var idlist = [];
-		for(var i=0;i<this.length;i++){ idlist.push(this[i].id);}
-		return idlist.join(str);
-	},
+	add     : Array.prototype.push,
+	unshift : Array.prototype.unshift,
+	pop     : Array.prototype.pop,
+	reverse : Array.prototype.reverse,
+	
+	//--------------------------------------------------------------------------------
+	// ☆Arrayオブジェクトiterator関連の関数
+	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
+	// list.include()  与えられたオブジェクトが配列に存在するか判定する
+	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
+	//--------------------------------------------------------------------------------
 	some : function(cond){
-		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
-		return false;
+		this.constructor.prototype.some =
+		((!!Array.prototype.some) ? 
+			Array.prototype.some
+		:
+			function(obj){
+				for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
+				return false;
+			}
+		);
+		return this.some(cond);
 	},
+	include : function(target){
+		return this.some(function(obj){ return (obj===target);});
+	},
+	
 	filter : function(cond){
 		var list = this.owner.newInstance(this.name);
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
 		return list;
-	},
-	include : function(obj){
-		for(var i=0;i<this.length;i++){ if(this[i]===obj){ return true;}}
-		return false;
-	},
-	reverse : function(){
-		for(var i=0,len=(this.length<<1);i<len;i++){
-			var tmp = this[i], j = ((this.length-1)-i);
-			this[i] = this[j];
-			this[j] = tmp;
-		}
 	},
 	
 	//--------------------------------------------------------------------------------
