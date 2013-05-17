@@ -206,42 +206,45 @@ pzprv3.createPuzzleClass('Board',
 	},
 
 	setposCells : function(){
+		var qc = this.qcols;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var obj = this.cell[id];
 			obj.id = id;
 			obj.isnull = false;
 
-			obj.bx = (id%this.qcols)*2+1;
-			obj.by = ((id/this.qcols)<<1)+1;
+			obj.bx = (id%qc)*2+1;
+			obj.by = ((id/qc)<<1)+1;
 		}
 	},
 	setposCrosses : function(){
+		var qc = this.qcols;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var obj = this.cross[id];
 			obj.id = id;
 			obj.isnull = false;
 
-			obj.bx = (id%(this.qcols+1))*2;
-			obj.by = (id/(this.qcols+1))<<1;
+			obj.bx = (id%(qc+1))*2;
+			obj.by = (id/(qc+1))<<1;
 		}
 	},
 	setposBorders : function(){
-		this.bdinside = 2*this.qcols*this.qrows-(this.qcols+this.qrows);
+		var qc = this.qcols, qr = this.qrows;
+		this.bdinside = 2*qc*qr-(qc+qr);
 		this.bdmax = this.border.length;
 		for(var id=0;id<this.bdmax;id++){
 			var obj=this.border[id], i=id;
 			obj.id = id;
 			obj.isnull = false;
 
-			if(i>=0 && i<(this.qcols-1)*this.qrows){ obj.bx=(i%(this.qcols-1))*2+2; obj.by=((i/(this.qcols-1))<<1)+1;} i-=((this.qcols-1)*this.qrows);
-			if(i>=0 && i<this.qcols*(this.qrows-1)){ obj.bx=(i%this.qcols)*2+1;     obj.by=((i/this.qcols)<<1)+2;    } i-=(this.qcols*(this.qrows-1));
+			if(i>=0 && i<(qc-1)*qr){ obj.bx=(i%(qc-1))*2+2; obj.by=((i/(qc-1))<<1)+1;} i-=((qc-1)*qr);
+			if(i>=0 && i<qc*(qr-1)){ obj.bx=(i%qc)*2+1;     obj.by=((i/qc)<<1)+2;    } i-=(qc*(qr-1));
 			if(this.isborder===2){
-				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;        obj.by=0;           } i-=this.qcols;
-				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;        obj.by=2*this.qrows;} i-=this.qcols;
-				if(i>=0 && i<this.qrows){ obj.bx=0;            obj.by=i*2+1;       } i-=this.qrows;
-				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols; obj.by=i*2+1;       } i-=this.qrows;
+				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=0;    } i-=qc;
+				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=2*qr; } i-=qc;
+				if(i>=0 && i<qr){ obj.bx=0;     obj.by=i*2+1;} i-=qr;
+				if(i>=0 && i<qr){ obj.bx=2*qc;  obj.by=i*2+1;} i-=qr;
 			}
 			obj.isvert = !(obj.bx&1);
 
@@ -262,6 +265,7 @@ pzprv3.createPuzzleClass('Board',
 		}
 	},
 	setposEXcells : function(){
+		var qc = this.qcols, qr = this.qrows;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
 			var obj = this.excell[id], i=id;
@@ -269,19 +273,19 @@ pzprv3.createPuzzleClass('Board',
 			obj.isnull = false;
 
 			if(this.isexcell===1){
-				if(i>=0 && i<this.qcols){ obj.bx=i*2+1; obj.by=-1;    continue;} i-=this.qcols;
-				if(i>=0 && i<this.qrows){ obj.bx=-1;    obj.by=i*2+1; continue;} i-=this.qrows;
-				if(i===0)               { obj.bx=-1;    obj.by=-1;    continue;} i--;
+				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=-1;   } i-=qc;
+				if(i>=0 && i<qr){ obj.bx=-1;    obj.by=i*2+1;} i-=qr;
+				if(i===0)       { obj.bx=-1;    obj.by=-1;   } i--;
 			}
 			else if(this.isexcell===2){
-				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;          obj.by=-1;             continue;} i-=this.qcols;
-				if(i>=0 && i<this.qcols){ obj.bx=i*2+1;          obj.by=2*this.qrows+1; continue;} i-=this.qcols;
-				if(i>=0 && i<this.qrows){ obj.bx=-1;             obj.by=i*2+1;          continue;} i-=this.qrows;
-				if(i>=0 && i<this.qrows){ obj.bx=2*this.qcols+1; obj.by=i*2+1;          continue;} i-=this.qrows;
-				if(i===0)               { obj.bx=-1;             obj.by=-1;             continue;} i--;
-				if(i===0)               { obj.bx=2*this.qcols+1; obj.by=-1;             continue;} i--;
-				if(i===0)               { obj.bx=-1;             obj.by=2*this.qrows+1; continue;} i--;
-				if(i===0)               { obj.bx=2*this.qcols+1; obj.by=2*this.qrows+1; continue;} i--;
+				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=-1;    } i-=qc;
+				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=2*qr+1;} i-=qc;
+				if(i>=0 && i<qr){ obj.bx=-1;     obj.by=i*2+1; } i-=qr;
+				if(i>=0 && i<qr){ obj.bx=2*qc+1; obj.by=i*2+1; } i-=qr;
+				if(i===0)       { obj.bx=-1;     obj.by=-1;    } i--;
+				if(i===0)       { obj.bx=2*qc+1; obj.by=-1;    } i--;
+				if(i===0)       { obj.bx=-1;     obj.by=2*qr+1;} i--;
+				if(i===0)       { obj.bx=2*qc+1; obj.by=2*qr+1;} i--;
 			}
 		}
 	},
