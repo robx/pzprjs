@@ -160,8 +160,13 @@ Board:{
 	},
 
 	initBoardSize : function(col,row){
+		this.segs.eraseall();	// segmentの配列
 		this.SuperFunc.initBoardSize.call(this,col,row);
+	},
+
+	resetInfo : function(){
 		this.segs.reset();	// segmentの配列
+		this.SuperFunc.resetInfo.call(this);
 	},
 
 	allclear : function(isrec){
@@ -843,6 +848,9 @@ Segment:{
 
 SegmentManager:{ /* LineManagerクラスを拡張してます */
 	initialize : function(){
+		this.eraseall();
+	},
+	eraseall : function(){
 		this.seg    = [];	// segmentの配列
 		this.segmax = 0;
 
@@ -851,13 +859,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.linemax = 0;
 		this.invalidid = [];
 		this.invalidsegid = [];
-
-		this.typeA = 'A';
-		this.typeB = 'B';
 	},
 	init : function(){
 		this.owner.board.validinfo.all.push(this);
 	},
+
+	typeA : 'A',
+	typeB : 'B',
 
 	//---------------------------------------------------------------------------
 	// segs.reset()      lcnts等の変数の初期化を行う
