@@ -31,6 +31,19 @@ Cell:{
 
 	nummaxfunc : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
+	},
+
+	posthook : {
+		qnum : function(num){ this.owner.board.setCellInfoAll(this); this.redDisp();},
+		qans : function(num){ this.owner.board.setCellInfoAll(this); this.redDisp();}
+	},
+
+	redDisp : function(){
+		var o = this.owner, bd = o.board;
+		if(o.getConfig('plred')){
+			o.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
+			o.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
+		}
 	}
 },
 Board:{
@@ -75,7 +88,8 @@ Graphic:{
 		var o=this.owner, bd=o.board;
 		if(!bd.haserror && o.getConfig('plred')){
 			o.checker.inCheck = true;
-			o.checker.checkRowsCols(o.checker.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
+			o.checker.checkOnly = false;
+			o.checker.checkRowsColsSameNumber();
 			o.checker.inCheck = false;
 
 			for(var i=0;i<bd.cellmax;i++){ this.drawNumber1(bd.cell[i]);}
