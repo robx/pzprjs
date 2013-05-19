@@ -149,15 +149,15 @@ pzprv3.createPuzzleClass('Graphic',
 		this.onCanvasReady_fun();
 	},
 	onCanvasReady_fun : function(){
-		var o = this.owner;
-		if(!o.canvas || (o.usecanvas2 && !o.canvas2)){
+		var cm = this.owner.canvasmgr;
+		if(!cm.maincanvas || (cm.usesubcanvas && !cm.subcanvas)){
 			var pc = this;
 			setTimeout(function(){ pc.onCanvasReady_fun();},10);
 			return;
 		}
 
-		this.currentContext = (!!o.canvas  ? o.canvas.getContext("2d")  : null);
-		this.subContext     = ((o.usecanvas2 && !!o.canvas2) ? o.canvas2.getContext("2d") : null);
+		this.currentContext = (!!cm.maincanvas ? cm.maincanvas.getContext("2d")  : null);
+		this.subContext     = ((cm.usesubcanvas && !!cm.subcanvas) ? cm.subcanvas.getContext("2d") : null);
 
 		var g = this.currentContext;
 		for(var type in g.use){ this.use[type] = g.use[type];}
