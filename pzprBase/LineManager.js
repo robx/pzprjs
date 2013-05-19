@@ -13,6 +13,7 @@ pzprv3.createPuzzleClass('LineManager',
 		this.idlist = [];
 		this.id = [];
 		this.max = 0;
+		this.invalidid = [];	// 使わなくなったIDのリスト
 
 		this.enabled = (this.isCenterLine || this.borderAsLine);
 	},
@@ -55,6 +56,7 @@ pzprv3.createPuzzleClass('LineManager',
 		// その他の変数初期化
 		this.max = 0;
 		for(var id=0;id<bd.bdmax;id++){ this.id[id] = null;}
+		this.invalidid = [];
 
 		this.rebuild();
 	},
@@ -65,19 +67,15 @@ pzprv3.createPuzzleClass('LineManager',
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
-				this.id[border.id] = 0;
 				blist.add(border);
 
 				var cc1 = border.lineedge[0].id, cc2 = border.lineedge[1].id;
 				if(cc1!==null){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
 				if(cc2!==null){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
 			}
-			else{
-				this.id[border.id] = null;
-			}
 		}
 
-		this.reassignId(blist);
+		this.searchLine(blist);
 		if(this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
@@ -118,11 +116,6 @@ pzprv3.createPuzzleClass('LineManager',
 
 	//---------------------------------------------------------------------------
 	// lines.setLineInfo()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
-	// 
-	// lines.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                         できる場合の線idの再設定を行う
-	// lines.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                         可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	setLineInfo : function(border){
 		if(!this.enabled){ return;}
@@ -155,139 +148,154 @@ pzprv3.createPuzzleClass('LineManager',
 		if(isset){
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
 			if(type1===this.typeA && type2===this.typeA){
-				this.max++;
-				this.idlist[this.max] = [border.id];
-				this.id[border.id] = this.max;
-				border.color = this.owner.painter.getNewLineColor();
+				this.assignLineInfo(border, null);
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
 			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
-				var border2 = (this.getbid(border))[0];
-				this.idlist[this.id[border2.id]].push(border.id);
-				this.id[border.id] = this.id[border2.id];
-				border.color  = border2.color;
+				this.assignLineInfo(border, (this.getbid(border))[0]);
 			}
-			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else if(type1===this.typeB && type2===this.typeB){
-				this.combineLineInfo(border);
-			}
-			// その他の場合
+			// (B)+(B)の場合, その他の場合 -> 大きい方の線idをふり直して、長いものに統一する
 			else{
-				this.remakeLineInfo(border,1);
+				this.remakeLineInfo(border);
 			}
 		}
 		else{
 			// (A)+(A)の場合 -> 線id自体を消滅させる
-			if(type1===this.typeA && type2===this.typeA){
-				this.idlist[this.id[border.id]] = [];
-				this.id[border.id] = null;
-			}
 			// (A)+(B)の場合 -> 既存の線から取り除く
-			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
-				var ownid =this.id[border.id], idlist = this.idlist[ownid];
-				for(var i=0;i<idlist.length;i++){ if(idlist[i]===border.id){ idlist.splice(i,1); break;} }
-				this.id[border.id] = null;
+			if((type1===this.typeA && type2===this.typeA) || (type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
+				this.removeLineInfo(border);
 			}
 			// (B)+(B)の場合、その他の場合 -> 分かれた線にそれぞれ新しい線idをふる
 			else{
-				this.remakeLineInfo(border,0);
+				this.remakeLineInfo(border);
 			}
 			border.color = "";
 		}
 	},
 
-	combineLineInfo : function(border){
-		// この関数の突入条件より、bid.lengthは必ず2になる
-		// →ならなかった... くっつく線のID数は必ず2以下になる
-		var blist = this.getbid(border);
-		var did = [this.id[blist[0].id], null];
-		for(var i=0;i<blist.length;i++){
-			if(did[0]!==this.id[blist[i].id]){ did[1]=this.id[blist[i].id]; break;}
+	//---------------------------------------------------------------------------
+	// lines.assignLineInfo()  指定された線を有効な線として設定する
+	// lines.removeLineInfo()  指定されたセルを無効なセルとして設定する
+	// lines.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                         可能性がある場合の線idの再設定を行う
+	//---------------------------------------------------------------------------
+	assignLineInfo : function(border, border2){
+		var pathid = this.id[border.id];
+		if(pathid!==null && pathid!==0){ return;}
+
+		if(border2===null){
+			pathid = this.addPath();
+			border.color = this.owner.painter.getNewLineColor();
 		}
-
-		var newColor = blist[0].color;
-		// くっつく線のID数が2種類の場合
-		if(did[1] != null){
-			// どっちが長いの？
-			var longid = did[0], shortid = did[1];
-			if(this.idlist[did[0]].length < this.idlist[did[1]].length){
-				longid=did[1]; shortid=did[0];
-				newColor = blist[1].color;
-			}
-
-			// つながった線は全て同じIDにする
-			var longidlist  = this.idlist[longid];
-			var shortidlist = this.idlist[shortid];
-			for(var n=0,len=shortidlist.length;n<len;n++){
-				longidlist.push(shortidlist[n]);
-				this.id[shortidlist[n]] = longid;
-			}
-			this.idlist[shortid] = [];
-
-			longidlist.push(border.id);
-			this.id[border.id] = longid;
-
-			// 色を同じにする
-			var blist = this.owner.newInstance('BorderList').addByIdlist(longidlist);
-			for(var i=0,len=blist.length;i<len;i++){ blist[i].color = newColor;}
-			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
-		}
-		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
 		else{
-			this.idlist[did[0]].push(border.id);
-			this.id[border.id] = did[0];
-			border.color = newColor;
+			pathid = this.id[border2.id];
+			border.color  = border2.color;
 		}
+		this.idlist[pathid].push(border.id);
+		this.id[border.id] = pathid;
 	},
-	remakeLineInfo : function(border,val){
-		var oldmax = this.max;	// いままでのthis.max値
+	removeLineInfo : function(border){
+		var pathid = this.id[border.id];
+		if(pathid===null || pathid===0){ return;}
 
-		// つなげた線のIDを一旦0にして、max+1, max+2, ...を割り振りしなおす関数
-
-		// つながった線の線情報を一旦0にする
-		var blist = this.getbid(border);
-		var oldlongid = this.id[blist[0].id], longColor = blist[0].color;
-		for(var i=0,len=blist.length;i<len;i++){
-			var current = this.id[blist[i].id];
-			if(current<=0){ continue;}
-			var idlist = this.idlist[current];
-			if(this.idlist[oldlongid].length < idlist.length){
-				oldlongid = current;
-				longColor = blist[i].color;
+		var idlist = this.idlist[pathid];
+		if(idlist.length>0){
+			for(var i=0;i<idlist.length;i++){
+				if(idlist[i]===border.id){ idlist.splice(i,1); break;}
 			}
-			for(var n=0,len2=idlist.length;n<len2;n++){ this.id[idlist[n]] = 0;}
-			this.idlist[current] = [];
 		}
 
-		// 自分のIDの情報を変更する
-		if(val>0){ this.id[border.id] = 0; blist.unshift(border);}
-		else     { this.id[border.id] = null;}
+		if(idlist.length===0){ this.removePath(pathid);}
+		this.id[border.id] = null;
+		border.color = "";
+	},
+	remakeLineInfo : function(border){
+		var blist_sub = this.getbid(border);
+		blist_sub.add(border);
+		
+		var longColor = this.getLongColor(blist_sub);
+		
+		// つながった線の線情報を一旦0にする
+		var blist = this.owner.newInstance('BorderList');
+		for(var i=0;i<blist_sub.length;i++){
+			var id=blist_sub[i].id, r=this.id[id], bd=this.owner.board;
+			if(r!==null && r!==0){ blist.extend(this.removePath(r));}
+			else if(r===null)    { blist.add(bd.border[id]);}
+		}
 
 		// 新しいidを設定する
-		this.reassignId(blist);
+		var assign = this.searchLine(blist);
 
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
+		this.setLongColor(assign, longColor);
+	},
 
-		// できた線の中でもっとも長いものを取得する
-		var newlongid = oldmax+1;
-		for(var current=oldmax+1;current<=this.max;current++){
-			var idlist = this.idlist[current];
-			if(this.idlist[newlongid].length<idlist.length){ newlongid = current;}
+	//--------------------------------------------------------------------------------
+	// info.addArea()    新しく割り当てるidを取得する
+	// info.removeArea() 部屋idを無効にする
+	//--------------------------------------------------------------------------------
+	addPath : function(){
+		var newid;
+		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
+		else{ this.max++; newid=this.max;}
+
+		this.idlist[newid] = [];
+		return newid;
+	},
+	removePath : function(id){
+		var blist = this.getBlist(id);
+		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
+		
+		this.idlist[id] = [];
+		this.invalidid.push(id);
+		return blist;
+	},
+
+	//--------------------------------------------------------------------------------
+	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
+	// info.setLongColor() ブロックに色をつけなおす
+	//--------------------------------------------------------------------------------
+	getLongColor : function(blist){
+		// 周りで一番大きな線は？
+		var largeid = null, longColor = "";
+		for(var i=0,len=blist.length;i<len;i++){
+			var r = this.id[blist[i].id];
+			if(r===null || r<=0){ continue;}
+			if(largeid===null || this.idlist[largeid].length < this.idlist[r].length){
+				largeid = r;
+				longColor = blist[i].color;
+			}
 		}
-
+		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
+	},
+	setLongColor : function(assign, longColor){
+		/* assign:影響のあったareaidの配列 */
+		var blist_all = this.owner.newInstance('BorderList');
+		
+		// できた線の中でもっとも長いものを取得する
+		var longid = assign[0];
+		for(var i=1;i<assign.length;i++){
+			var idlist = this.idlist[assign[i]];
+			if(this.idlist[longid].length<idlist.length){ longid = assign[i];}
+		}
+		
 		// 新しい色の設定
-		for(var current=oldmax+1;current<=this.max;current++){
-			var newColor = (current===newlongid ? longColor : this.owner.painter.getNewLineColor());
-			var blist = this.getBlist(current);
+		for(var i=0;i<assign.length;i++){
+			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+			var blist = this.getBlist(assign[i]);
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
 			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
+			blist_all.extend(blist);
+		}
+		
+		if(this.owner.getConfig('irowake')){
+			this.owner.painter.repaintLines(blist);
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// lines.getbid()     自分に線が存在するものとして、自分に繋がる線(最大6箇所)を全て取得する
-	// lines.reassignId() ひとつながりの線にlineidを設定する
 	//---------------------------------------------------------------------------
 	getbid : function(border){
 		var dx=((this.isCenterLine^border.isVert())?2:0), dy=(2-dx);	// (dx,dy) = 縦(2,0) or 横(0,2)
@@ -323,49 +331,59 @@ pzprv3.createPuzzleClass('LineManager',
 		return lines.filter(function(border){ return border.isLine();});
 	},
 
-	reassignId : function(blist){
+	//---------------------------------------------------------------------------
+	// lines.searchLine()   ひとつながりの線にlineidを設定する
+	// lines.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	//---------------------------------------------------------------------------
+	searchLine : function(blist){
+		var assign = [];
 		for(var i=0,len=blist.length;i<len;i++){
-			var border0 = blist[i];
-			if(this.id[border0.id]!==0){ continue;}	// 既にidがついていたらスルー
-			var bx0=border0.bx, by0=border0.by;
-			this.max++;
-			this.idlist[this.max] = [];
-
-			var newid = this.max;
-			var pos = this.owner.newInstance('Address', [null, null]);
-			var stack=((!this.isCenterLine^border0.isHorz())?[[bx0,by0+1,1],[bx0,by0,2]]:[[bx0+1,by0,3],[bx0,by0,4]]);
-			while(stack.length>0){
-				var dat=stack.pop(), dir=dat[2];
-				pos.init(dat[0], dat[1]);
-				while(1){
-					pos.movedir(dir,1);
-					if(!pos.onborder()){
-						var bx=pos.bx, by=pos.by;
-						var obj = (this.isCenterLine ? pos.getc() : pos.getx());
-						if(obj.isnull){ break;}
-						else if(obj.lcnt()>=3){
-							if(!obj.iscrossing()){
-								if(obj.ub().isLine()){ stack.push([bx,by,1]);}
-								if(obj.db().isLine()){ stack.push([bx,by,2]);}
-								if(obj.lb().isLine()){ stack.push([bx,by,3]);}
-								if(obj.rb().isLine()){ stack.push([bx,by,4]);}
-								break;
-							}
-							/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
+			this.id[blist[i].id] = (blist[i].isLine()?0:null);
+		}
+		for(var i=0,len=blist.length;i<len;i++){
+			var border = blist[i];
+			if(this.id[border.id]!==0){ continue;}	// 既にidがついていたらスルー
+			var newid = this.addPath();
+			this.searchSingle(border, newid);
+			assign.push(newid);
+		}
+		return assign;
+	},
+	searchSingle : function(border, newid){
+		var bx=border.bx, by=border.by;
+		var pos = this.owner.newInstance('Address', [null, null]);
+		var stack=((!this.isCenterLine^border.isHorz())?[[bx,by+1,1],[bx,by,2]]:[[bx+1,by,3],[bx,by,4]]);
+		while(stack.length>0){
+			var dat=stack.pop(), dir=dat[2];
+			pos.init(dat[0], dat[1]);
+			while(1){
+				pos.movedir(dir,1);
+				if(!pos.onborder()){
+					var bx=pos.bx, by=pos.by;
+					var obj = (this.isCenterLine ? pos.getc() : pos.getx());
+					if(obj.isnull){ break;}
+					else if(obj.lcnt()>=3){
+						if(!obj.iscrossing()){
+							if(obj.ub().isLine()){ stack.push([bx,by,1]);}
+							if(obj.db().isLine()){ stack.push([bx,by,2]);}
+							if(obj.lb().isLine()){ stack.push([bx,by,3]);}
+							if(obj.rb().isLine()){ stack.push([bx,by,4]);}
+							break;
 						}
-						else{
-							if     (dir!==1 && obj.db().isLine()){ dir=2;}
-							else if(dir!==2 && obj.ub().isLine()){ dir=1;}
-							else if(dir!==3 && obj.rb().isLine()){ dir=4;}
-							else if(dir!==4 && obj.lb().isLine()){ dir=3;}
-						}
+						/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
 					}
 					else{
-						var border = pos.getb();
-						if(this.id[border.id]!==0){ break;}
-						this.id[border.id] = newid;
-						this.idlist[newid].push(border.id);
+						if     (dir!==1 && obj.db().isLine()){ dir=2;}
+						else if(dir!==2 && obj.ub().isLine()){ dir=1;}
+						else if(dir!==3 && obj.rb().isLine()){ dir=4;}
+						else if(dir!==4 && obj.lb().isLine()){ dir=3;}
 					}
+				}
+				else{
+					var border = pos.getb();
+					if(this.id[border.id]!==0){ break;}
+					this.id[border.id] = newid;
+					this.idlist[newid].push(border.id);
 				}
 			}
 		}
