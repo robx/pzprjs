@@ -142,7 +142,7 @@ Cross:{
 	maxnum : 26,
 
 	initialize : function(){
-		this.segment = this.owner.newInstance('SegmentList');
+		this.seglist = this.owner.newInstance('SegmentList');
 	}
 },
 
@@ -428,7 +428,7 @@ Graphic:{
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i], id = cross.id, key = ['cross',id].join('_');
-			var graydisp = (isgray && cross.error===0 && cross.segment.length>=2);
+			var graydisp = (isgray && cross.error===0 && cross.seglist.length>=2);
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			if(cross.qnum>0){
 				// ○の描画
@@ -583,16 +583,16 @@ AnsCheck:{
 	},
 
 	checkAlonePoint : function(){
-		return this.checkSegment(function(cross){ return (cross.segment.length<2 && cross.qnum!==-1);});
+		return this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);});
 	},
 	checkSegmentPoint : function(){
-		return this.checkSegment(function(cross){ return (cross.segment.length>0 && cross.qnum===-1);});
+		return this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);});
 	},
 	checkSegmentBranch : function(){
-		return this.checkSegment(function(cross){ return (cross.segment.length>2);});
+		return this.checkSegment(function(cross){ return (cross.seglist.length>2);});
 	},
 	checkSegmentDeadend : function(){
-		return this.checkSegment(function(cross){ return (cross.segment.length===1);});
+		return this.checkSegment(function(cross){ return (cross.seglist.length===1);});
 	},
 	checkSegment : function(func){
 		var result = true, bd = this.owner.board;
@@ -600,7 +600,7 @@ AnsCheck:{
 			var cross = bd.cross[c];
 			if(func(cross)){
 				if(result){ bd.segs.getallsegment().seterr(-1);}
-				cross.segment.seterr(1);
+				cross.seglist.seterr(1);
 				result = false;
 			}
 		}
@@ -792,8 +792,7 @@ Segment:{
 	},
 
 	seterr : function(num){
-		if(!this.owner.board.isenableSetError()){ return;}
-		for(var i=0;i<this.length;i++){ this[i].error = num;}
+		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -890,7 +889,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		var o = this.owner, bd=o.board;
 		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){
-			bd.cross[c].segment=o.newInstance('SegmentList');
+			bd.cross[c].seglist=o.newInstance('SegmentList');
 		}
 
 		this.rebuild();
@@ -906,8 +905,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			this.lineid[id] = 0;
 			ids.push(id);
 
-			seg.cross1.segment.add(seg);
-			seg.cross2.segment.add(seg);
+			seg.cross1.seglist.add(seg);
+			seg.cross2.seglist.add(seg);
 		}
 		this.reassignId(ids);
 		if(!!this.owner.flags.irowake){ this.newIrowake();}
@@ -928,8 +927,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	//---------------------------------------------------------------------------
 	getSegment : function(bx1,by1,bx2,by2){
 		var cross = this.owner.board.getx(bx1,by1), seg = null;
-		for(var i=0,len=cross.segment.length;i<len;i++){
-			var search = cross.segment[i];
+		for(var i=0,len=cross.seglist.length;i<len;i++){
+			var search = cross.seglist[i];
 			if(search.bx2===bx2 && search.by2===by2){
 				seg = search;
 				break;
@@ -1014,14 +1013,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		var self = this;
 		var gettype = function(cross){
 			if(cross.isnull){ return self.typeA;}
-			else{ return ((cross.segment.length===(isset?0:1))?self.typeA:self.typeB);}
+			else{ return ((cross.seglist.length===(isset?0:1))?self.typeA:self.typeB);}
 		};
 		var id = seg.id, cross1 = seg.cross1, cross2 = seg.cross2;
 		var type1 = gettype(cross1), type2 = gettype(cross2);
 
 		if(isset){
-			if(!cross1.isnull){ cross1.segment.add(seg);}
-			if(!cross2.isnull){ cross2.segment.add(seg);}
+			if(!cross1.isnull){ cross1.seglist.add(seg);}
+			if(!cross2.isnull){ cross2.seglist.add(seg);}
 
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
 			if(type1===this.typeA && type2===this.typeA){
@@ -1058,8 +1057,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				this.remakeLineInfo(id,0);
 			}
 
-			if(!cross1.isnull){ cross1.segment.remove(seg);}
-			if(!cross2.isnull){ cross2.segment.remove(seg);}
+			if(!cross1.isnull){ cross1.seglist.remove(seg);}
+			if(!cross2.isnull){ cross2.seglist.remove(seg);}
 		}
 	},
 	array_remove : function(array, val){
@@ -1173,11 +1172,11 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	//---------------------------------------------------------------------------
 	getaround : function(id){
 		var around = [], cross1 = this.seg[id].cross1, cross2 = this.seg[id].cross2;
-		for(var i=0,len=cross1.segment.length;i<len;i++){
-			if(cross1.segment[i].id!==id){ around.push(cross1.segment[i].id);}
+		for(var i=0,len=cross1.seglist.length;i<len;i++){
+			if(cross1.seglist[i].id!==id){ around.push(cross1.seglist[i].id);}
 		}
-		for(var i=0,len=cross2.segment.length;i<len;i++){
-			if(cross2.segment[i].id!==id){ around.push(cross2.segment[i].id);}
+		for(var i=0,len=cross2.seglist.length;i<len;i++){
+			if(cross2.seglist[i].id!==id){ around.push(cross2.seglist[i].id);}
 		}
 		return around;
 	},
