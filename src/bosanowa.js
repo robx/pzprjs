@@ -178,11 +178,10 @@ Graphic:{
 
 	dispchange_bosanowa : function(){
 		var newval = this.owner.getConfig('disptype_bosanowa');
-		this.suspendAll();
 		if     (newval==1){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
 		else if(newval==2){ this.bdmargin = 1.20; this.bdmargin_image = 1.10;}
 		else if(newval==3){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
-		this.unsuspend();
+		this.owner.adjustCanvasSize();
 	},
 
 	drawErrorCells_bosanowa : function(){
@@ -336,7 +335,8 @@ Graphic:{
 		var header = "c_full_", d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
-				var cell=this.owner.board.getc(bx,by), addr=cell.getaddr();
+				var cell=this.owner.board.getc(bx,by);
+				var addr=this.owner.newInstance('Address',[bx, by]);
 				if( cell.isEmpty() && (
 					addr.rel(-2, 0).getc().ques===0 || addr.rel(2, 0).getc().ques===0 || 
 					addr.rel( 0,-2).getc().ques===0 || addr.rel(0, 2).getc().ques===0 || 

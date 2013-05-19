@@ -396,7 +396,7 @@ pzprv3.createCoreClass('Config',
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
-		this.add('fixsize', true);								/* 拡大縮小してもcanvasのサイズを変えない */
+		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 入力方法設定 */
 		this.add('use', (!pzprv3.env.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
