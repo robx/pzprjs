@@ -17,6 +17,27 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
+	},
+
+	inputqnum_main : function(cell){
+		var max=cell.nummaxfunc(), min=cell.numminfunc();
+		var num=(this.owner.editmode ? cell.getQnum() : cell.getAnum()), val=-1;
+
+		// playmode: subtypeは0以上、 qsにqsub値が入る
+		// editmode: subtypeは-1固定、qsは常に0が入る
+		if(this.btn.Left){
+			if     (num>=max){ val = -1;}
+			else if(num===-1){ val = 1;}
+			else{ val = num+1;}
+		}
+		else if(this.btn.Right){
+			if     (num===-1){ val = max;}
+			else if(num<=min){ val = -1;}
+			else{ val = num-1;}
+		}
+		cell.setNum(val);
+
+		cell.draw();
 	}
 },
 
