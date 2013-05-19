@@ -7,10 +7,6 @@ pzprv3.createCustoms('bdblock', {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
-			if     (this.mousestart){ this.inputcrossMark();}
-			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-		}
-		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){
 					if(this.mousestart){ this.checkBorderMode();}
@@ -20,6 +16,10 @@ MouseEvent:{
 				}
 				else if(this.btn.Right){ this.inputQsubLine();}
 			}
+		}
+		else if(this.owner.editmode){
+			if     (this.mousestart){ this.inputcrossMark();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
 	}
 },
