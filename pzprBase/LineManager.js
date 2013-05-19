@@ -285,7 +285,6 @@ pzprv3.createPuzzleClass('LineManager',
 			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
 			var blist = this.getBlist(assign[i]);
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
-			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
 			blist_all.extend(blist);
 		}
 		

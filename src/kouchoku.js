@@ -160,10 +160,8 @@ Board:{
 	},
 
 	initBoardSize : function(col,row){
-		this.segs.seg    = {};	// segmentの配列
-		this.segs.segmax = 0;
-
 		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.segs.reset();	// segmentの配列
 	},
 
 	allclear : function(isrec){
@@ -318,8 +316,8 @@ BoardExec:{
 
 	exec : function(num){
 		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, o=this.owner, tmp;
-		if     (num===1){ o.board.segs.setSegment   (bx1,by1,bx2,by2);}
-		else if(num===0){ o.board.segs.removeSegment(bx1,by1,bx2,by2);}
+		if     (num===1){ o.board.segs.setSegmentByAddr   (bx1,by1,bx2,by2);}
+		else if(num===0){ o.board.segs.removeSegmentByAddr(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
 		o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
@@ -608,22 +606,16 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(seglist){
-		var bd = this.owner.board, xinfo = this.owner.newInstance('SegmentInfo');
-		for(var i=0;i<seglist.length;i++){ xinfo.id[seglist[i].id] = 0;}
-		for(var i=0;i<seglist.length;i++){
-			var seg = seglist[i];
-			if(!xinfo.emptySegment(seg)){ continue;}
-			xinfo.addRoom();
-
-			var idlist = bd.segs.idlist[bd.segs.lineid[seg.id]];
-			for(var n=0;n<idlist.length;n++){
-				xinfo.addSegment(bd.segs.seg[idlist[n]]);
+		var result = false, bd = this.owner.board;
+		var validcount = 0, segs = this.owner.newInstance('SegmentList');
+		for(var r=1;r<=bd.segs.linemax;r++){
+			if(bd.segs.seglist[r].length===0){ continue;}
+			validcount++;
+			if(validcount>1){
+				seglist.seterr(-1);
+				bd.segs.seglist[r].seterr(1);
+				return false;
 			}
-		}
-		if(xinfo.max>1){
-			bd.segs.getallsegment().seterr(-1);
-			xinfo.getseglist(xinfo.max).seterr(1);
-			return false;
 		}
 		return true;
 	},
@@ -718,17 +710,6 @@ AnsCheck:{
 			}
 		}}
 		return result;
-	}
-},
-
-"SegmentInfo:LineInfo":{
-	addSegment : function(seg){ this.setRoomID(seg, this.max);},
-	emptySegment : function(seg){ return (this.id[seg.id]===0);},
-
-	getseglist : function(areaid){
-		var idlist = this.room[areaid].idlist, seglist = this.owner.newInstance('SegmentList');
-		for(var i=0;i<idlist.length;i++){ seglist.add(this.owner.board.segs.seg[idlist[i]]);}
-		return seglist;
 	}
 },
 
@@ -827,17 +808,17 @@ Segment:{
 		   !this.owner.board.segs.isOverLap(by11,by12,by21,by22)){ return false;}
 
 		/* 交差している位置を調べる */
-		if     (dx1===0){ // 片方の線だけ垂直
+		if     (dx1===0){ /* 片方の線だけ垂直 */
 			var _by0=dy2*(bx11-bx21)+by21*dx2, t=dx2;
 			if(t<0){ _by0*=-1; t*=-1;} var _by11=by11*t, _by12=by12*t;
 			if(_by11<_by0 && _by0<_by12){ return true;}
 		}
-		else if(dx2===0){ // 片方の線だけ垂直
+		else if(dx2===0){ /* 片方の線だけ垂直 */
 			var _by0=dy1*(bx21-bx11)+by11*dx1, t=dx1;
 			if(t<0){ _by0*=-1; t*=-1;} var _by21=by21*dx1, _by22=by22*dx1;
 			if(_by21<_by0 && _by0<_by22){ return true;}
 		}
-		else{ // 2本とも垂直でない (仕様的にbx1<bx2になるはず)
+		else{ /* 2本とも垂直でない (仕様的にbx1<bx2になるはず) */
 			var _bx0=(bx21*dy2-by21*dx2)*dx1-(bx11*dy1-by11*dx1)*dx2, t=(dy2*dx1)-(dy1*dx2);
 			if(t<0){ _bx0*=-1; t*=-1;} var _bx11=bx11*t, _bx12=bx12*t, _bx21=bx21*t, _bx22=bx22*t;
 			if((_bx11<_bx0 && _bx0<_bx12)&&(_bx21<_bx0 && _bx0<_bx22)){ return true;}
@@ -862,12 +843,14 @@ Segment:{
 
 SegmentManager:{ /* LineManagerクラスを拡張してます */
 	initialize : function(){
-		this.seg    = {};	// segmentの配列
+		this.seg    = [];	// segmentの配列
 		this.segmax = 0;
 
-		this.lineid = {};	// 線id情報(segment->line変換)
-		this.idlist = {};	// 線id情報(line->segment変換)
+		this.lineid = [];	// 線id情報(segment->line変換)
+		this.seglist = [];	// 線id情報(line->segment変換)
 		this.linemax = 0;
+		this.invalidid = [];
+		this.invalidsegid = [];
 
 		this.typeA = 'A';
 		this.typeB = 'B';
@@ -883,12 +866,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	//---------------------------------------------------------------------------
 	reset : function(){
 		// 変数の初期化
-		this.lineid = {};
-		this.idlist = {};
+		this.lineid = [];
+		this.seglist = [];
 		this.linemax = 0;
+		this.invalidid = [];
+		this.invalidseg = [];
 
 		var o = this.owner, bd=o.board;
-		for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){
+		for(var c=0,len=bd.crossmax;c<len;c++){
 			bd.cross[c].seglist=o.newInstance('SegmentList');
 		}
 
@@ -897,26 +882,26 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	rebuild : function(){
 		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
 
-		var ids = [];
+		var seglist = this.owner.newInstance('SegmentList');
 		for(var id in this.seg){
 			var seg = this.seg[id];
 			if(seg===null){ continue;}
 			id = +id;
 			this.lineid[id] = 0;
-			ids.push(id);
+			seglist.add(seg);
 
 			seg.cross1.seglist.add(seg);
 			seg.cross2.seglist.add(seg);
 		}
-		this.reassignId(ids);
+		this.searchLine(seglist);
 		if(!!this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){
-			if(this.idlist[i].length>0){
+			if(this.seglist[i].length>0){
 				var newColor = this.owner.painter.getNewLineColor();
-				for(var n=0;n<this.idlist[i].length;n++){
-					this.seg[this.idlist[i][n]].color = newColor;
+				for(var n=0;n<this.seglist[i].length;n++){
+					this.seglist[i][n].color = newColor;
 				}
 			}
 		}
@@ -975,8 +960,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 	//---------------------------------------------------------------------------
 	// segs.input()         マウスで入力された時に呼ぶ
-	// segs.setSegment()    線を引く時に呼ぶ
-	// segs.removeSegment() 線を消す時に呼ぶ
+	// segs.setSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
+	// segs.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
+	// segs.removeSegment()       線を消す時に呼ぶ
 	//---------------------------------------------------------------------------
 	input : function(bx1,by1,bx2,by2){
 		var tmp;
@@ -985,22 +971,29 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		else if(bx1===bx2 && by1===by2) { return;}
 
 		var id = this.getSegment(bx1,by1,bx2,by2);
-		if(id===null){ this.setSegment   (bx1,by1,bx2,by2);}
+		if(id===null){ this.setSegmentByAddr(bx1,by1,bx2,by2);}
 		else         { this.removeSegment(id);}
 	},
-	setSegment : function(bx1,by1,bx2,by2){
-		this.segmax++;
-		this.seg[this.segmax] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
-		this.seg[this.segmax].id = this.segmax;
-		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(this.seg[this.segmax], true);}
+	setSegmentByAddr : function(bx1,by1,bx2,by2){
+		var newsegid;
+		if(this.invalidsegid.length>0){ newsegid = this.invalidsegid.shift();}
+		else{ this.segmax++; newsegid = this.segmax;}
+		
+		this.seg[newsegid] = this.owner.newInstance('Segment',[bx1,by1,bx2,by2]);
+		this.seg[newsegid].id = newsegid;
+		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(this.seg[newsegid], true);}
 		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
 	},
-	removeSegment : function(bx1,by1,bx2,by2){
-		var seg = bx1;
-		if(by1!==(void 0)){ seg = this.getSegment(bx1,by1,bx2,by2);}
+	removeSegmentByAddr : function(bx1,by1,bx2,by2){
+		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
+	},
+	removeSegment : function(seg){
 		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(seg, false);}
 		this.owner.opemgr.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
 		this.owner.painter.eraseSegment1(seg);
+		
+		this.invalidsegid.push(seg.id);
+		this.seg[seg.id] = null;
 		delete this.seg[seg.id];
 	},
 
@@ -1021,184 +1014,195 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(isset){
 			if(!cross1.isnull){ cross1.seglist.add(seg);}
 			if(!cross2.isnull){ cross2.seglist.add(seg);}
+			this.lineid[seg.id] = null;
 
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
 			if(type1===this.typeA && type2===this.typeA){
-				this.linemax++;
-				this.idlist[this.linemax] = [id];
-				this.lineid[id] = this.linemax;
-				seg.color = this.owner.painter.getNewLineColor();
+				this.assignLineInfo(seg, null);
 			}
 			// (A)+(B)の場合 -> 既存の線にくっつける
 			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
-				var bid = (this.getaround(id))[0];
-				this.idlist[this.lineid[bid]].push(id);
-				this.lineid[id] = this.lineid[bid];
-				seg.color = this.seg[bid].color;
+				this.assignLineInfo(seg, (this.getaround(seg))[0]);
 			}
 			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
 			else{
-				this.combineLineInfo(id);
+				this.remakeLineInfo(seg, isset);
 			}
 		}
 		else{
 			// (A)+(A)の場合 -> 線id自体を消滅させる
-			if(type1===this.typeA && type2===this.typeA){
-				this.idlist[this.lineid[id]] = [];
-				this.lineid[id] = null;
-			}
 			// (A)+(B)の場合 -> 既存の線から取り除く
-			else if((type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
-				this.array_remove(this.idlist[this.lineid[id]], id);
-				this.lineid[id] = null;
+			if((type1===this.typeA && type2===this.typeA) || (type1===this.typeA && type2===this.typeB) || (type1===this.typeB && type2===this.typeA)){
+				this.removeLineInfo(seg);
 			}
 			// (B)+(B)の場合 -> 分かれた線にそれぞれ新しい線idをふる
 			else{
-				this.remakeLineInfo(id,0);
+				this.remakeLineInfo(seg, isset);
 			}
 
 			if(!cross1.isnull){ cross1.seglist.remove(seg);}
 			if(!cross2.isnull){ cross2.seglist.remove(seg);}
 		}
 	},
-	array_remove : function(array, val){
-		for(var i=0;i<array.length;i++){ if(array[i]===val){ array.splice(i,1);} }
-	},
 
 	//---------------------------------------------------------------------------
-	// segs.combineLineInfo() 線が引かれた時に、周りの線が全てくっついて1つの線が
-	//                        できる場合の線idの再設定を行う
+	// segs.assignLineInfo()  指定された線を有効な線として設定する
+	// segs.removeLineInfo()  指定されたセルを無効なセルとして設定する
 	// segs.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
 	//                        可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
-	combineLineInfo : function(id){
-		// くっつく線の種類数は必ず2以下になるはず
-		var around = this.getaround(id);
-		var lid = [this.lineid[around[0]], null];
-		for(var i=1;i<around.length;i++){
-			if(lid[0]!==this.lineid[around[i]]){ lid[1]=this.lineid[around[i]]; break;}
+	assignLineInfo : function(seg, seg2){
+		var pathid = this.lineid[seg.id];
+		if(pathid!==null && pathid!==0){ return;}
+
+		if(seg2===null){
+			pathid = this.addPath();
+			seg.color = this.owner.painter.getNewLineColor();
 		}
-
-		// どっちが長いの？
-		var longid, shortid;
-		if((lid[1]===null)||(this.idlist[lid[0]].length >= this.idlist[lid[1]].length))
-			{ longid=lid[0]; shortid=lid[1];}
-		else{ longid=lid[1]; shortid=lid[0];}
-		var newColor = this.seg[this.idlist[longid][0]].color;
-
-		// くっつく線のID数が2種類の場合 => 短いほうを長いほうに統一
-		if(shortid!==null){
-			// つながった線は全て同じID・色にする
-			for(var i=0,len=this.idlist[shortid].length;i<len;i++){
-				var sid = this.idlist[shortid][i];
-				this.idlist[longid].push(sid);
-				this.lineid[sid] = longid;
-				this.seg[sid].color = newColor;
-			}
-			this.idlist[shortid] = [];
+		else{
+			pathid = this.lineid[seg2.id];
+			seg.color = seg2.color;
 		}
-
-		this.idlist[longid].push(id);
-		this.lineid[id] = longid;
-		this.seg[id].color = newColor;
-
-		if(shortid!==null){
-			if(!!this.owner.getConfig('irowake')){
-				var idlist = this.idlist[longid], seglist = this.owner.newInstance('SegmentList');
-				for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
-				this.owner.painter.repaintSegments(seglist);
-			}
-		}
+		this.seglist[pathid].add(seg);
+		this.lineid[seg.id] = pathid;
 	},
-	remakeLineInfo : function(id,val){
+	removeLineInfo : function(seg){
+		var pathid = this.lineid[seg.id];
+		if(pathid===null || pathid===0){ return;}
 
-		// つなげた線のIDを一旦0にして、max+1, max+2, ...を割り振りしなおす関数
+		this.seglist[pathid].remove(seg);
 
+		if(this.seglist[pathid].length===0){ this.removePath(pathid);}
+		this.lineid[seg.id] = null;
+		seg.color = "";
+	},
+	remakeLineInfo : function(seg, isset){
+		var segs = this.getaround(seg);
+		if(isset){ segs.unshift(seg);}
+		else{ this.removeLineInfo(seg);}
+		
+		var longColor = this.getLongColor(segs);
+		
 		// つながった線の線情報を一旦0にする
-		var around = this.getaround(id), oldlongid = null, longColor;
-		for(var i=0,len=around.length;i<len;i++){
-			var current = this.lineid[around[i]];
-			if(current<=0){ continue;}
-
-			if(oldlongid===null || (this.idlist[oldlongid].length<this.idlist[current].length)){
-				oldlongid = current;
-				longColor = this.seg[around[i]].color;
-			}
-
-			for(var n=0,len2=this.idlist[current].length;n<len2;n++){
-				this.lineid[this.idlist[current][n]] = 0;
-			}
-			this.idlist[current] = [];
+		var seglist = this.owner.newInstance('SegmentList');
+		for(var i=0,len=segs.length;i<len;i++){
+			var id=segs[i].id, r=this.lineid[id];
+			if(r!==null && r!==0){ seglist.extend(this.removePath(r));}
+			else if(r===null)    { seglist.add(segs[i]);}
 		}
-
-		// 自分のIDの情報を0にする
-		if(val>0){ this.lineid[id] = 0; around.unshift(id);}
-		else     { this.lineid[id] = null;} /* ここは必ずこっちを通る */
 
 		// 新しいidを設定する
-		var oldmax = this.linemax;	// いままでのthis.linemax値
-		this.reassignId(around);
+		var assign = this.searchLine(seglist);
 
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
+		this.setLongColor(assign, longColor);
+	},
 
+	//--------------------------------------------------------------------------------
+	// info.addPath()    新しく割り当てるidを取得する
+	// info.removePath() 部屋idを無効にする
+	//--------------------------------------------------------------------------------
+	addPath : function(){
+		var newid;
+		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
+		else{ this.linemax++; newid=this.linemax;}
+
+		this.seglist[newid] = this.owner.newInstance('SegmentList');
+		return newid;
+	},
+	removePath : function(r){
+		var seglist = this.seglist[r];
+		for(var i=0,len=seglist.length;i<len;i++){ this.lineid[seglist[i].id] = null;}
+		
+		this.seglist[r] = this.owner.newInstance('SegmentList');
+		this.invalidid.push(r);
+		return seglist;
+	},
+
+	//--------------------------------------------------------------------------------
+	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
+	// info.setLongColor() ブロックに色をつけなおす
+	//--------------------------------------------------------------------------------
+	getLongColor : function(seglist){
+		// 周りで一番大きな線は？
+		var largeid = null, longColor = "";
+		for(var i=0,len=seglist.length;i<len;i++){
+			var r = this.lineid[seglist[i].id];
+			if(r===null || r<=0){ continue;}
+			if(largeid===null || this.seglist[largeid].length < this.seglist[r].length){
+				largeid = r;
+				longColor = seglist[i].color;
+			}
+		}
+		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
+	},
+	setLongColor : function(assign, longColor){
+		/* assign:影響のあったareaidの配列 */
+		var seglist = this.owner.newInstance('SegmentList');
+		
 		// できた線の中でもっとも長いものを取得する
-		var newlongid = oldmax+1;
-		for(var current=oldmax+1;current<=this.linemax;current++){
-			if(this.idlist[newlongid].length<this.idlist[current].length){
-				newlongid = current;
-			}
+		var longid = assign[0];
+		for(var i=1;i<assign.length;i++){
+			if(this.seglist[longid].length<this.seglist[assign[i]].length){ longid = assign[i];}
 		}
-
+		
 		// 新しい色の設定
-		var idlist = [];
-		for(var current=oldmax+1;current<=this.linemax;current++){
-			var newColor = (current===newlongid ? longColor : this.owner.painter.getNewLineColor());
-			for(var n=0,len=this.idlist[current].length;n<len;n++){
-				this.seg[this.idlist[current][n]].color = newColor;
-				idlist.push(this.idlist[current][n]);
-			}
+		for(var i=0;i<assign.length;i++){
+			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+			var segs = this.seglist[assign[i]];
+			for(var n=0,len=segs.length;n<len;n++){ segs[n].color = newColor;}
+			seglist.extend(segs);
 		}
-		if(!!this.owner.getConfig('irowake')){
-			var seglist = this.owner.newInstance('SegmentList');
-			for(var i=0;i<idlist.length;i++){ if(idlist[i]!==id){ seglist.add(this.seg[idlist[i]]);}}
+		
+		if(this.owner.getConfig('irowake')){
 			this.owner.painter.repaintSegments(seglist);
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// segs.getaround()  指定したsegmentに繋がる線を全て取得する
-	// segs.reassignId() id=0となっているsegmentにlineidを設定する
+	// segs.searchLine() id=0となっているsegmentにlineidを設定する
+	// segs.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//---------------------------------------------------------------------------
-	getaround : function(id){
-		var around = [], cross1 = this.seg[id].cross1, cross2 = this.seg[id].cross2;
+	getaround : function(seg){
+		var seglist = this.owner.newInstance('SegmentList');
+		var cross1 = seg.cross1, cross2 = seg.cross2;
 		for(var i=0,len=cross1.seglist.length;i<len;i++){
-			if(cross1.seglist[i].id!==id){ around.push(cross1.seglist[i].id);}
+			if(cross1.seglist[i].id!==seg.id){ seglist.add(cross1.seglist[i]);}
 		}
 		for(var i=0,len=cross2.seglist.length;i<len;i++){
-			if(cross2.seglist[i].id!==id){ around.push(cross2.seglist[i].id);}
+			if(cross2.seglist[i].id!==seg.id){ seglist.add(cross2.seglist[i]);}
 		}
-		return around;
+
+		return seglist;
 	},
 
-	reassignId : function(ids){
-		for(var i=0,len=ids.length;i<len;i++){
-			if(this.lineid[ids[i]]!==0){ continue;}	// 既にidがついていたらスルー
-			this.linemax++;
-			this.idlist[this.linemax] = [];
+	searchLine : function(seglist){
+		var assign = [];
+		for(var i=0,len=seglist.length;i<len;i++){
+			this.lineid[seglist[i].id] = 0;
+		}
+		for(var i=0,len=seglist.length;i<len;i++){
+			if(this.lineid[seglist[i].id]!==0){ continue;}	// 既にidがついていたらスルー
+			var newid = this.addPath();
+			this.searchSingle(seglist[i], newid);
+			assign.push(newid);
+		}
+		return assign;
+	},
+	searchSingle : function(startseg, newid){
+		var stack = [startseg];
+		while(stack.length>0){
+			var seg = stack.pop();
+			if(this.lineid[seg.id]!==0){ continue;}
 
-			var stack = [ids[i]];
-			while(stack.length>0){
-				var id = stack.pop();
-				if(this.lineid[id]!==0){ continue;}
+			this.lineid[seg.id] = newid;
+			this.seglist[newid].add(seg);
 
-				this.lineid[id] = this.linemax;
-				this.idlist[this.linemax].push(id);
-
-				var around = this.getaround(id);
-				for(var j=0;j<around.length;j++){
-					if(this.lineid[around[j]]===0){ stack.push(around[j]);}
-				}
+			var around = this.getaround(seg);
+			for(var j=0;j<around.length;j++){
+				if(this.lineid[around[j].id]===0){ stack.push(around[j]);}
 			}
 		}
 	}
