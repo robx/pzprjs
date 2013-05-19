@@ -62,6 +62,9 @@ ui.popupmgr.addpopup('debug',
 		}
 	},
 	
+	remove : function(){
+		/* removeさせない */
+	},
 	show : function(px,py){
 		if(!this.pop){
 			this.makeElement();

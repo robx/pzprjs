@@ -28,9 +28,11 @@ ui.popupmgr =
 			var popup = this.popups[name];
 			if(!popup.disable_remove){ popup.remove();}
 		}
-		/* デバッグ用だけは作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
-		this.popups.debug.show(0,0);
-		this.popups.debug.hide();
+		if(!this.popups.debug.pop){
+			/* デバッグ用だけは作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
+			this.popups.debug.show(0,0);
+			this.popups.debug.hide();
+		}
 	},
 	
 	setEvents : function(){
