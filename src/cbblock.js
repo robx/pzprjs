@@ -227,7 +227,7 @@ AnsCheck:{
 	},
 
 	checkDifferentShapeBlock : function(cinfo){
-		var result=true, sides=this.owner.board.getSideAreaInfo(cinfo), sc={};
+		var result=true, sides=cinfo.getSideAreaInfo(), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
 			if(cinfo.room[r].dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){

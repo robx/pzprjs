@@ -637,6 +637,32 @@ pzprv3.createPuzzleClass('AreaInfo',
 	},
 
 	//---------------------------------------------------------------------------
+	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
+	//---------------------------------------------------------------------------
+	getSideAreaInfo : function(){
+		var adjs=[], sides=[], max=this.max;
+		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
+
+		for(var id=0;id<this.bdmax;id++){
+			var cell1 = this.border[id].sidecell[0], cell2 = this.border[id].sidecell[1];
+			if(cell1.isnull || cell2.isnull){ continue;}
+			var r1=this.getRoomID(cell1), r2=this.getRoomID(cell2);
+			if(r1===null || r2===null){ continue;}
+
+			if(r1<r2){ adjs[r1][r2]=true;}
+			if(r1>r2){ adjs[r2][r1]=true;}
+		}
+
+		for(var r=1;r<=max-1;r++){
+			sides[r]=[];
+			for(var s=r+1;s<=max;s++){
+				if(!!adjs[r][s]){ sides[r].push(s);}
+			}
+		}
+		return sides;
+	},
+
+	//---------------------------------------------------------------------------
 	// info.setErrLareaByCell() ひとつながりになった線が存在するマスにエラーを設定する
 	// info.setErrLareaById()   ひとつながりになった線が存在するマスにエラーを設定する
 	//---------------------------------------------------------------------------

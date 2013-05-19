@@ -211,7 +211,7 @@ AnsCheck:{
 	},
 	checkAdjacentCountries : function(rinfo, ainfo){
 		// 隣接エリア情報を取得して、形式を変換
-		var sides=this.owner.board.getSideAreaInfo(rinfo), adjs=[];
+		var sides=rinfo.getSideAreaInfo(), adjs=[];
 		for(var r=1;r<=rinfo.max-1;r++){
 			adjs[r]=[];
 			for(var i=0;i<sides[r].length;i++){ adjs[r][sides[r][i]]=true;}

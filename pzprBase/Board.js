@@ -553,32 +553,6 @@ pzprv3.createPuzzleClass('Board',
 	getNumberInfo : function(){ return this.ncell.getAreaInfo();},
 
 	//---------------------------------------------------------------------------
-	// bd.getSideAreaInfo()   境界線をはさんで接する部屋を取得する
-	//---------------------------------------------------------------------------
-	getSideAreaInfo : function(rinfo){
-		var adjs=[], sides=[], max=rinfo.max;
-		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
-
-		for(var id=0;id<this.bdmax;id++){
-			var cell1 = this.border[id].sidecell[0], cell2 = this.border[id].sidecell[1];
-			if(cell1.isnull || cell2.isnull){ continue;}
-			var r1=rinfo.getRoomID(cell1), r2=rinfo.getRoomID(cell2);
-			if(r1===null || r2===null){ continue;}
-
-			if(r1<r2){ adjs[r1][r2]=true;}
-			if(r1>r2){ adjs[r2][r1]=true;}
-		}
-
-		for(var r=1;r<=max-1;r++){
-			sides[r]=[];
-			for(var s=r+1;s<=max;s++){
-				if(!!adjs[r][s]){ sides[r].push(s);}
-			}
-		}
-		return sides;
-	},
-
-	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする
 	// bd.enableSetError()   盤面のオブジェクトにエラーフラグを設定できるようにする
 	// bd.isenableSetError() 盤面のオブジェクトにエラーフラグを設定できるかどうかを返す

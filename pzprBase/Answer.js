@@ -325,7 +325,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval){
-		var sides = this.owner.board.getSideAreaInfo(rinfo);
+		var sides = rinfo.getSideAreaInfo();
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
