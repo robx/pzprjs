@@ -175,15 +175,19 @@ BoardExec:{
 "AreaBarManager:AreaManager":{
 	enabled : true,
 	relation : ['cell'],
-	isvalid : function(cell){ return (cell.getQans()>0);},
-	getlink : function(cell){
-		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
-		return (qa>0?16:0) + link;
+	
+	isvalid : function(cell){
+		return (cell.getQans()>0);
 	},
-
+	
 	rebuild : function(){
 		pzprv3.core.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
+	},
+	
+	calcLinkInfo : function(cell){
+		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
+		return (qa>0?16:0) + link;
 	}
 },
 "AreaBarInfo:AreaInfo":{
@@ -456,7 +460,7 @@ AnsCheck:{
 		return 0;
 	},
 	check1st : function(){
-		var areainfo = this.owner.bord.barinfo.getAreaInfo();
+		var areainfo = this.owner.board.barinfo.getAreaInfo();
 		return (this.checkOneArea(areainfo) ? 0 : 43611);
 	},
 
@@ -510,7 +514,7 @@ AnsCheck:{
 	checkLoop : function(){
 		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.barinfo.getcellaround(bd.cell[c]);
+			sinfo.cell[c] = bd.barinfo.getLinkCell(bd.cell[c]);
 		}
 
 		var sdata=[];

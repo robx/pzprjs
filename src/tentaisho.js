@@ -148,7 +148,7 @@ Star:{
 		var obj = this.obj, cell = null;
 		if(obj.iscellobj)
 			{ cell = obj;}
-		else if(obj.iscrossobj && this.owner.board.rooms.bdcnt[obj.id]===0)
+		else if(obj.iscrossobj && this.owner.board.rooms.crosscnt[obj.id]===0)
 			{ cell = obj.relcell(-1,-1);}
 		else if(obj.isborderobj && obj.getQans()===0)
 			{ cell = obj.sidecell[0];}

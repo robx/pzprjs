@@ -228,12 +228,8 @@ pzprv3.createPuzzleClass('LineManager',
 			this.id[border.id] = longid;
 
 			// 色を同じにする
-			var blist = this.owner.newInstance('BorderList');
-			for(var i=0,len=longidlist.length;i<len;i++){
-				var border = this.owner.board.border[longidlist[i]];
-				border.color = newColor;
-				blist.add(border);
-			}
+			var blist = this.owner.newInstance('BorderList').addByIdlist(longidlist);
+			for(var i=0,len=blist.length;i<len;i++){ blist[i].color = newColor;}
 			if(this.owner.getConfig('irowake')){ this.owner.painter.repaintLines(blist);}
 		}
 		// くっつく線のID数が1種類の場合 => 既存の線にくっつける
@@ -398,9 +394,7 @@ pzprv3.createPuzzleClass('LineManager',
 	//--------------------------------------------------------------------------------
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
 	getBlist : function(id){
-		var idlist = this.idlist[id], blist = this.owner.newInstance('BorderList');
-		for(var i=0;i<idlist.length;i++){ blist.add(this.owner.board.border[idlist[i]]);}
-		return blist;
+		return this.owner.newInstance('BorderList').addByIdlist(this.idlist[id]);
 	}
 });
 
@@ -426,8 +420,6 @@ pzprv3.createPuzzleClass('LineInfo',
 	emptyBorder : function(border){ return (this.id[border.id]===0);},
 
 	getblist : function(areaid){
-		var idlist = this.room[areaid].idlist, blist = this.owner.newInstance('BorderList');
-		for(var i=0;i<idlist.length;i++){ blist.add(this.owner.board.border[idlist[i]]);}
-		return blist;
+		return this.owner.newInstance('BorderList').addByIdlist(this.room[areaid].idlist);
 	}
 });

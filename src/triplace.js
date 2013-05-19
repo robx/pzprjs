@@ -120,7 +120,7 @@ BoardExec:{
 	}
 },
 
-"AreaTriTileManager:AreaBorderManager":{
+"AreaTriTileManager:AreaManager":{
 	enabled : true,
 	relation : ['cell','border'],
 	isvalid : function(cell){ return (!cell.is51cell());},

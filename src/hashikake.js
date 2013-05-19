@@ -84,10 +84,9 @@ Cell:{
 	maxnum : 8,
 
 	getCountOfBridges : function(){
-		var cnt=0, blist=this.owner.newInstance('BorderList');
-		blist.add(this.ub(), this.db(), this.lb(), this.rb());
-		for(var i=0;i<blist.length;i++){
-			var border = blist[i];
+		var cnt=0, cblist=this.getdir4cblist();
+		for(var i=0;i<cblist.length;i++){
+			var border = cblist[i][1];
 			if(!border.isnull && border.line>0){ cnt+=border.line;}
 		}
 		return cnt;

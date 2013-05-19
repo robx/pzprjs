@@ -65,12 +65,12 @@ Board:{
 	}
 },
 
-"AreaTileManager:AreaBorderManager":{
+"AreaTileManager:AreaManager":{
 	enabled : true,
 	relation : ['border'],
 	bdfunc : function(border){ return !border.isGround();}
 },
-"AreaBlockManager:AreaBorderManager":{
+"AreaBlockManager:AreaManager":{
 	enabled : true,
 	relation : ['border'],
 	bdfunc : function(border){ return border.qans>0;}

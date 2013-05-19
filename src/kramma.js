@@ -229,7 +229,7 @@ AnsCheck:{
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
 				var cross = bd.getx(bx,by);
-				if(bd.rooms.bdcnt[cross.id]===2 && cross.getQnum()!==1){
+				if(bd.rooms.crosscnt[cross.id]===2 && cross.getQnum()!==1){
 					if(    !(cross.ub().getQans()===1 && cross.db().getQans()===1)
 						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
 					{

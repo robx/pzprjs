@@ -661,11 +661,13 @@ pzprv3.createPuzzleClass('PieceList',
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクト関連の関数
 	// list.add()      与えられたオブジェクトを配列の末尾に追加する(push()相当)
+	// list.extend()   与えられたPieceListを配列の末尾に追加する
 	// list.unshift()  与えられたオブジェクトを配列の先頭に入れる
 	// list.pop()      配列の最後のオブジェクトを取り除いて返す
 	// list.reverse()  保持している配列の順番を逆にする
 	//--------------------------------------------------------------------------------
 	add     : Array.prototype.push,
+	extend  : function(list){ this.add.apply(this,list);},
 	unshift : Array.prototype.unshift,
 	pop     : Array.prototype.pop,
 	reverse : Array.prototype.reverse,
@@ -715,6 +717,16 @@ pzprv3.createPuzzleClass('CellList:PieceList',
 	name : 'CellList',
 
 	//---------------------------------------------------------------------------
+	// clist.addByIdlist()  セルのIDのリストからセルを追加する
+	//---------------------------------------------------------------------------
+	addByIdlist : function(idlist){
+		for(var i=0;i<idlist.length;i++){
+			this.add(this.owner.board.cell[idlist[i]]);
+		}
+		return this;
+	},
+
+	//---------------------------------------------------------------------------
 	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
@@ -757,6 +769,16 @@ pzprv3.createPuzzleClass('CrossList:PieceList',{
 pzprv3.createPuzzleClass('BorderList:PieceList',
 {
 	name : 'BorderList',
+
+	//---------------------------------------------------------------------------
+	// clist.addByIdlist()  BorderのIDのリストからBorderを追加する
+	//---------------------------------------------------------------------------
+	addByIdlist : function(idlist){
+		for(var i=0;i<idlist.length;i++){
+			this.add(this.owner.board.border[idlist[i]]);
+		}
+		return this;
+	},
 
 	//---------------------------------------------------------------------------
 	// blist.cellinside()  線が重なるセルのリストを取得する

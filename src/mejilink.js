@@ -74,7 +74,7 @@ Board:{
 LineManager:{
 	borderAsLine : true
 },
-"AreaTileManager:AreaBorderManager":{
+"AreaTileManager:AreaManager":{
 	enabled : true,
 	relation : ['border'],
 	bdfunc : function(border){ return !border.isGround();}

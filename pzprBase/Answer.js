@@ -459,7 +459,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.rooms.bdcnt[id]);
+				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.rooms.crosscnt[id]);
 				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
 					if(this.checkOnly){ return false;}
 					if(result){ bd.border.seterr(-1);}
@@ -859,8 +859,8 @@ pzprv3.addFailCode({
 	48231 : ["線が2回曲がっていません。","A line turns only once or lower."],
 	48241 : ["線の長さが同じではありません。","The length of lines is differnet."],
 	48251 : ["線の長短の指示に反してます。","The length of lines is not suit for the label of object."],
-	48301 : ["棒で輪っかができています。","There is a looped bars."],
-	48311 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
+	48301 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
+	48311 : ["棒で輪っかができています。","There is a looped bars."],
 	48321 : ["同じ長さの棒と交差していません。","A bar doesn't cross the bar whose length is the same."],
 
 	/* 単体セルチェック */
