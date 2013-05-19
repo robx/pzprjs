@@ -130,6 +130,9 @@ pzprv3.createCoreClass('Puzzle',
 
 		this.flags = this.newInstance('Flags');		// パズルの初期設定値を保持するオブジェクト
 
+		if(this.flags.irowake===2)   { this.setVal('irowake', true);}
+		if(this.flags.irowakeblk===2){ this.setVal('irowakeblk', true);}
+
 		this.board.init();
 		this.painter.init();
 	},
@@ -385,7 +388,8 @@ pzprv3.createCoreClass('Config',
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
-		this.add('irowake', (this.owner.irowake===2));			/* 線の色分け */
+		this.add('irowake', false);								/* 線の色分け */
+		this.add('irowakeblk', false);							/* 黒マスの色分け */
 
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
@@ -476,7 +480,8 @@ pzprv3.createPuzzleClass('Flags',
 	redblk   : false,
 	redblkrb : false,
 	bgcolor  : false,
-	irowake : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	irowake    : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	irowakeblk : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
 
 	disable_subclear : false	// "補助消去"ボタンを作らない
 });

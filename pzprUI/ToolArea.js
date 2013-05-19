@@ -100,6 +100,7 @@ ui.toolarea = {
 		this.addLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
 
 		this.addLabel('irowake', '線の色分けをする', 'Color each lines');
+		this.addLabel('irowakeblk', '黒マスの色分けをする', 'Color each blocks');
 	},
 
 	//---------------------------------------------------------------------------
@@ -163,7 +164,7 @@ ui.toolarea = {
 		}
 
 		// 色分けチェックボックス用の処理
-		if(!!this.labels.irowake){
+		if(!!this.labels.irowake || !!this.labels.irowakeblk){
 			// 横にくっつけたいボタンを追加
 			var el = createButton();
 			el.id = "ck_btn_irowake";
@@ -213,7 +214,7 @@ ui.toolarea = {
 			this.addButtons(el, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(!!ui.puzzle.flags.irowake){
+		if(!!ui.puzzle.flags.irowake || !!ui.puzzle.flags.irowakeblk){
 			var el = createButton(); el.id = "btncolor2";
 			this.area.appendChild(el);
 			this.addButtons(el, "色分けしなおす", "Change the color of Line");
@@ -254,7 +255,7 @@ ui.toolarea = {
 		if(!pzprv3.EDITOR){
 			getEL('separator2').style.display = mandisp;
 		}
-		if(ui.puzzle.flags.irowake){
+		if(ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk){
 			/* ボタンエリアのボタンは、管理領域が消えている時に表示 */
 			getEL('btncolor2').style.display = (this.isdisp ? 'none' : 'inline');
 		}

@@ -28,6 +28,13 @@ pzprv3.createPuzzleClass('AreaManager',
 	enabled : false,
 	relation : ['cell'],
 
+	irowakeEnable : function(){
+		return (this.owner.flags.irowakeblk || (this.owner.pid==='amibo' && this.owner.flags.irowake));
+	},
+	irowakeValid : function(){
+		return (this.owner.getConfig('irowakeblk') || (this.owner.pid==='amibo' && this.owner.getConfig('irowake')));
+	},
+
 	//--------------------------------------------------------------------------------
 	// info.isvalid() そのセルが有効かどうか返す
 	// info.bdfunc()  境界線が存在するかどうかを返す
@@ -186,11 +193,11 @@ pzprv3.createPuzzleClass('AreaManager',
 
 		if(cell2===null){
 			areaid = this.addArea();
-			if(!!this.owner.flags.irowake){ cell.color = this.owner.painter.getNewLineColor();}
+			if(this.irowakeEnable()){ cell.color = this.owner.painter.getNewLineColor();}
 		}
 		else{
 			areaid = this.id[cell2.id];
-			if(!!this.owner.flags.irowake){ cell.color = cell2.color;}
+			if(this.irowakeEnable()){ cell.color = cell2.color;}
 		}
 		this[areaid].idlist.push(cell.id);
 		this.id[cell.id] = areaid;
@@ -208,10 +215,10 @@ pzprv3.createPuzzleClass('AreaManager',
 
 		if(idlist.length===0){ this.removeArea(areaid);}
 		this.id[cell.id] = null;
-		if(!!this.owner.flags.irowake){ cell.color = "";}
+		if(this.irowakeEnable()){ cell.color = "";}
 	},
 	remakeInfo : function(cidlist){
-		var longColor = (!!this.owner.flags.irowake ? this.getLongColor(cidlist) : "");
+		var longColor = (this.irowakeEnable() ? this.getLongColor(cidlist) : "");
 
 		/* info.popArea() 指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す */
 		/* 周りのセルから、周りのセルを含む領域のセル全体に対象を拡大する */
@@ -223,7 +230,7 @@ pzprv3.createPuzzleClass('AreaManager',
 		}
 		var assign = this.searchIdlist(clist);
 
-		if(!!this.owner.flags.irowake){ this.setLongColor(assign, longColor);}
+		if(this.irowakeEnable()){ this.setLongColor(assign, longColor);}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -301,9 +308,7 @@ pzprv3.createPuzzleClass('AreaManager',
 			clist.extend(clist1);
 		}
 		
-		if(this.owner.getConfig('irowake')){
-			this.owner.painter.repaintBlocks(clist);
-		}
+		if(this.irowakeValid()){ this.owner.painter.repaintBlocks(clist);}
 	},
 
 	//--------------------------------------------------------------------------------
