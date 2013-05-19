@@ -12,7 +12,12 @@ MouseEvent:{
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputborderans();}
+				if(this.btn.Left){
+					if(this.mousestart){ this.checkBorderMode();}
+
+					if(this.bordermode){ this.inputborder();}
+					else               { this.inputQsubLine();}
+				}
 				else if(this.btn.Right){ this.inputQsubLine();}
 			}
 		}

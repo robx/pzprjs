@@ -550,81 +550,76 @@ pzprv3.createPuzzleClass('MouseEvent',
 		cross.draw();
 	},
 	//---------------------------------------------------------------------------
-	// mv.inputborder()     盤面境界線の問題データを入力する
-	// mv.inputborderans()  盤面境界線の回答データを入力する
-	// mv.inputBD()         上記二つの共通処理関数
-	// mv.getborderobj()    入力対象となる境界線オブジェクトを取得する
+	// mv.inputborder()     盤面境界線のデータを入力する
+	// mv.inputQsubLine()   盤面の境界線用補助記号を入力する
 	//---------------------------------------------------------------------------
-	inputborder : function(){ this.inputBD(0);},
-	inputborderans : function(){
-		if(this.mousestart){ this.checkBorderMode();}
-		if(this.bordermode){ this.inputBD(1);}
-		else               { this.inputLine1(1);}
-	},
-	inputBD : function(flag){ // 0:問題の境界線 1:回答の境界線 2:borderAsLine
+	inputborder : function(){
 		var pos = this.getpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getborderobj(this.prevPos, pos);
 		if(!border.isnull){
-			if(flag!==2){
-				if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
-				if     (this.inputData===1){ border.setBorder();}
-				else if(this.inputData===0){ border.removeBorder();}
-			}
-			else{
-				if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
-				if     (this.inputData===1){ border.setLine();}
-				else if(this.inputData===0){ border.removeLine();}
-			}
+			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
+			if     (this.inputData===1){ border.setBorder();}
+			else if(this.inputData===0){ border.removeBorder();}
 			border.draw();
 		}
 		this.prevPos = pos;
 	},
-	getborderobj : function(base, current){
-		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
-		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
-			{ return (base.onborder() ? base : current).getb();}
-		return this.owner.newInstance('BoardPiece');
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.inputLine()     盤面の線を入力する
-	// mv.inputQsubLine() 盤面の境界線用補助記号を入力する
-	// mv.inputLine1()    上記二つの共通処理関数
-	// mv.getnb()         上下左右に隣接する境界線のIDを取得する
-	//---------------------------------------------------------------------------
-	inputLine : function(){
-		if(this.owner.board.lines.isCenterLine){ this.inputLine1(0);}
-		else                                   { this.inputBD(2);}
-	},
-	inputQsubLine : function(){ this.inputLine1(1);},
-	inputLine1 : function(flag){ // 0:line 1:borderQsub
+	inputQsubLine : function(){
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
-			if(flag===0){
-				if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
-				if     (this.inputData===1){ border.setLine();}
-				else if(this.inputData===0){ border.removeLine();}
-			}
-			else if(flag===1){
-				if(this.inputData===null){ this.inputData=(border.getQsub()===0?1:0);}
-				if     (this.inputData===1){ border.setQsub(1);}
-				else if(this.inputData===0){ border.setQsub(0);}
-			}
+			if(this.inputData===null){ this.inputData=(border.getQsub()===0?1:0);}
+			if     (this.inputData===1){ border.setQsub(1);}
+			else if(this.inputData===0){ border.setQsub(0);}
 			border.draw();
 		}
 		this.prevPos = pos;
 	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputLine()     盤面の線を入力する
+	//---------------------------------------------------------------------------
+	inputLine : function(flag){
+		if(this.owner.board.lines.isCenterLine){
+			var pos = this.getpos(0);
+			if(this.prevPos.equals(pos)){ return;}
+			var border = this.getnb(this.prevPos, pos);
+		}
+		else{
+			var pos = this.getpos(0.35);
+			if(this.prevPos.equals(pos)){ return;}
+			var border = this.getborderobj(this.prevPos, pos);
+		}
+		
+		if(!border.isnull){
+			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
+			if     (this.inputData===1){ border.setLine();}
+			else if(this.inputData===0){ border.removeLine();}
+			border.draw();
+		}
+		this.prevPos = pos;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.getnb()         上下左右に隣接する境界線のIDを取得する
+	// mv.getborderobj()  入力対象となる境界線オブジェクトを取得する
+	//---------------------------------------------------------------------------
 	getnb : function(base, current){
 		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.rel(0,-1).getb();}
 		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
 		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
 		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
 		return this.owner.board.emptyborder;
+	},
+	getborderobj : function(base, current){
+		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
+		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
+			{ return (base.onborder() ? base : current).getb();}
+		return this.owner.newInstance('BoardPiece');
 	},
 
 	//---------------------------------------------------------------------------

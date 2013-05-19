@@ -14,7 +14,7 @@ MouseEvent:{
 			if(this.btn.Left){
 				if(this.mousestart){ this.checkBorderMode();}
 
-				if(this.bordermode){ this.inputborderans();}
+				if(this.bordermode){ this.inputborder();}
 				else               { this.dragnumber_fillomino();}
 			}
 			else if(this.btn.Right){ this.inputQsubLine();}
