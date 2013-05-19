@@ -28,13 +28,6 @@ pzprv3.createPuzzleClass('AreaManager',
 	enabled : false,
 	relation : ['cell'],
 
-	irowakeEnable : function(){
-		return (this.owner.flags.irowakeblk || (this.owner.pid==='amibo' && this.owner.flags.irowake));
-	},
-	irowakeValid : function(){
-		return (this.owner.getConfig('irowakeblk') || (this.owner.pid==='amibo' && this.owner.getConfig('irowake')));
-	},
-
 	//--------------------------------------------------------------------------------
 	// info.isvalid() そのセルが有効かどうか返す
 	// info.bdfunc()  境界線が存在するかどうかを返す
@@ -193,7 +186,7 @@ pzprv3.createPuzzleClass('AreaManager',
 
 		if(cell2===null){
 			areaid = this.addArea();
-			if(this.irowakeEnable()){ cell.color = this.owner.painter.getNewLineColor();}
+			if(this.irowakeEnable()){ cell.color = this.getNewColor();}
 		}
 		else{
 			areaid = this.id[cell2.id];
@@ -255,13 +248,25 @@ pzprv3.createPuzzleClass('AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.newIrowake()  線の情報が再構築された際、ブロックに色をつける
+	// info.irowakeEnable()  色分けが実行可能なパズルかどうかを返す
+	// info.irowakeValid()   色分けを実行するかどうかを返す
+	// info.getNewColor()    新しい色を返す
+	// info.newIrowake()     線の情報が再構築された際、ブロックに色をつける
 	//--------------------------------------------------------------------------------
+	irowakeEnable : function(){
+		return this.owner.flags.irowakeblk;
+	},
+	irowakeValid : function(){
+		return this.owner.getConfig('irowakeblk');
+	},
+	getNewColor : function(){
+		return "";
+	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
 			var idlist = this[i].idlist;
 			if(idlist.length>0){
-				var newColor = this.owner.painter.getNewLineColor();
+				var newColor = this.getNewColor();
 				for(var n=0;n<idlist.length;n++){
 					this.owner.board.cell[idlist[n]].color = newColor;
 				}
@@ -284,7 +289,7 @@ pzprv3.createPuzzleClass('AreaManager',
 				longColor = this.owner.board.cell[cidlist[i]].color;
 			}
 		}
-		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
+		return (!!longColor ? longColor : this.getNewColor());
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
@@ -302,7 +307,7 @@ pzprv3.createPuzzleClass('AreaManager',
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
-			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+			var newColor = (assign[i]===longid ? longColor : this.getNewColor());
 			var clist1 = this.owner.newInstance('CellList').addByIdlist(this[assign[i]].idlist);
 			for(var n=0,len=clist1.length;n<len;n++){ clist1[n].color = newColor;}
 			clist.extend(clist1);

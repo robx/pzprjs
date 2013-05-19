@@ -188,6 +188,16 @@ BoardExec:{
 	calcLinkInfo : function(cell){
 		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
 		return (qa>0?16:0) + link;
+	},
+
+	irowakeEnable : function(){
+		return this.owner.flags.irowake;
+	},
+	irowakeValid : function(){
+		return this.owner.getConfig('irowake');
+	},
+	getNewColor : function(){
+		return this.owner.painter.getNewLineColor();
 	}
 },
 "AreaBarInfo:AreaInfo":{
