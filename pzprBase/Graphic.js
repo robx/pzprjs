@@ -100,8 +100,8 @@ pzprv3.createPuzzleClass('Graphic',
 		this.suspendedAll = true;
 
 		// canvasの大きさを保持する
-		this.canvasWidth  = 240;
-		this.canvasHeight = 240;
+		this.canvasWidth  = null;
+		this.canvasHeight = null;
 
 		// 盤面のページ内の左上座標
 		this.pageX = 0;
@@ -141,6 +141,13 @@ pzprv3.createPuzzleClass('Graphic',
 		this.isdrawBD = false;
 
 		this.setColors();
+	},
+	
+	reset : function(){
+		this.suspended    = true;
+		this.suspendedAll = true;
+		this.canvasWidth  = null;
+		this.canvasHeight = null;
 	},
 	init : function(){
 		var cm = this.owner.canvasmgr;
@@ -182,16 +189,18 @@ pzprv3.createPuzzleClass('Graphic',
 	//                             (指定なしの場合は、前のセルのサイズを用いる)
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
-		this.suspendAll();
+		var insuspend = this.suspended;
+		if(!insuspend){ this.suspendAll();}
 		
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
 		this.resize_canvas_main();
 		
-		this.unsuspend();
+		if(!insuspend){ this.unsuspend();}
 	},
 	resizeCanvasByCellSize : function(cellsize){
-		this.suspendAll();
+		var insuspend = this.suspended;
+		if(!insuspend){ this.suspendAll();}
 		
 		this.cw = cellsize || this.cw;
 		this.ch = cellsize || this.ch;
@@ -199,7 +208,7 @@ pzprv3.createPuzzleClass('Graphic',
 		this.canvasHeight = this.ch*this.getCanvasRows();
 		this.resize_canvas_main();
 		
-		this.unsuspend();
+		if(!insuspend){ this.unsuspend();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -298,8 +307,14 @@ pzprv3.createPuzzleClass('Graphic',
 			this.setRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 			this.suspendedAll = false;
 		}
-		this.suspended = false;
-		this.prepaint();
+		if(this.suspended){
+			if(this.canvasWidth===null || this.canvasHeight===null){
+				var rect = pzprv3.getRect(this.owner.canvasmgr.maincanvas);
+				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
+			}
+			this.suspended = false;
+			this.prepaint();
+		}
 	},
 
 	//---------------------------------------------------------------------------

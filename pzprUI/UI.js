@@ -49,8 +49,6 @@ ui.event =
 	//---------------------------------------------------------------------------
 	afterReady : function(callback){
 		return function(){
-			ui.puzzle.painter.suspendAll();		/* adjustcellsize()で描画される */
-			
 			ui.menu.menuinit();					/* メニュー関係初期化 */
 			ui.event.adjustcellsize();
 			

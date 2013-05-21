@@ -43,10 +43,12 @@ pzprv3.createCoreClass('Puzzle',
 		var o = this;
 		this.initPuzzle(pzl.id, function(){
 			o.enc.decodeURL(url);
-			o.resetTime();
-			o.ready = true;
 			
 			if(!!callback){ callback();}
+			
+			o.painter.unsuspend();
+			o.resetTime();
+			o.ready = true;
 		});
 	},
 	openByFileData : function(filedata, callback){
@@ -62,10 +64,12 @@ pzprv3.createCoreClass('Puzzle',
 		var o = this;
 		this.initPuzzle(pid, function(){
 			o.fio.filedecode(fstr);
-			o.resetTime();
-			o.ready = true;
 			
 			if(!!callback){ callback();}
+			
+			o.painter.unsuspend();
+			o.resetTime();
+			o.ready = true;
 		});
 	},
 
@@ -104,6 +108,9 @@ pzprv3.createCoreClass('Puzzle',
 			/* クラスなどを初期化 */
 			this.classes = pzprv3.custom[this.pid];
 			this.initObjects();
+		}
+		else{
+			this.painter.reset();
 		}
 
 		/* canvasが用意できたらcallbackを呼ぶ */
