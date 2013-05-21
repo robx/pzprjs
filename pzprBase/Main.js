@@ -281,16 +281,16 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.drawCanvas()    盤面の再描画を行う
-	// owner.irowake()       色分けをする場合、色をふり直すルーチンを呼び出す
+	// owner.redraw()   盤面の再描画を行う
+	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
-	drawCanvas : function(){
+	redraw : function(){
 		this.painter.paintAll();
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
 		if(this.getConfig('irowake')){
-			this.drawCanvas();
+			this.redraw();
 		}
 	},
 
@@ -336,7 +336,7 @@ pzprv3.createCoreClass('Puzzle',
 		var result = this.checker.check(true);
 		if(result!==0){
 			this.board.haserror = true;
-			this.drawCanvas();
+			this.redraw();
 		}
 		return result;
 	},
@@ -349,11 +349,11 @@ pzprv3.createCoreClass('Puzzle',
 	ansclear : function(){
 		this.board.ansclear();
 		this.board.resetInfo();
-		this.drawCanvas();
+		this.redraw();
 	},
 	subclear : function(){
 		this.board.subclear();
-		this.drawCanvas();
+		this.redraw();
 	},
 
 	//------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ pzprv3.createCoreClass('Puzzle',
 		this.cursor.adjust_modechange();
 
 		this.board.haserror=true;
-		this.drawCanvas();
+		this.redraw();
 	},
 
 	//------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ pzprv3.createCoreClass('Config',
 		switch(name){
 		case 'irowake': case 'cursor': case 'circolor': case 'plred':
 		case 'colorslash': case 'snakebd': case 'disptype_pipelinkr':
-			o.drawCanvas();
+			o.redraw();
 			break;
 		
 		case 'mode':

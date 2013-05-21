@@ -132,7 +132,7 @@ Menu.prototype =
 		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.revCircleMain();
-			ui.puzzle.drawCanvas();
+			ui.puzzle.redraw();
 		}
 	},
 

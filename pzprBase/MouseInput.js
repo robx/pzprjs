@@ -651,7 +651,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).seterr(1);}
 		else{ this.dispRed8(cell);}
 		this.owner.board.haserror = true;
-		this.owner.drawCanvas();
+		this.owner.redraw();
 	},
 	dispRed8 : function(cell0){
 		var stack=[cell0];
@@ -688,7 +688,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		bd.border.seterr(-1);
 		blist.seterr(1);
 		bd.haserror = true;
-		this.owner.drawCanvas();
+		this.owner.redraw();
 	}
 });
 

@@ -343,7 +343,7 @@ pzprv3.createPuzzleClass('Board',
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
 
 		this.haserror = false;
-		if(isrepaint!==false){ this.owner.drawCanvas();}
+		if(isrepaint!==false){ this.owner.redraw();}
 	},
 
 	//---------------------------------------------------------------------------

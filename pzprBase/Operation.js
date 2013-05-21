@@ -139,7 +139,7 @@ pzprv3.createPuzzleClass('BoardAdjustOperation:Operation',
 
 		o.board.exec.expandreduce(num,{x1:0,y1:0,x2:2*o.board.qcols,y2:2*o.board.qrows});
 
-		o.drawCanvas();
+		o.redraw();
 	}
 });
 
@@ -195,7 +195,7 @@ pzprv3.createPuzzleClass('BoardFlipOperation:Operation',
 
 		this.owner.board.exec.turnflip(num,d);
 
-		this.owner.drawCanvas();
+		this.owner.redraw();
 	}
 });
 

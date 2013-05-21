@@ -135,7 +135,7 @@ ui.debug =
 		this.timeeval("正答判定測定", function(){ ans.checkAns();});
 	},
 	painteval : function(){
-		this.timeeval("描画時間測定", function(){ ui.puzzle.drawCanvas();});
+		this.timeeval("描画時間測定", function(){ ui.puzzle.redraw();});
 	},
 	resizeeval : function(){
 		this.timeeval("resize描画測定", function(){ ui.puzzle.adjustCanvasSize();});

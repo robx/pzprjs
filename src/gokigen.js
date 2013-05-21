@@ -47,7 +47,7 @@ MouseEvent:{
 		}
 
 		bd.haserror = true;
-		this.owner.drawCanvas();
+		this.owner.redraw();
 	}
 },
 "MouseEvent@wagiri":{
