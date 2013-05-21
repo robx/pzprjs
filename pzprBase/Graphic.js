@@ -144,17 +144,14 @@ pzprv3.createPuzzleClass('Graphic',
 		this.setColors();
 	},
 	init : function(){
-		this.clear_numobj_parent();
-
-		this.onCanvasReady_fun();
-	},
-	onCanvasReady_fun : function(){
 		var cm = this.owner.canvasmgr;
 		if(!cm.maincanvas || (cm.usesubcanvas && !cm.subcanvas)){
 			var pc = this;
-			setTimeout(function(){ pc.onCanvasReady_fun();},10);
+			setTimeout(function(){ pc.init();},10);
 			return;
 		}
+
+		this.clear_numobj_parent();
 
 		this.currentContext = (!!cm.maincanvas ? cm.maincanvas.getContext("2d")  : null);
 		this.subContext     = ((cm.usesubcanvas && !!cm.subcanvas) ? cm.subcanvas.getContext("2d") : null);
