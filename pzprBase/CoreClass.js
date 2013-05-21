@@ -181,6 +181,13 @@ window.pzprv3 = {
 	includedFile : {},
 
 	//---------------------------------------------------------------
+	// 言語環境をチェックして日本語かどうか判定する
+	getUserLang : function(){
+		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+		return ((userlang.substr(0,2)==='ja')?'ja':'en');
+	},
+
+	//---------------------------------------------------------------
 	// 現在の時間を取得
 	currentTime : function(){ return (new Date()).getTime();},
 

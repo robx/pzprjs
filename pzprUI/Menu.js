@@ -130,6 +130,10 @@ Menu.prototype =
 			ui.menu.setdisplay('keypopup');
 			ui.menu.setdisplay('bgcolor');
 		}
+		else if(idname==='language'){
+			ui.menu.displayAll();
+			ui.puzzle.adjustCanvasSize();
+		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.revCircleMain();
 			ui.puzzle.redraw();
@@ -257,9 +261,6 @@ Menu.prototype =
 
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
-
-		/* 言語設定 */
-		this.menuconfig.language = {val:this.getUserLang(), option:['ja','en']};
 	},
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}
@@ -274,10 +275,6 @@ Menu.prototype =
 		else if(idname==='textsize'){
 			this.settextsize();
 			ui.puzzle.adjustCanvasSize();	/* pageX/Yの位置がずれる */
-		}
-		else if(idname==='language'){
-			this.displayAll();
-			ui.puzzle.adjustCanvasSize();	/* canvasの左上座標等を更新して再描画 */
 		}
 	},
 	getMenuConfig : function(idname){
@@ -330,21 +327,15 @@ Menu.prototype =
 	// menu.selectStr()  現在の言語に応じた文字列を返す
 	// menu.alertStr()   現在の言語に応じたダイアログを表示する
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
-	// menu.getUserLang() 言語環境をチェックして日本語かどうか判定する
 	//--------------------------------------------------------------------------------
 	selectStr : function(strJP, strEN){
-		return (this.getMenuConfig('language')==='ja' ? strJP : strEN);
+		return (ui.puzzle.get('language')==='ja' ? strJP : strEN);
 	},
 	alertStr : function(strJP, strEN){
-		alert(this.getMenuConfig('language')==='ja' ? strJP : strEN);
+		alert(ui.puzzle.get('language')==='ja' ? strJP : strEN);
 	},
 	confirmStr : function(strJP, strEN){
-		return confirm(this.getMenuConfig('language')==='ja' ? strJP : strEN);
-	},
-
-	getUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		return ((userlang.substr(0,2)==='ja')?'ja':'en');
+		return confirm(ui.puzzle.get('language')==='ja' ? strJP : strEN);
 	},
 
 //--------------------------------------------------------------------------------------------------------------

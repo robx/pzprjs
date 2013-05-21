@@ -339,7 +339,7 @@ pzprv3.createCoreClass('Puzzle',
 	},
 	checkAndAlert : function(){
 		var failcode = this.check(true);
-		alert(pzprv3.failcode[failcode].ja);
+		alert(pzprv3.failcode[failcode][this.get('language')]);
 		return failcode;
 	},
 	
@@ -404,7 +404,8 @@ pzprv3.createCoreClass('Config',
 	//---------------------------------------------------------------------------
 	init : function(){
 		/* 全般的な設定 */
-		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
+		this.add('mode', (this.owner.editmode?1:3), [1,3]);			/* モード */
+		this.add('language', pzprv3.getUserLang(), ['ja','en'])		/* 言語設定 */
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */

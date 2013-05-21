@@ -245,7 +245,7 @@ ui.toolarea = {
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			var obj = this.btnstack[i];
 			if(!obj.el){ continue;}
-			obj.el.value = obj.str[ui.menu.getMenuConfig('language')];
+			obj.el.value = obj.str[ui.puzzle.get('language')];
 		}
 		this.enb_undo();
 		
