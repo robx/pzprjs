@@ -46,9 +46,9 @@ MouseEvent:{
 		if(cross1!==null){ cross1.draw();}
 		if(cross2!==null){ cross2.draw();}
 		if(cross1!==null && cross2!==null){
-			if(!o.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
+			if(!o.get('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
-				if(!o.getConfig('lattice') || o.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
+				if(!o.get('lattice') || o.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
 					o.board.segs.input(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
@@ -408,7 +408,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(!this.owner.get('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -423,7 +423,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto');
 
-		var isgray = this.owner.getConfig('circolor');
+		var isgray = this.owner.get('circolor');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;
@@ -1163,7 +1163,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seglist.extend(segs);
 		}
 		
-		if(this.owner.getConfig('irowake')){
+		if(this.owner.get('irowake')){
 			this.owner.painter.repaintSegments(seglist);
 		}
 	},

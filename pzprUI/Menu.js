@@ -97,8 +97,8 @@ Menu.prototype =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(c==='F2' && pzprv3.EDITOR){
-				if     (o.editmode && !this.isSHIFT){ o.setConfig('mode',3); result = true;}
-				else if(o.playmode &&  this.isSHIFT){ o.setConfig('mode',1); result = true;}
+				if     (o.editmode && !this.isSHIFT){ o.set('mode',3); result = true;}
+				else if(o.playmode &&  this.isSHIFT){ o.set('mode',1); result = true;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -115,7 +115,7 @@ Menu.prototype =
 		/* this === ui.puzzle.mouse になります */
 		if(this.mousestart && this.btn.Middle){ /* 中ボタン */
 			if(pzprv3.EDITOR){
-				this.owner.setConfig('mode', (this.owner.playmode?1:3));
+				this.owner.set('mode', (this.owner.playmode?1:3));
 			}
 			this.mousereset();
 			return true;
@@ -213,7 +213,7 @@ Menu.prototype =
 			this.setMenuConfig(idname, newval);
 		}
 		else if(!!ui.puzzle.config.list[idname]){
-			ui.puzzle.setConfig(idname, newval);
+			ui.puzzle.set(idname, newval);
 		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.uramashu = newval;
@@ -225,7 +225,7 @@ Menu.prototype =
 			return this.getMenuConfig(idname);
 		}
 		else if(!!ui.puzzle.config.list[idname]){
-			return ui.puzzle.getConfig(idname);
+			return ui.puzzle.get(idname);
 		}
 		else if(idname==='uramashu'){
 			return ui.puzzle.board.uramashu;

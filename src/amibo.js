@@ -194,7 +194,7 @@ BoardExec:{
 		return this.owner.flags.irowake;
 	},
 	irowakeValid : function(){
-		return this.owner.getConfig('irowake');
+		return this.owner.get('irowake');
 	},
 	getNewColor : function(){
 		return this.owner.painter.getNewLineColor();
@@ -292,7 +292,7 @@ Graphic:{
 		var err=cell.error, color="";
 		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor;}
 		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!this.owner.getConfig('irowake') || !cell.color){ color = this.linecolor;}
+		else if(!this.owner.get('irowake') || !cell.color){ color = this.linecolor;}
 		else{ color = cell.color;}
 		return color;
 	},

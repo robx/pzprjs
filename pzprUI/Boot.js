@@ -75,7 +75,7 @@ function startPuzzle(){
 
 	/* debugmode時の設定 */
 	if(ui.debugmode){
-		ui.puzzle.setConfig('mode',3);
+		ui.puzzle.set('mode',3);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
 

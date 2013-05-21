@@ -196,12 +196,12 @@ AnsCheck:{
 
 		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 31004;}
 
-		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){ return 50171;}
+		if( !this.owner.get('enbnonum') && !this.checkNoNumCell() ){ return 50171;}
 
 		return 0;
 	},
 	check1st : function(){
-		return ((this.owner.getConfig('enbnonum') || this.checkNoNumCell()) ? 0 : 50171);
+		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? 0 : 50171);
 	},
 
 	checkSideAreaNumberSize : function(rinfo){

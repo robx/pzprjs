@@ -25,7 +25,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var use = this.owner.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
+		var use = this.owner.get('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
@@ -282,7 +282,7 @@ Graphic:{
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
 		var o = this.owner, bd = o.board;
-		if(!bd.haserror && o.getConfig('colorslash')){
+		if(!bd.haserror && o.get('colorslash')){
 			this.setRange(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
 		}
 		else{
@@ -303,7 +303,7 @@ Graphic:{
 
 	drawSlashes : function(){
 		var o = this.owner, bd = o.board;
-		if(!bd.haserror && o.getConfig('colorslash')){
+		if(!bd.haserror && o.get('colorslash')){
 			var sdata=bd.getSlashData();
 			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
 

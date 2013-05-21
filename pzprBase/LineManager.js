@@ -288,7 +288,7 @@ pzprv3.createPuzzleClass('LineManager',
 			blist_all.extend(blist);
 		}
 		
-		if(this.owner.getConfig('irowake')){
+		if(this.owner.get('irowake')){
 			this.owner.painter.repaintLines(blist);
 		}
 	},

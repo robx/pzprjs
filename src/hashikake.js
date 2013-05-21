@@ -213,7 +213,7 @@ Graphic:{
 			var cell = clist[i];
 
 			if(cell.qnum!=-1){
-				if (this.owner.getConfig('circolor') && cell.qnum===cell.getCountOfBridges())
+				if (this.owner.get('circolor') && cell.qnum===cell.getCountOfBridges())
 									   { g.fillStyle = this.bcolor;      }
 				else if(cell.error===1){ g.fillStyle = this.errbcolor1;  }
 				else                   { g.fillStyle = this.circledcolor;}

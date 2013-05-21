@@ -89,7 +89,7 @@ Graphic:{
 	// 背景色をつけるため
 	drawCirclesAtNumber_kurotto : function(c){
 		var g = this.vinc('cell_circle', 'auto');
-		var axcolor = this.owner.getConfig('circolor');
+		var axcolor = this.owner.get('circolor');
 
 		g.lineWidth = this.cw*0.05;
 		var rsize   = this.cw*0.44;

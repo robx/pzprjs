@@ -221,7 +221,7 @@ pzprv3.createPuzzleClass('Graphic',
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
 
 		// セルのサイズなどを取得・設定
-		if(this.owner.getConfig('squarecell')){
+		if(this.owner.get('squarecell')){
 			this.cw = this.ch = Math.min(cw,ch);
 		}
 		else{
@@ -1103,7 +1103,7 @@ pzprv3.createPuzzleClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
-			else if(this.owner.flags.irowake===0 || !this.owner.getConfig('irowake') || !border.color){ return this.linecolor;}
+			else if(this.owner.flags.irowake===0 || !this.owner.get('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;
@@ -1485,7 +1485,7 @@ pzprv3.createPuzzleClass('Graphic',
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false && this.owner.getConfig('cursor') && !this.outputImage){
+		if(isdraw!==false && this.owner.get('cursor') && !this.outputImage){
 			var d = this.range, tc = this.owner.cursor;
 			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
 			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}

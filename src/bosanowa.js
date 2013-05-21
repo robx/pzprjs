@@ -152,16 +152,16 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		if(this.owner.getConfig('disptype_bosanowa')==1){
+		if(this.owner.get('disptype_bosanowa')==1){
 			this.drawCircles_bosanowa();
 			this.drawBDnumbase();
 		}
-		else if(this.owner.getConfig('disptype_bosanowa')==2){
+		else if(this.owner.get('disptype_bosanowa')==2){
 			this.drawOutside_souko();
 			this.drawGrid_souko();
 			this.drawBDnumbase();
 		}
-		else if(this.owner.getConfig('disptype_bosanowa')==3){
+		else if(this.owner.get('disptype_bosanowa')==3){
 			this.drawBorders();
 			this.drawGrid_waritai();
 		}
@@ -177,7 +177,7 @@ Graphic:{
 	},
 
 	dispchange_bosanowa : function(){
-		var newval = this.owner.getConfig('disptype_bosanowa');
+		var newval = this.owner.get('disptype_bosanowa');
 		if     (newval==1){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
 		else if(newval==2){ this.bdmargin = 1.20; this.bdmargin_image = 1.10;}
 		else if(newval==3){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
@@ -366,14 +366,14 @@ Encode:{
 		this.decodeBoard();
 		this.decodeNumber16();
 
-		if     (this.checkpflag("h")){ this.owner.setConfig('disptype_bosanowa',2);}
-		else if(this.checkpflag("t")){ this.owner.setConfig('disptype_bosanowa',3);}
+		if     (this.checkpflag("h")){ this.owner.set('disptype_bosanowa',2);}
+		else if(this.checkpflag("t")){ this.owner.set('disptype_bosanowa',3);}
 	},
 	encodePzpr : function(type){
 		this.encodeBosanowa();
 
-		if     (this.owner.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}
-		else if(this.owner.getConfig('disptype_bosanowa')==3){ this.outpflag="t";}
+		if     (this.owner.get('disptype_bosanowa')==2){ this.outpflag="h";}
+		else if(this.owner.get('disptype_bosanowa')==3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){

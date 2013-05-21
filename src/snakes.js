@@ -168,7 +168,7 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		if(!this.owner.getConfig('snakebd')){ return false;}
+		if(!this.owner.get('snakebd')){ return false;}
 
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 		if(!cell1.isnull && !cell2.isnull &&

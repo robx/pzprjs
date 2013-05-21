@@ -106,7 +106,7 @@ Graphic:{
 		this.drawDashedGrid();
 
 		if(this.owner.pid==='pipelinkr'){
-			this.drawCircles_pipelink((this.owner.getConfig('disptype_pipelinkr')==1));
+			this.drawCircles_pipelink((this.owner.get('disptype_pipelinkr')==1));
 			this.drawBorders();
 		}
 
@@ -124,12 +124,12 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
-		if     (cell.error===1)                                                { return this.errbcolor1;}
-		else if(cell.ques===6 && this.owner.getConfig('disptype_pipelinkr')==2){ return this.icecolor;}
+		if     (cell.error===1)                                          { return this.errbcolor1;}
+		else if(cell.ques===6 && this.owner.get('disptype_pipelinkr')==2){ return this.icecolor;}
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.owner.getConfig('disptype_pipelinkr')==2){
+		if(this.owner.get('disptype_pipelinkr')==2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.cellcolor;
@@ -177,11 +177,11 @@ Encode:{
 
 		this.checkPuzzleid();
 		if(this.owner.pid==='pipelinkr'){
-			this.owner.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
+			this.owner.set('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
 		}
 	},
 	encodePzpr : function(type){
-		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.getConfig('disptype_pipelinkr')==2)?"i":"");
+		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.get('disptype_pipelinkr')==2)?"i":"");
 		this.encodePipelink(type);
 	},
 
@@ -256,12 +256,12 @@ FileIO:{
 
 		this.owner.enc.checkPuzzleid();
 		if(this.owner.pid==='pipelinkr'){
-			this.owner.setConfig('disptype_pipelinkr', (disptype=="circle"?1:2));
+			this.owner.set('disptype_pipelinkr', (disptype=="circle"?1:2));
 		}
 	},
 	encodeData : function(){
 		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe\n';}
-		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.getConfig('disptype_pipelinkr')==1?"circle\n":"ice\n");}
+		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.get('disptype_pipelinkr')==1?"circle\n":"ice\n");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}
@@ -282,7 +282,7 @@ AnsCheck:{
 		if( !this.checkLcntCell(3) ){ return 40201;}
 
 		if(this.owner.pid==='pipelinkr'){
-			var isdispice = (this.owner.getConfig('disptype_pipelinkr')==2);
+			var isdispice = (this.owner.get('disptype_pipelinkr')==2);
 			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 40501 : 40502);}
 			if( !this.checkIceLines() ){ return (isdispice ? 40601 : 40602);}
 		}

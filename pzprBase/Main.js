@@ -159,8 +159,8 @@ pzprv3.createCoreClass('Puzzle',
 
 		this.flags = this.newInstance('Flags');		// パズルの初期設定値を保持するオブジェクト
 
-		if(this.flags.irowake===2)   { this.setVal('irowake', true);}
-		if(this.flags.irowakeblk===2){ this.setVal('irowakeblk', true);}
+		if(this.flags.irowake===2)   { this.set('irowake', true);}
+		if(this.flags.irowakeblk===2){ this.set('irowakeblk', true);}
 
 		this.board.init();
 		this.painter.init();
@@ -272,7 +272,7 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	adjustCanvasSize : function(){
-		if(!this.getConfig('fixsize')){
+		if(!this.get('fixsize')){
 			this.painter.resizeCanvasByCellSize();
 		}
 		else{
@@ -289,7 +289,7 @@ pzprv3.createCoreClass('Puzzle',
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
-		if(this.getConfig('irowake')){
+		if(this.get('irowake')){
 			this.redraw();
 		}
 	},
@@ -370,11 +370,11 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.getConfig()  設定値の取得を行う
-	// owner.setConfig()  設定値の設定を行う
+	// owner.get()  設定値の取得を行う
+	// owner.set()  設定値の設定を行う
 	//------------------------------------------------------------------------------
-	getConfig : function(idname){ return this.config.getVal(idname);},
-	setConfig : function(idname,val){ return this.config.setVal(idname,val);}
+	get : function(idname){ return this.config.getConfig(idname);},
+	set : function(idname,val){ return this.config.setConfig(idname,val);}
 });
 
 //--------------------------------------------------------------------------------------------------------------
@@ -388,13 +388,13 @@ pzprv3.createCoreClass('Config',
 	list : {},
 
 	//---------------------------------------------------------------------------
-	// config.getVal()  各フラグの設定値を返す
-	// config.setVal()  各フラグの設定値を設定する
+	// config.getConfig()  各フラグの設定値を返す
+	// config.setConfig()  各フラグの設定値を設定する
 	//---------------------------------------------------------------------------
-	getVal : function(name){
+	getConfig : function(name){
 		return this.list[name]?this.list[name].val:null;
 	},
-	setVal : function(name, newval){
+	setConfig : function(name, newval){
 		this.configevent(name, newval);
 		this.uievent(name, newval);
 	},

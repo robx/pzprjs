@@ -113,7 +113,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.owner.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA)^this.owner.getConfig('lrcheck')){
+		if((kc.isSHIFT || kc.isMETA)^this.owner.get('lrcheck')){
 			if(this.btn.Left !== this.btn.Right){
 				this.btn.Left  = !this.btn.Left;
 				this.btn.Right = !this.btn.Right;
@@ -154,10 +154,10 @@ pzprv3.createPuzzleClass('MouseEvent',
 	},
 	isDispred : function(){
 		var o = this.owner, cf = o.flags, flag = false;
-		if     (cf.redline     && o.getConfig('redline')) { flag = true;}
-		else if(cf.redblk      && o.getConfig('redblk'))  { flag = true;}
-		else if(cf.redblkrb    && o.getConfig('redblkrb')){ flag = true;}
-		else if(o.pid==='roma' && o.getConfig('redroad')) { flag = true;}
+		if     (cf.redline     && o.get('redline')) { flag = true;}
+		else if(cf.redblk      && o.get('redblk'))  { flag = true;}
+		else if(cf.redblkrb    && o.get('redblkrb')){ flag = true;}
+		else if(o.pid==='roma' && o.get('redroad')) { flag = true;}
 		return o.key.isZ ^ flag;
 	},
 
@@ -288,11 +288,11 @@ pzprv3.createPuzzleClass('MouseEvent',
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.owner.getConfig('use')==1){
+		if(this.owner.get('use')==1){
 			if     (this.btn.Left) { this.inputData=(cell.isWhite()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
-		else if(this.owner.getConfig('use')==2){
+		else if(this.owner.get('use')==2){
 			if(cell.numberIsWhite && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}

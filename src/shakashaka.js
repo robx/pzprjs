@@ -8,7 +8,7 @@ pzprv3.createCustoms('shakashaka', {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
-			if(this.owner.getConfig('use_tri')==1){
+			if(this.owner.get('use_tri')==1){
 				if(this.btn.Left){
 					if(this.mousestart){ this.inputTriangle_corner();}
 					else if(this.mousemove && this.inputData!==null){
@@ -19,7 +19,7 @@ MouseEvent:{
 					if(this.mousestart || this.mousemove){ this.inputDot();}
 				}
 			}
-			else if(this.owner.getConfig('use_tri')==2){
+			else if(this.owner.get('use_tri')==2){
 				if(this.btn.Left){
 					if(this.mousestart){
 						this.inputTriangle_pull_start();
@@ -38,7 +38,7 @@ MouseEvent:{
 					if(this.mousestart || this.mousemove){ this.inputDot();}
 				}
 			}
-			else if(this.owner.getConfig('use_tri')==3){
+			else if(this.owner.get('use_tri')==3){
 				if(this.mousestart){ this.inputTriangle_onebtn();}
 			}
 		}
