@@ -22,21 +22,14 @@ v3index.extend({
 		else if(!!element.attachEvent){ element.attachEvent("on"+type,func);}
 		else                          { element["on"+type] = func;}
 	},
-	includeFile : function(filename){
-		var _script = _doc.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = filename;
-		_doc.body.appendChild(_script);
-	},
 
 	/* onload function */
 	onload_include : function(){
-		if(!window.pzprurl){ self.includeFile("puzzlename.js");}
 		setTimeout(function(){
 			if(!window.pzprurl){ setTimeout(arguments.callee,50); return;}
 			self.onload_func();
 			self.complete = true;
-		},50);
+		},10);
 	},
 	onload_func : function(){
 		if(!self.current){

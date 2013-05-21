@@ -21,12 +21,9 @@ if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
 else{ window.attachEvent("onload", boot);}
 
 function includePzprFile(){
-	/* pzprv3, uiオブジェクト生成待ち */
-	if(!pzprv3 || !ui){ return false;}
-
-	/* 先にpuzzlename.jsを読まないとimportURL()が動作しないため読み込み待ち */
-	if(!window.pzprurl){ pzprv3.includeFile("puzzlename.js"); return false;}
-
+	/* pzprv3, pzprurl, uiオブジェクト生成待ち */
+	if(!window.pzprv3 || !window.pzprurl || !window.ui){ return false;}
+	
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 		/* 2) URL(?以降)をチェック */
@@ -39,32 +36,28 @@ function includePzprFile(){
 		}
 	}
 	
-	/* ui.menu読み込み待ち */
-	if(!ui.menu){ return false;}
 	ui.menu.init();
-
+	
 	return true;
 }
 
 function includeDebugFile(){
-	var pid = onload_pzl.id;
+	var pid = onload_pzl.id, result = true;
 	
 	/* 必要な場合、テスト用ファイルのinclude         */
 	/* importURL()後でないと必要かどうか判定できない */
 	if(ui.debugmode){
 		if(!ui.debug.urls){
 			pzprv3.includeFile("tests/for_test.js");
-			setTimeout(arguments.callee,10);
-			return false;
+			result = false;
 		}
-		if(!ui.debug.urls[pid]){
+		else if(!ui.debug.urls[pid]){
 			pzprv3.includeFile("tests/test_"+pid+".js");
-			setTimeout(arguments.callee,10);
-			return false;
+			result = false;
 		}
 	}
 	
-	return true;
+	return result;
 }
 
 function startPuzzle(){
