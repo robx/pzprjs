@@ -149,9 +149,8 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.exec????()       マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
 	setMouseEvents : function(canvas){
-		var o = this;
-
 		// マウス入力イベントの設定
+		var o = this;
 		pzprv3.addMouseDownEvent(canvas, o, o.execMouseDown);
 		pzprv3.addMouseMoveEvent(canvas, o, o.execMouseMove);
 		pzprv3.addMouseUpEvent  (canvas, o, o.execMouseUp);
@@ -165,28 +164,28 @@ pzprv3.createCoreClass('Puzzle',
 
 	//---------------------------------------------------------------------------
 	// owner.setKeyEvents() キーボード入力に関するイベントを設定する
+	// owner.setKeyEvents() SilverLight系のキーボード入力に関するイベントを設定する
 	// owner.exec????()     キー入力へ分岐する(this.keyが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
 	setKeyEvents : function(){
-		var o = this;
-		if(!this.painter){ setTimeout(function(){o.setKeyEvents();},10); return;}
-
 		// キー入力イベントの設定
-		var pc = this.painter;
+		var o = this;
 		pzprv3.addEvent(document, 'keydown',  o, o.execKeyDown);
 		pzprv3.addEvent(document, 'keyup',    o, o.execKeyUp);
 		pzprv3.addEvent(document, 'keypress', o, o.execKeyPress);
-		// Silverlightのキー入力イベント設定
-		var g = pc.currentContext;
-		if(g.use.sl){
-			var receiver = o, sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
-			sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
-		}
 	},
 	execKeyDown  : function(e){ this.key.e_keydown(e);},
 	execKeyUp    : function(e){ this.key.e_keyup(e);},
 	execKeyPress : function(e){ this.key.e_keypress(e);},
+
+	setSLKeyEvents : function(g){
+		// Silverlightのキー入力イベント設定
+		if(g.use.sl){
+			var receiver = this, sender = g.content.findName(g.canvasid);
+			sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
+			sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
+		}
+	},
 	execSLKeyDown : function(sender, a){ /* a: keyEventArgs */
 		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
 						altKey:false, returnValue:false, preventDefault:function(){} };
@@ -203,12 +202,13 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.addSubCanvas() 補助キャンバスを作成する
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
-		var cm = this.canvasmgr;
+		var cm = this.canvasmgr, o = this;
 		if(!type){ type = '';}
 		if(!!el){
 			Candle.start(el.id, type, function(g){
 				pzprv3.unselectable(g.canvas);
 				cm.maincanvas = g.canvas;
+				o.setSLKeyEvents(g);
 			});
 			this.setMouseEvents(el);
 		}
