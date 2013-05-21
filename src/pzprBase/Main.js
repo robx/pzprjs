@@ -337,8 +337,8 @@ pzprv3.createCoreClass('Puzzle',
 		}
 		return this.checker.check(!!activemode);
 	},
-	checkAndAlert : function(){
-		var failcode = this.check(true);
+	checkAndAlert : function(activemode){
+		var failcode = this.check(!!activemode);
 		alert(pzprv3.failcode[failcode][this.get('language')]);
 		return failcode;
 	},
