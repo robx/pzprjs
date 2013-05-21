@@ -240,6 +240,7 @@ pzprv3.createCoreClass('Puzzle',
 				o.setSLKeyEvents(g);
 			});
 			this.setMouseEvents(el);
+			if(Candle.enable.canvas){ o.addSubCanvas();}
 		}
 	},
 	addSubCanvas : function(){
