@@ -109,7 +109,7 @@ Graphic:{
 				var size = (cell.anum<10?0.8:0.7);
 				this.dispnum(key_qans, 1, (""+cell.anum), size, color, px, py);
 			}
-			else{ this.hideEL(key_qans);}
+			else{ this.hidenum(key_qans);}
 
 			if(cell.qnum!==-1){
 				var size = 0.45;
@@ -117,7 +117,7 @@ Graphic:{
 				else if(cell.qnum>= 10000){ size = 0.36;}
 				this.dispnum(key_ques, 5, (""+cell.qnum), size, this.fontcolor, px, py);
 			}
-			else{ this.hideEL(key_ques);}
+			else{ this.hidenum(key_ques);}
 		}
 	}
 },

@@ -182,7 +182,7 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			this.dispnum(key, cell.ques, ""+cell.qnum, 0.45, "white", px, py);
 		}
-		else{ this.hideEL(key);}
+		else{ this.hidenum(key);}
 	},
 
 	repaintParts : function(blist){

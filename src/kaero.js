@@ -151,7 +151,7 @@ Graphic:{
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				this.dispnum(key, 1, text, 0.85, color, px, py);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		}
 	}
 },

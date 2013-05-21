@@ -150,20 +150,13 @@ pzprv3.createCoreClass('Puzzle',
 	//---------------------------------------------------------------------------
 	setMouseEvents : function(canvas){
 		var o = this;
-		if(!this.painter){ setTimeout(function(){o.setMouseEvents(canvas);},10); return;}
 
 		// マウス入力イベントの設定
-		var pc = this.painter;
-		var elements = [canvas];
-		if(pc.fillTextEmulate){ elements.push(pc.get_numobj_parent());}
-		for(var i=0;i<elements.length;i++){
-			var el = elements[i];
-			pzprv3.addMouseDownEvent(el, o, o.execMouseDown);
-			pzprv3.addMouseMoveEvent(el, o, o.execMouseMove);
-			pzprv3.addMouseUpEvent  (el, o, o.execMouseUp);
-			el.oncontextmenu = function(){ return false;};
-		}
+		pzprv3.addMouseDownEvent(canvas, o, o.execMouseDown);
+		pzprv3.addMouseMoveEvent(canvas, o, o.execMouseMove);
+		pzprv3.addMouseUpEvent  (canvas, o, o.execMouseUp);
 		pzprv3.addEvent(canvas, "mouseout", o, o.execMouseOut);
+		canvas.oncontextmenu = function(){ return false;};
 	},
 	execMouseDown : function(e){ this.mouse.e_mousedown(e);},
 	execMouseMove : function(e){ this.mouse.e_mousemove(e);},

@@ -208,7 +208,7 @@ Graphic:{
 			if(border.qnum>0){
 				this.dispnum(key, 1, ""+border.qnum, 0.45, "black", px, py);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);

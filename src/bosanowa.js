@@ -324,7 +324,7 @@ Graphic:{
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				this.dispnum(key, 1, ""+border.qsub, 0.35, "blue", px, py);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		}
 	},
 

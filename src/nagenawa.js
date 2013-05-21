@@ -114,7 +114,7 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			this.dispnum(key, 5, text, 0.45, this.fontcolor, px, py);
 		}
-		else{ this.hideEL(key);}
+		else{ this.hidenum(key);}
 	}
 },
 "Graphic@ringring":{

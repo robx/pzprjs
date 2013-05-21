@@ -382,7 +382,7 @@ Graphic:{
 				var px = excell.bx*this.bw, py = excell.by*this.bh;
 				this.dispnum(key, 1, text, fontratio, color, px, py);
 			}
-			else{ this.hideEL(key);}
+			else{ this.hidenum(key);}
 		}
 	}
 },

@@ -414,7 +414,6 @@ Menu.prototype =
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
 			pc2.outputImage = true;
-			pc2.fillTextEmulate = false;
 			pc2.bdmargin = pc.bdmargin_image;
 
 			if(!cellsize){ cellsize = pc.cw;}
