@@ -154,7 +154,7 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
 		var keypopup, bar, _doc = document;
-		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
+		var rect = pzprv3.getRect(pzprv3.getEL('divcanvas'));
 		
 		keypopup = _doc.createElement('div');
 		keypopup.className = 'popup';

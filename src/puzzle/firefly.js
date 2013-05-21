@@ -75,9 +75,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.50,
-	bdmargin_image : 0.10,
-
 	hideHatena : true,
 
 	setColors : function(){

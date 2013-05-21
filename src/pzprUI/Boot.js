@@ -74,7 +74,7 @@ function startPuzzle(){
 	}
 
 	// 描画wrapperの設定
-	ui.puzzle.setCanvas(pzprv3.getEL('divques'), 'canvas');
+	ui.puzzle.setCanvas(pzprv3.getEL('divcanvas'), 'canvas');
 	ui.puzzle.setKeyEvents();
  
 	// 単体初期化処理のルーチンへ

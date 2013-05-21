@@ -162,9 +162,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.65,
-	bdmargin_image : 0.60,
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
@@ -180,6 +177,17 @@ Graphic:{
 
 		this.drawTarget();
 	},
+
+	getBoardCols : function(){
+		var bd = this.owner.board;
+		return ((bd.maxbx-bd.minbx)>>1)+1;
+	},
+	getBoardRows : function(){
+		var bd = this.owner.board;
+		return ((bd.maxby-bd.minby)>>1)+1;
+	},
+	getOffsetCols : function(){ return 0;},
+	getOffsetRows : function(){ return 0;},
 
 	drawNumbers_box : function(){
 		var g = this.vinc('excell_number', 'auto');

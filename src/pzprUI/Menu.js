@@ -70,6 +70,7 @@ Menu.prototype =
 		ui.puzzle.key.uievent    = ui.menu.key_common;
 		ui.puzzle.mouse.uievent  = ui.menu.mouse_common;
 		ui.puzzle.config.uievent = ui.menu.config_common;
+		ui.puzzle.resizeevent    = ui.event.onResize;
 
 		this.menupid = pid;
 	},
@@ -405,7 +406,6 @@ Menu.prototype =
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
 			pc2.outputImage = true;
-			pc2.bdmargin = pc.bdmargin_image;
 
 			if(!cellsize){ cellsize = pc.cw;}
 			pc2.cw = cellsize;

@@ -302,9 +302,6 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.15,
-	bdmargin_image : 0.10,
-
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.errcolor1 = this.cellcolor; // drawSlashes関係

@@ -249,8 +249,7 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.70,
-	bdmargin_image : 0.50,
+	margin : 0.50,
 
 	setColors : function(){
 		this.gridcolor = this.gridcolor_DLIGHT;

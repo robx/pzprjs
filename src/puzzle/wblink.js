@@ -119,9 +119,6 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.50,
-	bdmargin_image : 0.10,
-
 	setColors : function(){
 		this.gridcolor = this.gridcolor_THIN;
 		this.errbcolor1 = "white";

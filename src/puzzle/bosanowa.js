@@ -146,9 +146,6 @@ Board:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 0.70,
-	bdmargin_image : 0.10,
-
 	paint : function(){
 		this.drawBGCells();
 
@@ -176,12 +173,13 @@ Graphic:{
 		this.drawTarget_bosanowa();
 	},
 
-	dispchange_bosanowa : function(){
-		var newval = this.owner.get('disptype_bosanowa');
-		if     (newval==1){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
-		else if(newval==2){ this.bdmargin = 1.20; this.bdmargin_image = 1.10;}
-		else if(newval==3){ this.bdmargin = 0.70; this.bdmargin_image = 0.10;}
-		this.owner.adjustCanvasSize();
+	getBoardCols : function(){
+		var bd = this.owner.board, disptype = this.owner.get('disptype_bosanowa');
+		return ((bd.maxbx-bd.minbx)>>1)+(disptype==2?2:0);
+	},
+	getBoardRows : function(){
+		var bd = this.owner.board, disptype = this.owner.get('disptype_bosanowa');
+		return ((bd.maxby-bd.minby)>>1)+(disptype==2?2:0);
 	},
 
 	drawErrorCells_bosanowa : function(){

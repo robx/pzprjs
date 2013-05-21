@@ -279,6 +279,7 @@ pzprv3.createCoreClass('Puzzle',
 			this.painter.resizeCanvas();
 		}
 	},
+	resizeevent : function(){},
 
 	//---------------------------------------------------------------------------
 	// owner.redraw()   盤面の再描画を行う
@@ -479,7 +480,7 @@ pzprv3.createCoreClass('Config',
 			break;
 		
 		case 'disptype_bosanowa':
-			o.painter.dispchange_bosanowa();
+			o.adjustCanvasSize();
 			break;
 		
 		default:

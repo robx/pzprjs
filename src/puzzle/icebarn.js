@@ -302,9 +302,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bdmargin       : 1.00,
-	bdmargin_image : 1.00,
-
 	setColors : function(){
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
@@ -333,6 +330,41 @@ Graphic:{
 		if(this.owner.pid!=='icebarn'){ this.drawTarget();}
 
 		this.drawInOut();
+	},
+
+	getBoardCols : function(){
+		var bd = this.owner.board, cols = ((bd.maxbx-bd.minbx)>>1);
+		if(pzprv3.PLAYER){
+			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
+			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols+=0.7;}
+		}
+		else{ cols+=1.4;}
+		return cols;
+	},
+	getBoardRows : function(){
+		var bd = this.owner.board, rows = ((bd.maxby-bd.minby)>>1);
+		if(pzprv3.PLAYER){
+			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
+			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows+=0.7;}
+		}
+		else{ rows+=1.4;}
+		return rows;
+	},
+	getOffsetCols : function(){
+		var bd = this.owner.board, cols = 0;
+		if(pzprv3.PLAYER){
+			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
+			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols-=0.7;}
+		}
+		return cols;
+	},
+	getOffsetRows : function(){
+		var bd = this.owner.board, rows = 0;
+		if(pzprv3.PLAYER){
+			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
+			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows-=0.7;}
+		}
+		return rows;
 	},
 
 	drawBorderArrows : function(){

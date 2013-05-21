@@ -176,6 +176,29 @@ ui.event =
 
 		o.setCanvasSizeByCellSize(cellsize);
 	},
+	onResize : function(){
+		var padding = 0, pc = ui.puzzle.painter;
+		switch(ui.puzzle.pid){
+			case 'firefly': case 'hashikake': case 'wblink':
+			case 'ichimaga': case 'ichimagam': case 'ichimagax':
+				padding = 0.30; break;
+			
+			case 'kouchoku': case 'gokigen': case 'wagiri': case 'creek':
+				padding = 0.20; break;
+			
+			case 'kinkonkan': case 'box':
+				padding = 0.05; break;
+			
+			case 'bosanowa':
+				padding = (ui.puzzle.get('disptype_bosanowa')!=2?0.50:0.05); break;
+			
+			default: padding = 0.50; break;
+		}
+		if(pzprv3.OS.mobile){ padding = 0;}
+		
+		pzprv3.getEL('divques').style.width = ''+(pc.canvasWidth|0)+'px';
+		pzprv3.getEL('divques').style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
+	},
 
 	//----------------------------------------------------------------------
 	// pc.windowWidth()   ウィンドウの幅を返す

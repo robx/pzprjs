@@ -169,8 +169,7 @@ pzprv3.createPuzzleClass('Graphic',
 	},
 	setColors : function(){ },
 
-	bdmargin       : 0.70,	// 枠外の一辺のmargin(セル数換算)
-	bdmargin_image : 0.15,	// 画像出力時のbdmargin値
+	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
 
 	hideHatena : false,	// Cellのqnumが-2のときに？を表示しない
 
@@ -236,13 +235,8 @@ pzprv3.createPuzzleClass('Graphic',
 
 		// 盤面のセルID:0が描画される左上の位置の設定
 		var bd = this.owner.board;
-		this.x0 = (cwid-this.cw*((bd.maxbx-bd.minbx)>>1))/2;
-		this.y0 = (chgt-this.ch*((bd.maxby-bd.minby)>>1))/2;
-		// extendxell==0でない時は位置をずらす
-		if(!!this.owner.board.isexcell){ this.x0 += this.cw; this.y0 += this.ch;}
-		if(this.owner.pid==='box'){ this.x0 -= this.cw/2; this.y0 -= this.ch/2;}
-		this.x0 = this.x0|0;
-		this.y0 = this.y0|0;
+		this.x0 = ((cwid-this.cw*(bd.qcols-this.getOffsetCols()))/2)|0;
+		this.y0 = ((chgt-this.ch*(bd.qrows-this.getOffsetRows()))/2)|0;
 
 		// canvas要素のサイズを変更する
 		var gs = [this.currentContext, this.subContext];
@@ -268,6 +262,8 @@ pzprv3.createPuzzleClass('Graphic',
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
+		this.owner.resizeevent();
+
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
 
@@ -277,16 +273,34 @@ pzprv3.createPuzzleClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.getCanvasCols()  Canvasの横幅としてセル何個分が必要か返す
 	// pc.getCanvasRows()  Canvasの縦幅としてセル何個分が必要か返す
+	// pc.getBoardCols()   マージンを除いた盤面の横幅としてセル何個分が必要か返す
+	// pc.getBoardRows()   マージンを除いた盤面の縦幅としてセル何個分が必要か返す
+	// pc.getOffsetCols()  有効範囲が(0,0)-(C,R)からずれているパズルで、x0の位置を調整する
+	// pc.getOffsetRows()  有効範囲が(0,0)-(C,R)からずれているパズルで、x0の位置を調整する
 	//---------------------------------------------------------------------------
 	getCanvasCols : function(){
-		var bd = this.owner.board;
-		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
-		return ((bd.maxbx-bd.minbx)>>1)+2*this.bdmargin;
+		return this.getBoardCols()+2*this.margin;
 	},
 	getCanvasRows : function(){
+		return this.getBoardRows()+2*this.margin;
+	},
+
+	getBoardCols : function(){
 		var bd = this.owner.board;
-		if(pzprv3.OS.mobile && !this.outputImage){ this.bdmargin = this.bdmargin_image;}
-		return ((bd.maxby-bd.minby)>>1)+2*this.bdmargin;
+		return ((bd.maxbx-bd.minbx)>>1);
+	},
+	getBoardRows : function(){
+		var bd = this.owner.board;
+		return ((bd.maxby-bd.minby)>>1);
+	},
+
+	getOffsetCols : function(){
+		/* 左にずらしたい分プラス、右にずらしたい分マイナス */
+		return (this.owner.board.isexcell===1?1:0);
+	},
+	getOffsetRows : function(){
+		/* 上にずらしたい分プラス、下にずらしたい分マイナス */
+		return (this.owner.board.isexcell===1?1:0);
 	},
 
 	//---------------------------------------------------------------------------
