@@ -22,16 +22,22 @@ pzprv3.createPuzzleClass('AnsCheck',
 	// ans.check1st()  オートチェック時に初めに判定を行う(オーバーライド用)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
-		var failcode = 0;
+		var failcode = 0, o = this.owner, bd = o.board;
 		this.inCheck = true;
 		
 		if(activemode){
 			this.checkOnly = false;
 			failcode = this.checkAns();
+			if(failcode!==0){
+				bd.haserror = true;
+				o.redraw();
+			}
 		}
 		else{
+			bd.disableSetError();
 			this.checkOnly = true;
 			failcode = (this.autocheck1st() || this.checkAns());
+			bd.enableSetError();
 		}
 		
 		this.inCheck = false;

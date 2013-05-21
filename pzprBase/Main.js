@@ -325,27 +325,24 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.anscheck()       正答判定処理を行う
-	// owner.anscheckSilent() 自動判定処理用の正答判定処理を行う
+	// owner.check()          正答判定処理を行う
+	// owner.checkAnsAlert()  正答判定処理をしてalertに文字列を出す
 	// owner.ansclear()       回答を消去する
 	// owner.subclear()       補助記号を消去する
 	//------------------------------------------------------------------------------
-	anscheck : function(){
-		this.key.keyreset();
-		this.mouse.mousereset();
-		var result = this.checker.check(true);
-		if(result!==0){
-			this.board.haserror = true;
-			this.redraw();
+	check : function(activemode){
+		if(!!activemode){
+			this.key.keyreset();
+			this.mouse.mousereset();
 		}
-		return result;
+		return this.checker.check(!!activemode);
 	},
-	anscheckSilent : function(){
-		this.board.disableSetError();
-		var result = this.checker.check(false);
-		this.board.enableSetError();
-		return result;
+	checkAndAlert : function(){
+		var failcode = this.check(true);
+		alert(pzprv3.failcode[failcode].ja);
+		return failcode;
 	},
+	
 	ansclear : function(){
 		this.board.ansclear();
 		this.board.resetInfo();

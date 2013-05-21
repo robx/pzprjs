@@ -15,7 +15,7 @@ ui.debug.extend(
 	
 	accheck1 : function(){
 		var outputstr = ui.puzzle.getFileData(k.FILE_PZPH).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.anscheckSilent();
+		var failcode  = ui.puzzle.check(false);
 		this.addTextarea("\t\t\t["+failcode+",\""+outputstr+"\"],");
 	},
 
@@ -100,7 +100,7 @@ ui.debug.extend(
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
 			ui.openPuzzle(acsstr[n][1].replace(/\//g,"\n"));
-			var failcode = ui.puzzle.anscheck(), compcode = acsstr[n][0];
+			var failcode = ui.puzzle.check(true), compcode = acsstr[n][0];
 			var iserror = (failcode !== compcode);
 			var errdesc = "("+compcode+":"+pzprv3.failcode[compcode].ja+")";
 

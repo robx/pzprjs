@@ -481,7 +481,7 @@ Menu.prototype =
 	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		var failcode = ui.puzzle.anscheck();
+		var failcode = ui.puzzle.check(true);
 		var strs = pzprv3.failcode[failcode];
 		this.alertStr(strs.ja, strs.en);
 	},
