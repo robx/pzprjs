@@ -22,9 +22,10 @@ window.pzprv3 = {
 	//---------------------------------------------------------------
 	// パズルを生成する
 	//---------------------------------------------------------------
-	createPuzzle : function(){
+	createPuzzle : function(canvas){
 		var puzzle = new pzprv3.core.Puzzle();
 		this.puzzles.push(puzzle);
+		if(!!canvas){ puzzle.setCanvas(canvas);}
 		return puzzle;
 	},
 	deletePuzzle : function(puzzle){
