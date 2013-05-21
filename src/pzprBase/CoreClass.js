@@ -163,11 +163,12 @@ window.pzprv3 = {
 
 	//---------------------------------------------------------------
 	// 単体ファイルの読み込み
+	srcpath : 'http://pzv.jp/src/',
 	includeFile : function(filename){
 		if(!this.includedFile[filename]){
 			var _script = document.createElement('script');
 			_script.type = 'text/javascript';
-			_script.src = filename;
+			_script.src = this.srcpath+filename;
 			document.body.appendChild(_script);
 			this.includedFile[filename] = true;
 		}
@@ -175,7 +176,7 @@ window.pzprv3 = {
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
 		if(!this.custom[pid]){
-			this.includeFile("src/"+pzprurl.toScript(pid)+".js");
+			this.includeFile("puzzle/"+pzprurl.toScript(pid)+".js");
 		}
 	},
 	includedFile : {},

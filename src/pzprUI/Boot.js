@@ -24,6 +24,8 @@ function includePzprFile(){
 	/* pzprv3, pzprurl, uiオブジェクト生成待ち */
 	if(!window.pzprv3 || !window.pzprurl || !window.ui){ return false;}
 	
+	pzprv3.srcpath = "./src/";
+	
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 		/* 2) URL(?以降)をチェック */
