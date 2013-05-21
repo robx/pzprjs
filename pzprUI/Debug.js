@@ -122,7 +122,7 @@ ui.debug =
 	},
 
 	fileopen : function(){
-		ui.openFileData(this.getTA());
+		ui.openPuzzle(this.getTA());
 	},
 
 	erasetext : function(){

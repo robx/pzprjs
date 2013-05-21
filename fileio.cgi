@@ -48,7 +48,7 @@ sub fileopen{
 <script type="text/javascript">
 var filestr = "$str";
 if(!!parent.pzprv3 && !!parent.ui){
-	var errmsg = parent.ui.openFileData(filestr);
+	var errmsg = parent.ui.openPuzzle(filestr);
 	if(!!errmsg){ alert(errmsg);}
 }
 if(!!parent.v3index){

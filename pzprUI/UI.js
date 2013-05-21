@@ -23,14 +23,10 @@ window.ui = ui = {
 	debugmode : false,
 	
 	//---------------------------------------------------------------------------
-	// ui.openURL()      ui.puzzleオブジェクトにURLを読みこませる
-	// ui.openFileData() ui.puzzleオブジェクトにファイルを読みこませる
+	// ui.openPuzzle() ui.puzzleオブジェクトにURLやファイルを読みこませる
 	//---------------------------------------------------------------------------
-	openURL : function(url, callback){
-		ui.puzzle.openByURL(url, ui.event.afterReady(callback));
-	},
-	openFileData : function(filestr, callback){
-		ui.puzzle.openByFileData(filestr, ui.event.afterReady(callback));
+	openPuzzle : function(data, callback){
+		ui.puzzle.open(data, ui.event.afterReady(callback));
 	}
 };
 
@@ -48,11 +44,11 @@ ui.event =
 	// event.afterReady()   パズルの準備完了後に呼び出す関数を作成する
 	//---------------------------------------------------------------------------
 	afterReady : function(callback){
-		return function(){
+		return function(puzzle){
 			ui.menu.menuinit();					/* メニュー関係初期化 */
 			ui.event.adjustcellsize();
 			
-			if(!!callback){ callback();}
+			if(!!callback){ callback(puzzle);}
 			
 			ui.undotimer.reset();
 			ui.timer.reset();					/* タイマーリセット(最後) */

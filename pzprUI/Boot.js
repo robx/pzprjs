@@ -15,7 +15,7 @@ function boot(){
 		return;
 	}
 
-	openPuzzle();
+	startPuzzle();
 }
 if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
 else{ window.attachEvent("onload", boot);}
@@ -67,7 +67,7 @@ function includeDebugFile(){
 	return true;
 }
 
-function openPuzzle(){
+function startPuzzle(){
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
@@ -85,10 +85,10 @@ function openPuzzle(){
 	ui.puzzle.setKeyEvents();
  
 	// 単体初期化処理のルーチンへ
-	if     (!!pzl.fstr)  { ui.openFileData(pzl.fstr, accesslog);}
-	else if(!!pzl.qdata) { ui.openURL("?"+pid+"/"+pzl.qdata, accesslog);}
-	else if(ui.debugmode){ ui.openURL("?"+pid+"/"+ui.debug.urls[pid], accesslog);}
-	else if(!!pid)       { ui.openURL("?"+pid, accesslog);}
+	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, accesslog);}
+	else if(!!pzl.qdata) { ui.openPuzzle("?"+pid+"/"+pzl.qdata, accesslog);}
+	else if(ui.debugmode){ ui.openPuzzle("?"+pid+"/"+ui.debug.urls[pid], accesslog);}
+	else if(!!pid)       { ui.openPuzzle("?"+pid, accesslog);}
 	
 	return true;
 }

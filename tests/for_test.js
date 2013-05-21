@@ -7,9 +7,9 @@ var k = pzprv3.consts;
 ui.debug.extend(
 {
 	loadperf : function(){
-		ui.openFileData(perfstr, function(){
-			ui.puzzle.setConfig('mode',3);
-			ui.puzzle.setConfig('irowake',true);
+		ui.openPuzzle(perfstr, function(puzzle){
+			puzzle.setConfig('mode',3);
+			puzzle.setConfig('irowake',true);
 		});
 	},
 	
@@ -48,7 +48,7 @@ ui.debug.extend(
 			if(self.phase != 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
-			ui.openURL("?"+newid+"/"+self.urls[newid], function(){
+			ui.openPuzzle("?"+newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
@@ -86,7 +86,7 @@ ui.debug.extend(
 		if(pzprurl.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			ui.openURL(o.getURL(pzprurl.KANPEN), function(){
+			ui.openPuzzle(o.getURL(pzprurl.KANPEN), function(){
 				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -99,7 +99,7 @@ ui.debug.extend(
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
-			ui.openFileData(acsstr[n][1].replace(/\//g,"\n"));
+			ui.openPuzzle(acsstr[n][1].replace(/\//g,"\n"));
 			var failcode = ui.puzzle.anscheck(), compcode = acsstr[n][0];
 			var iserror = (failcode !== compcode);
 			var errdesc = "("+compcode+":"+pzprv3.failcode[compcode].ja+")";
@@ -123,7 +123,7 @@ ui.debug.extend(
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		ui.openFileData(outputstr, function(){
+		ui.openPuzzle(outputstr, function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
 		});
@@ -140,7 +140,7 @@ ui.debug.extend(
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
-			ui.openFileData(outputstr, function(){
+			ui.openPuzzle(outputstr, function(){
 				self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}

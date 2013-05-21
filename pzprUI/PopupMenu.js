@@ -390,7 +390,7 @@ ui.popupmgr.addpopup('newboard',
 		
 		this.hide();
 		if(url.length>0){
-			ui.openURL("?"+pid+"/"+url.join('/'));
+			ui.openPuzzle("?"+pid+"/"+url.join('/'));
 		}
 	}
 });
@@ -425,7 +425,7 @@ ui.popupmgr.addpopup('urlinput',
 	urlinput : function(){
 		this.hide();
 		
-		ui.openURL(this.form.ta.value);
+		ui.openPuzzle(this.form.ta.value.replace(/\n/g,""));
 	}
 });
 
@@ -529,7 +529,7 @@ ui.popupmgr.addpopup('fileopen',
 			if(!fitem){ return;}
 			
 			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
-			else                { ui.openFileData(fitem.getAsText(''));}
+			else                { ui.openPuzzle(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}

@@ -152,7 +152,7 @@ Menu.prototype =
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
-				ui.openFileData(e.target.result);
+				ui.openPuzzle(e.target.result);
 			};
 		}
 	},

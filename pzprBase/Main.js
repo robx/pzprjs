@@ -31,27 +31,39 @@ pzprv3.createCoreClass('Puzzle',
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.openByURL()      URLを入力して盤面を開く
-	// owner.openByFileData() ファイルデータを入力して盤面を開く
+	// owner.open()    パズルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
-	openByURL : function(url, callback){
+	open : function(data, callback){
+		if(data.indexOf("\n",data.indexOf("\n"))===-1){
+			return this.openURL(data, callback);
+		}
+		/* 改行が2つ以上あったらファイルデータ扱い */
+		return this.openFileData(data, callback);
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.openURL()      URLを入力して盤面を開く
+	// owner.openFileData() ファイルデータを入力して盤面を開く
+	//---------------------------------------------------------------------------
+	openURL : function(url, callback){
 		var pzl = pzprurl.parseURL(url);
 		if(!pzl.id){ return;}
 
 		this.ready = false;
 
 		var o = this;
-		this.initPuzzle(pzl.id, function(){
+		this.initPuzzle(pzl.id, function(o){
 			o.enc.decodeURL(url);
 			
-			if(!!callback){ callback();}
+			if(!!callback){ callback(o);}
 			
 			o.painter.unsuspend();
 			o.resetTime();
 			o.ready = true;
 		});
+		return this;
 	},
-	openByFileData : function(filedata, callback){
+	openFileData : function(filedata, callback){
 		var farray = filedata.replace(/[\t\r]*\n/g,"\n").split(/\n/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
@@ -61,16 +73,16 @@ pzprv3.createCoreClass('Puzzle',
 
 		this.ready = false;
 
-		var o = this;
-		this.initPuzzle(pid, function(){
+		this.initPuzzle(pid, function(o){
 			o.fio.filedecode(fstr);
 			
-			if(!!callback){ callback();}
+			if(!!callback){ callback(o);}
 			
 			o.painter.unsuspend();
 			o.resetTime();
 			o.ready = true;
 		});
+		return this;
 	},
 
 	//---------------------------------------------------------------------------
@@ -88,9 +100,10 @@ pzprv3.createCoreClass('Puzzle',
 
 	//---------------------------------------------------------------------------
 	// owner.initPuzzle() 新しくパズルのファイルを開く時の処理
+	// owner.afterInit()  callback呼び出し待ちを行う
 	//---------------------------------------------------------------------------
 	initPuzzle : function(newpid, callback){
-		var self = this;
+		var puzzle = this;
 
 		/* 今のパズルと別idの時 */
 		if(this.pid != newpid){
@@ -100,7 +113,7 @@ pzprv3.createCoreClass('Puzzle',
 		}
 		/* Classおよびcanvasが用意できるまで待つ */
 		if(!pzprv3.custom[this.pid]){
-			setTimeout(function(){ self.initPuzzle.call(self,newpid,callback);},10);
+			setTimeout(function(){ puzzle.initPuzzle.call(puzzle,newpid,callback);},10);
 			return;
 		}
 
@@ -113,8 +126,17 @@ pzprv3.createCoreClass('Puzzle',
 			this.painter.reset();
 		}
 
-		/* canvasが用意できたらcallbackを呼ぶ */
-		if(!!this.painter.ready){callback();}else{setTimeout(callback,10);}
+		this.afterInit(callback);
+	},
+	afterInit : function(callback){
+		var puzzle = this;
+		if(!!this.painter.ready){
+			/* canvasが用意できたらcallbackを呼ぶ */
+			callback(puzzle);
+		}
+		else{
+			setTimeout(function(){ puzzle.afterInit(callback);},10);
+		}
 	},
 
 	//---------------------------------------------------------------------------
