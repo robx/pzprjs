@@ -21,8 +21,8 @@ if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
 else{ window.attachEvent("onload", boot);}
 
 function includePzprFile(){
-	/* pzprv3, pzprurl, uiオブジェクト生成待ち */
-	if(!window.pzprv3 || !window.pzprurl || !window.ui){ return false;}
+	/* pzprv3, uiオブジェクト生成待ち */
+	if(!window.pzprv3 || !window.ui){ return false;}
 	
 	pzprv3.srcpath = "./src/";
 	
@@ -109,7 +109,7 @@ function importURL(){
 	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
-	var pzl = pzprurl.parseURL(search);
+	var pzl = pzprv3.url.parseURL(search);
 
 	if(!startmode){
 		var dat = pzprv3.parseURLData(pzl);

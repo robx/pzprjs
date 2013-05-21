@@ -34,7 +34,7 @@ ui.debug.extend(
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
-		for(var id in pzprurl.info){ idlist.push(id);}
+		for(var id in pzprv3.url.info){ idlist.push(id);}
 		idlist.sort();
 		term = idlist.length;
 
@@ -74,8 +74,8 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzprurl.constructURL({id:self.pid, type:pzprurl.PZPRV3, qdata:self.urls[self.pid]});
-		var ta  = ui.puzzle.getURL(pzprurl.PZPRV3);
+		var inp = pzprv3.url.constructURL({id:self.pid, type:k.URL_PZPRV3, qdata:self.urls[self.pid]});
+		var ta  = ui.puzzle.getURL(k.URL_PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -83,10 +83,10 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzprurl.info[self.pid].exists.pencilbox){
+		if(pzprv3.url.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			ui.openPuzzle(o.getURL(pzprurl.KANPEN), function(){
+			ui.openPuzzle(o.getURL(k.URL_KANPEN), function(){
 				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -131,7 +131,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_file_pbox(self);},0);
 	},
 	check_file_pbox : function(self){
-		if(pzprurl.info[self.pid].exists.kanpen){
+		if(pzprv3.url.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
 			var outputstr = o.getFileData(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);

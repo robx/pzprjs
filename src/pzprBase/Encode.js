@@ -1,4 +1,7 @@
 // Encode.js v3.4.0
+(function(){
+
+var k = pzprv3.consts;
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
@@ -25,7 +28,7 @@ pzprv3.createPuzzleClass('Encode',
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
-		var pzl = pzprurl.parseURL(url);
+		var pzl = pzprv3.url.parseURL(url);
 		var dat = pzprv3.parseURLData(pzl), o = this.owner;
 
 		o.board.initBoardSize(dat.cols, dat.rows);
@@ -33,16 +36,16 @@ pzprv3.createPuzzleClass('Encode',
 		if(!!dat.bstr){
 			this.pflag = dat.pflag;
 			switch(pzl.type){
-			case pzprurl.PZPRV3: case pzprurl.PZPRAPP: case pzprurl.PZPRV3E:
+			case k.URL_PZPRV3: case k.URL_PZPRAPP: case k.URL_PZPRV3E:
 				this.outbstr = dat.bstr;
 				this.decodePzpr(pzl.type);
 				break;
-			case pzprurl.KANPEN:
+			case k.URL_KANPEN:
 				o.fio.lineseek = 0;
 				o.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case pzprurl.HEYAAPP:
+			case k.URL_HEYAAPP:
 				this.outbstr = dat.bstr;
 				this.decodeHeyaApp();
 				break;
@@ -55,34 +58,34 @@ pzprv3.createPuzzleClass('Encode',
 		var o = this.owner;
 		var size='', ispflag=false, col = o.board.qcols, row = o.board.qrows;
 		
-		if(isNaN(type) || type===pzprurl.AUTO){ type=pzprurl.PZPRV3;}
-		if(type===pzprurl.KANPEN && o.pid=='lits'){ type = pzprurl.KANPENP;}
+		if(isNaN(type) || type===k.URL_AUTO){ type=k.URL_PZPRV3;}
+		if(type===k.URL_KANPEN && o.pid=='lits'){ type = k.URL_KANPENP;}
 
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
 
 		switch(type){
-		case pzprurl.PZPRV3: case pzprurl.PZPRV3E:
-			this.encodePzpr(pzprurl.PZPRV3);
+		case k.URL_PZPRV3: case k.URL_PZPRV3E:
+			this.encodePzpr(k.URL_PZPRV3);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = (!!this.outpflag);
 			break;
 
-		case pzprurl.PZPRAPP: case pzprurl.KANPENP:
-			this.encodePzpr(pzprurl.PZPRAPP);
+		case k.URL_PZPRAPP: case k.URL_KANPENP:
+			this.encodePzpr(k.URL_PZPRAPP);
 			size = (!this.outsize ? [col,row].join('/') : this.outsize);
 			ispflag = true;
 			break;
 
-		case pzprurl.KANPEN:
+		case k.URL_KANPEN:
 			o.fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = o.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
 			size = (!this.outsize ? [row,col].join('/') : this.outsize);
 			break;
 
-		case pzprurl.HEYAAPP:
+		case k.URL_HEYAAPP:
 			this.encodeHeyaApp();
 			size = [col,row].join('x');
 			break;
@@ -92,7 +95,7 @@ pzprv3.createPuzzleClass('Encode',
 		}
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
-		return pzprurl.constructURL({id:o.pid, type:type, qdata:pdata});
+		return pzprv3.url.constructURL({id:o.pid, type:type, qdata:pdata});
 	},
 
 	// オーバーライド用
@@ -515,3 +518,5 @@ pzprv3.createPuzzleClass('Encode',
 		return (bottom <= ca && ca <= up);
 	}
 });
+
+})();

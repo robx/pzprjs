@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
+
 pzprv3.createCustoms('lits', {
 //---------------------------------------------------------
 // マウス入力系
@@ -137,7 +141,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var oldflag = ((type===pzprurl.PZPRV3 && this.checkpflag("d"))||(type===pzprurl.PZPRAPP && !this.checkpflag("c")));
+		var oldflag = ((type===k.URL_PZPRV3 && this.checkpflag("d"))||(type===k.URL_PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}
@@ -146,7 +150,7 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===pzprurl.PZPRV3 || this.owner.pid==='norinori'){
+		if(type===k.URL_PZPRV3 || this.owner.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{
@@ -288,3 +292,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

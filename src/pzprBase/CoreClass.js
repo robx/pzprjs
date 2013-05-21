@@ -106,7 +106,7 @@ window.pzprv3 = {
 	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
 	//---------------------------------------------------------------
 	createCustoms : function(scriptid, custombase){
-		var pidlist = pzprurl.PIDlist(scriptid);
+		var pidlist = pzprv3.url.PIDlist(scriptid);
 		for(var i=0;i<pidlist.length;i++){
 			var pid=pidlist[i], customclass=this.PIDfilter(pid, custombase);
 			this.createCustomSingle(pid, customclass);
@@ -176,7 +176,7 @@ window.pzprv3 = {
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
 		if(!this.custom[pid]){
-			this.includeFile("puzzle/"+pzprurl.toScript(pid)+".js");
+			this.includeFile("puzzle/"+pzprv3.url.toScript(pid)+".js");
 		}
 	},
 	includedFile : {},
@@ -444,9 +444,9 @@ pzprv3.storage = (function(){
 //                   qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
 function parseURLData(pzl){
-	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''};
+	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''}, k=pzprv3.consts;
 	switch(pzl.type){
-	case pzprurl.KANPEN:
+	case k.URL_KANPEN:
 		if(pzl.id=="sudoku"){
 			dat.rows = dat.cols = parseInt(inp.shift());
 		}
@@ -458,7 +458,7 @@ function parseURLData(pzl){
 		dat.bstr = inp.join("/");
 		break;
 
-	case pzprurl.HEYAAPP:
+	case k.URL_HEYAAPP:
 		var size = inp.shift().split("x");
 		dat.cols = parseInt(size[0]);
 		dat.rows = parseInt(size[1]);

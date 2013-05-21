@@ -137,7 +137,7 @@ ui.menuarea = {
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
-		if(pzprurl.info[pid].exists.pencilbox){
+		if(pzprv3.url.info[pid].exists.pencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 

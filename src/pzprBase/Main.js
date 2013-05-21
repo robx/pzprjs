@@ -46,7 +46,7 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	openURL : function(url, callback){
-		var pzl = pzprurl.parseURL(url);
+		var pzl = pzprv3.url.parseURL(url);
 		if(!pzl.id){ return;}
 
 		this.ready = false;
@@ -90,7 +90,7 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.getFileData() ファイルデータを取得する
 	//---------------------------------------------------------------------------
 	getURL : function(type){
-		if(isNaN(type)){ type=pzprurl.AUTO;}
+		if(isNaN(type)){ type=k.URL_AUTO;}
 		return this.enc.encodeURL(type);
 	},
 	getFileData : function(type){

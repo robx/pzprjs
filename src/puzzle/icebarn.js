@@ -405,15 +405,15 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@icebarn":{
 	decodePzpr : function(type){
-		if     (type===pzprurl.PZPRV3){ this.decodeIcebarn();}
-		else if(type===pzprurl.PZPRAPP){
+		if     (type===k.URL_PZPRV3){ this.decodeIcebarn();}
+		else if(type===k.URL_PZPRAPP){
 			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
 			else                    { this.decodeIcebarn_old1();}
 		}
 	},
 	encodePzpr : function(type){
-		if     (type===pzprurl.PZPRV3){ return this.encodeIcebarn();}
-		else if(type===pzprurl.PZPRAPP){ return this.encodeIcebarn_old1();}
+		if     (type===k.URL_PZPRV3){ return this.encodeIcebarn();}
+		else if(type===k.URL_PZPRAPP){ return this.encodeIcebarn_old1();}
 	},
 
 	decodeIcebarn : function(){

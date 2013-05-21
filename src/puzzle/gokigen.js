@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
 
 pzprv3.createCustoms('gokigen', {
 //---------------------------------------------------------
@@ -326,12 +329,12 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@gokigen":{
 	decodePzpr : function(type){
-		var oldflag = ((type===pzprurl.PZPRAPP && !this.checkpflag("c")) || (type===pzprurl.PZPRV3 && this.checkpflag("d")));
+		var oldflag = ((type===k.URL_PZPRAPP && !this.checkpflag("c")) || (type===k.URL_PZPRV3 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type===pzprurl.PZPRAPP){ this.outpflag = 'c';}
+		if(type===k.URL_PZPRAPP){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },
@@ -419,3 +422,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

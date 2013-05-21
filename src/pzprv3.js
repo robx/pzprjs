@@ -6,8 +6,6 @@ document.writeln('<script type="text/javascript" src="../candle/source/candle.ca
 document.writeln('<script type="text/javascript" src="../candle/source/candle.sl.js"></script>');
 document.writeln('<script type="text/javascript" src="../candle/source/candle.vml.js"></script>');
 
-document.writeln("<script type=\"text/javascript\" src=\"./src/puzzlename.js\"></script>");
-
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/CoreClass.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/Main.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/BoardPiece.js\"></script>");
@@ -22,3 +20,5 @@ document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/Encode.j
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/Filesys.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/Answer.js\"></script>");
 document.writeln("<script type=\"text/javascript\" src=\"./src/pzprBase/Operation.js\"></script>");
+
+document.writeln("<script type=\"text/javascript\" src=\"./src/puzzlename.js\"></script>");

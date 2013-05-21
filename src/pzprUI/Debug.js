@@ -113,7 +113,7 @@ ui.debug =
 		this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		if(pzprurl.info[ui.puzzle.pid].exists.kanpen){
+		if(pzprv3.url.info[ui.puzzle.pid].exists.kanpen){
 			this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PBOX));
 		}
 		else{

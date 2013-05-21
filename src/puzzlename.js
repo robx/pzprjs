@@ -1,11 +1,26 @@
 (function(){
 
-var pzprurl = {
+/* pzprv3オブジェクト生成待ち */
+if(!window.pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
+
+var k = pzprv3.consts;
+pzprv3.addConsts({
+	// 定数(URL形式)
+	URL_AUTO    : 0,
+	URL_PZPRV3  : 6,
+	URL_PZPRV3E : 3,
+	URL_PZPRAPP : 1,
+	URL_KANPEN  : 2,
+	URL_KANPENP : 5,
+	URL_HEYAAPP : 4
+});
+
+pzprv3.url = {
 	info   : {},
 
 	register : function(obj){
 		for(var pzprid in obj){
-			pzprurl.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
+			pzprv3.url.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
 		}
 	},
 	exists : function(name){
@@ -38,15 +53,6 @@ var pzprurl = {
 		return list;
 	},
 
-	// 定数(URL形式)
-	AUTO    : 0,
-	PZPRV3  : 6,
-	PZPRV3E : 3,
-	PZPRAPP : 1,
-	KANPEN  : 2,
-	KANPENP : 5,
-	HEYAAPP : 4,
-
 	parseURL : function(url){
 		return parseURLType(url);
 	},
@@ -78,7 +84,7 @@ PZLDATA.prototype = {
 	}
 };
 
-pzprurl.register({
+pzprv3.url.register({
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
@@ -179,6 +185,7 @@ pzprurl.register({
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
 
+var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
 //                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
@@ -187,7 +194,7 @@ pzprurl.register({
 function parseURLType(url){
 	url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 
-	var pzl = {id:'',type:pzprurl.AUTO,qdata:''};
+	var pzl = {id:'',type:k.URL_AUTO,qdata:''};
 	// カンペンの場合
 	if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 		url.match(/([0-9a-z]+)\.html/);
@@ -195,29 +202,29 @@ function parseURLType(url){
 		// カンペンだけどデータ形式はへやわけアプレット
 		if(url.indexOf("?heyawake=")>=0){
 			pzl.qdata = url.substr(url.indexOf("?heyawake=")+10);
-			pzl.type = pzprurl.HEYAAPP;
+			pzl.type = k.URL_HEYAAPP;
 		}
 		// カンペンだけどデータ形式はぱずぷれ
 		else if(url.indexOf("?pzpr=")>=0){
 			pzl.qdata = url.substr(url.indexOf("?pzpr=")+6);
-			pzl.type = pzprurl.PZPRV3;
+			pzl.type = k.URL_PZPRV3;
 		}
 		else{
 			pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-			pzl.type = pzprurl.KANPEN;
+			pzl.type = k.URL_KANPEN;
 		}
 	}
 	// へやわけアプレットの場合
 	else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 		pzl.id = 'heyawake';
 		pzl.qdata = url.substr(url.indexOf("?problem=")+9);
-		pzl.type = pzprurl.HEYAAPP;
+		pzl.type = k.URL_HEYAAPP;
 	}
 	// ぱずぷれアプレットの場合
 	else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
 		pzl.id = RegExp.$1;
 		pzl.qdata = url.substr(url.indexOf("?"));
-		pzl.type = pzprurl.PZPRAPP;
+		pzl.type = k.URL_PZPRAPP;
 	}
 	// ぱずぷれv3の場合
 	else{
@@ -230,9 +237,9 @@ function parseURLType(url){
 			pzl.id = url.substr(1);
 		}
 		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
-		pzl.type = pzprurl.PZPRV3;
+		pzl.type = k.URL_PZPRV3;
 	}
-	pzl.id = pzprurl.toPID(pzl.id);
+	pzl.id = pzprv3.url.toPID(pzl.id);
 
 	return pzl;
 }
@@ -242,28 +249,25 @@ function parseURLType(url){
 //---------------------------------------------------------------------------
 function constructURLType(pzl){
 	var str='', type=pzl.type;
-	if     (type===pzprurl.PZPRV3) { str = "http://%DOMAIN%/p.html?%PID%/";}
-	else if(type===pzprurl.PZPRV3E){ str = "http://%DOMAIN%/p.html?%PID%_edit/";}
-	else if(type===pzprurl.PZPRAPP){ str = "http://indi.s58.xrea.com/%PID%/sa/q.html?";}
-	else if(type===pzprurl.KANPEN) { str = "http://www.kanpen.net/%KID%.html?problem=";}
-	else if(type===pzprurl.KANPENP){ str = "http://www.kanpen.net/%KID%.html?pzpr=";}
-	else if(type===pzprurl.HEYAAPP){ str = "http://www.geocities.co.jp/heyawake/?problem=";}
+	if     (type===k.URL_PZPRV3) { str = "http://%DOMAIN%/p.html?%PID%/";}
+	else if(type===k.URL_PZPRV3E){ str = "http://%DOMAIN%/p.html?%PID%_edit/";}
+	else if(type===k.URL_PZPRAPP){ str = "http://indi.s58.xrea.com/%PID%/sa/q.html?";}
+	else if(type===k.URL_KANPEN) { str = "http://www.kanpen.net/%KID%.html?problem=";}
+	else if(type===k.URL_KANPENP){ str = "http://www.kanpen.net/%KID%.html?pzpr=";}
+	else if(type===k.URL_HEYAAPP){ str = "http://www.geocities.co.jp/heyawake/?problem=";}
 
 	var domain = document.domain;
 	if(!domain){ domain = "pzv.jp";}
 	else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
-	if(type===pzprurl.PZPRAPP){
+	if(type===k.URL_PZPRAPP){
 		if     (pzl.id==='pipelinkr'){ str=str.replace("%PID%","pipelink");}
 		else if(pzl.id==='heyabon')  { str=str.replace("%PID%","bonsan");}
 	}
 	var urlbase = str.replace("%DOMAIN%", domain)
-					 .replace("%PID%", pzprurl.toURLID(pzl.id))
-					 .replace("%KID%", pzprurl.toKanpen(pzl.id));
+					 .replace("%PID%", pzprv3.url.toURLID(pzl.id))
+					 .replace("%KID%", pzprv3.url.toKanpen(pzl.id));
 	return urlbase + pzl.qdata;
 }
-
-/* extern */
-window.pzprurl = pzprurl;
 
 })();

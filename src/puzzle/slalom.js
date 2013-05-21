@@ -468,9 +468,9 @@ Encode:{
 	encodePzpr : function(type){
 		this.owner.board.hinfo.generateAll();
 
-		if(type===pzprurl.PZPRV3){ this.outpflag='p';}
+		if(type===k.URL_PZPRV3){ this.outpflag='p';}
 
-		return this.encodeSlalom((type===pzprurl.PZPRV3?1:0));
+		return this.encodeSlalom((type===k.URL_PZPRV3?1:0));
 	},
 
 	decodeKanpen : function(){

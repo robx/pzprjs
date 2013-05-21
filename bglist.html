@@ -13,7 +13,7 @@
 function bglist(){
   if(!window.ui || !window.ui.menu){ setTimeout(bglist,16); return;}
   var main = document.getElementById("main"), counter = 0;
-  for(var pid in pzprurl.info){
+  for(var pid in pzprv3.url.info){
     counter++;
 
     var el = document.createElement('span');
@@ -34,6 +34,7 @@ window.addEventListener('load', bglist, false);
 window.pzprv3 = {consts:{}};
 window.ui = {};
 </script>
+<script type="text/javascript" src="./src/pzprBase/CoreClass.js"></script>
 <script type="text/javascript" src="./src/puzzlename.js"></script>
 <script type="text/javascript" src="./src/pzprUI/Menu.js"></script>
 </HEAD>

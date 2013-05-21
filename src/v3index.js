@@ -26,7 +26,7 @@ v3index.extend({
 	/* onload function */
 	onload_include : function(){
 		setTimeout(function(){
-			if(!window.pzprurl){ setTimeout(arguments.callee,50); return;}
+			if(!window.pzprv3){ setTimeout(arguments.callee,50); return;}
 			self.onload_func();
 			self.complete = true;
 		},10);
@@ -317,7 +317,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzprurl.info[row.pid][v3index.language]+"&nbsp;");
+		str += (pzprv3.url.info[row.pid][v3index.language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][v3index.language]+"&nbsp;");

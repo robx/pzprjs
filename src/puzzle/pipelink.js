@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.0
 //
+(function(){
+
+var k = pzprv3.consts;
 
 pzprv3.createCustoms('pipelink', {
 //---------------------------------------------------------
@@ -215,13 +218,13 @@ Encode:{
 
 			if     (qu===-2){ pstr = ".";}
 			else if(qu=== 6){
-				if(type===pzprurl.PZPRV3){
+				if(type===k.URL_PZPRV3){
 					for(var n=1;n<10;n++){
 						if((c+n)>=bd.cellmax || bd.cell[c+n].ques!==6){ break;}
 					}
 					pstr=(n-1).toString(10); c=(c+n-1);
 				}
-				else if(type===pzprurl.PZPRAPP){ pstr="0";}
+				else if(type===k.URL_PZPRAPP){ pstr="0";}
 			}
 			else if(qu>=11 && qu<=17){ pstr = (qu-1).toString(36);}
 			else{ count++;}
@@ -306,3 +309,5 @@ AnsCheck:{
 	}
 }
 });
+
+})();

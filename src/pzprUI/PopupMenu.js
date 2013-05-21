@@ -446,7 +446,7 @@ ui.popupmgr.addpopup('urloutput',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = ui.puzzle.pid, exists = pzprurl.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzprv3.url.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}
@@ -469,13 +469,13 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc, url = '';
+		var enc = ui.puzzle.enc, url = '', k = pzprv3.consts;
 		switch((e.target||e.srcElement).name){
-			case "pzprv3":     url = ui.puzzle.getURL(pzprurl.PZPRV3);  break;
-			case "pzprapplet": url = ui.puzzle.getURL(pzprurl.PZPRAPP); break;
-			case "kanpen":     url = ui.puzzle.getURL(pzprurl.KANPEN);  break;
-			case "pzprv3edit": url = ui.puzzle.getURL(pzprurl.PZPRV3E); break;
-			case "heyaapp":    url = ui.puzzle.getURL(pzprurl.HEYAAPP); break;
+			case "pzprv3":     url = ui.puzzle.getURL(k.URL_PZPRV3);  break;
+			case "pzprapplet": url = ui.puzzle.getURL(k.URL_PZPRAPP); break;
+			case "kanpen":     url = ui.puzzle.getURL(k.URL_KANPEN);  break;
+			case "pzprv3edit": url = ui.puzzle.getURL(k.URL_PZPRV3E); break;
+			case "heyaapp":    url = ui.puzzle.getURL(k.URL_HEYAAPP); break;
 		}
 		this.form.ta.value = url;
 	},
