@@ -257,12 +257,12 @@ pzprv3.createPuzzleClass('Graphic',
 			g.translate(x0, y0);
 		}
 
+		this.owner.resizeevent();
+
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
 		var rect = pzprv3.getRect(this.currentContext.canvas);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
-
-		this.owner.resizeevent();
 
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
