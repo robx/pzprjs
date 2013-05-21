@@ -33,8 +33,7 @@ function includePzprFile(){
 		
 		/* 指定されたパズルがない場合はさようなら～ */
 		if(!onload_pzl || !onload_pzl.id){
-			location.href = "./";
-			return false;
+			throw "No Include Puzzle Data Exception";
 		}
 	}
 	
