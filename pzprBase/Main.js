@@ -250,11 +250,11 @@ pzprv3.createCoreClass('Puzzle',
 		
 		var el2 = document.createElement('div');
 		el2.id = "_"+(new Date()).getTime(); /* 何か他とかぶらないようなID */
-		el2.style.position = 'absolute';
 		el2.style.left = '-10000px';
 		document.body.appendChild(el2);
 		Candle.start(el2.id, 'canvas', function(g){
 			cm.subcanvas = g.canvas;
+			g.canvas.style.position = 'absolute';
 		});
 		return true;
 	},
