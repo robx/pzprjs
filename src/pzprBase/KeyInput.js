@@ -152,7 +152,7 @@ pzprv3.createPuzzleClass('KeyEvent',
 
 		if(this.keydown && !this.isZ){ this.owner.board.errclear();}
 
-		if(this.uievent(c)){ return;}
+		if(!this.owner.execListener('key',c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
@@ -169,13 +169,6 @@ pzprv3.createPuzzleClass('KeyEvent',
 	// オーバーライド用
 	keyinput : function(c){
 		this.key_inputqnum(c); /* デフォルトはCell数字入力 */
-	},
-
-	//---------------------------------------------------------------------------
-	// kc.uievent()  キーイベントの際のイベント共通処理 (UIEvent系)
-	//---------------------------------------------------------------------------
-	uievent : function(c){
-		return false;
 	},
 
 	//---------------------------------------------------------------------------

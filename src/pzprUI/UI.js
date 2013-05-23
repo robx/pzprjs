@@ -80,6 +80,11 @@ ui.event =
 		
 		// ポップアップメニューにイベントを割り当てる
 		ui.popupmgr.setEvents();
+		
+		ui.puzzle.addListener('key',    this.key_common);
+		ui.puzzle.addListener('mouse',  this.mouse_common);
+		ui.puzzle.addListener('config', this.config_common);
+		ui.puzzle.addListener('resize', this.onResize);
 	},
 	removeUIEvents : function(){
 		var islt = !!_doc.removeEventListener;
@@ -89,6 +94,64 @@ ui.event =
 			else    { e.el.detachEvent('on'+e.event, e.func);}
 		}
 		this.evlist=[];
+	},
+
+	//---------------------------------------------------------------------------
+	// event.key_common()  キー入力時に呼び出される関数
+	// event.mouse_common()  盤面へのマウス入力時に呼び出される関数
+	// event.config_common()  config設定時に呼び出される関数
+	//---------------------------------------------------------------------------
+	key_common : function(o, c){
+		var kc = o.key, result = true;
+		if(kc.keydown){
+			/* TimerでUndo/Redoする */
+			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startUndo(); result = false;}
+			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startRedo(); result = false;}
+
+			/* F2で回答モード Shift+F2で問題作成モード */
+			if(c==='F2' && pzprv3.EDITOR){
+				if     (o.editmode && !kc.isSHIFT){ o.set('mode',3); result = false;}
+				else if(o.playmode &&  kc.isSHIFT){ o.set('mode',1); result = false;}
+			}
+
+			/* デバッグ用ルーチンを通す */
+			if(ui.debug.keydown(c)){ result = false;}
+		}
+		else if(kc.keyup){
+			/* TimerのUndo/Redoを停止する */
+			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
+			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
+		}
+		return result;
+	},
+	mouse_common : function(o){
+		var mv = o.mouse;
+		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
+			if(pzprv3.EDITOR){
+				o.set('mode', (o.playmode?1:3));
+			}
+			mv.mousereset();
+			return false;
+		}
+		return true;
+	},
+	config_common : function(o, idname, newval){
+		ui.menu.setdisplay(idname);
+		
+		if(idname==='mode'){
+			ui.menu.setdisplay('keypopup');
+			ui.menu.setdisplay('bgcolor');
+		}
+		else if(idname==='language'){
+			ui.menu.displayAll();
+			o.adjustCanvasSize();
+		}
+		else if(idname==='uramashu'){
+			o.board.revCircleMain();
+			o.redraw();
+		}
+		
+		return true;
 	},
 
 	//---------------------------------------------------------------------------
@@ -176,8 +239,8 @@ ui.event =
 
 		o.setCanvasSizeByCellSize(cellsize);
 	},
-	onResize : function(){
-		var padding = 0, o = ui.puzzle, pc = o.painter;
+	onResize : function(o){
+		var padding = 0, pc = o.painter;
 		switch(o.pid){
 			case 'firefly': case 'hashikake': case 'wblink':
 			case 'ichimaga': case 'ichimagam': case 'ichimagax':
@@ -197,6 +260,8 @@ ui.event =
 		if(pzprv3.OS.mobile){ padding = 0;}
 		
 		o.canvasmgr.maincanvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
+		
+		return true;
 	},
 
 	//----------------------------------------------------------------------

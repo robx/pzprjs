@@ -139,7 +139,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.mouseend   = (step===2);
 		this.mouseout   = (step===3);
 		
-		if(this.uievent()){ return;}
+		if(!this.owner.execListener('mouse')){ return;}
 		
 		if(!this.btn.Left && !this.btn.Right){ return;}
 		
@@ -159,13 +159,6 @@ pzprv3.createPuzzleClass('MouseEvent',
 		else if(cf.redblkrb    && o.get('redblkrb')){ flag = true;}
 		else if(o.pid==='roma' && o.get('redroad')) { flag = true;}
 		return o.key.isZ ^ flag;
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.uievent()  マウスイベントの際のイベント共通処理 (UIEvent系)
-	//---------------------------------------------------------------------------
-	uievent : function(){
-		return false;
 	},
 
 	//---------------------------------------------------------------------------

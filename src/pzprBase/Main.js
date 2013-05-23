@@ -26,6 +26,13 @@ pzprv3.Puzzle.prototype =
 			usesubcanvas : false	// 補助canvasがあるかどうか
 		};
 
+		this.listeners = {
+			mouse  : [],
+			key    : [],
+			config : [],
+			resize : []
+		};
+
 		this.config = new Config();
 		this.config.owner = this;
 		this.config.init();
@@ -228,6 +235,23 @@ pzprv3.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する
+	// owner.execListener() イベントが発生した時に呼ぶ関数を実行する
+	//---------------------------------------------------------------------------
+	addListener : function(eventname, func){
+		if(!!this.listeners[eventname]){ this.listeners[eventname].push(func);}
+	},
+	execListener : function(){
+		var args = Array.prototype.slice.apply(arguments), eventname = args.shift();
+		var evlist = this.listeners[eventname], result = true;
+		if(!!evlist){
+			args.unshift(this);
+			for(var i=0;i<evlist.length;i++){ if(!evlist[i].apply(window,args)){ result=false;}}
+		}
+		return result;
+	},
+
+	//---------------------------------------------------------------------------
 	// owner.setCanvas()    描画キャンバスをセットする
 	// owner.addSubCanvas() 補助キャンバスを作成する
 	//---------------------------------------------------------------------------
@@ -280,7 +304,6 @@ pzprv3.Puzzle.prototype =
 			this.painter.resizeCanvas();
 		}
 	},
-	resizeevent : function(){},
 
 	//---------------------------------------------------------------------------
 	// owner.redraw()   盤面の再描画を行う
@@ -399,7 +422,7 @@ Config.prototype =
 	},
 	setConfig : function(name, newval){
 		this.configevent(name, newval);
-		this.uievent(name, newval);
+		this.owner.execListener('config', name, newval)
 	},
 
 	//---------------------------------------------------------------------------
@@ -453,13 +476,6 @@ Config.prototype =
 	add : function(name, defvalue, option){
 		if(!option){ this.list[name] = {val:defvalue};}
 		else{ this.list[name] = {val:defvalue, option:option};}
-	},
-
-	//---------------------------------------------------------------------------
-	// config.uievent()  設定変更の際のイベント共通処理 (UIEvent系)
-	//---------------------------------------------------------------------------
-	uievent : function(name, newval){
-		return false;
 	},
 
 	//---------------------------------------------------------------------------

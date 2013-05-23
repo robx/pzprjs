@@ -67,11 +67,6 @@ Menu.prototype =
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
 
-		ui.puzzle.key.uievent    = ui.menu.key_common;
-		ui.puzzle.mouse.uievent  = ui.menu.mouse_common;
-		ui.puzzle.config.uievent = ui.menu.config_common;
-		ui.puzzle.resizeevent    = ui.event.onResize;
-
 		this.menupid = pid;
 	},
 
@@ -83,62 +78,6 @@ Menu.prototype =
 		if(!!ui.popupmgr){ ui.popupmgr.reset();}
 		
 		ui.event.removeUIEvents();
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.key_common()  キー入力時に呼び出される関数
-	//---------------------------------------------------------------------------
-	key_common : function(c){
-		/* this === ui.puzzle.key になります */
-		var o = this.owner, result = false;
-		if(this.keydown){
-			/* TimerでUndo/Redoする */
-			if(c==='z' && (this.isCTRL || this.isMETA)){ ui.undotimer.startUndo(); result = true;}
-			if(c==='y' && (this.isCTRL || this.isMETA)){ ui.undotimer.startRedo(); result = true;}
-
-			/* F2で回答モード Shift+F2で問題作成モード */
-			if(c==='F2' && pzprv3.EDITOR){
-				if     (o.editmode && !this.isSHIFT){ o.set('mode',3); result = true;}
-				else if(o.playmode &&  this.isSHIFT){ o.set('mode',1); result = true;}
-			}
-
-			/* デバッグ用ルーチンを通す */
-			if(ui.debug.keydown(c)){ result = true;}
-		}
-		else if(this.keyup){
-			/* TimerのUndo/Redoを停止する */
-			if(c==='z' && (this.isCTRL || this.isMETA)){ ui.undotimer.stop(); result = true;}
-			if(c==='y' && (this.isCTRL || this.isMETA)){ ui.undotimer.stop(); result = true;}
-		}
-		return result;
-	},
-	mouse_common : function(){
-		/* this === ui.puzzle.mouse になります */
-		if(this.mousestart && this.btn.Middle){ /* 中ボタン */
-			if(pzprv3.EDITOR){
-				this.owner.set('mode', (this.owner.playmode?1:3));
-			}
-			this.mousereset();
-			return true;
-		}
-		return false;
-	},
-	config_common : function(idname, newval){
-		/* this === ui.puzzle.config になります */
-		ui.menu.setdisplay(idname);
-		
-		if(idname==='mode'){
-			ui.menu.setdisplay('keypopup');
-			ui.menu.setdisplay('bgcolor');
-		}
-		else if(idname==='language'){
-			ui.menu.displayAll();
-			ui.puzzle.adjustCanvasSize();
-		}
-		else if(idname==='uramashu'){
-			ui.puzzle.board.revCircleMain();
-			ui.puzzle.redraw();
-		}
 	},
 
 	//---------------------------------------------------------------------------
