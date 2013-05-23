@@ -260,7 +260,7 @@ pzprv3.createPuzzleClass('Graphic',
 		this.owner.resizeevent();
 
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect = pzprv3.getRect(this.currentContext.canvas);
+		var rect = pzprv3.getRect(this.currentContext.child);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
