@@ -35,8 +35,6 @@ function includePzprFile(){
 		}
 	}
 	
-	ui.menu.init();
-	
 	return true;
 }
 
@@ -64,24 +62,29 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	ui.puzzle = pzprv3.createPuzzle();
-
-	/* debugmode時の設定 */
-	if(ui.debugmode){
-		ui.puzzle.set('mode',3);
-		ui.menu.setMenuConfig('autocheck', true);
-	}
-
-	// 描画wrapperの設定
 	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
-	ui.puzzle.setKeyEvents();
- 
+	
+	/* createPuzzle()後からopen()前に呼ぶ */
+	ui.menu.init();
+	ui.event.setListeners(ui.puzzle);
+	
 	// 単体初期化処理のルーチンへ
-	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, accesslog);}
-	else if(!!pzl.qdata) { ui.openPuzzle("?"+pid+"/"+pzl.qdata, accesslog);}
-	else if(ui.debugmode){ ui.openPuzzle("?"+pid+"/"+ui.debug.urls[pid], accesslog);}
-	else if(!!pid)       { ui.openPuzzle("?"+pid, accesslog);}
+	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
+	else if(!!pzl.qdata) { ui.openPuzzle("?"+pid+"/"+pzl.qdata, afterBoot);}
+	else if(ui.debugmode){ ui.openPuzzle("?"+pid+"/"+ui.debug.urls[pid], afterBoot);}
+	else if(!!pid)       { ui.openPuzzle("?"+pid, afterBoot);}
 	
 	return true;
+}
+
+function afterBoot(o){
+	/* debugmode時の設定 */
+	if(ui.debugmode){
+		o.set('mode',3);
+		ui.menu.setMenuConfig('autocheck', true);
+	}
+	o.setKeyEvents();
+	accesslog();
 }
 
 //---------------------------------------------------------------------------

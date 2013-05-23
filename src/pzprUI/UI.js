@@ -80,11 +80,6 @@ ui.event =
 		
 		// ポップアップメニューにイベントを割り当てる
 		ui.popupmgr.setEvents();
-		
-		ui.puzzle.addListener('key',    this.key_common);
-		ui.puzzle.addListener('mouse',  this.mouse_common);
-		ui.puzzle.addListener('config', this.config_common);
-		ui.puzzle.addListener('resize', this.onResize);
 	},
 	removeUIEvents : function(){
 		var islt = !!_doc.removeEventListener;
@@ -94,6 +89,16 @@ ui.event =
 			else    { e.el.detachEvent('on'+e.event, e.func);}
 		}
 		this.evlist=[];
+	},
+
+	//---------------------------------------------------------------------------
+	// event.setListeners()  PuzzleのListenerを登録する
+	//---------------------------------------------------------------------------
+	setListeners : function(pzl){
+		pzl.addListener('key',    this.key_common);
+		pzl.addListener('mouse',  this.mouse_common);
+		pzl.addListener('config', this.config_common);
+		pzl.addListener('resize', this.onResize);
 	},
 
 	//---------------------------------------------------------------------------
