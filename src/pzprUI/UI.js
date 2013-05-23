@@ -67,9 +67,9 @@ ui.event =
 		else                     { el.attachEvent('on'+event, func);}
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
-	addMouseDownEvent : pzprv3.addMouseDownEvent,
-	addMouseMoveEvent : pzprv3.addMouseMoveEvent,
-	addMouseUpEvent   : pzprv3.addMouseUpEvent,
+	addMouseDownEvent : pzprv3.util.addMouseDownEvent,
+	addMouseMoveEvent : pzprv3.util.addMouseMoveEvent,
+	addMouseUpEvent   : pzprv3.util.addMouseUpEvent,
 
 	//---------------------------------------------------------------------------
 	// event.setUIEvents()    ぱずぷれv3で使用するイベントを設定する
@@ -82,7 +82,7 @@ ui.event =
 		ui.popupmgr.setEvents();
 	},
 	removeUIEvents : function(){
-		var islt = !!document.removeEventListener;
+		var islt = !!_doc.removeEventListener;
 		for(var i=0,len=this.evlist.length;i<len;i++){
 			var e=this.evlist[i];
 			if(islt){ e.el.removeEventListener(e.event, e.func, e.capt);}
@@ -107,7 +107,7 @@ ui.event =
 		}
 
 		// onBlurにイベントを割り当てる
-		this.addEvent(document, 'blur', this, this.onblur_func);
+		this.addEvent(_doc, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
 		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
@@ -170,8 +170,8 @@ ui.event =
 
 		// mainのサイズ変更
 		if(!pc.outputImage){
-			pzprv3.getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzprv3.OS.mobile){ pzprv3.getEL('menuboard').style.width = '90%';}
+			getEL('main').style.width = ''+(mwidth|0)+'px';
+			if(pzprv3.OS.mobile){ getEL('menuboard').style.width = '90%';}
 		}
 
 		o.setCanvasSizeByCellSize(cellsize);
@@ -205,7 +205,7 @@ ui.event =
 	//----------------------------------------------------------------------
 	windowWidth : function(){
 		this.windowWidth = ((!pzprv3.OS.mobile) ?
-			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : document.body.clientWidth);}
+			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
 		);
@@ -213,12 +213,15 @@ ui.event =
 	}
 	// windowHeight : function(){
 	//	this.windowHeight = ((!pzprv3.OS.mobile) ?
-	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : document.body.clientHeight);}
+	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : _doc.body.clientHeight);}
 	//	:
 	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
 	//	);
 	//	return this.windowHeight();
 	// }
 };
+
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
 
 })();

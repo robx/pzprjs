@@ -34,7 +34,7 @@ ui.timer =
 	//---------------------------------------------------------------------------
 	reset : function(){
 		this.worstACtime = 0;
-		this.timerEL = pzprv3.getEL('timerpanel');
+		this.timerEL = document.getElementById('timerpanel');
 		this.timerEL.innerHTML = this.label()+"00:00";
 
 		clearInterval(this.TID);
@@ -45,7 +45,7 @@ ui.timer =
 		this.TID = setInterval(function(){ self.update();}, this.timerInterval);
 	},
 	update : function(){
-		this.current = pzprv3.currentTime();
+		this.current = pzprv3.util.currentTime();
 
 		if(pzprv3.PLAYER){ this.updatetime();}
 		if(ui.menu.getMenuConfig('autocheck')){ this.ACcheck();}
@@ -88,7 +88,7 @@ ui.timer =
 				return;
 			}
 
-			this.worstACtime = Math.max(this.worstACtime, (pzprv3.currentTime()-this.current));
+			this.worstACtime = Math.max(this.worstACtime, (pzprv3.util.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	}

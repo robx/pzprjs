@@ -103,8 +103,8 @@ ui.keypopup =
 
 			this.element.style.display = 'block';
 
-			pzprv3.getEL('panelbase1').style.display = (mode==1?'block':'none');
-			pzprv3.getEL('panelbase3').style.display = (mode==3?'block':'none');
+			getEL('panelbase1').style.display = (mode==1?'block':'none');
+			getEL('panelbase3').style.display = (mode==3?'block':'none');
 		}
 		else if(!!this.element){
 			this.element.style.display = 'none';
@@ -132,20 +132,20 @@ ui.keypopup =
 		
 		this.resizepanel();
 		
-		var bar = pzprv3.getEL('barkeypopup');
+		var bar = getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
 		ui.event.addEvent(bar, 'dblclick', ui.menu, function(){ this.setMenuConfig('keypopup',false)});
 	},
 	createtable : function(mode,type){
-		this.basepanel = pzprv3.getEL('panelbase'+mode);
+		this.basepanel = getEL('panelbase'+mode);
 		this.basepanel.innerHTML = '';
 
 		this.generate(mode);
 	},
 	clear : function(){
 		if(!!this.element){
-			pzprv3.getEL('panelbase1').innerHTML = '';
-			pzprv3.getEL('panelbase3').innerHTML = '';
+			getEL('panelbase1').innerHTML = '';
+			getEL('panelbase3').innerHTML = '';
 		}
 	},
 
@@ -153,30 +153,30 @@ ui.keypopup =
 	// kp.makeKeyPopup() キーポップアップのパネルを作成する
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
-		var keypopup, bar, _doc = document;
-		var rect = pzprv3.getRect(pzprv3.getEL('divques'));
+		var keypopup, bar;
+		var rect = pzprv3.util.getRect(getEL('divques'));
 		
-		keypopup = _doc.createElement('div');
+		keypopup = createEL('div');
 		keypopup.className = 'popup';
 		keypopup.id = 'keypopup';
 		keypopup.style.left   = (rect.left+48)+'px';
 		keypopup.style.top    = (rect.top +48)+'px';
 		keypopup.style.zIndex = 100;
-		pzprv3.getEL("popup_parent").appendChild(keypopup);
+		getEL("popup_parent").appendChild(keypopup);
 		
-		bar = _doc.createElement('div');
+		bar = createEL('div');
 		bar.className = 'titlebar';
 		bar.id = 'barkeypopup';
 		bar.appendChild(_doc.createTextNode("panel"));
-		pzprv3.unselectable(bar);
+		pzprv3.util.unselectable(bar);
 		keypopup.appendChild(bar);
 		
-		var panel = _doc.createElement('div');
+		var panel = createEL('div');
 		panel.className = 'panelbase';
 		panel.id = 'panelbase1';
 		keypopup.appendChild(panel);
 		
-		panel = _doc.createElement('div');
+		panel = createEL('div');
 		panel.className = 'panelbase';
 		panel.id = 'panelbase3';
 		keypopup.appendChild(panel);
@@ -501,29 +501,29 @@ ui.keypopup =
 	inputcol : function(type, ca, disp){
 		var _div = null, _child = null;
 		if(type!=='empty'){
-			_div = pzprv3.createEL('div');
+			_div = createEL('div');
 			_div.className = 'kpcell kpcellvalid';
 			_div.onclick = function(){ ui.puzzle.key.keyinput(ca,0);};
-			pzprv3.unselectable(_div);
+			pzprv3.util.unselectable(_div);
 		}
 		else{
-			_div = pzprv3.createEL('div');
+			_div = createEL('div');
 			_div.className = 'kpcell kpcellempty';
-			pzprv3.unselectable(_div);
+			pzprv3.util.unselectable(_div);
 		}
 
 		if(type==='num'){
-			_child = pzprv3.createEL('span');
+			_child = createEL('span');
 			_child.className   = 'kpnum';
 			_child.style.color = this.tdcolor;
 			_child.innerHTML   = disp;
-			pzprv3.unselectable(_child);
+			pzprv3.util.unselectable(_child);
 		}
 		else if(type==='image'){
-			_child = pzprv3.createEL('img');
+			_child = createEL('img');
 			_child.className = 'kpimg';
 			_child.src = "./src/img/"+ui.puzzle.pid+"_kp.gif";
-			pzprv3.unselectable(_child);
+			pzprv3.util.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 
@@ -558,5 +558,9 @@ ui.keypopup =
 		});
 	}
 };
+
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
 
 })();

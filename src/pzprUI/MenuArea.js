@@ -344,15 +344,15 @@ ui.menuarea = {
 		var pp = this.items;
 
 		// ElementTemplate : メニュー領域
-		var el_menu = pzprv3.createEL('li');
+		var el_menu = createEL('li');
 		el_menu.className = 'menu';
 
 		// ElementTemplate : フロートメニュー
-		var el_float = pzprv3.createEL('menu');
+		var el_float = createEL('menu');
 		el_float.className = 'floatmenu';
 
 		// ElementTemplate : フロートメニュー(中身)
-		var el_smenu = pzprv3.createEL('li');
+		var el_smenu = createEL('li');
 		el_smenu.className = 'smenu';
 		var el_sparent  = el_smenu.cloneNode(false);
 
@@ -366,11 +366,11 @@ ui.menuarea = {
 		el_check.style.fontSize = '0.9em';
 		var el_child = el_check.cloneNode(false);
 
-		var el_separate = pzprv3.createEL('li');
+		var el_separate = createEL('li');
 		el_separate.className = 'smenusep';
 		el_separate.innerHTML = '&nbsp;';
 
-		var el_label = pzprv3.createEL('li');
+		var el_label = createEL('li');
 		el_label.className = 'smenulabel';
 
 		for(var id in pp.item){
@@ -391,7 +391,7 @@ ui.menuarea = {
 			var smenu = temp.cloneNode(temp===el_separate?true:false);
 			smenu.id = smenuid;
 			if(pp.type(id)===pp.MENU){
-				pzprv3.getEL('menupanel').appendChild(smenu);
+				getEL('menupanel').appendChild(smenu);
 				ui.event.addEvent(smenu, "mouseover", this, this.menuhover);
 				ui.event.addEvent(smenu, "mouseout",  this, this.menuout);
 				continue;
@@ -406,7 +406,7 @@ ui.menuarea = {
 			if(!this.floatpanel[parentid]){
 				var panel = el_float.cloneNode(false);
 				panel.id = 'float_'+parentid;
-				pzprv3.getEL('float_parent').appendChild(panel);
+				getEL('float_parent').appendChild(panel);
 				ui.event.addEvent(panel, "mouseout", this, this.floatmenuout);
 				this.floatpanel[parentid] = panel;
 			}
@@ -437,7 +437,7 @@ ui.menuarea = {
 
 		if(this.enableSaveImage && !!ui.puzzle.classes.ImageTile){
 			if(pzprv3.browser.Gecko && !location.hostname){
-				pzprv3.getEL('ms_imagesavep').className = 'smenunull';
+				getEL('ms_imagesavep').className = 'smenunull';
 			}
 		}
 	},
@@ -453,7 +453,7 @@ ui.menuarea = {
 			var idname = el.id.substr(3), val, pp = this.items, menutype = pp.type(idname);
 			if(menutype===pp.SMENU){
 				if(!this.submenuexec(idname)){
-					var pos = pzprv3.getPagePos(e);
+					var pos = pzprv3.util.getPagePos(e);
 					ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 				}
 			}
@@ -551,7 +551,7 @@ ui.menuarea = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = pzprv3.getRect(e.target||e.srcElement);
+		var rect = pzprv3.util.getRect(e.target||e.srcElement);
 		var idname = (e.target||e.srcElement).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
@@ -564,7 +564,7 @@ ui.menuarea = {
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = pzprv3.pageX(e)  + 'px';
+				_float.style.left = pzprv3.util.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -598,13 +598,13 @@ ui.menuarea = {
 	},
 
 	insideOf : function(el, e){
-		var pos = pzprv3.getPagePos(e);
-		var rect = pzprv3.getRect(el);
+		var pos = pzprv3.util.getPagePos(e);
+		var rect = pzprv3.util.getRect(el);
 		return (pos.px>=rect.left && pos.px<=rect.right && pos.py>=rect.top && pos.py<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var pos = pzprv3.getPagePos(e);
-		var rect_f = pzprv3.getRect(getEL('ms_file')), rect_o = pzprv3.getRect(getEL('ms_other'));
+		var pos = pzprv3.util.getPagePos(e);
+		var rect_f = pzprv3.util.getRect(getEL('ms_file')), rect_o = pzprv3.util.getRect(getEL('ms_other'));
 		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
 	}
 };
@@ -715,5 +715,6 @@ MenuList.prototype =
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
 
 })();

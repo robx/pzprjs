@@ -15,6 +15,8 @@ var self = v3index;
 var typelist = self.typelist;
 var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
+function getEL(id){ return _doc.getElementById(id);}
+
 v3index.extend({
 	/* common function */
 	addEvent : function(element,type,func){
@@ -34,12 +36,12 @@ v3index.extend({
 	onload_func : function(){
 		if(!self.current){
 			if(!window.pzprfaq && !self.input_init()){
-				var el = _doc.getElementById("puzmenu_input");
+				var el = getEL("puzmenu_input");
 				el.parentNode.removeChild(el);
-				_doc.getElementById("table_input").style.display = 'none';
+				getEL("table_input").style.display = 'none';
 			}
 
-			var el = _doc.getElementById("puztypes").firstChild;
+			var el = getEL("puztypes").firstChild;
 			while(!!el){
 				if(!!el.tagName && el.tagName.toLowerCase()==='li' &&
 				   !!el.id      && el.id.match(/puzmenu_(.+)$/)){
@@ -86,8 +88,8 @@ v3index.extend({
 	/* display tabs and tables function */
 	disp : function(){
 		for(var i=0;i<typelist.length;i++){
-			var el = _doc.getElementById("puzmenu_"+typelist[i]);
-			var table = _doc.getElementById("table_"+typelist[i]);
+			var el = getEL("puzmenu_"+typelist[i]);
+			var table = getEL("table_"+typelist[i]);
 			if(typelist[i]===self.current){
 				el.className = "puzmenusel";
 				try     { table.style.display = 'table';}
@@ -130,7 +132,7 @@ v3index.urlif.extend({
 		_form = _doc.urlinput;
 		if(!!_form){
 			if(v3index.LS){
-				v3index.addEvent(_doc.getElementById("urlinput_btn"), "click", self.urlinput);
+				v3index.addEvent(getEL("urlinput_btn"), "click", self.urlinput);
 				return true;
 			}
 			else{
@@ -140,7 +142,7 @@ v3index.urlif.extend({
 		}
 	},
 	urlinput : function(e){
-		var url = _doc.getElementById("urlinput_text").value;
+		var url = getEL("urlinput_text").value;
 		if(!!url){
 			localStorage['pzprv3_urldata'] = url;
 			window.open('./p.html', '');

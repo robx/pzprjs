@@ -92,7 +92,7 @@ MouseEvent:{
 	},
 	mouseout_kouchoku : function(e, px, py){
 		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
-		var pos = pzprv3.getPagePos(e), rect=pzprv3.getRect(this.owner.canvasmgr.maincanvas);
+		var pos = pzprv3.util.getPagePos(e), rect=pzprv3.util.getRect(this.owner.canvasmgr.maincanvas);
 		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];

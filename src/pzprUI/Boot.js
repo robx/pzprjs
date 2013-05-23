@@ -24,8 +24,6 @@ function includePzprFile(){
 	/* pzprv3, uiオブジェクト生成待ち */
 	if(!window.pzprv3 || !window.ui){ return false;}
 	
-	pzprv3.srcpath = "./src/";
-	
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 		/* 2) URL(?以降)をチェック */
@@ -74,7 +72,7 @@ function startPuzzle(){
 	}
 
 	// 描画wrapperの設定
-	ui.puzzle.setCanvas(pzprv3.getEL('divques'), 'canvas');
+	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
 	ui.puzzle.setKeyEvents();
  
 	// 単体初期化処理のルーチンへ
@@ -112,7 +110,7 @@ function importURL(){
 	var pzl = pzprv3.url.parseURL(search);
 
 	if(!startmode){
-		var dat = pzprv3.parseURLData(pzl);
+		var dat = pzprv3.url.splitURL(pzl);
 		startmode=(!dat.bstr?'EDITOR':'PLAYER');
 	}
 	switch(startmode){

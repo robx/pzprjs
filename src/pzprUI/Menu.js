@@ -21,7 +21,7 @@ var Menu = function(){
 
 	this.enableSaveImage = false; // 画像保存が有効か
 
-	this.fileio = (document.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
+	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	this.enableReadText = false;
 	
 	this.enableSaveBlob = false;
@@ -51,7 +51,7 @@ Menu.prototype =
 		
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
 		
-		if(ui.puzzle.canvasmgr.usesubcanvas && !!document.createElement('canvas').toDataURL){
+		if(ui.puzzle.canvasmgr.usesubcanvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 		}
 		
@@ -187,14 +187,15 @@ Menu.prototype =
 		if(pzprv3.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
 		else			 { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 
-		document.title = title;
-		pzprv3.getEL('title2').innerHTML = title;
+		_doc.title = title;
+		var titleEL = _doc.getElementById('title2');
+		titleEL.innerHTML = title;
 
 		var imageurl = this.bgimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
-		document.body.style.backgroundImage = "url("+imageurl+")";
+		_doc.body.style.backgroundImage = "url("+imageurl+")";
 		if(pzprv3.browser.IE6){
-			pzprv3.getEL('title2').style.marginTop = "24px";
+			titleEL.style.marginTop = "24px";
 		}
 	},
 	bgimage : function(pid){
@@ -296,7 +297,7 @@ Menu.prototype =
 		} });
 	},
 	modifyCSS : function(input){
-		var sheet = document.styleSheets[0];
+		var sheet = _doc.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
 		var modified = this.modifyCSS_sub(rules, input);
@@ -351,7 +352,7 @@ Menu.prototype =
 		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
 
 		if(!this.enableSaveBlob){
-			var form = document.fileform2;
+			var form = _doc.fileform2;
 			form.filename.value = fname;
 
 			if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
@@ -436,7 +437,6 @@ Menu.prototype =
 
 	submitimage : function(pc2){
 		var url = pc2.currentContext.canvas.toDataURL();
-		var _doc = document;
 		_doc.fileform2.filename.value  = ui.puzzle.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 		_doc.fileform2.operation.value = 'imagesave';

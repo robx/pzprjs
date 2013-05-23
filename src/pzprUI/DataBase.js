@@ -28,7 +28,7 @@ ProblemData.prototype =
 		this.row = owner.board.qrows;
 		this.hard = 0;
 		this.pdata = owner.getFileData(pzprv3.consts.FILE_PZPH).replace(/\r?\n/g,"/");
-		this.time = (pzprv3.currentTime()/1000)|0;
+		this.time = (pzprv3.util.currentTime()/1000)|0;
 		this.comment = '';
 	},
 	toString : function(){
@@ -468,7 +468,7 @@ DataBaseHandler_LS.prototype =
 	},
 	updateManageData : function(parent){
 		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.currentTime()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzprv3.util.currentTime()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -566,7 +566,7 @@ DataBaseHandler_LS.prototype =
 		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
 		localStorage['pzprv3_storage:version'] = '2.0';
 		localStorage['pzprv3_storage:count'] = puzzles.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.currentTime()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzprv3.util.currentTime()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){
 			puzzles[i].id = (i+1);
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();

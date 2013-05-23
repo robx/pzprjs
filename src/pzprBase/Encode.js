@@ -29,7 +29,7 @@ pzprv3.createPuzzleClass('Encode',
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
 		var pzl = pzprv3.url.parseURL(url);
-		var dat = pzprv3.parseURLData(pzl), o = this.owner;
+		var dat = pzprv3.url.splitURL(pzl), o = this.owner;
 
 		o.board.initBoardSize(dat.cols, dat.rows);
 

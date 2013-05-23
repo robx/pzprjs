@@ -52,7 +52,7 @@ ui.popupmgr.addpopup('debug',
 		this.addCancelButton();
 
 		/* テスト用文字列出力要素を追加 */
-		if(ui.debugmode && !pzprv3.getEL('testdiv')){
+		if(ui.debugmode && !getEL('testdiv')){
 			var el = document.createElement('div');
 			el.id = 'testdiv';
 			el.style.textAlign  = 'left';
@@ -127,7 +127,7 @@ ui.debug =
 
 	erasetext : function(){
 		this.setTA('');
-		if(ui.debugmode){ pzprv3.getEL('testdiv').innerHTML = '';}
+		if(ui.debugmode){ getEL('testdiv').innerHTML = '';}
 	},
 
 	perfeval : function(){
@@ -142,13 +142,13 @@ ui.debug =
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = pzprv3.currentTime();
-		while(pzprv3.currentTime() - old < 3000){
+		var count=0, old = pzprv3.util.currentTime();
+		while(pzprv3.util.currentTime() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = pzprv3.currentTime() - old;
+		var time = pzprv3.util.currentTime() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},
@@ -176,5 +176,8 @@ ui.debug =
 	setTA : function(str){ document.testform.testarea.value  = str;},
 	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
 };
+
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
 
 })();

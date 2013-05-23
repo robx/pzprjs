@@ -3,6 +3,9 @@
 
 var k = pzprv3.consts;
 
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
+
 /* Debug用オブジェクトに関数などを追加する */
 ui.debug.extend(
 {
@@ -255,10 +258,10 @@ ui.debug.extend(
 
 	taenable : true,
 	addTextarea : function(str){
-		if(!pzprv3.browser.Gecko){ pzprv3.getEL('testarea').value += (str+"\n");}
+		if(!pzprv3.browser.Gecko){ getEL('testarea').value += (str+"\n");}
 		else{
-			pzprv3.getEL('testdiv').appendChild(document.createTextNode(str));
-			pzprv3.getEL('testdiv').appendChild(document.createElement('br'));
+			getEL('testdiv').appendChild(_doc.createTextNode(str));
+			getEL('testdiv').appendChild(_doc.createElement('br'));
 		}
 	},
 

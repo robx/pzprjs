@@ -108,18 +108,18 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	createManageArea : function(){
 		// ElementTemplate : 管理領域
-		var el_div = pzprv3.createEL('div');
+		var el_div = createEL('div');
 
-		var el_span = pzprv3.createEL('span');
-		pzprv3.unselectable(el_span);
+		var el_span = createEL('span');
+		pzprv3.util.unselectable(el_span);
 
-		var el_checkbox = pzprv3.createEL('input');
+		var el_checkbox = createEL('input');
 		el_checkbox.type = 'checkbox';
 		el_checkbox.check = '';
 
-		var el_selchild = pzprv3.createEL('div');
+		var el_selchild = createEL('div');
 		el_selchild.className = 'flag';
-		pzprv3.unselectable(el_selchild);
+		pzprv3.util.unselectable(el_selchild);
 
 		// usearea & checkarea
 		var pp = ui.menuarea.items;
@@ -142,7 +142,7 @@ ui.toolarea = {
 					_div.appendChild(sel);
 					_div.appendChild(document.createTextNode(' '));
 				}
-				_div.appendChild(document.createElement('br'));
+				_div.appendChild(createEL('br'));
 
 				getEL('usepanel').appendChild(_div);
 				break;
@@ -156,7 +156,7 @@ ui.toolarea = {
 				var span = el_span.cloneNode(false);
 				span.id = 'cl_'+idname;
 				_div.appendChild(span);
-				_div.appendChild(document.createElement('br'));
+				_div.appendChild(createEL('br'));
 
 				getEL('checkpanel').appendChild(_div);
 				break;
@@ -184,7 +184,7 @@ ui.toolarea = {
 	// toolarea.createButtonArea()   ボタン用の初期設定を行う
 	//---------------------------------------------------------------------------
 	createButtonArea : function(){
-		this.area = pzprv3.getEL('btnarea');
+		this.area = getEL('btnarea');
 
 		// (Canvas下) ボタンの初期設定
 		var btncheck = createButton(); btncheck.id = "btncheck";
@@ -223,7 +223,7 @@ ui.toolarea = {
 
 		if(ui.puzzle.pid==='pipelinkr'){
 			var el = createButton(); el.id = 'btncircle';
-			pzprv3.unselectable(el);
+			pzprv3.util.unselectable(el);
 			ui.event.addEvent(el, "click", this, this.toggledisp);
 			this.area.appendChild(el);
 		}
@@ -346,7 +346,7 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	addButtons : function(el, strJP, strEN){
 		ui.event.addEvent(el, "click", this, this.buttonclick);
-		pzprv3.unselectable(el);
+		pzprv3.util.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 
@@ -390,8 +390,9 @@ ui.toolarea = {
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
 function createButton(){
-	var button = pzprv3.createEL('input');
+	var button = createEL('input');
 	button.type = 'button';
 	return button;
 }

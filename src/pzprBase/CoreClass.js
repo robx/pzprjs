@@ -17,13 +17,12 @@ window.pzprv3 = {
 	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用
 
-	pclasslist : [],	// パズル別クラスのスーパークラスになるクラスを保存
-
 	//---------------------------------------------------------------
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas){
-		var puzzle = new pzprv3.core.Puzzle();
+		var puzzle = new pzprv3.Puzzle();
+		puzzle.init();
 		this.puzzles.push(puzzle);
 		if(!!canvas){ puzzle.setCanvas(canvas);}
 		return puzzle;
@@ -59,21 +58,11 @@ window.pzprv3 = {
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
-	createCoreClass : function(classname, proto){
-		var rel = this._createClass(classname, proto, false);
-		this.core[rel.name] = rel.body;
-	},
 	createPuzzleClass : function(classname, proto){
-		var rel = this._createClass(classname, proto, true);
+		var rel = this._createClass(classname, proto);
 		this.core[rel.name] = rel.body;
-		this.pclasslist.push(rel.name);
 	},
-	extendCoreClass : function(classname, proto){
-		var base = pzprv3.core[classname].prototype;
-		for(var name in proto){ base[name] = proto[name];}
-	},
-
-	_createClass : function(classname, proto, iscommon){
+	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');
 		var colon = classname.indexOf(':'), basename = '';
 		if(colon>=0){
@@ -81,16 +70,11 @@ window.pzprv3 = {
 			classname = classname.substr(0,colon);
 		}
 
-		var NewClass = ((iscommon) ?
-			function(owner, args){
-				this.owner = owner;
-				if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}
-			}
-		:
-			function(){
-				if(!!this.initialize){ this.initialize.apply(this,arguments);}
-			}
-		);
+		var NewClass = function(owner, args){
+			this.owner = owner;
+			if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}
+		}
+
 		if(!!basename && !!this.core[basename]){
 			var BaseClass = this.core[basename];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
@@ -141,15 +125,14 @@ window.pzprv3 = {
 			if(!custom[classname]){
 				if(!!this.core[classname]){ classname = classname+":"+classname;}
 
-				var rel = this._createClass(classname, proto, true);
+				var rel = this._createClass(classname, proto);
 				custom[rel.name] = rel.body;
 			}
 			else{
 				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
 			}
 		}
-		for(var i=0;i<this.pclasslist.length;i++){
-			var classname = this.pclasslist[i];
+		for(var classname in this.core){
 			if(!custom[classname]){ custom[classname] = this.core[classname];}
 		}
 
@@ -157,18 +140,18 @@ window.pzprv3 = {
 	},
 
 	//---------------------------------------------------------------
-	parseURLData : function(pzl){
-		return parseURLData(pzl);
-	},
-
-	//---------------------------------------------------------------
 	// 単体ファイルの読み込み
-	srcpath : 'http://pzv.jp/src/',
+	srcpath : null,
 	includeFile : function(filename){
+		if(this.srcpath===null){
+			var host = location.host;
+			if(!host || !host.match(/(dev.)?pzv.jp/) || host==='localhost' || host==='127.0.0.1'){ this.srcpath='./src/';}
+			else{ this.srcpath = 'http://pzv.jp/src/';}
+		}
 		if(!this.includedFile[filename]){
 			var _script = document.createElement('script');
 			_script.type = 'text/javascript';
-			_script.src = this.srcpath+filename;
+			_script.src = this.srcpath+'/'+filename;
 			document.body.appendChild(_script);
 			this.includedFile[filename] = true;
 		}
@@ -179,201 +162,7 @@ window.pzprv3 = {
 			this.includeFile("puzzle/"+pzprv3.url.toScript(pid)+".js");
 		}
 	},
-	includedFile : {},
-
-	//---------------------------------------------------------------
-	// 言語環境をチェックして日本語かどうか判定する
-	getUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		return ((userlang.substr(0,2)==='ja')?'ja':'en');
-	},
-
-	//---------------------------------------------------------------
-	// 現在の時間を取得
-	currentTime : function(){ return (new Date()).getTime();},
-
-	//---------------------------------------------------------------
-	// Elementの生成関連
-	//---------------------------------------------------------------
-	unselectable : function(el){
-		el.style.MozUserSelect    = 'none';
-		el.style.KhtmlUserSelect  = 'none';
-		el.style.webkitUserSelect = 'none';
-		el.style.msUserSelect     = 'none';
-		el.style.userSelect       = 'none';
-		el.unselectable = "on";
-		return this;
-	},
-	getEL : function(id){
-		return document.getElementById(id);
-	},
-	createEL : function(tagName){
-		return document.createElement(tagName);
-	},
-
-	//----------------------------------------------------------------------
-	// pzprv3.addEvent()          addEventListener(など)を呼び出す
-	// pzprv3.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// pzprv3.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// pzprv3.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
-	//----------------------------------------------------------------------
-	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
-	},
-	addMouseDownEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerDown", self, func);
-		}
-		else{
-			this.addEvent(el, "mousedown", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchstart", self, func);
-			}
-		}
-	},
-	addMouseMoveEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerMove", self, func);
-		}
-		else{
-			this.addEvent(el, "mousemove", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchmove",  self, func);
-			}
-		}
-	},
-	addMouseUpEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
-			this.addEvent(el, "MSPointerUp", self, func);
-		}
-		else{
-			this.addEvent(el, "mouseup", self, func);
-			if(pzprv3.env.touchevent){
-				this.addEvent(el, "touchend", self, func);
-			}
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// pzprv3.getMouseButton() 左/中/右ボタンが押されているかチェックする
-	//---------------------------------------------------------------------------
-	getMouseButton : function(e){
-		var left=false, mid=false, right=false;
-		if(e.touches!==void 0){
-			/* touchイベントだった場合 */
-			left  = (e.touches.length===1);
-			right = (e.touches.length>1);
-		}
-		else{
-			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
-				left  = (e.button===1);
-				mid   = (e.button===4);
-				right = (e.button===2);
-			}
-			else{
-				left  = (!!e.which ? e.which===1 : e.button===0);
-				mid   = (!!e.which ? e.which===2 : e.button===1);
-				right = (!!e.which ? e.which===3 : e.button===2);
-			}
-		}
-
-		return {Left:left, Middle:mid, Right:right};
-	},
-
-	//----------------------------------------------------------------------
-	// pzprv3.getPagePos() イベントが起こったページ上の座標を返す
-	// pzprv3.pageX()      イベントが起こったページ上のX座標を返す
-	// pzprv3.pageY()      イベントが起こったページ上のY座標を返す
-	//----------------------------------------------------------------------
-	getPagePos : function(e){
-		var pos = new pzprv3.core.Point(0, 0);
-		pos.px = this.pageX(e);
-		pos.py = this.pageY(e);
-		return pos;
-	},
-	pageX : function(e){
-		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageX)){ return e.pageX;}
-		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
-		return 0;
-	},
-	pageY : function(e){
-		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
-		if(e.touches!==void 0 && e.touches.length>0){
-			var len=e.touches.length, pos=0;
-			if(len>0){
-				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
-				return pos/len;
-			}
-		}
-		else if(!isNaN(e.pageY)){ return e.pageY;}
-		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
-		return 0;
-	},
-
-	//--------------------------------------------------------------------------------
-	// pzprv3.getRect()   エレメントの四辺の座標を返す
-	//--------------------------------------------------------------------------------
-	getRect : function(el){
-		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			function(el){
-				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
-				if(!window.scrollX==void 0){
-					scrollLeft = window.scrollX;
-					scrollTop  = window.scrollY;
-				}
-				else{
-					_html = document.documentElement; _body = document.body;
-					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
-					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
-				}
-				var left   = rect.left   + scrollLeft;
-				var top    = rect.top    + scrollTop;
-				var right  = rect.right  + scrollLeft;
-				var bottom = rect.bottom + scrollTop;
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		:
-			function(el){
-				var left = 0, top = 0, el2 = el;
-				while(!!el2){
-					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
-					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
-					el2 = el2.offsetParent;
-				}
-				var right  = left + (el.offsetWidth  || el.clientWidth);
-				var bottom = top  + (el.offsetHeight || el.clientHeight);
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		);
-		return this.getRect(el);
-	},
-
-	//----------------------------------------------------------------------
-	// Eventオブジェクト関連
-	// 
-	// stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                   伝播させないようにする
-	// preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                   イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
-	}
+	includedFile : {}
 };
 
 //---------------------------------------------------------------------------
@@ -439,53 +228,194 @@ pzprv3.storage = (function(){
 	};
 })();
 
-//---------------------------------------------------------------------------
-// ★ parseURLData() URLを縦横・問題部分などに分解する
-//                   qdata -> [(pflag)/](cols)/(rows)/(bstr)
-//---------------------------------------------------------------------------
-function parseURLData(pzl){
-	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''}, k=pzprv3.consts;
-	switch(pzl.type){
-	case k.URL_KANPEN:
-		if(pzl.id=="sudoku"){
-			dat.rows = dat.cols = parseInt(inp.shift());
+//----------------------------------------------------------------------
+// EventやDOM関連のツール的関数群
+//----------------------------------------------------------------------
+pzprv3.util = {
+	//---------------------------------------------------------------
+	// 現在の時間を取得
+	currentTime : function(){ return (new Date()).getTime();},
+
+	//---------------------------------------------------------------
+	// 言語環境をチェックして日本語かどうか判定する
+	getUserLang : function(){
+		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+		return ((userlang.substr(0,2)==='ja')?'ja':'en');
+	},
+
+	//---------------------------------------------------------------
+	// Elementの生成関連
+	//---------------------------------------------------------------
+	unselectable : function(el){
+		el.style.MozUserSelect    = 'none';
+		el.style.KhtmlUserSelect  = 'none';
+		el.style.webkitUserSelect = 'none';
+		el.style.msUserSelect     = 'none';
+		el.style.userSelect       = 'none';
+		el.unselectable = "on";
+		return this;
+	},
+
+	//----------------------------------------------------------------------
+	// pzprv3.util.addEvent()          addEventListener(など)を呼び出す
+	// pzprv3.util.addMouseDownEvent() マウスを押したときのイベントを設定する
+	// pzprv3.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
+	// pzprv3.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	//----------------------------------------------------------------------
+	addEvent : function(el, event, self, callback, capt){
+		var func = function(e){ callback.call(self, (e||window.event));};
+		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
+		else                     { el.attachEvent('on'+event, func);}
+	},
+	addMouseDownEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerDown", self, func);
 		}
 		else{
-			dat.rows = parseInt(inp.shift());
-			dat.cols = parseInt(inp.shift());
-			if(pzl.id=="kakuro"){ dat.rows--; dat.cols--;}
+			this.addEvent(el, "mousedown", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchstart", self, func);
+			}
 		}
-		dat.bstr = inp.join("/");
-		break;
+	},
+	addMouseMoveEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerMove", self, func);
+		}
+		else{
+			this.addEvent(el, "mousemove", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchmove",  self, func);
+			}
+		}
+	},
+	addMouseUpEvent : function(el, self, func){
+		if(pzprv3.env.mspointerevent){
+			this.addEvent(el, "MSPointerUp", self, func);
+		}
+		else{
+			this.addEvent(el, "mouseup", self, func);
+			if(pzprv3.env.touchevent){
+				this.addEvent(el, "touchend", self, func);
+			}
+		}
+	},
 
-	case k.URL_HEYAAPP:
-		var size = inp.shift().split("x");
-		dat.cols = parseInt(size[0]);
-		dat.rows = parseInt(size[1]);
-		dat.bstr = inp.join("/");
-		break;
+	//---------------------------------------------------------------------------
+	// pzprv3.util.getMouseButton() 左/中/右ボタンが押されているかチェックする
+	//---------------------------------------------------------------------------
+	getMouseButton : function(e){
+		var left=false, mid=false, right=false;
+		if(e.touches!==void 0){
+			/* touchイベントだった場合 */
+			left  = (e.touches.length===1);
+			right = (e.touches.length>1);
+		}
+		else{
+			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
+			}
+			else{
+				left  = (!!e.which ? e.which===1 : e.button===0);
+				mid   = (!!e.which ? e.which===2 : e.button===1);
+				right = (!!e.which ? e.which===3 : e.button===2);
+			}
+		}
 
-	default:
-		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-		dat.pflag = inp.shift();
-		dat.cols = parseInt(inp.shift());
-		dat.rows = parseInt(inp.shift());
-		dat.bstr = inp.join("/");
-		break;
+		return {Left:left, Middle:mid, Right:right};
+	},
+
+	//----------------------------------------------------------------------
+	// pzprv3.util.getPagePos() イベントが起こったページ上の座標を返す
+	// pzprv3.util.pageX()      イベントが起こったページ上のX座標を返す
+	// pzprv3.util.pageY()      イベントが起こったページ上のY座標を返す
+	//----------------------------------------------------------------------
+	getPagePos : function(e){
+		return {px:this.pageX(e), py:this.pageY(e)}
+	},
+	pageX : function(e){
+		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageX;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageX)){ return e.pageX;}
+		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
+		return 0;
+	},
+	pageY : function(e){
+		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
+		if(e.touches!==void 0 && e.touches.length>0){
+			var len=e.touches.length, pos=0;
+			if(len>0){
+				for(var i=0;i<len;i++){ pos += e.touches[i].pageY;}
+				return pos/len;
+			}
+		}
+		else if(!isNaN(e.pageY)){ return e.pageY;}
+		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
+		return 0;
+	},
+
+	//--------------------------------------------------------------------------------
+	// pzprv3.util.getRect()   エレメントの四辺の座標を返す
+	//--------------------------------------------------------------------------------
+	getRect : function(el){
+		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
+			function(el){
+				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+				if(!window.scrollX==void 0){
+					scrollLeft = window.scrollX;
+					scrollTop  = window.scrollY;
+				}
+				else{
+					_html = document.documentElement; _body = document.body;
+					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
+					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
+				}
+				var left   = rect.left   + scrollLeft;
+				var top    = rect.top    + scrollTop;
+				var right  = rect.right  + scrollLeft;
+				var bottom = rect.bottom + scrollTop;
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		:
+			function(el){
+				var left = 0, top = 0, el2 = el;
+				while(!!el2){
+					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
+					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
+					el2 = el2.offsetParent;
+				}
+				var right  = left + (el.offsetWidth  || el.clientWidth);
+				var bottom = top  + (el.offsetHeight || el.clientHeight);
+				return { top:top, bottom:bottom, left:left, right:right};
+			}
+		);
+		return this.getRect(el);
+	},
+
+	//----------------------------------------------------------------------
+	// Eventオブジェクト関連
+	// 
+	// stopPropagation() イベントの起こったエレメントより上にイベントを
+	//                   伝播させないようにする
+	// preventDefault()  イベントの起こったエレメントで、デフォルトの
+	//                   イベントが起こらないようにする
+	//----------------------------------------------------------------------
+	stopPropagation : function(e){
+		if(!!e.stopPropagation){ e.stopPropagation();}
+		else{ e.cancelBubble = true;}
+	},
+	preventDefault : function(e){
+		if(!!e.preventDefault){ e.preventDefault();}
+		else{ e.returnValue = false;}
 	}
-	return dat;
-}
-
-//----------------------------------------------------------------------------
-// ★Pointクラス  (px,py)pixel座標を扱う
-//---------------------------------------------------------------------------
-// Pointクラス
-pzprv3.createCoreClass('Point',
-{
-	initialize : function(px,py){ this.px = px; this.py = py;},
-	set : function(point){ this.px = point.px; this.py = point.py;},
-	reset : function(){ this.px = null; this.py = null;},
-	valid : function(){ return (this.px!==null && this.py!==null);}
-});
+};
 
 })();

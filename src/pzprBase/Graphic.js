@@ -250,7 +250,7 @@ pzprv3.createPuzzleClass('Graphic',
 			var x0 = this.x0, y0 = this.y0;
 			// SVGの時、小数点以下の端数調整を行う
 			if(!g.use.canvas && g===this.currentContext){
-				var rect = pzprv3.getRect(g.canvas);
+				var rect = pzprv3.util.getRect(g.canvas);
 				x0 -= (rect.left%1);
 				y0 -= (rect.top%1);
 			}
@@ -260,7 +260,7 @@ pzprv3.createPuzzleClass('Graphic',
 		this.owner.resizeevent();
 
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect = pzprv3.getRect(this.currentContext.child);
+		var rect = pzprv3.util.getRect(this.currentContext.child);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
@@ -323,7 +323,7 @@ pzprv3.createPuzzleClass('Graphic',
 		}
 		if(this.suspended){
 			if(this.canvasWidth===null || this.canvasHeight===null){
-				var rect = pzprv3.getRect(this.owner.canvasmgr.maincanvas);
+				var rect = pzprv3.util.getRect(this.owner.canvasmgr.maincanvas);
 				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
 			}
 			this.suspended = false;

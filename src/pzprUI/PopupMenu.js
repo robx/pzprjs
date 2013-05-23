@@ -6,6 +6,7 @@ if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
 
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
@@ -98,7 +99,7 @@ ui.popupmgr =
 	//---------------------------------------------------------------------------
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
-		var pos = pzprv3.getPagePos(e);
+		var pos = pzprv3.util.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pos.px - parseInt(popel.style.left);
 		this.offset.py = pos.py - parseInt(popel.style.top);
@@ -114,10 +115,10 @@ ui.popupmgr =
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			var pos = pzprv3.getPagePos(e);
+			var pos = pzprv3.util.getPagePos(e);
 			popel.style.left = pos.px - this.offset.px + 'px';
 			popel.style.top  = pos.py - this.offset.py + 'px';
-			pzprv3.preventDefault(e);
+			pzprv3.util.preventDefault(e);
 		}
 	}
 };
@@ -162,17 +163,17 @@ ui.popupmgr.addpopup('template',
 	makeElement : function(){
 		this.reset();
 		
-		this.pop = _doc.createElement('div');
+		this.pop = createEL('div');
 		this.pop.className = 'popup';
 		this.popparent.appendChild(this.pop);
 		
-		var bar = _doc.createElement('div');
+		var bar = createEL('div');
 		bar.className = 'titlebar';
-		pzprv3.unselectable(bar);
+		pzprv3.util.unselectable(bar);
 		this.pop.appendChild(bar);
 		this.titlebar = bar;
 		
-		this.form = _doc.createElement('form');
+		this.form = createEL('form');
 		this.form.name = this.formname;
 		this.pop.appendChild(this.form);
 	},
@@ -210,21 +211,21 @@ ui.popupmgr.addpopup('template',
 	},
 
 	addText : function(str_jp, str_en){
-		var el = _doc.createElement('span');
+		var el = createEL('span');
 		el.appendChild(this.createTextNode(str_jp, str_en));
 		this.form.appendChild(el);
 	},
 	addBR : function(){
-		this.form.appendChild(_doc.createElement('br'));
+		this.form.appendChild(createEL('br'));
 	},
 	addInput : function(type, attr){
-		var el = _doc.createElement('input');
+		var el = createEL('input');
 		el.type = type;
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
 	},
 	addTextArea : function(attr){
-		var el = _doc.createElement('textarea');
+		var el = createEL('textarea');
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
 	},
@@ -233,7 +234,7 @@ ui.popupmgr.addpopup('template',
 	},
 
 	addExecButton : function(str_jp, str_en, func, attr){
-		var el = _doc.createElement('input');
+		var el = createEL('input');
 		el.type = 'button';
 		el.value = ui.menu.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
@@ -330,19 +331,19 @@ ui.popupmgr.addpopup('newboard',
 			e = (e||window.event);
 			var _div = (e.target||e.srcElement).parentNode;
 			var idx = _div.id.charAt(2);
-			for(var i=0;i<=3;i++){ pzprv3.getEL("nb"+i).style.backgroundColor = '';}
+			for(var i=0;i<=3;i++){ getEL("nb"+i).style.backgroundColor = '';}
 			_div.style.backgroundColor = 'red';
 		};
 		
 		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		for(var i=0;i<=3;i++){
-			var _img = _doc.createElement('img');
+			var _img = createEL('img');
 			_img.src = "src/img/tawa_nb.gif";
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
 			_img.onclick = clickshape;
 			
-			var _div = _doc.createElement('div');
+			var _div = createEL('div');
 			_div.id = "nb"+i;
 			_div.style.backgroundColor = (i==idx?'red':'');
 			_div.appendChild(_img);
@@ -379,7 +380,7 @@ ui.popupmgr.addpopup('newboard',
 		if(url.length>0 && pid==='tawa'){
 			var selected=null;
 			for(var i=0;i<=3;i++){
-				if(pzprv3.getEL("nb"+i).style.backgroundColor==='red'){ selected=[0,3,1,2][i]; break;}
+				if(getEL("nb"+i).style.backgroundColor==='red'){ selected=[0,3,1,2][i]; break;}
 			}
 			if(!isNaN(selected) && !(col==1 && (selected==0||selected==3))){
 				if(selected===3){ col--; url=[col,row];}
@@ -503,7 +504,7 @@ ui.popupmgr.addpopup('fileopen',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ pzprv3.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzprv3.util.preventDefault(e||window.event); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
@@ -708,16 +709,16 @@ TableElement.prototype =
 	trow  : null,
 
 	init : function(attr, style){
-		this.table = _doc.createElement('table');
+		this.table = createEL('table');
 		if(!!attr) { for(var att in attr){ this.table[att]=attr[att];}}
 		if(!!style){ for(var name in style){ this.table.style[name]=style[name];}}
 		
-		this.tbody = _doc.createElement('tbody');
+		this.tbody = createEL('tbody');
 		this.table.appendChild(this.tbody);
 	},
 	
 	initRow : function(attr, style){
-		this.trow = _doc.createElement('tr');
+		this.trow = createEL('tr');
 		if(!!attr) { for(var att in attr){ this.trow[att]=attr[att];}}
 		if(!!style){ for(var name in style){ this.trow.style[name]=style[name];}}
 		
@@ -725,7 +726,7 @@ TableElement.prototype =
 	},
 	
 	addCell : function(el){
-		var tcell = _doc.createElement('td');
+		var tcell = createEL('td');
 		tcell.appendChild(el);
 		this.trow.appendChild(tcell);
 	},

@@ -5,9 +5,10 @@
 //---------------------------------------------------------------------------
 
 // Puzzleクラス
-pzprv3.createCoreClass('Puzzle',
+pzprv3.Puzzle = function(){};
+pzprv3.Puzzle.prototype =
 {
-	initialize : function(){
+	init : function(){
 		this.pid     = '';			// パズルのID("creek"など)
 		this.classes = null;
 
@@ -25,7 +26,7 @@ pzprv3.createCoreClass('Puzzle',
 			usesubcanvas : false	// 補助canvasがあるかどうか
 		};
 
-		this.config = new pzprv3.core.Config();
+		this.config = new Config();
 		this.config.owner = this;
 		this.config.init();
 	},
@@ -180,10 +181,10 @@ pzprv3.createCoreClass('Puzzle',
 	setMouseEvents : function(canvas){
 		// マウス入力イベントの設定
 		var o = this;
-		pzprv3.addMouseDownEvent(canvas, o, o.execMouseDown);
-		pzprv3.addMouseMoveEvent(canvas, o, o.execMouseMove);
-		pzprv3.addMouseUpEvent  (canvas, o, o.execMouseUp);
-		pzprv3.addEvent(canvas, "mouseout", o, o.execMouseOut);
+		pzprv3.util.addMouseDownEvent(canvas, o, o.execMouseDown);
+		pzprv3.util.addMouseMoveEvent(canvas, o, o.execMouseMove);
+		pzprv3.util.addMouseUpEvent  (canvas, o, o.execMouseUp);
+		pzprv3.util.addEvent(canvas, "mouseout", o, o.execMouseOut);
 		canvas.oncontextmenu = function(){ return false;};
 	},
 	execMouseDown : function(e){ this.mouse.e_mousedown(e);},
@@ -199,9 +200,9 @@ pzprv3.createCoreClass('Puzzle',
 	setKeyEvents : function(){
 		// キー入力イベントの設定
 		var o = this;
-		pzprv3.addEvent(document, 'keydown',  o, o.execKeyDown);
-		pzprv3.addEvent(document, 'keyup',    o, o.execKeyUp);
-		pzprv3.addEvent(document, 'keypress', o, o.execKeyPress);
+		pzprv3.util.addEvent(document, 'keydown',  o, o.execKeyDown);
+		pzprv3.util.addEvent(document, 'keyup',    o, o.execKeyUp);
+		pzprv3.util.addEvent(document, 'keypress', o, o.execKeyPress);
 	},
 	execKeyDown  : function(e){ this.key.e_keydown(e);},
 	execKeyUp    : function(e){ this.key.e_keyup(e);},
@@ -235,7 +236,7 @@ pzprv3.createCoreClass('Puzzle',
 		if(!type){ type = '';}
 		if(!!el){
 			Candle.start(el.id, type, function(g){
-				pzprv3.unselectable(g.canvas);
+				pzprv3.util.unselectable(g.canvas);
 				cm.maincanvas = g.canvas;
 				o.setSLKeyEvents(g);
 			});
@@ -300,10 +301,10 @@ pzprv3.createCoreClass('Puzzle',
 	// owner.getTime()        開始からの時間をミリ秒単位で取得する
 	//---------------------------------------------------------------------------
 	resetTime : function(){
-		this.starttime = pzprv3.currentTime();
+		this.starttime = pzprv3.util.currentTime();
 	},
 	getTime : function(){
-		return (pzprv3.currentTime() - this.starttime);
+		return (pzprv3.util.currentTime() - this.starttime);
 	},
 
 	//---------------------------------------------------------------------------
@@ -376,14 +377,15 @@ pzprv3.createCoreClass('Puzzle',
 	//------------------------------------------------------------------------------
 	get : function(idname){ return this.config.getConfig(idname);},
 	set : function(idname,val){ return this.config.setConfig(idname,val);}
-});
+};
 
 //--------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // ★Configクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-pzprv3.createCoreClass('Config',
+var Config = function(){};
+Config.prototype =
 {
 	/* 設定値 */
 	list : {},
@@ -405,8 +407,8 @@ pzprv3.createCoreClass('Config',
 	//---------------------------------------------------------------------------
 	init : function(){
 		/* 全般的な設定 */
-		this.add('mode', (this.owner.editmode?1:3), [1,3]);			/* モード */
-		this.add('language', pzprv3.getUserLang(), ['ja','en'])		/* 言語設定 */
+		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
+		this.add('language', pzprv3.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
@@ -489,7 +491,7 @@ pzprv3.createCoreClass('Config',
 		}
 		return result;
 	}
-});
+};
 
 //---------------------------------------------------------------------------
 // ★Flagsクラス 設定値の値などを保持する

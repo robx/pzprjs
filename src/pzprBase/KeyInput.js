@@ -158,7 +158,7 @@ pzprv3.createPuzzleClass('KeyEvent',
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
 	},
 	stopEvent : function(){
-		pzprv3.preventDefault(this.event);
+		pzprv3.util.preventDefault(this.event);
 		this.keyreset();
 	},
 
