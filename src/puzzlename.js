@@ -237,7 +237,7 @@ function parseURLType(url){
 			pzl.qdata = url.substr(qs+1);
 		}
 		else{
-			pzl.id = url.substr(1);
+			pzl.id = url.substr(url.indexOf("?")+1);
 		}
 		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
 		pzl.type = k.URL_PZPRV3;

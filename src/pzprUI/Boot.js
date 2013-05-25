@@ -70,9 +70,9 @@ function startPuzzle(){
 	
 	// 単体初期化処理のルーチンへ
 	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
-	else if(!!pzl.qdata) { ui.openPuzzle("?"+pid+"/"+pzl.qdata, afterBoot);}
-	else if(ui.debugmode){ ui.openPuzzle("?"+pid+"/"+ui.debug.urls[pid], afterBoot);}
-	else if(!!pid)       { ui.openPuzzle("?"+pid, afterBoot);}
+	else if(!!pzl.qdata) { ui.openPuzzle(pid+"/"+pzl.qdata, afterBoot);}
+	else if(ui.debugmode){ ui.openPuzzle(pid+"/"+ui.debug.urls[pid], afterBoot);}
+	else if(!!pid)       { ui.openPuzzle(pid, afterBoot);}
 	
 	return true;
 }

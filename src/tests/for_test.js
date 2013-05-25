@@ -51,7 +51,7 @@ ui.debug.extend(
 			if(self.phase != 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
-			ui.openPuzzle("?"+newid+"/"+self.urls[newid], function(){
+			ui.openPuzzle(newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");

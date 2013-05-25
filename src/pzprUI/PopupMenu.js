@@ -391,7 +391,7 @@ ui.popupmgr.addpopup('newboard',
 		
 		this.hide();
 		if(url.length>0){
-			ui.openPuzzle("?"+pid+"/"+url.join('/'));
+			ui.openPuzzle(pid+"/"+url.join('/'));
 		}
 	}
 });
