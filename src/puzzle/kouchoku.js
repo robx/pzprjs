@@ -49,13 +49,23 @@ MouseEvent:{
 			if(!o.get('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
 				if(!o.get('lattice') || o.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
-					o.board.segs.input(bx1,by1,bx2,by2);
+					this.inputsegment_main(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
 					o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 				}
 			}
 		}
+	},
+	inputsegment_main : function(bx1,by1,bx2,by2){
+		var tmp;
+		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp; tmp=by1;by1=by2;by2=tmp;}
+		else if(bx1===bx2 && by1 > by2) { tmp=by1;by1=by2;by2=tmp;}
+		else if(bx1===bx2 && by1===by2) { return;}
+
+		var bd = this.owner.board, id = bd.getSegment(bx1,by1,bx2,by2);
+		if(id===null){ bd.addSegmentByAddr(bx1,by1,bx2,by2);}
+		else         { bd.removeSegment(id);}
 	},
 
 	inputcross_kouchoku : function(){
@@ -157,11 +167,19 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
+		this.segment = new this.owner.SegmentList();
+		this.segmax = 0;
+		this.seginvalid = [];
+
 		this.segs = this.addInfoList('SegmentManager');
 	},
 
 	initBoardSize : function(col,row){
 		this.segs.eraseall();	// segmentの配列
+
+		this.segment = new this.owner.SegmentList();
+		this.segmax = 0;
+		this.seginvalid = [];
 
 		this.Common.prototype.initBoardSize.call(this,col,row);
 	},
@@ -174,22 +192,21 @@ Board:{
 
 	allclear : function(isrec){
 		if(!!this.segs){
-			var seglist = this.segs.getallsegment();
-			for(var i=0;i<seglist.length;i++){
-				this.owner.painter.eraseSegment1(seglist[i]);
-			}
+			var pc = this.owner.painter;
+			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
 		}
+		this.segment = new this.owner.SegmentList();
+		this.segmax = 0;
 
 		this.Common.prototype.allclear.call(this,isrec);
 	},
 	ansclear : function(){
 		if(!!this.segs){
-			var seglist = this.segs.getallsegment();
-			for(var i=0;i<seglist.length;i++){
-				this.owner.painter.eraseSegment1(seglist[i]);
-				this.segs.removeSegment(seglist[i]);
-			}
+			var pc = this.owner.painter;
+			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
 		}
+		this.segment = new this.owner.SegmentList();
+		this.segmax = 0;
 
 		this.Common.prototype.ansclear.call(this);
 	},
@@ -197,8 +214,7 @@ Board:{
 		if(!this.haserror){ return;}
 
 		if(!!this.segs){
-			var seglist = this.segs.getallsegment();
-			for(var i=0;i<seglist.length;i++){ seglist[i].error=0;}
+			this.segment.each(function(seg){ seg.error = 0;});
 		}
 
 		this.Common.prototype.errclear.call(this);
@@ -215,15 +231,78 @@ Board:{
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
 		}
 		return lattice;
+	},
+
+	//---------------------------------------------------------------------------
+	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
+	//---------------------------------------------------------------------------
+	segmentinside : function(x1,y1,x2,y2){
+		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
+
+		var bd = this, seglist = new this.owner.SegmentList();
+		var pseudoSegment = new this.owner.Segment(x1,y1,x2,y2);
+		this.segment.each(function(seg){
+			var cnt=0;
+			if(seg.isAreaOverLap(pseudoSegment)){
+				if(seg.ispositive(x1,y1)){ cnt++;}
+				if(seg.ispositive(x1,y2)){ cnt++;}
+				if(seg.ispositive(x2,y1)){ cnt++;}
+				if(seg.ispositive(x2,y2)){ cnt++;}
+				if(cnt>0 && cnt<4){ seglist.add(seg);}
+			}
+		});
+		return seglist;
+	},
+
+	//---------------------------------------------------------------------------
+	// segs.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
+	// segs.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
+	// segs.removeSegment()       線を消す時に呼ぶ
+	//---------------------------------------------------------------------------
+	addSegmentByAddr : function(bx1,by1,bx2,by2){
+		var newsegid;
+		if(this.seginvalid.length>0){ newsegid = this.seginvalid.shift();}
+		else{ newsegid = this.segmax; this.segmax++; this.segment.length++;}
+		
+		var seg = new this.owner.Segment(bx1,by1,bx2,by2);
+		seg.id = newsegid;
+		this.segment[newsegid] = seg;
+		if(this.owner.board.isenableInfo()){ this.segs.setSegmentInfo(seg, true);}
+		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
+	},
+	removeSegmentByAddr : function(bx1,by1,bx2,by2){
+		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
+	},
+	removeSegment : function(seg){
+		if(this.isenableInfo()){ this.segs.setSegmentInfo(seg, false);}
+		this.owner.opemgr.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
+		this.owner.painter.eraseSegment1(seg);
+		
+		this.seginvalid.push(seg.id);
+		this.segment[seg.id] = new this.owner.Segment();
+	},
+
+	//---------------------------------------------------------------------------
+	// segs.getSegment() 位置情報からsegmentを取得する
+	//---------------------------------------------------------------------------
+	getSegment : function(bx1,by1,bx2,by2){
+		var cross = this.getx(bx1,by1), seg = null;
+		for(var i=0,len=cross.seglist.length;i<len;i++){
+			var search = cross.seglist[i];
+			if(search.bx2===bx2 && search.by2===by2){
+				seg = search;
+				break;
+			}
+		}
+		return seg;
 	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd=this.owner.board;
 		if(key & k.REDUCE){
-			var seglist=bd.segs.getallsegment(), sublist=new this.owner.SegmentList();
-			for(var i=0;i<seglist.length;i++){
-				var seg = seglist[i];
+			var seglist=bd.segment, sublist=new this.owner.SegmentList();
+			bd.segment.each(function(seg){
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
 					case k.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.add(seg);} break;
@@ -231,19 +310,18 @@ BoardExec:{
 					case k.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.add(seg);} break;
 					case k.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.add(seg);} break;
 				}
-			}
+			});
 
 			var opemgr = this.owner.opemgr, isrec = (!opemgr.undoExec && !opemgr.redoExec);
 			if(isrec){ opemgr.forceRecord = true;}
-			for(var i=0;i<sublist.length;i++){ bd.segs.removeSegment(sublist[i]);}
+			for(var i=0;i<sublist.length;i++){ bd.removeSegment(sublist[i]);}
 			if(isrec){ opemgr.forceRecord = false;}
 		}
 	},
 	adjustBoardData2 : function(key,d){
-		var seglist=this.owner.board.segs.getallsegment();
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		for(var i=0;i<seglist.length;i++){
-			var seg=seglist[i], bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
+		this.owner.board.segment.each(function(seg){
+			var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 			switch(key){
 				case k.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
 				case k.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
@@ -258,7 +336,7 @@ BoardExec:{
 				case k.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
 				case k.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
 			}
-		}
+		});
 	}
 },
 
@@ -277,6 +355,12 @@ BoardExec:{
 			if(d.y2<seg.by2){ d.y2=seg.by2;}
 		}
 		return d;
+	},
+	
+	each : function(func){
+		for(var i=0;i<this.length;i++){
+			if(this[i]!==null){ func(this[i]);}
+		}
 	}
 },
 
@@ -305,8 +389,8 @@ BoardExec:{
 
 	exec : function(num){
 		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, o=this.owner, tmp;
-		if     (num===1){ o.board.segs.setSegmentByAddr   (bx1,by1,bx2,by2);}
-		else if(num===0){ o.board.segs.removeSegmentByAddr(bx1,by1,bx2,by2);}
+		if     (num===1){ o.board.addSegmentByAddr   (bx1,by1,bx2,by2);}
+		else if(num===0){ o.board.removeSegmentByAddr(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
 		o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
@@ -371,10 +455,10 @@ Graphic:{
 		var seglist;
 		/* 全領域の30%以下なら範囲指定 */
 		if(((this.range.x2-this.range.x1)*(this.range.y2-this.range.y1))/((bd.maxbx-bd.minbx)*(bd.maxby-bd.minby))<0.30){
-			seglist = bd.segs.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
+			seglist = bd.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
 		}
 		else{
-			seglist = bd.segs.getallsegment();
+			seglist = bd.segment;
 		}
 		for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 	},
@@ -520,16 +604,15 @@ FileIO:{
 		var len = parseInt(this.readLine(),10);
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
-			this.owner.board.segs.input(+data[0], +data[1], +data[2], +data[3]);
+			this.owner.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);
 		}
 	},
 	encodeSegment : function(){
-		var seglist = this.owner.board.segs.getallsegment();
+		var fio = this, seglist = this.owner.board.segment;
 		this.datastr += (seglist.length+"\n");
-		for(var i=0;i<seglist.length;i++){
-			var seg = seglist[i];
-			this.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
-		}
+		seglist.each(function(seg){
+			fio.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
+		});
 	}
 },
 
@@ -538,34 +621,33 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var seglist = this.owner.board.segs.getallsegment();
-		if( !this.checkSegmentExist(seglist) ){ return 42111;}
+		if( !this.checkSegmentExist() ){ return 42111;}
 
 		if( !this.checkSegmentPoint() ){ return 49701;}
 
 		if( !this.checkSegmentBranch() ){ return 40211;}
 
-		if( !this.checkSegmentOverPoint(seglist) ){ return 49711;}
+		if( !this.checkSegmentOverPoint() ){ return 49711;}
 
-		if( !this.checkDuplicateSegment(seglist) ){ return 49721;}
+		if( !this.checkDuplicateSegment() ){ return 49721;}
 
-		if( !this.checkDifferentLetter(seglist) ){ return 49731;}
+		if( !this.checkDifferentLetter() ){ return 49731;}
 
-		if( !this.checkRightAngle(seglist) ){ return 49741;}
+		if( !this.checkRightAngle() ){ return 49741;}
 
-		if( !this.checkOneSegmentLoop(seglist) ){ return 41111;}
+		if( !this.checkOneSegmentLoop() ){ return 41111;}
 
 		if( !this.checkSegmentDeadend() ){ return 40111;}
 
 		if( !this.checkAlonePoint() ){ return 49751;}
 
-		if( !this.checkConsequentLetter(seglist) ){ return 49761;}
+		if( !this.checkConsequentLetter() ){ return 49761;}
 
 		return 0;
 	},
 
-	checkSegmentExist : function(seglist){
-		return (seglist.length!==0);
+	checkSegmentExist : function(){
+		return (this.owner.board.segment.length!==0);
 	},
 
 	checkAlonePoint : function(){
@@ -585,7 +667,7 @@ AnsCheck:{
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
 			if(func(cross)){
-				if(result){ bd.segs.getallsegment().seterr(-1);}
+				if(result){ bd.segment.seterr(-1);}
 				cross.seglist.seterr(1);
 				result = false;
 			}
@@ -593,14 +675,14 @@ AnsCheck:{
 		return result;
 	},
 
-	checkOneSegmentLoop : function(seglist){
+	checkOneSegmentLoop : function(){
 		var result = false, bd = this.owner.board;
 		var validcount = 0, segs = new this.owner.SegmentList();
 		for(var r=1;r<=bd.segs.linemax;r++){
 			if(bd.segs.seglist[r].length===0){ continue;}
 			validcount++;
 			if(validcount>1){
-				seglist.seterr(-1);
+				bd.segment.seterr(-1);
 				bd.segs.seglist[r].seterr(1);
 				return false;
 			}
@@ -608,37 +690,36 @@ AnsCheck:{
 		return true;
 	},
 
-	checkSegmentOverPoint : function(seglist){
+	checkSegmentOverPoint : function(){
 		var result = true, bd = this.owner.board;
-		for(var i=0;i<seglist.length;i++){
-			var seg=seglist[i], tmp;
+		bd.segment.each(function(seg){
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
 			for(var n=0;n<lattice.length;n++){
-				if(result){ bd.segs.getallsegment().seterr(-1);}
+				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				bd.cross[lattice[n]].seterr(1);
 				result = false;
 			}
-		}
+		});
 		return result;
 	},
 
-	checkDifferentLetter : function(seglist){
-		var result = true;
-		for(var i=0;i<seglist.length;i++){
-			var seg=seglist[i], cross1=seg.cross1, cross2=seg.cross2;
+	checkDifferentLetter : function(){
+		var result = true, bd = this.owner.board;
+		bd.segment.each(function(seg){
+			var cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
-				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
+				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				cross1.seterr(1);
 				cross2.seterr(1);
 				result = false;
 			}
-		}
+		});
 		return result;
 	},
 
-	checkConsequentLetter : function(seglist){
+	checkConsequentLetter : function(){
 		var result = true, count = {}, qnlist = [], bd = this.owner.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
@@ -649,8 +730,8 @@ AnsCheck:{
 				count[qn][0]++;
 			}
 		}
-		for(var i=0;i<seglist.length;i++){
-			var seg=seglist[i], cross1=seg.cross1, cross2=seg.cross2;
+		bd.segment.each(function(seg){
+			var cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum>=0 && cross2.qnum>=0 && cross1.qnum===cross2.qnum){
 				var qn = cross1.qnum; if(qn>=0){ count[qn][1]++;}
 			}
@@ -658,7 +739,7 @@ AnsCheck:{
 				var qn = cross1.qnum; if(qn>=0){ count[qn][2]++;}
 				var qn = cross2.qnum; if(qn>=0){ count[qn][2]++;}
 			}
-		}
+		});
 		for(var i=0;i<qnlist.length;i++){
 			var qn = qnlist[i];
 			if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
@@ -672,12 +753,13 @@ AnsCheck:{
 		return result;
 	},
 
-	checkDuplicateSegment : function(seglist){
-		var result = true, len = seglist.length;
+	checkDuplicateSegment : function(){
+		var result = true, seglist = this.owner.board.segment, len = seglist.length;
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
+			if(seg1===null||seg2===null){ continue;}
 			if(seg1.isOverLapSegment(seg2)){
-				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
+				if(result){ this.owner.board.segment.seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
@@ -687,11 +769,12 @@ AnsCheck:{
 	},
 
 	checkRightAngle : function(seglist){
-		var result = true, len = seglist.length;
+		var result = true, seglist = this.owner.board.segment, len = seglist.length;
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
+			if(seg1===null||seg2===null){ continue;}
 			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				if(result){ this.owner.board.segs.getallsegment().seterr(-1);}
+				if(result){ this.owner.board.segment.seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
@@ -788,12 +871,11 @@ Segment:{
 		/* 平行ならここでは対象外 */
 		if(this.isParallel(seg)){ return false;}
 
+		/* X座標,Y座標が重なっているかどうか調べる */
+		if(!this.isAreaOverLap(seg)){ return false;}
+
 		var bx11=this.bx1, bx12=this.bx2, by11=this.by1, by12=this.by2, dx1=this.dx, dy1=this.dy;
 		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy, tmp;
-
-		/* X座標,Y座標が重なっているかどうか調べる */
-		if(!this.owner.board.segs.isOverLap(bx11,bx12,bx21,bx22) ||
-		   !this.owner.board.segs.isOverLap(by11,by12,by21,by22)){ return false;}
 
 		/* 交差している位置を調べる */
 		if     (dx1===0){ /* 片方の線だけ垂直 */
@@ -813,19 +895,32 @@ Segment:{
 		}
 		return false;
 	},
+	/* X-Y座標でつくる長方形のエリアがかぶっているかどうか調べる */
+	isAreaOverLap : function(seg){
+		return (this.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2) &&
+				this.isOverLap(this.by1,this.by2,seg.by1,seg.by2));
+	},
+	/* 同じ傾きで重なっているSegmentかどうかを調べる */
 	isOverLapSegment : function(seg){
 		if(!this.isParallel(seg)){ return false;}
 		if(this.dx===0 && seg.dx===0){ // 2本とも垂直の時
 			if(this.bx1===seg.bx1){ // 垂直で両方同じX座標
-				if(this.owner.board.segs.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
+				if(this.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
 			}
 		}
 		else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
 			if((this.dx*this.by1-this.bx1*this.dy)*seg.dx===(seg.dx*seg.by1-seg.bx1*seg.dy)*this.dx){
-				if(this.owner.board.segs.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
+				if(this.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
 			}
 		}
 		return false;
+	},
+
+	/*  一次元で(a1-a2)と(b1-b2)の範囲が重なっているかどうか判定する */
+	isOverLap : function(a1,a2,b1,b2){
+		var tmp;
+		if(a1>a2){ tmp=a1;a1=a2;a2=tmp;} if(b1>b2){ tmp=b1;b1=b2;b2=tmp;}
+		return (b1<a2 && a1<b2);
 	}
 },
 
@@ -834,14 +929,10 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.eraseall();
 	},
 	eraseall : function(){
-		this.seg    = [];	// segmentの配列
-		this.segmax = 0;
-
 		this.lineid = [];	// 線id情報(segment->line変換)
 		this.seglist = [];	// 線id情報(line->segment変換)
 		this.linemax = 0;
 		this.invalidid = [];
-		this.invalidsegid = [];
 	},
 	init : function(){
 		this.owner.board.validinfo.all.push(this);
@@ -861,7 +952,6 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.seglist = [];
 		this.linemax = 0;
 		this.invalidid = [];
-		this.invalidseg = [];
 
 		var o = this.owner, bd=o.board;
 		for(var c=0,len=bd.crossmax;c<len;c++){
@@ -873,17 +963,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	rebuild : function(){
 		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
 
-		var seglist = new this.owner.SegmentList();
-		for(var id in this.seg){
-			var seg = this.seg[id];
-			if(seg===null){ continue;}
-			id = +id;
-			this.lineid[id] = 0;
+		var seglist = new this.owner.SegmentList(), seginfo = this;
+		this.owner.board.segment.each(function(seg){
+			seginfo.lineid[seg.id] = 0;
 			seglist.add(seg);
 
 			seg.cross1.seglist.add(seg);
 			seg.cross2.seglist.add(seg);
-		}
+		});
 		this.searchLine(seglist);
 		if(this.owner.flags.irowake){ this.newIrowake();}
 	},
@@ -896,96 +983,6 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				}
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// segs.getSegment() 位置情報からsegmentを取得する
-	//---------------------------------------------------------------------------
-	getSegment : function(bx1,by1,bx2,by2){
-		var cross = this.owner.board.getx(bx1,by1), seg = null;
-		for(var i=0,len=cross.seglist.length;i<len;i++){
-			var search = cross.seglist[i];
-			if(search.bx2===bx2 && search.by2===by2){
-				seg = search;
-				break;
-			}
-		}
-		return seg;
-	},
-
-	//---------------------------------------------------------------------------
-	// segs.isOverLap()    (a1-a2)と(b1-b2)の範囲が重なっているかどうか判定する
-	//---------------------------------------------------------------------------
-	isOverLap : function(a1,a2,b1,b2){
-		var tmp;
-		if(a1>a2){ tmp=a1;a1=a2;a2=tmp;} if(b1>b2){ tmp=b1;b1=b2;b2=tmp;}
-		return (b1<a2 && a1<b2);
-	},
-
-	//---------------------------------------------------------------------------
-	// segs.getallsegment() 盤面に存在する全てのsegmentのIDリストを取得する
-	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
-	//---------------------------------------------------------------------------
-	getallsegment : function(){
-		var seglist = new this.owner.SegmentList();
-		for(var id in this.seg){ seglist.add(this.seg[id]);}
-		return seglist;
-	},
-	segmentinside : function(x1,y1,x2,y2){
-		var bd = this.owner.board;
-		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
-
-		var seglist = new this.owner.SegmentList();
-		for(var id in this.seg){
-			var seg=this.seg[id], cnt=0;
-			if(this.isOverLap(seg.bx1,seg.bx2,x1,x2) && this.isOverLap(seg.by1,seg.by2,y1,y2)){
-				if(seg.ispositive(x1,y1)){ cnt++;}
-				if(seg.ispositive(x1,y2)){ cnt++;}
-				if(seg.ispositive(x2,y1)){ cnt++;}
-				if(seg.ispositive(x2,y2)){ cnt++;}
-				if(cnt>0 && cnt<4){ seglist.add(seg);}
-			}
-		}
-		return seglist;
-	},
-
-	//---------------------------------------------------------------------------
-	// segs.input()         マウスで入力された時に呼ぶ
-	// segs.setSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
-	// segs.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
-	// segs.removeSegment()       線を消す時に呼ぶ
-	//---------------------------------------------------------------------------
-	input : function(bx1,by1,bx2,by2){
-		var tmp;
-		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp; tmp=by1;by1=by2;by2=tmp;}
-		else if(bx1===bx2 && by1 > by2) { tmp=by1;by1=by2;by2=tmp;}
-		else if(bx1===bx2 && by1===by2) { return;}
-
-		var id = this.getSegment(bx1,by1,bx2,by2);
-		if(id===null){ this.setSegmentByAddr(bx1,by1,bx2,by2);}
-		else         { this.removeSegment(id);}
-	},
-	setSegmentByAddr : function(bx1,by1,bx2,by2){
-		var newsegid;
-		if(this.invalidsegid.length>0){ newsegid = this.invalidsegid.shift();}
-		else{ this.segmax++; newsegid = this.segmax;}
-		
-		this.seg[newsegid] = new this.owner.Segment(bx1,by1,bx2,by2);
-		this.seg[newsegid].id = newsegid;
-		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(this.seg[newsegid], true);}
-		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
-	},
-	removeSegmentByAddr : function(bx1,by1,bx2,by2){
-		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
-	},
-	removeSegment : function(seg){
-		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(seg, false);}
-		this.owner.opemgr.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
-		this.owner.painter.eraseSegment1(seg);
-		
-		this.invalidsegid.push(seg.id);
-		this.seg[seg.id] = null;
-		delete this.seg[seg.id];
 	},
 
 	//---------------------------------------------------------------------------
