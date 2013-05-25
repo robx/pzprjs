@@ -83,6 +83,11 @@ pzprv3.createPuzzleClass('Board',
 		this.infolist.push(instance);
 		return instance;
 	},
+	initInfoList : function(){
+		for(var i=0;i<this.infolist.length;i++){
+			this.infolist[i].init();
+		}
+	},
 	infolist : [],
 
 	qcols : 10,		/* 盤面の横幅(デフォルト) */
@@ -91,15 +96,6 @@ pzprv3.createPuzzleClass('Board',
 	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
-
-	//---------------------------------------------------------------------------
-	// bd.init()  オブジェクト生成後の処理
-	//---------------------------------------------------------------------------
-	init : function(){
-		for(var i=0;i<this.infolist.length;i++){
-			this.infolist[i].init();
-		}
-	},
 
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
@@ -120,6 +116,7 @@ pzprv3.createPuzzleClass('Board',
 		this.setminmax();
 		this.setposAll();
 
+		this.initInfoList();
 		this.resetInfo();
 
 		this.owner.cursor.initCursor();

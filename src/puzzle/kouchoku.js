@@ -331,7 +331,7 @@ OperationManager:{
 
 Flags:{
 	disable_subclear : true,
-	irowake : 1
+	irowake : true
 },
 
 //---------------------------------------------------------
@@ -885,7 +885,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seg.cross2.seglist.add(seg);
 		}
 		this.searchLine(seglist);
-		if(!!this.owner.flags.irowake){ this.newIrowake();}
+		if(this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){

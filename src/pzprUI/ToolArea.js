@@ -214,7 +214,7 @@ ui.toolarea = {
 			this.addButtons(el, "補助消去", "Erase Auxiliary Marks");
 		}
 
-		if(!!ui.puzzle.flags.irowake || !!ui.puzzle.flags.irowakeblk){
+		if(ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk){
 			var el = createButton(); el.id = "btncolor2";
 			this.area.appendChild(el);
 			this.addButtons(el, "色分けしなおす", "Change the color of Line");

@@ -69,7 +69,7 @@ AreaLineManager:{
 },
 
 Flags:{
-	irowake : 1
+	irowake : true
 },
 
 //---------------------------------------------------------

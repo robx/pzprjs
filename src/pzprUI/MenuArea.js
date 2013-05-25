@@ -182,11 +182,11 @@ ui.menuarea = {
 		pp.addSelect('cellsize','disp', '表示サイズ','Cell Size');
 		ap('sep_disp1',  'disp');
 
-		if(!!ui.puzzle.flags.irowake){
+		if(ui.puzzle.flags.irowake){
 			ac('irowake','disp', '線の色分け','Color coding');
 		}
-		if(!!ui.puzzle.flags.irowakeblk){
-			ac('irowakeblk','disp', '黒マスのの色分け','Color coding');
+		if(ui.puzzle.flags.irowakeblk){
+			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		pp.addCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');

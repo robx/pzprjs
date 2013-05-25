@@ -22,7 +22,6 @@ window.pzprv3 = {
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas){
 		var puzzle = new pzprv3.Puzzle();
-		puzzle.init();
 		this.puzzles.push(puzzle);
 		if(!!canvas){ puzzle.setCanvas(canvas);}
 		return puzzle;
@@ -148,6 +147,12 @@ window.pzprv3 = {
 	//   と、ちょっとずつ変わっている状態になります
 	//---------------------------------------------------------------
 	includeClasses : function(puzzle, pid){
+		/* 現在のクラスを消去する */
+		for(var name in puzzle.classlist){
+			puzzle[name] = null; delete puzzle[name];
+		}
+		puzzle.classlist = [];
+
 		var custom = pzprv3.custom[pid];
 		puzzle.classes = {};
 		for(var classname in custom){
@@ -159,6 +164,7 @@ window.pzprv3 = {
 			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
 			cls.prototype.owner = puzzle;
 			puzzle.classes[classname] = cls;
+			puzzle.classlist.push(classname);
 		}
 	},
 
@@ -185,7 +191,30 @@ window.pzprv3 = {
 			this.includeFile("puzzle/"+pzprv3.url.toScript(pid)+".js");
 		}
 	},
-	includedFile : {}
+	includedFile : {},
+
+	//---------------------------------------------------------------------------
+	// pzprv3.initPuzzle() 新しくパズルのファイルを開く時の処理
+	//---------------------------------------------------------------------------
+	initPuzzle : function(puzzle, newpid, callback){
+		/* 今のパズルと別idの時 */
+		if(puzzle.pid != newpid){
+			pzprv3.includeCustomFile(newpid);
+		}
+		/* Customファイルが読み込みできるまで待つ */
+		if(!pzprv3.custom[newpid]){
+			setTimeout(function(){ pzprv3.initPuzzle(puzzle,newpid,callback);},10);
+			return;
+		}
+
+		if(puzzle.pid != newpid){
+			/* 各クラスをpzprve.customから設定する */
+			pzprv3.includeClasses(puzzle, newpid);
+			puzzle.pid = newpid;
+		}
+		
+		callback();
+	}
 };
 
 //---------------------------------------------------------------------------

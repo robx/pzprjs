@@ -94,9 +94,13 @@ ui.debug.extend(
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
+				
+				setTimeout(function(){ self.check_answer(self);},0);
 			});
 		}
-		setTimeout(function(){ self.check_answer(self);},0);
+		else{
+			setTimeout(function(){ self.check_answer(self);},0);
+		}
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
@@ -129,9 +133,9 @@ ui.debug.extend(
 		ui.openPuzzle(outputstr, function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
-		});
 
-		setTimeout(function(){ self.check_file_pbox(self);},0);
+			setTimeout(function(){ self.check_file_pbox(self);},0);
+		});
 	},
 	check_file_pbox : function(self){
 		if(pzprv3.url.info[self.pid].exists.kanpen){
@@ -148,9 +152,13 @@ ui.debug.extend(
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
 				self.qsubf = true;
+
+				setTimeout(function(){ self.check_turnR1(self);},0);
 			});
 		}
-		setTimeout(function(){ self.check_turnR1(self);},0);
+		else{
+			setTimeout(function(){ self.check_turnR1(self);},0);
+		}
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){

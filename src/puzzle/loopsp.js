@@ -126,7 +126,7 @@ LineManager:{
 
 Flags:{
 	redline : true,
-	irowake : 1
+	irowake : true
 },
 
 //---------------------------------------------------------

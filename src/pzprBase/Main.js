@@ -5,12 +5,15 @@
 //---------------------------------------------------------------------------
 
 // Puzzleクラス
-pzprv3.Puzzle = function(){};
+pzprv3.Puzzle = function(){
+	this.initialize();
+};
 pzprv3.Puzzle.prototype =
 {
-	init : function(){
+	initialize : function(){
 		this.pid     = '';			// パズルのID("creek"など)
 		this.classes = null;
+		this.classlist = [];
 
 		this.ready = false;
 
@@ -55,20 +58,9 @@ pzprv3.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	openURL : function(url, callback){
 		var pzl = pzprv3.url.parseURL(url);
-		if(!pzl.id){ return;}
+		var pid = (!!pzl.id ? pzl.id : this.pid);
 
-		this.ready = false;
-
-		var o = this;
-		this.initPuzzle(pzl.id, function(o){
-			o.enc.decodeURL(url);
-			
-			if(!!callback){ callback(o);}
-			
-			o.painter.unsuspend();
-			o.resetTime();
-			o.ready = true;
-		});
+		this.init(pid, function(puzzle){ puzzle.enc.decodeURL(url);}, callback);
 		return this;
 	},
 	openFileData : function(filedata, callback){
@@ -79,17 +71,7 @@ pzprv3.Puzzle.prototype =
 		}
 		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.pid);
 
-		this.ready = false;
-
-		this.initPuzzle(pid, function(o){
-			o.fio.filedecode(fstr);
-			
-			if(!!callback){ callback(o);}
-			
-			o.painter.unsuspend();
-			o.resetTime();
-			o.ready = true;
-		});
+		this.init(pid, function(puzzle){ puzzle.fio.filedecode(fstr);}, callback);
 		return this;
 	},
 
@@ -107,50 +89,24 @@ pzprv3.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.initPuzzle() 新しくパズルのファイルを開く時の処理
-	// owner.afterInit()  callback呼び出し待ちを行う
+	// owner.init()             指定されたパズルの種類で初期化を行う
+	// owner.initObjects()      各オブジェクトの生成などの処理
+	// owner.waitCanvasReady()  Canvasの初期化待ちを行い、終了したらcallbackを呼び出す
 	//---------------------------------------------------------------------------
-	initPuzzle : function(newpid, callback){
-		var puzzle = this;
-
-		/* 今のパズルと別idの時 */
-		if(this.pid != newpid){
-			this.pid = newpid;
-			this.classes = null;
-			pzprv3.includeCustomFile(this.pid);
-		}
-		/* Classおよびcanvasが用意できるまで待つ */
-		if(!pzprv3.custom[this.pid]){
-			setTimeout(function(){ puzzle.initPuzzle.call(puzzle,newpid,callback);},10);
-			return;
-		}
-
-		if(!this.classes){
-			/* クラスなどを初期化 */
-			pzprv3.includeClasses(this, newpid);
-			this.initObjects();
-		}
-		else{
-			this.painter.reset();
-		}
-
-		this.afterInit(callback);
+	init : function(pid, decodecallback, callback){
+		var puzzle = this, Board = (!!this.classes ? this.classes.Board : null);;
+		puzzle.ready = false;
+		
+		pzprv3.initPuzzle(this, pid, function(){
+			if(Board!==puzzle.classes.Board){
+				/* パズルの種類が変わっていればオブジェクトを設定しなおす */
+				puzzle.initObjects();
+			}
+			decodecallback(puzzle);
+			puzzle.waitCanvasReady(callback);
+		});
 	},
-	afterInit : function(callback){
-		var puzzle = this;
-		if(!!this.painter.ready){
-			/* canvasが用意できたらcallbackを呼ぶ */
-			callback(puzzle);
-		}
-		else{
-			setTimeout(function(){ puzzle.afterInit(callback);},10);
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.initObjects()   各オブジェクトの生成などの処理
-	//---------------------------------------------------------------------------
-	initObjects : function(){
+	initObjects : function(puzzle){
 		// クラス初期化
 		this.board   = new this.classes.Board();		// 盤面オブジェクト
 		this.checker = new this.classes.AnsCheck();		// 正解判定オブジェクト
@@ -166,12 +122,25 @@ pzprv3.Puzzle.prototype =
 		this.fio = new this.classes.FileIO();		// ファイル入出力用オブジェクト
 
 		this.flags = new this.classes.Flags();		// パズルの初期設定値を保持するオブジェクト
-
-		if(this.flags.irowake===2)   { this.set('irowake', true);}
-		if(this.flags.irowakeblk===2){ this.set('irowakeblk', true);}
-
-		this.board.init();
-		this.painter.init();
+	},
+	waitCanvasReady : function(callback){
+		var puzzle = this;
+		puzzle.painter.init();
+		
+		/* canvasが用意できたらcallbackを呼ぶ */
+		var waitfun = function(){
+			if(!!puzzle.painter && !!puzzle.painter.ready){
+				puzzle.painter.reset();
+				
+				if(!!callback){ callback(puzzle);}
+				
+				puzzle.painter.unsuspend();
+				puzzle.resetTime();
+				puzzle.ready = true;
+			}
+			else{ setTimeout(waitfun,10);}
+		};
+		waitfun();
 	},
 
 	//---------------------------------------------------------------------------
@@ -513,8 +482,8 @@ pzprv3.createPuzzleClass('Flags',
 	redblk   : false,
 	redblkrb : false,
 	bgcolor  : false,
-	irowake    : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
-	irowakeblk : 0,			// 0:色分け設定無し 1:色分けしない 2:色分けする
+	irowake    : false,			// 色分け設定
+	irowakeblk : false,			// 色分け設定
 
 	disable_subclear : false	// "補助消去"ボタンを作らない
 });
