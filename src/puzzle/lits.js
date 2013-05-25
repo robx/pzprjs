@@ -26,7 +26,7 @@ Board:{
 	isborder : 1,
 
 	getTetrominoInfo : function(rinfo){
-		var tinfo = new this.owner.classes.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
+		var tinfo = new this.owner.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.room[r].clist.filter(function(cell){ return cell.isBlack();});
@@ -49,7 +49,7 @@ Board:{
 		return this.getBlockInfo(tinfo);
 	},
 	getBlockInfo : function(tinfo){
-		var dinfo = new this.owner.classes.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
+		var dinfo = new this.owner.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
 		for(var fc=0;fc<this.cellmax;fc++){ dinfo.id[fc]=(tinfo.id[fc]!==null?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!dinfo.emptyCell(this.cell[fc])){ continue;}

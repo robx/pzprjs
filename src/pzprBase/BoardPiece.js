@@ -34,7 +34,7 @@ pzprv3.createPuzzleClass('BoardPiece',
 	// getaddr() 自分の盤面中での位置を返す
 	// relcell(), relcross(), relbd(), relexcell() 相対位置に存在するオブジェクトを返す
 	//---------------------------------------------------------------------------
-	getaddr : function(){ return (new this.owner.classes.Address(this.bx, this.by));},
+	getaddr : function(){ return (new this.owner.Address(this.bx, this.by));},
 
 	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
 	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
@@ -188,7 +188,7 @@ pzprv3.createPuzzleClass('Cell:BoardPiece',
 	// posthook 値の設定後にやっておく処理を行う
 	//---------------------------------------------------------------------------
 	prehook : {
-		ques : function(num){ if(this.owner.classes.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
+		ques : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
 		qnum : function(num){ return (this.minnum>0 && num===0);},
 		anum : function(num){ return (this.minnum>0 && num===0);},
 	},
@@ -308,7 +308,7 @@ pzprv3.createPuzzleClass('Cell:BoardPiece',
 	// cell.noLP()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
 	setCombinedLine : function(){	// cell.setQuesから呼ばれる
-		if(this.owner.classes.Border.prototype.enableLineCombined){
+		if(this.owner.Border.prototype.enableLineCombined){
 			var bx=this.bx, by=this.by;
 			var blist = this.owner.board.borderinside(bx-1,by-1,bx+1,by+1);
 			for(var i=0;i<blist.length;i++){
@@ -799,7 +799,7 @@ pzprv3.createPuzzleClass('BorderList:PieceList',
 	// blist.crossinside() 線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(){
-		var clist = new this.owner.classes.CellList(), pushed = [];
+		var clist = new this.owner.CellList(), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cell1=border.sidecell[0], cell2=border.sidecell[1];
 			if(!cell1.isnull && pushed[cell1.id]!==true){ clist.add(cell1); pushed[cell1.id]=true;}
@@ -808,7 +808,7 @@ pzprv3.createPuzzleClass('BorderList:PieceList',
 		return clist;
 	},
 	crossinside : function(){
-		var clist = new this.owner.classes.CrossList(), pushed = [];
+		var clist = new this.owner.CrossList(), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cross1=border.sidecross[0], cross2=border.sidecross[1];
 			if(!cross1.isnull && pushed[cross1.id]!==true){ clist.add(cross1); pushed[cross1.id]=true;}

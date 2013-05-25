@@ -56,7 +56,7 @@ Cell:{
 	minnum : 3,
 
 	getTriLine : function(){
-		var blist=new this.owner.classes.BorderList(), border;
+		var blist=new this.owner.BorderList(), border;
 
 		border=this.lb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
 		border=this.rb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}

@@ -115,7 +115,7 @@ Cell:{
 },
 Board:{
 	getBarInfo : function(){
-		var barinfo = new this.owner.classes.AreaBarManager();
+		var barinfo = new this.owner.AreaBarManager();
 		return barinfo.getBarInfo();
 	}
 },
@@ -135,7 +135,7 @@ BoardExec:{
 AreaBarManager:{
 	getBarInfo : function(){
 		var bd = this.owner.board;
-		var binfo = new this.owner.classes.AreaInfo();
+		var binfo = new this.owner.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);

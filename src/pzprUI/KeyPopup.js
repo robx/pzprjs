@@ -243,7 +243,7 @@ ui.keypopup =
 	},
 	gentable10 : function(mode){
 		var pid = ui.puzzle.pid;
-		if((mode==3)&&(ui.puzzle.classes.Cell.prototype.numberWithMB)){
+		if((mode==3)&&(ui.puzzle.Cell.prototype.numberWithMB)){
 			this.tdcolor = ui.puzzle.painter.mbcolor;
 			this.inputcol('num','q','○');
 			this.inputcol('num','w','×');
@@ -272,7 +272,7 @@ ui.keypopup =
 		this.insertrow();
 		this.inputcol('num','8','8');
 		this.inputcol('num','9','9');
-		if(!((mode==3)&&(ui.puzzle.classes.Cell.prototype.numberWithMB))){
+		if(!((mode==3)&&(ui.puzzle.Cell.prototype.numberWithMB))){
 			this.inputcol('num',' ',' ');
 		}
 		else{

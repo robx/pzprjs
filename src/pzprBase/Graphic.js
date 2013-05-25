@@ -1769,7 +1769,7 @@ pzprv3.createPuzzleClass('Graphic',
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	//---------------------------------------------------------------------------
 	resetVectorFunctions : function(){
-		var proto = this.owner.classes.Graphic.prototype;
+		var proto = this.owner.Graphic.prototype;
 		this.flushCanvas    = proto.flushCanvas;
 		this.vnop  = proto.vnop;
 		this.vhide = proto.vhide;

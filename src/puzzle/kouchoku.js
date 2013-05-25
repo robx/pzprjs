@@ -142,7 +142,7 @@ Cross:{
 	maxnum : 26,
 
 	initialize : function(){
-		this.seglist = new this.owner.classes.SegmentList();
+		this.seglist = new this.owner.SegmentList();
 	}
 },
 
@@ -209,7 +209,7 @@ Board:{
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
-		var seg = new this.owner.classes.Segment(bx1,by1,bx2,by2), lattice = [];
+		var seg = new this.owner.Segment(bx1,by1,bx2,by2), lattice = [];
 		for(var i=0;i<seg.lattices.length;i++){
 			var xc = seg.lattices[i][2];
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
@@ -221,7 +221,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd=this.owner.board;
 		if(key & k.REDUCE){
-			var seglist=bd.segs.getallsegment(), sublist=new this.owner.classes.SegmentList();
+			var seglist=bd.segs.getallsegment(), sublist=new this.owner.SegmentList();
 			for(var i=0;i<seglist.length;i++){
 				var seg = seglist[i];
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
@@ -316,13 +316,13 @@ OperationManager:{
 	addOpe_Segment : function(x1, y1, x2, y2, old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.SegmentOperation();
+			var ope = new this.owner.SegmentOperation();
 			ope.setData(x1, y1, x2, y2, old, num);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.SegmentOperation();
+		var ope = new this.owner.SegmentOperation();
 		if(ope.decode(strs)){ return ope;}
 
 		return this.Common.prototype.decodeOpe.call(this, strs);
@@ -595,7 +595,7 @@ AnsCheck:{
 
 	checkOneSegmentLoop : function(seglist){
 		var result = false, bd = this.owner.board;
-		var validcount = 0, segs = new this.owner.classes.SegmentList();
+		var validcount = 0, segs = new this.owner.SegmentList();
 		for(var r=1;r<=bd.segs.linemax;r++){
 			if(bd.segs.seglist[r].length===0){ continue;}
 			validcount++;
@@ -865,7 +865,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		var o = this.owner, bd=o.board;
 		for(var c=0,len=bd.crossmax;c<len;c++){
-			bd.cross[c].seglist=new o.classes.SegmentList();
+			bd.cross[c].seglist=new o.SegmentList();
 		}
 
 		this.rebuild();
@@ -873,7 +873,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	rebuild : function(){
 		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
 
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		for(var id in this.seg){
 			var seg = this.seg[id];
 			if(seg===null){ continue;}
@@ -927,7 +927,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
 	//---------------------------------------------------------------------------
 	getallsegment : function(){
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		for(var id in this.seg){ seglist.add(this.seg[id]);}
 		return seglist;
 	},
@@ -935,7 +935,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		var bd = this.owner.board;
 		if(x1<=bd.minbx && x2>=bd.maxbx && y1<=bd.minby && y2>=bd.maxby){ return this.getallsegment();}
 
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		for(var id in this.seg){
 			var seg=this.seg[id], cnt=0;
 			if(this.isOverLap(seg.bx1,seg.bx2,x1,x2) && this.isOverLap(seg.by1,seg.by2,y1,y2)){
@@ -970,7 +970,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(this.invalidsegid.length>0){ newsegid = this.invalidsegid.shift();}
 		else{ this.segmax++; newsegid = this.segmax;}
 		
-		this.seg[newsegid] = new this.owner.classes.Segment(bx1,by1,bx2,by2);
+		this.seg[newsegid] = new this.owner.Segment(bx1,by1,bx2,by2);
 		this.seg[newsegid].id = newsegid;
 		if(this.owner.board.isenableInfo()){ this.setSegmentInfo(this.seg[newsegid], true);}
 		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
@@ -1075,7 +1075,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		var longColor = this.getLongColor(segs);
 		
 		// つながった線の線情報を一旦0にする
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		for(var i=0,len=segs.length;i<len;i++){
 			var id=segs[i].id, r=this.lineid[id];
 			if(r!==null && r!==0){ seglist.extend(this.removePath(r));}
@@ -1099,14 +1099,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ this.linemax++; newid=this.linemax;}
 
-		this.seglist[newid] = new this.owner.classes.SegmentList();
+		this.seglist[newid] = new this.owner.SegmentList();
 		return newid;
 	},
 	removePath : function(r){
 		var seglist = this.seglist[r];
 		for(var i=0,len=seglist.length;i<len;i++){ this.lineid[seglist[i].id] = null;}
 		
-		this.seglist[r] = new this.owner.classes.SegmentList();
+		this.seglist[r] = new this.owner.SegmentList();
 		this.invalidid.push(r);
 		return seglist;
 	},
@@ -1130,7 +1130,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -1157,7 +1157,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// segs.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//---------------------------------------------------------------------------
 	getaround : function(seg){
-		var seglist = new this.owner.classes.SegmentList();
+		var seglist = new this.owner.SegmentList();
 		var cross1 = seg.cross1, cross2 = seg.cross2;
 		for(var i=0,len=cross1.seglist.length;i<len;i++){
 			if(cross1.seglist[i].id!==seg.id){ seglist.add(cross1.seglist[i]);}

@@ -338,7 +338,7 @@ Menu.prototype =
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
 		var o = ui.puzzle, cm = o.canvasmgr, canvas_sv = cm.maincanvas, fail = false;
-		var pc = o.painter, pc2 = new o.classes.Graphic();
+		var pc = o.painter, pc2 = new o.Graphic();
 		
 		cm.maincanvas = cm.subcanvas;
 		pc2.init();

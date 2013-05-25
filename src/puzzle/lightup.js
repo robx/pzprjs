@@ -70,7 +70,7 @@ Cell:{
 	},
 
 	akariRangeClist : function(){
-		var cell, clist=new this.owner.classes.CellList();
+		var cell, clist=new this.owner.CellList();
 
 		clist.add(this);
 		cell=this.lt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.lt();}

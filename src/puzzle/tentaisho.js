@@ -159,7 +159,7 @@ Star:{
 		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 	getaddr : function(){
-		return (new this.owner.classes.Address(this.bx, this.by));
+		return (new this.owner.Address(this.bx, this.by));
 	}
 },
 Address:{
@@ -219,9 +219,9 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
-		var pos = new this.owner.classes.Address(0,0);
+		var pos = new this.owner.Address(0,0);
 		for(var id=0;id<this.starmax;id++){
-			this.star[id] = new this.owner.classes.Star();
+			this.star[id] = new this.owner.Star();
 			var star = this.star[id];
 			star.id = id;
 			star.isnull = false;
@@ -240,7 +240,7 @@ Board:{
 		return (id!==null ? this.star[id] : null);
 	},
 	starinside : function(x1,y1,x2,y2){
-		var slist = new this.owner.classes.PieceList();
+		var slist = new this.owner.PieceList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			var star = this.gets(bx,by);
 			if(star!==null){ slist.add(star);}

@@ -174,7 +174,7 @@ BoardExec:{
 			cell2 = cell;
 		}
 
-		var binfo = new this.owner.classes.AreaBarInfo();
+		var binfo = new this.owner.AreaBarInfo();
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 			var roomid=null, cell2=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
@@ -217,7 +217,7 @@ BoardExec:{
 
 	addRoom : function(vert){
 		var room = {};
-		room.clist = new this.owner.classes.CellList();
+		room.clist = new this.owner.CellList();
 		room.link = [];
 		room.pole = [];
 		room.vert = vert;

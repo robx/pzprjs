@@ -210,7 +210,7 @@ Cell:{
 },
 Board:{
 	getSlopeWareaInfo : function(){
-		var winfo = new this.owner.classes.AreaInfo();
+		var winfo = new this.owner.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].noNum()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!winfo.emptyCell(this.cell[fc])){ continue;}

@@ -271,13 +271,13 @@ OperationManager:{
 	addOpe_InOut : function(property, x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.InOutOperation();
+			var ope = new this.owner.InOutOperation();
 			ope.setData(property, x1, y1, x2, y2);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.InOutOperation();
+		var ope = new this.owner.InOutOperation();
 		if(ope.decode(strs)){ return ope;}
 
 		return this.Common.prototype.decodeOpe.call(this, strs);

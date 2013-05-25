@@ -108,7 +108,7 @@ Board:{
 	isborder : 1,
 
 	getSnakeInfo : function(){
-		var sinfo = new this.owner.classes.AreaInfo();
+		var sinfo = new this.owner.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!sinfo.emptyCell(this.cell[fc])){ continue;}
@@ -314,7 +314,7 @@ AnsCheck:{
 			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=k.RT;}
 			if(dir===k.NDIR){ continue;}
 
-			var pos = cell.getaddr(), clist2 = new this.owner.classes.CellList();
+			var pos = cell.getaddr(), clist2 = new this.owner.CellList();
 			clist2.add(cell);
 			while(!cell.isnull){
 				pos.movedir(dir,2);

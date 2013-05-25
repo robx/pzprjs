@@ -300,7 +300,7 @@ pzprv3.createPuzzleClass('KeyEvent',
 		}
 		if(target==0){ return;}
 
-		var def = this.owner.classes.Cell.prototype[(target===2?'qnum':'qdir')];
+		var def = this.owner.Cell.prototype[(target===2?'qnum':'qdir')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
@@ -332,7 +332,7 @@ pzprv3.createPuzzleClass('TargetCursor',
 {
 	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)
-		this.pos = new this.owner.classes.Address(1,1);
+		this.pos = new this.owner.Address(1,1);
 
 		// 有効な範囲(minx,miny)-(maxx,maxy)
 		this.minx;
@@ -360,8 +360,8 @@ pzprv3.createPuzzleClass('TargetCursor',
 		this.adjust_init();
 	},
 	initCursor : function(){
-		if(this.crosstype){ this.pos = new this.owner.classes.Address(0,0);}
-		else              { this.pos = new this.owner.classes.Address(1,1);}
+		if(this.crosstype){ this.pos = new this.owner.Address(0,0);}
+		else              { this.pos = new this.owner.Address(1,1);}
 
 		this.adjust_init();
 	},

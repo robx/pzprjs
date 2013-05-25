@@ -56,9 +56,9 @@ Cell:{
 
 	// 正答判定用
 	getViewClist : function(){
-		var sx=this.bx, sy=this.by, clist=new this.owner.classes.CellList();
+		var sx=this.bx, sy=this.by, clist=new this.owner.CellList();
 		for(var dir=1;dir<=4;dir++){
-			var pos = new this.owner.classes.Address(sx,sy);
+			var pos = new this.owner.Address(sx,sy);
 			while(1){
 				pos.movedir(dir,2);
 				var cell = pos.getc();

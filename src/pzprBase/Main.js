@@ -12,7 +12,6 @@ pzprv3.Puzzle.prototype =
 {
 	initialize : function(){
 		this.pid     = '';			// パズルのID("creek"など)
-		this.classes = null;
 		this.classlist = [];
 
 		this.ready = false;
@@ -94,11 +93,11 @@ pzprv3.Puzzle.prototype =
 	// owner.waitCanvasReady()  Canvasの初期化待ちを行い、終了したらcallbackを呼び出す
 	//---------------------------------------------------------------------------
 	init : function(pid, decodecallback, callback){
-		var puzzle = this, Board = (!!this.classes ? this.classes.Board : null);;
+		var puzzle = this, Board = (!!this.Board ? this.Board : null);;
 		puzzle.ready = false;
 		
 		pzprv3.initPuzzle(this, pid, function(){
-			if(Board!==puzzle.classes.Board){
+			if(Board!==puzzle.Board){
 				/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 				puzzle.initObjects();
 			}
@@ -108,20 +107,20 @@ pzprv3.Puzzle.prototype =
 	},
 	initObjects : function(puzzle){
 		// クラス初期化
-		this.board   = new this.classes.Board();		// 盤面オブジェクト
-		this.checker = new this.classes.AnsCheck();		// 正解判定オブジェクト
-		this.painter = new this.classes.Graphic();		// 描画系オブジェクト
+		this.board   = new this.Board();		// 盤面オブジェクト
+		this.checker = new this.AnsCheck();		// 正解判定オブジェクト
+		this.painter = new this.Graphic();		// 描画系オブジェクト
 
-		this.cursor = new this.classes.TargetCursor();	// 入力用カーソルオブジェクト
-		this.mouse  = new this.classes.MouseEvent();	// マウス入力オブジェクト
-		this.key    = new this.classes.KeyEvent();		// キーボード入力オブジェクト
+		this.cursor = new this.TargetCursor();	// 入力用カーソルオブジェクト
+		this.mouse  = new this.MouseEvent();	// マウス入力オブジェクト
+		this.key    = new this.KeyEvent();		// キーボード入力オブジェクト
 
-		this.opemgr = new this.classes.OperationManager();	// 操作情報管理オブジェクト
+		this.opemgr = new this.OperationManager();	// 操作情報管理オブジェクト
 
-		this.enc = new this.classes.Encode();		// URL入出力用オブジェクト
-		this.fio = new this.classes.FileIO();		// ファイル入出力用オブジェクト
+		this.enc = new this.Encode();		// URL入出力用オブジェクト
+		this.fio = new this.FileIO();		// ファイル入出力用オブジェクト
 
-		this.flags = new this.classes.Flags();		// パズルの初期設定値を保持するオブジェクト
+		this.flags = new this.Flags();		// パズルの初期設定値を保持するオブジェクト
 	},
 	waitCanvasReady : function(callback){
 		var puzzle = this;

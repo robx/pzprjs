@@ -102,7 +102,7 @@ Graphic:{
 
 		this.crosssize = 0.15;
 		if(this.owner.pid==='shwolf'){
-			this.imgtile = new this.owner.classes.ImageTile('./src/img/shwolf_obj.png',2,1);
+			this.imgtile = new this.owner.ImageTile('./src/img/shwolf_obj.png',2,1);
 		}
 	},
 
@@ -254,7 +254,7 @@ AnsCheck:{
 		var lines = [];
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
 
-		var pos = new this.owner.classes.Address(0,0);
+		var pos = new this.owner.Address(0,0);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
 			for(pos.by=bd.minby;pos.by<=bd.maxby;pos.by+=2){
 				/* 盤面端から探索をスタートする */

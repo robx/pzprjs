@@ -195,7 +195,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.hinfo = new this.owner.classes.HurdleManager();
+		this.hinfo = new this.owner.HurdleManager();
 	},
 
 	initBoardSize : function(col,row){
@@ -283,13 +283,13 @@ OperationManager:{
 	addOpe_Startpos : function(x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = new this.owner.classes.StartposOperation();
+			var ope = new this.owner.StartposOperation();
 			ope.setData(x1, y1, x2, y2);
 			return ope;
 		});
 	},
 	decodeOpe : function(strs){
-		var ope = new this.owner.classes.StartposOperation();
+		var ope = new this.owner.StartposOperation();
 		if(ope.decode(strs)){ return ope;}
 
 		return this.Common.prototype.decodeOpe.call(this, strs);
@@ -824,7 +824,7 @@ AnsCheck:{
 //---------------------------------------------------------
 HurdleData:{
 	initialize : function(){
-		this.clist  = new this.owner.classes.CellList();	// この旗門に含まれるセルのリスト
+		this.clist  = new this.owner.CellList();	// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
 		this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
@@ -841,7 +841,7 @@ HurdleManager:{
 	// 旗門の両端にある黒マスの場所のセルを取得する
 	getGatePole : function(gateid){
 		var bd = this.owner.board;
-		var clist = new this.owner.classes.CellList(), cell1, cell2;
+		var clist = new this.owner.CellList(), cell1, cell2;
 		if(this.data[gateid].val==21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
@@ -888,7 +888,7 @@ HurdleManager:{
 			var pos = cell.getaddr(), isvert=(val===21);
 
 			this.max++;
-			this.data[this.max] = new this.owner.classes.HurdleData();
+			this.data[this.max] = new this.owner.HurdleData();
 			while(1){
 				var cell2 = pos.getc();
 				if(cell2.isnull || cell2.getQues()!==val){ break;}

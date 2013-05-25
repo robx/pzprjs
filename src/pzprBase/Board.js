@@ -43,10 +43,10 @@ pzprv3.createPuzzleClass('Board',
 		// エラー表示中かどうか
 		this.haserror = false;
 
-		this.cell   = new this.owner.classes.CellList();
-		this.cross  = new this.owner.classes.CrossList();
-		this.border = new this.owner.classes.BorderList();
-		this.excell = new this.owner.classes.EXCellList();
+		this.cell   = new this.owner.CellList();
+		this.cross  = new this.owner.CrossList();
+		this.border = new this.owner.BorderList();
+		this.excell = new this.owner.EXCellList();
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
@@ -56,11 +56,11 @@ pzprv3.createPuzzleClass('Board',
 		this.bdinside  = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 		// 空オブジェクト
-		this.nullobj = new this.owner.classes.BoardPiece();
-		this.emptycell   = new this.owner.classes.Cell();
-		this.emptycross  = new this.owner.classes.Cross();
-		this.emptyborder = new this.owner.classes.Border();
-		this.emptyexcell = new this.owner.classes.EXCell();
+		this.nullobj = new this.owner.BoardPiece();
+		this.emptycell   = new this.owner.Cell();
+		this.emptycross  = new this.owner.Cross();
+		this.emptyborder = new this.owner.Border();
+		this.emptyexcell = new this.owner.EXCell();
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
@@ -76,10 +76,10 @@ pzprv3.createPuzzleClass('Board',
 		this.wcell = this.addInfoList('AreaWhiteManager');	// 白マス情報を保持する
 		this.ncell = this.addInfoList('AreaNumberManager');	// 数字情報を保持する
 
-		this.exec = new this.owner.classes.BoardExec();
+		this.exec = new this.owner.BoardExec();
 	},
 	addInfoList : function(classname){
-		var instance = new this.owner.classes[classname]();
+		var instance = new this.owner[classname]();
 		this.infolist.push(instance);
 		return instance;
 	},
@@ -169,10 +169,10 @@ pzprv3.createPuzzleClass('Board',
 		return 0;
 	},
 	newObject : function(type){
-		if     (type===k.CELL)  { return (new this.owner.classes.Cell());}
-		else if(type===k.CROSS) { return (new this.owner.classes.Cross());}
-		else if(type===k.BORDER){ return (new this.owner.classes.Border());}
-		else if(type===k.EXCELL){ return (new this.owner.classes.EXCell());}
+		if     (type===k.CELL)  { return (new this.owner.Cell());}
+		else if(type===k.CROSS) { return (new this.owner.Cross());}
+		else if(type===k.BORDER){ return (new this.owner.Border());}
+		else if(type===k.EXCELL){ return (new this.owner.EXCell());}
 		return this.nullobj;
 	},
  
@@ -452,7 +452,7 @@ pzprv3.createPuzzleClass('Board',
 	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
-		var clist = new this.owner.classes.CellList();
+		var clist = new this.owner.CellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -460,7 +460,7 @@ pzprv3.createPuzzleClass('Board',
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
-		var clist = new this.owner.classes.CrossList();
+		var clist = new this.owner.CrossList();
 		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
 			var cross = this.getx(bx,by);
 			if(!cross.isnull){ clist.add(cross);}
@@ -468,7 +468,7 @@ pzprv3.createPuzzleClass('Board',
 		return clist;
 	},
 	borderinside : function(x1,y1,x2,y2){
-		var blist = new this.owner.classes.BorderList();
+		var blist = new this.owner.BorderList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 			var border = this.getb(bx,by);
 			if(!border.isnull){ blist.add(border);}
@@ -476,7 +476,7 @@ pzprv3.createPuzzleClass('Board',
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
-		var exlist = new this.owner.classes.EXCellList();
+		var exlist = new this.owner.EXCellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var excell = this.getex(bx,by);
 			if(!excell.isnull){ exlist.add(excell);}

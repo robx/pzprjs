@@ -229,7 +229,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	//---------------------------------------------------------------------------
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
-			var errclist = new this.owner.classes.CellList();
+			var errclist = new this.owner.CellList();
 			var clist = this.owner.board.cell.filter(function(cell){ return cell.isBlack();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;
@@ -533,7 +533,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 
 	// 丸の場所で線を切り離して考える
 	getErrorFlag_line : function(){
-		var bd = this.owner.board, xinfo = new this.owner.classes.LineInfo();
+		var bd = this.owner.board, xinfo = new this.owner.LineInfo();
 		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.border[id].isLine()?0:null);}
 
 		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
@@ -546,7 +546,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 
 				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
 				xinfo.max++;
-				xinfo.room[xinfo.max] = {blist:(new this.owner.classes.BorderList()),error:0,
+				xinfo.room[xinfo.max] = {blist:(new this.owner.BorderList()),error:0,
 										 cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
 
 				this.searchErrorFlag_line(xinfo,xinfo.max);

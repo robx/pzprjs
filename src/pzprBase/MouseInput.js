@@ -15,7 +15,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 
 		this.enableMouse = true;	// マウス入力は有効か
 
-		this.inputPoint = new pzprv3.util.Point(null, null);		// 入力イベントが発生したpixel位置
+		this.inputPoint = new pzprv3.util.Point(null, null);	// 入力イベントが発生したpixel位置
 
 		this.currentpos = {px:0,py:0};
 		
@@ -26,8 +26,8 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-		this.firstPoint = new pzprv3.util.Point(null, null);		// mousedownされた時のpixel位置
-		this.prevPos    = new this.owner.classes.Address(null, null);	// 前回のマウス入力イベントのborder座標
+		this.firstPoint = new pzprv3.util.Point(null, null);	// mousedownされた時のpixel位置
+		this.prevPos    = new this.owner.Address(null, null);	// 前回のマウス入力イベントのborder座標
 		this.btn = {};		// 押されているボタン
 
 		this.bordermode;	// 境界線を入力中かどうか
@@ -205,7 +205,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		var bx = ((px/cw)|0)*2 + ((px%cw<2*pm)?0:1) - 4;
 		var by = ((py/ch)|0)*2 + ((py%ch<2*pm)?0:1) - 4;
 
-		return (new this.owner.classes.Address(bx,by));
+		return (new this.owner.Address(bx,by));
 	},
 
 	getborder : function(spc){
@@ -328,7 +328,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		else if(cell.numberAsObject){ subtype = 1;}
 		if(this.owner.pid==="roma" && this.owner.playmode){ subtype=0;}
 
-		if(this.owner.playmode && cell.qnum!==this.owner.classes.Cell.prototype.qnum){ return;}
+		if(this.owner.playmode && cell.qnum!==this.owner.Cell.prototype.qnum){ return;}
 
 		var max=cell.nummaxfunc(), min=cell.numminfunc();
 		var num=cell.getNum(), qs=(this.owner.editmode ? 0 : cell.getQsub());
@@ -612,7 +612,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return (new this.owner.classes.BoredPiece());
+		return (new this.owner.BoredPiece());
 	},
 
 	//---------------------------------------------------------------------------

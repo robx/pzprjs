@@ -125,7 +125,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
 			var pos = cell.getaddr(), dir = cell.getQdir();
-			var clist = new this.owner.classes.CellList();
+			var clist = new this.owner.CellList();
 			while(1){
 				pos.movedir(dir,2);
 				var cell2 = pos.getc();

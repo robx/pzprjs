@@ -133,7 +133,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num=cell.getQnum(), cell2;
-			var clist = new this.owner.classes.CellList();
+			var clist = new this.owner.CellList();
 			cell2=cell.relcell(-num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
 			cell2=cell.relcell( num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
 			cell2=cell.relcell(0,-num*2); if(cell2.isBlack()){ clist.add(cell2);}

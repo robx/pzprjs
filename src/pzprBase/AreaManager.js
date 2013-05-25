@@ -209,7 +209,7 @@ pzprv3.createPuzzleClass('AreaManager',
 
 		/* info.popArea() 指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す */
 		/* 周りのセルから、周りのセルを含む領域のセル全体に対象を拡大する */
-		var clist = new this.owner.classes.CellList();
+		var clist = new this.owner.CellList();
 		for(var i=0;i<cidlist.length;i++){
 			var r=this.id[cidlist[i]], bd=this.owner.board;
 			if(r!==null && r!==0){ clist.extend(this.removeArea(r));}
@@ -229,14 +229,14 @@ pzprv3.createPuzzleClass('AreaManager',
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ this.max++; newid=this.max;}
 
-		this[newid] = {clist:(new this.owner.classes.CellList())};
+		this[newid] = {clist:(new this.owner.CellList())};
 		return newid;
 	},
 	removeArea : function(id){
 		var clist = this[id].clist;
 		for(var i=0;i<clist.length;i++){ this.id[clist[i].id] = null;}
 		
-		this[id] = {clist:(new this.owner.classes.CellList())};
+		this[id] = {clist:(new this.owner.CellList())};
 		this.invalidid.push(id);
 		return clist;
 	},
@@ -285,7 +285,7 @@ pzprv3.createPuzzleClass('AreaManager',
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
-		var clist = new this.owner.classes.CellList();
+		var clist = new this.owner.CellList();
 		
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -346,7 +346,7 @@ pzprv3.createPuzzleClass('AreaManager',
 	// info.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getAreaInfo : function(){
-		var bd = this.owner.board, info = new this.owner.classes.AreaInfo();
+		var bd = this.owner.board, info = new this.owner.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -622,7 +622,7 @@ pzprv3.createPuzzleClass('AreaInfo',
 
 	addRoom : function(){
 		this.max++;
-		this.room[this.max] = {clist:(new this.owner.classes.CellList())};
+		this.room[this.max] = {clist:(new this.owner.CellList())};
 	},
 	getRoomID : function(obj){ return this.id[obj.id];},
 	setRoomID : function(obj, areaid){

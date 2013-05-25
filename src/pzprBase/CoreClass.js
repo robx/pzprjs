@@ -154,7 +154,6 @@ window.pzprv3 = {
 		puzzle.classlist = [];
 
 		var custom = pzprv3.custom[pid];
-		puzzle.classes = {};
 		for(var classname in custom){
 			var base = custom[classname];
 			var cls = function(){
@@ -163,7 +162,7 @@ window.pzprv3 = {
 			}
 			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
 			cls.prototype.owner = puzzle;
-			puzzle.classes[classname] = cls;
+			puzzle[classname] = cls;
 			puzzle.classlist.push(classname);
 		}
 	},

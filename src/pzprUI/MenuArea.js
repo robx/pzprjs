@@ -435,7 +435,7 @@ ui.menuarea = {
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 
-		if(this.enableSaveImage && !!ui.puzzle.classes.ImageTile){
+		if(this.enableSaveImage && !!ui.puzzle.ImageTile){
 			if(pzprv3.browser.Gecko && !location.hostname){
 				getEL('ms_imagesavep').className = 'smenunull';
 			}
