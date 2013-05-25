@@ -70,11 +70,7 @@ window.pzprv3 = {
 			classname = classname.substr(0,colon);
 		}
 
-		var NewClass = function(owner, args){
-			this.owner = owner;
-			if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}
-		}
-
+		var NewClass = function(){};
 		if(!!basename && !!this.core[basename]){
 			var BaseClass = this.core[basename];
 			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
@@ -137,6 +133,23 @@ window.pzprv3 = {
 		}
 
 		this.custom[pid] = custom;
+	},
+
+	//---------------------------------------------------------------
+	// パズル種類別のクラスをパズルのクラス一覧に設定する
+	//  共通クラス -> パズル種類別クラス -> パズルが保持するクラス
+	//   と、ちょっとずつ変わっている状態になります
+	//---------------------------------------------------------------
+	includeClasses : function(puzzle, pid){
+		var custom = pzprv3.custom[pid];
+		puzzle.classes = {};
+		for(var classname in custom){
+			var base = custom[classname];
+			var cls = function(args){ if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}}
+			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
+			cls.prototype.owner = puzzle;
+			puzzle.classes[classname] = cls;
+		}
 	},
 
 	//---------------------------------------------------------------

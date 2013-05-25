@@ -127,7 +127,6 @@ pzprv3.Puzzle.prototype =
 
 		if(!this.classes){
 			/* クラスなどを初期化 */
-			this.classes = pzprv3.custom[this.pid];
 			this.initObjects();
 		}
 		else{
@@ -151,6 +150,8 @@ pzprv3.Puzzle.prototype =
 	// owner.initObjects()   各オブジェクトの生成などの処理
 	//---------------------------------------------------------------------------
 	initObjects : function(){
+		pzprv3.includeClasses(this, this.pid);
+
 		// クラス初期化
 		this.board   = this.newInstance('Board');		// 盤面オブジェクト
 		this.checker = this.newInstance('AnsCheck');	// 正解判定オブジェクト
@@ -178,7 +179,7 @@ pzprv3.Puzzle.prototype =
 	// owner.newInstance()    新しいオブジェクトを生成する
 	//---------------------------------------------------------------------------
 	newInstance : function(classname, args){
-		return (new this.classes[classname](this, args));
+		return (new this.classes[classname](args));
 	},
 
 	//---------------------------------------------------------------------------
