@@ -470,4 +470,15 @@ pzprv3.util = {
 	}
 };
 
+//----------------------------------------------------------------------------
+// ★Pointクラス  (px,py)pixel座標を扱う
+//---------------------------------------------------------------------------
+// Pointクラス
+pzprv3.util.Point = function(px,py){ this.px = px; this.py = py;};
+pzprv3.util.Point.prototype = {
+	set : function(point){ this.px = point.px; this.py = point.py;},
+	reset : function(){ this.px = null; this.py = null;},
+	valid : function(){ return (this.px!==null && this.py!==null);}
+};
+
 })();

@@ -15,7 +15,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 
 		this.enableMouse = true;	// マウス入力は有効か
 
-		this.inputPoint = new this.owner.classes.Point(null, null);		// 入力イベントが発生したpixel位置
+		this.inputPoint = new pzprv3.util.Point(null, null);		// 入力イベントが発生したpixel位置
 
 		this.currentpos = {px:0,py:0};
 		
@@ -26,7 +26,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-		this.firstPoint = new this.owner.classes.Point(null, null);		// mousedownされた時のpixel位置
+		this.firstPoint = new pzprv3.util.Point(null, null);		// mousedownされた時のpixel位置
 		this.prevPos    = new this.owner.classes.Address(null, null);	// 前回のマウス入力イベントのborder座標
 		this.btn = {};		// 押されているボタン
 

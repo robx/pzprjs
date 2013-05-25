@@ -592,16 +592,4 @@ pzprv3.createPuzzleClass('Board',
 	}
 });
 
-//----------------------------------------------------------------------------
-// ★Pointクラス  (px,py)pixel座標を扱う
-//---------------------------------------------------------------------------
-// Pointクラス
-pzprv3.createPuzzleClass('Point',
-{
-	initialize : function(px,py){ this.px = px; this.py = py;},
-	set : function(point){ this.px = point.px; this.py = point.py;},
-	reset : function(){ this.px = null; this.py = null;},
-	valid : function(){ return (this.px!==null && this.py!==null);}
-});
-
 })();
