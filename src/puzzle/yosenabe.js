@@ -131,7 +131,8 @@ Board:{
 	isborder : 1,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.iceinfo = this.addInfoList('AreaCrockManager');
 	}
 },

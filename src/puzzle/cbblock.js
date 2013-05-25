@@ -46,7 +46,8 @@ Board:{
 	isborder : 1,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.tiles = this.addInfoList('AreaTileManager');
 		this.blocks = this.addInfoList('AreaBlockManager');
 	},

@@ -398,7 +398,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	initialize : function(){
 		this.crosscnt = [];		// 格子点の周りの境界線の数
 
-		pzprv3.core.AreaManager.prototype.initialize.call(this);
+		pzprv3.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'border'],
 	bdfunc : function(border){ return border.isBorder();},
@@ -420,7 +420,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 			this.crosscnt[c]=(ischassis?2:0);
 		}}
 
-		pzprv3.core.AreaManager.prototype.rebuild.call(this);
+		pzprv3.common.AreaManager.prototype.rebuild.call(this);
 
 		if(this.enabled && this.hastop){ this.resetRoomNumber();}
 	},
@@ -445,7 +445,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	checkExecSearch : function(border){
-		if(!pzprv3.core.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
+		if(!pzprv3.common.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
 		var xc1 = border.sidecross[0].id, xc2 = border.sidecross[1].id;
@@ -464,7 +464,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	searchSingle : function(cell, newid){
-		pzprv3.core.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		pzprv3.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.hastop){ this.setTopOfRoom(newid);}
 	},
@@ -553,7 +553,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの領域を分断する境界線の数
 
-		pzprv3.core.AreaManager.prototype.initialize.call(this);
+		pzprv3.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
 	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
@@ -566,7 +566,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 	reset : function(){
 		this.bdcnt = [];
 
-		pzprv3.core.AreaManager.prototype.reset.call(this);
+		pzprv3.common.AreaManager.prototype.reset.call(this);
 	},
 	rebuild : function(){
 		if(!this.enabled){ return;}
@@ -580,7 +580,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 			if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
 		}
 
-		pzprv3.core.AreaManager.prototype.rebuild.call(this);
+		pzprv3.common.AreaManager.prototype.rebuild.call(this);
 	},
 
 	//--------------------------------------------------------------------------------

@@ -193,12 +193,13 @@ Board:{
 	hinfo : null,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.hinfo = new this.owner.classes.HurdleManager();
 	},
 
 	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		this.startcell = this.emptycell;
 		this.hinfo.init();
@@ -291,7 +292,7 @@ OperationManager:{
 		var ope = new this.owner.classes.StartposOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		return this.SuperFunc.decodeOpe.call(this, strs);
+		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 

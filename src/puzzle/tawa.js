@@ -160,7 +160,7 @@ BoardExec:{
 			}
 		}
 
-		this.SuperFunc.execadjust.call(this, name);
+		this.Common.prototype.execadjust.call(this, name);
 	},
 	expandreduce : function(key,d){
 		var bd = this.owner.board;

@@ -134,7 +134,7 @@ Board:{
 	isborder : 2,
 
 	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		if(pzprv3.EDITOR){
 			var cell = this.owner.cursor.getTCC(); /* 真ん中にあるはず */

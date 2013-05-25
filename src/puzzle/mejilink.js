@@ -44,7 +44,7 @@ Border:{
 			this.ques = def;
 		}
 
-		this.SuperFunc.allclear.call(this,isrec);
+		this.Common.prototype.allclear.call(this,isrec);
 	},
 
 	// 線を引かせたくないので上書き
@@ -58,12 +58,13 @@ Board:{
 	isborder : 2,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.tiles = this.addInfoList('AreaTileManager');
 	},
 
 	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		for(var id=0;id<this.bdmax;id++){
 			this.border[id].allclear(false);

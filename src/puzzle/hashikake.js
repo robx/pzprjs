@@ -66,7 +66,7 @@ MouseEvent:{
 	},
 
 	mousereset : function(){
-		this.SuperFunc.mousereset.call(this);
+		this.Common.prototype.mousereset.call(this);
 
 		this.prevblist = new this.owner.classes.BorderList();
 	}

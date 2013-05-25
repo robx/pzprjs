@@ -178,15 +178,15 @@ TargetCursor:{
 Cell:{
 	qlight : 0,
 	allclear : function(isrec){
-		this.SuperFunc.allclear.call(this,isrec);
+		this.Common.prototype.allclear.call(this,isrec);
 		this.qlight = 0;
 	},
 	ansclear : function(){
-		this.SuperFunc.ansclear.call(this);
+		this.Common.prototype.ansclear.call(this);
 		this.qlight = 0;
 	},
 	subclear : function(){
-		this.SuperFunc.subclear.call(this);
+		this.Common.prototype.subclear.call(this);
 		this.qlight = 0;
 	}
 },
@@ -194,15 +194,15 @@ Cell:{
 EXCell:{
 	qlight : 0,
 	allclear : function(isrec){
-		this.SuperFunc.allclear.call(this,isrec);
+		this.Common.prototype.allclear.call(this,isrec);
 		this.qlight = 0;
 	},
 	ansclear : function(){
-		this.SuperFunc.ansclear.call(this);
+		this.Common.prototype.ansclear.call(this);
 		this.qlight = 0;
 	},
 	subclear : function(){
-		this.SuperFunc.subclear.call(this);
+		this.Common.prototype.subclear.call(this);
 		this.qlight = 0;
 	},
 

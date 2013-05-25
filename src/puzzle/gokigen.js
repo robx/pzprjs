@@ -309,12 +309,12 @@ Graphic:{
 			var sdata=bd.getSlashData();
 			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
 
-			this.SuperFunc.drawSlashes.call(this);
+			this.Common.prototype.drawSlashes.call(this);
 
 			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(0);} }
 		}
 		else{
-			this.SuperFunc.drawSlashes.call(this);
+			this.Common.prototype.drawSlashes.call(this);
 		}
 	},
 

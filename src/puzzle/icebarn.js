@@ -137,12 +137,13 @@ Board:{
 	arrowout : null,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.iceinfo = this.addInfoList('AreaIcebarnManager');
 	},
 
 	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		this.arrowin  = this.border[0];
 		this.arrowout = this.border[1];
@@ -279,7 +280,7 @@ OperationManager:{
 		var ope = new this.owner.classes.InOutOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		return this.SuperFunc.decodeOpe.call(this, strs);
+		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 

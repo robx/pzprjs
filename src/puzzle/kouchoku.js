@@ -155,18 +155,21 @@ Board:{
 	segs : null,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.segs = this.addInfoList('SegmentManager');
 	},
 
 	initBoardSize : function(col,row){
 		this.segs.eraseall();	// segmentの配列
-		this.SuperFunc.initBoardSize.call(this,col,row);
+
+		this.Common.prototype.initBoardSize.call(this,col,row);
 	},
 
 	resetInfo : function(){
 		this.segs.reset();	// segmentの配列
-		this.SuperFunc.resetInfo.call(this);
+
+		this.Common.prototype.resetInfo.call(this);
 	},
 
 	allclear : function(isrec){
@@ -177,7 +180,7 @@ Board:{
 			}
 		}
 
-		this.SuperFunc.allclear.call(this,isrec);
+		this.Common.prototype.allclear.call(this,isrec);
 	},
 	ansclear : function(){
 		if(!!this.segs){
@@ -188,7 +191,7 @@ Board:{
 			}
 		}
 
-		this.SuperFunc.ansclear.call(this);
+		this.Common.prototype.ansclear.call(this);
 	},
 	errclear : function(){
 		if(!this.haserror){ return;}
@@ -198,7 +201,7 @@ Board:{
 			for(var i=0;i<seglist.length;i++){ seglist[i].error=0;}
 		}
 
-		this.SuperFunc.errclear.call(this);
+		this.Common.prototype.errclear.call(this);
 	},
 
 	irowakeRemake : function(){
@@ -322,7 +325,7 @@ OperationManager:{
 		var ope = new this.owner.classes.SegmentOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		return this.SuperFunc.decodeOpe.call(this, strs);
+		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 

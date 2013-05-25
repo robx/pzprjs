@@ -202,13 +202,13 @@ Board:{
 	isborder : 1,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
 
 		this.star = []; /* インスタンス化 */
 	},
 
 	initBoardSize : function(col,row){
-		this.SuperFunc.initBoardSize.call(this,col,row);
+		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		this.initStar(col,row);
 	},

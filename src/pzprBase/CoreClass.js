@@ -14,7 +14,7 @@ window.pzprv3 = {
 
 	puzzles : [],	// createPuzzle()で生成したパズルを保存する
 
-	core   : {},	// CoreClass保存用(継承元になれるのはここのみ)
+	common : {},	// CoreClass保存用(継承元になれるのはここのみ)
 	custom : {},	// パズル別クラス保存用
 
 	//---------------------------------------------------------------
@@ -60,7 +60,7 @@ window.pzprv3 = {
 	//---------------------------------------------------------------
 	createPuzzleClass : function(classname, proto){
 		var rel = this._createClass(classname, proto);
-		this.core[rel.name] = rel.body;
+		this.common[rel.name] = rel.body;
 	},
 	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');
@@ -71,11 +71,11 @@ window.pzprv3 = {
 		}
 
 		var NewClass = function(){};
-		if(!!basename && !!this.core[basename]){
-			var BaseClass = this.core[basename];
-			for(var name in BaseClass.prototype){ NewClass.prototype[name] = BaseClass.prototype[name];}
-			NewClass.prototype.SuperClass = BaseClass;
-			NewClass.prototype.SuperFunc  = BaseClass.prototype;
+		if(!!basename && !!this.common[basename]){
+			var BaseClass = this.common[basename];
+			for(var name in BaseClass.prototype){
+				NewClass.prototype[name] = BaseClass.prototype[name];
+			}
 		}
 		for(var name in proto){ NewClass.prototype[name] = proto[name];}
 		NewClass.prototype.constructor = NewClass;
@@ -119,7 +119,7 @@ window.pzprv3 = {
 			var proto = customclass[classname];
 
 			if(!custom[classname]){
-				if(!!this.core[classname]){ classname = classname+":"+classname;}
+				if(!!this.common[classname]){ classname = classname+":"+classname;}
 
 				var rel = this._createClass(classname, proto);
 				custom[rel.name] = rel.body;
@@ -128,8 +128,15 @@ window.pzprv3 = {
 				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
 			}
 		}
-		for(var classname in this.core){
-			if(!custom[classname]){ custom[classname] = this.core[classname];}
+		for(var classname in this.common){
+			if(!custom[classname]){
+				custom[classname] = this.common[classname];
+			}
+		}
+		for(var classname in this.common){
+			if(!!this.common[classname]){
+				custom[classname].prototype.Common = this.common[classname];
+			}
 		}
 
 		this.custom[pid] = custom;

@@ -107,7 +107,8 @@ Board:{
 	qrows : 8,
 
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
+
 		this.barinfo = this.addInfoList('AreaBarManager');
 	},
 
@@ -138,7 +139,7 @@ BoardExec:{
 	},
 	
 	rebuild : function(){
-		pzprv3.core.AreaManager.prototype.rebuild.call(this);
+		pzprv3.common.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
 	},
 	
@@ -204,7 +205,7 @@ BoardExec:{
 },
 "AreaBarInfo:AreaInfo":{
 	initialize : function(){
-		this.SuperFunc.initialize.call(this);
+		this.Common.prototype.initialize.call(this);
 
 		this.pole = [];
 
@@ -267,7 +268,7 @@ Graphic:{
 	},
 
 	setRange : function(x1,y1,x2,y2){
-		this.SuperFunc.setRange.call(this, x1-2, y1-2, x2+2, y2+2);
+		this.Common.prototype.setRange.call(this, x1-2, y1-2, x2+2, y2+2);
 	},
 	paint : function(){
 		this.drawBGCells();

@@ -111,7 +111,7 @@ Graphic:{
 			this.suspendAll();
 		}
 		else{
-			this.SuperFunc.prepaint.call(this);
+			this.Common.prototype.prepaint.call(this);
 		}
 	},
 	paint : function(){
