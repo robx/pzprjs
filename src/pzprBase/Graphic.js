@@ -11,8 +11,6 @@ var k = pzprv3.consts;
 pzprv3.createPuzzleClass('Graphic',
 {
 	initialize : function(){
-		this.ready = false;
-
 		this.currentContext = null;
 		this.subContext     = null;
 
@@ -149,11 +147,11 @@ pzprv3.createPuzzleClass('Graphic',
 		this.canvasWidth  = null;
 		this.canvasHeight = null;
 	},
-	init : function(){
+	initCanvas : function(callback){
 		var cm = this.owner.canvasmgr;
 		if(!cm.maincanvas || (cm.usesubcanvas && !cm.subcanvas)){
 			var pc = this;
-			setTimeout(function(){ pc.init();},10);
+			setTimeout(function(){ pc.initCanvas();},10);
 			return;
 		}
 
@@ -165,7 +163,7 @@ pzprv3.createPuzzleClass('Graphic',
 
 		this.useBuffer = (!!g.use.canvas && !!this.subContext);
 
-		this.ready = true;
+		if(!!callback){ callback();}
 	},
 	setColors : function(){ },
 

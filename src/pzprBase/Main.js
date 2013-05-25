@@ -125,22 +125,15 @@ pzprv3.Puzzle.prototype =
 	},
 	waitCanvasReady : function(callback){
 		var puzzle = this;
-		puzzle.painter.init();
-		
-		/* canvasが用意できたらcallbackを呼ぶ */
-		var waitfun = function(){
-			if(!!puzzle.painter && !!puzzle.painter.ready){
-				puzzle.painter.reset();
-				
-				if(!!callback){ callback(puzzle);}
-				
-				puzzle.painter.unsuspend();
-				puzzle.resetTime();
-				puzzle.ready = true;
-			}
-			else{ setTimeout(waitfun,10);}
-		};
-		waitfun();
+		puzzle.painter.initCanvas(function(){
+			puzzle.painter.reset();
+			
+			if(!!callback){ callback(puzzle);}
+			
+			puzzle.painter.unsuspend();
+			puzzle.resetTime();
+			puzzle.ready = true;
+		});
 	},
 
 	//---------------------------------------------------------------------------
