@@ -10,7 +10,7 @@ pzprv3.createPuzzleClass('LineManager',
 		this.lcnt    = [];
 		this.ltotal  = [];
 
-		this.idlist = [];
+		this.blist = [];
 		this.id = [];
 		this.max = 0;
 		this.invalidid = [];	// 使わなくなったIDのリスト
@@ -80,10 +80,10 @@ pzprv3.createPuzzleClass('LineManager',
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
-			var idlist = this.idlist[i];
-			if(idlist.length>0){
+			var blist = this.blist[i];
+			if(blist.length>0){
 				var newColor = this.owner.painter.getNewLineColor();
-				for(var n=0;n<idlist.length;n++){ this.owner.board.border[idlist[n]].color = newColor;}
+				for(var n=0;n<blist.length;n++){ blist[n].color = newColor;}
 			}
 		}
 	},
@@ -191,22 +191,16 @@ pzprv3.createPuzzleClass('LineManager',
 			pathid = this.id[border2.id];
 			border.color  = border2.color;
 		}
-		this.idlist[pathid].push(border.id);
+		this.blist[pathid].add(border);
 		this.id[border.id] = pathid;
 	},
 	removeLineInfo : function(border){
 		var pathid = this.id[border.id];
 		if(pathid===null || pathid===0){ return;}
 
-		var idlist = this.idlist[pathid];
-		if(idlist.length>0){
-			for(var i=0;i<idlist.length;i++){
-				if(idlist[i]===border.id){ idlist.splice(i,1); break;}
-			}
-		}
-
-		if(idlist.length===0){ this.removePath(pathid);}
+		this.blist[pathid].remove(border);
 		this.id[border.id] = null;
+		if(this.blist[pathid].length===0){ this.removePath(pathid);}
 		border.color = "";
 	},
 	remakeLineInfo : function(border){
@@ -240,14 +234,14 @@ pzprv3.createPuzzleClass('LineManager',
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ this.max++; newid=this.max;}
 
-		this.idlist[newid] = [];
+		this.blist[newid] = this.owner.newInstance('BorderList');
 		return newid;
 	},
 	removePath : function(id){
 		var blist = this.getBlist(id);
 		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
 		
-		this.idlist[id] = [];
+		this.blist[newid] = this.owner.newInstance('BorderList');
 		this.invalidid.push(id);
 		return blist;
 	},
@@ -262,7 +256,7 @@ pzprv3.createPuzzleClass('LineManager',
 		for(var i=0,len=blist.length;i<len;i++){
 			var r = this.id[blist[i].id];
 			if(r===null || r<=0){ continue;}
-			if(largeid===null || this.idlist[largeid].length < this.idlist[r].length){
+			if(largeid===null || this.blist[largeid].length < this.blist[r].length){
 				largeid = r;
 				longColor = blist[i].color;
 			}
@@ -276,8 +270,8 @@ pzprv3.createPuzzleClass('LineManager',
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
 		for(var i=1;i<assign.length;i++){
-			var idlist = this.idlist[assign[i]];
-			if(this.idlist[longid].length<idlist.length){ longid = assign[i];}
+			var blist = this.blist[assign[i]];
+			if(this.blist[longid].length<blist.length){ longid = assign[i];}
 		}
 		
 		// 新しい色の設定
@@ -382,7 +376,7 @@ pzprv3.createPuzzleClass('LineManager',
 					var border = pos.getb();
 					if(this.id[border.id]!==0){ break;}
 					this.id[border.id] = newid;
-					this.idlist[newid].push(border.id);
+					this.blist[newid].add(border);
 				}
 			}
 		}
@@ -410,9 +404,7 @@ pzprv3.createPuzzleClass('LineManager',
 	// info.getBlist()         指定した領域の線配列を取得する
 	//--------------------------------------------------------------------------------
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
-	getBlist : function(id){
-		return this.owner.newInstance('BorderList').addByIdlist(this.idlist[id]);
-	}
+	getBlist : function(id){ return this.blist[id];}
 });
 
 //---------------------------------------------------------------------------
@@ -426,17 +418,21 @@ pzprv3.createPuzzleClass('LineInfo',
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
+		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].blistで取得)
 	},
 
-	addRoom : function(){ pzprv3.core.AreaInfo.prototype.addRoom.call(this);},
+	addRoom : function(){
+		this.max++;
+		this.room[this.max] = {blist:this.owner.newInstance('BorderList')};
+	},
 	getRoomID : function(obj){ return this.id[obj.id];},
-	setRoomID : function(obj, areaid){ pzprv3.core.AreaInfo.prototype.setRoomID.call(this, obj,areaid);},
+	setRoomID : function(obj, areaid){
+		this.room[areaid].blist.add(obj);
+		this.id[obj.id] = areaid;
+	},
 
 	addBorder : function(border){ this.setRoomID(border, this.max);},
 	emptyBorder : function(border){ return (this.id[border.id]===0);},
 
-	getblist : function(areaid){
-		return this.owner.newInstance('BorderList').addByIdlist(this.room[areaid].idlist);
-	}
+	getblist : function(areaid){ return this.room[areaid].blist;}
 });

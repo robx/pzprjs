@@ -303,7 +303,7 @@ AnsCheck:{
 		var k = pzprv3.consts;
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
-			var clist = sinfo.getclist(r);
+			var clist = sinfo.room[r].clist;
 			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
 			if(!cell){ continue;}
 
@@ -330,7 +330,7 @@ AnsCheck:{
 				if(this.checkOnly){ return false;}
 				clist2.seterr(1);
 				clist.seterr(1);
-				sinfo.getclist(sid).seterr(1);
+				sinfo.room[sid].clist.seterr(1);
 				result = false;
 			}
 		}

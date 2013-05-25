@@ -56,7 +56,7 @@ Board:{
 		var cinfo = this.blocks.getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
-			var d=[], cnt=0, clist=cinfo.getclist(r);
+			var d=[], cnt=0, clist=cinfo.room[r].clist;
 			cinfo.room[r].size = clist.length;
 
 			for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
@@ -224,7 +224,7 @@ AnsCheck:{
 			var cnt=cinfo.room[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
 				if(this.checkOnly){ return false;}
-				cinfo.getclist(r).seterr(1);
+				cinfo.room[r].clist.seterr(1);
 				result = false;
 			}
 		}
@@ -234,17 +234,18 @@ AnsCheck:{
 	checkDifferentShapeBlock : function(cinfo){
 		var result=true, sides=cinfo.getSideAreaInfo(), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
-			if(cinfo.room[r].dotcnt!==2){ continue;}
+			var room1 = cinfo.room[r];
+			if(room1.dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){
-				var s = sides[r][i];
+				var s = sides[r][i], room2 = cinfo.room[s];
 				// サイズ等は先に確認
-				if(cinfo.room[s].dotcnt!==2){ continue;}
-				if(cinfo.room[r].size!==cinfo.room[s].size){ continue;}
+				if(room2.dotcnt!==2){ continue;}
+				if(room1.size!==room2.size){ continue;}
 
 				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
 					if(this.checkOnly){ return false;}
-					cinfo.getclist(r).seterr(1);
-					cinfo.getclist(s).seterr(1);
+					room1.clist.seterr(1);
+					room2.clist.seterr(1);
 					result = false;
 				}
 			}
@@ -252,8 +253,8 @@ AnsCheck:{
 		return result;
 	},
 	isDifferentShapeBlock : function(cinfo, r, s, sc){
-		if(!sc[r]){ sc[r]=cinfo.getclist(r).getBlockShapes();}
-		if(!sc[s]){ sc[s]=cinfo.getclist(s).getBlockShapes();}
+		if(!sc[r]){ sc[r]=cinfo.room[r].clist.getBlockShapes();}
+		if(!sc[s]){ sc[s]=cinfo.room[s].clist.getBlockShapes();}
 		var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
 		var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
 		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}

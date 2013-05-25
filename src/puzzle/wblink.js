@@ -187,7 +187,7 @@ AnsCheck:{
 	checkWBcircle : function(linfo,val){
 		var result = true;
 		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.getclist(r);
+			var clist = linfo.room[r].clist;
 			if(clist.length<=1){ continue;}
 
 			var tip1 = clist[0], tip2 = clist[clist.length-1];

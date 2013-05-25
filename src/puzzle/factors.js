@@ -173,7 +173,7 @@ AnsCheck:{
 	checkRoomNumber : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var product = 1, clist = rinfo.getclist(id);
+			var product = 1, clist = rinfo.room[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.getAnum()>0){ product *= cell.getAnum();}

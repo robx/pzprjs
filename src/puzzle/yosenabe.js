@@ -354,7 +354,7 @@ AnsCheck:{
 	checkFillingCount : function(iarea){
 		var result = true;
 		for(var id=1;id<=iarea.max;id++){
-			var clist = iarea.getclist(id), num = null;
+			var clist = iarea.room[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
 				var qd = clist[i].getQdir();
 				if(qd!==-1){

@@ -226,7 +226,7 @@ AnsCheck:{
 			}
 		}
 		for(var r=1;r<=tarea.max;r++){
-			var clist = tarea.getclist(r);
+			var clist = tarea.room[r].clist;
 			if(tcount[r]>=0 && tcount[r]!==clist.length){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);

@@ -167,7 +167,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkOneArea : function(cinfo){
 		var bd = this.owner.board;
 		if(cinfo.max>1){
-			cinfo.getclist(1).seterr(1);
+			cinfo.room[1].clist.seterr(1);
 			return false;
 		}
 		return true;
@@ -186,7 +186,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 		var bd = this.owner.board, xinfo = bd.getLineInfo();
 		if(xinfo.max>1){
 			bd.border.seterr(-1);
-			xinfo.getblist(1).seterr(1);
+			xinfo.room[1].blist.seterr(1);
 			return false;
 		}
 		return true;
@@ -254,7 +254,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var clist = cinfo.getclist(id), d = clist.getRectSize();
+			var clist = cinfo.room[id].clist, d = clist.getRectSize();
 			var a = clist.filter(function(cell){ return func(cell);}).length;
 
 			var bd = this.owner.board;
@@ -315,7 +315,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkConnectObjectCount : function(linfo, evalfunc){
 		var result = true;
 		for(var id=1;id<=linfo.max;id++){
-			var count = linfo.getclist(id).filter(function(cell){ return cell.isNum(cell);}).length;
+			var count = linfo.room[id].clist.filter(function(cell){ return cell.isNum(cell);}).length;
 			if( !evalfunc(count) ){
 				if(this.checkOnly){ return false;}
 				if(result){ this.owner.board.border.seterr(-1);}
@@ -334,10 +334,10 @@ pzprv3.createPuzzleClass('AnsCheck',
 		var sides = rinfo.getSideAreaInfo();
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
-				var s=sides[r][i], a1=getval(rinfo,r), a2=getval(rinfo,s);
+				var s=sides[r][i], a1=getval(rinfo.room[r]), a2=getval(rinfo.room[s]);
 				if(a1>0 && a2>0 && a1==a2){
-					rinfo.getclist(r).seterr(1);
-					rinfo.getclist(s).seterr(1);
+					rinfo.room[r].clist.seterr(1);
+					rinfo.room[s].clist.seterr(1);
 					return false;
 				}
 			}
@@ -387,7 +387,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r);
+			var clist = rinfo.room[r].clist;
 			if(!this.isDifferentNumberInClist(clist, numfunc)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -503,7 +503,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			if(rinfo.room[r].error!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
-			rinfo.getclist(r).seterr(1);
+			rinfo.room[r].clist.seterr(1);
 			result = false;
 		}
 		return result;
@@ -525,7 +525,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
 			if(result){ this.owner.board.border.seterr(-1);}
-			xinfo.getblist(id).seterr(1);
+			xinfo.room[id].blist.seterr(1);
 			result = false;
 		}
 		return result;
@@ -546,10 +546,11 @@ pzprv3.createPuzzleClass('AnsCheck',
 
 				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
 				xinfo.max++;
-				xinfo.room[xinfo.max] = {idlist:[],error:0,cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
+				xinfo.room[xinfo.max] = {blist:this.owner.newInstance('BorderList'),error:0,
+										 cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
 
 				this.searchErrorFlag_line(xinfo,xinfo.max);
-				if(xinfo.getblist(xinfo.max).length===0){ continue;}
+				if(xinfo.room[xinfo.max].blist.length===0){ continue;}
 
 				this.isErrorFlag_line(xinfo);
 			}

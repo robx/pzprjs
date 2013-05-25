@@ -752,7 +752,7 @@ AnsCheck:{
 	checkGateLine : function(type){
 		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
-			var cnt=0, clist=bd.hinfo.getclist(r);
+			var cnt=0, clist=bd.hinfo.data[r].clist;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt()>0){ cnt++;}
 			}
@@ -792,13 +792,13 @@ AnsCheck:{
 							else if(passing==gatenumber)               { ordertype=1;}
 							else if(passing==bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
 							else{
-								bd.hinfo.getclist(r).seterr(4);
+								bd.hinfo.data[r].clist.seterr(4);
 								bd.hinfo.getGatePole(r).seterr(1);
 								return false;
 							}
 						}
 						else if(ordertype==1 && passing!=gatenumber){
-							bd.hinfo.getclist(r).seterr(4);
+							bd.hinfo.data[r].clist.seterr(4);
 							bd.hinfo.getGatePole(r).seterr(1);
 							return false;
 						}
@@ -823,7 +823,7 @@ AnsCheck:{
 //---------------------------------------------------------
 HurdleData:{
 	initialize : function(){
-		this.idlist = [];		// この旗門に含まれるセルのリスト
+		this.clist  = this.owner.newInstance('CellList');	// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
 		this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
@@ -864,13 +864,6 @@ HurdleManager:{
 		return idlist;
 	},
 
-	getclist : function(gateid){
-		var o = this.owner, bd = o.board;
-		var idlist = this.data[gateid].idlist, clist = o.newInstance('CellList');
-		for(var i=0;i<idlist.length;i++){ clist.add(bd.cell[idlist[i]]);}
-		return clist;
-	},
-
 	//---------------------------------------------------------
 	init : function(){
 		this.max=0;
@@ -899,7 +892,7 @@ HurdleManager:{
 				var cell2 = pos.getc();
 				if(cell2.isnull || cell2.getQues()!==val){ break;}
 
-				this.data[this.max].idlist.push(cell2.id);
+				this.data[this.max].clist.add(cell2);
 				this.gateid[cell2.id]=this.max;
 				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
 			}

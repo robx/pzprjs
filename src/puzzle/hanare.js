@@ -214,7 +214,7 @@ AnsCheck:{
 	checkAnsNumberAndSize : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r), num = -1;
+			var clist = rinfo.room[r].clist, num = -1;
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
 			if( num!==-1 && num!==clist.length ){

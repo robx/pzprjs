@@ -323,7 +323,7 @@ pzprv3.createPuzzleClass('Graphic',
 		}
 		if(this.suspended){
 			if(this.canvasWidth===null || this.canvasHeight===null){
-				var rect = pzprv3.util.getRect(this.owner.canvasmgr.maincanvas);
+				var rect = pzprv3.util.getRect(this.currentContext.child);
 				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
 			}
 			this.suspended = false;

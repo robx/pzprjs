@@ -205,21 +205,21 @@ AnsCheck:{
 	},
 
 	checkSideAreaNumberSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.room[r].number;});
+		return this.checkSideAreaSize(rinfo, function(room){ return room.number;});
 	},
 	checkAreaSize : function(rinfo, flag){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
 			var room = rinfo.room[id];
 			if(room.error===-1||room.number<=0){ continue;}
-			if     (flag===1 && room.number<room.idlist.length){
+			if     (flag===1 && room.number<room.clist.length){
 				if(this.checkOnly){ return false;}
-				rinfo.getclist(id).seterr(1);
+				rinfo.room[id].clist.seterr(1);
 				result = false;
 			}
-			else if(flag===2 && room.number>room.idlist.length){
+			else if(flag===2 && room.number>room.clist.length){
 				if(this.checkOnly){ return false;}
-				rinfo.getclist(id).seterr(1);
+				rinfo.room[id].clist.seterr(1);
 				result = false;
 			}
 		}
@@ -229,7 +229,7 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
-			var room = rinfo.room[id], clist = rinfo.getclist(id);
+			var room = rinfo.room[id], clist = room.clist;
 			room.error  =  0;
 			room.number = -1;
 			var nums = [];

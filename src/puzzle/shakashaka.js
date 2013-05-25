@@ -351,7 +351,7 @@ AnsCheck:{
 		var result = true;
 		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
-			var clist=winfo.getclist(id), d=clist.getRectSize();
+			var clist=winfo.room[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;
 			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.checkOnly){ return false;}
@@ -363,7 +363,7 @@ AnsCheck:{
 	},
 	// 斜め領域判定用
 	isAreaRect_slope : function(winfo,id){
-		var clist = winfo.getclist(id);
+		var clist = winfo.room[id].clist;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], a = cell.getQans();
 			if( ((a==4||a==5)^(cell.up().isnull||winfo.getRoomID(cell.up())!=id)) ||

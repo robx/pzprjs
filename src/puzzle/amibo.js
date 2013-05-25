@@ -213,22 +213,18 @@ BoardExec:{
 	},
 
 	addRoom : function(vert){
+		var room = {};
+		room.clist = this.owner.newInstance('CellList');
+		room.link = [];
+		room.pole = [];
+		room.vert = vert;
+		
 		this.max++;
-		this.room[this.max] = {idlist:[],link:[],pole:[],vert:vert};
+		this.room[this.max] = room;
 	},
 	addCell : function(cell){
-		this.room[this.max].idlist.push(cell.id);
+		this.room[this.max].clist.add(cell);
 		this.id[cell.id].push(this.max);
-	},
-
-	getclist : function(areaid){
-		var room = this.room[areaid], idlist = room.idlist;
-		var clist = this.owner.newInstance('CellList');
-		for(var i=0;i<idlist.length;i++){ clist.add(this.owner.board.cell[idlist[i]]);}
-		clist.pole = room.pole;
-		clist.link = room.link;
-		clist.vert = room.vert;
-		return clist;
 	}
 },
 CellList:{
@@ -494,7 +490,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
-				var qn=cell.getNum(), id=binfo.pole[c][i], clist = binfo.getclist(id), llen=clist.length;
+				var qn=cell.getNum(), id=binfo.pole[c][i], clist = binfo.room[id].clist, llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
 					if(this.checkOnly){ return false;}
 					cell.seterr(1);
@@ -508,9 +504,9 @@ AnsCheck:{
 	checkCrossedLength : function(binfo){
 		var result=true;
 		for(var id=1,max=binfo.max;id<=max;id++){
-			var check = false, linkid = binfo.room[id].link, clist = binfo.getclist(id);
+			var check = false, linkid = binfo.room[id].link, clist = binfo.room[id].clist;
 			for(var i=0,len=linkid.length;i<len;i++){
-				if(clist.length===binfo.getclist(linkid[i]).length){ check=true; break;}
+				if(clist.length===binfo.room[linkid[i]].clist.length){ check=true; break;}
 			}
 			if(!check){
 				if(this.checkOnly){ return false;}

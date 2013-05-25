@@ -131,7 +131,7 @@ Encode:{
 	encodeHeyaApp : function(){
 		var barray=[], bd=this.owner.board, rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.getclist(id).getRectSize();
+			var d = rinfo.room[r].clist.getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
 			barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 		}
@@ -186,7 +186,7 @@ AnsCheck:{
 	checkFractal : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r), d = clist.getRectSize();
+			var clist = rinfo.room[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);

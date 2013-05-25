@@ -251,7 +251,7 @@ Board:{
 	// 色をつける系関数
 	encolorall : function(){
 		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){ rinfo.getclist(id).encolor();}
+		for(var id=1;id<=rinfo.max;id++){ rinfo.room[id].clist.encolor();}
 		this.owner.redraw();
 	},
 
@@ -259,9 +259,9 @@ Board:{
 	getAreaStarInfoAll : function(){
 		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var ret = rinfo.getclist(id).getAreaStarInfo();
-			rinfo.room[id].star  = ret.star;
-			rinfo.room[id].error = ret.err;
+			var room = rinfo.room[id], ret = room.clist.getAreaStarInfo();
+			room.star  = ret.star;
+			room.error = ret.err;
 		}
 		return rinfo;
 	}
@@ -482,7 +482,7 @@ AnsCheck:{
 	checkFractal : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r);
+			var clist = rinfo.room[r].clist;
 			var star = rinfo.room[r].star;
 			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
@@ -504,7 +504,7 @@ AnsCheck:{
 			if(rinfo.room[r].error!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
-			rinfo.getclist(r).seterr(1);
+			rinfo.room[r].clist.seterr(1);
 			result = false;
 		}
 		return result;

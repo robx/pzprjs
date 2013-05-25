@@ -155,7 +155,7 @@ FileIO:{
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true);
 	},
 	checkSideAreaLandSide : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(rinfo,r){ return rinfo.getclist(r).getLandAreaOfClist();});
+		return this.checkSideAreaSize(rinfo, function(room){ return room.clist.getLandAreaOfClist();});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する

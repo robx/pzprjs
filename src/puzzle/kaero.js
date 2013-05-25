@@ -246,7 +246,7 @@ AnsCheck:{
 	checkSameObjectInRoom_kaero : function(rinfo){
 		var result=true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r), rnum=-1;
+			var clist = rinfo.room[r].clist, rnum=-1;
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], num=cell.base.qnum;
 				if(num===-1 || rnum===num){ continue;}

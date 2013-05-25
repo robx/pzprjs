@@ -192,22 +192,16 @@ pzprv3.createPuzzleClass('AreaManager',
 			areaid = this.id[cell2.id];
 			if(this.irowakeEnable()){ cell.color = cell2.color;}
 		}
-		this[areaid].idlist.push(cell.id);
+		this[areaid].clist.add(cell);
 		this.id[cell.id] = areaid;
 	},
 	removeCell : function(cell){
 		var areaid = this.id[cell.id];
 		if(areaid===null || areaid===0){ return;}
 
-		var idlist = this[areaid].idlist;
-		if(idlist.length>0){
-			for(var i=0;i<idlist.length;i++){
-				if(idlist[i]===cell.id){ idlist.splice(i,1); break;}
-			}
-		}
-
-		if(idlist.length===0){ this.removeArea(areaid);}
+		this[areaid].clist.remove(cell);
 		this.id[cell.id] = null;
+		if(this[areaid].clist.length===0){ this.removeArea(areaid);}
 		if(this.irowakeEnable()){ cell.color = "";}
 	},
 	remakeInfo : function(cidlist){
@@ -235,14 +229,14 @@ pzprv3.createPuzzleClass('AreaManager',
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ this.max++; newid=this.max;}
 
-		this[newid] = {idlist:[]};
+		this[newid] = {clist:this.owner.newInstance('CellList')};
 		return newid;
 	},
 	removeArea : function(id){
-		var clist = this.owner.newInstance('CellList').addByIdlist(this[id].idlist);
+		var clist = this[id].clist;
 		for(var i=0;i<clist.length;i++){ this.id[clist[i].id] = null;}
 		
-		this[id] = {idlist:[]};
+		this[id] = {clist:this.owner.newInstance('CellList')};
 		this.invalidid.push(id);
 		return clist;
 	},
@@ -264,12 +258,10 @@ pzprv3.createPuzzleClass('AreaManager',
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
-			var idlist = this[i].idlist;
-			if(idlist.length>0){
+			var clist = this[i].clist;
+			if(clist.length>0){
 				var newColor = this.getNewColor();
-				for(var n=0;n<idlist.length;n++){
-					this.owner.board.cell[idlist[n]].color = newColor;
-				}
+				for(var n=0;n<clist.length;n++){ clist[n].color = newColor;}
 			}
 		}
 	},
@@ -284,7 +276,7 @@ pzprv3.createPuzzleClass('AreaManager',
 		for(var i=0;i<cidlist.length;i++){
 			var r = this.id[cidlist[i]];
 			if(r===null){ continue;}
-			if(largeid===null || this[largeid].idlist.length < this[r].idlist.length){
+			if(largeid===null || this[largeid].clist.length < this[r].clist.length){
 				largeid = r;
 				longColor = this.owner.board.cell[cidlist[i]].color;
 			}
@@ -302,13 +294,13 @@ pzprv3.createPuzzleClass('AreaManager',
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
 		for(var i=1;i<assign.length;i++){
-			if(this[longid].idlist.length < this[assign[i]].idlist.length){ longid = assign[i];}
+			if(this[longid].clist.length < this[assign[i]].clist.length){ longid = assign[i];}
 		}
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
 			var newColor = (assign[i]===longid ? longColor : this.getNewColor());
-			var clist1 = this.owner.newInstance('CellList').addByIdlist(this[assign[i]].idlist);
+			var clist1 = this[assign[i]].clist;
 			for(var n=0,len=clist1.length;n<len;n++){ clist1[n].color = newColor;}
 			clist.extend(clist1);
 		}
@@ -341,7 +333,7 @@ pzprv3.createPuzzleClass('AreaManager',
 			var cell=stack.pop();
 			if(this.id[cell.id]!==iid){ continue;}
 			this.id[cell.id] = newid;
-			this[newid].idlist.push(cell.id);
+			this[newid].clist.add(cell);
 
 			var cidlist = this.getLinkCell(cell);
 			for(var i=0;i<cidlist.length;i++){
@@ -373,8 +365,8 @@ pzprv3.createPuzzleClass('AreaManager',
 	//--------------------------------------------------------------------------------
 	getClistByCell : function(cell){ return this.getClist(this.id[cell.id]);},
 	getClist : function(areaid){
-		if(!this[areaid]){ alert(areaid);}
-		return this.owner.newInstance('CellList').addByIdlist(this[areaid].idlist);
+		if(!this[areaid]){ throw "Invalid Area ID:"+(areaid);}
+		return this[areaid].clist;
 	}
 });
 
@@ -506,11 +498,11 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	calcTopOfRoom : function(roomid){
 		var bd=this.owner.board, cc=null, bx=bd.maxbx, by=bd.maxby;
-		var idlist = this[roomid].idlist;
-		for(var i=0;i<idlist.length;i++){
-			var cell = bd.cell[idlist[i]];
+		var clist = this[roomid].clist;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
 			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
-			cc=idlist[i];
+			cc=clist[i].id;
 			bx=cell.bx;
 			by=cell.by;
 		}
@@ -521,12 +513,12 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	},
 	resetRoomNumber : function(){
 		for(var r=1;r<=this.max;r++){
-			var val = -1, idlist = this[r].idlist, top = this.getTopOfRoom(r);
-			for(var i=0,len=idlist.length;i<len;i++){
-				var c = idlist[i], cell = this.owner.board.cell[c];
-				if(this.id[c]===r && cell.qnum!==-1){
+			var val = -1, clist = this[r].clist, top = this.getTopOfRoom(r);
+			for(var i=0,len=clist.length;i<len;i++){
+				var cell = clist[i];
+				if(this.id[cell.id]===r && cell.qnum!==-1){
 					if(val===-1){ val = cell.qnum;}
-					if(top!==c){ cell.qnum = -1;}
+					if(top!==cell.id){ cell.qnum = -1;}
 				}
 			}
 			if(val!==-1 && top.qnum===-1){
@@ -549,8 +541,8 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	getTopOfRoomByCell : function(cell){ return this.owner.board.cell[this[this.id[cell.id]].top];},
 	getTopOfRoom       : function(id)  { return this.owner.board.cell[this[id].top];},
 
-	getCntOfRoomByCell : function(cell){ return this[this.id[cell.id]].idlist.length;}
-//	getCntOfRoom       : function(id)  { return this[id].idlist.length;},
+	getCntOfRoomByCell : function(cell){ return this[this.id[cell.id]].clist.length;}
+//	getCntOfRoom       : function(id)  { return this[id].clist.length;},
 });
 
 //--------------------------------------------------------------------------------
@@ -625,26 +617,23 @@ pzprv3.createPuzzleClass('AreaInfo',
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].idlistで取得)
+		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].clistで取得)
 	},
 
 	addRoom : function(){
 		this.max++;
-		this.room[this.max] = {idlist:[]};
+		this.room[this.max] = {clist:this.owner.newInstance('CellList')};
 	},
 	getRoomID : function(obj){ return this.id[obj.id];},
 	setRoomID : function(obj, areaid){
-		this.room[areaid].idlist.push(obj.id);
+		this.room[areaid].clist.add(obj);
 		this.id[obj.id] = areaid;
 	},
 
 	addCell   : function(cell){ this.setRoomID(cell, this.max);},
 	emptyCell : function(cell){ return (this.id[cell.id]===0);},
 
-	getclistbycell : function(cell)  { return this.getclist(this.id[cell.id]);},
-	getclist : function(areaid){
-		return this.owner.newInstance('CellList').addByIdlist(this.room[areaid].idlist);
-	},
+	getclistbycell : function(cell){ return this.room[this.id[cell.id]].clist;},
 
 	//---------------------------------------------------------------------------
 	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する

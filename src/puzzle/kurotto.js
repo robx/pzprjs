@@ -38,14 +38,14 @@ Cell:{
 		
 		var cnt = 0, idlist = [], clist = this.getdir4clist();
 		for(var i=0;i<clist.length;i++){
-			var roomid = cinfo.getRoomID(clist[i][0]);
-			if(roomid!==null){
+			var r = cinfo.getRoomID(clist[i][0]);
+			if(r!==null){
 				for(var j=0;j<idlist.length;j++){
-					if(idlist[j]===roomid){ roomid=null; break;}
+					if(idlist[j]===r){ r=null; break;}
 				}
-				if(roomid!==null){
-					cnt += cinfo.getclist(roomid).length
-					idlist.push(roomid);
+				if(r!==null){
+					cnt += cinfo.room[r].clist.length
+					idlist.push(r);
 				}
 			}
 		}

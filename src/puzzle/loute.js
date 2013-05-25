@@ -194,7 +194,7 @@ Board:{
 		rinfo.place = [];
 
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.getclist(r), d = clist.getRectSize();
+			var clist = rinfo.room[r].clist, d = clist.getRectSize();
 
 			/* 四角形のうち別エリアとなっている部分を調べる */
 			/* 幅が1なので座標自体は調べなくてよいはず      */
@@ -451,7 +451,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.room[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.getclist(id);
+			var error = false, clist = rinfo.room[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2){
@@ -470,7 +470,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.room[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.getclist(id);
+			var error = false, clist = rinfo.room[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 &&
@@ -494,7 +494,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.room[id].shape===0){ continue;}
 
-			var clist = rinfo.getclist(id);
+			var clist = rinfo.room[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.isCircle() && rinfo.place[cell.id]!==3){
@@ -513,7 +513,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.room[id].shape===0){
 				if(this.checkOnly){ return false;}
-				rinfo.getclist(id).seterr(1);
+				rinfo.room[id].clist.seterr(1);
 				result = false;
 			}
 		}

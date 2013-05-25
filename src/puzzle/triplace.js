@@ -110,7 +110,7 @@ Board:{
 	getTileInfo : function(){
 		var tinfo = this.tiles.getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
-			var d = tinfo.getclist(r).getRectSize();
+			var d = tinfo.room[r].clist.getRectSize();
 			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;

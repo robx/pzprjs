@@ -155,8 +155,8 @@ AnsCheck:{
 	},
 	checkLshapeArea : function(rinfo){
 		var result = true;
-		for(var areaid=1;areaid<=rinfo.max;areaid++){
-			var clist = rinfo.getclist(areaid);
+		for(var r=1;r<=rinfo.max;r++){
+			var clist = rinfo.room[r].clist;
 			var cell = clist.getQnumCell();
 			if(cell.isnull){ continue;}
 
@@ -164,7 +164,7 @@ AnsCheck:{
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 
-			var clist2 = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==areaid);});
+			var clist2 = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var d2 = clist2.getRectSize();
 
 			if( clist2.length===0 || (d2.cols*d2.rows!=d2.cnt) || (d.x1!==d2.x1 && d.x2!==d2.x2) || (d.y1!==d2.y1 && d.y2!==d2.y2) ){

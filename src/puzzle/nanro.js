@@ -187,7 +187,7 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
-			var room = rinfo.room[id], clist = rinfo.getclist(id);
+			var room = rinfo.room[id], clist = room.clist;
 			room.error  =  0;		// 後でエラー表示するエラーのフラグ
 			room.number = -1;		// そのエリアに入っている数字
 			var nums = [];			// キーの数字が入っている数

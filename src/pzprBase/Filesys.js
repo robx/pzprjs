@@ -612,7 +612,7 @@ pzprv3.createPuzzleClass('FileIO',
 
 		this.datastr += (rinfo.max+"\n");
 		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.getclist(id).getRectSize();
+			var d = rinfo.room[id].clist.getRectSize();
 			var num = (isques ? bd.rooms.getTopOfRoom(id).qnum : -1);
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
 		}
