@@ -63,7 +63,7 @@ pzprv3.createPuzzleClass('LineManager',
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var bd = this.owner.board, blist = this.owner.newInstance('BorderList');
+		var bd = this.owner.board, blist = new this.owner.classes.BorderList();
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
@@ -210,7 +210,7 @@ pzprv3.createPuzzleClass('LineManager',
 		var longColor = this.getLongColor(blist_sub);
 		
 		// つながった線の線情報を一旦0にする
-		var blist = this.owner.newInstance('BorderList');
+		var blist = new this.owner.classes.BorderList();
 		for(var i=0;i<blist_sub.length;i++){
 			var id=blist_sub[i].id, r=this.id[id], bd=this.owner.board;
 			if(r!==null && r!==0){ blist.extend(this.removePath(r));}
@@ -234,14 +234,14 @@ pzprv3.createPuzzleClass('LineManager',
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ this.max++; newid=this.max;}
 
-		this.blist[newid] = this.owner.newInstance('BorderList');
+		this.blist[newid] = new this.owner.classes.BorderList();
 		return newid;
 	},
 	removePath : function(id){
 		var blist = this.getBlist(id);
 		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
 		
-		this.blist[newid] = this.owner.newInstance('BorderList');
+		this.blist[newid] = new this.owner.classes.BorderList();
 		this.invalidid.push(id);
 		return blist;
 	},
@@ -265,7 +265,7 @@ pzprv3.createPuzzleClass('LineManager',
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
-		var blist_all = this.owner.newInstance('BorderList');
+		var blist_all = new this.owner.classes.BorderList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -297,7 +297,7 @@ pzprv3.createPuzzleClass('LineManager',
 		// 交差ありでborderAsLine==true(->isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
-		var lines = this.owner.newInstance('BorderList');
+		var lines = new this.owner.classes.BorderList();
 		if(!obj1.isnull){
 			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt();
 			if(iscrossing && lcnt>=(4-erase)){
@@ -344,7 +344,7 @@ pzprv3.createPuzzleClass('LineManager',
 	},
 	searchSingle : function(border, newid){
 		var bx=border.bx, by=border.by;
-		var pos = this.owner.newInstance('Address', [null, null]);
+		var pos = new this.owner.classes.Address(null, null);
 		var stack=((!this.isCenterLine^border.isHorz())?[[bx,by+1,1],[bx,by,2]]:[[bx+1,by,3],[bx,by,4]]);
 		while(stack.length>0){
 			var dat=stack.pop(), dir=dat[2];
@@ -386,7 +386,7 @@ pzprv3.createPuzzleClass('LineManager',
 	// lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		var bd = this.owner.board, info = this.owner.newInstance('LineInfo');
+		var bd = this.owner.board, info = new this.owner.classes.LineInfo();
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.border[id].isLine()?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
@@ -423,7 +423,7 @@ pzprv3.createPuzzleClass('LineInfo',
 
 	addRoom : function(){
 		this.max++;
-		this.room[this.max] = {blist:this.owner.newInstance('BorderList')};
+		this.room[this.max] = {blist:(new this.owner.classes.BorderList())};
 	},
 	getRoomID : function(obj){ return this.id[obj.id];},
 	setRoomID : function(obj, areaid){

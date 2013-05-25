@@ -157,7 +157,7 @@ AnsCheck:{
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
 
-			var clist = this.owner.newInstance('CellList'), target;
+			var clist = new this.owner.classes.CellList(), target;
 			clist.add(cell);
 			target=cell.lt(); while(!target.isnull && target.inside){ clist.add(target); target = target.lt();}
 			target=cell.rt(); while(!target.isnull && target.inside){ clist.add(target); target = target.rt();}

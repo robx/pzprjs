@@ -332,7 +332,7 @@ AnsCheck:{
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
 			var qn=excell.getQnum(), pos=excell.getaddr(), val=0, cell;
-			var clist=this.owner.newInstance('CellList')
+			var clist=new this.owner.classes.CellList();
 			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
 				cell = pos.move(0,2).getc();
 				while(!cell.isnull){

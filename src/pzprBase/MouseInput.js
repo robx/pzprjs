@@ -15,7 +15,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 
 		this.enableMouse = true;	// マウス入力は有効か
 
-		this.inputPoint = this.owner.newInstance('Point',[null, null]);		// 入力イベントが発生したpixel位置
+		this.inputPoint = new this.owner.classes.Point(null, null);		// 入力イベントが発生したpixel位置
 
 		this.currentpos = {px:0,py:0};
 		
@@ -26,8 +26,8 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-		this.firstPoint = this.owner.newInstance('Point',[null, null]);		// mousedownされた時のpixel位置
-		this.prevPos    = this.owner.newInstance('Address',[null, null]);	// 前回のマウス入力イベントのborder座標
+		this.firstPoint = new this.owner.classes.Point(null, null);		// mousedownされた時のpixel位置
+		this.prevPos    = new this.owner.classes.Address(null, null);	// 前回のマウス入力イベントのborder座標
 		this.btn = {};		// 押されているボタン
 
 		this.bordermode;	// 境界線を入力中かどうか
@@ -205,7 +205,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		var bx = ((px/cw)|0)*2 + ((px%cw<2*pm)?0:1) - 4;
 		var by = ((py/ch)|0)*2 + ((py%ch<2*pm)?0:1) - 4;
 
-		return this.owner.newInstance('Address',[bx,by]);
+		return (new this.owner.classes.Address(bx,by));
 	},
 
 	getborder : function(spc){
@@ -612,7 +612,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return this.owner.newInstance('BoardPiece');
+		return (new this.owner.classes.BoredPiece());
 	},
 
 	//---------------------------------------------------------------------------

@@ -129,7 +129,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
-			var clist=this.owner.newInstance('CellList');
+			var clist=new this.owner.classes.CellList();
 			if(cell.up().isBlack()){ clist.extend(binfo.getclistbycell(cell.up()));}
 			if(cell.dn().isBlack()){ clist.extend(binfo.getclistbycell(cell.dn()));}
 			if(cell.lt().isBlack()){ clist.extend(binfo.getclistbycell(cell.lt()));}

@@ -293,7 +293,7 @@ pzprv3.createPuzzleClass('OperationManager',
 		this.addOpe_common(function(){
 			if(property===k.QSUB){ this.anscount--;}
 
-			var ope = this.owner.newInstance('ObjectOperation');
+			var ope = new this.owner.classes.ObjectOperation();
 			ope.setData(obj, property, old, num);
 			return ope;
 		},
@@ -317,7 +317,7 @@ pzprv3.createPuzzleClass('OperationManager',
 	addOpe_BoardAdjust : function(old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = this.owner.newInstance('BoardAdjustOperation');
+			var ope = new this.owner.classes.BoardAdjustOperation();
 			ope.setData(old, num);
 			return ope;
 		});
@@ -325,7 +325,7 @@ pzprv3.createPuzzleClass('OperationManager',
 	addOpe_BoardFlip : function(d, old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
-			var ope = this.owner.newInstance('BoardFlipOperation');
+			var ope = new this.owner.classes.BoardFlipOperation();
 			ope.setData(d, old, num);
 			return ope;
 		});
@@ -372,13 +372,13 @@ pzprv3.createPuzzleClass('OperationManager',
 		this.checkexec();
 	},
 	decodeOpe : function(strs){
-		var ope = this.owner.newInstance('ObjectOperation');
+		var ope = new this.owner.classes.ObjectOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		ope = this.owner.newInstance('BoardAdjustOperation');
+		ope = new this.owner.classes.BoardAdjustOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		ope = this.owner.newInstance('BoardFlipOperation');
+		ope = new this.owner.classes.BoardFlipOperation();
 		if(ope.decode(strs)){ return ope;}
 
 		return null;

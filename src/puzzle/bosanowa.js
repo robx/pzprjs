@@ -109,7 +109,7 @@ KeyEvent:{
 TargetCursor:{
 	initCursor : function(){
 		var bd = this.owner.board;
-		this.pos = this.owner.newInstance('Address', [bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2]);
+		this.pos = new this.owner.classes.Address(bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2);
 	}
 },
 
@@ -334,7 +334,7 @@ Graphic:{
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
 				var cell=this.owner.board.getc(bx,by);
-				var addr=this.owner.newInstance('Address',[bx, by]);
+				var addr=new this.owner.classes.Address(bx, by);
 				if( cell.isEmpty() && (
 					addr.rel(-2, 0).getc().ques===0 || addr.rel(2, 0).getc().ques===0 || 
 					addr.rel( 0,-2).getc().ques===0 || addr.rel(0, 2).getc().ques===0 || 

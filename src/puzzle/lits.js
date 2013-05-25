@@ -26,33 +26,30 @@ Board:{
 	isborder : 1,
 
 	getTetrominoInfo : function(rinfo){
-		var tinfo = this.owner.newInstance('AreaInfo'); /* 各セルに入る黒マスのテトロミノの形が入る */
+		var tinfo = new this.owner.classes.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
-			var bcells = this.owner.newInstance('CellList'), clist = rinfo.room[r].clist;
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				if(cell.isBlack()){ bcells.add(cell);}
-			}
-			if(bcells.length===4){
-				var bx0=bcells[0].bx, by0=bcells[0].by, value=0;
-				for(var i=1;i<bcells.length;i++){ value += (((bcells[i].by-by0)>>1)*10+((bcells[i].bx-bx0)>>1));}
+			var clist = rinfo.room[r].clist.filter(function(cell){ return cell.isBlack();});
+			var len = clist.length;
+			if(len===4){
+				var bx0=clist[0].bx, by0=clist[0].by, value=0;
+				for(var i=1;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
 				switch(value){
 					case 13: case 15: case 27: case 31: case 33: case 49: case 51:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="L";} break;
+						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="L";} break;
 					case 6: case 60:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="I";} break;
+						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="I";} break;
 					case 14: case 30: case 39: case 41:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="T";} break;
+						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="T";} break;
 					case 20: case 24: case 38: case 42:
-						for(var i=0;i<bcells.length;i++){ tinfo.id[bcells[i].id]="S";} break;
+						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="S";} break;
 				}
 			}
 		}
 		return this.getBlockInfo(tinfo);
 	},
 	getBlockInfo : function(tinfo){
-		var dinfo = this.owner.newInstance('AreaInfo'); /* 同じ部屋に含まれる黒マスのつながり情報 */
+		var dinfo = new this.owner.classes.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
 		for(var fc=0;fc<this.cellmax;fc++){ dinfo.id[fc]=(tinfo.id[fc]!==null?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!dinfo.emptyCell(this.cell[fc])){ continue;}

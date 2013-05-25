@@ -31,7 +31,7 @@ Cell:{
 },
 Board:{
 	getdir8WareaInfo : function(){
-		var winfo = this.owner.newInstance('AreaInfo');
+		var winfo = new this.owner.classes.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isWhite()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!winfo.emptyCell(this.cell[fc])){ continue;}

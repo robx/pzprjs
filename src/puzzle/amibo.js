@@ -115,50 +115,7 @@ Board:{
 		this.barinfo.newIrowake();
 	},
 
-	getBarInfo : function(){
-		var self = this;
-		function eachcell(cell, qa_chk, vert){
-			var qa=cell.getQans();
-			if(qa===qa_chk||qa===3){
-				if(roomid===null){
-					binfo.addRoom(vert);
-					roomid = binfo.max;
-					if(cell2!==null){ binfo.pole[cell2.id].push(roomid);}
-				}
-				binfo.addCell(cell)
-			}
-			else if(roomid!==null){ binfo.pole[cell.id].push(roomid); roomid=null;}
-			cell2 = cell;
-		}
-
-		var binfo = this.owner.newInstance('AreaBarInfo');
-		for(var bx=this.minbx+1;bx<=this.maxbx-1;bx+=2){
-			var roomid=null, cell2=null;
-			for(var by=this.minby+1;by<=this.maxby-1;by+=2){
-				eachcell(this.getc(bx,by),1,true);
-			}
-		}
-		for(var by=this.minby+1;by<=this.maxby-1;by+=2){
-			var roomid=null, cell2=null;
-			for(var bx=this.minbx+1;bx<=this.maxbx-1;bx+=2){
-				eachcell(this.getc(bx,by),2,false);
-			}
-		}
-		
-		for(var c=0;c<this.cellmax;c++){
-			if(binfo.id[c].length==2){ /* 0～2になる */
-				binfo.room[binfo.id[c][0]].link.push(binfo.id[c][1]);
-				binfo.room[binfo.id[c][1]].link.push(binfo.id[c][0]);
-			}
-			if(this.cell[c].isNum()){
-				for(var i=0;i<binfo.pole[c].length;i++){
-					binfo.room[binfo.pole[c][i]].pole.push(c);
-				}
-			}
-			else{ binfo.pole[c] = [];}
-		}
-		return binfo;
-	}
+	getBarInfo : function(){ return this.barinfo.getBarInfo();}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -198,6 +155,51 @@ BoardExec:{
 	},
 	getNewColor : function(){
 		return this.owner.painter.getNewLineColor();
+	},
+
+	getBarInfo : function(){
+		var bd = this.owner.board;
+		function eachcell(cell, qa_chk, vert){
+			var qa=cell.getQans();
+			if(qa===qa_chk||qa===3){
+				if(roomid===null){
+					binfo.addRoom(vert);
+					roomid = binfo.max;
+					if(cell2!==null){ binfo.pole[cell2.id].push(roomid);}
+				}
+				binfo.addCell(cell)
+			}
+			else if(roomid!==null){ binfo.pole[cell.id].push(roomid); roomid=null;}
+			cell2 = cell;
+		}
+
+		var binfo = new this.owner.classes.AreaBarInfo();
+		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
+			var roomid=null, cell2=null;
+			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
+				eachcell(bd.getc(bx,by),1,true);
+			}
+		}
+		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
+			var roomid=null, cell2=null;
+			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
+				eachcell(bd.getc(bx,by),2,false);
+			}
+		}
+		
+		for(var c=0;c<bd.cellmax;c++){
+			if(binfo.id[c].length==2){ /* 0～2になる */
+				binfo.room[binfo.id[c][0]].link.push(binfo.id[c][1]);
+				binfo.room[binfo.id[c][1]].link.push(binfo.id[c][0]);
+			}
+			if(bd.cell[c].isNum()){
+				for(var i=0;i<binfo.pole[c].length;i++){
+					binfo.room[binfo.pole[c][i]].pole.push(c);
+				}
+			}
+			else{ binfo.pole[c] = [];}
+		}
+		return binfo;
 	}
 },
 "AreaBarInfo:AreaInfo":{
@@ -214,7 +216,7 @@ BoardExec:{
 
 	addRoom : function(vert){
 		var room = {};
-		room.clist = this.owner.newInstance('CellList');
+		room.clist = new this.owner.classes.CellList();
 		room.link = [];
 		room.pole = [];
 		room.vert = vert;

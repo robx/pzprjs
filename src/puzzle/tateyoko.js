@@ -108,30 +108,15 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	nummaxfunc : function(){
-		return (cell.ques===1?4:Math.max(this.owner.board.qcols,this.owner.board.qrows));
+		var bd = this.owner.board;
+		return (this.ques===1?4:Math.max(bd.qcols,bd.qrows));
 	},
 	minnum : 0
 },
 Board:{
 	getBarInfo : function(){
-		var binfo = this.owner.newInstance('AreaInfo');
-		for(var c=0;c<this.cellmax;c++){
-			var cell = this.cell[c];
-			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);
-		}
-		for(var c=0;c<this.cellmax;c++){
-			var cell = this.cell[c];
-			if(!binfo.emptyCell(cell)){ continue;}
-			binfo.addRoom();
-
-			var pos=cell.getaddr(), val=cell.qans;
-			while(!cell.isnull && cell.qans===val){
-				binfo.addCell(cell);
-				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
-				cell = pos.getc();
-			}
-		}
-		return binfo;
+		var barinfo = new this.owner.classes.AreaBarManager();
+		return barinfo.getBarInfo();
 	}
 },
 BoardExec:{
@@ -144,6 +129,30 @@ BoardExec:{
 				cell.setQans(tans[cell.getQans()]);
 			}
 		}
+	}
+},
+
+AreaBarManager:{
+	getBarInfo : function(){
+		var bd = this.owner.board;
+		var binfo = new this.owner.classes.AreaInfo();
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
+			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);
+		}
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
+			if(!binfo.emptyCell(cell)){ continue;}
+			binfo.addRoom();
+
+			var pos=cell.getaddr(), val=cell.qans;
+			while(!cell.isnull && cell.qans===val){
+				binfo.addCell(cell);
+				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
+				cell = pos.getc();
+			}
+		}
+		return binfo;
 	}
 },
 

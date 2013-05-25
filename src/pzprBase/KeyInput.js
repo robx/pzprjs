@@ -332,7 +332,7 @@ pzprv3.createPuzzleClass('TargetCursor',
 {
 	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)
-		this.pos = this.owner.newInstance('Address',[1,1]);
+		this.pos = new this.owner.classes.Address(1,1);
 
 		// 有効な範囲(minx,miny)-(maxx,maxy)
 		this.minx;
@@ -360,8 +360,8 @@ pzprv3.createPuzzleClass('TargetCursor',
 		this.adjust_init();
 	},
 	initCursor : function(){
-		if(this.crosstype){ this.pos = this.owner.newInstance('Address',[0,0]);}
-		else              { this.pos = this.owner.newInstance('Address',[1,1]);}
+		if(this.crosstype){ this.pos = new this.owner.classes.Address(0,0);}
+		else              { this.pos = new this.owner.classes.Address(1,1);}
 
 		this.adjust_init();
 	},

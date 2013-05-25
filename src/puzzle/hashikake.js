@@ -68,7 +68,7 @@ MouseEvent:{
 	mousereset : function(){
 		this.SuperFunc.mousereset.call(this);
 
-		this.prevblist = this.owner.newInstance('BorderList');
+		this.prevblist = new this.owner.classes.BorderList();
 	}
 },
 

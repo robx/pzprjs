@@ -145,7 +145,10 @@ window.pzprv3 = {
 		puzzle.classes = {};
 		for(var classname in custom){
 			var base = custom[classname];
-			var cls = function(args){ if(!!this.initialize){ this.initialize.apply(this,[].concat(args));}}
+			var cls = function(){
+				var args = Array.prototype.slice.apply(arguments);
+				if(!!this.initialize){ this.initialize.apply(this,args);}
+			}
 			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
 			cls.prototype.owner = puzzle;
 			puzzle.classes[classname] = cls;

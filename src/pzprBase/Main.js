@@ -127,6 +127,7 @@ pzprv3.Puzzle.prototype =
 
 		if(!this.classes){
 			/* クラスなどを初期化 */
+			pzprv3.includeClasses(this, newpid);
 			this.initObjects();
 		}
 		else{
@@ -150,36 +151,27 @@ pzprv3.Puzzle.prototype =
 	// owner.initObjects()   各オブジェクトの生成などの処理
 	//---------------------------------------------------------------------------
 	initObjects : function(){
-		pzprv3.includeClasses(this, this.pid);
-
 		// クラス初期化
-		this.board   = this.newInstance('Board');		// 盤面オブジェクト
-		this.checker = this.newInstance('AnsCheck');	// 正解判定オブジェクト
-		this.painter = this.newInstance('Graphic');		// 描画系オブジェクト
+		this.board   = new this.classes.Board();		// 盤面オブジェクト
+		this.checker = new this.classes.AnsCheck();		// 正解判定オブジェクト
+		this.painter = new this.classes.Graphic();		// 描画系オブジェクト
 
-		this.cursor = this.newInstance('TargetCursor');	// 入力用カーソルオブジェクト
-		this.mouse  = this.newInstance('MouseEvent');	// マウス入力オブジェクト
-		this.key    = this.newInstance('KeyEvent');		// キーボード入力オブジェクト
+		this.cursor = new this.classes.TargetCursor();	// 入力用カーソルオブジェクト
+		this.mouse  = new this.classes.MouseEvent();	// マウス入力オブジェクト
+		this.key    = new this.classes.KeyEvent();		// キーボード入力オブジェクト
 
-		this.opemgr = this.newInstance('OperationManager');	// 操作情報管理オブジェクト
+		this.opemgr = new this.classes.OperationManager();	// 操作情報管理オブジェクト
 
-		this.enc = this.newInstance('Encode');		// URL入出力用オブジェクト
-		this.fio = this.newInstance('FileIO');		// ファイル入出力用オブジェクト
+		this.enc = new this.classes.Encode();		// URL入出力用オブジェクト
+		this.fio = new this.classes.FileIO();		// ファイル入出力用オブジェクト
 
-		this.flags = this.newInstance('Flags');		// パズルの初期設定値を保持するオブジェクト
+		this.flags = new this.classes.Flags();		// パズルの初期設定値を保持するオブジェクト
 
 		if(this.flags.irowake===2)   { this.set('irowake', true);}
 		if(this.flags.irowakeblk===2){ this.set('irowakeblk', true);}
 
 		this.board.init();
 		this.painter.init();
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.newInstance()    新しいオブジェクトを生成する
-	//---------------------------------------------------------------------------
-	newInstance : function(classname, args){
-		return (new this.classes[classname](args));
 	},
 
 	//---------------------------------------------------------------------------

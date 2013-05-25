@@ -12,7 +12,7 @@ MouseEvent:{
 	initialize : function(){
 		pzprv3.core.MouseEvent.prototype.initialize.call(this);
 		
-		this.ut = this.owner.newInstance('UndoTimer_goishi');
+		this.ut = new this.owner.classes.UndoTimer_goishi();
 	},
 
 	mouseinput : function(){

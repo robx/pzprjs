@@ -29,7 +29,7 @@ MouseEvent:{
 	},
 	getpos : function(rc){
 		var pc = this.owner.painter;
-		return this.owner.newInstance('Address',[(this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1]);
+		return (new this.owner.classes.Address((this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1));
 	}
 },
 
@@ -139,7 +139,7 @@ Board:{
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
 	cellinside : function(x1,y1,x2,y2){
-		var clist = this.owner.newInstance('CellList');
+		var clist = new this.owner.classes.CellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -363,13 +363,13 @@ AnsCheck:{
 	checkThreeBlackCells : function(){
 		var result = true, bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var clist = this.owner.newInstance('CellList');
+			var clist = new this.owner.classes.CellList();
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ continue;}
 				else if(cell.isWhite() || cell.isNum()){
 					if(clist.length>=3){ break;}
-					clist=this.owner.newInstance('CellList');
+					clist=new this.owner.classes.CellList();
 				}
 				else{ clist.add(cell);}
 			}
@@ -386,7 +386,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			var clist = this.owner.newInstance('CellList');
+			var clist = new this.owner.classes.CellList();
 			clist.add(cell.relcell(-1,-2));
 			clist.add(cell.relcell( 1,-2));
 			clist.add(cell.relcell(-2, 0));
