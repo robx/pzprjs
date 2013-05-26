@@ -127,6 +127,8 @@ var _form;
 var self = v3index.urlif;
 var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
+function getEL(id){ return _doc.getElementById(id);}
+
 v3index.urlif.extend({
 	init : function(){
 		_form = _doc.urlinput;
@@ -167,6 +169,8 @@ var _doc = document;
 var _form;
 var self = v3index.fileif;
 var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
+
+function getEL(id){ return _doc.getElementById(id);}
 
 v3index.fileif.extend({
 	init : function(){
