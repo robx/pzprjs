@@ -241,7 +241,7 @@ pzprv3.createPuzzleClass('LineManager',
 		var blist = this.getBlist(id);
 		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
 		
-		this.blist[newid] = new this.owner.BorderList();
+		this.blist[id] = new this.owner.BorderList();
 		this.invalidid.push(id);
 		return blist;
 	},
