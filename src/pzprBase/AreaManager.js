@@ -559,6 +559,8 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
 	bdfunc : function(border){ return !border.isLine();},
 
+	moveline : false,
+
 	//--------------------------------------------------------------------------------
 	// linfo.reset()   ファイル読み込み時などに、保持している情報を再構築する
 	// linfo.rebuild() 境界線情報の再設定を行う
@@ -581,6 +583,8 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 		}
 
 		pzprv3.common.AreaManager.prototype.rebuild.call(this);
+
+		if(this.enabled && this.moveline){ this.resetMovedBase();}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -599,10 +603,58 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.setLineInfo()  線が引かれたり消されてたりした時に、部屋情報を更新する
+	// linfo.setLineInfo()  線が引かれたり消されてたりした時に、部屋情報を更新する
 	//--------------------------------------------------------------------------------
 	setLineInfo : function(border){
 		this.setBorderInfo(border);
+	},
+
+	//--------------------------------------------------------------------------------
+	// linfo.searchIdlist() 盤面内のidlistに含まれるセルにIDを付け直す
+	// linfo.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	//--------------------------------------------------------------------------------
+	// オーバーライド
+	searchIdlist : function(clist){
+		/* searchSingleにはIDがついた領域しかこないので、先にbaseを初期値にする */
+		for(var i=0;i<clist.length;i++){
+			clist[i].base = (clist[i].isNum() ? clist[i] : this.owner.board.emptycell);
+		}
+
+		pzprv3.common.AreaManager.prototype.searchIdlist.call(this, clist);
+	},
+	searchSingle : function(cell, newid){
+		pzprv3.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
+
+		if(this.moveline){ this.setMovedBase(newid);}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linfo.resetMovedBase()  情報の再構築時に移動した情報を初期化する
+	// linfo.setMovedBase()    移動した情報を設定する
+	//--------------------------------------------------------------------------------
+	resetMovedBase : function(){
+		var bd = this.owner.board;
+		for(var c=0;c<bd.cellmax;c++){
+			bd.cell[c].base = (bd.cell[c].isNum() ? bd.cell[c] : bd.emptycell);
+		}
+		for(var r=1;r<=this.max;r++){ this.setMovedBase(r);}
+	},
+	setMovedBase : function(areaid){
+		var clist = this[areaid].clist;
+		if(clist.length<=1){ return;}
+		
+		var before=null, after=null, point=0;
+		for(var i=0;i<clist.length;i++){
+			var cell=clist[i];
+			if(cell.lcnt()===1){
+				point++;
+				if(cell.isNum()){ before=cell;}else{ after=cell;}
+			}
+		}
+		if(before!==null && after!==null && point===2){
+			before.base = this.owner.board.emptycell;
+			after.base = before;
+		}
 	}
 });
 

@@ -556,32 +556,7 @@ pzprv3.createPuzzleClass('Board',
 	//---------------------------------------------------------------------------
 	disableSetError  : function(){ this.diserror++;},
 	enableSetError   : function(){ this.diserror--;},
-	isenableSetError : function(){ return (this.diserror<=0); },
-
-	//---------------------------------------------------------------------------
-	// bd.searchMovedPosition() 丸数字を移動させるパズルで、移動後の場所を設定する
-	//---------------------------------------------------------------------------
-	searchMovedPosition : function(linfo){
-		for(var c=0;c<this.cellmax;c++){
-			var cell = this.cell[c];
-			cell.base = (cell.isNum() ? cell : this.emptycell);
-		}
-		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.room[r].clist;
-			if(clist.length<=1){ continue;}
-			var before=null, after=null;
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i];
-				if(cell.lcnt()===1){
-					if(cell.isNum()){ before=cell;}else{ after=cell;}
-				}
-			}
-			if(before!==null && after!==null){
-				before.base = this.emptycell;
-				after.base = before;
-			}
-		}
-	}
+	isenableSetError : function(){ return (this.diserror<=0); }
 });
 
 })();

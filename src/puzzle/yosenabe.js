@@ -142,7 +142,8 @@ LineManager:{
 },
 
 AreaLineManager:{
-	enabled : true
+	enabled : true,
+	moveline : true
 },
 "AreaCrockManager:AreaManager":{
 	enabled : true,
@@ -328,7 +329,6 @@ AnsCheck:{
 		// 問題のチェック (2)
 		if( !this.checkDoubleNumberInNabe(iarea) ){ return 90711;}
 
-		bd.searchMovedPosition(linfo);
 		if( !this.checkFillingCount(iarea) ){ return 90721;}
 		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 90731;}
 		if( !this.checkFillingOutOfNabe() ){ return 90741;}

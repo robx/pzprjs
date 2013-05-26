@@ -61,7 +61,8 @@ AreaRoomManager:{
 	enabled : true
 },
 AreaLineManager:{
-	enabled : true
+	enabled : true,
+	moveline : true
 },
 
 //---------------------------------------------------------
@@ -140,12 +141,12 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var pid = this.owner.pid;
+		var pid = this.owner.pid, bd = this.owner.board;
 
 		if( !this.checkLineCount(3) ){ return 40201;}
 		if( !this.checkLineCount(4) ){ return 40301;}
 
-		var linfo = this.owner.board.getLareaInfo();
+		var linfo = bd.getLareaInfo();
 		if( !this.checkDoubleObject(linfo) ){ return 30016;}
 		if( !this.checkLineOverLetter() ){ return 43102;}
 
@@ -153,8 +154,7 @@ AnsCheck:{
 
 		if( !this.checkLineLength(linfo) ){ return 50401;}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		this.owner.board.searchMovedPosition(linfo);
+		var rinfo = bd.getRoomInfo();
 		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 30501;}
 		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 30511;}
 		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 30025;}
