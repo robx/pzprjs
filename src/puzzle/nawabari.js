@@ -275,7 +275,7 @@ AnsCheck:{
 
 		if( !this.checkdir4BorderAns() ){ return 32401;}
 
-		if( !this.checkLcntCross(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 32101;}
 
 		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 30037;}
 		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 30038;}

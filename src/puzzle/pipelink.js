@@ -282,7 +282,7 @@ AnsCheck:{
 
 		if( !this.checkenableLineParts(1) ){ return 50121;}
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 40201;}
 
 		if(this.owner.pid==='pipelinkr'){
 			var isdispice = (this.owner.get('disptype_pipelinkr')==2);
@@ -294,9 +294,9 @@ AnsCheck:{
 
 		if( !this.checkCrossLineOnCross() ){ return 40421;}
 
-		if( !this.checkLcntCell(0) ){ return 50151;}
+		if( !this.checkLineCount(0) ){ return 50151;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		return 0;
 	},

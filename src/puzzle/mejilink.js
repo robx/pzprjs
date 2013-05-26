@@ -203,7 +203,7 @@ AnsCheck:{
 			if(cnt==val){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
-				bd.setCrossBorderError(cross.bx,cross.by);
+				cross.setCrossBorderError();
 				result = false;
 			}
 		}

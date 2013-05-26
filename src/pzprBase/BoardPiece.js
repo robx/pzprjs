@@ -418,7 +418,15 @@ pzprv3.createPuzzleClass('Cross:BoardPiece',
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
-	iscrossing : function(){ return this.owner.board.lines.isLineCross;}
+	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
+
+	//---------------------------------------------------------------------------
+	// cross.setCrossBorderError() 交点とその周り四方向にエラーフラグを設定する
+	//---------------------------------------------------------------------------
+	setCrossBorderError : function(){
+		this.seterr(1);
+		this.owner.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
+	}
 });
 
 //---------------------------------------------------------------------------
@@ -646,6 +654,14 @@ pzprv3.createPuzzleClass('Address',
 		var bd = this.owner.board;
 		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
 				this.by>=bd.minby && this.by<=bd.maxby);
+	},
+
+	//---------------------------------------------------------------------------
+	// pos.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
+	//---------------------------------------------------------------------------
+	setCrossBorderError : function(){
+		if(this.iscross!==0){ this.getx(this.bx,this.by).seterr(1);}
+		this.owner.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
 	}
 });
 

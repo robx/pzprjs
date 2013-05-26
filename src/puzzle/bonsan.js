@@ -142,8 +142,8 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkDoubleObject(linfo) ){ return 30016;}

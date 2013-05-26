@@ -719,9 +719,9 @@ AnsCheck:{
 
 		if( !this.checkLineOnBlackCell() ){ return 50102;}
 
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 40201;}
 
 		if( !this.checkGateLine(1) ){ return 49301;}
 
@@ -729,7 +729,7 @@ AnsCheck:{
 
 		if( !this.checkGateNumber() ){ return 49321;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 

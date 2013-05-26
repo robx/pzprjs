@@ -452,7 +452,7 @@ AnsCheck:{
 		var bd = this.owner.board;
 
 		var binfo = bd.getBarInfo();
-		if( !this.checkLineCount(binfo, 1) ){ return 48301;}
+		if( !this.checkOutgoingBars(binfo, 1) ){ return 48301;}
 
 		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
 		if( !this.checkLoop() ){ return 48311;}
@@ -461,7 +461,7 @@ AnsCheck:{
 		if( !this.checkPoleLength(binfo,2) ){ return 50431;}
 		bd.cell.seterr(0);
 
-		if( !this.checkLineCount(binfo, 2) ){ return 43511;}
+		if( !this.checkOutgoingBars(binfo, 2) ){ return 43511;}
 
 		var areainfo = bd.barinfo.getAreaInfo();
 		if( !this.checkOneArea(areainfo) ){ return 43611;}
@@ -473,7 +473,7 @@ AnsCheck:{
 		return (this.checkOneArea(areainfo) ? 0 : 43611);
 	},
 
-	checkLineCount : function(binfo, type){
+	checkOutgoingBars : function(binfo, type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];

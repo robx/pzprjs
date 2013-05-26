@@ -170,8 +170,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell_firefly(3) ){ return 40201;}
-		if( !this.checkLcntCell_firefly(4) ){ return 40301;}
+		if( !this.checkLineCount_firefly(3) ){ return 40201;}
+		if( !this.checkLineCount_firefly(4) ){ return 40301;}
 
 		var xinfo = this.getErrorFlag_line();
 		if( !this.checkErrorFlag_line(xinfo,4) ){ return 49911;}
@@ -182,14 +182,15 @@ AnsCheck:{
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkOneArea(linfo) ){ return 43601;}
 
-		if( !this.checkLcntCell_firefly(1) ){ return 40101;}
+		if( !this.checkLineCount_firefly(1) ){ return 40101;}
 
 		if( !this.checkFireflyBeam() ){ return 49901;}
 
 		return 0;
 	},
 
-	checkLcntCell_firefly : function(val){
+	/* 線のカウントはするが、○のある場所は除外する */
+	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
 	},

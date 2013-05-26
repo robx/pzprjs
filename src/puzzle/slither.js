@@ -172,14 +172,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(3,0) ){ return 40201;}
-		if( !this.checkLcntCross(4,0) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		if( !this.checkdir4BorderLine() ){ return 49101;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkLcntCross(1,0) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		return 0;
 	},

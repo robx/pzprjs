@@ -112,8 +112,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkRoom2(rinfo) ){ return 39001;}
@@ -123,7 +123,7 @@ AnsCheck:{
 
 		if( !this.checkSideAreaGrass(rinfo) ){ return 30121;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 

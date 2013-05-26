@@ -784,7 +784,7 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 40201;}
 
 		if( !this.checkCrossOutOfIce() ){ return 40501;}
 		if( !this.checkIceLines() ){ return 40601;}
@@ -807,7 +807,7 @@ AnsCheck:{
 
 		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 49471;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		return 0;
 	},

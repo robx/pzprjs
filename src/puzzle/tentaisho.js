@@ -470,7 +470,7 @@ AnsCheck:{
 			if(star.validcell()===null){
 				if(this.checkOnly){ return false;}
 				if(star.obj.iscrossobj)
-					{ bd.setCrossBorderError(star.bx, star.by);}
+					{ star.obj.setCrossBorderError();}
 				else if(star.obj.isborderobj)
 					{ star.obj.seterr(1);}
 				result = false;

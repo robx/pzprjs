@@ -99,17 +99,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(3,2) ){ return 32501;}
-		if( !this.checkLcntCross(4,2) ){ return 32511;}
+		if( !this.checkBorderCount(3,2) ){ return 32501;}
+		if( !this.checkBorderCount(4,2) ){ return 32511;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){ return 30002;}
 		if( !this.checkDiffNumberInBlock(rinfo) ){ return 30028;}
 		if( !this.checkGatheredObject(rinfo) ){ return 30402;}
 
-		if( !this.checkLcntCross(1,0) ){ return 32101;}
-		if( !this.checkLcntCross(2,1) ){ return 32611;}
-		if( !this.checkLcntCross(0,1) ){ return 32621;}
+		if( !this.checkBorderCount(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(2,1) ){ return 32611;}
+		if( !this.checkBorderCount(0,1) ){ return 32621;}
 
 		return 0;
 	},

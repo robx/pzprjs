@@ -144,16 +144,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 40201;}
 
 		if( !this.checkCrossOutOfIce() ){ return 40501;}
 		if( !this.checkIceLines() ){ return 40601;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 
-		if( !this.checkLcntCell(0) ){ return 50151;}
+		if( !this.checkLineCount(0) ){ return 50151;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		return 0;
 	},

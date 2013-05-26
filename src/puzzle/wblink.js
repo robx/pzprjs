@@ -167,7 +167,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkTripleObject(linfo) ){ return 43302;}

@@ -170,14 +170,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		if( !this.checkLineOnBlackCell() ){ return 50101;}
 
 		if( !this.checkAdjacentBlackCell() ){ return 10021;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( !this.checkArrowNumber() ){ return 10028;}
 

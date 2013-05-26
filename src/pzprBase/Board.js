@@ -581,14 +581,6 @@ pzprv3.createPuzzleClass('Board',
 				after.base = before;
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
-	//---------------------------------------------------------------------------
-	setCrossBorderError : function(bx,by){
-		if(this.iscross!==0){ this.getx(bx,by).seterr(1);}
-		this.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 });
 

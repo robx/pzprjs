@@ -53,8 +53,9 @@ pzprv3.createPuzzleClass('AnsCheck',
 	autocheck1st : function(){
 		var bd = this.owner.board;
 		if(bd.lines.enabled && !bd.linfo.enabled){
-			if(bd.lines.isCenterLine && !this.checkLcntCell(1)){ return 40101;}
-			if(bd.lines.borderAsLine && !this.checkLcntCross(1,0)){ return 40101;}
+			if(bd.lines.isCenterLine || bd.lines.borderAsLine){
+				if(!this.checkLineCount(1)){ return 40101;}
+			}
 		}
 		
 		var failcode = this.check1st();
@@ -161,7 +162,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
 	// ans.checkOneLine()  線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
-	// ans.checkLcntCell() セルから出ている線の本数について判定する
+	// ans.checkLineCount() セルから出ている線の本数について判定する
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
@@ -192,17 +193,31 @@ pzprv3.createPuzzleClass('AnsCheck',
 		return true;
 	},
 
-	checkLcntCell : function(val){
+	checkLineCount : function(val){
 		var result = true, bd = this.owner.board;
 		if(bd.lines.ltotal[val]==0){ return true;}
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.lcnt()==val){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(true);
-				result = false;
+		if(bd.lines.isCenterLine){
+			for(var c=0;c<bd.cellmax;c++){
+				var cell = bd.cell[c];
+				if(cell.lcnt()==val){
+					if(this.checkOnly){ return false;}
+					if(result){ bd.border.seterr(-1);}
+					cell.setCellLineError(true);
+					result = false;
+				}
 			}
+		}
+		else if(bd.lines.borderAsLine){
+			for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
+				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
+				var lcnts = bd.lines.lcnt[id];
+				if(lcnts==val){
+					if(this.checkOnly){ return false;}
+					if(result){ bd.border.seterr(-1);}
+					(new this.owner.Address(bx,by)).setCrossBorderError();
+					result = false;
+				}
+			}}
 		}
 		return result;
 	},
@@ -458,18 +473,18 @@ pzprv3.createPuzzleClass('AnsCheck',
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkLcntCross()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
+	// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
-	checkLcntCross : function(val, bp){
+	checkBorderCount : function(val, bp){
 		var result=true, bd=this.owner.board, mm=(bd.iscross===1?2:0);
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = (bd.lines.borderAsLine?bd.lines.lcnt[id]:bd.rooms.crosscnt[id]);
+				var lcnts = bd.rooms.crosscnt[id];
 				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
 					if(this.checkOnly){ return false;}
 					if(result){ bd.border.seterr(-1);}
-					bd.setCrossBorderError(bx,by);
+					(new this.owner.Address(bx,by)).setCrossBorderError();
 					result = false;
 				}
 			}

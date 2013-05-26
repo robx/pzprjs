@@ -120,7 +120,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(4,0) ){ return 32301;}
+		if( !this.checkBorderCount(4,0) ){ return 32301;}
 		if( !this.checkArrowNumber_border() ){ return 50501;}
 
 		var rinfo = this.owner.board.getRoomInfo();

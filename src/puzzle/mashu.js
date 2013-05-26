@@ -148,8 +148,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
-		if( !this.checkLcntCell(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(4) ){ return 40301;}
 
 		if( !this.checkWhitePearl1() ){ return 49211;}
 		if( !this.checkBlackPearl1() ){ return 49231;}
@@ -159,7 +159,7 @@ AnsCheck:{
 
 		if( !this.checkNoLinePearl() ){ return 49201;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 

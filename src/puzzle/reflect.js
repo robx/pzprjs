@@ -277,7 +277,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 40201;}
 		if( !this.checkCrossOutOfMark() ){ return 40401;}
 
 		if( !this.checkTriNumber(1) ){ return 19111;}
@@ -286,7 +286,7 @@ AnsCheck:{
 
 		if( !this.checkNotCrossOnMark() ){ return 40411;}
 
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( !this.checkOneLoop() ){ return 41101;}
 

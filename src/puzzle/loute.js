@@ -439,7 +439,7 @@ AnsCheck:{
 
 		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 30022;}
 
-		if( !this.checkLcntCross(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 32101;}
 
 		if( !this.checkLblock(rinfo) ){ return 30039;}
 

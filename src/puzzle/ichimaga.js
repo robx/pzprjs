@@ -127,8 +127,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCell_firefly(3) ){ return 40201;}
-		if( (this.owner.pid!=='ichimagax') && !this.checkLcntCell_firefly(4) ){ return 40301;}
+		if( !this.checkLineCount_firefly(3) ){ return 40201;}
+		if( (this.owner.pid!=='ichimagax') && !this.checkLineCount_firefly(4) ){ return 40301;}
 
 		var xinfo = this.getErrorFlag_line();
 		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48111;}
@@ -139,21 +139,22 @@ AnsCheck:{
 
 		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
 
-		if( !this.checkLineCount() ){ return 48101;}
+		if( !this.checkOutgoingLine() ){ return 48101;}
 
 		if( !this.checkNoLineObject() ){ return 50411;}
 
 		return 0;
 	},
 
-	checkLcntCell_firefly : function(val){
+	/* 線のカウントはするが、○のある場所は除外する */
+	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
 	},
 	checkNoLineObject : function(){
 		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()===0);});
 	},
-	checkLineCount : function(){
+	checkOutgoingLine : function(){
 		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getQnum()!==cell.lcnt());});
 	},
 

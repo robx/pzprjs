@@ -145,7 +145,7 @@ AnsCheck:{
 
 		if( !this.checkNumberAndSize(rinfo) ){ return 30021;}
 
-		if( !this.checkLcntCross(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 32101;}
 
 		return 0;
 	},

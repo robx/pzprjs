@@ -205,8 +205,8 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( (pid!=='kramma') && !this.checkLcntCross(3,0) ){ return 32201;}
-		if( (pid!=='kramma') && !this.checkLcntCross(4,1) ){ return 32601;}
+		if( (pid!=='kramma') && !this.checkBorderCount(3,0) ){ return 32201;}
+		if( (pid!=='kramma') && !this.checkBorderCount(4,1) ){ return 32601;}
 		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 32521;}
 
 		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 32701;}
@@ -216,13 +216,13 @@ AnsCheck:{
 
 		if( !this.checkDiffObjectInArea(rinfo) ){ return (this.owner.pid!=='shwolf' ? 30026 : 30027);}
 
-		if( (pid!=='kramma') && !this.checkLcntCross(1,0) ){ return 32101;}
-		if( (pid==='kramman') && !this.checkLcntCross(0,1) ){ return 32621;}
+		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 32101;}
+		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 32621;}
 
 		return 0;
 	},
 	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkLcntCross(1,0)) ? 0 : 32101);
+		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? 0 : 32101);
 	},
 
 	checkDiffObjectInArea : function(rinfo){
@@ -239,7 +239,7 @@ AnsCheck:{
 						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
 					{
 						if(this.checkOnly){ return false;}
-						bd.setCrossBorderError(bx,by);
+						cross.setCrossBorderError();
 						result = false;
 					}
 				}

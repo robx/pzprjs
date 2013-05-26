@@ -226,8 +226,8 @@ AnsCheck:{
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
 		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 30331;}
 
-		if( !this.checkLcntCell(3) ){ return 40201;}
-		if( !this.checkLcntCell(1) ){ return 40101;}
+		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(1) ){ return 40101;}
 
 		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 30341;}
 

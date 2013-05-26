@@ -199,7 +199,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLcntCross(4,0) ){ return 32301;}
+		if( !this.checkBorderCount(4,0) ){ return 32301;}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){ return 30006;}
@@ -212,7 +212,7 @@ AnsCheck:{
 
 		if( !this.checkAreaRect(rinfo) ){ return 20012;}
 
-		if( !this.checkLcntCross(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 32101;}
 
 		return 0;
 	},
