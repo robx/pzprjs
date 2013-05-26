@@ -37,7 +37,7 @@ sub input_flags{
 sub output_pzprBase{
 	my @files = (
 		'CoreClass.js',
-		'Main.js',
+		'Puzzle.js',
 		'BoardPiece.js',
 		'Board.js',
 		'BoardExec.js',
@@ -46,8 +46,9 @@ sub output_pzprBase{
 		'Graphic.js',
 		'MouseInput.js',
 		'KeyInput.js',
+		'URL.js',
 		'Encode.js',
-		'Filesys.js',
+		'FileData.js',
 		'Answer.js',
 		'Operation.js'
 	);

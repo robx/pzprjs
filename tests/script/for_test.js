@@ -44,7 +44,7 @@ ui.debug.extend(
 		self.alltimer = setInterval(function(){
 			var newid = idlist[pnum];
 			if(!self.urls[newid]){
-				pzprv3.includeFile("tests/test_"+newid+".js");
+				self.includeDebugScript("test_"+newid+".js");
 				return;
 			}
 

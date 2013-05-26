@@ -174,10 +174,33 @@ ui.debug =
 
 	getTA : function(){ return document.testform.testarea.value;},
 	setTA : function(str){ document.testform.testarea.value  = str;},
-	addTA : function(str){ document.testform.testarea.value += (str+"\n");}
+	addTA : function(str){ document.testform.testarea.value += (str+"\n");},
+
+	includeDebugScript : function(filename){
+		if(!!this.includedScript[filename]){ return;}
+		var _script = document.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = getpath()+'../tests/script/'+filename;
+		document.body.appendChild(_script);
+		this.includedScript[filename] = true;
+	},
+	includedScript : {},
 };
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
+
+function getpath(){
+	var dir="", srcs=document.getElementsByTagName('script');
+	for(var i=0;i<srcs.length;i++){
+		var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
+		if(result){
+			if(result[1].match(/\/$/)){ dir = result[1];}
+			else{ dir = result[1]+'/';}
+			break;
+		}
+	}
+	return dir;
+}
 
 })();

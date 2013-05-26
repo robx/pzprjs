@@ -169,26 +169,14 @@ window.pzprv3 = {
 
 	//---------------------------------------------------------------
 	// 単体ファイルの読み込み
-	srcpath : null,
-	includeFile : function(filename){
-		if(this.srcpath===null){
-			var host = location.host;
-			if(!host || !host.match(/(dev.)?pzv.jp/) || host==='localhost' || host==='127.0.0.1'){ this.srcpath='./src/';}
-			else{ this.srcpath = 'http://pzv.jp/src/';}
-		}
-		if(!this.includedFile[filename]){
-			var _script = document.createElement('script');
-			_script.type = 'text/javascript';
-			_script.src = this.srcpath+'/'+filename;
-			document.body.appendChild(_script);
-			this.includedFile[filename] = true;
-		}
-	},
 	// idを取得して、ファイルを読み込み
 	includeCustomFile : function(pid){
-		if(!this.custom[pid]){
-			this.includeFile("puzzle/"+pzprv3.url.toScript(pid)+".js");
-		}
+		if(!!this.custom[pid] || !!this.includedFile[pid]){ return;}
+		var _script = document.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = getpath()+"puzzle/"+pzprv3.url.toScript(pid)+".js";
+		document.body.appendChild(_script);
+		this.includedFile[pid] = true;
 	},
 	includedFile : {},
 
@@ -215,6 +203,19 @@ window.pzprv3 = {
 		callback();
 	}
 };
+
+function getpath(){
+	var dir="", srcs=document.getElementsByTagName('script');
+	for(var i=0;i<srcs.length;i++){
+		var result = srcs[i].src.match(/^(.*\/)pzprv3\.js$/);
+		if(result){
+			if(result[1].match(/\/$/)){ dir = result[1];}
+			else{ dir = result[1]+'/';}
+			break;
+		}
+	}
+	return dir;
+}
 
 //---------------------------------------------------------------------------
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック

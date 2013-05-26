@@ -45,11 +45,11 @@ function includeDebugFile(){
 	/* importURL()後でないと必要かどうか判定できない */
 	if(ui.debugmode){
 		if(!ui.debug.urls){
-			pzprv3.includeFile("tests/for_test.js");
+			ui.debug.includeDebugScript("for_test.js");
 			result = false;
 		}
 		else if(!ui.debug.urls[pid]){
-			pzprv3.includeFile("tests/test_"+pid+".js");
+			ui.debug.includeDebugScript("test_"+pid+".js");
 			result = false;
 		}
 	}
