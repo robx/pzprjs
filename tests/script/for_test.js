@@ -266,7 +266,7 @@ ui.debug.extend(
 
 	taenable : true,
 	addTextarea : function(str){
-		if(!pzprv3.browser.Gecko){ getEL('testarea').value += (str+"\n");}
+		if(!pzprv3.env.browser.Gecko){ getEL('testarea').value += (str+"\n");}
 		else{
 			getEL('testdiv').appendChild(_doc.createTextNode(str));
 			getEL('testdiv').appendChild(_doc.createElement('br'));

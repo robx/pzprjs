@@ -38,7 +38,7 @@ ui.popupmgr.addpopup('debug',
 			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
 		}
 		this.addExecButton("img", "img", function(){ debug.adjustimage();});
-		if(pzprv3.storage.localST){
+		if(pzprv3.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
 		this.addBR();

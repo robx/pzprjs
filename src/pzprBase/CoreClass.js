@@ -224,42 +224,47 @@ try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 	localStorage = globalStorage[location.host];
 }}catch(e){}
 
-/******************/
-/* 環境変数の定義 */
-/******************/
-pzprv3.browser = (function(){
-	var UA  = navigator.userAgent;
-	return {
-		IE    : (!!document.uniqueID),
-		Opera : (!!window.opera),
-		WebKit: (UA.indexOf('AppleWebKit/') > -1),
-		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
+/**************/
+/* 環境の取得 */
+/**************/
+pzprv3.env = {
+	browser : (function(){
+		var UA  = navigator.userAgent;
+		return {
+			IE    : (!!document.uniqueID),
+			Presto: (!!window.opera),
+			WebKit: (UA.indexOf('AppleWebKit/') > -1),
+			Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
 
-		IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-		IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
-		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
-		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
-		IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
-	};
-})();
-pzprv3.OS = (function(){
-	var UA  = navigator.userAgent;
-	var ios     = (UA.indexOf('like Mac OS X') > -1);
-	var android = (UA.indexOf('Android') > -1);
-	return {
-		iOS    : (ios),
-		mobile : (ios || android)
-	};
-})();
-pzprv3.env = (function(){
- 	var touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
-	var mspointerevent = (!!navigator.msPointerEnabled);
-	return {
-		touchevent     : touchevent,
-		mspointerevent : mspointerevent
-	};
-})();
-pzprv3.storage = (function(){
+			IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+			IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+			IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
+			IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
+			IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
+		};
+	})(),
+	OS : (function(){
+		var UA  = navigator.userAgent;
+		var ios     = (UA.indexOf('like Mac OS X') > -1);
+		var android = (UA.indexOf('Android') > -1);
+		return {
+			iOS    : (ios),
+			mobile : (ios || android)
+		};
+	})(),
+	storage : {},
+	API : (function(){
+		var touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
+		var mspointerevent = (!!navigator.msPointerEnabled);
+		return {
+			touchevent     : touchevent,
+			mspointerevent : mspointerevent
+		};
+	})()
+};
+
+var bz = pzprv3.env.browser;
+pzprv3.env.storage = (function(){
 	var val = 0x00;
 	try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
 	try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
@@ -270,7 +275,7 @@ pzprv3.storage = (function(){
 	}}catch(e){}
 
 	// Firefoxはローカルだとデータベース系は使えない
-	if(pzprv3.browser.Gecko && !location.hostname){ val = 0;}
+	if(bz.Gecko && !location.hostname){ val = 0;}
 
 	return {
 		session : !!(val & 0x10),
@@ -320,34 +325,34 @@ pzprv3.util = {
 		else                     { el.attachEvent('on'+event, func);}
 	},
 	addMouseDownEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
+		if(pzprv3.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerDown", self, func);
 		}
 		else{
 			this.addEvent(el, "mousedown", self, func);
-			if(pzprv3.env.touchevent){
+			if(pzprv3.env.API.touchevent){
 				this.addEvent(el, "touchstart", self, func);
 			}
 		}
 	},
 	addMouseMoveEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
+		if(pzprv3.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerMove", self, func);
 		}
 		else{
 			this.addEvent(el, "mousemove", self, func);
-			if(pzprv3.env.touchevent){
+			if(pzprv3.env.API.touchevent){
 				this.addEvent(el, "touchmove",  self, func);
 			}
 		}
 	},
 	addMouseUpEvent : function(el, self, func){
-		if(pzprv3.env.mspointerevent){
+		if(pzprv3.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerUp", self, func);
 		}
 		else{
 			this.addEvent(el, "mouseup", self, func);
-			if(pzprv3.env.touchevent){
+			if(pzprv3.env.API.touchevent){
 				this.addEvent(el, "touchend", self, func);
 			}
 		}
@@ -364,7 +369,7 @@ pzprv3.util = {
 			right = (e.touches.length>1);
 		}
 		else{
-			if(pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8){
+			if(bz.IE6 || bz.IE7 || bz.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
 				right = (e.button===2);

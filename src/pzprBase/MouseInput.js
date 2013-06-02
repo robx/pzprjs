@@ -20,8 +20,9 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.currentpos = {px:0,py:0};
 		
 		this.mouseoffset = {px:0,py:0};
-		if(pzprv3.browser.IE6||pzprv3.browser.IE7||pzprv3.browser.IE8){ this.mouseoffset = {px:2,py:2};}
-		else if(pzprv3.browser.WebKit){ this.mouseoffset = {px:1,py:1};}
+		var bz = pzprv3.env.browser;
+		if(bz.IE6||bz.IE7||bz.IE8){ this.mouseoffset = {px:2,py:2};}
+		else if(bz.WebKit){ this.mouseoffset = {px:1,py:1};}
 
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)

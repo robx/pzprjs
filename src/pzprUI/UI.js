@@ -179,7 +179,7 @@ ui.event =
 		this.addEvent(_doc, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
-		var evname = (!pzprv3.OS.iOS ? 'resize' : 'orientationchange');
+		var evname = (!pzprv3.env.OS.iOS ? 'resize' : 'orientationchange');
 		this.addEvent(window, evname, this, this.onresize_func);
 	},
 
@@ -215,7 +215,7 @@ ui.event =
 		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(pzprv3.OS.mobile){
+		if(pzprv3.env.OS.mobile){
 			mwidth = wwidth*0.98;
 			cellsize = (mwidth*0.92)/cols;
 			if(cellsize < cellsizeval){ cellsize = cellsizeval;}
@@ -240,7 +240,7 @@ ui.event =
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzprv3.OS.mobile){ getEL('menuboard').style.width = '90%';}
+			if(pzprv3.env.OS.mobile){ getEL('menuboard').style.width = '90%';}
 		}
 
 		o.setCanvasSizeByCellSize(cellsize);
@@ -263,7 +263,7 @@ ui.event =
 			
 			default: padding = 0.50; break;
 		}
-		if(pzprv3.OS.mobile){ padding = 0;}
+		if(pzprv3.env.OS.mobile){ padding = 0;}
 		
 		o.canvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
 		
@@ -275,7 +275,7 @@ ui.event =
 	// pc.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
 	windowWidth : function(){
-		this.windowWidth = ((!pzprv3.OS.mobile) ?
+		this.windowWidth = ((!pzprv3.env.OS.mobile) ?
 			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
@@ -283,7 +283,7 @@ ui.event =
 		return this.windowWidth();
 	}
 	// windowHeight : function(){
-	//	this.windowHeight = ((!pzprv3.OS.mobile) ?
+	//	this.windowHeight = ((!pzprv3.env.OS.mobile) ?
 	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : _doc.body.clientHeight);}
 	//	:
 	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}

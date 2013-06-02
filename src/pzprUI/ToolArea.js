@@ -261,7 +261,7 @@ ui.toolarea = {
 		}
 		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
 		
-		if(pzprv3.browser.IE6){
+		if(pzprv3.env.browser.IE6){
 			getEL('separator2').style.margin = '0pt';
 		}
 	},

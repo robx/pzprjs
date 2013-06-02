@@ -205,7 +205,7 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzprv3.storage.localST){ this.dbh = new DataBaseHandler_LS();}
+		if(pzprv3.env.storage.localST){ this.dbh = new DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;

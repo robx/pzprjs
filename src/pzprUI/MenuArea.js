@@ -126,7 +126,7 @@ ui.menuarea = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(pzprv3.storage.localST){
+		if(pzprv3.env.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(ui.menu.enableSaveImage){
@@ -156,7 +156,7 @@ ui.menuarea = {
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(pzprv3.storage.session){
+		if(pzprv3.env.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -436,7 +436,7 @@ ui.menuarea = {
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 
 		if(this.enableSaveImage && !!ui.puzzle.ImageTile){
-			if(pzprv3.browser.Gecko && !location.hostname){
+			if(pzprv3.env.browser.Gecko && !location.hostname){
 				getEL('ms_imagesavep').className = 'smenunull';
 			}
 		}
@@ -559,7 +559,7 @@ ui.menuarea = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!pzprv3.browser.IE6){
+			if(!pzprv3.env.browser.IE6){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}

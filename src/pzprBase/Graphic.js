@@ -1948,7 +1948,7 @@ pzprv3.createPuzzleClass('Graphic',
 
 		this.vshow("text_"+key);
 		g.fillText(text, px, py);
-		if(pzprv3.browser.Opera && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+		if(pzprv3.env.browser.Presto && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 	},
 	hidenum : function(key){
 		this.vhide(["text_"+key]);

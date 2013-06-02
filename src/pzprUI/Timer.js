@@ -5,7 +5,8 @@
 if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 /* タイマー割り込み間隔を短くするUA */
-var slowUA = (pzprv3.browser.IE6 || pzprv3.browser.IE7 || pzprv3.browser.IE8);
+var bz = pzprv3.env.browser;
+var slowUA = (bz.IE6 || bz.IE7 || bz.IE8);
 
 //---------------------------------------------------------------------------
 // ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)

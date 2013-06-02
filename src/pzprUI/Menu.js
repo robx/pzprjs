@@ -33,7 +33,7 @@ Menu.prototype =
 		
 		this.initReader();
 
-		if(pzprv3.browser.IE6){
+		if(pzprv3.env.browser.IE6){
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 		
@@ -133,7 +133,7 @@ Menu.prototype =
 		var imageurl = this.bgimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		_doc.body.style.backgroundImage = "url("+imageurl+")";
-		if(pzprv3.browser.IE6){
+		if(pzprv3.env.browser.IE6){
 			titleEL.style.marginTop = "24px";
 		}
 	},
@@ -198,7 +198,7 @@ Menu.prototype =
 		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
 
 		/* テキストのサイズ */
-		this.menuconfig.textsize = {val:(!pzprv3.OS.mobile?0:2), option:[0,1,2,3]};
+		this.menuconfig.textsize = {val:(!pzprv3.env.OS.mobile?0:2), option:[0,1,2,3]};
 
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
@@ -317,7 +317,7 @@ Menu.prototype =
 	duplicate : function(){
 		var filestr = ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
-		if(!pzprv3.browser.Opera){
+		if(!pzprv3.env.browser.Presto){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = filestr;
 			window.open(url,'');
@@ -386,7 +386,7 @@ Menu.prototype =
 	},
 	openimage : function(pc2){
 		var url = pc2.currentContext.canvas.toDataURL();
-		if(!pzprv3.browser.IE9){
+		if(!pzprv3.env.browser.IE9){
 			window.open(url, '', '');
 		}
 		else{

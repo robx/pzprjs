@@ -396,7 +396,7 @@ Config.prototype =
 		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 入力方法設定 */
-		this.add('use', (!pzprv3.env.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
+		this.add('use', (!pzprv3.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
