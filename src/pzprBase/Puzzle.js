@@ -122,7 +122,7 @@ pzprv3.Puzzle.prototype =
 	waitCanvasReady : function(callback){
 		var puzzle = this;
 		puzzle.painter.initCanvas(this.canvas, this.subcanvas, function(){
-			puzzle.painter.reset();
+			puzzle.painter.resetCanvas();
 			
 			if(!!callback){ callback(puzzle);}
 			

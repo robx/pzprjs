@@ -140,13 +140,8 @@ pzprv3.createPuzzleClass('Graphic',
 
 		this.setColors();
 	},
+	setColors : function(){ },
 	
-	reset : function(){
-		this.suspended    = true;
-		this.suspendedAll = true;
-		this.canvasWidth  = null;
-		this.canvasHeight = null;
-	},
 	initCanvas : function(canvas, subcanvas, callback){
 		if((!!canvas && !canvas.getContext) || (!!subcanvas && !subcanvas.getContext)){
 			var pc = this;
@@ -164,7 +159,12 @@ pzprv3.createPuzzleClass('Graphic',
 
 		if(!!callback){ callback();}
 	},
-	setColors : function(){ },
+	resetCanvas : function(){
+		this.suspended    = true;
+		this.suspendedAll = true;
+		this.canvasWidth  = null;
+		this.canvasHeight = null;
+	},
 
 	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
 
