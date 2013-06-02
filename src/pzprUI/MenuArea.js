@@ -485,10 +485,10 @@ ui.menuarea = {
 		case 'imagedl'   : ui.menu.imagesave(true,null); break;
 		case 'imagesave' : ui.menu.imagesave(false,null); break;
 		
-		case 'h_oldest'  : ui.puzzle.undoall(); ui.menu.enb_undo(); break;
-		case 'h_undo'    : ui.puzzle.undo();    ui.menu.enb_undo(); break;
-		case 'h_redo'    : ui.puzzle.redo();    ui.menu.enb_undo(); break;
-		case 'h_latest'  : ui.puzzle.redoall(); ui.menu.enb_undo(); break;
+		case 'h_oldest'  : ui.puzzle.undoall(); break;
+		case 'h_undo'    : ui.puzzle.undo();    break;
+		case 'h_redo'    : ui.puzzle.redo();    break;
+		case 'h_latest'  : ui.puzzle.redoall(); break;
 		case 'check'     : ui.menu.answercheck(); break;
 		case 'ansclear'  : ui.menu.ACconfirm(); break;
 		case 'subclear'  : ui.menu.ASconfirm(); break;

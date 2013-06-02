@@ -103,8 +103,6 @@ ui.undotimer =
 	TID           : null,	/* タイマーID */
 	timerInterval : (!slowUA ? 25 : 50),
 
-	CTID          : null,	/* キーボードチェック用タイマーID */
-
 	inUNDO        : false,	/* Undo実行中 */
 	inREDO        : false,	/* Redo実行中 */
 
@@ -112,22 +110,11 @@ ui.undotimer =
 	undoWaitTime  : 300,	/* 1回目にwaitを多く入れるための値 */
 	undoWaitCount : 0,
 
-	lastCurrentOpe : 0,		/* 盤面の状態が変わっていない場合、ボタンの有効/無効を切り替えない */
-
 	//---------------------------------------------------------------------------
-	// ut.reset()          タイマーをスタートする
-	// ut.check_keyevent() Undo/Redoボタンを有効にするか判定する
+	// ut.reset()  タイマーをスタートする
 	//---------------------------------------------------------------------------
 	reset : function(){
 		this.stop();
-	},
-	check_keyevent : function(){
-		if(!ui.puzzle || !ui.puzzle.key){ return;}
-
-		if(this.lastCurrentOpe !== ui.puzzle.opemgr.position){
-			ui.menu.enb_undo();
-			this.lastCurrentOpe = ui.puzzle.opemgr.position;
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -142,9 +129,6 @@ ui.undotimer =
 	startProc : function(){
 		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
 		if(!this.TID){
-			clearInterval(this.CTID);
-			this.CTID = null;
-
 			var self = this;
 			this.TID = setInterval(function(){ self.proc();}, this.timerInterval);
 		}
@@ -155,12 +139,9 @@ ui.undotimer =
 		this.inUNDO = false;
 		this.inREDO = false;
 
-		if(!this.CTID){
+		if(!!this.TID){
 			clearInterval(this.TID);
 			this.TID = null;
-
-			var self = this;
-			this.CTID = setInterval(function(){ self.check_keyevent();}, 16);
 		}
 	},
 

@@ -370,8 +370,8 @@ ui.toolarea = {
 		var id = (e.target||e.srcElement).id;
 		switch(id){
 		case 'btncheck':  ui.menu.answercheck(); break;
-		case 'btnundo':   ui.puzzle.undo(); ui.menu.enb_undo(); break;
-		case 'btnredo':   ui.puzzle.redo(); ui.menu.enb_undo(); break;
+		case 'btnundo':   ui.puzzle.undo(); break;
+		case 'btnredo':   ui.puzzle.redo(); break;
 		case 'btnclear':  ui.menu.ACconfirm(); break;
 		case 'btnclear2': ui.menu.ASconfirm(); break;
 		case 'btncolor2': case 'ck_btn_irowake': ui.puzzle.irowake(); break;

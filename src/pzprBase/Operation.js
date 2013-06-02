@@ -247,6 +247,8 @@ pzprv3.createPuzzleClass('OperationManager',
 
 		this.enableUndo = (this.position>0);
 		this.enableRedo = (this.position<this.ope.length);
+
+		this.owner.execListener('historychange');
 	},
 	allerase : function(){
 		this.ope      = [];
@@ -289,7 +291,6 @@ pzprv3.createPuzzleClass('OperationManager',
 	addOpe_Object : function(obj, property, old, num){
 		if(old===num){ return;}
 
-		var opemgr = this;
 		this.addOpe_common(function(){
 			if(property===k.QSUB){ this.anscount--;}
 
@@ -307,8 +308,9 @@ pzprv3.createPuzzleClass('OperationManager',
 				( (obj.iscellobj && ( property===k.QNUM || property===k.ANUM )) || obj.iscrossobj)
 			)
 			{
-				opemgr.changeflag = true;
+				this.changeflag = true;
 				ref.num = num;
+				this.owner.execListener('historychange');
 				return false;
 			}
 			return true;

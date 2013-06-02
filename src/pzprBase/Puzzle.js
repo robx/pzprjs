@@ -29,7 +29,8 @@ pzprv3.Puzzle.prototype =
 			mouse  : [],
 			key    : [],
 			config : [],
-			resize : []
+			resize : [],
+			historychange : []
 		};
 
 		this.config = new Config();

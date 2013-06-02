@@ -99,6 +99,7 @@ ui.event =
 		pzl.addListener('mouse',  this.mouse_common);
 		pzl.addListener('config', this.config_common);
 		pzl.addListener('resize', this.onResize);
+		pzl.addListener('historychange', function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
 	},
 
 	//---------------------------------------------------------------------------
