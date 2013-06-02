@@ -3,7 +3,7 @@
 (function(){
 
 //----------------------------------------------------------------------------
-// ★pzprv3オブジェクト (クラス作成関数等)
+// ★pzprv3オブジェクト
 //---------------------------------------------------------------------------
 /* extern */
 window.pzprv3 = {
@@ -13,9 +13,6 @@ window.pzprv3 = {
 	PLAYER : true,	// playerモード
 
 	puzzles : [],	// createPuzzle()で生成したパズルを保存する
-
-	common : {},	// CoreClass保存用(継承元になれるのはここのみ)
-	custom : {},	// パズル別クラス保存用
 
 	//---------------------------------------------------------------
 	// パズルを生成する
@@ -55,11 +52,29 @@ window.pzprv3 = {
 	},
 
 	//---------------------------------------------------------------
+	// クラス設定用関数など
+	//---------------------------------------------------------------
+	common : {},	// CoreClass保存用
+	custom : {},	// パズル別クラス保存用
+
+	createPuzzleClass : function(classname, proto){
+		this.classmgr.createPuzzleClass(classname, proto);
+	},
+	createCustoms : function(scriptid, custombase){
+		this.classmgr.createCustoms(scriptid, custombase);
+	}
+};
+
+//----------------------------------------------------------------------------
+// ★pzprv3.classmgrオブジェクト (クラス作成関数等)
+//---------------------------------------------------------------------------
+pzprv3.classmgr = {
+	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
 	createPuzzleClass : function(classname, proto){
 		var rel = this._createClass(classname, proto);
-		this.common[rel.name] = rel.body;
+		pzprv3.common[rel.name] = rel.body;
 	},
 	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');
@@ -70,8 +85,8 @@ window.pzprv3 = {
 		}
 
 		var NewClass = function(){};
-		if(!!basename && !!this.common[basename]){
-			var BaseClass = this.common[basename];
+		if(!!basename && !!pzprv3.common[basename]){
+			var BaseClass = pzprv3.common[basename];
 			for(var name in BaseClass.prototype){
 				NewClass.prototype[name] = BaseClass.prototype[name];
 			}
@@ -82,7 +97,21 @@ window.pzprv3 = {
 	},
 
 	//---------------------------------------------------------------
-	// 読み込んだパズル別ファイルから生成できるパズル別クラスを全て生成する
+	// 単体ファイルの読み込み
+	// idを取得して、ファイルを読み込み
+	//---------------------------------------------------------------
+	includeCustomFile : function(pid){
+		if(!!pzprv3.custom[pid] || !!this.includedFile[pid]){ return;}
+		var _script = document.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = getpath()+"puzzle/"+pzprv3.url.toScript(pid)+".js";
+		document.body.appendChild(_script);
+		this.includedFile[pid] = true;
+	},
+	includedFile : {},
+
+	//---------------------------------------------------------------
+	// includeCustomFileでファイルを読み込んだ後の処理
 	//---------------------------------------------------------------
 	createCustoms : function(scriptid, custombase){
 		var pidlist = pzprv3.url.PIDlist(scriptid);
@@ -118,7 +147,7 @@ window.pzprv3 = {
 			var proto = customclass[classname];
 
 			if(!custom[classname]){
-				if(!!this.common[classname]){ classname = classname+":"+classname;}
+				if(!!pzprv3.common[classname]){ classname = classname+":"+classname;}
 
 				var rel = this._createClass(classname, proto);
 				custom[rel.name] = rel.body;
@@ -127,18 +156,41 @@ window.pzprv3 = {
 				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
 			}
 		}
-		for(var classname in this.common){
+		for(var classname in pzprv3.common){
 			if(!custom[classname]){
-				custom[classname] = this.common[classname];
+				custom[classname] = pzprv3.common[classname];
 			}
 		}
-		for(var classname in this.common){
-			if(!!this.common[classname]){
-				custom[classname].prototype.Common = this.common[classname];
+		for(var classname in pzprv3.common){
+			if(!!pzprv3.common[classname]){
+				custom[classname].prototype.Common = pzprv3.common[classname];
 			}
 		}
 
-		this.custom[pid] = custom;
+		pzprv3.custom[pid] = custom;
+	},
+
+	//---------------------------------------------------------------------------
+	// 新しくパズルのファイルを開く時の処理
+	//---------------------------------------------------------------------------
+	setPuzzleClass : function(puzzle, newpid, callback){
+		/* 今のパズルと別idの時 */
+		if(puzzle.pid != newpid){
+			this.includeCustomFile(newpid);
+		}
+		/* Customファイルが読み込みできるまで待つ */
+		if(!pzprv3.custom[newpid]){
+			setTimeout(function(){ pzprv3.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
+			return;
+		}
+
+		if(puzzle.pid != newpid){
+			/* 各クラスをpzprv3.customから設定する */
+			this.setClasses(puzzle, newpid);
+			puzzle.pid = newpid;
+		}
+		
+		callback();
 	},
 
 	//---------------------------------------------------------------
@@ -146,7 +198,7 @@ window.pzprv3 = {
 	//  共通クラス -> パズル種類別クラス -> パズルが保持するクラス
 	//   と、ちょっとずつ変わっている状態になります
 	//---------------------------------------------------------------
-	includeClasses : function(puzzle, pid){
+	setClasses : function(puzzle, pid){
 		/* 現在のクラスを消去する */
 		for(var name in puzzle.classlist){
 			puzzle[name] = null; delete puzzle[name];
@@ -165,42 +217,6 @@ window.pzprv3 = {
 			puzzle[classname] = cls;
 			puzzle.classlist.push(classname);
 		}
-	},
-
-	//---------------------------------------------------------------
-	// 単体ファイルの読み込み
-	// idを取得して、ファイルを読み込み
-	includeCustomFile : function(pid){
-		if(!!this.custom[pid] || !!this.includedFile[pid]){ return;}
-		var _script = document.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = getpath()+"puzzle/"+pzprv3.url.toScript(pid)+".js";
-		document.body.appendChild(_script);
-		this.includedFile[pid] = true;
-	},
-	includedFile : {},
-
-	//---------------------------------------------------------------------------
-	// pzprv3.initPuzzle() 新しくパズルのファイルを開く時の処理
-	//---------------------------------------------------------------------------
-	initPuzzle : function(puzzle, newpid, callback){
-		/* 今のパズルと別idの時 */
-		if(puzzle.pid != newpid){
-			pzprv3.includeCustomFile(newpid);
-		}
-		/* Customファイルが読み込みできるまで待つ */
-		if(!pzprv3.custom[newpid]){
-			setTimeout(function(){ pzprv3.initPuzzle(puzzle,newpid,callback);},10);
-			return;
-		}
-
-		if(puzzle.pid != newpid){
-			/* 各クラスをpzprve.customから設定する */
-			pzprv3.includeClasses(puzzle, newpid);
-			puzzle.pid = newpid;
-		}
-		
-		callback();
 	}
 };
 

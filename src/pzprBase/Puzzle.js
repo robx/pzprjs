@@ -94,7 +94,7 @@ pzprv3.Puzzle.prototype =
 		var puzzle = this, Board = (!!this.Board ? this.Board : null);;
 		puzzle.ready = false;
 		
-		pzprv3.initPuzzle(this, pid, function(){
+		pzprv3.classmgr.setPuzzleClass(this, pid, function(){
 			if(Board!==puzzle.Board){
 				/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 				puzzle.initObjects();
