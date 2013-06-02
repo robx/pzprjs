@@ -308,7 +308,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合
 		this.pekecolor = "rgb(0, 160, 0)";

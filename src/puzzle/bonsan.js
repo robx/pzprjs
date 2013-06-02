@@ -70,7 +70,9 @@ AreaLineManager:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.qsubcolor1 = "rgb(224, 224, 255)";
 		this.qsubcolor2 = "rgb(255, 255, 144)";

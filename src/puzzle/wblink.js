@@ -119,7 +119,9 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_THIN;
 		this.errbcolor1 = "white";
 		this.circleratio = [0.35, 0.30];

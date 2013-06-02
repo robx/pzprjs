@@ -175,7 +175,9 @@ AreaBlackManager:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.errbcolor1 = this.errbcolor1_DARK;
 		this.bgcolor = "rgb(208, 208, 208)";

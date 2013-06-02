@@ -75,7 +75,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		if(this.owner.pid!=='nurikabe'){
 			this.bcolor = this.bcolor_GREEN;
 			this.setBGCellColorFunc('qsub1');

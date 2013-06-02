@@ -425,7 +425,9 @@ Graphic:{
 
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_DLIGHT;
 	},
 	paint : function(){

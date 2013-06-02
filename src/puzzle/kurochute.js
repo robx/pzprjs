@@ -58,7 +58,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.qsubcolor2 = this.bcolor_GREEN;
 	},

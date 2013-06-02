@@ -66,7 +66,9 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.bcolor    = "silver";
 		this.setBGCellColorFunc('qsub1');

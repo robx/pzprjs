@@ -78,7 +78,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		if(this.owner.pid==='shimaguni'){
 			this.bcolor = "rgb(191, 191, 255)";
 			this.bbcolor = "rgb(191, 191, 255)";

@@ -137,11 +137,24 @@ pzprv3.createPuzzleClass('Graphic',
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
-
-		this.setColors();
 	},
-	setColors : function(){ },
+
+	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
+
+	hideHatena : false,	// Cellのqnumが-2のときに？を表示しない
+
+	/* vnop関数用 */
+	STROKE      : 0,
+	FILL        : 1,
+	FILL_STROKE : 2,
+	NONE        : 3,
+	vnop_FILL   : [false,true,true,false],
+	vnop_STROKE : [true,false,true,false],
 	
+	//---------------------------------------------------------------------------
+	// pc.initCanvas()  このオブジェクトで使用するキャンバスを設定する
+	// pc.resetCanvas() キャンバスの設定を初期化して、後で設定されるようにする
+	//---------------------------------------------------------------------------
 	initCanvas : function(canvas, subcanvas, callback){
 		if((!!canvas && !canvas.getContext) || (!!subcanvas && !subcanvas.getContext)){
 			var pc = this;
@@ -165,18 +178,6 @@ pzprv3.createPuzzleClass('Graphic',
 		this.canvasWidth  = null;
 		this.canvasHeight = null;
 	},
-
-	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
-
-	hideHatena : false,	// Cellのqnumが-2のときに？を表示しない
-
-	/* vnop関数用 */
-	STROKE      : 0,
-	FILL        : 1,
-	FILL_STROKE : 2,
-	NONE        : 3,
-	vnop_FILL   : [false,true,true,false],
-	vnop_STROKE : [true,false,true,false],
 
 	//---------------------------------------------------------------------------
 	// pc.resizeCanvas()    キャンバスのサイズを設定する

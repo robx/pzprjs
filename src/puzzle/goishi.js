@@ -117,7 +117,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.errcolor1 = "rgb(208, 0, 0)";
 		this.errbcolor1 = "rgb(255, 192, 192)";
 	},

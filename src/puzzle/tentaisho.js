@@ -280,7 +280,9 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.borderQanscolor = "rgb(72, 72, 72)";
 		this.qsubcolor1 = "rgb(176,255,176)";

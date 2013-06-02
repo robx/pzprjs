@@ -51,7 +51,9 @@ AreaLineManager:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.circleratio = [0.40, 0.40];
 	},

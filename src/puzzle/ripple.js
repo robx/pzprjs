@@ -49,7 +49,9 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_DLIGHT;
 	},
 	paint : function(){

@@ -106,7 +106,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		if(this.owner.pid==='lits'){
 			this.gridcolor = "rgb(48, 48, 48)";
 			this.cellcolor = "rgb(96, 96, 96)";

@@ -122,7 +122,9 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.fontcolor = this.fontErrcolor = "white";
 		this.dotcolor = this.dotcolor_PINK;

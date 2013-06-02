@@ -134,7 +134,9 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
 		this.fontsizeratio = 0.85;

@@ -96,7 +96,9 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.setBGCellColorFunc('qsub2');
 	},
 	paint : function(){

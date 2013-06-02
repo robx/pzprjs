@@ -251,7 +251,9 @@ Flags:{
 Graphic:{
 	margin : 0.50,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.errcolor1 = "red";
 		if(this.owner.pid==='gokigen'){

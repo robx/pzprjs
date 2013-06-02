@@ -136,7 +136,9 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_THIN;
 		this.bcolor    = "silver";
 		this.fontsizeratio = 0.85;

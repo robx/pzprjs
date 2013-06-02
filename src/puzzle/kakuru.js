@@ -66,7 +66,9 @@ Board:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 
 		this.errbcolor1 = this.errbcolor1_DARK;

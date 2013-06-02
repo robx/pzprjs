@@ -302,7 +302,9 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	setColors : function(){
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.errcolor1 = this.cellcolor; // drawSlashes関係
 		this.errcolor2 = this.cellcolor; // drawSlashes関係
