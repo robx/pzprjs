@@ -11,16 +11,16 @@
 	}
 
 	var files = [
-		"pzprUI/Boot.js",
-		"pzprUI/UI.js",
-		"pzprUI/Menu.js",
-		"pzprUI/MenuArea.js",
-		"pzprUI/PopupMenu.js",
-		"pzprUI/ToolArea.js",
-		"pzprUI/KeyPopup.js",
-		"pzprUI/DataBase.js",
-		"pzprUI/Timer.js",
-		"pzprUI/Debug.js"
+		"ui/Boot.js",
+		"ui/UI.js",
+		"ui/Menu.js",
+		"ui/MenuArea.js",
+		"ui/PopupMenu.js",
+		"ui/ToolArea.js",
+		"ui/KeyPopup.js",
+		"ui/DataBase.js",
+		"ui/Timer.js",
+		"ui/Debug.js"
 	];
 	for(var i=0;i<files.length;i++){
 		document.writeln('<script type="text/javascript" src="'+dir+files[i]+'"></script>');

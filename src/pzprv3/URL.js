@@ -56,9 +56,6 @@ pzprv3.url = {
 	parseURL : function(url){
 		return parseURLType(url);
 	},
-	splitURL : function(pzl){
-		return parseURLData(pzl);
-	},
 	constructURL : function(pzl){
 		return constructURLType(pzl);
 	}
@@ -188,7 +185,6 @@ pzprv3.url.register({
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
 
-var k = pzprv3.consts;
 //---------------------------------------------------------------------------
 // ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
 //                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
@@ -244,7 +240,7 @@ function parseURLType(url){
 	}
 	pzl.id = pzprv3.url.toPID(pzl.id);
 
-	return pzl;
+	return parseURLData(pzl);
 }
 
 //---------------------------------------------------------------------------
@@ -252,36 +248,39 @@ function parseURLType(url){
 //                   qdata -> [(pflag)/](cols)/(rows)/(bstr)
 //---------------------------------------------------------------------------
 function parseURLData(pzl){
-	var inp=pzl.qdata.split("/"), dat={pflag:'',cols:0,rows:0,bstr:''}, k=pzprv3.consts;
+	var inp=pzl.qdata.split("/");
+	
 	switch(pzl.type){
 	case k.URL_KANPEN:
+		pzl.pflag = '';
 		if(pzl.id=="sudoku"){
-			dat.rows = dat.cols = parseInt(inp.shift());
+			pzl.rows = pzl.cols = parseInt(inp.shift());
 		}
 		else{
-			dat.rows = parseInt(inp.shift());
-			dat.cols = parseInt(inp.shift());
-			if(pzl.id=="kakuro"){ dat.rows--; dat.cols--;}
+			pzl.rows = parseInt(inp.shift());
+			pzl.cols = parseInt(inp.shift());
+			if(pzl.id=="kakuro"){ pzl.rows--; pzl.cols--;}
 		}
-		dat.bstr = inp.join("/");
+		pzl.bstr = inp.join("/");
 		break;
 
 	case k.URL_HEYAAPP:
 		var size = inp.shift().split("x");
-		dat.cols = parseInt(size[0]);
-		dat.rows = parseInt(size[1]);
-		dat.bstr = inp.join("/");
+		pzl.pflag = '';
+		pzl.cols = parseInt(size[0]);
+		pzl.rows = parseInt(size[1]);
+		pzl.bstr = inp.join("/");
 		break;
 
 	default:
 		if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
-		dat.pflag = inp.shift();
-		dat.cols = parseInt(inp.shift());
-		dat.rows = parseInt(inp.shift());
-		dat.bstr = inp.join("/");
+		pzl.pflag = inp.shift();
+		pzl.cols = parseInt(inp.shift());
+		pzl.rows = parseInt(inp.shift());
+		pzl.bstr = inp.join("/");
 		break;
 	}
-	return dat;
+	return pzl;
 }
 
 //---------------------------------------------------------------------------

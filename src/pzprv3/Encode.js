@@ -21,32 +21,31 @@ pzprv3.createPuzzleClass('Encode',
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
-	// enc.decodeURL()   parseURLData()を行い、各種各パズルのdecode関数を呼び出す
+	// enc.decodeURL()   parseURL()を行い、各種各パズルのdecode関数を呼び出す
 	// enc.encodeURL()   各種各パズルのencode関数を呼び出し、URLを出力する
 	// 
 	// enc.decodePzpr()  各パズルのURL入力用(オーバーライド用)
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
-		var pzl = pzprv3.url.parseURL(url);
-		var dat = pzprv3.url.splitURL(pzl), o = this.owner;
+		var pzl = pzprv3.url.parseURL(url), o = this.owner;
 
-		o.board.initBoardSize(dat.cols, dat.rows);
+		o.board.initBoardSize(pzl.cols, pzl.rows);
 
-		if(!!dat.bstr){
-			this.pflag = dat.pflag;
+		if(!!pzl.bstr){
+			this.pflag = pzl.pflag;
 			switch(pzl.type){
 			case k.URL_PZPRV3: case k.URL_PZPRAPP: case k.URL_PZPRV3E:
-				this.outbstr = dat.bstr;
+				this.outbstr = pzl.bstr;
 				this.decodePzpr(pzl.type);
 				break;
 			case k.URL_KANPEN:
 				o.fio.lineseek = 0;
-				o.fio.dataarray = dat.bstr.replace(/_/g, " ").split("/");
+				o.fio.dataarray = pzl.bstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
 			case k.URL_HEYAAPP:
-				this.outbstr = dat.bstr;
+				this.outbstr = pzl.bstr;
 				this.decodeHeyaApp();
 				break;
 			}

@@ -18,21 +18,21 @@
 		"../../candle/source/candle.sl.js",
 		"../../candle/source/candle.vml.js",
 
-		"pzprBase/CoreClass.js",
-		"pzprBase/Puzzle.js",
-		"pzprBase/BoardPiece.js",
-		"pzprBase/Board.js",
-		"pzprBase/BoardExec.js",
-		"pzprBase/LineManager.js",
-		"pzprBase/AreaManager.js",
-		"pzprBase/Graphic.js",
-		"pzprBase/MouseInput.js",
-		"pzprBase/KeyInput.js",
-		"pzprBase/URL.js",
-		"pzprBase/Encode.js",
-		"pzprBase/FileData.js",
-		"pzprBase/Answer.js",
-		"pzprBase/Operation.js"
+		"pzprv3/CoreClass.js",
+		"pzprv3/Puzzle.js",
+		"pzprv3/BoardPiece.js",
+		"pzprv3/Board.js",
+		"pzprv3/BoardExec.js",
+		"pzprv3/LineManager.js",
+		"pzprv3/AreaManager.js",
+		"pzprv3/Graphic.js",
+		"pzprv3/MouseInput.js",
+		"pzprv3/KeyInput.js",
+		"pzprv3/URL.js",
+		"pzprv3/Encode.js",
+		"pzprv3/FileData.js",
+		"pzprv3/Answer.js",
+		"pzprv3/Operation.js"
 	];
 	for(var i=0;i<files.length;i++){
 		document.writeln('<script type="text/javascript" src="'+dir+files[i]+'"></script>');

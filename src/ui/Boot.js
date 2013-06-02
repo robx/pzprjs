@@ -113,8 +113,7 @@ function importURL(){
 	var pzl = pzprv3.url.parseURL(search);
 
 	if(!startmode){
-		var dat = pzprv3.url.splitURL(pzl);
-		startmode=(!dat.bstr?'EDITOR':'PLAYER');
+		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
 	}
 	switch(startmode){
 		case 'PLAYER': pzprv3.EDITOR = false; break;
