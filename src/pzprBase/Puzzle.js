@@ -22,11 +22,8 @@ pzprv3.Puzzle.prototype =
 		this.starttime = 0;
 		this.resetTime();
 
-		this.canvasmgr = {
-			maincanvas   : null,	// 描画canvas本体
-			subcanvas    : null,	// 補助canvas
-			usesubcanvas : false	// 補助canvasがあるかどうか
-		};
+		this.canvas    = null;	// 描画canvas本体
+		this.subcanvas = null;	// 補助canvas
 
 		this.listeners = {
 			mouse  : [],
@@ -124,7 +121,7 @@ pzprv3.Puzzle.prototype =
 	},
 	waitCanvasReady : function(callback){
 		var puzzle = this;
-		puzzle.painter.initCanvas(function(){
+		puzzle.painter.initCanvas(this.canvas, this.subcanvas, function(){
 			puzzle.painter.reset();
 			
 			if(!!callback){ callback(puzzle);}
@@ -210,31 +207,29 @@ pzprv3.Puzzle.prototype =
 	// owner.addSubCanvas() 補助キャンバスを作成する
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
-		var cm = this.canvasmgr, o = this;
+		var o = this;
 		if(!type){ type = '';}
 		if(!!el){
 			Candle.start(el.id, type, function(g){
 				pzprv3.util.unselectable(g.canvas);
-				cm.maincanvas = g.canvas;
 				o.setSLKeyEvents(g);
+				if(g.use.canvas){ o.addSubCanvas();}
 			});
+			this.canvas = el;
 			this.setMouseEvents(el);
-			if(Candle.enable.canvas){ o.addSubCanvas();}
 		}
 	},
 	addSubCanvas : function(){
-		var cm = this.canvasmgr;
-		if(!Candle.enable.canvas || cm.usesubcanvas){ return false;}
-		cm.usesubcanvas = true;
+		if(!Candle.enable.canvas || !!this.subcanvas){ return false;}
 		
 		var el2 = document.createElement('div');
 		el2.id = "_"+(new Date()).getTime(); /* 何か他とかぶらないようなID */
 		el2.style.left = '-10000px';
 		document.body.appendChild(el2);
 		Candle.start(el2.id, 'canvas', function(g){
-			cm.subcanvas = g.canvas;
 			g.canvas.style.position = 'absolute';
 		});
+		this.subcanvas = el2;
 		return true;
 	},
 

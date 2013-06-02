@@ -264,7 +264,7 @@ ui.event =
 		}
 		if(pzprv3.OS.mobile){ padding = 0;}
 		
-		o.canvasmgr.maincanvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
+		o.canvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
 		
 		return true;
 	},

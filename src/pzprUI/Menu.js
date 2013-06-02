@@ -51,7 +51,7 @@ Menu.prototype =
 		
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
 		
-		if(ui.puzzle.canvasmgr.usesubcanvas && !!_doc.createElement('canvas').toDataURL){
+		if(!!ui.puzzle.subcanvas && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
 		}
 		
@@ -337,11 +337,9 @@ Menu.prototype =
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var o = ui.puzzle, cm = o.canvasmgr, canvas_sv = cm.maincanvas, fail = false;
-		var pc = o.painter, pc2 = new o.Graphic();
+		var o = ui.puzzle, pc = o.painter, pc2 = new o.Graphic(), fail = false;
 		
-		cm.maincanvas = cm.subcanvas;
-		pc2.init();
+		pc2.initCanvas(o.subcanvas);
 		try{
 			// 設定値・変数をcanvas用のものに変更
 			pc2.suspendAll();
@@ -371,7 +369,6 @@ Menu.prototype =
 		catch(e){
 			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
 		}
-		cm.maincanvas = canvas_sv;
 	},
 
 	submitimage : function(pc2){
