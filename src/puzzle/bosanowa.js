@@ -234,33 +234,15 @@ Graphic:{
 			var border = blist[i];
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(!g.use.canvas){
-					if(this.vnop(header+border.id,this.NONE)){
-						if(border.isVert()){
-							var py1 = py-this.bh, py2 = py+this.bh+1;
-							g.strokeLine(px, py1, px, py2);
-							g.setDashSize(3);
-						}
-						else{
-							var px1 = px-this.bw, px2 = px+this.bw+1;
-							g.strokeLine(px1, py, px2, py);
-							g.setDashSize(3);
-						}
+				if(this.vnop(header+border.id,this.NONE)){
+					/* strokeぶん0.5ずらす */
+					if(border.isVert()){
+						var py1 = py-this.bh, py2 = py+this.bh+1;
+						g.strokeDashedLine(px+0.5, py1, px+0.5, py2, [3]);
 					}
-				}
-				else{
-					var dotmax = this.cw/10+3;
-					var dotCount = Math.max(this.cw/dotmax, 1);
-					var dotSize  = this.cw/(dotCount*2);
-					if(border.isVert()){ 
-						for(var j=0;j<this.ch+1;j+=(2*dotSize)){
-							g.fillRect(px, py-this.bh+j, 1, dotSize);
-						}
-					}
-					else{ 
-						for(var j=0;j<this.cw+1 ;j+=(2*dotSize)){
-							g.fillRect(px-this.bw+j, py, dotSize, 1);
-						}
+					else{
+						var px1 = px-this.bw, px2 = px+this.bw+1;
+						g.strokeDashedLine(px1, py+0.5, px2, py+0.5, [3]);
 					}
 				}
 			}

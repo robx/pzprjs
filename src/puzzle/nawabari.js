@@ -165,25 +165,13 @@ Graphic:{
 			var border = blist[n];
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(g.use.canvas){
-					g.fillStyle = this.gridcolor;
-					if(border.isVert()){
-						for(var t=py-this.bh,max=py+this.bh;t<max;t+=(2*dotSize)){ g.fillRect(px, t, 1, dotSize);}
-					}
-					else{
-						for(var t=px-this.bw,max=px+this.bw;t<max;t+=(2*dotSize)){ g.fillRect(t, py, dotSize, 1);}
-					}
-				}
-				else{
-					if(this.vnop(header+border.id,this.NONE)){
-						// strokeぶん0.5ずらす
-						g.lineWidth = 1;
-						g.strokeStyle = this.gridcolor;
+				if(this.vnop(header+border.id,this.NONE)){
+					/* strokeぶん0.5ずらす */
+					g.lineWidth = 1;
+					g.strokeStyle = this.gridcolor;
 
-						if(border.isVert()){ g.strokeLine(px+0.5, py-this.bh, px+0.5, py+this.bh);}
-						else               { g.strokeLine(px-this.bw, py+0.5, px+this.bw, py+0.5);}
-						g.setDashSize(dotSize);
-					}
+					if(border.isVert()){ g.strokeDashedLine(px+0.5, py-this.bh, px+0.5, py+this.bh, [dotSize]);}
+					else               { g.strokeDashedLine(px-this.bw, py+0.5, px+this.bw, py+0.5, [dotSize]);}
 				}
 			}
 			else{ this.vhide(header+border.id);}

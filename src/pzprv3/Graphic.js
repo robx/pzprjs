@@ -1550,37 +1550,17 @@ pzprv3.createPuzzleClass('Graphic',
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
 
-		if(g.use.canvas){
-			g.fillStyle = this.gridcolor;
-			for(var i=x1;i<=x2;i+=2){
-				var px = i*this.bw, py = y1*this.bh;
-				for(var j=0;j<dotCount*((y2-y1)>>1);j++){
-					g.fillRect(px, py, 1, dotSize);
-					py += 2*dotSize;
-				}
-			}
-			for(var i=y1;i<=y2;i+=2){
-				var py = i*this.bh, px = x1*this.bw;
-				for(var j=0;j<dotCount*((x2-x1)>>1);j++){
-					g.fillRect(px, py, dotSize, 1);
-					px += 2*dotSize;
-				}
-			}
-		}
-		else{
-			g.lineWidth = 1;
-			g.strokeStyle = this.gridcolor;
-			for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
-				var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
-				g.strokeLine(px, py1, px, py2);
-				g.setDashSize(dotSize);
-			}}
-			for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
-				var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
-				g.strokeLine(px1, py, px2, py);
-				g.setDashSize(dotSize);
-			}}
-		}
+		/* strokeぶん0.5ずらす */
+		g.lineWidth = 1;
+		g.strokeStyle = this.gridcolor;
+		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){
+			var px = i*this.bw+0.5, py1 = y1*this.bh, py2 = y2*this.bh;
+			g.strokeDashedLine(px, py1, px, py2, [dotSize]);
+		}}
+		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){
+			var py = i*this.bh+0.5, px1 = x1*this.bw, px2 = x2*this.bw;
+			g.strokeDashedLine(px1, py, px2, py, [dotSize]);
+		}}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1628,38 +1608,17 @@ pzprv3.createPuzzleClass('Graphic',
 		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
 		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
 
-		if(g.use.canvas){
-			g.fillStyle = this.gridcolor;
-			for(var i=xa;i<=xb;i+=2){
-				var px = i*this.bw, py = y1*this.bh;
-				for(var j=0;j<dotCount*((y2-y1)>>1);j++){
-					g.fillRect(px, py, 1, dotSize);
-					py += 2*dotSize
-				}
-			}
-			for(var i=ya;i<=yb;i+=2){
-				var py = i*this.bh, px = x1*this.bw;
-				for(var j=0;j<dotCount*((x2-x1)>>1);j++){
-					g.fillRect(px, py, dotSize, 1);
-					px += 2*dotSize
-				}
-			}
-		}
-		else{
-			// strokeぶん0.5ずらす
-			g.lineWidth = 1;
-			g.strokeStyle = this.gridcolor;
-			for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
-				var px = i*this.bw+0.5, py1 = y1*this.bh, py2 = y2*this.bh;
-				g.strokeLine(px, py1, px, py2);
-				g.setDashSize(dotSize);
-			}}
-			for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){
-				var py = i*this.bh+0.5, px1 = x1*this.bw, px2 = x2*this.bw;
-				g.strokeLine(px1, py, px2, py);
-				g.setDashSize(dotSize);
-			}}
-		}
+		/* strokeぶん0.5ずらす */
+		g.lineWidth = 1;
+		g.strokeStyle = this.gridcolor;
+		for(var i=xa;i<=xb;i+=2){ if(this.vnop("bdy_"+i,this.NONE)){
+			var px = i*this.bw+0.5, py1 = y1*this.bh, py2 = y2*this.bh;
+			g.strokeDashedLine(px, py1, px, py2, [dotSize]);
+		}}
+		for(var i=ya;i<=yb;i+=2){ if(this.vnop("bdx_"+i,this.NONE)){
+			var py = i*this.bh+0.5, px1 = x1*this.bw, px2 = x2*this.bw;
+			g.strokeDashedLine(px1, py, px2, py, [dotSize]);
+		}}
 	},
 
 	//---------------------------------------------------------------------------
