@@ -513,10 +513,3 @@ AnsCheck:{
 	}
 }
 });
-
-pzpr.addFailCode({
-	39201 : ["星が含まれていない領域があります。","A block has no stars."],
-	39211 : ["星を線が通過しています。", "A line goes over the star."],
-	39221 : ["領域が星を中心に点対称になっていません。", "A area is not point symmetric about the star."],
-	39231 : ["星が複数含まれる領域があります。","A block has two or more stars."]
-});

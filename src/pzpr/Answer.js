@@ -32,6 +32,9 @@ pzpr.createPuzzleClass('AnsCheck',
 				bd.haserror = true;
 				o.redraw();
 			}
+			else{
+				failcode = 'complete';
+			}
 		}
 		else{
 			bd.disableSetError();
@@ -57,10 +60,7 @@ pzpr.createPuzzleClass('AnsCheck',
 				if(!this.checkLineCount(1)){ return 40101;}
 			}
 		}
-		
-		var failcode = this.check1st();
-		if(failcode!==0){ return failcode;}
-		return 0;
+		return this.check1st();
 	},
 
 	//---------------------------------------------------------------------------
@@ -600,8 +600,19 @@ pzpr.createPuzzleClass('AnsCheck',
 	isErrorFlag_line : function(xinfo){ }
 });
 
-pzpr.addFailCode({
-	0     : ["正解です！","Complete!"],
+//---------------------------------------------------------------------------
+// ★FailCodeクラス 答えの文字列を扱う
+//---------------------------------------------------------------------------
+// FailCodeクラス
+pzpr.createPuzzleClass('FailCode',
+{
+	getStr : function(code){
+		if(code===0){ code='complete';}
+		if(this.owner.get('language')==='ja'){ return this[code][0];}
+		return this[code][1];
+	},
+	
+	complete : ["正解です！","Complete!"],
 
 	10001 : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of black cells."],
 	10002 : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of white cells."],
@@ -788,6 +799,12 @@ pzpr.addFailCode({
 
 	39001 : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
 	39101 : ["タイルと周囲の線が引かれない点線の長さが異なります。","the size of the tile is not equal to the total of length of lines that is remained dotted around the tile."],
+	39201 : ["星が含まれていない領域があります。","A block has no stars."],
+	39211 : ["星を線が通過しています。", "A line goes over the star."],
+	39221 : ["領域が星を中心に点対称になっていません。", "A area is not point symmetric about the star."],
+	39231 : ["星が複数含まれる領域があります。","A block has two or more stars."],
+	39301 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
+	39311 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."],
 	39401 : ["ブロックが1つの点線からなる領域で構成されています。","A block has one area framed by dotted line."],
 	39411 : ["同じ形のブロックが接しています。","The blocks that has the same shape are adjacent."],
 	39421 : ["ブロックが3つ以上の点線からなる領域で構成されています。","A block has three or more areas framed by dotted line."],

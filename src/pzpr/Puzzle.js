@@ -119,6 +119,8 @@ pzpr.Puzzle.prototype =
 		this.fio = new this.FileIO();		// ファイル入出力用オブジェクト
 
 		this.flags = new this.Flags();		// パズルの初期設定値を保持するオブジェクト
+
+		this.faillist = new this.FailCode();	// 正答判定文字列を保持するオブジェクト
 	},
 	waitCanvasReady : function(callback){
 		var puzzle = this;
@@ -302,6 +304,7 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.check()          正答判定処理を行う
 	// owner.checkAnsAlert()  正答判定処理をしてalertに文字列を出す
+	// owner.getFailStr()     FailCodeから文字列を出力する
 	// owner.ansclear()       回答を消去する
 	// owner.subclear()       補助記号を消去する
 	//------------------------------------------------------------------------------
@@ -314,8 +317,11 @@ pzpr.Puzzle.prototype =
 	},
 	checkAndAlert : function(activemode){
 		var failcode = this.check(!!activemode);
-		alert(pzpr.failcode[failcode][this.get('language')]);
+		alert(this.getFailStr(failcode));
 		return failcode;
+	},
+	getFailStr : function(failcode){
+		return this.faillist.getStr(failcode);
 	},
 	
 	ansclear : function(){
