@@ -122,7 +122,7 @@ ui.keypopup =
 		var type = this.type[ui.puzzle.pid];
 		if(!type){ type=[0,0];}
 		
-		this.paneltype = { 1:(pzprv3.EDITOR?type[0]:0), 3:(type[1])};
+		this.paneltype = { 1:(pzpr.EDITOR?type[0]:0), 3:(type[1])};
 		if(!this.paneltype[1] && !this.paneltype[3]){ return;}
 		
 		if(!this.element){ this.element = this.makeKeyPopup();}
@@ -154,7 +154,7 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	makeKeyPopup : function(){
 		var keypopup, bar;
-		var rect = pzprv3.util.getRect(getEL('divques'));
+		var rect = pzpr.util.getRect(getEL('divques'));
 		
 		keypopup = createEL('div');
 		keypopup.className = 'popup';
@@ -168,7 +168,7 @@ ui.keypopup =
 		bar.className = 'titlebar';
 		bar.id = 'barkeypopup';
 		bar.appendChild(_doc.createTextNode("panel"));
-		pzprv3.util.unselectable(bar);
+		pzpr.util.unselectable(bar);
 		keypopup.appendChild(bar);
 		
 		var panel = createEL('div');
@@ -504,12 +504,12 @@ ui.keypopup =
 			_div = createEL('div');
 			_div.className = 'kpcell kpcellvalid';
 			_div.onclick = function(){ ui.puzzle.key.keyinput(ca,0);};
-			pzprv3.util.unselectable(_div);
+			pzpr.util.unselectable(_div);
 		}
 		else{
 			_div = createEL('div');
 			_div.className = 'kpcell kpcellempty';
-			pzprv3.util.unselectable(_div);
+			pzpr.util.unselectable(_div);
 		}
 
 		if(type==='num'){
@@ -517,13 +517,13 @@ ui.keypopup =
 			_child.className   = 'kpnum';
 			_child.style.color = this.tdcolor;
 			_child.innerHTML   = disp;
-			pzprv3.util.unselectable(_child);
+			pzpr.util.unselectable(_child);
 		}
 		else if(type==='image'){
 			_child = createEL('img');
 			_child.className = 'kpimg';
 			_child.src = "./src/img/"+ui.puzzle.pid+"_kp.gif";
-			pzprv3.util.unselectable(_child);
+			pzpr.util.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
 

@@ -1,8 +1,8 @@
 // Board.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
-pzprv3.addConsts({
+var k = pzpr.consts;
+pzpr.addConsts({
 	// const値
 	CELL   : 'cell',
 	CROSS  : 'cross',
@@ -28,7 +28,7 @@ pzprv3.addConsts({
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
 //---------------------------------------------------------------------------
 // Boardクラスの定義
-pzprv3.createPuzzleClass('Board',
+pzpr.createPuzzleClass('Board',
 {
 	initialize : function(){
 		// 盤面の範囲

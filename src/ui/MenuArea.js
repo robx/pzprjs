@@ -126,7 +126,7 @@ ui.menuarea = {
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
-		if(pzprv3.env.storage.localST){
+		if(pzpr.env.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(ui.menu.enableSaveImage){
@@ -137,7 +137,7 @@ ui.menuarea = {
 		// *ファイル - ファイル保存 -------------------------------------------
 		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
 		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
-		if(pzprv3.url.info[pid].exists.pencilbox){
+		if(pzpr.url.info[pid].exists.pencilbox){
 			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 
@@ -156,7 +156,7 @@ ui.menuarea = {
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
 		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
-		if(pzprv3.env.storage.session){
+		if(pzpr.env.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
 		}
@@ -228,7 +228,7 @@ ui.menuarea = {
 
 		pp.addMenu('setting', "設定", "Setting");
 
-		if(pzprv3.EDITOR){
+		if(pzpr.EDITOR){
 			pp.addSelect('mode','setting', 'モード', 'mode');
 			pp.addChild('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
 			pp.addChild('mode_3', 'mode', '回答モード',     'Answer mode');
@@ -316,10 +316,10 @@ ui.menuarea = {
 		}
 
 		/* EDITOR時の設定値 */
-		if(pzprv3.EDITOR && pid==='goishi'){
+		if(pzpr.EDITOR && pid==='goishi'){
 			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
 		}
-		if(pzprv3.EDITOR && pid==='tentaisho'){
+		if(pzpr.EDITOR && pid==='tentaisho'){
 			pp.addCheck('discolor','setting','色分け無効化','Disable color');
 		}
 
@@ -426,7 +426,7 @@ ui.menuarea = {
 		}
 
 		// その他の調整
-		if(pzprv3.PLAYER){
+		if(pzpr.PLAYER){
 			getEL('ms_newboard') .className = 'smenunull';
 			getEL('ms_urloutput').className = 'smenunull';
 			getEL('ms_adjust')   .className = 'smenunull';
@@ -436,7 +436,7 @@ ui.menuarea = {
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
 
 		if(this.enableSaveImage && !!ui.puzzle.ImageTile){
-			if(pzprv3.env.browser.Gecko && !location.hostname){
+			if(pzpr.env.browser.Gecko && !location.hostname){
 				getEL('ms_imagesavep').className = 'smenunull';
 			}
 		}
@@ -453,7 +453,7 @@ ui.menuarea = {
 			var idname = el.id.substr(3), val, pp = this.items, menutype = pp.type(idname);
 			if(menutype===pp.SMENU){
 				if(!this.submenuexec(idname)){
-					var pos = pzprv3.util.getPagePos(e);
+					var pos = pzpr.util.getPagePos(e);
 					ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 				}
 			}
@@ -477,7 +477,7 @@ ui.menuarea = {
 	submenuexec : function(idname, val){
 		if(!ui.puzzle.ready){ return true;}
 		
-		var result = true, k = pzprv3.consts;;
+		var result = true, k = pzpr.consts;
 		switch(idname){
 		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
 //		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;
@@ -497,7 +497,7 @@ ui.menuarea = {
 		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.menu.displayAll(); ui.puzzle.adjustCanvasSize(); break;
 		case 'repaint'   : ui.puzzle.redraw(); break;
 		
-		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzprv3.EDITOR?"_edit":""), ''); break;
+		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), ''); break;
 		case 'jumpv3'    : window.open('./', '', ''); break;
 		case 'jumptop'   : window.open('../../', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
@@ -551,7 +551,7 @@ ui.menuarea = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = pzprv3.util.getRect(e.target||e.srcElement);
+		var rect = pzpr.util.getRect(e.target||e.srcElement);
 		var idname = (e.target||e.srcElement).id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
@@ -559,12 +559,12 @@ ui.menuarea = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!pzprv3.env.browser.IE6){
+			if(!pzpr.env.browser.IE6){
 				_float.style.left = rect.right - 3 + 'px';
 				_float.style.top  = rect.top   - 3 + 'px';
 			}
 			else{
-				_float.style.left = pzprv3.util.pageX(e)  + 'px';
+				_float.style.left = pzpr.util.pageX(e)  + 'px';
 				_float.style.top  = rect.top - 3 + 'px';
 			}
 		}
@@ -598,13 +598,13 @@ ui.menuarea = {
 	},
 
 	insideOf : function(el, e){
-		var pos = pzprv3.util.getPagePos(e);
-		var rect = pzprv3.util.getRect(el);
+		var pos = pzpr.util.getPagePos(e);
+		var rect = pzpr.util.getRect(el);
 		return (pos.px>=rect.left && pos.px<=rect.right && pos.py>=rect.top && pos.py<=rect.bottom);
 	},
 	insideOfMenu : function(e){
-		var pos = pzprv3.util.getPagePos(e);
-		var rect_f = pzprv3.util.getRect(getEL('ms_file')), rect_o = pzprv3.util.getRect(getEL('ms_other'));
+		var pos = pzpr.util.getPagePos(e);
+		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
 		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
 	}
 };

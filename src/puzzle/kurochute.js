@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クロシュート版 kurochute.js v3.4.0
 //
-pzprv3.createCustoms('kurochute', {
+pzpr.createCustoms('kurochute', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

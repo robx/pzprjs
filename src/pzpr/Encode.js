@@ -1,14 +1,14 @@
 // Encode.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzprv3.createPuzzleClass('Encode',
+pzpr.createPuzzleClass('Encode',
 {
 	pflag    : "",
 	outpflag : '',
@@ -28,7 +28,7 @@ pzprv3.createPuzzleClass('Encode',
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
-		var pzl = pzprv3.url.parseURL(url), o = this.owner;
+		var pzl = pzpr.url.parseURL(url), o = this.owner;
 
 		o.board.initBoardSize(pzl.cols, pzl.rows);
 
@@ -94,7 +94,7 @@ pzprv3.createPuzzleClass('Encode',
 		}
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
-		return pzprv3.url.constructURL({id:o.pid, type:type, qdata:pdata});
+		return pzpr.url.constructURL({id:o.pid, type:type, qdata:pdata});
 	},
 
 	// オーバーライド用

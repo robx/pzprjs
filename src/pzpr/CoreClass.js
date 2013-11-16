@@ -3,10 +3,10 @@
 (function(){
 
 //----------------------------------------------------------------------------
-// ★pzprv3オブジェクト
+// ★pzprオブジェクト
 //---------------------------------------------------------------------------
 /* extern */
-window.pzprv3 = {
+window.pzpr = {
 	version : 'v3.4.0pre',
 
 	EDITOR : false,	// エディタモード
@@ -18,7 +18,7 @@ window.pzprv3 = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas){
-		var puzzle = new pzprv3.Puzzle();
+		var puzzle = new pzpr.Puzzle();
 		this.puzzles.push(puzzle);
 		if(!!canvas){ puzzle.setCanvas(canvas);}
 		return puzzle;
@@ -66,15 +66,15 @@ window.pzprv3 = {
 };
 
 //----------------------------------------------------------------------------
-// ★pzprv3.classmgrオブジェクト (クラス作成関数等)
+// ★pzpr.classmgrオブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-pzprv3.classmgr = {
+pzpr.classmgr = {
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
 	createPuzzleClass : function(classname, proto){
 		var rel = this._createClass(classname, proto);
-		pzprv3.common[rel.name] = rel.body;
+		pzpr.common[rel.name] = rel.body;
 	},
 	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');
@@ -85,8 +85,8 @@ pzprv3.classmgr = {
 		}
 
 		var NewClass = function(){};
-		if(!!basename && !!pzprv3.common[basename]){
-			var BaseClass = pzprv3.common[basename];
+		if(!!basename && !!pzpr.common[basename]){
+			var BaseClass = pzpr.common[basename];
 			for(var name in BaseClass.prototype){
 				NewClass.prototype[name] = BaseClass.prototype[name];
 			}
@@ -101,10 +101,10 @@ pzprv3.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile : function(pid){
-		if(!!pzprv3.custom[pid] || !!this.includedFile[pid]){ return;}
+		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = getpath()+"puzzle/"+pzprv3.url.toScript(pid)+".js";
+		_script.src = getpath()+"puzzle/"+pzpr.url.toScript(pid)+".js";
 		document.body.appendChild(_script);
 		this.includedFile[pid] = true;
 	},
@@ -114,7 +114,7 @@ pzprv3.classmgr = {
 	// includeCustomFileでファイルを読み込んだ後の処理
 	//---------------------------------------------------------------
 	createCustoms : function(scriptid, custombase){
-		var pidlist = pzprv3.url.PIDlist(scriptid);
+		var pidlist = pzpr.url.PIDlist(scriptid);
 		for(var i=0;i<pidlist.length;i++){
 			var pid=pidlist[i], customclass=this.PIDfilter(pid, custombase);
 			this.createCustomSingle(pid, customclass);
@@ -147,7 +147,7 @@ pzprv3.classmgr = {
 			var proto = customclass[classname];
 
 			if(!custom[classname]){
-				if(!!pzprv3.common[classname]){ classname = classname+":"+classname;}
+				if(!!pzpr.common[classname]){ classname = classname+":"+classname;}
 
 				var rel = this._createClass(classname, proto);
 				custom[rel.name] = rel.body;
@@ -156,18 +156,18 @@ pzprv3.classmgr = {
 				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
 			}
 		}
-		for(var classname in pzprv3.common){
+		for(var classname in pzpr.common){
 			if(!custom[classname]){
-				custom[classname] = pzprv3.common[classname];
+				custom[classname] = pzpr.common[classname];
 			}
 		}
-		for(var classname in pzprv3.common){
-			if(!!pzprv3.common[classname]){
-				custom[classname].prototype.Common = pzprv3.common[classname];
+		for(var classname in pzpr.common){
+			if(!!pzpr.common[classname]){
+				custom[classname].prototype.Common = pzpr.common[classname];
 			}
 		}
 
-		pzprv3.custom[pid] = custom;
+		pzpr.custom[pid] = custom;
 	},
 
 	//---------------------------------------------------------------------------
@@ -179,13 +179,13 @@ pzprv3.classmgr = {
 			this.includeCustomFile(newpid);
 		}
 		/* Customファイルが読み込みできるまで待つ */
-		if(!pzprv3.custom[newpid]){
-			setTimeout(function(){ pzprv3.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
+		if(!pzpr.custom[newpid]){
+			setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
 			return;
 		}
 
 		if(puzzle.pid != newpid){
-			/* 各クラスをpzprv3.customから設定する */
+			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 			puzzle.pid = newpid;
 		}
@@ -205,7 +205,7 @@ pzprv3.classmgr = {
 		}
 		puzzle.classlist = [];
 
-		var custom = pzprv3.custom[pid];
+		var custom = pzpr.custom[pid];
 		for(var classname in custom){
 			var base = custom[classname];
 			var cls = function(){
@@ -223,7 +223,7 @@ pzprv3.classmgr = {
 function getpath(){
 	var dir="", srcs=document.getElementsByTagName('script');
 	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)pzprv3\.js$/);
+		var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
 		if(result){
 			if(result[1].match(/\/$/)){ dir = result[1];}
 			else{ dir = result[1]+'/';}
@@ -243,7 +243,7 @@ try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 /**************/
 /* 環境の取得 */
 /**************/
-pzprv3.env = {
+pzpr.env = {
 	browser : (function(){
 		var UA  = navigator.userAgent;
 		return {
@@ -279,8 +279,8 @@ pzprv3.env = {
 	})()
 };
 
-var bz = pzprv3.env.browser;
-pzprv3.env.storage = (function(){
+var bz = pzpr.env.browser;
+pzpr.env.storage = (function(){
 	var val = 0x00;
 	try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
 	try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
@@ -304,7 +304,7 @@ pzprv3.env.storage = (function(){
 //----------------------------------------------------------------------
 // EventやDOM関連のツール的関数群
 //----------------------------------------------------------------------
-pzprv3.util = {
+pzpr.util = {
 	//---------------------------------------------------------------
 	// 現在の時間を取得
 	currentTime : function(){ return (new Date()).getTime();},
@@ -330,10 +330,10 @@ pzprv3.util = {
 	},
 
 	//----------------------------------------------------------------------
-	// pzprv3.util.addEvent()          addEventListener(など)を呼び出す
-	// pzprv3.util.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// pzprv3.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// pzprv3.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	// pzpr.util.addEvent()          addEventListener(など)を呼び出す
+	// pzpr.util.addMouseDownEvent() マウスを押したときのイベントを設定する
+	// pzpr.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
+	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
 		var func = function(e){ callback.call(self, (e||window.event));};
@@ -341,41 +341,41 @@ pzprv3.util = {
 		else                     { el.attachEvent('on'+event, func);}
 	},
 	addMouseDownEvent : function(el, self, func){
-		if(pzprv3.env.API.mspointerevent){
+		if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerDown", self, func);
 		}
 		else{
 			this.addEvent(el, "mousedown", self, func);
-			if(pzprv3.env.API.touchevent){
+			if(pzpr.env.API.touchevent){
 				this.addEvent(el, "touchstart", self, func);
 			}
 		}
 	},
 	addMouseMoveEvent : function(el, self, func){
-		if(pzprv3.env.API.mspointerevent){
+		if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerMove", self, func);
 		}
 		else{
 			this.addEvent(el, "mousemove", self, func);
-			if(pzprv3.env.API.touchevent){
+			if(pzpr.env.API.touchevent){
 				this.addEvent(el, "touchmove",  self, func);
 			}
 		}
 	},
 	addMouseUpEvent : function(el, self, func){
-		if(pzprv3.env.API.mspointerevent){
+		if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerUp", self, func);
 		}
 		else{
 			this.addEvent(el, "mouseup", self, func);
-			if(pzprv3.env.API.touchevent){
+			if(pzpr.env.API.touchevent){
 				this.addEvent(el, "touchend", self, func);
 			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// pzprv3.util.getMouseButton() 左/中/右ボタンが押されているかチェックする
+	// pzpr.util.getMouseButton() 左/中/右ボタンが押されているかチェックする
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
 		var left=false, mid=false, right=false;
@@ -401,9 +401,9 @@ pzprv3.util = {
 	},
 
 	//----------------------------------------------------------------------
-	// pzprv3.util.getPagePos() イベントが起こったページ上の座標を返す
-	// pzprv3.util.pageX()      イベントが起こったページ上のX座標を返す
-	// pzprv3.util.pageY()      イベントが起こったページ上のY座標を返す
+	// pzpr.util.getPagePos() イベントが起こったページ上の座標を返す
+	// pzpr.util.pageX()      イベントが起こったページ上のX座標を返す
+	// pzpr.util.pageY()      イベントが起こったページ上のY座標を返す
 	//----------------------------------------------------------------------
 	getPagePos : function(e){
 		return {px:this.pageX(e), py:this.pageY(e)}
@@ -436,7 +436,7 @@ pzprv3.util = {
 	},
 
 	//--------------------------------------------------------------------------------
-	// pzprv3.util.getRect()   エレメントの四辺の座標を返す
+	// pzpr.util.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
@@ -495,8 +495,8 @@ pzprv3.util = {
 // ★Pointクラス  (px,py)pixel座標を扱う
 //---------------------------------------------------------------------------
 // Pointクラス
-pzprv3.util.Point = function(px,py){ this.px = px; this.py = py;};
-pzprv3.util.Point.prototype = {
+pzpr.util.Point = function(px,py){ this.px = px; this.py = py;};
+pzpr.util.Point.prototype = {
 	set : function(point){ this.px = point.px; this.py = point.py;},
 	reset : function(){ this.px = null; this.py = null;},
 	valid : function(){ return (this.px!==null && this.py!==null);}

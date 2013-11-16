@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('gokigen', {
+pzpr.createCustoms('gokigen', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -226,7 +226,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd = this.owner.board;
-		if(key & pzprv3.consts.TURNFLIP){ // 反転・回転全て
+		if(key & pzpr.consts.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];

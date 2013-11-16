@@ -4,7 +4,7 @@
 // ★LineManagerクラス 主に色分けの情報を管理する
 //---------------------------------------------------------------------------
 // LineManagerクラスの定義
-pzprv3.createPuzzleClass('LineManager',
+pzpr.createPuzzleClass('LineManager',
 {
 	initialize : function(){
 		this.lcnt    = [];
@@ -413,7 +413,7 @@ pzprv3.createPuzzleClass('LineManager',
 //         0     どのPathに属させるかの処理中
 //         1以上 その番号のPathに属する
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('LineInfo',
+pzpr.createPuzzleClass('LineInfo',
 {
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)

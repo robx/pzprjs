@@ -1,33 +1,33 @@
 // MouseInput.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzprv3.createPuzzleClass('MouseEvent',
+pzpr.createPuzzleClass('MouseEvent',
 {
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
 		this.enableMouse = true;	// マウス入力は有効か
 
-		this.inputPoint = new pzprv3.util.Point(null, null);	// 入力イベントが発生したpixel位置
+		this.inputPoint = new pzpr.util.Point(null, null);	// 入力イベントが発生したpixel位置
 
 		this.currentpos = {px:0,py:0};
 		
 		this.mouseoffset = {px:0,py:0};
-		var bz = pzprv3.env.browser;
+		var bz = pzpr.env.browser;
 		if(bz.IE6||bz.IE7||bz.IE8){ this.mouseoffset = {px:2,py:2};}
 		else if(bz.WebKit){ this.mouseoffset = {px:1,py:1};}
 
 		this.mouseCell;		// 入力されたセル等のID
 		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-		this.firstPoint = new pzprv3.util.Point(null, null);	// mousedownされた時のpixel位置
+		this.firstPoint = new pzpr.util.Point(null, null);		// mousedownされた時のpixel位置
 		this.prevPos    = new this.owner.Address(null, null);	// 前回のマウス入力イベントのborder座標
 		this.btn = {};		// 押されているボタン
 
@@ -77,8 +77,8 @@ pzprv3.createPuzzleClass('MouseEvent',
 		var pos = this.getPosition(e);	/* 座標を取得 */
 		this.mouseevent(pos.px, pos.py, 0);
 		
-		pzprv3.util.stopPropagation(e);
-		pzprv3.util.preventDefault(e);
+		pzpr.util.stopPropagation(e);
+		pzpr.util.preventDefault(e);
 		return false;
 	},
 	e_mouseup   : function(e){
@@ -88,8 +88,8 @@ pzprv3.createPuzzleClass('MouseEvent',
 		this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);
 		this.mousereset();
 		
-		pzprv3.util.stopPropagation(e);
-		pzprv3.util.preventDefault(e);
+		pzpr.util.stopPropagation(e);
+		pzpr.util.preventDefault(e);
 		return false;
 	},
 	e_mousemove : function(e){
@@ -98,8 +98,8 @@ pzprv3.createPuzzleClass('MouseEvent',
 		var pos = this.getPosition(e);	/* 座標を取得 */
 		this.mouseevent(pos.px, pos.py, 1);
 		
-		pzprv3.util.stopPropagation(e);
-		pzprv3.util.preventDefault(e);
+		pzpr.util.stopPropagation(e);
+		pzpr.util.preventDefault(e);
 		return false;
 	},
 	e_mouseout : function(e){ },
@@ -109,7 +109,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 	// mv.getPosition()    イベントが起こったcanvas内の座標を取得する
 	//---------------------------------------------------------------------------
 	setMouseButton : function(e){
-		this.btn = pzprv3.util.getMouseButton(e);
+		this.btn = pzpr.util.getMouseButton(e);
 		
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.owner.key;
@@ -122,7 +122,7 @@ pzprv3.createPuzzleClass('MouseEvent',
 		}
 	},
 	getPosition : function(e){
-		var pc = this.owner.painter, pagePos = pzprv3.util.getPagePos(e);
+		var pc = this.owner.painter, pagePos = pzpr.util.getPagePos(e);
 		return { px: (pagePos.px - pc.pageX - this.mouseoffset.px),
 				 py: (pagePos.py - pc.pageY - this.mouseoffset.py)};
 	},

@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('pipelink', {
+pzpr.createCustoms('pipelink', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -67,7 +67,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){

@@ -1,8 +1,8 @@
 // UI.js v3.4.0
 (function(){
 
-/* pzprv3オブジェクト生成待ち */
-if(!pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
+/* pzprオブジェクト生成待ち */
+if(!pzpr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
@@ -67,9 +67,9 @@ ui.event =
 		else                     { el.attachEvent('on'+event, func);}
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
-	addMouseDownEvent : pzprv3.util.addMouseDownEvent,
-	addMouseMoveEvent : pzprv3.util.addMouseMoveEvent,
-	addMouseUpEvent   : pzprv3.util.addMouseUpEvent,
+	addMouseDownEvent : pzpr.util.addMouseDownEvent,
+	addMouseMoveEvent : pzpr.util.addMouseMoveEvent,
+	addMouseUpEvent   : pzpr.util.addMouseUpEvent,
 
 	//---------------------------------------------------------------------------
 	// event.setUIEvents()    ぱずぷれv3で使用するイベントを設定する
@@ -115,7 +115,7 @@ ui.event =
 			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startRedo(); result = false;}
 
 			/* F2で回答モード Shift+F2で問題作成モード */
-			if(c==='F2' && pzprv3.EDITOR){
+			if(c==='F2' && pzpr.EDITOR){
 				if     (o.editmode && !kc.isSHIFT){ o.set('mode',3); result = false;}
 				else if(o.playmode &&  kc.isSHIFT){ o.set('mode',1); result = false;}
 			}
@@ -133,7 +133,7 @@ ui.event =
 	mouse_common : function(o){
 		var mv = o.mouse;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
-			if(pzprv3.EDITOR){
+			if(pzpr.EDITOR){
 				o.set('mode', (o.playmode?1:3));
 			}
 			mv.mousereset();
@@ -179,7 +179,7 @@ ui.event =
 		this.addEvent(_doc, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
-		var evname = (!pzprv3.env.OS.iOS ? 'resize' : 'orientationchange');
+		var evname = (!pzpr.env.OS.iOS ? 'resize' : 'orientationchange');
 		this.addEvent(window, evname, this, this.onresize_func);
 	},
 
@@ -215,7 +215,7 @@ ui.event =
 		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(pzprv3.env.OS.mobile){
+		if(pzpr.env.OS.mobile){
 			mwidth = wwidth*0.98;
 			cellsize = (mwidth*0.92)/cols;
 			if(cellsize < cellsizeval){ cellsize = cellsizeval;}
@@ -240,7 +240,7 @@ ui.event =
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzprv3.env.OS.mobile){ getEL('menuboard').style.width = '90%';}
+			if(pzpr.env.OS.mobile){ getEL('menuboard').style.width = '90%';}
 		}
 
 		o.setCanvasSizeByCellSize(cellsize);
@@ -263,7 +263,7 @@ ui.event =
 			
 			default: padding = 0.50; break;
 		}
-		if(pzprv3.env.OS.mobile){ padding = 0;}
+		if(pzpr.env.OS.mobile){ padding = 0;}
 		
 		o.canvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
 		
@@ -275,7 +275,7 @@ ui.event =
 	// pc.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
 	windowWidth : function(){
-		this.windowWidth = ((!pzprv3.env.OS.mobile) ?
+		this.windowWidth = ((!pzpr.env.OS.mobile) ?
 			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);}
 		:
 			function(){ return 980;}
@@ -283,7 +283,7 @@ ui.event =
 		return this.windowWidth();
 	}
 	// windowHeight : function(){
-	//	this.windowHeight = ((!pzprv3.env.OS.mobile) ?
+	//	this.windowHeight = ((!pzpr.env.OS.mobile) ?
 	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : _doc.body.clientHeight);}
 	//	:
 	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}

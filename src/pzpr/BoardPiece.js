@@ -1,12 +1,12 @@
 // BoardPiece.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('BoardPiece',
+pzpr.createPuzzleClass('BoardPiece',
 {
 	bx : -1,	// X座標(border座標系)を保持する
 	by : -1,	// Y座標(border座標系)を保持する
@@ -126,7 +126,7 @@ pzprv3.createPuzzleClass('BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
-pzprv3.createPuzzleClass('Cell:BoardPiece',
+pzpr.createPuzzleClass('Cell:BoardPiece',
 {
 	group : 'cell',
 
@@ -390,7 +390,7 @@ pzprv3.createPuzzleClass('Cell:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
-pzprv3.createPuzzleClass('Cross:BoardPiece',
+pzpr.createPuzzleClass('Cross:BoardPiece',
 {
 	group : 'cross',
 
@@ -434,7 +434,7 @@ pzprv3.createPuzzleClass('Cross:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
-pzprv3.createPuzzleClass('Border:BoardPiece',
+pzpr.createPuzzleClass('Border:BoardPiece',
 {
 	initialize : function(){
 		this.sidecell  = [null,null];	// 隣接セルのオブジェクト
@@ -577,7 +577,7 @@ pzprv3.createPuzzleClass('Border:BoardPiece',
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(4)
 // EXCellクラスの定義
-pzprv3.createPuzzleClass('EXCell:BoardPiece',
+pzpr.createPuzzleClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
@@ -605,7 +605,7 @@ pzprv3.createPuzzleClass('EXCell:BoardPiece',
 // ★Addressクラス (bx,by)座標を扱う
 //---------------------------------------------------------------------------
 // Addressクラス
-pzprv3.createPuzzleClass('Address',
+pzpr.createPuzzleClass('Address',
 {
 	initialize : function(bx,by){
 		this.bx = bx;
@@ -668,7 +668,7 @@ pzprv3.createPuzzleClass('Address',
 //----------------------------------------------------------------------------
 // ★PieceListクラス オブジェクトの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('PieceList',
+pzpr.createPuzzleClass('PieceList',
 {
 	length : 0,
 	
@@ -747,7 +747,7 @@ pzprv3.createPuzzleClass('PieceList',
 //----------------------------------------------------------------------------
 // ★CellListクラス Cellの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('CellList:PieceList',
+pzpr.createPuzzleClass('CellList:PieceList',
 {
 	//---------------------------------------------------------------------------
 	// clist.addByIdlist()  セルのIDのリストからセルを追加する
@@ -792,13 +792,13 @@ pzprv3.createPuzzleClass('CellList:PieceList',
 //----------------------------------------------------------------------------
 // ★CrossListクラス Crossの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('CrossList:PieceList',{
+pzpr.createPuzzleClass('CrossList:PieceList',{
 });
 
 //----------------------------------------------------------------------------
 // ★BorderListクラス Borderの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('BorderList:PieceList',
+pzpr.createPuzzleClass('BorderList:PieceList',
 {
 	//---------------------------------------------------------------------------
 	// clist.addByIdlist()  BorderのIDのリストからBorderを追加する
@@ -837,7 +837,7 @@ pzprv3.createPuzzleClass('BorderList:PieceList',
 //----------------------------------------------------------------------------
 // ★EXCellListクラス EXCellの配列を扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('EXCellList:PieceList',{
+pzpr.createPuzzleClass('EXCellList:PieceList',{
 });
 
 })();

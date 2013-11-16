@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 遠い誓い版 toichika.js v3.4.0
 //
 
-pzprv3.createCustoms('toichika', {
+pzpr.createCustoms('toichika', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -72,7 +72,7 @@ Board:{
 	isborder : 1,
 
 	getPairedArrowsInfo : function(){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		var ainfo=[], isarrow=[];
 		for(var c=0;c<this.cellmax;c++){ isarrow[c]=this.cell[c].isNum();}
 		for(var c=0;c<this.cellmax;c++){

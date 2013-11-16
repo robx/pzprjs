@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js v3.4.0
 //
 
-pzprv3.createCustoms('shugaku', {
+pzpr.createCustoms('shugaku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -149,7 +149,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		var trans = {};
 		switch(key){
 			case k.FLIPY: trans={42:43,43:42,47:48,48:47}; break;	// 上下反転

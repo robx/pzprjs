@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.4.0
 //
-pzprv3.createCustoms('bosanowa', {
+pzpr.createCustoms('bosanowa', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -136,7 +136,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
-		if(pzprv3.EDITOR){
+		if(pzpr.EDITOR){
 			var cell = this.owner.cursor.getTCC(); /* 真ん中にあるはず */
 			if(!cell.isnull){ cell.ques = 0;}
 		}
@@ -166,7 +166,7 @@ Graphic:{
 		this.drawNumbers();
 		this.drawNumbersBD();
 
-		if(pzprv3.EDITOR && !this.outputImage){
+		if(pzpr.EDITOR && !this.outputImage){
 			this.drawChassis();
 		}
 

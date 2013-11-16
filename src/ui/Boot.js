@@ -21,8 +21,8 @@ if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
 else{ window.attachEvent("onload", boot);}
 
 function includePzprFile(){
-	/* pzprv3, uiオブジェクト生成待ち */
-	if(!window.pzprv3 || !window.ui){ return false;}
+	/* pzpr, uiオブジェクト生成待ち */
+	if(!window.pzpr || !window.ui){ return false;}
 	
 	if(!onload_pzl){
 		/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
@@ -61,7 +61,7 @@ function startPuzzle(){
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
-	ui.puzzle = pzprv3.createPuzzle();
+	ui.puzzle = pzpr.createPuzzle();
 	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
@@ -110,16 +110,13 @@ function importURL(){
 	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
-	var pzl = pzprv3.url.parseURL(search);
+	var pzl = pzpr.url.parseURL(search);
 
 	if(!startmode){
 		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
 	}
-	switch(startmode){
-		case 'PLAYER': pzprv3.EDITOR = false; break;
-		case 'EDITOR': pzprv3.EDITOR = true;  break;
-	}
-	pzprv3.PLAYER = !pzprv3.EDITOR;
+	pzpr.EDITOR = (startmode==='EDITOR');
+	pzpr.PLAYER = !pzpr.EDITOR;
 
 	return pzl;
 }
@@ -153,8 +150,8 @@ function importFileData(){
 		var id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
 		if(!id){ return null;}
 
-		pzprv3.EDITOR = true;
-		pzprv3.PLAYER = false;
+		pzpr.EDITOR = true;
+		pzpr.PLAYER = false;
 		require_accesslog = false;
 		// sessionStorageのデータは残しておきます
 		
@@ -167,7 +164,7 @@ function importFileData(){
 // ★accesslog() playerのアクセスログをとる
 //---------------------------------------------------------------------------
 function accesslog(){
-	if(pzprv3.EDITOR || !onload_pzl.id || !require_accesslog){ return;}
+	if(pzpr.EDITOR || !onload_pzl.id || !require_accesslog){ return;}
 
 	if(document.domain!=='indi.s58.xrea.com' &&
 	   document.domain!=='pzprv3.sakura.ne.jp' &&

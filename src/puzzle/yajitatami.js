@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 ヤジタタミ版 yajitatami.js v3.4.0
 //
 
-pzprv3.createCustoms('yajitatami', {
+pzpr.createCustoms('yajitatami', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -145,7 +145,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];

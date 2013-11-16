@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.4.0
 //
-pzprv3.createCustoms('paintarea', {
+pzpr.createCustoms('paintarea', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -103,7 +103,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( pzprv3.EDITOR && !this.checkSameColorTile() ){ return 30030;}
+		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 30030;}
 
 		var binfo = this.owner.board.getBCellInfo();
 		if( !this.checkOneArea(binfo) ){ return 10005;}

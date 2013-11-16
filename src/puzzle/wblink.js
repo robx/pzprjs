@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 シロクロリンク版 wblink.js v3.4.0
 //
-pzprv3.createCustoms('wblink', {
+pzpr.createCustoms('wblink', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

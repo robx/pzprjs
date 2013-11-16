@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 数独版 sudoku.js v3.4.0
 //
-pzprv3.createCustoms('sudoku', {
+pzpr.createCustoms('sudoku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

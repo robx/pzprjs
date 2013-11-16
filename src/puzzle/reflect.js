@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
 //
 
-pzprv3.createCustoms('reflect', {
+pzpr.createCustoms('reflect', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -74,7 +74,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		if(key & k.TURNFLIP){
 			var tques={};
 			switch(key){

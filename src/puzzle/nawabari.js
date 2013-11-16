@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 なわばり・フォーセルズ・ファイブセルズ版 nawabari.js v3.4.0
 //
-pzprv3.createCustoms('nawabari', {
+pzpr.createCustoms('nawabari', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('slalom', {
+pzpr.createCustoms('slalom', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

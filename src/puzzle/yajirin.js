@@ -3,9 +3,9 @@
 // 
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('yajirin', {
+pzpr.createCustoms('yajirin', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

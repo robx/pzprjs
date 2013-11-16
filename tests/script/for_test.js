@@ -1,7 +1,7 @@
 // for_test.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
@@ -37,7 +37,7 @@ ui.debug.extend(
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
-		for(var id in pzprv3.url.info){ idlist.push(id);}
+		for(var id in pzpr.url.info){ idlist.push(id);}
 		idlist.sort();
 		term = idlist.length;
 
@@ -77,7 +77,7 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzprv3.url.constructURL({id:self.pid, type:k.URL_PZPRV3, qdata:self.urls[self.pid]});
+		var inp = pzpr.url.constructURL({id:self.pid, type:k.URL_PZPRV3, qdata:self.urls[self.pid]});
 		var ta  = ui.puzzle.getURL(k.URL_PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
@@ -86,7 +86,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzprv3.url.info[self.pid].exists.pencilbox){
+		if(pzpr.url.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			ui.openPuzzle(o.getURL(k.URL_KANPEN), function(){
@@ -109,7 +109,7 @@ ui.debug.extend(
 			ui.openPuzzle(acsstr[n][1].replace(/\//g,"\n"));
 			var failcode = ui.puzzle.check(true), compcode = acsstr[n][0];
 			var iserror = (failcode !== compcode);
-			var errdesc = "("+compcode+":"+pzprv3.failcode[compcode].ja+")";
+			var errdesc = "("+compcode+":"+pzpr.failcode[compcode].ja+")";
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
@@ -138,7 +138,7 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox : function(self){
-		if(pzprv3.url.info[self.pid].exists.kanpen){
+		if(pzpr.url.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
 			var outputstr = o.getFileData(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);
@@ -266,7 +266,7 @@ ui.debug.extend(
 
 	taenable : true,
 	addTextarea : function(str){
-		if(!pzprv3.env.browser.Gecko){ getEL('testarea').value += (str+"\n");}
+		if(!pzpr.env.browser.Gecko){ getEL('testarea').value += (str+"\n");}
 		else{
 			getEL('testdiv').appendChild(_doc.createTextNode(str));
 			getEL('testdiv').appendChild(_doc.createElement('br'));

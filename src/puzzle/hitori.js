@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ひとりにしてくれ hitori.js v3.4.0
 //
-pzprv3.createCustoms('hitori', {
+pzpr.createCustoms('hitori', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

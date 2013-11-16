@@ -33,7 +33,7 @@ Menu.prototype =
 		
 		this.initReader();
 
-		if(pzprv3.env.browser.IE6){
+		if(pzpr.env.browser.IE6){
 			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
 		}
 		
@@ -121,10 +121,10 @@ Menu.prototype =
 
 	displayDesign : function(){
 		var pid = ui.puzzle.pid;
-		var pinfo = pzprv3.url.info[pid];
+		var pinfo = pzpr.url.info[pid];
 		var title = this.selectStr(pinfo.ja, pinfo.en);
-		if(pzprv3.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else			 { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+		if(pzpr.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else		   { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 
 		_doc.title = title;
 		var titleEL = _doc.getElementById('title2');
@@ -133,7 +133,7 @@ Menu.prototype =
 		var imageurl = this.bgimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		_doc.body.style.backgroundImage = "url("+imageurl+")";
-		if(pzprv3.env.browser.IE6){
+		if(pzpr.env.browser.IE6){
 			titleEL.style.marginTop = "24px";
 		}
 	},
@@ -186,7 +186,7 @@ Menu.prototype =
 		this.menuconfig = {};
 
 		/* 正解自動判定機能 */
-		this.menuconfig.autocheck = {val:pzprv3.PLAYER};
+		this.menuconfig.autocheck = {val:pzpr.PLAYER};
 
 		/* キーポップアップ */
 		this.menuconfig.keypopup = {val:false};	/* 数字などのパネル入力 */
@@ -198,7 +198,7 @@ Menu.prototype =
 		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
 
 		/* テキストのサイズ */
-		this.menuconfig.textsize = {val:(!pzprv3.env.OS.mobile?0:2), option:[0,1,2,3]};
+		this.menuconfig.textsize = {val:(!pzpr.env.OS.mobile?0:2), option:[0,1,2,3]};
 
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
@@ -315,9 +315,9 @@ Menu.prototype =
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var filestr = ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH);
-		var url = './p.html?'+ui.puzzle.pid+(pzprv3.PLAYER?"_play":"");
-		if(!pzprv3.env.browser.Presto){
+		var filestr = ui.puzzle.getFileData(pzpr.consts.FILE_PZPH);
+		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
+		if(!pzpr.env.browser.Presto){
 			var old = sessionStorage['filedata'];
 			sessionStorage['filedata'] = filestr;
 			window.open(url,'');
@@ -386,7 +386,7 @@ Menu.prototype =
 	},
 	openimage : function(pc2){
 		var url = pc2.currentContext.canvas.toDataURL();
-		if(!pzprv3.env.browser.IE9){
+		if(!pzpr.env.browser.IE9){
 			window.open(url, '', '');
 		}
 		else{
@@ -409,7 +409,7 @@ Menu.prototype =
 	//------------------------------------------------------------------------------
 	answercheck : function(){
 		var failcode = ui.puzzle.check(true);
-		var strs = pzprv3.failcode[failcode];
+		var strs = pzpr.failcode[failcode];
 		this.alertStr(strs.ja, strs.en);
 	},
 	ACconfirm : function(){

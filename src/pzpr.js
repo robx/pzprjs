@@ -2,7 +2,7 @@
 (function(){
 	var dir="", srcs=document.getElementsByTagName('script');
 	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)pzprv3\.js$/);
+		var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
 		if(result){
 			if(result[1].match(/\/$/)){ dir = result[1];}
 			else{ dir = result[1]+'/';}
@@ -18,21 +18,21 @@
 		"../../candle/source/candle.sl.js",
 		"../../candle/source/candle.vml.js",
 
-		"pzprv3/CoreClass.js",
-		"pzprv3/Puzzle.js",
-		"pzprv3/BoardPiece.js",
-		"pzprv3/Board.js",
-		"pzprv3/BoardExec.js",
-		"pzprv3/LineManager.js",
-		"pzprv3/AreaManager.js",
-		"pzprv3/Graphic.js",
-		"pzprv3/MouseInput.js",
-		"pzprv3/KeyInput.js",
-		"pzprv3/URL.js",
-		"pzprv3/Encode.js",
-		"pzprv3/FileData.js",
-		"pzprv3/Answer.js",
-		"pzprv3/Operation.js"
+		"pzpr/CoreClass.js",
+		"pzpr/Puzzle.js",
+		"pzpr/BoardPiece.js",
+		"pzpr/Board.js",
+		"pzpr/BoardExec.js",
+		"pzpr/LineManager.js",
+		"pzpr/AreaManager.js",
+		"pzpr/Graphic.js",
+		"pzpr/MouseInput.js",
+		"pzpr/KeyInput.js",
+		"pzpr/URL.js",
+		"pzpr/Encode.js",
+		"pzpr/FileData.js",
+		"pzpr/Answer.js",
+		"pzpr/Operation.js"
 	];
 	for(var i=0;i<files.length;i++){
 		document.writeln('<script type="text/javascript" src="'+dir+files[i]+'"></script>');

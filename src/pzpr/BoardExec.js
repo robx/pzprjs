@@ -1,8 +1,8 @@
 // BoardExec.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
-pzprv3.addConsts({
+var k = pzpr.consts;
+pzpr.addConsts({
 	// 拡大縮小・回転反転用定数
 	EXPAND : 0x10,
 	REDUCE : 0x20,
@@ -30,7 +30,7 @@ pzprv3.addConsts({
 //---------------------------------------------------------------------------
 // ★BoardExecクラス 盤面の拡大縮小、反転回転等を行う (MenuExec.js, Board.jsから移動)
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('BoardExec',
+pzpr.createPuzzleClass('BoardExec',
 {
 	boardtype : {
 		expandup: [k.REDUCEUP, k.EXPANDUP],

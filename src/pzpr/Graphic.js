@@ -1,14 +1,14 @@
 // Graphic.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
 //---------------------------------------------------------------------------
 // パズル共通 Canvas/DOM制御部
 // Graphicクラスの定義
-pzprv3.createPuzzleClass('Graphic',
+pzpr.createPuzzleClass('Graphic',
 {
 	initialize : function(){
 		this.currentContext = null;
@@ -248,7 +248,7 @@ pzprv3.createPuzzleClass('Graphic',
 			var x0 = this.x0, y0 = this.y0;
 			// SVGの時、小数点以下の端数調整を行う
 			if(!g.use.canvas && g===this.currentContext){
-				var rect = pzprv3.util.getRect(g.canvas);
+				var rect = pzpr.util.getRect(g.canvas);
 				x0 -= (rect.left%1);
 				y0 -= (rect.top%1);
 			}
@@ -258,7 +258,7 @@ pzprv3.createPuzzleClass('Graphic',
 		this.owner.execListener('resize');
 
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect = pzprv3.util.getRect(this.currentContext.child);
+		var rect = pzpr.util.getRect(this.currentContext.child);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
@@ -321,7 +321,7 @@ pzprv3.createPuzzleClass('Graphic',
 		}
 		if(this.suspended){
 			if(this.canvasWidth===null || this.canvasHeight===null){
-				var rect = pzprv3.util.getRect(this.currentContext.canvas);
+				var rect = pzpr.util.getRect(this.currentContext.canvas);
 				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
 			}
 			this.suspended = false;
@@ -1908,7 +1908,7 @@ pzprv3.createPuzzleClass('Graphic',
 
 		this.vshow("text_"+key);
 		g.fillText(text, px, py);
-		if(pzprv3.env.browser.Presto && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
+		if(pzpr.env.browser.Presto && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 	},
 	hidenum : function(key){
 		this.vhide(["text_"+key]);

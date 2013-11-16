@@ -16,7 +16,7 @@
 	td.sentence dl dd span.brreq { color:red;}
 </style>
 <script type="text/javascript" src="./src/v3index.js"></script>
-<script type="text/javascript" src="./src/pzprv3.js"></script>
+<script type="text/javascript" src="./src/pzpr.js"></script>
 </HEAD>
 <BODY>
 
@@ -341,7 +341,7 @@ function dispExpression(){
 	setText("title", title);
 
 	if(EDITOR || PLAYER){
-		document.getElementById('pzlname').innerHTML = pzprv3.url.info[puzzleid][langcode]
+		document.getElementById('pzlname').innerHTML = pzpr.url.info[puzzleid][langcode]
 										+ {ja:"の操作方法", en:" - How to Input"}[langcode];
 
 		setText("puzmenu_expression", {ja:"パズルの操作説明",   en:"How to Input the board"}[langcode]);

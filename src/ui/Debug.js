@@ -38,7 +38,7 @@ ui.popupmgr.addpopup('debug',
 			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
 		}
 		this.addExecButton("img", "img", function(){ debug.adjustimage();});
-		if(pzprv3.env.storage.localST){
+		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
 		this.addBR();
@@ -110,11 +110,11 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		if(pzprv3.url.info[ui.puzzle.pid].exists.kanpen){
-			this.setTA(ui.puzzle.getFileData(pzprv3.consts.FILE_PBOX));
+		if(pzpr.url.info[ui.puzzle.pid].exists.kanpen){
+			this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PBOX));
 		}
 		else{
 			this.setTA("");
@@ -142,13 +142,13 @@ ui.debug =
 	},
 	timeeval : function(text,func){
 		this.addTA(text);
-		var count=0, old = pzprv3.util.currentTime();
-		while(pzprv3.util.currentTime() - old < 3000){
+		var count=0, old = pzpr.util.currentTime();
+		while(pzpr.util.currentTime() - old < 3000){
 			count++;
 
 			func();
 		}
-		var time = pzprv3.util.currentTime() - old;
+		var time = pzpr.util.currentTime() - old;
 
 		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
 	},

@@ -2,16 +2,16 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<script type="text/javascript" src="../src/pzprv3.js"></script>
+<script type="text/javascript" src="../src/pzpr.js"></script>
 <script type="text/javascript">
 var pzl, pzl2;
 window.onload = function(){
-	pzprv3.srcbase = '../src';
+	pzpr.srcbase = '../src';
 	
-	pzl = pzprv3.createPuzzle(document.getElementById('divques')).open('?tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
+	pzl = pzpr.createPuzzle(document.getElementById('divques')).open('?tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
 	
 	var filedata = "pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /0 0 0 0 /0 -1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 -1 1 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /".replace(/\//g,"\n");
-	pzl2 = pzprv3.createPuzzle(document.getElementById('divques2')).open(filedata, function(p){
+	pzl2 = pzpr.createPuzzle(document.getElementById('divques2')).open(filedata, function(p){
 		p.setCanvasSizeByCellSize(32);
 		p.set('irowake',true);
 	});

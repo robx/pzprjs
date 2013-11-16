@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('minarism', {
+pzpr.createCustoms('minarism', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

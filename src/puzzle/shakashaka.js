@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.4.0
 //
 
-pzprv3.createCustoms('shakashaka', {
+pzpr.createCustoms('shakashaka', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -234,7 +234,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		var trans = [];
 		switch(key){
 			case k.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転

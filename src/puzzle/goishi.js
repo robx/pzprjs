@@ -3,14 +3,14 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('goishi', {
+pzpr.createCustoms('goishi', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	initialize : function(){
-		pzprv3.common.MouseEvent.prototype.initialize.call(this);
+		pzpr.common.MouseEvent.prototype.initialize.call(this);
 		
 		this.ut = new this.owner.UndoTimer_goishi();
 	},
@@ -355,7 +355,7 @@ UndoTimer_goishi:{
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
-		var bz = pzprv3.env.browser;
+		var bz = pzpr.env.browser;
 		if(bz.IE6 || bz.IE7 || bz.IE8){ this.timerInterval *= 2;}
 
 		this.inUNDO = false;

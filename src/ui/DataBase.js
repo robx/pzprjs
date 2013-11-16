@@ -27,8 +27,8 @@ ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.getFileData(pzprv3.consts.FILE_PZPH).replace(/\r?\n/g,"/");
-		this.time = (pzprv3.util.currentTime()/1000)|0;
+		this.pdata = owner.getFileData(pzpr.consts.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.time = (pzpr.util.currentTime()/1000)|0;
 		this.comment = '';
 	},
 	toString : function(){
@@ -205,7 +205,7 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzprv3.env.storage.localST){ this.dbh = new DataBaseHandler_LS();}
+		if(pzpr.env.storage.localST){ this.dbh = new DataBaseHandler_LS();}
 		else{ return;}
 
 		this.sync = false;
@@ -295,7 +295,7 @@ DataBaseManager.prototype =
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzprv3.url.info[row.pid].ja+"&nbsp;");
+		str += (pzpr.url.info[row.pid].ja+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][this.lang]+"&nbsp;");
@@ -468,7 +468,7 @@ DataBaseHandler_LS.prototype =
 	},
 	updateManageData : function(parent){
 		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.util.currentTime()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzpr.util.currentTime()/1000)|0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -538,7 +538,7 @@ DataBaseHandler_LS.prototype =
 		delete localStorage['pzprv3_manage:manage'];
 
 		var puzzles = [];
-		for(var pid in pzprv3.url.info){ // いらないのもあるけど、問題ないのでOK
+		for(var pid in pzpr.url.info){ // いらないのもあるけど、問題ないのでOK
 			if(!localStorage['pzprv3_'+pid]){ continue;}
 			var mheader = 'pzprv3_manage:manage!'+pid+'!';
 			var count = localStorage[mheader+'count'];
@@ -566,7 +566,7 @@ DataBaseHandler_LS.prototype =
 		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
 		localStorage['pzprv3_storage:version'] = '2.0';
 		localStorage['pzprv3_storage:count'] = puzzles.length;
-		localStorage['pzprv3_storage:time']  = (pzprv3.util.currentTime()/1000)|0;
+		localStorage['pzprv3_storage:time']  = (pzpr.util.currentTime()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){
 			puzzles[i].id = (i+1);
 			localStorage['pzprv3_storage:data:'+(i+1)] = puzzles[i].toString();

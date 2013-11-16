@@ -7,7 +7,7 @@
 //     そのため、1～maxまで全て中身が存在しているとは限りません。
 //     回答チェックやファイル出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
-pzprv3.createPuzzleClass('AreaManager',
+pzpr.createPuzzleClass('AreaManager',
 {
 	initialize : function(){
 		this.max;
@@ -375,17 +375,17 @@ pzprv3.createPuzzleClass('AreaManager',
 // ☆AreaWhiteManagerクラス  白マス情報オブジェクトのクラス
 // ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createPuzzleClass('AreaBlackManager:AreaManager',
+pzpr.createPuzzleClass('AreaBlackManager:AreaManager',
 {
 	isvalid : function(cell){ return cell.isBlack();}
 });
 
-pzprv3.createPuzzleClass('AreaWhiteManager:AreaManager',
+pzpr.createPuzzleClass('AreaWhiteManager:AreaManager',
 {
 	isvalid : function(cell){ return cell.isWhite();}
 });
 
-pzprv3.createPuzzleClass('AreaNumberManager:AreaManager',
+pzpr.createPuzzleClass('AreaNumberManager:AreaManager',
 {
 	isvalid : function(cell){ return cell.isNumberObj();}
 });
@@ -393,12 +393,12 @@ pzprv3.createPuzzleClass('AreaNumberManager:AreaManager',
 //--------------------------------------------------------------------------------
 // ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
+pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
 {
 	initialize : function(){
 		this.crosscnt = [];		// 格子点の周りの境界線の数
 
-		pzprv3.common.AreaManager.prototype.initialize.call(this);
+		pzpr.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'border'],
 	bdfunc : function(border){ return border.isBorder();},
@@ -420,7 +420,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 			this.crosscnt[c]=(ischassis?2:0);
 		}}
 
-		pzprv3.common.AreaManager.prototype.rebuild.call(this);
+		pzpr.common.AreaManager.prototype.rebuild.call(this);
 
 		if(this.enabled && this.hastop){ this.resetRoomNumber();}
 	},
@@ -445,7 +445,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	checkExecSearch : function(border){
-		if(!pzprv3.common.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
+		if(!pzpr.common.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
 		var xc1 = border.sidecross[0].id, xc2 = border.sidecross[1].id;
@@ -464,7 +464,7 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	searchSingle : function(cell, newid){
-		pzprv3.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		pzpr.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.hastop){ this.setTopOfRoom(newid);}
 	},
@@ -548,12 +548,12 @@ pzprv3.createPuzzleClass('AreaRoomManager:AreaManager',
 //--------------------------------------------------------------------------------
 // ☆AreaLineManagerクラス 線つながり情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
+pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 {
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの領域を分断する境界線の数
 
-		pzprv3.common.AreaManager.prototype.initialize.call(this);
+		pzpr.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
 	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
@@ -568,7 +568,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 	reset : function(){
 		this.bdcnt = [];
 
-		pzprv3.common.AreaManager.prototype.reset.call(this);
+		pzpr.common.AreaManager.prototype.reset.call(this);
 	},
 	rebuild : function(){
 		if(!this.enabled){ return;}
@@ -582,7 +582,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 			if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
 		}
 
-		pzprv3.common.AreaManager.prototype.rebuild.call(this);
+		pzpr.common.AreaManager.prototype.rebuild.call(this);
 
 		if(this.enabled && this.moveline){ this.resetMovedBase();}
 	},
@@ -620,10 +620,10 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 			clist[i].base = (clist[i].isNum() ? clist[i] : this.owner.board.emptycell);
 		}
 
-		pzprv3.common.AreaManager.prototype.searchIdlist.call(this, clist);
+		pzpr.common.AreaManager.prototype.searchIdlist.call(this, clist);
 	},
 	searchSingle : function(cell, newid){
-		pzprv3.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		pzpr.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.moveline){ this.setMovedBase(newid);}
 	},
@@ -664,7 +664,7 @@ pzprv3.createPuzzleClass('AreaLineManager:AreaManager',
 //         0     どの部屋に属させるかの処理中
 //         1以上 その番号の部屋に属する
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('AreaInfo',
+pzpr.createPuzzleClass('AreaInfo',
 {
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)

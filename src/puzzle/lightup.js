@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 美術館版 lightup.js v3.4.0
 //
-pzprv3.createCustoms('lightup', {
+pzpr.createCustoms('lightup', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -47,7 +47,7 @@ sub fileopen{
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
 var filestr = "$str";
-if(!!parent.pzprv3 && !!parent.ui){
+if(!!parent.pzpr && !!parent.ui){
 	var errmsg = parent.ui.openPuzzle(filestr);
 	if(!!errmsg){ alert(errmsg);}
 }

@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('box', {
+pzpr.createCustoms('box', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

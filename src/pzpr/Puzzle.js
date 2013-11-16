@@ -5,10 +5,10 @@
 //---------------------------------------------------------------------------
 
 // Puzzleクラス
-pzprv3.Puzzle = function(){
+pzpr.Puzzle = function(){
 	this.initialize();
 };
-pzprv3.Puzzle.prototype =
+pzpr.Puzzle.prototype =
 {
 	initialize : function(){
 		this.pid     = '';			// パズルのID("creek"など)
@@ -16,7 +16,7 @@ pzprv3.Puzzle.prototype =
 
 		this.ready = false;
 
-		this.editmode = pzprv3.EDITOR;		// 問題配置モード
+		this.editmode = pzpr.EDITOR;		// 問題配置モード
 		this.playmode = !this.editmode;		// 回答モード
 
 		this.starttime = 0;
@@ -54,7 +54,7 @@ pzprv3.Puzzle.prototype =
 	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	openURL : function(url, callback){
-		var pzl = pzprv3.url.parseURL(url);
+		var pzl = pzpr.url.parseURL(url);
 		var pid = (!!pzl.id ? pzl.id : this.pid);
 
 		this.init(pid, function(puzzle){ puzzle.enc.decodeURL(url);}, callback);
@@ -94,7 +94,7 @@ pzprv3.Puzzle.prototype =
 		var puzzle = this, Board = (!!this.Board ? this.Board : null);;
 		puzzle.ready = false;
 		
-		pzprv3.classmgr.setPuzzleClass(this, pid, function(){
+		pzpr.classmgr.setPuzzleClass(this, pid, function(){
 			if(Board!==puzzle.Board){
 				/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 				puzzle.initObjects();
@@ -140,10 +140,10 @@ pzprv3.Puzzle.prototype =
 	setMouseEvents : function(canvas){
 		// マウス入力イベントの設定
 		var o = this;
-		pzprv3.util.addMouseDownEvent(canvas, o, o.execMouseDown);
-		pzprv3.util.addMouseMoveEvent(canvas, o, o.execMouseMove);
-		pzprv3.util.addMouseUpEvent  (canvas, o, o.execMouseUp);
-		pzprv3.util.addEvent(canvas, "mouseout", o, o.execMouseOut);
+		pzpr.util.addMouseDownEvent(canvas, o, o.execMouseDown);
+		pzpr.util.addMouseMoveEvent(canvas, o, o.execMouseMove);
+		pzpr.util.addMouseUpEvent  (canvas, o, o.execMouseUp);
+		pzpr.util.addEvent(canvas, "mouseout", o, o.execMouseOut);
 		canvas.oncontextmenu = function(){ return false;};
 	},
 	execMouseDown : function(e){ this.mouse.e_mousedown(e);},
@@ -159,9 +159,9 @@ pzprv3.Puzzle.prototype =
 	setKeyEvents : function(){
 		// キー入力イベントの設定
 		var o = this;
-		pzprv3.util.addEvent(document, 'keydown',  o, o.execKeyDown);
-		pzprv3.util.addEvent(document, 'keyup',    o, o.execKeyUp);
-		pzprv3.util.addEvent(document, 'keypress', o, o.execKeyPress);
+		pzpr.util.addEvent(document, 'keydown',  o, o.execKeyDown);
+		pzpr.util.addEvent(document, 'keyup',    o, o.execKeyUp);
+		pzpr.util.addEvent(document, 'keypress', o, o.execKeyPress);
 	},
 	execKeyDown  : function(e){ this.key.e_keydown(e);},
 	execKeyUp    : function(e){ this.key.e_keyup(e);},
@@ -212,7 +212,7 @@ pzprv3.Puzzle.prototype =
 		if(!type){ type = '';}
 		if(!!el){
 			Candle.start(el.id, type, function(g){
-				pzprv3.util.unselectable(g.canvas);
+				pzpr.util.unselectable(g.canvas);
 				o.setSLKeyEvents(g);
 				if(g.use.canvas){ o.addSubCanvas();}
 			});
@@ -274,10 +274,10 @@ pzprv3.Puzzle.prototype =
 	// owner.getTime()        開始からの時間をミリ秒単位で取得する
 	//---------------------------------------------------------------------------
 	resetTime : function(){
-		this.starttime = pzprv3.util.currentTime();
+		this.starttime = pzpr.util.currentTime();
 	},
 	getTime : function(){
-		return (pzprv3.util.currentTime() - this.starttime);
+		return (pzpr.util.currentTime() - this.starttime);
 	},
 
 	//---------------------------------------------------------------------------
@@ -314,7 +314,7 @@ pzprv3.Puzzle.prototype =
 	},
 	checkAndAlert : function(activemode){
 		var failcode = this.check(!!activemode);
-		alert(pzprv3.failcode[failcode][this.get('language')]);
+		alert(pzpr.failcode[failcode][this.get('language')]);
 		return failcode;
 	},
 	
@@ -381,7 +381,7 @@ Config.prototype =
 	init : function(){
 		/* 全般的な設定 */
 		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
-		this.add('language', pzprv3.util.getUserLang(), ['ja','en']);	/* 言語設定 */
+		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
 		this.add('cursor', true);								/* カーソルの表示 */
@@ -396,7 +396,7 @@ Config.prototype =
 		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 入力方法設定 */
-		this.add('use', (!pzprv3.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
+		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
@@ -462,7 +462,7 @@ Config.prototype =
 //---------------------------------------------------------------------------
 // ★Flagsクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('Flags',
+pzpr.createPuzzleClass('Flags',
 {
 	/* フラグ */
 	use      : false,

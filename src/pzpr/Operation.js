@@ -1,14 +1,14 @@
 // Undo.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★Operation(派生)クラス 単体の操作情報を保持する
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
-pzprv3.createPuzzleClass('Operation',
+pzpr.createPuzzleClass('Operation',
 {
 	initialize : function(){
 		this.manager = this.owner.opemgr;
@@ -38,7 +38,7 @@ pzprv3.createPuzzleClass('Operation',
 });
 
 // ObjectOperationクラス
-pzprv3.createPuzzleClass('ObjectOperation:Operation',
+pzpr.createPuzzleClass('ObjectOperation:Operation',
 {
 	group    : '',
 	property : '',
@@ -112,7 +112,7 @@ pzprv3.createPuzzleClass('ObjectOperation:Operation',
 });
 
 // BoardAdjustOperationクラス
-pzprv3.createPuzzleClass('BoardAdjustOperation:Operation',
+pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 {
 	prefix : 'AJ',
 	//---------------------------------------------------------------------------
@@ -144,7 +144,7 @@ pzprv3.createPuzzleClass('BoardAdjustOperation:Operation',
 });
 
 // BoardFlipOperationクラス
-pzprv3.createPuzzleClass('BoardFlipOperation:Operation',
+pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 {
 	prefix : 'AT',
 	area : {},
@@ -203,7 +203,7 @@ pzprv3.createPuzzleClass('BoardFlipOperation:Operation',
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // OperationManagerクラス
-pzprv3.createPuzzleClass('OperationManager',
+pzpr.createPuzzleClass('OperationManager',
 {
 	initialize : function(){
 		this.lastope;		// this.opeのLasstIndexへのポインタ

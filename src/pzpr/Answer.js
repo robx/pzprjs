@@ -1,7 +1,7 @@
 // Answer.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -9,7 +9,7 @@ var k = pzprv3.consts;
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzprv3.createPuzzleClass('AnsCheck',
+pzpr.createPuzzleClass('AnsCheck',
 {
 	initialize : function(){
 		this.inCheck = false;
@@ -600,7 +600,7 @@ pzprv3.createPuzzleClass('AnsCheck',
 	isErrorFlag_line : function(xinfo){ }
 });
 
-pzprv3.addFailCode({
+pzpr.addFailCode({
 	0     : ["正解です！","Complete!"],
 
 	10001 : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of black cells."],

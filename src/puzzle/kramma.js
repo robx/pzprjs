@@ -3,7 +3,7 @@
 //
 (function(){
 
-pzprv3.createCustoms('kramma', {
+pzpr.createCustoms('kramma', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

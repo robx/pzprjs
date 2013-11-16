@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 トリプレイス版 triplace.js v3.4.0
 //
 
-pzprv3.createCustoms('triplace', {
+pzpr.createCustoms('triplace', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -325,7 +325,7 @@ AnsCheck:{
 	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		if     (dir===k.RT){ number = keyobj.getQnum();}
 		else if(dir===k.DN){ number = keyobj.getQdir();}
 

@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 へびいちご版 snakes.js v3.4.0
 //
 
-pzprv3.createCustoms('snakes', {
+pzpr.createCustoms('snakes', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -302,7 +302,7 @@ AnsCheck:{
 		return result;
 	},
 	checkSnakesView : function(sinfo){
-		var k = pzprv3.consts;
+		var k = pzpr.consts;
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.room[r].clist;

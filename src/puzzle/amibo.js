@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('amibo', {
+pzpr.createCustoms('amibo', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -139,7 +139,7 @@ BoardExec:{
 	},
 	
 	rebuild : function(){
-		pzprv3.common.AreaManager.prototype.rebuild.call(this);
+		pzpr.common.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
 	},
 	

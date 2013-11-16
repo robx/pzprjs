@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js v3.4.0
 //
-pzprv3.createCustoms('shikaku', {
+pzpr.createCustoms('shikaku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -180,7 +180,7 @@ AnsCheck:{
 }
 });
 
-pzprv3.addFailCode({
+pzpr.addFailCode({
 	39301 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
 	39311 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."]
 });

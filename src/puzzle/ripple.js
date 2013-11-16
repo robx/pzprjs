@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 波及効果・コージュン版 ripple.js v3.4.0
 //
-pzprv3.createCustoms('ripple', {
+pzpr.createCustoms('ripple', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

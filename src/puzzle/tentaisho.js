@@ -2,7 +2,7 @@
 // パズル固有スクリプト部 天体ショー版 tentaisho.js v3.4.0
 //
 
-pzprv3.createCustoms('tentaisho', {
+pzpr.createCustoms('tentaisho', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -35,7 +35,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
-		if(pzprv3.EDITOR && this.owner.get('discolor')){ return;}
+		if(pzpr.EDITOR && this.owner.get('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
 		var star = pos.gets();
@@ -107,7 +107,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			this.owner.opemgr.addOpe_Object(this, pzprv3.consts.QSUB, 1, 0);
+			this.owner.opemgr.addOpe_Object(this, pzpr.consts.QSUB, 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;
@@ -172,7 +172,7 @@ CellList:{
 		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
-			if(pzprv3.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
+			if(pzpr.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
 			else if(cell.getQsub()!==(ret>0?ret:0)){
 				cell.setQsub(ret>0?ret:0);
 				flag = true;
@@ -514,7 +514,7 @@ AnsCheck:{
 }
 });
 
-pzprv3.addFailCode({
+pzpr.addFailCode({
 	39201 : ["星が含まれていない領域があります。","A block has no stars."],
 	39211 : ["星を線が通過しています。", "A line goes over the star."],
 	39221 : ["領域が星を中心に点対称になっていません。", "A area is not point symmetric about the star."],

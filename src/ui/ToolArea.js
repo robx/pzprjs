@@ -111,7 +111,7 @@ ui.toolarea = {
 		var el_div = createEL('div');
 
 		var el_span = createEL('span');
-		pzprv3.util.unselectable(el_span);
+		pzpr.util.unselectable(el_span);
 
 		var el_checkbox = createEL('input');
 		el_checkbox.type = 'checkbox';
@@ -119,7 +119,7 @@ ui.toolarea = {
 
 		var el_selchild = createEL('div');
 		el_selchild.className = 'flag';
-		pzprv3.util.unselectable(el_selchild);
+		pzpr.util.unselectable(el_selchild);
 
 		// usearea & checkarea
 		var pp = ui.menuarea.items;
@@ -174,7 +174,7 @@ ui.toolarea = {
 		}
 
 		// 管理領域の表示/非表示設定
-		if(pzprv3.EDITOR){
+		if(pzpr.EDITOR){
 			getEL('timerpanel').style.display = 'none';
 			getEL('separator2').style.display = 'none';
 		}
@@ -223,7 +223,7 @@ ui.toolarea = {
 
 		if(ui.puzzle.pid==='pipelinkr'){
 			var el = createButton(); el.id = 'btncircle';
-			pzprv3.util.unselectable(el);
+			pzpr.util.unselectable(el);
 			ui.event.addEvent(el, "click", this, this.toggledisp);
 			this.area.appendChild(el);
 		}
@@ -252,7 +252,7 @@ ui.toolarea = {
 		var mandisp  = (this.isdisp ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
 		getEL('checkpanel').style.display = mandisp;
-		if(!pzprv3.EDITOR){
+		if(!pzpr.EDITOR){
 			getEL('separator2').style.display = mandisp;
 		}
 		if(ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk){
@@ -261,7 +261,7 @@ ui.toolarea = {
 		}
 		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
 		
-		if(pzprv3.env.browser.IE6){
+		if(pzpr.env.browser.IE6){
 			getEL('separator2').style.margin = '0pt';
 		}
 	},
@@ -346,7 +346,7 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	addButtons : function(el, strJP, strEN){
 		ui.event.addEvent(el, "click", this, this.buttonclick);
-		pzprv3.util.unselectable(el);
+		pzpr.util.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
 

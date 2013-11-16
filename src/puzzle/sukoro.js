@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 数コロ・ヴィウ・数コロ部屋版 sukoro.js v3.4.0
 //
-pzprv3.createCustoms('sukoro', {
+pzpr.createCustoms('sukoro', {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{

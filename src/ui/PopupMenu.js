@@ -99,7 +99,7 @@ ui.popupmgr =
 	//---------------------------------------------------------------------------
 	titlebardown : function(e){
 		var popel = (e.target||e.srcElement).parentNode;
-		var pos = pzprv3.util.getPagePos(e);
+		var pos = pzpr.util.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pos.px - parseInt(popel.style.left);
 		this.offset.py = pos.py - parseInt(popel.style.top);
@@ -115,10 +115,10 @@ ui.popupmgr =
 	titlebarmove : function(e){
 		var popel = this.movingpop;
 		if(!!popel){
-			var pos = pzprv3.util.getPagePos(e);
+			var pos = pzpr.util.getPagePos(e);
 			popel.style.left = pos.px - this.offset.px + 'px';
 			popel.style.top  = pos.py - this.offset.py + 'px';
-			pzprv3.util.preventDefault(e);
+			pzpr.util.preventDefault(e);
 		}
 	}
 };
@@ -169,7 +169,7 @@ ui.popupmgr.addpopup('template',
 		
 		var bar = createEL('div');
 		bar.className = 'titlebar';
-		pzprv3.util.unselectable(bar);
+		pzpr.util.unselectable(bar);
 		this.pop.appendChild(bar);
 		this.titlebar = bar;
 		
@@ -447,7 +447,7 @@ ui.popupmgr.addpopup('urloutput',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = ui.puzzle.pid, exists = pzprv3.url.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzpr.url.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}
@@ -470,7 +470,7 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc, url = '', k = pzprv3.consts;
+		var enc = ui.puzzle.enc, url = '', k = pzpr.consts;
 		switch((e.target||e.srcElement).name){
 			case "pzprv3":     url = ui.puzzle.getURL(k.URL_PZPRV3);  break;
 			case "pzprapplet": url = ui.puzzle.getURL(k.URL_PZPRAPP); break;
@@ -504,7 +504,7 @@ ui.popupmgr.addpopup('fileopen',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ pzprv3.util.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
@@ -686,7 +686,7 @@ ui.popupmgr.addpopup('credit',
 	makeForm : function(){
 		this.settitle("credit", "credit");
 		
-		this.addText("ぱずぷれv3 "+pzprv3.version, "PUZ-PRE v3 "+pzprv3.version);
+		this.addText("ぱずぷれv3 "+pzpr.version, "PUZ-PRE v3 "+pzpr.version);
 		this.addBR();
 		this.addBR();
 		

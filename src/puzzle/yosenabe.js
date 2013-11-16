@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 よせなべ版 yosenabe.js v3.4.0
 //
-pzprv3.createCustoms('yosenabe', {
+pzpr.createCustoms('yosenabe', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

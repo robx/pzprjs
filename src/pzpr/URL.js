@@ -1,10 +1,10 @@
 (function(){
 
-/* pzprv3オブジェクト生成待ち */
-if(!window.pzprv3){ setTimeout(setTimeout(arguments.callee),15); return;}
+/* pzprオブジェクト生成待ち */
+if(!window.pzpr){ setTimeout(setTimeout(arguments.callee),15); return;}
 
-var k = pzprv3.consts;
-pzprv3.addConsts({
+var k = pzpr.consts;
+pzpr.addConsts({
 	// 定数(URL形式)
 	URL_AUTO    : 0,
 	URL_PZPRV3  : 6,
@@ -15,12 +15,12 @@ pzprv3.addConsts({
 	URL_HEYAAPP : 4
 });
 
-pzprv3.url = {
+pzpr.url = {
 	info   : {},
 
 	register : function(obj){
 		for(var pzprid in obj){
-			pzprv3.url.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
+			pzpr.url.info[pzprid] = new PZLDATA(pzprid,obj[pzprid]);
 		}
 	},
 	exists : function(name){
@@ -84,7 +84,7 @@ PZLDATA.prototype = {
 	}
 };
 
-pzprv3.url.register({
+pzpr.url.register({
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
@@ -238,7 +238,7 @@ function parseURLType(url){
 		pzl.id = pzl.id.replace(/(m\+|_edit|_test|_play)/,'');
 		pzl.type = k.URL_PZPRV3;
 	}
-	pzl.id = pzprv3.url.toPID(pzl.id);
+	pzl.id = pzpr.url.toPID(pzl.id);
 
 	return parseURLData(pzl);
 }
@@ -304,8 +304,8 @@ function constructURLType(pzl){
 		else if(pzl.id==='heyabon')  { str=str.replace("%PID%","bonsan");}
 	}
 	var urlbase = str.replace("%DOMAIN%", domain)
-					 .replace("%PID%", pzprv3.url.toURLID(pzl.id))
-					 .replace("%KID%", pzprv3.url.toKanpen(pzl.id));
+					 .replace("%PID%", pzpr.url.toURLID(pzl.id))
+					 .replace("%KID%", pzpr.url.toKanpen(pzl.id));
 	return urlbase + pzl.qdata;
 }
 

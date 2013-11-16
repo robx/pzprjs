@@ -5,7 +5,7 @@
 if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 /* タイマー割り込み間隔を短くするUA */
-var bz = pzprv3.env.browser;
+var bz = pzpr.env.browser;
 var slowUA = (bz.IE6 || bz.IE7 || bz.IE8);
 
 //---------------------------------------------------------------------------
@@ -46,9 +46,9 @@ ui.timer =
 		this.TID = setInterval(function(){ self.update();}, this.timerInterval);
 	},
 	update : function(){
-		this.current = pzprv3.util.currentTime();
+		this.current = pzpr.util.currentTime();
 
-		if(pzprv3.PLAYER){ this.updatetime();}
+		if(pzpr.PLAYER){ this.updatetime();}
 		if(ui.menu.getMenuConfig('autocheck')){ this.ACcheck();}
 	},
 
@@ -89,7 +89,7 @@ ui.timer =
 				return;
 			}
 
-			this.worstACtime = Math.max(this.worstACtime, (pzprv3.util.currentTime()-this.current));
+			this.worstACtime = Math.max(this.worstACtime, (pzpr.util.currentTime()-this.current));
 			this.nextACtime = this.current + (this.worstACtime<250 ? this.worstACtime*4+120 : this.worstACtime*2+620);
 		}
 	}

@@ -3,9 +3,9 @@
 //
 (function(){
 
-var k = pzprv3.consts;
+var k = pzpr.consts;
 
-pzprv3.createCustoms('icebarn', {
+pzpr.createCustoms('icebarn', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -337,7 +337,7 @@ Graphic:{
 
 	getBoardCols : function(){
 		var bd = this.owner.board, cols = ((bd.maxbx-bd.minbx)>>1);
-		if(pzprv3.PLAYER){
+		if(pzpr.PLAYER){
 			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
 			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols+=0.7;}
 		}
@@ -346,7 +346,7 @@ Graphic:{
 	},
 	getBoardRows : function(){
 		var bd = this.owner.board, rows = ((bd.maxby-bd.minby)>>1);
-		if(pzprv3.PLAYER){
+		if(pzpr.PLAYER){
 			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
 			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows+=0.7;}
 		}
@@ -355,7 +355,7 @@ Graphic:{
 	},
 	getOffsetCols : function(){
 		var bd = this.owner.board, cols = 0;
-		if(pzprv3.PLAYER){
+		if(pzpr.PLAYER){
 			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
 			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols-=0.7;}
 		}
@@ -363,7 +363,7 @@ Graphic:{
 	},
 	getOffsetRows : function(){
 		var bd = this.owner.board, rows = 0;
-		if(pzprv3.PLAYER){
+		if(pzpr.PLAYER){
 			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
 			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows-=0.7;}
 		}

@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 島国・チョコナ版 shimaguni.js v3.4.0
 //
-pzprv3.createCustoms('shimaguni', {
+pzpr.createCustoms('shimaguni', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

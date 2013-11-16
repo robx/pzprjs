@@ -1,8 +1,8 @@
 // FileData.js v3.4.0
 (function(){
 
-var k = pzprv3.consts;
-pzprv3.addConsts({
+var k = pzpr.consts;
+pzpr.addConsts({
 	// 定数(ファイル形式)
 	FILE_AUTO : 0,
 	FILE_PZPR : 1,
@@ -13,7 +13,7 @@ pzprv3.addConsts({
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
 //---------------------------------------------------------------------------
-pzprv3.createPuzzleClass('FileIO',
+pzpr.createPuzzleClass('FileIO',
 {
 	filever   : 0,
 	lineseek  : 0,
