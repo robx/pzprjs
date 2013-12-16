@@ -468,11 +468,11 @@ AnsCheck:{
 		var areainfo = bd.barinfo.getAreaInfo();
 		if( !this.checkOneArea(areainfo) ){ return 'lbDivide';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
 		var areainfo = this.owner.board.barinfo.getAreaInfo();
-		return (this.checkOneArea(areainfo) ? 'complete' : 'amiboDivided');
+		return (this.checkOneArea(areainfo) ? null : 'amiboDivided');
 	},
 
 	checkOutgoingBars : function(binfo, type){

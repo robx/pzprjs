@@ -811,7 +811,7 @@ AnsCheck:{
 
 		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		return 0;
+		return null;
 	},
 
 	checkCrossOutOfIce : function(){

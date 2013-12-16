@@ -196,7 +196,7 @@ AnsCheck:{
 
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 
-		return 0;
+		return null;
 	},
 
 	checkRowsColsSameNumber : function(){

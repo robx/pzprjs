@@ -146,7 +146,7 @@ AnsCheck:{
 		if( !this.checkOutsideNumber() ){ return 'nmOutside';}
 		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkOutsideNumber : function(){

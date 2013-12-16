@@ -207,14 +207,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		// それぞれ点線、境界線で作られる領域の情報
+		/* 境界線で作られる領域の情報 */
 		var cinfo = this.owner.board.getBlockInfo();
 		if( !this.checkMiniBlockCount(cinfo, 1) ){ return 'bkSubLt2';}
 		if( !this.checkBlockNotRect(cinfo) ){ return 'bkRect';}
 		if( !this.checkDifferentShapeBlock(cinfo) ){ return 'sbSameShape';}
 		if( !this.checkMiniBlockCount(cinfo, 3) ){ return 'bkSubGt2';}
 
-		return 0;
+		return null;
 	},
 
 	checkBlockNotRect : function(cinfo){

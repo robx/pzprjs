@@ -232,7 +232,7 @@ AnsCheck:{
 		if( !this.checkArrowNumber() ){ return 'anNumberNe';}
 		if( !this.checkSnakesView(sinfo) ){ return 'snakeAttack';}
 
-		return 0;
+		return null;
 	},
 
 	checkSnakeSize : function(sinfo){

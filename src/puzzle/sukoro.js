@@ -169,9 +169,10 @@ AnsCheck:{
 	checkAns : function(){
 		var o = this.owner, bd = o.board, pid = o.pid;
 
-		if( (pid!=='sukororoom') && !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-
-		if(pid==='sukororoom'){
+		if(pid!=='sukororoom'){
+			if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
+		}
+		else{
 			var rinfo = bd.getRoomInfo();
 			if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
 			if( !this.checkNumberOrNotInRoom(rinfo) ){ return 'bkMixed';}
@@ -185,7 +186,7 @@ AnsCheck:{
 
 		if( !this.checkNoSuspendCell() ){ return 'ceSuspend';}
 
-		return 0;
+		return null;
 	},
 
 	checkAdjacentDiffNumber : function(){

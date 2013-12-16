@@ -346,10 +346,10 @@ AnsCheck:{
 		if( !this.checkRowsColsTotalNumber() ){ return 'nmSumRowNe';}
 		if( !this.checkEmptyCell_kakuro() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell_kakuro() ? 'complete' : 'ceEmpty');
+		return (this.checkEmptyCell_kakuro() ? null : 'ceEmpty');
 	},
 
 	checkEmptyCell_kakuro : function(){

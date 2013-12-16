@@ -108,9 +108,8 @@ ui.debug.extend(
 		for(var n=0;n<acsstr.length;n++){
 			ui.openPuzzle(acsstr[n][1].replace(/\//g,"\n"));
 			var failcode = ui.puzzle.check(true), compcode = acsstr[n][0];
-			if(compcode===0){ compcode='complete';}
 			var iserror = (failcode !== compcode);
-			var errdesc = "("+compcode+":"+ui.puzzle.getFailStr(compcode)+")";
+			var errdesc = "("+(!!compcode?compcode:'complete')+":"+ui.puzzle.getFailDescription(compcode)+")";
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}

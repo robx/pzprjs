@@ -129,10 +129,10 @@ AnsCheck:{
 
 		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkAloneCircle() ? 'complete' : 'nmIsolate');
+		return (this.checkAloneCircle() ? null : 'nmIsolate');
 	},
 
 	checkAloneCircle : function(){

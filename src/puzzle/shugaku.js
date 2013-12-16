@@ -359,7 +359,7 @@ AnsCheck:{
 		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
 		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 
 	checkDir4PillowOver : function(){

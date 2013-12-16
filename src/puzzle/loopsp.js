@@ -261,7 +261,7 @@ AnsCheck:{
 		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
 		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		return 0;
+		return null;
 	},
 
 	checkCrossOnNumber : function(){

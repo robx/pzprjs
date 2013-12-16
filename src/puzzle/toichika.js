@@ -198,7 +198,7 @@ AnsCheck:{
 		if( !this.checkDirectionOfArrow(ainfo) ){ return 'arAlone';}
 		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		return 0;
+		return null;
 	},
 
 	checkDirectionOfArrow : function(ainfo){

@@ -155,7 +155,7 @@ AnsCheck:{
 
 		if( !this.checkCellNumber_kurotto() ){ return 'nmSumSizeNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkCellNumber_kurotto : function(){

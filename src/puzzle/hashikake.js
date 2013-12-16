@@ -317,7 +317,7 @@ AnsCheck:{
 
 		if( !this.checkCellNumber(2) ){ return 'nmLineCntLt';}
 
-		return 0;
+		return null;
 	},
 
 	checkCellNumber : function(flag){

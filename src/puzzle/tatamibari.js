@@ -216,7 +216,7 @@ AnsCheck:{
 
 		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
-		return 0;
+		return null;
 	},
 
 	checkSquareTatami : function(rinfo){

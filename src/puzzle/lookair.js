@@ -106,7 +106,7 @@ AnsCheck:{
 			/* チェック時は最後にチェックする */
 		if( !this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
 
-		return 0;
+		return null;
 	},
 
 	checkDir5BlackCell : function(){

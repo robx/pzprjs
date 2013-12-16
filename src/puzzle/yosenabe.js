@@ -337,7 +337,7 @@ AnsCheck:{
 
 		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
 
-		return 0;
+		return null;
 	},
 
 	checkCurveLine : function(linfo){

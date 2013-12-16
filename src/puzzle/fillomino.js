@@ -200,10 +200,10 @@ AnsCheck:{
 
 		if( !this.owner.get('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? 'complete' : 'ceEmpty');
+		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? null : 'ceEmpty');
 	},
 
 	checkSideAreaNumberSize : function(rinfo){

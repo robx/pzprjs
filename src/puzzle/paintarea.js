@@ -112,7 +112,7 @@ AnsCheck:{
 		if( !this.checkDir4BlackCell() ){ return 'nmBcellNe';}
 		if( !this.check2x2WhiteCell() ){ return 'wc2x2';}
 
-		return 0;
+		return null;
 	},
 
 	checkDir4BlackCell : function(){

@@ -460,7 +460,7 @@ AnsCheck:{
 		if( !this.checkFractal(rinfo) ){ return 'bkNotSymSt';}
 		if( !this.checkErrorFlag(rinfo, -2) ){ return 'bkPlStar';}
 
-		return 0;
+		return null;
 	},
 
 	checkStarOnLine : function(){

@@ -176,7 +176,7 @@ AnsCheck:{
 		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 'nmCountLt';}
 		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 'bkNoNum';}
 
-		return 0;
+		return null;
 	},
 
 	check2x2NumberCell : function(){

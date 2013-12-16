@@ -737,7 +737,7 @@ AnsCheck:{
 
 		if( !this.checkGateLine(2) ){ return 'nmUnpass';}
 
-		return 0;
+		return null;
 	},
 
 	checkLineOnBlackCell : function(){

@@ -182,7 +182,7 @@ AnsCheck:{
 
 		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
-		return 0;
+		return null;
 	},
 
 	checkFractal : function(rinfo){

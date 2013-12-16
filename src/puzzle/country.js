@@ -129,7 +129,7 @@ AnsCheck:{
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		return 0;
+		return null;
 	},
 
 	checkRoadCount : function(rinfo){

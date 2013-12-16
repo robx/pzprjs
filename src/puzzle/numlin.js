@@ -150,7 +150,7 @@ AnsCheck:{
 
 		if( !this.checkAloneNumber() ){ return 'nmIsolate';}
 
-		return 0;
+		return null;
 	},
 
 	checkLinkDiffNumber : function(linfo){

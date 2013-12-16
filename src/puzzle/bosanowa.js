@@ -451,10 +451,10 @@ AnsCheck:{
 		if( !this.checkSubsNumber() ){ return 'nmSumOfDiff';}
 		if( !this.checkValidFillCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkValidFillCell() ? 'complete' : 'ceEmpty');
+		return (this.checkValidFillCell() ? null : 'ceEmpty');
 	},
 
 	checkValidFillCell : function(){

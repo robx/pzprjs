@@ -242,7 +242,7 @@ AnsCheck:{
 
 		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
 
-		return 0;
+		return null;
 	},
 
 	// checkSameObjectInRoom()にbaseを付加した関数

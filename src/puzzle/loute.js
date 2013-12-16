@@ -445,7 +445,7 @@ AnsCheck:{
 
 		if( !this.checkLblock(rinfo) ){ return 'bkNotLshape';}
 
-		return 0;
+		return null;
 	},
 
 	checkArrowCorner1 : function(rinfo){

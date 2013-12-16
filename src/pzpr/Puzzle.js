@@ -302,11 +302,9 @@ pzpr.Puzzle.prototype =
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.check()          正答判定処理を行う
-	// owner.checkAnsAlert()  正答判定処理をしてalertに文字列を出す
-	// owner.getFailStr()     FailCodeから文字列を出力する
-	// owner.ansclear()       回答を消去する
-	// owner.subclear()       補助記号を消去する
+	// owner.check()              正答判定処理を行う
+	// owner.checkAnsAlert()      正答判定処理をしてalertに文字列を出す
+	// owner.getFailDescription() FailCodeから文字列を出力する
 	//------------------------------------------------------------------------------
 	check : function(activemode){
 		if(!!activemode){
@@ -317,13 +315,17 @@ pzpr.Puzzle.prototype =
 	},
 	checkAndAlert : function(activemode){
 		var failcode = this.check(!!activemode);
-		alert(this.getFailStr(failcode));
+		alert(this.getFailDescription(failcode));
 		return failcode;
 	},
-	getFailStr : function(failcode){
+	getFailDescription : function(failcode){
 		return this.faillist.getStr(failcode);
 	},
-	
+
+	//------------------------------------------------------------------------------
+	// owner.ansclear()       回答を消去する
+	// owner.subclear()       補助記号を消去する
+	//------------------------------------------------------------------------------
 	ansclear : function(){
 		this.board.ansclear();
 		this.board.resetInfo();

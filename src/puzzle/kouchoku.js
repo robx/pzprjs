@@ -645,7 +645,7 @@ AnsCheck:{
 
 		if( !this.checkConsequentLetter() ){ return 'nmNotConseq';}
 
-		return 0;
+		return null;
 	},
 
 	checkSegmentExist : function(){

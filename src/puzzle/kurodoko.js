@@ -125,7 +125,7 @@ AnsCheck:{
 
 		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkCellNumber : function(){

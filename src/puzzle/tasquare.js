@@ -123,7 +123,7 @@ AnsCheck:{
 
 		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoBcell';}
 
-		return 0;
+		return null;
 	},
 
 	checkNumberSquare : function(binfo, flag){

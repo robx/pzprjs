@@ -324,7 +324,7 @@ AnsCheck:{
 
 		if( !this.checkBlackCells() ){ return 'nmSumRowBcNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkBlackCells : function(type){

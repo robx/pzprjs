@@ -118,7 +118,7 @@ AnsCheck:{
 
 		if( !this.checkArrowNumber() ){ return 'anBcellNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkArrowNumber : function(){

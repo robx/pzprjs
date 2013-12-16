@@ -230,7 +230,7 @@ AnsCheck:{
 		if( !this.checkDir4Akari() ){ return 'nmAkariNe';}
 		if( !this.checkShinedCell() ){ return 'ceDark';}
 
-		return 0;
+		return null;
 	},
 
 	checkDir4Akari : function(){

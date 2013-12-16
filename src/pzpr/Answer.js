@@ -18,22 +18,18 @@ pzpr.createPuzzleClass('AnsCheck',
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う
-	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(0はNo Error) (オーバーライド用)
-	// ans.check1st()  オートチェック時に初めに判定を行う(オーバーライド用)
+	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error) (オーバーライド用)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
-		var failcode = 0, o = this.owner, bd = o.board;
+		var failcode = null, o = this.owner, bd = o.board;
 		this.inCheck = true;
 		
 		if(activemode){
 			this.checkOnly = false;
 			failcode = this.checkAns();
-			if(failcode!==0){
+			if(!!failcode){
 				bd.haserror = true;
 				o.redraw();
-			}
-			else{
-				failcode = 'complete';
 			}
 		}
 		else{
@@ -46,11 +42,11 @@ pzpr.createPuzzleClass('AnsCheck',
 		this.inCheck = false;
 		return failcode;
 	},
-	checkAns : function(){ return 0;},	//オーバーライド用
-	check1st : function(){ return 0;},	//オーバーライド用
+	checkAns : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
-	// ans.autocheck1st() autocheck前に、軽い正答判定を行う
+	// ans.autocheck1st() autocheckの最初に、軽い正答判定を行う
+	// ans.check1st()     autocheckの最初に、軽い正答判定を行う(オーバーライド用)
 	//---------------------------------------------------------------------------
 	// リンク系は重いので最初に端点を判定する
 	autocheck1st : function(){
@@ -62,6 +58,7 @@ pzpr.createPuzzleClass('AnsCheck',
 		}
 		return this.check1st();
 	},
+	check1st : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する

@@ -131,7 +131,7 @@ AnsCheck:{
 		if( !this.checkTatamiSize(rinfo) ){ return 'bkSizeNe';}
 		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
 
-		return 0;
+		return null;
 	},
 
 	checkTatamiLength : function(rinfo){

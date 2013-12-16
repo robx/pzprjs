@@ -334,10 +334,10 @@ AnsCheck:{
 		if( !this.checkBDmark() ){ return 'nmIneqNe';}
 		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
+		return (this.checkNoNumCell() ? null : 'ceEmpty');
 	},
 
 	checkRowsColsSameNumber : function(){

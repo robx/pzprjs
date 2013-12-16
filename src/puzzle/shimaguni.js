@@ -150,7 +150,7 @@ FileIO:{
 
 		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
 
-		return 0;
+		return null;
 	},
 
 	checkSideAreaBlackCell : function(rinfo){
@@ -183,7 +183,7 @@ FileIO:{
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkBlackCellCount(rinfo) ){ return 'bkBcellNe';}
 
-		return 0;
+		return null;
 	}
 },
 

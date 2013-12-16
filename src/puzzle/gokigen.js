@@ -387,7 +387,7 @@ AnsCheck:{
 
 		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
 
-		return 'complete';
+		return null;
 	},
 
 	checkLoopLine_gokigen : function(sdata){

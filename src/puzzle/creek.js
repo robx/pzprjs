@@ -108,7 +108,7 @@ AnsCheck:{
 		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
 		if( !this.checkQnumCross(2) ){ return 'crBcellLt';}
 
-		return 0;
+		return null;
 	},
 
 	checkQnumCross : function(type){

@@ -214,7 +214,7 @@ AnsCheck:{
 		if( !this.checkSingleArrowInArea() ){ return 'bkDupNum';}
 		if( !this.checkBalls() ){ return 'stopHalfway';}
 
-		return 0;
+		return null;
 	},
 
 	checkSingleArrowInArea : function(){

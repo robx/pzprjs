@@ -192,10 +192,10 @@ AnsCheck:{
 		if( !this.checkAroundNumbers() ){ return 'nmAround';}
 		if( !this.checkEmptyCell_kakuru() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell_kakuru() ? 'complete' : 'ceEmpty');
+		return (this.checkEmptyCell_kakuru() ? null : 'ceEmpty');
 	},
 
 	checkEmptyCell_kakuru : function(){

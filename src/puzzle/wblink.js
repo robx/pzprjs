@@ -179,7 +179,7 @@ AnsCheck:{
 
 		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
-		return 0;
+		return null;
 	},
 
 	checkAloneCircle : function(){

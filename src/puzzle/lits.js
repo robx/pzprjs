@@ -222,7 +222,7 @@ AnsCheck:{
 
 		if( !this.checkLessBlackCellInArea(rinfo) ){ return 'bkBcLt4';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverBlackCellInArea : function(rinfo){
@@ -273,7 +273,7 @@ AnsCheck:{
 
 		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverBlackCell : function(binfo){

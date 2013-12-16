@@ -531,7 +531,7 @@ AnsCheck:{
 		if( !this.checkMirrors(2) ){ return 'pairedNumberNe'}
 		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
 
-		return 0;
+		return null;
 	},
 
 	checkNoPluralMirrorsInRoom : function(rinfo){

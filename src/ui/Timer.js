@@ -82,7 +82,7 @@ ui.timer =
 		var o = ui.puzzle;
 		if(this.current>this.nextACtime && this.lastAnsCnt != o.opemgr.anscount && o.playmode && !o.checker.inCheck){
 			this.lastAnsCnt = o.opemgr.anscount;
-			if(o.check(false)===0){
+			if(!o.check(false)){
 				o.mouse.mousereset();
 				ui.menu.setMenuConfig('autocheck',false);
 				ui.menu.alertStr("正解です！","Complete!");

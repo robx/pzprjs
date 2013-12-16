@@ -126,7 +126,7 @@ AnsCheck:{
 
 		if( !this.checkCellNumber() ){ return 'nmShootBcNe1';}
 
-		return 0;
+		return null;
 	},
 
 	checkCellNumber : function(){

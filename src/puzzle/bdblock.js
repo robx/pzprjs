@@ -113,7 +113,7 @@ AnsCheck:{
 		if( !this.checkBorderCount(2,1) ){ return 'bdCountLt3BP';}
 		if( !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
 
-		return 0;
+		return null;
 	},
 
 	checkDiffNumberInBlock : function(rinfo){

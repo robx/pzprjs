@@ -176,7 +176,7 @@ AnsCheck:{
 
 		if( !this.checkAllMarkInBox(rinfo) ){ return 'bkNumLt3';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverFourMarksInBox : function(rinfo){

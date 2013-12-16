@@ -158,7 +158,7 @@ FileIO:{
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
 
-		return 0;
+		return null;
 	}
 },
 "AnsCheck@nuribou":{
@@ -174,7 +174,7 @@ FileIO:{
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkBou : function(binfo){
@@ -218,7 +218,7 @@ FileIO:{
 			if( !this.checkAreaNotRect(binfo) ){ return 'bcRect';}
 		}
 
-		return 0;
+		return null;
 	},
 
 	checkAreaNotRect : function(binfo){

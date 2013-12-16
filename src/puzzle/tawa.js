@@ -359,7 +359,7 @@ AnsCheck:{
 
 		if( !this.checkNumbers() ){ return 'ceBcellNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkThreeBlackCells : function(){

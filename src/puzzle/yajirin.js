@@ -187,7 +187,7 @@ AnsCheck:{
 
 		if( !this.checkBlankCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 
 	checkLineOnBlackCell : function(){

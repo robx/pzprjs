@@ -145,7 +145,7 @@ AnsCheck:{
 
 		if( !this.checkNoLineObject() ){ return 'nmIsolate';}
 
-		return 0;
+		return null;
 	},
 
 	/* 線のカウントはするが、○のある場所は除外する */

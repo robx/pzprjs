@@ -292,7 +292,7 @@ AnsCheck:{
 
 		if( !this.checkRowsColsBlackCell() ){ return 'asBcellNe';}
 
-		return 0;
+		return null;
 	},
 
 	checkSameColorTile : function(){

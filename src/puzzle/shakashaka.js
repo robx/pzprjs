@@ -339,7 +339,7 @@ AnsCheck:{
 		if( !this.checkWhiteArea() ){ return 'wcNotRectx';}
 		if( !this.checkLessTriangle() ){ return 'nmTriangleLt';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverTriangle : function(){

@@ -221,10 +221,10 @@ AnsCheck:{
 		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? 0 : 'bdDeadEnd');
+		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? null : 'bdDeadEnd');
 	},
 
 	checkDiffObjectInArea : function(rinfo){

@@ -107,7 +107,7 @@ FileIO:{
 
 		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
-		return 0;
+		return null;
 	},
 
 	checkTatamiMaxSize : function(rinfo){
@@ -131,7 +131,7 @@ FileIO:{
 
 		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
 
-		return 0;
+		return null;
 	},
 
 	checkTatamiDiffSize : function(rinfo){

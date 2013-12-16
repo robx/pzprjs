@@ -124,10 +124,10 @@ AnsCheck:{
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
+		return (this.checkNoNumCell() ? null : 'ceEmpty');
 	},
 
 	checkRowsColsSameNumber : function(){

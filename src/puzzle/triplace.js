@@ -309,7 +309,7 @@ AnsCheck:{
 		if( !this.checkRowsColsTileCount(tiles) ){ return 'asLblockNe';}
 		if( !this.checkLessThreeCells(tiles) ){ return 'bkSizeGt3';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverThreeCells : function(tiles){

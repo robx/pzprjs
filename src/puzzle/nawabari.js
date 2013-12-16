@@ -270,7 +270,7 @@ AnsCheck:{
 		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 'bkSizeGt4';}
 		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 'bkSizeGt5';}
 
-		return 0;
+		return null;
 	},
 
 	checkOverFourCells : function(rinfo){

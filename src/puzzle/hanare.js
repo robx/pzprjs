@@ -174,7 +174,7 @@ AnsCheck:{
 
 		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		return 0;
+		return null;
 	},
 
 	checkDiffNumber : function(){

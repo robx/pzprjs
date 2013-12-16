@@ -351,10 +351,10 @@ AnsCheck:{
 
 		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell() ? 'complete' : 'ceEmpty');
+		return (this.checkEmptyCell() ? null : 'ceEmpty');
 	},
 
 	checkBCell : function(type){

@@ -340,7 +340,7 @@ AnsCheck:{
 	checkAns : function(){
 		if( !this.checkPickedStone() ){ return 'goishiRemains';}
 
-		return 0;
+		return null;
 	},
 
 	checkPickedStone :function(){

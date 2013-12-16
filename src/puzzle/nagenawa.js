@@ -237,7 +237,7 @@ AnsCheck:{
 
 		if( (pid==='ringring') && !this.checkUnreachedWhiteCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return null;
 	},
 
 	checkNoLine : function(){

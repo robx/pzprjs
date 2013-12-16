@@ -191,7 +191,7 @@ AnsCheck:{
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		return 0;
+		return null;
 	},
 
 	checkdir4Line_meji : function(val){
