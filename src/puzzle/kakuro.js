@@ -342,14 +342,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsSameNumber() ){ return 10035;}
-		if( !this.checkRowsColsTotalNumber() ){ return 10036;}
-		if( !this.checkEmptyCell_kakuro() ){ return 50161;}
+		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
+		if( !this.checkRowsColsTotalNumber() ){ return 'nmSumRowNe';}
+		if( !this.checkEmptyCell_kakuro() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell_kakuro() ? 0 : 50161);
+		return (this.checkEmptyCell_kakuro() ? 'complete' : 'ceEmpty');
 	},
 
 	checkEmptyCell_kakuro : function(){
@@ -387,6 +387,11 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	nmSumRowNe : ["数字の下か右にある数字の合計が間違っています。","The sum of the cells is not correct."],
+	ceEmpty    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
 }
 });
 

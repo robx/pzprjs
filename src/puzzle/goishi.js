@@ -338,7 +338,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		if( !this.checkPickedStone() ){ return 91001;}
+		if( !this.checkPickedStone() ){ return 'goishiRemains';}
 
 		return 0;
 	},
@@ -346,6 +346,10 @@ AnsCheck:{
 	checkPickedStone :function(){
 		return this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);});
 	}
+},
+
+FailCode:{
+	goishiRemains : ["拾われていない碁石があります。","There is remaining Goishi."]
 },
 
 //---------------------------------------------------------

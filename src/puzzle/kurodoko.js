@@ -118,12 +118,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
+		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
-		if( !this.checkCellNumber() ){ return 90301;}
+		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
 
 		return 0;
 	},
@@ -149,5 +149,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous white cells of four direction is different."]
 }
 });

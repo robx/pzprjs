@@ -133,21 +133,21 @@ AnsCheck:{
 		var pid = this.owner.pid;
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 30004;}
+		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		if( !this.checkDoubleNumber(rinfo) ){ return 30012;}
+		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 
 		if(pid==='shikaku'){
-			if(!this.checkAreaRect(rinfo) ){ return 20011;}
+			if(!this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 		}
 		else if(pid==='aho'){
-			if( !this.checkAhoSquare(rinfo) ){ return 39301;}
-			if( !this.checkLshapeArea(rinfo) ){ return 39311;}
+			if( !this.checkAhoSquare(rinfo) ){ return 'bkNotRect3';}
+			if( !this.checkLshapeArea(rinfo) ){ return 'bkNotLshape3';}
 		}
 
-		if( !this.checkNumberAndSize(rinfo) ){ return 30021;}
+		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
 		return 0;
 	},
@@ -177,5 +177,14 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNoNum  : ["数字の入っていない領域があります。","An area has no numbers."],
+	bkNumGe2 : ["1つの領域に2つ以上の数字が入っています。","An area has plural numbers."],
+	bkSizeNe : ["数字と領域の大きさが違います。","The size of the area is not equal to the number."],
+	bkNotRect : ["四角形ではない領域があります。","An area is not rectangle."],
+	bkNotRect3 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
+	bkNotLshape3 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."],
 }
 });

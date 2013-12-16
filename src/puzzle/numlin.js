@@ -136,19 +136,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 43303;}
+		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
 
-		if( !this.checkLinkDiffNumber(linfo) ){ return 30029;}
+		if( !this.checkLinkDiffNumber(linfo) ){ return 'nmConnDiff';}
 
-		if( !this.checkLineOverLetter() ){ return 43103;}
-		if( !this.checkDeadendLine() ){ return 43401;}
-		if( !this.checkDisconnectLine(linfo) ){ return 43203;}
+		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
+		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
+		if( !this.checkDisconnectLine(linfo) ){ return 'lcIsolate';}
 
-		if( !this.checkAloneNumber() ){ return 43503;}
+		if( !this.checkAloneNumber() ){ return 'nmIsolate';}
 
 		return 0;
 	},
@@ -173,5 +173,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmConnDiff : ["異なる数字がつながっています。","Different numbers are connected."]
 }
 });

@@ -310,12 +310,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkCellNumber(1) ){ return 49801;}
+		if( !this.checkCellNumber(1) ){ return 'nmLineCntGt';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 43601;}
+		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
 
-		if( !this.checkCellNumber(2) ){ return 49811;}
+		if( !this.checkCellNumber(2) ){ return 'nmLineCntLt';}
 
 		return 0;
 	},
@@ -335,5 +335,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmLineCntGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
+	nmLineCntLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
 });

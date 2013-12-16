@@ -165,16 +165,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAroundMarks() ){ return 60211;}
+		if( !this.checkAroundMarks() ){ return 'nmAround';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverFourMarksInBox(rinfo) ){ return 31013;}
-		if( !this.checkDiffMarkInBox(rinfo) ){ return 30423;}
+		if( !this.checkOverFourMarksInBox(rinfo) ){ return 'bkNumGt3';}
+		if( !this.checkDiffMarkInBox(rinfo) ){ return 'bkDupNum';}
 
 		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 10010;}
+		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
 
-		if( !this.checkAllMarkInBox(rinfo) ){ return 31014;}
+		if( !this.checkAllMarkInBox(rinfo) ){ return 'bkNumLt3';}
 
 		return 0;
 	},
@@ -211,5 +211,13 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum : ["1つのハコに同じ記号が複数入っています。","A box has same plural marks."],
+	bkNumGt3 : ["1つのハコに4つ以上の記号が入っています。","A box has four or more marks."],
+	bkNumLt3 : ["1つのハコに2つ以下の記号しか入っていません。","A box has tow or less marks."],
+	nmDivide : ["タテヨコにつながっていない記号があります。","Marks are devided."],
+	nmAround : ["同じ記号がタテヨコナナメに隣接しています。","Same marks are adjacent."],
 }
 });

@@ -453,12 +453,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkStarOnLine() ){ return 39201;}
+		if( !this.checkStarOnLine() ){ return 'bkNoStar';}
 
 		var rinfo = this.owner.board.getAreaStarInfoAll();
-		if( !this.checkErrorFlag(rinfo, -1) ){ return 39211;}
-		if( !this.checkFractal(rinfo) ){ return 39221;}
-		if( !this.checkErrorFlag(rinfo, -2) ){ return 39231;}
+		if( !this.checkErrorFlag(rinfo, -1) ){ return 'bdPassStar';}
+		if( !this.checkFractal(rinfo) ){ return 'bkNotSymSt';}
+		if( !this.checkErrorFlag(rinfo, -2) ){ return 'bkPlStar';}
 
 		return 0;
 	},
@@ -511,5 +511,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNoStar   : ["星が含まれていない領域があります。","A block has no stars."],
+	bdPassStar : ["星を線が通過しています。", "A line goes over the star."],
+	bkNotSymSt : ["領域が星を中心に点対称になっていません。", "An area is not point symmetric about the star."],
+	bkPlStar   : ["星が複数含まれる領域があります。","A block has two or more stars."]
 }
 });

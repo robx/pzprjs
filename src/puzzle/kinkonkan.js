@@ -526,10 +526,10 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 31011;}
-		if( !this.checkMirrors(1) ){ return 91201;}
-		if( !this.checkMirrors(2) ){ return 91211;}
-		if( !this.checkExistMirrorInRoom(rinfo) ){ return 31012;}
+		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 'bkObjGe2';}
+		if( !this.checkMirrors(1) ){ return 'pairedLetterNe';}
+		if( !this.checkMirrors(2) ){ return 'pairedNumberNe'}
+		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
 
 		return 0;
 	},
@@ -556,6 +556,13 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	bkNoObj  : ["斜線の引かれていない部屋があります。", "A room has no mirrors."],
+	bkObjGe2 : ["斜線が複数引かれた部屋があります。", "A room has plural mirrors."],
+	pairedLetterNe : ["光が同じ文字の場所へ到達しません。", "Beam from a light doesn't reach one's pair."],
+	pairedNumberNe : ["光の反射回数が正しくありません。", "The count of refrection is wrong."]
 }
 });
 

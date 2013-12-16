@@ -121,19 +121,19 @@ AnsCheck:{
 		var pid = this.owner.pid;
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
+		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
 
-		if( (pid==='ripple') && !this.checkRippleNumber() ){ return 69501;}
+		if( (pid==='ripple') && !this.checkRippleNumber() ){ return 'nmSmallGap';}
 
-		if( (pid==='cojun') && !this.checkAdjacentDiffNumber() ){ return 60101;}
-		if( (pid==='cojun') && !this.checkUpperNumber(rinfo) ){ return 69511;}
+		if( (pid==='cojun') && !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
+		if( (pid==='cojun') && !this.checkUpperNumber(rinfo) ){ return 'bkSmallOnBig';}
 
-		if( !this.checkNoNumCell() ){ return 50171;}
+		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 0 : 50171);
+		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkDiffNumberInRoom : function(rinfo){
@@ -184,5 +184,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum   : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
+	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is an small number on big number in a room."],
+	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The gap of the same kind of number is smaller than the number."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });

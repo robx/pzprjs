@@ -226,9 +226,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkNotDuplicateAkari() ){ return 90801;}
-		if( !this.checkDir4Akari() ){ return 10039;}
-		if( !this.checkShinedCell() ){ return 90811;}
+		if( !this.checkNotDuplicateAkari() ){ return 'akariDup';}
+		if( !this.checkDir4Akari() ){ return 'nmAkariNe';}
+		if( !this.checkShinedCell() ){ return 'ceDark';}
 
 		return 0;
 	},
@@ -251,5 +251,11 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	nmAkariNe : ["数字のまわりにある照明の数が間違っています。","The number is not equal to the number of Akari around it."],
+	akariDup  : ["照明に別の照明の光が当たっています。","Akari is shined from another Akari."],
+	ceDark    : ["照明に照らされていないセルがあります。","A cell is not shined."]
 }
 });

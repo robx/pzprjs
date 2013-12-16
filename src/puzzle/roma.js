@@ -211,8 +211,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSingleArrowInArea() ){ return 31015;}
-		if( !this.checkBalls() ){ return 91401;}
+		if( !this.checkSingleArrowInArea() ){ return 'bkDupNum';}
+		if( !this.checkBalls() ){ return 'stopHalfway';}
 
 		return 0;
 	},
@@ -236,5 +236,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum : ["1つの領域に2つ以上の同じ矢印が入っています。","An area has plural same arrows."],
+	stopHalfway : ["ゴールにたどり着かないセルがあります。","A cell cannot reach a goal."]
 }
 });

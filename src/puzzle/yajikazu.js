@@ -111,12 +111,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
+		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
-		if( !this.checkArrowNumber() ){ return 10028;}
+		if( !this.checkArrowNumber() ){ return 'anBcellNe';}
 
 		return 0;
 	},

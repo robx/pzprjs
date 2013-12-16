@@ -109,30 +109,30 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 43302;}
-		if( !this.checkLineOverLetter() ){ return 43102;}
+		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
+		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,7) ){ return 48201;}
-		if( !this.checkErrorFlag_line(xinfo,6) ){ return 48211;}
-		if( !this.checkErrorFlag_line(xinfo,5) ){ return 48221;}
-		if( !this.checkErrorFlag_line(xinfo,4) ){ return 48231;}
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48241;}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 48251;}
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
+		if( !this.checkErrorFlag_line(xinfo,7) ){ return 'lcNotKusabi';}
+		if( !this.checkErrorFlag_line(xinfo,6) ){ return 'lcInvalid';}
+		if( !this.checkErrorFlag_line(xinfo,5) ){ return 'lcCurveGt2';}
+		if( !this.checkErrorFlag_line(xinfo,4) ){ return 'lcCurveLt2';}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcLenInvNe';}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcLenInvDiff';}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 43202;}
+		if( !this.checkDisconnectLine(linfo) ){ return 'lcIsolate';}
 
-		if( !this.checkAloneCircle() ){ return 43502;}
+		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkAloneCircle() ? 0 : 43502);
+		return (this.checkAloneCircle() ? 'complete' : 'nmIsolate');
 	},
 
 	checkAloneCircle : function(){
@@ -153,5 +153,18 @@ AnsCheck:{
 		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
+},
+
+FailCode:{
+	lcOnNum : ["○の上を線が通過しています。","A line goes through a circle."],
+	lcIsolate : ["○につながっていない線があります。","A line doesn't connect any circle."],
+	lcTripleNum : ["3つ以上の○が繋がっています。","Three or more objects are connected."],
+	lcNotKusabi : ["丸がコの字型に繋がっていません。","The shape of a line is not correct."],
+	lcInvalid  : ["繋がる丸が正しくありません。","The type of connected circle is wrong."],
+	lcCurveGt2 : ["線が2回以上曲がっています。","A line turns twice or more."],
+	lcCurveLt2 : ["線が2回曲がっていません。","A line turns only once or lower."],
+	lcLenInvNe : ["線の長さが同じではありません。","The length of lines is differnet."],
+	lcLenInvDiff : ["線の長短の指示に反してます。","The length of lines is not suit for the label of object."],
+	nmIsolate : ["どこにもつながっていない○があります。","A circle is not connected another object."]
 }
 });

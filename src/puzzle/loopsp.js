@@ -246,20 +246,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkenableLineParts(1) ){ return 50121;}
+		if( !this.checkenableLineParts(1) ){ return 'ceAddLine';}
 
-		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
-		if( !this.checkCrossOnNumber() ){ return 49341;}
+		if( !this.checkCrossOnNumber() ){ return 'lnCrossOnNum';}
 
-		if( !this.checkLoopNumber() ){ return 49601;}
-		if( !this.checkNumberLoop() ){ return 49611;}
-		if( !this.checkNumberInLoop() ){ return 49621;}
+		if( !this.checkLoopNumber() ){ return 'lpPlNum';}
+		if( !this.checkNumberLoop() ){ return 'lpSepNum';}
+		if( !this.checkNumberInLoop() ){ return 'lpNoNum';}
 
-		if( !this.checkCrossLineOnCross() ){ return 40421;}
+		if( !this.checkCrossLineOnCross() ){ return 'lnNotCrossMk';}
 
-		if( !this.checkLineCount(0) ){ return 50151;}
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
 		return 0;
 	},
@@ -321,5 +321,13 @@ AnsCheck:{
 	checkCrossLineOnCross : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
 	}
+},
+
+FailCode:{
+	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."],
+	lnCrossOnNum : ["○の部分で線が交差しています。","the lines are crossed on the number."],
+	lpPlNum  : ["異なる数字を含んだループがあります。","A loop has plural kinds of number."],
+	lpSepNum : ["同じ数字が異なるループに含まれています。","A kind of numbers are in differernt loops."],
+	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
 }
 });

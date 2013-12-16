@@ -96,15 +96,15 @@ AnsCheck:{
 	checkAns : function(){
 
 		/* 自動チェック時は最初にチェックする */
-		if( this.checkOnly && !this.checkDir5BlackCell() ){ return 10025;}
+		if( this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkAreaSquare(binfo) ){ return 10016;}
+		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
 
-		if( !this.checkLookair(binfo) ){ return 19001;}
+		if( !this.checkLookair(binfo) ){ return 'lookairBC';}
 
 			/* チェック時は最後にチェックする */
-		if( !this.checkOnly && !this.checkDir5BlackCell() ){ return 10025;}
+		if( !this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
 
 		return 0;
 	},
@@ -161,5 +161,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmBcell5Ne : ["数字およびその上下左右にある黒マスの数が間違っています。","the number is not equal to the number of black cells in the cell and four adjacent cells."],
+	lookairBC : ["同じ大きさの黒マスのカタマリの間に他の黒マスのカタマリがありません。","A mass of black cells can looks other same size mass of black cells."]
 }
 });

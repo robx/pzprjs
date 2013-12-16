@@ -314,28 +314,28 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = bd.getLareaInfo();
 
-		if( !this.checkDoubleObject(linfo) ){ return 30017;}
-		if( !this.checkLineOverLetter() ){ return 43104;}
+		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
-		if( !this.checkCurveLine(linfo) ){ return 20013;}
+		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
 
 		// 問題のチェック (1)
-		if( !this.checkQuesNumber() ){ return 90701;}
+		if( !this.checkQuesNumber() ){ return 'bnIllegalPos';}
 
 		var iarea = bd.iceinfo.getAreaInfo();
 		// 問題のチェック (2)
-		if( !this.checkDoubleNumberInNabe(iarea) ){ return 90711;}
+		if( !this.checkDoubleNumberInNabe(iarea) ){ return 'bkDoubleBn';}
 
-		if( !this.checkFillingCount(iarea) ){ return 90721;}
-		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 90731;}
-		if( !this.checkFillingOutOfNabe() ){ return 90741;}
+		if( !this.checkFillingCount(iarea) ){ return 'bkSumNeBn';}
+		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 'bkNoNum';}
+		if( !this.checkFillingOutOfNabe() ){ return 'nmOutOfBk';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 43204;}
+		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
 
 		return 0;
 	},
@@ -381,5 +381,16 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	laOnNum      : ["具材の上を線が通過しています。","A line goes through a filling."],
+	laIsolate    : ["具材につながっていない線があります。","A line doesn't connect any filling."],
+	nmConnected  : ["具材が繋がっています。","There are connected fillings."],
+	nmOutOfBk    : ["鍋に入っていない具材があります。","A filling isn't in a crock."],
+	bnIllegalPos : ["鍋の外に数字が書いてあります。","There is a number out of a crock."],
+	bkDoubleBn   : ["鍋に数字が２つ以上書いてあります。","There is two or more numbers in a crock."],
+	bkSumNeBn    : ["具材の合計値が正しくありません。","Sum of filling is not equal to a crock."],
+	bkNoNum      : ["具材のない鍋があります。","A crock has no circle."]
 }
 });

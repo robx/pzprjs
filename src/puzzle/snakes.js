@@ -226,11 +226,11 @@ AnsCheck:{
 	checkAns : function(){
 
 		var sinfo = this.owner.board.getSnakeInfo();
-		if( !this.checkSnakeSize(sinfo) ){ return 31009;}
-		if( !this.checkDiffAnsNumberInRoom(sinfo) ){ return 31010;}
-		if( !this.checkSideCell2(sinfo) ){ return 30231;}
-		if( !this.checkArrowNumber() ){ return 50511;}
-		if( !this.checkSnakesView(sinfo) ){ return 91101;}
+		if( !this.checkSnakeSize(sinfo) ){ return 'bkSizeNe5';}
+		if( !this.checkDiffAnsNumberInRoom(sinfo) ){ return 'bkDupNum';}
+		if( !this.checkSideCell2(sinfo) ){ return 'sbSnake';}
+		if( !this.checkArrowNumber() ){ return 'anNumberNe';}
+		if( !this.checkSnakesView(sinfo) ){ return 'snakeAttack';}
 
 		return 0;
 	},
@@ -338,5 +338,13 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
+	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
+	sbSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
+	anNumberNe : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."],
+	snakeAttack: ["蛇の視線の先に別の蛇がいます。","A snake can see another snake."]
 }
 });

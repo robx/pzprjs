@@ -377,17 +377,17 @@ AnsCheck:{
 		var pid = this.owner.pid;
 
 		var sdata=this.owner.board.getSlashData();
-		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 90501;}
+		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 'slLoop';}
 
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){ return 90521;}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){ return 'slLoopGiri';}
 
-		if( !this.checkQnumCross() ){ return 90511;}
+		if( !this.checkQnumCross() ){ return 'crConnSlNe';}
 
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){ return 90531;}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){ return 'slNotLoopWa';}
 
-		if( !this.checkNoSlashCell() ){ return 50131;}
+		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
 
-		return 0;
+		return 'complete';
 	},
 
 	checkLoopLine_gokigen : function(sdata){
@@ -421,6 +421,14 @@ AnsCheck:{
 	checkNoSlashCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQans()===0);});
 	}
+},
+
+FailCode:{
+	slLoop      : ["斜線で輪っかができています。", "There is a loop consisted in some slashes."],
+	slLoopGiri  : ["'切'が含まれた線が輪っかになっています。", "There is a loop that consists '切'."],
+	slNotLoopWa : ["'輪'が含まれた線が輪っかになっていません。", "There is not a loop that consists '輪'."],
+	crConnSlNe  : ["数字に繋がる線の数が間違っています。", "A number is not equal to count of lines that is connected to it."],
+	ceEmpty     : ["斜線がないマスがあります。","There is an empty cell."]
 }
 });
 

@@ -146,16 +146,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
-		if( !this.checkCrossOutOfIce() ){ return 40501;}
-		if( !this.checkIceLines() ){ return 40601;}
+		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
+		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkLineCount(0) ){ return 50151;}
+		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
 		return 0;
 	},
@@ -163,5 +163,9 @@ AnsCheck:{
 	checkCrossOutOfIce : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());});
 	}
+},
+
+FailCode:{
+	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."]
 }
 });

@@ -114,14 +114,14 @@ AnsCheck:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkAreaSquare(binfo) ){ return 10016;}
+		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkOneArea(winfo) ){ return 10007;}
+		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
 
-		if( !this.checkNumberSquare(binfo,true) ){ return 10022;}
+		if( !this.checkNumberSquare(binfo,true) ){ return 'ceSumSizeNe';}
 
-		if( !this.checkNumberSquare(binfo,false) ){ return 10023;}
+		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoBcell';}
 
 		return 0;
 	},
@@ -146,5 +146,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	ceSumSizeNe : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of black cells is not equal to the number."],
+	ceNoBcell   : ["数字のない□に黒マスが接していません。","No black cells are adjacent to square mark without numbers."]
 }
 });

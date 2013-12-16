@@ -254,21 +254,21 @@ AnsCheck:{
 		var o=this.owner, bd=o.board, pid=o.pid;
 
 		var rinfo = bd.getRoomInfo();
-		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){ return 20010;}
+		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
-		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){ return 30003;}
+		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){ return 30011;}
+		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 
-		if( (pid==='fourcells') && !this.checkOverFourCells(rinfo) ){ return 30035;}
-		if( (pid==='fivecells') && !this.checkOverFiveCells(rinfo) ){ return 30036;}
+		if( (pid==='fourcells') && !this.checkOverFourCells(rinfo) ){ return 'bkSizeLt4';}
+		if( (pid==='fivecells') && !this.checkOverFiveCells(rinfo) ){ return 'bkSizeLt5';}
 
-		if( !this.checkdir4BorderAns() ){ return 32401;}
+		if( !this.checkdir4BorderAns() ){ return 'nmBorderNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
-		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 30037;}
-		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 30038;}
+		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 'bkSizeGt4';}
+		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 'bkSizeGt5';}
 
 		return 0;
 	},
@@ -298,5 +298,14 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNoNum  : ["数字の入っていない部屋があります。","A room has no numbers."],
+	bkNumGe2 : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
+	bkSizeLt4 : ["サイズが4マスより小さいブロックがあります。","The size of block is smaller than four."],
+	bkSizeLt5 : ["サイズが5マスより小さいブロックがあります。","The size of block is smaller than five."],
+	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of block is larger than four."],
+	bkSizeGt5 : ["サイズが5マスより大きいブロックがあります。","The size of block is larger than five."]
 }
 });

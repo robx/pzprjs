@@ -335,9 +335,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkOverTriangle() ){ return 10040;}
-		if( !this.checkWhiteArea() ){ return 90901;}
-		if( !this.checkLessTriangle() ){ return 10041;}
+		if( !this.checkOverTriangle() ){ return 'nmTriangleGt';}
+		if( !this.checkWhiteArea() ){ return 'wcNotRectx';}
+		if( !this.checkLessTriangle() ){ return 'nmTriangleLt';}
 
 		return 0;
 	},
@@ -378,5 +378,11 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	wcNotRectx : ["白マスが長方形(正方形)ではありません。","A mass of white cells is not rectangle."],
+	nmTriangleGt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is bigger than it."],
+	nmTriangleLt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is smaller than it."]
 }
 });

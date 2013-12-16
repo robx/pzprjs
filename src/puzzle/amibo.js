@@ -454,25 +454,25 @@ AnsCheck:{
 		var bd = this.owner.board;
 
 		var binfo = bd.getBarInfo();
-		if( !this.checkOutgoingBars(binfo, 1) ){ return 48301;}
+		if( !this.checkOutgoingBars(binfo, 1) ){ return 'nmLineGt1';}
 
 		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
-		if( !this.checkLoop() ){ return 48311;}
-		if( !this.checkPoleLength(binfo,1) ){ return 50421;}
-		if( !this.checkCrossedLength(binfo) ){ return 48321;}
-		if( !this.checkPoleLength(binfo,2) ){ return 50431;}
+		if( !this.checkLoop() ){ return 'lbLoop';}
+		if( !this.checkPoleLength(binfo,1) ){ return 'lbLenGt';}
+		if( !this.checkCrossedLength(binfo) ){ return 'lbNotCrossEq';}
+		if( !this.checkPoleLength(binfo,2) ){ return 'lbLenLt';}
 		bd.cell.seterr(0);
 
-		if( !this.checkOutgoingBars(binfo, 2) ){ return 43511;}
+		if( !this.checkOutgoingBars(binfo, 2) ){ return 'nmIsolate';}
 
 		var areainfo = bd.barinfo.getAreaInfo();
-		if( !this.checkOneArea(areainfo) ){ return 43611;}
+		if( !this.checkOneArea(areainfo) ){ return 'lbDivide';}
 
 		return 0;
 	},
 	check1st : function(){
 		var areainfo = this.owner.board.barinfo.getAreaInfo();
-		return (this.checkOneArea(areainfo) ? 0 : 43611);
+		return (this.checkOneArea(areainfo) ? 'complete' : 'amiboDivided');
 	},
 
 	checkOutgoingBars : function(binfo, type){
@@ -575,6 +575,16 @@ AnsCheck:{
 			}
 		}
 	}
+},
+
+FailCode:{
+	lbDivide : ["棒が１つに繋がっていません。","Bars are devided."],
+	lbLenGt : ["白丸から出る棒の長さが長いです。","The length of the bar is long."],
+	lbLenLt : ["白丸から出る棒の長さが短いです。","The length of the bar is short."],
+	lbLoop : ["棒で輪っかができています。","There is a looped bars."],
+	lbNotCrossEq : ["同じ長さの棒と交差していません。","A bar doesn't cross the bar whose length is the same."],
+	nmLineGt1 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
+	nmIsolate : ["白丸に線がつながっていません。","No bar connects to a white circle."]
 }
 });
 

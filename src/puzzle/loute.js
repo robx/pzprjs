@@ -435,15 +435,15 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getLblockInfo();
-		if( !this.checkArrowCorner1(rinfo) ){ return 39501;}
-		if( !this.checkArrowCorner2(rinfo) ){ return 39511;}
-		if( !this.checkCircleCorner(rinfo) ){ return 39521;}
+		if( !this.checkArrowCorner1(rinfo) ){ return 'awBlkEdge';}
+		if( !this.checkArrowCorner2(rinfo) ){ return 'awNotPtCnr';}
+		if( !this.checkCircleCorner(rinfo) ){ return 'ciNotOnCnr';}
 
-		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 30022;}
+		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
-		if( !this.checkLblock(rinfo) ){ return 30039;}
+		if( !this.checkLblock(rinfo) ){ return 'bkNotLshape';}
 
 		return 0;
 	},
@@ -521,6 +521,13 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNotLshape : ["ブロックが幅1のL字型になっていません。","A block is not L-shape or whose width is not one."],
+	awBlkEdge  : ["矢印がブロックの端にありません。","An arrow is not at the edge of the block."],
+	awNotPtCnr : ["矢印の先にブロックの角がありません。","An arrow doesn't indicate the corner of a block."],
+	ciNotOnCnr : ["白丸がブロックの角にありません。","A circle is out of the corner."]
 }
 });
 

@@ -168,19 +168,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
+		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 90111;}
+		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 'bkNotSymBc';}
 
-		if( !this.checkBlackCellCount(rinfo) ){ return 30091;}
+		if( !this.checkBlackCellCount(rinfo) ){ return 'bkBcellNe';}
 
-		if( !this.checkCountinuousWhiteCell() ){ return 90101;}
+		if( !this.checkCountinuousWhiteCell() ){ return 'bkWcConsecGt3';}
 
-		if( !this.checkAreaRect(rinfo) ){ return 20010;}
+		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
 		return 0;
 	},
@@ -223,5 +223,10 @@ AnsCheck:{
 		if(count>=2){ clist.seterr(1); return false;}
 		return true;
 	}
+},
+
+FailCode:{
+	bkWcConsecGt3 : ["白マスが3部屋連続で続いています。","White cells are continued for three consecutive room."],
+	bkNotSymBc    : ["部屋の中の黒マスが点対称に配置されていません。","Position of black cells in the room is not point symmetric."]
 }
 });

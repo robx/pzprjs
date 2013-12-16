@@ -719,23 +719,23 @@ AnsCheck:{
 	checkAns : function(){
 		this.owner.board.hinfo.generateAll();
 
-		if( !this.checkLineOnBlackCell() ){ return 50102;}
+		if( !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
 
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
-		if( !this.checkGateLine(1) ){ return 49301;}
+		if( !this.checkGateLine(1) ){ return 'gateRedup';}
 
-		if( !this.checkStartid() ){ return 49311;}
+		if( !this.checkStartid() ){ return 'gateStart';}
 
-		if( !this.checkGateNumber() ){ return 49321;}
+		if( !this.checkGateNumber() ){ return 'nmOrder';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkGateLine(2) ){ return 49331;}
+		if( !this.checkGateLine(2) ){ return 'nmUnpass';}
 
 		return 0;
 	},
@@ -820,6 +820,13 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
+	gateStart : ["○から線が２本出ていません。","A line goes through a gate twice or more."],
+	nmOrder   : ["旗門を通過する順番が間違っています。","the order of passing the gate is wrong."],
+	nmUnpass  : ["線が通過していない旗門があります。","there is a gate that the line is not passing."]
 },
 
 //---------------------------------------------------------

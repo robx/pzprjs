@@ -153,7 +153,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkCellNumber_kurotto() ){ return 10026;}
+		if( !this.checkCellNumber_kurotto() ){ return 'nmSumSizeNe';}
 
 		return 0;
 	},
@@ -171,5 +171,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmSumSizeNe : ["隣り合う黒マスの個数の合計が数字と違います。","The number is not equal to sum of adjacent masses of black cells."]
 }
 });

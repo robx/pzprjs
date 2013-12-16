@@ -162,19 +162,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.check2x2NumberCell() ){ return 10003;}
+		if( !this.check2x2NumberCell() ){ return 'nm2x2';}
 
-		if( !this.checkSideAreaNumber() ){ return 30111;}
+		if( !this.checkSideAreaNumber() ){ return 'scNum';}
 
 		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 31004;}
-		if( !this.checkErrorFlag_cell(rinfo, 1) ){ return 69701;}
+		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 'bkPlNum';}
+		if( !this.checkErrorFlag_cell(rinfo, 1) ){ return 'nmCountGt';}
 
 		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 10009;}
+		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
 
-		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 69711;}
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 31007;}
+		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 'nmCountLt';}
+		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 'bkNoNum';}
 
 		return 0;
 	},
@@ -210,5 +210,13 @@ AnsCheck:{
 		}
 		return rinfo;
 	}
+},
+
+FailCode:{
+	bkNoNum : ["数字が含まれていないブロックがあります。","A block has no number."],
+	nm2x2   : ["数字が2x2のかたまりになっています。","There is a 2x2 block of numbers."],
+	scNum   : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
+	nmCountGt : ["入っている数字の数が数字より多いです。","A number is bigger than the size of block."],
+	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."]
 }
 });

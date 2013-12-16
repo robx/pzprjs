@@ -228,19 +228,19 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 30015;}
-		if( !this.checkLineOverLetter() ){ return 43101;}
+		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
 		var rinfo = bd.getRoomInfo();
-		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 30031;}
-		if( !this.checkGatheredObject(rinfo) ){ return 30401;}
-		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 30411;}
+		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 'bkPlNum';}
+		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
+		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 43201;}
+		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
 
 		return 0;
 	},
@@ -288,5 +288,11 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	bkNoNum : ["アルファベットのないブロックがあります。","A block has no letters."],
+	bkPlNum : ["１つのブロックに異なるアルファベットが入っています。","A block has plural kinds of letters."],
+	bkSepNum : ["同じアルファベットが異なるブロックに入っています。","Same kinds of letters are placed different blocks."]
 }
 });

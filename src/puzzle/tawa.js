@@ -353,11 +353,11 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkThreeBlackCells() ){ return 90011;}
+		if( !this.checkThreeBlackCells() ){ return 'bcConsecGt3';}
 
-		if( !this.checkUnderCells() ){ return 90021;}
+		if( !this.checkUnderCells() ){ return 'bcNotOnBc';}
 
-		if( !this.checkNumbers() ){ return 10024;}
+		if( !this.checkNumbers() ){ return 'ceBcellNe';}
 
 		return 0;
 	},
@@ -422,6 +422,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	ceBcellNe   : ["数字の周りに入っている黒マスの数が違います。","The number of black cells around a number is not correct."],
+	bcConsecGt3 : ["黒マスが横に3マス以上続いています。","There or more black cells continue horizonally."],
+	bcNotOnBc   : ["黒マスの下に黒マスがありません。","There are no black cells under a black cell."]
 }
 });
 

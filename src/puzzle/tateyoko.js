@@ -339,22 +339,22 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkBCell(1) ){ return 90601;}
+		if( !this.checkBCell(1) ){ return 'nmConnBarGt';}
 
 		var binfo = bd.getBarInfo();
 		bd.cell.seterr(-1);
-		if( !this.checkDoubleNumber(binfo) ){ return 30018;}
-		if( !this.checkNumberAndSize(binfo) ){ return 30024;}
+		if( !this.checkDoubleNumber(binfo) ){ return 'baPlNum';}
+		if( !this.checkNumberAndSize(binfo) ){ return 'bkSizeNe';}
 		bd.cell.seterr(0);
 
-		if( !this.checkBCell(2) ){ return 90611;}
+		if( !this.checkBCell(2) ){ return 'nmConnBarLt';}
 
-		if( !this.checkEmptyCell() ){ return 50141;}
+		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell() ? 0 : 50141);
+		return (this.checkEmptyCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkBCell : function(type){
@@ -381,6 +381,13 @@ AnsCheck:{
 	checkEmptyCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});
 	}
+},
+
+FailCode:{
+	bkSizeNe    : ["数字と棒の長さが違います。","The number is different from the length of line."],
+	baPlNum     : ["1つの棒に2つ以上の数字が入っています。","A line passes plural numbers."],
+	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a black cell is wrong."],
+	nmConnBarLt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a black cell is wrong."]
 }
 });
 

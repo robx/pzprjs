@@ -150,20 +150,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkWhitePearl1() ){ return 49211;}
-		if( !this.checkBlackPearl1() ){ return 49231;}
+		if( !this.checkWhitePearl1() ){ return 'mashuWCurve';}
+		if( !this.checkBlackPearl1() ){ return 'mashuBStrig';}
 
-		if( !this.checkBlackPearl2() ){ return 49241;}
-		if( !this.checkWhitePearl2() ){ return 49221;}
+		if( !this.checkBlackPearl2() ){ return 'mashuBCvNbr';}
+		if( !this.checkWhitePearl2() ){ return 'mashuWStNbr';}
 
-		if( !this.checkNoLinePearl() ){ return 49201;}
+		if( !this.checkNoLinePearl() ){ return 'mashuOnLine';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
 		return 0;
 	},
@@ -237,5 +237,13 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	mashuOnLine : ["線が上を通っていない丸があります。","Lines don't pass some pearls."],
+	mashuWCurve : ["白丸の上で線が曲がっています。","Lines curve on white pearl."],
+	mashuWStNbr : ["白丸の隣で線が曲がっていません。","Lines go straight next to white pearl on each side."],
+	mashuBStrig : ["黒丸の上で線が直進しています。","Lines go straight on black pearl."],
+	mashuBCvNbr : ["黒丸の隣で線が曲がっています。","Lines curve next to black pearl."]
 }
 });

@@ -114,20 +114,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoom2(rinfo) ){ return 39001;}
+		if( !this.checkRoom2(rinfo) ){ return 'lnPassTwice';}
 
-		if( !this.checkRoadCount(rinfo) ){ return 30301;}
-		if( !this.checkNoRoadCountry(rinfo) ){ return 30311;}
+		if( !this.checkRoadCount(rinfo) ){ return 'bkLineNe';}
+		if( !this.checkNoRoadCountry(rinfo) ){ return 'bkNoLine';}
 
-		if( !this.checkSideAreaGrass(rinfo) ){ return 30121;}
+		if( !this.checkSideAreaGrass(rinfo) ){ return 'scNoLine';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
 		return 0;
 	},
@@ -161,5 +161,11 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","the number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
+	scNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","the cells that is not passed any line are adjacent over border line."],
+	lnPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
 }
 });

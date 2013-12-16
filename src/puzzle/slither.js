@@ -174,14 +174,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkdir4BorderLine() ){ return 49101;}
+		if( !this.checkdir4BorderLine() ){ return 'nmLineNe';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
 		return 0;
 	},
@@ -198,5 +198,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmLineNe : ["数字の周りにある線の本数が違います。","the number is not equal to the number of lines around it."]
 }
 });

@@ -129,21 +129,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount_firefly(3) ){ return 40201;}
-		if( (this.owner.pid!=='ichimagax') && !this.checkLineCount_firefly(4) ){ return 40301;}
+		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
+		if( (this.owner.pid!=='ichimagax') && !this.checkLineCount_firefly(4) ){ return 'lnCross';}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 48111;}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 48121;}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcSameNum';}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveGt1';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 43601;}
+		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
 
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
 
-		if( !this.checkOutgoingLine() ){ return 48101;}
+		if( !this.checkOutgoingLine() ){ return 'nmLineNe';}
 
-		if( !this.checkNoLineObject() ){ return 50411;}
+		if( !this.checkNoLineObject() ){ return 'nmIsolate';}
 
 		return 0;
 	},
@@ -170,5 +170,13 @@ AnsCheck:{
 		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
+},
+
+FailCode:{
+	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."],
+	
+	nmLineNe : ["○から出る線の本数が正しくありません。", "The number is not equal to the number of lines out of the circle."],
+	lcSameNum : ["同じ数字同士が線で繋がっています。", "Same numbers are connected each other."],
+	lcCurveGt1 : ["線が2回以上曲がっています。", "The number of curves is twice or more."]
 }
 });

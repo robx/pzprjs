@@ -282,23 +282,23 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkenableLineParts(1) ){ return 50121;}
+		if( !this.checkenableLineParts(1) ){ return 'ceAddLine';}
 
-		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
 		if(this.owner.pid==='pipelinkr'){
 			var isdispice = (this.owner.get('disptype_pipelinkr')==2);
-			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 40501 : 40502);}
-			if( !this.checkIceLines() ){ return (isdispice ? 40601 : 40602);}
+			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 'lnCrossExIce' : 'lnCrossExCir');}
+			if( !this.checkIceLines() ){ return (isdispice ? 'lnCurveOnIce' : 'lnCurveOnCir');}
 		}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkCrossLineOnCross() ){ return 40421;}
+		if( !this.checkCrossLineOnCross() ){ return 'lnNotCrossMk';}
 
-		if( !this.checkLineCount(0) ){ return 50151;}
+		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
 		return 0;
 	},
@@ -309,6 +309,12 @@ AnsCheck:{
 	checkCrossLineOnCross : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
 	}
+},
+
+FailCode:{
+	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."],
+	lnCrossExCir : ["○の部分以外で線が交差しています。","there is a crossing line out of circles."],
+	lnCurveOnCir : ["○の部分で線が曲がっています。","A line curves on circles."]
 }
 });
 

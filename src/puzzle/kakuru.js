@@ -187,15 +187,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAroundPrenums() ){ return 69301;}
-		if( !this.checkNumber() ){ return 69311;}
-		if( !this.checkAroundNumbers() ){ return 60201;}
-		if( !this.checkEmptyCell_kakuru() ){ return 50191;}
+		if( !this.checkAroundPrenums() ){ return 'nqAroundDup';}
+		if( !this.checkNumber() ){ return 'nqAroundSumNe';}
+		if( !this.checkAroundNumbers() ){ return 'nmAround';}
+		if( !this.checkEmptyCell_kakuru() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkEmptyCell_kakuru() ? 0 : 50191);
+		return (this.checkEmptyCell_kakuru() ? 'complete' : 'ceEmpty');
 	},
 
 	checkEmptyCell_kakuru : function(){
@@ -274,5 +274,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nqAroundDup : ["初めから出ている数字の周りに同じ数字が入っています。","There are same numbers around the pre-numbered cell."],
+	nqAroundSumNe : ["初めから出ている数字の周りに入る数の合計が正しくありません。","A sum of numbers around the pre-numbered cell is incorrect."]
 }
 });

@@ -182,14 +182,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkdir4Line_meji(3) ){ return 40201;}
-		if( !this.checkdir4Line_meji(4) ){ return 40301;}
+		if( !this.checkdir4Line_meji(3) ){ return 'lnBranch';}
+		if( !this.checkdir4Line_meji(4) ){ return 'lnCross';}
 
-		if( !this.checkDotLength() ){ return 39101;}
+		if( !this.checkDotLength() ){ return 'bkNoLineNe';}
 
-		if( !this.checkdir4Line_meji(1) ){ return 40101;}
+		if( !this.checkdir4Line_meji(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
 		return 0;
 	},
@@ -238,5 +238,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNoLineNe : ["タイルと周囲の線が引かれない点線の長さが異なります。","the size of the tile is not equal to the total of length of lines that is remained dotted around the tile."]
 }
 });

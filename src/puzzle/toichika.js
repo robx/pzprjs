@@ -191,12 +191,12 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){ return 31016;}
+		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 
 		var ainfo = this.owner.board.getPairedArrowsInfo();
-		if( !this.checkAdjacentCountries(rinfo, ainfo) ){ return 91501;}
-		if( !this.checkDirectionOfArrow(ainfo) ){ return 91511;}
-		if( !this.checkNoNumber(rinfo) ){ return 31017;}
+		if( !this.checkAdjacentCountries(rinfo, ainfo) ){ return 'arAdjPair';}
+		if( !this.checkDirectionOfArrow(ainfo) ){ return 'arAlone';}
+		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
 		return 0;
 	},
@@ -233,5 +233,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkNoNum   : ["国に矢印が入っていません。","A country has no arrow."],
+	bkNumGe2  : ["1つの国に2つ以上の矢印が入っています。","A country has plural arrows."],
+	arAdjPair : ["辺を共有する国にペアとなる矢印が入っています。","There are paired arrows in adjacent countries."],
+	arAlone   : ["矢印の先にペアとなる矢印がいません。","There is not paired arrow in the direction of an arrow."]
 }
 });

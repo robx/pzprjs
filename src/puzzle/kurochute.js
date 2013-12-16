@@ -119,12 +119,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
+		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
-		if( !this.checkCellNumber() ){ return 90401;}
+		if( !this.checkCellNumber() ){ return 'nmShootBcNe1';}
 
 		return 0;
 	},
@@ -149,5 +149,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmShootBcNe1 : ["数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。","The number of black cells at aparted cell by the number is not one."]
 }
 });

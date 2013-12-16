@@ -155,17 +155,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsSameAnsNumber() ){ return 10038;}
+		if( !this.checkRowsColsSameAnsNumber() ){ return 'nmDupRow';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoomNumber(rinfo) ){ return 69601;}
+		if( !this.checkRoomNumber(rinfo) ){ return 'nmProduct';}
 
-		if( !this.checkNoNumCell() ){ return 50171;}
+		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 0 : 50171);
+		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkRowsColsSameAnsNumber : function(){
@@ -192,5 +192,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmProduct : ["ブロックの数字と数字の積が同じではありません。","A number of room is not equal to the product of these numbers."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });

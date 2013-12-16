@@ -347,17 +347,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkKitamakura() ){ return 91301;}
-		if( !this.check2x2BlackCell() ){ return 10001;}
-		if( !this.checkDir4PillowOver() ){ return 10042;}
-		if( !this.checkFullSizeFuton() ){ return 91311;}
-		if( !this.checkFutonAisle() ){ return 91321;}
+		if( !this.checkKitamakura() ){ return 'kitamakura';}
+		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
+		if( !this.checkDir4PillowOver() ){ return 'nmPillowGt';}
+		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
+		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkOneArea(binfo) ){ return 10006;}
+		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
-		if( !this.checkDir4PillowLess() ){ return 10043;}
-		if( !this.checkEmptyCell_shugaku() ){ return 50211;}
+		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
+		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}
 
 		return 0;
 	},
@@ -414,5 +414,15 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bcDivide : ["通路が分断されています。","Aisle is divided."],
+	nmPillowGt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
+	nmPillowLt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
+	kitamakura : ["北枕になっている布団があります。", "There is a 'Kita-makura' futon."],
+	futonHalf  : ["布団が2マスになっていません。", "There is a half-size futon."],
+	futonMidPos: ["通路に接していない布団があります。", "There is a futon separated to aisle."],
+	ceEmpty : ["布団でも黒マスでもないマスがあります。", "There is an empty cell."]
 }
 });

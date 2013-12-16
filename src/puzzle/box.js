@@ -322,7 +322,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBlackCells() ){ return 90001;}
+		if( !this.checkBlackCells() ){ return 'nmSumRowBcNe';}
 
 		return 0;
 	},
@@ -360,6 +360,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmSumRowBcNe : ["数字と黒マスになった数字の合計が正しくありません。","A number is not equal to the sum of the number of black cells."]
 }
 });
 

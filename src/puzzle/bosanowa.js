@@ -448,13 +448,13 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSubsNumber() ){ return 69401;}
-		if( !this.checkValidFillCell() ){ return 50201;}
+		if( !this.checkSubsNumber() ){ return 'nmSumOfDiff';}
+		if( !this.checkValidFillCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkValidFillCell() ? 0 : 50201);
+		return (this.checkValidFillCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkValidFillCell : function(){
@@ -492,5 +492,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });

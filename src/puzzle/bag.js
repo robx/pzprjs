@@ -136,15 +136,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOutsideNumber() ){ return 29101;}
-		if( !this.checkCellNumber() ){ return 29111;}
+		if( !this.checkOutsideNumber() ){ return 'nmOutside';}
+		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
 
 		return 0;
 	},
@@ -174,5 +174,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmOutside   : ["輪の内側に入っていない数字があります。","There is an outside number."],
+	nmSumViewNe : ["数字と輪の内側になる4方向のマスの合計が違います。","The number and the sum of the inside cells of four direction is different."]
 }
 });

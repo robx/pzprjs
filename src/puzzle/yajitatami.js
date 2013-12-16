@@ -122,14 +122,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 32301;}
-		if( !this.checkArrowNumber_border() ){ return 50501;}
+		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		if( !this.checkArrowNumber_border() ){ return 'arNoAdjBd';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkTatamiLength(rinfo) ){ return 10033;}
-		if( !this.checkArrowNumber_tatami() ){ return 33201;}
-		if( !this.checkTatamiSize(rinfo) ){ return 30023;}
-		if( !this.checkTatamiBreadth(rinfo) ){ return 30001;}
+		if( !this.checkTatamiLength(rinfo) ){ return 'bkSize1';}
+		if( !this.checkArrowNumber_tatami() ){ return 'anTatamiNe';}
+		if( !this.checkTatamiSize(rinfo) ){ return 'bkSizeNe';}
+		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
 
 		return 0;
 	},
@@ -182,5 +182,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkSizeNe   : ["数字とタタミの大きさが違います。","The size of tatami and the number written in Tatami is different."],
+	bkSize1    : ["長さが１マスのタタミがあります。","The length of the tatami is one."],
+	anTatamiNe : ["矢印の方向にあるタタミの数が正しくありません。","The number of tatamis are not correct."],
+	arNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
 }
 });

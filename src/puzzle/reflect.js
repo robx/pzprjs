@@ -279,18 +279,18 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkCrossOutOfMark() ){ return 40401;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkCrossOutOfMark() ){ return 'lnCrossExMk';}
 
-		if( !this.checkTriNumber(1) ){ return 19111;}
-		if( !this.checkTriangle() ){ return 19101;}
-		if( !this.checkTriNumber(2) ){ return 19121;}
+		if( !this.checkTriNumber(1) ){ return 'lnLenGt';}
+		if( !this.checkTriangle() ){ return 'lnExTri';}
+		if( !this.checkTriNumber(2) ){ return 'lnLenLt';}
 
-		if( !this.checkNotCrossOnMark() ){ return 40411;}
+		if( !this.checkNotCrossOnMark() ){ return 'lnNotCrossMk';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
 		return 0;
 	},
@@ -332,5 +332,11 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	lnExTri : ["線が三角形を通過していません。","A line doesn't goes through a triangle."],
+	lnLenGt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."],
+	lnLenLt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."]
 }
 });

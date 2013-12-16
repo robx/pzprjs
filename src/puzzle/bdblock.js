@@ -101,17 +101,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(3,2) ){ return 32501;}
-		if( !this.checkBorderCount(4,2) ){ return 32511;}
+		if( !this.checkBorderCount(3,2) ){ return 'bdBranchExBP';}
+		if( !this.checkBorderCount(4,2) ){ return 'bdCrossExBP';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 30002;}
-		if( !this.checkDiffNumberInBlock(rinfo) ){ return 30028;}
-		if( !this.checkGatheredObject(rinfo) ){ return 30402;}
+		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkDiffNumberInBlock(rinfo) ){ return 'bkPlNum';}
+		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
 
-		if( !this.checkBorderCount(1,0) ){ return 32101;}
-		if( !this.checkBorderCount(2,1) ){ return 32611;}
-		if( !this.checkBorderCount(0,1) ){ return 32621;}
+		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderCount(2,1) ){ return 'bdCountLt3BP';}
+		if( !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
 
 		return 0;
 	},
@@ -135,5 +135,12 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	bdBranchExBP : ["黒点以外のところで線が分岐しています。","Lines are branched out of the black point."],
+	bdCrossExBP  : ["黒点以外のところで線が交差しています。","Lines are crossed out of the black point."],
+	bdCountLt3BP : ["黒点から線が３本以上出ていません。","A black point has two or less lines."],
+	bdIgnoreBP   : ["黒点上を線が通過していません。","A black point has no line."]
 }
 });

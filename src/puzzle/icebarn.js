@@ -786,30 +786,30 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( !this.checkLineCount(3) ){ return 40201;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
-		if( !this.checkCrossOutOfIce() ){ return 40501;}
-		if( !this.checkIceLines() ){ return 40601;}
+		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
+		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
 
 		var flag = this.checkLine();
-		if( flag==-1 ){ return 49401;}
-		if( flag==1 ){ return 49411;}
-		if( flag==2 ){ return 49421;}
-		if( flag==3 ){ return 49431;}
-		if( pid==='icebarn' && flag==4 ){ return 49441;}
-		if( pid!=='icebarn' && flag==5 ){ return 49451;}
+		if( flag==-1 ){ return 'stInvalid';}
+		if( flag==1 ){ return 'stNotLine';}
+		if( flag==2 ){ return 'stDeadEnd';}
+		if( flag==3 ){ return 'stOffField';}
+		if( pid==='icebarn' && flag==4 ){ return 'awInverse';}
+		if( pid!=='icebarn' && flag==5 ){ return 'nmOrder';}
 
-		if( !this.checkOneLoop() ){ return 41102;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( (pid==='icelom') && !this.checkUnreachedWhiteCell() ){ return 50301;}
+		if( (pid==='icelom') && !this.checkUnreachedWhiteCell() ){ return 'ceEmpty';}
 
-		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 30321;}
+		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 'bkNoLine';}
 
-		if( (pid==='icebarn') && !this.checkAllArrow() ){ return 49461;}
+		if( (pid==='icebarn') && !this.checkAllArrow() ){ return 'lnExArrow';}
 
-		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 49471;}
+		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 'nmUnpass';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
 		return 0;
 	},
@@ -884,6 +884,20 @@ AnsCheck:{
 
 		return 0;
 	}
+},
+
+FailCode:{
+	bkNoLine  : ["すべてのアイスバーンを通っていません。", "A icebarn is not gone through."],
+	lnPlLoop  : ["線がひとつながりではありません。","Lines are not countinuous."],
+	lnExArrow : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
+	nmOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
+	nmUnpass  : ["通過していない数字があります。","The line doesn't pass all of the number."],
+	stInvalid : ["スタート位置を特定できませんでした。","System can't detect start position."],
+	stNotLine : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
+	stDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
+	stOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
+	awInverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
+	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the white cell."]
 }
 });
 

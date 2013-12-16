@@ -305,9 +305,9 @@ AnsCheck:{
 	checkAns : function(){
 
 		var tiles = this.owner.board.getTileInfo();
-		if( !this.checkOverThreeCells(tiles) ){ return 31001;}
-		if( !this.checkRowsColsTileCount(tiles) ){ return 10034;}
-		if( !this.checkLessThreeCells(tiles) ){ return 31002;}
+		if( !this.checkOverThreeCells(tiles) ){ return 'bkSizeLt3';}
+		if( !this.checkRowsColsTileCount(tiles) ){ return 'asLblockNe';}
+		if( !this.checkLessThreeCells(tiles) ){ return 'bkSizeGt3';}
 
 		return 0;
 	},
@@ -341,5 +341,11 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	bkSizeLt3 : ["サイズが3マスより小さいブロックがあります。","The size of block is smaller than three."],
+	bkSizeGt3 : ["サイズが3マスより大きいブロックがあります。","The size of block is larger than three."],
+	asLblockNe : ["数字の下か右にあるまっすぐのブロックの数が間違っています。","The number of straight blocks underward or rightward is not correct."]
 }
 });

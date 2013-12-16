@@ -103,14 +103,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 30030;}
+		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkOneArea(binfo) ){ return 10005;}
+		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
-		if( !this.check2x2BlackCell() ){ return 10001;}
-		if( !this.checkDir4BlackCell() ){ return 10027;}
-		if( !this.check2x2WhiteCell() ){ return 10002;}
+		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
+		if( !this.checkDir4BlackCell() ){ return 'nmBcellNe';}
+		if( !this.check2x2WhiteCell() ){ return 'wc2x2';}
 
 		return 0;
 	},
@@ -125,5 +125,10 @@ AnsCheck:{
 	check2x2WhiteCell : function(){
 		return this.check2x2Block( function(cell){ return cell.isWhite();} );
 	}
+},
+
+FailCode:{
+	wc2x2     : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of white cells."],
+	nmBcellNe : ["数字の上下左右にある黒マスの数が間違っています。","The number is not equal to the number of black cells in four adjacent cells."]
 }
 });

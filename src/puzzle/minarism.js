@@ -329,15 +329,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRowsColsSameNumber() ){ return 10037;}
-		if( !this.checkBDnumber() ){ return 69101;}
-		if( !this.checkBDmark() ){ return 69111;}
-		if( !this.checkNoNumCell() ){ return 50171;}
+		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
+		if( !this.checkBDnumber() ){ return 'nmSubNe';}
+		if( !this.checkBDmark() ){ return 'nmIneqNe';}
+		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 0 : 50171);
+		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkRowsColsSameNumber : function(){
@@ -369,6 +369,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The Difference between two Adjacent cells is not equal to the number on circle."],
+	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });
 

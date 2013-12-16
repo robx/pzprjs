@@ -221,21 +221,21 @@ AnsCheck:{
 	checkAns : function(){
 		var o=this.owner, bd=o.board, pid=o.pid;
 
-		if( !this.checkNoLine() ){ return 42101;}
+		if( !this.checkNoLine() ){ return 'brNoLine';}
 
-		if( (pid==='ringring') && !this.checkLineOnBlackCell() ){ return 50102;}
+		if( (pid==='ringring') && !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
 
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 30331;}
+		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 'bkLineGt';}
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 30341;}
+		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 'bkLineLt';}
 
-		if( !this.checkAllLoopRect() ){ return 49501;}
+		if( !this.checkAllLoopRect() ){ return 'lnNotRect';}
 
-		if( (pid==='ringring') && !this.checkUnreachedWhiteCell() ){ return 50311;}
+		if( (pid==='ringring') && !this.checkUnreachedWhiteCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
@@ -287,5 +287,12 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	lnNotRect : ["長方形か正方形でない輪っかがあります。","there is a non-rectangle loop."],
+	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	ceEmpty : ["白マスの上に線が引かれていません。","there is no line on the white cell."]
 }
 });

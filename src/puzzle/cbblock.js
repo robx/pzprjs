@@ -209,10 +209,10 @@ AnsCheck:{
 
 		// それぞれ点線、境界線で作られる領域の情報
 		var cinfo = this.owner.board.getBlockInfo();
-		if( !this.checkMiniBlockCount(cinfo, 1) ){ return 39401;}
-		if( !this.checkBlockNotRect(cinfo) ){ return 10017;}
-		if( !this.checkDifferentShapeBlock(cinfo) ){ return 39411;}
-		if( !this.checkMiniBlockCount(cinfo, 3) ){ return 39421;}
+		if( !this.checkMiniBlockCount(cinfo, 1) ){ return 'bkSubLt2';}
+		if( !this.checkBlockNotRect(cinfo) ){ return 'bkRect';}
+		if( !this.checkDifferentShapeBlock(cinfo) ){ return 'sbSameShape';}
+		if( !this.checkMiniBlockCount(cinfo, 3) ){ return 'bkSubGt2';}
 
 		return 0;
 	},
@@ -263,5 +263,12 @@ AnsCheck:{
 		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}
 		return true;
 	}
+},
+
+FailCode:{
+	bkRect : ["ブロックが四角形になっています。","A block is rectangle."],
+	sbSameShape : ["同じ形のブロックが接しています。","The blocks that has the same shape are adjacent."],
+	bkSubLt2 : ["ブロックが1つの点線からなる領域で構成されています。","A block has one area framed by dotted line."],
+	bkSubGt2 : ["ブロックが3つ以上の点線からなる領域で構成されています。","A block has three or more areas framed by dotted line."]
 }
 });

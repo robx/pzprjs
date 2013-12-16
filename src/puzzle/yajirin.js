@@ -172,20 +172,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkLineOnBlackCell() ){ return 50101;}
+		if( !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		if( !this.checkLineCount(1) ){ return 40101;}
+		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkArrowNumber() ){ return 10028;}
+		if( !this.checkArrowNumber() ){ return 'anBcellNe';}
 
-		if( !this.checkOneLoop() ){ return 41101;}
+		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkBlankCell() ){ return 50111;}
+		if( !this.checkBlankCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
@@ -221,6 +221,10 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
 }
 });
 

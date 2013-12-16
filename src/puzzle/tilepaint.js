@@ -288,9 +288,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSameColorTile() ){ return 30030;}
+		if( !this.checkSameColorTile() ){ return 'bkMixed';}
 
-		if( !this.checkRowsColsBlackCell() ){ return 10029;}
+		if( !this.checkRowsColsBlackCell() ){ return 'asBcellNe';}
 
 		return 0;
 	},
@@ -315,6 +315,10 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	asBcellNe : ["数字の下か右にある黒マスの数が間違っています。","The number of black cells underward or rightward is not correct."]
 }
 });
 

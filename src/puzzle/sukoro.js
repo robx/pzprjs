@@ -169,21 +169,21 @@ AnsCheck:{
 	checkAns : function(){
 		var o = this.owner, bd = o.board, pid = o.pid;
 
-		if( (pid!=='sukororoom') && !this.checkAdjacentDiffNumber() ){ return 60101;}
+		if( (pid!=='sukororoom') && !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
 
 		if(pid==='sukororoom'){
 			var rinfo = bd.getRoomInfo();
-			if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
-			if( !this.checkNumberOrNotInRoom(rinfo) ){ return 31003;}
+			if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
+			if( !this.checkNumberOrNotInRoom(rinfo) ){ return 'bkMixed';}
 		}
 
-		if( (pid!=='view') && !this.checkDir4NumberCount() ){ return 69201;}
-		if( (pid==='view') && !this.checkViewNumber() ){ return 69211;}
+		if( (pid!=='view') && !this.checkDir4NumberCount() ){ return 'nmNumberNe';}
+		if( (pid==='view') && !this.checkViewNumber() ){ return 'nmSumViewNe';}
 
 		var numinfo = bd.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 10009;}
+		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
 
-		if( !this.checkNoSuspendCell() ){ return 50181;}
+		if( !this.checkNoSuspendCell() ){ return 'ceSuspend';}
 
 		return 0;
 	},
@@ -220,5 +220,13 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
+	bkMixed  : ["数字のあるなしが混在した部屋があります。","A room includes both numbered and non-numbered cells."],
+	nmNumberNe : ["数字と、その数字の上下左右に入る数字の数が一致していません。","The number of numbers placed in four adjacent cells is not equal to the number."],
+	nmSumViewNe : ["数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。","Sum of four-way gaps to another number is not equal to the number."],
+	ceSuspend  : ["数字の入っていないマスがあります。","There is a cell that is not filled in number."]
 }
 });

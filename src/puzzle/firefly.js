@@ -172,21 +172,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount_firefly(3) ){ return 40201;}
-		if( !this.checkLineCount_firefly(4) ){ return 40301;}
+		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount_firefly(4) ){ return 'lnCross';}
 
 		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,4) ){ return 49911;}
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 49921;}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 49931;}
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 43401;}
+		if( !this.checkErrorFlag_line(xinfo,4) ){ return 'lcInvDirB';}
+		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcInvDirW';}
+		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveNe';}
+		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneArea(linfo) ){ return 43601;}
+		if( !this.checkOneArea(linfo) ){ return 'lcDivided';}
 
-		if( !this.checkLineCount_firefly(1) ){ return 40101;}
+		if( !this.checkLineCount_firefly(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkFireflyBeam() ){ return 49901;}
+		if( !this.checkFireflyBeam() ){ return 'nmNoLine';}
 
 		return 0;
 	},
@@ -224,6 +224,13 @@ AnsCheck:{
 		else if( cell2.isnull){ err=1;}
 		room.error = err;
 	}
+},
+
+FailCode:{
+	nmNoLine : ["ホタルから線が出ていません。", "There is a lonely firefly."],
+	lcInvDirB : ["黒点同士が線で繋がっています。","Black points are connected each other."],
+	lcInvDirW : ["白丸の、黒点でない部分どうしがくっついています。","Fireflies are connected without a line starting from black point."],
+	lcCurveNe : ["線の曲がった回数が数字と違っています。","The number of curves is different from a firefly's number."]
 }
 });
 

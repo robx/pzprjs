@@ -189,12 +189,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 10021;}
+		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
 		var winfo = this.owner.board.getWCellInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 10020;}
+		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
-		if( !this.checkRowsColsSameNumber() ){ return 90201;}
+		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 
 		return 0;
 	},

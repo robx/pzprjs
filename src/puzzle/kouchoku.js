@@ -623,27 +623,27 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkSegmentExist() ){ return 42111;}
+		if( !this.checkSegmentExist() ){ return 'brNoLine';}
 
-		if( !this.checkSegmentPoint() ){ return 49701;}
+		if( !this.checkSegmentPoint() ){ return 'lnIsolate';}
 
-		if( !this.checkSegmentBranch() ){ return 40211;}
+		if( !this.checkSegmentBranch() ){ return 'lnBranch';}
 
-		if( !this.checkSegmentOverPoint() ){ return 49711;}
+		if( !this.checkSegmentOverPoint() ){ return 'lnPassOver';}
 
-		if( !this.checkDuplicateSegment() ){ return 49721;}
+		if( !this.checkDuplicateSegment() ){ return 'lnOverlap';}
 
-		if( !this.checkDifferentLetter() ){ return 49731;}
+		if( !this.checkDifferentLetter() ){ return 'nmConnDiff';}
 
-		if( !this.checkRightAngle() ){ return 49741;}
+		if( !this.checkRightAngle() ){ return 'lnRightAngle';}
 
-		if( !this.checkOneSegmentLoop() ){ return 41111;}
+		if( !this.checkOneSegmentLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkSegmentDeadend() ){ return 40111;}
+		if( !this.checkSegmentDeadend() ){ return 'lnDeadEnd';}
 
-		if( !this.checkAlonePoint() ){ return 49751;}
+		if( !this.checkAlonePoint() ){ return 'nmLineCount';}
 
-		if( !this.checkConsequentLetter() ){ return 49761;}
+		if( !this.checkConsequentLetter() ){ return 'nmNotConseq';}
 
 		return 0;
 	},
@@ -784,6 +784,20 @@ AnsCheck:{
 		}}
 		return result;
 	}
+},
+
+FailCode:{
+	lnDeadEnd    : ["途中で途切れている線があります。","there is a dead-end segment."],
+	lnBranch     : ["分岐している線があります。","there is a branched segment."],
+	lnPlLoop     : ["輪っかが一つではありません。","there are plural loops."],
+	lnIsolate    : ["線が丸のないところから出ています。","A segment comes from out of circle."],
+	lnPassOver   : ["線が丸を通過しています。","A segment passes over a circle."],
+	lnOverlap    : ["線が同一直線上で重なっています。","Plural segments are overlapped."],
+	lnRightAngle : ["線が直角に交差していません。","Segments don't intersect at a right angle."],
+	nmConnDiff   : ["異なる文字が直接繋がっています。","Different Letters are connected directly."],
+	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Same Letters are not consequent."],
+	nmLineCount  : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
+	brNoLine     : ["線が存在していません。","there is no segment."]
 },
 
 //---------------------------------------------------------

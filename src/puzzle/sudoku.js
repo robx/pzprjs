@@ -120,14 +120,14 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRoomNumber() ){ return 30422;}
-		if( !this.checkRowsColsSameNumber() ){ return 10037;}
-		if( !this.checkNoNumCell() ){ return 50171;}
+		if( !this.checkRoomNumber() ){ return 'bkDupNum';}
+		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
+		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 0 : 50171);
+		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkRowsColsSameNumber : function(){
@@ -147,5 +147,9 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });

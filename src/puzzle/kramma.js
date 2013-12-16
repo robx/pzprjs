@@ -207,24 +207,24 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( (pid!=='kramma') && !this.checkBorderCount(3,0) ){ return 32201;}
-		if( (pid!=='kramma') && !this.checkBorderCount(4,1) ){ return 32601;}
-		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 32521;}
+		if( (pid!=='kramma') && !this.checkBorderCount(3,0) ){ return 'bdBranch';}
+		if( (pid!=='kramma') && !this.checkBorderCount(4,1) ){ return 'bdCrossBP';}
+		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 'bdCurveExBP';}
 
-		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 32701;}
+		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 'bdNotChassis';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return (this.owner.pid!=='shwolf' ? 30007 : 30008);}
+		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		if( !this.checkDiffObjectInArea(rinfo) ){ return (this.owner.pid!=='shwolf' ? 30026 : 30027);}
+		if( !this.checkDiffObjectInArea(rinfo) ){ return 'bkPlNum';}
 
-		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 32101;}
-		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 32621;}
+		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
 
 		return 0;
 	},
 	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? 0 : 32101);
+		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? 0 : 'bdDeadEnd');
 	},
 
 	checkDiffObjectInArea : function(rinfo){
@@ -306,6 +306,20 @@ AnsCheck:{
 			}
 		}
 	}
+},
+
+FailCode:{
+	bkNoNum     : ["白丸も黒丸も含まれない領域があります。","An area has no marks."],
+	bkPlNum     : ["白丸と黒丸が両方含まれる領域があります。","An area has both white and black circles."],
+	bdBranch    : ["分岐している線があります。","there is a branch line."],
+	bdCurveExBP : ["黒点以外のところで線が曲がっています。","A line curves out of the black points."],
+	bdCrossBP   : ["黒点上で線が交差しています。","There is a crossing line on the black point."],
+	bdIgnoreBP  : ["黒点上を線が通過していません。","A black point has no line."]
+},
+"FailCode@shwolf":{
+	bkNoNum : ["ヤギもオオカミもいない領域があります。","An area has neither sheeps nor wolves."],
+	bkPlNum : ["ヤギとオオカミが両方いる領域があります。","An area has both sheeps and wolves."],
+	bdNotChassis : ["外枠につながっていない線があります。","A line doesn't connect to the chassis."]
 },
 
 ImageTile:{

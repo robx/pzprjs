@@ -201,20 +201,20 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 32301;}
+		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 30006;}
+		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 
-		if( !this.checkSquareTatami(rinfo) ){ return 33101;}
-		if( !this.checkHorizonLongTatami(rinfo) ){ return 33111;}
-		if( !this.checkVertLongTatami(rinfo) ){ return 33121;}
+		if( !this.checkSquareTatami(rinfo) ){ return 'bkNotSquare';}
+		if( !this.checkHorizonLongTatami(rinfo) ){ return 'bkNotHRect';}
+		if( !this.checkVertLongTatami(rinfo) ){ return 'bkNotVRect';}
 
-		if( !this.checkDoubleNumber(rinfo) ){ return 30014;}
+		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 
-		if( !this.checkAreaRect(rinfo) ){ return 20012;}
+		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
-		if( !this.checkBorderCount(1,0) ){ return 32101;}
+		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
 
 		return 0;
 	},
@@ -228,5 +228,14 @@ AnsCheck:{
 	checkVertLongTatami : function(rinfo){
 		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);});
 	}
+},
+
+FailCode:{
+	bkNoNum  : ["記号の入っていないタタミがあります。","A tatami has no marks."],
+	bkNumGe2 : ["1つのタタミに2つ以上の記号が入っています。","A tatami has plural marks."],
+	bkNotRect : ["タタミの形が長方形ではありません。","A tatami is not rectangle."],
+	bkNotSquare : ["正方形でないタタミがあります。","A tatami is not regular rectangle."],
+	bkNotHRect : ["横長ではないタタミがあります。","A tatami is not horizontally long rectangle."],
+	bkNotVRect : ["縦長ではないタタミがあります。","A tatami is not vertically long rectangle."]
 }
 });

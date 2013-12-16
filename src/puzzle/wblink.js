@@ -169,15 +169,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 43302;}
+		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
 
-		if( !this.checkWBcircle(linfo, 1) ){ return 48001;}
-		if( !this.checkWBcircle(linfo, 2) ){ return 48011;}
+		if( !this.checkWBcircle(linfo, 1) ){ return 'lcInvWhite';}
+		if( !this.checkWBcircle(linfo, 2) ){ return 'lcInvBlack';}
 
-		if( !this.checkAloneCircle() ){ return 43505;}
+		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
 		return 0;
 	},
@@ -204,5 +204,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	lcTripleNum : ["3つ以上の○が繋がっています。","Three or more objects are connected."],
+	lcInvWhite : ["白丸同士が繋がっています。","Two white circles are connected."],
+	lcInvBlack : ["黒丸同士が繋がっています。","Two black circles are connected."],
+	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });

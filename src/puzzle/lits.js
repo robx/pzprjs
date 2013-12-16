@@ -206,21 +206,21 @@ AnsCheck:{
 "AnsCheck@lits":{
 	checkAns : function(){
 
-		if( !this.check2x2BlackCell() ){ return 10001;}
+		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverBlackCellInArea(rinfo) ){ return 30081;}
+		if( !this.checkOverBlackCellInArea(rinfo) ){ return 'bkBcGt4';}
 
-		if( !this.checkSeqBlocksInRoom() ){ return 30032;}
+		if( !this.checkSeqBlocksInRoom() ){ return 'bkBcDivide';}
 
-		if( !this.checkTetromino(rinfo) ){ return 90031;}
+		if( !this.checkTetromino(rinfo) ){ return 'sbSameShape';}
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkOneArea(binfo) ){ return 10005;}
+		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
-		if( !this.checkNoBlackCellInArea(rinfo) ){ return 30041;}
+		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
 
-		if( !this.checkLessBlackCellInArea(rinfo) ){ return 30071;}
+		if( !this.checkLessBlackCellInArea(rinfo) ){ return 'bkBcLt4';}
 
 		return 0;
 	},
@@ -262,16 +262,16 @@ AnsCheck:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getBCellInfo();
-		if( !this.checkOverBlackCell(binfo) ){ return 10031;}
+		if( !this.checkOverBlackCell(binfo) ){ return 'bcGt2';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverBlackCellInArea(rinfo) ){ return 30061;}
+		if( !this.checkOverBlackCellInArea(rinfo) ){ return 'bkBcGt2';}
 
-		if( !this.checkSingleBlackCell(binfo) ){ return 10030;}
+		if( !this.checkSingleBlackCell(binfo) ){ return 'bcLt2';}
 
-		if( !this.checkSingleBlackCellInArea(rinfo) ){ return 30051;}
+		if( !this.checkSingleBlackCellInArea(rinfo) ){ return 'bkBcLt2';}
 
-		if( !this.checkNoBlackCellInArea(rinfo) ){ return 30041;}
+		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
 
 		return 0;
 	},
@@ -289,6 +289,19 @@ AnsCheck:{
 	checkSingleBlackCellInArea : function(rinfo){
 		return this.checkBlackCellInArea(rinfo, function(a){ return (a!=1);});
 	}
+},
+
+"FailCode@lits":{
+	bkBcLt4 : ["黒マスのカタマリが４マス未満の部屋があります。","A room has three or less black cells."],
+	bkBcGt4 : ["５マス以上の黒マスがある部屋が存在します。", "A room has five or more black cells."],
+	sbSameShape : ["同じ形のテトロミノが接しています。","Some Tetrominos that are the same shape are Adjacent."]
+},
+
+"FailCode@norinori":{
+	bcLt2 : ["１マスだけの黒マスのカタマリがあります。","There is a single black cell."],
+	bcGt2 : ["２マスより大きい黒マスのカタマリがあります。","The size of a mass of black cells is over two."],
+	bkBcLt2 : ["１マスしか黒マスがない部屋があります。","A room has only one black cell."],
+	bkBcGt2 : ["２マス以上の黒マスがある部屋が存在します。","A room has three or mode black cells."]
 }
 });
 

@@ -128,16 +128,16 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 30421;}
-		if( !this.checkNumbersInRoom(rinfo) ){ return 69801;}
+		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
+		if( !this.checkNumbersInRoom(rinfo) ){ return 'bkNotSeqNum';}
 
-		if( !this.checkBorderSideNumber() ){ return 69811;}
-		if( !this.checkNoNumCell() ){ return 50171;}
+		if( !this.checkBorderSideNumber() ){ return 'scDiffLenNe';}
+		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? 0 : 50171);
+		return (this.checkNoNumCell() ? 'complete' : 'ceEmpty');
 	},
 
 	checkDiffNumberInRoom : function(rinfo){
@@ -190,5 +190,12 @@ AnsCheck:{
 		}
 		return result;
 	}
+},
+
+FailCode:{
+	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
+	bkNotSeqNum : ["部屋に入る数字が正しくありません。","The numbers in the room are wrong."],
+	scDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });

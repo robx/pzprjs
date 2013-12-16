@@ -145,25 +145,25 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid, bd = this.owner.board;
 
-		if( !this.checkLineCount(3) ){ return 40201;}
-		if( !this.checkLineCount(4) ){ return 40301;}
+		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
 		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 30016;}
-		if( !this.checkLineOverLetter() ){ return 43102;}
+		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
-		if( !this.checkCurveLine(linfo) ){ return 20013;}
+		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
 
-		if( !this.checkLineLength(linfo) ){ return 50401;}
+		if( !this.checkLineLength(linfo) ){ return 'laLenNe';}
 
 		var rinfo = bd.getRoomInfo();
-		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 30501;}
-		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 30511;}
-		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 30025;}
+		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 'brObjNotSym';}
+		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 'bkObjNotSym';}
+		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
 
-		if( !this.checkNoLineCircle() ){ return 50411;}
+		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 43202;}
+		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
 
 		return 0;
 	},
@@ -192,5 +192,15 @@ AnsCheck:{
 		}
 		return true;
 	}
+},
+
+FailCode:{
+	bkNoNum : ["○のない部屋があります。","A room has no circle."],
+	bkObjNotSym : ["部屋の中の○が点対称に配置されていません。", "Position of circles in the room is not point symmetric."],
+	brObjNotSym : ["○が点対称に配置されていません。", "Position of circles is not point symmetric."],
+	laOnNum : ["○の上を線が通過しています。","A line goes through a circle."],
+	laIsolate : ["○につながっていない線があります。","A line doesn't connect any circle."],
+	nmConnected : ["○が繋がっています。","There are connected circles."],
+	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });

@@ -188,22 +188,22 @@ AnsCheck:{
 	checkAns : function(){
 
 		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 30002;}
+		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 'bkNoNum';}
 
-		if( !this.checkErrorFlag_cell(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){ return 31005;}
+		if( !this.checkErrorFlag_cell(rinfo, 1) || !this.checkAreaSize(rinfo, 2) ){ return 'bkSizeLt';}
 
-		if( !this.checkSideAreaNumberSize(rinfo) ){ return 30201;}
+		if( !this.checkSideAreaNumberSize(rinfo) ){ return 'sbSameNum';}
 
-		if( !this.checkErrorFlag_cell(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){ return 31006;}
+		if( !this.checkErrorFlag_cell(rinfo, 2) || !this.checkAreaSize(rinfo, 1) ){ return 'bkSizeGt';}
 
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 31004;}
+		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 'bkPlNum';}
 
-		if( !this.owner.get('enbnonum') && !this.checkNoNumCell() ){ return 50171;}
+		if( !this.owner.get('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return 0;
 	},
 	check1st : function(){
-		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? 0 : 50171);
+		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? 'complete' : 'ceEmpty');
 	},
 
 	checkSideAreaNumberSize : function(rinfo){
@@ -276,6 +276,11 @@ AnsCheck:{
 			}
 		}
 	}
+},
+
+FailCode:{
+	sbSameNum : ["同じ数字のブロックが辺を共有しています。","Adjacent blocks have the same number."],
+	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });
 
