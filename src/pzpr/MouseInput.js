@@ -47,9 +47,11 @@ pzpr.createPuzzleClass('MouseEvent',
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
+		var bd = this.owner.board, cell = this.mouseCell;
+		
 		this.inputData = null;
-		this.mouseCell = this.owner.board.emptycell;
-		this.firstCell = this.owner.board.emptycell;
+		this.mouseCell = bd.emptycell;
+		this.firstCell = bd.emptycell;
 		this.firstPoint.reset();
 		this.prevPos.reset();
 		this.btn = { Left:false, Middle:false, Right:false};
@@ -60,6 +62,8 @@ pzpr.createPuzzleClass('MouseEvent',
 		this.mousemove  = false;
 		this.mouseend   = false;
 		this.mouseout   = false;
+		
+		if(bd.linfo.moveline && this.owner.get('dispmove') && !!cell && !cell.isnull){ cell.draw();}
 	},
 
 	//---------------------------------------------------------------------------

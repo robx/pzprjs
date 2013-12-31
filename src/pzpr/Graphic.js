@@ -68,6 +68,8 @@ pzpr.createPuzzleClass('Graphic',
 		this.targetColor1 = "rgb(255, 64,  64)";
 		this.targetColor3 = "rgb(64,  64, 255)";
 
+		this.movecolor = "red";
+
 		// 盤面(枠の中)の背景色
 		this.bgcolor = '';
 
@@ -732,7 +734,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_'), num = cell.getNum();
-		if(num===-1 && this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.getNum();}
+		if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.getNum();}
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
@@ -749,8 +751,8 @@ pzpr.createPuzzleClass('Graphic',
 		else if(cell.error===1 || cell.error===4){
 			color = this.fontErrcolor;
 		}
-		else if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){
-			color = "silver";
+		else if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && this.owner.mouse.mouseCell===cell){
+			color = this.movecolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
 			color = this.fontAnscolor;
@@ -1119,6 +1121,7 @@ pzpr.createPuzzleClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
+			else if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ return "silver";}
 			else if(!this.owner.flags.irowake || !this.owner.get('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
@@ -1338,7 +1341,7 @@ pzpr.createPuzzleClass('Graphic',
 			var cell = clist[i], num = cell.qnum, id = cell.id, error = cell.error;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			if(num===-1 && this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.qnum;}
+			if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.qnum;}
 			if(num!==-1){
 				g.fillStyle = ((error===1||error===4) ? this.errbcolor1 : this.circledcolor);
 				if(this.vnop(headers[1]+id,this.FILL)){
@@ -1346,12 +1349,34 @@ pzpr.createPuzzleClass('Graphic',
 				}
 
 				g.strokeStyle = ((error===1||error===4) ? this.errcolor1 : this.cellcolor);
-				if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){ g.strokeStyle="silver";}
+				if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && this.owner.mouse.mouseCell===cell){ g.strokeStyle=this.movecolor;}
 				if(this.vnop(headers[0]+id,this.STROKE)){
 					g.strokeCircle(px, py, rsize);
 				}
 			}
 			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawDepartures()    移動系パズルで、移動元を示す記号を書き込む
+	//---------------------------------------------------------------------------
+	drawDepartures : function(){
+		var g = this.vinc('cell_depart', 'auto');
+		var rsize  = this.cw*0.15;
+		var header = "c_dcir_";
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], id = cell.id, num = -1;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+
+			if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){
+				g.fillStyle = "silver";
+				if(this.vnop(header+id,this.FILL)){
+					g.fillCircle(px, py, rsize);
+				}
+			}
+			else{ this.vhide(header+id);}
 		}
 	},
 

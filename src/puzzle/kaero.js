@@ -105,6 +105,7 @@ Graphic:{
 
 		this.drawTip();
 		this.drawPekes();
+		this.drawDepartures();
 		this.drawLines();
 
 		this.drawCellSquare();
@@ -125,7 +126,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			if(cell.isDeparture() || (this.owner.get('dispmove') && cell.isDestination())){
+			if((!this.owner.get('dispmove') && cell.isDeparture()) || (this.owner.get('dispmove') && cell.isDestination())){
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
@@ -145,7 +146,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum;
-			if(num===-1 && this.owner.get('dispmove')){ num = cell.base.getNum();}
+			if(this.owner.get('dispmove')){ num = cell.base.qnum;}
 			if(num!==-1){
 				var color = this.getCellNumberColor(cell);
 

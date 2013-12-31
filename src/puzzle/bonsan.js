@@ -87,6 +87,7 @@ Graphic:{
 		if(this.owner.pid==='heyabon'){ this.drawBorders();}
 
 		this.drawTip();
+		this.drawDepartures();
 		this.drawLines();
 
 		this.drawCirclesAtNumber();

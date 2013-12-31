@@ -180,6 +180,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawTip();
+		this.drawDepartures();
 		this.drawLines();
 
 		this.drawCirclesAtNumber();
@@ -194,17 +195,19 @@ Graphic:{
 
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_'), num = (cell.qnum>0 ? cell.qnum : cell.qdir);
+		if(this.owner.get('dispmove')){ num = (cell.base.qnum>0 ? cell.base.qnum : cell.qdir);}
 		if(num>0 || (cell.qdir===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(cell);
-			if(cell.qnum!==-1){ fontratio *= 0.9;}
+			if(num===cell.qdir){ fontratio *= 0.9;}
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			this.dispnum(key, 1, text, fontratio, color, px, py);
 		}
 		else{ this.hidenum(key);}
 	},
 	getCellNumberColor : function(cell){
+		if(cell===this.owner.mouse.mouseCell){ return this.movecolor;}
 		return ((cell.error===1 || cell.error===4) ? this.fontErrcolor : this.fontcolor);
 	}
 },
