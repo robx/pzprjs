@@ -256,9 +256,9 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	// cell.isNumberObj() 該当するCellに数字or○があるか返す
 	// cell.sameNumber()  ２つのCellに同じ有効な数字があるか返す
 	//-----------------------------------------------------------------------
-	isNum : function(){ return this.id!==null && (this.qnum!==-1 || this.anum!==-1);},
-	noNum : function(){ return this.id!==null && (this.qnum===-1 && this.anum===-1);},
-	isValidNum  : function(){ return this.id!==null && (this.qnum>=0||(this.anum>=0 && this.qnum===-1));},
+	isNum : function(){ return !this.isnull && (this.qnum!==-1 || this.anum!==-1);},
+	noNum : function(){ return !this.isnull && (this.qnum===-1 && this.anum===-1);},
+	isValidNum  : function(){ return !this.isnull && (this.qnum>=0||(this.anum>=0 && this.qnum===-1));},
 	isNumberObj : function(){ return (this.qnum!==-1 || this.anum!==-1 || (this.numberWithMB && this.qsub===1));},
 	sameNumber : function(cell){ return (this.isValidNum() && (this.getNum()===cell.getNum()));},
 
@@ -292,6 +292,14 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	//---------------------------------------------------------------------------
 	isEmpty : function(){ return ( this.isnull || this.ques===7);},
 	isValid : function(){ return (!this.isnull && this.ques!==7);},
+
+	//---------------------------------------------------------------------------
+	// cell.isDeparture()   オブジェクトを動かすパズルで移動元セルかどうか判定する
+	// cell.isDestination() オブジェクトを動かすパズルで移動先セルかどうか判定する
+	// ※動いていない場合は、idDestinationのみtrueを返します
+	//---------------------------------------------------------------------------
+	isDeparture   : function(){ return (!this.isnull &&  this.base.isnull && this.isNum());},
+	isDestination : function(){ return (!this.isnull && !this.base.isnull);},
 
 	//---------------------------------------------------------------------------
 	// cell.isLineStraight()   セルの上で線が直進しているか判定する
