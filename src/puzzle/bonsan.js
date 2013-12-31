@@ -184,8 +184,8 @@ AnsCheck:{
 			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.base.isNum() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).base.isNum()){
-					clist.filter(function(cell){ return cell.base.isNum();}).seterr(1);
+				if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
+					clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
 					return false;
 				}
 			}

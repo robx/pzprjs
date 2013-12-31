@@ -124,6 +124,16 @@ Cell:{
 	qnum : -1, // ○つき数字として扱う
 	qdir : -1  // ○なし数字として扱う
 },
+CellList:{
+	getDeparture : function(){ return this.map(function(cell){ return cell.base;}).notnull();},
+	getSumOfFilling : function(cond){
+		var count = 0;
+		for(var i=0,len=this.length;i<len;i++){
+			if(this[i].base.isValidNum()){ count += this[i].base.qnum;}
+		}
+		return count;
+	}
+},
 Board:{
 	qcols : 8,
 	qrows : 8,
@@ -351,7 +361,7 @@ AnsCheck:{
 		return this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);});
 	},
 	checkFillingOutOfNabe : function(){
-		return this.checkAllCell(function(cell){ return (cell.base.isNum() && !cell.ice());});
+		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
 	},
 
 	checkFillingCount : function(iarea){
@@ -367,15 +377,11 @@ AnsCheck:{
 			}
 			if(num===null){ continue;}
 
-			var count = 0;
-			for(var i=0;i<clist.length;i++){
-				if(clist[i].base.isValidNum()){ count += clist[i].base.qnum;}
-			}
-
+			var count = clist.getSumOfFilling();
 			if(count>0 && num!==count){
 				if(this.checkOnly){ return false;}
+				clist.getDeparture().seterr(4);
 				clist.seterr(1);
-				for(var i=0;i<clist.length;i++){ clist[i].base.seterr(4);}
 				result = false;
 			}
 		}

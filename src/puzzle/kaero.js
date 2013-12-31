@@ -64,6 +64,9 @@ KeyEvent:{
 Cell:{
 	maxnum : 52
 },
+CellList:{
+	getDeparture : function(){ return this.map(function(cell){ return cell.base;}).notnull();}
+},
 
 Board:{
 	qcols : 6,
@@ -250,18 +253,16 @@ AnsCheck:{
 		var result=true;
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.room[r].clist, rnum=-1;
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i], num=cell.base.qnum;
-				if(num===-1 || rnum===num){ continue;}
-				else if(rnum===-1){ rnum=num; continue;}
-
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				for(var i=0;i<clist.length;i++){
-					var cell2 = clist[i].base;
-					if(!cell2.isnull && cell2.error===0){ cell2.seterr(4);}
+			var cbase = clist.getDeparture();
+			for(var i=0;i<cbase.length;i++){
+				var num=cbase[i].qnum;
+				if(rnum===-1){ rnum=num;}
+				else if(rnum!==num){
+					if(this.checkOnly){ return false;}
+					cbase.seterr(4);
+					clist.seterr(1);
+					result = false;
 				}
-				result = false;
 			}
 		}
 		return result;
@@ -274,16 +275,13 @@ AnsCheck:{
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
 			for(var i=0;i<clist.length;i++){
-				var cell=clist[i], r=rinfo.getRoomID(cell);
-				if(r===null || rid===r){ continue;}
-				else if(rid===null){ rid=r; continue;}
-				
-				clist.seterr(1);
-				for(var i=0;i<clist.length;i++){
-					var cell2 = clist[i].base;
-					if(!cell2.isnull && cell2.error===0){ cell2.seterr(4);}
+				var r=rinfo.getRoomID(clist[i]);
+				if(rid===null){ rid=r;}
+				else if(r!==null && rid!==r){
+					clist.getDeparture().seterr(4);
+					clist.seterr(1);
+					return false;
 				}
-				return false;
 			}
 		}
 		return true;
