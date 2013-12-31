@@ -4,12 +4,12 @@
 var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
-// šBoardPieceƒNƒ‰ƒX Cell, Cross, Border, EXCellƒNƒ‰ƒX‚Ìƒx[ƒX
+// â˜…BoardPieceã‚¯ãƒ©ã‚¹ Cell, Cross, Border, EXCellã‚¯ãƒ©ã‚¹ã®ãƒ™ãƒ¼ã‚¹
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('BoardPiece',
 {
-	bx : -1,	// XÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
-	by : -1,	// YÀ•W(borderÀ•WŒn)‚ğ•Û‚·‚é
+	bx : -1,	// Xåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
+	by : -1,	// Yåº§æ¨™(borderåº§æ¨™ç³»)ã‚’ä¿æŒã™ã‚‹
 
 	group : 'none',
 	isnull : true,
@@ -26,13 +26,13 @@ pzpr.createPuzzleClass('BoardPiece',
 	propans : [],
 	propsub : [],
 
-	// “ü—Í‚Å‚«‚éÅ‘åEÅ¬‚Ì”š
+	// å…¥åŠ›ã§ãã‚‹æœ€å¤§ãƒ»æœ€å°ã®æ•°å­—
 	maxnum : 255,
 	minnum : 1,
 
 	//---------------------------------------------------------------------------
-	// getaddr() ©•ª‚Ì”Õ–Ê’†‚Å‚ÌˆÊ’u‚ğ•Ô‚·
-	// relcell(), relcross(), relbd(), relexcell() ‘Š‘ÎˆÊ’u‚É‘¶İ‚·‚éƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·
+	// getaddr() è‡ªåˆ†ã®ç›¤é¢ä¸­ã§ã®ä½ç½®ã‚’è¿”ã™
+	// relcell(), relcross(), relbd(), relexcell() ç›¸å¯¾ä½ç½®ã«å­˜åœ¨ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	getaddr : function(){ return (new this.owner.Address(this.bx, this.by));},
 
@@ -42,7 +42,7 @@ pzpr.createPuzzleClass('BoardPiece',
 	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
 	
 	//---------------------------------------------------------------------------
-	// ub() db() lb() rb()  ƒZƒ‹‚âŒğ“_‚Ìã‰º¶‰E‚É‚ ‚é‹«ŠEü‚ÌID‚ğ•Ô‚·
+	// ub() db() lb() rb()  ã‚»ãƒ«ã‚„äº¤ç‚¹ã®ä¸Šä¸‹å·¦å³ã«ã‚ã‚‹å¢ƒç•Œç·šã®IDã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	ub : function(){ return this.owner.board.getb(this.bx,this.by-1);},
 	db : function(){ return this.owner.board.getb(this.bx,this.by+1);},
@@ -50,7 +50,7 @@ pzpr.createPuzzleClass('BoardPiece',
 	rb : function(){ return this.owner.board.getb(this.bx+1,this.by);},
 
 	//---------------------------------------------------------------------------
-	// setdata() Cell,Cross,Border,EXCell‚Ì’l‚ğİ’è‚·‚é
+	// setdata() Cell,Cross,Border,EXCellã®å€¤ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	setdata : function(prop, num){
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
@@ -62,40 +62,40 @@ pzpr.createPuzzleClass('BoardPiece',
 	},
 	
 	//---------------------------------------------------------------------------
-	// nummaxfunc() “ü—Í‚Å‚«‚é”š‚ÌÅ‘å’l‚ğ•Ô‚·
-	// numminfunc() “ü—Í‚Å‚«‚é”š‚ÌÅ¬’l‚ğ•Ô‚·
+	// nummaxfunc() å…¥åŠ›ã§ãã‚‹æ•°å­—ã®æœ€å¤§å€¤ã‚’è¿”ã™
+	// numminfunc() å…¥åŠ›ã§ãã‚‹æ•°å­—ã®æœ€å°å€¤ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	nummaxfunc : function(){ return this.maxnum;},
 	numminfunc : function(){ return this.minnum;},
 
 	//---------------------------------------------------------------------------
-	// prehook  ’l‚Ìİ’è‘O‚É‚â‚Á‚Ä‚¨‚­ˆ—‚âAİ’è‹Ö~ˆ—‚ğs‚¤
-	// posthook ’l‚Ìİ’èŒã‚É‚â‚Á‚Ä‚¨‚­ˆ—‚ğs‚¤
+	// prehook  å€¤ã®è¨­å®šå‰ã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚„ã€è¨­å®šç¦æ­¢å‡¦ç†ã‚’è¡Œã†
+	// posthook å€¤ã®è¨­å®šå¾Œã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚’è¡Œã†
 	//---------------------------------------------------------------------------
 	prehook  : {},
 	posthook : {},
 
 	//---------------------------------------------------------------------------
-	// draw()   ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é
+	// draw()   ç›¤é¢ã«è‡ªåˆ†ã®å‘¨å›²ã‚’æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
 	draw : function(){
 		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 
 	//---------------------------------------------------------------------------
-	// seterr() error’l‚ğİ’è‚·‚é
+	// seterr() errorå€¤ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	seterr : function(num){
 		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
 
 	//---------------------------------------------------------------------------
-	// allclear() ˆÊ’u,•`‰æî•ñˆÈŠO‚ğƒNƒŠƒA‚·‚é
-	// ansclear() qans,anum,line,qsub,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// subclear() qsub,errorî•ñ‚ğƒNƒŠƒA‚·‚é
-	// comclear() 3‚Â‚Ì‹¤’Êˆ—
+	// allclear() ä½ç½®,æç”»æƒ…å ±ä»¥å¤–ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// ansclear() qans,anum,line,qsub,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// subclear() qsub,erroræƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
+	// comclear() 3ã¤ã®å…±é€šå‡¦ç†
 	//---------------------------------------------------------------------------
-	allclear : function(isrec) { /* undo,redoˆÈŠO‚Å”Õ–Êk¬‚â‚Á‚½‚Æ‚«‚Í, isrec===true */
+	allclear : function(isrec) { /* undo,redoä»¥å¤–ã§ç›¤é¢ç¸®å°ã‚„ã£ãŸã¨ãã¯, isrec===true */
 		this.comclear(this.propall, isrec);
 		if(this.color!==(void 0)){ this.color = "";}
 		this.error = 0;
@@ -122,40 +122,40 @@ pzpr.createPuzzleClass('BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// šCellƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªCell‚Ì”‚¾‚¯•Û‚·‚é
+// â˜…Cellã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒCellã®æ•°ã ã‘ä¿æŒã™ã‚‹
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(1)
-// CellƒNƒ‰ƒX‚Ì’è‹`
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(1)
+// Cellã‚¯ãƒ©ã‚¹ã®å®šç¾©
 pzpr.createPuzzleClass('Cell:BoardPiece',
 {
 	group : 'cell',
 
 	iscellobj : true,
 
-	// ƒfƒtƒHƒ‹ƒg’l
-	ques : 0,	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(1:•ƒ}ƒX 2-5:OŠpŒ` 6:ƒAƒCƒX 7:”Õ–ÊŠO 11-17:\šŒ^ 21-22:Šø–å 51:ƒJƒbƒNƒ)
-	qans : 0,	// ƒZƒ‹‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(1:•ƒ}ƒX/‚ ‚©‚è 2-5:OŠpŒ` 11-13:–_ 31-32:Îü 41-50:‚Ó‚Æ‚ñ)
-	qdir : 0,	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(”š‚É‚Â‚­–îˆó/ƒJƒbƒNƒ‚Ì‰º‘¤)
-	qnum :-1,	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(”š/›¢ /’P‘Ì–îˆó/”’ŠÛ•ŠÛ/ƒJƒbƒNƒ‚Ì‰E‘¤)
-	anum :-1,	// ƒZƒ‹‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(”š/›¢ /’P‘Ì–îˆó)
-	qsub : 0,	// ƒZƒ‹‚Ì•â•ƒf[ƒ^‚ğ•Û‚·‚é(1:”’ƒ}ƒX 1-2:”wŒiF/›~ 3:ŠG‚É‚È‚é•”•ª)
-	color: "",	// F•ª‚¯ƒf[ƒ^‚ğ•Û‚·‚é
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	ques : 0,	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(1:é»’ãƒã‚¹ 2-5:ä¸‰è§’å½¢ 6:ã‚¢ã‚¤ã‚¹ 7:ç›¤é¢å¤– 11-17:åå­—å‹ 21-22:æ——é–€ 51:ã‚«ãƒƒã‚¯ãƒ­)
+	qans : 0,	// ã‚»ãƒ«ã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(1:é»’ãƒã‚¹/ã‚ã‹ã‚Š 2-5:ä¸‰è§’å½¢ 11-13:æ£’ 31-32:æ–œç·š 41-50:ãµã¨ã‚“)
+	qdir : 0,	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(æ•°å­—ã«ã¤ãçŸ¢å°/ã‚«ãƒƒã‚¯ãƒ­ã®ä¸‹å´)
+	qnum :-1,	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(æ•°å­—/â—‹â–³â–¡/å˜ä½“çŸ¢å°/ç™½ä¸¸é»’ä¸¸/ã‚«ãƒƒã‚¯ãƒ­ã®å³å´)
+	anum :-1,	// ã‚»ãƒ«ã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(æ•°å­—/â—‹â–³â–¡/å˜ä½“çŸ¢å°)
+	qsub : 0,	// ã‚»ãƒ«ã®è£œåŠ©ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(1:ç™½ãƒã‚¹ 1-2:èƒŒæ™¯è‰²/â—‹Ã— 3:çµµã«ãªã‚‹éƒ¨åˆ†)
+	color: "",	// è‰²åˆ†ã‘ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
 
-	base : null,	// ŠÛ”š‚âƒAƒ‹ƒtƒ@ƒxƒbƒg‚ªˆÚ“®‚µ‚Ä‚«‚½ê‡‚ÌˆÚ“®Œ³‚ÌƒZƒ‹‚ğ¦‚· (ˆÚ“®‚È‚µ‚Í©•ª©g‚ğw‚·)
+	base : null,	// ä¸¸æ•°å­—ã‚„ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆãŒç§»å‹•ã—ã¦ããŸå ´åˆã®ç§»å‹•å…ƒã®ã‚»ãƒ«ã‚’ç¤ºã™ (ç§»å‹•ãªã—æ™‚ã¯è‡ªåˆ†è‡ªèº«ã‚’æŒ‡ã™)
 
 	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub'],
 	propans : ['qans', 'anum', 'qsub'],
 	propsub : ['qsub'],
 	
-	disInputHatena : false,	// qnum==-2‚ğ“ü—Í‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	disInputHatena : false,	// qnum==-2ã‚’å…¥åŠ›ã§ããªã„ã‚ˆã†ã«ã™ã‚‹
 	
-	numberWithMB   : false,	// ‰ñ“š‚Ì”š‚Æ›~‚ª“ü‚éƒpƒYƒ‹(›‚Í”š‚ª“ü‚Á‚Ä‚¢‚éˆµ‚¢‚³‚ê‚é)
-	numberAsObject : false,	// ”šˆÈŠO‚Åqnum/anum‚ğg—p‚·‚é(“¯‚¶’l‚ğ“ü—Í‚ÅÁ‹‚Å‚«‚½‚èA‰ñ“š‚ÅE‚ª“ü—Í‚Å‚«‚é)
+	numberWithMB   : false,	// å›ç­”ã®æ•°å­—ã¨â—‹Ã—ãŒå…¥ã‚‹ãƒ‘ã‚ºãƒ«(â—‹ã¯æ•°å­—ãŒå…¥ã£ã¦ã„ã‚‹æ‰±ã„ã•ã‚Œã‚‹)
+	numberAsObject : false,	// æ•°å­—ä»¥å¤–ã§qnum/anumã‚’ä½¿ç”¨ã™ã‚‹(åŒã˜å€¤ã‚’å…¥åŠ›ã§æ¶ˆå»ã§ããŸã‚Šã€å›ç­”ã§ãƒ»ãŒå…¥åŠ›ã§ãã‚‹)
 	
-	numberIsWhite  : false,	// ”š‚Ì‚ ‚éƒ}ƒX‚ª•ƒ}ƒX‚É‚È‚ç‚È‚¢ƒpƒYƒ‹
+	numberIsWhite  : false,	// æ•°å­—ã®ã‚ã‚‹ãƒã‚¹ãŒé»’ãƒã‚¹ã«ãªã‚‰ãªã„ãƒ‘ã‚ºãƒ«
 	
 	//---------------------------------------------------------------------------
-	// cell.up() dn() lt() rt()  ƒZƒ‹‚Ìã‰º¶‰E‚ÉÚ‚·‚éƒZƒ‹‚ÌID‚ğ•Ô‚·
+	// cell.up() dn() lt() rt()  ã‚»ãƒ«ã®ä¸Šä¸‹å·¦å³ã«æ¥ã™ã‚‹ã‚»ãƒ«ã®IDã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	up : function(){ return this.owner.board.getc(this.bx,this.by-2);},
 	dn : function(){ return this.owner.board.getc(this.bx,this.by+2);},
@@ -163,7 +163,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	rt : function(){ return this.owner.board.getc(this.bx+2,this.by);},
 
 	//---------------------------------------------------------------------------
-	// ƒIƒuƒWƒFƒNƒgİ’è’l‚Ìgetter/setter
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¨­å®šå€¤ã®getter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
 	setQues : function(val){ this.setdata(k.QUES, val);},
@@ -184,8 +184,8 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
 	//---------------------------------------------------------------------------
-	// prehook  ’l‚Ìİ’è‘O‚É‚â‚Á‚Ä‚¨‚­ˆ—‚âAİ’è‹Ö~ˆ—‚ğs‚¤
-	// posthook ’l‚Ìİ’èŒã‚É‚â‚Á‚Ä‚¨‚­ˆ—‚ğs‚¤
+	// prehook  å€¤ã®è¨­å®šå‰ã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚„ã€è¨­å®šç¦æ­¢å‡¦ç†ã‚’è¡Œã†
+	// posthook å€¤ã®è¨­å®šå¾Œã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚’è¡Œã†
 	//---------------------------------------------------------------------------
 	prehook : {
 		ques : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
@@ -196,28 +196,28 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 		qnum : function(num){ this.owner.board.setCellInfoAll(this);},
 		anum : function(num){ this.owner.board.setCellInfoAll(this);},
 		qans : function(num){ this.owner.board.setCellInfoAll(this);},
-		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setCellInfoAll(this);}} /* numberWithMB‚Ì›‚ğ•¶šˆµ‚¢ */
+		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setCellInfoAll(this);}} /* numberWithMBã®â—‹ã‚’æ–‡å­—æ‰±ã„ */
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.lcnt()       ƒZƒ‹‚É‘¶İ‚·‚éü‚Ì–{”‚ğ•Ô‚·
-	// cell.iscrossing() w’è‚³‚ê‚½ƒZƒ‹/Œğ“_‚Åü‚ªŒğ·‚·‚éê‡‚Étrue‚ğ•Ô‚·
+	// cell.lcnt()       ã‚»ãƒ«ã«å­˜åœ¨ã™ã‚‹ç·šã®æœ¬æ•°ã‚’è¿”ã™
+	// cell.iscrossing() æŒ‡å®šã•ã‚ŒãŸã‚»ãƒ«/äº¤ç‚¹ã§ç·šãŒäº¤å·®ã™ã‚‹å ´åˆã«trueã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
-	// cell.drawaround() ”Õ–Ê‚É©•ª‚ÌüˆÍ1ƒ}ƒX‚ğŠÜ‚ß‚Ä•`‰æ‚·‚é
+	// cell.drawaround() ç›¤é¢ã«è‡ªåˆ†ã®å‘¨å›²1ãƒã‚¹ã‚’å«ã‚ã¦æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
 	drawaround : function(){
 		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.isBlack()   ŠY“–‚·‚éCell‚ª•ƒ}ƒX‚©‚Ç‚¤‚©•Ô‚·
-	// cell.isWhite()   ŠY“–‚·‚éCell‚ª”’ƒ}ƒX‚©‚Ç‚¤‚©•Ô‚·
-	// cell.setBlack()  ŠY“–‚·‚éCell‚É•ƒ}ƒX‚ğƒZƒbƒg‚·‚é
-	// cell.setWhite()  ŠY“–‚·‚éCell‚É”’ƒ}ƒX‚ğƒZƒbƒg‚·‚é
+	// cell.isBlack()   è©²å½“ã™ã‚‹CellãŒé»’ãƒã‚¹ã‹ã©ã†ã‹è¿”ã™
+	// cell.isWhite()   è©²å½“ã™ã‚‹CellãŒç™½ãƒã‚¹ã‹ã©ã†ã‹è¿”ã™
+	// cell.setBlack()  è©²å½“ã™ã‚‹Cellã«é»’ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	// cell.setWhite()  è©²å½“ã™ã‚‹Cellã«ç™½ãƒã‚¹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	//---------------------------------------------------------------------------
 	isBlack : function(){ return this.qans===1;},
 	isWhite : function(){ return this.qans!==1;},
@@ -225,13 +225,13 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	setWhite : function(){ this.setQans(0);},
 	
 	//-----------------------------------------------------------------------
-	// cell.getNum()     ŠY“–‚·‚éCell‚Ì”š‚ğ•Ô‚·
-	// cell.setNum()     ŠY“–‚·‚éCell‚É”š‚ğİ’è‚·‚é
+	// cell.getNum()     è©²å½“ã™ã‚‹Cellã®æ•°å­—ã‚’è¿”ã™
+	// cell.setNum()     è©²å½“ã™ã‚‹Cellã«æ•°å­—ã‚’è¨­å®šã™ã‚‹
 	//-----------------------------------------------------------------------
 	getNum : function(){ return (this.qnum!==-1 ? this.qnum : this.anum);},
 	setNum : function(val){
 		if(this.minnum>0 && val===0){ return;}
-		// editmode val>=0‚Í”š val=-1‚ÍÁ‹ val=-2‚ÍH‚È‚Ç
+		// editmodeæ™‚ val>=0ã¯æ•°å­— val=-1ã¯æ¶ˆå» val=-2ã¯ï¼Ÿãªã©
 		if(this.owner.editmode){
 			val = (((this.numberAsObject||val===-2) && this.qnum===val)?-1:val);
 			this.setQnum(val);
@@ -239,7 +239,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 			if(this.numberIsWhite) { this.setQans(0);}
 			if(this.owner.painter.bcolor==="white"){ this.setQsub(0);}
 		}
-		// playmode val>=0‚Í”š val=-1‚ÍÁ‹ numberAsObject‚ÌE‚Íval=-2 numberWithMB‚Ì›~‚Íval=-2,-3
+		// playmodeæ™‚ val>=0ã¯æ•°å­— val=-1ã¯æ¶ˆå» numberAsObjectã®ãƒ»ã¯val=-2 numberWithMBã®â—‹Ã—ã¯val=-2,-3
 		else if(this.qnum===-1){
 			var vala = ((val>-1 && !(this.numberAsObject && this.anum=== val  ))? val  :-1);
 			var vals = ((val<-1 && !(this.numberAsObject && this.qsub===-val-1))?-val-1: 0);
@@ -250,11 +250,11 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	},
 	
 	//-----------------------------------------------------------------------
-	// cell.isNum()       ŠY“–‚·‚éCell‚É”š‚ª‚ ‚é‚©•Ô‚·
-	// cell.noNum()       ŠY“–‚·‚éCell‚É”š‚ª‚È‚¢‚©•Ô‚·
-	// cell.isValidNum()  ŠY“–‚·‚éCell‚É0ˆÈã‚Ì”š‚ª‚ ‚é‚©•Ô‚·
-	// cell.isNumberObj() ŠY“–‚·‚éCell‚É”šor›‚ª‚ ‚é‚©•Ô‚·
-	// cell.sameNumber()  ‚Q‚Â‚ÌCell‚É“¯‚¶—LŒø‚È”š‚ª‚ ‚é‚©•Ô‚·
+	// cell.isNum()       è©²å½“ã™ã‚‹Cellã«æ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
+	// cell.noNum()       è©²å½“ã™ã‚‹Cellã«æ•°å­—ãŒãªã„ã‹è¿”ã™
+	// cell.isValidNum()  è©²å½“ã™ã‚‹Cellã«0ä»¥ä¸Šã®æ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
+	// cell.isNumberObj() è©²å½“ã™ã‚‹Cellã«æ•°å­—orâ—‹ãŒã‚ã‚‹ã‹è¿”ã™
+	// cell.sameNumber()  ï¼’ã¤ã®Cellã«åŒã˜æœ‰åŠ¹ãªæ•°å­—ãŒã‚ã‚‹ã‹è¿”ã™
 	//-----------------------------------------------------------------------
 	isNum : function(){ return !this.isnull && (this.qnum!==-1 || this.anum!==-1);},
 	noNum : function(){ return !this.isnull && (this.qnum===-1 && this.anum===-1);},
@@ -263,11 +263,11 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	sameNumber : function(cell){ return (this.isValidNum() && (this.getNum()===cell.getNum()));},
 
 	//---------------------------------------------------------------------------
-	// cell.is51cell()     [_]‚ÌƒZƒ‹‚©ƒ`ƒFƒbƒN‚·‚é(ƒJƒbƒNƒˆÈŠO‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚é)
-	// cell.set51cell()    [_]‚ğì¬‚·‚é(ƒJƒbƒNƒˆÈŠO‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚é)
-	// cell.remove51cell() [_]‚ğÁ‹‚·‚é(ƒJƒbƒNƒˆÈŠO‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚é)
+	// cell.is51cell()     [ï¼¼]ã®ã‚»ãƒ«ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹(ã‚«ãƒƒã‚¯ãƒ­ä»¥å¤–ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹)
+	// cell.set51cell()    [ï¼¼]ã‚’ä½œæˆã™ã‚‹(ã‚«ãƒƒã‚¯ãƒ­ä»¥å¤–ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹)
+	// cell.remove51cell() [ï¼¼]ã‚’æ¶ˆå»ã™ã‚‹(ã‚«ãƒƒã‚¯ãƒ­ä»¥å¤–ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹)
 	//---------------------------------------------------------------------------
-	// ¦‚Æ‚è‚ ‚¦‚¸ƒJƒbƒNƒ—p
+	// â€»ã¨ã‚Šã‚ãˆãšã‚«ãƒƒã‚¯ãƒ­ç”¨
 	is51cell : function(){ return (this.ques===51);},
 	set51cell : function(val){
 		this.setQues(51);
@@ -283,26 +283,26 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.ice() ƒAƒCƒX‚Ìƒ}ƒX‚©‚Ç‚¤‚©”»’è‚·‚é
+	// cell.ice() ã‚¢ã‚¤ã‚¹ã®ãƒã‚¹ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	ice : function(){ return (this.ques===6);},
 
 	//---------------------------------------------------------------------------
-	// cell.isEmpty() / cell.isValid() •s’èŒ`”Õ–Ê‚È‚Ç‚ÅA“ü—Í‚Å‚«‚éƒ}ƒX‚©”»’è‚·‚é
+	// cell.isEmpty() / cell.isValid() ä¸å®šå½¢ç›¤é¢ãªã©ã§ã€å…¥åŠ›ã§ãã‚‹ãƒã‚¹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	isEmpty : function(){ return ( this.isnull || this.ques===7);},
 	isValid : function(){ return (!this.isnull && this.ques!==7);},
 
 	//---------------------------------------------------------------------------
-	// cell.isDeparture()   ƒIƒuƒWƒFƒNƒg‚ğ“®‚©‚·ƒpƒYƒ‹‚ÅˆÚ“®Œ³ƒZƒ‹‚©‚Ç‚¤‚©”»’è‚·‚é
-	// cell.isDestination() ƒIƒuƒWƒFƒNƒg‚ğ“®‚©‚·ƒpƒYƒ‹‚ÅˆÚ“®æƒZƒ‹‚©‚Ç‚¤‚©”»’è‚·‚é
-	// ¦“®‚¢‚Ä‚¢‚È‚¢ê‡‚ÍAidDestination‚Ì‚İtrue‚ğ•Ô‚µ‚Ü‚·
+	// cell.isDeparture()   ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‹•ã‹ã™ãƒ‘ã‚ºãƒ«ã§ç§»å‹•å…ƒã‚»ãƒ«ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// cell.isDestination() ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‹•ã‹ã™ãƒ‘ã‚ºãƒ«ã§ç§»å‹•å…ˆã‚»ãƒ«ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
+	// â€»å‹•ã„ã¦ã„ãªã„å ´åˆã¯ã€idDestinationã®ã¿trueã‚’è¿”ã—ã¾ã™
 	//---------------------------------------------------------------------------
 	isDeparture   : function(){ return (!this.isnull &&  this.base.isnull && this.isNum());},
 	isDestination : function(){ return (!this.isnull && !this.base.isnull);},
 
 	//---------------------------------------------------------------------------
-	// cell.isLineStraight()   ƒZƒ‹‚Ìã‚Åü‚ª’¼i‚µ‚Ä‚¢‚é‚©”»’è‚·‚é
+	// cell.isLineStraight()   ã‚»ãƒ«ã®ä¸Šã§ç·šãŒç›´é€²ã—ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	isLineStraight : function(){
 		if     (this.ub().isLine() && this.db().isLine()){ return true;}
@@ -311,24 +311,24 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.setCombinedLine() ©•ª‚ÌƒZƒ‹‚Ìİ’è‚É‰‚¶‚Äü‚è‚Ìü‚ğİ’è‚·‚é
-	// cell.isLP()  ü‚ª•K‚¸‘¶İ‚·‚éƒZƒ‹‚ÌğŒ‚ğ”»’è‚·‚é
-	// cell.noLP()  ü‚ªˆø‚¯‚È‚¢ƒZƒ‹‚ÌğŒ‚ğ”»’è‚·‚é
+	// cell.setCombinedLine() è‡ªåˆ†ã®ã‚»ãƒ«ã®è¨­å®šã«å¿œã˜ã¦å‘¨ã‚Šã®ç·šã‚’è¨­å®šã™ã‚‹
+	// cell.isLP()  ç·šãŒå¿…ãšå­˜åœ¨ã™ã‚‹ã‚»ãƒ«ã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
+	// cell.noLP()  ç·šãŒå¼•ã‘ãªã„ã‚»ãƒ«ã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	setCombinedLine : function(){	// cell.setQues‚©‚çŒÄ‚Î‚ê‚é
+	setCombinedLine : function(){	// cell.setQuesã‹ã‚‰å‘¼ã°ã‚Œã‚‹
 		if(this.owner.Border.prototype.enableLineCombined){
 			var bx=this.bx, by=this.by;
 			var blist = this.owner.board.borderinside(bx-1,by-1,bx+1,by+1);
 			for(var i=0;i<blist.length;i++){
 				var border=blist[i];
 				if        (border.line===0 && border.isLineEX()){ border.setLineVal(1);}
-				// •ƒ}ƒX‚ª“ü—Í‚³‚ê‚½‚çü‚ğÁ‚·‚Æ‚©‚â‚è‚½‚¢ê‡A«‚ÌƒRƒƒ“ƒgƒAƒEƒg‚ğ‚Í‚¸‚·
+				// é»’ãƒã‚¹ãŒå…¥åŠ›ã•ã‚ŒãŸã‚‰ç·šã‚’æ¶ˆã™ã¨ã‹ã‚„ã‚ŠãŸã„å ´åˆã€â†“ã®ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã‚’ã¯ãšã™
 				// else if(border.line!==0 && border.isLineNG()){ border.setLineVal(0);}
 			}
 		}
 	},
 
-	// ‰º‹L‚ÌŠÖ”‚Å—p‚¢‚é’è”
+	// ä¸‹è¨˜ã®é–¢æ•°ã§ç”¨ã„ã‚‹å®šæ•°
 	isLPobj : {
 		1 : {11:1,12:1,14:1,15:1}, /* k.UP */
 		2 : {11:1,12:1,16:1,17:1}, /* k.DN */
@@ -345,13 +345,13 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	isLP : function(dir){
 		return !!this.isLPobj[dir][this.ques];
 	},
-	// ans.checkenableLineParts‚©‚çnoLP()ŠÖ”‚ª’¼ÚŒÄ‚Î‚ê‚Ä‚¢‚é
+	// ans.checkenableLinePartsã‹ã‚‰noLP()é–¢æ•°ãŒç›´æ¥å‘¼ã°ã‚Œã¦ã„ã‚‹
 	noLP : function(dir){
 		return !!this.noLPobj[dir][this.ques];
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.countDir4Cell()  ã‰º¶‰E4•ûŒü‚ÅğŒfunc==true‚É‚È‚éƒ}ƒX‚Ì”‚ğƒJƒEƒ“ƒg‚·‚é
+	// cell.countDir4Cell()  ä¸Šä¸‹å·¦å³4æ–¹å‘ã§æ¡ä»¶func==trueã«ãªã‚‹ãƒã‚¹ã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹
 	//---------------------------------------------------------------------------
 	countDir4Cell : function(func){
 		var cnt=0, cell;
@@ -363,8 +363,8 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.getdir4clist()   ã‰º¶‰E4•ûŒü‚Ì‘¶İ‚·‚éƒZƒ‹‚ğ•Ô‚·
-	// cell.getdir4cblist()  ã‰º¶‰E4•ûŒü‚ÌƒZƒ‹•‹«ŠEü••ûŒü‚ğ•Ô‚·
+	// cell.getdir4clist()   ä¸Šä¸‹å·¦å³4æ–¹å‘ã®å­˜åœ¨ã™ã‚‹ã‚»ãƒ«ã‚’è¿”ã™
+	// cell.getdir4cblist()  ä¸Šä¸‹å·¦å³4æ–¹å‘ã®ã‚»ãƒ«ï¼†å¢ƒç•Œç·šï¼†æ–¹å‘ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
 		var cell, list=[];
@@ -384,7 +384,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.setCellLineError()    ƒZƒ‹‚Æü‚è‚Ìü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// cell.setCellLineError()    ã‚»ãƒ«ã¨å‘¨ã‚Šã®ç·šã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	setCellLineError : function(flag){
 		var bx=this.bx, by=this.by;
@@ -394,26 +394,26 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// šCrossƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªCross‚Ì”‚¾‚¯•Û‚·‚é(iscross==1‚Ì)
+// â˜…Crossã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒCrossã®æ•°ã ã‘ä¿æŒã™ã‚‹(iscross==1ã®æ™‚)
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(2)
-// CrossƒNƒ‰ƒX‚Ì’è‹`
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(2)
+// Crossã‚¯ãƒ©ã‚¹ã®å®šç¾©
 pzpr.createPuzzleClass('Cross:BoardPiece',
 {
 	group : 'cross',
 
 	iscrossobj : true,
 
-	// ƒfƒtƒHƒ‹ƒg’l
-	ques : 0,	// Œğ·“_‚Ì–â‘èƒf[ƒ^(•“_)‚ğ•Û‚·‚é
-	qnum :-1,	// Œğ·“_‚Ì–â‘èƒf[ƒ^(”š)‚ğ•Û‚·‚é
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	ques : 0,	// äº¤å·®ç‚¹ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(é»’ç‚¹)ã‚’ä¿æŒã™ã‚‹
+	qnum :-1,	// äº¤å·®ç‚¹ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ•°å­—)ã‚’ä¿æŒã™ã‚‹
 
 	propall : ['ques', 'qnum'],
 	propans : [],
 	propsub : [],
 
 	//---------------------------------------------------------------------------
-	// ƒIƒuƒWƒFƒNƒgİ’è’l‚Ìgetter/setter
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¨­å®šå€¤ã®getter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
 	setQues : function(val){ this.setdata(k.QUES, val);},
@@ -422,14 +422,14 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 	setQnum : function(val){ this.setdata(k.QNUM, val);},
 
 	//---------------------------------------------------------------------------
-	// cross.lcnt()       Œğ“_‚É‘¶İ‚·‚éü‚Ì–{”‚ğ•Ô‚·
-	// cross.iscrossing() w’è‚³‚ê‚½ƒZƒ‹/Œğ“_‚Åü‚ªŒğ·‚·‚éê‡‚Étrue‚ğ•Ô‚·
+	// cross.lcnt()       äº¤ç‚¹ã«å­˜åœ¨ã™ã‚‹ç·šã®æœ¬æ•°ã‚’è¿”ã™
+	// cross.iscrossing() æŒ‡å®šã•ã‚ŒãŸã‚»ãƒ«/äº¤ç‚¹ã§ç·šãŒäº¤å·®ã™ã‚‹å ´åˆã«trueã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
-	// cross.setCrossBorderError() Œğ“_‚Æ‚»‚Ìü‚èl•ûŒü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// cross.setCrossBorderError() äº¤ç‚¹ã¨ãã®å‘¨ã‚Šå››æ–¹å‘ã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	setCrossBorderError : function(){
 		this.seterr(1);
@@ -438,42 +438,42 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// šBorderƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªBorder‚Ì”‚¾‚¯•Û‚·‚é(isborder==1‚Ì)
+// â˜…Borderã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒBorderã®æ•°ã ã‘ä¿æŒã™ã‚‹(isborder==1ã®æ™‚)
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(3)
-// BorderƒNƒ‰ƒX‚Ì’è‹`
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(3)
+// Borderã‚¯ãƒ©ã‚¹ã®å®šç¾©
 pzpr.createPuzzleClass('Border:BoardPiece',
 {
 	initialize : function(){
-		this.sidecell  = [null,null];	// —×ÚƒZƒ‹‚ÌƒIƒuƒWƒFƒNƒg
-		this.sidecross = [null,null];	// —×ÚŒğ“_‚ÌƒIƒuƒWƒFƒNƒg
-		this.lineedge  = [];			// LineManager—p
+		this.sidecell  = [null,null];	// éš£æ¥ã‚»ãƒ«ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+		this.sidecross = [null,null];	// éš£æ¥äº¤ç‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+		this.lineedge  = [];			// LineManagerç”¨
 	},
 	group : 'border',
 
 	isborderobj : true,
 
-	// ƒfƒtƒHƒ‹ƒg’l
-	ques : 0,	// ‹«ŠEü‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(–â‘è‹«ŠEü)
-	qans : 0,	// ‹«ŠEü‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(‰ñ“š‹«ŠEü)
-	qdir : 0,	// ‹«ŠEü‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(ƒAƒCƒXƒo[ƒ“‚Ì–îˆó/ƒ}ƒCƒiƒŠƒYƒ€‚Ì•s“™†)
-	qnum :-1,	// ‹«ŠEü‚Ì–â‘èƒf[ƒ^‚ğ•Û‚·‚é(ƒ}ƒCƒiƒŠƒYƒ€‚Ì”š/“V‘ÌƒVƒ‡[‚Ì¯)
-	line : 0,	// ü‚Ì‰ñ“šƒf[ƒ^‚ğ•Û‚·‚é(ƒXƒŠƒŠƒ“‚È‚Ç‚Ìü‚à‚±‚Á‚¿)
-	qsub : 0,	// ‹«ŠEü‚Ì•â•ƒf[ƒ^‚ğ•Û‚·‚é(1:•â•ü/2:~)
-	color: "",	// F•ª‚¯ƒf[ƒ^‚ğ•Û‚·‚é
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	ques : 0,	// å¢ƒç•Œç·šã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(å•é¡Œå¢ƒç•Œç·š)
+	qans : 0,	// å¢ƒç•Œç·šã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(å›ç­”å¢ƒç•Œç·š)
+	qdir : 0,	// å¢ƒç•Œç·šã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(ã‚¢ã‚¤ã‚¹ãƒãƒ¼ãƒ³ã®çŸ¢å°/ãƒã‚¤ãƒŠãƒªã‚ºãƒ ã®ä¸ç­‰å·)
+	qnum :-1,	// å¢ƒç•Œç·šã®å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(ãƒã‚¤ãƒŠãƒªã‚ºãƒ ã®æ•°å­—/å¤©ä½“ã‚·ãƒ§ãƒ¼ã®æ˜Ÿ)
+	line : 0,	// ç·šã®å›ç­”ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(ã‚¹ãƒªãƒªãƒ³ãªã©ã®ç·šã‚‚ã“ã£ã¡)
+	qsub : 0,	// å¢ƒç•Œç·šã®è£œåŠ©ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹(1:è£œåŠ©ç·š/2:Ã—)
+	color: "",	// è‰²åˆ†ã‘ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹
 
-	isvert: false,	// true:‹«ŠEü‚ª‚’¼(c) false:‹«ŠEü‚ª…•½(‰¡)
+	isvert: false,	// true:å¢ƒç•Œç·šãŒå‚ç›´(ç¸¦) false:å¢ƒç•Œç·šãŒæ°´å¹³(æ¨ª)
 
 	propall : ['ques', 'qans', 'qdir', 'qnum', 'line', 'qsub'],
 	propans : ['qans', 'line', 'qsub'],
 	propsub : ['qsub'],
 
-	// isLineNGŠÖ˜A‚Ì•Ï”‚È‚Ç
+	// isLineNGé–¢é€£ã®å¤‰æ•°ãªã©
 	enableLineNG       : false,
 	enableLineCombined : false,
 
 	//---------------------------------------------------------------------------
-	// ƒIƒuƒWƒFƒNƒgİ’è’l‚Ìgetter/setter
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¨­å®šå€¤ã®getter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
 	setQues : function(val){ this.setdata(k.QUES, val);},
@@ -494,8 +494,8 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
 	//---------------------------------------------------------------------------
-	// prehook  ’l‚Ìİ’è‘O‚É‚â‚Á‚Ä‚¨‚­ˆ—‚âAİ’è‹Ö~ˆ—‚ğs‚¤
-	// posthook ’l‚Ìİ’èŒã‚É‚â‚Á‚Ä‚¨‚­ˆ—‚ğs‚¤
+	// prehook  å€¤ã®è¨­å®šå‰ã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚„ã€è¨­å®šç¦æ­¢å‡¦ç†ã‚’è¡Œã†
+	// posthook å€¤ã®è¨­å®šå¾Œã«ã‚„ã£ã¦ãŠãå‡¦ç†ã‚’è¡Œã†
 	//---------------------------------------------------------------------------
 	prehook : {
 		qans : function(num){ return (this.ques!==0);},
@@ -508,17 +508,17 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// border.draw() ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é (Border‚Í‚¿‚å‚Á‚Æ”ÍˆÍ‚ªL‚¢)
+	// border.draw() ç›¤é¢ã«è‡ªåˆ†ã®å‘¨å›²ã‚’æç”»ã™ã‚‹ (Borderã¯ã¡ã‚‡ã£ã¨ç¯„å›²ãŒåºƒã„)
 	//---------------------------------------------------------------------------
 	draw : function(){
 		this.owner.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
 	},
 
 	//-----------------------------------------------------------------------
-	// border.isLine()      ŠY“–‚·‚éBorder‚Éline‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-	// border.setLine()     ŠY“–‚·‚éBorder‚Éü‚ğˆø‚­
-	// border.setPeke()     ŠY“–‚·‚éBorder‚É~ˆó‚ğ‚Â‚¯‚é
-	// border.removeLine()  ŠY“–‚·‚éBorder‚©‚çü‚ğÁ‚·
+	// border.isLine()      è©²å½“ã™ã‚‹Borderã«lineãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// border.setLine()     è©²å½“ã™ã‚‹Borderã«ç·šã‚’å¼•ã
+	// border.setPeke()     è©²å½“ã™ã‚‹Borderã«Ã—å°ã‚’ã¤ã‘ã‚‹
+	// border.removeLine()  è©²å½“ã™ã‚‹Borderã‹ã‚‰ç·šã‚’æ¶ˆã™
 	//-----------------------------------------------------------------------
 	isLine : function(){ return this.line>0;},
 	setLine    : function(id){ this.setLineVal(1); this.setQsub(0);},
@@ -526,9 +526,9 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 	removeLine : function(id){ this.setLineVal(0); this.setQsub(0);},
 
 	//---------------------------------------------------------------------------
-	// border.isBorder()     ŠY“–‚·‚éBorder‚É‹«ŠEü‚ªˆø‚©‚ê‚Ä‚¢‚é‚©”»’è‚·‚é
-	// border.setBorder()    ŠY“–‚·‚éBorder‚É‹«ŠEü‚ğˆø‚­
-	// border.removeBorder() ŠY“–‚·‚éBorder‚©‚çü‚ğÁ‚·
+	// border.isBorder()     è©²å½“ã™ã‚‹Borderã«å¢ƒç•Œç·šãŒå¼•ã‹ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// border.setBorder()    è©²å½“ã™ã‚‹Borderã«å¢ƒç•Œç·šã‚’å¼•ã
+	// border.removeBorder() è©²å½“ã™ã‚‹Borderã‹ã‚‰ç·šã‚’æ¶ˆã™
 	//---------------------------------------------------------------------------
 	isBorder  : function(){ return (this.ques>0 || this.qans>0);},
 	setBorder : function(){
@@ -541,19 +541,19 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 	},
 
 	//---------------------------------------------------------------------------
-	// border.isVert()  ŠY“–‚·‚éBorder‚ª‚’¼(c)‚©‚Ç‚¤‚©•Ô‚·
-	// border.isHorz()  ŠY“–‚·‚éBorder‚É…•½(‰¡)‚©‚Ç‚¤‚©•Ô‚·
+	// border.isVert()  è©²å½“ã™ã‚‹BorderãŒå‚ç›´(ç¸¦)ã‹ã©ã†ã‹è¿”ã™
+	// border.isHorz()  è©²å½“ã™ã‚‹Borderã«æ°´å¹³(æ¨ª)ã‹ã©ã†ã‹è¿”ã™
 	//---------------------------------------------------------------------------
 	isVert : function(){ return  this.isvert;},
 	isHorz : function(){ return !this.isvert;},
 
 	//---------------------------------------------------------------------------
-	// border.checkStableLine() ü‚ªˆø‚¯‚È‚¢ or •K‚¸‘¶İ‚·‚éó‘Ô‚É‚È‚Á‚Ä‚¢‚é‚©”»’è‚·‚é
-	// border.isLineEX() ü‚ª•K‚¸‘¶İ‚·‚éborder‚ÌğŒ‚ğ”»’è‚·‚é
-	// border.isLineNG() ü‚ªˆø‚¯‚È‚¢border‚ÌğŒ‚ğ”»’è‚·‚é
+	// border.checkStableLine() ç·šãŒå¼•ã‘ãªã„ or å¿…ãšå­˜åœ¨ã™ã‚‹çŠ¶æ…‹ã«ãªã£ã¦ã„ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// border.isLineEX() ç·šãŒå¿…ãšå­˜åœ¨ã™ã‚‹borderã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
+	// border.isLineNG() ç·šãŒå¼•ã‘ãªã„borderã®æ¡ä»¶ã‚’åˆ¤å®šã™ã‚‹
 	//---------------------------------------------------------------------------
-	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]‚ÅŒÄ‚Î‚ê‚éŠÖ”
-	checkStableLine : function(num){	// border.setLine‚©‚çŒÄ‚Î‚ê‚é
+	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]ã§å‘¼ã°ã‚Œã‚‹é–¢æ•°
+	checkStableLine : function(num){	// border.setLineã‹ã‚‰å‘¼ã°ã‚Œã‚‹
 		if(this.enableLineNG){
 			if(this.enableLineCombined){
 				return ( (num!==0 && this.isLineNG()) ||
@@ -564,15 +564,15 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 		return false;
 	},
 
-	// cell.setQues => setCombinedLine‚©‚çŒÄ‚Î‚ê‚éŠÖ” (exist->ex)
-	//  -> cellid‚Ì•Ğ•û‚ªnull‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ğl—¶‚µ‚Ä‚¢‚Ü‚¹‚ñ
+	// cell.setQues => setCombinedLineã‹ã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•° (exist->ex)
+	//  -> cellidã®ç‰‡æ–¹ãŒnullã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’è€ƒæ…®ã—ã¦ã„ã¾ã›ã‚“
 	isLineEX : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
 		return this.isVert() ? (cell1.isLP(k.RT) && cell2.isLP(k.LT)) :
 							   (cell1.isLP(k.DN) && cell2.isLP(k.UP));
 	},
-	// border.setLineCal => checkStableLine‚©‚çŒÄ‚Î‚ê‚éŠÖ”
-	//  -> cellid‚Ì•Ğ•û‚ªnull‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ğl—¶‚µ‚Ä‚¢‚Ü‚¹‚ñ
+	// border.setLineCal => checkStableLineã‹ã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•°
+	//  -> cellidã®ç‰‡æ–¹ãŒnullã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’è€ƒæ…®ã—ã¦ã„ã¾ã›ã‚“
 	isLineNG : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
 		return this.isVert() ? (cell1.noLP(k.RT) || cell2.noLP(k.LT)) :
@@ -581,26 +581,26 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// šEXCellƒNƒ‰ƒX BoardƒNƒ‰ƒX‚ªEXCell‚Ì”‚¾‚¯•Û‚·‚é
+// â˜…EXCellã‚¯ãƒ©ã‚¹ Boardã‚¯ãƒ©ã‚¹ãŒEXCellã®æ•°ã ã‘ä¿æŒã™ã‚‹
 //---------------------------------------------------------------------------
-// ƒ{[ƒhƒƒ“ƒoƒf[ƒ^‚Ì’è‹`(4)
-// EXCellƒNƒ‰ƒX‚Ì’è‹`
+// ãƒœãƒ¼ãƒ‰ãƒ¡ãƒ³ãƒãƒ‡ãƒ¼ã‚¿ã®å®šç¾©(4)
+// EXCellã‚¯ãƒ©ã‚¹ã®å®šç¾©
 pzpr.createPuzzleClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
 	isexcellobj : true,
 
-	// ƒfƒtƒHƒ‹ƒg’l
-	qdir : 0,	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(•ûŒü)‚ğ•Û‚·‚é(–îˆó or ƒJƒbƒNƒ‚Ì‰º‘¤)
-	qnum :-1,	// ƒZƒ‹‚Ì–â‘èƒf[ƒ^(”š)‚ğ•Û‚·‚é(”š or ƒJƒbƒNƒ‚Ì‰E‘¤)
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+	qdir : 0,	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ–¹å‘)ã‚’ä¿æŒã™ã‚‹(çŸ¢å° or ã‚«ãƒƒã‚¯ãƒ­ã®ä¸‹å´)
+	qnum :-1,	// ã‚»ãƒ«ã®å•é¡Œãƒ‡ãƒ¼ã‚¿(æ•°å­—)ã‚’ä¿æŒã™ã‚‹(æ•°å­— or ã‚«ãƒƒã‚¯ãƒ­ã®å³å´)
 
 	propall : ['qdir', 'qnum'],
 	propans : [],
 	propsub : [],
 
 	//---------------------------------------------------------------------------
-	// ƒIƒuƒWƒFƒNƒgİ’è’l‚Ìgetter/setter
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¨­å®šå€¤ã®getter/setter
 	//---------------------------------------------------------------------------
 	getQdir : function(){ return this.qdir;},
 	setQdir : function(val){ this.setdata(k.QDIR, val);},
@@ -610,9 +610,9 @@ pzpr.createPuzzleClass('EXCell:BoardPiece',
 });
 
 //----------------------------------------------------------------------------
-// šAddressƒNƒ‰ƒX (bx,by)À•W‚ğˆµ‚¤
+// â˜…Addressã‚¯ãƒ©ã‚¹ (bx,by)åº§æ¨™ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
-// AddressƒNƒ‰ƒX
+// Addressã‚¯ãƒ©ã‚¹
 pzpr.createPuzzleClass('Address',
 {
 	initialize : function(bx,by){
@@ -649,14 +649,14 @@ pzpr.createPuzzleClass('Address',
 	},
 
 	//---------------------------------------------------------------------------
-	// pos.draw() ”Õ–Ê‚É©•ª‚ÌüˆÍ‚ğ•`‰æ‚·‚é
+	// pos.draw() ç›¤é¢ã«è‡ªåˆ†ã®å‘¨å›²ã‚’æç”»ã™ã‚‹
 	//---------------------------------------------------------------------------
 	draw : function(){
 		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 
 	//---------------------------------------------------------------------------
-	// pos.isinside() ‚±‚ÌêŠ‚ª”Õ–Ê“à‚©‚Ç‚¤‚©”»’f‚·‚é
+	// pos.isinside() ã“ã®å ´æ‰€ãŒç›¤é¢å†…ã‹ã©ã†ã‹åˆ¤æ–­ã™ã‚‹
 	//---------------------------------------------------------------------------
 	isinside : function(){
 		var bd = this.owner.board;
@@ -665,7 +665,7 @@ pzpr.createPuzzleClass('Address',
 	},
 
 	//---------------------------------------------------------------------------
-	// pos.setCrossBorderError() ‚ ‚éŒğ“_‚Æ‚»‚Ìü‚èl•ûŒü‚ÉƒGƒ‰[ƒtƒ‰ƒO‚ğİ’è‚·‚é
+	// pos.setCrossBorderError() ã‚ã‚‹äº¤ç‚¹ã¨ãã®å‘¨ã‚Šå››æ–¹å‘ã«ã‚¨ãƒ©ãƒ¼ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã™ã‚‹
 	//---------------------------------------------------------------------------
 	setCrossBorderError : function(){
 		if(this.iscross!==0){ this.getx(this.bx,this.by).seterr(1);}
@@ -674,19 +674,19 @@ pzpr.createPuzzleClass('Address',
 });
 
 //----------------------------------------------------------------------------
-// šPieceListƒNƒ‰ƒX ƒIƒuƒWƒFƒNƒg‚Ì”z—ñ‚ğˆµ‚¤
+// â˜…PieceListã‚¯ãƒ©ã‚¹ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é…åˆ—ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('PieceList',
 {
 	length : 0,
 	
 	//--------------------------------------------------------------------------------
-	// ™ArrayƒIƒuƒWƒFƒNƒgŠÖ˜A‚ÌŠÖ”
-	// list.add()      —^‚¦‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğ”z—ñ‚Ì––”ö‚É’Ç‰Á‚·‚é(push()‘Š“–)
-	// list.extend()   —^‚¦‚ç‚ê‚½PieceList‚ğ”z—ñ‚Ì––”ö‚É’Ç‰Á‚·‚é
-	// list.unshift()  —^‚¦‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğ”z—ñ‚Ìæ“ª‚É“ü‚ê‚é
-	// list.pop()      ”z—ñ‚ÌÅŒã‚ÌƒIƒuƒWƒFƒNƒg‚ğæ‚èœ‚¢‚Ä•Ô‚·
-	// list.reverse()  •Û‚µ‚Ä‚¢‚é”z—ñ‚Ì‡”Ô‚ğ‹t‚É‚·‚é
+	// â˜†Arrayã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé–¢é€£ã®é–¢æ•°
+	// list.add()      ä¸ãˆã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…åˆ—ã®æœ«å°¾ã«è¿½åŠ ã™ã‚‹(push()ç›¸å½“)
+	// list.extend()   ä¸ãˆã‚‰ã‚ŒãŸPieceListã‚’é…åˆ—ã®æœ«å°¾ã«è¿½åŠ ã™ã‚‹
+	// list.unshift()  ä¸ãˆã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…åˆ—ã®å…ˆé ­ã«å…¥ã‚Œã‚‹
+	// list.pop()      é…åˆ—ã®æœ€å¾Œã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–ã‚Šé™¤ã„ã¦è¿”ã™
+	// list.reverse()  ä¿æŒã—ã¦ã„ã‚‹é…åˆ—ã®é †ç•ªã‚’é€†ã«ã™ã‚‹
 	//--------------------------------------------------------------------------------
 	add     : Array.prototype.push,
 	extend  : function(list){ this.add.apply(this,list);},
@@ -695,18 +695,18 @@ pzpr.createPuzzleClass('PieceList',
 	reverse : Array.prototype.reverse,
 	
 	//--------------------------------------------------------------------------------
-	// ™ArrayƒIƒuƒWƒFƒNƒgiteratorŠÖ˜A‚ÌŠÖ”
-	// list.some()     ğŒ‚ªtrue‚Æ‚È‚éƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚·‚é‚©”»’è‚·‚é
-	// list.include()  —^‚¦‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ª”z—ñ‚É‘¶İ‚·‚é‚©”»’è‚·‚é
+	// â˜†Arrayã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆiteratoré–¢é€£ã®é–¢æ•°
+	// list.some()     æ¡ä»¶ãŒtrueã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå­˜åœ¨ã™ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	// list.include()  ä¸ãˆã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒé…åˆ—ã«å­˜åœ¨ã™ã‚‹ã‹åˆ¤å®šã™ã‚‹
 	//--------------------------------------------------------------------------------
 	some    : Array.prototype.some,
 	include : function(target){ return this.some(function(obj){ return (obj===target);});},
 	
 	//--------------------------------------------------------------------------------
-	// list.filter()   ğŒ‚ªtrue‚Æ‚È‚éƒIƒuƒWƒFƒNƒg‚ğ’Šo‚µ‚½clist‚ğV‚½‚Éì¬‚·‚é
-	// list.notnull()  null‚Å‚Í‚È‚¢ƒIƒuƒWƒFƒNƒg‚ğ’Šo‚µ‚½clist‚ğV‚½‚Éì¬‚·‚é
+	// list.filter()   æ¡ä»¶ãŒtrueã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŠ½å‡ºã—ãŸclistã‚’æ–°ãŸã«ä½œæˆã™ã‚‹
+	// list.notnull()  nullã§ã¯ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŠ½å‡ºã—ãŸclistã‚’æ–°ãŸã«ä½œæˆã™ã‚‹
 	//--------------------------------------------------------------------------------
-	/* constructor‚ª•Ï‚í‚Á‚Ä‚µ‚Ü‚¤‚Ì‚ÅAArray.prototype‚ªg—p‚Å‚«‚È‚¢ */
+	/* constructorãŒå¤‰ã‚ã£ã¦ã—ã¾ã†ã®ã§ã€Array.prototypeãŒä½¿ç”¨ã§ããªã„ */
 	filter  : function(cond){
 		var list = new this.constructor();
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
@@ -715,9 +715,9 @@ pzpr.createPuzzleClass('PieceList',
 	notnull : function(cond){ return this.filter(function(obj){ return !obj.isnull;});},
 	
 	//--------------------------------------------------------------------------------
-	// list.map()      clist‚ÌŠe—v‘f‚Éw’è‚³‚ê‚½ŠÖ”‚ğ“K—p‚µ‚½clist‚ğV‚½‚Éì¬‚·‚é
+	// list.map()      clistã®å„è¦ç´ ã«æŒ‡å®šã•ã‚ŒãŸé–¢æ•°ã‚’é©ç”¨ã—ãŸclistã‚’æ–°ãŸã«ä½œæˆã™ã‚‹
 	//--------------------------------------------------------------------------------
-	/* constructor‚ª•Ï‚í‚Á‚Ä‚µ‚Ü‚¤‚Ì‚ÅAArray.prototype‚ªg—p‚Å‚«‚È‚¢ */
+	/* constructorãŒå¤‰ã‚ã£ã¦ã—ã¾ã†ã®ã§ã€Array.prototypeãŒä½¿ç”¨ã§ããªã„ */
 	map : function(cond){
 		var list = new this.constructor();
 		for(var i=0;i<this.length;i++){ list.add(cond(this[i]));}
@@ -725,8 +725,8 @@ pzpr.createPuzzleClass('PieceList',
 	},
 	
 	//--------------------------------------------------------------------------------
-	// list.indexOf()  —^‚¦‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚Ì”z—ñã‚ÌˆÊ’u‚ğæ“¾‚·‚é
-	// list.remove()   —^‚¦‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğ”z—ñ‚©‚çæ‚èœ‚­
+	// list.indexOf()  ä¸ãˆã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é…åˆ—ä¸Šã®ä½ç½®ã‚’å–å¾—ã™ã‚‹
+	// list.remove()   ä¸ãˆã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é…åˆ—ã‹ã‚‰å–ã‚Šé™¤ã
 	//--------------------------------------------------------------------------------
 	indexOf : Array.prototype.indexOf,
 	remove : function(obj){
@@ -735,7 +735,7 @@ pzpr.createPuzzleClass('PieceList',
 	},
 	
 	//--------------------------------------------------------------------------------
-	// list.seterr()  •Û‚µ‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Éerror’l‚ğİ’è‚·‚é
+	// list.seterr()  ä¿æŒã—ã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«errorå€¤ã‚’è¨­å®šã™ã‚‹
 	//--------------------------------------------------------------------------------
 	seterr : function(num){
 		if(!this.owner.board.isenableSetError()){ return;}
@@ -744,12 +744,12 @@ pzpr.createPuzzleClass('PieceList',
 });
 
 //----------------------------------------------------------------------------
-// šCellListƒNƒ‰ƒX Cell‚Ì”z—ñ‚ğˆµ‚¤
+// â˜…CellListã‚¯ãƒ©ã‚¹ Cellã®é…åˆ—ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('CellList:PieceList',
 {
 	//---------------------------------------------------------------------------
-	// clist.addByIdlist()  ƒZƒ‹‚ÌID‚ÌƒŠƒXƒg‚©‚çƒZƒ‹‚ğ’Ç‰Á‚·‚é
+	// clist.addByIdlist()  ã‚»ãƒ«ã®IDã®ãƒªã‚¹ãƒˆã‹ã‚‰ã‚»ãƒ«ã‚’è¿½åŠ ã™ã‚‹
 	//---------------------------------------------------------------------------
 	addByIdlist : function(idlist){
 		for(var i=0;i<idlist.length;i++){
@@ -759,7 +759,7 @@ pzpr.createPuzzleClass('CellList:PieceList',
 	},
 
 	//---------------------------------------------------------------------------
-	// clist.getRectSize()  w’è‚³‚ê‚½Cell‚ÌƒŠƒXƒg‚Ìã‰º¶‰E‚Ì’[‚ÆAƒZƒ‹‚Ì”‚ğ•Ô‚·
+	// clist.getRectSize()  æŒ‡å®šã•ã‚ŒãŸCellã®ãƒªã‚¹ãƒˆã®ä¸Šä¸‹å·¦å³ã®ç«¯ã¨ã€ã‚»ãƒ«ã®æ•°ã‚’è¿”ã™
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
 		var bd = this.owner.board;
@@ -778,7 +778,7 @@ pzpr.createPuzzleClass('CellList:PieceList',
 	},
 
 	//--------------------------------------------------------------------------------
-	// clist.getQnumCell()  w’è‚³‚ê‚½Clist‚Ì’†‚Åˆê”Ô¶ã‚É‚ ‚é”š‚Ì‚ ‚éƒZƒ‹‚ğ•Ô‚·
+	// clist.getQnumCell()  æŒ‡å®šã•ã‚ŒãŸClistã®ä¸­ã§ä¸€ç•ªå·¦ä¸Šã«ã‚ã‚‹æ•°å­—ã®ã‚ã‚‹ã‚»ãƒ«ã‚’è¿”ã™
 	//--------------------------------------------------------------------------------
 	getQnumCell : function(){
 		for(var i=0,len=this.length;i<len;i++){
@@ -789,18 +789,18 @@ pzpr.createPuzzleClass('CellList:PieceList',
 });
 
 //----------------------------------------------------------------------------
-// šCrossListƒNƒ‰ƒX Cross‚Ì”z—ñ‚ğˆµ‚¤
+// â˜…CrossListã‚¯ãƒ©ã‚¹ Crossã®é…åˆ—ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('CrossList:PieceList',{
 });
 
 //----------------------------------------------------------------------------
-// šBorderListƒNƒ‰ƒX Border‚Ì”z—ñ‚ğˆµ‚¤
+// â˜…BorderListã‚¯ãƒ©ã‚¹ Borderã®é…åˆ—ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('BorderList:PieceList',
 {
 	//---------------------------------------------------------------------------
-	// clist.addByIdlist()  Border‚ÌID‚ÌƒŠƒXƒg‚©‚çBorder‚ğ’Ç‰Á‚·‚é
+	// clist.addByIdlist()  Borderã®IDã®ãƒªã‚¹ãƒˆã‹ã‚‰Borderã‚’è¿½åŠ ã™ã‚‹
 	//---------------------------------------------------------------------------
 	addByIdlist : function(idlist){
 		for(var i=0;i<idlist.length;i++){
@@ -810,8 +810,8 @@ pzpr.createPuzzleClass('BorderList:PieceList',
 	},
 
 	//---------------------------------------------------------------------------
-	// blist.cellinside()  ü‚ªd‚È‚éƒZƒ‹‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
-	// blist.crossinside() ü‚ªd‚È‚éŒğ“_‚ÌƒŠƒXƒg‚ğæ“¾‚·‚é
+	// blist.cellinside()  ç·šãŒé‡ãªã‚‹ã‚»ãƒ«ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
+	// blist.crossinside() ç·šãŒé‡ãªã‚‹äº¤ç‚¹ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 	//---------------------------------------------------------------------------
 	cellinside : function(){
 		var clist = new this.owner.CellList(), pushed = [];
@@ -834,7 +834,7 @@ pzpr.createPuzzleClass('BorderList:PieceList',
 });
 
 //----------------------------------------------------------------------------
-// šEXCellListƒNƒ‰ƒX EXCell‚Ì”z—ñ‚ğˆµ‚¤
+// â˜…EXCellListã‚¯ãƒ©ã‚¹ EXCellã®é…åˆ—ã‚’æ‰±ã†
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('EXCellList:PieceList',{
 });
