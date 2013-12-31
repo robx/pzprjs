@@ -299,6 +299,10 @@ ui.menuarea = {
 		}
 
 		/* 盤面表示形式の設定値 */
+		if(ui.puzzle.board.linfo.moveline){
+			pp.addCheck('dispmove','setting','動かしたように描画', 'Paint as move');
+		}
+
 		if(pid==='pipelinkr'){
 			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
 			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');

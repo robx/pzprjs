@@ -396,6 +396,7 @@ Config.prototype =
 		this.add('irowake', false);								/* 線の色分け */
 		this.add('irowakeblk', false);							/* 黒マスの色分け */
 
+		this.add('dispmove', true);								/* 線で動かすパズルで実際に動いたように描画 */
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
@@ -448,6 +449,7 @@ Config.prototype =
 		switch(name){
 		case 'irowake': case 'cursor': case 'circolor': case 'plred':
 		case 'colorslash': case 'snakebd': case 'disptype_pipelinkr':
+		case 'dispmove':
 			o.redraw();
 			break;
 		

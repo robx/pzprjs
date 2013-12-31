@@ -51,6 +51,8 @@ ui.toolarea = {
 		this.addLabel('use_tri_3', '1ボタン', 'One Button');
 
 		/* 盤面表示形式の設定値 */
+		this.addLabel('dispmove', '動かしたように描画を行う', 'Display as object moving');
+
 		this.addLabel('disptype_bosanowa', '表示形式', 'Display');
 		this.addLabel('disptype_bosanowa_1', 'ニコリ紙面形式', 'Original Type');
 		this.addLabel('disptype_bosanowa_2', '倉庫番形式',     'Sokoban Type');

@@ -732,6 +732,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_'), num = cell.getNum();
+		if(num===-1 && this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.getNum();}
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
@@ -747,6 +748,9 @@ pzpr.createPuzzleClass('Graphic',
 		}
 		else if(cell.error===1 || cell.error===4){
 			color = this.fontErrcolor;
+		}
+		else if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){
+			color = "silver";
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
 			color = this.fontAnscolor;
@@ -1143,7 +1147,7 @@ pzpr.createPuzzleClass('Graphic',
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			this.vdel([header+cell.id]);
-			if(cell.lcnt()===1 && cell.qnum===-1){
+			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.get('dispmove')){
 				var dir=0, border=null;
 				if     (cell.ub().isLine()){ dir=2; border=cell.ub();}
 				else if(cell.db().isLine()){ dir=1; border=cell.db();}
@@ -1331,16 +1335,18 @@ pzpr.createPuzzleClass('Graphic',
 		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, error = cell.error;
+			var cell = clist[i], num = cell.qnum, id = cell.id, error = cell.error;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			if(cell.qnum!==-1){
+			if(num===-1 && this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.qnum;}
+			if(num!==-1){
 				g.fillStyle = ((error===1||error===4) ? this.errbcolor1 : this.circledcolor);
 				if(this.vnop(headers[1]+id,this.FILL)){
 					g.fillCircle(px, py, rsize2);
 				}
 
 				g.strokeStyle = ((error===1||error===4) ? this.errcolor1 : this.cellcolor);
+				if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){ g.strokeStyle="silver";}
 				if(this.vnop(headers[0]+id,this.STROKE)){
 					g.strokeCircle(px, py, rsize);
 				}

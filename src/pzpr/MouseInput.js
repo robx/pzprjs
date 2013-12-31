@@ -576,8 +576,9 @@ pzpr.createPuzzleClass('MouseEvent',
 
 	//---------------------------------------------------------------------------
 	// mv.inputLine()     盤面の線を入力する
+	// mv.inputMoveLine() 移動系パズル向けに盤面の線を入力する
 	//---------------------------------------------------------------------------
-	inputLine : function(flag){
+	inputLine : function(){
 		if(this.owner.board.lines.isCenterLine){
 			var pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
@@ -596,6 +597,34 @@ pzpr.createPuzzleClass('MouseEvent',
 			border.draw();
 		}
 		this.prevPos = pos;
+	},
+	inputMoveLine : function(){
+		/* "ものを動かしたように描画する"でなければinputLineと同じ */
+		if(!this.owner.board.linfo.moveline || !this.owner.get('dispmove')){
+			this.inputLine();
+			return;
+		}
+		
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+
+		var cell0 = this.mouseCell, pos = cell.getaddr();
+		/* 初回はこの中に入ってきます。 */
+		if(this.mousestart && cell.isDestination()){
+			this.mouseCell = cell;
+			this.prevPos = pos;
+			cell.draw();
+		}
+		/* 移動中の場合 */
+		else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
+			var border = this.getnb(this.prevPos, pos);
+			if(!border.isnull && ((!border.isLine() && cell.lcnt()===0) || (border.isLine() && cell0.lcnt()===1))){
+				this.mouseCell = cell;
+				this.prevPos = pos;
+				if(!border.isLine()){ border.setLine();}else{ border.removeLine();}
+				border.draw();
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -626,7 +655,8 @@ pzpr.createPuzzleClass('MouseEvent',
 		var border = pos.getb();
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
-			if     (this.inputData===2){ border.setPeke();}
+			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.owner.get('dispmove')){}
+			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
 			border.draw();
 		}

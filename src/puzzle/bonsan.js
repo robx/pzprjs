@@ -8,7 +8,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left){ this.inputLine();}
+				if(this.btn.Left){ this.inputMoveLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputlight();}
 		}
