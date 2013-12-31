@@ -185,6 +185,8 @@ Graphic:{
 
 		this.drawCirclesAtNumber();
 		this.drawNumbers();
+		this.drawFillingNumBase();
+		this.drawFillingNumbers();
 
 		this.drawPekes();
 
@@ -194,21 +196,57 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_'), num = (cell.qnum>0 ? cell.qnum : cell.qdir);
-		if(this.owner.get('dispmove')){ num = (cell.base.qnum>0 ? cell.base.qnum : cell.qdir);}
-		if(num>0 || (cell.qdir===-2)){
-			var text      = (num>=0 ? ""+num : "?");
+		var key = ['cell',cell.id].join('_'), num = cell.qnum;
+		if(this.owner.get('dispmove')){ num = cell.base.qnum;}
+		if(num>0){
+			var text      = ""+num;
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
 			var color     = this.getCellNumberColor(cell);
-			if(num===cell.qdir){ fontratio *= 0.9;}
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum(key, 1, text, fontratio, color, px, py);
+			this.dispnum(key, 1, text, fontratio, color, (cell.bx*this.bw), (cell.by*this.bh));
 		}
 		else{ this.hidenum(key);}
 	},
 	getCellNumberColor : function(cell){
 		if(cell===this.owner.mouse.mouseCell){ return this.movecolor;}
 		return ((cell.error===1 || cell.error===4) ? this.fontErrcolor : this.fontcolor);
+	},
+
+	drawFillingNumBase : function(){
+		var g = this.vinc('cell_filling_back', 'crispEdges');
+		var header = "c_full_";
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], color = this.getBGCellColor(cell);
+			if(!!color && cell.qdir!==-1 && this.owner.get('dispmove') && cell.isDestination()){
+				g.fillStyle = color;
+				if(this.vnop(header+cell.id,this.FILL)){
+					var rpx = (cell.bx-0.9)*this.bw, rpy = (cell.by-0.9)*this.bh;
+					g.fillRect(rpx, rpy, this.cw*0.4, this.ch*0.4);
+				}
+			}
+			else{ this.vhide(header+cell.id); continue;}
+		}
+	},
+	drawFillingNumbers : function(){
+		var g = this.vinc('cell_filling_number', 'auto');
+		this.boldreq = true;
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], key='cell_'+cell.id, num = cell.qdir;
+			if(num!==-1){
+				var text = (num>=0 ? ""+num : "?"), type = 1;
+				var fontratio = (num<10?0.8:(num<100?0.7:0.55))*0.9;
+				var color = this.getCellNumberColor(cell);
+				if(this.owner.get('dispmove') && cell.isDestination()){
+					fontratio *= 0.6;
+					type = 5;
+				}
+				this.dispnum(key, type, text, fontratio, color, (cell.bx*this.bw), (cell.by*this.bh));
+			}
+			else{ this.hidenum(key);}
+		}
+		this.boldreq = false;
 	}
 },
 

@@ -139,6 +139,8 @@ pzpr.createPuzzleClass('Graphic',
 
 		this.isdrawBC = false;
 		this.isdrawBD = false;
+
+		this.boldreq = false;
 	},
 
 	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
@@ -1922,7 +1924,7 @@ pzpr.createPuzzleClass('Graphic',
 		var g = this.currentContext;
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 
-		g.font = ("" + fontsize + "px 'Serif'");
+		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px 'Serif'");
 		g.fillStyle = color;
 
 		switch(type){
