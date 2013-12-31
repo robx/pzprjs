@@ -690,27 +690,29 @@ pzpr.createPuzzleClass('PieceList',
 	// ☆Arrayオブジェクトiterator関連の関数
 	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
 	// list.include()  与えられたオブジェクトが配列に存在するか判定する
-	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
 	//--------------------------------------------------------------------------------
-	some : function(cond){
-		this.constructor.prototype.some =
-		((!!Array.prototype.some) ? 
-			Array.prototype.some
-		:
-			function(obj){
-				for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
-				return false;
-			}
-		);
-		return this.some(cond);
-	},
-	include : function(target){
-		return this.some(function(obj){ return (obj===target);});
-	},
+	some    : Array.prototype.some,
+	include : function(target){ return this.some(function(obj){ return (obj===target);});},
 	
-	filter : function(cond){
+	//--------------------------------------------------------------------------------
+	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
+	// list.notnull()  nullではないオブジェクトを抽出したclistを新たに作成する
+	//--------------------------------------------------------------------------------
+	/* constructorが変わってしまうので、Array.prototypeが使用できない */
+	filter  : function(cond){
 		var list = new this.constructor();
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
+		return list;
+	},
+	notnull : function(cond){ return this.filter(function(obj){ return !obj.isnull;});},
+	
+	//--------------------------------------------------------------------------------
+	// list.map()      clistの各要素に指定された関数を適用したclistを新たに作成する
+	//--------------------------------------------------------------------------------
+	/* constructorが変わってしまうので、Array.prototypeが使用できない */
+	map : function(cond){
+		var list = new this.constructor();
+		for(var i=0;i<this.length;i++){ list.add(cond(this[i]));}
 		return list;
 	},
 	
@@ -718,18 +720,7 @@ pzpr.createPuzzleClass('PieceList',
 	// list.indexOf()  与えられたオブジェクトの配列上の位置を取得する
 	// list.remove()   与えられたオブジェクトを配列から取り除く
 	//--------------------------------------------------------------------------------
-	indexOf : function(obj){
-		this.constructor.prototype.indexOf =
-		((!!Array.prototype.indexOf) ? 
-			Array.prototype.indexOf
-		:
-			function(obj){
-				for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}
-				return -1;
-			}
-		);
-		return this.indexOf(obj);
-	},
+	indexOf : Array.prototype.indexOf,
 	remove : function(obj){
 		var idx = this.indexOf(obj);
 		if(idx>=0){ Array.prototype.splice.call(this, idx, 1);}

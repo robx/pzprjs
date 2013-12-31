@@ -228,6 +228,19 @@ try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 	localStorage = globalStorage[location.host];
 }}catch(e){}
 
+if(!Array.prototype.indexOf){
+	Array.prototype.indexOf = function(obj){
+		for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}
+		return -1;
+	}
+}
+if(!Array.prototype.some){
+	Array.prototype.some = function(obj){
+		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
+		return false;
+	}
+}
+
 /**************/
 /* 環境の取得 */
 /**************/
