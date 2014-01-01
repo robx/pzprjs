@@ -556,7 +556,7 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 		pzpr.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
-	isvalid : function(cell){ return (this.bdcnt[cell.id]<4 || cell.isNum());},
+	isvalid : function(cell){ return (this.bdcnt[cell.id]<4 || (this.moveline && cell.isNum()));},
 	bdfunc : function(border){ return !border.isLine();},
 
 	moveline : false,

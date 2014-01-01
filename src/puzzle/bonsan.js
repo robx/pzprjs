@@ -158,8 +158,7 @@ AnsCheck:{
 		if( !this.checkLineLength(linfo) ){ return 'laLenNe';}
 
 		var rinfo = bd.getRoomInfo();
-		if( (pid==='bonsan') && !this.checkFractal(rinfo) ){ return 'brObjNotSym';}
-		if( (pid==='heyabon') && !this.checkFractal(rinfo) ){ return 'bkObjNotSym';}
+		if( !this.checkFractal(rinfo) ){ return (pid==='bonsan' ? 'brObjNotSym' : 'bkObjNotSym');}
 		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
 
 		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
@@ -173,7 +172,7 @@ AnsCheck:{
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
 	checkLineLength : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||n===a-1);});
+		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||a===1||n===a-1);});
 	},
 	checkNoLineCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);});
