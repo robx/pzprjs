@@ -193,10 +193,10 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 		anum : function(num){ return (this.minnum>0 && num===0);},
 	},
 	posthook : {
-		qnum : function(num){ this.owner.board.setCellInfoAll(this);},
-		anum : function(num){ this.owner.board.setCellInfoAll(this);},
-		qans : function(num){ this.owner.board.setCellInfoAll(this);},
-		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setCellInfoAll(this);}} /* numberWithMBの○を文字扱い */
+		qnum : function(num){ this.owner.board.setInfoByCell(this);},
+		anum : function(num){ this.owner.board.setInfoByCell(this);},
+		qans : function(num){ this.owner.board.setInfoByCell(this);},
+		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
 	},
 
 	//---------------------------------------------------------------------------
@@ -502,9 +502,9 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 		line : function(num){ return (this.checkStableLine(num));}
 	},
 	posthook : {
-		ques : function(num){ this.owner.board.setBorderInfoAll(this);},
-		qans : function(num){ this.owner.board.setBorderInfoAll(this);},
-		line : function(num){ this.owner.board.setLineInfoAll(this);}
+		ques : function(num){ this.owner.board.setInfoByBorder(this);},
+		qans : function(num){ this.owner.board.setInfoByBorder(this);},
+		line : function(num){ this.owner.board.setInfoByLine(this);}
 	},
 
 	//---------------------------------------------------------------------------

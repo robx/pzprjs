@@ -59,13 +59,13 @@ pzpr.createPuzzleClass('AreaManager',
 		if(this.owner.board.isborder){
 			for(var id=0;id<this.owner.board.bdmax;id++){
 				this.separate[id] = false;
-				this.setSeparateInfo(this.owner.board.border[id]);
+				this.checkSeparateInfo(this.owner.board.border[id]);
 			}
 		}
 
 		for(var cc=0;cc<this.owner.board.cellmax;cc++){
 			this.linkinfo[cc] = 0;
-			this.setLinkInfo(this.owner.board.cell[cc]);
+			this.checkLinkInfo(this.owner.board.cell[cc]);
 			this.id[cc] = 0;
 		}
 
@@ -73,21 +73,21 @@ pzpr.createPuzzleClass('AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.setCellInfo()  黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
-	// info.setLinkInfo()  自分のセルと4方向の接続情報を設定する
-	// info.calcLinkInfo() 上下左右にのセルに繋がることが可能かどうかの情報を取得する
+	// info.setCell()        黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
+	// info.checkLinkInfo()  自分のセルと4方向の接続情報を設定する
+	// info.calcLinkInfo()   上下左右にのセルに繋がることが可能かどうかの情報を取得する
 	//--------------------------------------------------------------------------------
-	setCellInfo : function(cell){
+	setCell : function(cell){
 		if(!this.enabled){ return;}
 
 		if(this.owner.board.isborder){
 			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
 			var cblist=cell.getdir4cblist();
-			for(var i=0;i<cblist.length;i++){ this.setSeparateInfo(cblist[i][1]);}
+			for(var i=0;i<cblist.length;i++){ this.checkSeparateInfo(cblist[i][1]);}
 		}
 
 		var val = this.calcLinkInfo(cell), old = this.linkinfo[cell.id];
-		if(this.setLinkInfo(cell)){
+		if(this.checkLinkInfo(cell)){
 			var cidlist = this.getRemakeCell(cell, (val|old));
 			var isadd = !!((val&16)&&!(old&16)), isremove = !!(!(val&16)&&(old&16));
 			// 新たに黒マス(白マス)くっつける場合 => 自分に領域IDを設定するだけ
@@ -104,7 +104,7 @@ pzpr.createPuzzleClass('AreaManager',
 			}
 		}
 	},
-	setLinkInfo : function(cell){
+	checkLinkInfo : function(cell){
 		var val = this.calcLinkInfo(cell);
 		if(this.linkinfo[cell.id]!==val){
 			this.linkinfo[cell.id]=val;
@@ -123,23 +123,23 @@ pzpr.createPuzzleClass('AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.setBorderInfo()   境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// info.setSeparateInfo() 境界線情報と実際の境界線の差異を調べて設定する
-	// info.checkExecSearch() 部屋情報が変化したかsearch前にチェックする
+	// info.setBorder()     境界線が引かれたり消されてたりした時に、部屋情報を更新する
+	// info.checkSeparateInfo() 境界線情報と実際の境界線の差異を調べて設定する
+	// info.checkExecSearch()   部屋情報が変化したかsearch前にチェックする
 	//--------------------------------------------------------------------------------
-	setBorderInfo : function(border){
+	setBorder : function(border){
 		if(!this.enabled){ return;}
 		
-		if(this.setSeparateInfo(border)){
+		if(this.checkSeparateInfo(border)){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull){ this.setLinkInfo(cell1);}
-			if(!cell2.isnull){ this.setLinkInfo(cell2);}
+			if(!cell1.isnull){ this.checkLinkInfo(cell1);}
+			if(!cell2.isnull){ this.checkLinkInfo(cell2);}
 			if(cell1.isnull || cell2.isnull || !this.checkExecSearch(border)){ return;}
 
 			this.remakeInfo([cell1.id, cell2.id]);
 		}
 	},
-	setSeparateInfo : function(border){
+	checkSeparateInfo : function(border){
 		var isbd = this.bdfunc(border);
 		if(this.separate[border.id]!==isbd){
 			this.separate[border.id]=isbd;
@@ -426,9 +426,9 @@ pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// rooms.setSeparateInfo()  境界線情報と実際の境界線の差異を調べて設定する
+	// rooms.checkSeparateInfo()  境界線情報と実際の境界線の差異を調べて設定する
 	//--------------------------------------------------------------------------------
-	setSeparateInfo : function(border){
+	checkSeparateInfo : function(border){
 		var isbd = this.bdfunc(border);
 		if(this.separate[border.id]!==isbd){
 			var cc1 = border.sidecross[0].id, cc2 = border.sidecross[1].id;
@@ -556,7 +556,7 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 		pzpr.common.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
-	isvalid : function(cell){ return this.bdcnt[cell.id]<4;},
+	isvalid : function(cell){ return (this.bdcnt[cell.id]<4 || cell.isNum());},
 	bdfunc : function(border){ return !border.isLine();},
 
 	moveline : false,
@@ -584,13 +584,13 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 
 		pzpr.common.AreaManager.prototype.rebuild.call(this);
 
-		if(this.enabled && this.moveline){ this.resetMovedBase();}
+		if(this.moveline){ this.resetMovedBase();}
 	},
 
 	//--------------------------------------------------------------------------------
-	// linfo.setSeparateInfo()  境界線情報と実際の境界線の差異を調べて設定する
+	// linfo.checkSeparateInfo()  境界線情報と実際の境界線の差異を調べて設定する
 	//--------------------------------------------------------------------------------
-	setSeparateInfo : function(border){
+	checkSeparateInfo : function(border){
 		var isbd = this.bdfunc(border);
 		if(this.separate[border.id]!==isbd){
 			var cc1 = border.sidecell[0].id, cc2 = border.sidecell[1].id;
@@ -603,10 +603,27 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
-	// linfo.setLineInfo()  線が引かれたり消されてたりした時に、部屋情報を更新する
+	// linfo.setLine()  線が引かれたり消されてたりした時に、部屋情報を更新する
 	//--------------------------------------------------------------------------------
-	setLineInfo : function(border){
-		this.setBorderInfo(border);
+	setLine : function(border){
+		this.setBorder(border);
+	},
+
+	//--------------------------------------------------------------------------------
+	// linfo.assignCell() 指定されたセルを有効なセルとして設定する
+	// linfo.removeCell() 指定されたセルを無効なセルとして設定する
+	//--------------------------------------------------------------------------------
+	// オーバーライド
+	assignCell : function(cell, cell2){
+		/* AreaLineManagerではCell入力で他とくっつくことはないので、cell2===nullとして考える */
+		if(this.moveline){ cell.base = (cell.isNum() ? cell : this.owner.board.emptycell);}
+
+		pzpr.common.AreaManager.prototype.assignCell.call(this, cell, cell2);
+	},
+	removeCell : function(cell){
+		if(this.moveline){ cell.base = this.owner.board.emptycell;}
+
+		pzpr.common.AreaManager.prototype.removeCell.call(this, cell);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -641,7 +658,8 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 	},
 	setMovedBase : function(areaid){
 		var clist = this[areaid].clist;
-		if(clist.length<=1){ return;}
+		if(clist.length<1){ return;}
+		else if(clist.length===1){ clist[0].base=clist[0]; return;}
 		
 		var before=null, after=null, point=0;
 		for(var i=0;i<clist.length;i++){

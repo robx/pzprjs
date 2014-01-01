@@ -50,7 +50,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	posthook : {
-		ques : function(num){ this.owner.board.setCellInfoAll(this);}
+		ques : function(num){ this.owner.board.setInfoByCell(this);}
 	},
 
 	getdir4BorderCount : function(){

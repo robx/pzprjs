@@ -503,28 +503,28 @@ pzpr.createPuzzleClass('Board',
 
 	//--------------------------------------------------------------------------------
 	// bd.resetInfo()        部屋、黒マス、白マスの情報をresetする
-	// bd.setCellInfoAll()   黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	// bd.setBorderInfoAll() 境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// bd.setLineInfoAll()   線が引かれたり消されてたりした時に、線情報を更新する
+	// bd.setInfoByCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
+	// bd.setInfoByBorder()  境界線が引かれたり消されてたりした時に、部屋情報を更新する
+	// bd.setInfoByLine()    線が引かれたり消されてたりした時に、線情報を更新する
 	//--------------------------------------------------------------------------------
 	resetInfo : function(){
 		for(var i=0,len=this.validinfo.all.length;i<len;i++)
 			{ this.validinfo.all[i].reset();}
 	},
-	setCellInfoAll : function(cell){
+	setInfoByCell : function(cell){
 		if(!this.isenableInfo()){ return;}
 		for(var i=0,len=this.validinfo.cell.length;i<len;i++)
-			{ this.validinfo.cell[i].setCellInfo(cell);}
+			{ this.validinfo.cell[i].setCell(cell);}
 	},
-	setBorderInfoAll : function(border){
+	setInfoByBorder : function(border){
 		if(!this.isenableInfo()){ return;}
 		for(var i=0,len=this.validinfo.border.length;i<len;i++)
-			{ this.validinfo.border[i].setBorderInfo(border);}
+			{ this.validinfo.border[i].setBorder(border);}
 	},
-	setLineInfoAll : function(border){
+	setInfoByLine : function(border){
 		if(!this.isenableInfo()){ return;}
 		for(var i=0,len=this.validinfo.line.length;i<len;i++)
-			{ this.validinfo.line[i].setLineInfo(border);}
+			{ this.validinfo.line[i].setLine(border);}
 	},
 
 	//---------------------------------------------------------------------------

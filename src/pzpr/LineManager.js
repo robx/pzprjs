@@ -115,9 +115,9 @@ pzpr.createPuzzleClass('LineManager',
 	},
 
 	//---------------------------------------------------------------------------
-	// lines.setLineInfo()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// lines.setLine()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	setLineInfo : function(border){
+	setLine : function(border){
 		if(!this.enabled){ return;}
 
 		var border = border, isset = border.isLine();

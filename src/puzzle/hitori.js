@@ -34,8 +34,8 @@ Cell:{
 	},
 
 	posthook : {
-		qnum : function(num){ this.owner.board.setCellInfoAll(this); this.redDisp();},
-		qans : function(num){ this.owner.board.setCellInfoAll(this); this.redDisp();}
+		qnum : function(num){ this.owner.board.setInfoByCell(this); this.redDisp();},
+		qans : function(num){ this.owner.board.setInfoByCell(this); this.redDisp();}
 	},
 
 	redDisp : function(){
