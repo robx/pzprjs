@@ -646,7 +646,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return (new this.owner.BoredPiece());
+		return (new this.owner.BoardPiece());
 	},
 
 	//---------------------------------------------------------------------------

@@ -217,7 +217,7 @@ Board:{
 	isexcell : 2,
 
 	errclear : function(isrepaint){
-		this.SuperFunc.errclear.call(this,false);
+		pzpr.common.Board.prototype.errclear.call(this,false);
 
 		this.lightclear();
 		this.owner.redraw();
