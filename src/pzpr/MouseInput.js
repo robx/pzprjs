@@ -323,21 +323,26 @@ pzpr.createPuzzleClass('MouseEvent',
 		this.mouseCell = cell;
 	},
 	inputqnum_main : function(cell){
-		if(this.owner.editmode && this.owner.board.rooms.hastop){
-			cell = this.owner.board.rooms.getTopOfRoomByCell(cell);
+		var cell0=cell, o=this.owner, bd=o.board;
+		if(o.editmode && bd.rooms.hastop){
+			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
+		}
+		else if(bd.linfo.moveline && o.get('dispmove')){
+			if(cell.isDestination()){ cell = cell.base;}
+			else if(cell.lcnt()>0){ return;}
 		}
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
-		if     (this.owner.editmode){ subtype =-1;}
+		if     (o.editmode)         { subtype =-1;}
 		else if(cell.numberWithMB)  { subtype = 2;}
 		else if(cell.numberAsObject){ subtype = 1;}
-		if(this.owner.pid==="roma" && this.owner.playmode){ subtype=0;}
+		if(o.pid==="roma" && o.playmode){ subtype=0;}
 
-		if(this.owner.playmode && cell.qnum!==this.owner.Cell.prototype.qnum){ return;}
+		if(o.playmode && cell.qnum!==o.Cell.prototype.qnum){ return;}
 
 		var max=cell.nummaxfunc(), min=cell.numminfunc();
-		var num=cell.getNum(), qs=(this.owner.editmode ? 0 : cell.getQsub());
-		var val=-1, ishatena=(this.owner.editmode && !cell.disInputHatena);
+		var num=cell.getNum(), qs=(o.editmode ? 0 : cell.getQsub());
+		var val=-1, ishatena=(o.editmode && !cell.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
@@ -364,7 +369,11 @@ pzpr.createPuzzleClass('MouseEvent',
 		}
 		cell.setNum(val);
 
-		cell.draw();
+		if(bd.linfo.moveline && o.get('dispmove') && cell.noNum()){
+				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
+		}
+
+		cell0.draw();
 	},
 
 	//---------------------------------------------------------------------------
@@ -478,9 +487,7 @@ pzpr.createPuzzleClass('MouseEvent',
 				cell2.setQsub(this.inputData==2?1:0);
 			}
 		}
-		var d = clist.getRectSize();
-
-		this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
+		clist.draw();
 	},
 
 	//---------------------------------------------------------------------------

@@ -603,6 +603,16 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 	},
 
 	//--------------------------------------------------------------------------------
+	// linfo.setCell()        黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
+	//--------------------------------------------------------------------------------
+	setCell : function(cell){
+		pzpr.common.AreaManager.prototype.setCell.call(this, cell);
+
+		var newid = this.id[cell.id];
+		if(this.moveline && newid!==null){ this.setMovedBase(newid);}
+	},
+
+	//--------------------------------------------------------------------------------
 	// linfo.setLine()  線が引かれたり消されてたりした時に、部屋情報を更新する
 	//--------------------------------------------------------------------------------
 	setLine : function(border){
@@ -615,15 +625,15 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	assignCell : function(cell, cell2){
+		pzpr.common.AreaManager.prototype.assignCell.call(this, cell, cell2);
+
 		/* AreaLineManagerではCell入力で他とくっつくことはないので、cell2===nullとして考える */
 		if(this.moveline){ cell.base = (cell.isNum() ? cell : this.owner.board.emptycell);}
-
-		pzpr.common.AreaManager.prototype.assignCell.call(this, cell, cell2);
 	},
 	removeCell : function(cell){
-		if(this.moveline){ cell.base = this.owner.board.emptycell;}
-
 		pzpr.common.AreaManager.prototype.removeCell.call(this, cell);
+
+		if(this.moveline){ cell.base = this.owner.board.emptycell;}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -651,28 +661,39 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 	//--------------------------------------------------------------------------------
 	resetMovedBase : function(){
 		var bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			bd.cell[c].base = (bd.cell[c].isNum() ? bd.cell[c] : bd.emptycell);
-		}
+		for(var c=0;c<bd.cellmax;c++){ bd.cell[c].base = bd.emptycell;}
 		for(var r=1;r<=this.max;r++){ this.setMovedBase(r);}
 	},
 	setMovedBase : function(areaid){
-		var clist = this[areaid].clist;
+		var clist = this[areaid].clist, bd = this.owner.board;
 		if(clist.length<1){ return;}
 		else if(clist.length===1){ clist[0].base=clist[0]; return;}
 		
 		var before=null, after=null, point=0;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
+			cell.base = bd.emptycell;
 			if(cell.lcnt()===1){
 				point++;
 				if(cell.isNum()){ before=cell;}else{ after=cell;}
 			}
 		}
 		if(before!==null && after!==null && point===2){
-			before.base = this.owner.board.emptycell;
 			after.base = before;
 		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linfo.eraseLineByCell()  移動系パズルの丸が消えたとき等、領域に含まれる線を消去する
+	//--------------------------------------------------------------------------------
+	eraseLineByCell : function(cell){
+		if(this.id[cell.id]===null){ return;}
+		var clist = this.getClistByCell(cell), count = 0;
+		for(var i=0,len=clist.length;i<len;i++){ for(var j=i+1;j<len;j++){
+			var border = this.owner.mouse.getnb(clist[i].getaddr(), clist[j].getaddr());
+			if(!border.isnull){ border.removeLine(); count++;}
+		}}
+		if(count>0){ clist.draw();}
 	}
 });
 

@@ -225,12 +225,21 @@ pzpr.createPuzzleClass('KeyEvent',
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
-		var cell = this.cursor.getTCC();
-		if(this.owner.editmode && this.owner.board.rooms.hastop){ cell = this.owner.board.rooms.getTopOfRoomByCell(cell);}
+		var cell = this.cursor.getTCC(), cell0=cell, o=this.owner, bd=o.board;
+		if(o.editmode && bd.rooms.hastop){
+			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
+		}
+		else if(bd.linfo.moveline && o.get('dispmove')){
+			if(cell.isDestination()){ cell = cell.base;}
+			else if(cell.lcnt()>0){ return;}
+		}
 
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;
-			cell.draw();
+			if(bd.linfo.moveline && o.get('dispmove') && cell.noNum()){
+				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
+			}
+			cell0.draw();
 		}
 	},
 	key_inputqnum_main : function(cell,ca){

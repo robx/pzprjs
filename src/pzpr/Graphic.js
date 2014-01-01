@@ -591,8 +591,7 @@ pzpr.createPuzzleClass('Graphic',
 	// pc.repaintBlocks()  色分け時にブロックを再描画する
 	//---------------------------------------------------------------------------
 	repaintBlocks : function(clist){
-		var d = clist.getRectSize();
-		this.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		clist.draw();
 	},
 
 	//---------------------------------------------------------------------------

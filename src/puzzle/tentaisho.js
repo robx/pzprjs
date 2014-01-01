@@ -44,10 +44,7 @@ MouseEvent:{
 		var cell = star.validcell();
 		if(cell!==null){
 			var clist = this.owner.board.rooms.getClistByCell(cell);
-			if(clist.encolor()){
-				var d = clist.getRectSize();
-				this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
-			}
+			if(clist.encolor()){ clist.draw();}
 		}
 	},
 	inputborder_tentaisho : function(){

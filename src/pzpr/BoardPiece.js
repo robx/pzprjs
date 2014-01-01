@@ -785,6 +785,14 @@ pzpr.createPuzzleClass('CellList:PieceList',
 			if(this[i].isNum()){ return this[i];}
 		}
 		return this.owner.board.emptycell;
+	},
+
+	//---------------------------------------------------------------------------
+	// clist.draw()   盤面に自分の周囲を描画する
+	//---------------------------------------------------------------------------
+	draw : function(){
+		var d = this.getRectSize();
+		this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
 	}
 });
 
