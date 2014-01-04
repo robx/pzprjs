@@ -71,8 +71,22 @@ MouseEvent:{
 			if(cell===bd.startcell){ this.inputData=10; input=true;}
 			else{ this.firstPoint.set(this.inputPoint);}
 		}
-		// 黒マス上なら何もしない
-		else if(cell.getQues()===1){ }
+		// 数字つき黒マス上なら矢印の入力をする
+		else if(cell.getQues()===1 && cell.isNum()){
+			this.inputData = 2;
+		}
+		else if(this.inputData===2){
+			if(cell!==this.mouseCell){
+				var cell0 = this.mouseCell;
+				this.inputdirec();
+				cell0.draw();
+				input=true;
+				this.mouseCell = cell;
+			}
+			return;
+		}
+		// それ以外の黒マス上なら何もしない
+		else if(cell.getQues()===1){}
 		// startposの入力中の場合
 		else if(this.inputData==10){
 			if(cell!==this.mouseCell){
@@ -132,6 +146,7 @@ KeyEvent:{
 	enableplay : true,
 	keyup_event : true,
 	moveTarget : function(ca){
+		if(this.isSHIFT){ return false;}
 		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
 		return false;
 	},
@@ -139,6 +154,7 @@ KeyEvent:{
 	keyinput : function(ca){
 		if(ca!=='x'){
 			if(this.keydown && this.owner.editmode){
+				if(this.key_inputdirec(ca)){ return;}
 				this.key_inputqnum_slalom(ca);
 			}
 		}
@@ -325,7 +341,7 @@ Graphic:{
 		this.drawGates()
 
 		this.drawBlackCells();
-		this.drawNumbers();
+		this.drawArrowNumbers();
 
 		this.drawPekes();
 		this.drawLines();
@@ -466,14 +482,14 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeSlalom((this.checkpflag("p")?1:0));
+		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
 	},
 	encodePzpr : function(type){
 		this.owner.board.hinfo.generateAll();
 
-		if(type===k.URL_PZPRV3){ this.outpflag='p';}
+		if(type===k.URL_PZPRV3){ this.outpflag='d';}
 
-		return this.encodeSlalom((type===k.URL_PZPRV3?1:0));
+		return this.encodeSlalom((type===k.URL_PZPRV3?2:0));
 	},
 
 	decodeKanpen : function(){
@@ -528,7 +544,7 @@ Encode:{
 				bd.cell[c].qnum = (min<1000?min:-1);
 			}
 		}
-		else if(ver===1){
+		else if(ver===1 || ver===2){
 			var c=0, spare=0;
 			for(i=i+1;i<array[0].length;i++){
 				var cell = bd.cell[c];
@@ -537,11 +553,22 @@ Encode:{
 				else{
 					var ca = array[0].charAt(i);
 
-					if(this.include(ca,"0","9")||this.include(ca,"a","f")){
+					if((ver===1) && (this.include(ca,"0","9")||this.include(ca,"a","f"))){
 						cell.qnum = parseInt(ca,16);
 					}
-					else if(ca=='-'){
-						cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;
+					else if((ver===1) && ca=='-'){
+						cell.qnum = parseInt(bstr.substr(i+1,2),16);
+						i+=2;
+					}
+					else if((ver===2) && this.include(ca,"0","4")){
+						cell.qdir = parseInt(ca,16);
+						cell.qnum = parseInt(bstr.charAt(i+1),16);
+						i++;
+					}
+					else if((ver===2) && this.include(ca,"5","9")){
+						cell.qdir = parseInt(ca,16)-5;
+						cell.qnum = parseInt(bstr.substr(i+1,2),16);
+						i+=2;
 					}
 					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
 				}
@@ -583,14 +610,14 @@ Encode:{
 			}
 			if(count>0){ cm+=(15+count).toString(36);}
 		}
-		else if(ver===1){
+		else if(ver===1 || ver===2){
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
 				if(cell.ques!==1){ continue;}
 
-				var pstr = "", val = cell.qnum;
-				if     (val>= 1 && val< 16){ pstr =       val.toString(16);}
-				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
+				var pstr = "", val = cell.qnum, dir = cell.qdir;
+				if     (val>= 1 && val< 16){ pstr = (ver===1 ? ""  : ""+dir)     + val.toString(16);}
+				else if(val>=16 && val<256){ pstr = (ver===1 ? "-" : ""+(dir+5)) + val.toString(16);}
 				else{ count++;}
 
 				if(count===0){ cm += pstr;}
@@ -607,21 +634,16 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(this.filever==1){
-			this.decodeBoard_pzpr();
-			this.decodeBorderLine();
-			this.owner.board.hinfo.generateGates();
-		}
-		else if(this.filever==0){
-			this.decodeBoard_old();
-			this.decodeBorderLine();
-		}
+		if     (this.filever==2){ this.decodeBoard_pzpr2();}
+		else if(this.filever==1){ this.decodeBoard_pzpr1();}
+		else if(this.filever==0){ this.decodeBoard_old();}
+		this.decodeBorderLine();
 	},
 	encodeData : function(){
 		this.owner.board.hinfo.generateAll();
 
-		this.filever = 1;
-		this.encodeBoard_pzpr();
+		this.filever = 2;
+		this.encodeBoard_pzpr2();
 		this.encodeBorderLine();
 	},
 
@@ -638,7 +660,7 @@ FileIO:{
 		this.encodeBorderLine();
 	},
 
-	decodeBoard_pzpr : function(){
+	decodeBoard_pzpr1 : function(){
 		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
 			if     (ca==="o"){ bd.startcell = obj;}
@@ -647,15 +669,35 @@ FileIO:{
 			else if(ca==="#"){ obj.ques = 1;}
 			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
 		});
+		this.owner.board.hinfo.generateGates();
 	},
-	encodeBoard_pzpr : function(){
+	decodeBoard_pzpr2 : function(){
+		var bd = this.owner.board;
+		this.decodeCell( function(obj,ca){
+			if     (ca==="o"){ bd.startcell = obj;}
+			else if(ca==="i"){ obj.ques = 21;}
+			else if(ca==="-"){ obj.ques = 22;}
+			else if(ca==="#"){ obj.ques = 1;}
+			else if(ca!=="."){
+				var inp = ca.split(",");
+				obj.ques = 1;
+				obj.qdir = (inp[0]!=="0"?parseInt(inp[0]): 0);
+				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
+			}
+		});
+		this.owner.board.hinfo.generateGates();
+	},
+	encodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
 		this.encodeCell( function(obj){
 			if     (bd.startcell===obj){ return "o ";}
 			else if(obj.ques===21){ return "i ";}
 			else if(obj.ques===22){ return "- ";}
+			else if(obj.ques=== 1 && obj.qnum<=0){ return "# ";}
 			else if(obj.ques=== 1){
-				return (obj.qnum>0 ? obj.qnum.toString() : "#")+" ";
+				var ca1 = (obj.qdir!== 0?obj.qdir.toString():"0");
+				var ca2 = (obj.qnum!==-2?obj.qnum.toString():"-");
+				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
 		});
@@ -924,10 +966,12 @@ HurdleManager:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQues()===1){
-				var qn = cell.getNum();
+				var qn = cell.getNum(), dir = cell.getQdir();
 				if(qn<=0 || qn>this.max){ continue;}
-				var idlist = this.getConnectingGate(c);
-				for(var i=0;i<idlist.length;i++){ nums[idlist[i]].push(qn);}
+				if((dir===k.NDIR||dir===k.UP) && cell.up().getQues()===21){ nums[this.gateid[cell.up().id]].push(qn);}
+				if((dir===k.NDIR||dir===k.DN) && cell.dn().getQues()===21){ nums[this.gateid[cell.dn().id]].push(qn);}
+				if((dir===k.NDIR||dir===k.LT) && cell.lt().getQues()===22){ nums[this.gateid[cell.lt().id]].push(qn);}
+				if((dir===k.NDIR||dir===k.RT) && cell.rt().getQues()===22){ nums[this.gateid[cell.rt().id]].push(qn);}
 			}
 		}
 
