@@ -61,8 +61,8 @@ function startPuzzle(){
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
-	ui.puzzle = pzpr.createPuzzle();
-	ui.puzzle.setCanvas(document.getElementById('divques'), 'canvas');
+	var element = document.getElementById('divques');
+	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas'});
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
