@@ -249,8 +249,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_DLIGHT;
 		this.setBorderColorFunc('qans');
 
-		this.circledcolor = "black";
-		this.circleratio = [0.35, 0.40];
+		this.circleratio = [0.40, 0.40];	/* 線幅を1pxにする */
 
 		this.fontAnscolor = "black"; /* 矢印用 */
 
@@ -277,23 +276,14 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawCircles : function(){
-		var g = this.vinc('cell_circle', 'auto');
-
-		var rsize2 = this.cw*this.circleratio[1];
-		var header = "c_cir_";
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.isCircle()){
-				g.strokeStyle = this.cellcolor;
-				if(this.vnop(header+cell.id,this.STROKE)){
-					g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize2);
-				}
-			}
-			else{ this.vhide([header+cell.id]);}
-		}
+	getCircleStrokeColor : function(cell){
+		if(cell.isCircle()){ return this.cellcolor;}
+		return null;
 	},
+	getCircleFillColor : function(cell){
+		return null;
+	},
+
 	drawHatenas_loute : function(){
 		var g = this.vinc('cell_hatena', 'auto');
 		var ratio = 0.8/this.fontsizeratio;

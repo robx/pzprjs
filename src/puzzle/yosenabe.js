@@ -171,8 +171,6 @@ Graphic:{
 		this.icecolor = "rgb(224,224,224)";
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
-
-		this.circleratio = [0.38, 0.38];
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -183,7 +181,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 		this.drawFillingNumBase();
 		this.drawFillingNumbers();

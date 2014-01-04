@@ -182,7 +182,7 @@ Graphic:{
 		this.errbcolor1 = this.errbcolor1_DARK;
 		this.bgcolor = "rgb(208, 208, 208)";
 		this.targetbgcolor = "rgb(255, 192, 192)";
-		this.circleratio = [0.44, 0.44];
+		this.circleratio = [0.47, 0.42];
 	},
 	paint : function(){
 		this.drawDotCells(false);
@@ -193,7 +193,7 @@ Graphic:{
 		this.drawPillows();
 		this.drawBorders();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawChassis();

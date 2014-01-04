@@ -55,7 +55,7 @@ Graphic:{
 		this.Common.prototype.initialize.call(this);
 
 		this.gridcolor = this.gridcolor_LIGHT;
-		this.circleratio = [0.40, 0.40];
+		this.circleratio = [0.45, 0.40];
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -64,7 +64,7 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawChassis();

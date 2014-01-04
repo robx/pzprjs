@@ -74,13 +74,14 @@ Graphic:{
 		this.setBGCellColorFunc('qsub1');
 
 		this.fontsizeratio = 0.85;
+		this.circleratio = [0.47, 0.42];
 	},
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawBlackCells();
 
-		this.drawCirclesAtNumber_kurotto();
+		this.drawCircles_kurotto();
 		this.drawNumbers();
 
 		this.drawChassis();
@@ -89,40 +90,32 @@ Graphic:{
 	},
 
 	// 背景色をつけるため
-	drawCirclesAtNumber_kurotto : function(c){
-		var g = this.vinc('cell_circle', 'auto');
-		var axcolor = this.owner.get('circolor');
-
-		g.lineWidth = this.cw*0.05;
-		var rsize   = this.cw*0.44;
-
-		var header = "c_cir_", clist, binfo;
-		if(!axcolor){
-			clist = this.range.cells;
-			binfo = null;
+	drawCircles_kurotto : function(){
+		var saved_cells = this.range.cells;
+		this.check_binfo = null;
+		if(this.owner.get('circolor')){
+			/* 一時的に盤面全体を対象に切り替える */
+			this.range.cells = this.owner.board.cell;
+			this.check_binfo = this.owner.board.getBCellInfo();
 		}
-		else{
-			clist = this.owner.board.cell;
-			binfo = this.owner.board.getBCellInfo();
+		
+		/* 本体を呼ぶ */
+		this.drawCircles();
+		
+		this.range.cells = saved_cells;
+	},
+	getCircleStrokeColor : function(cell){
+		if(cell.isNum()){
+			var cmpcell = (this.owner.get('circolor') && cell.checkComplete(this.check_binfo));
+			if     (cmpcell)       { return this.bcolor;      }
+			else if(cell.error===1){ return this.errbcolor1;  }
+			else                   { return this.circledcolor;}
 		}
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, error = cell.error;
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-
-			if(cell.qnum!==-1){
-				g.strokeStyle = this.cellcolor;
-
-				var cmpcell = ((axcolor && cell.qnum>=0) ? cell.checkComplete(binfo) : true);
-				if (axcolor && cmpcell){ g.fillStyle = this.bcolor;      }
-				else if(cell.error===1){ g.fillStyle = this.errbcolor1;  }
-				else                   { g.fillStyle = this.circledcolor;}
-
-				if(this.vnop(header+c,this.FILL_STROKE)){
-					g.shapeCircle(px, py, rsize);
-				}
-			}
-			else{ this.vhide(header+id);}
-		}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		if(cell.isNum()){ return this.cellcolor;}
+		return null;
 	}
 },
 
@@ -163,7 +156,7 @@ AnsCheck:{
 		var cinfo = this.owner.board.getBCellInfo();
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
-			if(cell.isValidNum() && !cell.checkComplete(cinfo)){
+			if(!cell.checkComplete(cinfo)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;

@@ -146,11 +146,15 @@ Board:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+		this.circleratio = [0.47, 0.42];
+	},
 	paint : function(){
 		this.drawBGCells();
 
 		if(this.owner.get('disptype_bosanowa')==1){
-			this.drawCircles_bosanowa();
+			this.drawCircles();
 			this.drawBDnumbase();
 		}
 		else if(this.owner.get('disptype_bosanowa')==2){
@@ -200,25 +204,14 @@ Graphic:{
 		}
 	},
 
-	drawCircles_bosanowa : function(){
-		var g = this.vinc('cell_circle', 'auto');
-
-		g.lineWidth = 1;
-		g.fillStyle = "white";
-		var rsize  = this.cw*0.44;
-		var header = "c_cir_";
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.isValid() && !cell.isNum()){
-				g.strokeStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(header+cell.id,this.STROKE)){
-					g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
-			}
-			else{ this.vhide([header+cell.id]);}
+	getCircleStrokeColor : function(cell){
+		if(cell.isValid() && !cell.isNum()){
+			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
 		}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		return null;
 	},
 
 	drawGrid_souko : function(){

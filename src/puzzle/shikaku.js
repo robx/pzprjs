@@ -51,16 +51,15 @@ Graphic:{
 		this.fontcolor = this.fontErrcolor = "white";
 		this.setBorderColorFunc('qans');
 
-		this.circledcolor = "black";
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0, 0.40];
+		this.circleratio = [0.40, 0.40];
 	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawCirclesAtNumber_shikaku();
+		this.drawCircles();
 		this.drawNumbers();
 		this.drawBorderQsubs();
 
@@ -69,22 +68,15 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawCirclesAtNumber_shikaku : function(){
-		var g = this.vinc('cell_circle', 'auto');
-
-		var rsize2 = this.cw*this.circleratio[1];
-		var header = "c_cir_";
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.qnum!==-1){
-				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize2);
-				}
-			}
-			else{ this.vhide([header+cell.id]);}
+	/* 黒丸を描画する */
+	getCircleStrokeColor : function(cell){
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		if(cell.qnum!==-1){
+			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
 		}
+		return null;
 	}
 },
 

@@ -61,14 +61,14 @@ Graphic:{
 		this.setBGCellColorFunc('qsub1');
 
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0.42, 0.42];
+		this.circleratio = [0.45, 0.40];
 	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
 		this.drawBlackCells();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawChassis();

@@ -63,7 +63,6 @@ Graphic:{
 
 		this.fontErrcolor = this.fontcolor;
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0.38, 0.38];
 	},
 	paint : function(){
 		this.drawDashedCenterLines();
@@ -71,7 +70,7 @@ Graphic:{
 
 		this.drawPekes();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawTarget();
@@ -80,7 +79,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 	}
 },

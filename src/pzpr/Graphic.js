@@ -88,7 +88,7 @@ pzpr.createPuzzleClass('Graphic',
 		// その他
 		this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
 		this.crosssize = 0.4;
-		this.circleratio = [0.40, 0.34];
+		this.circleratio = [0.40, 0.35];
 
 		// 描画領域を保持するオブジェクト
 		this.range = {
@@ -1295,68 +1295,64 @@ pzpr.createPuzzleClass('Graphic',
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawQnumCircles()    Cell上の黒丸と白丸をCanvasに書き込む
-	// pc.drawCirclesAtNumber() 数字が描画されるCellの丸を書き込む
+	// pc.drawCircles()          数字や白丸黒丸等を表すCellの丸を書き込む
+	// pc.getCircleStrokeColor() 描画する円の線の色を設定する
+	// pc.getCircleFillColor()   描画する円の背景色を設定する
 	//---------------------------------------------------------------------------
-	drawQnumCircles : function(){
+	drawCircles : function(){
 		var g = this.vinc('cell_circle', 'auto');
 
-		g.lineWidth = Math.max(this.cw*(this.circleratio[0]-this.circleratio[1]), 1);
-		var rsize1 = this.cw*(this.circleratio[0]+this.circleratio[1])/2;
-		var rsize2 = this.cw*this.circleratio[0];
-		var headers = ["c_cirw_", "c_cirb_"];
+		var ra = this.circleratio;
+		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
+		g.lineWidth = Math.max(this.cw*(ra[0]-ra[1]), 1);
+		
+		/* fillとstrokeの間に線を描画するスキマを与える */
+		if(this.owner.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
+
+		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			var cell = clist[i], id = cell.id, px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			if(cell.qnum===1){
-				g.strokeStyle = (cell.error===1 ? this.errcolor1  : this.cellcolor);
-				g.fillStyle   = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[0]+id,this.FILL_STROKE)){
-					g.shapeCircle(px, py, rsize1);
+			var color = this.getCircleFillColor(cell);
+			if(!!color){
+				g.fillStyle = color;
+				if(this.vnop(headers[1]+id,this.FILL)){
+					g.fillCircle(px, py, rsize_fill);
 				}
 			}
-			else{ this.vhide(headers[0]+id);}
+			else{ this.vhide(headers[1]+id);}
 
-			if(cell.qnum===2){
-				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(px, py, rsize2);
+			color = this.getCircleStrokeColor(cell);
+			if(!!color){
+				g.strokeStyle = color;
+				if(this.vnop(headers[0]+id,this.STROKE)){
+					g.strokeCircle(px, py, rsize_stroke);
 				}
 			}
 			else{ this.vhide(headers[1]+id);}
 		}
 	},
-	drawCirclesAtNumber : function(){
-		var g = this.vinc('cell_circle', 'auto');
-
-		g.lineWidth = this.cw*0.05;
-
-		var rsize  = this.cw*this.circleratio[0];
-		var rsize2 = this.cw*this.circleratio[1];
-
-		var headers = ["c_cira_", "c_cirb_"];
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], num = cell.qnum, id = cell.id, error = cell.error;
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-
-			if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.qnum;}
-			if(num!==-1){
-				g.fillStyle = ((error===1||error===4) ? this.errbcolor1 : this.circledcolor);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(px, py, rsize2);
-				}
-
-				g.strokeStyle = ((error===1||error===4) ? this.errcolor1 : this.cellcolor);
-				if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && this.owner.mouse.mouseCell===cell){ g.strokeStyle=this.movecolor;}
-				if(this.vnop(headers[0]+id,this.STROKE)){
-					g.strokeCircle(px, py, rsize);
-				}
-			}
-			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+	getCircleStrokeColor : function(cell){
+		var o = this.owner, bd = o.board, error = cell.error;
+		var isdrawmove = (bd.linfo.moveline && o.get('dispmove'));
+		var num = (!isdrawmove ? cell : cell.base).qnum;
+		if(num!==-1){
+			if(isdrawmove && o.mouse.mouseCell===cell){ return this.movecolor;}
+			else if(error===1||error===4){ return this.errcolor1;}
+			else{ return this.cellcolor;}
 		}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		var o = this.owner, bd = o.board, error = cell.error;
+		var isdrawmove = (bd.linfo.moveline && o.get('dispmove'));
+		var num = (!isdrawmove ? cell : cell.base).qnum;
+		if(num!==-1){
+			if(error===1||error===4){ return this.errbcolor1;}
+			else{ return this.circledcolor;}
+		}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -1371,7 +1367,8 @@ pzpr.createPuzzleClass('Graphic',
 			var cell = clist[i], id = cell.id, num = -1;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && cell.isDeparture()){
+			var isdrawmove = (this.owner.board.linfo.moveline && this.owner.get('dispmove'));
+			if(isdrawmove && cell.isDeparture()){
 				g.fillStyle = "silver";
 				if(this.vnop(header+id,this.FILL)){
 					g.fillCircle(px, py, rsize);

@@ -266,7 +266,7 @@ Graphic:{
 		this.fontcolor = this.fontErrcolor = "black";
 
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0.42, 0.42];
+		this.circleratio = [0.45, 0.40];
 	},
 
 	setRange : function(x1,y1,x2,y2){
@@ -279,7 +279,7 @@ Graphic:{
 		this.drawTateyokos()
 		this.drawTateyokos_sub();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawPekeBorder();

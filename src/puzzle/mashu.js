@@ -83,7 +83,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawQnumCircles();
+		this.drawCircles();
 		this.drawHatenas();
 
 		this.drawPekes();
@@ -92,6 +92,23 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	/* 旧drawQnumCircles用オーバーライド */
+	getCircleStrokeColor : function(cell){
+		if(cell.qnum===1){
+			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
+		}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		if(cell.qnum===1){
+			return (cell.error===1 ? this.errbcolor1 : "white");
+		}
+		else if(cell.qnum===2){
+			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
+		}
+		return null;
 	}
 },
 

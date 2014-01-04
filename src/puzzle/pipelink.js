@@ -105,13 +105,15 @@ Graphic:{
 		this.linecolor = this.linecolor_LIGHT;
 
 		this.minYdeg = 0.42;
+
+		this.circleratio = [0.42, 0.37];
 	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
 
 		if(this.owner.pid==='pipelinkr'){
-			this.drawCircles_pipelink((this.owner.get('disptype_pipelinkr')==1));
+			this.drawCircles();
 			this.drawBorders();
 		}
 
@@ -143,28 +145,14 @@ Graphic:{
 		return null;
 	},
 
-	drawCircles_pipelink : function(isdraw){
-		var g = this.vinc('cell_circle', 'auto');
-
-		var header = "c_cir_";
-		var clist = this.range.cells;
-		if(isdraw){
-			var rsize  = this.cw*0.40;
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				if(cell.ques===6){
-					g.strokeStyle = this.cellcolor;
-					if(this.vnop(header+cell.id,this.NONE)){
-						g.strokeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-					}
-				}
-				else{ this.vhide(header+cell.id);}
-			}
+	getCircleStrokeColor : function(cell){
+		if((this.owner.get('disptype_pipelinkr')==1) && cell.ques===6){
+			return this.cellcolor;
 		}
-		else{
-			var header = "c_cir_";
-			for(var i=0;i<clist.length;i++){ this.vhide(header+clist[i].id);}
-		}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		return null;
 	},
 
 	repaintParts : function(blist){

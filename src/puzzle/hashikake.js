@@ -142,6 +142,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_THIN;
 		this.bcolor    = "silver";
 		this.fontsizeratio = 0.85;
+		this.circleratio = [0.47, 0.42];
 
 		// 線の太さを通常より少し太くする
 		this.lwratio = 8;
@@ -152,7 +153,7 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines_hashikake();
 
-		this.drawCirclesAtNumber_hashikake();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawTarget();
@@ -198,31 +199,18 @@ Graphic:{
 		}
 	},
 	// 背景色をつけたい
-	drawCirclesAtNumber_hashikake : function(c){
-		var g = this.vinc('cell_circle', 'auto');
-
-		g.lineWidth   = this.cw*0.05;
-		g.strokeStyle = this.cellcolor;
-
-		var rsize = this.cw*0.44;
-		var header = "c_cir_";
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-
-			if(cell.qnum!=-1){
-				if (this.owner.get('circolor') && cell.qnum===cell.getCountOfBridges())
-									   { g.fillStyle = this.bcolor;      }
-				else if(cell.error===1){ g.fillStyle = this.errbcolor1;  }
-				else                   { g.fillStyle = this.circledcolor;}
-
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.shapeCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
-			}
-			else{ this.vhide([header+cell.id]);}
+	getCircleStrokeColor : function(cell){
+		if(cell.isNum()){ return this.cellcolor;}
+		return null;
+	},
+	getCircleFillColor : function(cell){
+		if(cell.isNum()){
+			var cmpcell = (this.owner.get('circolor') && cell.qnum===cell.getCountOfBridges());
+			if     (cmpcell)       { return this.bcolor;      }
+			else if(cell.error===1){ return this.errbcolor1;  }
+			else                   { return this.circledcolor;}
 		}
+		return null;
 	},
 
 	repaintLines : function(blist){
@@ -310,30 +298,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkCellNumber(1) ){ return 'nmLineCntGt';}
+		if( !this.checkCellNumberNotOver() ){ return 'nmLineCntGt';}
 
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
 
-		if( !this.checkCellNumber(2) ){ return 'nmLineCntLt';}
+		if( !this.checkCellNumberNotLess() ){ return 'nmLineCntLt';}
 
 		return null;
 	},
 
-	checkCellNumber : function(flag){
-		var result = true, bd = this.owner.board;
-		for(var cc=0;cc<bd.cellmax;cc++){
-			var cell = bd.cell[cc], qn = cell.getQnum();
-			if(qn<0){ continue;}
-
-			var cnt = cell.getCountOfBridges();
-			if((flag===1 && qn<cnt)||(flag===2 && qn>cnt)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
-		}
-		return result;
+	checkCellNumberNotOver :function(){
+		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.getQnum() < cell.getCountOfBridges());});
+	},
+	checkCellNumberNotLess :function(){
+		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.getQnum() > cell.getCountOfBridges());});
 	}
 },
 

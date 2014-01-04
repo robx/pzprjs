@@ -79,7 +79,6 @@ Graphic:{
 		this.setBGCellColorFunc('qsub2');
 
 		this.fontsizeratio = 0.9;	// 数字の倍率
-		this.circleratio = [0.38, 0.38];
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -90,7 +89,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawChassis();

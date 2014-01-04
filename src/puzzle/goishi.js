@@ -126,7 +126,7 @@ Graphic:{
 	paint : function(){
 		this.drawCenterLines();
 
-		this.drawCircles_goishi();
+		this.drawCircles();
 		this.drawCellSquare();
 		this.drawNumbers();
 
@@ -145,26 +145,20 @@ Graphic:{
 		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
 		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw,  i*this.bh, (x2-x1)*this.bw+1, 1);} }
 	},
-	drawCircles_goishi : function(){
-		var g = this.vinc('cell_goishi', 'auto');
 
-		g.lineWidth = Math.max(this.cw*0.05, 1);
-		var rsize  = this.cw*0.38;
-		var header = "c_cir_";
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.isStone() && cell.anum===-1){
-				g.strokeStyle = (cell.error===1 ? this.errcolor1  : this.cellcolor);
-				g.fillStyle   = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+cell.id,this.FILL_STROKE)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeCircle(px, py, rsize);
-				}
-			}
-			else{ this.vhide([header+cell.id]);}
+	getCircleStrokeColor : function(cell){
+		if(cell.isStone() && cell.anum===-1){
+			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
 		}
+		return null;
 	},
+	getCircleFillColor : function(cell){
+		if(cell.isStone() && cell.anum===-1){
+			return (cell.error===1 ? this.errbcolor1 : "white");
+		}
+		return null;
+	},
+
 	drawCellSquare : function(){
 		var g = this.vinc('cell_number_base', 'crispEdges');
 

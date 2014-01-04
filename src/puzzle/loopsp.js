@@ -140,7 +140,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0.38, 0.30];
+		this.circleratio = [0.40, 0.35];
 
 		this.minYdeg = 0.36;
 		this.maxYdeg = 0.74;
@@ -151,7 +151,7 @@ Graphic:{
 
 		this.drawLines();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawPekes();
@@ -166,7 +166,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCirclesAtNumber();
+		this.drawCircles();
 		this.drawNumbers();
 		this.drawLineParts();
 	}
