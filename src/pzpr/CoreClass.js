@@ -228,6 +228,11 @@ try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 	localStorage = globalStorage[location.host];
 }}catch(e){}
 
+if(!Array.prototype.each){
+	Array.prototype.each = function(func){
+		for(var i=0;i<this.length;i++){ func(this[i]);}
+	}
+}
 if(!Array.prototype.indexOf){
 	Array.prototype.indexOf = function(obj){
 		for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}

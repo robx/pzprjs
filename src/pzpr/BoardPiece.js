@@ -696,9 +696,11 @@ pzpr.createPuzzleClass('PieceList',
 	
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクトiterator関連の関数
+	// list.each()     全てのオブジェクトに指定された関数を実行する
 	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
 	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	//--------------------------------------------------------------------------------
+	each    : Array.prototype.each,
 	some    : Array.prototype.some,
 	include : function(target){ return this.some(function(obj){ return (obj===target);});},
 	

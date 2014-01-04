@@ -69,7 +69,7 @@ ui.toolarea = {
 
 		/* 文字別正解表示の設定値 */
 		var pid = ui.puzzle.pid;
-		if(pid==='hashikake'||pid==='kurotto'){
+		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'){
 			this.addLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='kouchoku'){

@@ -20,14 +20,55 @@ MouseEvent:{
 		}
 	},
 
+	inputLine : function(){
+		this.Common.prototype.inputLine.call(this);
+		
+		/* "丸数字を移動表示しない"場合の背景色描画準備 */
+		if(this.owner.get('circolor') && !this.owner.get('dispmove') && !this.notInputted()){
+			this.inputautodark();
+		}
+	},
+	inputautodark : function(){
+		/* 最後に入力した線を取得する */
+		var opemgr = this.owner.opemgr, lastope = opemgr.ope[opemgr.position-1];
+		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
+		var border = this.owner.board.getb(lastope.bx, lastope.by);
+		
+		/* 線を引いた/消した箇所にある領域を取得 */
+		var linfo = this.owner.board.linfo;
+		var clist = new this.owner.CellList();
+		Array.prototype.push.apply(clist, border.lineedge);
+		clist = clist.notnull().filter(function(cell){ return !!linfo.id[cell.id];});
+		
+		/* 改めて描画対象となるセルを取得して再描画 */
+		clist.each(function(cell){
+			linfo.getClistByCell(cell).each(function(cell){ if(cell.isNum()){ cell.draw();}});
+		});
+	},
+
 	inputlight : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
+
+		if(this.owner.get('circolor') && this.inputdark(cell)){ return;}
 
 		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
 		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
 		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
 		cell.draw();
+	},
+	inputdark : function(cell){
+		var targetcell = (!this.owner.get('dispmove') ? cell : cell.base);
+			pc = this.owner.painter,
+			distance = pc.cw*0.30,
+			dx = this.inputPoint.px-(cell.bx*pc.bw), /* ここはtargetcellではなくcell */
+			dy = this.inputPoint.py-(cell.by*pc.bh);
+		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
+			targetcell.setQdark(targetcell.getQdark()===0 ? 1 : 0);
+			targetcell.draw();
+			return true;
+		}
+		return false;
 	}
 },
 
@@ -40,8 +81,27 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	qdark : 0,
+	getQdark : function(){ return this.qdark;},
+	setQdark : function(val){ this.qdark = val;}, /* とりあえずグレー化は保存しない */
+	isDark : function(){
+		var ismoved = this.owner.get('dispmove'),
+			targetcell = (!ismoved ? this : this.base);
+		if(targetcell.qdark===1){ return true;}
+		
+		var	num   = targetcell.getNum(),
+			clist = this.owner.board.linfo.getClistByCell(this),
+			d     = clist.getRectSize();
+		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
+	},
+	
+	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub', 'qdark'],
+	propans : ['qans', 'anum', 'qsub', 'qdark'],
+	propsub : ['qsub', 'qdark'],
+	
 	nummaxfunc : function(){
-		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
+		var bd = this.owner.board;
+		return Math.max(bd.qcols,bd.qrows)-1;
 	},
 	minnum : 0
 },
@@ -95,6 +155,18 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	getCircleFillColor : function(cell){
+		var o = this.owner, bd = o.board, error = cell.error;
+		var isdrawmove = o.get('dispmove');
+		var num = (!isdrawmove ? cell : cell.base).qnum;
+		if(num!==-1){
+			if     (error===1||error===4)              { return this.errbcolor1;}
+			else if(o.get('circolor') && cell.isDark()){ return "silver"}
+			else{ return this.circledcolor;}
+		}
+		return null;
 	}
 },
 
