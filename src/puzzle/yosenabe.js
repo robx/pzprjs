@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 よせなべ版 yosenabe.js v3.4.0
 //
+(function(){
+
+var k = pzpr.consts;
+
 pzpr.createCustoms('yosenabe', {
 //---------------------------------------------------------
 // マウス入力系
@@ -11,6 +15,7 @@ MouseEvent:{
 				if     (this.btn.Left) { this.inputMoveLine();}
 				else if(this.btn.Right){ this.inputpeke();}
 			}
+			else if(this.mouseend && this.notInputted()){ this.inputlight();}
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){
@@ -19,6 +24,22 @@ MouseEvent:{
 			else if(this.mouseend && this.notInputted()){
 				this.inputqnum_yosenabe();
 			}
+		}
+	},
+
+	inputlight : function(){
+		var cell = this.getcell();
+		if(!cell.isnull && this.owner.get('circolor')){ this.inputdark(cell);}
+	},
+	inputdark : function(cell){
+		var targetcell = (!this.owner.get('dispmove') ? cell : cell.base);
+			pc = this.owner.painter,
+			distance = pc.cw*0.30,
+			dx = this.inputPoint.px-(cell.bx*pc.bw), /* ここはtargetcellではなくcell */
+			dy = this.inputPoint.py-(cell.by*pc.bh);
+		if(dx*dx+dy*dy<distance*distance){
+			targetcell.setQdark(targetcell.getQdark()===0 ? 1 : 0);
+			targetcell.draw();
 		}
 	},
 
@@ -122,7 +143,18 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	qnum : -1, // ○つき数字として扱う
-	qdir : -1  // ○なし数字として扱う
+	qdir : -1, // ○なし数字として扱う
+	
+	qdark : 0,
+	getQdark : function(){ return this.qdark;},
+	setQdark : function(val){ this.setdata(k.QDARK, val);},
+	isDark : function(){
+		return (!this.owner.get('dispmove') ? this : this.base).qdark===1;
+	},
+	
+	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub', 'qdark'],
+	propans : ['qans', 'anum', 'qsub', 'qdark'],
+	propsub : ['qsub', 'qdark']
 },
 CellList:{
 	getDeparture : function(){ return this.map(function(cell){ return cell.base;}).notnull();},
@@ -207,6 +239,18 @@ Graphic:{
 	getCellNumberColor : function(cell){
 		if(cell===this.owner.mouse.mouseCell){ return this.movecolor;}
 		return ((cell.error===1 || cell.error===4) ? this.fontErrcolor : this.fontcolor);
+	},
+
+	getCircleFillColor : function(cell){
+		var o = this.owner, bd = o.board, error = cell.error;
+		var isdrawmove = o.get('dispmove');
+		var num = (!isdrawmove ? cell : cell.base).qnum;
+		if(num!==-1){
+			if     (error===1||error===4)              { return this.errbcolor1;}
+			else if(o.get('circolor') && cell.isDark()){ return "silver"}
+			else{ return this.circledcolor;}
+		}
+		return null;
 	},
 
 	drawFillingNumBase : function(){
@@ -439,3 +483,5 @@ FailCode:{
 	bkNoNum      : ["具材のない鍋があります。","A crock has no circle."]
 }
 });
+
+})();

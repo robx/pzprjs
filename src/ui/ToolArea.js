@@ -72,6 +72,9 @@ ui.toolarea = {
 		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'){
 			this.addLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
+		else if(pid==='yosenabe'){
+			this.addLabel('circolor', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
+		}
 		else if(pid==='kouchoku'){
 			this.addLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
