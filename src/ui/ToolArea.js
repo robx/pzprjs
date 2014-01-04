@@ -250,7 +250,7 @@ ui.toolarea = {
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			var obj = this.btnstack[i];
 			if(!obj.el){ continue;}
-			obj.el.value = obj.str[ui.puzzle.get('language')];
+			obj.el.value = obj.str[ui.puzzle.getConfig('language')];
 		}
 		this.enb_undo();
 		
@@ -307,7 +307,7 @@ ui.toolarea = {
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.get('mode')];
+				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
 				getEL('ck_keypopup').disabled    = (f?"":"true");
 				getEL('cl_keypopup').style.color = (f?"black":"silver");
 			}
@@ -315,14 +315,14 @@ ui.toolarea = {
 		
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.get('mode');
+				var mode = ui.puzzle.getConfig('mode');
 				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}
 		}
 		
 		if(ui.puzzle.pid==='pipelinkr'){
-			getEL('btncircle').value = ((ui.puzzle.get(idname)==1)?"○":"■");
+			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 		}
 	},
 
@@ -388,8 +388,8 @@ ui.toolarea = {
 	// toolarea.toggledisp()   アイスと○などの表示切り替え時の処理を行う
 	//---------------------------------------------------------------------------
 	toggledisp : function(){
-		var current = ui.puzzle.get('disptype_pipelinkr');
-		ui.puzzle.set('disptype_pipelinkr', (current==1?2:1));
+		var current = ui.puzzle.getConfig('disptype_pipelinkr');
+		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
 	}
 };
 

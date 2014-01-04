@@ -8,8 +8,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
 			var inputbg = false;
-			if     (this.mousestart){ inputbg = (!!this.owner.get('bgcolor') && this.inputBGcolor0());}
-			else if(this.mousemove) { inputbg = (!!this.owner.get('bgcolor') && this.inputData>=10);}
+			if     (this.mousestart){ inputbg = (!!this.getConfig('bgcolor') && this.inputBGcolor0());}
+			else if(this.mousemove) { inputbg = (!!this.getConfig('bgcolor') && this.inputData>=10);}
 			else{ return;}
 
 			if(!inputbg){

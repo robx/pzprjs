@@ -282,7 +282,7 @@ pzpr.createPuzzleClass('LineManager',
 			blist_all.extend(blist);
 		}
 		
-		if(this.owner.get('irowake')){
+		if(this.getConfig('irowake')){
 			this.owner.painter.repaintLines(blist);
 		}
 	},

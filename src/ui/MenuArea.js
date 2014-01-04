@@ -707,7 +707,7 @@ MenuList.prototype =
 	// pp.type()       設定値のサブメニュータイプを返す
 	// pp.haschild()   サブメニューがあるかどうか調べる
 	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.item[idname].str[ui.puzzle.get('language')].menu; },
+	getMenuStr : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].menu; },
 	type       : function(idname){ return (this.item[idname]?this.item[idname].type:null);},
 	haschild   : function(idname){
 		var flag = this.item[idname];

@@ -605,7 +605,7 @@ pzpr.createPuzzleClass('FailCode',
 {
 	getStr : function(code){
 		if(!code){ code='complete';}
-		var lang = (this.owner.get('language')==='ja' ? 0 : 1);
+		var lang = (this.getConfig('language')==='ja' ? 0 : 1);
 		return this[code][lang];
 	},
 

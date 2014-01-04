@@ -63,7 +63,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		this.mouseend   = false;
 		this.mouseout   = false;
 		
-		if(bd.linfo.moveline && this.owner.get('dispmove') && !!cell && !cell.isnull){ cell.draw();}
+		if(bd.linfo.moveline && this.owner.getConfig('dispmove') && !!cell && !cell.isnull){ cell.draw();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.owner.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA)^this.owner.get('lrcheck')){
+		if((kc.isSHIFT || kc.isMETA)^this.getConfig('lrcheck')){
 			if(this.btn.Left !== this.btn.Right){
 				this.btn.Left  = !this.btn.Left;
 				this.btn.Right = !this.btn.Right;
@@ -159,10 +159,10 @@ pzpr.createPuzzleClass('MouseEvent',
 	},
 	isDispred : function(){
 		var o = this.owner, cf = o.flags, flag = false;
-		if     (cf.redline     && o.get('redline')) { flag = true;}
-		else if(cf.redblk      && o.get('redblk'))  { flag = true;}
-		else if(cf.redblkrb    && o.get('redblkrb')){ flag = true;}
-		else if(o.pid==='roma' && o.get('redroad')) { flag = true;}
+		if     (cf.redline     && this.getConfig('redline')) { flag = true;}
+		else if(cf.redblk      && this.getConfig('redblk'))  { flag = true;}
+		else if(cf.redblkrb    && this.getConfig('redblkrb')){ flag = true;}
+		else if(o.pid==='roma' && this.getConfig('redroad')) { flag = true;}
 		return o.key.isZ ^ flag;
 	},
 
@@ -286,11 +286,11 @@ pzpr.createPuzzleClass('MouseEvent',
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.owner.get('use')==1){
+		if(this.getConfig('use')==1){
 			if     (this.btn.Left) { this.inputData=(cell.isWhite()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
-		else if(this.owner.get('use')==2){
+		else if(this.getConfig('use')==2){
 			if(cell.numberIsWhite && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}
@@ -327,7 +327,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(o.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
-		else if(bd.linfo.moveline && o.get('dispmove')){
+		else if(bd.linfo.moveline && this.getConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
 			else if(cell.lcnt()>0){ return;}
 		}
@@ -369,7 +369,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		}
 		cell.setNum(val);
 
-		if(bd.linfo.moveline && o.get('dispmove') && cell.noNum()){
+		if(bd.linfo.moveline && this.getConfig('dispmove') && cell.noNum()){
 				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
 		}
 
@@ -611,7 +611,7 @@ pzpr.createPuzzleClass('MouseEvent',
 	},
 	inputMoveLine : function(){
 		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.owner.board.linfo.moveline || !this.owner.get('dispmove')){
+		if(!this.owner.board.linfo.moveline || !this.getConfig('dispmove')){
 			this.inputLine();
 			return;
 		}
@@ -666,7 +666,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		var border = pos.getb();
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
-			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.owner.get('dispmove')){}
+			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.getConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
 			border.draw();

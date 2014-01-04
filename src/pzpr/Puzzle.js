@@ -6,38 +6,41 @@
 
 // Puzzleクラス
 pzpr.Puzzle = function(){
-	this.initialize();
+
+	this.editmode = pzpr.EDITOR;		// 問題配置モード
+	this.playmode = !this.editmode;		// 回答モード
+
+	this.resetTime();
+
+	this.listeners = {
+		mouse  : [],
+		key    : [],
+		config : [],
+		resize : [],
+		historychange : []
+	};
+
+	this.config = new pzpr.util.Config(this);
 };
 pzpr.Puzzle.prototype =
 {
-	initialize : function(){
-		this.pid     = '';			// パズルのID("creek"など)
-		this.classlist = [];
-
-		this.ready = false;
-
-		this.editmode = pzpr.EDITOR;		// 問題配置モード
-		this.playmode = !this.editmode;		// 回答モード
-
-		this.starttime = 0;
-		this.resetTime();
-
-		this.canvas    = null;	// 描画canvas本体
-		this.subcanvas = null;	// 補助canvas
-
-		this.listeners = {
-			mouse  : [],
-			key    : [],
-			config : [],
-			resize : [],
-			historychange : []
-		};
-
-		this.config = new Config();
-		this.config.owner = this;
-		this.config.init();
-	},
-
+	pid : '',			// パズルのID("creek"など)
+	
+	classlist : null,
+	
+	ready    : false,
+	editmode : false,	// 問題配置モード
+	playmode : false,	// 回答モード
+	
+	starttime : 0,
+	
+	canvas    : null,	// 描画canvas本体
+	subcanvas : null,	// 補助canvas
+	
+	listeners : null,
+	
+	config : null,
+	
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
@@ -249,7 +252,7 @@ pzpr.Puzzle.prototype =
 	},
 
 	adjustCanvasSize : function(){
-		if(!this.get('fixsize')){
+		if(!this.getConfig('fixsize')){
 			this.painter.resizeCanvasByCellSize();
 		}
 		else{
@@ -266,7 +269,7 @@ pzpr.Puzzle.prototype =
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
-		if(this.get('irowake')){
+		if(this.getConfig('irowake')){
 			this.redraw();
 		}
 	},
@@ -353,11 +356,11 @@ pzpr.Puzzle.prototype =
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.get()  設定値の取得を行う
-	// owner.set()  設定値の設定を行う
+	// owner.getConfig()  設定値の取得を行う
+	// owner.setConfig()  設定値の設定を行う
 	//------------------------------------------------------------------------------
-	get : function(idname){ return this.config.getConfig(idname);},
-	set : function(idname,val){ return this.config.setConfig(idname,val);}
+	getConfig : function(idname){ return this.config.getConfig(idname);},
+	setConfig : function(idname,val){ return this.config.setConfig(idname,val);}
 };
 
 //--------------------------------------------------------------------------------------------------------------
@@ -365,8 +368,11 @@ pzpr.Puzzle.prototype =
 //---------------------------------------------------------------------------
 // ★Configクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-var Config = function(){};
-Config.prototype =
+pzpr.util.Config = function(owner){
+	this.owner = owner;
+	this.init();
+};
+pzpr.util.Config.prototype =
 {
 	/* 設定値 */
 	list : {},

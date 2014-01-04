@@ -158,7 +158,7 @@ Menu.prototype =
 			this.setMenuConfig(idname, newval);
 		}
 		else if(!!ui.puzzle.config.list[idname]){
-			ui.puzzle.set(idname, newval);
+			ui.puzzle.setConfig(idname, newval);
 		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.uramashu = newval;
@@ -170,7 +170,7 @@ Menu.prototype =
 			return this.getMenuConfig(idname);
 		}
 		else if(!!ui.puzzle.config.list[idname]){
-			return ui.puzzle.get(idname);
+			return ui.puzzle.getConfig(idname);
 		}
 		else if(idname==='uramashu'){
 			return ui.puzzle.board.uramashu;
@@ -270,13 +270,13 @@ Menu.prototype =
 	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
 	selectStr : function(strJP, strEN){
-		return (ui.puzzle.get('language')==='ja' ? strJP : strEN);
+		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	alertStr : function(strJP, strEN){
-		alert(ui.puzzle.get('language')==='ja' ? strJP : strEN);
+		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	confirmStr : function(strJP, strEN){
-		return confirm(ui.puzzle.get('language')==='ja' ? strJP : strEN);
+		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 
 //--------------------------------------------------------------------------------------------------------------

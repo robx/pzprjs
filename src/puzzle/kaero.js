@@ -122,11 +122,12 @@ Graphic:{
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
 		var header = "c_sq_";
+		var isdrawmove = this.getConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			if((!this.owner.get('dispmove') && cell.isDeparture()) || (this.owner.get('dispmove') && cell.isDestination())){
+			if((!isdrawmove && cell.isDeparture()) || (isdrawmove && cell.isDestination())){
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
@@ -142,11 +143,12 @@ Graphic:{
 	},
 	drawNumbers_kaero : function(){
 		var g = this.vinc('cell_number', 'auto');
+		var isdrawmove = this.getConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum;
-			if(this.owner.get('dispmove')){ num = cell.base.qnum;}
+			if(isdrawmove){ num = cell.base.qnum;}
 			if(num!==-1){
 				var color = this.getCellNumberColor(cell);
 
@@ -261,7 +263,7 @@ AnsCheck:{
 				if(rnum===-1){ rnum=num;}
 				else if(rnum!==num){
 					if(this.checkOnly){ return false;}
-					if(!this.owner.get('dispmove')){ cbase.seterr(4);}
+					if(!this.getConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
 					result = false;
 				}
@@ -280,7 +282,7 @@ AnsCheck:{
 				var r=rinfo.getRoomID(clist[i]);
 				if(rid===null){ rid=r;}
 				else if(r!==null && rid!==r){
-					if(!this.owner.get('dispmove')){ clist.getDeparture().seterr(4);}
+					if(!this.getConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
 					return false;
 				}

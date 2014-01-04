@@ -40,7 +40,7 @@ Cell:{
 
 	redDisp : function(){
 		var o = this.owner, bd = o.board;
-		if(o.get('plred')){
+		if(this.getConfig('plred')){
 			o.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
 			o.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
 		}
@@ -87,12 +87,12 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		this.drawNumbers();
 
-		var o=this.owner, bd=o.board;
-		if(!bd.haserror && o.get('plred')){
-			o.checker.inCheck = true;
-			o.checker.checkOnly = false;
-			o.checker.checkRowsColsSameNumber();
-			o.checker.inCheck = false;
+		var o=this.owner, bd=o.board, chk=o.checker;
+		if(!bd.haserror && this.getConfig('plred')){
+			chk.inCheck = true;
+			chk.checkOnly = false;
+			chk.checkRowsColsSameNumber();
+			chk.inCheck = false;
 
 			for(var i=0;i<bd.cellmax;i++){ this.drawNumber1(bd.cell[i]);}
 

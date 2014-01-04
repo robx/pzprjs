@@ -132,11 +132,11 @@ Graphic:{
 
 	getBGCellColor : function(cell){
 		if     (cell.error===1)                                          { return this.errbcolor1;}
-		else if(cell.ques===6 && this.owner.get('disptype_pipelinkr')==2){ return this.icecolor;}
+		else if(cell.ques===6 && this.getConfig('disptype_pipelinkr')==2){ return this.icecolor;}
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.owner.get('disptype_pipelinkr')==2){
+		if(this.getConfig('disptype_pipelinkr')==2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.cellcolor;
@@ -146,7 +146,7 @@ Graphic:{
 	},
 
 	getCircleStrokeColor : function(cell){
-		if((this.owner.get('disptype_pipelinkr')==1) && cell.ques===6){
+		if((this.getConfig('disptype_pipelinkr')==1) && cell.ques===6){
 			return this.cellcolor;
 		}
 		return null;
@@ -170,11 +170,11 @@ Encode:{
 
 		this.checkPuzzleid();
 		if(this.owner.pid==='pipelinkr'){
-			this.owner.set('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
+			this.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));
 		}
 	},
 	encodePzpr : function(type){
-		this.outpflag = ((this.owner.pid==='pipelinkr' && this.owner.get('disptype_pipelinkr')==2)?"i":"");
+		this.outpflag = ((this.owner.pid==='pipelinkr' && this.getConfig('disptype_pipelinkr')==2)?"i":"");
 		this.encodePipelink(type);
 	},
 
@@ -249,12 +249,12 @@ FileIO:{
 
 		this.owner.enc.checkPuzzleid();
 		if(this.owner.pid==='pipelinkr'){
-			this.owner.set('disptype_pipelinkr', (disptype=="circle"?1:2));
+			this.setConfig('disptype_pipelinkr', (disptype=="circle"?1:2));
 		}
 	},
 	encodeData : function(){
 		if     (this.owner.pid==='pipelink') { this.datastr += 'pipe\n';}
-		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.owner.get('disptype_pipelinkr')==1?"circle\n":"ice\n");}
+		else if(this.owner.pid==='pipelinkr'){ this.datastr += (this.getConfig('disptype_pipelinkr')==1?"circle\n":"ice\n");}
 		this.encodeCell( function(obj){
 			if     (obj.ques==6) { return "o ";}
 			else if(obj.ques==-2){ return "- ";}
@@ -275,7 +275,7 @@ AnsCheck:{
 		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
 		if(this.owner.pid==='pipelinkr'){
-			var isdispice = (this.owner.get('disptype_pipelinkr')==2);
+			var isdispice = (this.getConfig('disptype_pipelinkr')==2);
 			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 'lnCrossExIce' : 'lnCrossExCir');}
 			if( !this.checkIceLines() ){ return (isdispice ? 'lnCurveOnIce' : 'lnCurveOnCir');}
 		}

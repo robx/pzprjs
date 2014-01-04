@@ -116,8 +116,8 @@ ui.event =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(c==='F2' && pzpr.EDITOR){
-				if     (o.editmode && !kc.isSHIFT){ o.set('mode',3); result = false;}
-				else if(o.playmode &&  kc.isSHIFT){ o.set('mode',1); result = false;}
+				if     (o.editmode && !kc.isSHIFT){ o.setConfig('mode',3); result = false;}
+				else if(o.playmode &&  kc.isSHIFT){ o.setConfig('mode',1); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -134,7 +134,7 @@ ui.event =
 		var mv = o.mouse;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
 			if(pzpr.EDITOR){
-				o.set('mode', (o.playmode?1:3));
+				o.setConfig('mode', (o.playmode?1:3));
 			}
 			mv.mousereset();
 			return false;
@@ -259,7 +259,7 @@ ui.event =
 				padding = 0.05; break;
 			
 			case 'bosanowa':
-				padding = (o.get('disptype_bosanowa')!=2?0.50:0.05); break;
+				padding = (o.getConfig('disptype_bosanowa')!=2?0.50:0.05); break;
 			
 			default: padding = 0.50; break;
 		}

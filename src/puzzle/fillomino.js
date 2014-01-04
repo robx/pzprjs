@@ -198,12 +198,12 @@ AnsCheck:{
 
 		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 'bkPlNum';}
 
-		if( !this.owner.get('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
+		if( !this.getConfig('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
 
 		return null;
 	},
 	check1st : function(){
-		return ((this.owner.get('enbnonum') || this.checkNoNumCell()) ? null : 'ceEmpty');
+		return ((this.getConfig('enbnonum') || this.checkNoNumCell()) ? null : 'ceEmpty');
 	},
 
 	checkSideAreaNumberSize : function(rinfo){

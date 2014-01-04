@@ -80,7 +80,7 @@ function startPuzzle(){
 function afterBoot(o){
 	/* debugmode時の設定 */
 	if(ui.debugmode){
-		o.set('mode',3);
+		o.setConfig('mode',3);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
 	o.setKeyEvents();

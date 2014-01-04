@@ -222,7 +222,7 @@ pzpr.createPuzzleClass('Graphic',
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
 
 		// セルのサイズなどを取得・設定
-		if(this.owner.get('squarecell')){
+		if(this.getConfig('squarecell')){
 			this.cw = this.ch = Math.min(cw,ch);
 		}
 		else{
@@ -735,7 +735,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_'), num = cell.getNum();
-		if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ num = cell.base.getNum();}
+		if(this.owner.board.linfo.moveline && this.getConfig('dispmove')){ num = cell.base.getNum();}
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
@@ -752,7 +752,7 @@ pzpr.createPuzzleClass('Graphic',
 		else if(cell.error===1 || cell.error===4){
 			color = this.fontErrcolor;
 		}
-		else if(this.owner.board.linfo.moveline && this.owner.get('dispmove') && this.owner.mouse.mouseCell===cell){
+		else if(this.owner.board.linfo.moveline && this.getConfig('dispmove') && this.owner.mouse.mouseCell===cell){
 			color = this.movecolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
@@ -1122,8 +1122,8 @@ pzpr.createPuzzleClass('Graphic',
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
-			else if(this.owner.board.linfo.moveline && this.owner.get('dispmove')){ return "silver";}
-			else if(!this.owner.flags.irowake || !this.owner.get('irowake') || !border.color){ return this.linecolor;}
+			else if(this.owner.board.linfo.moveline && this.getConfig('dispmove')){ return "silver";}
+			else if(!this.owner.flags.irowake || !this.getConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;
@@ -1151,7 +1151,7 @@ pzpr.createPuzzleClass('Graphic',
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			this.vdel([header+cell.id]);
-			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.get('dispmove')){
+			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.getConfig('dispmove')){
 				var dir=0, border=null;
 				if     (cell.ub().isLine()){ dir=2; border=cell.ub();}
 				else if(cell.db().isLine()){ dir=1; border=cell.db();}
@@ -1335,7 +1335,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	getCircleStrokeColor : function(cell){
 		var o = this.owner, bd = o.board, error = cell.error;
-		var isdrawmove = (bd.linfo.moveline && o.get('dispmove'));
+		var isdrawmove = (bd.linfo.moveline && this.getConfig('dispmove'));
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if(isdrawmove && o.mouse.mouseCell===cell){ return this.movecolor;}
@@ -1345,8 +1345,8 @@ pzpr.createPuzzleClass('Graphic',
 		return null;
 	},
 	getCircleFillColor : function(cell){
-		var o = this.owner, bd = o.board, error = cell.error;
-		var isdrawmove = (bd.linfo.moveline && o.get('dispmove'));
+		var bd = this.owner.board, error = cell.error;
+		var isdrawmove = (bd.linfo.moveline && this.getConfig('dispmove'));
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if(error===1||error===4){ return this.errbcolor1;}
@@ -1367,7 +1367,7 @@ pzpr.createPuzzleClass('Graphic',
 			var cell = clist[i], id = cell.id, num = -1;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			var isdrawmove = (this.owner.board.linfo.moveline && this.owner.get('dispmove'));
+			var isdrawmove = (this.owner.board.linfo.moveline && this.getConfig('dispmove'));
 			if(isdrawmove && cell.isDeparture()){
 				g.fillStyle = "silver";
 				if(this.vnop(header+id,this.FILL)){
@@ -1526,7 +1526,7 @@ pzpr.createPuzzleClass('Graphic',
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false && this.owner.get('cursor') && !this.outputImage){
+		if(isdraw!==false && this.getConfig('cursor') && !this.outputImage){
 			var d = this.range, tc = this.owner.cursor;
 			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
 			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}

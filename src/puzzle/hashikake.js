@@ -205,7 +205,7 @@ Graphic:{
 	},
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.owner.get('circolor') && cell.qnum===cell.getCountOfBridges());
+			var cmpcell = (this.getConfig('circolor') && cell.qnum===cell.getCountOfBridges());
 			if     (cmpcell)       { return this.bcolor;      }
 			else if(cell.error===1){ return this.errbcolor1;  }
 			else                   { return this.circledcolor;}

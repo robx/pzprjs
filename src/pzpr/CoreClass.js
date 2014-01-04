@@ -183,8 +183,10 @@ pzpr.classmgr = {
 
 	//---------------------------------------------------------------
 	// パズル種類別のクラスをパズルのクラス一覧に設定する
-	//  共通クラス -> パズル種類別クラス -> パズルが保持するクラス
-	//   と、ちょっとずつ変わっている状態になります
+	//  共通クラス
+	//   -> パズル種類別クラス (this.Commonがつく)
+	//   -> パズルが保持するクラス (initialize()の呼び出しやthis.owner等がつく)
+	// と、ちょっとずつ変わっている状態になります
 	//---------------------------------------------------------------
 	setClasses : function(puzzle, pid){
 		/* 現在のクラスを消去する */
@@ -202,6 +204,8 @@ pzpr.classmgr = {
 			}
 			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
 			cls.prototype.owner = puzzle;
+			cls.prototype.getConfig = function(idname){ return this.owner.getConfig(idname);};
+			cls.prototype.setConfig = function(idname,val){ this.owner.setConfig(idname,val);};
 			puzzle[classname] = cls;
 			puzzle.classlist.push(classname);
 		}
