@@ -655,7 +655,7 @@ Graphic:{
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
 				if(c<bd.cellmax){
-					bd.cell[c].setQues(num&twi[w]?6:0);
+					bd.cell[c].ques = (num&twi[w]?6:0);
 					c++;
 				}
 			}
