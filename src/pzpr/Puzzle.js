@@ -242,7 +242,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
-	// owner.adjustCanvasSize()  サイズの再設定を含めて盤面の再描画を行う
+	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
 		this.painter.resizeCanvas(width, height);
@@ -258,6 +258,37 @@ pzpr.Puzzle.prototype =
 		else{
 			this.painter.resizeCanvas();
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.canvasToDataURL()     盤面画像をDataURLとして出力する
+	// owner.canvasToBlob()        盤面画像をBlobとして出力する
+	// owner.generateLocalCanvas() 上記関数の共通処理
+	//---------------------------------------------------------------------------
+	canvasToDataURL : function(cellsize){
+		return this.getLocalCanvas(cellsize).toDataURL();
+	},
+	canvasToBlob : function(cellsize){
+		return this.getLocalCanvas(cellsize).toBlob();
+	},
+	getLocalCanvas : function(cellsize){
+		var pc = this.painter, pc2 = new this.Graphic();
+		
+		pc2.initCanvas(this.subcanvas);
+		
+		// 設定値・変数をcanvas用のものに変更
+		pc2.suspendAll();
+		pc2.outputImage = true;
+		
+		if(!cellsize){ cellsize = pc.cw;}
+		pc2.cw = cellsize;
+		pc2.ch = cellsize*(pc.ch/pc.cw);
+		
+		// canvas要素の設定を適用して、再描画
+		pc2.resizeCanvasByCellSize();
+		pc2.unsuspend();
+		
+		return pc2.currentContext.canvas;
 	},
 
 	//---------------------------------------------------------------------------

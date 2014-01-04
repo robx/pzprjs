@@ -337,42 +337,27 @@ Menu.prototype =
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
 	imagesave : function(isDL,cellsize){
-		var o = ui.puzzle, pc = o.painter, pc2 = new o.Graphic(), fail = false;
+		var dataurl = "", blob = null;
 		
-		pc2.initCanvas(o.subcanvas);
 		try{
-			// 設定値・変数をcanvas用のものに変更
-			pc2.suspendAll();
-			pc2.outputImage = true;
-
-			if(!cellsize){ cellsize = pc.cw;}
-			pc2.cw = cellsize;
-			pc2.ch = cellsize*(pc.ch/pc.cw);
-
-			// canvas要素の設定を適用して、再描画
-			pc2.resizeCanvasByCellSize();
-			pc2.unsuspend();
+			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.canvasToBlob(cellsize);   }
+			else                           { dataurl = ui.puzzle.canvasToDataURL(cellsize);}
 		}
 		catch(e){
 			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');
-			fail = true;
 		}
-
+		
 		try{
-			if(fail){ /* 何もしない */ }
-			else if(!isDL){ this.openimage(pc2);}
-			else{
-				if(!this.enableSaveBlob){ this.submitimage(pc2);}
-				else                    { this.saveimage(pc2);}
-			}
+			if     (!isDL &&                         !!dataurl){ this.openimage(dataurl);  }
+			else if( isDL && !this.enableSaveBlob && !!dataurl){ this.submitimage(dataurl);}
+			else if( isDL &&  this.enableSaveBlob && !!blob)   { this.saveimage(blob);     }
 		}
 		catch(e){
 			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
 		}
 	},
 
-	submitimage : function(pc2){
-		var url = pc2.currentContext.canvas.toDataURL();
+	submitimage : function(url){
 		_doc.fileform2.filename.value  = ui.puzzle.pid+'.png';
 		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
 		_doc.fileform2.operation.value = 'imagesave';
@@ -380,12 +365,10 @@ Menu.prototype =
 		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
 	},
-	saveimage : function(pc2){
-		var blob = pc2.currentContext.canvas.toBlob();
+	saveimage : function(blob){
 		navigator.saveBlob(blob, ui.puzzle.pid+'.png');
 	},
-	openimage : function(pc2){
-		var url = pc2.currentContext.canvas.toDataURL();
+	openimage : function(url){
 		if(!pzpr.env.browser.IE9){
 			window.open(url, '', '');
 		}
