@@ -193,6 +193,8 @@ Graphic:{
 		this.icecolor = "rgb(224,224,224)";
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
+		
+		this.fontsizeratio = 0.85;
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -216,7 +218,7 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_'), num = cell.qnum;
+		var key = 'cell_'+cell.id, num = cell.qnum;
 		if(this.getConfig('dispmove')){ num = cell.base.qnum;}
 		if(num>0){
 			var text      = ""+num;
@@ -245,7 +247,7 @@ Graphic:{
 
 	drawFillingNumBase : function(){
 		var g = this.vinc('cell_filling_back', 'crispEdges');
-		var header = "c_full_";
+		var header = "c_full_nb_";
 		var isdrawmove = this.getConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -267,7 +269,7 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum2;
+			var cell = clist[i], key='cell5_'+cell.id, num = cell.qnum2;
 			if(num!==-1){
 				var text = (num>=0 ? ""+num : "?"), type = 1;
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55))*0.9;

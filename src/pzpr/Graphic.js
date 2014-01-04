@@ -1330,7 +1330,7 @@ pzpr.createPuzzleClass('Graphic',
 					g.strokeCircle(px, py, rsize_stroke);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ this.vhide(headers[0]+id);}
 		}
 	},
 	getCircleStrokeColor : function(cell){
