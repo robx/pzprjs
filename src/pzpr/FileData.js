@@ -485,15 +485,15 @@ pzpr.createPuzzleClass('FileIO',
 			var bx=(i%(bd.qcols+1)-1)*2+1, by=(((i/(bd.qcols+1))|0)-1)*2+1;
 			if(bx===-1 || by===-1){
 				var excell = bd.getex(bx,by);
-				var property = ((excell.by===-1)?'qdir':'qnum');
+				var property = ((excell.by===-1)?'qnum2':'qnum');
 				excell[property] = parseInt(item[i]);
 			}
 			else{
 				var inp = item[i].split(",");
 				var cell = bd.getc(bx,by);
 				cell.set51cell();
-				cell.qnum = parseInt(inp[0]);
-				cell.qdir = parseInt(inp[1]);
+				cell.qnum  = parseInt(inp[0]);
+				cell.qnum2 = parseInt(inp[1]);
 			}
 		}
 		bd.enableInfo(); /* mv.set51cell()用 */
@@ -505,13 +505,13 @@ pzpr.createPuzzleClass('FileIO',
 				if     (bx===-1 && by===-1){ str += "0 ";}
 				else if(bx===-1 || by===-1){
 					var excell = bd.getex(bx,by);
-					var property = ((excell.by===-1)?'qdir':'qnum');
+					var property = ((excell.by===-1)?'qnum2':'qnum');
 					str += (""+excell[property].toString()+" ");
 				}
 				else{
 					var cell = bd.getc(bx,by);
 					if(cell.ques===51){
-						str += (""+cell.qnum.toString()+","+cell.qdir.toString()+" ");
+						str += (""+cell.qnum.toString()+","+cell.qnum2.toString()+" ");
 					}
 					else{ str += ". ";}
 				}

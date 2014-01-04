@@ -53,6 +53,8 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 	STRPROP : {
 		U: 'ques',   // k.QUES
 		N: 'qnum',   // k.QNUM
+		Z: 'qnum2',  // k.QNUM2
+		C: 'qchar',  // k.QCHAR
 		M: 'anum',   // k.ANUM
 		D: 'qdir',   // k.QDIR
 		A: 'qans',   // k.QANS

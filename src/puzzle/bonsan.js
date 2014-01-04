@@ -85,9 +85,6 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qdark : 0,
-	getQdark : function(){ return this.qdark;},
-	setQdark : function(val){ this.setdata(k.QDARK, val);},
 	isDark : function(){
 		var ismoved = this.owner.get('dispmove'),
 			targetcell = (!ismoved ? this : this.base);
@@ -98,10 +95,6 @@ Cell:{
 			d     = clist.getRectSize();
 		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
 	},
-	
-	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub', 'qdark'],
-	propans : ['qans', 'anum', 'qsub', 'qdark'],
-	propsub : ['qsub', 'qdark'],
 	
 	nummaxfunc : function(){
 		var bd = this.owner.board;

@@ -145,21 +145,21 @@ KeyEvent:{
 		}
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = excell.getQdir();
-			if     ((canum-1)%26==num && canum>0 && canum<79){ excell.setQdir(canum+26);}
-			else if((canum-1)%26==num){ excell.setQdir(0);}
-			else{ excell.setQdir(num+1);}
+			var canum = excell.getQchar();
+			if     ((canum-1)%26==num && canum>0 && canum<79){ excell.setQchar(canum+26);}
+			else if((canum-1)%26==num){ excell.setQchar(0);}
+			else{ excell.setQchar(num+1);}
 		}
 		else if(ca=='-'){
 			if(qn!==-1){ excell.setQnum(-1);}
-			else       { excell.setQnum(-1); excell.setQdir(0);}
+			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
 		else if(ca=='F4'){
 			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
 			else{ this.owner.board.lightclear();}
 			this.owner.redraw();
 		}
-		else if(ca==' '){ excell.setQnum(-1); excell.setQdir(0);}
+		else if(ca==' '){ excell.setQnum(-1); excell.setQchar(0);}
 		else{ return;}
 
 		this.prev = excell;
@@ -362,8 +362,8 @@ Graphic:{
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], key = 'excell_'+excell.id;
 
-			if(excell.qdir!==0 || excell.qnum!==-1){
-				var num=excell.qnum, canum=excell.qdir;
+			if(excell.qchar!==0 || excell.qnum!==-1){
+				var num=excell.qnum, canum=excell.qchar;
 
 				var color = this.fontErrcolor;
 				if(excell.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
@@ -405,8 +405,8 @@ Encode:{
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), obj=bd.excell[ec];
 
-			if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9;}
-			else if(this.include(ca,'0','9')){ subint.push(ec); obj.qdir = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1))+1)*26; i++;}
+			if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9;}
+			else if(this.include(ca,'0','9')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1))+1)*26; i++;}
 			else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
 			ec++;
@@ -431,7 +431,7 @@ Encode:{
 		// 盤面外部分のエンコード
 		var count=0;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
-			var pstr = "", val = bd.excell[ec].qdir, qnum = bd.excell[ec].qnum;
+			var pstr = "", val = bd.excell[ec].qchar, qnum = bd.excell[ec].qnum;
 
 			if(val> 0 && val<=104){
 				if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
@@ -465,8 +465,8 @@ FileIO:{
 			var excell = bd.getex(bx,by);
 			if(!excell.isnull){
 				var inp = ca.split(",");
-				if(inp[0]!==""){ excell.qdir = parseInt(inp[0]);}
-				if(inp[1]!==""){ excell.qnum = parseInt(inp[1]);}
+				if(inp[0]!==""){ excell.qchar = parseInt(inp[0]);}
+				if(inp[1]!==""){ excell.qnum  = parseInt(inp[1]);}
 				continue;
 			}
 
@@ -497,7 +497,7 @@ FileIO:{
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
-					var dir=excell.qdir, qn=excell.qnum;
+					var dir=excell.qchar, qn=excell.qnum;
 					var str1 = (dir!== 0?dir.toString():"");
 					var str2 = (qn !==-1?qn.toString():"");
 					this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
@@ -545,10 +545,10 @@ AnsCheck:{
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
-			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQdir()===0){ continue;}
+			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQchar()===0){ continue;}
 			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
-			if( (type==1&& (excell.getQdir()!==excell2.getQdir()) )||
-				(type==2&&((excell.getQnum()!==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
+			if( (type==1&& (excell.getQchar()!==excell2.getQchar()) )||
+				(type==2&&((excell.getQnum() !==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
 			){
 				return false;
 			}

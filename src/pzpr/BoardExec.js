@@ -431,10 +431,10 @@ pzpr.createPuzzleClass('BoardExec',
 			}
 		}
 		for(var bx=bx1;bx<=d.x2;bx+=2){
-			this.qnumh[bx] = [bd.getex(bx,-1).getQdir()];
+			this.qnumh[bx] = [bd.getex(bx,-1).getQnum2()];
 			for(var by=by1;by<=d.y2;by+=2){
 				var cell = bd.getc(bx,by);
-				if(cell.is51cell()){ this.qnumh[bx].push(cell.getQdir());}
+				if(cell.is51cell()){ this.qnumh[bx].push(cell.getQnum2());}
 			}
 		}
 	},
@@ -446,10 +446,10 @@ pzpr.createPuzzleClass('BoardExec',
 		case k.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
-				bd.getex(bx,-1).setQdir(this.qnumh[bx][0]);
+				bd.getex(bx,-1).setQnum2(this.qnumh[bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
 					var cell = bd.getc(bx,by);
-					if(cell.is51cell()){ cell.setQdir(this.qnumh[bx][idx]); idx++;}
+					if(cell.is51cell()){ cell.setQnum2(this.qnumh[bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -476,10 +476,10 @@ pzpr.createPuzzleClass('BoardExec',
 			}
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1;
-				bd.getex(bx,-1).setQdir(this.qnumw[xx-bx][0]);
+				bd.getex(bx,-1).setQnum2(this.qnumw[xx-bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
 					var cell = bd.getc(bx,by);
-					if(cell.is51cell()){ cell.setQdir(this.qnumw[xx-bx][idx]); idx++;}
+					if(cell.is51cell()){ cell.setQnum2(this.qnumw[xx-bx][idx]); idx++;}
 				}
 			}
 			break;
@@ -495,10 +495,10 @@ pzpr.createPuzzleClass('BoardExec',
 			}
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumw[bx] = this.qnumw[bx].reverse();
-				bd.getex(bx,-1).setQdir(this.qnumw[bx][0]);
+				bd.getex(bx,-1).setQnum2(this.qnumw[bx][0]);
 				for(var by=by1;by<=d.y2;by+=2){
 					var cell = bd.getc(bx,by);
-					if(cell.is51cell()){ cell.setQdir(this.qnumw[bx][idx]); idx++;}
+					if(cell.is51cell()){ cell.setQnum2(this.qnumw[bx][idx]); idx++;}
 				}
 			}
 			break;

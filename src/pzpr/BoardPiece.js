@@ -2,6 +2,30 @@
 (function(){
 
 var k = pzpr.consts;
+pzpr.addConsts({
+	// const値
+	CELL   : 'cell',
+	CROSS  : 'cross',
+	BORDER : 'border',
+	EXCELL : 'excell',
+
+	QUES : 'ques',
+	QNUM : 'qnum',
+	QNUM2 : 'qnum2',
+	QCHAR : 'qchar',
+	QDIR : 'qdir',
+	QANS : 'qans',
+	ANUM : 'anum',
+	LINE : 'line',
+	QSUB : 'qsub',
+	QDARK : 'qdark',
+
+	NDIR : 0,	// 方向なし
+	UP   : 1,	// up
+	DN   : 2,	// down
+	LT   : 3,	// left
+	RT   : 4,	// right
+});
 
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
@@ -137,15 +161,17 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	qans : 0,	// セルの回答データを保持する(1:黒マス/あかり 2-5:三角形 11-13:棒 31-32:斜線 41-50:ふとん)
 	qdir : 0,	// セルの問題データを保持する(数字につく矢印/カックロの下側)
 	qnum :-1,	// セルの問題データを保持する(数字/○△□/単体矢印/白丸黒丸/カックロの右側)
+	qnum2 : -1,	// セルの問題データを保持する(カックロの下側/よせなべの丸無し数字)
 	anum :-1,	// セルの回答データを保持する(数字/○△□/単体矢印)
 	qsub : 0,	// セルの補助データを保持する(1:白マス 1-2:背景色/○× 3:絵になる部分)
+	qdark : 0,	// セルの補助データを保持する
 	color: "",	// 色分けデータを保持する
 
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
 
-	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub'],
-	propans : ['qans', 'anum', 'qsub'],
-	propsub : ['qsub'],
+	propall : ['ques', 'qans', 'qdir', 'qnum', 'qnum2', 'anum', 'qsub', 'qdark'],
+	propans : ['qans', 'anum', 'qsub', 'qdark'],
+	propsub : ['qsub', 'qdark'],
 	
 	disInputHatena : false,	// qnum==-2を入力できないようにする
 	
@@ -177,26 +203,34 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	getQnum : function(){ return this.qnum;},
 	setQnum : function(val){ this.setdata(k.QNUM, val);},
 
+	getQnum2 : function(){ return this.qnum2;},
+	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
+
 	getAnum : function(){ return this.anum;},
 	setAnum : function(val){ this.setdata(k.ANUM, val);},
 
 	getQsub : function(){ return this.qsub;},
 	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
+	getQdark : function(){ return this.qdark;},
+	setQdark : function(val){ this.setdata(k.QDARK, val);},
+
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
 	// posthook 値の設定後にやっておく処理を行う
 	//---------------------------------------------------------------------------
 	prehook : {
-		ques : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
-		qnum : function(num){ return (this.minnum>0 && num===0);},
-		anum : function(num){ return (this.minnum>0 && num===0);},
+		ques  : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
+		qnum  : function(num){ return (this.minnum>0 && num===0);},
+		qnum2 : function(num){ return (this.minnum>0 && num===0);},
+		anum  : function(num){ return (this.minnum>0 && num===0);},
 	},
 	posthook : {
-		qnum : function(num){ this.owner.board.setInfoByCell(this);},
-		anum : function(num){ this.owner.board.setInfoByCell(this);},
-		qans : function(num){ this.owner.board.setInfoByCell(this);},
-		qsub : function(num){ if(this.numberWithMB){ this.owner.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
+		qnum  : function(num){ this.owner.board.setInfoByCell(this);},
+		qnum2 : function(num){ this.owner.board.setInfoByCell(this);},
+		anum  : function(num){ this.owner.board.setInfoByCell(this);},
+		qans  : function(num){ this.owner.board.setInfoByCell(this);},
+		qsub  : function(num){ if(this.numberWithMB){ this.owner.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
 	},
 
 	//---------------------------------------------------------------------------
@@ -272,13 +306,13 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	set51cell : function(val){
 		this.setQues(51);
 		this.setQnum(0);
-		this.setQdir(0);
+		this.setQnum2(0);
 		this.setAnum(-1);
 	},
 	remove51cell : function(val){
 		this.setQues(0);
 		this.setQnum(0);
-		this.setQdir(0);
+		this.setQnum2(0);
 		this.setAnum(-1);
 	},
 
@@ -592,21 +626,25 @@ pzpr.createPuzzleClass('EXCell:BoardPiece',
 	isexcellobj : true,
 
 	// デフォルト値
-	qdir : 0,	// セルの問題データ(方向)を保持する(矢印 or カックロの下側)
-	qnum :-1,	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
+	qnum  :-1,	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
+	qnum2 :-1,	// セルの問題データ(数字)を保持する(カックロの下側)
+	qchar : 0,	// キンコンカンの文字
 
-	propall : ['qdir', 'qnum'],
+	propall : ['qnum', 'qnum2', 'qchar'],
 	propans : [],
 	propsub : [],
 
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
-	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(k.QDIR, val);},
-
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);}
+	setQnum : function(val){ this.setdata(k.QNUM, val);},
+
+	getQnum2 : function(){ return this.qnum2;},
+	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
+
+	getQchar : function(){ return this.qchar;},
+	setQchar : function(val){ this.setdata(k.QCHAR, val);},
 });
 
 //----------------------------------------------------------------------------

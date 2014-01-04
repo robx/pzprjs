@@ -309,7 +309,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		}
 		if(target==0){ return;}
 
-		var def = this.owner.Cell.prototype[(target===2?'qnum':'qdir')];
+		var def = this.owner.Cell.prototype[(target===2?'qnum':'qnum2')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
@@ -326,10 +326,10 @@ pzpr.createPuzzleClass('KeyEvent',
 		tc.getTCP().draw();
 	},
 	setnum51 : function(obj,target,val){
-		(target==2 ? obj.setQnum(val) : obj.setQdir(val));
+		(target==2 ? obj.setQnum(val) : obj.setQnum2(val));
 	},
 	getnum51 : function(obj,target){
-		return (target==2 ? obj.getQnum() : obj.getQdir());
+		return (target==2 ? obj.getQnum() : obj.getQnum2());
 	}
 });
 

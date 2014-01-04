@@ -47,7 +47,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(cell.isNum()){ this.inputqnum(); return;}
-		else if(cell.getQdir()!==-1){ this.inputqnum_yosenabe(); return;}
+		else if(cell.getQnum2()!==-1){ this.inputqnum_yosenabe(); return;}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
@@ -71,8 +71,8 @@ MouseEvent:{
 	inputnumber_yosenabe : function(cell){
 		var max = cell.nummaxfunc(), num, type, val=-1;
 
-		if     (cell.getQnum()!==-1){ num=cell.getQnum(); type=1;} /* ○数字 */
-		else if(cell.getQdir()!==-1){ num=cell.getQdir(); type=2;} /* なべの数字 */
+		if     (cell.getQnum() !==-1){ num=cell.getQnum();  type=1;} /* ○数字 */
+		else if(cell.getQnum2()!==-1){ num=cell.getQnum2(); type=2;} /* なべの数字 */
 		else{ num=-1; type=(cell.ice()?2:1);}
 
 		if(this.btn.Left){
@@ -89,7 +89,7 @@ MouseEvent:{
 		}
 
 		if     (type===1){ cell.setQnum(val);}
-		else if(type===2){ cell.setQdir(val);}
+		else if(type===2){ cell.setQnum2(val);}
 
 		cell.draw();
 	}
@@ -107,8 +107,8 @@ KeyEvent:{
 		var cell = this.cursor.getTCC(), num;
 		if(ca==='q'||ca==='q1'||ca==='q2'){
 			if(ca==='q') { ca = (cell.getQnum()!==-1?'q1':'q2');}
-			if     (ca==='q1' && cell.getQnum()!==-1){ cell.setQdir(cell.getQnum()); cell.setQnum(-1);}
-			else if(ca==='q2' && cell.getQdir()!==-1){ cell.setQnum(cell.getQdir()); cell.setQdir(-1);}
+			if     (ca==='q1' && cell.getQnum() !==-1){ cell.setQnum2(cell.getQnum()); cell.setQnum(-1);}
+			else if(ca==='q2' && cell.getQnum2()!==-1){ cell.setQnum(cell.getQnum2()); cell.setQnum2(-1);}
 		}
 		else if(ca=='w'){
 			cell.setQues(cell.ice()?0:6);
@@ -116,8 +116,8 @@ KeyEvent:{
 		else{
 			var max = cell.nummaxfunc(), val=-1, cur=-1;
 
-			if     (cell.getQnum()!==-1){ cur=cell.getQnum(); type=1;} /* ○数字 */
-			else if(cell.getQdir()!==-1){ cur=cell.getQdir(); type=2;} /* なべの数字 */
+			if     (cell.getQnum() !==-1){ cur=cell.getQnum();  type=1;} /* ○数字 */
+			else if(cell.getQnum2()!==-1){ cur=cell.getQnum2(); type=2;} /* なべの数字 */
 			else{ cur=-1; type=(cell.ice()?2:1);}
 
 			if('0'<=ca && ca<='9'){
@@ -131,7 +131,7 @@ KeyEvent:{
 			else{ return;}
 
 			if     (type===1){ cell.setQnum(val);}
-			else if(type===2){ cell.setQdir(val);}
+			else if(type===2){ cell.setQnum2(val);}
 		}
 
 		this.prev=cell;
@@ -142,19 +142,9 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qnum : -1, // ○つき数字として扱う
-	qdir : -1, // ○なし数字として扱う
-	
-	qdark : 0,
-	getQdark : function(){ return this.qdark;},
-	setQdark : function(val){ this.setdata(k.QDARK, val);},
 	isDark : function(){
 		return (!this.owner.get('dispmove') ? this : this.base).qdark===1;
-	},
-	
-	propall : ['ques', 'qans', 'qdir', 'qnum', 'anum', 'qsub', 'qdark'],
-	propans : ['qans', 'anum', 'qsub', 'qdark'],
-	propsub : ['qsub', 'qdark']
+	}
 },
 CellList:{
 	getDeparture : function(){ return this.map(function(cell){ return cell.base;}).notnull();},
@@ -259,7 +249,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			if(!!color && cell.qdir!==-1 && this.owner.get('dispmove') && cell.isDestination()){
+			if(!!color && cell.qnum2!==-1 && this.owner.get('dispmove') && cell.isDestination()){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
 					var rpx = (cell.bx-0.9)*this.bw, rpy = (cell.by-0.9)*this.bh;
@@ -275,7 +265,7 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell_'+cell.id, num = cell.qdir;
+			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum2;
 			if(num!==-1){
 				var text = (num>=0 ? ""+num : "?"), type = 1;
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55))*0.9;
@@ -340,9 +330,9 @@ Encode:{
 							  { cell.qnum = parseInt(ca,16);}
 			else if(ca == '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca == '.'){ cell.qnum = -2;}
-			else if(ca == 'i'){ cell.qdir = parseInt(bstr.substr(i+1,1),16); i+=1;}
-			else if(ca == 'g'){ cell.qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == 'h'){ cell.qdir = -2;}
+			else if(ca == 'i'){ cell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=1;}
+			else if(ca == 'g'){ cell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca == 'h'){ cell.qnum2 = -2;}
 			else if(ca >= 'j' && ca <= 'z'){ c += (parseInt(ca,36)-19);}
 
 			c++;
@@ -353,7 +343,7 @@ Encode:{
 	encodeNumber16_yosenabe : function(){
 		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qdir;
+			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qnum2;
 
 			if     (qn== -2          ){ pstr = ".";}
 			else if(qn>=  0 && qn< 16){ pstr =       qn.toString(16);}
@@ -381,7 +371,7 @@ FileIO:{
 				if(!!ca){ cell.qnum=parseInt(ca);}
 				else{ cell.qnum=-2;}
 			}
-			else if(!!ca&&ca!=='.'){ cell.qdir=parseInt(ca);}
+			else if(!!ca&&ca!=='.'){ cell.qnum2=parseInt(ca);}
 		});
 		this.decodeBorderLine();
 	},
@@ -393,7 +383,7 @@ FileIO:{
 				ca += "o";
 				if(cell.qnum>=0){ ca += cell.qnum.toString();}
 			}
-			else if(cell.qdir>0){ ca += cell.qdir.toString();}
+			else if(cell.qnum2>0){ ca += cell.qnum2.toString();}
 
 			return ((!!ca?ca:".")+" ");
 		});
@@ -437,11 +427,11 @@ AnsCheck:{
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
 	checkQuesNumber : function(){
-		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQdir()!==-1);});
+		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQnum2()!==-1);});
 	},
 
 	checkDoubleNumberInNabe : function(iarea){
-		return this.checkAllBlock(iarea, function(cell){ return (cell.getQdir()!==-1);}, function(w,h,a,n){ return (a<2);});
+		return this.checkAllBlock(iarea, function(cell){ return (cell.getQnum2()!==-1);}, function(w,h,a,n){ return (a<2);});
 	},
 	checkFillingOutOfNabe : function(){
 		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
@@ -452,7 +442,7 @@ AnsCheck:{
 		for(var id=1;id<=iarea.max;id++){
 			var clist = iarea.room[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
-				var qd = clist[i].getQdir();
+				var qd = clist[i].getQnum2();
 				if(qd!==-1){
 					if(num!==null && num!==qd){ num=null; break;}
 					num=qd;

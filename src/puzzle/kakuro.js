@@ -44,7 +44,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qnum : 0,
-	qdir : 0,
+	qnum2 : 0,
 
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
@@ -63,7 +63,7 @@ Cell:{
 
 EXCell:{
 	qnum : 0,
-	qdir : 0
+	qnum2 : 0
 },
 
 Board:{
@@ -170,8 +170,8 @@ Encode:{
 			else{
 				obj.ques = 51;
 				if(ca!='.'){
-					obj.qdir = this.decval(ca);
-					obj.qnum = this.decval(bstr.charAt(i+1));
+					obj.qnum2 = this.decval(ca);
+					obj.qnum  = this.decval(bstr.charAt(i+1));
 					i++;
 				}
 				cell++;
@@ -183,7 +183,7 @@ Encode:{
 		var i=a;
 		for(var bx=1;bx<bd.maxbx;bx+=2){
 			if(!bd.getc(bx,1).is51cell()){
-				bd.getex(bx,-1).qdir = this.decval(bstr.charAt(i));
+				bd.getex(bx,-1).qnum2 = this.decval(bstr.charAt(i));
 				i++;
 			}
 		}
@@ -205,8 +205,8 @@ Encode:{
 			var pstr="", obj=bd.cell[c];
 
 			if(obj.ques===51){
-				if(obj.qnum<=0 && obj.qdir<=0){ pstr = ".";}
-				else{ pstr = ""+this.encval(obj.qdir)+this.encval(obj.qnum);}
+				if(obj.qnum<=0 && obj.qnum2<=0){ pstr = ".";}
+				else{ pstr = ""+this.encval(obj.qnum2)+this.encval(obj.qnum);}
 			}
 			else{ count++;}
 
@@ -218,7 +218,7 @@ Encode:{
 		// 盤面外側の数字部分のエンコード
 		for(var bx=1;bx<bd.maxbx;bx+=2){
 			if(!bd.getc(bx,1).is51cell()){
-				cm+=this.encval(bd.getex(bx,-1).qdir);
+				cm+=this.encval(bd.getex(bx,-1).qnum2);
 			}
 		}
 		for(var by=1;by<bd.maxby;by+=2){
@@ -276,14 +276,14 @@ FileIO:{
 			else if(item[0]==0 && item[1]==0){ }
 			else if(item[0]==0 || item[1]==0){
 				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==0){ excell.qdir = parseInt(item[3]);}
-				else if(item[1]==0){ excell.qnum = parseInt(item[2]);}
+				if     (item[0]==0){ excell.qnum2 = parseInt(item[3]);}
+				else if(item[1]==0){ excell.qnum  = parseInt(item[2]);}
 			}
 			else{
 				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
 				cell.ques = 51;
-				cell.qdir = parseInt(item[3]);
-				cell.qnum = parseInt(item[2]);
+				cell.qnum2 = parseInt(item[3]);
+				cell.qnum  = parseInt(item[2]);
 			}
 		}
 	},
@@ -296,13 +296,13 @@ FileIO:{
 			else if(bx===-1||by===-1){
 				var excell = bd.getex(bx,by);
 				if(bx===-1){ item[2]=excell.qnum.toString();}
-				if(by===-1){ item[3]=excell.qdir.toString();}
+				if(by===-1){ item[3]=excell.qnum2.toString();}
 			}
 			else{
 				var cell = bd.getc(bx,by);
 				if(cell.ques!==51){ continue;}
 				item[2]=cell.qnum.toString();
-				item[3]=cell.qdir.toString();
+				item[3]=cell.qnum2.toString();
 			}
 			this.datastr += (item.join(" ")+"\n");
 		}}
@@ -373,7 +373,7 @@ AnsCheck:{
 	isTotalNumber : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}
-		else if(dir===k.DN){ number = keyobj.getQdir();}
+		else if(dir===k.DN){ number = keyobj.getQnum2();}
 
 		var sum = 0;
 		for(var i=0;i<clist.length;i++){

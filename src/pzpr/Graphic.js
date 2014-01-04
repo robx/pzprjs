@@ -1496,8 +1496,8 @@ pzpr.createPuzzleClass('Graphic',
 
 		if(obj.isexcellobj || obj.ques===51){
 			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum, guard=obj.by, nb=obj.relcell(2,0), type=4;} // 1回目は右向き
-				else if(i===1){ val=obj.qdir, guard=obj.bx, nb=obj.relcell(0,2), type=2;} // 2回目は下向き
+				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=obj.relcell(2,0), type=4;} // 1回目は右向き
+				else if(i===1){ val=obj.qnum2, guard=obj.bx, nb=obj.relcell(0,2), type=2;} // 2回目は下向き
 
 				if(val!==-1 && guard!==-1 && !nb.isnull && !nb.is51cell()){
 					var color = (obj.error===1?this.fontErrcolor:this.fontcolor);

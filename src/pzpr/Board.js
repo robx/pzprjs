@@ -2,28 +2,6 @@
 (function(){
 
 var k = pzpr.consts;
-pzpr.addConsts({
-	// const値
-	CELL   : 'cell',
-	CROSS  : 'cross',
-	BORDER : 'border',
-	EXCELL : 'excell',
-
-	QUES : 'ques',
-	QNUM : 'qnum',
-	QDIR : 'qdir',
-	QANS : 'qans',
-	ANUM : 'anum',
-	LINE : 'line',
-	QSUB : 'qsub',
-	QDARK : 'qdark',
-
-	NDIR : 0,	// 方向なし
-	UP   : 1,	// up
-	DN   : 2,	// down
-	LT   : 3,	// left
-	RT   : 4,	// right
-});
 
 //---------------------------------------------------------------------------
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する

@@ -65,9 +65,6 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qnum:-1,
-	qdir:-1,
-
 	disInputHatena : true,
 
 	minnum : 0,
@@ -75,13 +72,13 @@ Cell:{
 	set51cell : function(){
 		this.setQues(51);
 		this.setQnum(-1);
-		this.setQdir(-1);
+		this.setQnum2(-1);
 		this.set51aroundborder();
 	},
 	remove51cell : function(){
 		this.setQues(0);
 		this.setQnum(-1);
-		this.setQdir(-1);
+		this.setQnum2(-1);
 		this.set51aroundborder();
 	},
 	set51aroundborder : function(){
@@ -93,10 +90,6 @@ Cell:{
 			}
 		}
 	}
-},
-EXCell:{
-	qnum:-1,
-	qdir:-1
 },
 Board:{
 	isborder : 1,
@@ -183,26 +176,26 @@ Encode:{
 			else{
 				cell.set51cell();
 				if     (ca==='_'){}
-				else if(ca==='%'){ cell.qdir = parseInt(bstr.charAt(i+1),36); i++;}
-				else if(ca==='$'){ cell.qnum = parseInt(bstr.charAt(i+1),36); i++;}
+				else if(ca==='%'){ cell.qnum2 = parseInt(bstr.charAt(i+1),36); i++;}
+				else if(ca==='$'){ cell.qnum  = parseInt(bstr.charAt(i+1),36); i++;}
 				else if(ca==='-'){
-					cell.qdir = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
-					cell.qnum = parseInt(bstr.substr(i+2,2),16);
+					cell.qnum2 = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+					cell.qnum  = parseInt(bstr.substr(i+2,2),16);
 					i+=3;
 				}
 				else if(ca==='+'){
-					cell.qdir = parseInt(bstr.substr(i+1,2),16);
-					cell.qnum = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
+					cell.qnum2 = parseInt(bstr.substr(i+1,2),16);
+					cell.qnum  = (bstr.charAt(i+3)!=="." ? parseInt(bstr.charAt(i+3),16) : -1);
 					i+=3;
 				}
 				else if(ca==='='){
-					cell.qdir = parseInt(bstr.substr(i+1,2),16);
-					cell.qnum = parseInt(bstr.substr(i+3,2),16);
+					cell.qnum2 = parseInt(bstr.substr(i+1,2),16);
+					cell.qnum  = parseInt(bstr.substr(i+3,2),16);
 					i+=4;
 				}
 				else{
-					cell.qdir = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
-					cell.qnum = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
+					cell.qnum2 = (bstr.charAt(i)  !=="." ? parseInt(bstr.charAt(i),16) : -1);
+					cell.qnum  = (bstr.charAt(i+1)!=="." ? parseInt(bstr.charAt(i+1),16) : -1);
 					i+=1;
 				}
 			}
@@ -216,9 +209,9 @@ Encode:{
 		id=0;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i), excell = bd.excell[id];
-			if     (ca==='.'){ excell.qdir = -1;}
-			else if(ca==='-'){ excell.qdir = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { excell.qdir = parseInt(ca,16);}
+			if     (ca==='.'){ excell.qnum2 = -1;}
+			else if(ca==='-'){ excell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { excell.qnum2 = parseInt(ca,16);}
 			id++;
 			if(id>=bd.qcols){ a=i+1; break;}
 		}
@@ -242,16 +235,16 @@ Encode:{
 			var pstr = "", cell=bd.cell[c];
 
 			if(cell.ques===51){
-				if(cell.qnum===-1 && cell.qdir===-1){ pstr="_";}
-				else if(cell.qdir==-1 && cell.qnum<35){ pstr="$"+cell.qnum.toString(36);}
-				else if(cell.qnum==-1 && cell.qdir<35){ pstr="%"+cell.qdir.toString(36);}
+				if(cell.qnum===-1 && cell.qnum2===-1){ pstr="_";}
+				else if(cell.qnum2===-1 && cell.qnum <35){ pstr="$"+cell.qnum.toString(36);}
+				else if(cell.qnum ===-1 && cell.qnum2<35){ pstr="%"+cell.qnum2.toString(36);}
 				else{
-					pstr+=cell.qdir.toString(16);
+					pstr+=cell.qnum2.toString(16);
 					pstr+=cell.qnum.toString(16);
 
-					if     (cell.qnum>=16 && cell.qdir>=16){ pstr = ("="+pstr);}
-					else if(cell.qnum>=16){ pstr = ("-"+pstr);}
-					else if(cell.qdir>=16){ pstr = ("+"+pstr);}
+					if     (cell.qnum >=16 && cell.qnum2>=16){ pstr = ("="+pstr);}
+					else if(cell.qnum >=16){ pstr = ("-"+pstr);}
+					else if(cell.qnum2>=16){ pstr = ("+"+pstr);}
 				}
 			}
 			else{ count++;}
@@ -263,7 +256,7 @@ Encode:{
 
 		// 盤面外側の数字部分のエンコード
 		for(var c=0;c<bd.qcols;c++){
-			var num = bd.excell[c].qdir;
+			var num = bd.excell[c].qnum2;
 			if     (num<  0){ cm += ".";}
 			else if(num< 16){ cm += num.toString(16);}
 			else if(num<256){ cm += ("-"+num.toString(16));}
@@ -327,7 +320,7 @@ AnsCheck:{
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		var k = pzpr.consts;
 		if     (dir===k.RT){ number = keyobj.getQnum();}
-		else if(dir===k.DN){ number = keyobj.getQdir();}
+		else if(dir===k.DN){ number = keyobj.getQnum2();}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
