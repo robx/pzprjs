@@ -1,6 +1,10 @@
 //
 // パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.0
 //
+(function(){
+
+var k = pzpr.consts;
+
 pzpr.createCustoms('bonsan', {
 //---------------------------------------------------------
 // マウス入力系
@@ -83,7 +87,7 @@ KeyEvent:{
 Cell:{
 	qdark : 0,
 	getQdark : function(){ return this.qdark;},
-	setQdark : function(val){ this.qdark = val;}, /* とりあえずグレー化は保存しない */
+	setQdark : function(val){ this.setdata(k.QDARK, val);},
 	isDark : function(){
 		var ismoved = this.owner.get('dispmove'),
 			targetcell = (!ismoved ? this : this.base);
@@ -275,3 +279,5 @@ FailCode:{
 	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });
+
+})();

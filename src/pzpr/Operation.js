@@ -57,6 +57,7 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 		D: 'qdir',   // k.QDIR
 		A: 'qans',   // k.QANS
 		S: 'qsub',   // k.QSUB
+		K: 'qdark',  // k.QDARK
 		L: 'line'    // k.LINE
 	},
 
@@ -97,17 +98,18 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		this.exec(this.old);
-		if(this.property!=k.QSUB){ this.manager.anscount--;}
+		if(!(this.property==k.QSUB||this.property==k.QDARK)){ this.manager.anscount--;}
 	},
 	redo : function(){
 		this.exec(this.num);
-		if(this.property!=k.QSUB){ this.manager.anscount++;}
+		if(!(this.property==k.QSUB||this.property==k.QDARK)){ this.manager.anscount++;}
 	},
 	exec : function(num){
 		var obj = this.owner.board.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==obj.group){ return true;}
 		obj.setdata(this.property, num);
 		obj.draw();
+		if(this.property===k.QDARK){ this.owner.board.cell.each(function(cell){ if(obj===cell.base){cell.draw();}});}
 	}
 });
 
@@ -292,7 +294,7 @@ pzpr.createPuzzleClass('OperationManager',
 		if(old===num){ return;}
 
 		this.addOpe_common(function(){
-			if(property===k.QSUB){ this.anscount--;}
+			if(property===k.QSUB||property===k.QDARK){ this.anscount--;}
 
 			var ope = new this.owner.ObjectOperation();
 			ope.setData(obj, property, old, num);

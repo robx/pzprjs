@@ -16,6 +16,7 @@ pzpr.addConsts({
 	ANUM : 'anum',
 	LINE : 'line',
 	QSUB : 'qsub',
+	QDARK : 'qdark',
 
 	NDIR : 0,	// 方向なし
 	UP   : 1,	// up

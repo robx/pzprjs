@@ -700,7 +700,7 @@ pzpr.createPuzzleClass('PieceList',
 	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
 	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	//--------------------------------------------------------------------------------
-	each    : Array.prototype.each,
+	each    : Array.prototype.forEach,
 	some    : Array.prototype.some,
 	include : function(target){ return this.some(function(obj){ return (obj===target);});},
 	
