@@ -1,12 +1,7 @@
 // ToolArea.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
-/* extern */
 ui.toolarea = {
 
 	isdisp : true,		// 表示しているか
@@ -392,14 +387,3 @@ ui.toolarea = {
 		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
 	}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
-function createButton(){
-	var button = createEL('input');
-	button.type = 'button';
-	return button;
-}
-
-})();

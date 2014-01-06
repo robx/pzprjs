@@ -1,11 +1,6 @@
 // MenuArea.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 // メニュー描画/取得/html表示系
-/* extern */
 ui.menuarea = {
 	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
@@ -16,7 +11,7 @@ ui.menuarea = {
 	// menuarea.reset()  設定を消去する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.items = new MenuList();
+		this.items = new ui.MenuList();
 		this.items.reset();
 		
 		this.createArea();
@@ -614,8 +609,8 @@ ui.menuarea = {
 };
 
 // MenuListクラス
-var MenuList = function(){};
-MenuList.prototype =
+ui.MenuList = function(){};
+ui.MenuList.prototype =
 {
 	item : {},	// サブメニュー項目の情報
 
@@ -716,9 +711,3 @@ MenuList.prototype =
 		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
 	}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
-
-})();

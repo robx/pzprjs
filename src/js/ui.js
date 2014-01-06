@@ -11,6 +11,7 @@
 	}
 
 	var files = [
+		"../vendor/pzpr/pzpr.js",
 		"ui/Boot.js",
 		"ui/UI.js",
 		"ui/Menu.js",

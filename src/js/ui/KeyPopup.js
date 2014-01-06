@@ -1,8 +1,4 @@
 // KeyPopup.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
@@ -522,7 +518,7 @@ ui.keypopup =
 		else if(type==='image'){
 			_child = createEL('img');
 			_child.className = 'kpimg';
-			_child.src = "./src/img/"+ui.puzzle.pid+"_kp.gif";
+			_child.src = "./img/"+ui.puzzle.pid+"_kp.gif";
 			pzpr.util.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
@@ -558,9 +554,3 @@ ui.keypopup =
 		});
 	}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
-
-})();

@@ -1,14 +1,19 @@
 // UI.js v3.4.0
-(function(){
 
-/* pzprオブジェクト生成待ち */
-if(!pzpr){ setTimeout(setTimeout(arguments.callee),15); return;}
+/* ui.js Locals */
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
+function createButton(){
+	var button = createEL('input');
+	button.type = 'button';
+	return button;
+}
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
-/* extern */
-window.ui = ui = {
+var ui = {
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
@@ -29,6 +34,8 @@ window.ui = ui = {
 		ui.puzzle.open(data, ui.event.afterReady(callback));
 	}
 };
+/* extern */
+window.ui = ui;
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
@@ -292,7 +299,17 @@ ui.event =
 	// }
 };
 
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-
-})();
+ui.util = {
+	getpath : function(){
+		var dir="", srcs=document.getElementsByTagName('script');
+		for(var i=0;i<srcs.length;i++){
+			var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
+			if(result){
+				if(result[1].match(/\/$/)){ dir = result[1];}
+				else{ dir = result[1]+'/';}
+				break;
+			}
+		}
+		return dir;
+	}
+};

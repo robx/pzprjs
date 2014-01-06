@@ -1,12 +1,4 @@
 // Menu.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
 
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
@@ -319,7 +311,7 @@ ui.popupmgr.addpopup('newboard',
 		this.addCancelButton();
 	},
 	makeForm_tawa_shape : function(form){
-		var table = new TableElement();
+		var table = new ui.TableElement();
 		table.init({id:'NB_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
 		
@@ -338,7 +330,7 @@ ui.popupmgr.addpopup('newboard',
 		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		for(var i=0;i<=3;i++){
 			var _img = createEL('img');
-			_img.src = "src/img/tawa_nb.gif";
+			_img.src = "./img/tawa_nb.gif";
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
 			_img.onclick = clickshape;
@@ -701,8 +693,8 @@ ui.popupmgr.addpopup('credit',
 //---------------------------------------------------------------------------
 // ★TableElementクラス テーブル作成用のクラスです
 //---------------------------------------------------------------------------
-var TableElement = function(){};
-TableElement.prototype =
+ui.TableElement = function(){};
+ui.TableElement.prototype =
 {
 	table : null,
 	tbody : null,
@@ -735,5 +727,3 @@ TableElement.prototype =
 		return this.table;
 	}
 };
-
-})();

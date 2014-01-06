@@ -1,0 +1,24 @@
+{
+  "name": "pzpr-ui",
+  "version": "3.4.0-pre",
+  "description": "pzv.jp original user interface",
+  "main": "index.html",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [
+    "puzzle",
+    "nikoli",
+    "HTML",
+    "WebApp"
+  ],
+  "author": "sabo2",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}

@@ -1,9 +1,4 @@
-// Boot.js v3.4.0
-
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
+// Debug.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
@@ -180,27 +175,9 @@ ui.debug =
 		if(!!this.includedScript[filename]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = getpath()+'../tests/script/'+filename;
+		_script.src = ui.util.getpath()+'../vendor/pzpr-test/'+filename;
 		document.body.appendChild(_script);
 		this.includedScript[filename] = true;
 	},
 	includedScript : {},
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-
-function getpath(){
-	var dir="", srcs=document.getElementsByTagName('script');
-	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
-		if(result){
-			if(result[1].match(/\/$/)){ dir = result[1];}
-			else{ dir = result[1]+'/';}
-			break;
-		}
-	}
-	return dir;
-}
-
-})();

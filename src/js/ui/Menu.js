@@ -1,10 +1,4 @@
 // Menu.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
-
-var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -12,22 +6,20 @@ var _doc = document;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-var Menu = function(){
-	this.menupid = '';				// どの種類のパズルのメニューを表示しているか
-
-	this.menuconfig = {};
-
-	this.reader;	// FileReaderオブジェクト
-
-	this.enableSaveImage = false; // 画像保存が有効か
-
-	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
-	this.enableReadText = false;
+ui.menu = {
+	menupid : '',				// どの種類のパズルのメニューを表示しているか
+	menuconfig : {},			// MenuConfigの設定内容を保持する
 	
-	this.enableSaveBlob = false;
-};
-Menu.prototype =
-{
+	enableSaveImage : false,	// 画像保存が可能か
+	enableGetText   : false,	// FileReader APIの旧仕様でファイルが読めるか
+	enableReadText  : false,	// HTML5 FileReader APIでファイルが読めるか
+	enableSaveBlob  : false,	// saveBlobが使用できるか
+	
+	reader : null,				// FileReaderオブジェクト
+	
+	//---------------------------------------------------------------------------
+	// menu.init()   初回起動時の初期化関数
+	//---------------------------------------------------------------------------
 	init : function(){
 		this.initMenuConfig();
 		
@@ -39,6 +31,8 @@ Menu.prototype =
 		
 		window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
 		this.enableSaveBlob = (!!window.navigator.saveBlob);
+		
+		this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	},
 	
 	//---------------------------------------------------------------------------
@@ -519,8 +513,3 @@ function toBGimage(pid){
 
 	return "data:image/gif;base64,"+header+data[0]+'wAAAAAEAAQAAAC'+data[1];
 };
-
-/* extern */
-ui.menu = new Menu();
-
-})();

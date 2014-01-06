@@ -1,12 +1,9 @@
 // Timer.js v3.4.0
+
 (function(){
 
-/* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
-
 /* タイマー割り込み間隔を短くするUA */
-var bz = pzpr.env.browser;
-var slowUA = (bz.IE6 || bz.IE7 || bz.IE8);
+var slowUA = (function(bz){ return (bz.IE6 || bz.IE7 || bz.IE8);})(pzpr.env.browser);
 
 //---------------------------------------------------------------------------
 // ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)
