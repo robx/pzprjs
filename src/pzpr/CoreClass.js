@@ -94,7 +94,7 @@ pzpr.classmgr = {
 		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = getpath()+"puzzle/"+pzpr.url.toScript(pid)+".js";
+		_script.src = pzpr.util.getpath()+"puzzle/"+pzpr.url.toScript(pid)+".js";
 		document.body.appendChild(_script);
 		this.includedFile[pid] = true;
 	},
@@ -214,19 +214,6 @@ pzpr.classmgr = {
 	}
 };
 
-function getpath(){
-	var dir="", srcs=document.getElementsByTagName('script');
-	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
-		if(result){
-			if(result[1].match(/\/$/)){ dir = result[1];}
-			else{ dir = result[1]+'/';}
-			break;
-		}
-	}
-	return dir;
-}
-
 //---------------------------------------------------------------------------
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
 //---------------------------------------------------------------------------
@@ -316,6 +303,21 @@ pzpr.env.storage = (function(){
 // EventやDOM関連のツール的関数群
 //----------------------------------------------------------------------
 pzpr.util = {
+	//---------------------------------------------------------------
+	// pzpr.jsが読み込まれているスクリプトのパスを取得する
+	getpath : function(){
+		var dir="", srcs=document.getElementsByTagName('script');
+		for(var i=0;i<srcs.length;i++){
+			var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
+			if(result){
+				if(result[1].match(/\/$/)){ dir = result[1];}
+				else{ dir = result[1]+'/';}
+				break;
+			}
+		}
+		return dir;
+	},
+
 	//---------------------------------------------------------------
 	// 現在の時間を取得
 	currentTime : function(){ return (new Date()).getTime();},

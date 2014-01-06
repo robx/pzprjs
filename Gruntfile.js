@@ -91,6 +91,11 @@ module.exports = function(grunt){
         files : [
           { expand: true, cwd: 'src/puzzle', src: ['*.js'], dest: 'dist/puzzle' }
         ]
+      },
+      image: {
+        files : [
+          { expand: true, cwd: 'src/img', src: ['*'], dest: 'dist/img/' }
+        ]
       }
     },
 
@@ -134,7 +139,7 @@ module.exports = function(grunt){
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-text-replace');
   
-  grunt.registerTask('default', ['clean', 'copy:pzpr-debug', 'replace:pzpr-debug', 'copy:puzzle']);
-  grunt.registerTask('combine', ['clean', 'concat', 'replace:pzpr', 'copy:pzpr', 'copy:puzzle']);
-  grunt.registerTask('release', ['clean', 'concat', 'replace:pzpr', 'uglify']);
+  grunt.registerTask('default', ['clean', 'copy:pzpr-debug', 'replace:pzpr-debug',      'copy:puzzle',   'copy:image']);
+  grunt.registerTask('combine', ['clean', 'concat:pzpr', 'replace:pzpr', 'copy:pzpr',   'copy:puzzle',   'copy:image']);
+  grunt.registerTask('release', ['clean', 'concat:pzpr', 'replace:pzpr', 'uglify:pzpr', 'uglify:puzzle', 'copy:image']);
 };

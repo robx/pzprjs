@@ -104,7 +104,7 @@ Graphic:{
 
 		this.crosssize = 0.15;
 		if(this.owner.pid==='shwolf'){
-			this.imgtile = new this.owner.ImageTile('./src/img/shwolf_obj.png',2,1);
+			this.imgtile = new this.owner.ImageTile(pzpr.util.getpath()+'img/shwolf_obj.png',2,1);
 		}
 	},
 
