@@ -1,7 +1,4 @@
 // Graphic.js v3.4.0
-(function(){
-
-var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -1943,5 +1940,3 @@ pzpr.createPuzzleClass('Graphic',
 		this.vhide(["text_"+key]);
 	}
 });
-
-})();

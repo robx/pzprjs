@@ -1,7 +1,5 @@
 // BoardPiece.js v3.4.0
-(function(){
 
-var k = pzpr.consts;
 pzpr.addConsts({
 	// const値
 	CELL   : 'cell',
@@ -886,5 +884,3 @@ pzpr.createPuzzleClass('BorderList:PieceList',
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('EXCellList:PieceList',{
 });
-
-})();

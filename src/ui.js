@@ -2,7 +2,7 @@
 (function(){
 	var dir="", srcs=document.getElementsByTagName('script');
 	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
+		var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
 		if(result){
 			if(result[1].match(/\/$/)){ dir = result[1];}
 			else{ dir = result[1]+'/';}

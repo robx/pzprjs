@@ -1,7 +1,4 @@
 // Board.js v3.4.0
-(function(){
-
-var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
@@ -165,7 +162,7 @@ pzpr.createPuzzleClass('Board',
 	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
 	// bd.set_xnum()     crossは存在しないが、bd._xnumだけ設定したい場合に呼び出す
 	//---------------------------------------------------------------------------
-	// setpos関連関数 <- 各Cell等が持っているとメモリを激しく消費するのでここに置くこと.
+	/* setpos関連関数 */
 	setposAll : function(){
 		this.setposCells();
 		if(!!this.iscross) { this.setposCrosses();}
@@ -537,5 +534,3 @@ pzpr.createPuzzleClass('Board',
 	enableSetError   : function(){ this.diserror--;},
 	isenableSetError : function(){ return (this.diserror<=0); }
 });
-
-})();

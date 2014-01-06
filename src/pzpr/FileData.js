@@ -1,7 +1,5 @@
 // FileData.js v3.4.0
-(function(){
 
-var k = pzpr.consts;
 pzpr.addConsts({
 	// 定数(ファイル形式)
 	FILE_AUTO : 0,
@@ -618,5 +616,3 @@ pzpr.createPuzzleClass('FileIO',
 		}
 	}
 });
-
-})();

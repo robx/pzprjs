@@ -1,13 +1,11 @@
 // CoreClass.js v3.4.0
 
-(function(){
-
 //----------------------------------------------------------------------------
 // ★pzprオブジェクト
 //---------------------------------------------------------------------------
 /* extern */
 window.pzpr = {
-	version : 'v3.4.0pre',
+	version : '<deploy-version>',
 
 	EDITOR : false,	// エディタモード
 	PLAYER : true,	// playerモード
@@ -55,6 +53,7 @@ window.pzpr = {
 		this.classmgr.createCustoms(scriptid, custombase);
 	}
 };
+var k = pzpr.consts;
 
 //----------------------------------------------------------------------------
 // ★pzpr.classmgrオブジェクト (クラス作成関数等)
@@ -292,7 +291,6 @@ pzpr.env = {
 	})()
 };
 
-var bz = pzpr.env.browser;
 pzpr.env.storage = (function(){
 	var val = 0x00;
 	try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
@@ -304,7 +302,7 @@ pzpr.env.storage = (function(){
 	}}catch(e){}
 
 	// Firefoxはローカルだとデータベース系は使えない
-	if(bz.Gecko && !location.hostname){ val = 0;}
+	if(pzpr.env.browser.Gecko && !location.hostname){ val = 0;}
 
 	return {
 		session : !!(val & 0x10),
@@ -398,6 +396,7 @@ pzpr.util = {
 			right = (e.touches.length>1);
 		}
 		else{
+			var bz = pzpr.env.browser;
 			if(bz.IE6 || bz.IE7 || bz.IE8){
 				left  = (e.button===1);
 				mid   = (e.button===4);
@@ -514,5 +513,3 @@ pzpr.util.Point.prototype = {
 	reset : function(){ this.px = null; this.py = null;},
 	valid : function(){ return (this.px!==null && this.py!==null);}
 };
-
-})();

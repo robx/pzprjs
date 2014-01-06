@@ -1,9 +1,4 @@
-(function(){
 
-/* pzprオブジェクト生成待ち */
-if(!window.pzpr){ setTimeout(setTimeout(arguments.callee),15); return;}
-
-var k = pzpr.consts;
 pzpr.addConsts({
 	// 定数(URL形式)
 	URL_AUTO    : 0,
@@ -308,5 +303,3 @@ function constructURLType(pzl){
 					 .replace("%KID%", pzpr.url.toKanpen(pzl.id));
 	return urlbase + pzl.qdata;
 }
-
-})();

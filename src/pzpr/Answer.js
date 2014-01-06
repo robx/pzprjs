@@ -1,7 +1,4 @@
 // Answer.js v3.4.0
-(function(){
-
-var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -687,5 +684,3 @@ pzpr.createPuzzleClass('FailCode',
 
 	invalid : ["不明なエラーです","Invalid Error"]
 });
-
-})();

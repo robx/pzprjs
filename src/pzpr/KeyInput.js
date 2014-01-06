@@ -1,7 +1,4 @@
 // KeyInput.js v3.4.0
-(function(){
-
-var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
@@ -463,5 +460,3 @@ pzpr.createPuzzleClass('TargetCursor',
 		return this.targetdir;
 	}
 });
-
-})();

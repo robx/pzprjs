@@ -11,7 +11,7 @@
 	}
 
 	var files = [
-		"vendor/candle.js",
+		"../src/vendor/candle.js",
 		"pzpr/CoreClass.js",
 		"pzpr/Puzzle.js",
 		"pzpr/BoardPiece.js",

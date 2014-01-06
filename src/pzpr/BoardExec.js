@@ -1,7 +1,5 @@
 // BoardExec.js v3.4.0
-(function(){
 
-var k = pzpr.consts;
 pzpr.addConsts({
 	// 拡大縮小・回転反転用定数
 	EXPAND : 0x10,
@@ -526,5 +524,3 @@ pzpr.createPuzzleClass('BoardExec',
 		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};
 	}
 });
-
-})();
