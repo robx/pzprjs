@@ -22,7 +22,7 @@ pzpr.addConsts({
 	UP   : 1,	// up
 	DN   : 2,	// down
 	LT   : 3,	// left
-	RT   : 4,	// right
+	RT   : 4	// right
 });
 
 //---------------------------------------------------------------------------
@@ -159,10 +159,10 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	qans : 0,	// セルの回答データを保持する(1:黒マス/あかり 2-5:三角形 11-13:棒 31-32:斜線 41-50:ふとん)
 	qdir : 0,	// セルの問題データを保持する(数字につく矢印/カックロの下側)
 	qnum :-1,	// セルの問題データを保持する(数字/○△□/単体矢印/白丸黒丸/カックロの右側)
-	qnum2 : -1,	// セルの問題データを保持する(カックロの下側/よせなべの丸無し数字)
+	qnum2:-1,	// セルの問題データを保持する(カックロの下側/よせなべの丸無し数字)
 	anum :-1,	// セルの回答データを保持する(数字/○△□/単体矢印)
 	qsub : 0,	// セルの補助データを保持する(1:白マス 1-2:背景色/○× 3:絵になる部分)
-	qdark : 0,	// セルの補助データを保持する
+	qdark: 0,	// セルの補助データを保持する
 	color: "",	// 色分けデータを保持する
 
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
@@ -221,7 +221,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 		ques  : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
 		qnum  : function(num){ return (this.minnum>0 && num===0);},
 		qnum2 : function(num){ return (this.minnum>0 && num===0);},
-		anum  : function(num){ return (this.minnum>0 && num===0);},
+		anum  : function(num){ return (this.minnum>0 && num===0);}
 	},
 	posthook : {
 		qnum  : function(num){ this.owner.board.setInfoByCell(this);},
