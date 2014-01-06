@@ -678,7 +678,9 @@ ui.popupmgr.addpopup('credit',
 	makeForm : function(){
 		this.settitle("credit", "credit");
 		
-		this.addText("ぱずぷれv3 "+pzpr.version, "PUZ-PRE v3 "+pzpr.version);
+		this.addText("ぱずぷれv3 v"+pzpr.version, "PUZ-PRE v3 v"+pzpr.version);
+		this.addBR();
+		this.addText("ぱずぷれv3 UI v"+ui.version, "PUZ-PRE v3 UI v"+ui.version);
 		this.addBR();
 		this.addBR();
 		

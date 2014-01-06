@@ -95,6 +95,23 @@ module.exports = function(grunt){
       }
     },
 
+    replace: {
+      debug: {
+        src: 'dist/js/ui/UI.js',
+        overwrite: true,
+        replacements: [
+          { from: "<deploy-version>", to: "<%= pkg.version %>"}
+        ]
+      },
+      combine: {
+        src: 'dist/js/ui.js',
+        overwrite: true,
+        replacements: [
+          { from: "<deploy-version>", to: "<%= pkg.version %>"}
+        ]
+      }
+    },
+
     clean: ['dist/*'],
 
     uglify: {
@@ -127,8 +144,9 @@ module.exports = function(grunt){
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-text-replace');
   
-  grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
-  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine'                  ]);
-  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace:debug'                   ]);
+  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace:combine'                 ]);
+  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'replace:combine','uglify:release']);
 };
