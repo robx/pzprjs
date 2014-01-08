@@ -29,6 +29,8 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Border:{
+	ques : 1,
+
 	enableLineNG : true,
 
 	isGround : function(){

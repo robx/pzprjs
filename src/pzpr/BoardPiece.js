@@ -33,7 +33,8 @@ pzpr.createPuzzleClass('BoardPiece',
 	bx : -1,	// X座標(border座標系)を保持する
 	by : -1,	// Y座標(border座標系)を保持する
 
-	group : 'none',
+	group  : 'none',
+	id     : null,
 	isnull : true,
 
 	iscell   : false,
@@ -41,12 +42,37 @@ pzpr.createPuzzleClass('BoardPiece',
 	isborder : false,
 	isexcell : false,
 
-	id : null,
-	error: 0,
+	// デフォルト値
+	/* 問題データを保持するプロパティ */
+	ques  : 0,	// cell  :(1:黒マス 2-5:三角形 6:アイス・なべ等 7:盤面外 11-17:十字型パーツ 21-22:旗門 51:カックロ)
+				// cross :(交点の黒点)
+				// border:(問題の境界線)
+	qdir  : 0,	// cell  :(数字につく矢印の向き)
+				// border:(アイスバーンの矢印/マイナリズムの不等号)
+	qnum  :-1,	// cell  :(セルの数字/○△□/マカロ以外の単体矢印/白丸黒丸/カックロの右側)
+				// cross :(交点の数字)
+				// border:(マイナリズムの数字/天体ショーの星)
+	qnum2 :-1,	// cell  :(カックロの下側/よせなべの丸無し数字)
+	qchar : 0,	// excell:キンコンカンの文字
 
-	propall : [],
-	propans : [],
-	propsub : [],
+	/* 回答データを保持するプロパティ */
+	qans  : 0,	// cell  :(1:黒マス/あかり 2-5:三角形 11-13:棒 31-32:斜線 41-50:ふとん)
+				// border:(回答の境界線)
+	anum  :-1,	// cell  :(セルの数字/○△□/単体矢印)
+	line  : 0,	// border:(ましゅやスリリンなどの線)
+
+	/* 補助データを保持するプロパティ */
+	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
+				// border:(1:補助線 2:×)
+	qdark : 0,	// cell  :
+
+	/* 履歴保存しないプロパティ */
+	color : "",	// 色分けデータを保持する
+	error : 0,
+
+	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qdark', 'color', 'error'],
+	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qdark', 'color', 'error'],
+	propsub : [                                                                  'qsub', 'qdark',          'error'],
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -70,6 +96,39 @@ pzpr.createPuzzleClass('BoardPiece',
 	db : function(){ return this.owner.board.getb(this.bx,this.by+1);},
 	lb : function(){ return this.owner.board.getb(this.bx-1,this.by);},
 	rb : function(){ return this.owner.board.getb(this.bx+1,this.by);},
+
+	//---------------------------------------------------------------------------
+	// オブジェクト設定値のgetter/setter
+	//---------------------------------------------------------------------------
+	getQues : function(){ return this.ques;},
+	setQues : function(val){ this.setdata(k.QUES, val);},
+
+	getQans : function(){ return this.qans;},
+	setQans : function(val){ this.setdata(k.QANS, val);},
+
+	getQdir : function(){ return this.qdir;},
+	setQdir : function(val){ this.setdata(k.QDIR, val);},
+
+	getQnum : function(){ return this.qnum;},
+	setQnum : function(val){ this.setdata(k.QNUM, val);},
+
+	getQnum2 : function(){ return this.qnum2;},
+	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
+
+	getQchar : function(){ return this.qchar;},
+	setQchar : function(val){ this.setdata(k.QCHAR, val);},
+
+	getAnum : function(){ return this.anum;},
+	setAnum : function(val){ this.setdata(k.ANUM, val);},
+
+	getLineVal : function(){ return this.line;},
+	setLineVal : function(val){ this.setdata(k.LINE, val);},
+
+	getQsub : function(){ return this.qsub;},
+	setQsub : function(val){ this.setdata(k.QSUB, val);},
+
+	getQdark : function(){ return this.qdark;},
+	setQdark : function(val){ this.setdata(k.QDARK, val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -117,27 +176,19 @@ pzpr.createPuzzleClass('BoardPiece',
 	// subclear() qsub,error情報をクリアする
 	// comclear() 3つの共通処理
 	//---------------------------------------------------------------------------
-	allclear : function(isrec) { /* undo,redo以外で盤面縮小やったときは, isrec===true */
-		this.comclear(this.propall, isrec);
-		if(this.color!==(void 0)){ this.color = "";}
-		this.error = 0;
-	},
-	ansclear : function(){
-		this.comclear(this.propans, true);
-		if(this.color!==(void 0)){ this.color = "";}
-		this.error = 0;
-	},
-	subclear : function(){
-		this.comclear(this.propsub, true);
-		this.error = 0;
-	},
-
+	/* undo,redo以外で盤面縮小やったときは, isrec===true */
+	allclear : function(isrec){ this.comclear(this.propall, isrec);},
+	ansclear : function()     { this.comclear(this.propans, true);},
+	subclear : function()     { this.comclear(this.propsub, true);},
 	comclear : function(props, isrec){
 		for(var i=0;i<props.length;i++){
-			var def = this.constructor.prototype[props[i]];
-			if(this[props[i]]!==def){
-				if(isrec){ this.owner.opemgr.addOpe_Object(this, props[i], this[props[i]], def);}
-				this[props[i]] = def;
+			var pp = props[i];
+			var def = this.constructor.prototype[pp];
+			if(this[pp]!==def){
+				if(isrec && pp!=='color' && pp!=='error'){
+					this.owner.opemgr.addOpe_Object(this, pp, this[pp], def);
+				}
+				this[pp] = def;
 			}
 		}
 	}
@@ -154,22 +205,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 
 	iscell : true,
 
-	// デフォルト値
-	ques : 0,	// セルの問題データを保持する(1:黒マス 2-5:三角形 6:アイス 7:盤面外 11-17:十字型 21-22:旗門 51:カックロ)
-	qans : 0,	// セルの回答データを保持する(1:黒マス/あかり 2-5:三角形 11-13:棒 31-32:斜線 41-50:ふとん)
-	qdir : 0,	// セルの問題データを保持する(数字につく矢印/カックロの下側)
-	qnum :-1,	// セルの問題データを保持する(数字/○△□/単体矢印/白丸黒丸/カックロの右側)
-	qnum2:-1,	// セルの問題データを保持する(カックロの下側/よせなべの丸無し数字)
-	anum :-1,	// セルの回答データを保持する(数字/○△□/単体矢印)
-	qsub : 0,	// セルの補助データを保持する(1:白マス 1-2:背景色/○× 3:絵になる部分)
-	qdark: 0,	// セルの補助データを保持する
-	color: "",	// 色分けデータを保持する
-
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
-
-	propall : ['ques', 'qans', 'qdir', 'qnum', 'qnum2', 'anum', 'qsub', 'qdark'],
-	propans : ['qans', 'anum', 'qsub', 'qdark'],
-	propsub : ['qsub', 'qdark'],
 	
 	disInputHatena : false,	// qnum==-2を入力できないようにする
 	
@@ -185,33 +221,6 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	dn : function(){ return this.owner.board.getc(this.bx,this.by+2);},
 	lt : function(){ return this.owner.board.getc(this.bx-2,this.by);},
 	rt : function(){ return this.owner.board.getc(this.bx+2,this.by);},
-
-	//---------------------------------------------------------------------------
-	// オブジェクト設定値のgetter/setter
-	//---------------------------------------------------------------------------
-	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(k.QUES, val);},
-
-	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata(k.QANS, val);},
-
-	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(k.QDIR, val);},
-
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);},
-
-	getQnum2 : function(){ return this.qnum2;},
-	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
-
-	getAnum : function(){ return this.anum;},
-	setAnum : function(val){ this.setdata(k.ANUM, val);},
-
-	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata(k.QSUB, val);},
-
-	getQdark : function(){ return this.qdark;},
-	setQdark : function(val){ this.setdata(k.QDARK, val);},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -436,23 +445,6 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 
 	iscross : true,
 
-	// デフォルト値
-	ques : 0,	// 交差点の問題データ(黒点)を保持する
-	qnum :-1,	// 交差点の問題データ(数字)を保持する
-
-	propall : ['ques', 'qnum'],
-	propans : [],
-	propsub : [],
-
-	//---------------------------------------------------------------------------
-	// オブジェクト設定値のgetter/setter
-	//---------------------------------------------------------------------------
-	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(k.QUES, val);},
-
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);},
-
 	//---------------------------------------------------------------------------
 	// cross.lcnt()       交点に存在する線の本数を返す
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
@@ -485,45 +477,11 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 
 	isborder : true,
 
-	// デフォルト値
-	ques : 0,	// 境界線の問題データを保持する(問題境界線)
-	qans : 0,	// 境界線の回答データを保持する(回答境界線)
-	qdir : 0,	// 境界線の問題データを保持する(アイスバーンの矢印/マイナリズムの不等号)
-	qnum :-1,	// 境界線の問題データを保持する(マイナリズムの数字/天体ショーの星)
-	line : 0,	// 線の回答データを保持する(スリリンなどの線もこっち)
-	qsub : 0,	// 境界線の補助データを保持する(1:補助線/2:×)
-	color: "",	// 色分けデータを保持する
-
 	isvert: false,	// true:境界線が垂直(縦) false:境界線が水平(横)
-
-	propall : ['ques', 'qans', 'qdir', 'qnum', 'line', 'qsub'],
-	propans : ['qans', 'line', 'qsub'],
-	propsub : ['qsub'],
 
 	// isLineNG関連の変数など
 	enableLineNG       : false,
 	enableLineCombined : false,
-
-	//---------------------------------------------------------------------------
-	// オブジェクト設定値のgetter/setter
-	//---------------------------------------------------------------------------
-	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(k.QUES, val);},
-
-	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata(k.QANS, val);},
-
-	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(k.QDIR, val);},
-
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);},
-
-	getLineVal : function(){ return this.line;},
-	setLineVal : function(val){ this.setdata(k.LINE, val);},
-
-	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -621,28 +579,7 @@ pzpr.createPuzzleClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
-	isexcell : true,
-
-	// デフォルト値
-	qnum  :-1,	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
-	qnum2 :-1,	// セルの問題データ(数字)を保持する(カックロの下側)
-	qchar : 0,	// キンコンカンの文字
-
-	propall : ['qnum', 'qnum2', 'qchar'],
-	propans : [],
-	propsub : [],
-
-	//---------------------------------------------------------------------------
-	// オブジェクト設定値のgetter/setter
-	//---------------------------------------------------------------------------
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);},
-
-	getQnum2 : function(){ return this.qnum2;},
-	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
-
-	getQchar : function(){ return this.qchar;},
-	setQchar : function(val){ this.setdata(k.QCHAR, val);},
+	isexcell : true
 });
 
 //----------------------------------------------------------------------------
