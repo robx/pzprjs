@@ -52,7 +52,7 @@ pzpr.createPuzzleClass('BoardExec',
 	// expand/reduce処理で消える/増えるオブジェクトの判定用
 	insex : {
 		cell   : {1:true},
-		cross  : (this.iscross===1 ? {2:true} : {0:true}),
+		cross  : {},	/* Board初期化時に設定します */
 		border : {1:true, 2:true},
 		excell : {1:true}
 	},
@@ -111,16 +111,16 @@ pzpr.createPuzzleClass('BoardExec',
 			if     (key===k.EXPANDUP||key===k.EXPANDDN){ bd.qrows++;}
 			else if(key===k.EXPANDLT||key===k.EXPANDRT){ bd.qcols++;}
 
-							 { this.expandGroup(k.CELL,   key);}
-			if(!!bd.iscross) { this.expandGroup(k.CROSS,  key);}
-			if(!!bd.isborder){ this.expandGroup(k.BORDER, key);}
-			if(!!bd.isexcell){ this.expandGroup(k.EXCELL, key);}
+							  { this.expandGroup(k.CELL,   key);}
+			if(!!bd.hascross) { this.expandGroup(k.CROSS,  key);}
+			if(!!bd.hasborder){ this.expandGroup(k.BORDER, key);}
+			if(!!bd.hasexcell){ this.expandGroup(k.EXCELL, key);}
 		}
 		else if(key & k.REDUCE){
-							 { this.reduceGroup(k.CELL,   key);}
-			if(!!bd.iscross) { this.reduceGroup(k.CROSS,  key);}
-			if(!!bd.isborder){ this.reduceGroup(k.BORDER, key);}
-			if(!!bd.isexcell){ this.reduceGroup(k.EXCELL, key);}
+							  { this.reduceGroup(k.CELL,   key);}
+			if(!!bd.hascross) { this.reduceGroup(k.CROSS,  key);}
+			if(!!bd.hasborder){ this.reduceGroup(k.BORDER, key);}
+			if(!!bd.hasexcell){ this.reduceGroup(k.EXCELL, key);}
 
 			if     (key===k.REDUCEUP||key===k.REDUCEDN){ bd.qrows--;}
 			else if(key===k.REDUCELT||key===k.REDUCERT){ bd.qcols--;}
@@ -183,11 +183,11 @@ pzpr.createPuzzleClass('BoardExec',
 			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 		}
 
-						   { this.turnflipGroup(k.CELL,   key, d);}
-		if(!!bd.iscross)   { this.turnflipGroup(k.CROSS,  key, d);}
-		if(!!bd.isborder)  { this.turnflipGroup(k.BORDER, key, d);}
-		if(bd.isexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
-		else if(bd.isexcell===1 && (key & k.FLIP)){
+							{ this.turnflipGroup(k.CELL,   key, d);}
+		if(!!bd.hascross)   { this.turnflipGroup(k.CROSS,  key, d);}
+		if(!!bd.hasborder)  { this.turnflipGroup(k.BORDER, key, d);}
+		if(bd.hasexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+		else if(bd.hasexcell===1 && (key & k.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===k.FLIPY){ d2.x1 = d2.x2 = -1;}
 			else if(key===k.FLIPX){ d2.y1 = d2.y2 = -1;}

@@ -296,7 +296,7 @@ pzpr.createPuzzleClass('KeyEvent',
 
 		var obj = tc.getOBJ();
 		var target = tc.detectTarget(obj);
-		if(target===0 || (obj.iscellobj && obj.is51cell())){
+		if(target===0 || (obj.iscell && obj.is51cell())){
 			if(ca==='q' && !obj.isnull){
 				if(obj.is51cell()){ obj.set51cell();}
 				else              { obj.remove51cell();}
@@ -311,7 +311,7 @@ pzpr.createPuzzleClass('KeyEvent',
 
 		if('0'<=ca && ca<='9'){
 			var num=parseInt(ca), cur=this.getnum51(obj,target);
-			if(cur<=0 || cur*10+num>max || this.prev!==(obj.iscellobj ? obj : null)){ cur=0;}
+			if(cur<=0 || cur*10+num>max || this.prev!==(obj.iscell ? obj : null)){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
@@ -319,7 +319,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		else{ return;}
 
 		this.setnum51(obj,target,val);
-		this.prev = (obj.iscellobj ? obj : null);
+		this.prev = (obj.iscell ? obj : null);
 		tc.getTCP().draw();
 	},
 	setnum51 : function(obj,target,val){
@@ -441,14 +441,14 @@ pzpr.createPuzzleClass('TargetCursor',
 	detectTarget : function(obj){
 		var bd = this.owner.board;
 		if(obj.isnull){ return 0;}
-		else if(obj.iscellobj){
+		else if(obj.iscell){
 			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}
 			else if((obj.rt().isnull || obj.rt().getQues()===51) &&
 				    (obj.dn().isnull || obj.dn().getQues()===51)){ return 0;}
 			else if(obj.rt().isnull || obj.rt().getQues()===51){ return 4;}
 			else if(obj.dn().isnull || obj.dn().getQues()===51){ return 2;}
 		}
-		else if(obj.isexcellobj){
+		else if(obj.isexcell){
 			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
 			else if((obj.by===-1 && obj.relcell(0,2).getQues()===51) ||
 				    (obj.bx===-1 && obj.relcell(2,0).getQues()===51)){ return 0;}

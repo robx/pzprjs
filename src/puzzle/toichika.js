@@ -69,7 +69,7 @@ Cell:{
 	maxnum : 4
 },
 Board:{
-	isborder : 1,
+	hasborder : 1,
 
 	getPairedArrowsInfo : function(){
 		var k = pzpr.consts;

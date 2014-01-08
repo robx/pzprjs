@@ -40,7 +40,7 @@ Cell:{
 	}
 },
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 
 LineManager:{

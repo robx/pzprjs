@@ -92,8 +92,8 @@ Cell:{
 	}
 },
 Board:{
-	isborder : 1,
-	isexcell : 1,
+	hasborder : 1,
+	hasexcell : 1,
 
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);

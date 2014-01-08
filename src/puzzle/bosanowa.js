@@ -131,7 +131,7 @@ Border:{
 },
 
 Board:{
-	isborder : 2,
+	hasborder : 2,
 
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);

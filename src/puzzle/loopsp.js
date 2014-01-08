@@ -97,7 +97,7 @@ Border:{
 	enableLineCombined : true
 },
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){

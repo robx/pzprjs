@@ -45,7 +45,7 @@ Cell:{
 },
 
 Board:{
-	isborder : 1,
+	hasborder : 1,
 
 	uramashu : false,
 

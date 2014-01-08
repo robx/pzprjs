@@ -54,8 +54,8 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	iscross  : 2,
-	isborder : 2,
+	hascross  : 2,
+	hasborder : 2,
 
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);

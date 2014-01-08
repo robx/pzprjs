@@ -31,7 +31,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 
 LineManager:{

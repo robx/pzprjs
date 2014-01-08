@@ -100,8 +100,8 @@ EXCell:{
 	minnum : 0
 },
 Board:{
-	isborder : 1,
-	isexcell : 1
+	hasborder : 1,
+	hasexcell : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){

@@ -34,7 +34,7 @@ Board:{
 	qcols : 6,
 	qrows : 6,
 
-	isborder : 1,
+	hasborder : 1,
 
 	// 正答判定用
 	getBorderLengthInfo : function(){

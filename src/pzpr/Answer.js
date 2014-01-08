@@ -470,7 +470,7 @@ pzpr.createPuzzleClass('AnsCheck',
 	// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
 	checkBorderCount : function(val, bp){
-		var result=true, bd=this.owner.board, mm=(bd.iscross===1?2:0);
+		var result=true, bd=this.owner.board, mm=(bd.hascross===1?2:0);
 		for(var by=mm;by<=bd.maxby-mm;by+=2){
 			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
 				var id = (bx>>1)+(by>>1)*(bd.qcols+1);

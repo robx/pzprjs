@@ -187,7 +187,7 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
+	hasborder : 1,
 
 	getLblockInfo : function(){
 		var rinfo = this.getRoomInfo();

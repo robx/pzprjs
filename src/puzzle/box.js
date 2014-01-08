@@ -20,7 +20,7 @@ MouseEvent:{
 
 	input_onstart : function(){
 		var excell = this.getcell_excell();
-		if(excell.isnull || !excell.isexcellobj){ return;}
+		if(excell.isnull || !excell.isexcell){ return;}
 
 		if(excell!==this.cursor.getTEC()){
 			this.setcursor(excell);
@@ -117,7 +117,7 @@ Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isexcell : 1
+	hasexcell : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){

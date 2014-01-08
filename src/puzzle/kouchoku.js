@@ -160,7 +160,7 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	iscross : 2,
+	hascross : 2,
 
 	segs : null,
 

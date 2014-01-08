@@ -135,7 +135,7 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	isborder : 1
+	hasborder : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){

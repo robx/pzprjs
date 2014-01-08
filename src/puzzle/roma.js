@@ -81,7 +81,7 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
+	hasborder : 1,
 
 	trackBall1 : function(startcc, ldata){
 		var startcell = this.cell[startcc], pos = startcell.getaddr();

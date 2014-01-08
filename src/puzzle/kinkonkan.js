@@ -72,7 +72,7 @@ MouseEvent:{
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(!obj.isexcellobj){
+		if(!obj.isexcell){
 			this.inputborder();
 		}
 		else if(obj!==this.cursor.getOBJ()){
@@ -213,8 +213,8 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1,
-	isexcell : 2,
+	hasborder : 1,
+	hasexcell : 2,
 
 	errclear : function(isrepaint){
 		pzpr.common.Board.prototype.errclear.call(this,false);

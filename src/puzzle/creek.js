@@ -37,7 +37,7 @@ Cross:{
 	minnum : 0
 },
 Board:{
-	iscross : 2
+	hascross : 2
 },
 
 AreaWhiteManager:{

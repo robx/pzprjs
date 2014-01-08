@@ -494,10 +494,10 @@ pzpr.createPuzzleClass('MouseEvent',
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(obj.isexcellobj || (obj.iscellobj && obj!==this.cursor.getTCC())){
+		if(obj.isexcell || (obj.iscell && obj!==this.cursor.getTCC())){
 			this.setcursor(obj);
 		}
-		else if(obj.iscellobj){
+		else if(obj.iscell){
 			this.input51_main(obj);
 		}
 	},
@@ -539,7 +539,7 @@ pzpr.createPuzzleClass('MouseEvent',
 	inputcrossMark : function(){
 		var pos = this.getpos(0.24);
 		if(!pos.oncross()){ return;}
-		var bd = this.owner.board, bm = (bd.iscross===2?0:2);
+		var bd = this.owner.board, bm = (bd.hascross===2?0:2);
 		if(pos.bx<bd.minbx+bm || pos.bx>bd.maxbx-bm || pos.by<bd.minby+bm || pos.by>bd.maxby-bm){ return;}
 
 		var cross = pos.getx();

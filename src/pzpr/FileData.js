@@ -153,11 +153,11 @@ pzpr.createPuzzleClass('FileIO',
 	},
 	decodeBorder : function(func){
 		var o = this.owner, bd = o.board;
-		if(bd.isborder===1 || o.pid==='bosanowa' || (o.pid==='fourcells' && this.filever===0)){
+		if(bd.hasborder===1 || o.pid==='bosanowa' || (o.pid==='fourcells' && this.filever===0)){
 			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
-		else if(bd.isborder===2){
+		else if(bd.hasborder===2){
 			if(this.currentType===k.FILE_PZPR){
 				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
@@ -193,11 +193,11 @@ pzpr.createPuzzleClass('FileIO',
 	},
 	encodeBorder : function(func){
 		var o = this.owner, bd = o.board;
-		if(bd.isborder===1 || o.pid==='bosanowa'){
+		if(bd.hasborder===1 || o.pid==='bosanowa'){
 			this.encodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
-		else if(bd.isborder===2){
+		else if(bd.hasborder===2){
 			if(this.currentType===k.FILE_PZPR){
 				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );

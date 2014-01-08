@@ -72,7 +72,7 @@ Board:{
 	qcols : 6,
 	qrows : 6,
 
-	isborder : 1
+	hasborder : 1
 },
 
 LineManager:{

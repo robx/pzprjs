@@ -53,6 +53,7 @@ pzpr.createPuzzleClass('Board',
 		this.ncell = this.addInfoList('AreaNumberManager');	// 数字情報を保持する
 
 		this.exec = new this.owner.BoardExec();
+		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},
 	addInfoList : function(classname){
 		var instance = new this.owner[classname]();
@@ -69,9 +70,9 @@ pzpr.createPuzzleClass('Board',
 	qcols : 10,		/* 盤面の横幅(デフォルト) */
 	qrows : 10,		/* 盤面の縦幅(デフォルト) */
 
-	iscross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
-	isborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
-	isexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	hascross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
+	hasexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
@@ -81,10 +82,10 @@ pzpr.createPuzzleClass('Board',
 
 		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
 
-						   { this.initGroup(k.CELL,   col, row);}
-		if(!!this.iscross) { this.initGroup(k.CROSS,  col, row);}
-		if(!!this.isborder){ this.initGroup(k.BORDER, col, row);}
-		if(!!this.isexcell){ this.initGroup(k.EXCELL, col, row);}
+							{ this.initGroup(k.CELL,   col, row);}
+		if(!!this.hascross) { this.initGroup(k.CROSS,  col, row);}
+		if(!!this.hasborder){ this.initGroup(k.BORDER, col, row);}
+		if(!!this.hasexcell){ this.initGroup(k.EXCELL, col, row);}
 
 		this.qcols = col;
 		this.qrows = row;
@@ -135,12 +136,12 @@ pzpr.createPuzzleClass('Board',
 		if     (type===k.CELL)  { return col*row;}
 		else if(type===k.CROSS) { return (col+1)*(row+1);}
 		else if(type===k.BORDER){
-			if     (this.isborder===1){ return 2*col*row-(col+row);}
-			else if(this.isborder===2){ return 2*col*row+(col+row);}
+			if     (this.hasborder===1){ return 2*col*row-(col+row);}
+			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
 		else if(type===k.EXCELL){
-			if     (this.isexcell===1){ return col+row+1;}
-			else if(this.isexcell===2){ return 2*col+2*row+4;}
+			if     (this.hasexcell===1){ return col+row+1;}
+			else if(this.hasexcell===2){ return 2*col+2*row+4;}
 		}
 		return 0;
 	},
@@ -165,9 +166,9 @@ pzpr.createPuzzleClass('Board',
 	/* setpos関連関数 */
 	setposAll : function(){
 		this.setposCells();
-		if(!!this.iscross) { this.setposCrosses();}
-		if(!!this.isborder){ this.setposBorders();}
-		if(!!this.isexcell){ this.setposEXcells();}
+		if(!!this.hascross) { this.setposCrosses();}
+		if(!!this.hasborder){ this.setposBorders();}
+		if(!!this.hasexcell){ this.setposEXcells();}
 
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 	},
@@ -213,7 +214,7 @@ pzpr.createPuzzleClass('Board',
 
 			if(i>=0 && i<(qc-1)*qr){ obj.bx=(i%(qc-1))*2+2; obj.by=((i/(qc-1))<<1)+1;} i-=((qc-1)*qr);
 			if(i>=0 && i<qc*(qr-1)){ obj.bx=(i%qc)*2+1;     obj.by=((i/qc)<<1)+2;    } i-=(qc*(qr-1));
-			if(this.isborder===2){
+			if(this.hasborder===2){
 				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=0;    } i-=qc;
 				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=2*qr; } i-=qc;
 				if(i>=0 && i<qr){ obj.bx=0;     obj.by=i*2+1;} i-=qr;
@@ -245,12 +246,12 @@ pzpr.createPuzzleClass('Board',
 			obj.id = id;
 			obj.isnull = false;
 
-			if(this.isexcell===1){
+			if(this.hasexcell===1){
 				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=-1;   } i-=qc;
 				if(i>=0 && i<qr){ obj.bx=-1;    obj.by=i*2+1;} i-=qr;
 				if(i===0)       { obj.bx=-1;    obj.by=-1;   } i--;
 			}
-			else if(this.isexcell===2){
+			else if(this.hasexcell===2){
 				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=-1;    } i-=qc;
 				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=2*qr+1;} i-=qc;
 				if(i>=0 && i<qr){ obj.bx=-1;     obj.by=i*2+1; } i-=qr;
@@ -267,8 +268,8 @@ pzpr.createPuzzleClass('Board',
 	// bd.setminmax()   盤面のbx,byの最小値/最大値をセットする
 	//---------------------------------------------------------------------------
 	setminmax : function(){
-		var extUL = (this.isexcell===1 || this.isexcell===2);
-		var extDR = (this.isexcell===2);
+		var extUL = (this.hasexcell>0);
+		var extDR = (this.hasexcell===2);
 		this.minbx = (!extUL ? 0 : -2);
 		this.minby = (!extUL ? 0 : -2);
 		this.maxbx = (!extDR ? 2*this.qcols : 2*this.qcols+2);
@@ -351,9 +352,9 @@ pzpr.createPuzzleClass('Board',
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*(qc+1);}
 
-		if(this.iscross!==0 && id!==null){ cross = this.cross[id];}
+		if(this.hascross!==0 && id!==null){ cross = this.cross[id];}
 		else{
-			if(this.iscross===0){
+			if(this.hascross===0){
 				/* LineManager用 */
 				cross = this.newObject(k.CROSS);
 				cross.id = id
@@ -371,7 +372,7 @@ pzpr.createPuzzleClass('Board',
 			if     (!(bx&1) &&  (by&1)){ id = ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ id = (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
-		else if(this.isborder===2){
+		else if(this.hasborder===2){
 			if     (by===0   &&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ id = (qc-1)*qr+qc*(qr-1)+(bx>>1);}
 			else if(by===2*qr&&(bx&1)&&(bx>=1&&bx<=2*qc-1)){ id = (qc-1)*qr+qc*(qr-1)+qc+(bx>>1);}
 			else if(bx===0   &&(by&1)&&(by>=1&&by<=2*qr-1)){ id = (qc-1)*qr+qc*(qr-1)+2*qc+(by>>1);}
@@ -383,12 +384,12 @@ pzpr.createPuzzleClass('Board',
 	getex : function(bx,by,qc,qr){
 		var id = null;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
-		if(this.isexcell===1){
+		if(this.hasexcell===1){
 			if(bx===-1&&by===-1){ id = qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ id = qc+(by>>1);}
 		}
-		else if(this.isexcell===2){
+		else if(this.hasexcell===2){
 			if     (by===-1    &&bx>0&&bx<2*qc){ id = (bx>>1);}
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ id = qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ id = 2*qc+(by>>1);}

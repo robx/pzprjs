@@ -80,8 +80,8 @@ Border:{
 },
 
 Board:{
-	iscross  : 1,
-	isborder : 1
+	hascross  : 1,
+	hasborder : 1
 },
 "Board@kramma,krammar":{
 	qcols : 8,

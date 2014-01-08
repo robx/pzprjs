@@ -56,7 +56,7 @@ pzpr.createPuzzleClass('AreaManager',
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		if(this.owner.board.isborder){
+		if(this.owner.board.hasborder){
 			for(var id=0;id<this.owner.board.bdmax;id++){
 				this.separate[id] = false;
 				this.checkSeparateInfo(this.owner.board.border[id]);
@@ -80,7 +80,7 @@ pzpr.createPuzzleClass('AreaManager',
 	setCell : function(cell){
 		if(!this.enabled){ return;}
 
-		if(this.owner.board.isborder){
+		if(this.owner.board.hasborder){
 			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
 			var cblist=cell.getdir4cblist();
 			for(var i=0;i<cblist.length;i++){ this.checkSeparateInfo(cblist[i][1]);}
@@ -416,7 +416,7 @@ pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
 		var bd = this.owner.board;
 		for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
 			var c = (bx>>1)+(by>>1)*(bd.qcols+1);
-			var ischassis = (bd.isborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
+			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
 			this.crosscnt[c]=(ischassis?2:0);
 		}}
 

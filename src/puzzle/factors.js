@@ -67,7 +67,7 @@ Board:{
 	qcols : 9,
 	qrows : 9,
 
-	isborder : 1
+	hasborder : 1
 },
 
 AreaRoomManager:{

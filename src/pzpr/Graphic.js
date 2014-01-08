@@ -295,11 +295,11 @@ pzpr.createPuzzleClass('Graphic',
 
 	getOffsetCols : function(){
 		/* 左にずらしたい分プラス、右にずらしたい分マイナス */
-		return (this.owner.board.isexcell===1?1:0);
+		return (this.owner.board.hasexcell===1?1:0);
 	},
 	getOffsetRows : function(){
 		/* 上にずらしたい分プラス、下にずらしたい分マイナス */
-		return (this.owner.board.isexcell===1?1:0);
+		return (this.owner.board.hasexcell===1?1:0);
 	},
 
 	//---------------------------------------------------------------------------
@@ -346,10 +346,10 @@ pzpr.createPuzzleClass('Graphic',
 		var bd = this.owner.board, g = this.currentContext;
 		var enableBuffer = (this.useBuffer && !this.outputImage);
 		if(enableBuffer){ x1--; y1--; x2++; y2++;}
-						   this.range.cells   = bd.cellinside(x1,y1,x2,y2);
-		if(!!bd.iscross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
-		if(!!bd.isborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
-		if(!!bd.isexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
+							this.range.cells   = bd.cellinside(x1,y1,x2,y2);
+		if(!!bd.hascross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
+		if(!!bd.hasborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
+		if(!!bd.hasexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
 		if(enableBuffer){ x1++; y1++; x2--; y2--;}
 
 		if(!enableBuffer){
@@ -1042,7 +1042,7 @@ pzpr.createPuzzleClass('Graphic',
 			var px1 = px+lm+1, px2 = px+cw-lm-1;
 			var py1 = py+lm+1, py2 = py+ch-lm-1;
 
-			// この関数を呼ぶ場合は全てisborder===1なので
+			// この関数を呼ぶ場合は全てhasborder===1なので
 			// 外枠用の考慮部分を削除しています。
 			var UPin = (cell.by>2), DNin = (cell.by<2*this.owner.board.qrows-2);
 			var LTin = (cell.bx>2), RTin = (cell.bx<2*this.owner.board.qcols-2);
@@ -1491,7 +1491,7 @@ pzpr.createPuzzleClass('Graphic',
 		var keys = [[obj.group,obj.id,'ques51','rt'].join('_'),
 					[obj.group,obj.id,'ques51','dn'].join('_')];
 
-		if(obj.isexcellobj || obj.ques===51){
+		if(obj.isexcell || obj.ques===51){
 			for(var i=0;i<2;i++){
 				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=obj.relcell(2,0), type=4;} // 1回目は右向き
 				else if(i===1){ val=obj.qnum2, guard=obj.bx, nb=obj.relcell(0,2), type=2;} // 2回目は下向き
@@ -1603,7 +1603,7 @@ pzpr.createPuzzleClass('Graphic',
 		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 		x1-=(x1&1), y1-=(y1&1);
 
-		var bs = ((bd.isborder!==2&&haschassis!==false)?2:0);
+		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.qcols-bs);
 		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*bd.qrows-bs);
 
@@ -1649,7 +1649,7 @@ pzpr.createPuzzleClass('Graphic',
 
 	//---------------------------------------------------------------------------
 	// pc.drawChassis()     外枠をCanvasに書き込む
-	// pc.drawChassis_ex1() bd.isexcell==1の時の外枠をCanvasに書き込む
+	// pc.drawChassis_ex1() bd.hasexcell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawChassis : function(){
 		var g = this.vinc('chassis', 'crispEdges'), bd = this.owner.board;

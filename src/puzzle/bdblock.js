@@ -33,8 +33,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	iscross  : 2,
-	isborder : 1
+	hascross  : 2,
+	hasborder : 1
 },
 
 AreaRoomManager:{

@@ -23,7 +23,7 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	isborder : 1,
+	hasborder : 1,
 
 	getTetrominoInfo : function(rinfo){
 		var tinfo = new this.owner.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */

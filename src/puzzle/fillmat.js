@@ -36,7 +36,7 @@ KeyEvent:{
 },
 
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 "Board@usotatami":{
 	qcols : 8,

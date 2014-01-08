@@ -35,7 +35,7 @@ Cell:{
 	maxnum : 3
 },
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 
 LineManager:{

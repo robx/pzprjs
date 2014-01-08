@@ -70,8 +70,8 @@ Board:{
 	qcols : 11,
 	qrows : 11,
 
-	isborder : 1,
-	isexcell : 1
+	hasborder : 1,
+	hasexcell : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){

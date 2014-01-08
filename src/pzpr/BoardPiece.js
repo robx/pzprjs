@@ -7,15 +7,15 @@ pzpr.addConsts({
 	BORDER : 'border',
 	EXCELL : 'excell',
 
-	QUES : 'ques',
-	QNUM : 'qnum',
+	QUES  : 'ques',
+	QNUM  : 'qnum',
 	QNUM2 : 'qnum2',
 	QCHAR : 'qchar',
-	QDIR : 'qdir',
-	QANS : 'qans',
-	ANUM : 'anum',
-	LINE : 'line',
-	QSUB : 'qsub',
+	QDIR  : 'qdir',
+	QANS  : 'qans',
+	ANUM  : 'anum',
+	LINE  : 'line',
+	QSUB  : 'qsub',
 	QDARK : 'qdark',
 
 	NDIR : 0,	// 方向なし
@@ -36,10 +36,10 @@ pzpr.createPuzzleClass('BoardPiece',
 	group : 'none',
 	isnull : true,
 
-	iscellobj   : false,
-	iscrossobj  : false,
-	isborderobj : false,
-	isexcellobj : false,
+	iscell   : false,
+	iscross  : false,
+	isborder : false,
+	isexcell : false,
 
 	id : null,
 	error: 0,
@@ -152,7 +152,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 {
 	group : 'cell',
 
-	iscellobj : true,
+	iscell : true,
 
 	// デフォルト値
 	ques : 0,	// セルの問題データを保持する(1:黒マス 2-5:三角形 6:アイス 7:盤面外 11-17:十字型 21-22:旗門 51:カックロ)
@@ -426,7 +426,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// ★Crossクラス BoardクラスがCrossの数だけ保持する(iscross==1の時)
+// ★Crossクラス BoardクラスがCrossの数だけ保持する(hascross>=1の時)
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
@@ -434,7 +434,7 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 {
 	group : 'cross',
 
-	iscrossobj : true,
+	iscross : true,
 
 	// デフォルト値
 	ques : 0,	// 交差点の問題データ(黒点)を保持する
@@ -470,7 +470,7 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 });
 
 //---------------------------------------------------------------------------
-// ★Borderクラス BoardクラスがBorderの数だけ保持する(isborder==1の時)
+// ★Borderクラス BoardクラスがBorderの数だけ保持する(hasborder>0の時)
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
@@ -483,7 +483,7 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 	},
 	group : 'border',
 
-	isborderobj : true,
+	isborder : true,
 
 	// デフォルト値
 	ques : 0,	// 境界線の問題データを保持する(問題境界線)
@@ -621,7 +621,7 @@ pzpr.createPuzzleClass('EXCell:BoardPiece',
 {
 	group : 'excell',
 
-	isexcellobj : true,
+	isexcell : true,
 
 	// デフォルト値
 	qnum  :-1,	// セルの問題データ(数字)を保持する(数字 or カックロの右側)
@@ -704,8 +704,9 @@ pzpr.createPuzzleClass('Address',
 	// pos.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	setCrossBorderError : function(){
-		if(this.iscross!==0){ this.getx(this.bx,this.by).seterr(1);}
-		this.owner.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
+		var bd = this.owner.board;
+		if(bd.hascross!==0){ this.getx().seterr(1);}
+		bd.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
 	}
 });
 

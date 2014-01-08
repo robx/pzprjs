@@ -79,8 +79,8 @@ Cell:{
 },
 
 Board:{
-	iscross  : 2,
-	isborder : 2
+	hascross  : 2,
+	hasborder : 2
 },
 
 LineManager:{

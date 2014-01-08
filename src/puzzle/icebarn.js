@@ -131,7 +131,7 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 2,
+	hasborder : 2,
 
 	arrowin  : null,
 	arrowout : null,

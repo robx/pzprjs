@@ -101,7 +101,7 @@ Cell:{
 	minnum : 2
 },
 Board:{
-	isborder : 1,
+	hasborder : 1,
 
 	qcols : 8,
 	qrows : 8,

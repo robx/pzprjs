@@ -87,10 +87,10 @@ Cell:{
 },
 
 "Board@nawabari":{
-	isborder : 1
+	hasborder : 1
 },
 "Board@fourcells,fivecells":{
-	isborder : 2,
+	hasborder : 2,
 
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);

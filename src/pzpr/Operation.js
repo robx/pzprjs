@@ -309,7 +309,7 @@ pzpr.createPuzzleClass('OperationManager',
 			if( !this.disCombine && !!ref && !!ref.property &&
 				ref.group===obj.group && ref.property===property &&
 				ref.num===old && ref.bx===obj.bx && ref.by===obj.by && 
-				( (obj.iscellobj && ( property===k.QNUM || property===k.ANUM )) || obj.iscrossobj)
+				( (obj.iscell && ( property===k.QNUM || property===k.ANUM )) || obj.iscross)
 			)
 			{
 				this.changeflag = true;

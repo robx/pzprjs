@@ -85,7 +85,7 @@ Cell:{
 	qcols : 8,
 	qrows : 8,
 
-	isborder : 1
+	hasborder : 1
 },
 
 AreaNumberManager:{

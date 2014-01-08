@@ -418,7 +418,7 @@ pzpr.createPuzzleClass('Encode',
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
 		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
-		var cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
@@ -440,7 +440,7 @@ pzpr.createPuzzleClass('Encode',
 	},
 	encodeCrossMark : function(){
 		var cm="", count=0, bd = this.owner.board;
-		var cp=(bd.iscross===2?1:0), cp2=(cp<<1);
+		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(var c=0,max=cols*rows;c<max;c++){
 			var pstr="";

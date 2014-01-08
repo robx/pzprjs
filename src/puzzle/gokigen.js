@@ -129,7 +129,7 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	iscross : 2,
+	hascross : 2,
 
 	// 正答判定用
 	getSlashData : function(){

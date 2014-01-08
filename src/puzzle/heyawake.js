@@ -48,7 +48,7 @@ Cell:{
 	minnum : 0
 },
 Board:{
-	isborder : 1
+	hasborder : 1
 },
 
 AreaWhiteManager:{
