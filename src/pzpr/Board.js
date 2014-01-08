@@ -8,10 +8,10 @@ pzpr.createPuzzleClass('Board',
 {
 	initialize : function(){
 		// 盤面の範囲
-		this.minbx;
-		this.minby;
-		this.maxbx;
-		this.maxby;
+		this.minbx = 0;
+		this.minby = 0;
+		this.maxbx = 0;
+		this.maxby = 0;
 
 		// エラー設定可能状態かどうか
 		this.diserror = 0;
@@ -438,26 +438,32 @@ pzpr.createPuzzleClass('Board',
 	},
 	crossinside : function(x1,y1,x2,y2){
 		var clist = new this.owner.CrossList();
-		for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
-			var cross = this.getx(bx,by);
-			if(!cross.isnull){ clist.add(cross);}
-		}}
+		if(!!this.hascross){
+			for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
+				var cross = this.getx(bx,by);
+				if(!cross.isnull){ clist.add(cross);}
+			}}
+		}
 		return clist;
 	},
 	borderinside : function(x1,y1,x2,y2){
 		var blist = new this.owner.BorderList();
-		for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
-			var border = this.getb(bx,by);
-			if(!border.isnull){ blist.add(border);}
-		}}
+		if(!!this.hasborder){
+			for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
+				var border = this.getb(bx,by);
+				if(!border.isnull){ blist.add(border);}
+			}}
+		}
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = new this.owner.EXCellList();
-		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
-			var excell = this.getex(bx,by);
-			if(!excell.isnull){ exlist.add(excell);}
-		}}
+		if(!!this.hasexcell){
+			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
+				var excell = this.getex(bx,by);
+				if(!excell.isnull){ exlist.add(excell);}
+			}}
+		}
 		return exlist;
 	},
 

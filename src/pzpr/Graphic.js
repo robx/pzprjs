@@ -88,10 +88,8 @@ pzpr.createPuzzleClass('Graphic',
 		this.circleratio = [0.40, 0.35];
 
 		// 描画領域を保持するオブジェクト
-		this.range = {
-			x1:null, y1:null, x2:null, y2:null,
-			cells:[], crosses:[], borders:[], excells:[]
-		};
+		this.range = {};
+		this.resetRange();
 
 		this.suspended = true;
 		this.suspendedAll = true;
@@ -192,9 +190,11 @@ pzpr.createPuzzleClass('Graphic',
 		
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
-		this.resize_canvas_main();
 		
-		if(!insuspend){ this.unsuspend();}
+		if(!!this.currentContext){
+			this.resize_canvas_main();
+			if(!insuspend){ this.unsuspend();}
+		}
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
@@ -204,9 +204,11 @@ pzpr.createPuzzleClass('Graphic',
 		this.ch = cellsize || this.ch;
 		this.canvasWidth  = this.cw*this.getCanvasCols();
 		this.canvasHeight = this.ch*this.getCanvasRows();
-		this.resize_canvas_main();
 		
-		if(!insuspend){ this.unsuspend();}
+		if(!!this.currentContext){
+			this.resize_canvas_main();
+			if(!insuspend){ this.unsuspend();}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -334,8 +336,9 @@ pzpr.createPuzzleClass('Graphic',
 	// pc.prepaint()    paint関数を呼び出す
 	// pc.paint()       座標(x1,y1)-(x2,y2)を再描画する。各パズルのファイルでオーバーライドされる。
 	//
-	// pc.setRange()    rangeオブジェクトを設定する
-	// pc.resetRange()  rangeオブジェクトを初期化する
+	// pc.setRange()       rangeオブジェクトを設定する
+	// pc.setRangeObject() 描画対象となるオブジェクトを取得する
+	// pc.resetRange()     rangeオブジェクトを初期化する
 	//---------------------------------------------------------------------------
 	prepaint : function(){
 		if(this.suspended){ return;}
@@ -343,26 +346,19 @@ pzpr.createPuzzleClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1>x2 || y1>y2){ return;}
 
-		var bd = this.owner.board, g = this.currentContext;
-		var enableBuffer = (this.useBuffer && !this.outputImage);
-		if(enableBuffer){ x1--; y1--; x2++; y2++;}
-							this.range.cells   = bd.cellinside(x1,y1,x2,y2);
-		if(!!bd.hascross) { this.range.crosses = bd.crossinside(x1,y1,x2,y2);}
-		if(!!bd.hasborder){ this.range.borders = bd.borderinside(x1,y1,x2,y2);}
-		if(!!bd.hasexcell){ this.range.excells = bd.excellinside(x1,y1,x2,y2);}
-		if(enableBuffer){ x1++; y1++; x2--; y2--;}
-
-		if(!enableBuffer){
+		if(!this.useBuffer || this.outputImage){
+			this.setRangeObject(x1,y1,x2,y2);
 			this.flushCanvas();
 			this.paint();
 		}
 		else{
-			var g2 = this.subContext;
+			var g = this.currentContext, g2 = this.subContext;
 			this.currentContext = g2;
+			this.setRangeObject(x1-1,y1-1,x2+1,y2+1);
 			this.flushCanvas();
 			this.paint();
 			this.currentContext = g;
-
+			
 			// source側はtaranslateのぶん足されていないので、加算しておきます
 			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1;
 			var sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
@@ -381,16 +377,25 @@ pzpr.createPuzzleClass('Graphic',
 		if(this.range.x2 < x2){ this.range.x2 = x2;}
 		if(this.range.y2 < y2){ this.range.y2 = y2;}
 	},
-	resetRange : function(){
+	setRangeObject : function(x1,y1,x2,y2){
 		var bd = this.owner.board;
-		this.range.x1 = bd.maxbx+1;
-		this.range.y1 = bd.maxby+1;
-		this.range.x2 = bd.minbx-1;
-		this.range.y2 = bd.minby-1;
-		this.range.cells   = [];
-		this.range.crosses = [];
-		this.range.borders = [];
-		this.range.excells = [];
+		this.range.cells   = bd.cellinside(x1,y1,x2,y2);
+		this.range.crosses = bd.crossinside(x1,y1,x2,y2);
+		this.range.borders = bd.borderinside(x1,y1,x2,y2);
+		this.range.excells = bd.excellinside(x1,y1,x2,y2);
+	},
+	resetRange : function(){
+		var o = this.owner, bd = o.board;
+		this.range = {
+			x1 : bd.maxbx+1,
+			y1 : bd.maxby+1,
+			x2 : bd.minbx-1,
+			y2 : bd.minby-1,
+			cells   : (new o.CellList()),
+			crosses : (new o.CrossList()),
+			borders : (new o.BorderList()),
+			excells : (new o.EXCellList())
+		};
 	},
 
 	//---------------------------------------------------------------------------
