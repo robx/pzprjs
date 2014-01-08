@@ -84,7 +84,7 @@ module.exports = function(grunt){
       'pzpr-debug': {
         files : [
           { expand: true, cwd: 'src/pzpr', src: ['*.js'], dest: 'dist/pzpr' },
-          { src: 'tests/pzpr.debug.js', dest: 'dist/pzpr.js' }
+          { src: 'src/pzpr.js', dest: 'dist/pzpr.js' }
         ]
       },
       puzzle: {
@@ -126,7 +126,7 @@ module.exports = function(grunt){
     array.unshift("src/pzpr/intro.js");
     array.push   ("src/pzpr/outro.js");
     
-    array.unshift("src/vendor/candle.js");
+    array.unshift("src/lib/candle.js");
     return array;
   }
   

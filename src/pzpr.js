@@ -1,4 +1,6 @@
 
+/* concat前のテスト用スクリプト */
+
 (function(){
 	var dir="", srcs=document.getElementsByTagName('script');
 	for(var i=0;i<srcs.length;i++){
@@ -11,7 +13,7 @@
 	}
 
 	var files = [
-		"../src/vendor/candle.js",
+		"../src/lib/candle.js",
 		"pzpr/CoreClass.js",
 		"pzpr/Puzzle.js",
 		"pzpr/BoardPiece.js",
