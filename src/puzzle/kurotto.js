@@ -74,7 +74,7 @@ Graphic:{
 		this.setBGCellColorFunc('qsub1');
 
 		this.fontsizeratio = 0.85;
-		this.circleratio = [0.47, 0.42];
+		this.circleratio = [0.45, 0.40];
 	},
 	paint : function(){
 		this.drawDotCells(false);
@@ -107,14 +107,14 @@ Graphic:{
 	getCircleStrokeColor : function(cell){
 		if(cell.isNum()){
 			var cmpcell = (this.getConfig('circolor') && cell.checkComplete(this.check_binfo));
-			if     (cmpcell)       { return this.bcolor;      }
-			else if(cell.error===1){ return this.errbcolor1;  }
-			else                   { return this.circledcolor;}
+			if     (cmpcell)       { return this.bcolor;    }
+			else if(cell.error===1){ return this.errbcolor1;}
+			else                   { return this.cellcolor; }
 		}
 		return null;
 	},
 	getCircleFillColor : function(cell){
-		if(cell.isNum()){ return this.cellcolor;}
+		if(cell.isNum()){ return this.circledcolor;}
 		return null;
 	}
 },
