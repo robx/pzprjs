@@ -15,12 +15,17 @@ window.pzpr = {
 	//---------------------------------------------------------------
 	// パズルを生成する
 	//---------------------------------------------------------------
+	firstCreate : true,
 	createPuzzle : function(canvas, option){
 		var puzzle = new pzpr.Puzzle();
 		this.puzzles.push(puzzle);
 		if(!!canvas){
 			var type = (!!option && !!option.graphic ? option.graphic : '');
 			puzzle.setCanvas(canvas, type);
+		}
+		if(this.firstCreate){
+			this.addKeyEvents();
+			this.firstCreate = false;
 		}
 		return puzzle;
 	},
@@ -51,7 +56,23 @@ window.pzpr = {
 	},
 	createCustoms : function(scriptid, custombase){
 		this.classmgr.createCustoms(scriptid, custombase);
-	}
+	},
+
+	//---------------------------------------------------------------------------
+	// connectKeyEvents()  キーボード入力に関するイベントを指定したパズルへ通知する準備を行う
+	// exec????()          キー入力へ分岐する(this.keyが不変でないためバイパスする)
+	//---------------------------------------------------------------------------
+	keytarget : null,
+	addKeyEvents :function(){
+		// キー入力イベントの設定
+		pzpr.util.addEvent(document, 'keydown',  pzpr, pzpr.execKeyDown);
+		pzpr.util.addEvent(document, 'keyup',    pzpr, pzpr.execKeyUp);
+		pzpr.util.addEvent(document, 'keypress', pzpr, pzpr.execKeyPress);
+	},
+	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
+	execKeyDown  : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keydown(e);}},
+	execKeyUp    : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keyup(e);}},
+	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}}
 };
 var k = pzpr.consts;
 

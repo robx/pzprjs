@@ -63,6 +63,7 @@ function startPuzzle(){
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
 	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas'});
+	pzpr.connectKeyEvents(ui.puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
@@ -83,7 +84,6 @@ function afterBoot(o){
 		o.setConfig('mode',3);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
-	o.setKeyEvents();
 	accesslog();
 }
 

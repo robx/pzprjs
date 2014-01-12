@@ -127,22 +127,29 @@ pzpr.Puzzle.prototype =
 	},
 	waitCanvasReady : function(callback){
 		var puzzle = this;
-		puzzle.painter.initCanvas(this.canvas, this.subcanvas, function(){
-			puzzle.painter.resetCanvas();
-			
+		if(!!this.canvas){
+			puzzle.painter.initCanvas(this.canvas, this.subcanvas, function(){
+				puzzle.painter.resetCanvas();
+				
+				if(!!callback){ callback(puzzle);}
+				
+				puzzle.painter.unsuspend();
+				puzzle.resetTime();
+				puzzle.ready = true;
+			});
+		}
+		else{
 			if(!!callback){ callback(puzzle);}
-			
-			puzzle.painter.unsuspend();
 			puzzle.resetTime();
 			puzzle.ready = true;
-		});
+		}
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.setMouseEvents() マウス入力に関するイベントを設定する
-	// owner.exec????()       マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
+	// owner.setCanvasEvents() マウス入力に関するイベントを設定する
+	// owner.exec????()        マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
-	setMouseEvents : function(canvas){
+	setCanvasEvents : function(canvas){
 		// マウス入力イベントの設定
 		var o = this;
 		pzpr.util.addMouseDownEvent(canvas, o, o.execMouseDown);
@@ -157,28 +164,14 @@ pzpr.Puzzle.prototype =
 	execMouseOut  : function(e){ this.mouse.e_mouseout(e);},
 
 	//---------------------------------------------------------------------------
-	// owner.setKeyEvents() キーボード入力に関するイベントを設定する
-	// owner.setKeyEvents() SilverLight系のキーボード入力に関するイベントを設定する
-	// owner.exec????()     キー入力へ分岐する(this.keyが不変でないためバイパスする)
+	// owner.setSLKeyEvents() SilverLight系のキーボード入力に関するイベントを設定する
+	// owner.exec????()       キー入力へ分岐する(this.keyが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
-	setKeyEvents : function(){
-		// キー入力イベントの設定
-		var o = this;
-		pzpr.util.addEvent(document, 'keydown',  o, o.execKeyDown);
-		pzpr.util.addEvent(document, 'keyup',    o, o.execKeyUp);
-		pzpr.util.addEvent(document, 'keypress', o, o.execKeyPress);
-	},
-	execKeyDown  : function(e){ this.key.e_keydown(e);},
-	execKeyUp    : function(e){ this.key.e_keyup(e);},
-	execKeyPress : function(e){ this.key.e_keypress(e);},
-
 	setSLKeyEvents : function(g){
 		// Silverlightのキー入力イベント設定
-		if(g.use.sl){
-			var receiver = this, sender = g.content.findName(g.canvasid);
-			sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
-			sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
-		}
+		var receiver = this, sender = g.content.findName(g.canvasid);
+		sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
+		sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
 	},
 	execSLKeyDown : function(sender, a){ /* a: keyEventArgs */
 		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
@@ -218,11 +211,15 @@ pzpr.Puzzle.prototype =
 		if(!!el){
 			Candle.start(el.id, type, function(g){
 				pzpr.util.unselectable(g.canvas);
-				o.setSLKeyEvents(g);
+				if(g.use.sl){ o.setSLKeyEvents(g);}
 				if(g.use.canvas){ o.addSubCanvas();}
+				if(o.ready){
+					o.painter.resetCanvas();
+					o.painter.unsuspend();
+				}
 			});
 			this.canvas = el;
-			this.setMouseEvents(el);
+			this.setCanvasEvents(el);
 		}
 	},
 	addSubCanvas : function(){

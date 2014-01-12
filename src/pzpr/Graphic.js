@@ -346,7 +346,7 @@ pzpr.createPuzzleClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1>x2 || y1>y2){ return;}
 
-		if(!this.useBuffer || this.outputImage){
+		if(!this.useBuffer){
 			this.setRangeObject(x1,y1,x2,y2);
 			this.flushCanvas();
 			this.paint();
