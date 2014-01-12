@@ -247,6 +247,8 @@ BoardExec:{
 		}
 
 		this.posinfo = this.getAfterPos(key,d,bd.startcell);
+
+		this.adjustNumberArrow(key,d);
 	},
 	adjustBoardData2 : function(key,d){
 		var bd = this.owner.board;
