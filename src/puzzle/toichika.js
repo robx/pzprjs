@@ -16,10 +16,8 @@ MouseEvent:{
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.mousestart){ this.checkBorderMode();}
-
-				if(this.bordermode){ this.inputborder();}
-				else               { this.inputarrow_cell();}
+				if(this.isBorderMode()){ this.inputborder();}
+				else                   { this.inputarrow_cell();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}

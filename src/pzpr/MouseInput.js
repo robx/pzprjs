@@ -184,7 +184,7 @@ pzpr.createPuzzleClass('MouseEvent',
 	// mv.getborder()  入力された位置がどの境界線・Lineに該当するかを返す(クリック用)
 	// mv.getpos()    入力された位置が仮想セル上でどこの(X*2,Y*2)に該当するかを返す。
 	//                外枠の左上が(0,0)で右下は(bd.qcols*2,bd.qrows*2)。rcは0～0.5のパラメータ。
-	// mv.checkBorderMode() 境界線入力モードかどうか判定する
+	// mv.isBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
 		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
@@ -238,8 +238,11 @@ pzpr.createPuzzleClass('MouseEvent',
 		return bd.emptyborder;
 	},
 
-	checkBorderMode : function(){
-		this.bordermode = !this.getpos(0.25).oncell();
+	isBorderMode : function(){
+		if(this.mousestart){
+			this.bordermode = !this.getpos(0.25).oncell();
+		}
+		return this.bordermode;
 	},
 
 	//---------------------------------------------------------------------------

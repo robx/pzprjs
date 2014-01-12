@@ -9,9 +9,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.mousestart && this.btn.Left){ this.checkBorderMode();}
-
-				if(this.bordermode){ this.inputborder_tentaisho();}
+				if(this.btn.Left && this.isBorderMode()){ this.inputborder_tentaisho();}
 				else{ this.inputQsubLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}

@@ -12,10 +12,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode && (this.mousestart || this.mousemove)){
 			if(this.btn.Left){
-				if(this.mousestart){ this.checkBorderMode();}
-
-				if(this.bordermode){ this.inputborder();}
-				else               { this.dragnumber_fillomino();}
+				if(this.isBorderMode()){ this.inputborder();}
+				else                   { this.dragnumber_fillomino();}
 			}
 			else if(this.btn.Right){ this.inputQsubLine();}
 		}
