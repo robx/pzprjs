@@ -18,7 +18,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		
 		this.mouseoffset = {px:0,py:0};
 		var bz = pzpr.env.browser;
-		if(bz.IE6||bz.IE7||bz.IE8){ this.mouseoffset = {px:2,py:2};}
+		if(bz.legacyIE)   { this.mouseoffset = {px:2,py:2};}
 		else if(bz.WebKit){ this.mouseoffset = {px:1,py:1};}
 
 		this.mouseCell;		// 入力されたセル等のID

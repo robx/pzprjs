@@ -20,7 +20,7 @@ MouseEvent:{
 			}
 		}
 	},
-	inputRed : function(){ this.dispRed();},
+	inputRed : function(){ this.dispRed();}
 },
 
 //---------------------------------------------------------

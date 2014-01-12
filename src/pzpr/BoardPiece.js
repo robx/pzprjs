@@ -663,7 +663,13 @@ pzpr.createPuzzleClass('PieceList',
 	// list.reverse()  保持している配列の順番を逆にする
 	//--------------------------------------------------------------------------------
 	add     : Array.prototype.push,
-	extend  : function(list){ this.add.apply(this,list);},
+	extend  : function(list){
+		if(!pzpr.env.browser.legacyIE){ this.add.apply(this,list);}
+		else{
+			var self = this;
+			list.each(function(obj){ self.add(obj);})
+		}
+	},
 	unshift : Array.prototype.unshift,
 	pop     : Array.prototype.pop,
 	reverse : Array.prototype.reverse,

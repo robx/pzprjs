@@ -218,6 +218,6 @@ FailCode:{
 	bkNumGt3 : ["1つのハコに4つ以上の記号が入っています。","A box has four or more marks."],
 	bkNumLt3 : ["1つのハコに2つ以下の記号しか入っていません。","A box has tow or less marks."],
 	nmDivide : ["タテヨコにつながっていない記号があります。","Marks are devided."],
-	nmAround : ["同じ記号がタテヨコナナメに隣接しています。","Same marks are adjacent."],
+	nmAround : ["同じ記号がタテヨコナナメに隣接しています。","Same marks are adjacent."]
 }
 });

@@ -27,7 +27,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberIsWhite : true
 },
 Board:{
 	getdir8WareaInfo : function(){
@@ -229,7 +229,7 @@ FileIO:{
 FailCode:{
 	bkNoNum  : ["数字の入っていないシマがあります。","An area of white cells has no numbers."],
 	bkNumGe2 : ["1つのシマに2つ以上の数字が入っています。","An area of white cells has plural numbers."],
-	bkSizeNe : ["数字とシマの面積が違います。","The number is not equal to the number of the size of the area."],
+	bkSizeNe : ["数字とシマの面積が違います。","The number is not equal to the number of the size of the area."]
 },
 "FailCode@nuribou":{
 	bcWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","there is a mass of black cells, whose width is more than two."],

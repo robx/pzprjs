@@ -53,7 +53,7 @@ KeyEvent:{
 Cell:{
 	numberAsObject : true,
 
-	maxnum : 2,
+	maxnum : 2
 },
 Cross:{
 	noNum : function(){ return this.id!==null && this.qnum===-1;}

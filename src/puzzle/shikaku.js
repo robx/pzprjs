@@ -172,6 +172,6 @@ FailCode:{
 	bkSizeNe : ["数字と領域の大きさが違います。","The size of the area is not equal to the number."],
 	bkNotRect : ["四角形ではない領域があります。","An area is not rectangle."],
 	bkNotRect3 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
-	bkNotLshape3 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."],
+	bkNotLshape3 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."]
 }
 });

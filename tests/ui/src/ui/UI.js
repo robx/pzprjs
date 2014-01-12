@@ -265,7 +265,9 @@ ui.event =
 		}
 		if(pzpr.env.OS.mobile){ padding = 0;}
 		
-		o.canvas.style.padding = ''+((padding*Math.min(pc.cw, pc.ch))|0)+'px';
+		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.currentContext;
+		o.canvas.style.padding = val+'px';
+		if(g.use.vml){ g.translate(val+pc.x0, val+pc.y0);}
 		
 		return true;
 	},

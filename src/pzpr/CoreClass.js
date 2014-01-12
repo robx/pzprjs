@@ -254,7 +254,7 @@ if(!Array.prototype.indexOf){
 	}
 }
 if(!Array.prototype.some){
-	Array.prototype.some = function(obj){
+	Array.prototype.some = function(cond){
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
 		return false;
 	}
@@ -266,7 +266,7 @@ if(!Array.prototype.some){
 pzpr.env = {
 	browser : (function(){
 		var UA  = navigator.userAgent;
-		return {
+		var bz = {
 			IE    : (!!document.uniqueID),
 			Presto: (!!window.opera),
 			WebKit: (UA.indexOf('AppleWebKit/') > -1),
@@ -278,6 +278,8 @@ pzpr.env = {
 			IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
 			IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
 		};
+		bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
+		return bz;
 	})(),
 	OS : (function(){
 		var UA  = navigator.userAgent;
@@ -419,16 +421,15 @@ pzpr.util = {
 			right = (e.touches.length>1);
 		}
 		else{
-			var bz = pzpr.env.browser;
-			if(bz.IE6 || bz.IE7 || bz.IE8){
-				left  = (e.button===1);
-				mid   = (e.button===4);
-				right = (e.button===2);
-			}
-			else{
+			if(!pzpr.env.browser.legacyIE){
 				left  = (!!e.which ? e.which===1 : e.button===0);
 				mid   = (!!e.which ? e.which===2 : e.button===1);
 				right = (!!e.which ? e.which===3 : e.button===2);
+			}
+			else{
+				left  = (e.button===1);
+				mid   = (e.button===4);
+				right = (e.button===2);
 			}
 		}
 

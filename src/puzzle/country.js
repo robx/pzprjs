@@ -166,6 +166,6 @@ AnsCheck:{
 FailCode:{
 	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","the number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
 	scNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","the cells that is not passed any line are adjacent over border line."],
-	lnPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
+	lnPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."]
 }
 });

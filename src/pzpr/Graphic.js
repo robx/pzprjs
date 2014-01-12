@@ -1936,6 +1936,7 @@ pzpr.createPuzzleClass('Graphic',
 			case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 		}
 		if((g.use.vml || g.use.sl) && (type===1||type===4||type===5)){py++;}
+		if(g.use.vml){ py-=(fontsize*0.35);}
 
 		this.vshow("text_"+key);
 		g.fillText(text, px, py);

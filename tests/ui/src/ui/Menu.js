@@ -243,7 +243,7 @@ Menu.prototype =
 		if(!modified){
 			var sel = ''; for(sel in input){ break;}
 			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
-			else if(!!sheet.addRule){ sheet.addRule(sel, "");}
+			else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");}
 			rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 			this.modifyCSS_sub(rules, input);
 		}
@@ -255,7 +255,7 @@ Menu.prototype =
 			if(!rule.selectorText){ continue;}
 			var pps = input[rule.selectorText];
 			if(!!pps){
-				for(var p in pps){ rule.style[p]=pps[p];}
+				for(var p in pps){ if(!!pps[p]){ rule.style[p]=pps[p];}}
 				modified = true;
 			}
 		}

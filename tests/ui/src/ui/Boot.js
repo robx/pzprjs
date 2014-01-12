@@ -44,7 +44,10 @@ function includeDebugFile(){
 	/* 必要な場合、テスト用ファイルのinclude         */
 	/* importURL()後でないと必要かどうか判定できない */
 	if(ui.debugmode){
-		if(!ui.debug.urls){
+		if(!ui.debug){
+			result = false;
+		}
+		else if(!ui.debug.urls){
 			ui.debug.includeDebugScript("for_test.js");
 			result = false;
 		}
