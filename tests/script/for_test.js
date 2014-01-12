@@ -17,9 +17,9 @@ ui.debug.extend(
 	},
 	
 	accheck1 : function(){
-		var outputstr = ui.puzzle.getFileData(k.FILE_PZPH).replace(/\r?\n/g, "/");
+		var outputstr = ui.puzzle.getFileData(k.FILE_PZPR).replace(/\r?\n/g, "/");
 		var failcode  = ui.puzzle.check(false);
-		this.addTextarea("\t\t\t["+failcode+",\""+outputstr+"\"],");
+		this.addTextarea("\t\t['"+failcode+"',\""+outputstr+"\"],");
 	},
 
 	urls : {},
