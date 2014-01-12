@@ -1938,9 +1938,17 @@ pzpr.createPuzzleClass('Graphic',
 		if((g.use.vml || g.use.sl) && (type===1||type===4||type===5)){py++;}
 		if(g.use.vml){ py-=(fontsize*0.35);}
 
-		this.vshow("text_"+key);
+		var vid = "text_"+key;
+		if(g.use.vml){
+			if(!!g.elements[vid]){
+				this.hidenum(key);
+				g.target.removeChild(g.elements[vid].parentNode);
+				g.elements[vid] = null;
+			}
+			g.vid = vid;
+		}
+		else{ this.vshow(vid);}
 		g.fillText(text, px, py);
-		if(pzpr.env.browser.Presto && g.use.svg){g.lastElement.setAttribute('unselectable','on');}
 	},
 	hidenum : function(key){
 		this.vhide(["text_"+key]);
