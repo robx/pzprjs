@@ -388,7 +388,14 @@ pzpr.Puzzle.prototype =
 	// owner.setConfig()  設定値の設定を行う
 	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.get(idname);},
-	setConfig : function(idname,val){ return this.config.set(idname,val);}
+	setConfig : function(idname,val){ return this.config.set(idname,val);},
+	
+	//------------------------------------------------------------------------------
+	// owner.saveConfig()     設定値の保存を行う
+	// owner.restoreConfig()  設定値の復帰を行う
+	//------------------------------------------------------------------------------
+	saveConfig : function(){ return this.config.getAll();},
+	restoreConfig : function(json){ this.config.setAll(json);}
 };
 
 //--------------------------------------------------------------------------------------------------------------
@@ -415,6 +422,22 @@ pzpr.util.Config.prototype =
 	set : function(name, newval){
 		this.configevent(name, newval);
 		this.owner.execListener('config', name, newval)
+	},
+
+	//---------------------------------------------------------------------------
+	// config.getAll()  全フラグの設定値を返す
+	// config.setAll()  全フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	getAll : function(){
+		var object = {};
+		for(var key in this.list){ object[key] = this.list[key].val;}
+		return JSON.stringify(object);
+	},
+	setAll : function(json){
+		var object = JSON.parse(json);
+		for(var key in this.list){
+			if(object[key]!==void 0){ this.list[key].val = object[key];}
+		}
 	},
 
 	//---------------------------------------------------------------------------
