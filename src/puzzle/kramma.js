@@ -26,7 +26,7 @@ MouseEvent:{
 	},
 
 	// オーバーライド
-	inputBD : function(flag){
+	inputborder : function(){
 		var pos = this.getpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
