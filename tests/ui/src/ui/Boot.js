@@ -71,7 +71,7 @@ function startPuzzle(){
 	
 	// 単体初期化処理のルーチンへ
 	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
-	else if(!!pzl.qdata) { ui.openPuzzle(pid+"/"+pzl.qdata, afterBoot);}
+	else if(!!pzl.url)   { ui.openPuzzle(pzl.url, afterBoot);}
 	else if(ui.debugmode){ ui.openPuzzle(pid+"/"+ui.debug.urls[pid], afterBoot);}
 	else if(!!pid)       { ui.openPuzzle(pid, afterBoot);}
 	
@@ -111,6 +111,7 @@ function importURL(){
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
 	var pzl = pzpr.url.parseURL(search);
+	if(!!pzl.qdata){ pzl.url = search;}
 
 	if(!startmode){
 		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
