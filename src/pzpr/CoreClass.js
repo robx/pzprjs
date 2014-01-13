@@ -354,6 +354,7 @@ pzpr.env.storage = (function(){
 		WebSQL  : !!(val & 0x02)
 	};
 })();
+pzpr.env.API.dataURL = !(pzpr.env.browser.legacyIE && !pzpr.env.browser.IE8);
 
 //----------------------------------------------------------------------
 // EventやDOM関連のツール的関数群

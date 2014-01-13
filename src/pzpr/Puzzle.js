@@ -226,7 +226,7 @@ pzpr.Puzzle.prototype =
 				if(!!o.imgcanvas[1]){
 					var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
 					o.imgcanvas[1].lastChild.setAttribute('xmlns', SVGNS);
-					o.imgcanvas[1].lastChild.setAttributeNS(SVGNS, 'xlink', XLINKNS);
+					o.imgcanvas[1].lastChild.setAttribute('xmlns:xlink', XLINKNS);
 				}
 			});
 			this.canvas = el;
@@ -292,6 +292,7 @@ pzpr.Puzzle.prototype =
 		if(!cellsize){ cellsize = pc.cw;}
 		pc2.cw = cellsize;
 		pc2.ch = cellsize*(pc.ch/pc.cw);
+		if(this.pid==='shwolf'){ pc2.imgtile = pc.imgtile;}
 		
 		// canvas要素の設定を適用して、再描画
 		pc2.resizeCanvasByCellSize();
