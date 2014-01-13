@@ -442,7 +442,7 @@ pzpr.util.Config.prototype =
 	//---------------------------------------------------------------------------
 	getAll : function(){
 		var object = {};
-		for(var key in this.list){ object[key] = this.list[key].val;}
+		for(var key in this.list){ if(key!=='mode'){ object[key] = this.list[key].val;}}
 		return JSON.stringify(object);
 	},
 	setAll : function(json){
