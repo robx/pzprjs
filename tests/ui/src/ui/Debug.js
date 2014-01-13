@@ -3,7 +3,7 @@
 (function(){
 
 /* uiオブジェクト生成待ち */
-if(!ui || !ui.popupmgr){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!window.ui || !ui.popupmgr){ setTimeout(arguments.callee,15); return;}
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用

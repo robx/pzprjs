@@ -2,7 +2,7 @@
 (function(){
 
 /* pzprオブジェクト生成待ち */
-if(!pzpr){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト

@@ -4,21 +4,17 @@
 /********************************/
 /* 初期化時のみ使用するルーチン */
 /********************************/
+if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
+
 var require_accesslog = true;
 var onload_pzl = null;
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
-function boot(){
-	if(!includePzprFile() || !includeDebugFile()){
-		setTimeout(arguments.callee,10);
-		return;
-	}
-
-	startPuzzle();
-}
-if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
-else{ window.attachEvent("onload", boot);}
+pzpr.addLoadListener(function(){
+	if(includePzprFile() && includeDebugFile()){ startPuzzle();}
+	else{ setTimeout(arguments.callee,0);}
+});
 
 function includePzprFile(){
 	/* pzpr, uiオブジェクト生成待ち */

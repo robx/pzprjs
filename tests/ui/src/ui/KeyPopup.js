@@ -2,7 +2,7 @@
 (function(){
 
 /* uiオブジェクト生成待ち */
-if(!ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!window.ui){ setTimeout(arguments.callee,15); return;}
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する

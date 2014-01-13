@@ -15,17 +15,12 @@ window.pzpr = {
 	//---------------------------------------------------------------
 	// パズルを生成する
 	//---------------------------------------------------------------
-	firstCreate : true,
 	createPuzzle : function(canvas, option){
 		var puzzle = new pzpr.Puzzle();
 		this.puzzles.push(puzzle);
 		if(!!canvas){
 			var type = (!!option && !!option.graphic ? option.graphic : '');
 			puzzle.setCanvas(canvas, type);
-		}
-		if(this.firstCreate){
-			this.addKeyEvents();
-			this.firstCreate = false;
 		}
 		return puzzle;
 	},
@@ -72,8 +67,45 @@ window.pzpr = {
 	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
 	execKeyDown  : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keydown(e);}},
 	execKeyUp    : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keyup(e);}},
-	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}}
+	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}},
+
+	//---------------------------------------------------------------
+	// 起動時関連関数
+	//---------------------------------------------------------------
+	preinit : true,
+	loadfun : [],
+	addLoadListener : function(func){
+		if(this.preinit){ this.loadfun.push(func);}
+		else{ func();}
+	},
+	postload : function(){
+		if(!!window.Candle){
+			this.addKeyEvents();
+			this.preinit = false;
+			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
+			this.loadfun = [];
+		}
+		else{ setTimeout(function(){ pzpr.postload();},10);}
+	}
 };
+
+//----------------------------------------------------------------------
+// 起動時処理実行処理
+//----------------------------------------------------------------------
+if(!!document.addEventListener){
+	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
+}
+else if(navigator.userAgent.test(/MSIE 8/)){
+	document.attachEvent('onreadystatechange', function(){ if(document.readyState==='interactive'){ pzpr.postload();}});
+}
+else{
+	(function(){
+		try{ document.documentElement.doScroll("left");}
+		catch(error){ setTimeout(arguments.callee, 0); return;}
+		pzpr.postload();
+	})();
+}
+
 var k = pzpr.consts;
 
 //----------------------------------------------------------------------------
@@ -330,16 +362,12 @@ pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
 	getpath : function(){
-		var dir="", srcs=document.getElementsByTagName('script');
+		var srcs=document.getElementsByTagName('script');
 		for(var i=0;i<srcs.length;i++){
 			var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
-			if(result){
-				if(result[1].match(/\/$/)){ dir = result[1];}
-				else{ dir = result[1]+'/';}
-				break;
-			}
+			if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
 		}
-		return dir;
+		return "";
 	},
 
 	//---------------------------------------------------------------
