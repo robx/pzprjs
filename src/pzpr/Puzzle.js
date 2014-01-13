@@ -229,7 +229,8 @@ pzpr.Puzzle.prototype =
 		
 		var el2 = document.createElement('div');
 		el2.id = "_"+(new Date()).getTime(); /* 何か他とかぶらないようなID */
-		el2.style.left = '0px';
+		el2.style.left = '-10000px';
+		el2.style.top = '0px';
 		document.body.appendChild(el2);
 		Candle.start(el2.id, 'canvas', function(g){
 			g.canvas.style.position = 'absolute';
