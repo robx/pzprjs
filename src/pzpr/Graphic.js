@@ -255,13 +255,21 @@ pzpr.createPuzzleClass('Graphic',
 				x0 -= (rect.left%1);
 				y0 -= (rect.top%1);
 			}
-			g.translate(x0, y0);
+			gs[i].translate(x0, y0);
 		}
 
 		this.owner.execListener('resize');
 
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect = pzpr.util.getRect(!g.use.sl ? g.child : g.canvas);
+		var rect;
+		if(!pzpr.env.browser.oldGecko){
+			rect = pzpr.util.getRect(!g.use.sl ? g.child : g.canvas);
+		}
+		else{
+			rect = pzpr.util.getRect(g.canvas);
+			rect.left += parseInt(g.canvas.style.paddingLeft);
+			rect.top  += parseInt(g.canvas.style.paddingTop);
+		}
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
@@ -343,7 +351,8 @@ pzpr.createPuzzleClass('Graphic',
 	prepaint : function(){
 		if(this.suspended){ return;}
 
-		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
+		var x1 = this.range.x1, y1 = this.range.y1,
+			x2 = this.range.x2, y2 = this.range.y2;
 		if(x1>x2 || y1>y2){ return;}
 
 		if(!this.useBuffer){
@@ -360,10 +369,11 @@ pzpr.createPuzzleClass('Graphic',
 			this.currentContext = g;
 			
 			// source側はtaranslateのぶん足されていないので、加算しておきます
-			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1;
-			var sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
+			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1,
+				sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
 			if(sx1<0){ sx1=0;} if(sx2>g2.child.width) { sx2=g2.child.width;}
 			if(sy1<0){ sy1=0;} if(sy2>g2.child.height){ sy2=g2.child.height;}
+			//g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 		}
 

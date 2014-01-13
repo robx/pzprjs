@@ -279,6 +279,7 @@ pzpr.env = {
 			IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
 		};
 		bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
+		bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
 		return bz;
 	})(),
 	OS : (function(){

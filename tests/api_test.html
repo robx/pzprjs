@@ -6,7 +6,7 @@
 <script type="text/javascript">
 var pzl, pzl2;
 window.onload = function(){
-	pzpr.srcbase = '../src';
+	if(!window.pzpr || !pzpr.url){ setTimeout(arguments.callee,20); return;}
 	
 	pzl = pzpr.createPuzzle(document.getElementById('divques')).open('?tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
 	

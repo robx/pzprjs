@@ -2,7 +2,7 @@
 (function(){
 
 /* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(setTimeout(arguments.callee),15); return;}
+if(!window.ui){ setTimeout(arguments.callee,15); return;}
 
 // メニュー描画/取得/html表示系
 /* extern */

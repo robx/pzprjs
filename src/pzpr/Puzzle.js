@@ -209,6 +209,8 @@ pzpr.Puzzle.prototype =
 		var o = this;
 		if(!type){ type = '';}
 		if(!!el){
+			/* fillTextが使えない場合は強制的にSVG描画に変更する */
+			if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 			Candle.start(el.id, type, function(g){
 				pzpr.util.unselectable(g.canvas);
 				if(g.use.sl){ o.setSLKeyEvents(g);}
@@ -227,7 +229,7 @@ pzpr.Puzzle.prototype =
 		
 		var el2 = document.createElement('div');
 		el2.id = "_"+(new Date()).getTime(); /* 何か他とかぶらないようなID */
-		el2.style.left = '-10000px';
+		el2.style.left = '0px';
 		document.body.appendChild(el2);
 		Candle.start(el2.id, 'canvas', function(g){
 			g.canvas.style.position = 'absolute';
