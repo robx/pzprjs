@@ -36,6 +36,7 @@ pzpr.Puzzle.prototype =
 	
 	canvas    : null,	// 描画canvas本体
 	subcanvas : null,	// 補助canvas
+	imgcanvas : [null, null],	// 画像出力用canvas
 	
 	listeners : null,
 	
@@ -214,29 +215,35 @@ pzpr.Puzzle.prototype =
 			Candle.start(el.id, type, function(g){
 				pzpr.util.unselectable(g.canvas);
 				if(g.use.sl){ o.setSLKeyEvents(g);}
-				if(g.use.canvas){ o.addSubCanvas();}
+				if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
 				if(o.ready){
 					o.painter.resetCanvas();
 					o.painter.unsuspend();
+				}
+				/* 画像出力用canvasの準備 */
+				o.imgcanvas[0] = (!!o.subcanvas ? o.subcanvas : o.addSubCanvas('canvas'));
+				o.imgcanvas[1] = o.addSubCanvas('svg');
+				if(!!o.imgcanvas[1]){
+					var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
+					o.imgcanvas[1].lastChild.setAttribute('xmlns', SVGNS);
+					o.imgcanvas[1].lastChild.setAttributeNS(SVGNS, 'xlink', XLINKNS);
 				}
 			});
 			this.canvas = el;
 			this.setCanvasEvents(el);
 		}
 	},
-	addSubCanvas : function(){
-		if(!Candle.enable.canvas || !!this.subcanvas){ return false;}
-		
-		var el2 = document.createElement('div');
-		el2.id = "_"+(new Date()).getTime(); /* 何か他とかぶらないようなID */
-		el2.style.left = '-10000px';
-		el2.style.top = '0px';
-		document.body.appendChild(el2);
-		Candle.start(el2.id, 'canvas', function(g){
-			g.canvas.style.position = 'absolute';
-		});
-		this.subcanvas = el2;
-		return true;
+	addSubCanvas : function(type){
+		var el = null;
+		if(Candle.enable[type]){
+			el = document.createElement('div');
+			el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
+			el.style.left = '-10000px';
+			el.style.top = '0px';
+			document.body.appendChild(el);
+			Candle.start(el.id, type, function(g){ g.canvas.style.position = 'absolute';});
+		}
+		return el;
 	},
 
 	//---------------------------------------------------------------------------
@@ -265,16 +272,18 @@ pzpr.Puzzle.prototype =
 	// owner.canvasToBlob()        盤面画像をBlobとして出力する
 	// owner.generateLocalCanvas() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	canvasToDataURL : function(cellsize){
-		return this.getLocalCanvas(cellsize).toDataURL();
+	canvasToDataURL : function(type, cellsize){
+		if(type!=='svg'){ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toDataURL();}
+		else{ return "data:image/svg+xml;base64," + window.btoa(this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML);}
 	},
-	canvasToBlob : function(cellsize){
-		return this.getLocalCanvas(cellsize).toBlob();
+	canvasToBlob : function(type, cellsize){
+		if(type!=='svg'){ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toBlob();}
+		else{ return new Blob([this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML]);}
 	},
-	getLocalCanvas : function(cellsize){
+	getLocalCanvas : function(el, cellsize){
 		var pc = this.painter, pc2 = new this.Graphic();
 		
-		pc2.initCanvas(this.subcanvas);
+		pc2.initCanvas(el);
 		
 		// 設定値・変数をcanvas用のものに変更
 		pc2.suspendAll();
