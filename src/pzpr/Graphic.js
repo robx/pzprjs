@@ -235,22 +235,22 @@ pzpr.createPuzzleClass('Graphic',
 		this.lm = (this.lw-1)/2;
 
 		// 盤面のセルID:0が描画される左上の位置の設定
+		var g = this.currentContext;
 		var bd = this.owner.board;
 		this.x0 = ((cwid-this.cw*(bd.qcols-this.getOffsetCols()))/2)|0;
 		this.y0 = ((chgt-this.ch*(bd.qrows-this.getOffsetRows()))/2)|0;
 
 		// canvas要素のサイズを変更する
-		var gs = [this.currentContext, this.subContext];
+		var gs = [g, this.subContext];
 		for(var i=0;i<2;i++){
-			var g = gs[i];
-			if(!g){ continue;}
+			if(!gs[i]){ continue;}
 			// Canvasのサイズ変更
-			g.changeSize(cwid|0, chgt|0);
+			gs[i].changeSize(cwid|0, chgt|0);
 			
 			// CanvasのOffset位置変更
 			var x0 = this.x0, y0 = this.y0;
 			// SVGの時、小数点以下の端数調整を行う
-			if(!g.use.canvas && g===this.currentContext){
+			if(!g.use.canvas && gs[i]===g){
 				var rect = pzpr.util.getRect(g.canvas);
 				x0 -= (rect.left%1);
 				y0 -= (rect.top%1);
@@ -261,7 +261,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.owner.execListener('resize');
 
 		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect = pzpr.util.getRect(this.currentContext.child);
+		var rect = pzpr.util.getRect(!g.use.sl ? g.child : g.canvas);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 
@@ -1936,7 +1936,7 @@ pzpr.createPuzzleClass('Graphic',
 			case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 		}
 		if((g.use.vml || g.use.sl) && (type===1||type===4||type===5)){py++;}
-		if(g.use.vml){ py-=(fontsize*0.35);}
+		if(g.use.vml){ py-=(fontsize*0.20);}
 
 		var vid = "text_"+key;
 		if(g.use.vml){
