@@ -3,6 +3,8 @@
 //
 (function(){
 
+var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
+
 pzpr.createCustoms('kramma', {
 //---------------------------------------------------------
 // マウス入力系
@@ -98,21 +100,10 @@ Graphic:{
 		this.setBorderColorFunc('qans');
 
 		this.crosssize = 0.15;
-		if(this.owner.pid==='shwolf'){
-			var imgsrc = pzpr.util.getpath()+'img/shwolf_obj.png';
-			if(pzpr.env.API.dataURL){ imgsrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC";}
-			this.imgtile = new this.owner.ImageTile(imgsrc,2,1);
-		}
+
+		this.imgtile = null;
 	},
 
-	prepaint : function(){
-		if(this.owner.pid==='shwolf' && !this.imgtile.loaded){
-			this.suspendAll();
-		}
-		else{
-			this.Common.prototype.prepaint.call(this);
-		}
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
@@ -147,8 +138,37 @@ Graphic:{
 			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
 		}
 		return null;
+	}
+},
+"Graphic@shwolf":{
+	initCanvas : function(canvas, subcanvas, callback){
+		/* callbackはimgtile初期化後に呼び出す */
+		var pc = this;
+		this.Common.prototype.initCanvas.call(this, canvas, subcanvas, function(){ pc.initImageTile(callback);});
+	},
+	initImageTile : function(callback){
+		if(!this.imgtile){
+			var imgsrc = pzpr.util.getpath()+'img/shwolf_obj.png';
+			if(pzpr.env.API.dataURL){ imgsrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC";}
+			this.imgtile = new this.owner.ImageTile(this,imgsrc,2,1);
+		}
+		if(!this.imgtile.loaded){
+			var pc = this;
+			setTimeout(function(){ pc.initImageTile(callback);},10);
+			return;
+		}
+		
+		if(!!callback){ callback();}
 	},
 
+	resize_canvas_main : function(){
+		this.Common.prototype.resize_canvas_main.call(this);
+		if(this.imgtile && this.imgtile.loaded){ this.imgtile.createStamp(this.currentContext);}
+	},
+	prepaint : function(){
+		if(!this.imgtile || !this.imgtile.loaded){ this.suspendAll();}
+		else{ this.Common.prototype.prepaint.call(this);}
+	},
 	drawSheepWolf : function(){
 		var g = this.vinc('cell_number_image', 'auto');
 
@@ -158,7 +178,8 @@ Graphic:{
 			if(cell.qnum>0){
 				var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
 				this.vshow(keyimg);
-				this.imgtile.putImage(cell.qnum-1, g, rpx,rpy,this.cw,this.ch);
+				if(g.use.svg){ this.imgtile.putStamp(cell.qnum-1, g, rpx,rpy);}
+				else         { this.imgtile.putImage(cell.qnum-1, g, rpx,rpy,this.cw,this.ch);}
 			}
 			else{ this.vhide(keyimg);}
 		}
@@ -336,8 +357,8 @@ FailCode:{
 	bdNotChassis : ["外枠につながっていない線があります。","A line doesn't connect to the chassis."]
 },
 
-ImageTile:{
-	initialize : function(src,col,row){
+"ImageTile@shwolf":{
+	initialize : function(pc,src,col,row){
 		this.image = new Image();
 		this.image.src = src;
 
@@ -346,32 +367,77 @@ ImageTile:{
 
 		this.width  = 0;
 		this.height = 0;
-		this.cw     = 0;
-		this.ch     = 0;
+		this.cwidth  = 0;
+		this.cheight = 0;
 		this.loaded = false;
+		this.painter = pc;
+		this.key = this.owner.pid+'_img';
 
-		var self = this;
-		setTimeout(function(){
-			if(self.image.height>0){ self.load_func.call(self);}
-			else{ setTimeout(arguments.callee,10);}
-		},10);
+		this.waitload();
+	},
+	waitload : function(){
+		if(this.image.height>0){ this.load_func();}
+		else{ var self = this; setTimeout(function(){ self.waitload();},10);}
 	},
 	load_func : function(){
+		var pc = this.painter, ctx = pc.currentContext;
 		this.width  = this.image.width;
 		this.height = this.image.height;
-		this.cw     = this.width/this.cols;
-		this.ch     = this.height/this.rows;
+		this.cwidth  = this.width/this.cols;
+		this.cheight = this.height/this.rows;
 		this.loaded = true;
-		this.owner.painter.unsuspend();
+		if(ctx.use.svg){ this.createStamp(ctx);}
+		pc.unsuspend();
 	},
-	putImage : function(id,ctx,dx,dy,dw,dh){
+	createStamp : function(ctx){
+		var defs = document.createElementNS(SVGNS, 'defs');
+		ctx.child.insertBefore(defs, (!!ctx.child.firstChild ? ctx.child.firstChild : null));
+		
+		var el = document.createElementNS(SVGNS, 'image');
+		el.setAttributeNS(null, "id", this.key);
+		el.setAttributeNS(null, "width",  this.image.width);
+		el.setAttributeNS(null, "height", this.image.height);
+		el.setAttributeNS(XLINKNS, "xlink:href", this.image.src);
+		defs.appendChild(el);
+		
+		var n=0, w=this.cwidth, h=this.cheight;
+		for(var j=0;j<this.rows;j++){ for(var i=0;i<this.cols;i++){
+			var el = document.createElementNS(SVGNS, 'svg');
+			el.setAttribute("id", this.key+n);
+			el.setAttribute("viewBox", [(i*w),(j*h),w,h].join(" "));
+			el.setAttribute("width",  this.painter.cw);
+			el.setAttribute("height", this.painter.ch);
+			defs.appendChild(el);
+			
+			var use = document.createElementNS(SVGNS, 'use');
+			use.setAttributeNS(XLINKNS, "xlink:href", '#'+this.key);
+			el.appendChild(use);
+			n++;
+		}}
+	},
+	
+	putImage : function(n,ctx,dx,dy,dw,dh){
 		if(this.loaded){
-			if(dw===(void 0)){ dw=this.cw; dh=this.ch;}
-			var col=id%this.cols, row=(id/this.cols)|0;
-			ctx.drawImage(this.image, col*this.cw,row*this.ch,this.cw,this.ch, dx,dy,dw,dh);
-			return true;
+			var w=this.cwidth, h=this.cheight;
+			if(dw===(void 0)){ dw=w; dh=h;}
+			var col=n%this.cols, row=(n/this.cols)|0;
+			ctx.drawImage(this.image, (col*w),(row*h),w,h, dx,dy,dw,dh);
 		}
-		return false;
+		return this.loaded;
+	},
+	putStamp : function(n,ctx,dx,dy){
+		if(this.loaded){
+			var el = (!!ctx.vid ? ctx.elements[ctx.vid] : null), newel = !el;
+			if(newel){ el = document.createElementNS(SVGNS, 'use');}
+			el.setAttributeNS(XLINKNS, "xlink:href", '#'+this.key+n);
+			el.setAttribute("x", dx);
+			el.setAttribute("y", dy);
+			if(newel){ ctx.target.appendChild(el);}
+			
+			if(newel && !!ctx.vid){ ctx.elements[ctx.vid] = el;}
+			ctx.vid = '';
+		}
+		return this.loaded;
 	}
 }
 });

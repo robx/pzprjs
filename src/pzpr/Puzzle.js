@@ -292,7 +292,6 @@ pzpr.Puzzle.prototype =
 		if(!cellsize){ cellsize = pc.cw;}
 		pc2.cw = cellsize;
 		pc2.ch = cellsize*(pc.ch/pc.cw);
-		if(this.pid==='shwolf'){ pc2.imgtile = pc.imgtile;}
 		
 		// canvas要素の設定を適用して、再描画
 		pc2.resizeCanvasByCellSize();
