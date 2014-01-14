@@ -61,7 +61,7 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas'});
+	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas', imagesave:true});
 	pzpr.connectKeyEvents(ui.puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */

@@ -16,11 +16,11 @@ window.pzpr = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas, option){
-		var puzzle = new pzpr.Puzzle();
+		option = (!!option ? option : {});
+		var puzzle = new pzpr.Puzzle(option);
 		this.puzzles.push(puzzle);
 		if(!!canvas){
-			var type = (!!option && !!option.graphic ? option.graphic : '');
-			puzzle.setCanvas(canvas, type);
+			puzzle.setCanvas(canvas, option.graphic);
 		}
 		return puzzle;
 	},
