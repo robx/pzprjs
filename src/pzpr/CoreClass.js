@@ -326,9 +326,11 @@ pzpr.env = {
 	storage : {},
 	API : (function(){
 		var touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
+		var pointerevent = (!!navigator.pointerEnabled);
 		var mspointerevent = (!!navigator.msPointerEnabled);
 		return {
 			touchevent     : touchevent,
+			pointerevent   : pointerevent,
 			mspointerevent : mspointerevent
 		};
 	})()
@@ -407,7 +409,10 @@ pzpr.util = {
 		else                     { el.attachEvent('on'+event, func);}
 	},
 	addMouseDownEvent : function(el, self, func){
-		if(pzpr.env.API.mspointerevent){
+		if(pzpr.env.API.pointerevent){
+			this.addEvent(el, "pointerdown", self, func);
+		}
+		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerDown", self, func);
 		}
 		else{
@@ -418,7 +423,10 @@ pzpr.util = {
 		}
 	},
 	addMouseMoveEvent : function(el, self, func){
-		if(pzpr.env.API.mspointerevent){
+		if(pzpr.env.API.pointerevent){
+			this.addEvent(el, "pointermove", self, func);
+		}
+		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerMove", self, func);
 		}
 		else{
@@ -429,7 +437,10 @@ pzpr.util = {
 		}
 	},
 	addMouseUpEvent : function(el, self, func){
-		if(pzpr.env.API.mspointerevent){
+		if(pzpr.env.API.pointerevent){
+			this.addEvent(el, "pointerup", self, func);
+		}
+		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerUp", self, func);
 		}
 		else{
