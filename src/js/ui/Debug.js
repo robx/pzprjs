@@ -179,5 +179,5 @@ ui.debug =
 		document.body.appendChild(_script);
 		this.includedScript[filename] = true;
 	},
-	includedScript : {},
+	includedScript : {}
 };

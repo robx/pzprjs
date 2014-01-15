@@ -1,14 +1,14 @@
 
 (function(){
-	var dir="", srcs=document.getElementsByTagName('script');
-	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
-		if(result){
-			if(result[1].match(/\/$/)){ dir = result[1];}
-			else{ dir = result[1]+'/';}
-			break;
-		}
-	}
+	var dir = (function getpath(){
+		var srcs=document.getElementsByTagName('script');
+		for(var i=0;i<srcs.length;i++){
+			var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
+			if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
+ 		}
+		return "";
+	})();
+	if(!dir){ setTimeout(arguments.callee,0); return;}
 
 	var files = [
 		"../vendor/pzpr/pzpr.js",

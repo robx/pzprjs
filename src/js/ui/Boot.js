@@ -4,21 +4,17 @@
 /********************************/
 /* 初期化時のみ使用するルーチン */
 /********************************/
+if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
+
 var require_accesslog = true;
 var onload_pzl = null;
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
-function boot(){
-	if(!includePzprFile() || !includeDebugFile()){
-		setTimeout(arguments.callee,10);
-		return;
-	}
-
-	startPuzzle();
-}
-if(!!window.addEventListener){ window.addEventListener("load", boot, false);}
-else{ window.attachEvent("onload", boot);}
+pzpr.addLoadListener(function(){
+	if(includePzprFile() && includeDebugFile()){ startPuzzle();}
+	else{ setTimeout(arguments.callee,0);}
+});
 
 function includePzprFile(){
 	/* pzpr, uiオブジェクト生成待ち */
@@ -44,7 +40,10 @@ function includeDebugFile(){
 	/* 必要な場合、テスト用ファイルのinclude         */
 	/* importURL()後でないと必要かどうか判定できない */
 	if(ui.debugmode){
-		if(!ui.debug.urls){
+		if(!ui.debug){
+			result = false;
+		}
+		else if(!ui.debug.urls){
 			ui.debug.includeDebugScript("for_test.js");
 			result = false;
 		}
@@ -62,7 +61,8 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas'});
+	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas', imagesave:true});
+	pzpr.connectKeyEvents(ui.puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
@@ -70,7 +70,7 @@ function startPuzzle(){
 	
 	// 単体初期化処理のルーチンへ
 	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
-	else if(!!pzl.qdata) { ui.openPuzzle(pid+"/"+pzl.qdata, afterBoot);}
+	else if(!!pzl.url)   { ui.openPuzzle(pzl.url, afterBoot);}
 	else if(ui.debugmode){ ui.openPuzzle(pid+"/"+ui.debug.urls[pid], afterBoot);}
 	else if(!!pid)       { ui.openPuzzle(pid, afterBoot);}
 	
@@ -83,7 +83,6 @@ function afterBoot(o){
 		o.setConfig('mode',3);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
-	o.setKeyEvents();
 	accesslog();
 }
 
@@ -111,6 +110,7 @@ function importURL(){
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}
 
 	var pzl = pzpr.url.parseURL(search);
+	if(!!pzl.qdata){ pzl.url = search;}
 
 	if(!startmode){
 		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
