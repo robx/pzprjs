@@ -10,7 +10,8 @@ ui.menu = {
 	menupid : '',				// どの種類のパズルのメニューを表示しているか
 	menuconfig : {},			// MenuConfigの設定内容を保持する
 	
-	enableSaveImage : false,	// 画像保存が可能か
+	enableSaveImage : false,	// 画像保存(png形式)が可能か
+	enableSaveSVG   : false,	// 画像保存(SVG形式)が可能か
 	enableGetText   : false,	// FileReader APIの旧仕様でファイルが読めるか
 	enableReadText  : false,	// HTML5 FileReader APIでファイルが読めるか
 	enableSaveBlob  : false,	// saveBlobが使用できるか
@@ -45,8 +46,11 @@ ui.menu = {
 		
 		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
 		
-		if(!!ui.puzzle.subcanvas && !!_doc.createElement('canvas').toDataURL){
+		if(!!ui.puzzle.imgcanvas[0] && !!_doc.createElement('canvas').toDataURL){
 			this.enableSaveImage = true;
+		}
+		if(!!ui.puzzle.imgcanvas[1] && !!window.btoa){
+			this.enableSaveSVG = true;
 		}
 		
 		this.menureset();
@@ -330,12 +334,13 @@ ui.menu = {
 	// menu.saveimage()   "画像をダウンロード"の処理ルーチン (IE10用)
 	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
 	//------------------------------------------------------------------------------
-	imagesave : function(isDL,cellsize){
+	imagesave : function(type,isDL,cellsize){
 		var dataurl = "", blob = null;
+		type = (type!=='svg'?'png':'svg');
 		
 		try{
-			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.canvasToBlob(cellsize);   }
-			else                           { dataurl = ui.puzzle.canvasToDataURL(cellsize);}
+			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.canvasToBlob(type,cellsize);   }
+			else                           { dataurl = ui.puzzle.canvasToDataURL(type,cellsize);}
 		}
 		catch(e){
 			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');
@@ -343,24 +348,26 @@ ui.menu = {
 		
 		try{
 			if     (!isDL &&                         !!dataurl){ this.openimage(dataurl);  }
-			else if( isDL && !this.enableSaveBlob && !!dataurl){ this.submitimage(dataurl);}
-			else if( isDL &&  this.enableSaveBlob && !!blob)   { this.saveimage(blob);     }
+			else if( isDL && !this.enableSaveBlob && !!dataurl){ this.submitimage(type,dataurl);}
+			else if( isDL &&  this.enableSaveBlob && !!blob)   { this.saveimage(type,blob);     }
 		}
 		catch(e){
 			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
 		}
 	},
 
-	submitimage : function(url){
-		_doc.fileform2.filename.value  = ui.puzzle.pid+'.png';
-		_doc.fileform2.urlstr.value    = url.replace('data:image/png;base64,', '');
+	submitimage : function(type,url){
+		url = url.replace('data:image/png;base64,', '');
+		url = url.replace('data:image/svg+xml;base64,', '');
+		_doc.fileform2.filename.value  = ui.puzzle.pid+'.'+type;
+		_doc.fileform2.urlstr.value    = url;
 		_doc.fileform2.operation.value = 'imagesave';
 
 		_doc.fileform2.action = this.fileio
 		_doc.fileform2.submit();
 	},
-	saveimage : function(blob){
-		navigator.saveBlob(blob, ui.puzzle.pid+'.png');
+	saveimage : function(type,blob){
+		navigator.saveBlob(blob, ui.puzzle.pid+'.'+type);
 	},
 	openimage : function(url){
 		if(!pzpr.env.browser.IE9){

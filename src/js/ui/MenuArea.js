@@ -124,7 +124,7 @@ ui.menuarea = {
 		if(pzpr.env.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
-		if(ui.menu.enableSaveImage){
+		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
 		}
@@ -138,8 +138,12 @@ ui.menuarea = {
 
 		// *ファイル - 画像を保存 -------------------------------------------
 		if(ui.menu.enableSaveImage){
-			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
-			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
+			as('imagedl',   'imagesavep', '画像をダウンロード (png)', 'Download the image (png)');
+			as('imagesave', 'imagesavep', '別ウィンドウで開く (png)', 'Open another window (png)');
+		}
+		if(ui.menu.enableSaveSVG){
+			as('svgdl',   'imagesavep', '画像をダウンロード (SVG)', 'Download the image (SVG)');
+			as('svgsave', 'imagesavep', '別ウィンドウで開く (SVG)', 'Open another window (SVG)');
 		}
 
 		// *編集 ==============================================================
@@ -433,12 +437,6 @@ ui.menuarea = {
 		getEL('ms_jumpv3')  .style.fontSize = '0.9em'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
-
-		if(this.enableSaveImage && !!ui.puzzle.ImageTile){
-			if(pzpr.env.browser.Gecko && !location.hostname){
-				getEL('ms_imagesavep').className = 'smenunull';
-			}
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -481,8 +479,10 @@ ui.menuarea = {
 		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
 //		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;
 		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ ui.menu.filesave(k.FILE_PBOX);} break;
-		case 'imagedl'   : ui.menu.imagesave(true,null); break;
-		case 'imagesave' : ui.menu.imagesave(false,null); break;
+		case 'imagedl'   : ui.menu.imagesave('',true,null); break;
+		case 'imagesave' : ui.menu.imagesave('',false,null); break;
+		case 'svgdl'     : ui.menu.imagesave('svg',true,null); break;
+		case 'svgsave'   : ui.menu.imagesave('svg',false,null); break;
 		
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;
