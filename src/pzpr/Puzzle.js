@@ -6,7 +6,7 @@
 
 // Puzzleクラス
 pzpr.Puzzle = function(option){
-	this.createOption = option;
+	this.opt = option;
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -209,7 +209,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
 		var o = this;
-		if(!type){ type = o.createOption.graphic;}
+		if(!type){ type = o.opt.graphic;}
 		if(!type){ type = '';}
 		if(!!el){
 			/* fillTextが使えない場合は強制的にSVG描画に変更する */
@@ -223,7 +223,7 @@ pzpr.Puzzle.prototype =
 					o.painter.unsuspend();
 				}
 				/* 画像出力用canvasの準備 */
-				if(!o.createOption.imagesave){ return;}
+				if(!o.opt.imagesave){ return;}
 				o.imgcanvas[0] = (!!o.subcanvas ? o.subcanvas : o.addSubCanvas('canvas'));
 				o.imgcanvas[1] = o.addSubCanvas('svg');
 				if(!!o.imgcanvas[1]){
