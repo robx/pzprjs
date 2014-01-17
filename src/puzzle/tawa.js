@@ -234,7 +234,7 @@ Graphic:{
 	flushCanvas : function(){
 		this.flushCanvas = ((this.use.canvas) ?
 			function(){
-				var g = this.currentContext, bd = this.owner.board;
+				var g = this.context, bd = this.owner.board;
 				var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 				g.fillStyle = "rgb(255, 255, 255)";
 				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw+1, (y2-y1)*this.bh+1);

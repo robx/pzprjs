@@ -469,7 +469,7 @@ Graphic:{
 		this.drawSegment1(seg,false);
 	},
 	drawSegment1 : function(seg,isdraw){
-		var g = this.currentContext;
+		var g = this.context;
 
 		g.lineWidth = this.lw;
 

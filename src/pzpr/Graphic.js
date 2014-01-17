@@ -8,8 +8,8 @@
 pzpr.createPuzzleClass('Graphic',
 {
 	initialize : function(){
-		this.currentContext = null;
-		this.subContext     = null;
+		this.context    = null;
+		this.subcontext = null;
 
 		// 盤面のCellを分ける色
 		this.gridcolor = "black";
@@ -161,13 +161,13 @@ pzpr.createPuzzleClass('Graphic',
 			return;
 		}
 
-		this.currentContext = (!!canvas    ? canvas.getContext("2d")    : null);
-		this.subContext     = (!!subcanvas ? subcanvas.getContext("2d") : null);
+		this.context    = (!!canvas    ? canvas.getContext("2d")    : null);
+		this.subcontext = (!!subcanvas ? subcanvas.getContext("2d") : null);
 
-		var g = this.currentContext;
+		var g = this.context;
 		for(var type in g.use){ this.use[type] = g.use[type];}
 
-		this.useBuffer = (!!g.use.canvas && !!this.subContext);
+		this.useBuffer = (!!g.use.canvas && !!this.subcontext);
 
 		if(!!callback){ callback();}
 	},
@@ -191,7 +191,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
 		
-		if(!!this.currentContext){
+		if(!!this.context){
 			this.resize_canvas_main();
 			if(!insuspend){ this.unsuspend();}
 		}
@@ -205,7 +205,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.canvasWidth  = this.cw*this.getCanvasCols();
 		this.canvasHeight = this.ch*this.getCanvasRows();
 		
-		if(!!this.currentContext){
+		if(!!this.context){
 			this.resize_canvas_main();
 			if(!insuspend){ this.unsuspend();}
 		}
@@ -235,13 +235,13 @@ pzpr.createPuzzleClass('Graphic',
 		this.lm = (this.lw-1)/2;
 
 		// 盤面のセルID:0が描画される左上の位置の設定
-		var g = this.currentContext;
+		var g = this.context;
 		var bd = this.owner.board;
 		this.x0 = ((cwid-this.cw*(bd.qcols-this.getOffsetCols()))/2)|0;
 		this.y0 = ((chgt-this.ch*(bd.qrows-this.getOffsetRows()))/2)|0;
 
 		// canvas要素のサイズを変更する
-		var gs = [g, this.subContext];
+		var gs = [g, this.subcontext];
 		for(var i=0;i<2;i++){
 			if(!gs[i]){ continue;}
 			// Canvasのサイズ変更
@@ -276,7 +276,7 @@ pzpr.createPuzzleClass('Graphic',
 		// flushCanvas, vnopなどの関数を初期化する
 		this.resetVectorFunctions();
 
-		this.currentContext.clear();
+		this.context.clear();
 	},
 
 	//---------------------------------------------------------------------------
@@ -332,7 +332,7 @@ pzpr.createPuzzleClass('Graphic',
 		}
 		if(this.suspended){
 			if(this.canvasWidth===null || this.canvasHeight===null){
-				var rect = pzpr.util.getRect(this.currentContext.canvas);
+				var rect = pzpr.util.getRect(this.context.canvas);
 				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
 			}
 			this.suspended = false;
@@ -361,12 +361,12 @@ pzpr.createPuzzleClass('Graphic',
 			this.paint();
 		}
 		else{
-			var g = this.currentContext, g2 = this.subContext;
-			this.currentContext = g2;
+			var g = this.context, g2 = this.subcontext;
+			this.context = g2;
 			this.setRangeObject(x1-1,y1-1,x2+1,y2+1);
 			this.flushCanvas();
 			this.paint();
-			this.currentContext = g;
+			this.context = g;
 			
 			// source側はtaranslateのぶん足されていないので、加算しておきます
 			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1,
@@ -937,7 +937,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.drawBorders_common("b_bd");
 	},
 	drawBorders_common : function(header){
-		var g = this.currentContext;
+		var g = this.context;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
@@ -1130,7 +1130,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.addlw = 0;
 		if(border.isLine()){
 			if(border.error===1){
-				if(this.currentContext.use.canvas){ this.addlw=1;}
+				if(this.context.use.canvas){ this.addlw=1;}
 				return this.errlinecolor;
 			}
 			else if(border.error===-1){ return this.errlinebgcolor;}
@@ -1261,7 +1261,7 @@ pzpr.createPuzzleClass('Graphic',
 		}
 	},
 	drawTriangle1 : function(px,py,num,vid){
-		var g = this.currentContext;
+		var g = this.context;
 		if(this.vnop(vid,this.FILL)){
 			var cw = this.cw, ch = this.ch, mgn = (this.owner.pid==="reflect"?1:0);
 			switch(num){
@@ -1778,11 +1778,11 @@ pzpr.createPuzzleClass('Graphic',
 	},
 
 	flushCanvas : function(){
-		var g = this.currentContext
+		var g = this.context
 		this.flushCanvas = ((this.use.canvas) ?
 			function(){
 				var d = this.range;
-				var g = this.currentContext;
+				var g = this.context;
 				var px=d.x1*this.bw, py=d.y1*this.bh, pw=(d.x2-d.x1)*this.bw+1, ph=(d.y2-d.y1)*this.bh+1;
 				var pxmin=-this.x0, pymin=-this.y0, pxmax=g.canvas.clientWidth, pymax=g.canvas.clientHeight;
 				px=(px>=pxmin?px:pxmin); py=(py>=pymin?py:pymin);
@@ -1809,7 +1809,7 @@ pzpr.createPuzzleClass('Graphic',
 			function(vid, ccflag){ return true;}
 		: (this.use.vml) ?
 			function(vid, ccflag){
-				var g = this.currentContext
+				var g = this.context
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1820,7 +1820,7 @@ pzpr.createPuzzleClass('Graphic',
 			}
 		: (this.use.sl) ?
 			function(vid, ccflag){
-				var g = this.currentContext
+				var g = this.context
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1831,7 +1831,7 @@ pzpr.createPuzzleClass('Graphic',
 			}
 		: /* (this.use.svg) */
 			function(vid, ccflag){
-				var g = this.currentContext
+				var g = this.context
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
@@ -1848,7 +1848,7 @@ pzpr.createPuzzleClass('Graphic',
 			function(vid){}
 		:
 			function(vid){
-				var g = this.currentContext
+				var g = this.context
 				g.vid = vid;
 				if(!g.elements[vid]){ return;}
 
@@ -1860,12 +1860,12 @@ pzpr.createPuzzleClass('Graphic',
 		this.vshow(vid);
 	},
 	vhide : function(vid){
-		var g = this.currentContext
+		var g = this.context
 		this.vhide = ((this.use.canvas) ?
 			function(vid){}
 		:
 			function(vid){
-				var g = this.currentContext
+				var g = this.context
 				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
@@ -1879,12 +1879,12 @@ pzpr.createPuzzleClass('Graphic',
 		this.vhide(vid);
 	},
 	vdel : function(vid){
-		var g = this.currentContext
+		var g = this.context
 		this.vdel = ((this.use.canvas) ?
 			function(vid){}
 		:
 			function(vid){
-				var g = this.currentContext
+				var g = this.context
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
@@ -1897,17 +1897,17 @@ pzpr.createPuzzleClass('Graphic',
 		this.vdel(vid);
 	},
 	vinc : function(layerid, rendering){
-		var g = this.currentContext
+		var g = this.context
 		this.vinc = ((this.use.canvas) ?
 			function(layerid, rendering){
-				var g = this.currentContext
+				var g = this.context
 				g.setLayer(layerid);
 				if(rendering){ g.setRendering(rendering);}
 				return g;
 			}
 		:
 			function(layerid, rendering){
-				var g = this.currentContext
+				var g = this.context
 				g.vid = "";
 				g.setLayer(layerid);
 
@@ -1929,7 +1929,7 @@ pzpr.createPuzzleClass('Graphic',
 	// pc.hidenum()  数字を隠す
 	//---------------------------------------------------------------------------
 	dispnum : function(key, type, text, fontratio, color, px, py){
-		var g = this.currentContext;
+		var g = this.context;
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
 
 		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px 'Serif'");

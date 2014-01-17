@@ -300,7 +300,7 @@ pzpr.Puzzle.prototype =
 		pc2.resizeCanvasByCellSize();
 		pc2.unsuspend();
 		
-		return pc2.currentContext.canvas;
+		return pc2.context.canvas;
 	},
 
 	//---------------------------------------------------------------------------

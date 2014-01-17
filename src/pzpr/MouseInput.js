@@ -126,7 +126,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		var pc = this.owner.painter, pagePos = pzpr.util.getPagePos(e);
 		var pos = { px: (pagePos.px - pc.pageX - this.mouseoffset.px),
 					py: (pagePos.py - pc.pageY - this.mouseoffset.py)};
-		var g = pc.currentContext;
+		var g = pc.context;
 		if(!!g && (g.use.vml || g.use.sl)){
 			pos.px+=pc.bw*0.33;
 			pos.py+=pc.bh*0.33;

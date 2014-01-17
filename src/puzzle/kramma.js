@@ -163,7 +163,7 @@ Graphic:{
 
 	resize_canvas_main : function(){
 		this.Common.prototype.resize_canvas_main.call(this);
-		if(this.imgtile && this.imgtile.loaded){ this.imgtile.createStamp(this.currentContext);}
+		if(this.imgtile && this.imgtile.loaded){ this.imgtile.createStamp(this.context);}
 	},
 	prepaint : function(){
 		if(!this.imgtile || !this.imgtile.loaded){ this.suspendAll();}
@@ -380,7 +380,7 @@ FailCode:{
 		else{ var self = this; setTimeout(function(){ self.waitload();},10);}
 	},
 	load_func : function(){
-		var pc = this.painter, ctx = pc.currentContext;
+		var pc = this.painter, ctx = pc.context;
 		this.width  = this.image.width;
 		this.height = this.image.height;
 		this.cwidth  = this.width/this.cols;

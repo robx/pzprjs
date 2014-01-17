@@ -407,7 +407,7 @@ Graphic:{
 		}
 	},
 	drawInOut : function(){
-		var g = this.currentContext, bd = this.owner.board, border;
+		var g = this.context, bd = this.owner.board, border;
 
 		border = bd.arrowin;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
