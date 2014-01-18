@@ -265,6 +265,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.anscount = 0;
 		this.broken   = false;
 		this.initpos  = 0;
+		this.changeflag = false;
 		this.checkexec();
 	},
 	newOperation : function(flag){ this.changeflag = false;},
