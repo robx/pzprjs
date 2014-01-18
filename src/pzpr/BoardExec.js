@@ -61,7 +61,7 @@ pzpr.createPuzzleClass('BoardExec',
 	// bd.exec.execadjust()   盤面の調整、回転、反転で対応する関数へジャンプする
 	//------------------------------------------------------------------------------
 	execadjust : function(name){
-		var bd = this.owner.board;
+		var o = this.owner, bd = o.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
 				if(bd.qrows<=1){ return;}
@@ -71,28 +71,28 @@ pzpr.createPuzzleClass('BoardExec',
 			}
 		}
 
-		this.owner.opemgr.newOperation(true);
+		o.opemgr.newOperation();
 
-		this.owner.painter.suspendAll();
+		o.painter.suspendAll();
 
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var key = this.boardtype[name][1], key0 = this.boardtype[name][0];
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
 		if(key & k.TURNFLIP){
 			this.turnflip(key,d);
-			this.owner.opemgr.addOpe_BoardFlip(d, key0, key);
+			o.opemgr.addOpe_BoardFlip(d, key0, key);
 		}
 		else{
 			this.expandreduce(key,d);
-			this.owner.opemgr.addOpe_BoardAdjust(key0, key);
+			o.opemgr.addOpe_BoardAdjust(key0, key);
 		}
 
 		bd.setminmax();
 		bd.resetInfo();
 
 		// Canvasを更新する
-		this.owner.adjustCanvasSize();
-		this.owner.painter.unsuspend();
+		o.adjustCanvasSize();
+		o.painter.unsuspend();
 	},
 
 	//------------------------------------------------------------------------------

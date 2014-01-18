@@ -14,11 +14,11 @@ pzpr.createPuzzleClass('Operation',
 		this.manager = this.owner.opemgr;
 	},
 
-	chain : false,
 	//---------------------------------------------------------------------------
 	// ope.setData()  オブジェクトのデータを設定する
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
+	// ope.toJSON()   ファイル保存時に使用するルーチン
 	//---------------------------------------------------------------------------
 	setData : function(old, num){
 		this.old = old;
@@ -26,6 +26,7 @@ pzpr.createPuzzleClass('Operation',
 	},
 	decode : function(strs){ return false;},
 	toString : function(){ return '';},
+	toJSON : function(){ return this.toString();},
 
 	//---------------------------------------------------------------------------
 	// ope.undo()  操作opeを一手前に戻す
@@ -68,7 +69,7 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
-	setData : function(obj, property, old, num, chain){
+	setData : function(obj, property, old, num){
 		this.group = obj.group;
 		this.property = property;
 		this.bx  = obj.bx;
@@ -210,8 +211,8 @@ pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 pzpr.createPuzzleClass('OperationManager',
 {
 	initialize : function(){
-		this.lastope;		// this.opeのLasstIndexへのポインタ
-		this.ope;			// Operationクラスを保持する配列
+		this.lastope;		// this.opeの最後に追加されたOperationへのポインタ
+		this.ope;			// Operationクラスを保持する二次元配列
 		this.position;		// 現在の表示操作番号を保持する
 		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
@@ -219,7 +220,6 @@ pzpr.createPuzzleClass('OperationManager',
 		this.disCombine = false;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
 		this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
-		this.chainflag = false;		// chainされたOperationオブジェクトを登録する
 
 		this.enableUndo = false;	// Undoできる状態か？
 		this.enableRedo = false;	// Redoできる状態か？
@@ -255,15 +255,13 @@ pzpr.createPuzzleClass('OperationManager',
 		this.owner.execListener('historymove');
 	},
 	allerase : function(){
+		this.lastope  = null;
 		this.ope      = [];
 		this.position = 0;
 		this.anscount = 0;
 		this.checkexec();
 	},
-	newOperation : function(flag){	// キー、ボタンを押し始めたときはtrue
-		this.chainflag = false;
-		if(flag){ this.changeflag = false;}
-	},
+	newOperation : function(flag){ this.changeflag = false;},
 
 	//---------------------------------------------------------------------------
 	// um.addOpe_common()      指定された操作を追加する(共通操作)
@@ -274,21 +272,27 @@ pzpr.createPuzzleClass('OperationManager',
 	addOpe_common : function(regist_func, cond_func){
 		if(!this.isenableRecord()){ return;}
 
+		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){
 			for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
 			this.position = this.ope.length;
 		}
 
+		/* Operationを追加するかどうか判定 */
 		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
+
+		/* Operationを追加する */
+		if(!this.changeflag){
+			this.ope.push([]);
+			this.position++;
+			this.changeflag = true;
+		}
+		
 		var ope = regist_func.call(this);
-		ope.chain = this.chainflag;
-
-		this.ope.push(ope);
-		this.position++;
+		this.ope[this.ope.length-1].push(ope);
+		this.lastope = ope;
 		this.anscount++;
-
-		this.chainflag = true;
-		this.changeflag = true;
+		
 		this.checkexec();
 	},
 
@@ -303,13 +307,19 @@ pzpr.createPuzzleClass('OperationManager',
 			return ope;
 		},
 		function(){
-			var ref = this.ope[this.position-1];
-
 			// 前回と同じ場所なら前回の更新のみ
+			var ref = this.lastope;
 			if( !this.disCombine && !!ref && !!ref.property &&
-				ref.group===obj.group && ref.property===property &&
-				ref.num===old && ref.bx===obj.bx && ref.by===obj.by && 
-				( (obj.iscell && ( property===k.QNUM || property===k.ANUM )) || obj.iscross)
+				ref.group    === obj.group &&
+				ref.property === property  &&
+				ref.num      === old       &&
+				ref.bx       === obj.bx    &&
+				ref.by       === obj.by    &&
+				(property === k.QNUM  || 
+				 property === k.QNUM2 ||
+				 property === k.QDIR  ||
+				 property === k.QCHAR ||
+				 property === k.ANUM )
 			)
 			{
 				this.changeflag = true;
@@ -344,6 +354,7 @@ pzpr.createPuzzleClass('OperationManager',
 	//---------------------------------------------------------------------------
 	decodeLines : function(){
 		this.allerase();
+		/* ファイル内容の読み込み */
 		var linepos = this.owner.fio.lineseek, datas = [], inhistory = false;
 		while(1){
 			var line = this.owner.fio.readLine();
@@ -357,18 +368,21 @@ pzpr.createPuzzleClass('OperationManager',
 			}
 		}
 
+		/* ファイル内容のデコード */
 		if(!!window.JSON){
 			try{
-				var str = datas.join(''), data = JSON.parse(str);
+				var str = datas.join(''), history = JSON.parse(str);
 				this.ope = [];
-				this.position = data.current;
-				for(var i=0,len=data.datas.length;i<len;i++){
-					var str = data.datas[i], chain = false;
-					if(str.charAt(0)==='+'){ chain = true; str = str.substr(1);}
-					var ope = this.decodeOpe(str.split(/,/));
-					if(!!ope){
-						ope.chain = chain;
-						this.ope.push(ope);
+				this.position = history.current;
+				for(var i=0,len=history.datas.length;i<len;i++){
+					this.ope.push([]);
+					for(var j=0,len2=history.datas[i].length;j<len2;j++){
+						var str = history.datas[i][j];
+						var ope = this.decodeOpe(str.split(/,/));
+						if(!!ope){
+							this.ope[this.open.length-1].push(ope);
+							this.lastope = ope;
+						}
 					}
 				}
 			}
@@ -391,20 +405,12 @@ pzpr.createPuzzleClass('OperationManager',
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
-		var lastid = this.ope.length;
-		var data = ['','history:{'], datas = [];
-		data.push('"version":0.2,');
-		data.push('"history":'+lastid+',');
-		data.push('"current":'+(this.position)+',');
-		data.push('"datas":[');
-		for(var i=0;i<lastid;i++){
-			var chain = (this.ope[i].chain?'+':'');
-			datas.push(['"',chain,(this.ope[i].toString()),'"'].join(''));
-		}
-		data.push(datas.join(',\n'));
-		data.push(']');
-		data.push('}');
-		return data.join('\n');
+		return "\nhistory:" + JSON.stringify({
+			version : 0.3,
+			history : this.ope.length,
+			current : this.position,
+			datas   : this.ope
+		},null,1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -413,34 +419,32 @@ pzpr.createPuzzleClass('OperationManager',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(!this.enableUndo){ return false;}
-		this.undoExec = true;
 		this.preproc();
-		for(var i=this.position-1;i>=0;i--){
-			var ref = this.ope[i];
-			if(!ref){ break;}
-			ref.undo();
-			this.position--;
-			if(!ref.chain){ break;}
+		
+		this.undoExec = true;
+		var opes = this.ope[this.position-1];
+		for(var i=opes.length-1;i>=0;i--){
+			if(!!opes[i]){ opes[i].undo();}
 		}
-		this.postproc();
+		this.position--;
 		this.undoExec = false;
-		this.checkexec();
+		
+		this.postproc();
 		return this.enableUndo;
 	},
 	redo : function(){
 		if(!this.enableRedo){ return false;}
-		this.redoExec = true;
 		this.preproc();
-		for(var i=this.position,len=this.ope.length;i<len;i++){
-			var ref = this.ope[i];
-			if(!ref){ break;}
-			ref.redo();
-			this.position++;
-			if(!this.ope[i+1] || !this.ope[i+1].chain){ break;}
+		
+		this.redoExec = true;
+		var opes = this.ope[this.position];
+		for(var i=0,len=opes.length;i<len;i++){
+			if(!!opes[i]){ opes[i].redo();}
 		}
-		this.postproc();
+		this.position++;
 		this.redoExec = false;
-		this.checkexec();
+		
+		this.postproc();
 		return this.enableRedo;
 	},
 

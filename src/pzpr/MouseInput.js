@@ -152,8 +152,8 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(!this.btn.Left && !this.btn.Right){ return;}
 		
 		var o = this.owner;
-		o.opemgr.newOperation(!!this.mousestart);
 		if(this.mousestart){
+			o.opemgr.newOperation();
 			o.board.errclear();
 			if(this.isDispred()){ this.inputRed(); return;}
 		}

@@ -404,11 +404,13 @@ UndoTimer_goishi:{
 	exec : function(){
 		var o = this.owner, opemgr = o.opemgr;
 		if(this.inUNDO){
-			var prop = (opemgr.enableUndo ? opemgr.ope[opemgr.position-1].property : '');
+			var nextopes = opemgr.ope[opemgr.position-1];
+			var prop = (opemgr.enableUndo ? nextopes[nextopes.length-1].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		else if(this.inREDO){
-			var prop = (opemgr.enableRedo ? opemgr.ope[opemgr.position].property : '');
+			var nextopes = opemgr.ope[opemgr.position];
+			var prop = (opemgr.enableRedo ? nextopes[0].property : '');
 			if(prop!==k.ANUM){ this.stop();}
 		}
 		

@@ -293,7 +293,7 @@ pzpr.createPuzzleClass('Board',
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
-		this.owner.opemgr.newOperation(true);
+		this.owner.opemgr.newOperation();
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].ansclear();}
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear();}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear();}
@@ -301,7 +301,7 @@ pzpr.createPuzzleClass('Board',
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
-		this.owner.opemgr.newOperation(true);
+		this.owner.opemgr.newOperation();
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].subclear();}
 		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear();}
 		for(var i=0;i<this.bdmax    ;i++){ this.border[i].subclear();}

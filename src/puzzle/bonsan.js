@@ -34,7 +34,7 @@ MouseEvent:{
 	},
 	inputautodark : function(){
 		/* 最後に入力した線を取得する */
-		var opemgr = this.owner.opemgr, lastope = opemgr.ope[opemgr.position-1];
+		var opemgr = this.owner.opemgr, lastope = opemgr.lastope;
 		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
 		var border = this.owner.board.getb(lastope.bx, lastope.by);
 		
