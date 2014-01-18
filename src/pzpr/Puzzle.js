@@ -13,13 +13,7 @@ pzpr.Puzzle = function(option){
 
 	this.resetTime();
 
-	this.listeners = {
-		mouse  : [],
-		key    : [],
-		config : [],
-		resize : [],
-		historychange : []
-	};
+	this.listeners = {};
 
 	this.config = new pzpr.util.Config(this);
 };
@@ -191,7 +185,8 @@ pzpr.Puzzle.prototype =
 	// owner.execListener() イベントが発生した時に呼ぶ関数を実行する
 	//---------------------------------------------------------------------------
 	addListener : function(eventname, func){
-		if(!!this.listeners[eventname]){ this.listeners[eventname].push(func);}
+		if(!this.listeners[eventname]){ this.listeners[eventname] = [];}
+		this.listeners[eventname].push(func);
 	},
 	execListener : function(){
 		var args = Array.prototype.slice.apply(arguments), eventname = args.shift();
