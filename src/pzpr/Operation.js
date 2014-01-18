@@ -216,6 +216,9 @@ pzpr.createPuzzleClass('OperationManager',
 		this.position;		// 現在の表示操作番号を保持する
 		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
+		this.broken   = false;	// "以前の操作"を消して元に戻れなくなった状態
+		this.initpos  = 0;		// 盤面初期化時のposition
+
 		this.disrec = 0;		// このクラスからの呼び出し時は1にする
 		this.disCombine = false;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
@@ -236,6 +239,7 @@ pzpr.createPuzzleClass('OperationManager',
 	// um.checkexec()      html上の[戻][進]ボタンを押すことが可能か設定する
 	// um.allerase()       記憶していた操作を全て破棄する
 	// um.newOperation()   マウス、キー入力開始時に呼び出す
+	// um.isModified()     操作がファイル等に保存されていないか確認する
 	//---------------------------------------------------------------------------
 
 	// 今この関数でレコード禁止になるのは、UndoRedo時、URLdecode、fileopen、adjustGeneral/Special時
@@ -259,9 +263,15 @@ pzpr.createPuzzleClass('OperationManager',
 		this.ope      = [];
 		this.position = 0;
 		this.anscount = 0;
+		this.broken   = false;
+		this.initpos  = 0;
 		this.checkexec();
 	},
 	newOperation : function(flag){ this.changeflag = false;},
+
+	isModified : function(){
+		return (this.isbroken || (this.initpos<this.position));
+	},
 
 	//---------------------------------------------------------------------------
 	// um.addOpe_common()      指定された操作を追加する(共通操作)
@@ -274,6 +284,7 @@ pzpr.createPuzzleClass('OperationManager',
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){
+			if(this.position<this.initpos){ this.broken = true;}
 			for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
 			this.position = this.ope.length;
 		}
@@ -373,7 +384,7 @@ pzpr.createPuzzleClass('OperationManager',
 			try{
 				var str = datas.join(''), history = JSON.parse(str);
 				this.ope = [];
-				this.position = history.current;
+				this.initpos = this.position = history.current;
 				for(var i=0,len=history.datas.length;i<len;i++){
 					this.ope.push([]);
 					for(var j=0,len2=history.datas[i].length;j<len2;j++){
@@ -405,6 +416,7 @@ pzpr.createPuzzleClass('OperationManager',
 	},
 	toString : function(){
 		if(!window.JSON){ return '';}
+		this.initpos = this.position;
 		return "\nhistory:" + JSON.stringify({
 			version : 0.3,
 			history : this.ope.length,
