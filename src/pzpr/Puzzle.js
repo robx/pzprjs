@@ -13,6 +13,8 @@ pzpr.Puzzle = function(option){
 
 	this.resetTime();
 
+	this.imgcanvas = [null, null];
+
 	this.listeners = {};
 
 	this.config = new pzpr.util.Config(this);
@@ -31,7 +33,7 @@ pzpr.Puzzle.prototype =
 	
 	canvas    : null,	// 描画canvas本体
 	subcanvas : null,	// 補助canvas
-	imgcanvas : [null, null],	// 画像出力用canvas
+	imgcanvas : null,	// 画像出力用canvas
 	
 	listeners : null,
 	
