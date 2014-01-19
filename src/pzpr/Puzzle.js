@@ -5,8 +5,10 @@
 //---------------------------------------------------------------------------
 
 // Puzzleクラス
-pzpr.Puzzle = function(option){
+pzpr.Puzzle = function(canvas, option){
+	option = (!!option ? option : {});
 	this.opt = option;
+	if(option.input===(void 0)){ this.opt.input = true;}
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -18,6 +20,10 @@ pzpr.Puzzle = function(option){
 	this.listeners = {};
 
 	this.config = new pzpr.util.Config(this);
+
+	if(!!canvas){
+		this.setCanvas(canvas, option.graphic);
+	}
 };
 pzpr.Puzzle.prototype =
 {
@@ -230,7 +236,7 @@ pzpr.Puzzle.prototype =
 				}
 			});
 			this.canvas = el;
-			this.setCanvasEvents(el);
+			if(!!this.opt.input){ this.setCanvasEvents(el);}
 		}
 	},
 	addSubCanvas : function(type){
