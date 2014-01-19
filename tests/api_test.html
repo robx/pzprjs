@@ -8,7 +8,7 @@ var pzl, pzl2;
 pzpr.addLoadListener(function(){
 	pzl = pzpr.createPuzzle(document.getElementById('divques')).open('?tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
 	
-	var filedata = "pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /0 0 0 0 /0 -1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 -1 1 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /".replace(/\//g,"\n");
+	var filedata = "pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /0 0 0 0 /0 -1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 -1 1 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /";
 	pzl2 = pzpr.createPuzzle(document.getElementById('divques2')).open(filedata, function(p){
 		p.setCanvasSizeByCellSize(32);
 		p.setConfig('irowake',true);

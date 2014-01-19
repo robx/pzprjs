@@ -49,7 +49,7 @@ pzpr.Puzzle.prototype =
 	// owner.open()    パズルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	open : function(data, callback){
-		if(data.indexOf("\n",data.indexOf("\n"))===-1){
+		if(data.indexOf("\n",data.indexOf("\n"))===-1 && data.indexOf("pzprv3")!==0){
 			return this.openURL(data, callback);
 		}
 		/* 改行が2つ以上あったらファイルデータ扱い */
@@ -68,7 +68,7 @@ pzpr.Puzzle.prototype =
 		return this;
 	},
 	openFileData : function(filedata, callback){
-		var farray = filedata.replace(/[\t\r]*\n/g,"\n").split(/\n/), fstr = "";
+		var farray = filedata.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n").split(/\n/), fstr = "";
 		for(var i=0;i<farray.length;i++){
 			if(farray[i].match(/^http\:\/\//)){ break;}
 			fstr += (farray[i]+"\n");
