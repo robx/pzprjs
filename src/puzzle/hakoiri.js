@@ -21,7 +21,6 @@ MouseEvent:{
 		}
 		
 		if(this.mouseend && this.notInputted()){
-			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
 		}
 	},
