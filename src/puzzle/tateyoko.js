@@ -156,6 +156,10 @@ AreaBarManager:{
 	}
 },
 
+Flags:{
+	disable_subclear : true
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
