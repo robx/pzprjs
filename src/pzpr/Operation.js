@@ -344,6 +344,7 @@ pzpr.createPuzzleClass('OperationManager',
 			)
 			{
 				this.changeflag = true;
+				this.anscount++;
 				ref.num = num;
 				this.owner.execListener('historychange');
 				return false;
