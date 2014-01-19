@@ -275,17 +275,28 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.canvasToDataURL()     盤面画像をDataURLとして出力する
-	// owner.canvasToBlob()        盤面画像をBlobとして出力する
+	// owner.toDataURL()           盤面画像をDataURLとして出力する
+	// owner.toBlob()              盤面画像をBlobとして出力する
 	// owner.generateLocalCanvas() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	canvasToDataURL : function(type, cellsize){
-		if(type!=='svg'){ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toDataURL();}
+	toDataURL : function(type, cellsize){
+		type = (!!type ? type : "");
+		if(!type.match(/svg/)){ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toDataURL();}
 		else{ return "data:image/svg+xml;base64," + window.btoa(this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML);}
 	},
-	canvasToBlob : function(type, cellsize){
-		if(type!=='svg'){ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toBlob();}
-		else{ return new Blob([this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML]);}
+	toBlob : function(type, cellsize){
+		type = (!!type ? type : "");
+		if(!type.match(/svg/)){
+			try{ return this.getLocalCanvas(this.imgcanvas[0], cellsize).toBlob();}
+			catch(e){}
+			/* Webkit, BlinkにtoBlobがない... */
+			this.getLocalCanvas(this.imgcanvas[0], cellsize).toDataURL().match(/data:(.*);base64,(.*)/);
+			var bin = window.atob(RegExp.$2);
+			var buf = new Uint8Array(bin.length);
+			for(var i=0,len=buf.length;i<len;i++){ buf[i]=bin.charCodeAt(i);}
+			return new Blob([buf.buffer], {type:RegExp.$1});
+		}
+		else{ return new Blob([this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML], {type:'image/svg+xml'});}
 	},
 	getLocalCanvas : function(el, cellsize){
 		var pc = this.painter, pc2 = new this.Graphic();

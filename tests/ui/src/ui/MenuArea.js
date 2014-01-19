@@ -146,6 +146,10 @@ ui.menuarea = {
 			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
 			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
 		}
+		if(ui.menu.enableSaveSVG){
+			as('svgdl',   'imagesavep', '画像をダウンロード (SVG)', 'Download the image (SVG)');
+			as('svgsave', 'imagesavep', '別ウィンドウで開く (SVG)', 'Open another window (SVG)');
+		}
 
 		// *編集 ==============================================================
 		am('edit', "編集", "Edit");
@@ -486,8 +490,10 @@ ui.menuarea = {
 		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
 //		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;
 		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ ui.menu.filesave(k.FILE_PBOX);} break;
-		case 'imagedl'   : ui.menu.imagesave(true,null); break;
-		case 'imagesave' : ui.menu.imagesave(false,null); break;
+		case 'imagedl'   : ui.menu.imagesave('',true,null); break;
+		case 'imagesave' : ui.menu.imagesave('',false,null); break;
+		case 'svgdl'     : ui.menu.imagesave('svg',true,null); break;
+		case 'svgsave'   : ui.menu.imagesave('svg',false,null); break;
 		
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;
