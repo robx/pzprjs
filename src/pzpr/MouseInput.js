@@ -157,6 +157,7 @@ pzpr.createPuzzleClass('MouseEvent',
 			o.board.errclear();
 			if(this.isDispred()){ this.inputRed(); return;}
 		}
+		else{ o.opemgr.newChain();}
 		
 		this.mouseinput();		/* 各パズルのルーチンへ */
 	},

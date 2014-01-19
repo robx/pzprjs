@@ -143,6 +143,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.keyup   = (step===1);
 
 		if(this.keydown){ this.owner.opemgr.newOperation();}
+		else            { this.owner.opemgr.newChain();}
 
 		this.ca = c;
 		this.checkbutton(c);

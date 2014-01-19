@@ -223,6 +223,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.disCombine = false;	// 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 		this.forceRecord = false;	// 強制的に登録する(盤面縮小時限定)
 		this.changeflag = false;	// 操作が行われたらtrueにする(mv.notInputted()用)
+		this.chainflag = false;		// 同じope直下の配列に新しいOperationオブジェクトを追加する
 
 		this.enableUndo = false;	// Undoできる状態か？
 		this.enableRedo = false;	// Redoできる状態か？
@@ -266,9 +267,16 @@ pzpr.createPuzzleClass('OperationManager',
 		this.broken   = false;
 		this.initpos  = 0;
 		this.changeflag = false;
+		this.chainflag = false;
 		this.checkexec();
 	},
-	newOperation : function(flag){ this.changeflag = false;},
+	newOperation : function(){
+		this.changeflag = false;
+		this.chainflag = false;
+	},
+	newChain : function(){
+		this.chainflag = false;
+	},
 
 	isModified : function(){
 		return (this.isbroken || (this.initpos<this.position));
@@ -294,16 +302,17 @@ pzpr.createPuzzleClass('OperationManager',
 		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
 
 		/* Operationを追加する */
-		if(!this.changeflag){
+		if(!this.chainflag){
 			this.ope.push([]);
 			this.position++;
-			this.changeflag = true;
+			this.chainflag = true;
 		}
 		
 		var ope = regist_func.call(this);
 		this.ope[this.ope.length-1].push(ope);
 		this.lastope = ope;
 		this.anscount++;
+		this.changeflag = true;
 		
 		this.checkexec();
 	},
