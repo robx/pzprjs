@@ -299,20 +299,12 @@ pzpr.Puzzle.prototype =
 		else{ return new Blob([this.getLocalCanvas(this.imgcanvas[1], cellsize).innerHTML], {type:'image/svg+xml'});}
 	},
 	getLocalCanvas : function(el, cellsize){
-		var pc = this.painter, pc2 = new this.Graphic();
-		
+		var pc2 = new this.Graphic();
 		pc2.initCanvas(el);
+		pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 		
-		// 設定値・変数をcanvas用のものに変更
-		pc2.suspendAll();
-		pc2.outputImage = true;
-		
-		if(!cellsize){ cellsize = pc.cw;}
-		pc2.cw = cellsize;
-		pc2.ch = cellsize*(pc.ch/pc.cw);
-		
-		// canvas要素の設定を適用して、再描画
-		pc2.resizeCanvasByCellSize();
+		// canvasの設定を適用して、再描画
+		pc2.resizeCanvasByCellSize(cellsize || this.painter.cw);
 		pc2.unsuspend();
 		
 		return pc2.context.canvas;
