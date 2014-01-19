@@ -237,13 +237,11 @@ BoardExec:{
 },
 
 Flags:{
-	use     : true,
-	redline : true,
+	use : true,
 	disable_subclear : true
 },
-"Flags@wagiri":{
-	use     : true,
-	disable_subclear : true
+"Flags@gokigen":{
+	redline : true
 },
 
 //---------------------------------------------------------
