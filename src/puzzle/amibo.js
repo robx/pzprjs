@@ -205,7 +205,7 @@ BoardExec:{
 },
 "AreaBarInfo:AreaInfo":{
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.owner.AreaInfo.prototype.initialize.call(this);
 
 		this.pole = [];
 
@@ -231,14 +231,7 @@ BoardExec:{
 	}
 },
 CellList:{
-	initialize : function(){
-		this.link = [];
-		this.pole = [];
-		this.vert = false
-	},
-
-	setErrorBar : function(){
-		var vert = this.vert;
+	setErrorBar : function(vert){
 		for(var i=0;i<this.length;i++){
 			var cell=this[i], err=cell.error;
 			if     (err===4){ /* nop */ }
@@ -495,11 +488,11 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
-				var qn=cell.getNum(), id=binfo.pole[c][i], clist = binfo.room[id].clist, llen=clist.length;
+				var qn=cell.getNum(), id=binfo.pole[c][i], room = binfo.room[id], clist = room.clist, llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
 					if(this.checkOnly){ return false;}
 					cell.seterr(1);
-					clist.setErrorBar();
+					clist.setErrorBar(room.vert);
 					result = false;
 				}
 			}
@@ -509,13 +502,13 @@ AnsCheck:{
 	checkCrossedLength : function(binfo){
 		var result=true;
 		for(var id=1,max=binfo.max;id<=max;id++){
-			var check = false, linkid = binfo.room[id].link, clist = binfo.room[id].clist;
+			var check = false, room = binfo.room[id], linkid = room.link, clist = room.clist;
 			for(var i=0,len=linkid.length;i<len;i++){
 				if(clist.length===binfo.room[linkid[i]].clist.length){ check=true; break;}
 			}
 			if(!check){
 				if(this.checkOnly){ return false;}
-				clist.setErrorBar();
+				clist.setErrorBar(room.vert);
 				result = false;
 			}
 		}
