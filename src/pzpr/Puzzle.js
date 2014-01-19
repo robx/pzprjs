@@ -219,6 +219,7 @@ pzpr.Puzzle.prototype =
 			if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 			Candle.start(el.id, type, function(g){
 				pzpr.util.unselectable(g.canvas);
+				g.child.style.pointerEvents = 'none';
 				if(g.use.sl){ o.setSLKeyEvents(g);}
 				if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
 				if(o.ready){
