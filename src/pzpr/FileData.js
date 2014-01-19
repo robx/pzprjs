@@ -79,8 +79,10 @@ pzpr.createPuzzleClass('FileIO',
 
 		// メイン処理
 		var o = this.owner;
+		o.opemgr.disableRecord();
 		if     (this.currentType===k.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===k.FILE_PBOX){ this.kanpenSave();}
+		o.opemgr.enableRecord();
 
 		// サイズを表す文字列
 		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("\n");}

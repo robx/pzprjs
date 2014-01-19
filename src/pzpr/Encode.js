@@ -57,6 +57,8 @@ pzpr.createPuzzleClass('Encode',
 		if(isNaN(type) || type===k.URL_AUTO){ type=k.URL_PZPRV3;}
 		if(type===k.URL_KANPEN && o.pid=='lits'){ type = k.URL_KANPENP;}
 
+		o.opemgr.disableRecord();
+
 		this.outpflag = '';
 		this.outsize = '';
 		this.outbstr = '';
@@ -89,6 +91,8 @@ pzpr.createPuzzleClass('Encode',
 		default:
 			return '';
 		}
+
+		o.opemgr.enableRecord();
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
 		return pzpr.url.constructURL({id:o.pid, type:type, qdata:pdata});
