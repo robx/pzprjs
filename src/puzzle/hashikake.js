@@ -200,15 +200,20 @@ Graphic:{
 	},
 	// 背景色をつけたい
 	getCircleStrokeColor : function(cell){
-		if(cell.isNum()){ return this.cellcolor;}
+		if(cell.isNum()){
+			var err = cell.error;
+			if(err===1||err===4){ return this.errcolor1;}
+			else                { return this.cellcolor;}
+		}
 		return null;
 	},
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
 			var cmpcell = (this.getConfig('circolor') && cell.qnum===cell.getCountOfBridges());
-			if     (cmpcell)       { return this.bcolor;      }
-			else if(cell.error===1){ return this.errbcolor1;  }
-			else                   { return this.circledcolor;}
+			var err = cell.error;
+			if(err===1||err===4){ return this.errbcolor1;  }
+			else if(cmpcell)    { return this.bcolor;      }
+			else                { return this.circledcolor;}
 		}
 		return null;
 	},
@@ -222,7 +227,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCirclesAtNumber_hashikake();
+		this.drawCircles();
 		this.drawNumbers();
 	}
 },
