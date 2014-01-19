@@ -165,7 +165,7 @@ Menu.prototype =
 		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.uramashu = newval;
-			this.config_common(idname, newval);
+			ui.event.config_common(ui.puzzle, idname, newval);
 		}
 	},
 	getConfigVal : function(idname){
