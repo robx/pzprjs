@@ -39,6 +39,7 @@ MouseEvent:{
 		}
 		bd.haserror = true;
 		this.owner.redraw();
+		this.mousereset();
 	}
 },
 
