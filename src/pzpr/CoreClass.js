@@ -291,68 +291,67 @@ if(!Array.prototype.some){
 /**************/
 /* 環境の取得 */
 /**************/
-pzpr.env = {
-	browser : (function(){
-		var UA  = navigator.userAgent;
-		var bz = {
-			IE    : (!!document.uniqueID),
-			Presto: (!!window.opera),
-			WebKit: (UA.indexOf('AppleWebKit/') > -1),
-			Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
+pzpr.env = (function(){
+	var UA  = navigator.userAgent;
+	
+	var bz = {
+		IE    : (!!document.uniqueID),
+		Presto: (!!window.opera),
+		WebKit: (UA.indexOf('AppleWebKit/') > -1),
+		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
 
-			IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-			IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
-			IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
-			IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
-			IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
-		};
-		bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
-		bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
-		return bz;
-	})(),
-	OS : (function(){
-		var UA  = navigator.userAgent;
-		var ios     = (UA.indexOf('like Mac OS X') > -1);
-		var android = (UA.indexOf('Android') > -1);
+		IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
+		IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
+		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
+		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
+		IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
+	};
+	bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
+	bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
+	
+	var ios     = (UA.indexOf('like Mac OS X') > -1);
+	var android = (UA.indexOf('Android') > -1);
+	var os = {
+		iOS    : (ios),
+		mobile : (ios || android)
+	};
+	
+	var storage = (function(){
+		var val = 0x00;
+		try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
+		try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
+		try{ if(!!window.indexedDB)     { val |= 0x04;}}catch(e){}
+		try{ if(!!window.openDatabase){ // Opera10.50対策
+			var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
+			if(!!dbtmp){ val |= 0x02;}
+		}}catch(e){}
+		
+		// Firefoxはローカルだとデータベース系は使えない
+		if(bz.Gecko && !location.hostname){ val = 0;}
+		
 		return {
-			iOS    : (ios),
-			mobile : (ios || android)
+			session : !!(val & 0x10),
+			localST : !!(val & 0x08),
+			WebIDB  : !!(val & 0x04),
+			WebSQL  : !!(val & 0x02)
 		};
-	})(),
-	storage : {},
-	API : (function(){
-		var touchevent = ((!!window.ontouchstart) || (!!document.createTouch));
-		var pointerevent = (!!navigator.pointerEnabled);
-		var mspointerevent = (!!navigator.msPointerEnabled);
-		return {
-			touchevent     : touchevent,
-			pointerevent   : pointerevent,
-			mspointerevent : mspointerevent
-		};
-	})()
-};
-
-pzpr.env.storage = (function(){
-	var val = 0x00;
-	try{ if(!!window.sessionStorage){ val |= 0x10;}}catch(e){}
-	try{ if(!!window.localStorage)  { val |= 0x08;}}catch(e){}
-	try{ if(!!window.indexedDB)     { val |= 0x04;}}catch(e){}
-	try{ if(!!window.openDatabase){ // Opera10.50対策
-		var dbtmp = openDatabase('pzprv3_manage', '1.0', 'manager', 1024*1024*5);	// Chrome3対策
-		if(!!dbtmp){ val |= 0x02;}
-	}}catch(e){}
-
-	// Firefoxはローカルだとデータベース系は使えない
-	if(pzpr.env.browser.Gecko && !location.hostname){ val = 0;}
-
+	})();
+	
+	var api = {
+		touchevent      : ((!!window.ontouchstart) || (!!document.createTouch)),
+		pointerevent    : (!!navigator.pointerEnabled),
+		mspointerevent  : (!!navigator.msPointerEnabled),
+		anchor_download : (document.createElement("a").download!==(void 0)),
+		dataURL         : !(bz.legacyIE && !bz.IE8)
+	};
+	
 	return {
-		session : !!(val & 0x10),
-		localST : !!(val & 0x08),
-		WebIDB  : !!(val & 0x04),
-		WebSQL  : !!(val & 0x02)
+		browser : bz,
+		OS      : os,
+		storage : storage,
+		API     : api
 	};
 })();
-pzpr.env.API.dataURL = !(pzpr.env.browser.legacyIE && !pzpr.env.browser.IE8);
 
 //----------------------------------------------------------------------
 // EventやDOM関連のツール的関数群
