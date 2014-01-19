@@ -283,7 +283,7 @@ pzpr.createPuzzleClass('LineManager',
 		}
 		
 		if(this.getConfig('irowake')){
-			this.owner.painter.repaintLines(blist);
+			this.owner.painter.repaintLines(blist_all);
 		}
 	},
 

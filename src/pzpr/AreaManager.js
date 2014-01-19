@@ -285,7 +285,7 @@ pzpr.createPuzzleClass('AreaManager',
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
-		var clist = new this.owner.CellList();
+		var clist_all = new this.owner.CellList();
 		
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -300,12 +300,12 @@ pzpr.createPuzzleClass('AreaManager',
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
 			var newColor = (assign[i]===longid ? longColor : this.getNewColor());
-			var clist1 = this[assign[i]].clist;
-			for(var n=0,len=clist1.length;n<len;n++){ clist1[n].color = newColor;}
-			clist.extend(clist1);
+			var clist = this[assign[i]].clist;
+			for(var n=0,len=clist.length;n<len;n++){ clist[n].color = newColor;}
+			clist_all.extend(clist);
 		}
 		
-		if(this.irowakeValid()){ this.owner.painter.repaintBlocks(clist);}
+		if(this.irowakeValid()){ this.owner.painter.repaintBlocks(clist_all);}
 	},
 
 	//--------------------------------------------------------------------------------
