@@ -16,6 +16,8 @@ window.pzpr = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas, option){
+		if(arguments.length===1 && !(canvas instanceof HTMLElement)){ option=canvas; canvas=(void 0);}
+		
 		var puzzle = new pzpr.Puzzle(canvas, option);
 		this.puzzles.push(puzzle);
 		return puzzle;

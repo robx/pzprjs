@@ -226,22 +226,22 @@ pzpr.Puzzle.prototype =
 	// owner.setCanvas()    描画キャンバスをセットする
 	// owner.addSubCanvas() 補助キャンバスを作成する
 	//---------------------------------------------------------------------------
-	setCanvas : function(el, type){
+	setCanvas : function(el, type, callback){
 		if(!el){ return;}
+		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
 		
-		var o = this;
-		if(!type){ type = o.opt.graphic;}
-		if(!type){ type = '';}
+		type = type || this.opt.graphic || '';
 		/* fillTextが使えない場合は強制的にSVG描画に変更する */
 		if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 		
-		this.canvas = el;
+		var o = this;
+		o.canvas = el;
 		Candle.start(el.id, type, function(g){
 			pzpr.util.unselectable(g.canvas);
 			g.child.style.pointerEvents = 'none';
 			if(g.use.sl){ o.setSLKeyEvents(g);}
 			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
-			if(o.painter){ o.waitCanvasReady();}
+			if(o.ready){ o.waitCanvasReady(callback);}
 			
 			/* 画像出力用canvasの準備 */
 			if(!o.opt.imagesave){ return;}
