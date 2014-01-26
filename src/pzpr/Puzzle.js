@@ -95,7 +95,6 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.init()             指定されたパズルの種類で初期化を行う
 	// owner.initObjects()      各オブジェクトの生成などの処理
-	// owner.waitCanvasReady()  Canvasの初期化待ちを行い、終了したらcallbackを呼び出す
 	//---------------------------------------------------------------------------
 	init : function(pid, decodecallback, callback){
 		var puzzle = this, Board = (!!this.Board ? this.Board : null);;
@@ -129,23 +128,35 @@ pzpr.Puzzle.prototype =
 
 		this.faillist = new this.FailCode();	// 正答判定文字列を保持するオブジェクト
 	},
+	
+	//---------------------------------------------------------------------------
+	// owner.waitCanvasReady()  Canvasの初期化待ちを行う
+	// owner.postCanvasReady()  Canvasの初期化終了後の処理を行う
+	//---------------------------------------------------------------------------
 	waitCanvasReady : function(callback){
 		var puzzle = this;
-		if(!!this.canvas){
-			puzzle.painter.initCanvas(this.canvas, this.subcanvas, function(){
-				puzzle.painter.resetCanvas();
-				
-				if(!!callback){ callback(puzzle);}
-				
-				puzzle.painter.unsuspend();
-				puzzle.resetTime();
-				puzzle.ready = true;
-			});
+		if(!!puzzle.canvas){
+			puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas, function(){ puzzle.postCanvasReady(callback);});
 		}
-		else{
-			if(!!callback){ callback(puzzle);}
-			puzzle.resetTime();
-			puzzle.ready = true;
+		else{ puzzle.postCanvasReady(callback);}
+	},
+	postCanvasReady : function(callback){
+		if(!!this.canvas){
+			if(!!this.opt.input){
+				this.setCanvasEvents(this.canvas);
+			}
+			this.painter.suspendAll();
+		}
+		
+		if(!!callback){ callback(this);}
+		
+		if(!!this.canvas){
+			this.painter.unsuspend();
+		}
+		
+		if(!this.ready){
+			this.resetTime();
+			this.ready = true;
 		}
 	},
 
@@ -211,45 +222,43 @@ pzpr.Puzzle.prototype =
 	// owner.addSubCanvas() 補助キャンバスを作成する
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
+		if(!el){ return;}
+		
 		var o = this;
 		if(!type){ type = o.opt.graphic;}
 		if(!type){ type = '';}
-		if(!!el){
-			/* fillTextが使えない場合は強制的にSVG描画に変更する */
-			if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
-			Candle.start(el.id, type, function(g){
-				pzpr.util.unselectable(g.canvas);
-				g.child.style.pointerEvents = 'none';
-				if(g.use.sl){ o.setSLKeyEvents(g);}
-				if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
-				if(o.ready){
-					o.painter.resetCanvas();
-					o.painter.unsuspend();
-				}
-				/* 画像出力用canvasの準備 */
-				if(!o.opt.imagesave){ return;}
-				o.imgcanvas[0] = (!!o.subcanvas ? o.subcanvas : o.addSubCanvas('canvas'));
-				o.imgcanvas[1] = o.addSubCanvas('svg');
-				if(!!o.imgcanvas[1]){
-					var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
-					o.imgcanvas[1].lastChild.setAttribute('xmlns', SVGNS);
-					o.imgcanvas[1].lastChild.setAttribute('xmlns:xlink', XLINKNS);
-				}
-			});
-			this.canvas = el;
-			if(!!this.opt.input){ this.setCanvasEvents(el);}
-		}
+		/* fillTextが使えない場合は強制的にSVG描画に変更する */
+		if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
+		
+		this.canvas = el;
+		Candle.start(el.id, type, function(g){
+			pzpr.util.unselectable(g.canvas);
+			g.child.style.pointerEvents = 'none';
+			if(g.use.sl){ o.setSLKeyEvents(g);}
+			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
+			if(o.ready){ o.postCanvasReady();}
+			
+			/* 画像出力用canvasの準備 */
+			if(!o.opt.imagesave){ return;}
+			o.imgcanvas[0] = (!!o.subcanvas ? o.subcanvas : o.addSubCanvas('canvas'));
+			o.imgcanvas[1] = o.addSubCanvas('svg');
+		});
 	},
 	addSubCanvas : function(type){
+		if(!Candle.enable[type]){ return null;}
 		var el = null;
-		if(Candle.enable[type]){
-			el = document.createElement('div');
-			el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
-			el.style.left = '-10000px';
-			el.style.top = '0px';
-			document.body.appendChild(el);
-			Candle.start(el.id, type, function(g){ g.canvas.style.position = 'absolute';});
-		}
+		el = document.createElement('div');
+		el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
+		el.style.left = '-10000px';
+		el.style.top = '0px';
+		document.body.appendChild(el);
+		Candle.start(el.id, type, function(g){
+			g.canvas.style.position = 'absolute';
+			if(g.use.svg){
+				g.child.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+				g.child.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
+			}
+		});
 		return el;
 	},
 

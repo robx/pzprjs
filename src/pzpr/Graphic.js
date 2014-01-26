@@ -152,7 +152,6 @@ pzpr.createPuzzleClass('Graphic',
 	
 	//---------------------------------------------------------------------------
 	// pc.initCanvas()  このオブジェクトで使用するキャンバスを設定する
-	// pc.resetCanvas() キャンバスの設定を初期化して、後で設定されるようにする
 	//---------------------------------------------------------------------------
 	initCanvas : function(canvas, subcanvas, callback){
 		if((!!canvas && !canvas.getContext) || (!!subcanvas && !subcanvas.getContext)){
@@ -170,12 +169,6 @@ pzpr.createPuzzleClass('Graphic',
 		this.useBuffer = (!!g.use.canvas && !!this.subcontext);
 
 		if(!!callback){ callback();}
-	},
-	resetCanvas : function(){
-		this.suspended    = true;
-		this.suspendedAll = true;
-		this.canvasWidth  = null;
-		this.canvasHeight = null;
 	},
 
 	//---------------------------------------------------------------------------
