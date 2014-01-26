@@ -136,6 +136,8 @@ pzpr.createPuzzleClass('Graphic',
 		this.isdrawBD = false;
 
 		this.boldreq = false;
+
+		this.pendingResize = false;
 	},
 
 	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
@@ -188,6 +190,9 @@ pzpr.createPuzzleClass('Graphic',
 			this.resize_canvas_main();
 			if(!insuspend){ this.unsuspend();}
 		}
+		else{
+			this.pendingResize = true;
+		}
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
@@ -201,6 +206,9 @@ pzpr.createPuzzleClass('Graphic',
 		if(!!this.context){
 			this.resize_canvas_main();
 			if(!insuspend){ this.unsuspend();}
+		}
+		else{
+			this.pendingResize = true;
 		}
 	},
 
@@ -318,16 +326,21 @@ pzpr.createPuzzleClass('Graphic',
 		this.suspended = true;
 	},
 	unsuspend : function(){
+		if(this.canvasWidth===null || this.canvasHeight===null){
+			var rect = pzpr.util.getRect(this.context.canvas);
+			this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
+		}
+		else if(this.pendingResize){
+			this.pendingResize = false;
+			this.resize_canvas_main();
+		}
+		
 		if(this.suspendedAll){
 			var bd = this.owner.board;
 			this.setRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 			this.suspendedAll = false;
 		}
 		if(this.suspended){
-			if(this.canvasWidth===null || this.canvasHeight===null){
-				var rect = pzpr.util.getRect(this.context.canvas);
-				this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
-			}
 			this.suspended = false;
 			this.prepaint();
 		}

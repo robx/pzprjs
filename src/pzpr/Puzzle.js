@@ -101,12 +101,13 @@ pzpr.Puzzle.prototype =
 		puzzle.ready = false;
 		
 		pzpr.classmgr.setPuzzleClass(this, pid, function(){
-			if(Board!==puzzle.Board){
-				/* パズルの種類が変わっていればオブジェクトを設定しなおす */
-				puzzle.initObjects();
-			}
+			/* パズルの種類が変わっていればオブジェクトを設定しなおす */
+			if(Board!==puzzle.Board){ puzzle.initObjects();}
+			
 			decodecallback(puzzle);
-			puzzle.waitCanvasReady(callback);
+			
+			if(!!puzzle.canvas){ puzzle.waitCanvasReady(callback);}
+			else               { puzzle.postCanvasReady(callback);}
 		});
 	},
 	initObjects : function(puzzle){
@@ -135,10 +136,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	waitCanvasReady : function(callback){
 		var puzzle = this;
-		if(!!puzzle.canvas){
-			puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas, function(){ puzzle.postCanvasReady(callback);});
-		}
-		else{ puzzle.postCanvasReady(callback);}
+		puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas, function(){ puzzle.postCanvasReady(callback);});
 	},
 	postCanvasReady : function(callback){
 		if(!!this.canvas){
@@ -146,6 +144,13 @@ pzpr.Puzzle.prototype =
 				this.setCanvasEvents(this.canvas);
 			}
 			this.painter.suspendAll();
+		}
+		
+		if(!!this.opt.width && !!this.opt.height){
+			this.setCanvasSize(this.opt.width, this.opt.height);
+		}
+		else if(!!this.opt.cellsize){
+			this.setCanvasSizeByCellSize(this.opt.cellsize);
 		}
 		
 		if(!!callback){ callback(this);}
@@ -236,7 +241,7 @@ pzpr.Puzzle.prototype =
 			g.child.style.pointerEvents = 'none';
 			if(g.use.sl){ o.setSLKeyEvents(g);}
 			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
-			if(o.ready){ o.postCanvasReady();}
+			if(o.painter){ o.waitCanvasReady();}
 			
 			/* 画像出力用canvasの準備 */
 			if(!o.opt.imagesave){ return;}
@@ -268,10 +273,21 @@ pzpr.Puzzle.prototype =
 	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
-		this.painter.resizeCanvas(width, height);
+		if(this.painter){
+			this.painter.resizeCanvas(width, height);
+		}
+		else{
+			this.opt.width  = width;
+			this.opt.height = height;
+		}
 	},
 	setCanvasSizeByCellSize : function(cellsize){
-		this.painter.resizeCanvasByCellSize(cellsize);
+		if(this.painter){
+			this.painter.resizeCanvasByCellSize(cellsize);
+		}
+		else{
+			this.opt.cellsize = cellsize;
+		}
 	},
 
 	adjustCanvasSize : function(){
@@ -324,7 +340,7 @@ pzpr.Puzzle.prototype =
 	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(){
-		this.painter.paintAll();
+		if(this.ready){ this.painter.paintAll();}
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
