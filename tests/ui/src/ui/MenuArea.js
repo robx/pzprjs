@@ -686,6 +686,9 @@ MenuList.prototype =
 		else if(!!ui.puzzle.config.list[idname]){
 			this.item[idname].children = ui.puzzle.config.list[idname].option;
 		}
+		else if(idname==='mode'){
+			this.item[idname].children = [1,3];
+		}
 	},
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_"), val = list.pop();

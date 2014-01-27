@@ -4,6 +4,8 @@
 /* pzprオブジェクト生成待ち */
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 
+var k = pzpr.consts;
+
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
@@ -98,6 +100,7 @@ ui.event =
 		pzl.addListener('key',    this.key_common);
 		pzl.addListener('mouse',  this.mouse_common);
 		pzl.addListener('config', this.config_common);
+		pzl.addListener('modechange', function(){ ui.event.config_common(pzl,'mode');});
 		pzl.addListener('resize', this.onResize);
 		pzl.addListener('historymove',   function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
 		pzl.addListener('historychange', function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
@@ -117,8 +120,8 @@ ui.event =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(c==='F2' && pzpr.EDITOR){
-				if     (o.editmode && !kc.isSHIFT){ o.setConfig('mode',3); result = false;}
-				else if(o.playmode &&  kc.isSHIFT){ o.setConfig('mode',1); result = false;}
+				if     (o.editmode && !kc.isSHIFT){ o.modechange(k.MODE_PLAYER); result = false;}
+				else if(o.playmode &&  kc.isSHIFT){ o.modechange(k.MODE_EDITOR); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -135,7 +138,7 @@ ui.event =
 		var mv = o.mouse;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
 			if(pzpr.EDITOR){
-				o.setConfig('mode', (o.playmode?1:3));
+				o.modechange(o.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
 			}
 			mv.mousereset();
 			return false;

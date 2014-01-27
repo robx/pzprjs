@@ -1,8 +1,16 @@
 // Puzzle.js v3.4.0
+(function(){
 
 //---------------------------------------------------------------------------
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
+
+var k = pzpr.consts;
+pzpr.addConsts({
+	// モード設定用定数
+	MODE_EDITOR : 1,
+	MODE_PLAYER : 3
+});
 
 // Puzzleクラス
 pzpr.Puzzle = function(canvas, option){
@@ -422,8 +430,9 @@ pzpr.Puzzle.prototype =
 	// owner.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		this.editmode = (num==1);
-		this.playmode = (num==3);
+		this.editmode = (num==k.MODE_EDITOR);
+		this.playmode = (num==k.MODE_PLAYER);
+		this.execListener('modechange');
 		if(!this.ready){ return;}
 
 		this.key.keyreset();
@@ -472,7 +481,7 @@ pzpr.util.Config.prototype =
 	},
 	set : function(name, newval){
 		this.configevent(name, newval);
-		this.owner.execListener('config', name, newval)
+		this.owner.execListener('config', name, newval);
 	},
 
 	//---------------------------------------------------------------------------
@@ -481,7 +490,7 @@ pzpr.util.Config.prototype =
 	//---------------------------------------------------------------------------
 	getAll : function(){
 		var object = {};
-		for(var key in this.list){ if(key!=='mode'){ object[key] = this.list[key].val;}}
+		for(var key in this.list){ object[key] = this.list[key].val;}
 		return JSON.stringify(object);
 	},
 	setAll : function(json){
@@ -496,7 +505,6 @@ pzpr.util.Config.prototype =
 	//---------------------------------------------------------------------------
 	init : function(){
 		/* 全般的な設定 */
-		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* モード */
 		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
@@ -561,10 +569,6 @@ pzpr.util.Config.prototype =
 			o.redraw();
 			break;
 		
-		case 'mode':
-			o.modechange(newval);
-			break;
-		
 		case 'disptype_bosanowa':
 			o.adjustCanvasSize();
 			break;
@@ -593,3 +597,5 @@ pzpr.createPuzzleClass('Flags',
 
 	disable_subclear : false	// "補助消去"ボタンを作らない
 });
+
+})();

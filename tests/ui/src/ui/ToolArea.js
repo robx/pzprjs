@@ -307,7 +307,7 @@ ui.toolarea = {
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
+				var f = !!kp.paneltype[ui.puzzle.playmode ? 3 : 1];
 				getEL('ck_keypopup').disabled    = (f?"":"true");
 				getEL('cl_keypopup').style.color = (f?"black":"silver");
 			}
@@ -315,7 +315,7 @@ ui.toolarea = {
 		
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.getConfig('mode');
+				var mode = ui.puzzle.playmode ? 3 : 1;
 				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}

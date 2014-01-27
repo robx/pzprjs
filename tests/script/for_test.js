@@ -11,7 +11,7 @@ ui.debug.extend(
 {
 	loadperf : function(){
 		ui.openPuzzle(perfstr, function(puzzle){
-			puzzle.setConfig('mode',3);
+			puzzle.modechange(k.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
 	},

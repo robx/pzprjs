@@ -167,6 +167,9 @@ Menu.prototype =
 			ui.puzzle.board.uramashu = newval;
 			ui.event.config_common(ui.puzzle, idname, newval);
 		}
+		else if(idname==='mode'){
+			ui.puzzle.modechange(newval);
+		}
 	},
 	getConfigVal : function(idname){
 		if(!!this.menuconfig[idname]){
@@ -177,6 +180,9 @@ Menu.prototype =
 		}
 		else if(idname==='uramashu'){
 			return ui.puzzle.board.uramashu;
+		}
+		else if(idname==='mode'){
+			return ui.puzzle.playmode ? 3 : 1;
 		}
 	},
 
