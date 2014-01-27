@@ -12,28 +12,26 @@ pzpr.createPuzzleClass('MouseEvent',
 
 		this.enableMouse = true;	// マウス入力は有効か
 
-		this.inputPoint = new pzpr.util.Point(null, null);	// 入力イベントが発生したpixel位置
-
-		this.currentpos = {px:0,py:0};
-		
 		this.mouseoffset = {px:0,py:0};
 		var bz = pzpr.env.browser;
 		if(bz.legacyIE)   { this.mouseoffset = {px:2,py:2};}
 		else if(bz.WebKit){ this.mouseoffset = {px:1,py:1};}
 
 		this.mouseCell;		// 入力されたセル等のID
-		this.inputData;		// 入力中のデータ番号(実装依存)
 		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
-		this.firstPoint = new pzpr.util.Point(null, null);		// mousedownされた時のpixel位置
-		this.prevPos    = new this.owner.Address(null, null);	// 前回のマウス入力イベントのborder座標
+
+		this.inputPoint = new this.owner.RawAddress();	// 入力イベントが発生したborder座標 ※端数あり
+		this.firstPoint = new this.owner.RawAddress();	// mousedownされた時のborder座標 ※端数あり
+		this.prevPos    = new this.owner.Address();		// 前回のマウス入力イベントのborder座標
+
 		this.btn = {};		// 押されているボタン
+		this.inputData;		// 入力中のデータ番号(実装依存)
 
 		this.bordermode;	// 境界線を入力中かどうか
 
 		this.mousestart;	// mousedown/touchstartイベントかどうか
 		this.mousemove;		// mousemove/touchmoveイベントかどうか
 		this.mouseend;		// mouseup/touchendイベントかどうか
-		this.mouseout;		// mouseoutイベントかどうか
 
 		this.mousereset();
 	},
@@ -46,19 +44,20 @@ pzpr.createPuzzleClass('MouseEvent',
 	mousereset : function(){
 		var bd = this.owner.board, cell = this.mouseCell;
 		
-		this.inputData = null;
 		this.mouseCell = bd.emptycell;
 		this.firstCell = bd.emptycell;
+
 		this.firstPoint.reset();
 		this.prevPos.reset();
+
 		this.btn = { Left:false, Middle:false, Right:false};
+		this.inputData = null;
 
 		this.bordermode = false;
 
 		this.mousestart = false;
 		this.mousemove  = false;
 		this.mouseend   = false;
-		this.mouseout   = false;
 		
 		if(bd.linfo.moveline && this.owner.getConfig('dispmove') && !!cell && !cell.isnull){ cell.draw();}
 	},
@@ -75,8 +74,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
-		var pos = this.getPosition(e);	/* 座標を取得 */
-		this.mouseevent(pos.px, pos.py, 0);
+		this.mouseevent(this.getBoardAddress(e), 0);
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
@@ -86,7 +84,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(!this.enableMouse){ return true;}
 		
 		/* 座標は前のイベントのものを使用する */
-		this.mouseevent(this.inputPoint.px, this.inputPoint.py, 2);
+		this.mouseevent(this.inputPoint, 2);
 		this.mousereset();
 		
 		pzpr.util.stopPropagation(e);
@@ -96,8 +94,7 @@ pzpr.createPuzzleClass('MouseEvent',
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		var pos = this.getPosition(e);	/* 座標を取得 */
-		this.mouseevent(pos.px, pos.py, 1);
+		this.mouseevent(this.getBoardAddress(e), 1);
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
@@ -106,8 +103,8 @@ pzpr.createPuzzleClass('MouseEvent',
 	e_mouseout : function(e){ },
 
 	//---------------------------------------------------------------------------
-	// mv.setMouseButton() イベントが起こったボタンを設定する
-	// mv.getPosition()    イベントが起こったcanvas内の座標を取得する
+	// mv.setMouseButton()  イベントが起こったボタンを設定する
+	// mv.getBoardAddress() イベントが起こったcanvas内の座標を取得する
 	//---------------------------------------------------------------------------
 	setMouseButton : function(e){
 		this.btn = pzpr.util.getMouseButton(e);
@@ -122,30 +119,26 @@ pzpr.createPuzzleClass('MouseEvent',
 			}
 		}
 	},
-	getPosition : function(e){
-		var pc = this.owner.painter, pagePos = pzpr.util.getPagePos(e);
-		var pos = { px: (pagePos.px - pc.pageX - this.mouseoffset.px),
-					py: (pagePos.py - pc.pageY - this.mouseoffset.py)};
+	getBoardAddress : function(e){
+		var puzzle = this.owner, pc = puzzle.painter, pagePos = pzpr.util.getPagePos(e);
+		var px = (pagePos.px - pc.pageX - this.mouseoffset.px);
+		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
+		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
 		var g = pc.context;
-		if(!!g && (g.use.vml || g.use.sl)){
-			pos.px+=pc.bw*0.33;
-			pos.py+=pc.bh*0.33;
-		}
-		return pos;
+		if(!!g && (g.use.vml || g.use.sl)){ addr.move(+0.33,+0.33);}
+		return addr;
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
 	// mv.isDispred()  inputRed()処理を呼び出すかどうか判定する
 	//---------------------------------------------------------------------------
-	mouseevent : function(px, py, step){
-		this.inputPoint.px = px;
-		this.inputPoint.py = py;
+	mouseevent : function(addr, step){
+		this.inputPoint.set(addr);
 		
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
-		this.mouseout   = (step===3);
 		
 		if(!this.owner.execListener('mouse')){ return;}
 		
@@ -194,47 +187,44 @@ pzpr.createPuzzleClass('MouseEvent',
 	// mv.isBorderMode() 境界線入力モードかどうか判定する
 	//---------------------------------------------------------------------------
 	getcell : function(){
-		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return this.owner.board.emptycell;} // ぴったりは無効
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
-		var cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		if(this.inputPoint.px%cw===0 || this.inputPoint.py%ch===0){ return this.owner.board.emptyexcell;} // ぴったりは無効
 		var pos = this.getpos(0), obj = pos.getex();
 		return (!obj.isnull ? obj : pos.getc());
 	},
 	getcross : function(){
 		return this.getpos(0.5).getx();
 	},
-	getpos : function(rc){
-		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var cw = this.owner.painter.cw, ch = this.owner.painter.ch, pm = rc*cw;
-		var px=(this.inputPoint.px+pm+2*cw), py=(this.inputPoint.py+pm+2*ch);
-		var bx = ((px/cw)|0)*2 + ((px%cw<2*pm)?0:1) - 4;
-		var by = ((py/ch)|0)*2 + ((py%ch<2*pm)?0:1) - 4;
 
+	getpos : function(spc){
+		var addr=this.inputPoint, m1=2*spc, m2=2*(1-spc);
+		// マイナスでもシームレスな値にしたいので、+4して-4する
+		var bx=addr.bx+4, by=addr.by+4, dx=bx-(bx>>1<<1), dy=by-(by>>1<<1);
+		bx = (bx>>1<<1) + (+(dx>=m1)) + (+(dx>=m2)) - 4;
+		by = (by>>1<<1) + (+(dy>=m1)) + (+(dy>=m2)) - 4;
 		return (new this.owner.Address(bx,by));
 	},
 
 	getborder : function(spc){
-		var bd = this.owner.board, cw = this.owner.painter.cw, ch = this.owner.painter.ch;
-		var bx = ((this.inputPoint.px/cw)<<1)+1, by = ((this.inputPoint.py/ch)<<1)+1;
-		var dx =   this.inputPoint.px%cw,        dy =   this.inputPoint.py%ch;
+		var addr = this.inputPoint;
+		var bx = (addr.bx>>1<<1)+1, by = (addr.by>>1<<1)+1;
+		var dx = addr.bx+1-bx, dy = addr.by+1-by;
 
 		// 真ん中のあたりはどこにも該当しないようにする
+		var bd = this.owner.board;
 		if(bd.lines.isLineCross){
 			if(!bd.lines.borderAsLine){
-				var m1=spc*cw, m2=(1-spc)*cw;
+				var m1=2*spc, m2=2*(1-spc);
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.emptyborder;}
 			}
 			else{
-				var m1=(0.5-spc)*cw, m2=(0.5+spc)*cw;
+				var m1=2*(0.5-spc), m2=2*(0.5+spc);
 				if(m1<dx && dx<m2 && m1<dy && dy<m2){ return bd.emptyborder;}
 			}
 		}
 
-		if(dx<cw-dy){	//左上
+		if(dx<2-dy){	//左上
 			if(dx>dy){ return bd.getb(bx  ,by-1);}	//左上＆右上 -> 上
 			else     { return bd.getb(bx-1,by  );}	//左上＆左下 -> 左
 		}

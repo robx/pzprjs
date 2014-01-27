@@ -33,10 +33,10 @@ MouseEvent:{
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
-				var mx=Math.abs(this.inputPoint.px-this.firstPoint.px);
-				var my=Math.abs(this.inputPoint.py-this.firstPoint.py);
-				if     (my>=8){ this.inputData=12; input=true;}
-				else if(mx>=8){ this.inputData=13; input=true;}
+				var mx=Math.abs(this.inputPoint.bx-this.firstPoint.bx);
+				var my=Math.abs(this.inputPoint.by-this.firstPoint.by);
+				if     (my>=0.25){ this.inputData=12; input=true;}
+				else if(mx>=0.25){ this.inputData=13; input=true;}
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);

@@ -20,16 +20,12 @@ MouseEvent:{
 
 	// マウス入力時のセルID取得系
 	getcell : function(){
-		var o = this.owner, bd = o.board, pos = this.getpos(0);
-		if(this.inputY%o.painter.ch===0){ return bd.emptycell;} // 縦方向だけ、ぴったりは無効
-		if(!pos.isinside()){ return bd.emptycell;}
-
-		var cand = pos.getc();
+		var pos = this.getpos(0), cand = pos.getc();
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	getpos : function(rc){
 		var pc = this.owner.painter;
-		return (new this.owner.Address((this.inputPoint.px/pc.bw)|0, ((this.inputPoint.py/pc.ch)|0)*2+1));
+		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by>>1<<1)+1));
 	}
 },
 

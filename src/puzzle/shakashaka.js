@@ -69,9 +69,8 @@ MouseEvent:{
 		cell.draw();
 	},
 	checkCornerData : function(cell){
-		var bw = this.owner.painter.bw, bh = this.owner.painter.bh;
-		var dx = this.inputPoint.px - cell.bx*bw;
-		var dy = this.inputPoint.py - cell.by*bh;
+		var dx = this.inputPoint.bx - cell.bx;
+		var dy = this.inputPoint.by - cell.by;
 		if(dx<=0){ return ((dy<=0)?5:2);}
 		else     { return ((dy<=0)?4:3);}
 	},
@@ -86,11 +85,11 @@ MouseEvent:{
 	},
 	inputTriangle_pull_move : function(){
 		var cell = this.mouseCell;
-		var dx = (this.inputPoint.px-this.firstPoint.px);
-		var dy = (this.inputPoint.py-this.firstPoint.py);
+		var dx = (this.inputPoint.bx-this.firstPoint.bx);
+		var dy = (this.inputPoint.by-this.firstPoint.by);
 
 		// 一定以上動いていたら三角形を入力
-		var diff = 12;
+		var diff = 0.33;
 		if     (dx<=-diff && dy>= diff){ this.inputData = 2;}
 		else if(dx<=-diff && dy<=-diff){ this.inputData = 5;}
 		else if(dx>= diff && dy>= diff){ this.inputData = 3;}
@@ -103,11 +102,11 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputTriangle_pull_end : function(){
-		var dx = (this.inputPoint.px-this.firstPoint.px);
-		var dy = (this.inputPoint.py-this.firstPoint.py);
+		var dx = (this.inputPoint.bx-this.firstPoint.bx);
+		var dy = (this.inputPoint.by-this.firstPoint.by);
 
 		// ほとんど動いていなかった場合は・を入力
-		if(Math.abs(dx)<=3 && Math.abs(dy)<=3){
+		if(Math.abs(dx)<=0.1 && Math.abs(dy)<=0.1){
 			var cell = this.mouseCell;
 			cell.setAnswer(cell.getQsub()!==1?-1:0);
 			cell.draw();

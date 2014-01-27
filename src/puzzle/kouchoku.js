@@ -98,9 +98,9 @@ MouseEvent:{
 	},
 
 	e_mouseout : function(e){
-		this.mouseout_kouchoku(e, this.inputPoint.px, this.inputPoint.py);
+		this.mouseout_kouchoku(e);
 	},
-	mouseout_kouchoku : function(e, px, py){
+	mouseout_kouchoku : function(e){
 		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
 		var pos = pzpr.util.getPagePos(e), rect=pzpr.util.getRect(this.owner.canvas);
 		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){

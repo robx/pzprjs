@@ -36,7 +36,7 @@ MouseEvent:{
 			if(cell.isnull){ /* nop */} // 何もしない
 			else if(this.mouseCell===cell){ this.inputData = 1;} // 入力開始時と同じセルの場合
 			else{
-				var dx=(this.inputPoint.px-this.firstPoint.px), dy=(this.inputPoint.py-this.firstPoint.py);
+				var dx=(this.inputPoint.bx-this.firstPoint.bx), dy=(this.inputPoint.by-this.firstPoint.by);
 				if     (dx-dy>0 && dx+dy>0){ adj=this.mouseCell.rt(); this.inputData=5;}
 				else if(dx-dy>0 && dx+dy<0){ adj=this.mouseCell.up(); this.inputData=2;}
 				else if(dx-dy<0 && dx+dy>0){ adj=this.mouseCell.dn(); this.inputData=3;}

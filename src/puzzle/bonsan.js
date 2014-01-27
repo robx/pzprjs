@@ -63,10 +63,9 @@ MouseEvent:{
 	},
 	inputdark : function(cell){
 		var targetcell = (!this.getConfig('dispmove') ? cell : cell.base);
-			pc = this.owner.painter,
-			distance = pc.cw*0.30,
-			dx = this.inputPoint.px-(cell.bx*pc.bw), /* ここはtargetcellではなくcell */
-			dy = this.inputPoint.py-(cell.by*pc.bh);
+			distance = 0.60,
+			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
+			dy = this.inputPoint.by-cell.by;
 		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
 			targetcell.setQdark(targetcell.getQdark()===0 ? 1 : 0);
 			targetcell.draw();
