@@ -414,9 +414,11 @@ pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
 
 		/* 外枠のカウントをあらかじめ足しておく */
 		var bd = this.owner.board;
-		for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
+		/* minbx, minbyを使用すると、excellがある時おかしくなるので使用してはいけません */
+		var minbx=0, maxbx=bd.qcols*2, minby=0, maxby=bd.qrows*2;
+		for(var by=minby;by<=maxby;by+=2){ for(var bx=minbx;bx<=maxbx;bx+=2){
 			var c = (bx>>1)+(by>>1)*(bd.qcols+1);
-			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby):false);
+			var ischassis = (bd.hasborder===1 ? (bx===minbx||bx===maxbx||by===minby||by===maxby):false);
 			this.crosscnt[c]=(ischassis?2:0);
 		}}
 
