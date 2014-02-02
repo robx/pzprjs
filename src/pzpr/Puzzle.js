@@ -53,6 +53,9 @@ pzpr.Puzzle.prototype =
 	
 	config : null,
 	
+	initCanvasSize  : false,
+	initCanvasEvent : false,
+	
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
@@ -141,35 +144,38 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.waitCanvasReady()  Canvasの初期化待ちを行う
 	// owner.postCanvasReady()  Canvasの初期化終了後の処理を行う
+	// owner.firstCanvasReady() Canvasの初回初期化終了後の処理を行う
 	//---------------------------------------------------------------------------
 	waitCanvasReady : function(callback){
 		var puzzle = this;
 		puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas, function(){ puzzle.postCanvasReady(callback);});
 	},
 	postCanvasReady : function(callback){
-		if(!!this.canvas){
-			if(!!this.opt.input){
-				this.setCanvasEvents(this.canvas);
-			}
-			this.painter.suspendAll();
-		}
-		
-		if(!!this.opt.width && !!this.opt.height){
-			this.setCanvasSize(this.opt.width, this.opt.height);
-		}
-		else if(!!this.opt.cellsize){
-			this.setCanvasSizeByCellSize(this.opt.cellsize);
-		}
+		this.painter.suspendAll();
+		this.firstCanvasReady();
 		
 		if(!!callback){ callback(this);}
 		
-		if(!!this.canvas){
-			this.painter.unsuspend();
-		}
+		this.painter.unsuspend();
 		
 		if(!this.ready){
 			this.resetTime();
 			this.ready = true;
+		}
+	},
+	firstCanvasReady : function(){
+		if(!this.initCanvasEvent && !!this.canvas && !!this.opt.input){
+			this.setCanvasEvents(this.canvas);
+			this.initCanvasEvent = true;
+		}
+		if(!this.initCanvasSize){
+			if(!!this.opt.width && !!this.opt.height){
+				this.setCanvasSize(this.opt.width, this.opt.height);
+			}
+			else if(!!this.opt.cellsize){
+				this.setCanvasSizeByCellSize(this.opt.cellsize);
+			}
+			this.initCanvasSize = true;
 		}
 	},
 

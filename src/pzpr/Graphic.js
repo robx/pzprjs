@@ -326,6 +326,8 @@ pzpr.createPuzzleClass('Graphic',
 		this.suspended = true;
 	},
 	unsuspend : function(){
+		if(!this.context){ return false;}
+		
 		if(this.canvasWidth===null || this.canvasHeight===null){
 			var rect = pzpr.util.getRect(this.context.canvas);
 			this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
@@ -344,6 +346,8 @@ pzpr.createPuzzleClass('Graphic',
 			this.suspended = false;
 			this.prepaint();
 		}
+		
+		return true;
 	},
 
 	//---------------------------------------------------------------------------
@@ -355,7 +359,7 @@ pzpr.createPuzzleClass('Graphic',
 	// pc.resetRange()     rangeオブジェクトを初期化する
 	//---------------------------------------------------------------------------
 	prepaint : function(){
-		if(this.suspended){ return;}
+		if(this.suspended || !this.context){ return;}
 
 		var x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
