@@ -299,8 +299,8 @@ pzpr.createPuzzleClass('KeyEvent',
 		var target = tc.detectTarget(obj);
 		if(target===0 || (obj.iscell && obj.is51cell())){
 			if(ca==='q' && !obj.isnull){
-				if(obj.is51cell()){ obj.set51cell();}
-				else              { obj.remove51cell();}
+				if(!obj.is51cell()){ obj.set51cell();}
+				else               { obj.remove51cell();}
 				tc.getTCP().draw();
 				return;
 			}

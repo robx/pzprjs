@@ -16,11 +16,12 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputborder();}
-				else if(this.mouseend && this.notInputted()){ this.input51();}
 			}
 			else if(this.btn.Right){
 				if(this.mousestart || this.mousemove){ this.inputBGcolor1();}
 			}
+			
+			if(this.mouseend && this.notInputted()){ this.input51();}
 		}
 	},
 
