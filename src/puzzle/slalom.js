@@ -217,7 +217,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
-		this.startcell = this.emptycell;
+		this.startcell = this.cell[0];
 		this.hinfo.init();
 	},
 
