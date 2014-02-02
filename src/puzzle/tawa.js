@@ -134,6 +134,9 @@ Board:{
 
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
+	getobj : function(bx,by,qc,qr){
+		return this.getc(bx,by,qc,qr);
+	},
 	cellinside : function(x1,y1,x2,y2){
 		var clist = new this.owner.CellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
