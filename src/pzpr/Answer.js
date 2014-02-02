@@ -263,12 +263,11 @@ pzpr.createPuzzleClass('AnsCheck',
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var room = cinfo.room[id], clist = room.clist, d = clist.getRectSize();
-			var a = clist.filter(function(cell){ return func(cell);}).length;
-
-			var bd = this.owner.board;
-			var cell = (!!room.top ? room.top : clist.getQnumCell());
-			var n = (!cell.isnull?cell.getQnum():-1);
+			var room = cinfo.room[id], clist = room.clist;
+			var top = (!!room.top ? room.top : clist.getQnumCell());
+			var d = clist.getRectSize();
+			var a = clist.filter(func).length;
+			var n = (!top.isnull ? top.getQnum() : -1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.checkOnly){ return false;}
