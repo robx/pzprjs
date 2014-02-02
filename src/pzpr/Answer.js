@@ -267,7 +267,7 @@ pzpr.createPuzzleClass('AnsCheck',
 			var a = clist.filter(function(cell){ return func(cell);}).length;
 
 			var bd = this.owner.board;
-			var cell = (bd.rooms.hastop ? room.top : clist.getQnumCell());
+			var cell = (!!room.top ? room.top : clist.getQnumCell());
 			var n = (!cell.isnull?cell.getQnum():-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
