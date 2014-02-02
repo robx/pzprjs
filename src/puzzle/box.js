@@ -178,16 +178,14 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	getBoardCols : function(){
-		var bd = this.owner.board;
-		return ((bd.maxbx-bd.minbx)>>1)+1;
+	getCanvasCols : function(){
+		return this.getBoardCols()+2*this.margin+1;
 	},
-	getBoardRows : function(){
-		var bd = this.owner.board;
-		return ((bd.maxby-bd.minby)>>1)+1;
+	getCanvasRows : function(){
+		return this.getBoardRows()+2*this.margin+1;
 	},
-	getOffsetCols : function(){ return 0;},
-	getOffsetRows : function(){ return 0;},
+	getOffsetCols : function(){ return 0.5;},
+	getOffsetRows : function(){ return 0.5;},
 
 	drawNumbers_box : function(){
 		var g = this.vinc('excell_number', 'auto');

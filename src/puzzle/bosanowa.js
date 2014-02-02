@@ -178,13 +178,13 @@ Graphic:{
 		this.drawTarget_bosanowa();
 	},
 
-	getBoardCols : function(){
-		var bd = this.owner.board, disptype = this.getConfig('disptype_bosanowa');
-		return ((bd.maxbx-bd.minbx)>>1)+(disptype==2?2:0);
+	getCanvasCols : function(){
+		var disptype = this.getConfig('disptype_bosanowa');
+		return this.getBoardCols()+2*this.margin+(disptype==2?2:0);
 	},
-	getBoardRows : function(){
-		var bd = this.owner.board, disptype = this.getConfig('disptype_bosanowa');
-		return ((bd.maxby-bd.minby)>>1)+(disptype==2?2:0);
+	getCanvasRows : function(){
+		var disptype = this.getConfig('disptype_bosanowa');
+		return this.getBoardRows()+2*this.margin+(disptype==2?2:0);
 	},
 
 	drawErrorCells_bosanowa : function(){

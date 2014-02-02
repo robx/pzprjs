@@ -335,8 +335,8 @@ Graphic:{
 		this.drawInOut();
 	},
 
-	getBoardCols : function(){
-		var bd = this.owner.board, cols = ((bd.maxbx-bd.minbx)>>1);
+	getCanvasCols : function(){
+		var bd = this.owner.board, cols = this.getBoardCols()+2*this.margin;
 		if(pzpr.PLAYER){
 			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
 			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols+=0.7;}
@@ -344,8 +344,8 @@ Graphic:{
 		else{ cols+=1.4;}
 		return cols;
 	},
-	getBoardRows : function(){
-		var bd = this.owner.board, rows = ((bd.maxby-bd.minby)>>1);
+	getCanvasRows : function(){
+		var bd = this.owner.board, rows = this.getBoardRows()+2*this.margin;
 		if(pzpr.PLAYER){
 			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
 			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows+=0.7;}
@@ -356,16 +356,16 @@ Graphic:{
 	getOffsetCols : function(){
 		var bd = this.owner.board, cols = 0;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
-			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols-=0.7;}
+			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.35;}
+			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols-=0.35;}
 		}
 		return cols;
 	},
 	getOffsetRows : function(){
 		var bd = this.owner.board, rows = 0;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
-			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows-=0.7;}
+			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.35;}
+			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows-=0.35;}
 		}
 		return rows;
 	},

@@ -238,8 +238,8 @@ pzpr.createPuzzleClass('Graphic',
 		// 盤面のセルID:0が描画される左上の位置の設定
 		var g = this.context;
 		var bd = this.owner.board;
-		this.x0 = ((cwid-this.cw*(bd.qcols-this.getOffsetCols()))/2)|0;
-		this.y0 = ((chgt-this.ch*(bd.qrows-this.getOffsetRows()))/2)|0;
+		this.x0 = ((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0;
+		this.y0 = ((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0;
 
 		// canvas要素のサイズを変更する
 		var gs = [g, this.subcontext];
@@ -285,8 +285,8 @@ pzpr.createPuzzleClass('Graphic',
 	// pc.getCanvasRows()  Canvasの縦幅としてセル何個分が必要か返す
 	// pc.getBoardCols()   マージンを除いた盤面の横幅としてセル何個分が必要か返す
 	// pc.getBoardRows()   マージンを除いた盤面の縦幅としてセル何個分が必要か返す
-	// pc.getOffsetCols()  有効範囲が(0,0)-(C,R)からずれているパズルで、x0の位置を調整する
-	// pc.getOffsetRows()  有効範囲が(0,0)-(C,R)からずれているパズルで、x0の位置を調整する
+	// pc.getOffsetCols()  有効範囲が(0,0)-(C,R)からずれているパズルで、左右の中心位置を調整する
+	// pc.getOffsetRows()  有効範囲が(0,0)-(C,R)からずれているパズルで、上下の中心位置を調整する
 	//---------------------------------------------------------------------------
 	getCanvasCols : function(){
 		return this.getBoardCols()+2*this.margin;
@@ -297,20 +297,20 @@ pzpr.createPuzzleClass('Graphic',
 
 	getBoardCols : function(){
 		var bd = this.owner.board;
-		return ((bd.maxbx-bd.minbx)>>1);
+		return (bd.maxbx-bd.minbx)/2;
 	},
 	getBoardRows : function(){
 		var bd = this.owner.board;
-		return ((bd.maxby-bd.minby)>>1);
+		return (bd.maxby-bd.minby)/2;
 	},
 
 	getOffsetCols : function(){
-		/* 左にずらしたい分プラス、右にずらしたい分マイナス */
-		return (this.owner.board.hasexcell===1?1:0);
+		/* 右にずらしたい分プラス、左にずらしたい分マイナス */
+		return (0-this.owner.board.minbx)/2;
 	},
 	getOffsetRows : function(){
-		/* 上にずらしたい分プラス、下にずらしたい分マイナス */
-		return (this.owner.board.hasexcell===1?1:0);
+		/* 下にずらしたい分プラス、上にずらしたい分マイナス */
+		return (0-this.owner.board.minby)/2;
 	},
 
 	//---------------------------------------------------------------------------
