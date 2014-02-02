@@ -352,6 +352,7 @@ pzpr.createPuzzleClass('AreaManager',
 			var cell = bd.cell[c];
 			if(!info.emptyCell(cell)){ continue;}
 			info.addRoom();
+			if(!!this.hastop){ info.setTop(this.getTopOfRoomByCell(cell));}
 
 			var clist = this.getClistByCell(cell);
 			for(var i=0;i<clist.length;i++){ info.addCell(clist[i]);}
@@ -722,6 +723,8 @@ pzpr.createPuzzleClass('AreaInfo',
 		this.room[areaid].clist.add(obj);
 		this.id[obj.id] = areaid;
 	},
+
+	setTop : function(cell){ this.room[this.max].top = cell;},
 
 	addCell   : function(cell){ this.setRoomID(cell, this.max);},
 	emptyCell : function(cell){ return (this.id[cell.id]===0);},

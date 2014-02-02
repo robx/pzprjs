@@ -263,11 +263,11 @@ pzpr.createPuzzleClass('AnsCheck',
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var clist = cinfo.room[id].clist, d = clist.getRectSize();
+			var room = cinfo.room[id], clist = room.clist, d = clist.getRectSize();
 			var a = clist.filter(function(cell){ return func(cell);}).length;
 
 			var bd = this.owner.board;
-			var cell = (bd.rooms.hastop ? bd.rooms.getTopOfRoom(id) : clist.getQnumCell());
+			var cell = (bd.rooms.hastop ? room.top : clist.getQnumCell());
 			var n = (!cell.isnull?cell.getQnum():-1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
