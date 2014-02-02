@@ -405,6 +405,7 @@ pzpr.createPuzzleClass('AnsCheck',
 		return result;
 	},
 	isDifferentNumberInClist : function(clist, numfunc){
+		if(clist.length<=0){ return true;}
 		var result = true, d = [], num = [];
 		var max = clist[0].nummaxfunc(), bottom = clist[0].numminfunc();
 		for(var n=bottom;n<=max;n++){ d[n]=0;}

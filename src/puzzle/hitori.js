@@ -88,7 +88,7 @@ Graphic:{
 		this.drawNumbers();
 
 		var o=this.owner, bd=o.board, chk=o.checker;
-		if(!bd.haserror && this.getConfig('plred')){
+		if(this.getConfig('plred')){
 			chk.inCheck = true;
 			chk.checkOnly = false;
 			chk.checkRowsColsSameNumber();
@@ -98,6 +98,7 @@ Graphic:{
 
 			bd.haserror = true;
 			bd.errclear(false);
+			bd.haserror = true;
 		}
 	}
 },
