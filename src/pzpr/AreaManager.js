@@ -83,7 +83,10 @@ pzpr.createPuzzleClass('AreaManager',
 		if(this.owner.board.hasborder){
 			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
 			var cblist=cell.getdir4cblist();
-			for(var i=0;i<cblist.length;i++){ this.checkSeparateInfo(cblist[i][1]);}
+			for(var i=0;i<cblist.length;i++){
+				this.checkLinkInfo(cblist[i][0]);
+				this.checkSeparateInfo(cblist[i][1]);
+			}
 		}
 
 		var val = this.calcLinkInfo(cell), old = this.linkinfo[cell.id];
