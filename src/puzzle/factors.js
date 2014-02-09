@@ -63,6 +63,17 @@ Cell:{
 	}
 },
 
+CellList:{
+	getProduct : function(){
+		var product = 1;
+		for(var i=0,len=this.length;i<len;i++){
+			var num = this[i].getAnum();
+			product *= (num>0 ? num : 0);
+		}
+		return product;
+	}
+},
+
 Board:{
 	qcols : 9,
 	qrows : 9,
@@ -160,31 +171,29 @@ AnsCheck:{
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkRoomNumber(rinfo) ){ return 'nmProduct';}
 
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
+		if( !this.checkNoAnumCell() ){ return 'ceEmpty';}
 
 		return null;
 	},
 	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
+		return (this.checkNoAnumCell() ? null : 'ceEmpty');
 	},
 
 	checkRowsColsSameAnsNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getAnum();});
 	},
+	checkNoAnumCell : function(){
+		return this.checkAllCell( function(cell){ return cell.getAnum()===-1;} );
+	},
 
 	checkRoomNumber : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var product = 1, clist = rinfo.room[id].clist;
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				if(cell.getAnum()>0){ product *= cell.getAnum();}
-				else{ product = 0;}
-			}
-			if(product==0){ continue;}
+			var room = rinfo.room[id], clist = room.clist;
+			var product = clist.getProduct();
+			if(product === 0){ continue;}
 
-			var cell = this.owner.board.rooms.getTopOfRoom(id);
-			if(product!=cell.getQnum()){
+			if(product !== room.top.getQnum()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
