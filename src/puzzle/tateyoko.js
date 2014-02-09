@@ -92,7 +92,7 @@ KeyEvent:{
 			if(ca=='q1'){
 				cell.setQues(1);
 				cell.setQans(0);
-				if(cell.setQnum()>4){ cell.setQnum(-1);}
+				if(cell.getQnum()>4){ cell.setQnum(-1);}
 			}
 			else if(ca=='q2'){ cell.setQues(0);}
 		}
