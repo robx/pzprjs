@@ -51,7 +51,7 @@ MouseEvent:{
 				else{ cell.setNum(num-1);}
 			}
 		}
-		cell.draw();
+		cell.drawaround();
 	}
 },
 
@@ -102,14 +102,14 @@ KeyEvent:{
 		}
 		else{ return;}
 
-		tcp.draw();
+		tcp.drawaround();
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
 		var bd = this.owner.board;
-		this.pos = new this.owner.Address(bd.qcols-1-bd.qcols%2, bd.qrows-1-bd.qrows%2);
+		this.pos = new this.owner.Address(((bd.qcols-1)>>1<<1)+1, ((bd.qrows-1)>>1<<1)+1);
 	}
 },
 
@@ -127,6 +127,12 @@ Border:{
 	},
 	isBorder : function(){
 		return !!(this.sidecell[0].isEmpty()^this.sidecell[1].isEmpty());
+	}
+},
+
+Address:{
+	drawaround : function(){
+		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
 	}
 },
 
