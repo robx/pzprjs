@@ -739,16 +739,6 @@ pzpr.createPuzzleClass('PieceList',
 pzpr.createPuzzleClass('CellList:PieceList',
 {
 	//---------------------------------------------------------------------------
-	// clist.addByIdlist()  セルのIDのリストからセルを追加する
-	//---------------------------------------------------------------------------
-	addByIdlist : function(idlist){
-		for(var i=0;i<idlist.length;i++){
-			this.add(this.owner.board.cell[idlist[i]]);
-		}
-		return this;
-	},
-
-	//---------------------------------------------------------------------------
 	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
@@ -797,16 +787,6 @@ pzpr.createPuzzleClass('CrossList:PieceList',{
 //---------------------------------------------------------------------------
 pzpr.createPuzzleClass('BorderList:PieceList',
 {
-	//---------------------------------------------------------------------------
-	// clist.addByIdlist()  BorderのIDのリストからBorderを追加する
-	//---------------------------------------------------------------------------
-	addByIdlist : function(idlist){
-		for(var i=0;i<idlist.length;i++){
-			this.add(this.owner.board.border[idlist[i]]);
-		}
-		return this;
-	},
-
 	//---------------------------------------------------------------------------
 	// blist.cellinside()  線が重なるセルのリストを取得する
 	// blist.crossinside() 線が重なる交点のリストを取得する
