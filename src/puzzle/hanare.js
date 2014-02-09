@@ -50,29 +50,6 @@ MouseEvent:{
 },
 
 //---------------------------------------------------------
-// キーボード入力系
-KeyEvent:{
-	enablemake : true,
-	enableplay : true,
-
-	keyinput : function(ca){
-		this.key_inputqnum_hanare(ca);
-	},
-	key_inputqnum_hanare : function(ca){
-		var cell=this.cursor.getTCC(), val=-1;
-
-		if('0'<=ca && ca<='9'){ val = 1;}
-		else if(ca==='-') { val = (this.owner.playmode?-2:-1);}
-		else if(ca===' ') { val = -1;}
-		else{ return;}
-
-		cell.setNum_hanare(val);
-		this.prev = cell;
-		cell.draw();
-	}
-},
-
-//---------------------------------------------------------
 // 盤面管理系
 Cell:{
 	setNum_hanare : function(val){
@@ -129,8 +106,6 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawChassis();
-
-		this.drawCursor();
 	}
 },
 
