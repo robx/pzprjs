@@ -285,7 +285,7 @@ Graphic:{
 	paintRange : function(x1,y1,x2,y2){
 		var bd = this.owner.board;
 		if(!bd.haserror && this.getConfig('colorslash')){
-			this.setRange(bd.minbx, bd.minby, bd.maxbx, bd.maxby);
+			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
 			this.setRange(x1,y1,x2,y2);
