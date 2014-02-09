@@ -282,7 +282,7 @@ ui.menuarea = {
 			pp.addCheck('plred','setting', '重複した数字を表示', 'Show overlapped number');
 		}
 
-		if(pid==='wagiri'){
+		if(pid==='gokigen'||pid==='wagiri'){
 			pp.addCheck('colorslash','setting', '斜線の色分け', 'Slash with color');
 		}
 

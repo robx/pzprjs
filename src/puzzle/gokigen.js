@@ -238,10 +238,8 @@ BoardExec:{
 
 Flags:{
 	use : true,
+	redline : true,
 	disable_subclear : true
-},
-"Flags@gokigen":{
-	redline : true
 },
 
 //---------------------------------------------------------
@@ -263,6 +261,18 @@ Graphic:{
 
 		this.crosssize = 0.33;
 	},
+
+	// オーバーライド
+	paintRange : function(x1,y1,x2,y2){
+		var bd = this.owner.board;
+		if(!bd.haserror && this.getConfig('colorslash')){
+			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
+		}
+		else{
+			this.setRange(x1,y1,x2,y2);
+		}
+		this.prepaint();
+	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid(false);
@@ -278,36 +288,18 @@ Graphic:{
 	getBGCellColor : function(cell){
 		if(cell.qans===0 && cell.error===1){ return this.errbcolor1;}
 		return null;
-	}
-},
-"Graphic@wagiri":{
-	// オーバーライド
-	paintRange : function(x1,y1,x2,y2){
-		var bd = this.owner.board;
-		if(!bd.haserror && this.getConfig('colorslash')){
-			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
-		}
-		else{
-			this.setRange(x1,y1,x2,y2);
-		}
-		this.prepaint();
-	},
-
-	drawNumber1 : function(cell){
-		var num = cell.qnum, key='cell_'+cell.id;
-		if(num!==-1){
-			var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum(key, 1, text, 0.70, this.fontcolor, px, py);
-		}
-		else{ this.hidenum(key);}
 	},
 
 	drawSlashes : function(){
 		var bd = this.owner.board;
 		if(!bd.haserror && this.getConfig('colorslash')){
 			var sdata=bd.getSlashData();
-			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
+			if(this.owner.pid==='gokigen'){
+				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===1){ bd.cell[c].seterr(sdata[c]);} }
+			}
+			else if(this.owner.pid==='wagiri'){
+				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
+			}
 
 			this.Common.prototype.drawSlashes.call(this);
 
@@ -316,6 +308,17 @@ Graphic:{
 		else{
 			this.Common.prototype.drawSlashes.call(this);
 		}
+	}
+},
+"Graphic@wagiri":{
+	drawNumber1 : function(cell){
+		var num = cell.qnum, key='cell_'+cell.id;
+		if(num!==-1){
+			var text = (num!==-2 ? ({1:"輪",2:"切"})[num] : "?");
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			this.dispnum(key, 1, text, 0.70, this.fontcolor, px, py);
+		}
+		else{ this.hidenum(key);}
 	},
 
 	drawTarget : function(){

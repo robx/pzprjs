@@ -81,7 +81,12 @@ ui.toolarea = {
 
 		this.addLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
 
-		this.addLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		if(pid==='gokigen'){
+			this.addLabel('colorslash', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
+		}
+		else if(pid==='wagiri'){
+			this.addLabel('colorslash', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
+		}
 
 		/* 正当判定方法の設定値 */
 		this.addLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
