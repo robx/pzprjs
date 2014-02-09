@@ -159,9 +159,7 @@ pzpr.createPuzzleClass('BoardPiece',
 	//---------------------------------------------------------------------------
 	// draw()   盤面に自分の周囲を描画する
 	//---------------------------------------------------------------------------
-	draw : function(){
-		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
-	},
+	draw : function(){ this.getaddr().draw();},
 
 	//---------------------------------------------------------------------------
 	// seterr() error値を設定する
@@ -250,9 +248,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 	//---------------------------------------------------------------------------
 	// cell.drawaround() 盤面に自分の周囲1マスを含めて描画する
 	//---------------------------------------------------------------------------
-	drawaround : function(){
-		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
-	},
+	drawaround : function(){ this.getaddr().drawaround();},
 
 	//---------------------------------------------------------------------------
 	// cell.isBlack()   該当するCellが黒マスかどうか返す
@@ -618,9 +614,13 @@ pzpr.createPuzzleClass('RawAddress',
 
 	//---------------------------------------------------------------------------
 	// addr.draw() 盤面に自分の周囲を描画する
+	// addr.drawaround() 盤面に自分の周囲1マスを含めて描画する
 	//---------------------------------------------------------------------------
 	draw : function(){
 		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+	},
+	drawaround : function(){
+		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
 	},
 
 	//---------------------------------------------------------------------------

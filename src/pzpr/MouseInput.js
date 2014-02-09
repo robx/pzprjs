@@ -507,8 +507,8 @@ pzpr.createPuzzleClass('MouseEvent',
 			else{ this.cursor.chtarget('shift');}
 		}
 		else if(this.btn.Right){ cell.remove51cell();}
-
-		cell.draw();
+console.log();
+		cell.drawaround();
 	},
 
 	//---------------------------------------------------------------------------

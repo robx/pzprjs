@@ -130,12 +130,6 @@ Border:{
 	}
 },
 
-Address:{
-	drawaround : function(){
-		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
-	}
-},
-
 Board:{
 	hasborder : 2,
 

@@ -301,7 +301,7 @@ pzpr.createPuzzleClass('KeyEvent',
 			if(ca==='q' && !obj.isnull){
 				if(!obj.is51cell()){ obj.set51cell();}
 				else               { obj.remove51cell();}
-				tc.getTCP().draw();
+				tc.getTCP().drawaround();
 				return;
 			}
 		}
