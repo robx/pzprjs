@@ -70,22 +70,23 @@ ui.toolarea = {
 		/* 文字別正解表示の設定値 */
 		var pid = ui.puzzle.pid;
 		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'){
-			this.addLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
+			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='yosenabe'){
-			this.addLabel('circolor', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
+			this.addLabel('autocmp', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
 		}
 		else if(pid==='kouchoku'){
-			this.addLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+			this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
 
-		this.addLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
-
-		if(pid==='gokigen'){
-			this.addLabel('colorslash', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
+		if(pid==='hitori'){
+			this.addLabel('autoerr', '重複している数字を赤くする', 'Show overlapped number as red.');
+		}
+		else if(pid==='gokigen'){
+			this.addLabel('autoerr', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
 		}
 		else if(pid==='wagiri'){
-			this.addLabel('colorslash', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
+			this.addLabel('autoerr', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
 		}
 
 		/* 正当判定方法の設定値 */

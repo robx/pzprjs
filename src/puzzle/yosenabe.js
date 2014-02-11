@@ -29,7 +29,7 @@ MouseEvent:{
 
 	inputlight : function(){
 		var cell = this.getcell();
-		if(!cell.isnull && this.getConfig('circolor')){ this.inputdark(cell);}
+		if(!cell.isnull && this.getConfig('autocmp')){ this.inputdark(cell);}
 	},
 	inputdark : function(cell){
 		var targetcell = (!this.getConfig('dispmove') ? cell : cell.base);
@@ -243,7 +243,7 @@ Graphic:{
 			num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                       { return this.errbcolor1;}
-			else if(this.getConfig('circolor') && cell.isDark()){ return "silver"}
+			else if(this.getConfig('autocmp') && cell.isDark()){ return "silver"}
 			else{ return this.circledcolor;}
 		}
 		return null;

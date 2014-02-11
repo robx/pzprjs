@@ -272,18 +272,17 @@ ui.menuarea = {
 
 		/* 文字別正解表示の設定値 */
 		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
-			pp.addCheck('circolor','setting','数字をグレーにする','Set Grey Color');
+			pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
 		}
 		else if(pid==='kouchoku'){
-			pp.addCheck('circolor','setting','点をグレーにする','Set Grey Color');
+			pp.addCheck('autocmp','setting','点をグレーにする','Set Grey Color');
 		}
 
 		if(pid==='hitori'){
-			pp.addCheck('plred','setting', '重複した数字を表示', 'Show overlapped number');
+			pp.addCheck('autoerr','setting', '重複した数字を表示', 'Show overlapped number');
 		}
-
-		if(pid==='gokigen'||pid==='wagiri'){
-			pp.addCheck('colorslash','setting', '斜線の色分け', 'Slash with color');
+		else if(pid==='gokigen'||pid==='wagiri'){
+			pp.addCheck('autoerr','setting', '斜線の色分け', 'Slash with color');
 		}
 
 		/* 正当判定方法の設定値 */

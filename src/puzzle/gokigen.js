@@ -238,7 +238,6 @@ BoardExec:{
 
 Flags:{
 	use : true,
-	redline : true,
 	disable_subclear : true
 },
 
@@ -265,7 +264,7 @@ Graphic:{
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
 		var bd = this.owner.board;
-		if(!bd.haserror && this.getConfig('colorslash')){
+		if(!bd.haserror && this.getConfig('autoerr')){
 			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
@@ -292,7 +291,7 @@ Graphic:{
 
 	drawSlashes : function(){
 		var bd = this.owner.board;
-		if(!bd.haserror && this.getConfig('colorslash')){
+		if(!bd.haserror && this.getConfig('autoerr')){
 			var sdata=bd.getSlashData();
 			if(this.owner.pid==='gokigen'){
 				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===1){ bd.cell[c].seterr(sdata[c]);} }

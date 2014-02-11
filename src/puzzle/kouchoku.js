@@ -492,7 +492,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto');
 
-		var isgray = this.getConfig('circolor');
+		var isgray = this.getConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;

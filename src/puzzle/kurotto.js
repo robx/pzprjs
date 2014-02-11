@@ -93,7 +93,7 @@ Graphic:{
 	drawCircles_kurotto : function(){
 		var saved_cells = this.range.cells;
 		this.check_binfo = null;
-		if(this.getConfig('circolor')){
+		if(this.getConfig('autocmp')){
 			/* 一時的に盤面全体を対象に切り替える */
 			this.range.cells = this.owner.board.cell;
 			this.check_binfo = this.owner.board.getBCellInfo();
@@ -106,7 +106,7 @@ Graphic:{
 	},
 	getCircleStrokeColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.getConfig('circolor') && cell.checkComplete(this.check_binfo));
+			var cmpcell = (this.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
 			if     (cmpcell)       { return this.bcolor;    }
 			else if(cell.error===1){ return this.errbcolor1;}
 			else                   { return this.cellcolor; }

@@ -543,9 +543,8 @@ pzpr.util.Config.prototype =
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
 
 		/* 回答お助け機能 */
-		this.add('circolor', false);		/* 数字 or kouchokuの正解の点をグレーにする */
-		this.add('plred', false);			/* hitori:ひとくれの重複した数字を表示 */
-		this.add('colorslash', false);		/* wagiri: 斜線の色分け */
+		this.add('autocmp', false);			/* 数字 or kouchokuの正解の点をグレーにする */
+		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */
 		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
@@ -569,9 +568,8 @@ pzpr.util.Config.prototype =
 
 		var result = true, o = this.owner;
 		switch(name){
-		case 'irowake': case 'cursor': case 'circolor': case 'plred':
-		case 'colorslash': case 'snakebd': case 'disptype_pipelinkr':
-		case 'dispmove':
+		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
+		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
 			o.redraw();
 			break;
 		

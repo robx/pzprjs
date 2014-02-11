@@ -28,7 +28,7 @@ MouseEvent:{
 		this.Common.prototype.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.getConfig('circolor') && !this.getConfig('dispmove') && !this.notInputted()){
+		if(this.getConfig('autocmp') && !this.getConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -54,7 +54,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(this.getConfig('circolor') && this.inputdark(cell)){ return;}
+		if(this.getConfig('autocmp') && this.inputdark(cell)){ return;}
 
 		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
 		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
@@ -159,7 +159,7 @@ Graphic:{
 			num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                       { return this.errbcolor1;}
-			else if(this.getConfig('circolor') && cell.isDark()){ return "silver"}
+			else if(this.getConfig('autocmp') && cell.isDark()){ return "silver"}
 			else{ return this.circledcolor;}
 		}
 		return null;

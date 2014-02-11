@@ -40,7 +40,7 @@ Cell:{
 
 	redDisp : function(){
 		var o = this.owner, bd = o.board;
-		if(this.getConfig('plred')){
+		if(this.getConfig('autoerr')){
 			o.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
 			o.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
 		}
@@ -88,7 +88,7 @@ Graphic:{
 		this.drawNumbers();
 
 		var o=this.owner, bd=o.board, chk=o.checker;
-		if(this.getConfig('plred')){
+		if(this.getConfig('autoerr')){
 			chk.inCheck = true;
 			chk.checkOnly = false;
 			chk.checkRowsColsSameNumber();

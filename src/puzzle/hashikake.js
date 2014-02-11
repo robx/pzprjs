@@ -209,7 +209,7 @@ Graphic:{
 	},
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.getConfig('circolor') && cell.qnum===cell.getCountOfBridges());
+			var cmpcell = (this.getConfig('autocmp') && cell.qnum===cell.getCountOfBridges());
 			var err = cell.error;
 			if(err===1||err===4){ return this.errbcolor1;  }
 			else if(cmpcell)    { return this.bcolor;      }
