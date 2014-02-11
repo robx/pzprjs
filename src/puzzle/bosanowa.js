@@ -109,7 +109,7 @@ KeyEvent:{
 TargetCursor:{
 	initCursor : function(){
 		var bd = this.owner.board;
-		this.pos = new this.owner.Address(((bd.qcols-1)>>1<<1)+1, ((bd.qrows-1)>>1<<1)+1);
+		this.pos = new this.owner.Address(((bd.qcols-1)&~1)+1, ((bd.qrows-1))&~1)+1);
 	}
 },
 

@@ -25,7 +25,7 @@ MouseEvent:{
 	},
 	getpos : function(rc){
 		var pc = this.owner.painter;
-		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by>>1<<1)+1));
+		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by&~1)+1));
 	}
 },
 

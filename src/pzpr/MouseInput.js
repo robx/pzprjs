@@ -199,16 +199,16 @@ pzpr.createPuzzleClass('MouseEvent',
 
 	getpos : function(spc){
 		var addr=this.inputPoint, m1=2*spc, m2=2*(1-spc);
-		// マイナスでもシームレスな値にしたいので、+4して-4する
-		var bx=addr.bx+4, by=addr.by+4, dx=bx-(bx>>1<<1), dy=by-(by>>1<<1);
-		bx = (bx>>1<<1) + (+(dx>=m1)) + (+(dx>=m2)) - 4;
-		by = (by>>1<<1) + (+(dy>=m1)) + (+(dy>=m2)) - 4;
+		// 符号反転の影響なく計算したいので、+4して-4する
+		var bx=addr.bx+4, by=addr.by+4, dx=bx%2, dy=by%2;
+		bx = (bx&~1) + (+(dx>=m1)) + (+(dx>=m2)) - 4;
+		by = (by&~1) + (+(dy>=m1)) + (+(dy>=m2)) - 4;
 		return (new this.owner.Address(bx,by));
 	},
 
 	getborder : function(spc){
 		var addr = this.inputPoint;
-		var bx = (addr.bx>>1<<1)+1, by = (addr.by>>1<<1)+1;
+		var bx = (addr.bx&~1)+1, by = (addr.by&~1)+1;
 		var dx = addr.bx+1-bx, dy = addr.by+1-by;
 
 		// 真ん中のあたりはどこにも該当しないようにする

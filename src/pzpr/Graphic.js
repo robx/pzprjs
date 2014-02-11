@@ -1596,7 +1596,7 @@ pzpr.createPuzzleClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1-=((x1+1)&1), y1-=((y1+1)&1), x2+=((x2+1)&1), y2+=((y2+1)&1);
+		x1-=(~x1&1), y1-=(~y1&1), x2+=(~x2&1), y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
@@ -1626,7 +1626,7 @@ pzpr.createPuzzleClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
-		x1-=(x1&1), y1-=(y1&1);
+		x1-=(x1&1), y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
 
 		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.qcols-bs);
@@ -1650,7 +1650,7 @@ pzpr.createPuzzleClass('Graphic',
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
-		x1-=(x1&1), y1-=(y1&1), x2+=(x2&1), y2+=(y2&1);
+		x1-=(x1&1), y1-=(y1&1), x2+=(x2&1), y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
