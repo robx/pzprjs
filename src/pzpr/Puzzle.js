@@ -16,7 +16,6 @@ pzpr.addConsts({
 pzpr.Puzzle = function(canvas, option){
 	option = (!!option ? option : {});
 	this.opt = option;
-	if(option.input===(void 0)){ this.opt.input = true;}
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -164,7 +163,7 @@ pzpr.Puzzle.prototype =
 		}
 	},
 	firstCanvasReady : function(){
-		if(!this.initCanvasEvent && !!this.canvas && !!this.opt.input){
+		if(!this.initCanvasEvent && !!this.canvas && !this.opt.noinput){
 			this.setCanvasEvents(this.canvas);
 			this.initCanvasEvent = true;
 		}
