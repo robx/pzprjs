@@ -130,8 +130,11 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getTEC(), qn = excell.getQnum();
+		var excell = this.cursor.getTEC(), bd = this.owner.board;
+		if((excell.bx===bd.minbx+1||excell.bx===bd.maxbx-1)&&
+		   (excell.by===bd.minby+1||excell.by===bd.maxby-1)){ return;}
 
+		var qn = excell.getQnum();
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
 
