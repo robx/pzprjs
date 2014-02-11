@@ -139,7 +139,7 @@ Graphic:{
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1|=1, y1|=1;
+		x1-=((x1+1)&1), y1-=((y1+1)&1), x2+=((x2+1)&1), y2+=((y2+1)&1);
 
 		g.fillStyle = this.gridcolor_LIGHT;
 		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw, y1*this.bh, 1, (y2-y1)*this.bh+1);} }
