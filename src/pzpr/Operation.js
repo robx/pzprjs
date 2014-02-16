@@ -307,7 +307,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.ope[this.ope.length-1].push(ope);
 		this.lastope = ope;
 		this.changeflag = true;
-		if(ope.property!==k.QSUB && k.property!==k.QCMP){
+		if(ope.property!==k.QSUB && ope.property!==k.QCMP){
 			this.owner.checker.resetCache();
 		}
 		

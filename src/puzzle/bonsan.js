@@ -67,7 +67,7 @@ MouseEvent:{
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.getQdcmp()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.getQcmp()===0 ? 1 : 0);
 			targetcell.draw();
 			return true;
 		}
