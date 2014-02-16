@@ -180,12 +180,14 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qlight : 0,
-	propinfo : ['error', 'qinfo', 'qlight']
+	propinfo : ['error', 'qinfo', 'qlight'],
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 }
 },
 
 EXCell:{
 	qlight : 0,
 	propinfo : ['error', 'qinfo', 'qlight'],
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
 
 	minnum : 0
 },

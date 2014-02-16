@@ -474,7 +474,7 @@ pzpr.createPuzzleClass('OperationManager',
 	// um.preproc()  Undo/Redo実行前の処理を行う
 	// um.postproc() Undo/Redo実行後の処理を行う
 	//---------------------------------------------------------------------------
-	checkReqReset : function(ope){
+	checkReqReset : function(opes){
 		var result = false;
 		for(var i=0,len=opes.length;i<len;i++){
 			if(opes[i].reqReset){ result = true; break;}

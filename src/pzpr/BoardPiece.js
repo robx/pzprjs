@@ -75,6 +75,7 @@ pzpr.createPuzzleClass('BoardPiece',
 	propans  : ['qans', 'anum', 'line', 'color'],
 	propsub  : ['qsub', 'qcmp'],
 	propinfo : ['error', 'qinfo'],
+	propnorec : { color:1, error:1, qinfo:1 },
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -731,13 +732,14 @@ pzpr.createPuzzleClass('PieceList',
 	subclear : function()     { this.propclear(this.getprop('sub'), true);},
 	errclear : function()     { this.propclear(this.getprop('err'), false);},
 	propclear : function(props, isrec){
+		var norec = (this.length>0?this[0].propnorec:{});
 		for(var i=0;i<this.length;i++){
 			var obj = this[i];
 			for(var j=0;j<props.length;j++){
 				var pp = props[j];
 				var def = obj.constructor.prototype[pp];
 				if(obj[pp]!==def){
-					if(isrec && pp!=='color' && pp!=='error' && pp!=='qinfo'){
+					if(isrec && !norec[pp]){
 						this.owner.opemgr.addOpe_Object(obj, pp, obj[pp], def);
 					}
 					obj[pp] = def;
