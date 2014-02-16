@@ -12,32 +12,34 @@ pzpr.createPuzzleClass('AnsCheck',
 		this.inCheck = false;
 		this.checkOnly = false;
 	},
+	failcode : (void 0),
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う
 	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error) (オーバーライド用)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
-		var failcode = null, o = this.owner, bd = o.board;
+		var o = this.owner, bd = o.board;
 		this.inCheck = true;
 		
 		if(activemode){
 			this.checkOnly = false;
-			failcode = this.checkAns();
-			if(!!failcode){
+			this.failcode = this.checkAns();
+			if(!!this.failcode){
 				bd.haserror = true;
 				o.redraw();
 			}
 		}
-		else{
+		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
+		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
-			failcode = (this.autocheck1st() || this.checkAns());
+			this.failcode = (this.autocheck1st() || this.checkAns());
 			bd.enableSetError();
 		}
 		
 		this.inCheck = false;
-		return failcode;
+		return this.failcode;
 	},
 	checkAns : function(){ return null;},	//オーバーライド用
 
@@ -56,6 +58,11 @@ pzpr.createPuzzleClass('AnsCheck',
 		return this.check1st();
 	},
 	check1st : function(){ return null;},	//オーバーライド用
+
+	//---------------------------------------------------------------------------
+	// ans.resetCache() 前回のエラー情報を破棄する
+	//---------------------------------------------------------------------------
+	resetCache : function(){ this.failcode = void 0;},
 
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する

@@ -103,18 +103,18 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		this.exec(this.old);
-		if(!(this.property==k.QSUB||this.property==k.QDARK)){ this.manager.anscount--;}
+		if(!(this.property==k.QSUB||this.property==k.QCMP)){ this.owner.checker.resetCache();}
 	},
 	redo : function(){
 		this.exec(this.num);
-		if(!(this.property==k.QSUB||this.property==k.QDARK)){ this.manager.anscount++;}
+		if(!(this.property==k.QSUB||this.property==k.QCMP)){ this.owner.checker.resetCache();}
 	},
 	exec : function(num){
 		var obj = this.owner.board.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==obj.group){ return true;}
 		obj.setdata(this.property, num);
 		obj.draw();
-		if(this.property===k.QDARK){ this.owner.board.cell.each(function(cell){ if(obj===cell.base){cell.draw();}});}
+		if(this.property===k.QCMP){ this.owner.board.cell.each(function(cell){ if(obj===cell.base){cell.draw();}});}
 	}
 });
 
@@ -210,7 +210,6 @@ pzpr.createPuzzleClass('OperationManager',
 		this.lastope;		// this.opeの最後に追加されたOperationへのポインタ
 		this.ope;			// Operationクラスを保持する二次元配列
 		this.position;		// 現在の表示操作番号を保持する
-		this.anscount;		// 補助以外の操作が行われた数を保持する(autocheck用)
 
 		this.broken   = false;	// "以前の操作"を消して元に戻れなくなった状態
 		this.initpos  = 0;		// 盤面初期化時のposition
@@ -259,12 +258,12 @@ pzpr.createPuzzleClass('OperationManager',
 		this.lastope  = null;
 		this.ope      = [];
 		this.position = 0;
-		this.anscount = 0;
 		this.broken   = false;
 		this.initpos  = 0;
 		this.changeflag = false;
 		this.chainflag = false;
 		this.checkexec();
+		this.owner.checker.resetCache();
 	},
 	newOperation : function(){
 		this.changeflag = false;
@@ -307,8 +306,10 @@ pzpr.createPuzzleClass('OperationManager',
 		var ope = regist_func.call(this);
 		this.ope[this.ope.length-1].push(ope);
 		this.lastope = ope;
-		this.anscount++;
 		this.changeflag = true;
+		if(ope.property!==k.QSUB && k.property!==k.QCMP){
+			this.owner.checker.resetCache();
+		}
 		
 		this.checkexec();
 	},
@@ -317,8 +318,6 @@ pzpr.createPuzzleClass('OperationManager',
 		if(old===num){ return;}
 
 		this.addOpe_common(function(){
-			if(property===k.QSUB||property===k.QDARK){ this.anscount--;}
-
 			var ope = new this.owner.ObjectOperation();
 			ope.setData(obj, property, old, num);
 			return ope;
@@ -340,8 +339,8 @@ pzpr.createPuzzleClass('OperationManager',
 			)
 			{
 				this.changeflag = true;
-				this.anscount++;
 				ref.num = num;
+				this.owner.checker.resetCache();
 				this.owner.execListener('historychange');
 				return false;
 			}
