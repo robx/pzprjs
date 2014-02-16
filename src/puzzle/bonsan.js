@@ -67,7 +67,7 @@ MouseEvent:{
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
-			targetcell.setQdark(targetcell.getQdark()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.getQdcmp()===0 ? 1 : 0);
 			targetcell.draw();
 			return true;
 		}
@@ -84,10 +84,10 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	isDark : function(){
+	isCmp : function(){
 		var ismoved = this.getConfig('dispmove'),
 			targetcell = (!ismoved ? this : this.base);
-		if(targetcell.qdark===1){ return true;}
+		if(targetcell.qcmp===1){ return true;}
 		
 		var	num   = targetcell.getNum(),
 			clist = this.owner.board.linfo.getClistByCell(this),
@@ -158,8 +158,8 @@ Graphic:{
 			isdrawmove = this.getConfig('dispmove'),
 			num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
-			if     (error===1||error===4)                       { return this.errbcolor1;}
-			else if(this.getConfig('autocmp') && cell.isDark()){ return "silver"}
+			if     (error===1||error===4)                     { return this.errbcolor1;}
+			else if(this.getConfig('autocmp') && cell.isCmp()){ return "silver"}
 			else{ return this.circledcolor;}
 		}
 		return null;

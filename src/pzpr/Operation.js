@@ -60,7 +60,7 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 		D: 'qdir',   // k.QDIR
 		A: 'qans',   // k.QANS
 		S: 'qsub',   // k.QSUB
-		K: 'qdark',  // k.QDARK
+		K: 'qcmp',   // k.QCMP
 		L: 'line'    // k.LINE
 	},
 

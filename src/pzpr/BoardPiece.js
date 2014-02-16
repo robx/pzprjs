@@ -16,7 +16,7 @@ pzpr.addConsts({
 	ANUM  : 'anum',
 	LINE  : 'line',
 	QSUB  : 'qsub',
-	QDARK : 'qdark',
+	QCMP  : 'qcmp',
 
 	NDIR : 0,	// 方向なし
 	UP   : 1,	// up
@@ -64,15 +64,15 @@ pzpr.createPuzzleClass('BoardPiece',
 	/* 補助データを保持するプロパティ */
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
 				// border:(1:補助線 2:×)
-	qdark : 0,	// cell  :
+	qcmp : 0,	// cell  :
 
 	/* 履歴保存しないプロパティ */
 	color : "",	// 色分けデータを保持する
 	error : 0,
 
-	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qdark', 'color', 'error'],
-	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qdark', 'color', 'error'],
-	propsub : [                                                                  'qsub', 'qdark',          'error'],
+	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error'],
+	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error'],
+	propsub : [                                                                  'qsub', 'qcmp',          'error'],
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -127,8 +127,8 @@ pzpr.createPuzzleClass('BoardPiece',
 	getQsub : function(){ return this.qsub;},
 	setQsub : function(val){ this.setdata(k.QSUB, val);},
 
-	getQdark : function(){ return this.qdark;},
-	setQdark : function(val){ this.setdata(k.QDARK, val);},
+	getQcmp : function(){ return this.qcmp;},
+	setQcmp : function(val){ this.setdata(k.QCMP, val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
