@@ -44,10 +44,6 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	posthook : {
-		ques : function(num){ this.owner.board.setInfoByCell(this);}
-	},
-
 	getdir4BorderCount : function(){
 		var cnt=0, cblist=this.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){

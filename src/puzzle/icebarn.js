@@ -112,12 +112,6 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Cell:{
-	posthook : {
-		ques : function(num){ this.owner.board.setInfoByCell(this);}
-	}
-},
-
 Border:{
 	getArrow : function(){ return this.qdir;},
 	setArrow : function(val){ this.setQdir(val);},

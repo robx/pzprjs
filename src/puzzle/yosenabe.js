@@ -141,11 +141,6 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	posthook : {
-		ques : function(num){ this.owner.board.setInfoByCell(this);},
-		qnum : function(num){ this.owner.board.setInfoByCell(this);}
-	},
-
 	isDark : function(){
 		return (!this.getConfig('dispmove') ? this : this.base).qdark===1;
 	}

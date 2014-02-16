@@ -231,6 +231,7 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 		anum  : function(num){ return (this.minnum>0 && num===0);}
 	},
 	posthook : {
+		ques  : function(num){ this.owner.board.setInfoByCell(this);},
 		qnum  : function(num){ this.owner.board.setInfoByCell(this);},
 		qnum2 : function(num){ this.owner.board.setInfoByCell(this);},
 		anum  : function(num){ this.owner.board.setInfoByCell(this);},
