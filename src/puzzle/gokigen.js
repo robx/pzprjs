@@ -293,16 +293,12 @@ Graphic:{
 		var bd = this.owner.board;
 		if(!bd.haserror && this.getConfig('autoerr')){
 			var sdata=bd.getSlashData();
-			if(this.owner.pid==='gokigen'){
-				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===1){ bd.cell[c].seterr(sdata[c]);} }
-			}
-			else if(this.owner.pid==='wagiri'){
-				for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
-			}
+			if     (this.owner.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
+			else if(this.owner.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = sdata[cell.id];});}
 
 			this.Common.prototype.drawSlashes.call(this);
 
-			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(0);} }
+			bd.cell.each(function(cell){ cell.qinfo = 0;})
 		}
 		else{
 			this.Common.prototype.drawSlashes.call(this);

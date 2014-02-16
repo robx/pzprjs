@@ -309,12 +309,10 @@ pzpr.createPuzzleClass('Board',
 	},
 
 	errclear : function(isrepaint){
-		if(!this.haserror){ return;}
-
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].error=0;}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].error=0;}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].error=0;}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].error=0;}
+		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].errclear();}
+		for(var i=0;i<this.crossmax ;i++){ this.cross[i].errclear();}
+		for(var i=0;i<this.bdmax    ;i++){ this.border[i].errclear();}
+		for(var i=0;i<this.excellmax;i++){ this.excell[i].errclear();}
 
 		this.haserror = false;
 		if(isrepaint!==false){ this.owner.redraw();}

@@ -69,10 +69,12 @@ pzpr.createPuzzleClass('BoardPiece',
 	/* 履歴保存しないプロパティ */
 	color : "",	// 色分けデータを保持する
 	error : 0,
+	qinfo : 0,
 
-	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error'],
-	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error'],
-	propsub : [                                                                  'qsub', 'qcmp',          'error'],
+	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error', 'qinfo'],
+	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error', 'qinfo'],
+	propsub : [                                                                  'qsub', 'qcmp',          'error', 'qinfo'],
+	properr : [                                                                                           'error', 'qinfo'],
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -162,28 +164,32 @@ pzpr.createPuzzleClass('BoardPiece',
 	draw : function(){ this.getaddr().draw();},
 
 	//---------------------------------------------------------------------------
-	// seterr() error値を設定する
+	// seterr()  error値を設定する
+	// setinfo() qinfo値を設定する
 	//---------------------------------------------------------------------------
 	seterr : function(num){
 		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
+	setinfo : function(num){ this.qinfo = num;},
 
 	//---------------------------------------------------------------------------
 	// allclear() 位置,描画情報以外をクリアする
 	// ansclear() qans,anum,line,qsub,error情報をクリアする
 	// subclear() qsub,error情報をクリアする
-	// comclear() 3つの共通処理
+	// errclear() error情報をクリアする
+	// comclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
 	allclear : function(isrec){ this.comclear(this.propall, isrec);},
 	ansclear : function()     { this.comclear(this.propans, true);},
 	subclear : function()     { this.comclear(this.propsub, true);},
+	errclear : function()     { this.comclear(this.properr, false);},
 	comclear : function(props, isrec){
 		for(var i=0;i<props.length;i++){
 			var pp = props[i];
 			var def = this.constructor.prototype[pp];
 			if(this[pp]!==def){
-				if(isrec && pp!=='color' && pp!=='error'){
+				if(isrec && pp!=='color' && pp!=='error' && pp!=='qinfo'){
 					this.owner.opemgr.addOpe_Object(this, pp, this[pp], def);
 				}
 				this[pp] = def;
@@ -727,10 +733,14 @@ pzpr.createPuzzleClass('PieceList',
 	
 	//--------------------------------------------------------------------------------
 	// list.seterr()  保持しているオブジェクトにerror値を設定する
+	// list.setinfo() 保持しているオブジェクトにqinfo値を設定する
 	//--------------------------------------------------------------------------------
 	seterr : function(num){
 		if(!this.owner.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
+	},
+	setinfo : function(num){
+		for(var i=0;i<this.length;i++){ this[i].qinfo = num;}
 	}
 });
 

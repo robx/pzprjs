@@ -680,7 +680,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isBlack()){ return;}
-		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).seterr(1);}
+		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
 		else{ this.dispRed8(cell);}
 		this.owner.board.haserror = true;
 		this.owner.redraw();
@@ -689,13 +689,13 @@ pzpr.createPuzzleClass('MouseEvent',
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell = stack.pop();
-			if(cell.error!==0){ continue;}
+			if(cell.qinfo!==0){ continue;}
 
-			cell.seterr(1);
+			cell.setinfo(1);
 			var bx=cell.bx, by=cell.by, clist=this.owner.board.cellinside(bx-2,by-2,bx+2,by+2);
 			for(var i=0;i<clist.length;i++){
 				var cell2 = clist[i];
-				if(cell2.error===0 && cell2.isBlack()){ stack.push(cell2);}
+				if(cell2.qinfo===0 && cell2.isBlack()){ stack.push(cell2);}
 			}
 		}
 	},
@@ -717,8 +717,8 @@ pzpr.createPuzzleClass('MouseEvent',
 		if(border.isnull){ return;}
 
 		var blist = bd.lines.getBlistByBorder(border);
-		bd.border.seterr(-1);
-		blist.seterr(1);
+		bd.border.setinfo(-1);
+		blist.setinfo(1);
 		bd.haserror = true;
 		this.owner.redraw();
 	}

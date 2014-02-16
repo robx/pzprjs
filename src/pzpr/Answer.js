@@ -412,9 +412,8 @@ pzpr.createPuzzleClass('AnsCheck',
 		for(var i=0;i<clist.length;i++){ num[clist[i].id] = numfunc(clist[i]);}
 
 		for(var i=0;i<clist.length;i++){ if(num[clist[i].id]>=bottom){ d[num[clist[i].id]]++;} }
-		for(var i=0;i<clist.length;i++){
-			if(num[clist[i].id]>=bottom && d[num[clist[i].id]]>=2){ clist[i].seterr(1); result = false;}
-		}
+		var clist2 = clist.filter(function(cell){ return (num[cell.id]>=bottom && d[num[cell.id]]>=2);});
+		if(clist2.length>0){ clist2.seterr(1); result = false;}
 		return result;
 	},
 

@@ -130,6 +130,10 @@ Graphic:{
 		this.drawTarget();
 	},
 
+	getTriangleColor : function(cell){
+		return ((cell.error===1||cell.error===4||cell.qinfo===1||cell.qinfo===4) ? this.errcolor1 : this.cellcolor);
+	},
+
 	drawTriangleBorder : function(){
 		var g = this.vinc('cell_triangle_border', 'crispEdges');
 

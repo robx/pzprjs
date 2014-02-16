@@ -85,20 +85,25 @@ Graphic:{
 	},
 
 	drawNumbers_hitori : function(){
-		this.drawNumbers();
-
-		var o=this.owner, bd=o.board, chk=o.checker;
-		if(this.getConfig('autoerr')){
+		var puzzle=this.owner, bd=puzzle.board, chk=puzzle.checker;
+		if(!bd.haserror && this.getConfig('autoerr')){
+			var pt = puzzle.CellList.prototype, seterr = pt.seterr;
 			chk.inCheck = true;
 			chk.checkOnly = false;
+			pt.seterr = pt.setinfo;
 			chk.checkRowsColsSameNumber();
+			pt.seterr = seterr;
 			chk.inCheck = false;
 
-			for(var i=0;i<bd.cellmax;i++){ this.drawNumber1(bd.cell[i]);}
+			var clist = this.range.cells;
+			this.range.cells = bd.cell;
+			this.drawNumbers();
+			this.range.cells = clist;
 
-			bd.haserror = true;
-			bd.errclear(false);
-			bd.haserror = true;
+			bd.cell.each(function(cell){ cell.qinfo = 0;})
+		}
+		else{
+			this.drawNumbers();
 		}
 	}
 },
