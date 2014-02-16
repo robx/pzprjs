@@ -14,6 +14,8 @@ pzpr.createPuzzleClass('Operation',
 		this.manager = this.owner.opemgr;
 	},
 
+	reqReset : false,
+
 	//---------------------------------------------------------------------------
 	// ope.setData()  オブジェクトのデータを設定する
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
@@ -120,6 +122,7 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 {
 	prefix : 'AJ',
+	reqReset : true,
 	//---------------------------------------------------------------------------
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
@@ -139,11 +142,7 @@ pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 	//---------------------------------------------------------------------------
 	exec : function(num){
 		var o = this.owner;
-		o.board.disableInfo();
-		this.manager.reqReset = true;
-
 		o.board.exec.expandreduce(num,{x1:0,y1:0,x2:2*o.board.qcols,y2:2*o.board.qrows});
-
 		o.redraw();
 	}
 });
@@ -152,6 +151,7 @@ pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 {
 	prefix : 'AT',
+	reqReset : true,
 	area : {},
 	//---------------------------------------------------------------------------
 	// ope.setData()  オブジェクトのデータを設定する
@@ -195,11 +195,7 @@ pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 		this.exec(this.num,d);
 	},
 	exec : function(num,d){
-		this.owner.board.disableInfo();
-		this.manager.reqReset = true;
-
 		this.owner.board.exec.turnflip(num,d);
-
 		this.owner.redraw();
 	}
 });
@@ -442,10 +438,11 @@ pzpr.createPuzzleClass('OperationManager',
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(!this.enableUndo){ return false;}
+		var opes = this.ope[this.position-1];
+		this.reqReset = this.checkReqReset(opes);
 		this.preproc();
 		
 		this.undoExec = true;
-		var opes = this.ope[this.position-1];
 		for(var i=opes.length-1;i>=0;i--){
 			if(!!opes[i]){ opes[i].undo();}
 		}
@@ -457,10 +454,11 @@ pzpr.createPuzzleClass('OperationManager',
 	},
 	redo : function(){
 		if(!this.enableRedo){ return false;}
+		var opes = this.ope[this.position];
+		this.reqReset = this.checkReqReset(opes);
 		this.preproc();
 		
 		this.redoExec = true;
-		var opes = this.ope[this.position];
 		for(var i=0,len=opes.length;i<len;i++){
 			if(!!opes[i]){ opes[i].redo();}
 		}
@@ -472,28 +470,37 @@ pzpr.createPuzzleClass('OperationManager',
 	},
 
 	//---------------------------------------------------------------------------
+	// um.checkReqReset() 盤面全体に影響する処理が含まれているかどうか判定する
 	// um.preproc()  Undo/Redo実行前の処理を行う
 	// um.postproc() Undo/Redo実行後の処理を行う
 	//---------------------------------------------------------------------------
-	preproc : function(){
-		this.reqReset=false;
-
+	checkReqReset : function(ope){
+		var result = false;
+		for(var i=0,len=opes.length;i<len;i++){
+			if(opes[i].reqReset){ result = true; break;}
+		}
+		return result;
+	},
+	preproc : function(opes){
+		var puzzle = this.owner, bd = puzzle.board;
+		bd.errclear();
 		this.disableRecord();
-		this.owner.painter.suspend();
-		this.owner.board.errclear();
+
+		puzzle.painter.suspend();
+		if(this.reqReset){
+			bd.disableInfo();
+		}
 	},
 	postproc : function(){
-		var o = this.owner;
+		var puzzle = this.owner, bd = puzzle.board;
 		if(this.reqReset){
-			this.reqReset=false;
-
-			o.board.setposAll();
-			o.board.setminmax();
-			o.board.enableInfo();
-			o.board.resetInfo();
-			o.adjustCanvasSize();
+			bd.setposAll();
+			bd.setminmax();
+			bd.enableInfo();
+			bd.resetInfo();
+			puzzle.adjustCanvasSize();
 		}
-		o.painter.unsuspend();
+		puzzle.painter.unsuspend();
 
 		this.enableRecord();
 		this.checkexec();
