@@ -144,13 +144,14 @@ pzpr.createPuzzleClass('MouseEvent',
 		
 		if(!this.btn.Left && !this.btn.Right){ return;}
 		
-		var o = this.owner;
+		var puzzle = this.owner;
 		if(this.mousestart){
-			o.opemgr.newOperation();
-			o.board.errclear();
+			puzzle.opemgr.newOperation();
+			puzzle.board.errclear();
+			puzzle.redraw();
 			if(this.isDispred()){ this.inputRed(); return;}
 		}
-		else{ o.opemgr.newChain();}
+		else{ puzzle.opemgr.newChain();}
 		
 		this.mouseinput();		/* 各パズルのルーチンへ */
 	},

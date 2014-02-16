@@ -483,10 +483,13 @@ pzpr.createPuzzleClass('OperationManager',
 	},
 	preproc : function(opes){
 		var puzzle = this.owner, bd = puzzle.board;
-		bd.errclear();
 		this.disableRecord();
 
 		puzzle.painter.suspend();
+		if(bd.haserror){
+			bd.errclear();
+			puzzle.redraw();
+		}
 		if(this.reqReset){
 			bd.disableInfo();
 		}

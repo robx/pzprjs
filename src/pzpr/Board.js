@@ -314,14 +314,12 @@ pzpr.createPuzzleClass('Board',
 		this.excell.subclear();
 	},
 
-	errclear : function(isrepaint){
+	errclear : function(){
 		this.cell.errclear();
 		this.cross.errclear();
 		this.border.errclear();
 		this.excell.errclear();
 		this.haserror = false;
-		
-		if(isrepaint!==false){ this.owner.redraw();}
 	},
 
 	//---------------------------------------------------------------------------

@@ -139,18 +139,22 @@ pzpr.createPuzzleClass('KeyEvent',
 	// kc.stopEvent() カーソル移動時などに、ウィンドウがスクロールしないようにする
 	//---------------------------------------------------------------------------
 	keyevent : function(c, step){
+		var puzzle = this.owner;
 		this.keydown = (step===0);
 		this.keyup   = (step===1);
 
-		if(this.keydown){ this.owner.opemgr.newOperation();}
-		else            { this.owner.opemgr.newChain();}
+		if(this.keydown){ puzzle.opemgr.newOperation();}
+		else            { puzzle.opemgr.newChain();}
 
 		this.ca = c;
 		this.checkbutton(c);
 
-		if(this.keydown && !this.isZ){ this.owner.board.errclear();}
+		if(this.keydown && !this.isZ){
+			puzzle.board.errclear();
+			puzzle.redraw();
+		}
 
-		if(!this.owner.execListener('key',c)){ return;}
+		if(!puzzle.execListener('key',c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
