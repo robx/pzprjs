@@ -480,6 +480,7 @@ pzpr.createPuzzleClass('OperationManager',
 
 		this.disableRecord();
 		this.owner.painter.suspend();
+		this.owner.board.errclear();
 	},
 	postproc : function(){
 		var o = this.owner;
