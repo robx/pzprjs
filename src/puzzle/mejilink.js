@@ -33,24 +33,27 @@ Border:{
 
 	enableLineNG : true,
 
-	isGround : function(){
-		return this.ques>0;
-	},
-
-	propall : ['line', 'qsub'], /* quesは取り除いておく */
-	allclear : function(isrec){
-		var bd = this.owner.board;
-		var def = (this.id<bd.qcols*(bd.qrows-1)+(bd.qcols-1)*bd.qrows ? 1 : 0);
-		if(this.ques!==def){
-			if(isrec){ this.owner.opemgr.addOpe_Object(this, pzpr.consts.QUES, this.ques, def);}
-			this.ques = def;
-		}
-
-		this.Common.prototype.allclear.call(this,isrec);
-	},
+	isGround : function(){ return this.ques>0;},
 
 	// 線を引かせたくないので上書き
 	isLineNG : function(){ return (this.ques===1);}
+},
+BorderList:{
+	allclear : function(isrec){
+		/* quesは共通ルーチンを使用しない */
+		var bd = this.owner.board;
+		for(var i=0;i<this.length;i++){
+			var border = this[i];
+			/* border.quesの真の初期値は↓ */
+			var def = (border.id<bd.bdinside ? 1 : 0);
+			if(border.ques!==def){
+				if(isrec){ this.owner.opemgr.addOpe_Object(border, 'ques', border.ques, def);}
+				border.ques = def;
+			}
+		}
+
+		this.propclear(['line', 'qsub'], isrec);
+	}
 },
 Board:{
 	qcols : 8,
@@ -68,9 +71,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
-		for(var id=0;id<this.bdmax;id++){
-			this.border[id].allclear(false);
-		}
+		this.border.allclear(false);
 	}
 },
 

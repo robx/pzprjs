@@ -162,66 +162,57 @@ Board:{
 
 	hascross : 2,
 
-	segs : null,
+	seginfo : null,
 
 	initialize : function(){
+		this.initSegmentGroup();
+
 		this.Common.prototype.initialize.call(this);
 
-		this.segment = new this.owner.SegmentList();
-		this.segmax = 0;
-		this.seginvalid = [];
-
-		this.segs = this.addInfoList('SegmentManager');
+		this.seginfo = this.addInfoList('SegmentManager');
 	},
 
 	initBoardSize : function(col,row){
-		this.segs.eraseall();	// segmentの配列
+		this.seginfo.eraseall();	// SegmentManager
 
-		this.segment = new this.owner.SegmentList();
-		this.segmax = 0;
-		this.seginvalid = [];
+		this.initSegmentGroup();
 
 		this.Common.prototype.initBoardSize.call(this,col,row);
 	},
 
-	resetInfo : function(){
-		this.segs.reset();	// segmentの配列
+	initSegmentGroup : function(){
+		if(!!this.segment){
+			var pc = this.owner.painter;
+			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
+		}
+		this.segment = new this.owner.SegmentList();
+		this.segmax = 0;
+		this.seginvalid = [];
+	},
 
+	resetInfo : function(){
+		this.seginfo.reset();
 		this.Common.prototype.resetInfo.call(this);
 	},
 
 	allclear : function(isrec){
-		if(!!this.segs){
-			var pc = this.owner.painter;
-			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
-		}
-		this.segment = new this.owner.SegmentList();
-		this.segmax = 0;
-
+		this.initSegmentGroup();
+		
 		this.Common.prototype.allclear.call(this,isrec);
 	},
 	ansclear : function(){
-		if(!!this.segs){
-			var pc = this.owner.painter;
-			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
-		}
-		this.segment = new this.owner.SegmentList();
-		this.segmax = 0;
-
+		this.initSegmentGroup();
+		
 		this.Common.prototype.ansclear.call(this);
 	},
 	errclear : function(){
-		if(!this.haserror){ return;}
-
-		if(!!this.segs){
-			this.segment.each(function(seg){ seg.error = 0;});
-		}
-
+		this.segment.errclear();
+		
 		this.Common.prototype.errclear.call(this);
 	},
 
 	irowakeRemake : function(){
-		this.segs.newIrowake();
+		this.seginfo.newIrowake();
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
@@ -234,7 +225,7 @@ Board:{
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
+	// bd.segmentinside() 座標(x1,y1)-(x2,y2)に含まれるsegmentのIDリストを取得する
 	//---------------------------------------------------------------------------
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
@@ -255,9 +246,9 @@ Board:{
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
-	// segs.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
-	// segs.removeSegment()       線を消す時に呼ぶ
+	// bd.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
+	// bd.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
+	// bd.removeSegment()       線を消す時に呼ぶ
 	//---------------------------------------------------------------------------
 	addSegmentByAddr : function(bx1,by1,bx2,by2){
 		var newsegid;
@@ -267,14 +258,14 @@ Board:{
 		var seg = new this.owner.Segment(bx1,by1,bx2,by2);
 		seg.id = newsegid;
 		this.segment[newsegid] = seg;
-		if(this.owner.board.isenableInfo()){ this.segs.setSegmentInfo(seg, true);}
+		if(this.owner.board.isenableInfo()){ this.seginfo.setSegmentInfo(seg, true);}
 		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
 	},
 	removeSegmentByAddr : function(bx1,by1,bx2,by2){
 		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
 	},
 	removeSegment : function(seg){
-		if(this.isenableInfo()){ this.segs.setSegmentInfo(seg, false);}
+		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg, false);}
 		this.owner.opemgr.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
 		this.owner.painter.eraseSegment1(seg);
 		
@@ -283,7 +274,7 @@ Board:{
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.getSegment() 位置情報からsegmentを取得する
+	// bd.getSegment() 位置情報からsegmentを取得する
 	//---------------------------------------------------------------------------
 	getSegment : function(bx1,by1,bx2,by2){
 		var cross = this.getx(bx1,by1), seg = null;
@@ -361,6 +352,10 @@ BoardExec:{
 		for(var i=0;i<this.length;i++){
 			if(this[i]!==null){ func(this[i]);}
 		}
+	},
+
+	errclear : function(){
+		this.each(function(seg){ seg.error = 0;});
 	}
 },
 
@@ -678,14 +673,13 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(){
-		var result = false, bd = this.owner.board;
-		var validcount = 0, segs = new this.owner.SegmentList();
-		for(var r=1;r<=bd.segs.linemax;r++){
-			if(bd.segs.seglist[r].length===0){ continue;}
+		var result = false, bd = this.owner.board, validcount = 0;
+		for(var r=1;r<=bd.seginfo.linemax;r++){
+			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
 			if(validcount>1){
 				bd.segment.seterr(-1);
-				bd.segs.seglist[r].seterr(1);
+				bd.seginfo.seglist[r].seterr(1);
 				return false;
 			}
 		}
@@ -958,9 +952,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	typeB : 'B',
 
 	//---------------------------------------------------------------------------
-	// segs.reset()      lcnts等の変数の初期化を行う
-	// segs.rebuild()    情報の再設定を行う
-	// segs.newIrowake() reset()時などに色情報を設定しなおす
+	// seginfo.reset()      lcnts等の変数の初期化を行う
+	// seginfo.rebuild()    情報の再設定を行う
+	// seginfo.newIrowake() reset()時などに色情報を設定しなおす
 	//---------------------------------------------------------------------------
 	reset : function(){
 		// 変数の初期化
@@ -1002,7 +996,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.setSegmentInfo()    線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// seginfo.setSegmentInfo()    線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
 	setSegmentInfo : function(seg, isset){
 		if(!isset && (this.lineid[seg.id]===null)){ return;}
@@ -1050,10 +1044,10 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.assignLineInfo()  指定された線を有効な線として設定する
-	// segs.removeLineInfo()  指定されたセルを無効なセルとして設定する
-	// segs.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                        可能性がある場合の線idの再設定を行う
+	// seginfo.assignLineInfo()  指定された線を有効な線として設定する
+	// seginfo.removeLineInfo()  指定されたセルを無効なセルとして設定する
+	// seginfo.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
+	//                           可能性がある場合の線idの再設定を行う
 	//---------------------------------------------------------------------------
 	assignLineInfo : function(seg, seg2){
 		var pathid = this.lineid[seg.id];
@@ -1165,9 +1159,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	},
 
 	//---------------------------------------------------------------------------
-	// segs.getaround()  指定したsegmentに繋がる線を全て取得する
-	// segs.searchLine() id=0となっているsegmentにlineidを設定する
-	// segs.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	// seginfo.getaround()  指定したsegmentに繋がる線を全て取得する
+	// seginfo.searchLine() id=0となっているsegmentにlineidを設定する
+	// seginfo.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//---------------------------------------------------------------------------
 	getaround : function(seg){
 		var seglist = new this.owner.SegmentList();

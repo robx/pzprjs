@@ -80,7 +80,7 @@ pzpr.createPuzzleClass('Board',
 	initBoardSize : function(col,row){
 		if(col===(void 0)||isNaN(col)){ col=this.qcols; row=this.qrows;}
 
-		this.allclear(false); // initGroupで、新Objectに対してはallclearが個別に呼ばれます
+		this.allclear(false); // initGroupで、新Objectに対しては別途allclearが呼ばれます
 
 							{ this.initGroup(k.CELL,   col, row);}
 		if(!!this.hascross) { this.initGroup(k.CROSS,  col, row);}
@@ -115,11 +115,13 @@ pzpr.createPuzzleClass('Board',
 		}
 		// 既存のサイズより大きくなるなら追加する
 		else if(clen<len){
+			var group2 = new group.constructor();
 			for(var id=clen;id<len;id++){
-				group.add(this.newObject(type));
-				group[id].id = id;
-				group[id].allclear(false);
+				var obj = this.newObject(type, id);
+				group.add(obj);
+				group2.add(obj);
 			}
+			group2.allclear(false);
 		}
 		group.length = len;
 		this.setposGroup(type);
@@ -145,12 +147,14 @@ pzpr.createPuzzleClass('Board',
 		}
 		return 0;
 	},
-	newObject : function(type){
-		if     (type===k.CELL)  { return (new this.owner.Cell());}
-		else if(type===k.CROSS) { return (new this.owner.Cross());}
-		else if(type===k.BORDER){ return (new this.owner.Border());}
-		else if(type===k.EXCELL){ return (new this.owner.EXCell());}
-		return this.nullobj;
+	newObject : function(type, id){
+		var obj = this.nullobj;
+		if     (type===k.CELL)  { obj = new this.owner.Cell();}
+		else if(type===k.CROSS) { obj = new this.owner.Cross();}
+		else if(type===k.BORDER){ obj = new this.owner.Border();}
+		else if(type===k.EXCELL){ obj = new this.owner.EXCell();}
+		if(obj!==this.nullobj && id!==void 0){ obj.id = id;}
+		return obj;
 	},
  
 	//---------------------------------------------------------------------------
@@ -286,35 +290,37 @@ pzpr.createPuzzleClass('Board',
 	//---------------------------------------------------------------------------
 	// 呼び出し元：this.initBoardSize()
 	allclear : function(isrec){
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].allclear(isrec);}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].allclear(isrec);}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].allclear(isrec);}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].allclear(isrec);}
+		this.cell.allclear(isrec);
+		this.cross.allclear(isrec);
+		this.border.allclear(isrec);
+		this.excell.allclear(isrec);
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
 		this.owner.opemgr.newOperation();
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].ansclear();}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].ansclear();}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].ansclear();}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].ansclear();}
+		
+		this.cell.ansclear();
+		this.cross.ansclear();
+		this.border.ansclear();
+		this.excell.ansclear();
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
 		this.owner.opemgr.newOperation();
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].subclear();}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].subclear();}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].subclear();}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].subclear();}
+		
+		this.cell.subclear();
+		this.cross.subclear();
+		this.border.subclear();
+		this.excell.subclear();
 	},
 
 	errclear : function(isrepaint){
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].errclear();}
-		for(var i=0;i<this.crossmax ;i++){ this.cross[i].errclear();}
-		for(var i=0;i<this.bdmax    ;i++){ this.border[i].errclear();}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].errclear();}
-
+		this.cell.errclear();
+		this.cross.errclear();
+		this.border.errclear();
+		this.excell.errclear();
 		this.haserror = false;
+		
 		if(isrepaint!==false){ this.owner.redraw();}
 	},
 
@@ -354,8 +360,7 @@ pzpr.createPuzzleClass('Board',
 		else{
 			if(this.hascross===0){
 				/* LineManager用 */
-				cross = this.newObject(k.CROSS);
-				cross.id = id
+				cross = this.newObject(k.CROSS, id);
 				cross.isnull = false;
 				cross.bx = bx;
 				cross.by = by;

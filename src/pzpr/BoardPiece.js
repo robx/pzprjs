@@ -71,10 +71,10 @@ pzpr.createPuzzleClass('BoardPiece',
 	error : 0,
 	qinfo : 0,
 
-	propall : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error', 'qinfo'],
-	propans : [                                          'qans', 'anum', 'line', 'qsub', 'qcmp', 'color', 'error', 'qinfo'],
-	propsub : [                                                                  'qsub', 'qcmp',          'error', 'qinfo'],
-	properr : [                                                                                           'error', 'qinfo'],
+	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
+	propans  : ['qans', 'anum', 'line', 'color'],
+	propsub  : ['qsub', 'qcmp'],
+	propinfo : ['error', 'qinfo'],
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -170,32 +170,7 @@ pzpr.createPuzzleClass('BoardPiece',
 	seterr : function(num){
 		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
-	setinfo : function(num){ this.qinfo = num;},
-
-	//---------------------------------------------------------------------------
-	// allclear() 位置,描画情報以外をクリアする
-	// ansclear() qans,anum,line,qsub,error情報をクリアする
-	// subclear() qsub,error情報をクリアする
-	// errclear() error情報をクリアする
-	// comclear() 4つの共通処理
-	//---------------------------------------------------------------------------
-	/* undo,redo以外で盤面縮小やったときは, isrec===true */
-	allclear : function(isrec){ this.comclear(this.propall, isrec);},
-	ansclear : function()     { this.comclear(this.propans, true);},
-	subclear : function()     { this.comclear(this.propsub, true);},
-	errclear : function()     { this.comclear(this.properr, false);},
-	comclear : function(props, isrec){
-		for(var i=0;i<props.length;i++){
-			var pp = props[i];
-			var def = this.constructor.prototype[pp];
-			if(this[pp]!==def){
-				if(isrec && pp!=='color' && pp!=='error' && pp!=='qinfo'){
-					this.owner.opemgr.addOpe_Object(this, pp, this[pp], def);
-				}
-				this[pp] = def;
-			}
-		}
-	}
+	setinfo : function(num){ this.qinfo = num;}
 });
 
 //---------------------------------------------------------------------------
@@ -741,6 +716,49 @@ pzpr.createPuzzleClass('PieceList',
 	},
 	setinfo : function(num){
 		for(var i=0;i<this.length;i++){ this[i].qinfo = num;}
+	},
+
+	//---------------------------------------------------------------------------
+	// list.allclear() 位置,描画情報以外をクリアする
+	// list.ansclear() qans,anum,line,qsub,error情報をクリアする
+	// list.subclear() qsub,error情報をクリアする
+	// list.errclear() error情報をクリアする
+	// list.propclear() 4つの共通処理
+	//---------------------------------------------------------------------------
+	/* undo,redo以外で盤面縮小やったときは, isrec===true */
+	allclear : function(isrec){ this.propclear(this.getprop('all'), isrec);},
+	ansclear : function()     { this.propclear(this.getprop('ans'), true);},
+	subclear : function()     { this.propclear(this.getprop('sub'), true);},
+	errclear : function()     { this.propclear(this.getprop('err'), false);},
+	propclear : function(props, isrec){
+		for(var i=0;i<this.length;i++){
+			var obj = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j];
+				var def = obj.constructor.prototype[pp];
+				if(obj[pp]!==def){
+					if(isrec && pp!=='color' && pp!=='error' && pp!=='qinfo'){
+						this.owner.opemgr.addOpe_Object(obj, pp, obj[pp], def);
+					}
+					obj[pp] = def;
+				}
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// list.getprop() 上記の関数で使用するプロパティの配列を取得する
+	//---------------------------------------------------------------------------
+	getprop : function(type){
+		var array = [];
+		if(this.length>0){
+			var level = {all:3,ans:2,sub:1,err:0}[type];
+			if(level>=3){ array=array.concat(this[0].propques);}
+			if(level>=2){ array=array.concat(this[0].propans);}
+			if(level>=1){ array=array.concat(this[0].propsub);}
+			if(level>=0){ array=array.concat(this[0].propinfo);}
+		}
+		return array;
 	}
 });
 

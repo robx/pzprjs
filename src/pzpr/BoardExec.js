@@ -134,15 +134,18 @@ pzpr.createPuzzleClass('BoardExec',
 		var bd = this.owner.board;
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
+		var group2 = new group.constructor();
 		for(var i=group.length-1;i>=0;i--){
-			if(this.isdel(key,group[i])){
-				group[i] = bd.newObject(type);
-				group[i].id = i;
-				group[i].allclear(false);
+			var obj = group[i];
+			if(this.isdel(key,obj)){
+				obj = bd.newObject(type, i);
+				group[i] = obj;
+				group2.add(obj);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
 		}
+		group2.allclear(false);
 
 		if(type===k.BORDER){ this.expandborder(key);}
 	},
@@ -152,15 +155,18 @@ pzpr.createPuzzleClass('BoardExec',
 
 		var opemgr = this.owner.opemgr;
 		var margin=0, group = bd.getGroup(type), isrec=(!opemgr.undoExec && !opemgr.redoExec);
+		var group2 = new group.constructor();
 		if(isrec){ opemgr.forceRecord = true;}
 		for(var i=0;i<group.length;i++){
-			if(this.isdel(key,group[i])){
-				group[i].id = i;
-				group[i].allclear(isrec);
+			var obj = group[i];
+			if(this.isdel(key,obj)){
+				obj.id = i;
+				group2.add(obj);
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
+		group2.allclear(isrec);
 		for(var i=0;i<margin;i++){ group.pop();}
 		if(isrec){ opemgr.forceRecord = false;}
 	},
@@ -255,6 +261,7 @@ pzpr.createPuzzleClass('BoardExec',
 		var bd = this.owner.board;
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
 		if(bd.lines.borderAsLine || !bd.owner.opemgr.undoExec){
+			var group2 = new this.owner.BorderList();
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
@@ -265,8 +272,9 @@ pzpr.createPuzzleClass('BoardExec',
 
 				var source = (bd.lines.borderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(border, source);
-				if(bd.lines.borderAsLine){ source.allclear(false);}
+				group2.add(source);
 			}
+			if(bd.lines.borderAsLine){ group2.allclear(false);}
 		}
 	},
 	reduceborder : function(key){

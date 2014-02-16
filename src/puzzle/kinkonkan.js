@@ -180,34 +180,12 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qlight : 0,
-	allclear : function(isrec){
-		this.Common.prototype.allclear.call(this,isrec);
-		this.qlight = 0;
-	},
-	ansclear : function(){
-		this.Common.prototype.ansclear.call(this);
-		this.qlight = 0;
-	},
-	subclear : function(){
-		this.Common.prototype.subclear.call(this);
-		this.qlight = 0;
-	}
+	propinfo : ['error', 'qinfo', 'qlight']
 },
 
 EXCell:{
 	qlight : 0,
-	allclear : function(isrec){
-		this.Common.prototype.allclear.call(this,isrec);
-		this.qlight = 0;
-	},
-	ansclear : function(){
-		this.Common.prototype.ansclear.call(this);
-		this.qlight = 0;
-	},
-	subclear : function(){
-		this.Common.prototype.subclear.call(this);
-		this.qlight = 0;
-	},
+	propinfo : ['error', 'qinfo', 'qlight'],
 
 	minnum : 0
 },
@@ -218,13 +196,6 @@ Board:{
 
 	hasborder : 1,
 	hasexcell : 2,
-
-	errclear : function(isrepaint){
-		pzpr.common.Board.prototype.errclear.call(this,false);
-
-		this.lightclear();
-		this.owner.redraw();
-	},
 
 	haslight : false,
 	lightclear : function(){
