@@ -412,7 +412,7 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca!=="."){ obj.ques = 0;}
+			obj.ques = (ca==="."?7:0);
 			if(ca!=="0"&&ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 		this.decodeCell( function(obj,ca){
