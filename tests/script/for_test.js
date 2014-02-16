@@ -18,8 +18,10 @@ ui.debug.extend(
 	
 	accheck1 : function(){
 		var outputstr = ui.puzzle.getFileData(k.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.check(false);
-		this.addTextarea("\t\t['"+failcode+"',\""+outputstr+"\"],");
+		var failcode  = ui.puzzle.check(true);
+		var failstr   = (failcode!==null ? "'"+failcode+"'" : "null");
+		ui.puzzle.board.errclear();
+		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 
 	urls : {},
@@ -58,7 +60,7 @@ ui.debug.extend(
 				pnum++;
 				if(pnum >= term){ clearInterval(self.alltimer);}
 			});
-		},500);
+		},100);
 	},
 
 	starttest : function(){
