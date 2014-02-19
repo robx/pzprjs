@@ -86,7 +86,7 @@ ui.keypopup =
 		pipelinkr  : [111,0],
 		loopsp     : [111,0],
 		tatamibari : [112,0],
-		hakoiri    : [113,0],
+		hakoiri    : [113,113],
 		husabi     : [114,0]
 	},
 
