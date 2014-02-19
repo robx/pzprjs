@@ -47,6 +47,9 @@ window.pzpr = {
 	createPuzzleClass : function(classname, proto){
 		this.classmgr.createPuzzleClass(classname, proto);
 	},
+	extendPuzzleClass : function(classname, proto){
+		this.classmgr.extendPuzzleClass(classname, proto);
+	},
 	createCustoms : function(scriptid, custombase){
 		this.classmgr.createCustoms(scriptid, custombase);
 	},
@@ -116,6 +119,9 @@ pzpr.classmgr = {
 	createPuzzleClass : function(classname, proto){
 		var rel = this._createClass(classname, proto);
 		pzpr.common[rel.name] = rel.body;
+	},
+	extendPuzzleClass : function(classname, proto){
+		for(var name in proto){ pzpr.common[classname].prototype[name] = proto[name];}
 	},
 	_createClass : function(classname, proto){
 		classname = classname.replace(/\s+/g,'');

@@ -1,19 +1,26 @@
 var component = [
- 'CoreClass',
- 'Puzzle',
- 'BoardPiece',
- 'Board',
- 'BoardExec',
- 'LineManager',
- 'AreaManager',
- 'Graphic',
- 'MouseInput',
- 'KeyInput',
- 'URL',
- 'Encode',
- 'FileData',
- 'Answer',
- 'Operation'
+ 'pzpr/CoreClass',
+ 'pzpr/Puzzle',
+ 'pzpr/BoardPiece',
+ 'pzpr/Board',
+ 'pzpr/BoardExec',
+ 'pzpr/LineManager',
+ 'pzpr/AreaManager',
+ 'pzpr/Graphic',
+ 'pzpr/MouseInput',
+ 'pzpr/KeyInput',
+ 'pzpr/URL',
+ 'pzpr/Encode',
+ 'pzpr/FileData',
+ 'pzpr/Answer',
+ 'pzpr/Operation',
+ 'puzzle-common/Graphic',
+ 'puzzle-common/KeyInput',
+ 'puzzle-common/MouseInput',
+ 'puzzle-common/Answer',
+ 'puzzle-common/BoardExec',
+ 'puzzle-common/Encode',
+ 'puzzle-common/FileData'
 ];
 
 var banner_min = [
@@ -100,7 +107,8 @@ module.exports = function(grunt){
       },
       'pzpr-debug': {
         files : [
-          { expand: true, cwd: 'src/pzpr', src: ['*.js'], dest: 'dist/pzpr' },
+          { expand: true, cwd: 'src/pzpr',          src: ['*.js'], dest: 'dist/pzpr' },
+          { expand: true, cwd: 'src/puzzle-common', src: ['*.js'], dest: 'dist/puzzle-common' },
           { src: 'src/pzpr.js',     dest: 'dist/pzpr.js'     },
           { src: 'src/pzpr-all.js', dest: 'dist/pzpr-all.js' }
         ]
@@ -143,7 +151,7 @@ module.exports = function(grunt){
   });
   
   function mod2file(mod){
-    return "src/pzpr/" + mod + ".js";
+    return "src/" + mod + ".js";
   }
   function wrap(array){
     array.unshift("src/pzpr/intro.js");

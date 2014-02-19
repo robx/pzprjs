@@ -27,7 +27,14 @@
 		"pzpr/Encode.js",
 		"pzpr/FileData.js",
 		"pzpr/Answer.js",
-		"pzpr/Operation.js"
+		"pzpr/Operation.js",
+		"puzzle-common/Graphic.js",
+		"puzzle-common/KeyInput.js",
+		"puzzle-common/MouseInput.js",
+		"puzzle-common/Answer.js",
+		"puzzle-common/BoardExec.js",
+		"puzzle-common/Encode.js",
+		"puzzle-common/FileData.js"
 	];
 	for(var i=0;i<files.length;i++){
 		document.write('<script type="text/javascript" src="'+dir+files[i]+'"></script>');
