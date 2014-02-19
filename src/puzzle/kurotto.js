@@ -76,12 +76,26 @@ Graphic:{
 		this.fontsizeratio = 0.85;
 		this.circleratio = [0.45, 0.40];
 	},
+
+	// オーバーライド
+	paintRange : function(x1,y1,x2,y2){
+		var bd = this.owner.board;
+		if(this.getConfig('autocmp')){
+			this.check_binfo = this.owner.board.getBCellInfo();
+			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
+		}
+		else{
+			this.check_binfo = null;
+			this.setRange(x1,y1,x2,y2);
+		}
+		this.prepaint();
+	},
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawBlackCells();
 
-		this.drawCircles_kurotto();
+		this.drawCircles();
 		this.drawNumbers();
 
 		this.drawChassis();
@@ -89,32 +103,11 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	// 背景色をつけるため
-	drawCircles_kurotto : function(){
-		var saved_cells = this.range.cells;
-		this.check_binfo = null;
-		if(this.getConfig('autocmp')){
-			/* 一時的に盤面全体を対象に切り替える */
-			this.range.cells = this.owner.board.cell;
-			this.check_binfo = this.owner.board.getBCellInfo();
-		}
-		
-		/* 本体を呼ぶ */
-		this.drawCircles();
-		
-		this.range.cells = saved_cells;
-	},
-	getCircleStrokeColor : function(cell){
+	getCircleFillColor : function(cell){
 		if(cell.isNum()){
 			var cmpcell = (this.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
-			if     (cmpcell)       { return this.bcolor;    }
-			else if(cell.error===1){ return this.errbcolor1;}
-			else                   { return this.cellcolor; }
+			return (cmpcell ? this.bcolor : this.circledcolor);
 		}
-		return null;
-	},
-	getCircleFillColor : function(cell){
-		if(cell.isNum()){ return this.circledcolor;}
 		return null;
 	}
 },
