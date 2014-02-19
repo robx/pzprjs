@@ -109,7 +109,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.barinfo = this.addInfoList('AreaBarManager');
+		this.barinfo = this.addInfoList(this.owner.AreaBarManager);
 	},
 
 	irowakeRemake : function(){

@@ -169,7 +169,7 @@ Board:{
 
 		this.Common.prototype.initialize.call(this);
 
-		this.seginfo = this.addInfoList('SegmentManager');
+		this.seginfo = this.addInfoList(this.owner.SegmentManager);
 	},
 
 	initBoardSize : function(col,row){

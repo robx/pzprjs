@@ -93,7 +93,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.tiles = this.addInfoList('AreaTriTileManager');
+		this.tiles = this.addInfoList(this.owner.AreaTriTileManager);
 	},
 
 	getTileInfo : function(){

@@ -65,7 +65,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.tiles = this.addInfoList('AreaTileManager');
+		this.tiles = this.addInfoList(this.owner.AreaTileManager);
 	},
 
 	initBoardSize : function(col,row){

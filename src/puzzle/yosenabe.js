@@ -164,7 +164,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.iceinfo = this.addInfoList('AreaCrockManager');
+		this.iceinfo = this.addInfoList(this.owner.AreaCrockManager);
 	}
 },
 

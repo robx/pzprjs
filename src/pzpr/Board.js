@@ -7,6 +7,8 @@
 pzpr.createPuzzleClass('Board',
 {
 	initialize : function(){
+		var puzzle = this.owner;
+		
 		// 盤面の範囲
 		this.minbx = 0;
 		this.minby = 0;
@@ -19,10 +21,10 @@ pzpr.createPuzzleClass('Board',
 		// エラー表示中かどうか
 		this.haserror = false;
 
-		this.cell   = new this.owner.CellList();
-		this.cross  = new this.owner.CrossList();
-		this.border = new this.owner.BorderList();
-		this.excell = new this.owner.EXCellList();
+		this.cell   = new puzzle.CellList();
+		this.cross  = new puzzle.CrossList();
+		this.border = new puzzle.BorderList();
+		this.excell = new puzzle.EXCellList();
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
@@ -32,31 +34,31 @@ pzpr.createPuzzleClass('Board',
 		this.bdinside  = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 		// 空オブジェクト
-		this.nullobj = new this.owner.BoardPiece();
-		this.emptycell   = new this.owner.Cell();
-		this.emptycross  = new this.owner.Cross();
-		this.emptyborder = new this.owner.Border();
-		this.emptyexcell = new this.owner.EXCell();
+		this.nullobj = new puzzle.BoardPiece();
+		this.emptycell   = new puzzle.Cell();
+		this.emptycross  = new puzzle.Cross();
+		this.emptyborder = new puzzle.Border();
+		this.emptyexcell = new puzzle.EXCell();
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
-		this.lines = this.addInfoList('LineManager');		// 線情報管理オブジェクト
+		this.lines = this.addInfoList(puzzle.LineManager);			// 線情報管理オブジェクト
 
-		this.rooms = this.addInfoList('AreaRoomManager');		// 部屋情報を保持する
-		this.linfo = this.addInfoList('AreaLineManager');		// 線つながり情報を保持する
+		this.rooms = this.addInfoList(puzzle.AreaRoomManager);		// 部屋情報を保持する
+		this.linfo = this.addInfoList(puzzle.AreaLineManager);		// 線つながり情報を保持する
 
-		this.bcell = this.addInfoList('AreaBlackManager');	// 黒マス情報を保持する
-		this.wcell = this.addInfoList('AreaWhiteManager');	// 白マス情報を保持する
-		this.ncell = this.addInfoList('AreaNumberManager');	// 数字情報を保持する
+		this.bcell = this.addInfoList(puzzle.AreaBlackManager);		// 黒マス情報を保持する
+		this.wcell = this.addInfoList(puzzle.AreaWhiteManager);		// 白マス情報を保持する
+		this.ncell = this.addInfoList(puzzle.AreaNumberManager);	// 数字情報を保持する
 
-		this.exec = new this.owner.BoardExec();
+		this.exec = new puzzle.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},
-	addInfoList : function(classname){
-		var instance = new this.owner[classname]();
+	addInfoList : function(klass){
+		var instance = new klass();
 		this.infolist.push(instance);
 		return instance;
 	},
@@ -132,7 +134,7 @@ pzpr.createPuzzleClass('Board',
 		else if(type===k.CROSS) { return this.cross;}
 		else if(type===k.BORDER){ return this.border;}
 		else if(type===k.EXCELL){ return this.excell;}
-		return [];
+		return new this.owner.PieceList();
 	},
 	estimateSize : function(type, col, row){
 		if     (type===k.CELL)  { return col*row;}
@@ -148,11 +150,11 @@ pzpr.createPuzzleClass('Board',
 		return 0;
 	},
 	newObject : function(type, id){
-		var obj = this.nullobj;
-		if     (type===k.CELL)  { obj = new this.owner.Cell();}
-		else if(type===k.CROSS) { obj = new this.owner.Cross();}
-		else if(type===k.BORDER){ obj = new this.owner.Border();}
-		else if(type===k.EXCELL){ obj = new this.owner.EXCell();}
+		var obj = this.nullobj, puzzle = this.owner;
+		if     (type===k.CELL)  { obj = new puzzle.Cell();}
+		else if(type===k.CROSS) { obj = new puzzle.Cross();}
+		else if(type===k.BORDER){ obj = new puzzle.Border();}
+		else if(type===k.EXCELL){ obj = new puzzle.EXCell();}
 		if(obj!==this.nullobj && id!==void 0){ obj.id = id;}
 		return obj;
 	},
@@ -170,10 +172,9 @@ pzpr.createPuzzleClass('Board',
 	/* setpos関連関数 */
 	setposAll : function(){
 		this.setposCells();
-		if(!!this.hascross) { this.setposCrosses();}
-		if(!!this.hasborder){ this.setposBorders();}
-		if(!!this.hasexcell){ this.setposEXcells();}
-
+		this.setposCrosses();
+		this.setposBorders();
+		this.setposEXcells();
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 	},
 	setposGroup : function(type){
@@ -209,8 +210,8 @@ pzpr.createPuzzleClass('Board',
 	},
 	setposBorders : function(){
 		var qc = this.qcols, qr = this.qrows;
-		this.bdinside = 2*qc*qr-(qc+qr);
 		this.bdmax = this.border.length;
+		this.bdinside = this.bdmax - (this.hasborder===2 ? 2*(qc+qr) : 0);
 		for(var id=0;id<this.bdmax;id++){
 			var obj=this.border[id], i=id;
 			obj.id = id;
@@ -330,7 +331,7 @@ pzpr.createPuzzleClass('Board',
 		else if(type===k.CROSS) { return this.getx(bx,by,qc,qr);}
 		else if(type===k.BORDER){ return this.getb(bx,by,qc,qr);}
 		else if(type===k.EXCELL){ return this.getex(bx,by,qc,qr);}
-		return null;
+		return this.nullobj;
 	},
 
 	//---------------------------------------------------------------------------
@@ -420,7 +421,7 @@ pzpr.createPuzzleClass('Board',
 		else if(type===k.CROSS) { return this.crossinside (x1,y1,x2,y2);}
 		else if(type===k.BORDER){ return this.borderinside(x1,y1,x2,y2);}
 		else if(type===k.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
-		return [];
+		return new this.owner.PieceList();
 	},
 
 	//---------------------------------------------------------------------------

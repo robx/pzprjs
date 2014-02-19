@@ -139,7 +139,7 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.iceinfo = this.addInfoList('AreaIcebarnManager');
+		this.iceinfo = this.addInfoList(this.owner.AreaIcebarnManager);
 	},
 
 	initBoardSize : function(col,row){
