@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<HTML lang="ja">
+<HEAD>
+<META CHARSET="utf-8">
+<META NAME="robots" CONTENT="noindex,nofollow">
+<meta http-equiv="Content-Type" content="text/html">
+<link rel="stylesheet" href="./src/sc8.css" type="text/css" />
+<script type="text/javascript" src="../../dist/pzpr.js"></script>
+<script type="text/javascript" src="./src/ui.js"></script>
+<TITLE>ぱずぷれv3</TITLE>
+</HEAD>
+
+<BODY>
+
+<div id="main">
+
+<h2 id="title2">読み込み中です...</h2>
+
+<div id="menuboard" class="outofboard">
+  <menu id="menupanel"></menu>
+  <div id="usepanel"></div>
+  <div id="checkpanel"></div>
+  <hr id="separator2">
+  <div id="timerpanel">経過時間：00:00</div>
+</div>
+
+<div id="quesboard">
+  <div id="divques"></div>						<!-- Canvas用 -->
+  <div id="btnarea" class="outofboard"></div>	<!-- Canvas下部のボタン -->
+</div>
+
+</div> <!-- div#main close. -->
+
+<!-- フロートパネル用 -->
+<div id="float_parent" class="outofboard"></div>
+
+<!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
+<div id="popup_parent" class="outofboard"></div>
+
+<!-- 隠し要素 -->
+<div id="hidden_element">
+  <!-- ファイル入出力用インラインフレーム -->
+  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
+
+  <!-- ここからファイル出力用フォーム -->
+  <form name="fileform2" id="fileform2" action="fileio.cgi" method="post"
+        target="fileiopanel" onsubmit="return false;">
+    <input type="hidden" name="operation" value="save">
+    <input type="hidden" name="filename" value="">
+    <input type="hidden" name="ques" value="">
+    <input type="hidden" name="urlstr" value="">
+    <input type="hidden" name="platform" value="">
+  </form>
+</div>
+<!-- ここまで -->
+
+</BODY>
+</HTML>

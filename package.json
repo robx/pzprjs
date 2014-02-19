@@ -1,0 +1,21 @@
+{
+  "name": "pzpr",
+  "version": "3.4.0-pre",
+  "description": "Playing and editing puzzles by Javascript",
+  "main": "pzpr.js",
+  "keywords": [
+    "puzzle",
+    "nikoli",
+    "HTML5"
+  ],
+  "author": "sabo2",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-text-replace": "~0.3.10"
+  }
+}
