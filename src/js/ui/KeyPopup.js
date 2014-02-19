@@ -135,6 +135,8 @@ ui.keypopup =
 	createtable : function(mode,type){
 		this.basepanel = getEL('panelbase'+mode);
 		this.basepanel.innerHTML = '';
+		
+		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 
 		this.generate(mode);
 	},
@@ -467,7 +469,6 @@ ui.keypopup =
 		this.insertrow();
 	},
 	generate_hakoiri : function(mode){
-		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 		this.inputcol('num','1','○');
 		this.inputcol('num','2','△');
 		this.inputcol('num','3','□');
