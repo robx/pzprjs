@@ -275,7 +275,7 @@ BoardExec:{
 		this.bx2 = x2;
 		this.by2 = y2;
 	},
-	decode : function(str){
+	decode : function(strs){
 		if(strs[0]!=='PS'){ return false;}
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];

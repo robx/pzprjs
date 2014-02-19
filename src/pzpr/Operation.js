@@ -97,24 +97,20 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 	},
 
 	//---------------------------------------------------------------------------
-	// ope.undo()  操作opeを一手前に戻す
-	// ope.redo()  操作opeを一手進める
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
-	undo : function(){
-		this.exec(this.old);
-		if(!(this.property==k.QSUB||this.property==k.QCMP)){ this.owner.checker.resetCache();}
-	},
-	redo : function(){
-		this.exec(this.num);
-		if(!(this.property==k.QSUB||this.property==k.QCMP)){ this.owner.checker.resetCache();}
-	},
 	exec : function(num){
-		var obj = this.owner.board.getObjectPos(this.group, this.bx, this.by);
+		var bd = this.owner.board, obj = bd.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==obj.group){ return true;}
+		
 		obj.setdata(this.property, num);
 		obj.draw();
-		if(this.property===k.QCMP){ this.owner.board.cell.each(function(cell){ if(obj===cell.base){cell.draw();}});}
+		
+		switch(this.property){
+			case k.QCMP: bd.cell.each(function(cell){ if(obj===cell.base){ cell.draw();}}); break;
+			case k.QSUB: break;
+			default:     this.owner.checker.resetCache(); break;
+		}
 	}
 });
 
@@ -124,26 +120,39 @@ pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 	prefix : 'AJ',
 	reqReset : true,
 	//---------------------------------------------------------------------------
+	// ope.setData()  オブジェクトのデータを設定する
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
+	setData : function(name){
+		this.old = this.num = name;
+	},
 	decode : function(strs){
 		if(strs[0]!==this.prefix){ return false;}
-		this.old = +strs[1];
-		this.num = +strs[2];
+		this.old = this.num = strs[1];
 		return true;
 	},
 	toString : function(){
-		return [this.prefix, this.old, this.num].join(',');
+		return [this.prefix, this.num].join(',');
 	},
 
 	//---------------------------------------------------------------------------
+	// ope.undo()  操作opeを一手前に戻す
+	// ope.redo()  操作opeを一手進める
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
+	undo : function(){
+		var key_undo = this.owner.board.exec.boardtype[this.old][0];
+		this.exec(key_undo);
+	},
+	redo : function(){
+		var key_redo = this.owner.board.exec.boardtype[this.num][1];
+		this.exec(key_redo);
+	},
 	exec : function(num){
-		var o = this.owner;
-		o.board.exec.expandreduce(num,{x1:0,y1:0,x2:2*o.board.qcols,y2:2*o.board.qrows});
-		o.redraw();
+		var puzzle = this.owner, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
+		puzzle.board.exec.expandreduce(num,d);
+		puzzle.redraw();
 	}
 });
 
@@ -158,24 +167,22 @@ pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
-	setData : function(d, old, num){
+	setData : function(d, name){
 		this.area = d;
-		this.old = old;
-		this.num = num;
+		this.old = this.num = name;
 	},
 	decode : function(strs){
 		if(strs[0]!==this.prefix){ return false;}
-		this.area.x1 = +strs[1];
-		this.area.y1 = +strs[2];
-		this.area.x2 = +strs[3];
-		this.area.y2 = +strs[4];
-		this.old = +strs[5];
-		this.num = +strs[6];
+		this.old = this.num = strs[1];
+		this.area.x1 = +strs[2];
+		this.area.y1 = +strs[3];
+		this.area.x2 = +strs[4];
+		this.area.y2 = +strs[5];
 		return true;
 	},
 	toString : function(){
-		var x1 = this.area.x1, y1 = this.area.y1, x2 = this.area.x2, y2 = this.area.y2;
-		return [this.prefix, x1, y1, x2, y2, this.old, this.num].join(',');
+		var d = this.area;
+		return [this.prefix, this.num, d.x1, d.y1, d.x2, d.y2].join(',');
 	},
 
 	//---------------------------------------------------------------------------
@@ -186,17 +193,20 @@ pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 	undo : function(){
 		// とりあえず盤面全部の対応だけ
 		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
-		if(this.old & k.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
-		this.exec(this.old,d);
+		var key_undo = this.owner.board.exec.boardtype[this.old][0];
+		if(key_undo & k.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
+		this.exec(key_undo,d);
 	},
 	redo : function(){
 		// とりあえず盤面全部の対応だけ
 		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
-		this.exec(this.num,d);
+		var key_redo = this.owner.board.exec.boardtype[this.num][1];
+		this.exec(key_redo,d);
 	},
 	exec : function(num,d){
-		this.owner.board.exec.turnflip(num,d);
-		this.owner.redraw();
+		var puzzle = this.owner;
+		puzzle.board.exec.turnflip(num,d);
+		puzzle.redraw();
 	}
 });
 
@@ -347,19 +357,19 @@ pzpr.createPuzzleClass('OperationManager',
 			return true;
 		});
 	},
-	addOpe_BoardAdjust : function(old, num){
+	addOpe_BoardAdjust : function(name){
 		// 操作を登録する
 		this.addOpe_common(function(){
 			var ope = new this.owner.BoardAdjustOperation();
-			ope.setData(old, num);
+			ope.setData(name);
 			return ope;
 		});
 	},
-	addOpe_BoardFlip : function(d, old, num){
+	addOpe_BoardFlip : function(d, name){
 		// 操作を登録する
 		this.addOpe_common(function(){
 			var ope = new this.owner.BoardFlipOperation();
-			ope.setData(d, old, num);
+			ope.setData(d, name);
 			return ope;
 		});
 	},
@@ -386,18 +396,18 @@ pzpr.createPuzzleClass('OperationManager',
 		}
 
 		/* ファイル内容のデコード */
-		if(!!window.JSON){
+		if(datas.length>0 && !!window.JSON){
 			try{
+				console.log(datas.join(''));
 				var str = datas.join(''), history = JSON.parse(str);
 				this.ope = [];
 				this.initpos = this.position = history.current;
 				for(var i=0,len=history.datas.length;i<len;i++){
 					this.ope.push([]);
 					for(var j=0,len2=history.datas[i].length;j<len2;j++){
-						var str = history.datas[i][j];
-						var ope = this.decodeOpe(str.split(/,/));
+						var ope = this.decodeOpe(history.datas[i][j]);
 						if(!!ope){
-							this.ope[this.open.length-1].push(ope);
+							this.ope[this.ope.length-1].push(ope);
 							this.lastope = ope;
 						}
 					}
@@ -408,14 +418,16 @@ pzpr.createPuzzleClass('OperationManager',
 
 		this.checkexec();
 	},
-	decodeOpe : function(strs){
-		var ope = new this.owner.ObjectOperation();
+	decodeOpe : function(str){
+		var puzzle = this.owner, strs = str.split(/,/);
+
+		var ope = new puzzle.ObjectOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		ope = new this.owner.BoardAdjustOperation();
+		ope = new puzzle.BoardAdjustOperation();
 		if(ope.decode(strs)){ return ope;}
 
-		ope = new this.owner.BoardFlipOperation();
+		ope = new puzzle.BoardFlipOperation();
 		if(ope.decode(strs)){ return ope;}
 
 		return null;
@@ -424,8 +436,8 @@ pzpr.createPuzzleClass('OperationManager',
 		if(!window.JSON){ return '';}
 		this.initpos = this.position;
 		return "\nhistory:" + JSON.stringify({
+			type    : 'pzpr',
 			version : 0.3,
-			history : this.ope.length,
 			current : this.position,
 			datas   : this.ope
 		},null,1);

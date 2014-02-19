@@ -243,7 +243,7 @@ BoardExec:{
 		this.bx2 = x2;
 		this.by2 = y2;
 	},
-	decode : function(str){
+	decode : function(strs){
 		if(strs[0]!=='PI' && strs[0]!=='PO'){ return false;}
 		this.property = (strs[0]=='PI'?'in':'out');
 		this.bx1 = +strs[1];

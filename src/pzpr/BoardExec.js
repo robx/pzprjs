@@ -41,8 +41,8 @@ pzpr.createPuzzleClass('BoardExec',
 		reducert: [k.EXPANDRT, k.REDUCERT],
 		turnl: [k.TURNR, k.TURNL],
 		turnr: [k.TURNL, k.TURNR],
-		flipy: [k.FLIPX, k.FLIPY],
-		flipx: [k.FLIPY, k.FLIPX]
+		flipy: [k.FLIPY, k.FLIPY],
+		flipx: [k.FLIPX, k.FLIPX]
 	},
 
 	// expand/reduce処理用
@@ -76,15 +76,15 @@ pzpr.createPuzzleClass('BoardExec',
 		o.painter.suspendAll();
 
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
-		var key = this.boardtype[name][1], key0 = this.boardtype[name][0];
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
+		var key = this.boardtype[name][1];
 		if(key & k.TURNFLIP){
 			this.turnflip(key,d);
-			o.opemgr.addOpe_BoardFlip(d, key0, key);
+			o.opemgr.addOpe_BoardFlip(d, name);
 		}
 		else{
 			this.expandreduce(key,d);
-			o.opemgr.addOpe_BoardAdjust(key0, key);
+			o.opemgr.addOpe_BoardAdjust(name);
 		}
 
 		bd.setminmax();
