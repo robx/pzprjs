@@ -65,18 +65,24 @@ ui.toolarea = {
 		/* 文字別正解表示の設定値 */
 		var pid = ui.puzzle.pid;
 		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'){
-			this.addLabel('circolor', '正しい数字をグレーにする', 'Grey if the number is correct.');
+			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='yosenabe'){
-			this.addLabel('circolor', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
+			this.addLabel('autocmp', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
 		}
 		else if(pid==='kouchoku'){
-			this.addLabel('circolor', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+			this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
 
-		this.addLabel('plred', '重複している数字を赤くする', 'Show overlapped number as red.');
-
-		this.addLabel('colorslash', '斜線を輪切りかのどちらかで色分けする(重いと思います)', 'Encolor slashes whether it consists in a loop or not.(Too busy)');
+		if(pid==='hitori'){
+			this.addLabel('autoerr', '重複している数字を赤くする', 'Show overlapped number as red.');
+		}
+		else if(pid==='gokigen'){
+			this.addLabel('autoerr', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
+		}
+		else if(pid==='wagiri'){
+			this.addLabel('autoerr', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
+		}
 
 		/* 正当判定方法の設定値 */
 		this.addLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
@@ -302,7 +308,7 @@ ui.toolarea = {
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.getConfig('mode')];
+				var f = !!kp.paneltype[ui.menu.getConfigVal('mode')];
 				getEL('ck_keypopup').disabled    = (f?"":"true");
 				getEL('cl_keypopup').style.color = (f?"black":"silver");
 			}
@@ -310,7 +316,7 @@ ui.toolarea = {
 		
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.getConfig('mode');
+				var mode = ui.menu.getConfigVal('mode');
 				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}

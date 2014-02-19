@@ -21,7 +21,6 @@ ui.timer =
 	timerEL  : null,	/* 経過時間表示用要素 */
 
 	/* 自動正答判定用変数 */
-	lastAnsCnt  : 0,	/* 前回正答判定した時の、OperationManagerに記録されてた問題/回答入力のカウント */
 	worstACtime : 0,	/* 正答判定にかかった時間の最悪値(ミリ秒) */
 	nextACtime  : 0,	/* 次に自動正答判定ルーチンに入ることが可能になる時間 */
 
@@ -77,8 +76,7 @@ ui.timer =
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
 		var o = ui.puzzle;
-		if(this.current>this.nextACtime && this.lastAnsCnt != o.opemgr.anscount && o.playmode && !o.checker.inCheck){
-			this.lastAnsCnt = o.opemgr.anscount;
+		if(this.current>this.nextACtime && o.playmode && !o.checker.inCheck){
 			if(!o.check(false)){
 				o.mouse.mousereset();
 				ui.menu.setMenuConfig('autocheck',false);

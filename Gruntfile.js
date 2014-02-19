@@ -66,7 +66,7 @@ module.exports = function(grunt){
       },
       debug: {
         files : [
-          { expand: true, cwd: 'src/vendor', src: ['**/*'],  dest: 'dist/vendor' },
+          { expand: true, cwd: 'src/lib', src: ['**/*'],  dest: 'dist/lib' },
           { expand: true, cwd: 'src/js/ui',  src: ['*.js'],  dest: 'dist/js/ui' },
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
@@ -77,7 +77,7 @@ module.exports = function(grunt){
       },
       combine: {
         files : [
-          { expand: true, cwd: 'src/vendor', src: ['**/*'],  dest: 'dist/vendor' },
+          { expand: true, cwd: 'src/lib', src: ['**/*'],  dest: 'dist/lib' },
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
           { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
@@ -87,7 +87,7 @@ module.exports = function(grunt){
       },
       release: {
         files : [
-          { expand: true, cwd: 'src/vendor', src: ['**/*'],  dest: 'dist/vendor' },
+          { expand: true, cwd: 'src/lib', src: ['**/*'],  dest: 'dist/lib' },
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
           { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' }

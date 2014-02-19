@@ -175,7 +175,7 @@ ui.debug =
 		if(!!this.includedScript[filename]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = ui.util.getpath()+'../vendor/pzpr-test/'+filename;
+		_script.src = ui.util.getpath()+'../lib/pzpr-test/'+filename;
 		document.body.appendChild(_script);
 		this.includedScript[filename] = true;
 	},

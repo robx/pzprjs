@@ -80,7 +80,7 @@ function startPuzzle(){
 function afterBoot(o){
 	/* debugmode時の設定 */
 	if(ui.debugmode){
-		o.setConfig('mode',3);
+		o.modechange(pzpr.consts.MODE_PLAYER);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
 	accesslog();

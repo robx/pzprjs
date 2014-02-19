@@ -160,7 +160,10 @@ ui.menu = {
 		}
 		else if(idname==='uramashu'){
 			ui.puzzle.board.uramashu = newval;
-			this.config_common(idname, newval);
+			ui.event.config_common(ui.puzzle, idname, newval);
+		}
+		else if(idname==='mode'){
+			ui.puzzle.modechange(newval);
 		}
 	},
 	getConfigVal : function(idname){
@@ -172,6 +175,9 @@ ui.menu = {
 		}
 		else if(idname==='uramashu'){
 			return ui.puzzle.board.uramashu;
+		}
+		else if(idname==='mode'){
+			return ui.puzzle.playmode ? 3 : 1;
 		}
 	},
 
@@ -339,8 +345,8 @@ ui.menu = {
 		type = (type!=='svg'?'png':'svg');
 		
 		try{
-			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.canvasToBlob(type,cellsize);   }
-			else                           { dataurl = ui.puzzle.canvasToDataURL(type,cellsize);}
+			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.toBlob(type,cellsize);   }
+			else                           { dataurl = ui.puzzle.toDataURL(type,cellsize);}
 		}
 		catch(e){
 			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');

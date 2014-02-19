@@ -11,7 +11,7 @@
 	if(!dir){ setTimeout(arguments.callee,0); return;}
 
 	var files = [
-		"../vendor/pzpr/pzpr.js",
+		"../lib/pzpr/pzpr.js",
 		"ui/Boot.js",
 		"ui/UI.js",
 		"ui/Menu.js",
