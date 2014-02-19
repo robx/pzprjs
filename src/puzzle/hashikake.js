@@ -21,35 +21,53 @@ MouseEvent:{
 		}
 	},
 
+	prevblist : null,
+	mousereset : function(){
+		this.Common.prototype.mousereset.call(this);
+		this.prevblist = new this.owner.BorderList();
+	},
+
 	inputLine : function(){
-		var pos = this.getpos(0);
+		var pos = this.getpos(0.20);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.getlineobj(this.prevPos, pos);
 		if(!border.isnull){
-			var dir = this.getdir(this.prevPos, pos);
+			var dir = this.getlinedir(this.prevPos, pos);
 			var d = border.getlinesize();
 			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 			var k = pzpr.consts;
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
+			
 			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
 			if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ borders.reverse();} // 色分けの都合上の処理
-			for(var i=0;i<borders.length;i++){
-				borders[i].setLineVal(this.inputData);
-				borders[i].setQsub(0);
-			}
+			borders.setLineVal(this.inputData);
+			borders.setQsub(0);
 			this.prevblist = borders;
 
 			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
-	prevblist : null,
+	getlineobj : function(base, current){
+		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
+		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
+			{ return (base.onborder() ? base : current).getb();}
+		return this.owner.board.nullobj;
+	},
+	getlinedir : function(base, current){
+		var dx = (current.bx-base.bx), dy = (current.by-base.by);
+		if     (dx=== 0 && dy===-1){ return k.UP;}
+		else if(dx=== 0 && dy=== 1){ return k.DN;}
+		else if(dx===-1 && dy=== 0){ return k.LT;}
+		else if(dx=== 1 && dy=== 0){ return k.RT;}
+		return k.NDIR;
+	},
 
 	inputpeke : function(){
 		var pos = this.getpos(0.22);
-		if(this.prevPos.equals(pos)){ return;}
+		if(this.btn.Right && this.prevPos.equals(pos)){ return;}
 
 		var border = pos.getb();
 		if(border.isnull){ return;}
@@ -58,17 +76,11 @@ MouseEvent:{
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
+		this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
 		this.prevPos = pos;
 
 		this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
-	},
-
-	mousereset : function(){
-		this.Common.prototype.mousereset.call(this);
-
-		this.prevblist = new this.owner.BorderList();
+		border.draw();
 	}
 },
 
@@ -94,7 +106,6 @@ Cell:{
 
 	iscrossing : function(){ return this.noNum();}
 },
-
 Border:{
 	getlinesize : function(){
 		var pos1 = this.getaddr(), pos2 = pos1.clone();
@@ -109,6 +120,10 @@ Border:{
 		if(pos1.getc().isnull || pos2.getc().isnull){ return {x1:-1,y1:-1,x2:-1,y2:-1};}
 		return {x1:pos1.bx, y1:pos1.by, x2:pos2.bx, y2:pos2.by};
 	}
+},
+BorderList:{
+	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});},
+	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});}
 },
 
 Board:{

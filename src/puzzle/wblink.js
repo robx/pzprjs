@@ -21,39 +21,46 @@ MouseEvent:{
 	},
 
 	inputLine : function(){
-		var pos = this.getpos(0);
+		var pos = this.getpos(0.10);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.getlineobj(this.prevPos, pos);
 		if(!border.isnull){
 			var d = border.getlinesize();
 			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
-			for(var i=0;i<borders.length;i++){
-				if     (this.inputData===1){ borders[i].setLine();}
-				else if(this.inputData===0){ borders[i].removeLine();}
-			}
+			if     (this.inputData===1){ borders.setLine();}
+			else if(this.inputData===0){ borders.removeLine();}
 			this.inputData=2;
 
 			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
+	getlineobj : function(base, current){
+		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
+		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
+			{ return (base.onborder() ? base : current).getb();}
+		return this.owner.board.nullobj;
+	},
+
 	inputpeke : function(){
 		var pos = this.getpos(0.22);
+		if(this.btn.Right && this.prevPos.equals(pos)){ return;}
+
 		var border = pos.getb();
-		if(border.isnull || this.prevPos.equals(pos)){ return;}
+		if(border.isnull){ return;}
 
 		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<borders.length;i++){ borders[i].setLineVal(0);}
+		this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
 		this.prevPos = pos;
 
 		this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		border.draw();
 	}
 },
 
@@ -99,6 +106,11 @@ Border:{
 		if(pos1.getc().isnull || pos2.getc().isnull){ return {x1:-1,y1:-1,x2:-1,y2:-1};}
 		return {x1:pos1.bx, y1:pos1.by, x2:pos2.bx, y2:pos2.by};
 	}
+},
+BorderList:{
+	setLine    : function(){ this.each(function(border){ border.setLine();});},
+	removeLine : function(){ this.each(function(border){ border.removeLine();});},
+	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});}
 },
 
 Board:{
