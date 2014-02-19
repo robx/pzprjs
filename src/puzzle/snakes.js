@@ -102,7 +102,14 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : 5,
-	minnum : 0
+	minnum : 0,
+
+	draw : function(){
+		if(!this.getConfig('snakebd')){ this.getaddr().draw();}
+		else{
+			this.owner.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
+		}
+	}
 },
 Board:{
 	hasborder : 1,
