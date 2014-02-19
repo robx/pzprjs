@@ -10,17 +10,18 @@ pzpr.createCustoms('gokigen', {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode && this.mousestart){
+		var puzzle = this.owner;
+		if(puzzle.playmode && this.mousestart){
 			this.inputslash();
 		}
-		else if(this.owner.editmode && this.mousestart){
-			if(this.owner.pid==='gokigen')    { this.inputcross();}
-			else if(this.owner.pid==='wagiri'){ this.inputquestion();}
+		else if(puzzle.editmode && this.mousestart){
+			if     (puzzle.pid==='gokigen'){ this.inputcross();}
+			else if(puzzle.pid==='wagiri') { this.inputquestion();}
 		}
 	},
 	inputRed : function(){
-		if(this.owner.playmode){
-			if(this.owner.pid==='gokigen'){ this.dispBlue();}
+		if(puzzle.playmode){
+			if(puzzle.pid==='gokigen'){ this.dispBlue();}
 		}
 	},
 
@@ -28,7 +29,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var use = this.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
+		var use = this.owner.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.getQans();
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
@@ -264,7 +265,7 @@ Graphic:{
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
 		var bd = this.owner.board;
-		if(!bd.haserror && this.getConfig('autoerr')){
+		if(!bd.haserror && this.owner.getConfig('autoerr')){
 			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
@@ -290,15 +291,15 @@ Graphic:{
 	},
 
 	drawSlashes : function(){
-		var bd = this.owner.board;
-		if(!bd.haserror && this.getConfig('autoerr')){
+		var puzzle = this.owner, bd = puzzle.board;
+		if(!bd.haserror && puzzle.getConfig('autoerr')){
 			var sdata=bd.getSlashData();
-			if     (this.owner.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
-			else if(this.owner.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = sdata[cell.id];});}
+			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
+			else if(puzzle.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = sdata[cell.id];});}
 
 			this.Common.prototype.drawSlashes.call(this);
 
-			bd.cell.each(function(cell){ cell.qinfo = 0;})
+			bd.cell.setinfo(0);
 		}
 		else{
 			this.Common.prototype.drawSlashes.call(this);

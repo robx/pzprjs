@@ -6,10 +6,11 @@ pzpr.createCustoms('bag', {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		var puzzle = this.owner;
+		if(puzzle.playmode){
 			var inputbg = false;
-			if     (this.mousestart){ inputbg = (!!this.getConfig('bgcolor') && this.inputBGcolor0());}
-			else if(this.mousemove) { inputbg = (!!this.getConfig('bgcolor') && this.inputData>=10);}
+			if     (this.mousestart){ inputbg = (!!puzzle.getConfig('bgcolor') && this.inputBGcolor0());}
+			else if(this.mousemove) { inputbg = (!!puzzle.getConfig('bgcolor') && this.inputData>=10);}
 			else{ return;}
 
 			if(!inputbg){
@@ -18,7 +19,7 @@ MouseEvent:{
 			}
 			else{ this.inputBGcolor(false);}
 		}
-		else if(this.owner.editmode){
+		else if(puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},

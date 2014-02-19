@@ -264,8 +264,10 @@ pzpr.createPuzzleClass('LineManager',
 		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
 	},
 	setLongColor : function(assign, longColor){
+		var puzzle = this.owner;
+		
 		/* assign:影響のあったareaidの配列 */
-		var blist_all = new this.owner.BorderList();
+		var blist_all = new puzzle.BorderList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -276,15 +278,13 @@ pzpr.createPuzzleClass('LineManager',
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
-			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+			var newColor = (assign[i]===longid ? longColor : puzzle.painter.getNewLineColor());
 			var blist = this.getBlist(assign[i]);
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
 			blist_all.extend(blist);
 		}
 		
-		if(this.getConfig('irowake')){
-			this.owner.painter.repaintLines(blist_all);
-		}
+		if(puzzle.getConfig('irowake')){ puzzle.painter.repaintLines(blist_all);}
 	},
 
 	//---------------------------------------------------------------------------

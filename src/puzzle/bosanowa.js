@@ -153,7 +153,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		var disptype = +this.getConfig('disptype_bosanowa');
+		var disptype = +this.owner.getConfig('disptype_bosanowa');
 		if(disptype===1){
 			this.drawCircles();
 			this.drawBDnumbase();
@@ -179,11 +179,11 @@ Graphic:{
 	},
 
 	getCanvasCols : function(){
-		var disptype = this.getConfig('disptype_bosanowa');
+		var disptype = this.owner.getConfig('disptype_bosanowa');
 		return this.getBoardCols()+2*this.margin+(disptype==2?2:0);
 	},
 	getCanvasRows : function(){
-		var disptype = this.getConfig('disptype_bosanowa');
+		var disptype = this.owner.getConfig('disptype_bosanowa');
 		return this.getBoardRows()+2*this.margin+(disptype==2?2:0);
 	},
 
@@ -340,14 +340,16 @@ Encode:{
 		this.decodeBoard();
 		this.decodeNumber16();
 
-		if     (this.checkpflag("h")){ this.setConfig('disptype_bosanowa',2);}
-		else if(this.checkpflag("t")){ this.setConfig('disptype_bosanowa',3);}
+		var puzzle = this.owner;
+		if     (this.checkpflag("h")){ puzzle.setConfig('disptype_bosanowa',2);}
+		else if(this.checkpflag("t")){ puzzle.setConfig('disptype_bosanowa',3);}
 	},
 	encodePzpr : function(type){
 		this.encodeBosanowa();
 
-		if     (this.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}
-		else if(this.getConfig('disptype_bosanowa')==3){ this.outpflag="t";}
+		var puzzle = this.owner;
+		if     (puzzle.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}
+		else if(puzzle.getConfig('disptype_bosanowa')==3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){

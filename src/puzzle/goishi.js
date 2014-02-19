@@ -244,7 +244,7 @@ Encode:{
 			count++;
 		}
 		if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
-		if(this.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
+		if(this.owner.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 		return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 	}
 },

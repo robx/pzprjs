@@ -33,7 +33,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
-		if(pzpr.EDITOR && this.getConfig('discolor')){ return;}
+		if(pzpr.EDITOR && this.owner.getConfig('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
 		var star = pos.gets();

@@ -79,9 +79,9 @@ Graphic:{
 
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
-		var bd = this.owner.board;
-		if(this.getConfig('autocmp')){
-			this.check_binfo = this.owner.board.getBCellInfo();
+		var puzzle = this.owner, bd = puzzle.board;
+		if(puzzle.getConfig('autocmp')){
+			this.check_binfo = bd.getBCellInfo();
 			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
@@ -105,7 +105,7 @@ Graphic:{
 
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
+			var cmpcell = (this.owner.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
 			return (cmpcell ? this.bcolor : this.circledcolor);
 		}
 		return null;

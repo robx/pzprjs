@@ -39,10 +39,10 @@ Cell:{
 	},
 
 	redDisp : function(){
-		var o = this.owner, bd = o.board;
-		if(this.getConfig('autoerr')){
-			o.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
-			o.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
+		var puzzle = this.owner, bd = puzzle.board;
+		if(puzzle.getConfig('autoerr')){
+			puzzle.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
+			puzzle.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
 		}
 	}
 },
@@ -86,7 +86,7 @@ Graphic:{
 
 	drawNumbers_hitori : function(){
 		var puzzle=this.owner, bd=puzzle.board, chk=puzzle.checker;
-		if(!bd.haserror && this.getConfig('autoerr')){
+		if(!bd.haserror && puzzle.getConfig('autoerr')){
 			var pt = puzzle.CellList.prototype, seterr = pt.seterr;
 			chk.inCheck = true;
 			chk.checkOnly = false;
@@ -100,7 +100,7 @@ Graphic:{
 			this.drawNumbers();
 			this.range.cells = clist;
 
-			bd.cell.each(function(cell){ cell.qinfo = 0;})
+			bd.cell.setinfo(0);
 		}
 		else{
 			this.drawNumbers();

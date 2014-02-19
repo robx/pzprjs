@@ -254,7 +254,7 @@ pzpr.createPuzzleClass('AreaManager',
 		return this.owner.flags.irowakeblk;
 	},
 	irowakeValid : function(){
-		return this.getConfig('irowakeblk');
+		return this.owner.getConfig('irowakeblk');
 	},
 	getNewColor : function(){
 		return "";

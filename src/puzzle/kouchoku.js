@@ -41,18 +41,19 @@ MouseEvent:{
 	inputsegment_up : function(){
 		if(this.inputData!==1){ return;}
 
+		var puzzle = this.owner;
 		var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 		this.targetPoint = [null, null];
 		if(cross1!==null){ cross1.draw();}
 		if(cross2!==null){ cross2.draw();}
 		if(cross1!==null && cross2!==null){
-			if(!this.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
+			if(!puzzle.getConfig('enline') || (cross1.qnum!==-1 && cross2.qnum!==-1)){
 				var bx1=cross1.bx, bx2=cross2.bx, by1=cross1.by, by2=cross2.by, tmp;
-				if(!this.getConfig('lattice') || this.owner.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
+				if(!puzzle.getConfig('lattice') || puzzle.board.getLatticePoint(bx1,by1,bx2,by2).length===0){
 					this.inputsegment_main(bx1,by1,bx2,by2);
 					if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;}
 					if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-					this.owner.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+					puzzle.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 				}
 			}
 		}
@@ -472,7 +473,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(!this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -487,7 +488,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto');
 
-		var isgray = this.getConfig('autocmp');
+		var isgray = this.owner.getConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;
@@ -1136,8 +1137,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
 	},
 	setLongColor : function(assign, longColor){
+		var puzzle = this.owner;
 		/* assign:影響のあったareaidの配列 */
-		var seglist = new this.owner.SegmentList();
+		var seglist = new puzzle.SegmentList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -1147,15 +1149,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
-			var newColor = (assign[i]===longid ? longColor : this.owner.painter.getNewLineColor());
+			var newColor = (assign[i]===longid ? longColor : puzzle.painter.getNewLineColor());
 			var segs = this.seglist[assign[i]];
 			for(var n=0,len=segs.length;n<len;n++){ segs[n].color = newColor;}
 			seglist.extend(segs);
 		}
 		
-		if(this.getConfig('irowake')){
-			this.owner.painter.repaintSegments(seglist);
-		}
+		if(puzzle.getConfig('irowake')){ puzzle.painter.repaintSegments(seglist);}
 	},
 
 	//---------------------------------------------------------------------------

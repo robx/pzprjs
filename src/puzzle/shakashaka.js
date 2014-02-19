@@ -8,7 +8,7 @@ pzpr.createCustoms('shakashaka', {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
-			var use = +this.getConfig('use_tri');
+			var use = +this.owner.getConfig('use_tri');
 			if(use===1){
 				if(this.btn.Left){
 					if(this.mousestart){ this.inputTriangle_corner();}

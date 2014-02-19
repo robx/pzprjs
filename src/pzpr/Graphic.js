@@ -222,7 +222,7 @@ pzpr.createPuzzleClass('Graphic',
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
 
 		// セルのサイズなどを取得・設定
-		if(this.getConfig('squarecell')){
+		if(this.owner.getConfig('squarecell')){
 			this.cw = this.ch = Math.min(cw,ch);
 		}
 		else{
@@ -763,7 +763,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	drawNumber1 : function(cell){
 		var key = ['cell',cell.id].join('_'), num = cell.getNum();
-		if(this.owner.board.linfo.moveline && this.getConfig('dispmove')){ num = cell.base.getNum();}
+		if(this.owner.board.linfo.moveline && this.owner.getConfig('dispmove')){ num = cell.base.getNum();}
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			var text      = (num>=0 ? ""+num : "?");
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
@@ -773,14 +773,14 @@ pzpr.createPuzzleClass('Graphic',
 		else{ this.hidenum(key);}
 	},
 	getCellNumberColor : function(cell){
-		var color = this.fontcolor;
+		var color = this.fontcolor, puzzle = this.owner;
 		if((cell.ques>=1 && cell.ques<=5) || (cell.qans>=1 && cell.qans<=5)){
 			color = this.fontBCellcolor;
 		}
 		else if(cell.error===1 || cell.error===4 || cell.qinfo===1 || cell.qinfo===4){
 			color = this.fontErrcolor;
 		}
-		else if(this.owner.board.linfo.moveline && this.getConfig('dispmove') && this.owner.mouse.mouseCell===cell){
+		else if(puzzle.board.linfo.moveline && puzzle.getConfig('dispmove') && puzzle.mouse.mouseCell===cell){
 			color = this.movecolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
@@ -1146,14 +1146,14 @@ pzpr.createPuzzleClass('Graphic',
 	getLineColor : function(border){
 		this.addlw = 0;
 		if(border.isLine()){
-			var info = border.error || border.qinfo;
+			var info = border.error || border.qinfo, puzzle = this.owner;
 			if(info===1){
 				if(this.context.use.canvas){ this.addlw=1;}
 				return this.errlinecolor;
 			}
 			else if(info===-1){ return this.errlinebgcolor;}
-			else if(this.owner.board.linfo.moveline && this.getConfig('dispmove')){ return "silver";}
-			else if(!this.owner.flags.irowake || !this.getConfig('irowake') || !border.color){ return this.linecolor;}
+			else if(puzzle.board.linfo.moveline && puzzle.getConfig('dispmove')){ return "silver";}
+			else if(!puzzle.flags.irowake || !puzzle.getConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;
@@ -1181,7 +1181,7 @@ pzpr.createPuzzleClass('Graphic',
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			this.vdel([header+cell.id]);
-			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.getConfig('dispmove')){
+			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.getConfig('dispmove')){
 				var dir=0, border=null;
 				if     (cell.ub().isLine()){ dir=2; border=cell.ub();}
 				else if(cell.db().isLine()){ dir=1; border=cell.db();}
@@ -1360,11 +1360,11 @@ pzpr.createPuzzleClass('Graphic',
 		}
 	},
 	getCircleStrokeColor : function(cell){
-		var o = this.owner, bd = o.board, error = cell.error || cell.qinfo;
-		var isdrawmove = (bd.linfo.moveline && this.getConfig('dispmove'));
+		var puzzle = this.owner, bd = puzzle.board, error = cell.error || cell.qinfo;
+		var isdrawmove = (bd.linfo.moveline && puzzle.getConfig('dispmove'));
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
-			if(isdrawmove && o.mouse.mouseCell===cell){ return this.movecolor;}
+			if(isdrawmove && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
 			else if(error===1||error===4){ return this.errcolor1;}
 			else{ return this.cellcolor;}
 		}
@@ -1372,7 +1372,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	getCircleFillColor : function(cell){
 		var bd = this.owner.board, error = cell.error || cell.qinfo;
-		var isdrawmove = (bd.linfo.moveline && this.getConfig('dispmove'));
+		var isdrawmove = (bd.linfo.moveline && this.owner.getConfig('dispmove'));
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if(error===1||error===4){ return this.errbcolor1;}
@@ -1388,12 +1388,12 @@ pzpr.createPuzzleClass('Graphic',
 		var g = this.vinc('cell_depart', 'auto');
 		var rsize  = this.cw*0.15;
 		var header = "c_dcir_";
+		var isdrawmove = (this.owner.board.linfo.moveline && this.owner.getConfig('dispmove'));
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id, num = -1;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			var isdrawmove = (this.owner.board.linfo.moveline && this.getConfig('dispmove'));
 			if(isdrawmove && cell.isDeparture()){
 				g.fillStyle = "silver";
 				if(this.vnop(header+id,this.FILL)){
@@ -1552,7 +1552,7 @@ pzpr.createPuzzleClass('Graphic',
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		if(isdraw!==false && this.getConfig('cursor') && !this.outputImage){
+		if(isdraw!==false && this.owner.getConfig('cursor') && !this.outputImage){
 			var d = this.range, tc = this.owner.cursor;
 			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
 			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}
@@ -1564,7 +1564,7 @@ pzpr.createPuzzleClass('Graphic',
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
 			this.vdel(["ti1_","ti2_","ti3_","ti4_"]);
-			g.fillStyle = (this.owner.editmode?this.targetColor1:this.targetColor3);
+			g.fillStyle = (this.owner.editmode ? this.targetColor1 : this.targetColor3);
 			if(this.vnop("ti1_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   size*2, w);}
 			if(this.vnop("ti2_",this.FILL)){ g.fillRect(cpx-size,   cpy-size,   w, size*2);}
 			if(this.vnop("ti3_",this.FILL)){ g.fillRect(cpx-size,   cpy+size-w, size*2, w);}

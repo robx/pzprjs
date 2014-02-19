@@ -112,7 +112,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.owner.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA)^this.getConfig('lrcheck')){
+		if((kc.isSHIFT || kc.isMETA)^this.owner.getConfig('lrcheck')){
 			if(this.btn.Left !== this.btn.Right){
 				this.btn.Left  = !this.btn.Left;
 				this.btn.Right = !this.btn.Right;
@@ -156,12 +156,12 @@ pzpr.createPuzzleClass('MouseEvent',
 		this.mouseinput();		/* 各パズルのルーチンへ */
 	},
 	isDispred : function(){
-		var o = this.owner, cf = o.flags, flag = false;
-		if     (cf.redline     && this.getConfig('redline')) { flag = true;}
-		else if(cf.redblk      && this.getConfig('redblk'))  { flag = true;}
-		else if(cf.redblkrb    && this.getConfig('redblkrb')){ flag = true;}
-		else if(o.pid==='roma' && this.getConfig('redroad')) { flag = true;}
-		return o.key.isZ ^ flag;
+		var puzzle = this.owner, cf = puzzle.flags, flag = false;
+		if     (cf.redline          && puzzle.getConfig('redline')) { flag = true;}
+		else if(cf.redblk           && puzzle.getConfig('redblk'))  { flag = true;}
+		else if(cf.redblkrb         && puzzle.getConfig('redblkrb')){ flag = true;}
+		else if(puzzle.pid==='roma' && puzzle.getConfig('redroad')) { flag = true;}
+		return puzzle.key.isZ ^ flag;
 	},
 
 	//---------------------------------------------------------------------------
@@ -284,11 +284,11 @@ pzpr.createPuzzleClass('MouseEvent',
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.getConfig('use')==1){
+		if(this.owner.getConfig('use')==1){
 			if     (this.btn.Left) { this.inputData=(cell.isWhite()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
-		else if(this.getConfig('use')==2){
+		else if(this.owner.getConfig('use')==2){
 			if(cell.numberIsWhite && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}
@@ -321,26 +321,26 @@ pzpr.createPuzzleClass('MouseEvent',
 		this.mouseCell = cell;
 	},
 	inputqnum_main : function(cell){
-		var cell0=cell, o=this.owner, bd=o.board;
-		if(o.editmode && bd.rooms.hastop){
+		var cell0=cell, puzzle=this.owner, bd=puzzle.board;
+		if(puzzle.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
-		else if(bd.linfo.moveline && this.getConfig('dispmove')){
+		else if(bd.linfo.moveline && puzzle.getConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
 			else if(cell.lcnt()>0){ return;}
 		}
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
-		if     (o.editmode)         { subtype =-1;}
+		if     (puzzle.editmode)    { subtype =-1;}
 		else if(cell.numberWithMB)  { subtype = 2;}
 		else if(cell.numberAsObject){ subtype = 1;}
-		if(o.pid==="roma" && o.playmode){ subtype=0;}
+		if(puzzle.pid==="roma" && puzzle.playmode){ subtype=0;}
 
-		if(o.playmode && cell.qnum!==o.Cell.prototype.qnum){ return;}
+		if(puzzle.playmode && cell.qnum!==puzzle.Cell.prototype.qnum){ return;}
 
 		var max=cell.nummaxfunc(), min=cell.numminfunc();
-		var num=cell.getNum(), qs=(o.editmode ? 0 : cell.getQsub());
-		var val=-1, ishatena=(o.editmode && !cell.disInputHatena);
+		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.getQsub());
+		var val=-1, ishatena=(puzzle.editmode && !cell.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
@@ -367,8 +367,8 @@ pzpr.createPuzzleClass('MouseEvent',
 		}
 		cell.setNum(val);
 
-		if(bd.linfo.moveline && this.getConfig('dispmove') && cell.noNum()){
-				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
+		if(bd.linfo.moveline && puzzle.getConfig('dispmove') && cell.noNum()){
+			bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
 		}
 
 		cell0.draw();
@@ -609,7 +609,7 @@ pzpr.createPuzzleClass('MouseEvent',
 	},
 	inputMoveLine : function(){
 		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.owner.board.linfo.moveline || !this.getConfig('dispmove')){
+		if(!this.owner.board.linfo.moveline || !this.owner.getConfig('dispmove')){
 			this.inputLine();
 			return;
 		}
@@ -664,7 +664,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		var border = pos.getb();
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
-			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.getConfig('dispmove')){}
+			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.owner.getConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
 			border.draw();

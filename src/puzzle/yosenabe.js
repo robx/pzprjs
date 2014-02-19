@@ -29,10 +29,10 @@ MouseEvent:{
 
 	inputlight : function(){
 		var cell = this.getcell();
-		if(!cell.isnull && this.getConfig('autocmp')){ this.inputdark(cell);}
+		if(!cell.isnull && this.owner.getConfig('autocmp')){ this.inputdark(cell);}
 	},
 	inputdark : function(cell){
-		var targetcell = (!this.getConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.getConfig('dispmove') ? cell : cell.base);
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -142,7 +142,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){
-		return (!this.getConfig('dispmove') ? this : this.base).qcmp===1;
+		return (!this.owner.getConfig('dispmove') ? this : this.base).qcmp===1;
 	}
 },
 CellList:{
@@ -218,7 +218,7 @@ Graphic:{
 
 	drawNumber1 : function(cell){
 		var key = 'cell_'+cell.id, num = cell.qnum;
-		if(this.getConfig('dispmove')){ num = cell.base.qnum;}
+		if(this.owner.getConfig('dispmove')){ num = cell.base.qnum;}
 		if(num>0){
 			var text      = ""+num;
 			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
@@ -233,12 +233,10 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		var error = cell.error,
-			isdrawmove = this.getConfig('dispmove'),
-			num = (!isdrawmove ? cell : cell.base).qnum;
+		var error = cell.error, num = (!this.owner.getConfig('dispmove') ? cell : cell.base).qnum;
 		if(num!==-1){
-			if     (error===1||error===4)                     { return this.errbcolor1;}
-			else if(this.getConfig('autocmp') && cell.isCmp()){ return "silver"}
+			if     (error===1||error===4)                           { return this.errbcolor1;}
+			else if(this.owner.getConfig('autocmp') && cell.isCmp()){ return "silver"}
 			else{ return this.circledcolor;}
 		}
 		return null;
@@ -247,11 +245,10 @@ Graphic:{
 	drawFillingNumBase : function(){
 		var g = this.vinc('cell_filling_back', 'crispEdges');
 		var header = "c_full_nb_";
-		var isdrawmove = this.getConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			if(!!color && cell.qnum2!==-1 && isdrawmove && cell.isDestination()){
+			if(!!color && cell.qnum2!==-1 && this.owner.getConfig('dispmove') && cell.isDestination()){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
 					var rpx = (cell.bx-0.9)*this.bw, rpy = (cell.by-0.9)*this.bh;
@@ -264,7 +261,6 @@ Graphic:{
 	drawFillingNumbers : function(){
 		var g = this.vinc('cell_filling_number', 'auto');
 		this.boldreq = true;
-		var isdrawmove = this.getConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -273,7 +269,7 @@ Graphic:{
 				var text = (num>=0 ? ""+num : "?"), type = 1;
 				var fontratio = (num<10?0.8:(num<100?0.7:0.55))*0.9;
 				var color = this.getCellNumberColor(cell);
-				if(isdrawmove && cell.isDestination()){
+				if(this.owner.getConfig('dispmove') && cell.isDestination()){
 					fontratio *= 0.6;
 					type = 5;
 				}
