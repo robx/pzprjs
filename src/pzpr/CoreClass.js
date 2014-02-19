@@ -80,9 +80,10 @@ window.pzpr = {
 		else{ func();}
 	},
 	postload : function(){
-		if(!!window.Candle){
-			this.addKeyEvents();
+		if(!this.preinit){}
+		else if(!!window.Candle){
 			this.preinit = false;
+			this.addKeyEvents();
 			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
 			this.loadfun = [];
 		}
