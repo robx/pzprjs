@@ -465,7 +465,7 @@ AnsCheck:{
 	},
 	check1st : function(){
 		var areainfo = this.owner.board.barinfo.getAreaInfo();
-		return (this.checkOneArea(areainfo) ? null : 'amiboDivided');
+		return (this.checkOneArea(areainfo) ? null : 'lbDivide');
 	},
 
 	checkOutgoingBars : function(binfo, type){
