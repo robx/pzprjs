@@ -160,6 +160,7 @@ ui.event =
 		if(idname==='mode'){
 			ui.menu.setdisplay('keypopup');
 			ui.menu.setdisplay('bgcolor');
+			ui.keypopup.display();
 		}
 		else if(idname==='language'){
 			ui.menu.displayAll();
