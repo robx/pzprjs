@@ -603,7 +603,7 @@ ui.menuarea = {
 	insideOfMenu : function(e){
 		var pos = pzpr.util.getPagePos(e);
 		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
-		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
+		return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
 	}
 };
 
