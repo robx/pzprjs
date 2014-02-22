@@ -66,6 +66,7 @@ function startPuzzle(){
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
+	ui.event.onload_func();
 	ui.event.setListeners(ui.puzzle);
 	
 	// 単体初期化処理のルーチンへ

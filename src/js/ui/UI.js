@@ -198,6 +198,28 @@ ui.event =
 
 		// onbeforeunloadイベントを割り当てる
 		this.addEvent(window, 'beforeunload', this, this.onbeforeunload_func);
+
+		// onunloadイベントを割り当てる
+		this.addEvent(window, 'unload', this, this.onunload_func);
+	},
+
+	//---------------------------------------------------------------------------
+	// event.onload_func()   ウィンドウリサイズ時に呼ばれる関数
+	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onload_func : function(){
+		if(pzpr.env.storage.localST){
+			var json_puzzle = localStorage['pzprv3_config:puzzle'];
+			var json_menu   = localStorage['pzprv3_config:ui'];
+			if(!!json_puzzle){ ui.puzzle.restoreConfig(json_puzzle);}
+			if(!!json_menu)  { ui.menu.restoreMenuConfig(json_menu);}
+		}
+	},
+	onunload_func : function(){
+		if(pzpr.env.storage.localST){
+			localStorage['pzprv3_config:puzzle'] = ui.puzzle.saveConfig();
+			localStorage['pzprv3_config:ui']     = ui.menu.saveMenuConfig();
+		}
 	},
 
 	//---------------------------------------------------------------------------

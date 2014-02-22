@@ -226,6 +226,23 @@ ui.menu = {
 		return (!!this.menuconfig[idname]?this.menuconfig[idname].val:null);
 	},
 
+	//---------------------------------------------------------------------------
+	// menu.saveMenuConfig()     全フラグの設定値を返す
+	// menu.restoreMenuConfig()  全フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	saveMenuConfig : function(){
+		var object = {};
+		for(var key in this.menuconfig){ object[key] = this.menuconfig[key].val;}
+		delete object.autocheck;
+		return JSON.stringify(object);
+	},
+	restoreMenuConfig : function(json){
+		var object = JSON.parse(json);
+		for(var key in this.menuconfig){
+			if(object[key]!==void 0){ this.menuconfig[key].val = object[key];}
+		}
+	},
+
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
