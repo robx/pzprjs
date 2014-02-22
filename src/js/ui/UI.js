@@ -73,7 +73,7 @@ ui.event =
 	// event.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
+		var func = function(e){ return callback.call(self, (e||window.event));};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
@@ -195,11 +195,15 @@ ui.event =
 		// onresizeイベントを割り当てる
 		var evname = (!pzpr.env.OS.iOS ? 'resize' : 'orientationchange');
 		this.addEvent(window, evname, this, this.onresize_func);
+
+		// onbeforeunloadイベントを割り当てる
+		this.addEvent(window, 'beforeunload', this, this.onbeforeunload_func);
 	},
 
 	//---------------------------------------------------------------------------
 	// event.onresize_func() ウィンドウリサイズ時に呼ばれる関数
 	// event.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	// event.onbeforeunload_func()  ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
@@ -212,6 +216,13 @@ ui.event =
 	onblur_func : function(){
 		ui.puzzle.key.keyreset();
 		ui.puzzle.mouse.mousereset();
+	},
+	onbeforeunload_func : function(e){
+		if(pzpr.PLAYER || !ui.puzzle.ismodified()){ return;}
+		
+		var msg = ui.menu.selectStr("盤面が更新されています", "The board is edited.");
+		e.returnValue = msg
+		return msg;
 	},
 
 	//---------------------------------------------------------------------------
