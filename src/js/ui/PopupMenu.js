@@ -90,7 +90,7 @@ ui.popupmgr =
 	// popupmgr.titlebarmove()  タイトルバーからマウスを動かしたときポップアップメニューを動かす(documentにbind)
 	//---------------------------------------------------------------------------
 	titlebardown : function(e){
-		var popel = (e.target||e.srcElement).parentNode;
+		var popel = e.target.parentNode;
 		var pos = pzpr.util.getPagePos(e);
 		this.movingpop = popel;
 		this.offset.px = pos.px - parseInt(popel.style.left);
@@ -320,8 +320,7 @@ ui.popupmgr.addpopup('newboard',
 		ui.menu.modifyCSS({'#NB_shape img':{position:'absolute', margin:'2px'}});
 		
 		var clickshape = function(e){
-			e = (e||window.event);
-			var _div = (e.target||e.srcElement).parentNode;
+			var _div = e.target.parentNode;
 			var idx = _div.id.charAt(2);
 			for(var i=0;i<=3;i++){ getEL("nb"+i).style.backgroundColor = '';}
 			_div.style.backgroundColor = 'red';
@@ -333,7 +332,7 @@ ui.popupmgr.addpopup('newboard',
 			_img.src = (!pzpr.env.API.dataURL ? "./img/tawa_nb.gif" : "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==");
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			_img.onclick = clickshape;
+			ui.event.addEvent(_img, 'click', this, clickshape);
 			
 			var _div = createEL('div');
 			_div.id = "nb"+i;
@@ -463,7 +462,7 @@ ui.popupmgr.addpopup('urloutput',
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
 		var enc = ui.puzzle.enc, url = '', k = pzpr.consts;
-		switch((e.target||e.srcElement).name){
+		switch(e.target.name){
 			case "pzprv3":     url = ui.puzzle.getURL(k.URL_PZPRV3);  break;
 			case "pzprapplet": url = ui.puzzle.getURL(k.URL_PZPRAPP); break;
 			case "kanpen":     url = ui.puzzle.getURL(k.URL_KANPEN);  break;
@@ -574,7 +573,7 @@ ui.popupmgr.addpopup('adjust',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		ui.puzzle.board.exec.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.exec.execadjust(e.target.name);
 	}
 });
 
@@ -616,7 +615,7 @@ ui.popupmgr.addpopup('turnflip',
 	// adjust() 盤面の調整を行う
 	//------------------------------------------------------------------------------
 	adjust : function(e){
-		ui.puzzle.board.exec.execadjust((e.target||e.srcElement).name);
+		ui.puzzle.board.exec.execadjust(e.target.name);
 	}
 });
 

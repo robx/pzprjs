@@ -362,19 +362,18 @@ ui.toolarea = {
 	// toolarea.buttonclick()  ボタンがクリックされたときの動作
 	//---------------------------------------------------------------------------
 	checkclick : function(e){
-		var el = (e.target||e.srcElement);
+		var el = e.target;
 		var idname = el.id.substr(3);
 		ui.menu.setConfigVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
-		var list = (e.target||e.srcElement).id.split('_');
+		var list = e.target.id.split('_');
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
 		ui.menu.setConfigVal(idname, child);
 	},
 	buttonclick : function(e){
-		var id = (e.target||e.srcElement).id;
-		switch(id){
+		switch(e.target.id){
 		case 'btncheck':  ui.menu.answercheck(); break;
 		case 'btnundo':   ui.puzzle.undo(); break;
 		case 'btnredo':   ui.puzzle.redo(); break;

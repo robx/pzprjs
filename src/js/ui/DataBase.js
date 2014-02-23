@@ -174,8 +174,7 @@ ui.popupmgr.addpopup('database',
 	// database_handler() データベースmanagerへ処理を渡します
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
-		var operation = (e.target||e.srcElement).name;
-		ui.database.clickHandler(operation, ui.puzzle);
+		ui.database.clickHandler(e.target.name, ui.puzzle);
 	}
 });
 

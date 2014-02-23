@@ -442,7 +442,7 @@ ui.menuarea = {
 	// menuarea.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
-		var el = (e.target||e.srcElement);
+		var el = e.target;
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
@@ -525,14 +525,14 @@ ui.menuarea = {
 	// menuarea.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
-			if((e.target||e.srcElement).className==='smenu'){
+		if(this.items.haschild(e.target.id.substr(3))){
+			if(e.target.className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
+		if(this.items.haschild(e.target.id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -549,8 +549,8 @@ ui.menuarea = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = pzpr.util.getRect(e.target||e.srcElement);
-		var idname = (e.target||e.srcElement).id.substr(3);
+		var rect = pzpr.util.getRect(e.target);
+		var idname = e.target.id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
 			_float.style.left = rect.left   + 1 + 'px';
