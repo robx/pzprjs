@@ -56,20 +56,10 @@ ui.popupmgr.addpopup('database',
 	// 要素作成用関数
 	//------------------------------------------------------------------------------
 	createElement : function(tagname, attr, style){
-		var el = document.createElement(tagname);
+		var el = createEL(tagname);
 		if(!!attr) { for(var att in attr){ el[att]=attr[att];}}
 		if(!!style){ for(var name in style){ el.style[name]=style[name];}}
 		return el;
-	},
-	addSelect : function(attr, options){
-		var sel = this.createElement('select', attr);
-		this.form.appendChild(sel);
-		for(var i=0;i<options.length;i++){
-			var op = document.createElement('option');
-			op.value = options[i].name;
-			op.appendChild(this.addTextNode(options[i].str_jp, options[i].str_en));
-			sel.appendChild(op);
-		}
 	},
 	
 	//------------------------------------------------------------------------------
@@ -201,6 +191,7 @@ ui.database = {
 		if(pzpr.env.storage.localST){ this.dbh = new ui.DataBaseHandler_LS();}
 		else{ return;}
 
+		this.lang = ui.menu.getConfigVal('language');
 		this.sync = false;
 		this.dbh.convert();
 		this.dbh.importDBlist(this, this.update);
@@ -214,7 +205,6 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = ui.menu.getMenuConfig('language');
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -270,7 +260,7 @@ ui.database = {
 		this.appendNewOption(-1, "&nbsp;&lt;新しく保存する&gt;");
 	},
 	appendNewOption : function(id, str){
-		var opt = document.createElement('option');
+		var opt = createEL('option');
 		opt.setAttribute('value', (id!=-1 ? id : "new"));
 		opt.innerHTML = str;
 		if(this.DBsid==id){ opt.setAttribute('selected', "selected");}
@@ -279,7 +269,7 @@ ui.database = {
 	},
 	getRowString : function(row){
 		var hardstr = [
-			{ja:'−'       , en:'-'     },
+			{ja:'−'      , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
 			{ja:'おてごろ', en:'Normal'},
 			{ja:'たいへん', en:'Hard'  },
