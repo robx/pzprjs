@@ -197,7 +197,7 @@ ui.popupmgr.addpopup('template',
 		ui.popupmgr.popup = null;
 		
 		ui.puzzle.key.enableKey = true;
-		ui.puzzle.key.enableMouse = true;
+		ui.puzzle.mouse.enableMouse = true;
 	},
 
 	settitle : function(str_jp, str_en){
