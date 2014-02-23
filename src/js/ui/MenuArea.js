@@ -120,20 +120,13 @@ ui.menuarea = {
 		as('urloutput','file', 'URL出力', 'Export URL');
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
+		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
 		if(pzpr.env.storage.localST){
 			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
 		}
 		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
 			ap('sep_image', 'file');
 			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
-		}
-
-		// *ファイル - ファイル保存 -------------------------------------------
-		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
-		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
-		if(pzpr.url.info[pid].exists.pencilbox){
-			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
 		}
 
 		// *ファイル - 画像を保存 -------------------------------------------
@@ -475,9 +468,6 @@ ui.menuarea = {
 		
 		var result = true, k = pzpr.consts;
 		switch(idname){
-		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
-//		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;
-		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ ui.menu.filesave(k.FILE_PBOX);} break;
 		case 'imagedl'   : ui.menu.imagesave('',true,null); break;
 		case 'imagesave' : ui.menu.imagesave('',false,null); break;
 		case 'svgdl'     : ui.menu.imagesave('svg',true,null); break;

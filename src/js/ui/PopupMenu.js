@@ -60,6 +60,7 @@ ui.popupmgr =
 			case 'urlinput':  target = this.popups.urlinput; break;
 			case 'urloutput': target = this.popups.urloutput; break;
 			case 'fileopen':  target = this.popups.fileopen; break;
+			case 'filesave':  target = this.popups.filesave; break;
 			case 'database':  target = this.popups.database; break;
 			case 'adjust':    target = this.popups.adjust; break;
 			case 'turn':      target = this.popups.turnflip; break;
@@ -486,7 +487,7 @@ ui.popupmgr.addpopup('fileopen',
 	formname : 'fileform',
 	
 	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
+	// makeForm() ファイル入力のポップアップメニューを作成する
 	//------------------------------------------------------------------------------
 	makeForm : function(){
 		this.settitle("ファイルを開く", "Open file");
@@ -529,6 +530,122 @@ ui.popupmgr.addpopup('fileopen',
 			this.form.submit();
 		}
 		this.form.reset();
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_FileSaveクラス ファイル出力のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('filesave',
+{
+	formname : 'filesave',
+	
+	//------------------------------------------------------------------------------
+	// 要素作成用関数
+	//------------------------------------------------------------------------------
+	addSelect : function(attr, options){
+		var sel = createEL('select');
+		if(!!attr){ for(var att in attr){ sel[att]=attr[att];}}
+		this.form.appendChild(sel);
+		for(var i=0;i<options.length;i++){
+			var op = createEL('option');
+			op.value = options[i].name;
+			op.appendChild(this.createTextNode(options[i].str_jp, options[i].str_en));
+			sel.appendChild(op);
+		}
+	},
+	
+	//------------------------------------------------------------------------------
+	// makeForm() URL入力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	anchor : null,
+	makeForm : function(){
+		this.settitle("ファイルを保存する", "Open file");
+		
+		this.form.action = ui.menu.fileio;
+		this.form.method = 'post';
+		this.form.target = "fileiopanel";
+		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
+		
+		var platform = "";
+		if     (navigator.platform.indexOf("Win")!==-1){ platform = "Win";}
+		else if(navigator.platform.indexOf("Mac")!==-1){ platform = "Mac";}
+		else                                           { platform = "Others";}
+		
+		this.addInput('hidden', {name:"operation", value:"save"});
+		this.addInput('hidden', {name:"ques", value:""});
+		this.addInput('hidden', {name:"urlstr", value:""});
+		this.addInput('hidden', {name:"platform", value:platform});
+		
+		/* ファイル形式選択オプション */
+		var typeitem = [];
+		typeitem.push({name:'filesave',  str_jp:"ぱずぷれv3形式",        str_en:"Puz-Pre v3 format"});
+/*		typeitem.push({name:'filesave3', str_jp:"ぱずぷれv3(履歴つき)",  str_en:"Puz-Pre v3 with history"}); */
+		if(pzpr.url.info[ui.puzzle.pid].exists.pencilbox){
+			typeitem.push({name:'filesave2', str_jp:"pencilbox形式", str_en:"Pencilbox format"});
+		}
+		this.addSelect({name:'filetype'}, typeitem);
+		this.addBR();
+		
+		this.addInput('text', {name:"filename",value:ui.puzzle.pid+".txt"});
+		this.addBR();
+		
+		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+			this.anchor = createEL('a');
+			this.anchor.appendChild(this.createTextNode("Click to Download File","Click to Download File"));
+			this.anchor.style.display = 'none';
+			this.addElement(this.anchor);
+		}
+		this.addBR();
+		
+		var popup = this;
+		this.addExecButton("保存", "Save", function(){ popup.filesave();});
+		
+		this.addCancelButton();
+	},
+	/* オーバーライド */
+	hide : function(){
+		if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
+		
+		ui.popupmgr.popups.template.hide.call(this);
+	},
+	
+	//------------------------------------------------------------------------------
+	// filesave()  ファイルを保存する
+	//------------------------------------------------------------------------------
+	filesaveurl : null,
+	filesave : function(){
+		var form = this.form;
+		var filename = form.filename.value;
+		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+		for(var i=0;i<prohibit.length;i++){
+			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
+		}
+
+		var k = pzpr.consts, filetype = k.FILE_PZPR;
+		switch(form.filetype.value){
+			case 'filesave2': filetype = k.FILE_PBOX; break;
+			case 'filesave3': filetype = k.FILE_PZPH; break;
+		}
+
+		if(ui.menu.enableSaveBlob){
+			var blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
+			navigator.saveBlob(blob, filename);
+			this.hide();
+		}
+		else if(!!this.anchor){
+			var blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
+			if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
+			this.filesaveurl = URL.createObjectURL(blob);
+			this.anchor.href = this.filesaveurl;
+			this.anchor.download = filename;
+			this.anchor.style.display = 'inline';
+		}
+		else{
+			form.ques.value = ui.puzzle.getFileData(filetype);
+			form.submit();
+			this.hide();
+		}
 	}
 });
 

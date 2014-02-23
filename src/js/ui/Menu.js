@@ -303,36 +303,6 @@ ui.menu = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------------
-	// menu.filesave()   ファイルを保存する
-	//------------------------------------------------------------------------------
-	filesave : function(ftype){
-		var fname = prompt("保存するファイル名を入力して下さい。", ui.puzzle.pid+".txt");
-		if(!fname){ return;}
-		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
-		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
-
-		if(!this.enableSaveBlob){
-			var form = _doc.fileform2;
-			form.filename.value = fname;
-
-			if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
-			else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
-			else                                           { form.platform.value = "Others";}
-
-			form.ques.value   = ui.puzzle.getFileData(ftype);
-			form.urlstr.value = "";
-			form.operation.value = 'save';
-
-			form.action = this.fileio
-			form.submit();
-		}
-		else{
-			var blob = new Blob([ui.puzzle.getFileData(ftype)], {type:'text/plain'});
-			navigator.saveBlob(blob, fname);
-		}
-	},
-
-	//------------------------------------------------------------------------------
 	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
