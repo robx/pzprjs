@@ -61,6 +61,7 @@ ui.popupmgr =
 			case 'urloutput': target = this.popups.urloutput; break;
 			case 'fileopen':  target = this.popups.fileopen; break;
 			case 'filesave':  target = this.popups.filesave; break;
+			case 'imagesave': target = this.popups.imagesave; break;
 			case 'database':  target = this.popups.database; break;
 			case 'adjust':    target = this.popups.adjust; break;
 			case 'turn':      target = this.popups.turnflip; break;
@@ -195,8 +196,8 @@ ui.popupmgr.addpopup('template',
 		this.pop.style.display = "none";
 		ui.popupmgr.popup = null;
 		
-		ui.event.enableKey = true;
-		ui.event.enableMouse = true;
+		ui.puzzle.key.enableKey = true;
+		ui.puzzle.key.enableMouse = true;
 	},
 
 	settitle : function(str_jp, str_en){
@@ -221,6 +222,17 @@ ui.popupmgr.addpopup('template',
 		var el = createEL('textarea');
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
+	},
+	addSelect : function(attr, options){
+		var sel = createEL('select');
+		if(!!attr){ for(var att in attr){ sel[att]=attr[att];}}
+		this.form.appendChild(sel);
+		for(var i=0;i<options.length;i++){
+			var op = createEL('option');
+			op.value = options[i].name;
+			op.appendChild(this.createTextNode(options[i].str_jp, options[i].str_en));
+			sel.appendChild(op);
+		}
 	},
 	addElement : function(el){
 		this.form.appendChild(el);
@@ -348,7 +360,7 @@ ui.popupmgr.addpopup('newboard',
 	
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
-		ui.event.enableKey = false;
+		ui.puzzle.key.enableKey = false;
 	},
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
@@ -541,21 +553,6 @@ ui.popupmgr.addpopup('filesave',
 	formname : 'filesave',
 	
 	//------------------------------------------------------------------------------
-	// 要素作成用関数
-	//------------------------------------------------------------------------------
-	addSelect : function(attr, options){
-		var sel = createEL('select');
-		if(!!attr){ for(var att in attr){ sel[att]=attr[att];}}
-		this.form.appendChild(sel);
-		for(var i=0;i<options.length;i++){
-			var op = createEL('option');
-			op.value = options[i].name;
-			op.appendChild(this.createTextNode(options[i].str_jp, options[i].str_en));
-			sel.appendChild(op);
-		}
-	},
-	
-	//------------------------------------------------------------------------------
 	// makeForm() URL入力のポップアップメニューを作成する
 	//------------------------------------------------------------------------------
 	anchor : null,
@@ -604,6 +601,11 @@ ui.popupmgr.addpopup('filesave',
 		this.addCancelButton();
 	},
 	/* オーバーライド */
+	show : function(px,py){
+		ui.popupmgr.popups.template.show.call(this,px,py);
+		
+		ui.puzzle.key.enableKey = false;
+	},
 	hide : function(){
 		if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
 		
@@ -628,13 +630,19 @@ ui.popupmgr.addpopup('filesave',
 			case 'filesave3': filetype = k.FILE_PZPH; break;
 		}
 
+		var blob = null, filedata = null;
+		if(ui.menu.enableSaveBlob || !!this.anchor){
+			blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
+		}
+		else{
+			filedata = ui.puzzle.getFileData(filetype);
+		}
+
 		if(ui.menu.enableSaveBlob){
-			var blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
 			navigator.saveBlob(blob, filename);
 			this.hide();
 		}
 		else if(!!this.anchor){
-			var blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
 			if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
 			this.filesaveurl = URL.createObjectURL(blob);
 			this.anchor.href = this.filesaveurl;
@@ -642,9 +650,190 @@ ui.popupmgr.addpopup('filesave',
 			this.anchor.style.display = 'inline';
 		}
 		else{
-			form.ques.value = ui.puzzle.getFileData(filetype);
+			form.ques.value = filedata;
 			form.submit();
 			this.hide();
+		}
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_ImageSaveクラス 画像出力のポップアップメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('imagesave',
+{
+	formname : 'imagesave',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() 画像出力のポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	anchor : null,
+	showsize : null,
+	makeForm : function(){
+		var popup = this;
+		
+		this.settitle("画像を保存する", "Open file");
+		
+		this.form.action = ui.menu.fileio;
+		this.form.method = 'post';
+		this.form.target = "fileiopanel";
+		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
+		
+		this.addInput('hidden', {name:"operation", value:"imagesave"});
+		this.addInput('hidden', {name:"urlstr", value:""});
+		
+		/* ファイル形式選択オプション */
+		this.addText("ファイル形式 ", "File format ");
+		var typeitem = [];
+		if(ui.menu.enableSaveImage){
+			typeitem.push({name:'png', str_jp:"PNG形式 (png)", str_en:"PNG Format (png)"});
+		}
+		if(ui.menu.enableSaveSVG){
+			typeitem.push({name:'svg', str_jp:"ベクター画像(SVG)", str_en:"Vector Image (SVG)"});
+		}
+		this.addSelect({name:'filetype'}, typeitem);
+		this.addBR();
+		this.form.filetype.onchange = function(){ popup.changefilename();};
+		
+		this.addText("ファイル名 ", "Filename ");
+		this.addInput('text', {name:"filename",value:ui.puzzle.pid+".png"});
+		this.addBR();
+		
+		this.addText("画像のサイズ ", "Image Size ");
+		this.addInput('number', {name:"cs", value:""+ui.menu.getMenuConfig('cellsizeval'), size:'4', maxlength:'3', min:'8', max:'999'});
+		this.addText(' ', ' ');
+		this.showsize = createEL('span');
+		this.showsize.appendChild(createEL('span'));
+		this.addElement(this.showsize);
+		this.addBR();
+		this.form.cs.onchange = function(){ popup.estimatesize();};
+		
+		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+			this.anchor = createEL('a');
+			this.anchor.appendChild(this.createTextNode("Click to Download File","Click to Download File"));
+			this.anchor.style.display = 'none';
+			this.addElement(this.anchor);
+		}
+		this.addBR();
+		
+		this.addExecButton("ダウンロード", "Download", function(){ popup.saveimage();});
+		this.addExecButton("別ウィンドウで開く", "Open another window", function(){ popup.openimage();});
+		
+		this.addCancelButton();
+		
+		popup.changefilename();
+		popup.estimatesize();
+	},
+	
+	/* オーバーライド */
+	show : function(px,py){
+		ui.popupmgr.popups.template.show.call(this,px,py);
+		
+		ui.puzzle.key.enableKey = false;
+		ui.puzzle.mouse.enableMouse = false;
+	},
+	hide : function(){
+		if(!!this.saveimageurl){ URL.revokeObjectURL(this.saveimageurl);}
+		
+		ui.puzzle.setCanvasSize();
+		ui.popupmgr.popups.template.hide.call(this);
+	},
+	
+	changefilename : function(){
+		var filename = this.form.filename.value.replace('.png','.').replace('.svg','.');
+		this.form.filename.value = filename + (this.form.filetype.value!=='svg'?'png':'svg');
+	},
+	estimatesize : function(){
+		var cellsize = +this.form.cs.value;
+		var width  = (+cellsize * ui.puzzle.painter.getCanvasCols())|0;
+		var height = (+cellsize * ui.puzzle.painter.getCanvasRows())|0;
+		this.showsize.replaceChild(_doc.createTextNode(width+" x "+height), this.showsize.firstChild);
+	},
+	
+	//------------------------------------------------------------------------------
+	// saveimage()    画像をダウンロードする
+	// submitimage() "画像をダウンロード"の処理ルーチン
+	// saveimage()   "画像をダウンロード"の処理ルーチン (IE10用)
+ 	//------------------------------------------------------------------------------
+	saveimageurl : null,
+	saveimage : function(){
+		/* ファイル名チェックルーチン */
+		var form = this.form;
+		var filename = form.filename.value;
+		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+		for(var i=0;i<prohibit.length;i++){
+			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
+		}
+
+		/* 画像出力ルーチン */
+		var cellsize = +form.cs.value;
+		var type = (form.filetype.value!=='svg'?'png':'svg');
+
+		var blob = null, filedata = null;
+		try{
+			if(ui.menu.enableSaveBlob || !!this.anchor){
+				blob = ui.puzzle.toBlob(type,cellsize);
+			}
+			else{
+				filedata = ui.puzzle.toDataURL(type,cellsize)
+									.replace('data:image/png;base64,', '')
+									.replace('data:image/svg+xml;base64,', '');
+			}
+		}
+		catch(e){
+			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+		}
+
+		/* 出力された画像の保存ルーチン */
+		if(ui.menu.enableSaveBlob){
+			navigator.saveBlob(blob, filename);
+			this.hide();
+		}
+		else if(!!this.anchor){
+			if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
+			this.filesaveurl = URL.createObjectURL(blob);
+			this.anchor.href = this.filesaveurl;
+			this.anchor.download = filename;
+			this.anchor.style.display = 'inline';
+		}
+		else{
+			form.urlstr.value = filedata;
+			form.submit();
+			this.hide();
+		}
+	},
+	
+ 	//------------------------------------------------------------------------------
+	// openimage()   "別ウィンドウで開く"の処理ルーチン
+	//------------------------------------------------------------------------------
+	openimage : function(){
+		/* 画像出力ルーチン */
+		var cellsize = +this.form.cs.value;
+		var type = (this.form.filetype.value!=='svg'?'png':'svg');
+		
+		var dataurl = "";
+		try{
+			dataurl = ui.puzzle.toDataURL(type,cellsize);
+		}
+		catch(e){
+			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+		}
+		
+		/* 出力された画像を開くルーチン */
+		if(!dataurl){ /* dataurlが存在しない */}
+		else if(!pzpr.env.browser.IE9){
+			window.open(dataurl, '', '');
+		}
+		else{
+			// IE9だとアドレスバーの長さが2KBだったり、
+			// そもそもDataURL入れても何も起こらなかったりする対策
+			var cdoc = window.open('', '', '').document;
+			cdoc.open();
+			cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
+			cdoc.writeln("<META CHARSET=\"utf-8\">");
+			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
+			cdoc.writeln("<BODY><img src=\"", dataurl, "\"><\/BODY>\n<\/HTML>");
+			cdoc.close();
 		}
 	}
 });
@@ -765,7 +954,7 @@ ui.popupmgr.addpopup('dispsize',
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		
 		this.form.cs.value = ui.menu.getMenuConfig('cellsizeval');
-		ui.event.enableKey = false;
+		ui.puzzle.key.enableKey = false;
 	},
 	
 	//------------------------------------------------------------------------------

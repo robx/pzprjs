@@ -303,7 +303,7 @@ ui.menu = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------------
-	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
+	// menu.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
 		var filestr = ui.puzzle.getFileData(pzpr.consts.FILE_PZPH);
@@ -318,64 +318,6 @@ ui.menu = {
 		else{
 			localStorage['pzprv3_filedata'] = filestr;
 			window.open(url,'');
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.imagesave()   画像を保存する
-	// menu.submitimage() "画像をダウンロード"の処理ルーチン
-	// menu.saveimage()   "画像をダウンロード"の処理ルーチン (IE10用)
-	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
-	//------------------------------------------------------------------------------
-	imagesave : function(type,isDL,cellsize){
-		var dataurl = "", blob = null;
-		type = (type!=='svg'?'png':'svg');
-		
-		try{
-			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.toBlob(type,cellsize);   }
-			else                           { dataurl = ui.puzzle.toDataURL(type,cellsize);}
-		}
-		catch(e){
-			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');
-		}
-		
-		try{
-			if     (!isDL &&                         !!dataurl){ this.openimage(dataurl);  }
-			else if( isDL && !this.enableSaveBlob && !!dataurl){ this.submitimage(type,dataurl);}
-			else if( isDL &&  this.enableSaveBlob && !!blob)   { this.saveimage(type,blob);     }
-		}
-		catch(e){
-			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
-		}
-	},
-
-	submitimage : function(type,url){
-		url = url.replace('data:image/png;base64,', '');
-		url = url.replace('data:image/svg+xml;base64,', '');
-		_doc.fileform2.filename.value  = ui.puzzle.pid+'.'+type;
-		_doc.fileform2.urlstr.value    = url;
-		_doc.fileform2.operation.value = 'imagesave';
-
-		_doc.fileform2.action = this.fileio
-		_doc.fileform2.submit();
-	},
-	saveimage : function(type,blob){
-		navigator.saveBlob(blob, ui.puzzle.pid+'.'+type);
-	},
-	openimage : function(url){
-		if(!pzpr.env.browser.IE9){
-			window.open(url, '', '');
-		}
-		else{
-			// IE9だとアドレスバーの長さが2KBだったり、
-			// そもそもDataURL入れても何も起こらなかったりする対策
-			var cdoc = window.open('', '', '').document;
-			cdoc.open();
-			cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
-			cdoc.writeln("<META CHARSET=\"utf-8\">");
-			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
-			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
-			cdoc.close();
 		}
 	},
 

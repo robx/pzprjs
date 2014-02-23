@@ -126,17 +126,7 @@ ui.menuarea = {
 		}
 		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
 			ap('sep_image', 'file');
-			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
-		}
-
-		// *ファイル - 画像を保存 -------------------------------------------
-		if(ui.menu.enableSaveImage){
-			as('imagedl',   'imagesavep', '画像をダウンロード (png)', 'Download the image (png)');
-			as('imagesave', 'imagesavep', '別ウィンドウで開く (png)', 'Open another window (png)');
-		}
-		if(ui.menu.enableSaveSVG){
-			as('svgdl',   'imagesavep', '画像をダウンロード (SVG)', 'Download the image (SVG)');
-			as('svgsave', 'imagesavep', '別ウィンドウで開く (SVG)', 'Open another window (SVG)');
+			as('imagesave', 'file', '画像を保存', 'Save as image file');
 		}
 
 		// *編集 ==============================================================
@@ -468,11 +458,6 @@ ui.menuarea = {
 		
 		var result = true, k = pzpr.consts;
 		switch(idname){
-		case 'imagedl'   : ui.menu.imagesave('',true,null); break;
-		case 'imagesave' : ui.menu.imagesave('',false,null); break;
-		case 'svgdl'     : ui.menu.imagesave('svg',true,null); break;
-		case 'svgsave'   : ui.menu.imagesave('svg',false,null); break;
-		
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;
 		case 'h_redo'    : ui.puzzle.redo();    break;
