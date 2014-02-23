@@ -90,6 +90,18 @@ Graphic:{
 		}
 		this.prepaint();
 	},
+	prepaint : function(){
+		if(this.check_binfo===void 0){
+			var puzzle = this.owner, bd = puzzle.board;
+			if(puzzle.getConfig('autocmp')){
+				this.check_binfo = bd.getBCellInfo();
+			}
+			else{
+				this.check_binfo = null;
+			}
+		}
+		this.Common.prototype.prepaint.call(this);
+	},
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawGrid();
