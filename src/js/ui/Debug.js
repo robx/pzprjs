@@ -152,7 +152,9 @@ ui.debug =
 		var text = "";
 		for(var i=0;i<localStorage.length;i++){
 			var key = localStorage.key(i);
-			text += (""+key+" "+localStorage[key]+"\n");
+			if(key.match(/^pzprv3/)){
+				text += (""+key+" "+localStorage[key]+"\n");
+			}
 		}
 		this.setTA(text);
 	},
