@@ -144,14 +144,14 @@ ui.menuarea = {
 		}
 
 		// *編集 - 履歴 -----------------------------------------------------
-		aa('cap_hist', 'hist', '履歴','Display mode');
+		aa('cap_hist', 'hist', '履歴','History');
 		as('h_oldest', 'hist', '最初にジャンプ', 'Jump to oldest');
 		as('h_undo',   'hist', '元に戻す/Undo', 'Undo');
 		as('h_redo',   'hist', 'やり直し/Redo', 'Redo');
 		as('h_latest', 'hist', '最後にジャンプ', 'Jump to latest');
 
 		// *編集 - 盤面 -----------------------------------------------------
-		aa('cap_board','board', '盤面','Display mode');
+		aa('cap_board','board', '盤面','Board');
 		as('check',    'board', 'チェック', 'Check the Answer');
 		as('ansclear', 'board', '回答消去', 'Erase answer');
 		if(!ui.puzzle.flags.disable_subclear){
@@ -161,7 +161,12 @@ ui.menuarea = {
 		// *表示 ==============================================================
 		am('disp', "表示", "Display");
 
-		pp.addSelect('cellsize','disp', '表示サイズ','Cell Size');
+		au('cellsize','disp', '表示サイズ','Cell Size');
+
+		au('font','disp', 'フォント','Font Family');
+		ai('font_1', 'font', 'ゴシック', 'Sans-Serif');
+		ai('font_2', 'font', '明朝', 'Serif');
+
 		ap('sep_disp1',  'disp');
 
 		if(ui.puzzle.flags.irowake){
@@ -171,7 +176,7 @@ ui.menuarea = {
 			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
-		pp.addCheck('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
+		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');

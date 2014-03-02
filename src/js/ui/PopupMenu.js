@@ -734,6 +734,7 @@ ui.popupmgr.addpopup('imagesave',
 	},
 	hide : function(){
 		if(!!this.saveimageurl){ URL.revokeObjectURL(this.saveimageurl);}
+		this.anchor.style.display = 'none';
 		
 		ui.puzzle.setCanvasSize();
 		ui.popupmgr.popups.template.hide.call(this);
@@ -775,9 +776,7 @@ ui.popupmgr.addpopup('imagesave',
 				blob = ui.puzzle.toBlob(type,cellsize);
 			}
 			else{
-				filedata = ui.puzzle.toDataURL(type,cellsize)
-									.replace('data:image/png;base64,', '')
-									.replace('data:image/svg+xml;base64,', '');
+				filedata = ui.puzzle.toDataURL(type,cellsize).replace(/data:.*;base64,/, '');
 			}
 		}
 		catch(e){

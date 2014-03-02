@@ -13,7 +13,6 @@ var v3index = {
 var _doc = document;
 var self = v3index;
 var typelist = self.typelist;
-var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
 function getEL(id){ return _doc.getElementById(id);}
 
@@ -61,8 +60,7 @@ v3index.extend({
 	},
 	input_init : function(){
 		// HTML5 - Web localStorage判定用(localStorage)
-		try{ if(!!window.localStorage && (!isGecko || !!location.hostname)){ self.LS = true;}}
-		catch(e){}
+		if(pzpr.env.storage.localST){ self.LS = true;}
 
 		var cnt=0;
 		if(self.urlif.init()) { cnt++;}
@@ -125,7 +123,6 @@ v3index.urlif = {
 var _doc = document;
 var _form;
 var self = v3index.urlif;
-var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
 function getEL(id){ return _doc.getElementById(id);}
 
@@ -168,7 +165,6 @@ v3index.fileif = {
 var _doc = document;
 var _form;
 var self = v3index.fileif;
-var isGecko = (navigator.userAgent.indexOf('Gecko')>-1 && navigator.userAgent.indexOf('KHTML') == -1);
 
 function getEL(id){ return _doc.getElementById(id);}
 
@@ -236,7 +232,6 @@ var v3index = window.v3index;
 
 v3index.dbif = {
 	list   : [],
-	LS     : false,
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
