@@ -608,6 +608,7 @@ ui.popupmgr.addpopup('filesave',
 	},
 	hide : function(){
 		if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
+		if(!!this.anchor){ this.anchor.style.display = 'none';}
 		
 		ui.popupmgr.popups.template.hide.call(this);
 	},
@@ -734,7 +735,7 @@ ui.popupmgr.addpopup('imagesave',
 	},
 	hide : function(){
 		if(!!this.saveimageurl){ URL.revokeObjectURL(this.saveimageurl);}
-		this.anchor.style.display = 'none';
+		if(!!this.anchor){ this.anchor.style.display = 'none';}
 		
 		ui.puzzle.setCanvasSize();
 		ui.popupmgr.popups.template.hide.call(this);
