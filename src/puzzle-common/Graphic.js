@@ -1296,8 +1296,9 @@ pzpr.extendPuzzleClass('Graphic',
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var g = this.context;
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
+		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
 
-		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px sans-serif");
+		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px "+fontfamily);
 		g.fillStyle = color;
 
 		switch(type){

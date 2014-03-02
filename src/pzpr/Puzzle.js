@@ -513,6 +513,7 @@ pzpr.util.Config.prototype =
 		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
+		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */
 		this.add('irowake', false);								/* 線の色分け */
 		this.add('irowakeblk', false);							/* 黒マスの色分け */
@@ -568,7 +569,7 @@ pzpr.util.Config.prototype =
 		var result = true, o = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
+		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove': case 'font':
 			o.redraw();
 			break;
 		
