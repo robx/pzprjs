@@ -77,6 +77,19 @@ Graphic:{
 		this.circleratio = [0.45, 0.40];
 	},
 
+	// オーバーライド
+	setRange : function(x1,y1,x2,y2){
+ 		var puzzle = this.owner, bd = puzzle.board;
+		if(puzzle.getConfig('autocmp')){
+			x1 = bd.minbx-2;
+			y1 = bd.minby-2;
+			x2 = bd.maxbx+2;
+			y2 = bd.maxby+2;
+		}
+		
+		this.Common.prototype.setRange.call(this,x1,y1,x2,y2);
+	},
+
 	paint : function(){
 		var puzzle = this.owner, bd = puzzle.board;
 		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getBCellInfo() : null);
