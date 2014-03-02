@@ -315,6 +315,7 @@ pzpr.env = (function(){
 	};
 	bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
 	bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
+	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
@@ -333,8 +334,8 @@ pzpr.env = (function(){
 			if(!!dbtmp){ val |= 0x02;}
 		}}catch(e){}
 		
-		// Firefoxはローカルだとデータベース系は使えない
-		if(bz.Gecko && !location.hostname){ val = 0;}
+		// Firefox 8.0より前はローカルだとデータベース系は使えない
+		if(Gecko7orOlder && !location.hostname){ val = 0;}
 		
 		return {
 			session : !!(val & 0x10),
