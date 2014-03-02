@@ -122,7 +122,7 @@ ui.menuarea = {
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
 		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
 		if(pzpr.env.storage.localST){
-			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
+			as('database',  'file', 'ブラウザ保存', 'Browser Save');
 		}
 		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
 			ap('sep_image', 'file');
