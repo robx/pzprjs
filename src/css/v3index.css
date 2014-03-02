@@ -46,6 +46,13 @@
 	li.subpa { color:gray; }
 	li.orig  { color:#afafaf; }
 	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top; width:34%;}
+	td.blocks  { background-color:#ffdfdf;}
+	td.loops   { background-color:#dfdfff;}
+	td.lines   { background-color:#efefff;}
+	td.devides { background-color:#ccffcc;}
+	td.numbers { background-color:#dfdfdf;}
+	td.pics    { background-color:#efefef;}
+	td.others  { background-color:#ffffcc;}
 
 	/* for index_test.html */
 	table.exp{ width:80%; margin:auto;margin-bottom:8pt;border: 1px red solid;}
