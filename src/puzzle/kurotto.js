@@ -77,32 +77,10 @@ Graphic:{
 		this.circleratio = [0.45, 0.40];
 	},
 
-	// オーバーライド
-	paintRange : function(x1,y1,x2,y2){
-		var puzzle = this.owner, bd = puzzle.board;
-		if(puzzle.getConfig('autocmp')){
-			this.check_binfo = bd.getBCellInfo();
-			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
-		}
-		else{
-			this.check_binfo = null;
-			this.setRange(x1,y1,x2,y2);
-		}
-		this.prepaint();
-	},
-	prepaint : function(){
-		if(this.check_binfo===void 0){
-			var puzzle = this.owner, bd = puzzle.board;
-			if(puzzle.getConfig('autocmp')){
-				this.check_binfo = bd.getBCellInfo();
-			}
-			else{
-				this.check_binfo = null;
-			}
-		}
-		this.Common.prototype.prepaint.call(this);
-	},
 	paint : function(){
+		var puzzle = this.owner, bd = puzzle.board;
+		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getBCellInfo() : null);
+		
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawBlackCells();
@@ -117,7 +95,7 @@ Graphic:{
 
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.owner.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
+			var cmpcell = (!!this.check_binfo && cell.checkComplete(this.check_binfo));
 			return (cmpcell ? this.bcolor : this.circledcolor);
 		}
 		return null;
