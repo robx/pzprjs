@@ -353,8 +353,8 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	openDataTable_M : function(owner){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!confirm(ui.menu.selectStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
-									  "Recover selected data? (Current board is erased)"))){ return;}
+		if(!ui.menu.confirmStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
+							   "Recover selected data? (Current board is erased)")){ return;}
 
 		this.dbh.openDataTable(this, id, null, owner);
 	},
@@ -366,12 +366,12 @@ ui.database = {
 
 			this.DBlist[id] = new ui.ProblemData();
 			this.DBlist[id].setnewData(id+1, owner);
-			var str = prompt(ui.menu.selectStr("コメントがある場合は入力してください。","Input comment if you want."),"");
+			var str = ui.menu.promptStr("コメントがある場合は入力してください。","Input comment if you want.","");
 			this.DBlist[id].comment = (!!str ? str : '');
 			this.DBsid = this.DBlist[id].id;
 		}
 		else{
-			if(!confirm(ui.menu.selectStr("このデータに上書きしますか？","Update selected data?"))){ return;}
+			if(!ui.menu.confirmStr("このデータに上書きしますか？","Update selected data?")){ return;}
 		}
 
 		this.sync = false;
@@ -385,7 +385,7 @@ ui.database = {
 	editComment_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var str = prompt(ui.menu.selectStr("この問題に対するコメントを入力してください。","Input command for selected data."),this.DBlist[id].comment);
+		var str = ui.menu.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
 		if(str==null){ return;}
 		this.DBlist[id].comment = str;
 
@@ -395,8 +395,8 @@ ui.database = {
 	editDifficult_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var hard = prompt(ui.menu.selectStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
-						  "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)"),this.DBlist[id].hard);
+		var hard = ui.menu.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
+									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
 		if(hard==null){ return;}
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
 
@@ -409,7 +409,7 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	deleteDataTable_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!confirm(ui.menu.selectStr("このデータを完全に削除しますか？","Delete selected data?"))){ return;}
+		if(!ui.menu.confirmStr("このデータを完全に削除しますか？","Delete selected data?")){ return;}
 
 		var sID = this.DBlist[id].id, max = this.DBlist.length;
 		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1]; this.DBlist[i].id--;}

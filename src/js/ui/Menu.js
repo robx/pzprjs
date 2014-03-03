@@ -299,6 +299,9 @@ ui.menu = {
 	confirmStr : function(strJP, strEN){
 		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
+	promptStr : function(strJP, strEN, initialStr){
+		return prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
+	},
 
 //--------------------------------------------------------------------------------------------------------------
 
