@@ -398,7 +398,6 @@ pzpr.createPuzzleClass('OperationManager',
 		/* ファイル内容のデコード */
 		if(datas.length>0 && !!window.JSON){
 			try{
-				console.log(datas.join(''));
 				var str = datas.join(''), history = JSON.parse(str);
 				this.ope = [];
 				this.initpos = this.position = history.current;
