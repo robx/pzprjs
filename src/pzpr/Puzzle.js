@@ -397,9 +397,7 @@ pzpr.Puzzle.prototype =
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.check()              正答判定処理を行う
-	// owner.checkAnsAlert()      正答判定処理をしてalertに文字列を出す
-	// owner.getFailDescription() FailCodeから文字列を出力する
+	// owner.check()          正答判定処理を行う
 	//------------------------------------------------------------------------------
 	check : function(activemode){
 		if(!!activemode){
@@ -407,14 +405,6 @@ pzpr.Puzzle.prototype =
 			this.mouse.mousereset();
 		}
 		return this.checker.check(!!activemode);
-	},
-	checkAndAlert : function(activemode){
-		var failcode = this.check(!!activemode);
-		alert(this.getFailDescription(failcode));
-		return failcode;
-	},
-	getFailDescription : function(failcode){
-		return this.faillist.getStr(failcode);
 	},
 
 	//------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ pzpr.createPuzzleClass('AnsCheck',
 	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error) (オーバーライド用)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
-		var o = this.owner, bd = o.board;
+		var puzzle = this.owner, bd = puzzle.board;
 		this.inCheck = true;
 		
 		if(activemode){
@@ -27,7 +27,7 @@ pzpr.createPuzzleClass('AnsCheck',
 			this.failcode = this.checkAns();
 			if(!!this.failcode){
 				bd.haserror = true;
-				o.redraw();
+				puzzle.redraw();
 			}
 		}
 		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
@@ -39,7 +39,7 @@ pzpr.createPuzzleClass('AnsCheck',
 		}
 		
 		this.inCheck = false;
-		return this.failcode;
+		return new puzzle.CheckInfo(this.failcode);
 	},
 	checkAns : function(){ return null;},	//オーバーライド用
 
@@ -66,17 +66,35 @@ pzpr.createPuzzleClass('AnsCheck',
 });
 
 //---------------------------------------------------------------------------
+// ★CheckInfoクラス ans.checkで返すインスタンスのクラス
+//---------------------------------------------------------------------------
+pzpr.createPuzzleClass('CheckInfo',
+{
+	initialize : function(code){
+		this.add(code);
+	},
+	complete : true,
+	length : 0,
+	
+	add : function(code){
+		if(!!code){
+			Array.prototype.push.call(this, code);
+			this.complete = false;
+		}
+	},
+	text : function(lang){
+		var code = (this[0] || 'complete');
+		lang = lang || this.owner.getConfig('language');
+		return this.owner.faillist[code][lang==='ja'?0:1];
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★FailCodeクラス 答えの文字列を扱う
 //---------------------------------------------------------------------------
 // FailCodeクラス
 pzpr.createPuzzleClass('FailCode',
 {
-	getStr : function(code){
-		if(!code){ code='complete';}
-		var lang = (this.owner.getConfig('language')==='ja' ? 0 : 1);
-		return this[code][lang];
-	},
-
 	complete : ["正解です！","Complete!"],
 	invalid  : ["不明なエラーです","Invalid Error"]
 });
