@@ -160,6 +160,7 @@ pzpr.Puzzle.prototype =
 		if(!this.ready){
 			this.resetTime();
 			this.ready = true;
+			this.execListener('ready');
 		}
 	},
 	firstCanvasReady : function(){

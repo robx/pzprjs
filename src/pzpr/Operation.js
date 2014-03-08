@@ -262,7 +262,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.enableUndo = (this.position>0);
 		this.enableRedo = (this.position<this.ope.length);
 
-		this.owner.execListener('historymove');
+		this.owner.execListener('history');
 	},
 	allerase : function(){
 		this.lastope  = null;
@@ -351,7 +351,7 @@ pzpr.createPuzzleClass('OperationManager',
 				this.changeflag = true;
 				ref.num = num;
 				this.owner.checker.resetCache();
-				this.owner.execListener('historychange');
+				this.owner.execListener('history');
 				return false;
 			}
 			return true;
