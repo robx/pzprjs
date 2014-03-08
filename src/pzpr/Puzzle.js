@@ -284,6 +284,7 @@ pzpr.Puzzle.prototype =
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
 	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
+	// owner.resetPagePos()            ページサイズの変更時等に、Canvasの左上座標を変更する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
 		if(this.painter){
@@ -309,6 +310,26 @@ pzpr.Puzzle.prototype =
 		}
 		else{
 			this.painter.resizeCanvas();
+		}
+	},
+
+	resetPagePos : function(){
+		if(this.ready && this.painter){
+			this.painter.setPagePos();
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.redraw()   盤面の再描画を行う
+	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
+	//---------------------------------------------------------------------------
+	redraw : function(){
+		if(this.ready){ this.painter.paintAll();}
+	},
+	irowake : function(){
+		this.board.irowakeRemake();
+		if(this.getConfig('irowake')){
+			this.redraw();
 		}
 	},
 
@@ -346,20 +367,6 @@ pzpr.Puzzle.prototype =
 		pc2.unsuspend();
 		
 		return pc2.context.canvas;
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.redraw()   盤面の再描画を行う
-	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
-	//---------------------------------------------------------------------------
-	redraw : function(){
-		if(this.ready){ this.painter.paintAll();}
-	},
-	irowake : function(){
-		this.board.irowakeRemake();
-		if(this.getConfig('irowake')){
-			this.redraw();
-		}
 	},
 
 	//---------------------------------------------------------------------------

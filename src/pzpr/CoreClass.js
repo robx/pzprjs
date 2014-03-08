@@ -71,6 +71,21 @@ window.pzpr = {
 	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}},
 
 	//---------------------------------------------------------------
+	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
+	//---------------------------------------------------------------
+	addWindowEvents : function(){
+		var ev = ['resize', 'orientationchange', 'pageshow'];
+		for(var i=0;i<3;i++){
+			pzpr.util.addEvent(window, ev[i], pzpr, pzpr.onresize);
+		}
+	},
+	onresize : function(e){
+		for(var i=0,len=this.puzzles.length;i<len;i++){
+			this.puzzles[i].resetPagePos();
+		}
+	},
+
+	//---------------------------------------------------------------
 	// 起動時関連関数
 	//---------------------------------------------------------------
 	preinit : true,
@@ -83,6 +98,7 @@ window.pzpr = {
 		if(!this.preinit){}
 		else if(!!window.Candle){
 			this.preinit = false;
+			this.addWindowEvents();
 			this.addKeyEvents();
 			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
 			this.loadfun = [];

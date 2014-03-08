@@ -215,13 +215,34 @@ pzpr.createPuzzleClass('Graphic',
 	//---------------------------------------------------------------------------
 	// pc.resize_canvas_main() ウィンドウのLoad/Resize時の処理。
 	//                         Canvas/表示するマス目の大きさを設定する。
+	// pc.setParameter()       cw, ch等の変数を大きさに応じて再設定する
+	// pc.setOffset()          盤面のサイズや大きさを再設定する
+	// pc.setPagePos()         盤面のページ内座標を設定する
 	//---------------------------------------------------------------------------
 	resize_canvas_main : function(){
+		// セルのサイズなどを取得・設定
+		this.setParameter();
+
+		// Canvasのサイズ、オフセット位置の変更
+		this.setOffset();
+
+		// Listener呼び出し
+		this.owner.execListener('resize');
+
+		// 盤面のページ内における座標を設定 (Canvasのサイズ確定後に取得する)
+		this.setPagePos();
+
+		// flushCanvas, vnopなどの関数を初期化する
+		this.resetVectorFunctions();
+
+		this.context.clear();
+	},
+
+	setParameter :function(){
 		var cwid = this.canvasWidth, chgt = this.canvasHeight;
 		var cols = this.getCanvasCols(), rows = this.getCanvasRows();
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
 
-		// セルのサイズなどを取得・設定
 		if(this.owner.getConfig('squarecell')){
 			this.cw = this.ch = Math.min(cw,ch);
 		}
@@ -234,35 +255,32 @@ pzpr.createPuzzleClass('Graphic',
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
 		this.lm = (this.lw-1)/2;
-
-		// 盤面のセルID:0が描画される左上の位置の設定
-		var g = this.context;
-		var bd = this.owner.board;
-		this.x0 = ((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0;
-		this.y0 = ((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0;
-
+	},
+	setOffset : function(){
+		var g = this.context, g2 = this.subcontext;
+		var cwid = this.canvasWidth, chgt = this.canvasHeight;
+		
 		// canvas要素のサイズを変更する
-		var gs = [g, this.subcontext];
-		for(var i=0;i<2;i++){
-			if(!gs[i]){ continue;}
-			// Canvasのサイズ変更
-			gs[i].changeSize(cwid|0, chgt|0);
-			
-			// CanvasのOffset位置変更
-			var x0 = this.x0, y0 = this.y0;
-			// SVGの時、小数点以下の端数調整を行う
-			if(!g.use.canvas && gs[i]===g){
-				var rect = pzpr.util.getRect(g.canvas);
-				x0 -= (rect.left%1);
-				y0 -= (rect.top%1);
-			}
-			gs[i].translate(x0, y0);
+		g.changeSize(cwid|0, chgt|0);
+		if(!!g2){ g2.changeSize(cwid|0, chgt|0);}
+		
+		// 盤面のセルID:0が描画される左上の位置の設定 (Canvas左上からのオフセット)
+		var bd = this.owner.board;
+		var x0 = this.x0 = ((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0;
+		var y0 = this.y0 = ((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0;
+		
+		// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
+		if(!g.use.canvas){
+			var rect = pzpr.util.getRect(g.canvas);
+			g.translate(x0-(rect.left%1), y0-(rect.top%1));
 		}
-
-		this.owner.execListener('resize');
-
-		// 盤面のページ内座標を設定 (canvasのサイズ変更後に取得し直す)
-		var rect;
+		else{
+			g.translate(x0, y0);
+			if(!!g2){ g2.translate(x0, y0);}
+		}
+	},
+	setPagePos : function(){
+		var rect, g = this.context;
 		if(!pzpr.env.browser.oldGecko){
 			rect = pzpr.util.getRect(!g.use.sl ? g.child : g.canvas);
 		}
@@ -273,11 +291,6 @@ pzpr.createPuzzleClass('Graphic',
 		}
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
-
-		// flushCanvas, vnopなどの関数を初期化する
-		this.resetVectorFunctions();
-
-		this.context.clear();
 	},
 
 	//---------------------------------------------------------------------------
