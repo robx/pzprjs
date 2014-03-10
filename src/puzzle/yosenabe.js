@@ -373,8 +373,12 @@ FileIO:{
 			else if(!!ca&&ca!=='.'){ cell.qnum2=parseInt(ca);}
 		});
 		this.decodeBorderLine();
+		if(this.filever>=1){
+			this.decodeCellQsubQcmp();
+		}
 	},
 	encodeData : function(){
+		this.filever = 1;
 		this.encodeCell( function(cell){
 			var ca = "";
 			if(cell.ques===6){ ca += "i";}
@@ -387,6 +391,24 @@ FileIO:{
 			return ((!!ca?ca:".")+" ");
 		});
 		this.encodeBorderLine();
+		this.encodeCellQsubQcmp();
+	},
+
+	/* decode/encodeCellQsubの上位互換です */
+	decodeCellQsubQcmp : function(){
+		this.decodeCell( function(obj,ca){
+			if(ca!=="0"){
+				var num = parseInt(ca);
+				obj.qsub = num % 10;
+				obj.qcmp = (num / 10)|0;
+			}
+		});
+	},
+	encodeCellQsubQcmp : function(){
+		this.encodeCell( function(obj){
+			var num = obj.qsub + obj.qcmp*10;
+			return (num.toString() + " ");
+		});
 	}
 },
 
