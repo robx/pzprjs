@@ -573,7 +573,7 @@ pzpr.createPuzzleClass('Graphic',
 				g.vid = vid;
 				var el = g.elements[vid];
 				if(!el){ return true;}
-				el.removeAttribute('opacity');
+				el.setAttribute('display','inline');
 				if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Candle.parse(g.fillStyle));}
 				if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Candle.parse(g.strokeStyle));}
 				return false;
@@ -590,7 +590,7 @@ pzpr.createPuzzleClass('Graphic',
 				g.vid = vid;
 				if(!g.elements[vid]){ return;}
 
-				if(g.use.svg){ g.elements[vid].removeAttribute('opacity');}
+				if(g.use.svg){ g.elements[vid].setAttribute('display','inline');}
 				else if(g.use.vml){ g.elements[vid].style.display = 'inline';}
 				else{ g.elements[vid].Visibility = "Visible";}
 			}
@@ -608,7 +608,7 @@ pzpr.createPuzzleClass('Graphic',
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
-					if(g.use.svg){ g.elements[vid[i]].setAttribute('opacity',0);}
+					if(g.use.svg){ g.elements[vid[i]].setAttribute('display','none');}
 					else if(g.use.vml){ g.elements[vid[i]].style.display = 'none';}
 					else{ g.elements[vid[i]].Visibility = "Collapsed";}
 				}
