@@ -208,14 +208,14 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if(ca!=="0"){
 				var num = parseInt(ca);
-				obj.qsub = num % 10;
-				obj.qcmp = (num / 10)|0;
+				obj.qsub = num & 0x0f;
+				obj.qcmp = (num >> 4)|0;
 			}
 		});
 	},
 	encodeCellQsubQcmp : function(){
 		this.encodeCell( function(obj){
-			var num = obj.qsub + obj.qcmp*10;
+			var num = obj.qsub + (obj.qcmp << 4);
 			return (num.toString() + " ");
 		});
 	}
