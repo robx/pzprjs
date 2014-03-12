@@ -75,10 +75,10 @@ ui.timer =
 	// tm.ACcheck()    自動正解判定を呼び出す
 	//---------------------------------------------------------------------------
 	ACcheck : function(){
-		var o = ui.puzzle;
-		if(this.current>this.nextACtime && o.playmode && !o.checker.inCheck){
-			if(!o.check(false)){
-				o.mouse.mousereset();
+		var puzzle = ui.puzzle;
+		if(this.current>this.nextACtime && puzzle.playmode && !puzzle.checker.inCheck){
+			if(puzzle.check().complete){
+				puzzle.mouse.mousereset();
 				ui.menu.setMenuConfig('autocheck',false);
 				ui.menu.alertStr("正解です！","Complete!");
 				return;

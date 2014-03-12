@@ -10,7 +10,7 @@ function getEL(id){ return _doc.getElementById(id);}
 ui.debug.extend(
 {
 	loadperf : function(){
-		ui.openPuzzle(perfstr, function(puzzle){
+		ui.puzzle.open(perfstr, function(puzzle){
 			puzzle.modechange(k.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
@@ -53,7 +53,7 @@ ui.debug.extend(
 			if(self.phase != 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
-			ui.openPuzzle(newid+"/"+self.urls[newid], function(){
+			ui.puzzle.open(newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTextarea("Test ("+pnum+", "+newid+") start.");
@@ -91,7 +91,7 @@ ui.debug.extend(
 		if(pzpr.url.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			ui.openPuzzle(o.getURL(k.URL_KANPEN), function(){
+			o.open(o.getURL(k.URL_KANPEN), function(){
 				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -108,7 +108,7 @@ ui.debug.extend(
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
-			ui.openPuzzle(acsstr[n][1].replace(/\//g,"\n"));
+			ui.puzzle.open(acsstr[n][1].replace(/\//g,"\n"));
 			var failcode = ui.puzzle.check(true), compcode = acsstr[n][0];
 			var iserror = (failcode !== compcode);
 			var errdesc = "("+(!!compcode?compcode:'complete')+":"+ui.puzzle.getFailDescription(compcode)+")";
@@ -132,7 +132,7 @@ ui.debug.extend(
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		ui.openPuzzle(outputstr, function(){
+		o.open(outputstr, function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
 
@@ -149,7 +149,7 @@ ui.debug.extend(
 			bd.initBoardSize(1,1);
 			bd.resetInfo();
 
-			ui.openPuzzle(outputstr, function(){
+			o.open(outputstr, function(){
 				self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}

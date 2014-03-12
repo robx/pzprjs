@@ -62,27 +62,27 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	ui.puzzle = pzpr.createPuzzle(element, {imagesave:true});
-	pzpr.connectKeyEvents(ui.puzzle);
+	var puzzle = ui.puzzle = pzpr.createPuzzle(element, {imagesave:true});
+	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
 	ui.event.onload_func();
-	ui.event.setListeners(ui.puzzle);
+	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
-	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
-	else if(!!pzl.url)   { ui.openPuzzle(pzl.url, afterBoot);}
-	else if(ui.debugmode){ ui.openPuzzle(pid+"/"+ui.debug.urls[pid], afterBoot);}
-	else if(!!pid)       { ui.openPuzzle(pid, afterBoot);}
+	if     (!!pzl.fstr)  { puzzle.open(pzl.fstr, afterBoot);}
+	else if(!!pzl.url)   { puzzle.open(pzl.url, afterBoot);}
+	else if(ui.debugmode){ puzzle.open(pid+"/"+ui.debug.urls[pid], afterBoot);}
+	else if(!!pid)       { puzzle.open(pid, afterBoot);}
 	
 	return true;
 }
 
-function afterBoot(o){
+function afterBoot(puzzle){
 	/* debugmode時の設定 */
 	if(ui.debugmode){
-		o.modechange(pzpr.consts.MODE_PLAYER);
+		puzzle.modechange(pzpr.consts.MODE_PLAYER);
 		ui.menu.setMenuConfig('autocheck', true);
 	}
 	accesslog();

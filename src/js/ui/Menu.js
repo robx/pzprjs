@@ -94,7 +94,7 @@ ui.menu = {
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
-				ui.openPuzzle(e.target.result);
+				ui.puzzle.open(e.target.result);
 			};
 		}
 	},
@@ -330,7 +330,7 @@ ui.menu = {
 	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		alert( ui.puzzle.getFailDescription( ui.puzzle.check(true) ) );
+		alert( ui.puzzle.check(true).text() );
 	},
 	ACconfirm : function(){
 		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){

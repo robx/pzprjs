@@ -395,7 +395,7 @@ ui.popupmgr.addpopup('newboard',
 		
 		this.hide();
 		if(url.length>0){
-			ui.openPuzzle(pid+"/"+url.join('/'));
+			ui.puzzle.open(pid+"/"+url.join('/'));
 		}
 	}
 });
@@ -430,7 +430,7 @@ ui.popupmgr.addpopup('urlinput',
 	urlinput : function(){
 		this.hide();
 		
-		ui.openPuzzle(this.form.ta.value.replace(/\n/g,""));
+		ui.puzzle.open(this.form.ta.value.replace(/\n/g,""));
 	}
 });
 
@@ -534,7 +534,7 @@ ui.popupmgr.addpopup('fileopen',
 			if(!fitem){ return;}
 			
 			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
-			else                { ui.openPuzzle(fitem.getAsText(''));}
+			else                { ui.puzzle.open(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}

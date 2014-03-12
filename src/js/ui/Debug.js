@@ -117,7 +117,7 @@ ui.debug =
 	},
 
 	fileopen : function(){
-		ui.openPuzzle(this.getTA());
+		ui.puzzle.open(this.getTA());
 	},
 
 	erasetext : function(){

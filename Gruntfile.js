@@ -104,7 +104,7 @@ module.exports = function(grunt){
         ]
       },
       combine: {
-        src: 'dist/js/ui.js',
+        src: 'dist/js/ui.concat.js',
         overwrite: true,
         replacements: [
           { from: "<deploy-version>", to: "<%= pkg.version %>"}

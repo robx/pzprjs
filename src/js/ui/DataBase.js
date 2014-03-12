@@ -478,7 +478,7 @@ ui.DataBaseHandler_LS.prototype =
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
 		var data = new ui.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		ui.openPuzzle(data.pdata.replace(/\//g,"\n"));
+		ui.puzzle.open(data.pdata.replace(/\//g,"\n"));
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){
