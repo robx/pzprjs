@@ -553,7 +553,7 @@ ui.popupmgr.addpopup('filesave',
 	formname : 'filesave',
 	
 	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
+	// makeForm() ファイル出力のポップアップメニューを作成する
 	//------------------------------------------------------------------------------
 	anchor : null,
 	makeForm : function(){
@@ -589,7 +589,7 @@ ui.popupmgr.addpopup('filesave',
 		
 		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
-			this.anchor.appendChild(this.createTextNode("Click to Download File","Click to Download File"));
+			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
 			this.addElement(this.anchor);
 		}
@@ -648,7 +648,7 @@ ui.popupmgr.addpopup('filesave',
 			this.filesaveurl = URL.createObjectURL(blob);
 			this.anchor.href = this.filesaveurl;
 			this.anchor.download = filename;
-			this.anchor.style.display = 'inline';
+			this.anchor.click();
 		}
 		else{
 			form.ques.value = filedata;
@@ -711,7 +711,7 @@ ui.popupmgr.addpopup('imagesave',
 		
 		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
-			this.anchor.appendChild(this.createTextNode("Click to Download File","Click to Download File"));
+			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
 			this.addElement(this.anchor);
 		}
@@ -735,7 +735,6 @@ ui.popupmgr.addpopup('imagesave',
 	},
 	hide : function(){
 		if(!!this.saveimageurl){ URL.revokeObjectURL(this.saveimageurl);}
-		if(!!this.anchor){ this.anchor.style.display = 'none';}
 		
 		ui.puzzle.setCanvasSize();
 		ui.popupmgr.popups.template.hide.call(this);
@@ -794,7 +793,7 @@ ui.popupmgr.addpopup('imagesave',
 			this.filesaveurl = URL.createObjectURL(blob);
 			this.anchor.href = this.filesaveurl;
 			this.anchor.download = filename;
-			this.anchor.style.display = 'inline';
+			this.anchor.click();
 		}
 		else{
 			form.urlstr.value = filedata;
