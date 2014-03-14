@@ -32,7 +32,6 @@ ui.popupmgr.addpopup('debug',
 		if(ui.debugmode){
 			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
 		}
-		this.addExecButton("img", "img", function(){ debug.adjustimage();});
 		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
@@ -157,16 +156,6 @@ ui.debug =
 			}
 		}
 		this.setTA(text);
-	},
-
-	adjustimage : function(){
-		var col = ui.puzzle.board.qcols, size = 17;
-		if     (col<= 6){ size = 28;}
-		else if(col<= 8){ size = 27;}
-		else if(col<= 8){ size = 24;}
-		else if(col<= 9){ size = 21;}
-		else if(col<=18){ size = 19;}
-		ui.menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},

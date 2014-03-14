@@ -62,7 +62,7 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	var puzzle = ui.puzzle = pzpr.createPuzzle(element, {imagesave:true});
+	var puzzle = ui.puzzle = pzpr.createPuzzle(element, {imagesave:true, graphic:(!ui.canvasmode?'':'canvas')});
 	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
@@ -71,21 +71,20 @@ function startPuzzle(){
 	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
-	if     (!!pzl.fstr)  { puzzle.open(pzl.fstr, afterBoot);}
-	else if(!!pzl.url)   { puzzle.open(pzl.url, afterBoot);}
-	else if(ui.debugmode){ puzzle.open(pid+"/"+ui.debug.urls[pid], afterBoot);}
-	else if(!!pid)       { puzzle.open(pid, afterBoot);}
+	var inputdata = pzl.fstr || pzl.url;
+	if(!ui.debugmode){
+		puzzle.open((inputdata || pid), accesslog);
+	}
+	else{
+		puzzle.open((inputdata || pid+"/"+ui.debug.urls[pid]),
+		function(puzzle){
+			puzzle.modechange(pzpr.consts.MODE_PLAYER);
+			ui.menu.setMenuConfig('autocheck', true);
+			accesslog();
+		});
+	}
 	
 	return true;
-}
-
-function afterBoot(puzzle){
-	/* debugmode時の設定 */
-	if(ui.debugmode){
-		puzzle.modechange(pzpr.consts.MODE_PLAYER);
-		ui.menu.setMenuConfig('autocheck', true);
-	}
-	accesslog();
 }
 
 //---------------------------------------------------------------------------
@@ -102,11 +101,13 @@ function importURL(){
 	}
 	else{ search = location.search;}
 	if(search.length<=0){ return;}
-
+	
+	if(search.match(/^\??canvas\/(.*)/)){ ui.canvasmode = true; search = "?"+RegExp.$1;}
+	if(search.match(/^\??test$/)){ search = '?country_test';}
+	
 	// エディタモードかplayerモードか、等を判定する
 	var startmode = '';
-	if     (search=="?test")       { startmode = 'EDITOR'; ui.debugmode = true; search = '?country';}
-	else if(search.match(/_test/)) { startmode = 'EDITOR'; ui.debugmode = true;}
+	if     (search.match(/_test/)) { startmode = 'EDITOR'; ui.debugmode = true;}
 	else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
 	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
 	else if(search.match(/_play/)) { startmode = 'PLAYER';}

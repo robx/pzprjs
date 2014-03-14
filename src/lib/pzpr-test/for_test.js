@@ -11,6 +11,7 @@ ui.debug.extend(
 {
 	loadperf : function(){
 		ui.puzzle.open(perfstr, function(puzzle){
+			ui.menu.setMenuConfig('autocheck',false);
 			puzzle.modechange(k.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
@@ -108,16 +109,16 @@ ui.debug.extend(
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
 		for(var n=0;n<acsstr.length;n++){
-			ui.puzzle.open(acsstr[n][1].replace(/\//g,"\n"));
-			var failcode = ui.puzzle.check(true), compcode = acsstr[n][0];
-			var iserror = (failcode !== compcode);
-			var errdesc = "("+(!!compcode?compcode:'complete')+":"+ui.puzzle.getFailDescription(compcode)+")";
+			ui.puzzle.open(acsstr[n][1]);
+			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];
+			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+faildata.text();
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
 
 			if(iserror || !self.alltimer){
-				self.addTextarea("Answer test "+(n+1)+" = "+judge+" "+errdesc);
+				self.addTextarea("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
 		setTimeout(function(){ self.check_file(self);},0);
