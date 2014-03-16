@@ -8,6 +8,7 @@ if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 
 var require_accesslog = true;
 var onload_pzl = null;
+var onload_option = {imagesave:true};
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
@@ -62,7 +63,7 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	var puzzle = ui.puzzle = pzpr.createPuzzle(element, {imagesave:true, graphic:(!ui.canvasmode?'':'canvas')});
+	var puzzle = ui.puzzle = pzpr.createPuzzle(element, onload_option);
 	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
@@ -102,17 +103,24 @@ function importURL(){
 	else{ search = location.search;}
 	if(search.length<=0){ return;}
 	
-	if(search.match(/^\??canvas\/(.*)/)){ ui.canvasmode = true; search = "?"+RegExp.$1;}
-	if(search.match(/^\??test$/)){ search = '?country_test';}
+	/* 一旦先頭の?記号を取り除く */
+	if(search.charAt(0)==="?"){ search = search.substr(1);}
+	
+	while(search.match(/^(\w+)\=(\w+)\&(.*)/)){
+		onload_option[RegExp.$1] = RegExp.$2;
+		search = RegExp.$3;
+	}
 	
 	// エディタモードかplayerモードか、等を判定する
-	var startmode = '';
-	if     (search.match(/_test/)) { startmode = 'EDITOR'; ui.debugmode = true;}
-	else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
-	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
-	else if(search.match(/_play/)) { startmode = 'PLAYER';}
+	if(search==="test"){ search = 'country_test';}
+	
+	var startmode = 'PLAYER';
+	if     (search.match(/_test/)){ startmode = 'EDITOR'; ui.debugmode = true;}
+	else if(search.match(/^m\+/)) { startmode = 'EDITOR';}
+	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
+	/* else if(search.match(/_play/)){ startmode = 'PLAYER';} */
 
-	var pzl = pzpr.url.parseURL(search);
+	var pzl = pzpr.url.parseURL("?"+search);
 	if(!!pzl.qdata){ pzl.url = search;}
 
 	if(!startmode){

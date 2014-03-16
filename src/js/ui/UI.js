@@ -29,7 +29,6 @@ var ui = {
 	timer     : null,
 	undotimer : null,
 	
-	canvasmode : false,
 	debugmode : false
 };
 /* extern */
