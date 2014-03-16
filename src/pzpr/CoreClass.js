@@ -17,7 +17,7 @@ window.pzpr = {
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas, option){
 		var canvasNotElement;
-		try{ canvasNotElement = (canvas instanceof HTMLElement);}
+		try{ canvasNotElement = !(canvas instanceof HTMLElement);}
 		/* IE8以下だとHTMLElementが定義されておらずエラーになる */
 		catch(e){ canvasNotElement = !(canvas && canvas.style);}
 		if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
@@ -78,8 +78,8 @@ window.pzpr = {
 	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
 	//---------------------------------------------------------------
 	addWindowEvents : function(){
-		var ev = ['resize', 'orientationchange', 'pageshow'];
-		for(var i=0;i<3;i++){
+		var ev = ['resize', 'orientationchange', 'pageshow', 'focus'];
+		for(var i=0;i<ev.length;i++){
 			pzpr.util.addEvent(window, ev[i], pzpr, pzpr.onresize);
 		}
 	},

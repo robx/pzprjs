@@ -68,7 +68,7 @@ pzpr.createPuzzleClass('Graphic',
 		this.movecolor = "red";
 
 		// 盤面(枠の中)の背景色
-		this.bgcolor = '';
+		this.bgcolor = "white";
 
 		// 色々なパズルで定義してた固定色
 		this.gridcolor_BLACK  = "black";
@@ -281,6 +281,7 @@ pzpr.createPuzzleClass('Graphic',
 	},
 	setPagePos : function(){
 		var rect, g = this.context;
+		if(!g){ return;}
 		if(!pzpr.env.browser.oldGecko){
 			rect = pzpr.util.getRect(g.child);
 		}
@@ -525,7 +526,7 @@ pzpr.createPuzzleClass('Graphic',
 				var pxmin=-this.x0, pymin=-this.y0, pxmax=g.canvas.clientWidth, pymax=g.canvas.clientHeight;
 				px=(px>=pxmin?px:pxmin); py=(py>=pymin?py:pymin);
 				pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
-				g.fillStyle = (!this.bgcolor ? "rgb(255, 255, 255)" : this.bgcolor);
+				g.fillStyle = this.bgcolor;
 				g.fillRect(px, py, pw, ph);
 			}
 		:
