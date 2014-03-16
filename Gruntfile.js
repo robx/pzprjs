@@ -132,8 +132,8 @@ module.exports = function(grunt){
     return "src/js/ui/" + mod + ".js";
   }
   function wrap(array){
-    array.unshift("src/js/intro.js");
-    array.push   ("src/js/outro.js");
+    array.unshift("src/js/ui/intro.js");
+    array.push   ("src/js/ui/outro.js");
     return array;
   }
   
