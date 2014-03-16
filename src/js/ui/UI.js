@@ -201,7 +201,7 @@ ui.event =
 	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onload_func : function(){
-		if(pzpr.env.storage.localST){
+		if(pzpr.env.storage.localST && !!window.JSON){
 			var json_puzzle = localStorage['pzprv3_config:puzzle'];
 			var json_menu   = localStorage['pzprv3_config:ui'];
 			if(!!json_puzzle){ ui.puzzle.restoreConfig(json_puzzle);}
@@ -209,7 +209,7 @@ ui.event =
 		}
 	},
 	onunload_func : function(){
-		if(pzpr.env.storage.localST){
+		if(pzpr.env.storage.localST && !!window.JSON){
 			localStorage['pzprv3_config:puzzle'] = ui.puzzle.saveConfig();
 			localStorage['pzprv3_config:ui']     = ui.menu.saveMenuConfig();
 		}
@@ -307,8 +307,7 @@ ui.event =
 		
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
-		if     (g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
-		else if(g.use.sl) { pc.x0+=val; pc.y0+=val;}
+		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
 		
 		return true;
 	},
