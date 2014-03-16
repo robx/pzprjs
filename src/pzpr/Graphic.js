@@ -282,7 +282,7 @@ pzpr.createPuzzleClass('Graphic',
 	setPagePos : function(){
 		var rect, g = this.context;
 		if(!pzpr.env.browser.oldGecko){
-			rect = pzpr.util.getRect(!g.use.sl ? g.child : g.canvas);
+			rect = pzpr.util.getRect(g.child);
 		}
 		else{
 			rect = pzpr.util.getRect(g.canvas);
@@ -556,17 +556,6 @@ pzpr.createPuzzleClass('Graphic',
 				if(this.vnop_STROKE[ccflag]){ el.strokecolor = Candle.parse(g.strokeStyle);}
 				return false;
 			}
-		: (this.use.sl) ?
-			function(vid, ccflag){
-				var g = this.context
-				g.vid = vid;
-				var el = g.elements[vid];
-				if(!el){ return true;}
-				el.Visibility = "Visible";
-				if(this.vnop_FILL[ccflag])  { el.fill = Candle.parse(g.fillStyle);}
-				if(this.vnop_STROKE[ccflag]){ el.stroke = Candle.parse(g.strokeStyle);}
-				return false;
-			}
 		: /* (this.use.svg) */
 			function(vid, ccflag){
 				var g = this.context
@@ -591,8 +580,7 @@ pzpr.createPuzzleClass('Graphic',
 				if(!g.elements[vid]){ return;}
 
 				if(g.use.svg){ g.elements[vid].setAttribute('display','inline');}
-				else if(g.use.vml){ g.elements[vid].style.display = 'inline';}
-				else{ g.elements[vid].Visibility = "Visible";}
+				else /* if(g.use.vml) */{ g.elements[vid].style.display = 'inline';}
 			}
 		);
 		this.vshow(vid);
@@ -609,8 +597,7 @@ pzpr.createPuzzleClass('Graphic',
 					if(!g.elements[vid[i]]){ continue;}
 
 					if(g.use.svg){ g.elements[vid[i]].setAttribute('display','none');}
-					else if(g.use.vml){ g.elements[vid[i]].style.display = 'none';}
-					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					else /* if(g.use.vml) */{ g.elements[vid[i]].style.display = 'none';}
 				}
 			}
 		);
@@ -626,8 +613,7 @@ pzpr.createPuzzleClass('Graphic',
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
-					if(!g.use.sl){ g.target.removeChild(g.elements[vid[i]]);}
-					else{ g.elements[vid[i]].Visibility = "Collapsed";}
+					g.target.removeChild(g.elements[vid[i]]);
 					g.elements[vid[i]] = null;
 				}
 			}
@@ -653,8 +639,7 @@ pzpr.createPuzzleClass('Graphic',
 					this.zidx++;
 					this.zidx_array[layerid] = this.zidx;
 					if(rendering){ g.setRendering(rendering);}
-					if(!g.use.sl){ g.getLayerElement().style.zIndex = this.zidx;}
-					else{ g.getLayerElement()["Canvas.ZIndex"] = this.zidx;}
+					g.getLayerElement().style.zIndex = this.zidx;
 				}
 				return g;
 			}

@@ -267,8 +267,7 @@ ui.event =
 		
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
-		if     (g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
-		else if(g.use.sl) { pc.x0+=val; pc.y0+=val;}
+		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
 		
 		return true;
 	},

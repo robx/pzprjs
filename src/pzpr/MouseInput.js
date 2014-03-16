@@ -125,7 +125,7 @@ pzpr.createPuzzleClass('MouseEvent',
 		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
 		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
 		var g = pc.context;
-		if(!!g && (g.use.vml || g.use.sl)){ addr.move(+0.33,+0.33);}
+		if(!!g && g.use.vml){ addr.move(+0.33,+0.33);}
 		return addr;
 	},
 
