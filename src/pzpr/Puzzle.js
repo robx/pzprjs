@@ -246,13 +246,14 @@ pzpr.Puzzle.prototype =
 		
 		type = type || this.opt.graphic || '';
 		/* fillTextが使えない場合は強制的にSVG描画に変更する */
-		if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
+		if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 		
 		var o = this;
 		o.canvas = el;
 		Candle.start(el.id, type, function(g){
 			pzpr.util.unselectable(g.canvas);
 			g.child.style.pointerEvents = 'none';
+			if(g.use.vml){ g.canvas.style.display='block'; g.canvas.style.position='relative';}
 			if(g.use.sl){ o.setSLKeyEvents(g);}
 			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
 			if(o.ready){ o.waitCanvasReady(callback);}

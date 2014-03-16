@@ -16,7 +16,11 @@ window.pzpr = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas, option){
-		if(arguments.length===1 && !(canvas instanceof HTMLElement)){ option=canvas; canvas=(void 0);}
+		var canvasNotElement;
+		try{ canvasNotElement = (canvas instanceof HTMLElement);}
+		/* IE8以下だとHTMLElementが定義されておらずエラーになる */
+		catch(e){ canvasNotElement = !(canvas && canvas.style);}
+		if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
 		
 		var puzzle = new pzpr.Puzzle(canvas, option);
 		this.puzzles.push(puzzle);
@@ -113,8 +117,11 @@ window.pzpr = {
 if(!!document.addEventListener){
 	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
 }
-else if(navigator.userAgent.test(/MSIE 8/)){
-	document.attachEvent('onreadystatechange', function(){ if(document.readyState==='interactive'){ pzpr.postload();}});
+else if(navigator.userAgent.match(/MSIE 8/)){
+	document.attachEvent('onreadystatechange', function(){
+		var state = document.readyState;
+		if(state==='interactive'||state=='complete'){ pzpr.postload();}
+	});
 }
 else{
 	(function(){
