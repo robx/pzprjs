@@ -177,6 +177,7 @@ ui.menuarea = {
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
+		ac('fullwidth', 'disp', '横幅最大拡張', 'Expand Canvas Width');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');

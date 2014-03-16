@@ -201,11 +201,11 @@ ui.menu = {
 		/* 表示サイズ */
 		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
 
-		/* テキストのサイズ */
-		this.menuconfig.textsize = {val:(!pzpr.env.OS.mobile?0:2), option:[0,1,2,3]};
-
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
+
+		/* キャンバスを横幅いっぱいに広げる */
+		this.menuconfig.fullwidth = {val:(ui.event.windowWidth()<600)};
 	},
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}
@@ -214,12 +214,8 @@ ui.menu = {
 		if(idname==='keypopup'){
 			ui.keypopup.display();
 		}
-		else if(idname==='adjsize' || idname==='cellsize'){
+		else if(idname==='adjsize' || idname==='cellsize' || idname==='fullwidth'){
 			ui.event.adjustcellsize();
-		}
-		else if(idname==='textsize'){
-			this.settextsize();
-			ui.puzzle.adjustCanvasSize();	/* pageX/Yの位置がずれる */
 		}
 	},
 	getMenuConfig : function(idname){
@@ -250,7 +246,6 @@ ui.menu = {
 	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	settextsize : function(num){
-		var val = this.menuconfig.textsize.val;
 		this.modifyCSS({'.outofboard':{
 			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
 			lineHeight:['1.2','1.1','1.1','1.1'][num]

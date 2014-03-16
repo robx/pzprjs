@@ -255,10 +255,9 @@ ui.event =
 		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(pzpr.env.OS.mobile){
+		if(ui.menu.getMenuConfig('fullwidth')){
 			mwidth = wwidth*0.98;
 			cellsize = (mwidth*0.92)/cols;
-			if(cellsize < cellsizeval){ cellsize = cellsizeval;}
 		}
 		// 縮小が必要ない場合
 		else if(!ui.menu.getMenuConfig('adjsize') || cols < ci[0]){
@@ -280,7 +279,7 @@ ui.event =
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzpr.env.OS.mobile){ getEL('menuboard').style.width = '90%';}
+			if(ui.menu.getMenuConfig('fullwidth')){ getEL('menuboard').style.width = '90%';}
 		}
 
 		o.setCanvasSizeByCellSize(cellsize);
@@ -303,7 +302,7 @@ ui.event =
 			
 			default: padding = 0.50; break;
 		}
-		if(pzpr.env.OS.mobile){ padding = 0;}
+		if(ui.menu.getMenuConfig('fullwidth')){ padding = 0;}
 		
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
@@ -314,24 +313,10 @@ ui.event =
 
 	//----------------------------------------------------------------------
 	// pc.windowWidth()   ウィンドウの幅を返す
-	// pc.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
 	windowWidth : function(){
-		this.windowWidth = ((!pzpr.env.OS.mobile) ?
-			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);}
-		:
-			function(){ return 980;}
-		);
-		return this.windowWidth();
+		return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);
 	}
-	// windowHeight : function(){
-	//	this.windowHeight = ((!pzpr.env.OS.mobile) ?
-	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : _doc.body.clientHeight);}
-	//	:
-	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
-	//	);
-	//	return this.windowHeight();
-	// }
 };
 
 ui.util = {
