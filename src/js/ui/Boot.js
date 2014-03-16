@@ -114,18 +114,16 @@ function importURL(){
 	// エディタモードかplayerモードか、等を判定する
 	if(search==="test"){ search = 'country_test';}
 	
-	var startmode = 'PLAYER';
+	var startmode = '';
 	if     (search.match(/_test/)){ startmode = 'EDITOR'; ui.debugmode = true;}
 	else if(search.match(/^m\+/)) { startmode = 'EDITOR';}
 	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
-	/* else if(search.match(/_play/)){ startmode = 'PLAYER';} */
+	else if(search.match(/_play/)){ startmode = 'PLAYER';}
 
 	var pzl = pzpr.url.parseURL("?"+search);
 	if(!!pzl.qdata){ pzl.url = search;}
 
-	if(!startmode){
-		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
-	}
+	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
 	pzpr.EDITOR = (startmode==='EDITOR');
 	pzpr.PLAYER = !pzpr.EDITOR;
 
