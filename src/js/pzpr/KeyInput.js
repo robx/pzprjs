@@ -52,12 +52,8 @@ pzpr.createPuzzleClass('KeyEvent',
 	},
 	setfocus : function(){
 		var canvas = this.owner.canvas;
-		if(pzpr.env.OS.iOS || this.key.isenablemode()){
-			canvas.focus();
-		}
-		else{
-			canvas.blur();
-		}
+		if(pzpr.env.OS.iOS || this.isenablemode()){ canvas.focus();}
+		else                                      { canvas.blur();}
 	},
 
 	//---------------------------------------------------------------------------
