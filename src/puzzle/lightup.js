@@ -7,7 +7,7 @@ pzpr.createCustoms('lightup', {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
-			if(this.mousestart || (this.mousemove && this.btn.Right)){ this.inputcell();}
+			if(this.mousestart || (this.mousemove && (this.inputData!==1))){ this.inputcell();}
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}

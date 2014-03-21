@@ -1296,8 +1296,9 @@ pzpr.extendPuzzleClass('Graphic',
 	dispnum : function(key, type, text, fontratio, color, px, py){
 		var g = this.context;
 		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
+		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
 
-		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px 'Serif'");
+		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px "+fontfamily);
 		g.fillStyle = color;
 
 		switch(type){
@@ -1310,11 +1311,12 @@ pzpr.extendPuzzleClass('Graphic',
 			case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
 			case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
 		}
-		if((g.use.vml || g.use.sl) && (type===1||type===4||type===5)){py++;}
-		if(g.use.vml){ py-=(fontsize*0.20);}
-
+		
 		var vid = "text_"+key;
 		if(g.use.vml){
+			if(type===1||type===4||type===5){ py++;}
+			py -= (fontsize*0.20);
+			
 			if(!!g.elements[vid]){
 				this.hidenum(key);
 				g.target.removeChild(g.elements[vid].parentNode);

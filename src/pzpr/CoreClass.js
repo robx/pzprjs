@@ -16,7 +16,11 @@ window.pzpr = {
 	// パズルを生成する
 	//---------------------------------------------------------------
 	createPuzzle : function(canvas, option){
-		if(arguments.length===1 && !(canvas instanceof HTMLElement)){ option=canvas; canvas=(void 0);}
+		var canvasNotElement;
+		try{ canvasNotElement = !(canvas instanceof HTMLElement);}
+		/* IE8以下だとHTMLElementが定義されておらずエラーになる */
+		catch(e){ canvasNotElement = !(canvas && canvas.style);}
+		if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
 		
 		var puzzle = new pzpr.Puzzle(canvas, option);
 		this.puzzles.push(puzzle);
@@ -71,6 +75,21 @@ window.pzpr = {
 	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}},
 
 	//---------------------------------------------------------------
+	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
+	//---------------------------------------------------------------
+	addWindowEvents : function(){
+		var ev = ['resize', 'orientationchange', 'pageshow', 'focus'];
+		for(var i=0;i<ev.length;i++){
+			pzpr.util.addEvent(window, ev[i], pzpr, pzpr.onresize);
+		}
+	},
+	onresize : function(e){
+		for(var i=0,len=this.puzzles.length;i<len;i++){
+			this.puzzles[i].resetPagePos();
+		}
+	},
+
+	//---------------------------------------------------------------
 	// 起動時関連関数
 	//---------------------------------------------------------------
 	preinit : true,
@@ -80,9 +99,11 @@ window.pzpr = {
 		else{ func();}
 	},
 	postload : function(){
-		if(!!window.Candle){
-			this.addKeyEvents();
+		if(!this.preinit){}
+		else if(!!window.Candle){
 			this.preinit = false;
+			this.addWindowEvents();
+			this.addKeyEvents();
 			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
 			this.loadfun = [];
 		}
@@ -96,8 +117,11 @@ window.pzpr = {
 if(!!document.addEventListener){
 	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
 }
-else if(navigator.userAgent.test(/MSIE 8/)){
-	document.attachEvent('onreadystatechange', function(){ if(document.readyState==='interactive'){ pzpr.postload();}});
+else if(navigator.userAgent.match(/MSIE 8/)){
+	document.attachEvent('onreadystatechange', function(){
+		var state = document.readyState;
+		if(state==='interactive'||state=='complete'){ pzpr.postload();}
+	});
 }
 else{
 	(function(){
@@ -314,6 +338,7 @@ pzpr.env = (function(){
 	};
 	bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
 	bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
+	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
@@ -332,8 +357,8 @@ pzpr.env = (function(){
 			if(!!dbtmp){ val |= 0x02;}
 		}}catch(e){}
 		
-		// Firefoxはローカルだとデータベース系は使えない
-		if(bz.Gecko && !location.hostname){ val = 0;}
+		// Firefox 8.0より前はローカルだとデータベース系は使えない
+		if(Gecko7orOlder && !location.hostname){ val = 0;}
 		
 		return {
 			session : !!(val & 0x10),

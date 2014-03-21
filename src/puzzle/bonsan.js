@@ -190,7 +190,7 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
-		this.decodeCellQsub();
+		this.decodeCellQsubQcmp();
 		this.decodeBorderQues();
 		this.decodeBorderLine();
 
@@ -198,9 +198,26 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCellQnum();
-		this.encodeCellQsub();
+		this.encodeCellQsubQcmp();
 		this.encodeBorderQues();
 		this.encodeBorderLine();
+	},
+
+	/* decode/encodeCellQsubの上位互換です */
+	decodeCellQsubQcmp : function(){
+		this.decodeCell( function(obj,ca){
+			if(ca!=="0"){
+				var num = parseInt(ca);
+				obj.qsub = num & 0x0f;
+				obj.qcmp = (num >> 4)|0;
+			}
+		});
+	},
+	encodeCellQsubQcmp : function(){
+		this.encodeCell( function(obj){
+			var num = obj.qsub + (obj.qcmp << 4);
+			return (num.toString() + " ");
+		});
 	}
 },
 

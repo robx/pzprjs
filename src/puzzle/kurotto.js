@@ -78,19 +78,22 @@ Graphic:{
 	},
 
 	// オーバーライド
-	paintRange : function(x1,y1,x2,y2){
-		var puzzle = this.owner, bd = puzzle.board;
+	setRange : function(x1,y1,x2,y2){
+ 		var puzzle = this.owner, bd = puzzle.board;
 		if(puzzle.getConfig('autocmp')){
-			this.check_binfo = bd.getBCellInfo();
-			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
+			x1 = bd.minbx-2;
+			y1 = bd.minby-2;
+			x2 = bd.maxbx+2;
+			y2 = bd.maxby+2;
 		}
-		else{
-			this.check_binfo = null;
-			this.setRange(x1,y1,x2,y2);
-		}
-		this.prepaint();
+		
+		this.Common.prototype.setRange.call(this,x1,y1,x2,y2);
 	},
+
 	paint : function(){
+		var puzzle = this.owner, bd = puzzle.board;
+		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getBCellInfo() : null);
+		
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawBlackCells();
@@ -105,7 +108,7 @@ Graphic:{
 
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
-			var cmpcell = (this.owner.getConfig('autocmp') && cell.checkComplete(this.check_binfo));
+			var cmpcell = (!!this.check_binfo && cell.checkComplete(this.check_binfo));
 			return (cmpcell ? this.bcolor : this.circledcolor);
 		}
 		return null;

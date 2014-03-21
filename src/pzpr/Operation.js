@@ -262,7 +262,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.enableUndo = (this.position>0);
 		this.enableRedo = (this.position<this.ope.length);
 
-		this.owner.execListener('historymove');
+		this.owner.execListener('history');
 	},
 	allerase : function(){
 		this.lastope  = null;
@@ -351,7 +351,7 @@ pzpr.createPuzzleClass('OperationManager',
 				this.changeflag = true;
 				ref.num = num;
 				this.owner.checker.resetCache();
-				this.owner.execListener('historychange');
+				this.owner.execListener('history');
 				return false;
 			}
 			return true;
@@ -398,7 +398,6 @@ pzpr.createPuzzleClass('OperationManager',
 		/* ファイル内容のデコード */
 		if(datas.length>0 && !!window.JSON){
 			try{
-				console.log(datas.join(''));
 				var str = datas.join(''), history = JSON.parse(str);
 				this.ope = [];
 				this.initpos = this.position = history.current;

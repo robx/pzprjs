@@ -160,6 +160,7 @@ pzpr.Puzzle.prototype =
 		if(!this.ready){
 			this.resetTime();
 			this.ready = true;
+			this.execListener('ready');
 		}
 	},
 	firstCanvasReady : function(){
@@ -197,27 +198,6 @@ pzpr.Puzzle.prototype =
 	execMouseOut  : function(e){ this.mouse.e_mouseout(e);},
 
 	//---------------------------------------------------------------------------
-	// owner.setSLKeyEvents() SilverLight系のキーボード入力に関するイベントを設定する
-	// owner.exec????()       キー入力へ分岐する(this.keyが不変でないためバイパスする)
-	//---------------------------------------------------------------------------
-	setSLKeyEvents : function(g){
-		// Silverlightのキー入力イベント設定
-		var receiver = this, sender = g.content.findName(g.canvasid);
-		sender.AddEventListener("KeyDown", function(s,a){ receiver.execSLKeyDown(s,a);});
-		sender.AddEventListener("KeyUp",   function(s,a){ receiver.execSLKeyUp(s,a);});
-	},
-	execSLKeyDown : function(sender, a){ /* a: keyEventArgs */
-		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
-						altKey:false, returnValue:false, preventDefault:function(){} };
-		return this.key.e_keydown(emulate);
-	},
-	execSLKeyUp : function(sender, a){ /* a: keyEventArgs */
-		var emulate = { keyCode : a.platformKeyCode, shiftKey:a.shift, ctrlKey:a.ctrl,
-						altKey:false, returnValue:false, preventDefault:function(){} };
-		return this.key.e_keyup(emulate);
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する
 	// owner.execListener() イベントが発生した時に呼ぶ関数を実行する
 	//---------------------------------------------------------------------------
@@ -245,14 +225,13 @@ pzpr.Puzzle.prototype =
 		
 		type = type || this.opt.graphic || '';
 		/* fillTextが使えない場合は強制的にSVG描画に変更する */
-		if(type==='canvas' && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
+		if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 		
 		var o = this;
 		o.canvas = el;
 		Candle.start(el.id, type, function(g){
 			pzpr.util.unselectable(g.canvas);
 			g.child.style.pointerEvents = 'none';
-			if(g.use.sl){ o.setSLKeyEvents(g);}
 			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
 			if(o.ready){ o.waitCanvasReady(callback);}
 			
@@ -284,6 +263,7 @@ pzpr.Puzzle.prototype =
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
 	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
+	// owner.resetPagePos()            ページサイズの変更時等に、Canvasの左上座標を変更する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
 		if(this.painter){
@@ -309,6 +289,26 @@ pzpr.Puzzle.prototype =
 		}
 		else{
 			this.painter.resizeCanvas();
+		}
+	},
+
+	resetPagePos : function(){
+		if(this.ready && this.painter){
+			this.painter.setPagePos();
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.redraw()   盤面の再描画を行う
+	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
+	//---------------------------------------------------------------------------
+	redraw : function(){
+		if(this.ready){ this.painter.paintAll();}
+	},
+	irowake : function(){
+		this.board.irowakeRemake();
+		if(this.getConfig('irowake')){
+			this.redraw();
 		}
 	},
 
@@ -349,20 +349,6 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.redraw()   盤面の再描画を行う
-	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
-	//---------------------------------------------------------------------------
-	redraw : function(){
-		if(this.ready){ this.painter.paintAll();}
-	},
-	irowake : function(){
-		this.board.irowakeRemake();
-		if(this.getConfig('irowake')){
-			this.redraw();
-		}
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.resetTime()      開始時間をリセットする
 	// owner.getTime()        開始からの時間をミリ秒単位で取得する
 	//---------------------------------------------------------------------------
@@ -397,9 +383,7 @@ pzpr.Puzzle.prototype =
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.check()              正答判定処理を行う
-	// owner.checkAnsAlert()      正答判定処理をしてalertに文字列を出す
-	// owner.getFailDescription() FailCodeから文字列を出力する
+	// owner.check()          正答判定処理を行う
 	//------------------------------------------------------------------------------
 	check : function(activemode){
 		if(!!activemode){
@@ -408,18 +392,11 @@ pzpr.Puzzle.prototype =
 		}
 		return this.checker.check(!!activemode);
 	},
-	checkAndAlert : function(activemode){
-		var failcode = this.check(!!activemode);
-		alert(this.getFailDescription(failcode));
-		return failcode;
-	},
-	getFailDescription : function(failcode){
-		return this.faillist.getStr(failcode);
-	},
 
 	//------------------------------------------------------------------------------
 	// owner.ansclear()       回答を消去する
 	// owner.subclear()       補助記号を消去する
+	// owner.clear()          回答・履歴を消去する
 	//------------------------------------------------------------------------------
 	ansclear : function(){
 		this.board.ansclear();
@@ -429,6 +406,16 @@ pzpr.Puzzle.prototype =
 	subclear : function(){
 		this.board.subclear();
 		this.redraw();
+	},
+	clear : function(){
+		if(pzpr.PLAYER){
+			this.ansclear();
+			this.opemgr.allerase();
+		}
+		else{
+			this.board.initBoardSize();
+			this.redraw();
+		}
 	},
 
 	//------------------------------------------------------------------------------
@@ -513,6 +500,7 @@ pzpr.util.Config.prototype =
 		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
 		/* 盤面表示設定 */
+		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */
 		this.add('irowake', false);								/* 線の色分け */
 		this.add('irowakeblk', false);							/* 黒マスの色分け */
@@ -568,7 +556,7 @@ pzpr.util.Config.prototype =
 		var result = true, o = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
+		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove': case 'font':
 			o.redraw();
 			break;
 		

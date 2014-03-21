@@ -28,7 +28,7 @@ window.ui = ui = {
 	// ui.openPuzzle() ui.puzzleオブジェクトにURLやファイルを読みこませる
 	//---------------------------------------------------------------------------
 	openPuzzle : function(data, callback){
-		ui.puzzle.open(data, ui.event.afterReady(callback));
+		ui.puzzle.open(data, callback);
 	}
 };
 
@@ -41,21 +41,6 @@ ui.event =
 	resizetimer : null,	// resizeタイマー
 
 	evlist : [],
-
-	//---------------------------------------------------------------------------
-	// event.afterReady()   パズルの準備完了後に呼び出す関数を作成する
-	//---------------------------------------------------------------------------
-	afterReady : function(callback){
-		return function(puzzle){
-			ui.menu.menuinit();					/* メニュー関係初期化 */
-			ui.event.adjustcellsize();
-			
-			if(!!callback){ callback(puzzle);}
-			
-			ui.undotimer.reset();
-			ui.timer.reset();					/* タイマーリセット(最後) */
-		};
-	},
 
 	//----------------------------------------------------------------------
 	// event.addEvent()          addEventListener(など)を呼び出す
@@ -97,13 +82,24 @@ ui.event =
 	// event.setListeners()  PuzzleのListenerを登録する
 	//---------------------------------------------------------------------------
 	setListeners : function(pzl){
+		pzl.addListener('ready',  this.onReady);
 		pzl.addListener('key',    this.key_common);
 		pzl.addListener('mouse',  this.mouse_common);
 		pzl.addListener('config', this.config_common);
 		pzl.addListener('modechange', function(){ ui.event.config_common(pzl,'mode');});
 		pzl.addListener('resize', this.onResize);
-		pzl.addListener('historymove',   function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
-		pzl.addListener('historychange', function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
+		pzl.addListener('history', function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
+	},
+
+	//---------------------------------------------------------------------------
+	// event.onReady()  パズル読み込み完了時に呼び出される関数
+	//---------------------------------------------------------------------------
+	onReady : function(puzzle){
+		ui.menu.menuinit();					/* メニュー関係初期化 */
+		ui.event.adjustcellsize();
+		
+		ui.undotimer.reset();
+		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
 
 	//---------------------------------------------------------------------------
@@ -271,8 +267,7 @@ ui.event =
 		
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
-		if     (g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
-		else if(g.use.sl) { pc.x0+=val; pc.y0+=val;}
+		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
 		
 		return true;
 	},
