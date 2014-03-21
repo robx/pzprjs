@@ -175,7 +175,7 @@ pzpr.classmgr = {
 		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = pzpr.util.getpath()+"puzzle/"+pzpr.url.toScript(pid)+".js";
+		_script.src = pzpr.util.getpath()+"js/puzzle/"+pzpr.url.toScript(pid)+".js";
 		document.body.appendChild(_script);
 		this.includedFile[pid] = true;
 	},

@@ -5,7 +5,7 @@
 <META NAME="robots" CONTENT="nofollow">
 <meta http-equiv="Content-Type" content="text/html">
 <TITLE>ぱずぷれv3 操作方法</TITLE>
-<link rel="stylesheet" href="./src/v3index.css" type="text/css" />
+<link rel="stylesheet" href="./css/v3index.css" type="text/css" />
 <style type="text/css">
 	td.sentence hr { margin-top:1.0em; margin-bottom:1.0em;}
 	td.sentence h4 { margin-top:0.5em; margin-bottom:0.1em;}
@@ -15,8 +15,8 @@
 	td.sentence dl dd { margin-left:24px; font-size:small;}
 	td.sentence dl dd span.brreq { color:red;}
 </style>
-<script type="text/javascript" src="./src/v3index.js"></script>
-<script type="text/javascript" src="../../dist/pzpr.js"></script>
+<script type="text/javascript" src="./js/v3index.js"></script>
+<script type="text/javascript" src="./js/pzprv3.js"></script>
 </HEAD>
 <BODY>
 
@@ -134,11 +134,11 @@
     <dt>ファイルを開く</dt><dd>ぱずぷれv3、pencilboxで出力されたファイルを開くことができます。
     現在の盤面は消去されます。</dd>
     <dt>ファイル保存</dt><dd>ぱずぷれv3形式、pencilbox形式のファイルを保存できます。</dd>
-    <dt>一時保存/戻す</dt><dd>現在の盤面データをブラウザの記憶領域に保存しておくことができます。
+    <dt>ブラウザ保存</dt><dd>現在の盤面データをブラウザの記憶領域に保存しておくことができます。
     難易度やコメントも記録することができます。別ブラウザからは参照できません。<br>
     <span class="brreq">※Internet Explorer8.0+, Firefox2.0+, Google Chrome 4.0+,
     Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
-    <dt>画像を保存</dt><dd>現在の盤面の画像を別タブで開くか、画像としてpng形式でダウンロードできます。
+    <dt>画像を保存</dt><dd>現在の盤面の画像を別タブで開くか、画像としてpng形式もしくはSVG形式でダウンロードできます。
     カーソルは表示されません。<br><span class="brreq">※Internet Explorer9.0+,
     Firefox3.5+, Google Chrome 2.0+, Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
    </dl>
@@ -168,12 +168,12 @@
     <dt>Open the file</dt><dd>Open the file that is saved from PUZPRE v3 and pencilbox.
      Current board is wiped out.</dd>
     <dt>Save the file AS ...</dt><dd>Save the PUZPRE v3 or pencilbox file.</dd>
-    <dt>Temporary save</dt><dd>Save current board to browser storage with difficulty and comment.
+    <dt>Browser Save</dt><dd>Save current board to browser storage with difficulty and comment.
     Same machine and browser will be able to access the data.<br>
     <span class="brreq">- This feature is enabled with Internet Explorer8.0+, Firefox2.0+,
      Google Chrome 4.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
     <dt>Save the Image</dt><dd>Open another tab and output the image of current board there or
-    download it as png format. The cursor is hidden.<br><span class="brreq">- This feature is enabled
+    download it as png or svg format. The cursor is hidden.<br><span class="brreq">- This feature is enabled
     with Internet Explorer9.0+, Firefox3.5+, Google Chrome 2.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
    </dl>
    <hr>
@@ -201,9 +201,10 @@
   <td class="sentence" id="menu2_ja">
    <h4>[表示]メニュー</h4>
    <dl>
-    <dt>サイズ指定</dt><dd>盤面のサイズを指定します。セルのサイズをピクセル単位で入力します。</dd>
-    <dt>表示サイズ</dt><dd>「サイズ指定」で指定したサイズの拡大率を指定します。</dd>
-    <dt>テキストのサイズ</dt><dd>盤面以外のテキストのサイズを大きくします。</dd>
+    <dt>表示サイズ</dt><dd>盤面の大きさを指定します</dd>
+    <dt>[表示サイズ] - サイズ指定</dt><dd>盤面のサイズを指定します。セルのサイズをピクセル単位で入力します。</dd>
+    <dt>[表示サイズ] - 表示倍率</dt><dd>「サイズ指定」で指定したサイズの拡大率を指定します。</dd>
+    <dt>フォント</dt><dd>文字をゴシック体で描画するか、明朝体で描画するか指定します。</dd>
     <dt>線の色分け</dt><dd>線の自動色分け機能がついているパズルで、色分け機能の有効/無効を切り替えます。</dd>
     <dt>カーソルの表示</dt><dd>カーソルの表示/非表示を切り替えます。</dd>
     <dt>自動横幅調節</dt><dd>ウィンドウに入るように盤面のサイズを調節する機能の有効/無効を切り替えます。</dd>
@@ -238,9 +239,10 @@
   <td class="sentence" id="menu2_en">
    <h4>[Display] menu</h4>
    <dl>
-    <dt>Cell Size</dt><dd>Set the pixel size of the cells.</dd>
-    <dt>Display size</dt><dd>Set the zoom ratio of the board.</dd>
-    <dt>Text size</dt><dd>Zoom text size without themselves in the board.</dd>
+    <dt>Cell Size</dt><dd>Set the board size by cell size.</dd>
+    <dt>[Cell Size] - Cell Size</dt><dd>Set the pixel size of the cells.</dd>
+    <dt>[Cell Size] - Display size</dt><dd>Set the zoom ratio of the board.</dd>
+    <dt>Font</dt><dd>Set the board font either sans-serif or serif.</dd>
     <dt>Encolor lines</dt><dd>If the puzzle has the feature, set the encolor line feature enabled.</dd>
     <dt>Display cursor</dt><dd>Toggles to display the cursor on the board.</dd>
     <dt>Auto Size Fix</dt><dd>Set the feature that reduces the size in order to squeeze up the whole board.</dd>

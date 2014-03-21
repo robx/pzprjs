@@ -1,10 +1,4 @@
 // Menu.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(arguments.callee,15); return;}
-
-var _doc = document;
 
 //---------------------------------------------------------------------------
 // ★Menuクラス [ファイル]等のメニューの動作を設定する
@@ -12,22 +6,21 @@ var _doc = document;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
-var Menu = function(){
-	this.menupid = '';				// どの種類のパズルのメニューを表示しているか
-
-	this.menuconfig = {};
-
-	this.reader;	// FileReaderオブジェクト
-
-	this.enableSaveImage = false; // 画像保存が有効か
-
-	this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
-	this.enableReadText = false;
+ui.menu = {
+	menupid : '',				// どの種類のパズルのメニューを表示しているか
+	menuconfig : {},			// MenuConfigの設定内容を保持する
 	
-	this.enableSaveBlob = false;
-};
-Menu.prototype =
-{
+	enableSaveImage : false,	// 画像保存(png形式)が可能か
+	enableSaveSVG   : false,	// 画像保存(SVG形式)が可能か
+	enableGetText   : false,	// FileReader APIの旧仕様でファイルが読めるか
+	enableReadText  : false,	// HTML5 FileReader APIでファイルが読めるか
+	enableSaveBlob  : false,	// saveBlobが使用できるか
+	
+	reader : null,				// FileReaderオブジェクト
+	
+	//---------------------------------------------------------------------------
+	// menu.init()   初回起動時の初期化関数
+	//---------------------------------------------------------------------------
 	init : function(){
 		this.initMenuConfig();
 		
@@ -39,6 +32,8 @@ Menu.prototype =
 		
 		window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
 		this.enableSaveBlob = (!!window.navigator.saveBlob);
+		
+		this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	},
 	
 	//---------------------------------------------------------------------------
@@ -99,7 +94,7 @@ Menu.prototype =
 		else{
 			this.reader = new FileReader();
 			this.reader.onload = function(e){
-				ui.openPuzzle(e.target.result);
+				ui.puzzle.open(e.target.result);
 			};
 		}
 	},
@@ -206,11 +201,11 @@ Menu.prototype =
 		/* 表示サイズ */
 		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
 
-		/* テキストのサイズ */
-		this.menuconfig.textsize = {val:(!pzpr.env.OS.mobile?0:2), option:[0,1,2,3]};
-
 		/* セルのサイズ設定用 */
 		this.menuconfig.cellsizeval = {val:36};
+
+		/* キャンバスを横幅いっぱいに広げる */
+		this.menuconfig.fullwidth = {val:(ui.event.windowWidth()<600)};
 	},
 	setMenuConfig : function(idname, newval){
 		if(!this.menuconfig[idname]){ return;}
@@ -219,16 +214,29 @@ Menu.prototype =
 		if(idname==='keypopup'){
 			ui.keypopup.display();
 		}
-		else if(idname==='adjsize' || idname==='cellsize'){
+		else if(idname==='adjsize' || idname==='cellsize' || idname==='fullwidth'){
 			ui.event.adjustcellsize();
-		}
-		else if(idname==='textsize'){
-			this.settextsize();
-			ui.puzzle.adjustCanvasSize();	/* pageX/Yの位置がずれる */
 		}
 	},
 	getMenuConfig : function(idname){
 		return (!!this.menuconfig[idname]?this.menuconfig[idname].val:null);
+	},
+
+	//---------------------------------------------------------------------------
+	// menu.saveMenuConfig()     全フラグの設定値を返す
+	// menu.restoreMenuConfig()  全フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	saveMenuConfig : function(){
+		var object = {};
+		for(var key in this.menuconfig){ object[key] = this.menuconfig[key].val;}
+		delete object.autocheck;
+		return JSON.stringify(object);
+	},
+	restoreMenuConfig : function(json){
+		var object = JSON.parse(json);
+		for(var key in this.menuconfig){
+			if(object[key]!==void 0){ this.menuconfig[key].val = object[key];}
+		}
 	},
 
 //--------------------------------------------------------------------------------------------------------------
@@ -238,7 +246,6 @@ Menu.prototype =
 	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	settextsize : function(num){
-		var val = this.menuconfig.textsize.val;
 		this.modifyCSS({'.outofboard':{
 			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
 			lineHeight:['1.2','1.1','1.1','1.1'][num]
@@ -287,41 +294,14 @@ Menu.prototype =
 	confirmStr : function(strJP, strEN){
 		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
+	promptStr : function(strJP, strEN, initialStr){
+		return prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
+	},
 
 //--------------------------------------------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------------
-	// menu.filesave()   ファイルを保存する
-	//------------------------------------------------------------------------------
-	filesave : function(ftype){
-		var fname = prompt("保存するファイル名を入力して下さい。", ui.puzzle.pid+".txt");
-		if(!fname){ return;}
-		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
-		for(var i=0;i<prohibit.length;i++){ if(fname.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;} }
-
-		if(!this.enableSaveBlob){
-			var form = _doc.fileform2;
-			form.filename.value = fname;
-
-			if     (navigator.platform.indexOf("Win")!==-1){ form.platform.value = "Win";}
-			else if(navigator.platform.indexOf("Mac")!==-1){ form.platform.value = "Mac";}
-			else                                           { form.platform.value = "Others";}
-
-			form.ques.value   = ui.puzzle.getFileData(ftype);
-			form.urlstr.value = "";
-			form.operation.value = 'save';
-
-			form.action = this.fileio
-			form.submit();
-		}
-		else{
-			var blob = new Blob([ui.puzzle.getFileData(ftype)], {type:'text/plain'});
-			navigator.saveBlob(blob, fname);
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.duplicate() 盤面の複製を行う => 受取はCoreClass.jsのimportFileData()
+	// menu.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
 		var filestr = ui.puzzle.getFileData(pzpr.consts.FILE_PZPH);
@@ -336,64 +316,6 @@ Menu.prototype =
 		else{
 			localStorage['pzprv3_filedata'] = filestr;
 			window.open(url,'');
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.imagesave()   画像を保存する
-	// menu.submitimage() "画像をダウンロード"の処理ルーチン
-	// menu.saveimage()   "画像をダウンロード"の処理ルーチン (IE10用)
-	// menu.openimage()   "別ウィンドウで開く"の処理ルーチン
-	//------------------------------------------------------------------------------
-	imagesave : function(type,isDL,cellsize){
-		var dataurl = "", blob = null;
-		type = (type!=='svg'?'png':'svg');
-		
-		try{
-			if(isDL && this.enableSaveBlob){ blob    = ui.puzzle.toBlob(type,cellsize);   }
-			else                           { dataurl = ui.puzzle.toDataURL(type,cellsize);}
-		}
-		catch(e){
-			this.alertStr('画像の出力に失敗しました','Fail to Output the Image');
-		}
-		
-		try{
-			if     (!isDL &&                         !!dataurl){ this.openimage(dataurl);       }
-			else if( isDL && !this.enableSaveBlob && !!dataurl){ this.submitimage(type,dataurl);}
-			else if( isDL &&  this.enableSaveBlob && !!blob)   { this.saveimage(type,blob);     }
-		}
-		catch(e){
-			this.alertStr('画像の保存に失敗しました','Fail to Save the Image');
-		}
-	},
-
-	submitimage : function(type,url){
-		url = url.replace('data:image/png;base64,', '');
-		url = url.replace('data:image/svg+xml;base64,', '');
-		_doc.fileform2.filename.value  = ui.puzzle.pid+'.'+type;
-		_doc.fileform2.urlstr.value    = url;
-		_doc.fileform2.operation.value = 'imagesave';
-
-		_doc.fileform2.action = this.fileio
-		_doc.fileform2.submit();
-	},
-	saveimage : function(type,blob){
-		navigator.saveBlob(blob, ui.puzzle.pid+'.'+type);
-	},
-	openimage : function(url){
-		if(!pzpr.env.browser.IE9){
-			window.open(url, '', '');
-		}
-		else{
-			// IE9だとアドレスバーの長さが2KBだったり、
-			// そもそもDataURL入れても何も起こらなかったりする対策
-			var cdoc = window.open('', '', '').document;
-			cdoc.open();
-			cdoc.writeln("<!DOCTYPE html>\n<HTML LANG=\"ja\">\n<HEAD>");
-			cdoc.writeln("<META CHARSET=\"utf-8\">");
-			cdoc.writeln("<TITLE>ぱずぷれv3<\/TITLE>\n<\/HEAD>");
-			cdoc.writeln("<BODY><img src=\"", url, "\"><\/BODY>\n<\/HTML>");
-			cdoc.close();
 		}
 	},
 
@@ -531,8 +453,3 @@ function toBGimage(pid){
 
 	return "data:image/gif;base64,"+header+data[0]+'wAAAAAEAAQAAAC'+data[1];
 };
-
-/* extern */
-ui.menu = new Menu();
-
-})();

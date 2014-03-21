@@ -60,8 +60,7 @@ v3index.extend({
 	},
 	input_init : function(){
 		// HTML5 - Web localStorage判定用(localStorage)
-		try{ if(pzpr.env.storage.localST){ self.LS = true;}}
-		catch(e){}
+		if(pzpr.env.storage.localST){ self.LS = true;}
 
 		var cnt=0;
 		if(self.urlif.init()) { cnt++;}
@@ -233,7 +232,6 @@ var v3index = window.v3index;
 
 v3index.dbif = {
 	list   : [],
-	LS     : false,
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
@@ -318,12 +316,14 @@ v3index.dbif.extend({
 			return str;
 		})();
 
+		var language = (!location.href.match("index_en.html")?"ja":"en")
+
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid][v3index.language]+"&nbsp;");
+		str += (pzpr.url.info[row.pid][language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][v3index.language]+"&nbsp;");
+			str += (hardstr[row.hard][language]+"&nbsp;");
 		}
 		str += ("("+datestr+")");
 		return str;

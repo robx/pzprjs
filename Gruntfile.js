@@ -1,4 +1,5 @@
 var component = [
+ 'lib/candle',
  'pzpr/CoreClass',
  'pzpr/Puzzle',
  'pzpr/BoardPiece',
@@ -20,11 +21,21 @@ var component = [
  'puzzle-common/Answer',
  'puzzle-common/BoardExec',
  'puzzle-common/Encode',
- 'puzzle-common/FileData'
+ 'puzzle-common/FileData',
+ 'ui/Boot',
+ 'ui/UI',
+ 'ui/Menu',
+ 'ui/MenuArea',
+ 'ui/PopupMenu',
+ 'ui/ToolArea',
+ 'ui/KeyPopup',
+ 'ui/DataBase',
+ 'ui/Timer',
+ 'ui/Debug'
 ];
 
 var banner_min = [
-  "/*! @license pzpr.js v<%= pkg.version %>"+
+  "/*! @license pzprv3.js v<%= pkg.version %>"+
   " (c) 2009-<%= grunt.template.today('yyyy') %> <%= pkg.author %>, MIT license",
   " *   https://bitbucket.org/sabo2/pzprv3 */",
   ""
@@ -33,7 +44,7 @@ var banner_full = [
   "/*!",
   " * @license",
   " * ",
-  " * pzpr.js v<%= pkg.version %>",
+  " * pzprv3.js v<%= pkg.version %>",
   " *  https://bitbucket.org/sabo2/pzprv3",
   " * ",
   " * This script includes candle.js, see below",
@@ -51,121 +62,92 @@ var banner_full = [
  ].join("\n")
 
 module.exports = function(grunt){
+  var replacer = [{ from: "<deploy-version>", to: "<%= pkg.version %>"}];
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+
+    clean: ['dist/*'],
 
     concat: {
       options: {
         banner: banner_full
       },
-      pzpr: {
+      combine: {
         files: [
-          { src: [], dest: 'dist/js/pzpr.concat.js' }
-        ]
-      },
-      'pzpr-all': {
-        files: [
-          { src: [], dest: 'dist/js/pzpr-all.concat.js' }
-        ]
-      }
-    },
-
-    replace: {
-      pzpr: {
-        src: 'dist/js/pzpr.concat.js',
-        overwrite: true,
-        replacements: [
-          { from: "<deploy-version>", to: "<%= pkg.version %>"}
-        ]
-      },
-      'pzpr-all': {
-        src: 'dist/js/pzpr-all.concat.js',
-        overwrite: true,
-        replacements: [
-          { from: "<deploy-version>", to: "<%= pkg.version %>"}
-        ]
-      },
-      'pzpr-debug': {
-        src: 'dist/js/pzpr/CoreClass.js',
-        overwrite: true,
-        replacements: [
-          { from: "<deploy-version>", to: "<%= pkg.version %>"}
+          { src: [], dest: 'dist/js/pzprv3.concat.js' },
+          { src: [], dest: 'dist/js/pzprv3-all.concat.js' }
         ]
       }
     },
 
     copy: {
-      pzpr: {
+      debug: {
         files : [
-          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js' }
+          { expand: true, cwd: 'src/js',  src: ['**/*.js'], dest: 'dist/js'  },
+          { expand: true, cwd: 'src/css', src: ['*.css'],   dest: 'dist/css' },
+          { expand: true, cwd: 'src/img', src: ['*'],       dest: 'dist/img' },
+          { expand: true, cwd: 'src',     src: ['*'],       dest: 'dist' },
+          { src: 'src/js/pzprv3.js',     dest: 'dist/js/pzprv3.js'     },
+          { src: 'src/js/pzprv3-all.js', dest: 'dist/js/pzprv3-all.js' },
+          { src: 'src/js/v3index.js',    dest: 'dist/js/v3index.js'  }
         ]
       },
-      'pzpr-all': {
+      combine: {
         files : [
-          { src: 'dist/js/pzpr-all.concat.js', dest: 'dist/js/pzpr-all.js' }
+          { expand: true, cwd: 'src/js/puzzle',  src: ['*.js'], dest: 'dist/js/puzzle' },
+          { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
+          { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
+          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
+          { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js'     },
+          { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
+          { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js'  }
         ]
       },
-      'pzpr-debug': {
+      release: {
         files : [
-          { expand: true, cwd: 'src/js/pzpr',          src: ['*.js'], dest: 'dist/js/pzpr' },
-          { expand: true, cwd: 'src/js/puzzle-common', src: ['*.js'], dest: 'dist/js/puzzle-common' },
-          { src: 'src/js/pzpr.js',     dest: 'dist/js/pzpr.js'     },
-          { src: 'src/js/pzpr-all.js', dest: 'dist/js/pzpr-all.js' }
-        ]
-      },
-      puzzle: {
-        files : [
-          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' }
-        ]
-      },
-      image: {
-        files : [
-          { expand: true, cwd: 'src/img', src: ['*'], dest: 'dist/img/' }
+          { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
+          { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
+          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' }
         ]
       }
     },
 
-    clean: ['dist/*'],
+    replace: {
+      'debug-pzprv3':    { src: 'dist/js/pzpr/CoreClass.js',      overwrite: true, replacements: replacer },
+      'debug-ui':        { src: 'dist/js/ui/UI.js',               overwrite: true, replacements: replacer },
+      'combine-pzprv3':    { src: 'dist/js/pzprv3.concat.js',     overwrite: true, replacements: replacer },
+      'combine-pzprv3-all':{ src: 'dist/js/pzprv3-all.concat.js', overwrite: true, replacements: replacer }
+    },
 
     uglify: {
       options: {
         banner: banner_min,
         report: 'min',
       },
-      pzpr: {
+      release: {
         files: [
-          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js' },
-        ]
-      },
-      'pzpr-all': {
-        files: [
-          { src: 'dist/js/pzpr-all.concat.js', dest: 'dist/js/pzpr-all.js' },
-        ]
-      },
-      puzzle: {
-        files : [
-          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' }
+          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' },
+          { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js' },
+          { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
+          { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },
         ]
       }
-     }
+    }
   });
   
   function mod2file(mod){
     return "src/js/" + mod + ".js";
   }
   function wrap(array){
-    array.unshift("src/js/pzpr/intro.js");
-    array.push   ("src/js/pzpr/outro.js");
+    array.unshift("src/js/common/intro.js");
+    array.push   ("src/js/common/outro.js");
     
     array.unshift("src/js/lib/candle.js");
     return array;
   }
   
-  var prop = "concat.pzpr.files.0.src";
-  grunt.config.set(prop, wrap(component.map(mod2file)));
-  
-  prop = "concat.pzpr-all.files.0.src";
-  grunt.config.set(prop, wrap(component.map(mod2file).concat(['src/js/puzzle/*.js'])));
+  grunt.config.set("concat.combine.files.0.src", wrap(component.map(mod2file)));
+  grunt.config.set("concat.combine.files.1.src", wrap(component.map(mod2file).concat(['src/js/puzzle/*.js'])));
   
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -173,16 +155,10 @@ module.exports = function(grunt){
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-text-replace');
   
-  grunt.registerTask('default', ['clean', 'copy:pzpr-debug', 'replace:pzpr-debug', 'copy:puzzle', 'copy:image']);
+  grunt.registerTask('replace-debug',   ['replace:debug-pzprv3', 'replace:debug-ui'])
+  grunt.registerTask('replace-combine', ['replace:combine-pzprv3', 'replace:combine-pzprv3-all'])
   
-  grunt.registerTask('combine-pzpr',     ['concat:pzpr', 'replace:pzpr', 'copy:pzpr'])
-  grunt.registerTask('combine-pzpr-all', ['concat:pzpr-all', 'replace:pzpr-all', 'copy:pzpr-all'])
-  grunt.registerTask('combine-puzzle',   ['copy:puzzle', 'copy:image'])
-  
-  grunt.registerTask('release-pzpr',     ['concat:pzpr', 'replace:pzpr', 'uglify:pzpr'])
-  grunt.registerTask('release-pzpr-all', ['concat:pzpr-all', 'replace:pzpr-all', 'uglify:pzpr-all'])
-  grunt.registerTask('release-puzzle',   ['uglify:puzzle', 'copy:image'])
-  
-  grunt.registerTask('combine', ['clean', 'combine-puzzle', 'combine-pzpr', 'combine-pzpr-all']);
-  grunt.registerTask('release', ['clean', 'release-puzzle', 'release-pzpr', 'release-pzpr-all']);
+  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace-debug'                   ]);
+  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace-combine'                 ]);
+  grunt.registerTask('release', ['clean', 'concat:combine', 'copy:combine', 'replace-combine','uglify:release']);
 };

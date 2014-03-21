@@ -1,9 +1,4 @@
-// Boot.js v3.4.0
-
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui || !ui.popupmgr){ setTimeout(arguments.callee,15); return;}
+// Debug.js v3.4.0
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
@@ -37,7 +32,6 @@ ui.popupmgr.addpopup('debug',
 		if(ui.debugmode){
 			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
 		}
-		this.addExecButton("img", "img", function(){ debug.adjustimage();});
 		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
@@ -122,7 +116,7 @@ ui.debug =
 	},
 
 	fileopen : function(){
-		ui.openPuzzle(this.getTA());
+		ui.puzzle.open(this.getTA());
 	},
 
 	erasetext : function(){
@@ -157,19 +151,11 @@ ui.debug =
 		var text = "";
 		for(var i=0;i<localStorage.length;i++){
 			var key = localStorage.key(i);
-			text += (""+key+" "+localStorage[key]+"\n");
+			if(key.match(/^pzprv3/)){
+				text += (""+key+" "+localStorage[key]+"\n");
+			}
 		}
 		this.setTA(text);
-	},
-
-	adjustimage : function(){
-		var col = ui.puzzle.board.qcols, size = 17;
-		if     (col<= 6){ size = 28;}
-		else if(col<= 8){ size = 27;}
-		else if(col<= 8){ size = 24;}
-		else if(col<= 9){ size = 21;}
-		else if(col<=18){ size = 19;}
-		ui.menu.imagesave(false,size);
 	},
 
 	getTA : function(){ return document.testform.testarea.value;},
@@ -180,27 +166,9 @@ ui.debug =
 		if(!!this.includedScript[filename]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = getpath()+'../../../tests/script/'+filename;
+		_script.src = ui.util.getpath()+'../tests/script/'+filename;
 		document.body.appendChild(_script);
 		this.includedScript[filename] = true;
 	},
 	includedScript : {}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-
-function getpath(){
-	var dir="", srcs=document.getElementsByTagName('script');
-	for(var i=0;i<srcs.length;i++){
-		var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
-		if(result){
-			if(result[1].match(/\/$/)){ dir = result[1];}
-			else{ dir = result[1]+'/';}
-			break;
-		}
-	}
-	return dir;
-}
-
-})();

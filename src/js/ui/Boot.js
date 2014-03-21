@@ -5,9 +5,11 @@
 /* 初期化時のみ使用するルーチン */
 /********************************/
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
+if(!location.href.match(/\/p\.html/)){ return;}
 
 var require_accesslog = true;
 var onload_pzl = null;
+var onload_option = {imagesave:true};
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
@@ -27,6 +29,7 @@ function includePzprFile(){
 		
 		/* 指定されたパズルがない場合はさようなら～ */
 		if(!onload_pzl || !onload_pzl.id){
+			_doc.getElementById('title2').innerHTML = "Fail to import puzzle data or URL.";
 			throw "No Include Puzzle Data Exception";
 		}
 	}
@@ -61,29 +64,29 @@ function startPuzzle(){
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
-	ui.puzzle = pzpr.createPuzzle(element, {graphic:'canvas', imagesave:true});
-	pzpr.connectKeyEvents(ui.puzzle);
+	var puzzle = ui.puzzle = pzpr.createPuzzle(element, onload_option);
+	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
-	ui.event.setListeners(ui.puzzle);
+	ui.event.onload_func();
+	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
-	if     (!!pzl.fstr)  { ui.openPuzzle(pzl.fstr, afterBoot);}
-	else if(!!pzl.url)   { ui.openPuzzle(pzl.url, afterBoot);}
-	else if(ui.debugmode){ ui.openPuzzle(pid+"/"+ui.debug.urls[pid], afterBoot);}
-	else if(!!pid)       { ui.openPuzzle(pid, afterBoot);}
+	var inputdata = pzl.fstr || pzl.url;
+	if(!ui.debugmode){
+		puzzle.open((inputdata || pid), accesslog);
+	}
+	else{
+		puzzle.open((inputdata || pid+"/"+ui.debug.urls[pid]),
+		function(puzzle){
+			puzzle.modechange(pzpr.consts.MODE_PLAYER);
+			ui.menu.setMenuConfig('autocheck', true);
+			accesslog();
+		});
+	}
 	
 	return true;
-}
-
-function afterBoot(o){
-	/* debugmode時の設定 */
-	if(ui.debugmode){
-		o.modechange(pzpr.consts.MODE_PLAYER);
-		ui.menu.setMenuConfig('autocheck', true);
-	}
-	accesslog();
 }
 
 //---------------------------------------------------------------------------
@@ -100,21 +103,28 @@ function importURL(){
 	}
 	else{ search = location.search;}
 	if(search.length<=0){ return;}
-
+	
+	/* 一旦先頭の?記号を取り除く */
+	if(search.charAt(0)==="?"){ search = search.substr(1);}
+	
+	while(search.match(/^(\w+)\=(\w+)\&(.*)/)){
+		onload_option[RegExp.$1] = RegExp.$2;
+		search = RegExp.$3;
+	}
+	
 	// エディタモードかplayerモードか、等を判定する
+	if(search==="test"){ search = 'country_test';}
+	
 	var startmode = '';
-	if     (search=="?test")       { startmode = 'EDITOR'; ui.debugmode = true; search = '?country';}
-	else if(search.match(/_test/)) { startmode = 'EDITOR'; ui.debugmode = true;}
-	else if(search.match(/^\?m\+/)){ startmode = 'EDITOR';}
-	else if(search.match(/_edit/)) { startmode = 'EDITOR';}
-	else if(search.match(/_play/)) { startmode = 'PLAYER';}
+	if     (search.match(/_test/)){ startmode = 'EDITOR'; ui.debugmode = true;}
+	else if(search.match(/^m\+/)) { startmode = 'EDITOR';}
+	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
+	else if(search.match(/_play/)){ startmode = 'PLAYER';}
 
-	var pzl = pzpr.url.parseURL(search);
+	var pzl = pzpr.url.parseURL("?"+search);
 	if(!!pzl.qdata){ pzl.url = search;}
 
-	if(!startmode){
-		startmode=(!pzl.bstr?'EDITOR':'PLAYER');
-	}
+	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
 	pzpr.EDITOR = (startmode==='EDITOR');
 	pzpr.PLAYER = !pzpr.EDITOR;
 

@@ -1,11 +1,6 @@
 // MenuArea.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(arguments.callee,15); return;}
 
 // メニュー描画/取得/html表示系
-/* extern */
 ui.menuarea = {
 	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
@@ -16,7 +11,7 @@ ui.menuarea = {
 	// menuarea.reset()  設定を消去する
 	//---------------------------------------------------------------------------
 	init : function(){
-		this.items = new MenuList();
+		this.items = new ui.MenuList();
 		this.items.reset();
 		
 		this.createArea();
@@ -125,30 +120,13 @@ ui.menuarea = {
 		as('urloutput','file', 'URL出力', 'Export URL');
 		ap('sep_file', 'file');
 		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		at('filesavep', 'file', 'ファイル保存 ->',  'Save the file as ... ->');
+		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
 		if(pzpr.env.storage.localST){
-			as('database',  'file', '一時保存/戻す', 'Temporary Stack');
+			as('database',  'file', 'ブラウザ保存', 'Browser Save');
 		}
-		if(ui.menu.enableSaveImage){
+		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
 			ap('sep_image', 'file');
-			at('imagesavep', 'file', '画像を保存 ->', 'Save as image file');
-		}
-
-		// *ファイル - ファイル保存 -------------------------------------------
-		as('filesave',  'filesavep', 'ぱずぷれv3形式',  'Puz-Pre v3 format');
-		//as('filesave3',  'filesavep', 'ぱずぷれv3(履歴つき)',  'Puz-Pre v3 with history');
-		if(pzpr.url.info[pid].exists.pencilbox){
-			as('filesave2', 'filesavep', 'pencilbox形式', 'Pencilbox format');
-		}
-
-		// *ファイル - 画像を保存 -------------------------------------------
-		if(ui.menu.enableSaveImage){
-			as('imagedl',   'imagesavep', '画像をダウンロード', 'Download the image');
-			as('imagesave', 'imagesavep', '別ウィンドウで開く', 'Open another window');
-		}
-		if(ui.menu.enableSaveSVG){
-			as('svgdl',   'imagesavep', '画像をダウンロード (SVG)', 'Download the image (SVG)');
-			as('svgsave', 'imagesavep', '別ウィンドウで開く (SVG)', 'Open another window (SVG)');
+			as('imagesave', 'file', '画像を保存', 'Save as image file');
 		}
 
 		// *編集 ==============================================================
@@ -199,6 +177,7 @@ ui.menuarea = {
 		}
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
+		ac('fullwidth', 'disp', '横幅最大拡張', 'Expand Canvas Width');
 		ap('sep_disp2', 'disp');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
@@ -446,19 +425,13 @@ ui.menuarea = {
 		getEL('ms_jumpv3')  .style.fontSize = '0.9em'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
 		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
 		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
-
-		if(this.enableSaveImage && !!ui.puzzle.ImageTile){
-			if(pzpr.env.browser.Gecko && !location.hostname){
-				getEL('ms_imagesavep').className = 'smenunull';
-			}
-		}
 	},
 
 	//---------------------------------------------------------------------------
 	// menuarea.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
 	//---------------------------------------------------------------------------
 	submenuclick : function(e){
-		var el = (e.target||e.srcElement);
+		var el = e.target;
 		if(!!el && el.className==="smenu"){
 			this.floatmenuclose(0);
 
@@ -491,14 +464,6 @@ ui.menuarea = {
 		
 		var result = true, k = pzpr.consts;
 		switch(idname){
-		case 'filesave'  : ui.menu.filesave(k.FILE_PZPR); break;
-//		case 'filesave3' : ui.menu.filesave(k.FILE_PZPH); break;
-		case 'filesave2' : if(!!ui.puzzle.fio.kanpenSave){ ui.menu.filesave(k.FILE_PBOX);} break;
-		case 'imagedl'   : ui.menu.imagesave('',true,null); break;
-		case 'imagesave' : ui.menu.imagesave('',false,null); break;
-		case 'svgdl'     : ui.menu.imagesave('svg',true,null); break;
-		case 'svgsave'   : ui.menu.imagesave('svg',false,null); break;
-		
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;
 		case 'h_redo'    : ui.puzzle.redo();    break;
@@ -541,14 +506,14 @@ ui.menuarea = {
 	// menuarea.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
 	//---------------------------------------------------------------------------
 	submenuhover : function(e){
-		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
-			if((e.target||e.srcElement).className==='smenu'){
+		if(this.items.haschild(e.target.id.substr(3))){
+			if(e.target.className==='smenu'){
 				this.floatmenuopen(e, this.dispfloat.length);
 			}
 		}
 	},
 	submenuout   : function(e){
-		if(this.items.haschild((e.target||e.srcElement).id.substr(3))){
+		if(this.items.haschild(e.target.id.substr(3))){
 			this.floatmenuout(e);
 		}
 	},
@@ -565,8 +530,8 @@ ui.menuarea = {
 
 		if(depth>0 && !this.dispfloat[depth-1]){ return;}
 
-		var rect = pzpr.util.getRect(e.target||e.srcElement);
-		var idname = (e.target||e.srcElement).id.substr(3);
+		var rect = pzpr.util.getRect(e.target);
+		var idname = e.target.id.substr(3);
 		var _float = this.floatpanel[idname];
 		if(depth==0){
 			_float.style.left = rect.left   + 1 + 'px';
@@ -619,13 +584,13 @@ ui.menuarea = {
 	insideOfMenu : function(e){
 		var pos = pzpr.util.getPagePos(e);
 		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
-		return (pos.px>= rect_f.bottom || (pos.px>=rect_f.left && pos.py<=rect_o.right && pos.py>=rect_f.top));
+		return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
 	}
 };
 
 // MenuListクラス
-var MenuList = function(){};
-MenuList.prototype =
+ui.MenuList = function(){};
+ui.MenuList.prototype =
 {
 	item : {},	// サブメニュー項目の情報
 
@@ -729,9 +694,3 @@ MenuList.prototype =
 		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
 	}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
-
-})();

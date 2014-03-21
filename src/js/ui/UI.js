@@ -1,16 +1,23 @@
 // UI.js v3.4.0
-(function(){
 
-/* pzprオブジェクト生成待ち */
-if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
+/* ui.js Locals */
+var _doc = document;
+function getEL(id){ return _doc.getElementById(id);}
+function createEL(tagName){ return _doc.createElement(tagName);}
+function createButton(){
+	var button = createEL('input');
+	button.type = 'button';
+	return button;
+}
 
 var k = pzpr.consts;
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
-/* extern */
-window.ui = ui = {
+var ui = {
+	version : '<deploy-version>',
+	
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
@@ -22,15 +29,10 @@ window.ui = ui = {
 	timer     : null,
 	undotimer : null,
 	
-	debugmode : false,
-	
-	//---------------------------------------------------------------------------
-	// ui.openPuzzle() ui.puzzleオブジェクトにURLやファイルを読みこませる
-	//---------------------------------------------------------------------------
-	openPuzzle : function(data, callback){
-		ui.puzzle.open(data, callback);
-	}
+	debugmode : false
 };
+/* extern */
+window.ui = ui;
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
@@ -49,7 +51,11 @@ ui.event =
 	// event.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
+		var func = function(e){
+			e = e||window.event;
+			e.target = e.target||e.srcElement;
+			return callback.call(self, e);
+		};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
@@ -88,7 +94,7 @@ ui.event =
 		pzl.addListener('config', this.config_common);
 		pzl.addListener('modechange', function(){ ui.event.config_common(pzl,'mode');});
 		pzl.addListener('resize', this.onResize);
-		pzl.addListener('history', function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
+		pzl.addListener('history',   function(){if(!!ui.menu.menupid){ui.menu.enb_undo();}});
 	},
 
 	//---------------------------------------------------------------------------
@@ -147,6 +153,7 @@ ui.event =
 		if(idname==='mode'){
 			ui.menu.setdisplay('keypopup');
 			ui.menu.setdisplay('bgcolor');
+			ui.keypopup.display();
 		}
 		else if(idname==='language'){
 			ui.menu.displayAll();
@@ -181,11 +188,37 @@ ui.event =
 		// onresizeイベントを割り当てる
 		var evname = (!pzpr.env.OS.iOS ? 'resize' : 'orientationchange');
 		this.addEvent(window, evname, this, this.onresize_func);
+
+		// onbeforeunloadイベントを割り当てる
+		this.addEvent(window, 'beforeunload', this, this.onbeforeunload_func);
+
+		// onunloadイベントを割り当てる
+		this.addEvent(window, 'unload', this, this.onunload_func);
+	},
+
+	//---------------------------------------------------------------------------
+	// event.onload_func()   ウィンドウリサイズ時に呼ばれる関数
+	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
+	//---------------------------------------------------------------------------
+	onload_func : function(){
+		if(pzpr.env.storage.localST && !!window.JSON){
+			var json_puzzle = localStorage['pzprv3_config:puzzle'];
+			var json_menu   = localStorage['pzprv3_config:ui'];
+			if(!!json_puzzle){ ui.puzzle.restoreConfig(json_puzzle);}
+			if(!!json_menu)  { ui.menu.restoreMenuConfig(json_menu);}
+		}
+	},
+	onunload_func : function(){
+		if(pzpr.env.storage.localST && !!window.JSON){
+			localStorage['pzprv3_config:puzzle'] = ui.puzzle.saveConfig();
+			localStorage['pzprv3_config:ui']     = ui.menu.saveMenuConfig();
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// event.onresize_func() ウィンドウリサイズ時に呼ばれる関数
 	// event.onblur_func()   ウィンドウからフォーカスが離れた時に呼ばれる関数
+	// event.onbeforeunload_func()  ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
@@ -198,6 +231,13 @@ ui.event =
 	onblur_func : function(){
 		ui.puzzle.key.keyreset();
 		ui.puzzle.mouse.mousereset();
+	},
+	onbeforeunload_func : function(e){
+		if(pzpr.PLAYER || !ui.puzzle.ismodified()){ return;}
+		
+		var msg = ui.menu.selectStr("盤面が更新されています", "The board is edited.");
+		e.returnValue = msg
+		return msg;
 	},
 
 	//---------------------------------------------------------------------------
@@ -215,10 +255,9 @@ ui.event =
 		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
 
 		// 横幅いっぱいに広げたい場合
-		if(pzpr.env.OS.mobile){
+		if(ui.menu.getMenuConfig('fullwidth')){
 			mwidth = wwidth*0.98;
 			cellsize = (mwidth*0.92)/cols;
-			if(cellsize < cellsizeval){ cellsize = cellsizeval;}
 		}
 		// 縮小が必要ない場合
 		else if(!ui.menu.getMenuConfig('adjsize') || cols < ci[0]){
@@ -240,7 +279,7 @@ ui.event =
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(pzpr.env.OS.mobile){ getEL('menuboard').style.width = '90%';}
+			if(ui.menu.getMenuConfig('fullwidth')){ getEL('menuboard').style.width = '90%';}
 		}
 
 		o.setCanvasSizeByCellSize(cellsize);
@@ -263,7 +302,7 @@ ui.event =
 			
 			default: padding = 0.50; break;
 		}
-		if(pzpr.env.OS.mobile){ padding = 0;}
+		if(ui.menu.getMenuConfig('fullwidth')){ padding = 0;}
 		
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
@@ -274,27 +313,23 @@ ui.event =
 
 	//----------------------------------------------------------------------
 	// pc.windowWidth()   ウィンドウの幅を返す
-	// pc.windowHeight()  ウィンドウの高さを返す
 	//----------------------------------------------------------------------
 	windowWidth : function(){
-		this.windowWidth = ((!pzpr.env.OS.mobile) ?
-			function(){ return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);}
-		:
-			function(){ return 980;}
-		);
-		return this.windowWidth();
+		return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);
 	}
-	// windowHeight : function(){
-	//	this.windowHeight = ((!pzpr.env.OS.mobile) ?
-	//		function(){ return ((window.innerHeight!==void 0) ? window.innerHeight : _doc.body.clientHeight);}
-	//	:
-	//		function(){ return (980*(window.innerHeight/window.innerWidth))|0;}
-	//	);
-	//	return this.windowHeight();
-	// }
 };
 
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-
-})();
+ui.util = {
+	getpath : function(){
+		var dir="", srcs=document.getElementsByTagName('script');
+		for(var i=0;i<srcs.length;i++){
+			var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
+			if(result){
+				if(result[1].match(/\/$/)){ dir = result[1];}
+				else{ dir = result[1]+'/';}
+				break;
+			}
+		}
+		return dir;
+	}
+};

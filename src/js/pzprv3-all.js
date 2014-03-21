@@ -5,14 +5,14 @@
 	var dir = (function getpath(){
 		var srcs=document.getElementsByTagName('script');
 		for(var i=0;i<srcs.length;i++){
-			var result = srcs[i].src.match(/^(.*\/)pzpr-all\.js$/);
+			var result = srcs[i].src.match(/^(.*\/)pzprv3-all\.js$/);
 			if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
 		}
 		return "";
 	})();
 
 	var files = [
-		"../src/lib/candle.js",
+		"lib/candle.js",
 		"pzpr/CoreClass.js",
 		"pzpr/Puzzle.js",
 		"pzpr/BoardPiece.js",
@@ -35,6 +35,16 @@
 		"puzzle-common/BoardExec.js",
 		"puzzle-common/Encode.js",
 		"puzzle-common/FileData.js",
+		"ui/Boot.js",
+		"ui/UI.js",
+		"ui/Menu.js",
+		"ui/MenuArea.js",
+		"ui/PopupMenu.js",
+		"ui/ToolArea.js",
+		"ui/KeyPopup.js",
+		"ui/DataBase.js",
+		"ui/Timer.js",
+		"ui/Debug.js",
 		"puzzle/amibo.js",
 		"puzzle/bag.js",
 		"puzzle/barns.js",

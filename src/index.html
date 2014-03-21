@@ -5,9 +5,9 @@
 <META NAME="robots" CONTENT="nofollow">
 <meta http-equiv="Content-Type" content="text/html">
 <TITLE>ぱずぷれv3</TITLE>
-<link rel="stylesheet" href="./src/v3index.css" type="text/css" />
-<script type="text/javascript" src="./src/v3index.js"></script>
-<script type="text/javascript" src="../../dist/pzpr.js"></script>
+<link rel="stylesheet" href="./css/v3index.css" type="text/css" />
+<script type="text/javascript" src="./js/v3index.js"></script>
+<script type="text/javascript" src="./js/pzprv3.js"></script>
 </HEAD>
 <BODY>
 
@@ -37,10 +37,10 @@
     <h4 class="notice_item">ぱずぷれv3について</h4>
     <div style="margin-left:6pt;">
      　ぱずぷれ<small>(仮称)</small>は主に<a href="http://www.nikoli.co.jp/">ニコリ</a>に載っている/載っていたパズルを作成したり、遊んだりするWebアプリです。
-     現在はJavaScriptで開発しており、HTML5についても対応するようにがんばっています。
+     JavaScriptおよびHTML5の機能を使用して開発しています。
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
-     　スクリプトの作成は主にSafari6.0上で行っており、動作確認はその他のブラウザでも行っております。
+     　スクリプトの作成は主にSafari7.0上で行っており、動作確認はその他のブラウザでも行っております。
     </div>
     <div style="margin-left:6pt; margin-top:6pt;">
      <a href="./index_en.html">to English Menu</a>
@@ -50,41 +50,16 @@
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">推奨ブラウザ</h4>
     <div style="margin-left:6pt;">
-     Firefox最新版, Google Chrome最新版, Safari6.0+, Opera12+, Internet Explorer 9.0+
-    </div>
-   </p>
-   <hr>
-   <p class=expression style="margin-top:6pt;">
-    <h4 class="notice_item">動作ブラウザ</h4>
-    <div style="margin-left:6pt;">
-     Firefox3.6+, Google Chrome(6.0以外), Safari5.1+, Opera10.60+ およびInternetExplorer8.0+
-     あるいはIEコンポーネントを使用しているブラウザ(Seipnir, Donut, KIKIあたり)
-     iOS5, Android4.0+, WiiUは制限つきで対応しています。<br>
-    </div>
-   </p>
-   <hr>
-   <p class=expression style="margin-top:6pt;">
-    <h4 class="notice_item">制限事項</h4>
-    <div style="margin-left:6pt;">
-     <ul>
-     <li>盤面の"一時保存/戻す"機能はFirefox1.5まで, Google Chrome3.0まで, Safari3.2まで, Opera10.10まででは動作しません。</li>
-     <li>盤面の画像出力機能はFirefox3.0まで, Google Chrome1.0まで, Safari3.2まで, Opera10.10まで, InternetExplorer8.0で
-         正しく動作しません。</li>
-     <li>Google Chrome 6.0の描画処理およびCSS関連APIの動作が不安定なので、動作ブラウザから除外しています</li>
-     <li>Opera10.5xの条件分岐動作が不安定なので、動作ブラウザから除外しています</li>
-     <li>InternetExplorer8およびSleipnir等のIEコンポーネント使用ブラウザは描画処理等動作が重いですので、
-         それ以外のブラウザの使用を推奨いたします。</li>
-     </ul>
+     Firefox最新版, Google Chrome最新版, Safari7.0+, Internet Explorer 10.0+<br>
+     その他の動作環境、制限事項については<a href="https://bitbucket.org/sabo2/pzprv3/wiki/restriction">こちら</a><br>
     </div>
    </p>
    <hr>
    <p class=expression style="margin-top:6pt;">
     <h4 class="notice_item">リンク</h4>
     <div style="margin-left:6pt;">
-     ぱずぷれv3のGoogle Code上のホスティングページ(ソースのダウンロード等)は<a href="http://code.google.com/p/pzprv3/">こちら</a><br>
-     ぱずぷれv3＋ぱずぷれアプレットのアクセス数集計は<a href="logview.php">こちら</a><br>
-     昔のURLジェネレータ、ぱずぷれ(Javaアプレット版)は<a href="../">こちら</a><br>
-     <!-- <a href="src.zip">ReleaseNotes</a> <a href="src.zip">ReleaseNotes(pzprBase.js)</a> -->
+     ぱずぷれv3のBitbucket上のホスティングページ(ソースのダウンロード等)は<a href="https://bitbucket.org/sabo2/pzprv3/">こちら</a><br>
+     ぱずぷれv3＋ぱずぷれアプレットのアクセス数集計は<a href="http://log.pzv.jp/logview.php">こちら</a><br>
     </div>
    </p>
    <hr>
@@ -120,7 +95,7 @@
    </form>
    <hr>
    <form name="database">
-    <h4 class="notice_item">一時保存/戻す</h4>
+    <h4 class="notice_item">ブラウザ保存データ</h4>
     <div style="float:left;height:120px;margin-right:24px;">
      <select name="sorts" style="height:24px;">
       <option value="idlist" selected>ID順</option>
@@ -143,7 +118,7 @@
 
 <table class="puztable" id="table_all" border=0>
  <tr>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>黒マス配置系</b>
    <ul>
     <li class="lunch"><a href="p.html?nurikabe">ぬりかべ</a></li>
@@ -158,7 +133,7 @@
     <li class="orig"><a href="p.html?mochinyoro">モチにょろ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>領域＋黒マス系</b>
    <ul>
     <li class="lunch"><a href="p.html?lits">ＬＩＴＳ</a></li>
@@ -169,7 +144,7 @@
     <li class="subpa"><a href="p.html?chocona">チョコナ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>連黒分断禁系</b>
    <ul>
     <li class="lunch"><a href="p.html?heyawake">へやわけ</a></li>
@@ -182,7 +157,7 @@
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists loops">
    <b>ループ系</b>
    <ul>
     <li class="lunch"><a href="p.html?slither">スリザーリンク</a></li>
@@ -194,44 +169,95 @@
     <li class="subpa"><a href="p.html?mejilink">メジリンク</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists loops">
    <b>交差ありループ系</b>
    <ul>
     <li class="nigun"><a href="p.html?reflect">リフレクトリンク</a></li>
-    <li class="nigun"><a href="p.html?icebarn">アイスバーン</a></li>
     <li class="subpa"><a href="p.html?pipelink">パイプリンク</a></li>
-    <li class="subpa"><a href="p.html?pipelinkr">帰ってきたパイプリンク</a></li>
     <li class="subpa"><a href="p.html?loopsp">環状線スペシャル</a></li>
-    <li class="subpa"><a href="p.html?barns">バーンズ</a></li>
     <li class="subpa"><a href="p.html?nagenawa">なげなわ</a></li>
-    <li class="subpa"><a href="p.html?icelom">アイスローム</a></li>
-    <li class="subpa"><a href="p.html?icelom2">アイスローム２</a></li>
     <li class="subpa"><a href="p.html?kouchoku">交差は直角に限る</a></li>
     <li class="subpa"><a href="p.html?ringring">リングリング</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ccffcc;">
+  <td class="lists loops">
+   <b>アイスバーン系</b>
+   <ul>
+    <li class="nigun"><a href="p.html?icebarn">アイスバーン</a></li>
+    <li class="subpa"><a href="p.html?pipelinkr">帰ってきたパイプリンク</a></li>
+    <li class="subpa"><a href="p.html?barns">バーンズ</a></li>
+    <li class="subpa"><a href="p.html?icelom">アイスローム</a></li>
+    <li class="subpa"><a href="p.html?icelom2">アイスローム２</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists lines">
+   <b>線でつなぐパズル</b>
+   <ul>
+    <li class="lunch"><a href="p.html?numlin">ナンバーリンク</a></li>
+    <li class="subpa"><a href="p.html?wblink">シロクロリンク</a></li>
+    <li class="subpa"><a href="p.html?kusabi">クサビリンク</a></li>
+   </ul>
+  </td>
+  <td class="lists lines">
+   <b>ひとつながりにするパズル</b>
+   <ul>
+    <li class="lunch2"><a href="p.html?hashikake">橋をかけろ</a></li>
+    <li class="nigun"><a href="p.html?firefly">ホタルビーム</a></li>
+    <li class="subpa"><a href="p.html?ichimaga">イチマガ</a></li>
+    <li class="subpa"><a href="p.html?ichimagam">磁石イチマガ</a></li>
+    <li class="subpa"><a href="p.html?ichimagax">一回曲がって交差もするの</a></li>
+    <li class="subpa"><a href="p.html?amibo">あみぼー</a></li>
+   </ul>
+  </td>
+  <td class="lists lines">
+   <b>移動系パズル</b>
+   <ul>
+    <li class="testa"><a href="p.html?yosenabe">よせなべ</a></li>
+    <li class="nigun"><a href="p.html?kaero">お家へ帰ろう</a></li>
+    <li class="subpa"><a href="p.html?bonsan">ぼんさん</a></li>
+    <li class="subpa"><a href="p.html?heyabon">へやぼん</a></li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td class="lists devides">
    <b>領域分割系</b>
    <ul>
-    <li class="lunch"><a href="p.html?tentaisho">天体ショー</a></li>
     <li class="lunch"><a href="p.html?shikaku">四角に切れ</a></li>
     <li class="testa"><a href="p.html?fivecells">ファイブセルズ</a></li>
     <li class="testa"><a href="p.html?sashigane">さしがね</a></li>
     <li class="nigun"><a href="p.html?bdblock">ボーダーブロック</a></li>
     <li class="subpa"><a href="p.html?nawabari">なわばり</a></li>
     <li class="subpa"><a href="p.html?triplace">トリプレイス</a></li>
+    <li class="subpa"><a href="p.html?fourcells">フォーセルズ</a></li>
+    <li class="orig"><a href="p.html?aho">アホになり切れ</a></li>
+   </ul>
+  </td>
+  <td class="lists devides">
+   <b>領域分割系 (数字なし)</b>
+   <ul>
+    <li class="lunch"><a href="p.html?tentaisho">天体ショー</a></li>
     <li class="subpa"><a href="p.html?kramma">快刀乱麻</a></li>
     <li class="subpa"><a href="p.html?kramman">新・快刀乱麻</a></li>
     <li class="subpa"><a href="p.html?shwolf">ヤギとオオカミ</a></li>
     <li class="subpa"><a href="p.html?cbblock">コンビブロック</a></li>
-    <li class="subpa"><a href="p.html?fourcells">フォーセルズ</a></li>
     <li class="subpa"><a href="p.html?loute">エルート</a></li>
-    <li class="orig"><a href="p.html?aho">アホになり切れ</a></li>
+   </ul>
+  </td>
+  <td class="lists devides">
+   <b>タタミ系</b>
+   <ul>
+    <li class="nigun"><a href="p.html?tatamibari">タタミバリ</a></li>
+    <li class="subpa"><a href="p.html?fillmat">フィルマット</a></li>
+    <li class="subpa"><a href="p.html?usotatami">ウソタタミ</a></li>
+    <li class="subpa"><a href="p.html?yajitatami">ヤジタタミ</a></li>
    </ul>
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#dfdfdf;">
+  <td class="lists numbers">
    <b>数字系</b>
    <ul>
     <li class="lunch"><a href="p.html?kakuro">カックロ</a></li>
@@ -242,7 +268,7 @@
     <li class="subpa"><a href="p.html?bosanowa">ボサノワ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfdf;">
+  <td class="lists numbers">
    <b>領域＋数字系</b>
    <ul>
     <li class="lunch"><a href="p.html?sudoku">数独</a></li>
@@ -256,54 +282,33 @@
     <li class="subpa"><a href="p.html?hanare">はなれ組</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ccffcc;">
-   <b>タタミ系</b>
-   <ul>
-    <li class="nigun"><a href="p.html?tatamibari">タタミバリ</a></li>
-    <li class="subpa"><a href="p.html?fillmat">フィルマット</a></li>
-    <li class="subpa"><a href="p.html?usotatami">ウソタタミ</a></li>
-    <li class="subpa"><a href="p.html?yajitatami">ヤジタタミ</a></li>
-   </ul>
+  <td class="lists numbers">
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#ffffcc;">
-   <b>線を引く</b>
+  <td class="lists others">
+   <b>その他 (線を引く)</b>
    <ul>
-    <li class="testa"><a href="p.html?yosenabe">よせなべ</a></li>
     <li class="nigun"><a href="p.html?gokigen">ごきげんななめ</a></li>
     <li class="nigun"><a href="p.html?tateyoko">タテボーヨコボー</a></li>
-    <li class="nigun"><a href="p.html?kaero">お家へ帰ろう</a></li>
-    <li class="omopa"><a href="p.html?yosenabe">よせなべ</a></li>
-    <li class="subpa"><a href="p.html?bonsan">ぼんさん</a></li>
-    <li class="subpa"><a href="p.html?heyabon">へやぼん</a></li>
     <li class="subpa"><a href="p.html?wagiri">ごきげんななめ・輪切</a></li>
-    <li class="subpa"><a href="p.html?amibo">あみぼー</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ffffcc;">
-   <b>線でつなぐ</b>
-   <ul>
-    <li class="lunch"><a href="p.html?numlin">ナンバーリンク</a></li>
-    <li class="lunch2"><a href="p.html?hashikake">橋をかけろ</a></li>
-    <li class="nigun"><a href="p.html?firefly">ホタルビーム</a></li>
-    <li class="subpa"><a href="p.html?wblink">シロクロリンク</a></li>
-    <li class="subpa"><a href="p.html?ichimaga">イチマガ</a></li>
-    <li class="subpa"><a href="p.html?ichimagam">磁石イチマガ</a></li>
-    <li class="subpa"><a href="p.html?ichimagax">一回曲がって交差もするの</a></li>
-    <li class="subpa"><a href="p.html?kusabi">クサビリンク</a></li>
-   </ul>
-  </td>
-  <td class="lists" style="background-color:#ffffcc;">
-   <b>その他</b>
+  <td class="lists others">
+   <b>その他 (数字あり)</b>
    <ul>
     <li class="lunch"><a href="p.html?akari">美術館</a></li>
     <li class="lunch2"><a href="p.html?goishi">碁石ひろい</a></li>
     <li class="lunch"><a href="p.html?shakashaka">シャカシャカ</a></li>
-    <li class="testa"><a href="p.html?snakes">へびいちご</a></li>
     <li class="nigun"><a href="p.html?kinkonkan">キンコンカン</a></li>
-    <li class="subpa"><a href="p.html?hakoiri">はこいり○△□</a></li>
+    <li class="nigun"><a href="p.html?snakes">へびいちご</a></li>
     <li class="subpa"><a href="p.html?shugaku">修学旅行の夜</a></li>
+   </ul>
+  </td>
+  <td class="lists others">
+   <b>その他 (数字なし)</b>
+   <ul>
+    <li class="subpa"><a href="p.html?hakoiri">はこいり○△□</a></li>
     <li class="subpa"><a href="p.html?roma">ろーま</a></li>
     <li class="subpa"><a href="p.html?toichika">遠い誓い</a></li>
    </ul>
@@ -315,7 +320,7 @@
 
 <table class="puztable" id="table_lunch" border=0>
  <tr>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>黒マスのパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?nurikabe">ぬりかべ</a></li>
@@ -326,7 +331,7 @@
     <li class="lunch"><a href="p.html?norinori">のりのり</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists loops">
    <b>線のパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?numlin">ナンバーリンク</a></li>
@@ -337,7 +342,7 @@
     <li class="lunch2"><a href="p.html?hashikake">橋をかけろ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ccffcc;">
+  <td class="lists devides">
    <b>領域分割系パズル</b>
    <ul>
     <li class="lunch"><a href="p.html?shikaku">四角に切れ</a></li>
@@ -345,7 +350,7 @@
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#efefef;">
+  <td class="lists pics">
    <b>絵が出るパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?tentaisho">天体ショー</a></li>
@@ -353,7 +358,7 @@
     <li class="lunch2"><a href="p.html?box">ボックス</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfdf;">
+  <td class="lists numbers">
    <b>数字のパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?sudoku">数独</a></li>
@@ -362,7 +367,7 @@
     <li class="lunch"><a href="p.html?ripple">波及効果</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ffffcc;">
+  <td class="lists others">
    <b>その他のパズル</b>
    <ul>
     <li class="lunch"><a href="p.html?akari">美術館</a></li>
@@ -377,7 +382,7 @@
 
 <table class="puztable" id="table_nigun" border=0>
  <tr>
-  <td rowspan=2 class="lists" style="background-color:#ffdfdf;">
+  <td rowspan=2 class="lists blocks">
    <b>黒マスのパズル</b>
    <ul>
     <li class="testa"><a href="p.html?kurotto">クロット</a></li>
@@ -388,7 +393,7 @@
     <li class="nigun"><a href="p.html?tasquare">たすくえあ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists loops">
    <b>ループのパズル</b>
    <ul>
     <li class="nigun"><a href="p.html?bag">バッグ</a></li>
@@ -397,7 +402,7 @@
     <li class="nigun"><a href="p.html?icebarn">アイスバーン</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists lines">
    <b>線のパズル</b>
    <ul>
     <li class="testa"><a href="p.html?yosenabe">よせなべ</a></li>
@@ -408,7 +413,7 @@
   </td>
  </tr>
  <tr>
-  <td rowspan=2 class="lists" style="background-color:#dfdfdf;">
+  <td rowspan=2 class="lists numbers">
    <b>数字のパズル</b>
    <ul>
     <li class="lunch2"><a href="p.html?minarism">マイナリズム</a></li>
@@ -416,17 +421,17 @@
     <li class="nigun"><a href="p.html?sukoro">数コロ</a></li>
    </ul>
   </td>
-  <td rowspan=2 class="lists" style="background-color:#ffffcc;">
+  <td rowspan=2 class="lists others">
    <b>その他のパズル</b>
    <ul>
-    <li class="testa"><a href="p.html?snakes">へびいちご</a></li>
     <li class="nigun"><a href="p.html?kinkonkan">キンコンカン</a></li>
     <li class="nigun"><a href="p.html?gokigen">ごきげんななめ</a></li>
+    <li class="nigun"><a href="p.html?snakes">へびいちご</a></li>
    </ul>
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#ccffcc;">
+  <td class="lists devides">
    <b>領域分割系パズル</b>
    <ul>
     <li class="testa"><a href="p.html?fivecells">ファイブセルズ</a></li>
@@ -442,7 +447,7 @@
 
 <table class="puztable" id="table_omopa" border=0>
  <tr>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>黒マスのパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?nuribou">ぬりぼう</a></li>
@@ -453,7 +458,7 @@
     <li class="subpa"><a href="p.html?lookair">るっくえあ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists loops">
    <b>ループのパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?pipelink">パイプリンク</a></li>
@@ -468,7 +473,7 @@
     <li class="subpa"><a href="p.html?ringring">リングリング</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfff;">
+  <td class="lists lines">
    <b>線のパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?wblink">シロクロリンク</a></li>
@@ -483,7 +488,7 @@
   </td>
  </tr>
  <tr>
-  <td class="lists" style="background-color:#ccffcc;">
+  <td class="lists devides">
    <b>領域分割系パズル</b>
    <ul>
     <li class="subpa"><a href="p.html?fillmat">フィルマット</a></li>
@@ -499,7 +504,7 @@
     <li class="subpa"><a href="p.html?yajitatami">ヤジタタミ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfdf;">
+  <td class="lists numbers">
    <b>数字のパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?kakuru">カックル</a></li>
@@ -511,7 +516,7 @@
     <li class="subpa"><a href="p.html?hanare">はなれ組</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ffffcc;">
+  <td class="lists others">
    <b>その他のパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?hakoiri">はこいり○△□</a></li>
@@ -528,20 +533,20 @@
 
 <table class="puztable" id="table_other" border=0>
  <tr>
-  <td class="lists" style="background-color:#ffdfdf;">
+  <td class="lists blocks">
    <b>黒マスのパズル</b>
    <ul>
     <li class="orig"><a href="p.html?ayeheya">∀人∃ＨＥＹＡ</a></li>
     <li class="orig"><a href="p.html?mochinyoro">モチにょろ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#ccffcc;">
+  <td class="lists devides">
    <b>領域分割系パズル</b>
    <ul>
     <li class="orig"><a href="p.html?aho">アホになり切れ</a></li>
    </ul>
   </td>
-  <td class="lists" style="background-color:#dfdfdf;">
+  <td class="lists numbers">
    <b>数字のパズル</b>
    <ul>
     <li class="subpa"><a href="p.html?view">ヴィウ</a></li>

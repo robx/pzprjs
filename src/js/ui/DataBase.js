@@ -1,13 +1,9 @@
 // DataBase.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui || !ui.popupmgr){ setTimeout(arguments.callee,15); return;}
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
 //---------------------------------------------------------------------------
-var ProblemData = function(){
+ui.ProblemData = function(){
 	this.id = null;
 	this.pid = '';
 	this.col = '';
@@ -19,7 +15,7 @@ var ProblemData = function(){
 
 	if(arguments.length>0){ this.parse(arguments[0]);}
 };
-ProblemData.prototype =
+ui.ProblemData.prototype =
 {
 	setnewData : function(id, owner){
 		this.id = id;
@@ -60,20 +56,10 @@ ui.popupmgr.addpopup('database',
 	// 要素作成用関数
 	//------------------------------------------------------------------------------
 	createElement : function(tagname, attr, style){
-		var el = document.createElement(tagname);
+		var el = createEL(tagname);
 		if(!!attr) { for(var att in attr){ el[att]=attr[att];}}
 		if(!!style){ for(var name in style){ el.style[name]=style[name];}}
 		return el;
-	},
-	addSelect : function(attr, options){
-		var sel = this.createElement('select', attr);
-		this.form.appendChild(sel);
-		for(var i=0;i<options.length;i++){
-			var op = document.createElement('option');
-			op.value = options[i].name;
-			op.appendChild(this.addTextNode(options[i].str_jp, options[i].str_en));
-			sel.appendChild(op);
-		}
 	},
 	
 	//------------------------------------------------------------------------------
@@ -105,7 +91,7 @@ ui.popupmgr.addpopup('database',
 		var popup = this, handler = function(e){ popup.database_handler(e||window.event);};
 		var form = this.form;
 		
-		this.settitle("一時保存/戻す", "Temporary Stack");
+		this.settitle("ブラウザ保存/復帰", "Browser Saved Data");
 		
 		this.initTable({},{borderCollapse:'collapse'});
 		/* ----------------------------------------------------------------- */
@@ -178,36 +164,34 @@ ui.popupmgr.addpopup('database',
 	// database_handler() データベースmanagerへ処理を渡します
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
-		var operation = (e.target||e.srcElement).name;
-		ui.database.clickHandler(operation, ui.puzzle);
+		ui.database.clickHandler(e.target.name, ui.puzzle);
 	}
 });
 
 //---------------------------------------------------------------------------
 // ★DataBaseManagerクラス Web Storage用 データベースの設定・管理を行う
 //---------------------------------------------------------------------------
-var DataBaseManager = function(){
-	this.dbh    = null;	// データベースハンドラ
+ui.database = {
+	dbh    : null,	// データベースハンドラ
 
-	this.DBsid  = -1;	// 現在選択されているリスト中のID
-	this.DBlist = [];	// 現在一覧にある問題のリスト
+	DBsid  : -1,	// 現在選択されているリスト中のID
+	DBlist : [],	// 現在一覧にある問題のリスト
 
-	var self    = this;
-	this.update = function(){ self.updateDialog.call(self);};
-	this.sync   = false;
-	this.lang   = null;
-};
-DataBaseManager.prototype =
-{
+	sync   : false,
+	lang   : null,
+
+	update : function(){ ui.database.updateDialog();},
+
 	//---------------------------------------------------------------------------
 	// dbm.openDialog()   データベースダイアログが開いた時の処理
 	// dbm.closeDialog()  データベースダイアログが閉じた時の処理
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzpr.env.storage.localST){ this.dbh = new DataBaseHandler_LS();}
+		if(pzpr.env.storage.localST){ this.dbh = new ui.DataBaseHandler_LS();}
 		else{ return;}
 
+		this.lang = ui.menu.getConfigVal('language');
 		this.sync = false;
 		this.dbh.convert();
 		this.dbh.importDBlist(this, this.update);
@@ -221,7 +205,6 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	clickHandler : function(name, owner){
 		if(this.sync===false){ return;}
-		this.lang = ui.menu.getMenuConfig('language');
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			case 'datalist': this.selectDataTable();   break;
@@ -274,10 +257,10 @@ DataBaseManager.prototype =
 			var row = this.DBlist[i];
 			if(!!row){ this.appendNewOption(row.id, this.getRowString(row));}
 		}
-		this.appendNewOption(-1, "&nbsp;&lt;新しく保存する&gt;");
+		this.appendNewOption(-1, ui.menu.selectStr("&nbsp;&lt;新しく保存する&gt;","&nbsp;&lt;New Save&gt;"));
 	},
 	appendNewOption : function(id, str){
-		var opt = document.createElement('option');
+		var opt = createEL('option');
 		opt.setAttribute('value', (id!=-1 ? id : "new"));
 		opt.innerHTML = str;
 		if(this.DBsid==id){ opt.setAttribute('selected', "selected");}
@@ -286,7 +269,7 @@ DataBaseManager.prototype =
 	},
 	getRowString : function(row){
 		var hardstr = [
-			{ja:'−'       , en:'-'     },
+			{ja:'−'      , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
 			{ja:'おてごろ', en:'Normal'},
 			{ja:'たいへん', en:'Hard'  },
@@ -295,7 +278,7 @@ DataBaseManager.prototype =
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid].ja+"&nbsp;");
+		str += (pzpr.url.info[row.pid][this.lang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][this.lang]+"&nbsp;");
@@ -370,7 +353,8 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	openDataTable_M : function(owner){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)")){ return;}
+		if(!ui.menu.confirmStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
+							   "Recover selected data? (Current board is erased)")){ return;}
 
 		this.dbh.openDataTable(this, id, null, owner);
 	},
@@ -380,14 +364,14 @@ DataBaseManager.prototype =
 			id = this.DBlist.length;
 			refresh = true;
 
-			this.DBlist[id] = new ProblemData();
+			this.DBlist[id] = new ui.ProblemData();
 			this.DBlist[id].setnewData(id+1, owner);
-			var str = prompt("コメントがある場合は入力してください。","");
+			var str = ui.menu.promptStr("コメントがある場合は入力してください。","Input comment if you want.","");
 			this.DBlist[id].comment = (!!str ? str : '');
 			this.DBsid = this.DBlist[id].id;
 		}
 		else{
-			if(!confirm("このデータに上書きしますか？")){ return;}
+			if(!ui.menu.confirmStr("このデータに上書きしますか？","Update selected data?")){ return;}
 		}
 
 		this.sync = false;
@@ -401,7 +385,7 @@ DataBaseManager.prototype =
 	editComment_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var str = prompt("この問題に対するコメントを入力してください。",this.DBlist[id].comment);
+		var str = ui.menu.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
 		if(str==null){ return;}
 		this.DBlist[id].comment = str;
 
@@ -411,7 +395,8 @@ DataBaseManager.prototype =
 	editDifficult_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var hard = prompt("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",this.DBlist[id].hard);
+		var hard = ui.menu.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
+									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
 		if(hard==null){ return;}
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
 
@@ -424,7 +409,7 @@ DataBaseManager.prototype =
 	//---------------------------------------------------------------------------
 	deleteDataTable_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!confirm("このデータを完全に削除しますか？")){ return;}
+		if(!ui.menu.confirmStr("このデータを完全に削除しますか？","Delete selected data?")){ return;}
 
 		var sID = this.DBlist[id].id, max = this.DBlist.length;
 		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1]; this.DBlist[i].id--;}
@@ -438,13 +423,13 @@ DataBaseManager.prototype =
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-var DataBaseHandler_LS = function(){
+ui.DataBaseHandler_LS = function(){
 	this.pheader = 'pzprv3_storage:data:';
 
 	this.createManageDataTable();
 	this.createDataBase();
 };
-DataBaseHandler_LS.prototype =
+ui.DataBaseHandler_LS.prototype =
 {
 	//---------------------------------------------------------------------------
 	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
@@ -452,7 +437,7 @@ DataBaseHandler_LS.prototype =
 	importDBlist : function(parent, callback){
 		parent.DBlist = [];
 		for(var i=1;true;i++){
-			var row = new ProblemData(localStorage[this.pheader+i]);
+			var row = new ui.ProblemData(localStorage[this.pheader+i]);
 			if(row.id==null){ break;}
 			parent.DBlist.push(row);
 		}
@@ -492,8 +477,8 @@ DataBaseHandler_LS.prototype =
 	// dbm.dbh.saveDataTable()   データの盤面を保存する
 	//---------------------------------------------------------------------------
 	openDataTable : function(parent, id, callback, owner){
-		var data = new ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		ui.openPuzzle(data.pdata.replace(/\//g,"\n"));
+		var data = new ui.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
+		ui.puzzle.open(data.pdata.replace(/\//g,"\n"));
 		if(!!callback){ callback();}
 	},
 	saveDataTable : function(parent, id, callback, owner){
@@ -518,7 +503,7 @@ DataBaseHandler_LS.prototype =
 	//---------------------------------------------------------------------------
 	deleteDataTable : function(parent, sID, max, callback){
 		for(var i=parseInt(sID);i<max;i++){
-			var data = new ProblemData(localStorage[this.pheader+(i+1)]);
+			var data = new ui.ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();
 		}
@@ -553,7 +538,7 @@ DataBaseHandler_LS.prototype =
 			delete localStorage['pzprv3_'+pid+':puzdata'];
 			for(var i=0;i<count;i++){
 				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
-				var row = new ProblemData();
+				var row = new ui.ProblemData();
 				row.pid = pid;
 				for(var c=0;c<7;c++){
 					row[keys[c]] = localStorage[pheader+keys[c]];
@@ -573,8 +558,3 @@ DataBaseHandler_LS.prototype =
 		}
 	}
 };
-
-/* extern */
-ui.database = new DataBaseManager();
-
-})();

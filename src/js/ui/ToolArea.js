@@ -1,12 +1,7 @@
 // ToolArea.js v3.4.0
-(function(){
-
-/* uiオブジェクト生成待ち */
-if(!window.ui){ setTimeout(arguments.callee,15); return;}
 
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
-/* extern */
 ui.toolarea = {
 
 	isdisp : true,		// 表示しているか
@@ -313,7 +308,7 @@ ui.toolarea = {
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.puzzle.playmode ? 3 : 1];
+				var f = !!kp.paneltype[ui.menu.getConfigVal('mode')];
 				getEL('ck_keypopup').disabled    = (f?"":"true");
 				getEL('cl_keypopup').style.color = (f?"black":"silver");
 			}
@@ -321,7 +316,7 @@ ui.toolarea = {
 		
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.puzzle.playmode ? 3 : 1;
+				var mode = ui.menu.getConfigVal('mode');
 				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}
@@ -367,19 +362,18 @@ ui.toolarea = {
 	// toolarea.buttonclick()  ボタンがクリックされたときの動作
 	//---------------------------------------------------------------------------
 	checkclick : function(e){
-		var el = (e.target||e.srcElement);
+		var el = e.target;
 		var idname = el.id.substr(3);
 		ui.menu.setConfigVal(idname, !!el.checked);
 	},
 	selectclick : function(e){
-		var list = (e.target||e.srcElement).id.split('_');
+		var list = e.target.id.split('_');
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
 		ui.menu.setConfigVal(idname, child);
 	},
 	buttonclick : function(e){
-		var id = (e.target||e.srcElement).id;
-		switch(id){
+		switch(e.target.id){
 		case 'btncheck':  ui.menu.answercheck(); break;
 		case 'btnundo':   ui.puzzle.undo(); break;
 		case 'btnredo':   ui.puzzle.redo(); break;
@@ -398,14 +392,3 @@ ui.toolarea = {
 		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
 	}
 };
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
-function createEL(tagName){ return _doc.createElement(tagName);}
-function createButton(){
-	var button = createEL('input');
-	button.type = 'button';
-	return button;
-}
-
-})();
