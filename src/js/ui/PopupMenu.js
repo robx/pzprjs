@@ -984,8 +984,6 @@ ui.popupmgr.addpopup('credit',
 		
 		this.addText("ぱずぷれv3 v"+pzpr.version, "PUZ-PRE v3 v"+pzpr.version);
 		this.addBR();
-		this.addText("ぱずぷれv3 UI v"+ui.version, "PUZ-PRE v3 UI v"+ui.version);
-		this.addBR();
 		this.addBR();
 		
 		this.addText("ぱずぷれv3は はっぱ/連続発破が作成しています。", "PUZ-PRE v3 id made by happa.");

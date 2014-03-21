@@ -16,8 +16,6 @@ var k = pzpr.consts;
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
 var ui = {
-	version : '<deploy-version>',
-	
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
