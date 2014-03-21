@@ -67,12 +67,10 @@ window.pzpr = {
 		// キー入力イベントの設定
 		pzpr.util.addEvent(document, 'keydown',  pzpr, pzpr.execKeyDown);
 		pzpr.util.addEvent(document, 'keyup',    pzpr, pzpr.execKeyUp);
-		pzpr.util.addEvent(document, 'keypress', pzpr, pzpr.execKeyPress);
 	},
 	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
 	execKeyDown  : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyDown(e);}},
 	execKeyUp    : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyUp(e);}},
-	execKeyPress : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyPress(e);}},
 
 	//---------------------------------------------------------------
 	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う

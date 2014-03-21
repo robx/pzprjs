@@ -196,7 +196,6 @@ pzpr.Puzzle.prototype =
 		// キー入力イベントの設定
 		pzpr.util.addEvent(canvas, 'keydown',  puzzle, puzzle.execKeyDown);
 		pzpr.util.addEvent(canvas, 'keyup',    puzzle, puzzle.execKeyUp);
-		pzpr.util.addEvent(canvas, 'keypress', puzzle, puzzle.execKeyPress);
 	},
 	execMouseDown : function(e){
 		/* キー入力のフォーカスを当てる */
@@ -208,7 +207,6 @@ pzpr.Puzzle.prototype =
 	execMouseOut  : function(e){ if(!!this.mouse){ this.mouse.e_mouseout(e);}},
 	execKeyDown   : function(e){ if(!!this.key){ this.key.e_keydown(e);}},
 	execKeyUp     : function(e){ if(!!this.key){ this.key.e_keyup(e);}},
-	execKeyPress  : function(e){ if(!!this.key){ this.key.e_keypress(e);}},
 
 	//---------------------------------------------------------------------------
 	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する

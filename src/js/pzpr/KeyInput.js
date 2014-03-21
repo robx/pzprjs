@@ -53,7 +53,6 @@ pzpr.createPuzzleClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	// kc.e_keydown()  キーを押した際のイベント共通処理
 	// kc.e_keyup()    キーを離した際のイベント共通処理
-	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	e_keydown : function(e){
@@ -74,18 +73,6 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getchar(e);
 		if(c){ this.keyevent(c,1);}
-		
-		if(e.target===this.owner.canvas){
-			pzpr.util.stopPropagation(e);
-			pzpr.util.preventDefault(e);
-		}
-	},
-	e_keypress : function(e){
-		if(!this.enableKey){ return;}
-		
-		this.event = e;
-		var c = this.getcharp(e);
-		if(c){ this.keyevent(c,0);}
 		
 		if(e.target===this.owner.canvas){
 			pzpr.util.stopPropagation(e);
@@ -118,7 +105,6 @@ pzpr.createPuzzleClass('KeyEvent',
 
 	//---------------------------------------------------------------------------
 	// kc.getchar()  入力されたキーを表す文字列を返す
-	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
 	//---------------------------------------------------------------------------
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	getchar : function(e){
@@ -136,16 +122,10 @@ pzpr.createPuzzleClass('KeyEvent',
 		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
 		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode==8)                  { return 'BS';}
+		else if(keycode==109|| keycode==189) { return '-';}
 
 		else if(e.shiftKey){ return 'shift';}
 
-		return '';
-	},
-	// (keypressのみ)45は-(マイナス)
-	getcharp : function(e){
-		this.checkmodifiers(e);
-
-		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
 		return '';
 	},
 
