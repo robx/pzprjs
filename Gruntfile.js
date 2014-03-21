@@ -60,33 +60,33 @@ module.exports = function(grunt){
       },
       pzpr: {
         files: [
-          { src: [], dest: 'dist/pzpr.concat.js' }
+          { src: [], dest: 'dist/js/pzpr.concat.js' }
         ]
       },
       'pzpr-all': {
         files: [
-          { src: [], dest: 'dist/pzpr-all.concat.js' }
+          { src: [], dest: 'dist/js/pzpr-all.concat.js' }
         ]
       }
     },
 
     replace: {
       pzpr: {
-        src: 'dist/pzpr.concat.js',
+        src: 'dist/js/pzpr.concat.js',
         overwrite: true,
         replacements: [
           { from: "<deploy-version>", to: "<%= pkg.version %>"}
         ]
       },
       'pzpr-all': {
-        src: 'dist/pzpr-all.concat.js',
+        src: 'dist/js/pzpr-all.concat.js',
         overwrite: true,
         replacements: [
           { from: "<deploy-version>", to: "<%= pkg.version %>"}
         ]
       },
       'pzpr-debug': {
-        src: 'dist/pzpr/CoreClass.js',
+        src: 'dist/js/pzpr/CoreClass.js',
         overwrite: true,
         replacements: [
           { from: "<deploy-version>", to: "<%= pkg.version %>"}
@@ -97,25 +97,25 @@ module.exports = function(grunt){
     copy: {
       pzpr: {
         files : [
-          { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js' }
+          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js' }
         ]
       },
       'pzpr-all': {
         files : [
-          { src: 'dist/pzpr-all.concat.js', dest: 'dist/pzpr-all.js' }
+          { src: 'dist/js/pzpr-all.concat.js', dest: 'dist/js/pzpr-all.js' }
         ]
       },
       'pzpr-debug': {
         files : [
-          { expand: true, cwd: 'src/pzpr',          src: ['*.js'], dest: 'dist/pzpr' },
-          { expand: true, cwd: 'src/puzzle-common', src: ['*.js'], dest: 'dist/puzzle-common' },
-          { src: 'src/pzpr.js',     dest: 'dist/pzpr.js'     },
-          { src: 'src/pzpr-all.js', dest: 'dist/pzpr-all.js' }
+          { expand: true, cwd: 'src/js/pzpr',          src: ['*.js'], dest: 'dist/js/pzpr' },
+          { expand: true, cwd: 'src/js/puzzle-common', src: ['*.js'], dest: 'dist/js/puzzle-common' },
+          { src: 'src/js/pzpr.js',     dest: 'dist/js/pzpr.js'     },
+          { src: 'src/js/pzpr-all.js', dest: 'dist/js/pzpr-all.js' }
         ]
       },
       puzzle: {
         files : [
-          { expand: true, cwd: 'src/puzzle', src: ['*.js'], dest: 'dist/puzzle' }
+          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' }
         ]
       },
       image: {
@@ -134,30 +134,30 @@ module.exports = function(grunt){
       },
       pzpr: {
         files: [
-          { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js' },
+          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js' },
         ]
       },
       'pzpr-all': {
         files: [
-          { src: 'dist/pzpr-all.concat.js', dest: 'dist/pzpr-all.js' },
+          { src: 'dist/js/pzpr-all.concat.js', dest: 'dist/js/pzpr-all.js' },
         ]
       },
       puzzle: {
         files : [
-          { expand: true, cwd: 'src/puzzle', src: ['*.js'], dest: 'dist/puzzle' }
+          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' }
         ]
       }
      }
   });
   
   function mod2file(mod){
-    return "src/" + mod + ".js";
+    return "src/js/" + mod + ".js";
   }
   function wrap(array){
-    array.unshift("src/pzpr/intro.js");
-    array.push   ("src/pzpr/outro.js");
+    array.unshift("src/js/pzpr/intro.js");
+    array.push   ("src/js/pzpr/outro.js");
     
-    array.unshift("src/lib/candle.js");
+    array.unshift("src/js/lib/candle.js");
     return array;
   }
   
@@ -165,7 +165,7 @@ module.exports = function(grunt){
   grunt.config.set(prop, wrap(component.map(mod2file)));
   
   prop = "concat.pzpr-all.files.0.src";
-  grunt.config.set(prop, wrap(component.map(mod2file).concat(['src/puzzle/*.js'])));
+  grunt.config.set(prop, wrap(component.map(mod2file).concat(['src/js/puzzle/*.js'])));
   
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
