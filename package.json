@@ -1,12 +1,16 @@
 {
   "name": "pzpr",
-  "version": "3.4.0",
+  "version": "3.4.0-pre",
   "description": "Playing and editing puzzles by Javascript",
-  "main": "pzpr.js",
+  "main": "index.html",
+  "directories": {
+    "test": "tests"
+  },
   "keywords": [
     "puzzle",
     "nikoli",
-    "HTML5"
+    "HTML5",
+    "WebApp"
   ],
   "author": "sabo2",
   "license": "MIT",

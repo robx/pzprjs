@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<HTML LANG="ja">
+<HEAD>
+<META CHARSET="utf-8">
+<META NAME="robots" CONTENT="nofollow">
+<meta http-equiv="Content-Type" content="text/html">
+<TITLE>ぱずぷれv3 操作方法</TITLE>
+<link rel="stylesheet" href="./css/v3index.css" type="text/css" />
+<style type="text/css">
+	td.sentence hr { margin-top:1.0em; margin-bottom:1.0em;}
+	td.sentence h4 { margin-top:0.5em; margin-bottom:0.1em;}
+	td.sentence p  { margin-top:0em; margin-bottom:0.8em;}
+	td.sentence dl { margin-top:0em;}
+	td.sentence dl dt { margin-top:0.3em; font-weight:bold; font-size:small;}
+	td.sentence dl dd { margin-left:24px; font-size:small;}
+	td.sentence dl dd span.brreq { color:red;}
+</style>
+<script type="text/javascript" src="./js/v3index.js"></script>
+<script type="text/javascript" src="./js/pzprv3.js"></script>
+</HEAD>
+<BODY>
+
+<div class=main id=main>
+
+<h2 id=title>ぱずぷれv3 操作方法</h2>
+
+<div id="design1">
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+ <menu id="puztypes">
+  <li class="puzmenu" id="puzmenu_expression">パズルの操作説明</li>
+  <li class="puzmenu" id="puzmenu_common">操作説明</li>
+  <li class="puzmenu" id="puzmenu_menu1">メニュー(ファイル・編集)</li>
+  <li class="puzmenu" id="puzmenu_menu2">メニュー(表示・設定・その他)</li>
+ </menu>
+
+<br clear="all">
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_expression" border=0>
+ <tr>
+  <td class="sentence">
+   <h3 id="pzlname" style="margin-top:0.5em;"></h3>
+   <h4 class="notice_item" id="h4_editor"></h4>
+   <p class=expression style="margin-left:0.5em;margin-bottom:1em;" id="expression_e">
+   </p>
+   <h4 class="notice_item" id="h4_player"></h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+   </p>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_common" border=0>
+ <tr>
+  <td class="sentence" id="common_ja">
+   <h4>管理領域</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     メニュー項目の下、盤面の上に管理領域という部分があります。[設定]メニューなどから
+     設定できる項目の一部はここからでも設定可能です。
+   </p>
+   <hr>
+   <h4>共通マウス操作</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     各パズルは、マウスから数字や黒マス、境界線などを入力することができます。
+     「数字・記号をパネルで入力する」のチェックボックスがonになっている場合は、
+     ポップアップの数字をクリックすることでも数字などを入力することができます。
+     詳細は各パズルの操作説明を参照してください。
+   </p>
+   <hr>
+   <h4>共通キーボード操作</h4>
+   <dl>
+    <dt>数字キー</dt><dd>カーソルの位置に数字を入力する</dd>
+    <dt>矢印キー</dt><dd>カーソルを移動する</dd>
+    <dt>-(マイナス)キー</dt><dd>問題入力モード時、カーソルの位置に？を入力したり消去する</dd>
+    <dt>DELキー/Spaceキー</dt><dd>カーソルの位置の数字・文字を消去する</dd>
+    <dt>Shiftキー/(Mac)Commandキーを押し続ける</dt><dd>マウスの左右のボタンを反転する</dd>
+    <dt>Ctrl/(Mac)Commandキー+Zキー</dt><dd>操作をUndoする</dd>
+    <dt>Ctrl/(Mac)Commandキー+Yキー</dt><dd>操作をRedoする</dd>
+    <dt>Zキーを押し続ける</dt><dd>線や黒マスの色分け機能がある場合、クリックした部分を着色する</dd>
+    <dt>F2キー</dt><dd>(エディタのみ)回答入力モードへ移る</dd>
+    <dt>Shift+F2キー</dt><dd>(エディタのみ)問題入力モードへ移る</dd>
+    <dt>Ctrl+F8キー</dt><dd>デバッグ用ウィンドウを表示する</dd>
+   </dl>
+  </td>
+  <td class="sentence" id="common_en">
+   <h4>Management-Area</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     There is Management-Area between the menus and the board. Some features that is
+     in 'Setting' menu is able to be set here.
+   </p>
+   <hr>
+   <h4>Mouse Usage</h4>
+   <p class=expression style="margin-left:0.5em;" id="expression_p">
+     You are able to input numbers, black cells, borders, etc. by mouse or some pointer devices.
+     If checkbox 'Input numbers by panel' is checked, you are able to input numbers or marks
+     by displayed panel. Details are referred each puzzle help menu.
+   </p>
+   <hr>
+   <h4>Keyboard Usage</h4>
+   <dl>
+    <dt>Number keys</dt><dd>Input number at the cursor.</dd>
+    <dt>Arrow keys</dt><dd>Move the cursor.</dd>
+    <dt>-(minus) key</dt><dd>Input or Erase question marks at the cursor (in edit mode).</dd>
+    <dt>DEL/Space key</dt><dd>Clear at the cursor.</dd>
+    <dt>Pressing Shift/(Mac)Command key</dt><dd>Toggle Mouse Left/Right button.</dd>
+    <dt>Z key with Ctrl/(Mac)Command key</dt><dd>Undo</dd>
+    <dt>Y key with Ctrl/(Mac)Command key</dt><dd>Redo</dd>
+    <dt>Pressing Z key</dt><dd>Emphasis connected line or black cells if the feature enabled.</dd>
+    <dt>F2 key</dt><dd>(Editor only) To edit mode.</dd>
+    <dt>F2 key with Shift key</dt><dd>(Editor only) To play mode.</dd>
+    <dt>F8 key with Ctrl key</dt><dd>Display debug popup.</dd>
+   </dl>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_menu1" border=0>
+ <tr>
+  <td class="sentence" id="menu1_ja">
+   <h4>[ファイル]メニュー</h4>
+   <dl>
+    <dt>新規作成</dt><dd>指定したサイズの盤面を新規に作成します。現在の盤面は消去されます。</dd>
+    <dt>URL入力</dt><dd>URLを入力して盤面を表示します。ぱずぷれ(v3/アプレット)、カンペン、
+    へやわけアプレットに対応しています。現在の盤面は消去されます。</dd>
+    <dt>URL出力</dt><dd>現在の盤面をWebで公開する為のURLを生成します。ぱずぷれv3、カンペン、
+    へやわけアプレットのURLを出力することができます。</dd>
+    <dt>ファイルを開く</dt><dd>ぱずぷれv3、pencilboxで出力されたファイルを開くことができます。
+    現在の盤面は消去されます。</dd>
+    <dt>ファイル保存</dt><dd>ぱずぷれv3形式、pencilbox形式のファイルを保存できます。</dd>
+    <dt>ブラウザ保存</dt><dd>現在の盤面データをブラウザの記憶領域に保存しておくことができます。
+    難易度やコメントも記録することができます。別ブラウザからは参照できません。<br>
+    <span class="brreq">※Internet Explorer8.0+, Firefox2.0+, Google Chrome 4.0+,
+    Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+    <dt>画像を保存</dt><dd>現在の盤面の画像を別タブで開くか、画像としてpng形式もしくはSVG形式でダウンロードできます。
+    カーソルは表示されません。<br><span class="brreq">※Internet Explorer9.0+,
+    Firefox3.5+, Google Chrome 2.0+, Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+   </dl>
+   <hr>
+   <h4>[編集]メニュー</h4>
+   <dl>
+    <dt>履歴</dt><dd>UndoしたりRedoしたりできます。</dd>
+    <dt>盤面</dt><dd>正答判定や回答の消去を行います。</dd>
+    <dt>[盤面] - チェック</dt><dd>盤面の正答判定ができます。</dd>
+    <dt>[盤面] - 回答消去</dt><dd>回答情報を全て消去します。</dd>
+    <dt>[盤面] - 補助記号消去</dt><dd>補助記号を全て消去します。</dd>
+    <dt>盤面の調整</dt><dd>盤面のサイズを調整します。上下左右方向のサイズを1ずつ増やしたり減らしたりできます。</dd>
+    <dt>回転・反転</dt><dd>盤面の90°回転あるいは上下・左右の反転を行うことができます。</dd>
+    <dt>盤面の複製</dt><dd>現在の盤面を複製します。履歴も複製されます。<br>
+    <span class="brreq">※Internet Explorer8.0+, Firefox2.0+,
+    Google Chrome 5.0+, Safari 4.0+, Opera 10.50+のみ使用できます</span></dd>
+   </dl>
+  </td>
+  <td class="sentence" id="menu1_en">
+   <h4>[File] Menu</h4>
+   <dl>
+    <dt>New Board</dt><dd>Create new board whose size is set. Current board is wiped out.</dd>
+    <dt>Input URL</dt><dd>Import URL and display it. URL of PUZ-PRE (v3/applet), Kanpen and Heyawake-Applet
+    is enabled. Current board is wiped out.</dd>
+    <dt>Output URL</dt><dd>Export URL that is used for releasing on Web. URL of PUZPRE v3, Kanpen and
+    Heyawake-Applet is enabled.</dd>
+    <dt>Open the file</dt><dd>Open the file that is saved from PUZPRE v3 and pencilbox.
+     Current board is wiped out.</dd>
+    <dt>Save the file AS ...</dt><dd>Save the PUZPRE v3 or pencilbox file.</dd>
+    <dt>Browser Save</dt><dd>Save current board to browser storage with difficulty and comment.
+    Same machine and browser will be able to access the data.<br>
+    <span class="brreq">- This feature is enabled with Internet Explorer8.0+, Firefox2.0+,
+     Google Chrome 4.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+    <dt>Save the Image</dt><dd>Open another tab and output the image of current board there or
+    download it as png or svg format. The cursor is hidden.<br><span class="brreq">- This feature is enabled
+    with Internet Explorer9.0+, Firefox3.5+, Google Chrome 2.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+   </dl>
+   <hr>
+   <h4>[Edit] menu</h4>
+   <dl>
+    <dt>History</dt><dd>Undo or Redo menu.</dd>
+    <dt>Board</dt><dd>Check or erase the answer.</dd>
+    <dt>[Board] - Check</dt><dd>Check the answer.</dd>
+    <dt>[Board] - Erase answer</dt><dd>Erase the answer.</dd>
+    <dt>[Board] - Erase auxiliary marks</dt><dd>Erase auxiliary marks.</dd>
+    <dt>Adjust the board</dt><dd>Adjust the board size. Increase or decrease one step for four direction.</dd>
+    <dt>Turn/Filp the board</dt><dd>Turn quarter or X/Y-filp the board.</dd>
+    <dt>Duplicate the board</dt><dd>Duplicate current board with history.<br>
+    <span class="brreq">- This feature is enabled with Internet Explorer8.0+, Firefox2.0+,
+    Google Chrome 5.0+, Safari 4.0+ and Opera 10.50+.</span></dd>
+   </dl>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<table class="puztable" id="table_menu2" border=0>
+ <tr>
+  <td class="sentence" id="menu2_ja">
+   <h4>[表示]メニュー</h4>
+   <dl>
+    <dt>表示サイズ</dt><dd>盤面の大きさを指定します</dd>
+    <dt>[表示サイズ] - サイズ指定</dt><dd>盤面のサイズを指定します。セルのサイズをピクセル単位で入力します。</dd>
+    <dt>[表示サイズ] - 表示倍率</dt><dd>「サイズ指定」で指定したサイズの拡大率を指定します。</dd>
+    <dt>フォント</dt><dd>文字をゴシック体で描画するか、明朝体で描画するか指定します。</dd>
+    <dt>線の色分け</dt><dd>線の自動色分け機能がついているパズルで、色分け機能の有効/無効を切り替えます。</dd>
+    <dt>カーソルの表示</dt><dd>カーソルの表示/非表示を切り替えます。</dd>
+    <dt>自動横幅調節</dt><dd>ウィンドウに入るように盤面のサイズを調節する機能の有効/無効を切り替えます。</dd>
+    <dt>盤面の再描画</dt><dd>盤面全体を再描画します。数字がずれた時などに使用してください。</dd>
+    <dt>管理領域を隠す/管理領域の表示</dt><dd>メニュー下のチェックボックスがある領域の表示/非表示を切り替えます。</dd>
+   </dl>
+   <hr>
+   <h4>[設定]メニュー</h4>
+   <dl>
+    <dt>モード</dt><dd>(エディタ)問題入力モード、回答入力モードを切り替えます。</dd>
+    <dt>入力方法</dt><dd>黒マスを入力するパズル等で、左右ボタンで黒マス/補助記号別々に入力するか、
+    なし-&gt;黒マス-&gt;白マス-&gt;なしでループさせるか設定できます。シャカシャカはパズル個別の
+    入力設定を参照してください。</dd>
+    <dt>繋がりチェック</dt><dd>黒マス、線を入力するパズルでひと繋がりになった部分を表示するモードにします。
+    Zキーを押し続けたのと同じ状態になります。</dd>
+    <dt>正答自動判定</dt><dd>正解判定を自動で行い、正解になったら通知するようにします。</dd>
+    <dt>マウス左右反転</dt><dd>マウスの左右ボタンを反転します。Shiftキーや、MacでCommandキーを押した時と
+    同じ効果になります。</dd>
+    <dt>パネル入力</dt><dd>マウスから数字・記号を入力する為のポップアップを表示します。</dd>
+    <dt>言語</dt><dd>言語を切り替えます。</dd>
+    <dt>(その他)</dt><dd>そのほか、パズルによって様々な項目が追加されています。</dd>
+   </dl>
+   <hr>
+   <h4>[その他]メニュー</h4>
+   <dl>
+    <dt>ぱずぷれv3について</dt><dd>creditやバージョンを表示します。</dd>
+    <dt>操作説明</dt><dd>このページを開きます。</dd>
+    <dt>リンク</dt><dd>指定したリンク先を別ウィンドウで開きます。</dd>
+    <dt>デバッグ</dt><dd>デバッグ用ポップアップを表示します。</dd>
+   </dl>
+  </td>
+  <td class="sentence" id="menu2_en">
+   <h4>[Display] menu</h4>
+   <dl>
+    <dt>Cell Size</dt><dd>Set the board size by cell size.</dd>
+    <dt>[Cell Size] - Cell Size</dt><dd>Set the pixel size of the cells.</dd>
+    <dt>[Cell Size] - Display size</dt><dd>Set the zoom ratio of the board.</dd>
+    <dt>Font</dt><dd>Set the board font either sans-serif or serif.</dd>
+    <dt>Encolor lines</dt><dd>If the puzzle has the feature, set the encolor line feature enabled.</dd>
+    <dt>Display cursor</dt><dd>Toggles to display the cursor on the board.</dd>
+    <dt>Auto Size Fix</dt><dd>Set the feature that reduces the size in order to squeeze up the whole board.</dd>
+    <dt>Repaint the board</dt><dd>Repaint the whole board. It is used if the number is not in the proper position.</dd>
+    <dt>Show/Hide management area</dt><dd>Show/Hide the Management-Area.</dd>
+   </dl>
+   <hr>
+   <h4>[Setting] menu</h4>
+   <dl>
+    <dt>Mode</dt><dd>(EDITOR) Change the mode whether edit ot play mode.</dd>
+    <dt>Use</dt><dd>Change the mouse usage whether left/right click inputs each black or white cells or
+    loop empty-&gt;black cell-&gt;white cell-&gt;empty if the puzzle need black cells. Shakashaka is
+    special setting, so please refer the 'How to Input this puzzle'.</dd>
+    <dt>Continueous Check</dt><dd>Set the mode that emphasis the continueous line or black cells.
+    It is the same state with pressing Z key.</dd>
+    <dt>Automatically check</dt><dd>Check the asnwer automatically and notice if the board is complete.</dd>
+    <dt>Flip mouse button</dt><dd>Set mouse left/right button inversed. It is the same state with perssing
+    Shift key or Command key on Mac.</dd>
+    <dt>Display panel</dt><dd>Display the popup in order to input numbers or marks by mouse directly.</dd>
+    <dt>Language</dt><dd>Set the PUZPRE v3 language.</dd>
+    <dt>(others)</dt><dd>Some features are added in some puzzles.</dd>
+   </dl>
+   <hr>
+   <h4>[Other] menu</h4>
+   <dl>
+    <dt>About PUZ-PRE v3</dt><dd>Show credit and version.</dd>
+    <dt>How to Use</dt><dd>Open this page.</dd>
+    <dt>Link</dt><dd>Open in another window with clicked URL.</dd>
+    <dt>Debug</dt><dd>Display the popup for debug.</dd>
+   </dl>
+  </td>
+ </tr>
+</table>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+</div><!-- <div id="design1"> -->
+
+</div>
+</BODY>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<script type="text/javascript">
+var expression_p="", expression_e="";
+var langcode='ja', puzzleid='', EDITOR=false, PLAYER=false;
+window.pzprfaq = true;
+
+function getEL(id){ return document.getElementById(id);}
+function hideEL(id){ document.getElementById(id).style.display = "none";}
+function removeEL(id){ var el=document.getElementById(id); el.parentNode.removeChild(el);}
+function setText(id,text){ document.getElementById(id).innerHTML = text;}
+
+function addStr  (str){ expression_p += str;}
+function addStr_e(str){ expression_e += str;}
+
+function onload_include_FAQ(){
+	setTimeout(function(){
+		if(!window.v3index ||!window.v3index.complete){
+			setTimeout(arguments.callee,50);
+			return;
+		}
+		onload_func_FAQ();
+	},50);
+}
+function onload_func_FAQ(){
+	var info = location.search.substr(1);
+	if(!info){}
+	else if(info.match(/_edit$/)){
+		puzzleid = info.slice(0,-5);
+		EDITOR = true;
+	}
+	else{
+		puzzleid = info;
+		PLAYER = true;
+	}
+
+	if(!EDITOR && !PLAYER){
+		removeEL('puzmenu_expression');
+		removeEL('table_expression');
+		v3index.reset_func();
+	}
+
+	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+	langcode = (userlang.substr(0,2)!=='ja'?'en':'ja');
+
+	if(!!puzzleid && !!strinfo[puzzleid]){
+		var edit=strinfo[puzzleid][1], play=strinfo[puzzleid][0];
+		for(var i=0;i<play.length;i++){ addStr  (strdata[langcode][play[i]]);}
+		for(var i=0;i<edit.length;i++){ addStr_e(strdata[langcode][edit[i]]);}
+	}
+	dispExpression();
+}
+
+function dispExpression(){
+	var title = {ja:"ぱずぷれv3 操作方法", en:"PUZ-PRE v3 - How to Input"}[langcode];
+	document.title = title;
+	setText("title", title);
+
+	if(EDITOR || PLAYER){
+		document.getElementById('pzlname').innerHTML = pzpr.url.info[puzzleid][langcode]
+										+ {ja:"の操作方法", en:" - How to Input"}[langcode];
+
+		setText("puzmenu_expression", {ja:"パズルの操作説明",   en:"How to Input the board"}[langcode]);
+		setText("h4_player", {ja:"回答の入力方法", en:"Input Answer"}[langcode]);
+		setText("expression_p", expression_p);
+
+		if(EDITOR){
+			setText("expression_e", expression_e);
+			setText("h4_editor", {ja:"問題の入力方法", en:"Input Question"}[langcode]);
+		}
+		else{
+			hideEL("h4_editor");
+			hideEL("expression_e");
+		}
+	}
+
+	setText("puzmenu_common", {ja:"共通部分の操作説明", en:"Common"}[langcode]);
+	setText("puzmenu_menu1", {ja:"メニュー(ファイル・編集)", en:"Menu (File, Edit)"}[langcode]);
+	setText("puzmenu_menu2", {ja:"メニュー(表示・設定・その他)", en:"Menu (Display, Setting, Other)"}[langcode]);
+
+	removeEL({ja:"common_en", en:"common_ja"}[langcode]);
+	removeEL({ja:"menu1_en", en:"menu1_ja"}[langcode]);
+	removeEL({ja:"menu2_en", en:"menu2_ja"}[langcode]);
+}
+
+v3index.addEvent(window, 'load', onload_include_FAQ);
+
+/* *********************************************************************** */
+
+var strinfo = {
+	aho       : [['pBorder'],['eNumCircle']],
+	amibo     : [['pEtcBar'],['eNumBCell']],
+	ayeheya   : [['pBCell', 'pBCellRB'],['eBorder', 'eNumRoom']],
+	bag       : [['pLineBG1'],['eNumCell']],
+	barns     : [['pLine', 'pLineCont'],['eBorder', 'eIceBarns']],
+	bdblock   : [['pBorder'],['eNumCell', 'eCrossMark']],
+	bonsan    : [['pLineBG2'],['eBorder', 'eNumCircle']],
+	bosanowa  : [['pNum'],['eNumCell', 'eEXbosanowa', 'eReduce1']],
+	box       : [['pBCell'],['eNumCell']],
+	cbblock   : [['pBorder'],['eBorderDot']],
+	chocona   : [['pBCell'],['eBorder', 'eNumRoom']],
+	cojun     : [['pNum'],['eBorder', 'eNumCell']],
+	country   : [['pLineMB', 'pLineCont'],['eBorder', 'eNumRoom']],
+	creek     : [['pBCell'],['eNumCircle']],
+	factors   : [['pNum'],['eBorder', 'eNumRoom']],
+	fillmat   : [['pBorder'],['eNumCell']],
+	fillomino : [['pBorder', 'pNumCopy', 'pEXfillomino'],['eNumCell']],
+	firefly   : [['pLine'],['eNumCircle', 'eArrowNum2']],
+	fivecells : [['pBorder'],['eNumCell', 'eEXfivecells']],
+	fourcells : [['pBorder'],['eNumCell']],
+	goishi    : [['pEXgoishi'],['eEXgoishi', 'eReduce2']],
+	gokigen   : [['pEtcSlash', 'pEtcSlashCont'],['eNumCircle']],
+	hakoiri   : [['pEtcMark3'],['eBorder', 'eNumMark']],
+	hanare    : [['pNum'], ['eBorder', 'eNumber']],
+	hashikake : [['pLine'],['eNumCircle']],
+	heyawake  : [['pBCell', 'pBCellRB'],['eBorder', 'eNumRoom']],
+	hitori    : [['pBCell', 'pBCellRB'],['eNumCell']],
+	icebarn   : [['pLine', 'pLineCont'],['eIceArrow']],
+	icelom    : [['pLine', 'pLineCont'],['eNumCell', 'eIceArrow2']],
+	ichimaga  : [['pLine'],['eNumCircle']],
+	kaero     : [['pLineBG2'],['eBorder', 'eNumLetter', 'eNumLetter2']],
+	kakuro    : [['pNum'],['eQues51']],
+	kakuru    : [['pNum'],['eNumCell']],
+	kinkonkan : [['pEtcSlash', 'pEtcSlashLigt'],['eBorder', 'eOutLetter']],
+	kouchoku  : [['pEXkouchoku'],['eEXkouchoku']],
+	kramma    : [['pBorder'],['eShirokuro1', 'eCrossMark']],
+	kusabi    : [['pLine', 'pLineCont'],['eNumCell']],
+	kurochute : [['pBCell'],['eNumCircle']],
+	kurodoko  : [['pBCell', 'pBCellRB'],['eNumKanji']],
+	kurotto   : [['pBCell'],['eNumCircle']],
+	lightup   : [['pEXakari'],['eNumBCell']],
+	lits      : [['pBCell', 'pBCellCont'],['eBorder']],
+	lookair   : [['pBCell'],['eNumCell']],
+	loopsp    : [['pLine', 'pLineCont'],['eNumCircle', 'eLineMark']],
+	loute     : [['pBorder'],['pEtcArrow', 'eEXloute']],
+	mashu     : [['pLine', 'pLineCont'],['eShirokuro1']],
+	mejilink  : [['pLine', 'pLineCont'],['eBorderDot']],
+	minarism  : [['pNum'],['eNumCircle', 'eEXminarism']],
+	mochikoro : [['pBCell'],['eNumCell']],
+	mochinyoro: [['pBCell'],['eNumCell']],
+	nagenawa  : [['pLineMB', 'pLineCont'],['eBorder', 'eNumRoom']],
+	nanro     : [['pNumCopy', 'pEXnanro']['eBorder', 'eNumCell']],
+	nawabari  : [['pBorder'],['eNumCell']],
+	norinori  : [['pBCell'],['eBorder']],
+	numlin    : [['pLine', 'pLineCont'],['eNumCell']],
+	nuribou   : [['pBCell'],['eNumCell']],
+	nurikabe  : [['pBCell', 'pBCellCont'],['eNumCell']],
+	paintarea : [['pBTile', 'pBCellCont'],['eBorder', 'eNumCell']],
+	pipelink  : [['pLine', 'pLineCont'],['eLineMark', 'eEXpipelink']],
+	reflect   : [['pLine', 'pLineCont'],['eTriangle']],
+	renban    : [['pNum'],['eBorder', 'eNumCell']],
+	ringring  : [['pLineCont'],['eEXringring']],
+	ripple    : [['pNum'],['eBorder', 'eNumCell']],
+	roma      : [['pEtcArrow', 'pEXroma'],['eBorder', 'eNumArrow']],
+	sashigane : [['pBorder'],['pEtcArrow', 'eNumCircle']],
+	shakashaka: [['pEXshaka2'],['eNumBCell']],
+	shikaku   : [['pBorder'],['eNumCircle']],
+	shimaguni : [['pBCell'],['eBorder', 'eNumRoom']],
+	shugaku   : [['pEXshugaku'],['eNumCircle']],
+	shwolf    : [['pBorder'],['eShirokuro2', 'eCrossMark']],
+	slalom    : [['pLine', 'pLineCont', 'pLineGate'],['eEXslalom']],
+	slither   : [['pLine', 'pLineCont'],['eNumCell']],
+	snakes    : [['pNum', 'pNumSub'],['eNumCell', 'eArrowNum1']],
+	sudoku    : [['pNum'],['eNumCell']],
+	sukoro    : [['pNum', 'pNumMB'],['eNumCell']],
+	sukororoom: [['pNum', 'pNumMB'],['eBorder', 'eNumCell']],
+	tasquare  : [['pBCell'],['eNumCircle']],
+	tatamibari: [['pBorder'],['eNumMark']],
+	tateyoko  : [['pEtcBar'],['eNumCell', 'eEXtetayoko']],
+	tawa      : [['pBCell'],['eNumCell']],
+	tentaisho : [['pBorder', 'pBorderDraw'],['eEXtentaisho', 'ePicture', 'ePicture2']],
+	tilepaint : [['pBTile'],['eBorder', 'eQues51', 'ePicture']],
+	toichika  : [['pEtcArrow', 'pEtcArrowSub'],['eBorder', 'eNumArrow']],
+	triplace  : [['pBorder', 'pBorderBG'],['eQues51']],
+	usotatami : [['pBorder'],['eNumCell']],
+	view      : [['pNum', 'pNumMB'],['eNumCell']],
+	wagiri    : [['pEtcSlash'],['eEXwagiri']],
+	wblink    : [['pLine'],['eShirokuro1']],
+	yajikazu  : [['pBCell', 'pBCellRB'],['eNumCell', 'eArrowNum1']],
+	yajirin   : [['pLineYaji', 'pLineCont'],['eNumCell', 'eArrowNum1']],
+	yajitatami: [['pBorder'],['eNumCell', 'eArrowNum1', 'eBorder']],
+	yosenabe  : [['pLine'],['eEXyosenabe']]
+};
+
+var strdata={};
+strdata.ja = {
+	pBorder     : "左ドラッグで境界線が、右ドラッグで補助記号が入力できます。",
+	pBorderDraw : "<br>星をクリックすると色がぬれます。",
+	pBorderBG   : "<br>セルのクリックか、Zキー押しながら背景色(2種類)を入力することもできます。",
+	pBCell     : "クリックで黒マスや白マスを入力できます。",
+	pBTile     : "クリックで黒タイルや白タイルを入力できます。",
+	pBCellCont : "<br>Zキーを押しながら黒マスをクリックすることで繋がっている黒マスが表示されます。",
+	pBCellRB   : "<br>Zキーを押しながら黒マスをクリックすることで斜めに繋がっている黒マスが表示されます。",
+	pLine    : "左ドラッグで線が、右クリックで×印が入力できます。",
+	pLineBG1 : "左ドラッグで線が、右クリックでセルの背景色(緑/黄色)が入力できます。",
+	pLineBG2 : "左ドラッグで線が、マスのクリックでセルの背景色が入力できます。",
+	pLineMB  : "左ドラッグで線が、マスのクリックで○×(補助記号)が入力できます。",
+	pLineyaji : "左ドラッグで線が、左クリックで黒マスが、右クリックで補助記号が入力できます。",
+	pLineCont : "<br>Zキーを押しながら線をクリックすると繋がっている線が表示されます。",
+	pLineGate : "<br>Xキーを押している間は、数字が旗門上に表示されます。",
+	pNum     : "キーボードやマウスで数字が入力できます。",
+	pNumCopy : "マスの中央で左ボタンを押してから動かすことで、数字を隣のマスにコピーできます。",
+	pNumMB   : "QAZキーで○、WSXキーで×を入力できます。",
+	pNumSub  : "右クリックやQキーで補助記号が打てます。",
+	pEtcSlash     : "マウスで斜線を入力できます。",
+	pEtcSlashSub  : "マウスで斜線や補助記号が入力できます。",
+	pEtcSlashCont : "Zキーを押しながら斜線をクリックすると繋がっている線が表示されます。",
+	pEtcSlashLight: "外側をクリックすると光が発射されます。",
+	pEtcBar       : "マウスの左ボタンやドラッグで線が入力できます。",
+	pEtcMark3     : "左クリックやキーボードの1～3キーで○△□の記号が、"
+				   +"右クリックや4キーで補助記号が入力できます。",
+	pEtcArrow     : "クリックか、左ボタンを押したまま上下左右へ動かすか、キーボードの1～4キーか、"
+				   +"Shiftキーを押しながら方向キーを入力することで矢印を入力できます。",
+	pEtcArrowSub  : "キーボードの5キーや右クリックで補助記号が入力できます。",
+	pEXfillomino : "<br>キーボードではZキー、Xキー、Ctrlキーを押しながら矢印キーを入力することで、"
+				  +"境界線の入力、補助記号の入力、数字のコピーを行うことができます。",
+	pEXnanro     : "右クリックしたままマウスを動かして×を入力することもできます。",
+	pEXgoishi    : "左クリックで○に順番を表す数字が、右クリックor押しっぱなしで元に戻せます。",
+	pEXroma      : "<br>Zキーを押しながら矢印をクリックするとその矢印に到達する・向かう先が表示されます。",
+	pEXakari     : "マウスで光源と白マス確定マスが入力できます。",
+	pEXshaka2    : "\"クリックした位置\"ではマス目の角のほうをクリックすることで三角形が入力できます。"
+				  +"<br>\"引っ張り入力\"では斜め4方向にドラッグして三角形を入力できます。",
+	pEXshugaku   : "マウスの左ボタンドラッグで布団を、右ボタンで通路を入力できます。",
+	pEXkouchoku  : "マウスのボタンを押しながら動かすことで、2点間に線を入力したり消したりできます。",
+
+	eBorder    : "左ドラッグで境界線が入力できます。",
+	eBorderDot : "左ドラッグで点線が入力・消去できます。",
+	eNumber    : "キーボードやマウスで数字が入力できます。",
+	eNumCell   : "キーボードやマウスで数字が入力できます。-キーで?を入力することができます。",
+	eNumRoom   : "キーボードやマウスで部屋に数字が入力できます。-キーで?を入力することができます。",
+	eNumMark   : "キーボードやマウスで記号が入力できます。-キーで?を入力することができます。",
+	eNumArrow  : "キーボードやマウスで矢印が入力できます。-キーで?を入力することができます。",
+	eNumBCell  : "キーボードやマウスで数字が入力できます。-キーで黒マスを入力することができます。",
+	eNumCircle : "キーボードやマウスで数字が入力できます。-キーで数字のない記号を入力することができます。",
+	eNumKanji  : "キーボードやマウスで漢字が入力できます。-キーで漢字のない記号を入力することができます。",
+	eNumLetter : "キーボードやマウスで文字が入力できます。-キーで?を入力することができます。",
+	eNumLetter2: "同じ文字を押すことで小文字を入力することができます。",
+	eArrowNum1 : "<br>矢印は、マウスの左ドラッグか、SHIFTキーを押しながら矢印キーで入力できます。",
+	eArrowNum2 : "<br>黒点は、マウスの左ドラッグか、SHIFTキーを押しながら矢印キーで入力できます。",
+	eOutLetter : "外側のアルファベットは、同じキーを何回か押して大文字小文字／色違いの計4種類を入力できます。",
+	eIceBarns  : "右クリックで氷が入力できます。",
+	eIceArrow  : "左ドラッグで矢印が、右クリックで氷が入力できます。",
+	eIceArrow2 : "左ドラッグでIN/OUTが、右クリックかQキーで氷が入力できます。",
+	eShirokuro1: "クリックで白丸・黒丸および?を入力できます。",
+	eShirokuro2: "クリックでやぎ・おおかみおよび?を入力できます。",
+	eCrossMark : "交点をクリックすることで黒点が入力できます。",
+	eQues51    : "Qキーや左クリックでブロックが入力できます。数字を入力する場所はSHIFTキーを押すと切り替えられます。",
+	eReduce1   : "URL生成時、数字のない部分は自動的にカットされます。",
+	eReduce2   : "URL生成時、碁石のない部分は自動的にカットされます。",
+	eLineMark  : "問題の記号はQWEASDFの各キーで入力できます。Rキーや-キーで消去できます。",
+	eTriangle  : "問題の三角形はQWEASの各キーで入力、Tキーや-キーで消去できます。",
+	ePicture   : "マウスの右ボタンで下絵を描くことが出来ます。",
+	ePicture2  : "この背景色は「星をクリック」や「色をつける」ボタンで上書きされます。",
+	eEXringring  : "マウスで黒マスが入力できます。",
+	eEXloute     : "マウスや5キーで○が入力できます。",
+	eEXtateyoko  : "黒マスはQキーで入力できます。",
+	eEXtentaisho : "クリックで星が入力できます。",
+	eEXminarism  : "QWキーあるいはマウスのドラッグで不等号が入力できます。",
+	eEXbosanowa  : "Wキーで数字を入力するマス/しないマスの切り替えが出来ます。",
+	eEXfivecells : "Wキーで盤面に含まれるマスか否かの切り替えができます。",
+	eEXgoishi    : "クリックで碁石が入力できます。",
+	eEXpipelink  : "1キーで記号か氷を入力できます。",
+	eEXwagiri    : "交点でクリックするか数字キーや-キーを押すことで数字や数字のない丸を入力できます。"
+				  +"マス目でクリックするか12キーや-キーを押すことで漢字や?を入力できます。",
+	eEXslalom    : "黒マスはQキーかマウスの左クリックで入力、Rキーで消去できます。"
+				  +"旗門はマウスのドラッグかWEキーで入力できます。○はSキーか、マウスドラッグで移動出来ます。"
+				  +"黒マスの上で数字キーを押すことで数字を入力できます。",
+	eEXkouchoku  : "キーボードやマウスで記号が入力できます。-キーで黒点を入力することができます。",
+	eEXyosenabe  : "右クリックかWキーで鍋となる領域が入力できます。"
+				  +"<br>数字キーで数字を入力できます。鍋の上だと通常の数字に、鍋意外だと丸付き数字になります。"
+				  +"<br>Qキーを押すことで、丸付きとない数字を入れ替えることが出来ます。"
+				  +"<br>ただし、鍋以外の場所にある○なし数字はエラーになります。"
+};
+
+strdata.en = {
+	pBorder     : "Left Button Drag to input border lines, Right to input auxiliary marks.",
+	pBorderDraw : "<br>Click star to paint.",
+	pBorderBG   : "<br>Click cell or Click with Pressing Z key to input background color.",
+	pBCell     : "Click to input black or white cells.",
+	pBTile     : "Click to input black or white tiles.",
+	pBCellCont : "<br>Click with Z key to display continuous black cells.",
+	pBCellRB   : "<br>Click with Z key to display continuous black cells.",
+	pLine    : "Left Button Drag to input black cells, Right Click to input a cross.",
+	pLineBG1 : "Left Button Drag to input lines, Right Click to input background color (lime or yellow) of the cell.",
+	pLineBG2 : "Left Button Drag to input lines, Click the cell to input background color of the cell.",
+	pLineMB  : "Left Button Drag to input lines, Click to input auxiliary marks.",
+	pLineyaji : "Left Button Drag to input lines, Left Click to input black cells. Right click to input auxiliary marks.",
+	pLineCont : "<br>Click a line with Z key to display connected line.",
+	pLineGate : "<br>While X key is pressed, the numbers are displayed on the gate.",
+	pNum     : "Click or Press Keys to input number.",
+	pNumCopy : "Mouse down on center of the cell and move to copy the number.",
+	pNumMB   : "Press Q, A or Z key to input auxiliary circle, W, S or X key to input auxiliary cross.",
+	pNumSub  : "Right Click or Key to input auxiliary mark.",
+	pEtcSlash     : "Click to input slashes.",
+	pEtcSlashSub  : "Click to input mirrors or auxiliary marks.",
+	pEtcSlashCont : "Click a slash with Z key to display connected line.",
+	pEtcSlashLight: "Click Outside of the board to give off the light.",
+	pEtcBar       : "Left Button Drag or Click to input bars.",
+	pEtcMark3     : "Left Click or Type 1 to 3 key to input answers, "
+				   +"Right Click or Type 4 key to input auxiliary marks.",
+	pEtcArrow     : "Click, Mouse down on center of the cell and move, "
+				   +"input arrow key with shift key or press 1 to 4 key to input arrows,",
+	pEtcArrowSub  : "Right Click or Press 5 key to input auxiliary marks.",
+	pEXfillomino : "By keyboard, Press arrow key with each 'Z', 'X' or 'Ctrl' key to"
+				  +"input border, input auxiliary mark or copy number.",
+	pEXnanro     : "Press Right Mouse Button and Move to input a cross.",
+	pEXgoishi    : "Left Click to input number of orders, Right Click or Pressing to Undo.",
+	pEXroma      : "<br>Click an arrow with Z key to display the road that passes it or the arrow goes.",
+	pEXakari     : "Click to input Akari (Light source) or determined white cells.",
+	pEXshaka2    : "Click corner-side to input triangles if 'Corner-side' mode."
+				  +"<br>Left Button Drag to skew-ward to input triangle if 'Pull-to-Input' mode.",
+	pEXshugaku   : "Left Button Drag to input Futon, Right Click to input aisle.",
+	pEXkouchoku  : "Mouse Button Drag to input or erase segment between the points.",
+
+	eBorder    : "Left Button Drag to input border lines.",
+	eBorderDot : "Left Button Drag to input or erase dotted lines.",
+	eNumber    : "Click or Press Keys to input number.",
+	eNumCell   : "Click or Press Keys to input number. Press - key to input question mark.",
+	eNumRoom   : "Click or Press Keys to input number to the room. Press - key to input question mark.",
+	eNumMark   : "Click or Press Keys to input marks. Press - key to input question mark.",
+	eNumArrow  : "Click or Press Keys to input arrows. Press - key to input question mark.",
+	eNumBCell  : "Click or Press Keys to input number. Press - key to input black cell.",
+	eNumCircle : "Click or Press Keys to input number. Press - key to input non-numbered mark.",
+	eNumKanji  : "Click or Press Keys to input kanjis. Press - key to input non-kanjied mark.",
+	eNumLetter : "Click or Press Keys to input letter. Press - key to input question mark.",
+	eNumLetter2: "Press Key twice to be able to input lower case letter.",
+	eArrowNum1 : "<br>To input Arrows, Left Button Drag or Press arrow key with SHIFT key.",
+	eArrowNum2 : "<br>To input black marks, Left Button Drag or Press arrow key with SHIFT key.",
+	eOutLetter : "It is able to change outside alphabets to four type that is either capital or lower, is either black or blue type by pressing the same key.",
+	eIceBarns  : "Right Click or Drag to input ice.",
+	eIceArrow  : "Left Button Drag to input arrows, Right Click or Drag to input ice.",
+	eIceArrow2 : "Left Button Drag to input arrows and Right Click, Drag or Q key to input ice.",
+	eShirokuro1: "Click to input black circles, white circles or question marks.",
+	eShirokuro2: "Click to input sheeps, wolves or question marks.",
+	eCrossMark : "Click to input black points.",
+	eQues51    : "Q key or Left Click to input blocks. Press SHIFT key to change the side of inputting numbers.",
+	eReduce1   : "The area with no numbers or circles is cut when outputting URL.",
+	eReduce2   : "The area with no goishis or circles is cut when outputting URL.",
+	eLineMark  : "Press each QWEASDF key to input question. Press 'R' or '-' key to erase.",
+	eTriangle  : "Press each QWEAS key to input triangles. Press 'T' or '-' key to erase.",
+	ePicture   : "It is able to paint a design by Right Click.",
+	ePicture2  : "This background color is superscripted by clicking star or pressing 'Color up' button.",
+	eEXloute     : "Press 5 key or mouse to input a circle.",
+	eEXtateyoko  : "Press Q key to toggle black cells or not.",
+	eEXtentaisho : "Click to input stars.",
+	eEXminarism  : "Q or W key or Drag to input inequality mark.",
+	eEXbosanowa  : "W key toggles cell that is able to be inputted number or not.",
+	eEXfivecells : "W key toggles cell that is included the board or not.",
+	eEXgoishi    : "Click to input a goishi.",
+	eEXpipelink  : "'1' keys to input circles or ice.",
+	eEXwagiri    : "Type number key or Click on crosses to input number or non-numbered mark."
+				  +"Type 1 or 2 key or Click on cells to input kanjis or question marks.",
+	eEXslalom    : "Q key or Left Click to input black marks and R key to erase a mark."
+				  +"W or E key or Drag to input gates. S key or Left Button Drag to move circle."
+				  +"Type number key on a black cell to input number.",
+	eEXkouchoku  : "Click or Press Keys to input letters. Press - key to input black point."
+};
+</script>
+</HTML>
