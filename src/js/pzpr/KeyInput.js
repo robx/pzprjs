@@ -62,6 +62,11 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getchar(e);
 		if(c){ this.keyevent(c,0);}
+		
+		if(e.target===this.owner.canvas){
+			pzpr.util.stopPropagation(e);
+			pzpr.util.preventDefault(e);
+		}
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
@@ -69,6 +74,11 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getchar(e);
 		if(c){ this.keyevent(c,1);}
+		
+		if(e.target===this.owner.canvas){
+			pzpr.util.stopPropagation(e);
+			pzpr.util.preventDefault(e);
+		}
 	},
 	e_keypress : function(e){
 		if(!this.enableKey){ return;}
@@ -76,6 +86,11 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getcharp(e);
 		if(c){ this.keyevent(c,0);}
+		
+		if(e.target===this.owner.canvas){
+			pzpr.util.stopPropagation(e);
+			pzpr.util.preventDefault(e);
+		}
 	},
 
 	//---------------------------------------------------------------------------

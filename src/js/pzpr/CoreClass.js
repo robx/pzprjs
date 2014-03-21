@@ -70,9 +70,9 @@ window.pzpr = {
 		pzpr.util.addEvent(document, 'keypress', pzpr, pzpr.execKeyPress);
 	},
 	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
-	execKeyDown  : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keydown(e);}},
-	execKeyUp    : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keyup(e);}},
-	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}},
+	execKeyDown  : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyDown(e);}},
+	execKeyUp    : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyUp(e);}},
+	execKeyPress : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyPress(e);}},
 
 	//---------------------------------------------------------------
 	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
@@ -430,7 +430,11 @@ pzpr.util = {
 	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
+		var func = function(e){
+			e = e || window.event;
+			e.target = e.target || e.srcElement;
+			callback.call(self, e);
+		};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 	},

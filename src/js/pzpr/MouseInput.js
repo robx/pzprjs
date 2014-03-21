@@ -78,7 +78,6 @@ pzpr.createPuzzleClass('MouseEvent',
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
-		return false;
 	},
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
@@ -89,7 +88,6 @@ pzpr.createPuzzleClass('MouseEvent',
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
-		return false;
 	},
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
@@ -98,7 +96,6 @@ pzpr.createPuzzleClass('MouseEvent',
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
-		return false;
 	},
 	e_mouseout : function(e){ },
 

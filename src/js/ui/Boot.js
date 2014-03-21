@@ -66,6 +66,7 @@ function startPuzzle(){
 	var element = document.getElementById('divques');
 	var puzzle = ui.puzzle = pzpr.createPuzzle(element, onload_option);
 	pzpr.connectKeyEvents(puzzle);
+	element.focus();
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
 	ui.menu.init();
