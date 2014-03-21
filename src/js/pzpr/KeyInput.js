@@ -28,6 +28,7 @@ pzpr.createPuzzleClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	// kc.keyreset()     キーボード入力に関する情報を初期化する
 	// kc.isenablemode() 現在のモードでキー入力が有効か判定する
+	// kc.setfocus()     キャンバスにフォーカスをセットするか外す
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
@@ -48,6 +49,15 @@ pzpr.createPuzzleClass('KeyEvent',
 	},
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
+	},
+	setfocus : function(){
+		var canvas = this.owner.canvas;
+		if(pzpr.env.OS.iOS || this.key.isenablemode()){
+			canvas.focus();
+		}
+		else{
+			canvas.blur();
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -110,23 +120,31 @@ pzpr.createPuzzleClass('KeyEvent',
 	getchar : function(e){
 		this.checkmodifiers(e);
 
-		if     (e.keyCode==38){ return this.KEYUP;}
-		else if(e.keyCode==40){ return this.KEYDN;}
-		else if(e.keyCode==37){ return this.KEYLT;}
-		else if(e.keyCode==39){ return this.KEYRT;}
+		var key = '', keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 
-		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
-		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
-		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
-		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
-		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                  { return 'BS';}
-		else if(keycode==109|| keycode==189) { return '-';}
+		if     (keycode==38){ key = this.KEYUP;}
+		else if(keycode==40){ key = this.KEYDN;}
+		else if(keycode==37){ key = this.KEYLT;}
+		else if(keycode==39){ key = this.KEYRT;}
+		else if( 48<=keycode && keycode<= 57){ key = (keycode-48).toString(36);}
+		else if( 65<=keycode && keycode<= 90){ key = (keycode-55).toString(36);} //アルファベット
+		else if( 96<=keycode && keycode<=105){ key = (keycode-96).toString(36);} //テンキー対応
+		else if(112<=keycode && keycode<=123){ key = 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
+		else if(keycode==32 || keycode==46)  { key = ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode==8)                  { key = 'BS';}
+		else if(keycode==109|| keycode==189) { key = '-';}
+		else if(e.shiftKey){ key = 'shift';}
 
-		else if(e.shiftKey){ return 'shift';}
+		if(this.isALT){
+			if     (pzpr.EDITOR && key==='1'){ this.owner.modechange(k.MODE_EDITOR); key = '';}
+			else if(pzpr.EDITOR && key==='3'){ this.owner.modechange(k.MODE_PLAYER); key = '';}
+			else if(key==='h'){ key = this.KEYLT;}
+			else if(key==='k'){ key = this.KEYUP;}
+			else if(key==='j'){ key = this.KEYDN;}
+			else if(key==='l'){ key = this.KEYRT;}
+		}
 
-		return '';
+		return key;
 	},
 
 	//---------------------------------------------------------------------------

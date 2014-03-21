@@ -199,7 +199,7 @@ pzpr.Puzzle.prototype =
 	},
 	execMouseDown : function(e){
 		/* キー入力のフォーカスを当てる */
-		if(!!this.key && this.key.isenablemode()){ this.canvas.focus();}else{ this.canvas.blur();}
+		if(!!this.key){ this.key.setfocus();}
 		if(!!this.mouse){ this.mouse.e_mousedown(e);}
 	},
 	execMouseMove : function(e){ if(!!this.mouse){ this.mouse.e_mousemove(e);}},
