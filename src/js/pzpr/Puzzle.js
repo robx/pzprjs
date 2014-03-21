@@ -199,7 +199,8 @@ pzpr.Puzzle.prototype =
 		pzpr.util.addEvent(canvas, 'keypress', puzzle, puzzle.execKeyPress);
 	},
 	execMouseDown : function(e){
-		this.canvas.focus(); /* キー入力のフォーカスを当てる */
+		/* キー入力のフォーカスを当てる */
+		if(!!this.key && this.key.isenablemode()){ this.canvas.focus();}else{ this.canvas.blur();}
 		if(!!this.mouse){ this.mouse.e_mousedown(e);}
 	},
 	execMouseMove : function(e){ if(!!this.mouse){ this.mouse.e_mousemove(e);}},
