@@ -5,7 +5,6 @@
 /* 初期化時のみ使用するルーチン */
 /********************************/
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
-if(!location.href.match(/\/p\.html/)){ return;}
 
 var require_accesslog = true;
 var onload_pzl = null;
@@ -60,6 +59,7 @@ function includeDebugFile(){
 }
 
 function startPuzzle(){
+	if(!!window.v3index){ return;}
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */

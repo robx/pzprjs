@@ -84,12 +84,12 @@ ui.debug =
 	keydown : function(ca){
 		var kc = ui.puzzle.key;
 		if(!ui.debugmode){
-			if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
+			if(kc.isALT && ca==='p'){ this.disppoptest();}
 			else{ return false;}
 		}
 		else{
 			if(ca=='F7'){ this.accheck1();}
-			else if(kc.isCTRL && ca=='F8'){ this.disppoptest();}
+			else if(kc.isALT  && ca==='p'){ this.disppoptest();}
 			else if(kc.isCTRL && ca=='F9'){ this.starttest();}
 			else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
 			else{ return false;}
@@ -98,7 +98,7 @@ ui.debug =
 		return true;
 	},
 	disppoptest : function(){
-		ui.menu.popups.debug.show();
+		ui.popupmgr.popups.debug.show();
 	},
 
 	starttest : function(){},

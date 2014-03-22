@@ -132,9 +132,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		else if(e.shiftKey){ key = 'shift';}
 
 		if(this.isALT){
-			if     (pzpr.EDITOR && key==='1'){ this.owner.modechange(k.MODE_EDITOR); key = '';}
-			else if(pzpr.EDITOR && key==='3'){ this.owner.modechange(k.MODE_PLAYER); key = '';}
-			else if(key==='h'){ key = this.KEYLT;}
+			if     (key==='h'){ key = this.KEYLT;}
 			else if(key==='k'){ key = this.KEYUP;}
 			else if(key==='j'){ key = this.KEYDN;}
 			else if(key==='l'){ key = this.KEYRT;}
@@ -164,6 +162,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		}
 
 		if(!puzzle.execListener('key',c)){ return;}
+		if(!this.keyexec(c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
@@ -171,6 +170,18 @@ pzpr.createPuzzleClass('KeyEvent',
 	stopEvent : function(){
 		pzpr.util.preventDefault(this.event);
 		this.keyreset();
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.keyexec() モードに共通で行う処理を実行します
+	//---------------------------------------------------------------------------
+	keyexec : function(c){
+		var puzzle = this.owner;
+		if(this.keydown && this.isALT && c==='c' && pzpr.EDITOR){
+			puzzle.modechange(puzzle.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
+			return false;
+		}
+		return true;
 	},
 
 	//---------------------------------------------------------------------------
