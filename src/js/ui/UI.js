@@ -132,18 +132,20 @@ ui.event =
 			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
 			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
 		}
+		ui.menuarea.floatmenuclose(0);
 		return result;
 	},
 	mouse_common : function(o){
-		var mv = o.mouse;
+		var mv = o.mouse, result = true;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
 			if(pzpr.EDITOR){
 				o.modechange(o.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
 			}
 			mv.mousereset();
-			return false;
+			result = false;
 		}
-		return true;
+		ui.menuarea.floatmenuclose(0);
+		return result;
 	},
 	config_common : function(o, idname, newval){
 		ui.menu.setdisplay(idname);

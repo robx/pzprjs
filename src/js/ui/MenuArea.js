@@ -584,7 +584,15 @@ ui.menuarea = {
 	insideOfMenu : function(e){
 		var pos = pzpr.util.getPagePos(e);
 		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
-		return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
+		var floats = this.dispfloat;
+		if(pos.py <= rect_f.bottom){
+			return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
+		}
+		else if(floats.length>0){
+			var rect_0 = pzpr.util.getRect(floats[0]), rect_l = pzpr.util.getRect(floats[floats.length-1]);
+			return (pos.px>=rect_0.left && pos.px<=rect_l.right);
+		}
+		return false;
 	}
 };
 
