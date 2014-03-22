@@ -192,8 +192,8 @@ ui.menu = {
 		/* 正解自動判定機能 */
 		this.menuconfig.autocheck = {val:pzpr.PLAYER};
 
-		/* キーポップアップ */
-		this.menuconfig.keypopup = {val:false};	/* 数字などのパネル入力 */
+		/* キーポップアップ (数字などのパネル入力) */
+		this.menuconfig.keypopup = {val:false};
 
 		/* 自動横幅調節 */
 		this.menuconfig.adjsize = {val:true};
@@ -211,11 +211,14 @@ ui.menu = {
 		if(!this.menuconfig[idname]){ return;}
 		this.menuconfig[idname].val = newval;
 		this.setdisplay(idname);
-		if(idname==='keypopup'){
+		switch(idname){
+		case 'keypopup':
 			ui.keypopup.display();
-		}
-		else if(idname==='adjsize' || idname==='cellsize' || idname==='fullwidth'){
+			break;
+			
+		case 'adjsize': case 'cellsize': case 'fullwidth':
 			ui.event.adjustcellsize();
+			break;
 		}
 	},
 	getMenuConfig : function(idname){

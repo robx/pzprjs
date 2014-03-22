@@ -323,6 +323,8 @@ ui.menuarea = {
 			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 		}
 
+		pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
+
 		pp.addSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');

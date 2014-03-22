@@ -158,6 +158,7 @@ pzpr.Puzzle.prototype =
 		this.painter.unsuspend();
 		
 		if(!this.ready){
+			this.key.setfocus();
 			this.resetTime();
 			this.ready = true;
 			this.execListener('ready');
@@ -530,6 +531,8 @@ pzpr.util.Config.prototype =
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
 
+		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
+
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
@@ -569,6 +572,10 @@ pzpr.util.Config.prototype =
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove': case 'font':
 			o.redraw();
+			break;
+		
+		case 'keytarget':
+			this.owner.key.setfocus();
 			break;
 		
 		case 'disptype_bosanowa':
