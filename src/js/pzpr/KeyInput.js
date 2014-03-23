@@ -52,7 +52,8 @@ pzpr.createPuzzleClass('KeyEvent',
 	},
 	setfocus : function(){
 		var canvas = this.owner.canvas;
-		if(this.owner.getConfig('keytarget') && (pzpr.env.OS.iOS || this.isenablemode())){
+		if(!canvas){}
+		else if(this.owner.getConfig('keytarget') && (pzpr.env.OS.iOS || this.isenablemode())){
 			canvas.focus();
 			canvas.contentEditable = true;
 		}
