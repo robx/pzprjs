@@ -252,7 +252,7 @@ ui.menu = {
 		if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
 			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
-			else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");}
+			/* else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");} IE6でエラー? */
 			rules = sheet.cssRules || sheet.rules;
 			this.modifyCSS_sub(rules, input);
 		}
