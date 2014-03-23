@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "3.4.0-pre",
+  "version": "3.4.0",
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
   "directories": {
