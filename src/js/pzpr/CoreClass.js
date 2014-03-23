@@ -98,14 +98,14 @@ window.pzpr = {
 	},
 	postload : function(){
 		if(!this.preinit){}
-		else if(!!window.Candle){
+		else if(!window.Candle){ setTimeout(function(){ pzpr.postload();},10);}
+		else{
 			this.preinit = false;
 			this.addWindowEvents();
 			this.addKeyEvents();
 			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
 			this.loadfun = [];
 		}
-		else{ setTimeout(function(){ pzpr.postload();},10);}
 	}
 };
 
@@ -114,19 +114,10 @@ window.pzpr = {
 //----------------------------------------------------------------------
 if(!!document.addEventListener){
 	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
-}
-else if(navigator.userAgent.match(/MSIE 8/)){
-	document.attachEvent('onreadystatechange', function(){
-		var state = document.readyState;
-		if(state==='interactive'||state=='complete'){ pzpr.postload();}
-	});
+	window.addEventListener('load', function(){ pzpr.postload();}, false);
 }
 else{
-	(function(){
-		try{ document.documentElement.doScroll("left");}
-		catch(error){ setTimeout(arguments.callee, 0); return;}
-		pzpr.postload();
-	})();
+	window.attachEvent('onload', function(){ pzpr.postload();});
 }
 
 var k = pzpr.consts;
