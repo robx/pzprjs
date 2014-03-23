@@ -28,8 +28,9 @@ function includePzprFile(){
 		
 		/* 指定されたパズルがない場合はさようなら～ */
 		if(!onload_pzl || !onload_pzl.id){
-			_doc.getElementById('title2').innerHTML = "Fail to import puzzle data or URL.";
-			throw "No Include Puzzle Data Exception";
+			var title2 = document.getElementById('title2');
+			if(!!title2){ title2.innerHTML = "Fail to import puzzle data or URL.";}
+			throw new Error("No Include Puzzle Data Exception");
 		}
 	}
 	
