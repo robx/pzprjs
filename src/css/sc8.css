@@ -63,6 +63,10 @@
 
 	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
 
+	/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
+	#tawa_shape div { display:block; position:relative; width:36px; height:36px;}
+	#tawa_shape img { position:absolute; margin:2px;}
+
 	/* キーポップアップ用 */
 	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}

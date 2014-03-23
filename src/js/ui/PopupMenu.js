@@ -326,12 +326,8 @@ ui.popupmgr.addpopup('newboard',
 	},
 	makeForm_tawa_shape : function(form){
 		var table = new ui.TableElement();
-		table.init({id:'NB_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
+		table.init({id:'tawa_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
-		
-		/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
-		ui.menu.modifyCSS({'#NB_shape div':{display:'block', position:'relative', width:'36px', height:'36px'}});
-		ui.menu.modifyCSS({'#NB_shape img':{position:'absolute', margin:'2px'}});
 		
 		var clickshape = function(e){
 			var _div = e.target.parentNode;
@@ -344,6 +340,9 @@ ui.popupmgr.addpopup('newboard',
 		for(var i=0;i<=3;i++){
 			var _img = createEL('img');
 			_img.src = (!pzpr.env.API.dataURL ? "./img/tawa_nb.gif" : "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==");
+			_img.style.width  = "128px";
+			_img.style.height = "32px";
+			_img.style.top  = "0px";
 			_img.style.left = "-"+(i*32)+"px";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
 			ui.event.addEvent(_img, 'click', this, clickshape);

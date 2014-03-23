@@ -248,13 +248,12 @@ ui.menu = {
 	//--------------------------------------------------------------------------------
 	modifyCSS : function(input){
 		var sheet = _doc.styleSheets[0];
-		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
-		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
-		var modified = this.modifyCSS_sub(rules, input);
-		if(!modified){
+		var rules = sheet.cssRules || sheet.rules;
+		if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
-			if(!!sheet.insertRule){ sheet.insertRule(""+sel+" {}", rules.length);}
-			rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
+			else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");}
+			rules = sheet.cssRules || sheet.rules;
 			this.modifyCSS_sub(rules, input);
 		}
 	},
