@@ -181,6 +181,10 @@ function accesslog(){
 	   document.domain!=='pzprv3.sakura.ne.jp' &&
 	   !document.domain.match(/pzv\.jp/)){ return;}
 
+	var refer = document.referrer.replace(/\?/g,"%3f").replace(/\&/g,"%26")
+								 .replace(/\=/g,"%3d").replace(/\//g,"%2f");
+	if(refer.match(/http\:\%2f\%2f(www\.)?pzv.jp/)){ return;}
+
 	// 送信
 	var xmlhttp = false;
 	if(typeof ActiveXObject != "undefined"){
@@ -191,8 +195,6 @@ function accesslog(){
 		xmlhttp = new XMLHttpRequest();
 	}
 	if(xmlhttp){
-		var refer = document.referrer.replace(/\?/g,"%3f").replace(/\&/g,"%26")
-									 .replace(/\=/g,"%3d").replace(/\//g,"%2f");
 		var data = [
 			("scr="     + "pzprv3"),
 			("pid="     + onload_pzl.id),
@@ -205,7 +207,6 @@ function accesslog(){
 		xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
 		xmlhttp.send(data);
 	}
-	require_accesslog = false;
 }
 
 })();
