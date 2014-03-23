@@ -13,7 +13,8 @@ var onload_option = {imagesave:true};
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
 pzpr.addLoadListener(function(){
-	if(includePzprFile() && includeDebugFile()){ startPuzzle();}
+	if(location.href.match(/^(file|http:\/\/192.168\.).+\/tests\//)){}
+	else if(includePzprFile() && includeDebugFile()){ startPuzzle();}
 	else{ setTimeout(arguments.callee,0);}
 });
 
