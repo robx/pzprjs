@@ -51,7 +51,7 @@ ui.event =
 	addEvent : function(el, event, self, callback, capt){
 		var func = function(e){
 			e = e||window.event;
-			e.target = e.target||e.srcElement;
+			if(!e.target){ e.target = e.srcElement;}
 			return callback.call(self, e);
 		};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
