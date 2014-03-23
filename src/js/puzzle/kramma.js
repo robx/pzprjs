@@ -165,7 +165,9 @@ Graphic:{
 
 	resize_canvas_main : function(){
 		this.Common.prototype.resize_canvas_main.call(this);
-		if(this.imgtile && this.imgtile.loaded){ this.imgtile.createStamp(this.context);}
+		if(this.imgtile && this.imgtile.loaded){
+			if(this.context.use.svg){ this.imgtile.createStamp(this.context);}
+		}
 	},
 	prepaint : function(){
 		if(!this.imgtile || !this.imgtile.loaded){ this.suspendAll();}
