@@ -308,6 +308,11 @@ ui.event =
 		o.canvas.style.padding = val+'px';
 		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
 		
+		if(pzpr.env.browser.IE6 || pzpr.env.browser.IE7){
+			/* なんかIE6,7は計算してあげるないと位置がおかしくなるらしい。 */
+			pzpr.util.getRect(o.canvas);
+		}
+		
 		return true;
 	},
 
