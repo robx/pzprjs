@@ -101,6 +101,7 @@ ui.event =
 	onReady : function(puzzle){
 		ui.menu.menuinit();					/* メニュー関係初期化 */
 		ui.event.adjustcellsize();
+		ui.keypopup.display();
 		
 		ui.undotimer.reset();
 		ui.timer.reset();					/* タイマーリセット(最後) */
@@ -197,7 +198,7 @@ ui.event =
 	},
 
 	//---------------------------------------------------------------------------
-	// event.onload_func()   ウィンドウリサイズ時に呼ばれる関数
+	// event.onload_func()   ウィンドウを開いた時に呼ばれる関数
 	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onload_func : function(){
@@ -222,11 +223,7 @@ ui.event =
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		var self = this;
-		this.resizetimer = setTimeout(function(){
-			self.adjustcellsize();
-			ui.keypopup.resizepanel();
-		},250);
+		this.resizetimer = setTimeout(function(){ ui.event.adjustcellsize();},250);
 	},
 	onblur_func : function(){
 		ui.puzzle.key.keyreset();
@@ -312,6 +309,8 @@ ui.event =
 			/* なんかIE6,7は計算してあげるないと位置がおかしくなるらしい。 */
 			pzpr.util.getRect(o.canvas);
 		}
+		
+		ui.keypopup.resizepanel();
 		
 		return true;
 	},
