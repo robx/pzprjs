@@ -60,7 +60,6 @@ ui.menu = {
 		if(!!ui.menuarea){ ui.menuarea.init();}
 		if(!!ui.toolarea){ ui.toolarea.init();}
 
-		this.settextsize();
 		this.displayAll();
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
@@ -245,15 +244,8 @@ ui.menu = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.settextsize() テキストのサイズを設定する
 	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
-	settextsize : function(num){
-		this.modifyCSS({'.outofboard':{
-			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
-			lineHeight:['1.2','1.1','1.1','1.1'][num]
-		} });
-	},
 	modifyCSS : function(input){
 		var sheet = _doc.styleSheets[0];
 		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
