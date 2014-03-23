@@ -158,9 +158,9 @@ ui.debug =
 		this.setTA(text);
 	},
 
-	getTA : function(){ return document.testform.testarea.value;},
-	setTA : function(str){ document.testform.testarea.value  = str;},
-	addTA : function(str){ document.testform.testarea.value += (str+"\n");},
+	getTA : function(){ return document.getElementById('testarea').value;},
+	setTA : function(str){ document.getElementById('testarea').value  = str;},
+	addTA : function(str){ document.getElementById('testarea').value += (str+"\n");},
 
 	includeDebugScript : function(filename){
 		if(!!this.includedScript[filename]){ return;}
