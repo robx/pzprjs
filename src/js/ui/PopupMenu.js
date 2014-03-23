@@ -214,7 +214,8 @@ ui.popupmgr.addpopup('template',
 	},
 	addInput : function(type, attr){
 		var el = createEL('input');
-		el.type = type;
+		try{ el.type = type;}
+		catch(e){ el.type = "text"; /* IE8まででエラーをくらうので修正 */}
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
 	},

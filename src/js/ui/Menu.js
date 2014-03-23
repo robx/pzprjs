@@ -261,8 +261,7 @@ ui.menu = {
 		var modified = this.modifyCSS_sub(rules, input);
 		if(!modified){
 			var sel = ''; for(sel in input){ break;}
-			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
-			else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");}
+			if(!!sheet.insertRule){ sheet.insertRule(""+sel+" {}", rules.length);}
 			rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
 			this.modifyCSS_sub(rules, input);
 		}
