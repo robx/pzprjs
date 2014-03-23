@@ -1,5 +1,8 @@
 
 module.exports = function(grunt){
+  var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
+  for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
+  
   var fs = require('fs');
   var banner_min  = fs.readFileSync('./src/js/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/js/common/banner_full.js', 'utf-8');
@@ -9,9 +12,9 @@ module.exports = function(grunt){
 
   var replacer = [{ from: "<deploy-version>", to: "<%= pkg.version %>"}];
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: pkg,
 
-    clean: ['dist/*'],
+    clean: ['dist/*', 'pzprv3-*.zip', 'pzprv3-*.tar.gz'],
 
     concat: {
       options: {
@@ -58,9 +61,8 @@ module.exports = function(grunt){
     },
 
     replace: {
-      'debug-pzprv3':      { src: 'dist/js/pzpr/CoreClass.js',    overwrite: true, replacements: replacer },
-      'combine-pzprv3':    { src: 'dist/js/pzprv3.concat.js',     overwrite: true, replacements: replacer },
-      'combine-pzprv3-all':{ src: 'dist/js/pzprv3-all.concat.js', overwrite: true, replacements: replacer }
+      debug:  { src: ['dist/js/pzpr/CoreClass.js'], overwrite: true, replacements: replacer },
+      combine:{ src: ['dist/js/*.js'],              overwrite: true, replacements: replacer }
     },
 
     uglify: {
@@ -76,6 +78,15 @@ module.exports = function(grunt){
           { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },
         ]
       }
+    },
+
+    shell: {
+      release: {
+        command: [
+          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js dist/*",
+          "zip -9r pzprv3-<%= pkg.version %>.zip dist/* -x *.concat.js"
+        ].join('; ')
+      }
     }
   });
   
@@ -90,16 +101,7 @@ module.exports = function(grunt){
   grunt.config.set("concat.combine.files.0.src", wrap(component_core).map(mod2file));
   grunt.config.set("concat.combine.files.1.src", wrap(component_all ).map(mod2file));
   
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-text-replace');
-  
-  grunt.registerTask('replace-debug',   ['replace:debug-pzprv3'])
-  grunt.registerTask('replace-combine', ['replace:combine-pzprv3', 'replace:combine-pzprv3-all'])
-  
-  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace-debug'                   ]);
-  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace-combine'                 ]);
-  grunt.registerTask('release', ['clean', 'concat:combine', 'copy:combine', 'replace-combine','uglify:release']);
+  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace:debug'  ]);
+  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace:combine']);
+  grunt.registerTask('release', ['combine', 'uglify:release', 'shell:release']);
 };
