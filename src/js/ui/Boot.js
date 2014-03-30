@@ -5,7 +5,6 @@
 /* 初期化時のみ使用するルーチン */
 /********************************/
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
-if(!location.href.match(/\/p\.html/)){ return;}
 
 var require_accesslog = true;
 var onload_pzl = null;
@@ -14,7 +13,8 @@ var onload_option = {imagesave:true};
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
 pzpr.addLoadListener(function(){
-	if(includePzprFile() && includeDebugFile()){ startPuzzle();}
+	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)){}
+	else if(includePzprFile() && includeDebugFile()){ startPuzzle();}
 	else{ setTimeout(arguments.callee,0);}
 });
 
@@ -29,8 +29,9 @@ function includePzprFile(){
 		
 		/* 指定されたパズルがない場合はさようなら～ */
 		if(!onload_pzl || !onload_pzl.id){
-			_doc.getElementById('title2').innerHTML = "Fail to import puzzle data or URL.";
-			throw "No Include Puzzle Data Exception";
+			var title2 = document.getElementById('title2');
+			if(!!title2){ title2.innerHTML = "Fail to import puzzle data or URL.";}
+			throw new Error("No Include Puzzle Data Exception");
 		}
 	}
 	
@@ -60,6 +61,7 @@ function includeDebugFile(){
 }
 
 function startPuzzle(){
+	if(!!window.v3index){ return;}
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
@@ -180,6 +182,10 @@ function accesslog(){
 	   document.domain!=='pzprv3.sakura.ne.jp' &&
 	   !document.domain.match(/pzv\.jp/)){ return;}
 
+	var refer = document.referrer.replace(/\?/g,"%3f").replace(/\&/g,"%26")
+								 .replace(/\=/g,"%3d").replace(/\//g,"%2f");
+	if(refer.match(/http\:\%2f\%2f(www\.)?pzv.jp/)){ return;}
+
 	// 送信
 	var xmlhttp = false;
 	if(typeof ActiveXObject != "undefined"){
@@ -190,8 +196,6 @@ function accesslog(){
 		xmlhttp = new XMLHttpRequest();
 	}
 	if(xmlhttp){
-		var refer = document.referrer.replace(/\?/g,"%3f").replace(/\&/g,"%26")
-									 .replace(/\=/g,"%3d").replace(/\//g,"%2f");
 		var data = [
 			("scr="     + "pzprv3"),
 			("pid="     + onload_pzl.id),
@@ -204,7 +208,6 @@ function accesslog(){
 		xmlhttp.setRequestHeader("Content-Type" , "application/x-www-form-urlencoded");
 		xmlhttp.send(data);
 	}
-	require_accesslog = false;
 }
 
 })();

@@ -158,6 +158,7 @@ pzpr.Puzzle.prototype =
 		this.painter.unsuspend();
 		
 		if(!this.ready){
+			this.key.setfocus();
 			this.resetTime();
 			this.ready = true;
 			this.execListener('ready');
@@ -184,18 +185,29 @@ pzpr.Puzzle.prototype =
 	// owner.exec????()        マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
 	setCanvasEvents : function(canvas){
+		var puzzle = this;
+		
 		// マウス入力イベントの設定
-		var o = this;
-		pzpr.util.addMouseDownEvent(canvas, o, o.execMouseDown);
-		pzpr.util.addMouseMoveEvent(canvas, o, o.execMouseMove);
-		pzpr.util.addMouseUpEvent  (canvas, o, o.execMouseUp);
-		pzpr.util.addEvent(canvas, "mouseout", o, o.execMouseOut);
+		pzpr.util.addMouseDownEvent(canvas, puzzle, puzzle.execMouseDown);
+		pzpr.util.addMouseMoveEvent(canvas, puzzle, puzzle.execMouseMove);
+		pzpr.util.addMouseUpEvent  (canvas, puzzle, puzzle.execMouseUp);
+		pzpr.util.addEvent(canvas, "mouseout", puzzle, puzzle.execMouseOut);
 		canvas.oncontextmenu = function(){ return false;};
+		
+		// キー入力イベントの設定
+		pzpr.util.addEvent(canvas, 'keydown',  puzzle, puzzle.execKeyDown);
+		pzpr.util.addEvent(canvas, 'keyup',    puzzle, puzzle.execKeyUp);
 	},
-	execMouseDown : function(e){ this.mouse.e_mousedown(e);},
-	execMouseMove : function(e){ this.mouse.e_mousemove(e);},
-	execMouseUp   : function(e){ this.mouse.e_mouseup(e);},
-	execMouseOut  : function(e){ this.mouse.e_mouseout(e);},
+	execMouseDown : function(e){
+		/* キー入力のフォーカスを当てる */
+		if(!!this.key){ this.key.setfocus();}
+		if(!!this.mouse){ this.mouse.e_mousedown(e);}
+	},
+	execMouseMove : function(e){ if(!!this.mouse){ this.mouse.e_mousemove(e);}},
+	execMouseUp   : function(e){ if(!!this.mouse){ this.mouse.e_mouseup(e);}},
+	execMouseOut  : function(e){ if(!!this.mouse){ this.mouse.e_mouseout(e);}},
+	execKeyDown   : function(e){ if(!!this.key){ this.key.e_keydown(e);}},
+	execKeyUp     : function(e){ if(!!this.key){ this.key.e_keyup(e);}},
 
 	//---------------------------------------------------------------------------
 	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する
@@ -519,6 +531,8 @@ pzpr.util.Config.prototype =
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
 
+		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
+
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
@@ -558,6 +572,10 @@ pzpr.util.Config.prototype =
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove': case 'font':
 			o.redraw();
+			break;
+		
+		case 'keytarget':
+			this.owner.key.setfocus();
 			break;
 		
 		case 'disptype_bosanowa':

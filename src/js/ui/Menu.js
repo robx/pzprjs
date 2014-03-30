@@ -60,7 +60,6 @@ ui.menu = {
 		if(!!ui.menuarea){ ui.menuarea.init();}
 		if(!!ui.toolarea){ ui.toolarea.init();}
 
-		this.settextsize();
 		this.displayAll();
 
 		ui.event.setUIEvents();				/* イベントをくっつける */
@@ -192,8 +191,8 @@ ui.menu = {
 		/* 正解自動判定機能 */
 		this.menuconfig.autocheck = {val:pzpr.PLAYER};
 
-		/* キーポップアップ */
-		this.menuconfig.keypopup = {val:false};	/* 数字などのパネル入力 */
+		/* キーポップアップ (数字などのパネル入力) */
+		this.menuconfig.keypopup = {val:false};
 
 		/* 自動横幅調節 */
 		this.menuconfig.adjsize = {val:true};
@@ -211,11 +210,14 @@ ui.menu = {
 		if(!this.menuconfig[idname]){ return;}
 		this.menuconfig[idname].val = newval;
 		this.setdisplay(idname);
-		if(idname==='keypopup'){
+		switch(idname){
+		case 'keypopup':
 			ui.keypopup.display();
-		}
-		else if(idname==='adjsize' || idname==='cellsize' || idname==='fullwidth'){
+			break;
+			
+		case 'adjsize': case 'cellsize': case 'fullwidth':
 			ui.event.adjustcellsize();
+			break;
 		}
 	},
 	getMenuConfig : function(idname){
@@ -242,25 +244,16 @@ ui.menu = {
 //--------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	// menu.settextsize() テキストのサイズを設定する
 	// menu.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
-	settextsize : function(num){
-		this.modifyCSS({'.outofboard':{
-			fontSize:['1.0em','1.5em','2.0em','3.0em'][num],
-			lineHeight:['1.2','1.1','1.1','1.1'][num]
-		} });
-	},
 	modifyCSS : function(input){
 		var sheet = _doc.styleSheets[0];
-		var rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
-		if(!rules){ return;} /* Chrome6の挙動がおかしいのでエラー回避用 */
-		var modified = this.modifyCSS_sub(rules, input);
-		if(!modified){
+		var rules = sheet.cssRules || sheet.rules;
+		if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
 			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
-			else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");}
-			rules = (!!sheet.cssRules ? sheet.cssRules : sheet.rules);
+			/* else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");} IE6でエラー? */
+			rules = sheet.cssRules || sheet.rules;
 			this.modifyCSS_sub(rules, input);
 		}
 	},

@@ -1,6 +1,6 @@
 {
-  "name": "pzpr",
-  "version": "3.4.0-pre",
+  "name": "pzprv3",
+  "version": "3.4.0",
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
   "directories": {
@@ -20,6 +20,7 @@
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-text-replace": "~0.3.10"
+    "grunt-text-replace": "~0.3.10",
+    "grunt-shell": "~0.6.4"
   }
 }

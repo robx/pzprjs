@@ -323,6 +323,8 @@ ui.menuarea = {
 			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 		}
 
+		pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
+
 		pp.addSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');
 		pp.addChild('language_en', 'language', 'English', 'English');
@@ -584,7 +586,15 @@ ui.menuarea = {
 	insideOfMenu : function(e){
 		var pos = pzpr.util.getPagePos(e);
 		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
-		return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
+		var floats = this.dispfloat;
+		if(pos.py <= rect_f.bottom){
+			return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
+		}
+		else if(floats.length>0){
+			var rect_0 = pzpr.util.getRect(floats[0]), rect_l = pzpr.util.getRect(floats[floats.length-1]);
+			return (pos.px>=rect_0.left && pos.px<=rect_l.right);
+		}
+		return false;
 	}
 };
 

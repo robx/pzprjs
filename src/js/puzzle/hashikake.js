@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.0
 //
+(function(){
+
+var k = pzpr.consts;
 
 pzpr.createCustoms('hashikake', {
 //---------------------------------------------------------
@@ -36,7 +39,6 @@ MouseEvent:{
 			var dir = this.getlinedir(this.prevPos, pos);
 			var d = border.getlinesize();
 			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
-			var k = pzpr.consts;
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			
@@ -341,3 +343,5 @@ FailCode:{
 	nmLineCntLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
 });
+
+}());

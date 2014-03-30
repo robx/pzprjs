@@ -1,3 +1,5 @@
 dist
+pzprv3(.*).tar.gz
+pzprv3(.*).zip
 node_modules
 .DS_Store

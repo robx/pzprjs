@@ -28,6 +28,7 @@ pzpr.createPuzzleClass('KeyEvent',
 	//---------------------------------------------------------------------------
 	// kc.keyreset()     キーボード入力に関する情報を初期化する
 	// kc.isenablemode() 現在のモードでキー入力が有効か判定する
+	// kc.setfocus()     キャンバスにフォーカスをセットするか外す
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
@@ -49,11 +50,22 @@ pzpr.createPuzzleClass('KeyEvent',
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
 	},
+	setfocus : function(){
+		var canvas = this.owner.canvas;
+		if(!canvas){}
+		else if(this.owner.getConfig('keytarget') && (this.isenablemode() || (pzpr.EDITOR && pzpr.env.OS.iOS))){
+			canvas.focus();
+			canvas.contentEditable = true;
+		}
+		else{
+			canvas.blur();
+			canvas.contentEditable = false;
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// kc.e_keydown()  キーを押した際のイベント共通処理
 	// kc.e_keyup()    キーを離した際のイベント共通処理
-	// kc.e_keypress() キー入力した際のイベント共通処理(-キー用)
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	e_keydown : function(e){
@@ -62,6 +74,11 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getchar(e);
 		if(c){ this.keyevent(c,0);}
+		
+		if(e.target===this.owner.canvas){
+			pzpr.util.stopPropagation(e);
+			pzpr.util.preventDefault(e);
+		}
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
@@ -69,13 +86,11 @@ pzpr.createPuzzleClass('KeyEvent',
 		this.event = e;
 		var c = this.getchar(e);
 		if(c){ this.keyevent(c,1);}
-	},
-	e_keypress : function(e){
-		if(!this.enableKey){ return;}
 		
-		this.event = e;
-		var c = this.getcharp(e);
-		if(c){ this.keyevent(c,0);}
+		if(e.target===this.owner.canvas){
+			pzpr.util.stopPropagation(e);
+			pzpr.util.preventDefault(e);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -103,35 +118,34 @@ pzpr.createPuzzleClass('KeyEvent',
 
 	//---------------------------------------------------------------------------
 	// kc.getchar()  入力されたキーを表す文字列を返す
-	// kc.getcharp() 入力されたキーを表す文字列を返す(keypressの時)
 	//---------------------------------------------------------------------------
 	// 48～57は0～9キー、65～90はa～z、96～105はテンキー、112～123はF1～F12キー
 	getchar : function(e){
 		this.checkmodifiers(e);
 
-		if     (e.keyCode==38){ return this.KEYUP;}
-		else if(e.keyCode==40){ return this.KEYDN;}
-		else if(e.keyCode==37){ return this.KEYLT;}
-		else if(e.keyCode==39){ return this.KEYRT;}
+		var key = '', keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 
-		var keycode = (!!e.keyCode ? e.keyCode: e.charCode);
-		if     ( 48<=keycode && keycode<= 57){ return (keycode-48).toString(36);}
-		else if( 65<=keycode && keycode<= 90){ return (keycode-55).toString(36);} //アルファベット
-		else if( 96<=keycode && keycode<=105){ return (keycode-96).toString(36);} //テンキー対応
-		else if(112<=keycode && keycode<=123){ return 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
-		else if(keycode==32 || keycode==46)  { return ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                  { return 'BS';}
+		if     (keycode==38){ key = this.KEYUP;}
+		else if(keycode==40){ key = this.KEYDN;}
+		else if(keycode==37){ key = this.KEYLT;}
+		else if(keycode==39){ key = this.KEYRT;}
+		else if( 48<=keycode && keycode<= 57){ key = (keycode-48).toString(36);}
+		else if( 65<=keycode && keycode<= 90){ key = (keycode-55).toString(36);} //アルファベット
+		else if( 96<=keycode && keycode<=105){ key = (keycode-96).toString(36);} //テンキー対応
+		else if(112<=keycode && keycode<=123){ key = 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
+		else if(keycode==32 || keycode==46)  { key = ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode==8)                  { key = 'BS';}
+		else if(keycode==109|| keycode==189) { key = '-';}
+		else if(e.shiftKey){ key = 'shift';}
 
-		else if(e.shiftKey){ return 'shift';}
+		if(this.isALT){
+			if     (key==='h'){ key = this.KEYLT;}
+			else if(key==='k'){ key = this.KEYUP;}
+			else if(key==='j'){ key = this.KEYDN;}
+			else if(key==='l'){ key = this.KEYRT;}
+		}
 
-		return '';
-	},
-	// (keypressのみ)45は-(マイナス)
-	getcharp : function(e){
-		this.checkmodifiers(e);
-
-		if((!!e.keyCode ? e.keyCode: e.charCode)==45){ return '-';}
-		return '';
+		return key;
 	},
 
 	//---------------------------------------------------------------------------
@@ -155,6 +169,7 @@ pzpr.createPuzzleClass('KeyEvent',
 		}
 
 		if(!puzzle.execListener('key',c)){ return;}
+		if(!this.keyexec(c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
@@ -162,6 +177,18 @@ pzpr.createPuzzleClass('KeyEvent',
 	stopEvent : function(){
 		pzpr.util.preventDefault(this.event);
 		this.keyreset();
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.keyexec() モードに共通で行う処理を実行します
+	//---------------------------------------------------------------------------
+	keyexec : function(c){
+		var puzzle = this.owner;
+		if(this.keydown && this.isALT && c==='c' && pzpr.EDITOR){
+			puzzle.modechange(puzzle.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
+			return false;
+		}
+		return true;
 	},
 
 	//---------------------------------------------------------------------------

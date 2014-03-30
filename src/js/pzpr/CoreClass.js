@@ -67,12 +67,10 @@ window.pzpr = {
 		// キー入力イベントの設定
 		pzpr.util.addEvent(document, 'keydown',  pzpr, pzpr.execKeyDown);
 		pzpr.util.addEvent(document, 'keyup',    pzpr, pzpr.execKeyUp);
-		pzpr.util.addEvent(document, 'keypress', pzpr, pzpr.execKeyPress);
 	},
 	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
-	execKeyDown  : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keydown(e);}},
-	execKeyUp    : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keyup(e);}},
-	execKeyPress : function(e){ var o=this.keytarget; if(!!o && !!o.key){ o.key.e_keypress(e);}},
+	execKeyDown  : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyDown(e);}},
+	execKeyUp    : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyUp(e);}},
 
 	//---------------------------------------------------------------
 	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
@@ -100,14 +98,14 @@ window.pzpr = {
 	},
 	postload : function(){
 		if(!this.preinit){}
-		else if(!!window.Candle){
+		else if(!window.Candle){ setTimeout(function(){ pzpr.postload();},10);}
+		else{
 			this.preinit = false;
 			this.addWindowEvents();
 			this.addKeyEvents();
 			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
 			this.loadfun = [];
 		}
-		else{ setTimeout(function(){ pzpr.postload();},10);}
 	}
 };
 
@@ -116,19 +114,10 @@ window.pzpr = {
 //----------------------------------------------------------------------
 if(!!document.addEventListener){
 	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
-}
-else if(navigator.userAgent.match(/MSIE 8/)){
-	document.attachEvent('onreadystatechange', function(){
-		var state = document.readyState;
-		if(state==='interactive'||state=='complete'){ pzpr.postload();}
-	});
+	window.addEventListener('load', function(){ pzpr.postload();}, false);
 }
 else{
-	(function(){
-		try{ document.documentElement.doScroll("left");}
-		catch(error){ setTimeout(arguments.callee, 0); return;}
-		pzpr.postload();
-	})();
+	window.attachEvent('onload', function(){ pzpr.postload();});
 }
 
 var k = pzpr.consts;
@@ -430,7 +419,11 @@ pzpr.util = {
 	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, (e||window.event));};
+		var func = function(e){
+			e = e || window.event;
+			if(!e.target){ e.target = e.srcElement;}
+			callback.call(self, e);
+		};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
 	},

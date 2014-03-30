@@ -45,8 +45,7 @@
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
-	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;
-			/* IE6,7用Hack */ zoom:1; *display:inline; }
+	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px; /* IE6,7用Hack */ zoom:1;}
 	div#btnarea { position:relative; margin-top:1.0em;}
 
 	/* (canvas.context.fillText代替用) */
@@ -63,6 +62,10 @@
 			 { margin:2pt 8pt 4pt 4pt; padding:0pt;}
 
 	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
+
+	/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
+	#tawa_shape div { display:block; position:relative; width:36px; height:36px;}
+	#tawa_shape img { position:absolute; margin:2px;}
 
 	/* キーポップアップ用 */
 	div#keypopup { background-color:silver; line-height:1;}

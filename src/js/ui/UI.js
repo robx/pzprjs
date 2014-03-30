@@ -16,8 +16,6 @@ var k = pzpr.consts;
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
 var ui = {
-	version : '<deploy-version>',
-	
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
@@ -53,7 +51,7 @@ ui.event =
 	addEvent : function(el, event, self, callback, capt){
 		var func = function(e){
 			e = e||window.event;
-			e.target = e.target||e.srcElement;
+			if(!e.target){ e.target = e.srcElement;}
 			return callback.call(self, e);
 		};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
@@ -103,6 +101,7 @@ ui.event =
 	onReady : function(puzzle){
 		ui.menu.menuinit();					/* メニュー関係初期化 */
 		ui.event.adjustcellsize();
+		ui.keypopup.display();
 		
 		ui.undotimer.reset();
 		ui.timer.reset();					/* タイマーリセット(最後) */
@@ -134,18 +133,20 @@ ui.event =
 			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
 			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
 		}
+		ui.menuarea.floatmenuclose(0);
 		return result;
 	},
 	mouse_common : function(o){
-		var mv = o.mouse;
+		var mv = o.mouse, result = true;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
 			if(pzpr.EDITOR){
 				o.modechange(o.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
 			}
 			mv.mousereset();
-			return false;
+			result = false;
 		}
-		return true;
+		ui.menuarea.floatmenuclose(0);
+		return result;
 	},
 	config_common : function(o, idname, newval){
 		ui.menu.setdisplay(idname);
@@ -197,7 +198,7 @@ ui.event =
 	},
 
 	//---------------------------------------------------------------------------
-	// event.onload_func()   ウィンドウリサイズ時に呼ばれる関数
+	// event.onload_func()   ウィンドウを開いた時に呼ばれる関数
 	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
 	onload_func : function(){
@@ -222,11 +223,7 @@ ui.event =
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		var self = this;
-		this.resizetimer = setTimeout(function(){
-			self.adjustcellsize();
-			ui.keypopup.resizepanel();
-		},250);
+		this.resizetimer = setTimeout(function(){ ui.event.adjustcellsize();},250);
 	},
 	onblur_func : function(){
 		ui.puzzle.key.keyreset();
@@ -307,6 +304,13 @@ ui.event =
 		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
 		o.canvas.style.padding = val+'px';
 		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
+		
+		if(pzpr.env.browser.IE6 || pzpr.env.browser.IE7){
+			/* なんかIE6,7は計算してあげるないと位置がおかしくなるらしい。 */
+			pzpr.util.getRect(o.canvas);
+		}
+		
+		ui.keypopup.resizepanel();
 		
 		return true;
 	},
