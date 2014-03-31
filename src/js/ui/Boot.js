@@ -13,7 +13,7 @@ var onload_option = {imagesave:true};
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
 pzpr.addLoadListener(function(){
-	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)){}
+	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)||!!window.v3index){}
 	else if(includePzprFile() && includeDebugFile()){ startPuzzle();}
 	else{ setTimeout(arguments.callee,0);}
 });
@@ -61,7 +61,6 @@ function includeDebugFile(){
 }
 
 function startPuzzle(){
-	if(!!window.v3index){ return;}
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
