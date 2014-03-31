@@ -94,16 +94,13 @@ function startPuzzle(){
 // ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う
 //---------------------------------------------------------------------------
 function importURL(){
-	// どの文字列をURL判定するかチェック
-	var search = "";
-	if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
-		// index.htmlからのURL読み込み時
-		search = localStorage['pzprv3_urldata'];
-		delete localStorage['pzprv3_urldata'];
-		require_accesslog = false;
-	}
-	else{ search = location.search;}
-	if(search.length<=0){ return;}
+	/* index.htmlからURLが入力されたかチェック */
+	var search = getStorageData('pzprv3_urldata', 'urldata');
+	if(!!search){ require_accesslog = false;}  /* index.htmlからのURL読み込み時はアクセスログをとらない */
+	
+	/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
+	search = search || location.search;
+	if(!search){ return null;}
 	
 	/* 一旦先頭の?記号を取り除く */
 	if(search.charAt(0)==="?"){ search = search.substr(1);}
@@ -135,36 +132,41 @@ function importURL(){
 // ★importFileData() 初期化時にファイルデータの読み込みを行う
 //---------------------------------------------------------------------------
 function importFileData(){
+	/* index.htmlや盤面の複製等でファイルorブラウザ保存データが入力されたかチェック */
+	var fstr = getStorageData('pzprv3_filedata', 'filedata');
+	if(!fstr){ return null;}
+
+	var pzl = pzpr.parser.parseFile(fstr);
+	if(!pzl || !pzl.id){ return null;}
+
+	pzpr.EDITOR = true;
+	pzpr.PLAYER = false;
+	require_accesslog = false;
+	
+	return pzl;
+}
+
+//---------------------------------------------------------------------------
+// ★getStorageData() localStorageやsesseionStorageのデータを読み込む
+//---------------------------------------------------------------------------
+function getStorageData(key, key2){
 	try{
-		if(!window.sessionStorage){ return null;}
+		if(!window.localStorage || !window.sessionStorage){ return null;}
 	}
 	catch(e){
 		// FirefoxでLocalURLのときここに飛んでくる
 		return null;
 	}
-	var str='';
 
 	// 移し変える処理
-	if(!!window.localStorage){
-		str = localStorage['pzprv3_filedata'];
-		if(!!str){
-			delete localStorage['pzprv3_filedata'];
-			sessionStorage['filedata'] = str;
-		}
+	var str = localStorage[key];
+	if(str!==void 0){
+		delete localStorage[key];
+		sessionStorage[key2] = str;
 	}
 
-	str = sessionStorage['filedata'];
-	if(!str){ return null;}
-
-	var pzl = pzpr.parser.parseFile(str);
-	if(!pzl.id){ return null;}
-
-	pzpr.EDITOR = true;
-	pzpr.PLAYER = false;
-	require_accesslog = false;
-	// sessionStorageのデータは残しておきます
-	
-	return pzl;
+	str = sessionStorage[key2];
+	return (str!==void 0 ? str : null);
 }
 
 //---------------------------------------------------------------------------

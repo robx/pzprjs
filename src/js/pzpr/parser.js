@@ -53,7 +53,6 @@ pzpr.parser.ParsedURLData.prototype = {
 	parse : function (){
 		this.parseURLType();
 		this.parseURLData();
-		console.log(this);
 		return this;
 	},
 	generate : function (){
