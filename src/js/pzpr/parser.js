@@ -343,4 +343,4 @@ pzpr.parser.ParsedFileData.prototype = {
 	}
 }
 
-}());
+})();

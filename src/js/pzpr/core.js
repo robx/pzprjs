@@ -123,6 +123,6 @@ else{
 	window.attachEvent('onload', postload);
 }
 
-}());
+})();
 
 var k = pzpr.consts;
