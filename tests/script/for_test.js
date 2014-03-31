@@ -40,7 +40,7 @@ ui.debug.extend(
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
-		for(var id in pzpr.url.info){ idlist.push(id);}
+		for(var id in pzpr.variety.info){ idlist.push(id);}
 		idlist.sort();
 		term = idlist.length;
 
@@ -80,7 +80,10 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzpr.url.constructURL({id:self.pid, type:k.URL_PZPRV3, qdata:self.urls[self.pid]});
+		var pzl = new pzpr.parser.ParsedURLData('');
+		pzl.id    = self.pid;
+		pzl.type  = k.URL_PZPRV3;
+		var inp = pzl.outputURLType() + self.urls[self.pid];
 		var ta  = ui.puzzle.getURL(k.URL_PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
@@ -89,7 +92,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzpr.url.info[self.pid].exists.pencilbox){
+		if(pzpr.variety.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			o.open(o.getURL(k.URL_KANPEN), function(){
@@ -141,7 +144,7 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox : function(self){
-		if(pzpr.url.info[self.pid].exists.kanpen){
+		if(pzpr.variety.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
 			var outputstr = o.getFileData(k.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);

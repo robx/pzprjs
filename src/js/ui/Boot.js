@@ -80,11 +80,11 @@ function startPuzzle(){
 		puzzle.open((inputdata || pid), accesslog);
 	}
 	else{
+		if(!pzl.qdata){ inputdata = '';}
 		puzzle.open((inputdata || pid+"/"+ui.debug.urls[pid]),
 		function(puzzle){
 			puzzle.modechange(pzpr.consts.MODE_PLAYER);
 			ui.menu.setMenuConfig('autocheck', true);
-			accesslog();
 		});
 	}
 	
@@ -123,8 +123,7 @@ function importURL(){
 	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
 	else if(search.match(/_play/)){ startmode = 'PLAYER';}
 
-	var pzl = pzpr.parser.parseURL("?"+search);
-	if(!!pzl.qdata){ pzl.url = search;}
+	var pzl = pzpr.parser.parseURL(search);
 
 	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
 	pzpr.EDITOR = (startmode==='EDITOR');
@@ -156,20 +155,17 @@ function importFileData(){
 	}
 
 	str = sessionStorage['filedata'];
+	if(!str){ return null;}
 
-	if(!!str){
-		var lines = str.replace(/[\t\r]*\n/g,"\n").split(/\n/);
-		var id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
-		if(!id){ return null;}
+	var pzl = pzpr.parser.parseFile(str);
+	if(!pzl.id){ return null;}
 
-		pzpr.EDITOR = true;
-		pzpr.PLAYER = false;
-		require_accesslog = false;
-		// sessionStorageのデータは残しておきます
-		
-		return {id:id, fstr:str};
-	}
-	return null;
+	pzpr.EDITOR = true;
+	pzpr.PLAYER = false;
+	require_accesslog = false;
+	// sessionStorageのデータは残しておきます
+	
+	return pzl;
 }
 
 //---------------------------------------------------------------------------

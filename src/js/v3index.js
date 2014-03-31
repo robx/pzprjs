@@ -336,7 +336,6 @@ v3index.dbif.extend({
 	open : function(){
 		var selected = self.getvalue();
 		if(selected>=0){
-			// var str = DBlist[selected].pdata.replace(/\//g,"\n");
 			var str = DBlist[selected].pdata;
 			if(!!str){
 				localStorage['pzprv3_filedata'] = str;

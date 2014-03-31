@@ -156,8 +156,6 @@ Encode:{
 		this.owner.fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
-		this.outsize = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("/");
-
 		this.owner.fio.encodeCellQnum51_kanpen();
 	},
 
@@ -258,8 +256,6 @@ FileIO:{
 		this.decodeQans_kanpen();
 	},
 	kanpenSave : function(){
-		this.sizestr = [this.owner.board.qrows+1, this.owner.board.qcols+1].join("\n");
-
 		this.encodeCellQnum51_kanpen();
 		this.datastr += "\n";
 		this.encodeQans_kanpen();

@@ -1,13 +1,5 @@
 // FileData.js v3.4.0
 
-pzpr.addConsts({
-	// 定数(ファイル形式)
-	FILE_AUTO : 0,
-	FILE_PZPR : 1,
-	FILE_PBOX : 2,
-	FILE_PZPH : 3
-});
-
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
 //---------------------------------------------------------------------------
@@ -23,43 +15,22 @@ pzpr.createPuzzleClass('FileIO',
 	// fio.filedecode()  ファイルデータ(文字列)からのデコード実行関数
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
-		var o = this.owner;
+		var puzzle = this.owner, pzl = pzpr.parser.parseFile(datastr, puzzle.pid);
 
-		this.filever = 0;
+		puzzle.board.initBoardSize(pzl.cols, pzl.rows);
+
+		this.filever = pzl.filever;
 		this.lineseek = 0;
-		this.dataarray = datastr.split("\n");
-
-		// ヘッダの処理
-		if(this.readLine().match(/pzprv3\.?(\d+)?/)){
-			if(RegExp.$1){ this.filever = parseInt(RegExp.$1);}
-			if(this.readLine()!==this.owner.pid){ ;} /* パズルIDが入っている */
-			this.currentType = k.FILE_PZPR;
-		}
-		else{
-			this.lineseek = 0;
-			this.currentType = k.FILE_PBOX;
-		}
-
-		// サイズを表す文字列
-		var row, col;
-		if(o.pid!=="sudoku"){
-			row = parseInt(this.readLine(), 10);
-			col = parseInt(this.readLine(), 10);
-			if(this.currentType===k.FILE_PBOX && o.pid==="kakuro"){ row--; col--;}
-		}
-		else{
-			row = col = parseInt(this.readLine(), 10);
-		}
-		if(row<=0 || col<=0){ return '';}
-		this.owner.board.initBoardSize(col, row); // 盤面を指定されたサイズで初期化
+		this.dataarray = pzl.bstr.split("\n");
+		this.currentType = pzl.type;
 
 		// メイン処理
 		if     (this.currentType===k.FILE_PZPR){ this.decodeData();}
 		else if(this.currentType===k.FILE_PBOX){ this.kanpenOpen();}
 
-		o.opemgr.decodeLines();
+		puzzle.opemgr.decodeLines();
 
-		o.board.resetInfo();
+		puzzle.board.resetInfo();
 
 		this.dataarray = null;
 
@@ -70,35 +41,34 @@ pzpr.createPuzzleClass('FileIO',
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
 		if(isNaN(type) || type===k.FILE_AUTO){ type=k.FILE_PZPR;}
+		var puzzle = this.owner, bd = puzzle.board;
 
 		this.filever = 0;
-		this.sizestr = "";
 		this.datastr = "";
 		this.currentType = type;
 		if(this.currentType===k.FILE_PZPH){ this.currentType = k.FILE_PZPR;}
 
 		// メイン処理
-		var o = this.owner;
-		o.opemgr.disableRecord();
+		puzzle.opemgr.disableRecord();
+		
 		if     (this.currentType===k.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===k.FILE_PBOX){ this.kanpenSave();}
-		o.opemgr.enableRecord();
-
-		// サイズを表す文字列
-		if(!this.sizestr){ this.sizestr = [o.board.qrows, o.board.qcols].join("\n");}
-		this.datastr = [this.sizestr, this.datastr].join("\n");
-
-		// ヘッダの処理
-		if(this.currentType===k.FILE_PZPR){
-			var header = (this.filever===0 ? "pzprv3" : ("pzprv3."+this.filever));
-			this.datastr = [header, o.pid, this.datastr].join("\n");
-		}
+		
 		var bstr = this.datastr;
+		if(type===k.FILE_PZPH){ bstr += puzzle.opemgr.toString();}
+		
+		puzzle.opemgr.enableRecord();
 
-		// 末尾の履歴情報追加処理
-		if(type===k.FILE_PZPH){ bstr += o.opemgr.toString();}
+		var pzl = new pzpr.parser.ParsedFileData('', puzzle.pid);
+		pzl.type  = this.currentType;
+		pzl.filever = this.filever;
+		pzl.cols  = bd.qcols;
+		pzl.rows  = bd.qrows;
+		pzl.bstr  = this.datastr;
 
-		return bstr;
+		this.datastr = "";
+
+		return pzl.generate();
 	},
 
 	//---------------------------------------------------------------------------

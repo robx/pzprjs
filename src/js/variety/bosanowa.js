@@ -407,7 +407,8 @@ Encode:{
 		if(count>0){ cm+=(15+count).toString(36);}
 		this.outbstr += cm;
 
-		this.outsize = [(x2-x1+2)/2, (y2-y1+2)/2].join("/");
+		this.cols = (x2-x1+2)/2;
+		this.rows = (y2-y1+2)/2;
 	}
 },
 //---------------------------------------------------------

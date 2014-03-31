@@ -229,7 +229,8 @@ Encode:{
 		if(count>0){ cm += pass.toString(32);}
 		this.outbstr += cm;
 
-		this.outsize = [d.cols, d.rows].join("/");
+		this.cols = d.cols;
+		this.rows = d.rows;
 	},
 
 	getSizeOfBoard_goishi : function(){

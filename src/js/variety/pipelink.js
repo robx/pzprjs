@@ -174,7 +174,7 @@ Encode:{
 	},
 	encodePzpr : function(type){
 		var puzzle = this.owner;
-		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')==2)?"i":"");
+		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')==2)?"i":null);
 		this.encodePipelink(type);
 	},
 

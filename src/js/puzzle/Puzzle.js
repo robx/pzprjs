@@ -71,21 +71,13 @@ pzpr.Puzzle.prototype =
 	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	openURL : function(url, callback){
-		var pzl = pzpr.parser.parseURL(url);
-		var pid = (!!pzl.id ? pzl.id : this.pid);
-
+		var pid = pzpr.parser.parseURL(url).id || this.pid;
 		this.init(pid, function(puzzle){ puzzle.enc.decodeURL(url);}, callback);
 		return this;
 	},
 	openFileData : function(filedata, callback){
-		var farray = filedata.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n").split(/\n/), fstr = "";
-		for(var i=0;i<farray.length;i++){
-			if(farray[i].match(/^http\:\/\//)){ break;}
-			fstr += (farray[i]+"\n");
-		}
-		var pid = (farray[0].match(/^pzprv3/) ? farray[1] : this.pid);
-
-		this.init(pid, function(puzzle){ puzzle.fio.filedecode(fstr);}, callback);
+		var pid = pzpr.parser.parseFile(filedata, this.pid).id;
+		this.init(pid, function(puzzle){ puzzle.fio.filedecode(filedata);}, callback);
 		return this;
 	},
 
