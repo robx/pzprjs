@@ -1,5 +1,7 @@
 // core.js v3.4.1
 
+(function(){
+
 //----------------------------------------------------------------------------
 // ★pzprオブジェクト
 //---------------------------------------------------------------------------
@@ -90,34 +92,37 @@ window.pzpr = {
 	//---------------------------------------------------------------
 	// 起動時関連関数
 	//---------------------------------------------------------------
-	preinit : true,
-	loadfun : [],
 	addLoadListener : function(func){
 		if(this.preinit){ this.loadfun.push(func);}
 		else{ func();}
-	},
-	postload : function(){
-		if(!this.preinit){}
-		else if(!window.Candle){ setTimeout(function(){ pzpr.postload();},10);}
-		else{
-			this.preinit = false;
-			this.addWindowEvents();
-			this.addKeyEvents();
-			for(var i=0;i<this.loadfun.length;i++){ this.loadfun[i]();}
-			this.loadfun = [];
-		}
 	}
 };
 
 //----------------------------------------------------------------------
 // 起動時処理実行処理
 //----------------------------------------------------------------------
+var preinit = true;
+var loadfun = [];
+function postload(){
+	if(!preinit){}
+	else if(!window.Candle){ setTimeout(postload,10);}
+	else{
+		preinit = false;
+		pzpr.addWindowEvents();
+		pzpr.addKeyEvents();
+		for(var i=0;i<loadfun.length;i++){ loadfun[i]();}
+		loadfun = [];
+	}
+}
+
 if(!!document.addEventListener){
-	document.addEventListener('DOMContentLoaded', function(){ pzpr.postload();}, false);
-	window.addEventListener('load', function(){ pzpr.postload();}, false);
+	document.addEventListener('DOMContentLoaded', postload, false);
+	window.addEventListener('load', postload, false);
 }
 else{
-	window.attachEvent('onload', function(){ pzpr.postload();});
+	window.attachEvent('onload', postload);
 }
+
+}());
 
 var k = pzpr.consts;
