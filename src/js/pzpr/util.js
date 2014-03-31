@@ -6,10 +6,11 @@
 pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
-	getpath : function(){
+	getpath : function(filename){
+		filename = filename || "pzprv3.js";
 		var srcs=document.getElementsByTagName('script');
 		for(var i=0;i<srcs.length;i++){
-			var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
+			var result = srcs[i].src.match(new RegExp("^(.*\\/)"+filename+"$"));
 			if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
 		}
 		return "";

@@ -166,7 +166,7 @@ ui.debug =
 		if(!!this.includedScript[filename]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = ui.util.getpath()+'../tests/script/'+filename;
+		_script.src = pzpr.util.getpath()+'../../tests/script/'+filename;
 		document.body.appendChild(_script);
 		this.includedScript[filename] = true;
 	},

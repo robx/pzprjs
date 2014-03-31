@@ -322,18 +322,3 @@ ui.event =
 		return ((window.innerHeight!==void 0) ? window.innerWidth : _doc.body.clientWidth);
 	}
 };
-
-ui.util = {
-	getpath : function(){
-		var dir="", srcs=document.getElementsByTagName('script');
-		for(var i=0;i<srcs.length;i++){
-			var result = srcs[i].src.match(/^(.*\/)ui\.js$/);
-			if(result){
-				if(result[1].match(/\/$/)){ dir = result[1];}
-				else{ dir = result[1]+'/';}
-				break;
-			}
-		}
-		return dir;
-	}
-};
