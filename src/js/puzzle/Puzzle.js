@@ -71,7 +71,7 @@ pzpr.Puzzle.prototype =
 	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	openURL : function(url, callback){
-		var pzl = pzpr.url.parseURL(url);
+		var pzl = pzpr.parser.parseURL(url);
 		var pid = (!!pzl.id ? pzl.id : this.pid);
 
 		this.init(pid, function(puzzle){ puzzle.enc.decodeURL(url);}, callback);

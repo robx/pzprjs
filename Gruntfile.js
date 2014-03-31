@@ -42,7 +42,7 @@ module.exports = function(grunt){
       },
       combine: {
         files : [
-          { expand: true, cwd: 'src/js/puzzle',  src: ['*.js'], dest: 'dist/js/puzzle' },
+          { expand: true, cwd: 'src/js/variety',  src: ['*.js'], dest: 'dist/js/variety' },
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
           { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
@@ -61,8 +61,8 @@ module.exports = function(grunt){
     },
 
     replace: {
-      debug:  { src: ['dist/js/pzpr/CoreClass.js'], overwrite: true, replacements: replacer },
-      combine:{ src: ['dist/js/*.js'],              overwrite: true, replacements: replacer }
+      debug:  { src: ['dist/js/puzzle/CoreClass.js'], overwrite: true, replacements: replacer },
+      combine:{ src: ['dist/js/*.js'],                overwrite: true, replacements: replacer }
     },
 
     uglify: {
@@ -72,7 +72,7 @@ module.exports = function(grunt){
       },
       release: {
         files: [
-          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' },
+          { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/js/variety' },
           { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js' },
           { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
           { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },

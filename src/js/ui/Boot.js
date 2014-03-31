@@ -123,7 +123,7 @@ function importURL(){
 	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
 	else if(search.match(/_play/)){ startmode = 'PLAYER';}
 
-	var pzl = pzpr.url.parseURL("?"+search);
+	var pzl = pzpr.parser.parseURL("?"+search);
 	if(!!pzl.qdata){ pzl.url = search;}
 
 	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');

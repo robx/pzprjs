@@ -320,7 +320,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid][language]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][language]+"&nbsp;");

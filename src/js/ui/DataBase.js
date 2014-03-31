@@ -278,7 +278,7 @@ ui.database = {
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid][this.lang]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][this.lang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][this.lang]+"&nbsp;");
@@ -523,7 +523,7 @@ ui.DataBaseHandler_LS.prototype =
 		delete localStorage['pzprv3_manage:manage'];
 
 		var puzzles = [];
-		for(var pid in pzpr.url.info){ // いらないのもあるけど、問題ないのでOK
+		for(var pid in pzpr.variety.info){ // いらないのもあるけど、問題ないのでOK
 			if(!localStorage['pzprv3_'+pid]){ continue;}
 			var mheader = 'pzprv3_manage:manage!'+pid+'!';
 			var count = localStorage[mheader+'count'];

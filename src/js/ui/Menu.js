@@ -118,7 +118,7 @@ ui.menu = {
 
 	displayDesign : function(){
 		var pid = ui.puzzle.pid;
-		var pinfo = pzpr.url.info[pid];
+		var pinfo = pzpr.variety.info[pid];
 		var title = this.selectStr(pinfo.ja, pinfo.en);
 		if(pzpr.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
 		else		   { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}

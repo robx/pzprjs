@@ -25,7 +25,7 @@ pzpr.createPuzzleClass('Encode',
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
-		var pzl = pzpr.url.parseURL(url), o = this.owner;
+		var pzl = pzpr.parser.parseURL(url), o = this.owner;
 
 		o.board.initBoardSize(pzl.cols, pzl.rows);
 
@@ -95,7 +95,7 @@ pzpr.createPuzzleClass('Encode',
 		o.opemgr.enableRecord();
 
 		var pdata = (ispflag?[this.outpflag]:[]).concat([size, this.outbstr]).join("/");
-		return pzpr.url.constructURL({id:o.pid, type:type, qdata:pdata});
+		return pzpr.parser.constructURL({id:o.pid, type:type, qdata:pdata});
 	},
 
 	// オーバーライド用

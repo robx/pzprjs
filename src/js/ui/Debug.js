@@ -107,7 +107,7 @@ ui.debug =
 		this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.url.info[ui.puzzle.pid].exists.kanpen){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
 			this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PBOX));
 		}
 		else{

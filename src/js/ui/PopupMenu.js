@@ -451,7 +451,7 @@ ui.popupmgr.addpopup('urloutput',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = ui.puzzle.pid, exists = pzpr.url.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzpr.variety.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}
@@ -578,7 +578,7 @@ ui.popupmgr.addpopup('filesave',
 		var typeitem = [];
 		typeitem.push({name:'filesave',  str_jp:"ぱずぷれv3形式",        str_en:"Puz-Pre v3 format"});
 /*		typeitem.push({name:'filesave3', str_jp:"ぱずぷれv3(履歴つき)",  str_en:"Puz-Pre v3 with history"}); */
-		if(pzpr.url.info[ui.puzzle.pid].exists.pencilbox){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
 			typeitem.push({name:'filesave2', str_jp:"pencilbox形式", str_en:"Pencilbox format"});
 		}
 		this.addSelect({name:'filetype'}, typeitem);
