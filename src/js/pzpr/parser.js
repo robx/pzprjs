@@ -24,11 +24,28 @@ pzpr.addConsts({
 var k = pzpr.consts;
 
 pzpr.parser = {
+	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
+	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
+	parse : function(data, variety){
+		if(data instanceof this.URLData || data instanceof this.FileData){ return data;}
+		
+		/* 改行が2つ以上ある場合はファイルデータ、それ以下ではURLとして扱います */
+		/* orでつなげようとしましたが、URLの/を改行扱いしてしまうのでダメでした */
+		if(data.indexOf("pzprv3")===0 || data.indexOf("\n",data.indexOf("\n"))>-1){
+			return this.parseFile(data, variety);
+		}
+		return this.parseURL(data);
+	},
+	
 	parseURL : function(url){
+		if(url instanceof this.URLData){ return url;}
+		
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 		return (new pzpr.parser.URLData(url)).parse();
 	},
 	parseFile : function(fstr, variety){
+		if(fstr instanceof this.FileData){ return fstr;}
+		
 		fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
 		return (new pzpr.parser.FileData(fstr, variety)).parse();
 	}
@@ -49,6 +66,8 @@ pzpr.parser.URLData.prototype = {
 	cols    : 0,
 	rows    : 0,
 	bstr    : "",
+	
+	isurl : true,
 	
 	parse : function (){
 		this.parseURLType();
@@ -242,6 +261,8 @@ pzpr.parser.FileData.prototype = {
 	cols    : 0,
 	rows    : 0,
 	bstr    : "",
+	
+	isfile : true,
 	
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());

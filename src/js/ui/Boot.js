@@ -74,14 +74,12 @@ function startPuzzle(){
 	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
-	var inputdata = pzl.fstr || pzl.url;
 	if(!ui.debugmode){
-		puzzle.open((inputdata || pid), accesslog);
+		puzzle.open(pzl, accesslog);
 	}
 	else{
-		if(!pzl.qdata){ inputdata = '';}
-		puzzle.open((inputdata || pid+"/"+ui.debug.urls[pid]),
-		function(puzzle){
+		var inputdata = (!!pzl.qdata ? pzl : pid+"/"+ui.debug.urls[pid]);
+		puzzle.open(inputdata, function(puzzle){
 			puzzle.modechange(pzpr.consts.MODE_PLAYER);
 			ui.menu.setMenuConfig('autocheck', true);
 		});
@@ -136,8 +134,8 @@ function importFileData(){
 	var fstr = getStorageData('pzprv3_filedata', 'filedata');
 	if(!fstr){ return null;}
 
-	var pzl = pzpr.parser.parseFile(fstr);
-	if(!pzl || !pzl.id){ return null;}
+	var pzl = pzpr.parser.parseFile(fstr, '');
+	if(!pzl){ return null;}
 
 	pzpr.EDITOR = true;
 	pzpr.PLAYER = false;

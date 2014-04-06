@@ -57,27 +57,21 @@ pzpr.Puzzle.prototype =
 	
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面を開く
-	//---------------------------------------------------------------------------
-	open : function(data, callback){
-		if(data.indexOf("\n",data.indexOf("\n"))===-1 && data.indexOf("pzprv3")!==0){
-			return this.openURL(data, callback);
-		}
-		/* 改行が2つ以上あったらファイルデータ扱い */
-		return this.openFileData(data, callback);
-	},
-
-	//---------------------------------------------------------------------------
+	// 
 	// owner.openURL()      URLを入力して盤面を開く
 	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
+	open : function(data, callback){
+		this.init(pzpr.parser.parse(data, this.pid), callback);
+		return this;
+	},
+
 	openURL : function(url, callback){
-		var pid = pzpr.parser.parseURL(url).id || this.pid;
-		this.init(pid, function(puzzle){ puzzle.enc.decodeURL(url);}, callback);
+		this.init(pzpr.parser.parseURL(url), callback);
 		return this;
 	},
 	openFileData : function(filedata, callback){
-		var pid = pzpr.parser.parseFile(filedata, this.pid).id;
-		this.init(pid, function(puzzle){ puzzle.fio.filedecode(filedata);}, callback);
+		this.init(pzpr.parser.parseFile(filedata, this.pid), callback);
 		return this;
 	},
 
@@ -98,15 +92,16 @@ pzpr.Puzzle.prototype =
 	// owner.init()             指定されたパズルの種類で初期化を行う
 	// owner.initObjects()      各オブジェクトの生成などの処理
 	//---------------------------------------------------------------------------
-	init : function(pid, decodecallback, callback){
-		var puzzle = this, Board = (!!this.Board ? this.Board : null);;
+	init : function(pzl, callback){
+		var puzzle = this, Board = (!!this.Board ? this.Board : null);
 		puzzle.ready = false;
 		
-		pzpr.classmgr.setPuzzleClass(this, pid, function(){
+		pzpr.classmgr.setPuzzleClass(this, (pzl.id||this.pid), function(){
 			/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 			if(Board!==puzzle.Board){ puzzle.initObjects();}
 			
-			decodecallback(puzzle);
+			if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
+			else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 			
 			if(!!puzzle.canvas){ puzzle.waitCanvasReady(callback);}
 			else               { puzzle.postCanvasReady(callback);}
