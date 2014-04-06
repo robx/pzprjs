@@ -9,16 +9,18 @@ if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 var require_accesslog = true;
 var onload_pzl = null;
 var onload_option = {imagesave:true};
+
+pzpr.addLoadListener(boot);
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
-pzpr.addLoadListener(function(){
+function boot(){
 	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)||!!window.v3index){}
-	else if(includePzprFile() && includeDebugFile()){ startPuzzle();}
-	else{ setTimeout(arguments.callee,0);}
-});
+	else if(importData() && includeDebugFile()){ startPuzzle();}
+	else{ setTimeout(boot,0);}
+}
 
-function includePzprFile(){
+function importData(){
 	/* pzpr, uiオブジェクト生成待ち */
 	if(!window.pzpr || !window.ui){ return false;}
 	
