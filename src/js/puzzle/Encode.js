@@ -87,7 +87,7 @@ pzpr.createPuzzleClass('Encode',
 
 		puzzle.opemgr.enableRecord();
 
-		var pzl = new pzpr.parser.ParsedURLData('');
+		var pzl = new pzpr.parser.URLData('');
 		pzl.id    = puzzle.pid;
 		pzl.type  = type;
 		pzl.pflag = this.outpflag;

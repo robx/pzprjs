@@ -80,7 +80,7 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var pzl = new pzpr.parser.ParsedURLData('');
+		var pzl = new pzpr.parser.URLData('');
 		pzl.id    = self.pid;
 		pzl.type  = k.URL_PZPRV3;
 		var inp = pzl.outputURLType() + self.urls[self.pid];

@@ -26,21 +26,21 @@ var k = pzpr.consts;
 pzpr.parser = {
 	parseURL : function(url){
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
-		return (new pzpr.parser.ParsedURLData(url)).parse();
+		return (new pzpr.parser.URLData(url)).parse();
 	},
 	parseFile : function(fstr, variety){
 		fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
-		return (new pzpr.parser.ParsedFileData(fstr, variety)).parse();
+		return (new pzpr.parser.FileData(fstr, variety)).parse();
 	}
 };
 
 //---------------------------------------------------------------------------
-// ★ parsedURLData() URLデータのencode/decodeのためのオブジェクト
+// ★ URLData() URLデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
-pzpr.parser.ParsedURLData = function(url){
+pzpr.parser.URLData = function(url){
 	this.url = url;
 }
-pzpr.parser.ParsedURLData.prototype = {
+pzpr.parser.URLData.prototype = {
 	id      : '',
 	type    : k.URL_AUTO,
 	url     : "",
@@ -227,13 +227,13 @@ pzpr.parser.ParsedURLData.prototype = {
 };
 
 //---------------------------------------------------------------------------
-// ★ parsedFileData() ファイルデータのencode/decodeのためのオブジェクト
+// ★ FileData() ファイルデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
-pzpr.parser.ParsedFileData = function(fstr, variety){
+pzpr.parser.FileData = function(fstr, variety){
 	this.id   = (!!variety ? variety : '');
 	this.fstr = fstr;
 }
-pzpr.parser.ParsedFileData.prototype = {
+pzpr.parser.FileData.prototype = {
 	id      : '',
 	type    : k.FILE_AUTO,
 	filever : 0,

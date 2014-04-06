@@ -58,7 +58,7 @@ pzpr.createPuzzleClass('FileIO',
 		
 		puzzle.opemgr.enableRecord();
 
-		var pzl = new pzpr.parser.ParsedFileData('', puzzle.pid);
+		var pzl = new pzpr.parser.FileData('', puzzle.pid);
 		pzl.type  = this.currentType;
 		pzl.filever = this.filever;
 		pzl.cols  = bd.qcols;
