@@ -54,8 +54,7 @@ pzpr.createPuzzleClass('FileIO',
 		if     (this.currentType===k.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===k.FILE_PBOX){ this.kanpenSave();}
 		
-		var bstr = this.datastr;
-		if(type===k.FILE_PZPH){ bstr += puzzle.opemgr.toString();}
+		if(type===k.FILE_PZPH){ this.datastr += puzzle.opemgr.toString();}
 		
 		puzzle.opemgr.enableRecord();
 
