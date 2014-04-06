@@ -57,35 +57,10 @@ pzpr.Puzzle.prototype =
 	
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面を開く
-	// 
-	// owner.openURL()      URLを入力して盤面を開く
-	// owner.openFileData() ファイルデータを入力して盤面を開く
 	//---------------------------------------------------------------------------
 	open : function(data, callback){
 		this.init(pzpr.parser.parse(data, this.pid), callback);
 		return this;
-	},
-
-	openURL : function(url, callback){
-		this.init(pzpr.parser.parseURL(url), callback);
-		return this;
-	},
-	openFileData : function(filedata, callback){
-		this.init(pzpr.parser.parseFile(filedata, this.pid), callback);
-		return this;
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.getURL()      URLを取得する
-	// owner.getFileData() ファイルデータを取得する
-	//---------------------------------------------------------------------------
-	getURL : function(type){
-		if(isNaN(type)){ type=k.URL_AUTO;}
-		return this.enc.encodeURL(type);
-	},
-	getFileData : function(type){
-		if(isNaN(type)){ type=k.FILE_AUTO;}
-		return this.fio.fileencode(type);
 	},
 
 	//---------------------------------------------------------------------------
@@ -345,6 +320,19 @@ pzpr.Puzzle.prototype =
 		pc2.unsuspend();
 		
 		return pc2.context.canvas;
+	},
+
+	//---------------------------------------------------------------------------
+	// owner.getURL()      URLを取得する
+	// owner.getFileData() ファイルデータを取得する
+	//---------------------------------------------------------------------------
+	getURL : function(type){
+		if(isNaN(type)){ type=k.URL_AUTO;}
+		return this.enc.encodeURL(type);
+	},
+	getFileData : function(type){
+		if(isNaN(type)){ type=k.FILE_AUTO;}
+		return this.fio.fileencode(type);
 	},
 
 	//---------------------------------------------------------------------------
