@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 /* extern */
 window.pzpr = {
-	version : '<deploy-version>',
+	version : '<%= pkg.version %>',
 
 	EDITOR : false,	// エディタモード
 	PLAYER : true,	// playerモード

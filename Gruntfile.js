@@ -10,7 +10,6 @@ module.exports = function(grunt){
   var component_core = require('./src/js/pzprv3.js').component;
   var component_all  = require('./src/js/pzprv3-all.js').component;
 
-  var replacer = [{ from: "<deploy-version>", to: "<%= pkg.version %>"}];
   grunt.initConfig({
     pkg: pkg,
 
@@ -18,7 +17,8 @@ module.exports = function(grunt){
 
     concat: {
       options: {
-        banner: banner_full
+        banner: banner_full,
+        process: true
       },
       combine: {
         files: [
@@ -60,11 +60,6 @@ module.exports = function(grunt){
       }
     },
 
-    replace: {
-      debug:  { src: ['dist/js/puzzle/CoreClass.js'], overwrite: true, replacements: replacer },
-      combine:{ src: ['dist/js/*.js'],                overwrite: true, replacements: replacer }
-    },
-
     uglify: {
       options: {
         banner: banner_min,
@@ -101,7 +96,7 @@ module.exports = function(grunt){
   grunt.config.set("concat.combine.files.0.src", wrap(component_core).map(mod2file));
   grunt.config.set("concat.combine.files.1.src", wrap(component_all ).map(mod2file));
   
-  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace:debug'  ]);
-  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace:combine']);
+  grunt.registerTask('default', ['clean',                   'copy:debug'  ]);
+  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine']);
   grunt.registerTask('release', ['combine', 'uglify:release', 'shell:release']);
 };
