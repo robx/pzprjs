@@ -231,7 +231,7 @@ pzpr.parser.URLData.prototype = {
 			}
 		}
 		else if(pzl.type===k.URL_HEYAAPP){
-			out.push([cols, row].join("x"));
+			out.push([col, row].join("x"));
 		}
 		else{
 			out.push(col);
