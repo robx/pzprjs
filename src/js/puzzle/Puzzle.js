@@ -56,22 +56,15 @@ pzpr.Puzzle.prototype =
 	initCanvasEvent : false,
 	
 	//---------------------------------------------------------------------------
-	// owner.open()    パズルデータを入力して盤面を開く
+	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	open : function(data, callback){
-		this.init(pzpr.parser.parse(data, this.pid), callback);
-		return this;
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.init()             指定されたパズルの種類で初期化を行う
-	// owner.initObjects()      各オブジェクトの生成などの処理
-	//---------------------------------------------------------------------------
-	init : function(pzl, callback){
-		var puzzle = this, Board = (!!this.Board ? this.Board : null);
+		var puzzle = this, pzl, Board;
 		puzzle.ready = false;
+		Board = (!!puzzle.Board ? puzzle.Board : null);
+		pzl = pzpr.parser.parse(data, puzzle.pid);
 		
-		pzpr.classmgr.setPuzzleClass(this, (pzl.id||this.pid), function(){
+		pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
 			/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 			if(Board!==puzzle.Board){ puzzle.initObjects();}
 			
@@ -81,7 +74,13 @@ pzpr.Puzzle.prototype =
 			if(!!puzzle.canvas){ puzzle.waitCanvasReady(callback);}
 			else               { puzzle.postCanvasReady(callback);}
 		});
+		
+		return puzzle;
 	},
+
+	//---------------------------------------------------------------------------
+	// owner.initObjects()      各オブジェクトの生成などの処理
+	//---------------------------------------------------------------------------
 	initObjects : function(puzzle){
 		// クラス初期化
 		this.board   = new this.Board();		// 盤面オブジェクト
