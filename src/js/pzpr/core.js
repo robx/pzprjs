@@ -44,22 +44,6 @@ window.pzpr = {
 		}
 	},
 
-	//---------------------------------------------------------------
-	// クラス設定用関数など
-	//---------------------------------------------------------------
-	common : {},	// CoreClass保存用
-	custom : {},	// パズル別クラス保存用
-
-	createPuzzleClass : function(classname, proto){
-		this.classmgr.createPuzzleClass(classname, proto);
-	},
-	extendPuzzleClass : function(classname, proto){
-		this.classmgr.extendPuzzleClass(classname, proto);
-	},
-	createCustoms : function(scriptid, custombase){
-		this.classmgr.createCustoms(scriptid, custombase);
-	},
-
 	//---------------------------------------------------------------------------
 	// connectKeyEvents()  キーボード入力に関するイベントを指定したパズルへ通知する準備を行う
 	//---------------------------------------------------------------------------

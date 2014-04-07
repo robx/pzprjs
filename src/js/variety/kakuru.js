@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 カックル版 kakuru.js v3.4.0
+// パズル固有スクリプト部 カックル版 kakuru.js v3.4.1
 //
-pzpr.createCustoms('kakuru', {
+pzpr.classmgr.makeCustom('kakuru', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

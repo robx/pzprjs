@@ -1,4 +1,4 @@
-// BoardPiece.js v3.4.0
+// BoardPiece.js v3.4.1
 
 pzpr.addConsts({
 	// const値
@@ -28,8 +28,9 @@ pzpr.addConsts({
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('BoardPiece',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+BoardPiece:{
 	bx : -1,	// X座標(border座標系)を保持する
 	by : -1,	// Y座標(border座標系)を保持する
 
@@ -172,15 +173,14 @@ pzpr.createPuzzleClass('BoardPiece',
 		if(this.owner.board.isenableSetError()){ this.error = num;}
 	},
 	setinfo : function(num){ this.qinfo = num;}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★Cellクラス BoardクラスがCellの数だけ保持する
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(1)
 // Cellクラスの定義
-pzpr.createPuzzleClass('Cell:BoardPiece',
-{
+'Cell:BoardPiece':{
 	group : 'cell',
 
 	iscell : true,
@@ -411,15 +411,14 @@ pzpr.createPuzzleClass('Cell:BoardPiece',
 		if(flag){ this.seterr(1);}
 		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★Crossクラス BoardクラスがCrossの数だけ保持する(hascross>=1の時)
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(2)
 // Crossクラスの定義
-pzpr.createPuzzleClass('Cross:BoardPiece',
-{
+'Cross:BoardPiece':{
 	group : 'cross',
 
 	iscross : true,
@@ -438,15 +437,14 @@ pzpr.createPuzzleClass('Cross:BoardPiece',
 		this.seterr(1);
 		this.owner.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★Borderクラス BoardクラスがBorderの数だけ保持する(hasborder>0の時)
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(3)
 // Borderクラスの定義
-pzpr.createPuzzleClass('Border:BoardPiece',
-{
+'Border:BoardPiece':{
 	initialize : function(){
 		this.sidecell  = [null,null];	// 隣接セルのオブジェクト
 		this.sidecross = [null,null];	// 隣接交点のオブジェクト
@@ -547,25 +545,23 @@ pzpr.createPuzzleClass('Border:BoardPiece',
 		return this.isVert() ? (cell1.noLP(k.RT) || cell2.noLP(k.LT)) :
 							   (cell1.noLP(k.DN) || cell2.noLP(k.UP));
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★EXCellクラス BoardクラスがEXCellの数だけ保持する
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(4)
 // EXCellクラスの定義
-pzpr.createPuzzleClass('EXCell:BoardPiece',
-{
+'EXCell:BoardPiece':{
 	group : 'excell',
 
 	isexcell : true
-});
+},
 
 //----------------------------------------------------------------------------
 // ★RawAddressクラス (bx,by)座標を扱う ※端数あり
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('RawAddress',
-{
+RawAddress:{
 	initialize : function(bx,by){
 		if(arguments.length>=2){ this.init(bx,by);}
 	},
@@ -614,14 +610,13 @@ pzpr.createPuzzleClass('RawAddress',
 		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
 				this.by>=bd.minby && this.by<=bd.maxby);
 	}
-});
+},
 
 //----------------------------------------------------------------------------
 // ★Addressクラス (bx,by)座標を扱う ※端数無し
 //---------------------------------------------------------------------------
 // Addressクラス
-pzpr.createPuzzleClass('Address:RawAddress',
-{
+'Address:RawAddress':{
 	oncell   : function(){ return !!( (this.bx&1)&& (this.by&1));},
 	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
 	onborder : function(){ return !!((this.bx+this.by)&1);},
@@ -639,13 +634,12 @@ pzpr.createPuzzleClass('Address:RawAddress',
 		if(bd.hascross!==0){ this.getx().seterr(1);}
 		bd.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
 	}
-});
+},
 
 //----------------------------------------------------------------------------
 // ★PieceListクラス オブジェクトの配列を扱う
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('PieceList',
-{
+PieceList:{
 	length : 0,
 	
 	//--------------------------------------------------------------------------------
@@ -762,13 +756,12 @@ pzpr.createPuzzleClass('PieceList',
 		}
 		return array;
 	}
-});
+},
 
 //----------------------------------------------------------------------------
 // ★CellListクラス Cellの配列を扱う
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('CellList:PieceList',
-{
+'CellList:PieceList':{
 	//---------------------------------------------------------------------------
 	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
@@ -805,19 +798,18 @@ pzpr.createPuzzleClass('CellList:PieceList',
 		var d = this.getRectSize();
 		this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
 	}
-});
+},
 
 //----------------------------------------------------------------------------
 // ★CrossListクラス Crossの配列を扱う
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('CrossList:PieceList',{
-});
+'CrossList:PieceList':{
+},
 
 //----------------------------------------------------------------------------
 // ★BorderListクラス Borderの配列を扱う
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('BorderList:PieceList',
-{
+'BorderList:PieceList':{
 	//---------------------------------------------------------------------------
 	// blist.cellinside()  線が重なるセルのリストを取得する
 	// blist.crossinside() 線が重なる交点のリストを取得する
@@ -840,10 +832,11 @@ pzpr.createPuzzleClass('BorderList:PieceList',
 		}
 		return clist;
 	}
-});
+},
 
 //----------------------------------------------------------------------------
 // ★EXCellListクラス EXCellの配列を扱う
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('EXCellList:PieceList',{
+'EXCellList:PieceList':{
+}
 });

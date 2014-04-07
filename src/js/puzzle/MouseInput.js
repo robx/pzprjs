@@ -1,12 +1,13 @@
-// MouseInput.js v3.4.0
+// MouseInput.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzpr.createPuzzleClass('MouseEvent',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+MouseEvent:{
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
@@ -255,4 +256,5 @@ pzpr.createPuzzleClass('MouseEvent',
 		pos0.draw();
 		pos.draw();
 	}
+}
 });

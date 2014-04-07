@@ -1,6 +1,10 @@
-// classmgr.js v3.4.0
+// classmgr.js v3.4.1
 
-(function(){
+//---------------------------------------------------------------
+// クラス設定用関数など
+//---------------------------------------------------------------
+pzpr.common = {};	// CoreClass保存用
+pzpr.custom = {};	// パズル別クラス保存用
 
 //----------------------------------------------------------------------------
 // ★pzpr.classmgrオブジェクト (クラス作成関数等)
@@ -9,12 +13,117 @@ pzpr.classmgr = {
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
-	createPuzzleClass : function(classname, proto){
-		var rel = _createClass(classname, proto);
-		pzpr.common[rel.name] = rel.body;
+	makeCommon : function(commonbase){
+		var commonclass = commonbase;
+		this.createCommon(commonclass);
 	},
-	extendPuzzleClass : function(classname, proto){
-		for(var name in proto){ pzpr.common[classname].prototype[name] = proto[name];}
+	createCommon : function(commonclass){
+		var common = pzpr.common;
+		for(var key in commonclass){
+			var realname = this.searchName(key).real;
+			var proto = commonclass[key];
+			if(!common[realname]){
+				common[realname] = this.createClass(key, proto);
+			}
+			else{
+				for(var name in proto){ common[realname].prototype[name] = proto[name];}
+			}
+		}
+	},
+//	createPuzzleClass : function(classname, proto){
+//		var rel = this.createClass(classname, proto);
+//		pzpr.common[rel.name] = rel.body;
+//	},
+
+	//---------------------------------------------------------------
+	// includeCustomFileでファイルを読み込んだ後の処理
+	//---------------------------------------------------------------
+	makeCustom : function(scriptid, custombase){
+		var pidlist = pzpr.variety.PIDlist(scriptid);
+		for(var i=0;i<pidlist.length;i++){
+			var pid = pidlist[i];
+			var customclass = this.baseToClass(pid, custombase);
+			pzpr.custom[pid] = this.createCustom(customclass);
+		}
+	},
+	baseToClass : function(pid, custombase){
+		var customclass = {};
+		for(var hashkey in custombase){
+			var name = hashkey, pidcond = [], isexist = false;
+			if(hashkey.match('@')){
+				pidcond = hashkey.substr(hashkey.indexOf('@')+1).split(/,/);
+				name    = hashkey.substr(0,hashkey.indexOf('@'));
+				for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
+				if(!isexist){ name = '';}
+			}
+			if(!!name){
+				var proto = custombase[hashkey];
+				if(!customclass[name]){ customclass[name]={};}
+				for(var key in proto){ customclass[name][key] = proto[key];}
+			}
+		}
+		return customclass
+	},
+	createCustom : function(customclass){
+		var custom = {};
+
+		// 追加プロパティが指定されているクラスを作成する
+		for(var key in customclass){
+			var realname = this.searchName(key).real;
+			var proto = customclass[key];
+			if(!custom[realname]){
+				if(!!pzpr.common[realname] && key===realname){ key=realname+":"+realname;}
+				
+				custom[realname] = this.createClass(key, proto);
+			}
+			else{
+				for(var name in proto){ custom[realname].prototype[name] = proto[name];}
+			}
+		}
+		// 指定がなかった残りの共通クラスを作成する
+		for(var classname in pzpr.common){
+			if(!custom[classname]){
+				custom[classname] = pzpr.common[classname];
+			}
+		}
+
+		// pzpr.commonから継承されたクラスへprototype.Commonを付加する
+		for(var classname in pzpr.common){
+			if(!!pzpr.common[classname]){
+				custom[classname].prototype.Common = pzpr.common[classname];
+			}
+		}
+
+		return custom;
+	},
+
+	//---------------------------------------------------------------
+	// createCommon, createCustomから呼び出される共通処理
+	//---------------------------------------------------------------
+	searchName : function(key){
+		key = key.replace(/\s+/g,'');
+		var colon = key.indexOf(':'), basename = '', realname = key;
+		if(colon>=0){
+			basename = key.substr(colon+1);
+			realname = key.substr(0,colon);
+		}
+		return {base:basename, real:realname};
+	},
+	createClass : function(key, proto){
+		var basename = this.searchName(key).base;
+		var NewClass = function(){};
+		if(!!basename && !!pzpr.common[basename]){
+			var BaseProto = pzpr.common[basename].prototype;
+			for(var name in BaseProto){
+				NewClass.prototype[name] = BaseProto[name];
+			}
+		}
+		if(!!proto){
+			for(var name in proto){
+				NewClass.prototype[name] = proto[name];
+			}
+		}
+		return NewClass;
 	},
 
 	//---------------------------------------------------------------
@@ -30,47 +139,6 @@ pzpr.classmgr = {
 		this.includedFile[pid] = true;
 	},
 	includedFile : {},
-
-	//---------------------------------------------------------------
-	// includeCustomFileでファイルを読み込んだ後の処理
-	//---------------------------------------------------------------
-	createCustoms : function(scriptid, custombase){
-		var pidlist = pzpr.variety.PIDlist(scriptid);
-		for(var i=0;i<pidlist.length;i++){
-			var pid=pidlist[i], customclass=_PIDfilter(pid, custombase);
-			this.createCustomSingle(pid, customclass);
-		}
-	},
-
-	createCustomSingle : function(pid, customclass){
-		// 追加があるクラス => 残りの共通クラスの順に継承
-		var custom = {};
-		for(var classname in customclass){
-			var proto = customclass[classname];
-
-			if(!custom[classname]){
-				if(!!pzpr.common[classname]){ classname = classname+":"+classname;}
-
-				var rel = _createClass(classname, proto);
-				custom[rel.name] = rel.body;
-			}
-			else{
-				for(var name in proto){ custom[classname].prototype[name] = proto[name];}
-			}
-		}
-		for(var classname in pzpr.common){
-			if(!custom[classname]){
-				custom[classname] = pzpr.common[classname];
-			}
-		}
-		for(var classname in pzpr.common){
-			if(!!pzpr.common[classname]){
-				custom[classname].prototype.Common = pzpr.common[classname];
-			}
-		}
-
-		pzpr.custom[pid] = custom;
-	},
 
 	//---------------------------------------------------------------------------
 	// 新しくパズルのファイルを開く時の処理
@@ -111,56 +179,15 @@ pzpr.classmgr = {
 
 		var custom = pzpr.custom[pid];
 		for(var classname in custom){
-			var base = custom[classname];
 			var cls = function(){
 				var args = Array.prototype.slice.apply(arguments);
 				if(!!this.initialize){ this.initialize.apply(this,args);}
 			}
-			for(var name in base.prototype){ cls.prototype[name] = base.prototype[name];}
+			var baseproto = custom[classname].prototype;
+			for(var name in baseproto){ cls.prototype[name] = baseproto[name];}
 			cls.prototype.owner = puzzle;
 			puzzle[classname] = cls;
 			puzzle.classlist.push(classname);
 		}
 	}
 };
-
-function _createClass(classname, proto){
-	classname = classname.replace(/\s+/g,'');
-	var colon = classname.indexOf(':'), basename = '';
-	if(colon>=0){
-		basename  = classname.substr(colon+1);
-		classname = classname.substr(0,colon);
-	}
-
-	var NewClass = function(){};
-	if(!!basename && !!pzpr.common[basename]){
-		var BaseClass = pzpr.common[basename];
-		for(var name in BaseClass.prototype){
-			NewClass.prototype[name] = BaseClass.prototype[name];
-		}
-	}
-	for(var name in proto){ NewClass.prototype[name] = proto[name];}
-	NewClass.prototype.constructor = NewClass;
-	return {body:NewClass, name:classname};
-}
-
-function _PIDfilter(pid, custombase){
-	var customclass = {};
-	for(var hashkey in custombase){
-		var name = hashkey, pidcond = [], isexist = false;
-		if(hashkey.match('@')){
-			pidcond = hashkey.substr(hashkey.indexOf('@')+1).split(/,/);
-			name    = hashkey.substr(0,hashkey.indexOf('@'));
-			for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
-			if(!isexist){ name = '';}
-		}
-		if(!!name){
-			var proto = custombase[hashkey];
-			if(!customclass[name]){ customclass[name]={};}
-			for(var key in proto){ customclass[name][key] = proto[key];}
-		}
-	}
-	return customclass
-}
-
-})();

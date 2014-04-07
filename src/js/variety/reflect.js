@@ -1,8 +1,8 @@
 //
-// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.0
+// パズル固有スクリプト部 リフレクトリンク版 reflect.js v3.4.1
 //
 
-pzpr.createCustoms('reflect', {
+pzpr.classmgr.makeCustom('reflect', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

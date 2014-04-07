@@ -1,4 +1,4 @@
-// Answer.js v3.4.0
+// Answer.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
@@ -6,8 +6,9 @@
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzpr.createPuzzleClass('AnsCheck',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+AnsCheck:{
 	initialize : function(){
 		this.inCheck = false;
 		this.checkOnly = false;
@@ -63,13 +64,12 @@ pzpr.createPuzzleClass('AnsCheck',
 	// ans.resetCache() 前回のエラー情報を破棄する
 	//---------------------------------------------------------------------------
 	resetCache : function(){ this.failcode = void 0;}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★CheckInfoクラス ans.checkで返すインスタンスのクラス
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('CheckInfo',
-{
+CheckInfo:{
 	initialize : function(code){
 		this.add(code);
 	},
@@ -87,14 +87,14 @@ pzpr.createPuzzleClass('CheckInfo',
 		lang = lang || this.owner.getConfig('language');
 		return this.owner.faillist[code][lang==='ja'?0:1];
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★FailCodeクラス 答えの文字列を扱う
 //---------------------------------------------------------------------------
 // FailCodeクラス
-pzpr.createPuzzleClass('FailCode',
-{
+FailCode:{
 	complete : ["正解です！","Complete!"],
 	invalid  : ["不明なエラーです","Invalid Error"]
+}
 });

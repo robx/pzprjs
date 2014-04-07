@@ -1,4 +1,4 @@
-// AreaManager.js v3.4.0
+// AreaManager.js v3.4.1
 
 //--------------------------------------------------------------------------------
 // ★AreaManagerクラス セルの部屋情報などを保持するクラス
@@ -7,8 +7,9 @@
 //     そのため、1～maxまで全て中身が存在しているとは限りません。
 //     回答チェックやファイル出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
-pzpr.createPuzzleClass('AreaManager',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+AreaManager:{
 	initialize : function(){
 		this.max;
 		this.invalidid;	// 使わなくなったIDのリスト
@@ -372,33 +373,29 @@ pzpr.createPuzzleClass('AreaManager',
 		if(!this[areaid]){ throw "Invalid Area ID:"+(areaid);}
 		return this[areaid].clist;
 	}
-});
+},
 
 //--------------------------------------------------------------------------------
 // ☆AreaBlackManagerクラス  黒マス情報オブジェクトのクラス
 // ☆AreaWhiteManagerクラス  白マス情報オブジェクトのクラス
 // ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzpr.createPuzzleClass('AreaBlackManager:AreaManager',
-{
+'AreaBlackManager:AreaManager':{
 	isvalid : function(cell){ return cell.isBlack();}
-});
+},
 
-pzpr.createPuzzleClass('AreaWhiteManager:AreaManager',
-{
+'AreaWhiteManager:AreaManager':{
 	isvalid : function(cell){ return cell.isWhite();}
-});
+},
 
-pzpr.createPuzzleClass('AreaNumberManager:AreaManager',
-{
+'AreaNumberManager:AreaManager':{
 	isvalid : function(cell){ return cell.isNumberObj();}
-});
+},
 
 //--------------------------------------------------------------------------------
 // ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
-{
+'AreaRoomManager:AreaManager':{
 	initialize : function(){
 		this.crosscnt = [];		// 格子点の周りの境界線の数
 
@@ -549,13 +546,12 @@ pzpr.createPuzzleClass('AreaRoomManager:AreaManager',
 
 	getCntOfRoomByCell : function(cell){ return this[this.id[cell.id]].clist.length;}
 //	getCntOfRoom       : function(id)  { return this[id].clist.length;},
-});
+},
 
 //--------------------------------------------------------------------------------
 // ☆AreaLineManagerクラス 線つながり情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-pzpr.createPuzzleClass('AreaLineManager:AreaManager',
-{
+'AreaLineManager:AreaManager':{
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの領域を分断する境界線の数
 
@@ -701,7 +697,7 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 		}}
 		if(count>0){ clist.draw();}
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★AreaInfoクラス 主に色分けの情報を管理する
@@ -709,8 +705,7 @@ pzpr.createPuzzleClass('AreaLineManager:AreaManager',
 //         0     どの部屋に属させるかの処理中
 //         1以上 その番号の部屋に属する
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('AreaInfo',
-{
+AreaInfo:{
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
@@ -778,4 +773,5 @@ pzpr.createPuzzleClass('AreaInfo',
 			return (self.id[cell.id]===areaid && cell.isNum());
 		}).seterr(4);
 	}
+}
 });

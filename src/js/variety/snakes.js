@@ -1,8 +1,8 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.4.0
+// パズル固有スクリプト部 へびいちご版 snakes.js v3.4.1
 //
 
-pzpr.createCustoms('snakes', {
+pzpr.classmgr.makeCustom('snakes', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

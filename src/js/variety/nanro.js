@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 ナンロー版 nanro.js v3.4.0
+// パズル固有スクリプト部 ナンロー版 nanro.js v3.4.1
 //
-pzpr.createCustoms('nanro', {
+pzpr.classmgr.makeCustom('nanro', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

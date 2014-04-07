@@ -1,7 +1,8 @@
-// GraphicCommon.js v3.4.0
+// GraphicCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('Graphic',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
 	// pc.getCellColor()   前景色の設定・描画判定する
@@ -1330,4 +1331,5 @@ pzpr.extendPuzzleClass('Graphic',
 	hidenum : function(key){
 		this.vhide(["text_"+key]);
 	}
+}
 });

@@ -1,7 +1,8 @@
-// FileDataCommon.js v3.4.0
+// FileDataCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('FileIO',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+FileIO:{
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum() 問題数字のデコードを行う
 	// fio.encodeCellQnum() 問題数字のエンコードを行う
@@ -407,4 +408,5 @@ pzpr.extendPuzzleClass('FileIO',
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
 		}
 	}
+}
 });

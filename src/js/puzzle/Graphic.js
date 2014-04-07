@@ -1,12 +1,13 @@
-// Graphic.js v3.4.0
+// Graphic.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
 //---------------------------------------------------------------------------
 // パズル共通 Canvas/DOM制御部
 // Graphicクラスの定義
-pzpr.createPuzzleClass('Graphic',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Graphic:{
 	initialize : function(){
 		this.context    = null;
 		this.subcontext = null;
@@ -647,4 +648,5 @@ pzpr.createPuzzleClass('Graphic',
 		);
 		return this.vinc(layerid, rendering);
 	}
+}
 });

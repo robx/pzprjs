@@ -1,7 +1,8 @@
-// KeyCommon.js v3.4.0
+// KeyCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('KeyEvent',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+KeyEvent:{
 	//---------------------------------------------------------------------------
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
@@ -132,4 +133,5 @@ pzpr.extendPuzzleClass('KeyEvent',
 	getnum51 : function(obj,target){
 		return (target==2 ? obj.getQnum() : obj.getQnum2());
 	}
+}
 });

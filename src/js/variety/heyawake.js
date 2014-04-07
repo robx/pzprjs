@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js v3.4.0
+// パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js v3.4.1
 //
-pzpr.createCustoms('heyawake', {
+pzpr.classmgr.makeCustom('heyawake', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

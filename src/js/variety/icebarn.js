@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js v3.4.0
+// パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('icebarn', {
+pzpr.classmgr.makeCustom('icebarn', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

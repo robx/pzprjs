@@ -1,7 +1,8 @@
-// EncodeCommon.js v3.4.0
+// EncodeCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('Encode',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Encode:{
 	//---------------------------------------------------------------------------
 	// enc.include()    文字列caはbottomとupの間にあるか
 	//---------------------------------------------------------------------------
@@ -413,4 +414,5 @@ pzpr.extendPuzzleClass('Encode',
 
 		this.outbstr = bstr.substr(i);
 	}
+}
 });

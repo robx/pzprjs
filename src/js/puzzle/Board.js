@@ -1,11 +1,12 @@
-// Board.js v3.4.0
+// Board.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
 //---------------------------------------------------------------------------
 // Boardクラスの定義
-pzpr.createPuzzleClass('Board',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Board:{
 	initialize : function(){
 		var puzzle = this.owner;
 		
@@ -542,4 +543,5 @@ pzpr.createPuzzleClass('Board',
 	disableSetError  : function(){ this.diserror++;},
 	enableSetError   : function(){ this.diserror--;},
 	isenableSetError : function(){ return (this.diserror<=0); }
+}
 });

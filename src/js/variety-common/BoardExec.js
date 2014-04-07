@@ -1,7 +1,8 @@
-// BoardExecCommon.js v3.4.0
+// BoardExecCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('BoardExec',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+BoardExec:{
 	//------------------------------------------------------------------------------
 	// bd.exec.adjustBoardData()    回転・反転開始前に各セルの調節を行う(共通処理)
 	// bd.exec.adjustBoardData2()   回転・反転終了後に各セルの調節を行う(共通処理)
@@ -177,4 +178,5 @@ pzpr.extendPuzzleClass('BoardExec',
 		}
 		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};
 	}
+}
 });

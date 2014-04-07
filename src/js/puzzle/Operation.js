@@ -1,4 +1,4 @@
-// Undo.js v3.4.0
+// Operation.js v3.4.1
 (function(){
 
 var k = pzpr.consts;
@@ -8,8 +8,9 @@ var k = pzpr.consts;
 //---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
-pzpr.createPuzzleClass('Operation',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Operation:{
 	initialize : function(){
 		this.manager = this.owner.opemgr;
 	},
@@ -38,11 +39,10 @@ pzpr.createPuzzleClass('Operation',
 	undo : function(){ this.exec(this.old);},
 	redo : function(){ this.exec(this.num);},
 	exec : function(num){}
-});
+},
 
 // ObjectOperationクラス
-pzpr.createPuzzleClass('ObjectOperation:Operation',
-{
+'ObjectOperation:Operation':{
 	group    : '',
 	property : '',
 
@@ -112,11 +112,10 @@ pzpr.createPuzzleClass('ObjectOperation:Operation',
 			default:     this.owner.checker.resetCache(); break;
 		}
 	}
-});
+},
 
 // BoardAdjustOperationクラス
-pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
-{
+'BoardAdjustOperation:Operation':{
 	prefix : 'AJ',
 	reqReset : true,
 	//---------------------------------------------------------------------------
@@ -154,11 +153,10 @@ pzpr.createPuzzleClass('BoardAdjustOperation:Operation',
 		puzzle.board.exec.expandreduce(num,d);
 		puzzle.redraw();
 	}
-});
+},
 
 // BoardFlipOperationクラス
-pzpr.createPuzzleClass('BoardFlipOperation:Operation',
-{
+'BoardFlipOperation:Operation':{
 	prefix : 'AT',
 	reqReset : true,
 	area : {},
@@ -208,14 +206,13 @@ pzpr.createPuzzleClass('BoardFlipOperation:Operation',
 		puzzle.board.exec.turnflip(num,d);
 		puzzle.redraw();
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // OperationManagerクラス
-pzpr.createPuzzleClass('OperationManager',
-{
+OperationManager:{
 	initialize : function(){
 		this.lastope;		// this.opeの最後に追加されたOperationへのポインタ
 		this.ope;			// Operationクラスを保持する二次元配列
@@ -518,6 +515,7 @@ pzpr.createPuzzleClass('OperationManager',
 		this.enableRecord();
 		this.checkexec();
 	}
+}
 });
 
 })();

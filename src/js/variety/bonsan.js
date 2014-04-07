@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.0
+// パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('bonsan', {
+pzpr.classmgr.makeCustom('bonsan', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

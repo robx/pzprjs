@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.0
+// パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('pipelink', {
+pzpr.classmgr.makeCustom('pipelink', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

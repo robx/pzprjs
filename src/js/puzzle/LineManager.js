@@ -1,11 +1,12 @@
-// LineManager.js v3.4.0
+// LineManager.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★LineManagerクラス 主に色分けの情報を管理する
 //---------------------------------------------------------------------------
 // LineManagerクラスの定義
-pzpr.createPuzzleClass('LineManager',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+LineManager:{
 	initialize : function(){
 		this.lcnt    = [];
 		this.ltotal  = [];
@@ -405,7 +406,7 @@ pzpr.createPuzzleClass('LineManager',
 	//--------------------------------------------------------------------------------
 	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
 	getBlist : function(id){ return this.blist[id];}
-});
+},
 
 //---------------------------------------------------------------------------
 // LineInfoクラス
@@ -413,8 +414,7 @@ pzpr.createPuzzleClass('LineManager',
 //         0     どのPathに属させるかの処理中
 //         1以上 その番号のPathに属する
 //---------------------------------------------------------------------------
-pzpr.createPuzzleClass('LineInfo',
-{
+LineInfo:{
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
@@ -435,4 +435,5 @@ pzpr.createPuzzleClass('LineInfo',
 	emptyBorder : function(border){ return (this.id[border.id]===0);},
 
 	getblist : function(areaid){ return this.room[areaid].blist;}
+}
 });

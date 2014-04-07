@@ -1,12 +1,13 @@
-// KeyInput.js v3.4.0
+// KeyInput.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★KeyEventクラス キーボード入力に関する情報の保持とイベント処理を扱う
 //---------------------------------------------------------------------------
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
-pzpr.createPuzzleClass('KeyEvent',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+KeyEvent:{
 	initialize : function(){
 		this.cursor = this.owner.cursor;
 
@@ -229,14 +230,12 @@ pzpr.createPuzzleClass('KeyEvent',
 
 		return true;
 	}
-});
+},
 
 //---------------------------------------------------------------------------
 // ★TargetCursorクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
-
-pzpr.createPuzzleClass('TargetCursor',
-{
+TargetCursor:{
 	initialize : function(){
 		// 現在入力ターゲットになっている場所(border座標系)
 		this.pos = new this.owner.Address(1,1);
@@ -360,4 +359,5 @@ pzpr.createPuzzleClass('TargetCursor',
 
 		return this.targetdir;
 	}
+}
 });

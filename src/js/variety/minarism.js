@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.0
+// パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('minarism', {
+pzpr.classmgr.makeCustom('minarism', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

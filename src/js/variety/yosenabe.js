@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 よせなべ版 yosenabe.js v3.4.0
+// パズル固有スクリプト部 よせなべ版 yosenabe.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('yosenabe', {
+pzpr.classmgr.makeCustom('yosenabe', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

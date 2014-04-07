@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.4.0
+// パズル固有スクリプト部 やじさんかずさん版 yajikazu.js v3.4.1
 //
-pzpr.createCustoms('yajikazu', {
+pzpr.classmgr.makeCustom('yajikazu', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

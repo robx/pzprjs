@@ -1,7 +1,8 @@
-// MouseCommon.js v3.4.0
+// MouseCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('MouseEvent',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+MouseEvent:{
 	// 共通関数
 	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
@@ -466,4 +467,5 @@ pzpr.extendPuzzleClass('MouseEvent',
 		bd.haserror = true;
 		this.owner.redraw();
 	}
+}
 });

@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.4.0
+// パズル固有スクリプト部 スラローム版 slalom.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('slalom', {
+pzpr.classmgr.makeCustom('slalom', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,12 +1,13 @@
-// Encode.js v3.4.0
+// Encode.js v3.4.1
 
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzpr.createPuzzleClass('Encode',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+Encode:{
 	pflag    : "",
 	outpflag : '',
 	outcols  : null,
@@ -105,4 +106,5 @@ pzpr.createPuzzleClass('Encode',
 	encodeKanpen : function(){ },
 	decodeHeyaApp : function(){ },
 	encodeHeyaApp : function(){ }
+}
 });

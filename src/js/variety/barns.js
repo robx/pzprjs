@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 バーンズ版 barns.js v3.4.0
+// パズル固有スクリプト部 バーンズ版 barns.js v3.4.1
 //
-pzpr.createCustoms('barns', {
+pzpr.classmgr.makeCustom('barns', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

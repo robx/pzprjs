@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.4.0
+// パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('tateyoko', {
+pzpr.classmgr.makeCustom('tateyoko', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

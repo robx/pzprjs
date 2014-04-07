@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.0
+// パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('gokigen', {
+pzpr.classmgr.makeCustom('gokigen', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

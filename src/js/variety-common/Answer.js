@@ -1,7 +1,8 @@
-// AnswerCommon.js v3.4.0
+// AnswerCommon.js v3.4.1
 
-pzpr.extendPuzzleClass('AnsCheck',
-{
+pzpr.classmgr.makeCommon({
+//---------------------------------------------------------
+AnsCheck:{
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
 	// ans.checkNoNumCell() 数字の入っていないセルがあるか判定する
@@ -536,13 +537,12 @@ pzpr.extendPuzzleClass('AnsCheck',
 		room.dir2=[0,2,1,4,3][dir];
 	},
 	isErrorFlag_line : function(xinfo){ }
-});
+},
 
 //---------------------------------------------------------------------------
 // ★FailCodeクラス 答えの文字列を扱う
 //---------------------------------------------------------------------------
-pzpr.extendPuzzleClass('FailCode',
-{
+FailCode:{
 	/* ** 黒マス ** */
 	bc2x2       : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of black cells."],
 	bcNotSquare : ["正方形でない黒マスのカタマリがあります。","A mass of black cells is not regular rectangle."],
@@ -616,4 +616,5 @@ pzpr.extendPuzzleClass('FailCode',
 	nmAround : ["同じ数字がタテヨコナナメに隣接しています。","Same numbers are adjacent."],
 	nmDupRow : ["同じ列に同じ数字が入っています。","There are same numbers in a row."],
 	nmDivide : ["タテヨコにつながっていない数字があります。","Numbers are devided."]
+}
 });

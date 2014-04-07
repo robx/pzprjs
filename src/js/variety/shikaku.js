@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js v3.4.0
+// パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js v3.4.1
 //
-pzpr.createCustoms('shikaku', {
+pzpr.classmgr.makeCustom('shikaku', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

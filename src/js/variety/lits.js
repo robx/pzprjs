@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.0
+// パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('lits', {
+pzpr.classmgr.makeCustom('lits', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

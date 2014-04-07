@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.0
+// パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.1
 //
 (function(){
 
 var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
 
-pzpr.createCustoms('kramma', {
+pzpr.classmgr.makeCustom('kramma', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

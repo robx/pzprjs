@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 エルート・さしがね版 loute.js v3.4.0
+// パズル固有スクリプト部 エルート・さしがね版 loute.js v3.4.1
 //
 (function(){
 
 var k = pzpr.consts;
 
-pzpr.createCustoms('loute', {
+pzpr.classmgr.makeCustom('loute', {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
