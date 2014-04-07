@@ -62,38 +62,16 @@ window.pzpr = {
 
 	//---------------------------------------------------------------------------
 	// connectKeyEvents()  キーボード入力に関するイベントを指定したパズルへ通知する準備を行う
-	// exec????()          キー入力へ分岐する(this.keyが不変でないためバイパスする)
 	//---------------------------------------------------------------------------
-	keytarget : null,
-	addKeyEvents :function(){
-		// キー入力イベントの設定
-		pzpr.util.addEvent(document, 'keydown',  pzpr, pzpr.execKeyDown);
-		pzpr.util.addEvent(document, 'keyup',    pzpr, pzpr.execKeyUp);
-	},
-	connectKeyEvents : function(puzzle){ this.keytarget = puzzle;},
-	execKeyDown  : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyDown(e);}},
-	execKeyUp    : function(e){ var puzzle=this.keytarget; if(!!puzzle){ puzzle.execKeyUp(e);}},
-
-	//---------------------------------------------------------------
-	// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
-	//---------------------------------------------------------------
-	addWindowEvents : function(){
-		var ev = ['resize', 'orientationchange', 'pageshow', 'focus'];
-		for(var i=0;i<ev.length;i++){
-			pzpr.util.addEvent(window, ev[i], pzpr, pzpr.onresize);
-		}
-	},
-	onresize : function(e){
-		for(var i=0,len=this.puzzles.length;i<len;i++){
-			this.puzzles[i].resetPagePos();
-		}
+	connectKeyEvents : function(puzzle){
+		keytarget = puzzle;
 	},
 
 	//---------------------------------------------------------------
 	// 起動時関連関数
 	//---------------------------------------------------------------
 	addLoadListener : function(func){
-		if(this.preinit){ this.loadfun.push(func);}
+		if(preinit){ loadfun.push(func);}
 		else{ func();}
 	}
 };
@@ -103,13 +81,11 @@ window.pzpr = {
 //----------------------------------------------------------------------
 var preinit = true;
 var loadfun = [];
-function postload(){
+function postload(e){
 	if(!preinit){}
 	else if(!window.Candle){ setTimeout(postload,10);}
 	else{
 		preinit = false;
-		pzpr.addWindowEvents();
-		pzpr.addKeyEvents();
 		for(var i=0;i<loadfun.length;i++){ loadfun[i]();}
 		loadfun = [];
 	}
@@ -121,6 +97,38 @@ if(!!document.addEventListener){
 }
 else{
 	window.attachEvent('onload', postload);
+}
+
+//---------------------------------------------------------------
+// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
+//---------------------------------------------------------------
+pzpr.addLoadListener(function addWindowEvents(){
+	var ev = ['resize', 'orientationchange', 'pageshow', 'focus'];
+	for(var i=0;i<ev.length;i++){
+		pzpr.util.addEvent(window, ev[i], pzpr, execResize);
+	}
+});
+function execResize(e){
+	for(var i=0,len=pzpr.puzzles.length;i<len;i++){
+		pzpr.puzzles[i].resetPagePos();
+	}
+}
+
+//---------------------------------------------------------------------------
+// addKeyEvents()  キーボード入力発生時に指定されたパズルへ通知する準備を行う
+// exec????()      各パズルのキー入力へ分岐する
+//---------------------------------------------------------------------------
+var keytarget = null;
+pzpr.addLoadListener(function addKeyEvents(){
+	// キー入力イベントの設定
+	pzpr.util.addEvent(document, 'keydown', pzpr, execKeyDown);
+	pzpr.util.addEvent(document, 'keyup',   pzpr, execKeyUp);
+});
+function execKeyDown(e){
+	if(!!keytarget){ keytarget.execKeyDown(e);}
+}
+function execKeyUp(e){
+	if(!!keytarget){ keytarget.execKeyUp(e);}
 }
 
 })();
