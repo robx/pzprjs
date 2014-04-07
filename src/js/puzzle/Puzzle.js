@@ -326,11 +326,9 @@ pzpr.Puzzle.prototype =
 	// owner.getFileData() ファイルデータを取得する
 	//---------------------------------------------------------------------------
 	getURL : function(type){
-		if(isNaN(type)){ type=k.URL_AUTO;}
 		return this.enc.encodeURL(type);
 	},
 	getFileData : function(type){
-		if(isNaN(type)){ type=k.FILE_AUTO;}
 		return this.fio.fileencode(type);
 	},
 

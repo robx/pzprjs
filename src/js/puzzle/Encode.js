@@ -53,7 +53,7 @@ pzpr.createPuzzleClass('Encode',
 	encodeURL : function(type){
 		var puzzle = this.owner, bd = puzzle.board;
 		
-		if(isNaN(type) || type===k.URL_AUTO){ type = k.URL_PZPRV3;}
+		type = type || k.URL_PZPRV3; /* type===k.URL_AUTO(0)もまとめて変換する */
 		if(type===k.URL_KANPEN && puzzle.pid=='lits'){ type = k.URL_KANPENP;}
 
 		puzzle.opemgr.disableRecord();

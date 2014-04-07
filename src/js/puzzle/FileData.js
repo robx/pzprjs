@@ -40,8 +40,9 @@ pzpr.createPuzzleClass('FileIO',
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
-		if(isNaN(type) || type===k.FILE_AUTO){ type=k.FILE_PZPR;}
 		var puzzle = this.owner, bd = puzzle.board;
+		
+		type = type || k.FILE_PZPR; /* type===k.FILE_AUTO(0)もまとめて変換する */
 
 		this.filever = 0;
 		this.datastr = "";
