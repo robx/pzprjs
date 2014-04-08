@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('gokigen', {
 //---------------------------------------------------------
 // マウス入力系
@@ -327,12 +323,14 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@gokigen":{
 	decodePzpr : function(type){
-		var oldflag = ((type===k.URL_PZPRAPP && !this.checkpflag("c")) || (type===k.URL_PZPRV3 && this.checkpflag("d")));
+		var parser = pzpr.parser;
+		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c"))
+					|| (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type===k.URL_PZPRAPP){ this.outpflag = 'c';}
+		if(type===pzpr.parser.URL_PZPRAPP){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },
@@ -428,5 +426,3 @@ FailCode:{
 	ceEmpty     : ["斜線がないマスがあります。","There is an empty cell."]
 }
 });
-
-})();

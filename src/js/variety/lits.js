@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('lits', {
 //---------------------------------------------------------
 // マウス入力系
@@ -140,7 +136,9 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var oldflag = ((type===k.URL_PZPRV3 && this.checkpflag("d"))||(type===k.URL_PZPRAPP && !this.checkpflag("c")));
+		var parser = pzpr.parser;
+		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d"))
+					|| (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}
@@ -149,7 +147,7 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===k.URL_PZPRV3 || this.owner.pid==='norinori'){
+		if(type===pzpr.parser.URL_PZPRV3 || this.owner.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{
@@ -304,5 +302,3 @@ AnsCheck:{
 	bkBcGt2 : ["２マス以上の黒マスがある部屋が存在します。","A room has three or mode black cells."]
 }
 });
-
-})();

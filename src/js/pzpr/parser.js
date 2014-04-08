@@ -2,28 +2,36 @@
 
 (function(){
 
-pzpr.addConsts({
-	// 定数(URL形式)
-	URL_AUTO    : 0,
-	URL_PZPRV3  : 6,
-	URL_PZPRV3E : 3,
-	URL_PZPRAPP : 1,
-	URL_KANPEN  : 2,
-	URL_KANPENP : 5,
-	URL_HEYAAPP : 4
-});
-
-pzpr.addConsts({
-	// 定数(ファイル形式)
-	FILE_AUTO : 0,
-	FILE_PZPR : 1,
-	FILE_PBOX : 2,
-	FILE_PZPH : 3
-});
-
-var k = pzpr.consts;
+var URL_AUTO    = 0,
+	URL_PZPRV3  = 6,
+	URL_PZPRV3E = 3,
+	URL_PZPRAPP = 1,
+	URL_KANPEN  = 2,
+	URL_KANPENP = 5,
+	URL_HEYAAPP = 4,
+	
+	FILE_AUTO = 0,
+	FILE_PZPR = 1,
+	FILE_PBOX = 2,
+	FILE_PZPH = 3;
 
 pzpr.parser = {
+	
+	// 定数(URL形式)
+	URL_AUTO    : URL_AUTO,
+	URL_PZPRV3  : URL_PZPRV3,
+	URL_PZPRV3E : URL_PZPRV3E,
+	URL_PZPRAPP : URL_PZPRAPP,
+	URL_KANPEN  : URL_KANPEN,
+	URL_KANPENP : URL_KANPENP,
+	URL_HEYAAPP : URL_HEYAAPP,
+	
+	// 定数(ファイル形式)
+	FILE_AUTO : FILE_AUTO,
+	FILE_PZPR : FILE_PZPR,
+	FILE_PBOX : FILE_PBOX,
+	FILE_PZPH : FILE_PZPH,
+	
 	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
 	parse : function(data, variety){
@@ -59,7 +67,7 @@ pzpr.parser.URLData = function(url){
 }
 pzpr.parser.URLData.prototype = {
 	id      : '',
-	type    : k.URL_AUTO,
+	type    : 0,	/* ==URL_AUTO */
 	url     : "",
 	qdata   : "",
 	pflag   : null,
@@ -68,6 +76,15 @@ pzpr.parser.URLData.prototype = {
 	bstr    : "",
 	
 	isurl : true,
+	
+	// 定数(URL形式)
+	URL_AUTO    : URL_AUTO,
+	URL_PZPRV3  : URL_PZPRV3,
+	URL_PZPRV3E : URL_PZPRV3E,
+	URL_PZPRAPP : URL_PZPRAPP,
+	URL_KANPEN  : URL_KANPEN,
+	URL_KANPENP : URL_KANPENP,
+	URL_HEYAAPP : URL_HEYAAPP,
 	
 	parse : function (){
 		this.parseURLType();
@@ -94,29 +111,29 @@ pzpr.parser.URLData.prototype = {
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
 				this.qdata = url.substr(url.indexOf("?heyawake=")+10);
-				this.type = k.URL_HEYAAPP;
+				this.type = this.URL_HEYAAPP;
 			}
 			// カンペンだけどデータ形式はぱずぷれ
 			else if(url.indexOf("?pzpr=")>=0){
 				this.qdata = url.substr(url.indexOf("?pzpr=")+6);
-				this.type = k.URL_PZPRV3;
+				this.type = this.URL_PZPRV3;
 			}
 			else{
 				this.qdata = url.substr(url.indexOf("?problem=")+9);
-				this.type = k.URL_KANPEN;
+				this.type = this.URL_KANPEN;
 			}
 		}
 		// へやわけアプレットの場合
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
 			this.id = 'heyawake';
 			this.qdata = url.substr(url.indexOf("?problem=")+9);
-			this.type = k.URL_HEYAAPP;
+			this.type = this.URL_HEYAAPP;
 		}
 		// ぱずぷれアプレットの場合
 		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
 			this.id = RegExp.$1;
 			this.qdata = url.substr(url.indexOf("?"));
-			this.type = k.URL_PZPRAPP;
+			this.type = this.URL_PZPRAPP;
 		}
 		// ぱずぷれv3の場合
 		else{
@@ -129,7 +146,7 @@ pzpr.parser.URLData.prototype = {
 				this.id = url.substr(url.indexOf("?")+1);
 			}
 			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
-			this.type = k.URL_PZPRV3;
+			this.type = this.URL_PZPRV3;
 		}
 		this.id = pzpr.variety.toPID(this.id);
 	},
@@ -141,19 +158,19 @@ pzpr.parser.URLData.prototype = {
 		/* URLの種類からURLを取得する */
 		var url = "", type = this.type;
 		switch(this.type){
-			case k.URL_PZPRV3:  url="http://%DOMAIN%/p.html?%PID%/"; break;
-			case k.URL_PZPRV3E: url="http://%DOMAIN%/p.html?%PID%_edit/"; break;
-			case k.URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
-			case k.URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
-			case k.URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
-			case k.URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
+			case this.URL_PZPRV3:  url="http://%DOMAIN%/p.html?%PID%/"; break;
+			case this.URL_PZPRV3E: url="http://%DOMAIN%/p.html?%PID%_edit/"; break;
+			case this.URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
+			case this.URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
+			case this.URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
+			case this.URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 		}
 
 		var domain = document.domain;
 		if(!domain){ domain = "pzv.jp";}
 		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
-		if(this.type===k.URL_PZPRAPP){
+		if(this.type===this.URL_PZPRAPP){
 			if     (this.id==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
 			else if(this.id==='heyabon')  { url=url.replace("%PID%","bonsan");}
 		}
@@ -170,13 +187,13 @@ pzpr.parser.URLData.prototype = {
 	parseURLData : function(){
 		var inp = this.qdata.split("/"), col = 0, row = 0;
 		/* URLにつけるオプション */
-		if(this.type!==k.URL_KANPEN && this.type!==k.URL_HEYAAPP){
+		if(this.type!==this.URL_KANPEN && this.type!==this.URL_HEYAAPP){
 			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
 			this.pflag = inp.shift();
 		}
 		
 		/* サイズを表す文字列 */
-		if(this.type===k.URL_KANPEN){
+		if(this.type===this.URL_KANPEN){
 			if(this.id==="kakuro"){
 				row = +inp.shift() - 1;
 				col = +inp.shift() - 1;
@@ -189,7 +206,7 @@ pzpr.parser.URLData.prototype = {
 				col = +inp.shift();
 			}
 		}
-		else if(this.type===k.URL_HEYAAPP){
+		else if(this.type===this.URL_HEYAAPP){
 			var size = inp.shift().split("x");
 			col = +size[0];
 			row = +size[1];
@@ -212,12 +229,12 @@ pzpr.parser.URLData.prototype = {
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
 
 		/* URLにつけるオプション */
-		if(pzl.type!==k.URL_KANPEN && pzl.type!==k.URL_HEYAAPP){
+		if(pzl.type!==this.URL_KANPEN && pzl.type!==this.URL_HEYAAPP){
 			if(pzl.pflag!==null){ out.push(pzl.pflag);}
 		}
 
 		/* サイズを表す文字列 */
-		if(pzl.type===k.URL_KANPEN){
+		if(pzl.type===this.URL_KANPEN){
 			if(pzl.id==="kakuro"){
 				out.push(row + 1);
 				out.push(col + 1);
@@ -230,7 +247,7 @@ pzpr.parser.URLData.prototype = {
 				out.push(col);
 			}
 		}
-		else if(pzl.type===k.URL_HEYAAPP){
+		else if(pzl.type===this.URL_HEYAAPP){
 			out.push([col, row].join("x"));
 		}
 		else{
@@ -254,7 +271,7 @@ pzpr.parser.FileData = function(fstr, variety){
 }
 pzpr.parser.FileData.prototype = {
 	id      : '',
-	type    : k.FILE_AUTO,
+	type    : 0,	/* ==FILE_AUTO */
 	filever : 0,
 	fstr    : "",
 	qdata   : "",
@@ -263,6 +280,12 @@ pzpr.parser.FileData.prototype = {
 	bstr    : "",
 	
 	isfile : true,
+	
+	// 定数(ファイル形式)
+	FILE_AUTO : FILE_AUTO,
+	FILE_PZPR : FILE_PZPR,
+	FILE_PBOX : FILE_PBOX,
+	FILE_PZPH : FILE_PZPH,
 	
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());
@@ -281,12 +304,12 @@ pzpr.parser.FileData.prototype = {
 		var firstline = lines.shift();
 		
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
-		var type = this.type = (firstline.match(/^pzprv3/) ? k.FILE_PZPR : k.FILE_PBOX);
-		if(type===k.FILE_PZPR){
+		var type = this.type = (firstline.match(/^pzprv3/) ? this.FILE_PZPR : this.FILE_PBOX);
+		if(type===this.FILE_PZPR){
 			if(firstline.match(/pzprv3\.(\d+)/)){ this.filever = +RegExp.$1;}
 			this.id = lines.shift();
 		}
-		else if(type===k.FILE_PBOX){
+		else if(type===this.FILE_PBOX){
 			lines.unshift(firstline);
 		}
 		this.qdata = lines.join("\n");
@@ -299,7 +322,7 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileType : function(){
 		/* ヘッダの処理 */
-		if(this.type===k.FILE_PZPR){
+		if(this.type===this.FILE_PZPR){
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.id, ""].join("\n");
 		}
 		return "";
@@ -312,7 +335,7 @@ pzpr.parser.FileData.prototype = {
 		var lines = this.qdata.split(/\n/), col = 0, row = 0;
 		
 		/* サイズを表す文字列 */
-		if(this.type===k.FILE_PBOX && this.id==="kakuro"){
+		if(this.type===this.FILE_PBOX && this.id==="kakuro"){
 			row = +lines.shift() - 1;
 			col = +lines.shift() - 1;
 		}
@@ -345,7 +368,7 @@ pzpr.parser.FileData.prototype = {
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
 
 		/* サイズを表す文字列 */
-		if(pzl.type===k.FILE_PBOX && pzl.id==="kakuro"){
+		if(pzl.type===this.FILE_PBOX && pzl.id==="kakuro"){
 			out.push(row + 1);
 			out.push(col + 1);
 		}
@@ -362,6 +385,6 @@ pzpr.parser.FileData.prototype = {
 
 		return out.join("\n");
 	}
-}
+};
 
 })();

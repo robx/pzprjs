@@ -474,13 +474,13 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc, url = '', k = pzpr.consts;
+		var enc = ui.puzzle.enc, url = '', parser = pzpr.parser;
 		switch(e.target.name){
-			case "pzprv3":     url = ui.puzzle.getURL(k.URL_PZPRV3);  break;
-			case "pzprapplet": url = ui.puzzle.getURL(k.URL_PZPRAPP); break;
-			case "kanpen":     url = ui.puzzle.getURL(k.URL_KANPEN);  break;
-			case "pzprv3edit": url = ui.puzzle.getURL(k.URL_PZPRV3E); break;
-			case "heyaapp":    url = ui.puzzle.getURL(k.URL_HEYAAPP); break;
+			case "pzprv3":     url = ui.puzzle.getURL(parser.URL_PZPRV3);  break;
+			case "pzprapplet": url = ui.puzzle.getURL(parser.URL_PZPRAPP); break;
+			case "kanpen":     url = ui.puzzle.getURL(parser.URL_KANPEN);  break;
+			case "pzprv3edit": url = ui.puzzle.getURL(parser.URL_PZPRV3E); break;
+			case "heyaapp":    url = ui.puzzle.getURL(parser.URL_HEYAAPP); break;
 		}
 		this.form.ta.value = url;
 	},
@@ -625,10 +625,10 @@ ui.popupmgr.addpopup('filesave',
 			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
-		var k = pzpr.consts, filetype = k.FILE_PZPR;
+		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
 		switch(form.filetype.value){
-			case 'filesave2': filetype = k.FILE_PBOX; break;
-			case 'filesave3': filetype = k.FILE_PZPH; break;
+			case 'filesave2': filetype = parser.FILE_PBOX; break;
+			case 'filesave3': filetype = parser.FILE_PZPH; break;
 		}
 
 		var blob = null, filedata = null;

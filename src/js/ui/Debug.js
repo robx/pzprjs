@@ -104,11 +104,11 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
 		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
-			this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PBOX));
+			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX));
 		}
 		else{
 			this.setTA("");

@@ -10,7 +10,7 @@ FileIO:{
 	lineseek  : 0,
 	dataarray : null,
 	datastr   : "",
-	currentType : k.FILE_PZPR,
+	currentType : 0,
 
 	//---------------------------------------------------------------------------
 	// fio.filedecode()  ファイルデータ(文字列)からのデコード実行関数
@@ -26,8 +26,8 @@ FileIO:{
 		this.currentType = pzl.type;
 
 		// メイン処理
-		if     (this.currentType===k.FILE_PZPR){ this.decodeData();}
-		else if(this.currentType===k.FILE_PBOX){ this.kanpenOpen();}
+		if     (this.currentType===pzl.FILE_PZPR){ this.decodeData();}
+		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenOpen();}
 
 		puzzle.opemgr.decodeLines();
 
@@ -42,25 +42,25 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	fileencode : function(type){
 		var puzzle = this.owner, bd = puzzle.board;
+		var pzl = new pzpr.parser.FileData('', puzzle.pid);
 		
-		type = type || k.FILE_PZPR; /* type===k.FILE_AUTO(0)もまとめて変換する */
+		type = type || pzl.FILE_PZPR; /* type===pzl.FILE_AUTO(0)もまとめて変換する */
 
 		this.filever = 0;
 		this.datastr = "";
 		this.currentType = type;
-		if(this.currentType===k.FILE_PZPH){ this.currentType = k.FILE_PZPR;}
+		if(this.currentType===pzl.FILE_PZPH){ this.currentType = pzl.FILE_PZPR;}
 
 		// メイン処理
 		puzzle.opemgr.disableRecord();
 		
-		if     (this.currentType===k.FILE_PZPR){ this.encodeData();}
-		else if(this.currentType===k.FILE_PBOX){ this.kanpenSave();}
+		if     (this.currentType===pzl.FILE_PZPR){ this.encodeData();}
+		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenSave();}
 		
-		if(type===k.FILE_PZPH){ this.datastr += puzzle.opemgr.toString();}
+		if(type===pzl.FILE_PZPH){ this.datastr += puzzle.opemgr.toString();}
 		
 		puzzle.opemgr.enableRecord();
 
-		var pzl = new pzpr.parser.FileData('', puzzle.pid);
 		pzl.type  = this.currentType;
 		pzl.filever = this.filever;
 		pzl.cols  = bd.qcols;
@@ -131,12 +131,12 @@ FileIO:{
 			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.hasborder===2){
-			if(this.currentType===k.FILE_PZPR){
+			if(this.currentType===pzpr.parser.FILE_PZPR){
 				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===k.FILE_PBOX){
+			else if(this.currentType===pzpr.parser.FILE_PBOX){
 				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
@@ -171,12 +171,12 @@ FileIO:{
 			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.hasborder===2){
-			if(this.currentType===k.FILE_PZPR){
+			if(this.currentType===pzpr.parser.FILE_PZPR){
 				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
-			else if(this.currentType===k.FILE_PBOX){
+			else if(this.currentType===pzpr.parser.FILE_PBOX){
 				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}

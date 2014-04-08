@@ -440,15 +440,17 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@icebarn":{
 	decodePzpr : function(type){
-		if     (type===k.URL_PZPRV3){ this.decodeIcebarn();}
-		else if(type===k.URL_PZPRAPP){
+		var parser = pzpr.parser;
+		if     (type===parser.URL_PZPRV3){ this.decodeIcebarn();}
+		else if(type===parser.URL_PZPRAPP){
 			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
 			else                    { this.decodeIcebarn_old1();}
 		}
 	},
 	encodePzpr : function(type){
-		if     (type===k.URL_PZPRV3){ return this.encodeIcebarn();}
-		else if(type===k.URL_PZPRAPP){ return this.encodeIcebarn_old1();}
+		var parser = pzpr.parser;
+		if     (type===parser.URL_PZPRV3){ return this.encodeIcebarn();}
+		else if(type===parser.URL_PZPRAPP){ return this.encodeIcebarn_old1();}
 	},
 
 	decodeIcebarn : function(){

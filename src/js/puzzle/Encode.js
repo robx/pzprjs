@@ -35,15 +35,15 @@ Encode:{
 			this.pflag = pzl.pflag;
 			this.outbstr = pzl.bstr;
 			switch(pzl.type){
-			case k.URL_PZPRV3: case k.URL_PZPRAPP: case k.URL_PZPRV3E:
+			case pzl.URL_PZPRV3: case pzl.URL_PZPRAPP: case pzl.URL_PZPRV3E:
 				this.decodePzpr(pzl.type);
 				break;
-			case k.URL_KANPEN:
+			case pzl.URL_KANPEN:
 				puzzle.fio.lineseek = 0;
 				puzzle.fio.dataarray = this.outbstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
 				break;
-			case k.URL_HEYAAPP:
+			case pzl.URL_HEYAAPP:
 				this.decodeHeyaApp();
 				break;
 			}
@@ -53,9 +53,10 @@ Encode:{
 	},
 	encodeURL : function(type){
 		var puzzle = this.owner, bd = puzzle.board;
+		var pzl = new pzpr.parser.URLData('');
 		
-		type = type || k.URL_PZPRV3; /* type===k.URL_AUTO(0)もまとめて変換する */
-		if(type===k.URL_KANPEN && puzzle.pid=='lits'){ type = k.URL_KANPENP;}
+		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
+		if(type===pzl.URL_KANPEN && puzzle.pid=='lits'){ type = pzl.URL_KANPENP;}
 
 		puzzle.opemgr.disableRecord();
 
@@ -65,30 +66,29 @@ Encode:{
 		this.outbstr = '';
 
 		switch(type){
-		case k.URL_PZPRV3: case k.URL_PZPRV3E:
-			this.encodePzpr(k.URL_PZPRV3);
+		case pzl.URL_PZPRV3: case pzl.URL_PZPRV3E:
+			this.encodePzpr(pzl.URL_PZPRV3);
 			break;
 
-		case k.URL_PZPRAPP: case k.URL_KANPENP:
-			this.encodePzpr(k.URL_PZPRAPP);
+		case pzl.URL_PZPRAPP: case pzl.URL_KANPENP:
+			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;
 
-		case k.URL_KANPEN:
+		case pzl.URL_KANPEN:
 			puzzle.fio.datastr = "";
 			this.encodeKanpen()
 			this.outbstr = puzzle.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
 			puzzle.fio.datastr = "";
 			break;
 
-		case k.URL_HEYAAPP:
+		case pzl.URL_HEYAAPP:
 			this.encodeHeyaApp();
 			break;
 		}
 
 		puzzle.opemgr.enableRecord();
 
-		var pzl = new pzpr.parser.URLData('');
 		pzl.id    = puzzle.pid;
 		pzl.type  = type;
 		pzl.pflag = this.outpflag;

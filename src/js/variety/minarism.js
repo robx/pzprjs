@@ -245,11 +245,12 @@ Encode:{
 
 	decodeMinarism : function(type){
 		// 盤面外数字のデコード
+		var parser = pzpr.parser;
 		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if(type===k.URL_PZPRAPP){
+			if(type===parser.URL_PZPRAPP){
 				if     (id<bd.qcols*bd.qrows)  { mgn=((id/bd.qcols)|0);}
 				else if(id<2*bd.qcols*bd.qrows){ mgn=bd.qrows;}
 			}
@@ -259,10 +260,10 @@ Encode:{
 			if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ obj.qnum = parseInt(ca,16);}
 			else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca==="."){ obj.qnum = -2;}
-			else if(ca==="g"){ tmp = ((type===k.URL_PZPRV3 || id<bd.qcols*bd.qrows)?1:2);}
-			else if(ca==="h"){ tmp = ((type===k.URL_PZPRV3 || id<bd.qcols*bd.qrows)?2:1);}
+			else if(ca==="g"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?1:2);}
+			else if(ca==="h"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?2:1);}
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
-			else if(type===k.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
+			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
 
 			if     (tmp===1){ obj.qdir = (obj.isHorz()?k.UP:k.LT);}
 			else if(tmp===2){ obj.qdir = (obj.isHorz()?k.DN:k.RT);}
@@ -273,8 +274,9 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
+		var parser = pzpr.parser;
 		var cm="", count=0, mgn=0, bd=this.owner.board;
-		for(var id=0,max=bd.bdmax+(type===k.URL_PZPRV3?0:bd.qcols);id<max;id++){
+		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
 			if(type===1){
 				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)==0){ count++;}
 				if(id==(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
@@ -283,8 +285,8 @@ Encode:{
 			if(id<bd.bdmax){
 				var pstr="", dir=bd.border[id].qdir, qnum=bd.border[id].qnum;
 
-				if     (dir===k.UP||dir===k.LT){ pstr = ((type===k.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
-				else if(dir===k.DN||dir===k.RT){ pstr = ((type===k.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
+				if     (dir===k.UP||dir===k.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
+				else if(dir===k.DN||dir===k.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
 				else if(qnum===-2){ pstr = ".";}
 				else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
 				else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}

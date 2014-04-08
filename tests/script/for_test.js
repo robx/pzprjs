@@ -12,13 +12,13 @@ ui.debug.extend(
 	loadperf : function(){
 		ui.puzzle.open(perfstr, function(puzzle){
 			ui.menu.setMenuConfig('autocheck',false);
-			puzzle.modechange(k.MODE_PLAYER);
+			puzzle.modechange(puzzle.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
 	},
 	
 	accheck1 : function(){
-		var outputstr = ui.puzzle.getFileData(k.FILE_PZPR).replace(/\r?\n/g, "/");
+		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
 		var failcode  = ui.puzzle.check(true);
 		var failstr   = (failcode!==null ? "'"+failcode+"'" : "null");
 		ui.puzzle.board.errclear();
@@ -82,9 +82,9 @@ ui.debug.extend(
 	check_encode : function(self){
 		var pzl = new pzpr.parser.URLData('');
 		pzl.id    = self.pid;
-		pzl.type  = k.URL_PZPRV3;
+		pzl.type  = pzl.URL_PZPRV3;
 		var inp = pzl.outputURLType() + self.urls[self.pid];
-		var ta  = ui.puzzle.getURL(k.URL_PZPRV3);
+		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -95,7 +95,7 @@ ui.debug.extend(
 		if(pzpr.variety.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			o.open(o.getURL(k.URL_KANPEN), function(){
+			o.open(o.getURL(pzpr.parser.URL_KANPEN), function(){
 				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
@@ -129,7 +129,7 @@ ui.debug.extend(
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
 		var o = ui.puzzle, bd = o.board;
-		var outputstr = o.getFileData(k.FILE_PZPR);
+		var outputstr = o.getFileData(pzpr.parser.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
 		o.painter.suspendAll();
@@ -146,7 +146,7 @@ ui.debug.extend(
 	check_file_pbox : function(self){
 		if(pzpr.variety.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
-			var outputstr = o.getFileData(k.FILE_PBOX);
+			var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 
 			o.painter.suspendAll();

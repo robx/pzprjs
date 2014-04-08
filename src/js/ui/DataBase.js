@@ -23,7 +23,7 @@ ui.ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.getFileData(pzpr.consts.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.pdata = owner.getFileData(pzpr.parser.FILE_PZPH).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
 		this.comment = '';
 	},

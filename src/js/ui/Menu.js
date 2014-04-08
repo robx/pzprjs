@@ -297,7 +297,7 @@ ui.menu = {
 	// menu.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
 	//------------------------------------------------------------------------------
 	duplicate : function(){
-		var filestr = ui.puzzle.getFileData(pzpr.consts.FILE_PZPH);
+		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
 		if(!pzpr.env.browser.Presto){
 			var old = sessionStorage['filedata'];

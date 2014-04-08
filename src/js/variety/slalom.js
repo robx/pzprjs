@@ -489,9 +489,10 @@ Encode:{
 	encodePzpr : function(type){
 		this.owner.board.hinfo.generateAll();
 
-		if(type===k.URL_PZPRV3){ this.outpflag='d';}
+		var parser = pzpr.parser;
+		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
 
-		return this.encodeSlalom((type===k.URL_PZPRV3?2:0));
+		return this.encodeSlalom((type===parser.URL_PZPRV3?2:0));
 	},
 
 	decodeKanpen : function(){
