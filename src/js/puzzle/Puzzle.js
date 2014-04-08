@@ -59,116 +59,8 @@ pzpr.Puzzle.prototype =
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	open : function(data, callback){
-		var puzzle = this, pzl, Board;
-		puzzle.ready = false;
-		Board = (!!puzzle.Board ? puzzle.Board : null);
-		pzl = pzpr.parser.parse(data, puzzle.pid);
-		
-		pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
-			/* パズルの種類が変わっていればオブジェクトを設定しなおす */
-			if(Board!==puzzle.Board){ puzzle.initObjects();}
-			
-			if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
-			else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
-			
-			if(!!puzzle.canvas){ puzzle.waitCanvasReady(callback);}
-			else               { puzzle.postCanvasReady(callback);}
-		});
-		
-		return puzzle;
+		return openExecute(this, data, callback);
 	},
-
-	//---------------------------------------------------------------------------
-	// owner.initObjects()      各オブジェクトの生成などの処理
-	//---------------------------------------------------------------------------
-	initObjects : function(puzzle){
-		// クラス初期化
-		this.board   = new this.Board();		// 盤面オブジェクト
-		this.checker = new this.AnsCheck();		// 正解判定オブジェクト
-		this.painter = new this.Graphic();		// 描画系オブジェクト
-
-		this.cursor = new this.TargetCursor();	// 入力用カーソルオブジェクト
-		this.mouse  = new this.MouseEvent();	// マウス入力オブジェクト
-		this.key    = new this.KeyEvent();		// キーボード入力オブジェクト
-
-		this.opemgr = new this.OperationManager();	// 操作情報管理オブジェクト
-
-		this.enc = new this.Encode();		// URL入出力用オブジェクト
-		this.fio = new this.FileIO();		// ファイル入出力用オブジェクト
-
-		this.flags = new this.Flags();		// パズルの初期設定値を保持するオブジェクト
-
-		this.faillist = new this.FailCode();	// 正答判定文字列を保持するオブジェクト
-	},
-	
-	//---------------------------------------------------------------------------
-	// owner.waitCanvasReady()  Canvasの初期化待ちを行う
-	// owner.postCanvasReady()  Canvasの初期化終了後の処理を行う
-	// owner.firstCanvasReady() Canvasの初回初期化終了後の処理を行う
-	//---------------------------------------------------------------------------
-	waitCanvasReady : function(callback){
-		var puzzle = this;
-		puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas, function(){ puzzle.postCanvasReady(callback);});
-	},
-	postCanvasReady : function(callback){
-		this.painter.suspendAll();
-		this.firstCanvasReady();
-		
-		if(!!callback){ callback(this);}
-		
-		this.painter.unsuspend();
-		
-		if(!this.ready){
-			this.key.setfocus();
-			this.resetTime();
-			this.ready = true;
-			this.execListener('ready');
-		}
-	},
-	firstCanvasReady : function(){
-		if(!this.initCanvasEvent && !!this.canvas && !this.opt.noinput){
-			this.setCanvasEvents(this.canvas);
-			this.initCanvasEvent = true;
-		}
-		if(!this.initCanvasSize){
-			if(!!this.opt.width && !!this.opt.height){
-				this.setCanvasSize(this.opt.width, this.opt.height);
-			}
-			else if(!!this.opt.cellsize){
-				this.setCanvasSizeByCellSize(this.opt.cellsize);
-			}
-			this.initCanvasSize = true;
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// owner.setCanvasEvents() マウス入力に関するイベントを設定する
-	// owner.exec????()        マウス入力へ分岐する(this.mouseが不変でないためバイパスする)
-	//---------------------------------------------------------------------------
-	setCanvasEvents : function(canvas){
-		var puzzle = this;
-		
-		// マウス入力イベントの設定
-		pzpr.util.addMouseDownEvent(canvas, puzzle, puzzle.execMouseDown);
-		pzpr.util.addMouseMoveEvent(canvas, puzzle, puzzle.execMouseMove);
-		pzpr.util.addMouseUpEvent  (canvas, puzzle, puzzle.execMouseUp);
-		pzpr.util.addEvent(canvas, "mouseout", puzzle, puzzle.execMouseOut);
-		canvas.oncontextmenu = function(){ return false;};
-		
-		// キー入力イベントの設定
-		pzpr.util.addEvent(canvas, 'keydown',  puzzle, puzzle.execKeyDown);
-		pzpr.util.addEvent(canvas, 'keyup',    puzzle, puzzle.execKeyUp);
-	},
-	execMouseDown : function(e){
-		/* キー入力のフォーカスを当てる */
-		if(!!this.key){ this.key.setfocus();}
-		if(!!this.mouse){ this.mouse.e_mousedown(e);}
-	},
-	execMouseMove : function(e){ if(!!this.mouse){ this.mouse.e_mousemove(e);}},
-	execMouseUp   : function(e){ if(!!this.mouse){ this.mouse.e_mouseup(e);}},
-	execMouseOut  : function(e){ if(!!this.mouse){ this.mouse.e_mouseout(e);}},
-	execKeyDown   : function(e){ if(!!this.key){ this.key.e_keydown(e);}},
-	execKeyUp     : function(e){ if(!!this.key){ this.key.e_keyup(e);}},
 
 	//---------------------------------------------------------------------------
 	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する
@@ -189,47 +81,16 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.setCanvas()    描画キャンバスをセットする
-	// owner.addSubCanvas() 補助キャンバスを作成する
+	// owner.setCanvas()  描画キャンバスをセットする
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type, callback){
 		if(!el){ return;}
 		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
-		
 		type = type || this.opt.graphic || '';
-		/* fillTextが使えない場合は強制的にSVG描画に変更する */
-		if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 		
-		var o = this;
-		o.canvas = el;
-		Candle.start(el.id, type, function(g){
-			pzpr.util.unselectable(g.canvas);
-			g.child.style.pointerEvents = 'none';
-			if(g.use.canvas && !o.subcanvas){ o.subcanvas = o.addSubCanvas('canvas');}
-			if(o.ready){ o.waitCanvasReady(callback);}
-			
-			/* 画像出力用canvasの準備 */
-			if(!o.opt.imagesave){ return;}
-			o.imgcanvas[0] = (!!o.subcanvas ? o.subcanvas : o.addSubCanvas('canvas'));
-			o.imgcanvas[1] = o.addSubCanvas('svg');
-		});
-	},
-	addSubCanvas : function(type){
-		if(!Candle.enable[type]){ return null;}
-		var el = null;
-		el = document.createElement('div');
-		el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
-		el.style.left = '-10000px';
-		el.style.top = '0px';
-		document.body.appendChild(el);
-		Candle.start(el.id, type, function(g){
-			g.canvas.style.position = 'absolute';
-			if(g.use.svg){
-				g.child.setAttribute('xmlns', "http://www.w3.org/2000/svg");
-				g.child.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
-			}
-		});
-		return el;
+		this.canvas = el;
+		
+		setCanvas_main(this, type, callback);
 	},
 
 	//---------------------------------------------------------------------------
@@ -286,27 +147,14 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.toDataURL()           盤面画像をDataURLとして出力する
-	// owner.toBlob()              盤面画像をBlobとして出力する
-	// owner.generateLocalCanvas() 上記関数の共通処理
+	// owner.toDataURL() 盤面画像をDataURLとして出力する
+	// owner.toBlob()    盤面画像をBlobとして出力する
 	//---------------------------------------------------------------------------
 	toDataURL : function(type, cellsize){
-		return this.getLocalCanvas((type||""), cellsize).toDataURL();
+		return getLocalCanvas(this, (type||""), cellsize).toDataURL();
 	},
 	toBlob : function(type, cellsize){
-		return this.getLocalCanvas((type||""), cellsize).toBlob();
-	},
-	getLocalCanvas : function(type, cellsize){
-		var el = this.imgcanvas[type.match(/svg/)?1:0];
-		var pc2 = new this.Graphic();
-		pc2.initCanvas(el);
-		pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
-		
-		// canvasの設定を適用して、再描画
-		pc2.resizeCanvasByCellSize(cellsize || this.painter.cw);
-		pc2.unsuspend();
-		
-		return pc2.context.canvas;
+		return getLocalCanvas(this, (type||""), cellsize).toBlob();
 	},
 
 	//---------------------------------------------------------------------------
@@ -421,5 +269,185 @@ pzpr.Puzzle.prototype =
 	saveConfig : function(){ return this.config.getAll();},
 	restoreConfig : function(json){ this.config.setAll(json);}
 };
+
+
+//---------------------------------------------------------------------------
+//  openExecute()      各オブジェクトの生成などの処理
+//---------------------------------------------------------------------------
+function openExecute(puzzle, data, callback){
+	puzzle.ready = false;
+	var Board = (!!puzzle.Board ? puzzle.Board : null);
+	var pzl = pzpr.parser.parse(data, puzzle.pid);
+	
+	pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
+		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
+		if(Board!==puzzle.Board){ initObjects(puzzle);}
+		
+		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
+		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
+		
+		if(!!puzzle.canvas){ waitCanvasReady(puzzle, callback);}
+		else               { postCanvasReady(puzzle, callback);}
+	});
+	
+	return puzzle;
+}
+
+//---------------------------------------------------------------------------
+//  initObjects()      各オブジェクトの生成などの処理
+//---------------------------------------------------------------------------
+function initObjects(puzzle){
+	// クラス初期化
+	puzzle.board   = new puzzle.Board();		// 盤面オブジェクト
+	puzzle.checker = new puzzle.AnsCheck();		// 正解判定オブジェクト
+	puzzle.painter = new puzzle.Graphic();		// 描画系オブジェクト
+
+	puzzle.cursor = new puzzle.TargetCursor();	// 入力用カーソルオブジェクト
+	puzzle.mouse  = new puzzle.MouseEvent();	// マウス入力オブジェクト
+	puzzle.key    = new puzzle.KeyEvent();		// キーボード入力オブジェクト
+
+	puzzle.opemgr = new puzzle.OperationManager();	// 操作情報管理オブジェクト
+
+	puzzle.enc = new puzzle.Encode();		// URL入出力用オブジェクト
+	puzzle.fio = new puzzle.FileIO();		// ファイル入出力用オブジェクト
+
+	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
+
+	puzzle.faillist = new puzzle.FailCode();	// 正答判定文字列を保持するオブジェクト
+}
+
+//---------------------------------------------------------------------------
+//  setCanvas_main()  描画キャンバスをセットする
+//  createSubCanvas() 補助キャンバスを作成する
+//---------------------------------------------------------------------------
+function setCanvas_main(puzzle, type, callback){
+	/* fillTextが使えない場合は強制的にSVG描画に変更する */
+	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
+	
+	Candle.start(puzzle.canvas.id, type, function(g){
+		pzpr.util.unselectable(g.canvas);
+		g.child.style.pointerEvents = 'none';
+		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
+		if(puzzle.ready){ waitCanvasReady(puzzle, callback);}
+		
+		/* 画像出力用canvasの準備 */
+		if(!puzzle.opt.imagesave){ return;}
+		puzzle.imgcanvas[0] = puzzle.subcanvas || createSubCanvas('canvas');
+		puzzle.imgcanvas[1] = createSubCanvas('svg');
+	});
+}
+function createSubCanvas(type){
+	if(!Candle.enable[type]){ return null;}
+	var el = null;
+	el = document.createElement('div');
+	el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
+	el.style.left = '-10000px';
+	el.style.top = '0px';
+	document.body.appendChild(el);
+	Candle.start(el.id, type, function(g){
+		g.canvas.style.position = 'absolute';
+		if(g.use.svg){
+			g.child.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+			g.child.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
+		}
+	});
+	return el;
+}
+
+//---------------------------------------------------------------------------
+//  waitCanvasReady()  Canvasの初期化待ちを行う
+//  postCanvasReady()  Canvasの初期化終了後の処理を行う
+//  firstCanvasReady() Canvasの初回初期化終了後の処理を行う
+//---------------------------------------------------------------------------
+function waitCanvasReady(puzzle, callback){
+	puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas,
+		function(){ postCanvasReady(puzzle, callback);}
+	);
+}
+function postCanvasReady(puzzle, callback){
+	puzzle.painter.suspendAll();
+	firstCanvasReady(puzzle);
+	
+	if(!!callback){ callback(this);}
+	
+	puzzle.painter.unsuspend();
+	
+	if(!puzzle.ready){
+		puzzle.key.setfocus();
+		puzzle.resetTime();
+		puzzle.ready = true;
+		puzzle.execListener('ready');
+	}
+}
+function firstCanvasReady(puzzle){
+	if(!puzzle.initCanvasEvent && !!puzzle.canvas && !puzzle.opt.noinput){
+		setCanvasEvents(puzzle);
+		puzzle.initCanvasEvent = true;
+	}
+	if(!puzzle.initCanvasSize){
+		if(!!puzzle.opt.width && !!puzzle.opt.height){
+			puzzle.setCanvasSize(puzzle.opt.width, puzzle.opt.height);
+		}
+		else if(!!puzzle.opt.cellsize){
+			puzzle.setCanvasSizeByCellSize(puzzle.opt.cellsize);
+		}
+		puzzle.initCanvasSize = true;
+	}
+}
+
+//---------------------------------------------------------------------------
+//  setCanvasEvents() マウス入力に関するイベントを設定する
+//  exec????()        マウス入力へ分岐する(puzzle.mouseが不変でないためバイパスする)
+//---------------------------------------------------------------------------
+function setCanvasEvents(puzzle){
+	var canvas = puzzle.canvas;
+	
+	// マウス入力イベントの設定
+	pzpr.util.addMouseDownEvent(canvas, puzzle, execMouseDown);
+	pzpr.util.addMouseMoveEvent(canvas, puzzle, execMouseMove);
+	pzpr.util.addMouseUpEvent  (canvas, puzzle, execMouseUp);
+	pzpr.util.addEvent(canvas, "mouseout", puzzle, execMouseOut);
+	canvas.oncontextmenu = function(){ return false;};
+	
+	// キー入力イベントの設定
+	pzpr.util.addEvent(canvas, 'keydown',  puzzle, execKeyDown);
+	pzpr.util.addEvent(canvas, 'keyup',    puzzle, execKeyUp);
+}
+function execMouseDown(e){
+	/* キー入力のフォーカスを当てる */
+	if(!!this.key){ this.key.setfocus();}
+	if(!!this.mouse){ this.mouse.e_mousedown(e);}
+}
+function execMouseMove(e){
+	if(!!this.mouse){ this.mouse.e_mousemove(e);}
+}
+function execMouseUp(e){
+	if(!!this.mouse){ this.mouse.e_mouseup(e);}
+}
+function execMouseOut(e){
+	if(!!this.mouse){ this.mouse.e_mouseout(e);}
+}
+function execKeyDown(e){
+	if(!!this.key){ this.key.e_keydown(e);}
+}
+function execKeyUp(e){
+	if(!!this.key){ this.key.e_keyup(e);}
+}
+
+//---------------------------------------------------------------------------
+//  generateLocalCanvas()  toDataURL, toBlobの共通処理
+//---------------------------------------------------------------------------
+function getLocalCanvas(puzzle, type, cellsize){
+	var el = puzzle.imgcanvas[type.match(/svg/)?1:0];
+	var pc2 = new puzzle.Graphic();
+	pc2.initCanvas(el);
+	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
+	
+	// canvasの設定を適用して、再描画
+	pc2.resizeCanvasByCellSize(cellsize || puzzle.painter.cw);
+	pc2.unsuspend();
+	
+	return pc2.context.canvas;
+}
 
 })();

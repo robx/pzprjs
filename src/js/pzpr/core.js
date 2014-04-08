@@ -109,10 +109,10 @@ pzpr.addLoadListener(function addKeyEvents(){
 	pzpr.util.addEvent(document, 'keyup',   pzpr, execKeyUp);
 });
 function execKeyDown(e){
-	if(!!keytarget){ keytarget.execKeyDown(e);}
+	if(!!keytarget && !!keytarget.key){ keytarget.key.e_keydown(e);}
 }
 function execKeyUp(e){
-	if(!!keytarget){ keytarget.execKeyUp(e);}
+	if(!!keytarget && !!keytarget.key){ keytarget.key.e_keyup(e);}
 }
 
 })();
