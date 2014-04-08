@@ -112,8 +112,8 @@ ui.event =
 	// event.mouse_common()  盤面へのマウス入力時に呼び出される関数
 	// event.config_common()  config設定時に呼び出される関数
 	//---------------------------------------------------------------------------
-	key_common : function(o, c){
-		var kc = o.key, result = true;
+	key_common : function(puzzle, c){
+		var kc = puzzle.key, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
 			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startUndo(); result = false;}
@@ -121,8 +121,8 @@ ui.event =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(c==='F2' && pzpr.EDITOR){
-				if     (o.editmode && !kc.isSHIFT){ o.modechange(k.MODE_PLAYER); result = false;}
-				else if(o.playmode &&  kc.isSHIFT){ o.modechange(k.MODE_EDITOR); result = false;}
+				if     (puzzle.editmode && !kc.isSHIFT){ puzzle.modechange(puzzle.MODE_PLAYER); result = false;}
+				else if(puzzle.playmode &&  kc.isSHIFT){ puzzle.modechange(puzzle.MODE_EDITOR); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -136,19 +136,17 @@ ui.event =
 		ui.menuarea.floatmenuclose(0);
 		return result;
 	},
-	mouse_common : function(o){
-		var mv = o.mouse, result = true;
+	mouse_common : function(puzzle){
+		var mv = puzzle.mouse, result = true;
 		if(mv.mousestart && mv.btn.Middle){ /* 中ボタン */
-			if(pzpr.EDITOR){
-				o.modechange(o.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
-			}
+			puzzle.modechange();
 			mv.mousereset();
 			result = false;
 		}
 		ui.menuarea.floatmenuclose(0);
 		return result;
 	},
-	config_common : function(o, idname, newval){
+	config_common : function(puzzle, idname, newval){
 		ui.menu.setdisplay(idname);
 		
 		if(idname==='mode'){
@@ -158,11 +156,11 @@ ui.event =
 		}
 		else if(idname==='language'){
 			ui.menu.displayAll();
-			o.adjustCanvasSize();
+			puzzle.adjustCanvasSize();
 		}
 		else if(idname==='uramashu'){
-			o.board.revCircleMain();
-			o.redraw();
+			puzzle.board.revCircleMain();
+			puzzle.redraw();
 		}
 		
 		return true;

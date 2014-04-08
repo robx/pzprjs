@@ -184,9 +184,8 @@ KeyEvent:{
 	// kc.keyexec() モードに共通で行う処理を実行します
 	//---------------------------------------------------------------------------
 	keyexec : function(c){
-		var puzzle = this.owner;
 		if(this.keydown && this.isALT && c==='c' && pzpr.EDITOR){
-			puzzle.modechange(puzzle.playmode ? k.MODE_EDITOR : k.MODE_PLAYER);
+			this.owner.modechange();
 			return false;
 		}
 		return true;

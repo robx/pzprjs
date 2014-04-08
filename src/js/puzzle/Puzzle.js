@@ -4,15 +4,6 @@
 //---------------------------------------------------------------------------
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
-
-var k = pzpr.consts;
-pzpr.addConsts({
-	// モード設定用定数
-	MODE_EDITOR : 1,
-	MODE_PLAYER : 3
-});
-
-// Puzzleクラス
 pzpr.Puzzle = function(canvas, option){
 	option = (!!option ? option : {});
 	this.opt = option;
@@ -54,6 +45,10 @@ pzpr.Puzzle.prototype =
 	
 	initCanvasSize  : false,
 	initCanvasEvent : false,
+	
+	// モード設定用定数
+	MODE_EDITOR : 1,
+	MODE_PLAYER : 3,
 	
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
@@ -242,8 +237,10 @@ pzpr.Puzzle.prototype =
 	// owner.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		this.editmode = (num==k.MODE_EDITOR);
-		this.playmode = (num==k.MODE_PLAYER);
+		if(pzpr.PLAYER){ return;}
+		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
+		this.editmode = (num==this.MODE_EDITOR);
+		this.playmode = (num==this.MODE_PLAYER);
 		this.execListener('modechange');
 		if(!this.ready){ return;}
 

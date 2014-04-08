@@ -82,7 +82,7 @@ function startPuzzle(){
 	else{
 		var inputdata = (!!pzl.qdata ? pzl : pid+"/"+ui.debug.urls[pid]);
 		puzzle.open(inputdata, function(puzzle){
-			puzzle.modechange(pzpr.consts.MODE_PLAYER);
+			puzzle.modechange(puzzle.MODE_PLAYER);
 			ui.menu.setMenuConfig('autocheck', true);
 		});
 	}
