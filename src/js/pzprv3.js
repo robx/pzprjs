@@ -5,6 +5,7 @@
 	var files = [
 		"lib/candle",
 		"pzpr/core",
+		"pzpr/event",
 		"pzpr/classmgr",
 		"pzpr/env",
 		"pzpr/variety",
