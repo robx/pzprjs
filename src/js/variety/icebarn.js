@@ -270,12 +270,7 @@ OperationManager:{
 		this.operationlist.push(this.owner.InOutOperation);
 	},
 	addOpe_InOut : function(property, x1, y1, x2, y2){
-		// 操作を登録する
-		this.addOpe_common(function(){
-			var ope = new this.owner.InOutOperation();
-			ope.setData(property, x1, y1, x2, y2);
-			return ope;
-		});
+		this.add(new this.owner.InOutOperation(property, x1, y1, x2, y2));
 	}
 },
 

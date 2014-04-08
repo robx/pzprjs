@@ -301,12 +301,7 @@ OperationManager:{
 	},
 	
 	addOpe_Startpos : function(x1, y1, x2, y2){
-		// 操作を登録する
-		this.addOpe_common(function(){
-			var ope = new this.owner.StartposOperation();
-			ope.setData(x1, y1, x2, y2);
-			return ope;
-		});
+		this.add(new this.owner.StartposOperation(x1, y1, x2, y2));
 	}
 },
 

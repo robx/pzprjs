@@ -9,6 +9,11 @@ pzpr.classmgr.makeCommon({
 Operation:{
 	initialize : function(){
 		this.manager = this.owner.opemgr;
+		
+		if(arguments.length>0){
+			var args = Array.prototype.slice.call(arguments);
+			this.setData.apply(this, args);
+		}
 	},
 
 	reqReset : false,
@@ -90,6 +95,30 @@ Operation:{
 		for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
 		for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
 		return [prefix, this.bx, this.by, this.old, this.num].join(',');
+	},
+
+	//---------------------------------------------------------------------------
+	// ope.isModify()  前の履歴をこのオブジェクトで更新するかどうか確認する
+	//---------------------------------------------------------------------------
+	isModify : function(lastope){
+		// 前回と同じ場所なら前回の更新のみ
+		var property = this.property;
+		if( lastope.group    === this.group &&
+			lastope.property === this.property  &&
+			lastope.num      === this.old   &&
+			lastope.bx       === this.bx    &&
+			lastope.by       === this.by    &&
+			(property === 'qnum'  || 
+			 property === 'qnum2' ||
+			 property === 'qdir'  ||
+			 property === 'qchar' ||
+			 property === 'anum' )
+		)
+		{
+			lastope.num = this.num;
+			return true;
+		}
+		return false;
 	},
 
 	//---------------------------------------------------------------------------
@@ -288,13 +317,14 @@ OperationManager:{
 	},
 
 	//---------------------------------------------------------------------------
-	// um.addOpe_common()      指定された操作を追加する(共通操作)
+	// um.add()                指定された操作を追加する(共通操作)
 	// um.addOpe_Object()      指定された操作を追加する。プロパティ等が同じ場合は最終操作を変更する
 	// um.addOpe_BoardAdjust() 指定された盤面(拡大・縮小)操作を追加する
 	// um.addOpe_BoardFlip()   指定された盤面(回転・反転)操作を追加する
 	//---------------------------------------------------------------------------
-	addOpe_common : function(regist_func, cond_func){
+	add : function(newope){
 		if(!this.isenableRecord()){ return;}
+		this.changeflag = true;
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){
@@ -303,75 +333,39 @@ OperationManager:{
 			this.position = this.ope.length;
 		}
 
-		/* Operationを追加するかどうか判定 */
-		if(cond_func!==(void 0) && !cond_func.call(this)){ return;}
-
-		/* Operationを追加する */
-		if(!this.chainflag){
-			this.ope.push([]);
-			this.position++;
-			this.chainflag = true;
+		/* 前の履歴を更新するかどうか判定 */
+		var puzzle = this.owner;
+		if( this.disCombine || !this.lastope ||
+			!newope.isModify || !newope.isModify(this.lastope) )
+		{
+			/* 履歴を追加する */
+			if(!this.chainflag){
+				this.ope.push([]);
+				this.position++;
+				this.chainflag = true;
+			}
+			this.ope[this.ope.length-1].push(newope);
+			this.lastope = newope;
+		}
+		else{
+			/* 前の履歴を更新したときは何もしない */
 		}
 		
-		var ope = regist_func.call(this);
-		this.ope[this.ope.length-1].push(ope);
-		this.lastope = ope;
-		this.changeflag = true;
-		if(ope.property!=='qsub' && ope.property!=='qcmp'){
-			this.owner.checker.resetCache();
+		if(newope.property!=='qsub' && newope.property!=='qcmp'){
+			puzzle.checker.resetCache();
 		}
-		
 		this.checkexec();
 	},
 
 	addOpe_Object : function(obj, property, old, num){
 		if(old===num){ return;}
-
-		this.addOpe_common(function(){
-			var ope = new this.owner.ObjectOperation();
-			ope.setData(obj, property, old, num);
-			return ope;
-		},
-		function(){
-			// 前回と同じ場所なら前回の更新のみ
-			var ref = this.lastope;
-			if( !this.disCombine && !!ref && !!ref.property &&
-				ref.group    === obj.group &&
-				ref.property === property  &&
-				ref.num      === old       &&
-				ref.bx       === obj.bx    &&
-				ref.by       === obj.by    &&
-				(property === 'qnum'  || 
-				 property === 'qnum2' ||
-				 property === 'qdir'  ||
-				 property === 'qchar' ||
-				 property === 'anum' )
-			)
-			{
-				this.changeflag = true;
-				ref.num = num;
-				this.owner.checker.resetCache();
-				this.owner.execListener('history');
-				return false;
-			}
-			return true;
-		});
+		this.add(new this.owner.ObjectOperation(obj, property, old, num));
 	},
 	addOpe_BoardAdjust : function(name){
-		// 操作を登録する
-		this.addOpe_common(function(){
-			var ope = new this.owner.BoardAdjustOperation();
-			ope.setData(name);
-			return ope;
-		});
+		this.add(new this.owner.BoardAdjustOperation(name));
 	},
 	addOpe_BoardFlip : function(d, name){
-		// 操作を登録する
-		this.addOpe_common(function(){
-			var ope = new this.owner.BoardFlipOperation();
-			ope.setData(d, name);
-			return ope;
-		});
+		this.add(new this.owner.BoardFlipOperation(d, name));
 	},
 
 	//---------------------------------------------------------------------------

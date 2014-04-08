@@ -394,14 +394,8 @@ OperationManager:{
 
 		this.operationlist.push(this.owner.SegmentOperation);
 	},
-	
 	addOpe_Segment : function(x1, y1, x2, y2, old, num){
-		// 操作を登録する
-		this.addOpe_common(function(){
-			var ope = new this.owner.SegmentOperation();
-			ope.setData(x1, y1, x2, y2, old, num);
-			return ope;
-		});
+		this.add(new this.owner.SegmentOperation(x1, y1, x2, y2, old, num));
 	}
 },
 
