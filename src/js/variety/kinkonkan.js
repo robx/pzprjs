@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('kinkonkan', {
 //---------------------------------------------------------
 // マウス入力系
@@ -95,6 +91,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
+		var k = pzpr.consts;
 		var tc = this.cursor;
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = k.NDIR;
 
@@ -261,7 +258,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd = this.owner.board;
-		if(key & k.TURNFLIP){ // 反転・回転全て
+		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
@@ -541,5 +538,3 @@ FailCode:{
 	pairedNumberNe : ["光の反射回数が正しくありません。", "The count of refrection is wrong."]
 }
 });
-
-})();

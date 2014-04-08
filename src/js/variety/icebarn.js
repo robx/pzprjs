@@ -218,7 +218,7 @@ BoardExec:{
 		bd.arrowout = bd.getb(info2.bx2, info2.by2);
 
 		var opemgr = this.owner.opemgr;
-		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
+		if((key & this.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
 			opemgr.forceRecord = true;
 			if(info1.isdel){
 				opemgr.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);

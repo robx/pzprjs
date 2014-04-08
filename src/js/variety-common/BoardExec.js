@@ -19,13 +19,13 @@ BoardExec:{
 	// bd.exec.adjustBoardObject()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
 	adjustNumberArrow : function(key,d){
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			var tdir={};
 			switch(key){
-				case k.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
-				case k.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
-				case k.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
-				case k.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
+				case this.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
+				case this.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
+				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
+				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -35,13 +35,13 @@ BoardExec:{
 		}
 	},
 	adjustCellArrow : function(key,d){
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			var trans = {};
 			switch(key){
-				case k.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case k.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case k.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case k.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 				default: return;
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
@@ -53,13 +53,13 @@ BoardExec:{
 		}
 	},
 	adjustBorderArrow : function(key,d){
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			var trans = {};
 			switch(key){
-				case k.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case k.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case k.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case k.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
 				default: return;
 			}
 			var blist = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
@@ -96,7 +96,7 @@ BoardExec:{
 
 		var bd = this.owner.board;
 		switch(key){
-		case k.FLIPY: // 上下反転
+		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				idx = 1; this.qnumh[bx] = this.qnumh[bx].reverse();
 				bd.getex(bx,-1).setQnum2(this.qnumh[bx][0]);
@@ -107,7 +107,7 @@ BoardExec:{
 			}
 			break;
 
-		case k.FLIPX: // 左右反転
+		case this.FLIPX: // 左右反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumw[by] = this.qnumw[by].reverse();
 				bd.getex(-1,by).setQnum(this.qnumw[by][0]);
@@ -118,7 +118,7 @@ BoardExec:{
 			}
 			break;
 
-		case k.TURNR: // 右90°反転
+		case this.TURNR: // 右90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1; this.qnumh[by] = this.qnumh[by].reverse();
 				bd.getex(-1,by).setQnum(this.qnumh[by][0]);
@@ -137,7 +137,7 @@ BoardExec:{
 			}
 			break;
 
-		case k.TURNL: // 左90°反転
+		case this.TURNL: // 左90°反転
 			for(var by=by1;by<=d.y2;by+=2){
 				idx = 1;
 				bd.getex(-1,by).setQnum(this.qnumh[yy-by][0]);
@@ -162,18 +162,18 @@ BoardExec:{
 		var bd=this.owner.board;
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;
 		switch(key){
-			case k.FLIPY: bx2 = bx1; by2 = yy-by1; break;
-			case k.FLIPX: bx2 = xx-bx1; by2 = by1; break;
-			case k.TURNR: bx2 = yy-by1; by2 = bx1; break;
-			case k.TURNL: bx2 = by1; by2 = xx-bx1; break;
-			case k.EXPANDUP: bx2 = bx1; by2 = by1+(by1===bd.minby?0:2); break;
-			case k.EXPANDDN: bx2 = bx1; by2 = by1+(by1===bd.maxby?2:0); break;
-			case k.EXPANDLT: bx2 = bx1+(bx1===bd.minbx?0:2); by2 = by1; break;
-			case k.EXPANDRT: bx2 = bx1+(bx1===bd.maxbx?2:0); by2 = by1; break;
-			case k.REDUCEUP: bx2 = bx1; by2 = by1-(by1<=bd.minby+2?0:2); break;
-			case k.REDUCEDN: bx2 = bx1; by2 = by1-(by1>=bd.maxby-2?2:0); break;
-			case k.REDUCELT: bx2 = bx1-(bx1<=bd.minbx+2?0:2); by2 = by1; break;
-			case k.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
+			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
+			case this.FLIPX: bx2 = xx-bx1; by2 = by1; break;
+			case this.TURNR: bx2 = yy-by1; by2 = bx1; break;
+			case this.TURNL: bx2 = by1; by2 = xx-bx1; break;
+			case this.EXPANDUP: bx2 = bx1; by2 = by1+(by1===bd.minby?0:2); break;
+			case this.EXPANDDN: bx2 = bx1; by2 = by1+(by1===bd.maxby?2:0); break;
+			case this.EXPANDLT: bx2 = bx1+(bx1===bd.minbx?0:2); by2 = by1; break;
+			case this.EXPANDRT: bx2 = bx1+(bx1===bd.maxbx?2:0); by2 = by1; break;
+			case this.REDUCEUP: bx2 = bx1; by2 = by1-(by1<=bd.minby+2?0:2); break;
+			case this.REDUCEDN: bx2 = bx1; by2 = by1-(by1>=bd.maxby-2?2:0); break;
+			case this.REDUCELT: bx2 = bx1-(bx1<=bd.minbx+2?0:2); by2 = by1; break;
+			case this.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
 			default: bx2 = bx1; by2 = by1; break;
 		}
 		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};

@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('bonsan', {
 //---------------------------------------------------------
 // マウス入力系
@@ -285,5 +281,3 @@ FailCode:{
 	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });
-
-})();

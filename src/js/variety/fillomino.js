@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('fillomino', {
 //---------------------------------------------------------
 // マウス入力系
@@ -71,6 +67,7 @@ KeyEvent:{
 		var cell = this.cursor.getTCC();
 		if(cell.isnull){ return false;}
 
+		var k = pzpr.consts;
 		var nc, nb, dir=k.NDIR;
 		switch(ca){
 			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=k.UP; break;
@@ -281,5 +278,3 @@ FailCode:{
 	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });
-
-})();

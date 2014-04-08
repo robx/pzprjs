@@ -1,49 +1,66 @@
 // BoardExec.js v3.4.1
 
-pzpr.addConsts({
-	// 拡大縮小・回転反転用定数
-	EXPAND : 0x10,
-	REDUCE : 0x20,
-	TURN   : 0x40,
-	FLIP   : 0x80,
-	TURNFLIP: 0xC0, // (TURN|FLIP),
+(function(){
 
-	EXPANDUP: 0x11, // (EXPAND|UP),
-	EXPANDDN: 0x12, // (EXPAND|DN),
-	EXPANDLT: 0x13, // (EXPAND|LT),
-	EXPANDRT: 0x14, // (EXPAND|RT),
+// 拡大縮小・回転反転用定数
+var UP = 0x01,
+	DN = 0x02,
+	LT = 0x03,
+	RT = 0x04,
 
-	REDUCEUP: 0x21, // (REDUCE|UP),
-	REDUCEDN: 0x22, // (REDUCE|DN),
-	REDUCELT: 0x23, // (REDUCE|LT),
-	REDUCERT: 0x24, // (REDUCE|RT),
+	EXPAND = 0x10,
+	REDUCE = 0x20,
+	TURN   = 0x40,
+	FLIP   = 0x80;
 
-	TURNL: 0x41, // (TURN|1),
-	TURNR: 0x42, // (TURN|2),
+var k = pzpr.consts;
 
-	FLIPX: 0x81, // (FLIP|1),
-	FLIPY: 0x82  // (FLIP|2),
-});
-
+pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 // ★BoardExecクラス 盤面の拡大縮小、反転回転等を行う (MenuExec.js, Board.jsから移動)
 //---------------------------------------------------------------------------
-pzpr.classmgr.makeCommon({
-//---------------------------------------------------------
 BoardExec:{
+	// 拡大縮小・回転反転用定数
+	UP : UP,
+	DN : DN,
+	LT : LT,
+	RT : RT,
+
+	EXPAND : EXPAND,
+	REDUCE : REDUCE,
+	TURN   : TURN,
+	FLIP   : FLIP,
+	TURNFLIP: (TURN|FLIP),
+
+	EXPANDUP: (EXPAND|UP),
+	EXPANDDN: (EXPAND|DN),
+	EXPANDLT: (EXPAND|LT),
+	EXPANDRT: (EXPAND|RT),
+
+	REDUCEUP: (REDUCE|UP),
+	REDUCEDN: (REDUCE|DN),
+	REDUCELT: (REDUCE|LT),
+	REDUCERT: (REDUCE|RT),
+
+	TURNL: (TURN|1),
+	TURNR: (TURN|2),
+
+	FLIPX: (FLIP|1),
+	FLIPY: (FLIP|2),
+
 	boardtype : {
-		expandup: [k.REDUCEUP, k.EXPANDUP],
-		expanddn: [k.REDUCEDN, k.EXPANDDN],
-		expandlt: [k.REDUCELT, k.EXPANDLT],
-		expandrt: [k.REDUCERT, k.EXPANDRT],
-		reduceup: [k.EXPANDUP, k.REDUCEUP],
-		reducedn: [k.EXPANDDN, k.REDUCEDN],
-		reducelt: [k.EXPANDLT, k.REDUCELT],
-		reducert: [k.EXPANDRT, k.REDUCERT],
-		turnl: [k.TURNR, k.TURNL],
-		turnr: [k.TURNL, k.TURNR],
-		flipy: [k.FLIPY, k.FLIPY],
-		flipx: [k.FLIPX, k.FLIPX]
+		expandup: [REDUCE|UP, EXPAND|UP],
+		expanddn: [REDUCE|DN, EXPAND|DN],
+		expandlt: [REDUCE|LT, EXPAND|LT],
+		expandrt: [REDUCE|RT, EXPAND|RT],
+		reduceup: [EXPAND|UP, REDUCE|UP],
+		reducedn: [EXPAND|DN, REDUCE|DN],
+		reducelt: [EXPAND|LT, REDUCE|LT],
+		reducert: [EXPAND|RT, REDUCE|RT],
+		turnl: [TURN|2, TURN|1],
+		turnr: [TURN|1, TURN|2],
+		flipy: [FLIP|2, FLIP|2],
+		flipx: [FLIP|1, FLIP|1]
 	},
 
 	// expand/reduce処理用
@@ -79,7 +96,7 @@ BoardExec:{
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
 		var key = this.boardtype[name][1];
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			this.turnflip(key,d);
 			o.opemgr.addOpe_BoardFlip(d, name);
 		}
@@ -106,25 +123,25 @@ BoardExec:{
 		var bd = this.owner.board;
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
-		if(bd.rooms.hastop && (key & k.REDUCE)){ this.reduceRoomNumber(key,d);}
+		if(bd.rooms.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
 
-		if(key & k.EXPAND){
-			if     (key===k.EXPANDUP||key===k.EXPANDDN){ bd.qrows++;}
-			else if(key===k.EXPANDLT||key===k.EXPANDRT){ bd.qcols++;}
+		if(key & this.EXPAND){
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
 
 							  { this.expandGroup(k.CELL,   key);}
 			if(!!bd.hascross) { this.expandGroup(k.CROSS,  key);}
 			if(!!bd.hasborder){ this.expandGroup(k.BORDER, key);}
 			if(!!bd.hasexcell){ this.expandGroup(k.EXCELL, key);}
 		}
-		else if(key & k.REDUCE){
+		else if(key & this.REDUCE){
 							  { this.reduceGroup(k.CELL,   key);}
 			if(!!bd.hascross) { this.reduceGroup(k.CROSS,  key);}
 			if(!!bd.hasborder){ this.reduceGroup(k.BORDER, key);}
 			if(!!bd.hasexcell){ this.reduceGroup(k.EXCELL, key);}
 
-			if     (key===k.REDUCEUP||key===k.REDUCEDN){ bd.qrows--;}
-			else if(key===k.REDUCELT||key===k.REDUCERT){ bd.qcols--;}
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
 		}
 		bd.setposAll();
 
@@ -184,7 +201,7 @@ BoardExec:{
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
-		if(key & k.TURN){
+		if(key & this.TURN){
 			var tmp = bd.qcols; bd.qcols = bd.qrows; bd.qrows = tmp;
 			bd.setposAll();
 			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
@@ -194,10 +211,10 @@ BoardExec:{
 		if(!!bd.hascross)   { this.turnflipGroup(k.CROSS,  key, d);}
 		if(!!bd.hasborder)  { this.turnflipGroup(k.BORDER, key, d);}
 		if(bd.hasexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
-		else if(bd.hasexcell===1 && (key & k.FLIP)){
+		else if(bd.hasexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
-			if     (key===k.FLIPY){ d2.x1 = d2.x2 = -1;}
-			else if(key===k.FLIPX){ d2.y1 = d2.y2 = -1;}
+			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
+			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
 			this.turnflipGroup(k.EXCELL, key, d2);
 		}
 		bd.setposAll();
@@ -221,10 +238,10 @@ BoardExec:{
 				// nextになるものがtargetに移動してくる、、という考えかた。
 				// ここでは移動前のIDを取得しています
 				switch(key){
-					case k.FLIPY: next = bd.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
-					case k.FLIPX: next = bd.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
-					case k.TURNR: next = bd.getObjectPos(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols).id; break;
-					case k.TURNL: next = bd.getObjectPos(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.FLIPY: next = bd.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
+					case this.FLIPX: next = bd.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
+					case this.TURNR: next = bd.getObjectPos(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.TURNL: next = bd.getObjectPos(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols).id; break;
 				}
 
 				if(ch[next]===false){
@@ -247,10 +264,10 @@ BoardExec:{
 		if(obj.isnull){ return -1;}
 
 		key &= 0x0F;
-		if     (key===k.UP){ return obj.by;}
-		else if(key===k.DN){ return 2*bd.qrows-obj.by;}
-		else if(key===k.LT){ return obj.bx;}
-		else if(key===k.RT){ return 2*bd.qcols-obj.bx;}
+		if     (key===this.UP){ return obj.by;}
+		else if(key===this.DN){ return 2*bd.qrows-obj.by;}
+		else if(key===this.LT){ return obj.bx;}
+		else if(key===this.RT){ return 2*bd.qcols-obj.bx;}
 		return -1;
 	},
 
@@ -308,19 +325,19 @@ BoardExec:{
 	innerBorder : function(id,key){
 		var border=this.owner.board.border[id];
 		key &= 0x0F;
-		if     (key===k.UP){ return border.relbd(0, 2);}
-		else if(key===k.DN){ return border.relbd(0,-2);}
-		else if(key===k.LT){ return border.relbd(2, 0);}
-		else if(key===k.RT){ return border.relbd(-2,0);}
+		if     (key===this.UP){ return border.relbd(0, 2);}
+		else if(key===this.DN){ return border.relbd(0,-2);}
+		else if(key===this.LT){ return border.relbd(2, 0);}
+		else if(key===this.RT){ return border.relbd(-2,0);}
 		return null;
 	},
 	outerBorder : function(id,key){
 		var border=this.owner.board.border[id];
 		key &= 0x0F;
-		if     (key===k.UP){ return border.relbd(0,-2);}
-		else if(key===k.DN){ return border.relbd(0, 2);}
-		else if(key===k.LT){ return border.relbd(-2,0);}
-		else if(key===k.RT){ return border.relbd( 2,0);}
+		if     (key===this.UP){ return border.relbd(0,-2);}
+		else if(key===this.DN){ return border.relbd(0, 2);}
+		else if(key===this.LT){ return border.relbd(-2,0);}
+		else if(key===this.RT){ return border.relbd( 2,0);}
 		return null;
 	},
 
@@ -365,3 +382,5 @@ BoardExec:{
 	adjustBoardData2 : function(key,d){ }
 }
 });
+
+})();

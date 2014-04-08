@@ -74,14 +74,13 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzpr.consts;
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			var tques={};
 			switch(key){
-				case k.FLIPY: tques={2:5,3:4,4:3,5:2}; break;
-				case k.FLIPX: tques={2:3,3:2,4:5,5:4}; break;
-				case k.TURNR: tques={2:5,3:2,4:3,5:4}; break;
-				case k.TURNL: tques={2:3,3:4,4:5,5:2}; break;
+				case this.FLIPY: tques={2:5,3:4,4:3,5:2}; break;
+				case this.FLIPX: tques={2:3,3:2,4:5,5:4}; break;
+				case this.TURNR: tques={2:5,3:2,4:3,5:4}; break;
+				case this.TURNL: tques={2:3,3:4,4:5,5:2}; break;
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){

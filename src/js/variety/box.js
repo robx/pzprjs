@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ボックス版 box.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('box', {
 //---------------------------------------------------------
 // マウス入力系
@@ -43,6 +39,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
+		var k = pzpr.consts;
 		var tc = this.cursor;
 		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = k.NDIR;
 		switch(ca){
@@ -134,20 +131,20 @@ BoardExec:{
 
 		var bd=this.owner.board;
 		switch(key){
-		case k.FLIPY: // 上下反転
+		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumh[bx]);}
 			break;
 
-		case k.FLIPX: // 左右反転
+		case this.FLIPX: // 左右反転
 			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumw[by]);}
 			break;
 
-		case k.TURNR: // 右90°反転
+		case this.TURNR: // 右90°反転
 			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[by]);}
 			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[xx-bx]);}
 			break;
 
-		case k.TURNL: // 左90°反転
+		case this.TURNL: // 左90°反転
 			for(var by=by1;by<=d.y2;by+=2){ bd.getex(-1,by).setQnum(this.qnumh[yy-by]);}
 			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumw[bx]);}
 			break;
@@ -364,5 +361,3 @@ FailCode:{
 	nmSumRowBcNe : ["数字と黒マスになった数字の合計が正しくありません。","A number is not equal to the sum of the number of black cells."]
 }
 });
-
-})();

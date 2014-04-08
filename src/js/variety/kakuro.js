@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 カックロ版 kakuro.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('kakuro', {
 //---------------------------------------------------------
 // マウス入力系
@@ -367,6 +363,7 @@ AnsCheck:{
 		return this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false);
 	},
 	isTotalNumber : function(keycellpos, clist){
+		var k = pzpr.consts;
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===k.RT){ number = keyobj.getQnum();}
 		else if(dir===k.DN){ number = keyobj.getQnum2();}
@@ -390,5 +387,3 @@ FailCode:{
 	ceEmpty    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
 }
 });
-
-})();

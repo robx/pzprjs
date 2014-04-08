@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 碁石ひろい版 goishi.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('goishi', {
 //---------------------------------------------------------
 // マウス入力系
@@ -403,6 +399,7 @@ UndoTimer_goishi:{
 		else{ this.exec();}
 	},
 	exec : function(){
+		var k = pzpr.consts;
 		var o = this.owner, opemgr = o.opemgr;
 		if(this.inUNDO){
 			var nextopes = opemgr.ope[opemgr.position-1];
@@ -426,5 +423,3 @@ UndoTimer_goishi:{
 	}
 }
 });
-
-})();

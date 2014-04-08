@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('pipelink', {
 //---------------------------------------------------------
 // マウス入力系
@@ -67,14 +63,13 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzpr.consts;
-		if(key & k.TURNFLIP){
+		if(key & this.TURNFLIP){
 			var tques={};
 			switch(key){
-				case k.FLIPY: tques={14:17,15:16,16:15,17:14}; break;
-				case k.FLIPX: tques={14:15,15:14,16:17,17:16}; break;
-				case k.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
-				case k.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
+				case this.FLIPY: tques={14:17,15:16,16:15,17:14}; break;
+				case this.FLIPX: tques={14:15,15:14,16:17,17:16}; break;
+				case this.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
+				case this.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -200,6 +195,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodePipelink : function(type){
+		var k = pzpr.consts;
 		var count, pass, cm="", bd = this.owner.board;
 
 		count=0;
@@ -305,5 +301,3 @@ FailCode:{
 	lnCurveOnCir : ["○の部分で線が曲がっています。","A line curves on circles."]
 }
 });
-
-})();

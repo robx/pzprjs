@@ -237,7 +237,7 @@ BoardExec:{
 	posinfo : {},
 	adjustBoardData : function(key,d){
 		var bd = this.owner.board;
-		if(key & k.TURN){
+		if(key & this.TURN){
 			var tques = {21:22,22:21};
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -256,7 +256,7 @@ BoardExec:{
 		bd.startcell = bd.getc(info.bx2, info.by2);
 
 		var opemgr = this.owner.opemgr;
-		if((key & k.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
+		if((key & this.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
 			opemgr.forceRecord = true;
 			if(info.isdel){
 				opemgr.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);

@@ -464,7 +464,7 @@ ui.menuarea = {
 	submenuexec : function(idname, val){
 		if(!ui.puzzle.ready){ return true;}
 		
-		var result = true, k = pzpr.consts;
+		var result = true;
 		switch(idname){
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;

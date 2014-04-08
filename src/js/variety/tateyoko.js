@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('tateyoko', {
 //---------------------------------------------------------
 // マウス入力系
@@ -23,6 +19,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
+		var k = pzpr.consts;
 		var pos = cell.getaddr();
 		var input=false;
 
@@ -121,7 +118,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		if(key & k.TURN){ // 回転だけ
+		if(key & this.TURN){ // 回転だけ
 			var tans = {0:0,12:13,13:12};
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
@@ -394,5 +391,3 @@ FailCode:{
 	nmConnBarLt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a black cell is wrong."]
 }
 });
-
-})();

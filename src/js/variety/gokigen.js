@@ -227,7 +227,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd = this.owner.board;
-		if(key & pzpr.consts.TURNFLIP){ // 反転・回転全て
+		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];

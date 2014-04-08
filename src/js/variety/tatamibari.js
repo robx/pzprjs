@@ -54,7 +54,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		if(key & pzpr.consts.TURN){
+		if(key & this.TURN){
 			var tques = {2:3,3:2};
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){

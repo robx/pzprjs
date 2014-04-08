@@ -120,7 +120,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		if(key & k.TURN){ // 回転だけ
+		if(key & this.TURN){ // 回転だけ
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];

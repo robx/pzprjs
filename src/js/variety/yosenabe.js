@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 よせなべ版 yosenabe.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('yosenabe', {
 //---------------------------------------------------------
 // マウス入力系
@@ -494,5 +490,3 @@ FailCode:{
 	bkNoNum      : ["具材のない鍋があります。","A crock has no circle."]
 }
 });
-
-})();

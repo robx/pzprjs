@@ -234,13 +234,12 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var k = pzpr.consts;
 		var trans = [];
 		switch(key){
-			case k.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
-			case k.FLIPX: trans=[0,1,3,2,5,4]; break;	// 左右反転
-			case k.TURNR: trans=[0,1,5,2,3,4]; break;	// 右90°回転
-			case k.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
+			case this.FLIPY: trans=[0,1,5,4,3,2]; break;	// 上下反転
+			case this.FLIPX: trans=[0,1,3,2,5,4]; break;	// 左右反転
+			case this.TURNR: trans=[0,1,5,2,3,4]; break;	// 右90°回転
+			case this.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
 			default: return;
 		}
 		var clist = this.owner.board.cell;

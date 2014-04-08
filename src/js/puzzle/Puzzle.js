@@ -365,7 +365,7 @@ function postCanvasReady(puzzle, callback){
 	puzzle.painter.suspendAll();
 	firstCanvasReady(puzzle);
 	
-	if(!!callback){ callback(this);}
+	if(!!callback){ callback(puzzle);}
 	
 	puzzle.painter.unsuspend();
 	
