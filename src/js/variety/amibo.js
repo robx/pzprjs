@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 あみぼー版 amibo.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('amibo', {
 //---------------------------------------------------------
 // マウス入力系
@@ -28,6 +24,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
+		var k = pzpr.consts;
 		var pos = cell.getaddr();
 		var input=false;
 
@@ -580,5 +577,3 @@ FailCode:{
 	nmIsolate : ["白丸に線がつながっていません。","No bar connects to a white circle."]
 }
 });
-
-})();

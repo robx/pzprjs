@@ -399,17 +399,16 @@ UndoTimer_goishi:{
 		else{ this.exec();}
 	},
 	exec : function(){
-		var k = pzpr.consts;
 		var o = this.owner, opemgr = o.opemgr;
 		if(this.inUNDO){
 			var nextopes = opemgr.ope[opemgr.position-1];
 			var prop = (opemgr.enableUndo ? nextopes[nextopes.length-1].property : '');
-			if(prop!==k.ANUM){ this.stop();}
+			if(prop!=='anum'){ this.stop();}
 		}
 		else if(this.inREDO){
 			var nextopes = opemgr.ope[opemgr.position];
 			var prop = (opemgr.enableRedo ? nextopes[0].property : '');
-			if(prop!==k.ANUM){ this.stop();}
+			if(prop!=='anum'){ this.stop();}
 		}
 		
 		if(!!this.TID){

@@ -2,17 +2,6 @@
 
 pzpr.addConsts({
 	// const値
-	QUES  : 'ques',
-	QNUM  : 'qnum',
-	QNUM2 : 'qnum2',
-	QCHAR : 'qchar',
-	QDIR  : 'qdir',
-	QANS  : 'qans',
-	ANUM  : 'anum',
-	LINE  : 'line',
-	QSUB  : 'qsub',
-	QCMP  : 'qcmp',
-
 	NDIR : 0,	// 方向なし
 	UP   : 1,	// up
 	DN   : 2,	// down
@@ -99,34 +88,34 @@ BoardPiece:{
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
 	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata(k.QUES, val);},
+	setQues : function(val){ this.setdata('ques', val);},
 
 	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata(k.QANS, val);},
+	setQans : function(val){ this.setdata('qans', val);},
 
 	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata(k.QDIR, val);},
+	setQdir : function(val){ this.setdata('qdir', val);},
 
 	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata(k.QNUM, val);},
+	setQnum : function(val){ this.setdata('qnum', val);},
 
 	getQnum2 : function(){ return this.qnum2;},
-	setQnum2 : function(val){ this.setdata(k.QNUM2, val);},
+	setQnum2 : function(val){ this.setdata('qnum2', val);},
 
 	getQchar : function(){ return this.qchar;},
-	setQchar : function(val){ this.setdata(k.QCHAR, val);},
+	setQchar : function(val){ this.setdata('qchar', val);},
 
 	getAnum : function(){ return this.anum;},
-	setAnum : function(val){ this.setdata(k.ANUM, val);},
+	setAnum : function(val){ this.setdata('anum', val);},
 
 	getLineVal : function(){ return this.line;},
-	setLineVal : function(val){ this.setdata(k.LINE, val);},
+	setLineVal : function(val){ this.setdata('line', val);},
 
 	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata(k.QSUB, val);},
+	setQsub : function(val){ this.setdata('qsub', val);},
 
 	getQcmp : function(){ return this.qcmp;},
-	setQcmp : function(val){ this.setdata(k.QCMP, val);},
+	setQcmp : function(val){ this.setdata('qcmp', val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する

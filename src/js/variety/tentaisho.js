@@ -102,7 +102,7 @@ Cell:{
 	// 一部qsubで消したくないものがあるため上書き
 	subclear : function(){
 		if(this.qsub===1){
-			this.owner.opemgr.addOpe_Object(this, pzpr.consts.QSUB, 1, 0);
+			this.owner.opemgr.addOpe_Object(this, 'qsub', 1, 0);
 			this.qsub = 0;
 		}
 		this.error = 0;

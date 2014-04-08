@@ -1,15 +1,11 @@
 // Operation.js v3.4.1
-(function(){
 
-var k = pzpr.consts;
-
-//---------------------------------------------------------------------------
-// ★Operation(派生)クラス 単体の操作情報を保持する
-//---------------------------------------------------------------------------
 // 入力情報管理クラス
 // Operationクラス
 pzpr.classmgr.makeCommon({
-//---------------------------------------------------------
+//---------------------------------------------------------------------------
+// ★Operation(派生)クラス 単体の操作情報を保持する
+//---------------------------------------------------------------------------
 Operation:{
 	initialize : function(){
 		this.manager = this.owner.opemgr;
@@ -54,16 +50,16 @@ Operation:{
 		E: 'excell'
 	},
 	STRPROP : {
-		U: 'ques',   // k.QUES
-		N: 'qnum',   // k.QNUM
-		Z: 'qnum2',  // k.QNUM2
-		C: 'qchar',  // k.QCHAR
-		M: 'anum',   // k.ANUM
-		D: 'qdir',   // k.QDIR
-		A: 'qans',   // k.QANS
-		S: 'qsub',   // k.QSUB
-		K: 'qcmp',   // k.QCMP
-		L: 'line'    // k.LINE
+		U: 'ques',
+		N: 'qnum',
+		Z: 'qnum2',
+		C: 'qchar',
+		M: 'anum',
+		D: 'qdir',
+		A: 'qans',
+		S: 'qsub',
+		K: 'qcmp',
+		L: 'line'
 	},
 
 	//---------------------------------------------------------------------------
@@ -107,8 +103,8 @@ Operation:{
 		obj.draw();
 		
 		switch(this.property){
-			case k.QCMP: bd.cell.each(function(cell){ if(obj===cell.base){ cell.draw();}}); break;
-			case k.QSUB: break;
+			case 'qcmp': bd.cell.each(function(cell){ if(obj===cell.base){ cell.draw();}}); break;
+			case 'qsub': break;
 			default:     this.owner.checker.resetCache(); break;
 		}
 	}
@@ -314,7 +310,7 @@ OperationManager:{
 		this.ope[this.ope.length-1].push(ope);
 		this.lastope = ope;
 		this.changeflag = true;
-		if(ope.property!==k.QSUB && ope.property!==k.QCMP){
+		if(ope.property!=='qsub' && ope.property!=='qcmp'){
 			this.owner.checker.resetCache();
 		}
 		
@@ -338,11 +334,11 @@ OperationManager:{
 				ref.num      === old       &&
 				ref.bx       === obj.bx    &&
 				ref.by       === obj.by    &&
-				(property === k.QNUM  || 
-				 property === k.QNUM2 ||
-				 property === k.QDIR  ||
-				 property === k.QCHAR ||
-				 property === k.ANUM )
+				(property === 'qnum'  || 
+				 property === 'qnum2' ||
+				 property === 'qdir'  ||
+				 property === 'qchar' ||
+				 property === 'anum' )
 			)
 			{
 				this.changeflag = true;
@@ -517,5 +513,3 @@ OperationManager:{
 	}
 }
 });
-
-})();

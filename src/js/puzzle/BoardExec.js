@@ -13,8 +13,6 @@ var UP = 0x01,
 	TURN   = 0x40,
 	FLIP   = 0x80;
 
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 // ★BoardExecクラス 盤面の拡大縮小、反転回転等を行う (MenuExec.js, Board.jsから移動)
@@ -364,7 +362,7 @@ BoardExec:{
 				var opemgr = this.owner.opemgr;
 				if(!opemgr.undoExec && !opemgr.redoExec){
 					opemgr.forceRecord = true;
-					opemgr.addOpe_Object(qnums[i].cell, k.QNUM, qnums[i].val, -1);
+					opemgr.addOpe_Object(qnums[i].cell, 'qnum', qnums[i].val, -1);
 					opemgr.forceRecord = false;
 				}
 			}
