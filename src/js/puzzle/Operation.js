@@ -48,10 +48,10 @@ Operation:{
 
 	/* 変換テーブル */
 	STRGROUP : {
-		C: 'cell',   // k.CELL,
-		X: 'cross',  // k.CROSS,
-		B: 'border', // k.BORDER,
-		E: 'excell'  // k.EXCELL
+		C: 'cell',
+		X: 'cross',
+		B: 'border',
+		E: 'excell'
 	},
 	STRPROP : {
 		U: 'ques',   // k.QUES

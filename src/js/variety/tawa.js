@@ -172,10 +172,10 @@ BoardExec:{
 			}
 			bd.setminmax();
 
-			this.expandGroup(k.CELL,key);
+			this.expandGroup('cell',key);
 		}
 		else if(key & this.REDUCE){
-			this.reduceGroup(k.CELL,key);
+			this.reduceGroup('cell',key);
 
 			switch(key & 0x0F){
 				case this.LT: bd.qcols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
@@ -194,7 +194,7 @@ BoardExec:{
 		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
 		else if(key===this.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
 
-		this.turnflipGroup(k.CELL, key, d);
+		this.turnflipGroup('cell', key, d);
 
 		bd.setposAll();
 	},

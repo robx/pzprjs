@@ -129,16 +129,16 @@ BoardExec:{
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
 			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
 
-							  { this.expandGroup(k.CELL,   key);}
-			if(!!bd.hascross) { this.expandGroup(k.CROSS,  key);}
-			if(!!bd.hasborder){ this.expandGroup(k.BORDER, key);}
-			if(!!bd.hasexcell){ this.expandGroup(k.EXCELL, key);}
+							  { this.expandGroup('cell',   key);}
+			if(!!bd.hascross) { this.expandGroup('cross',  key);}
+			if(!!bd.hasborder){ this.expandGroup('border', key);}
+			if(!!bd.hasexcell){ this.expandGroup('excell', key);}
 		}
 		else if(key & this.REDUCE){
-							  { this.reduceGroup(k.CELL,   key);}
-			if(!!bd.hascross) { this.reduceGroup(k.CROSS,  key);}
-			if(!!bd.hasborder){ this.reduceGroup(k.BORDER, key);}
-			if(!!bd.hasexcell){ this.reduceGroup(k.EXCELL, key);}
+							  { this.reduceGroup('cell',   key);}
+			if(!!bd.hascross) { this.reduceGroup('cross',  key);}
+			if(!!bd.hasborder){ this.reduceGroup('border', key);}
+			if(!!bd.hasexcell){ this.reduceGroup('excell', key);}
 
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
@@ -165,11 +165,11 @@ BoardExec:{
 		}
 		group2.allclear(false);
 
-		if(type===k.BORDER){ this.expandborder(key);}
+		if(type==='border'){ this.expandborder(key);}
 	},
 	reduceGroup : function(type,key){
 		var bd = this.owner.board;
-		if(type===k.BORDER){ this.reduceborder(key);}
+		if(type==='border'){ this.reduceborder(key);}
 
 		var opemgr = this.owner.opemgr;
 		var margin=0, group = bd.getGroup(type), isrec=(!opemgr.undoExec && !opemgr.redoExec);
@@ -207,15 +207,15 @@ BoardExec:{
 			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 		}
 
-							{ this.turnflipGroup(k.CELL,   key, d);}
-		if(!!bd.hascross)   { this.turnflipGroup(k.CROSS,  key, d);}
-		if(!!bd.hasborder)  { this.turnflipGroup(k.BORDER, key, d);}
-		if(bd.hasexcell===2){ this.turnflipGroup(k.EXCELL, key, d);}
+							{ this.turnflipGroup('cell',   key, d);}
+		if(!!bd.hascross)   { this.turnflipGroup('cross',  key, d);}
+		if(!!bd.hasborder)  { this.turnflipGroup('border', key, d);}
+		if(bd.hasexcell===2){ this.turnflipGroup('excell', key, d);}
 		else if(bd.hasexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
-			this.turnflipGroup(k.EXCELL, key, d2);
+			this.turnflipGroup('excell', key, d2);
 		}
 		bd.setposAll();
 
@@ -349,7 +349,7 @@ BoardExec:{
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
-			if(!!this.insex[k.CELL][this.distObj(key,cell)]){
+			if(!!this.insex.cell[this.distObj(key,cell)]){
 				if(cell.qnum!==-1){
 					qnums.push({cell:cell, areaid:bd.rooms.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
 					cell.qnum=-1;

@@ -1,8 +1,6 @@
 // for_test.js v3.4.0
 (function(){
 
-var k = pzpr.consts;
-
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 

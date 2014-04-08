@@ -2,11 +2,6 @@
 
 pzpr.addConsts({
 	// const値
-	CELL   : 'cell',
-	CROSS  : 'cross',
-	BORDER : 'border',
-	EXCELL : 'excell',
-
 	QUES  : 'ques',
 	QNUM  : 'qnum',
 	QNUM2 : 'qnum2',

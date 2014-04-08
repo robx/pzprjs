@@ -85,10 +85,10 @@ Board:{
 
 		this.allclear(false); // initGroupで、新Objectに対しては別途allclearが呼ばれます
 
-							{ this.initGroup(k.CELL,   col, row);}
-		if(!!this.hascross) { this.initGroup(k.CROSS,  col, row);}
-		if(!!this.hasborder){ this.initGroup(k.BORDER, col, row);}
-		if(!!this.hasexcell){ this.initGroup(k.EXCELL, col, row);}
+							{ this.initGroup('cell',   col, row);}
+		if(!!this.hascross) { this.initGroup('cross',  col, row);}
+		if(!!this.hasborder){ this.initGroup('border', col, row);}
+		if(!!this.hasexcell){ this.initGroup('excell', col, row);}
 
 		this.qcols = col;
 		this.qrows = row;
@@ -131,20 +131,20 @@ Board:{
 		return (len-clen);
 	},
 	getGroup : function(type){
-		if     (type===k.CELL)  { return this.cell;}
-		else if(type===k.CROSS) { return this.cross;}
-		else if(type===k.BORDER){ return this.border;}
-		else if(type===k.EXCELL){ return this.excell;}
+		if     (type==='cell')  { return this.cell;}
+		else if(type==='cross') { return this.cross;}
+		else if(type==='border'){ return this.border;}
+		else if(type==='excell'){ return this.excell;}
 		return new this.owner.PieceList();
 	},
 	estimateSize : function(type, col, row){
-		if     (type===k.CELL)  { return col*row;}
-		else if(type===k.CROSS) { return (col+1)*(row+1);}
-		else if(type===k.BORDER){
+		if     (type==='cell')  { return col*row;}
+		else if(type==='cross') { return (col+1)*(row+1);}
+		else if(type==='border'){
 			if     (this.hasborder===1){ return 2*col*row-(col+row);}
 			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
-		else if(type===k.EXCELL){
+		else if(type==='excell'){
 			if     (this.hasexcell===1){ return col+row+1;}
 			else if(this.hasexcell===2){ return 2*col+2*row+4;}
 		}
@@ -152,10 +152,10 @@ Board:{
 	},
 	newObject : function(type, id){
 		var obj = this.nullobj, puzzle = this.owner;
-		if     (type===k.CELL)  { obj = new puzzle.Cell();}
-		else if(type===k.CROSS) { obj = new puzzle.Cross();}
-		else if(type===k.BORDER){ obj = new puzzle.Border();}
-		else if(type===k.EXCELL){ obj = new puzzle.EXCell();}
+		if     (type==='cell')  { obj = new puzzle.Cell();}
+		else if(type==='cross') { obj = new puzzle.Cross();}
+		else if(type==='border'){ obj = new puzzle.Border();}
+		else if(type==='excell'){ obj = new puzzle.EXCell();}
 		if(obj!==this.nullobj && id!==void 0){ obj.id = id;}
 		return obj;
 	},
@@ -179,10 +179,10 @@ Board:{
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 	},
 	setposGroup : function(type){
-		if     (type===k.CELL)  { this.setposCells();}
-		else if(type===k.CROSS) { this.setposCrosses();}
-		else if(type===k.BORDER){ this.setposBorders();}
-		else if(type===k.EXCELL){ this.setposEXcells();}
+		if     (type==='cell')  { this.setposCells();}
+		else if(type==='cross') { this.setposCrosses();}
+		else if(type==='border'){ this.setposBorders();}
+		else if(type==='excell'){ this.setposEXcells();}
 	},
 
 	setposCells : function(){
@@ -328,10 +328,10 @@ Board:{
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	getObjectPos : function(type,bx,by,qc,qr){
-		if     (type===k.CELL)  { return this.getc(bx,by,qc,qr);}
-		else if(type===k.CROSS) { return this.getx(bx,by,qc,qr);}
-		else if(type===k.BORDER){ return this.getb(bx,by,qc,qr);}
-		else if(type===k.EXCELL){ return this.getex(bx,by,qc,qr);}
+		if     (type==='cell')  { return this.getc(bx,by,qc,qr);}
+		else if(type==='cross') { return this.getx(bx,by,qc,qr);}
+		else if(type==='border'){ return this.getb(bx,by,qc,qr);}
+		else if(type==='excell'){ return this.getex(bx,by,qc,qr);}
 		return this.nullobj;
 	},
 
@@ -360,7 +360,7 @@ Board:{
 		else{
 			if(this.hascross===0){
 				/* LineManager用 */
-				cross = this.newObject(k.CROSS, id);
+				cross = this.newObject('cross', id);
 				cross.isnull = false;
 				cross.bx = bx;
 				cross.by = by;
@@ -418,10 +418,10 @@ Board:{
 	// bd.objectinside() 座標(x1,y1)-(x2,y2)に含まれるオブジェクトのリストを取得する
 	//---------------------------------------------------------------------------
 	objectinside : function(type,x1,y1,x2,y2){
-		if     (type===k.CELL)  { return this.cellinside  (x1,y1,x2,y2);}
-		else if(type===k.CROSS) { return this.crossinside (x1,y1,x2,y2);}
-		else if(type===k.BORDER){ return this.borderinside(x1,y1,x2,y2);}
-		else if(type===k.EXCELL){ return this.excellinside(x1,y1,x2,y2);}
+		if     (type==='cell')  { return this.cellinside  (x1,y1,x2,y2);}
+		else if(type==='cross') { return this.crossinside (x1,y1,x2,y2);}
+		else if(type==='border'){ return this.borderinside(x1,y1,x2,y2);}
+		else if(type==='excell'){ return this.excellinside(x1,y1,x2,y2);}
 		return new this.owner.PieceList();
 	},
 

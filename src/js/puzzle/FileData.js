@@ -119,26 +119,26 @@ FileIO:{
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, k.CELL, 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
+		this.decodeObj(func, 'cell', 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, k.CROSS, 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
+		this.decodeObj(func, 'cross', 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
 	},
 	decodeBorder : function(func){
 		var o = this.owner, bd = o.board;
 		if(bd.hasborder===1 || o.pid==='bosanowa' || (o.pid==='fourcells' && this.filever===0)){
-			this.decodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
-			this.decodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
+			this.decodeObj(func, 'border', 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.decodeObj(func, 'border', 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.hasborder===2){
 			if(this.currentType===pzpr.parser.FILE_PZPR){
-				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
-				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.decodeObj(func, 'border', 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.decodeObj(func, 'border', 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
 			else if(this.currentType===pzpr.parser.FILE_PBOX){
-				this.decodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
-				this.decodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.decodeObj(func, 'border', 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.decodeObj(func, 'border', 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	},
@@ -159,26 +159,26 @@ FileIO:{
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, k.CELL, 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
+		this.encodeObj(func, 'cell', 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, k.CROSS, 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
+		this.encodeObj(func, 'cross', 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
 	},
 	encodeBorder : function(func){
 		var o = this.owner, bd = o.board;
 		if(bd.hasborder===1 || o.pid==='bosanowa'){
-			this.encodeObj(func, k.BORDER, 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
-			this.encodeObj(func, k.BORDER, 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
+			this.encodeObj(func, 'border', 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
+			this.encodeObj(func, 'border', 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
 		else if(bd.hasborder===2){
 			if(this.currentType===pzpr.parser.FILE_PZPR){
-				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
-				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.encodeObj(func, 'border', 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.encodeObj(func, 'border', 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
 			}
 			// pencilboxでは、outsideborderの時はぱずぷれとは順番が逆になってます
 			else if(this.currentType===pzpr.parser.FILE_PBOX){
-				this.encodeObj(func, k.BORDER, 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
-				this.encodeObj(func, k.BORDER, 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
+				this.encodeObj(func, 'border', 1, 0, 2*bd.qcols-1, 2*bd.qrows  );
+				this.encodeObj(func, 'border', 0, 1, 2*bd.qcols  , 2*bd.qrows-1);
 			}
 		}
 	}
