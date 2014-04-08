@@ -24,12 +24,15 @@ FileIO:{
 		this.lineseek = 0;
 		this.dataarray = pzl.bstr.split("\n");
 		this.currentType = pzl.type;
+		if(pzl.type===pzl.FILE_PZPH){ this.currentType = pzl.FILE_PZPR;}
 
 		// メイン処理
 		if     (this.currentType===pzl.FILE_PZPR){ this.decodeData();}
 		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenOpen();}
 
-		puzzle.opemgr.decodeLines();
+		if(pzl.type===pzl.FILE_PZPH){
+			puzzle.opemgr.decodeLines(pzl.history);
+		}
 
 		puzzle.board.resetInfo();
 
@@ -57,15 +60,17 @@ FileIO:{
 		if     (this.currentType===pzl.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenSave();}
 		
-		if(type===pzl.FILE_PZPH){ this.datastr += puzzle.opemgr.toString();}
+		var history = "";
+		if(type===pzl.FILE_PZPH){ history = puzzle.opemgr.toString();}
 		
 		puzzle.opemgr.enableRecord();
 
-		pzl.type  = this.currentType;
+		pzl.type  = type;
 		pzl.filever = this.filever;
 		pzl.cols  = bd.qcols;
 		pzl.rows  = bd.qrows;
 		pzl.bstr  = this.datastr;
+		pzl.history = history;
 
 		this.datastr = "";
 

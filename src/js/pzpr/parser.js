@@ -278,6 +278,7 @@ pzpr.parser.FileData.prototype = {
 	cols    : 0,
 	rows    : 0,
 	bstr    : "",
+	history : "",
 	
 	isfile : true,
 	
@@ -322,7 +323,7 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileType : function(){
 		/* ヘッダの処理 */
-		if(this.type===this.FILE_PZPR){
+		if(this.type===this.FILE_PZPR || this.type===this.FILE_PZPH){
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.id, ""].join("\n");
 		}
 		return "";
@@ -351,12 +352,32 @@ pzpr.parser.FileData.prototype = {
 		this.cols = col;
 		
 		/* サイズ以降のデータを取得 */
-		var bstrs = [];
+		var bstrs = [], historypos = null;
 		for(var i=0;i<lines.length;i++){
+			/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
 			if(lines[i].match(/^http\:\/\//)){ break;}
+			
+			/* 履歴行に到達した場合 */
+			if(lines[i].match(/history:\{|__HISTORY__/)){ historypos=i; break;}
+			
 			bstrs.push(lines[i]);
 		}
 		this.bstr = bstrs.join("\n");
+		
+		/* 履歴部分の読み込み */
+		if(this.type===this.FILE_PZPR && historypos!==null){
+			var histrs = [], count = 0, cnt;
+			for(var i=historypos;i<lines.length;i++){
+				histrs.push(lines[i]);
+				
+				cnt = count;
+				count += (lines[i].match(/\{/g)||[]).length;
+				count -= (lines[i].match(/\}/g)||[]).length;
+				if(cnt>0 && count==0){ break;}
+			}
+			this.history = histrs.join("\n");
+			this.type = this.FILE_PZPH;
+		}
 		
 		return true;
 	},
@@ -382,6 +403,11 @@ pzpr.parser.FileData.prototype = {
 
 		/* サイズ以降のデータを設定 */
 		out.push(pzl.bstr);
+
+		/* 履歴出力がある形式ならば出力する */
+		if(pzl.type===this.FILE_PZPH){
+			out.push(pzl.history);
+		}
 
 		return out.join("\n");
 	}

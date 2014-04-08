@@ -369,46 +369,37 @@ OperationManager:{
 
 	//---------------------------------------------------------------------------
 	// um.decodeLines() ファイル等から読み込んだ文字列を履歴情報に変換する
+	// um.decodeHistory() 文字列を履歴情報に変換する
 	// um.decodeOpe()   1つの履歴を履歴情報に変換する
 	// um.toString()    履歴情報を文字列に変換する
 	//---------------------------------------------------------------------------
-	decodeLines : function(){
+	decodeLines : function(str){
 		this.allerase();
-		/* ファイル内容の読み込み */
-		var linepos = this.owner.fio.lineseek, datas = [], inhistory = false;
-		while(1){
-			var line = this.owner.fio.readLine();
-			if(line===(void 0)){ this.owner.fio.lineseek=linepos; break;}
-			else if(!inhistory){
-				if(line==='history:{'){ inhistory=true; datas=['{'];}
-			}
-			else if(inhistory){
-				datas.push(line);
-				if(line==='}'){ break;}
-			}
-		}
-
+		
 		/* ファイル内容のデコード */
-		if(datas.length>0 && !!window.JSON){
-			try{
-				var str = datas.join(''), history = JSON.parse(str);
-				this.ope = [];
-				this.initpos = this.position = history.current;
-				for(var i=0,len=history.datas.length;i<len;i++){
-					this.ope.push([]);
-					for(var j=0,len2=history.datas[i].length;j<len2;j++){
-						var ope = this.decodeOpe(history.datas[i][j]);
-						if(!!ope){
-							this.ope[this.ope.length-1].push(ope);
-							this.lastope = ope;
-						}
-					}
+		try{
+			this.decodeHistory(str);
+		}
+		catch(e){ /*　デコードできなかったとか　*/ }
+		
+		this.checkexec();
+	},
+	decodeHistory :function(str){
+		if(str.substr(0,8)!=="history:" || !window.JSON){ return;}
+		
+		var history = JSON.parse(str.substr(8));
+		this.ope = [];
+		this.initpos = this.position = history.current;
+		for(var i=0,len=history.datas.length;i<len;i++){
+			this.ope.push([]);
+			for(var j=0,len2=history.datas[i].length;j<len2;j++){
+				var ope = this.decodeOpe(history.datas[i][j]);
+				if(!!ope){
+					this.ope[this.ope.length-1].push(ope);
+					this.lastope = ope;
 				}
 			}
-			catch(e){ /*　デコードできなかったとか　*/ }
 		}
-
-		this.checkexec();
 	},
 	decodeOpe : function(str){
 		var puzzle = this.owner, strs = str.split(/,/);
@@ -427,7 +418,7 @@ OperationManager:{
 	toString : function(){
 		if(!window.JSON){ return '';}
 		this.initpos = this.position;
-		return "\nhistory:" + JSON.stringify({
+		return "history:" + JSON.stringify({
 			type    : 'pzpr',
 			version : 0.3,
 			current : this.position,
