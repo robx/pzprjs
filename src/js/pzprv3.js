@@ -11,6 +11,7 @@
 		"pzpr/parser",
 		"pzpr/util",
 		"puzzle/Puzzle",
+		"puzzle/Config",
 		"puzzle/Address",
 		"puzzle/Piece",
 		"puzzle/PieceList",
