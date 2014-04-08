@@ -67,13 +67,12 @@ KeyEvent:{
 		var cell = this.cursor.getTCC();
 		if(cell.isnull){ return false;}
 
-		var k = pzpr.consts;
-		var nc, nb, dir=k.NDIR;
+		var nc, nb, dir=cell.NDIR;
 		switch(ca){
-			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=k.UP; break;
-			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=k.DN; break;
-			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=k.LT; break;
-			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=k.RT; break;
+			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=cell.UP; break;
+			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=cell.DN; break;
+			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=cell.LT; break;
+			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=cell.RT; break;
 			default: return false;
 		}
 		if(!nc.isnull){

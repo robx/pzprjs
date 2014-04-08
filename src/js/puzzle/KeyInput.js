@@ -212,12 +212,12 @@ KeyEvent:{
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcp = this.cursor.getTCP(), dir = this.owner.board.BDIR;
+		var tcp = this.cursor.getTCP(), dir = tcp.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = k.UP;} break;
-			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = k.DN;} break;
-			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = k.LT;} break;
-			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = k.RT;} break;
+			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = tcp.UP;} break;
+			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = tcp.DN;} break;
+			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = tcp.LT;} break;
+			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = tcp.RT;} break;
 			default: return false;
 		}
 

@@ -21,15 +21,22 @@ RawAddress:{
 	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
 	rel  : function(dx,dy){ return (new this.constructor(this.bx+dx, this.by+dy));},
 
+	// 方向を表す定数 (Pieceと同じ)
+	NDIR : 0,	// 方向なし
+	UP   : 1,	// up, top
+	DN   : 2,	// down, bottom
+	LT   : 3,	// left
+	RT   : 4,	// right
+
 	//---------------------------------------------------------------------------
 	// addr.movedir() 指定した方向に指定した数移動する
 	//---------------------------------------------------------------------------
 	movedir : function(dir,dd){
 		switch(dir){
-			case k.UP: this.by-=dd; break;
-			case k.DN: this.by+=dd; break;
-			case k.LT: this.bx-=dd; break;
-			case k.RT: this.bx+=dd; break;
+			case this.UP: this.by-=dd; break;
+			case this.DN: this.by+=dd; break;
+			case this.LT: this.bx-=dd; break;
+			case this.RT: this.bx+=dd; break;
 		}
 		return this;
 	},

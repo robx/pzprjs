@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('icebarn', {
 //---------------------------------------------------------
 // マウス入力系
@@ -76,10 +72,10 @@ MouseEvent:{
 	checkinout : function(border,dir){
 		if(border.isnull){ return 0;}
 		var bd=this.owner.board, bx=border.bx, by=border.by;
-		if     ((bx===bd.minbx && dir===k.RT)||(bx===bd.maxbx && dir===k.LT)||
-				(by===bd.minby && dir===k.DN)||(by===bd.maxby && dir===k.UP)){ return 1;}
-		else if((bx===bd.minbx && dir===k.LT)||(bx===bd.maxbx && dir===k.RT)||
-				(by===bd.minby && dir===k.UP)||(by===bd.maxby && dir===k.DN)){ return 2;}
+		if     ((bx===bd.minbx && dir===border.RT)||(bx===bd.maxbx && dir===border.LT)||
+				(by===bd.minby && dir===border.DN)||(by===bd.maxby && dir===border.UP)){ return 1;}
+		else if((bx===bd.minbx && dir===border.LT)||(bx===bd.maxbx && dir===border.RT)||
+				(by===bd.minby && dir===border.UP)||(by===bd.maxby && dir===border.DN)){ return 2;}
 		return 0;
 	}
 },
@@ -180,10 +176,10 @@ Board:{
 		this.setarrowin_arrow(border);
 	},
 	setarrowin_arrow : function(border){
-		if     (border.by===this.maxby){ border.setArrow(k.UP);}
-		else if(border.by===this.minby){ border.setArrow(k.DN);}
-		else if(border.bx===this.maxbx){ border.setArrow(k.LT);}
-		else if(border.bx===this.minbx){ border.setArrow(k.RT);}
+		if     (border.by===this.maxby){ border.setArrow(border.UP);}
+		else if(border.by===this.minby){ border.setArrow(border.DN);}
+		else if(border.bx===this.maxbx){ border.setArrow(border.LT);}
+		else if(border.bx===this.minbx){ border.setArrow(border.RT);}
 	},
 
 	setarrowout : function(border){
@@ -195,10 +191,10 @@ Board:{
 		this.setarrowout_arrow(border);
 	},
 	setarrowout_arrow : function(border){
-		if     (border.by===this.minby){ border.setArrow(k.UP);}
-		else if(border.by===this.maxby){ border.setArrow(k.DN);}
-		else if(border.bx===this.minbx){ border.setArrow(k.LT);}
-		else if(border.bx===this.maxbx){ border.setArrow(k.RT);}
+		if     (border.by===this.minby){ border.setArrow(border.UP);}
+		else if(border.by===this.maxby){ border.setArrow(border.DN);}
+		else if(border.bx===this.minbx){ border.setArrow(border.LT);}
+		else if(border.bx===this.maxbx){ border.setArrow(border.RT);}
 	}
 },
 BoardExec:{
@@ -389,17 +385,17 @@ Graphic:{
 				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
-						case k.UP: case k.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
-						case k.LT: case k.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+						case border.UP: case border.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
+						case border.LT: case border.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
 					}
 				}
 
 				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
 					switch(dir){
-						case k.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-						case k.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-						case k.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-						case k.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+						case border.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+						case border.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+						case border.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+						case border.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
 					}
 					g.fill();
 				}
@@ -474,7 +470,10 @@ Graphic:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?k.UP:k.LT);}
+				if(id<bd.bdinside){
+					var border = bd.border[id];
+					border.setArrow(border.isHorz()?border.UP:border.LT);
+				}
 				id++;
 			}
 			else{ id+=35;}
@@ -486,7 +485,10 @@ Graphic:{
 			var ca = barray[0].charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){ bd.border[id].setArrow(bd.border[id].isHorz()?k.DN:k.RT);}
+				if(id<bd.bdinside){
+					var border = bd.border[id];
+					border.setArrow(border.isHorz()?border.DN:border.RT);
+				}
 				id++;
 			}
 			else{ id+=35;}
@@ -509,8 +511,9 @@ Graphic:{
 
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
-			var dir = bd.border[id].getArrow();
-			if(dir===k.UP||dir===k.LT){ cm+=num.toString(36); num=0;}
+			var border = bd.border[id];
+			var dir = border.getArrow();
+			if(dir===border.UP||dir===border.LT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -520,8 +523,9 @@ Graphic:{
 
 		num=0;
 		for(var id=0;id<bd.bdinside;id++){
-			var dir = bd.border[id].getArrow();
-			if(dir===k.DN||dir===k.RT){ cm+=num.toString(36); num=0;}
+			var border = bd.border[id];
+			var dir = border.getArrow();
+			if(dir===border.DN||dir===border.RT){ cm+=num.toString(36); num=0;}
 			else{
 				num++;
 				if(num>=35){ cm+="z"; num=0;}
@@ -553,7 +557,7 @@ Graphic:{
 		var id=0;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?k.UP:k.DN)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow(((num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
@@ -561,7 +565,7 @@ Graphic:{
 		id=(bd.qcols-1)*bd.qrows;
 		for(var i=a;i<barray[2].length;i++){
 			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca); bd.border[id].setArrow(((num&1)?k.LT:k.RT)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow(((num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=bd.bdinside){ break;}
@@ -591,19 +595,19 @@ Graphic:{
 		bd.disableInfo();
 		if(barray[1]!=""){
 			var array = barray[1].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(k.UP);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].db(); border.setArrow(border.UP);}
 		}
 		if(barray[2]!=""){
 			var array = barray[2].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].db().setArrow(k.DN);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].db(); border.setArrow(border.DN);}
 		}
 		if(barray[3]!=""){
 			var array = barray[3].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(k.LT);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].rb(); border.setArrow(border.LT);}
 		}
 		if(barray[4]!=""){
 			var array = barray[4].split("+");
-			for(var i=0;i<array.length;i++){ bd.cell[array[i]].rb().setArrow(k.RT);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].rb(); border.setArrow(border.RT);}
 		}
 
 		bd.inputarrowin (bd.border[parseInt(barray[5])+bd.bdinside]);
@@ -621,10 +625,10 @@ Graphic:{
 		if(num>0){ cm += pass.toString(16);}
 		cm += "/";
 
-		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===k.UP);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.db().getArrow()===k.DN);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===k.LT);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ return (cell.rb().getArrow()===k.RT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.db(); return (border.getArrow()===border.UP);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.db(); return (border.getArrow()===border.DN);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.rb(); return (border.getArrow()===border.LT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.rb(); return (border.getArrow()===border.RT);}).join("+") + "/");
 
 		cm += ((bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
 
@@ -708,10 +712,10 @@ Graphic:{
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
 				var val = parseInt(ca), isvert = obj.isVert();
-				if(val===1&&!isvert){ obj.setArrow(k.UP);}
-				if(val===2&&!isvert){ obj.setArrow(k.DN);}
-				if(val===1&& isvert){ obj.setArrow(k.LT);}
-				if(val===2&& isvert){ obj.setArrow(k.RT);}
+				if(val===1&&!isvert){ obj.setArrow(obj.UP);}
+				if(val===2&&!isvert){ obj.setArrow(obj.DN);}
+				if(val===1&& isvert){ obj.setArrow(obj.LT);}
+				if(val===2&& isvert){ obj.setArrow(obj.RT);}
 			}
 		});
 		bd.enableInfo();
@@ -728,9 +732,9 @@ Graphic:{
 		});
 		this.encodeBorder( function(obj){
 			var dir = obj.getArrow();
-			if     (dir===k.UP||dir===k.LT){ return "1 ";}
-			else if(dir===k.DN||dir===k.RT){ return "2 ";}
-			else                           { return "0 ";}
+			if     (dir===obj.UP||dir===obj.LT){ return "1 ";}
+			else if(dir===obj.DN||dir===obj.RT){ return "2 ";}
+			else                               { return "0 ";}
 		});
 		this.encodeBorder( function(obj){
 			if     (obj.line===1){ return "1 ";}
@@ -902,5 +906,3 @@ FailCode:{
 	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the white cell."]
 }
 });
-
-})();

@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('minarism', {
 //---------------------------------------------------------
 // マウス入力系
@@ -92,18 +88,18 @@ KeyEvent:{
 		if(border.isnull){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
-			var tmp=k.NDIR;
-			if(ca=='q'){ tmp=(border.isHorz()?k.UP:k.LT);}
-			if(ca=='w'){ tmp=(border.isHorz()?k.DN:k.RT);}
+			var tmp=border.NDIR;
+			if(ca=='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
+			if(ca=='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
 
-			border.setQdir(border.getQdir()!==tmp?tmp:k.NDIR);
+			border.setQdir(border.getQdir()!==tmp?tmp:border.NDIR);
 			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = border.getQnum();
 			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 
-			border.setQdir(k.NDIR);
+			border.setQdir(border.NDIR);
 			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
 			else{
 				if(cur*10+num<=max){ border.setQnum(cur*10+num);}
@@ -214,13 +210,13 @@ Graphic:{
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);
-			if(border.qdir!==k.NDIR){
+			if(border.qdir!==border.NDIR){
 				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
 					switch(border.qdir){
-						case k.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case k.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case k.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case k.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+						case border.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+						case border.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+						case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
+						case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
 					}
 					g.stroke();
 				}
@@ -265,8 +261,8 @@ Encode:{
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = (obj.isHorz()?k.UP:k.LT);}
-			else if(tmp===2){ obj.qdir = (obj.isHorz()?k.DN:k.RT);}
+			if     (tmp===1){ obj.qdir = (obj.isHorz()?obj.UP:obj.LT);}
+			else if(tmp===2){ obj.qdir = (obj.isHorz()?obj.DN:obj.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -283,10 +279,10 @@ Encode:{
 			}
 
 			if(id<bd.bdmax){
-				var pstr="", dir=bd.border[id].qdir, qnum=bd.border[id].qnum;
+				var pstr="", border=bd.border[id], dir=border.qdir, qnum=border.qnum;
 
-				if     (dir===k.UP||dir===k.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
-				else if(dir===k.DN||dir===k.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
+				if     (dir===border.UP||dir===border.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
+				else if(dir===border.DN||dir===border.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
 				else if(qnum===-2){ pstr = ".";}
 				else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
 				else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}
@@ -306,8 +302,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = (obj.isHorz()?k.UP:k.LT);}
-			else if(ca==="b"){ obj.qdir = (obj.isHorz()?k.DN:k.RT);}
+			if     (ca==="a"){ obj.qdir = (obj.isHorz()?obj.UP:obj.LT);}
+			else if(ca==="b"){ obj.qdir = (obj.isHorz()?obj.DN:obj.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
 			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
 		});
@@ -316,8 +312,8 @@ FileIO:{
 	encodeData : function(){
 		this.encodeBorder( function(obj){
 			var dir=obj.qdir;
-			if     (dir===k.UP||dir===k.LT){ return "a ";}
-			else if(dir===k.DN||dir===k.RT){ return "b ";}
+			if     (dir===obj.UP||dir===obj.LT){ return "a ";}
+			else if(dir===obj.DN||dir===obj.RT){ return "b ";}
 			else if(obj.qnum===-2){ return ". ";}
 			else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
 			else                  { return "0 ";}
@@ -379,5 +375,3 @@ FailCode:{
 	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
 }
 });
-
-})();

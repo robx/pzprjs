@@ -91,30 +91,29 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var k = pzpr.consts;
 		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = k.NDIR;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = excell0.NDIR;
 
 		if     (ca===this.KEYUP){
 			if(tcp.by===tc.maxy && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.miny;}
-			else if(tcp.by>tc.miny){ dir=k.UP;}else{ flag=false;}
+			else if(tcp.by>tc.miny){ dir=excell0.UP;}else{ flag=false;}
 		}
 		else if(ca===this.KEYDN){
 			if(tcp.by===tc.miny && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.maxy;}
-			else if(tcp.by<tc.maxy){ dir=k.DN;}else{ flag=false;}
+			else if(tcp.by<tc.maxy){ dir=excell0.DN;}else{ flag=false;}
 		}
 		else if(ca===this.KEYLT){
 			if(tcp.bx===tc.maxx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.minx;}
-			else if(tcp.bx>tc.minx){ dir=k.LT;}else{ flag=false;}
+			else if(tcp.bx>tc.minx){ dir=excell0.LT;}else{ flag=false;}
 		}
 		else if(ca===this.KEYRT){
 			if(tcp.bx===tc.minx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.maxx;}
-			else if(tcp.bx<tc.maxx){ dir=k.RT;}else{ flag=false;}
+			else if(tcp.bx<tc.maxx){ dir=excell0.RT;}else{ flag=false;}
 		}
 		else{ flag=false;}
 
 		if(flag){
-			if(dir!==k.NDIR){ tc.pos.movedir(dir,2);}
+			if(dir!==excell0.NDIR){ tc.pos.movedir(dir,2);}
 
 			excell0.draw();
 			tc.getTCP().draw();

@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 たわむれんが版 tawa.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('tawa', {
 //---------------------------------------------------------
 // マウス入力系
@@ -46,11 +42,11 @@ TargetCursor:{
 	movedir_cursor : function(dir,mv){
 		this.pos.movedir(dir,mv);
 
-		if(dir===k.UP){
+		if(dir===this.pos.UP){
 			if(this.pos.bx===this.maxx || (this.pos.bx>this.minx && (this.pos.by&2)===0)){ this.pos.bx--;}
 			else{ this.pos.bx++;}
 		}
-		else if(dir===k.DN){
+		else if(dir===this.pos.DN){
 			if(this.pos.bx===this.minx || (this.pos.bx<this.maxx && (this.pos.by&2)===2)){ this.pos.bx++;}
 			else{ this.pos.bx--;}
 		}
@@ -429,5 +425,3 @@ FailCode:{
 	bcNotOnBc   : ["黒マスの下に黒マスがありません。","There are no black cells under a black cell."]
 }
 });
-
-})();

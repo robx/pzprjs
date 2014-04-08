@@ -166,10 +166,10 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if( (cell.ub().isLine() && cell.noLP(k.UP)) ||
-				(cell.db().isLine() && cell.noLP(k.DN)) ||
-				(cell.lb().isLine() && cell.noLP(k.LT)) ||
-				(cell.rb().isLine() && cell.noLP(k.RT)) )
+			if( (cell.ub().isLine() && cell.noLP(cell.UP)) ||
+				(cell.db().isLine() && cell.noLP(cell.DN)) ||
+				(cell.lb().isLine() && cell.noLP(cell.LT)) ||
+				(cell.rb().isLine() && cell.noLP(cell.RT)) )
 			{
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
@@ -387,11 +387,11 @@ AnsCheck:{
 		return result;
 	},
 	checkRowsColsPartly : function(evalfunc, termfunc, multierr){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.owner.board, cell = bd.cell[0];
 		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
-				if(tx>bx && !evalfunc.call(this, [bx-2,by,k.RT], bd.cellinside(bx,by,tx-2,by))){
+				if(tx>bx && !evalfunc.call(this, [bx-2,by,cell.RT], bd.cellinside(bx,by,tx-2,by))){
 					if(!multierr || this.checkOnly){ return false;}
 					result = false;
 				}
@@ -401,7 +401,7 @@ AnsCheck:{
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
 				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
-				if(ty>by && !evalfunc.call(this, [bx,by-2,k.DN], bd.cellinside(bx,by,bx,ty-2))){
+				if(ty>by && !evalfunc.call(this, [bx,by-2,cell.DN], bd.cellinside(bx,by,bx,ty-2))){
 					if(!multierr || this.checkOnly){ return false;}
 					result = false;
 				}

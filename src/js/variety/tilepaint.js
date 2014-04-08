@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('tilepaint', {
 //---------------------------------------------------------
 // マウス入力系
@@ -305,8 +301,8 @@ AnsCheck:{
 	},
 	isBCellCount : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===k.RT){ number = keyobj.getQnum();}
-		else if(dir===k.DN){ number = keyobj.getQnum2();}
+		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
+		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
 
 		var count = clist.filter(function(cell){ return cell.isBlack();}).length;
 		if(number>=0 && count!=number){
@@ -322,5 +318,3 @@ FailCode:{
 	asBcellNe : ["数字の下か右にある黒マスの数が間違っています。","The number of black cells underward or rightward is not correct."]
 }
 });
-
-})();

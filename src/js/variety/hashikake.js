@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('hashikake', {
 //---------------------------------------------------------
 // マウス入力系
@@ -43,7 +39,7 @@ MouseEvent:{
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			
 			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
-			if(this.inputData>0 && (dir===k.UP||dir===k.LT)){ borders.reverse();} // 色分けの都合上の処理
+			if(this.inputData>0 && (dir===border.UP||dir===border.LT)){ borders.reverse();} // 色分けの都合上の処理
 			borders.setLineVal(this.inputData);
 			borders.setQsub(0);
 			this.prevblist = borders;
@@ -60,11 +56,11 @@ MouseEvent:{
 	},
 	getlinedir : function(base, current){
 		var dx = (current.bx-base.bx), dy = (current.by-base.by);
-		if     (dx=== 0 && dy===-1){ return k.UP;}
-		else if(dx=== 0 && dy=== 1){ return k.DN;}
-		else if(dx===-1 && dy=== 0){ return k.LT;}
-		else if(dx=== 1 && dy=== 0){ return k.RT;}
-		return k.NDIR;
+		if     (dx=== 0 && dy===-1){ return base.UP;}
+		else if(dx=== 0 && dy=== 1){ return base.DN;}
+		else if(dx===-1 && dy=== 0){ return base.LT;}
+		else if(dx=== 1 && dy=== 0){ return base.RT;}
+		return base.NDIR;
 	},
 
 	inputpeke : function(){
@@ -343,5 +339,3 @@ FailCode:{
 	nmLineCntLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
 });
-
-}());

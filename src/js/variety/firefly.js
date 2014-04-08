@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ホタルビーム版 firefly.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('firefly', {
 //---------------------------------------------------------
 // マウス入力系
@@ -123,10 +119,10 @@ Graphic:{
 				if(cell.qdir!==0){
 					g.fillStyle = this.cellcolor;
 					switch(cell.qdir){
-						case k.UP: py-=(rsize-1); break;
-						case k.DN: py+=(rsize-1); break;
-						case k.LT: px-=(rsize-1); break;
-						case k.RT: px+=(rsize-1); break;
+						case cell.UP: py-=(rsize-1); break;
+						case cell.DN: py+=(rsize-1); break;
+						case cell.LT: px-=(rsize-1); break;
+						case cell.RT: px+=(rsize-1); break;
 					}
 					if(this.vnop(headers[1]+id,this.NONE)){
 						g.fillCircle(px, py, rsize3);
@@ -215,7 +211,7 @@ AnsCheck:{
 		var cell1=room.cells[0], cell2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
 
 		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=cell1.getQdir(), qd2=(!cell2.isnull?cell2.getQdir():k.NDIR), qn=-1, err=0;
+		var qd1=cell1.getQdir(), qd2=(!cell2.isnull?cell2.getQdir():cell2.NDIR), qn=-1, err=0;
 		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1?cell1:cell2).getQnum();}
 
 		if     (!cell2.isnull && (dir1===qd1) && (dir2===qd2)){ err=4;}
@@ -233,5 +229,3 @@ FailCode:{
 	lcCurveNe : ["線の曲がった回数が数字と違っています。","The number of curves is different from a firefly's number."]
 }
 });
-
-})();

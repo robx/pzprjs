@@ -24,7 +24,6 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var k = pzpr.consts;
 		var pos = cell.getaddr();
 		var input=false;
 
@@ -42,8 +41,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=1; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=2; input=true;}
+				if     (dir===cell.UP || dir===cell.DN){ this.inputData=1; input=true;}
+				else if(dir===cell.LT || dir===cell.RT){ this.inputData=2; input=true;}
 			}
 
 			if(input){
@@ -54,8 +53,8 @@ MouseEvent:{
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cell!==this.mouseCell){
 			var dir = this.getdir(this.prevPos, pos);
-			if     (dir===k.UP || dir===k.DN){ this.inputData=(this.inputData>0?1:-1); input=true;}
-			else if(dir===k.LT || dir===k.RT){ this.inputData=(this.inputData>0?2:-2); input=true;}
+			if     (dir===cell.UP || dir===cell.DN){ this.inputData=(this.inputData>0?1:-1); input=true;}
+			else if(dir===cell.LT || dir===cell.RT){ this.inputData=(this.inputData>0?2:-2); input=true;}
 		}
 
 		// 描画・後処理

@@ -39,17 +39,16 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var k = pzpr.consts;
 		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = k.NDIR;
+		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = excell0.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=k.UP;} break;
-			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=k.DN;} break;
-			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=k.LT;} break;
-			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=k.RT;} break;
+			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=excell0.UP;} break;
+			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=excell0.DN;} break;
+			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=excell0.LT;} break;
+			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=excell0.RT;} break;
 		}
 
-		if(dir!==k.NDIR){
+		if(dir!==excell0.NDIR){
 			tc.pos.movedir(dir,2);
 
 			excell0.draw();

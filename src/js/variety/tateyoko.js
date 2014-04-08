@@ -19,7 +19,6 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var k = pzpr.consts;
 		var pos = cell.getaddr();
 		var input=false;
 
@@ -37,8 +36,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
+				if     (dir===pos.UP || dir===pos.DN){ this.inputData=12; input=true;}
+				else if(dir===pos.LT || dir===pos.RT){ this.inputData=13; input=true;}
 			}
 
 			if(input){
@@ -51,8 +50,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=12; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=13; input=true;}
+				if     (dir===pos.UP || dir===pos.DN){ this.inputData=12; input=true;}
+				else if(dir===pos.LT || dir===pos.RT){ this.inputData=13; input=true;}
 			}
 		}
 

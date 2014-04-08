@@ -177,7 +177,7 @@ MouseEvent:{
 		if(!cell.isnull){
 			if(cell.getQnum()!==-1){
 				var dir = this.getdir(this.prevPos, pos);
-				if(dir!==k.NDIR){
+				if(dir!==cell.NDIR){
 					cell.setQdir(cell.getQdir()!==dir?dir:0);
 					cell.draw();
 				}
@@ -189,10 +189,10 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos) && this.inputData===1){ return;}
 
-		var dir = k.NDIR, cell = this.prevPos.getc();
+		var dir = pos.NDIR, cell = this.prevPos.getc();
 		if(!cell.isnull){
 			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==k.NDIR){
+			if(dir!==pos.NDIR){
 				if(cell.numberAsObject){ cell.setNum(dir);}
 				else{ cell.setQdir(dir);}
 				cell.draw();
@@ -205,11 +205,11 @@ MouseEvent:{
 
 	getdir : function(base, current){
 		var dx = (current.bx-base.bx), dy = (current.by-base.by);
-		if     (dx=== 0 && dy===-2){ return k.UP;}
-		else if(dx=== 0 && dy=== 2){ return k.DN;}
-		else if(dx===-2 && dy=== 0){ return k.LT;}
-		else if(dx=== 2 && dy=== 0){ return k.RT;}
-		return k.NDIR;
+		if     (dx=== 0 && dy===-2){ return base.UP;}
+		else if(dx=== 0 && dy=== 2){ return base.DN;}
+		else if(dx===-2 && dy=== 0){ return base.LT;}
+		else if(dx=== 2 && dy=== 0){ return base.RT;}
+		return base.NDIR;
 	},
 
 	//---------------------------------------------------------------------------

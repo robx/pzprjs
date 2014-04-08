@@ -1,14 +1,5 @@
 // Piece.js v3.4.1
 
-pzpr.addConsts({
-	// const値
-	NDIR : 0,	// 方向なし
-	UP   : 1,	// up
-	DN   : 2,	// down
-	LT   : 3,	// left
-	RT   : 4	// right
-});
-
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
@@ -64,6 +55,13 @@ BoardPiece:{
 	// 入力できる最大・最小の数字
 	maxnum : 255,
 	minnum : 1,
+
+	// 方向を表す定数 (RawAddressと同じ)
+	NDIR : 0,	// 方向なし
+	UP   : 1,	// up, top
+	DN   : 2,	// down, bottom
+	LT   : 3,	// left
+	RT   : 4,	// right
 
 	//---------------------------------------------------------------------------
 	// getaddr() 自分の盤面中での位置を返す
@@ -333,16 +331,16 @@ BoardPiece:{
 
 	// 下記の関数で用いる定数
 	isLPobj : {
-		1 : {11:1,12:1,14:1,15:1}, /* k.UP */
-		2 : {11:1,12:1,16:1,17:1}, /* k.DN */
-		3 : {11:1,13:1,15:1,16:1}, /* k.LT */
-		4 : {11:1,13:1,14:1,17:1}  /* k.RT */
+		1 : {11:1,12:1,14:1,15:1}, /* UP */
+		2 : {11:1,12:1,16:1,17:1}, /* DN */
+		3 : {11:1,13:1,15:1,16:1}, /* LT */
+		4 : {11:1,13:1,14:1,17:1}  /* RT */
 	},
 	noLPobj : {
-		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* k.UP */
-		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* k.DN */
-		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* k.LT */
-		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* k.RT */
+		1 : {1:1,4:1,5:1,13:1,16:1,17:1,21:1}, /* UP */
+		2 : {1:1,2:1,3:1,13:1,14:1,15:1,21:1}, /* DN */
+		3 : {1:1,2:1,5:1,12:1,14:1,17:1,22:1}, /* LT */
+		4 : {1:1,3:1,4:1,12:1,15:1,16:1,22:1}  /* RT */
 	},
 
 	isLP : function(dir){
@@ -371,18 +369,18 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
 		var cell, list=[];
-		cell=this.up(); if(!cell.isnull){ list.push([cell,k.UP]);}
-		cell=this.dn(); if(!cell.isnull){ list.push([cell,k.DN]);}
-		cell=this.lt(); if(!cell.isnull){ list.push([cell,k.LT]);}
-		cell=this.rt(); if(!cell.isnull){ list.push([cell,k.RT]);}
+		cell=this.up(); if(!cell.isnull){ list.push([cell,cell.UP]);}
+		cell=this.dn(); if(!cell.isnull){ list.push([cell,cell.DN]);}
+		cell=this.lt(); if(!cell.isnull){ list.push([cell,cell.LT]);}
+		cell=this.rt(); if(!cell.isnull){ list.push([cell,cell.RT]);}
 		return list;
 	},
 	getdir4cblist : function(){
 		var cell, border, cblist=[];
-		cell=this.up(); border=this.ub(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.UP]);}
-		cell=this.dn(); border=this.db(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.DN]);}
-		cell=this.lt(); border=this.lb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.LT]);}
-		cell=this.rt(); border=this.rb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,k.RT]);}
+		cell=this.up(); border=this.ub(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.UP]);}
+		cell=this.dn(); border=this.db(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.DN]);}
+		cell=this.lt(); border=this.lb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.LT]);}
+		cell=this.rt(); border=this.rb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.RT]);}
 		return cblist;
 	},
 
@@ -518,15 +516,15 @@ BoardPiece:{
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.isLP(k.RT) && cell2.isLP(k.LT)) :
-							   (cell1.isLP(k.DN) && cell2.isLP(k.UP));
+		return this.isVert() ? (cell1.isLP(cell1.RT) && cell2.isLP(cell2.LT)) :
+							   (cell1.isLP(cell1.DN) && cell2.isLP(cell2.UP));
 	},
 	// border.setLineCal => checkStableLineから呼ばれる関数
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineNG : function(){
 		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.noLP(k.RT) || cell2.noLP(k.LT)) :
-							   (cell1.noLP(k.DN) || cell2.noLP(k.UP));
+		return this.isVert() ? (cell1.noLP(cell1.RT) || cell2.noLP(cell2.LT)) :
+							   (cell1.noLP(cell1.DN) || cell2.noLP(cell2.UP));
 	}
 },
 

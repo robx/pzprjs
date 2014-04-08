@@ -30,17 +30,5 @@ window.pzpr = {
 		for(var i=0,len=this.puzzles.length;i<len;i++){
 			if(this.puzzles[i]===puzzle){ this.puzzles[i]=null;}
 		}
-	},
-
-	//---------------------------------------------------------------
-	// スクリプトで使用する定数を定義する
-	//---------------------------------------------------------------
-	consts : {},
-	addConsts : function(defines){
-		for(var name in defines){
-			if(!this.consts[name]){ this.consts[name] = defines[name];}
-		}
 	}
 };
-
-var k = pzpr.consts;

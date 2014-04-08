@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajirin.js v3.4.1
 // 
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('yajirin', {
 //---------------------------------------------------------
 // マウス入力系
@@ -138,23 +134,27 @@ FileIO:{
 	},
 
 	decodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [k.UP, k.LT, k.DN, k.RT];
 		this.decodeCell( function(obj,ca){
 			if     (ca==="#" && !isurl){ obj.qans = 1;}
 			else if(ca==="+" && !isurl){ obj.qsub = 1;}
 			else if(ca!=="."){
-				var num = parseInt(ca);
-				obj.qdir = dirs[(num & 0x30) >> 4];
+				var num = parseInt(ca), dir = ((num & 0x30) >> 4);
+				if     (dir===0){ obj.qdir = obj.UP;}
+				else if(dir===1){ obj.qdir = obj.LT;}
+				else if(dir===2){ obj.qdir = obj.DN;}
+				else if(dir===3){ obj.qdir = obj.RT;}
 				obj.qnum = (num & 0x0F);
 			}
 		});
 	},
 	encodeCellDirecQnum_kanpen : function(isurl){
-		var dirs = [k.UP, k.LT, k.DN, k.RT];
 		this.encodeCell( function(obj){
 			var num = ((obj.qnum>=0&&obj.qnum<16) ? obj.qnum : -1), dir;
-			if(num!==-1 && obj.qdir!==k.NDIR){
-				for(dir=0;dir<4;dir++){ if(dirs[dir]===obj.qdir){ break;}}
+			if(num!==-1 && obj.qdir!==obj.NDIR){
+				if     (obj.qdir===obj.UP){ dir = 0;}
+				else if(obj.qdir===obj.LT){ dir = 1;}
+				else if(obj.qdir===obj.DN){ dir = 2;}
+				else if(obj.qdir===obj.RT){ dir = 3;}
 				return (""+((dir<<4)+(num&0x0F))+" ");
 			}
 			else if(!isurl){
@@ -226,5 +226,3 @@ FailCode:{
 	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
 }
 });
-
-})();

@@ -70,7 +70,6 @@ Board:{
 	hasborder : 1,
 
 	getPairedArrowsInfo : function(){
-		var k = pzpr.consts;
 		var ainfo=[], isarrow=[];
 		for(var c=0;c<this.cellmax;c++){ isarrow[c]=this.cell[c].isNum();}
 		for(var c=0;c<this.cellmax;c++){
@@ -83,7 +82,7 @@ Board:{
 				var cell = pos.getc();
 				if(cell.isnull){ ainfo.push([cell0.id]); break;}
 				if(!!isarrow[cell.id]){
-					if(cell.getNum()!==[0,k.DN,k.UP,k.RT,k.LT][dir]){ ainfo.push([cell0.id]);}
+					if(cell.getNum()!==[0,cell.DN,cell.UP,cell.RT,cell.LT][dir]){ ainfo.push([cell0.id]);}
 					else{ ainfo.push([cell.id,cell0.id]);}
 					break;
 				}

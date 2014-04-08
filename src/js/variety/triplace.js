@@ -313,9 +313,8 @@ AnsCheck:{
 	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		var k = pzpr.consts;
-		if     (dir===k.RT){ number = keyobj.getQnum();}
-		else if(dir===k.DN){ number = keyobj.getQnum2();}
+		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
+		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){

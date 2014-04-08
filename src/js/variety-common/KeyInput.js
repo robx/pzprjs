@@ -76,10 +76,10 @@ KeyEvent:{
 
 		var flag = true;
 		switch(ca){
-			case this.KEYUP: cell.setQdir(cell.getQdir()!==k.UP?k.UP:0); break;
-			case this.KEYDN: cell.setQdir(cell.getQdir()!==k.DN?k.DN:0); break;
-			case this.KEYLT: cell.setQdir(cell.getQdir()!==k.LT?k.LT:0); break;
-			case this.KEYRT: cell.setQdir(cell.getQdir()!==k.RT?k.RT:0); break;
+			case this.KEYUP: cell.setQdir(cell.getQdir()!==cell.UP?cell.UP:cell.NDIR); break;
+			case this.KEYDN: cell.setQdir(cell.getQdir()!==cell.DN?cell.DN:cell.NDIR); break;
+			case this.KEYLT: cell.setQdir(cell.getQdir()!==cell.LT?cell.LT:cell.NDIR); break;
+			case this.KEYRT: cell.setQdir(cell.getQdir()!==cell.RT?cell.RT:cell.NDIR); break;
 			default: flag = false;
 		}
 

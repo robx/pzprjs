@@ -1,10 +1,6 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js v3.4.1
 //
-(function(){
-
-var k = pzpr.consts;
-
 pzpr.classmgr.makeCustom('slalom', {
 //---------------------------------------------------------
 // マウス入力系
@@ -107,8 +103,8 @@ MouseEvent:{
 			}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
+				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
+				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}
 
 			if(input){
@@ -121,8 +117,8 @@ MouseEvent:{
 			if(this.inputData==0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===k.UP || dir===k.DN){ this.inputData=21; input=true;}
-				else if(dir===k.LT || dir===k.RT){ this.inputData=22; input=true;}
+				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
+				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}
 		}
 
@@ -971,10 +967,10 @@ HurdleManager:{
 			if(cell.getQues()===1){
 				var qn = cell.getNum(), dir = cell.getQdir();
 				if(qn<=0 || qn>this.max){ continue;}
-				if((dir===k.NDIR||dir===k.UP) && cell.up().getQues()===21){ nums[this.gateid[cell.up().id]].push(qn);}
-				if((dir===k.NDIR||dir===k.DN) && cell.dn().getQues()===21){ nums[this.gateid[cell.dn().id]].push(qn);}
-				if((dir===k.NDIR||dir===k.LT) && cell.lt().getQues()===22){ nums[this.gateid[cell.lt().id]].push(qn);}
-				if((dir===k.NDIR||dir===k.RT) && cell.rt().getQues()===22){ nums[this.gateid[cell.rt().id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.UP) && cell.up().getQues()===21){ nums[this.gateid[cell.up().id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && cell.dn().getQues()===21){ nums[this.gateid[cell.dn().id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && cell.lt().getQues()===22){ nums[this.gateid[cell.lt().id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && cell.rt().getQues()===22){ nums[this.gateid[cell.rt().id]].push(qn);}
 			}
 		}
 
@@ -1052,5 +1048,3 @@ HurdleManager:{
 	}
 }
 });
-
-})();

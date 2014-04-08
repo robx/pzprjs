@@ -138,17 +138,16 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
-		var k = pzpr.consts;
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 
 			var bx = cell.bx, by = cell.by, dir = cell.getQdir(), blist;
-			if     (dir===k.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
-			else if(dir===k.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
-			else if(dir===k.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
-			else if(dir===k.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
+			if     (dir===cell.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
+			else if(dir===cell.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
+			else if(dir===cell.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
+			else if(dir===cell.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
 
 			var count = blist.filter(function(border){ return border.isBorder();}).length;
