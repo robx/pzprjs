@@ -389,6 +389,12 @@ BoardExec:{
 },
 
 OperationManager:{
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
+		this.operationlist.push(this.owner.SegmentOperation);
+	},
+	
 	addOpe_Segment : function(x1, y1, x2, y2, old, num){
 		// 操作を登録する
 		this.addOpe_common(function(){
@@ -396,12 +402,6 @@ OperationManager:{
 			ope.setData(x1, y1, x2, y2, old, num);
 			return ope;
 		});
-	},
-	decodeOpe : function(strs){
-		var ope = new this.owner.SegmentOperation();
-		if(ope.decode(strs)){ return ope;}
-
-		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 

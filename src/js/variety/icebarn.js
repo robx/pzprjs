@@ -264,6 +264,11 @@ BoardExec:{
 },
 
 OperationManager:{
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
+		this.operationlist.push(this.owner.InOutOperation);
+	},
 	addOpe_InOut : function(property, x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
@@ -271,12 +276,6 @@ OperationManager:{
 			ope.setData(property, x1, y1, x2, y2);
 			return ope;
 		});
-	},
-	decodeOpe : function(strs){
-		var ope = new this.owner.InOutOperation();
-		if(ope.decode(strs)){ return ope;}
-
-		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 

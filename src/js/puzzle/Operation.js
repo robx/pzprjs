@@ -229,6 +229,13 @@ OperationManager:{
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
+
+		var puzzle = this.owner;
+		this.operationlist = [
+			puzzle.ObjectOperation,
+			puzzle.BoardAdjustOperation,
+			puzzle.BoardFlipOperation
+		];
 	},
 
 	//---------------------------------------------------------------------------
@@ -402,17 +409,11 @@ OperationManager:{
 		}
 	},
 	decodeOpe : function(str){
-		var puzzle = this.owner, strs = str.split(/,/);
-
-		var ope = new puzzle.ObjectOperation();
-		if(ope.decode(strs)){ return ope;}
-
-		ope = new puzzle.BoardAdjustOperation();
-		if(ope.decode(strs)){ return ope;}
-
-		ope = new puzzle.BoardFlipOperation();
-		if(ope.decode(strs)){ return ope;}
-
+		var ope, List = this.operationlist, strs = str.split(/,/);
+		for(var i=0;i<List.length;i++){
+			ope = new List[i]();
+			if(ope.decode(strs)){ return ope;}
+		}
 		return null;
 	},
 	toString : function(){

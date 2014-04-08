@@ -294,6 +294,12 @@ BoardExec:{
 },
 
 OperationManager:{
+	initialize : function(){
+		this.Common.prototype.initialize.call(this);
+
+		this.operationlist.push(this.owner.StartposOperation);
+	},
+	
 	addOpe_Startpos : function(x1, y1, x2, y2){
 		// 操作を登録する
 		this.addOpe_common(function(){
@@ -301,12 +307,6 @@ OperationManager:{
 			ope.setData(x1, y1, x2, y2);
 			return ope;
 		});
-	},
-	decodeOpe : function(strs){
-		var ope = new this.owner.StartposOperation();
-		if(ope.decode(strs)){ return ope;}
-
-		return this.Common.prototype.decodeOpe.call(this, strs);
 	}
 },
 
