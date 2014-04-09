@@ -159,7 +159,7 @@ BoardExec:{
 	},
 
 	getAfterPos : function(key,d,obj){
-		var bd=this.owner.board;
+		var puzzle=this.owner, bd=puzzle.board;
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;
 		switch(key){
 			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
@@ -176,7 +176,8 @@ BoardExec:{
 			case this.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
 			default: bx2 = bx1; by2 = by1; break;
 		}
-		return {bx1:bx1, by1:by1, bx2:bx2, by2:by2, isdel:this.isdel(key,obj)};
+		
+		return { pos:new puzzle.Address(bx2,by2), isdel:this.isdel(key,obj) };
 	}
 }
 });

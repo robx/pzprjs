@@ -98,9 +98,7 @@ PieceList:{
 				var pp = props[j];
 				var def = obj.constructor.prototype[pp];
 				if(obj[pp]!==def){
-					if(isrec && !norec[pp]){
-						this.owner.opemgr.addOpe_Object(obj, pp, obj[pp], def);
-					}
+					if(isrec && !norec[pp]){ obj.addOpe(pp, obj[pp], def);}
 					obj[pp] = def;
 				}
 			}

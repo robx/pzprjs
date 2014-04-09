@@ -117,14 +117,19 @@ BoardPiece:{
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
+	// addOpe()  履歴情報にプロパティの変更を通知する
 	//---------------------------------------------------------------------------
 	setdata : function(prop, num){
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
 
-		this.owner.opemgr.addOpe_Object(this, prop, this[prop], num);
+		this.addOpe(prop, this[prop], num);
 		this[prop] = num;
 
 		if(!!this.posthook[prop]){ this.posthook[prop].call(this,num);}
+	},
+	addOpe : function(property, old, num){
+		if(old===num){ return;}
+		this.owner.opemgr.add(new this.owner.ObjectOperation(this, property, old, num));
 	},
 	
 	//---------------------------------------------------------------------------

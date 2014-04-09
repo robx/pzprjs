@@ -255,15 +255,15 @@ Board:{
 		var seg = new this.owner.Segment(bx1,by1,bx2,by2);
 		seg.id = newsegid;
 		this.segment[newsegid] = seg;
-		if(this.owner.board.isenableInfo()){ this.seginfo.setSegmentInfo(seg, true);}
-		this.owner.opemgr.addOpe_Segment(bx1, by1, bx2, by2, 0, 1);
+		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg, true);}
+		seg.addOpe(0, 1);
 	},
 	removeSegmentByAddr : function(bx1,by1,bx2,by2){
 		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
 	},
 	removeSegment : function(seg){
 		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg, false);}
-		this.owner.opemgr.addOpe_Segment(seg.bx1, seg.by1, seg.bx2, seg.by2, 1, 0);
+		seg.addOpe(1, 0);
 		this.owner.painter.eraseSegment1(seg);
 		
 		this.seginvalid.push(seg.id);
@@ -357,11 +357,11 @@ BoardExec:{
 },
 
 "SegmentOperation:Operation":{
-	setData : function(x1, y1, x2, y2, old, num){
-		this.bx1 = x1;
-		this.by1 = y1;
-		this.bx2 = x2;
-		this.by2 = y2;
+	setData : function(seg, old, num){
+		this.bx1 = seg.bx1;
+		this.by1 = seg.by1;
+		this.bx2 = seg.bx2;
+		this.by2 = seg.by2;
 		this.old = old;
 		this.num = num;
 	},
@@ -393,9 +393,6 @@ OperationManager:{
 		this.Common.prototype.initialize.call(this);
 
 		this.operationlist.push(this.owner.SegmentOperation);
-	},
-	addOpe_Segment : function(x1, y1, x2, y2, old, num){
-		this.add(new this.owner.SegmentOperation(x1, y1, x2, y2, old, num));
 	}
 },
 
@@ -846,6 +843,13 @@ Segment:{
 
 	seterr : function(num){
 		if(this.owner.board.isenableSetError()){ this.error = num;}
+	},
+
+	//---------------------------------------------------------------------------
+	// addOpe()  履歴情報にプロパティの変更を通知する
+	//---------------------------------------------------------------------------
+	addOpe : function(old, num){
+		this.owner.opemgr.add(new this.owner.SegmentOperation(this, old, num));
 	},
 
 	//---------------------------------------------------------------------------

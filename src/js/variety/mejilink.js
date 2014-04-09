@@ -47,7 +47,7 @@ BorderList:{
 			/* border.quesの真の初期値は↓ */
 			var def = (border.id<bd.bdinside ? 1 : 0);
 			if(border.ques!==def){
-				if(isrec){ this.owner.opemgr.addOpe_Object(border, 'ques', border.ques, def);}
+				if(isrec){ border.addOpe('ques', border.ques, def);}
 				border.ques = def;
 			}
 		}

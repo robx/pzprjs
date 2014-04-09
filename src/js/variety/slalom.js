@@ -48,12 +48,7 @@ MouseEvent:{
 
 	inputStartid : function(){
 		this.inputData = null;
-		var st = this.owner.board.startcell;
-		st.draw();
-		if(this.firstCell!==st){
-			var cell0 = this.firstCell;
-			this.owner.opemgr.addOpe_Startpos(cell0.bx,cell0.by, st.bx,st.by);
-		}
+		this.owner.board.startcell.draw();
 	},
 	inputGate : function(){
 		var cell = this.getcell();
@@ -87,9 +82,7 @@ MouseEvent:{
 		else if(this.inputData==10){
 			if(cell!==this.mouseCell){
 				if(this.firstCell.isnull){ this.firstCell = this.mouseCell;}
-				var cell0 = bd.startcell;
-				bd.startcell = cell;
-				cell0.draw();
+				bd.setstartcell(cell);
 				input=true;
 			}
 		}
@@ -168,7 +161,7 @@ KeyEvent:{
 			else if(ca=='w'){ newques=21;}
 			else if(ca=='e'){ newques=22;}
 			else if(ca=='r'||ca==' '){ newques= 0;}
-			else if(ca=='s'){ bd.inputstartid(cell);}
+			else if(ca=='s'){ bd.inputstartcell(cell);}
 			else{ return;}
 			if(old==newques){ return;}
 
@@ -218,15 +211,20 @@ Board:{
 	},
 
 	startcell : null,
-	inputstartid : function(cell){
+	inputstartcell : function(cell){
 		if(cell!==this.startcell){
 			var cell0 = this.startcell;
-			this.owner.opemgr.addOpe_Startpos(cell0.bx,cell0.by, cell.bx,cell.by);
-
-			this.startcell = cell;
+			this.setstartcell(cell);
 			cell0.draw();
 			cell.draw();
 		}
+	},
+	setstartcell : function(cell){
+		var puzzle = this.owner, pos = this.startcell.getaddr();
+		var ope = new puzzle.StartposOperation(pos.bx,pos.by, cell.bx,cell.by);
+		puzzle.opemgr.add(ope);
+
+		this.startcell = cell;
 	}
 },
 BoardExec:{
@@ -247,19 +245,14 @@ BoardExec:{
 		this.adjustNumberArrow(key,d);
 	},
 	adjustBoardData2 : function(key,d){
-		var bd = this.owner.board;
-		var info = this.posinfo;
-		bd.startcell = bd.getc(info.bx2, info.by2);
-
-		var opemgr = this.owner.opemgr;
-		if((key & this.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
-			opemgr.forceRecord = true;
-			if(info.isdel){
-				opemgr.addOpe_Startpos(info.bx1,info.by1, info.bx2,info.by2);
-			}
-			opemgr.forceRecord = false;
-		}
-
+		var bd = this.owner.board, opemgr = this.owner.opemgr;
+		var info = this.posinfo, isrec;
+		
+		isrec = ((key & this.REDUCE) && (info.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
+		if(isrec){ opemgr.forceRecord = true;}
+		bd.setstartcell(info.pos.getc());
+		if(isrec){ opemgr.forceRecord = false;}
+		
 		bd.hinfo.generateGates();	// 念のため
 	}
 },
@@ -283,6 +276,16 @@ BoardExec:{
 		return ['PS', this.bx1, this.by1, this.bx2, this.by2].join(',');
 	},
 
+	isModify : function(lastope){
+		// 1回の入力でstartposが連続して更新されているなら前回の更新のみ
+		if( this.manager.changeflag && lastope.bx2 === this.bx1 && lastope.by2 === this.by1 ){
+			lastope.bx2 = this.bx2;
+			lastope.by2 = this.by2;
+			return true;
+		}
+		return false;
+	},
+
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
@@ -296,12 +299,8 @@ BoardExec:{
 OperationManager:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
-
+		
 		this.operationlist.push(this.owner.StartposOperation);
-	},
-	
-	addOpe_Startpos : function(x1, y1, x2, y2){
-		this.add(new this.owner.StartposOperation(x1, y1, x2, y2));
 	}
 },
 

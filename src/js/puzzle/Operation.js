@@ -110,7 +110,6 @@ Operation:{
 			lastope.by       === this.by    &&
 			(property === 'qnum'  || 
 			 property === 'qnum2' ||
-			 property === 'qdir'  ||
 			 property === 'qchar' ||
 			 property === 'anum' )
 		)
@@ -270,7 +269,6 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する
 	// um.enableRecord()   操作の登録を許可する
-	// um.isenableRecord() 操作の登録できるかを返す
 	// um.checkexec()      html上の[戻][進]ボタンを押すことが可能か設定する
 	// um.allerase()       記憶していた操作を全て破棄する
 	// um.newOperation()   マウス、キー入力開始時に呼び出す
@@ -283,7 +281,6 @@ OperationManager:{
 	//     変な制限事項がなくなるし、動作速度にもかなり効くしね
 	disableRecord : function(){ this.disrec++; },
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
-	isenableRecord : function(){ return (this.forceRecord || this.disrec===0);},
 
 	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
@@ -317,14 +314,10 @@ OperationManager:{
 	},
 
 	//---------------------------------------------------------------------------
-	// um.add()                指定された操作を追加する(共通操作)
-	// um.addOpe_Object()      指定された操作を追加する。プロパティ等が同じ場合は最終操作を変更する
-	// um.addOpe_BoardAdjust() 指定された盤面(拡大・縮小)操作を追加する
-	// um.addOpe_BoardFlip()   指定された盤面(回転・反転)操作を追加する
+	// um.add()  指定された操作を追加する(共通操作)
 	//---------------------------------------------------------------------------
 	add : function(newope){
-		if(!this.isenableRecord()){ return;}
-		this.changeflag = true;
+		if(!this.forceRecord && this.disrec>0){ return;}
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){
@@ -354,18 +347,8 @@ OperationManager:{
 		if(newope.property!=='qsub' && newope.property!=='qcmp'){
 			puzzle.checker.resetCache();
 		}
+		this.changeflag = true;
 		this.checkexec();
-	},
-
-	addOpe_Object : function(obj, property, old, num){
-		if(old===num){ return;}
-		this.add(new this.owner.ObjectOperation(obj, property, old, num));
-	},
-	addOpe_BoardAdjust : function(name){
-		this.add(new this.owner.BoardAdjustOperation(name));
-	},
-	addOpe_BoardFlip : function(d, name){
-		this.add(new this.owner.BoardFlipOperation(d, name));
 	},
 
 	//---------------------------------------------------------------------------

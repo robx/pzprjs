@@ -111,6 +111,7 @@ MouseEvent:{
 Border:{
 	getArrow : function(){ return this.qdir;},
 	setArrow : function(val){ this.setQdir(val);},
+	setArrowOnly : function(val){ this.qdir = val;},
 	isArrow  : function(){ return (this.qdir>0);}
 },
 
@@ -157,40 +158,52 @@ Board:{
 	},
 
 	inputarrowin : function(border){
-		var old_in=this.arrowin, old_out=this.arrowout;
-		if(old_out===border){ this.setarrowout(old_in);}else{ old_in.setArrow(0);}
-		this.setarrowin(border);
+		if(this.arrowout!==border){
+			this.arrowin.setArrow(0);
+			this.setarrowin(border);
+		}
+		else{
+			this.exchangeinout();
+		}
 	},
 	inputarrowout : function(border){
+		if(this.arrowin!==border){
+			this.arrowout.setArrow(0);
+			this.setarrowout(border);
+		}
+		else{
+			this.exchangeinout();
+		}
+	},
+	exchangeinout : function(){
 		var old_in=this.arrowin, old_out=this.arrowout;
-		if(old_in===border){ this.setarrowin(old_out);}else{ old_out.setArrow(0);}
-		this.setarrowout(border);
+		old_in.setArrow(0);
+		old_out.setArrow(0);
+		this.setarrowin(old_out);
+		this.setarrowout(old_in);
 	},
 
 	setarrowin : function(border){
-		if(this.owner.opemgr.isenableRecord()){
-			this.owner.opemgr.addOpe_InOut('in', this.arrowin.bx,this.arrowin.by, border.bx,border.by);
-		}
+		var puzzle = this.owner, pos = this.arrowin.getaddr();
+		var ope = new puzzle.InOutOperation('in', pos.bx,pos.by, border.bx,border.by);
+		puzzle.opemgr.add(ope);
+		
 		this.arrowin = border;
-
-		this.setarrowin_arrow(border);
-	},
-	setarrowin_arrow : function(border){
+		
+		/* setarrowin_arrow */
 		if     (border.by===this.maxby){ border.setArrow(border.UP);}
 		else if(border.by===this.minby){ border.setArrow(border.DN);}
 		else if(border.bx===this.maxbx){ border.setArrow(border.LT);}
 		else if(border.bx===this.minbx){ border.setArrow(border.RT);}
 	},
-
 	setarrowout : function(border){
-		if(this.owner.opemgr.isenableRecord()){
-			this.owner.opemgr.addOpe_InOut('out', this.arrowout.bx,this.arrowout.by, border.bx,border.by);
-		}
+		var puzzle = this.owner, pos = this.arrowout.getaddr();
+		var ope = new puzzle.InOutOperation('out', pos.bx,pos.by, border.bx,border.by);
+		puzzle.opemgr.add(ope);
+		
 		this.arrowout = border;
-
-		this.setarrowout_arrow(border);
-	},
-	setarrowout_arrow : function(border){
+		
+		/* setarrowout_arrow */
 		if     (border.by===this.minby){ border.setArrow(border.UP);}
 		else if(border.by===this.maxby){ border.setArrow(border.DN);}
 		else if(border.bx===this.minbx){ border.setArrow(border.LT);}
@@ -208,24 +221,18 @@ BoardExec:{
 		this.posinfo_out = this.getAfterPos(key,d,bd.arrowout);
 	},
 	adjustBoardData2 : function(key,d){
-		var bd = this.owner.board;
-		var info1 = this.posinfo_in, info2 = this.posinfo_out;
-		bd.arrowin  = bd.getb(info1.bx2, info1.by2);
-		bd.arrowout = bd.getb(info2.bx2, info2.by2);
-
-		var opemgr = this.owner.opemgr;
-		if((key & this.REDUCE) && !opemgr.undoExec && !opemgr.redoExec){
-			opemgr.forceRecord = true;
-			if(info1.isdel){
-				opemgr.addOpe_InOut('in', info1.bx1,info1.by1, info1.bx2,info1.by2);
-				bd.setarrowin_arrow (bd.arrowin);
-			}
-			if(info2.isdel){
-				opemgr.addOpe_InOut('out', info2.bx1,info2.by1, info2.bx2,info2.by2);
-				bd.setarrowout_arrow(bd.arrowout);
-			}
-			opemgr.forceRecord = false;
-		}
+		var puzzle = this.owner, bd = puzzle.board, opemgr = puzzle.opemgr;
+		var info1 = this.posinfo_in, info2 = this.posinfo_out, isrec;
+		
+		isrec = ((key & this.REDUCE) && (info1.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
+		if(isrec){ opemgr.forceRecord = true;}
+		bd.setarrowin(info1.pos.getb());
+		if(isrec){ opemgr.forceRecord = false;}
+		
+		isrec = ((key & this.REDUCE) && (info2.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
+		if(isrec){ opemgr.forceRecord = true;}
+		bd.setarrowout(info2.pos.getb());
+		if(isrec){ opemgr.forceRecord = false;}
 	}
 },
 
@@ -266,11 +273,8 @@ BoardExec:{
 OperationManager:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
-
+		
 		this.operationlist.push(this.owner.InOutOperation);
-	},
-	addOpe_InOut : function(property, x1, y1, x2, y2){
-		this.add(new this.owner.InOutOperation(property, x1, y1, x2, y2));
 	}
 },
 

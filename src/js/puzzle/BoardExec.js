@@ -94,14 +94,9 @@ BoardExec:{
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
 		var key = this.boardtype[name][1];
-		if(key & this.TURNFLIP){
-			this.turnflip(key,d);
-			o.opemgr.addOpe_BoardFlip(d, name);
-		}
-		else{
-			this.expandreduce(key,d);
-			o.opemgr.addOpe_BoardAdjust(name);
-		}
+		if(key & this.TURNFLIP){ this.turnflip(key,d);}
+		else                   { this.expandreduce(key,d);}
+		this.addOpe(d, name);
 
 		bd.setminmax();
 		bd.resetInfo();
@@ -109,6 +104,17 @@ BoardExec:{
 		// Canvasを更新する
 		o.adjustCanvasSize();
 		o.painter.unsuspend();
+	},
+
+
+	//------------------------------------------------------------------------------
+	// bd.exec.addOpe() 指定された盤面(拡大・縮小, 回転・反転)操作を追加する
+	//------------------------------------------------------------------------------
+	addOpe : function(d, name){
+		var key = this.boardtype[name][1], puzzle = this.owner, ope;
+		if(key & this.TURNFLIP){ ope = new puzzle.BoardFlipOperation(d, name);}
+		else                   { ope = new puzzle.BoardAdjustOperation(name);}
+		puzzle.opemgr.add(ope);
 	},
 
 	//------------------------------------------------------------------------------
@@ -169,10 +175,7 @@ BoardExec:{
 		var bd = this.owner.board;
 		if(type==='border'){ this.reduceborder(key);}
 
-		var opemgr = this.owner.opemgr;
-		var margin=0, group = bd.getGroup(type), isrec=(!opemgr.undoExec && !opemgr.redoExec);
-		var group2 = new group.constructor();
-		if(isrec){ opemgr.forceRecord = true;}
+		var margin=0, group = bd.getGroup(type), group2 = new group.constructor();
 		for(var i=0;i<group.length;i++){
 			var obj = group[i];
 			if(this.isdel(key,obj)){
@@ -182,9 +185,13 @@ BoardExec:{
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
-		group2.allclear(isrec);
+		var opemgr = this.owner.opemgr;
+		if(!opemgr.undoExec && !opemgr.redoExec){
+			opemgr.forceRecord = true;
+			group2.allclear(true);
+			opemgr.forceRecord = false;
+		}
 		for(var i=0;i<margin;i++){ group.pop();}
-		if(isrec){ opemgr.forceRecord = false;}
 	},
 	isdel : function(key,obj){
 		return !!this.insex[obj.group][this.distObj(key,obj)];
@@ -356,18 +363,18 @@ BoardExec:{
 			}
 		}
 		for(var i=0;i<qnums.length;i++){
-			var areaid = qnums[i].areaid;
+			var data = qnums[i], areaid = data.areaid;
 			var top = bd.rooms.calcTopOfRoom(areaid);
 			if(top===null){
 				var opemgr = this.owner.opemgr;
 				if(!opemgr.undoExec && !opemgr.redoExec){
 					opemgr.forceRecord = true;
-					opemgr.addOpe_Object(qnums[i].cell, 'qnum', qnums[i].val, -1);
+					data.cell.addOpe('qnum', data.val, -1);
 					opemgr.forceRecord = false;
 				}
 			}
 			else{
-				bd.cell[top].qnum = qnums[i].val;
+				bd.cell[top].qnum = data.val;
 			}
 		}
 	},
