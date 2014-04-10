@@ -111,7 +111,6 @@ MouseEvent:{
 Border:{
 	getArrow : function(){ return this.qdir;},
 	setArrow : function(val){ this.setQdir(val);},
-	setArrowOnly : function(val){ this.qdir = val;},
 	isArrow  : function(){ return (this.qdir>0);}
 },
 

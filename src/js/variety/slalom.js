@@ -16,76 +16,55 @@ MouseEvent:{
 			}
 		}
 		else if(this.owner.editmode){
-			if(this.mousestart || this.mousemove){ this.inputGate();}
-			else if(this.mouseend){
-				if(this.inputData==10){ this.inputStartid();}
-				else if(this.notInputted()){ this.inputGate_end();}
-			}
+			if(this.mousestart || this.mousemove){ this.inputEdit();}
+			else if(this.mouseend){ this.inputEdit_end();}
 		}
 	},
 	inputRed : function(){ this.dispRedLine();},
 
-	inputGate_end : function(){
+	inputEdit : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-
-		if(cell!==this.cursor.getTCC()){
-			this.setcursor(cell);
-		}
-		else{
-			this.inputGate_end_main(cell);
-		}
-	},
-	inputGate_end_main : function(cell){
-		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
-		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
-		cell.setNum(-1);
-		this.owner.board.hinfo.generateGates();
-
-		cell.draw();
-		this.owner.board.startcell.draw();
-	},
-
-	inputStartid : function(){
-		this.inputData = null;
-		this.owner.board.startcell.draw();
-	},
-	inputGate : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
-
-		var pos = cell.getaddr();
-		var input=false, bd = this.owner.board;
 
 		// 初回はこの中に入ってきます。
 		if(this.mouseCell.isnull){
-			if(cell===bd.startcell){ this.inputData=10; input=true;}
-			else{ this.firstPoint.set(this.inputPoint);}
+			this.inputEdit_first(cell);
 		}
-		// 数字つき黒マス上なら矢印の入力をする
+		
+		// startposの入力中の場合
+		if(this.inputData===10){
+			this.owner.board.inputstartcell(cell);
+		}
+		// 矢印の入力中の場合
+		else if(this.inputData===2){
+			this.inputdirec();
+		}
+		// ゲート入力チェック
+		else{
+			this.inputGate(cell);
+		}
+		
+		this.mouseCell = cell;
+	},
+	inputEdit_first : function(cell){
+		// startposの上ならstartpos移動ルーチンへ移行
+		if(cell===this.owner.board.startcell){
+			this.inputData = 10;
+		}
+		// 数字つき黒マスの上なら矢印入力ルーチンへ移行
 		else if(cell.getQues()===1 && cell.isNum()){
 			this.inputData = 2;
 		}
-		else if(this.inputData===2){
-			if(cell!==this.mouseCell){
-				var cell0 = this.mouseCell;
-				this.inputdirec();
-				cell0.draw();
-				input=true;
-				this.mouseCell = cell;
-			}
-			return;
+		// その他はゲート入力チェックへ
+		else{
+			this.firstPoint.set(this.inputPoint);
 		}
-		// それ以外の黒マス上なら何もしない
-		else if(cell.getQues()===1){}
-		// startposの入力中の場合
-		else if(this.inputData==10){
-			if(cell!==this.mouseCell){
-				if(this.firstCell.isnull){ this.firstCell = this.mouseCell;}
-				bd.setstartcell(cell);
-				input=true;
-			}
-		}
+	},
+	inputGate : function(cell){
+		var pos = cell.getaddr(), input = false;
+		
+		// 黒マス上なら何もしない
+		if(cell.getQues()===1){}
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
@@ -99,7 +78,7 @@ MouseEvent:{
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
 				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}
-
+			
 			if(input){
 				if(cell.getQues()===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
@@ -114,17 +93,46 @@ MouseEvent:{
 				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}
 		}
-
+		
+		this.prevPos = pos;
+		
 		// 描画・後処理
 		if(input){
-			if(this.inputData!==10){ cell.setQues(this.inputData);}
+			var bd = this.owner.board;
+			cell.setQues(this.inputData);
 			bd.hinfo.generateGates();
-
+			
 			cell.draw();
 			bd.startcell.draw();
 		}
-		this.prevPos   = pos;
-		this.mouseCell = cell;
+	},
+
+	inputEdit_end : function(){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+		
+		if(this.inputData==10){
+			this.inputData = null;
+			cell.draw();
+		}
+		else if(this.notInputted()){
+			if(cell!==this.cursor.getTCC()){
+				this.setcursor(cell);
+			}
+			else{
+				this.inputGateNumber(cell);
+			}
+		}
+	},
+	inputGateNumber :function(cell){
+		var bd = this.owner.board;
+		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
+		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
+		cell.setNum(-1);
+		bd.hinfo.generateGates();
+
+		cell.draw();
+		bd.startcell.draw();
 	}
 },
 
@@ -212,11 +220,14 @@ Board:{
 
 	startcell : null,
 	inputstartcell : function(cell){
+		var cell0 = this.startcell;
 		if(cell!==this.startcell){
-			var cell0 = this.startcell;
 			this.setstartcell(cell);
 			cell0.draw();
 			cell.draw();
+		}
+		else{
+			cell0.draw();
 		}
 	},
 	setstartcell : function(cell){
