@@ -125,8 +125,17 @@
 	catch(e){}
 	
 	if(isbrowser){
+		var dir = (function getpath(){
+			var srcs=document.getElementsByTagName('script');
+			for(var i=0;i<srcs.length;i++){
+				var result = srcs[i].src.match(/^(.*\/)pzprv3\-all\.js$/);
+				if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
+			}
+			return "";
+		})();
+		
 		for(var i=0;i<files.length;i++){
-			document.write('<script type="text/javascript" src="./js/'+files[i]+'.js"></script>');
+			document.write('<script type="text/javascript" src="'+dir+files[i]+'"></script>');
 		}
 	}
 	else{ exports.component = files;}
