@@ -20,7 +20,7 @@ module.exports = function(grunt){
         banner: banner_full,
         process: true
       },
-      combine: {
+      release: {
         files: [
           { src: [], dest: 'dist/js/pzprv3.concat.js' },
           { src: [], dest: 'dist/js/pzprv3-all.concat.js' }
@@ -38,17 +38,6 @@ module.exports = function(grunt){
           { src: 'src/js/pzprv3.js',     dest: 'dist/js/pzprv3.js'     },
           { src: 'src/js/pzprv3-all.js', dest: 'dist/js/pzprv3-all.js' },
           { src: 'src/js/v3index.js',    dest: 'dist/js/v3index.js'  }
-        ]
-      },
-      combine: {
-        files : [
-          { expand: true, cwd: 'src/js/variety',  src: ['*.js'], dest: 'dist/js/variety' },
-          { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
-          { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
-          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
-          { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js'     },
-          { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
-          { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js'  }
         ]
       },
       release: {
@@ -93,10 +82,10 @@ module.exports = function(grunt){
     array.push   ("common/outro");
     return array;
   }
-  grunt.config.set("concat.combine.files.0.src", wrap(component_core).map(mod2file));
-  grunt.config.set("concat.combine.files.1.src", wrap(component_all ).map(mod2file));
+  grunt.config.set("concat.release.files.0.src", wrap(component_core).map(mod2file));
+  grunt.config.set("concat.release.files.1.src", wrap(component_all ).map(mod2file));
   
-  grunt.registerTask('default', ['clean',                   'copy:debug'  ]);
-  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine']);
-  grunt.registerTask('release', ['combine', 'uglify:release', 'shell:release']);
+  grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
+  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('zipfile', ['shell:release']);
 };
