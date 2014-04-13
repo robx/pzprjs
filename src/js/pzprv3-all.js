@@ -2,7 +2,7 @@
 /* concat前のテスト用スクリプト */
 
 (function(){
-	var files = [
+	var component = [
 		"lib/candle",
 		"pzpr/core",
 		"pzpr/event",
@@ -134,9 +134,15 @@
 			return "";
 		})();
 		
-		for(var i=0;i<files.length;i++){
-			document.write('<script type="text/javascript" src="'+dir+files[i]+'"></script>');
-		}
+		component.map(function(mod){ return dir+mod+".js";}).forEach(function(file){
+			document.write('<script type="text/javascript" src="'+file+'"></script>');
+		});
 	}
-	else{ exports.component = files;}
+	else{
+		component.unshift("common/intro");
+		component.push   ("common/outro");
+
+		var dir = "src/js/";
+		exports.files = component.map(function(mod){ return dir+mod+".js";});
+	}
 })();

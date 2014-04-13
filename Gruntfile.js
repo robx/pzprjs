@@ -7,9 +7,6 @@ module.exports = function(grunt){
   var banner_min  = fs.readFileSync('./src/js/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/js/common/banner_full.js', 'utf-8');
 
-  var component_core = require('./src/js/pzprv3.js').component;
-  var component_all  = require('./src/js/pzprv3-all.js').component;
-
   grunt.initConfig({
     pkg: pkg,
 
@@ -22,13 +19,16 @@ module.exports = function(grunt){
       },
       release: {
         files: [
-          { src: [], dest: 'dist/js/pzprv3.concat.js' },
-          { src: [], dest: 'dist/js/pzprv3-all.concat.js' }
+          { src: require('./src/js/pzprv3.js').files,     dest: 'dist/js/pzprv3.concat.js' },
+          { src: require('./src/js/pzprv3-all.js').files, dest: 'dist/js/pzprv3-all.concat.js' }
         ]
       }
     },
 
     copy: {
+      options: {
+        process: function(content, srcpath){ return grunt.template.process(content);}
+      },
       debug: {
         files : [
           { expand: true, cwd: 'src/js',  src: ['**/*.js'], dest: 'dist/js'  },
@@ -73,17 +73,6 @@ module.exports = function(grunt){
       }
     }
   });
-  
-  function mod2file(mod){
-    return "src/js/" + mod + ".js";
-  }
-  function wrap(array){
-    array.unshift("common/intro");
-    array.push   ("common/outro");
-    return array;
-  }
-  grunt.config.set("concat.release.files.0.src", wrap(component_core).map(mod2file));
-  grunt.config.set("concat.release.files.1.src", wrap(component_all ).map(mod2file));
   
   grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
   grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
