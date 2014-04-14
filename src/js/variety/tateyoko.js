@@ -234,14 +234,12 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell_'+cell.id;
-			var num = cell.qnum;
-			if(num!==-1){
-				var color = (cell.ques!==1 ? this.fontcolor : "white");
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				this.dispnum(key, 1, (num!=-2?""+num:"?"), (num<10?0.8:0.75), color, px, py);
-			}
-			else{ this.hidenum(key);}
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var num = cell.qnum, text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
+			var option = { key: "cell_"+cell.id };
+			option.ratio = [0.8, 0.75];
+			option.color = (cell.ques!==1 ? this.fontcolor : "white");
+			this.disptext(text, px, py, option);
 		}
 	}
 },

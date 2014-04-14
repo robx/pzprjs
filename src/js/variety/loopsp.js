@@ -138,7 +138,7 @@ Graphic:{
 
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
-		this.fontsizeratio = 0.85;
+		this.fontsizeratio = [0.68, 0.6, 0.47];
 		this.circleratio = [0.40, 0.35];
 
 		this.minYdeg = 0.36;

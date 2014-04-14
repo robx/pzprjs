@@ -129,7 +129,7 @@ Graphic:{
 		this.qsubcolor2 = "rgb(255, 255, 144)";
 		this.setBGCellColorFunc('qsub2');
 
-		this.fontsizeratio = 0.9;	// 数字の倍率
+		this.fontsizeratio = [0.72, 0.63, 0.5];	// 数字の倍率
 	},
 	paint : function(){
 		this.drawBGCells();

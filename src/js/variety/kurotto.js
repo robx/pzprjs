@@ -73,7 +73,7 @@ Graphic:{
 		this.bcolor    = "silver";
 		this.setBGCellColorFunc('qsub1');
 
-		this.fontsizeratio = 0.85;
+		this.fontsizeratio = [0.68, 0.6, 0.47];
 		this.circleratio = [0.45, 0.40];
 	},
 

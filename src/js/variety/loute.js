@@ -245,7 +245,7 @@ Graphic:{
 		this.fontAnscolor = "black"; /* 矢印用 */
 
 		if(this.owner.pid==='sashigane'){
-			this.fontsizeratio = 0.85;
+			this.fontsizeratio = [0.68, 0.6, 0.47];
 
 			this.hideHatena = true;
 		}
@@ -277,17 +277,15 @@ Graphic:{
 
 	drawHatenas_loute : function(){
 		var g = this.vinc('cell_hatena', 'auto');
-		var ratio = 0.8/this.fontsizeratio;
-
+		var ratio = (this.owner.pid==='sashigane' ? [0.8] : [0.94]);
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key = 'cell_h_'+cell.id;
-			if(cell.qdir===-2){
-				var color = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				this.dispnum(key, 1, "?", ratio, color, px, py);
-			}
-			else{ this.hidenum(key);}
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var text = (cell.qdir===-2 ? "?" : "");
+			var option = { key:"cell_h_"+cell.id };
+			option.ratio = ratio;
+			option.color = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
+			this.disptext(text, px, py, option);
 		}
 	}
 },

@@ -416,33 +416,22 @@ Graphic:{
 	drawStartpos : function(){
 		var g = this.vinc('cell_circle', 'auto');
 
-		var cell = this.owner.board.startcell, d = this.range;
+		var bd = this.owner.board, cell = bd.startcell, d = this.range;
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
-		var rsize = this.cw*0.45, rsize2 = this.cw*0.40;
-		var csize = (rsize+rsize2)/2, csize2 = rsize2-rsize;
-		var vids = ["sposa_","sposb_"];
-		this.vdel(vids);
+		var px = cell.bx*this.bw, py = cell.by*this.bh;
+		var csize = this.cw*0.42, linewidth = Math.max(this.cw*0.05, 1);
+		this.vdel(["c_stpos", "text_stpos"]);
 
-		g.lineWidth = (csize2>=1 ? csize2 : 1);
+		g.lineWidth = linewidth;
 		g.strokeStyle = this.cellcolor;
 		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
-		if(this.vnop(vids[0],this.FILL)){
-			g.shapeCircle((cell.bx*this.bw), (cell.by*this.bh), csize);
+		if(this.vnop("c_stpos",this.FILL)){
+			g.shapeCircle(px, py, csize);
 		}
 
-		this.dispnumStartpos();
-	},
-	dispnumStartpos : function(){
-		var g = this.vinc('cell_numberpos', 'auto'), bd = this.owner.board;
-
-		var cell = bd.startcell, num = bd.hinfo.max;
-		if(num>=0){
-			var fontratio = (num<10?0.75:0.66);
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum('stpos', 1, ""+num, fontratio, "black", px, py);
-		}
-		else{ this.hidenum(key);}
+		var option = { key:"stpos", ratio:[0.75, 0.66] };
+		this.disptext(""+bd.hinfo.max, px, py, option);
 	},
 
 	repaintParts : function(blist){
@@ -467,16 +456,15 @@ Graphic:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques!==21 && cell.ques!==22){ continue;}
-			var key='cell_'+c;
 
 			var r = bd.hinfo.getGateid(c);
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (r>0?bd.hinfo.data[r].number:-1);
-			if(keydown && num>0){
-				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				this.dispnum(key, 1, ""+num, fontratio ,"tomato", px, py);
-			}
-			else{ this.hidenum(key);}
+			var text = ((keydown && num>0) ? ""+num : "");
+			var option = { key: "cell_"+c };
+			option.ratio = [0.8, 0.7, 0.55];
+			option.color = "tomato";
+			this.disptext(text, px, py, option);
 		}
 	}
 },

@@ -189,7 +189,7 @@ Graphic:{
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
 		
-		this.fontsizeratio = 0.85;
+		this.fontsizeratio = [0.68, 0.6, 0.47];
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -213,15 +213,12 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var key = 'cell_'+cell.id, num = cell.qnum;
-		if(this.owner.getConfig('dispmove')){ num = cell.base.qnum;}
-		if(num>0){
-			var text      = ""+num;
-			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-			var color     = this.getCellNumberColor(cell);
-			this.dispnum(key, 1, text, fontratio, color, (cell.bx*this.bw), (cell.by*this.bh));
-		}
-		else{ this.hidenum(key);}
+		var num    = (this.owner.getConfig('dispmove') ? cell.base : cell).qnum;
+		var text   = (num>0 ? ""+num : "");
+		var option = { key: 'cell_'+cell.id };
+		option.ratio = [0.68, 0.6, 0.48];
+		option.color = this.getCellNumberColor(cell);
+		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 	},
 	getCellNumberColor : function(cell){
 		if(cell===this.owner.mouse.mouseCell){ return this.movecolor;}
@@ -256,24 +253,18 @@ Graphic:{
 	},
 	drawFillingNumbers : function(){
 		var g = this.vinc('cell_filling_number', 'auto');
-		this.boldreq = true;
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell5_'+cell.id, num = cell.qnum2;
-			if(num!==-1){
-				var text = (num>=0 ? ""+num : "?"), type = 1;
-				var fontratio = (num<10?0.8:(num<100?0.7:0.55))*0.9;
-				var color = this.getCellNumberColor(cell);
-				if(this.owner.getConfig('dispmove') && cell.isDestination()){
-					fontratio *= 0.6;
-					type = 5;
-				}
-				this.dispnum(key, type, text, fontratio, color, (cell.bx*this.bw), (cell.by*this.bh));
-			}
-			else{ this.hidenum(key);}
+			var cell = clist[i], num = cell.qnum2;
+			var text = (num>0 ? ""+num : (num!==-1 ? "?" : ""));
+			var topleft = (this.owner.getConfig('dispmove') && cell.isDestination())
+			var option = { key: 'cell5_'+cell.id };
+			option.position = (!topleft ? this.CENTER : this.TOPLEFT);
+			option.ratio = (!topleft ? [0.61, 0.54, 0.43] : [0.37, 0.32, 0.26] /* x0.6 */);
+			option.color = this.getCellNumberColor(cell);
+			option.style = "bold";
+			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 		}
-		this.boldreq = false;
 	}
 },
 

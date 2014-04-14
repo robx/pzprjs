@@ -197,10 +197,13 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell_'+cell.id;
+			var cell = clist[i];
 			if(cell.qnum===-1 && cell.anum>0){
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				this.dispnum(key, 1, ""+cell.anum, 0.8, this.fontAnscolor, px, py);
+				var option = { key:"cell_"+cell.id };
+				option.ratio = [0.8];
+				option.color = this.fontAnscolor;
+				this.disptext(""+cell.anum, px, py, option);
 			}
 			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 		}

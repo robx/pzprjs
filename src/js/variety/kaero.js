@@ -147,21 +147,18 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key='cell_'+cell.id, num = cell.qnum;
-			if(isdrawmove){ num = cell.base.qnum;}
-			if(num!==-1){
-				var color = this.getCellNumberColor(cell);
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var num = (isdrawmove ? cell.base : cell).qnum, text = "";
+			if     (num===-1)        { text = "";}
+			else if(num===-2)        { text = "?";}
+			else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+			else{ text+=num;}
 
-				var text="";
-				if     (num==-2)         { text ="?";}
-				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-				else{ text+=num;}
-
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				this.dispnum(key, 1, text, 0.85, color, px, py);
-			}
-			else{ this.hidenum(key);}
+			var option = { key:"cell_"+cell.id };
+			option.ratio = [0.85];
+			option.color = this.getCellNumberColor(cell);
+			this.disptext(text, px, py, option);
 		}
 	}
 },

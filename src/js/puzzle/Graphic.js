@@ -1,5 +1,13 @@
 // Graphic.js v3.4.1
 
+(function(){
+
+var CENTER      = 1,
+	BOTTOMLEFT  = 2,
+	BOTTOMRIGHT = 3,
+	TOPRIGHT    = 4,
+	TOPLEFT     = 5;
+
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
 //---------------------------------------------------------------------------
@@ -84,7 +92,7 @@ Graphic:{
 		this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
 		// その他
-		this.fontsizeratio = 1.0;	// 数字Fontサイズの倍率
+		this.fontsizeratio = [0.8, 0.7, 0.55];	// 数字Fontサイズの倍率
 		this.crosssize = 0.4;
 		this.circleratio = [0.40, 0.35];
 
@@ -136,8 +144,6 @@ Graphic:{
 		this.isdrawBC = false;
 		this.isdrawBD = false;
 
-		this.boldreq = false;
-
 		this.pendingResize = false;
 	},
 
@@ -152,7 +158,14 @@ Graphic:{
 	NONE        : 3,
 	vnop_FILL   : [false,true,true,false],
 	vnop_STROKE : [true,false,true,false],
-	
+
+	/* disptext関数用 */
+	CENTER      : CENTER,
+	BOTTOMLEFT  : BOTTOMLEFT,
+	BOTTOMRIGHT : BOTTOMRIGHT,
+	TOPRIGHT    : TOPRIGHT,
+	TOPLEFT     : TOPLEFT,
+
 	//---------------------------------------------------------------------------
 	// pc.initCanvas()  このオブジェクトで使用するキャンバスを設定する
 	//---------------------------------------------------------------------------
@@ -612,6 +625,7 @@ Graphic:{
 		:
 			function(vid){
 				var g = this.context
+				if(typeof vid === 'string'){ vid = [vid];}
 				for(var i=0;i<vid.length;i++){
 					if(!g.elements[vid[i]]){ continue;}
 
@@ -647,6 +661,42 @@ Graphic:{
 			}
 		);
 		return this.vinc(layerid, rendering);
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.disptext()  数字を記入するための共通関数
+	//---------------------------------------------------------------------------
+	disptext : function(text, px, py, option){
+		option = option || {};
+		var key = option.key || "", vid = "text_"+key;
+		if((typeof text !== 'string')||(text.length===0)){ this.vhide(vid); return;}
+
+		var g = this.context;
+		var style = (option.style ? option.style+" " : "");
+		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
+		var ratioarray = option.ratio || [1], ratio = ratioarray[text.length-1];
+		ratio = ratio || ratioarray[ratioarray.length-1];
+
+		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;
+		g.fillStyle = option.color || this.fontcolor;
+
+		var position = option.position || CENTER;
+		switch(position){
+			case CENTER:                     g.textAlign='center';                 break;
+			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=(this.bw-2); break;
+			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=(this.bw-2); break;
+		}
+		switch(position){
+			case CENTER:                       g.textBaseline='middle';                      break;
+			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh-2); break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
+		}
+		
+		if(g.use.vml){ this.vdel(vid);}
+		this.vshow(vid);
+		g.fillText(text, px, py);
 	}
 }
 });
+
+})();

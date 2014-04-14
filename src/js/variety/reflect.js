@@ -182,12 +182,13 @@ Graphic:{
 		}
 	},
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_');
-		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum(key, cell.ques, ""+cell.qnum, 0.45, "white", px, py);
-		}
-		else{ this.hidenum(key);}
+		var px = cell.bx*this.bw, py = cell.by*this.bh;
+		var text = ((cell.ques>=2 && cell.ques<=5) && cell.qnum>0 ? ""+cell.qnum : "");
+		var option = { key:"cell_"+cell.id };
+		option.ratio = [0.45];
+		option.color = "white";
+		option.position = cell.ques;
+		this.disptext(text, px, py, option);
 	},
 
 	repaintParts : function(blist){

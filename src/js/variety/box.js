@@ -189,14 +189,15 @@ Graphic:{
 		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i], key="excell_"+excell.id;
+			var excell = exlist[i];
 			if(excell.id>=this.owner.board.qcols+this.owner.board.qrows){ continue;}
 
 			if(excell.bx===-1 && excell.by===-1){ continue;}
-			var color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
-			var fontratio = (excell.qnum<10?0.8:0.7);
 			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			this.dispnum(key, 1, ""+excell.qnum, fontratio, color, px, py);
+			var option = { key:"excell_"+excell.id };
+			option.color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
+			option.ratio = [0.8, 0.7];
+			this.disptext(""+excell.qnum, px, py, option);
 		}
 	},
 
@@ -225,9 +226,9 @@ Graphic:{
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
 			if(num<=0){ continue;}
 
-			var key = [header,list[i][0],list[i][1]].join("_");
-			var fontratio = (num<10?0.7:0.6);
-			this.dispnum(key, 1, ""+num, fontratio, this.fontcolor, list[i][0]*this.bw, list[i][1]*this.bh);
+			var option = { key: [header,list[i][0],list[i][1]].join("_") };
+			option.ratio = [0.7, 0.6];
+			this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
 		}
 	}
 },

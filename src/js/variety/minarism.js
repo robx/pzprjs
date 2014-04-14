@@ -191,7 +191,7 @@ Graphic:{
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border=blist[i], id=border.id, key=['border',id].join('_');
+			var border=blist[i], id=border.id;
 			var px = border.bx*this.bw, py = border.by*this.bh;
 			// ○の描画
 			if(border.qnum!=-1){
@@ -203,10 +203,10 @@ Graphic:{
 			else{ this.vhide([headers[0]+id]);}
 
 			// 数字の描画
-			if(border.qnum>0){
-				this.dispnum(key, 1, ""+border.qnum, 0.45, "black", px, py);
-			}
-			else{ this.hidenum(key);}
+			var text = (border.qnum>0 ? ""+border.qnum : "");
+			var option = { key:"border_"+id };
+			option.ratio = [0.45];
+			this.disptext(text, px, py, option);
 
 			// 不等号の描画
 			this.vhide([headers[1]+id, headers[2]+id]);

@@ -110,13 +110,12 @@ Graphic:{
 
 	//オーバーライド
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_');
-		if(cell.qnum!==-1){
-			var text = (cell.qnum>=0 ? ""+cell.qnum : "?");
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum(key, 5, text, 0.45, this.fontcolor, px, py);
-		}
-		else{ this.hidenum(key);}
+		var px = cell.bx*this.bw, py = cell.by*this.bh;
+		var text = (cell.qnum!==-1 ? (cell.qnum>=0 ? ""+cell.qnum : "?") : "");
+		var option = { key:"cell_"+cell.id };
+		option.ratio = [0.45];
+		option.position = this.TOPLEFT;
+		this.disptext(text, px, py, option);
 	}
 },
 "Graphic@ringring":{

@@ -482,24 +482,27 @@ Graphic:{
 
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
-			var cross = clist[i], id = cross.id, key = ['cross',id].join('_');
+			var cross = clist[i], id = cross.id;
 			var graydisp = (isgray && cross.error===0 && cross.seglist.length>=2);
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
+			// ○の描画
 			if(cross.qnum>0){
-				// ○の描画
 				g.fillStyle = (cross.error===1 ? this.errbcolor1 : "white");
 				g.strokeStyle = (graydisp ? "gray" : "black");
 				if(this.vnop(headers[0]+id,this.FILL_STROKE)){
 					g.shapeCircle(px, py, csize1);
 				}
-
-				// アルファベットの描画
-				var letter = (cross.qnum+9).toString(36).toUpperCase();
-				var color = (graydisp ? "gray" : this.fontcolor);
-				this.dispnum(key, 1, letter, 0.55, color, px, py);
 			}
-			else{ this.vhide([headers[0]+id]); this.hidenum(key);}
+			else{ this.vhide([headers[0]+id]);}
 
+			// アルファベットの描画
+			var text = ((cross.qnum>0) ? (cross.qnum+9).toString(36).toUpperCase() : "");
+			var option = { key:"cross_"+id };
+			option.ratio = [0.55];
+			option.color = (graydisp ? "gray" : this.fontcolor);
+			this.disptext(text, px, py, option);
+
+			// ●の描画
 			if(cross.qnum===-2){
 				g.fillStyle = (cross.error===1 ? this.errcolor1 : this.cellcolor);
 				if(graydisp){ g.fillStyle="gray";}

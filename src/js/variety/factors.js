@@ -112,25 +112,20 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var key_qans = ['cell',cell.id,'qans'].join('_');
-			var key_ques = ['cell',cell.id,'ques'].join('_');
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			if(cell.anum!==-1){
-				var color = (cell.error==1?this.fontErrcolor:this.fontAnscolor);
-				var size = (cell.anum<10?0.8:0.7);
-				this.dispnum(key_qans, 1, (""+cell.anum), size, color, px, py);
-			}
-			else{ this.hidenum(key_qans);}
+			var text = (cell.anum!==-1 ? ""+cell.anum : "");
+			var option = { key:['cell',cell.id,'qans'].join('_') };
+			option.ratio = [0.8, 0.7];
+			option.color = (cell.error==1 ? this.fontErrcolor : this.fontAnscolor);
+			this.disptext(text, px, py, option);
 
-			if(cell.qnum!==-1){
-				var size = 0.45;
-				if     (cell.qnum>=100000){ size = 0.30;}
-				else if(cell.qnum>= 10000){ size = 0.36;}
-				this.dispnum(key_ques, 5, (""+cell.qnum), size, this.fontcolor, px, py);
-			}
-			else{ this.hidenum(key_ques);}
+			var text = (cell.qnum!==-1 ? ""+cell.qnum : "");
+			var option = { key:['cell',cell.id,'ques'].join('_') };
+			option.ratio = [0.45, 0.45, 0.45, 0.45, 0.36, 0.30];
+			option.color = this.fontcolor;
+			option.position = this.TOPLEFT;
+			this.disptext(text, px, py, option);
 		}
 	}
 },

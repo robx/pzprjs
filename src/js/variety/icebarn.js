@@ -406,19 +406,21 @@ Graphic:{
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
-			if     (by===bd.minby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py-0.6*this.ch);}
-			else if(by===bd.maxby){ this.dispnum("string_in", 1, "IN", 0.55, "black", px,             py+0.6*this.ch);}
-			else if(bx===bd.minbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px-0.5*this.cw, py-0.3*this.ch);}
-			else if(bx===bd.maxbx){ this.dispnum("string_in", 1, "IN", 0.55, "black", px+0.5*this.cw, py-0.3*this.ch);}
+			if     (by===bd.minby){                  py-=0.6*this.ch;}
+			else if(by===bd.maxby){                  py+=0.6*this.ch;}
+			else if(bx===bd.minbx){ px-=0.5*this.cw; py-=0.3*this.ch;}
+			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
+			this.disptext("IN", px, py, {key:"string_in",ratio:[0.55]});
 		}
 		border = bd.arrowout;
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
-			if     (by===bd.minby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py-0.6*this.ch);}
-			else if(by===bd.maxby){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px,             py+0.6*this.ch);}
-			else if(bx===bd.minbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px-0.7*this.cw, py-0.3*this.ch);}
-			else if(bx===bd.maxbx){ this.dispnum("string_out", 1, "OUT", 0.55, "black", px+0.7*this.cw, py-0.3*this.ch);}
+			if     (by===bd.minby){                  py-=0.6*this.ch;}
+			else if(by===bd.maxby){                  py+=0.6*this.ch;}
+			else if(bx===bd.minbx){ px-=0.7*this.cw; py-=0.3*this.ch;}
+			else if(bx===bd.maxbx){ px+=0.7*this.cw; py-=0.3*this.ch;}
+			this.disptext("OUT", px, py, {key:"string_out",ratio:[0.55]});
 		}
 	},
 

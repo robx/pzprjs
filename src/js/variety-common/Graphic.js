@@ -273,7 +273,7 @@ Graphic:{
 
 	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
-	// pc.drawNumber1()  Cellに数字を記入するためdispnum関数を呼び出す
+	// pc.drawNumber1()  Cellに数字を記入するためdisptext関数を呼び出す
 	// pc.getCellNumberColor()  Cellの数字の色を設定する
 	// 
 	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
@@ -286,15 +286,14 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 	},
 	drawNumber1 : function(cell){
-		var key = ['cell',cell.id].join('_'), num = cell.getNum();
-		if(this.owner.board.linfo.moveline && this.owner.getConfig('dispmove')){ num = cell.base.getNum();}
-		if(num>=0 || (!this.hideHatena && num===-2)){
-			var text      = (num>=0 ? ""+num : "?");
-			var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-			var color     = this.getCellNumberColor(cell);
-			this.dispnum(key, 1, text, fontratio, color, (cell.bx*this.bw), (cell.by*this.bh));
+		var num  = (this.owner.board.linfo.moveline && this.owner.getConfig('dispmove') ? cell.base : cell).getNum();
+		var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
+		var option = { key: "cell_"+cell.id };
+		if(!!text){
+			option.ratio = this.fontsizeratio;
+			option.color = this.getCellNumberColor(cell);
 		}
-		else{ this.hidenum(key);}
+		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 	},
 	getCellNumberColor : function(cell){
 		var color = this.fontcolor, puzzle = this.owner;
@@ -383,22 +382,22 @@ Graphic:{
 					else{ this.vhide(headers[5]+id);}
 				}
 				else{ this.vhide([headers[3]+id, headers[4]+id, headers[5]+id]);}
-
-				// 数字の描画
-				var text = (num>=0 ? ""+num : "?");
-				var fontratio = (num<10?0.8:(num<100?0.7:0.55));
-				var color = g.fillStyle;
-
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if     (dir===cell.UP||dir===cell.DN){ fontratio *= 0.85; px-=this.cw*0.1;}
-				else if(dir===cell.LT||dir===cell.RT){ fontratio *= 0.85; py+=this.ch*0.1;}
-
-				this.dispnum('cell_'+id, 1, text, fontratio, color, px, py);
 			}
 			else{
 				this.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);
-				this.hidenum('cell_'+id);
 			}
+
+			// 数字の描画
+			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
+			var option = { key: "cell_"+id };
+			option.ratio = (dir===cell.NDIR ? [0.8, 0.7, 0.55] : [0.68, 0.6, 0.47]);
+			option.color = g.fillStyle;
+
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			if     (dir===cell.UP||dir===cell.DN){ px-=this.cw*0.1;}
+			else if(dir===cell.LT||dir===cell.RT){ py+=this.ch*0.1;}
+
+			this.disptext(text, px, py, option);
 		}
 	},
 	drawHatenas : function(){
@@ -406,12 +405,10 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], key = 'cell_'+cell.id;
-			if(cell.ques===-2||cell.qnum===-2){
-				var color = (cell.error===1||cell.qinfo===1 ? this.fontErrcolor : this.fontcolor);
-				this.dispnum(key, 1, "?", 0.8, color, (cell.bx*this.bw), (cell.by*this.bh));
-			}
-			else{ this.hidenum(key);}
+			var cell = clist[i], text = (cell.ques===-2||cell.qnum===-2 ? "?" : "");
+			var option = { key:"cell_"+cell.id };
+			option.color = (cell.error===1||cell.qinfo===1 ? this.fontErrcolor : this.fontcolor);
+			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 		}
 	},
 
@@ -428,7 +425,7 @@ Graphic:{
 
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
-			var cross = clist[i], id = cross.id, key = ['cross',id].join('_');
+			var cross = clist[i], id = cross.id;
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			// ○の描画
 			if(cross.qnum!==-1){
@@ -441,10 +438,9 @@ Graphic:{
 			else{ this.vhide([header+id]);}
 
 			// 数字の描画
-			if(cross.qnum>=0){
-				this.dispnum(key, 1, ""+cross.qnum, 0.6, this.fontcolor, px, py);
-			}
-			else{ this.hidenum(key);}
+			var text = (cross.qnum>=0 ? ""+cross.qnum : "");
+			var option = {key:"cross_"+id, ratio:[0.6]};
+			this.disptext(text, px, py, option);
 		}
 	},
 	drawCrossMarks : function(){
@@ -1037,18 +1033,18 @@ Graphic:{
 				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=obj.relcell(2,0), type=4;} // 1回目は右向き
 				else if(i===1){ val=obj.qnum2, guard=obj.bx, nb=obj.relcell(0,2), type=2;} // 2回目は下向き
 
-				if(val!==-1 && guard!==-1 && !nb.isnull && !nb.is51cell()){
-					var color = (obj.error===1||obj.qinfo===1?this.fontErrcolor:this.fontcolor);
-					var text = (val>=0?""+val:"");
-					var px = obj.bx*this.bw, py = obj.by*this.bh;
-					this.dispnum(keys[i], type, text, 0.45, color, px, py);
-				}
-				else{ this.hidenum(keys[i]);}
+				var px = obj.bx*this.bw, py = obj.by*this.bh;
+				var text = ((val!==-1 && guard!==-1 && !nb.isnull && !nb.is51cell()) ? (val>=0?""+val:"") : "");
+				var option = { key:keys[i] };
+				option.ratio = [0.45];
+				option.color = (obj.error===1||obj.qinfo===1 ? this.fontErrcolor : this.fontcolor);
+				option.position = type;
+				this.disptext(text, px, py, option);
 			}
 		}
 		else{
-			this.hidenum(keys[0]);
-			this.hidenum(keys[1]);
+			this.disptext("", 0, 0, {key:keys[0]});
+			this.disptext("", 0, 0, {key:keys[1]});
 		}
 	},
 
@@ -1288,48 +1284,6 @@ Graphic:{
 				}
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.dispnum()  数字を記入するための共通関数
-	// pc.hidenum()  数字を隠す
-	//---------------------------------------------------------------------------
-	dispnum : function(key, type, text, fontratio, color, px, py){
-		var g = this.context;
-		var fontsize = (this.cw*fontratio*this.fontsizeratio)|0;
-		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
-
-		g.font = ((this.boldreq ? "bold " :"") + fontsize + "px "+fontfamily);
-		g.fillStyle = color;
-
-		switch(type){
-			case 1:         g.textAlign='center';                break;
-			case 2: case 5: g.textAlign='left';  px+=-this.bw+3; break;
-			case 3: case 4: g.textAlign='right'; px+= this.bw-1; break;
-		}
-		switch(type){
-			case 1:         g.textBaseline='middle';                     break;
-			case 4: case 5: g.textBaseline='top';        py+=-this.bh+1; break;
-			case 2: case 3: g.textBaseline='alphabetic'; py+= this.bh-2; break;
-		}
-		
-		var vid = "text_"+key;
-		if(g.use.vml){
-			if(type===1||type===4||type===5){ py++;}
-			py -= (fontsize*0.20);
-			
-			if(!!g.elements[vid]){
-				this.hidenum(key);
-				g.target.removeChild(g.elements[vid].parentNode);
-				g.elements[vid] = null;
-			}
-			g.vid = vid;
-		}
-		else{ this.vshow(vid);}
-		g.fillText(text, px, py);
-	},
-	hidenum : function(key){
-		this.vhide(["text_"+key]);
 	}
 }
 });

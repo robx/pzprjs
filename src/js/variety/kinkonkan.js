@@ -332,28 +332,21 @@ Graphic:{
 		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i], key = 'excell_'+excell.id;
+			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
+			var px = excell.bx*this.bw, py = excell.by*this.bh;
+			var text = "";
+			if(canum===0 && num===-1){}
+			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+			if(num>=0){ text+=num.toString(10);}
 
-			if(excell.qchar!==0 || excell.qnum!==-1){
-				var num=excell.qnum, canum=excell.qchar;
-
-				var color = this.fontErrcolor;
-				if(excell.error!==1){ color=(canum<=52?this.fontcolor:this.fontAnscolor);}
-
-				var fontratio = 0.66;
-				if(canum>0&&num>=10){ fontratio = 0.55;}
-
-				var text="";
-				if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-				else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-				else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-				if(num>=0){ text+=num.toString(10);}
-
-				var px = excell.bx*this.bw, py = excell.by*this.bh;
-				this.dispnum(key, 1, text, fontratio, color, px, py);
-			}
-			else{ this.hidenum(key);}
+			var option = { key:"excell_"+excell.id };
+			option.color = this.fontErrcolor;
+			if(excell.error!==1){ option.color = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
+			option.ratio = ((canum===0||num<10) ? [0.66] : [0.55]);
+			this.disptext(text, px, py, option);
 		}
 	}
 },

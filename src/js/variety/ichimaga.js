@@ -62,7 +62,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 
 		this.fontErrcolor = this.fontcolor;
-		this.fontsizeratio = 0.85;
+		this.fontsizeratio = [0.68, 0.6, 0.47];
 	},
 	paint : function(){
 		this.drawDashedCenterLines();

@@ -73,13 +73,11 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var num = cell.qnum, key='cell_'+cell.id;
-		if(num>=1 && num<=3){
-			var text = ({1:"同",2:"短",3:"長"})[num];
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			this.dispnum(key, 1, text, 0.65, this.fontcolor, px, py);
-		}
-		else{ this.hidenum(key);}
+		var text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
+		var px = cell.bx*this.bw, py = cell.by*this.bh;
+		var option = { key: "cell_"+cell.id };
+		option.ratio = [0.65];
+		this.disptext(text, px, py, option);
 	}
 },
 

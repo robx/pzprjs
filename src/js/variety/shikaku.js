@@ -46,7 +46,7 @@ Graphic:{
 		this.fontcolor = this.fontErrcolor = "white";
 		this.setBorderColorFunc('qans');
 
-		this.fontsizeratio = 0.85;
+		this.fontsizeratio = [0.68, 0.6, 0.47];
 		this.circleratio = [0.40, 0.40];
 	},
 	paint : function(){
