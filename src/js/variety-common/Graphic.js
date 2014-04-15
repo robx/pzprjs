@@ -1024,28 +1024,25 @@ Graphic:{
 		}
 	},
 	drawNumbersOn51_1 : function(obj){
-		var val, err, guard, nb, type, str;
-		var keys = [[obj.group,obj.id,'ques51','rt'].join('_'),
-					[obj.group,obj.id,'ques51','dn'].join('_')];
+		var val, text, adj, px = obj.bx*this.bw, py = obj.by*this.bh, option = {};
+		option.ratio = [0.45];
+		option.color = (obj.error===1||obj.qinfo===1 ? this.fontErrcolor : this.fontcolor);
 
-		if(obj.isexcell || obj.ques===51){
-			for(var i=0;i<2;i++){
-				if     (i===0){ val=obj.qnum,  guard=obj.by, nb=obj.relcell(2,0), type=4;} // 1回目は右向き
-				else if(i===1){ val=obj.qnum2, guard=obj.bx, nb=obj.relcell(0,2), type=2;} // 2回目は下向き
+		adj  = obj.relcell(2,0);
+		val  = (obj.ques===51 ? obj.qnum : -1);
+		text = ((val>=0 && !adj.isnull && adj.ques!==51) ? ""+val : "");
 
-				var px = obj.bx*this.bw, py = obj.by*this.bh;
-				var text = ((val!==-1 && guard!==-1 && !nb.isnull && !nb.is51cell()) ? (val>=0?""+val:"") : "");
-				var option = { key:keys[i] };
-				option.ratio = [0.45];
-				option.color = (obj.error===1||obj.qinfo===1 ? this.fontErrcolor : this.fontcolor);
-				option.position = type;
-				this.disptext(text, px, py, option);
-			}
-		}
-		else{
-			this.disptext("", 0, 0, {key:keys[0]});
-			this.disptext("", 0, 0, {key:keys[1]});
-		}
+		option.key = [obj.group, obj.id, 'ques51_rt'].join('_');
+		option.position = this.TOPRIGHT;
+		this.disptext(text, px, py, option);
+
+		adj  = obj.relcell(0,2);
+		val  = (obj.ques===51 ? obj.qnum2 : -1);
+		text = ((val>=0 && !adj.isnull && adj.ques!==51) ? ""+val : "");
+
+		option.key = [obj.group, obj.id, 'ques51_dn'].join('_');
+		option.position = this.BOTTOMLEFT;
+		this.disptext(text, px, py, option);
 	},
 
 	//---------------------------------------------------------------------------

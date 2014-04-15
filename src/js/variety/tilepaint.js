@@ -91,6 +91,7 @@ Cell:{
 	}
 },
 EXCell:{
+	ques: 51,
 	qnum: 0,
 	qnum2: 0,
 

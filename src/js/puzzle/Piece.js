@@ -541,6 +541,11 @@ BoardPiece:{
 'EXCell:BoardPiece':{
 	group : 'excell',
 
-	isexcell : true
+	isexcell : true,
+
+	//---------------------------------------------------------------------------
+	// excell.is51cell()   [＼]のセルかチェックする
+	//---------------------------------------------------------------------------
+	is51cell : function(){ return (this.ques===51);}
 }
 });

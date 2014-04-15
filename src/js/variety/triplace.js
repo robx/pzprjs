@@ -86,6 +86,9 @@ Cell:{
 		}
 	}
 },
+EXCell:{
+	ques : 51
+},
 Board:{
 	hasborder : 1,
 	hasexcell : 1,
