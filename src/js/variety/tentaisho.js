@@ -317,7 +317,7 @@ Graphic:{
 					g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 				}
 			}
-			else{ this.vhide(headers[0]+id);}
+			else{ g.vhide(headers[0]+id);}
 
 			if(star.getStar()===2){
 				g.fillStyle = (star.iserror() ? this.errcolor1 : this.cellcolor);
@@ -325,7 +325,7 @@ Graphic:{
 					g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ g.vhide(headers[1]+id);}
 		}
 	},
 

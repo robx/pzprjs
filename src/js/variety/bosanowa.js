@@ -197,11 +197,11 @@ Graphic:{
 			var cell = clist[i];
 			if(cell.error===1){
 				if(this.vnop(header+cell.id,this.FILL)){
-					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
-					g.fillRect(rpx, rpy, this.cw, this.ch);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.fillRectCenter(px, py, this.bw, this.bh);
 				}
 			}
-			else{ this.vhide([header+cell.id]);}
+			else{ g.vhide(header+cell.id);}
 		}
 	},
 
@@ -240,7 +240,7 @@ Graphic:{
 					}
 				}
 			}
-			else{ if(!g.use.canvas){ this.vhide([header+border.id]);}}
+			else{ if(!g.use.canvas){ g.vhide(header+border.id);}}
 		}
 	},
 	drawGrid_waritai : function(){
@@ -255,17 +255,17 @@ Graphic:{
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				g.fillStyle=this.gridcolor;
 				if(this.vnop(headers[0]+id,this.NONE)){
-					if(border.isVert()){ g.fillRect(px, py-this.bh, 1, this.ch+1);}
-					else               { g.fillRect(px-this.bw, py, this.cw+1, 1);}
+					if(border.isVert()){ g.fillRectCenter(px+0.5, py, 0.5, this.bh);}
+					else               { g.fillRectCenter(px, py+0.5, this.bw, 0.5);}
 				}
 
 				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
 				if(this.vnop(headers[1]+id,this.FILL)){
-					if(border.isVert()){ g.fillRect(px, py-csize, 1, 2*csize+1);}
-					else               { g.fillRect(px-csize, py, 2*csize+1, 1);}
+					if(border.isVert()){ g.fillRectCenter(px+0.5, py, 0.5, csize);}
+					else               { g.fillRectCenter(px, py+0.5, csize, 0.5);}
 				}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
 
@@ -282,10 +282,10 @@ Graphic:{
 				g.fillStyle = "white";
 				if(this.vnop(header+border.id,this.NONE)){
 					var px = border.bx*this.bw, py = border.by*this.bh;
-					g.fillRect(px-csize, py-csize, 2*csize+1, 2*csize+1);
+					g.fillRectCenter(px, py, csize, csize);
 				}
 			}
-			else{ this.vhide(header+border.id);}
+			else{ g.vhide(header+border.id);}
 		}
 	},
 	drawNumbersBD : function(){
@@ -319,10 +319,10 @@ Graphic:{
 				{
 					g.fillStyle = "rgb(127,127,127)";
 					if(this.vnop([header,bx,by].join('_'),this.NONE)){
-						g.fillRect((bx-1)*this.bw, (by-1)*this.bh, this.cw+1, this.ch+1);
+						g.fillRectCenter(bx*this.bw+0.5, by*this.bh+0.5, this.bw+0.5, this.bh+0.5);
 					}
 				}
-				else{ this.vhide([header,bx,by].join('_'));}
+				else{ g.vhide([header,bx,by].join('_'));}
 			}
 		}
 	},

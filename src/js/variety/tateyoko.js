@@ -187,28 +187,27 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
-			var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
-			var lw = Math.max(this.cw/6, 3);	//LineWidth
-			var lp = (this.bw-lw/2);			//LinePadding
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
 
 			var err = cell.error;
-			if     (err===1||err===4){ g.fillStyle = this.errlinecolor; lw++;}
+			if     (err===1||err===4){ g.fillStyle = this.errlinecolor; lm+=0.5;}
 			else if(err===-1){ g.fillStyle = this.errlinebgcolor;}
 			else{ g.fillStyle = this.linecolor;}
 
 			if(cell.qans===12){
 				if(this.vnop(headers[0]+id,this.FILL)){
-					g.fillRect(rpx+lp, rpy, lw, this.ch+1);
+					g.fillRectCenter(px, py, lm, this.bh);
 				}
 			}
-			else{ this.vhide(headers[0]+id);}
+			else{ g.vhide(headers[0]+id);}
 
 			if(cell.qans===13){
 				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillRect(rpx, rpy+lp, this.cw+1, lw);
+					g.fillRectCenter(px, py, this.bw, lm);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ g.vhide(headers[1]+id);}
 		}
 	},
 
@@ -222,11 +221,11 @@ Graphic:{
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+cell.id,this.FILL)){
-					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
-					g.fillRect(rpx, rpy, this.cw+1, this.ch+1);
+					var px = cell.bx*this.bw+0.5, py = cell.by*this.bh+0.5;
+					g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
 				}
 			}
-			else{ this.vhide(header+cell.id);}
+			else{ g.vhide(header+cell.id);}
 		}
 	},
 	drawNumbers_tateyoko : function(){

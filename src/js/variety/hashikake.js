@@ -190,25 +190,25 @@ Graphic:{
 
 				if(border.line===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
-						if(!isvert){ g.fillRect(px-lm, py-this.bh-lm, lw, this.ch+lw);}
-						else       { g.fillRect(px-this.bw-lm, py-lm, this.cw+lw, lw);}
+						if(!isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
+						else       { g.fillRectCenter(px, py, this.bw+lm, lm);}
 					}
 				}
-				else{ this.vhide(headers[0]+id);}
+				else{ g.vhide(headers[0]+id);}
 
 				if(border.line===2){
 					if(this.vnop(headers[1]+id,this.FILL)){
-						if(!isvert){ g.fillRect(px-lm-ls, py-this.bh-lm, lw, this.ch+lw);}
-						else       { g.fillRect(px-this.bw-lm, py-lm-ls, this.cw+lw, lw);}
+						if(!isvert){ g.fillRectCenter(px-ls, py, lm, this.bh+lm);}
+						else       { g.fillRectCenter(px, py-ls, this.bw+lm, lm);}
 					}
 					if(this.vnop(headers[2]+id,this.FILL)){
-						if(!isvert){ g.fillRect(px-lm+ls, py-this.bh-lm, lw, this.ch+lw);}
-						else       { g.fillRect(px-this.bw-lm, py-lm+ls, this.cw+lw, lw);}
+						if(!isvert){ g.fillRectCenter(px+ls, py, lm, this.bh+lm);}
+						else       { g.fillRectCenter(px, py+ls, this.bw+lm, lm);}
 					}
 				}
-				else{ this.vhide([headers[1]+id, headers[2]+id]);}
+				else{ g.vhide([headers[1]+id, headers[2]+id]);}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
 		}
 	},
 	// 背景色をつけたい

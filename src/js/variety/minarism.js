@@ -175,7 +175,7 @@ Graphic:{
 			if(border.qdir!==0 || border.qnum!==-1){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				g.fillStyle = "white";
-				g.fillRect(px-csize, py-csize, 2*csize+1, 2*csize+1);
+				g.fillRectCenter(px, py, csize, csize);
 			}
 		}
 	},
@@ -200,7 +200,7 @@ Graphic:{
 					g.shapeCircle(px, py, csize);
 				}
 			}
-			else{ this.vhide([headers[0]+id]);}
+			else{ g.vhide([headers[0]+id]);}
 
 			// 数字の描画
 			var text = (border.qnum>0 ? ""+border.qnum : "");
@@ -209,7 +209,7 @@ Graphic:{
 			this.disptext(text, px, py, option);
 
 			// 不等号の描画
-			this.vhide([headers[1]+id, headers[2]+id]);
+			g.vhide([headers[1]+id, headers[2]+id]);
 			if(border.qdir!==border.NDIR){
 				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
 					switch(border.qdir){

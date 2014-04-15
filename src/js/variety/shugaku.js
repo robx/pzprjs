@@ -221,11 +221,11 @@ Graphic:{
 			if(isdraw){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
-					var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
-					g.fillRect(rpx+1, rpy+1, this.cw-1, this.ch-1);
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.fillRectCenter(px, py, this.bw, this.bh);
 				}
 			}
-			else{ this.vhide(header+cell.id);}
+			else{ g.vhide(header+cell.id);}
 		}
 	},
 	drawPillows : function(){
@@ -256,10 +256,10 @@ Graphic:{
 
 				if(this.vnop(header+cell.id,this.FILL)){
 					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeRect(px-rw, py-rh, rw*2+1, rh*2+1);
+					g.shapeRectCenter(px, py, rw, rh);
 				}
 			}
-			else{ this.vhide([header+cell.id]);}
+			else{ g.vhide(header+cell.id);}
 		}
 	},
 

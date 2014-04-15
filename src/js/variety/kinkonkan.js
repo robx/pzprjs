@@ -310,15 +310,15 @@ Graphic:{
 			if(err!==0 || ql!==0){
 				if     (err==1){ g.fillStyle = this.errbcolor1;}
 				else if(ql > 0){ g.fillStyle = this.lightcolor;}
-				var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
+				var px = cell.bx*this.bw+0.5, py = cell.by*this.bh+0.5;
 				if(err===1 || ql===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRect(rpx, rpy, this.cw, this.ch);
+						g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
 					}
 				}
-				else{ this.drawTriangle1(rpx, rpy, ql, headers[ql-1]+id);}
+				else{ this.drawTriangle1(px, py, ql, headers[ql-1]+id);}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);}
 		}
 	},
 

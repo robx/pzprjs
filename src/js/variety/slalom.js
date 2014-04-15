@@ -379,9 +379,9 @@ Graphic:{
 
 			if(cell.ques===21){ //たて
 				if(this.vnop([headers[0],id].join("_"),this.FILL)){
-					var px = (cell.bx*this.bw)-lm+1, py, rpy = (cell.by-1)*this.bh, max = rpy+this.ch;
+					var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
 					g.beginPath();
-					for(py=rpy;py<max;py+=ll*2){
+					for(py=ry;py<max;py+=ll*2){
 						g.moveTo(px,   py);
 						g.lineTo(px+lw,py);
 						g.lineTo(px+lw,py+ll);
@@ -392,13 +392,13 @@ Graphic:{
 					g.fill();
 				}
 			}
-			else{ this.vhide([headers[0],id].join("_"));}
+			else{ g.vhide([headers[0],id].join("_"));}
 
 			if(cell.ques===22){ //よこ
 				if(this.vnop([headers[1],id].join("_"),this.FILL)){
-					var px, py = (cell.by*this.bh)-lm+1, rpx = (cell.bx-1)*this.bw, max = rpx+this.cw;
+					var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
 					g.beginPath();
-					for(px=rpx;px<max;px+=ll*2){
+					for(px=rx;px<max;px+=ll*2){
 						g.moveTo(px,   py);
 						g.lineTo(px+ll,py);
 						g.lineTo(px+ll,py+lw);
@@ -409,7 +409,7 @@ Graphic:{
 					g.fill();
 				}
 			}
-			else{ this.vhide([headers[1],id].join("_"));}
+			else{ g.vhide([headers[1],id].join("_"));}
 		}
 	},
 
@@ -421,7 +421,7 @@ Graphic:{
 
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
 		var csize = this.cw*0.42, linewidth = Math.max(this.cw*0.05, 1);
-		this.vdel(["c_stpos", "text_stpos"]);
+		g.vdel(["c_stpos", "text_stpos"]);
 
 		g.lineWidth = linewidth;
 		g.strokeStyle = this.cellcolor;

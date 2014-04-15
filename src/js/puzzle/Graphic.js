@@ -131,9 +131,6 @@ Graphic:{
 		this.minYdeg = 0.18;
 		this.maxYdeg = 0.70;
 
-		this.zidx = 1;
-		this.zidx_array=[];
-
 		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
 
 		this.numobj = {};					// エレメントへの参照を保持する
@@ -246,8 +243,8 @@ Graphic:{
 		// 盤面のページ内における座標を設定 (Canvasのサイズ確定後に取得する)
 		this.setPagePos();
 
-		// flushCanvas, vnopなどの関数を初期化する
-		this.resetVectorFunctions();
+		// vnop関数を初期化する
+		this.vnop = this.constructor.prototype.vnop;
 
 		this.context.clear();
 	},
@@ -268,7 +265,7 @@ Graphic:{
 		this.bh = this.ch/2;
 
 		this.lw = Math.max(this.cw/this.lwratio, 3);
-		this.lm = (this.lw-1)/2;
+		this.lm = this.lw/2;
 	},
 	setOffset : function(){
 		var g = this.context, g2 = this.subcontext;
@@ -518,149 +515,80 @@ Graphic:{
 	repaintParts : function(blist){ }, // オーバーライド用
 
 	//---------------------------------------------------------------------------
-	// pc.resetVectorFunctions() flushCanvas, vnop系関数をリセットする
 	// pc.flushCanvas()    指定された領域を白で塗りつぶす
 	//---------------------------------------------------------------------------
-	resetVectorFunctions : function(){
-		var proto = this.owner.Graphic.prototype;
-		this.flushCanvas    = proto.flushCanvas;
-		this.vnop  = proto.vnop;
-		this.vhide = proto.vhide;
-		this.vdel  = proto.vdel;
-		this.vinc  = proto.vinc;
-	},
-
 	flushCanvas : function(){
-		var g = this.context
-		this.flushCanvas = ((this.use.canvas) ?
-			function(){
-				var d = this.range;
-				var g = this.context;
-				var px=d.x1*this.bw, py=d.y1*this.bh, pw=(d.x2-d.x1)*this.bw+1, ph=(d.y2-d.y1)*this.bh+1;
-				var pxmin=-this.x0, pymin=-this.y0, pxmax=g.canvas.clientWidth, pymax=g.canvas.clientHeight;
-				px=(px>=pxmin?px:pxmin); py=(py>=pymin?py:pymin);
-				pw=(px+pw<=pxmax?pw:pxmax-px); ph=(py+ph<=pymax?ph:pymax-py);
-				g.fillStyle = this.bgcolor;
+		var g = this.vinc('background', 'crispEdges');
+
+		g.fillStyle = this.bgcolor;
+		if(g.use.canvas){
+			var d = this.range;
+			var px = d.x1*this.bw, py = d.y1*this.bh, pw = (d.x2-d.x1)*this.bw+1, ph = (d.y2-d.y1)*this.bh+1;
+			var pxmin = -this.x0, pymin = -this.y0, pxmax = g.canvas.clientWidth, pymax = g.canvas.clientHeight;
+			px = (px>=pxmin ? px : pxmin);
+			py = (py>=pymin ? py : pymin);
+			pw = (px+pw<=pxmax ? pw : pxmax-px);
+			ph = (py+ph<=pymax ? ph : pymax-py);
+			g.fillRect(px, py, pw, ph);
+		}
+		else{
+			if(this.vnop("BG",this.NONE)){
+				var bd = this.owner.board;
+				var px = bd.minbx*this.bw, py = bd.minby*this.bh,
+					pw = (bd.maxbx-bd.minbx)*this.bw, ph=(bd.maxby-bd.minby)*this.bh;
 				g.fillRect(px, py, pw, ph);
 			}
-		:
-			function(){ this.zidx=1;}
-		);
-		this.flushCanvas();
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
-	// pc.vshow() VMLで既に描画されているオブジェクトを表示する
-	// pc.vhide() VMLで既に描画されているオブジェクトを隠す
-	// pc.vdel()  VMLで既に描画されているオブジェクトを削除する
-	// pc.vinc()  z-indexに設定される値を+1する
 	//---------------------------------------------------------------------------
 	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
 	vnop : function(vid, ccflag){
-		this.vnop = ((this.use.canvas) ?
-			function(vid, ccflag){ return true;}
-		: (this.use.vml) ?
-			function(vid, ccflag){
-				var g = this.context
-				g.vid = vid;
-				var el = g.elements[vid];
-				if(!el){ return true;}
-				el.style.display = 'inline';
-				if(this.vnop_FILL[ccflag])  { el.fillcolor   = Candle.parse(g.fillStyle);}
-				if(this.vnop_STROKE[ccflag]){ el.strokecolor = Candle.parse(g.strokeStyle);}
-				return false;
-			}
-		: /* (this.use.svg) */
-			function(vid, ccflag){
-				var g = this.context
-				g.vid = vid;
-				var el = g.elements[vid];
-				if(!el){ return true;}
-				el.setAttribute('display','inline');
-				if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Candle.parse(g.fillStyle));}
-				if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Candle.parse(g.strokeStyle));}
-				return false;
-			}
+		this.vnop = (
+			(this.use.canvas) ? this.vnop_canvas :
+			(this.use.svg)    ? this.vnop_svg :
+		 /* (this.use.vml) ? */ this.vnop_vml
 		);
 		return this.vnop(vid, ccflag);
 	},
-	vshow : function(vid){
-		this.vshow = ((this.use.canvas) ?
-			function(vid){}
-		:
-			function(vid){
-				var g = this.context
-				g.vid = vid;
-				if(!g.elements[vid]){ return;}
-
-				if(g.use.svg){ g.elements[vid].setAttribute('display','inline');}
-				else /* if(g.use.vml) */{ g.elements[vid].style.display = 'inline';}
-			}
-		);
-		this.vshow(vid);
+	vnop_canvas : function(vid, ccflag){
+		return true;
 	},
-	vhide : function(vid){
+	vnop_vml : function(vid, ccflag){
 		var g = this.context
-		this.vhide = ((this.use.canvas) ?
-			function(vid){}
-		:
-			function(vid){
-				var g = this.context
-				if(typeof vid === 'string'){ vid = [vid];}
-				for(var i=0;i<vid.length;i++){
-					if(!g.elements[vid[i]]){ continue;}
-
-					if(g.use.svg){ g.elements[vid[i]].setAttribute('display','none');}
-					else /* if(g.use.vml) */{ g.elements[vid[i]].style.display = 'none';}
-				}
-			}
-		);
-		this.vhide(vid);
+		g.vid = vid;
+		var el = g.elements[vid];
+		if(!!el){
+			el.style.display = 'inline';
+			if(this.vnop_FILL[ccflag])  { el.fillcolor   = Candle.parse(g.fillStyle);}
+			if(this.vnop_STROKE[ccflag]){ el.strokecolor = Candle.parse(g.strokeStyle);}
+			return false;
+		}
+		return true;
 	},
-	vdel : function(vid){
+	vnop_svg : function(vid, ccflag){
 		var g = this.context
-		this.vdel = ((this.use.canvas) ?
-			function(vid){}
-		:
-			function(vid){
-				var g = this.context
-				if(typeof vid === 'string'){ vid = [vid];}
-				for(var i=0;i<vid.length;i++){
-					if(!g.elements[vid[i]]){ continue;}
-
-					g.target.removeChild(g.elements[vid[i]]);
-					g.elements[vid[i]] = null;
-				}
-			}
-		);
-		this.vdel(vid);
+		g.vid = vid;
+		var el = g.elements[vid];
+		if(!!el){
+			el.removeAttribute('display');
+			if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Candle.parse(g.fillStyle));}
+			if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Candle.parse(g.strokeStyle));}
+			return false;
+		}
+		return true;
 	},
+
+	//---------------------------------------------------------------------------
+	// pc.vinc()  レイヤーを返す
+	//---------------------------------------------------------------------------
 	vinc : function(layerid, rendering){
 		var g = this.context
-		this.vinc = ((this.use.canvas) ?
-			function(layerid, rendering){
-				var g = this.context
-				g.setLayer(layerid);
-				if(rendering){ g.setRendering(rendering);}
-				return g;
-			}
-		:
-			function(layerid, rendering){
-				var g = this.context
-				g.vid = "";
-				g.setLayer(layerid);
-
-				if(!this.zidx_array[layerid]){
-					this.zidx++;
-					this.zidx_array[layerid] = this.zidx;
-					if(rendering){ g.setRendering(rendering);}
-					g.getLayerElement().style.zIndex = this.zidx;
-				}
-				return g;
-			}
-		);
-		return this.vinc(layerid, rendering);
+		g.setLayer(layerid);
+		if(rendering){ g.setRendering(rendering);}
+		return g;
 	},
 
 	//---------------------------------------------------------------------------
@@ -668,15 +596,15 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	disptext : function(text, px, py, option){
 		option = option || {};
-		var key = option.key || "", vid = "text_"+key;
-		if((typeof text !== 'string')||(text.length===0)){ this.vhide(vid); return;}
+		var g = this.context, key = option.key || "", vid = "text_"+key;
+		if((typeof text !== 'string')||(text.length===0)){ g.vhide(vid); return;}
 
-		var g = this.context;
 		var style = (option.style ? option.style+" " : "");
 		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
 		var ratioarray = option.ratio || [1], ratio = ratioarray[text.length-1];
 		ratio = ratio || ratioarray[ratioarray.length-1];
 
+		g.vid = vid;
 		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;
 		g.fillStyle = option.color || this.fontcolor;
 
@@ -692,8 +620,9 @@ Graphic:{
 			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
 		}
 		
-		if(g.use.vml){ this.vdel(vid);}
-		this.vshow(vid);
+		if(g.use.vml){ g.vdel(vid);}
+		g.vshow(vid);
+		
 		g.fillText(text, px, py);
 	}
 }

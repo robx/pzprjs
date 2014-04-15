@@ -165,7 +165,7 @@ Graphic:{
 					else               { g.strokeDashedLine(px-this.bw, py+0.5, px+this.bw, py+0.5, [dotSize]);}
 				}
 			}
-			else{ this.vhide(header+border.id);}
+			else{ g.vhide(header+border.id);}
 		}
 	}
 },

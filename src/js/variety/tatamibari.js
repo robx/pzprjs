@@ -96,8 +96,8 @@ Graphic:{
 	drawMarks : function(){
 		var g = this.vinc('cell_ques', 'crispEdges');
 
-		var lw = Math.max(this.cw/12, 3);	//LineWidth
-		var ll = this.cw*0.70;				//LineLength
+		var lm = Math.max(this.cw/12, 3)/2;	//LineWidth
+		var lp = this.bw*0.70;				//LineLength
 		var headers = ["c_lp1_", "c_lp2_"];
 		g.fillStyle = this.borderQuescolor;
 
@@ -107,17 +107,17 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			if(qn===1||qn===2){
 				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRect(px-lw/2, py-ll/2, lw, ll);
+					g.fillRectCenter(px, py, lm, lp);
 				}
 			}
-			else{ this.vhide(headers[0]+id);}
+			else{ g.vhide(headers[0]+id);}
 
 			if(qn===1||qn===3){
 				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRect(px-ll/2, py-lw/2, ll, lw);
+					g.fillRectCenter(px, py, lp, lm);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ g.vhide(headers[1]+id);}
 		}
 	}
 },

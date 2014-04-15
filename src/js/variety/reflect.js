@@ -146,15 +146,15 @@ Graphic:{
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
 				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRect(px, py-this.bh, 1, this.ch);
+					g.fillRectCenter(px+0.5, py, 0.5, this.bh);
 				}
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
 				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRect(px-this.bw, py, this.cw, 1);
+					g.fillRectCenter(px, py+0.5, this.bw, 0.5);
 				}
 			}
-			else{ this.vhide(header+border.id);}
+			else{ g.vhide(header+border.id);}
 		}
 	},
 	draw11s : function(){
@@ -172,13 +172,13 @@ Graphic:{
 
 				// Gridの真ん中＝cpx,cpy+0.5
 				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRect(px+0.5-lm, py+0.5-ll/2,  lw, ll);
+					g.fillRectCenter(px+0.5, py+0.5, lm, ll/2);
 				}
 				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRect(px+0.5-ll/2, py+0.5-lm,  ll, lw);
+					g.fillRectCenter(px+0.5, py+0.5, ll/2, lm);
 				}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
 	drawNumber1 : function(cell){

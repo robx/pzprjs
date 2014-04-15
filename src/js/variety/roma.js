@@ -174,7 +174,7 @@ Graphic:{
 					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 				}
 			}
-			else{ this.vhide(header+cell.id);}
+			else{ g.vhide(header+cell.id);}
 		}
 	}
 },

@@ -115,7 +115,7 @@ Graphic:{
 					g.shapeCircle(px, py, rsize);
 				}
 
-				this.vdel([headers[1]+id]);
+				g.vdel(headers[1]+id);
 				if(cell.qdir!==0){
 					g.fillStyle = this.cellcolor;
 					switch(cell.qdir){
@@ -129,7 +129,7 @@ Graphic:{
 					}
 				}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
 

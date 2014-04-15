@@ -110,7 +110,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id, num=cell.getNum();
-			this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
+			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
 			if(num<=0){ continue;}
 
 			g.strokeStyle = this.getCellNumberColor(cell);
@@ -125,7 +125,7 @@ Graphic:{
 					g.stroke();
 					break;
 				case 3:
-					g.strokeRect(px-rsize, py-rsize, 2*rsize, 2*rsize);
+					g.strokeRectCenter(px, py, rsize, rsize);
 					break;
 				}
 			}

@@ -169,10 +169,10 @@ Graphic:{
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
 				if(this.vnop(header+cell.id,this.FILL)){
 					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRect(px-rw, py-rh, rw*2+1, rh*2+1);
+					g.fillRectCenter(px, py, rw, rh);
 				}
 			}
-			else{ this.vhide([header+cell.id]);}
+			else{ g.vhide(header+cell.id);}
 		}
 	}
 },

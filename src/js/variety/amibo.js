@@ -294,29 +294,29 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
-			var lw = Math.max(this.cw/6, 3);	//LineWidth
-			var lp = (this.bw-lw/2);			//LinePadding
+			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
+			var lp = (this.bw-lm);				//LinePadding
 
 			var qa=cell.qans;
 			if(qa!==-1){
-				var rpx = (cell.bx-1)*this.bw, rpy = (cell.by-1)*this.bh;
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if(qa===1 || qa===3){
 					g.fillStyle = this.getBarColor(cell,true);
 					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRect(rpx+lp, rpy, lw, this.ch+1);
+						g.fillRectCenter(px, py, lm, this.bh);
 					}
 				}
-				else{ this.vhide(headers[0]+id);}
+				else{ g.vhide(headers[0]+id);}
 
 				if(qa===2 || qa===3){
 					g.fillStyle = this.getBarColor(cell,false);
 					if(this.vnop(headers[1]+id,this.FILL)){
-						g.fillRect(rpx, rpy+lp, this.cw+1, lw);
+						g.fillRectCenter(px, py, this.bw, lm);
 					}
 				}
-				else{ this.vhide(headers[1]+id);}
+				else{ g.vhide(headers[1]+id);}
 			}
-			else{ this.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide([headers[0]+id, headers[1]+id]);}
 		}
 	},
 
@@ -332,7 +332,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
 			if(!cell.isNum()){
-				this.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id]);
+				g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id]);
 				continue;
 			}
 
@@ -347,7 +347,7 @@ Graphic:{
 					g.fillRect(px-bw+lp, py-bh, lw, bh);
 				}
 			}
-			else{ this.vhide(headers[0]+id);}
+			else{ g.vhide(headers[0]+id);}
 
 			var cell2 = cell.dn(), qa = cell2.qans;
 			if(qa===1||qa===3){
@@ -356,7 +356,7 @@ Graphic:{
 					g.fillRect(px-bw+lp, py+1, lw, bh);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ g.vhide(headers[1]+id);}
 
 			var cell2 = cell.lt(), qa = cell2.qans;
 			if(qa===2||qa===3){
@@ -365,7 +365,7 @@ Graphic:{
 					g.fillRect(px-bw, py-bh+lp, bw, lw);
 				}
 			}
-			else{ this.vhide(headers[2]+id);}
+			else{ g.vhide(headers[2]+id);}
 
 			var cell2 = cell.rt(), qa = cell2.qans;
 			if(qa===2||qa===3){
@@ -374,7 +374,7 @@ Graphic:{
 					g.fillRect(px+1, py-bh+lp, bw, lw);
 				}
 			}
-			else{ this.vhide(headers[3]+id);}
+			else{ g.vhide(headers[3]+id);}
 		}
 	},
 
@@ -392,11 +392,11 @@ Graphic:{
 				if(this.vnop(header+border.id,this.NONE)){
 					var lw = this.lw + this.addlw, lm = this.lm;
 					var px = border.bx*this.bw, py = border.by*this.bh;
-					if(border.isVert()){ g.fillRect(px-lm, py-rw-lm, lw, rw*2+lw);}
-					else               { g.fillRect(px-rw-lm, py-lm, rw*2+lw, lw);}
+					if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
+					else               { g.fillRectCenter(px, py, rw+lm, lm);}
 				}
 			}
-			else{ this.vhide(header+border.id);}
+			else{ g.vhide(header+border.id);}
 		}
 	}
 },

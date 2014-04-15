@@ -375,15 +375,15 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], id = border.id, dir=border.getArrow();
 
-			this.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
+			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
 			if(dir>=1 && dir<=4){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 
 				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
-						case border.UP: case border.DN: g.fillRect(px-lm, py-ll, lw, ll*2); break;
-						case border.LT: case border.RT: g.fillRect(px-ll, py-lm, ll*2, lw); break;
+						case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
+						case border.LT: case border.RT: g.fillRectCenter(px, py, ll, lm); break;
 					}
 				}
 

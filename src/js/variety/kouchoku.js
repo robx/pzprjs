@@ -469,7 +469,7 @@ Graphic:{
 				g.strokeLine(px1,py1,px2,py2);
 			}
 		}
-		else{ this.vhide(header_id);}
+		else{ g.vhide(header_id);}
 	},
 
 	drawCrosses_kouchoku : function(){
@@ -493,7 +493,7 @@ Graphic:{
 					g.shapeCircle(px, py, csize1);
 				}
 			}
-			else{ this.vhide([headers[0]+id]);}
+			else{ g.vhide([headers[0]+id]);}
 
 			// アルファベットの描画
 			var text = ((cross.qnum>0) ? (cross.qnum+9).toString(36).toUpperCase() : "");
@@ -510,7 +510,7 @@ Graphic:{
 					g.fillCircle(px, py, csize2);
 				}
 			}
-			else{ this.vhide(headers[1]+id);}
+			else{ g.vhide(headers[1]+id);}
 		}
 	},
 
@@ -532,7 +532,7 @@ Graphic:{
 					g.strokeCircle(px, py, csize);
 				}
 			}
-			else{ this.vhide(header+cross.id);}
+			else{ g.vhide(header+cross.id);}
 		}
 	}
 },

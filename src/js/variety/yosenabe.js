@@ -244,11 +244,11 @@ Graphic:{
 			if(!!color && cell.qnum2!==-1 && this.owner.getConfig('dispmove') && cell.isDestination()){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
-					var rpx = (cell.bx-0.9)*this.bw, rpy = (cell.by-0.9)*this.bh;
-					g.fillRect(rpx, rpy, this.cw*0.4, this.ch*0.4);
+					var rx = (cell.bx-0.9)*this.bw, ry = (cell.by-0.9)*this.bh;
+					g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
 				}
 			}
-			else{ this.vhide(header+cell.id); continue;}
+			else{ g.vhide(header+cell.id); continue;}
 		}
 	},
 	drawFillingNumbers : function(){
