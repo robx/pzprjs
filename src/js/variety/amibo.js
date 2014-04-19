@@ -338,7 +338,7 @@ Graphic:{
 
 			var lw = Math.max(this.cw/6, 3);	//LineWidth
 			var lp = (this.bw-lw/2);			//LinePadding
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			var px = cell.bx*this.bw-0.5, py = cell.by*this.bh-0.5;
 
 			var cell2 = cell.up(), qa = cell2.qans;
 			if(qa===1||qa===3){

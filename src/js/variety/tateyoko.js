@@ -221,7 +221,7 @@ Graphic:{
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
 				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw+0.5, py = cell.by*this.bh+0.5;
+					var px = cell.bx*this.bw, py = cell.by*this.bh;
 					g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
 				}
 			}

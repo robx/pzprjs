@@ -227,17 +227,29 @@ Graphic:{
 		this.drawTarget();
 	},
 	flushCanvas : function(){
-		this.flushCanvas = ((this.use.canvas) ?
-			function(){
-				var g = this.context, bd = this.owner.board;
-				var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-				g.fillStyle = "rgb(255, 255, 255)";
-				g.fillRect(x1*this.bw, y1*this.bh, (x2-x1)*this.bw+1, (y2-y1)*this.bh+1);
-			}
-		:
-			function(){ this.zidx=1;}
-		);
-		this.flushCanvas();
+		var g = this.vinc('background', 'crispEdges');
+		var minbx, minby, bwidth, bheight;
+		var bw = this.bw, bh = this.bh;
+
+		if(g.use.canvas){
+			var d = this.range;
+			minbx   = d.x1;
+			minby   = d.y1;
+			bwidth  = d.x2 - minbx;
+			bheight = d.y2 - minby;
+		}
+		else{
+			var bd = this.owner.board;
+			minbx   = bd.minbx;
+			minby   = bd.minby;
+			bwidth  = bd.maxbx - minbx;
+			bheight = bd.maxby - minby;
+		}
+
+		g.fillStyle = this.bgcolor;
+		if(this.vnop("BG",this.NONE)){
+			g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
+		}
 	},
 
 	drawGrid_tawa : function(){
@@ -262,7 +274,7 @@ Graphic:{
 				if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
 				else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
 				else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
-				g.fillRect((x1+redx)*this.bw-lm, by*this.bh-lm, (x2-x1-redw)*this.bw+1, lw);
+				g.fillRect((x1+redx)*this.bw-lm-0.5, by*this.bh-lm-0.5, (x2-x1-redw)*this.bw+1, lw);
 			}
 			if(by>=bd.maxby){ break;}
 
@@ -270,7 +282,7 @@ Graphic:{
 			if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
 			for(var bx=xs;bx<=xb;bx+=2){
 				if(this.vnop([headers[1],bx,by].join("_"),this.NONE)){
-					g.fillRect(bx*this.bw-lm, by*this.bh-lm, lw, this.ch+1);
+					g.fillRect(bx*this.bw-lm-0.5, by*this.bh-lm-0.5, lw, this.ch+1);
 				}
 			}
 		}

@@ -229,14 +229,13 @@ Graphic:{
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				if(this.vnop(header+border.id,this.NONE)){
-					/* strokeぶん0.5ずらす */
 					if(border.isVert()){
 						var py1 = py-this.bh, py2 = py+this.bh+1;
-						g.strokeDashedLine(px+0.5, py1, px+0.5, py2, [3]);
+						g.strokeDashedLine(px, py1, px, py2, [3]);
 					}
 					else{
 						var px1 = px-this.bw, px2 = px+this.bw+1;
-						g.strokeDashedLine(px1, py+0.5, px2, py+0.5, [3]);
+						g.strokeDashedLine(px1, py, px2, py, [3]);
 					}
 				}
 			}
@@ -255,14 +254,14 @@ Graphic:{
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				g.fillStyle=this.gridcolor;
 				if(this.vnop(headers[0]+id,this.NONE)){
-					if(border.isVert()){ g.fillRectCenter(px+0.5, py, 0.5, this.bh);}
-					else               { g.fillRectCenter(px, py+0.5, this.bw, 0.5);}
+					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, this.bh);}
+					else               { g.fillRectCenter(px, py, this.bw, 0.5);}
 				}
 
 				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
 				if(this.vnop(headers[1]+id,this.FILL)){
-					if(border.isVert()){ g.fillRectCenter(px+0.5, py, 0.5, csize);}
-					else               { g.fillRectCenter(px, py+0.5, csize, 0.5);}
+					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, csize);}
+					else               { g.fillRectCenter(px, py, csize, 0.5);}
 				}
 			}
 			else{ g.vhide([headers[0]+id, headers[1]+id]);}
@@ -319,7 +318,7 @@ Graphic:{
 				{
 					g.fillStyle = "rgb(127,127,127)";
 					if(this.vnop([header,bx,by].join('_'),this.NONE)){
-						g.fillRectCenter(bx*this.bw+0.5, by*this.bh+0.5, this.bw+0.5, this.bh+0.5);
+						g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
 					}
 				}
 				else{ g.vhide([header,bx,by].join('_'));}

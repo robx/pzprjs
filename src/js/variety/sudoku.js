@@ -60,12 +60,12 @@ Graphic:{
 		g.fillStyle = "black";
 		for(var i=1;i<block;i++){
 			if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i,this.NONE)){
-				g.fillRect(i*block*this.cw-lw+1, y1*this.bh-lw+1, lw, (y2-y1)*this.bh+2*lw-1);
+				g.fillRect(i*block*this.cw-lw+0.5, y1*this.bh-lw+0.5, lw, (y2-y1)*this.bh+2*lw-1);
 			}}
 		}
 		for(var i=1;i<block;i++){
 			if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i,this.NONE)){
-				g.fillRect(x1*this.bw-lw+1, i*block*this.ch-lw+1, (x2-x1)*this.bw+2*lw-1, lw);
+				g.fillRect(x1*this.bw-lw+0.5, i*block*this.ch-lw+0.5, (x2-x1)*this.bw+2*lw-1, lw);
 			}}
 		}
 	}

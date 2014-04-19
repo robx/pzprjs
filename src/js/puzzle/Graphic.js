@@ -277,8 +277,8 @@ Graphic:{
 		
 		// 盤面のセルID:0が描画される左上の位置の設定 (Canvas左上からのオフセット)
 		var bd = this.owner.board;
-		var x0 = this.x0 = ((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0;
-		var y0 = this.y0 = ((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0;
+		var x0 = this.x0 = (((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0) + 0.5;
+		var y0 = this.y0 = (((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0) + 0.5;
 		
 		// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
 		if(!g.use.canvas){
@@ -519,25 +519,27 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	flushCanvas : function(){
 		var g = this.vinc('background', 'crispEdges');
+		var minbx, minby, bwidth, bheight;
+		var bw = this.bw, bh = this.bh;
 
-		g.fillStyle = this.bgcolor;
 		if(g.use.canvas){
 			var d = this.range;
-			var px = d.x1*this.bw, py = d.y1*this.bh, pw = (d.x2-d.x1)*this.bw+1, ph = (d.y2-d.y1)*this.bh+1;
-			var pxmin = -this.x0, pymin = -this.y0, pxmax = g.canvas.clientWidth, pymax = g.canvas.clientHeight;
-			px = (px>=pxmin ? px : pxmin);
-			py = (py>=pymin ? py : pymin);
-			pw = (px+pw<=pxmax ? pw : pxmax-px);
-			ph = (py+ph<=pymax ? ph : pymax-py);
-			g.fillRect(px, py, pw, ph);
+			minbx   = Math.max(d.x1, -this.x0/bw);
+			minby   = Math.max(d.y1, -this.y0/bh);
+			bwidth  = Math.min(d.x2, g.canvas.clientWidth /bw) - minbx;
+			bheight = Math.min(d.y2, g.canvas.clientHeight/bh) - minby;
 		}
 		else{
-			if(this.vnop("BG",this.NONE)){
-				var bd = this.owner.board;
-				var px = bd.minbx*this.bw, py = bd.minby*this.bh,
-					pw = (bd.maxbx-bd.minbx)*this.bw, ph=(bd.maxby-bd.minby)*this.bh;
-				g.fillRect(px, py, pw, ph);
-			}
+			var bd = this.owner.board;
+			minbx   = bd.minbx;
+			minby   = bd.minby;
+			bwidth  = bd.maxbx - minbx;
+			bheight = bd.maxby - minby;
+		}
+
+		g.fillStyle = this.bgcolor;
+		if(this.vnop("BG",this.NONE)){
+			g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
 		}
 	},
 

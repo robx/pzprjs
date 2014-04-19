@@ -244,7 +244,7 @@ Graphic:{
 			if(!!color && cell.qnum2!==-1 && this.owner.getConfig('dispmove') && cell.isDestination()){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
-					var rx = (cell.bx-0.9)*this.bw, ry = (cell.by-0.9)*this.bh;
+					var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
 					g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
 				}
 			}

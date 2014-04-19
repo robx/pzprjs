@@ -310,7 +310,7 @@ Graphic:{
 			if(err!==0 || ql!==0){
 				if     (err==1){ g.fillStyle = this.errbcolor1;}
 				else if(ql > 0){ g.fillStyle = this.lightcolor;}
-				var px = cell.bx*this.bw+0.5, py = cell.by*this.bh+0.5;
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if(err===1 || ql===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
 						g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);

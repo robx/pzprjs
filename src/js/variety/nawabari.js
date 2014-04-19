@@ -157,12 +157,11 @@ Graphic:{
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				if(this.vnop(header+border.id,this.NONE)){
-					/* strokeぶん0.5ずらす */
 					g.lineWidth = 1;
 					g.strokeStyle = this.gridcolor;
 
-					if(border.isVert()){ g.strokeDashedLine(px+0.5, py-this.bh, px+0.5, py+this.bh, [dotSize]);}
-					else               { g.strokeDashedLine(px-this.bw, py+0.5, px+this.bw, py+0.5, [dotSize]);}
+					if(border.isVert()){ g.strokeDashedLine(px, py-this.bh, px, py+this.bh, [dotSize]);}
+					else               { g.strokeDashedLine(px-this.bw, py, px+this.bw, py, [dotSize]);}
 				}
 			}
 			else{ g.vhide(header+border.id);}
