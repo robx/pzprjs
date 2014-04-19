@@ -245,7 +245,7 @@ Graphic:{
 		this.fontAnscolor = "black"; /* 矢印用 */
 
 		if(this.owner.pid==='sashigane'){
-			this.fontsizeratio = [0.68, 0.6, 0.47];
+			this.globalfontsizeratio = 0.85;
 
 			this.hideHatena = true;
 		}

@@ -154,7 +154,7 @@ Graphic:{
 
 		this.gridcolor = this.gridcolor_THIN;
 		this.bcolor    = "silver";
-		this.fontsizeratio = [0.68, 0.6, 0.47];
+		this.globalfontsizeratio = 0.85;
 		this.circleratio = [0.47, 0.42];
 
 		// 線の太さを通常より少し太くする

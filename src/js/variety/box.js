@@ -196,7 +196,6 @@ Graphic:{
 			var px = excell.bx*this.bw, py = excell.by*this.bh;
 			var option = { key:"excell_"+excell.id };
 			option.color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
-			option.ratio = [0.8, 0.7];
 			this.disptext(""+excell.qnum, px, py, option);
 		}
 	},
@@ -227,7 +226,7 @@ Graphic:{
 			if(num<=0){ continue;}
 
 			var option = { key: [header,list[i][0],list[i][1]].join("_") };
-			option.ratio = [0.7, 0.6];
+			option.globalratio = 0.95;
 			this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
 		}
 	}

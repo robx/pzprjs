@@ -92,7 +92,8 @@ Graphic:{
 		this.linecolor_LIGHT = "rgb(0, 192, 0)";
 
 		// その他
-		this.fontsizeratio = [0.8, 0.7, 0.55];	// 数字Fontサイズの倍率
+		this.globalfontsizeratio = 1;			// Fontサイズの倍率
+		this.fontsizeratio = [0.8, 0.7, 0.55];	// 文字の長さ別Fontサイズの倍率
 		this.crosssize = 0.4;
 		this.circleratio = [0.40, 0.35];
 
@@ -603,8 +604,10 @@ Graphic:{
 
 		var style = (option.style ? option.style+" " : "");
 		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
-		var ratioarray = option.ratio || [1], ratio = ratioarray[text.length-1];
-		ratio = ratio || ratioarray[ratioarray.length-1];
+		var ratioarray = option.ratio || this.fontsizeratio;
+		ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
+		ratio *= (option.globalratio || this.globalfontsizeratio);
+		console.log(ratioarray);
 
 		g.vid = vid;
 		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;

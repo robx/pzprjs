@@ -130,7 +130,6 @@ Graphic:{
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var text = ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
 			var option = { key:['cell',cell.id,'anum'].join('_') };
-			option.ratio = [0.80];
 			option.color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
 			this.disptext(text, px, py, option);
 		}

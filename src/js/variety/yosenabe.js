@@ -189,7 +189,7 @@ Graphic:{
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
 		
-		this.fontsizeratio = [0.68, 0.6, 0.47];
+		this.globalfontsizeratio = 0.85;
 	},
 	paint : function(){
 		this.drawBGCells();
@@ -216,7 +216,6 @@ Graphic:{
 		var num    = (this.owner.getConfig('dispmove') ? cell.base : cell).qnum;
 		var text   = (num>0 ? ""+num : "");
 		var option = { key: 'cell_'+cell.id };
-		option.ratio = [0.68, 0.6, 0.48];
 		option.color = this.getCellNumberColor(cell);
 		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 	},
@@ -260,7 +259,7 @@ Graphic:{
 			var topleft = (this.owner.getConfig('dispmove') && cell.isDestination())
 			var option = { key: 'cell5_'+cell.id };
 			option.position = (!topleft ? this.CENTER : this.TOPLEFT);
-			option.ratio = (!topleft ? [0.61, 0.54, 0.43] : [0.37, 0.32, 0.26] /* x0.6 */);
+			option.globalratio = (!topleft ? 0.8 : 0.5);
 			option.color = this.getCellNumberColor(cell);
 			option.style = "bold";
 			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);

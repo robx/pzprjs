@@ -462,7 +462,6 @@ Graphic:{
 			var num = (r>0?bd.hinfo.data[r].number:-1);
 			var text = ((keydown && num>0) ? ""+num : "");
 			var option = { key: "cell_"+c };
-			option.ratio = [0.8, 0.7, 0.55];
 			option.color = "tomato";
 			this.disptext(text, px, py, option);
 		}

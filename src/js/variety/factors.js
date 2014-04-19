@@ -116,7 +116,6 @@ Graphic:{
 
 			var text = (cell.anum!==-1 ? ""+cell.anum : "");
 			var option = { key:['cell',cell.id,'qans'].join('_') };
-			option.ratio = [0.8, 0.7];
 			option.color = (cell.error==1 ? this.fontErrcolor : this.fontAnscolor);
 			this.disptext(text, px, py, option);
 

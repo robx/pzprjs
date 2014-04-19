@@ -254,7 +254,7 @@ Graphic:{
 		this.linecolor = this.linecolor_LIGHT;
 		this.fontcolor = this.fontErrcolor = "black";
 
-		this.fontsizeratio = [0.68, 0.6, 0.47];
+		this.globalfontsizeratio = 0.85;
 		this.circleratio = [0.45, 0.40];
 	},
 

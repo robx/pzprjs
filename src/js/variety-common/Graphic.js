@@ -389,7 +389,7 @@ Graphic:{
 			// 数字の描画
 			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
 			var option = { key: "cell_"+id };
-			option.ratio = (dir===cell.NDIR ? [0.8, 0.7, 0.55] : [0.68, 0.6, 0.47]);
+			if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
 			option.color = g.fillStyle;
 
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
