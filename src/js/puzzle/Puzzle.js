@@ -321,7 +321,7 @@ function setCanvas_main(puzzle, type, callback){
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
 	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
-	Candle.start(puzzle.canvas.id, type, function(g){
+	Candle.start(puzzle.canvas, type, function(g){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
@@ -341,7 +341,7 @@ function createSubCanvas(type){
 	el.style.left = '-10000px';
 	el.style.top = '0px';
 	document.body.appendChild(el);
-	Candle.start(el.id, type, function(g){
+	Candle.start(el, type, function(g){
 		g.canvas.style.position = 'absolute';
 		if(g.use.svg){
 			g.child.setAttribute('xmlns', "http://www.w3.org/2000/svg");

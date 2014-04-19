@@ -607,7 +607,6 @@ Graphic:{
 		var ratioarray = option.ratio || this.fontsizeratio;
 		ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);
-		console.log(ratioarray);
 
 		g.vid = vid;
 		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;
