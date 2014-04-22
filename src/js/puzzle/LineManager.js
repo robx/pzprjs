@@ -47,11 +47,11 @@ LineManager:{
 		var bd = this.owner.board;
 		if(this.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
-			this.ltotal=[(bd.qcols*bd.qrows), 0, 0, 0, 0];
+			this.ltotal=[bd.cellmax, 0, 0, 0, 0];
 		}
 		else{
-			for(var c=0,len=(bd.qcols+1)*(bd.qrows+1);c<len;c++){ this.lcnt[c]=0;}
-			this.ltotal=[((bd.qcols+1)*(bd.qrows+1)), 0, 0, 0, 0];
+			for(var c=0;c<bd.crossmax;c++){ this.lcnt[c]=0;}
+			this.ltotal=[bd.crossmax, 0, 0, 0, 0];
 		}
 
 		// その他の変数初期化
