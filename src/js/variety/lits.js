@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.1
 //
-pzpr.classmgr.makeCustom('lits', {
+pzpr.classmgr.makeCustom(['lits','norinori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

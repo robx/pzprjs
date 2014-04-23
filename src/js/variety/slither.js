@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 スリザーリンク版 slither.js v3.4.1
 //
-pzpr.classmgr.makeCustom('slither', {
+pzpr.classmgr.makeCustom(['slither'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

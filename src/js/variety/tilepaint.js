@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 タイルペイント版 tilepaint.js v3.4.1
 //
-pzpr.classmgr.makeCustom('tilepaint', {
+pzpr.classmgr.makeCustom(['tilepaint'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

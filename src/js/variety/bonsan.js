@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.1
 //
-pzpr.classmgr.makeCustom('bonsan', {
+pzpr.classmgr.makeCustom(['bonsan','heyabon'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

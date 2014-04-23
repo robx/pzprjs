@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajirin.js v3.4.1
 // 
-pzpr.classmgr.makeCustom('yajirin', {
+pzpr.classmgr.makeCustom(['yajirin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

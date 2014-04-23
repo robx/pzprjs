@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クサビリンク版 kusabi.js v3.4.1
 //
-pzpr.classmgr.makeCustom('kusabi', {
+pzpr.classmgr.makeCustom(['kusabi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

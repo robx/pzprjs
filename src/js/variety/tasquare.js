@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 たすくえあ版 tasquare.js v3.4.1
 //
-pzpr.classmgr.makeCustom('tasquare', {
+pzpr.classmgr.makeCustom(['tasquare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

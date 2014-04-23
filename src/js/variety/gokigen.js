@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.1
 //
-pzpr.classmgr.makeCustom('gokigen', {
+pzpr.classmgr.makeCustom(['gokigen','wagiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

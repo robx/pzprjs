@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ボックス版 box.js v3.4.1
 //
-pzpr.classmgr.makeCustom('box', {
+pzpr.classmgr.makeCustom(['box'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

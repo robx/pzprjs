@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 るっくえあ版 lookair.js v3.4.1
 //
-pzpr.classmgr.makeCustom('lookair', {
+pzpr.classmgr.makeCustom(['lookair'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

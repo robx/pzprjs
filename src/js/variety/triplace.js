@@ -1,8 +1,7 @@
 //
 // パズル固有スクリプト部 トリプレイス版 triplace.js v3.4.1
 //
-
-pzpr.classmgr.makeCustom('triplace', {
+pzpr.classmgr.makeCustom(['triplace'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

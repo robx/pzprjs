@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js v3.4.1
 //
-pzpr.classmgr.makeCustom('nagenawa', {
+pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@nagenawa":{

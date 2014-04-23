@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.4.1
 //
-pzpr.classmgr.makeCustom('paintarea', {
+pzpr.classmgr.makeCustom(['paintarea'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

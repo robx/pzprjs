@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 数独版 sudoku.js v3.4.1
 //
-pzpr.classmgr.makeCustom('sudoku', {
+pzpr.classmgr.makeCustom(['sudoku'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,8 +1,7 @@
 //
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.1
 //
-
-pzpr.classmgr.makeCustom('tatamibari', {
+pzpr.classmgr.makeCustom(['tatamibari'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

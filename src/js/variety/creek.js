@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クリーク版 creek.js v3.4.1
 //
-pzpr.classmgr.makeCustom('creek', {
+pzpr.classmgr.makeCustom(['creek'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

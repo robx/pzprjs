@@ -38,8 +38,7 @@ pzpr.classmgr = {
 	//---------------------------------------------------------------
 	// includeCustomFileでファイルを読み込んだ後の処理
 	//---------------------------------------------------------------
-	makeCustom : function(scriptid, custombase){
-		var pidlist = pzpr.variety.PIDlist(scriptid);
+	makeCustom : function(pidlist, custombase){
 		for(var i=0;i<pidlist.length;i++){
 			var pid = pidlist[i];
 			var customclass = this.baseToClass(pid, custombase);

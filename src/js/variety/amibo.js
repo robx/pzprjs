@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 あみぼー版 amibo.js v3.4.1
 //
-pzpr.classmgr.makeCustom('amibo', {
+pzpr.classmgr.makeCustom(['amibo'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

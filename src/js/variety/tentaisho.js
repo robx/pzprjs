@@ -1,8 +1,7 @@
 //
 // パズル固有スクリプト部 天体ショー版 tentaisho.js v3.4.1
 //
-
-pzpr.classmgr.makeCustom('tentaisho', {
+pzpr.classmgr.makeCustom(['tentaisho'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

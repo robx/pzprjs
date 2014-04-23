@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 バッグ版 bag.js v3.4.1
 //
-pzpr.classmgr.makeCustom('bag', {
+pzpr.classmgr.makeCustom(['bag'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

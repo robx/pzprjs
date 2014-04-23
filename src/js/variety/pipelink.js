@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.1
 //
-pzpr.classmgr.makeCustom('pipelink', {
+pzpr.classmgr.makeCustom(['pipelink','pipelinkr'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

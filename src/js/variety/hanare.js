@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 はなれ組版 hanare.js v3.4.1
 //
-pzpr.classmgr.makeCustom('hanare', {
+pzpr.classmgr.makeCustom(['hanare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

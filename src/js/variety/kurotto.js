@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 クロット版 kurotto.js v3.4.1
 //
-pzpr.classmgr.makeCustom('kurotto', {
+pzpr.classmgr.makeCustom(['kurotto'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

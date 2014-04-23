@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 コンビブロック版 cbblock.js v3.4.1
 //
-pzpr.classmgr.makeCustom('cbblock', {
+pzpr.classmgr.makeCustom(['cbblock'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

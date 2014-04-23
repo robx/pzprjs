@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js v3.4.1
 //
-pzpr.classmgr.makeCustom('slalom', {
+pzpr.classmgr.makeCustom(['slalom'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

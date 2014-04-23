@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 はこいり○△□版 hakoiri.js v3.4.1
 //
-pzpr.classmgr.makeCustom('hakoiri', {
+pzpr.classmgr.makeCustom(['hakoiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

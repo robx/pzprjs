@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ましゅ版 mashu.js v3.4.1
 //
-pzpr.classmgr.makeCustom('mashu', {
+pzpr.classmgr.makeCustom(['mashu'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

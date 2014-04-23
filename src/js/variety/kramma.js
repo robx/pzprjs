@@ -1,11 +1,7 @@
 //
 // パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.1
 //
-(function(){
-
-var SVGNS = "http://www.w3.org/2000/svg", XLINKNS = "http://www.w3.org/1999/xlink";
-
-pzpr.classmgr.makeCustom('kramma', {
+pzpr.classmgr.makeCustom(['kramma','kramman','shwolf'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -393,27 +389,27 @@ FailCode:{
 		pc.unsuspend();
 	},
 	createStamp : function(ctx){
-		var defs = document.createElementNS(SVGNS, 'defs');
+		var defs = document.createElementNS(Candle.SVGNS, 'defs');
 		ctx.child.insertBefore(defs, (!!ctx.child.firstChild ? ctx.child.firstChild : null));
 		
-		var el = document.createElementNS(SVGNS, 'image');
+		var el = document.createElementNS(Candle.SVGNS, 'image');
 		el.setAttributeNS(null, "id", this.key);
 		el.setAttributeNS(null, "width",  this.image.width);
 		el.setAttributeNS(null, "height", this.image.height);
-		el.setAttributeNS(XLINKNS, "xlink:href", this.image.src);
+		el.setAttributeNS(Candle.XLINKNS, "xlink:href", this.image.src);
 		defs.appendChild(el);
 		
 		var n=0, w=this.cwidth, h=this.cheight;
 		for(var j=0;j<this.rows;j++){ for(var i=0;i<this.cols;i++){
-			var el = document.createElementNS(SVGNS, 'svg');
+			var el = document.createElementNS(Candle.SVGNS, 'svg');
 			el.setAttribute("id", this.key+n);
 			el.setAttribute("viewBox", [(i*w),(j*h),w,h].join(" "));
 			el.setAttribute("width",  this.painter.cw);
 			el.setAttribute("height", this.painter.ch);
 			defs.appendChild(el);
 			
-			var use = document.createElementNS(SVGNS, 'use');
-			use.setAttributeNS(XLINKNS, "xlink:href", '#'+this.key);
+			var use = document.createElementNS(Candle.SVGNS, 'use');
+			use.setAttributeNS(Candle.XLINKNS, "xlink:href", '#'+this.key);
 			el.appendChild(use);
 			n++;
 		}}
@@ -431,8 +427,8 @@ FailCode:{
 	putStamp : function(n,ctx,dx,dy){
 		if(this.loaded){
 			var el = (!!ctx.vid ? ctx.elements[ctx.vid] : null), newel = !el;
-			if(newel){ el = document.createElementNS(SVGNS, 'use');}
-			el.setAttributeNS(XLINKNS, "xlink:href", '#'+this.key+n);
+			if(newel){ el = document.createElementNS(Candle.SVGNS, 'use');}
+			el.setAttributeNS(Candle.XLINKNS, "xlink:href", '#'+this.key+n);
 			el.setAttribute("x", dx);
 			el.setAttribute("y", dy);
 			if(newel){ ctx.target.appendChild(el);}
@@ -444,5 +440,3 @@ FailCode:{
 	}
 }
 });
-
-})();

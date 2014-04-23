@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 ホタルビーム版 firefly.js v3.4.1
 //
-pzpr.classmgr.makeCustom('firefly', {
+pzpr.classmgr.makeCustom(['firefly'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
