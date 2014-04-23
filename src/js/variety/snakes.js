@@ -260,14 +260,14 @@ AnsCheck:{
 			return (r1>0 && r2>0 && r1!==r2);
 		};
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], cell2 = cell.rt();
+			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.checkOnly){ return false;}
 				sinfo.getclistbycell(cell).seterr(1);
 				sinfo.getclistbycell(cell2).seterr(1);
 				result = false;
 			}
-			cell2 = cell.dn();
+			cell2 = cell.adjacent.bottom;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.checkOnly){ return false;}
 				sinfo.getclistbycell(cell).seterr(1);
@@ -319,11 +319,11 @@ AnsCheck:{
 			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
 			if(!cell){ continue;}
 
-			var cell2, dir=cell.NDIR;
-			cell2=cell.dn(); if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.UP;}
-			cell2=cell.up(); if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.DN;}
-			cell2=cell.rt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.LT;}
-			cell2=cell.lt(); if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.RT;}
+			var cell2, dir=cell.NDIR, adc=cell.adjacent;
+			cell2=adc.bottom; if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.UP;}
+			cell2=adc.top;    if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.DN;}
+			cell2=adc.right;  if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.LT;}
+			cell2=adc.left;   if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.RT;}
 			if(dir===cell.NDIR){ continue;}
 
 			var pos = cell.getaddr(), clist2 = new this.owner.CellList();

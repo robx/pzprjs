@@ -127,7 +127,6 @@ Board:{
 			group2.allclear(false);
 		}
 		group.length = len;
-		this.setposGroup(type);
 		return (len-clen);
 	},
 	getGroup : function(type){
@@ -192,9 +191,13 @@ Board:{
 			var obj = this.cell[id];
 			obj.id = id;
 			obj.isnull = false;
+			obj.validcell = true;
 
 			obj.bx = (id%qc)*2+1;
 			obj.by = ((id/qc)<<1)+1;
+
+			obj.initAdjacent();
+			obj.initAdjBorder();
 		}
 	},
 	setposCrosses : function(){
@@ -207,6 +210,8 @@ Board:{
 
 			obj.bx = (id%(qc+1))*2;
 			obj.by = (id/(qc+1))<<1;
+
+			obj.initAdjBorder();
 		}
 	},
 	setposBorders : function(){
@@ -228,20 +233,7 @@ Board:{
 			}
 			obj.isvert = !(obj.bx&1);
 
-			if(obj.isvert){
-				obj.sidecell[0] = obj.relcell(-1,0);
-				obj.sidecell[1] = obj.relcell( 1,0);
-				obj.sidecross[0] = obj.relcross(0,-1);
-				obj.sidecross[1] = obj.relcross(0, 1);
-			}
-			else{
-				obj.sidecell[0] = obj.relcell(0,-1);
-				obj.sidecell[1] = obj.relcell(0, 1);
-				obj.sidecross[0] = obj.relcross(-1,0);
-				obj.sidecross[1] = obj.relcross( 1,0);
-			}
-			// LineManager用
-			obj.lineedge = (!this.lines.borderAsLine ? obj.sidecell : obj.sidecross);
+			obj.initSideObject();
 		}
 	},
 	setposEXcells : function(){
@@ -267,6 +259,8 @@ Board:{
 				if(i===0)       { obj.bx=-1;     obj.by=2*qr+1;} i--;
 				if(i===0)       { obj.bx=2*qc+1; obj.by=2*qr+1;} i--;
 			}
+
+			obj.initAdjacent();
 		}
 	},
 
@@ -350,28 +344,29 @@ Board:{
 
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
-	getx : function(bx,by,qc,qr){
-		var id = null, cross = this.emptycross;
+ 	getx : function(bx,by,qc,qr){
+		var id = null;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*(qc+1);}
 
-		if(this.hascross!==0 && id!==null){ cross = this.cross[id];}
-		else{
-			if(this.hascross===0){
-				/* LineManager用 */
-				cross = this.newObject('cross', id);
-				cross.isnull = false;
-				cross.bx = bx;
-				cross.by = by;
-			}
+		if(this.hascross!==0){
+			return (id!==null ? this.cross[id] : this.emptycross);
 		}
-		return cross;
+		/* AreaManager用 */
+		else if(this.owner.AreaRoomManager.prototype.enabled){
+			var cross = this.newObject('cross', id);
+			cross.isnull = false;
+			cross.bx = bx;
+			cross.by = by;
+			return cross;
+		}
+		return this.emptycross;
 	},
 	getb : function(bx,by,qc,qr){
 		var id = null;
 		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
-		if(bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1){
+		if(!!this.hasborder && (bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1)){
 			if     (!(bx&1) &&  (by&1)){ id = ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ id = (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
 		}
@@ -411,7 +406,7 @@ Board:{
 		else if(!(bx&1)&&!(by&1)){ return this.getx(bx,by,qc,qr);}
 
 		var cell = this.getc(bx,by,qc,qr);
-		return (!cell.isnull?cell:this.getex(bx,by,qc,qr));
+		return ((cell!==this.emptycell || !this.hasexcell) ? cell : this.getex(bx,by,qc,qr));
 	},
 
 	//---------------------------------------------------------------------------

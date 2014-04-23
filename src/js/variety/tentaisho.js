@@ -141,11 +141,11 @@ Star:{
 	// 星に線が通っていないなら、近くのセルを返す
 	validcell : function(){
 		var obj = this.obj, cell = null;
-		if(obj.iscell)
+		if(obj.group==='cell')
 			{ cell = obj;}
-		else if(obj.iscross && this.owner.board.rooms.crosscnt[obj.id]===0)
+		else if(obj.group==='cross' && this.owner.board.rooms.crosscnt[obj.id]===0)
 			{ cell = obj.relcell(-1,-1);}
-		else if(obj.isborder && obj.getQans()===0)
+		else if(obj.group==='border' && obj.getQans()===0)
 			{ cell = obj.sidecell[0];}
 		return cell;
 	},
@@ -466,9 +466,9 @@ AnsCheck:{
 
 			if(star.validcell()===null){
 				if(this.checkOnly){ return false;}
-				if(star.obj.iscross)
+				if(star.obj.group==='cross')
 					{ star.obj.setCrossBorderError();}
-				else if(star.obj.isborder)
+				else if(star.obj.group==='border')
 					{ star.obj.seterr(1);}
 				result = false;
 			}

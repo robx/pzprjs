@@ -70,11 +70,11 @@ Cell:{
 	minnum : 0,
 
 	getdir4BorderLine1 : function(){
-		var cnt=0;
-		if( this.ub().isLine() ){ cnt++;}
-		if( this.db().isLine() ){ cnt++;}
-		if( this.lb().isLine() ){ cnt++;}
-		if( this.rb().isLine() ){ cnt++;}
+		var adb = this.adjborder, cnt=0;
+		if( adb.top.isLine()    ){ cnt++;}
+		if( adb.bottom.isLine() ){ cnt++;}
+		if( adb.left.isLine()   ){ cnt++;}
+		if( adb.right.isLine()  ){ cnt++;}
 		return cnt;
 	}
 },

@@ -200,11 +200,11 @@ AnsCheck:{
 	checkdir4Line_meji : function(val){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
-			var cnt = 0, cross = bd.cross[c];
-			if(cross.lb().isLine()){ cnt++;}
-			if(cross.rb().isLine()){ cnt++;}
-			if(cross.ub().isLine()){ cnt++;}
-			if(cross.db().isLine()){ cnt++;}
+			var cnt = 0, cross = bd.cross[c], adb = cross.adjborder;
+			if(adb.left.isLine()  ){ cnt++;}
+			if(adb.right.isLine() ){ cnt++;}
+			if(adb.top.isLine()   ){ cnt++;}
+			if(adb.bottom.isLine()){ cnt++;}
 			if(cnt==val){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}

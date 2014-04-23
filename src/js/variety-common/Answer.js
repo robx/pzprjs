@@ -54,17 +54,18 @@ AnsCheck:{
 	checkSideCell : function(func){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.bx<bd.maxbx-1 && func(cell,cell.rt())){
+			var cell = bd.cell[c], cell2 = cell.adjacent.right;
+			if(cell.bx<bd.maxbx-1 && func(cell,cell2)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
-				cell.rt().seterr(1);
+				cell2.seterr(1);
 				result = false;
 			}
-			if(cell.by<bd.maxby-1 && func(cell,cell.dn())){
+			cell2 = cell.adjacent.bottom;
+			if(cell.by<bd.maxby-1 && func(cell,cell2)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
-				cell.dn().seterr(1);
+				cell2.seterr(1);
 				result = false;
 			}
 		}
@@ -165,11 +166,11 @@ AnsCheck:{
 	checkenableLineParts : function(val){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if( (cell.ub().isLine() && cell.noLP(cell.UP)) ||
-				(cell.db().isLine() && cell.noLP(cell.DN)) ||
-				(cell.lb().isLine() && cell.noLP(cell.LT)) ||
-				(cell.rb().isLine() && cell.noLP(cell.RT)) )
+			var cell = bd.cell[c], adb = cell.adjborder;
+			if( (adb.top.isLine()    && cell.noLP(cell.UP)) ||
+				(adb.bottom.isLine() && cell.noLP(cell.DN)) ||
+				(adb.left.isLine()   && cell.noLP(cell.LT)) ||
+				(adb.right.isLine()  && cell.noLP(cell.RT)) )
 			{
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
@@ -492,8 +493,8 @@ AnsCheck:{
 
 		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var dir4bd = [cell.ub(),cell.db(),cell.lb(),cell.rb()];
+			var cell = clist[i], adb = cell.adjborder;
+			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
 			for(var a=0;a<4;a++){
 				var firstbd = dir4bd[a];
 				if(firstbd.isnull){ continue;}
@@ -517,13 +518,13 @@ AnsCheck:{
 		while(1){
 			pos.movedir(dir,1);
 			if(pos.oncell()){
-				var cell = pos.getc();
+				var cell = pos.getc(), adb = cell.adjborder;
 				if(cell.isnull || cell.isNum()){ break;}
 				else if(cell.iscrossing() && cell.lcnt()>=3){ }
-				else if(dir!==1 && cell.db().isLine()){ if(dir!==2){ room.ccnt++;} dir=2;}
-				else if(dir!==2 && cell.ub().isLine()){ if(dir!==1){ room.ccnt++;} dir=1;}
-				else if(dir!==3 && cell.rb().isLine()){ if(dir!==4){ room.ccnt++;} dir=4;}
-				else if(dir!==4 && cell.lb().isLine()){ if(dir!==3){ room.ccnt++;} dir=3;}
+				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ room.ccnt++;} dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ room.ccnt++;} dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ room.ccnt++;} dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ room.ccnt++;} dir=3;}
 			}
 			else{
 				var border = pos.getb();

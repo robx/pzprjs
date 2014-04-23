@@ -67,12 +67,13 @@ KeyEvent:{
 		var cell = this.cursor.getTCC();
 		if(cell.isnull){ return false;}
 
+		var adc=cell.adjacent, adb=cell.adjborder;
 		var nc, nb, dir=cell.NDIR;
 		switch(ca){
-			case this.KEYUP: nc=cell.up(); nb=cell.ub(); dir=cell.UP; break;
-			case this.KEYDN: nc=cell.dn(); nb=cell.db(); dir=cell.DN; break;
-			case this.KEYLT: nc=cell.lt(); nb=cell.lb(); dir=cell.LT; break;
-			case this.KEYRT: nc=cell.rt(); nb=cell.rb(); dir=cell.RT; break;
+			case this.KEYUP: nc=adc.top;    nb=adb.top;    dir=cell.UP; break;
+			case this.KEYDN: nc=adc.bottom; nb=adb.bottom; dir=cell.DN; break;
+			case this.KEYLT: nc=adc.left;   nb=adb.left;   dir=cell.LT; break;
+			case this.KEYRT: nc=adc.right;  nb=adb.right;  dir=cell.RT; break;
 			default: return false;
 		}
 		if(!nc.isnull){

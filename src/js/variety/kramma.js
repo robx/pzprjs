@@ -274,10 +274,10 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
 			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
-				var cross = bd.getx(bx,by);
+				var cross = bd.getx(bx,by), adb = cross.adjborder;
 				if(bd.rooms.crosscnt[cross.id]===2 && cross.getQnum()!==1){
-					if(    !(cross.ub().getQans()===1 && cross.db().getQans()===1)
-						&& !(cross.lb().getQans()===1 && cross.rb().getQans()===1) )
+					if(    !(adb.top.getQans()===1 && adb.bottom.getQans()===1)
+						&& !(adb.left.getQans()===1 && adb.right.getQans()===1) )
 					{
 						if(this.checkOnly){ return false;}
 						cross.setCrossBorderError();
@@ -328,12 +328,12 @@ AnsCheck:{
 			while(1){
 				pos.movedir(dir,1);
 				if(pos.oncross()){
-					var cross = pos.getx();
+					var cross = pos.getx(), adb = cross.adjborder;
 					if(!cross.isnull && cross.getQnum()===1){
-						if(cross.ub().getQans()){ stack.push([pos.clone(),1]);}
-						if(cross.db().getQans()){ stack.push([pos.clone(),2]);}
-						if(cross.lb().getQans()){ stack.push([pos.clone(),3]);}
-						if(cross.rb().getQans()){ stack.push([pos.clone(),4]);}
+						if(adb.top.getQans()   ){ stack.push([pos.clone(),1]);}
+						if(adb.bottom.getQans()){ stack.push([pos.clone(),2]);}
+						if(adb.left.getQans()  ){ stack.push([pos.clone(),3]);}
+						if(adb.right.getQans() ){ stack.push([pos.clone(),4]);}
 						break;
 					}
 				}

@@ -20,9 +20,10 @@ AreaManager:{
 	},
 	init : function(){
 		if(this.enabled){
+			var info = this.owner.board.validinfo;
 			for(var i=0;i<this.relation.length;i++){
-				this.owner.board.validinfo[this.relation[i]].push(this);
-				this.owner.board.validinfo.all.push(this);
+				info[this.relation[i]].push(this);
+				info.all.push(this);
 			}
 		}
 	},
@@ -57,20 +58,21 @@ AreaManager:{
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		if(this.owner.board.hasborder){
-			for(var id=0;id<this.owner.board.bdmax;id++){
+		var bd = this.owner.board;
+		if(bd.hasborder){
+			for(var id=0;id<bd.bdmax;id++){
 				this.separate[id] = false;
-				this.checkSeparateInfo(this.owner.board.border[id]);
+				this.checkSeparateInfo(bd.border[id]);
 			}
 		}
 
-		for(var cc=0;cc<this.owner.board.cellmax;cc++){
+		for(var cc=0;cc<bd.cellmax;cc++){
 			this.linkinfo[cc] = 0;
-			this.checkLinkInfo(this.owner.board.cell[cc]);
+			this.checkLinkInfo(bd.cell[cc]);
 			this.id[cc] = 0;
 		}
 
-		this.searchIdlist(this.owner.board.cell);
+		this.searchIdlist(bd.cell);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -117,11 +119,11 @@ AreaManager:{
 		return false;
 	},
 	calcLinkInfo : function(cell){
-		var val = 0;
-		if(!cell.up().isnull && !this.bdfunc(cell.ub())){ val+=1;}
-		if(!cell.dn().isnull && !this.bdfunc(cell.db())){ val+=2;}
-		if(!cell.lt().isnull && !this.bdfunc(cell.lb())){ val+=4;}
-		if(!cell.rt().isnull && !this.bdfunc(cell.rb())){ val+=8;}
+		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
+		if(adc.top.validcell    && !this.bdfunc(adb.top   )){ val+=1;}
+		if(adc.bottom.validcell && !this.bdfunc(adb.bottom)){ val+=2;}
+		if(adc.left.validcell   && !this.bdfunc(adb.left  )){ val+=4;}
+		if(adc.right.validcell  && !this.bdfunc(adb.right )){ val+=8;}
 		if(this.isvalid(cell)){ val+=16;}
 		return val;
 	},

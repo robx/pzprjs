@@ -453,12 +453,12 @@ AnsCheck:{
 
 			var error = false, clist = rinfo.room[id].clist;
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], num = cell.getObjNum();
+				var cell = clist[i], adb = cell.adjborder, num = cell.getObjNum();
 				if(num>=1 && num<=4 &&
-				   ((num===cell.UP && cell.ub().isBorder()) ||
-					(num===cell.DN && cell.db().isBorder()) ||
-					(num===cell.LT && cell.lb().isBorder()) ||
-					(num===cell.RT && cell.rb().isBorder())) )
+				   ((num===cell.UP && adb.top.isBorder()   ) ||
+					(num===cell.DN && adb.bottom.isBorder()) ||
+					(num===cell.LT && adb.left.isBorder()  ) ||
+					(num===cell.RT && adb.right.isBorder() ) ) )
 				{
 					if(this.checkOnly){ return false;}
 					clist.seterr(1);

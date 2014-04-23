@@ -802,11 +802,11 @@ AnsCheck:{
 		return result;
 	},
 	checkGateNumber : function(){
-		var sid = [], bd = this.owner.board, startcell = bd.startcell;
-		if(startcell.rb().isLine()){ sid.push({obj:startcell.rb(),dir:4});}
-		if(startcell.db().isLine()){ sid.push({obj:startcell.db(),dir:2});}
-		if(startcell.lb().isLine()){ sid.push({obj:startcell.lb(),dir:3});}
-		if(startcell.ub().isLine()){ sid.push({obj:startcell.ub(),dir:1});}
+		var sid = [], bd = this.owner.board, startcell = bd.startcell, adb = startcell.adjborder;
+		if(adb.right.isLine() ){ sid.push({obj:adb.right, dir:4});}
+		if(adb.bottom.isLine()){ sid.push({obj:adb.bottom,dir:2});}
+		if(adb.left.isLine()  ){ sid.push({obj:adb.left,  dir:3});}
+		if(adb.top.isLine()   ){ sid.push({obj:adb.top,   dir:1});}
 
 		for(var i=0;i<sid.length;i++){
 			var pos = sid[i].obj.getaddr();
@@ -840,11 +840,12 @@ AnsCheck:{
 						}
 					}
 
+					var adb = cell.adjborder;
 					if     (cell.lcnt()!==2){ break;}
-					else if(dir!=1 && cell.db().isLine()){ dir=2;}
-					else if(dir!=2 && cell.ub().isLine()){ dir=1;}
-					else if(dir!=3 && cell.rb().isLine()){ dir=4;}
-					else if(dir!=4 && cell.lb().isLine()){ dir=3;}
+					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
 				}
 				else{
 					if(!pos.getb().isLine()){ break;} // 途切れてたら、何事もなかったように終了
@@ -899,11 +900,11 @@ HurdleManager:{
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(c){
-		var bd = this.owner.board, cell=bd.cell[c], cell2, idlist=[];
-		cell2=cell.up(); if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=cell.dn(); if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=cell.lt(); if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
-		cell2=cell.rt(); if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
+		var bd = this.owner.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
+		cell2=adc.top;    if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.bottom; if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.left;   if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.right;  if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
 		return idlist;
 	},
 
@@ -957,12 +958,12 @@ HurdleManager:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQues()===1){
-				var qn = cell.getNum(), dir = cell.getQdir();
+				var qn = cell.getNum(), dir = cell.getQdir(), adc = cell.adjacent;
 				if(qn<=0 || qn>this.max){ continue;}
-				if((dir===cell.NDIR||dir===cell.UP) && cell.up().getQues()===21){ nums[this.gateid[cell.up().id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.DN) && cell.dn().getQues()===21){ nums[this.gateid[cell.dn().id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.LT) && cell.lt().getQues()===22){ nums[this.gateid[cell.lt().id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.RT) && cell.rt().getQues()===22){ nums[this.gateid[cell.rt().id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.UP) && adc.top.getQues()   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.getQues()===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && adc.left.getQues()  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && adc.right.getQues() ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
 			}
 		}
 

@@ -147,11 +147,11 @@ AnsCheck:{
 		for(var r=1;r<=rinfo.max;r++){
 			var cnt=0, clist=rinfo.room[r].clist;
 			for(var i=0;i<clist.length;i++){
-				var cell=clist[i], border;
-				border=cell.ub(); if(border.ques===1 && border.line===1){ cnt++;}
-				border=cell.db(); if(border.ques===1 && border.line===1){ cnt++;}
-				border=cell.lb(); if(border.ques===1 && border.line===1){ cnt++;}
-				border=cell.rb(); if(border.ques===1 && border.line===1){ cnt++;}
+				var cell=clist[i], adb=cell.adjborder, border;
+				border=adb.top;    if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.bottom; if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.left;   if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.right;  if(border.ques===1 && border.line===1){ cnt++;}
 			}
 			if(cnt>2){
 				if(this.checkOnly){ return false;}

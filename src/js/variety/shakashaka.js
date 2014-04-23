@@ -222,11 +222,11 @@ Board:{
 				if(!winfo.emptyCell(cell)){ continue;}
 				winfo.addCell(cell);
 
-				var a=cell.getQans(), b, cell2;
-				cell2=cell.up(); if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
-				cell2=cell.dn(); if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
-				cell2=cell.lt(); if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
-				cell2=cell.rt(); if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
+				var a=cell.getQans(), b, cell2, adc=cell.adjacent;
+				cell2=adc.top;    if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
+				cell2=adc.bottom; if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
+				cell2=adc.left;   if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
+				cell2=adc.right;  if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
 			}
 		}
 		return winfo;
@@ -366,11 +366,11 @@ AnsCheck:{
 	isAreaRect_slope : function(winfo,id){
 		var clist = winfo.room[id].clist;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], a = cell.getQans();
-			if( ((a==4||a==5)^(cell.up().isnull||winfo.getRoomID(cell.up())!=id)) ||
-				((a==2||a==3)^(cell.dn().isnull||winfo.getRoomID(cell.dn())!=id)) ||
-				((a==2||a==5)^(cell.lt().isnull||winfo.getRoomID(cell.lt())!=id)) ||
-				((a==3||a==4)^(cell.rt().isnull||winfo.getRoomID(cell.rt())!=id)) )
+			var cell = clist[i], adc = cell.adjacent, a = cell.getQans();
+			if( ((a==4||a==5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!=id)) ||
+				((a==2||a==3)^(adc.bottom.isnull||winfo.getRoomID(adc.bottom)!=id)) ||
+				((a==2||a==5)^(adc.left.isnull  ||winfo.getRoomID(adc.left  )!=id)) ||
+				((a==3||a==4)^(adc.right.isnull ||winfo.getRoomID(adc.right )!=id)) )
 			{
 				return false;
 			}

@@ -134,12 +134,12 @@ AnsCheck:{
 			var cell = bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
 
-			var clist = new this.owner.CellList(), target;
+			var clist = new this.owner.CellList(), adc = cell.adjacent, target;
 			clist.add(cell);
-			target=cell.lt(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.lt();}
-			target=cell.rt(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.rt();}
-			target=cell.up(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.up();}
-			target=cell.dn(); while(!target.isnull && target.isWhite()){ clist.add(target); target = target.dn();}
+			target=adc.left;   while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.left;  }
+			target=adc.right;  while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.right; }
+			target=adc.top;    while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.top;   }
+			target=adc.bottom; while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.bottom;}
 
 			if(cell.getQnum()!==clist.length){
 				if(this.checkOnly){ return false;}

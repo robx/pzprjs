@@ -16,7 +16,7 @@ MouseEvent:{
 
 	input_onstart : function(){
 		var excell = this.getcell_excell();
-		if(excell.isnull || !excell.isexcell){ return;}
+		if(excell.isnull || excell.group!=='excell'){ return;}
 
 		if(excell!==this.cursor.getTEC()){
 			this.setcursor(excell);

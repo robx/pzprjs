@@ -70,22 +70,22 @@ Cell:{
 	},
 
 	akariRangeClist : function(){
-		var cell, clist=new this.owner.CellList();
+		var cell, clist=new this.owner.CellList(), adc=this.adjacent;
 
 		clist.add(this);
-		cell=this.lt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.lt();}
-		cell=this.rt(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.rt();}
-		cell=this.up(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.up();}
-		cell=this.dn(); while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.dn();}
+		cell=adc.left;   while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.left;  }
+		cell=adc.right;  while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.right; }
+		cell=adc.top;    while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.top;   }
+		cell=adc.bottom; while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.bottom;}
 		return clist;
 	},
 	akariRange : function(){
-		var cell, cell2, d={};
+		var cell, cell2, d={}, adc=this.adjacent;
 
-		cell=cell2=this.lt(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.lt();} d.x1=cell.bx;
-		cell=cell2=this.rt(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.rt();} d.x2=cell.bx;
-		cell=cell2=this.up(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.up();} d.y1=cell.by;
-		cell=cell2=this.dn(); while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.dn();} d.y2=cell.by;
+		cell=cell2=adc.left;   while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.left;  } d.x1=cell.bx;
+		cell=cell2=adc.right;  while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.right; } d.x2=cell.bx;
+		cell=cell2=adc.top;    while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.top;   } d.y1=cell.by;
+		cell=cell2=adc.bottom; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.bottom;} d.y2=cell.by;
 		return d;
 	}
 },

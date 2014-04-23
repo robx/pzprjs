@@ -359,11 +359,11 @@ AnsCheck:{
 			var cell = bd.cell[c], num = cell.getQnum();
 			if(cell.getQues()!==1 || num<0){ continue;}
 
-			var cnt1=0, cnt2=0, cell2;
-			cell2=cell.up(); if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=cell.dn(); if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=cell.lt(); if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
-			cell2=cell.rt(); if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
+			var cnt1=0, cnt2=0, cell2, adc=cell.adjacent;
+			cell2=adc.top;    if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
+			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
+			cell2=adc.left;   if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
+			cell2=adc.right;  if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
 
 			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
 				if(this.checkOnly){ return false;}

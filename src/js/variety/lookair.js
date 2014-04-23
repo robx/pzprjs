@@ -28,12 +28,11 @@ Cell:{
 	minnum : 0,
 
 	countDir5Cell : function(func){
-		var cnt=0, cell;
-		cell=this;      if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.up(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.dn(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.lt(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.rt(); if(!cell.isnull && func(cell)){ cnt++;}
+		var cnt=0, adc=this.adjacent;
+		var cells = [this, adc.top, adc.bottom, adc.left, adc.right];
+		for(var i=0;i<5;i++){
+			if(!cells[i].isnull && func(cells[i])){ cnt++;}
+		}
 		return cnt;
 	}
 },

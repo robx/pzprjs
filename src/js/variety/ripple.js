@@ -173,7 +173,7 @@ AnsCheck:{
 	checkUpperNumber : function(rinfo){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
-			var cell=bd.cell[c], cell2=cell.dn(), dc=cell2.id;
+			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
 			if(rinfo.id[c]!=rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell2.getNum()>cell.getNum()){
 				if(this.checkOnly){ return false;}

@@ -105,11 +105,11 @@ Board:{
 			var cell2=stack.pop();
 			if(cell2!==startcell && ldata[cell2.id]!==-1){ continue;}
 			ldata[cell2.id]=0;
-			var tcell, dir=cell2.getNum();
-			tcell=cell2.up(); if( dir!==1 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===2 ){ stack.push(tcell);}
-			tcell=cell2.dn(); if( dir!==2 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===1 ){ stack.push(tcell);}
-			tcell=cell2.lt(); if( dir!==3 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===4 ){ stack.push(tcell);}
-			tcell=cell2.rt(); if( dir!==4 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===3 ){ stack.push(tcell);}
+			var tcell, adc=cell2.adjacent, dir=cell2.getNum();
+			tcell=adc.top;    if( dir!==1 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===2 ){ stack.push(tcell);}
+			tcell=adc.bottom; if( dir!==2 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===1 ){ stack.push(tcell);}
+			tcell=adc.left;   if( dir!==3 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===4 ){ stack.push(tcell);}
+			tcell=adc.right;  if( dir!==4 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===3 ){ stack.push(tcell);}
 		}
 
 		for(var c=0;c<this.cellmax;c++){

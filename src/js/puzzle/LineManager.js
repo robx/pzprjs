@@ -355,22 +355,23 @@ LineManager:{
 				if(!pos.onborder()){
 					var bx=pos.bx, by=pos.by;
 					var obj = (this.isCenterLine ? pos.getc() : pos.getx());
+					var adb = obj.adjborder;
 					if(obj.isnull){ break;}
 					else if(obj.lcnt()>=3){
 						if(!obj.iscrossing()){
-							if(obj.ub().isLine()){ stack.push([bx,by,1]);}
-							if(obj.db().isLine()){ stack.push([bx,by,2]);}
-							if(obj.lb().isLine()){ stack.push([bx,by,3]);}
-							if(obj.rb().isLine()){ stack.push([bx,by,4]);}
+							if(adb.top.isLine()   ){ stack.push([bx,by,1]);}
+							if(adb.bottom.isLine()){ stack.push([bx,by,2]);}
+							if(adb.left.isLine()  ){ stack.push([bx,by,3]);}
+							if(adb.right.isLine() ){ stack.push([bx,by,4]);}
 							break;
 						}
 						/* lcnt>=3でiscrossing==trueの時は直進＝何もしない */
 					}
 					else{
-						if     (dir!==1 && obj.db().isLine()){ dir=2;}
-						else if(dir!==2 && obj.ub().isLine()){ dir=1;}
-						else if(dir!==3 && obj.rb().isLine()){ dir=4;}
-						else if(dir!==4 && obj.lb().isLine()){ dir=3;}
+						if     (dir!==1 && adb.bottom.isLine()){ dir=2;}
+						else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+						else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+						else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
 					}
 				}
 				else{

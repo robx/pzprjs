@@ -157,6 +157,7 @@ BoardExec:{
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
 		var group2 = new group.constructor();
+		bd.setposGroup(type);
 		for(var i=group.length-1;i>=0;i--){
 			var obj = group[i];
 			if(this.isdel(key,obj)){

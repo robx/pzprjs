@@ -131,11 +131,12 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
-			var clist=new this.owner.CellList();
-			if(cell.up().isBlack()){ clist.extend(binfo.getclistbycell(cell.up()));}
-			if(cell.dn().isBlack()){ clist.extend(binfo.getclistbycell(cell.dn()));}
-			if(cell.lt().isBlack()){ clist.extend(binfo.getclistbycell(cell.lt()));}
-			if(cell.rt().isBlack()){ clist.extend(binfo.getclistbycell(cell.rt()));}
+			var clist=new this.owner.CellList(), adc=cell.adjacent;
+			console.log(adc);
+			if(adc.top.isBlack()   ){ clist.extend(binfo.getclistbycell(adc.top   ));}
+			if(adc.bottom.isBlack()){ clist.extend(binfo.getclistbycell(adc.bottom));}
+			if(adc.left.isBlack()  ){ clist.extend(binfo.getclistbycell(adc.left  ));}
+			if(adc.right.isBlack() ){ clist.extend(binfo.getclistbycell(adc.right ));}
 
 			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
 				if(this.checkOnly){ return false;}

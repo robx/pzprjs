@@ -37,10 +37,11 @@ Cell:{
 
 	setErrorPearl : function(){
 		this.setCellLineError(1);
-		if(this.ub().isLine()){ this.up().setCellLineError(0);}
-		if(this.db().isLine()){ this.dn().setCellLineError(0);}
-		if(this.lb().isLine()){ this.lt().setCellLineError(0);}
-		if(this.rb().isLine()){ this.rt().setCellLineError(0);}
+		var adc = this.adjacent, adb = this.adjborder;
+		if(adb.top.isLine()   ){ adc.top.setCellLineError(0);   }
+		if(adb.bottom.isLine()){ adc.bottom.setCellLineError(0);}
+		if(adb.left.isLine()  ){ adc.left.setCellLineError(0);  }
+		if(adb.right.isLine() ){ adc.right.setCellLineError(0); }
 	}
 },
 
@@ -221,11 +222,11 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.getQnum()!==1 || cell.lcnt()!==2){ continue;}
-			var stcnt = 0;
-			if(cell.ub().isLine() && cell.up().lcnt()===2 && cell.up().isLineStraight()){ stcnt++;}
-			if(cell.db().isLine() && cell.dn().lcnt()===2 && cell.dn().isLineStraight()){ stcnt++;}
-			if(cell.lb().isLine() && cell.lt().lcnt()===2 && cell.lt().isLineStraight()){ stcnt++;}
-			if(cell.rb().isLine() && cell.rt().lcnt()===2 && cell.rt().isLineStraight()){ stcnt++;}
+			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
+			if(adb.top.isLine()    && adc.top.lcnt()===2    && adc.top.isLineStraight()   ){ stcnt++;}
+			if(adb.bottom.isLine() && adc.bottom.lcnt()===2 && adc.bottom.isLineStraight()){ stcnt++;}
+			if(adb.left.isLine()   && adc.left.lcnt()===2   && adc.left.isLineStraight()  ){ stcnt++;}
+			if(adb.right.isLine()  && adc.right.lcnt()===2  && adc.right.isLineStraight() ){ stcnt++;}
 
 			if(stcnt>=2){
 				if(this.checkOnly){ return false;}
@@ -239,12 +240,12 @@ AnsCheck:{
 	checkBlackPearl2 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
+			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.getQnum()!==2 || cell.lcnt()!==2){ continue;}
-			if((cell.ub().isLine() && cell.up().lcnt()===2 && !cell.up().isLineStraight()) ||
-			   (cell.db().isLine() && cell.dn().lcnt()===2 && !cell.dn().isLineStraight()) ||
-			   (cell.lb().isLine() && cell.lt().lcnt()===2 && !cell.lt().isLineStraight()) ||
-			   (cell.rb().isLine() && cell.rt().lcnt()===2 && !cell.rt().isLineStraight()) )
+			if((adb.top.isLine()    && adc.top.lcnt()===2    && !adc.top.isLineStraight()   ) ||
+			   (adb.bottom.isLine() && adc.bottom.lcnt()===2 && !adc.bottom.isLineStraight()) ||
+			   (adb.left.isLine()   && adc.left.lcnt()===2   && !adc.left.isLineStraight()  ) ||
+			   (adb.right.isLine()  && adc.right.lcnt()===2  && !adc.right.isLineStraight() ) )
 			{
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}

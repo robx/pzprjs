@@ -280,16 +280,17 @@ FileIO:{
 		});
 		this.decodeCell( function(obj,ca){
 			if(ca==="0"){ return;}
+			var adb = obj.adjborder;
 			var val = parseInt(ca);
 			var datah = (val&3);
 			if(datah>0){
-				var uborder=obj.ub(), dborder=obj.db();
+				var uborder=adb.top, dborder=adb.bottom;
 				if(!uborder.isnull){ uborder.line = datah;}
 				if(!dborder.isnull){ dborder.line = datah;}
 			}
 			var dataw = ((val&12)>>2);
 			if(dataw>0){
-				var lborder=obj.lb(), rborder=obj.rb();
+				var lborder=adb.left, rborder=adb.right;
 				if(!lborder.isnull){ lborder.line = dataw;}
 				if(!rborder.isnull){ rborder.line = dataw;}
 			}
@@ -303,7 +304,7 @@ FileIO:{
 		});
 		this.encodeCell( function(obj){
 			if(obj.qnum!==-1){ return "0 ";}
-			var uborder=obj.ub(), lborder=obj.lb();
+			var uborder=obj.adjborder.top, lborder=obj.adjborder.left;
 			var datah = (!uborder.isnull ? uborder.line : 0);
 			var dataw = (!lborder.isnull ? lborder.line : 0);
 			return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";

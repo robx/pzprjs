@@ -594,19 +594,19 @@ Graphic:{
 		bd.disableInfo();
 		if(barray[1]!=""){
 			var array = barray[1].split("+");
-			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].db(); border.setArrow(border.UP);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.bottom; border.setArrow(border.UP);}
 		}
 		if(barray[2]!=""){
 			var array = barray[2].split("+");
-			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].db(); border.setArrow(border.DN);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.bottom; border.setArrow(border.DN);}
 		}
 		if(barray[3]!=""){
 			var array = barray[3].split("+");
-			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].rb(); border.setArrow(border.LT);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.LT);}
 		}
 		if(barray[4]!=""){
 			var array = barray[4].split("+");
-			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].rb(); border.setArrow(border.RT);}
+			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.RT);}
 		}
 
 		bd.inputarrowin (bd.border[parseInt(barray[5])+bd.bdinside]);
@@ -624,10 +624,10 @@ Graphic:{
 		if(num>0){ cm += pass.toString(16);}
 		cm += "/";
 
-		cm += (bd.cell.filter(function(cell){ var border=cell.db(); return (border.getArrow()===border.UP);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.db(); return (border.getArrow()===border.DN);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.rb(); return (border.getArrow()===border.LT);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.rb(); return (border.getArrow()===border.RT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.getArrow()===border.UP);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.getArrow()===border.DN);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.LT);}).join("+") + "/");
+		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.RT);}).join("+") + "/");
 
 		cm += ((bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
 
@@ -861,11 +861,12 @@ AnsCheck:{
 				var cell = pos.getc();
 				if(cell.isnull){ continue;}
 				else if(!cell.ice()){
+					var adb = cell.adjborder;
 					if     (cell.lcnt()!==2){ dir=dir;}
-					else if(dir!=1 && cell.db().isLine()){ dir=2;}
-					else if(dir!=2 && cell.ub().isLine()){ dir=1;}
-					else if(dir!=3 && cell.rb().isLine()){ dir=4;}
-					else if(dir!=4 && cell.lb().isLine()){ dir=3;}
+					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
 				}
 
 				if(this.owner.pid!=='icebarn'){

@@ -338,19 +338,19 @@ TargetCursor:{
 		return true;
 	},
 	detectTarget : function(obj){
-		var bd = this.owner.board;
+		var bd = this.owner.board, adc=obj.adjacent;
 		if(obj.isnull){ return 0;}
-		else if(obj.iscell){
+		else if(obj.group==='cell'){
 			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}
-			else if((obj.rt().isnull || obj.rt().getQues()===51) &&
-				    (obj.dn().isnull || obj.dn().getQues()===51)){ return 0;}
-			else if(obj.rt().isnull || obj.rt().getQues()===51){ return 4;}
-			else if(obj.dn().isnull || obj.dn().getQues()===51){ return 2;}
+			else if((adc.right.isnull  || adc.right.ques ===51) &&
+				    (adc.bottom.isnull || adc.bottom.ques===51)){ return 0;}
+			else if (adc.right.isnull  || adc.right.ques ===51) { return 4;}
+			else if (adc.bottom.isnull || adc.bottom.ques===51) { return 2;}
 		}
-		else if(obj.isexcell){
+		else if(obj.group==='excell'){
 			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
-			else if((obj.by===-1 && obj.relcell(0,2).getQues()===51) ||
-				    (obj.bx===-1 && obj.relcell(2,0).getQues()===51)){ return 0;}
+			else if((obj.by===-1 && adj.bottom.ques===51) ||
+				    (obj.bx===-1 && adj.right.ques ===51)){ return 0;}
 			else if(obj.by===-1){ return 4;}
 			else if(obj.bx===-1){ return 2;}
 		}

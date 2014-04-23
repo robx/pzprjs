@@ -340,7 +340,7 @@ Graphic:{
 			var lp = (this.bw-lw/2);			//LinePadding
 			var px = cell.bx*this.bw-0.5, py = cell.by*this.bh-0.5;
 
-			var cell2 = cell.up(), qa = cell2.qans;
+			var cell2 = cell.adjacent.top, qa = cell2.qans;
 			if(qa===1||qa===3){
 				g.fillStyle = this.getBarColor(cell2,true);
 				if(this.vnop(headers[0]+id,this.FILL)){
@@ -349,7 +349,7 @@ Graphic:{
 			}
 			else{ g.vhide(headers[0]+id);}
 
-			var cell2 = cell.dn(), qa = cell2.qans;
+			var cell2 = cell.adjacent.bottom, qa = cell2.qans;
 			if(qa===1||qa===3){
 				g.fillStyle = this.getBarColor(cell2,true);
 				if(this.vnop(headers[1]+id,this.FILL)){
@@ -358,7 +358,7 @@ Graphic:{
 			}
 			else{ g.vhide(headers[1]+id);}
 
-			var cell2 = cell.lt(), qa = cell2.qans;
+			var cell2 = cell.adjacent.left, qa = cell2.qans;
 			if(qa===2||qa===3){
 				g.fillStyle = this.getBarColor(cell2,false);
 				if(this.vnop(headers[2]+id,this.FILL)){
@@ -367,7 +367,7 @@ Graphic:{
 			}
 			else{ g.vhide(headers[2]+id);}
 
-			var cell2 = cell.rt(), qa = cell2.qans;
+			var cell2 = cell.adjacent.right, qa = cell2.qans;
 			if(qa===2||qa===3){
 				g.fillStyle = this.getBarColor(cell2,false);
 				if(this.vnop(headers[3]+id,this.FILL)){

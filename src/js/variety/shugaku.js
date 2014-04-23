@@ -37,10 +37,11 @@ MouseEvent:{
 			else if(this.mouseCell===cell){ this.inputData = 1;} // 入力開始時と同じセルの場合
 			else{
 				var dx=(this.inputPoint.bx-this.firstPoint.bx), dy=(this.inputPoint.by-this.firstPoint.by);
-				if     (dx-dy>0 && dx+dy>0){ adj=this.mouseCell.rt(); this.inputData=5;}
-				else if(dx-dy>0 && dx+dy<0){ adj=this.mouseCell.up(); this.inputData=2;}
-				else if(dx-dy<0 && dx+dy>0){ adj=this.mouseCell.dn(); this.inputData=3;}
-				else if(dx-dy<0 && dx+dy<0){ adj=this.mouseCell.lt(); this.inputData=4;}
+				var adc = this.mouseCell.adjacent;
+				if     (dx-dy>0 && dx+dy>0){ adj=adc.right;  this.inputData=5;}
+				else if(dx-dy>0 && dx+dy<0){ adj=adc.top;    this.inputData=2;}
+				else if(dx-dy<0 && dx+dy>0){ adj=adc.bottom; this.inputData=3;}
+				else if(dx-dy<0 && dx+dy<0){ adj=adc.left;   this.inputData=4;}
 				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
 			}
 			if(old!=this.inputData){ this.mouseCell.drawaround();}
@@ -88,11 +89,11 @@ MouseEvent:{
 	},
 
 	changeHalf : function(cell){
-		var qa=cell.getQans(), adj=null;
-		if     (qa===42 || qa===47){ adj=cell.up();}
-		else if(qa===43 || qa===48){ adj=cell.dn();}
-		else if(qa===44 || qa===49){ adj=cell.lt();}
-		else if(qa===45 || qa===50){ adj=cell.rt();}
+		var qa=cell.getQans(), adc=cell.adjacent, adj=null;
+		if     (qa===42 || qa===47){ adj=adc.top;   }
+		else if(qa===43 || qa===48){ adj=adc.bottom;}
+		else if(qa===44 || qa===49){ adj=adc.left;  }
+		else if(qa===45 || qa===50){ adj=adc.right; }
 
 		if     (adj===null){ /* nop */ }
 		else if(adj.getQans()>=42 && adj.getQans()<=45){ adj.setQans(41);}
@@ -100,12 +101,12 @@ MouseEvent:{
 	},
 	currentTargetADJ : function(){
 		if(!this.mouseCell.isnull){
-			var cell = this.mouseCell;
+			var adc = this.mouseCell.adjacent;
 			switch(this.inputData){
-				case 2: return cell.up();
-				case 3: return cell.dn();
-				case 4: return cell.lt();
-				case 5: return cell.rt();
+				case 2: return adc.top;
+				case 3: return adc.bottom;
+				case 4: return adc.left;
+				case 5: return adc.right;
 			}
 		}
 		return this.owner.board.emptycell;
@@ -381,7 +382,7 @@ AnsCheck:{
 			if(cell.getQans()===43){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
-				cell.dn().seterr(1);
+				cell.adjacent.bottom.seterr(1);
 				result = false;
 			}
 		}
@@ -394,12 +395,12 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}
 
-			var adj=null;
+			var adc=cell.adjacent, adj=null;
 			switch(cell.getQans()){
-				case 42: adj = cell.up(); break;
-				case 43: adj = cell.dn(); break;
-				case 44: adj = cell.lt(); break;
-				case 45: adj = cell.rt(); break;
+				case 42: adj = adc.top;    break;
+				case 43: adj = adc.bottom; break;
+				case 44: adj = adc.left;   break;
+				case 45: adj = adc.right;  break;
 				default: continue;
 			}
 			if( cell.countDir4Cell(function(cell){ return cell.isBlack();})===0 &&

@@ -56,12 +56,12 @@ Cell:{
 	minnum : 3,
 
 	getTriLine : function(){
-		var blist=new this.owner.BorderList(), border;
+		var blist=new this.owner.BorderList(), adb = this.adjborder, border;
 
-		border=this.lb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
-		border=this.rb(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}
-		border=this.ub(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0,-2);}
-		border=this.db(); while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0, 2);}
+		border=adb.left;   while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
+		border=adb.right;  while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}
+		border=adb.top;    while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0,-2);}
+		border=adb.bottom; while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(0, 2);}
 
 		return blist;
 	}

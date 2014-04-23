@@ -595,13 +595,14 @@ Graphic:{
 
 			// この関数を呼ぶ場合は全てhasborder===1なので
 			// 外枠用の考慮部分を削除しています。
+			var adb = cell.adjborder;
 			var UPin = (cell.by>2), DNin = (cell.by<2*this.owner.board.qrows-2);
 			var LTin = (cell.bx>2), RTin = (cell.bx<2*this.owner.board.qcols-2);
 
-			var isUP = (!UPin || cell.ub().ques===1);
-			var isDN = (!DNin || cell.db().ques===1);
-			var isLT = (!LTin || cell.lb().ques===1);
-			var isRT = (!RTin || cell.rb().ques===1);
+			var isUP = (!UPin || adb.top.ques   ===1);
+			var isDN = (!DNin || adb.bottom.ques===1);
+			var isLT = (!LTin || adb.left.ques  ===1);
+			var isRT = (!RTin || adb.right.ques ===1);
 
 			var isUL = (!UPin || !LTin || cell.relbd(-2,-1).ques===1 || cell.relbd(-1,-2).ques===1);
 			var isUR = (!UPin || !RTin || cell.relbd( 2,-1).ques===1 || cell.relbd( 1,-2).ques===1);
@@ -689,11 +690,11 @@ Graphic:{
 			var cell = clist[i];
 			g.vdel(header+cell.id);
 			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.getConfig('dispmove')){
-				var dir=0, border=null;
-				if     (cell.ub().isLine()){ dir=2; border=cell.ub();}
-				else if(cell.db().isLine()){ dir=1; border=cell.db();}
-				else if(cell.lb().isLine()){ dir=4; border=cell.lb();}
-				else if(cell.rb().isLine()){ dir=3; border=cell.rb();}
+				var adb = cell.adjborder, dir=0, border=null;
+				if     (adb.top.isLine()   ){ dir=2; border=adb.top;   }
+				else if(adb.bottom.isLine()){ dir=1; border=adb.bottom;}
+				else if(adb.left.isLine()  ){ dir=4; border=adb.left;  }
+				else if(adb.right.isLine() ){ dir=3; border=adb.right; }
 				else{ continue;}
 
 				g.lineWidth = this.lw; //LineWidth

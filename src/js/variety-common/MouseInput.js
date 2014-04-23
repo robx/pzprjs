@@ -239,10 +239,11 @@ MouseEvent:{
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(obj.isexcell || (obj.iscell && obj!==this.cursor.getTCC())){
+		var group = obj.group;
+		if(group==='excell' || (group==='cell' && obj!==this.cursor.getTCC())){
 			this.setcursor(obj);
 		}
-		else if(obj.iscell){
+		else if(group==='cell'){
 			this.input51_main(obj);
 		}
 	},
@@ -453,10 +454,11 @@ MouseEvent:{
 		if(!border.isLine()){
 			var obj = (!bd.lines.borderAsLine ? this.getcell() : this.getcross());
 			if(obj.isnull || (obj.iscrossing() && (obj.lcnt()===3 || obj.lcnt()===4))){ return;}
-			if     (obj.lb().isLine()){ border = obj.lb();}
-			else if(obj.rb().isLine()){ border = obj.rb();}
-			else if(obj.ub().isLine()){ border = obj.ub();}
-			else if(obj.db().isLine()){ border = obj.db();}
+			var adb = obj.adjborder;
+			if     (adb.left.isLine()  ){ border = adb.left;  }
+			else if(adb.right.isLine() ){ border = adb.right; }
+			else if(adb.top.isLine()   ){ border = adb.top;   }
+			else if(adb.bottom.isLine()){ border = adb.bottom;}
 			else{ return;}
 		}
 		if(border.isnull){ return;}

@@ -475,11 +475,11 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.isEmpty() || cell.noNum()){ continue;}
 
-			var num=cell.getNum(), sum=0, sub;
-			sub=subs[cell.ub().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
-			sub=subs[cell.db().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
-			sub=subs[cell.lb().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
-			sub=subs[cell.rb().id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
+			var adb=cell.adjborder, num=cell.getNum(), sum=0, sub;
+			sub=subs[adb.top.id   ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
+			sub=subs[adb.bottom.id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
+			sub=subs[adb.left.id  ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
+			sub=subs[adb.right.id ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			if(num!==sum){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);

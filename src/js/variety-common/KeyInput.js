@@ -101,7 +101,7 @@ KeyEvent:{
 
 		var obj = tc.getOBJ();
 		var target = tc.detectTarget(obj);
-		if(target===0 || (obj.iscell && obj.is51cell())){
+		if(target===0 || (obj.group==='cell' && obj.is51cell())){
 			if(ca==='q' && !obj.isnull){
 				if(!obj.is51cell()){ obj.set51cell();}
 				else               { obj.remove51cell();}
@@ -116,7 +116,7 @@ KeyEvent:{
 
 		if('0'<=ca && ca<='9'){
 			var num=parseInt(ca), cur=this.getnum51(obj,target);
-			if(cur<=0 || cur*10+num>max || this.prev!==(obj.iscell ? obj : null)){ cur=0;}
+			if(cur<=0 || cur*10+num>max || this.prev!==(obj.group==='cell' ? obj : null)){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
@@ -124,7 +124,7 @@ KeyEvent:{
 		else{ return;}
 
 		this.setnum51(obj,target,val);
-		this.prev = (obj.iscell ? obj : null);
+		this.prev = (obj.group==='excell' ? obj : null);
 		tc.getTCP().draw();
 	},
 	setnum51 : function(obj,target,val){

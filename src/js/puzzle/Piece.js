@@ -12,10 +12,7 @@ BoardPiece:{
 	id     : null,
 	isnull : true,
 
-	iscell   : false,
-	iscross  : false,
-	isborder : false,
-	isexcell : false,
+	validcell : false,
 
 	// デフォルト値
 	/* 問題データを保持するプロパティ */
@@ -73,14 +70,29 @@ BoardPiece:{
 	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
 	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
 	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
-	
+
 	//---------------------------------------------------------------------------
-	// ub() db() lb() rb()  セルや交点の上下左右にある境界線のIDを返す
+	// initAdjacent()   隣接セルの情報を設定する
+	// initAdjBorder()  隣接境界線の情報を設定する
 	//---------------------------------------------------------------------------
-	ub : function(){ return this.owner.board.getb(this.bx,this.by-1);},
-	db : function(){ return this.owner.board.getb(this.bx,this.by+1);},
-	lb : function(){ return this.owner.board.getb(this.bx-1,this.by);},
-	rb : function(){ return this.owner.board.getb(this.bx+1,this.by);},
+	initAdjacent : function(){
+		var bd = this.owner.board;
+		this.adjacent = {
+			top    : bd.getobj(this.bx,this.by-2),
+			bottom : bd.getobj(this.bx,this.by+2),
+			left   : bd.getobj(this.bx-2,this.by),
+			right  : bd.getobj(this.bx+2,this.by)
+		};
+	},
+	initAdjBorder : function(){
+		var bd = this.owner.board;
+		this.adjborder = {
+			top    : bd.getb(this.bx,this.by-1),
+			bottom : bd.getb(this.bx,this.by+1),
+			left   : bd.getb(this.bx-1,this.by),
+			right  : bd.getb(this.bx+1,this.by)
+		};
+	},
 
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
@@ -169,8 +181,6 @@ BoardPiece:{
 'Cell:BoardPiece':{
 	group : 'cell',
 
-	iscell : true,
-
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
 	
 	disInputHatena : false,	// qnum==-2を入力できないようにする
@@ -180,13 +190,8 @@ BoardPiece:{
 	
 	numberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
 	
-	//---------------------------------------------------------------------------
-	// cell.up() dn() lt() rt()  セルの上下左右に接するセルのIDを返す
-	//---------------------------------------------------------------------------
-	up : function(){ return this.owner.board.getc(this.bx,this.by-2);},
-	dn : function(){ return this.owner.board.getc(this.bx,this.by+2);},
-	lt : function(){ return this.owner.board.getc(this.bx-2,this.by);},
-	rt : function(){ return this.owner.board.getc(this.bx+2,this.by);},
+	adjacent  : {},	// 四方向に隣接するセルを保持する
+	adjborder : {},	// 四方向に隣接する境界線を保持する
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -311,8 +316,8 @@ BoardPiece:{
 	// cell.isLineStraight()   セルの上で線が直進しているか判定する
 	//---------------------------------------------------------------------------
 	isLineStraight : function(){
-		if     (this.ub().isLine() && this.db().isLine()){ return true;}
-		else if(this.lb().isLine() && this.rb().isLine()){ return true;}
+		if     (this.adjborder.top.isLine() && this.adjborder.bottom.isLine()){ return true;}
+		else if(this.adjborder.left.isLine() && this.adjborder.right.isLine()){ return true;}
 		return false;
 	},
 
@@ -360,11 +365,11 @@ BoardPiece:{
 	// cell.countDir4Cell()  上下左右4方向で条件func==trueになるマスの数をカウントする
 	//---------------------------------------------------------------------------
 	countDir4Cell : function(func){
-		var cnt=0, cell;
-		cell=this.up(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.dn(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.lt(); if(!cell.isnull && func(cell)){ cnt++;}
-		cell=this.rt(); if(!cell.isnull && func(cell)){ cnt++;}
+		var adc = this.adjacent, cell, cnt = 0;
+		var cells = [adc.top, adc.bottom, adc.left, adc.right];
+		for(var i=0;i<4;i++){
+			if(cells[i].validcell && func(cells[i])){ cnt++;}
+		}
 		return cnt;
 	},
 
@@ -373,19 +378,20 @@ BoardPiece:{
 	// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
-		var cell, list=[];
-		cell=this.up(); if(!cell.isnull){ list.push([cell,cell.UP]);}
-		cell=this.dn(); if(!cell.isnull){ list.push([cell,cell.DN]);}
-		cell=this.lt(); if(!cell.isnull){ list.push([cell,cell.LT]);}
-		cell=this.rt(); if(!cell.isnull){ list.push([cell,cell.RT]);}
+		var adc = this.adjacent, cell, list=[];
+		var cells = [adc.top, adc.bottom, adc.left, adc.right];
+		for(var i=0;i<4;i++){
+			if(cells[i].validcell){ list.push([cells[i],(i+1)]);} /* i+1==dir */
+		}
 		return list;
 	},
 	getdir4cblist : function(){
-		var cell, border, cblist=[];
-		cell=this.up(); border=this.ub(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.UP]);}
-		cell=this.dn(); border=this.db(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.DN]);}
-		cell=this.lt(); border=this.lb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.LT]);}
-		cell=this.rt(); border=this.rb(); if(!cell.isnull || !border.isnull){ cblist.push([cell,border,cell.RT]);}
+		var adc = this.adjacent, adb = this.adjborder, cell, border, cblist=[];
+		var cells = [adc.top, adc.bottom, adc.left, adc.right];
+		var bds   = [adb.top, adb.bottom, adb.left, adb.right];
+		for(var i=0;i<4;i++){
+			if(cells[i].validcell || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
+		}
 		return cblist;
 	},
 
@@ -407,7 +413,7 @@ BoardPiece:{
 'Cross:BoardPiece':{
 	group : 'cross',
 
-	iscross : true,
+	adjborder : {},	// 四方向に隣接する境界線を保持する
 
 	//---------------------------------------------------------------------------
 	// cross.lcnt()       交点に存在する線の本数を返す
@@ -438,13 +444,32 @@ BoardPiece:{
 	},
 	group : 'border',
 
-	isborder : true,
-
 	isvert: false,	// true:境界線が垂直(縦) false:境界線が水平(横)
 
 	// isLineNG関連の変数など
 	enableLineNG       : false,
 	enableLineCombined : false,
+
+	//---------------------------------------------------------------------------
+	// initSideObject() 隣接オブジェクトの情報を設定する
+	//---------------------------------------------------------------------------
+	initSideObject : function(){
+		if(this.isvert){
+			this.sidecell[0] = this.relcell(-1,0);
+			this.sidecell[1] = this.relcell( 1,0);
+			this.sidecross[0] = this.relcross(0,-1);
+			this.sidecross[1] = this.relcross(0, 1);
+		}
+		else{
+			this.sidecell[0] = this.relcell(0,-1);
+			this.sidecell[1] = this.relcell(0, 1);
+			this.sidecross[0] = this.relcross(-1,0);
+			this.sidecross[1] = this.relcross( 1,0);
+		}
+
+		// LineManager用
+		this.lineedge = (!this.owner.board.lines.borderAsLine ? this.sidecell : this.sidecross);
+	},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -541,7 +566,7 @@ BoardPiece:{
 'EXCell:BoardPiece':{
 	group : 'excell',
 
-	isexcell : true,
+	adjacent  : {},	// 四方向に隣接するセルを保持する
 
 	//---------------------------------------------------------------------------
 	// excell.is51cell()   [＼]のセルかチェックする

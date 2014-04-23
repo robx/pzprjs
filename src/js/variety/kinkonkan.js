@@ -68,7 +68,7 @@ MouseEvent:{
 		var obj = this.getcell_excell();
 		if(obj.isnull){ return;}
 
-		if(!obj.isexcell){
+		if(obj.group!=='excell'){
 			this.inputborder();
 		}
 		else if(obj!==this.cursor.getOBJ()){

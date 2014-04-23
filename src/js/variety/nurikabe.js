@@ -186,15 +186,18 @@ FileIO:{
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
 
-			var cell1, cell2;
-			if     ( cell.isBlack() && cell.rt().dn().isBlack() ){ cell1 = cell; cell2 = cell.rt().dn();}
-			else if( cell.rt().isBlack() && cell.dn().isBlack() ){ cell1 = cell.rt(); cell2 = cell.dn();}
-			else{ continue;}
+			var i, adc = cell.adjacent;
+			var cells = [ [cell, adc.right.adjacent.bottom], [adc.right, adc.bottom] ];
+			for(i=0;i<2;i++){
+				if( cells[i][0].isBlack() && cells[i][1].isBlack() ){ break;}
+			}
+			if(i===2){ continue;}
 
-			if(binfo.getclistbycell(cell1).length == binfo.getclistbycell(cell2).length){
+			var block1 = binfo.getclistbycell(cells[i][0]), block2 = binfo.getclistbycell(cells[i][1]);
+			if(block1.length == block2.length){
 				if(this.checkOnly){ return false;}
-				binfo.getclistbycell(cell1).seterr(1);
-				binfo.getclistbycell(cell2).seterr(1);
+				block1.seterr(1);
+				block2.seterr(1);
 				result = false;
 			}
 		}
