@@ -133,16 +133,16 @@ BoardExec:{
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
 			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
 
-							  { this.expandGroup('cell',   key);}
-			if(!!bd.hascross) { this.expandGroup('cross',  key);}
-			if(!!bd.hasborder){ this.expandGroup('border', key);}
-			if(!!bd.hasexcell){ this.expandGroup('excell', key);}
+			this.expandGroup('cell',   key);
+			this.expandGroup('cross',  key);
+			this.expandGroup('border', key);
+			this.expandGroup('excell', key);
 		}
 		else if(key & this.REDUCE){
-							  { this.reduceGroup('cell',   key);}
-			if(!!bd.hascross) { this.reduceGroup('cross',  key);}
-			if(!!bd.hasborder){ this.reduceGroup('border', key);}
-			if(!!bd.hasexcell){ this.reduceGroup('excell', key);}
+			this.reduceGroup('cell',   key);
+			this.reduceGroup('cross',  key);
+			this.reduceGroup('border', key);
+			this.reduceGroup('excell', key);
 
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
@@ -213,16 +213,11 @@ BoardExec:{
 			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
 		}
 
-							{ this.turnflipGroup('cell',   key, d);}
-		if(!!bd.hascross)   { this.turnflipGroup('cross',  key, d);}
-		if(!!bd.hasborder)  { this.turnflipGroup('border', key, d);}
-		if(bd.hasexcell===2){ this.turnflipGroup('excell', key, d);}
-		else if(bd.hasexcell===1 && (key & this.FLIP)){
-			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
-			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
-			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
-			this.turnflipGroup('excell', key, d2);
-		}
+		this.turnflipGroup('cell',   key, d);
+		this.turnflipGroup('cross',  key, d);
+		this.turnflipGroup('border', key, d);
+		this.turnflipGroup('excell', key, d);
+
 		bd.setposAll();
 
 		this.adjustBoardData2(key,d);
@@ -230,6 +225,13 @@ BoardExec:{
 	},
 	turnflipGroup : function(type,key,d){
 		var bd = this.owner.board;
+		if(type==='excell' && bd.hasexcell===1 && (key & this.FLIP)){
+			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
+			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
+			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
+			d = d2;
+		}
+
 		var ch=[], objlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<objlist.length;i++){ ch[objlist[i].id]=false;}
 

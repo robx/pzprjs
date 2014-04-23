@@ -80,7 +80,6 @@ Cell:{
 },
 
 Board:{
-	hascross  : 2,
 	hasborder : 2
 },
 

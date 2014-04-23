@@ -66,6 +66,8 @@ Board:{
 	qrows : 7,
 	shape : 3,	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
 
+	hascross : 0,
+
 	setShape : function(val){
 		this.shape=val;
 		this.setminmax();
@@ -73,10 +75,11 @@ Board:{
 
 	estimateSize : function(type, col, row){
 		var total = 0;
-		if     (this.shape==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
-		else if(this.shape==3 || this.shape==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
-		else{ total = col*row;}
-
+		if(type==='cell'){
+			if     (this.shape==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
+			else if(this.shape==3 || this.shape==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
+			else{ total = col*row;}
+		}
 		return total;
 	},
 	setposCells : function(){

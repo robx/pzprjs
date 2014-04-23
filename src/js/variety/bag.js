@@ -68,7 +68,6 @@ Cell:{
 
 Board:{
 	hasborder : 2,
-	hascross  : 2,
 
 	searchInsideArea : function(){
 		this.cell[0].inside = (this.getx(0,0).lcnt()!==0);

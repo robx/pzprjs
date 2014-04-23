@@ -36,9 +36,6 @@ Cross:{
 	maxnum : 4,
 	minnum : 0
 },
-Board:{
-	hascross : 2
-},
 
 AreaWhiteManager:{
 	enabled : true

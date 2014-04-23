@@ -157,8 +157,6 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	hascross : 2,
-
 	seginfo : null,
 
 	initialize : function(){

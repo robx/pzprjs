@@ -132,7 +132,6 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
-			console.log(adc);
 			if(adc.top.isBlack()   ){ clist.extend(binfo.getclistbycell(adc.top   ));}
 			if(adc.bottom.isBlack()){ clist.extend(binfo.getclistbycell(adc.bottom));}
 			if(adc.left.isBlack()  ){ clist.extend(binfo.getclistbycell(adc.left  ));}

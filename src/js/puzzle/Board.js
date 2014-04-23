@@ -73,7 +73,7 @@ Board:{
 	qcols : 10,		/* 盤面の横幅(デフォルト) */
 	qrows : 10,		/* 盤面の縦幅(デフォルト) */
 
-	hascross  : 0,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	hascross  : 2,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	hasexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 
@@ -85,10 +85,10 @@ Board:{
 
 		this.allclear(false); // initGroupで、新Objectに対しては別途allclearが呼ばれます
 
-							{ this.initGroup('cell',   col, row);}
-		if(!!this.hascross) { this.initGroup('cross',  col, row);}
-		if(!!this.hasborder){ this.initGroup('border', col, row);}
-		if(!!this.hasexcell){ this.initGroup('excell', col, row);}
+		this.initGroup('cell',   col, row);
+		this.initGroup('cross',  col, row);
+		this.initGroup('border', col, row);
+		this.initGroup('excell', col, row);
 
 		this.qcols = col;
 		this.qrows = row;
@@ -352,14 +352,6 @@ Board:{
 
 		if(this.hascross!==0){
 			return (id!==null ? this.cross[id] : this.emptycross);
-		}
-		/* AreaManager用 */
-		else if(this.owner.AreaRoomManager.prototype.enabled){
-			var cross = this.newObject('cross', id);
-			cross.isnull = false;
-			cross.bx = bx;
-			cross.by = by;
-			return cross;
 		}
 		return this.emptycross;
 	},
