@@ -65,7 +65,7 @@ KeyEvent:{
 	},
 	key_view : function(ca){
 		if(this.owner.playmode){
-			var cell = this.cursor.getTCC();
+			var cell = this.cursor.getc();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }

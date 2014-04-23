@@ -33,7 +33,7 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputLineParts : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if     (ca=='q'){ cell.setQues(2); cell.setQnum(-1);}
 		else if(ca=='w'){ cell.setQues(3); cell.setQnum(-1);}

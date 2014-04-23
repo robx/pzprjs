@@ -1058,11 +1058,11 @@ Graphic:{
 		var g = this.vinc('target_cursor', 'crispEdges');
 
 		if(isdraw!==false && this.owner.getConfig('cursor') && !this.outputImage){
-			var d = this.range, tc = this.owner.cursor;
-			if(tc.pos.bx < d.x1-1 || d.x2+1 < tc.pos.bx){ return;}
-			if(tc.pos.by < d.y1-1 || d.y2+1 < tc.pos.by){ return;}
+			var d = this.range, cursor = this.owner.cursor;
+			if(cursor.bx < d.x1-1 || d.x2+1 < cursor.bx){ return;}
+			if(cursor.by < d.y1-1 || d.y2+1 < cursor.by){ return;}
 
-			var px = tc.pos.bx*this.bw, py = tc.pos.by*this.bh, w, size;
+			var px = cursor.bx*this.bw, py = cursor.by*this.bh, w, size;
 			if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 			else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
@@ -1083,15 +1083,15 @@ Graphic:{
 
 		if(this.owner.playmode){ return;}
 
-		var d = this.range, tc = this.owner.cursor;
-		if(tc.pos.bx < d.x1 || d.x2 < tc.pos.bx){ return;}
-		if(tc.pos.by < d.y1 || d.y2 < tc.pos.by){ return;}
+		var d = this.range, cursor = this.owner.cursor;
+		if(cursor.bx < d.x1 || d.x2 < cursor.bx){ return;}
+		if(cursor.by < d.y1 || d.y2 < cursor.by){ return;}
 
-		var target = tc.detectTarget(tc.getOBJ());
+		var target = cursor.detectTarget(cursor.getobj());
 		if(target===0){ return;}
 
 		g.fillStyle = this.ttcolor;
-		this.drawTriangle1((tc.pos.bx*this.bw), (tc.pos.by*this.bh), (target===2?4:2), vid);
+		this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===2?4:2), vid);
 	},
 
 	//---------------------------------------------------------------------------

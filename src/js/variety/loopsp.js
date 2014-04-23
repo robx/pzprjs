@@ -26,7 +26,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getTCC()){
+		if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -69,7 +69,7 @@ KeyEvent:{
 		this.key_inputLineParts(ca);
 	},
 	key_inputLineParts : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if     (ca=='q'){ cell.setQues(11); cell.setQnum(-1);}
 		else if(ca=='w'){ cell.setQues(12); cell.setQnum(-1);}

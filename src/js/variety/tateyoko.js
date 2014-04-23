@@ -82,7 +82,7 @@ KeyEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputqnum_tateyoko : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 		if(ca=='q'||ca=='q1'||ca=='q2'){
 			if(ca=='q'){ ca = (cell.getQues()!=1?'q1':'q2');}
 			if(ca=='q1'){

@@ -37,8 +37,8 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!this.cursor.pos.equals(pos)){
-			this.setcursorpos(pos);
+		if(!this.cursor.equals(pos)){
+			this.setcursor(pos);
 			pos.draw();
 		}
 		else{
@@ -84,7 +84,7 @@ KeyEvent:{
 		else if(this.owner.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
-		var border = this.cursor.getTBC();
+		var border = this.cursor.getb();
 		if(border.isnull){ return;}
 
 		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){

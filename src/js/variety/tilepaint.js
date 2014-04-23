@@ -38,8 +38,8 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.inputnumber51(ca,
-			{2 : (this.owner.board.qcols-(this.cursor.pos.bx>>1)-1),
-			 4 : (this.owner.board.qrows-(this.cursor.pos.by>>1)-1)});
+			{2 : (this.owner.board.qcols-(this.cursor.bx>>1)-1),
+			 4 : (this.owner.board.qrows-(this.cursor.by>>1)-1)});
 	}
 },
 

@@ -81,7 +81,7 @@ KeyEvent:{
 		this.key_inputstar(ca);
 	},
 	key_inputstar : function(ca){
-		var pos = this.cursor.getTCP(), star = pos.gets();
+		var star = this.cursor.gets();
 		if(star!==null){
 			if     (ca=='1'){ star.setStar(1);}
 			else if(ca=='2'){ star.setStar(2);}
@@ -158,8 +158,10 @@ Star:{
 	}
 },
 Address:{
-	gets : function(){ return this.owner.board.gets(this.bx, this.by);},
-	getobj : function(){ return this.owner.board.getobj(this.bx, this.by);}
+	gets : function(){ return this.owner.board.gets(this.bx, this.by);}
+},
+TargetCursor:{
+	gets : function(){ return this.owner.board.gets(this.bx, this.by);}
 },
 CellList:{
 	encolor : function(){

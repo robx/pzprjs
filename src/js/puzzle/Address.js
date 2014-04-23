@@ -74,6 +74,7 @@ RawAddress:{
 	getc  : function(){ return this.owner.board.getc(this.bx, this.by);},
 	getx  : function(){ return this.owner.board.getx(this.bx, this.by);},
 	getb  : function(){ return this.owner.board.getb(this.bx, this.by);},
-	getex : function(){ return this.owner.board.getex(this.bx, this.by);}
+	getex : function(){ return this.owner.board.getex(this.bx, this.by);},
+	getobj: function(){ return this.owner.board.getobj(this.bx, this.by);}
 }
 });

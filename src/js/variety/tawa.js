@@ -34,21 +34,21 @@ KeyEvent:{
 TargetCursor:{
 	// キー移動範囲のminx,maxx,miny,maxy設定関数オーバーライド
 	adjust_init : function(){
-		if(this.pos.getc().isnull){
-			this.pos.bx++;
+		if(this.getc().isnull){
+			this.bx++;
 		}
 	},
 
-	movedir_cursor : function(dir,mv){
-		this.pos.movedir(dir,mv);
+	movedir : function(dir,mv){
+		pzpr.common.TargetCursor.prototype.movedir.call(this,dir,mv);
 
-		if(dir===this.pos.UP){
-			if(this.pos.bx===this.maxx || (this.pos.bx>this.minx && (this.pos.by&2)===0)){ this.pos.bx--;}
-			else{ this.pos.bx++;}
+		if(dir===this.UP){
+			if(this.bx===this.maxx || (this.bx>this.minx && (this.by&2)===0)){ this.bx--;}
+			else{ this.bx++;}
 		}
-		else if(dir===this.pos.DN){
-			if(this.pos.bx===this.minx || (this.pos.bx<this.maxx && (this.pos.by&2)===2)){ this.pos.bx++;}
-			else{ this.pos.bx--;}
+		else if(dir===this.DN){
+			if(this.bx===this.minx || (this.bx<this.maxx && (this.by&2)===2)){ this.bx++;}
+			else{ this.bx--;}
 		}
 	}
 },

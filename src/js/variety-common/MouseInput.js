@@ -56,7 +56,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getTCC()){
+		if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -125,7 +125,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==this.cursor.getTCC()){
+		if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -240,7 +240,7 @@ MouseEvent:{
 		if(obj.isnull){ return;}
 
 		var group = obj.group;
-		if(group==='excell' || (group==='cell' && obj!==this.cursor.getTCC())){
+		if(group==='excell' || (group==='cell' && obj!==this.cursor.getc())){
 			this.setcursor(obj);
 		}
 		else if(group==='cell'){
@@ -265,7 +265,7 @@ MouseEvent:{
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross!==this.cursor.getTXC()){
+		if(cross!==this.cursor.getx()){
 			this.setcursor(cross);
 		}
 		else{

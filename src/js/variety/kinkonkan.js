@@ -71,7 +71,7 @@ MouseEvent:{
 		if(obj.group!=='excell'){
 			this.inputborder();
 		}
-		else if(obj!==this.cursor.getOBJ()){
+		else if(obj!==this.cursor.getobj()){
 			this.setcursor(obj);
 			this.mousereset();
 		}
@@ -91,32 +91,32 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), flag = true, dir = excell0.NDIR;
+		var cursor = this.cursor;
+		var excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
 
 		if     (ca===this.KEYUP){
-			if(tcp.by===tc.maxy && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.miny;}
-			else if(tcp.by>tc.miny){ dir=excell0.UP;}else{ flag=false;}
+			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
+			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
 		}
 		else if(ca===this.KEYDN){
-			if(tcp.by===tc.miny && tc.minx<tcp.bx && tcp.bx<tc.maxx){ tc.pos.by=tc.maxy;}
-			else if(tcp.by<tc.maxy){ dir=excell0.DN;}else{ flag=false;}
+			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
+			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
 		}
 		else if(ca===this.KEYLT){
-			if(tcp.bx===tc.maxx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.minx;}
-			else if(tcp.bx>tc.minx){ dir=excell0.LT;}else{ flag=false;}
+			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
+			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
 		}
 		else if(ca===this.KEYRT){
-			if(tcp.bx===tc.minx && tc.miny<tcp.by && tcp.by<tc.maxy){ tc.pos.bx=tc.maxx;}
-			else if(tcp.bx<tc.maxx){ dir=excell0.RT;}else{ flag=false;}
+			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
+			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
 		}
 		else{ flag=false;}
 
 		if(flag){
-			if(dir!==excell0.NDIR){ tc.pos.movedir(dir,2);}
+			if(dir!==excell0.NDIR){ cursor.movedir(dir,2);}
 
 			excell0.draw();
-			tc.getTCP().draw();
+			cursor.draw();
 			this.stopEvent();	/* カーソルを移動させない */
 		}
 		return flag;
@@ -126,7 +126,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getTEC(), bd = this.owner.board;
+		var excell = this.cursor.getex(), bd = this.owner.board;
 		if((excell.bx===bd.minbx+1||excell.bx===bd.maxbx-1)&&
 		   (excell.by===bd.minby+1||excell.by===bd.maxby-1)){ return;}
 
@@ -162,13 +162,13 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		this.cursor.getTCP().draw();
+		this.cursor.draw();
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(this.owner.board.excell[0]);
+		this.init(-1,-1);
 	}
 },
 

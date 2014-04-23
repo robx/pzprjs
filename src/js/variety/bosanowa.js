@@ -13,8 +13,8 @@ MouseEvent:{
 		var pos = this.getpos(0.31);
 		if(!pos.isinside()){ return;}
 
-		if(!this.cursor.pos.equals(pos)){
-			this.setcursorpos(pos);
+		if(!this.cursor.equals(pos)){
+			this.setcursor(pos);
 		}
 		else if(pos.oncell()){
 			this.inputcell_bosanowa(pos);
@@ -66,9 +66,9 @@ KeyEvent:{
 		this.key_inputqnum_bosanowa(ca);
 	},
 	key_inputqnum_bosanowa : function(ca){
-		var tcp = this.cursor.getTCP();
-		if(tcp.oncell()){
-			var cell = this.cursor.getTCC();
+		var cursor = this.cursor;
+		if(cursor.oncell()){
+			var cell = cursor.getc();
 			if(this.owner.editmode){
 				if     (ca=='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
 				else if(ca=='-'||ca==' '){ cell.setQues(0); cell.setNum(-1);}
@@ -83,8 +83,8 @@ KeyEvent:{
 				else{ return;}
 			}
 		}
-		else if(tcp.onborder()){
-			var border = tcp.getb(), cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		else if(cursor.onborder()){
+			var border = cursor.getb(), cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
 				var num = parseInt(ca), qs = border.getQsub();
@@ -102,14 +102,15 @@ KeyEvent:{
 		}
 		else{ return;}
 
-		tcp.drawaround();
+		cursor.drawaround();
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
 		var bd = this.owner.board;
-		this.pos = new this.owner.Address(((bd.qcols-1)&~1)+1, ((bd.qrows-1)&~1)+1);
+		this.bx = ((bd.qcols-1)&~1)+1;
+		this.by = ((bd.qrows-1)&~1)+1;
 	}
 },
 
@@ -137,7 +138,7 @@ Board:{
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
 		if(pzpr.EDITOR){
-			var cell = this.owner.cursor.getTCC(); /* 真ん中にあるはず */
+			var cell = this.owner.cursor.getc(); /* 真ん中にあるはず */
 			if(!cell.isnull){ cell.ques = 0;}
 		}
 	}
@@ -327,7 +328,7 @@ Graphic:{
 	},
 
 	drawTarget_bosanowa : function(){
-		var islarge = this.owner.cursor.pos.oncell();
+		var islarge = this.owner.cursor.oncell();
 		this.drawCursor(islarge);
 	}
 },

@@ -241,18 +241,11 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.setcursor()    TargetCursorの場所を移動する
-	// mv.setcursorpos() TargetCursorの場所を移動する
+	// mv.setcursor() TargetCursorの場所を移動する
 	//---------------------------------------------------------------------------
-	setcursor : function(obj){
-		var obj0 = this.cursor.getOBJ();
-		this.cursor.setOBJ(obj);
-		obj0.draw();
-		obj.draw();
-	},
-	setcursorpos : function(pos){
-		var pos0 = this.cursor.getTCP();
-		this.cursor.setTCP(pos);
+	setcursor : function(pos){
+		var pos0 = this.cursor.getaddr();
+		this.cursor.setaddr(pos);
 		pos0.draw();
 		pos.draw();
 	}

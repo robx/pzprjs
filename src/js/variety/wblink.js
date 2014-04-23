@@ -73,7 +73,7 @@ KeyEvent:{
 		this.key_inputcircle(ca);
 	},
 	key_inputcircle : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if     (ca=='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
 		else if(ca=='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}

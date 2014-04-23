@@ -18,7 +18,7 @@ MouseEvent:{
 		var excell = this.getcell_excell();
 		if(excell.isnull || excell.group!=='excell'){ return;}
 
-		if(excell!==this.cursor.getTEC()){
+		if(excell!==this.cursor.getex()){
 			this.setcursor(excell);
 		}
 		else{
@@ -39,20 +39,20 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		var tc = this.cursor;
-		var excell0 = tc.getTEC(), tcp = tc.getTCP(), dir = excell0.NDIR;
+		var cursor = this.cursor;
+		var excell0 = cursor.getex(), dir = excell0.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.bx===tc.minx && tc.miny<tcp.by){ dir=excell0.UP;} break;
-			case this.KEYDN: if(tcp.bx===tc.minx && tc.maxy>tcp.by){ dir=excell0.DN;} break;
-			case this.KEYLT: if(tcp.by===tc.miny && tc.minx<tcp.bx){ dir=excell0.LT;} break;
-			case this.KEYRT: if(tcp.by===tc.miny && tc.maxx>tcp.bx){ dir=excell0.RT;} break;
+			case this.KEYUP: if(cursor.bx===cursor.minx && cursor.miny<cursor.by){ dir=excell0.UP;} break;
+			case this.KEYDN: if(cursor.bx===cursor.minx && cursor.maxy>cursor.by){ dir=excell0.DN;} break;
+			case this.KEYLT: if(cursor.by===cursor.miny && cursor.minx<cursor.bx){ dir=excell0.LT;} break;
+			case this.KEYRT: if(cursor.by===cursor.miny && cursor.maxx>cursor.bx){ dir=excell0.RT;} break;
 		}
 
 		if(dir!==excell0.NDIR){
-			tc.pos.movedir(dir,2);
+			cursor.movedir(dir,2);
 
 			excell0.draw();
-			tc.getTCP().draw();
+			cursor.draw();
 			this.stopEvent();	/* カーソルを移動させない */
 
 			return true;
@@ -64,7 +64,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getTEC(), qn = excell.getQnum();
+		var excell = this.cursor.getex(), qn = excell.getQnum();
 		var max = excell.nummaxfunc();
 
 		if('0'<=ca && ca<='9'){
@@ -82,13 +82,13 @@ KeyEvent:{
 		else{ return;}
 
 		this.prev = excell;
-		this.cursor.getTCP().draw();
+		this.cursor.draw();
 	}
 },
 
 TargetCursor:{
 	initCursor : function(){
-		this.setTEC(this.owner.board.excell[0]);
+		this.init(-1,-1);
 	}
 },
 

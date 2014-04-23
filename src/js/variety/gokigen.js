@@ -55,8 +55,8 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!this.cursor.pos.equals(pos)){
-			this.setcursorpos(pos);
+		if(!this.cursor.equals(pos)){
+			this.setcursor(pos);
 		}
 		else if(pos.oncross()){
 			this.inputcross();
@@ -93,12 +93,12 @@ MouseEvent:{
 		this.key_wagiri(ca);
 	},
 	key_wagiri : function(ca){
-		var pos = this.cursor.getTCP();
-		if(pos.oncross()){
+		var cursor = this.cursor;
+		if(cursor.oncross()){
 			this.key_inputcross(ca);
 		}
-		else if(pos.oncell()){
-			var cell = this.cursor.getTCC(), val = 0;
+		else if(cursor.oncell()){
+			var cell = cursor.getc(), val = 0;
 			if     (ca=='1'){ val= 1;}
 			else if(ca=='2'){ val= 2;}
 			else if(ca=='-'){ val=-2;}
@@ -310,7 +310,7 @@ Graphic:{
 	},
 
 	drawTarget : function(){
-		var islarge = !this.owner.cursor.pos.onborder();
+		var islarge = !this.owner.cursor.onborder();
 		this.drawCursor(islarge,this.owner.editmode);
 	}
 },

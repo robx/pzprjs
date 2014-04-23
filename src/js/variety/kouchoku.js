@@ -69,7 +69,7 @@ MouseEvent:{
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
-		if(cross!==this.cursor.getTXC()){
+		if(cross!==this.cursor.getx()){
 			this.setcursor(cross);
 		}
 		else{
@@ -122,7 +122,7 @@ KeyEvent:{
 		this.key_inputqnum_kouchoku(ca);
 	},
 	key_inputqnum_kouchoku : function(ca){
-		var cross = this.cursor.getTXC();
+		var cross = this.cursor.getx();
 
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){

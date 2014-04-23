@@ -55,7 +55,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getTCC()){
+		if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -99,7 +99,7 @@ KeyEvent:{
 		this.key_inputqnum_yosenabe(ca);
 	},
 	key_inputqnum_yosenabe : function(ca){
-		var cell = this.cursor.getTCC(), num;
+		var cell = this.cursor.getc(), num;
 		if(ca==='q'||ca==='q1'||ca==='q2'){
 			if(ca==='q') { ca = (cell.getQnum()!==-1?'q1':'q2');}
 			if     (ca==='q1' && cell.getQnum() !==-1){ cell.setQnum2(cell.getQnum()); cell.setQnum(-1);}

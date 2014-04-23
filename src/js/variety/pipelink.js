@@ -32,7 +32,7 @@ KeyEvent:{
 	},
 	key_inputLineParts : function(ca){
 		if(this.owner.playmode){ return false;}
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if     (ca=='q'){ cell.setQues(11);}
 		else if(ca=='w'){ cell.setQues(12);}

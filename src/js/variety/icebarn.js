@@ -90,7 +90,7 @@ MouseEvent:{
 		this.key_inputqnum(ca);
 	},
 	key_inputIcebarn : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if(ca==='q'){
 			cell.getQues(cell.ice()?0:6);

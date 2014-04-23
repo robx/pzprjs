@@ -116,7 +116,7 @@ MouseEvent:{
 			cell.draw();
 		}
 		else if(this.notInputted()){
-			if(cell!==this.cursor.getTCC()){
+			if(cell!==this.cursor.getc()){
 				this.setcursor(cell);
 			}
 			else{
@@ -161,7 +161,7 @@ KeyEvent:{
 		}
 	},
 	key_inputqnum_slalom : function(ca){
-		var cell = this.cursor.getTCC(), bd = this.owner.board;
+		var cell = this.cursor.getc(), bd = this.owner.board;
 
 		if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
 			var old=cell.getQues(), newques=-1;

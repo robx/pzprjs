@@ -10,7 +10,7 @@ MouseEvent:{
 	},
 	inputqnum_kakuru : function(){
 		var cell = this.getcell();
-		if(cell.isnull || (cell.getQues()===1 && cell===this.cursor.getTCC())){ return;}
+		if(cell.isnull || (cell.getQues()===1 && cell===this.cursor.getc())){ return;}
 		this.inputqnum();
 	}
 },
@@ -25,7 +25,7 @@ KeyEvent:{
 		this.key_inputqnum_kakuru(ca);
 	},
 	key_inputqnum_kakuru : function(ca){
-		var cell = this.cursor.getTCC();
+		var cell = this.cursor.getc();
 
 		if(('0'<=ca && ca<='9') || ca==='-'){
 			if(cell.getQues()===1){ return;}

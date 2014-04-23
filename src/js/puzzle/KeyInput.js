@@ -212,19 +212,19 @@ KeyEvent:{
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var tcp = this.cursor.getTCP(), dir = tcp.NDIR;
+		var cursor = this.cursor, pos0 = cursor.getaddr(), dir = cursor.NDIR;
 		switch(ca){
-			case this.KEYUP: if(tcp.by-mv>=this.cursor.miny){ dir = tcp.UP;} break;
-			case this.KEYDN: if(tcp.by+mv<=this.cursor.maxy){ dir = tcp.DN;} break;
-			case this.KEYLT: if(tcp.bx-mv>=this.cursor.minx){ dir = tcp.LT;} break;
-			case this.KEYRT: if(tcp.bx+mv<=this.cursor.maxx){ dir = tcp.RT;} break;
+			case this.KEYUP: if(cursor.by-mv>=cursor.miny){ dir = cursor.UP;} break;
+			case this.KEYDN: if(cursor.by+mv<=cursor.maxy){ dir = cursor.DN;} break;
+			case this.KEYLT: if(cursor.bx-mv>=cursor.minx){ dir = cursor.LT;} break;
+			case this.KEYRT: if(cursor.bx+mv<=cursor.maxx){ dir = cursor.RT;} break;
 			default: return false;
 		}
 
-		this.cursor.movedir_cursor(dir,mv);
+		cursor.movedir(dir,mv);
 
-		tcp.draw();
-		this.cursor.getTCP().draw();
+		pos0.draw();
+		cursor.draw();
 		this.stopEvent();	/* カーソルを移動させない */
 
 		return true;
@@ -234,17 +234,17 @@ KeyEvent:{
 //---------------------------------------------------------------------------
 // ★TargetCursorクラス キー入力のターゲットを保持する
 //---------------------------------------------------------------------------
-TargetCursor:{
+"TargetCursor:Address":{
 	initialize : function(){
-		// 現在入力ターゲットになっている場所(border座標系)
-		this.pos = new this.owner.Address(1,1);
-
-		// 有効な範囲(minx,miny)-(maxx,maxy)
-		this.minx;
-		this.miny;
-		this.maxx;
-		this.maxy;
+		this.bx = 1;
+		this.by = 1;
 	},
+
+	// 有効な範囲(minx,miny)-(maxx,maxy)
+	minx: null,
+	miny: null,
+	maxx: null,
+	maxy: null,
 
 	crosstype : false,
 
@@ -265,64 +265,30 @@ TargetCursor:{
 		this.adjust_init();
 	},
 	initCursor : function(){
-		if(this.crosstype){ this.pos = new this.owner.Address(0,0);}
-		else              { this.pos = new this.owner.Address(1,1);}
+		if(this.crosstype){ this.init(0,0);}
+		else              { this.init(1,1);}
 
 		this.adjust_init();
 	},
 
 	adjust_init : function(){
-		if(this.pos===(void 0)){ return;}
-		if(this.pos.bx<this.minx){ this.pos.bx=this.minx;}
-		if(this.pos.by<this.miny){ this.pos.by=this.miny;}
-		if(this.pos.bx>this.maxx){ this.pos.bx=this.maxx;}
-		if(this.pos.by>this.maxy){ this.pos.by=this.maxy;}
+		if(this.bx<this.minx){ this.bx=this.minx;}
+		if(this.by<this.miny){ this.by=this.miny;}
+		if(this.bx>this.maxx){ this.bx=this.maxx;}
+		if(this.by>this.maxy){ this.by=this.maxy;}
 	},
 	adjust_modechange : function(){ },
 
 	//---------------------------------------------------------------------------
-	// tc.movedir_cursor() ターゲットの位置を動かす
+	// tc.getaddr() ターゲットの位置をAddressクラスのオブジェクトで取得する
+	// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 	//---------------------------------------------------------------------------
-	movedir_cursor : function(dir,mv){
-		this.pos.movedir(dir,mv);
+	getaddr : function(){
+		return (new this.owner.Address(this.bx, this.by));
 	},
-
-	//---------------------------------------------------------------------------
-	// tc.getTCP() ターゲットの位置をAddressクラスのオブジェクトで取得する
-	// tc.setTCP() ターゲットの位置をAddressクラスのオブジェクトで設定する
-	// tc.getTCC() ターゲットの位置をCellのIDで取得する
-	// tc.setTCC() ターゲットの位置をCellのIDで設定する
-	// tc.getTXC() ターゲットの位置をCrossのIDで取得する
-	// tc.setTXC() ターゲットの位置をCrossのIDで設定する
-	// tc.getTBC() ターゲットの位置をBorderのIDで取得する
-	// tc.setTBC() ターゲットの位置をBorderのIDで設定する
-	// tc.getTEC() ターゲットの位置をEXCellのIDで取得する
-	// tc.setTEC() ターゲットの位置をEXCellのIDで設定する
-	// tc.getOBJ() ターゲットの位置をオブジェクトで取得する
-	// tc.setOBJ() ターゲットの位置をオブジェクトで設定する
-	//---------------------------------------------------------------------------
-	getTCP : function(){ return this.pos.clone();},
-	setTCP : function(pos){
+	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
 		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
-		this.pos.set(pos);
-	},
-
-	getTCC : function(){ return this.pos.getc();},
-	setTCC : function(cell){ this.pos.init(cell.bx,cell.by);},
-
-	getTXC : function(){ return this.pos.getx();},
-	setTXC : function(cross){ this.pos.init(cross.bx,cross.by);},
-
-	getTBC : function(){ return this.pos.getb();},
-	setTBC : function(border){ this.pos.init(border.bx,border.by);},
-
-	getTEC : function(){ return this.pos.getex();},
-	setTEC : function(excell){ this.pos.init(excell.bx,excell.by);},
-
-	getOBJ : function(){ return this.owner.board.getobj(this.pos.bx, this.pos.by);},
-	setOBJ : function(obj){
-		if(obj.isnull){ return;}
-		this.pos.init(obj.bx,obj.by);
+		this.init(pos);
 	},
 
 	//---------------------------------------------------------------------------
@@ -334,7 +300,7 @@ TargetCursor:{
 		if(ca!='shift'){ return false;}
 		if(this.targetdir==2){ this.targetdir=4;}
 		else{ this.targetdir=2;}
-		this.getTCC().draw();
+		this.draw();
 		return true;
 	},
 	detectTarget : function(obj){

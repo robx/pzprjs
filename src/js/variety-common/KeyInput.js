@@ -7,7 +7,7 @@ KeyEvent:{
 	// kc.key_inputcross() 上限maxまでの数字をCrossの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
-		var cross = this.cursor.getTXC();
+		var cross = this.cursor.getx();
 		var max = cross.nummaxfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
@@ -27,7 +27,7 @@ KeyEvent:{
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
-		var cell = this.cursor.getTCC(), cell0=cell, puzzle=this.owner, bd=puzzle.board;
+		var cell = this.cursor.getc(), cell0=cell, puzzle=this.owner, bd=puzzle.board;
 		if(puzzle.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
@@ -69,7 +69,7 @@ KeyEvent:{
 	key_inputdirec : function(ca){
 		if(!this.isSHIFT){ return false;}
 
-		var cell = this.cursor.getTCC(), pid = this.owner.pid;
+		var cell = this.cursor.getc(), pid = this.owner.pid;
 		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
 			if(cell.getQnum()===-1){ return false;}
 		}
@@ -84,7 +84,7 @@ KeyEvent:{
 		}
 
 		if(flag){
-			this.cursor.getTCP().draw();
+			this.cursor.draw();
 			this.stopEvent();	/* カーソルを移動させない */
 		}
 		return flag;
@@ -96,16 +96,16 @@ KeyEvent:{
 	// kc.getnum51()      モード別に数字を取得する
 	//---------------------------------------------------------------------------
 	inputnumber51 : function(ca,max_obj){
-		var tc = this.cursor;
-		if(tc.chtarget(ca)){ return;}
+		var cursor = this.cursor;
+		if(cursor.chtarget(ca)){ return;}
 
-		var obj = tc.getOBJ();
-		var target = tc.detectTarget(obj);
+		var obj = cursor.getobj();
+		var target = cursor.detectTarget(obj);
 		if(target===0 || (obj.group==='cell' && obj.is51cell())){
 			if(ca==='q' && !obj.isnull){
 				if(!obj.is51cell()){ obj.set51cell();}
 				else               { obj.remove51cell();}
-				tc.getTCP().drawaround();
+				cursor.drawaround();
 				return;
 			}
 		}
@@ -125,7 +125,7 @@ KeyEvent:{
 
 		this.setnum51(obj,target,val);
 		this.prev = (obj.group==='excell' ? obj : null);
-		tc.getTCP().draw();
+		cursor.draw();
 	},
 	setnum51 : function(obj,target,val){
 		(target==2 ? obj.setQnum(val) : obj.setQnum2(val));
