@@ -317,7 +317,7 @@ OperationManager:{
 	// um.add()  指定された操作を追加する(共通操作)
 	//---------------------------------------------------------------------------
 	add : function(newope){
-		if(!this.forceRecord && this.disrec>0){ return;}
+		if(!this.owner.ready || (!this.forceRecord && this.disrec>0)){ return;}
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){

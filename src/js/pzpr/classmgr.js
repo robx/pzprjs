@@ -23,7 +23,7 @@ pzpr.classmgr = {
 			var realname = this.searchName(key).real;
 			var proto = commonclass[key];
 			if(!common[realname]){
-				common[realname] = this.createClass(key, proto);
+				common[realname] = this.createClass(key, proto, {});
 			}
 			else{
 				for(var name in proto){ common[realname].prototype[name] = proto[name];}
@@ -74,7 +74,7 @@ pzpr.classmgr = {
 			if(!custom[realname]){
 				if(!!pzpr.common[realname] && key===realname){ key=realname+":"+realname;}
 				
-				custom[realname] = this.createClass(key, proto);
+				custom[realname] = this.createClass(key, proto, custom);
 			}
 			else{
 				for(var name in proto){ custom[realname].prototype[name] = proto[name];}
@@ -109,11 +109,12 @@ pzpr.classmgr = {
 		}
 		return {base:basename, real:realname};
 	},
-	createClass : function(key, proto){
+	createClass : function(key, proto, customs){
 		var basename = this.searchName(key).base;
 		var NewClass = function(){};
-		if(!!basename && !!pzpr.common[basename]){
-			var BaseProto = pzpr.common[basename].prototype;
+		var BaseClass = (customs[basename] || pzpr.common[basename]);
+		if(!!basename && !!BaseClass){
+			var BaseProto = BaseClass.prototype;
 			for(var name in BaseProto){
 				NewClass.prototype[name] = BaseProto[name];
 			}

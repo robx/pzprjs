@@ -283,9 +283,6 @@ KeyEvent:{
 	// tc.getaddr() ターゲットの位置をAddressクラスのオブジェクトで取得する
 	// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 	//---------------------------------------------------------------------------
-	getaddr : function(){
-		return (new this.owner.Address(this.bx, this.by));
-	},
 	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
 		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
 		this.init(pos);

@@ -60,13 +60,9 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputarrow_inout : function(border,dir){
-		var val = this.checkinout(border,dir), bd = this.owner.board, border0=null;
-		if     (val===1){ border0 = bd.arrowin;  bd.inputarrowin(border);}
-		else if(val===2){ border0 = bd.arrowout; bd.inputarrowout(border);}
-		if(border0!==null){
-			border0.draw();
-			this.mousereset();
-		}
+		var val = this.checkinout(border,dir), bd = this.owner.board;
+		if     (val===1){ bd.arrowin.input(border);  this.mousereset();}
+		else if(val===2){ bd.arrowout.input(border); this.mousereset();}
 	},
 	/* 0:どちらでもない 1:IN 2:OUT */
 	checkinout : function(border,dir){
@@ -135,78 +131,40 @@ Board:{
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
-		this.iceinfo = this.addInfoList(this.owner.AreaIcebarnManager);
+		var puzzle = this.owner;
+		this.arrowin  = new puzzle.InAddress(2,0);
+		this.arrowout = new puzzle.OutAddress(4,0);
+		this.arrowin.partner  = this.arrowout;
+		this.arrowout.partner = this.arrowin;
+
+		this.iceinfo = this.addInfoList(puzzle.AreaIcebarnManager);
 	},
 
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
-		this.arrowin  = this.border[0];
-		this.arrowout = this.border[1];
-
 		this.disableInfo();
 		if(col>=3){
-			this.inputarrowin (this.getb(this.minbx+1, this.minby));
-			this.inputarrowout(this.getb(this.minbx+5, this.minby));
+			this.arrowin.init (this.minbx+1, this.minby);
+			this.arrowout.init(this.minbx+5, this.minby);
 		}
 		else{
-			this.inputarrowin (this.getb(1, this.minby));
-			this.inputarrowout(this.getb(1, this.maxby));
+			this.arrowin.init (1, this.minby);
+			this.arrowout.init(1, this.maxby);
 		}
 		this.enableInfo();
 	},
 
-	inputarrowin : function(border){
-		if(this.arrowout!==border){
-			this.arrowin.setArrow(0);
-			this.setarrowin(border);
-		}
-		else{
-			this.exchangeinout();
-		}
-	},
-	inputarrowout : function(border){
-		if(this.arrowin!==border){
-			this.arrowout.setArrow(0);
-			this.setarrowout(border);
-		}
-		else{
-			this.exchangeinout();
-		}
-	},
 	exchangeinout : function(){
-		var old_in=this.arrowin, old_out=this.arrowout;
+		var old_in  = this.arrowin.getb();
+		var old_out = this.arrowout.getb();
 		old_in.setArrow(0);
 		old_out.setArrow(0);
-		this.setarrowin(old_out);
-		this.setarrowout(old_in);
-	},
-
-	setarrowin : function(border){
-		var puzzle = this.owner, pos = this.arrowin.getaddr();
-		var ope = new puzzle.InOutOperation('in', pos.bx,pos.by, border.bx,border.by);
-		puzzle.opemgr.add(ope);
+		this.arrowin.set(old_out);
+		this.arrowout.set(old_in);
 		
-		this.arrowin = border;
-		
-		/* setarrowin_arrow */
-		if     (border.by===this.maxby){ border.setArrow(border.UP);}
-		else if(border.by===this.minby){ border.setArrow(border.DN);}
-		else if(border.bx===this.maxbx){ border.setArrow(border.LT);}
-		else if(border.bx===this.minbx){ border.setArrow(border.RT);}
-	},
-	setarrowout : function(border){
-		var puzzle = this.owner, pos = this.arrowout.getaddr();
-		var ope = new puzzle.InOutOperation('out', pos.bx,pos.by, border.bx,border.by);
-		puzzle.opemgr.add(ope);
-		
-		this.arrowout = border;
-		
-		/* setarrowout_arrow */
-		if     (border.by===this.minby){ border.setArrow(border.UP);}
-		else if(border.by===this.maxby){ border.setArrow(border.DN);}
-		else if(border.bx===this.minbx){ border.setArrow(border.LT);}
-		else if(border.bx===this.maxbx){ border.setArrow(border.RT);}
+		this.arrowin.draw();
+		this.arrowout.draw();
 	}
 },
 BoardExec:{
@@ -216,8 +174,8 @@ BoardExec:{
 		var bd = this.owner.board;
 		this.adjustBorderArrow(key,d);
 
-		this.posinfo_in  = this.getAfterPos(key,d,bd.arrowin);
-		this.posinfo_out = this.getAfterPos(key,d,bd.arrowout);
+		this.posinfo_in  = this.getAfterPos(key,d,bd.arrowin.getb());
+		this.posinfo_out = this.getAfterPos(key,d,bd.arrowout.getb());
 	},
 	adjustBoardData2 : function(key,d){
 		var puzzle = this.owner, bd = puzzle.board, opemgr = puzzle.opemgr;
@@ -225,16 +183,86 @@ BoardExec:{
 		
 		isrec = ((key & this.REDUCE) && (info1.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
-		bd.setarrowin(info1.pos.getb());
+		bd.arrowin.set(info1.pos);
 		if(isrec){ opemgr.forceRecord = false;}
 		
 		isrec = ((key & this.REDUCE) && (info2.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
-		bd.setarrowout(info2.pos.getb());
+		bd.arrowout.set(info2.pos);
 		if(isrec){ opemgr.forceRecord = false;}
 	}
 },
 
+"InOutAddress:Address":{
+	type : "",
+	partner : null,
+
+	getid : function(){
+		return this.getb().id;
+	},
+	setid : function(id){
+		this.input(this.owner.board.border[id]);
+	},
+	geturlid : function(){
+		return this.getb().id - this.owner.board.bdinside;
+	},
+	seturlid : function(id){
+		var bd = this.owner.board;
+		this.input(bd.border[id + bd.bdinside]);
+	},
+
+	input : function(border){
+		if(!this.partner.equals(border)){
+			if(!this.equals(border)){
+				this.getb().setArrow(0);
+				this.set(border);
+			}
+		}
+		else{
+			this.owner.board.exchangeinout();
+		}
+	},
+	set : function(pos){
+		var pos0 = this.getaddr();
+		this.addOpe(pos.bx, pos.by);
+		
+		this.bx = pos.bx;
+		this.by = pos.by;
+		this.setarrow(this.owner.board.getb(pos.bx, pos.by));
+		
+		pos0.draw();
+		this.draw();
+	},
+
+	addOpe : function(bx, by){
+		if(this.bx===bx && this.by===by){ return;}
+		this.owner.opemgr.add(new this.owner.InOutOperation(this.type, this.bx,this.by, bx,by));
+	}
+},
+"InAddress:InOutAddress":{
+	type : "in",
+	
+	setarrow : function(border){
+		/* setarrowin_arrow */
+		var bd = this.owner.board;
+		if     (border.by===bd.maxby){ border.setArrow(border.UP);}
+		else if(border.by===bd.minby){ border.setArrow(border.DN);}
+		else if(border.bx===bd.maxbx){ border.setArrow(border.LT);}
+		else if(border.bx===bd.minbx){ border.setArrow(border.RT);}
+	}
+},
+"OutAddress:InOutAddress":{
+	type : "out",
+	
+	setarrow : function(border){
+		/* setarrowout_arrow */
+		var bd = this.owner.board;
+		if     (border.by===bd.minby){ border.setArrow(border.UP);}
+		else if(border.by===bd.maxby){ border.setArrow(border.DN);}
+		else if(border.bx===bd.minbx){ border.setArrow(border.LT);}
+		else if(border.bx===bd.maxbx){ border.setArrow(border.RT);}
+	}
+},
 "InOutOperation:Operation":{
 	property : '',
 
@@ -262,10 +290,8 @@ BoardExec:{
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
 		var bd = this.owner.board, border = bd.getb(bx,by), border0;
-		if     (this.property==='in') { border0 = bd.arrowin;  bd.arrowin  = border;}
-		else if(this.property==='out'){ border0 = bd.arrowout; bd.arrowout = border;}
-		border0.draw();
-		border.draw();
+		if     (this.property==='in') { bd.arrowin.set(border);}
+		else if(this.property==='out'){ bd.arrowout.set(border);}
 	}
 },
 
@@ -402,7 +428,7 @@ Graphic:{
 	drawInOut : function(){
 		var g = this.context, bd = this.owner.board, border;
 
-		border = bd.arrowin;
+		border = bd.arrowin.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
@@ -412,7 +438,7 @@ Graphic:{
 			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
 			this.disptext("IN", px, py, {key:"string_in",ratio:[0.55]});
 		}
-		border = bd.arrowout;
+		border = bd.arrowout.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
@@ -493,10 +519,10 @@ Graphic:{
 			else{ id+=35;}
 			if(id>=bd.bdinside){ break;}
 		}
-
-		bd.inputarrowin (bd.border[parseInt(barray[1])+bd.bdinside]);
-		bd.inputarrowout(bd.border[parseInt(barray[2])+bd.bdinside]);
 		bd.enableInfo();
+
+		bd.arrowin.seturlid (parseInt(barray[1]));
+		bd.arrowout.seturlid(parseInt(barray[2]));
 
 		this.outbstr = "";
 	},
@@ -532,7 +558,7 @@ Graphic:{
 		}
 		if(num>0){ cm+=num.toString(36);}
 
-		cm += ("/"+(bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
+		cm += ("/"+bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
 
 		this.outbstr += cm;
 	},
@@ -569,10 +595,10 @@ Graphic:{
 			else{ id++;}
 			if(id>=bd.bdinside){ break;}
 		}
-
-		bd.inputarrowin (bd.border[parseInt(barray[0])+bd.bdinside]);
-		bd.inputarrowout(bd.border[parseInt(barray[1])+bd.bdinside]);
 		bd.enableInfo();
+
+		bd.arrowin.seturlid (parseInt(barray[0]));
+		bd.arrowout.seturlid(parseInt(barray[1]));
 
 		this.outbstr = "";
 	},
@@ -608,10 +634,10 @@ Graphic:{
 			var array = barray[4].split("+");
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.RT);}
 		}
-
-		bd.inputarrowin (bd.border[parseInt(barray[5])+bd.bdinside]);
-		bd.inputarrowout(bd.border[parseInt(barray[6])+bd.bdinside]);
 		bd.enableInfo();
+
+		bd.arrowin.seturlid (parseInt(barray[5]));
+		bd.arrowout.seturlid(parseInt(barray[6]));
 
 		this.outbstr = "";
 	},
@@ -629,7 +655,7 @@ Graphic:{
 		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.LT);}).join("+") + "/");
 		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.RT);}).join("+") + "/");
 
-		cm += ((bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
+		cm += (bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
 
 		this.outbstr += cm;
 	}
@@ -683,26 +709,22 @@ Graphic:{
 		var barray = this.outbstr.substr(1).split("/");
 
 		var bd = this.owner.board;
-		bd.disableInfo();
-		bd.inputarrowin (bd.border[parseInt(barray[0])+bd.bdinside]);
-		bd.inputarrowout(bd.border[parseInt(barray[1])+bd.bdinside]);
-		bd.enableInfo();
+		bd.arrowin.seturlid (parseInt(barray[0]));
+		bd.arrowout.seturlid(parseInt(barray[1]));
 
 		this.outbstr = "";
 	},
 	encodeInOut : function(){
 		var bd = this.owner.board;
-		this.outbstr += ("/"+(bd.arrowin.id-bd.bdinside)+"/"+(bd.arrowout.id-bd.bdinside));
+		this.outbstr += ("/"+bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
 	}
 },
 //---------------------------------------------------------
 "FileIO@icebarn":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.disableInfo();
-		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
-		bd.inputarrowout(bd.border[parseInt(this.readLine())]);
-		bd.enableInfo();
+		bd.arrowin.setid (parseInt(this.readLine()));
+		bd.arrowout.setid(parseInt(this.readLine()));
 
 		this.decodeCell( function(obj,ca){
 			if(ca==="1"){ obj.ques = 6;}
@@ -725,7 +747,7 @@ Graphic:{
 	},
 	encodeData : function(){
 		var bd = this.owner.board;
-		this.datastr += (bd.arrowin.id+"\n"+bd.arrowout.id+"\n");
+		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
 		this.encodeCell( function(obj){
 			return (obj.ques===6?"1 ":"0 ");
 		});
@@ -745,8 +767,8 @@ Graphic:{
 "FileIO@icelom,icelom2":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.inputarrowin (bd.border[parseInt(this.readLine())]);
-		bd.inputarrowout(bd.border[parseInt(this.readLine())]);
+		bd.arrowin.setid (parseInt(this.readLine()));
+		bd.arrowout.setid(parseInt(this.readLine()));
 
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
@@ -769,7 +791,7 @@ Graphic:{
 		var bd = this.owner.board;
 		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
 
-		this.datastr += (bd.arrowin.id+"\n"+bd.arrowout.id+"\n"+pzltype+"\n");
+		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n"+pzltype+"\n");
 		this.encodeCell( function(obj){
 			var istr = (obj.ques===6 ? "i" : ""), qstr='';
 			if     (obj.qnum===-1){ qstr = (istr==="" ? ". " : " ");}
@@ -846,15 +868,16 @@ AnsCheck:{
 	},
 
 	checkLine : function(){
-		var bd = this.owner.board, pos = bd.arrowin.getaddr(), dir=0, count=1;
-		if     (pos.by===bd.minby){ dir=2;}else if(pos.by===bd.maxby){ dir=1;}
-		else if(pos.bx===bd.minbx){ dir=4;}else if(pos.bx===bd.maxbx){ dir=3;}
+		var bd = this.owner.board, border = bd.arrowin.getb(), dir=0, count=1;
+		if     (border.by===bd.minby){ dir=2;}else if(border.by===bd.maxby){ dir=1;}
+		else if(border.bx===bd.minbx){ dir=4;}else if(border.bx===bd.maxbx){ dir=3;}
 		if(dir==0){ return -1;}
-		if(!bd.arrowin.isLine()){ bd.arrowin.seterr(4); return 1;}
+		if(!border.isLine()){ border.seterr(4); return 1;}
 
 		bd.border.seterr(-1);
-		bd.arrowin.seterr(1);
+		border.seterr(1);
 
+		var pos = border.getaddr();
 		while(1){
 			pos.movedir(dir,1);
 			if(pos.oncell()){
@@ -880,7 +903,7 @@ AnsCheck:{
 				var border = pos.getb();
 				border.seterr(1);
 				if(!border.isLine()){ return 2;}
-				if(bd.arrowout===border){ break;}
+				if(bd.arrowout.equals(border)){ break;}
 				else if(border.id>=bd.bdinside){ return 3;}
 				if(dir===[0,2,1,4,3][border.getArrow()]){ return 4;}
 			}
