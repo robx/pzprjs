@@ -820,16 +820,16 @@ AnsCheck:{
 	},
 
 	checkCrossOutOfIce : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
 	},
 	checkUnreachedWhiteCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.ice());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.ice());});
 	},
 	checkIgnoreIcebarn : function(){
 		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
 	},
 	checkNoLineNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
 	},
 
 	checkAllArrow : function(){
@@ -862,7 +862,7 @@ AnsCheck:{
 				if(cell.isnull){ continue;}
 				else if(!cell.ice()){
 					var adb = cell.adjborder;
-					if     (cell.lcnt()!==2){ dir=dir;}
+					if     (cell.lcnt!==2){ dir=dir;}
 					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
 					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
 					else if(dir!=3 && adb.right.isLine() ){ dir=4;}

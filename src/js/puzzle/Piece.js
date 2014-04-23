@@ -181,6 +181,7 @@ BoardPiece:{
 'Cell:BoardPiece':{
 	group : 'cell',
 
+	lcnt : 0,		// セルに存在する線の本数
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
 	
 	disInputHatena : false,	// qnum==-2を入力できないようにする
@@ -213,10 +214,8 @@ BoardPiece:{
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.lcnt()       セルに存在する線の本数を返す
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
@@ -413,13 +412,13 @@ BoardPiece:{
 'Cross:BoardPiece':{
 	group : 'cross',
 
+	lcnt : 0,		// 交点に存在する線の本数
+
 	adjborder : {},	// 四方向に隣接する境界線を保持する
 
 	//---------------------------------------------------------------------------
-	// cross.lcnt()       交点に存在する線の本数を返す
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	lcnt       : function(){ return (!!this.owner.board.lines.lcnt[this.id]?this.owner.board.lines.lcnt[this.id]:0);},
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------

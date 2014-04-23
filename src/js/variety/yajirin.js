@@ -190,10 +190,10 @@ AnsCheck:{
 	},
 
 	checkLineOnBlackCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()>0 && cell.isBlack());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isBlack());});
 	},
 	checkBlankCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && !cell.isBlack() && cell.noNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isBlack() && cell.noNum());});
 	},
 
 	checkArrowNumber : function(){

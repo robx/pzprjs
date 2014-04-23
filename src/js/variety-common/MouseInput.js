@@ -71,7 +71,7 @@ MouseEvent:{
 		}
 		else if(bd.linfo.moveline && puzzle.getConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
-			else if(cell.lcnt()>0){ return;}
+			else if(cell.lcnt>0){ return;}
 		}
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
@@ -372,7 +372,7 @@ MouseEvent:{
 		/* 移動中の場合 */
 		else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
 			var border = this.getnb(this.prevPos, pos);
-			if(!border.isnull && ((!border.isLine() && cell.lcnt()===0) || (border.isLine() && cell0.lcnt()===1))){
+			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
 				this.mouseCell = cell;
 				this.prevPos = pos;
 				if(!border.isLine()){ border.setLine();}else{ border.removeLine();}
@@ -453,7 +453,7 @@ MouseEvent:{
 
 		if(!border.isLine()){
 			var obj = (!bd.lines.borderAsLine ? this.getcell() : this.getcross());
-			if(obj.isnull || (obj.iscrossing() && (obj.lcnt()===3 || obj.lcnt()===4))){ return;}
+			if(obj.isnull || (obj.iscrossing() && (obj.lcnt===3 || obj.lcnt===4))){ return;}
 			var adb = obj.adjborder;
 			if     (adb.left.isLine()  ){ border = adb.left;  }
 			else if(adb.right.isLine() ){ border = adb.right; }

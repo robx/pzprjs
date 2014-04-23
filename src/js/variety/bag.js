@@ -70,7 +70,7 @@ Board:{
 	hasborder : 2,
 
 	searchInsideArea : function(){
-		this.cell[0].inside = (this.getx(0,0).lcnt()!==0);
+		this.cell[0].inside = (this.cross[0].lcnt!==0);
 		for(var by=1;by<this.maxby;by+=2){
 			if(by>1){ this.getc(1,by).inside = !!(this.getc(1,by-2).inside ^ this.getb(1,by-1).isLine());}
 			for(var bx=3;bx<this.maxbx;bx+=2){

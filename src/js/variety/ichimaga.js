@@ -150,13 +150,13 @@ AnsCheck:{
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
 	},
 	checkNoLineObject : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()===0);});
+		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
 	},
 	checkOutgoingLine : function(){
-		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getQnum()!==cell.lcnt());});
+		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);});
 	},
 
 	isErrorFlag_line : function(xinfo){

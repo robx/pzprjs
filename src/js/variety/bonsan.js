@@ -252,7 +252,7 @@ AnsCheck:{
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||a===1||n===a-1);});
 	},
 	checkNoLineCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQnum()>=1 && cell.lcnt()===0);});
+		return this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);});
 	},
 
 	checkFractal : function(rinfo, getval){

@@ -272,17 +272,16 @@ AnsCheck:{
 
 	checkLcntCurve : function(){
 		var result = true, bd = this.owner.board;
-		for(var bx=bd.minbx+2;bx<=bd.maxbx-2;bx+=2){
-			for(var by=bd.minby+2;by<=bd.maxby-2;by+=2){
-				var cross = bd.getx(bx,by), adb = cross.adjborder;
-				if(bd.rooms.crosscnt[cross.id]===2 && cross.getQnum()!==1){
-					if(    !(adb.top.getQans()===1 && adb.bottom.getQans()===1)
-						&& !(adb.left.getQans()===1 && adb.right.getQans()===1) )
-					{
-						if(this.checkOnly){ return false;}
-						cross.setCrossBorderError();
-						result = false;
-					}
+		var crosses = bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2);
+		for(var c=0;c<crosses.length;c++){
+			var cross = crosses[c], adb = cross.adjborder;
+			if(cross.lcnt===2 && cross.qnum!==1){
+				if(    !(adb.top.qans===1 && adb.bottom.qans===1)
+					&& !(adb.left.qans===1 && adb.right.qans===1) )
+				{
+					if(this.checkOnly){ return false;}
+					cross.setCrossBorderError();
+					result = false;
 				}
 			}
 		}

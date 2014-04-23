@@ -299,17 +299,17 @@ AnsCheck:{
 	},
 
 	checkCrossOutOfMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==11);});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);});
 	},
 	checkNotCrossOnMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()!==4 && cell.getQues()===11);});
+		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
 	},
 
 	checkTriangle : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.lcnt()==0 && (cell.getQues()>=2 && cell.getQues()<=5)){
+			if(cell.lcnt===0 && (cell.ques>=2 && cell.ques<=5)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				result = false;

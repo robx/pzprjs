@@ -264,7 +264,7 @@ AnsCheck:{
 	},
 
 	checkCrossOnNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.isNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.isNum());});
 	},
 
 	checkLoopNumber : function(){
@@ -318,7 +318,7 @@ AnsCheck:{
 		return result;
 	},
 	checkCrossLineOnCross : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
+		return this.checkAllCell(function(cell){ return (cell.ques===11 && cell.lcnt!==4);});
 	}
 },
 

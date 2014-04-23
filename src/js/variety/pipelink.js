@@ -288,10 +288,10 @@ AnsCheck:{
 	},
 
 	checkCrossOutOfMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && cell.getQues()!==6 && cell.getQues()!==11);});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==6 && cell.ques!==11);});
 	},
 	checkCrossLineOnCross : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===11 && cell.lcnt()!==4);});
+		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
 	}
 },
 

@@ -161,7 +161,7 @@ AnsCheck:{
 	},
 
 	checkCrossOutOfIce : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===4 && !cell.ice());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
 	}
 },
 

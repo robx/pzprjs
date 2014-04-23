@@ -774,12 +774,12 @@ AnsCheck:{
 	},
 
 	checkLineOnBlackCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);});
+		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},
 
 	checkStartid : function(){
 		var start = this.owner.board.startcell;
-		if(start.lcnt()!=2){
+		if(start.lcnt!==2){
 			start.seterr(1);
 			return false;
 		}
@@ -790,7 +790,7 @@ AnsCheck:{
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.data[r].clist;
 			for(var i=0;i<clist.length;i++){
-				if(clist[i].lcnt()>0){ cnt++;}
+				if(clist[i].lcnt>0){ cnt++;}
 			}
 			if((type==1 && cnt>1)||(type==2 && cnt==0)){
 				if(this.checkOnly){ return false;}
@@ -841,7 +841,7 @@ AnsCheck:{
 					}
 
 					var adb = cell.adjborder;
-					if     (cell.lcnt()!==2){ break;}
+					if     (cell.lcnt!==2){ break;}
 					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
 					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
 					else if(dir!=3 && adb.right.isLine() ){ dir=4;}

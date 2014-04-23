@@ -187,14 +187,14 @@ AnsCheck:{
 	},
 
 	checkNoLinePearl : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt()==0);});
+		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
 	},
 
 	checkWhitePearl1 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQnum()===1 && cell.lcnt()===2 && !cell.isLineStraight()){
+			if(cell.qnum===1 && cell.lcnt===2 && !cell.isLineStraight()){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
@@ -207,7 +207,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQnum()===2 && cell.lcnt()===2 && cell.isLineStraight()){
+			if(cell.qnum===2 && cell.lcnt===2 && cell.isLineStraight()){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(1);
@@ -221,12 +221,12 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQnum()!==1 || cell.lcnt()!==2){ continue;}
+			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
 			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
-			if(adb.top.isLine()    && adc.top.lcnt()===2    && adc.top.isLineStraight()   ){ stcnt++;}
-			if(adb.bottom.isLine() && adc.bottom.lcnt()===2 && adc.bottom.isLineStraight()){ stcnt++;}
-			if(adb.left.isLine()   && adc.left.lcnt()===2   && adc.left.isLineStraight()  ){ stcnt++;}
-			if(adb.right.isLine()  && adc.right.lcnt()===2  && adc.right.isLineStraight() ){ stcnt++;}
+			if(adb.top.isLine()    && adc.top.lcnt===2    && adc.top.isLineStraight()   ){ stcnt++;}
+			if(adb.bottom.isLine() && adc.bottom.lcnt===2 && adc.bottom.isLineStraight()){ stcnt++;}
+			if(adb.left.isLine()   && adc.left.lcnt===2   && adc.left.isLineStraight()  ){ stcnt++;}
+			if(adb.right.isLine()  && adc.right.lcnt===2  && adc.right.isLineStraight() ){ stcnt++;}
 
 			if(stcnt>=2){
 				if(this.checkOnly){ return false;}
@@ -241,11 +241,11 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
-			if(cell.getQnum()!==2 || cell.lcnt()!==2){ continue;}
-			if((adb.top.isLine()    && adc.top.lcnt()===2    && !adc.top.isLineStraight()   ) ||
-			   (adb.bottom.isLine() && adc.bottom.lcnt()===2 && !adc.bottom.isLineStraight()) ||
-			   (adb.left.isLine()   && adc.left.lcnt()===2   && !adc.left.isLineStraight()  ) ||
-			   (adb.right.isLine()  && adc.right.lcnt()===2  && !adc.right.isLineStraight() ) )
+			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}
+			if((adb.top.isLine()    && adc.top.lcnt===2    && !adc.top.isLineStraight()   ) ||
+			   (adb.bottom.isLine() && adc.bottom.lcnt===2 && !adc.bottom.isLineStraight()) ||
+			   (adb.left.isLine()   && adc.left.lcnt===2   && !adc.left.isLineStraight()  ) ||
+			   (adb.right.isLine()  && adc.right.lcnt===2  && !adc.right.isLineStraight() ) )
 			{
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}

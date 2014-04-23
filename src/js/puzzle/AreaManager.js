@@ -398,11 +398,6 @@ AreaManager:{
 // ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
 'AreaRoomManager:AreaManager':{
-	initialize : function(){
-		this.crosscnt = [];		// 格子点の周りの境界線の数
-
-		pzpr.common.AreaManager.prototype.initialize.call(this);
-	},
 	relation : ['cell', 'border'],
 	bdfunc : function(border){ return border.isBorder();},
 
@@ -417,13 +412,11 @@ AreaManager:{
 
 		/* 外枠のカウントをあらかじめ足しておく */
 		var bd = this.owner.board;
-		/* minbx, minbyを使用すると、excellがある時おかしくなるので使用してはいけません */
-		var minbx=0, maxbx=bd.qcols*2, minby=0, maxby=bd.qrows*2;
-		for(var by=minby;by<=maxby;by+=2){ for(var bx=minbx;bx<=maxbx;bx+=2){
-			var c = (bx>>1)+(by>>1)*(bd.qcols+1);
-			var ischassis = (bd.hasborder===1 ? (bx===minbx||bx===maxbx||by===minby||by===maxby):false);
-			this.crosscnt[c]=(ischassis?2:0);
-		}}
+		for(var c=0;c<bd.crossmax;c++){
+			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
+			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
+			cross.lcnt = (ischassis?2:0);
+		}
 
 		pzpr.common.AreaManager.prototype.rebuild.call(this);
 
@@ -436,9 +429,9 @@ AreaManager:{
 	checkSeparateInfo : function(border){
 		var isbd = this.bdfunc(border);
 		if(this.separate[border.id]!==isbd){
-			var cc1 = border.sidecross[0].id, cc2 = border.sidecross[1].id;
-			if(cc1!==null){ this.crosscnt[cc1]+=(isbd?1:-1);}
-			if(cc2!==null){ this.crosscnt[cc2]+=(isbd?1:-1);}
+			var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
+			if(!cross1.isnull){ cross1.lcnt += (isbd?1:-1);}
+			if(!cross2.isnull){ cross2.lcnt += (isbd?1:-1);}
 			this.separate[border.id]=isbd;
 			if(border.id<this.owner.board.bdinside){ return true;}
 		}
@@ -453,9 +446,9 @@ AreaManager:{
 		if(!pzpr.common.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
-		var xc1 = border.sidecross[0].id, xc2 = border.sidecross[1].id;
-		if     ( this.separate[border.id] && (this.crosscnt[xc1]===1 || this.crosscnt[xc2]===1)){ return false;}
-		else if(!this.separate[border.id] && (this.crosscnt[xc1]===0 || this.crosscnt[xc2]===0)){ return false;}
+		var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
+		if     ( this.separate[border.id] && (cross1.lcnt===1 || cross2.lcnt===1)){ return false;}
+		else if(!this.separate[border.id] && (cross1.lcnt===0 || cross2.lcnt===0)){ return false;}
 
 		// TOPがある場合 どっちの数字を残すかは、TOP同士の位置で比較する
 		var cell1 = border.sidecell[0],  cell2 = border.sidecell[1];
@@ -677,7 +670,7 @@ AreaManager:{
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
 			cell.base = bd.emptycell;
-			if(cell.lcnt()===1){
+			if(cell.lcnt===1){
 				point++;
 				if(cell.isNum()){ before=cell;}else{ after=cell;}
 			}

@@ -8,7 +8,6 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 LineManager:{
 	initialize : function(){
-		this.lcnt    = [];
 		this.ltotal  = [];
 
 		this.blist = [];
@@ -46,11 +45,11 @@ LineManager:{
 		// lcnt, ltotal変数(配列)初期化
 		var bd = this.owner.board;
 		if(this.isCenterLine){
-			for(var c=0;c<bd.cellmax;c++){ this.lcnt[c]=0;}
+			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].lcnt=0;}
 			this.ltotal=[bd.cellmax, 0, 0, 0, 0];
 		}
 		else{
-			for(var c=0;c<bd.crossmax;c++){ this.lcnt[c]=0;}
+			for(var c=0;c<bd.crossmax;c++){ bd.cross[c].lcnt=0;}
 			this.ltotal=[bd.crossmax, 0, 0, 0, 0];
 		}
 
@@ -70,9 +69,9 @@ LineManager:{
 			if(border.isLine()){
 				blist.add(border);
 
-				var cc1 = border.lineedge[0].id, cc2 = border.lineedge[1].id;
-				if(cc1!==null){ this.ltotal[this.lcnt[cc1]]--; this.lcnt[cc1]++; this.ltotal[this.lcnt[cc1]]++;}
-				if(cc2!==null){ this.ltotal[this.lcnt[cc2]]--; this.lcnt[cc2]++; this.ltotal[this.lcnt[cc2]]++;}
+				var obj1 = border.lineedge[0], obj2 = border.lineedge[1];
+				if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt++; this.ltotal[obj1.lcnt]++;}
+				if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt++; this.ltotal[obj2.lcnt]++;}
 			}
 		}
 
@@ -99,10 +98,10 @@ LineManager:{
 			return this.typeA;
 		}
 		else if(!obj.iscrossing()){
-			return ((obj.lcnt()===(1-erase))?this.typeA:this.typeB);
+			return ((obj.lcnt===(1-erase))?this.typeA:this.typeB);
 		}
 		else{
-			var lcnt = obj.lcnt();
+			var lcnt = obj.lcnt;
 			if     (lcnt===(1-erase) || (lcnt===(3-erase) && this.isTpos(obj,border))){ return this.typeA;}
 			else if(lcnt===(2-erase) ||  lcnt===(4-erase)){ return this.typeB;}
 			return this.typeC;
@@ -126,12 +125,12 @@ LineManager:{
 
 		var obj1 = border.lineedge[0], obj2 = border.lineedge[1];
 		if(isset){
-			if(!obj1.isnull){ this.ltotal[this.lcnt[obj1.id]]--; this.lcnt[obj1.id]++; this.ltotal[this.lcnt[obj1.id]]++;}
-			if(!obj2.isnull){ this.ltotal[this.lcnt[obj2.id]]--; this.lcnt[obj2.id]++; this.ltotal[this.lcnt[obj2.id]]++;}
+			if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt++; this.ltotal[obj1.lcnt]++;}
+			if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt++; this.ltotal[obj2.lcnt]++;}
 		}
 		else{
-			if(!obj1.isnull){ this.ltotal[this.lcnt[obj1.id]]--; this.lcnt[obj1.id]--; this.ltotal[this.lcnt[obj1.id]]++;}
-			if(!obj2.isnull){ this.ltotal[this.lcnt[obj2.id]]--; this.lcnt[obj2.id]--; this.ltotal[this.lcnt[obj2.id]]++;}
+			if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt--; this.ltotal[obj1.lcnt]++;}
+			if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt--; this.ltotal[obj2.lcnt]++;}
 		}
 
 		//---------------------------------------------------------------------------
@@ -300,7 +299,7 @@ LineManager:{
 
 		var lines = new this.owner.BorderList();
 		if(!obj1.isnull){
-			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt();
+			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt;
 			if(iscrossing && lcnt>=(4-erase)){
 				lines.add(border.relbd(-dy,-dx)); // obj1からのstraight
 			}
@@ -311,7 +310,7 @@ LineManager:{
 			}
 		}
 		if(!obj2.isnull){
-			var iscrossing=obj2.iscrossing(), lcnt=obj2.lcnt();
+			var iscrossing=obj2.iscrossing(), lcnt=obj2.lcnt;
 			if(iscrossing && lcnt>=(4-erase)){
 				lines.add(border.relbd(dy,dx)); // obj2からのstraight
 			}
@@ -357,7 +356,7 @@ LineManager:{
 					var obj = (this.isCenterLine ? pos.getc() : pos.getx());
 					var adb = obj.adjborder;
 					if(obj.isnull){ break;}
-					else if(obj.lcnt()>=3){
+					else if(obj.lcnt>=3){
 						if(!obj.iscrossing()){
 							if(adb.top.isLine()   ){ stack.push([bx,by,1]);}
 							if(adb.bottom.isLine()){ stack.push([bx,by,2]);}

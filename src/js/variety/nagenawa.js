@@ -245,7 +245,7 @@ AnsCheck:{
 		return false;
 	},
 	checkLineOnBlackCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===1 && cell.lcnt()>0);});
+		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},
 	checkOverLineCount : function(rinfo){
 		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);});
@@ -254,7 +254,7 @@ AnsCheck:{
 		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);});
 	},
 	checkUnreachedWhiteCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.getQues()===0);});
+		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);});
 	},
 
 	checkAllLoopRect : function(){

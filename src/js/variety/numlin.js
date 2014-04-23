@@ -157,14 +157,14 @@ AnsCheck:{
 		return this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();});
 	},
 	checkAloneNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
 	},
 
 	checkDeadendLine : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!(cell.lcnt()===1 && cell.noNum())){ continue;}
+			if(!(cell.lcnt===1 && cell.noNum())){ continue;}
 
 			if(this.checkOnly){ return false;}
 			if(result){ bd.border.seterr(-1);}

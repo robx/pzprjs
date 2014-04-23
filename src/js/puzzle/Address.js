@@ -74,15 +74,6 @@ RawAddress:{
 	getc  : function(){ return this.owner.board.getc(this.bx, this.by);},
 	getx  : function(){ return this.owner.board.getx(this.bx, this.by);},
 	getb  : function(){ return this.owner.board.getb(this.bx, this.by);},
-	getex : function(){ return this.owner.board.getex(this.bx, this.by);},
-	
-	//---------------------------------------------------------------------------
-	// pos.setCrossBorderError() ある交点とその周り四方向にエラーフラグを設定する
-	//---------------------------------------------------------------------------
-	setCrossBorderError : function(){
-		var bd = this.owner.board;
-		if(bd.hascross!==0){ this.getx().seterr(1);}
-		bd.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
-	}
+	getex : function(){ return this.owner.board.getex(this.bx, this.by);}
 }
 });

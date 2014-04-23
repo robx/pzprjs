@@ -212,7 +212,7 @@ AnsCheck:{
 	},
 
 	checkAloneCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt()===0 && cell.isNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
 	},
 
 	checkWBcircle : function(linfo,val){

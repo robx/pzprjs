@@ -25,7 +25,7 @@ AnsCheck:{
 	},
 	checkIceLines : function(){
 		return this.checkAllCell( function(cell){
-			return (cell.lcnt()===2 && cell.ice() && !cell.isLineStraight());
+			return (cell.lcnt===2 && cell.ice() && !cell.isLineStraight());
 		});
 	},
 
@@ -140,7 +140,7 @@ AnsCheck:{
 		if(bd.lines.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
-				if(cell.lcnt()==val){
+				if(cell.lcnt===val){
 					if(this.checkOnly){ return false;}
 					if(result){ bd.border.seterr(-1);}
 					cell.setCellLineError(true);
@@ -149,16 +149,15 @@ AnsCheck:{
 			}
 		}
 		else if(bd.lines.borderAsLine){
-			for(var by=bd.minby;by<=bd.maxby;by+=2){ for(var bx=bd.minbx;bx<=bd.maxbx;bx+=2){
-				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = bd.lines.lcnt[id];
-				if(lcnts==val){
+			for(var c=0;c<bd.crossmax;c++){
+				var cross = bd.cross[c];
+				if(cross.lcnt===val){
 					if(this.checkOnly){ return false;}
 					if(result){ bd.border.seterr(-1);}
-					(new this.owner.Address(bx,by)).setCrossBorderError();
+					cross.setCrossBorderError();
 					result = false;
 				}
-			}}
+			}
 		}
 		return result;
 	},
@@ -251,7 +250,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	// ans.checkLinesInArea()  領域の中で線が通っているセルの数を判定する
 	//---------------------------------------------------------------------------
-	checkLinesInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.lcnt()>0;}, evalfunc);},
+	checkLinesInArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return cell.lcnt>0;}, evalfunc);},
 
 	//---------------------------------------------------------------------------
 	// ans.checkNoMovedObjectInRoom() 領域に移動後のオブジェクトがないと判定する
@@ -417,16 +416,14 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkBorderCount : function(val, bp){
 		var result=true, bd=this.owner.board, mm=(bd.hascross===1?2:0);
-		for(var by=mm;by<=bd.maxby-mm;by+=2){
-			for(var bx=mm;bx<=bd.maxbx-mm;bx+=2){
-				var id = (bx>>1)+(by>>1)*(bd.qcols+1);
-				var lcnts = bd.rooms.crosscnt[id];
-				if(lcnts==val && (bp===0 || (bp==1&&bd.getx(bx,by).getQnum()===1) || (bp===2&&bd.getx(bx,by).getQnum()!==1) )){
-					if(this.checkOnly){ return false;}
-					if(result){ bd.border.seterr(-1);}
-					(new this.owner.Address(bx,by)).setCrossBorderError();
-					result = false;
-				}
+		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
+		for(var c=0;c<crosses.length;c++){
+			var cross = crosses[c];
+			if(cross.lcnt===val && (bp===0 || (bp==1 && cross.qnum===1) || (bp===2 && cross.qnum!==1) )){
+				if(this.checkOnly){ return false;}
+				if(result){ bd.border.seterr(-1);}
+				cross.setCrossBorderError();
+				result = false;
 			}
 		}
 		return result;
@@ -439,7 +436,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.lcnt()>=2 && cell.isNum()){
+			if(cell.lcnt>=2 && cell.isNum()){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cell.setCellLineError(true);
@@ -520,7 +517,7 @@ AnsCheck:{
 			if(pos.oncell()){
 				var cell = pos.getc(), adb = cell.adjborder;
 				if(cell.isnull || cell.isNum()){ break;}
-				else if(cell.iscrossing() && cell.lcnt()>=3){ }
+				else if(cell.iscrossing() && cell.lcnt>=3){ }
 				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ room.ccnt++;} dir=2;}
 				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ room.ccnt++;} dir=1;}
 				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ room.ccnt++;} dir=4;}

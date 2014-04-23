@@ -190,7 +190,7 @@ AnsCheck:{
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt()==val);});
+		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
 	},
 	checkFireflyBeam : function(){
 		var result = true, bd = this.owner.board;

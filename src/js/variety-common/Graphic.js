@@ -689,7 +689,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			g.vdel(header+cell.id);
-			if(cell.lcnt()===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.getConfig('dispmove')){
+			if(cell.lcnt===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.getConfig('dispmove')){
 				var adb = cell.adjborder, dir=0, border=null;
 				if     (adb.top.isLine()   ){ dir=2; border=adb.top;   }
 				else if(adb.bottom.isLine()){ dir=1; border=adb.bottom;}

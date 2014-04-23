@@ -143,9 +143,9 @@ Star:{
 		var obj = this.obj, cell = null;
 		if(obj.group==='cell')
 			{ cell = obj;}
-		else if(obj.group==='cross' && this.owner.board.rooms.crosscnt[obj.id]===0)
+		else if(obj.group==='cross' && obj.lcnt===0)
 			{ cell = obj.relcell(-1,-1);}
-		else if(obj.group==='border' && obj.getQans()===0)
+		else if(obj.group==='border' && obj.qans===0)
 			{ cell = obj.sidecell[0];}
 		return cell;
 	},

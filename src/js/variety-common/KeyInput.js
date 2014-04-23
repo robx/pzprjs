@@ -33,7 +33,7 @@ KeyEvent:{
 		}
 		else if(bd.linfo.moveline && puzzle.getConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
-			else if(cell.lcnt()>0){ return;}
+			else if(cell.lcnt>0){ return;}
 		}
 
 		if(this.key_inputqnum_main(cell,ca)){
