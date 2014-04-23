@@ -58,8 +58,6 @@ Encode:{
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
 		if(type===pzl.URL_KANPEN && puzzle.pid=='lits'){ type = pzl.URL_KANPENP;}
 
-		puzzle.opemgr.disableRecord();
-
 		this.outpflag = null;
 		this.outcols = bd.qcols;
 		this.outrows = bd.qrows;
@@ -86,8 +84,6 @@ Encode:{
 			this.encodeHeyaApp();
 			break;
 		}
-
-		puzzle.opemgr.enableRecord();
 
 		pzl.id    = puzzle.pid;
 		pzl.type  = type;

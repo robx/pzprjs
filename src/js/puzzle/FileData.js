@@ -55,15 +55,11 @@ FileIO:{
 		if(this.currentType===pzl.FILE_PZPH){ this.currentType = pzl.FILE_PZPR;}
 
 		// メイン処理
-		puzzle.opemgr.disableRecord();
-		
 		if     (this.currentType===pzl.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenSave();}
 		
 		var history = "";
 		if(type===pzl.FILE_PZPH){ history = puzzle.opemgr.toString();}
-		
-		puzzle.opemgr.enableRecord();
 
 		pzl.type  = type;
 		pzl.filever = this.filever;
