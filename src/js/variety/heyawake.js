@@ -51,7 +51,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 AreaRoomManager:{
@@ -78,7 +78,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -170,7 +170,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		var rinfo = this.owner.board.getRoomInfo();
@@ -192,7 +192,7 @@ AnsCheck:{
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
-				if(cell.isBlack() ^ cell2.isBlack()){
+				if(cell.isShade() ^ cell2.isShade()){
 					if(this.checkOnly){ return false;}
 					clist.seterr(1);
 					result = false;
@@ -203,7 +203,7 @@ AnsCheck:{
 	},
 
 	checkCountinuousWhiteCell : function(){
-		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isBlack();}, false);
+		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, false);
 	},
 	isBorderCount : function(keycellpos, clist){
 		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;

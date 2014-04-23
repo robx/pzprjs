@@ -265,7 +265,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawDashedGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawNumbers();
 
 		this.drawTriangle();

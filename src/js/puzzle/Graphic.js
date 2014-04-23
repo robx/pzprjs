@@ -41,7 +41,7 @@ Graphic:{
 		this.fontcolor = "black";
 		this.fontAnscolor = "rgb(0, 160, 0)";
 		this.fontErrcolor = "rgb(191, 0, 0)";
-		this.fontBCellcolor = "rgb(224, 224, 224)";
+		this.fontShadecolor = "rgb(224, 224, 224)";
 
 		// セルの背景色(白マス)
 		this.bcolor = "white";

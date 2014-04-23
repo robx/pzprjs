@@ -76,7 +76,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -91,7 +91,7 @@ Graphic:{
 		else if(cell.error=== 1){ return this.errbcolor1;}
 		return null;
 	},
-	// オーバーライド drawBlackCells用
+	// オーバーライド drawShadedCells用
 	getCellColor : function(cell){
 		if(cell.ques===1){ return this.cellcolor;}
 		return null;

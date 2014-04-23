@@ -51,8 +51,8 @@ Board:{
 		this.rooms = this.addInfoList(puzzle.AreaRoomManager);		// 部屋情報を保持する
 		this.linfo = this.addInfoList(puzzle.AreaLineManager);		// 線つながり情報を保持する
 
-		this.bcell = this.addInfoList(puzzle.AreaBlackManager);		// 黒マス情報を保持する
-		this.wcell = this.addInfoList(puzzle.AreaWhiteManager);		// 白マス情報を保持する
+		this.bcell = this.addInfoList(puzzle.AreaShadeManager);		// 黒マス情報を保持する
+		this.wcell = this.addInfoList(puzzle.AreaUnshadeManager);		// 白マス情報を保持する
 		this.ncell = this.addInfoList(puzzle.AreaNumberManager);	// 数字情報を保持する
 
 		this.exec = new puzzle.BoardExec();
@@ -511,16 +511,16 @@ Board:{
 	// bd.getLineInfo()  線情報をAreaInfo型のオブジェクトで返す
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
 	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
-	// bd.getBCellInfo() 黒マス情報をAreaInfo型のオブジェクトで返す
-	// bd.getWCellInfo() 白マス情報をAreaInfo型のオブジェクトで返す
-	// bd.getNumberInfo() 数字情報をAreaInfo型のオブジェクトで返す
+	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
+	// bd.getUnshadeInfo() 白マス情報をAreaInfo型のオブジェクトで返す
+	// bd.getNumberInfo()  数字情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo  : function(){ return this.lines.getLineInfo();},
 	getRoomInfo  : function(){ return this.rooms.getAreaInfo();},
 	getLareaInfo : function(){ return this.linfo.getAreaInfo();},
-	getBCellInfo : function(){ return this.bcell.getAreaInfo();},
-	getWCellInfo : function(){ return this.wcell.getAreaInfo();},
-	getNumberInfo : function(){ return this.ncell.getAreaInfo();},
+	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
+	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
+	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

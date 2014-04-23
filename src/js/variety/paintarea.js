@@ -33,7 +33,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 AreaRoomManager:{
@@ -58,7 +58,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -105,7 +105,7 @@ AnsCheck:{
 
 		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
 		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
@@ -116,14 +116,14 @@ AnsCheck:{
 	},
 
 	checkDir4BlackCell : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isBlack();},0);
+		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);
 	},
 	checkSameColorTile : function(){
 		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isBlack()?1:2);});
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
 	},
 	check2x2WhiteCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isWhite();} );
+		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
 	}
 },
 

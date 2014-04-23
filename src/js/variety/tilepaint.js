@@ -68,7 +68,7 @@ Cell:{
 		this.setQues(51);
 		this.setQnum(0);
 		this.setQnum2(0);
-		this.setWhite();
+		this.clrShade();
 		this.setQsub(0);
 		this.set51aroundborder();
 	},
@@ -76,7 +76,7 @@ Cell:{
 		this.setQues(0);
 		this.setQnum(0);
 		this.setQnum2(0);
-		this.setWhite();
+		this.clrShade();
 		this.setQsub(0);
 	},
 
@@ -137,7 +137,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawBorders();
 
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawBoxBorders(true);
 
 		this.drawChassis_ex1(true);
@@ -295,7 +295,7 @@ AnsCheck:{
 
 	checkSameColorTile : function(){
 		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isBlack()?1:2);});
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
 	},
 	checkRowsColsBlackCell : function(){
 		return this.checkRowsColsPartly(this.isBCellCount, function(cell){ return cell.is51cell();}, false);
@@ -305,7 +305,7 @@ AnsCheck:{
 		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
 		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
 
-		var count = clist.filter(function(cell){ return cell.isBlack();}).length;
+		var count = clist.filter(function(cell){ return cell.isShade();}).length;
 		if(number>=0 && count!=number){
 			keyobj.seterr(1)
 			clist.seterr(1);

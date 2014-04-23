@@ -172,7 +172,7 @@ Graphic:{
 
 		this.drawTateyokos()
 
-		this.drawBcellsAtNumber();
+		this.drawShadeAtNumber();
 		this.drawNumbers_tateyoko();
 
 		this.drawChassis();
@@ -211,7 +211,7 @@ Graphic:{
 		}
 	},
 
-	drawBcellsAtNumber : function(){
+	drawShadeAtNumber : function(){
 		var g = this.vinc('cell_bcells', 'crispEdges');
 
 		var header = "c_full_";
@@ -335,7 +335,7 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkBCell(1) ){ return 'nmConnBarGt';}
+		if( !this.checkShade(1) ){ return 'nmConnBarGt';}
 
 		var binfo = bd.getBarInfo();
 		bd.cell.seterr(-1);
@@ -343,7 +343,7 @@ AnsCheck:{
 		if( !this.checkNumberAndSize(binfo) ){ return 'bkSizeNe';}
 		bd.cell.seterr(0);
 
-		if( !this.checkBCell(2) ){ return 'nmConnBarLt';}
+		if( !this.checkShade(2) ){ return 'nmConnBarLt';}
 
 		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
@@ -353,7 +353,7 @@ AnsCheck:{
 		return (this.checkEmptyCell() ? null : 'ceEmpty');
 	},
 
-	checkBCell : function(type){
+	checkShade : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getQnum();

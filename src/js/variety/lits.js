@@ -25,7 +25,7 @@ Board:{
 		var tinfo = new this.owner.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist.filter(function(cell){ return cell.isBlack();});
+			var clist = rinfo.room[r].clist.filter(function(cell){ return cell.isShade();});
 			var len = clist.length;
 			if(len===4){
 				var bx0=clist[0].bx, by0=clist[0].by, value=0;
@@ -84,7 +84,7 @@ CellList:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 AreaRoomManager:{
@@ -122,7 +122,7 @@ Graphic:{
 		this.drawBGCells();
 		if(this.owner.pid==='lits'){ this.drawDotCells(false);}
 		this.drawGrid();
-		if(this.owner.pid==='norinori'){ this.drawBlackCells();}
+		if(this.owner.pid==='norinori'){ this.drawShadedCells();}
 
 		this.drawBorders();
 
@@ -198,7 +198,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkBlackCellInArea : function(cinfo, evalfunc){
-		return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return evalfunc(a);});
+		return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return evalfunc(a);});
 	}
 },
 "AnsCheck@lits":{
@@ -213,7 +213,7 @@ AnsCheck:{
 
 		if( !this.checkTetromino(rinfo) ){ return 'sbSameShape';}
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
 		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
@@ -234,7 +234,7 @@ AnsCheck:{
 	checkSeqBlocksInRoom : function(){
 		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
+			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isShade()});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -259,7 +259,7 @@ AnsCheck:{
 "AnsCheck@norinori":{
 	checkAns : function(){
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkOverBlackCell(binfo) ){ return 'bcGt2';}
 
 		var rinfo = this.owner.board.getRoomInfo();

@@ -342,7 +342,7 @@ Graphic:{
 
 		this.drawGates()
 
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawArrowNumbers();
 
 		this.drawPekes();

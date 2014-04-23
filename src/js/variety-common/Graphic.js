@@ -4,8 +4,8 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Graphic:{
 	//---------------------------------------------------------------------------
-	// pc.drawBlackCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
-	// pc.getCellColor()   前景色の設定・描画判定する
+	// pc.drawShadedCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
+	// pc.getCellColor()    前景色の設定・描画判定する
 	// pc.setCellColorFunc()   pc.getCellColor関数を設定する
 	//
 	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
@@ -13,7 +13,7 @@ Graphic:{
 	// pc.setBGCellColorFunc() pc.getBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
 	// err==2になるlitsは、drawBGCellsで描画してます。。
-	drawBlackCells : function(){
+	drawShadedCells : function(){
 		var g = this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
 
@@ -297,7 +297,7 @@ Graphic:{
 	getCellNumberColor : function(cell){
 		var color = this.fontcolor, puzzle = this.owner;
 		if((cell.ques>=1 && cell.ques<=5) || (cell.qans>=1 && cell.qans<=5)){
-			color = this.fontBCellcolor;
+			color = this.fontShadecolor;
 		}
 		else if(cell.error===1 || cell.error===4 || cell.qinfo===1 || cell.qinfo===4){
 			color = this.fontErrcolor;
@@ -328,7 +328,7 @@ Graphic:{
 				var ax=(cell.bx-1)*this.bw, ay=(cell.by-1)*this.bh, dir=cell.qdir;
 				var info = cell.error || cell.qinfo;
 
-				if     (cell.qans===1){ g.fillStyle = this.fontBCellcolor;}
+				if     (cell.qans===1){ g.fillStyle = this.fontShadecolor;}
 				else if(info===1)     { g.fillStyle = this.fontErrcolor;}
 				else                  { g.fillStyle = this.fontcolor;}
 

@@ -135,7 +135,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawNumbers();
 
 		this.drawAkari();

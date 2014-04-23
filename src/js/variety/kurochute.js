@@ -47,7 +47,7 @@ Board:{
 	qrows : 8
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -68,7 +68,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -121,7 +121,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		if( !this.checkCellNumber() ){ return 'nmShootBcNe1';}
@@ -136,10 +136,10 @@ AnsCheck:{
 			if(!cell.isValidNum()){ continue;}
 			var num=cell.getQnum(), cell2;
 			var clist = new this.owner.CellList();
-			cell2=cell.relcell(-num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
-			cell2=cell.relcell( num*2,0); if(cell2.isBlack()){ clist.add(cell2);}
-			cell2=cell.relcell(0,-num*2); if(cell2.isBlack()){ clist.add(cell2);}
-			cell2=cell.relcell(0, num*2); if(cell2.isBlack()){ clist.add(cell2);}
+			cell2=cell.relcell(-num*2,0); if(cell2.isShade()){ clist.add(cell2);}
+			cell2=cell.relcell( num*2,0); if(cell2.isShade()){ clist.add(cell2);}
+			cell2=cell.relcell(0,-num*2); if(cell2.isShade()){ clist.add(cell2);}
+			cell2=cell.relcell(0, num*2); if(cell2.isShade()){ clist.add(cell2);}
 			if(clist.length!==1){
 				if(this.checkOnly){ return false;}
 				cell.seterr(4);

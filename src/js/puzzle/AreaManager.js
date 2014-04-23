@@ -378,16 +378,16 @@ AreaManager:{
 },
 
 //--------------------------------------------------------------------------------
-// ☆AreaBlackManagerクラス  黒マス情報オブジェクトのクラス
-// ☆AreaWhiteManagerクラス  白マス情報オブジェクトのクラス
+// ☆AreaShadeManagerクラス  黒マス情報オブジェクトのクラス
+// ☆AreaUnshadeManagerクラス  白マス情報オブジェクトのクラス
 // ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
-'AreaBlackManager:AreaManager':{
-	isvalid : function(cell){ return cell.isBlack();}
+'AreaShadeManager:AreaManager':{
+	isvalid : function(cell){ return cell.isShade();}
 },
 
-'AreaWhiteManager:AreaManager':{
-	isvalid : function(cell){ return cell.isWhite();}
+'AreaUnshadeManager:AreaManager':{
+	isvalid : function(cell){ return cell.isUnshade();}
 },
 
 'AreaNumberManager:AreaManager':{

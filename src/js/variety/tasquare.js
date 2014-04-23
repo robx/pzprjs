@@ -27,10 +27,10 @@ Cell:{
 	numberIsWhite : true
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -53,7 +53,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawCellSquare();
 
@@ -113,10 +113,10 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
 
 		if( !this.checkNumberSquare(binfo,true) ){ return 'ceSumSizeNe';}
@@ -132,10 +132,10 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
-			if(adc.top.isBlack()   ){ clist.extend(binfo.getclistbycell(adc.top   ));}
-			if(adc.bottom.isBlack()){ clist.extend(binfo.getclistbycell(adc.bottom));}
-			if(adc.left.isBlack()  ){ clist.extend(binfo.getclistbycell(adc.left  ));}
-			if(adc.right.isBlack() ){ clist.extend(binfo.getclistbycell(adc.right ));}
+			if(adc.top.isShade()   ){ clist.extend(binfo.getclistbycell(adc.top   ));}
+			if(adc.bottom.isShade()){ clist.extend(binfo.getclistbycell(adc.bottom));}
+			if(adc.left.isShade()  ){ clist.extend(binfo.getclistbycell(adc.left  ));}
+			if(adc.right.isShade() ){ clist.extend(binfo.getclistbycell(adc.right ));}
 
 			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
 				if(this.checkOnly){ return false;}

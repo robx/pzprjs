@@ -161,7 +161,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawGrid();
 
 		this.drawBGEXcells();

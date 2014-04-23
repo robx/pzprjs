@@ -37,7 +37,7 @@ Cell:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 
@@ -57,7 +57,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -97,7 +97,7 @@ AnsCheck:{
 		/* 自動チェック時は最初にチェックする */
 		if( this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
 
 		if( !this.checkLookair(binfo) ){ return 'lookairBC';}
@@ -110,7 +110,7 @@ AnsCheck:{
 
 	checkDir5BlackCell : function(){
 		var result = true;
-		var iscount = function(cell){ return cell.isBlack();};
+		var iscount = function(cell){ return cell.isShade();};
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -129,7 +129,7 @@ AnsCheck:{
 		function subcheck(base,bx,by){
 			var cell = bd.getc(bx,by);
 			if(cell.isnull){ return 1;}
-			else if(!cell.isBlack()){ return 0;}
+			else if(!cell.isShade()){ return 0;}
 			
 			var target = cinfo.getclistbycell(cell);
 			if(base.length === target.length){

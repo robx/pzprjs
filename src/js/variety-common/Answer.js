@@ -72,7 +72,7 @@ AnsCheck:{
 		return result;
 	},
 	checkAdjacentBlackCell : function(){
-		return this.checkSideCell(function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());});
+		return this.checkSideCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());});
 	},
 
 	//---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
 				var cnt=0, bx=cell.bx, by=cell.by;
-				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(function(cell){ return func(cell);});
+				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(func);
 				if(clist.length===4){
 					if(this.checkOnly){ return false;}
 					clist.seterr(1);
@@ -96,7 +96,7 @@ AnsCheck:{
 		return result;
 	},
 	check2x2BlackCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isBlack();} );
+		return this.check2x2Block( function(cell){ return cell.isShade();} );
 	},
 
 	//---------------------------------------------------------------------------
@@ -185,7 +185,7 @@ AnsCheck:{
 	checkRBBlackCell : function(winfo){
 		if(winfo.max>1){
 			var errclist = new this.owner.CellList();
-			var clist = this.owner.board.cell.filter(function(cell){ return cell.isBlack();});
+			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;
 				for(var n=0;n<list.length;n++){
@@ -205,14 +205,14 @@ AnsCheck:{
 	// ans.checkAllBlock()   すべてのfuncを満たすマスで構成されるエリアが
 	//                       evalfuncを満たすかどうか判定する
 	//---------------------------------------------------------------------------
-	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, function(cell){ return true;}, evalfunc);},
+	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, null, evalfunc);},
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
 			var room = cinfo.room[id], clist = room.clist;
 			var top = (!!room.top ? room.top : clist.getQnumCell());
 			var d = clist.getRectSize();
-			var a = clist.filter(func).length;
+			var a = (!!func ? clist.filter(func) : clist).length;
 			var n = (!top.isnull ? top.getQnum() : -1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
@@ -244,8 +244,8 @@ AnsCheck:{
 	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkNoBlackCellInArea()  部屋に黒マスがあるか判定する
 	//---------------------------------------------------------------------------
-	checkBlackCellCount    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return (n<0 || n===a);});},
-	checkNoBlackCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isBlack();}, function(w,h,a,n){ return (a>0);}         );},
+	checkBlackCellCount    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkNoBlackCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>0);}         );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkLinesInArea()  領域の中で線が通っているセルの数を判定する
@@ -269,7 +269,7 @@ AnsCheck:{
 	checkConnectObjectCount : function(linfo, evalfunc){
 		var result = true;
 		for(var id=1;id<=linfo.max;id++){
-			var count = linfo.room[id].clist.filter(function(cell){ return cell.isNum(cell);}).length;
+			var count = linfo.room[id].clist.filter(function(cell){ return cell.isNum();}).length;
 			if( !evalfunc(count) ){
 				if(this.checkOnly){ return false;}
 				if(result){ this.owner.board.border.seterr(-1);}

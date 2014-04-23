@@ -50,7 +50,7 @@ BoardExec:{
 	}
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -67,13 +67,13 @@ Graphic:{
 
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.bcolor = this.bcolor_GREEN;
-		this.fontBCellcolor = "rgb(96,96,96)";
+		this.fontShadecolor = "rgb(96,96,96)";
 		this.setBGCellColorFunc('qsub1');
 	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawArrowNumbers();
 
@@ -112,7 +112,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		if( !this.checkArrowNumber() ){ return 'anBcellNe';}
@@ -124,7 +124,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
+			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isShade()){ continue;}
 			var pos = cell.getaddr(), dir = cell.getQdir();
 			var clist = new this.owner.CellList();
 			while(1){
@@ -134,7 +134,7 @@ AnsCheck:{
 				clist.add(cell2);
 			}
 
-			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
+			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);

@@ -51,7 +51,7 @@ Board:{
 	qrows : 8
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -69,13 +69,13 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.bcolor = this.bcolor_GREEN;
 		this.fontErrcolor = "red";
-		this.fontBCellcolor = "rgb(96,96,96)";
+		this.fontShadecolor = "rgb(96,96,96)";
 		this.setBGCellColorFunc('qsub1');
 	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers_hitori();
 
@@ -197,7 +197,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
@@ -209,7 +209,7 @@ AnsCheck:{
 		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
 	},
 	isDifferentNumberInClist_hitori : function(clist, numfunc){
-		var clist2 = clist.filter(function(cell){ return (cell.isWhite() && cell.isNum());});
+		var clist2 = clist.filter(function(cell){ return (cell.isUnshade() && cell.isNum());});
 		return this.isDifferentNumberInClist(clist2, numfunc);
 	}
 }

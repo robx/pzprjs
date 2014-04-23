@@ -22,14 +22,14 @@ MouseEvent:{
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 
-		(this.inputData==1?cell.setBlack:cell.setWhite).call(cell);
+		(this.inputData==1?cell.setShade:cell.clrShade).call(cell);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
 	},
 	decIC : function(cell){
 		if(this.owner.getConfig('use')==1){
-			if     (this.btn.Left) { this.inputData=(cell.isWhite()  ? 1 : 0); }
+			if     (this.btn.Left) { this.inputData=(cell.isUnshade()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
 		else if(this.owner.getConfig('use')==2){
@@ -37,12 +37,12 @@ MouseEvent:{
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}
 			else if(this.btn.Left){
-				if     (cell.isBlack())    { this.inputData=2;}
+				if     (cell.isShade())    { this.inputData=2;}
 				else if(cell.getQsub()===1){ this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (cell.isBlack())    { this.inputData=0;}
+				if     (cell.isShade())    { this.inputData=0;}
 				else if(cell.getQsub()===1){ this.inputData=1;}
 				else{ this.inputData=2;}
 			}
@@ -225,7 +225,7 @@ MouseEvent:{
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			if(this.inputData===1 || cell2.getQsub()!==3){
-				(this.inputData===1?cell2.setBlack:cell2.setWhite).call(cell2);
+				(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
 				cell2.setQsub(this.inputData==2?1:0);
 			}
 		}
@@ -425,7 +425,7 @@ MouseEvent:{
 	dispRed : function(){
 		var cell = this.getcell();
 		this.mousereset();
-		if(cell.isnull || !cell.isBlack()){ return;}
+		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
 		else{ this.dispRed8(cell);}
 		this.owner.board.haserror = true;
@@ -441,7 +441,7 @@ MouseEvent:{
 			var bx=cell.bx, by=cell.by, clist=this.owner.board.cellinside(bx-2,by-2,bx+2,by+2);
 			for(var i=0;i<clist.length;i++){
 				var cell2 = clist[i];
-				if(cell2.qinfo===0 && cell2.isBlack()){ stack.push(cell2);}
+				if(cell2.qinfo===0 && cell2.isShade()){ stack.push(cell2);}
 			}
 		}
 	},

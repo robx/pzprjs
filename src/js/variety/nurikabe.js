@@ -32,7 +32,7 @@ Cell:{
 Board:{
 	getdir8WareaInfo : function(){
 		var winfo = new this.owner.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isWhite()?0:null);}
+		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isUnshade()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
 			if(!winfo.emptyCell(this.cell[fc])){ continue;}
 			winfo.addRoom();
@@ -54,13 +54,13 @@ Board:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
-"AreaBlackManager@mochikoro":{
+"AreaShadeManager@mochikoro":{
 	enabled : false
 },
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -87,7 +87,7 @@ Graphic:{
 		this.drawBGCells();
 		if(this.owner.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -151,9 +151,9 @@ FileIO:{
 
 		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
 
-		var winfo = bd.getWCellInfo();
+		var winfo = bd.getUnshadeInfo();
 		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
-		var binfo = bd.getBCellInfo();
+		var binfo = bd.getShadeInfo();
 		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
@@ -165,11 +165,11 @@ FileIO:{
 	checkAns : function(){
 		var bd=this.owner.board;
 
-		var binfo = bd.getBCellInfo();
+		var binfo = bd.getShadeInfo();
 		if( !this.checkBou(binfo) ){ return 'bcWidthGt1';}
 		if( !this.checkCorners(binfo) ){ return 'bcCornerSize';}
 
-		var winfo = bd.getWCellInfo();
+		var winfo = bd.getUnshadeInfo();
 		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
@@ -189,7 +189,7 @@ FileIO:{
 			var i, adc = cell.adjacent;
 			var cells = [ [cell, adc.right.adjacent.bottom], [adc.right, adc.bottom] ];
 			for(i=0;i<2;i++){
-				if( cells[i][0].isBlack() && cells[i][1].isBlack() ){ break;}
+				if( cells[i][0].isShade() && cells[i][1].isShade() ){ break;}
 			}
 			if(i===2){ continue;}
 
@@ -211,13 +211,13 @@ FileIO:{
 		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
 		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 'bcDivide8';}
 
-		var winfo = bd.getWCellInfo();
+		var winfo = bd.getUnshadeInfo();
 		if( !this.checkAreaRect(winfo) ){ return 'wcNotRect';}
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
 
 		if(this.owner.pid==='mochinyoro'){
-			var binfo = bd.getBCellInfo();
+			var binfo = bd.getShadeInfo();
 			if( !this.checkAreaNotRect(binfo) ){ return 'bcRect';}
 		}
 

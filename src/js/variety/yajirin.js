@@ -44,7 +44,7 @@ Cell:{
 	numberIsWhite : true,
 
 	// 線を引かせたくないので上書き
-	noLP : function(dir){ return (this.isBlack() || this.isNum());}
+	noLP : function(dir){ return (this.isShade() || this.isNum());}
 },
 Border:{
 	enableLineNG : true
@@ -81,7 +81,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawArrowNumbers();
 
@@ -190,17 +190,17 @@ AnsCheck:{
 	},
 
 	checkLineOnBlackCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isBlack());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isShade());});
 	},
 	checkBlankCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isBlack() && cell.noNum());});
+		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());});
 	},
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isBlack()){ continue;}
+			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isShade()){ continue;}
 			var pos = cell.getaddr(), dir = cell.getQdir(), cnt=0;
 			var clist = new this.owner.CellList();
 			while(1){
@@ -210,7 +210,7 @@ AnsCheck:{
 				clist.add(cell2);
 			}
 
-			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
+			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);

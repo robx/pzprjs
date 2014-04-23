@@ -37,7 +37,7 @@ Cross:{
 	minnum : 0
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -101,7 +101,7 @@ AnsCheck:{
 	checkAns : function(){
 
 		if( !this.checkQnumCross(1) ){ return 'crBcellGt';}
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
 		if( !this.checkQnumCross(2) ){ return 'crBcellLt';}
 
@@ -116,7 +116,7 @@ AnsCheck:{
 
 			var bx=cross.bx, by=cross.by;
 			var clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
-			var cnt = clist.filter(function(cell){ return cell.isBlack();}).length;
+			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 
 			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
 				if(this.checkOnly){ return false;}

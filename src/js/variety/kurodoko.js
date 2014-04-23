@@ -39,7 +39,7 @@ Board:{
 	qrows : 9
 },
 
-AreaWhiteManager:{
+AreaUnshadeManager:{
 	enabled : true
 },
 
@@ -66,7 +66,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawCircles();
 		this.drawNumbers();
@@ -120,7 +120,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
 
-		var winfo = this.owner.board.getWCellInfo();
+		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
 
 		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
@@ -136,10 +136,10 @@ AnsCheck:{
 
 			var clist = new this.owner.CellList(), adc = cell.adjacent, target;
 			clist.add(cell);
-			target=adc.left;   while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.left;  }
-			target=adc.right;  while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.right; }
-			target=adc.top;    while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.top;   }
-			target=adc.bottom; while(!target.isnull && target.isWhite()){ clist.add(target); target=target.adjacent.bottom;}
+			target=adc.left;   while(target.isUnshade()){ clist.add(target); target=target.adjacent.left;  }
+			target=adc.right;  while(target.isUnshade()){ clist.add(target); target=target.adjacent.right; }
+			target=adc.top;    while(target.isUnshade()){ clist.add(target); target=target.adjacent.top;   }
+			target=adc.bottom; while(target.isUnshade()){ clist.add(target); target=target.adjacent.bottom;}
 
 			if(cell.getQnum()!==clist.length){
 				if(this.checkOnly){ return false;}

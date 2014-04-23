@@ -53,7 +53,7 @@ Cell:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 
@@ -92,11 +92,11 @@ Graphic:{
 
 	paint : function(){
 		var puzzle = this.owner, bd = puzzle.board;
-		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getBCellInfo() : null);
+		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getShadeInfo() : null);
 		
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawCircles();
 		this.drawNumbers();
@@ -149,9 +149,9 @@ AnsCheck:{
 
 	checkCellNumber_kurotto : function(){
 		var result = true;
-		var cinfo = this.owner.board.getBCellInfo();
-		for(var c=0;c<this.owner.board.cellmax;c++){
-			var cell = this.owner.board.cell[c];
+		var bd = this.owner.board, cinfo = bd.getShadeInfo();
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
 			if(!cell.checkComplete(cinfo)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);

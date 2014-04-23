@@ -224,15 +224,15 @@ BoardPiece:{
 	drawaround : function(){ this.getaddr().drawaround();},
 
 	//---------------------------------------------------------------------------
-	// cell.isBlack()   該当するCellが黒マスかどうか返す
-	// cell.isWhite()   該当するCellが白マスかどうか返す
-	// cell.setBlack()  該当するCellに黒マスをセットする
-	// cell.setWhite()  該当するCellに白マスをセットする
+	// cell.isShade()   該当するCellが黒マスかどうか返す
+	// cell.isUnshade() 該当するCellが白マスかどうか返す
+	// cell.setShade()  該当するCellに黒マスをセットする
+	// cell.clrShade()  該当するCellに白マスをセットする
 	//---------------------------------------------------------------------------
-	isBlack : function(){ return this.qans===1;},
-	isWhite : function(){ return this.qans!==1;},
-	setBlack : function(){ this.setQans(1);},
-	setWhite : function(){ this.setQans(0);},
+	isShade   : function(){ return (!this.isnull && this.qans===1);},
+	isUnshade : function(){ return (!this.isnull && this.qans!==1);},
+	setShade : function(){ this.setQans(1);},
+	clrShade : function(){ this.setQans(0);},
 	
 	//-----------------------------------------------------------------------
 	// cell.getNum()     該当するCellの数字を返す

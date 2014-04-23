@@ -328,7 +328,7 @@ Graphic:{
 		this.gridcolor = this.gridcolor_LIGHT;
 		this.linecolor = this.linecolor_LIGHT;
 		this.errcolor1 = "red";
-		if(this.owner.pid!=='icebarn'){ this.fontBCellcolor = this.fontcolor;}
+		if(this.owner.pid!=='icebarn'){ this.fontShadecolor = this.fontcolor;}
 		this.setBGCellColorFunc('icebarn');
 		this.setBorderColorFunc('ice');
 

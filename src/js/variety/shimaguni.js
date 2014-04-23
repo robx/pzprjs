@@ -41,7 +41,7 @@ CellList:{
 	getLandAreaOfClist : function(){
 		var cnt = 0;
 		for(var i=0,len=this.length;i<len;i++){
-			if(this[i].isBlack()){ cnt++;}
+			if(this[i].isShade()){ cnt++;}
 		}
 		return cnt;
 	},
@@ -63,7 +63,7 @@ CellList:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 AreaRoomManager:{
@@ -94,7 +94,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -154,7 +154,7 @@ FileIO:{
 	},
 
 	checkSideAreaBlackCell : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isBlack() && cell2.isBlack());}, true);
+		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
 	},
 	checkSideAreaLandSide : function(rinfo){
 		return this.checkSideAreaSize(rinfo, function(room){ return room.clist.getLandAreaOfClist();});
@@ -164,7 +164,7 @@ FileIO:{
 	checkSeqBlocksInRoom : function(){
 		var result = true;
 		for(var r=1;r<=this.owner.board.rooms.max;r++){
-			var clist = this.owner.board.rooms.getClist(r).filter(function(cell){ return cell.isBlack()});
+			var clist = this.owner.board.rooms.getClist(r).filter(function(cell){ return cell.isShade()});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -177,7 +177,7 @@ FileIO:{
 "AnsCheck@chocona":{
 	checkAns : function(){
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkAreaRect(binfo) ){ return 'bcNotRect';}
 
 		var rinfo = this.owner.board.getRoomInfo();

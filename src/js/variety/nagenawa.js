@@ -97,7 +97,7 @@ Graphic:{
 			this.drawBorders();
 		}
 		else if(this.owner.pid==='ringring'){
-			this.drawBlackCells();
+			this.drawShadedCells();
 		}
 
 		this.drawLines();

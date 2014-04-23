@@ -379,7 +379,7 @@ AnsCheck:{
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ continue;}
-				else if(cell.isWhite() || cell.isNum()){
+				else if(cell.isUnshade() || cell.isNum()){
 					if(clist.length>=3){ break;}
 					clist=new this.owner.CellList();
 				}
@@ -406,7 +406,7 @@ AnsCheck:{
 			clist.add(cell.relcell(-1, 2));
 			clist.add(cell.relcell( 1, 2));
 
-			var cnt=clist.filter(function(cell){ return cell.isBlack();}).length;
+			var cnt=clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.getQnum()!==cnt){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
@@ -420,9 +420,9 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.isWhite() || cell.by===bd.maxby-1){ continue;}
+			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 
-			if(cell.relcell(-1,2).isWhite() && cell.relcell(1,2).isWhite()){
+			if(cell.relcell(-1,2).isUnshade() && cell.relcell(1,2).isUnshade()){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				cell.relcell(-1,2).seterr(1);

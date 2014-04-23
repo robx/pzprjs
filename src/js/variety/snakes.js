@@ -168,7 +168,7 @@ Graphic:{
 
 		this.drawBorders();
 
-		this.drawBlackCells();
+		this.drawShadedCells();
 		this.drawArrowNumbers();
 		this.drawAnswerNumbers();
 

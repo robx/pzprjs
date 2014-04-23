@@ -165,7 +165,7 @@ BoardExec:{
 	}
 },
 
-AreaBlackManager:{
+AreaShadeManager:{
 	enabled : true
 },
 
@@ -186,7 +186,7 @@ Graphic:{
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawDashedGrid();
-		this.drawBlackCells();
+		this.drawShadedCells();
 
 		this.drawFutons();
 		this.drawPillows();
@@ -352,7 +352,7 @@ AnsCheck:{
 		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
 		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
 
-		var binfo = this.owner.board.getBCellInfo();
+		var binfo = this.owner.board.getShadeInfo();
 		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
 
 		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
@@ -402,8 +402,8 @@ AnsCheck:{
 				case 45: adj = adc.right;  break;
 				default: continue;
 			}
-			if( cell.countDir4Cell(function(cell){ return cell.isBlack();})===0 &&
-				adj .countDir4Cell(function(cell){ return cell.isBlack();})===0 )
+			if( cell.countDir4Cell(function(cell){ return cell.isShade();})===0 &&
+				adj .countDir4Cell(function(cell){ return cell.isShade();})===0 )
 			{
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
