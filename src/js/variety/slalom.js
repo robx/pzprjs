@@ -33,7 +33,7 @@ MouseEvent:{
 		
 		// startposの入力中の場合
 		if(this.inputData===10){
-			this.owner.board.inputstartcell(cell);
+			this.owner.board.startpos.input(cell);
 		}
 		// 矢印の入力中の場合
 		else if(this.inputData===2){
@@ -48,7 +48,7 @@ MouseEvent:{
 	},
 	inputEdit_first : function(cell){
 		// startposの上ならstartpos移動ルーチンへ移行
-		if(cell===this.owner.board.startcell){
+		if(cell===this.owner.board.startpos.getc()){
 			this.inputData = 10;
 		}
 		// 数字つき黒マスの上なら矢印入力ルーチンへ移行
@@ -103,7 +103,7 @@ MouseEvent:{
 			bd.hinfo.generateGates();
 			
 			cell.draw();
-			bd.startcell.draw();
+			bd.startpos.draw();
 		}
 	},
 
@@ -132,7 +132,7 @@ MouseEvent:{
 		bd.hinfo.generateGates();
 
 		cell.draw();
-		bd.startcell.draw();
+		bd.startpos.draw();
 	}
 },
 
@@ -169,7 +169,7 @@ KeyEvent:{
 			else if(ca=='w'){ newques=21;}
 			else if(ca=='e'){ newques=22;}
 			else if(ca=='r'||ca==' '){ newques= 0;}
-			else if(ca=='s'){ bd.inputstartcell(cell);}
+			else if(ca=='s'){ bd.startpos.input(cell);}
 			else{ return;}
 			if(old==newques){ return;}
 
@@ -179,7 +179,7 @@ KeyEvent:{
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
 				cell.draw();
-				bd.startcell.draw();
+				bd.startpos.draw();
 			}
 		}
 		else if(cell.getQues()===1){
@@ -203,39 +203,21 @@ Border:{
 Board:{
 	hasborder : 1,
 
+	startpos : null,
 	hinfo : null,
 
 	initialize : function(){
 		this.Common.prototype.initialize.call(this);
 
+		this.startpos = new this.owner.StartPosAddress(1,1);
 		this.hinfo = new this.owner.HurdleManager();
 	},
 
 	initBoardSize : function(col,row){
 		this.Common.prototype.initBoardSize.call(this,col,row);
 
-		this.startcell = this.cell[0];
+		this.startpos.set(this.cell[0]);
 		this.hinfo.init();
-	},
-
-	startcell : null,
-	inputstartcell : function(cell){
-		var cell0 = this.startcell;
-		if(cell!==this.startcell){
-			this.setstartcell(cell);
-			cell0.draw();
-			cell.draw();
-		}
-		else{
-			cell0.draw();
-		}
-	},
-	setstartcell : function(cell){
-		var puzzle = this.owner, pos = this.startcell.getaddr();
-		var ope = new puzzle.StartposOperation(pos.bx,pos.by, cell.bx,cell.by);
-		puzzle.opemgr.add(ope);
-
-		this.startcell = cell;
 	}
 },
 BoardExec:{
@@ -251,7 +233,7 @@ BoardExec:{
 			}
 		}
 
-		this.posinfo = this.getAfterPos(key,d,bd.startcell);
+		this.posinfo = this.getAfterPos(key,d,bd.startpos.getc());
 
 		this.adjustNumberArrow(key,d);
 	},
@@ -261,13 +243,32 @@ BoardExec:{
 		
 		isrec = ((key & this.REDUCE) && (info.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
-		bd.setstartcell(info.pos.getc());
+		bd.startpos.set(info.pos.getc());
 		if(isrec){ opemgr.forceRecord = false;}
 		
 		bd.hinfo.generateGates();	// 念のため
 	}
 },
 
+"StartPosAddress:Address":{
+	input : function(cell){
+		var pos0 = this.clone();
+		if(!this.equals(cell)){
+			this.set(cell);
+			pos0.draw();
+		}
+		this.draw();
+	},
+	set : function(pos){
+		this.addOpe(pos.bx, pos.by);
+		this.bx = pos.bx;
+		this.by = pos.by;
+	},
+	addOpe : function(bx, by){
+		if(!this.owner.ready || (this.bx===bx && this.by===by)){ return;}
+		this.owner.opemgr.add(new this.owner.StartposOperation(this.bx,this.by, bx,by));
+	}
+},
 "StartposOperation:Operation":{
 	setData : function(x1, y1, x2, y2){
 		this.bx1 = x1;
@@ -300,10 +301,8 @@ BoardExec:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var bd = this.owner.board, cell = bd.getc(bx, by), cell0;
-		cell0 = bd.startcell; bd.startcell = cell;
-		cell0.draw();
-		cell.draw();
+		var bd = this.owner.board, cell = bd.getc(bx, by);
+		bd.startpos.input(cell);
 	}
 },
 
@@ -416,7 +415,7 @@ Graphic:{
 	drawStartpos : function(){
 		var g = this.vinc('cell_circle', 'auto');
 
-		var bd = this.owner.board, cell = bd.startcell, d = this.range;
+		var bd = this.owner.board, cell = bd.startpos.getc(), d = this.range;
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
@@ -430,7 +429,7 @@ Graphic:{
 			g.shapeCircle(px, py, csize);
 		}
 
-		var option = { key:"stpos", ratio:[0.75, 0.66] };
+		var option = { key:"stpos", ratio:[0.75, 0.66], color:this.cellcolor };
 		this.disptext(""+bd.hinfo.max, px, py, option);
 	},
 
@@ -438,7 +437,7 @@ Graphic:{
 		var clist = blist.cellinside();
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			if(cell!==this.owner.board.startcell){ continue;}
+			if(!this.owner.board.startpos.equals(cell)){ continue;}
 
 			this.range = {x1:cell.bx,y1:cell.by,x2:cell.bx,y2:cell.by};
 			this.drawStartpos();
@@ -568,7 +567,7 @@ Encode:{
 			}
 		}
 
-		bd.startcell = bd.cell[parseInt(array[1])];
+		bd.startpos.set( bd.cell[parseInt(array[1])] );
 
 		this.outbstr = array[0].substr(i);
 	},
@@ -617,7 +616,7 @@ Encode:{
 			if(count>0){ cm+=(15+count).toString(36);}
 		}
 
-		cm += ("/"+bd.startcell.id.toString());
+		cm += ("/"+bd.startpos.getc().id.toString());
 
 		this.outbstr += cm;
 	}
@@ -654,7 +653,7 @@ FileIO:{
 	decodeBoard_pzpr1 : function(){
 		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startcell = obj;}
+			if     (ca==="o"){ bd.startpos.set(obj);}
 			else if(ca==="i"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="#"){ obj.ques = 1;}
@@ -665,7 +664,7 @@ FileIO:{
 	decodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startcell = obj;}
+			if     (ca==="o"){ bd.startpos.set(obj);}
 			else if(ca==="i"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="#"){ obj.ques = 1;}
@@ -681,7 +680,7 @@ FileIO:{
 	encodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
 		this.encodeCell( function(obj){
-			if     (bd.startcell===obj){ return "o ";}
+			if     (bd.startpos.equals(obj)){ return "o ";}
 			else if(obj.ques===21){ return "i ";}
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1 && obj.qnum<=0){ return "# ";}
@@ -697,7 +696,7 @@ FileIO:{
 	decodeBoard_kanpen : function(){
 		var bd = this.owner.board;
 		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ bd.startcell = obj;}
+			if     (ca==="+"){ bd.startpos.set(obj);}
 			else if(ca==="|"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="0"){ obj.ques = 1;}
@@ -707,7 +706,7 @@ FileIO:{
 	encodeBoard_kanpen : function(){
 		var bd = this.owner.board;
 		this.encodeCell( function(obj){
-			if     (bd.startcell===obj){ return "+ ";}
+			if     (bd.startpos.equals(obj)){ return "+ ";}
 			else if(obj.ques===21){ return "| ";}
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1){
@@ -723,7 +722,7 @@ FileIO:{
 			var c = obj.id;
 			sv_num[c]=-1;
 			if     (ca==="#"){ obj.ques = 1;}
-			else if(ca==="o"){ bd.startcell = obj;}
+			else if(ca==="o"){ bd.startpos.set(obj);}
 			else if(ca!=="."){
 				if     (ca.charAt(0)==="i"){ obj.ques = 21;}
 				else if(ca.charAt(0)==="w"){ obj.ques = 22;}
@@ -778,7 +777,7 @@ AnsCheck:{
 	},
 
 	checkStartid : function(){
-		var start = this.owner.board.startcell;
+		var start = this.owner.board.startpos.getc();
 		if(start.lcnt!==2){
 			start.seterr(1);
 			return false;
@@ -802,7 +801,7 @@ AnsCheck:{
 		return result;
 	},
 	checkGateNumber : function(){
-		var sid = [], bd = this.owner.board, startcell = bd.startcell, adb = startcell.adjborder;
+		var sid = [], bd = this.owner.board, adb = bd.startpos.getc().adjborder;
 		if(adb.right.isLine() ){ sid.push({obj:adb.right, dir:4});}
 		if(adb.bottom.isLine()){ sid.push({obj:adb.bottom,dir:2});}
 		if(adb.left.isLine()  ){ sid.push({obj:adb.left,  dir:3});}
@@ -816,7 +815,7 @@ AnsCheck:{
 				pos.movedir(dir,1);
 				if(pos.oncell()){
 					var cell = pos.getc();
-					if(cell===bd.startcell){ return true;} // ちゃんと戻ってきた
+					if(bd.startpos.equals(cell)){ return true;} // ちゃんと戻ってきた
 
 					if(cell.getQues()===21 || cell.getQues()===22){
 						var r = bd.hinfo.getGateid(cell.id);
