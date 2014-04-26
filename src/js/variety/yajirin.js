@@ -41,7 +41,7 @@ KeyEvent:{
 Cell:{
 	minnum : 0,
 
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());}
@@ -174,13 +174,13 @@ AnsCheck:{
 		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
-		if( !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
+		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 
-		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
+		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
 		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
 
-		if( !this.checkArrowNumber() ){ return 'anBcellNe';}
+		if( !this.checkArrowNumber() ){ return 'anShadeNe';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
@@ -189,7 +189,7 @@ AnsCheck:{
 		return null;
 	},
 
-	checkLineOnBlackCell : function(){
+	checkLineOnShadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isShade());});
 	},
 	checkBlankCell : function(){

@@ -100,10 +100,10 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkQnumCross(1) ){ return 'crBcellGt';}
+		if( !this.checkQnumCross(1) ){ return 'crShadeGt';}
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
-		if( !this.checkQnumCross(2) ){ return 'crBcellLt';}
+		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
+		if( !this.checkQnumCross(2) ){ return 'crShadeLt';}
 
 		return null;
 	},
@@ -129,7 +129,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	crBcellGt : ["数字のまわりにある黒マスの数が間違っています。","The number of black cells around a number on crossing is big."],
-	crBcellLt : ["数字のまわりにある黒マスの数が間違っています。","The number of black cells around a number on crossing is small."]
+	crShadeGt : ["数字のまわりにある黒マスの数が間違っています。","The number of shaded cells around a number on crossing is big."],
+	crShadeLt : ["数字のまわりにある黒マスの数が間違っています。","The number of shaded cells around a number on crossing is small."]
 }
 });

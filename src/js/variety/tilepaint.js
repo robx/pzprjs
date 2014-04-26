@@ -51,7 +51,7 @@ Cell:{
 
 	disInputHatena : true,
 
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	minnum : 0,
 
@@ -288,7 +288,7 @@ AnsCheck:{
 
 		if( !this.checkSameColorTile() ){ return 'bkMixed';}
 
-		if( !this.checkRowsColsBlackCell() ){ return 'asBcellNe';}
+		if( !this.checkRowsColsShadeCell() ){ return 'asShadeNe';}
 
 		return null;
 	},
@@ -297,10 +297,10 @@ AnsCheck:{
 		var rinfo = this.owner.board.getRoomInfo();
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
 	},
-	checkRowsColsBlackCell : function(){
-		return this.checkRowsColsPartly(this.isBCellCount, function(cell){ return cell.is51cell();}, false);
+	checkRowsColsShadeCell : function(){
+		return this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, false);
 	},
-	isBCellCount : function(keycellpos, clist){
+	isShadeCount : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
 		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
@@ -316,6 +316,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	asBcellNe : ["数字の下か右にある黒マスの数が間違っています。","The number of black cells underward or rightward is not correct."]
+	asShadeNe : ["数字の下か右にある黒マスの数が間違っています。","The number of shaded cells underward or rightward is not correct."]
 }
 });

@@ -106,29 +106,29 @@ AnsCheck:{
 		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
+		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
 
-		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
-		if( !this.checkDir4BlackCell() ){ return 'nmBcellNe';}
-		if( !this.check2x2WhiteCell() ){ return 'wc2x2';}
+		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
+		if( !this.checkDir4ShadeCell() ){ return 'nmShadeNe';}
+		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}
 
 		return null;
 	},
 
-	checkDir4BlackCell : function(){
+	checkDir4ShadeCell : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);
 	},
 	checkSameColorTile : function(){
 		var rinfo = this.owner.board.getRoomInfo();
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
 	},
-	check2x2WhiteCell : function(){
+	check2x2UnshadeCell : function(){
 		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
 	}
 },
 
 FailCode:{
-	wc2x2     : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of white cells."],
-	nmBcellNe : ["数字の上下左右にある黒マスの数が間違っています。","The number is not equal to the number of black cells in four adjacent cells."]
+	cu2x2     : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
+	nmShadeNe : ["数字の上下左右にある黒マスの数が間違っています。","The number is not equal to the number of shaded cells in four adjacent cells."]
 }
 });

@@ -5,7 +5,7 @@ pzpr.classmgr.makeCustom(['kurochute'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	RBBlackCell : true,
+	RBShadeCell : true,
 
 	mouseinput : function(){
 		if(this.owner.playmode){
@@ -36,7 +36,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	nummaxfunc : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
@@ -119,12 +119,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
+		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
+		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
 
-		if( !this.checkCellNumber() ){ return 'nmShootBcNe1';}
+		if( !this.checkCellNumber() ){ return 'nmShootShadeNe1';}
 
 		return null;
 	},
@@ -152,6 +152,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmShootBcNe1 : ["数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。","The number of black cells at aparted cell by the number is not one."]
+	nmShootShadeNe1 : ["数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。","The number of shaded cells at aparted cell by the number is not one."]
 }
 });

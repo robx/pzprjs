@@ -95,20 +95,20 @@ AnsCheck:{
 	checkAns : function(){
 
 		/* 自動チェック時は最初にチェックする */
-		if( this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
+		if( this.checkOnly && !this.checkDir5ShadeCell() ){ return 'nmShade5Ne';}
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
+		if( !this.checkAreaSquare(binfo) ){ return 'csNotSquare';}
 
 		if( !this.checkLookair(binfo) ){ return 'lookairBC';}
 
 			/* チェック時は最後にチェックする */
-		if( !this.checkOnly && !this.checkDir5BlackCell() ){ return 'nmBcell5Ne';}
+		if( !this.checkOnly && !this.checkDir5ShadeCell() ){ return 'nmShade5Ne';}
 
 		return null;
 	},
 
-	checkDir5BlackCell : function(){
+	checkDir5ShadeCell : function(){
 		var result = true;
 		var iscount = function(cell){ return cell.isShade();};
 		for(var c=0;c<this.owner.board.cellmax;c++){
@@ -163,7 +163,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmBcell5Ne : ["数字およびその上下左右にある黒マスの数が間違っています。","the number is not equal to the number of black cells in the cell and four adjacent cells."],
-	lookairBC : ["同じ大きさの黒マスのカタマリの間に他の黒マスのカタマリがありません。","A mass of black cells can looks other same size mass of black cells."]
+	nmShade5Ne : ["数字およびその上下左右にある黒マスの数が間違っています。","the number is not equal to the number of shaded cells in the cell and four adjacent cells."],
+	lookairBC : ["同じ大きさの黒マスのカタマリの間に他の黒マスのカタマリがありません。","A mass of shaded cells can looks other same size mass of shaded cells."]
 }
 });

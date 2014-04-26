@@ -828,7 +828,7 @@ AnsCheck:{
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( (pid==='icelom') && !this.checkUnreachedWhiteCell() ){ return 'ceEmpty';}
+		if( (pid==='icelom') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
 
 		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 'bkNoLine';}
 
@@ -844,7 +844,7 @@ AnsCheck:{
 	checkCrossOutOfIce : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
 	},
-	checkUnreachedWhiteCell : function(){
+	checkUnreachedUnshadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.ice());});
 	},
 	checkIgnoreIcebarn : function(){
@@ -926,6 +926,6 @@ FailCode:{
 	stDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
 	stOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
 	awInverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
-	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the white cell."]
+	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
 }
 });

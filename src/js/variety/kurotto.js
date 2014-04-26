@@ -25,7 +25,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	nummaxfunc : function(){
 		var max=this.owner.board.qcols*this.owner.board.qrows-1;
@@ -163,6 +163,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmSumSizeNe : ["隣り合う黒マスの個数の合計が数字と違います。","The number is not equal to sum of adjacent masses of black cells."]
+	nmSumSizeNe : ["隣り合う黒マスの個数の合計が数字と違います。","The number is not equal to sum of adjacent masses of shaded cells."]
 }
 });

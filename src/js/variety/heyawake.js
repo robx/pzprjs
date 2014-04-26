@@ -5,7 +5,7 @@ pzpr.classmgr.makeCustom(['heyawake','ayeheya'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	RBBlackCell : true,
+	RBShadeCell : true,
 
 	mouseinput : function(){
 		if(this.owner.playmode){
@@ -168,17 +168,17 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
+		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
+		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 'bkNotSymBc';}
+		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 'bkNotSymShade';}
 
-		if( !this.checkBlackCellCount(rinfo) ){ return 'bkBcellNe';}
+		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
 
-		if( !this.checkCountinuousWhiteCell() ){ return 'bkWcConsecGt3';}
+		if( !this.checkCountinuousUnshadeCell() ){ return 'bkUnshadeConsecGt3';}
 
 		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
@@ -202,7 +202,7 @@ AnsCheck:{
 		return result;
 	},
 
-	checkCountinuousWhiteCell : function(){
+	checkCountinuousUnshadeCell : function(){
 		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, false);
 	},
 	isBorderCount : function(keycellpos, clist){
@@ -226,7 +226,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkWcConsecGt3 : ["白マスが3部屋連続で続いています。","White cells are continued for three consecutive room."],
-	bkNotSymBc    : ["部屋の中の黒マスが点対称に配置されていません。","Position of black cells in the room is not point symmetric."]
+	bkUnshadeConsecGt3 : ["白マスが3部屋連続で続いています。","Unshaded cells are continued for three consecutive room."],
+	bkNotSymShade      : ["部屋の中の黒マスが点対称に配置されていません。","Position of shaded cells in the room is not point symmetric."]
 }
 });

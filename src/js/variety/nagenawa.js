@@ -222,7 +222,7 @@ AnsCheck:{
 
 		if( !this.checkNoLine() ){ return 'brNoLine';}
 
-		if( (pid==='ringring') && !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
+		if( (pid==='ringring') && !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 
 		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
 		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 'bkLineGt';}
@@ -234,7 +234,7 @@ AnsCheck:{
 
 		if( !this.checkAllLoopRect() ){ return 'lnNotRect';}
 
-		if( (pid==='ringring') && !this.checkUnreachedWhiteCell() ){ return 'ceEmpty';}
+		if( (pid==='ringring') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
 
 		return null;
 	},
@@ -244,7 +244,7 @@ AnsCheck:{
 		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
 		return false;
 	},
-	checkLineOnBlackCell : function(){
+	checkLineOnShadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},
 	checkOverLineCount : function(rinfo){
@@ -253,7 +253,7 @@ AnsCheck:{
 	checkLessLineCount : function(rinfo){
 		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);});
 	},
-	checkUnreachedWhiteCell : function(){
+	checkUnreachedUnshadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);});
 	},
 
@@ -292,6 +292,6 @@ FailCode:{
 	lnNotRect : ["長方形か正方形でない輪っかがあります。","there is a non-rectangle loop."],
 	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
 	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
-	ceEmpty : ["白マスの上に線が引かれていません。","there is no line on the white cell."]
+	ceEmpty : ["白マスの上に線が引かれていません。","there is no line on the unshaded cell."]
 }
 });

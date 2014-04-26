@@ -5,7 +5,7 @@ pzpr.classmgr.makeCustom(['kurodoko'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	RBBlackCell : true,
+	RBShadeCell : true,
 
 	mouseinput : function(){
 		if(this.owner.playmode){
@@ -27,7 +27,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	nummaxfunc : function(){
 		return this.owner.board.qcols+this.owner.board.qrows-1;
@@ -118,10 +118,10 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
+		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
+		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
 
 		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
 
@@ -152,6 +152,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous white cells of four direction is different."]
+	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous unshaded cells of four direction is different."]
 }
 });

@@ -140,20 +140,20 @@ FileIO:{
 	checkAns : function(){
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaBlackCell(rinfo) ){ return 'scBcell';}
+		if( !this.checkSideAreaShadeCell(rinfo) ){ return 'scShade';}
 
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkBcDivide';}
+		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
 
-		if( !this.checkBlackCellCount(rinfo) ){ return 'bkBcellNe';}
+		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
 
-		if( !this.checkSideAreaLandSide(rinfo) ){ return 'sbEqBcell';}
+		if( !this.checkSideAreaLandSide(rinfo) ){ return 'sbEqShade';}
 
-		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
+		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
 
 		return null;
 	},
 
-	checkSideAreaBlackCell : function(rinfo){
+	checkSideAreaShadeCell : function(rinfo){
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
 	},
 	checkSideAreaLandSide : function(rinfo){
@@ -178,25 +178,25 @@ FileIO:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaRect(binfo) ){ return 'bcNotRect';}
+		if( !this.checkAreaRect(binfo) ){ return 'csNotRect';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkBlackCellCount(rinfo) ){ return 'bkBcellNe';}
+		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
 
 		return null;
 	}
 },
 
 "FailCode@shimaguni":{
-	bkBcellNe  : ["海域内の数字と国のマス数が一致していません。","the number of black cells is not equals to the number."],
-	bkBcDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are devided to plural ones."],
-	bkNoBcell  : ["黒マスのカタマリがない海域があります。","A marine area has no black cells."],
-	scBcell    : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
-	sbEqBcell  : ["隣り合う海域にある国の大きさが同じです。","the size of countries that there are in adjacent marine areas are the same."]
+	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","the number of shaded cells is not equals to the number."],
+	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are devided to plural ones."],
+	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
+	scShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
+	sbEqShade     : ["隣り合う海域にある国の大きさが同じです。","the size of countries that there are in adjacent marine areas are the same."]
 },
 
 "FailCode@chocona":{
-	bcNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of black cells is not rectangle."],
-	bkBcellNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","the number of Black cells in the area and the number written in the area is different."]
+	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
+	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","the number of shaded cells in the area and the number written in the area is different."]
 }
 });

@@ -27,7 +27,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true
+	numberRemainsUnshaded : true
 },
 Board:{
 	getdir8WareaInfo : function(){
@@ -149,12 +149,12 @@ FileIO:{
 	checkAns : function(){
 		var bd=this.owner.board;
 
-		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
+		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 
 		var winfo = bd.getUnshadeInfo();
 		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
 		var binfo = bd.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
+		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
 
@@ -166,8 +166,8 @@ FileIO:{
 		var bd=this.owner.board;
 
 		var binfo = bd.getShadeInfo();
-		if( !this.checkBou(binfo) ){ return 'bcWidthGt1';}
-		if( !this.checkCorners(binfo) ){ return 'bcCornerSize';}
+		if( !this.checkBou(binfo) ){ return 'csWidthGt1';}
+		if( !this.checkCorners(binfo) ){ return 'csCornerSize';}
 
 		var winfo = bd.getUnshadeInfo();
 		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
@@ -208,17 +208,17 @@ FileIO:{
 	checkAns : function(){
 		var bd=this.owner.board;
 
-		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
-		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 'bcDivide8';}
+		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
+		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 'csDivide8';}
 
 		var winfo = bd.getUnshadeInfo();
-		if( !this.checkAreaRect(winfo) ){ return 'wcNotRect';}
+		if( !this.checkAreaRect(winfo) ){ return 'cuNotRect';}
 		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
 
 		if(this.owner.pid==='mochinyoro'){
 			var binfo = bd.getShadeInfo();
-			if( !this.checkAreaNotRect(binfo) ){ return 'bcRect';}
+			if( !this.checkAreaNotRect(binfo) ){ return 'csRect';}
 		}
 
 		return null;
@@ -230,18 +230,18 @@ FileIO:{
 },
 
 FailCode:{
-	bkNoNum  : ["数字の入っていないシマがあります。","An area of white cells has no numbers."],
-	bkNumGe2 : ["1つのシマに2つ以上の数字が入っています。","An area of white cells has plural numbers."],
+	bkNoNum  : ["数字の入っていないシマがあります。","An area of unshaded cells has no numbers."],
+	bkNumGe2 : ["1つのシマに2つ以上の数字が入っています。","An area of unshaded cells has plural numbers."],
 	bkSizeNe : ["数字とシマの面積が違います。","The number is not equal to the number of the size of the area."]
 },
 "FailCode@nuribou":{
-	bcWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","there is a mass of black cells, whose width is more than two."],
-	bcCornerSize : ["同じ面積の黒マスのカタマリが、角を共有しています。","Masses of black cells whose length is the same share a corner."]
+	csWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","there is a mass of shaded cells, whose width is more than two."],
+	csCornerSize : ["同じ面積の黒マスのカタマリが、角を共有しています。","Masses of shaded cells whose length is the same share a corner."]
 },
 
 "FailCode@mochikoro,mochinyoro":{
-	wcNotRect : ["四角形でない白マスのブロックがあります。","There is a block of white cells that is not rectangle."],
-	bcRect    : ["四角形になっている黒マスのブロックがあります。","There is a block of black cells that is rectangle."],
-	bcDivide8 : ["孤立した白マスのブロックがあります。","White cells are devided."]
+	cuNotRect : ["四角形でない白マスのブロックがあります。","There is a block of unshaded cells that is not rectangle."],
+	csRect    : ["四角形になっている黒マスのブロックがあります。","There is a block of shaded cells that is rectangle."],
+	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are devided."]
 }
 });

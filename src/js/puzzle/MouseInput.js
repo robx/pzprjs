@@ -37,7 +37,7 @@ MouseEvent:{
 		this.mousereset();
 	},
 
-	RBBlackCell : false,	// 連黒分断禁のパズル
+	RBShadeCell : false,	// 連黒分断禁のパズル
 
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する

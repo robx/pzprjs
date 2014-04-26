@@ -55,8 +55,8 @@ ui.toolarea = {
 
 		/* 盤面チェックの設定値 */
 		this.addLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
-		this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-		this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+		this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous shaded cells');
+		this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous shaded cells with its corner');
 		this.addLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 
 		/* 背景色入力の設定値 */

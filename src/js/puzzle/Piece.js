@@ -189,7 +189,7 @@ BoardPiece:{
 	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)
 	numberAsObject : false,	// 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
 	
-	numberIsWhite  : false,	// 数字のあるマスが黒マスにならないパズル
+	numberRemainsUnshaded  : false,	// 数字のあるマスが黒マスにならないパズル
 	
 	adjacent  : {},	// 四方向に隣接するセルを保持する
 	adjborder : {},	// 四方向に隣接する境界線を保持する
@@ -246,7 +246,7 @@ BoardPiece:{
 			val = (((this.numberAsObject||val===-2) && this.qnum===val)?-1:val);
 			this.setQnum(val);
 			this.setAnum(-1);
-			if(this.numberIsWhite) { this.setQans(0);}
+			if(this.numberRemainsUnshaded) { this.setQans(0);}
 			if(this.owner.painter.bcolor==="white"){ this.setQsub(0);}
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3

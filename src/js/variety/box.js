@@ -316,12 +316,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBlackCells() ){ return 'nmSumRowBcNe';}
+		if( !this.checkShadeCells() ){ return 'nmSumRowShadeNe';}
 
 		return null;
 	},
 
-	checkBlackCells : function(type){
+	checkShadeCells : function(type){
 		var result = true, bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
@@ -357,6 +357,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmSumRowBcNe : ["数字と黒マスになった数字の合計が正しくありません。","A number is not equal to the sum of the number of black cells."]
+	nmSumRowShadeNe : ["数字と黒マスになった数字の合計が正しくありません。","A number is not equal to the sum of the number of shaded cells."]
 }
 });

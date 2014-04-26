@@ -15,8 +15,8 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberIsWhite && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
-		if(this.RBBlackCell && this.inputData===1){
+		if(cell.numberRemainsUnshaded && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
+		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
@@ -33,7 +33,7 @@ MouseEvent:{
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
 		else if(this.owner.getConfig('use')==2){
-			if(cell.numberIsWhite && cell.getQnum()!==-1){
+			if(cell.numberRemainsUnshaded && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}
 			else if(this.btn.Left){
@@ -426,7 +426,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
-		if(!this.RBBlackCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
+		if(!this.RBShadeCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
 		else{ this.dispRed8(cell);}
 		this.owner.board.haserror = true;
 		this.owner.redraw();

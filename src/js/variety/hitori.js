@@ -5,7 +5,7 @@ pzpr.classmgr.makeCustom(['hitori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	RBBlackCell : true,
+	RBShadeCell : true,
 
 	mouseinput : function(){
 		if(this.owner.playmode){
@@ -195,10 +195,10 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkAdjacentBlackCell() ){ return 'bcAdjacent';}
+		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBBlackCell(winfo) ){ return 'wcDivideRB';}
+		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
 
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 

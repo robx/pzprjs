@@ -49,7 +49,7 @@ AnsCheck:{
 
 	//---------------------------------------------------------------------------
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
-	// ans.checkAdjacentBlackCell()  黒マスが隣接している時、エラーを設定する
+	// ans.checkAdjacentShadeCell()  黒マスが隣接している時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkSideCell : function(func){
 		var result = true, bd = this.owner.board;
@@ -71,13 +71,13 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkAdjacentBlackCell : function(){
+	checkAdjacentShadeCell : function(){
 		return this.checkSideCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());});
 	},
 
 	//---------------------------------------------------------------------------
 	// ans.check2x2Block()      2x2のセルが全て条件func==trueの時、エラーを設定する
-	// ans.check2x2BlackCell()  2x2のセルが黒マスの時、エラーを設定する
+	// ans.check2x2ShadeCell()  2x2のセルが黒マスの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	check2x2Block : function(func){
 		var result = true, bd = this.owner.board;
@@ -95,7 +95,7 @@ AnsCheck:{
 		}
 		return result;
 	},
-	check2x2BlackCell : function(){
+	check2x2ShadeCell : function(){
 		return this.check2x2Block( function(cell){ return cell.isShade();} );
 	},
 
@@ -180,9 +180,9 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkRBBlackCell() 連黒分断禁のパズルで白マスが分断されているかチェックする
+	// ans.checkRBShadeCell() 連黒分断禁のパズルで白マスが分断されているかチェックする
 	//---------------------------------------------------------------------------
-	checkRBBlackCell : function(winfo){
+	checkRBShadeCell : function(winfo){
 		if(winfo.max>1){
 			var errclist = new this.owner.CellList();
 			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
@@ -241,11 +241,11 @@ AnsCheck:{
 	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 2);} );},
 
 	//---------------------------------------------------------------------------
-	// ans.checkBlackCellCount() 領域内の数字と黒マスの数が等しいか判定する
-	// ans.checkNoBlackCellInArea()  部屋に黒マスがあるか判定する
+	// ans.checkShadeCellCount() 領域内の数字と黒マスの数が等しいか判定する
+	// ans.checkNoShadeCellInArea()  部屋に黒マスがあるか判定する
 	//---------------------------------------------------------------------------
-	checkBlackCellCount    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (n<0 || n===a);});},
-	checkNoBlackCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>0);}         );},
+	checkShadeCellCount    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkNoShadeCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>0);}         );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkLinesInArea()  領域の中で線が通っているセルの数を判定する
@@ -542,12 +542,12 @@ AnsCheck:{
 //---------------------------------------------------------------------------
 FailCode:{
 	/* ** 黒マス ** */
-	bc2x2       : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of black cells."],
-	bcNotSquare : ["正方形でない黒マスのカタマリがあります。","A mass of black cells is not regular rectangle."],
-	bcAdjacent  : ["黒マスがタテヨコに連続しています。","Black cells are adjacent."],
-	bcDivide    : ["黒マスが分断されています。","Black cells are devided,"],
-	wcDivide    : ["白マスが分断されています。","White cells are devided."],
-	wcDivideRB  : ["白マスが分断されています。","White cells are devided."], /* 連黒分断禁 */
+	cs2x2       : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of shaded cells."],
+	csNotSquare : ["正方形でない黒マスのカタマリがあります。","A mass of shaded cells is not regular rectangle."],
+	csAdjacent  : ["黒マスがタテヨコに連続しています。","Shaded cells are adjacent."],
+	csDivide    : ["黒マスが分断されています。","Shaded cells are devided,"],
+	cuDivide    : ["白マスが分断されています。","Unshaded cells are devided."],
+	cuDivideRB  : ["白マスが分断されています。","Unshaded cells are devided."], /* 連黒分断禁 */
 
 	/* ** 領域＋数字 ** */
 	bkNoNum  : ["数字のないブロックがあります。","A block has no number."],
@@ -560,10 +560,10 @@ FailCode:{
 	bkSizeLt : ["ブロックの大きさより数字のほうが大きいです。","A number is bigger than the size of block."],
 	bkSizeGt : ["ブロックの大きさよりも数字が小さいです。","A number is smaller than the size of block."],
 	
-	bkBcellNe  : ["部屋の数字と黒マスの数が一致していません。","The number of Black cells in the room and The number written in the room is different."],
-	bkBcDivide : ["1つの部屋に入る黒マスが2つ以上に分裂しています。","Black cells are devided in one room."],
-	bkNoBcell  : ["黒マスがない部屋があります。","A room has no black cell."],
-	bkMixed    : ["白マスと黒マスの混在したタイルがあります。","A tile includes both black and white cells."],
+	bkShadeNe     : ["部屋の数字と黒マスの数が一致していません。","The number of shaded cells in the room and The number written in the room is different."],
+	bkShadeDivide : ["1つの部屋に入る黒マスが2つ以上に分裂しています。","Shaded cells are devided in one room."],
+	bkNoShade     : ["黒マスがない部屋があります。","A room has no shaded cell."],
+	bkMixed       : ["白マスと黒マスの混在したタイルがあります。","A tile includes both shaded and unshaded cells."],
 	
 	bkWidthGt1 : ["幅が１マスではないタタミがあります。","The width of the tatami is not one."],
 	
@@ -586,7 +586,7 @@ FailCode:{
 	lnCrossExIce : ["氷の部分以外で線が交差しています。","A Line is crossed outside of ice."],
 	lnCurveOnIce : ["氷の部分で線が曲がっています。","A Line curve on ice."],
 	lnPlLoop : ["輪っかが一つではありません。","There are plural loops."],
-	lnOnBcell : ["黒マスの上に線が引かれています。","There is a line on the black cell."],
+	lnOnShade : ["黒マスの上に線が引かれています。","There is a line on the shaded cell."],
 
 	/* ** 線でつなぐ系 ** */
 	lcDeadEnd : ["線が途中で途切れています。", "There is a dead-end line."],
@@ -607,7 +607,7 @@ FailCode:{
 	ceEmpty : ["何も入っていないマスがあります。","There is an empty cell."],
 	ceAddLine : ["最初から引かれている線があるマスに線が足されています。","Lines are added to the cell that the mark lie in by the question."],
 	
-	anBcellNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of black cells are not correct."],
+	anShadeNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of shaded cells are not correct."],
 
 	/* ** 数字系 ** */
 	nmSameNum : ["同じ数字がタテヨコに連続しています。","Same numbers are adjacent."],

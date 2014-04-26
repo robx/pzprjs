@@ -382,7 +382,7 @@ AnsCheck:{
 FailCode:{
 	bkSizeNe    : ["数字と棒の長さが違います。","The number is different from the length of line."],
 	baPlNum     : ["1つの棒に2つ以上の数字が入っています。","A line passes plural numbers."],
-	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a black cell is wrong."],
-	nmConnBarLt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a black cell is wrong."]
+	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."],
+	nmConnBarLt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."]
 }
 });

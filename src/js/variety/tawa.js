@@ -56,7 +56,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	maxnum : 6,
 	minnum : 0
@@ -363,16 +363,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkThreeBlackCells() ){ return 'bcConsecGt3';}
+		if( !this.checkThreeShadeCells() ){ return 'csConsecGt3';}
 
-		if( !this.checkUnderCells() ){ return 'bcNotOnBc';}
+		if( !this.checkUnderCells() ){ return 'csNotOnShade';}
 
-		if( !this.checkNumbers() ){ return 'ceBcellNe';}
+		if( !this.checkNumbers() ){ return 'ceShadeNe';}
 
 		return null;
 	},
 
-	checkThreeBlackCells : function(){
+	checkThreeShadeCells : function(){
 		var result = true, bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			var clist = new this.owner.CellList();
@@ -435,8 +435,8 @@ AnsCheck:{
 },
 
 FailCode:{
-	ceBcellNe   : ["数字の周りに入っている黒マスの数が違います。","The number of black cells around a number is not correct."],
-	bcConsecGt3 : ["黒マスが横に3マス以上続いています。","There or more black cells continue horizonally."],
-	bcNotOnBc   : ["黒マスの下に黒マスがありません。","There are no black cells under a black cell."]
+	ceShadeNe    : ["数字の周りに入っている黒マスの数が違います。","The number of shaded cells around a number is not correct."],
+	csConsecGt3  : ["黒マスが横に3マス以上続いています。","There or more shaded cells continue horizonally."],
+	csNotOnShade : ["黒マスの下に黒マスがありません。","There are no shaded cells under a shaded cell."]
 }
 });

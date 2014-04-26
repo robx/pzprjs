@@ -27,7 +27,7 @@ Cell:{
 	qlight : 0,
 	akariinfo : 0, /* 0:なし 1:あかり 2:黒マス */
 
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	maxnum : 4,
 	minnum : 0,

@@ -751,7 +751,7 @@ AnsCheck:{
 	checkAns : function(){
 		this.owner.board.hinfo.generateAll();
 
-		if( !this.checkLineOnBlackCell() ){ return 'lnOnBcell';}
+		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 
 		if( !this.checkLineCount(4) ){ return 'lnCross';}
 
@@ -772,7 +772,7 @@ AnsCheck:{
 		return null;
 	},
 
-	checkLineOnBlackCell : function(){
+	checkLineOnShadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},
 

@@ -132,9 +132,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	bdBranchExBP : ["黒点以外のところで線が分岐しています。","Lines are branched out of the black point."],
-	bdCrossExBP  : ["黒点以外のところで線が交差しています。","Lines are crossed out of the black point."],
-	bdCountLt3BP : ["黒点から線が３本以上出ていません。","A black point has two or less lines."],
-	bdIgnoreBP   : ["黒点上を線が通過していません。","A black point has no line."]
+	bdBranchExBP : ["黒点以外のところで線が分岐しています。","Lines are branched out of the point."],
+	bdCrossExBP  : ["黒点以外のところで線が交差しています。","Lines are crossed out of the point."],
+	bdCountLt3BP : ["黒点から線が３本以上出ていません。","A point has two or less lines."],
+	bdIgnoreBP   : ["黒点上を線が通過していません。","A point has no line."]
 }
 });

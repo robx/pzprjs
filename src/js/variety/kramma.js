@@ -346,9 +346,9 @@ FailCode:{
 	bkNoNum     : ["白丸も黒丸も含まれない領域があります。","An area has no marks."],
 	bkPlNum     : ["白丸と黒丸が両方含まれる領域があります。","An area has both white and black circles."],
 	bdBranch    : ["分岐している線があります。","there is a branch line."],
-	bdCurveExBP : ["黒点以外のところで線が曲がっています。","A line curves out of the black points."],
-	bdCrossBP   : ["黒点上で線が交差しています。","There is a crossing line on the black point."],
-	bdIgnoreBP  : ["黒点上を線が通過していません。","A black point has no line."]
+	bdCurveExBP : ["黒点以外のところで線が曲がっています。","A line curves out of the points."],
+	bdCrossBP   : ["黒点上で線が交差しています。","There is a crossing line on the point."],
+	bdIgnoreBP  : ["黒点上を線が通過していません。","A point has no line."]
 },
 "FailCode@shwolf":{
 	bkNoNum : ["ヤギもオオカミもいない領域があります。","An area has neither sheeps nor wolves."],

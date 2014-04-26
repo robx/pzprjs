@@ -121,7 +121,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	maxnum : 4,
 	minnum : 0,
@@ -347,13 +347,13 @@ AnsCheck:{
 	checkAns : function(){
 
 		if( !this.checkKitamakura() ){ return 'kitamakura';}
-		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
+		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 		if( !this.checkDir4PillowOver() ){ return 'nmPillowGt';}
 		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
 		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
+		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
 
 		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
 		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}
@@ -416,7 +416,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	bcDivide : ["通路が分断されています。","Aisle is divided."],
+	csDivide : ["通路が分断されています。","Aisle is divided."],
 	nmPillowGt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
 	nmPillowLt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
 	kitamakura : ["北枕になっている布団があります。", "There is a 'Kita-makura' futon."],

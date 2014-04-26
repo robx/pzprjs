@@ -197,37 +197,37 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkBlackCellInArea : function(cinfo, evalfunc){
+	checkShadeCellInArea : function(cinfo, evalfunc){
 		return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return evalfunc(a);});
 	}
 },
 "AnsCheck@lits":{
 	checkAns : function(){
 
-		if( !this.check2x2BlackCell() ){ return 'bc2x2';}
+		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverBlackCellInArea(rinfo) ){ return 'bkBcGt4';}
+		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt4';}
 
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkBcDivide';}
+		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
 
 		if( !this.checkTetromino(rinfo) ){ return 'sbSameShape';}
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'bcDivide';}
+		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
 
-		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
+		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
 
-		if( !this.checkLessBlackCellInArea(rinfo) ){ return 'bkBcLt4';}
+		if( !this.checkLessShadeCellInArea(rinfo) ){ return 'bkShadeLt4';}
 
 		return null;
 	},
 
-	checkOverBlackCellInArea : function(rinfo){
-		return this.checkBlackCellInArea(rinfo, function(a){ return (a<=4);});
+	checkOverShadeCellInArea : function(rinfo){
+		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=4);});
 	},
-	checkLessBlackCellInArea : function(rinfo){
-		return this.checkBlackCellInArea(rinfo, function(a){ return (a>=4);});
+	checkLessShadeCellInArea : function(rinfo){
+		return this.checkShadeCellInArea(rinfo, function(a){ return (a>=4);});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -260,45 +260,45 @@ AnsCheck:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOverBlackCell(binfo) ){ return 'bcGt2';}
+		if( !this.checkOverShadeCell(binfo) ){ return 'csGt2';}
 
 		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverBlackCellInArea(rinfo) ){ return 'bkBcGt2';}
+		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt2';}
 
-		if( !this.checkSingleBlackCell(binfo) ){ return 'bcLt2';}
+		if( !this.checkSingleShadeCell(binfo) ){ return 'csLt2';}
 
-		if( !this.checkSingleBlackCellInArea(rinfo) ){ return 'bkBcLt2';}
+		if( !this.checkSingleShadeCellInArea(rinfo) ){ return 'bkShadeLt2';}
 
-		if( !this.checkNoBlackCellInArea(rinfo) ){ return 'bkNoBcell';}
+		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
 
 		return null;
 	},
 
-	checkOverBlackCell : function(binfo){
+	checkOverShadeCell : function(binfo){
 		return this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} );
 	},
-	checkSingleBlackCell : function(binfo){
+	checkSingleShadeCell : function(binfo){
 		return this.checkAllArea(binfo, function(w,h,a,n){ return (a>=2);} );
 	},
 
-	checkOverBlackCellInArea : function(rinfo){
-		return this.checkBlackCellInArea(rinfo, function(a){ return (a<=2);});
+	checkOverShadeCellInArea : function(rinfo){
+		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=2);});
 	},
-	checkSingleBlackCellInArea : function(rinfo){
-		return this.checkBlackCellInArea(rinfo, function(a){ return (a!=1);});
+	checkSingleShadeCellInArea : function(rinfo){
+		return this.checkShadeCellInArea(rinfo, function(a){ return (a!=1);});
 	}
 },
 
 "FailCode@lits":{
-	bkBcLt4 : ["黒マスのカタマリが４マス未満の部屋があります。","A room has three or less black cells."],
-	bkBcGt4 : ["５マス以上の黒マスがある部屋が存在します。", "A room has five or more black cells."],
+	bkShadeLt4 : ["黒マスのカタマリが４マス未満の部屋があります。","A room has three or less shaded cells."],
+	bkShadeGt4 : ["５マス以上の黒マスがある部屋が存在します。", "A room has five or more shaded cells."],
 	sbSameShape : ["同じ形のテトロミノが接しています。","Some Tetrominos that are the same shape are Adjacent."]
 },
 
 "FailCode@norinori":{
-	bcLt2 : ["１マスだけの黒マスのカタマリがあります。","There is a single black cell."],
-	bcGt2 : ["２マスより大きい黒マスのカタマリがあります。","The size of a mass of black cells is over two."],
-	bkBcLt2 : ["１マスしか黒マスがない部屋があります。","A room has only one black cell."],
-	bkBcGt2 : ["２マス以上の黒マスがある部屋が存在します。","A room has three or mode black cells."]
+	csLt2 : ["１マスだけの黒マスのカタマリがあります。","There is a single shaded cell."],
+	csGt2 : ["２マスより大きい黒マスのカタマリがあります。","The size of a mass of shaded cells is over two."],
+	bkShadeLt2 : ["１マスしか黒マスがない部屋があります。","A room has only one shaded cell."],
+	bkShadeGt2 : ["２マス以上の黒マスがある部屋が存在します。","A room has three or mode shaded cells."]
 }
 });

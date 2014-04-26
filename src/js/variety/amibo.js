@@ -86,7 +86,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true,
+	numberRemainsUnshaded : true,
 
 	nummaxfunc : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;

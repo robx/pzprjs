@@ -24,7 +24,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	numberIsWhite : true
+	numberRemainsUnshaded : true
 },
 
 AreaShadeManager:{
@@ -114,14 +114,14 @@ AnsCheck:{
 	checkAns : function(){
 
 		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaSquare(binfo) ){ return 'bcNotSquare';}
+		if( !this.checkAreaSquare(binfo) ){ return 'csNotSquare';}
 
 		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'wcDivide';}
+		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
 
 		if( !this.checkNumberSquare(binfo,true) ){ return 'ceSumSizeNe';}
 
-		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoBcell';}
+		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoShade';}
 
 		return null;
 	},
@@ -149,7 +149,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	ceSumSizeNe : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of black cells is not equal to the number."],
-	ceNoBcell   : ["数字のない□に黒マスが接していません。","No black cells are adjacent to square mark without numbers."]
+	ceSumSizeNe : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
+	ceNoShade   : ["数字のない□に黒マスが接していません。","No shaded cells are adjacent to square mark without numbers."]
 }
 });
