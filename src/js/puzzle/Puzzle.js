@@ -357,9 +357,7 @@ function createSubCanvas(type){
 //  firstCanvasReady() Canvasの初回初期化終了後の処理を行う
 //---------------------------------------------------------------------------
 function waitCanvasReady(puzzle, callback){
-	puzzle.painter.initCanvas(puzzle.canvas, puzzle.subcanvas,
-		function(){ postCanvasReady(puzzle, callback);}
-	);
+	puzzle.painter.initCanvas( function(){ postCanvasReady(puzzle, callback);} );
 }
 function postCanvasReady(puzzle, callback){
 	puzzle.painter.suspendAll();
@@ -437,7 +435,7 @@ function execKeyUp(e){
 function getLocalCanvas(puzzle, type, cellsize){
 	var el = puzzle.imgcanvas[type.match(/svg/)?1:0];
 	var pc2 = new puzzle.Graphic();
-	pc2.initCanvas(el);
+	pc2.initCanvas_special(el);
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	
 	// canvasの設定を適用して、再描画

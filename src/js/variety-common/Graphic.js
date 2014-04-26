@@ -664,7 +664,7 @@ Graphic:{
 		if(border.isLine()){
 			var info = border.error || border.qinfo, puzzle = this.owner;
 			if(info===1){
-				if(this.context.use.canvas){ this.addlw=1;}
+				if(this.use.canvas){ this.addlw=1;}
 				return this.errlinecolor;
 			}
 			else if(info===-1){ return this.errlinebgcolor;}

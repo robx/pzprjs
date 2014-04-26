@@ -165,17 +165,28 @@ Graphic:{
 	TOPLEFT     : TOPLEFT,
 
 	//---------------------------------------------------------------------------
-	// pc.initCanvas()  このオブジェクトで使用するキャンバスを設定する
+	// pc.initCanvas()       このオブジェクトで使用するキャンバスを設定する
+	// pc.initCanvasCheck()  initCanvas_mainを呼び出せるか確認する
+	// pc.initCanvas_main()  キャンバスを設定する
 	//---------------------------------------------------------------------------
-	initCanvas : function(canvas, subcanvas, callback){
-		if((!!canvas && !canvas.getContext) || (!!subcanvas && !subcanvas.getContext)){
-			var pc = this;
-			setTimeout(function(){ pc.initCanvas(canvas, subcanvas, callback);},10);
-			return;
+	initCanvas : function(callback){
+		if(this.initCanvasCheck()){
+			this.initCanvas_main(callback);
 		}
-
-		this.context    = (!!canvas    ? canvas.getContext("2d")    : null);
-		this.subcontext = (!!subcanvas ? subcanvas.getContext("2d") : null);
+		else{
+			var pc = this;
+			setTimeout(function(){ pc.initCanvas(callback);},10);
+		}
+	},
+	initCanvasCheck : function(){
+		var puzzle = this.owner;
+		return  (!puzzle.canvas    || !!puzzle.canvas.getContext   ) &&
+				(!puzzle.subcanvas || !!puzzle.subcanvas.getContext);
+	},
+	initCanvas_main : function(callback){
+		var puzzle = this.owner;
+		this.context    = (!!puzzle.canvas    ? puzzle.canvas.getContext("2d")    : null);
+		this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
 
 		var g = this.context;
 		for(var type in g.use){ this.use[type] = g.use[type];}
@@ -183,6 +194,14 @@ Graphic:{
 		this.useBuffer = (!!g.use.canvas && !!this.subcontext);
 
 		if(!!callback){ callback();}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.initCanvas_special() 画像出力時に使用するキャンバスを設定する
+	//---------------------------------------------------------------------------
+	initCanvas_special : function(canvas){
+		var g = this.context = canvas.getContext("2d");
+		for(var type in g.use){ this.use[type] = g.use[type];}
 	},
 
 	//---------------------------------------------------------------------------
