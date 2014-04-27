@@ -138,22 +138,16 @@ Graphic:{
 	initialize : function(){
 		pzpr.custom.kramma.Graphic.prototype.initialize.call(this);
 
+		/* imgtileの初期設定を追加 */
 		var imgsrc = ((pzpr.env.API.dataURL && !pzpr.env.browser.IE8) ? this.imgsrc_dataurl : this.imgsrc_imgfile);
-		this.imgtile = new this.owner.ImageTile(this, imgsrc, 2, 1);
+		this.imgtile = new this.owner.ImageTile(imgsrc, 2, 1);
 	},
 	imgsrc_dataurl : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC",
 	imgsrc_imgfile : pzpr.util.getpath()+'../img/shwolf_obj.png',
 
 	initCanvasCheck : function(){
+		/* imgtileの条件判定を追加 */
 		return this.Common.prototype.initCanvasCheck.call(this) && this.imgtile.loaded;
-	},
-
-	resize_canvas_main : function(){
-		this.Common.prototype.resize_canvas_main.call(this);
-		
-		if(this.imgtile && this.imgtile.loaded && this.use.svg){
-			this.imgtile.createStamp(this.context);
-		}
 	},
 
 	drawSheepWolf : function(){
@@ -165,8 +159,7 @@ Graphic:{
 			if(cell.qnum>0){
 				var rx = (cell.bx-1)*this.bw, ry = (cell.by-1)*this.bh;
 				g.vshow(keyimg);
-				if(g.use.svg){ this.imgtile.putStamp(cell.qnum-1, g, rx,ry);}
-				else         { this.imgtile.putImage(cell.qnum-1, g, rx,ry,this.cw,this.ch);}
+				this.imgtile.putImage(g, cell.qnum-1, rx,ry,this.cw,this.ch);
 			}
 			else{ g.vhide(keyimg);}
 		}
@@ -344,85 +337,43 @@ FailCode:{
 },
 
 "ImageTile@shwolf":{
-	initialize : function(pc,src,col,row){
+	initialize : function(src,col,row){
 		this.image = new Image();
 		this.image.src = src;
 
 		this.cols = col;
 		this.rows = row;
 
-		this.width  = 0;
-		this.height = 0;
-		this.cwidth  = 0;
-		this.cheight = 0;
-		this.loaded = false;
-		this.painter = pc;
-		this.key = this.owner.pid+'_img';
-
 		this.waitload();
 	},
+	
+	/* initialize()で設定する変数 */
+	image : null,
+	
+	cols : 0,
+	rows : 0,
+	
+	/* waitload()で設定する変数 */
+	cwidth  : 0,
+	cheight : 0,
+	loaded : false,
+	
 	waitload : function(){
 		if(!(this.image.height>0)){
 			var self = this;
 			setTimeout(function(){ self.waitload();},10);
 			return;
 		}
-		this.width  = this.image.width;
-		this.height = this.image.height;
-		this.cwidth  = this.width/this.cols;
-		this.cheight = this.height/this.rows;
+		this.cwidth  = this.image.width /this.cols;
+		this.cheight = this.image.height/this.rows;
 		this.loaded = true;
 	},
-	
-	createStamp : function(ctx){
-		var defs = document.createElementNS(Candle.SVGNS, 'defs');
-		ctx.child.insertBefore(defs, (ctx.child.firstChild || null));
-		
-		var el = document.createElementNS(Candle.SVGNS, 'image');
-		el.setAttributeNS(null, "id", this.key);
-		el.setAttributeNS(null, "width",  this.image.width);
-		el.setAttributeNS(null, "height", this.image.height);
-		el.setAttributeNS(Candle.XLINKNS, "xlink:href", this.image.src);
-		defs.appendChild(el);
-		
-		var n=0, w=this.cwidth, h=this.cheight;
-		for(var j=0;j<this.rows;j++){ for(var i=0;i<this.cols;i++){
-			var el = document.createElementNS(Candle.SVGNS, 'svg');
-			el.setAttribute("id", this.key+n);
-			el.setAttribute("viewBox", [(i*w),(j*h),w,h].join(" "));
-			el.setAttribute("width",  this.painter.cw);
-			el.setAttribute("height", this.painter.ch);
-			defs.appendChild(el);
-			
-			var use = document.createElementNS(Candle.SVGNS, 'use');
-			use.setAttributeNS(Candle.XLINKNS, "xlink:href", '#'+this.key);
-			el.appendChild(use);
-			n++;
-		}}
-	},
-	
-	putImage : function(n,ctx,dx,dy,dw,dh){
-		if(this.loaded){
-			var w=this.cwidth, h=this.cheight;
-			if(dw===(void 0)){ dw=w; dh=h;}
-			var col=n%this.cols, row=(n/this.cols)|0;
-			ctx.drawImage(this.image, (col*w),(row*h),w,h, dx,dy,dw,dh);
-		}
-		return this.loaded;
-	},
-	putStamp : function(n,ctx,dx,dy){
-		if(this.loaded){
-			var el = (!!ctx.vid ? ctx.elements[ctx.vid] : null), newel = !el;
-			if(newel){ el = document.createElementNS(Candle.SVGNS, 'use');}
-			el.setAttributeNS(Candle.XLINKNS, "xlink:href", '#'+this.key+n);
-			el.setAttribute("x", dx);
-			el.setAttribute("y", dy);
-			if(newel){ ctx.target.appendChild(el);}
-			
-			if(newel && !!ctx.vid){ ctx.elements[ctx.vid] = el;}
-			ctx.vid = '';
-		}
-		return this.loaded;
+
+	putImage : function(ctx,n,dx,dy,dw,dh){
+		var sw=this.cwidth, sh=this.cheight;
+		var sx=sw*(n%this.cols), sy=sh*((n/this.cols)|0);
+		if(dw===(void 0)){ dw=sw; dh=sh;}
+		ctx.drawImage(this.image, sx,sy,sw,sh, dx,dy,dw,dh);
 	}
 }
 });

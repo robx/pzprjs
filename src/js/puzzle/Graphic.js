@@ -249,6 +249,7 @@ Graphic:{
 	// pc.setParameter()       cw, ch等の変数を大きさに応じて再設定する
 	// pc.setOffset()          盤面のサイズや大きさを再設定する
 	// pc.setPagePos()         盤面のページ内座標を設定する
+	// pc.clearObject()        contextのclearなどを呼び出す関数
 	//---------------------------------------------------------------------------
 	resize_canvas_main : function(){
 		// セルのサイズなどを取得・設定
@@ -266,7 +267,8 @@ Graphic:{
 		// vnop関数を初期化する
 		this.vnop = this.constructor.prototype.vnop;
 
-		this.context.clear();
+		// contextのclear等を呼び出す
+		this.clearObject();
 	},
 
 	setParameter :function(){
@@ -323,6 +325,9 @@ Graphic:{
 		}
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
+	},
+	clearObject : function(){
+		this.context.clear();
 	},
 
 	//---------------------------------------------------------------------------
