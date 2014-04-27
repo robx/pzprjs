@@ -285,7 +285,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
 		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
-		this.init(pos);
+		this.set(pos);
 	},
 
 	//---------------------------------------------------------------------------
