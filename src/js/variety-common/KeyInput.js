@@ -31,14 +31,14 @@ KeyEvent:{
 		if(puzzle.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
-		else if(bd.linfo.moveline && puzzle.getConfig('dispmove')){
+		else if(puzzle.execConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
 			else if(cell.lcnt>0){ return;}
 		}
 
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;
-			if(bd.linfo.moveline && puzzle.getConfig('dispmove') && cell.noNum()){
+			if(puzzle.execConfig('dispmove') && cell.noNum()){
 				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
 			}
 			cell0.draw();

@@ -122,7 +122,7 @@ Graphic:{
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
 		var header = "c_sq_";
-		var isdrawmove = this.owner.getConfig('dispmove');
+		var isdrawmove = this.owner.execConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -143,7 +143,7 @@ Graphic:{
 	},
 	drawNumbers_kaero : function(){
 		var g = this.vinc('cell_number', 'auto');
-		var isdrawmove = this.owner.getConfig('dispmove');
+		var isdrawmove = this.owner.execConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -260,7 +260,7 @@ AnsCheck:{
 				if(rnum===-1){ rnum=num;}
 				else if(rnum!==num){
 					if(this.checkOnly){ return false;}
-					if(!this.owner.getConfig('dispmove')){ cbase.seterr(4);}
+					if(!this.owner.execConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
 					result = false;
 				}
@@ -279,7 +279,7 @@ AnsCheck:{
 				var r=rinfo.getRoomID(clist[i]);
 				if(rid===null){ rid=r;}
 				else if(r!==null && rid!==r){
-					if(!this.owner.getConfig('dispmove')){ clist.getDeparture().seterr(4);}
+					if(!this.owner.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
 					return false;
 				}

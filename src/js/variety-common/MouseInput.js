@@ -69,7 +69,7 @@ MouseEvent:{
 		if(puzzle.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
-		else if(bd.linfo.moveline && puzzle.getConfig('dispmove')){
+		else if(puzzle.execConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
 			else if(cell.lcnt>0){ return;}
 		}
@@ -111,7 +111,7 @@ MouseEvent:{
 		}
 		cell.setNum(val);
 
-		if(bd.linfo.moveline && puzzle.getConfig('dispmove') && cell.noNum()){
+		if(puzzle.execConfig('dispmove') && cell.noNum()){
 			bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
 		}
 
@@ -354,7 +354,7 @@ MouseEvent:{
 	},
 	inputMoveLine : function(){
 		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.owner.board.linfo.moveline || !this.owner.getConfig('dispmove')){
+		if(!this.owner.execConfig('dispmove')){
 			this.inputLine();
 			return;
 		}
@@ -409,7 +409,7 @@ MouseEvent:{
 		var border = pos.getb();
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
-			if(this.inputData===2 && border.isLine() && this.owner.board.linfo.moveline && this.owner.getConfig('dispmove')){}
+			if(this.inputData===2 && border.isLine() && this.owner.execConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
 			border.draw();

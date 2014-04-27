@@ -43,10 +43,10 @@ MouseEvent:{
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
-		var bd = this.owner.board, cell = this.mouseCell;
-		
-		this.mouseCell = bd.emptycell;
-		this.firstCell = bd.emptycell;
+		var cell0 = this.mouseCell;
+
+		this.mouseCell = // 下の行へ続く
+		this.firstCell = this.owner.board.emptycell
 
 		this.firstPoint.reset();
 		this.prevPos.reset();
@@ -60,7 +60,7 @@ MouseEvent:{
 		this.mousemove  = false;
 		this.mouseend   = false;
 		
-		if(bd.linfo.moveline && this.owner.getConfig('dispmove') && !!cell && !cell.isnull){ cell.draw();}
+		if(this.owner.execConfig('dispmove') && !!cell0 && !cell0.isnull){ cell0.draw();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -154,11 +154,11 @@ MouseEvent:{
 		this.mouseinput();		/* 各パズルのルーチンへ */
 	},
 	isDispred : function(){
-		var puzzle = this.owner, cf = puzzle.flags, flag = false;
-		if     (cf.redline          && puzzle.getConfig('redline')) { flag = true;}
-		else if(cf.redblk           && puzzle.getConfig('redblk'))  { flag = true;}
-		else if(cf.redblkrb         && puzzle.getConfig('redblkrb')){ flag = true;}
-		else if(puzzle.pid==='roma' && puzzle.getConfig('redroad')) { flag = true;}
+		var puzzle = this.owner, flag = false;
+		if     (puzzle.execConfig('redline')) { flag = true;}
+		else if(puzzle.execConfig('redblk'))  { flag = true;}
+		else if(puzzle.execConfig('redblkrb')){ flag = true;}
+		else if(puzzle.execConfig('redroad')) { flag = true;}
 		return puzzle.key.isZ ^ flag;
 	},
 

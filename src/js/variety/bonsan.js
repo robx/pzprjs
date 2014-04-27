@@ -24,7 +24,7 @@ MouseEvent:{
 		this.Common.prototype.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.getConfig('autocmp') && !this.owner.getConfig('dispmove') && !this.notInputted()){
+		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -58,7 +58,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputdark : function(cell){
-		var targetcell = (!this.owner.getConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -81,7 +81,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){
-		var targetcell = (!this.owner.getConfig('dispmove') ? this : this.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
 		
 		var	num   = targetcell.getNum(),
@@ -149,7 +149,7 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		var error = cell.error, num = (!this.owner.getConfig('dispmove') ? cell : cell.base).qnum;
+		var error = cell.error, num = (!this.owner.execConfig('dispmove') ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                           { return this.errbcolor1;}
 			else if(this.owner.getConfig('autocmp') && cell.isCmp()){ return "silver"}

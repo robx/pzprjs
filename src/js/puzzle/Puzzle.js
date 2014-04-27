@@ -255,9 +255,23 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.getConfig()  設定値の取得を行う
 	// owner.setConfig()  設定値の設定を行う
+	// owner.execConfig() 設定値と、パズルごとに有効かどうかの条件をANDして返す
 	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.get(idname);},
 	setConfig : function(idname,val){ return this.config.set(idname,val);},
+	
+	execConfig : function(idname){
+		var val = this.config.get(idname), flags = this.flags, exec = true;
+		switch(idname){
+			case 'dispmove': exec = this.board.linfo.moveline; break;
+			case 'irowake':  exec = !!flags.irowake; break;
+			case 'redline':  exec = flags.redline;   break;
+			case 'redblk':   exec = flags.redblk;    break;
+			case 'redblkrb': exec = flags.redblkrb;  break;
+			case 'redload':  exec = (puzzle.pid==='roma'); break;
+		}
+		return (val && exec);
+	},
 	
 	//------------------------------------------------------------------------------
 	// owner.saveConfig()     設定値の保存を行う

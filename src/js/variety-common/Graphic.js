@@ -285,7 +285,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
 	},
 	drawNumber1 : function(cell){
-		var num  = (this.owner.board.linfo.moveline && this.owner.getConfig('dispmove') ? cell.base : cell).getNum();
+		var num  = (this.owner.execConfig('dispmove') ? cell.base : cell).getNum();
 		var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
 		var option = { key: "cell_"+cell.id };
 		if(!!text){
@@ -302,7 +302,7 @@ Graphic:{
 		else if(cell.error===1 || cell.error===4 || cell.qinfo===1 || cell.qinfo===4){
 			color = this.fontErrcolor;
 		}
-		else if(puzzle.board.linfo.moveline && puzzle.getConfig('dispmove') && puzzle.mouse.mouseCell===cell){
+		else if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){
 			color = this.movecolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
@@ -668,8 +668,8 @@ Graphic:{
 				return this.errlinecolor;
 			}
 			else if(info===-1){ return this.errlinebgcolor;}
-			else if(puzzle.board.linfo.moveline && puzzle.getConfig('dispmove')){ return "silver";}
-			else if(!puzzle.flags.irowake || !puzzle.getConfig('irowake') || !border.color){ return this.linecolor;}
+			else if(puzzle.execConfig('dispmove')){ return "silver";}
+			else if(!puzzle.execConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
 		return null;
@@ -689,7 +689,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			g.vdel(header+cell.id);
-			if(cell.lcnt===1 && cell.qnum===-1 && this.owner.board.linfo.moveline && !this.owner.getConfig('dispmove')){
+			if(cell.lcnt===1 && cell.qnum===-1 && !this.owner.execConfig('dispmove')){
 				var adb = cell.adjborder, dir=0, border=null;
 				if     (adb.top.isLine()   ){ dir=2; border=adb.top;   }
 				else if(adb.bottom.isLine()){ dir=1; border=adb.bottom;}
@@ -869,7 +869,7 @@ Graphic:{
 	},
 	getCircleStrokeColor : function(cell){
 		var puzzle = this.owner, bd = puzzle.board, error = cell.error || cell.qinfo;
-		var isdrawmove = (bd.linfo.moveline && puzzle.getConfig('dispmove'));
+		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if(isdrawmove && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
@@ -880,7 +880,7 @@ Graphic:{
 	},
 	getCircleFillColor : function(cell){
 		var bd = this.owner.board, error = cell.error || cell.qinfo;
-		var isdrawmove = (bd.linfo.moveline && this.owner.getConfig('dispmove'));
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if(error===1||error===4){ return this.errbcolor1;}
@@ -896,7 +896,7 @@ Graphic:{
 		var g = this.vinc('cell_depart', 'auto');
 		var rsize  = this.cw*0.15;
 		var header = "c_dcir_";
-		var isdrawmove = (this.owner.board.linfo.moveline && this.owner.getConfig('dispmove'));
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id, num = -1;

@@ -28,7 +28,7 @@ MouseEvent:{
 		if(!cell.isnull && this.owner.getConfig('autocmp')){ this.inputdark(cell);}
 	},
 	inputdark : function(cell){
-		var targetcell = (!this.owner.getConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -138,7 +138,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){
-		return (!this.owner.getConfig('dispmove') ? this : this.base).qcmp===1;
+		return (!this.owner.execConfig('dispmove') ? this : this.base).qcmp===1;
 	}
 },
 CellList:{
@@ -213,7 +213,7 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var num    = (this.owner.getConfig('dispmove') ? cell.base : cell).qnum;
+		var num    = (this.owner.execConfig('dispmove') ? cell.base : cell).qnum;
 		var text   = (num>0 ? ""+num : "");
 		var option = { key: 'cell_'+cell.id };
 		option.color = this.getCellNumberColor(cell);
@@ -225,7 +225,7 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		var error = cell.error, num = (!this.owner.getConfig('dispmove') ? cell : cell.base).qnum;
+		var error = cell.error, num = (!this.owner.execConfig('dispmove') ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                           { return this.errbcolor1;}
 			else if(this.owner.getConfig('autocmp') && cell.isCmp()){ return "silver"}
@@ -240,7 +240,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			if(!!color && cell.qnum2!==-1 && this.owner.getConfig('dispmove') && cell.isDestination()){
+			if(!!color && cell.qnum2!==-1 && this.owner.execConfig('dispmove') && cell.isDestination()){
 				g.fillStyle = color;
 				if(this.vnop(header+cell.id,this.FILL)){
 					var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
@@ -256,7 +256,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum2;
 			var text = (num>0 ? ""+num : (num!==-1 ? "?" : ""));
-			var topleft = (this.owner.getConfig('dispmove') && cell.isDestination())
+			var topleft = (this.owner.execConfig('dispmove') && cell.isDestination())
 			var option = { key: 'cell5_'+cell.id };
 			option.position = (!topleft ? this.CENTER : this.TOPLEFT);
 			option.globalratio = (!topleft ? 0.8 : 0.5);
