@@ -17,8 +17,9 @@ PieceList:{
 	//--------------------------------------------------------------------------------
 	add     : Array.prototype.push,
 	extend  : function(list){
-		var self = this;
-		list.each(function(obj){ self.add(obj);})
+		var len = list.length, n = this.length;
+		this.length += len;
+		for(var i=0;i<len;i++){ this[n+i] = list[i];}
 	},
 	unshift : Array.prototype.unshift,
 	pop     : Array.prototype.pop,
@@ -40,8 +41,11 @@ PieceList:{
 	//--------------------------------------------------------------------------------
 	/* constructorが変わってしまうので、Array.prototypeが使用できない */
 	filter  : function(cond){
-		var list = new this.constructor();
-		for(var i=0;i<this.length;i++){ if(cond(this[i])){ list.add(this[i]);}}
+		var list = new this.constructor(), len = this.length, n = 0;
+		for(var i=0;i<len;i++){
+			if(cond(this[i])){ list[n] = this[i]; n++;}
+		}
+		list.length = n;
 		return list;
 	},
 	notnull : function(cond){ return this.filter(function(obj){ return !obj.isnull;});},
@@ -50,9 +54,9 @@ PieceList:{
 	// list.map()      clistの各要素に指定された関数を適用したclistを新たに作成する
 	//--------------------------------------------------------------------------------
 	/* constructorが変わってしまうので、Array.prototypeが使用できない */
-	map : function(cond){
-		var list = new this.constructor();
-		for(var i=0;i<this.length;i++){ list.add(cond(this[i]));}
+	map : function(changer){
+		var list = new this.constructor(), len = list.length = this.length;
+		for(var i=0;i<len;i++){ list[i] = changer(this[i]);}
 		return list;
 	},
 	
