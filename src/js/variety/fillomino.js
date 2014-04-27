@@ -248,10 +248,11 @@ AnsCheck:{
 				// -> それぞれに別の領域idを割り当てて判定できるようにする
 				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i].id] = 0;}
 				for(var i=0;i<clist.length;i++){
-					if(rinfo.getRoomID(clist[i])!==0){ continue;}
+					if(rinfo.id[clist[i].id]!==0){ continue;}
 					max++;
-					rinfo.addRoom();
-					this.setNewID(rinfo, clist[i]);
+					var roomid = ++rinfo.max;
+					rinfo.room[roomid] = {clist:(new this.owner.CellList())};
+					this.setNewID(rinfo, roomid, clist[i]);
 				}
 				// 最後に自分の情報を無効にする
 				rinfo.room[id] = {idlist:[], error:0, number:-1};
@@ -259,12 +260,14 @@ AnsCheck:{
 		}
 		return rinfo;
 	},
-	setNewID : function(rinfo, cell0){
+	setNewID : function(rinfo, roomid, cell0){
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell=stack.pop();
-			if(!rinfo.emptyCell(cell)){ continue;}
-			rinfo.addCell(cell);
+			if(rinfo.id[cell.id]!==0){ continue;}
+			rinfo.room[roomid].clist.add(cell);
+			rinfo.id[cell.id] = roomid;
+
 			var list = cell.getdir4clist();
 			for(var i=0;i<list.length;i++){
 				if(cell.sameNumber(list[i][0])){ stack.push(list[i][0]);}

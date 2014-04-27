@@ -34,19 +34,21 @@ Board:{
 		var winfo = new this.owner.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isUnshade()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(!winfo.emptyCell(this.cell[fc])){ continue;}
-			winfo.addRoom();
+			if(winfo.id[this.cell[fc].id]!==0){ continue;}
+			var roomid = ++winfo.max;
+			var room = winfo.room[roomid] = {clist:(new this.owner.CellList())};
 
 			var stack=[this.cell[fc]];
 			while(stack.length>0){
 				var cell = stack.pop();
-				if(!winfo.emptyCell(cell)){ continue;}
-				winfo.addCell(cell);
+				if(winfo.id[cell.id]!==0){ continue;}
+				room.clist.add(cell);
+				winfo.id[cell.id] = roomid;
 
 				var bx=cell.bx, by=cell.by;
 				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
 				for(var i=0;i<clist.length;i++){
-					if(winfo.emptyCell(clist[i])){ stack.push(clist[i]);}
+					if(winfo.id[clist[i].id]===0){ stack.push(clist[i]);}
 				}
 			}
 		}
@@ -193,7 +195,8 @@ FileIO:{
 			}
 			if(i===2){ continue;}
 
-			var block1 = binfo.getclistbycell(cells[i][0]), block2 = binfo.getclistbycell(cells[i][1]);
+			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
+				block2 = binfo.getRoomByCell(cells[i][1]).clist;
 			if(block1.length == block2.length){
 				if(this.checkOnly){ return false;}
 				block1.seterr(1);

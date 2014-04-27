@@ -212,20 +212,22 @@ Board:{
 		var winfo = new this.owner.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].noNum()?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(!winfo.emptyCell(this.cell[fc])){ continue;}
-			winfo.addRoom();
+			if(winfo.id[this.cell[fc].id]!==0){ continue;}
+			var roomid = ++winfo.max;
+			var room = winfo.room[roomid] = {clist:(new this.owner.CellList())};
 
 			var stack=[this.cell[fc]];
 			while(stack.length>0){
 				var cell=stack.pop();
-				if(!winfo.emptyCell(cell)){ continue;}
-				winfo.addCell(cell);
+				if(winfo.id[cell.id]!==0){ continue;}
+				room.clist.add(cell);
+				winfo.id[cell.id] = roomid;
 
 				var a=cell.getQans(), b, cell2, adc=cell.adjacent;
-				cell2=adc.top;    if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
-				cell2=adc.bottom; if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
-				cell2=adc.left;   if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
-				cell2=adc.right;  if(!cell2.isnull){ b=cell2.getQans(); if(winfo.emptyCell(cell2) && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
+				cell2=adc.top;    if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
+				cell2=adc.bottom; if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
+				cell2=adc.left;   if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
+				cell2=adc.right;  if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
 			}
 		}
 		return winfo;

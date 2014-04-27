@@ -155,30 +155,34 @@ BoardExec:{
 	},
 
 	getBarInfo : function(){
-		var bd = this.owner.board;
+		var puzzle = this.owner, bd = puzzle.board;
 		function eachcell(cell, qa_chk, vert){
-			var qa=cell.getQans();
+			var qa = cell.qans, roomid = binfo.max;
 			if(qa===qa_chk||qa===3){
-				if(roomid===null){
-					binfo.addRoom(vert);
-					roomid = binfo.max;
+				if(room===null){
+					roomid = ++binfo.max;
+					room = binfo.room[roomid] = {
+						clist : new puzzle.CellList(),
+						link : [], pole : [], vert : vert
+					};
 					if(cell2!==null){ binfo.pole[cell2.id].push(roomid);}
 				}
-				binfo.addCell(cell)
+				room.clist.add(cell);
+				binfo.id[cell.id].push(roomid);	// タテヨコで別のIDにするため、配列にする
 			}
-			else if(roomid!==null){ binfo.pole[cell.id].push(roomid); roomid=null;}
+			else if(room!==null){ binfo.pole[cell.id].push(roomid); room=null;}
 			cell2 = cell;
 		}
 
-		var binfo = new this.owner.AreaBarInfo();
+		var binfo = new puzzle.AreaBarInfo();
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var roomid=null, cell2=null;
+			var room=null, cell2=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
 				eachcell(bd.getc(bx,by),1,true);
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var roomid=null, cell2=null;
+			var room=null, cell2=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 				eachcell(bd.getc(bx,by),2,false);
 			}
@@ -209,21 +213,6 @@ BoardExec:{
 			this.id[c]=[];
 			this.pole[c]=[];
 		}
-	},
-
-	addRoom : function(vert){
-		var room = {};
-		room.clist = new this.owner.CellList();
-		room.link = [];
-		room.pole = [];
-		room.vert = vert;
-		
-		this.max++;
-		this.room[this.max] = room;
-	},
-	addCell : function(cell){
-		this.room[this.max].clist.add(cell);
-		this.id[cell.id].push(this.max);
 	}
 },
 CellList:{

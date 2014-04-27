@@ -233,7 +233,7 @@ AreaManager:{
 	addArea : function(){
 		var newid;
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
-		else{ this.max++; newid=this.max;}
+		else{ newid = ++this.max;}
 
 		this[newid] = {clist:(new this.owner.CellList())};
 		return newid;
@@ -356,12 +356,17 @@ AreaManager:{
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!info.emptyCell(cell)){ continue;}
-			info.addRoom();
-			if(!!this.hastop){ info.setTop(this.getTopOfRoomByCell(cell));}
+			if(info.id[cell.id]!==0){ continue;}
+			var roomid = ++info.max;
+			var room = info.room[roomid] = {clist:(new this.owner.CellList())};
+			
+			if(!!this.hastop){ room.top = this.getTopOfRoomByCell(cell);}
 
 			var clist = this.getClistByCell(cell);
-			for(var i=0;i<clist.length;i++){ info.addCell(clist[i]);}
+			for(var i=0;i<clist.length;i++){
+				room.clist.add(clist[i]);
+				info.id[clist[i].id] = roomid;
+			}
 		}
 		return info;
 	},
@@ -706,23 +711,8 @@ AreaInfo:{
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].clistで取得)
 	},
-
-	addRoom : function(){
-		this.max++;
-		this.room[this.max] = {clist:(new this.owner.CellList())};
-	},
 	getRoomID : function(obj){ return this.id[obj.id];},
-	setRoomID : function(obj, areaid){
-		this.room[areaid].clist.add(obj);
-		this.id[obj.id] = areaid;
-	},
-
-	setTop : function(cell){ this.room[this.max].top = cell;},
-
-	addCell   : function(cell){ this.setRoomID(cell, this.max);},
-	emptyCell : function(cell){ return (this.id[cell.id]===0);},
-
-	getclistbycell : function(cell){ return this.room[this.id[cell.id]].clist;},
+	getRoomByCell : function(cell){ return this.room[this.id[cell.id]];},
 
 	//---------------------------------------------------------------------------
 	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する

@@ -42,17 +42,23 @@ Board:{
 		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
 		for(var i=0;i<this.bdmax;i++){
 			var border0 = this.border[i];
-			if(!rdata.emptyBorder(border0)){ continue;}
+			if(rdata.id[border0.id]!==0){ continue;}
 			var pos=border0.getaddr(), isvert=border0.isVert(), blist=[];
 			while(1){
 				var border = pos.getb();
-				if(border.isnull || !rdata.emptyBorder(border)){ break;}
+				if(border.isnull || rdata.id[border.id]!==0){ break;}
 
 				blist.push(border);
 				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
 			}
-			rdata.addRoom();
-			for(var n=0;n<blist.length;n++){ rdata.addBorder(blist[n]);}
+
+			var roomid = ++rdata.max;
+			var room = rdata.room[roomid] = {blist:(new this.owner.BorderList())};
+			for(var n=0;n<blist.length;n++){
+				var border = room.blist[n] = blist[n];
+				rdata.id[border.id] = roomid;
+			}
+			room.blist.length = blist.length;
 		}
 		return rdata;
 	}
@@ -179,7 +185,7 @@ AnsCheck:{
 			var val1=cell1.getNum(), val2=cell2.getNum();
 			if(val1<=0 || val2<=0){ continue;}
 
-			var blist = rdata.getblist(rdata.id[i]);
+			var blist = rdata.room[rdata.id[i]].blist;
 			if(Math.abs(val1-val2)!==blist.length){
 				if(this.checkOnly){ return false;}
 				cell1.seterr(1);

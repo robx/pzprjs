@@ -119,19 +119,21 @@ Board:{
 		var sinfo = new this.owner.AreaInfo();
 		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(!sinfo.emptyCell(this.cell[fc])){ continue;}
-			sinfo.addRoom();
+			if(sinfo.id[this.cell[fc].id]!==0){ continue;}
+			var snakeid = ++sinfo.max;
+			var room = sinfo.room[snakeid] = {clist:(new this.owner.CellList())};
 
 			var stack=[this.cell[fc]];
 			while(stack.length>0){
 				var cell = stack.pop();
-				if(!sinfo.emptyCell(cell)){ continue;}
-				sinfo.addCell(cell);
+				if(sinfo.id[cell.id]!==0){ continue;}
+				room.clist.add(cell);
+				sinfo.id[cell.id] = snakeid;
 
 				var list = cell.getdir4clist();
 				for(var i=0;i<list.length;i++){
 					var cell2 = list[i][0];
-					if(Math.abs(cell.getAnum()-cell2.getAnum())===1){ stack.push(cell2);}
+					if(Math.abs(cell.anum-cell2.anum)===1){ stack.push(cell2);}
 				}
 			}
 		}
@@ -262,15 +264,15 @@ AnsCheck:{
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.checkOnly){ return false;}
-				sinfo.getclistbycell(cell).seterr(1);
-				sinfo.getclistbycell(cell2).seterr(1);
+				sinfo.getRoomByCell(cell).clist.seterr(1);
+				sinfo.getRoomByCell(cell2).clist.seterr(1);
 				result = false;
 			}
 			cell2 = cell.adjacent.bottom;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
 				if(this.checkOnly){ return false;}
-				sinfo.getclistbycell(cell).seterr(1);
-				sinfo.getclistbycell(cell2).seterr(1);
+				sinfo.getRoomByCell(cell).clist.seterr(1);
+				sinfo.getRoomByCell(cell2).clist.seterr(1);
 				result = false;
 			}
 		}

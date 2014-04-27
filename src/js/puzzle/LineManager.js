@@ -232,7 +232,7 @@ LineManager:{
 	addPath : function(){
 		var newid;
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
-		else{ this.max++; newid=this.max;}
+		else{ newid = ++this.max;}
 
 		this.blist[newid] = new this.owner.BorderList();
 		return newid;
@@ -388,14 +388,19 @@ LineManager:{
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
 		var bd = this.owner.board, info = new this.owner.LineInfo();
-		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(bd.border[id].isLine()?0:null);}
+		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(this.id[id]>0?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
-			if(!info.emptyBorder(border)){ continue;}
-			info.addRoom();
+			if(info.id[border.id]!==0){ continue;}
+			var roomid = ++info.max;
+			var room = info.room[roomid] = {blist:(new this.owner.BorderList())};
 
 			var blist = this.getBlistByBorder(border);
-			for(var i=0;i<blist.length;i++){ info.addBorder(blist[i]);}
+			for(var i=0;i<blist.length;i++){
+				var border = room.blist[i] = blist[i];
+				info.id[border.id] = roomid;
+			}
+			room.blist.length = blist.length;
 		}
 		return info;
 	},
@@ -404,7 +409,7 @@ LineManager:{
 	// info.getBlistByBorder() 指定した線が含まれる領域の線配列を取得する
 	// info.getBlist()         指定した領域の線配列を取得する
 	//--------------------------------------------------------------------------------
-	getBlistByBorder : function(border){ return this.getBlist(this.id[border.id]);},
+	getBlistByBorder : function(border){ return this.blist[this.id[border.id]];},
 	getBlist : function(id){ return this.blist[id];}
 },
 
@@ -420,20 +425,6 @@ LineInfo:{
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].blistで取得)
 	},
-
-	addRoom : function(){
-		this.max++;
-		this.room[this.max] = {blist:(new this.owner.BorderList())};
-	},
-	getRoomID : function(obj){ return this.id[obj.id];},
-	setRoomID : function(obj, areaid){
-		this.room[areaid].blist.add(obj);
-		this.id[obj.id] = areaid;
-	},
-
-	addBorder : function(border){ this.setRoomID(border, this.max);},
-	emptyBorder : function(border){ return (this.id[border.id]===0);},
-
-	getblist : function(areaid){ return this.room[areaid].blist;}
+	getRoomID : function(obj){ return this.id[obj.id];}
 }
 });

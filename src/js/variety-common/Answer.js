@@ -307,8 +307,8 @@ AnsCheck:{
 			if(!cell1.isnull && !cell2.isnull && func(cell1, cell2)){
 				if(!flag){ cell1.seterr(1); cell2.seterr(1);}
 				else{
-					rinfo.getclistbycell(cell1).seterr(1);
-					rinfo.getclistbycell(cell2).seterr(1);
+					rinfo.getRoomByCell(cell1).clist.seterr(1);
+					rinfo.getRoomByCell(cell2).clist.seterr(1);
 				}
 				return false;
 			}
@@ -331,7 +331,7 @@ AnsCheck:{
 			else if(d[rinfo.id[c]]!==val[c]){
 				if(this.checkOnly){ return false;}
 
-				rinfo.getclistbycell(bd.cell[c]).seterr(1);
+				rinfo.getRoomByCell(bd.cell[c]).clist.seterr(1);
 				result = false;
 			}
 		}
@@ -497,20 +497,20 @@ AnsCheck:{
 				if(firstbd.isnull){ continue;}
 
 				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
-				xinfo.max++;
-				xinfo.room[xinfo.max] = {blist:(new this.owner.BorderList()),error:0,
-										 cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
+				var roomid = ++xinfo.max;
+				var room = xinfo.room[roomid] = {blist:(new this.owner.BorderList()),error:0,
+												 cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
 
-				this.searchErrorFlag_line(xinfo,xinfo.max);
-				if(xinfo.room[xinfo.max].blist.length===0){ continue;}
+				this.searchErrorFlag_line(xinfo,roomid);
+				if(room.blist.length===0){ continue;}
 
 				this.isErrorFlag_line(xinfo);
 			}
 		}
 		return xinfo;
 	},
-	searchErrorFlag_line : function(xinfo,areaid){
-		var room = xinfo.room[areaid], dir=room.dir1;
+	searchErrorFlag_line : function(xinfo,roomid){
+		var room = xinfo.room[roomid], dir=room.dir1;
 		var pos = room.cells[0].getaddr();
 		while(1){
 			pos.movedir(dir,1);
@@ -525,9 +525,11 @@ AnsCheck:{
 			}
 			else{
 				var border = pos.getb();
-				if(border.isnull||xinfo.getRoomID(border)!==0){ break;}
+				if(border.isnull||xinfo.id[border.id]!==0){ break;}
 
-				xinfo.setRoomID(border,areaid);
+				room.blist.add(border);
+				xinfo.id[border.id] = roomid;
+
 				if(isNaN(room.length[room.ccnt])){ room.length[room.ccnt]=0;}else{ room.length[room.ccnt]++;}
 			}
 		}

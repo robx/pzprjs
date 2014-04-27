@@ -132,10 +132,10 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
-			if(adc.top.isShade()   ){ clist.extend(binfo.getclistbycell(adc.top   ));}
-			if(adc.bottom.isShade()){ clist.extend(binfo.getclistbycell(adc.bottom));}
-			if(adc.left.isShade()  ){ clist.extend(binfo.getclistbycell(adc.left  ));}
-			if(adc.right.isShade() ){ clist.extend(binfo.getclistbycell(adc.right ));}
+			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
+			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
+			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}
+			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
 
 			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
 				if(this.checkOnly){ return false;}

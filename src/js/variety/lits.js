@@ -48,17 +48,20 @@ Board:{
 		var dinfo = new this.owner.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
 		for(var fc=0;fc<this.cellmax;fc++){ dinfo.id[fc]=(tinfo.id[fc]!==null?0:null);}
 		for(var fc=0;fc<this.cellmax;fc++){
-			if(!dinfo.emptyCell(this.cell[fc])){ continue;}
-			dinfo.addRoom();
+			if(dinfo.id[this.cell[fc].id]!==0){ continue;}
+			var roomid = ++dinfo.max;
+			var room = dinfo.room[roomid] = {clist:(new this.owner.CellList())};
 
 			var stack=[this.cell[fc]];
 			while(stack.length>0){
 				var cell = stack.pop();
-				if(!dinfo.emptyCell(cell)){ continue;}
-				dinfo.addCell(cell);
+				if(dinfo.id[cell.id]!==0){ continue;}
+				room.clist.add(cell);
+				dinfo.id[cell.id] = roomid;
+				
 				var list = cell.getdir4clist();
 				for(var i=0;i<list.length;i++){
-					if(tinfo.getRoomID(cell)==tinfo.getRoomID(list[i][0])){ stack.push(list[i][0]);}
+					if(tinfo.id[cell.id]===tinfo.id[list[i][0].id]){ stack.push(list[i][0]);}
 				}
 			}
 		}

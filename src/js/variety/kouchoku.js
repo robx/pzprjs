@@ -248,7 +248,7 @@ Board:{
 	addSegmentByAddr : function(bx1,by1,bx2,by2){
 		var newsegid;
 		if(this.seginvalid.length>0){ newsegid = this.seginvalid.shift();}
-		else{ newsegid = this.segmax; this.segmax++; this.segment.length++;}
+		else{ newsegid = this.segmax++; this.segment.length++;}
 		
 		var seg = new this.owner.Segment(bx1,by1,bx2,by2);
 		seg.id = newsegid;
@@ -1100,7 +1100,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	addPath : function(){
 		var newid;
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
-		else{ this.linemax++; newid=this.linemax;}
+		else{ newid = ++this.linemax;}
 
 		this.seglist[newid] = new this.owner.SegmentList();
 		return newid;

@@ -138,12 +138,15 @@ AreaBarManager:{
 		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!binfo.emptyCell(cell)){ continue;}
-			binfo.addRoom();
+			if(binfo.id[cell.id]!==0){ continue;}
+			var roomid = ++binfo.max;
+			var room = binfo.room[roomid] = {clist:(new this.owner.CellList())};
 
 			var pos=cell.getaddr(), val=cell.qans;
 			while(!cell.isnull && cell.qans===val){
-				binfo.addCell(cell);
+				room.clist.add(cell);
+				binfo.id[cell.id] = roomid;
+				
 				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
 				cell = pos.getc();
 			}

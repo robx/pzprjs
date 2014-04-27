@@ -131,7 +131,7 @@ AnsCheck:{
 			if(cell.isnull){ return 1;}
 			else if(!cell.isShade()){ return 0;}
 			
-			var target = cinfo.getclistbycell(cell);
+			var target = cinfo.getRoomByCell(cell).clist;
 			if(base.length === target.length){
 				if(this.checkOnly){ return 2;}
 				base.seterr(1);

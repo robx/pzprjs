@@ -924,26 +924,26 @@ HurdleManager:{
 		var bd = this.owner.board;
 		this.init();
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], val = cell.getQues();
+			var cell = bd.cell[c], val = cell.ques;
 			if(val===0 || val===1 || this.getGateid(cell.id)!==-1){ continue;}
 
 			var pos = cell.getaddr(), isvert=(val===21);
 
-			this.max++;
-			this.data[this.max] = new this.owner.HurdleData();
+			var gateid = ++this.max;
+			var gate = this.data[gateid] = new this.owner.HurdleData();
 			while(1){
 				var cell2 = pos.getc();
-				if(cell2.isnull || cell2.getQues()!==val){ break;}
+				if(cell2.isnull || cell2.ques!==val){ break;}
 
-				this.data[this.max].clist.add(cell2);
-				this.gateid[cell2.id]=this.max;
+				gate.clist.add(cell2);
+				this.gateid[cell2.id] = gateid;
 				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
 			}
-			this.data[this.max].x1 = cell.bx;
-			this.data[this.max].y1 = cell.by;
-			this.data[this.max].x2 = (!isvert?pos.bx-2:pos.bx);
-			this.data[this.max].y2 = ( isvert?pos.by-2:pos.by);
-			this.data[this.max].val = val;
+			gate.x1 = cell.bx;
+			gate.y1 = cell.by;
+			gate.x2 = (!isvert ? pos.bx-2 : pos.bx);
+			gate.y2 = ( isvert ? pos.by-2 : pos.by);
+			gate.val = val;
 		}
 	},
 
