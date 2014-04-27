@@ -624,7 +624,7 @@ Graphic:{
 	disptext : function(text, px, py, option){
 		option = option || {};
 		var g = this.context, key = option.key || "", vid = "text_"+key;
-		if((typeof text !== 'string')||(text.length===0)){ g.vhide(vid); return;}
+		if((typeof text !== 'string')||(text.length===0)){ if(!!g.elements[vid]){ g.vhide(vid);} return;}
 
 		var style = (option.style ? option.style+" " : "");
 		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
@@ -648,10 +648,22 @@ Graphic:{
 			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
 		}
 		
-		if(g.use.vml){ g.vdel(vid);}
-		g.vshow(vid);
-		
-		g.fillText(text, px, py);
+		if(this.vnop(g.vid,this.FILL)){
+			if(g.use.vml){ g.vdel(vid);}
+			g.fillText(text, px, py);
+		}
+		else{
+			// テキストが変わったときは入れ替える
+			var el = g.elements[g.vid];
+			if(g.use.svg){
+				var text0 = el.firstChild.innerHTML;
+				if(text!==text0){ el.replaceChild(document.createTextNode(text), el.firstChild);}
+			}
+			else if(g.use.vml){
+				var text0 = el.lastChild.string;
+				if(text!==text0){ el.lastChild.string = text;}
+			}
+		}
 	}
 }
 });

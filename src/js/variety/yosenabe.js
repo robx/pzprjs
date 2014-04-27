@@ -254,15 +254,21 @@ Graphic:{
 		var g = this.vinc('cell_filling_number', 'auto');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], num = cell.qnum2;
+			var cell = clist[i], num = cell.qnum2, px = cell.bx*this.bw, py = cell.by*this.bh;
 			var text = (num>0 ? ""+num : (num!==-1 ? "?" : ""));
-			var topleft = (this.owner.execConfig('dispmove') && cell.isDestination())
-			var option = { key: 'cell5_'+cell.id };
-			option.position = (!topleft ? this.CENTER : this.TOPLEFT);
-			option.globalratio = (!topleft ? 0.8 : 0.5);
+			var topleft = (this.owner.execConfig('dispmove') && cell.isDestination());
+			var option = {};
 			option.color = this.getCellNumberColor(cell);
 			option.style = "bold";
-			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
+			
+			option.key = 'cell_fill1_'+cell.id;
+			option.globalratio = 0.8;
+			this.disptext((!topleft ? text : ""), px, py, option);
+			
+			option.key = 'cell_fill5_'+cell.id;
+			option.position = this.TOPLEFT;
+			option.globalratio = 0.5;
+			this.disptext((!topleft ? "" : text), px, py, option);
 		}
 	}
 },

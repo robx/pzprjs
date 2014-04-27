@@ -107,16 +107,16 @@ Config.prototype =
 		var result = true, o = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove': case 'font':
+		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
 			o.redraw();
+			break;
+		
+		case 'disptype_bosanowa': case 'font':
+			o.adjustCanvasSize();
 			break;
 		
 		case 'keytarget':
 			this.owner.key.setfocus();
-			break;
-		
-		case 'disptype_bosanowa':
-			o.adjustCanvasSize();
 			break;
 		
 		default:
