@@ -268,7 +268,7 @@ pzpr.Puzzle.prototype =
 			case 'redline':  exec = flags.redline;   break;
 			case 'redblk':   exec = flags.redblk;    break;
 			case 'redblkrb': exec = flags.redblkrb;  break;
-			case 'redroad':  exec = (puzzle.pid==='roma'); break;
+			case 'redroad':  exec = (this.pid==='roma'); break;
 		}
 		return (val && exec);
 	},
