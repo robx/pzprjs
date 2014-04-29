@@ -64,6 +64,7 @@ Board:{
 		return instance;
 	},
 	initInfoList : function(){
+		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		for(var i=0;i<this.infolist.length;i++){
 			this.infolist[i].init();
 		}
