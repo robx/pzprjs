@@ -63,15 +63,14 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	bcolor_type : "GREEN",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.bcolor = this.bcolor_GREEN;
-		this.fontErrcolor = "red";
-		this.fontShadecolor = "rgb(96,96,96)";
-		this.setBGCellColorFunc('qsub1');
-	},
+	bgcellcolor_func : "qsub1",
+
+	fontErrcolor : "red",
+	fontShadecolor : "rgb(96,96,96)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

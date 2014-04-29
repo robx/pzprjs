@@ -78,19 +78,10 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		if(this.owner.pid==='shimaguni'){
-			this.bcolor = "rgb(191, 191, 255)";
-			this.bbcolor = "rgb(191, 191, 255)";
-		}
-		else if(this.owner.pid==='chocona'){
-			this.bcolor = this.bcolor_GREEN;
-		}
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.setBGCellColorFunc('qsub1');
-	},
+	bgcellcolor_func : "qsub1",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -106,6 +97,13 @@ Graphic:{
 
 		this.drawTarget();
 	}
+},
+"Graphic@shimaguni":{
+	bcolor : "rgb(191, 191, 255)",
+	bbcolor : "rgb(191, 191, 255)"
+},
+"Graphic@chocona":{
+	bcolor_type : "GREEN"
 },
 
 //---------------------------------------------------------

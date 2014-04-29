@@ -96,11 +96,8 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bgcellcolor_func : "qsub2",
 
-		this.setBGCellColorFunc('qsub2');
-	},
 	paint : function(){
 		this.drawBGCells();
 

@@ -274,16 +274,14 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	dotcolor_type : "PINK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.errcolor1 = this.cellcolor; // drawSlashes関係
-		this.errcolor2 = this.cellcolor; // drawSlashes関係
+	errcolor1 : "black",	// drawSlashes関係 cellcolorと同じ
+	errcolor2 : "black",	// drawSlashes関係 cellcolorと同じ
 
-		this.lightcolor = "rgb(255, 255, 127)";
-		this.dotcolor = this.dotcolor_PINK;
-	},
+	lightcolor : "rgb(255, 255, 127)",
+
 	paint : function(){
 		this.drawBGCells_kinkonkan();
 		this.drawDotCells(true);

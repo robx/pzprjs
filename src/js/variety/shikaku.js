@@ -39,16 +39,16 @@ AreaRoomManager:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.fontcolor = this.fontErrcolor = "white";
-		this.setBorderColorFunc('qans');
+	bordercolor_func : "qans",
 
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.40, 0.40];
-	},
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
+	globalfontsizeratio : 0.85,
+	circleratio : [0.40, 0.40],
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

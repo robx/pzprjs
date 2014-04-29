@@ -122,16 +122,16 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	dotcolor_type : "PINK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.fontcolor = this.fontErrcolor = "white";
-		this.dotcolor = this.dotcolor_PINK;
-		this.setCellColorFunc('qnum');
+	cellcolor_func : "qnum",
 
-		this.lightcolor = "rgb(192, 255, 127)";
-	},
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
+	lightcolor : "rgb(192, 255, 127)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

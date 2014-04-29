@@ -149,17 +149,16 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "THIN",
 
-		this.gridcolor = this.gridcolor_THIN;
-		this.bcolor    = "silver";
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.47, 0.42];
+	bcolor : "silver",
 
-		// 線の太さを通常より少し太くする
-		this.lwratio = 8;
-	},
+	globalfontsizeratio : 0.85,
+	circleratio : [0.47, 0.42],
+
+	// 線の太さを通常より少し太くする
+	lwratio : 8,
+
 	paint : function(){
 		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
 
@@ -235,7 +234,7 @@ Graphic:{
 		this.range.borders = blist;
 		this.drawLines_hashikake();
 
-		if(this.use.canvas){ this.repaintParts(blist);}
+		if(this.context.use.canvas){ this.repaintParts(blist);}
 	},
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();

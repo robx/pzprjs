@@ -406,11 +406,8 @@ Graphic:{
 
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-	},
 	paint : function(){
 		this.drawDashedGrid(false);
 
@@ -422,7 +419,7 @@ Graphic:{
 	},
 
 	repaintSegments : function(seglist){
-		if(!this.use.canvas){
+		if(!this.context.use.canvas){
 			var g = this.vinc('segment', 'auto');
 			for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 		}

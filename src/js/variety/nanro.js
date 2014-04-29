@@ -102,11 +102,8 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

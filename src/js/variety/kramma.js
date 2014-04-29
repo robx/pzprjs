@@ -88,15 +88,12 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.borderQanscolor = "rgb(64, 64, 255)";
-		this.setBorderColorFunc('qans');
+	bordercolor_func : "qans",
+	borderQanscolor : "rgb(64, 64, 255)",
 
-		this.crosssize = 0.15;
-	},
+	crosssize : 0.15,
 
 	paint : function(){
 		this.drawBGCells();

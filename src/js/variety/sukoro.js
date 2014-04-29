@@ -113,12 +113,8 @@ Graphic:{
 	}
 },
 "Graphic@view":{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
-
-		this.errbcolor2 = "rgb(255, 255, 127)";
-		this.setBGCellColorFunc('error2');
-	}
+	bgcellcolor_func : "error2",
+	errbcolor2 : "rgb(255, 255, 127)"
 },
 
 //---------------------------------------------------------

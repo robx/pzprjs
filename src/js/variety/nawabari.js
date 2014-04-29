@@ -101,12 +101,8 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		if(this.owner.pid==='nawabari'){ this.setBorderColorFunc('qans');}
-	},
 	paint : function(){
 		this.drawBGCells();
 
@@ -127,6 +123,9 @@ Graphic:{
 
 		this.drawTarget();
 	}
+},
+"Graphic@nawabari":{
+	bordercolor_func : "qans"
 },
 "Graphic@fourcells,fivecells":{
 	getQansBorderColor : function(border){

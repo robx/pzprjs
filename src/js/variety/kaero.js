@@ -90,14 +90,12 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.qsubcolor1 = "rgb(224, 224, 255)";
-		this.qsubcolor2 = "rgb(255, 255, 144)";
-		this.setBGCellColorFunc('qsub2');
-	},
+	bgcellcolor_func : "qsub2",
+	qsubcolor1 : "rgb(224, 224, 255)",
+	qsubcolor2 : "rgb(255, 255, 144)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

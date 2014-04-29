@@ -241,20 +241,12 @@ Flags:{
 Graphic:{
 	margin : 0.50,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.errcolor1 = "red";
-		if(this.owner.pid==='gokigen'){
-			this.errcolor2 = "rgb(32, 32, 255)";
-		}
-		else if(this.owner.pid==='wagiri'){
-			this.errcolor2 = "rgb(0, 0, 127)";
-		}
+	errcolor1 : "red",
+	errcolor2 : "rgb(32, 32, 255)",
 
-		this.crosssize = 0.33;
-	},
+	crosssize : 0.33,
 
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
@@ -301,6 +293,8 @@ Graphic:{
 	}
 },
 "Graphic@wagiri":{
+	errcolor2 : "rgb(0, 0, 127)",
+
 	drawNumber1 : function(cell){
 		var text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
 		var px = cell.bx*this.bw, py = cell.by*this.bh;

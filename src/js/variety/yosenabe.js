@@ -181,16 +181,14 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.icecolor = "rgb(224,224,224)";
-		this.setBGCellColorFunc('icebarn');
-		this.setBorderColorFunc('ice');
-		
-		this.globalfontsizeratio = 0.85;
-	},
+	globalfontsizeratio : 0.85,
+
+	bgcellcolor_func : "icebarn",
+	bordercolor_func : "ice",
+	icecolor : "rgb(224,224,224)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

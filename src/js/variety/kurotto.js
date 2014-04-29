@@ -66,16 +66,13 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.bcolor    = "silver";
-		this.setBGCellColorFunc('qsub1');
+	bgcellcolor_func : "qsub1",
+	bcolor : "silver",
 
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.45, 0.40];
-	},
+	globalfontsizeratio : 0.85,
+	circleratio : [0.45, 0.40],
 
 	// オーバーライド
 	setRange : function(x1,y1,x2,y2){

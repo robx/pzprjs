@@ -91,12 +91,10 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.setBGCellColorFunc('qsub2');
-	},
+	bgcellcolor_func : "qsub2",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid(false);

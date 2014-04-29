@@ -322,18 +322,18 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	linecolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = this.linecolor_LIGHT;
-		this.errcolor1 = "red";
-		if(this.owner.pid!=='icebarn'){ this.fontShadecolor = this.fontcolor;}
-		this.setBGCellColorFunc('icebarn');
-		this.setBorderColorFunc('ice');
+	bgcellcolor_func : "icebarn",
+	bordercolor_func : "ice",
 
-		this.maxYdeg = 0.70;
-	},
+	errcolor1 : "red",
+
+	fontShadecolor : "black", /* icelom, icelom2用 this.fontcolorと同じ */
+
+	maxYdeg : 0.70,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

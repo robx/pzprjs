@@ -55,12 +55,10 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.setBorderColorFunc('qans');
-	},
+	bordercolor_func : "qans",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

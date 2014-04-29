@@ -147,10 +147,8 @@ Board:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
-		this.circleratio = [0.47, 0.42];
-	},
+	circleratio : [0.47, 0.42],
+
 	paint : function(){
 		this.drawBGCells();
 

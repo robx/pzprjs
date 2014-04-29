@@ -276,16 +276,15 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	errbcolor1_type : "DARK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.borderQanscolor = "rgb(72, 72, 72)";
-		this.qsubcolor1 = "rgb(176,255,176)";
-		this.qsubcolor2 = "rgb(108,108,108)";
-		this.errbcolor1 = this.errbcolor1_DARK;
-		this.setBGCellColorFunc('qsub3');
-	},
+	bgcellcolor_func : "qsub3",
+	qsubcolor1 : "rgb(176,255,176)",
+	qsubcolor2 : "rgb(108,108,108)",
+
+	borderQanscolor : "rgb(72, 72, 72)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

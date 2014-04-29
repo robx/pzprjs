@@ -78,14 +78,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
-
-		if(this.owner.pid!=='nurikabe'){
-			this.bcolor = this.bcolor_GREEN;
-			this.setBGCellColorFunc('qsub1');
-		}
-	},
 	paint : function(){
 		this.drawBGCells();
 		if(this.owner.pid==='nurikabe'){ this.drawDotCells(false);}
@@ -98,6 +90,11 @@ Graphic:{
 
 		this.drawTarget();
 	}
+},
+"Graphic@nuribou,mochikoro,mochinyoro":{
+	bgcellcolor_func : "qsub1",
+
+	bcolor_type : "GREEN"
 },
 
 //---------------------------------------------------------

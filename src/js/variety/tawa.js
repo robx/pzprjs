@@ -215,11 +215,8 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bgcellcolor_func : "qans1",
 
-		this.setBGCellColorFunc('qans1');
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);

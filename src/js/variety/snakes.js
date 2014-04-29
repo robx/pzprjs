@@ -156,14 +156,13 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	dotcolor_type : "PINK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.dotcolor = this.dotcolor_PINK;
-		this.fontcolor = this.fontErrcolor = "white";
-		this.setCellColorFunc('qnum');
-	},
+	cellcolor_func : "qnum",
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(true);

@@ -38,14 +38,13 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.setBorderColorFunc('qans');
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.borderQanscolor = "black";
-		this.crosssize = 0.15;
-	},
+	bordercolor_func : "qans",
+	borderQanscolor : "black",
+
+	crosssize : 0.15,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

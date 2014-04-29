@@ -64,16 +64,14 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	linecolor_type : "LIGHT",
+	errbcolor1_type : "DARK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = this.linecolor_LIGHT;
-		this.errbcolor1 = this.errbcolor1_DARK;
-		this.setBGCellColorFunc('icebarn');
+	bgcellcolor_func : "icebarn",
 
-		this.maxYdeg = 0.70;
-	},
+	maxYdeg : 0.70,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

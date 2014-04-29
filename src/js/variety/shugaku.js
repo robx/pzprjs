@@ -174,15 +174,14 @@ AreaShadeManager:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	errbcolor1_type : "DARK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.errbcolor1 = this.errbcolor1_DARK;
-		this.bgcolor = "rgb(208, 208, 208)";
-		this.targetbgcolor = "rgb(255, 192, 192)";
-		this.circleratio = [0.47, 0.42];
-	},
+	bgcolor : "rgb(208, 208, 208)",
+	targetbgcolor : "rgb(255, 192, 192)",	/* 入力中の布団の色 */
+
+	circleratio : [0.47, 0.42],
+
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawDashedGrid();

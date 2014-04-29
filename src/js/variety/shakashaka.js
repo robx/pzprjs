@@ -257,13 +257,12 @@ BoardExec:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.fontcolor = this.fontErrcolor = "white";
-		this.setCellColorFunc('qnum');
-	},
+	cellcolor_func : "qnum",
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);

@@ -53,16 +53,14 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
+	bcolor_type : "GREEN",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.bcolor = this.bcolor_GREEN;
-		this.setBGCellColorFunc('qsub1');
+	bgcellcolor_func : "qsub1",
 
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.45, 0.40];
-	},
+	globalfontsizeratio : 0.85,
+	circleratio : [0.45, 0.40],
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

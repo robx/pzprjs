@@ -326,16 +326,16 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	errbcolor1_type : "DARK",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = "rgb(32, 32, 255)";	// 色分けなしの場合
-		this.pekecolor = "rgb(0, 160, 0)";
-		this.errlinebgcolor = "rgb(160, 150, 255)";
-		this.errbcolor1 = this.errbcolor1_DARK;
-		this.fontcolor = this.fontErrcolor = "white";
-	},
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
+	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
+	errlinebgcolor : "rgb(160, 150, 255)",
+	pekecolor : "rgb(0, 160, 0)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

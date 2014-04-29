@@ -132,17 +132,15 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	linecolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = this.linecolor_LIGHT;
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.40, 0.35];
+	globalfontsizeratio : 0.85,
+	circleratio : [0.40, 0.35],
 
-		this.minYdeg = 0.36;
-		this.maxYdeg = 0.74;
-	},
+	minYdeg : 0.36,
+	maxYdeg : 0.74,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

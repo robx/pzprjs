@@ -121,14 +121,12 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	bcolor_type : "GREEN",
+	bbcolor : "rgb(127, 127, 127)",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.bcolor = this.bcolor_GREEN;
-		this.bbcolor = "rgb(127, 127, 127)";
-		this.setBGCellColorFunc('qsub3');
-	},
+	bgcellcolor_func : "qsub3",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();

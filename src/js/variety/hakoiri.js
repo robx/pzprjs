@@ -78,13 +78,11 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bcolor_type : "GREEN",
+	dotcolor_type : "PINK",
 
-		this.bcolor = this.bcolor_GREEN;
-		this.bbcolor = "rgb(127, 127, 127)";
-		this.dotcolor = this.dotcolor_PINK;
-	},
+	bbcolor : "rgb(127, 127, 127)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

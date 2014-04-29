@@ -82,11 +82,8 @@ BoardExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	ttcolor : "rgb(255,255,127)",
 
-		this.ttcolor = "rgb(255,255,127)";
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();

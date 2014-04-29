@@ -73,14 +73,12 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
+	fontErrcolor : "black", /* fontcolorと同じ */
 
-		this.fontErrcolor = this.fontcolor;
-		this.globalfontsizeratio = 0.85;
-	},
+	globalfontsizeratio : 0.85,
+
 	paint : function(){
 		this.drawDashedCenterLines();
 		this.drawLines();

@@ -51,12 +51,9 @@ AreaLineManager:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	circleratio : [0.45, 0.40],
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.circleratio = [0.45, 0.40];
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

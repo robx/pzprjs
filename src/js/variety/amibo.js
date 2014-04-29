@@ -244,16 +244,14 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	linecolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = this.linecolor_LIGHT;
-		this.fontcolor = this.fontErrcolor = "black";
+	fontcolor    : "black",
+	fontErrcolor : "black",
 
-		this.globalfontsizeratio = 0.85;
-		this.circleratio = [0.45, 0.40];
-	},
+	globalfontsizeratio : 0.85,
+	circleratio : [0.45, 0.40],
 
 	setRange : function(x1,y1,x2,y2){
 		this.Common.prototype.setRange.call(this, x1-2, y1-2, x2+2, y2+2);

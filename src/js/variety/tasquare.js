@@ -43,12 +43,9 @@ Flags:{
 Graphic:{
 	hideHatena : true,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	globalfontsizeratio : 0.85,
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.globalfontsizeratio = 0.85;
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);

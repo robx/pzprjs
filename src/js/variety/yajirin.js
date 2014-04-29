@@ -71,12 +71,10 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.dotcolor = "rgb(255, 96, 191)";
-	},
+	dotcolor : "rgb(255, 96, 191)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);

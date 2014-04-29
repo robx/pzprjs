@@ -48,13 +48,11 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bgcellcolor_func : "qans1",
 
-		this.bcolor = this.bcolor_GREEN;
-		this.bbcolor = "rgb(127, 127, 127)";
-		this.setBGCellColorFunc('qans1');
-	},
+	bcolor_type : "GREEN",
+	bbcolor : "rgb(127, 127, 127)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

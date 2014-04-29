@@ -17,137 +17,154 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Graphic:{
 	initialize : function(){
-		this.context    = null;
-		this.subcontext = null;
+		this.gridcolor  = this.gridcolor_list [this.gridcolor_type]  || this.gridcolor;
+		this.bcolor     = this.bcolor_list    [this.bcolor_type]     || this.bcolor;
+		this.dotcolor   = this.dotcolor_list  [this.dotcolor_type]   || this.dotcolor;
+		this.errbcolor1 = this.errbcolor1_list[this.errbcolor1_type] || this.errbcolor1;
+		this.linecolor  = this.linecolor_list [this.linecolor_type]  || this.linecolor;
 
-		// 盤面のCellを分ける色
-		this.gridcolor = "black";
-
-		// セルの色(黒マス)
-		this.cellcolor = "black";
-		this.errcolor1 = "rgb(224, 0, 0)";
-
-		// セルの丸数字の中に書く色
-		this.circledcolor = "white";
-
-		// セルの○×の色(補助記号)
-		this.mbcolor = "rgb(255, 160, 127)";
-
-		this.qsubcolor1 = "rgb(160,255,160)";
-		this.qsubcolor2 = "rgb(255,255,127)";
-		this.qsubcolor3 = "rgb(192,192,192)";	// 絵が出るパズルの背景入力
-
-		// フォントの色(白マス/黒マス)
-		this.fontcolor = "black";
-		this.fontAnscolor = "rgb(0, 160, 0)";
-		this.fontErrcolor = "rgb(191, 0, 0)";
-		this.fontShadecolor = "rgb(224, 224, 224)";
-
-		// セルの背景色(白マス)
-		this.bcolor = "white";
-		this.dotcolor = "black";
-		this.errbcolor1 = "rgb(255, 160, 160)";
-		this.errbcolor2 = "rgb(64, 255, 64)";
-
-		this.icecolor = "rgb(192, 224, 255)";
-
-		// ques=51のとき、入力できる場所の背景色(TargetTriangle)
-		this.ttcolor = "rgb(127,255,127)";
-
-		// 境界線の色
-		this.borderQuescolor = "black";
-		this.borderQanscolor = "rgb(0, 191, 0)";
-		this.borderQsubcolor = "rgb(255, 0, 255)";
-
-		this.errborderbgcolor = "rgb(160, 160, 160)";
-
-		this.bbcolor = "rgb(96, 96, 96)"; // 境界線と黒マスを分ける色(BoxBorder)
-
-		// 線・×の色
-		this.linecolor = "rgb(0, 160, 0)";	// 色分けなしの場合
-		this.pekecolor = "rgb(32, 32, 255)";
-
-		this.errlinecolor   = "rgb(255, 0, 0)";
-		this.errlinebgcolor = "rgb(160, 160, 160)";
-
-		// 入力ターゲットの色
-		this.targetColor1 = "rgb(255, 64,  64)";
-		this.targetColor3 = "rgb(64,  64, 255)";
-
-		this.movecolor = "red";
-
-		// 盤面(枠の中)の背景色
-		this.bgcolor = "white";
-
-		// 色々なパズルで定義してた固定色
-		this.gridcolor_BLACK  = "black";
-		this.gridcolor_LIGHT  = "rgb(127, 127, 127)";	/* ほとんどはこの色を指定している */
-		this.gridcolor_DLIGHT = "rgb(160, 160, 160)";	/* 領域分割系で使ってることが多い */
-		this.gridcolor_SLIGHT = "rgb(191, 191, 191)";	/* 部屋＋線を引くパズル           */
-		this.gridcolor_THIN   = "rgb(224, 224, 224)";	/* 問題入力時のみGrid表示のパズル */
-
-		this.bcolor_GREEN  = "rgb(160, 255, 160)";
-		this.dotcolor_PINK = "rgb(255, 96, 191)";
-		this.errbcolor1_DARK = "rgb(255, 127, 127)";
-		this.linecolor_LIGHT = "rgb(0, 192, 0)";
-
-		// その他
-		this.globalfontsizeratio = 1;			// Fontサイズの倍率
-		this.fontsizeratio = [0.8, 0.7, 0.55];	// 文字の長さ別Fontサイズの倍率
-		this.crosssize = 0.4;
-		this.circleratio = [0.40, 0.35];
-
-		// 描画領域を保持するオブジェクト
-		this.range = {};
 		this.resetRange();
-
-		this.suspended = true;
-		this.suspendedAll = true;
-
-		// canvasの大きさを保持する
-		this.canvasWidth  = null;
-		this.canvasHeight = null;
-
-		// 盤面のページ内の左上座標
-		this.pageX = 0;
-		this.pageY = 0;
-
-		// canvas内での盤面の左上座標
-		this.x0 = 0;
-		this.y0 = 0;
-
-		// 描画単位(ここはデフォルト)
-		this.cw = 36; 			// セルの横幅
-		this.ch = 36; 			// セルの縦幅
-		this.bw = 18; 			// セルの横幅
-		this.bh = 18; 			// セルの縦幅
-
-		this.lw = 1;		// LineWidth 境界線・Lineの太さ
-		this.lm = 1;		// LineMargin
-		this.lwratio = 12;	// onresize_processでlwの値の算出に用いる
-		this.addlw = 0;		// エラー時に線の太さを広げる
-
-		this.lastHdeg = 0;
-		this.lastYdeg = 0;
-		this.minYdeg = 0.18;
-		this.maxYdeg = 0.70;
-
-		this.use = {};						// 描画ルーチン外で参照する値として、g.useをコピーしておく
-
-		this.numobj = {};					// エレメントへの参照を保持する
-		this.useBuffer = false;				// Buffer描画を行うか
-
-		this.outputImage = false;			// 画像保存中
-
-		this.isdrawBC = false;
-		this.isdrawBD = false;
-
-		this.pendingResize = false;
 	},
 
-	margin : 0.15,	// 枠外の一辺のmargin(セル数換算)
+	context    : null,
+	subcontext : null,
 
-	hideHatena : false,	// Cellのqnumが-2のときに？を表示しない
+	cellcolor_func : "",	// getCellColor()の種類
+	bgcellcolor_func : "",	// getBGCellColor()の種類
+	bordercolor_func : "",	// getBorderColor()の種類
+
+	// セルの色(黒マス)
+	cellcolor : "black",
+	errcolor1 : "rgb(224, 0, 0)",
+
+	// セルの背景色(白マス)
+	bcolor : "white",
+	bcolor_type : "",
+	bcolor_list : { GREEN : "rgb(160, 255, 160)"},
+
+	qsubcolor1 : "rgb(160,255,160)",
+	qsubcolor2 : "rgb(255,255,127)",
+	qsubcolor3 : "rgb(192,192,192)",	// 絵が出るパズルの背景入力
+
+	dotcolor : "black",
+	dotcolor_type : "",
+	dotcolor_list : { PINK : "rgb(255, 96, 191)"},
+
+	errbcolor1 : "rgb(255, 160, 160)",
+	errbcolor1_type : "",
+	errbcolor1_list : { DARK : "rgb(255, 127, 127)"},
+
+	errbcolor2 : "rgb(64, 255, 64)",
+
+	icecolor : "rgb(192, 224, 255)",
+
+	// セルの丸数字内部の背景色
+	circledcolor : "white",
+
+	// フォントの色
+	fontcolor : "black",
+	fontAnscolor : "rgb(0, 160, 0)",
+	fontErrcolor : "rgb(191, 0, 0)",
+	fontShadecolor : "rgb(224, 224, 224)",
+
+	// セルの○×の色(補助記号)
+	mbcolor : "rgb(255, 160, 127)",
+
+	// 線・×の色
+	linecolor : "rgb(0, 160, 0)",	// 色分けなしの場合
+	linecolor_type : "",
+	linecolor_list : { LIGHT : "rgb(0, 192, 0)"},
+
+	errlinecolor   : "rgb(255, 0, 0)",
+	errlinebgcolor : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線の描画色
+
+	pekecolor : "rgb(32, 32, 255)",
+
+	// 境界線の色
+	borderQuescolor : "black",
+	borderQanscolor : "rgb(0, 191, 0)",
+	borderQsubcolor : "rgb(255, 0, 255)",
+
+	errborderbgcolor : "rgb(160, 160, 160)",	// エラー表示時, エラーでない境界線の描画色
+
+	// 境界線と黒マスを分ける色(BoxBorder)
+	bbcolor : "rgb(96, 96, 96)",
+
+	// 入力ターゲットの色
+	targetColor1 : "rgb(255, 64,  64)",
+	targetColor3 : "rgb(64,  64, 255)",
+	ttcolor : "rgb(127,255,127)",				// ques=51の入力ターゲット(TargetTriangle)
+
+	movecolor : "red",
+
+	// 盤面のCellを分ける色
+	gridcolor      : "black",
+	gridcolor_type : "",
+	gridcolor_list : {
+		// 色々なパズルで定義してた固定色
+		DARK   : "rgb( 48,  48,  48)",	/* LITSでの指定 */
+		LIGHT  : "rgb(127, 127, 127)",	/* ほとんどはこの色を指定している */
+		DLIGHT : "rgb(160, 160, 160)",	/* 領域分割系で使ってることが多い */
+		SLIGHT : "rgb(191, 191, 191)",	/* 部屋＋線を引くパズル           */
+		THIN   : "rgb(224, 224, 224)"	/* 問題入力時のみGrid表示のパズル */
+	},
+
+	// 盤面(枠の中)の背景色
+	bgcolor : "white",
+
+	// その他サイズ指定
+	globalfontsizeratio : 1,			// Fontサイズの倍率
+	fontsizeratio : [0.8, 0.7, 0.55],	// 文字の長さ別Fontサイズの倍率
+	crosssize     : 0.4,
+	circleratio   : [0.40, 0.35],
+
+	// 枠外の一辺のmargin(セル数換算)
+	margin : 0.15,
+
+	// canvasの大きさを保持する
+	canvasWidth  : null,
+	canvasHeight : null,
+
+	// 盤面のページ内の左上座標
+	pageX : 0,
+	pageY : 0,
+
+	// canvas内での盤面の左上座標
+	x0 : 0,
+	y0 : 0,
+
+	// 描画単位(デフォルト値)
+	cw : 36,			// セルの横幅
+	ch : 36,			// セルの縦幅
+	bw : 18,			// セルの横幅/2
+	bh : 18,			// セルの縦幅/2
+
+	lw : 1,		// LineWidth 境界線・Lineの太さ
+	lm : 1,		// LineMargin
+	lwratio : 12,	// onresize_processでlwの値の算出に用いる
+	addlw   : 0,	// エラー時に線の太さを広げる
+
+	// getNewColorの設定
+	lastHdeg : 0,
+	lastYdeg : 0,
+	minYdeg : 0.18,
+	maxYdeg : 0.70,
+
+	// 描画設定
+	range : null,					// 描画領域を保持するオブジェクト
+
+	useBuffer   : false,			// Buffer描画を行うか
+	outputImage : false,			// 画像保存中
+
+	// resize関数が呼ばれたが、初期化されていない等でresizeしていないことを示すフラグ
+	pendingResize : false,
+
+	// 初期化前、およびsuspend呼び出し中
+	suspended    : true,
+	suspendedAll : true,
+
+	// Cellのqnumが-2のときに？を表示しない設定
+	hideHatena : false,
 
 	/* vnop関数用 */
 	STROKE      : 0,
@@ -189,8 +206,6 @@ Graphic:{
 		this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
 
 		var g = this.context;
-		for(var type in g.use){ this.use[type] = g.use[type];}
-
 		this.useBuffer = (!!g.use.canvas && !!this.subcontext);
 
 		if(!!callback){ callback();}
@@ -200,8 +215,7 @@ Graphic:{
 	// pc.initCanvas_special() 画像出力時に使用するキャンバスを設定する
 	//---------------------------------------------------------------------------
 	initCanvas_special : function(canvas){
-		var g = this.context = canvas.getContext("2d");
-		for(var type in g.use){ this.use[type] = g.use[type];}
+		this.context = canvas.getContext("2d");
 	},
 
 	//---------------------------------------------------------------------------
@@ -535,7 +549,7 @@ Graphic:{
 		this.range.borders = blist;
 		this.drawLines();
 
-		if(this.use.canvas){ this.repaintParts(blist);}
+		if(this.context.use.canvas){ this.repaintParts(blist);}
 	},
 	repaintParts : function(blist){ }, // オーバーライド用
 
@@ -574,9 +588,9 @@ Graphic:{
 	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
 	vnop : function(vid, ccflag){
 		this.vnop = (
-			(this.use.canvas) ? this.vnop_canvas :
-			(this.use.svg)    ? this.vnop_svg :
-		 /* (this.use.vml) ? */ this.vnop_vml
+			(this.context.use.canvas) ? this.vnop_canvas :
+			(this.context.use.svg)    ? this.vnop_svg :
+		 /* (this.context.use.vml) ? */ this.vnop_vml
 		);
 		return this.vnop(vid, ccflag);
 	},

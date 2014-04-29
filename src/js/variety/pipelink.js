@@ -93,16 +93,13 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
+	linecolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.linecolor = this.linecolor_LIGHT;
+	circleratio : [0.42, 0.37],
 
-		this.minYdeg = 0.42;
+	minYdeg : 0.42,
 
-		this.circleratio = [0.42, 0.37];
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

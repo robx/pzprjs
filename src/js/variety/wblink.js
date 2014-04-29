@@ -131,16 +131,15 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "THIN",
 
-		this.gridcolor = this.gridcolor_THIN;
-		this.errbcolor1 = "white";
-		this.circleratio = [0.35, 0.30];
+	errbcolor1 : "white",
 
-		// 線の太さを通常より少し太くする
-		this.lwratio = 8;
-	},
+	circleratio : [0.35, 0.30],
+
+	// 線の太さを通常より少し太くする
+	lwratio : 8,
+
 	paint : function(){
 		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
 

@@ -48,12 +48,10 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bgcellcolor_func : "qsub1",
 
-		this.bcolor = this.bcolor_GREEN;
-		this.setBGCellColorFunc('qsub1');
-	},
+	bcolor_type : "GREEN",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();

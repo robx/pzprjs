@@ -60,11 +60,8 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "SLIGHT",
 
-		this.gridcolor = this.gridcolor_SLIGHT;
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawNumbers();

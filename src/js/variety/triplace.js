@@ -126,13 +126,12 @@ BoardExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.gridcolor = this.gridcolor_LIGHT;
-		this.borderQanscolor = "rgb(0, 160, 0)";
-		this.setBGCellColorFunc('qsub2');
-	},
+	bgcellcolor_func : "qsub2",
+
+	borderQanscolor : "rgb(0, 160, 0)",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();

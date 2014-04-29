@@ -234,22 +234,15 @@ AreaRoomManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "DLIGHT",
 
-		this.gridcolor = this.gridcolor_DLIGHT;
-		this.setBorderColorFunc('qans');
+	bordercolor_func : "qans",
 
-		this.circleratio = [0.40, 0.40];	/* 線幅を1pxにする */
+	fontAnscolor : "black", /* 矢印用 */
 
-		this.fontAnscolor = "black"; /* 矢印用 */
+	globalfontsizeratio : 0.85,		/* sashigane用 */
+	circleratio : [0.40, 0.40],		/* 線幅を1pxにする */
 
-		if(this.owner.pid==='sashigane'){
-			this.globalfontsizeratio = 0.85;
-
-			this.hideHatena = true;
-		}
-	},
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
@@ -288,6 +281,9 @@ Graphic:{
 			this.disptext(text, px, py, option);
 		}
 	}
+},
+"Grahpic@sashigane":{
+	hideHatena : true,
 },
 
 //---------------------------------------------------------

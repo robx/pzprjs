@@ -106,22 +106,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
-
-		if(this.owner.pid==='lits'){
-			this.gridcolor = "rgb(48, 48, 48)";
-			this.cellcolor = "rgb(96, 96, 96)";
-			this.errcolor2 = "rgb(32, 32, 255)";
-			this.setBGCellColorFunc('qans2');
-		}
-		else if(this.owner.pid==='norinori'){
-			this.gridcolor = this.gridcolor_LIGHT;
-			this.bcolor = "rgb(96, 224, 160)";
-			this.bbcolor = "rgb(96, 127, 127)";
-			this.setBGCellColorFunc('qsub1');
-		}
-	},
 	paint : function(){
 		this.drawBGCells();
 		if(this.owner.pid==='lits'){ this.drawDotCells(false);}
@@ -134,6 +118,20 @@ Graphic:{
 
 		if(this.owner.pid==='norinori'){ this.drawBoxBorders(false);}
 	}
+},
+"Graphic@lits":{
+	gridcolor_type : "DARK",
+
+	bgcellcolor_func : "qans2",
+	cellcolor : "rgb(96, 96, 96)",
+	errcolor2 : "rgb(32, 32, 255)"
+},
+"Graphic@norinori":{
+	gridcolor_type : "LIGHT",
+
+	bgcellcolor_func : "qsub1",
+	bcolor : "rgb(96, 224, 160)",
+	bbcolor : "rgb(96, 127, 127)"
 },
 
 //---------------------------------------------------------

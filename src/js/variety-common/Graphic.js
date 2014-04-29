@@ -6,13 +6,8 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawShadedCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
 	// pc.getCellColor()    前景色の設定・描画判定する
-	// pc.setCellColorFunc()   pc.getCellColor関数を設定する
-	//
-	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
-	// pc.getBGCellColor() 背景色の設定・描画判定する
-	// pc.setBGCellColorFunc() pc.getBGCellColor関数を設定する
 	//---------------------------------------------------------------------------
-	// err==2になるlitsは、drawBGCellsで描画してます。。
+	// err==2になるlitsは、drawBGCellsで描画します
 	drawShadedCells : function(){
 		var g = this.vinc('cell_front', 'crispEdges');
 		var header = "c_fullb_";
@@ -29,32 +24,35 @@ Graphic:{
 			}
 			else{ g.vhide(header+cell.id); continue;}
 		}
-		this.isdrawBC = true;
 	},
-	// 'qans'用
 	getCellColor : function(cell){
+		var type = this.cellcolor_func || "qans";
+		this.getCellColor = (
+			(type==="qnum") ? this.getCellColor_qnum :
+			(type==="qans") ? this.getCellColor_qans :
+							  function(){ return null;}
+		);
+		return this.getCellColor(cell);
+	},
+	getCellColor_qnum : function(cell){
+		if(cell.qnum===-1){ return null;}
+		var info = cell.error || cell.qinfo;
+		if     (info===0){ return this.cellcolor;}
+		else if(info===1){ return this.errcolor1;}
+		return null;
+	},
+	getCellColor_qans : function(cell){
 		if(cell.qans!==1){ return null;}
 		var info = cell.error || cell.qinfo;
 		if     (info===0){ return this.cellcolor;}
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
-	setCellColorFunc : function(type){
-		switch(type){
-		case 'qnum':
-			this.getCellColor = function(cell){
-				if(cell.qnum===-1){ return null;}
-				var info = cell.error || cell.qinfo;
-				if     (info===0){ return this.cellcolor;}
-				else if(info===1){ return this.errcolor1;}
-				return null;
-			};
-			break;
-		default:
-			break;
-		}
-	},
 
+	//---------------------------------------------------------------------------
+	// pc.drawBGCells()    Cellの、境界線の下に描画される背景色をCanvasに書き込む
+	// pc.getBGCellColor() 背景色の設定・描画判定する
+	//---------------------------------------------------------------------------
 	drawBGCells : function(){
 		var g = this.vinc('cell_back', 'crispEdges');
 		var header = "c_full_";
@@ -71,78 +69,72 @@ Graphic:{
 			else{ g.vhide(header+cell.id); continue;}
 		}
 	},
-	// 'error1'用
 	getBGCellColor : function(cell){
+		var type = this.bgcellcolor_func || "error1";
+		this.getBGCellColor = (
+			(type==="error1") ? this.getBGCellColor_error1 :
+			(type==="error2") ? this.getBGCellColor_error2 :
+			(type==="qans1")  ? this.getBGCellColor_qans1 :
+			(type==="qans2")  ? this.getBGCellColor_qans2 :
+			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
+			(type==="qsub2")  ? this.getBGCellColor_qsub2 :
+			(type==="qsub3")  ? this.getBGCellColor_qsub3 :
+			(type==="icebarn")? this.getBGCellColor_icebarn :
+								function(){ return null;}
+		);
+		return this.getBGCellColor(cell);
+	},
+	getBGCellColor_error1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
 		return null;
 	},
-	setBGCellColorFunc : function(type){
-		switch(type){
-		case 'error2':
-			this.getBGCellColor = function(cell){
-				var info = cell.error || cell.qinfo;
-				if     (info===1){ return this.errbcolor1;}
-				else if(info===2){ return this.errbcolor2;}
-				return null;
-			}
-			break;
-		case 'qans1':
-			this.getBGCellColor = function(cell){
-				var info = cell.error || cell.qinfo;
-				if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.cellcolor);}
-				else if(info     ===1){ return this.errbcolor1;}
-				else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
-				return null;
-			};
-			break;
-		case 'qans2':
-			this.getBGCellColor = function(cell){
-				var info = cell.error || cell.qinfo;
-				if(cell.qans===1){
-					if     (info===0){ return this.cellcolor;}
-					else if(info===1){ return this.errcolor1;}
-					else if(info===2){ return this.errcolor2;}
-				}
-				if     (info===1){ return this.errbcolor1;}
-				else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
-				return null;
-			};
-			break;
-		case 'qsub1':
-			this.getBGCellColor = function(cell){
-				if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-				else if(cell.qsub===1){ return this.bcolor;}
-				return null;
-			};
-			break;
-		case 'qsub2':
-			this.getBGCellColor = function(cell){
-				if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-				else if(cell.qsub===1){ return this.qsubcolor1;}
-				else if(cell.qsub===2){ return this.qsubcolor2;}
-				return null;
-			};
-			this.bcolor = "silver"; /* 数字入力で背景が消えないようにする応急処置 */
-			break;
-		case 'qsub3':
-			this.getBGCellColor = function(cell){
-				if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-				else if(cell.qsub===1){ return this.qsubcolor1;}
-				else if(cell.qsub===2){ return this.qsubcolor2;}
-				else if(cell.qsub===3){ return this.qsubcolor3;}
-				return null;
-			};
-			break;
-		case 'icebarn':
-			this.getBGCellColor = function(cell){
-				if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-				else if(cell.ques===6){ return this.icecolor;}
-				return null;
-			};
-			break;
-		default:
-			break;
+	getBGCellColor_error2 : function(cell){
+		var info = cell.error || cell.qinfo;
+		if     (info===1){ return this.errbcolor1;}
+		else if(info===2){ return this.errbcolor2;}
+		return null;
+	},
+	getBGCellColor_qans1 : function(cell){
+		var info = cell.error || cell.qinfo;
+		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.cellcolor);}
+		else if(info     ===1){ return this.errbcolor1;}
+		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+		return null;
+	},
+	getBGCellColor_qans2 : function(cell){
+		var info = cell.error || cell.qinfo;
+		if(cell.qans===1){
+			if     (info===0){ return this.cellcolor;}
+			else if(info===1){ return this.errcolor1;}
+			else if(info===2){ return this.errcolor2;}
 		}
+		if     (info===1){ return this.errbcolor1;}
+		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+		return null;
+	},
+	getBGCellColor_qsub1 : function(cell){
+		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(cell.qsub===1){ return this.bcolor;}
+		return null;
+	},
+	getBGCellColor_qsub2 : function(cell){
+		this.bcolor = "silver"; /* 数字入力で背景が消えないようにする応急処置 */
+		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(cell.qsub===1){ return this.qsubcolor1;}
+		else if(cell.qsub===2){ return this.qsubcolor2;}
+		return null;
+	},
+	getBGCellColor_qsub3 : function(cell){
+		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(cell.qsub===1){ return this.qsubcolor1;}
+		else if(cell.qsub===2){ return this.qsubcolor2;}
+		else if(cell.qsub===3){ return this.qsubcolor3;}
+		return null;
+	},
+	getBGCellColor_icebarn : function(cell){
+		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(cell.ques===6){ return this.icecolor;}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -466,7 +458,6 @@ Graphic:{
 	// pc.drawBorders()        境界線をCanvasに書き込む
 	// pc.drawBorders_common() 境界線をCanvasに書き込む(共通処理)
 	// pc.getBorderColor()     境界線の設定・描画判定する
-	// pc.setBorderColorFunc() pc.getBorderColor関数を設定する
 	//---------------------------------------------------------------------------
 	drawBorders : function(){
 		var g = this.vinc('border', 'crispEdges');
@@ -489,36 +480,37 @@ Graphic:{
 			}
 			else{ g.vhide(header+border.id);}
 		}
-		this.isdrawBD = true;
 	},
 
 	getBorderColor : function(border){
+		var type = this.bordercolor_func || "ques";
+		this.getBorderColor = (
+			(type==="ques") ? this.getBorderColor_ques :
+			(type==="qans") ? this.getBorderColor_qans :
+			(type==="ice")  ? this.getBorderColor_ice :
+							  function(){ return null;}
+		);
+		return this.getBorderColor(border);
+	},
+	getBorderColor_ques : function(border){
 		if(border.isBorder()){ return this.borderQuescolor;}
 		return null;
 	},
-	setBorderColorFunc : function(type){
-		switch(type){
-		case 'qans':
-			this.getBorderColor = function(border){
-				var err=border.error||border.qinfo;
-				if(border.isBorder()){
-					if     (err=== 1){ return this.errcolor1;       }
-					else if(err===-1){ return this.errborderbgcolor;}
-					else             { return this.borderQanscolor; }
-				}
-				return null;
-			}
-			break;
-		case 'ice':
-			this.getBorderColor = function(border){
-				var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-				if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
-					return this.cellcolor;
-				}
-				return null;
-			}
-			break;
+	getBorderColor_qans : function(border){
+		var err=border.error||border.qinfo;
+		if(border.isBorder()){
+			if     (err=== 1){ return this.errcolor1;       }
+			else if(err===-1){ return this.errborderbgcolor;}
+			else             { return this.borderQanscolor; }
 		}
+		return null;
+	},
+	getBorderColor_ice : function(border){
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
+			return this.cellcolor;
+		}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -664,7 +656,7 @@ Graphic:{
 		if(border.isLine()){
 			var info = border.error || border.qinfo, puzzle = this.owner;
 			if(info===1){
-				if(this.use.canvas){ this.addlw=1;}
+				if(this.context.use.canvas){ this.addlw=1;}
 				return this.errlinecolor;
 			}
 			else if(info===-1){ return this.errlinebgcolor;}

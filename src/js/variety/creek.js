@@ -50,14 +50,12 @@ Flags:{
 Graphic:{
 	margin : 0.50,
 
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	bgcellcolor_func : "qans1",
 
-		this.cellcolor = "rgb(96, 96, 96)";
-		this.setBGCellColorFunc('qans1');
+	cellcolor : "rgb(96, 96, 96)",
 
-		this.crosssize = 0.35;
-	},
+	crosssize : 0.35,
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);

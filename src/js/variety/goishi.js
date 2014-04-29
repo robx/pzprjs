@@ -113,12 +113,11 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+	gridcolor_type : "LIGHT",
 
-		this.errcolor1 = "rgb(208, 0, 0)";
-		this.errbcolor1 = "rgb(255, 192, 192)";
-	},
+	errcolor1 : "rgb(208, 0, 0)",
+	errbcolor1 : "rgb(255, 192, 192)",
+
 	paint : function(){
 		this.drawCenterLines();
 
@@ -137,7 +136,7 @@ Graphic:{
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
 		x1-=(~x1&1), y1-=(~y1&1), x2+=(~x2&1), y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
-		g.fillStyle = this.gridcolor_LIGHT;
+		g.fillStyle = this.gridcolor;
 		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw-0.5, y1*this.bh-0.5, 1, (y2-y1)*this.bh+1);} }
 		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw-0.5,  i*this.bh-0.5, (x2-x1)*this.bw+1, 1);} }
 	},
