@@ -249,7 +249,8 @@ ui.menu = {
 	modifyCSS : function(input){
 		var sheet = _doc.styleSheets[0];
 		var rules = sheet.cssRules || sheet.rules;
-		if(!this.modifyCSS_sub(rules, input)){
+		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
+		else if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
 			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
 			/* else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");} IE6でエラー? */
