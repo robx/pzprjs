@@ -458,7 +458,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.owner.getConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(!this.owner.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			if(this.vnop(header_id,this.STROKE)){
@@ -978,7 +978,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seg.cross2.seglist.add(seg);
 		});
 		this.searchLine(seglist);
-		if(this.owner.flags.irowake){ this.newIrowake();}
+
+		// if(this.owner.flags.irowake){ this.newIrowake();} irowake==trueなので削除
+		this.newIrowake();
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){
@@ -1150,7 +1152,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			seglist.extend(segs);
 		}
 		
-		if(puzzle.getConfig('irowake')){ puzzle.painter.repaintSegments(seglist);}
+		if(puzzle.execConfig('irowake')){ puzzle.painter.repaintSegments(seglist);}
 	},
 
 	//---------------------------------------------------------------------------

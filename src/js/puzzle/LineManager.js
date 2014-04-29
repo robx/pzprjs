@@ -284,7 +284,7 @@ LineManager:{
 			blist_all.extend(blist);
 		}
 		
-		if(puzzle.getConfig('irowake')){ puzzle.painter.repaintLines(blist_all);}
+		if(puzzle.execConfig('irowake')){ puzzle.painter.repaintLines(blist_all);}
 	},
 
 	//---------------------------------------------------------------------------

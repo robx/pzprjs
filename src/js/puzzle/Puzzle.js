@@ -136,7 +136,7 @@ pzpr.Puzzle.prototype =
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
-		if(this.getConfig('irowake')){
+		if(this.execConfig('irowake')){
 			this.redraw();
 		}
 	},
@@ -264,11 +264,11 @@ pzpr.Puzzle.prototype =
 		var val = this.config.get(idname), flags = this.flags, exec = true;
 		switch(idname){
 			case 'dispmove': exec = this.board.linfo.moveline; break;
-			case 'irowake':  exec = !!flags.irowake; break;
+			case 'irowake': case 'irowakeblk': exec = !!flags.irowake; break;
 			case 'redline':  exec = flags.redline;   break;
 			case 'redblk':   exec = flags.redblk;    break;
 			case 'redblkrb': exec = flags.redblkrb;  break;
-			case 'redload':  exec = (puzzle.pid==='roma'); break;
+			case 'redroad':  exec = (puzzle.pid==='roma'); break;
 		}
 		return (val && exec);
 	},
