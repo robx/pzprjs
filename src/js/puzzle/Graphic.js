@@ -329,14 +329,7 @@ Graphic:{
 	setPagePos : function(){
 		var rect, g = this.context;
 		if(!g){ return;}
-		if(!pzpr.env.browser.oldGecko){
-			rect = pzpr.util.getRect(g.child);
-		}
-		else{
-			rect = pzpr.util.getRect(g.canvas);
-			rect.left += parseInt(g.canvas.style.paddingLeft);
-			rect.top  += parseInt(g.canvas.style.paddingTop);
-		}
+		rect = pzpr.util.getRect(g.child);
 		this.pageX = this.x0 + (rect.left|0);
 		this.pageY = this.y0 + (rect.top|0);
 	},

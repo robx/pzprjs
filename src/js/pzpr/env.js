@@ -32,19 +32,16 @@ pzpr.env = (function(){
 	var UA  = navigator.userAgent;
 	
 	var bz = {
-		IE    : (!!document.uniqueID),
-		Presto: (!!window.opera),
-		WebKit: (UA.indexOf('AppleWebKit/') > -1),
-		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1),
-
 		IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
 		IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
 		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
 		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
-		IE10: !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==10)
+
+		Presto: (!!window.opera),
+		WebKit: (UA.indexOf('AppleWebKit/') > -1),
+		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1)
 	};
 	bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
-	bz.oldGecko = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 1.9); /* Firefox2.0かそれ以前 */
 	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
