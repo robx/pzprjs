@@ -202,21 +202,21 @@ AnsCheck:{
 	},
 
 	checkSideAreaNumberSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(room){ return room.number;});
+		return this.checkSideAreaSize(rinfo, function(area){ return area.number;});
 	},
 	checkAreaSize : function(rinfo, flag){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var room = rinfo.room[id];
-			if(room.error===-1||room.number<=0){ continue;}
-			if     (flag===1 && room.number<room.clist.length){
+			var area = rinfo.area[id];
+			if(area.error===-1||area.number<=0){ continue;}
+			if     (flag===1 && area.number<area.clist.length){
 				if(this.checkOnly){ return false;}
-				rinfo.room[id].clist.seterr(1);
+				rinfo.area[id].clist.seterr(1);
 				result = false;
 			}
-			else if(flag===2 && room.number>room.clist.length){
+			else if(flag===2 && area.number>area.clist.length){
 				if(this.checkOnly){ return false;}
-				rinfo.room[id].clist.seterr(1);
+				rinfo.area[id].clist.seterr(1);
 				result = false;
 			}
 		}
@@ -226,9 +226,9 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){  /* rinfo.maxは領域を分割した時に増加します. */
-			var room = rinfo.room[id], clist = room.clist;
-			room.error  =  0;
-			room.number = -1;
+			var area = rinfo.area[id], clist = area.clist;
+			area.error  =  0;
+			area.number = -1;
 			var nums = [];
 			var emptycell=0, numcnt=0, filled=0;
 			for(var i=0;i<clist.length;i++){
@@ -238,11 +238,11 @@ AnsCheck:{
 				else{ nums[num]++;}
 			}
 
-			if(numcnt>1 && emptycell>0){ room.error=4;}
-			else if(numcnt===0)        { room.error=3;}
-			else if(numcnt===1 && filled < nums[filled]+emptycell){ room.error=2;  room.number=filled;}
-			else if(numcnt===1 && filled > nums[filled]+emptycell){ room.error=1;  room.number=filled;}
-			else if(numcnt===1)                                   { room.error=-1; room.number=filled;}
+			if(numcnt>1 && emptycell>0){ area.error=4;}
+			else if(numcnt===0)        { area.error=3;}
+			else if(numcnt===1 && filled < nums[filled]+emptycell){ area.error=2;  area.number=filled;}
+			else if(numcnt===1 && filled > nums[filled]+emptycell){ area.error=1;  area.number=filled;}
+			else if(numcnt===1)                                   { area.error=-1; area.number=filled;}
 			else{
 				// ここまで来るのはemptycellが0で2種類以上の数字が入っている領域のみ
 				// -> それぞれに別の領域idを割り当てて判定できるようにする
@@ -252,26 +252,26 @@ AnsCheck:{
 					this.assignNewID(rinfo, clist[i]);
 				}
 				// 最後に自分の情報を無効にする
-				rinfo.room[id] = {clist:null, error:0, number:-1};
+				rinfo.area[id] = {clist:null, error:0, number:-1};
 			}
 		}
 		return rinfo;
 	},
 	assignNewID : function(rinfo, cell0){
-		var room = rinfo.addRoom(), stack=[cell0], n = 0;
+		var area = rinfo.addArea(), stack=[cell0], n = 0;
 		while(stack.length>0){
 			var cell=stack.pop();
 			if(rinfo.id[cell.id]!==0){ continue;}
 
-			room.clist[n++] = cell;
-			rinfo.id[cell.id] = room.id;
+			area.clist[n++] = cell;
+			rinfo.id[cell.id] = area.id;
 
 			var list = cell.getdir4clist();
 			for(var i=0;i<list.length;i++){
 				if(cell.sameNumber(list[i][0])){ stack.push(list[i][0]);}
 			}
 		}
-		room.clist.length = n;
+		area.clist.length = n;
 	}
 },
 

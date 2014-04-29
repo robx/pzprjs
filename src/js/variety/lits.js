@@ -25,7 +25,7 @@ Board:{
 		var tinfo = new this.owner.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist.filter(function(cell){ return cell.isShade();});
+			var clist = rinfo.area[r].clist.filter(function(cell){ return cell.isShade();});
 			var len = clist.length;
 			if(len===4){
 				var bx0=clist[0].bx, by0=clist[0].by, value=0;
@@ -50,21 +50,21 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
 			if(dinfo.id[cell0.id]!==0){ continue;}
-			var room = dinfo.addRoom();
+			var area = dinfo.addArea();
 			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell = stack.pop();
 				if(dinfo.id[cell.id]!==0){ continue;}
 
-				room.clist[n++] = cell;
-				dinfo.id[cell.id] = room.id;
+				area.clist[n++] = cell;
+				dinfo.id[cell.id] = area.id;
 
 				var list = cell.getdir4clist();
 				for(var i=0;i<list.length;i++){
 					if(tinfo.id[cell.id]===tinfo.id[list[i][0].id]){ stack.push(list[i][0]);}
 				}
 			}
-			room.clist.length = n;
+			area.clist.length = n;
 		}
 		return dinfo;
 	}
@@ -238,7 +238,7 @@ AnsCheck:{
 	checkSeqBlocksInRoom : function(){
 		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.getClist(r).filter(function(cell){ return cell.isShade()});
+			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -251,7 +251,7 @@ AnsCheck:{
 	checkTetromino : function(rinfo){
 		var dinfo = this.owner.board.getTetrominoInfo(rinfo), result = true;
 		for(var r=1;r<=dinfo.max;r++){
-			var clist = dinfo.room[r].clist;
+			var clist = dinfo.area[r].clist;
 			if(clist.length<=4){ continue;}
 			if(this.checkOnly){ return false;}
 			clist.seterr(2);

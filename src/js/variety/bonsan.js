@@ -257,7 +257,7 @@ AnsCheck:{
 
 	checkFractal : function(rinfo, getval){
 		for(var id=1;id<=rinfo.max;id++){
-			var clist = rinfo.room[id].clist, d = clist.getRectSize();
+			var clist = rinfo.area[id].clist, d = clist.getRectSize();
 			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];

@@ -247,7 +247,7 @@ Board:{
 	// 色をつける系関数
 	encolorall : function(){
 		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){ rinfo.room[id].clist.encolor();}
+		for(var id=1;id<=rinfo.max;id++){ rinfo.area[id].clist.encolor();}
 		this.owner.redraw();
 	},
 
@@ -255,9 +255,9 @@ Board:{
 	getAreaStarInfoAll : function(){
 		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var room = rinfo.room[id], ret = room.clist.getAreaStarInfo();
-			room.star  = ret.star;
-			room.error = ret.err;
+			var area = rinfo.area[id], ret = area.clist.getAreaStarInfo();
+			area.star  = ret.star;
+			area.error = ret.err;
 		}
 		return rinfo;
 	}
@@ -480,8 +480,8 @@ AnsCheck:{
 	checkFractal : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist;
-			var star = rinfo.room[r].star;
+			var clist = rinfo.area[r].clist;
+			var star = rinfo.area[r].star;
 			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
@@ -499,10 +499,10 @@ AnsCheck:{
 	checkErrorFlag : function(rinfo, val){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			if(rinfo.room[r].error!==val){ continue;}
+			if(rinfo.area[r].error!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
-			rinfo.room[r].clist.seterr(1);
+			rinfo.area[r].clist.seterr(1);
 			result = false;
 		}
 		return result;

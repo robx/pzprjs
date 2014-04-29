@@ -189,9 +189,9 @@ AnsCheck:{
 	getErrorFlag_cell : function(){
 		var rinfo = this.owner.board.getRoomInfo();
 		for(var id=1,max=rinfo.max;id<=max;id++){
-			var room = rinfo.room[id], clist = room.clist;
-			room.error  =  0;		// 後でエラー表示するエラーのフラグ
-			room.number = -1;		// そのエリアに入っている数字
+			var area = rinfo.area[id], clist = area.clist;
+			area.error  =  0;		// 後でエラー表示するエラーのフラグ
+			area.number = -1;		// そのエリアに入っている数字
 			var nums = [];			// キーの数字が入っている数
 			var numcnt = 0;			// エリアに入っている数字の種類数
 			var emptycell = 0;		// 数字が入っていないセルの数
@@ -202,11 +202,11 @@ AnsCheck:{
 				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 				else{ nums[num]++;}
 			}
-			if(numcnt>1)                               { room.error=4;}
-			else if(numcnt==0)                         { room.error=3;}
-			else if(numcnt==1 && filled < nums[filled]){ room.error=1; room.number=filled;}
-			else if(numcnt==1 && filled > nums[filled]){ room.error=2; room.number=filled;}
-			else                                       { room.error=-1;room.number=filled;}
+			if(numcnt>1)                               { area.error=4;}
+			else if(numcnt==0)                         { area.error=3;}
+			else if(numcnt==1 && filled < nums[filled]){ area.error=1; area.number=filled;}
+			else if(numcnt==1 && filled > nums[filled]){ area.error=2; area.number=filled;}
+			else                                       { area.error=-1;area.number=filled;}
 		}
 		return rinfo;
 	}

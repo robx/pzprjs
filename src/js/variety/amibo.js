@@ -158,32 +158,32 @@ BoardExec:{
 		var puzzle = this.owner, bd = puzzle.board;
 		function eachcell(cell, vert){
 			var qa = cell.qans, isbar = (qa===3 || qa===(vert?1:2));
-			if(!room && isbar){
-				room = binfo.addRoom();
-				room.vert = vert;
-				if(cell2!==null){ binfo.pole[cell2.id].push(room.id);}
+			if(!bar && isbar){
+				bar = binfo.addArea();
+				bar.vert = vert;
+				if(cell2!==null){ binfo.pole[cell2.id].push(bar.id);}
 			}
-			else if(!!room && !isbar){
-				binfo.pole[cell.id].push(room.id);
-				room = null;
+			else if(!!bar && !isbar){
+				binfo.pole[cell.id].push(bar.id);
+				bar = null;
 			}
 			
-			if(!!room && isbar){
-				room.clist.add(cell);
-				binfo.id[cell.id].push(room.id);	// タテヨコで別のIDにするため、配列にする
+			if(!!bar && isbar){
+				bar.clist.add(cell);
+				binfo.id[cell.id].push(bar.id);	// タテヨコで別のIDにするため、配列にする
 			}
 			cell2 = cell;
 		}
 
 		var binfo = new puzzle.AreaBarInfo();
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var room=null, cell2=null;
+			var bar=null, cell2=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
 				eachcell(bd.getc(bx,by),true);
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var room=null, cell2=null;
+			var bar=null, cell2=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 				eachcell(bd.getc(bx,by),false);
 			}
@@ -191,12 +191,12 @@ BoardExec:{
 		
 		for(var c=0;c<bd.cellmax;c++){
 			if(binfo.id[c].length==2){ /* 0～2になる */
-				binfo.room[binfo.id[c][0]].link.push(binfo.id[c][1]);
-				binfo.room[binfo.id[c][1]].link.push(binfo.id[c][0]);
+				binfo.area[binfo.id[c][0]].link.push(binfo.id[c][1]);
+				binfo.area[binfo.id[c][1]].link.push(binfo.id[c][0]);
 			}
 			if(bd.cell[c].isNum()){
 				for(var i=0;i<binfo.pole[c].length;i++){
-					binfo.room[binfo.pole[c][i]].pole.push(c);
+					binfo.area[binfo.pole[c][i]].pole.push(c);
 				}
 			}
 			else{ binfo.pole[c] = [];}
@@ -215,10 +215,10 @@ BoardExec:{
 			this.pole[c]=[];
 		}
 	},
-	addRoom : function(){
-		var roomid = ++this.max;
-		return this.room[roomid] = {
-			clist:(new this.owner.CellList()), id:roomid,
+	addArea : function(){
+		var areaid = ++this.max;
+		return this.area[areaid] = {
+			clist:(new this.owner.CellList()), id:areaid,
 			link:[], pole:[], vert:false
 		};
 	}
@@ -481,11 +481,11 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
-				var qn=cell.getNum(), id=binfo.pole[c][i], room = binfo.room[id], clist = room.clist, llen=clist.length;
+				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
 					if(this.checkOnly){ return false;}
 					cell.seterr(1);
-					clist.setErrorBar(room.vert);
+					clist.setErrorBar(bar.vert);
 					result = false;
 				}
 			}
@@ -495,13 +495,13 @@ AnsCheck:{
 	checkCrossedLength : function(binfo){
 		var result=true;
 		for(var id=1,max=binfo.max;id<=max;id++){
-			var check = false, room = binfo.room[id], linkid = room.link, clist = room.clist;
+			var check = false, bar = binfo.area[id], linkid = bar.link, clist = bar.clist;
 			for(var i=0,len=linkid.length;i<len;i++){
-				if(clist.length===binfo.room[linkid[i]].clist.length){ check=true; break;}
+				if(clist.length===binfo.area[linkid[i]].clist.length){ check=true; break;}
 			}
 			if(!check){
 				if(this.checkOnly){ return false;}
-				clist.setErrorBar(room.vert);
+				clist.setErrorBar(bar.vert);
 				result = false;
 			}
 		}

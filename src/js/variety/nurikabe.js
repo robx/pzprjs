@@ -36,14 +36,14 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
 			if(winfo.id[cell0.id]!==0){ continue;}
-			var room = winfo.addRoom();
+			var area = winfo.addArea();
 			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell = stack.pop();
 				if(winfo.id[cell.id]!==0){ continue;}
 
-				room.clist[n++] = cell;
-				winfo.id[cell.id] = room.id;
+				area.clist[n++] = cell;
+				winfo.id[cell.id] = area.id;
 
 				var bx=cell.bx, by=cell.by;
 				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
@@ -51,7 +51,7 @@ Board:{
 					if(winfo.id[clist[i].id]===0){ stack.push(clist[i]);}
 				}
 			}
-			room.clist.length = n;
+			area.clist.length = n;
 		}
 		return winfo;
 	}

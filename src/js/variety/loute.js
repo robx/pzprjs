@@ -185,18 +185,18 @@ Board:{
 		rinfo.place = [];
 
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist, d = clist.getRectSize();
+			var clist = rinfo.area[r].clist, d = clist.getRectSize();
 
 			/* 四角形のうち別エリアとなっている部分を調べる */
 			/* 幅が1なので座標自体は調べなくてよいはず      */
 			var subclist = this.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var dl = subclist.getRectSize();
 			if( subclist.length==0 || (dl.cols*dl.rows!=dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
-				rinfo.room[r].shape = 0;
+				rinfo.area[r].shape = 0;
 				for(var i=0;i<clist.length;i++){ rinfo.place[clist[i].id] = 0;}
 			}
 			else{
-				rinfo.room[r].shape = 1; /* 幅が1のL字型 */
+				rinfo.area[r].shape = 1; /* 幅が1のL字型 */
 				for(var i=0;i<clist.length;i++){ rinfo.place[clist[i].id] = 1;} /* L字型ブロックのセル */
 
 				/* 端のセル */
@@ -430,9 +430,9 @@ AnsCheck:{
 	checkArrowCorner1 : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].shape===0){ continue;}
+			if(rinfo.area[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.room[id].clist;
+			var error = false, clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2){
@@ -449,9 +449,9 @@ AnsCheck:{
 	checkArrowCorner2 : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].shape===0){ continue;}
+			if(rinfo.area[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.room[id].clist;
+			var error = false, clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], adb = cell.adjborder, num = cell.getObjNum();
 				if(num>=1 && num<=4 &&
@@ -473,9 +473,9 @@ AnsCheck:{
 	checkCircleCorner : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].shape===0){ continue;}
+			if(rinfo.area[id].shape===0){ continue;}
 
-			var clist = rinfo.room[id].clist;
+			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.isCircle() && rinfo.place[cell.id]!==3){
@@ -492,9 +492,9 @@ AnsCheck:{
 	checkLblock : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.room[id].shape===0){
+			if(rinfo.area[id].shape===0){
 				if(this.checkOnly){ return false;}
-				rinfo.room[id].clist.seterr(1);
+				rinfo.area[id].clist.seterr(1);
 				result = false;
 			}
 		}

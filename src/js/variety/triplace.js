@@ -101,8 +101,8 @@ Board:{
 	getTileInfo : function(){
 		var tinfo = this.tiles.getAreaInfo();
 		for(var r=1;r<=tinfo.max;r++){
-			var d = tinfo.room[r].clist.getRectSize();
-			tinfo.room[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
+			var d = tinfo.area[r].clist.getRectSize();
+			tinfo.area[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
 		}
 		return tinfo;
 	}
@@ -321,7 +321,7 @@ AnsCheck:{
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
 			var tid = tiles.getRoomID(clist[i]);
-			if(tiles.room[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
+			if(tiles.area[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
 		}
 		if(number>=0 && count!=number){
 			keyobj.seterr(1);

@@ -109,7 +109,7 @@ AnsCheck:{
 	checkOneArea : function(cinfo){
 		var bd = this.owner.board;
 		if(cinfo.max>1){
-			cinfo.room[1].clist.seterr(1);
+			cinfo.area[1].clist.seterr(1);
 			return false;
 		}
 		return true;
@@ -209,8 +209,8 @@ AnsCheck:{
 	checkAllBlock : function(cinfo, func, evalfunc){
 		var result = true;
 		for(var id=1;id<=cinfo.max;id++){
-			var room = cinfo.room[id], clist = room.clist;
-			var top = (!!room.top ? room.top : clist.getQnumCell());
+			var area = cinfo.area[id], clist = area.clist;
+			var top = (!!area.top ? area.top : clist.getQnumCell());
 			var d = clist.getRectSize();
 			var a = (!!func ? clist.filter(func) : clist).length;
 			var n = (!top.isnull ? top.getQnum() : -1);
@@ -269,7 +269,7 @@ AnsCheck:{
 	checkConnectObjectCount : function(linfo, evalfunc){
 		var result = true;
 		for(var id=1;id<=linfo.max;id++){
-			var count = linfo.room[id].clist.filter(function(cell){ return cell.isNum();}).length;
+			var count = linfo.area[id].clist.filter(function(cell){ return cell.isNum();}).length;
 			if( !evalfunc(count) ){
 				if(this.checkOnly){ return false;}
 				if(result){ this.owner.board.border.seterr(-1);}
@@ -288,10 +288,10 @@ AnsCheck:{
 		var sides = rinfo.getSideAreaInfo();
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
-				var s=sides[r][i], a1=getval(rinfo.room[r]), a2=getval(rinfo.room[s]);
+				var s=sides[r][i], a1=getval(rinfo.area[r]), a2=getval(rinfo.area[s]);
 				if(a1>0 && a2>0 && a1==a2){
-					rinfo.room[r].clist.seterr(1);
-					rinfo.room[s].clist.seterr(1);
+					rinfo.area[r].clist.seterr(1);
+					rinfo.area[s].clist.seterr(1);
 					return false;
 				}
 			}
@@ -341,7 +341,7 @@ AnsCheck:{
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist;
+			var clist = rinfo.area[r].clist;
 			if(!this.isDifferentNumberInClist(clist, numfunc)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -452,10 +452,10 @@ AnsCheck:{
 	checkErrorFlag_cell : function(rinfo, val){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			if(rinfo.room[r].error!==val){ continue;}
+			if(rinfo.area[r].error!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
-			rinfo.room[r].clist.seterr(1);
+			rinfo.area[r].clist.seterr(1);
 			result = false;
 		}
 		return result;

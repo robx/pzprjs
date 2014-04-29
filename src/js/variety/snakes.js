@@ -121,14 +121,14 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
 			if(sinfo.id[cell0.id]!==0){ continue;}
-			var room = sinfo.addRoom();
+			var snake = sinfo.addArea();
 			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell = stack.pop();
 				if(sinfo.id[cell.id]!==0){ continue;}
 
-				room.clist[n++] = cell;
-				sinfo.id[cell.id] = room.id;
+				snake.clist[n++] = cell;
+				sinfo.id[cell.id] = snake.id;
 
 				var list = cell.getdir4clist();
 				for(var i=0;i<list.length;i++){
@@ -136,7 +136,7 @@ Board:{
 					if(Math.abs(cell.anum-cell2.anum)===1){ stack.push(cell2);}
 				}
 			}
-			room.clist.length = n;
+			snake.clist.length = n;
 		}
 		return sinfo;
 	}
@@ -317,7 +317,7 @@ AnsCheck:{
 	checkSnakesView : function(sinfo){
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
-			var clist = sinfo.room[r].clist;
+			var clist = sinfo.area[r].clist;
 			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
 			if(!cell){ continue;}
 
@@ -344,7 +344,7 @@ AnsCheck:{
 				if(this.checkOnly){ return false;}
 				clist2.seterr(1);
 				clist.seterr(1);
-				sinfo.room[sid].clist.seterr(1);
+				sinfo.area[sid].clist.seterr(1);
 				result = false;
 			}
 		}

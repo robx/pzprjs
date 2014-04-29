@@ -222,8 +222,8 @@ AnsCheck:{
 			if(ainfo[i].length===1){ continue;}
 			var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
 			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])>0){
-				rinfo.room[r1].clist.seterr(1);
-				rinfo.room[r2].clist.seterr(1);
+				rinfo.area[r1].clist.seterr(1);
+				rinfo.area[r2].clist.seterr(1);
 				result = false;
 			}
 		}

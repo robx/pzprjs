@@ -145,7 +145,7 @@ AnsCheck:{
 	checkLshapeArea : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist;
+			var clist = rinfo.area[r].clist;
 			var cell = clist.getQnumCell();
 			if(cell.isnull){ continue;}
 

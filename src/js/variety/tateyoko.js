@@ -145,7 +145,7 @@ AreaBarManager:{
 				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
 				cell = pos.getc();
 			}
-			binfo.addRoomByClist(list);
+			binfo.addAreaByClist(list);
 		}
 		return binfo;
 	}

@@ -253,7 +253,7 @@ AnsCheck:{
 	checkSameObjectInRoom_kaero : function(rinfo){
 		var result=true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist, rnum=-1;
+			var clist = rinfo.area[r].clist, rnum=-1;
 			var cbase = clist.getDeparture();
 			for(var i=0;i<cbase.length;i++){
 				var num=cbase[i].qnum;

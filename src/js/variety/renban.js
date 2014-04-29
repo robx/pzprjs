@@ -149,7 +149,7 @@ AnsCheck:{
 	checkNumbersInRoom : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.room[r].clist;
+			var clist = rinfo.area[r].clist;
 			if(clist.length<=1){ continue;}
 			var max=-1, min=clist[0].maxnum, breakflag=false;
 			for(var i=0,len=clist.length;i<len;i++){

@@ -145,7 +145,7 @@ AnsCheck:{
 	checkRoom2 : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){
-			var cnt=0, clist=rinfo.room[r].clist;
+			var cnt=0, clist=rinfo.area[r].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], adb=cell.adjborder, border;
 				border=adb.top;    if(border.ques===1 && border.line===1){ cnt++;}

@@ -44,7 +44,7 @@ Cell:{
 					if(idlist[j]===r){ r=null; break;}
 				}
 				if(r!==null){
-					cnt += cinfo.room[r].clist.length
+					cnt += cinfo.area[r].clist.length
 					idlist.push(r);
 				}
 			}

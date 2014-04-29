@@ -453,7 +453,7 @@ AnsCheck:{
 	checkFillingCount : function(iarea){
 		var result = true;
 		for(var id=1;id<=iarea.max;id++){
-			var clist = iarea.room[id].clist, num = null;
+			var clist = iarea.area[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
 				var qd = clist[i].getQnum2();
 				if(qd!==-1){

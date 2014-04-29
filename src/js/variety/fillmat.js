@@ -109,7 +109,7 @@ FileIO:{
 		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
 	},
 	checkSideAreaRoomSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(room){ return room.clist.length;});
+		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.length;});
 	}
 },
 "AnsCheck@usotatami":{

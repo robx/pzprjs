@@ -157,14 +157,14 @@ FileIO:{
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
 	},
 	checkSideAreaLandSide : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(room){ return room.clist.getLandAreaOfClist();});
+		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.getLandAreaOfClist();});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var result = true;
-		for(var r=1;r<=this.owner.board.rooms.max;r++){
-			var clist = this.owner.board.rooms.getClist(r).filter(function(cell){ return cell.isShade()});
+		var result = true, rooms = this.owner.board.rooms;
+		for(var r=1;r<=rooms.max;r++){
+			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);

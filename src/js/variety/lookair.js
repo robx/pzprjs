@@ -142,7 +142,7 @@ AnsCheck:{
 		}
 
 		for(var r=1;r<=cinfo.max;r++){
-			var base = cinfo.room[r].clist, d = base.getRectSize();
+			var base = cinfo.area[r].clist, d = base.getRectSize();
 			/* 相互に見る必要は無いので、上と左だけ確認する */
 			for(var bx=d.x1; bx<=d.x2; bx+=2){
 				for(var by=d.y1-2; by>=this.owner.board.minby; by-=2){

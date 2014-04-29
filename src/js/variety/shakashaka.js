@@ -214,14 +214,14 @@ Board:{
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
 			if(winfo.id[cell0.id]!==0){ continue;}
-			var room = winfo.addRoom();
+			var area = winfo.addArea();
 			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell=stack.pop();
 				if(winfo.id[cell.id]!==0){ continue;}
 
-				room.clist[n++] = cell;
-				winfo.id[cell.id] = room.id;
+				area.clist[n++] = cell;
+				winfo.id[cell.id] = area.id;
 
 				var a=cell.qans, b, cell2, adc=cell.adjacent;
 				cell2=adc.top;    if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
@@ -229,7 +229,7 @@ Board:{
 				cell2=adc.left;   if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
 				cell2=adc.right;  if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
 			}
-			room.clist.length = n;
+			area.clist.length = n;
 		}
 		return winfo;
 	}
@@ -354,7 +354,7 @@ AnsCheck:{
 		var result = true;
 		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
-			var clist=winfo.room[id].clist, d=clist.getRectSize();
+			var clist=winfo.area[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;
 			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.checkOnly){ return false;}
@@ -366,7 +366,7 @@ AnsCheck:{
 	},
 	// 斜め領域判定用
 	isAreaRect_slope : function(winfo,id){
-		var clist = winfo.room[id].clist;
+		var clist = winfo.area[id].clist;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], adc = cell.adjacent, a = cell.getQans();
 			if( ((a==4||a==5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!=id)) ||

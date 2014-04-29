@@ -52,15 +52,15 @@ Board:{
 		var cinfo = this.blocks.getAreaInfo();
 
 		for(var r=1;r<=cinfo.max;r++){
-			var d=[], cnt=0, clist=cinfo.room[r].clist;
-			cinfo.room[r].size = clist.length;
+			var d=[], cnt=0, clist=cinfo.area[r].clist;
+			cinfo.area[r].size = clist.length;
 
 			for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
 			for(var i=0;i<clist.length;i++){
 				d[ tinfo.getRoomID(clist[i]) ]++;
 			}
 			for(var i=1;i<=tinfo.max;i++){ if(d[i]>0){ cnt++;}}
-			cinfo.room[r].dotcnt = cnt;
+			cinfo.area[r].dotcnt = cnt;
 		}
 		return cinfo;
 	}
@@ -219,10 +219,10 @@ AnsCheck:{
 	checkMiniBlockCount : function(cinfo, flag){
 		var result=true;
 		for(var r=1;r<=cinfo.max;r++){
-			var cnt=cinfo.room[r].dotcnt;
+			var cnt=cinfo.area[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
 				if(this.checkOnly){ return false;}
-				cinfo.room[r].clist.seterr(1);
+				cinfo.area[r].clist.seterr(1);
 				result = false;
 			}
 		}
@@ -232,18 +232,18 @@ AnsCheck:{
 	checkDifferentShapeBlock : function(cinfo){
 		var result=true, sides=cinfo.getSideAreaInfo(), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
-			var room1 = cinfo.room[r];
-			if(room1.dotcnt!==2){ continue;}
+			var area1 = cinfo.area[r];
+			if(area1.dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){
-				var s = sides[r][i], room2 = cinfo.room[s];
+				var s = sides[r][i], area2 = cinfo.area[s];
 				// サイズ等は先に確認
-				if(room2.dotcnt!==2){ continue;}
-				if(room1.size!==room2.size){ continue;}
+				if(area2.dotcnt!==2){ continue;}
+				if(area1.size!==area2.size){ continue;}
 
 				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
 					if(this.checkOnly){ return false;}
-					room1.clist.seterr(1);
-					room2.clist.seterr(1);
+					area1.clist.seterr(1);
+					area2.clist.seterr(1);
 					result = false;
 				}
 			}
@@ -251,8 +251,8 @@ AnsCheck:{
 		return result;
 	},
 	isDifferentShapeBlock : function(cinfo, r, s, sc){
-		if(!sc[r]){ sc[r]=cinfo.room[r].clist.getBlockShapes();}
-		if(!sc[s]){ sc[s]=cinfo.room[s].clist.getBlockShapes();}
+		if(!sc[r]){ sc[r]=cinfo.area[r].clist.getBlockShapes();}
+		if(!sc[s]){ sc[s]=cinfo.area[s].clist.getBlockShapes();}
 		var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
 		var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
 		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}

@@ -8,12 +8,12 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 LineManager:{
 	initialize : function(){
-		this.ltotal  = [];
-
-		this.blist = [];
-		this.id = [];
-		this.max = 0;
+		this.id = [];			// 個々の線のid
+		this.path = [];			// つながっている線の情報を保持する
+		this.max = 0;			// 1からいくつまでidが使用されているか保持する
 		this.invalidid = [];	// 使わなくなったIDのリスト
+
+		this.ltotal  = [0,0,0,0,0];	// 線が0〜4本引いてあるセル/交点がいくつあるか保持している
 
 		this.enabled = (this.isCenterLine || this.borderAsLine);
 	},
@@ -42,6 +42,12 @@ LineManager:{
 	// lines.newIrowake()  線の情報が再構築された際、線に色をつける
 	//---------------------------------------------------------------------------
 	reset : function(){
+		// 基本変数初期化
+		this.id = [];
+		this.path = [];
+		this.max = 0;
+		this.invalidid = [];
+
 		// lcnt, ltotal変数(配列)初期化
 		var bd = this.owner.board;
 		if(this.isCenterLine){
@@ -53,34 +59,29 @@ LineManager:{
 			this.ltotal=[bd.crossmax, 0, 0, 0, 0];
 		}
 
-		// その他の変数初期化
-		this.max = 0;
-		for(var id=0;id<bd.bdmax;id++){ this.id[id] = null;}
-		this.invalidid = [];
-
 		this.rebuild();
 	},
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var bd = this.owner.board, blist = new this.owner.BorderList();
+		var bd = this.owner.board;
+		for(var id=0;id<bd.bdmax;id++){ this.id[id] = 0;}
+
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
-				blist.add(border);
-
 				var obj1 = border.lineedge[0], obj2 = border.lineedge[1];
 				if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt++; this.ltotal[obj1.lcnt]++;}
 				if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt++; this.ltotal[obj2.lcnt]++;}
 			}
 		}
 
-		this.searchLine(blist);
+		this.searchLine(bd.border);
 		if(this.owner.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
-			var blist = this.blist[i];
+			var blist = this.path[i].blist;
 			if(blist.length>0){
 				var newColor = this.owner.painter.getNewLineColor();
 				for(var n=0;n<blist.length;n++){ blist[n].color = newColor;}
@@ -191,16 +192,16 @@ LineManager:{
 			pathid = this.id[border2.id];
 			border.color  = border2.color;
 		}
-		this.blist[pathid].add(border);
+		this.path[pathid].blist.add(border);
 		this.id[border.id] = pathid;
 	},
 	removeLineInfo : function(border){
 		var pathid = this.id[border.id];
 		if(pathid===null || pathid===0){ return;}
 
-		this.blist[pathid].remove(border);
+		this.path[pathid].blist.remove(border);
 		this.id[border.id] = null;
-		if(this.blist[pathid].length===0){ this.removePath(pathid);}
+		if(this.path[pathid].blist.length===0){ this.removePath(pathid);}
 		border.color = "";
 	},
 	remakeLineInfo : function(border){
@@ -234,14 +235,14 @@ LineManager:{
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ newid = ++this.max;}
 
-		this.blist[newid] = new this.owner.BorderList();
+		this.path[newid] = {blist:(new this.owner.BorderList())};
 		return newid;
 	},
 	removePath : function(id){
-		var blist = this.getBlist(id);
+		var blist = this.path[id].blist;
 		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
 		
-		this.blist[id] = new this.owner.BorderList();
+		this.path[id] = {blist:(new this.owner.BorderList())};
 		this.invalidid.push(id);
 		return blist;
 	},
@@ -256,7 +257,7 @@ LineManager:{
 		for(var i=0,len=blist.length;i<len;i++){
 			var r = this.id[blist[i].id];
 			if(r===null || r<=0){ continue;}
-			if(largeid===null || this.blist[largeid].length < this.blist[r].length){
+			if(largeid===null || this.path[largeid].blist.length < this.path[r].blist.length){
 				largeid = r;
 				longColor = blist[i].color;
 			}
@@ -272,14 +273,13 @@ LineManager:{
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
 		for(var i=1;i<assign.length;i++){
-			var blist = this.blist[assign[i]];
-			if(this.blist[longid].length<blist.length){ longid = assign[i];}
+			if(this.path[longid].blist.length < this.path[assign[i]].blist.length){ longid = assign[i];}
 		}
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
 			var newColor = (assign[i]===longid ? longColor : puzzle.painter.getNewLineColor());
-			var blist = this.getBlist(assign[i]);
+			var blist = this.path[assign[i]].blist;
 			for(var n=0,len=blist.length;n<len;n++){ blist[n].color = newColor;}
 			blist_all.extend(blist);
 		}
@@ -377,7 +377,7 @@ LineManager:{
 					var border = pos.getb();
 					if(this.id[border.id]!==0){ break;}
 					this.id[border.id] = newid;
-					this.blist[newid].add(border);
+					this.path[newid].blist.add(border);
 				}
 			}
 		}
@@ -399,10 +399,8 @@ LineManager:{
 
 	//--------------------------------------------------------------------------------
 	// info.getBlistByBorder() 指定した線が含まれる領域の線配列を取得する
-	// info.getBlist()         指定した領域の線配列を取得する
 	//--------------------------------------------------------------------------------
-	getBlistByBorder : function(border){ return this.blist[this.id[border.id]];},
-	getBlist : function(id){ return this.blist[id];}
+	getBlistByBorder : function(border){ return this.path[this.id[border.id]].blist;}
 },
 
 //---------------------------------------------------------------------------
@@ -417,7 +415,6 @@ LineInfo:{
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 		this.path = [];	// 各部屋のidlist等の情報を保持する(info.path[id].blistで取得)
 	},
-	getRoomID : function(obj){ return this.id[obj.id];},
 
 	//---------------------------------------------------------------------------
 	// info.addPath()         空のPathを追加する

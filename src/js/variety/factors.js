@@ -183,7 +183,7 @@ AnsCheck:{
 	checkRoomNumber : function(rinfo){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
-			var room = rinfo.room[id], clist = room.clist;
+			var room = rinfo.area[id], clist = room.clist;
 			var product = clist.getProduct();
 			if(product === 0){ continue;}
 

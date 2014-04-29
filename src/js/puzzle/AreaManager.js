@@ -11,11 +11,12 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 AreaManager:{
 	initialize : function(){
-		this.max;
-		this.invalidid;	// 使わなくなったIDのリスト
-		this.id;		// 各々のセルのid
-		this.linkinfo;	// セルの情報を保持しておく
+		this.id = [];			// 各々のセルのid
+		this.area = [];			// つながっている領域の情報を保持する
+		this.max = 0;			// 1からいくつまでidが使用されているか保持する
+		this.invalidid = [];	// 使わなくなったIDのリスト
 
+		this.linkinfo = [];		// セルの情報を保持しておく
 		this.separate = [];		// 境界線に線が引いてあるかどうか
 	},
 	init : function(){
@@ -46,11 +47,14 @@ AreaManager:{
 	// info.rebuild() 既存の情報からデータを再設定する
 	//--------------------------------------------------------------------------------
 	reset : function(){
+		// 基本変数初期化
+		this.id        = [];
+		this.area      = [];
 		this.max       = 0;
 		this.invalidid = [];
-		this.id        = [];
-		this.linkinfo  = [];
 
+		// 状態のチェックに使用する変数初期化
+		this.linkinfo  = [];
 		this.separate  = [];
 
 		this.rebuild();
@@ -59,17 +63,16 @@ AreaManager:{
 		if(!this.enabled){ return;}
 
 		var bd = this.owner.board;
-		if(bd.hasborder){
-			for(var id=0;id<bd.bdmax;id++){
-				this.separate[id] = false;
-				this.checkSeparateInfo(bd.border[id]);
-			}
+		for(var c=0;c<bd.cellmax;c++){ this.id[c] = 0;}
+
+		for(var c=0;c<bd.cellmax;c++){
+			this.linkinfo[c] = 0;
+			this.checkLinkInfo(bd.cell[c]);
 		}
 
-		for(var cc=0;cc<bd.cellmax;cc++){
-			this.linkinfo[cc] = 0;
-			this.checkLinkInfo(bd.cell[cc]);
-			this.id[cc] = 0;
+		for(var id=0;id<bd.bdmax;id++){ /* hasborder=0の時はbdmax=0です */
+			this.separate[id] = false;
+			this.checkSeparateInfo(bd.border[id]);
 		}
 
 		this.searchIdlist(bd.cell);
@@ -198,16 +201,16 @@ AreaManager:{
 			areaid = this.id[cell2.id];
 			if(this.irowakeEnable()){ cell.color = cell2.color;}
 		}
-		this[areaid].clist.add(cell);
+		this.area[areaid].clist.add(cell);
 		this.id[cell.id] = areaid;
 	},
 	removeCell : function(cell){
 		var areaid = this.id[cell.id];
 		if(areaid===null || areaid===0){ return;}
 
-		this[areaid].clist.remove(cell);
+		this.area[areaid].clist.remove(cell);
 		this.id[cell.id] = null;
-		if(this[areaid].clist.length===0){ this.removeArea(areaid);}
+		if(this.area[areaid].clist.length===0){ this.removeArea(areaid);}
 		if(this.irowakeEnable()){ cell.color = "";}
 	},
 	remakeInfo : function(cidlist){
@@ -235,14 +238,14 @@ AreaManager:{
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ newid = ++this.max;}
 
-		this[newid] = {clist:(new this.owner.CellList())};
+		this.area[newid] = {clist:(new this.owner.CellList())};
 		return newid;
 	},
 	removeArea : function(id){
-		var clist = this[id].clist;
+		var clist = this.area[id].clist;
 		for(var i=0;i<clist.length;i++){ this.id[clist[i].id] = null;}
 		
-		this[id] = {clist:(new this.owner.CellList())};
+		this.area[id] = {clist:(new this.owner.CellList())};
 		this.invalidid.push(id);
 		return clist;
 	},
@@ -264,7 +267,7 @@ AreaManager:{
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
-			var clist = this[i].clist;
+			var clist = this.area[i].clist;
 			if(clist.length>0){
 				var newColor = this.getNewColor();
 				for(var n=0;n<clist.length;n++){ clist[n].color = newColor;}
@@ -282,7 +285,7 @@ AreaManager:{
 		for(var i=0;i<cidlist.length;i++){
 			var r = this.id[cidlist[i]];
 			if(r===null){ continue;}
-			if(largeid===null || this[largeid].clist.length < this[r].clist.length){
+			if(largeid===null || this.area[largeid].clist.length < this.area[r].clist.length){
 				largeid = r;
 				longColor = this.owner.board.cell[cidlist[i]].color;
 			}
@@ -300,13 +303,13 @@ AreaManager:{
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
 		for(var i=1;i<assign.length;i++){
-			if(this[longid].clist.length < this[assign[i]].clist.length){ longid = assign[i];}
+			if(this.area[longid].clist.length < this.area[assign[i]].clist.length){ longid = assign[i];}
 		}
 		
 		// 新しい色の設定
 		for(var i=0;i<assign.length;i++){
 			var newColor = (assign[i]===longid ? longColor : this.getNewColor());
-			var clist = this[assign[i]].clist;
+			var clist = this.area[assign[i]].clist;
 			for(var n=0,len=clist.length;n<len;n++){ clist[n].color = newColor;}
 			clist_all.extend(clist);
 		}
@@ -339,7 +342,7 @@ AreaManager:{
 			var cell=stack.pop();
 			if(this.id[cell.id]!==iid){ continue;}
 			this.id[cell.id] = newid;
-			this[newid].clist.add(cell);
+			this.area[newid].clist.add(cell);
 
 			var cidlist = this.getLinkCell(cell);
 			for(var i=0;i<cidlist.length;i++){
@@ -357,22 +360,17 @@ AreaManager:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(info.id[cell.id]!==0){ continue;}
-			var room = info.addRoomByClist( this.getClistByCell(cell) );
+			var area = info.addAreaByClist( this.getClistByCell(cell) );
 			
-			if(!!this.hastop){ room.top = this.getTopOfRoomByCell(cell);}
+			if(!!this.hastop){ area.top = this.getTopOfRoomByCell(cell);}
 		}
 		return info;
 	},
 
 	//--------------------------------------------------------------------------------
 	// info.getClistByCell() 指定したセルが含まれる領域のセル配列を取得する
-	// info.getClist()       指定した領域のセル配列を取得する
 	//--------------------------------------------------------------------------------
-	getClistByCell : function(cell){ return this.getClist(this.id[cell.id]);},
-	getClist : function(areaid){
-		if(!this[areaid]){ throw "Invalid Area ID:"+(areaid);}
-		return this[areaid].clist;
-	}
+	getClistByCell : function(cell){ return this.area[this.id[cell.id]].clist;}
 },
 
 //--------------------------------------------------------------------------------
@@ -462,7 +460,9 @@ AreaManager:{
 	searchSingle : function(cell, newid){
 		pzpr.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
-		if(this.hastop){ this.setTopOfRoom(newid);}
+		if(this.hastop){
+			this.area[newid].top = this.calcTopOfRoom(newid);
+		}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -489,12 +489,11 @@ AreaManager:{
 
 	//--------------------------------------------------------------------------------
 	// rooms.calcTopOfRoom()   部屋のTOPになりそうなセルのIDを返す
-	// rooms.setTopOfRoom()    部屋のTOPを設定する
 	// rooms.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
 	//--------------------------------------------------------------------------------
-	calcTopOfRoom : function(roomid){
+	calcTopOfRoom : function(areaid){
 		var bd=this.owner.board, cc=null, bx=bd.maxbx, by=bd.maxby;
-		var clist = this[roomid].clist;
+		var clist = this.area[areaid].clist;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
@@ -504,12 +503,9 @@ AreaManager:{
 		}
 		return cc;
 	},
-	setTopOfRoom : function(roomid){
-		this[roomid].top = this.calcTopOfRoom(roomid);
-	},
 	resetRoomNumber : function(){
 		for(var r=1;r<=this.max;r++){
-			var val = -1, clist = this[r].clist, top = this.getTopOfRoom(r);
+			var val = -1, clist = this.area[r].clist, top = this.getTopOfRoom(r);
 			for(var i=0,len=clist.length;i<len;i++){
 				var cell = clist[i];
 				if(this.id[cell.id]===r && cell.qnum!==-1){
@@ -534,11 +530,11 @@ AreaManager:{
 	getRoomID : function(cell){ return this.id[cell.id];},
 //	setRoomID : function(cell,val){ this.id[cell.id] = val;},
 
-	getTopOfRoomByCell : function(cell){ return this.owner.board.cell[this[this.id[cell.id]].top];},
-	getTopOfRoom       : function(id)  { return this.owner.board.cell[this[id].top];},
+	getTopOfRoomByCell : function(cell){ return this.owner.board.cell[this.area[this.id[cell.id]].top];},
+	getTopOfRoom       : function(id)  { return this.owner.board.cell[this.area[id].top];},
 
-	getCntOfRoomByCell : function(cell){ return this[this.id[cell.id]].clist.length;}
-//	getCntOfRoom       : function(id)  { return this[id].clist.length;},
+	getCntOfRoomByCell : function(cell){ return this.area[this.id[cell.id]].clist.length;}
+//	getCntOfRoom       : function(id)  { return this.area[id].clist.length;},
 },
 
 //--------------------------------------------------------------------------------
@@ -660,7 +656,7 @@ AreaManager:{
 		for(var r=1;r<=this.max;r++){ this.setMovedBase(r);}
 	},
 	setMovedBase : function(areaid){
-		var clist = this[areaid].clist, bd = this.owner.board;
+		var clist = this.area[areaid].clist, bd = this.owner.board;
 		if(clist.length<1){ return;}
 		else if(clist.length===1){ clist[0].base=clist[0]; return;}
 		
@@ -702,28 +698,28 @@ AreaInfo:{
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].clistで取得)
+		this.area = [];	// 各部屋のidlist等の情報を保持する(info.area[id].clistで取得)
 	},
 	getRoomID : function(obj){ return this.id[obj.id];},
-	getRoomByCell : function(cell){ return this.room[this.id[cell.id]];},
+	getRoomByCell : function(cell){ return this.area[this.id[cell.id]];},
 
 	//---------------------------------------------------------------------------
-	// info.addRoom()         空のRoomを追加する
-	// info.addRoomByClist()  指定されたclistを持つRoomを追加する
+	// info.addArea()         空の領域を追加する
+	// info.addAreaByClist()  指定されたclistを持つ領域を追加する
 	//---------------------------------------------------------------------------
-	addRoom : function(){
-		var roomid = ++this.max;
-		return this.room[roomid] = {clist:(new this.owner.CellList()), id:roomid};
+	addArea : function(){
+		var areaid = ++this.max;
+		return this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid};
 	},
-	addRoomByClist : function(clist){
-		var roomid = ++this.max;
-		var room = this.room[roomid] = {clist:(new this.owner.CellList()), id:roomid};
+	addAreaByClist : function(clist){
+		var areaid = ++this.max;
+		var area = this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid};
 
 		for(var i=0;i<clist.length;i++){
-			this.id[clist[i].id] = roomid;
+			this.id[clist[i].id] = areaid;
 		}
-		room.clist.extend(clist);
-		return room;
+		area.clist.extend(clist);
+		return area;
 	},
 
 	//---------------------------------------------------------------------------
