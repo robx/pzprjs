@@ -659,12 +659,10 @@ Graphic:{
 			// テキストが変わったときは入れ替える
 			var el = g.elements[g.vid];
 			if(g.use.svg){
-				var text0 = el.firstChild.innerHTML;
-				if(text!==text0){ el.replaceChild(document.createTextNode(text), el.firstChild);}
+				if(el.textContent!==text){ el.textContent = text;}
 			}
 			else if(g.use.vml){
-				var text0 = el.lastChild.string;
-				if(text!==text0){ el.lastChild.string = text;}
+				if(el.lastChild.string!==text){ el.lastChild.string = text;}
 			}
 		}
 	}
