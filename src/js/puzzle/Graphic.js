@@ -624,7 +624,10 @@ Graphic:{
 	disptext : function(text, px, py, option){
 		option = option || {};
 		var g = this.context, key = option.key || "", vid = "text_"+key;
-		if((typeof text !== 'string')||(text.length===0)){ if(!!g.elements[vid]){ g.vhide(vid);} return;}
+		if((typeof text !== 'string')||(text.length===0)){
+			if(!!g.elements && !!g.elements[vid]){ g.vhide(vid);}
+			return;
+		}
 
 		var style = (option.style ? option.style+" " : "");
 		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
