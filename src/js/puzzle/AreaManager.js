@@ -357,16 +357,9 @@ AreaManager:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(info.id[cell.id]!==0){ continue;}
-			var roomid = ++info.max;
-			var room = info.room[roomid] = {clist:(new this.owner.CellList())};
+			var room = info.addRoomByClist( this.getClistByCell(cell) );
 			
 			if(!!this.hastop){ room.top = this.getTopOfRoomByCell(cell);}
-
-			var clist = this.getClistByCell(cell);
-			for(var i=0;i<clist.length;i++){
-				room.clist.add(clist[i]);
-				info.id[clist[i].id] = roomid;
-			}
 		}
 		return info;
 	},
@@ -713,6 +706,25 @@ AreaInfo:{
 	},
 	getRoomID : function(obj){ return this.id[obj.id];},
 	getRoomByCell : function(cell){ return this.room[this.id[cell.id]];},
+
+	//---------------------------------------------------------------------------
+	// info.addRoom()         空のRoomを追加する
+	// info.addRoomByClist()  指定されたclistを持つRoomを追加する
+	//---------------------------------------------------------------------------
+	addRoom : function(){
+		var roomid = ++this.max;
+		return this.room[roomid] = {clist:(new this.owner.CellList()), id:roomid};
+	},
+	addRoomByClist : function(clist){
+		var roomid = ++this.max;
+		var room = this.room[roomid] = {clist:(new this.owner.CellList()), id:roomid};
+
+		for(var i=0;i<clist.length;i++){
+			this.id[clist[i].id] = roomid;
+		}
+		room.clist.extend(clist);
+		return room;
+	},
 
 	//---------------------------------------------------------------------------
 	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する

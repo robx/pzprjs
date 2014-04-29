@@ -117,18 +117,18 @@ Board:{
 
 	getSnakeInfo : function(){
 		var sinfo = new this.owner.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ sinfo.id[fc]=(this.cell[fc].getAnum()>0?0:-1);}
-		for(var fc=0;fc<this.cellmax;fc++){
-			if(sinfo.id[this.cell[fc].id]!==0){ continue;}
-			var snakeid = ++sinfo.max;
-			var room = sinfo.room[snakeid] = {clist:(new this.owner.CellList())};
-
-			var stack=[this.cell[fc]];
+		for(var c=0;c<this.cellmax;c++){ sinfo.id[c]=(this.cell[c].anum>0?0:-1);}
+		for(var c=0;c<this.cellmax;c++){
+			var cell0 = this.cell[c];
+			if(sinfo.id[cell0.id]!==0){ continue;}
+			var room = sinfo.addRoom();
+			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell = stack.pop();
 				if(sinfo.id[cell.id]!==0){ continue;}
-				room.clist.add(cell);
-				sinfo.id[cell.id] = snakeid;
+
+				room.clist[n++] = cell;
+				sinfo.id[cell.id] = room.id;
 
 				var list = cell.getdir4clist();
 				for(var i=0;i<list.length;i++){
@@ -136,6 +136,7 @@ Board:{
 					if(Math.abs(cell.anum-cell2.anum)===1){ stack.push(cell2);}
 				}
 			}
+			room.clist.length = n;
 		}
 		return sinfo;
 	}

@@ -156,21 +156,22 @@ BoardExec:{
 
 	getBarInfo : function(){
 		var puzzle = this.owner, bd = puzzle.board;
-		function eachcell(cell, qa_chk, vert){
-			var qa = cell.qans, roomid = binfo.max;
-			if(qa===qa_chk||qa===3){
-				if(room===null){
-					roomid = ++binfo.max;
-					room = binfo.room[roomid] = {
-						clist : new puzzle.CellList(),
-						link : [], pole : [], vert : vert
-					};
-					if(cell2!==null){ binfo.pole[cell2.id].push(roomid);}
-				}
-				room.clist.add(cell);
-				binfo.id[cell.id].push(roomid);	// タテヨコで別のIDにするため、配列にする
+		function eachcell(cell, vert){
+			var qa = cell.qans, isbar = (qa===3 || qa===(vert?1:2));
+			if(!room && isbar){
+				room = binfo.addRoom();
+				room.vert = vert;
+				if(cell2!==null){ binfo.pole[cell2.id].push(room.id);}
 			}
-			else if(room!==null){ binfo.pole[cell.id].push(roomid); room=null;}
+			else if(!!room && !isbar){
+				binfo.pole[cell.id].push(room.id);
+				room = null;
+			}
+			
+			if(!!room && isbar){
+				room.clist.add(cell);
+				binfo.id[cell.id].push(room.id);	// タテヨコで別のIDにするため、配列にする
+			}
 			cell2 = cell;
 		}
 
@@ -178,13 +179,13 @@ BoardExec:{
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 			var room=null, cell2=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-				eachcell(bd.getc(bx,by),1,true);
+				eachcell(bd.getc(bx,by),true);
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
 			var room=null, cell2=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				eachcell(bd.getc(bx,by),2,false);
+				eachcell(bd.getc(bx,by),false);
 			}
 		}
 		
@@ -213,6 +214,13 @@ BoardExec:{
 			this.id[c]=[];
 			this.pole[c]=[];
 		}
+	},
+	addRoom : function(){
+		var roomid = ++this.max;
+		return this.room[roomid] = {
+			clist:(new this.owner.CellList()), id:roomid,
+			link:[], pole:[], vert:false
+		};
 	}
 },
 CellList:{

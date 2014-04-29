@@ -306,7 +306,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		var linfo = bd.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
-			var blist = linfo.room[r].blist;
+			var blist = linfo.path[r].blist;
 			if(func(blist.cellinside())){ continue;}
 
 			if(this.checkOnly){ return false;}

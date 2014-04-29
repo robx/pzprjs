@@ -207,18 +207,18 @@ AnsCheck:{
 	},
 
 	isErrorFlag_line : function(xinfo){
-		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var cell1=room.cells[0], cell2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
+		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
+		var cell1=path.cells[0], cell2=path.cells[1], dir1=path.dir1, dir2=path.dir2;
 
 		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=cell1.getQdir(), qd2=(!cell2.isnull?cell2.getQdir():cell2.NDIR), qn=-1, err=0;
-		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1?cell1:cell2).getQnum();}
+		var qd1=cell1.qdir, qd2=(!cell2.isnull ? cell2.qdir : cell2.NDIR), qn=-1, err=0;
+		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1 ? cell1 : cell2).qnum;}
 
 		if     (!cell2.isnull && (dir1===qd1) && (dir2===qd2)){ err=4;}
 		else if(!cell2.isnull && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
-		else if(!cell2.isnull && qn>=0 && qn!==ccnt){ err=2; room.cells=[cell1];}
+		else if(!cell2.isnull && qn>=0 && qn!==ccnt){ err=2; path.cells=[cell1];}
 		else if( cell2.isnull){ err=1;}
-		room.error = err;
+		path.error = err;
 	}
 },
 

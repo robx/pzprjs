@@ -210,25 +210,26 @@ Cell:{
 Board:{
 	getSlopeWareaInfo : function(){
 		var winfo = new this.owner.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].noNum()?0:null);}
-		for(var fc=0;fc<this.cellmax;fc++){
-			if(winfo.id[this.cell[fc].id]!==0){ continue;}
-			var roomid = ++winfo.max;
-			var room = winfo.room[roomid] = {clist:(new this.owner.CellList())};
-
-			var stack=[this.cell[fc]];
+		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].noNum()?0:null);}
+		for(var c=0;c<this.cellmax;c++){
+			var cell0 = this.cell[c];
+			if(winfo.id[cell0.id]!==0){ continue;}
+			var room = winfo.addRoom();
+			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell=stack.pop();
 				if(winfo.id[cell.id]!==0){ continue;}
-				room.clist.add(cell);
-				winfo.id[cell.id] = roomid;
 
-				var a=cell.getQans(), b, cell2, adc=cell.adjacent;
+				room.clist[n++] = cell;
+				winfo.id[cell.id] = room.id;
+
+				var a=cell.qans, b, cell2, adc=cell.adjacent;
 				cell2=adc.top;    if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
 				cell2=adc.bottom; if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
 				cell2=adc.left;   if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
 				cell2=adc.right;  if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
 			}
+			room.clist.length = n;
 		}
 		return winfo;
 	}

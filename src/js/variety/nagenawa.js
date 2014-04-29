@@ -261,7 +261,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		var xinfo = bd.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
-			var blist = xinfo.room[r].blist;
+			var blist = xinfo.path[r].blist;
 			if(this.isLoopRect(blist)){ continue;}
 
 			if(this.checkOnly){ return false;}

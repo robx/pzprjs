@@ -392,15 +392,7 @@ LineManager:{
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(info.id[border.id]!==0){ continue;}
-			var roomid = ++info.max;
-			var room = info.room[roomid] = {blist:(new this.owner.BorderList())};
-
-			var blist = this.getBlistByBorder(border);
-			for(var i=0;i<blist.length;i++){
-				var border = room.blist[i] = blist[i];
-				info.id[border.id] = roomid;
-			}
-			room.blist.length = blist.length;
+			info.addPathByBlist( this.getBlistByBorder(border) );
 		}
 		return info;
 	},
@@ -423,8 +415,27 @@ LineInfo:{
 	initialize : function(){
 		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.room = [];	// 各部屋のidlist等の情報を保持する(info.room[id].blistで取得)
+		this.path = [];	// 各部屋のidlist等の情報を保持する(info.path[id].blistで取得)
 	},
-	getRoomID : function(obj){ return this.id[obj.id];}
+	getRoomID : function(obj){ return this.id[obj.id];},
+
+	//---------------------------------------------------------------------------
+	// info.addPath()         空のPathを追加する
+	// info.addPathByBlist()  指定されたblistを持つPathを追加する
+	//---------------------------------------------------------------------------
+	addPath : function(){
+		var pathid = ++this.max;
+		return this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid};
+	},
+	addPathByBlist : function(blist){
+		var pathid = ++this.max;
+		var path = this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid};
+
+		for(var i=0;i<blist.length;i++){
+			this.id[blist[i].id] = pathid;
+		}
+		path.blist.extend(blist);
+		return path;
+	}
 }
 });

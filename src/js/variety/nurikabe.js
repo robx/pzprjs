@@ -32,18 +32,18 @@ Cell:{
 Board:{
 	getdir8WareaInfo : function(){
 		var winfo = new this.owner.AreaInfo();
-		for(var fc=0;fc<this.cellmax;fc++){ winfo.id[fc]=(this.cell[fc].isUnshade()?0:null);}
-		for(var fc=0;fc<this.cellmax;fc++){
-			if(winfo.id[this.cell[fc].id]!==0){ continue;}
-			var roomid = ++winfo.max;
-			var room = winfo.room[roomid] = {clist:(new this.owner.CellList())};
-
-			var stack=[this.cell[fc]];
+		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].isUnshade()?0:null);}
+		for(var c=0;c<this.cellmax;c++){
+			var cell0 = this.cell[c];
+			if(winfo.id[cell0.id]!==0){ continue;}
+			var room = winfo.addRoom();
+			var stack=[cell0], n=0;
 			while(stack.length>0){
 				var cell = stack.pop();
 				if(winfo.id[cell.id]!==0){ continue;}
-				room.clist.add(cell);
-				winfo.id[cell.id] = roomid;
+
+				room.clist[n++] = cell;
+				winfo.id[cell.id] = room.id;
 
 				var bx=cell.bx, by=cell.by;
 				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
@@ -51,6 +51,7 @@ Board:{
 					if(winfo.id[clist[i].id]===0){ stack.push(clist[i]);}
 				}
 			}
+			room.clist.length = n;
 		}
 		return winfo;
 	}

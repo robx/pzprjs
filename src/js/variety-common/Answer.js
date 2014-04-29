@@ -128,7 +128,7 @@ AnsCheck:{
 		var bd = this.owner.board, xinfo = bd.getLineInfo();
 		if(xinfo.max>1){
 			bd.border.seterr(-1);
-			xinfo.room[1].blist.seterr(1);
+			xinfo.path[1].blist.seterr(1);
 			return false;
 		}
 		return true;
@@ -470,14 +470,14 @@ AnsCheck:{
 	checkErrorFlag_line : function(xinfo, val){
 		var result = true;
 		for(var id=1;id<=xinfo.max;id++){
-			if(xinfo.room[id].error!==val){ continue;}
+			if(xinfo.path[id].error!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
-			var cells = xinfo.room[id].cells;
+			var cells = xinfo.path[id].cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
 			if(result){ this.owner.board.border.seterr(-1);}
-			xinfo.room[id].blist.seterr(1);
+			xinfo.path[id].blist.seterr(1);
 			result = false;
 		}
 		return result;
@@ -496,45 +496,48 @@ AnsCheck:{
 				var firstbd = dir4bd[a];
 				if(firstbd.isnull){ continue;}
 
-				// dir1 スタート地点で線が出発した方向 dir2 到達地点から見た、到達した線の方向
-				var roomid = ++xinfo.max;
-				var room = xinfo.room[roomid] = {blist:(new this.owner.BorderList()),error:0,
-												 cells:[cell,null],ccnt:0,length:[],dir1:(a+1),dir2:0};
+				var path = xinfo.addPath();
+				path.error  = 0;
+				path.cells  = [cell,null];	// 出発したセル、到達したセル
+				path.ccnt   = 0;			// 曲がった回数
+				path.length = [];
+				path.dir1   = (a+1);		// dir1 スタート地点で線が出発した方向
+				path.dir2   = 0;			// dir2 到達地点から見た、到達した線の方向
 
-				this.searchErrorFlag_line(xinfo,roomid);
-				if(room.blist.length===0){ continue;}
+				this.searchErrorFlag_line(xinfo,path);
+				if(path.blist.length===0){ continue;}
 
 				this.isErrorFlag_line(xinfo);
 			}
 		}
 		return xinfo;
 	},
-	searchErrorFlag_line : function(xinfo,roomid){
-		var room = xinfo.room[roomid], dir=room.dir1;
-		var pos = room.cells[0].getaddr();
+	searchErrorFlag_line : function(xinfo,path){
+		var dir = path.dir1, pos = path.cells[0].getaddr(), n = 0;
 		while(1){
 			pos.movedir(dir,1);
 			if(pos.oncell()){
 				var cell = pos.getc(), adb = cell.adjborder;
 				if(cell.isnull || cell.isNum()){ break;}
 				else if(cell.iscrossing() && cell.lcnt>=3){ }
-				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ room.ccnt++;} dir=2;}
-				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ room.ccnt++;} dir=1;}
-				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ room.ccnt++;} dir=4;}
-				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ room.ccnt++;} dir=3;}
+				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ path.ccnt++;} dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ path.ccnt++;} dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ path.ccnt++;} dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ path.ccnt++;} dir=3;}
 			}
 			else{
 				var border = pos.getb();
 				if(border.isnull||xinfo.id[border.id]!==0){ break;}
 
-				room.blist.add(border);
-				xinfo.id[border.id] = roomid;
+				path.blist[n++] = border;
+				xinfo.id[border.id] = path.id;
 
-				if(isNaN(room.length[room.ccnt])){ room.length[room.ccnt]=0;}else{ room.length[room.ccnt]++;}
+				if(isNaN(path.length[path.ccnt])){ path.length[path.ccnt]=0;}else{ path.length[path.ccnt]++;}
 			}
 		}
-		room.cells[1]=pos.getc();
-		room.dir2=[0,2,1,4,3][dir];
+		path.blist.length = n;
+		path.cells[1] = pos.getc();
+		path.dir2 = [0,2,1,4,3][dir];
 	},
 	isErrorFlag_line : function(xinfo){ }
 },

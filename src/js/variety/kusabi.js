@@ -138,10 +138,10 @@ AnsCheck:{
 	},
 
 	isErrorFlag_line : function(xinfo){
-		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var cell1=room.cells[0], cell2=room.cells[1], dir1=room.dir1, dir2=room.dir2;
+		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
+		var cell1=path.cells[0], cell2=path.cells[1], dir1=path.dir1, dir2=path.dir2;
 
-		var qn1=cell1.getQnum(), qn2=(!cell2.isnull?cell2.getQnum():-1), err=0;
+		var qn1=cell1.qnum, qn2=(!cell2.isnull ? cell2.qnum : -1), err=0;
 		if(ccnt===2 && dir1!==dir2){ err=7;}
 		else if(!cell2.isnull && ccnt===2 && !((qn1===1&&qn2===1) || (qn1===2&&qn2===3) || (qn1===3&&qn2===2) || qn1===-2 || qn2===-2)){ err=6;}
 		else if(ccnt>2){ err=5;}
@@ -149,7 +149,7 @@ AnsCheck:{
 		else if(!cell2.isnull && ccnt===2 && (qn1===1||qn2===1) && length[0]!==length[2]){ err=3;}
 		else if(!cell2.isnull && ccnt===2 && (((qn1===2||qn2===3) && length[0]>=length[2]) || ((qn1===3||qn2===2) && length[0]<=length[2]))){ err=2;}
 		else if( cell2.isnull){ err=1;}
-		room.error = err;
+		path.error = err;
 	}
 },
 

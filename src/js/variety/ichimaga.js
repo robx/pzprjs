@@ -160,14 +160,14 @@ AnsCheck:{
 	},
 
 	isErrorFlag_line : function(xinfo){
-		var room=xinfo.room[xinfo.max], ccnt=room.ccnt, length=room.length;
-		var cell1=room.cells[0], cell2=room.cells[1];
+		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
+		var cell1=path.cells[0], cell2=path.cells[1];
 
-		var qn1=cell1.getQnum(), qn2=(!cell2.isnull?cell2.getQnum():-1), err=0;
+		var qn1=cell1.qnum, qn2=(!cell2.isnull ? cell2.qnum : -1), err=0;
 		if((this.owner.pid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
 		else if(!cell2.isnull && ccnt>1){ err=2;}
 		else if( cell2.isnull){ err=1;}
-		room.error = err;
+		path.error = err;
 	}
 },
 

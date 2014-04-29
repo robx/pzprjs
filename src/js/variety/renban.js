@@ -43,22 +43,18 @@ Board:{
 		for(var i=0;i<this.bdmax;i++){
 			var border0 = this.border[i];
 			if(rdata.id[border0.id]!==0){ continue;}
-			var pos=border0.getaddr(), isvert=border0.isVert(), blist=[];
+			var path = rdata.addPath();
+			var pos=border0.getaddr(), isvert=border0.isVert(), n=0;
 			while(1){
 				var border = pos.getb();
 				if(border.isnull || rdata.id[border.id]!==0){ break;}
 
-				blist.push(border);
+				path.blist[n++] = border;
+				rdata.id[border.id] = path.id;
+
 				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
 			}
-
-			var roomid = ++rdata.max;
-			var room = rdata.room[roomid] = {blist:(new this.owner.BorderList())};
-			for(var n=0;n<blist.length;n++){
-				var border = room.blist[n] = blist[n];
-				rdata.id[border.id] = roomid;
-			}
-			room.blist.length = blist.length;
+			path.blist.length = n;
 		}
 		return rdata;
 	}
@@ -185,7 +181,7 @@ AnsCheck:{
 			var val1=cell1.getNum(), val2=cell2.getNum();
 			if(val1<=0 || val2<=0){ continue;}
 
-			var blist = rdata.room[rdata.id[i]].blist;
+			var blist = rdata.path[rdata.id[i]].blist;
 			if(Math.abs(val1-val2)!==blist.length){
 				if(this.checkOnly){ return false;}
 				cell1.seterr(1);
