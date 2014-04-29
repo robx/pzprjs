@@ -287,7 +287,7 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var num  = (this.owner.execConfig('dispmove') ? cell.base : cell).getNum();
 		var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
-		var option = { key: "cell_"+cell.id };
+		var option = { key: "cell_text_"+cell.id };
 		if(!!text){
 			option.ratio = this.fontsizeratio;
 			option.color = this.getCellNumberColor(cell);
@@ -388,7 +388,7 @@ Graphic:{
 
 			// 数字の描画
 			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
-			var option = { key: "cell_"+id };
+			var option = { key: "cell_text_"+id };
 			if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
 			option.color = g.fillStyle;
 
@@ -405,7 +405,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], text = (cell.ques===-2||cell.qnum===-2 ? "?" : "");
-			var option = { key:"cell_"+cell.id };
+			var option = { key:"cell_text_"+cell.id };
 			option.color = (cell.error===1||cell.qinfo===1 ? this.fontErrcolor : this.fontcolor);
 			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 		}
@@ -438,7 +438,7 @@ Graphic:{
 
 			// 数字の描画
 			var text = (cross.qnum>=0 ? ""+cross.qnum : "");
-			var option = {key:"cross_"+id, ratio:[0.6]};
+			var option = {key:"cross_text_"+id, ratio:[0.6]};
 			this.disptext(text, px, py, option);
 		}
 	},
@@ -1032,7 +1032,7 @@ Graphic:{
 		val  = (obj.ques===51 ? obj.qnum : -1);
 		text = ((val>=0 && !adj.isnull && adj.ques!==51) ? ""+val : "");
 
-		option.key = [obj.group, obj.id, 'ques51_rt'].join('_');
+		option.key = [obj.group, obj.id, 'text_ques51_rt'].join('_');
 		option.position = this.TOPRIGHT;
 		this.disptext(text, px, py, option);
 
@@ -1040,7 +1040,7 @@ Graphic:{
 		val  = (obj.ques===51 ? obj.qnum2 : -1);
 		text = ((val>=0 && !adj.isnull && adj.ques!==51) ? ""+val : "");
 
-		option.key = [obj.group, obj.id, 'ques51_dn'].join('_');
+		option.key = [obj.group, obj.id, 'text_ques51_dn'].join('_');
 		option.position = this.BOTTOMLEFT;
 		this.disptext(text, px, py, option);
 	},

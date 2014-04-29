@@ -295,7 +295,7 @@ Graphic:{
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
 			var text = (border.qsub>=0 ? ""+border.qsub : "");
-			var option = { key:"border_"+border.id };
+			var option = { key:"border_text_"+border.id };
 			option.ratio = [0.35];
 			option.color = "blue";
 			this.disptext(text, px, py, option);

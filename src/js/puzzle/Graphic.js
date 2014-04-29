@@ -623,7 +623,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	disptext : function(text, px, py, option){
 		option = option || {};
-		var g = this.context, key = option.key || "", vid = "text_"+key;
+		var g = this.context, vid = option.key || "";
 		if((typeof text !== 'string')||(text.length===0)){
 			if(!!g.elements && !!g.elements[vid]){ g.vhide(vid);}
 			return;
@@ -635,7 +635,6 @@ Graphic:{
 		ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);
 
-		g.vid = vid;
 		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;
 		g.fillStyle = option.color || this.fontcolor;
 
@@ -651,7 +650,7 @@ Graphic:{
 			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
 		}
 		
-		if(this.vnop(g.vid,this.FILL)){
+		if(this.vnop(vid,this.FILL)){
 			if(g.use.vml){ g.vdel(vid);}
 			g.fillText(text, px, py);
 		}

@@ -215,7 +215,7 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var num    = (this.owner.execConfig('dispmove') ? cell.base : cell).qnum;
 		var text   = (num>0 ? ""+num : "");
-		var option = { key: 'cell_'+cell.id };
+		var option = { key: 'cell_text_'+cell.id };
 		option.color = this.getCellNumberColor(cell);
 		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
 	},
@@ -261,11 +261,11 @@ Graphic:{
 			option.color = this.getCellNumberColor(cell);
 			option.style = "bold";
 			
-			option.key = 'cell_fill1_'+cell.id;
+			option.key = 'cell_fill1_text_'+cell.id;
 			option.globalratio = 0.8;
 			this.disptext((!topleft ? text : ""), px, py, option);
 			
-			option.key = 'cell_fill5_'+cell.id;
+			option.key = 'cell_fill5_text_'+cell.id;
 			option.position = this.TOPLEFT;
 			option.globalratio = 0.5;
 			this.disptext((!topleft ? "" : text), px, py, option);

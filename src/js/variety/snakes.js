@@ -202,7 +202,7 @@ Graphic:{
 			var cell = clist[i];
 			if(cell.qnum===-1 && cell.anum>0){
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				var option = { key:"cell_"+cell.id };
+				var option = { key:"cell_text_"+cell.id };
 				option.color = this.fontAnscolor;
 				this.disptext(""+cell.anum, px, py, option);
 			}

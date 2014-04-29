@@ -342,7 +342,7 @@ Graphic:{
 			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
 			if(num>=0){ text+=num.toString(10);}
 
-			var option = { key:"excell_"+excell.id };
+			var option = { key:"excell_text_"+excell.id };
 			option.color = this.fontErrcolor;
 			if(excell.error!==1){ option.color = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
 			option.ratio = ((canum===0||num<10) ? [0.66] : [0.55]);

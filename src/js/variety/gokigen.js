@@ -304,7 +304,7 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var option = { key:"cell_"+cell.id };
+		var option = { key:"cell_text_"+cell.id };
 		option.ratio = [0.70];
 		this.disptext(text, px, py, option);
 	},

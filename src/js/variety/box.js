@@ -194,7 +194,7 @@ Graphic:{
 
 			if(excell.bx===-1 && excell.by===-1){ continue;}
 			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			var option = { key:"excell_"+excell.id };
+			var option = { key:"excell_text_"+excell.id };
 			option.color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
 			this.disptext(""+excell.qnum, px, py, option);
 		}
@@ -220,7 +220,7 @@ Graphic:{
 		}
 
 		var g = this.vinc('excell_number2', 'auto');
-		var key = "ex2_cir_";
+		var header = "ex2_cirtext_";
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
 			if(num<=0){ continue;}

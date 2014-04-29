@@ -234,7 +234,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = cell.qnum, text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
-			var option = { key: "cell_"+cell.id };
+			var option = { key: "cell_text_"+cell.id };
 			option.color = (cell.ques!==1 ? this.fontcolor : "white");
 			this.disptext(text, px, py, option);
 		}

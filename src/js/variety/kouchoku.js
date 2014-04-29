@@ -495,7 +495,7 @@ Graphic:{
 
 			// アルファベットの描画
 			var text = ((cross.qnum>0) ? (cross.qnum+9).toString(36).toUpperCase() : "");
-			var option = { key:"cross_"+id };
+			var option = { key:"cross_text_"+id };
 			option.ratio = [0.55];
 			option.color = (graydisp ? "gray" : this.fontcolor);
 			this.disptext(text, px, py, option);

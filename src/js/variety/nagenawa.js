@@ -112,7 +112,7 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
 		var text = (cell.qnum!==-1 ? (cell.qnum>=0 ? ""+cell.qnum : "?") : "");
-		var option = { key:"cell_"+cell.id };
+		var option = { key:"cell_text_"+cell.id };
 		option.ratio = [0.45];
 		option.position = this.TOPLEFT;
 		this.disptext(text, px, py, option);

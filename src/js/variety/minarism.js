@@ -204,7 +204,7 @@ Graphic:{
 
 			// 数字の描画
 			var text = (border.qnum>0 ? ""+border.qnum : "");
-			var option = { key:"border_"+id };
+			var option = { key:"border_text_"+id };
 			option.ratio = [0.45];
 			this.disptext(text, px, py, option);
 

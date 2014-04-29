@@ -182,7 +182,7 @@ Graphic:{
 	drawNumber1 : function(cell){
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
 		var text = ((cell.ques>=2 && cell.ques<=5) && cell.qnum>0 ? ""+cell.qnum : "");
-		var option = { key:"cell_"+cell.id };
+		var option = { key:"cell_text_"+cell.id };
 		option.ratio = [0.45];
 		option.color = "white";
 		option.position = cell.ques;

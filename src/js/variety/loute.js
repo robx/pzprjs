@@ -282,7 +282,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var text = (cell.qdir===-2 ? "?" : "");
-			var option = { key:"cell_h_"+cell.id };
+			var option = { key:"cell_text_h_"+cell.id };
 			option.ratio = ratio;
 			option.color = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
 			this.disptext(text, px, py, option);

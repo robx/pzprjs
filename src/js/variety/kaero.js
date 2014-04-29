@@ -155,7 +155,7 @@ Graphic:{
 			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
 			else{ text+=num;}
 
-			var option = { key:"cell_"+cell.id };
+			var option = { key:"cell_text_"+cell.id };
 			option.ratio = [0.85];
 			option.color = this.getCellNumberColor(cell);
 			this.disptext(text, px, py, option);

@@ -436,6 +436,7 @@ Graphic:{
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.5*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
+			g.vdel("string_in");
 			this.disptext("IN", px, py, {key:"string_in",ratio:[0.55]});
 		}
 		border = bd.arrowout.getb();
@@ -446,6 +447,7 @@ Graphic:{
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.7*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.7*this.cw; py-=0.3*this.ch;}
+			g.vdel("string_out");
 			this.disptext("OUT", px, py, {key:"string_out",ratio:[0.55]});
 		}
 	},

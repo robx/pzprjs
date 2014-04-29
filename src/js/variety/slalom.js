@@ -429,7 +429,7 @@ Graphic:{
 			g.shapeCircle(px, py, csize);
 		}
 
-		var option = { key:"stpos", ratio:[0.75, 0.66], color:this.cellcolor };
+		var option = { key:"text_stpos", ratio:[0.75, 0.66], color:this.cellcolor };
 		this.disptext(""+bd.hinfo.max, px, py, option);
 	},
 
@@ -460,7 +460,7 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (r>0?bd.hinfo.data[r].number:-1);
 			var text = ((keydown && num>0) ? ""+num : "");
-			var option = { key: "cell_"+c };
+			var option = { key: "cell_text_"+c };
 			option.color = "tomato";
 			this.disptext(text, px, py, option);
 		}
