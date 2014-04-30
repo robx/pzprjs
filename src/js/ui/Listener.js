@@ -40,6 +40,9 @@ ui.listener =
 			/* 以前設定済みのイベントを削除する */
 			ui.event.removeAllEvents();
 			
+			/* menuareaより先に キーポップアップを作成する必要がある */
+			ui.keypopup.create();
+			
 			/* メニュー用の設定を消去・再設定する */
 			ui.menuarea.reset();
 			ui.toolarea.reset();

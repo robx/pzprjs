@@ -29,9 +29,6 @@ ui.popupmgr =
 			this.popups.debug.hide();
 		}
 		
-		/* キーポップアップも個々で作成する */
-		ui.keypopup.create();
-		
 		/* イベントを割り当てる */
 		this.setEvents();
 		
