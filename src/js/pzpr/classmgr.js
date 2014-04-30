@@ -102,7 +102,8 @@ pzpr.classmgr = {
 		var basename = this.searchName(key).base;
 		var BaseClass = (customs[basename] || pzpr.common[basename]);
 		if(!!BaseClass){
-			NewClass.prototype = new BaseClass();
+			var BaseProto = BaseClass.prototype;
+			for(var name in BaseProto){ NewClass.prototype[name] = BaseProto[name];}
 		}
 		else{
 			NewClass.prototype.common = NewClass.prototype;
@@ -168,14 +169,13 @@ pzpr.classmgr = {
 
 		var custom = pzpr.custom[pid];
 		for(var classname in custom){
-			var PuzzleClass = function(){
+			var PuzzleClass = puzzle[classname] = function(){
 				var args = Array.prototype.slice.apply(arguments);
 				if(!!this.initialize){ this.initialize.apply(this,args);}
 			};
-			PuzzleClass.prototype = new custom[classname];
+			var CustomProto = custom[classname].prototype;
+			for(var name in CustomProto){ PuzzleClass.prototype[name] = CustomProto[name];}
 			PuzzleClass.prototype.owner = puzzle;
-			PuzzleClass.prototype.constructor = PuzzleClass;	/* constructorが指す先を修正 */
-			puzzle[classname] = PuzzleClass;
 			puzzle.classlist.push(classname);
 		}
 	}
