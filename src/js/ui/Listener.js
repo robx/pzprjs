@@ -121,8 +121,8 @@ ui.listener =
 	},
 	onHistoryChange : function(puzzle){
 		if(!!ui.currentpid){
-			ui.menuarea.enb_undo();
-			ui.toolarea.enb_undo();
+			ui.menuarea.setdisplay("operation");
+			ui.toolarea.setdisplay("operation");
 		}
 	},
 

@@ -243,16 +243,16 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	// toolarea.display()    全てのラベルに対して文字列を設定する
 	// toolarea.setdisplay() 管理パネルに表示する文字列を個別に設定する
-	// toolarea.enb_undo()   html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
 	display : function(){
 		for(var idname in this.labels){ this.setdisplay(idname);}
+		this.setdisplay("operation");
+		
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			var obj = this.btnstack[i];
 			if(!obj.el){ continue;}
 			obj.el.value = obj.str[ui.puzzle.getConfig('language')];
 		}
-		this.enb_undo();
 		
 		var mandisp  = (this.isdisp ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
@@ -272,7 +272,7 @@ ui.toolarea = {
 	},
 	setdisplay : function(idname){
 		var pp = ui.menuarea.items;
-		if(!pp || !pp.item[idname]){ return;}
+		if(!pp){ return;}
 		
 		switch(pp.type(idname)){
 		case pp.SELECT:
@@ -304,6 +304,12 @@ ui.toolarea = {
 			break;
 		}
 		
+		if(idname==="operation"){
+			var opemgr = ui.puzzle.opemgr;
+			getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
+			getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+		}
+		
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
@@ -326,12 +332,6 @@ ui.toolarea = {
 				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 			}
 		}
-	},
-
-	enb_undo : function(){
-		var opemgr = ui.puzzle.opemgr;
-		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
-		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
 	},
 
 	//---------------------------------------------------------------------------

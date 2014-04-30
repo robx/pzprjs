@@ -36,7 +36,7 @@ ui.menuarea = {
 	},
 	setdisplay : function(idname){
 		var pp = this.items;
-		if(!pp || !pp.item[idname]){ return;}
+		if(!pp){ return;}
 		
 		switch(pp.type(idname)){
 		case pp.MENU:
@@ -75,23 +75,20 @@ ui.menuarea = {
 			break;
 		}
 
+		if(idname==="operation"){
+			var opemgr = ui.puzzle.opemgr;
+			getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+			getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+			getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+			getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+		}
+
 		if(idname==='manarea'){
 			var str;
 			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
 			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
 			getEL('ms_manarea').innerHTML = str;
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.enb_undo()     html上の[戻][進]ボタンを押すことが可能か設定する
-	//---------------------------------------------------------------------------
-	enb_undo : function(){
-		var opemgr = ui.puzzle.opemgr;
-		getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-		getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-		getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
-		getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
 	},
 
 	//---------------------------------------------------------------------------
