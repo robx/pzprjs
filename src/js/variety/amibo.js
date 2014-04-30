@@ -103,7 +103,7 @@ Board:{
 	qrows : 8,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.barinfo = this.addInfoList(this.owner.AreaBarManager);
 	},
@@ -135,7 +135,7 @@ BoardExec:{
 	},
 	
 	rebuild : function(){
-		pzpr.common.AreaManager.prototype.rebuild.call(this);
+		this.owner.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
 	},
 	
@@ -254,7 +254,7 @@ Graphic:{
 	circleratio : [0.45, 0.40],
 
 	setRange : function(x1,y1,x2,y2){
-		this.Common.prototype.setRange.call(this, x1-2, y1-2, x2+2, y2+2);
+		this.common.setRange.call(this, x1-2, y1-2, x2+2, y2+2);
 	},
 	paint : function(){
 		this.drawBGCells();

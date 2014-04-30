@@ -41,7 +41,7 @@ Board:{
 	hasborder : 1,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.tiles = this.addInfoList(this.owner.AreaTileManager);
 		this.blocks = this.addInfoList(this.owner.AreaBlockManager);

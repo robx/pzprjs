@@ -162,7 +162,7 @@ Board:{
 	initialize : function(){
 		this.initSegmentGroup();
 
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.seginfo = this.addInfoList(this.owner.SegmentManager);
 	},
@@ -172,7 +172,7 @@ Board:{
 
 		this.initSegmentGroup();
 
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 	},
 
 	initSegmentGroup : function(){
@@ -187,23 +187,23 @@ Board:{
 
 	resetInfo : function(){
 		this.seginfo.reset();
-		this.Common.prototype.resetInfo.call(this);
+		this.common.resetInfo.call(this);
 	},
 
 	allclear : function(isrec){
 		this.initSegmentGroup();
 		
-		this.Common.prototype.allclear.call(this,isrec);
+		this.common.allclear.call(this,isrec);
 	},
 	ansclear : function(){
 		this.initSegmentGroup();
 		
-		this.Common.prototype.ansclear.call(this);
+		this.common.ansclear.call(this);
 	},
 	errclear : function(){
 		this.segment.errclear();
 		
-		this.Common.prototype.errclear.call(this);
+		this.common.errclear.call(this);
 	},
 
 	irowakeRemake : function(){
@@ -388,7 +388,7 @@ BoardExec:{
 
 OperationManager:{
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.operationlist.push(this.owner.SegmentOperation);
 	}

@@ -21,7 +21,7 @@ MouseEvent:{
 	},
 
 	inputLine : function(){
-		this.Common.prototype.inputLine.call(this);
+		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
 		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){

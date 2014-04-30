@@ -207,14 +207,14 @@ Board:{
 	hinfo : null,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.startpos = new this.owner.StartPosAddress(1,1);
 		this.hinfo = new this.owner.HurdleManager();
 	},
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		this.startpos.set(this.cell[0]);
 		this.hinfo.init();
@@ -308,7 +308,7 @@ BoardExec:{
 
 OperationManager:{
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 		
 		this.operationlist.push(this.owner.StartposOperation);
 	}

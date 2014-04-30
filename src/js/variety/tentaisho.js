@@ -198,13 +198,13 @@ Board:{
 	hasborder : 1,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.star = []; /* インスタンス化 */
 	},
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		this.initStar(col,row);
 	},

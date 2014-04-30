@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['goishi'], {
 // マウス入力系
 MouseEvent:{
 	initialize : function(){
-		pzpr.common.MouseEvent.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 		
 		this.ut = new this.owner.UndoTimer_goishi();
 	},

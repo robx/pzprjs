@@ -30,10 +30,6 @@ pzpr.classmgr = {
 			}
 		}
 	},
-//	createPuzzleClass : function(classname, proto){
-//		var rel = this.createClass(classname, proto);
-//		pzpr.common[rel.name] = rel.body;
-//	},
 
 	//---------------------------------------------------------------
 	// includeCustomFileでファイルを読み込んだ後の処理
@@ -41,12 +37,11 @@ pzpr.classmgr = {
 	makeCustom : function(pidlist, custombase){
 		for(var i=0;i<pidlist.length;i++){
 			var pid = pidlist[i];
-			var customclass = this.baseToClass(pid, custombase);
-			pzpr.custom[pid] = this.createCustom(customclass);
+			pzpr.custom[pid] = this.createCustom(pid, custombase);
 		}
 	},
-	baseToClass : function(pid, custombase){
-		var customclass = {};
+	getExtension : function(pid, custombase){
+		var extension = {};
 		for(var hashkey in custombase){
 			var name = hashkey, pidcond = [], isexist = false;
 			if(hashkey.match('@')){
@@ -57,19 +52,20 @@ pzpr.classmgr = {
 			}
 			if(!!name){
 				var proto = custombase[hashkey];
-				if(!customclass[name]){ customclass[name]={};}
-				for(var key in proto){ customclass[name][key] = proto[key];}
+				if(!extension[name]){ extension[name]={};}
+				for(var key in proto){ extension[name][key] = proto[key];}
 			}
 		}
-		return customclass
+		return extension;
 	},
-	createCustom : function(customclass){
+	createCustom : function(pid, custombase){
 		var custom = {};
+		var extension = this.getExtension(pid, custombase);
 
 		// 追加プロパティが指定されているクラスを作成する
-		for(var key in customclass){
+		for(var key in extension){
 			var realname = this.searchName(key).real;
-			var proto = customclass[key];
+			var proto = extension[key];
 			if(!custom[realname]){
 				if(!!pzpr.common[realname] && key===realname){ key=realname+":"+realname;}
 				
@@ -79,17 +75,10 @@ pzpr.classmgr = {
 				for(var name in proto){ custom[realname].prototype[name] = proto[name];}
 			}
 		}
-		// 指定がなかった残りの共通クラスを作成する
+		// 指定がなかった残りの共通クラスを作成(コピー)する
 		for(var classname in pzpr.common){
 			if(!custom[classname]){
 				custom[classname] = pzpr.common[classname];
-			}
-		}
-
-		// pzpr.commonから継承されたクラスへprototype.Commonを付加する
-		for(var classname in pzpr.common){
-			if(!!pzpr.common[classname]){
-				custom[classname].prototype.Common = pzpr.common[classname];
 			}
 		}
 
@@ -109,14 +98,14 @@ pzpr.classmgr = {
 		return {base:basename, real:realname};
 	},
 	createClass : function(key, proto, customs){
+		function NewClass(){};
 		var basename = this.searchName(key).base;
-		var NewClass = function(){};
 		var BaseClass = (customs[basename] || pzpr.common[basename]);
-		if(!!basename && !!BaseClass){
-			var BaseProto = BaseClass.prototype;
-			for(var name in BaseProto){
-				NewClass.prototype[name] = BaseProto[name];
-			}
+		if(!!BaseClass){
+			NewClass.prototype = new BaseClass();
+		}
+		else{
+			NewClass.prototype.common = NewClass.prototype;
 		}
 		if(!!proto){
 			for(var name in proto){
@@ -165,8 +154,8 @@ pzpr.classmgr = {
 
 	//---------------------------------------------------------------
 	// パズル種類別のクラスをパズルのクラス一覧に設定する
-	//  共通クラス
-	//   -> パズル種類別クラス (this.Commonがつく)
+	//      共通クラス        (pzpr.common)
+	//   -> パズル種類別クラス (pzpr.custom)
 	//   -> パズルが保持するクラス (initialize()の呼び出しやthis.owner等がつく)
 	// と、ちょっとずつ変わっている状態になります
 	//---------------------------------------------------------------
@@ -179,14 +168,14 @@ pzpr.classmgr = {
 
 		var custom = pzpr.custom[pid];
 		for(var classname in custom){
-			var cls = function(){
+			var PuzzleClass = function(){
 				var args = Array.prototype.slice.apply(arguments);
 				if(!!this.initialize){ this.initialize.apply(this,args);}
-			}
-			var baseproto = custom[classname].prototype;
-			for(var name in baseproto){ cls.prototype[name] = baseproto[name];}
-			cls.prototype.owner = puzzle;
-			puzzle[classname] = cls;
+			};
+			PuzzleClass.prototype = new custom[classname];
+			PuzzleClass.prototype.owner = puzzle;
+			PuzzleClass.prototype.constructor = PuzzleClass;	/* constructorが指す先を修正 */
+			puzzle[classname] = PuzzleClass;
 			puzzle.classlist.push(classname);
 		}
 	}

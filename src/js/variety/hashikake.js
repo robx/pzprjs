@@ -22,7 +22,7 @@ MouseEvent:{
 
 	prevblist : null,
 	mousereset : function(){
-		this.Common.prototype.mousereset.call(this);
+		this.common.mousereset.call(this);
 		this.prevblist = new this.owner.BorderList();
 	},
 

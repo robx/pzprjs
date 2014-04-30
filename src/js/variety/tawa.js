@@ -40,7 +40,7 @@ TargetCursor:{
 	},
 
 	movedir : function(dir,mv){
-		pzpr.common.TargetCursor.prototype.movedir.call(this,dir,mv);
+		this.common.movedir.call(this,dir,mv);
 
 		if(dir===this.UP){
 			if(this.bx===this.maxx || (this.bx>this.minx && (this.by&2)===0)){ this.bx--;}
@@ -158,7 +158,7 @@ BoardExec:{
 			}
 		}
 
-		this.Common.prototype.execadjust.call(this, name);
+		this.common.execadjust.call(this, name);
 	},
 	expandreduce : function(key,d){
 		var bd = this.owner.board;

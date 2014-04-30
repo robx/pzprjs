@@ -61,13 +61,13 @@ Board:{
 	hasborder : 2,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.tiles = this.addInfoList(this.owner.AreaTileManager);
 	},
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		this.border.allclear(false);
 	}

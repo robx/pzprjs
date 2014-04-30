@@ -129,7 +129,7 @@ Board:{
 	arrowout : null,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		var puzzle = this.owner;
 		this.arrowin  = new puzzle.InAddress(2,0);
@@ -141,7 +141,7 @@ Board:{
 	},
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		this.disableInfo();
 		if(col>=3){
@@ -297,7 +297,7 @@ BoardExec:{
 
 OperationManager:{
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 		
 		this.operationlist.push(this.owner.InOutOperation);
 	}

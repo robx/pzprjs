@@ -84,7 +84,7 @@ Graphic:{
 			y2 = bd.maxby+2;
 		}
 		
-		this.Common.prototype.setRange.call(this,x1,y1,x2,y2);
+		this.common.setRange.call(this,x1,y1,x2,y2);
 	},
 
 	paint : function(){

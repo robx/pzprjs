@@ -158,7 +158,7 @@ Board:{
 	hasborder : 1,
 
 	initialize : function(){
-		this.Common.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		this.iceinfo = this.addInfoList(this.owner.AreaCrockManager);
 	}

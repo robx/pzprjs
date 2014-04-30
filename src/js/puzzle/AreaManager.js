@@ -414,7 +414,7 @@ AreaManager:{
 			cross.lcnt = (ischassis?2:0);
 		}
 
-		pzpr.common.AreaManager.prototype.rebuild.call(this);
+		this.owner.AreaManager.prototype.rebuild.call(this);
 
 		if(this.enabled && this.hastop){ this.resetRoomNumber();}
 	},
@@ -439,7 +439,7 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	checkExecSearch : function(border){
-		if(!pzpr.common.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
+		if(!this.owner.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
 		var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
@@ -458,7 +458,7 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	searchSingle : function(cell, newid){
-		pzpr.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		this.owner.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.hastop){
 			this.area[newid].top = this.calcTopOfRoom(newid);
@@ -544,7 +544,7 @@ AreaManager:{
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの領域を分断する境界線の数
 
-		pzpr.common.AreaManager.prototype.initialize.call(this);
+		this.owner.AreaManager.prototype.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
 	isvalid : function(cell){ return (this.bdcnt[cell.id]<4 || (this.moveline && cell.isNum()));},
@@ -559,7 +559,7 @@ AreaManager:{
 	reset : function(){
 		this.bdcnt = [];
 
-		pzpr.common.AreaManager.prototype.reset.call(this);
+		this.owner.AreaManager.prototype.reset.call(this);
 	},
 	rebuild : function(){
 		if(!this.enabled){ return;}
@@ -573,7 +573,7 @@ AreaManager:{
 			if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
 		}
 
-		pzpr.common.AreaManager.prototype.rebuild.call(this);
+		this.owner.AreaManager.prototype.rebuild.call(this);
 
 		if(this.moveline){ this.resetMovedBase();}
 	},
@@ -597,7 +597,7 @@ AreaManager:{
 	// linfo.setCell()        黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCell : function(cell){
-		pzpr.common.AreaManager.prototype.setCell.call(this, cell);
+		this.owner.AreaManager.prototype.setCell.call(this, cell);
 
 		var newid = this.id[cell.id];
 		if(this.moveline && newid!==null){ this.setMovedBase(newid);}
@@ -616,13 +616,13 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	assignCell : function(cell, cell2){
-		pzpr.common.AreaManager.prototype.assignCell.call(this, cell, cell2);
+		this.owner.AreaManager.prototype.assignCell.call(this, cell, cell2);
 
 		/* AreaLineManagerではCell入力で他とくっつくことはないので、cell2===nullとして考える */
 		if(this.moveline){ cell.base = (cell.isNum() ? cell : this.owner.board.emptycell);}
 	},
 	removeCell : function(cell){
-		pzpr.common.AreaManager.prototype.removeCell.call(this, cell);
+		this.owner.AreaManager.prototype.removeCell.call(this, cell);
 
 		if(this.moveline){ cell.base = this.owner.board.emptycell;}
 	},
@@ -638,10 +638,10 @@ AreaManager:{
 			clist[i].base = (clist[i].isNum() ? clist[i] : this.owner.board.emptycell);
 		}
 
-		pzpr.common.AreaManager.prototype.searchIdlist.call(this, clist);
+		this.owner.AreaManager.prototype.searchIdlist.call(this, clist);
 	},
 	searchSingle : function(cell, newid){
-		pzpr.common.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		this.owner.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.moveline){ this.setMovedBase(newid);}
 	},

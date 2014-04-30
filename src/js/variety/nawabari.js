@@ -84,7 +84,7 @@ Cell:{
 	hasborder : 2,
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		var odd = (col*row)%(this.owner.pid==='fivecells'?5:4);
 		if(odd>=1){ this.getc(this.minbx+1,this.minby+1).ques=7;}

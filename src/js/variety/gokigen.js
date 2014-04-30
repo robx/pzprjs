@@ -283,12 +283,12 @@ Graphic:{
 			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
 			else if(puzzle.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = sdata[cell.id];});}
 
-			this.Common.prototype.drawSlashes.call(this);
+			this.common.drawSlashes.call(this);
 
 			bd.cell.setinfo(0);
 		}
 		else{
-			this.Common.prototype.drawSlashes.call(this);
+			this.common.drawSlashes.call(this);
 		}
 	}
 },

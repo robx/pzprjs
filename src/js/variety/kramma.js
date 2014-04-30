@@ -133,7 +133,7 @@ Graphic:{
 },
 "Graphic@shwolf":{
 	initialize : function(){
-		pzpr.custom.kramma.Graphic.prototype.initialize.call(this);
+		this.common.initialize.call(this);
 
 		/* imgtileの初期設定を追加 */
 		var imgsrc = ((pzpr.env.API.dataURL && !pzpr.env.browser.IE8) ? this.imgsrc_dataurl : this.imgsrc_imgfile);
@@ -144,7 +144,7 @@ Graphic:{
 
 	initCanvasCheck : function(){
 		/* imgtileの条件判定を追加 */
-		return this.Common.prototype.initCanvasCheck.call(this) && this.imgtile.loaded;
+		return this.common.initCanvasCheck.call(this) && this.imgtile.loaded;
 	},
 
 	drawSheepWolf : function(){

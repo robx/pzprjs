@@ -135,7 +135,7 @@ Board:{
 	hasborder : 2,
 
 	initBoardSize : function(col,row){
-		this.Common.prototype.initBoardSize.call(this,col,row);
+		this.common.initBoardSize.call(this,col,row);
 
 		if(pzpr.EDITOR){
 			var cell = this.owner.cursor.getc(); /* 真ん中にあるはず */
