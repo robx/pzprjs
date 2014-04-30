@@ -328,7 +328,7 @@ ui.toolarea = {
 		}
 		
 		if(idname==='disptype_pipelinkr'){
-			if(ui.puzzle.pid==='pipelinkr'){
+			if(ui.puzzle.pid==='pipelinkr' && !!getEL('btncircle')){
 				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
 			}
 		}
