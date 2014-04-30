@@ -6,6 +6,8 @@
 /********************************/
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 
+window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
+
 var require_accesslog = true;
 var onload_pzl = null;
 var onload_option = {imagesave:true};
@@ -71,9 +73,7 @@ function startPuzzle(){
 	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
-	ui.menu.init();
 	ui.event.onload_func();
-	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
 	if(!ui.debugmode){
@@ -83,7 +83,7 @@ function startPuzzle(){
 		var inputdata = (!!pzl.qdata ? pzl : pid+"/"+ui.debug.urls[pid]);
 		puzzle.open(inputdata, function(puzzle){
 			puzzle.modechange(puzzle.MODE_PLAYER);
-			ui.menu.setMenuConfig('autocheck', true);
+			ui.menuconfig.set('autocheck', true);
 		});
 	}
 	
@@ -150,13 +150,7 @@ function importFileData(){
 // ★getStorageData() localStorageやsesseionStorageのデータを読み込む
 //---------------------------------------------------------------------------
 function getStorageData(key, key2){
-	try{
-		if(!window.localStorage || !window.sessionStorage){ return null;}
-	}
-	catch(e){
-		// FirefoxでLocalURLのときここに飛んでくる
-		return null;
-	}
+	if(!pzpr.env.storage.localST || !pzpr.env.storage.session){ return null;}
 
 	// 移し変える処理
 	var str = localStorage[key];

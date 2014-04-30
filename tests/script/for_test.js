@@ -9,7 +9,7 @@ ui.debug.extend(
 {
 	loadperf : function(){
 		ui.puzzle.open(perfstr, function(puzzle){
-			ui.menu.setMenuConfig('autocheck',false);
+			ui.menuconfig.set('autocheck',false);
 			puzzle.modechange(puzzle.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
@@ -69,7 +69,7 @@ ui.debug.extend(
 
 	fails : 0,
 	sccheck : function(){
-		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+		ui.menuconfig.set('autocheck',false);
 		var self = this;
 
 		self.fails = 0;
@@ -94,7 +94,7 @@ ui.debug.extend(
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
 			o.open(o.getURL(pzpr.parser.URL_KANPEN), function(){
-				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+				ui.menuconfig.set('autocheck',false);
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -166,7 +166,7 @@ ui.debug.extend(
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+		ui.menuconfig.set('autocheck',false);
 
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}

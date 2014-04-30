@@ -50,6 +50,8 @@ Encode:{
 		}
 
 		puzzle.board.resetInfo();
+
+		puzzle.execListener('openurl', pzl.url);
 	},
 	encodeURL : function(type){
 		var puzzle = this.owner, bd = puzzle.board;

@@ -38,7 +38,7 @@ FileIO:{
 
 		this.dataarray = null;
 
-		return '';
+		puzzle.execListener('openfile', pzl.fstr);
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数

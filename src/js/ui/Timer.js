@@ -45,7 +45,7 @@ ui.timer =
 		this.current = pzpr.util.currentTime();
 
 		if(pzpr.PLAYER){ this.updatetime();}
-		if(ui.menu.getMenuConfig('autocheck')){ this.ACcheck();}
+		if(ui.menuconfig.get('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ ui.timer =
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return ui.menu.selectStr("経過時間：","Time: ");
+		return ui.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------
@@ -79,8 +79,8 @@ ui.timer =
 		if(this.current>this.nextACtime && puzzle.playmode && !puzzle.checker.inCheck){
 			if(puzzle.check().complete){
 				puzzle.mouse.mousereset();
-				ui.menu.setMenuConfig('autocheck',false);
-				ui.menu.alertStr("正解です！","Complete!");
+				ui.menuconfig.set('autocheck',false);
+				ui.alertStr("正解です！","Complete!");
 				return;
 			}
 

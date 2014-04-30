@@ -94,8 +94,8 @@ ui.keypopup =
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = ui.menu.getConfigVal('mode');
-		if(this.element && !!this.paneltype[mode] && ui.menu.getMenuConfig('keypopup')){
+		var mode = ui.getConfig('mode');
+		if(this.element && !!this.paneltype[mode] && ui.menuconfig.get('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -110,9 +110,13 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	// kp.create()      キーポップアップを生成して初期化する
 	// kp.createtable() キーポップアップのポップアップを作成する
-	// kp.clear()       キーポップアップを削除する
 	//---------------------------------------------------------------------------
 	create : function(){
+		if(!!this.element){
+			getEL('panelbase1').innerHTML = '';
+			getEL('panelbase3').innerHTML = '';
+		}
+		
 		this.imgs = [];			// resize用
 		
 		var type = this.type[ui.puzzle.pid];
@@ -130,7 +134,7 @@ ui.keypopup =
 		
 		var bar = getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', ui.menu, function(){ this.setMenuConfig('keypopup',false)});
+		ui.event.addEvent(bar, 'dblclick', ui.menuconfig, function(){ this.set('keypopup',false)});
 	},
 	createtable : function(mode,type){
 		this.basepanel = getEL('panelbase'+mode);
@@ -139,12 +143,6 @@ ui.keypopup =
 		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 
 		this.generate(mode);
-	},
-	clear : function(){
-		if(!!this.element){
-			getEL('panelbase1').innerHTML = '';
-			getEL('panelbase3').innerHTML = '';
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -555,7 +553,7 @@ ui.keypopup =
 			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
 
-		ui.menu.modifyCSS({
+		ui.misc.modifyCSS({
 			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});

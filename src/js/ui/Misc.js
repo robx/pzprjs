@@ -1,127 +1,19 @@
-// Menu.js v3.4.0
+// Misc.js v3.4.1
 
 //---------------------------------------------------------------------------
-// ★Menuクラス [ファイル]等のメニューの動作を設定する
+// ★Miscクラス html表示系 (Menu, Button以外)の制御を行う
 //---------------------------------------------------------------------------
-
-// メニュー描画/取得/html表示系
-// Menuクラス
-ui.menu = {
-	menupid : '',				// どの種類のパズルのメニューを表示しているか
-	menuconfig : {},			// MenuConfigの設定内容を保持する
-	
-	enableSaveImage : false,	// 画像保存(png形式)が可能か
-	enableSaveSVG   : false,	// 画像保存(SVG形式)が可能か
-	enableGetText   : false,	// FileReader APIの旧仕様でファイルが読めるか
-	enableReadText  : false,	// HTML5 FileReader APIでファイルが読めるか
-	enableSaveBlob  : false,	// saveBlobが使用できるか
-	
-	reader : null,				// FileReaderオブジェクト
-	
+ui.misc = {
 	//---------------------------------------------------------------------------
-	// menu.init()   初回起動時の初期化関数
+	// misc.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
+	// misc.bgimage()        背景画像を返す
 	//---------------------------------------------------------------------------
-	init : function(){
-		this.initMenuConfig();
-		
-		this.initReader();
-
-		if(pzpr.env.browser.IE6){
-			this.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
-		}
-		
-		window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
-		this.enableSaveBlob = (!!window.navigator.saveBlob);
-		
-		this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
-	},
-	
-	//---------------------------------------------------------------------------
-	// menu.menuinit()   メニュー、サブメニュー、フロートメニュー、ボタン、
-	//                   管理領域、ポップアップメニューの初期設定を行う
-	// menu.menureset()  メニュー用の設定を消去する
-	//---------------------------------------------------------------------------
-	menuinit : function(){
-		var pid = ui.puzzle.pid;
-		
-		if(ui.menu.menupid === pid){ return;}	/* パズルの種類が同じなら初期設定必要なし */
-		
-		if(!!ui.puzzle.imgcanvas[0] && !!_doc.createElement('canvas').toDataURL){
-			this.enableSaveImage = true;
-		}
-		if(!!ui.puzzle.imgcanvas[1] && !!window.btoa){
-			this.enableSaveSVG = true;
-		}
-		
-		this.menureset();
-
-		ui.keypopup.create();
-
-		if(!!ui.menuarea){ ui.menuarea.init();}
-		if(!!ui.toolarea){ ui.toolarea.init();}
-
-		this.displayAll();
-
-		ui.event.setUIEvents();				/* イベントをくっつける */
-
-		this.menupid = pid;
-	},
-
-	menureset : function(){
-		if(!!ui.menuarea){ ui.menuarea.reset();}
-		if(!!ui.toolarea){ ui.toolarea.reset();}
-
-		ui.keypopup.clear();
-		if(!!ui.popupmgr){ ui.popupmgr.reset();}
-		
-		ui.event.removeUIEvents();
-	},
-
-	//---------------------------------------------------------------------------
-	// initReader() File Reader (あれば)の初期化処理
-	//---------------------------------------------------------------------------
-	initReader : function(){
-		if(typeof FileReader == 'undefined'){
-			this.reader = null;
-
-			if(typeof FileList != 'undefined' &&
-			   typeof File.prototype.getAsText != 'undefined')
-			{
-				this.enableGetText = true;
-			}
-		}
-		else{
-			this.reader = new FileReader();
-			this.reader.onload = function(e){
-				ui.puzzle.open(e.target.result);
-			};
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.displayAll()     全てのメニュー、ボタン、ラベルに対して文字列を設定する
-	// menu.setdisplay()     個別のメニュー、ボタン、ラベルに対して文字列を設定する
-	// menu.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
-	// menu.bgimage()        背景画像を返す
-	//---------------------------------------------------------------------------
-	displayAll : function(){
-		ui.menuarea.display();
-		ui.toolarea.display();
-		ui.popupmgr.translate();
-
-		this.displayDesign();
-	},
-	setdisplay : function(idname){
-		ui.menuarea.setdisplay(idname);
-		ui.toolarea.setdisplay(idname);
-	},
-
 	displayDesign : function(){
 		var pid = ui.puzzle.pid;
 		var pinfo = pzpr.variety.info[pid];
-		var title = this.selectStr(pinfo.ja, pinfo.en);
-		if(pzpr.EDITOR){ title += this.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else		   { title += this.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+		var title = ui.selectStr(pinfo.ja, pinfo.en);
+		if(pzpr.EDITOR){ title += ui.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
+		else		   { title += ui.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
 
 		_doc.title = title;
 		var titleEL = _doc.getElementById('title2');
@@ -138,113 +30,8 @@ ui.menu = {
 		return toBGimage(pid);
 	},
 
-	//---------------------------------------------------------------------------
-	// menu.enb_undo()     html上の[戻][進]ボタンを押すことが可能か設定する
-	//---------------------------------------------------------------------------
-	enb_undo : function(){
-		ui.menuarea.enb_undo();
-		ui.toolarea.enb_undo();
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.setConfigVal()   値設定の共通処理
-	// menu.getConfigVal()   値設定の共通処理
-	//---------------------------------------------------------------------------
-	setConfigVal : function(idname, newval){
-		if(!!this.menuconfig[idname]){
-			this.setMenuConfig(idname, newval);
-		}
-		else if(!!ui.puzzle.config.list[idname]){
-			ui.puzzle.setConfig(idname, newval);
-		}
-		else if(idname==='uramashu'){
-			ui.puzzle.board.uramashu = newval;
-			ui.event.config_common(ui.puzzle, idname, newval);
-		}
-		else if(idname==='mode'){
-			ui.puzzle.modechange(newval);
-		}
-	},
-	getConfigVal : function(idname){
-		if(!!this.menuconfig[idname]){
-			return this.getMenuConfig(idname);
-		}
-		else if(!!ui.puzzle.config.list[idname]){
-			return ui.puzzle.getConfig(idname);
-		}
-		else if(idname==='uramashu'){
-			return ui.puzzle.board.uramashu;
-		}
-		else if(idname==='mode'){
-			return ui.puzzle.playmode ? 3 : 1;
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.initMenuConfig()  盤面下のボタンエリアの初期化を行う
-	// menu.setMenuConfig()   アイスと○などの表示切り替え時の処理を行う
-	// menu.getMenuConfig()   html上の[戻][進]ボタンを押すことが可能か設定する
-	//---------------------------------------------------------------------------
-	initMenuConfig : function(){
-		this.menuconfig = {};
-
-		/* 正解自動判定機能 */
-		this.menuconfig.autocheck = {val:pzpr.PLAYER};
-
-		/* キーポップアップ (数字などのパネル入力) */
-		this.menuconfig.keypopup = {val:false};
-
-		/* 自動横幅調節 */
-		this.menuconfig.adjsize = {val:true};
-
-		/* 表示サイズ */
-		this.menuconfig.cellsize = {val:2, option:[0,1,2,3,4]};
-
-		/* セルのサイズ設定用 */
-		this.menuconfig.cellsizeval = {val:36};
-
-		/* キャンバスを横幅いっぱいに広げる */
-		this.menuconfig.fullwidth = {val:(ui.event.windowWidth()<600)};
-	},
-	setMenuConfig : function(idname, newval){
-		if(!this.menuconfig[idname]){ return;}
-		this.menuconfig[idname].val = newval;
-		this.setdisplay(idname);
-		switch(idname){
-		case 'keypopup':
-			ui.keypopup.display();
-			break;
-			
-		case 'adjsize': case 'cellsize': case 'fullwidth':
-			ui.event.adjustcellsize();
-			break;
-		}
-	},
-	getMenuConfig : function(idname){
-		return (!!this.menuconfig[idname]?this.menuconfig[idname].val:null);
-	},
-
-	//---------------------------------------------------------------------------
-	// menu.saveMenuConfig()     全フラグの設定値を返す
-	// menu.restoreMenuConfig()  全フラグの設定値を設定する
-	//---------------------------------------------------------------------------
-	saveMenuConfig : function(){
-		var object = {};
-		for(var key in this.menuconfig){ object[key] = this.menuconfig[key].val;}
-		delete object.autocheck;
-		return JSON.stringify(object);
-	},
-	restoreMenuConfig : function(json){
-		var object = JSON.parse(json);
-		for(var key in this.menuconfig){
-			if(object[key]!==void 0){ this.menuconfig[key].val = object[key];}
-		}
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-
 	//--------------------------------------------------------------------------------
-	// menu.modifyCSS()   スタイルシートの中身を変更する
+	// misc.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	modifyCSS : function(input){
 		var sheet = _doc.styleSheets[0];
@@ -270,66 +57,6 @@ ui.menu = {
 			}
 		}
 		return modified;
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-
-	//--------------------------------------------------------------------------------
-	// menu.selectStr()  現在の言語に応じた文字列を返す
-	// menu.alertStr()   現在の言語に応じたダイアログを表示する
-	// menu.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
-	//--------------------------------------------------------------------------------
-	selectStr : function(strJP, strEN){
-		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	alertStr : function(strJP, strEN){
-		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	confirmStr : function(strJP, strEN){
-		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	promptStr : function(strJP, strEN, initialStr){
-		return prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
-	},
-
-//--------------------------------------------------------------------------------------------------------------
-
-	//------------------------------------------------------------------------------
-	// menu.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
-	//------------------------------------------------------------------------------
-	duplicate : function(){
-		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
-		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
-		if(!pzpr.env.browser.Presto){
-			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = filestr;
-			window.open(url,'');
-			if(!!old){ sessionStorage['filedata'] = old;}
-			else     { delete sessionStorage['filedata'];}
-		}
-		else{
-			localStorage['pzprv3_filedata'] = filestr;
-			window.open(url,'');
-		}
-	},
-
-	//------------------------------------------------------------------------------
-	// menu.answercheck()「正答判定」ボタンを押したときの処理
-	// menu.ACconfirm()  「回答消去」ボタンを押したときの処理
-	// menu.ASconfirm()  「補助消去」ボタンを押したときの処理
-	//------------------------------------------------------------------------------
-	answercheck : function(){
-		alert( ui.puzzle.check(true).text() );
-	},
-	ACconfirm : function(){
-		if(this.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			ui.puzzle.ansclear();
-		}
-	},
-	ASconfirm : function(){
-		if(this.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			ui.puzzle.subclear();
-		}
 	}
 };
 

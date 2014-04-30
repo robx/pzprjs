@@ -17,15 +17,25 @@ ui.popupmgr =
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
 	reset : function(){
+		/* 一旦全てのpopupを削除する */
 		for(var name in this.popups){
 			var popup = this.popups[name];
 			if(!popup.disable_remove){ popup.remove();}
 		}
+		
+		/* デバッグ用を作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
 		if(!this.popups.debug.pop){
-			/* デバッグ用だけは作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
 			this.popups.debug.show(0,0);
 			this.popups.debug.hide();
 		}
+		
+		/* キーポップアップも個々で作成する */
+		ui.keypopup.create();
+		
+		/* イベントを割り当てる */
+		this.setEvents();
+		
+		this.translate();
 	},
 	
 	setEvents : function(){
@@ -140,13 +150,13 @@ ui.popupmgr.addpopup('template',
 		if(!this.captions){ return;}
 		for(var i=0;i<this.captions.length;i++){
 			var obj  = this.captions[i];
-			var text = ui.menu.selectStr(obj.str_jp, obj.str_en);
+			var text = ui.selectStr(obj.str_jp, obj.str_en);
 			if   (!!obj.textnode){ obj.textnode.data = text;}
 			else if(!!obj.button){ obj.button.value  = text;}
 		}
 	},
 	createTextNode : function(str_jp, str_en){
-		var textnode = _doc.createTextNode(ui.menu.selectStr(str_jp, str_en));
+		var textnode = _doc.createTextNode(ui.selectStr(str_jp, str_en));
 		this.captions.push({textnode:textnode, str_jp:str_jp, str_en:str_en});
 		return textnode;
 	},
@@ -242,7 +252,7 @@ ui.popupmgr.addpopup('template',
 	addExecButton : function(str_jp, str_en, func, attr){
 		var el = createEL('input');
 		el.type = 'button';
-		el.value = ui.menu.selectStr(str_jp, str_en);
+		el.value = ui.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
 		el.onclick = func;
 		this.form.appendChild(el);
@@ -529,16 +539,16 @@ ui.popupmgr.addpopup('fileopen',
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		var fileEL = this.form.filebox;
-		if(!!ui.menu.reader || ui.menu.enableGetText){
+		if(!!ui.reader || ui.enableGetText){
 			var fitem = fileEL.files[0];
 			if(!fitem){ return;}
 			
-			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
-			else                { ui.puzzle.open(fitem.getAsText(''));}
+			if(!!ui.reader){ ui.reader.readAsText(fitem);}
+			else           { ui.puzzle.open(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}
-			this.form.action = ui.menu.fileio;
+			this.form.action = ui.fileio;
 			this.form.submit();
 		}
 		this.form.reset();
@@ -559,7 +569,7 @@ ui.popupmgr.addpopup('filesave',
 	makeForm : function(){
 		this.settitle("ファイルを保存する", "Open file");
 		
-		this.form.action = ui.menu.fileio;
+		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
@@ -587,7 +597,7 @@ ui.popupmgr.addpopup('filesave',
 		this.addInput('text', {name:"filename",value:ui.puzzle.pid+".txt"});
 		this.addBR();
 		
-		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+		if(!ui.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
 			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
@@ -632,14 +642,14 @@ ui.popupmgr.addpopup('filesave',
 		}
 
 		var blob = null, filedata = null;
-		if(ui.menu.enableSaveBlob || !!this.anchor){
+		if(ui.enableSaveBlob || !!this.anchor){
 			blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
 		}
 		else{
 			filedata = ui.puzzle.getFileData(filetype);
 		}
 
-		if(ui.menu.enableSaveBlob){
+		if(ui.enableSaveBlob){
 			navigator.saveBlob(blob, filename);
 			this.hide();
 		}
@@ -675,7 +685,7 @@ ui.popupmgr.addpopup('imagesave',
 		
 		this.settitle("画像を保存する", "Open file");
 		
-		this.form.action = ui.menu.fileio;
+		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
@@ -686,10 +696,10 @@ ui.popupmgr.addpopup('imagesave',
 		/* ファイル形式選択オプション */
 		this.addText("ファイル形式 ", "File format ");
 		var typeitem = [];
-		if(ui.menu.enableSaveImage){
+		if(ui.enableSaveImage){
 			typeitem.push({name:'png', str_jp:"PNG形式 (png)", str_en:"PNG Format (png)"});
 		}
-		if(ui.menu.enableSaveSVG){
+		if(ui.enableSaveSVG){
 			typeitem.push({name:'svg', str_jp:"ベクター画像(SVG)", str_en:"Vector Image (SVG)"});
 		}
 		this.addSelect({name:'filetype'}, typeitem);
@@ -701,7 +711,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addBR();
 		
 		this.addText("画像のサイズ ", "Image Size ");
-		this.addInput('number', {name:"cs", value:""+ui.menu.getMenuConfig('cellsizeval'), size:'4', maxlength:'3', min:'8', max:'999'});
+		this.addInput('number', {name:"cs", value:""+ui.menuconfig.get('cellsizeval'), size:'4', maxlength:'3', min:'8', max:'999'});
 		this.addText(' ', ' ');
 		this.showsize = createEL('span');
 		this.showsize.appendChild(createEL('span'));
@@ -709,7 +719,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addBR();
 		this.form.cs.onchange = function(){ popup.estimatesize();};
 		
-		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+		if(!ui.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
 			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
@@ -772,7 +782,7 @@ ui.popupmgr.addpopup('imagesave',
 
 		var blob = null, filedata = null;
 		try{
-			if(ui.menu.enableSaveBlob || !!this.anchor){
+			if(ui.enableSaveBlob || !!this.anchor){
 				blob = ui.puzzle.toBlob(type,cellsize);
 			}
 			else{
@@ -780,11 +790,11 @@ ui.popupmgr.addpopup('imagesave',
 			}
 		}
 		catch(e){
-			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
 		}
 
 		/* 出力された画像の保存ルーチン */
-		if(ui.menu.enableSaveBlob){
+		if(ui.enableSaveBlob){
 			navigator.saveBlob(blob, filename);
 			this.hide();
 		}
@@ -815,7 +825,7 @@ ui.popupmgr.addpopup('imagesave',
 			dataurl = ui.puzzle.toDataURL(type,cellsize);
 		}
 		catch(e){
-			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
 		}
 		
 		/* 出力された画像を開くルーチン */
@@ -952,7 +962,7 @@ ui.popupmgr.addpopup('dispsize',
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		
-		this.form.cs.value = ui.menu.getMenuConfig('cellsizeval');
+		this.form.cs.value = ui.menuconfig.get('cellsizeval');
 		ui.puzzle.key.enableKey = false;
 	},
 	
@@ -962,7 +972,7 @@ ui.popupmgr.addpopup('dispsize',
 	changesize : function(e){
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){
-			ui.menu.setMenuConfig('cellsizeval', (csize|0));
+			ui.menuconfig.set('cellsizeval', (csize|0));
 			ui.event.adjustcellsize();
 		}
 		this.hide();
