@@ -499,7 +499,7 @@ Graphic:{
 
 			// ●の描画
 			if(cross.qnum===-2){
-				g.fillStyle = (cross.error===1 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (cross.error===1 ? this.errcolor1 : this.quescolor);
 				if(graydisp){ g.fillStyle="gray";}
 				if(this.vnop(headers[1]+id,this.FILL)){
 					g.fillCircle(px, py, csize2);

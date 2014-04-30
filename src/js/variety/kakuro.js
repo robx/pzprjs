@@ -114,7 +114,7 @@ Graphic:{
 	getBorderColor : function(border){
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 		if(!cell1.isnull && !cell2.isnull && ((cell1.ques===51)^(cell2.ques===51))){
-			return this.cellcolor;
+			return this.quescolor;
 		}
 		return null;
 	},

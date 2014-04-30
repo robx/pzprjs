@@ -167,7 +167,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(cell.qnum===5){
-				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
 				if(this.vnop(header+cell.id,this.FILL)){
 					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 				}

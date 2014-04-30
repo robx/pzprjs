@@ -117,7 +117,7 @@ Graphic:{
 },
 "Graphic@ringring":{
 	getCellColor : function(cell){
-		if(cell.ques===1){ return this.cellcolor;}
+		if(cell.ques===1){ return this.quescolor;}
 		return null;
 	},
 	drawTarget : function(){}

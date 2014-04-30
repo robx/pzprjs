@@ -405,7 +405,7 @@ Graphic:{
 			if(dir>=1 && dir<=4){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 
-				g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 				if(this.vnop(headers[0]+id,this.FILL)){
 					switch(dir){
 						case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
@@ -430,7 +430,7 @@ Graphic:{
 
 		border = bd.arrowin.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
@@ -441,7 +441,7 @@ Graphic:{
 		}
 		border = bd.arrowout.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.cellcolor);
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}

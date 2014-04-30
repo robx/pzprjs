@@ -277,8 +277,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	dotcolor_type : "PINK",
 
-	errcolor1 : "black",	// drawSlashes関係 cellcolorと同じ
-	errcolor2 : "black",	// drawSlashes関係 cellcolorと同じ
+	errcolor1 : "black",	// drawSlashes関係 quescolorと同じ
+	errcolor2 : "black",	// drawSlashes関係 quescolorと同じ
 
 	lightcolor : "rgb(255, 255, 127)",
 

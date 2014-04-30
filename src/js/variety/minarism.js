@@ -184,7 +184,7 @@ Graphic:{
 		var headers = ["b_cp_", "b_is1_", "b_is2_"];
 
 		g.lineWidth = 1;
-		g.strokeStyle = this.cellcolor;
+		g.strokeStyle = this.quescolor;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){

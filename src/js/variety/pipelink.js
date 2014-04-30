@@ -131,7 +131,7 @@ Graphic:{
 		if(this.owner.getConfig('disptype_pipelinkr')==2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
-				return this.cellcolor;
+				return this.quescolor;
 			}
 		}
 		return null;
@@ -139,7 +139,7 @@ Graphic:{
 
 	getCircleStrokeColor : function(cell){
 		if((this.owner.getConfig('disptype_pipelinkr')==1) && cell.ques===6){
-			return this.cellcolor;
+			return this.quescolor;
 		}
 		return null;
 	},

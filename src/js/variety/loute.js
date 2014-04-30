@@ -261,7 +261,7 @@ Graphic:{
 	},
 
 	getCircleStrokeColor : function(cell){
-		if(cell.isCircle()){ return this.cellcolor;}
+		if(cell.isCircle()){ return this.quescolor;}
 		return null;
 	},
 	getCircleFillColor : function(cell){

@@ -123,7 +123,7 @@ Graphic:{
 	gridcolor_type : "DARK",
 
 	bgcellcolor_func : "qans2",
-	cellcolor : "rgb(96, 96, 96)",
+	qanscolor : "rgb(96, 96, 96)",
 	errcolor2 : "rgb(32, 32, 255)"
 },
 "Graphic@norinori":{

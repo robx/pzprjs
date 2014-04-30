@@ -133,9 +133,10 @@ Graphic:{
 		this.drawQues51();
 
 		this.drawGrid();
-		this.drawBorders();
 
 		this.drawShadedCells();
+
+		this.drawBorders();
 		this.drawBoxBorders(true);
 
 		this.drawChassis_ex1(true);

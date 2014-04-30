@@ -206,7 +206,7 @@ Graphic:{
 
 	getCircleStrokeColor : function(cell){
 		if(cell.isValid() && !cell.isNum()){
-			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
+			return (cell.error===1 ? this.errcolor1 : this.quescolor);
 		}
 		return null;
 	},

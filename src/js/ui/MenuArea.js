@@ -129,7 +129,7 @@ ui.menuarea = {
 		ap('sep_edit1', 'edit');
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
-		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+		as('turnflip', 'edit', '反転・回転', 'Filp/Turn the Board');
 		if(pzpr.env.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
@@ -167,10 +167,12 @@ ui.menuarea = {
 		if(ui.puzzle.flags.irowakeblk){
 			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
 		}
+
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ac('fullwidth', 'disp', '横幅最大拡張', 'Expand Canvas Width');
 		ap('sep_disp2', 'disp');
+		as('colors',  'disp', '色の設定','Change Color');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 

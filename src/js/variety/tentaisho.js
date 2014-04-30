@@ -311,7 +311,7 @@ Graphic:{
 			var star = slist[i], id=star.id, bx=star.bx, by=star.by;
 
 			if(star.getStar()===1){
-				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.cellcolor);
+				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
 				g.fillStyle   = "white";
 				if(this.vnop(headers[0]+id,this.STROKE)){
 					g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
@@ -320,7 +320,7 @@ Graphic:{
 			else{ g.vhide(headers[0]+id);}
 
 			if(star.getStar()===2){
-				g.fillStyle = (star.iserror() ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
 				if(this.vnop(headers[1]+id,this.FILL)){
 					g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 				}

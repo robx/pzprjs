@@ -357,7 +357,7 @@ Graphic:{
 
 	getCellColor : function(cell){
 		if(cell.ques===1){
-			if     (cell.error===0){ return this.cellcolor;}
+			if     (cell.error===0){ return this.quescolor;}
 			else if(cell.error===1){ return this.errcolor1;}
 		}
 		return null;
@@ -374,7 +374,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
-			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.cellcolor);
+			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.quescolor);
 
 			if(cell.ques===21){ //たて
 				if(this.vnop([headers[0],id].join("_"),this.FILL)){
@@ -423,13 +423,13 @@ Graphic:{
 		g.vdel(["c_stpos", "text_stpos"]);
 
 		g.lineWidth = linewidth;
-		g.strokeStyle = this.cellcolor;
+		g.strokeStyle = this.quescolor;
 		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
 		if(this.vnop("c_stpos",this.FILL)){
 			g.shapeCircle(px, py, csize);
 		}
 
-		var option = { key:"text_stpos", ratio:[0.75, 0.66], color:this.cellcolor };
+		var option = { key:"text_stpos", ratio:[0.75, 0.66], color:this.quescolor };
 		this.disptext(""+bd.hinfo.max, px, py, option);
 	},
 

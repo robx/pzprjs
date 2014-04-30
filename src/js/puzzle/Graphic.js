@@ -24,6 +24,8 @@ Graphic:{
 		this.linecolor  = this.linecolor_list [this.linecolor_type]  || this.linecolor;
 
 		this.resetRange();
+
+		this.initColor();
 	},
 
 	context    : null,
@@ -34,7 +36,8 @@ Graphic:{
 	bordercolor_func : "",	// getBorderColor()の種類
 
 	// セルの色(黒マス)
-	cellcolor : "black",
+	quescolor : "black",
+	qanscolor : "black",
 	errcolor1 : "rgb(224, 0, 0)",
 
 	// セルの背景色(白マス)
@@ -216,6 +219,21 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	initCanvas_special : function(canvas){
 		this.context = canvas.getContext("2d");
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.initColor()   初期化事に描画色の設定を行う
+	// pc.setColor()    描画色の設定を行う
+	//---------------------------------------------------------------------------
+	initColor : function(){
+		var configlist = this.owner.config.list;
+		for(var key in configlist){
+			if(key.substr(0,6)==="color_"){ this.setColor(key.substr(6), configlist[key].val);}
+		}
+	},
+	setColor : function(name, color){
+		this[name] = color || this.constructor.prototype[name];
+		this.paintAll();
 	},
 
 	//---------------------------------------------------------------------------
@@ -608,8 +626,8 @@ Graphic:{
 		var el = g.elements[vid];
 		if(!!el){
 			el.removeAttribute('display');
-			if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  Candle.parse(g.fillStyle));}
-			if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',Candle.parse(g.strokeStyle));}
+			if(this.vnop_FILL[ccflag])  { el.setAttribute('fill',  g.fillStyle);}
+			if(this.vnop_STROKE[ccflag]){ el.setAttribute('stroke',g.strokeStyle);}
 			return false;
 		}
 		return true;

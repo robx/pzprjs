@@ -95,7 +95,7 @@ Graphic:{
 		var g = this.vinc('cell_firefly', 'auto');
 
 		g.lineWidth = 1.5;
-		g.strokeStyle = this.cellcolor;
+		g.strokeStyle = this.quescolor;
 
 		var rsize  = this.cw*0.40;
 		var rsize3 = this.cw*0.10;
@@ -115,7 +115,7 @@ Graphic:{
 
 				g.vdel(headers[1]+id);
 				if(cell.qdir!==0){
-					g.fillStyle = this.cellcolor;
+					g.fillStyle = this.quescolor;
 					switch(cell.qdir){
 						case cell.UP: py-=(rsize-1); break;
 						case cell.DN: py+=(rsize-1); break;

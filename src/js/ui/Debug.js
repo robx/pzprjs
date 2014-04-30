@@ -43,7 +43,7 @@ ui.popupmgr.addpopup('debug',
 		
 		this.addExecButton("Load", "Load", function(){ debug.fileopen();});
 		this.addExecButton("消去", "Cls", function(){ debug.erasetext();});
-		this.addCancelButton();
+		this.addCloseButton();
 
 		/* テスト用文字列出力要素を追加 */
 		if(ui.debugmode && !getEL('testdiv')){

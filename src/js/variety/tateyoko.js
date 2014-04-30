@@ -215,7 +215,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
 			if(cell.ques===1){
-				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
 				if(this.vnop(header+cell.id,this.FILL)){
 					var px = cell.bx*this.bw, py = cell.by*this.bh;
 					g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);

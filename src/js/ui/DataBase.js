@@ -145,7 +145,7 @@ ui.popupmgr.addpopup('database',
 		this.initRow();
 		this.initCell({},{verticalAlign:'bottom'});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 		/* ----------------------------------------------------------------- */
 		
 		this.form = form;

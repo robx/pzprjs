@@ -37,14 +37,14 @@ Graphic:{
 	getCellColor_qnum : function(cell){
 		if(cell.qnum===-1){ return null;}
 		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.cellcolor;}
+		if     (info===0){ return this.quescolor;}
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
 	getCellColor_qans : function(cell){
 		if(cell.qans!==1){ return null;}
 		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.cellcolor;}
+		if     (info===0){ return this.qanscolor;}
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
@@ -96,7 +96,7 @@ Graphic:{
 	},
 	getBGCellColor_qans1 : function(cell){
 		var info = cell.error || cell.qinfo;
-		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.cellcolor);}
+		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.qanscolor);}
 		else if(info     ===1){ return this.errbcolor1;}
 		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
 		return null;
@@ -104,7 +104,7 @@ Graphic:{
 	getBGCellColor_qans2 : function(cell){
 		var info = cell.error || cell.qinfo;
 		if(cell.qans===1){
-			if     (info===0){ return this.cellcolor;}
+			if     (info===0){ return this.qanscolor;}
 			else if(info===1){ return this.errcolor1;}
 			else if(info===2){ return this.errcolor2;}
 		}
@@ -239,7 +239,7 @@ Graphic:{
 				var info = cell.error || cell.qinfo;
 				if     (info===1){ g.strokeStyle = this.errcolor1;}
 				else if(info===2){ g.strokeStyle = this.errcolor2;}
-				else             { g.strokeStyle = this.cellcolor;}
+				else             { g.strokeStyle = this.qanscolor;}
 
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if(cell.qans==31){
@@ -444,7 +444,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
 			if(cross.qnum===1){
-				g.fillStyle = (cross.error===1||cross.qinfo===1 ? this.errcolor1 : this.cellcolor);
+				g.fillStyle = (cross.error===1||cross.qinfo===1 ? this.errcolor1 : this.quescolor);
 				if(this.vnop(header+cross.id,this.FILL)){
 					var px = cross.bx*this.bw, py = cross.by*this.bh;
 					g.fillCircle(px, py, csize);
@@ -508,7 +508,7 @@ Graphic:{
 	getBorderColor_ice : function(border){
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 		if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
-			return this.cellcolor;
+			return this.quescolor;
 		}
 		return null;
 	},
@@ -742,7 +742,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
 
-			g.fillStyle = this.cellcolor;
+			g.fillStyle = this.quescolor;
 			if(this.vnop(header+cross.id,this.NONE)){
 				var px = cross.bx*this.bw, py = cross.by*this.bh;
 				g.fillCircle(px, py, (this.lw*1.2)/2);
@@ -772,7 +772,7 @@ Graphic:{
 		}
 	},
 	getTriangleColor : function(cell){
-		return this.cellcolor;
+		return this.quescolor;
 	},
 	drawTriangle1 : function(px,py,num,vid){
 		var g = this.context;
@@ -866,7 +866,7 @@ Graphic:{
 		if(num!==-1){
 			if(isdrawmove && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
 			else if(error===1||error===4){ return this.errcolor1;}
-			else{ return this.cellcolor;}
+			else{ return this.quescolor;}
 		}
 		return null;
 	},
@@ -948,7 +948,7 @@ Graphic:{
 		var g = this.vinc('cell_ques51', 'crispEdges');
 
 		var header = "c_slash51_";
-		g.strokeStyle = this.cellcolor;
+		g.strokeStyle = this.quescolor;
 		g.lineWidth = 1;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -966,7 +966,7 @@ Graphic:{
 		var g = this.vinc('excell_ques51', 'crispEdges');
 
 		var header = "ex_slash51_";
-		g.strokeStyle = this.cellcolor;
+		g.strokeStyle = this.quescolor;
 		g.lineWidth = 1;
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
@@ -979,7 +979,7 @@ Graphic:{
 	drawEXCellGrid : function(){
 		var g = this.vinc('grid_excell', 'crispEdges');
 
-		g.fillStyle = this.cellcolor;
+		g.fillStyle = this.quescolor;
 		var headers = ["ex_bdx_", "ex_bdy_"];
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){

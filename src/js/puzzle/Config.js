@@ -62,6 +62,9 @@ Config.prototype =
 		this.add('squarecell', true);							/* セルは正方形にする */
 		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
+		/* 表示色の設定 */
+		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
+
 		/* 入力方法設定 */
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
@@ -104,19 +107,23 @@ Config.prototype =
 		
 		this.list[name].val = newval;
 
-		var result = true, o = this.owner;
+		var result = true, puzzle = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
-			o.redraw();
+			puzzle.redraw();
 			break;
 		
 		case 'disptype_bosanowa': case 'font':
-			o.adjustCanvasSize();
+			puzzle.adjustCanvasSize();
 			break;
 		
 		case 'keytarget':
 			this.owner.key.setfocus();
+			break;
+		
+		case 'color_qanscolor':
+			puzzle.painter.setColor('qanscolor', newval);
 			break;
 		
 		default:

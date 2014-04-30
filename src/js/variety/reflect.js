@@ -126,7 +126,7 @@ Graphic:{
 	},
 
 	getTriangleColor : function(cell){
-		return ((cell.error===1||cell.error===4||cell.qinfo===1||cell.qinfo===4) ? this.errcolor1 : this.cellcolor);
+		return ((cell.error===1||cell.error===4||cell.qinfo===1||cell.qinfo===4) ? this.errcolor1 : this.quescolor);
 	},
 
 	drawTriangleBorder : function(){
@@ -164,7 +164,7 @@ Graphic:{
 			if(cell.ques===11){
 				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				g.fillStyle = this.cellcolor;
+				g.fillStyle = this.quescolor;
 
 				if(this.vnop(headers[0]+id,this.NONE)){
 					g.fillRectCenter(px, py, lm, ll/2);

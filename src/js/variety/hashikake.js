@@ -215,7 +215,7 @@ Graphic:{
 		if(cell.isNum()){
 			var err = cell.error;
 			if(err===1||err===4){ return this.errcolor1;}
-			else                { return this.cellcolor;}
+			else                { return this.quescolor;}
 		}
 		return null;
 	},

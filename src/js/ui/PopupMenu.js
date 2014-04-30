@@ -61,20 +61,7 @@ ui.popupmgr =
 			return true;
 		}
 
-		var target = null;
-		switch(idname){
-			case 'newboard':  target = this.popups.newboard; break;
-			case 'urlinput':  target = this.popups.urlinput; break;
-			case 'urloutput': target = this.popups.urloutput; break;
-			case 'fileopen':  target = this.popups.fileopen; break;
-			case 'filesave':  target = this.popups.filesave; break;
-			case 'imagesave': target = this.popups.imagesave; break;
-			case 'database':  target = this.popups.database; break;
-			case 'adjust':    target = this.popups.adjust; break;
-			case 'turn':      target = this.popups.turnflip; break;
-			case 'credit':    target = this.popups.credit; break;
-			case 'dispsize':  target = this.popups.dispsize; break;
-		}
+		var target = this.popups[idname] || null;
 		if(target!==null){
 			/* 表示しているウィンドウがある場合は閉じる */
 			if(this.popup){ this.popup.hide();}
@@ -225,6 +212,7 @@ ui.popupmgr.addpopup('template',
 		catch(e){ el.type = "text"; /* IE8まででエラーをくらうので修正 */}
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
+		return el;
 	},
 	addTextArea : function(attr){
 		var el = createEL('textarea');
@@ -258,6 +246,10 @@ ui.popupmgr.addpopup('template',
 	addCancelButton : function(){
 		var popup = this;
 		this.addExecButton("キャンセル", "Cancel", function(){ popup.hide();})
+	},
+	addCloseButton : function(){
+		var popup = this;
+		this.addExecButton("閉じる", "Close", function(){ popup.hide();})
 	}
 });
 
@@ -473,7 +465,7 @@ ui.popupmgr.addpopup('urloutput',
 		this.addBR();
 		
 		this.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl);
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -605,7 +597,7 @@ ui.popupmgr.addpopup('filesave',
 		var popup = this;
 		this.addExecButton("保存", "Save", function(){ popup.filesave();});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	/* オーバーライド */
 	show : function(px,py){
@@ -727,7 +719,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addExecButton("ダウンロード", "Download", function(){ popup.saveimage();});
 		this.addExecButton("別ウィンドウで開く", "Open another window", function(){ popup.openimage();});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 		
 		popup.changefilename();
 		popup.estimatesize();
@@ -878,7 +870,7 @@ ui.popupmgr.addpopup('adjust',
 		this.addExecButton("右", "right", adjust, {name:'reducert'});
 		this.addBR();
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -920,7 +912,7 @@ ui.popupmgr.addpopup('turnflip',
 			this.form.turnr.disabled = true;
 		}
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -932,14 +924,53 @@ ui.popupmgr.addpopup('turnflip',
 });
 
 //---------------------------------------------------------------------------
-// ★Popup_DispSizeクラス 回転・反転のポップアップメニューを作成したり表示します
+// ★Popup_Colorsクラス 色の選択を行うメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('colors',
+{
+	formname : 'colors',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() 色の選択を行うポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("色の変更", "Change Colors");
+		
+		this.addColorSelector("qanscolor", "黒マス (回答入力)", "Shaded Cell (Answer)");
+		
+		this.addCloseButton();
+	},
+	addColorSelector : function(idname, str_ja, str_en){
+		this.addText(str_ja, str_en);
+		this.addInput('color', {name:idname+"_set", value:Candle.parse(ui.puzzle.painter[idname]), onchange:this.setcolor});
+		this.addExecButton("クリア", "Reset", this.clearcolor, {name:idname+"_clear"});
+		this.addBR();
+	},
+	
+	//------------------------------------------------------------------------------
+	// setcolor()   色を設定する
+	// clearcolor() 色の設定をクリアする
+	//------------------------------------------------------------------------------
+	setcolor : function(e){
+		var name = e.target.name.replace(/_set/,"");
+		ui.puzzle.setConfig("color_"+name, e.target.value)
+	},
+	clearcolor : function(e){
+		var name = e.target.name.replace(/_clear/,"");
+		this.form[name+"_set"].value = "";
+		ui.puzzle.setConfig("color_"+name, "")
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_DispSizeクラス サイズの変更を行うポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('dispsize',
 {
 	formname : 'dispsize',
 	
 	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
+	// makeForm() サイズ変更のポップアップメニューを作成する
 	//------------------------------------------------------------------------------
 	makeForm : function(){
 		this.settitle("表示サイズの変更", "Change size");
@@ -953,7 +984,7 @@ ui.popupmgr.addpopup('dispsize',
 		
 		var popup = this;
 		this.addExecButton("変更する", "Change", function(){ popup.changesize();});
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	show : function(px,py){
@@ -996,8 +1027,7 @@ ui.popupmgr.addpopup('credit',
 		this.addText("ぱずぷれv3は はっぱ/連続発破が作成しています。", "PUZ-PRE v3 id made by happa.");
 		this.addBR();
 		
-		var popup = this;
-		this.addExecButton("閉じる", "Close", function(){ popup.hide();});
+		this.addCloseButton();
 	}
 });
 

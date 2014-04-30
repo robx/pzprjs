@@ -143,7 +143,7 @@ Graphic:{
 
 	getCircleStrokeColor : function(cell){
 		if(cell.isStone() && cell.anum===-1){
-			return (cell.error===1 ? this.errcolor1 : this.cellcolor);
+			return (cell.error===1 ? this.errcolor1 : this.quescolor);
 		}
 		return null;
 	},

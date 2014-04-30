@@ -138,7 +138,7 @@ Graphic:{
 		return null;
 	},
 	getQuesBorderColor : function(border){
-		return (border.isQuesBorder() ? this.cellcolor : null);
+		return (border.isQuesBorder() ? this.quescolor : null);
 	},
 
 	drawValidDashedGrid : function(){
