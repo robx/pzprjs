@@ -4,22 +4,18 @@
 ui.menuarea = {
 	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
-	area : null,				// ボタン表示領域の要素を保持する
 	
 	//---------------------------------------------------------------------------
 	// menuarea.reset()  メニュー、サブメニュー、フロートメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.dispfloat  = [];
+		this.floatmenuclose(0);		// dispfloat[]はこの中でクリアします
 		this.floatpanel = [];
-
-		this.floatmenuclose(0);
 
 		getEL('float_parent').innerHTML = '';
 		getEL('menupanel') .innerHTML = '';
 
 		this.items = new ui.MenuList();
-		this.items.reset();
 		
 		this.createArea();
 		this.createAllFloat();
@@ -476,7 +472,7 @@ ui.menuarea = {
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), ''); break;
 		case 'jumpv3'    : window.open('./', '', ''); break;
-		case 'jumptop'   : window.open('../../', '', ''); break;
+		case 'jumptop'   : window.open('http://indi.s58.xrea.com/', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
 		
 		default:
@@ -635,10 +631,12 @@ ui.menuarea = {
 };
 
 // MenuListクラス
-ui.MenuList = function(){};
+ui.MenuList = function(){
+	this.item = {};
+};
 ui.MenuList.prototype =
 {
-	item : {},	// サブメニュー項目の情報
+	item : null,	// サブメニュー項目の情報
 
 	// 定数
 	MENU     : 6,
@@ -650,13 +648,6 @@ ui.MenuList.prototype =
 	LABEL    : 3,
 	CHILD    : 4,
 	SEPARATE : 5,
-
-	//---------------------------------------------------------------------------
-	// pp.reset()      再読み込みを行うときに初期化を行う
-	//---------------------------------------------------------------------------
-	reset : function(){
-		this.item = {};
-	},
 
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
