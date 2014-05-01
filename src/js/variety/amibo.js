@@ -131,7 +131,7 @@ BoardExec:{
 	relation : ['cell'],
 	
 	isvalid : function(cell){
-		return (cell.getQans()>0);
+		return (cell.qans>0);
 	},
 	
 	rebuild : function(){
@@ -140,8 +140,7 @@ BoardExec:{
 	},
 	
 	calcLinkInfo : function(cell){
-		var qa = cell.getQans(), link = ([0,3,12,15][qa]);
-		return (qa>0?16:0) + link;
+		return (this.linkinfo[cell.id] = [0,19,28,31][cell.qans]);
 	},
 
 	irowakeEnable : function(){

@@ -66,8 +66,7 @@ AreaManager:{
 		for(var c=0;c<bd.cellmax;c++){ this.id[c] = 0;}
 
 		for(var c=0;c<bd.cellmax;c++){
-			this.linkinfo[c] = 0;
-			this.checkLinkInfo(bd.cell[c]);
+			this.calcLinkInfo(bd.cell[c]);
 		}
 
 		for(var id=0;id<bd.bdmax;id++){ /* hasborder=0の時はbdmax=0です */
@@ -86,19 +85,12 @@ AreaManager:{
 	setCell : function(cell){
 		if(!this.enabled){ return;}
 
-		if(this.owner.board.hasborder){
-			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
-			var cblist=cell.getdir4cblist();
-			for(var i=0;i<cblist.length;i++){
-				this.checkLinkInfo(cblist[i][0]);
-				this.checkSeparateInfo(cblist[i][1]);
-			}
-		}
-
-		var val = this.calcLinkInfo(cell), old = this.linkinfo[cell.id];
-		if(this.checkLinkInfo(cell)){
-			var cidlist = this.getRemakeCell(cell, (val|old));
-			var isadd = !!((val&16)&&!(old&16)), isremove = !!(!(val&16)&&(old&16));
+		var change = this.checkLinkInfo(cell);
+		if(change[0]!==0){
+			var val = this.linkinfo[cell.id];
+			var isadd = !!((val&16)&&(change[0]&16)), isremove = !!(!(val&16)&&(change[0]&16));
+			var cidlist = this.getRemakeCell(cell, change);
+			
 			// 新たに黒マス(白マス)くっつける場合 => 自分に領域IDを設定するだけ
 			if(isadd && (cidlist.length<=1)){
 				this.assignCell(cell, (cidlist.length===1?this.owner.board.cell[cidlist[0]]:null));
@@ -114,12 +106,23 @@ AreaManager:{
 		}
 	},
 	checkLinkInfo : function(cell){
-		var val = this.calcLinkInfo(cell);
-		if(this.linkinfo[cell.id]!==val){
-			this.linkinfo[cell.id]=val;
-			return true;
+		var old = this.linkinfo[cell.id], val = this.calcLinkInfo(cell);
+		var change = [(old^val), 0, 0, 0, 0];
+		
+		if(this.owner.board.hasborder){
+			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
+			var cblist=cell.getdir4cblist();
+			for(var i=0;i<cblist.length;i++){
+				var cell2 = cblist[i][0], border2 = cblist[i][1], dir2 = cblist[i][2];
+				
+				var old2 = this.linkinfo[cell2.id], val2 = this.calcLinkInfo(cell2);
+				change[dir2] = (old2^val2);
+				
+				this.checkSeparateInfo(border2);
+			}
 		}
-		return false;
+		
+		return change;
 	},
 	calcLinkInfo : function(cell){
 		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
@@ -128,7 +131,7 @@ AreaManager:{
 		if(adc.left.validcell   && !this.bdfunc(adb.left  )){ val+=4;}
 		if(adc.right.validcell  && !this.bdfunc(adb.right )){ val+=8;}
 		if(this.isvalid(cell)){ val+=16;}
-		return val;
+		return (this.linkinfo[cell.id] = val);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -141,8 +144,8 @@ AreaManager:{
 		
 		if(this.checkSeparateInfo(border)){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull){ this.checkLinkInfo(cell1);}
-			if(!cell2.isnull){ this.checkLinkInfo(cell2);}
+			if(!cell1.isnull){ this.calcLinkInfo(cell1);}
+			if(!cell2.isnull){ this.calcLinkInfo(cell2);}
 			if(cell1.isnull || cell2.isnull || !this.checkExecSearch(border)){ return;}
 
 			this.remakeInfo([cell1.id, cell2.id]);
@@ -172,16 +175,18 @@ AreaManager:{
 	// info.getRemakeCell() 自分＋接する最大4箇所のセルのうち、自分に繋がることができるものを返す
 	// info.getLinkCell()   今自分が繋がっているセルを返す
 	//--------------------------------------------------------------------------------
-	getRemakeCell : function(cell, link){
+	getRemakeCell : function(cell, change){
+		var link = (this.linkinfo[cell.id] | (change[0] || 0));
 		var cidlist = [], list = cell.getdir4clist(), pow=[0,1,2,4,8], pow2=[0,2,1,8,4];
 		for(var i=0;i<list.length;i++){
-			var cell2=list[i][0], dir=list[i][1], link2=this.linkinfo[cell2.id];
+			var cell2 = list[i][0], dir = list[i][1];
+			var link2 = (this.linkinfo[cell2.id] | (change[dir] || 0));
 			if(this.id[cell2.id]!==null && !!(link & pow[dir]) && !!(link2 & pow2[dir])){ cidlist.push(cell2.id);}
 		}
 		return cidlist;
 	},
 	getLinkCell : function(cell){
-		return this.getRemakeCell(cell, this.linkinfo[cell.id]);
+		return this.getRemakeCell(cell, []);
 	},
 
 	//--------------------------------------------------------------------------------
