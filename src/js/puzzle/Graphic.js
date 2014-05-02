@@ -663,8 +663,9 @@ Graphic:{
 		var ratioarray = option.ratio || this.fontsizeratio;
 		ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);
+		var realsize = ((this.cw * ratio)|0);
 
-		g.font = style + ((this.cw * ratio)|0) + "px " + fontfamily;
+		g.font = style + realsize + "px " + fontfamily;
 		g.fillStyle = option.color || this.fontcolor;
 
 		var position = option.position || CENTER;
@@ -687,10 +688,18 @@ Graphic:{
 			// テキストが変わったときは入れ替える
 			var el = g.elements[g.vid];
 			if(g.use.svg){
-				if(el.textContent!==text){ el.textContent = text;}
+				if(el.textContent!==text){
+					el.textContent = text;
+					if(el.getAttribute('font-size')!=realsize){
+						el.setAttribute('font-size', realsize);
+					}
+				}
 			}
 			else if(g.use.vml){
-				if(el.lastChild.string!==text){ el.lastChild.string = text;}
+				if(el.lastChild.string!==text){
+					el.lastChild.string = text;
+					el.lastChild.style.fontSize = realsize+'px';
+				}
 			}
 		}
 	}
