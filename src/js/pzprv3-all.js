@@ -85,6 +85,7 @@
 		"variety/lookair",
 		"variety/loopsp",
 		"variety/loute",
+		"variety/makaro",
 		"variety/mashu",
 		"variety/mejilink",
 		"variety/minarism",

@@ -17,8 +17,8 @@ ui.debug.extend(
 	
 	accheck1 : function(){
 		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.check(true);
-		var failstr   = (failcode!==null ? "'"+failcode+"'" : "null");
+		var failcode  = ui.puzzle.check()[0];
+		var failstr   = (!!failcode ? "'"+failcode+"'" : "null");
 		ui.puzzle.board.errclear();
 		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
 	},

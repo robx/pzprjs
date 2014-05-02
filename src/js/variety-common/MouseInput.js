@@ -193,14 +193,16 @@ MouseEvent:{
 		if(!cell.isnull){
 			var dir = this.getdir(this.prevPos, pos);
 			if(dir!==pos.NDIR){
-				if(cell.numberAsObject){ cell.setNum(dir);}
-				else{ cell.setQdir(dir);}
+				this.inputarrow_cell_main(cell, dir);
 				cell.draw();
 				this.mousereset();
 				return;
 			}
 		}
 		this.prevPos = pos;
+	},
+	inputarrow_cell_main : function(cell, dir){
+		if(cell.numberAsObject){ cell.setNum(dir);}
 	},
 
 	getdir : function(base, current){

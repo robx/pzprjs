@@ -177,10 +177,12 @@ ui.listener =
 		}
 		if(ui.menuconfig.get('fullwidth')){ padding = 0;}
 		
-		var val = (padding*Math.min(pc.cw, pc.ch))|0, g = pc.context;
+		var val = (padding*Math.min(pc.cw, pc.ch))|0;
 		puzzle.canvas.style.padding = val+'px';
-		if(g.use.vml){ g.translate(pc.x0+val, pc.y0+val);}
 		
+		if(pc.context.use.vml){
+			pc.context.translate(pc.x0+val, pc.y0+val);
+		}
 		if(pzpr.env.browser.IE6 || pzpr.env.browser.IE7){
 			/* なんかIE6,7は計算してあげないと位置がおかしくなるらしい。 */
 			pzpr.util.getRect(puzzle.canvas);

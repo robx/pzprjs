@@ -50,6 +50,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 	// ans.checkAdjacentShadeCell()  黒マスが隣接している時、エラーを設定する
+	// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkSideCell : function(func){
 		var result = true, bd = this.owner.board;
@@ -73,6 +74,9 @@ AnsCheck:{
 	},
 	checkAdjacentShadeCell : function(){
 		return this.checkSideCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());});
+	},
+	checkAdjacentDiffNumber : function(){
+		return this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);});
 	},
 
 	//---------------------------------------------------------------------------
@@ -318,6 +322,7 @@ AnsCheck:{
 
 	//---------------------------------------------------------------------------
 	// ans.checkSameObjectInRoom()  部屋の中のgetvalueの値が1種類であるか判定する
+	// ans.checkDiffNumberInRoom()  部屋の中に同じ数字が存在しないことを判定する
 	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 	//---------------------------------------------------------------------------
@@ -338,6 +343,9 @@ AnsCheck:{
 		return result;
 	},
 
+	checkDiffNumberInRoom : function(rinfo){
+		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	},
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){

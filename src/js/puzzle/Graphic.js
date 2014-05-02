@@ -64,6 +64,10 @@ Graphic:{
 	// セルの丸数字内部の背景色
 	circledcolor : "white",
 
+	// セルの矢印描画色
+	arrowQuescolor : "black",
+	arrowQanscolor : "rgb(0, 160, 0)",
+
 	// フォントの色
 	fontcolor : "black",
 	fontAnscolor : "rgb(0, 160, 0)",

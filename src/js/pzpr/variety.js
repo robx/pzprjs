@@ -101,6 +101,7 @@ pzpr.variety.register({
 	lookair   :[0,0,"るっくえあ","Look-Air"],
 	loopsp    :[1,0,"環状線スペシャル","Loop Special"],
 	loute     :[0,0,"エルート","L-route"],
+	makaro    :[0,0,"マカロ","Makaro"],
 	mashu     :[0,1,"ましゅ","Masyu (Pearl Puzzle)",'',{kanpen:'masyu'}],
 	mejilink  :[0,0,"メジリンク","Mejilink"],
 	minarism  :[1,0,"マイナリズム","Minarism"],

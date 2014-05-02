@@ -13,27 +13,14 @@ MouseEvent:{
 			}
 		}
 		else if(this.owner.editmode){
-			if(this.mousestart || this.mousemove){ this.inputarrow_cell_loute();}
+			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
 		}
 	},
 
-	inputarrow_cell_loute : function(){
-		var pos = this.getpos(0);
-		if(this.prevPos.equals(pos)){ return;}
-
-		var dir = pos.NDIR, cell = this.prevPos.getc();
-		if(!cell.isnull){
-			var dir = this.getdir(this.prevPos, pos);
-			if(dir!==pos.NDIR){
-				cell.setQdir(cell.getQdir()!==dir?dir:0);
-				cell.setQnum(-1);
-				cell.draw();
-				this.mousereset();
-				return;
-			}
-		}
-		this.prevPos = pos;
+	inputarrow_cell_main : function(cell, dir){
+		cell.setQdir(cell.qdir!==dir?dir:0);
+		cell.setQnum(-1);
 	},
 
 	inputqnum_loute : function(){
@@ -237,8 +224,6 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
-
-	fontAnscolor : "black", /* 矢印用 */
 
 	globalfontsizeratio : 0.85,		/* sashigane用 */
 	circleratio : [0.40, 0.40],		/* 線幅を1pxにする */

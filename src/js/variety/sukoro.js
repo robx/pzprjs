@@ -185,12 +185,6 @@ AnsCheck:{
 		return null;
 	},
 
-	checkAdjacentDiffNumber : function(){
-		return this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);});
-	},
-	checkDiffNumberInRoom : function(rinfo){
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
-	},
 	checkNumberOrNotInRoom : function(rinfo){
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);});
 	},

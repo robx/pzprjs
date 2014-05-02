@@ -12,64 +12,66 @@ BoardExec:{
 	//------------------------------------------------------------------------------
 	// bd.exec.adjustNumberArrow()  回転・反転開始前の矢印つき数字の調整
 	// bd.exec.adjustCellArrow()    回転・反転開始前の矢印セルの調整
-	// 
-	// bd.exec.adjustQues51_1()     回転・反転開始前の[＼]セルの調整
-	// bd.exec.adjustQues51_2()     回転・反転終了後の[＼]セルの調整
-	// 
-	// bd.exec.adjustBoardObject()  回転・反転開始前のIN/OUTなどの位置の調整
+	// bd.exec.adjustBorderArrow()  回転・反転開始前の境界線にある矢印セル等の調整
 	//------------------------------------------------------------------------------
 	adjustNumberArrow : function(key,d){
 		if(key & this.TURNFLIP){
-			var tdir={};
-			switch(key){
-				case this.FLIPY: tdir={1:2,2:1}; break;				// 上下反転
-				case this.FLIPX: tdir={3:4,4:3}; break;				// 左右反転
-				case this.TURNR: tdir={1:4,2:3,3:1,4:2}; break;		// 右90°回転
-				case this.TURNL: tdir={1:3,2:4,3:2,4:1}; break;		// 左90°回転
-			}
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val=tdir[cell.getQdir()]; if(!!val){ cell.setQdir(val);}
-			}
+			this.adjustCellQdirArrow(key,d);
 		}
 	},
 	adjustCellArrow : function(key,d){
 		if(key & this.TURNFLIP){
-			var trans = {};
-			switch(key){
-				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
-				default: return;
+			if(this.owner.Cell.prototype.numberAsObject){
+				this.adjustCellQnumArrow(key,d);
 			}
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var val = trans[cell.getQnum()]; if(!!val){ cell.setQnum(val);}
-				var val = trans[cell.getAnum()]; if(!!val){ cell.setAnum(val);}
+			else{
+				this.adjustCellQdirArrow(key,d);
 			}
 		}
 	},
-	adjustBorderArrow : function(key,d){
-		if(key & this.TURNFLIP){
-			var trans = {};
-			switch(key){
-				case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
-				case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
-				case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
-				case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
-				default: return;
-			}
-			var blist = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<blist.length;i++){
-				var border=blist[i], val;
-				val=trans[border.getQdir()]; if(!!val){ border.setQdir(val);}
-			}
+	adjustCellQdirArrow : function(key,d){
+		var trans = this.getTranslateDir(key);
+		var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var val=trans[cell.qdir]; if(!!val){ cell.setQdir(val);}
+		}
+	},
+	adjustCellQnumArrow : function(key,d){
+		var trans = this.getTranslateDir(key);
+		var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var val = trans[cell.qnum]; if(!!val){ cell.setQnum(val);}
+			var val = trans[cell.anum]; if(!!val){ cell.setAnum(val);}
 		}
 	},
 
+	adjustBorderArrow : function(key,d){
+		if(key & this.TURNFLIP){
+			var trans = this.getTranslateDir(key);
+			var blist = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			for(var i=0;i<blist.length;i++){
+				var border=blist[i], val;
+				val=trans[border.qdir]; if(!!val){ border.setQdir(val);}
+			}
+		}
+	},
+	getTranslateDir : function(key){
+		var trans = {};
+		switch(key){
+			case this.FLIPY: trans={1:2,2:1}; break;			// 上下反転
+			case this.FLIPX: trans={3:4,4:3}; break;			// 左右反転
+			case this.TURNR: trans={1:4,2:3,3:1,4:2}; break;	// 右90°回転
+			case this.TURNL: trans={1:3,2:4,3:2,4:1}; break;	// 左90°回転
+		}
+		return trans;
+	},
+
+	//------------------------------------------------------------------------------
+	// bd.exec.adjustQues51_1()     回転・反転開始前の[＼]セルの調整
+	// bd.exec.adjustQues51_2()     回転・反転終了後の[＼]セルの調整
+	//------------------------------------------------------------------------------
 	adjustQues51_1 : function(key,d){
 		var bx1=(d.x1|1), by1=(d.y1|1);
 		this.qnumw = [];
@@ -158,6 +160,9 @@ BoardExec:{
 		}
 	},
 
+	//------------------------------------------------------------------------------
+	// bd.exec.getAfterPos()  回転・反転開始前のIN/OUTなどの位置の調整
+	//------------------------------------------------------------------------------
 	getAfterPos : function(key,d,obj){
 		var puzzle=this.owner, bd=puzzle.board;
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;

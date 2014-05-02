@@ -166,7 +166,7 @@ AnsCheck:{
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkOverFourMarksInBox(rinfo) ){ return 'bkNumGt3';}
-		if( !this.checkDiffMarkInBox(rinfo) ){ return 'bkDupNum';}
+		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
 
 		var numinfo = this.owner.board.getNumberInfo();
 		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
@@ -178,9 +178,6 @@ AnsCheck:{
 
 	checkOverFourMarksInBox : function(rinfo){
 		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
-	},
-	checkDiffMarkInBox : function(rinfo){
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
 	},
 	checkAllMarkInBox : function(rinfo){
 		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});

@@ -28,11 +28,16 @@ Graphic:{
 	getCellColor : function(cell){
 		var type = this.cellcolor_func || "qans";
 		this.getCellColor = (
+			(type==="ques") ? this.getCellColor_ques :
 			(type==="qnum") ? this.getCellColor_qnum :
 			(type==="qans") ? this.getCellColor_qans :
 							  function(){ return null;}
 		);
 		return this.getCellColor(cell);
+	},
+	getCellColor_ques : function(cell){
+		if(cell.ques===1){ return this.quescolor;}
+		return null;
 	},
 	getCellColor_qnum : function(cell){
 		if(cell.qnum===-1){ return null;}
@@ -205,7 +210,7 @@ Graphic:{
 			var cell = clist[i], id = cell.id, dir=(!cell.numberAsObject?cell.qdir:cell.getNum());
 			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id]);
 			if(dir>=1 && dir<=4){
-				g.fillStyle = (cell.qnum!==-1?this.fontcolor:this.fontAnscolor);
+				g.fillStyle = ((!cell.numberAsObject||cell.qnum!==-1)?this.arrowQuescolor:this.arrowQanscolor);
 
 				// 矢印の描画 ここに来る場合、dirは1～4
 				if(this.vnop(headers[(dir-1)]+id,this.FILL)){

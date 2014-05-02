@@ -70,24 +70,27 @@ KeyEvent:{
 		if(!this.isSHIFT){ return false;}
 
 		var cell = this.cursor.getc(), pid = this.owner.pid;
+		/* 矢印つき数字の場合 */
 		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
 			if(cell.getQnum()===-1){ return false;}
 		}
 
-		var flag = true;
+		var dir = cell.NDIR;
 		switch(ca){
-			case this.KEYUP: cell.setQdir(cell.getQdir()!==cell.UP?cell.UP:cell.NDIR); break;
-			case this.KEYDN: cell.setQdir(cell.getQdir()!==cell.DN?cell.DN:cell.NDIR); break;
-			case this.KEYLT: cell.setQdir(cell.getQdir()!==cell.LT?cell.LT:cell.NDIR); break;
-			case this.KEYRT: cell.setQdir(cell.getQdir()!==cell.RT?cell.RT:cell.NDIR); break;
+			case this.KEYUP: dir = cell.UP; break;
+			case this.KEYDN: dir = cell.DN; break;
+			case this.KEYLT: dir = cell.LT; break;
+			case this.KEYRT: dir = cell.RT; break;
 			default: flag = false;
 		}
 
-		if(flag){
+		if(dir!==cell.NDIR){
+			cell.setQdir(cell.qdir!==dir ? dir : cell.NDIR);
 			this.cursor.draw();
 			this.stopEvent();	/* カーソルを移動させない */
+			return true;
 		}
-		return flag;
+		return false;
 	},
 
 	//---------------------------------------------------------------------------

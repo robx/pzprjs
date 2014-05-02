@@ -248,7 +248,7 @@ FileIO:{
 
 		this.datastr += (rinfo.max+"\n");
 		for(var c=0;c<bd.cellmax;c++){
-			this.datastr += (""+(rinfo.id[c]-1)+" ");
+			this.datastr += (""+(rinfo.id[c]>0 ? rinfo.id[c]-1 : ".")+" ");
 			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
 		}
 	},

@@ -140,10 +140,6 @@ AnsCheck:{
 		return (this.checkNoNumCell() ? null : 'ceEmpty');
 	},
 
-	checkDiffNumberInRoom : function(rinfo){
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
-	},
-
 	checkNumbersInRoom : function(rinfo){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){

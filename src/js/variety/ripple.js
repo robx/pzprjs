@@ -133,13 +133,6 @@ AnsCheck:{
 		return (this.checkNoNumCell() ? null : 'ceEmpty');
 	},
 
-	checkDiffNumberInRoom : function(rinfo){
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
-	},
-	checkAdjacentDiffNumber : function(){
-		return this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);});
-	},
-
 	checkRippleNumber : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

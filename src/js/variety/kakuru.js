@@ -69,6 +69,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
 
+	cellcolor_func : "ques",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -85,11 +87,6 @@ Graphic:{
 	getBGCellColor : function(cell){
 		if     (cell.qnum !==-1){ return "rgb(208, 208, 208)";}
 		else if(cell.error=== 1){ return this.errbcolor1;}
-		return null;
-	},
-	// オーバーライド drawShadedCells用
-	getCellColor : function(cell){
-		if(cell.ques===1){ return this.quescolor;}
 		return null;
 	}
 },
