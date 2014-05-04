@@ -357,10 +357,6 @@ function createSubCanvas(type){
 	document.body.appendChild(el);
 	Candle.start(el, type, function(g){
 		g.canvas.style.position = 'absolute';
-		if(g.use.svg){
-			g.child.setAttribute('xmlns', "http://www.w3.org/2000/svg");
-			g.child.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
-		}
 	});
 	return el;
 }
