@@ -286,7 +286,6 @@ Graphic:{
 		var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
 		var option = { key: "cell_text_"+cell.id };
 		if(!!text){
-			option.ratio = this.fontsizeratio;
 			option.color = this.getCellNumberColor(cell);
 		}
 		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
@@ -665,7 +664,7 @@ Graphic:{
 				return this.errlinecolor;
 			}
 			else if(info===-1){ return this.errlinebgcolor;}
-			else if(puzzle.execConfig('dispmove')){ return "silver";}
+			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
 			else if(!puzzle.execConfig('irowake') || !border.color){ return this.linecolor;}
 			else{ return border.color;}
 		}
@@ -864,8 +863,18 @@ Graphic:{
 			else{ g.vhide(headers[0]+id);}
 		}
 	},
+
 	getCircleStrokeColor : function(cell){
-		var puzzle = this.owner, bd = puzzle.board, error = cell.error || cell.qinfo;
+		var type = this.circlestrokecolor_func || "qnum";
+		this.getCircleStrokeColor = (
+			(type==="qnum")  ? this.getCircleStrokeColor_qnum :
+			(type==="qnum2") ? this.getCircleStrokeColor_qnum2 :
+								function(){ return null;}
+		);
+		return this.getCircleStrokeColor(cell);
+	},
+	getCircleStrokeColor_qnum : function(cell){
+		var puzzle = this.owner, error = cell.error || cell.qinfo;
 		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
@@ -875,12 +884,47 @@ Graphic:{
 		}
 		return null;
 	},
+	getCircleStrokeColor_qnum2 : function(cell){
+		if(cell.qnum===1){
+			return (cell.error===1 ? this.errcolor1 : this.quescolor);
+		}
+		return null;
+	},
+
 	getCircleFillColor : function(cell){
-		var bd = this.owner.board, error = cell.error || cell.qinfo;
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var type = this.circlefillcolor_func || "qnum";
+		this.getCircleFillColor = (
+			(type==="qnum")  ? this.getCircleFillColor_qnum :
+			(type==="qnum2") ? this.getCircleFillColor_qnum2 :
+			(type==="qcmp")  ? this.getCircleFillColor_qcmp :
+								function(){ return null;}
+		);
+		return this.getCircleFillColor(cell);
+	},
+	getCircleFillColor_qnum : function(cell){
+		if(cell.qnum!==-1){
+			var error = cell.error || cell.qinfo;
+			if(error===1||error===4){ return this.errbcolor1;}
+			else{ return this.circledcolor;}
+		}
+		return null;
+	},
+	getCircleFillColor_qnum2 : function(cell){
+		if(cell.qnum===1){
+			return (cell.error===1 ? this.errbcolor1 : "white");
+		}
+		else if(cell.qnum===2){
+			return (cell.error===1 ? this.errcolor1 : this.quescolor);
+		}
+		return null;
+	},
+	getCircleFillColor_qcmp : function(cell){
+		var puzzle = this.owner, error = cell.error || cell.qinfo;
+		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
-			if(error===1||error===4){ return this.errbcolor1;}
+			if     (error===1||error===4)                       { return this.errbcolor1;}
+			else if(puzzle.getConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
 			else{ return this.circledcolor;}
 		}
 		return null;
@@ -900,7 +944,7 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
 			if(isdrawmove && cell.isDeparture()){
-				g.fillStyle = "silver";
+				g.fillStyle = this.movelinecolor;
 				if(this.vnop(header+id,this.FILL)){
 					g.fillCircle(px, py, rsize);
 				}

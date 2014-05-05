@@ -102,6 +102,10 @@ Cell:{
 		return cnt;
 	},
 
+	isCmp : function(){
+		return this.qnum === this.getCountOfBridges();
+	},
+
 	iscrossing : function(){ return this.noNum();}
 },
 Border:{
@@ -150,8 +154,6 @@ Graphic:{
 	hideHatena : true,
 
 	gridcolor_type : "THIN",
-
-	bcolor : "silver",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.47, 0.42],
@@ -209,25 +211,6 @@ Graphic:{
 			}
 			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
 		}
-	},
-	// 背景色をつけたい
-	getCircleStrokeColor : function(cell){
-		if(cell.isNum()){
-			var err = cell.error;
-			if(err===1||err===4){ return this.errcolor1;}
-			else                { return this.quescolor;}
-		}
-		return null;
-	},
-	getCircleFillColor : function(cell){
-		if(cell.isNum()){
-			var cmpcell = (this.owner.getConfig('autocmp') && cell.qnum===cell.getCountOfBridges());
-			var err = cell.error;
-			if(err===1||err===4){ return this.errbcolor1;  }
-			else if(cmpcell)    { return this.bcolor;      }
-			else                { return this.circledcolor;}
-		}
-		return null;
 	},
 
 	repaintLines : function(blist){

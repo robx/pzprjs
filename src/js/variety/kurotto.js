@@ -69,7 +69,6 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bgcellcolor_func : "qsub1",
-	bcolor : "silver",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],
@@ -106,7 +105,7 @@ Graphic:{
 	getCircleFillColor : function(cell){
 		if(cell.isNum()){
 			var cmpcell = (!!this.check_binfo && cell.checkComplete(this.check_binfo));
-			return (cmpcell ? this.bcolor : this.circledcolor);
+			return (cmpcell ? this.qcmpcolor : this.circledcolor);
 		}
 		return null;
 	}

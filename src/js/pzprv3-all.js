@@ -66,6 +66,7 @@
 		"variety/hakoiri",
 		"variety/hanare",
 		"variety/hashikake",
+		"variety/herugolf",
 		"variety/heyawake",
 		"variety/hitori",
 		"variety/icebarn",

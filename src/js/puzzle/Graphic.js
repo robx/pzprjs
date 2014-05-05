@@ -35,6 +35,9 @@ Graphic:{
 	bgcellcolor_func : "",	// getBGCellColor()の種類
 	bordercolor_func : "",	// getBorderColor()の種類
 
+	circlefillcolor_func : "",		// getCircleFillColor()の種類
+	circlestrokecolor_func : "",	// getCircleStrokeColor()の種類
+
 	// セルの色(黒マス)
 	quescolor : "black",
 	qanscolor : "black",
@@ -63,6 +66,7 @@ Graphic:{
 
 	// セルの丸数字内部の背景色
 	circledcolor : "white",
+	qcmpcolor : "silver",
 
 	// セルの矢印描画色
 	arrowQuescolor : "black",
@@ -84,6 +88,8 @@ Graphic:{
 
 	errlinecolor   : "rgb(255, 0, 0)",
 	errlinebgcolor : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線の描画色
+
+	movelinecolor : "silver",
 
 	pekecolor : "rgb(32, 32, 255)",
 
@@ -157,7 +163,7 @@ Graphic:{
 	minYdeg : 0.18,
 	maxYdeg : 0.70,
 
-	// 描画設定
+	// その他の描画設定
 	range : null,					// 描画領域を保持するオブジェクト
 
 	useBuffer   : false,			// Buffer描画を行うか
@@ -166,27 +172,12 @@ Graphic:{
 	// resize関数が呼ばれたが、初期化されていない等でresizeしていないことを示すフラグ
 	pendingResize : false,
 
-	// 初期化前、およびsuspend呼び出し中
+	// 初期化前、およびsuspend呼び出し中を示すフラグ
 	suspended    : true,
 	suspendedAll : true,
 
-	// Cellのqnumが-2のときに？を表示しない設定
+	// Cellのqnumが-2のときに？を表示しないパズルごとの設定
 	hideHatena : false,
-
-	/* vnop関数用 */
-	STROKE      : 0,
-	FILL        : 1,
-	FILL_STROKE : 2,
-	NONE        : 3,
-	vnop_FILL   : [false,true,true,false],
-	vnop_STROKE : [true,false,true,false],
-
-	/* disptext関数用 */
-	CENTER      : CENTER,
-	BOTTOMLEFT  : BOTTOMLEFT,
-	BOTTOMRIGHT : BOTTOMRIGHT,
-	TOPRIGHT    : TOPRIGHT,
-	TOPLEFT     : TOPLEFT,
 
 	//---------------------------------------------------------------------------
 	// pc.initCanvas()       このオブジェクトで使用するキャンバスを設定する
@@ -601,6 +592,13 @@ Graphic:{
 	// pc.vnop()  VMLで既に描画されているオブジェクトを再描画せず、色は設定する
 	//---------------------------------------------------------------------------
 	// ccflag -> 0:strokeのみ, 1:fillのみ, 2:両方, 3:色の変更なし
+	STROKE      : 0,
+	FILL        : 1,
+	FILL_STROKE : 2,
+	NONE        : 3,
+	vnop_FILL   : [false,true,true,false],
+	vnop_STROKE : [true,false,true,false],
+
 	vnop : function(vid, ccflag){
 		this.vnop = (
 			(this.context.use.canvas) ? this.vnop_canvas :
@@ -650,6 +648,12 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.disptext()  数字を記入するための共通関数
 	//---------------------------------------------------------------------------
+	CENTER      : CENTER,
+	BOTTOMLEFT  : BOTTOMLEFT,
+	BOTTOMRIGHT : BOTTOMRIGHT,
+	TOPRIGHT    : TOPRIGHT,
+	TOPLEFT     : TOPLEFT,
+
 	disptext : function(text, px, py, option){
 		option = option || {};
 		var g = this.context, vid = option.key || "";

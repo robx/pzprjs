@@ -76,6 +76,7 @@ pzpr.variety.register({
 	hakoiri   :[1,0,"はこいり○△□","Triplets"],
 	hanare    :[0,0,"はなれ組","Hanare-gumi",'hanare'],
 	hashikake :[0,1,"橋をかけろ","Bridges",'',{kanpen:'hashi'}],
+	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
 	heyabon   :[1,0,"へやぼん","Heya-Bon",'bonsan'],
 	hitori    :[0,1,"ひとりにしてくれ","Hitori"],

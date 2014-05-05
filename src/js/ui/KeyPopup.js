@@ -65,6 +65,7 @@ ui.keypopup =
 		bonsan     : [10,0],
 		heyabon    : [10,0],
 		yosenabe   : [10,0],
+		herugolf   : [10,0],
 		firefly    : [10,0],
 		tateyoko   : [10,0],
 		factors    : [10,10],
@@ -72,6 +73,7 @@ ui.keypopup =
 		renban     : [10,10],
 		ripple     : [10,10],
 		cojun      : [10,10],
+		makaro     : [10,10],
 		sudoku     : [10,10],
 		nanro      : [10,10],
 		view       : [10,10],
@@ -283,7 +285,7 @@ ui.keypopup =
 		else if(pid==='tasquare'){
 			this.inputcol('num','-','□');
 		}
-		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
+		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
 			this.inputcol('num','-','○');
 		}
 		this.insertrow();

@@ -93,6 +93,9 @@ Graphic:{
 	bordercolor_func : "qans",
 	borderQanscolor : "rgb(64, 64, 255)",
 
+	circlefillcolor_func   : "qnum2",
+	circlestrokecolor_func : "qnum2",
+
 	crosssize : 0.15,
 
 	paint : function(){
@@ -112,23 +115,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	/* 旧drawQnumCircles用オーバーライド */
-	getCircleStrokeColor : function(cell){
-		if(cell.qnum===1){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
-		}
-		return null;
-	},
-	getCircleFillColor : function(cell){
-		if(cell.qnum===1){
-			return (cell.error===1 ? this.errbcolor1 : "white");
-		}
-		else if(cell.qnum===2){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
-		}
-		return null;
 	}
 },
 "Graphic@shwolf":{

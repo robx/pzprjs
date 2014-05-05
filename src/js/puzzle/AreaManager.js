@@ -65,13 +65,13 @@ AreaManager:{
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ this.id[c] = 0;}
 
-		for(var c=0;c<bd.cellmax;c++){
-			this.calcLinkInfo(bd.cell[c]);
-		}
-
 		for(var id=0;id<bd.bdmax;id++){ /* hasborder=0の時はbdmax=0です */
 			this.separate[id] = false;
 			this.checkSeparateInfo(bd.border[id]);
+		}
+
+		for(var c=0;c<bd.cellmax;c++){
+			this.calcLinkInfo(bd.cell[c]);
 		}
 
 		this.searchIdlist(bd.cell);
@@ -624,12 +624,12 @@ AreaManager:{
 		this.owner.AreaManager.prototype.assignCell.call(this, cell, cell2);
 
 		/* AreaLineManagerではCell入力で他とくっつくことはないので、cell2===nullとして考える */
-		if(this.moveline){ cell.base = (cell.isNum() ? cell : this.owner.board.emptycell);}
+		if(this.moveline){ this.setMovedBase(this.id[cell.id]);}
 	},
 	removeCell : function(cell){
 		this.owner.AreaManager.prototype.removeCell.call(this, cell);
 
-		if(this.moveline){ cell.base = this.owner.board.emptycell;}
+		if(this.moveline){ this.initMovedBase([cell]);}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -639,9 +639,7 @@ AreaManager:{
 	// オーバーライド
 	searchIdlist : function(clist){
 		/* searchSingleにはIDがついた領域しかこないので、先にbaseを初期値にする */
-		for(var i=0;i<clist.length;i++){
-			clist[i].base = (clist[i].isNum() ? clist[i] : this.owner.board.emptycell);
-		}
+		if(this.moveline){ this.initMovedBase(clist);}
 
 		this.owner.AreaManager.prototype.searchIdlist.call(this, clist);
 	},
@@ -652,30 +650,46 @@ AreaManager:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// linfo.resetMovedBase()  情報の再構築時に移動した情報を初期化する
-	// linfo.setMovedBase()    移動した情報を設定する
+	// linfo.resetMovedBase()  情報の再構築時に移動情報を初期化する
+	// linfo.initMovedBase()   指定されたセルの移動情報を初期化する
+	// linfo.setMovedBase()    指定された領域の移動情報を設定する
 	//--------------------------------------------------------------------------------
 	resetMovedBase : function(){
-		var bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){ bd.cell[c].base = bd.emptycell;}
+		this.initMovedBase(this.owner.board.cell);
 		for(var r=1;r<=this.max;r++){ this.setMovedBase(r);}
 	},
+	initMovedBase : function(clist){
+		for(var i=0;i<clist.length;i++){
+			clist[i].base = ((this.id[clist[i].id]!==null && clist[i].isNum()) ? clist[i] : this.owner.board.emptycell);
+		}
+	},
 	setMovedBase : function(areaid){
-		var clist = this.area[areaid].clist, bd = this.owner.board;
+		var area = this.area[areaid], emptycell = this.owner.board.emptycell;
+		area.departure = area.destination = emptycell;
+		area.movevalid = false;
+		
+		var clist = area.clist;
 		if(clist.length<1){ return;}
-		else if(clist.length===1){ clist[0].base=clist[0]; return;}
 		
 		var before=null, after=null, point=0;
-		for(var i=0;i<clist.length;i++){
-			var cell=clist[i];
-			cell.base = bd.emptycell;
-			if(cell.lcnt===1){
-				point++;
-				if(cell.isNum()){ before=cell;}else{ after=cell;}
+		if(clist.length===1){
+			before = after = clist[0];
+			point = 2;
+		}
+		else{
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i];
+				cell.base = emptycell;
+				if(cell.lcnt===1){
+					point++;
+					if(cell.isNum()){ before=cell;}else{ after=cell;}
+				}
 			}
 		}
 		if(before!==null && after!==null && point===2){
-			after.base = before;
+			area.departure   = after.base = before;
+			area.destination = after;
+			area.movevalid = true;
 		}
 	},
 

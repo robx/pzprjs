@@ -400,6 +400,37 @@ Encode:{
 	},
 
 	//---------------------------------------------------------------------------
+	// enc.decodeIce() cell.ques===6をデコードする
+	// enc.encodeIce() cell.ques===6をエンコードする
+	//---------------------------------------------------------------------------
+	decodeIce : function(){
+		var bstr = this.outbstr, bd = this.owner.board;
+
+		var c=0, twi=[16,8,4,2,1];
+		for(var i=0;i<bstr.length;i++){
+			var num = parseInt(bstr.charAt(i),32);
+			for(var w=0;w<5;w++){
+				if(c<bd.cellmax){
+					bd.cell[c].ques = (num&twi[w]?6:0);
+					c++;
+				}
+			}
+			if(c>=bd.cellmax){ break;}
+		}
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeIce : function(){
+		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.owner.board;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+		}
+		if(num>0){ cm += pass.toString(32);}
+
+		this.outbstr += cm;
+	},
+
+	//---------------------------------------------------------------------------
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(){

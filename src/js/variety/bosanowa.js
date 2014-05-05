@@ -210,9 +210,7 @@ Graphic:{
 		}
 		return null;
 	},
-	getCircleFillColor : function(cell){
-		return null;
-	},
+	circlefillcolor_func : "null",
 
 	drawGrid_souko : function(){
 		var g = this.vinc('grid_souko', 'crispEdges');

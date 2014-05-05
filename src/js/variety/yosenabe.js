@@ -109,7 +109,7 @@ KeyEvent:{
 			cell.setQues(cell.ice()?0:6);
 		}
 		else{
-			var max = cell.nummaxfunc(), val=-1, cur=-1;
+			var max = cell.nummaxfunc(), val=-1, cur=-1, type;
 
 			if     (cell.getQnum() !==-1){ cur=cell.getQnum();  type=1;} /* ○数字 */
 			else if(cell.getQnum2()!==-1){ cur=cell.getQnum2(); type=2;} /* なべの数字 */
@@ -181,6 +181,8 @@ AreaLineManager:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	hideHatena : true,
+
 	gridcolor_type : "LIGHT",
 
 	globalfontsizeratio : 0.85,
@@ -188,6 +190,8 @@ Graphic:{
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
 	icecolor : "rgb(224,224,224)",
+
+	circlefillcolor_func : "qcmp",
 
 	paint : function(){
 		this.drawBGCells();
@@ -208,28 +212,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	drawNumber1 : function(cell){
-		var num    = (this.owner.execConfig('dispmove') ? cell.base : cell).qnum;
-		var text   = (num>0 ? ""+num : "");
-		var option = { key: 'cell_text_'+cell.id };
-		option.color = this.getCellNumberColor(cell);
-		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
-	},
-	getCellNumberColor : function(cell){
-		if(cell===this.owner.mouse.mouseCell){ return this.movecolor;}
-		return ((cell.error===1 || cell.error===4) ? this.fontErrcolor : this.fontcolor);
-	},
-
-	getCircleFillColor : function(cell){
-		var error = cell.error, num = (!this.owner.execConfig('dispmove') ? cell : cell.base).qnum;
-		if(num!==-1){
-			if     (error===1||error===4)                           { return this.errbcolor1;}
-			else if(this.owner.getConfig('autocmp') && cell.isCmp()){ return "silver"}
-			else{ return this.circledcolor;}
-		}
-		return null;
 	},
 
 	drawFillingNumBase : function(){
@@ -275,39 +257,12 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeIcelom();
+		this.decodeIce();
 		this.decodeNumber16_yosenabe();
 	},
 	encodePzpr : function(type){
-		this.encodeIcelom();
+		this.encodeIce();
 		this.encodeNumber16_yosenabe();
-	},
-
-	decodeIcelom : function(){
-		var bstr = this.outbstr, bd = this.owner.board;
-
-		var a=0, c=0, twi=[16,8,4,2,1];
-		for(var i=0;i<bstr.length;i++){
-			var num = parseInt(bstr.charAt(i),32);
-			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
-					bd.cell[c].ques = (num&twi[w]?6:0);
-					c++;
-				}
-			}
-			if(c>=bd.cellmax){ a=i+1; break;}
-		}
-		this.outbstr = bstr.substr(a);
-	},
-	encodeIcelom : function(){
-		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
-		}
-		if(num>0){ cm += pass.toString(32);}
-
-		this.outbstr += cm;
 	},
 
 	decodeNumber16_yosenabe : function(){

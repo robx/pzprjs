@@ -77,6 +77,9 @@ Flags:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
+	circlefillcolor_func   : "qnum2",
+	circlestrokecolor_func : "qnum2",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
@@ -90,23 +93,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	/* 旧drawQnumCircles用オーバーライド */
-	getCircleStrokeColor : function(cell){
-		if(cell.qnum===1){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
-		}
-		return null;
-	},
-	getCircleFillColor : function(cell){
-		if(cell.qnum===1){
-			return (cell.error===1 ? this.errbcolor1 : "white");
-		}
-		else if(cell.qnum===2){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
-		}
-		return null;
 	}
 },
 

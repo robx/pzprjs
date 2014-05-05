@@ -249,9 +249,7 @@ Graphic:{
 		if(cell.isCircle()){ return this.quescolor;}
 		return null;
 	},
-	getCircleFillColor : function(cell){
-		return null;
-	},
+	circlefillcolor_func : "null",
 
 	drawHatenas_loute : function(){
 		var g = this.vinc('cell_hatena', 'auto');

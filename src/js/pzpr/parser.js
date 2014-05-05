@@ -67,7 +67,7 @@ pzpr.parser.URLData = function(url){
 }
 pzpr.parser.URLData.prototype = {
 	id      : '',
-	type    : 0,	/* ==URL_AUTO */
+	type    : URL_AUTO,	/* ==0 */
 	url     : "",
 	qdata   : "",
 	pflag   : null,
@@ -271,7 +271,7 @@ pzpr.parser.FileData = function(fstr, variety){
 }
 pzpr.parser.FileData.prototype = {
 	id      : '',
-	type    : 0,	/* ==FILE_AUTO */
+	type    : FILE_AUTO,	/* == 0 */
 	filever : 0,
 	fstr    : "",
 	qdata   : "",

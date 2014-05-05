@@ -64,9 +64,7 @@ Graphic:{
 	},
 
 	/* 黒丸を描画する */
-	getCircleStrokeColor : function(cell){
-		return null;
-	},
+	circlestrokecolor_func : "null",
 	getCircleFillColor : function(cell){
 		if(cell.qnum!==-1){
 			return (cell.error===1 ? this.errcolor1 : this.quescolor);

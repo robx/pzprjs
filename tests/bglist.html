@@ -11,7 +11,7 @@
 </style>
 <script type="text/javascript">
 function bglist(){
-  if(!window.ui || !window.ui.menu){ setTimeout(bglist,16); return;}
+  if(!window.ui){ setTimeout(bglist,16); return;}
   var main = document.getElementById("main"), counter = 0;
   for(var pid in pzpr.variety.info){
     counter++;
@@ -22,7 +22,7 @@ function bglist(){
     main.appendChild(el);
 
     var el = document.createElement('div');
-    el.style.backgroundImage = "url(" + ui.menu.bgimage(pid) + ")";
+    el.style.backgroundImage = "url(" + ui.misc.bgimage(pid) + ")";
     el.onclick = function(e){ alert(e.target.style.backgroundImage);};
     main.appendChild(el);
 

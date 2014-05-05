@@ -464,37 +464,69 @@ Graphic:{
 "Encode@icebarn":{
 	decodePzpr : function(type){
 		var parser = pzpr.parser;
-		if     (type===parser.URL_PZPRV3){ this.decodeIcebarn();}
-		else if(type===parser.URL_PZPRAPP){
-			if(this.checkpflag("c")){ this.decodeIcebarn_old2();}
-			else                    { this.decodeIcebarn_old1();}
+		var urlver = (type===parser.URL_PZPRV3 ? 3 : (this.checkpflag("c") ? 2 : 1));
+		
+		if(urlver===2){
+			var barray = this.outbstr.split("/");
+			this.outbstr = [barray[2], barray[0], barray[1]].join("/");
 		}
+		
+		if     (urlver>= 2){ this.decodeIce();}
+		else               { this.decodeIce_old1();}
+		
+		if     (urlver===3){ this.decodeBorderArrow();}
+		else if(urlver===2){ this.decodeBorderArrow_old2();}
+		else               { this.decodeBorderArrow_old1();}
+		
+		this.decodeInOut();
 	},
 	encodePzpr : function(type){
 		var parser = pzpr.parser;
-		if     (type===parser.URL_PZPRV3){ return this.encodeIcebarn();}
-		else if(type===parser.URL_PZPRAPP){ return this.encodeIcebarn_old1();}
+		var urlver = (type===parser.URL_PZPRV3 ? 3 : 1);
+		
+		if(urlver===3){ this.encodeIce();}
+		else          { this.encodeIce_old1();}
+		
+		if(urlver===3){ this.encodeBorderArrow();}
+		else          { this.encodeBorderArrow_old1();}
+		
+		this.encodeInOut();
 	},
 
-	decodeIcebarn : function(){
-		var barray = this.outbstr.split("/");
+	decodeIce_old1 : function(){
+		var bstr = this.outbstr, bd = this.owner.board;
 
-		var a=0, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
-		for(var i=0;i<barray[0].length;i++){
-			var num = parseInt(barray[0].charAt(i),32);
-			for(var w=0;w<5;w++){
+		var c=0, twi=[8,4,2,1];
+		for(var i=0;i<bstr.length;i++){
+			var num = parseInt(bstr.charAt(i),32);
+			for(var w=0;w<4;w++){
 				if(c<bd.cellmax){
 					bd.cell[c].ques = (num&twi[w]?6:0);
 					c++;
 				}
 			}
-			if(c>=bd.cellmax){ a=i+1; break;}
+			if(c>=bd.cellmax){ break;}
 		}
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeIce_old1 : function(){
+		var cm = "", num=0, pass=0, bd = this.owner.board, twi=[8,4,2,1];
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+			if(num===4){ cm += pass.toString(16); num=0; pass=0;}
+		}
+		if(num>0){ cm += pass.toString(16);}
+
+		this.outbstr += cm;
+	},
+
+	decodeBorderArrow : function(){
+		var bstr = this.outbstr, bd = this.owner.board;
 
 		bd.disableInfo();
-		var id=0;
-		for(var i=a;i<barray[0].length;i++){
-			var ca = barray[0].charAt(i);
+		var id=0, a=0;
+		for(var i=a;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
 				if(id<bd.bdinside){
@@ -508,8 +540,8 @@ Graphic:{
 		}
 
 		id=0;
-		for(var i=a;i<barray[0].length;i++){
-			var ca = barray[0].charAt(i);
+		for(var i=a;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
 				if(id<bd.bdinside){
@@ -519,24 +551,14 @@ Graphic:{
 				id++;
 			}
 			else{ id+=35;}
-			if(id>=bd.bdinside){ break;}
+			if(id>=bd.bdinside){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
-		bd.arrowin.seturlid (parseInt(barray[1]));
-		bd.arrowout.seturlid(parseInt(barray[2]));
-
-		this.outbstr = "";
+		this.outbstr = bstr.substr(a);
 	},
-	encodeIcebarn : function(){
-		var cm = "", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
-		}
-		if(num>0){ cm += pass.toString(32);}
-
-		num=0;
+	encodeBorderArrow : function(){
+		var cm = "", num=0, bd=this.owner.board;
 		for(var id=0;id<bd.bdinside;id++){
 			var border = bd.border[id];
 			var dir = border.getArrow();
@@ -560,111 +582,70 @@ Graphic:{
 		}
 		if(num>0){ cm+=num.toString(36);}
 
-		cm += ("/"+bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
-
 		this.outbstr += cm;
 	},
-
-	decodeIcebarn_old2 : function(){
-		var barray = this.outbstr.split("/");
-
-		var a=0, c=0, bd = this.owner.board, twi=[16,8,4,2,1];
-		for(var i=0;i<barray[0].length;i++){
-			var num = parseInt(barray[0].charAt(i),32);
-			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
-					bd.cell[c].ques = (num&twi[w]?6:0);
-					c++;
-				}
-			}
-			if(c>=bd.cellmax){ a=i+1; break;}
-		}
+	decodeBorderArrow_old2 : function(){
+		var bstr = this.outbstr, bd = this.owner.board;
 
 		bd.disableInfo();
-		var id=0;
-		for(var i=a;i<barray[2].length;i++){
-			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow(((num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
+		var id=0, a=0;
+		for(var i=a;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
 		}
 		id=(bd.qcols-1)*bd.qrows;
-		for(var i=a;i<barray[2].length;i++){
-			var ca = barray[2].charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow(((num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
+		for(var i=a;i<bstr.length;i++){
+			var ca = bstr.charAt(i);
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
-			if(id>=bd.bdinside){ break;}
+			if(id>=bd.bdinside){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
-		bd.arrowin.seturlid (parseInt(barray[0]));
-		bd.arrowout.seturlid(parseInt(barray[1]));
-
-		this.outbstr = "";
+		this.outbstr = bstr.substr(a);
 	},
-	decodeIcebarn_old1 : function(){
-		var barray = this.outbstr.split("/");
-
-		var a=0, c=0, bd = this.owner.board, twi=[8,4,2,1];
-		for(var i=0;i<barray[0].length;i++){
-			var num = parseInt(barray[0].charAt(i),32);
-			for(var w=0;w<4;w++){
-				if(c<bd.cellmax){
-					bd.cell[c].ques = (num&twi[w]?6:0);
-					c++;
-				}
-			}
-			if(c>=bd.cellmax){ break;}
-		}
+	decodeBorderArrow_old1 : function(){
+		var bstr, barray = this.outbstr.substr(1).split("/"), bd = this.owner.board;
 
 		bd.disableInfo();
-		if(barray[1]!=""){
-			var array = barray[1].split("+");
+		if(!!(bstr = barray.shift())){
+			var array = bstr.split("+");
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.bottom; border.setArrow(border.UP);}
 		}
-		if(barray[2]!=""){
-			var array = barray[2].split("+");
+		if(!!(bstr = barray.shift())){
+			var array = bstr.split("+");
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.bottom; border.setArrow(border.DN);}
 		}
-		if(barray[3]!=""){
-			var array = barray[3].split("+");
+		if(!!(bstr = barray.shift())){
+			var array = bstr.split("+");
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.LT);}
 		}
-		if(barray[4]!=""){
-			var array = barray[4].split("+");
+		if(!!(bstr = barray.shift())){
+			var array = bstr.split("+");
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.RT);}
 		}
 		bd.enableInfo();
-
-		bd.arrowin.seturlid (parseInt(barray[5]));
-		bd.arrowout.seturlid(parseInt(barray[6]));
-
-		this.outbstr = "";
+		
+		this.outbstr = "/"+barray.join("/");
 	},
-	encodeIcebarn_old1 : function(){
-		var cm = "", num=0, pass=0, bd = this.owner.board, twi=[8,4,2,1];
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num===4){ cm += pass.toString(16); num=0; pass=0;}
-		}
-		if(num>0){ cm += pass.toString(16);}
-		cm += "/";
+	encodeBorderArrow_old1 : function(){
+		var cm = "", bd = this.owner.board;
 
-		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.getArrow()===border.UP);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.getArrow()===border.DN);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.LT);}).join("+") + "/");
-		cm += (bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.getArrow()===border.RT);}).join("+") + "/");
-
-		cm += (bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.id<bd.bdinside && border.getArrow()===border.UP);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.id<bd.bdinside && border.getArrow()===border.DN);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.id<bd.bdinside && border.getArrow()===border.LT);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.id<bd.bdinside && border.getArrow()===border.RT);}).join("+"));
 
 		this.outbstr += cm;
 	}
 },
 "Encode@icelom,icelom2":{
 	decodePzpr : function(type){
-		this.decodeIcelom();
+		this.decodeIce();
 		this.decodeNumber16();
 		this.decodeInOut();
 
@@ -673,46 +654,19 @@ Graphic:{
 		}
 	},
 	encodePzpr : function(type){
-		this.encodeIcelom();
+		this.encodeIce();
 		this.encodeNumber16();
 		this.encodeInOut();
 
 		if(this.owner.pid==='icelom'){ this.outpflag="a";}
-	},
-
-	decodeIcelom : function(){
-		var bstr = this.outbstr;
-
-		var a=0, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
-		for(var i=0;i<bstr.length;i++){
-			var num = parseInt(bstr.charAt(i),32);
-			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
-					bd.cell[c].ques = (num&twi[w]?6:0);
-					c++;
-				}
-			}
-			if(c>=bd.cellmax){ a=i+1; break;}
-		}
-		this.outbstr = bstr.substr(a);
-	},
-	encodeIcelom : function(){
-		var cm = "", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
-		for(var c=0;c<bd.cellmax;c++){
-			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
-		}
-		if(num>0){ cm += pass.toString(32);}
-
-		this.outbstr += cm;
-	},
-
+	}
+},
+Encode:{
 	decodeInOut : function(){
-		var barray = this.outbstr.substr(1).split("/");
+		var barray = this.outbstr.split("/"), bd = this.owner.board;
 
-		var bd = this.owner.board;
-		bd.arrowin.seturlid (parseInt(barray[0]));
-		bd.arrowout.seturlid(parseInt(barray[1]));
+		bd.arrowin.seturlid (parseInt(barray[1]));
+		bd.arrowout.seturlid(parseInt(barray[2]));
 
 		this.outbstr = "";
 	},
@@ -731,6 +685,21 @@ Graphic:{
 		this.decodeCell( function(obj,ca){
 			if(ca==="1"){ obj.ques = 6;}
 		});
+		this.decodeBorderArrow();
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		var bd = this.owner.board;
+		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
+		this.encodeCell( function(obj){
+			return (obj.ques===6?"1 ":"0 ");
+		});
+		this.encodeBorderArrow();
+		this.encodeBorderLine();
+	},
+
+	decodeBorderArrow : function(){
+		var bd = this.owner.board;
 		bd.disableInfo();
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
@@ -742,27 +711,13 @@ Graphic:{
 			}
 		});
 		bd.enableInfo();
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="1" ){ obj.line = 1;}
-			else if(ca==="-1"){ obj.qsub = 2;}
-		});
 	},
-	encodeData : function(){
-		var bd = this.owner.board;
-		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
-		this.encodeCell( function(obj){
-			return (obj.ques===6?"1 ":"0 ");
-		});
+	encodeBorderArrow : function(){
 		this.encodeBorder( function(obj){
 			var dir = obj.getArrow();
 			if     (dir===obj.UP||dir===obj.LT){ return "1 ";}
 			else if(dir===obj.DN||dir===obj.RT){ return "2 ";}
 			else                               { return "0 ";}
-		});
-		this.encodeBorder( function(obj){
-			if     (obj.line===1){ return "1 ";}
-			else if(obj.qsub===2){ return "-1 ";}
-			else                 { return "0 ";}
 		});
 	}
 },
@@ -784,10 +739,7 @@ Graphic:{
 				obj.qnum = (ca!=='?' ? parseInt(ca) : -2);
 			}
 		});
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="1" ){ obj.line = 1;}
-			else if(ca==="-1"){ obj.qsub = 2;}
-		});
+		this.decodeBorderLine();
 	},
 	encodeData : function(){
 		var bd = this.owner.board;
@@ -801,11 +753,7 @@ Graphic:{
 			else{ qstr = obj.qnum+" ";}
 			return istr+qstr;
 		});
-		this.encodeBorder( function(obj){
-			if     (obj.line===1){ return "1 "; }
-			else if(obj.qsub===2){ return "-1 ";}
-			else                 { return "0 "; }
-		});
+		this.encodeBorderLine();
 	}
 },
 

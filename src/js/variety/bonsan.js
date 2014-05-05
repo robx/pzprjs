@@ -127,6 +127,8 @@ Graphic:{
 	qsubcolor1 : "rgb(224, 224, 255)",
 	qsubcolor2 : "rgb(255, 255, 144)",
 
+	circlefillcolor_func : "qcmp",
+
 	globalfontsizeratio : 0.9,	// 数字の倍率
 
 	paint : function(){
@@ -144,16 +146,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	getCircleFillColor : function(cell){
-		var error = cell.error, num = (!this.owner.execConfig('dispmove') ? cell : cell.base).qnum;
-		if(num!==-1){
-			if     (error===1||error===4)                           { return this.errbcolor1;}
-			else if(this.owner.getConfig('autocmp') && cell.isCmp()){ return "silver"}
-			else{ return this.circledcolor;}
-		}
-		return null;
 	}
 },
 

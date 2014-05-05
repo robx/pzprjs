@@ -143,9 +143,7 @@ Graphic:{
 		}
 		return null;
 	},
-	getCircleFillColor : function(cell){
-		return null;
-	},
+	circlefillcolor_func : "null",
 
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
