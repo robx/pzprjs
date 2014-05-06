@@ -14,20 +14,17 @@ pzpr.classmgr = {
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
 	makeCommon : function(commonbase){
-		var commonclass = commonbase;
-		this.createCommon(commonclass);
+		this.createCommon(commonbase);
 	},
-	createCommon : function(commonclass){
-		var common = pzpr.common;
-		for(var key in commonclass){
-			var realname = this.searchName(key).real;
-			var proto = commonclass[key];
-			if(!common[realname]){
-				common[realname] = this.createClass(key, proto, {});
+	createCommon : function(commonbase){
+		for(var key in commonbase){
+			var names = this.searchName(key), NewClass = pzpr.common[names.real];
+			if(!NewClass){
+				NewClass = this.createClass( pzpr.common[names.base] );
+				NewClass.prototype.common = NewClass.prototype;
 			}
-			else{
-				for(var name in proto){ common[realname].prototype[name] = proto[name];}
-			}
+			this.extendPrototype( NewClass.prototype, commonbase[key] );
+			pzpr.common[names.real] = NewClass;
 		}
 	},
 
@@ -64,17 +61,14 @@ pzpr.classmgr = {
 
 		// 追加プロパティが指定されているクラスを作成する
 		for(var key in extension){
-			var realname = this.searchName(key).real;
-			var proto = extension[key];
-			if(!custom[realname]){
-				if(!!pzpr.common[realname] && key===realname){ key=realname+":"+realname;}
-				
-				custom[realname] = this.createClass(key, proto, custom);
+			var names = this.searchName(key), NewClass = custom[names.real];
+			if(!NewClass){
+				NewClass = this.createClass( custom[names.base] || pzpr.common[names.base] );
 			}
-			else{
-				for(var name in proto){ custom[realname].prototype[name] = proto[name];}
-			}
+			this.extendPrototype( NewClass.prototype, extension[key] );
+			custom[names.real] = NewClass;
 		}
+
 		// 指定がなかった残りの共通クラスを作成(コピー)する
 		for(var classname in pzpr.common){
 			if(!custom[classname]){
@@ -95,25 +89,24 @@ pzpr.classmgr = {
 			basename = key.substr(colon+1);
 			realname = key.substr(0,colon);
 		}
-		return {base:basename, real:realname};
+		return {base:(basename||realname), real:realname};
 	},
-	createClass : function(key, proto, customs){
+	createClass : function(BaseClass){
 		function NewClass(){};
-		var basename = this.searchName(key).base;
-		var BaseClass = (customs[basename] || pzpr.common[basename]);
-		if(!!BaseClass){
-			var BaseProto = BaseClass.prototype;
-			for(var name in BaseProto){ NewClass.prototype[name] = BaseProto[name];}
-		}
-		else{
-			NewClass.prototype.common = NewClass.prototype;
-		}
-		if(!!proto){
-			for(var name in proto){
-				NewClass.prototype[name] = proto[name];
+		if(!!BaseClass){ this.extendPrototype( NewClass.prototype, BaseClass.prototype );}
+		return NewClass;
+	},
+	extendPrototype : function(NewProto, proto){
+		proto = proto || {};
+		for(var name in proto){
+			if(proto[name]!=null && (typeof proto[name]==='object') && proto[name].constructor===Object){
+				if(!NewProto[name]){ NewProto[name] = {};}
+				this.extendPrototype(NewProto[name], proto[name]);
+			}
+			else{
+				NewProto[name] = proto[name];
 			}
 		}
-		return NewClass;
 	},
 
 	//---------------------------------------------------------------
