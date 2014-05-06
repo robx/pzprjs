@@ -392,7 +392,7 @@ Graphic:{
 		}
 	},
 
-	// drawDeparturesのオーバーライド
+	// drawDeparturesから派生
 	drawViaPoints : function(){
 		var g = this.vinc('cell_via', 'auto');
 		var rsize  = this.cw*0.15;
@@ -400,16 +400,14 @@ Graphic:{
 		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num = -1;
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			if(isdrawmove && cell.isViaPoint()){
-				g.fillStyle = (this.owner.execConfig('dispmove') ? this.movelinecolor : this.linecolor);
-				if(this.vnop(header+id,this.FILL)){
+				g.fillStyle = this.movelinecolor;
+				if(this.vnop(header+cell.id,this.NONE)){
 					g.fillCircle(px, py, rsize);
 				}
 			}
-			else{ g.vhide(header+id);}
+			else{ g.vhide(header+cell.id);}
 		}
 	}
 },
