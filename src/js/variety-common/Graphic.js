@@ -834,7 +834,6 @@ Graphic:{
 
 		var ra = this.circleratio;
 		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
-		g.lineWidth = Math.max(this.cw*(ra[0]-ra[1]), 1);
 		
 		/* fillとstrokeの間に線を描画するスキマを与える */
 		if(this.owner.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
@@ -852,8 +851,15 @@ Graphic:{
 				}
 			}
 			else{ g.vhide(headers[1]+id);}
+		}
 
-			color = this.getCircleStrokeColor(cell);
+		g = this.vinc('cell_circle_stroke', 'auto');
+		g.lineWidth = Math.max(this.cw*(ra[0]-ra[1]), 1);
+
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], id = cell.id, px = cell.bx*this.bw, py = cell.by*this.bh;
+
+			var color = this.getCircleStrokeColor(cell);
 			if(!!color){
 				g.strokeStyle = color;
 				if(this.vnop(headers[0]+id,this.STROKE)){

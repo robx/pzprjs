@@ -103,7 +103,7 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		if(cell.isNum()){
+		if(cell.isValidNum()){
 			var cmpcell = (!!this.check_binfo && cell.checkComplete(this.check_binfo));
 			return (cmpcell ? this.qcmpcolor : this.circledcolor);
 		}
