@@ -206,7 +206,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		this.initStar(col,row);
+		this.initStar(this.qcols,this.qrows);
 	},
 
 	// 星アクセス用関数
