@@ -74,11 +74,18 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	// オーバーライド drawBGCells用 (qsub==1は表示しない..)
-	getBGCellColor : function(cell){
-		if     (cell.error===1){ return this.errbcolor1;}
-		else if(cell.qsub ===2){ return this.qsubcolor2;}
-		return null;
+	getCellNumberColor : function(cell){
+		var color = this.fontcolor;
+		if(cell.qsub===2){
+			color = this.qcmpcolor;
+		}
+		else if(cell.error===1){
+			color = this.fontErrcolor;
+		}
+		else if(cell.qnum===-1 && cell.anum!==-1){
+			color = this.fontAnscolor;
+		}
+		return color;
 	}
 },
 
