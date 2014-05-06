@@ -1,7 +1,6 @@
 @charset "UTF-8" ;
 
-	BODY{ background:url(data:image/gif;base64,R0lGODdhEAAQAIACAMD/wPD/8CwAAAAAEAAQAAACKYQTpogKnFxbMDpa7W18yjhp1yGO1OidW5mSKFuaTyy585t0ctZ+EFAAADs=);
-		color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	BODY{ color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
 	/* メインの白背景領域 */
 	div#main{ width:80%; background-color:white; text-align:center;
