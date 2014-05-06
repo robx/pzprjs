@@ -67,8 +67,11 @@ module.exports = function(grunt){
     shell: {
       release: {
         command: [
-          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js dist/*",
-          "zip -9r pzprv3-<%= pkg.version %>.zip dist/* -x *.concat.js"
+          "cd dist",
+          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js --exclude \".DS_Store\" *",
+          "zip -9r pzprv3-<%= pkg.version %>.zip * -x *.concat.js -x .DS_Store",
+          "mv pzprv3-<%= pkg.version %>.* ..",
+          "cd .."
         ].join('; ')
       }
     }
