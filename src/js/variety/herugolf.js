@@ -159,6 +159,9 @@ KeyEvent:{
 		else if(ca=='h'){
 			cell.setQues(cell.ques===31?0:31);
 		}
+		else if(ca==' '){
+			cell.setQues(0);
+		}
 		else if(!cell.ice()){
 			this.key_inputqnum(ca);
 		}
