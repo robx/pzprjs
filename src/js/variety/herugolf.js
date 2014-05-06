@@ -332,7 +332,12 @@ Graphic:{
 			
 			var cells = border.sidecell;
 			var isvalidline = (cells[0].distance>=0 && cells[1].distance>=0);
-			return (isvalidline ? this.linecolor : this.invalidlinecolor);
+			if(this.owner.execConfig('dispmove')){
+				return (isvalidline ? this.movelinecolor : this.errlinecolor);
+			}
+			else{
+				return (isvalidline ? this.linecolor : this.invalidlinecolor);
+			}
 		}
 		return null;
 	},
@@ -399,7 +404,7 @@ Graphic:{
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
 			if(isdrawmove && cell.isViaPoint()){
-				g.fillStyle = this.linecolor;
+				g.fillStyle = (this.owner.execConfig('dispmove') ? this.movelinecolor : this.linecolor);
 				if(this.vnop(header+id,this.FILL)){
 					g.fillCircle(px, py, rsize);
 				}
