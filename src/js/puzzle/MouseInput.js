@@ -85,7 +85,6 @@ MouseEvent:{
 		
 		/* 座標は前のイベントのものを使用する */
 		this.mouseevent(this.inputPoint, 2);
-		this.mousereset();
 		
 		pzpr.util.stopPropagation(e);
 		pzpr.util.preventDefault(e);
@@ -138,20 +137,24 @@ MouseEvent:{
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
 		
-		if(!this.owner.execListener('mouse')){ return;}
-		
-		if(!this.btn.Left && !this.btn.Right){ return;}
-		
-		var puzzle = this.owner;
-		if(this.mousestart){
-			puzzle.opemgr.newOperation();
-			puzzle.board.errclear();
-			puzzle.redraw();
-			if(this.isDispred()){ this.inputRed(); return;}
+		if(!this.owner.execListener('mouse')){ }
+		else if(!this.btn.Left && !this.btn.Right){ }
+		else{
+			var puzzle = this.owner;
+			if(this.mousestart){
+				puzzle.opemgr.newOperation();
+				puzzle.board.errclear();
+				puzzle.redraw();
+			}
+			else{ puzzle.opemgr.newChain();}
+			
+			if(this.mousestart && this.isDispred()){ this.inputRed();}
+			else{
+				this.mouseinput();		/* 各パズルのルーチンへ */
+			}
 		}
-		else{ puzzle.opemgr.newChain();}
 		
-		this.mouseinput();		/* 各パズルのルーチンへ */
+		if(this.mouseend){ this.mousereset();}
 	},
 	isDispred : function(){
 		var puzzle = this.owner, flag = false;

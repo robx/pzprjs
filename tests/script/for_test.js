@@ -25,9 +25,54 @@ ui.debug.extend(
 
 	urls : {},
 	acs  : {},
+	inputs : {},
 	addDebugData : function(pid, data){
 		this.urls[pid] = data.url;
 		this.acs[pid] = data.failcheck;
+		this.inputs[pid] = data.inputs || [];
+	},
+
+	execinput : function(str){
+		var strs = str.split(/,/);
+		switch(strs[0]){
+			case 'newboard':
+				var urls = [ui.puzzle.pid, strs[1], strs[2]];
+				if(ui.puzzle.pid==='tawa'){ urls.push(strs[3]);}
+				ui.puzzle.open(urls.join("/"));
+				break;
+			case 'playmode':
+				ui.puzzle.modechange(ui.puzzle.MODE_PLAYER);
+				break;
+			case 'editmode':
+				ui.puzzle.modechange(ui.puzzle.MODE_EDITOR);
+				break;
+			case 'setconfig':
+				ui.puzzle.setConfig(strs[1], str[2]);
+				break;
+			case 'key':
+				for(var i=1;i<strs.length;i++){
+					ui.puzzle.key.keyevent(strs[i],0);
+					ui.puzzle.key.keyevent(strs[i],1);
+				}
+				break;
+			case 'mouse':
+				ui.puzzle.mouse.btn.Left  = (strs[1]==='left');
+				ui.puzzle.mouse.btn.Right = (strs[1]==='right');
+				var addr = new ui.puzzle.RawAddress();
+				ui.puzzle.mouse.mouseevent(addr.init(+strs[2], +strs[3]),0);
+				for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
+					var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
+					var distance = Math.sqrt(dx*dx+dy*dy);
+					var mx = dx/(distance*10), my = dy/(distance*10);
+					for(var dist=0.0;dist<distance-0.1;dist+=0.1){
+						ui.puzzle.mouse.mouseevent(addr.move(mx,my),1);
+					}
+					/* 最後 */
+					ui.puzzle.mouse.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
+				}
+				ui.puzzle.mouse.mouseevent(addr,2);
+				break;
+		}
 	},
 
 	alltimer : null,
