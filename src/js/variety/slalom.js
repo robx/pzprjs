@@ -143,7 +143,7 @@ KeyEvent:{
 	enableplay : true,
 	keyup_event : true,
 	moveTarget : function(ca){
-		if(this.isSHIFT){ return false;}
+		if(ca.match(/shift/)){ return false;}
 		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
 		return false;
 	},

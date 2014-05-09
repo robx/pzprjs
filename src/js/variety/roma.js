@@ -48,7 +48,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		if(this.isSHIFT){ return false;}
+		if(ca.match(/shift/)){ return false;}
 		return this.moveTCell(ca);
 	},
 
@@ -56,10 +56,10 @@ KeyEvent:{
 		this.key_roma(ca);
 	},
 	key_roma : function(ca){
-		if     (ca==='1'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
-		else if(ca==='2'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
-		else if(ca==='3'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
-		else if(ca==='4'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
+		if     (ca==='1'||(ca==='shift+up'))                { ca='1';}
+		else if(ca==='2'||(ca==='shift+right'))             { ca='4';}
+		else if(ca==='3'||(ca==='shift+down'))              { ca='2';}
+		else if(ca==='4'||(ca==='shift+left'))              { ca='3';}
 		else if(ca==='q')                                   { ca='5';}
 		else if(this.owner.editmode && (ca==='5'||ca==='-')){ ca='s1';}
 		else if(ca==='6'||ca===' ')                         { ca=' ';}

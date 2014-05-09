@@ -67,20 +67,18 @@ KeyEvent:{
 	// kc.key_inputdirec()  四方向の矢印などを設定する
 	//---------------------------------------------------------------------------
 	key_inputdirec : function(ca){
-		if(!this.isSHIFT){ return false;}
-
 		var cell = this.cursor.getc(), pid = this.owner.pid;
 		/* 矢印つき数字の場合 */
 		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
-			if(cell.getQnum()===-1){ return false;}
+			if(cell.qnum===-1){ return false;}
 		}
 
 		var dir = cell.NDIR;
 		switch(ca){
-			case this.KEYUP: dir = cell.UP; break;
-			case this.KEYDN: dir = cell.DN; break;
-			case this.KEYLT: dir = cell.LT; break;
-			case this.KEYRT: dir = cell.RT; break;
+			case 'shift+up':    dir = cell.UP; break;
+			case 'shift+down':  dir = cell.DN; break;
+			case 'shift+left':  dir = cell.LT; break;
+			case 'shift+right': dir = cell.RT; break;
 			default: flag = false;
 		}
 
@@ -100,7 +98,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	inputnumber51 : function(ca,max_obj){
 		var cursor = this.cursor;
-		if(cursor.chtarget(ca)){ return;}
+		if(ca==='shift'){ cursor.chtarget(); return;}
 
 		var obj = cursor.getobj();
 		var target = cursor.detectTarget(obj);

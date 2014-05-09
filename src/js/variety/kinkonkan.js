@@ -94,19 +94,19 @@ KeyEvent:{
 		var cursor = this.cursor;
 		var excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
 
-		if     (ca===this.KEYUP){
+		if     (ca==='up'){
 			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
 			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
 		}
-		else if(ca===this.KEYDN){
+		else if(ca==='down'){
 			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
 			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
 		}
-		else if(ca===this.KEYLT){
+		else if(ca==='left'){
 			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
 			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
 		}
-		else if(ca===this.KEYRT){
+		else if(ca==='right'){
 			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
 			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
 		}

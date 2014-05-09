@@ -28,7 +28,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		if(this.isSHIFT){ return false;}
+		if(ca.match(/shift/)){ return false;}
 		return this.moveTCell(ca);
 	},
 

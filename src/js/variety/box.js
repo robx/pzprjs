@@ -42,10 +42,10 @@ KeyEvent:{
 		var cursor = this.cursor;
 		var excell0 = cursor.getex(), dir = excell0.NDIR;
 		switch(ca){
-			case this.KEYUP: if(cursor.bx===cursor.minx && cursor.miny<cursor.by){ dir=excell0.UP;} break;
-			case this.KEYDN: if(cursor.bx===cursor.minx && cursor.maxy>cursor.by){ dir=excell0.DN;} break;
-			case this.KEYLT: if(cursor.by===cursor.miny && cursor.minx<cursor.bx){ dir=excell0.LT;} break;
-			case this.KEYRT: if(cursor.by===cursor.miny && cursor.maxx>cursor.bx){ dir=excell0.RT;} break;
+			case 'up':    if(cursor.bx===cursor.minx && cursor.miny<cursor.by){ dir=excell0.UP;} break;
+			case 'down':  if(cursor.bx===cursor.minx && cursor.maxy>cursor.by){ dir=excell0.DN;} break;
+			case 'left':  if(cursor.by===cursor.miny && cursor.minx<cursor.bx){ dir=excell0.LT;} break;
+			case 'right': if(cursor.by===cursor.miny && cursor.maxx>cursor.bx){ dir=excell0.RT;} break;
 		}
 
 		if(dir!==excell0.NDIR){

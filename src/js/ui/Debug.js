@@ -84,14 +84,14 @@ ui.debug =
 	keydown : function(ca){
 		var kc = ui.puzzle.key;
 		if(!ui.debugmode){
-			if(kc.isALT && ca==='p'){ this.disppoptest();}
+			if(ca==='alt+p'){ this.disppoptest();}
 			else{ return false;}
 		}
 		else{
-			if(ca=='F7'){ this.accheck1();}
-			else if(kc.isALT  && ca==='p'){ this.disppoptest();}
-			else if(kc.isCTRL && ca=='F9'){ this.starttest();}
-			else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
+			if(ca==='F7'){ this.accheck1();}
+			else if(ca==='alt+p'){ this.disppoptest();}
+			else if(ca==='ctrl+F9'){ this.starttest();}
+			else if(ca==='shift+ctrl+F10'){ this.all_test();}
 			else{ return false;}
 		}
 		kc.stopEvent();	/* カーソルを移動させない */

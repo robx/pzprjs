@@ -500,7 +500,8 @@ ui.keypopup =
 		if(type!=='empty'){
 			_div = createEL('div');
 			_div.className = 'kpcell kpcellvalid';
-			_div.onclick = function(){ ui.puzzle.key.keyevent(ca,0);};
+			_div.onclick = function(e){ e.preventDefault();};
+			ui.event.addMouseDownEvent(_div, ui.puzzle, function(){ this.key.keyevent(ca,0);});
 			pzpr.util.unselectable(_div);
 		}
 		else{

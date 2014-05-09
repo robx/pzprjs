@@ -92,13 +92,13 @@ ui.listener =
 		var kc = puzzle.key, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
-			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startUndo(); result = false;}
-			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.startRedo(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.startUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.startRedo(); result = false;}
 
 			/* F2で回答モード Shift+F2で問題作成モード */
-			if(c==='F2' && pzpr.EDITOR){
-				if     (puzzle.editmode && !kc.isSHIFT){ puzzle.modechange(puzzle.MODE_PLAYER); result = false;}
-				else if(puzzle.playmode &&  kc.isSHIFT){ puzzle.modechange(puzzle.MODE_EDITOR); result = false;}
+			if(pzpr.EDITOR){
+				if     (puzzle.editmode && c==='F2'      ){ puzzle.modechange(puzzle.MODE_PLAYER); result = false;}
+				else if(puzzle.playmode && c==='shift+F2'){ puzzle.modechange(puzzle.MODE_EDITOR); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -106,8 +106,8 @@ ui.listener =
 		}
 		else if(kc.keyup){
 			/* TimerのUndo/Redoを停止する */
-			if(c==='z' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
-			if(c==='y' && (kc.isCTRL || kc.isMETA)){ ui.undotimer.stop(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.stop(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.stop(); result = false;}
 		}
 		ui.menuarea.floatmenuclose(0);
 		return result;

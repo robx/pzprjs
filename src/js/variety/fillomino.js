@@ -70,10 +70,10 @@ KeyEvent:{
 		var adc=cell.adjacent, adb=cell.adjborder;
 		var nc, nb, dir=cell.NDIR;
 		switch(ca){
-			case this.KEYUP: nc=adc.top;    nb=adb.top;    dir=cell.UP; break;
-			case this.KEYDN: nc=adc.bottom; nb=adb.bottom; dir=cell.DN; break;
-			case this.KEYLT: nc=adc.left;   nb=adb.left;   dir=cell.LT; break;
-			case this.KEYRT: nc=adc.right;  nb=adb.right;  dir=cell.RT; break;
+			case 'up':    nc=adc.top;    nb=adb.top;    dir=cell.UP; break;
+			case 'down':  nc=adc.bottom; nb=adb.bottom; dir=cell.DN; break;
+			case 'left':  nc=adc.left;   nb=adb.left;   dir=cell.LT; break;
+			case 'right': nc=adc.right;  nb=adb.right;  dir=cell.RT; break;
 			default: return false;
 		}
 		if(!nc.isnull){

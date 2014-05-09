@@ -40,7 +40,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
-		if(this.isSHIFT){ return false;}
+		if(ca.match(/shift/)){ return false;}
 		return this.moveTCell(ca);
 	},
 
@@ -48,12 +48,12 @@ KeyEvent:{
 		this.key_toichika(ca);
 	},
 	key_toichika : function(ca){
-		if     (ca==='1'||ca==='w'||(this.isSHIFT && ca===this.KEYUP)){ ca='1';}
-		else if(ca==='2'||ca==='s'||(this.isSHIFT && ca===this.KEYRT)){ ca='4';}
-		else if(ca==='3'||ca==='z'||(this.isSHIFT && ca===this.KEYDN)){ ca='2';}
-		else if(ca==='4'||ca==='a'||(this.isSHIFT && ca===this.KEYLT)){ ca='3';}
-		else if(ca==='5'||ca==='q'||ca==='-')                         { ca='s1';}
-		else if(ca==='6'||ca==='e'||ca===' ')                         { ca=' ';}
+		if     (ca==='1'||ca==='w'||ca==='shift+up')   { ca='1';}
+		else if(ca==='2'||ca==='s'||ca==='shift+right'){ ca='4';}
+		else if(ca==='3'||ca==='z'||ca==='shift+down') { ca='2';}
+		else if(ca==='4'||ca==='a'||ca==='shift+left') { ca='3';}
+		else if(ca==='5'||ca==='q'||ca==='-')          { ca='s1';}
+		else if(ca==='6'||ca==='e'||ca===' ')          { ca=' ';}
 		this.key_inputqnum(ca);
 	}
 },

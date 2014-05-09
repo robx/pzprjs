@@ -252,7 +252,7 @@ MouseEvent:{
 	input51_main : function(cell){
 		if(this.btn.Left){
 			if(!cell.is51cell()){ cell.set51cell();}
-			else{ this.cursor.chtarget('shift');}
+			else{ this.cursor.chtarget();}
 		}
 		else if(this.btn.Right){ cell.remove51cell();}
 

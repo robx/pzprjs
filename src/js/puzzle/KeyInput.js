@@ -20,12 +20,6 @@ KeyEvent:{
 	enableplay : false,
 	keyup_event : false,	/* keyupイベントでもパズル個別のキーイベント関数を呼び出す */
 
-	// const値
-	KEYUP : 'up',
-	KEYDN : 'down',
-	KEYLT : 'left',
-	KEYRT : 'right',
-
 	//---------------------------------------------------------------------------
 	// kc.keyreset()     キーボード入力に関する情報を初期化する
 	// kc.isenablemode() 現在のモードでキー入力が有効か判定する
@@ -74,6 +68,7 @@ KeyEvent:{
 		
 		this.event = e;
 		var c = this.getchar(e);
+		this.checkbutton(c,0);
 		if(c){ this.keyevent(c,0);}
 		
 		if(e.target===this.owner.canvas){
@@ -86,6 +81,7 @@ KeyEvent:{
 		
 		this.event = e;
 		var c = this.getchar(e);
+		this.checkbutton(c,1);
 		if(c){ this.keyevent(c,1);}
 		
 		if(e.target===this.owner.canvas){
@@ -104,8 +100,8 @@ KeyEvent:{
 		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
 		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
 	},
-	checkbutton : function(c){
-		if(this.keydown){
+	checkbutton : function(c,step){
+		if(step===0){
 			if(c==='z' && !this.isZ){ this.isZ=true;}
 			if(c==='x' && !this.isX){ this.isX=true;}
 			if(c==='y' && !this.isY){ this.isY=true;}
@@ -126,10 +122,10 @@ KeyEvent:{
 
 		var key = '', keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 
-		if     (keycode==38){ key = this.KEYUP;}
-		else if(keycode==40){ key = this.KEYDN;}
-		else if(keycode==37){ key = this.KEYLT;}
-		else if(keycode==39){ key = this.KEYRT;}
+		if     (keycode==38){ key = 'up';   }
+		else if(keycode==40){ key = 'down'; }
+		else if(keycode==37){ key = 'left'; }
+		else if(keycode==39){ key = 'right';}
 		else if( 48<=keycode && keycode<= 57){ key = (keycode-48).toString(36);}
 		else if( 65<=keycode && keycode<= 90){ key = (keycode-55).toString(36);} //アルファベット
 		else if( 96<=keycode && keycode<=105){ key = (keycode-96).toString(36);} //テンキー対応
@@ -137,14 +133,18 @@ KeyEvent:{
 		else if(keycode==32 || keycode==46)  { key = ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode==8)                  { key = 'BS';}
 		else if(keycode==109|| keycode==189) { key = '-';}
-		else if(e.shiftKey){ key = 'shift';}
 
-		if(this.isALT){
-			if     (key==='h'){ key = this.KEYLT;}
-			else if(key==='k'){ key = this.KEYUP;}
-			else if(key==='j'){ key = this.KEYDN;}
-			else if(key==='l'){ key = this.KEYRT;}
-		}
+		var keylist = (!!key ? [key] : []);
+		if(this.isMETA) { keylist.unshift('meta'); }
+		if(this.isALT)  { keylist.unshift('alt');  }
+		if(this.isCTRL) { keylist.unshift('ctrl'); }
+		if(this.isSHIFT){ keylist.unshift('shift');}
+		key = keylist.join('+');
+
+		if     (key==='alt+h'){ key = 'left'; }
+		else if(key==='alt+k'){ key = 'up';   }
+		else if(key==='alt+j'){ key = 'down'; }
+		else if(key==='alt+l'){ key = 'right';}
 
 		return key;
 	},
@@ -160,9 +160,6 @@ KeyEvent:{
 
 		if(this.keydown){ puzzle.opemgr.newOperation();}
 		else            { puzzle.opemgr.newChain();}
-
-		this.ca = c;
-		this.checkbutton(c);
 
 		if(this.keydown && !this.isZ){
 			puzzle.board.errclear();
@@ -184,7 +181,7 @@ KeyEvent:{
 	// kc.keyexec() モードに共通で行う処理を実行します
 	//---------------------------------------------------------------------------
 	keyexec : function(c){
-		if(this.keydown && this.isALT && c==='c' && pzpr.EDITOR){
+		if(this.keydown && c==='alt+c' && pzpr.EDITOR){
 			this.owner.modechange();
 			return false;
 		}
@@ -214,10 +211,10 @@ KeyEvent:{
 	moveTC : function(ca,mv){
 		var cursor = this.cursor, pos0 = cursor.getaddr(), dir = cursor.NDIR;
 		switch(ca){
-			case this.KEYUP: if(cursor.by-mv>=cursor.miny){ dir = cursor.UP;} break;
-			case this.KEYDN: if(cursor.by+mv<=cursor.maxy){ dir = cursor.DN;} break;
-			case this.KEYLT: if(cursor.bx-mv>=cursor.minx){ dir = cursor.LT;} break;
-			case this.KEYRT: if(cursor.bx+mv<=cursor.maxx){ dir = cursor.RT;} break;
+			case 'up':    if(cursor.by-mv>=cursor.miny){ dir = cursor.UP;} break;
+			case 'down':  if(cursor.by+mv<=cursor.maxy){ dir = cursor.DN;} break;
+			case 'left':  if(cursor.bx-mv>=cursor.minx){ dir = cursor.LT;} break;
+			case 'right': if(cursor.bx+mv<=cursor.maxx){ dir = cursor.RT;} break;
 			default: return false;
 		}
 
@@ -293,10 +290,8 @@ KeyEvent:{
 	// tc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
 	//---------------------------------------------------------------------------
 	targetdir : 2,
-	chtarget : function(ca){
-		if(ca!='shift'){ return false;}
-		if(this.targetdir==2){ this.targetdir=4;}
-		else{ this.targetdir=2;}
+	chtarget : function(){
+		this.targetdir = (this.targetdir===2?4:2);
 		this.draw();
 		return true;
 	},
@@ -312,8 +307,8 @@ KeyEvent:{
 		}
 		else if(obj.group==='excell'){
 			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
-			else if((obj.by===-1 && adj.bottom.ques===51) ||
-				    (obj.bx===-1 && adj.right.ques ===51)){ return 0;}
+			else if((obj.by===-1 && adc.bottom.ques===51) ||
+				    (obj.bx===-1 && adc.right.ques ===51)){ return 0;}
 			else if(obj.by===-1){ return 4;}
 			else if(obj.bx===-1){ return 2;}
 		}
