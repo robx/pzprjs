@@ -173,7 +173,7 @@ KeyEvent:{
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
 	},
 	stopEvent : function(){
-		pzpr.util.preventDefault(this.event);
+		if(!!this.event){ pzpr.util.preventDefault(this.event);}
 		this.keyreset();
 	},
 
