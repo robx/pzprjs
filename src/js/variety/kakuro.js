@@ -51,9 +51,10 @@ Cell:{
 	getNum : function(){ return this.anum;},
 	setNum : function(val){ this.setAnum(val>0 ? val : -1);},
 
-	// 問題入力モードだけ、、0でも入力できるようにする
+	// 問題入力モードは0でも入力できるようにする
 	prehook : {
-		anum : function(num){ return (this.minnum>0 && num===0);}
+		qnum  : function(num){ return false;},
+		qnum2 : function(num){ return false;}
 	}
 },
 
