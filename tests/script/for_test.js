@@ -221,8 +221,9 @@ ui.debug.extend(
 			}
 		}
 		if(inps.length>0){
-			self.addTextarea("Input test Pass = "+pass+"/"+count);
-			
+			if(!self.alltimer){
+				self.addTextarea("Input test Pass = "+pass+"/"+count);
+			}
 			self.execinput("playmode");
 			ui.restoreConfig();
 			ui.displayAll();

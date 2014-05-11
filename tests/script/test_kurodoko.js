@@ -8,5 +8,5 @@ ui.debug.addDebugData('kurodoko', {
 		['nmSumViewNe',"pzprv3/kurodoko/5/5/. . . 7 . /5 . . . . /. . 2 . . /. . . . 2 /. 4 . . . /# + + + . /+ + # + + /+ # + + # /+ + # + + /# + + + # /"],
 		[null,         "pzprv3/kurodoko/5/5/. . . 7 . /5 . . . . /. . 2 . . /. . . . 2 /. 4 . . . /+ # + + . /+ + # + + /+ # + + # /+ + # + + /# + + + # /"]
 	],
-	inputs : [] /" hitori, kurottoと同じなので省略 "/
+	inputs : [] /* hitori, kurottoと同じなので省略 */
 });
