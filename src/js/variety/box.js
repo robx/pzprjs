@@ -292,7 +292,12 @@ FileIO:{
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
-					this.datastr += (excell.qnum.toString()+" ");
+					if(excell.id<bd.qcols+bd.qrows){
+						this.datastr += (excell.qnum.toString()+" ");
+					}
+					else{
+						this.datastr += ". ";
+					}
 					continue;
 				}
 
