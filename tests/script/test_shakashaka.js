@@ -12,6 +12,7 @@ ui.debug.addDebugData('shakashaka', {
 		[null,          "pzprv3/shakashaka/6/6/2 . . . 1 . /. . . 3 . . /. . 4 . . . /3 . . . . . /. . . . . . /. . . 1 . . /. 5 4 + . + /5 . 3 . 5 4 /2 3 . 5 . 3 /. 5 4 2 3 . /5 . 3 + 5 4 /2 3 + . 2 3 /"]
 	],
 	inputs : [
+		/* 回答入力テスト */
 		{ input:["newboard,6,6", "playmode", "setconfig,use_tri,1"] },
 		{ input:["mouse,left, 0.5,4.5, 5,1, 7,1, 11,5, 11,7, 7,11, 5,11, 1,7"],
 		  result:"pzprv3/shakashaka/6/6/. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . 5 4 . . /. 5 . . 4 . /5 . . . . 4 /2 . . . . 3 /. 2 . . 3 . /. . 2 3 . . /" },
@@ -31,6 +32,7 @@ ui.debug.addDebugData('shakashaka', {
 		{ input:["mouse,left, 1,1", "mouse,leftx2, 3,1", "mouse,leftx3, 5,1", "mouse,leftx4, 7,1", "mouse,leftx5, 9,1", "mouse,leftx6, 11,1",
 				 "mouse,right, 1,3", "mouse,rightx2, 3,3", "mouse,rightx3, 5,3", "mouse,rightx4, 7,3", "mouse,rightx5, 9,3", "mouse,rightx6, 11,3"],
 		  result:"pzprv3/shakashaka/2/6/. . . . . . /. . . . . . /2 3 4 5 + . /+ 5 4 3 2 . /" },
+		/* 問題入力テスト */
 		{ input:["editmode", "newboard,6,1"] },
 		{ input:["cursor,1,1", "key,-", "key,right", "key,0", "key,right", "key,1", "key,right", "key,2", "key,right", "key,3", "key,right", "key,4" ],
 		  result:"pzprv3/shakashaka/1/6/5 0 1 2 3 4 /. . . . . . /" },

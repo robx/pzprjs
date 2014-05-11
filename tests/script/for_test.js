@@ -67,30 +67,32 @@ ui.debug.extend(
 				ui.puzzle.cursor.init(+strs[1], +strs[2]);
 				break;
 			case 'mouse':
-				var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
-				var repeat = matches ? parseInt(matches[1]) : 1;
-				for(var t=0;t<repeat;t++){ this.execmouse(strs);}
+				this.execmouse(strs);
 				break;
 		}
 	},
 	execmouse : function(strs){
-		var mv = ui.puzzle.mouse;
-		mv.btn.Left  = (strs[1].substr(0,4)==="left");
-		mv.btn.Right = (strs[1].substr(0,5)==="right");
-		
-		var addr = new ui.puzzle.RawAddress();
-		mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
-		for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
-			var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
-			var distance = Math.sqrt(dx*dx+dy*dy)*10; /* 0.1ずつ動かす */
-			var mx = dx/distance, my = dy/distance;
-			for(var dist=0;dist<distance-1;dist++){
-				mv.mouseevent(addr.move(mx,my),1);
+		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
+		var repeat = matches ? parseInt(matches[1]) : 1;
+		for(var t=0;t<repeat;t++){
+			var mv = ui.puzzle.mouse;
+			mv.btn.Left  = (strs[1].substr(0,4)==="left");
+			mv.btn.Right = (strs[1].substr(0,5)==="right");
+			
+			var addr = new ui.puzzle.RawAddress();
+			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
+			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
+				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
+				var distance = Math.sqrt(dx*dx+dy*dy)*10; /* 0.1ずつ動かす */
+				var mx = dx/distance, my = dy/distance;
+				for(var dist=0;dist<distance-1;dist++){
+					mv.mouseevent(addr.move(mx,my),1);
+				}
+				/* 最後 */
+				mv.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
 			}
-			/* 最後 */
-			mv.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
+			mv.mouseevent(addr,2);
 		}
-		mv.mouseevent(addr,2);
 	},
 	inputcheck1 : function(){
 		var inps = this.inputs[ui.puzzle.pid];
@@ -175,37 +177,12 @@ ui.debug.extend(
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
 				
-				setTimeout(function(){ self.check_input(self);},0);
+				setTimeout(function(){ self.check_answer(self);},0);
 			});
 		}
 		else{
-			setTimeout(function(){ self.check_input(self);},0);
+			setTimeout(function(){ self.check_answer(self);},0);
 		}
-	},
-	//Input test---------------------------------------------------------------
-	check_input : function(self){
-		var inps = self.inputs[self.pid], count=0;
-		for(var n=0;n<inps.length;n++){
-			var data = inps[n];
-			if(data.input!==void 0 && !!data.input){
-				for(var i=0;i<data.input.length;i++){
-					self.execinput(data.input[i]);
-				}
-			}
-			if(data.result!==void 0 && !!data.result){
-				var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
-				var judge = (!iserror ? "pass" : "failure...");
-				if(iserror){ self.fails++;}
-				self.addTextarea("Input test "+(++count)+" = "+judge);
-			}
-		}
-		if(inps.length>0){
-			self.execinput("playmode");
-			ui.restoreConfig();
-			ui.displayAll();
-		}
-
-		setTimeout(function(){ self.check_answer(self);},0);
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
@@ -223,7 +200,35 @@ ui.debug.extend(
 				self.addTextarea("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
-		setTimeout(function(){ self.check_file(self);},0);
+		setTimeout(function(){ self.check_input(self);},0);
+	},
+	//Input test---------------------------------------------------------------
+	check_input : function(self){
+		var filedata = ui.puzzle.getFileData();
+		var inps = self.inputs[self.pid], count=0, pass=0;
+		for(var n=0;n<inps.length;n++){
+			var data = inps[n];
+			if(data.input!==void 0 && !!data.input){
+				for(var i=0;i<data.input.length;i++){
+					self.execinput(data.input[i]);
+				}
+			}
+			if(data.result!==void 0 && !!data.result){
+				var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
+				count++;
+				if(iserror){ self.fails++;}
+				if(!iserror){ pass++;}
+			}
+		}
+		if(inps.length>0){
+			self.addTextarea("Input test Pass = "+pass+"/"+count);
+			
+			self.execinput("playmode");
+			ui.restoreConfig();
+			ui.displayAll();
+		}
+
+		ui.puzzle.open(filedata,function(){ self.check_file(self);});
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
