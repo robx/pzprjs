@@ -432,14 +432,12 @@ Graphic:{
 	drawSegments : function(){
 		var g = this.vinc('segment', 'auto'), bd = this.owner.board;
 
-		var seglist;
+		var seglist = bd.segment;
 		/* 全領域の30%以下なら範囲指定 */
 		if(((this.range.x2-this.range.x1)*(this.range.y2-this.range.y1))/((bd.maxbx-bd.minbx)*(bd.maxby-bd.minby))<0.30){
 			seglist = bd.segmentinside(this.range.x1,this.range.y1,this.range.x2,this.range.y2);
 		}
-		else{
-			seglist = bd.segment;
-		}
+
 		for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 	},
 	eraseSegment1 : function(seg){
@@ -447,6 +445,8 @@ Graphic:{
 		this.drawSegment1(seg,false);
 	},
 	drawSegment1 : function(seg,isdraw){
+		if(seg.bx1===void 0){ /* 消すための情報が無い場合は何もしない */ return; }
+
 		var g = this.context;
 
 		g.lineWidth = this.lw;
