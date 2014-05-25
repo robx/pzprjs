@@ -197,6 +197,13 @@ BoardExec:{
 	type : "",
 	partner : null,
 
+	init : function(bx,by){
+		this.bx = bx;
+		this.by = by;
+		if(!!this.owner.board){ this.setarrow(this.getb());}
+		return this;
+	},
+
 	getid : function(){
 		return this.getb().id;
 	},
@@ -228,7 +235,7 @@ BoardExec:{
 		
 		this.bx = pos.bx;
 		this.by = pos.by;
-		this.setarrow(this.owner.board.getb(pos.bx, pos.by));
+		this.setarrow(this.getb());
 		
 		pos0.draw();
 		this.draw();
