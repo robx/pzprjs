@@ -125,6 +125,7 @@ AreaManager:{
 		return change;
 	},
 	calcLinkInfo : function(cell){
+		if(cell.isnull){ return false;}
 		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
 		if(adc.top.validcell    && !this.bdfunc(adb.top   )){ val+=1;}
 		if(adc.bottom.validcell && !this.bdfunc(adb.bottom)){ val+=2;}
