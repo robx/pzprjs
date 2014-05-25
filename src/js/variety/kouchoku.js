@@ -227,17 +227,17 @@ Board:{
 
 		var bd = this, seglist = new this.owner.SegmentList();
 		var pseudoSegment = new this.owner.Segment(x1,y1,x2,y2);
-		this.segment.each(function(seg){
-			var cnt=0;
+		return this.segment.filter(function(seg){
 			if(seg.isAreaOverLap(pseudoSegment)){
+				var cnt=0;
 				if(seg.ispositive(x1,y1)){ cnt++;}
 				if(seg.ispositive(x1,y2)){ cnt++;}
 				if(seg.ispositive(x2,y1)){ cnt++;}
 				if(seg.ispositive(x2,y2)){ cnt++;}
-				if(cnt>0 && cnt<4){ seglist.add(seg);}
+				if(cnt>0 && cnt<4){ return true;}
 			}
+			return false;
 		});
-		return seglist;
 	},
 
 	//---------------------------------------------------------------------------
@@ -591,7 +591,7 @@ FileIO:{
 		}
 	},
 	encodeSegment : function(){
-		var fio = this, seglist = this.owner.board.segment;
+		var fio = this, seglist = this.owner.board.segment.filter(function(seg){ return (seg.id!==null);});
 		this.datastr += (seglist.length+"\n");
 		seglist.each(function(seg){
 			fio.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
