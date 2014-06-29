@@ -158,6 +158,8 @@ Graphic:{
 	globalfontsizeratio : 0.85,
 	circleratio : [0.47, 0.42],
 
+	circlefillcolor_func : "qcmp",
+
 	// 線の太さを通常より少し太くする
 	lwratio : 8,
 
