@@ -36,7 +36,7 @@ ui.debug.addDebugData('mashu', {
 		  result:"pzprv3/mashu/1/5/. - . 2 1 /0 0 0 0 /" },
 		{ input:["newboard,4,2", "editmode"] },
 		{ input:["cursor,0,0", "mouse,leftx2, 1,1",  "mouse,leftx3, 3,1",  "mouse,leftx4, 5,1",  "mouse,leftx5, 7,1",
-				 "cursor,0,0", "mouse,rightx2, 1,3", "mouse,rightx3, 3,3", "mouse,rightx4, 5,3", "mouse,rightx5, 7,3",],
+				 "cursor,0,0", "mouse,rightx2, 1,3", "mouse,rightx3, 3,3", "mouse,rightx4, 5,3", "mouse,rightx5, 7,3"],
 		  result:"pzprv3/mashu/2/4/- 1 2 . /2 1 - . /0 0 0 /0 0 0 /0 0 0 0 /" }
 	]
 });
