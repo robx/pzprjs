@@ -43,7 +43,8 @@ KeyEvent:{
 	key_inputqnum_kaero : function(ca){
 		var cell = this.cursor.getc();
 
-		if('a'<=ca && ca<='z'){
+		if(ca.length>1){ return;}
+		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
 			var canum = cell.getQnum();
 			if     ((canum-1)%26==num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
