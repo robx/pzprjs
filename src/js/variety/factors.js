@@ -20,8 +20,12 @@ MouseEvent:{
 	},
 
 	inputqnum_main : function(cell){
+		if(this.owner.editmode){
+			cell = this.owner.board.rooms.getTopOfRoomByCell(cell);
+		}
+
 		var max=cell.nummaxfunc(), min=cell.numminfunc();
-		var num=(this.owner.editmode ? cell.getQnum() : cell.getAnum()), val=-1;
+		var num=(this.owner.editmode ? cell.qnum : cell.anum), val=-1;
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
