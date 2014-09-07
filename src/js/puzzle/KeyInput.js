@@ -100,16 +100,17 @@ KeyEvent:{
 		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
 		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
 	},
-	checkbutton : function(c,step){
+	checkbutton : function(charall,step){
+		var c = charall.split(/\+/).pop();
 		if(step===0){
-			if(c==='z' && !this.isZ){ this.isZ=true;}
-			if(c==='x' && !this.isX){ this.isX=true;}
-			if(c==='y' && !this.isY){ this.isY=true;}
+			if(c==='z'){ this.isZ=true;}
+			if(c==='x'){ this.isX=true;}
+			if(c==='y'){ this.isY=true;}
 		}
 		else{
-			if(c==='z' && this.isZ){ this.isZ=false;}
-			if(c==='x' && this.isX){ this.isX=false;}
-			if(c==='y' && this.isY){ this.isY=false;}
+			if(c==='z'){ this.isZ=false;}
+			if(c==='x'){ this.isX=false;}
+			if(c==='y'){ this.isY=false;}
 		}
 	},
 
