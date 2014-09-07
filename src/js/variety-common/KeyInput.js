@@ -69,9 +69,8 @@ KeyEvent:{
 	key_inputdirec : function(ca){
 		var cell = this.cursor.getc(), pid = this.owner.pid;
 		/* 矢印つき数字の場合 */
-		if(pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin"){
-			if(cell.qnum===-1){ return false;}
-		}
+		var arrownum = (pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin");
+		if(arrownum && cell.qnum===-1){ return false;}
 
 		var dir = cell.NDIR;
 		switch(ca){
@@ -84,6 +83,7 @@ KeyEvent:{
 
 		if(dir!==cell.NDIR){
 			cell.setQdir(cell.qdir!==dir ? dir : cell.NDIR);
+			if(!arrownum){ cell.setQnum(-1);}
 			this.cursor.draw();
 			this.stopEvent();	/* カーソルを移動させない */
 			return true;
