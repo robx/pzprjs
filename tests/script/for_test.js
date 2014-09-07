@@ -95,9 +95,14 @@ ui.debug.extend(
 		}
 	},
 	inputcheck1 : function(){
-		var inps = this.inputs[ui.puzzle.pid];
-		for(var n=0;n<inps.length;n++){
-			var data = inps[n];
+		this.inputcheck(this.inputs[ui.puzzle.pid]);
+	},
+	inputcheck2 : function(text){
+		this.inputcheck(eval("["+text+"]"));
+	},
+	inputcheck : function(inparray){
+		for(var n=0;n<inparray.length;n++){
+			var data = inparray[n];
 			if(data.input===void 0 || !data.input){ continue;}
 			for(var i=0;i<data.input.length;i++){
 				this.execinput(data.input[i]);
