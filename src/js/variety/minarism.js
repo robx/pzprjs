@@ -43,9 +43,9 @@ MouseEvent:{
 		}
 		else{
 			var border = pos.getb();
-			if(!border.isnull){ return;}
+			if(border.isnull){ return;}
 
-			var qn=border.getQnum(), qs=border.getQdir(), qm=(border.isHorz()?0:2);
+			var qn=border.qnum, qs=border.qdir, qm=(border.isHorz()?0:2);
 			var max=Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 			if(this.btn.Left){
 				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
@@ -53,7 +53,7 @@ MouseEvent:{
 				else if(qn===-1 && qs===qm+2){ border.setQnum(1);  border.setQdir(0);}
 				else if(qn===max)            { border.setQnum(-2); border.setQdir(0);}
 				else if(qn===-2)             { border.setQnum(-1); border.setQdir(0);}
-				else{ border.setQnum(id,qn+1);}
+				else{ border.setQnum(qn+1);}
 			}
 			else if(this.btn.Right){
 				if     (qn===-1 && qs===0)   { border.setQnum(-2); border.setQdir(0);}
@@ -61,7 +61,7 @@ MouseEvent:{
 				else if(qn=== 1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+2);}
 				else if(qn===-1 && qs===qm+2){ border.setQnum(-1); border.setQdir(qm+1);}
 				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
-				else{ border.setQnum(id,qn-1);}
+				else{ border.setQnum(qn-1);}
 			}
 			border.draw();
 		}
@@ -115,8 +115,8 @@ KeyEvent:{
 
 TargetCursor:{
 	adjust_modechange : function(){
-		this.pos.bx -= ((this.pos.bx+1)%2);
-		this.pos.by -= ((this.pos.by+1)%2);
+		this.bx -= ((this.bx+1)%2);
+		this.by -= ((this.by+1)%2);
 	}
 },
 
