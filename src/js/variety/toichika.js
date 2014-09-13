@@ -39,6 +39,7 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
+	enableplay : true,
 	moveTarget : function(ca){
 		if(ca.match(/shift/)){ return false;}
 		return this.moveTCell(ca);
