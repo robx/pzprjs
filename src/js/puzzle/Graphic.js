@@ -696,6 +696,7 @@ Graphic:{
 				var el = g.elements[g.vid];
 				if     (g.use.svg){ el.textContent = text;}
 				else if(g.use.vml){ el.lastChild.string = text;}
+				cache.text=text;
 			}
 		}
 		if(!cachekeep){
