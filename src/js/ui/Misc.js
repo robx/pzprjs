@@ -36,7 +36,7 @@ ui.misc = {
 		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
 		else if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
-			sheet.insertRule(""+sel+" {}", rules.length);
+			if(!!sheet.insertRule){ sheet.insertRule(""+sel+" {}", rules.length);}
 			rules = sheet.cssRules || sheet.rules;	/* IE8まではrulesなし */
 			this.modifyCSS_sub(rules, input);
 		}
