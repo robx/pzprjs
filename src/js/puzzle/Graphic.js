@@ -348,6 +348,7 @@ Graphic:{
 	},
 	clearObject : function(){
 		this.context.clear();
+		this._textcache = {};
 	},
 
 	//---------------------------------------------------------------------------
@@ -653,6 +654,7 @@ Graphic:{
 	BOTTOMRIGHT : BOTTOMRIGHT,
 	TOPRIGHT    : TOPRIGHT,
 	TOPLEFT     : TOPLEFT,
+	_textcache  : null,
 
 	disptext : function(text, px, py, option){
 		option = option || {};
@@ -684,27 +686,23 @@ Graphic:{
 			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
 		}
 		
-		if(this.vnop(vid,this.FILL)){
-			if(g.use.vml){ g.vdel(vid);}
-			g.fillText(text, px, py);
+		var cachekeep = !this.vnop(vid,this.FILL);
+		if(cachekeep){
+			var cache = this._textcache[vid];
+			if(!cache || cache.px!==px || cache.py!==py || cache.size!==realsize || cache.pos!==position){
+				cachekeep = false;
+			}
+			else if(cache.text!==text){
+				var el = g.elements[g.vid];
+				if     (g.use.svg){ el.textContent = text;}
+				else if(g.use.vml){ el.lastChild.string = text;}
+			}
 		}
-		else{
-			// テキストが変わったときは入れ替える
-			var el = g.elements[g.vid];
-			if(g.use.svg){
-				if(el.textContent!==text){
-					el.textContent = text;
-					if(el.getAttribute('font-size')!=realsize){
-						el.setAttribute('font-size', realsize);
-					}
-				}
-			}
-			else if(g.use.vml){
-				if(el.lastChild.string!==text){
-					el.lastChild.string = text;
-					el.lastChild.style.fontSize = realsize+'px';
-				}
-			}
+		if(!cachekeep){
+			g.vdel(vid);
+			g.fillText(text, px, py);
+			
+			this._textcache[vid] = { text:text, px:px, py:py, size:realsize, pos:position };
 		}
 	}
 }
