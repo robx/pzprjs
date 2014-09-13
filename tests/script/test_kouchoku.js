@@ -18,7 +18,7 @@ ui.debug.addDebugData('kouchoku', {
 	inputs : [
 		/* 問題入力テスト */
 		{ input:["newboard,4,3", "editmode"] },
-		{ input:["cursor,0,0", "key,-", "key,right", "key,a", "key,right", "key,b", "key,right", "key,c", ],
+		{ input:["cursor,0,0", "key,-", "key,right", "key,a", "key,right", "key,b", "key,right", "key,c" ],
 		  result:"pzprv3/kouchoku/3/4/- 1 2 3 . /. . . . . /. . . . . /. . . . . /0/" },
 		{ input:["cursor,0,0", "key,-", "key,right", "key,-", "key,right", "key,-", "key,-" ],
 		  result:"pzprv3/kouchoku/3/4/. - . 3 . /. . . . . /. . . . . /. . . . . /0/" },

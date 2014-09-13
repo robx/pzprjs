@@ -30,6 +30,6 @@ ui.debug.addDebugData('cbblock', {
 		{ input:["mouse,right, 1,1, 1,3, 3,3, 3,1, 1,1"],
 		  result:"pzprv3/cbblock/2/2/3 /3 /-1 -1 /" },
 		{ input:["mouse,left, 2,0, 2,2"],
-		  result:"pzprv3/cbblock/2/2/-2 /3 /-1 -1 /" },
+		  result:"pzprv3/cbblock/2/2/-2 /3 /-1 -1 /" }
 	]
 });
