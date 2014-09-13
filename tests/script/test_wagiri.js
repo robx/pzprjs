@@ -8,5 +8,13 @@ ui.debug.addDebugData('wagiri', {
 		['slNotLoopWa',"pzprv3/wagiri/4/4/. . . . . /. 4 . . 1 /. . 2 . . /0 . . 2 . /. . . . . /. 1 . . /. . 2 . /. 1 . . /. . 1 . /1 2 1 1 /2 1 1 1 /1 2 2 . /2 1 2 1 /"],
 		['ceEmpty',    "pzprv3/wagiri/4/4/. . . . . /. 4 . . 1 /. . 2 . . /0 . . 2 . /. . . . . /. 1 . . /. . 2 . /. 1 . . /. . 1 . /1 2 1 1 /2 1 1 1 /1 2 2 2 /. 1 2 2 /"],
 		[null,         "pzprv3/wagiri/4/4/. . . . . /. 4 . . 1 /. . 2 . . /0 . . 2 . /. . . . . /. 1 . . /. . 2 . /. 1 . . /. . 1 . /1 2 1 1 /2 1 1 1 /1 2 2 2 /2 1 2 2 /"]
+	],
+	inputs : [
+		/* 問題入力テスト(輪切のみ) */
+		{ input:["newboard,4,2", "editmode", "cursor,0,0"] },
+		{ input:["mouse,left, 2,1",  "mouse,leftx3, 3,1",  "mouse,leftx4, 5,1",  "mouse,leftx5, 7,1",
+				 "mouse,right, 2,3", "mouse,rightx3, 3,3", "mouse,rightx4, 5,3", "mouse,rightx5, 7,3"],
+		  result:"pzprv3/wagiri/2/4/. . . . . /. . . . . /. . . . . /1 2 - . /- 2 1 . /. . . . /. . . . /" }
+		/* 回答入力はgokigenでやっているので省略 */
 	]
 });

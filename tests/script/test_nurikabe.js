@@ -13,7 +13,7 @@ ui.debug.addDebugData('nurikabe', {
 	inputs : [
 		/* 回答入力テスト */
 		{ input:["newboard,5,1", "playmode", "setconfig,use,1"] },
-		{ input:["anslear", "mouse,left, 1,1, 9,1"],
+		{ input:["ansclear", "mouse,left, 1,1, 9,1"],
 		  result:"pzprv3/nurikabe/1/5/# # # # # /" },
 		{ input:["mouse,left, 1,1, 9,1"],
 		  result:"pzprv3/nurikabe/1/5/. . . . . /" },
