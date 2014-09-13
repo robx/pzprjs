@@ -82,10 +82,10 @@ Cell:{
 	akariRange : function(){
 		var cell, cell2, d={}, adc=this.adjacent;
 
-		cell=cell2=adc.left;   while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.left;  } d.x1=cell.bx;
-		cell=cell2=adc.right;  while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.right; } d.x2=cell.bx;
-		cell=cell2=adc.top;    while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.top;   } d.y1=cell.by;
-		cell=cell2=adc.bottom; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.bottom;} d.y2=cell.by;
+		cell=cell2=this; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.left;  } d.x1=cell.bx;
+		cell=cell2=this; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.right; } d.x2=cell.bx;
+		cell=cell2=this; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.top;   } d.y1=cell.by;
+		cell=cell2=this; while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.bottom;} d.y2=cell.by;
 		return d;
 	}
 },
