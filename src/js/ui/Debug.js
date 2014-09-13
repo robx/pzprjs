@@ -35,6 +35,7 @@ ui.popupmgr.addpopup('debug',
 		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
+		this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
 		this.addBR();
 		
 		this.addExecButton("Save", "Save", function(){ debug.filesave()});
@@ -89,7 +90,6 @@ ui.debug =
 		}
 		else{
 			if(ca==='F7'){ this.accheck1();}
-			else if(ca==='F6'){ this.inputcheck1();}
 			else if(ca==='alt+p'){ this.disppoptest();}
 			else if(ca==='ctrl+F9'){ this.starttest();}
 			else if(ca==='shift+ctrl+F10'){ this.all_test();}

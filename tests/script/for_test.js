@@ -94,13 +94,8 @@ ui.debug.extend(
 			mv.mouseevent(addr,2);
 		}
 	},
-	inputcheck1 : function(){
-		this.inputcheck(this.inputs[ui.puzzle.pid]);
-	},
-	inputcheck2 : function(text){
-		this.inputcheck(eval("["+text+"]"));
-	},
-	inputcheck : function(inparray){
+	inputcheck : function(text){
+		var inparray = eval("["+text+"]");
 		for(var n=0;n<inparray.length;n++){
 			var data = inparray[n];
 			if(data.input===void 0 || !data.input){ continue;}
