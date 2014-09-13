@@ -384,7 +384,7 @@ Graphic:{
 
 			// 数字の描画
 			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
-			var option = { key: "cell_text_"+id };
+			var option = { key: "cell_arnum_"+id };
 			if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
 			option.color = g.fillStyle;
 
