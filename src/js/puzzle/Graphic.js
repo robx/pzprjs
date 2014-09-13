@@ -699,7 +699,7 @@ Graphic:{
 			}
 		}
 		if(!cachekeep){
-			g.vdel(vid);
+			if(!!g.elements && !!g.elements[vid]){ g.vdel(vid);}
 			g.fillText(text, px, py);
 			
 			this._textcache[vid] = { text:text, px:px, py:py, size:realsize, pos:position };
