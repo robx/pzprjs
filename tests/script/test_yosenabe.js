@@ -37,7 +37,7 @@ ui.debug.addDebugData('yosenabe', {
 		  result:"pzprv3.1/yosenabe/2/6/i o1 i2 o3 o4 . /. i . i . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /" },
 		/* 回答入力はkaeroと同じなので省略 */
 		/* 数字をクリックしたらグレーにする */
-		{ input:["setconfig,autocmp,true", "playmode"]},
+		{ input:["playmode"]},
 		{ input:["mouse,left, 9,1", "mouse,left, 7,1", "mouse,left, 9,1"],
 		  result:"pzprv3.1/yosenabe/2/6/i o1 i2 o3 o4 . /. i . i . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 16 0 0 /0 0 0 0 0 0 /" },
 	]

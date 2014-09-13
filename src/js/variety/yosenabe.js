@@ -11,7 +11,7 @@ MouseEvent:{
 				if     (this.btn.Left) { this.inputMoveLine();}
 				else if(this.btn.Right){ this.inputpeke();}
 			}
-			else if(this.mouseend && this.notInputted()){ this.inputlight();}
+			else if(this.mouseend && this.notInputted()){ this.inputdark();}
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){
@@ -23,11 +23,9 @@ MouseEvent:{
 		}
 	},
 
-	inputlight : function(){
+	inputdark : function(){
 		var cell = this.getcell();
-		if(!cell.isnull && this.owner.getConfig('autocmp')){ this.inputdark(cell);}
-	},
-	inputdark : function(cell){
+		if(cell.isnull){ return;}
 		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
@@ -191,8 +189,6 @@ Graphic:{
 	bordercolor_func : "ice",
 	icecolor : "rgb(224,224,224)",
 
-	circlefillcolor_func : "qcmp",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -212,6 +208,18 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	getCircleFillColor : function(cell){
+		var puzzle = this.owner, error = cell.error || cell.qinfo;
+		var isdrawmove = puzzle.execConfig('dispmove');
+		var num = (!isdrawmove ? cell : cell.base).qnum;
+		if(num!==-1){
+			if     (error===1||error===4){ return this.errbcolor1;}
+			else if(cell.isCmp())        { return this.qcmpcolor;}
+			else{ return this.circledcolor;}
+		}
+		return null;
 	},
 
 	drawFillingNumBase : function(){
