@@ -48,7 +48,7 @@ KeyEvent:{
 	setfocus : function(){
 		var canvas = this.owner.canvas;
 		if(!canvas){}
-		else if(this.owner.getConfig('keytarget') && (this.isenablemode() || (pzpr.EDITOR && pzpr.env.OS.iOS))){
+		else if(this.owner.getConfig('keytarget') && this.isenablemode()){
 			canvas.focus();
 			canvas.contentEditable = true;
 		}
