@@ -22,6 +22,8 @@ ui.popupmgr.addpopup('debug',
 		if(ui.debugmode){
 			this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
 			this.addText(" ", " ");
+			this.addExecButton("ALL", "ALL-Test", function(){ debug.all_test();}, {name:'all_test'});
+			this.addText(" ", " ");
 		}
 		
 		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
