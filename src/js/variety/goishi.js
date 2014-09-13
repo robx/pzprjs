@@ -349,8 +349,6 @@ UndoTimer_goishi:{
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
 		this.timerInterval = 25
-		var bz = pzpr.env.browser;
-		if(bz.IE6 || bz.IE7 || bz.IE8){ this.timerInterval *= 2;}
 
 		this.inUNDO = false;
 		this.inREDO = false;

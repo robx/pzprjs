@@ -109,7 +109,7 @@ pzpr.util = {
 			right = (e.touches.length>1);
 		}
 		else{
-			if(!pzpr.env.browser.legacyIE){
+			if(!pzpr.env.browser.IE8){
 				left  = (!!e.which ? e.which===1 : e.button===0);
 				mid   = (!!e.which ? e.which===2 : e.button===1);
 				right = (!!e.which ? e.which===3 : e.button===2);

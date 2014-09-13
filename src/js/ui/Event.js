@@ -85,10 +85,6 @@ ui.event =
 	onload_func : function(){
 		ui.initFileReadMethod();
 		
-		if(pzpr.env.browser.IE6){
-			ui.misc.modifyCSS('menu.floatmenu li.smenusep', {lineHeight :'2pt', display:'inline'});
-		}
-		
 		ui.menuconfig.init();
 		ui.restoreConfig();
 		

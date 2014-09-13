@@ -521,12 +521,7 @@ ui.keypopup =
 			_child = createEL('img');
 			_child.className = 'kpimg';
 			var pid = ui.puzzle.pid;
-			if(!pzpr.env.API.dataURL){
-				_child.src = "./img/"+pid+"_kp.gif";
-			}
-			else{
-				_child.src = "data:image/gif;base64,"+this.dataurl[!!this.dataurl[pid] ? pid : 'shitappa'];
-			}
+			_child.src = "data:image/gif;base64,"+this.dataurl[!!this.dataurl[pid] ? pid : 'shitappa'];
 			pzpr.util.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}

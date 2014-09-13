@@ -183,10 +183,6 @@ ui.listener =
 		if(pc.context.use.vml){
 			pc.context.translate(pc.x0+val, pc.y0+val);
 		}
-		if(pzpr.env.browser.IE6 || pzpr.env.browser.IE7){
-			/* なんかIE6,7は計算してあげないと位置がおかしくなるらしい。 */
-			pzpr.util.getRect(puzzle.canvas);
-		}
 		
 		ui.keypopup.resizepanel();
 	}

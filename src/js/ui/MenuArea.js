@@ -534,14 +534,8 @@ ui.menuarea = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!pzpr.env.browser.IE6){
-				_float.style.left = rect.right - 3 + 'px';
-				_float.style.top  = rect.top   - 3 + 'px';
-			}
-			else{
-				_float.style.left = pzpr.util.pageX(e)  + 'px';
-				_float.style.top  = rect.top - 3 + 'px';
-			}
+			_float.style.left = rect.right - 3 + 'px';
+			_float.style.top  = rect.top   - 3 + 'px';
 		}
 		_float.style.zIndex   = 101+depth;
 		_float.style.display  = 'block';

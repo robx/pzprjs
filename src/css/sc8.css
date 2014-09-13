@@ -44,7 +44,7 @@
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
-	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px; /* IE6,7用Hack */ zoom:1;}
+	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;}
 	div#btnarea { position:relative; margin-top:1.0em;}
 
 	/* (canvas.context.fillText代替用) */

@@ -32,8 +32,6 @@ pzpr.env = (function(){
 	var UA  = navigator.userAgent;
 	
 	var bz = {
-		IE6 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==6),
-		IE7 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==7),
 		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
 		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
 
@@ -41,7 +39,7 @@ pzpr.env = (function(){
 		WebKit: (UA.indexOf('AppleWebKit/') > -1),
 		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1)
 	};
-	bz.legacyIE = (bz.IE6||bz.IE7||bz.IE8);
+	bz.legacyIE = (bz.IE8);
 	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
@@ -76,8 +74,7 @@ pzpr.env = (function(){
 		touchevent      : ((!!window.ontouchstart) || (!!document.createTouch)),
 		pointerevent    : (!!navigator.pointerEnabled),
 		mspointerevent  : (!!navigator.msPointerEnabled),
-		anchor_download : (document.createElement("a").download!==(void 0)),
-		dataURL         : !(bz.legacyIE && !bz.IE8)
+		anchor_download : (document.createElement("a").download!==(void 0))
 	};
 	
 	return {

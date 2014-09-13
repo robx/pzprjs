@@ -265,10 +265,6 @@ ui.toolarea = {
 			getEL('btncolor2').style.display = (this.isdisp ? 'none' : 'inline');
 		}
 		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
-		
-		if(pzpr.env.browser.IE6){
-			getEL('separator2').style.margin = '0pt';
-		}
 	},
 	setdisplay : function(idname){
 		var pp = ui.menuarea.items;

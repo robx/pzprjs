@@ -22,9 +22,6 @@ ui.misc = {
 		var imageurl = this.bgimage(pid);
 		if(!imageurl){ imageurl="./bg/"+pid+".gif";}
 		_doc.body.style.backgroundImage = "url("+imageurl+")";
-		if(pzpr.env.browser.IE6){
-			titleEL.style.marginTop = "24px";
-		}
 	},
 	bgimage : function(pid){
 		return toBGimage(pid);
@@ -39,9 +36,8 @@ ui.misc = {
 		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
 		else if(!this.modifyCSS_sub(rules, input)){
 			var sel = ''; for(sel in input){ break;}
-			if(!!sheet.insertRule)  { sheet.insertRule(""+sel+" {}", rules.length);}
-			/* else if(!!sheet.addRule){ sheet.addRule(sel, "zoom:1;");} IE6でエラー? */
-			rules = sheet.cssRules || sheet.rules;
+			sheet.insertRule(""+sel+" {}", rules.length);
+			rules = sheet.cssRules || sheet.rules;	/* IE8まではrulesなし */
 			this.modifyCSS_sub(rules, input);
 		}
 	},
