@@ -10,9 +10,8 @@ var Config = pzpr.Puzzle.prototype.Config = function(owner){
 };
 Config.prototype =
 {
-	/* 設定値 */
-	list : {},
-
+	list : null,		/* 設定値 */
+	
 	//---------------------------------------------------------------------------
 	// config.get()  各フラグの設定値を返す
 	// config.set()  各フラグの設定値を設定する
@@ -31,11 +30,15 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	getAll : function(){
 		var object = {};
-		for(var key in this.list){ object[key] = this.list[key].val;}
+		for(var key in this.list){
+			var item = this.list[key];
+			if(item.val!==item.defval){ object[key] = item.val;}
+		}
 		return JSON.stringify(object);
 	},
 	setAll : function(json){
 		var object = JSON.parse(json);
+		this.init();
 		for(var key in this.list){
 			if(object[key]!==void 0){ this.list[key].val = object[key];}
 		}
@@ -45,6 +48,8 @@ Config.prototype =
 	// config.init()        各設定値を初期化する
 	//---------------------------------------------------------------------------
 	init : function(){
+		this.list = {};
+
 		/* 全般的な設定 */
 		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
 
@@ -95,8 +100,9 @@ Config.prototype =
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 	},
 	add : function(name, defvalue, option){
-		if(!option){ this.list[name] = {val:defvalue};}
-		else{ this.list[name] = {val:defvalue, option:option};}
+		var item = {val:defvalue, defval:defvalue};
+		if(!!option){ item.option = option;}
+		this.list[name] = item;
 	},
 
 	//---------------------------------------------------------------------------
