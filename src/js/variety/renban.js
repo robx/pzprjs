@@ -145,7 +145,7 @@ AnsCheck:{
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			if(clist.length<=1){ continue;}
-			var max=-1, min=clist[0].maxnum, breakflag=false;
+			var max=-1, min=clist[0].getmaxnum(), breakflag=false;
 			for(var i=0,len=clist.length;i<len;i++){
 				var val = clist[i].getNum();
 				if(val===-1 || val===-2){ breakflag=true; break;}

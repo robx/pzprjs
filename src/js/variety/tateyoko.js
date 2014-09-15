@@ -103,7 +103,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd = this.owner.board;
 		return (this.ques===1?4:Math.max(bd.qcols,bd.qrows));
 	},

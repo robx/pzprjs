@@ -81,7 +81,7 @@ KeyEvent:{
 Cell:{
 	numberWithMB : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return this.owner.board.rooms.getCntOfRoomByCell(this);
 	}
 },

@@ -24,7 +24,7 @@ MouseEvent:{
 			cell = this.owner.board.rooms.getTopOfRoomByCell(cell);
 		}
 
-		var max=cell.nummaxfunc(), min=cell.numminfunc();
+		var max=cell.getmaxnum(), min=cell.getminnum();
 		var num=(this.owner.editmode ? cell.qnum : cell.anum), val=-1;
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
@@ -57,7 +57,7 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return this.owner.editmode?999999:Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	},
 

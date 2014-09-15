@@ -88,7 +88,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);

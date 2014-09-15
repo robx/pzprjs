@@ -193,7 +193,7 @@ Cell:{
 		}
 		return false;
 	},
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd = this.owner.board, cx = (this.bx>>1), cy = (this.by>>1);
 		return Math.max(cx, cy, bd.qcols-1-cx, bd.qrows-1-cy);
 	},

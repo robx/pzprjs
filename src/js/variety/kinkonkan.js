@@ -132,14 +132,14 @@ KeyEvent:{
 
 		var qn = excell.getQnum();
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
+			var num = parseInt(ca), max = excell.getmaxnum();
 
 			if(qn<=0 || this.prev!==excell){
-				if(num<=excell.maxnum){ excell.setQnum(num);}
+				if(num<=max){ excell.setQnum(num);}
 			}
 			else{
-				if(qn*10+num<=excell.maxnum){ excell.setQnum(qn*10+num);}
-				else if (num<=excell.maxnum){ excell.setQnum(num);}
+				if(qn*10+num<=max){ excell.setQnum(qn*10+num);}
+				else if (num<=max){ excell.setQnum(num);}
 			}
 		}
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){

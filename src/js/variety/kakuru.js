@@ -54,7 +54,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		return (this.owner.editmode?44:9);
 	}
 },

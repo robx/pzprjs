@@ -26,7 +26,7 @@ MouseEvent:{
 		}
 	},
 	inputnumber : function(excell){
-		var qn = excell.getQnum(), max=excell.nummaxfunc();
+		var qn = excell.getQnum(), max=excell.getmaxnum();
 		if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
 		else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 
@@ -65,7 +65,7 @@ KeyEvent:{
 	},
 	key_inputexcell : function(ca){
 		var excell = this.cursor.getex(), qn = excell.getQnum();
-		var max = excell.nummaxfunc();
+		var max = excell.getmaxnum();
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
@@ -99,9 +99,9 @@ EXCell:{
 
 	disInputHatena : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bx=this.bx, by=this.by, cnt;
-		if(bx===-1 && by===-1){ return;}
+		if(bx===-1 && by===-1){ return 0;}
 		var sum=0;
 		for(var n=(bx===-1?this.owner.board.qrows:this.owner.board.qcols);n>0;n--){ sum+=n;}
 		return sum;

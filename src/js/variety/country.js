@@ -35,8 +35,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
-		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
+	maxnum : function(){
+		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Board:{
