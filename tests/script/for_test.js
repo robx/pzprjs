@@ -95,6 +95,7 @@ ui.debug.extend(
 		}
 	},
 	inputcheck : function(text){
+		ui.saveConfig();
 		var inparray = eval("["+text+"]");
 		for(var n=0;n<inparray.length;n++){
 			var data = inparray[n];
@@ -205,22 +206,24 @@ ui.debug.extend(
 	//Input test---------------------------------------------------------------
 	check_input : function(self){
 		var filedata = ui.puzzle.getFileData();
-		var inps = self.inputs[self.pid], count=0, pass=0;
-		for(var n=0;n<inps.length;n++){
-			var data = inps[n];
-			if(data.input!==void 0 && !!data.input){
-				for(var i=0;i<data.input.length;i++){
-					self.execinput(data.input[i]);
+		var inps = self.inputs[self.pid];
+		if(inps.length>0){
+			var count=0, pass=0;
+			ui.saveConfig();
+			for(var n=0;n<inps.length;n++){
+				var data = inps[n];
+				if(data.input!==void 0 && !!data.input){
+					for(var i=0;i<data.input.length;i++){
+						self.execinput(data.input[i]);
+					}
+				}
+				if(data.result!==void 0 && !!data.result){
+					var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
+					count++;
+					if(iserror){ self.fails++;}
+					if(!iserror){ pass++;}
 				}
 			}
-			if(data.result!==void 0 && !!data.result){
-				var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
-				count++;
-				if(iserror){ self.fails++;}
-				if(!iserror){ pass++;}
-			}
-		}
-		if(inps.length>0){
 			if(!self.alltimer){
 				self.addTextarea("Input test Pass = "+pass+"/"+count);
 			}
