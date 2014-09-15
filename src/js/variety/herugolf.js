@@ -183,12 +183,12 @@ Cell:{
 	},
 	isCmp : function(){
 		if(this.owner.execConfig('dispmove')){
-			return (this.ques===31 && this.base.qnum!==-1);
+			return (this.ques===31 && this.base.qnum!==-1 && this.isViaPoint());
 		}
 		else if(this.qnum!==-1){
 			var clist = this.owner.board.linfo.getClistByCell(this);
 			for(var i=0,len=clist.length;i<len;i++){
-				if(clist[i].base===this && clist[i].ques===31){ return true;}
+				if(clist[i].base===this && clist[i].ques===31 && clist[i].isViaPoint()){ return true;}
 			}
 		}
 		return false;
