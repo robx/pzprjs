@@ -280,7 +280,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawGrid();
+		this.drawDashedGrid();
 		this.drawBorders();
 
 		this.drawTip_herugolf();
