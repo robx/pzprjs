@@ -164,6 +164,7 @@ ui.popupmgr.addpopup('template',
 		this.form = createEL('form');
 		this.form.name = this.formname;
 		this.pop.appendChild(this.form);
+		this.form.onsubmit = function(){ return false;};	/* filesave等では後で上書きされる */
 	},
 	makeForm : function(){
 	},
