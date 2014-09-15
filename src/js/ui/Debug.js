@@ -22,6 +22,8 @@ ui.popupmgr.addpopup('debug',
 		if(ui.debugmode){
 			this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
 			this.addText(" ", " ");
+			this.addExecButton("ALL", "ALL-Test", function(){ debug.all_test();}, {name:'all_test'});
+			this.addText(" ", " ");
 		}
 		
 		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
@@ -35,6 +37,7 @@ ui.popupmgr.addpopup('debug',
 		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
+		this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
 		this.addBR();
 		
 		this.addExecButton("Save", "Save", function(){ debug.filesave()});
@@ -43,7 +46,7 @@ ui.popupmgr.addpopup('debug',
 		
 		this.addExecButton("Load", "Load", function(){ debug.fileopen();});
 		this.addExecButton("消去", "Cls", function(){ debug.erasetext();});
-		this.addCancelButton();
+		this.addCloseButton();
 
 		/* テスト用文字列出力要素を追加 */
 		if(ui.debugmode && !getEL('testdiv')){
@@ -84,14 +87,14 @@ ui.debug =
 	keydown : function(ca){
 		var kc = ui.puzzle.key;
 		if(!ui.debugmode){
-			if(kc.isALT && ca==='p'){ this.disppoptest();}
+			if(ca==='alt+p'){ this.disppoptest();}
 			else{ return false;}
 		}
 		else{
-			if(ca=='F7'){ this.accheck1();}
-			else if(kc.isALT  && ca==='p'){ this.disppoptest();}
-			else if(kc.isCTRL && ca=='F9'){ this.starttest();}
-			else if(kc.isCTRL && kc.isSHIFT && ca=='F10'){ this.all_test();}
+			if(ca==='F7'){ this.accheck1();}
+			else if(ca==='alt+p'){ this.disppoptest();}
+			else if(ca==='ctrl+F9'){ this.starttest();}
+			else if(ca==='shift+ctrl+F10'){ this.all_test();}
 			else{ return false;}
 		}
 		kc.stopEvent();	/* カーソルを移動させない */
@@ -104,11 +107,11 @@ ui.debug =
 	starttest : function(){},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.url.info[ui.puzzle.pid].exists.kanpen){
-			this.setTA(ui.puzzle.getFileData(pzpr.consts.FILE_PBOX));
+		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
+			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX));
 		}
 		else{
 			this.setTA("");
@@ -166,8 +169,8 @@ ui.debug =
 		if(!!this.includedScript[filename]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = ui.util.getpath()+'../tests/script/'+filename;
-		document.body.appendChild(_script);
+		_script.src = pzpr.util.getpath()+'../../tests/script/'+filename;
+		document.getElementsByTagName('head')[0].appendChild(_script);
 		this.includedScript[filename] = true;
 	},
 	includedScript : {}

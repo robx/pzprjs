@@ -4,40 +4,35 @@
 ui.menuarea = {
 	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
 	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
-	area : null,				// ボタン表示領域の要素を保持する
 	
 	//---------------------------------------------------------------------------
-	// menuarea.init()   メニュー、サブメニュー、フロートメニューの初期設定を行う
-	// menuarea.reset()  設定を消去する
+	// menuarea.reset()  メニュー、サブメニュー、フロートメニューの初期設定を行う
 	//---------------------------------------------------------------------------
-	init : function(){
-		this.items = new ui.MenuList();
-		this.items.reset();
-		
-		this.createArea();
-		this.createAllFloat();
-	},
-
 	reset : function(){
-		this.dispfloat  = [];
+		this.floatmenuclose(0);		// dispfloat[]はこの中でクリアします
 		this.floatpanel = [];
-
-		this.floatmenuclose(0);
 
 		getEL('float_parent').innerHTML = '';
 		getEL('menupanel') .innerHTML = '';
+
+		this.items = new ui.MenuList();
+		
+		this.createArea();
+		this.createAllFloat();
+		
+		this.display();
 	},
 
 	//---------------------------------------------------------------------------
-	// menu.display()    全てのメニューに対して文字列を設定する
-	// menu.setdisplay() サブメニューに表示する文字列を個別に設定する
+	// menuarea.display()    全てのメニューに対して文字列を設定する
+	// menuarea.setdisplay() サブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	display : function(){
 		for(var i in this.items.item){ this.setdisplay(i);}
 	},
 	setdisplay : function(idname){
 		var pp = this.items;
-		if(!pp || !pp.item[idname]){ return;}
+		if(!pp){ return;}
 		
 		switch(pp.type(idname)){
 		case pp.MENU:
@@ -61,7 +56,7 @@ ui.menuarea = {
 			break;
 
 		case pp.CHILD:
-			var val = ui.menu.getConfigVal(pp.item[idname].parent);
+			var val = ui.getConfig(pp.item[idname].parent);
 			var issel = (pp.item[idname].val == val);	/* 選択されているかどうか */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){
@@ -70,29 +65,26 @@ ui.menuarea = {
 			break;
 
 		case pp.CHECK:
-			var flag = ui.menu.getConfigVal(idname);
+			var flag = ui.getConfig(idname);
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}
 			break;
 		}
 
+		if(idname==="operation"){
+			var opemgr = ui.puzzle.opemgr;
+			getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+			getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
+			getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+			getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+		}
+
 		if(idname==='manarea'){
 			var str;
-			if(!ui.toolarea.isdisp){ str = ui.menu.selectStr("管理領域を表示","Show management area");}
-			else                   { str = ui.menu.selectStr("管理領域を隠す","Hide management area");}
+			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
+			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
 			getEL('ms_manarea').innerHTML = str;
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.enb_undo()     html上の[戻][進]ボタンを押すことが可能か設定する
-	//---------------------------------------------------------------------------
-	enb_undo : function(){
-		var opemgr = ui.puzzle.opemgr;
-		getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-		getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-		getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
-		getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
 	},
 
 	//---------------------------------------------------------------------------
@@ -124,7 +116,7 @@ ui.menuarea = {
 		if(pzpr.env.storage.localST){
 			as('database',  'file', 'ブラウザ保存', 'Browser Save');
 		}
-		if(ui.menu.enableSaveImage || ui.menu.enableSaveSVG){
+		if(ui.enableSaveImage || ui.enableSaveSVG){
 			ap('sep_image', 'file');
 			as('imagesave', 'file', '画像を保存', 'Save as image file');
 		}
@@ -137,7 +129,7 @@ ui.menuarea = {
 		ap('sep_edit1', 'edit');
 
 		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
-		as('turn',   'edit', '反転・回転', 'Filp/Turn the Board');
+		as('turnflip', 'edit', '反転・回転', 'Filp/Turn the Board');
 		if(pzpr.env.storage.session){
 			ap('sep_edit2',  'edit');
 			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
@@ -175,10 +167,12 @@ ui.menuarea = {
 		if(ui.puzzle.flags.irowakeblk){
 			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
 		}
+
 		ac('cursor','disp','カーソルの表示','Display cursor');
 		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
 		ac('fullwidth', 'disp', '横幅最大拡張', 'Expand Canvas Width');
 		ap('sep_disp2', 'disp');
+		as('colors',  'disp', '色の設定','Change Color');
 		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
 		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
 
@@ -255,7 +249,7 @@ ui.menuarea = {
 		}
 
 		/* 文字別正解表示の設定値 */
-		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
+		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='herugolf'){
 			pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
 		}
 		else if(pid==='kouchoku'){
@@ -450,9 +444,9 @@ ui.menuarea = {
 					idname = pp.item[idname].parent;
 				}
 				else if(menutype===pp.CHECK){
-					val = !ui.menu.getConfigVal(idname);
+					val = !ui.getConfig(idname);
 				}
-				ui.menu.setConfigVal(idname, val);
+				ui.setConfig(idname, val);
 			}
 		}
 	},
@@ -464,23 +458,23 @@ ui.menuarea = {
 	submenuexec : function(idname, val){
 		if(!ui.puzzle.ready){ return true;}
 		
-		var result = true, k = pzpr.consts;
+		var result = true;
 		switch(idname){
 		case 'h_oldest'  : ui.puzzle.undoall(); break;
 		case 'h_undo'    : ui.puzzle.undo();    break;
 		case 'h_redo'    : ui.puzzle.redo();    break;
 		case 'h_latest'  : ui.puzzle.redoall(); break;
-		case 'check'     : ui.menu.answercheck(); break;
-		case 'ansclear'  : ui.menu.ACconfirm(); break;
-		case 'subclear'  : ui.menu.ASconfirm(); break;
-		case 'duplicate' : ui.menu.duplicate(); break;
+		case 'check'     : ui.answercheck();    break;
+		case 'ansclear'  : ui.ACconfirm();      break;
+		case 'subclear'  : ui.ASconfirm();      break;
+		case 'duplicate' : this.duplicate();    break;
 		
-		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.menu.displayAll(); ui.puzzle.adjustCanvasSize(); break;
+		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.displayAll(); ui.puzzle.adjustCanvasSize(); break;
 		case 'repaint'   : ui.puzzle.redraw(); break;
 		
 		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), ''); break;
 		case 'jumpv3'    : window.open('./', '', ''); break;
-		case 'jumptop'   : window.open('../../', '', ''); break;
+		case 'jumptop'   : window.open('http://indi.s58.xrea.com/', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
 		
 		default:
@@ -540,14 +534,8 @@ ui.menuarea = {
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
 		else{
-			if(!pzpr.env.browser.IE6){
-				_float.style.left = rect.right - 3 + 'px';
-				_float.style.top  = rect.top   - 3 + 'px';
-			}
-			else{
-				_float.style.left = pzpr.util.pageX(e)  + 'px';
-				_float.style.top  = rect.top - 3 + 'px';
-			}
+			_float.style.left = rect.right - 3 + 'px';
+			_float.style.top  = rect.top   - 3 + 'px';
 		}
 		_float.style.zIndex   = 101+depth;
 		_float.style.display  = 'block';
@@ -595,14 +583,56 @@ ui.menuarea = {
 			return (pos.px>=rect_0.left && pos.px<=rect_l.right);
 		}
 		return false;
+	},
+
+//--------------------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------
+	// menuarea.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
+	//------------------------------------------------------------------------------
+	duplicate : function(){
+		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
+		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
+		if(!pzpr.env.browser.Presto){
+			var old = sessionStorage['filedata'];
+			sessionStorage['filedata'] = filestr;
+			window.open(url,'');
+			if(!!old){ sessionStorage['filedata'] = old;}
+			else     { delete sessionStorage['filedata'];}
+		}
+		else{
+			localStorage['pzprv3_filedata'] = filestr;
+			window.open(url,'');
+		}
+	},
+
+	//------------------------------------------------------------------------------
+	// menuarea.answercheck()「正答判定」ボタンを押したときの処理
+	// menuarea.ACconfirm()  「回答消去」ボタンを押したときの処理
+	// menuarea.ASconfirm()  「補助消去」ボタンを押したときの処理
+	//------------------------------------------------------------------------------
+	answercheck : function(){
+		alert( ui.puzzle.check(true).text() );
+	},
+	ACconfirm : function(){
+		if(ui.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
+			ui.puzzle.ansclear();
+		}
+	},
+	ASconfirm : function(){
+		if(ui.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
+			ui.puzzle.subclear();
+		}
 	}
 };
 
 // MenuListクラス
-ui.MenuList = function(){};
+ui.MenuList = function(){
+	this.item = {};
+};
 ui.MenuList.prototype =
 {
-	item : {},	// サブメニュー項目の情報
+	item : null,	// サブメニュー項目の情報
 
 	// 定数
 	MENU     : 6,
@@ -614,13 +644,6 @@ ui.MenuList.prototype =
 	LABEL    : 3,
 	CHILD    : 4,
 	SEPARATE : 5,
-
-	//---------------------------------------------------------------------------
-	// pp.reset()      再読み込みを行うときに初期化を行う
-	//---------------------------------------------------------------------------
-	reset : function(){
-		this.item = {};
-	},
 
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
@@ -659,8 +682,8 @@ ui.MenuList.prototype =
 	},
 	addSelect : function(idname, parent, strJP, strEN){
 		this.addFlags(idname, parent, this.SELECT, null, strJP, strEN);
-		if(!!ui.menu.menuconfig[idname]){
-			this.item[idname].children = ui.menu.menuconfig[idname].option;
+		if(!!ui.menuconfig.list[idname]){
+			this.item[idname].children = ui.menuconfig.list[idname].option;
 		}
 		else if(!!ui.puzzle.config.list[idname]){
 			this.item[idname].children = ui.puzzle.config.list[idname].option;

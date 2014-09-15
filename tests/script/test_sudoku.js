@@ -7,5 +7,9 @@ ui.debug.addDebugData('sudoku', {
 		['nmDupRow',"pzprv3/sudoku/4/. 1 . . /. . . 2 /3 . . . /. . 3 . /. . . . /. . . . /. . . . /. 1 . . /"],
 		['ceEmpty', "pzprv3/sudoku/4/. 1 . . /. . . 2 /3 . . . /. . 3 . /2 . . . /. . . . /. 4 2 . /1 2 . . /"],
 		[null,      "pzprv3/sudoku/4/. 1 . . /. . . 2 /3 . . . /. . 3 . /2 . 4 3 /4 3 1 . /. 4 2 1 /1 2 . 4 /"]
+	],
+	inputs : [
+		/* 問題入力はhitoriと同じなので省略 */
+		/* 回答入力はminarismと同じなので省略 */
 	]
 });

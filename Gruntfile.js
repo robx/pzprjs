@@ -7,10 +7,6 @@ module.exports = function(grunt){
   var banner_min  = fs.readFileSync('./src/js/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/js/common/banner_full.js', 'utf-8');
 
-  var component_core = require('./src/js/pzprv3.js').component;
-  var component_all  = require('./src/js/pzprv3-all.js').component;
-
-  var replacer = [{ from: "<deploy-version>", to: "<%= pkg.version %>"}];
   grunt.initConfig({
     pkg: pkg,
 
@@ -18,17 +14,21 @@ module.exports = function(grunt){
 
     concat: {
       options: {
-        banner: banner_full
+        banner: banner_full,
+        process: true
       },
-      combine: {
+      release: {
         files: [
-          { src: [], dest: 'dist/js/pzprv3.concat.js' },
-          { src: [], dest: 'dist/js/pzprv3-all.concat.js' }
+          { src: require('./src/js/pzprv3.js').files,     dest: 'dist/js/pzprv3.concat.js' },
+          { src: require('./src/js/pzprv3-all.js').files, dest: 'dist/js/pzprv3-all.concat.js' }
         ]
       }
     },
 
     copy: {
+      options: {
+        process: function(content, srcpath){ return grunt.template.process(content);}
+      },
       debug: {
         files : [
           { expand: true, cwd: 'src/js',  src: ['**/*.js'], dest: 'dist/js'  },
@@ -40,17 +40,6 @@ module.exports = function(grunt){
           { src: 'src/js/v3index.js',    dest: 'dist/js/v3index.js'  }
         ]
       },
-      combine: {
-        files : [
-          { expand: true, cwd: 'src/js/puzzle',  src: ['*.js'], dest: 'dist/js/puzzle' },
-          { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
-          { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
-          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
-          { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js'     },
-          { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
-          { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js'  }
-        ]
-      },
       release: {
         files : [
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
@@ -60,11 +49,6 @@ module.exports = function(grunt){
       }
     },
 
-    replace: {
-      debug:  { src: ['dist/js/pzpr/CoreClass.js'], overwrite: true, replacements: replacer },
-      combine:{ src: ['dist/js/*.js'],              overwrite: true, replacements: replacer }
-    },
-
     uglify: {
       options: {
         banner: banner_min,
@@ -72,7 +56,7 @@ module.exports = function(grunt){
       },
       release: {
         files: [
-          { expand: true, cwd: 'src/js/puzzle', src: ['*.js'], dest: 'dist/js/puzzle' },
+          { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/js/variety' },
           { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js' },
           { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
           { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },
@@ -83,25 +67,17 @@ module.exports = function(grunt){
     shell: {
       release: {
         command: [
-          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js dist/*",
-          "zip -9r pzprv3-<%= pkg.version %>.zip dist/* -x *.concat.js"
+          "cd dist",
+          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js --exclude \".DS_Store\" *",
+          "zip -9r pzprv3-<%= pkg.version %>.zip * -x *.concat.js -x .DS_Store",
+          "mv pzprv3-<%= pkg.version %>.* ..",
+          "cd .."
         ].join('; ')
       }
     }
   });
   
-  function mod2file(mod){
-    return "src/js/" + mod + ".js";
-  }
-  function wrap(array){
-    array.unshift("common/intro");
-    array.push   ("common/outro");
-    return array;
-  }
-  grunt.config.set("concat.combine.files.0.src", wrap(component_core).map(mod2file));
-  grunt.config.set("concat.combine.files.1.src", wrap(component_all ).map(mod2file));
-  
-  grunt.registerTask('default', ['clean',                   'copy:debug',   'replace:debug'  ]);
-  grunt.registerTask('combine', ['clean', 'concat:combine', 'copy:combine', 'replace:combine']);
-  grunt.registerTask('release', ['combine', 'uglify:release', 'shell:release']);
+  grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
+  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('zipfile', ['shell:release']);
 };

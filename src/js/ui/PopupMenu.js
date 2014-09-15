@@ -17,15 +17,22 @@ ui.popupmgr =
 	// popupmgr.setEvents()  ポップアップメニュー(タイトルバー)のイベントを設定する
 	//---------------------------------------------------------------------------
 	reset : function(){
+		/* 一旦全てのpopupを削除する */
 		for(var name in this.popups){
 			var popup = this.popups[name];
 			if(!popup.disable_remove){ popup.remove();}
 		}
+		
+		/* デバッグ用を作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
 		if(!this.popups.debug.pop){
-			/* デバッグ用だけは作っておかないとTextAreaがなくてエラーするため、オブジェクトを作成する */
 			this.popups.debug.show(0,0);
 			this.popups.debug.hide();
 		}
+		
+		/* イベントを割り当てる */
+		this.setEvents();
+		
+		this.translate();
 	},
 	
 	setEvents : function(){
@@ -54,20 +61,7 @@ ui.popupmgr =
 			return true;
 		}
 
-		var target = null;
-		switch(idname){
-			case 'newboard':  target = this.popups.newboard; break;
-			case 'urlinput':  target = this.popups.urlinput; break;
-			case 'urloutput': target = this.popups.urloutput; break;
-			case 'fileopen':  target = this.popups.fileopen; break;
-			case 'filesave':  target = this.popups.filesave; break;
-			case 'imagesave': target = this.popups.imagesave; break;
-			case 'database':  target = this.popups.database; break;
-			case 'adjust':    target = this.popups.adjust; break;
-			case 'turn':      target = this.popups.turnflip; break;
-			case 'credit':    target = this.popups.credit; break;
-			case 'dispsize':  target = this.popups.dispsize; break;
-		}
+		var target = this.popups[idname] || null;
 		if(target!==null){
 			/* 表示しているウィンドウがある場合は閉じる */
 			if(this.popup){ this.popup.hide();}
@@ -140,13 +134,13 @@ ui.popupmgr.addpopup('template',
 		if(!this.captions){ return;}
 		for(var i=0;i<this.captions.length;i++){
 			var obj  = this.captions[i];
-			var text = ui.menu.selectStr(obj.str_jp, obj.str_en);
+			var text = ui.selectStr(obj.str_jp, obj.str_en);
 			if   (!!obj.textnode){ obj.textnode.data = text;}
 			else if(!!obj.button){ obj.button.value  = text;}
 		}
 	},
 	createTextNode : function(str_jp, str_en){
-		var textnode = _doc.createTextNode(ui.menu.selectStr(str_jp, str_en));
+		var textnode = _doc.createTextNode(ui.selectStr(str_jp, str_en));
 		this.captions.push({textnode:textnode, str_jp:str_jp, str_en:str_en});
 		return textnode;
 	},
@@ -170,6 +164,7 @@ ui.popupmgr.addpopup('template',
 		this.form = createEL('form');
 		this.form.name = this.formname;
 		this.pop.appendChild(this.form);
+		this.form.onsubmit = function(){ return false;};	/* filesave等では後で上書きされる */
 	},
 	makeForm : function(){
 	},
@@ -218,6 +213,7 @@ ui.popupmgr.addpopup('template',
 		catch(e){ el.type = "text"; /* IE8まででエラーをくらうので修正 */}
 		for(var att in attr){ el[att]=attr[att];}
 		this.form.appendChild(el);
+		return el;
 	},
 	addTextArea : function(attr){
 		var el = createEL('textarea');
@@ -242,7 +238,7 @@ ui.popupmgr.addpopup('template',
 	addExecButton : function(str_jp, str_en, func, attr){
 		var el = createEL('input');
 		el.type = 'button';
-		el.value = ui.menu.selectStr(str_jp, str_en);
+		el.value = ui.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
 		el.onclick = func;
 		this.form.appendChild(el);
@@ -251,6 +247,10 @@ ui.popupmgr.addpopup('template',
 	addCancelButton : function(){
 		var popup = this;
 		this.addExecButton("キャンセル", "Cancel", function(){ popup.hide();})
+	},
+	addCloseButton : function(){
+		var popup = this;
+		this.addExecButton("閉じる", "Close", function(){ popup.hide();})
 	}
 });
 
@@ -339,7 +339,7 @@ ui.popupmgr.addpopup('newboard',
 		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		for(var i=0;i<=3;i++){
 			var _img = createEL('img');
-			_img.src = (!pzpr.env.API.dataURL ? "./img/tawa_nb.gif" : "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==");
+			_img.src = "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==";
 			_img.style.width  = "128px";
 			_img.style.height = "32px";
 			_img.style.top  = "0px";
@@ -451,7 +451,7 @@ ui.popupmgr.addpopup('urloutput',
 		
 		this.settitle("URL出力", "Export URL");
 		
-		var pid = ui.puzzle.pid, exists = pzpr.url.info[pid].exists;
+		var pid = ui.puzzle.pid, exists = pzpr.variety.info[pid].exists;
 			{ this.addExecButton("ぱずぷれv3のURLを出力する", "Output PUZ-PRE v3 URL", outputurl, {name:'pzprv3'}); this.addBR();}
 		if(exists.pzprapp)
 			{ this.addExecButton("ぱずぷれ(アプレット)のURLを出力する", "Output PUZ-PRE(JavaApplet) URL", outputurl, {name:'pzprapplet'}); this.addBR();}
@@ -466,7 +466,7 @@ ui.popupmgr.addpopup('urloutput',
 		this.addBR();
 		
 		this.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl);
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -474,13 +474,13 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc, url = '', k = pzpr.consts;
+		var enc = ui.puzzle.enc, url = '', parser = pzpr.parser;
 		switch(e.target.name){
-			case "pzprv3":     url = ui.puzzle.getURL(k.URL_PZPRV3);  break;
-			case "pzprapplet": url = ui.puzzle.getURL(k.URL_PZPRAPP); break;
-			case "kanpen":     url = ui.puzzle.getURL(k.URL_KANPEN);  break;
-			case "pzprv3edit": url = ui.puzzle.getURL(k.URL_PZPRV3E); break;
-			case "heyaapp":    url = ui.puzzle.getURL(k.URL_HEYAAPP); break;
+			case "pzprv3":     url = ui.puzzle.getURL(parser.URL_PZPRV3);  break;
+			case "pzprapplet": url = ui.puzzle.getURL(parser.URL_PZPRAPP); break;
+			case "kanpen":     url = ui.puzzle.getURL(parser.URL_KANPEN);  break;
+			case "pzprv3edit": url = ui.puzzle.getURL(parser.URL_PZPRV3E); break;
+			case "heyaapp":    url = ui.puzzle.getURL(parser.URL_HEYAAPP); break;
 		}
 		this.form.ta.value = url;
 	},
@@ -529,16 +529,16 @@ ui.popupmgr.addpopup('fileopen',
 	//------------------------------------------------------------------------------
 	fileopen : function(e){
 		var fileEL = this.form.filebox;
-		if(!!ui.menu.reader || ui.menu.enableGetText){
+		if(!!ui.reader || ui.enableGetText){
 			var fitem = fileEL.files[0];
 			if(!fitem){ return;}
 			
-			if(!!ui.menu.reader){ ui.menu.reader.readAsText(fitem);}
-			else                { ui.puzzle.open(fitem.getAsText(''));}
+			if(!!ui.reader){ ui.reader.readAsText(fitem);}
+			else           { ui.puzzle.open(fitem.getAsText(''));}
 		}
 		else{
 			if(!fileEL.value){ return;}
-			this.form.action = ui.menu.fileio;
+			this.form.action = ui.fileio;
 			this.form.submit();
 		}
 		this.form.reset();
@@ -559,7 +559,7 @@ ui.popupmgr.addpopup('filesave',
 	makeForm : function(){
 		this.settitle("ファイルを保存する", "Open file");
 		
-		this.form.action = ui.menu.fileio;
+		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
@@ -578,7 +578,7 @@ ui.popupmgr.addpopup('filesave',
 		var typeitem = [];
 		typeitem.push({name:'filesave',  str_jp:"ぱずぷれv3形式",        str_en:"Puz-Pre v3 format"});
 /*		typeitem.push({name:'filesave3', str_jp:"ぱずぷれv3(履歴つき)",  str_en:"Puz-Pre v3 with history"}); */
-		if(pzpr.url.info[ui.puzzle.pid].exists.pencilbox){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
 			typeitem.push({name:'filesave2', str_jp:"pencilbox形式", str_en:"Pencilbox format"});
 		}
 		this.addSelect({name:'filetype'}, typeitem);
@@ -587,7 +587,7 @@ ui.popupmgr.addpopup('filesave',
 		this.addInput('text', {name:"filename",value:ui.puzzle.pid+".txt"});
 		this.addBR();
 		
-		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+		if(!ui.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
 			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
@@ -598,7 +598,7 @@ ui.popupmgr.addpopup('filesave',
 		var popup = this;
 		this.addExecButton("保存", "Save", function(){ popup.filesave();});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	/* オーバーライド */
 	show : function(px,py){
@@ -625,21 +625,21 @@ ui.popupmgr.addpopup('filesave',
 			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
-		var k = pzpr.consts, filetype = k.FILE_PZPR;
+		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
 		switch(form.filetype.value){
-			case 'filesave2': filetype = k.FILE_PBOX; break;
-			case 'filesave3': filetype = k.FILE_PZPH; break;
+			case 'filesave2': filetype = parser.FILE_PBOX; break;
+			case 'filesave3': filetype = parser.FILE_PZPH; break;
 		}
 
 		var blob = null, filedata = null;
-		if(ui.menu.enableSaveBlob || !!this.anchor){
+		if(ui.enableSaveBlob || !!this.anchor){
 			blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
 		}
 		else{
 			filedata = ui.puzzle.getFileData(filetype);
 		}
 
-		if(ui.menu.enableSaveBlob){
+		if(ui.enableSaveBlob){
 			navigator.saveBlob(blob, filename);
 			this.hide();
 		}
@@ -675,7 +675,7 @@ ui.popupmgr.addpopup('imagesave',
 		
 		this.settitle("画像を保存する", "Open file");
 		
-		this.form.action = ui.menu.fileio;
+		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
@@ -686,10 +686,10 @@ ui.popupmgr.addpopup('imagesave',
 		/* ファイル形式選択オプション */
 		this.addText("ファイル形式 ", "File format ");
 		var typeitem = [];
-		if(ui.menu.enableSaveImage){
+		if(ui.enableSaveImage){
 			typeitem.push({name:'png', str_jp:"PNG形式 (png)", str_en:"PNG Format (png)"});
 		}
-		if(ui.menu.enableSaveSVG){
+		if(ui.enableSaveSVG){
 			typeitem.push({name:'svg', str_jp:"ベクター画像(SVG)", str_en:"Vector Image (SVG)"});
 		}
 		this.addSelect({name:'filetype'}, typeitem);
@@ -701,7 +701,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addBR();
 		
 		this.addText("画像のサイズ ", "Image Size ");
-		this.addInput('number', {name:"cs", value:""+ui.menu.getMenuConfig('cellsizeval'), size:'4', maxlength:'3', min:'8', max:'999'});
+		this.addInput('number', {name:"cs", value:""+ui.menuconfig.get('cellsizeval'), size:'4', maxlength:'3', min:'8', max:'999'});
 		this.addText(' ', ' ');
 		this.showsize = createEL('span');
 		this.showsize.appendChild(createEL('span'));
@@ -709,7 +709,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addBR();
 		this.form.cs.onchange = function(){ popup.estimatesize();};
 		
-		if(!ui.menu.enableSaveBlob && pzpr.env.API.anchor_download){
+		if(!ui.enableSaveBlob && pzpr.env.API.anchor_download){
 			this.anchor = createEL('a');
 			this.anchor.appendChild(this.createTextNode("",""));
 			this.anchor.style.display = 'none';
@@ -720,7 +720,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.addExecButton("ダウンロード", "Download", function(){ popup.saveimage();});
 		this.addExecButton("別ウィンドウで開く", "Open another window", function(){ popup.openimage();});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 		
 		popup.changefilename();
 		popup.estimatesize();
@@ -772,7 +772,7 @@ ui.popupmgr.addpopup('imagesave',
 
 		var blob = null, filedata = null;
 		try{
-			if(ui.menu.enableSaveBlob || !!this.anchor){
+			if(ui.enableSaveBlob || !!this.anchor){
 				blob = ui.puzzle.toBlob(type,cellsize);
 			}
 			else{
@@ -780,11 +780,11 @@ ui.popupmgr.addpopup('imagesave',
 			}
 		}
 		catch(e){
-			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
 		}
 
 		/* 出力された画像の保存ルーチン */
-		if(ui.menu.enableSaveBlob){
+		if(ui.enableSaveBlob){
 			navigator.saveBlob(blob, filename);
 			this.hide();
 		}
@@ -815,7 +815,7 @@ ui.popupmgr.addpopup('imagesave',
 			dataurl = ui.puzzle.toDataURL(type,cellsize);
 		}
 		catch(e){
-			ui.menu.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
 		}
 		
 		/* 出力された画像を開くルーチン */
@@ -871,7 +871,7 @@ ui.popupmgr.addpopup('adjust',
 		this.addExecButton("右", "right", adjust, {name:'reducert'});
 		this.addBR();
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -913,7 +913,7 @@ ui.popupmgr.addpopup('turnflip',
 			this.form.turnr.disabled = true;
 		}
 		
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	//------------------------------------------------------------------------------
@@ -925,14 +925,53 @@ ui.popupmgr.addpopup('turnflip',
 });
 
 //---------------------------------------------------------------------------
-// ★Popup_DispSizeクラス 回転・反転のポップアップメニューを作成したり表示します
+// ★Popup_Colorsクラス 色の選択を行うメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('colors',
+{
+	formname : 'colors',
+	
+	//------------------------------------------------------------------------------
+	// makeForm() 色の選択を行うポップアップメニューを作成する
+	//------------------------------------------------------------------------------
+	makeForm : function(){
+		this.settitle("色の変更", "Change Colors");
+		
+		this.addColorSelector("qanscolor", "黒マス (回答入力)", "Shaded Cell (Answer)");
+		
+		this.addCloseButton();
+	},
+	addColorSelector : function(idname, str_ja, str_en){
+		this.addText(str_ja, str_en);
+		this.addInput('color', {name:idname+"_set", value:Candle.parse(ui.puzzle.painter[idname]), onchange:this.setcolor});
+		this.addExecButton("クリア", "Reset", this.clearcolor, {name:idname+"_clear"});
+		this.addBR();
+	},
+	
+	//------------------------------------------------------------------------------
+	// setcolor()   色を設定する
+	// clearcolor() 色の設定をクリアする
+	//------------------------------------------------------------------------------
+	setcolor : function(e){
+		var name = e.target.name.replace(/_set/,"");
+		ui.puzzle.setConfig("color_"+name, e.target.value)
+	},
+	clearcolor : function(e){
+		var name = e.target.name.replace(/_clear/,"");
+		this.form[name+"_set"].value = "";
+		ui.puzzle.setConfig("color_"+name, "")
+	}
+});
+
+//---------------------------------------------------------------------------
+// ★Popup_DispSizeクラス サイズの変更を行うポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('dispsize',
 {
 	formname : 'dispsize',
 	
 	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
+	// makeForm() サイズ変更のポップアップメニューを作成する
 	//------------------------------------------------------------------------------
 	makeForm : function(){
 		this.settitle("表示サイズの変更", "Change size");
@@ -946,13 +985,13 @@ ui.popupmgr.addpopup('dispsize',
 		
 		var popup = this;
 		this.addExecButton("変更する", "Change", function(){ popup.changesize();});
-		this.addCancelButton();
+		this.addCloseButton();
 	},
 	
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		
-		this.form.cs.value = ui.menu.getMenuConfig('cellsizeval');
+		this.form.cs.value = ui.menuconfig.get('cellsizeval');
 		ui.puzzle.key.enableKey = false;
 	},
 	
@@ -962,7 +1001,7 @@ ui.popupmgr.addpopup('dispsize',
 	changesize : function(e){
 		var csize = parseInt(this.form.cs.value);
 		if(csize>0){
-			ui.menu.setMenuConfig('cellsizeval', (csize|0));
+			ui.menuconfig.set('cellsizeval', (csize|0));
 			ui.event.adjustcellsize();
 		}
 		this.hide();
@@ -989,8 +1028,7 @@ ui.popupmgr.addpopup('credit',
 		this.addText("ぱずぷれv3は はっぱ/連続発破が作成しています。", "PUZ-PRE v3 id made by happa.");
 		this.addBR();
 		
-		var popup = this;
-		this.addExecButton("閉じる", "Close", function(){ popup.hide();});
+		this.addCloseButton();
 	}
 });
 

@@ -1,8 +1,6 @@
 // for_test.js v3.4.0
 (function(){
 
-var k = pzpr.consts;
-
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 
@@ -11,25 +9,104 @@ ui.debug.extend(
 {
 	loadperf : function(){
 		ui.puzzle.open(perfstr, function(puzzle){
-			ui.menu.setMenuConfig('autocheck',false);
-			puzzle.modechange(k.MODE_PLAYER);
+			ui.menuconfig.set('autocheck',false);
+			puzzle.modechange(puzzle.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
 	},
 	
 	accheck1 : function(){
-		var outputstr = ui.puzzle.getFileData(k.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.check(true);
-		var failstr   = (failcode!==null ? "'"+failcode+"'" : "null");
+		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
+		var failcode  = ui.puzzle.check()[0];
+		var failstr   = (!!failcode ? "'"+failcode+"'" : "null");
 		ui.puzzle.board.errclear();
 		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 
 	urls : {},
 	acs  : {},
+	inputs : {},
 	addDebugData : function(pid, data){
 		this.urls[pid] = data.url;
 		this.acs[pid] = data.failcheck;
+		this.inputs[pid] = data.inputs || [];
+	},
+
+	execinput : function(str){
+		var strs = str.split(/,/);
+		switch(strs[0]){
+			case 'newboard':
+				var urls = [ui.puzzle.pid, strs[1], strs[2]];
+				if(ui.puzzle.pid==='tawa'){ urls.push(strs[3]);}
+				ui.puzzle.open(urls.join("/"));
+				break;
+			case 'clear':
+				ui.puzzle.clear();
+				break;
+			case 'ansclear':
+				ui.puzzle.ansclear();
+				break;
+			case 'playmode':
+				ui.puzzle.modechange(ui.puzzle.MODE_PLAYER);
+				break;
+			case 'editmode':
+				ui.puzzle.modechange(ui.puzzle.MODE_EDITOR);
+				break;
+			case 'setconfig':
+				if     (strs[2]=="true") { ui.puzzle.setConfig(strs[1], true);}
+				else if(strs[2]=="false"){ ui.puzzle.setConfig(strs[1], false);}
+				else                     { ui.puzzle.setConfig(strs[1], strs[2]);}
+				break;
+			case 'key':
+				for(var i=1;i<strs.length;i++){
+					ui.puzzle.key.keyevent(strs[i],0);
+					ui.puzzle.key.keyevent(strs[i],1);
+				}
+				break;
+			case 'cursor':
+				ui.puzzle.cursor.init(+strs[1], +strs[2]);
+				break;
+			case 'mouse':
+				this.execmouse(strs);
+				break;
+		}
+	},
+	execmouse : function(strs){
+		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
+		var repeat = matches ? parseInt(matches[1]) : 1;
+		for(var t=0;t<repeat;t++){
+			var mv = ui.puzzle.mouse;
+			mv.btn.Left  = (strs[1].substr(0,4)==="left");
+			mv.btn.Right = (strs[1].substr(0,5)==="right");
+			
+			var addr = new ui.puzzle.RawAddress();
+			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
+			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
+				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
+				var distance = Math.sqrt(dx*dx+dy*dy)*10; /* 0.1ずつ動かす */
+				var mx = dx/distance, my = dy/distance;
+				for(var dist=0;dist<distance-1;dist++){
+					mv.mouseevent(addr.move(mx,my),1);
+				}
+				/* 最後 */
+				mv.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
+			}
+			mv.mouseevent(addr,2);
+		}
+	},
+	inputcheck : function(text){
+		ui.saveConfig();
+		var inparray = eval("["+text+"]");
+		for(var n=0;n<inparray.length;n++){
+			var data = inparray[n];
+			if(data.input===void 0 || !data.input){ continue;}
+			for(var i=0;i<data.input.length;i++){
+				this.execinput(data.input[i]);
+			}
+		}
+		this.execinput("playmode");
+		ui.restoreConfig();
+		ui.displayAll();
 	},
 
 	alltimer : null,
@@ -40,7 +117,7 @@ ui.debug.extend(
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
-		for(var id in pzpr.url.info){ idlist.push(id);}
+		for(var id in pzpr.variety.info){ idlist.push(id);}
 		idlist.sort();
 		term = idlist.length;
 
@@ -71,7 +148,7 @@ ui.debug.extend(
 
 	fails : 0,
 	sccheck : function(){
-		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+		ui.menuconfig.set('autocheck',false);
 		var self = this;
 
 		self.fails = 0;
@@ -80,8 +157,11 @@ ui.debug.extend(
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
-		var inp = pzpr.url.constructURL({id:self.pid, type:k.URL_PZPRV3, qdata:self.urls[self.pid]});
-		var ta  = ui.puzzle.getURL(k.URL_PZPRV3);
+		var pzl = new pzpr.parser.URLData('');
+		pzl.id    = self.pid;
+		pzl.type  = pzl.URL_PZPRV3;
+		var inp = pzl.outputURLType() + self.urls[self.pid];
+		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
 
 		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
@@ -89,11 +169,11 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzpr.url.info[self.pid].exists.pencilbox){
+		if(pzpr.variety.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 
-			o.open(o.getURL(k.URL_KANPEN), function(){
-				if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+			o.open(o.getURL(pzpr.parser.URL_KANPEN), function(){
+				ui.menuconfig.set('autocheck',false);
 
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
@@ -121,12 +201,43 @@ ui.debug.extend(
 				self.addTextarea("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
-		setTimeout(function(){ self.check_file(self);},0);
+		setTimeout(function(){ self.check_input(self);},0);
+	},
+	//Input test---------------------------------------------------------------
+	check_input : function(self){
+		var filedata = ui.puzzle.getFileData();
+		var inps = self.inputs[self.pid];
+		if(inps.length>0){
+			var count=0, pass=0;
+			ui.saveConfig();
+			for(var n=0;n<inps.length;n++){
+				var data = inps[n];
+				if(data.input!==void 0 && !!data.input){
+					for(var i=0;i<data.input.length;i++){
+						self.execinput(data.input[i]);
+					}
+				}
+				if(data.result!==void 0 && !!data.result){
+					var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
+					count++;
+					if(iserror){ self.fails++;}
+					if(!iserror){ pass++;}
+				}
+			}
+			if(!self.alltimer){
+				self.addTextarea("Input test Pass = "+pass+"/"+count);
+			}
+			self.execinput("playmode");
+			ui.restoreConfig();
+			ui.displayAll();
+		}
+
+		ui.puzzle.open(filedata,function(){ self.check_file(self);});
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
 		var o = ui.puzzle, bd = o.board;
-		var outputstr = o.getFileData(k.FILE_PZPR);
+		var outputstr = o.getFileData(pzpr.parser.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
 		o.painter.suspendAll();
@@ -141,9 +252,9 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox : function(self){
-		if(pzpr.url.info[self.pid].exists.kanpen){
+		if(pzpr.variety.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, pid = o.pid;
-			var outputstr = o.getFileData(k.FILE_PBOX);
+			var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
 			var bd2 = self.bd_freezecopy(bd);
 
 			o.painter.suspendAll();
@@ -165,7 +276,7 @@ ui.debug.extend(
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		if(ui.menu.getMenuConfig('autocheck')){ ui.menu.setMenuConfig('autocheck',false);}
+		ui.menuconfig.set('autocheck',false);
 
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}

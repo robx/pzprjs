@@ -2,33 +2,44 @@
 /* concat前のテスト用スクリプト */
 
 (function(){
-	var files = [
+	var component = [
 		"lib/candle",
-		"pzpr/CoreClass",
-		"pzpr/Puzzle",
-		"pzpr/BoardPiece",
-		"pzpr/Board",
-		"pzpr/BoardExec",
-		"pzpr/LineManager",
-		"pzpr/AreaManager",
-		"pzpr/Graphic",
-		"pzpr/MouseInput",
-		"pzpr/KeyInput",
-		"pzpr/URL",
-		"pzpr/Encode",
-		"pzpr/FileData",
-		"pzpr/Answer",
-		"pzpr/Operation",
-		"puzzle-common/Graphic",
-		"puzzle-common/KeyInput",
-		"puzzle-common/MouseInput",
-		"puzzle-common/Answer",
-		"puzzle-common/BoardExec",
-		"puzzle-common/Encode",
-		"puzzle-common/FileData",
+		"pzpr/core",
+		"pzpr/event",
+		"pzpr/classmgr",
+		"pzpr/env",
+		"pzpr/variety",
+		"pzpr/parser",
+		"pzpr/util",
+		"puzzle/Puzzle",
+		"puzzle/Config",
+		"puzzle/Address",
+		"puzzle/Piece",
+		"puzzle/PieceList",
+		"puzzle/Board",
+		"puzzle/BoardExec",
+		"puzzle/LineManager",
+		"puzzle/AreaManager",
+		"puzzle/Graphic",
+		"puzzle/MouseInput",
+		"puzzle/KeyInput",
+		"puzzle/Encode",
+		"puzzle/FileData",
+		"puzzle/Answer",
+		"puzzle/Operation",
+		"variety-common/Graphic",
+		"variety-common/KeyInput",
+		"variety-common/MouseInput",
+		"variety-common/Answer",
+		"variety-common/BoardExec",
+		"variety-common/Encode",
+		"variety-common/FileData",
 		"ui/Boot",
 		"ui/UI",
-		"ui/Menu",
+		"ui/Event",
+		"ui/Listener",
+		"ui/MenuConfig",
+		"ui/Misc",
 		"ui/MenuArea",
 		"ui/PopupMenu",
 		"ui/ToolArea",
@@ -52,9 +63,15 @@
 			return "";
 		})();
 		
-		for(var i=0;i<files.length;i++){
-			document.write('<script type="text/javascript" src="'+dir+files[i]+'.js"></script>');
-		}
+		component.map(function(mod){ return dir+mod+".js";}).forEach(function(file){
+			document.write('<script type="text/javascript" src="'+file+'"></script>');
+		});
 	}
-	else{ exports.component = files;}
+	else{
+		component.unshift("common/intro");
+		component.push   ("common/outro");
+
+		var dir = "src/js/";
+		exports.files = component.map(function(mod){ return dir+mod+".js";});
+	}
 })();

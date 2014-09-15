@@ -1,7 +1,6 @@
 @charset "UTF-8" ;
 
-	BODY{ background:url(data:image/gif;base64,R0lGODdhEAAQAIACAMD/wPD/8CwAAAAAEAAQAAACKYQTpogKnFxbMDpa7W18yjhp1yGO1OidW5mSKFuaTyy585t0ctZ+EFAAADs=);
-		color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	BODY{ color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
 
 	/* メインの白背景領域 */
 	div#main{ width:80%; background-color:white; text-align:center;
@@ -45,7 +44,7 @@
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
-	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px; /* IE6,7用Hack */ zoom:1;}
+	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;}
 	div#btnarea { position:relative; margin-top:1.0em;}
 
 	/* (canvas.context.fillText代替用) */

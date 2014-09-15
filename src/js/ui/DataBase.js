@@ -23,7 +23,7 @@ ui.ProblemData.prototype =
 		this.col = owner.board.qcols;
 		this.row = owner.board.qrows;
 		this.hard = 0;
-		this.pdata = owner.getFileData(pzpr.consts.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.pdata = owner.getFileData(pzpr.parser.FILE_PZPH).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
 		this.comment = '';
 	},
@@ -145,7 +145,7 @@ ui.popupmgr.addpopup('database',
 		this.initRow();
 		this.initCell({},{verticalAlign:'bottom'});
 		
-		this.addCancelButton();
+		this.addCloseButton();
 		/* ----------------------------------------------------------------- */
 		
 		this.form = form;
@@ -191,7 +191,7 @@ ui.database = {
 		if(pzpr.env.storage.localST){ this.dbh = new ui.DataBaseHandler_LS();}
 		else{ return;}
 
-		this.lang = ui.menu.getConfigVal('language');
+		this.lang = ui.getConfig('language');
 		this.sync = false;
 		this.dbh.convert();
 		this.dbh.importDBlist(this, this.update);
@@ -257,7 +257,7 @@ ui.database = {
 			var row = this.DBlist[i];
 			if(!!row){ this.appendNewOption(row.id, this.getRowString(row));}
 		}
-		this.appendNewOption(-1, ui.menu.selectStr("&nbsp;&lt;新しく保存する&gt;","&nbsp;&lt;New Save&gt;"));
+		this.appendNewOption(-1, ui.selectStr("&nbsp;&lt;新しく保存する&gt;","&nbsp;&lt;New Save&gt;"));
 	},
 	appendNewOption : function(id, str){
 		var opt = createEL('option');
@@ -278,7 +278,7 @@ ui.database = {
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid][this.lang]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][this.lang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][this.lang]+"&nbsp;");
@@ -353,8 +353,8 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	openDataTable_M : function(owner){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!ui.menu.confirmStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
-							   "Recover selected data? (Current board is erased)")){ return;}
+		if(!ui.confirmStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
+						  "Recover selected data? (Current board is erased)")){ return;}
 
 		this.dbh.openDataTable(this, id, null, owner);
 	},
@@ -366,12 +366,12 @@ ui.database = {
 
 			this.DBlist[id] = new ui.ProblemData();
 			this.DBlist[id].setnewData(id+1, owner);
-			var str = ui.menu.promptStr("コメントがある場合は入力してください。","Input comment if you want.","");
+			var str = ui.promptStr("コメントがある場合は入力してください。","Input comment if you want.","");
 			this.DBlist[id].comment = (!!str ? str : '');
 			this.DBsid = this.DBlist[id].id;
 		}
 		else{
-			if(!ui.menu.confirmStr("このデータに上書きしますか？","Update selected data?")){ return;}
+			if(!ui.confirmStr("このデータに上書きしますか？","Update selected data?")){ return;}
 		}
 
 		this.sync = false;
@@ -385,7 +385,7 @@ ui.database = {
 	editComment_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var str = ui.menu.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
+		var str = ui.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
 		if(str==null){ return;}
 		this.DBlist[id].comment = str;
 
@@ -395,7 +395,7 @@ ui.database = {
 	editDifficult_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var hard = ui.menu.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
+		var hard = ui.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
 									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
 		if(hard==null){ return;}
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
@@ -409,7 +409,7 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	deleteDataTable_M : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!ui.menu.confirmStr("このデータを完全に削除しますか？","Delete selected data?")){ return;}
+		if(!ui.confirmStr("このデータを完全に削除しますか？","Delete selected data?")){ return;}
 
 		var sID = this.DBlist[id].id, max = this.DBlist.length;
 		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1]; this.DBlist[i].id--;}
@@ -523,7 +523,7 @@ ui.DataBaseHandler_LS.prototype =
 		delete localStorage['pzprv3_manage:manage'];
 
 		var puzzles = [];
-		for(var pid in pzpr.url.info){ // いらないのもあるけど、問題ないのでOK
+		for(var pid in pzpr.variety.info){ // いらないのもあるけど、問題ないのでOK
 			if(!localStorage['pzprv3_'+pid]){ continue;}
 			var mheader = 'pzprv3_manage:manage!'+pid+'!';
 			var count = localStorage[mheader+'count'];

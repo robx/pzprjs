@@ -65,6 +65,7 @@ ui.keypopup =
 		bonsan     : [10,0],
 		heyabon    : [10,0],
 		yosenabe   : [10,0],
+		herugolf   : [10,0],
 		firefly    : [10,0],
 		tateyoko   : [10,0],
 		factors    : [10,10],
@@ -72,6 +73,7 @@ ui.keypopup =
 		renban     : [10,10],
 		ripple     : [10,10],
 		cojun      : [10,10],
+		makaro     : [10,10],
 		sudoku     : [10,10],
 		nanro      : [10,10],
 		view       : [10,10],
@@ -94,8 +96,8 @@ ui.keypopup =
 	// kp.display()     キーポップアップを表示する
 	//---------------------------------------------------------------------------
 	display : function(){
-		var mode = ui.menu.getConfigVal('mode');
-		if(this.element && !!this.paneltype[mode] && ui.menu.getMenuConfig('keypopup')){
+		var mode = ui.getConfig('mode');
+		if(this.element && !!this.paneltype[mode] && ui.menuconfig.get('keypopup')){
 
 			this.element.style.display = 'block';
 
@@ -110,9 +112,13 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	// kp.create()      キーポップアップを生成して初期化する
 	// kp.createtable() キーポップアップのポップアップを作成する
-	// kp.clear()       キーポップアップを削除する
 	//---------------------------------------------------------------------------
 	create : function(){
+		if(!!this.element){
+			getEL('panelbase1').innerHTML = '';
+			getEL('panelbase3').innerHTML = '';
+		}
+		
 		this.imgs = [];			// resize用
 		
 		var type = this.type[ui.puzzle.pid];
@@ -130,7 +136,7 @@ ui.keypopup =
 		
 		var bar = getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', ui.menu, function(){ this.setMenuConfig('keypopup',false)});
+		ui.event.addEvent(bar, 'dblclick', ui.menuconfig, function(){ this.set('keypopup',false)});
 	},
 	createtable : function(mode,type){
 		this.basepanel = getEL('panelbase'+mode);
@@ -139,12 +145,6 @@ ui.keypopup =
 		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 
 		this.generate(mode);
-	},
-	clear : function(){
-		if(!!this.element){
-			getEL('panelbase1').innerHTML = '';
-			getEL('panelbase3').innerHTML = '';
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -285,7 +285,7 @@ ui.keypopup =
 		else if(pid==='tasquare'){
 			this.inputcol('num','-','□');
 		}
-		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'){
+		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
 			this.inputcol('num','-','○');
 		}
 		this.insertrow();
@@ -500,7 +500,8 @@ ui.keypopup =
 		if(type!=='empty'){
 			_div = createEL('div');
 			_div.className = 'kpcell kpcellvalid';
-			_div.onclick = function(){ ui.puzzle.key.keyevent(ca,0);};
+			_div.onclick = function(e){ e.preventDefault();};
+			ui.event.addMouseDownEvent(_div, ui.puzzle, function(){ this.key.keyevent(ca,0);});
 			pzpr.util.unselectable(_div);
 		}
 		else{
@@ -520,12 +521,7 @@ ui.keypopup =
 			_child = createEL('img');
 			_child.className = 'kpimg';
 			var pid = ui.puzzle.pid;
-			if(!pzpr.env.API.dataURL){
-				_child.src = "./img/"+pid+"_kp.gif";
-			}
-			else{
-				_child.src = "data:image/gif;base64,"+this.dataurl[!!this.dataurl[pid] ? pid : 'shitappa'];
-			}
+			_child.src = "data:image/gif;base64,"+this.dataurl[!!this.dataurl[pid] ? pid : 'shitappa'];
 			pzpr.util.unselectable(_child);
 			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
 		}
@@ -555,7 +551,7 @@ ui.keypopup =
 			img.style.left   = "-"+(obj.x*dsize)+"px";
 		}
 
-		ui.menu.modifyCSS({
+		ui.misc.modifyCSS({
 			"div.kpcell" : { width:(""+dsize+"px"), height:(""+dsize+"px"), lineHeight:(""+dsize+"px")},
 			"span.kpnum" : { fontSize:(""+tsize+"px")}
 		});

@@ -320,7 +320,7 @@ v3index.dbif.extend({
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.url.info[row.pid][language]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][language]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
 			str += (hardstr[row.hard][language]+"&nbsp;");
@@ -336,7 +336,6 @@ v3index.dbif.extend({
 	open : function(){
 		var selected = self.getvalue();
 		if(selected>=0){
-			// var str = DBlist[selected].pdata.replace(/\//g,"\n");
 			var str = DBlist[selected].pdata;
 			if(!!str){
 				localStorage['pzprv3_filedata'] = str;

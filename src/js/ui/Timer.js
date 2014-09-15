@@ -2,9 +2,6 @@
 
 (function(){
 
-/* タイマー割り込み間隔を短くするUA */
-var slowUA = (function(bz){ return (bz.IE6 || bz.IE7 || bz.IE8);})(pzpr.env.browser);
-
 //---------------------------------------------------------------------------
 // ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)
 //---------------------------------------------------------------------------
@@ -12,7 +9,7 @@ ui.timer =
 {
 	/* メンバ変数 */
 	TID           : null,					/* タイマーID */
-	timerInterval : (!slowUA ? 100 : 200),	/* タイマー割り込み間隔 */
+	timerInterval : 100,					/* タイマー割り込み間隔 */
 
 	current  : 0,		/* 現在のgetTime()取得値(ミリ秒) */
 
@@ -45,7 +42,7 @@ ui.timer =
 		this.current = pzpr.util.currentTime();
 
 		if(pzpr.PLAYER){ this.updatetime();}
-		if(ui.menu.getMenuConfig('autocheck')){ this.ACcheck();}
+		if(ui.menuconfig.get('autocheck')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -68,7 +65,7 @@ ui.timer =
 		this.bseconds = seconds;
 	},
 	label : function(){
-		return ui.menu.selectStr("経過時間：","Time: ");
+		return ui.selectStr("経過時間：","Time: ");
 	},
 
 	//---------------------------------------------------------------------------
@@ -79,8 +76,8 @@ ui.timer =
 		if(this.current>this.nextACtime && puzzle.playmode && !puzzle.checker.inCheck){
 			if(puzzle.check().complete){
 				puzzle.mouse.mousereset();
-				ui.menu.setMenuConfig('autocheck',false);
-				ui.menu.alertStr("正解です！","Complete!");
+				ui.menuconfig.set('autocheck',false);
+				ui.alertStr("正解です！","Complete!");
 				return;
 			}
 
@@ -97,7 +94,7 @@ ui.undotimer =
 {
 	/* メンバ変数 */
 	TID           : null,	/* タイマーID */
-	timerInterval : (!slowUA ? 25 : 50),
+	timerInterval : 25,		/* タイマー割り込み間隔 */
 
 	inUNDO        : false,	/* Undo実行中 */
 	inREDO        : false,	/* Redo実行中 */

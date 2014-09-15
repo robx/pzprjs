@@ -3,19 +3,12 @@
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
 ui.toolarea = {
-
-	isdisp : true,		// 表示しているか
+	area : null,		// ボタン表示領域の要素を保持する
+	isdisp : true,		// 管理パネルを表示しているか
 
 	//---------------------------------------------------------------------------
-	// toolarea.init()   管理領域の初期設定を行う
-	// toolarea.reset()  管理領域用の設定を消去する
+	// toolarea.reset()  管理領域の初期設定を行う
 	//---------------------------------------------------------------------------
-	init : function(){
-		this.createLabels();
-		this.createManageArea();
-		this.createButtonArea();
-	},
-
 	reset : function(){
 		this.btnstack = [];
 		this.labels   = {};
@@ -24,6 +17,12 @@ ui.toolarea = {
 		getEL('checkpanel').innerHTML = '';
 
 		if(!!this.area){ this.area.innerHTML = '';}
+
+		this.createLabels();
+		this.createManageArea();
+		this.createButtonArea();
+		
+		this.display();
 	},
 
 	//---------------------------------------------------------------------------
@@ -55,8 +54,8 @@ ui.toolarea = {
 
 		/* 盤面チェックの設定値 */
 		this.addLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
-		this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous black cells');
-		this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous black cells with its corner');
+		this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous shaded cells');
+		this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous shaded cells with its corner');
 		this.addLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
 
 		/* 背景色入力の設定値 */
@@ -64,11 +63,8 @@ ui.toolarea = {
 
 		/* 文字別正解表示の設定値 */
 		var pid = ui.puzzle.pid;
-		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'){
+		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='herugolf'){
 			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
-		}
-		else if(pid==='yosenabe'){
-			this.addLabel('autocmp', '数字をクリックしたらグレーにする', 'Grey if the number is clicked.');
 		}
 		else if(pid==='kouchoku'){
 			this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
@@ -244,16 +240,16 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	// toolarea.display()    全てのラベルに対して文字列を設定する
 	// toolarea.setdisplay() 管理パネルに表示する文字列を個別に設定する
-	// toolarea.enb_undo()   html上の[戻][進]ボタンを押すことが可能か設定する
 	//---------------------------------------------------------------------------
 	display : function(){
 		for(var idname in this.labels){ this.setdisplay(idname);}
+		this.setdisplay("operation");
+		
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			var obj = this.btnstack[i];
 			if(!obj.el){ continue;}
 			obj.el.value = obj.str[ui.puzzle.getConfig('language')];
 		}
-		this.enb_undo();
 		
 		var mandisp  = (this.isdisp ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
@@ -266,14 +262,10 @@ ui.toolarea = {
 			getEL('btncolor2').style.display = (this.isdisp ? 'none' : 'inline');
 		}
 		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
-		
-		if(pzpr.env.browser.IE6){
-			getEL('separator2').style.margin = '0pt';
-		}
 	},
 	setdisplay : function(idname){
 		var pp = ui.menuarea.items;
-		if(!pp || !pp.item[idname]){ return;}
+		if(!pp){ return;}
 		
 		switch(pp.type(idname)){
 		case pp.SELECT:
@@ -289,7 +281,7 @@ ui.toolarea = {
 		case pp.CHILD:
 			var manage = getEL('up_'+idname);
 			if(!!manage){
-				var val = ui.menu.getConfigVal(pp.item[idname].parent);
+				var val = ui.getConfig(pp.item[idname].parent);
 				manage.innerHTML = this.getLabel(idname);
 				manage.className = ((pp.item[idname].val == val)?"childsel":"child");
 			}
@@ -298,17 +290,23 @@ ui.toolarea = {
 		case pp.CHECK:
 			/* チェックボックスの表記の設定 */
 			var check = getEL('ck_'+idname);
-			if(!!check){ check.checked = ui.menu.getConfigVal(idname);}
+			if(!!check){ check.checked = ui.getConfig(idname);}
 			/* ラベルの表記の設定 */
 			var label = getEL('cl_'+idname);
 			if(!!label){ label.innerHTML = this.getLabel(idname);}
 			break;
 		}
 		
+		if(idname==="operation"){
+			var opemgr = ui.puzzle.opemgr;
+			getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
+			getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+		}
+		
 		if(idname==='keypopup'){
 			var kp = ui.keypopup;
 			if(kp.paneltype[1]!==0 || kp.paneltype[3]!==0){
-				var f = !!kp.paneltype[ui.menu.getConfigVal('mode')];
+				var f = !!kp.paneltype[ui.getConfig('mode')];
 				getEL('ck_keypopup').disabled    = (f?"":"true");
 				getEL('cl_keypopup').style.color = (f?"black":"silver");
 			}
@@ -316,21 +314,17 @@ ui.toolarea = {
 		
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
-				var mode = ui.menu.getConfigVal('mode');
+				var mode = ui.getConfig('mode');
 				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
 				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
 			}
 		}
 		
-		if(ui.puzzle.pid==='pipelinkr'){
-			getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
+		if(idname==='disptype_pipelinkr'){
+			if(ui.puzzle.pid==='pipelinkr' && !!getEL('btncircle')){
+				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
+			}
 		}
-	},
-
-	enb_undo : function(){
-		var opemgr = ui.puzzle.opemgr;
-		getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
-		getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
 	},
 
 	//---------------------------------------------------------------------------
@@ -339,7 +333,7 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	getLabel : function(idname){
 		var obj  = this.labels[idname];
-		return ui.menu.selectStr(obj.str_jp, obj.str_en);
+		return ui.selectStr(obj.str_jp, obj.str_en);
 	},
 	addLabel : function(idname, strJP, strEN){
 		if(!!ui.menuarea.items.item[idname]){
@@ -364,21 +358,21 @@ ui.toolarea = {
 	checkclick : function(e){
 		var el = e.target;
 		var idname = el.id.substr(3);
-		ui.menu.setConfigVal(idname, !!el.checked);
+		ui.setConfig(idname, !!el.checked);
 	},
 	selectclick : function(e){
 		var list = e.target.id.split('_');
 		list.shift();
 		var child = list.pop(), idname = list.join("_");
-		ui.menu.setConfigVal(idname, child);
+		ui.setConfig(idname, child);
 	},
 	buttonclick : function(e){
 		switch(e.target.id){
-		case 'btncheck':  ui.menu.answercheck(); break;
-		case 'btnundo':   ui.puzzle.undo(); break;
-		case 'btnredo':   ui.puzzle.redo(); break;
-		case 'btnclear':  ui.menu.ACconfirm(); break;
-		case 'btnclear2': ui.menu.ASconfirm(); break;
+		case 'btncheck':  ui.menuarea.answercheck(); break;
+		case 'btnundo':   ui.puzzle.undo();          break;
+		case 'btnredo':   ui.puzzle.redo();          break;
+		case 'btnclear':  ui.menuarea.ACconfirm();   break;
+		case 'btnclear2': ui.menuarea.ASconfirm();   break;
 		case 'btncolor2': case 'ck_btn_irowake': ui.puzzle.irowake(); break;
 		case 'btncolor': ui.puzzle.board.encolorall(); break; /* 天体ショーのボタン */
 		}

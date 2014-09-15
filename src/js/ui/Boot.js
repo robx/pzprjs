@@ -6,19 +6,23 @@
 /********************************/
 if(!window.pzpr){ setTimeout(arguments.callee,0); return;}
 
+window.navigator.saveBlob = window.navigator.saveBlob || window.navigator.msSaveBlob;
+
 var require_accesslog = true;
 var onload_pzl = null;
 var onload_option = {imagesave:true};
+
+pzpr.addLoadListener(boot);
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
-pzpr.addLoadListener(function(){
-	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)){}
-	else if(includePzprFile() && includeDebugFile()){ startPuzzle();}
-	else{ setTimeout(arguments.callee,0);}
-});
+function boot(){
+	if(location.href.match(/^(file|http:\/\/(192.168|10)\.).+\/tests\//)||!!window.v3index){}
+	else if(importData() && includeDebugFile()){ startPuzzle();}
+	else{ setTimeout(boot,0);}
+}
 
-function includePzprFile(){
+function importData(){
 	/* pzpr, uiオブジェクト生成待ち */
 	if(!window.pzpr || !window.ui){ return false;}
 	
@@ -61,7 +65,6 @@ function includeDebugFile(){
 }
 
 function startPuzzle(){
-	if(!!window.v3index){ return;}
 	var pzl = onload_pzl, pid = pzl.id;
 	
 	/* パズルオブジェクトの作成 */
@@ -70,21 +73,17 @@ function startPuzzle(){
 	pzpr.connectKeyEvents(puzzle);
 	
 	/* createPuzzle()後からopen()前に呼ぶ */
-	ui.menu.init();
 	ui.event.onload_func();
-	ui.event.setListeners(puzzle);
 	
 	// 単体初期化処理のルーチンへ
-	var inputdata = pzl.fstr || pzl.url;
 	if(!ui.debugmode){
-		puzzle.open((inputdata || pid), accesslog);
+		puzzle.open(pzl, accesslog);
 	}
 	else{
-		puzzle.open((inputdata || pid+"/"+ui.debug.urls[pid]),
-		function(puzzle){
-			puzzle.modechange(pzpr.consts.MODE_PLAYER);
-			ui.menu.setMenuConfig('autocheck', true);
-			accesslog();
+		var inputdata = (!!pzl.qdata ? pzl : pid+"/"+ui.debug.urls[pid]);
+		puzzle.open(inputdata, function(puzzle){
+			puzzle.modechange(puzzle.MODE_PLAYER);
+			ui.menuconfig.set('autocheck', true);
 		});
 	}
 	
@@ -95,16 +94,13 @@ function startPuzzle(){
 // ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う
 //---------------------------------------------------------------------------
 function importURL(){
-	// どの文字列をURL判定するかチェック
-	var search = "";
-	if(!!window.localStorage && !!localStorage['pzprv3_urldata']){
-		// index.htmlからのURL読み込み時
-		search = localStorage['pzprv3_urldata'];
-		delete localStorage['pzprv3_urldata'];
-		require_accesslog = false;
-	}
-	else{ search = location.search;}
-	if(search.length<=0){ return;}
+	/* index.htmlからURLが入力されたかチェック */
+	var search = getStorageData('pzprv3_urldata', 'urldata');
+	if(!!search){ require_accesslog = false;}  /* index.htmlからのURL読み込み時はアクセスログをとらない */
+	
+	/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
+	search = search || location.search;
+	if(!search){ return null;}
 	
 	/* 一旦先頭の?記号を取り除く */
 	if(search.charAt(0)==="?"){ search = search.substr(1);}
@@ -123,8 +119,7 @@ function importURL(){
 	else if(search.match(/_edit/)){ startmode = 'EDITOR';}
 	else if(search.match(/_play/)){ startmode = 'PLAYER';}
 
-	var pzl = pzpr.url.parseURL("?"+search);
-	if(!!pzl.qdata){ pzl.url = search;}
+	var pzl = pzpr.parser.parseURL(search);
 
 	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
 	pzpr.EDITOR = (startmode==='EDITOR');
@@ -137,39 +132,35 @@ function importURL(){
 // ★importFileData() 初期化時にファイルデータの読み込みを行う
 //---------------------------------------------------------------------------
 function importFileData(){
-	try{
-		if(!window.sessionStorage){ return null;}
-	}
-	catch(e){
-		// FirefoxでLocalURLのときここに飛んでくる
-		return null;
-	}
-	var str='';
+	/* index.htmlや盤面の複製等でファイルorブラウザ保存データが入力されたかチェック */
+	var fstr = getStorageData('pzprv3_filedata', 'filedata');
+	if(!fstr){ return null;}
+
+	var pzl = pzpr.parser.parseFile(fstr, '');
+	if(!pzl){ return null;}
+
+	pzpr.EDITOR = true;
+	pzpr.PLAYER = false;
+	require_accesslog = false;
+	
+	return pzl;
+}
+
+//---------------------------------------------------------------------------
+// ★getStorageData() localStorageやsesseionStorageのデータを読み込む
+//---------------------------------------------------------------------------
+function getStorageData(key, key2){
+	if(!pzpr.env.storage.localST || !pzpr.env.storage.session){ return null;}
 
 	// 移し変える処理
-	if(!!window.localStorage){
-		str = localStorage['pzprv3_filedata'];
-		if(!!str){
-			delete localStorage['pzprv3_filedata'];
-			sessionStorage['filedata'] = str;
-		}
+	var str = localStorage[key];
+	if(str!==void 0){
+		delete localStorage[key];
+		sessionStorage[key2] = str;
 	}
 
-	str = sessionStorage['filedata'];
-
-	if(!!str){
-		var lines = str.replace(/[\t\r]*\n/g,"\n").split(/\n/);
-		var id = (lines[0].match(/^pzprv3/) ? lines[1] : '');
-		if(!id){ return null;}
-
-		pzpr.EDITOR = true;
-		pzpr.PLAYER = false;
-		require_accesslog = false;
-		// sessionStorageのデータは残しておきます
-		
-		return {id:id, fstr:str};
-	}
-	return null;
+	str = sessionStorage[key2];
+	return (str!==void 0 ? str : null);
 }
 
 //---------------------------------------------------------------------------
