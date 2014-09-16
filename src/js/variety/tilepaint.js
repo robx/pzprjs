@@ -292,10 +292,6 @@ AnsCheck:{
 		return null;
 	},
 
-	checkSameColorTile : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
-	},
 	checkRowsColsShadeCell : function(){
 		return this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, false);
 	},

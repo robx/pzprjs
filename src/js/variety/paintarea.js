@@ -116,10 +116,6 @@ AnsCheck:{
 	checkDir4ShadeCell : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);
 	},
-	checkSameColorTile : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
-	},
 	check2x2UnshadeCell : function(){
 		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
 	}

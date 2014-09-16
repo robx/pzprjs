@@ -104,6 +104,14 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkSameColorTile() 白マスと黒マスが混ざったタイルがないかどうかチェックする
+	//---------------------------------------------------------------------------
+	checkSameColorTile : function(){
+		var rinfo = this.owner.board.getRoomInfo();
+		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isShade()?1:2);});
+	},
+
+	//---------------------------------------------------------------------------
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
 	// ans.checkOneLine()  線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する

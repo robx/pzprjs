@@ -103,6 +103,7 @@ Graphic:{
 		var info = cell.error || cell.qinfo;
 		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.qanscolor);}
 		else if(info     ===1){ return this.errbcolor1;}
+		else if(info     ===2){ return this.errbcolor2;}
 		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
 		return null;
 	},

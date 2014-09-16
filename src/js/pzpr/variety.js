@@ -115,6 +115,7 @@ pzpr.variety.register({
 	numlin    :[0,1,"ナンバーリンク","Numberlink",'',{kanpen:'numberlink'}],
 	nuribou   :[1,0,"ぬりぼう","Nuribou",'nurikabe'],
 	nurikabe  :[0,1,"ぬりかべ","Nurikabe",'nurikabe'],
+	nurimaze  :[0,0,"ぬりめいず","Nuri-Maze",'nurimaze'],
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],
