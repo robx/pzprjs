@@ -119,6 +119,7 @@ pzpr.variety.register({
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],
+	rectslider:[0,0,"四角スライダー","Rectangle-Slider",'bonsan'],
 	reflect   :[1,0,"リフレクトリンク","Reflect Link"],
 	renban    :[0,0,"連番窓口","Renban-Madoguchi"],
 	ringring  :[0,0,"リングリング","Ring-ring",'nagenawa'],

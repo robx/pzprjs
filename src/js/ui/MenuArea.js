@@ -249,7 +249,7 @@ ui.menuarea = {
 		}
 
 		/* 文字別正解表示の設定値 */
-		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='herugolf'){
+		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='rectslider'||pid==='herugolf'){
 			pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
 		}
 		else if(pid==='kouchoku'){

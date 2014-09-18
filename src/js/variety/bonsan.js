@@ -1,7 +1,7 @@
 //
-// パズル固有スクリプト部 ぼんさん・へやぼん版 bonsan.js v3.4.1
+// パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js v3.4.2
 //
-pzpr.classmgr.makeCustom(['bonsan','heyabon'], {
+pzpr.classmgr.makeCustom(['bonsan','heyabon','rectslider'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -50,7 +50,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(this.owner.getConfig('autocmp') && this.inputdark(cell)){ return;}
+		var puzzle = this.owner;
+		if(puzzle.pid!=='rectslider' && puzzle.getConfig('autocmp') && this.inputdark(cell)){ return;}
 
 		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
 		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
@@ -58,7 +59,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputdark : function(cell){
-		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -70,7 +71,6 @@ MouseEvent:{
 		return false;
 	}
 },
-
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
@@ -91,8 +91,10 @@ Cell:{
 	},
 	
 	maxnum : function(){
-		var bd = this.owner.board;
-		return Math.max(bd.qcols,bd.qrows)-1;
+		var bd=this.owner.board, bx=this.bx, by=this.by;
+		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
+		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
+		return Math.max(col, row);
 	},
 	minnum : 0
 },
@@ -103,17 +105,53 @@ Board:{
 
 	hasborder : 1
 },
+"Board@rectslider":{
+	initialize : function(){
+		this.common.initialize.call(this);
+
+		/* AreaLineManagerより後にすること */
+		this.rects = this.addInfoList(this.owner.AreaSlideMaanger);
+	}
+},
 
 LineManager:{
 	isCenterLine : true
 },
 
-AreaRoomManager:{
+"AreaRoomManager@heyabon":{
 	enabled : true
 },
 AreaLineManager:{
 	enabled : true,
 	moveline : true
+},
+"AreaSlideMaanger:AreaShadeManager@rectslider":{
+	enabled : true,
+	relation : ['cell','line'],
+	isvalid : function(cell){ return cell.base.qnum!==-1;},
+	bdfunc : function(border){ return false;},
+	
+	setLine : function(border){
+		if(!this.enabled){ return;}
+		
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		var linfo = this.owner.board.linfo, clist = new this.owner.CellList(), rects = this;
+		var id1 = linfo.id[cell1.id], id2 = linfo.id[cell2.id];
+		if(id1===id2 && id1!==null){ clist.extend(linfo.getClistByCell(cell1));}
+		else{
+			if(id1!==null){ clist.extend(linfo.area[id1].clist);}else{ clist.add(cell1);}
+			if(id2!==null){ clist.extend(linfo.area[id2].clist);}else{ clist.add(cell2);}
+		}
+		clist = clist.filter(function(cell){ return (cell.base.qnum!==-1 || rects.id[cell.id]!==null);});
+		
+		var cidlist = [];
+		for(var i=0;i<clist.length;i++){
+			this.calcLinkInfo(clist[i]);
+			cidlist.push(clist[i].id);
+			cidlist = cidlist.concat(this.getLinkCell(clist[i]));
+		}
+		this.remakeInfo(cidlist);
+	}
 },
 
 //---------------------------------------------------------
@@ -148,6 +186,44 @@ Graphic:{
 		this.drawTarget();
 	}
 },
+"Graphic@rectslider":{
+	globalfontsizeratio : 1.0,	// 数字の倍率
+
+	fontShadecolor : "white",
+	qcmpcolor : "gray",
+	mbcolor : "green",
+
+	paint : function(){
+		this.drawDashedGrid();
+
+		this.drawTip();
+		this.drawDepartures();
+		this.drawLines();
+
+		this.drawShadedCells();
+		this.drawMBs();
+
+		this.drawNumbers();
+
+		this.drawChassis();
+
+		this.drawTarget();
+	},
+
+	getCellColor : function(cell){
+		var puzzle = this.owner, targetcell = (puzzle.execConfig('dispmove') ? cell.base : cell);
+		if(targetcell.qnum===-1){ return null;}
+		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===targetcell){ return this.movecolor;}
+		
+		var info = cell.error || cell.qinfo;
+		if     (info===0){ return this.quescolor;}
+		else if(info===1){ return this.errcolor1;}
+		return null;
+	},
+	getCellNumberColor : function(cell){
+		return (this.owner.getConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
+	}
+},
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
@@ -172,12 +248,20 @@ Encode:{
 		}
 	}
 },
+"Encode@rectslider":{
+	decodePzpr : function(type){
+		this.decodeNumber16();
+	},
+	encodePzpr : function(type){
+		this.encodeNumber16();
+	},
+},
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
 		this.decodeCellQsubQcmp();
-		this.decodeBorderQues();
+		if(this.owner.pid!=='rectslider'){ this.decodeBorderQues();}
 		this.decodeBorderLine();
 
 		this.owner.enc.checkPuzzleid();
@@ -185,7 +269,7 @@ FileIO:{
 	encodeData : function(){
 		this.encodeCellQnum();
 		this.encodeCellQsubQcmp();
-		this.encodeBorderQues();
+		if(this.owner.pid!=='rectslider'){ this.encodeBorderQues();}
 		this.encodeBorderLine();
 	},
 
@@ -222,11 +306,22 @@ AnsCheck:{
 
 		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
 
+		if(pid==='rectslider'){
+			var rectinfo = bd.rects.getAreaInfo();
+			if( !this.checkAreaRect(rectinfo) ){ return 'csNotRect';}
+			if( !this.checkBlockSize(rectinfo) ){ return 'bkSize1';}
+		}
+
 		if( !this.checkLineLength(linfo) ){ return 'laLenNe';}
 
-		var rinfo = bd.getRoomInfo();
-		if( !this.checkFractal(rinfo) ){ return (pid==='bonsan' ? 'brObjNotSym' : 'bkObjNotSym');}
-		if( (pid==='heyabon') && !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
+		if(pid==='bonsan'){ 
+			if( !this.checkFractal_board() ){ return 'brObjNotSym';}
+		}
+		else if(pid==='heyabon'){
+			var rinfo = bd.getRoomInfo();
+			if( !this.checkFractal(rinfo) ){ return 'bkObjNotSym';}
+			if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
+		}
 
 		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
 
@@ -244,17 +339,27 @@ AnsCheck:{
 	checkNoLineCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);});
 	},
+	checkBlockSize : function(rinfo){
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
+	},
 
-	checkFractal : function(rinfo, getval){
+	checkFractal : function(rinfo){
 		for(var id=1;id<=rinfo.max;id++){
-			var clist = rinfo.area[id].clist, d = clist.getRectSize();
-			d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
-					clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
-					return false;
-				}
+			if(!this.checkFractal_clist(rinfo.area[id].clist)){ return false;}
+		}
+		return true;
+	},
+	checkFractal_board : function(){
+		return this.checkFractal_clist(this.owner.board.cell);
+	},
+	checkFractal_clist : function(clist){
+		var d = clist.getRectSize();
+		d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
+				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
+				return false;
 			}
 		}
 		return true;
@@ -269,5 +374,13 @@ FailCode:{
 	laIsolate : ["○につながっていない線があります。","A line doesn't connect any circle."],
 	nmConnected : ["○が繋がっています。","There are connected circles."],
 	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
+},
+"FailCode@rectslider":{
+	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
+	bkSize1   : ["黒マスが一つで孤立しています。","There is a isolated shaded cells."],
+	laOnNum   : ["黒マスの上を線が通過しています。","A line goes through a shaded cell."],
+	laIsolate : ["黒マスにつながっていない線があります。","A line doesn't connect any shaded cell."],
+	nmConnected : ["黒マスが繋がっています。","There are connected shaded cells."],
+	nmIsolate : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
 }
 });
