@@ -123,7 +123,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
+	nummaxfunc : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },

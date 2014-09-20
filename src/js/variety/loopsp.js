@@ -42,7 +42,7 @@ MouseEvent:{
 				else if(qu==17)        { cell.setQues(0); cell.setQnum(-2);}
 			}
 			else if(qn==-2){ cell.setQnum(1);}
-			else if(qn<cell.getmaxnum()){ cell.setQnum(qn+1);}
+			else if(qn<cell.maxnum){ cell.setQnum(qn+1);}
 			else{ cell.setQues(0); cell.setQnum(-1);}
 		}
 		else if(this.btn.Right){

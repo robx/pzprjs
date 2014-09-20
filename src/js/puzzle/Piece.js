@@ -145,11 +145,11 @@ BoardPiece:{
 	},
 	
 	//---------------------------------------------------------------------------
-	// getmaxnum() 入力できる数字の最大値を返す
-	// getminnum() 入力できる数字の最小値を返す
+	// nummaxfunc() 入力できる数字の最大値を返す
+	// numminfunc() 入力できる数字の最小値を返す
 	//---------------------------------------------------------------------------
-	getmaxnum : function(){ return (typeof this.maxnum==="function" ? this.maxnum() : this.maxnum);},
-	getminnum : function(){ return (typeof this.minnum==="function" ? this.minnum() : this.minnum);},
+	nummaxfunc : function(){ return this.maxnum;},
+	numminfunc : function(){ return this.minnum;},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -200,9 +200,9 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	prehook : {
 		ques  : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
-		qnum  : function(num){ return (this.getminnum()>0 && num===0);},
-		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
-		anum  : function(num){ return (this.getminnum()>0 && num===0);}
+		qnum  : function(num){ return (this.minnum>0 && num===0);},
+		qnum2 : function(num){ return (this.minnum>0 && num===0);},
+		anum  : function(num){ return (this.minnum>0 && num===0);}
 	},
 	posthook : {
 		ques  : function(num){ this.owner.board.setInfoByCell(this);},
@@ -240,7 +240,7 @@ BoardPiece:{
 	//-----------------------------------------------------------------------
 	getNum : function(){ return (this.qnum!==-1 ? this.qnum : this.anum);},
 	setNum : function(val){
-		if(this.getminnum()>0 && val===0){ return;}
+		if(this.minnum>0 && val===0){ return;}
 		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
 		if(this.owner.editmode){
 			val = (((this.numberAsObject||val===-2) && this.qnum===val)?-1:val);

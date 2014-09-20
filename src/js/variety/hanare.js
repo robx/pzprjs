@@ -56,7 +56,7 @@ Cell:{
 		if(val>=0){
 			var o=this.owner, rooms=o.board.rooms;
 			val = rooms.getCntOfRoomByCell(this);
-			if(val>this.getmaxnum()){ return null;}
+			if(val>this.maxnum){ return null;}
 
 			var clist = rooms.getClistByCell(this), cell2=null;
 			for(var i=0;i<clist.length;i++){

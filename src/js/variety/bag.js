@@ -58,8 +58,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
-		return Math.min(255, this.owner.board.qcols+this.owner.board.qrows-1);
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, this.owner.board.qcols+this.owner.board.qrows-1);
 	},
 	minnum : 2,
 

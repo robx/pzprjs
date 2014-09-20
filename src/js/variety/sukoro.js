@@ -70,10 +70,11 @@ Cell:{
 	}
 },
 "Cell@view":{
-	maxnum : function(){
-		return Math.min(255, this.owner.board.qcols+this.owner.board.qrows-2);
-	},
-	minnum : 0
+	maxnum : 255,
+	minnum : 0,
+	nummaxfunc : function(){
+		return Math.min(this.owner.board.qcols+this.owner.board.qrows-2, this.maxnum);
+	}
 },
 
 "Board@view":{

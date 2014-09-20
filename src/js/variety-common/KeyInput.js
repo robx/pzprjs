@@ -8,7 +8,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
 		var cross = this.cursor.getx();
-		var max = cross.getmaxnum(), val=-1;
+		var max = cross.nummaxfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = cross.getQnum();
@@ -45,7 +45,7 @@ KeyEvent:{
 		}
 	},
 	key_inputqnum_main : function(cell,ca){
-		var max = cell.getmaxnum(), min = cell.getminnum(), val=-1;
+		var max = cell.nummaxfunc(), min = cell.numminfunc(), val=-1;
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = cell.getNum();

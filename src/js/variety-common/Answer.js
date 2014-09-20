@@ -369,7 +369,7 @@ AnsCheck:{
 	isDifferentNumberInClist : function(clist, numfunc){
 		if(clist.length<=0){ return true;}
 		var result = true, d = [], num = [];
-		var max = clist[0].getmaxnum(), bottom = clist[0].getminnum();
+		var max = clist[0].nummaxfunc(), bottom = clist[0].numminfunc();
 		for(var n=bottom;n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i].id] = numfunc(clist[i]);}
 

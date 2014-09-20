@@ -53,12 +53,12 @@ MouseEvent:{
 						break;
 					}
 				}
-				if(cell.getQdir()===5 && this.owner.pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
+				if(cell.getQdir()===5 && this.owner.pid==='sashigane'){ cell.setQnum(cell.nummaxfunc());}
 			}
 		}
 		else{
 			var qn = cell.getNum(), min, max;
-			if(this.owner.pid==='sashigane'){ max=cell.getmaxnum(), min=cell.getminnum();}
+			if(this.owner.pid==='sashigane'){ max=cell.nummaxfunc(), min=cell.numminfunc();}
 			if(this.btn.Left){
 				if(this.owner.pid==='loute'){ cell.setQdir(1);}
 				else if(qn<min){ cell.setNum(min);}
@@ -146,15 +146,16 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
+	nummaxfunc : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx+2):bx+2)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by+2):by+2)>>1);
 		return (col+row-1);
 	},
-	minnum : function(){
+	numminfunc : function(){
 		return ((this.owner.board.qcols>=2?2:1)+(this.owner.board.qrows>=2?2:1)-1);
 	},
+	minnum : 3,
 
 	getObjNum : function(){ return this.qdir;},
 	isCircle : function(){ return this.qdir===5;}

@@ -150,7 +150,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
+	nummaxfunc : function(){
 		return Math.min(99, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },

@@ -48,8 +48,8 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
-		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
+	nummaxfunc : function(){
+		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
 	},
 	minnum : 0
 },

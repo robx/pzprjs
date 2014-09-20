@@ -24,7 +24,7 @@ MouseEvent:{
 		var cell = pos.getc();
 		if(cell.isnull){ return;}
 
-		var max = cell.getmaxnum(), ques = cell.getQues(), num = cell.getNum();
+		var max = cell.nummaxfunc(), ques = cell.getQues(), num = cell.getNum();
 		if(this.owner.editmode){
 			if(this.btn.Left){
 				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}

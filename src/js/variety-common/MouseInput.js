@@ -82,7 +82,7 @@ MouseEvent:{
 
 		if(puzzle.playmode && cell.qnum!==puzzle.Cell.prototype.qnum){ return;}
 
-		var max=cell.getmaxnum(), min=cell.getminnum();
+		var max=cell.nummaxfunc(), min=cell.numminfunc();
 		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.getQsub());
 		var val=-1, ishatena=(puzzle.editmode && !cell.disInputHatena);
 

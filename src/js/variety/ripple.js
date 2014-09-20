@@ -30,7 +30,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : function(){
+	nummaxfunc : function(){
 		return this.owner.board.rooms.getCntOfRoomByCell(this);
 	}
 },

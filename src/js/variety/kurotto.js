@@ -27,7 +27,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	maxnum : function(){
+	nummaxfunc : function(){
 		var max=this.owner.board.qcols*this.owner.board.qrows-1;
 		return (max<=255?max:255);
 	},
