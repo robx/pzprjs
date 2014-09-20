@@ -63,7 +63,7 @@ ui.toolarea = {
 
 		/* 文字別正解表示の設定値 */
 		var pid = ui.puzzle.pid;
-		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='herugolf'){
+		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='rectslider'||pid==='herugolf'){
 			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
 		else if(pid==='kouchoku'){

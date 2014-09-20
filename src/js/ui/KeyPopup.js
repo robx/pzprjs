@@ -64,6 +64,7 @@ ui.keypopup =
 		kurotto    : [10,0],
 		bonsan     : [10,0],
 		heyabon    : [10,0],
+		rectslider : [10,0],
 		yosenabe   : [10,0],
 		herugolf   : [10,0],
 		firefly    : [10,0],
@@ -284,6 +285,9 @@ ui.keypopup =
 		}
 		else if(pid==='tasquare'){
 			this.inputcol('num','-','□');
+		}
+		else if(pid==='rectslider'){
+			this.inputcol('num','-','■');
 		}
 		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
 			this.inputcol('num','-','○');
