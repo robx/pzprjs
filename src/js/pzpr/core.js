@@ -21,6 +21,7 @@ window.pzpr = {
 		/* IE8以下だとHTMLElementが定義されておらずエラーになる */
 		catch(e){ canvasNotElement = !(canvas && canvas.style);}
 		if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
+		if(pzpr.env.browser.Presto){ option.graphic='canvas';}
 		
 		var puzzle = new pzpr.Puzzle(canvas, option);
 		this.puzzles.push(puzzle);
