@@ -293,6 +293,7 @@ function openExecute(puzzle, data, callback){
 	pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.Board){ initObjects(puzzle);}
+		else{ puzzle.painter.suspendAll();}
 		
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
@@ -370,7 +371,6 @@ function waitCanvasReady(puzzle, callback){
 	puzzle.painter.initCanvas( function(){ postCanvasReady(puzzle, callback);} );
 }
 function postCanvasReady(puzzle, callback){
-	puzzle.painter.suspendAll();
 	firstCanvasReady(puzzle);
 	
 	if(!!callback){ callback(puzzle);}
