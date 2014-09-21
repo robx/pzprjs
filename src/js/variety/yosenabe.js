@@ -62,7 +62,7 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputnumber_yosenabe : function(cell){
-		var max = cell.nummaxfunc(), num, type, val=-1;
+		var max = cell.getmaxnum(), num, type, val=-1;
 
 		if     (cell.getQnum() !==-1){ num=cell.getQnum();  type=1;} /* ○数字 */
 		else if(cell.getQnum2()!==-1){ num=cell.getQnum2(); type=2;} /* なべの数字 */
@@ -107,7 +107,7 @@ KeyEvent:{
 			cell.setQues(cell.ice()?0:6);
 		}
 		else{
-			var max = cell.nummaxfunc(), val=-1, cur=-1, type;
+			var max = cell.getmaxnum(), val=-1, cur=-1, type;
 
 			if     (cell.getQnum() !==-1){ cur=cell.getQnum();  type=1;} /* ○数字 */
 			else if(cell.getQnum2()!==-1){ cur=cell.getQnum2(); type=2;} /* なべの数字 */

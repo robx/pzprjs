@@ -193,8 +193,8 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
-	nummaxfunc : function(){
-		return Math.min(this.owner.board.hinfo.max, this.maxnum);
+	maxnum : function(){
+		return Math.min(255, this.owner.board.hinfo.max);
 	}
 },
 Border:{

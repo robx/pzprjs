@@ -20,7 +20,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },

@@ -71,10 +71,8 @@ MouseEvent:{
 	inputqnum_snakes : function(){
 		var cell = this.getcell();
 		if(!cell.isnull){
-			if(this.owner.playmode){ cell.minnum = 1;}
 			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
-			cell.minnum = 0;
 		}
 	}
 },
@@ -101,7 +99,9 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : 5,
-	minnum : 0,
+	minnum : function(){
+		return (this.owner.playmode ? 1 : 0);
+	},
 
 	draw : function(){
 		if(!this.owner.getConfig('snakebd')){

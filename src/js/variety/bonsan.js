@@ -90,7 +90,7 @@ Cell:{
 		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
 	},
 	
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);

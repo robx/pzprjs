@@ -28,7 +28,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		var d = this.owner.board.rooms.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}

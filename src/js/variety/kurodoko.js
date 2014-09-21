@@ -29,7 +29,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return this.owner.board.qcols+this.owner.board.qrows-1;
 	},
 	minnum : 2

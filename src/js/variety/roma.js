@@ -73,7 +73,7 @@ KeyEvent:{
 Cell:{
 	numberAsObject : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return (this.owner.editmode?5:4);
 	}
 },
