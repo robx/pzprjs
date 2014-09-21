@@ -220,11 +220,11 @@ ui.debug.extend(
 				if(data.result!==void 0 && !!data.result){
 					var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
 					count++;
-					if(iserror){ self.fails++;}
+					if(iserror){ self.fails++; self.addTextarea("Input Error No."+n);}
 					if(!iserror){ pass++;}
 				}
 			}
-			if(!self.alltimer){
+			if(!self.alltimer || pass!==count){
 				self.addTextarea("Input test Pass = "+pass+"/"+count);
 			}
 			self.execinput("playmode");
