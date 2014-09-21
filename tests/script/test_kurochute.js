@@ -12,6 +12,7 @@ ui.debug.addDebugData('kurochute', {
 		/* 回答入力テスト */
 		{ input:["editmode", "newboard,5,1", "cursor,1,1", "key,1", "playmode"] },
 		/* 問題入力はnurikabeやhitori等と同じなので省略 */
+		{ input:["setconfig,use,1", "ansclear"] },
 		{ input:["mouse,left, 3,1, 9,1"],
 		  result:"pzprv3/kurochute/1/5/1 . . . . /. 1 . 1 . /" },
 		{ input:["mouse,left, 3,1, 9,1"],

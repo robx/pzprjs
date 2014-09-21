@@ -301,7 +301,7 @@ pzpr.parser.FileData.prototype = {
 	//                   出力={id:パズル種類, type:ファイル種類, fstr:ファイルの内容}
 	//---------------------------------------------------------------------------
 	parseFileType : function(){
-		var lines = this.fstr.split(/\n/);
+		var lines = this.fstr.split("\n");
 		var firstline = lines.shift();
 		
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
@@ -333,7 +333,7 @@ pzpr.parser.FileData.prototype = {
 	// ★ parseFileData() ファイルの内容からサイズなどを求める
 	//---------------------------------------------------------------------------
 	parseFileData : function(){
-		var lines = this.qdata.split(/\n/), col = 0, row = 0;
+		var lines = this.qdata.split("\n"), col = 0, row = 0;
 		
 		/* サイズを表す文字列 */
 		if(this.type===this.FILE_PBOX && this.id==="kakuro"){

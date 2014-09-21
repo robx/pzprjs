@@ -27,7 +27,7 @@ ui.debug.addDebugData('kakuru', {
 		{ input:["cursor,1,1", "key,0", "key,right,1", "key,right,2", "key,right,3", "key,right,4", "key,right,1,0" ],
 		  result:"pzprv3/kakuru/1/6/. . 4 . b . /0 1 . 3 . 1 /" },
 		{ input:["cursor,3,1", "key,-", "key,right,-,-", "key,right, " ],
-		  result:"pzprv3/kakuru/1/6/. . 4 . b . /0 0 . 0 . 0 /" },
+		  result:"pzprv3/kakuru/1/6/. . 4 . b . /0 0 . 0 . 1 /" },
 		{ input:["newboard,5,2", "playmode"] },
 		{ input:["cursor,0,0", "mouse,leftx2, 1,1",  "mouse,leftx3, 3,1",  "mouse,leftx3, 5,1",  "mouse,leftx10, 7,1",  "mouse,leftx11, 9,1",
 							   "mouse,rightx2, 1,3", "mouse,rightx3, 3,3", "mouse,rightx3, 5,3", "mouse,rightx10, 7,3", "mouse,rightx11, 9,3"],

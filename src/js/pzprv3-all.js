@@ -139,9 +139,10 @@
 			return "";
 		})();
 		
-		component.map(function(mod){ return dir+mod+".js";}).forEach(function(file){
+		for(var i=0; i<component.length; i++){
+			var file = dir+component[i]+".js";
 			document.write('<script type="text/javascript" src="'+file+'"></script>');
-		});
+		}
 	}
 	else{
 		component.unshift("common/intro");

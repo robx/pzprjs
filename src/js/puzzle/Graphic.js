@@ -432,11 +432,13 @@ Graphic:{
 	prepaint : function(){
 		if(this.suspended || !this.context){ return;}
 
-		var x1 = this.range.x1, y1 = this.range.y1,
+		var bd = this.owner.board, bm=2*this.margin,
+			x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
-		if(x1>x2 || y1>y2){ return;}
-
-		if(!this.useBuffer){
+		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-bm){
+			/* 入力が範囲外ならば何もしない */
+		}
+		else if(!this.useBuffer){
 			this.setRangeObject(x1,y1,x2,y2);
 			this.flushCanvas();
 			this.paint();
@@ -454,7 +456,6 @@ Graphic:{
 				sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
 			if(sx1<0){ sx1=0;} if(sx2>g2.child.width) { sx2=g2.child.width;}
 			if(sy1<0){ sy1=0;} if(sy2>g2.child.height){ sy2=g2.child.height;}
-			//g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 		}
 
