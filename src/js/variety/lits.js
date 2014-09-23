@@ -139,8 +139,8 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		var parser = pzpr.parser;
-		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d"))
-					|| (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
+		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d")) ||
+					   (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}

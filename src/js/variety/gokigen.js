@@ -314,8 +314,8 @@ Graphic:{
 "Encode@gokigen":{
 	decodePzpr : function(type){
 		var parser = pzpr.parser;
-		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c"))
-					|| (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
+		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c")) ||
+					   (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},

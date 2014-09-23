@@ -15,7 +15,6 @@
   },
   "browser": true,  // Allow to use browser defined variable (not console, alert etc.)
 
-  "laxbreak": true, // Allow unsafe line break (TODO: this option disable)
   "shadow": true,   // Allow redefine variable (TODO: this option disable)
   "loopfunc": true, // Allow function definition in loop
   "sub": true       // Allow object access via obj["name"]

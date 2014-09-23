@@ -233,8 +233,8 @@ AnsCheck:{
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c], adb = cross.adjborder;
 			if(cross.lcnt===2 && cross.qnum!==1){
-				if(    !(adb.top.qans===1 && adb.bottom.qans===1)
-					&& !(adb.left.qans===1 && adb.right.qans===1) )
+				if( !(adb.top.qans===1 && adb.bottom.qans===1) &&
+					!(adb.left.qans===1 && adb.right.qans===1) )
 				{
 					if(this.checkOnly){ return false;}
 					cross.setCrossBorderError();
