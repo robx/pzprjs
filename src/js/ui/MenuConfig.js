@@ -1,9 +1,11 @@
 // MenuConfig.js v3.4.1
-/* global ui:false */
+/* global pzpr:false, ui:false */
 
+(function(){
 //---------------------------------------------------------------------------
 // ★MenuConfigクラス UI側の設定値を管理する
 //---------------------------------------------------------------------------
+var Config = pzpr.Puzzle.prototype.Config.prototype;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
@@ -27,11 +29,7 @@ ui.menuconfig = {
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
 	},
-	add : function(name, defvalue, option){
-		var item = {val:defvalue, defval:defvalue};
-		if(!!option){ item.option = option;}
-		this.list[name] = item;
-	},
+	add : Config.add,
 
 	//---------------------------------------------------------------------------
 	// menu.set()   アイスと○などの表示切り替え時の処理を行う
@@ -40,20 +38,9 @@ ui.menuconfig = {
 	set : function(idname, newval){
 		if(!this.list[idname]){ return;}
 		this.setproper(idname, newval);
-		ui.setdisplay(idname);
-		switch(idname){
-		case 'keypopup':
-			ui.keypopup.display();
-			break;
-			
-		case 'adjsize': case 'cellsize': case 'fullwidth':
-			ui.event.adjustcellsize();
-			break;
-		}
+		this.configevent(idname,newval);
 	},
-	get : function(idname){
-		return (!!this.list[idname]?this.list[idname].val:null);
-	},
+	get : Config.get,
 
 	//---------------------------------------------------------------------------
 	// menu.getAll()  全フラグの設定値を返す
@@ -68,23 +55,30 @@ ui.menuconfig = {
 		delete object.autocheck;
 		return JSON.stringify(object);
 	},
-	setAll : function(json){
-		var object = JSON.parse(json);
-		this.init();
-		for(var key in this.list){
-			if(object[key]!==void 0){ this.setproper(key, object[key]);}
-		}
-	},
+	setAll : Config.setAll,
 
 	//---------------------------------------------------------------------------
 	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
+	// menuconfig.gettype()      設定値の持つ型を返す
 	//---------------------------------------------------------------------------
-	setproper : function(idname, newval){
-		var item = this.list[idname];
-		switch(typeof item.defval){
-			case "boolean": item.val = !!newval;  break;
-			case "number":  item.val = +newval;   break;
-			case "string":  item.val = ""+newval; break;
+	setproper : Config.setproper,
+	gettype : Config.gettype,
+
+	//---------------------------------------------------------------------------
+	// config.configevent()  設定変更時の動作を記述する
+	//---------------------------------------------------------------------------
+	configevent : function(idname, newval){
+		ui.setdisplay(idname);
+		switch(idname){
+		case 'keypopup':
+			ui.keypopup.display();
+			break;
+			
+		case 'adjsize': case 'cellsize': case 'fullwidth':
+			ui.event.adjustcellsize();
+			break;
 		}
 	}
 };
+
+})();

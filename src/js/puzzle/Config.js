@@ -82,6 +82,8 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
+		if(!this.list[name]){ return;}
+		this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.owner.execListener('config', name, newval);
 	},
@@ -108,6 +110,7 @@ Config.prototype =
 
 	//---------------------------------------------------------------------------
 	// config.setproper()    設定値の型を正しいものに変換して設定変更する
+	// config.gettype()      設定値の持つ型を返す
 	//---------------------------------------------------------------------------
 	setproper : function(name, newval){
 		var item = this.list[name];
@@ -117,15 +120,14 @@ Config.prototype =
 			case "string":  item.val = ""+newval; break;
 		}
 	},
+	gettype : function(name){
+		return (typeof this.list[name].defval);
+	},
 
 	//---------------------------------------------------------------------------
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		if(!this.list[name]){ return;}
-		
-		this.setproper(name, newval);
-
 		var result = true, puzzle = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
