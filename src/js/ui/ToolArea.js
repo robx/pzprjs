@@ -284,7 +284,7 @@ ui.toolarea = {
 			if(!!manage){
 				var val = ui.getConfig(pp.item[idname].parent);
 				manage.innerHTML = this.getLabel(idname);
-				manage.className = ((pp.item[idname].val == val)?"childsel":"child");
+				manage.className = ((pp.item[idname].val===val)?"childsel":"child");
 			}
 			break;
 
@@ -316,14 +316,14 @@ ui.toolarea = {
 		if(idname==='bgcolor'){
 			if(ui.puzzle.flags.bgcolor){
 				var mode = ui.getConfig('mode');
-				getEL('ck_bgcolor').disabled    = (mode==3?"":"true");
-				getEL('cl_bgcolor').style.color = (mode==3?"black":"silver");
+				getEL('ck_bgcolor').disabled    = (mode===3?"":"true");
+				getEL('cl_bgcolor').style.color = (mode===3?"black":"silver");
 			}
 		}
 		
 		if(idname==='disptype_pipelinkr'){
 			if(ui.puzzle.pid==='pipelinkr' && !!getEL('btncircle')){
-				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)==1)?"○":"■");
+				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)===1)?"○":"■");
 			}
 		}
 	},
@@ -384,6 +384,6 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	toggledisp : function(){
 		var current = ui.puzzle.getConfig('disptype_pipelinkr');
-		ui.puzzle.setConfig('disptype_pipelinkr', (current==1?2:1));
+		ui.puzzle.setConfig('disptype_pipelinkr', (current===1?2:1));
 	}
 };

@@ -34,12 +34,12 @@ pzpr.env = (function(){
 	var UA  = navigator.userAgent;
 	
 	var bz = {
-		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==8),
-		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)==9),
+		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===8),
+		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===9),
 
 		Presto: (!!window.opera),
 		WebKit: (UA.indexOf('AppleWebKit/') > -1),
-		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML') == -1)
+		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1)
 	};
 	bz.legacyIE = (bz.IE8);
 	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */

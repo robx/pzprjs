@@ -5,7 +5,7 @@
   "newcap": true,   // Warn if first letter is not capital
   "nonew": true,    // Warn contructor call
   "regexp": true,   // Warn use . in regexp
-//"eqeqeq": true,   // Warn ==, != to compare
+  "eqeqeq": true,   // Warn ==, != to compare
   "latedef": true,  // Warn use variable before definition
   "es3": true,      // Enable ES3 mode (to find out extra-comma)
 

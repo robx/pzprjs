@@ -22,17 +22,17 @@ MouseEvent:{
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 
-		(this.inputData==1?cell.setShade:cell.clrShade).call(cell);
+		(this.inputData===1?cell.setShade:cell.clrShade).call(cell);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.owner.getConfig('use')==1){
+		if(this.owner.getConfig('use')===1){
 			if     (this.btn.Left) { this.inputData=(cell.isUnshade()  ? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
 		}
-		else if(this.owner.getConfig('use')==2){
+		else if(this.owner.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.getQnum()!==-1){
 				this.inputData=((cell.getQsub()!==1)? 2 : 0);
 			}
@@ -228,7 +228,7 @@ MouseEvent:{
 			var cell2 = clist[i];
 			if(this.inputData===1 || cell2.getQsub()!==3){
 				(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
-				cell2.setQsub(this.inputData==2?1:0);
+				cell2.setQsub(this.inputData===2?1:0);
 			}
 		}
 		clist.draw();

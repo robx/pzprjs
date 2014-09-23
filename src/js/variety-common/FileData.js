@@ -259,7 +259,7 @@ FileIO:{
 		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!=rdata[cell2.id]);
+			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!==rdata[cell2.id]);
 			border[(isques?'ques':'qans')] = (isdiff?1:0);
 		}
 	},
@@ -271,7 +271,7 @@ FileIO:{
 		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
 		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
-			if(item[i]=="."){ continue;}
+			if(item[i]==="."){ continue;}
 
 			var bx=(i%(bd.qcols+1)-1)*2+1, by=(((i/(bd.qcols+1))|0)-1)*2+1;
 			if(bx===-1 || by===-1){

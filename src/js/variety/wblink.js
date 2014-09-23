@@ -75,10 +75,10 @@ KeyEvent:{
 	key_inputcircle : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
-		else if(ca=='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}
-		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
-		else if(ca=='3'||ca==" "){ cell.setQnum(-1);}
+		if     (ca==='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
+		else if(ca==='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}
+		else if(ca==='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		else if(ca==='3'||ca===" "){ cell.setQnum(-1);}
 		else{ return;}
 
 		cell.draw();

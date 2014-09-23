@@ -47,12 +47,12 @@ KeyEvent:{
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
 			var canum = cell.getQnum();
-			if     ((canum-1)%26==num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
-			else if((canum-1)%26==num){ cell.setQnum(-1);}
+			if     ((canum-1)%26===num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
+			else if((canum-1)%26===num){ cell.setQnum(-1);}
 			else{ cell.setQnum(num+1);}
 		}
-		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
-		else if(ca==' '){ cell.setQnum(-1);}
+		else if(ca==='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		else if(ca===' '){ cell.setQnum(-1);}
 		else{ return;}
 
 		this.prev = cell;
@@ -195,14 +195,14 @@ Encode:{
 		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qnum = bd.cell[c].qnum;
-			if     (qnum==-2){ pstr = ".";}
+			if     (qnum===-2){ pstr = ".";}
 			else if(qnum>= 1 && qnum<=26){ pstr = ""+ (qnum+9).toString(36).toUpperCase();}
 			else if(qnum>=27 && qnum<=36){ pstr = ""+ (qnum-27).toString(10);}
 			else if(qnum>=37 && qnum<=72){ pstr = "-"+ (qnum-37).toString(36).toUpperCase();}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr||count==26){ cm+=((9+count).toString(36).toLowerCase()+pstr); count=0;}
+			else if(pstr||count===26){ cm+=((9+count).toString(36).toLowerCase()+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36).toLowerCase();}
 

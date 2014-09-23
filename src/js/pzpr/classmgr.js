@@ -128,7 +128,7 @@ pzpr.classmgr = {
 	//---------------------------------------------------------------------------
 	setPuzzleClass : function(puzzle, newpid, callback){
 		/* 今のパズルと別idの時 */
-		if(puzzle.pid != newpid){
+		if(puzzle.pid !== newpid){
 			this.includeCustomFile(newpid);
 		}
 		/* Customファイルが読み込みできるまで待つ */
@@ -137,7 +137,7 @@ pzpr.classmgr = {
 			return;
 		}
 
-		if(puzzle.pid != newpid){
+		if(puzzle.pid !== newpid){
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 			puzzle.pid = newpid;

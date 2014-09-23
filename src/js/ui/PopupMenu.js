@@ -350,7 +350,7 @@ ui.popupmgr.addpopup('newboard',
 			
 			var _div = createEL('div');
 			_div.id = "nb"+i;
-			_div.style.backgroundColor = (i==idx?'red':'');
+			_div.style.backgroundColor = (i===idx?'red':'');
 			_div.appendChild(_img);
 			
 			table.addCell(_div);
@@ -623,7 +623,7 @@ ui.popupmgr.addpopup('filesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!=-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
@@ -764,7 +764,7 @@ ui.popupmgr.addpopup('imagesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!=-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		/* 画像出力ルーチン */

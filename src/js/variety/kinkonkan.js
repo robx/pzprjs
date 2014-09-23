@@ -24,7 +24,7 @@ MouseEvent:{
 		}
 		
 		if(this.mouseend){
-			if(this.inputData==12){ this.owner.board.lightclear();}
+			if(this.inputData===12){ this.owner.board.lightclear();}
 		}
 	},
 
@@ -55,7 +55,7 @@ MouseEvent:{
 		if(excell.isnull || this.mouseCell===excell){ return;}
 		if(excell.id>=this.owner.board.excellmax-4){ return;}
 
-		if(this.inputData!=11 && this.inputData!==null){ }
+		if(this.inputData!==11 && this.inputData!==null){ }
 		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
 		else{
 			this.owner.board.flashlight(excell.id);
@@ -145,20 +145,20 @@ KeyEvent:{
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
 			var canum = excell.getQchar();
-			if     ((canum-1)%26==num && canum>0 && canum<79){ excell.setQchar(canum+26);}
-			else if((canum-1)%26==num){ excell.setQchar(0);}
+			if     ((canum-1)%26===num && canum>0 && canum<79){ excell.setQchar(canum+26);}
+			else if((canum-1)%26===num){ excell.setQchar(0);}
 			else{ excell.setQchar(num+1);}
 		}
-		else if(ca=='-'){
+		else if(ca==='-'){
 			if(qn!==-1){ excell.setQnum(-1);}
 			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
-		else if(ca=='F4'){
+		else if(ca==='F4'){
 			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
 			else{ this.owner.board.lightclear();}
 			this.owner.redraw();
 		}
-		else if(ca==' '){ excell.setQnum(-1); excell.setQchar(0);}
+		else if(ca===' '){ excell.setQnum(-1); excell.setQchar(0);}
 		else{ return;}
 
 		this.prev = excell;
@@ -305,8 +305,8 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id, err = cell.error, ql = cell.qlight;
 			if(err!==0 || ql!==0){
-				if     (err==1){ g.fillStyle = this.errbcolor1;}
-				else if(ql > 0){ g.fillStyle = this.lightcolor;}
+				if     (err===1){ g.fillStyle = this.errbcolor1;}
+				else if(ql >  0){ g.fillStyle = this.lightcolor;}
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if(err===1 || ql===1){
 					if(this.vnop(headers[0]+id,this.FILL)){
@@ -398,9 +398,9 @@ Encode:{
 				if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
 				else       { pstr = (((val-1)/26-1)|0).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
 
-				if     (qnum==-2){ cm2+=".";}
-				else if(qnum <16){ cm2+=("" +qnum.toString(16));}
-				else             { cm2+=("-"+qnum.toString(16));}
+				if     (qnum===-2){ cm2+=".";}
+				else if(qnum  <16){ cm2+=("" +qnum.toString(16));}
+				else              { cm2+=("-"+qnum.toString(16));}
 			}
 			else{ count++;}
 
@@ -508,8 +508,8 @@ AnsCheck:{
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQchar()===0){ continue;}
 			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
-			if( (type==1&& (excell.getQchar()!==excell2.getQchar()) )||
-				(type==2&&((excell.getQnum() !==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
+			if( (type===1&& (excell.getQchar()!==excell2.getQchar()) )||
+				(type===2&&((excell.getQnum() !==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
 			){
 				return false;
 			}

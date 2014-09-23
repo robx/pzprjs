@@ -523,7 +523,7 @@ Graphic:{
 			var Ldeg = (Cmax+Cmin)*0.5 / 255;
 			var Sdeg = (Cmax===Cmin?0:(Cmax-Cmin)/((Ldeg<=0.5)?(Cmax+Cmin):(2*255-Cmax-Cmin)) );
 
-			if(Cmax==Cmin){ Hdeg = 0;}
+			if(Cmax===Cmin){ Hdeg = 0;}
 			else if(Rdeg>=Gdeg && Rdeg>=Bdeg){ Hdeg = (    60*(Gdeg-Bdeg)/(Cmax-Cmin)+360)%360;}
 			else if(Gdeg>=Rdeg && Gdeg>=Bdeg){ Hdeg = (120+60*(Bdeg-Rdeg)/(Cmax-Cmin)+360)%360;}
 			else if(Bdeg>=Gdeg && Bdeg>=Rdeg){ Hdeg = (240+60*(Rdeg-Gdeg)/(Cmax-Cmin)+360)%360;}
@@ -666,7 +666,7 @@ Graphic:{
 		}
 
 		var style = (option.style ? option.style+" " : "");
-		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
+		var fontfamily = (this.owner.getConfig('font')===1 ? 'sans-serif' : 'serif');
 		var ratioarray = option.ratio || this.fontsizeratio;
 		var ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);

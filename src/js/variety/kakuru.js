@@ -42,7 +42,7 @@ KeyEvent:{
 				cell.setQues(1);
 				cell.setNum(-1);
 			}
-			else if(ca=='q2'){ cell.setQues(0);}
+			else if(ca==='q2'){ cell.setQues(0);}
 		}
 		else{ return;}
 

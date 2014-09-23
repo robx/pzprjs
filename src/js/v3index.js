@@ -48,7 +48,7 @@ v3index.extend({
 					var typename = RegExp.$1;
 					typelist.push(typename);
 					self.addEvent(el,"click",self.click_tab);
-					if(el.className=="puzmenusel"){ self.current = typename;}
+					if(el.className==="puzmenusel"){ self.current = typename;}
 				}
 				el = el.nextSibling;
 			}
@@ -81,7 +81,7 @@ v3index.extend({
 	click_tab : function(e){
 		var el = (e.target || e.srcElement);
 		if(!!el){ self.current = el.id.substr(8); self.disp();}
-		if(self.current=="input"){ self.dbif.display();} /* iPhone用 */
+		if(self.current==="input"){ self.dbif.display();} /* iPhone用 */
 	},
 
 	/* display tabs and tables function */
@@ -184,15 +184,15 @@ v3index.fileif.extend({
 
 	fileinput : function(e){
 		var fileEL = _doc.fileform.filebox;
-		if(typeof FileReader != 'undefined'){
+		if(typeof FileReader !== 'undefined'){
 			var reader = new FileReader();
 			reader.onload = function(e){
 				self.fileonload.call(self, e.target.result);
 			};
 			reader.readAsText(fileEL.files[0]);
 		}
-		else if(typeof FileList != 'undefined' &&
-			    typeof File.prototype.getAsText != 'undefined')
+		else if(typeof FileList !== 'undefined' &&
+			    typeof File.prototype.getAsText !== 'undefined')
 		{
 			if(!fileEL.files[0]){ return;}
 			this.fileonload(fileEL.files[0].getAsText(''));
@@ -300,6 +300,7 @@ v3index.dbif.extend({
 		}
 	},
 	getcaption : function(row){
+		/* jshint eqeqeq:false */
 		var hardstr = [
 			{ja:'−'       , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
@@ -344,6 +345,7 @@ v3index.dbif.extend({
 		}
 	},
 	getvalue : function(){
+		/* jshint eqeqeq:false */
 		var val = _form.datalist.value;
 		if(val!==""){
 			for(var i=0;i<DBlist.length;i++){

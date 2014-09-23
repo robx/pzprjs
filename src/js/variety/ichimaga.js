@@ -103,9 +103,9 @@ FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
 		if(this.owner.pid==='ichimaga'){
-			if     (pzlflag=="mag")  { this.owner.pid="ichimagam";}
-			else if(pzlflag=="cross"){ this.owner.pid="ichimagax";}
-			else                     { this.owner.pid="ichimaga"; }
+			if     (pzlflag==="mag")  { this.owner.pid="ichimagam";}
+			else if(pzlflag==="cross"){ this.owner.pid="ichimagax";}
+			else                      { this.owner.pid="ichimaga"; }
 		}
 
 		this.decodeCellQnum();

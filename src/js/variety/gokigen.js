@@ -27,8 +27,8 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var use = this.owner.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.qans;
-		if     (use==1){ cell.setQans(qa!==sl?sl:0);}
-		else if(use==2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
+		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
+		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
 		cell.drawaround();
 	}
@@ -100,10 +100,10 @@ MouseEvent:{
 		}
 		else if(cursor.oncell()){
 			var cell = cursor.getc(), val = 0;
-			if     (ca=='1'){ val= 1;}
-			else if(ca=='2'){ val= 2;}
-			else if(ca=='-'){ val=-2;}
-			else if(ca==' '){ val=-1;}
+			if     (ca==='1'){ val= 1;}
+			else if(ca==='2'){ val= 2;}
+			else if(ca==='-'){ val=-2;}
+			else if(ca===' '){ val=-1;}
 
 			if(!cell.isnull && val!==0){
 				cell.setNum(val);
@@ -383,8 +383,8 @@ AnsCheck:{
 	checkLoopLine_wagiri : function(sdata, checkLoop){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!checkLoop && sdata[c]==1 && bd.cell[c].getQnum()===2){ result = false;}
-			if( checkLoop && sdata[c]==2 && bd.cell[c].getQnum()===1){ result = false;}
+			if(!checkLoop && sdata[c]===1 && bd.cell[c].getQnum()===2){ result = false;}
+			if( checkLoop && sdata[c]===2 && bd.cell[c].getQnum()===1){ result = false;}
 		}
 		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} } }
 		return result;
@@ -394,7 +394,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.getQnum();
-			if(qn>=0 && qn!=sinfo.cross[c].length){
+			if(qn>=0 && qn!==sinfo.cross[c].length){
 				if(this.checkOnly){ return false;}
 				cross.seterr(1);
 				result = false;

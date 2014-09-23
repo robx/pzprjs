@@ -103,7 +103,7 @@ Graphic:{
 
 	// オーバーライド drawBGCells用
 	getBGCellColor : function(cell){
-		if     (cell.error== 1){ return this.errbcolor1;}
+		if     (cell.error===1){ return this.errbcolor1;}
 		else if(cell.ques===51){ return "rgb(192,192,192)";}
 		return null;
 	},
@@ -159,7 +159,7 @@ Encode:{
 			if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
 			else{
 				obj.ques = 51;
-				if(ca!='.'){
+				if(ca!=='.'){
 					obj.qnum2 = this.decval(ca);
 					obj.qnum  = this.decval(bstr.charAt(i+1));
 					i++;
@@ -304,7 +304,7 @@ FileIO:{
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if(arr[(bx+1)>>1]===''){ continue;}
 				var cell = bd.getc(bx,by);
-				if(!cell.isnull && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
+				if(!cell.isnull && arr[(bx+1)>>1]!=="." && arr[(bx+1)>>1]!=="0"){
 					cell.anum = parseInt(arr[(bx+1)>>1]);
 				}
 			}
@@ -368,7 +368,7 @@ AnsCheck:{
 			if(clist[i].getAnum()>0){ sum += clist[i].getAnum();}
 			else{ return true;}
 		}
-		if(number>0 && sum!=number){
+		if(number>0 && sum!==number){
 			keyobj.seterr(1);
 			clist.seterr(1);
 			return false;

@@ -159,14 +159,14 @@ window.ui = {
 	//----------------------------------------------------------------------
 	initFileReadMethod : function(){
 		// File Reader (あれば)の初期化処理
-		if(typeof FileReader != 'undefined'){
+		if(typeof FileReader !== 'undefined'){
 			this.reader = new FileReader();
 			this.reader.onload = function(e){ ui.puzzle.open(e.target.result);};
 			this.enableReadText = true;
 		}
 		else{
 			this.reader = null;
-			this.enableGetText = (typeof FileList != 'undefined' && typeof File.prototype.getAsText != 'undefined');
+			this.enableGetText = (typeof FileList !== 'undefined' && typeof File.prototype.getAsText !== 'undefined');
 		}
 	},
 

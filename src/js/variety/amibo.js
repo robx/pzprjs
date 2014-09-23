@@ -189,7 +189,7 @@ BoardExec:{
 		}
 		
 		for(var c=0;c<bd.cellmax;c++){
-			if(binfo.id[c].length==2){ /* 0～2になる */
+			if(binfo.id[c].length===2){ /* 0～2になる */
 				binfo.area[binfo.id[c][0]].link.push(binfo.id[c][1]);
 				binfo.area[binfo.id[c][1]].link.push(binfo.id[c][0]);
 			}

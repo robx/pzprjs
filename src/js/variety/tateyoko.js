@@ -83,14 +83,14 @@ KeyEvent:{
 	},
 	key_inputqnum_tateyoko : function(ca){
 		var cell = this.cursor.getc();
-		if(ca=='q'||ca=='q1'||ca=='q2'){
-			if(ca=='q'){ ca = (cell.getQues()!=1?'q1':'q2');}
-			if(ca=='q1'){
+		if(ca==='q'||ca==='q1'||ca==='q2'){
+			if(ca==='q'){ ca = (cell.getQues()!==1?'q1':'q2');}
+			if(ca==='q1'){
 				cell.setQues(1);
 				cell.setQans(0);
 				if(cell.getQnum()>4){ cell.setQnum(-1);}
 			}
-			else if(ca=='q2'){ cell.setQues(0);}
+			else if(ca==='q2'){ cell.setQues(0);}
 		}
 		else{ return false;}
 
@@ -308,7 +308,7 @@ FileIO:{
 	encodeData : function(){
 		this.encodeCell( function(obj){
 			if(obj.ques===1){
-				if(obj.qnum==-1||obj.qnum==-2){ return "f ";}
+				if(obj.qnum===-1||obj.qnum===-2){ return "f ";}
 				else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[obj.qnum];}
 			}
 			else if(obj.qnum===-2){ return "? ";}

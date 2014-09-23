@@ -70,16 +70,16 @@ KeyEvent:{
 	key_inputLineParts : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'){ cell.setQues(11); cell.setQnum(-1);}
-		else if(ca=='w'){ cell.setQues(12); cell.setQnum(-1);}
-		else if(ca=='e'){ cell.setQues(13); cell.setQnum(-1);}
-		else if(ca=='r'){ cell.setQues(0);  cell.setQnum(-1);}
-		else if(ca==' '){ cell.setQues(0);  cell.setQnum(-1);}
-		else if(ca=='a'){ cell.setQues(14); cell.setQnum(-1);}
-		else if(ca=='s'){ cell.setQues(15); cell.setQnum(-1);}
-		else if(ca=='d'){ cell.setQues(16); cell.setQnum(-1);}
-		else if(ca=='f'){ cell.setQues(17); cell.setQnum(-1);}
-		else if((ca>='0' && ca<='9') || ca=='-'){
+		if     (ca==='q'){ cell.setQues(11); cell.setQnum(-1);}
+		else if(ca==='w'){ cell.setQues(12); cell.setQnum(-1);}
+		else if(ca==='e'){ cell.setQues(13); cell.setQnum(-1);}
+		else if(ca==='r'){ cell.setQues(0);  cell.setQnum(-1);}
+		else if(ca===' '){ cell.setQues(0);  cell.setQnum(-1);}
+		else if(ca==='a'){ cell.setQues(14); cell.setQnum(-1);}
+		else if(ca==='s'){ cell.setQues(15); cell.setQnum(-1);}
+		else if(ca==='d'){ cell.setQues(16); cell.setQnum(-1);}
+		else if(ca==='f'){ cell.setQues(17); cell.setQnum(-1);}
+		else if((ca>='0' && ca<='9') || ca==='-'){
 			if(this.key_inputqnum_main(cell,ca)){ cell.setQues(0);}
 		}
 		else{ return;}

@@ -225,6 +225,7 @@ ui.database = {
 	// dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
+		/* jshint eqeqeq:false */
 		var val = document.database.datalist.value;
 		if(val!=="new" && val!==""){
 			for(var i=0;i<this.DBlist.length;i++){
@@ -262,6 +263,7 @@ ui.database = {
 		this.appendNewOption(-1, ui.selectStr("&nbsp;&lt;新しく保存する&gt;","&nbsp;&lt;New Save&gt;"));
 	},
 	appendNewOption : function(id, str){
+		/* jshint eqeqeq:false */
 		var opt = createEL('option');
 		opt.setAttribute('value', (id!=-1 ? id : "new"));
 		opt.innerHTML = str;
@@ -270,6 +272,7 @@ ui.database = {
 		document.database.datalist.appendChild(opt);
 	},
 	getRowString : function(row){
+		/* jshint eqeqeq:false */
 		var hardstr = [
 			{ja:'−'      , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
@@ -400,7 +403,7 @@ ui.database = {
 		var hard = ui.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
 									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
 		if(hard===null){ return;}
-		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:'0');
 
 		this.sync = false;
 		this.dbh.updateDifficult(this, id, this.update);

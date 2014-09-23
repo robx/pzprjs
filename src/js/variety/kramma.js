@@ -269,7 +269,7 @@ AnsCheck:{
 
 			if(this.checkOnly){ return false;}
 			if(result){ bd.border.seterr(-1);}
-			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ bd.border[i].seterr(1);} }
+			for(var i=0;i<bd.bdmax;i++){ if(lines[i]===1){ bd.border[i].seterr(1);} }
 			result = false;
 		}
 

@@ -52,7 +52,7 @@ ui.timer =
 	//---------------------------------------------------------------------------
 	updatetime : function(){
 		var seconds = (ui.puzzle.getTime()/1000)|0;
-		if(this.bseconds == seconds){ return;}
+		if(this.bseconds === seconds){ return;}
 
 		var hours   = (seconds/3600)|0;
 		var minutes = ((seconds/60)|0) - hours*60;

@@ -103,7 +103,7 @@ KeyEvent:{
 			if     (ca==='q1' && cell.getQnum() !==-1){ cell.setQnum2(cell.getQnum()); cell.setQnum(-1);}
 			else if(ca==='q2' && cell.getQnum2()!==-1){ cell.setQnum(cell.getQnum2()); cell.setQnum2(-1);}
 		}
-		else if(ca=='w'){
+		else if(ca==='w'){
 			cell.setQues(cell.ice()?0:6);
 		}
 		else{
@@ -279,12 +279,12 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == '.'){ cell.qnum = -2;}
-			else if(ca == 'i'){ cell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=1;}
-			else if(ca == 'g'){ cell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == 'h'){ cell.qnum2 = -2;}
+							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === '.'){ cell.qnum = -2;}
+			else if(ca === 'i'){ cell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=1;}
+			else if(ca === 'g'){ cell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === 'h'){ cell.qnum2 = -2;}
 			else if(ca >= 'j' && ca <= 'z'){ c += (parseInt(ca,36)-19);}
 
 			c++;
@@ -297,16 +297,16 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qnum2;
 
-			if     (qn== -2          ){ pstr = ".";}
+			if     (qn===-2          ){ pstr = ".";}
 			else if(qn>=  0 && qn< 16){ pstr =       qn.toString(16);}
 			else if(qn>= 16 && qn<256){ pstr = "-" + qn.toString(16);}
-			else if(qd== -2          ){ pstr = "h";}
+			else if(qd===-2          ){ pstr = "h";}
 			else if(qd>=  0 && qd< 16){ pstr = "i" + qd.toString(16);}
 			else if(qd>= 16 && qd<256){ pstr = "g" + qd.toString(16);}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==17){ cm+=((18+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===17){ cm+=((18+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(18+count).toString(36);}
 
@@ -317,8 +317,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(cell,ca){
-			if(ca.charAt(0)=='i'){ cell.ques=6; ca=ca.substr(1);}
-			if(ca.charAt(0)=='o'){
+			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
+			if(ca.charAt(0)==='o'){
 				ca=ca.substr(1);
 				if(!!ca){ cell.qnum=parseInt(ca);}
 				else{ cell.qnum=-2;}

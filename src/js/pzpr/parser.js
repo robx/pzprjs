@@ -168,7 +168,7 @@ pzpr.parser.URLData.prototype = {
 
 		var domain = document.domain;
 		if(!domain){ domain = "pzv.jp";}
-		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
+		else if(domain==="indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
 
 		if(this.type===this.URL_PZPRAPP){
 			if     (this.id==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
@@ -198,7 +198,7 @@ pzpr.parser.URLData.prototype = {
 				row = +inp.shift() - 1;
 				col = +inp.shift() - 1;
 			}
-			else if(this.id=="sudoku"){
+			else if(this.id==="sudoku"){
 				row = col = +inp.shift();
 			}
 			else{

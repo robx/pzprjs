@@ -22,7 +22,7 @@ Encode:{
 			else if(this.include(ca,"5","9")){ cell.qnum = parseInt(ca,16)-5;  c++; }
 			else if(this.include(ca,"a","e")){ cell.qnum = parseInt(ca,16)-10; c+=2;}
 			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
-			else if(ca=="."){ cell.qnum=-2;}
+			else if(ca==="."){ cell.qnum=-2;}
 
 			c++;
 			if(c>=bd.cellmax){ break;}
@@ -62,7 +62,7 @@ Encode:{
 			else if(this.include(ca,"5","9")){ cross.qnum = parseInt(ca,16)-5;  c++; }
 			else if(this.include(ca,"a","e")){ cross.qnum = parseInt(ca,16)-10; c+=2;}
 			else if(this.include(ca,"g","z")){ c+=(parseInt(ca,36)-16);}
-			else if(ca=="."){ cross.qnum=-2;}
+			else if(ca==="."){ cross.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}
@@ -99,7 +99,7 @@ Encode:{
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
-			if     (ca == '.')				 { cell.qnum = -2;}
+			if     (ca === '.')				 { cell.qnum = -2;}
 			else if(this.include(ca,"0","9")){ cell.qnum = parseInt(ca,10);}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
@@ -118,7 +118,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
 
@@ -135,12 +135,12 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
-			else if(ca == '+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
-			else if(ca == '='){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
-			else if(ca == '%'){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
-			else if(ca == '.'){ cell.qnum = -2;}
+							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
+			else if(ca === '+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
+			else if(ca === '='){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
+			else if(ca === '%'){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
+			else if(ca === '.'){ cell.qnum = -2;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
@@ -153,7 +153,7 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum;
 
-			if     (qn==  -2           ){ pstr = ".";}
+			if     (qn=== -2           ){ pstr = ".";}
 			else if(qn>=   0 && qn<  16){ pstr =       qn.toString(16);}
 			else if(qn>=  16 && qn< 256){ pstr = "-" + qn.toString(16);}
 			else if(qn>= 256 && qn<4096){ pstr = "+" + qn.toString(16);}
@@ -162,7 +162,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
@@ -180,13 +180,13 @@ Encode:{
 			var ca = bstr.charAt(i), top=bd.rooms.getTopOfRoom(r);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { top.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ top.qnum = parseInt(bstr.substr(i+1,2),16);       i+=2;}
-			else if(ca == '+'){ top.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
-			else if(ca == '='){ top.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
-			else if(ca == '%'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
-			else if(ca == '*'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
-			else if(ca == '$'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
+							   { top.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ top.qnum = parseInt(bstr.substr(i+1,2),16);       i+=2;}
+			else if(ca === '+'){ top.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
+			else if(ca === '='){ top.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
+			else if(ca === '%'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
+			else if(ca === '*'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
+			else if(ca === '$'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
@@ -210,7 +210,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
@@ -229,7 +229,7 @@ Encode:{
 			if(this.include(ca,"0","4")){
 				var ca1 = bstr.charAt(i+1);
 				cell.qdir = parseInt(ca,16);
-				cell.qnum = (ca1!="." ? parseInt(ca1,16) : -2);
+				cell.qnum = (ca1!=="." ? parseInt(ca1,16) : -2);
 				i++;
 			}
 			else if(this.include(ca,"5","9")){
@@ -339,7 +339,7 @@ Encode:{
 				if(by>bd.maxby-2*(1-cp)){ i++; break;}
 				bd.getx(bx,by).qnum = 1;
 			}
-			else if(ca == '.'){ cc+=35;}
+			else if(ca === '.'){ cc+=35;}
 
 			cc++;
 			if(cc>=cols*rows){ i++; break;}
@@ -359,7 +359,7 @@ Encode:{
 			else{ count++;}
 
 			if(pstr){ cm += count.toString(36); count=0;}
-			else if(count==36){ cm += "."; count=0;}
+			else if(count===36){ cm += "."; count=0;}
 		}
 		if(count>0){ cm += count.toString(36);}
 
@@ -423,7 +423,7 @@ Encode:{
 		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 

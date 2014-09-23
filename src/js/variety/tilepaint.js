@@ -301,7 +301,7 @@ AnsCheck:{
 		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
 
 		var count = clist.filter(function(cell){ return cell.isShade();}).length;
-		if(number>=0 && count!=number){
+		if(number>=0 && count!==number){
 			keyobj.seterr(1);
 			clist.seterr(1);
 			return false;

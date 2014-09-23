@@ -320,9 +320,9 @@ AnsCheck:{
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
 			var tid = tiles.getRoomID(clist[i]);
-			if(tiles.area[tid].is1x3==1 && !counted[tid]){ count++; counted[tid] = true;}
+			if(tiles.area[tid].is1x3===1 && !counted[tid]){ count++; counted[tid] = true;}
 		}
-		if(number>=0 && count!=number){
+		if(number>=0 && count!==number){
 			keyobj.seterr(1);
 			clist.seterr(1);
 			return false;

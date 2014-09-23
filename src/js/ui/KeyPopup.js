@@ -103,8 +103,8 @@ ui.keypopup =
 
 			this.element.style.display = 'block';
 
-			getEL('panelbase1').style.display = (mode==1?'block':'none');
-			getEL('panelbase3').style.display = (mode==3?'block':'none');
+			getEL('panelbase1').style.display = (mode===1?'block':'none');
+			getEL('panelbase3').style.display = (mode===3?'block':'none');
 		}
 		else if(!!this.element){
 			this.element.style.display = 'none';
@@ -144,7 +144,7 @@ ui.keypopup =
 		this.basepanel = getEL('panelbase'+mode);
 		this.basepanel.innerHTML = '';
 		
-		if(mode==3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
+		if(mode===3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
 
 		this.generate(mode);
 	},
@@ -215,7 +215,7 @@ ui.keypopup =
 		this.inputcol('num','3','3');
 		this.inputcol('num','4','4');
 		this.insertrow();
-		if((mode==3)&&(pid==='sukoro'||pid==='sukororoom')){
+		if((mode===3)&&(pid==='sukoro'||pid==='sukororoom')){
 			this.tdcolor = ui.puzzle.painter.mbcolor;
 			this.inputcol('num','q','○');
 			this.inputcol('num','w','×');
@@ -243,7 +243,7 @@ ui.keypopup =
 	},
 	gentable10 : function(mode){
 		var pid = ui.puzzle.pid;
-		if((mode==3)&&(ui.puzzle.Cell.prototype.numberWithMB)){
+		if((mode===3)&&(ui.puzzle.Cell.prototype.numberWithMB)){
 			this.tdcolor = ui.puzzle.painter.mbcolor;
 			this.inputcol('num','q','○');
 			this.inputcol('num','w','×');
@@ -252,7 +252,7 @@ ui.keypopup =
 			this.inputcol('empty','','');
 			this.insertrow();
 		}
-		if((mode==1)&&(pid==='kakuru'||pid==='tateyoko')){
+		if((mode===1)&&(pid==='kakuru'||pid==='tateyoko')){
 			this.inputcol('num','q1','■');
 			this.inputcol('num','q2','□');
 			this.inputcol('num',' ',' ');
@@ -272,7 +272,7 @@ ui.keypopup =
 		this.insertrow();
 		this.inputcol('num','8','8');
 		this.inputcol('num','9','9');
-		if(!((mode==3)&&(ui.puzzle.Cell.prototype.numberWithMB))){
+		if(!((mode===3)&&(ui.puzzle.Cell.prototype.numberWithMB))){
 			this.inputcol('num',' ',' ');
 		}
 		else{
@@ -478,9 +478,9 @@ ui.keypopup =
 		this.inputcol('num','2','△');
 		this.inputcol('num','3','□');
 		this.insertrow();
-		if(mode==3){ this.tdcolor = "rgb(255, 96, 191)";}
+		if(mode===3){ this.tdcolor = "rgb(255, 96, 191)";}
 		this.inputcol('num','4',(mode===1 ? '?' : '・'));
-		if(mode==3){ this.tdcolor = "black";}
+		if(mode===3){ this.tdcolor = "black";}
 		this.inputcol('num',' ',' ');
 		this.inputcol('empty','','');
 		this.insertrow();

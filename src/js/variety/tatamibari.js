@@ -29,12 +29,12 @@ KeyEvent:{
 	key_inputMarks : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'||ca=='1'){ cell.setQnum(1); }
-		else if(ca=='w'||ca=='2'){ cell.setQnum(2); }
-		else if(ca=='e'||ca=='3'){ cell.setQnum(3); }
-		else if(ca=='r'||ca=='4'){ cell.setQnum(-1); }
-		else if(ca==' '         ){ cell.setQnum(-1); }
-		else if(ca=='-'         ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
+		if     (ca==='q'||ca==='1'){ cell.setQnum(1); }
+		else if(ca==='w'||ca==='2'){ cell.setQnum(2); }
+		else if(ca==='e'||ca==='3'){ cell.setQnum(3); }
+		else if(ca==='r'||ca==='4'){ cell.setQnum(-1); }
+		else if(ca===' '          ){ cell.setQnum(-1); }
+		else if(ca==='-'          ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
 		else{ return;}
 
 		cell.draw();
@@ -158,7 +158,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
@@ -212,13 +212,13 @@ AnsCheck:{
 	},
 
 	checkSquareTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=1||a<=0||(w*h!=a)||w==h);});
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);});
 	},
 	checkHorizonLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=3||a<=0||(w*h!=a)||w>h);});
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);});
 	},
 	checkVertLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);});
+		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);});
 	}
 },
 

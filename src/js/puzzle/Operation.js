@@ -92,8 +92,8 @@ Operation:{
 	},
 	toString : function(){
 		var prefix = '';
-		for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
-		for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
+		for(var i in this.STRGROUP){ if(this.group   ===this.STRGROUP[i]){ prefix+=i; break;}}
+		for(var i in this.STRPROP) { if(this.property===this.STRPROP[i]) { prefix+=i; break;}}
 		return [prefix, this.bx, this.by, this.old, this.num].join(',');
 	},
 

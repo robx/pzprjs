@@ -178,7 +178,7 @@ FileIO:{
 	},
 
 	checkBou : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);});
+		return this.checkAllArea(binfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
 	checkCorners : function(binfo){
 		var result = true, bd = this.owner.board;
@@ -195,7 +195,7 @@ FileIO:{
 
 			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
 				block2 = binfo.getRoomByCell(cells[i][1]).clist;
-			if(block1.length == block2.length){
+			if(block1.length === block2.length){
 				if(this.checkOnly){ return false;}
 				block1.seterr(1);
 				block2.seterr(1);

@@ -170,7 +170,7 @@ Encode:{
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!=bstr.charAt(cell2.id)){ border.ques = 1;}
+			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!==bstr.charAt(cell2.id)){ border.ques = 1;}
 		}
 		this.outbstr = bstr.substr(bd.cellmax);
 	}
@@ -287,7 +287,7 @@ AnsCheck:{
 		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=2);});
 	},
 	checkSingleShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a!=1);});
+		return this.checkShadeCellInArea(rinfo, function(a){ return (a!==1);});
 	}
 },
 

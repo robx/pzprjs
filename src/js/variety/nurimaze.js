@@ -34,7 +34,7 @@ MouseEvent:{
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
-			cell2.setQsub(this.inputData==2?1:0);
+			cell2.setQsub(this.inputData===2?1:0);
 		}
 		clist.draw();
 	},
@@ -122,11 +122,11 @@ KeyEvent:{
 		var cell = this.cursor.getc(), bd = this.owner.board;
 
 		var old=cell.ques, newques=-1;
-		if     (ca=='1'||ca=='q'){ newques=(old!=41?41:0);}
-		else if(ca=='2'||ca=='w'){ newques=(old!=42?42:0);}
-		else if(ca=='3'||ca=='e'||ca==' '){ newques=0;}
-		else if(ca=='s'){ bd.startpos.input(cell);}
-		else if(ca=='g'){ bd.goalpos.input(cell);}
+		if     (ca==='1'||ca==='q'){ newques=(old!==41?41:0);}
+		else if(ca==='2'||ca==='w'){ newques=(old!==42?42:0);}
+		else if(ca==='3'||ca==='e'||ca===' '){ newques=0;}
+		else if(ca==='s'){ bd.startpos.input(cell);}
+		else if(ca==='g'){ bd.goalpos.input(cell);}
 
 		if(newques!==old && (newques===0 || (!bd.startpos.equals(cell) && !bd.goalpos.equals(cell)))){
 			cell.setQues(newques);
@@ -247,7 +247,7 @@ BoardExec:{
 	},
 	decode : function(strs){
 		if(strs[0]!=='PS' && strs[0]!=='PG'){ return false;}
-		this.property = (strs[0]=='PS'?'start':'goal');
+		this.property = (strs[0]==='PS'?'start':'goal');
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];
 		this.bx2 = +strs[3];
@@ -255,7 +255,7 @@ BoardExec:{
 		return true;
 	},
 	toString : function(){
-		return [(this.property=='start'?'PS':'PG'), this.bx1, this.by1, this.bx2, this.by2].join(',');
+		return [(this.property==='start'?'PS':'PG'), this.bx1, this.by1, this.bx2, this.by2].join(',');
 	},
 
 	isModify : function(lastope){
@@ -328,14 +328,14 @@ Graphic:{
 		var cell = bd.startpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData==10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+			var color = (this.owner.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
 			var option = { key:"text_stpos", color:color };
 			this.disptext("S", px, py, option);
 		}
 		cell = bd.goalpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData==11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+			var color = (this.owner.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
 			var option = { key:"text_glpos", color:color };
 			this.disptext("G", px, py, option);
 		}

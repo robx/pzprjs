@@ -153,13 +153,13 @@ KeyEvent:{
 	},
 	key_inputqnum_herugolf : function(ca){
 		var cell = this.cursor.getc();
-		if(ca=='q'||ca=='w'){
+		if(ca==='q'||ca==='w'){
 			cell.setQues(cell.ice()?0:6);
 		}
-		else if(ca=='h'){
+		else if(ca==='h'){
 			cell.setQues(cell.ques===31?0:31);
 		}
-		else if(ca==' '){
+		else if(ca===' '){
 			cell.setQues(0);
 		}
 		else if(!cell.ice()){
@@ -431,8 +431,8 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qnum = parseInt(ca,16);}
-			else if(ca == 'h'){ cell.ques = 31;}
+							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === 'h'){ cell.ques = 31;}
 			else if(ca >= 'i' && ca <= 'z'){ c += (parseInt(ca,36)-18);}
 
 			c++;
@@ -445,14 +445,14 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", cell = bd.cell[c], qn = cell.qnum, qu = cell.ques;
 
-			if     (qn== -2          ){ pstr = ".";}
+			if     (qn===-2          ){ pstr = ".";}
 			else if(qn>=  0 && qn< 16){ pstr =       qn.toString(16);}
 			else if(qn>= 16 && qn<256){ pstr = "-" + qn.toString(16);}
-			else if(qu== 31          ){ pstr = "h";}
+			else if(qu===31          ){ pstr = "h";}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}
 

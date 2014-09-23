@@ -172,7 +172,7 @@ ui.listener =
 				padding = 0.05; break;
 			
 			case 'bosanowa':
-				padding = (puzzle.getConfig('disptype_bosanowa')!=2?0.50:0.05); break;
+				padding = (puzzle.getConfig('disptype_bosanowa')!==2?0.50:0.05); break;
 			
 			default: padding = 0.50; break;
 		}

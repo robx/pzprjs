@@ -77,7 +77,7 @@ Encode:{
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type==1){ this.outpflag = 'c';}
+		if(type===1){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },

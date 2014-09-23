@@ -120,7 +120,7 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca=='-' || ca==' '){ val=def;}
+		else if(ca==='-' || ca===' '){ val=def;}
 		else{ return;}
 
 		this.setnum51(obj,target,val);

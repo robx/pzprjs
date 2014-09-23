@@ -355,7 +355,7 @@ AnsCheck:{
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.getQans()===0);}).length;
-			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
+			if(d.cols*d.rows!==cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;
@@ -368,10 +368,10 @@ AnsCheck:{
 		var clist = winfo.area[id].clist;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], adc = cell.adjacent, a = cell.getQans();
-			if( ((a==4||a==5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!=id)) ||
-				((a==2||a==3)^(adc.bottom.isnull||winfo.getRoomID(adc.bottom)!=id)) ||
-				((a==2||a==5)^(adc.left.isnull  ||winfo.getRoomID(adc.left  )!=id)) ||
-				((a==3||a==4)^(adc.right.isnull ||winfo.getRoomID(adc.right )!=id)) )
+			if( ((a===4||a===5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!==id)) ||
+				((a===2||a===3)^(adc.bottom.isnull||winfo.getRoomID(adc.bottom)!==id)) ||
+				((a===2||a===5)^(adc.left.isnull  ||winfo.getRoomID(adc.left  )!==id)) ||
+				((a===3||a===4)^(adc.right.isnull ||winfo.getRoomID(adc.right )!==id)) )
 			{
 				return false;
 			}

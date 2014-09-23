@@ -240,8 +240,8 @@ pzpr.Puzzle.prototype =
 	modechange : function(num){
 		if(pzpr.PLAYER){ return;}
 		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
-		this.editmode = (num==this.MODE_EDITOR);
-		this.playmode = (num==this.MODE_PLAYER);
+		this.editmode = (num===this.MODE_EDITOR);
+		this.playmode = (num===this.MODE_PLAYER);
 		this.execListener('modechange');
 		if(!this.ready){ return;}
 

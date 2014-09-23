@@ -282,7 +282,7 @@ BoardExec:{
 	},
 	decode : function(strs){
 		if(strs[0]!=='PI' && strs[0]!=='PO'){ return false;}
-		this.property = (strs[0]=='PI'?'in':'out');
+		this.property = (strs[0]==='PI'?'in':'out');
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];
 		this.bx2 = +strs[3];
@@ -290,7 +290,7 @@ BoardExec:{
 		return true;
 	},
 	toString : function(){
-		return [(this.property=='in'?'PI':'PO'), this.bx1, this.by1, this.bx2, this.by2].join(',');
+		return [(this.property==='in'?'PI':'PO'), this.bx1, this.by1, this.bx2, this.by2].join(',');
 	},
 
 	undo : function(){ this.exec(this.bx1, this.by1);},
@@ -776,12 +776,12 @@ AnsCheck:{
 		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
 
 		var flag = this.checkLine();
-		if( flag==-1 ){ return 'stInvalid';}
-		if( flag==1 ){ return 'stNotLine';}
-		if( flag==2 ){ return 'stDeadEnd';}
-		if( flag==3 ){ return 'stOffField';}
-		if( pid==='icebarn' && flag==4 ){ return 'awInverse';}
-		if( pid!=='icebarn' && flag==5 ){ return 'nmOrder';}
+		if( flag===-1 ){ return 'stInvalid';}
+		if( flag===1 ){ return 'stNotLine';}
+		if( flag===2 ){ return 'stDeadEnd';}
+		if( flag===3 ){ return 'stOffField';}
+		if( pid==='icebarn' && flag===4 ){ return 'awInverse';}
+		if( pid!=='icebarn' && flag===5 ){ return 'nmOrder';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
@@ -843,10 +843,10 @@ AnsCheck:{
 				else if(!cell.ice()){
 					var adb = cell.adjborder;
 					if     (cell.lcnt!==2){ dir=dir;}
-					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
+					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
 				}
 
 				if(this.owner.pid!=='icebarn'){

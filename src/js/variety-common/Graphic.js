@@ -248,7 +248,7 @@ Graphic:{
 				else             { g.strokeStyle = this.qanscolor;}
 
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(cell.qans==31){
+				if(cell.qans===31){
 					if(this.vnop(headers[0]+id,this.STROKE)){
 						g.setOffsetLinePath(px,py, -this.bw,-this.bh, this.bw,this.bh, true);
 						g.stroke();
@@ -256,7 +256,7 @@ Graphic:{
 				}
 				else{ g.vhide(headers[0]+id);}
 
-				if(cell.qans==32){
+				if(cell.qans===32){
 					if(this.vnop(headers[1]+id,this.STROKE)){
 						g.setOffsetLinePath(px,py, this.bw,-this.bh, -this.bw,this.bh, true);
 						g.stroke();

@@ -78,7 +78,7 @@ KeyEvent:{
 				else if (num<=max){ excell.setQnum(num);}
 			}
 		}
-		else if(ca==' ' || ca=='-'){ excell.setQnum(0);}
+		else if(ca===' ' || ca==='-'){ excell.setQnum(0);}
 		else{ return;}
 
 		this.prev = excell;
@@ -270,7 +270,7 @@ FileIO:{
 		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
-			if(ca=="."){ continue;}
+			if(ca==="."){ continue;}
 
 			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
 			var excell = bd.getex(bx,by);

@@ -31,7 +31,7 @@ MouseEvent:{
 			this.inputData = cell.getAnum()!==-1?cell.getAnum():10;
 			this.mouseCell = cell;
 		}
-		else if(cell.getQnum()==-1 && this.inputData>=1 && this.inputData<=5){
+		else if(cell.getQnum()===-1 && this.inputData>=1 && this.inputData<=5){
 			if     (this.btn.Left ){ this.inputData++;}
 			else if(this.btn.Right){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
@@ -42,7 +42,7 @@ MouseEvent:{
 				cell.draw();
 			}
 		}
-		else if(cell.getQnum()===-1 && this.inputData==10){
+		else if(cell.getQnum()===-1 && this.inputData===10){
 			cell.setAnum(-1);
 			cell.setQsub(0);
 			cell.draw();
@@ -339,7 +339,7 @@ AnsCheck:{
 			// cellは数字のあるマスか、null(盤面外)を指す
 
 			var sid=sinfo.getRoomID(cell);
-			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!=sid){
+			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!==sid){
 				if(this.checkOnly){ return false;}
 				clist2.seterr(1);
 				clist.seterr(1);

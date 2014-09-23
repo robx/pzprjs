@@ -130,7 +130,7 @@ AnsCheck:{
 	},
 
 	checkRoadCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);});
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n===a);});
 	},
 	checkNoRoadCountry : function(rinfo){
 		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!==0);});

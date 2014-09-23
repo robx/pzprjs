@@ -34,12 +34,12 @@ KeyEvent:{
 	key_inputLineParts : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'){ cell.setQues(2); cell.setQnum(-1);}
-		else if(ca=='w'){ cell.setQues(3); cell.setQnum(-1);}
-		else if(ca=='e'){ cell.setQues(4); cell.setQnum(-1);}
-		else if(ca=='r'){ cell.setQues(5); cell.setQnum(-1);}
-		else if(ca=='t'){ cell.setQues(11);cell.setQnum(-1);}
-		else if(ca=='y'){ cell.setQues(0); cell.setQnum(-1);}
+		if     (ca==='q'){ cell.setQues(2); cell.setQnum(-1);}
+		else if(ca==='w'){ cell.setQues(3); cell.setQnum(-1);}
+		else if(ca==='e'){ cell.setQues(4); cell.setQnum(-1);}
+		else if(ca==='r'){ cell.setQues(5); cell.setQnum(-1);}
+		else if(ca==='t'){ cell.setQues(11);cell.setQnum(-1);}
+		else if(ca==='y'){ cell.setQues(0); cell.setQnum(-1);}
 		else{ return false;}
 
 		cell.drawaround();
@@ -321,7 +321,7 @@ AnsCheck:{
 			if(cell.getQues()<2 || cell.getQues()>5 || !cell.isValidNum()){ continue;}
 
 			var blist = cell.getTriLine();
-			if(type==1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
+			if(type===1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				if(result){ bd.border.seterr(-1);}

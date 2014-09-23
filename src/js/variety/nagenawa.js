@@ -151,7 +151,7 @@ Graphic:{
 				cc += parseInt(ca,36);
 				bd.cell[cc].ques = 1;
 			}
-			else if(ca == '.'){ cc+=35;}
+			else if(ca === '.'){ cc+=35;}
 
 			cc++;
 			if(cc>=bd.cellmax){ i++; break;}
@@ -166,7 +166,7 @@ Graphic:{
 			else{ count++;}
 
 			if(pstr){ cm += count.toString(36); count=0;}
-			else if(count==36){ cm += "."; count=0;}
+			else if(count===36){ cm += "."; count=0;}
 		}
 		//if(count>0){ cm += count.toString(36);}
 

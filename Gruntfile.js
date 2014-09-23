@@ -81,7 +81,7 @@ module.exports = function(grunt){
       options: {
         jshintrc: true
       },
-      default: [
+      files: [
         'Gruntfile.js',
         'src/js/*.js',
         'src/js/pzpr/*.js',
@@ -94,7 +94,7 @@ module.exports = function(grunt){
     }
   });
   
-  grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
-  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('default', [          'clean',                   'copy:debug'                    ]);
+  grunt.registerTask('release', ['jshint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
   grunt.registerTask('zipfile', ['shell:release']);
 };

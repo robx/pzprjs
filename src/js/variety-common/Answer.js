@@ -228,7 +228,7 @@ AnsCheck:{
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.checkOnly){ return false;}
-				clist.seterr(this.owner.pid!="tateyoko"?1:4);
+				clist.seterr(this.owner.pid!=="tateyoko"?1:4);
 				result = false;
 			}
 		}
@@ -300,7 +300,7 @@ AnsCheck:{
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo.area[r]), a2=getval(rinfo.area[s]);
-				if(a1>0 && a2>0 && a1==a2){
+				if(a1>0 && a2>0 && a1===a2){
 					rinfo.area[r].clist.seterr(1);
 					rinfo.area[s].clist.seterr(1);
 					return false;
@@ -434,7 +434,7 @@ AnsCheck:{
 		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c];
-			if(cross.lcnt===val && (bp===0 || (bp==1 && cross.qnum===1) || (bp===2 && cross.qnum!==1) )){
+			if(cross.lcnt===val && (bp===0 || (bp===1 && cross.qnum===1) || (bp===2 && cross.qnum!==1) )){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cross.setCrossBorderError();

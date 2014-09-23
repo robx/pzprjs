@@ -201,7 +201,7 @@ AnsCheck:{
 			if(adb.right.isLine() ){ cnt++;}
 			if(adb.top.isLine()   ){ cnt++;}
 			if(adb.bottom.isLine()){ cnt++;}
-			if(cnt==val){
+			if(cnt===val){
 				if(this.checkOnly){ return false;}
 				if(result){ bd.border.seterr(-1);}
 				cross.setCrossBorderError();

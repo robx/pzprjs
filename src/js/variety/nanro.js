@@ -195,7 +195,7 @@ AnsCheck:{
 			var filled = 0;			// エリアに入っている数字
 			for(var i=0;i<clist.length;i++){
 				var num = clist[i].getNum();
-				if(num==-1){ emptycell++;}
+				if(num===-1){ emptycell++;}
 				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 				else{ nums[num]++;}
 			}

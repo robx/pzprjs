@@ -58,7 +58,7 @@ ui.menuarea = {
 
 		case pp.CHILD:
 			var val = ui.getConfig(pp.item[idname].parent);
-			var issel = (pp.item[idname].val == val);	/* 選択されているかどうか */
+			var issel = (pp.item[idname].val===val);	/* 選択されているかどうか */
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){
 				smenu.innerHTML = (issel?"+":"&nbsp;")+pp.getMenuStr(idname);
@@ -401,7 +401,7 @@ ui.menuarea = {
 		var el = getEL('float_setting'), fw = el.firstChild.style.fontWeight;
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
-			if(fw!=node.style.fontWeight){
+			if(fw!==node.style.fontWeight){
 				var smenu = el_separate.cloneNode(true);
 				node.parentNode.insertBefore(smenu, node);
 				i++; len++; // 追加したので1たしておく
@@ -686,6 +686,7 @@ ui.MenuList.prototype =
 	},
 	addChild : function(idname, parent, strJP, strEN){
 		var list = idname.split("_"), val = list.pop();
+		if(ui.getConfigType(list.join("_"))==="number"){ val = +val;}
 		this.addFlags(idname, parent, this.CHILD, val, strJP, strEN);
 	},
 

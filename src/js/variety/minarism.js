@@ -87,10 +87,10 @@ KeyEvent:{
 		var border = this.cursor.getb();
 		if(border.isnull){ return;}
 
-		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
+		if(ca==='q'||ca==='w'||ca==='e'||ca===' '||ca==='-'){
 			var tmp=border.NDIR;
-			if(ca=='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
-			if(ca=='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
+			if(ca==='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
+			if(ca==='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
 
 			border.setQdir(border.getQdir()!==tmp?tmp:border.NDIR);
 			border.setQnum(-1);
@@ -191,7 +191,7 @@ Graphic:{
 			var border=blist[i], id=border.id;
 			var px = border.bx*this.bw, py = border.by*this.bh;
 			// ○の描画
-			if(border.qnum!=-1){
+			if(border.qnum!==-1){
 				g.fillStyle = (border.error===1 ? this.errcolor1 : "white");
 				if(this.vnop(headers[0]+id,this.FILL)){
 					g.shapeCircle(px, py, csize);
@@ -272,7 +272,7 @@ Encode:{
 		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
 			if(type===1){
 				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)===0){ count++;}
-				if(id==(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
+				if(id===(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
 			var pstr="";
@@ -289,7 +289,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr||count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
+			else if(pstr||count===18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}
 

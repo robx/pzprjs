@@ -82,9 +82,9 @@ KeyEvent:{
 	key_inputstar : function(ca){
 		var star = this.cursor.gets();
 		if(star!==null){
-			if     (ca=='1'){ star.setStar(1);}
-			else if(ca=='2'){ star.setStar(2);}
-			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ star.setStar(0);}
+			if     (ca==='1'){ star.setStar(1);}
+			else if(ca==='2'){ star.setStar(2);}
+			else if(ca===' '||ca==='-'||ca==='0'||ca==='3'){ star.setStar(0);}
 			star.draw();
 		}
 	}
@@ -168,7 +168,7 @@ CellList:{
 		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
-			if(pzpr.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
+			if(pzpr.EDITOR && cell.getQsub()===3 && ret!==2){ continue;}
 			else if(cell.getQsub()!==(ret>0?ret:0)){
 				cell.setQsub(ret>0?ret:0);
 				flag = true;
@@ -385,7 +385,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==20){ cm += ((count+15).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 

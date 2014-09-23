@@ -26,11 +26,11 @@ KeyEvent:{
 
 "KeyEvent@fourcells,fivecells":{
 	keyinput : function(ca){
-		if(ca=='w'){ this.key_inputvalid(ca);}
+		if(ca==='w'){ this.key_inputvalid(ca);}
 		else{ this.key_inputqnum(ca);}
 	},
 	key_inputvalid : function(ca){
-		if(ca=='w'){
+		if(ca==='w'){
 			var cell = this.cursor.getc();
 			if(!cell.isnull){
 				cell.setQues(cell.getQues()!==7?7:0);
@@ -184,8 +184,8 @@ Encode:{
 			var obj = bd.cell[c], ca = bstr.charAt(i);
 
 			obj.ques = 0;
-			if     (ca == '7')				 { obj.ques = 7;}
-			else if(ca == '.')				 { obj.qnum = -2;}
+			if     (ca === '7')				 { obj.ques = 7;}
+			else if(ca === '.')				 { obj.qnum = -2;}
 			else if(this.include(ca,"0","9")){ obj.qnum = parseInt(ca,10);}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
@@ -205,7 +205,7 @@ Encode:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
 
@@ -278,7 +278,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.isValidNum() && cell.getdir4BorderCount()!=cell.getQnum()){
+			if(cell.isValidNum() && cell.getdir4BorderCount()!==cell.getQnum()){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;

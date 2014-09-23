@@ -180,11 +180,11 @@ function accesslog(){
 
 	// 送信
 	var xmlhttp = false;
-	if(typeof ActiveXObject != "undefined"){
+	if(typeof ActiveXObject !== "undefined"){
 		try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
 		catch (e) { xmlhttp = false;}
 	}
-	if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+	if(!xmlhttp && typeof XMLHttpRequest !== "undefined") {
 		xmlhttp = new XMLHttpRequest();
 	}
 	if(xmlhttp){

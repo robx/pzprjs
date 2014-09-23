@@ -117,7 +117,7 @@ Graphic:{
 
 			var text = (cell.anum!==-1 ? ""+cell.anum : "");
 			var option = { key:['cell_text',cell.id,'qans'].join('_') };
-			option.color = (cell.error==1 ? this.fontErrcolor : this.fontAnscolor);
+			option.color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
 			this.disptext(text, px, py, option);
 
 			var text = (cell.qnum!==-1 ? ""+cell.qnum : "");

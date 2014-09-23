@@ -70,8 +70,8 @@ KeyEvent:{
 		if(cursor.oncell()){
 			var cell = cursor.getc();
 			if(this.owner.editmode){
-				if     (ca=='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
-				else if(ca=='-'||ca==' '){ cell.setQues(0); cell.setNum(-1);}
+				if     (ca==='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
+				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
 				else if('0'<=ca && ca<='9'){
 					if(cell.getQues()!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
@@ -97,7 +97,7 @@ KeyEvent:{
 				}
 				this.prev = border;
 			}
-			else if(ca=='-'||ca==' '){ border.setQsub(-1);}
+			else if(ca==='-'||ca===' '){ border.setQsub(-1);}
 			else{ return;}
 		}
 		else{ return;}
@@ -179,11 +179,11 @@ Graphic:{
 
 	getCanvasCols : function(){
 		var disptype = this.owner.getConfig('disptype_bosanowa');
-		return this.getBoardCols()+2*this.margin+(disptype==2?2:0);
+		return this.getBoardCols()+2*this.margin+(disptype===2?2:0);
 	},
 	getCanvasRows : function(){
 		var disptype = this.owner.getConfig('disptype_bosanowa');
-		return this.getBoardRows()+2*this.margin+(disptype==2?2:0);
+		return this.getBoardRows()+2*this.margin+(disptype===2?2:0);
 	},
 
 	drawErrorCells_bosanowa : function(){
@@ -344,8 +344,8 @@ Encode:{
 		this.encodeBosanowa();
 
 		var puzzle = this.owner;
-		if     (puzzle.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}
-		else if(puzzle.getConfig('disptype_bosanowa')==3){ this.outpflag="t";}
+		if     (puzzle.getConfig('disptype_bosanowa')===2){ this.outpflag="h";}
+		else if(puzzle.getConfig('disptype_bosanowa')===3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){
@@ -397,7 +397,7 @@ Encode:{
 				else{ count++;}
 
 				if(count===0){ cm += pstr;}
-				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 			}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}

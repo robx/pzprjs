@@ -34,17 +34,17 @@ KeyEvent:{
 		if(this.owner.playmode){ return false;}
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'){ cell.setQues(11);}
-		else if(ca=='w'){ cell.setQues(12);}
-		else if(ca=='e'){ cell.setQues(13);}
-		else if(ca=='r'){ cell.setQues(0);}
-		else if(ca==' '){ cell.setQues(0);}
-		else if(ca=='a'){ cell.setQues(14);}
-		else if(ca=='s'){ cell.setQues(15);}
-		else if(ca=='d'){ cell.setQues(16);}
-		else if(ca=='f'){ cell.setQues(17);}
-		else if(ca=='-'){ cell.setQues(cell.getQues()!==-2?-2:0);}
-		else if(this.owner.pid==='pipelinkr' && ca=='1'){ cell.setQues(6);}
+		if     (ca==='q'){ cell.setQues(11);}
+		else if(ca==='w'){ cell.setQues(12);}
+		else if(ca==='e'){ cell.setQues(13);}
+		else if(ca==='r'){ cell.setQues(0);}
+		else if(ca===' '){ cell.setQues(0);}
+		else if(ca==='a'){ cell.setQues(14);}
+		else if(ca==='s'){ cell.setQues(15);}
+		else if(ca==='d'){ cell.setQues(16);}
+		else if(ca==='f'){ cell.setQues(17);}
+		else if(ca==='-'){ cell.setQues(cell.getQues()!==-2?-2:0);}
+		else if(this.owner.pid==='pipelinkr' && ca==='1'){ cell.setQues(6);}
 		else{ return false;}
 
 		cell.drawaround();
@@ -123,12 +123,12 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
-		if     (cell.error===1)                                                { return this.errbcolor1;}
-		else if(cell.ques===6 && this.owner.getConfig('disptype_pipelinkr')==2){ return this.icecolor;}
+		if     (cell.error===1)                                                 { return this.errbcolor1;}
+		else if(cell.ques===6 && this.owner.getConfig('disptype_pipelinkr')===2){ return this.icecolor;}
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.owner.getConfig('disptype_pipelinkr')==2){
+		if(this.owner.getConfig('disptype_pipelinkr')===2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.quescolor;
@@ -138,7 +138,7 @@ Graphic:{
 	},
 
 	getCircleStrokeColor : function(cell){
-		if((this.owner.getConfig('disptype_pipelinkr')==1) && cell.ques===6){
+		if((this.owner.getConfig('disptype_pipelinkr')===1) && cell.ques===6){
 			return this.quescolor;
 		}
 		return null;
@@ -164,7 +164,7 @@ Encode:{
 	},
 	encodePzpr : function(type){
 		var puzzle = this.owner;
-		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')==2)?"i":null);
+		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')===2)?"i":null);
 		this.encodePipelink(type);
 	},
 
@@ -173,7 +173,7 @@ Encode:{
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
-			if     (ca=='.'){ bd.cell[c].ques = -2;}
+			if     (ca==='.'){ bd.cell[c].ques = -2;}
 			else if(ca>='0' && ca<='9'){
 				for(var n=0,max=parseInt(ca,10)+1;n<max;n++){
 					if(c<bd.cellmax){ bd.cell[c].ques = 6; c++;}
@@ -240,17 +240,17 @@ FileIO:{
 
 		var puzzle = this.owner;
 		puzzle.enc.checkPuzzleid();
-		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype=="circle"?1:2));}
+		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
 	},
 	encodeData : function(){
 		var puzzle = this.owner;
 		if     (puzzle.pid==='pipelink') { this.datastr += 'pipe\n';}
-		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')==1?"circle\n":"ice\n");}
+		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')===1?"circle\n":"ice\n");}
 		this.encodeCell( function(obj){
-			if     (obj.ques==6) { return "o ";}
-			else if(obj.ques==-2){ return "- ";}
+			if     (obj.ques===6) { return "o ";}
+			else if(obj.ques===-2){ return "- ";}
 			else if(obj.ques>=11 && obj.ques<=17){ return ""+(obj.ques-1).toString(36)+" ";}
-			else                 { return ". ";}
+			else                  { return ". ";}
 		});
 		this.encodeBorderLine();
 	}
@@ -266,7 +266,7 @@ AnsCheck:{
 		if( !this.checkLineCount(3) ){ return 'lnBranch';}
 
 		if(this.owner.pid==='pipelinkr'){
-			var isdispice = (this.owner.getConfig('disptype_pipelinkr')==2);
+			var isdispice = (this.owner.getConfig('disptype_pipelinkr')===2);
 			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 'lnCrossExIce' : 'lnCrossExCir');}
 			if( !this.checkIceLines() ){ return (isdispice ? 'lnCurveOnIce' : 'lnCurveOnCir');}
 		}

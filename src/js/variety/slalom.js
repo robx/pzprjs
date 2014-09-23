@@ -111,7 +111,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 		
-		if(this.inputData==10){
+		if(this.inputData===10){
 			this.inputData = null;
 			cell.draw();
 		}
@@ -144,7 +144,7 @@ KeyEvent:{
 	keyup_event : true,
 	moveTarget : function(ca){
 		if(ca.match(/shift/)){ return false;}
-		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
+		if(this.owner.editmode && ca!=='x'){ return this.moveTCell(ca);}
 		return false;
 	},
 
@@ -163,20 +163,20 @@ KeyEvent:{
 	key_inputqnum_slalom : function(ca){
 		var cell = this.cursor.getc(), bd = this.owner.board;
 
-		if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
+		if(ca==='q'||ca==='w'||ca==='e'||ca==='r'||ca==='s'||ca===' '){
 			var old=cell.getQues(), newques=-1;
-			if     (ca=='q'){ newques=(old!=1?1:0);}
-			else if(ca=='w'){ newques=21;}
-			else if(ca=='e'){ newques=22;}
-			else if(ca=='r'||ca==' '){ newques= 0;}
-			else if(ca=='s'){ bd.startpos.input(cell);}
+			if     (ca==='q'){ newques=(old!==1?1:0);}
+			else if(ca==='w'){ newques=21;}
+			else if(ca==='e'){ newques=22;}
+			else if(ca==='r'||ca===' '){ newques= 0;}
+			else if(ca==='s'){ bd.startpos.input(cell);}
 			else{ return;}
-			if(old==newques){ return;}
+			if(old===newques){ return;}
 
 			if(newques!==-1){
 				cell.setQues(newques);
 				if(newques===0){ cell.setNum(-1);}
-				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
+				if(old===21||old===22||newques===21||newques===22){ bd.hinfo.generateGates();}
 
 				cell.draw();
 				bd.startpos.draw();
@@ -424,7 +424,7 @@ Graphic:{
 
 		g.lineWidth = linewidth;
 		g.strokeStyle = this.quescolor;
-		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
+		g.fillStyle = (this.owner.mouse.inputData===10 ? this.errbcolor1 : "white");
 		if(this.vnop("c_stpos",this.FILL)){
 			g.shapeCircle(px, py, csize);
 		}
@@ -546,7 +546,7 @@ Encode:{
 					if((ver===1) && (this.include(ca,"0","9")||this.include(ca,"a","f"))){
 						cell.qnum = parseInt(ca,16);
 					}
-					else if((ver===1) && ca=='-'){
+					else if((ver===1) && ca==='-'){
 						cell.qnum = parseInt(bstr.substr(i+1,2),16);
 						i+=2;
 					}
@@ -791,7 +791,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
-			if((type==1 && cnt>1)||(type==2 && cnt===0)){
+			if((type===1 && cnt>1)||(type===2 && cnt===0)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(4);
 				bd.hinfo.getGatePole(r).seterr(1);
@@ -822,17 +822,17 @@ AnsCheck:{
 						var gatenumber = bd.hinfo.data[r].number;
 						passing++;
 						if(gatenumber<=0){ } // 何もしない
-						else if(ordertype==-1){
-							if(gatenumber*2-1==bd.hinfo.max){ } // ど真ん中の数字なら何もしない
-							else if(passing==gatenumber)               { ordertype=1;}
-							else if(passing==bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
+						else if(ordertype===-1){
+							if(gatenumber*2-1===bd.hinfo.max){ } // ど真ん中の数字なら何もしない
+							else if(passing===gatenumber)               { ordertype=1;}
+							else if(passing===bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
 							else{
 								bd.hinfo.data[r].clist.seterr(4);
 								bd.hinfo.getGatePole(r).seterr(1);
 								return false;
 							}
 						}
-						else if(ordertype==1 && passing!=gatenumber){
+						else if(ordertype===1 && passing!==gatenumber){
 							bd.hinfo.data[r].clist.seterr(4);
 							bd.hinfo.getGatePole(r).seterr(1);
 							return false;
@@ -841,10 +841,10 @@ AnsCheck:{
 
 					var adb = cell.adjborder;
 					if     (cell.lcnt!==2){ break;}
-					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
+					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
 				}
 				else{
 					if(!pos.getb().isLine()){ break;} // 途切れてたら、何事もなかったように終了
@@ -884,11 +884,11 @@ HurdleManager:{
 	getGatePole : function(gateid){
 		var bd = this.owner.board;
 		var clist = new this.owner.CellList(), cell1, cell2;
-		if(this.data[gateid].val==21){
+		if(this.data[gateid].val===21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
 		}
-		else if(this.data[gateid].val==22){
+		else if(this.data[gateid].val===22){
 			cell1 = bd.getc(this.data[gateid].x1-2, this.data[gateid].y1);
 			cell2 = bd.getc(this.data[gateid].x2+2, this.data[gateid].y1);
 		}
@@ -969,7 +969,7 @@ HurdleManager:{
 		// セットされた数字を全てのnumsから消す関数
 		var self = this, delnum = function(dn){ for(var r=1;r<=self.max;r++){
 			var atmp = [];
-			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
+			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!==1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;
 		} };
 		var decnumber = [];
@@ -977,7 +977,7 @@ HurdleManager:{
 
 		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
 		for(var r=1;r<=this.max;r++){
-			if(nums[r].length==2 && nums[r][0]>0 && nums[r][0]==nums[r][1]){
+			if(nums[r].length===2 && nums[r][0]>0 && nums[r][0]===nums[r][1]){
 				this.data[r].number = nums[r][0];
 				decnumber[nums[r][0]] = 1;
 				nums[r] = [];
@@ -994,13 +994,13 @@ HurdleManager:{
 
 			// 競合していない数字がいくつ残っているか数える
 			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
-			for(var r=1;r<=this.max;r++){ if(nums[r].length==1){ numcnt[nums[r][0]]++;} }
+			for(var r=1;r<=this.max;r++){ if(nums[r].length===1){ numcnt[nums[r][0]]++;} }
 
 			// 各旗門をチェック
 			for(var r=1;r<=this.max;r++){
 				// 2つ以上の数字が繋がっている場合はダメです
 				// また、複数箇所の旗門の候補になっている場合もダメ
-				var cand=(nums[r].length==1?nums[r][0]:-1);
+				var cand=(nums[r].length===1?nums[r][0]:-1);
 				if(cand>0 && numcnt[cand]>1){ cand=-1;}
 
 				// 旗門に数字をセット
@@ -1024,7 +1024,7 @@ HurdleManager:{
 			for(var r=1;r<=this.max;r++){
 				var cand=-1;
 				for(var i=0;i<nums[r].length;i++){
-					if(numcnt[nums[r][i]]==1){ cand=(cand==-1?nums[r][i]:-1);}
+					if(numcnt[nums[r][i]]===1){ cand=(cand===-1?nums[r][i]:-1);}
 				}
 
 				// 旗門に数字をセット

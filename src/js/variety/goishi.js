@@ -86,7 +86,7 @@ KeyEvent:{
 		this.key_inputstone(ca);
 	},
 	key_inputstone : function(ca){
-		if(ca=='q'){
+		if(ca==='q'){
 			var cell = this.cursor.getc();
 			cell.setStone();
 			cell.draw();
@@ -218,7 +218,7 @@ Encode:{
 			for(var bx=d.x1;bx<=d.x2;bx+=2){
 				var cell = this.owner.board.getc(bx,by);
 				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
-				if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+				if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 			}
 		}
 		if(count>0){ cm += pass.toString(32);}

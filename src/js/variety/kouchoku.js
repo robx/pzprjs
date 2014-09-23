@@ -130,8 +130,8 @@ KeyEvent:{
 			if(cross.getQnum()===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
-		else if(ca=='-'){ cross.setQnum(cross.getQnum()!==-2?-2:-1);}
-		else if(ca==' '){ cross.setQnum(-1);}
+		else if(ca==='-'){ cross.setQnum(cross.getQnum()!==-2?-2:-1);}
+		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 
 		this.prev = cross;
@@ -548,7 +548,7 @@ Encode:{
 			var obj = bd.cross[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
 			else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
-			else if(ca=="."){ obj.qnum=-2;}
+			else if(ca==="."){ obj.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}

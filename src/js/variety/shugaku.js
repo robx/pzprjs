@@ -43,7 +43,7 @@ MouseEvent:{
 				else if(dx-dy<0 && dx+dy<0){ adj=adc.left;   this.inputData=4;}
 				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
 			}
-			if(old!=this.inputData){ this.mouseCell.drawaround();}
+			if(old!==this.inputData){ this.mouseCell.drawaround();}
 		}
 	},
 	inputFuton2 : function(){
@@ -81,8 +81,8 @@ MouseEvent:{
 		this.changeHalf(cell);
 		this.mouseCell = cell;
 
-		cell.setQans(this.inputData==1?1:0);
-		cell.setQsub(this.inputData==2?1:0);
+		cell.setQans(this.inputData===1?1:0);
+		cell.setQsub(this.inputData===2?1:0);
 
 		cell.drawaround();
 	},

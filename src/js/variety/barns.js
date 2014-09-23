@@ -114,7 +114,7 @@ Encode:{
 		var cm="", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
-			if(num==5){ cm += pass.toString(32); num=0; pass=0;}
+			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 

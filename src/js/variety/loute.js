@@ -284,8 +284,8 @@ Graphic:{
 			var obj = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { obj.qdir = parseInt(ca,16);}
-			else if(ca == '.'){ obj.qdir = -2;}
+							   { obj.qdir = parseInt(ca,16);}
+			else if(ca === '.'){ obj.qdir = -2;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
@@ -303,7 +303,7 @@ Graphic:{
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
@@ -324,10 +324,10 @@ Graphic:{
 			var ca = bstr.charAt(i), obj=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { obj.qdir = 5; obj.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ obj.qdir = 5; obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == '.'){ obj.qdir = 5;}
-			else if(ca == '%'){ obj.qdir = -2;}
+							   { obj.qdir = 5; obj.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ obj.qdir = 5; obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === '.'){ obj.qdir = 5;}
+			else if(ca === '%'){ obj.qdir = -2;}
 			else if(ca>='g' && ca<='j'){ obj.qdir = (parseInt(ca,20)-15);}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
