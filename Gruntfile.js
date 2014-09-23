@@ -27,7 +27,8 @@ module.exports = function(grunt){
 
     copy: {
       options: {
-        process: function(content, srcpath){ return grunt.template.process(content);}
+        process: function(content, srcpath){ return grunt.template.process(content);},
+        mode: true
       },
       debug: {
         files : [
