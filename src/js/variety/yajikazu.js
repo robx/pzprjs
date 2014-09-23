@@ -123,8 +123,8 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isShade()){ continue;}
-			var pos = cell.getaddr(), dir = cell.getQdir();
+			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
+			var pos = cell.getaddr(), dir = cell.qdir;
 			var clist = new this.owner.CellList();
 			while(1){
 				pos.movedir(dir,2);
@@ -134,7 +134,7 @@ AnsCheck:{
 			}
 
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.getQnum()!==cnt){
+			if(cell.qnum!==cnt){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				clist.seterr(1);

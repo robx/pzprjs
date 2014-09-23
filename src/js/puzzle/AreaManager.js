@@ -485,7 +485,7 @@ AreaManager:{
 		if(merged.isNum()){
 			// 数字が消える部屋にしかない場合 -> 残るほうに移動させる
 			if(keep.noNum()){
-				keep.setQnum(merged.getQnum());
+				keep.setQnum(merged.qnum);
 				keep.draw();
 			}
 			merged.setQnum(-1);

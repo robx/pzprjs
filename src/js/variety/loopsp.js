@@ -34,7 +34,7 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputcell_loopsp : function(cell){
-		var qu = cell.getQues(), qn = cell.getQnum();
+		var qu = cell.ques, qn = cell.qnum;
 		if(this.btn.Left){
 			if(qn===-1){
 				if     (qu===0)        { cell.setQues(11);}
@@ -110,7 +110,7 @@ BoardExec:{
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}

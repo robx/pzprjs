@@ -127,14 +127,14 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
+			if((flag?(cell.qnum<0):(cell.qnum!==-2))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
 			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
 			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
 			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}
 			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
 
-			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
+			if(flag?(clist.length!==cell.qnum):(clist.length===0)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				cell.seterr(1);

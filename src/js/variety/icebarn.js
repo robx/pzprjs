@@ -89,7 +89,7 @@ MouseEvent:{
 		var cell = this.cursor.getc();
 
 		if(ca==='q'){
-			cell.getQues(cell.ice()?0:6);
+			cell.setQues(cell.ice()?0:6);
 		}
 		else if(ca===' ' && cell.noNum()){
 			cell.setQues(0);

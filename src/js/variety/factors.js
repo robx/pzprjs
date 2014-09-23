@@ -71,7 +71,7 @@ CellList:{
 	getProduct : function(){
 		var product = 1;
 		for(var i=0,len=this.length;i<len;i++){
-			var num = this[i].getAnum();
+			var num = this[i].anum;
 			product *= (num>0 ? num : 0);
 		}
 		return product;
@@ -175,10 +175,10 @@ AnsCheck:{
 	},
 
 	checkRowsColsSameAnsNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getAnum();});
+		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.anum;});
 	},
 	checkNoAnumCell : function(){
-		return this.checkAllCell( function(cell){ return cell.getAnum()===-1;} );
+		return this.checkAllCell( function(cell){ return cell.anum===-1;} );
 	},
 
 	checkRoomNumber : function(rinfo){
@@ -188,7 +188,7 @@ AnsCheck:{
 			var product = clist.getProduct();
 			if(product === 0){ continue;}
 
-			if(product !== room.top.getQnum()){
+			if(product !== room.top.qnum){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;

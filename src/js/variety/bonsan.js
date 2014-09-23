@@ -53,9 +53,9 @@ MouseEvent:{
 		var puzzle = this.owner;
 		if(puzzle.pid!=='rectslider' && puzzle.getConfig('autocmp') && this.inputdark(cell)){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
 		cell.draw();
 	},
 	inputdark : function(cell){
@@ -64,7 +64,7 @@ MouseEvent:{
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.getQcmp()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
 			targetcell.draw();
 			return true;
 		}

@@ -32,12 +32,12 @@ MouseEvent:{
 			this.inputData = cell.getNum();
 			if     (this.inputData===-2){ this.inputData=null;}
 			else if(this.inputData===-1){
-				if     (cell.getQsub()===1){ this.inputData=-2;}
-				else if(cell.getQsub()===2){ this.inputData=-3;}
+				if     (cell.qsub===1){ this.inputData=-2;}
+				else if(cell.qsub===2){ this.inputData=-3;}
 			}
 			this.mouseCell = cell;
 		}
-		else if(cell.getQnum()===-1){
+		else if(cell.qnum===-1){
 			cell.setNum(this.inputData);
 			this.mouseCell = cell;
 			cell.draw();
@@ -46,7 +46,7 @@ MouseEvent:{
 	inputDot_nanro : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
-		if(this.inputData===null){ this.inputData = (cell.getQsub()===2?0:2);}
+		if(this.inputData===null){ this.inputData = (cell.qsub===2?0:2);}
 		if     (this.inputData===2){ cell.setAnum(-1); cell.setQsub(2);}
 		else if(this.inputData===0){ cell.setAnum(-1); cell.setQsub(0);}
 		this.mouseCell = cell;
@@ -69,8 +69,8 @@ KeyEvent:{
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && cell.getAnum()===1)        { ca='s1';}
-			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
+			else if(ca==='1' && cell.anum===1)             { ca='s1';}
+			else if(ca==='2' && cell.anum===2)             { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	}

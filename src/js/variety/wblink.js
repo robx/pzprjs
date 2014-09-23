@@ -52,7 +52,7 @@ MouseEvent:{
 		var border = pos.getb();
 		if(border.isnull){ return;}
 
-		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
+		if(this.inputData===null){ this.inputData=(border.qsub!==2?2:0);}
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
@@ -75,9 +75,9 @@ KeyEvent:{
 	key_inputcircle : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca==='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
-		else if(ca==='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}
-		else if(ca==='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		if     (ca==='1'){ cell.setQnum(cell.qnum!==1?1:-1);}
+		else if(ca==='2'){ cell.setQnum(cell.qnum!==2?2:-1);}
+		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
 		else if(ca==='3'||ca===" "){ cell.setQnum(-1);}
 		else{ return;}
 
@@ -207,7 +207,7 @@ AnsCheck:{
 			if(clist.length<=1){ continue;}
 
 			var tip1 = clist[0], tip2 = clist[clist.length-1];
-			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
+			if(tip1.qnum!==val || tip2.qnum!==val){ continue;}
 
 			if(this.checkOnly){ return false;}
 			if(result){ this.owner.board.border.seterr(-1);}

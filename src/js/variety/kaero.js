@@ -25,9 +25,9 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
 		cell.draw();
 	}
 },
@@ -46,12 +46,12 @@ KeyEvent:{
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = cell.getQnum();
+			var canum = cell.qnum;
 			if     ((canum-1)%26===num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
 			else if((canum-1)%26===num){ cell.setQnum(-1);}
 			else{ cell.setQnum(num+1);}
 		}
-		else if(ca==='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
+		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
 		else if(ca===' '){ cell.setQnum(-1);}
 		else{ return;}
 

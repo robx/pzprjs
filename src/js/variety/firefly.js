@@ -193,7 +193,7 @@ AnsCheck:{
 	checkFireflyBeam : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], dir=cell.getQdir();
+			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
 			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
 				if(this.checkOnly){ return false;}

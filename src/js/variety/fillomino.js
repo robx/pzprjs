@@ -41,7 +41,7 @@ MouseEvent:{
 		else if(this.inputData<=-3){
 			var cell2 = this.mouseCell;
 			var border = this.owner.board.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
-			if(this.inputData===-3){ this.inputData=(border.getQsub()===1?-5:-4);}
+			if(this.inputData===-3){ this.inputData=(border.qsub===1?-5:-4);}
 			if(!border.isnull){
 				border.setQsub(this.inputData===-4?1:0);
 				border.draw();
@@ -80,9 +80,9 @@ KeyEvent:{
 			var isMoved = (this.isCTRL || this.isX || this.isZ);
 			if(!isMoved){ return false;}
 
-			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.getQsub()===0)?1:0); this.cursor.setaddr(nc);}}
-			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                           }}
-			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());          this.cursor.setaddr(nc);}}
+			if(this.isCTRL)  { if(!nb.isnull){ nb.setQsub((nb.qsub===0)?1:0);    this.cursor.setaddr(nc);}}
+			else if(this.isZ){ if(!nb.isnull){ nb.setQans((!nb.isBorder()?1:0));                         }}
+			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());        this.cursor.setaddr(nc);}}
 
 			cell.draw();
 			this.stopEvent();	/* カーソルを移動させない */

@@ -403,7 +403,7 @@ AnsCheck:{
 			clist.add(cell.relcell( 1, 2));
 
 			var cnt=clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.getQnum()!==cnt){
+			if(cell.qnum!==cnt){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				clist.seterr(1);

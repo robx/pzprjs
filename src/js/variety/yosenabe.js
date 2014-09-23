@@ -31,7 +31,7 @@ MouseEvent:{
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.getQcmp()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
 			targetcell.draw();
 		}
 	},
@@ -40,7 +40,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(cell.isNum()){ this.inputqnum(); return;}
-		else if(cell.getQnum2()!==-1){ this.inputqnum_yosenabe(); return;}
+		else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
@@ -64,8 +64,8 @@ MouseEvent:{
 	inputnumber_yosenabe : function(cell){
 		var max = cell.getmaxnum(), num, type, val=-1;
 
-		if     (cell.getQnum() !==-1){ num=cell.getQnum();  type=1;} /* ○数字 */
-		else if(cell.getQnum2()!==-1){ num=cell.getQnum2(); type=2;} /* なべの数字 */
+		if     (cell.qnum !==-1){ num=cell.qnum;  type=1;} /* ○数字 */
+		else if(cell.qnum2!==-1){ num=cell.qnum2; type=2;} /* なべの数字 */
 		else{ num=-1; type=(cell.ice()?2:1);}
 
 		if(this.btn.Left){
@@ -99,9 +99,9 @@ KeyEvent:{
 	key_inputqnum_yosenabe : function(ca){
 		var cell = this.cursor.getc(), num;
 		if(ca==='q'||ca==='q1'||ca==='q2'){
-			if(ca==='q') { ca = (cell.getQnum()!==-1?'q1':'q2');}
-			if     (ca==='q1' && cell.getQnum() !==-1){ cell.setQnum2(cell.getQnum()); cell.setQnum(-1);}
-			else if(ca==='q2' && cell.getQnum2()!==-1){ cell.setQnum(cell.getQnum2()); cell.setQnum2(-1);}
+			if(ca==='q') { ca = (cell.qnum!==-1?'q1':'q2');}
+			if     (ca==='q1' && cell.qnum !==-1){ cell.setQnum2(cell.qnum); cell.setQnum(-1);}
+			else if(ca==='q2' && cell.qnum2!==-1){ cell.setQnum(cell.qnum2); cell.setQnum2(-1);}
 		}
 		else if(ca==='w'){
 			cell.setQues(cell.ice()?0:6);
@@ -109,8 +109,8 @@ KeyEvent:{
 		else{
 			var max = cell.getmaxnum(), val=-1, cur=-1, type;
 
-			if     (cell.getQnum() !==-1){ cur=cell.getQnum();  type=1;} /* ○数字 */
-			else if(cell.getQnum2()!==-1){ cur=cell.getQnum2(); type=2;} /* なべの数字 */
+			if     (cell.qnum !==-1){ cur=cell.qnum;  type=1;} /* ○数字 */
+			else if(cell.qnum2!==-1){ cur=cell.qnum2; type=2;} /* なべの数字 */
 			else{ cur=-1; type=(cell.ice()?2:1);}
 
 			if('0'<=ca && ca<='9'){
@@ -401,11 +401,11 @@ AnsCheck:{
 		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
 	},
 	checkQuesNumber : function(){
-		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQnum2()!==-1);});
+		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);});
 	},
 
 	checkDoubleNumberInNabe : function(iarea){
-		return this.checkAllBlock(iarea, function(cell){ return (cell.getQnum2()!==-1);}, function(w,h,a,n){ return (a<2);});
+		return this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);});
 	},
 	checkFillingOutOfNabe : function(){
 		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
@@ -416,7 +416,7 @@ AnsCheck:{
 		for(var id=1;id<=iarea.max;id++){
 			var clist = iarea.area[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
-				var qd = clist[i].getQnum2();
+				var qd = clist[i].qnum2;
 				if(qd!==-1){
 					if(num!==null && num!==qd){ num=null; break;}
 					num=qd;

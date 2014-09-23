@@ -26,7 +26,7 @@ MouseEvent:{
 		}
 	},
 	inputnumber : function(excell){
-		var qn = excell.getQnum(), max=excell.getmaxnum();
+		var qn = excell.qnum, max=excell.getmaxnum();
 		if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
 		else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 
@@ -64,7 +64,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getex(), qn = excell.getQnum();
+		var excell = this.cursor.getex(), qn = excell.qnum;
 		var max = excell.getmaxnum();
 
 		if('0'<=ca && ca<='9'){
@@ -122,8 +122,8 @@ BoardExec:{
 		this.qnumh = [];
 
 		var bd=this.owner.board;
-		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).getQnum();}
-		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).getQnum();}
+		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).qnum;}
+		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).qnum;}
 	},
 	adjustBoardData2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
@@ -329,7 +329,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
-			var qn=excell.getQnum(), pos=excell.getaddr(), val=0, cell;
+			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
 			var clist=new this.owner.CellList();
 			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
 				cell = pos.move(0,2).getc();

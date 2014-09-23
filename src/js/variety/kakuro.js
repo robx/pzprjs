@@ -341,14 +341,14 @@ AnsCheck:{
 	},
 
 	checkEmptyCell_kakuro : function(){
-		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});
+		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.anum<=0);});
 	},
 
 	checkRowsColsSameNumber : function(){
 		return this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true);
 	},
 	isSameNumber : function(keycellpos, clist){
-		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getAnum();})){
+		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.anum;})){
 			this.owner.board.getobj(keycellpos[0],keycellpos[1]).seterr(1);
 			return false;
 		}
@@ -360,12 +360,12 @@ AnsCheck:{
 	},
 	isTotalNumber : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
-		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
+		if     (dir===keyobj.RT){ number = keyobj.qnum;}
+		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
 
 		var sum = 0;
 		for(var i=0;i<clist.length;i++){
-			if(clist[i].getAnum()>0){ sum += clist[i].getAnum();}
+			if(clist[i].anum>0){ sum += clist[i].anum;}
 			else{ return true;}
 		}
 		if(number>0 && sum!==number){

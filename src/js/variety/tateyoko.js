@@ -25,7 +25,7 @@ MouseEvent:{
 		// 初回はこの中に入ってきます。
 		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
 		// 黒マス上なら何もしない
-		else if(cell.getQues()===1){ }
+		else if(cell.ques===1){ }
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
@@ -41,7 +41,7 @@ MouseEvent:{
 			}
 
 			if(input){
-				if(cell.getQans()===this.inputData){ this.inputData=0;}
+				if(cell.qans===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
 			}
 		}
@@ -65,9 +65,9 @@ MouseEvent:{
 	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
-		if(cell.isnull || cell.getQues()===1){ return;}
+		if(cell.isnull || cell.ques===1){ return;}
 
-		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.getQans()]);
+		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.qans]);
 		cell.draw();
 	}
 },
@@ -84,11 +84,11 @@ KeyEvent:{
 	key_inputqnum_tateyoko : function(ca){
 		var cell = this.cursor.getc();
 		if(ca==='q'||ca==='q1'||ca==='q2'){
-			if(ca==='q'){ ca = (cell.getQues()!==1?'q1':'q2');}
+			if(ca==='q'){ ca = (cell.ques!==1?'q1':'q2');}
 			if(ca==='q1'){
 				cell.setQues(1);
 				cell.setQans(0);
-				if(cell.getQnum()>4){ cell.setQnum(-1);}
+				if(cell.qnum>4){ cell.setQnum(-1);}
 			}
 			else if(ca==='q2'){ cell.setQues(0);}
 		}
@@ -122,7 +122,7 @@ BoardExec:{
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans(tans[cell.getQans()]);
+				cell.setQans(tans[cell.qans]);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ AreaBarManager:{
 		var binfo = new this.owner.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);
+			binfo.id[c]=((cell.ques===1||cell.qans===0) ? null : 0);
 		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -352,14 +352,14 @@ AnsCheck:{
 	checkShade : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], num = cell.getQnum();
-			if(cell.getQues()!==1 || num<0){ continue;}
+			var cell = bd.cell[c], num = cell.qnum;
+			if(cell.ques!==1 || num<0){ continue;}
 
 			var cnt1=0, cnt2=0, cell2, adc=cell.adjacent;
-			cell2=adc.top;    if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=adc.left;   if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
-			cell2=adc.right;  if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
+			cell2=adc.top;    if(!cell2.isnull){ if(cell2.qans===12){ cnt1++;}else if(cell2.qans===13){ cnt2++;} }
+			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.qans===12){ cnt1++;}else if(cell2.qans===13){ cnt2++;} }
+			cell2=adc.left;   if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
+			cell2=adc.right;  if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
 
 			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
 				if(this.checkOnly){ return false;}
@@ -371,7 +371,7 @@ AnsCheck:{
 	},
 	
 	checkEmptyCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});
+		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.qans===0);});
 	}
 },
 

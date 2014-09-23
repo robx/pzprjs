@@ -165,7 +165,7 @@ AnsCheck:{
 			target=adc.top;    while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.top;   }
 			target=adc.bottom; while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.bottom;}
 
-			if(cell.getQnum()!==clist.length){
+			if(cell.qnum!==clist.length){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
 				result = false;

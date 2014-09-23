@@ -140,7 +140,7 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 
-			var bx = cell.bx, by = cell.by, dir = cell.getQdir(), blist;
+			var bx = cell.bx, by = cell.by, dir = cell.qdir, blist;
 			if     (dir===cell.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
 			else if(dir===cell.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
 			else if(dir===cell.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
@@ -148,7 +148,7 @@ AnsCheck:{
 			else{ continue;}
 
 			var count = blist.filter(function(border){ return border.isBorder();}).length;
-			if(cell.getQnum()!==count){
+			if(cell.qnum!==count){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;
@@ -160,7 +160,7 @@ AnsCheck:{
 	checkArrowNumber_border : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], dir = cell.getQdir();
+			var cell = bd.cell[c], dir = cell.qdir;
 			if(!cell.isValidNum() || !dir){ continue;}
 
 			if(!cell.getaddr().movedir(dir,1).getb().isBorder()){

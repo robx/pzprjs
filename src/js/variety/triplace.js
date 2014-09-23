@@ -28,14 +28,14 @@ MouseEvent:{
 		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
 			if(this.btn.Left){
-				if     (cell.getQsub()===0){ this.inputData=1;}
-				else if(cell.getQsub()===1){ this.inputData=2;}
-				else                       { this.inputData=0;}
+				if     (cell.qsub===0){ this.inputData=1;}
+				else if(cell.qsub===1){ this.inputData=2;}
+				else                  { this.inputData=0;}
 			}
 			else if(this.btn.Right){
-				if     (cell.getQsub()===0){ this.inputData=2;}
-				else if(cell.getQsub()===1){ this.inputData=0;}
-				else                       { this.inputData=1;}
+				if     (cell.qsub===0){ this.inputData=2;}
+				else if(cell.qsub===1){ this.inputData=0;}
+				else                  { this.inputData=1;}
 			}
 		}
 		cell.setQsub(this.inputData);
@@ -314,8 +314,8 @@ AnsCheck:{
 	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
-		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
+		if     (dir===keyobj.RT){ number = keyobj.qnum;}
+		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){

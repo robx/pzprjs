@@ -21,8 +21,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(2);}
-		else if(cell.getQsub()===2){ cell.setQsub(0);}
+		if     (cell.qsub===0){ cell.setQsub(2);}
+		else if(cell.qsub===2){ cell.setQsub(0);}
 		cell.draw();
 	}
 },
@@ -138,7 +138,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			var num=cell.getQnum(), cell2;
+			var num=cell.qnum, cell2;
 			var clist = new this.owner.CellList();
 			cell2=cell.relcell(-num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell( num*2,0); if(cell2.isShade()){ clist.add(cell2);}

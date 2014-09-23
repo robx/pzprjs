@@ -35,7 +35,7 @@ MouseEvent:{
 		}
 	},
 	inputcell_loute : function(cell){
-		var dir = cell.getQdir();
+		var dir = cell.qdir;
 		if(dir!==5){
 			var array = [0,5,1,2,3,4,-2], len = array.length;
 			if(this.btn.Left){
@@ -53,7 +53,7 @@ MouseEvent:{
 						break;
 					}
 				}
-				if(cell.getQdir()===5 && this.owner.pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
+				if(cell.qdir===5 && this.owner.pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
 			}
 		}
 		else{
@@ -107,9 +107,9 @@ KeyEvent:{
 
 		var cell = this.cursor.getc(), val=-1;
 
-		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (cell.getQdir()!==val?val:0);}
-		else if(ca==='-') { val = (cell.getQdir()!==-2?-2:0);}
-		else if(ca==='q') { val = (cell.getQdir()!==5?5:0);}
+		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (cell.qdir!==val?val:0);}
+		else if(ca==='-') { val = (cell.qdir!==-2?-2:0);}
+		else if(ca==='q') { val = (cell.qdir!==5?5:0);}
 		else if(ca===' ') { val = 0;}
 		else if(ca==='s1'){ val = -2;}
 		else{ return;}
@@ -122,11 +122,11 @@ KeyEvent:{
 	key_inputqnum_sashigane : function(ca){
 		var cell = this.cursor.getc();
 		if(ca==='q'){
-			cell.setQdir((cell.getQdir()!==5)?5:0);
+			cell.setQdir((cell.qdir!==5)?5:0);
 			cell.setQnum(-1);
 		}
 		else if(ca==='-'){
-			cell.setQdir((cell.getQdir()!==-2||cell.getQnum()!==-1)?-2:0);
+			cell.setQdir((cell.qdir!==-2||cell.qnum!==-1)?-2:0);
 			cell.setQnum(-1);
 		}
 		else if(ca===' '){
@@ -135,7 +135,7 @@ KeyEvent:{
 		}
 		else{
 			this.key_inputqnum_main(cell,ca);
-			if(cell.isNum() && cell.getQdir()!==5){ cell.setQdir(5);}
+			if(cell.isNum() && cell.qdir!==5){ cell.setQdir(5);}
 		}
 
 		this.prev = cell;

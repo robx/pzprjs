@@ -34,7 +34,7 @@ KeyEvent:{
 		else if(ca==='e'||ca==='3'){ cell.setQnum(3); }
 		else if(ca==='r'||ca==='4'){ cell.setQnum(-1); }
 		else if(ca===' '          ){ cell.setQnum(-1); }
-		else if(ca==='-'          ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
+		else if(ca==='-'          ){ cell.setQnum(cell.qnum!==-2?-2:-1); }
 		else{ return;}
 
 		cell.draw();
@@ -57,7 +57,7 @@ BoardExec:{
 			var tques = {2:3,3:2};
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQnum()];
+				var cell = clist[i], val = tques[cell.qnum];
 				if(!!val){ cell.setQnum(val);}
 			}
 		}

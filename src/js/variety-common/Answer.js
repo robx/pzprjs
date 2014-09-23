@@ -224,7 +224,7 @@ AnsCheck:{
 			var top = (!!area.top ? area.top : clist.getQnumCell());
 			var d = clist.getRectSize();
 			var a = (!!func ? clist.filter(func) : clist).length;
-			var n = (!top.isnull ? top.getQnum() : -1);
+			var n = (!top.isnull ? top.qnum : -1);
 
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.checkOnly){ return false;}

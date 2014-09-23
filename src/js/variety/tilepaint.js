@@ -24,7 +24,7 @@ MouseEvent:{
 	inputBGcolor1 : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.is51cell()){ return;}
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		if(this.inputData===null){ this.inputData=(cell.qsub===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
@@ -297,8 +297,8 @@ AnsCheck:{
 	},
 	isShadeCount : function(keycellpos, clist){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
-		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
+		if     (dir===keyobj.RT){ number = keyobj.qnum;}
+		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
 
 		var count = clist.filter(function(cell){ return cell.isShade();}).length;
 		if(number>=0 && count!==number){

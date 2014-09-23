@@ -24,7 +24,7 @@ MouseEvent:{
 		var cell = pos.getc();
 		if(cell.isnull){ return;}
 
-		var max = cell.getmaxnum(), ques = cell.getQues(), num = cell.getNum();
+		var max = cell.getmaxnum(), ques = cell.ques, num = cell.getNum();
 		if(this.owner.editmode){
 			if(this.btn.Left){
 				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
@@ -70,16 +70,16 @@ KeyEvent:{
 		if(cursor.oncell()){
 			var cell = cursor.getc();
 			if(this.owner.editmode){
-				if     (ca==='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
+				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
 				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
 				else if('0'<=ca && ca<='9'){
-					if(cell.getQues()!==0){ cell.setQues(0); cell.setNum(-1);}
+					if(cell.ques!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
 				}
 				else{ return;}
 			}
 			else if(this.owner.playmode){
-				if(cell.getQues()===0){ this.key_inputqnum(ca);}
+				if(cell.ques===0){ this.key_inputqnum(ca);}
 				else{ return;}
 			}
 		}
@@ -87,7 +87,7 @@ KeyEvent:{
 			var border = cursor.getb();
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
-				var num = parseInt(ca), qs = border.getQsub();
+				var num = parseInt(ca), qs = border.qsub;
 				var qsubmax = 99;
 
 				if(qs<=0 || this.prev!==border){ if(num<=qsubmax){ border.setQsub(num);}}

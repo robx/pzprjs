@@ -36,16 +36,16 @@ MouseEvent:{
 		else if(this.inputData===4){ cell.setQans(0); cell.setQsub(0);}
 		else if(this.inputData!==null){ return;}
 		else if(this.btn.Left){
-			if     (cell.getQans()===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else if(cell.getQans()===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
-			else if(cell.getQsub()=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else                        { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+			if     (cell.qans===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else if(cell.qans===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
+			else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else                   { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
 		}
 		else if(this.btn.Right){
-			if     (cell.getQans()===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else if(cell.getQans()===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
-			else if(cell.getQsub()=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else                        { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
+			if     (cell.qans===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else if(cell.qans===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+			else if(cell.qsub=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else                   { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
 		}
 
 		cell.drawaround();
@@ -130,7 +130,7 @@ KeyEvent:{
 		if((excell.bx===bd.minbx+1||excell.bx===bd.maxbx-1)&&
 		   (excell.by===bd.minby+1||excell.by===bd.maxby-1)){ return;}
 
-		var qn = excell.getQnum();
+		var qn = excell.qnum;
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), max = excell.getmaxnum();
 
@@ -144,7 +144,7 @@ KeyEvent:{
 		}
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = excell.getQchar();
+			var canum = excell.qchar;
 			if     ((canum-1)%26===num && canum>0 && canum<79){ excell.setQchar(canum+26);}
 			else if((canum-1)%26===num){ excell.setQchar(0);}
 			else{ excell.setQchar(num+1);}
@@ -223,7 +223,7 @@ Board:{
 			var cell = pos.getc();
 			if(cell.isnull){ break;}
 
-			var qb = cell.getQans(), cc = cell.id;
+			var qb = cell.qans, cc = cell.id;
 			if(qb===31){
 				if     (dir===1){ ldata[cc]=(!isNaN({4:1,1:1}[ldata[cc]])?1:2); dir=3;}
 				else if(dir===2){ ldata[cc]=(!isNaN({2:1,1:1}[ldata[cc]])?1:4); dir=4;}
@@ -260,7 +260,7 @@ BoardExec:{
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans({0:0,31:32,32:31}[cell.getQans()]);
+				cell.setQans({0:0,31:32,32:31}[cell.qans]);
 			}
 		}
 	}
@@ -496,20 +496,20 @@ AnsCheck:{
 	},
 
 	checkNoPluralMirrorsInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);});
+		return this.checkAllBlock(rinfo, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);});
 	},
 	checkExistMirrorInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!==0);});
+		return this.checkAllBlock(rinfo, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
 	},
 
 	checkMirrors : function(type){
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
-			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQchar()===0){ continue;}
+			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
 			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
-			if( (type===1&& (excell.getQchar()!==excell2.getQchar()) )||
-				(type===2&&((excell.getQnum() !==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
+			if( (type===1&& (excell.qchar!==excell2.qchar) )||
+				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){
 				return false;
 			}

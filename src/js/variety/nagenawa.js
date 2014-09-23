@@ -34,7 +34,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQues(cell.getQues()===0?1:0);
+		cell.setQues(cell.ques===0?1:0);
 		cell.draw();
 	}
 },

@@ -95,35 +95,16 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
-	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata('ques', val);},
-
-	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata('qans', val);},
-
-	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata('qdir', val);},
-
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata('qnum', val);},
-
-	getQnum2 : function(){ return this.qnum2;},
-	setQnum2 : function(val){ this.setdata('qnum2', val);},
-
-	getQchar : function(){ return this.qchar;},
-	setQchar : function(val){ this.setdata('qchar', val);},
-
-	getAnum : function(){ return this.anum;},
-	setAnum : function(val){ this.setdata('anum', val);},
-
-	getLineVal : function(){ return this.line;},
+	setQues :    function(val){ this.setdata('ques', val);},
+	setQans :    function(val){ this.setdata('qans', val);},
+	setQdir :    function(val){ this.setdata('qdir', val);},
+	setQnum :    function(val){ this.setdata('qnum', val);},
+	setQnum2 :   function(val){ this.setdata('qnum2', val);},
+	setQchar :   function(val){ this.setdata('qchar', val);},
+	setAnum :    function(val){ this.setdata('anum', val);},
 	setLineVal : function(val){ this.setdata('line', val);},
-
-	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata('qsub', val);},
-
-	getQcmp : function(){ return this.qcmp;},
-	setQcmp : function(val){ this.setdata('qcmp', val);},
+	setQsub :    function(val){ this.setdata('qsub', val);},
+	setQcmp :    function(val){ this.setdata('qcmp', val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する

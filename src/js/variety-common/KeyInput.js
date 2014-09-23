@@ -11,12 +11,12 @@ KeyEvent:{
 		var max = cross.getmaxnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cross.getQnum();
+			var num = parseInt(ca), cur = cross.qnum;
 			if(cur<=0 || cur*10+num>max){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca==='-'){ cross.setQnum(cross.getQnum()!==-2 ? -2 : -1);}
+		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2 ? -2 : -1);}
 		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 
@@ -132,7 +132,7 @@ KeyEvent:{
 		else          { obj.setQnum2(val);}
 	},
 	getnum51 : function(obj,target){
-		return (target===2 ? obj.getQnum() : obj.getQnum2());
+		return (target===2 ? obj.qnum : obj.qnum2);
 	}
 }
 });

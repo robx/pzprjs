@@ -147,7 +147,7 @@ AnsCheck:{
 			var cell = clist.getQnumCell();
 			if(cell.isnull){ continue;}
 
-			var n = cell.getQnum();
+			var n = cell.qnum;
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 

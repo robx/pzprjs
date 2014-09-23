@@ -15,7 +15,7 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberRemainsUnshaded && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
+		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
@@ -30,20 +30,20 @@ MouseEvent:{
 	decIC : function(cell){
 		if(this.owner.getConfig('use')===1){
 			if     (this.btn.Left) { this.inputData=(cell.isUnshade()  ? 1 : 0); }
-			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
+			else if(this.btn.Right){ this.inputData=((cell.qsub!==1)? 2 : 0); }
 		}
 		else if(this.owner.getConfig('use')===2){
-			if(cell.numberRemainsUnshaded && cell.getQnum()!==-1){
-				this.inputData=((cell.getQsub()!==1)? 2 : 0);
+			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
+				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
 			else if(this.btn.Left){
-				if     (cell.isShade())    { this.inputData=2;}
-				else if(cell.getQsub()===1){ this.inputData=0;}
+				if     (cell.isShade()){ this.inputData=2;}
+				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (cell.isShade())    { this.inputData=0;}
-				else if(cell.getQsub()===1){ this.inputData=1;}
+				if     (cell.isShade()){ this.inputData=0;}
+				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
 			}
 		}
@@ -83,7 +83,7 @@ MouseEvent:{
 		if(puzzle.playmode && cell.qnum!==puzzle.Cell.prototype.qnum){ return;}
 
 		var max=cell.getmaxnum(), min=cell.getminnum();
-		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.getQsub());
+		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.qsub);
 		var val=-1, ishatena=(puzzle.editmode && !cell.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
@@ -133,7 +133,7 @@ MouseEvent:{
 		}
 	},
 	inputQues_main : function(array,cell){
-		var qu = cell.getQues(), len = array.length;
+		var qu = cell.ques, len = array.length;
 		if(this.btn.Left){
 			for(var i=0;i<=len-1;i++){
 				if(qu===array[i]){
@@ -160,7 +160,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.getQsub()]);
+		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.qsub]);
 		cell.draw();
 	},
 
@@ -175,10 +175,10 @@ MouseEvent:{
 
 		var cell = this.prevPos.getc();
 		if(!cell.isnull){
-			if(cell.getQnum()!==-1){
+			if(cell.qnum!==-1){
 				var dir = this.getdir(this.prevPos, pos);
 				if(dir!==cell.NDIR){
-					cell.setQdir(cell.getQdir()!==dir?dir:0);
+					cell.setQdir(cell.qdir!==dir?dir:0);
 					cell.draw();
 				}
 			}
@@ -226,7 +226,7 @@ MouseEvent:{
 		var clist = this.owner.board.rooms.getClistByCell(cell);
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
-			if(this.inputData===1 || cell2.getQsub()!==3){
+			if(this.inputData===1 || cell2.qsub!==3){
 				(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
 				cell2.setQsub(this.inputData===2?1:0);
 			}
@@ -277,10 +277,10 @@ MouseEvent:{
 	},
 	inputcross_main : function(cross){
 		if(this.btn.Left){
-			cross.setQnum(cross.getQnum()!==4 ? cross.getQnum()+1 : -2);
+			cross.setQnum(cross.qnum!==4 ? cross.qnum+1 : -2);
 		}
 		else if(this.btn.Right){
-			cross.setQnum(cross.getQnum()!==-2 ? cross.getQnum()-1 : 4);
+			cross.setQnum(cross.qnum!==-2 ? cross.qnum-1 : 4);
 		}
 		cross.draw();
 	},
@@ -294,7 +294,7 @@ MouseEvent:{
 		if(cross.isnull){ return;}
 
 		this.owner.opemgr.disCombine = true;
-		cross.setQnum(cross.getQnum()===1?-1:1);
+		cross.setQnum(cross.qnum===1?-1:1);
 		this.owner.opemgr.disCombine = false;
 
 		cross.draw();
@@ -322,7 +322,7 @@ MouseEvent:{
 
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQsub()===0?1:0);}
+			if(this.inputData===null){ this.inputData=(border.qsub===0?1:0);}
 			if     (this.inputData===1){ border.setQsub(1);}
 			else if(this.inputData===0){ border.setQsub(0);}
 			border.draw();
@@ -411,7 +411,7 @@ MouseEvent:{
 
 		var border = pos.getb();
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
+			if(this.inputData===null){ this.inputData=(border.qsub===0?2:3);}
 			if(this.inputData===2 && border.isLine() && this.owner.execConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}

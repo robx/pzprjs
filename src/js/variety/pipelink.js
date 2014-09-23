@@ -43,7 +43,7 @@ KeyEvent:{
 		else if(ca==='s'){ cell.setQues(15);}
 		else if(ca==='d'){ cell.setQues(16);}
 		else if(ca==='f'){ cell.setQues(17);}
-		else if(ca==='-'){ cell.setQues(cell.getQues()!==-2?-2:0);}
+		else if(ca==='-'){ cell.setQues(cell.ques!==-2?-2:0);}
 		else if(this.owner.pid==='pipelinkr' && ca==='1'){ cell.setQues(6);}
 		else{ return false;}
 
@@ -73,7 +73,7 @@ BoardExec:{
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}

@@ -37,14 +37,14 @@ MouseEvent:{
 	dispBlue : function(){
 		var cell = this.getcell();
 		this.mousereset();
-		if(cell.isnull || cell.getQans()===0){ return;}
+		if(cell.isnull || cell.qans===0){ return;}
 
 		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
 		var bd = this.owner.board, check = bd.searchline(fcross);
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
-			if(cell2.getQans()===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
-			if(cell2.getQans()===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
+			if(cell2.qans===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
+			if(cell2.qans===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
 		}
 
 		bd.haserror = true;
@@ -71,7 +71,7 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
-		cell.setNum(trans[cell.getQnum()+2]);
+		cell.setNum(trans[cell.qnum+2]);
 		cell.draw();
 	}
 },
@@ -211,10 +211,10 @@ Board:{
 			check[cross.id]=1;
 
 			var nc;
-			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).getQans()===31){ stack.push(nc);}
-			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).getQans()===32){ stack.push(nc);}
-			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).getQans()===32){ stack.push(nc);}
-			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
+			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).qans===31){ stack.push(nc);}
+			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).qans===32){ stack.push(nc);}
+			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).qans===32){ stack.push(nc);}
+			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).qans===31){ stack.push(nc);}
 		}
 		return check;
 	}
@@ -225,7 +225,7 @@ BoardExec:{
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans({0:0,31:32,32:31}[cell.getQans()]);
+				cell.setQans({0:0,31:32,32:31}[cell.qans]);
 			}
 		}
 	}
@@ -383,8 +383,8 @@ AnsCheck:{
 	checkLoopLine_wagiri : function(sdata, checkLoop){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			if(!checkLoop && sdata[c]===1 && bd.cell[c].getQnum()===2){ result = false;}
-			if( checkLoop && sdata[c]===2 && bd.cell[c].getQnum()===1){ result = false;}
+			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}
+			if( checkLoop && sdata[c]===2 && bd.cell[c].qnum===1){ result = false;}
 		}
 		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} } }
 		return result;
@@ -393,7 +393,7 @@ AnsCheck:{
 	checkQnumCross : function(){
 		var result = true, bd = this.owner.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], qn = cross.getQnum();
+			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn>=0 && qn!==sinfo.cross[c].length){
 				if(this.checkOnly){ return false;}
 				cross.seterr(1);
@@ -404,7 +404,7 @@ AnsCheck:{
 	},
 
 	checkNoSlashCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQans()===0);});
+		return this.checkAllCell(function(cell){ return (cell.qans===0);});
 	}
 },
 

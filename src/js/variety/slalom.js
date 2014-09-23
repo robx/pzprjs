@@ -52,7 +52,7 @@ MouseEvent:{
 			this.inputData = 10;
 		}
 		// 数字つき黒マスの上なら矢印入力ルーチンへ移行
-		else if(cell.getQues()===1 && cell.isNum()){
+		else if(cell.ques===1 && cell.isNum()){
 			this.inputData = 2;
 		}
 		// その他はゲート入力チェックへ
@@ -64,7 +64,7 @@ MouseEvent:{
 		var pos = cell.getaddr(), input = false;
 		
 		// 黒マス上なら何もしない
-		if(cell.getQues()===1){}
+		if(cell.ques===1){}
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
@@ -80,7 +80,7 @@ MouseEvent:{
 			}
 			
 			if(input){
-				if(cell.getQues()===this.inputData){ this.inputData=0;}
+				if(cell.ques===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
 			}
 		}
@@ -126,8 +126,8 @@ MouseEvent:{
 	},
 	inputGateNumber :function(cell){
 		var bd = this.owner.board;
-		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
-		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
+		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
+		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
 		bd.hinfo.generateGates();
 
@@ -164,7 +164,7 @@ KeyEvent:{
 		var cell = this.cursor.getc(), bd = this.owner.board;
 
 		if(ca==='q'||ca==='w'||ca==='e'||ca==='r'||ca==='s'||ca===' '){
-			var old=cell.getQues(), newques=-1;
+			var old=cell.ques, newques=-1;
 			if     (ca==='q'){ newques=(old!==1?1:0);}
 			else if(ca==='w'){ newques=21;}
 			else if(ca==='e'){ newques=22;}
@@ -182,7 +182,7 @@ KeyEvent:{
 				bd.startpos.draw();
 			}
 		}
-		else if(cell.getQues()===1){
+		else if(cell.ques===1){
 			this.key_inputqnum(ca);
 		}
 	}
@@ -228,7 +228,7 @@ BoardExec:{
 			var tques = {21:22,22:21};
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}
@@ -817,7 +817,7 @@ AnsCheck:{
 					var cell = pos.getc();
 					if(bd.startpos.equals(cell)){ return true;} // ちゃんと戻ってきた
 
-					if(cell.getQues()===21 || cell.getQues()===22){
+					if(cell.ques===21 || cell.ques===22){
 						var r = bd.hinfo.getGateid(cell.id);
 						var gatenumber = bd.hinfo.data[r].number;
 						passing++;
@@ -893,17 +893,17 @@ HurdleManager:{
 			cell2 = bd.getc(this.data[gateid].x2+2, this.data[gateid].y1);
 		}
 		else{ return [];}
-		if(!cell1.isnull && cell1.getQues()===1){ clist.add(cell1);}
-		if(!cell2.isnull && cell2.getQues()===1){ clist.add(cell2);}
+		if(!cell1.isnull && cell1.ques===1){ clist.add(cell1);}
+		if(!cell2.isnull && cell2.ques===1){ clist.add(cell2);}
 		return clist;
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(c){
 		var bd = this.owner.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
-		cell2=adc.top;    if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.bottom; if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.left;   if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.right;  if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.top;    if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.bottom; if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.left;   if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.right;  if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
 		return idlist;
 	},
 
@@ -956,13 +956,13 @@ HurdleManager:{
 		for(var r=1;r<=this.max;r++){ nums[r] = [];}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()===1){
-				var qn = cell.getNum(), dir = cell.getQdir(), adc = cell.adjacent;
+			if(cell.ques===1){
+				var qn = cell.getNum(), dir = cell.qdir, adc = cell.adjacent;
 				if(qn<=0 || qn>this.max){ continue;}
-				if((dir===cell.NDIR||dir===cell.UP) && adc.top.getQues()   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.getQues()===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.LT) && adc.left.getQues()  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.RT) && adc.right.getQues() ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
 			}
 		}
 

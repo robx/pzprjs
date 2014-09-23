@@ -83,7 +83,7 @@ BoardExec:{
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}
@@ -318,10 +318,10 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()<2 || cell.getQues()>5 || !cell.isValidNum()){ continue;}
+			if(cell.ques<2 || cell.ques>5 || !cell.isValidNum()){ continue;}
 
 			var blist = cell.getTriLine();
-			if(type===1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
+			if(type===1?cell.qnum<(blist.length+1):cell.qnum>(blist.length+1)){
 				if(this.checkOnly){ return false;}
 				cell.seterr(4);
 				if(result){ bd.border.seterr(-1);}

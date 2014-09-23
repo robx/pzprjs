@@ -26,7 +26,7 @@ MouseEvent:{
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
 			this.inputData = this.getdir(this.prevPos, pos);
-			border.setQdir(this.inputData!==border.getQdir()?this.inputData:0);
+			border.setQdir(this.inputData!==border.qdir?this.inputData:0);
 			border.draw();
 			this.mousereset();
 			return;
@@ -92,11 +92,11 @@ KeyEvent:{
 			if(ca==='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
 			if(ca==='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
 
-			border.setQdir(border.getQdir()!==tmp?tmp:border.NDIR);
+			border.setQdir(border.qdir!==tmp?tmp:border.NDIR);
 			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = border.getQnum();
+			var num = parseInt(ca), cur = border.qnum;
 			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 
 			border.setQdir(border.NDIR);
@@ -342,12 +342,12 @@ AnsCheck:{
 
 	checkBDnumber : function(){
 		return this.checkBDSideCell(function(border,a1,a2){
-			return (border.getQnum()>0 && border.getQnum()!==Math.abs(a1-a2));
+			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));
 		});
 	},
 	checkBDmark : function(){
 		return this.checkBDSideCell(function(border,a1,a2){
-			var mark = border.getQdir();
+			var mark = border.qdir;
 			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
 		});
 	},

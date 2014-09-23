@@ -46,7 +46,7 @@ MouseEvent:{
 			}
 
 			if(input){
-				if(cell.getQans() & this.inputData){ this.inputData*=-1;}
+				if(cell.qans & this.inputData){ this.inputData*=-1;}
 				this.firstPoint.reset();
 			}
 		}
@@ -59,10 +59,10 @@ MouseEvent:{
 
 		// 描画・後処理
 		if(input){
-			if     (this.inputData=== 1){ cell.setQans([1,1,3,3][cell.getQans()]);}
-			else if(this.inputData=== 2){ cell.setQans([2,3,2,3][cell.getQans()]);}
-			else if(this.inputData===-1){ cell.setQans([0,0,2,2][cell.getQans()]);}
-			else if(this.inputData===-2){ cell.setQans([0,1,0,1][cell.getQans()]);}
+			if     (this.inputData=== 1){ cell.setQans([1,1,3,3][cell.qans]);}
+			else if(this.inputData=== 2){ cell.setQans([2,3,2,3][cell.qans]);}
+			else if(this.inputData===-1){ cell.setQans([0,0,2,2][cell.qans]);}
+			else if(this.inputData===-2){ cell.setQans([0,1,0,1][cell.qans]);}
 			cell.draw();
 		}
 		this.prevPos   = pos;
@@ -72,7 +72,7 @@ MouseEvent:{
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
 
-		cell.setQans((this.btn.Left?[1,2,3,0]:[3,0,1,2])[cell.getQans()]);
+		cell.setQans((this.btn.Left?[1,2,3,0]:[3,0,1,2])[cell.qans]);
 		cell.draw();
 	}
 },
@@ -120,7 +120,7 @@ BoardExec:{
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans([0,2,1,3][cell.getQans()]);
+				cell.setQans([0,2,1,3][cell.qans]);
 			}
 		}
 	}
@@ -511,7 +511,7 @@ AnsCheck:{
 		}
 
 		var sdata=[];
-		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].getQans()!==0?0:null);}
+		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].qans!==0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(sdata[c]!==0){ continue;}
 			this.searchloop(c, sinfo, sdata);

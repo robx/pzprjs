@@ -26,7 +26,7 @@ MouseEvent:{
 	inputBGcolor1 : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		if(this.inputData===null){ this.inputData=(cell.qsub===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell; 
 		cell.draw();
@@ -50,7 +50,7 @@ MouseEvent:{
 
 		var border = this.getborderobj(this.prevPos, pos);
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQans()===0?1:0);}
+			if(this.inputData===null){ this.inputData=(border.qans===0?1:0);}
 			border.setQans(this.inputData);
 			border.draw();
 		}
@@ -126,7 +126,7 @@ Star:{
 	obj : null,
 
 	getStar : function(){
-		return this.obj.getQnum();
+		return this.obj.qnum;
 	},
 	setStar : function(val){
 		this.owner.opemgr.disCombine = true;
@@ -168,8 +168,8 @@ CellList:{
 		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
-			if(pzpr.EDITOR && cell.getQsub()===3 && ret!==2){ continue;}
-			else if(cell.getQsub()!==(ret>0?ret:0)){
+			if(pzpr.EDITOR && cell.qsub===3 && ret!==2){ continue;}
+			else if(cell.qsub!==(ret>0?ret:0)){
 				cell.setQsub(ret>0?ret:0);
 				flag = true;
 			}

@@ -205,7 +205,7 @@ AnsCheck:{
 	},
 
 	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
+		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.qnum;});
 	},
 	isDifferentNumberInClist_hitori : function(clist, numfunc){
 		var clist2 = clist.filter(function(cell){ return (cell.isUnshade() && cell.isNum());});

@@ -37,11 +37,11 @@ KeyEvent:{
 	key_sukoro : function(ca){
 		if(this.owner.playmode){
 			var cell=this.cursor.getc();
-			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(cell.getQsub()===1?'1':'s1');}
-			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(cell.getQsub()===2?'2':'s2');}
+			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(cell.qsub===1?'1':'s1');}
+			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(cell.qsub===2?'2':'s2');}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && cell.getAnum()===1)        { ca='s1';}
-			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
+			else if(ca==='1' && cell.anum===1)             { ca='s1';}
+			else if(ca==='2' && cell.anum===2)             { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	}
@@ -62,7 +62,7 @@ Cell:{
 			while(1){
 				pos.movedir(dir,2);
 				var cell = pos.getc();
-				if(!cell.isnull && cell.noNum() && cell.getQsub()!==1){ clist.add(cell);}
+				if(!cell.isnull && cell.noNum() && cell.qsub!==1){ clist.add(cell);}
 				else{ break;}
 			}
 		}
@@ -191,7 +191,7 @@ AnsCheck:{
 		return this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0);
 	},
 	checkNoSuspendCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQsub()===1);});
+		return this.checkAllCell(function(cell){ return (cell.qsub===1);});
 	},
 
 	checkViewNumber : function(){

@@ -33,7 +33,7 @@ KeyEvent:{
 		if(ca==='w'){
 			var cell = this.cursor.getc();
 			if(!cell.isnull){
-				cell.setQues(cell.getQues()!==7?7:0);
+				cell.setQues(cell.ques!==7?7:0);
 				cell.setNum(-1);
 				cell.drawaround();
 			}
@@ -278,7 +278,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.isValidNum() && cell.getdir4BorderCount()!==cell.getQnum()){
+			if(cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum){
 				if(this.checkOnly){ return false;}
 				cell.seterr(1);
 				result = false;

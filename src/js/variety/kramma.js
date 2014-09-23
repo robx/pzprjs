@@ -249,7 +249,7 @@ AnsCheck:{
 	checkLineChassis : function(){
 		var result = true, bd = this.owner.board;
 		var lines = [];
-		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
+		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].qans;}
 
 		var pos = new this.owner.Address(0,0);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
@@ -285,11 +285,11 @@ AnsCheck:{
 				pos.movedir(dir,1);
 				if(pos.oncross()){
 					var cross = pos.getx(), adb = cross.adjborder;
-					if(!cross.isnull && cross.getQnum()===1){
-						if(adb.top.getQans()   ){ stack.push([pos.clone(),1]);}
-						if(adb.bottom.getQans()){ stack.push([pos.clone(),2]);}
-						if(adb.left.getQans()  ){ stack.push([pos.clone(),3]);}
-						if(adb.right.getQans() ){ stack.push([pos.clone(),4]);}
+					if(!cross.isnull && cross.qnum===1){
+						if(adb.top.qans   ){ stack.push([pos.clone(),1]);}
+						if(adb.bottom.qans){ stack.push([pos.clone(),2]);}
+						if(adb.left.qans  ){ stack.push([pos.clone(),3]);}
+						if(adb.right.qans ){ stack.push([pos.clone(),4]);}
 						break;
 					}
 				}

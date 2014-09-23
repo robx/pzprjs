@@ -28,10 +28,10 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull||cell===this.mouseCell){ return;}
 		if(this.mouseCell.isnull){
-			this.inputData = cell.getAnum()!==-1?cell.getAnum():10;
+			this.inputData = cell.anum!==-1?cell.anum:10;
 			this.mouseCell = cell;
 		}
-		else if(cell.getQnum()===-1 && this.inputData>=1 && this.inputData<=5){
+		else if(cell.qnum===-1 && this.inputData>=1 && this.inputData<=5){
 			if     (this.btn.Left ){ this.inputData++;}
 			else if(this.btn.Right){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
@@ -42,7 +42,7 @@ MouseEvent:{
 				cell.draw();
 			}
 		}
-		else if(cell.getQnum()===-1 && this.inputData===10){
+		else if(cell.qnum===-1 && this.inputData===10){
 			cell.setAnum(-1);
 			cell.setQsub(0);
 			cell.draw();
@@ -55,8 +55,8 @@ MouseEvent:{
 		if(cell.isnull||cell===this.mouseCell){ return (this.inputData<0);}
 
 		if(this.inputData===null){
-			if(cell.getAnum()===-1){
-				this.inputData = (cell.getQsub()!==1?-2:-3);
+			if(cell.anum===-1){
+				this.inputData = (cell.qsub!==1?-2:-3);
 				return true;
 			}
 			return false;
@@ -251,7 +251,7 @@ AnsCheck:{
 		return this.checkAllArea(sinfo, function(w,h,a,n){ return (a===5);});
 	},
 	checkDiffAnsNumberInRoom : function(sinfo){
-		return this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.getAnum();});
+		return this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.anum;});
 	},
 
 	checkSideCell2 : function(sinfo){
@@ -288,7 +288,7 @@ AnsCheck:{
 		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);};
 
 		for(var c=0;c<bd.cellmax;c++){
-			var cell=bd.cell[c], num=cell.getQnum(), dir=cell.getQdir();
+			var cell=bd.cell[c], num=cell.qnum, dir=cell.qdir;
 			if(num<0 || dir===0){ continue;}
 
 			var cell2, pos=cell.getaddr();
@@ -317,14 +317,14 @@ AnsCheck:{
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.area[r].clist;
-			var cell = clist.filter(function(cell){ return (cell.getAnum()===1);})[0];
+			var cell = clist.filter(function(cell){ return (cell.anum===1);})[0];
 			if(!cell){ continue;}
 
 			var cell2, dir=cell.NDIR, adc=cell.adjacent;
-			cell2=adc.bottom; if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.UP;}
-			cell2=adc.top;    if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.DN;}
-			cell2=adc.right;  if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.LT;}
-			cell2=adc.left;   if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.RT;}
+			cell2=adc.bottom; if(!cell2.isnull && cell2.anum===2){ dir=cell.UP;}
+			cell2=adc.top;    if(!cell2.isnull && cell2.anum===2){ dir=cell.DN;}
+			cell2=adc.right;  if(!cell2.isnull && cell2.anum===2){ dir=cell.LT;}
+			cell2=adc.left;   if(!cell2.isnull && cell2.anum===2){ dir=cell.RT;}
 			if(dir===cell.NDIR){ continue;}
 
 			var pos = cell.getaddr(), clist2 = new this.owner.CellList();
@@ -339,7 +339,7 @@ AnsCheck:{
 			// cellは数字のあるマスか、null(盤面外)を指す
 
 			var sid=sinfo.getRoomID(cell);
-			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!==sid){
+			if(!cell.isnull && cell.anum>0 && cell.qnum===-1 && sid>0 && r!==sid){
 				if(this.checkOnly){ return false;}
 				clist2.seterr(1);
 				clist.seterr(1);

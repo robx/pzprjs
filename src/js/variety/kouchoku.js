@@ -78,7 +78,7 @@ MouseEvent:{
 		this.mouseCell = cross;
 	},
 	inputnumber : function(cross){
-		var qn = cross.getQnum();
+		var qn = cross.qnum;
 		if(this.btn.Left){
 			if     (qn===26){ cross.setQnum(-1);}
 			else if(qn===-1){ cross.setQnum(-2);}
@@ -127,10 +127,10 @@ KeyEvent:{
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-9;
-			if(cross.getQnum()===num){ cross.setQnum(-1);}
+			if(cross.qnum===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
-		else if(ca==='-'){ cross.setQnum(cross.getQnum()!==-2?-2:-1);}
+		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
 		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 

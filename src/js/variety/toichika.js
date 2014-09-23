@@ -24,9 +24,9 @@ MouseEvent:{
 
 	inputDot : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
+		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.qsub===1?0:1);}
 		
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);

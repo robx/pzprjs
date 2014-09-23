@@ -61,7 +61,7 @@ MouseEvent:{
 		if(cell.isnull || cell.isNum()){ return;}
 
 		this.inputData = this.checkCornerData(cell);
-		if(this.inputData===cell.getQans()){ this.inputData = 0;}
+		if(this.inputData===cell.qans){ this.inputData = 0;}
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
@@ -95,7 +95,7 @@ MouseEvent:{
 		else if(dx>= diff && dy<=-diff){ this.inputData = 4;}
 
 		if(this.inputData!==null){
-			if(this.inputData===cell.getQans()){ this.inputData = 0;}
+			if(this.inputData===cell.qans){ this.inputData = 0;}
 			cell.setAnswer(this.inputData);
 		}
 		cell.draw();
@@ -107,7 +107,7 @@ MouseEvent:{
 		// ほとんど動いていなかった場合は・を入力
 		if(Math.abs(dx)<=0.1 && Math.abs(dy)<=0.1){
 			var cell = this.mouseCell;
-			cell.setAnswer(cell.getQsub()!==1?-1:0);
+			cell.setAnswer(cell.qsub!==1?-1:0);
 			cell.draw();
 		}
 	},
@@ -159,7 +159,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
 
-		if(this.inputData===null){ this.inputData = (cell.getQsub()===1?0:-1);}
+		if(this.inputData===null){ this.inputData = (cell.qsub===1?0:-1);}
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
@@ -354,7 +354,7 @@ AnsCheck:{
 		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
-			var cnt = clist.filter(function(cell){ return (cell.getQans()===0);}).length;
+			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;
 			if(d.cols*d.rows!==cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
@@ -367,7 +367,7 @@ AnsCheck:{
 	isAreaRect_slope : function(winfo,id){
 		var clist = winfo.area[id].clist;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], adc = cell.adjacent, a = cell.getQans();
+			var cell = clist[i], adc = cell.adjacent, a = cell.qans;
 			if( ((a===4||a===5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!==id)) ||
 				((a===2||a===3)^(adc.bottom.isnull||winfo.getRoomID(adc.bottom)!==id)) ||
 				((a===2||a===5)^(adc.left.isnull  ||winfo.getRoomID(adc.left  )!==id)) ||

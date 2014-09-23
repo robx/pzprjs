@@ -10,7 +10,7 @@ MouseEvent:{
 	},
 	inputqnum_kakuru : function(){
 		var cell = this.getcell();
-		if(cell.isnull || (cell.getQues()===1 && cell===this.cursor.getc())){ return;}
+		if(cell.isnull || (cell.ques===1 && cell===this.cursor.getc())){ return;}
 		this.inputqnum();
 	}
 },
@@ -28,7 +28,7 @@ KeyEvent:{
 		var cell = this.cursor.getc();
 
 		if(('0'<=ca && ca<='9') || ca==='-'){
-			if(cell.getQues()===1){ return;}
+			if(cell.ques===1){ return;}
 			if(!this.key_inputqnum_main(cell,ca)){ return;}
 		}
 		else if(ca===' '){
@@ -37,7 +37,7 @@ KeyEvent:{
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
 		else if(this.owner.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
-			if(ca==='q'){ ca = (cell.getQues()!==1?'q1':'q2');}
+			if(ca==='q'){ ca = (cell.ques!==1?'q1':'q2');}
 			if(ca==='q1'){
 				cell.setQues(1);
 				cell.setNum(-1);
@@ -192,14 +192,14 @@ AnsCheck:{
 	},
 
 	checkEmptyCell_kakuru : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.noNum());});
+		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.noNum());});
 	},
 
 	checkAroundPrenums : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
+			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
 			var bx=cell.bx, by=cell.by;
 			var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
@@ -216,7 +216,7 @@ AnsCheck:{
 				if(d[n]>1){
 					if(this.checkOnly){ return false;}
 					cell.seterr(1);
-					clist.filter(function(cell){ return (cell.getAnum()===n);}).seterr(1);
+					clist.filter(function(cell){ return (cell.anum===n);}).seterr(1);
 					result = false;
 				}
 			}
@@ -227,7 +227,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()===1 || cell.getQnum()<=0){ continue;}
+			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
 			var cnt=0, bx=cell.bx, by=cell.by;
 			var clist=new this.owner.CellList(), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
@@ -237,10 +237,10 @@ AnsCheck:{
 				if(cell!==cell2 && cell2.ques===0 && cell2.qnum===-1){
 					var qa = cell2.anum;
 					if(qa>0){ cnt+=qa; clist.add(cell2);}
-					else    { cnt=cell.getQnum(); break;}
+					else    { cnt=cell.qnum; break;}
 				}
 			}
-			if(cell.getQnum()!==cnt){
+			if(cell.qnum!==cnt){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1); result = false;
 			}
@@ -251,7 +251,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getAnum()<=0){ continue;}
+			if(cell.anum<=0){ continue;}
 			var bx = cell.bx, by = cell.by;
 			var clist=new this.owner.CellList(), clist0 = bd.cellinside(bx,by,bx+2,by+2);
 			clist.add(cell);

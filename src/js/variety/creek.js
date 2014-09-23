@@ -109,7 +109,7 @@ AnsCheck:{
 	checkQnumCross : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], qn = cross.getQnum();
+			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0){ continue;}
 
 			var bx=cross.bx, by=cross.by;
