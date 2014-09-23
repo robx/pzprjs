@@ -13,6 +13,7 @@ ui.menuconfig = {
 
 	//---------------------------------------------------------------------------
 	// menuconfig.init()  MenuConfigの初期化を行う
+	// menuconfig.add()   初期化時に設定を追加する
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.list = {};
@@ -38,7 +39,7 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	set : function(idname, newval){
 		if(!this.list[idname]){ return;}
-		this.list[idname].val = newval;
+		this.setproper(idname, newval);
 		ui.setdisplay(idname);
 		switch(idname){
 		case 'keypopup':
@@ -71,7 +72,19 @@ ui.menuconfig = {
 		var object = JSON.parse(json);
 		this.init();
 		for(var key in this.list){
-			if(object[key]!==void 0){ this.list[key].val = object[key];}
+			if(object[key]!==void 0){ this.setproper(key, object[key]);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
+	//---------------------------------------------------------------------------
+	setproper : function(idname, newval){
+		var item = this.list[idname];
+		switch(typeof item.defval){
+			case "boolean": item.val = !!newval;  break;
+			case "number":  item.val = +newval;   break;
+			case "string":  item.val = ""+newval; break;
 		}
 	}
 };

@@ -11,41 +11,10 @@ var Config = pzpr.Puzzle.prototype.Config = function(owner){
 Config.prototype =
 {
 	list : null,		/* 設定値 */
-	
-	//---------------------------------------------------------------------------
-	// config.get()  各フラグの設定値を返す
-	// config.set()  各フラグの設定値を設定する
-	//---------------------------------------------------------------------------
-	get : function(name){
-		return this.list[name]?this.list[name].val:null;
-	},
-	set : function(name, newval){
-		this.configevent(name, newval);
-		this.owner.execListener('config', name, newval);
-	},
-
-	//---------------------------------------------------------------------------
-	// config.getAll()  全フラグの設定値を返す
-	// config.setAll()  全フラグの設定値を設定する
-	//---------------------------------------------------------------------------
-	getAll : function(){
-		var object = {};
-		for(var key in this.list){
-			var item = this.list[key];
-			if(item.val!==item.defval){ object[key] = item.val;}
-		}
-		return JSON.stringify(object);
-	},
-	setAll : function(json){
-		var object = JSON.parse(json);
-		this.init();
-		for(var key in this.list){
-			if(object[key]!==void 0){ this.list[key].val = object[key];}
-		}
-	},
 
 	//---------------------------------------------------------------------------
 	// config.init()        各設定値を初期化する
+	// config.add()         初期化時に設定を追加する
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.list = {};
@@ -106,12 +75,56 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.get()  各フラグの設定値を返す
+	// config.set()  各フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	get : function(name){
+		return this.list[name]?this.list[name].val:null;
+	},
+	set : function(name, newval){
+		this.configevent(name, newval);
+		this.owner.execListener('config', name, newval);
+	},
+
+	//---------------------------------------------------------------------------
+	// config.getAll()  全フラグの設定値を返す
+	// config.setAll()  全フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	getAll : function(){
+		var object = {};
+		for(var key in this.list){
+			var item = this.list[key];
+			if(item.val!==item.defval){ object[key] = item.val;}
+		}
+		return JSON.stringify(object);
+	},
+	setAll : function(json){
+		var object = JSON.parse(json);
+		this.init();
+		for(var key in this.list){
+			if(object[key]!==void 0){ this.setproper(key,object[key]);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// config.setproper()    設定値の型を正しいものに変換して設定変更する
+	//---------------------------------------------------------------------------
+	setproper : function(name, newval){
+		var item = this.list[name];
+		switch(typeof item.defval){
+			case "boolean": item.val = !!newval;  break;
+			case "number":  item.val = +newval;   break;
+			case "string":  item.val = ""+newval; break;
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
 		if(!this.list[name]){ return;}
 		
-		this.list[name].val = newval;
+		this.setproper(name, newval);
 
 		var result = true, puzzle = this.owner;
 		switch(name){
