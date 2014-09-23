@@ -77,7 +77,7 @@ Encode:{
 
 		case pzl.URL_KANPEN:
 			puzzle.fio.datastr = "";
-			this.encodeKanpen()
+			this.encodeKanpen();
 			this.outbstr = puzzle.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
 			puzzle.fio.datastr = "";
 			break;

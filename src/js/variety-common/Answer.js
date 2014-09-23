@@ -88,7 +88,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
-				var cnt=0, bx=cell.bx, by=cell.by;
+				var bx=cell.bx, by=cell.by;
 				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(func);
 				if(clist.length===4){
 					if(this.checkOnly){ return false;}
@@ -119,7 +119,6 @@ AnsCheck:{
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkOneArea : function(cinfo){
-		var bd = this.owner.board;
 		if(cinfo.max>1){
 			cinfo.area[1].clist.seterr(1);
 			return false;
@@ -148,7 +147,7 @@ AnsCheck:{
 
 	checkLineCount : function(val){
 		var result = true, bd = this.owner.board;
-		if(bd.lines.ltotal[val]==0){ return true;}
+		if(bd.lines.ltotal[val]===0){ return true;}
 		if(bd.lines.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){
 				var cell = bd.cell[c];
@@ -249,8 +248,8 @@ AnsCheck:{
 	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
 	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
 	//---------------------------------------------------------------------------
-	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!=0);} );},
-	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a< 2);} );},
+	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);} );},
+	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<  2);} );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkShadeCellCount() 領域内の数字と黒マスの数が等しいか判定する
@@ -267,7 +266,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	// ans.checkNoMovedObjectInRoom() 領域に移動後のオブジェクトがないと判定する
 	//---------------------------------------------------------------------------
-	checkNoMovedObjectInRoom : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(cell){ return cell.base.qnum!==-1;}, function(w,h,a,n){ return (a!=0);});},
+	checkNoMovedObjectInRoom : function(cinfo, getvalue){ return this.checkAllBlock(cinfo, function(cell){ return cell.base.qnum!==-1;}, function(w,h,a,n){ return (a!==0);});},
 
 	//---------------------------------------------------------------------------
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
@@ -275,7 +274,7 @@ AnsCheck:{
 	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
 	// ans.checkConnectObjectCount() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	checkDisconnectLine : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a>0)});},
+	checkDisconnectLine : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a>0);});},
 	checkDoubleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<2);});},
 	checkTripleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<3);});},
 	checkConnectObjectCount : function(linfo, evalfunc){
@@ -431,7 +430,7 @@ AnsCheck:{
 	// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
 	checkBorderCount : function(val, bp){
-		var result=true, bd=this.owner.board, mm=(bd.hascross===1?2:0);
+		var result=true, bd=this.owner.board;
 		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c];

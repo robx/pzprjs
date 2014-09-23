@@ -422,7 +422,7 @@ LineInfo:{
 	//---------------------------------------------------------------------------
 	addPath : function(){
 		var pathid = ++this.max;
-		return this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid};
+		return (this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid});
 	},
 	addPathByBlist : function(blist){
 		var pathid = ++this.max;

@@ -187,7 +187,7 @@ AnsCheck:{
 
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]==0){ return true;}
+		if(this.owner.board.lines.ltotal[val]===0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
 	},
 	checkFireflyBeam : function(){
@@ -205,7 +205,7 @@ AnsCheck:{
 	},
 
 	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
+		var path=xinfo.path[xinfo.max], ccnt=path.ccnt;
 		var cell1=path.cells[0], cell2=path.cells[1], dir1=path.dir1, dir2=path.dir2;
 
 		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向

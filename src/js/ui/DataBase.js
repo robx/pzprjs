@@ -208,6 +208,7 @@ ui.database = {
 		if(this.sync===false){ return;}
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
+			/* falls through */
 			case 'datalist': this.selectDataTable();   break;
 			case 'tableup' : this.upDataTable_M();     break;
 			case 'tabledn' : this.downDataTable_M();   break;
@@ -225,7 +226,7 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	getDataID : function(){
 		var val = document.database.datalist.value;
-		if(val!="new" && val!=""){
+		if(val!=="new" && val!==""){
 			for(var i=0;i<this.DBlist.length;i++){
 				if(this.DBlist[i].id==val){ return i;}
 			}
@@ -387,7 +388,7 @@ ui.database = {
 		var id = this.getDataID(); if(id===-1){ return;}
 
 		var str = ui.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
-		if(str==null){ return;}
+		if(str===null){ return;}
 		this.DBlist[id].comment = str;
 
 		this.sync = false;
@@ -398,7 +399,7 @@ ui.database = {
 
 		var hard = ui.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
 									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
-		if(hard==null){ return;}
+		if(hard===null){ return;}
 		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
 
 		this.sync = false;
@@ -439,7 +440,7 @@ ui.DataBaseHandler_LS.prototype =
 		parent.DBlist = [];
 		for(var i=1;true;i++){
 			var row = new ui.ProblemData(localStorage[this.pheader+i]);
-			if(row.id==null){ break;}
+			if(row.id===null){ break;}
 			parent.DBlist.push(row);
 		}
 		if(!!callback){ callback();}

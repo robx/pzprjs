@@ -117,7 +117,7 @@ Encode:{
 			else if(qn>=0 && qn<10){ pstr = qn.toString(10);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
@@ -161,7 +161,7 @@ Encode:{
 			else if(qn>=8192           ){ pstr = "%" + (qn-8192).toString(16);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
@@ -209,7 +209,7 @@ Encode:{
 			else if(qn>=77776            ){ pstr = "$" + (qn-77776).toString(16);} // 最大1126352
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}

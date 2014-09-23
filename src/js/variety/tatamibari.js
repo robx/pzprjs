@@ -148,7 +148,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTatamibari : function(){
-		var count=0, pass, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 			if     (qn===-2){ pstr = ".";}
@@ -157,7 +157,7 @@ Encode:{
 			else if(qn=== 3){ pstr = "2";}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}

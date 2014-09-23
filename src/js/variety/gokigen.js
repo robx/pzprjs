@@ -16,6 +16,7 @@ MouseEvent:{
 		}
 	},
 	inputRed : function(){
+		var puzzle = this.owner;
 		if(puzzle.playmode){
 			if(puzzle.pid==='gokigen'){ this.dispBlue();}
 		}
@@ -160,7 +161,7 @@ Board:{
 			if(cc!==null){
 				var xc2 = sinfo.cell[cc][((sinfo.cell[cc][0]!==xc)?0:1)];
 				history.push({cell:cc,cross:null});
-				sinfo.cell[cc] = []
+				sinfo.cell[cc] = [];
 
 				// ループになった場合 => ループフラグをセットする
 				if(!!passed[xc2]){
@@ -220,7 +221,6 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
 		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){

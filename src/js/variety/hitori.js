@@ -142,7 +142,7 @@ Encode:{
 			else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(36);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else{ cm+="."; count=0;}
 		}
 		if(count>0){ cm+=".";}

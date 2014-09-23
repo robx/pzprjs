@@ -268,15 +268,16 @@ Encode:{
 	},
 	encodeMinarism : function(type){
 		var parser = pzpr.parser;
-		var cm="", count=0, mgn=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.owner.board;
 		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
 			if(type===1){
-				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)==0){ count++;}
+				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)===0){ count++;}
 				if(id==(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
+			var pstr="";
 			if(id<bd.bdmax){
-				var pstr="", border=bd.border[id], dir=border.qdir, qnum=border.qnum;
+				var border=bd.border[id], dir=border.qdir, qnum=border.qnum;
 
 				if     (dir===border.UP||dir===border.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
 				else if(dir===border.DN||dir===border.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
@@ -287,7 +288,7 @@ Encode:{
 			}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr||count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}
@@ -347,7 +348,7 @@ AnsCheck:{
 	checkBDmark : function(){
 		return this.checkBDSideCell(function(border,a1,a2){
 			var mark = border.getQdir();
-			return !(mark==0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
+			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
 		});
 	},
 	checkBDSideCell : function(func){

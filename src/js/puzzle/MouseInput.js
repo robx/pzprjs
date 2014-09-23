@@ -18,21 +18,21 @@ MouseEvent:{
 		if(bz.IE8)        { this.mouseoffset = {px:2,py:2};}
 		else if(bz.WebKit){ this.mouseoffset = {px:1,py:1};}
 
-		this.mouseCell;		// 入力されたセル等のID
-		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
+		this.mouseCell = null;		// 入力されたセル等のID
+		this.firstCell = null;		// mousedownされた時のセルのID(連黒分断禁用)
 
 		this.inputPoint = new this.owner.RawAddress();	// 入力イベントが発生したborder座標 ※端数あり
 		this.firstPoint = new this.owner.RawAddress();	// mousedownされた時のborder座標 ※端数あり
 		this.prevPos    = new this.owner.Address();		// 前回のマウス入力イベントのborder座標
 
-		this.btn = {};		// 押されているボタン
-		this.inputData;		// 入力中のデータ番号(実装依存)
+		this.btn = {};				// 押されているボタン
+		this.inputData = null;		// 入力中のデータ番号(実装依存)
 
-		this.bordermode;	// 境界線を入力中かどうか
+		this.bordermode = false;	// 境界線を入力中かどうか
 
-		this.mousestart;	// mousedown/touchstartイベントかどうか
-		this.mousemove;		// mousemove/touchmoveイベントかどうか
-		this.mouseend;		// mouseup/touchendイベントかどうか
+		this.mousestart = false;	// mousedown/touchstartイベントかどうか
+		this.mousemove = false;		// mousemove/touchmoveイベントかどうか
+		this.mouseend = false;		// mouseup/touchendイベントかどうか
 
 		this.mousereset();
 	},
@@ -46,7 +46,7 @@ MouseEvent:{
 		var cell0 = this.mouseCell;
 
 		this.mouseCell = // 下の行へ続く
-		this.firstCell = this.owner.board.emptycell
+		this.firstCell = this.owner.board.emptycell;
 
 		this.firstPoint.reset();
 		this.prevPos.reset();

@@ -162,7 +162,7 @@ FileIO:{
 	checkSeqBlocksInRoom : function(){
 		var result = true, rooms = this.owner.board.rooms;
 		for(var r=1;r<=rooms.max;r++){
-			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
+			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);

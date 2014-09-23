@@ -28,8 +28,8 @@ ui.popupmgr.addpopup('debug',
 		}
 		
 		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
-		this.addExecButton("T2", "T2", function(){ debug.painteval()});
-		this.addExecButton("T3", "T3", function(){ debug.resizeeval()});
+		this.addExecButton("T2", "T2", function(){ debug.painteval();});
+		this.addExecButton("T3", "T3", function(){ debug.resizeeval();});
 		this.addText(" ", " ");
 		
 		if(ui.debugmode){
@@ -41,8 +41,8 @@ ui.popupmgr.addpopup('debug',
 		this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
 		this.addBR();
 		
-		this.addExecButton("Save", "Save", function(){ debug.filesave()});
-		this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox()});
+		this.addExecButton("Save", "Save", function(){ debug.filesave();});
+		this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox();});
 		this.addText(" ", " ");
 		
 		this.addExecButton("Load", "Load", function(){ debug.fileopen();});
@@ -148,7 +148,7 @@ ui.debug =
 		}
 		var time = pzpr.util.currentTime() - old;
 
-		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms");
 	},
 
 	dispdatabase : function(){

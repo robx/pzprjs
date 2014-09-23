@@ -326,7 +326,6 @@ Graphic:{
 		if(!!g2){ g2.changeSize(cwid|0, chgt|0);}
 		
 		// 盤面のセルID:0が描画される左上の位置の設定 (Canvas左上からのオフセット)
-		var bd = this.owner.board;
 		var x0 = this.x0 = (((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0) + 0.5;
 		var y0 = this.y0 = (((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0) + 0.5;
 		
@@ -614,7 +613,7 @@ Graphic:{
 		return true;
 	},
 	vnop_vml : function(vid, ccflag){
-		var g = this.context
+		var g = this.context;
 		g.vid = vid;
 		var el = g.elements[vid];
 		if(!!el){
@@ -626,7 +625,7 @@ Graphic:{
 		return true;
 	},
 	vnop_svg : function(vid, ccflag){
-		var g = this.context
+		var g = this.context;
 		g.vid = vid;
 		var el = g.elements[vid];
 		if(!!el){
@@ -642,7 +641,7 @@ Graphic:{
 	// pc.vinc()  レイヤーを返す
 	//---------------------------------------------------------------------------
 	vinc : function(layerid, rendering){
-		var g = this.context
+		var g = this.context;
 		g.setLayer(layerid);
 		if(rendering){ g.setRendering(rendering);}
 		return g;

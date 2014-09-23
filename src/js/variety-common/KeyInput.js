@@ -109,7 +109,7 @@ KeyEvent:{
 				return;
 			}
 		}
-		if(target==0){ return;}
+		if(target===0){ return;}
 
 		var def = this.owner.Cell.prototype[(target===2?'qnum':'qnum2')];
 		var max = max_obj[target], val=def;
@@ -128,10 +128,11 @@ KeyEvent:{
 		cursor.draw();
 	},
 	setnum51 : function(obj,target,val){
-		(target==2 ? obj.setQnum(val) : obj.setQnum2(val));
+		if(target===2){ obj.setQnum(val);}
+		else          { obj.setQnum2(val);}
 	},
 	getnum51 : function(obj,target){
-		return (target==2 ? obj.getQnum() : obj.getQnum2());
+		return (target===2 ? obj.getQnum() : obj.getQnum2());
 	}
 }
 });

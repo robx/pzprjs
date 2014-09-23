@@ -121,7 +121,7 @@ Graphic:{
 	},
 
 	drawNumbers_kakuro : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -261,11 +261,11 @@ FileIO:{
 
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
-			else if(item[0]==0 && item[1]==0){ }
-			else if(item[0]==0 || item[1]==0){
+			else if(item[0]==="0" && item[1]==="0"){ }
+			else if(item[0]==="0" || item[1]==="0"){
 				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==0){ excell.qnum2 = parseInt(item[3]);}
-				else if(item[1]==0){ excell.qnum  = parseInt(item[2]);}
+				if     (item[0]==="0"){ excell.qnum2 = parseInt(item[3]);}
+				else if(item[1]==="0"){ excell.qnum  = parseInt(item[2]);}
 			}
 			else{
 				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
@@ -302,7 +302,7 @@ FileIO:{
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if(arr[(bx+1)>>1]==''){ continue;}
+				if(arr[(bx+1)>>1]===''){ continue;}
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
 					cell.anum = parseInt(arr[(bx+1)>>1]);

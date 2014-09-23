@@ -247,11 +247,11 @@ ui.popupmgr.addpopup('template',
 	},
 	addCancelButton : function(){
 		var popup = this;
-		this.addExecButton("キャンセル", "Cancel", function(){ popup.hide();})
+		this.addExecButton("キャンセル", "Cancel", function(){ popup.hide();});
 	},
 	addCloseButton : function(){
 		var popup = this;
-		this.addExecButton("閉じる", "Close", function(){ popup.hide();})
+		this.addExecButton("閉じる", "Close", function(){ popup.hide();});
 	}
 });
 
@@ -330,14 +330,14 @@ ui.popupmgr.addpopup('newboard',
 		table.init({id:'tawa_shape', border:'0', cellPadding:'0', cellSpacing:'2'},{marginTop:'4pt', marginBottom:'4pt'});
 		table.initRow({},{paddingBottom:'2px'});
 		
+		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		var clickshape = function(e){
 			var _div = e.target.parentNode;
-			var idx = _div.id.charAt(2);
+			idx = _div.id.charAt(2);
 			for(var i=0;i<=3;i++){ getEL("nb"+i).style.backgroundColor = '';}
 			_div.style.backgroundColor = 'red';
 		};
 		
-		var idx = [0,2,3,1][ui.puzzle.board.shape];
 		for(var i=0;i<=3;i++){
 			var _img = createEL('img');
 			_img.src = "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==";
@@ -387,7 +387,7 @@ ui.popupmgr.addpopup('newboard',
 			for(var i=0;i<=3;i++){
 				if(getEL("nb"+i).style.backgroundColor==='red'){ selected=[0,3,1,2][i]; break;}
 			}
-			if(!isNaN(selected) && !(col==1 && (selected==0||selected==3))){
+			if(!isNaN(selected) && !(col===1 && (selected===0||selected===3))){
 				if(selected===3){ col--; url=[col,row];}
 				url.push(selected);
 			}
@@ -475,7 +475,7 @@ ui.popupmgr.addpopup('urloutput',
 	// openurl()   「このURLを開く」を実行する
 	//------------------------------------------------------------------------------
 	urloutput : function(e){
-		var enc = ui.puzzle.enc, url = '', parser = pzpr.parser;
+		var url = '', parser = pzpr.parser;
 		switch(e.target.name){
 			case "pzprv3":     url = ui.puzzle.getURL(parser.URL_PZPRV3);  break;
 			case "pzprapplet": url = ui.puzzle.getURL(parser.URL_PZPRAPP); break;
@@ -487,7 +487,7 @@ ui.popupmgr.addpopup('urloutput',
 	},
 	openurl : function(e){
 		if(this.form.ta.value!==''){
-			var win = window.open(this.form.ta.value, '', '');
+			window.open(this.form.ta.value, '', '');
 		}
 	}
 });
@@ -955,12 +955,12 @@ ui.popupmgr.addpopup('colors',
 	//------------------------------------------------------------------------------
 	setcolor : function(e){
 		var name = e.target.name.replace(/_set/,"");
-		ui.puzzle.setConfig("color_"+name, e.target.value)
+		ui.puzzle.setConfig("color_"+name, e.target.value);
 	},
 	clearcolor : function(e){
 		var name = e.target.name.replace(/_clear/,"");
 		this.form[name+"_set"].value = "";
-		ui.puzzle.setConfig("color_"+name, "")
+		ui.puzzle.setConfig("color_"+name, "");
 	}
 });
 

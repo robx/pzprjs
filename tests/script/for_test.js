@@ -114,7 +114,7 @@ ui.debug.extend(
 	phase : 99,
 	pid : '',
 	all_test : function(){
-		if(this.alltimer != null){ return;}
+		if(this.alltimer !== null){ return;}
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
@@ -188,7 +188,7 @@ ui.debug.extend(
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
-		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
+		var acsstr = self.acs[self.pid];
 		for(var n=0;n<acsstr.length;n++){
 			ui.puzzle.open(acsstr[n][1]);
 			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];

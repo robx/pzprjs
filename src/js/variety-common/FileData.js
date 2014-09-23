@@ -376,12 +376,12 @@ FileIO:{
 		var barray = this.readLines(rmax);
 		var rdata = [];
 		for(var i=0;i<barray.length;i++){
-			if(barray[i]==""){ break;}
+			if(barray[i]===""){ break;}
 			var pce = barray[i].split(" ");
 			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
 
 			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
-			if(isques && pce[4]!=""){
+			if(isques && pce[4]!==""){
 				var cell = this.owner.board.getc(sp.x1,sp.y1);
 				cell.qnum = parseInt(pce[4],10);
 			}

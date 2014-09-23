@@ -146,7 +146,7 @@ Encode:{
 	},
 	encodeMejilink : function(){
 		var count = 0, bd = this.owner.board;
-		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()) count++;}
+		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()){ count++;}}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
 			if(bd.border[id].isGround()){ pass+=twi[num];} num++;

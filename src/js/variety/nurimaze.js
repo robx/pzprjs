@@ -322,7 +322,7 @@ Graphic:{
 	},
 
 	drawStartGoal : function(){
-		var g = this.vinc('cell_sg', 'auto');
+		this.vinc('cell_sg', 'auto');
 		var bd = this.owner.board, d = this.range;
 		
 		var cell = bd.startpos.getc();
@@ -345,7 +345,6 @@ Graphic:{
 		var g = this.vinc('cell_mark', 'auto');
 
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var lampcolor = "rgb(0, 127, 96)";
 		var headers = ["c_mk1_", "c_mk2_"];
 		g.lineWidth = 2;
 
@@ -497,7 +496,7 @@ AnsCheck:{
 			this.searchloop(c, sinfo, sdata);
 		}
 
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1)});
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
 			errclist.seterr(1);
 			return false;

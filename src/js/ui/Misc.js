@@ -1,4 +1,5 @@
 // Misc.js v3.4.1
+/* jshint latedef:false */
 /* global ui:false, _doc:false */
 
 //---------------------------------------------------------------------------
@@ -174,4 +175,4 @@ function toBGimage(pid){
 	else                  { header='R0lGODdhEAAQAKEAA';}
 
 	return "data:image/gif;base64,"+header+data[0]+'wAAAAAEAAQAAAC'+data[1];
-};
+}

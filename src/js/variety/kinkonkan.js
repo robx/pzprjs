@@ -256,7 +256,6 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
 		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
@@ -325,9 +324,8 @@ Graphic:{
 		return null;
 	},
 	drawNumbers_kinkonkan : function(){
-		var g = this.vinc('excell_number', 'auto');
+		this.vinc('excell_number', 'auto');
 
-		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
@@ -433,7 +431,7 @@ FileIO:{
 				continue;
 			}
 
-			if(this.filever==1){
+			if(this.filever===1){
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull){
 					if     (ca==="+"){ cell.qsub = 1;}
@@ -443,7 +441,7 @@ FileIO:{
 			}
 		}
 
-		if(this.filever==0){
+		if(this.filever===0){
 			this.decodeCell( function(obj,ca){
 				if     (ca==="+"){ obj.qsub = 1;}
 				else if(ca==="1"){ obj.qans = 31;}
@@ -463,7 +461,7 @@ FileIO:{
 					var dir=excell.qchar, qn=excell.qnum;
 					var str1 = (dir!== 0?dir.toString():"");
 					var str2 = (qn !==-1?qn.toString():"");
-					this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
+					this.datastr += ((str1==="" && str2==="")?(". "):(""+str1+","+str2+" "));
 					continue;
 				}
 
@@ -491,7 +489,7 @@ AnsCheck:{
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 'bkObjGe2';}
 		if( !this.checkMirrors(1) ){ return 'pairedLetterNe';}
-		if( !this.checkMirrors(2) ){ return 'pairedNumberNe'}
+		if( !this.checkMirrors(2) ){ return 'pairedNumberNe';}
 		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
 
 		return null;
@@ -501,7 +499,7 @@ AnsCheck:{
 		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);});
 	},
 	checkExistMirrorInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!=0);});
+		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!==0);});
 	},
 
 	checkMirrors : function(type){

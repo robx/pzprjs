@@ -20,7 +20,6 @@ MouseEvent:{
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	getpos : function(rc){
-		var pc = this.owner.painter;
 		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by&~1)+1));
 	}
 },
@@ -76,8 +75,8 @@ Board:{
 	estimateSize : function(type, col, row){
 		var total = 0;
 		if(type==='cell'){
-			if     (this.shape==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
-			else if(this.shape==3 || this.shape==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
+			if     (this.shape===0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
+			else if(this.shape===3 || this.shape===undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
 			else{ total = col*row;}
 		}
 		return total;
@@ -89,22 +88,22 @@ Board:{
 			obj.id = id;
 			obj.isnull = false;
 
-			if(this.shape==0){
+			if(this.shape===0){
 				var row = (((2*id)/(2*this.qcols-1))|0);
 				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==1){
+			else if(this.shape===1){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==2){
+			else if(this.shape===2){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==3){
+			else if(this.shape===3){
 				var row = (((2*id+1)/(2*this.qcols+1))|0);
 				obj.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
 				obj.by = row*2+1;

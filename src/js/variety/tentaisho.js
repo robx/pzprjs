@@ -215,7 +215,6 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
-		var pos = new this.owner.Address(0,0);
 		for(var id=0;id<this.starmax;id++){
 			this.star[id] = new this.owner.Star();
 			var star = this.star[id];
@@ -385,7 +384,7 @@ Encode:{
 			}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==20){ cm += ((count+15).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += ((count+15).toString(36));}

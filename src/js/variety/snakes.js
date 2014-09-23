@@ -32,8 +32,8 @@ MouseEvent:{
 			this.mouseCell = cell;
 		}
 		else if(cell.getQnum()==-1 && this.inputData>=1 && this.inputData<=5){
-			if     (this.btn.Left ) this.inputData++;
-			else if(this.btn.Right) this.inputData--;
+			if     (this.btn.Left ){ this.inputData++;}
+			else if(this.btn.Right){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
@@ -194,7 +194,7 @@ Graphic:{
 	},
 
 	drawAnswerNumbers : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -285,7 +285,7 @@ AnsCheck:{
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
 		};
-		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);}
+		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);};
 
 		for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.getQnum(), dir=cell.getQdir();
@@ -317,7 +317,7 @@ AnsCheck:{
 		var result = true;
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.area[r].clist;
-			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
+			var cell = clist.filter(function(cell){ return (cell.getAnum()===1);})[0];
 			if(!cell){ continue;}
 
 			var cell2, dir=cell.NDIR, adc=cell.adjacent;

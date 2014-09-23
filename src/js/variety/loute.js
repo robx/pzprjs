@@ -58,7 +58,7 @@ MouseEvent:{
 		}
 		else{
 			var qn = cell.getNum(), min, max;
-			if(this.owner.pid==='sashigane'){ max=cell.getmaxnum(), min=cell.getminnum();}
+			if(this.owner.pid==='sashigane'){ max=cell.getmaxnum(); min=cell.getminnum();}
 			if(this.btn.Left){
 				if(this.owner.pid==='loute'){ cell.setQdir(1);}
 				else if(qn<min){ cell.setNum(min);}
@@ -177,7 +177,7 @@ Board:{
 			/* 幅が1なので座標自体は調べなくてよいはず      */
 			var subclist = this.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var dl = subclist.getRectSize();
-			if( subclist.length==0 || (dl.cols*dl.rows!=dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
+			if( subclist.length===0 || (dl.cols*dl.rows!==dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
 				rinfo.area[r].shape = 0;
 				for(var i=0;i<clist.length;i++){ rinfo.place[clist[i].id] = 0;}
 			}
@@ -251,7 +251,7 @@ Graphic:{
 	circlefillcolor_func : "null",
 
 	drawHatenas_loute : function(){
-		var g = this.vinc('cell_hatena', 'auto');
+		this.vinc('cell_hatena', 'auto');
 		var ratio = (this.owner.pid==='sashigane' ? [0.8] : [0.94]);
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -302,7 +302,7 @@ Graphic:{
 			else if(dir!== 0){ pstr = dir.toString(16);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
@@ -410,7 +410,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.area[id].clist;
+			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2){
@@ -429,7 +429,7 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
-			var error = false, clist = rinfo.area[id].clist;
+			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], adb = cell.adjborder, num = cell.getObjNum();
 				if(num>=1 && num<=4 &&

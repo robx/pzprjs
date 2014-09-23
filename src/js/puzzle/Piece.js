@@ -362,7 +362,7 @@ BoardPiece:{
 	// cell.countDir4Cell()  上下左右4方向で条件func==trueになるマスの数をカウントする
 	//---------------------------------------------------------------------------
 	countDir4Cell : function(func){
-		var adc = this.adjacent, cell, cnt = 0;
+		var adc = this.adjacent, cnt = 0;
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
 			if(cells[i].group==="cell" && !cells[i].isnull && func(cells[i])){ cnt++;}
@@ -375,7 +375,7 @@ BoardPiece:{
 	// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
-		var adc = this.adjacent, cell, list=[];
+		var adc = this.adjacent, list=[];
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
 			if(cells[i].group==="cell" && !cells[i].isnull){ list.push([cells[i],(i+1)]);} /* i+1==dir */
@@ -383,7 +383,7 @@ BoardPiece:{
 		return list;
 	},
 	getdir4cblist : function(){
-		var adc = this.adjacent, adb = this.adjborder, cell, border, cblist=[];
+		var adc = this.adjacent, adb = this.adjborder, cblist=[];
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		var bds   = [adb.top, adb.bottom, adb.left, adb.right];
 		for(var i=0;i<4;i++){

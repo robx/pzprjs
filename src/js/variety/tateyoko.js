@@ -47,7 +47,7 @@ MouseEvent:{
 		}
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cell!==this.mouseCell){
-			if(this.inputData==0){ this.inputData=0; input=true;}
+			if(this.inputData===0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=12; input=true;}
@@ -166,7 +166,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawTateyokos()
+		this.drawTateyokos();
 
 		this.drawShadeAtNumber();
 		this.drawNumbers_tateyoko();
@@ -225,7 +225,7 @@ Graphic:{
 		}
 	},
 	drawNumbers_tateyoko : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

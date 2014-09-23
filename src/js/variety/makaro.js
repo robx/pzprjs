@@ -226,7 +226,7 @@ Encode:{
 
 			if(this.include(ca,"0","9")){ cell.qnum = parseInt(ca,10)+1;}
 			else if(ca == '-')          { cell.qnum = parseInt(bstr.substr(i+1,2),10)+1; i+=2;}
-			else if(ca>='a' && ca<='e') { cell.ques = 1, cell.qdir = parseInt(ca,36)-10;}
+			else if(ca>='a' && ca<='e') { cell.ques = 1; cell.qdir = parseInt(ca,36)-10;}
 			else if(ca>='g' && ca<='z') { c+=(parseInt(ca,36)-16);}
 
 			c++;

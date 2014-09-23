@@ -1,3 +1,5 @@
+/* jshint eqnull:true */
+/* global File:false */
 (function(){
 
 /* variables */
@@ -166,8 +168,6 @@ var _doc = document;
 var _form;
 var self = v3index.fileif;
 
-function getEL(id){ return _doc.getElementById(id);}
-
 v3index.fileif.extend({
 	init : function(){
 		_form = _doc.fileform;
@@ -209,7 +209,7 @@ v3index.fileif.extend({
 	fileonload : function(str){
 		if(!!str){
 			var farray = str.replace(/[\t\r]*\n/g,"\n").split(/\n/);
-			var fstr = "", fheader = ['',''];
+			var fstr = "";
 			for(var i=0;i<farray.length;i++){
 				if(farray[i].match(/^http\:\/\//)){ break;}
 				fstr += (farray[i]+"\n");
@@ -316,7 +316,7 @@ v3index.dbif.extend({
 			return str;
 		})();
 
-		var language = (!location.href.match("index_en.html")?"ja":"en")
+		var language = (!location.href.match("index_en.html")?"ja":"en");
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
@@ -345,7 +345,7 @@ v3index.dbif.extend({
 	},
 	getvalue : function(){
 		var val = _form.datalist.value;
-		if(val!=""){
+		if(val!==""){
 			for(var i=0;i<DBlist.length;i++){
 				if(DBlist[i].id==val){ return i;}
 			}

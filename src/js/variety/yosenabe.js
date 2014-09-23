@@ -239,7 +239,7 @@ Graphic:{
 		}
 	},
 	drawFillingNumbers : function(){
-		var g = this.vinc('cell_filling_number', 'auto');
+		this.vinc('cell_filling_number', 'auto');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum2, px = cell.bx*this.bw, py = cell.by*this.bh;
@@ -305,7 +305,7 @@ Encode:{
 			else if(qd>= 16 && qd<256){ pstr = "g" + qd.toString(16);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==17){ cm+=((18+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(18+count).toString(36);}

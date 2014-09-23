@@ -58,8 +58,8 @@ ui.timer =
 		var minutes = ((seconds/60)|0) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
 
-		if(minutes < 10) minutes = "0" + minutes;
-		if(seconds < 10) seconds = "0" + seconds;
+		if(minutes < 10){ minutes = "0" + minutes;}
+		if(seconds < 10){ seconds = "0" + seconds;}
 
 		this.timerEL.innerHTML = [this.label(), (!!hours?hours+":":""), minutes, ":", seconds].join('');
 

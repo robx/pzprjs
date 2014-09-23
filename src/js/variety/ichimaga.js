@@ -147,7 +147,7 @@ AnsCheck:{
 
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]==0){ return true;}
+		if(this.owner.board.lines.ltotal[val]===0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
 	},
 	checkNoLineObject : function(){
@@ -158,7 +158,7 @@ AnsCheck:{
 	},
 
 	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
+		var path=xinfo.path[xinfo.max], ccnt=path.ccnt;
 		var cell1=path.cells[0], cell2=path.cells[1];
 
 		var qn1=cell1.qnum, qn2=(!cell2.isnull ? cell2.qnum : -1), err=0;

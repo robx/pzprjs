@@ -47,8 +47,7 @@ Graphic:{
 	drawBlockBorders : function(){
 		var g = this.vinc('border_block', 'crispEdges'), bd = this.owner.board;
 
-		var lw = this.lw, lm = this.lm;
-
+		var lw = this.lw;
 		var max=bd.qcols;
 		var block=((Math.sqrt(max)+0.1)|0);
 		var headers = ["bbx_", "bby_"];

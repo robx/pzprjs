@@ -86,7 +86,7 @@ MouseEvent:{
 		}
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cell!==this.mouseCell){
-			if(this.inputData==0){ this.inputData=0; input=true;}
+			if(this.inputData===0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
@@ -175,7 +175,7 @@ KeyEvent:{
 
 			if(newques!==-1){
 				cell.setQues(newques);
-				if(newques==0){ cell.setNum(-1);}
+				if(newques===0){ cell.setNum(-1);}
 				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
 
 				cell.draw();
@@ -340,7 +340,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawGates()
+		this.drawGates();
 
 		this.drawShadedCells();
 		this.drawArrowNumbers();
@@ -624,9 +624,9 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if     (this.filever==2){ this.decodeBoard_pzpr2();}
-		else if(this.filever==1){ this.decodeBoard_pzpr1();}
-		else if(this.filever==0){ this.decodeBoard_old();}
+		if     (this.filever===2){ this.decodeBoard_pzpr2();}
+		else if(this.filever===1){ this.decodeBoard_pzpr1();}
+		else if(this.filever===0){ this.decodeBoard_old();}
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
@@ -791,10 +791,10 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
-			if((type==1 && cnt>1)||(type==2 && cnt==0)){
+			if((type==1 && cnt>1)||(type==2 && cnt===0)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(4);
-				bd.hinfo.getGatePole(r).seterr(1)
+				bd.hinfo.getGatePole(r).seterr(1);
 				result = false;
 			}
 		}
@@ -979,7 +979,7 @@ HurdleManager:{
 		for(var r=1;r<=this.max;r++){
 			if(nums[r].length==2 && nums[r][0]>0 && nums[r][0]==nums[r][1]){
 				this.data[r].number = nums[r][0];
-				decnumber[nums[r][0]] = 1
+				decnumber[nums[r][0]] = 1;
 				nums[r] = [];
 			}
 		}

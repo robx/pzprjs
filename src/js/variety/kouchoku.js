@@ -225,7 +225,6 @@ Board:{
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
 
-		var bd = this, seglist = new this.owner.SegmentList();
 		var pseudoSegment = new this.owner.Segment(x1,y1,x2,y2);
 		return this.segment.filter(function(seg){
 			if(seg.isAreaOverLap(pseudoSegment)){
@@ -287,7 +286,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd=this.owner.board;
 		if(key & this.REDUCE){
-			var seglist=bd.segment, sublist=new this.owner.SegmentList();
+			var sublist=new this.owner.SegmentList();
 			bd.segment.each(function(seg){
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
@@ -330,7 +329,7 @@ BoardExec:{
 	name : 'SegmentList',
 
 	getRange : function(){
-		if(this.length==0){ return null;}
+		if(this.length===0){ return null;}
 		var bd = this.owner.board;
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
 		for(var i=0;i<this.length;i++){
@@ -420,7 +419,7 @@ Graphic:{
 
 	repaintSegments : function(seglist){
 		if(!this.context.use.canvas){
-			var g = this.vinc('segment', 'auto');
+			this.vinc('segment', 'auto');
 			for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 		}
 		else{
@@ -430,7 +429,8 @@ Graphic:{
 	},
 
 	drawSegments : function(){
-		var g = this.vinc('segment', 'auto'), bd = this.owner.board;
+		var bd = this.owner.board;
+		this.vinc('segment', 'auto');
 
 		var seglist = bd.segment;
 		/* 全領域の30%以下なら範囲指定 */
@@ -441,7 +441,7 @@ Graphic:{
 		for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 	},
 	eraseSegment1 : function(seg){
-		var g = this.vinc('segment', 'auto');
+		this.vinc('segment', 'auto');
 		this.drawSegment1(seg,false);
 	},
 	drawSegment1 : function(seg,isdraw){
@@ -659,7 +659,7 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(){
-		var result = false, bd = this.owner.board, validcount = 0;
+		var bd = this.owner.board, validcount = 0;
 		for(var r=1;r<=bd.seginfo.linemax;r++){
 			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
@@ -786,18 +786,18 @@ Segment:{
 	initialize : function(bx1, by1, bx2, by2){
 		this.id = null;
 
-		this.cross1;	// 端点1のIDを保持する
-		this.cross2;	// 端点2のIDを保持する
+		this.cross1 = null;	// 端点1の交点を保持する
+		this.cross2 = null;	// 端点2の交点を保持する
 
-		this.bx1;		// 端点1のX座標(border座標系)を保持する
-		this.by1;		// 端点1のY座標(border座標系)を保持する
-		this.bx2;		// 端点2のX座標(border座標系)を保持する
-		this.by2;		// 端点2のY座標(border座標系)を保持する
+		this.bx1 = null;		// 端点1のX座標(border座標系)を保持する
+		this.by1 = null;		// 端点1のY座標(border座標系)を保持する
+		this.bx2 = null;		// 端点2のX座標(border座標系)を保持する
+		this.by2 = null;		// 端点2のY座標(border座標系)を保持する
 
-		this.dx;		// X座標の差分を保持する
-		this.dy;		// Y座標の差分を保持する
+		this.dx = 0;	// X座標の差分を保持する
+		this.dy = 0;	// Y座標の差分を保持する
 
-		this.lattices;	// 途中で通過する格子点を保持する
+		this.lattices = [];	// 途中で通過する格子点を保持する
 
 		this.color = "";
 		this.error = 0;
@@ -878,7 +878,7 @@ Segment:{
 		if(!this.isAreaOverLap(seg)){ return false;}
 
 		var bx11=this.bx1, bx12=this.bx2, by11=this.by1, by12=this.by2, dx1=this.dx, dy1=this.dy;
-		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy, tmp;
+		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy;
 
 		/* 交差している位置を調べる */
 		if     (dx1===0){ /* 片方の線だけ垂直 */
@@ -1001,7 +1001,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			if(cross.isnull){ return self.typeA;}
 			else{ return ((cross.seglist.length===(isset?0:1))?self.typeA:self.typeB);}
 		};
-		var id = seg.id, cross1 = seg.cross1, cross2 = seg.cross2;
+		var cross1 = seg.cross1, cross2 = seg.cross2;
 		var type1 = gettype(cross1), type2 = gettype(cross2);
 
 		if(isset){

@@ -1,7 +1,7 @@
 
 /* concat前のテスト用スクリプト */
 
-/* jshint node: true */
+/* jshint node: true, evil: true */
 
 (function(){
 	var component = [

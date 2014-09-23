@@ -277,7 +277,7 @@ Graphic:{
 	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawNumbers : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
@@ -319,10 +319,10 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell=clist[i], num=cell.qnum, id=cell.id;
+			var cell=clist[i], num=cell.qnum, dir=cell.qdir, id=cell.id;
 
 			if(num>=0 || (!this.hideHatena && num===-2)){
-				var ax=(cell.bx-1)*this.bw, ay=(cell.by-1)*this.bh, dir=cell.qdir;
+				var ax=(cell.bx-1)*this.bw, ay=(cell.by-1)*this.bh;
 				var info = cell.error || cell.qinfo;
 
 				if     (cell.qans===1){ g.fillStyle = this.fontShadecolor;}
@@ -397,7 +397,7 @@ Graphic:{
 		}
 	},
 	drawHatenas : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -465,7 +465,7 @@ Graphic:{
 	// pc.getBorderColor()     境界線の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawBorders : function(){
-		var g = this.vinc('border', 'crispEdges');
+		this.vinc('border', 'crispEdges');
 		this.drawBorders_common("b_bd");
 	},
 	drawBorders_common : function(header){
@@ -525,12 +525,12 @@ Graphic:{
 	// pc.getQansBorderColor() 回答の境界線の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawQansBorders : function(){
-		var g = this.vinc('border_answer', 'crispEdges');
+		this.vinc('border_answer', 'crispEdges');
 		this.getBorderColor = this.getQansBorderColor;
 		this.drawBorders_common("b_bdans");
 	},
 	drawQuesBorders : function(){
-		var g = this.vinc('border_question', 'crispEdges');
+		this.vinc('border_question', 'crispEdges');
 		this.getBorderColor = this.getQuesBorderColor;
 		this.drawBorders_common("b_bdques");
 	},
@@ -576,7 +576,6 @@ Graphic:{
 		var lw = this.lw, lm = this.lm;
 		var cw = this.cw;
 		var ch = this.ch;
-		var chars = ['u','d','l','r'];
 
 		g.fillStyle = this.bbcolor;
 
@@ -637,7 +636,7 @@ Graphic:{
 	drawLines : function(){
 		var g = this.vinc('line', 'crispEdges');
 
-		var lw = this.lw + this.addlw, lm = this.lm;
+		var lm = this.lm;
 
 		var header = "b_line_";
 		var blist = this.range.borders;
@@ -947,7 +946,7 @@ Graphic:{
 		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num = -1;
+			var cell = clist[i], id = cell.id;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 
 			if(isdrawmove && cell.isDeparture()){
@@ -1061,7 +1060,7 @@ Graphic:{
 	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
 	drawNumbersOn51 : function(){
-		var g = this.vinc('cell_number51', 'auto');
+		this.vinc('cell_number51', 'auto');
 
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
@@ -1151,7 +1150,7 @@ Graphic:{
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1-=(~x1&1), y1-=(~y1&1), x2+=(~x2&1), y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
+		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
@@ -1180,7 +1179,7 @@ Graphic:{
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
-		x1-=(x1&1), y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
+		x1-=(x1&1); y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
 
 		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0);
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.qcols-bs);
@@ -1204,7 +1203,7 @@ Graphic:{
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
 		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
-		x1-=(x1&1), y1-=(y1&1), x2+=(x2&1), y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
+		x1-=(x1&1); y1-=(y1&1); x2+=(x2&1); y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);

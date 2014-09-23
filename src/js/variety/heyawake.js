@@ -132,7 +132,7 @@ Encode:{
 	encodeHeyaApp : function(){
 		var barray=[], bd=this.owner.board, rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[r].clist.getRectSize();
+			var d = rinfo.area[id].clist.getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
 			barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 		}

@@ -92,14 +92,14 @@ pzpr.classmgr = {
 		return {base:(basename||realname), real:realname};
 	},
 	createClass : function(BaseClass){
-		function NewClass(){};
+		function NewClass(){}
 		if(!!BaseClass){ this.extendPrototype( NewClass.prototype, BaseClass.prototype );}
 		return NewClass;
 	},
 	extendPrototype : function(NewProto, proto){
 		proto = proto || {};
 		for(var name in proto){
-			if(proto[name]!=null && (typeof proto[name]==='object') && proto[name].constructor===Object){
+			if((proto[name]!==null) && (typeof proto[name]==='object') && proto[name].constructor===Object){
 				if(!NewProto[name]){ NewProto[name] = {};}
 				this.extendPrototype(NewProto[name], proto[name]);
 			}

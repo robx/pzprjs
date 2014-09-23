@@ -112,7 +112,7 @@ ui.event =
 		if(pzpr.PLAYER || !ui.puzzle.ismodified()){ return;}
 		
 		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
-		e.returnValue = msg
+		e.returnValue = msg;
 		return msg;
 	},
 
@@ -121,7 +121,7 @@ ui.event =
 	//---------------------------------------------------------------------------
 	adjustcellsize : function(){
 		var puzzle = ui.puzzle, bd = puzzle.board, pc = puzzle.painter;
-		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
+		var cols = pc.getCanvasCols();
 		var wwidth = ui.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 		var uiconf = ui.menuconfig;
 

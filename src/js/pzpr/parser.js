@@ -64,7 +64,7 @@ pzpr.parser = {
 //---------------------------------------------------------------------------
 pzpr.parser.URLData = function(url){
 	this.url = url;
-}
+};
 pzpr.parser.URLData.prototype = {
 	id      : '',
 	type    : URL_AUTO,	/* ==0 */
@@ -156,7 +156,7 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
-		var url = "", type = this.type;
+		var url = "";
 		switch(this.type){
 			case this.URL_PZPRV3:  url="http://%DOMAIN%/p.html?%PID%/"; break;
 			case this.URL_PZPRV3E: url="http://%DOMAIN%/p.html?%PID%_edit/"; break;
@@ -268,7 +268,7 @@ pzpr.parser.URLData.prototype = {
 pzpr.parser.FileData = function(fstr, variety){
 	this.id   = (!!variety ? variety : '');
 	this.fstr = fstr;
-}
+};
 pzpr.parser.FileData.prototype = {
 	id      : '',
 	type    : FILE_AUTO,	/* == 0 */
@@ -373,7 +373,7 @@ pzpr.parser.FileData.prototype = {
 				cnt = count;
 				count += (lines[i].match(/\{/g)||[]).length;
 				count -= (lines[i].match(/\}/g)||[]).length;
-				if(cnt>0 && count==0){ break;}
+				if(cnt>0 && count===0){ break;}
 			}
 			this.history = histrs.join("\n");
 			this.type = this.FILE_PZPH;

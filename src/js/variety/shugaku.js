@@ -361,7 +361,7 @@ AnsCheck:{
 	},
 
 	checkDir4PillowOver : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2)
+		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2);
 	},
 	checkDir4PillowLess : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isPillow();},1);

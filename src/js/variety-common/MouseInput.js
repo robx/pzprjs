@@ -335,15 +335,16 @@ MouseEvent:{
 	// mv.inputMoveLine() 移動系パズル向けに盤面の線を入力する
 	//---------------------------------------------------------------------------
 	inputLine : function(){
+		var pos, border;
 		if(this.owner.board.lines.isCenterLine){
-			var pos = this.getpos(0);
+			pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
-			var border = this.getnb(this.prevPos, pos);
+			border = this.getnb(this.prevPos, pos);
 		}
 		else{
-			var pos = this.getpos(0.35);
+			pos = this.getpos(0.35);
 			if(this.prevPos.equals(pos)){ return;}
-			var border = this.getborderobj(this.prevPos, pos);
+			border = this.getborderobj(this.prevPos, pos);
 		}
 		
 		if(!border.isnull){

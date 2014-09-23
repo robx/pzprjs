@@ -100,7 +100,7 @@ EXCell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		var bx=this.bx, by=this.by, cnt;
+		var bx=this.bx, by=this.by;
 		if(bx===-1 && by===-1){ return 0;}
 		var sum=0;
 		for(var n=(bx===-1?this.owner.board.qrows:this.owner.board.qcols);n>0;n--){ sum+=n;}
@@ -184,9 +184,8 @@ Graphic:{
 	getOffsetRows : function(){ return 0.5;},
 
 	drawNumbers_box : function(){
-		var g = this.vinc('excell_number', 'auto');
+		this.vinc('excell_number', 'auto');
 
-		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
@@ -219,7 +218,7 @@ Graphic:{
 			}
 		}
 
-		var g = this.vinc('excell_number2', 'auto');
+		this.vinc('excell_number2', 'auto');
 		var header = "ex2_cirtext_";
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
@@ -243,7 +242,7 @@ Encode:{
 	},
 
 	decodeBox : function(){
-		var cm="", ec=0, bstr = this.outbstr, bd = this.owner.board;
+		var ec=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var a=0;a<bstr.length;a++){
 			var ca=bstr.charAt(a), obj=bd.excell[ec];
 			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}

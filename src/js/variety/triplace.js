@@ -310,7 +310,7 @@ AnsCheck:{
 
 	checkRowsColsTileCount : function(tiles){
 		var evalfunc = function(pos,clist){ return this.isTileCount(pos,clist,tiles);};
-		return this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, false)
+		return this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, false);
 	},
 	isTileCount : function(keycellpos, clist, tiles){
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];

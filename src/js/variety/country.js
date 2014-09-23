@@ -133,7 +133,7 @@ AnsCheck:{
 		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);});
 	},
 	checkNoRoadCountry : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!=0);});
+		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!==0);});
 	},
 	checkSideAreaGrass : function(rinfo){
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false);

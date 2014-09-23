@@ -216,10 +216,10 @@ BoardExec:{
 	},
 	addArea : function(){
 		var areaid = ++this.max;
-		return this.area[areaid] = {
+		return (this.area[areaid] = {
 			clist:(new this.owner.CellList()), id:areaid,
 			link:[], pole:[], vert:false
-		};
+		});
 	}
 },
 CellList:{
@@ -259,7 +259,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawTateyokos()
+		this.drawTateyokos();
 		this.drawTateyokos_sub();
 
 		this.drawCircles();
@@ -289,7 +289,6 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], id = cell.id;
 			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
-			var lp = (this.bw-lm);				//LinePadding
 
 			var qa=cell.qans;
 			if(qa!==-1){
@@ -384,7 +383,7 @@ Graphic:{
 			var border = blist[i];
 			if(border.qsub===2){
 				if(this.vnop(header+border.id,this.NONE)){
-					var lw = this.lw + this.addlw, lm = this.lm;
+					var lm = this.lm;
 					var px = border.bx*this.bw, py = border.by*this.bh;
 					if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
 					else               { g.fillRectCenter(px, py, rw+lm, lm);}
@@ -518,7 +517,7 @@ AnsCheck:{
 			this.searchloop(c, sinfo, sdata);
 		}
 
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1)});
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
 			errclist.seterr(4);
 			return false;

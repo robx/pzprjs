@@ -95,7 +95,7 @@ FileIO:{
 			var array1 = array[i].split(" ");
 			var array2 = [];
 			for(var c=0;c<array1.length;c++){
-				if(array1[c]!=""){ array2.push(array1[c]);}
+				if(array1[c]!==""){ array2.push(array1[c]);}
 			}
 			item = item.concat(array2);
 		}

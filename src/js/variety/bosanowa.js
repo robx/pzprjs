@@ -84,7 +84,7 @@ KeyEvent:{
 			}
 		}
 		else if(cursor.onborder()){
-			var border = cursor.getb(), cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			var border = cursor.getb();
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
 				var num = parseInt(ca), qs = border.getQsub();
@@ -285,7 +285,7 @@ Graphic:{
 		}
 	},
 	drawNumbersBD : function(){
-		var g = this.vinc('border_number', 'auto');
+		this.vinc('border_number', 'auto');
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
@@ -386,7 +386,7 @@ Encode:{
 		if(count>0){ cm += pass.toString(32);}
 		this.outbstr += cm;
 
-		cm="", count=0;
+		cm=""; count=0;
 		for(var by=y1;by<=y2;by+=2){
 			for(var bx=x1;bx<=x2;bx+=2){
 				var pstr="", qn=bd.getc(bx,by).qnum;
@@ -396,7 +396,7 @@ Encode:{
 				else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(16);}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
+				if(count===0){ cm += pstr;}
 				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
 			}
 		}

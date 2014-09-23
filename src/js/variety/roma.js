@@ -114,7 +114,7 @@ Board:{
 		}
 
 		for(var c=0;c<this.cellmax;c++){
-			if(ldata[c]===0){ ldata[c] = (result?2:1)}
+			if(ldata[c]===0){ ldata[c] = (result?2:1);}
 		}
 		return result;
 	}

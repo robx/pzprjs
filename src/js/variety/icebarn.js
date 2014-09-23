@@ -296,7 +296,7 @@ BoardExec:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var bd = this.owner.board, border = bd.getb(bx,by), border0;
+		var bd = this.owner.board, border = bd.getb(bx,by);
 		if     (this.property==='in') { bd.arrowin.set(border);}
 		else if(this.property==='out'){ bd.arrowout.set(border);}
 	}
@@ -805,7 +805,7 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.ice());});
 	},
 	checkIgnoreIcebarn : function(){
-		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
+		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);});
 	},
 	checkNoLineNumber : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
@@ -828,7 +828,7 @@ AnsCheck:{
 		var bd = this.owner.board, border = bd.arrowin.getb(), dir=0, count=1;
 		if     (border.by===bd.minby){ dir=2;}else if(border.by===bd.maxby){ dir=1;}
 		else if(border.bx===bd.minbx){ dir=4;}else if(border.bx===bd.maxbx){ dir=3;}
-		if(dir==0){ return -1;}
+		if(dir===0){ return -1;}
 		if(!border.isLine()){ border.seterr(4); return 1;}
 
 		bd.border.seterr(-1);

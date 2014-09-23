@@ -152,7 +152,7 @@ KeyEvent:{
 		this.key_inputqnum_herugolf(ca);
 	},
 	key_inputqnum_herugolf : function(ca){
-		var cell = this.cursor.getc(), num;
+		var cell = this.cursor.getc();
 		if(ca=='q'||ca=='w'){
 			cell.setQues(cell.ice()?0:6);
 		}
@@ -233,7 +233,7 @@ AreaLineManager:{
 	setMovedBase : function(areaid){
 		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
 		
-		var area = this.area[areaid], clist = area.clist;
+		var area = this.area[areaid];
 		if(!area.movevalid){ return;}
 		
 		var cell = area.departure, num = area.departure.qnum;
@@ -323,7 +323,7 @@ Graphic:{
 	getLineColor : function(border){
 		this.addlw = 0;
 		if(border.isLine()){
-			var info = border.error || border.qinfo, puzzle = this.owner;
+			var info = border.error || border.qinfo;
 			if(info===1){
 				if(this.context.use.canvas){ this.addlw=1;}
 				return this.errlinecolor;
@@ -381,7 +381,7 @@ Graphic:{
 	},
 
 	drawHoles : function(){
-		var g = this.vinc('cell_hole', 'auto');
+		this.vinc('cell_hole', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -451,7 +451,7 @@ Encode:{
 			else if(qu== 31          ){ pstr = "h";}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}

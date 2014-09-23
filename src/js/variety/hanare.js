@@ -154,13 +154,13 @@ AnsCheck:{
 		function eachcell(cell2){
 			distance++;
 			if(!cell2.isNum()){ /* nop */ }
-			else if(!cell2.isValidNum(cell2)){ c=null;}
+			else if(!cell2.isValidNum(cell2)){ cell=null;}
 			else{
 				if(cell!==null){
 					if(Math.abs(num-cell2.getNum())!==distance){
 						if(this.checkOnly){ return false;}
 						cell.seterr(1);
-						cell2.seterr(1)
+						cell2.seterr(1);
 						result = false;
 					}
 				}

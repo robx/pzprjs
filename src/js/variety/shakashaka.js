@@ -354,7 +354,7 @@ AnsCheck:{
 		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
-			var cnt = clist.filter(function(cell){ return (cell.getQans()===0)}).length;
+			var cnt = clist.filter(function(cell){ return (cell.getQans()===0);}).length;
 			if(d.cols*d.rows!=cnt && !this.isAreaRect_slope(winfo,id)){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);

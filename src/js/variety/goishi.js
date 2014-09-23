@@ -134,7 +134,7 @@ Graphic:{
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1-=(~x1&1), y1-=(~y1&1), x2+=(~x2&1), y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
+		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
 		g.fillStyle = this.gridcolor;
 		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw-0.5, y1*this.bh-0.5, 1, (y2-y1)*this.bh+1);} }
@@ -239,7 +239,7 @@ Encode:{
 			if(y2<cell.by){ y2=cell.by;}
 			count++;
 		}
-		if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
+		if(count===0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
 		if(this.owner.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 		return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 	}
@@ -348,7 +348,7 @@ UndoTimer_goishi:{
 	initialize : function(){
 		// ** Undoタイマー
 		this.TID           = null;	// タイマーID
-		this.timerInterval = 25
+		this.timerInterval = 25;
 
 		this.inUNDO = false;
 		this.inREDO = false;

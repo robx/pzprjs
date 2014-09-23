@@ -141,7 +141,7 @@ Graphic:{
 		}
 	},
 	drawNumbers_kaero : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 		var isdrawmove = this.owner.execConfig('dispmove');
 
 		var clist = this.range.cells;
@@ -201,7 +201,7 @@ Encode:{
 			else if(qnum>=37 && qnum<=72){ pstr = "-"+ (qnum-37).toString(36).toUpperCase();}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr||count==26){ cm+=((9+count).toString(36).toLowerCase()+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36).toLowerCase();}

@@ -13,7 +13,6 @@ var require_accesslog = true;
 var onload_pzl = null;
 var onload_option = {imagesave:true};
 
-pzpr.addLoadListener(boot);
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
@@ -22,6 +21,7 @@ function boot(){
 	else if(importData() && includeDebugFile()){ startPuzzle();}
 	else{ setTimeout(boot,0);}
 }
+pzpr.addLoadListener(boot);
 
 function importData(){
 	/* pzpr, uiオブジェクト生成待ち */

@@ -148,7 +148,6 @@ Graphic:{
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		var csize = this.cw*0.20;
 		var header = "b_grid_wari_";
 		var blist = this.range.borders;
 		for(var n=0;n<blist.length;n++){
@@ -205,7 +204,7 @@ Encode:{
 			else if(qn!==-1){ pstr = qn.toString(10);} // 0～3
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}

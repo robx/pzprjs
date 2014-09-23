@@ -37,21 +37,21 @@ MouseEvent:{
 		var qu = cell.getQues(), qn = cell.getQnum();
 		if(this.btn.Left){
 			if(qn===-1){
-				if     (qu==0)         { cell.setQues(11);}
+				if     (qu===0)        { cell.setQues(11);}
 				else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
-				else if(qu==17)        { cell.setQues(0); cell.setQnum(-2);}
+				else if(qu===17)       { cell.setQues(0); cell.setQnum(-2);}
 			}
-			else if(qn==-2){ cell.setQnum(1);}
+			else if(qn===-2){ cell.setQnum(1);}
 			else if(qn<cell.getmaxnum()){ cell.setQnum(qn+1);}
 			else{ cell.setQues(0); cell.setQnum(-1);}
 		}
 		else if(this.btn.Right){
 			if(qn===-1){
-				if     (qu==0)         { cell.setQues(0); cell.setQnum(-2);}
-				else if(qu==11)        { cell.setQues(0); cell.setQnum(-1);}
+				if     (qu===0)        { cell.setQues(0); cell.setQnum(-2);}
+				else if(qu===11)       { cell.setQues(0); cell.setQnum(-1);}
 				else if(qu>=12&&qu<=17){ cell.setQues(qu-1);}
 			}
-			else if(qn==-2){ cell.setQues(17); cell.setQnum(-1);}
+			else if(qn===-2){ cell.setQues(17); cell.setQnum(-1);}
 			else if(qn>1) { cell.setQnum(qn-1);}
 			else{ cell.setQues(0); cell.setQnum(-2);}
 		}
@@ -286,7 +286,7 @@ AnsCheck:{
 			var number = sublist[0].getNum();
 
 			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c], included=false;
+				var cell = bd.cell[c];
 				if(cell.getNum()===number && !sublist.include(cell)){
 					sublist.seterr(1);
 					return false;

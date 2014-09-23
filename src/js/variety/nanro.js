@@ -47,8 +47,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
 		if(this.inputData===null){ this.inputData = (cell.getQsub()===2?0:2);}
-		if     (this.inputData==2){ cell.setAnum(-1); cell.setQsub(2);}
-		else if(this.inputData==0){ cell.setAnum(-1); cell.setQsub(0);}
+		if     (this.inputData===2){ cell.setAnum(-1); cell.setQsub(2);}
+		else if(this.inputData===0){ cell.setAnum(-1); cell.setQsub(0);}
 		this.mouseCell = cell;
 		cell.draw();
 	}
@@ -199,11 +199,11 @@ AnsCheck:{
 				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
 				else{ nums[num]++;}
 			}
-			if(numcnt>1)                               { area.error=4;}
-			else if(numcnt==0)                         { area.error=3;}
-			else if(numcnt==1 && filled < nums[filled]){ area.error=1; area.number=filled;}
-			else if(numcnt==1 && filled > nums[filled]){ area.error=2; area.number=filled;}
-			else                                       { area.error=-1;area.number=filled;}
+			if(numcnt>1)                                { area.error=4;}
+			else if(numcnt===0)                         { area.error=3;}
+			else if(numcnt===1 && filled < nums[filled]){ area.error=1; area.number=filled;}
+			else if(numcnt===1 && filled > nums[filled]){ area.error=2; area.number=filled;}
+			else                                        { area.error=-1;area.number=filled;}
 		}
 		return rinfo;
 	}

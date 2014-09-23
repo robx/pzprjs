@@ -138,7 +138,7 @@ ui.keypopup =
 		
 		var bar = getEL('barkeypopup');
 		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
-		ui.event.addEvent(bar, 'dblclick', ui.menuconfig, function(){ this.set('keypopup',false)});
+		ui.event.addEvent(bar, 'dblclick', ui.menuconfig, function(){ this.set('keypopup',false);});
 	},
 	createtable : function(mode,type){
 		this.basepanel = getEL('panelbase'+mode);

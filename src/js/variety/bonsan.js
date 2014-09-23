@@ -354,7 +354,7 @@ AnsCheck:{
 	},
 	checkFractal_clist : function(clist){
 		var d = clist.getRectSize();
-		d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
+		d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){

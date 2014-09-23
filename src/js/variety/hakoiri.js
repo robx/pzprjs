@@ -101,7 +101,6 @@ Graphic:{
 		var g = this.vinc('cell_mark', 'auto');
 
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var lampcolor = "rgb(0, 127, 96)";
 		var headers = ["c_mk1_", "c_mk2_", "c_mk3_"];
 		g.lineWidth = 2;
 
@@ -188,7 +187,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
-			var bx = cell.bx, by = cell.by, target=0, clist=new this.owner.CellList();
+			var target=0, clist=new this.owner.CellList();
 			var func = function(cell){ return (!cell.isnull && num===cell.getNum());};
 			// 右・左下・下・右下だけチェック
 			clist.add(cell);

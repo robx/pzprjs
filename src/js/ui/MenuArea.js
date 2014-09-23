@@ -41,7 +41,7 @@ ui.menuarea = {
 			if(!!pmenu){ pmenu.innerHTML = "["+pp.getMenuStr(idname)+"]";}
 			break;
 
-		case pp.SMENU: case pp.LABEL: case pp.SPARENT: case pp.SPARENT2:
+		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
 			var smenu = getEL('ms_'+idname);
 			if(!!smenu){ smenu.innerHTML = pp.getMenuStr(idname);}
 			break;
@@ -95,15 +95,13 @@ ui.menuarea = {
 	createArea : function(){
 		var pp = this.items;
 		var am = function(){ pp.addMenu.apply(pp,arguments);},
-			at = function(){ pp.addSParent.apply(pp,arguments);},
-			an = function(){ pp.addSParent2.apply(pp,arguments);},
+			an = function(){ pp.addSParent.apply(pp,arguments);},
 			as = function(){ pp.addSmenu.apply(pp,arguments);},
 			au = function(){ pp.addSelect.apply(pp,arguments);},
 			ac = function(){ pp.addCheck.apply(pp,arguments);},
 			aa = function(){ pp.addCaption.apply(pp,arguments);},
 			ai = function(){ pp.addChild.apply(pp,arguments);},
-			ap = function(){ pp.addSeparator.apply(pp,arguments);}
-		var pid = ui.puzzle.pid;
+			ap = function(){ pp.addSeparator.apply(pp,arguments);};
 
 		// *ファイル ==========================================================
 		am('file', "ファイル", "File");
@@ -342,12 +340,11 @@ ui.menuarea = {
 		// ElementTemplate : フロートメニュー(中身)
 		var el_smenu = createEL('li');
 		el_smenu.className = 'smenu';
-		var el_sparent  = el_smenu.cloneNode(false);
 
-		var el_sparent2 = el_smenu.cloneNode(false);
-		el_sparent2.style.fontWeight = '900';
-		el_sparent2.style.fontSize = '0.9em';
-		var el_select = el_sparent2.cloneNode(false);
+		var el_sparent = el_smenu.cloneNode(false);
+		el_sparent.style.fontWeight = '900';
+		el_sparent.style.fontSize = '0.9em';
+		var el_select = el_sparent.cloneNode(false);
 
 		var el_check  = el_smenu.cloneNode(false);
 		el_check.style.paddingLeft = '6pt';
@@ -369,11 +366,10 @@ ui.menuarea = {
 				case pp.LABEL:    temp = el_label;    break;
 				case pp.SELECT:   temp = el_select;   sfunc = true; break;
 				case pp.SPARENT:  temp = el_sparent;  sfunc = true; break;
-				case pp.SPARENT2: temp = el_sparent2; sfunc = true; break;
 				case pp.SMENU:    temp = el_smenu;    sfunc = cfunc = true; break;
 				case pp.CHECK:    temp = el_check;    sfunc = cfunc = true; break;
 				case pp.CHILD:    temp = el_child;    sfunc = cfunc = true; break;
-				default: continue; break;
+				default: continue;
 			}
 
 			var smenu = temp.cloneNode(temp===el_separate?true:false);
@@ -402,7 +398,7 @@ ui.menuarea = {
 		}
 
 		// 'setting'だけはセパレータを後から挿入する
-		var el = getEL('float_setting'), fw = el.firstChild.style.fontWeight
+		var el = getEL('float_setting'), fw = el.firstChild.style.fontWeight;
 		for(var i=1,len=el.childNodes.length;i<len;i++){
 			var node = el.childNodes[i];
 			if(fw!=node.style.fontWeight){
@@ -530,7 +526,7 @@ ui.menuarea = {
 		var rect = pzpr.util.getRect(e.target);
 		var idname = e.target.id.substr(3);
 		var _float = this.floatpanel[idname];
-		if(depth==0){
+		if(depth===0){
 			_float.style.left = rect.left   + 1 + 'px';
 			_float.style.top  = rect.bottom + 1 + 'px';
 		}
@@ -637,8 +633,7 @@ ui.MenuList.prototype =
 
 	// 定数
 	MENU     : 6,
-	SPARENT  : 7,
-	SPARENT2 : 8,
+	SPARENT  : 8,
 	SMENU    : 0,
 	SELECT   : 1,
 	CHECK    : 2,
@@ -649,7 +644,6 @@ ui.MenuList.prototype =
 	//---------------------------------------------------------------------------
 	// pp.addMenu()      メニュー最上位の情報を登録する
 	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
-	// pp.addSParent2()  フロートメニューを開くサブメニュー項目を登録する
 	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
 	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
 	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
@@ -662,9 +656,6 @@ ui.MenuList.prototype =
 	},
 	addSParent : function(idname, parent, strJP, strEN){
 		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
-	},
-	addSParent2 : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SPARENT2, null, strJP, strEN);
 	},
 
 	addSmenu : function(idname, parent, strJP, strEN){
@@ -725,6 +716,6 @@ ui.MenuList.prototype =
 		var flag = this.item[idname];
 		if(!flag){ return false;}
 		var type = flag.type;
-		return (type===this.SELECT || type===this.SPARENT || type===this.SPARENT2);
+		return (type===this.SELECT || type===this.SPARENT);
 	}
 };

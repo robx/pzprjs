@@ -58,8 +58,8 @@ Board:{
 		this.exec = new puzzle.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},
-	addInfoList : function(klass){
-		var instance = new klass();
+	addInfoList : function(Klass){
+		var instance = new Klass();
 		this.infolist.push(instance);
 		return instance;
 	},

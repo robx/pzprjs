@@ -340,7 +340,7 @@ FailCode:{
 	loaded : false,
 	
 	waitload : function(){
-		if(!(this.image.height>0)){
+		if(!this.image.height){
 			var self = this;
 			setTimeout(function(){ self.waitload();},10);
 			return;

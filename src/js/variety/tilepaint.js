@@ -302,7 +302,7 @@ AnsCheck:{
 
 		var count = clist.filter(function(cell){ return cell.isShade();}).length;
 		if(number>=0 && count!=number){
-			keyobj.seterr(1)
+			keyobj.seterr(1);
 			clist.seterr(1);
 			return false;
 		}

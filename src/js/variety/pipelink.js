@@ -191,7 +191,7 @@ Encode:{
 	},
 	encodePipelink : function(type){
 		var parser = pzpr.parser;
-		var count, pass, cm="", bd = this.owner.board;
+		var count, cm="", bd = this.owner.board;
 
 		count=0;
 		for(var c=0;c<bd.cellmax;c++){

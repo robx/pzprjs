@@ -130,7 +130,7 @@ pzpr.util = {
 	// pzpr.util.pageY()      イベントが起こったページ上のY座標を返す
 	//----------------------------------------------------------------------
 	getPagePos : function(e){
-		return {px:this.pageX(e), py:this.pageY(e)}
+		return {px:this.pageX(e), py:this.pageY(e)};
 	},
 	pageX : function(e){
 		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
@@ -166,7 +166,7 @@ pzpr.util = {
 		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
 			function(el){
 				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
-				if(!window.scrollX==void 0){
+				if(window.scrollX!==void 0){
 					scrollLeft = window.scrollX;
 					scrollTop  = window.scrollY;
 				}

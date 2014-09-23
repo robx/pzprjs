@@ -729,7 +729,7 @@ AreaInfo:{
 	//---------------------------------------------------------------------------
 	addArea : function(){
 		var areaid = ++this.max;
-		return this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid};
+		return (this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid});
 	},
 	addAreaByClist : function(clist){
 		var areaid = ++this.max;

@@ -109,7 +109,7 @@ Graphic:{
 	},
 
 	drawNumbers_factors : function(){
-		var g = this.vinc('cell_number', 'auto');
+		this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

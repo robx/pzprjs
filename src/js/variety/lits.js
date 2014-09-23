@@ -236,7 +236,7 @@ AnsCheck:{
 	checkSeqBlocksInRoom : function(){
 		var result = true, bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
+			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
 			if(!clist.isSeqBlock()){
 				if(this.checkOnly){ return false;}
 				clist.seterr(1);
