@@ -1,4 +1,3 @@
-/* jshint eqnull:true */
 /* global File:false */
 (function(){
 
@@ -261,6 +260,7 @@ v3index.dbif.extend({
 		}
 	},
 	importlist : function(callback){
+		/* jshint eqnull:true */
 		DBlist = [];
 		for(var i=1;true;i++){
 			var data = localStorage[pheader+i];
