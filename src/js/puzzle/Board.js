@@ -192,7 +192,6 @@ Board:{
 			var obj = this.cell[id];
 			obj.id = id;
 			obj.isnull = false;
-			obj.validcell = true;
 
 			obj.bx = (id%qc)*2+1;
 			obj.by = ((id/qc)<<1)+1;

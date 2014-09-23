@@ -12,8 +12,6 @@ BoardPiece:{
 	id     : null,
 	isnull : true,
 
-	validcell : false,
-
 	// デフォルト値
 	/* 問題データを保持するプロパティ */
 	ques  : 0,	// cell  :(1:黒マス 2-5:三角形 6:アイス・なべ等 7:盤面外 11-17:十字型パーツ 21-22:旗門 31:Hole 41-42:ぬりめいずの○△ 51:カックロ)
@@ -367,7 +365,7 @@ BoardPiece:{
 		var adc = this.adjacent, cell, cnt = 0;
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell && func(cells[i])){ cnt++;}
+			if(cells[i].group==="cell" && !cells[i].isnull && func(cells[i])){ cnt++;}
 		}
 		return cnt;
 	},
@@ -380,7 +378,7 @@ BoardPiece:{
 		var adc = this.adjacent, cell, list=[];
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell){ list.push([cells[i],(i+1)]);} /* i+1==dir */
+			if(cells[i].group==="cell" && !cells[i].isnull){ list.push([cells[i],(i+1)]);} /* i+1==dir */
 		}
 		return list;
 	},
@@ -389,7 +387,7 @@ BoardPiece:{
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		var bds   = [adb.top, adb.bottom, adb.left, adb.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
+			if(cells[i].group==="cell" && !cells[i].isnull || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
 		}
 		return cblist;
 	},
