@@ -1,4 +1,6 @@
 // UI.js v3.4.0
+/* global ui:false, File:false */
+/* exported ui, _doc, getEL, createEL, createButton */
 
 /* ui.js Locals */
 var _doc = document;
@@ -13,7 +15,8 @@ function createButton(){
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
-var ui = {
+/* extern */
+window.ui = {
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
@@ -73,13 +76,13 @@ var ui = {
 		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	alertStr : function(strJP, strEN){
-		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		window.alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	confirmStr : function(strJP, strEN){
-		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		return window.confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	promptStr : function(strJP, strEN, initialStr){
-		return prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
+		return window.prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
 	},
 
 	//---------------------------------------------------------------------------
@@ -167,5 +170,3 @@ var ui = {
 		this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	}
 };
-/* extern */
-window.ui = ui;

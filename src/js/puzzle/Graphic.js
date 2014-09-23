@@ -1,4 +1,5 @@
 // Graphic.js v3.4.1
+/* global Candle:false */
 
 (function(){
 

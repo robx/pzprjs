@@ -1,4 +1,5 @@
 // Timer.js v3.4.0
+/* global ui:false */
 
 (function(){
 

@@ -1,4 +1,5 @@
 // Menu.js v3.4.0
+/* global Candle:false, ui:false, _doc:false, createEL:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
@@ -622,7 +623,7 @@ ui.popupmgr.addpopup('filesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!=-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
@@ -763,7 +764,7 @@ ui.popupmgr.addpopup('imagesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!=-1){ alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!=-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		/* 画像出力ルーチン */

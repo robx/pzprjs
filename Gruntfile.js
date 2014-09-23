@@ -1,4 +1,4 @@
-
+/* jshint node: true, browser: false */
 module.exports = function(grunt){
   var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
@@ -75,6 +75,22 @@ module.exports = function(grunt){
           "cd .."
         ].join('; ')
       }
+    },
+
+    jshint: {
+      options: {
+        jshintrc: true
+      },
+      default: [
+        'Gruntfile.js',
+        'src/js/*.js',
+        'src/js/pzpr/*.js',
+        'src/js/puzzle/*.js',
+        'src/js/variety/*.js',
+        'src/js/variety-common/*.js',
+        'src/js/ui/*.js',
+        'tests/**/*.js'
+      ]
     }
   });
   

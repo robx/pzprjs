@@ -1,4 +1,5 @@
 // MenuArea.js v3.4.0
+/* global ui:false, createEL:false, getEL:false */
 
 // メニュー描画/取得/html表示系
 ui.menuarea = {
@@ -612,7 +613,7 @@ ui.menuarea = {
 	// menuarea.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		alert( ui.puzzle.check(true).text() );
+		window.alert( ui.puzzle.check(true).text() );
 	},
 	ACconfirm : function(){
 		if(ui.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){

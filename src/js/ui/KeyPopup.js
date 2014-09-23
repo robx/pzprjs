@@ -1,4 +1,5 @@
 // KeyPopup.js v3.4.0
+/* global ui:false, _doc:false, createEL:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する

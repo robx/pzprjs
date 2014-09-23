@@ -1,6 +1,8 @@
 
 /* concat前のテスト用スクリプト */
 
+/* jshint node: true */
+
 (function(){
 	var component = [
 		"lib/candle",

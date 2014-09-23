@@ -1,4 +1,5 @@
 // ToolArea.js v3.4.0
+/* global ui:false, createEL:false, createButton:false, getEL:false */
 
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト

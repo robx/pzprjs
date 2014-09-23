@@ -1,4 +1,5 @@
 // Boot.js v3.4.0
+/* global ui:false, ActiveXObject:false */
 
 (function(){
 /********************************/

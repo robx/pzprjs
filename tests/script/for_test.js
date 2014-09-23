@@ -1,4 +1,5 @@
 // for_test.js v3.4.0
+/* jshint evil:true, es3:false */
 (function(){
 
 var _doc = document;
