@@ -668,7 +668,7 @@ Graphic:{
 		var style = (option.style ? option.style+" " : "");
 		var fontfamily = (this.owner.getConfig('font')==1 ? 'sans-serif' : 'serif');
 		var ratioarray = option.ratio || this.fontsizeratio;
-		ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
+		var ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);
 		var realsize = ((this.cw * ratio)|0);
 

@@ -150,6 +150,7 @@ AnsCheck:{
 	},
 
 	checkDiffNumber : function(){
+		var cell, num, distance;
 		function eachcell(cell2){
 			distance++;
 			if(!cell2.isNum()){ /* nop */ }
@@ -171,13 +172,13 @@ AnsCheck:{
 
 		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var cell=null, num, distance;
+			cell=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
 				eachcell(bd.getc(bx,by));
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var cell=null, num, distance;
+			cell=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 				eachcell(bd.getc(bx,by));
 			}

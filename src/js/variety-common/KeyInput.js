@@ -78,7 +78,6 @@ KeyEvent:{
 			case 'shift+down':  dir = cell.DN; break;
 			case 'shift+left':  dir = cell.LT; break;
 			case 'shift+right': dir = cell.RT; break;
-			default: flag = false;
 		}
 
 		if(dir!==cell.NDIR){

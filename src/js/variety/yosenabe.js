@@ -26,7 +26,7 @@ MouseEvent:{
 	inputdark : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;

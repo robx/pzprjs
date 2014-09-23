@@ -539,14 +539,14 @@ AnsCheck:{
 	},
 
 	checkRouteCheckPoint : function(sdata){
-		result = this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);});
+		var result = this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);});
 		if(!result && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
 		return result;
 	},
 	checkRouteNoDeadEnd : function(sdata){
-		result = this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);});
+		var result = this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);});
 		if(!result && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
