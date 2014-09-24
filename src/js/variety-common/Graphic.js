@@ -929,8 +929,8 @@ Graphic:{
 		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
-			if     (error===1||error===4)                       { return this.errbcolor1;}
-			else if(puzzle.getConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
+			if     (error===1||error===4)                        { return this.errbcolor1;}
+			else if(puzzle.execConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
 			else{ return this.circledcolor;}
 		}
 		return null;

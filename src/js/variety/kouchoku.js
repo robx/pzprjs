@@ -395,7 +395,8 @@ OperationManager:{
 
 Flags:{
 	disable_subclear : true,
-	irowake : true
+	irowake : true,
+	autocmp : "kouchoku"
 },
 
 //---------------------------------------------------------
@@ -470,7 +471,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto');
 
-		var isgray = this.owner.getConfig('autocmp');
+		var isgray = this.owner.execConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;

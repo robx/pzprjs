@@ -270,6 +270,7 @@ pzpr.Puzzle.prototype =
 			case 'redblk':   exec = flags.redblk;    break;
 			case 'redblkrb': exec = flags.redblkrb;  break;
 			case 'redroad':  exec = (this.pid==='roma'); break;
+			case 'autocmp':  exec = (flags.autocmp!==''); break;
 		}
 		return (val && exec);
 	},

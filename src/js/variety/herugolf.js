@@ -28,7 +28,7 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -261,6 +261,10 @@ AreaLineManager:{
 	enabled : true,
 	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}
+},
+
+Flags:{
+	autocmp : "number"
 },
 
 //---------------------------------------------------------

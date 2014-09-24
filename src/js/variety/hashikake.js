@@ -145,6 +145,7 @@ AreaLineManager:{
 },
 
 Flags:{
+	autocmp : "number",
 	irowake : true
 },
 

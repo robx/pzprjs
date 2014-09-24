@@ -24,7 +24,7 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -51,7 +51,7 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var puzzle = this.owner;
-		if(puzzle.pid!=='rectslider' && puzzle.getConfig('autocmp') && this.inputdark(cell)){ return;}
+		if(puzzle.pid!=='rectslider' && puzzle.execConfig('autocmp') && this.inputdark(cell)){ return;}
 
 		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
 		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
@@ -154,6 +154,10 @@ AreaLineManager:{
 	}
 },
 
+Flags:{
+	autocmp : "number"
+},
+
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
@@ -221,7 +225,7 @@ Graphic:{
 		return null;
 	},
 	getCellNumberColor : function(cell){
-		return (this.owner.getConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
+		return (this.owner.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 

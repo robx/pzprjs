@@ -162,6 +162,7 @@ pzpr.classmgr.makeCommon({
 Flags:{
 	/* フラグ */
 	use      : false,
+	autocmp  : '',
 	redline  : false,
 	redblk   : false,
 	redblkrb : false,

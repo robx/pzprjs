@@ -63,11 +63,11 @@ ui.toolarea = {
 		this.addLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
 
 		/* 文字別正解表示の設定値 */
-		var pid = ui.puzzle.pid;
-		if(pid==='hashikake'||pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='rectslider'||pid==='herugolf'){
+		var flags = ui.puzzle.flags, pid = ui.puzzle.pid;
+		if(flags.autocmp==="number"){
 			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
 		}
-		else if(pid==='kouchoku'){
+		else if(flags.autocmp==="kouchoku"){
 			this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
 		}
 
