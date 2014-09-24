@@ -308,10 +308,10 @@ Graphic:{
 				var cell=this.owner.board.getc(bx,by);
 				var addr=new this.owner.Address(bx, by);
 				if( cell.isEmpty() && (
-					addr.rel(-2, 0).getc().ques===0 || addr.rel(2, 0).getc().ques===0 || 
-					addr.rel( 0,-2).getc().ques===0 || addr.rel(0, 2).getc().ques===0 || 
-					addr.rel(-2,-2).getc().ques===0 || addr.rel(2,-2).getc().ques===0 || 
-					addr.rel(-2, 2).getc().ques===0 || addr.rel(2, 2).getc().ques===0 ) )
+					addr.relcell(-2, 0).ques===0 || addr.relcell(2, 0).ques===0 || 
+					addr.relcell( 0,-2).ques===0 || addr.relcell(0, 2).ques===0 || 
+					addr.relcell(-2,-2).ques===0 || addr.relcell(2,-2).ques===0 || 
+					addr.relcell(-2, 2).ques===0 || addr.relcell(2, 2).ques===0 ) )
 				{
 					g.fillStyle = "rgb(127,127,127)";
 					if(this.vnop([header,bx,by].join('_'),this.NONE)){

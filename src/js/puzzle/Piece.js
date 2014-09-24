@@ -4,10 +4,7 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-BoardPiece:{
-	bx : -1,	// X座標(border座標系)を保持する
-	by : -1,	// Y座標(border座標系)を保持する
-
+"BoardPiece:Position":{
 	group  : 'none',
 	id     : null,
 	isnull : true,
@@ -51,44 +48,24 @@ BoardPiece:{
 	maxnum : 255,
 	minnum : 1,
 
-	// 方向を表す定数 (RawAddressと同じ)
-	NDIR : 0,	// 方向なし
-	UP   : 1,	// up, top
-	DN   : 2,	// down, bottom
-	LT   : 3,	// left
-	RT   : 4,	// right
-
-	//---------------------------------------------------------------------------
-	// getaddr() 自分の盤面中での位置を返す
-	// relcell(), relcross(), relbd(), relexcell() 相対位置に存在するオブジェクトを返す
-	//---------------------------------------------------------------------------
-	getaddr : function(){ return (new this.owner.Address(this.bx, this.by));},
-
-	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
-	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
-	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
-	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
-
 	//---------------------------------------------------------------------------
 	// initAdjacent()   隣接セルの情報を設定する
 	// initAdjBorder()  隣接境界線の情報を設定する
 	//---------------------------------------------------------------------------
 	initAdjacent : function(){
-		var bd = this.owner.board;
 		this.adjacent = {
-			top    : bd.getobj(this.bx,this.by-2),
-			bottom : bd.getobj(this.bx,this.by+2),
-			left   : bd.getobj(this.bx-2,this.by),
-			right  : bd.getobj(this.bx+2,this.by)
+			top    : this.relobj(0,-2),
+			bottom : this.relobj(0, 2),
+			left   : this.relobj(-2,0),
+			right  : this.relobj( 2,0)
 		};
 	},
 	initAdjBorder : function(){
-		var bd = this.owner.board;
 		this.adjborder = {
-			top    : bd.getb(this.bx,this.by-1),
-			bottom : bd.getb(this.bx,this.by+1),
-			left   : bd.getb(this.bx-1,this.by),
-			right  : bd.getb(this.bx+1,this.by)
+			top    : this.relbd(0,-1),
+			bottom : this.relbd(0, 1),
+			left   : this.relbd(-1,0),
+			right  : this.relbd( 1,0)
 		};
 	},
 
@@ -136,11 +113,6 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	prehook  : {},
 	posthook : {},
-
-	//---------------------------------------------------------------------------
-	// draw()   盤面に自分の周囲を描画する
-	//---------------------------------------------------------------------------
-	draw : function(){ this.getaddr().draw();},
 
 	//---------------------------------------------------------------------------
 	// seterr()  error値を設定する
@@ -196,11 +168,6 @@ BoardPiece:{
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
-
-	//---------------------------------------------------------------------------
-	// cell.drawaround() 盤面に自分の周囲1マスを含めて描画する
-	//---------------------------------------------------------------------------
-	drawaround : function(){ this.getaddr().drawaround();},
 
 	//---------------------------------------------------------------------------
 	// cell.isShade()   該当するCellが黒マスかどうか返す

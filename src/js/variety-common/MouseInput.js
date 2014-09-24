@@ -389,10 +389,10 @@ MouseEvent:{
 	// mv.getborderobj()  入力対象となる境界線オブジェクトを取得する
 	//---------------------------------------------------------------------------
 	getnb : function(base, current){
-		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.rel(0,-1).getb();}
-		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
-		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
-		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
+		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.relbd(0,-1);}
+		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.relbd(0, 1);}
+		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.relbd(-1,0);}
+		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.relbd( 1,0);}
 		return this.owner.board.emptyborder;
 	},
 	getborderobj : function(base, current){
