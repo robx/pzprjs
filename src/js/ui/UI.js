@@ -102,7 +102,7 @@ window.ui = {
 			ui.listener.onConfigSet(ui.puzzle, idname, newval);
 		}
 		else if(idname==='mode'){
-			ui.puzzle.modechange(newval);
+			ui.puzzle.modechange(+newval);
 		}
 	},
 	getConfig : function(idname){
