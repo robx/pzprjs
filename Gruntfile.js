@@ -81,20 +81,23 @@ module.exports = function(grunt){
       options: {
         jshintrc: true
       },
-      files: [
-        'Gruntfile.js',
-        'src/js/*.js',
-        'src/js/pzpr/*.js',
-        'src/js/puzzle/*.js',
-        'src/js/variety/*.js',
-        'src/js/variety-common/*.js',
-        'src/js/ui/*.js',
-        'tests/**/*.js'
-      ]
+      all: {
+        src: [
+          'Gruntfile.js',
+          'src/js/*.js',
+          'src/js/pzpr/*.js',
+          'src/js/puzzle/*.js',
+          'src/js/variety/*.js',
+          'src/js/variety-common/*.js',
+          'src/js/ui/*.js',
+          'tests/**/*.js'
+        ]
+      }
     }
   });
   
-  grunt.registerTask('default', [          'clean',                   'copy:debug'                    ]);
-  grunt.registerTask('release', ['jshint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('lint', ['newer:jshint:all']);
+  grunt.registerTask('default', [        'clean',                   'copy:debug'                    ]);
+  grunt.registerTask('release', ['lint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
   grunt.registerTask('zipfile', ['shell:release']);
 };
