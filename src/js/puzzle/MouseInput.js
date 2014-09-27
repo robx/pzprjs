@@ -122,7 +122,10 @@ MouseEvent:{
 		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
 		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
 		var g = pc.context;
-		if(!!g && g.use.vml){ addr.move(+0.33,+0.33);}
+		if(!!g && g.use.vml){
+			if(puzzle.board.hasexcell>0){ addr.move(+2.33,+2.33);}
+			else{ addr.move(+0.33,+0.33);}
+		}
 		return addr;
 	},
 
