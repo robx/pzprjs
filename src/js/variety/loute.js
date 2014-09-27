@@ -251,16 +251,17 @@ Graphic:{
 	circlefillcolor_func : "null",
 
 	drawHatenas_loute : function(){
-		this.vinc('cell_hatena', 'auto');
-		var ratio = (this.owner.pid==='sashigane' ? [0.8] : [0.94]);
+		var g = this.vinc('cell_hatena', 'auto');
+		var option = {ratio:(this.owner.pid==='sashigane' ? [0.8] : [0.94])};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = (cell.qdir===-2 ? "?" : "");
-			var option = { key:"cell_text_h_"+cell.id };
-			option.ratio = ratio;
-			option.color = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
-			this.disptext(text, px, py, option);
+			var cell = clist[i];
+			g.vid = "cell_text_h_"+cell.id;
+			if(cell.qdir===-2){
+				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
+				this.disptext("?", cell.bx*this.bw, cell.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

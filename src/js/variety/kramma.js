@@ -122,7 +122,7 @@ Graphic:{
 		this.common.initialize.call(this);
 
 		/* imgtileの初期設定を追加 */
-		this.imgtile = new this.owner.ImageTile(this.imgsrc_dataurl, 2, 1);
+		this.imgtile = new this.owner.ImageTile((!pzpr.env.browser.IE8 ? this.imgsrc_dataurl : "../src/img/shwolf_obj.png"), 2, 1);
 	},
 	imgsrc_dataurl : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC",
 
@@ -137,12 +137,9 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], keyimg = ['cell',cell.id,'quesimg'].join('_');
-			if(cell.qnum>0){
-				var rx = (cell.bx-1)*this.bw, ry = (cell.by-1)*this.bh;
-				g.vshow(keyimg);
-				this.imgtile.putImage(g, cell.qnum-1, rx,ry,this.cw,this.ch);
-			}
-			else{ g.vhide(keyimg);}
+			var rx = (cell.bx-1)*this.bw, ry = (cell.by-1)*this.bh;
+			
+			this.imgtile.putImage(g, keyimg, (cell.qnum>0?cell.qnum-1:null), rx,ry,this.cw,this.ch);
 		}
 	}
 },
@@ -350,11 +347,13 @@ FailCode:{
 		this.loaded = true;
 	},
 
-	putImage : function(ctx,n,dx,dy,dw,dh){
+	putImage : function(ctx,key,n,dx,dy,dw,dh){
 		var sw=this.cwidth, sh=this.cheight;
 		var sx=sw*(n%this.cols), sy=sh*((n/this.cols)|0);
 		if(dw===(void 0)){ dw=sw; dh=sh;}
-		ctx.drawImage(this.image, sx,sy,sw,sh, dx,dy,dw,dh);
+		
+		ctx.vid = key;
+		ctx.drawImage((n!==null?this.image:null), sx,sy,sw,sh, dx,dy,dw,dh);
 	}
 }
 });

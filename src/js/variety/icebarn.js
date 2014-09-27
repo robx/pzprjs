@@ -397,66 +397,79 @@ Graphic:{
 	},
 
 	drawBorderArrows : function(){
-		var g = this.vinc('border_arrow', 'crispEdges');
+		var g = this.vinc('border_arrow', 'crispEdges', true);
 
 		var ll = this.cw*0.35;				//LineLength
 		var lw = Math.max(this.cw/36, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
 
-		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id, dir=border.getArrow();
+			var border = blist[i], dir=border.getArrow();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
-			if(dir>=1 && dir<=4){
-				var px = border.bx*this.bw, py = border.by*this.bh;
-
-				g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(headers[0]+id,this.FILL)){
-					switch(dir){
-						case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
-						case border.LT: case border.RT: g.fillRectCenter(px, py, ll, lm); break;
-					}
-				}
-
-				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
-					switch(dir){
-						case border.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-						case border.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-						case border.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-						case border.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
-					}
-					g.fill();
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			g.vid = "b_ar_"+border.id;
+			if(dir!==border.NDIR){
+				switch(dir){
+					case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
+					case border.LT: case border.RT: g.fillRectCenter(px, py, ll, lm); break;
 				}
 			}
+			else{ g.vhide();}
+
+			/* 1つのidでは2方向しかとれないはず */
+			g.vid = "b_tipa_"+border.id;
+			if(dir===border.UP||dir===border.LT){
+				g.beginPath();
+				switch(dir){
+					case border.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+					case border.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
+
+			g.vid = "b_tipb_"+border.id;
+			if(dir===border.DN||dir===border.RT){
+				g.beginPath();
+				switch(dir){
+					case border.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+					case border.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
 		}
 	},
 	drawInOut : function(){
 		var g = this.context, bd = this.owner.board, border;
 
+		g.vid = "string_in";
 		border = bd.arrowin.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.5*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
-			g.vdel("string_in");
-			this.disptext("IN", px, py, {key:"string_in",ratio:[0.55]});
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			this.disptext("IN", px, py, {ratio:[0.55]});
 		}
+		else{ g.vhide();}
+
+		g.vid = "string_out";
 		border = bd.arrowout.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.7*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.7*this.cw; py-=0.3*this.ch;}
-			g.vdel("string_out");
-			this.disptext("OUT", px, py, {key:"string_out",ratio:[0.55]});
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			this.disptext("OUT", px, py, {ratio:[0.55]});
 		}
+		else{ g.vhide();}
 	},
 
 	repaintParts : function(blist){

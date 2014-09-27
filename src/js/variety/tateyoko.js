@@ -177,12 +177,11 @@ Graphic:{
 	},
 
 	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges');
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
 
-		var headers = ["c_bar1_", "c_bar2_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
 
@@ -191,49 +190,40 @@ Graphic:{
 			else if(err===-1){ g.fillStyle = this.errlinebgcolor;}
 			else{ g.fillStyle = this.linecolor;}
 
-			if(cell.qans===12){
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.fillRectCenter(px, py, lm, this.bh);
-				}
-			}
-			else{ g.vhide(headers[0]+id);}
+			g.vid = "c_bar1_"+cell.id;
+			if(cell.qans===12){ g.fillRectCenter(px, py, lm, this.bh);}else{ g.vhide();}
 
-			if(cell.qans===13){
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillRectCenter(px, py, this.bw, lm);
-				}
-			}
-			else{ g.vhide(headers[1]+id);}
+			g.vid = "c_bar2_"+cell.id;
+			if(cell.qans===13){ g.fillRectCenter(px, py, this.bw, lm);}else{ g.vhide();}
 		}
 	},
 
 	drawShadeAtNumber : function(){
-		var g = this.vinc('cell_bcells', 'crispEdges');
+		var g = this.vinc('cell_bcells', 'crispEdges', true);
 
-		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
+			g.vid = "c_full_"+cell.id;
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbers_tateyoko : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var num = cell.qnum, text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
-			var option = { key: "cell_text_"+cell.id };
-			option.color = (cell.ques!==1 ? this.fontcolor : "white");
-			this.disptext(text, px, py, option);
+			var cell = clist[i], num = cell.qnum;
+			g.vid = "cell_text_"+cell.id;
+			if(num!==-1){
+				g.fillStyle = (cell.ques!==1 ? this.fontcolor : "white");
+				this.disptext((num>=0 ? ""+num : "?"), cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

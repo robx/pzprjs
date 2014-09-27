@@ -129,16 +129,25 @@ Graphic:{
 	},
 
 	drawCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges'), bd = this.owner.board;
+		var g = this.vinc('centerline', 'crispEdges', true), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
 		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
+		g.lineWidth = 1;
 		g.fillStyle = this.gridcolor;
-		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw-0.5, y1*this.bh-0.5, 1, (y2-y1)*this.bh+1);} }
-		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw-0.5,  i*this.bh-0.5, (x2-x1)*this.bw+1, 1);} }
+		for(var i=x1;i<=x2;i+=2){
+			var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
+			g.vid = "cliney_"+i;
+			g.strokeLine(px, py1, px, py2);
+		}
+		for(var i=y1;i<=y2;i+=2){
+			var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
+			g.vid = "clinex_"+i;
+			g.strokeLine(px1, py, px2, py);
+		}
 	},
 
 	getCircleStrokeColor : function(cell){
@@ -159,19 +168,16 @@ Graphic:{
 
 		var rw = this.bw*0.8-2;
 		var rh = this.bh*0.8-2;
-		var header = "c_sq2_";
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			
+			g.vid = "c_sq_"+cell.id;
 			if(cell.isStone() && cell.anum!==-1){
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },

@@ -100,31 +100,30 @@ Graphic:{
 	drawQnumMarks : function(){
 		var g = this.vinc('cell_mark', 'auto');
 
-		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var headers = ["c_mk1_", "c_mk2_", "c_mk3_"];
 		g.lineWidth = 2;
-
+		var rsize = this.cw*0.30, tsize=this.cw*0.26;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num=cell.getNum();
-			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
-			if(num<=0){ continue;}
+			var cell = clist[i];
 
+			g.vid = "c_mk_"+cell.id;
 			g.strokeStyle = this.getCellNumberColor(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(this.vnop(headers[(num-1)]+id,this.STROKE)){
-				switch(num){
-				case 1:
-					g.strokeCircle(px, py, rsize);
-					break;
-				case 2:
-					g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
-					g.stroke();
-					break;
-				case 3:
-					g.strokeRectCenter(px, py, rsize, rsize);
-					break;
-				}
+			switch(cell.getNum()){
+			case 1:
+				g.strokeCircle(px, py, rsize);
+				break;
+			case 2:
+				g.beginPath();
+				g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+				g.stroke();
+				break;
+			case 3:
+				g.strokeRectCenter(px, py, rsize, rsize);
+				break;
+			default:
+				g.vhide();
+				break;
 			}
 		}
 	}

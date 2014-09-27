@@ -223,40 +223,41 @@ Graphic:{
 	},
 
 	drawFillingNumBase : function(){
-		var g = this.vinc('cell_filling_back', 'crispEdges');
-		var header = "c_full_nb_";
+		var g = this.vinc('cell_filling_back', 'crispEdges', true);
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			if(!!color && cell.qnum2!==-1 && this.owner.execConfig('dispmove') && cell.isDestination()){
+			g.vid = "c_full_nb_"+cell.id;
+			if(!!color && cell.qnum2!==-1 && isdrawmove && cell.isDestination()){
+				var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
 				g.fillStyle = color;
-				if(this.vnop(header+cell.id,this.FILL)){
-					var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
-					g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
-				}
+				g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
 			}
-			else{ g.vhide(header+cell.id); continue;}
+			else{ g.vhide();}
 		}
 	},
 	drawFillingNumbers : function(){
-		this.vinc('cell_filling_number', 'auto');
+		var g = this.vinc('cell_filling_number', 'auto');
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum2, px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = (num>0 ? ""+num : (num!==-1 ? "?" : ""));
-			var topleft = (this.owner.execConfig('dispmove') && cell.isDestination());
-			var option = {};
-			option.color = this.getCellNumberColor(cell);
-			option.style = "bold";
-			
-			option.key = 'cell_fill1_text_'+cell.id;
-			option.globalratio = 0.8;
-			this.disptext((!topleft ? text : ""), px, py, option);
-			
-			option.key = 'cell_fill5_text_'+cell.id;
-			option.position = this.TOPLEFT;
-			option.globalratio = 0.5;
-			this.disptext((!topleft ? "" : text), px, py, option);
+			g.vid = 'cell_fill_text_'+cell.id;
+			if(num!==-1){
+				var text = (num>0 ? ""+num : "?");
+				var option = {style:"bold"};
+				if(isdrawmove && cell.isDestination()){
+					option.position = this.TOPLEFT;
+					option.globalratio = 0.5;
+				}
+				else{
+					option.globalratio = 0.8;
+				}
+				g.fillStyle = this.getCellNumberColor(cell);
+				this.disptext(text, px, py, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

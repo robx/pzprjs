@@ -194,16 +194,15 @@ Graphic:{
 	},
 
 	drawAnswerNumbers : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			if(cell.qnum===-1 && cell.anum>0){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				var option = { key:"cell_text_"+cell.id };
-				option.color = this.fontAnscolor;
-				this.disptext(""+cell.anum, px, py, option);
+				g.vid = "cell_text_"+cell.id;
+				g.fillStyle = this.fontAnscolor;
+				this.disptext(""+cell.anum, cell.bx*this.bw, cell.by*this.bh);
 			}
 			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
 		}

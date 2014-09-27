@@ -130,60 +130,52 @@ Graphic:{
 	},
 
 	drawTriangleBorder : function(){
-		var g = this.vinc('cell_triangle_border', 'crispEdges');
+		var g = this.vinc('cell_triangle_border', 'crispEdges', true);
 
-		var header = "b_tb_";
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], lflag = border.isVert();
 			var qs1 = border.sidecell[0].ques, qs2 = border.sidecell[1].ques;
 			var px = border.bx*this.bw, py = border.by*this.bh;
 
+			g.vid = "b_tb_"+border.id;
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
-				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRectCenter(px, py, 0.5, this.bh);
-				}
+				g.fillRectCenter(px, py, 0.5, this.bh);
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
-				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRectCenter(px, py, this.bw, 0.5);
-				}
+				g.fillRectCenter(px, py, this.bw, 0.5);
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	},
 	draw11s : function(){
-		var g = this.vinc('cell_ques', 'crispEdges');
-		var headers = ["c_lp1_", "c_lp2_"];
+		var g = this.vinc('cell_ques', 'crispEdges', true);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 
+			g.vid = "c_lp11_"+cell.id;
 			if(cell.ques===11){
-				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
+				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.38;
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				g.fillStyle = this.quescolor;
-
-				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRectCenter(px, py, lm, ll/2);
-				}
-				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRectCenter(px, py, ll/2, lm);
-				}
+				g.beginPath();
+				g.setOffsetLinePath(px,py, -lm,-lm, -lm,-ll, lm,-ll, lm,-lm, ll,-lm, ll,lm, lm,lm, lm,ll, -lm,ll, -lm,lm, -ll,lm, -ll,-lm, true);
+				g.fill();
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumber1 : function(cell){
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var text = ((cell.ques>=2 && cell.ques<=5) && cell.qnum>0 ? ""+cell.qnum : "");
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.45];
-		option.color = "white";
-		option.position = cell.ques;
-		this.disptext(text, px, py, option);
+		var g = this.context;
+		g.vid = "cell_text_"+cell.id;
+		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
+			g.fillStyle = "white";
+			this.disptext(""+cell.qnum, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
+		}
+		else{ g.vhide();}
 	},
 
 	repaintParts : function(blist){

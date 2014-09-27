@@ -364,51 +364,48 @@ Graphic:{
 	},
 
 	drawGates : function(){
-		var g = this.vinc('cell_gate', 'auto');
+		var g = this.vinc('cell_gate', 'auto', true);
 
 		var lw = Math.max(this.cw/10, 3);	//LineWidth
 		var lm = lw/2;						//LineMargin
 		var ll = lw*1.1;					//LineLength
-		var headers = ["c_dl21", "c_dl22"];
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.quescolor);
 
+			g.vid = "c_dl21_"+cell.id;
 			if(cell.ques===21){ //たて
-				if(this.vnop([headers[0],id].join("_"),this.FILL)){
-					var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
-					g.beginPath();
-					for(py=ry;py<max;py+=ll*2){
-						g.moveTo(px,   py);
-						g.lineTo(px+lw,py);
-						g.lineTo(px+lw,py+ll);
-						g.lineTo(px,   py+ll);
-						g.lineTo(px,   py);
-					}
-					g.closePath();
-					g.fill();
+				var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
+				g.beginPath();
+				for(py=ry;py<max;py+=ll*2){
+					g.moveTo(px,   py);
+					g.lineTo(px+lw,py);
+					g.lineTo(px+lw,py+ll);
+					g.lineTo(px,   py+ll);
+					g.lineTo(px,   py);
 				}
+				g.closePath();
+				g.fill();
 			}
-			else{ g.vhide([headers[0],id].join("_"));}
+			else{ g.vhide();}
 
+			g.vid = "c_dl22_"+cell.id;
 			if(cell.ques===22){ //よこ
-				if(this.vnop([headers[1],id].join("_"),this.FILL)){
-					var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
-					g.beginPath();
-					for(px=rx;px<max;px+=ll*2){
-						g.moveTo(px,   py);
-						g.lineTo(px+ll,py);
-						g.lineTo(px+ll,py+lw);
-						g.lineTo(px,   py+lw);
-						g.lineTo(px,   py);
-					}
-					g.closePath();
-					g.fill();
+				var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
+				g.beginPath();
+				for(px=rx;px<max;px+=ll*2){
+					g.moveTo(px,   py);
+					g.lineTo(px+ll,py);
+					g.lineTo(px+ll,py+lw);
+					g.lineTo(px,   py+lw);
+					g.lineTo(px,   py);
 				}
+				g.closePath();
+				g.fill();
 			}
-			else{ g.vhide([headers[1],id].join("_"));}
+			else{ g.vhide();}
 		}
 	},
 
@@ -419,18 +416,17 @@ Graphic:{
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var csize = this.cw*0.42, linewidth = Math.max(this.cw*0.05, 1);
-		g.vdel(["c_stpos", "text_stpos"]);
+		var csize = this.cw*0.42;
 
-		g.lineWidth = linewidth;
+		g.vid = "c_stpos";
+		g.lineWidth   = Math.max(this.cw*0.05, 1);
 		g.strokeStyle = this.quescolor;
-		g.fillStyle = (this.owner.mouse.inputData===10 ? this.errbcolor1 : "white");
-		if(this.vnop("c_stpos",this.FILL)){
-			g.shapeCircle(px, py, csize);
-		}
+		g.fillStyle   = (this.owner.mouse.inputData===10 ? this.errbcolor1 : "white");
+		g.shapeCircle(px, py, csize);
 
-		var option = { key:"text_stpos", ratio:[0.75, 0.66], color:this.quescolor };
-		this.disptext(""+bd.hinfo.max, px, py, option);
+		g.vid = "text_stpos";
+		g.fillStyle = this.quescolor;
+		this.disptext(""+bd.hinfo.max, px, py, {ratio:[0.75, 0.66]});
 	},
 
 	repaintParts : function(blist){
@@ -449,7 +445,7 @@ Graphic:{
 
 	// Xキー押した時に数字を表示するメソッド
 	drawNumbersOnGate : function(keydown){
-		var bd = this.owner.board;
+		var g = this.context, bd = this.owner.board;
 		if(keydown){ bd.hinfo.generateGateNumber();}
 
 		for(var c=0;c<bd.cellmax;c++){
@@ -457,12 +453,13 @@ Graphic:{
 			if(cell.ques!==21 && cell.ques!==22){ continue;}
 
 			var r = bd.hinfo.getGateid(c);
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (r>0?bd.hinfo.data[r].number:-1);
-			var text = ((keydown && num>0) ? ""+num : "");
-			var option = { key: "cell_text_"+c };
-			option.color = "tomato";
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_"+c;
+			if(keydown && num>0){
+				g.fillStyle = "tomato";
+				this.disptext(""+num, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

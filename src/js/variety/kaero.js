@@ -116,48 +116,47 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges', true);
 
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
-		var header = "c_sq_";
 		var isdrawmove = this.owner.execConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if((!isdrawmove && cell.isDeparture()) || (isdrawmove && cell.isDestination())){
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
 				else                   { g.fillStyle = "white";}
 
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbers_kaero : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 		var isdrawmove = this.owner.execConfig('dispmove');
 
+		var option = {ratio:[0.85]};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (isdrawmove ? cell.base : cell).qnum, text = "";
-			if     (num===-1)        { text = "";}
-			else if(num===-2)        { text = "?";}
-			else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-			else{ text+=num;}
+			g.vid = "cell_text_"+cell.id;
+			if(num!==-1){
+				if     (num===-2)        { text = "?";}
+				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				else{ text+=num;}
 
-			var option = { key:"cell_text_"+cell.id };
-			option.ratio = [0.85];
-			option.color = this.getCellNumberColor(cell);
-			this.disptext(text, px, py, option);
+				g.fillStyle = this.getCellNumberColor(cell);
+				this.disptext(text, px, py, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

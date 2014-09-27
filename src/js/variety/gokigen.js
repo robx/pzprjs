@@ -296,11 +296,13 @@ Graphic:{
 	errcolor2 : "rgb(0, 0, 127)",
 
 	drawNumber1 : function(cell){
-		var text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.70];
-		this.disptext(text, px, py, option);
+		var g = this.context, text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
+		g.vid = "cell_text_"+cell.id;
+		if(!!text){
+			g.fillStyle = this.fontcolor;
+			this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.70]});
+		}
+		else{ g.vhide();}
 	},
 
 	drawTarget : function(){

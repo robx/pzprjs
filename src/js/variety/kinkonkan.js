@@ -300,22 +300,17 @@ Graphic:{
 	drawBGCells_kinkonkan : function(){
 		var g = this.vinc('cell_back', 'crispEdges');
 
-		var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, err = cell.error, ql = cell.qlight;
-			if(err!==0 || ql!==0){
-				if     (err===1){ g.fillStyle = this.errbcolor1;}
-				else if(ql >  0){ g.fillStyle = this.lightcolor;}
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(err===1 || ql===1){
-					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
-					}
-				}
-				else{ this.drawTriangle1(px, py, ql, headers[ql-1]+id);}
-			}
-			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);}
+			var cell = clist[i], info = cell.error || cell.qlight;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			
+			g.fillStyle = (cell.error!==0 ? this.errbcolor1 : this.lightcolor);
+			
+			g.vid = "c_bglight_"+cell.id;
+			if     (info===1){ g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);}
+			else if(info!==0){ this.drawTriangle1(px, py, cell.qlight);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -324,25 +319,26 @@ Graphic:{
 		return null;
 	},
 	drawNumbers_kinkonkan : function(){
-		this.vinc('excell_number', 'auto');
+		var g = this.vinc('excell_number', 'auto');
 
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
-			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			var text = "";
-			if(canum===0 && num===-1){}
-			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-			if(num>=0){ text+=num.toString(10);}
+			g.vid = "excell_text_"+excell.id;
+			if(canum!==0 || num!==-1){
+				var text="";
+				if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+				else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+				else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+				if(num>=0){ text+=num.toString(10);}
 
-			var option = { key:"excell_text_"+excell.id };
-			option.color = this.fontErrcolor;
-			if(excell.error!==1){ option.color = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
-			option.ratio = ((canum===0||num<10) ? [0.66] : [0.55]);
-			this.disptext(text, px, py, option);
+				g.fillStyle = this.fontErrcolor;
+				if(excell.error!==1){ g.fillStyle = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
+				var option = {ratio:((canum===0||num<10) ? [0.66] : [0.55])};
+				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

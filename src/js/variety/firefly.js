@@ -85,56 +85,61 @@ Graphic:{
 
 		this.drawPekes();
 
-		this.drawFireflies();
+		this.drawFireflies1();
+		this.drawFireflies2();
 		this.drawNumbers();
 
 		this.drawTarget();
 	},
 
-	drawFireflies : function(){
-		var g = this.vinc('cell_firefly', 'auto');
+	drawFireflies1 : function(){
+		var g = this.vinc('cell_firefly', 'auto', true);
 
 		g.lineWidth = 1.5;
 		g.strokeStyle = this.quescolor;
-
 		var rsize  = this.cw*0.40;
-		var rsize3 = this.cw*0.10;
-
-		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 
+			g.vid = "c_cira_"+cell.id;
 			if(cell.qnum!==-1){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.shapeCircle(px, py, rsize);
-				}
-
-				g.vdel(headers[1]+id);
-				if(cell.qdir!==0){
-					g.fillStyle = this.quescolor;
-					switch(cell.qdir){
-						case cell.UP: py-=(rsize-1); break;
-						case cell.DN: py+=(rsize-1); break;
-						case cell.LT: px-=(rsize-1); break;
-						case cell.RT: px+=(rsize-1); break;
-					}
-					if(this.vnop(headers[1]+id,this.NONE)){
-						g.fillCircle(px, py, rsize3);
-					}
-				}
+				g.shapeCircle(cell.bx*this.bw, cell.by*this.bh, rsize);
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
+		}
+	},
+	drawFireflies2 : function(){
+		var g = this.vinc('cell_firefly', 'auto');
+
+		g.fillStyle = this.quescolor;
+		var rsize  = this.cw*0.40;
+		var rsize3 = this.cw*0.10;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+
+			g.vid = "c_cirb_"+cell.id;
+			if(cell.qnum!==-1 && cell.qdir!==cell.NDIR){
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				switch(cell.qdir){
+					case cell.UP: py-=(rsize-1); break;
+					case cell.DN: py+=(rsize-1); break;
+					case cell.LT: px-=(rsize-1); break;
+					case cell.RT: px+=(rsize-1); break;
+				}
+				g.fillCircle(px, py, rsize3);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawFireflies();
+		this.drawFireflies1();
+		this.drawFireflies2();
 		this.drawNumbers();
 	}
 },

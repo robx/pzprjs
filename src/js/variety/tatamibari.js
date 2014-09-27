@@ -91,30 +91,22 @@ Graphic:{
 	},
 
 	drawMarks : function(){
-		var g = this.vinc('cell_ques', 'crispEdges');
+		var g = this.vinc('cell_ques', 'crispEdges', true);
 
 		var lm = Math.max(this.cw/12, 3)/2;	//LineWidth
 		var lp = this.bw*0.70;				//LineLength
-		var headers = ["c_lp1_", "c_lp2_"];
 		g.fillStyle = this.borderQuescolor;
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, qn = cell.qnum;
+			var cell = clist[i], qn = cell.qnum;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(qn===1||qn===2){
-				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRectCenter(px, py, lm, lp);
-				}
-			}
-			else{ g.vhide(headers[0]+id);}
 
-			if(qn===1||qn===3){
-				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRectCenter(px, py, lp, lm);
-				}
-			}
-			else{ g.vhide(headers[1]+id);}
+			g.vid = "c_lp1_"+cell.id;
+			if(qn===1||qn===2){ g.fillRectCenter(px, py, lm, lp);}else{ g.vhide();}
+
+			g.vid = "c_lp2_"+cell.id;
+			if(qn===1||qn===3){ g.fillRectCenter(px, py, lp, lm);}else{ g.vhide();}
 		}
 	}
 },

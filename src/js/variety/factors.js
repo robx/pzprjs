@@ -109,23 +109,29 @@ Graphic:{
 	},
 
 	drawNumbers_factors : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
+		var qnumoption = {
+			ratio : [0.45, 0.45, 0.45, 0.45, 0.36, 0.30],
+			position : this.TOPLEFT
+		};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 
-			var text = (cell.anum!==-1 ? ""+cell.anum : "");
-			var option = { key:['cell_text',cell.id,'qans'].join('_') };
-			option.color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_qans_"+cell.id;
+			if(cell.anum!==-1){
+				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
+				this.disptext(""+cell.anum, px, py);
+			}
+			else{ g.vhide();}
 
-			var text = (cell.qnum!==-1 ? ""+cell.qnum : "");
-			var option = { key:['cell_text',cell.id,'ques'].join('_') };
-			option.ratio = [0.45, 0.45, 0.45, 0.45, 0.36, 0.30];
-			option.color = this.fontcolor;
-			option.position = this.TOPLEFT;
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_qnum_"+cell.id;
+			if(cell.qnum!==-1){
+				g.fillStyle = this.fontcolor;
+				this.disptext(""+cell.qnum, px, py, qnumoption);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

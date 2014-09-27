@@ -200,7 +200,7 @@ Graphic:{
 	},
 
 	drawFutons : function(){
-		var g = this.vinc('cell_back', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_back', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -208,7 +208,6 @@ Graphic:{
 			adj = mv.currentTargetADJ();
 		}
 
-		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], isdraw = (cell.qans>=41);
@@ -217,18 +216,16 @@ Graphic:{
 				if(cell===tc || cell===adj){ isdraw=true; color=this.targetbgcolor;}
 			}
 
+			g.vid = "c_full_"+cell.id;
 			if(isdraw){
 				g.fillStyle = color;
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw, this.bh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw, this.bh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawPillows : function(){
-		var g = this.vinc('cell_pillow', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_pillow', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -236,7 +233,6 @@ Graphic:{
 			adj = mv.currentTargetADJ();
 		}
 
-		var header = "c_pillow_";
 		var clist = this.range.cells;
 		var rw = this.bw*0.7-1, rh = this.bh*0.7-1;
 		for(var i=0;i<clist.length;i++){
@@ -246,19 +242,16 @@ Graphic:{
 				else if( isdraw && adj===cell){ isdraw = false;}
 			}
 
+			g.vid = "c_pillow_"+cell.id;
 			if(isdraw){
 				g.lineWidth = 1;
 				g.strokeStyle = "black";
 				if     (inputting && tc===cell){ g.fillStyle = this.targetbgcolor;}
 				else if(cell.error===1)        { g.fillStyle = this.errbcolor1;   }
 				else                           { g.fillStyle = "white";}
-
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeRectCenter(px, py, rw, rh);
-				}
+				g.shapeRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 

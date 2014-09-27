@@ -142,27 +142,25 @@ Graphic:{
 	},
 
 	drawValidDashedGrid : function(){
-		var g = this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges', true);
 
 		var dotmax   = this.cw/10+3;
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		var header = "b_grid_wari_";
+		g.lineWidth = 1;
+		g.strokeStyle = this.gridcolor;
+
 		var blist = this.range.borders;
 		for(var n=0;n<blist.length;n++){
 			var border = blist[n];
+			g.vid = "b_grid_wari_"+border.id;
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(this.vnop(header+border.id,this.NONE)){
-					g.lineWidth = 1;
-					g.strokeStyle = this.gridcolor;
-
-					if(border.isVert()){ g.strokeDashedLine(px, py-this.bh, px, py+this.bh, [dotSize]);}
-					else               { g.strokeDashedLine(px-this.bw, py, px+this.bw, py, [dotSize]);}
-				}
+				if(border.isVert()){ g.strokeDashedLine(px, py-this.bh, px, py+this.bh, [dotSize]);}
+				else               { g.strokeDashedLine(px-this.bw, py, px+this.bw, py, [dotSize]);}
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	}
 },

@@ -226,7 +226,7 @@ Graphic:{
 		this.drawTarget();
 	},
 	flushCanvas : function(){
-		var g = this.vinc('background', 'crispEdges');
+		var g = this.vinc('background', 'crispEdges', true);
 		var minbx, minby, bwidth, bheight;
 		var bw = this.bw, bh = this.bh;
 
@@ -245,14 +245,13 @@ Graphic:{
 			bheight = bd.maxby - minby;
 		}
 
+		g.vid = "BG";
 		g.fillStyle = this.bgcolor;
-		if(this.vnop("BG",this.NONE)){
-			g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
-		}
+		g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
 	},
 
 	drawGrid_tawa : function(){
-		var g = this.vinc('grid', 'crispEdges'), bd = this.owner.board;
+		var g = this.vinc('grid', 'crispEdges', true), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -260,27 +259,24 @@ Graphic:{
 
 		var lw = Math.max(this.cw/36, 1);
 		var lm = (lw-1)/2;
-		var headers = ["bdx_", "bdy"];
 
 		g.fillStyle = this.gridcolor;
 		var xa = Math.max(x1,bd.minbx), xb = Math.min(x2,bd.maxbx);
 		var ya = Math.max(y1,bd.minby), yb = Math.min(y2,bd.maxby);
 		ya-=(ya&1);
 		for(var by=ya;by<=yb;by+=2){
-			var cy = (by>>1);
-			if(this.vnop(headers[0]+by,this.NONE)){
-				var redx = 0, redw = 0;
-				if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
-				else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
-				else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
-				g.fillRect((x1+redx)*this.bw-lm-0.5, by*this.bh-lm-0.5, (x2-x1-redw)*this.bw+1, lw);
-			}
-			if(by>=bd.maxby){ break;}
+			var cy = (by>>1), redx = 0, redw = 0;
+			if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
+			else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
+			else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
+			g.vid = "bdx_"+by;
+			g.fillRect((x1+redx)*this.bw-lm-0.5, by*this.bh-lm-0.5, (x2-x1-redw)*this.bw+1, lw);
 
-			var xs = xa;
-			if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
-			for(var bx=xs;bx<=xb;bx+=2){
-				if(this.vnop([headers[1],bx,by].join("_"),this.NONE)){
+			if(by<bd.maxby){
+				var xs = xa;
+				if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
+				for(var bx=xs;bx<=xb;bx+=2){
+					g.vid = ["bdy_",bx,by].join("_");
 					g.fillRect(bx*this.bw-lm-0.5, by*this.bh-lm-0.5, lw, this.ch+1);
 				}
 			}

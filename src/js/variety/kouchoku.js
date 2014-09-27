@@ -451,84 +451,77 @@ Graphic:{
 		var g = this.context;
 
 		g.lineWidth = this.lw;
-
-		var header_id = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
+		g.vid = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
 			else if(!this.owner.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
-			if(this.vnop(header_id,this.STROKE)){
-				var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
-					py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
-				g.strokeLine(px1,py1,px2,py2);
-			}
+			var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
+				py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
+			g.strokeLine(px1,py1,px2,py2);
 		}
-		else{ g.vhide(header_id);}
+		else{ g.vhide();}
 	},
 
 	drawCrosses_kouchoku : function(){
-		var g = this.vinc('cross_base', 'auto');
+		var g = this.vinc('cross_base', 'auto', true);
 
 		var isgray = this.owner.execConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
-		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;
 
+		var option = {ratio:[0.55]};
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
-			var cross = clist[i], id = cross.id;
+			var cross = clist[i];
 			var graydisp = (isgray && cross.error===0 && cross.seglist.length>=2);
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			// ○の描画
+			g.vid = "x_cp_"+cross.id;
 			if(cross.qnum>0){
 				g.fillStyle = (cross.error===1 ? this.errbcolor1 : "white");
 				g.strokeStyle = (graydisp ? "gray" : "black");
-				if(this.vnop(headers[0]+id,this.FILL_STROKE)){
-					g.shapeCircle(px, py, csize1);
-				}
+				g.shapeCircle(px, py, csize1);
 			}
-			else{ g.vhide([headers[0]+id]);}
+			else{ g.vhide();}
 
 			// アルファベットの描画
-			var text = ((cross.qnum>0) ? (cross.qnum+9).toString(36).toUpperCase() : "");
-			var option = { key:"cross_text_"+id };
-			option.ratio = [0.55];
-			option.color = (graydisp ? "gray" : this.fontcolor);
-			this.disptext(text, px, py, option);
+			g.vid = "cross_text_"+cross.id;
+			if(cross.qnum>0){
+				g.fillStyle = (graydisp ? "gray" : this.fontcolor);
+				this.disptext((cross.qnum+9).toString(36).toUpperCase(), px, py, option);
+			}
+			else{ g.vhide();}
 
 			// ●の描画
+			g.vid = "x_cm_"+cross.id;
 			if(cross.qnum===-2){
 				g.fillStyle = (cross.error===1 ? this.errcolor1 : this.quescolor);
 				if(graydisp){ g.fillStyle="gray";}
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(px, py, csize2);
-				}
+				g.fillCircle(px, py, csize2);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 		}
 	},
 
 	drawSegmentTarget : function(){
-		var g = this.vinc('cross_target_', 'auto');
+		var g = this.vinc('cross_target_', 'auto', true);
 
 		var csize = this.cw*0.32;
-		var header = "x_point_";
 		g.strokeStyle = "rgb(64,127,255)";
 		g.lineWidth = this.lw*1.5;
 
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
+			g.vid = "x_point_"+cross.id;
 			if(this.owner.mouse.targetPoint[0]===cross ||
 			   this.owner.mouse.targetPoint[1]===cross){
-				if(this.vnop(header+cross.id,this.STROKE)){
-					var px = cross.bx*this.bw, py = cross.by*this.bh;
-					g.strokeCircle(px, py, csize);
-				}
+				g.strokeCircle(cross.bx*this.bw, cross.by*this.bh, csize);
 			}
-			else{ g.vhide(header+cross.id);}
+			else{ g.vhide();}
 		}
 	}
 },

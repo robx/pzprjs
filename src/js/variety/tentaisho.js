@@ -299,32 +299,28 @@ Graphic:{
 	},
 
 	drawStars : function(){
-		var g = this.vinc('star', 'auto');
+		var g = this.vinc('star', 'auto', true);
 
 		g.lineWidth = Math.max(this.cw*0.04, 1);
-		var headers = ["s_star1_", "s_star2_"];
-
 		var d = this.range;
 		var slist = this.owner.board.starinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<slist.length;i++){
-			var star = slist[i], id=star.id, bx=star.bx, by=star.by;
+			var star = slist[i], bx=star.bx, by=star.by;
 
+			g.vid = "s_star1_"+star.id;
 			if(star.getStar()===1){
 				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
 				g.fillStyle   = "white";
-				if(this.vnop(headers[0]+id,this.STROKE)){
-					g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
-				}
+				g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 			}
-			else{ g.vhide(headers[0]+id);}
+			else{ g.vhide();}
 
+			g.vid = "s_star2_"+star.id;
 			if(star.getStar()===2){
 				g.fillStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
-				}
+				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 		}
 	},
 

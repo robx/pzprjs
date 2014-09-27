@@ -62,25 +62,22 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_square', 'crispEdges');
+		var g = this.vinc('cell_square', 'crispEdges', true);
 
 		var rw = this.bw*0.8-1;
 		var rh = this.bh*0.8-1;
-		var header = "c_sq_";
 
+		g.lineWidth = 1;
+		g.strokeStyle = "black";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if(cell.qnum!==-1){
-				g.lineWidth = 1;
-				g.strokeStyle = "black";
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeRectCenter(px, py, rw, rh);
-				}
+				g.shapeRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },

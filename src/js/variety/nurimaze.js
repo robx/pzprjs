@@ -322,51 +322,55 @@ Graphic:{
 	},
 
 	drawStartGoal : function(){
-		this.vinc('cell_sg', 'auto');
+		var g = this.vinc('cell_sg', 'auto');
 		var bd = this.owner.board, d = this.range;
 		
+		g.vid = "text_stpos";
 		var cell = bd.startpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
-			var option = { key:"text_stpos", color:color };
-			this.disptext("S", px, py, option);
+			if(!cell.isnull){
+				g.fillStyle = (this.owner.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				this.disptext("S", cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
+		
+		g.vid = "text_glpos";
 		cell = bd.goalpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
-			var option = { key:"text_glpos", color:color };
-			this.disptext("G", px, py, option);
+			if(!cell.isnull){
+				g.fillStyle = (this.owner.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				this.disptext("G", cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	drawQuesMarks : function(){
-		var g = this.vinc('cell_mark', 'auto');
+		var g = this.vinc('cell_mark', 'auto', true);
 
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var headers = ["c_mk1_", "c_mk2_"];
 		g.lineWidth = 2;
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num=cell.ques;
-			g.vhide([headers[0]+id, headers[1]+id]);
-			if(num<=0){ continue;}
-
-			g.strokeStyle = this.getCellNumberColor(cell);
+			var cell = clist[i], num=cell.ques;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(this.vnop(headers[(num-41)]+id,this.STROKE)){
-				switch(num){
-				case 41:
-					g.strokeCircle(px, py, rsize);
-					break;
-				case 42:
-					g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
-					g.stroke();
-					break;
-				}
+			g.strokeStyle = this.getCellNumberColor(cell);
+			
+			g.vid = "c_mk1_"+cell.id;
+			if(num===41){
+				g.strokeCircle(px, py, rsize);
 			}
+			else{ g.vhide();}
+			
+			g.vid = "c_mk2_"+cell.id;
+			if(num===42){
+				g.beginPath();
+				g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+				g.stroke();
+			}
+			else{ g.vhide();}
 		}
 	}
 },

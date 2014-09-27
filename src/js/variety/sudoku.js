@@ -45,12 +45,11 @@ Graphic:{
 	},
 
 	drawBlockBorders : function(){
-		var g = this.vinc('border_block', 'crispEdges'), bd = this.owner.board;
+		var g = this.vinc('border_block', 'crispEdges', true), bd = this.owner.board;
 
 		var lw = this.lw;
 		var max=bd.qcols;
 		var block=((Math.sqrt(max)+0.1)|0);
-		var headers = ["bbx_", "bby_"];
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -58,14 +57,16 @@ Graphic:{
 
 		g.fillStyle = "black";
 		for(var i=1;i<block;i++){
-			if(x1-1<=i*block&&i*block<=x2+1){ if(this.vnop(headers[0]+i,this.NONE)){
+			if(x1-1<=i*block&&i*block<=x2+1){
+				g.vid = "bbx_"+i;
 				g.fillRect(i*block*this.cw-lw+0.5, y1*this.bh-lw+0.5, lw, (y2-y1)*this.bh+2*lw-1);
-			}}
+			}
 		}
 		for(var i=1;i<block;i++){
-			if(y1-1<=i*block&&i*block<=y2+1){ if(this.vnop(headers[1]+i,this.NONE)){
+			if(y1-1<=i*block&&i*block<=y2+1){
+				g.vid = "bby_"+i;
 				g.fillRect(x1*this.bw-lw+0.5, i*block*this.ch-lw+0.5, (x2-x1)*this.bw+2*lw-1, lw);
-			}}
+			}
 		}
 	}
 },

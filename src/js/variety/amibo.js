@@ -282,114 +282,95 @@ Graphic:{
 	},
 
 	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges');
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
 
-		var headers = ["c_bar1_", "c_bar2_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
-
 			var qa=cell.qans;
-			if(qa!==-1){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(qa===1 || qa===3){
-					g.fillStyle = this.getBarColor(cell,true);
-					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRectCenter(px, py, lm, this.bh);
-					}
-				}
-				else{ g.vhide(headers[0]+id);}
 
-				if(qa===2 || qa===3){
-					g.fillStyle = this.getBarColor(cell,false);
-					if(this.vnop(headers[1]+id,this.FILL)){
-						g.fillRectCenter(px, py, this.bw, lm);
-					}
-				}
-				else{ g.vhide(headers[1]+id);}
+			g.vid = "c_bar1_"+cell.id;
+			if(qa===1 || qa===3){
+				g.fillStyle = this.getBarColor(cell,true);
+				g.fillRectCenter(px, py, lm, this.bh);
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
+
+			g.vid = "c_bar2_"+cell.id;
+			if(qa===2 || qa===3){
+				g.fillStyle = this.getBarColor(cell,false);
+				g.fillRectCenter(px, py, this.bw, lm);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	// 白丸と線の間に隙間があいてしまうので、隙間部分を描画する
 	drawTateyokos_sub : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges'); /* 同じレイヤでよい */
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true); /* 同じレイヤでよい */
 
 		g.fillStyle = this.linecolor;
-
-		var headers = ["c_bars1_", "c_bars2_", "c_bars3_", "c_bars4_"];
 		var clist = this.range.cells;
 		var bw = this.bw, bh = this.bh;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
-			if(!cell.isNum()){
-				g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id]);
-				continue;
-			}
+			var cell = clist[i], isnum = cell.isNum();
 
-			var lw = Math.max(this.cw/6, 3);	//LineWidth
-			var lp = (this.bw-lw/2);			//LinePadding
-			var px = cell.bx*this.bw-0.5, py = cell.by*this.bh-0.5;
+			var lw = Math.max(bw/3, 3);			//LineWidth
+			var lp = (bw-lw/2);					//LinePadding
+			var px = cell.bx*bw, py = cell.by*bh;
 
 			var cell2 = cell.adjacent.top, qa = cell2.qans;
-			if(qa===1||qa===3){
+			g.vid = "c_bars1a_"+cell.id;
+			if(isnum && (qa===1||qa===3)){
 				g.fillStyle = this.getBarColor(cell2,true);
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.fillRect(px-bw+lp, py-bh, lw, bh);
-				}
+				g.fillRect(px-bw+lp, py-bh, lw, bh);
 			}
-			else{ g.vhide(headers[0]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.bottom, qa = cell2.qans;
-			if(qa===1||qa===3){
+			g.vid = "c_bars1b_"+cell.id;
+			if(isnum && (qa===1||qa===3)){
 				g.fillStyle = this.getBarColor(cell2,true);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillRect(px-bw+lp, py+1, lw, bh);
-				}
+				g.fillRect(px-bw+lp, py+1, lw, bh);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.left, qa = cell2.qans;
-			if(qa===2||qa===3){
+			g.vid = "c_bars2a_"+cell.id;
+			if(isnum && (qa===2||qa===3)){
 				g.fillStyle = this.getBarColor(cell2,false);
-				if(this.vnop(headers[2]+id,this.FILL)){
-					g.fillRect(px-bw, py-bh+lp, bw, lw);
-				}
+				g.fillRect(px-bw, py-bh+lp, bw, lw);
 			}
-			else{ g.vhide(headers[2]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.right, qa = cell2.qans;
-			if(qa===2||qa===3){
+			g.vid = "c_bars2b_"+cell.id;
+			if(isnum && (qa===2||qa===3)){
 				g.fillStyle = this.getBarColor(cell2,false);
-				if(this.vnop(headers[3]+id,this.FILL)){
-					g.fillRect(px+1, py-bh+lp, bw, lw);
-				}
+				g.fillRect(px+1, py-bh+lp, bw, lw);
 			}
-			else{ g.vhide(headers[3]+id);}
+			else{ g.vhide();}
 		}
 	},
 
 	drawPekeBorder : function(){
-		var g = this.vinc('border_pbd', 'crispEdges');
+		var g = this.vinc('border_pbd', 'crispEdges', true);
 
 		g.fillStyle = "rgb(64,64,64)";
-		var header = "b_qsub2_";
 		var rw = this.bw*0.6;
+		var lm = this.lm;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
+			g.vid = "b_qsub2_"+border.id;
 			if(border.qsub===2){
-				if(this.vnop(header+border.id,this.NONE)){
-					var lm = this.lm;
-					var px = border.bx*this.bw, py = border.by*this.bh;
-					if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
-					else               { g.fillRectCenter(px, py, rw+lm, lm);}
-				}
+				var px = border.bx*this.bw, py = border.by*this.bh;
+				if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
+				else               { g.fillRectCenter(px, py, rw+lm, lm);}
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	}
 },

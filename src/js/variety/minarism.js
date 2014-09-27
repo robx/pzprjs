@@ -177,47 +177,57 @@ Graphic:{
 		}
 	},
 	drawBDNumbers_and_IneqSigns : function(){
-		var g = this.vinc('border_marks', 'auto');
+		var g = this.vinc('border_marks', 'auto', true);
 
 		var csize = this.cw*0.27;
 		var ssize = this.cw*0.22;
-		var headers = ["b_cp_", "b_is1_", "b_is2_"];
 
 		g.lineWidth = 1;
 		g.strokeStyle = this.quescolor;
 
+		var option = {ratio:[0.45]};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border=blist[i], id=border.id;
-			var px = border.bx*this.bw, py = border.by*this.bh;
+			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
+
 			// ○の描画
+			g.vid = "b_cp_"+border.id;
 			if(border.qnum!==-1){
 				g.fillStyle = (border.error===1 ? this.errcolor1 : "white");
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.shapeCircle(px, py, csize);
-				}
+				g.shapeCircle(px, py, csize);
 			}
-			else{ g.vhide([headers[0]+id]);}
+			else{ g.vhide();}
 
 			// 数字の描画
-			var text = (border.qnum>0 ? ""+border.qnum : "");
-			var option = { key:"border_text_"+id };
-			option.ratio = [0.45];
-			this.disptext(text, px, py, option);
+			g.vid = "border_text_"+border.id;
+			if(border.qnum>0){
+				g.fillStyle = this.fontcolor;
+				this.disptext(""+border.qnum, px, py, option);
+			}
+			else{ g.vhide();}
 
 			// 不等号の描画
-			g.vhide([headers[1]+id, headers[2]+id]);
-			if(border.qdir!==border.NDIR){
-				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
-					switch(border.qdir){
-						case border.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case border.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
-					}
-					g.stroke();
+			g.vid = "b_is1_"+border.id;
+			if(border.qdir===border.UP||border.qdir===border.LT){
+				g.beginPath();
+				switch(border.qdir){
+					case border.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+					case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
 				}
+				g.stroke();
 			}
+			else{ g.vhide();}
+			
+			g.vid = "b_is2_"+border.id;
+			if(border.qdir===border.DN||border.qdir===border.RT){
+				g.beginPath();
+				switch(border.qdir){
+					case border.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+					case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+				}
+				g.stroke();
+			}
+			else{ g.vhide();}
 		}
 	},
 

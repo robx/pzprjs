@@ -187,20 +187,17 @@ Graphic:{
 	},
 
 	drawErrorCells_bosanowa : function(){
-		var g = this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges', true);
 
-		var header = "c_fullerr_";
 		g.fillStyle = this.errbcolor1;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_fullerr_"+cell.id;
 			if(cell.error===1){
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw, this.bh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw, this.bh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -213,112 +210,107 @@ Graphic:{
 	circlefillcolor_func : "null",
 
 	drawGrid_souko : function(){
-		var g = this.vinc('grid_souko', 'crispEdges');
+		var g = this.vinc('grid_souko', 'crispEdges', true);
 
-		var header = "b_grids_";
 		g.lineWidth = 1;
-		g.fillStyle="rgb(127,127,127)";
 		g.strokeStyle="rgb(127,127,127)";
-
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
+			g.vid = "b_grids_"+border.id;
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(this.vnop(header+border.id,this.NONE)){
-					if(border.isVert()){
-						var py1 = py-this.bh, py2 = py+this.bh+1;
-						g.strokeDashedLine(px, py1, px, py2, [3]);
-					}
-					else{
-						var px1 = px-this.bw, px2 = px+this.bw+1;
-						g.strokeDashedLine(px1, py, px2, py, [3]);
-					}
+				if(border.isVert()){
+					var py1 = py-this.bh, py2 = py+this.bh+1;
+					g.strokeDashedLine(px, py1, px, py2, [3]);
+				}
+				else{
+					var px1 = px-this.bw, px2 = px+this.bw+1;
+					g.strokeDashedLine(px1, py, px2, py, [3]);
 				}
 			}
-			else{ if(!g.use.canvas){ g.vhide(header+border.id);}}
+			else{ g.vhide();}
 		}
 	},
 	drawGrid_waritai : function(){
-		var g = this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges', true);
 
 		var csize = this.cw*0.20;
-		var headers = ["b_grid_", "b_grid2_"];
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id;
-			if(border.isGrid()){
-				var px = border.bx*this.bw, py = border.by*this.bh;
-				g.fillStyle=this.gridcolor;
-				if(this.vnop(headers[0]+id,this.NONE)){
-					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, this.bh);}
-					else               { g.fillRectCenter(px, py, this.bw, 0.5);}
-				}
+			var border = blist[i], isgrid = border.isGrid();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, csize);}
-					else               { g.fillRectCenter(px, py, csize, 0.5);}
-				}
+			g.vid = "b_grid_"+border.id;
+			if(isgrid){
+				g.fillStyle=this.gridcolor;
+				if(border.isVert()){ g.fillRectCenter(px, py, 0.5, this.bh);}
+				else               { g.fillRectCenter(px, py, this.bw, 0.5);}
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
+
+			g.vid = "b_grid2_"+border.id;
+			if(isgrid){
+				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
+				if(border.isVert()){ g.fillRectCenter(px, py, 0.5, csize);}
+				else               { g.fillRectCenter(px, py, csize, 0.5);}
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	drawBDnumbase : function(){
-		var g = this.vinc('border_number_base', 'crispEdges');
+		var g = this.vinc('border_number_base', 'crispEdges', true);
 
 		var csize = this.cw*0.20;
-		var header = "b_bbse_";
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
 
+			g.vid = "b_bbse_"+border.id;
 			if(border.qsub>=0 && border.isGrid()){
 				g.fillStyle = "white";
-				if(this.vnop(header+border.id,this.NONE)){
-					var px = border.bx*this.bw, py = border.by*this.bh;
-					g.fillRectCenter(px, py, csize, csize);
-				}
+				g.fillRectCenter(border.bx*this.bw, border.by*this.bh, csize, csize);
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbersBD : function(){
-		this.vinc('border_number', 'auto');
+		var g = this.vinc('border_number', 'auto');
 
+		var option = {ratio:[0.35]};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
-			var text = (border.qsub>=0 ? ""+border.qsub : "");
-			var option = { key:"border_text_"+border.id };
-			option.ratio = [0.35];
-			option.color = "blue";
-			this.disptext(text, px, py, option);
+			var border=blist[i];
+			g.vid = "border_text_"+border.id;
+			if(border.qsub>=0){
+				g.fillStyle = "blue";
+				this.disptext(""+border.qsub, border.bx*this.bw, border.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	// 倉庫番の外側(グレー)描画用
 	drawOutside_souko : function(){
-		var g = this.vinc('cell_outside_souko', 'crispEdges');
+		var g = this.vinc('cell_outside_souko', 'crispEdges', true);
 
-		var header = "c_full_", d = this.range;
+		g.fillStyle = "rgb(127,127,127)";
+		var d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
-				var cell=this.owner.board.getc(bx,by);
-				var addr=new this.owner.Address(bx, by);
-				if( cell.isEmpty() && (
+				var addr=new this.owner.Address(bx,by);
+				
+				g.vid = ["c_full_",bx,by].join('_');
+				if( addr.getc().isEmpty() && (
 					addr.relcell(-2, 0).ques===0 || addr.relcell(2, 0).ques===0 || 
 					addr.relcell( 0,-2).ques===0 || addr.relcell(0, 2).ques===0 || 
 					addr.relcell(-2,-2).ques===0 || addr.relcell(2,-2).ques===0 || 
 					addr.relcell(-2, 2).ques===0 || addr.relcell(2, 2).ques===0 ) )
 				{
-					g.fillStyle = "rgb(127,127,127)";
-					if(this.vnop([header,bx,by].join('_'),this.NONE)){
-						g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
-					}
+					g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
 				}
-				else{ g.vhide([header,bx,by].join('_'));}
+				else{ g.vhide();}
 			}
 		}
 	},

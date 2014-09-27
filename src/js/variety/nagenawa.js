@@ -107,12 +107,14 @@ Graphic:{
 
 	//オーバーライド
 	drawNumber1 : function(cell){
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var text = (cell.qnum!==-1 ? (cell.qnum>=0 ? ""+cell.qnum : "?") : "");
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.45];
-		option.position = this.TOPLEFT;
-		this.disptext(text, px, py, option);
+		var g = this.context;
+		g.vid = "cell_text_"+cell.id;
+		if(cell.qnum!==-1){
+			var option = {ratio:[0.45], position:this.TOPLEFT};
+			g.fillStyle = this.fontcolor;
+			this.disptext((cell.qnum>=0 ? ""+cell.qnum : "?"), cell.bx*this.bw, cell.by*this.bh, option);
+		}
+		else{ g.vhide();}
 	}
 },
 "Graphic@ringring":{

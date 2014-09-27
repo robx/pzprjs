@@ -160,20 +160,18 @@ Graphic:{
 	},
 
 	drawGoals : function(){
-		var g = this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto', true);
 
 		var rsize = this.cw*this.circleratio[0];
-		var header = "c_cir_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_cir_"+cell.id;
 			if(cell.qnum===5){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
+				g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },

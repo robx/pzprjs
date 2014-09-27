@@ -184,18 +184,19 @@ Graphic:{
 	getOffsetRows : function(){ return 0.5;},
 
 	drawNumbers_box : function(){
-		this.vinc('excell_number', 'auto');
+		var g = this.vinc('excell_number', 'auto');
 
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
 			if(excell.id>=this.owner.board.qcols+this.owner.board.qrows){ continue;}
 
-			if(excell.bx===-1 && excell.by===-1){ continue;}
-			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			var option = { key:"excell_text_"+excell.id };
-			option.color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
-			this.disptext(""+excell.qnum, px, py, option);
+			g.vi = "excell_text_"+excell.id;
+			if(excell.bx>=0 || excell.by>=0){
+				g.fillStyle = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
+				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	},
 
@@ -205,28 +206,29 @@ Graphic:{
 		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ list.push([bd.maxbx+1,by]);}}
 		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ list.push([bx,bd.maxby+1]);}}
 
-		var g = this.vinc('excell_circle', 'auto');
-		var header = "ex2_cir_", rsize  = this.cw*0.36;
+		var g = this.vinc('excell_circle', 'auto', true);
+		var rsize = this.cw*0.36;
 		g.fillStyle   = this.circledcolor;
 		g.strokeStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
-			if(num<=0){ continue;}
-
-			if(this.vnop([header,list[i][0],list[i][1]].join("_"),this.NONE)){
+			g.vid = ["ex2_cir_",list[i][0],list[i][1]].join("_");
+			if(num>0){
 				g.shapeCircle(list[i][0]*this.bw, list[i][1]*this.bh, rsize);
 			}
+			else{ g.vhide();}
 		}
 
-		this.vinc('excell_number2', 'auto');
-		var header = "ex2_cirtext_";
+		var option = {globalratio:0.95};
+		g = this.vinc('excell_number2', 'auto');
+		g.fillStyle = this.fontcolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
-			if(num<=0){ continue;}
-
-			var option = { key: [header,list[i][0],list[i][1]].join("_") };
-			option.globalratio = 0.95;
-			this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
+			g.vid = ["ex2_cirtext_",list[i][0],list[i][1]].join("_");
+			if(num>0){
+				this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },

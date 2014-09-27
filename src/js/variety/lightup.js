@@ -160,18 +160,15 @@ Graphic:{
 
 		var rsize = this.cw*0.40;
 		var lampcolor = "rgb(0, 127, 96)";
-		var header = "c_AK_";
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_AK_"+cell.id;
 			if(cell.isAkari()){
 				g.fillStyle = (cell.error!==4 ? lampcolor : this.errcolor1);
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
+				g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },

@@ -67,25 +67,20 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges', true);
 
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
-		var header = "c_sq_";
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if(cell.qnum!==-1){
-				if(cell.error===1){ g.fillStyle = this.errbcolor1;}
-				else              { g.fillStyle = "white";}
-
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },

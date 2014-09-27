@@ -70,11 +70,13 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var option = { key: "cell_text_"+cell.id };
-		option.ratio = [0.65];
-		this.disptext(text, px, py, option);
+		var g = this.context, text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
+		g.vid = "cell_text_"+cell.id;
+		if(!!text){
+			g.fillStyle = this.fontcolor;
+			this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.65]});
+		}
+		else{ g.vhide();}
 	}
 },
 

@@ -178,41 +178,39 @@ Graphic:{
 
 	// オーバーライド
 	drawLines_hashikake : function(id){
-		var g = this.vinc('line', 'crispEdges');
+		var g = this.vinc('line', 'crispEdges', true);
 
 		// LineWidth, LineMargin, LineSpace
 		var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
 
-		var headers = ["b_line_","b_dline1_","b_dline2_"];
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id, color = this.getLineColor(border);
-			if(!!color){
-				g.fillStyle = color;
-				var isvert = border.isVert();
-				var px = border.bx*this.bw, py = border.by*this.bh;
+			var border = blist[i], color = this.getLineColor(border);
+			var isvert = border.isVert();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-				if(border.line===1){
-					if(this.vnop(headers[0]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py, this.bw+lm, lm);}
-					}
-				}
-				else{ g.vhide(headers[0]+id);}
-
-				if(border.line===2){
-					if(this.vnop(headers[1]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px-ls, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py-ls, this.bw+lm, lm);}
-					}
-					if(this.vnop(headers[2]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px+ls, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py+ls, this.bw+lm, lm);}
-					}
-				}
-				else{ g.vhide([headers[1]+id, headers[2]+id]);}
+			g.fillStyle = color;
+			g.vid = "b_line_"+border.id;
+			if(!!color && border.line===1){
+				if(!isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
+				else       { g.fillRectCenter(px, py, this.bw+lm, lm);}
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
+			else{ g.vhide();}
+
+			g.vid = "b_dline_"+border.id;
+			if(!!color && border.line===2){
+				g.beginPath();
+				if(!isvert){
+					g.rectcenter(px-ls, py, lm, this.bh+lm);
+					g.rectcenter(px+ls, py, lm, this.bh+lm);
+				}
+				else{
+					g.rectcenter(px, py-ls, this.bw+lm, lm);
+					g.rectcenter(px, py+ls, this.bw+lm, lm);
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
 		}
 	},
 

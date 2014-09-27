@@ -121,15 +121,17 @@ Graphic:{
 	},
 
 	drawNumbers_kakuro : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
-			var option = { key:['cell_text',cell.id,'anum'].join('_') };
-			option.color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_anum"+cell.id;
+			if(!cell.is51cell() && cell.anum>0){
+				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
+				this.disptext(""+cell.anum, px, py);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
