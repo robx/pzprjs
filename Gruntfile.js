@@ -37,6 +37,7 @@ module.exports = function(grunt){
           { expand: true, cwd: 'src/css', src: ['*.css'],   dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],       dest: 'dist/img' },
           { expand: true, cwd: 'src',     src: ['*'],       dest: 'dist' },
+          { src: 'LICENSE.txt',          dest: 'dist/LICENSE.txt'      },
           { src: 'src/js/pzprv3.js',     dest: 'dist/js/pzprv3.js'     },
           { src: 'src/js/pzprv3-all.js', dest: 'dist/js/pzprv3-all.js' },
           { src: 'src/js/v3index.js',    dest: 'dist/js/v3index.js'  }
@@ -46,7 +47,8 @@ module.exports = function(grunt){
         files : [
           { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
-          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' }
+          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
+          { src: 'LICENSE.txt',          dest: 'dist/LICENSE.txt'      }
         ]
       }
     },
