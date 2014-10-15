@@ -27,7 +27,8 @@ module.exports = function(grunt){
 
     copy: {
       options: {
-        process: function(content, srcpath){ return (srcpath.match(/\.js$/) ? grunt.template.process(content) : content);},
+        process: function(content, srcpath){ return grunt.template.process(content);},
+        noProcess: ['**/*.{png,gif,ico}'],
         mode: true
       },
       debug: {
