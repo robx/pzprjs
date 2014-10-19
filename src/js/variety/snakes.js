@@ -199,12 +199,12 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "cell_ansnum_"+cell.id;
 			if(cell.qnum===-1 && cell.anum>0){
-				g.vid = "cell_text_"+cell.id;
 				g.fillStyle = this.fontAnscolor;
 				this.disptext(""+cell.anum, cell.bx*this.bw, cell.by*this.bh);
 			}
-			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
+			else{ g.vhide();}
 		}
 	}
 },
