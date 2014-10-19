@@ -38,7 +38,9 @@ ui.popupmgr.addpopup('debug',
 		if(pzpr.env.storage.localST){
 			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
 		}
-		this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
+		if(ui.debugmode){
+			this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
+		}
 		this.addBR();
 		
 		this.addExecButton("Save", "Save", function(){ debug.filesave();});
@@ -86,26 +88,15 @@ ui.debug =
 
 	// debugmode===true時はオーバーライドされます
 	keydown : function(ca){
-		var kc = ui.puzzle.key;
-		if(!ui.debugmode){
-			if(ca==='alt+p'){ this.disppoptest();}
-			else{ return false;}
-		}
-		else{
-			if(ca==='F7'){ this.accheck1();}
-			else if(ca==='alt+p'){ this.disppoptest();}
-			else if(ca==='ctrl+F9'){ this.starttest();}
-			else if(ca==='shift+ctrl+F10'){ this.all_test();}
-			else{ return false;}
-		}
-		kc.stopEvent();	/* カーソルを移動させない */
+		if(ca==='alt+p'){ this.disppoptest();}
+		else{ return false;}
+		
+		ui.puzzle.key.stopEvent();	/* カーソルを移動させない */
 		return true;
 	},
 	disppoptest : function(){
 		ui.popupmgr.popups.debug.show();
 	},
-
-	starttest : function(){},
 
 	filesave : function(){
 		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));

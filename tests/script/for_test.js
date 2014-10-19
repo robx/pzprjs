@@ -16,6 +16,17 @@ ui.debug.extend(
 		});
 	},
 	
+	keydown : function(ca){
+		if(ca==='alt+p'){ this.disppoptest();}
+		else if(ca==='F7'){ this.accheck1();}
+		else if(ca==='ctrl+F9'){ this.starttest();}
+		else if(ca==='shift+ctrl+F10'){ this.all_test();}
+		else{ return false;}
+		
+		ui.puzzle.key.stopEvent();	/* カーソルを移動させない */
+		return true;
+	},
+	
 	accheck1 : function(){
 		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
 		var failcode  = ui.puzzle.check()[0];
