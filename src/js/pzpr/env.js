@@ -36,13 +36,12 @@ pzpr.env = (function(){
 	var bz = {
 		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===8),
 		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===9),
-
-		Presto: (!!window.opera),
-		WebKit: (UA.indexOf('AppleWebKit/') > -1),
-		Gecko : (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1)
+		Presto: (!!window.opera)
 	};
 	bz.legacyIE = (bz.IE8);
-	var Gecko7orOlder = (bz.Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
+	
+	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
+	var Gecko7orOlder = (Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
