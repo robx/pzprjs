@@ -198,14 +198,11 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.qnum===-1 && cell.anum>0){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				var option = { key:"cell_text_"+cell.id };
-				option.color = this.fontAnscolor;
-				this.disptext(""+cell.anum, px, py, option);
-			}
-			/* 不要な文字はdrawArrowNumbersで消しているので、ここでは消さない */
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var text = (cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "";
+			var option = { key:"cell_ansnum_"+cell.id };
+			option.color = this.fontAnscolor;
+			this.disptext(text, px, py, option);
 		}
 	}
 },
