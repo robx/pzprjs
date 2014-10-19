@@ -379,14 +379,7 @@ Graphic:{
 			if(cell.ques===21){ //たて
 				var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
 				g.beginPath();
-				for(py=ry;py<max;py+=ll*2){
-					g.moveTo(px,   py);
-					g.lineTo(px+lw,py);
-					g.lineTo(px+lw,py+ll);
-					g.lineTo(px,   py+ll);
-					g.lineTo(px,   py);
-				}
-				g.closePath();
+				for(py=ry;py<max;py+=ll*2){ g.rect(px,py,lw,ll);}
 				g.fill();
 			}
 			else{ g.vhide();}
@@ -395,14 +388,7 @@ Graphic:{
 			if(cell.ques===22){ //よこ
 				var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
 				g.beginPath();
-				for(px=rx;px<max;px+=ll*2){
-					g.moveTo(px,   py);
-					g.lineTo(px+ll,py);
-					g.lineTo(px+ll,py+lw);
-					g.lineTo(px,   py+lw);
-					g.lineTo(px,   py);
-				}
-				g.closePath();
+				for(px=rx;px<max;px+=ll*2){ g.rect(px,py,ll,lw);}
 				g.fill();
 			}
 			else{ g.vhide();}
