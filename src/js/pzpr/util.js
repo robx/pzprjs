@@ -42,18 +42,23 @@ pzpr.util = {
 
 	//----------------------------------------------------------------------
 	// pzpr.util.addEvent()          addEventListener(など)を呼び出す
+	// pzpr.util.eventWrapper()      イベント発生時のイベントWrapper関数を作成する
 	// pzpr.util.addMouseDownEvent() マウスを押したときのイベントを設定する
 	// pzpr.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
 	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){
-			e = e || window.event;
-			if(!e.target){ e.target = e.srcElement;}
-			callback.call(self, e);
-		};
+		var func = function(e){ callback.call(self, pzpr.util.eventWrapper(e));};
 		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
 		else                     { el.attachEvent('on'+event, func);}
+		return func;
+	},
+	eventWrapper : function(e){
+		e = e || window.event;
+		if(!e.target){ e.target = e.srcElement;}
+		if(!e.stopPropagation){ e.stopPropagation = function(e){ e.cancelBubble = true;};}
+		if(!e.preventDefault) { e.preventDefault  = function(e){ e.returnValue = false;};}
+		return e;
 	},
 	addMouseDownEvent : function(el, self, func){
 		if(pzpr.env.API.pointerevent){
@@ -175,22 +180,5 @@ pzpr.util = {
 		var right  = rect.right  + scrollLeft;
 		var bottom = rect.bottom + scrollTop;
 		return { top:top, bottom:bottom, left:left, right:right};
-	},
-
-	//----------------------------------------------------------------------
-	// Eventオブジェクト関連
-	// 
-	// stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                   伝播させないようにする
-	// preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                   イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
 	}
 };

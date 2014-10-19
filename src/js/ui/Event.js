@@ -18,13 +18,7 @@ ui.event =
 	// event.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){
-			e = e||window.event;
-			if(!e.target){ e.target = e.srcElement;}
-			return callback.call(self, e);
-		};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
+		var func = pzpr.util.addEvent(el, event, self, callback, !!capt);
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
 	addMouseDownEvent : pzpr.util.addMouseDownEvent,

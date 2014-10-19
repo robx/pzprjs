@@ -75,8 +75,8 @@ MouseEvent:{
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
 		this.mouseevent(this.getBoardAddress(e), 0);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
@@ -84,16 +84,16 @@ MouseEvent:{
 		/* 座標は前のイベントのものを使用する */
 		this.mouseevent(this.inputPoint, 2);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
 		this.mouseevent(this.getBoardAddress(e), 1);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mouseout : function(e){ },
 

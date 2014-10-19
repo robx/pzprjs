@@ -72,8 +72,8 @@ KeyEvent:{
 		if(c){ this.keyevent(c,0);}
 		
 		if(e.target===this.owner.canvas){
-			pzpr.util.stopPropagation(e);
-			pzpr.util.preventDefault(e);
+			e.stopPropagation();
+			e.preventDefault();
 		}
 	},
 	e_keyup : function(e){
@@ -85,8 +85,8 @@ KeyEvent:{
 		if(c){ this.keyevent(c,1);}
 		
 		if(e.target===this.owner.canvas){
-			pzpr.util.stopPropagation(e);
-			pzpr.util.preventDefault(e);
+			e.stopPropagation();
+			e.preventDefault();
 		}
 	},
 
@@ -174,7 +174,7 @@ KeyEvent:{
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
 	},
 	stopEvent : function(){
-		if(!!this.event){ pzpr.util.preventDefault(this.event);}
+		if(!!this.event){ this.event.preventDefault();}
 		this.keyreset();
 	},
 

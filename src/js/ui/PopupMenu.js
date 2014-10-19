@@ -107,7 +107,7 @@ ui.popupmgr =
 			var pos = pzpr.util.getPagePos(e);
 			popel.style.left = pos.px - this.offset.px + 'px';
 			popel.style.top  = pos.py - this.offset.py + 'px';
-			pzpr.util.preventDefault(e);
+			e.preventDefault();
 		}
 	}
 };
@@ -509,7 +509,7 @@ ui.popupmgr.addpopup('fileopen',
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
 		this.form.enctype = 'multipart/form-data';
-		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzpr.util.eventWrapper(e).preventDefault(); return false;};
 		
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
@@ -563,7 +563,7 @@ ui.popupmgr.addpopup('filesave',
 		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
-		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzpr.util.eventWrapper(e).preventDefault(); return false;};
 		
 		var platform = "";
 		if     (navigator.platform.indexOf("Win")!==-1){ platform = "Win";}
@@ -679,7 +679,7 @@ ui.popupmgr.addpopup('imagesave',
 		this.form.action = ui.fileio;
 		this.form.method = 'post';
 		this.form.target = "fileiopanel";
-		this.form.onsubmit = function(e){ pzpr.util.preventDefault(e||window.event); return false;};
+		this.form.onsubmit = function(e){ pzpr.util.eventWrapper(e).preventDefault(); return false;};
 		
 		this.addInput('hidden', {name:"operation", value:"imagesave"});
 		this.addInput('hidden', {name:"urlstr", value:""});
