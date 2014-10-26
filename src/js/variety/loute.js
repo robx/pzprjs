@@ -266,7 +266,7 @@ Graphic:{
 	}
 },
 "Grahpic@sashigane":{
-	hideHatena : true,
+	hideHatena : true
 },
 
 //---------------------------------------------------------
