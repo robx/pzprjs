@@ -108,17 +108,15 @@ pzpr.util = {
 			left  = (e.touches.length===1);
 			right = (e.touches.length>1);
 		}
+		else if(!pzpr.env.browser.legacyIE){
+			left  = (!!e.which ? e.which===1 : e.button===0);
+			mid   = (!!e.which ? e.which===2 : e.button===1);
+			right = (!!e.which ? e.which===3 : e.button===2);
+		}
 		else{
-			if(!pzpr.env.browser.IE8){
-				left  = (!!e.which ? e.which===1 : e.button===0);
-				mid   = (!!e.which ? e.which===2 : e.button===1);
-				right = (!!e.which ? e.which===3 : e.button===2);
-			}
-			else{
-				left  = (e.button===1);
-				mid   = (e.button===4);
-				right = (e.button===2);
-			}
+			left  = (e.button===1);
+			mid   = (e.button===4);
+			right = (e.button===2);
 		}
 
 		return {Left:left, Middle:mid, Right:right};
