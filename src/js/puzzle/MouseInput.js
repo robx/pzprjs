@@ -14,7 +14,7 @@ MouseEvent:{
 		this.enableMouse = true;	// マウス入力は有効か
 
 		this.mouseoffset = {px:0,py:0};
-		if(pzpr.env.browser.IE8){ this.mouseoffset = {px:2,py:2};}
+		if(pzpr.env.browser.legacyIE){ this.mouseoffset = {px:2,py:2};}
 
 		this.mouseCell = null;		// 入力されたセル等のID
 		this.firstCell = null;		// mousedownされた時のセルのID(連黒分断禁用)

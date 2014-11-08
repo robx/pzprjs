@@ -33,12 +33,12 @@ if(!Array.prototype.some){
 pzpr.env = (function(){
 	var UA  = navigator.userAgent;
 	
+	var IEversion = (UA.match(/MSIE (\d+)/) ? parseInt(RegExp.$1) : 0);
 	var bz = {
-		IE8 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===8),
-		IE9 : !!(UA.match(/MSIE (\d+)/) && parseInt(RegExp.$1)===9),
+		legacyIE: (IEversion>0 && IEversion<=8),
+		IE9     : (IEversion===9),
 		Presto: (!!window.opera)
 	};
-	bz.legacyIE = (bz.IE8);
 	
 	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
 	var Gecko7orOlder = (Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
