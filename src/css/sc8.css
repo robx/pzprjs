@@ -11,6 +11,13 @@
 	/* 盤面外の表示部分(管理領域・メニュー・ポップアップ・ボタン) */
 	.outofboard { font-size:1.0em; line-height:1.2;}
 
+	div.button { display:inline-block; text-align:center; vertical-align:middle; font-size:90%; font-family: sans-serif; cursor:default;
+				  margin:0pt 2pt 0pt 2pt; padding:2pt 4pt 2pt 4pt; border-radius:4pt; border:solid gray 1pt;
+				  background: silver; background: linear-gradient(to bottom, white, silver);}
+	#btnarea div#btncheck { background: blue; background: linear-gradient(to bottom, aqua, blue); color:white;}
+	#btnarea div#btnclear { color:red;}
+	#btnarea div#btnclear2{ color:maroon;}
+
 	/* 管理領域 */
 	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
 

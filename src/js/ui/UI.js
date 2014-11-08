@@ -7,8 +7,8 @@ var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 function createEL(tagName){ return _doc.createElement(tagName);}
 function createButton(){
-	var button = createEL('input');
-	button.type = 'button';
+	var button = createEL('div');
+	button.className = 'button';
 	return button;
 }
 

@@ -207,9 +207,12 @@ ui.toolarea = {
 		this.addButtons(btnredo,  "進", "->");
 		this.addButtons(btnclear, "回答消去", "Erase Answer");
 
+		ui.event.addMouseUpEvent(btnundo, this, this.buttonup);
+		ui.event.addMouseUpEvent(btnredo, this, this.buttonup);
+
 		// 初期値ではどっちも押せない
-		getEL('btnundo').disabled = true;
-		getEL('btnredo').disabled = true;
+		getEL('btnundo').style.color = 'silver';
+		getEL('btnredo').style.color = 'silver';
 
 		if(!ui.puzzle.flags.disable_subclear){
 			var el = createButton(); el.id = "btnclear2";
@@ -249,7 +252,7 @@ ui.toolarea = {
 		for(var i=0,len=this.btnstack.length;i<len;i++){
 			var obj = this.btnstack[i];
 			if(!obj.el){ continue;}
-			obj.el.value = obj.str[ui.puzzle.getConfig('language')];
+			obj.el.innerHTML = obj.str[ui.puzzle.getConfig('language')];
 		}
 		
 		var mandisp  = (this.isdisp ? 'block' : 'none');
@@ -260,7 +263,7 @@ ui.toolarea = {
 		}
 		if(ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk){
 			/* ボタンエリアのボタンは、管理領域が消えている時に表示 */
-			getEL('btncolor2').style.display = (this.isdisp ? 'none' : 'inline');
+			getEL('btncolor2').style.display = (this.isdisp ? 'none' : 'inline-block');
 		}
 		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
 	},
@@ -300,8 +303,8 @@ ui.toolarea = {
 		
 		if(idname==="operation"){
 			var opemgr = ui.puzzle.opemgr;
-			getEL('btnundo').disabled = (!opemgr.enableUndo ? 'disabled' : '');
-			getEL('btnredo').disabled = (!opemgr.enableRedo ? 'disabled' : '');
+			getEL('btnundo').style.color = (!opemgr.enableUndo ? 'silver' : '');
+			getEL('btnredo').style.color = (!opemgr.enableRedo ? 'silver' : '');
 		}
 		
 		if(idname==='keypopup'){
@@ -346,7 +349,7 @@ ui.toolarea = {
 	// toolarea.addButtons() ボタンの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	addButtons : function(el, strJP, strEN){
-		ui.event.addEvent(el, "click", this, this.buttonclick);
+		ui.event.addMouseDownEvent(el, this, this.buttonclick);
 		pzpr.util.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},
@@ -354,7 +357,8 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	// toolarea.checkclick()   管理領域のチェックボタンが押されたとき、チェック型の設定を設定する
 	// toolarea.selectclick()  選択型サブメニュー項目がクリックされたときの動作
-	// toolarea.buttonclick()  ボタンがクリックされたときの動作
+	// toolarea.buttonclick()  ボタンが押されたときの動作
+	// toolarea.buttonup()  ボタンが放されたときの動作
 	//---------------------------------------------------------------------------
 	checkclick : function(e){
 		var el = e.target;
@@ -370,12 +374,18 @@ ui.toolarea = {
 	buttonclick : function(e){
 		switch(e.target.id){
 		case 'btncheck':  ui.menuarea.answercheck(); break;
-		case 'btnundo':   ui.puzzle.undo();          break;
-		case 'btnredo':   ui.puzzle.redo();          break;
+		case 'btnundo':   ui.puzzle.undotimer.startButtonUndo(); break;
+		case 'btnredo':   ui.puzzle.undotimer.startButtonRedo(); break;
 		case 'btnclear':  ui.menuarea.ACconfirm();   break;
 		case 'btnclear2': ui.menuarea.ASconfirm();   break;
 		case 'btncolor2': case 'ck_btn_irowake': ui.puzzle.irowake(); break;
 		case 'btncolor': ui.puzzle.board.encolorall(); break; /* 天体ショーのボタン */
+		}
+	},
+	buttonup : function(e){
+		switch(e.target.id){
+		case 'btnundo':   ui.puzzle.undotimer.stopButtonUndo(); break;
+		case 'btnredo':   ui.puzzle.undotimer.stopButtonRedo(); break;
 		}
 	},
 
