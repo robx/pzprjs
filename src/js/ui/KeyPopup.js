@@ -144,7 +144,7 @@ ui.keypopup =
 		this.basepanel = getEL('panelbase'+mode);
 		this.basepanel.innerHTML = '';
 		
-		if(mode===3){ this.tdcolor = ui.puzzle.painter.fontAnscolor;}
+		this.tdcolor = (mode===3 ? ui.puzzle.painter.fontAnscolor : "black");
 
 		this.generate(mode);
 	},
@@ -209,108 +209,64 @@ ui.keypopup =
 		else if(type===114){ this.generate_kusabi(mode);}
 	},
 	gentable4 : function(mode){
-		var pid=ui.puzzle.pid;
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.inputcol('num','4','4');
-		this.insertrow();
+		var pid = ui.puzzle.pid, itemlist = ['1','2','3','4'];
 		if((mode===3)&&(pid==='sukoro'||pid==='sukororoom')){
-			this.tdcolor = ui.puzzle.painter.mbcolor;
-			this.inputcol('num','q','○');
-			this.inputcol('num','w','×');
-			this.tdcolor = "black";
-			this.inputcol('num',' ',' ');
-			this.inputcol('empty','','');
+			var mbcolor = ui.puzzle.painter.mbcolor;
+			itemlist.push(
+				['q',{text:'○',color:mbcolor}],
+				['w',{text:'×',color:mbcolor}],
+				' ',null
+			);
 		}
 		else{
-			this.inputcol('num','0','0');
-			this.inputcol('empty','','');
-			this.inputcol('num',' ',' ');
-			if(!ui.puzzle.painter.hideHatena){
-				this.inputcol('num','-','?');
-			}
-			else{
-				var cap = '?';
+			var cap = '?';
+			if(ui.puzzle.painter.hideHatena){
 				switch(pid){
 					case 'lightup': case 'shakashaka':                           cap='■'; break;
 					case 'gokigen': case 'wagiri': case 'shugaku': case 'creek': cap='○'; break;
 				}
-				this.inputcol('num','-',cap);
 			}
+			itemlist.push('0',null,' ',['-',cap]);
 		}
-		this.insertrow();
+		this.generate_main(itemlist,4);
 	},
 	gentable10 : function(mode){
-		var pid = ui.puzzle.pid;
+		var pid = ui.puzzle.pid, itemlist = [];
 		if((mode===3)&&(ui.puzzle.Cell.prototype.numberWithMB)){
-			this.tdcolor = ui.puzzle.painter.mbcolor;
-			this.inputcol('num','q','○');
-			this.inputcol('num','w','×');
-			this.tdcolor = "black";
-			this.inputcol('num',' ',' ');
-			this.inputcol('empty','','');
-			this.insertrow();
+			var mbcolor = ui.puzzle.painter.mbcolor;
+			itemlist.push(
+				['q',{text:'○',color:mbcolor}],
+				['w',{text:'×',color:mbcolor}],
+				' ',null
+			);
 		}
 		if((mode===1)&&(pid==='kakuru'||pid==='tateyoko')){
-			this.inputcol('num','q1','■');
-			this.inputcol('num','q2','□');
-			this.inputcol('num',' ',' ');
-			this.inputcol('num','-','?');
-			this.insertrow();
+			itemlist.push(['q1','■'],['w2','□'],' ',['-','?']);
 		}
 		
-		this.inputcol('num','0','0');
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.insertrow();
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.inputcol('num','6','6');
-		this.inputcol('num','7','7');
-		this.insertrow();
-		this.inputcol('num','8','8');
-		this.inputcol('num','9','9');
-		if(!((mode===3)&&(ui.puzzle.Cell.prototype.numberWithMB))){
-			this.inputcol('num',' ',' ');
-		}
-		else{
-			this.inputcol('empty','','');
-		}
+		itemlist.push('0','1','2','3','4','5','6','7','8','9');
+		itemlist.push(((mode===1)||(!ui.puzzle.Cell.prototype.numberWithMB)) ? ' ' : null);
+		
+		var cap = null;
 		if((mode===3)||(pid==='kakuru'||pid==='tateyoko')){
-			this.inputcol('empty','','','');
 		}
 		else if(!ui.puzzle.painter.hideHatena){
-			this.inputcol('num','-','?');
+			cap = '?';
 		}
 		else if(pid==='tasquare'){
-			this.inputcol('num','-','□');
+			cap = '□';
 		}
 		else if(pid==='rectslider'){
-			this.inputcol('num','-','■');
+			cap = '■';
 		}
 		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
-			this.inputcol('num','-','○');
+			cap = '○';
 		}
-		this.insertrow();
+		if(cap!==null){ itemlist.push(['-',cap]);}
+		this.generate_main(itemlist,4);
 	},
 	gentable51 : function(mode){
-		this.inputcol('image','q',[0,0]);
-		this.inputcol('num',' ',' ');
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.insertrow();
-		this.inputcol('num','3','3');
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.inputcol('num','6','6');
-		this.insertrow();
-		this.inputcol('num','7','7');
-		this.inputcol('num','8','8');
-		this.inputcol('num','9','9');
-		this.inputcol('num','0','0');
-		this.insertrow();
+		this.generate_main([['q',{image:0}],' ','1','2','3','4','5','6','7','8','9','0'],4);
 	},
 
 	//---------------------------------------------------------------------------
@@ -320,57 +276,16 @@ ui.keypopup =
 	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	gentable3 : function(mode){
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.insertrow();
-		this.inputcol('num','0','0');
-		this.inputcol('num',' ',' ');
-		this.inputcol('num','-','?');
-		this.insertrow();
+		this.generate_main(['1','2','3','0',' ',['-','?']],3);
 	},
 	gentable5: function(mode){
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.insertrow();
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.inputcol('empty','','');
-		this.insertrow();
-		this.inputcol('num','0','0');
-		this.inputcol('num',' ',' ');
-		this.inputcol('num','-','?');
-		this.insertrow();
+		this.generate_main(['1','2','3','4','5',null,'0',' ',['-','?']],3);
 	},
 	gentable6 : function(mode){
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.insertrow();
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.inputcol('num','6','6');
-		this.insertrow();
-		this.inputcol('num','0','0');
-		this.inputcol('num',' ',' ');
-		this.inputcol('num','-','?');
-		this.insertrow();
+		this.generate_main(['1','2','3','4','5','6','0',' ',['-','?']],3);
 	},
 	gentable8 : function(mode){
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.inputcol('num','4','4');
-		this.insertrow();
-		this.inputcol('num','5','5');
-		this.inputcol('num','6','6');
-		this.inputcol('num','7','7');
-		this.inputcol('num','8','8');
-		this.insertrow();
-		this.inputcol('num',' ',' ');
-		this.inputcol('num','-','○');
-		this.insertrow();
+		this.generate_main(['1','2','3','4','5','6','7','8',' ',['-','○']],4);
 	},
 
 	//---------------------------------------------------------------------------
@@ -379,50 +294,28 @@ ui.keypopup =
 	//---------------------------------------------------------------------------
 	generate_slalom : function(mode){
 		this.imgCR = [4,1];
-		this.inputcol('image','q',[0,0]);
-		this.inputcol('image','s',[1,0]);
-		this.inputcol('image','w',[2,0]);
-		this.inputcol('image','e',[3,0]);
-		this.inputcol('num','r',' ');
-		this.insertrow();
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.insertrow();
-		this.inputcol('num','6','6');
-		this.inputcol('num','7','7');
-		this.inputcol('num','8','8');
-		this.inputcol('num','9','9');
-		this.inputcol('num','0','0');
-		this.insertrow();
-		this.inputcol('num','-','-');
-		this.inputcol('num',' ',' ');
-		this.insertrow();
+		this.generate_main([
+			['q',{image:0}],
+			['s',{image:1}],
+			['w',{image:2}],
+			['e',{image:3}],
+			['r',' '],
+			'1','2','3','4','5',
+			'6','7','8','9','0',
+			'-',' '
+		],5);
 	},
 	generate_reflect : function(mode){
 		this.imgCR = [4,1];
-		this.inputcol('image','q',[0,0]);
-		this.inputcol('image','w',[1,0]);
-		this.inputcol('image','e',[2,0]);
-		this.inputcol('image','r',[3,0]);
-		this.inputcol('num','t','╋');
-		this.inputcol('num','y',' ');
-		this.insertrow();
-		this.inputcol('num','1','1');
-		this.inputcol('num','2','2');
-		this.inputcol('num','3','3');
-		this.inputcol('num','4','4');
-		this.inputcol('num','5','5');
-		this.inputcol('num','6','6');
-		this.insertrow();
-		this.inputcol('num','7','7');
-		this.inputcol('num','8','8');
-		this.inputcol('num','9','9');
-		this.inputcol('num','0','0');
-		this.inputcol('num','-','-');
-		this.insertrow();
+		this.generate_main([
+			['q',{image:0}],
+			['w',{image:1}],
+			['e',{image:2}],
+			['r',{image:3}],
+			['t','╋'],['y',' '],
+			'1','2','3','4','5','6',
+			'7','8','9','0','-'
+		],6);
 	},
 
 	//---------------------------------------------------------------------------
@@ -432,75 +325,55 @@ ui.keypopup =
 	// kp.generate_kusabi()     クサビリンク用のテーブルを作成する
 	//---------------------------------------------------------------------------
 	generate_pipelink : function(mode){
-		var pid = ui.puzzle.pid;
-		this.inputcol('num','q','╋');
-		this.inputcol('num','w','┃');
-		this.inputcol('num','e','━');
-		this.inputcol('num','r',' ');
-		if     (pid==='pipelink') { this.inputcol('empty','','');}
-		else if(pid==='pipelinkr'){ this.inputcol('num','1','○');}
-		else if(pid==='loopsp')   { this.inputcol('num','-','○');}
-		this.insertrow();
-		this.inputcol('num','a','┗');
-		this.inputcol('num','s','┛');
-		this.inputcol('num','d','┓');
-		this.inputcol('num','f','┏');
-		if(pid!=='loopsp'){ this.inputcol('num','-','?');}
-		this.insertrow();
+		var pid = ui.puzzle.pid, itemlist = [];
+		itemlist.push(
+			['q','╋'],['w','┃'],['e','━'],['r',' '],(pid!=='loopsp'?['-','?']:null),
+			['a','┗'],['s','┛'],['d','┓'],['f','┏']
+		);
+		if     (pid==='pipelink') { itemlist.push(null);}
+		else if(pid==='pipelinkr'){ itemlist.push(['1','○']);}
+		else if(pid==='loopsp')   { itemlist.push(['-','○']);}
 		
 		if(pid==='loopsp'){
-			this.inputcol('num','1','1');
-			this.inputcol('num','2','2');
-			this.inputcol('num','3','3');
-			this.inputcol('num','4','4');
-			this.inputcol('num','5','5');
-			this.insertrow();
-			this.inputcol('num','6','6');
-			this.inputcol('num','7','7');
-			this.inputcol('num','8','8');
-			this.inputcol('num','9','9');
-			this.inputcol('num','0','0');
-			this.insertrow();
+			itemlist.push('1','2','3','4','5','6','7','8','9','0');
 		}
+		this.generate_main(itemlist,5);
 	},
 	generate_tatamibari : function(mode){
-		this.inputcol('num','q','╋');
-		this.inputcol('num','w','┃');
-		this.inputcol('num','e','━');
-		this.insertrow();
-		this.inputcol('num','r',' ');
-		this.inputcol('num','-','?');
-		this.inputcol('empty','','');
-		this.insertrow();
+		this.generate_main([['q','╋'],['w','┃'],['e','━'],['r',' '],['-','?']],3);
 	},
 	generate_hakoiri : function(mode){
-		this.inputcol('num','1','○');
-		this.inputcol('num','2','△');
-		this.inputcol('num','3','□');
-		this.insertrow();
-		if(mode===3){ this.tdcolor = "rgb(255, 96, 191)";}
-		this.inputcol('num','4',(mode===1 ? '?' : '・'));
-		if(mode===3){ this.tdcolor = "black";}
-		this.inputcol('num',' ',' ');
-		this.inputcol('empty','','');
-		this.insertrow();
+		this.generate_main([
+			['1','○'],['2','△'],['3','□'],
+			['4',{text:(mode===1?'?':'・'), color:(mode===3?"rgb(255, 96, 191)":"")}],' '
+		],3);
 	},
 	generate_kusabi : function(mode){
-		this.inputcol('num','1','同');
-		this.inputcol('num','2','短');
-		this.inputcol('num','3','長');
-		this.insertrow();
-		this.inputcol('num','-','○');
-		this.inputcol('num',' ',' ');
-		this.inputcol('empty','','');
-		this.insertrow();
+		this.generate_main([['1','同'],['2','短'],['3','長'],['-','○'],' '],3);
+	},
+
+	generate_main : function(list, split){
+		for(var i=0; i<list.length; i++){
+			this.inputcol(list[i]);
+			if((i+1)%split===0){ this.insertrow();}
+		}
+		if(i%split!==0){ this.insertrow();}
 	},
 
 	//---------------------------------------------------------------------------
 	// kp.inputcol()  テーブルのセルを追加する
 	// kp.insertrow() テーブルの行を追加する
 	//---------------------------------------------------------------------------
-	inputcol : function(type, ca, disp){
+	inputcol : function(item){
+		var type = "num", ca, disp, color = this.tdcolor;
+		if(!item){ type = "empty";}
+		else{
+			if(typeof item==="string"){ ca = disp = item;}
+			else if(typeof item[1]==="string"){ ca = item[0]; disp = item[1];}
+			else if(!!item[1].text) { ca = item[0]; disp = item[1].text; color = item[1].color;}
+			else if(item[1].image!==void 0){ ca = item[0]; disp = item[1].image; type = "image";}
+		}
+		
 		var _div = null, _child = null;
 		if(type!=='empty'){
 			_div = createEL('div');
@@ -518,7 +391,7 @@ ui.keypopup =
 		if(type==='num'){
 			_child = createEL('span');
 			_child.className   = 'kpnum';
-			_child.style.color = this.tdcolor;
+			_child.style.color = color;
 			_child.innerHTML   = disp;
 			pzpr.util.unselectable(_child);
 		}
@@ -528,7 +401,8 @@ ui.keypopup =
 			var pid = ui.puzzle.pid;
 			_child.src = "data:image/gif;base64,"+this.dataurl[!!this.dataurl[pid] ? pid : 'shitappa'];
 			pzpr.util.unselectable(_child);
-			this.imgs.push({'el':_child, 'x':disp[0], 'y':disp[1]});
+			var x = disp%this.imgCR[0], y = (disp-x)/this.imgCR[1];
+			this.imgs.push({'el':_child, 'x':x, 'y':y});
 		}
 
 		if(this.clearflag){ _div.style.clear='both'; this.clearflag=false;}
