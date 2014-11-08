@@ -67,11 +67,11 @@ pzpr.util = {
 		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerDown", self, func);
 		}
+		else if(pzpr.env.API.touchevent){
+			this.addEvent(el, "touchstart", self, func);
+		}
 		else{
 			this.addEvent(el, "mousedown", self, func);
-			if(pzpr.env.API.touchevent){
-				this.addEvent(el, "touchstart", self, func);
-			}
 		}
 	},
 	addMouseMoveEvent : function(el, self, func){
@@ -81,11 +81,11 @@ pzpr.util = {
 		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerMove", self, func);
 		}
+		else if(pzpr.env.API.touchevent){
+			this.addEvent(el, "touchmove",  self, func);
+		}
 		else{
 			this.addEvent(el, "mousemove", self, func);
-			if(pzpr.env.API.touchevent){
-				this.addEvent(el, "touchmove",  self, func);
-			}
 		}
 	},
 	addMouseUpEvent : function(el, self, func){
@@ -95,11 +95,11 @@ pzpr.util = {
 		else if(pzpr.env.API.mspointerevent){
 			this.addEvent(el, "MSPointerUp", self, func);
 		}
+		else if(pzpr.env.API.touchevent){
+			this.addEvent(el, "touchend", self, func);
+		}
 		else{
 			this.addEvent(el, "mouseup", self, func);
-			if(pzpr.env.API.touchevent){
-				this.addEvent(el, "touchend", self, func);
-			}
 		}
 	},
 
