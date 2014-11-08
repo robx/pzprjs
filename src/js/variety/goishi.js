@@ -8,13 +8,13 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode && this.mousestart){
 			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right && !!ui){ this.owner.undotimer.startAnswerUndo();}
+			else if(this.btn.Right){ this.owner.undotimer.startAnswerUndo();}
 		}
 		else if(this.owner.editmode && this.mousestart){
 			this.inputstone();
 		}
 		
-		if(this.mouseend && !!ui){ this.owner.undotimer.stop();}
+		if(this.mouseend){ this.owner.undotimer.stop();}
 	},
 
 	inputstone : function(){
