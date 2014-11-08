@@ -31,7 +31,6 @@ window.ui = {
 	popupmgr  : null,
 	keypopup  : null,
 	timer     : null,
-	undotimer : null,
 	
 	debugmode : false,
 	

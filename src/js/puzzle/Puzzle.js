@@ -321,6 +321,7 @@ function initObjects(puzzle){
 	puzzle.key    = new puzzle.KeyEvent();		// キーボード入力オブジェクト
 
 	puzzle.opemgr = new puzzle.OperationManager();	// 操作情報管理オブジェクト
+	puzzle.undotimer = new puzzle.UndoTimer();	// UndoTimerオブジェクト
 
 	puzzle.enc = new puzzle.Encode();		// URL入出力用オブジェクト
 	puzzle.fio = new puzzle.FileIO();		// ファイル入出力用オブジェクト
@@ -382,6 +383,7 @@ function postCanvasReady(puzzle, callback){
 	if(!puzzle.ready){
 		puzzle.key.setfocus();
 		puzzle.resetTime();
+		puzzle.undotimer.reset();
 		puzzle.ready = true;
 		puzzle.execListener('ready');
 	}

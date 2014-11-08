@@ -59,7 +59,6 @@ ui.listener =
 		ui.event.adjustcellsize();
 		ui.keypopup.display();
 		
-		ui.undotimer.reset();
 		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
 
@@ -90,11 +89,11 @@ ui.listener =
 	// listener.onHistoryChange() 履歴変更時に呼び出される関数
 	//---------------------------------------------------------------------------
 	onKeyInput : function(puzzle, c){
-		var kc = puzzle.key, result = true;
+		var kc = puzzle.key, ut = puzzle.undotimer, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
-			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.startUndo(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.startRedo(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ut.startKeyUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ut.startKeyRedo(); result = false;}
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(pzpr.EDITOR){
@@ -107,9 +106,14 @@ ui.listener =
 		}
 		else if(kc.keyup){
 			/* TimerのUndo/Redoを停止する */
-			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.stop(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.stop(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ut.stopKeyUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ut.stopKeyRedo(); result = false;}
 		}
+		
+		if(!kc.isCTRL && !kc.isMETA){ ut.reset();}
+		else if(!kc.isZ){ ut.stopKeyUndo();}
+		else if(!kc.isY){ ut.stopKeyRedo();}
+		
 		ui.menuarea.floatmenuclose(0);
 		return result;
 	},
