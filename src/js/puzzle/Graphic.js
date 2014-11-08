@@ -228,7 +228,7 @@ Graphic:{
 	},
 	setColor : function(name, color){
 		this[name] = color || this.constructor.prototype[name];
-		this.paintAll();
+		if(!this.suspended){ this.paintAll();}
 	},
 
 	//---------------------------------------------------------------------------
