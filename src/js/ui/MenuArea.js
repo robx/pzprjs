@@ -30,6 +30,7 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	display : function(){
 		for(var i in this.items.item){ this.setdisplay(i);}
+		this.setdisplay("operation");
 	},
 	setdisplay : function(idname){
 		var pp = this.items;
@@ -228,6 +229,18 @@ ui.menuarea = {
 			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
 		}
 
+		if(pid==='pipelinkr'){
+			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
+			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
+			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
+		}
+		if(pid==='bosanowa'){
+			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
+			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
+			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
+			pp.addChild('disptype_bosanowa_3', 'disptype_bosanowa', 'ワリタイ形式',   'Waritai type');
+		}
+
 		/* 盤面チェックの設定値 */
 		if(flags.redline){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
@@ -281,18 +294,6 @@ ui.menuarea = {
 		/* 盤面表示形式の設定値 */
 		if(ui.puzzle.board.linfo.moveline){
 			pp.addCheck('dispmove','setting','動かしたように描画', 'Paint as move');
-		}
-
-		if(pid==='pipelinkr'){
-			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
-			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
-			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
-		}
-		if(pid==='bosanowa'){
-			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
-			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
-			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
-			pp.addChild('disptype_bosanowa_3', 'disptype_bosanowa', 'ワリタイ形式',   'Waritai type');
 		}
 
 		if(pid==='snakes'){
@@ -461,9 +462,9 @@ ui.menuarea = {
 		case 'h_undo'    : ui.puzzle.undo();    break;
 		case 'h_redo'    : ui.puzzle.redo();    break;
 		case 'h_latest'  : ui.puzzle.redoall(); break;
-		case 'check'     : ui.answercheck();    break;
-		case 'ansclear'  : ui.ACconfirm();      break;
-		case 'subclear'  : ui.ASconfirm();      break;
+		case 'check'     : this.answercheck();  break;
+		case 'ansclear'  : this.ACconfirm();    break;
+		case 'subclear'  : this.ASconfirm();    break;
 		case 'duplicate' : this.duplicate();    break;
 		
 		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.displayAll(); ui.puzzle.adjustCanvasSize(); break;

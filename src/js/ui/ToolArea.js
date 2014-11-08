@@ -190,7 +190,7 @@ ui.toolarea = {
 		this.area = getEL('btnarea');
 
 		// (Canvas下) ボタンの初期設定
-		var btncheck = createButton(); btncheck.id = "btncheck";
+		var btncheck = createButton(); btncheck.id = "btncheck"; btncheck.className = 'btn btn-ok';
 		var btnundo  = createButton(); btnundo.id  = "btnundo";
 		var btnredo  = createButton(); btnredo.id  = "btnredo";
 		var btnclear = createButton(); btnclear.id = "btnclear";
@@ -230,7 +230,7 @@ ui.toolarea = {
 		if(ui.puzzle.pid==='pipelinkr'){
 			var el = createButton(); el.id = 'btncircle';
 			pzpr.util.unselectable(el);
-			ui.event.addEvent(el, "click", this, this.toggledisp);
+			this.addButtons(el, "○", "○");
 			this.area.appendChild(el);
 		}
 
@@ -326,7 +326,7 @@ ui.toolarea = {
 		
 		if(idname==='disptype_pipelinkr'){
 			if(ui.puzzle.pid==='pipelinkr' && !!getEL('btncircle')){
-				getEL('btncircle').value = ((ui.puzzle.getConfig(idname)===1)?"○":"■");
+				getEL('btncircle').innerHTML = ((ui.puzzle.getConfig(idname)===1)?"○":"■");
 			}
 		}
 	},
@@ -380,6 +380,7 @@ ui.toolarea = {
 		case 'btnclear2': ui.menuarea.ASconfirm();   break;
 		case 'btncolor2': case 'ck_btn_irowake': ui.puzzle.irowake(); break;
 		case 'btncolor': ui.puzzle.board.encolorall(); break; /* 天体ショーのボタン */
+		case 'btncircle': this.toggledisp(); break; /* 帰ってきたパイプリンクのボタン */
 		}
 	},
 	buttonup : function(e){

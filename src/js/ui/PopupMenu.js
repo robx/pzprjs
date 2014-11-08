@@ -239,9 +239,11 @@ ui.popupmgr.addpopup('template',
 	addExecButton : function(str_jp, str_en, func, attr){
 		var el = createEL('input');
 		el.type = 'button';
+		el.className = 'btn';
 		el.value = ui.selectStr(str_jp, str_en);
 		if(!!attr){ for(var att in attr){ el[att]=attr[att];}}
-		el.onclick = func;
+		if(pzpr.env.API.touchevent){ el.ontouchstart = func;}
+		else{ el.onmousedown = func;}
 		this.form.appendChild(el);
 		this.captions.push({button:el, str_jp:str_jp, str_en:str_en});
 	},
@@ -322,7 +324,7 @@ ui.popupmgr.addpopup('newboard',
 		
 		/* 新規作成 or Cancel */
 		var popup = this;
-		this.addExecButton("新規作成", "Create", function(){ popup.execute();});
+		this.addExecButton("新規作成", "Create", function(){ popup.execute();}, {className:"btn btn-ok"});
 		this.addCancelButton();
 	},
 	makeForm_tawa_shape : function(form){
@@ -421,7 +423,7 @@ ui.popupmgr.addpopup('urlinput',
 		this.addBR();
 		
 		var popup = this;
-		this.addExecButton("読み込む", "Import", function(){ popup.urlinput();});
+		this.addExecButton("読み込む", "Import", function(){ popup.urlinput();}, {className:"btn btn-ok"});
 		this.addCancelButton();
 	},
 	
@@ -466,7 +468,7 @@ ui.popupmgr.addpopup('urloutput',
 		this.addTextArea({name:"ta", cols:'48', rows:'8', wrap:'hard', value:'', readonly:'readonly'});
 		this.addBR();
 		
-		this.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl);
+		this.addExecButton("このURLを開く", "Open this URL on another window/tab", openurl, {className:"btn btn-info"});
 		this.addCloseButton();
 	},
 	
@@ -514,7 +516,7 @@ ui.popupmgr.addpopup('fileopen',
 		this.addText("ファイル選択", "Choose file");
 		this.addBR();
 		
-		this.addInput('file', {name:"filebox", id:"filebox"});
+		this.addInput('file', {name:"filebox", id:"filebox", className:'btn btn-info'});
 		this.addInput('hidden', {name:"pencilbox", value:"0"});
 		this.addInput('hidden', {name:"operation", value:"open"});
 		this.addBR();
@@ -597,7 +599,7 @@ ui.popupmgr.addpopup('filesave',
 		this.addBR();
 		
 		var popup = this;
-		this.addExecButton("保存", "Save", function(){ popup.filesave();});
+		this.addExecButton("保存", "Save", function(){ popup.filesave();}, {className:"btn btn-ok"});
 		
 		this.addCloseButton();
 	},
@@ -718,8 +720,8 @@ ui.popupmgr.addpopup('imagesave',
 		}
 		this.addBR();
 		
-		this.addExecButton("ダウンロード", "Download", function(){ popup.saveimage();});
-		this.addExecButton("別ウィンドウで開く", "Open another window", function(){ popup.openimage();});
+		this.addExecButton("ダウンロード", "Download", function(){ popup.saveimage();}, {className:"btn btn-ok"});
+		this.addExecButton("別ウィンドウで開く", "Open another window", function(){ popup.openimage();}, {className:"btn btn-info"});
 		
 		this.addCloseButton();
 		
@@ -945,7 +947,7 @@ ui.popupmgr.addpopup('colors',
 	addColorSelector : function(idname, str_ja, str_en){
 		this.addText(str_ja, str_en);
 		this.addInput('color', {name:idname+"_set", value:Candle.parse(ui.puzzle.painter[idname]), onchange:this.setcolor});
-		this.addExecButton("クリア", "Reset", this.clearcolor, {name:idname+"_clear"});
+		this.addExecButton("クリア", "Reset", this.clearcolor, {name:idname+"_clear", className:'btn btn-warn'});
 		this.addBR();
 	},
 	

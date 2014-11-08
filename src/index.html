@@ -83,14 +83,14 @@
    <form name="urlinput">
     <h4 class="notice_item">URLを入力する</h4>
     <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea><br>
-    <input type="button" id="urlinput_btn" value="入力">
-    <input type="reset" id="urlinput_clr" value="リセット"><br>
+    <input type="button" class="btn btn-ok" id="urlinput_btn" value="入力">
+    <input type="reset" class="btn" id="urlinput_clr" value="リセット"><br>
    </form>
    <hr>
    <form name="fileform" id="fileform" action="fileio.cgi" method="post"
          target="fileiopanel" enctype="multipart/form-data" onsubmit="return false;">
     <h4 class="notice_item">ファイルを読み込む</h4>
-    <input type="file" name="filebox" id="filebox"><br>
+    <input type="file" name="filebox" class="btn btn-info" id="filebox"><br>
     <input type="hidden" name="pencilbox" value="0">
     <input type="hidden" name="operation" value="open">
    </form>
@@ -109,7 +109,7 @@
     </div>
     <textarea name="comtext" wrap="hard" style="width:240px;height:120px;background-color:#dfdfdf;" readonly></textarea>
     <br style="clear:both;">
-    <input type="button" name="open" value="このデータを読み込む" />
+    <input type="button" name="open" class="btn btn-ok" value="このデータを読み込む" />
    </form>
   </td>
  </tr>

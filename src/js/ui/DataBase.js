@@ -97,7 +97,7 @@ ui.popupmgr.addpopup('database',
 		this.initTable({},{borderCollapse:'collapse'});
 		/* ----------------------------------------------------------------- */
 		this.initRow();
-		this.initCell({rowSpan:3},{paddingRight:'12pt'});
+		this.initCell({},{paddingRight:'12pt'});
 		
 		var sortitem = [
 			{name:'idlist',  str_jp:"ID順",            str_en:"ID order"},
@@ -110,43 +110,29 @@ ui.popupmgr.addpopup('database',
 		this.addExecButton('▲', 'Up',   handler, {name:'tableup'});
 		this.addExecButton('▼', 'Down', handler, {name:'tabledn'});
 		this.addBR();
-		this.addBR();
 		
 		this.addSelect({name:'datalist', size:'8'}, []);
 		form.datalist.style.width = '100%';
 		form.datalist.onchange = handler;
 		
 		/* ----------------------------------------------------------------- */
-		this.initCell({colSpan:2},{verticalAlign:'middle'});
+		this.initCell();
 		
 		this.addText("コメント:", "Comment:");
 		this.addBR();
-		this.addTextArea({name:"comtext", cols:'24', rows:'3', wrap:'hard', readonly:'readonly'});
+		this.addTextArea({name:"comtext", cols:'28', rows:'5', wrap:'hard', readonly:'readonly'});
 		form.comtext.style.backgroundColor = '#dfdfdf';
-		
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({rowSpan:2},{verticalAlign:'bottom',paddingRight:'8pt'});
-		
-		this.addExecButton("盤面を保存",         "Save",           handler, {name:'save'});
 		this.addBR();
-		this.addExecButton("コメントを編集する", "Edit Comment",   handler, {name:'comedit'});
+		
+		this.addExecButton("コメント編集", "Edit Comment",   handler, {name:'comedit'});
+		this.addExecButton("難易度設定",   "Set difficulty", handler, {name:'difedit'});
+		this.addExecButton("削除", "Delete", handler, {name:'del', className:'btn btn-danger'});
 		this.addBR();
-		this.addExecButton("難易度を設定する",   "Set difficulty", handler, {name:'difedit'});
 		this.addBR();
-		this.addExecButton("データを読み込む",   "Load",           handler, {name:'open'});
-		
-		/* ----------------------------------------------------------------- */
-		this.initCell({},{verticalAlign:'top',paddingRight:'4pt'});
-		
-		this.addExecButton("削除", "Delete", handler, {name:'del'});
-		form.del.style.color = 'red';
-		
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({},{verticalAlign:'bottom'});
-		
+		this.addExecButton("データ読み込み", "Load", handler, {name:'open', className:"btn btn-info"});
+		this.addExecButton("盤面保存",      "Save", handler, {name:'save', className:"btn btn-info"});
 		this.addCloseButton();
+		
 		/* ----------------------------------------------------------------- */
 		
 		this.form = form;
@@ -306,22 +292,24 @@ ui.database = {
 	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
-		var selected = this.getDataID(), _doc = document;
+		var selected = this.getDataID(), form = document.database;
 		if(selected>=0){
-			_doc.database.comtext.value = ""+this.DBlist[selected].comment;
+			form.comtext.value = ""+this.DBlist[selected].comment;
 			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
-			_doc.database.comtext.value = "";
+			form.comtext.value = "";
 			this.DBsid = -1;
 		}
 
-		_doc.database.tableup.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
-		_doc.database.tabledn.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
-		_doc.database.comedit.disabled = (this.DBsid===-1);
-		_doc.database.difedit.disabled = (this.DBsid===-1);
-		_doc.database.open.disabled    = (this.DBsid===-1);
-		_doc.database.del.disabled     = (this.DBsid===-1);
+		var sid = this.DBsid; /* selected id */
+		var sortbyid = (form.sorts.value==='idlist');
+		form.tableup.disabled = (!sortbyid || sid===-1 || sid===1);
+		form.tabledn.disabled = (!sortbyid || sid===-1 || sid===this.DBlist.length);
+		form.comedit.disabled = (sid===-1);
+		form.difedit.disabled = (sid===-1);
+		form.open.style.color = (sid===-1 ? "silver" : "");
+		form.del.style.color  = (sid===-1 ? "silver" : "");
 	},
 
 	//---------------------------------------------------------------------------

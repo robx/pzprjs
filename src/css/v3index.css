@@ -37,6 +37,12 @@
 
 	input, button, textarea, select{ font-size:0.9em;}
 
+	.btn { display:inline-block; text-align:center; vertical-align:middle; font:90%/1.2 sans-serif; cursor:default;
+		   margin:0pt 2pt 0pt 2pt; padding:2pt 4pt 2pt 4pt; border-radius:4pt; border:solid 1pt gray;
+		   background: silver; background: linear-gradient(to bottom, white, silver);}
+	.btn-ok   { background: blue; background: linear-gradient(to bottom, #afafff, blue); color:white;}
+	.btn-info { background: #993366; background: linear-gradient(to bottom, #cc6699, #993366);  color:white;}
+
 	/* for index.html, index_en.html, index_test.html */
 	li.lunch { color:black;}
 	li.lunch2{ color:#666666;}
