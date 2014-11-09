@@ -29,7 +29,7 @@ pzpr.variety = {
 		return (!!this.info[pid].alias.pzprurl ? this.info[pid].alias.pzprurl : pid);
 	},
 	toKanpen : function(pid){
-		return (!!this.info[pid].alias.kanpen ? !!this.info[pid].alias.kanpen : pid);
+		return (!!this.info[pid].alias.kanpen ? this.info[pid].alias.kanpen : pid);
 	}
 };
 
