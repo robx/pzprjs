@@ -6,69 +6,41 @@
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('debug',
 {
-	formname : 'testform',
-	disable_remove : true,
+	formname : 'debug',
 	
-	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
-	//------------------------------------------------------------------------------
-	makeForm : function(){
-		this.settitle("pop_test", "pop_test");
+	setFormEvent : function(){
+		var form = this.form;
+		function ae(name, func){ ui.event.addMouseDownEvent(form[name], ui.debug, func);}
 		
-		this.addTextArea({name:"testarea", id:"testarea", cols:'40', rows:'16', wrap:'off'});
-		this.form.testarea.style.fontSize = '10pt';
-		this.addBR();
+		ae("starttest", function(){ this.starttest();});
+		ae("all_test",  function(){ this.all_test();});
 		
-		var debug = ui.debug;
-		if(ui.debugmode){
-			this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
-			this.addText(" ", " ");
-			this.addExecButton("ALL", "ALL-Test", function(){ debug.all_test();}, {name:'all_test'});
-			this.addText(" ", " ");
-		}
+		ae("eval1", function(){ this.perfeval();});
+		ae("eval2", function(){ this.painteval();});
+		ae("eval3", function(){ this.resizeeval();});
 		
-		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
-		this.addExecButton("T2", "T2", function(){ debug.painteval();});
-		this.addExecButton("T3", "T3", function(){ debug.resizeeval();});
-		this.addText(" ", " ");
+		ae("loadperf", function(){ this.loadperf();});
+		ae("database", function(){ this.dispdatabase();});
+		ae("inputchk", function(){ this.inputcheck(getEL('testarea').value);});
 		
-		if(ui.debugmode){
-			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
-		}
-		if(pzpr.env.storage.localST){
-			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
-		}
-		if(ui.debugmode){
-			this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
-		}
-		this.addBR();
+		ae("filesave", function(){ this.filesave();});
+		ae("pbsave",   function(){ this.filesave_pencilbox();});
+		ae("fileload", function(){ this.fileopen();});
+		ae("clrtext",  function(){ this.erasetext();});
+		ui.event.addMouseDownEvent(form.close, this, function(){ this.hide();});
 		
-		this.addExecButton("Save", "Save", function(){ debug.filesave();});
-		this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox();});
-		this.addText(" ", " ");
-		
-		this.addExecButton("Load", "Load", function(){ debug.fileopen();});
-		this.addExecButton("消去", "Cls", function(){ debug.erasetext();});
-		this.addCloseButton();
-
-		/* テスト用文字列出力要素を追加 */
-		if(ui.debugmode && !getEL('testdiv')){
-			var el = document.createElement('div');
-			el.id = 'testdiv';
-			el.style.textAlign  = 'left';
-			el.style.fontSize   = '8pt';
-			el.style.lineHeight = '100%';
-			document.body.appendChild(el);
+		if(!ui.debugmode){
+			this.form.starttest.style.display = "none";
+			this.form.all_test.style.display = "none";
+			this.form.loadperf.style.display = "none";
+			this.form.inputchk.style.display = "none";
 		}
 	},
 	
-	remove : function(){
-		/* removeさせない */
-	},
 	show : function(px,py){
 		if(!this.pop){
-			this.makeElement();
-			this.makeForm();
+			this.reset();
+			this.searchForm();
 			this.setEvent();
 		}
 		this.pop.style.display = 'inline';

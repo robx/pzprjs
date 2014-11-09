@@ -51,91 +51,25 @@ ui.ProblemData.prototype =
 ui.popupmgr.addpopup('database',
 {
 	formname : 'database',
-	disable_remove : true,
 	
-	//------------------------------------------------------------------------------
-	// 要素作成用関数
-	//------------------------------------------------------------------------------
-	createElement : function(tagname, attr, style){
-		var el = createEL(tagname);
-		if(!!attr) { for(var att in attr){ el[att]=attr[att];}}
-		if(!!style){ for(var name in style){ el.style[name]=style[name];}}
-		return el;
-	},
-	
-	//------------------------------------------------------------------------------
-	// テーブルレイアウト作成用の関数
-	//------------------------------------------------------------------------------
-	table : null,
-	tbody : null,
-	trow  : null,
-	initTable : function(attr, style){
-		this.table = this.createElement('table', attr, style);
-		this.addElement(this.table);
+	setFormEvent : function(){
+		var popup = this, form=popup.form;
+		function handler(e){ popup.database_handler(e||window.event);}
+		function ae(name, func){ ui.event.addMouseDownEvent(form[name], popup, func);}
 		
-		this.tbody = this.createElement('tbody');
-		this.table.appendChild(this.tbody);
-	},
-	initRow : function(attr, style){
-		this.trow = this.createElement('tr', attr, style);
-		this.tbody.appendChild(this.trow);
-	},
-	initCell : function(attr, style){
-		this.form = this.createElement('td', attr, style);
-		this.trow.appendChild(this.form);
-	},
-	
-	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
-	//------------------------------------------------------------------------------
-	makeForm : function(){
-		var popup = this, handler = function(e){ popup.database_handler(e||window.event);};
-		var form = this.form;
+		this.form.sorts.onchange = handler;
+		ae("tableup", handler);
+		ae("tabledn", handler);
+		this.form.datalist.onchange = handler;
 		
-		this.settitle("ブラウザ保存/復帰", "Browser Saved Data");
+		ae("comedit", handler);
+		ae("difedit", handler);
+		ae("del", handler);
 		
-		this.initTable({},{borderCollapse:'collapse'});
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({},{paddingRight:'12pt'});
+		ae("open", handler);
+		ae("save", handler);
 		
-		var sortitem = [
-			{name:'idlist',  str_jp:"ID順",            str_en:"ID order"},
-			{name:'newsave', str_jp:"保存が新しい順",  str_en:"Latest Save"},
-			{name:'oldsave', str_jp:"保存が古い順",    str_en:"Oldest Save"},
-			{name:'size',    str_jp:"サイズ/難易度順", str_en:"Size, Dif. order"}
-		];
-		this.addSelect({name:'sorts'},sortitem);
-		form.sorts.onchange = handler;
-		this.addExecButton('▲', 'Up',   handler, {name:'tableup'});
-		this.addExecButton('▼', 'Down', handler, {name:'tabledn'});
-		this.addBR();
-		
-		this.addSelect({name:'datalist', size:'8'}, []);
-		form.datalist.style.width = '100%';
-		form.datalist.onchange = handler;
-		
-		/* ----------------------------------------------------------------- */
-		this.initCell();
-		
-		this.addText("コメント:", "Comment:");
-		this.addBR();
-		this.addTextArea({name:"comtext", cols:'28', rows:'5', wrap:'hard', readonly:'readonly'});
-		form.comtext.style.backgroundColor = '#dfdfdf';
-		this.addBR();
-		
-		this.addExecButton("コメント編集", "Edit Comment",   handler, {name:'comedit'});
-		this.addExecButton("難易度設定",   "Set difficulty", handler, {name:'difedit'});
-		this.addExecButton("削除", "Delete", handler, {name:'del', className:'btn btn-danger'});
-		this.addBR();
-		this.addBR();
-		this.addExecButton("データ読み込み", "Load", handler, {name:'open', className:"btn btn-info"});
-		this.addExecButton("盤面保存",      "Save", handler, {name:'save', className:"btn btn-info"});
-		this.addCloseButton();
-		
-		/* ----------------------------------------------------------------- */
-		
-		this.form = form;
+		ae("close", function(){ this.hide();});
 	},
 	
 	show : function(px,py){

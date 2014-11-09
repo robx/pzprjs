@@ -1,5 +1,5 @@
 // KeyPopup.js v3.4.0
-/* global ui:false, _doc:false, createEL:false, getEL:false */
+/* global ui:false, createEL:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
@@ -129,7 +129,13 @@ ui.keypopup =
 		this.paneltype = { 1:(pzpr.EDITOR?type[0]:0), 3:(type[1])};
 		if(!this.paneltype[1] && !this.paneltype[3]){ return;}
 		
-		if(!this.element){ this.element = this.makeKeyPopup();}
+		if(!this.element){
+			var rect = pzpr.util.getRect(getEL('divques'));
+			this.element = getEL('keypopup');
+			this.element.style.left = (rect.left+48)+'px';
+			this.element.style.top  = (rect.top +48)+'px';
+			pzpr.util.unselectable(this.element);
+		}
 		
 		if(this.paneltype[1]!==0){ this.createtable(1);}
 		if(this.paneltype[3]!==0){ this.createtable(3);}
@@ -147,41 +153,6 @@ ui.keypopup =
 		this.tdcolor = (mode===3 ? ui.puzzle.painter.fontAnscolor : "black");
 
 		this.generate(mode);
-	},
-
-	//---------------------------------------------------------------------------
-	// kp.makeKeyPopup() キーポップアップのパネルを作成する
-	//---------------------------------------------------------------------------
-	makeKeyPopup : function(){
-		var keypopup, bar;
-		var rect = pzpr.util.getRect(getEL('divques'));
-		
-		keypopup = createEL('div');
-		keypopup.className = 'popup';
-		keypopup.id = 'keypopup';
-		keypopup.style.left   = (rect.left+48)+'px';
-		keypopup.style.top    = (rect.top +48)+'px';
-		keypopup.style.zIndex = 100;
-		getEL("popup_parent").appendChild(keypopup);
-		
-		bar = createEL('div');
-		bar.className = 'titlebar';
-		bar.id = 'barkeypopup';
-		bar.appendChild(_doc.createTextNode("panel"));
-		pzpr.util.unselectable(bar);
-		keypopup.appendChild(bar);
-		
-		var panel = createEL('div');
-		panel.className = 'panelbase';
-		panel.id = 'panelbase1';
-		keypopup.appendChild(panel);
-		
-		panel = createEL('div');
-		panel.className = 'panelbase';
-		panel.id = 'panelbase3';
-		keypopup.appendChild(panel);
-		
-		return keypopup;
 	},
 
 	//---------------------------------------------------------------------------
