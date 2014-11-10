@@ -409,18 +409,18 @@ function firstCanvasReady(puzzle){
 //  exec????()        マウス入力へ分岐する(puzzle.mouseが不変でないためバイパスする)
 //---------------------------------------------------------------------------
 function setCanvasEvents(puzzle){
-	var canvas = puzzle.canvas;
+	function ae(type,func){ pzpr.util.addEvent(puzzle.canvas, type, puzzle, func);}
 	
 	// マウス入力イベントの設定
-	pzpr.util.addMouseDownEvent(canvas, puzzle, execMouseDown);
-	pzpr.util.addMouseMoveEvent(canvas, puzzle, execMouseMove);
-	pzpr.util.addMouseUpEvent  (canvas, puzzle, execMouseUp);
-	pzpr.util.addEvent(canvas, "mouseout", puzzle, execMouseOut);
-	canvas.oncontextmenu = function(){ return false;};
+	ae("mousedown", execMouseDown);
+	ae("mousemove", execMouseMove);
+	ae("mouseup",   execMouseUp);
+	ae("mouseout",  execMouseOut);
+	puzzle.canvas.oncontextmenu = function(){ return false;};
 	
 	// キー入力イベントの設定
-	pzpr.util.addEvent(canvas, 'keydown',  puzzle, execKeyDown);
-	pzpr.util.addEvent(canvas, 'keyup',    puzzle, execKeyUp);
+	ae("keydown", execKeyDown);
+	ae("keyup",   execKeyUp);
 }
 function execMouseDown(e){
 	/* キー入力のフォーカスを当てる */

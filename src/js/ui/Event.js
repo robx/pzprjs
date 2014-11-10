@@ -12,18 +12,12 @@ ui.event =
 	evlist : [],
 
 	//----------------------------------------------------------------------
-	// event.addEvent()          addEventListener(など)を呼び出す
-	// event.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// event.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// event.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	// event.addEvent()        addEventListener(など)を呼び出す
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
 		var func = pzpr.util.addEvent(el, event, self, callback, !!capt);
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
-	addMouseDownEvent : pzpr.util.addMouseDownEvent,
-	addMouseMoveEvent : pzpr.util.addMouseMoveEvent,
-	addMouseUpEvent   : pzpr.util.addMouseUpEvent,
 
 	//----------------------------------------------------------------------
 	// event.removeAllEvents() addEventで登録されたイベントを削除する

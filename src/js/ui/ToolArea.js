@@ -207,8 +207,8 @@ ui.toolarea = {
 		this.addButtons(btnredo,  "進", "->");
 		this.addButtons(btnclear, "回答消去", "Erase Answer");
 
-		ui.event.addMouseUpEvent(btnundo, this, this.buttonup);
-		ui.event.addMouseUpEvent(btnredo, this, this.buttonup);
+		ui.event.addEvent(btnundo, "mouseup", this, this.buttonup);
+		ui.event.addEvent(btnredo, "mouseup", this, this.buttonup);
 
 		// 初期値ではどっちも押せない
 		getEL('btnundo').style.color = 'silver';
@@ -349,7 +349,7 @@ ui.toolarea = {
 	// toolarea.addButtons() ボタンの情報を変数に登録する
 	//---------------------------------------------------------------------------
 	addButtons : function(el, strJP, strEN){
-		ui.event.addMouseDownEvent(el, this, this.buttonclick);
+		ui.event.addEvent(el, "mousedown", this, this.buttonclick);
 		pzpr.util.unselectable(el);
 		this.btnstack.push({el:el, str:{ja:strJP, en:strEN}});
 	},

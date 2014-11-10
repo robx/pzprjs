@@ -1,5 +1,28 @@
 // util.js v3.4.0
 
+(function(){
+
+var api = pzpr.env.API,
+	eventMouseDown = "mousedown",
+	eventMouseMove = "mousemove",
+	eventMouseUp   = "mouseup";
+
+if(api.pointerevent){
+	eventMouseDown = "pointerdown";
+	eventMouseMove = "pointermove";
+	eventMouseUp   = "pointerup";
+}
+else if(api.mspointerevent){
+	eventMouseDown = "MSPointerDown";
+	eventMouseMove = "MSPointerMove";
+	eventMouseUp   = "MSPointerUp";
+}
+else if(api.touchevent){
+	eventMouseDown = "touchstart";
+	eventMouseMove = "touchmove";
+	eventMouseUp   = "touchend";
+}
+
 //----------------------------------------------------------------------
 // EventやDOM関連のツール的関数群
 //----------------------------------------------------------------------
@@ -43,15 +66,16 @@ pzpr.util = {
 	//----------------------------------------------------------------------
 	// pzpr.util.addEvent()          addEventListener(など)を呼び出す
 	// pzpr.util.eventWrapper()      イベント発生時のイベントWrapper関数を作成する
-	// pzpr.util.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// pzpr.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
 	//----------------------------------------------------------------------
-	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){ callback.call(self, pzpr.util.eventWrapper(e));};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
-		return func;
+	addEvent : function(el, type, self, callback, capt){
+		if     (type==="mousedown"){ type = eventMouseDown;}
+		else if(type==="mousemove"){ type = eventMouseMove;}
+		else if(type==="mouseup")  { type = eventMouseUp;}
+		
+		function executer(e){ callback.call(self, pzpr.util.eventWrapper(e));}
+		if(!!el.addEventListener){ el.addEventListener(type, executer, !!capt);}
+		else                     { el.attachEvent('on'+type, executer);}
+		return executer;
 	},
 	eventWrapper : function(e){
 		e = e || window.event;
@@ -59,48 +83,6 @@ pzpr.util = {
 		if(!e.stopPropagation){ e.stopPropagation = function(e){ e.cancelBubble = true;};}
 		if(!e.preventDefault) { e.preventDefault  = function(e){ e.returnValue = false;};}
 		return e;
-	},
-	addMouseDownEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointerdown", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerDown", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchstart", self, func);
-		}
-		else{
-			this.addEvent(el, "mousedown", self, func);
-		}
-	},
-	addMouseMoveEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointermove", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerMove", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchmove",  self, func);
-		}
-		else{
-			this.addEvent(el, "mousemove", self, func);
-		}
-	},
-	addMouseUpEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointerup", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerUp", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchend", self, func);
-		}
-		else{
-			this.addEvent(el, "mouseup", self, func);
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -182,3 +164,5 @@ pzpr.util = {
 		return { top:top, bottom:bottom, left:left, right:right};
 	}
 };
+
+})();

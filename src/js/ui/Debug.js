@@ -10,24 +10,23 @@ ui.popupmgr.addpopup('debug',
 	
 	setFormEvent : function(){
 		var form = this.form;
-		function ae(name, func){ ui.event.addMouseDownEvent(form[name], ui.debug, func);}
+		function ae(name, func){ ui.event.addEvent(form[name], "mousedown", ui.debug, func);}
 		
-		ae("starttest", function(){ this.starttest();});
-		ae("all_test",  function(){ this.all_test();});
+		ae("starttest", this.starttest);
+		ae("all_test",  this.all_test);
 		
-		ae("eval1", function(){ this.perfeval();});
-		ae("eval2", function(){ this.painteval();});
-		ae("eval3", function(){ this.resizeeval();});
+		ae("eval1", this.perfeval);
+		ae("eval2", this.painteval);
+		ae("eval3", this.resizeeval);
 		
-		ae("loadperf", function(){ this.loadperf();});
-		ae("database", function(){ this.dispdatabase();});
+		ae("loadperf", this.loadperf);
+		ae("database", this.dispdatabase);
 		ae("inputchk", function(){ this.inputcheck(getEL('testarea').value);});
 		
-		ae("filesave", function(){ this.filesave();});
-		ae("pbsave",   function(){ this.filesave_pencilbox();});
-		ae("fileload", function(){ this.fileopen();});
-		ae("clrtext",  function(){ this.erasetext();});
-		ui.event.addMouseDownEvent(form.close, this, function(){ this.hide();});
+		ae("filesave", this.filesave);
+		ae("pbsave",   this.filesave_pencilbox);
+		ae("fileload", this.fileopen);
+		ae("clrtext",  this.erasetext);
 		
 		if(!ui.debugmode){
 			this.form.starttest.style.display = "none";

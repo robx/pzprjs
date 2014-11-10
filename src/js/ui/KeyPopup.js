@@ -143,7 +143,7 @@ ui.keypopup =
 		this.resizepanel();
 		
 		var bar = getEL('barkeypopup');
-		ui.event.addMouseDownEvent(bar, ui.popupmgr, ui.popupmgr.titlebardown);
+		ui.event.addEvent(bar, "mousedown", ui.popupmgr, ui.popupmgr.titlebardown);
 		ui.event.addEvent(bar, 'dblclick', ui.menuconfig, function(){ this.set('keypopup',false);});
 	},
 	createtable : function(mode,type){
@@ -350,7 +350,7 @@ ui.keypopup =
 			_div = createEL('div');
 			_div.className = 'kpcell kpcellvalid';
 			_div.onclick = function(e){ e.preventDefault();};
-			ui.event.addMouseDownEvent(_div, ui.puzzle, function(){ this.key.keyevent(ca,0);});
+			ui.event.addEvent(_div, "mousedown", ui.puzzle, function(){ this.key.keyevent(ca,0);});
 			pzpr.util.unselectable(_div);
 		}
 		else{

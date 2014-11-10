@@ -27,8 +27,8 @@ ui.popupmgr =
 	
 	setEvents : function(){
 		for(var name in this.popups){ this.popups[name].setEvent();}
-		ui.event.addMouseMoveEvent(_doc, this, this.titlebarmove);
-		ui.event.addMouseUpEvent  (_doc, this, this.titlebarup);
+		ui.event.addEvent(_doc, "mousemove", this, this.titlebarmove);
+		ui.event.addEvent(_doc, "mouseup",   this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
@@ -154,7 +154,7 @@ ui.popupmgr.addpopup('template',
 		if(!!this.form){
 			this.setFormEvent();
 			if(!!this.form.close){
-				ui.event.addMouseDownEvent(this.form.close, this, function(){ this.hide();});
+				ui.event.addEvent(this.form.close, "mousedown", this, this.hide);
 			}
 		}
 		if(!!this.titlebar){
@@ -165,7 +165,7 @@ ui.popupmgr.addpopup('template',
 	},
 	setTitlebarEvent :function(){
 		var mgr = ui.popupmgr;
-		ui.event.addMouseDownEvent(this.titlebar, mgr, mgr.titlebardown);
+		ui.event.addEvent(this.titlebar, "mousedown", mgr, mgr.titlebardown);
 	},
 
 	show : function(px,py){
@@ -226,7 +226,7 @@ ui.popupmgr.addpopup('newboard',
 		getEL("nb_shape_tawa").style.display = ((pid==='tawa') ? "" : "none");
 		if(pid==='tawa'){ this.setFormEvent_tawa();}
 		
-		ui.event.addMouseDownEvent(this.form.create, this, function(){ this.execute();});
+		ui.event.addEvent(this.form.create, "mousedown", this, this.execute);
 	},
 	setFormEvent_tawa : function(){
 		function setbgcolor(idx){
@@ -295,7 +295,7 @@ ui.popupmgr.addpopup('urlinput',
 	formname : 'urlinput',
 	
 	setFormEvent : function(){
-		ui.event.addMouseDownEvent(this.form.import, this, function(){ this.urlinput();});
+		ui.event.addEvent(this.form.import, "mousedown", this, this.urlinput);
 	},
 	
 	//------------------------------------------------------------------------------
@@ -317,7 +317,7 @@ ui.popupmgr.addpopup('urloutput',
 	
 	setFormEvent : function(){
 		var popup = this, form = popup.form;
-		function ae(name, func){ ui.event.addMouseDownEvent(form[name], popup, func);}
+		function ae(name, func){ ui.event.addEvent(form[name], "mousedown", popup, func);}
 		function outputurl(e){ this.urloutput(e);}
 		
 		ae("pzprv3",     outputurl);
@@ -325,7 +325,7 @@ ui.popupmgr.addpopup('urloutput',
 		ae("kanpen",     outputurl);
 		ae("heyaapp",    outputurl);
 		ae("pzprv3edit", outputurl);
-		ae("opneurl", function(){ this.openurl();});
+		ae("opneurl",    this.openurl);
 		
 		var pid = ui.puzzle.pid, exists = pzpr.variety.info[pid].exists;
 		// form.pzprapp.style.display             = (exists.pzprapp ? "" : "none");
@@ -404,7 +404,7 @@ ui.popupmgr.addpopup('filesave',
 		
 		this.form.action = ui.fileio;
 		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
-		ui.event.addMouseDownEvent(this.form.execsave, this, function(){ this.filesave();});
+		ui.event.addEvent(this.form.execsave, "mousedown", this, this.filesave);
 		
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety.info[ui.puzzle.pid].exists.pencilbox;
@@ -483,10 +483,10 @@ ui.popupmgr.addpopup('imagesave',
 		
 		this.form.action = ui.fileio;
 		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
-		ui.event.addEvent(this.form.filetype, "change", this, function(){ this.changefilename();});
-		ui.event.addMouseDownEvent(this.form.cellsize, this, function(){ this.estimatesize();});
-		ui.event.addMouseDownEvent(this.form.execdl,  this, function(){ this.saveimage();});
-		ui.event.addMouseDownEvent(this.form.exectab, this, function(){ this.openimage();});
+		ui.event.addEvent(this.form.filetype, "change",    this, this.changefilename);
+		ui.event.addEvent(this.form.cellsize, "mousedown", this, this.estimatesize);
+		ui.event.addEvent(this.form.execdl,   "mousedown", this, this.saveimage);
+		ui.event.addEvent(this.form.exectab,  "mousedown", this, this.openimage);
 		
 		/* ファイル形式選択オプション */
 		var filetype = this.form.filetype;
@@ -621,7 +621,7 @@ ui.popupmgr.addpopup('adjust',
 	setFormEvent : function(){
 		var popup = this, form = popup.form;
 		function adjust(e){ ui.puzzle.board.exec.execadjust(e.target.name);}
-		function ae(name, func){ ui.event.addMouseDownEvent(form[name], popup, adjust);}
+		function ae(name){ ui.event.addEvent(form[name], "mousedown", popup, adjust);}
 		
 		ae("expandup");
 		ae("expanddn");
@@ -644,7 +644,7 @@ ui.popupmgr.addpopup('turnflip',
 	setFormEvent : function(){
 		var popup = this, form = popup.form;
 		function adjust(e){ ui.puzzle.board.exec.execadjust(e.target.name);}
-		function ae(name, func){ ui.event.addMouseDownEvent(form[name], popup, adjust);}
+		function ae(name){ ui.event.addEvent(form[name], popup, "mousedown", adjust);}
 		
 		ae("turnl");
 		ae("turnr");
@@ -669,10 +669,10 @@ ui.popupmgr.addpopup('colors',
 		this.setColorSelector('qanscolor');
 	},
 	setColorSelector : function(idname, str_ja, str_en){
-		this.form[idname+"_set"].onchange = this.setcolor;
 		this.form[idname+"_set"].value = Candle.parse(ui.puzzle.painter[idname]);
 		
-		ui.event.addMouseDownEvent(this.form[idname+"_clear"], this, function(e){ this.clearcolor(e);});
+		ui.event.addEvent(this.form[idname+"_set"],   "change",    this, this.setcolor);
+		ui.event.addEvent(this.form[idname+"_clear"], "mousedown", this, this.clearcolor);
 	},
 	
 	//------------------------------------------------------------------------------
@@ -698,7 +698,7 @@ ui.popupmgr.addpopup('dispsize',
 	formname : 'dispsize',
 
 	setFormEvent : function(){
-		ui.event.addMouseDownEvent(this.form.exec, this, function(){ this.changesize();});
+		ui.event.addEvent(this.form.exec, "mousedown", this, this.changesize);
 	},
 	
 	show : function(px,py){

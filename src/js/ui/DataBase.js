@@ -54,22 +54,19 @@ ui.popupmgr.addpopup('database',
 	
 	setFormEvent : function(){
 		var popup = this, form=popup.form;
-		function handler(e){ popup.database_handler(e||window.event);}
-		function ae(name, func){ ui.event.addMouseDownEvent(form[name], popup, func);}
+		function ae(name, type){ ui.event.addEvent(form[name], (type||"mousedown"), popup, popup.database_handler);}
 		
-		this.form.sorts.onchange = handler;
-		ae("tableup", handler);
-		ae("tabledn", handler);
-		this.form.datalist.onchange = handler;
+		ae("sorts", "change");
+		ae("tableup");
+		ae("tabledn");
+		ae("datalist", "change");
 		
-		ae("comedit", handler);
-		ae("difedit", handler);
-		ae("del", handler);
+		ae("comedit");
+		ae("difedit");
+		ae("del");
 		
-		ae("open", handler);
-		ae("save", handler);
-		
-		ae("close", function(){ this.hide();});
+		ae("open");
+		ae("save");
 	},
 	
 	show : function(px,py){
