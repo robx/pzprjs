@@ -80,8 +80,8 @@ pzpr.util = {
 	eventWrapper : function(e){
 		e = e || window.event;
 		if(!e.target){ e.target = e.srcElement;}
-		if(!e.stopPropagation){ e.stopPropagation = function(e){ e.cancelBubble = true;};}
-		if(!e.preventDefault) { e.preventDefault  = function(e){ e.returnValue = false;};}
+		if(!e.stopPropagation){ e.stopPropagation = function(){ this.cancelBubble = true;};}
+		if(!e.preventDefault) { e.preventDefault  = function(){ this.returnValue = false;};}
 		return e;
 	},
 

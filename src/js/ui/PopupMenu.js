@@ -295,7 +295,7 @@ ui.popupmgr.addpopup('urlinput',
 	formname : 'urlinput',
 	
 	setFormEvent : function(){
-		ui.event.addEvent(this.form.import, "mousedown", this, this.urlinput);
+		ui.event.addEvent(this.form.exec, "mousedown", this, this.urlinput);
 	},
 	
 	//------------------------------------------------------------------------------
