@@ -1,16 +1,11 @@
 // UI.js v3.4.0
 /* global ui:false, File:false */
-/* exported ui, _doc, getEL, createEL, createButton */
+/* exported ui, _doc, getEL, createEL */
 
 /* ui.js Locals */
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 function createEL(tagName){ return _doc.createElement(tagName);}
-function createButton(){
-	var button = createEL('div');
-	button.className = 'btn';
-	return button;
-}
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
