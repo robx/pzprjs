@@ -52,23 +52,6 @@ ui.popupmgr.addpopup('database',
 {
 	formname : 'database',
 	
-	setFormEvent : function(){
-		var popup = this, form=popup.form;
-		function ae(name, type){ ui.event.addEvent(form[name], (type||"mousedown"), popup, popup.database_handler);}
-		
-		ae("sorts", "change");
-		ae("tableup");
-		ae("tabledn");
-		ae("datalist", "change");
-		
-		ae("comedit");
-		ae("difedit");
-		ae("del");
-		
-		ae("open");
-		ae("save");
-	},
-	
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		ui.database.openDialog();

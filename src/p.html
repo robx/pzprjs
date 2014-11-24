@@ -57,13 +57,13 @@
         <input type="radio" name="size" id="nb_size_sudoku_3" value="3" /> 25x25
       </div>
       <br />
-      <table id="nb_shape_tawa" border=0 cell-padding=0 cell-spaceing=2 style="margin-top:4pt;margin-bottom:4pt;"><tr style="padding-bottom:2pt;">
-        <td><div id="nb_shape_0"><img src="" style="width:128px;height:32px;top:0px;left:-0px; clip:rect(0px,32px,32px,0px);" /></div></td>
-        <td><div id="nb_shape_1"><img src="" style="width:128px;height:32px;top:0px;left:-32px;clip:rect(0px,64px,32px,32px);" /></div></td>
-        <td><div id="nb_shape_2"><img src="" style="width:128px;height:32px;top:0px;left:-64px;clip:rect(0px,96px,32px,64px);" /></div></td>
-        <td><div id="nb_shape_3"><img src="" style="width:128px;height:32px;top:0px;left:-96px;clip:rect(0px,128px,32px,96px);" /></div></td>
+      <table id="nb_shape_tawa" border=0 cell-padding=0 cell-spaceing=2><tr>
+        <td><div id="nb_shape_0"><img src="" data-button-exec="clickshape" /></div></td>
+        <td><div id="nb_shape_1"><img src="" data-button-exec="clickshape" /></div></td>
+        <td><div id="nb_shape_2"><img src="" data-button-exec="clickshape" /></div></td>
+        <td><div id="nb_shape_3"><img src="" data-button-exec="clickshape" /></div></td>
       </tr></table>
-      <input type="button" name="create" class="btn btn-ok" value="__新規作成__Create__" />
+      <input type="button" data-button-exec="execute" class="btn btn-ok" value="__新規作成__Create__" />
       <input type="button" name="close" class="btn" value="__キャンセル__Cancel__" />
     </form>
   </div>
@@ -75,7 +75,7 @@
       <br />
       <textarea name="ta" cols=48 rows=8 wrap="hard"></textarea>
       <br />
-      <input type="button" name="exec" class="btn btn-ok" value="__読み込む__Import__" />
+      <input type="button" data-button-exec="urlinput" class="btn btn-ok" value="__読み込む__Import__" />
       <input type="button" name="close" class="btn" value="__キャンセル__Cancel__" />
     </form>
   </div>
@@ -83,15 +83,15 @@
   <div class="popup">
     <div class="titlebar">__URL出力__Export URL__</div>
     <form name="urloutput">
-      <input type="button" name="pzprv3"     class="btn" value="__ぱずぷれv3のURLを出力する__Output PUZ-PRE v3 URL__" /><br />
- <!-- <input type="button" name="pzprapp"    class="btn" value="__ぱずぷれ(アプレット)のURLを出力する__Output PUZ-PRE(JavaApplet) URL__" /><br /> -->
-      <input type="button" name="kanpen"     class="btn" value="__カンペンのURLを出力する__Output Kanpen URL__" /><br />
-      <input type="button" name="heyaapp"    class="btn" value="__へやわけアプレットのURLを出力する__Output Heyawake-Applet URL__" /><br />
-      <input type="button" name="pzprv3edit" class="btn" value="__ぱずぷれv3の再編集用URLを出力する__Output PUZ-PRE v3 Re-Edit URL__" /><br />
+      <input type="button" name="pzprv3"     data-button-exec="urloutput" class="btn" value="__ぱずぷれv3のURLを出力する__Output PUZ-PRE v3 URL__" /><br />
+ <!-- <input type="button" name="pzprapp"    data-button-exec="urloutput" class="btn" value="__ぱずぷれ(アプレット)のURLを出力する__Output PUZ-PRE(JavaApplet) URL__" /><br /> -->
+      <input type="button" name="kanpen"     data-button-exec="urloutput" class="btn" value="__カンペンのURLを出力する__Output Kanpen URL__" /><br />
+      <input type="button" name="heyaapp"    data-button-exec="urloutput" class="btn" value="__へやわけアプレットのURLを出力する__Output Heyawake-Applet URL__" /><br />
+      <input type="button" name="pzprv3edit" data-button-exec="urloutput" class="btn" value="__ぱずぷれv3の再編集用URLを出力する__Output PUZ-PRE v3 Re-Edit URL__" /><br />
       <br />
       <textarea name="ta" cols=48 rows=8 wrap="hard" readonly></textarea>
       <br />
-      <input type="button" name="opneurl" class="btn btn-info" value="__このURLを開く__Open this URL on another window/tab__" />
+      <input type="button" data-button-exec="openurl" class="btn btn-info" value="__このURLを開く__Open this URL on another window/tab__" />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
   </div>
@@ -103,7 +103,7 @@
       <input type="hidden" name="pencilbox" value="0" />
       <span>__ファイル選択__Choose file__</span>
       <br />
-      <input type="file" name="filebox" class="btn btn-info" id="filebox" value="" />
+      <input type="file" name="filebox" data-button-exec="fileopen" class="btn btn-info" id="filebox" value="" />
       <br />
       <input type="button" name="close" class="btn" value="__キャンセル__Cancel__" />
     </form>
@@ -126,7 +126,7 @@
       <input type="text" name="filename" value="" />
       <br />
       <br />
-      <input type="button" name="execsave" class="btn btn-ok" value="__保存__Save__" />
+      <input type="button" data-button-exec="filesave" class="btn btn-ok" value="__保存__Save__" />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
   </div>
@@ -136,27 +136,27 @@
     <form name="database">
       <table border=0><tr>
       <td style="padding-right:12pt;">
-        <select name="sorts">
+        <select name="sorts" data-change-exec="database_handler">
           <option value="idlist">__ID順__ID order__</option>
           <option value="newsave">__保存が新しい順__Latest Save__</option>
           <option value="oldsave">__保存が古い順__Oldest Save__</option>
           <option value="size">__サイズ/難易度順__Size, Dif. order__</option>
         </select>
-        <input type="button" name="tableup" class="btn" value="__▲__Up__" />
-        <input type="button" name="tabledn" class="btn" value="__▼__Down__" />
+        <input type="button" name="tableup" data-button-exec="database_handler" class="btn" value="__▲__Up__" />
+        <input type="button" name="tabledn" data-button-exec="database_handler" class="btn" value="__▼__Down__" />
         <br />
-        <select name="datalist" size=8></select>
+        <select name="datalist" size=8 data-change-exec="database_handler"></select>
       </td>
       <td>
         <span>__コメント:__Comment:__</span><br />
         <textarea name="comtext" cols=28 rows=5 wrap="hard" readonly style="background-color:#dfdfdf"></textarea><br />
-        <input type="button" name="comedit" class="btn" value="__コメント編集__Edit Comment__" />
-        <input type="button" name="difedit" class="btn" value="__難易度設定__Set difficulty__" />
-        <input type="button" name="del" class="btn btn-danger" value="__削除__Delete__" />
+        <input type="button" name="comedit" data-button-exec="database_handler" class="btn" value="__コメント編集__Edit Comment__" />
+        <input type="button" name="difedit" data-button-exec="database_handler" class="btn" value="__難易度設定__Set difficulty__" />
+        <input type="button" name="del"     data-button-exec="database_handler" class="btn btn-danger" value="__削除__Delete__" />
         <br />
         <br />
-        <input type="button" name="open" class="btn btn-info" value="__データ読み込み__Load__" />
-        <input type="button" name="save" class="btn btn-info" value="__盤面保存__Save__" />
+        <input type="button" name="open" data-button-exec="database_handler" class="btn btn-info" value="__データ読み込み__Load__" />
+        <input type="button" name="save" data-button-exec="database_handler" class="btn btn-info" value="__盤面保存__Save__" />
         <input type="button" name="close" class="btn" value="__閉じる__Close__" />
       </td>
       </tr></table>
@@ -169,7 +169,7 @@
       <input type="hidden" name="operation" value="imagesave" />
       <input type="hidden" name="urlstr" value="" />
       <span>__ファイル形式__File format__</span>
-      <select name="filetype">
+      <select name="filetype" data-change-exec="changefilename">
         <option value="png">__PNG形式 (png)__PNG Format (png)__</option>
         <option value="svg">__ベクター画像(SVG)__Vector Image (SVG)__</option>
       </select>
@@ -178,12 +178,12 @@
       <input type="text" name="filename" value="" />
       <br />
       <span>__画像のサイズ__Image Size__</span>
-      <input type="number" name="cellsize" value="36" size=4 maxlength=3 min=8 max=999 />
+      <input type="number" name="cellsize" value="36" size=4 maxlength=3 min=8 max=999 data-change-exec="estimatesize" />
       <span id="showsize">x</span>
       <br />
       <br />
-      <input type="button" name="execdl" class="btn btn-ok" value="__ダウンロード__Download__" />
-      <input type="button" name="exectab" class="btn btn-info" value="__別ウィンドウで開く__Open in another window__" />
+      <input type="button" data-button-exec="saveimage" class="btn btn-ok" value="__ダウンロード__Download__" />
+      <input type="button" data-button-exec="openimage" class="btn btn-info" value="__別ウィンドウで開く__Open in another window__" />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
   </div>
@@ -194,18 +194,18 @@
       <span>__盤面の調整を行います。__Adjust the board.__</span>
       <br />
       <span>__拡大__Expand__</span>
-      <input type="button" name="expandup" class="btn" value="__上__Top__" />
-      <input type="button" name="expanddn" class="btn" value="__下__Bottom__" />
+      <input type="button" name="expandup" data-button-exec="adjust" class="btn" value="__上__Top__" />
+      <input type="button" name="expanddn" data-button-exec="adjust" class="btn" value="__下__Bottom__" />
       <span> </span>
-      <input type="button" name="expandlt" class="btn" value="__左__Left__" />
-      <input type="button" name="expandrt" class="btn" value="__右__right__" />
+      <input type="button" name="expandlt" data-button-exec="adjust" class="btn" value="__左__Left__" />
+      <input type="button" name="expandrt" data-button-exec="adjust" class="btn" value="__右__right__" />
       <br />
       <span>__縮小__Reduce__</span>
-      <input type="button" name="reduceup" class="btn" value="__上__Top__" />
-      <input type="button" name="reducedn" class="btn" value="__下__Bottom__" />
+      <input type="button" name="reduceup" data-button-exec="adjust" class="btn" value="__上__Top__" />
+      <input type="button" name="reducedn" data-button-exec="adjust" class="btn" value="__下__Bottom__" />
       <span> </span>
-      <input type="button" name="reducelt" class="btn" value="__左__Left__" />
-      <input type="button" name="reducert" class="btn" value="__右__right__" />
+      <input type="button" name="reducelt" data-button-exec="adjust" class="btn" value="__左__Left__" />
+      <input type="button" name="reducert" data-button-exec="adjust" class="btn" value="__右__right__" />
       <br />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
@@ -216,11 +216,11 @@
     <form name="turnflip">
       <span>__盤面の回転・反転を行います。__Flip/Turn the board.__</span>
       <br />
-      <input type="button" name="turnl" class="btn" value="__左90°回転__Turn left by 90 degree__" />
-      <input type="button" name="turnr" class="btn" value="__右90°回転__Turn right by 90 degree__" />
+      <input type="button" name="turnl" data-button-exec="adjust" class="btn" value="__左90°回転__Turn left by 90 degree__" />
+      <input type="button" name="turnr" data-button-exec="adjust" class="btn" value="__右90°回転__Turn right by 90 degree__" />
       <br />
-      <input type="button" name="flipy" class="btn" value="__上下反転__Flip upside down__" />
-      <input type="button" name="flipx" class="btn" value="__左右反転__Flip leftside right__" />
+      <input type="button" name="flipy" data-button-exec="adjust" class="btn" value="__上下反転__Flip upside down__" />
+      <input type="button" name="flipx" data-button-exec="adjust" class="btn" value="__左右反転__Flip leftside right__" />
       <br />
       <br />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
@@ -235,7 +235,7 @@
       <span>__表示サイズ__Display size__</span>
       <input type="number" name="cellsize" value="" size=4 maxlength=3 min=8 max=999 />
       <br />
-      <input type="button" name="exec" class="btn btn-ok" value="__変更する__Change__" />
+      <input type="button" data-button-exec="changesize" class="btn btn-ok" value="__変更する__Change__" />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
   </div>
@@ -244,8 +244,8 @@
     <div class="titlebar">__色の変更___Change Colors__</div>
     <form name="colors">
       <span>__黒マス (回答入力)__Shaded Cell (Answer)__</span>
-      <input type="color"  name="qanscolor_set" value="" />
-      <input type="button" name="qanscolor_clear" class="btn btn-warn" value="__クリア__Reset__" />
+      <input type="color"  data-color-target="qanscolor" data-change-exec="setcolor" value="" />
+      <input type="button" data-color-target="qanscolor" data-button-exec="clearcolor" class="btn btn-warn" value="__クリア__Reset__" />
       <br />
       <input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
@@ -267,19 +267,19 @@
     <div class="titlebar">pop_test</div>
     <form name="debug">
       <textarea name="testarea" id="testarea" cols=40 rows=16 wrap="off" style="font-size:10pt;"></textarea><br />
-        <input type="button" name="starttest" class="btn" value="__テスト__Test__"
-      /><input type="button" name="all_test" class="btn" value="__ALL__ALL-Test__" />
-        <input type="button" name="eval1" class="btn" value="T1"
-      /><input type="button" name="eval2" class="btn" value="T2"
-      /><input type="button" name="eval3" class="btn" value="T3" />
-        <input type="button" name="loadperf" class="btn" value="Perf" />
-        <input type="button" name="database" class="btn" value="DB" />
-        <input type="button" name="inputchk" class="btn" value="INP" />
+        <input type="button" data-button-exec="handler" data-debug-exec="starttest"  class="btn" value="__テスト__Test__"
+      /><input type="button" data-button-exec="handler" data-debug-exec="all_test"   class="btn" value="__ALL__ALL-Test__" />
+        <input type="button" data-button-exec="handler" data-debug-exec="perfeval"   class="btn" value="T1"
+      /><input type="button" data-button-exec="handler" data-debug-exec="printeval"  class="btn" value="T2"
+      /><input type="button" data-button-exec="handler" data-debug-exec="resizeeval" class="btn" value="T3" />
+        <input type="button" data-button-exec="handler" data-debug-exec="loadperf"   class="btn" value="Perf" />
+        <input type="button" data-button-exec="handler" data-debug-exec="dispdatabase" class="btn" value="DB" />
+        <input type="button" data-button-exec="handler" data-debug-exec="inputcheck_popup" class="btn" value="INP" />
       <br />
-        <input type="button" name="filesave" class="btn" value="Save"
-      /><input type="button" name="pbsave"   class="btn" value="PBSave" />
-        <input type="button" name="fileload" class="btn" value="Load"
-      /><input type="button" name="clrtext"  class="btn" value="__消去__CLS__"
+        <input type="button" data-button-exec="handler" data-debug-exec="filesave"  class="btn" value="Save"
+      /><input type="button" data-button-exec="handler" data-debug-exec="filesave_pencilbox" class="btn" value="PBSave" />
+        <input type="button" data-button-exec="handler" data-debug-exec="fileopen"  class="btn" value="Load"
+      /><input type="button" data-button-exec="handler" data-debug-exec="erasetext" class="btn" value="__消去__CLS__"
       /><input type="button" name="close" class="btn" value="__閉じる__Close__" />
     </form>
   </div>

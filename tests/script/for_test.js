@@ -106,6 +106,9 @@ ui.debug.extend(
 			mv.mouseevent(addr,2);
 		}
 	},
+	inputcheck_popup : function(){
+		this.inputcheck(getEL('testarea').value);
+	},
 	inputcheck : function(text){
 		ui.saveConfig();
 		var inparray = eval("["+text+"]");

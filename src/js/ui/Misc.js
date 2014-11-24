@@ -55,6 +55,23 @@ ui.misc = {
 			}
 		}
 		return modified;
+	},
+
+	//--------------------------------------------------------------------------------
+	// misc.walker()        DOMツリーをたどる
+	// misc.elementWalker() 要素のみDOMツリーをたどる
+	//--------------------------------------------------------------------------------
+	walker : function(parent, func){
+		var els = [parent.firstChild];
+		while(els.length>0){
+			var el = els.pop();
+			func(el);
+			if(!!el.nextSibling){ els.push(el.nextSibling);}
+			if(el.childNodes.length>0){ els.push(el.firstChild);}
+		}
+	},
+	elementWalker : function(parent, func){
+		this.walker(parent, function(el){ if(el.nodeType===1){ func(el);}});
 	}
 };
 

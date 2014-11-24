@@ -474,6 +474,7 @@ ui.menuarea = {
 		case 'jumpv3'    : window.open('./', '', ''); break;
 		case 'jumptop'   : window.open('http://indi.s58.xrea.com/', '', ''); break;
 		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
+		case 'poptest'   : ui.popupmgr.open("debug", 0, 0); break;
 		
 		default:
 			result = false;

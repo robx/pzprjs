@@ -65,15 +65,21 @@
 			   background-color:#efefff; border:1px black solid; font-size:0.9em; line-height:1.6; z-index:100;}
 	div.popup div.titlebar
 			 { display:block; text-align:left; background-color:gray; color:white; cursor:pointer;
-			   margin:0pt; padding:1pt 0pt 1pt 8pt; font-size:1.0em;}
+			   margin:0pt; padding:1pt 12pt 1pt 8pt; font-size:1.0em;}
 	div.popup form
 			 { margin:2pt 8pt 4pt 4pt; padding:0pt;}
 
 	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
 
 	/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
+	#nb_shape_tawa { margin-top:4pt; margin-bottom:4pt;}
+	#nb_shape_tawa tr  { padding-bottom:2pt;}
 	#nb_shape_tawa div { display:block; position:relative; width:36px; height:36px;}
-	#nb_shape_tawa img { position:absolute; margin:2px;}
+	#nb_shape_tawa img { position:absolute; margin:2px; width:128px; height:32px; top:0px;}
+	#nb_shape_tawa #nb_shape_0 img { left:-0px; clip:rect(0px,32px,32px,0px);}
+	#nb_shape_tawa #nb_shape_1 img { left:-32px;clip:rect(0px,64px,32px,32px);}
+	#nb_shape_tawa #nb_shape_2 img { left:-64px;clip:rect(0px,96px,32px,64px);}
+	#nb_shape_tawa #nb_shape_3 img { left:-96px;clip:rect(0px,128px,32px,96px);}
 
 	/* キーポップアップ用 */
 	div#keypopup { background-color:silver; line-height:1;}

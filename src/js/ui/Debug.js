@@ -7,44 +7,24 @@
 ui.popupmgr.addpopup('debug',
 {
 	formname : 'debug',
+	multipopup : true,
 	
 	setFormEvent : function(){
-		var form = this.form;
-		function ae(name, func){ ui.event.addEvent(form[name], "mousedown", ui.debug, func);}
-		
-		ae("starttest", this.starttest);
-		ae("all_test",  this.all_test);
-		
-		ae("eval1", this.perfeval);
-		ae("eval2", this.painteval);
-		ae("eval3", this.resizeeval);
-		
-		ae("loadperf", this.loadperf);
-		ae("database", this.dispdatabase);
-		ae("inputchk", function(){ this.inputcheck(getEL('testarea').value);});
-		
-		ae("filesave", this.filesave);
-		ae("pbsave",   this.filesave_pencilbox);
-		ae("fileload", this.fileopen);
-		ae("clrtext",  this.erasetext);
-		
 		if(!ui.debugmode){
-			this.form.starttest.style.display = "none";
-			this.form.all_test.style.display = "none";
-			this.form.loadperf.style.display = "none";
-			this.form.inputchk.style.display = "none";
+			var form = this.form;
+			form.starttest.style.display = "none";
+			form.all_test.style.display = "none";
+			form.loadperf.style.display = "none";
+			form.inputchk.style.display = "none";
 		}
+	},
+	handler : function(e){
+		var name = (e.target.dataset!==void 0 ? e.target.dataset.debugExec : e.target['data-debug-exec']) || e.target.name;
+		ui.debug[name]();
 	},
 	
 	show : function(px,py){
-		if(!this.pop){
-			this.reset();
-			this.searchForm();
-			this.setEvent();
-		}
-		this.pop.style.display = 'inline';
-		this.pop.style.left = '40px';
-		this.pop.style.top  = '80px';
+		ui.popupmgr.popups.template.show.call(this,40,80);
 	}
 });
 

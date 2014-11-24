@@ -42,8 +42,7 @@ ui.popupmgr =
 	// popupmgr.addpopup()   ポップアップメニューを追加する
 	//---------------------------------------------------------------------------
 	addpopup : function(idname, proto){
-		var NewPopup = {}, template = this.popups.template;
-		if(!template){ template = {};}
+		var NewPopup = {}, template = this.popups.template || {};
 		for(var name in template){ NewPopup[name] = template[name];}
 		for(var name in proto)   { NewPopup[name] = proto[name];}
 		this.popups[idname] = NewPopup;
@@ -53,15 +52,10 @@ ui.popupmgr =
 	// popupmgr.open()  ポップアップメニューを開く
 	//---------------------------------------------------------------------------
 	open : function(idname, px, py){
-		if(idname==='poptest'){
-			this.popups.debug.show(px, py);
-			return true;
-		}
-
 		var target = this.popups[idname] || null;
 		if(target!==null){
 			/* 表示しているウィンドウがある場合は閉じる */
-			if(this.popup){ this.popup.hide();}
+			if(!target.multipopup && !!this.popup){ this.popup.hide();}
 			
 			/* ポップアップメニューを表示する */
 			target.show(px, py);
@@ -107,6 +101,7 @@ ui.popupmgr =
 ui.popupmgr.addpopup('template',
 {
 	formname : '',
+	multipopup : false,
 
 	reset : function(){
 		this.pop       = null;
@@ -134,28 +129,40 @@ ui.popupmgr.addpopup('template',
 		pzpr.util.unselectable(this.titlebar);
 	},
 	walkElement : function(parent){
-		var el = parent.firstChild;
-		while(!!el){
+		var popup = this;
+		ui.misc.walker(parent, function(el){
 			if(el.nodeType===3 && el.data.match(/^__(.+)__(.+)__$/)){
-				this.captions.push({textnode:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+				popup.captions.push({textnode:el, str_jp:RegExp.$1, str_en:RegExp.$2});
 			}
 			else if(el.nodeName==="INPUT" && el.value.match(/^__(.+)__(.+)__$/)){
-				this.captions.push({button:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+				popup.captions.push({button:el, str_jp:RegExp.$1, str_en:RegExp.$2});
 			}
 			
-			if(el.className==='titlebar'){ this.titlebar=el;}
-			
-			if(el.childNodes.length>0){ this.walkElement(el);}
-			el = el.nextSibling;
-		}
+			if(el.className==='titlebar'){ popup.titlebar=el;}
+		});
+	},
+	walkEvent : function(parent){
+		var popup = this;
+		ui.misc.elementWalker(parent, function(el){
+			var role = (el.dataset!==void 0 ? el.dataset.buttonExec : el['data-button-exec']);
+			if(!!role){
+				ui.event.addEvent(el, "mousedown", popup, popup[role]);
+			}
+			role = (el.dataset!==void 0 ? el.dataset.changeExec : el['data-change-exec']);
+			if(!!role){
+				ui.event.addEvent(el, "change", popup, popup[role]);
+			}
+		});
 	},
 
 	setEvent : function(){
 		if(!!this.form){
+			this.walkEvent(this.form);
 			this.setFormEvent();
 			if(!!this.form.close){
 				ui.event.addEvent(this.form.close, "mousedown", this, this.hide);
 			}
+			ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
 		}
 		if(!!this.titlebar){
 			this.setTitlebarEvent();
@@ -177,11 +184,15 @@ ui.popupmgr.addpopup('template',
 		this.pop.style.left = px + 'px';
 		this.pop.style.top  = py + 'px';
 		this.pop.style.display = 'inline';
-		ui.popupmgr.popup = this;
+		if(!this.multipopup){
+			ui.popupmgr.popup = this;
+		}
 	},
 	hide : function(){
 		this.pop.style.display = "none";
-		ui.popupmgr.popup = null;
+		if(!this.multipopup){
+			ui.popupmgr.popup = null;
+		}
 		
 		ui.puzzle.key.enableKey = true;
 		ui.puzzle.mouse.enableMouse = true;
@@ -225,24 +236,22 @@ ui.popupmgr.addpopup('newboard',
 		/* たわむレンガの形状指定ルーチン */
 		getEL("nb_shape_tawa").style.display = ((pid==='tawa') ? "" : "none");
 		if(pid==='tawa'){ this.setFormEvent_tawa();}
-		
-		ui.event.addEvent(this.form.create, "mousedown", this, this.execute);
 	},
 	setFormEvent_tawa : function(){
-		function setbgcolor(idx){
-			for(var i=0;i<=3;i++){ getEL("nb_shape_"+i).style.backgroundColor = (i===idx?'red':'');}
-		}
-		function clickshape(e){
-			setbgcolor(+e.target.parentNode.id.charAt(9));
-		}
-		
 		for(var i=0;i<=3;i++){
 			var _div = getEL("nb_shape_"+i), _img = _div.children[0];
 			_img.src = "data:image/gif;base64,R0lGODdhgAAgAKEBAAAAAP//AP//////ACwAAAAAgAAgAAAC/pSPqcvtD6OctNqLs968+98A4kiWJvmcquisrtm+MpAAwY0Hdn7vPN1aAGstXs+oQw6FyqZxKfDlpDhqLyXMhpw/ZfHJndbCVW9QATWkEdYk+Pntvn/j+dQc0hK39jKcLxcoxkZ29JeHpsfUZ0gHeMeoUyfo54i4h7lI2TjI0PaJp1boZumpeLCGOvoZB7kpyTbzIiTrglY7o4Yrc8l2irYamjiciar2G4VM7Lus6fpcdVZ8PLxmrTyd3AwcydprvK19HZ6aPf5YCX31TW3ezuwOcQ7vGXyIPA+e/w6ORZ5ir9S/gfu0ZRt4UFU3YfHiFSyoaxeMWxJLUKx4IiLGZIn96HX8iNBjQ5EG8Zkk+dDfyJAgS7Lkxy9lOJTYXMK0ibOlTJ0n2eEs97OnUJ40X668SfRo0ZU7SS51erOp0XxSkSaFGtTo1a0bUcSo9bVr2I0gypo9izat2rVs27p9Czfu2QIAOw==";
 			_img.style.clip = "rect(0px,"+((i+1)*32)+"px,"+32+"px,"+(i*32)+"px)";
-			ui.event.addEvent(_img, 'click', this, clickshape);
 		}
-		setbgcolor([0,2,3,1][ui.puzzle.board.shape]);
+		this.setbgcolor([0,2,3,1][ui.puzzle.board.shape]);
+	},
+	setbgcolor : function(idx){
+		for(var i=0;i<=3;i++){
+			getEL("nb_shape_"+i).style.backgroundColor = (i===idx?'red':'');
+		}
+	},
+	clickshape : function(e){
+		this.setbgcolor(+e.target.parentNode.id.charAt(9));
 	},
 	
 	show : function(px,py){
@@ -294,16 +303,11 @@ ui.popupmgr.addpopup('urlinput',
 {
 	formname : 'urlinput',
 	
-	setFormEvent : function(){
-		ui.event.addEvent(this.form.exec, "mousedown", this, this.urlinput);
-	},
-	
 	//------------------------------------------------------------------------------
 	// urlinput() URLを入力する
 	//------------------------------------------------------------------------------
 	urlinput : function(){
 		this.hide();
-		
 		ui.puzzle.open(this.form.ta.value.replace(/\n/g,""));
 	}
 });
@@ -316,18 +320,7 @@ ui.popupmgr.addpopup('urloutput',
 	formname : 'urloutput',
 	
 	setFormEvent : function(){
-		var popup = this, form = popup.form;
-		function ae(name, func){ ui.event.addEvent(form[name], "mousedown", popup, func);}
-		function outputurl(e){ this.urloutput(e);}
-		
-		ae("pzprv3",     outputurl);
-		// ae("pzprapp", outputurl);
-		ae("kanpen",     outputurl);
-		ae("heyaapp",    outputurl);
-		ae("pzprv3edit", outputurl);
-		ae("opneurl",    this.openurl);
-		
-		var pid = ui.puzzle.pid, exists = pzpr.variety.info[pid].exists;
+		var form = this.form, pid = ui.puzzle.pid, exists = pzpr.variety.info[pid].exists;
 		// form.pzprapp.style.display             = (exists.pzprapp ? "" : "none");
 		// form.pzprapp.nextSibling.style.display = (exists.pzprapp ? "" : "none");
 		form.kanpen.style.display              = (exists.kanpen ? "" : "none");
@@ -367,8 +360,6 @@ ui.popupmgr.addpopup('fileopen',
 	
 	setFormEvent : function(){
 		this.form.action = ui.fileio;
-		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
-		ui.event.addEvent(this.form.filebox, "change", this, function(e){ this.fileopen(e); this.hide();});
 	},
 	
 	//------------------------------------------------------------------------------
@@ -389,6 +380,7 @@ ui.popupmgr.addpopup('fileopen',
 			this.form.submit();
 		}
 		this.form.reset();
+		this.hide();
 	}
 });
 
@@ -403,8 +395,6 @@ ui.popupmgr.addpopup('filesave',
 		this.anchor = ((!ui.enableSaveBlob && pzpr.env.API.anchor_download) ? getEL("saveanchor") : null);
 		
 		this.form.action = ui.fileio;
-		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
-		ui.event.addEvent(this.form.execsave, "mousedown", this, this.filesave);
 		
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety.info[ui.puzzle.pid].exists.pencilbox;
@@ -482,16 +472,14 @@ ui.popupmgr.addpopup('imagesave',
 		this.showsize = getEL("showsize");
 		
 		this.form.action = ui.fileio;
-		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
-		ui.event.addEvent(this.form.filetype, "change",    this, this.changefilename);
-		ui.event.addEvent(this.form.cellsize, "mousedown", this, this.estimatesize);
-		ui.event.addEvent(this.form.execdl,   "mousedown", this, this.saveimage);
-		ui.event.addEvent(this.form.exectab,  "mousedown", this, this.openimage);
 		
 		/* ファイル形式選択オプション */
-		var filetype = this.form.filetype;
-		if(!ui.enableSaveSVG)  { filetype.removeChild(filetype.options[1]);}
-		if(!ui.enableSaveImage){ filetype.removeChild(filetype.options[0]);}
+		var filetype = this.form.filetype, options = filetype.options;
+		for(var i=0;i<options.length;i++){
+			var option = options[i];
+			if(option.value==="svg" && !ui.enableSaveSVG)  { filetype.removeChild(option);}
+			if(option.value==="png" && !ui.enableSaveImage){ filetype.removeChild(option);}
+		}
 		
 		this.form.filename.value = ui.puzzle.pid+".png";
 		this.form.cellsize.value = ui.menuconfig.get('cellsizeval');
@@ -618,19 +606,8 @@ ui.popupmgr.addpopup('adjust',
 {
 	formname : 'adjust',
 	
-	setFormEvent : function(){
-		var popup = this, form = popup.form;
-		function adjust(e){ ui.puzzle.board.exec.execadjust(e.target.name);}
-		function ae(name){ ui.event.addEvent(form[name], "mousedown", popup, adjust);}
-		
-		ae("expandup");
-		ae("expanddn");
-		ae("expandlt");
-		ae("expandrt");
-		ae("reduceup");
-		ae("reducedn");
-		ae("reducelt");
-		ae("reducert");
+	adjust : function(e){
+		ui.puzzle.board.exec.execadjust(e.target.name);
 	}
 });
 
@@ -642,19 +619,12 @@ ui.popupmgr.addpopup('turnflip',
 	formname : 'turnflip',
 	
 	setFormEvent : function(){
-		var popup = this, form = popup.form;
-		function adjust(e){ ui.puzzle.board.exec.execadjust(e.target.name);}
-		function ae(name){ ui.event.addEvent(form[name], popup, "mousedown", adjust);}
-		
-		ae("turnl");
-		ae("turnr");
-		ae("flipx");
-		ae("flipy");
-		
-		if(ui.puzzle.pid==='tawa'){
-			form.turnl.disabled = true;
-			form.turnr.disabled = true;
-		}
+		this.form.turnl.disabled = (ui.puzzle.pid==='tawa');
+		this.form.turnr.disabled = (ui.puzzle.pid==='tawa');
+	},
+	
+	adjust : function(e){
+		ui.puzzle.board.exec.execadjust(e.target.name);
 	}
 });
 
@@ -666,13 +636,21 @@ ui.popupmgr.addpopup('colors',
 	formname : 'colors',
 	
 	setFormEvent : function(){
-		this.setColorSelector('qanscolor');
+		this.refresh();
 	},
-	setColorSelector : function(idname, str_ja, str_en){
-		this.form[idname+"_set"].value = Candle.parse(ui.puzzle.painter[idname]);
-		
-		ui.event.addEvent(this.form[idname+"_set"],   "change",    this, this.setcolor);
-		ui.event.addEvent(this.form[idname+"_clear"], "mousedown", this, this.clearcolor);
+
+	//------------------------------------------------------------------------------
+	// refresh()    フォームに表示される色を再設定する
+	//------------------------------------------------------------------------------
+	refresh : function(name){
+		ui.misc.elementWalker(this.form, function(el){
+			if(el.nodeName==="INPUT" && el.getAttribute("type")==="color"){
+				var target = (el.dataset!==void 0 ? el.dataset.colorTarget : el['data-color-target']);
+				if(!!target && (!name || name===target)){
+					el.value = Candle.parse(ui.puzzle.painter[target]);
+				}
+			}
+		});
 	},
 	
 	//------------------------------------------------------------------------------
@@ -680,13 +658,13 @@ ui.popupmgr.addpopup('colors',
 	// clearcolor() 色の設定をクリアする
 	//------------------------------------------------------------------------------
 	setcolor : function(e){
-		var name = e.target.name.replace(/_set/,"");
+		var name = (e.target.dataset!==void 0 ? e.target.dataset.colorTarget : e.target['data-color-target']);
 		ui.puzzle.setConfig("color_"+name, e.target.value);
 	},
 	clearcolor : function(e){
-		var name = e.target.name.replace(/_clear/,"");
-		this.form[name+"_set"].value = "";
+		var name = (e.target.dataset!==void 0 ? e.target.dataset.colorTarget : e.target['data-color-target']);
 		ui.puzzle.setConfig("color_"+name, "");
+		this.refresh(name);
 	}
 });
 
@@ -696,10 +674,6 @@ ui.popupmgr.addpopup('colors',
 ui.popupmgr.addpopup('dispsize',
 {
 	formname : 'dispsize',
-
-	setFormEvent : function(){
-		ui.event.addEvent(this.form.exec, "mousedown", this, this.changesize);
-	},
 	
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
