@@ -11,8 +11,8 @@
 	/* 盤面外の表示部分(管理領域・メニュー・ポップアップ・ボタン) */
 	.outofboard { font-size:1.0em; line-height:1.2;}
 
-	.btn { display:inline-block; text-align:center; vertical-align:middle; font:90%/1.2 sans-serif; cursor:default;
-		   margin:0pt 2pt 0pt 2pt; padding:2pt 4pt 2pt 4pt; border-radius:4pt; border:solid 1pt gray;
+	.btn { display:inline; text-align:center; vertical-align:middle; font:90%/1.2 sans-serif; cursor:default;
+		   margin:2pt; padding:2pt 4pt 2pt 4pt; border-radius:4pt; border:solid 1pt gray;
 		   background: silver; background: linear-gradient(to bottom, white, silver);}
 	.btn-ok   { background: blue; background: linear-gradient(to bottom, #afafff, blue); color:white;}
 	.btn-info { background: #993366; background: linear-gradient(to bottom, #cc6699, #993366);  color:white;}
@@ -95,7 +95,7 @@
 
 	/* 置換要素 */
 	input, button, select, textarea{ font-size:1.0em; line-height:1;}
-	input[type="button"] { font-size:0.9em;}
+	input[type="button"], button { font-size:0.9em; line-height:1.2;}
 	input[type="checkbox"] { width:0.9em; height:0.9em;}
 
 	/* (ファイル入出力用)隠しエレメント */

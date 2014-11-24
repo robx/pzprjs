@@ -56,9 +56,9 @@ ui.popupmgr.addpopup('database',
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		ui.database.openDialog();
 	},
-	hide : function(){
+	close : function(){
 		ui.database.closeDialog();
-		ui.popupmgr.popups.template.hide.call(this);
+		ui.popupmgr.popups.template.close.call(this);
 	},
 
 	//---------------------------------------------------------------------------

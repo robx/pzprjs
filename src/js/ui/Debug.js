@@ -19,8 +19,7 @@ ui.popupmgr.addpopup('debug',
 		}
 	},
 	handler : function(e){
-		var name = (e.target.dataset!==void 0 ? e.target.dataset.debugExec : e.target['data-debug-exec']) || e.target.name;
-		ui.debug[name]();
+		ui.debug[e.target.name]();
 	},
 	
 	show : function(px,py){
