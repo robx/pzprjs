@@ -210,31 +210,31 @@ ui.menuarea = {
 
 		pp.addMenu('setting', "設定", "Setting");
 
-		if(pzpr.EDITOR){
+		if(ui.validConfig("mode")){
 			pp.addSelect('mode','setting', 'モード', 'mode');
 			pp.addChild('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
 			pp.addChild('mode_3', 'mode', '回答モード',     'Answer mode');
 		}
 
 		/* 操作方法の設定値 */
-		if(puzzle.validConfig("use")){
+		if(ui.validConfig("use")){
 			pp.addSelect('use','setting','操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
 			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
-		if(puzzle.validConfig("use_tri")){
+		if(ui.validConfig("use_tri")){
 			pp.addSelect('use_tri','setting','操作方法', 'Input Type');
 			pp.addChild('use_tri_1', 'use_tri', 'クリックした位置', 'Corner-side');
 			pp.addChild('use_tri_2', 'use_tri', '引っ張り入力', 'Pull-to-Input');
 			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
 		}
 
-		if(puzzle.validConfig("disptype_pipelinkr")){
+		if(ui.validConfig("disptype_pipelinkr")){
 			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
 			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
 			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
 		}
-		if(puzzle.validConfig("disptype_bosanowa")){
+		if(ui.validConfig("disptype_bosanowa")){
 			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
 			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
 			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
@@ -242,26 +242,26 @@ ui.menuarea = {
 		}
 
 		/* 盤面チェックの設定値 */
-		if(puzzle.validConfig("redline")){
+		if(ui.validConfig("redline")){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
 		}
-		else if(puzzle.validConfig("redblk")){
+		else if(ui.validConfig("redblk")){
 			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
 		}
-		else if(puzzle.validConfig("redblkrb")){
+		else if(ui.validConfig("redblkrb")){
 			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
 		}
-		else if(puzzle.validConfig("redroad")){
+		else if(ui.validConfig("redroad")){
 			pp.addCheck('redroad','setting','通り道のチェック', 'Check Road');
 		}
 
 		/* 背景色入力の設定値 */
-		if(puzzle.validConfig("bgcolor")){
+		if(ui.validConfig("bgcolor")){
 			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
 		}
 
 		/* 文字別正解表示の設定値 */
-		if(puzzle.validConfig("autocmp")){
+		if(ui.validConfig("autocmp")){
 			if(flags.autocmp==="number"){
 				pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
 			}
@@ -270,7 +270,7 @@ ui.menuarea = {
 			}
 		}
 
-		if(puzzle.validConfig("autoerr")){
+		if(ui.validConfig("autoerr")){
 			if(pid==='hitori'){
 				pp.addCheck('autoerr','setting', '重複した数字を表示', 'Show overlapped number');
 			}
@@ -280,7 +280,7 @@ ui.menuarea = {
 		}
 
 		/* 正当判定方法の設定値 */
-		if(puzzle.validConfig("enbnonum")){
+		if(ui.validConfig("enbnonum")){
 			pp.addCheck('enbnonum','setting','未入力で正答判定','Allow Empty cell');
 		}
 
@@ -291,45 +291,49 @@ ui.menuarea = {
 		}
 
 		/* 問題形式の設定値 */
-		if(pid==='mashu'){
+		if(ui.validConfig("uramashu")){
 			pp.addCheck('uramashu','setting', '裏ましゅ', 'Ura-Mashu');
 		}
 
 		/* 盤面表示形式の設定値 */
-		if(puzzle.validConfig("dispmove")){
+		if(ui.validConfig("dispmove")){
 			pp.addCheck('dispmove','setting','動かしたように描画', 'Paint as move');
 		}
 
-		if(puzzle.validConfig("snakebd")){
+		if(ui.validConfig("snakebd")){
 			pp.addCheck('snakebd','setting','へび境界線有効','Enable snake border');
 		}
 
 		/* EDITOR時の設定値 */
-		if(puzzle.validConfig("goishi")){
+		if(ui.validConfig("goishi")){
 			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
 		}
-		if(puzzle.validConfig("discolor")){
+		if(ui.validConfig("discolor")){
 			pp.addCheck('discolor','setting','色分け無効化','Disable color');
 		}
 
 		/* 共通設定値 */
-		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
+		if(ui.validConfig("autocheck")){
+			pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
+		}
 
-		if(puzzle.validConfig("lrcheck")){
+		if(ui.validConfig("lrcheck")){
 			pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
 		}
 
-		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
+		if(ui.validConfig("keypopup")){
 			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 		}
 
-		if(puzzle.validConfig("keytarget")){
+		if(ui.validConfig("keytarget")){
 			pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
 		}
 
-		pp.addSelect('language', 'setting', '言語', 'Language');
-		pp.addChild('language_ja', 'language', '日本語',  '日本語');
-		pp.addChild('language_en', 'language', 'English', 'English');
+		if(ui.validConfig("language")){
+			pp.addSelect('language', 'setting', '言語', 'Language');
+			pp.addChild('language_ja', 'language', '日本語',  '日本語');
+			pp.addChild('language_en', 'language', 'English', 'English');
+		}
 	},
 
 	//---------------------------------------------------------------------------

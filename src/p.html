@@ -17,8 +17,113 @@
 
 <div id="menuboard" class="outofboard">
   <menu id="menupanel"></menu>
-  <div id="usepanel"></div>
-  <div id="checkpanel"></div>
+  <div id="usepanel" style="display:none;">
+    <div class="configtool" data-config="mode">
+      <span>__モード__mode__</span> | 
+      <div class="child" data-value="1">__問題入力モード__Edit mode__</div>
+      <div class="child" data-value="3">__回答モード__Answer mode__</div>
+    </div>
+    <div class="configtool" data-config="use">
+      <span>__操作方法__Input Type__</span> | 
+      <div class="child" data-value="1">__左右ボタン__LR Button__</div>
+      <div class="child" data-value="2">__1ボタン__One Button__</div>
+    </div>
+    <div class="configtool" data-config="use_tri">
+      <span>__三角形の入力方法__Input Triangle Type__</span> | 
+      <div class="child" data-value="1">__クリックした位置__Corner-side__</div>
+      <div class="child" data-value="2">__引っ張り入力__Pull-to-Input__</div>
+      <div class="child" data-value="3">__1ボタン__One Button__</div>
+    </div>
+    <div class="configtool" data-config="disptype_bosanowa">
+      <span>__表示形式__Display__</span> | 
+      <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
+      <div class="child" data-value="2">__倉庫番形式__Sokoban Type__</div>
+      <div class="child" data-value="3">__ワリタイ形式__Waritai type__</div>
+    </div>
+  </div>
+  <div id="checkpanel" style="display:none;">
+    <div class="configtool" data-config="dispmove">
+      <input type="checkbox">
+      <span>__動かしたように描画を行う__Display as object moving__</span>
+    </div>
+    <div class="configtool" data-config="redline">
+      <input type="checkbox">
+      <span>__線のつながりをチェックする__Check countinuous lines__</span>
+    </div>
+    <div class="configtool" data-config="redblk">
+      <input type="checkbox">
+      <span>__黒マスのつながりをチェックする__Check countinuous shaded cells__</span>
+    </div>
+    <div class="configtool" data-config="redblkrb">
+      <input type="checkbox">
+      <span>__ナナメ黒マスのつながりをチェックする__Check countinuous shaded cells with its corner__</span>
+    </div>
+    <div class="configtool" data-config="redroad">
+      <input type="checkbox">
+      <span>__クリックした矢印が通る道をチェックする__Check the road that passes clicked arrow.__</span>
+    </div>
+    <div class="configtool" data-config="bgcolor">
+      <input type="checkbox">
+      <span>__セルの中央をクリックした時に背景色の入力を有効にする__Enable to Input BGColor When the Center of the Cell is Clicked__</span>
+    </div>
+    <div class="configtool" data-config="autocmp">
+      <input type="checkbox">
+      <span data-disp-pid="!kouchoku">__正しい数字をグレーにする__Grey if the number is correct__</span>
+      <span data-disp-pid="kouchoku">__線が2本以上になったら点をグレーにする__Grey if the letter links over two segments__</span>
+    </div>
+    <div class="configtool" data-config="autoerr">
+      <input type="checkbox">
+      <span data-disp-pid="hitori">__重複している数字を赤くする__Show overlapped number as red__</span>
+      <span data-disp-pid="gokigen">__ループになっている斜線を赤くする__Draw loop line as red__</span>
+      <span data-disp-pid="wagiri">__斜線を輪切りかのどちらかで色分けする__Encolor slashes whether it consists in a loop or not__</span>
+    </div>
+    <div class="configtool" data-config="enbnonum">
+      <input type="checkbox">
+      <span>__全ての数字が入っていない状態での正答判定を許可する__Allow answer check with empty cell in the board__</span>
+    </div>
+    <div class="configtool" data-config="enline">
+      <input type="checkbox">
+      <span>__点の間のみ線を引けるようにする__Able to draw line only between the points__</span>
+    </div>
+    <div class="configtool" data-config="lattice">
+      <input type="checkbox">
+      <span>__点を通過する線を引けないようにする__Disable drawing segment passing over a lattice point__</span>
+    </div>
+    <div class="configtool" data-config="uramashu">
+      <input type="checkbox">
+      <span>__裏ましゅにする__Change to Ura-Mashu__</span>
+    </div>
+    <div class="configtool" data-config="snakebd">
+      <input type="checkbox">
+      <span>__へびの周りに境界線を表示する__Draw border around a snake__</span>
+    </div>
+    <div class="configtool" data-config="bdpadding">
+      <input type="checkbox">
+      <span>__URL生成時に周り1マス何もない部分をつける__Add Padding around the Board in outputting URL__</span>
+    </div>
+    <div class="configtool" data-config="discolor">
+      <input type="checkbox">
+      <span>__星クリックによる色分けを無効化する__Disable Coloring up by clicking star__</span>
+    </div>
+    <div class="configtool" data-config="lrcheck">
+      <input type="checkbox">
+      <span>__マウスの左右ボタンを反転する__Invert button of the mouse__</span>
+    </div>
+    <div class="configtool" data-config="keypopup">
+      <input type="checkbox">
+      <span>__数字・記号をパネルで入力する__Input numbers by panel__</span>
+    </div>
+    <div class="configtool" data-config="irowake">
+      <input type="checkbox">
+      <span>__線の色分けをする__Color each lines__</span>
+      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the color of Line__</button>
+    </div>
+    <div class="configtool" data-config="irowakeblk">
+      <input type="checkbox">
+      <span>__黒マスの色分けをする__Color each blocks__</span>
+      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the color of Line__</button>
+    </div>
+  </div>
   <hr id="separator2">
   <div id="timerpanel">経過時間：00:00</div>
 </div>

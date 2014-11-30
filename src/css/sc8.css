@@ -49,7 +49,7 @@
 	div#timerpanel{ margin:2pt 0pt 0pt 6pt;}
 
 	div.child   { display:inline; cursor:pointer;}
-	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold; background-color:#efefef;}
+	div.childsel{ color:maroon; font-weight:bold; background-color:#efefef;}
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}

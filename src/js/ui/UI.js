@@ -54,6 +54,21 @@ window.ui = {
 		ui.toolarea.setdisplay(idname);
 	},
 
+	//---------------------------------------------------------------------------
+	// ui.checkpid()     メニューなどが表示対象のパズルかどうか返す
+	//---------------------------------------------------------------------------
+	checkpid : function(str){
+		var matches = str.match(/!?[a-z0-9]+/g), isdisp = true;
+		if(!!matches){
+			isdisp = false;
+			for(var i=0;i<matches.length;i++){
+				if(matches[i].charAt(0)!=="!"){ if(matches[i]===ui.puzzle.pid){ isdisp = true;}}
+				else                          { isdisp = (matches[i].substr(1)!==ui.puzzle.pid);}
+			}
+		}
+		return isdisp;
+	},
+
 	//----------------------------------------------------------------------
 	// ui.windowWidth()   ウィンドウの幅を返す
 	//----------------------------------------------------------------------
@@ -82,6 +97,7 @@ window.ui = {
 	//---------------------------------------------------------------------------
 	// ui.setConfig()   値設定の共通処理
 	// ui.getConfig()   値設定の共通処理
+	// ui.validConfig() 設定が有効なパズルかどうかを返す共通処理
 	// ui.getConfigType() 設定値の型を返す共通処理
 	//---------------------------------------------------------------------------
 	setConfig : function(idname, newval){
@@ -111,6 +127,20 @@ window.ui = {
 		}
 		else if(idname==='mode'){
 			return ui.puzzle.playmode ? 3 : 1;
+		}
+	},
+	validConfig : function(idname){
+		if(!!ui.puzzle.config.list[idname]){
+			return ui.puzzle.validConfig(idname);
+		}
+		else if(!!ui.menuconfig.list[idname]){
+			return ui.menuconfig.valid(idname);
+		}
+		else if(idname==='uramashu'){
+			return ui.puzzle.pid==="mashu";
+		}
+		else if(idname==='mode'){
+			return pzpr.EDITOR;
 		}
 	},
 	getConfigType : function(idname){
