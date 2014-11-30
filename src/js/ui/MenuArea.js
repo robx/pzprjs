@@ -1,607 +1,216 @@
 // MenuArea.js v3.4.0
-/* global ui:false, createEL:false, getEL:false */
+/* global ui:false, getEL:false */
 
 // メニュー描画/取得/html表示系
 ui.menuarea = {
-	dispfloat  : [],			// 現在表示しているフロートメニューウィンドウ(オブジェクト)
-	floatpanel : [],			// (2段目含む)フロートメニューオブジェクトのリスト
+	captions : [],				// 言語指定を切り替えた際のキャプションを保持する
+	menuitem : null,			// メニューの設定切り替え用エレメント等を保持する
 	
 	//---------------------------------------------------------------------------
 	// menuarea.reset()  メニュー、サブメニュー、フロートメニューの初期設定を行う
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.floatmenuclose(0);		// dispfloat[]はこの中でクリアします
-		this.floatpanel = [];
-
-		getEL('float_parent').innerHTML = '';
-		getEL('menupanel') .innerHTML = '';
-
-		this.items = new ui.MenuList();
-		
-		this.createArea();
-		this.createAllFloat();
+		this.createMenu();
 		
 		this.display();
 	},
 
 	//---------------------------------------------------------------------------
+	// menuarea.createMenu()  メニューの初期設定を行う
+	//---------------------------------------------------------------------------
+	createMenu : function(){
+		if(this.menuitem===null){
+			this.menuitem = {};
+			this.walkElement(getEL("menupanel"));
+		}
+		this.walkElement2(getEL("menupanel"));
+	},
+
+	//---------------------------------------------------------------------------
+	// menuarea.walkElement()  エレメントを探索して領域の初期設定を行う
+	//---------------------------------------------------------------------------
+	walkElement : function(parent){
+		var menuarea = this;
+		ui.misc.walker(parent, function(el){
+			if(el.nodeType===1 && el.nodeName==="LI"){
+				var setevent = false;
+				var idname = el["data-config"] || el.dataset.config;
+				if(!!idname){
+					menuarea.menuitem[idname] = {el:el};
+					if(el.className==="check"){
+						pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.checkclick);
+						setevent = true;
+					}
+				}
+				var value = el["data-value"] || el.dataset.value;
+				if(!!value){
+					var parent = el.parentNode.parentNode, idname = parent["data-config"] || parent.dataset.config;
+					var item = menuarea.menuitem[idname];
+					if(!item.children){ item.children=[];}
+					item.children.push(el);
+					
+					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.childclick);
+					setevent = true;
+				}
+				
+				var role = el['data-menu-exec'] || el.dataset.menuExec;
+				if(!!role){
+					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea[role]);
+					setevent = true;
+				}
+				role = el['data-popup'] || el.dataset.popup;
+				if(!!role){
+					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.disppopup);
+					setevent = true;
+				}
+				
+				if(!setevent){
+					pzpr.util.addEvent(el, "mousedown", menuarea, function(e){ e.preventDefault();});
+				}
+			}
+			else if(el.nodeType===1 && el.nodeName==="MENU"){
+				var label = el.getAttribute("label");
+				if(!!label && label.match(/^__(.+)__(.+)__$/)){
+					menuarea.captions.push({menu:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+				}
+			}
+			else if(el.nodeType===3){
+				if(el.data.match(/^__(.+)__(.+)__$/)){
+					menuarea.captions.push({textnode:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+				}
+			}
+		});
+	},
+	walkElement2 : function(parent){
+		ui.misc.walker(parent, function(el){
+			if(el.nodeType===1 && el.nodeName==="SPAN"){
+				var disppid = el["data-disp-pid"] || el.dataset.dispPid;
+				if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
+			}
+		});
+	},
+	
+	//---------------------------------------------------------------------------
 	// menuarea.display()    全てのメニューに対して文字列を設定する
 	// menuarea.setdisplay() サブメニューに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	display : function(){
-		for(var i in this.items.item){ this.setdisplay(i);}
+		getEL('menupanel').style.display = "";
+		
+		getEL("menu_database").className  = (pzpr.env.storage.localST ? "" : "disabled");
+		getEL("menu_imagesave").className = ((ui.enableSaveImage || ui.enableSaveSVG) ? "" : "disabled");
+		
+		getEL("menu_duplicate").className = (pzpr.env.storage.session ? "" : "disabled");
+		getEL("menu_subclear").style.display  = (!ui.puzzle.flags.disable_subclear ? "" : "none");
+		
+		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");
+		
+		/* キャプションの設定 */
+		for(var i=0;i<this.captions.length;i++){
+			var obj = this.captions[i];
+			if(!!obj.textnode) { obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);}
+			else if(!!obj.menu){ obj.menu.setAttribute("label", ui.selectStr(obj.str_jp, obj.str_en));}
+		}
 	},
 	setdisplay : function(idname){
-		var pp = this.items;
-		if(!pp){ return;}
-		
-		switch(pp.type(idname)){
-		case pp.MENU:
-			var pmenu = getEL('ms_'+idname);
-			if(!!pmenu){ pmenu.innerHTML = "["+pp.getMenuStr(idname)+"]";}
-			break;
-
-		case pp.SMENU: case pp.LABEL: case pp.SPARENT:
-			var smenu = getEL('ms_'+idname);
-			if(!!smenu){ smenu.innerHTML = pp.getMenuStr(idname);}
-			break;
-
-		case pp.SELECT:
-			var smenu = getEL('ms_'+idname);
-			if(!!smenu){ smenu.innerHTML = "&nbsp;"+pp.getMenuStr(idname);}	// メニュー上の表記の設定
-			
-			/* 子要素の設定も行う */
-			for(var i=0,len=pp.item[idname].children.length;i<len;i++){
-				this.setdisplay(""+idname+"_"+pp.item[idname].children[i]);
-			}
-			break;
-
-		case pp.CHILD:
-			var val = ui.getConfig(pp.item[idname].parent);
-			var issel = (pp.item[idname].val===val);	/* 選択されているかどうか */
-			var smenu = getEL('ms_'+idname);
-			if(!!smenu){
-				smenu.innerHTML = (issel?"+":"&nbsp;")+pp.getMenuStr(idname);
-			}
-			break;
-
-		case pp.CHECK:
-			var flag = ui.getConfig(idname);
-			var smenu = getEL('ms_'+idname);
-			if(!!smenu){ smenu.innerHTML = (flag?"+":"&nbsp;")+pp.getMenuStr(idname);}
-			break;
-		}
-
 		if(idname==="operation"){
 			var opemgr = ui.puzzle.opemgr;
-			getEL('ms_h_oldest').className = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-			getEL('ms_h_undo').className   = (opemgr.enableUndo ? 'smenu' : 'smenunull');
-			getEL('ms_h_redo').className   = (opemgr.enableRedo ? 'smenu' : 'smenunull');
-			getEL('ms_h_latest').className = (opemgr.enableRedo ? 'smenu' : 'smenunull');
+			getEL('menu_oldest').className = (opemgr.enableUndo ? "" : "disabled");
+			getEL('menu_undo').className   = (opemgr.enableUndo ? "" : "disabled");
+			getEL('menu_redo').className   = (opemgr.enableRedo ? "" : "disabled");
+			getEL('menu_latest').className = (opemgr.enableRedo ? "" : "disabled");
 		}
-
-		if(idname==='manarea'){
+		else if(idname==="toolarea"){
 			var str;
 			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
 			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
-			getEL('ms_manarea').innerHTML = str;
+			getEL('menu_toolarea').innerHTML = str;
+		}
+		else if(this.menuitem===null || !this.menuitem[idname]){
+			/* DO NOTHING */
+		}
+		else if(ui.validConfig(idname)){
+			var menuitem = this.menuitem[idname];
+			menuitem.el.style.display = "";
+			
+			/* セレクタ部の設定を行う */
+			if(!!menuitem.children){
+				var children = menuitem.children;
+				for(var i=0;i<children.length;i++){
+					var child = children[i], selected = ((child["data-value"] || child.dataset.value)===""+ui.getConfig(idname));
+					child.className = (selected ? "checked" : "");
+				}
+			}
+			/* Check部の表記の変更 */
+			else if(!!menuitem.el){
+				menuitem.el.className = (ui.getConfig(idname) ? "checked" : "check");
+			}
+		}
+		else if(!!this.menuitem[idname]){
+			this.menuitem[idname].el.style.display = "none";
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// menuarea.createArea()          メニューの初期設定を行う
-	// menuarea.createArea_setting()  各パズルの設定を追加する
+	// menuarea.checkclick()   メニューから設定値の入力があった時、設定を変更する
+	// menuarea.childclick()   メニューから設定値の入力があった時、設定を変更する
 	//---------------------------------------------------------------------------
-	createArea : function(){
-		var pp = this.items;
-		var am = function(){ pp.addMenu.apply(pp,arguments);},
-			an = function(){ pp.addSParent.apply(pp,arguments);},
-			as = function(){ pp.addSmenu.apply(pp,arguments);},
-			au = function(){ pp.addSelect.apply(pp,arguments);},
-			ac = function(){ pp.addCheck.apply(pp,arguments);},
-			aa = function(){ pp.addCaption.apply(pp,arguments);},
-			ai = function(){ pp.addChild.apply(pp,arguments);},
-			ap = function(){ pp.addSeparator.apply(pp,arguments);};
-
-		// *ファイル ==========================================================
-		am('file', "ファイル", "File");
-
-		as('newboard', 'file', '新規作成','New Board');
-		as('urlinput', 'file', 'URL入力', 'Import from URL');
-		as('urloutput','file', 'URL出力', 'Export URL');
-		ap('sep_file', 'file');
-		as('fileopen', 'file', 'ファイルを開く','Open the file');
-		as('filesave', 'file', 'ファイル保存',  'Save the file as ...');
-		if(pzpr.env.storage.localST){
-			as('database',  'file', 'ブラウザ保存', 'Browser Save');
-		}
-		if(ui.enableSaveImage || ui.enableSaveSVG){
-			ap('sep_image', 'file');
-			as('imagesave', 'file', '画像を保存', 'Save as image file');
-		}
-
-		// *編集 ==============================================================
-		am('edit', "編集", "Edit");
-
-		an('hist', 'edit', '履歴', 'History');
-		an('board','edit', '盤面', 'Board');
-		ap('sep_edit1', 'edit');
-
-		as('adjust', 'edit', '盤面の調整', 'Adjust the Board');
-		as('turnflip', 'edit', '反転・回転', 'Filp/Turn the Board');
-		if(pzpr.env.storage.session){
-			ap('sep_edit2',  'edit');
-			as('duplicate', 'edit', '盤面の複製', 'Duplicate the Board');
-		}
-
-		// *編集 - 履歴 -----------------------------------------------------
-		aa('cap_hist', 'hist', '履歴','History');
-		as('h_oldest', 'hist', '最初にジャンプ', 'Jump to oldest');
-		as('h_undo',   'hist', '元に戻す/Undo', 'Undo');
-		as('h_redo',   'hist', 'やり直し/Redo', 'Redo');
-		as('h_latest', 'hist', '最後にジャンプ', 'Jump to latest');
-
-		// *編集 - 盤面 -----------------------------------------------------
-		aa('cap_board','board', '盤面','Board');
-		as('check',    'board', 'チェック', 'Check the Answer');
-		as('ansclear', 'board', '回答消去', 'Erase answer');
-		if(!ui.puzzle.flags.disable_subclear){
-			as('subclear', 'board', '補助記号消去', 'Erase auxiliary marks');
-		}
-
-		// *表示 ==============================================================
-		am('disp', "表示", "Display");
-
-		au('cellsize','disp', '表示サイズ','Cell Size');
-
-		au('font','disp', 'フォント','Font Family');
-		ai('font_1', 'font', 'ゴシック', 'Sans-Serif');
-		ai('font_2', 'font', '明朝', 'Serif');
-
-		ap('sep_disp1',  'disp');
-
-		if(ui.puzzle.validConfig("irowake")){
-			ac('irowake','disp', '線の色分け','Color coding');
-		}
-		if(ui.puzzle.validConfig("irowakeblk")){
-			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
-		}
-
-		ac('cursor','disp','カーソルの表示','Display cursor');
-		ac('adjsize', 'disp', '自動横幅調節', 'Auto Size Adjust');
-		ac('fullwidth', 'disp', '横幅最大拡張', 'Expand Canvas Width');
-		ap('sep_disp2', 'disp');
-		as('colors',  'disp', '色の設定','Change Color');
-		as('repaint', 'disp', '盤面の再描画', 'Repaint whole board');
-		as('manarea', 'disp', '管理領域を隠す', 'Hide Management Area');
-
-		// *表示 - 表示サイズ -------------------------------------------------
-		as('dispsize', 'cellsize','数値指定','Cell Size');
-		aa('cap_dispmode','cellsize','表示倍率','Display mode');
-		ai('cellsize_0', 'cellsize', 'サイズ 極小', 'Ex Small');
-		ai('cellsize_1', 'cellsize', 'サイズ 小',   'Small');
-		ai('cellsize_2', 'cellsize', 'サイズ 標準', 'Normal');
-		ai('cellsize_3', 'cellsize', 'サイズ 大',   'Large');
-		ai('cellsize_4', 'cellsize', 'サイズ 特大', 'Ex Large');
-
-		// *設定 ==============================================================
-		this.createArea_setting(pp);		// コンフィグ関連のメニュー追加
-
-		// *その他 ============================================================
-		am('other', "その他", "Others");
-
-		as('credit',   'other', 'ぱずぷれv3について', 'About PUZ-PRE v3');
-		as('jumpexp',  'other', '操作説明',           'How to Input');
-		ap('sep_other','other');
-		an('link',     'other', 'リンク', 'Link');
-		an('debug',    'other', 'デバッグ', 'Debug');
-
-		// *その他 - リンク ---------------------------------------------------
-		as('jumpv3',  'link', 'ぱずぷれv3のページへ', 'Jump to PUZ-PRE v3 page');
-		as('jumptop', 'link', '連続発破保管庫TOPへ',  'Jump to indi.s58.xrea.com');
-		as('jumpblog','link', 'はっぱ日記(blog)へ',   'Jump to my blog');
-
-		// *その他 - デバッグ -------------------------------------------------
-		as('poptest', 'debug', 'pop_testを表示', 'Show pop_test window');
-	},
-	createArea_setting : function(pp){
-		var puzzle = ui.puzzle, flags = puzzle.flags, pid = puzzle.pid;
-
-		pp.addMenu('setting', "設定", "Setting");
-
-		if(ui.validConfig("mode")){
-			pp.addSelect('mode','setting', 'モード', 'mode');
-			pp.addChild('mode_1', 'mode', '問題作成モード', 'Edit mode'  );
-			pp.addChild('mode_3', 'mode', '回答モード',     'Answer mode');
-		}
-
-		/* 操作方法の設定値 */
-		if(ui.validConfig("use")){
-			pp.addSelect('use','setting','操作方法', 'Input Type');
-			pp.addChild('use_1','use','左右ボタン','LR Button');
-			pp.addChild('use_2','use','1ボタン',   'One Button');
-		}
-		if(ui.validConfig("use_tri")){
-			pp.addSelect('use_tri','setting','操作方法', 'Input Type');
-			pp.addChild('use_tri_1', 'use_tri', 'クリックした位置', 'Corner-side');
-			pp.addChild('use_tri_2', 'use_tri', '引っ張り入力', 'Pull-to-Input');
-			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
-		}
-
-		if(ui.validConfig("disptype_pipelinkr")){
-			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
-			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
-			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
-		}
-		if(ui.validConfig("disptype_bosanowa")){
-			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
-			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
-			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
-			pp.addChild('disptype_bosanowa_3', 'disptype_bosanowa', 'ワリタイ形式',   'Waritai type');
-		}
-
-		/* 盤面チェックの設定値 */
-		if(ui.validConfig("redline")){
-			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
-		}
-		else if(ui.validConfig("redblk")){
-			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
-		}
-		else if(ui.validConfig("redblkrb")){
-			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
-		}
-		else if(ui.validConfig("redroad")){
-			pp.addCheck('redroad','setting','通り道のチェック', 'Check Road');
-		}
-
-		/* 背景色入力の設定値 */
-		if(ui.validConfig("bgcolor")){
-			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
-		}
-
-		/* 文字別正解表示の設定値 */
-		if(ui.validConfig("autocmp")){
-			if(flags.autocmp==="number"){
-				pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
-			}
-			else if(flags.autocmp==='kouchoku'){
-				pp.addCheck('autocmp','setting','点をグレーにする','Set Grey Color');
-			}
-		}
-
-		if(ui.validConfig("autoerr")){
-			if(pid==='hitori'){
-				pp.addCheck('autoerr','setting', '重複した数字を表示', 'Show overlapped number');
-			}
-			else if(pid==='gokigen'||pid==='wagiri'){
-				pp.addCheck('autoerr','setting', '斜線の色分け', 'Slash with color');
-			}
-		}
-
-		/* 正当判定方法の設定値 */
-		if(ui.validConfig("enbnonum")){
-			pp.addCheck('enbnonum','setting','未入力で正答判定','Allow Empty cell');
-		}
-
-		/* 線の引き方の設定値 */
-		if(puzzle.validConfig("kouchoku")){
-			pp.addCheck('enline','setting','線は点の間','Line between points');
-			pp.addCheck('lattice','setting','格子点チェック','Check lattice point');
-		}
-
-		/* 問題形式の設定値 */
-		if(ui.validConfig("uramashu")){
-			pp.addCheck('uramashu','setting', '裏ましゅ', 'Ura-Mashu');
-		}
-
-		/* 盤面表示形式の設定値 */
-		if(ui.validConfig("dispmove")){
-			pp.addCheck('dispmove','setting','動かしたように描画', 'Paint as move');
-		}
-
-		if(ui.validConfig("snakebd")){
-			pp.addCheck('snakebd','setting','へび境界線有効','Enable snake border');
-		}
-
-		/* EDITOR時の設定値 */
-		if(ui.validConfig("goishi")){
-			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
-		}
-		if(ui.validConfig("discolor")){
-			pp.addCheck('discolor','setting','色分け無効化','Disable color');
-		}
-
-		/* 共通設定値 */
-		if(ui.validConfig("autocheck")){
-			pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
-		}
-
-		if(ui.validConfig("lrcheck")){
-			pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
-		}
-
-		if(ui.validConfig("keypopup")){
-			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
-		}
-
-		if(ui.validConfig("keytarget")){
-			pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
-		}
-
-		if(ui.validConfig("language")){
-			pp.addSelect('language', 'setting', '言語', 'Language');
-			pp.addChild('language_ja', 'language', '日本語',  '日本語');
-			pp.addChild('language_en', 'language', 'English', 'English');
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.createAllFloat() 登録されたサブメニューから全てのフロートメニューを作成する
-	//---------------------------------------------------------------------------
-	createAllFloat : function(){
-		var pp = this.items;
-
-		// ElementTemplate : メニュー領域
-		var el_menu = createEL('li');
-		el_menu.className = 'menu';
-
-		// ElementTemplate : フロートメニュー
-		var el_float = createEL('menu');
-		el_float.className = 'floatmenu';
-
-		// ElementTemplate : フロートメニュー(中身)
-		var el_smenu = createEL('li');
-		el_smenu.className = 'smenu';
-
-		var el_sparent = el_smenu.cloneNode(false);
-		el_sparent.style.fontWeight = '900';
-		el_sparent.style.fontSize = '0.9em';
-		var el_select = el_sparent.cloneNode(false);
-
-		var el_check  = el_smenu.cloneNode(false);
-		el_check.style.paddingLeft = '6pt';
-		el_check.style.fontSize = '0.9em';
-		var el_child = el_check.cloneNode(false);
-
-		var el_separate = createEL('li');
-		el_separate.className = 'smenusep';
-		el_separate.innerHTML = '&nbsp;';
-
-		var el_label = createEL('li');
-		el_label.className = 'smenulabel';
-
-		for(var id in pp.item){
-			var temp=null, smenuid = 'ms_'+id, sfunc=false, cfunc=false;
-			switch(pp.type(id)){
-				case pp.MENU:     temp = el_menu;     break;
-				case pp.SEPARATE: temp = el_separate; break;
-				case pp.LABEL:    temp = el_label;    break;
-				case pp.SELECT:   temp = el_select;   sfunc = true; break;
-				case pp.SPARENT:  temp = el_sparent;  sfunc = true; break;
-				case pp.SMENU:    temp = el_smenu;    sfunc = cfunc = true; break;
-				case pp.CHECK:    temp = el_check;    sfunc = cfunc = true; break;
-				case pp.CHILD:    temp = el_child;    sfunc = cfunc = true; break;
-				default: continue;
-			}
-
-			var smenu = temp.cloneNode(temp===el_separate?true:false);
-			smenu.id = smenuid;
-			if(pp.type(id)===pp.MENU){
-				getEL('menupanel').appendChild(smenu);
-				ui.event.addEvent(smenu, "mouseover", this, this.menuhover);
-				ui.event.addEvent(smenu, "mouseout",  this, this.menuout);
-				continue;
-			}
-			else if(sfunc){
-				ui.event.addEvent(smenu, "mouseover", this, this.submenuhover);
-				ui.event.addEvent(smenu, "mouseout",  this, this.submenuout);
-				if(cfunc){ ui.event.addEvent(smenu, "click", this, this.submenuclick);}
-			}
-
-			var parentid = pp.item[id].parent;
-			if(!this.floatpanel[parentid]){
-				var panel = el_float.cloneNode(false);
-				panel.id = 'float_'+parentid;
-				getEL('float_parent').appendChild(panel);
-				ui.event.addEvent(panel, "mouseout", this, this.floatmenuout);
-				this.floatpanel[parentid] = panel;
-			}
-			this.floatpanel[parentid].appendChild(smenu);
-		}
-
-		// 'setting'だけはセパレータを後から挿入する
-		var el = getEL('float_setting'), fw = el.firstChild.style.fontWeight;
-		for(var i=1,len=el.childNodes.length;i<len;i++){
-			var node = el.childNodes[i];
-			if(fw!==node.style.fontWeight){
-				var smenu = el_separate.cloneNode(true);
-				node.parentNode.insertBefore(smenu, node);
-				i++; len++; // 追加したので1たしておく
-			}
-			fw=node.style.fontWeight;
-		}
-
-		// その他の調整
-		if(pzpr.PLAYER){
-			getEL('ms_newboard') .className = 'smenunull';
-			getEL('ms_urloutput').className = 'smenunull';
-			getEL('ms_adjust')   .className = 'smenunull';
-		}
-		getEL('ms_jumpv3')  .style.fontSize = '0.9em'; getEL('ms_jumpv3')  .style.paddingLeft = '8pt';
-		getEL('ms_jumptop') .style.fontSize = '0.9em'; getEL('ms_jumptop') .style.paddingLeft = '8pt';
-		getEL('ms_jumpblog').style.fontSize = '0.9em'; getEL('ms_jumpblog').style.paddingLeft = '8pt';
-	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.submenuclick(e) 通常/選択型/チェック型サブメニューがクリックされたときの動作を実行する
-	//---------------------------------------------------------------------------
-	submenuclick : function(e){
+	checkclick : function(e){
 		var el = e.target;
-		if(!!el && el.className==="smenu"){
-			this.floatmenuclose(0);
-
-			var idname = el.id.substr(3), val, pp = this.items, menutype = pp.type(idname);
-			if(menutype===pp.SMENU){
-				if(!this.submenuexec(idname)){
-					var pos = pzpr.util.getPagePos(e);
-					ui.popupmgr.open(idname, pos.px-8, pos.py-8);
-				}
-			}
-			else if(menutype===pp.CHILD || menutype===pp.CHECK){
-				if(menutype===pp.CHILD){
-					val    = pp.item[idname].val;
-					idname = pp.item[idname].parent;
-				}
-				else if(menutype===pp.CHECK){
-					val = !ui.getConfig(idname);
-				}
-				ui.setConfig(idname, val);
-			}
-		}
+		if(el.nodeName==="SPAN"){ el = el.parentNode;}
+		
+		var idname = (el["data-config"] || el.dataset.config);
+		ui.setConfig(idname, !ui.getConfig(idname));
+	},
+	childclick : function(e){
+		var el = e.target;
+		if(el.nodeName==="SPAN"){ el = el.parentNode;}
+		
+		var parent = el.parentNode.parentNode;
+		var idname = (parent["data-config"] || parent.dataset.config);
+		var value = (el["data-value"] || el.dataset.value);
+		ui.setConfig(idname, value);
 	},
 
 	//---------------------------------------------------------------------------
-	// menuarea.submenuexec()     メニューがクリックされた時の動作を呼び出す
+	// メニューがクリックされた時の動作を呼び出す
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
-	submenuexec : function(idname, val){
-		if(!ui.puzzle.ready){ return true;}
-		
-		var result = true;
-		switch(idname){
-		case 'h_oldest'  : ui.puzzle.undoall(); break;
-		case 'h_undo'    : ui.puzzle.undo();    break;
-		case 'h_redo'    : ui.puzzle.redo();    break;
-		case 'h_latest'  : ui.puzzle.redoall(); break;
-		case 'check'     : this.answercheck();  break;
-		case 'ansclear'  : this.ACconfirm();    break;
-		case 'subclear'  : this.ASconfirm();    break;
-		case 'duplicate' : this.duplicate();    break;
-		
-		case 'manarea'   : ui.toolarea.isdisp = !ui.toolarea.isdisp; ui.displayAll(); ui.puzzle.adjustCanvasSize(); break;
-		case 'repaint'   : ui.puzzle.redraw(); break;
-		
-		case 'jumpexp'   : window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), ''); break;
-		case 'jumpv3'    : window.open('./', '', ''); break;
-		case 'jumptop'   : window.open('http://indi.s58.xrea.com/', '', ''); break;
-		case 'jumpblog'  : window.open('http://d.hatena.ne.jp/sunanekoroom/', '', ''); break;
-		case 'poptest'   : ui.popupmgr.open("debug", 0, 0); break;
-		
-		default:
-			result = false;
-			break;
-		}
-		return result;
+	undoall : function(){ ui.puzzle.undoall();},
+	undo    : function(){ ui.puzzle.undo();},
+	redo    : function(){ ui.puzzle.redo();},
+	redoall : function(){ ui.puzzle.redoall();},
+	anscheck : function(){ this.answercheck();},
+	ansclear : function(){ this.ACconfirm();},
+	subclear : function(){ this.ASconfirm();},
+	duplicate: function(){ this.duplicate_board();},
+	toolarea : function(){
+		ui.toolarea.isdisp = !ui.toolarea.isdisp;
+		ui.displayAll();
+		ui.puzzle.adjustCanvasSize();
+		this.setdisplay("toolarea");
 	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.menuhover(e) メニューにマウスが乗ったときの表示設定を行う
-	// menuarea.menuout(e)   メニューからマウスが外れた時の表示設定を行う
-	//---------------------------------------------------------------------------
-	menuhover : function(e){
-		this.floatmenuopen(e, 0);
+	repaint : function(){ ui.puzzle.redraw();},
+	jumpexp : function(){
+		window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), '');
 	},
-	menuout   : function(e){
-		if(!this.insideOfMenu(e)){
-			this.floatmenuclose(0);
+	disppopup : function(e){
+		var el = e.target;
+		if(el.nodeName==="SPAN"){ el = el.parentNode;}
+		if(el.className!=="disabled"){
+			var idname = el["data-popup"] || el.dataset.popup;
+			var pos = pzpr.util.getPagePos(e);
+			ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 		}
 	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.submenuhover(e) サブメニューにマウスが乗ったときの表示設定を行う
-	// menuarea.submenuout(e)   サブメニューからマウスが外れたときの表示設定を行う
-	//---------------------------------------------------------------------------
-	submenuhover : function(e){
-		if(this.items.haschild(e.target.id.substr(3))){
-			if(e.target.className==='smenu'){
-				this.floatmenuopen(e, this.dispfloat.length);
-			}
-		}
-	},
-	submenuout   : function(e){
-		if(this.items.haschild(e.target.id.substr(3))){
-			this.floatmenuout(e);
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// menuarea.floatmenuopen()  マウスがメニュー項目上に来た時にフロートメニューを表示する
-	// menuarea.floatmenuclose() フロートメニューをcloseする
-	// menuarea.floatmenuout(e)  マウスがフロートメニューを離れた時にフロートメニューをcloseする
-	// menuarea.insideOf()       イベントeがエレメントの範囲内で起こったか？
-	// menuarea.insideOfMenu()   マウスがメニュー領域の中にいるか判定する
-	//---------------------------------------------------------------------------
-	floatmenuopen : function(e, depth){
-		this.floatmenuclose(depth);
-
-		if(depth>0 && !this.dispfloat[depth-1]){ return;}
-
-		var rect = pzpr.util.getRect(e.target);
-		var idname = e.target.id.substr(3);
-		var _float = this.floatpanel[idname];
-		if(depth===0){
-			_float.style.left = rect.left   + 1 + 'px';
-			_float.style.top  = rect.bottom + 1 + 'px';
-		}
-		else{
-			_float.style.left = rect.right - 3 + 'px';
-			_float.style.top  = rect.top   - 3 + 'px';
-		}
-		_float.style.zIndex   = 101+depth;
-		_float.style.display  = 'block';
-
-		this.dispfloat.push(_float);
-	},
-	// マウスが離れたときにフロートメニューをクローズする
-	// フロート->メニュー側に外れた時は、関数終了直後にfloatmenuopen()が呼ばれる
-	floatmenuclose : function(depth){
-		for(var i=this.dispfloat.length-1;i>=depth;i--){
-			if(i!==0){
-				var parentsmenuid = "ms_" + this.dispfloat[i].id.substr(6);
-				getEL(parentsmenuid).className = 'smenu';
-			}
-			this.dispfloat[i].style.display = 'none';
-			this.dispfloat.pop();
-		}
-	},
-
-	floatmenuout : function(e){
-		for(var i=this.dispfloat.length-1;i>=0;i--){
-			if(this.insideOf(this.dispfloat[i],e)){
-				this.floatmenuclose(i+1);
-				return;
-			}
-		}
-		// ここに来るのはすべて消える場合
-		this.floatmenuclose(0);
-	},
-
-	insideOf : function(el, e){
-		var pos = pzpr.util.getPagePos(e);
-		var rect = pzpr.util.getRect(el);
-		return (pos.px>=rect.left && pos.px<=rect.right && pos.py>=rect.top && pos.py<=rect.bottom);
-	},
-	insideOfMenu : function(e){
-		var pos = pzpr.util.getPagePos(e);
-		var rect_f = pzpr.util.getRect(getEL('ms_file')), rect_o = pzpr.util.getRect(getEL('ms_other'));
-		var floats = this.dispfloat;
-		if(pos.py <= rect_f.bottom){
-			return (pos.px>=rect_f.left && pos.px<=rect_o.right && pos.py>=rect_f.top);
-		}
-		else if(floats.length>0){
-			var rect_0 = pzpr.util.getRect(floats[0]), rect_l = pzpr.util.getRect(floats[floats.length-1]);
-			return (pos.px>=rect_0.left && pos.px<=rect_l.right);
-		}
-		return false;
-	},
-
-//--------------------------------------------------------------------------------------------------------------
+	dispdebug : function(){ ui.popupmgr.open("debug", 0, 0);},
 
 	//------------------------------------------------------------------------------
-	// menuarea.duplicate() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
+	// menuarea.duplicate_board() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
 	//------------------------------------------------------------------------------
-	duplicate : function(){
+	duplicate_board : function(){
+		if(getEL("menu_duplicate").className==="disabled"){ return;}
 		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
 		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
 		if(!pzpr.env.browser.Presto){
@@ -634,103 +243,5 @@ ui.menuarea = {
 		if(ui.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
 			ui.puzzle.subclear();
 		}
-	}
-};
-
-// MenuListクラス
-ui.MenuList = function(){
-	this.item = {};
-};
-ui.MenuList.prototype =
-{
-	item : null,	// サブメニュー項目の情報
-
-	// 定数
-	MENU     : 6,
-	SPARENT  : 8,
-	SMENU    : 0,
-	SELECT   : 1,
-	CHECK    : 2,
-	LABEL    : 3,
-	CHILD    : 4,
-	SEPARATE : 5,
-
-	//---------------------------------------------------------------------------
-	// pp.addMenu()      メニュー最上位の情報を登録する
-	// pp.addSParent()   フロートメニューを開くサブメニュー項目を登録する
-	// pp.addSmenu()     Popupメニューを開くサブメニュー項目を登録する
-	// pp.addCaption()   Captionとして使用するサブメニュー項目を登録する
-	// pp.addSeparator() セパレータとして使用するサブメニュー項目を登録する
-	// pp.addCheck()     選択型サブメニュー項目に表示する文字列を設定する
-	// pp.addSelect()    チェック型サブメニュー項目に表示する文字列を設定する
-	// pp.addChild()     チェック型サブメニュー項目の子要素を設定する
-	//---------------------------------------------------------------------------
-	addMenu : function(idname, strJP, strEN){
-		this.addFlags(idname, '', this.MENU, null, strJP, strEN);
-	},
-	addSParent : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SPARENT, null, strJP, strEN);
-	},
-
-	addSmenu : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SMENU, null, strJP, strEN);
-	},
-
-	addCaption : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.LABEL, null, strJP, strEN);
-	},
-	addSeparator : function(idname, parent){
-		this.addFlags(idname, parent, this.SEPARATE, null, '', '');
-	},
-
-	addCheck : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.CHECK, null, strJP, strEN);
-	},
-	addSelect : function(idname, parent, strJP, strEN){
-		this.addFlags(idname, parent, this.SELECT, null, strJP, strEN);
-		if(!!ui.menuconfig.list[idname]){
-			this.item[idname].children = ui.menuconfig.list[idname].option;
-		}
-		else if(!!ui.puzzle.config.list[idname]){
-			this.item[idname].children = ui.puzzle.config.list[idname].option;
-		}
-		else if(idname==='mode'){
-			this.item[idname].children = [1,3];
-		}
-	},
-	addChild : function(idname, parent, strJP, strEN){
-		var list = idname.split("_"), val = list.pop();
-		if(ui.getConfigType(list.join("_"))==="number"){ val = +val;}
-		this.addFlags(idname, parent, this.CHILD, val, strJP, strEN);
-	},
-
-	//---------------------------------------------------------------------------
-	// pp.addFlags()  上記関数の内部共通処理
-	//---------------------------------------------------------------------------
-	addFlags : function(idname, parent, type, first, strJP, strEN){
-		this.item[idname] = {
-			id     : idname,
-			type   : type,
-			val    : first,
-			parent : parent,
-			str : {
-				ja : { menu:strJP, label:''},
-				en : { menu:strEN, label:''}
-			}
-		};
-	},
-
-	//---------------------------------------------------------------------------
-	// pp.getMenuStr() 選択型/チェック型サブメニューに表示する文字列を返す
-	// pp.type()       設定値のサブメニュータイプを返す
-	// pp.haschild()   サブメニューがあるかどうか調べる
-	//---------------------------------------------------------------------------
-	getMenuStr : function(idname){ return this.item[idname].str[ui.puzzle.getConfig('language')].menu; },
-	type       : function(idname){ return (this.item[idname]?this.item[idname].type:null);},
-	haschild   : function(idname){
-		var flag = this.item[idname];
-		if(!flag){ return false;}
-		var type = flag.type;
-		return (type===this.SELECT || type===this.SPARENT);
 	}
 };

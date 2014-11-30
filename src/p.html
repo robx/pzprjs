@@ -16,25 +16,145 @@
 <h2 id="title2">読み込み中です...</h2>
 
 <div id="menuboard" class="outofboard">
-  <menu id="menupanel"></menu>
+  <menu id="menupanel" style="display:none;">
+   <li><span>__[ファイル]__[File]__</span><menu label="__ファイル__File__">
+     <li data-popup="newboard"><span>__新規作成__New Board__</span></li>
+     <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
+     <li data-popup="urloutput"><span>__URL出力__Export URL__</span></li>
+     <hr>
+     <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
+     <li data-popup="filesave"><span>__ファイル保存__Save file as ...__</span></li>
+     <li data-popup="database" id="menu_database"><span>__ブラウザ保存__Browser Save__</span></li>
+     <hr>
+     <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
+   </menu></li>
+   <li><span>__[編集]__[Edit]__</span><menu label="__編集__Edit__">
+     <li><span>__履歴__History__</span> -&gt;<menu label="__履歴__History__">
+       <li id="menu_oldest" data-menu-exec="undoall"><span>__最初にジャンプ__Jump to oldest__</span></li>
+       <li id="menu_undo" data-menu-exec="undo"><span>__元に戻す/Undo__Undo__</span></li>
+       <li id="menu_redo" data-menu-exec="redo"><span>__やり直し/Redo__Redo__</span></li>
+       <li id="menu_latest" data-menu-exec="redoall"><span>__最後にジャンプ__Jump to latest__</span></li>
+     </menu></li>
+     <li><span>__盤面__Board__</span> -&gt;<menu label="__盤面__Board__">
+       <li data-menu-exec="anscheck"><span>__チェック__Check the Answer__</span></li>
+       <li data-menu-exec="ansclear"><span>__回答消去__Erase answer__</span></li>
+       <li data-menu-exec="subclear" id="menu_subclear"><span>__補助記号消去__Erase auxiliary marks__</span></li>
+     </menu></li>
+     <hr>
+     <li data-popup="adjust"><span>__盤面の調整__Adjust the Board__</span></li>
+     <li data-popup="turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
+     <hr>
+     <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
+   </menu></li>
+   <li><span>__[表示]__[Display]__</span><menu label="__表示__Display__">
+     <li data-config="cellsize"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
+       <li data-popup="dispsize"><span>__数値指定__Size Number__</span></li>
+       <li data-config="cellsize"><span>__倍率指定__Size Ratio__</span> -&gt;<menu label="__表示倍率__Size Ratio__">
+         <li data-value="0"><span>__サイズ 極小__Ex Small__</span></li>
+         <li data-value="1"><span>__サイズ 小__Small__</span></li>
+         <li data-value="2"><span>__サイズ 標準__Normal__</span></li>
+         <li data-value="3"><span>__サイズ 大__Large__</span></li>
+         <li data-value="4"><span>__サイズ 特大__Ex Large__</span></li>
+       </menu></li>
+     </menu></li>
+     <li data-config="font"><span>__フォント__Font Family__</span> -&gt;<menu label="__フォント__Font Family__">
+       <li data-value="1"><span>__ゴシック__Sans-Serif__</span></li>
+       <li data-value="2"><span>__明朝__Serif__</span></li>
+     </menu></li>
+     <hr>
+     <li class="check" data-config="irowake"><span>__線の色分け__Color coding__</span></li>
+     <li class="check" data-config="irowakeblk"><span>__黒マスの色分け__Color coding__</span></li>
+     <li class="check" data-config="cursor"><span>__カーソルの表示__Show cursor__</span></li>
+     <li class="check" data-config="adjsize"><span>__自動横幅調節__Auto Size Adjust__</span></li>
+     <li class="check" data-config="fullwidth"><span>__横幅最大拡張__Expand Canvas Width__</span></li>
+     <hr>
+     <li data-popup="colors"><span>__色の設定__Change Color__</span></li>
+     <li data-menu-exec="repaint"><span>__盤面の再描画__Repaint whole board__</span></li>
+     <li data-menu-exec="toolarea"><span id="menu_toolarea">__管理領域を隠す__Hide Management Area__</span></li>
+   </menu></li>
+   <li><span>__[設定]__[Setting]__</span><menu label="__設定__Setting__">
+     <li data-config="mode"><span>__モード__mode__</span> -&gt;<menu label="__モード__mode__">
+       <li data-value="1"><span>__問題作成モード__Edit mode__</span></li>
+       <li data-value="3"><span>__回答モード__Answer mode__</span></li>
+     </menu></li>
+     <li data-config="use"><span>__操作方法__Input Type__</span> -&gt;<menu label="__操作方法__Input Type__">
+       <li data-value="1"><span>__左右ボタン__LR Button__</span></li>
+       <li data-value="2"><span>__1ボタン__One Button__</span></li>
+     </menu></li>
+     <li data-config="use_tri"><span>__操作方法__Input Type__</span> -&gt;<menu label="__操作方法__Input Type__">
+       <li data-value="1"><span>__クリックした位置__Corner-side__</span></li>
+       <li data-value="2"><span>__引っ張り入力__Pull-to-Input__</span></li>
+       <li data-value="3"><span>__1ボタン__One Button__</span></li>
+     </menu></li>
+     <li data-config="disptype_pipelinkr"><span>__表示形式__Display__</span> -&gt;<menu label="__表示形式__Display__">
+       <li data-value="1"><span>__○__Circle__</span></li>
+       <li data-value="2"><span>__■__Icebarn__</span></li>
+     </menu></li>
+     <li data-config="disptype_bosanowa"><span>表示形式</span> -&gt;<menu label="表示形式">
+       <li data-value="1"><span>__ニコリ紙面形式__Original Type__</span></li>
+       <li data-value="2"><span>__倉庫番形式__Sokoban Type__</span></li>
+       <li data-value="3"><span>__ワリタイ形式__Waritai Type__</span></li>
+     </menu></li>
+     <hr>
+     <li class="check" data-config="redline"><span>__繋がりチェック__Continuous Check__</span></li>
+     <li class="check" data-config="redblk"><span>__繋がりチェック__Continuous Check__</span></li>
+     <li class="check" data-config="redblkrb"><span>__繋がりチェック__Continuous Check__</span></li>
+     <li class="check" data-config="redroad"><span>__通り道のチェック__Check Road__</span></li>
+     <li class="check" data-config="bgcolor"><span>__背景色入力__Input BGcolor__</span></li>
+     <li class="check" data-config="autocmp"><span data-disp-pid="!kouchoku">__数字をグレーにする__Set Grey Color__</span
+                                            ><span data-disp-pid="kouchoku">__点をグレーにする__Set Grey Color__</span></li>
+     <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__重複した数字を表示__Show overlapped number__</span
+                                            ><span data-disp-pid="gokigen,wagiri">__斜線の色分け__Slash with color__</span></li>
+     <li class="check" data-config="enbnonum"><span>__空セル許可__Allow Empty cell__</span></li>
+     <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
+     <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
+     <li class="check" data-config="uramashu"><span>__裏ましゅ__Ura-Mashu__</span></li>
+     <li class="check" data-config="dispmove"><span>__動かしたように描画__Paint as move__</span></li>
+     <li class="check" data-config="snakebd"><span>__へび境界線描画__Draw snake border__</span></li>
+     <li class="check" data-config="bdpadding"><span>__空隙つきURL__URL with Padding__</span></li>
+     <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
+     <li class="check" data-config="autocheck"><span>__正答自動判定__Auto Answer Check__</span></li>
+     <li class="check" data-config="lrcheck"><span>__マウス左右反転__Mouse button inversion__</span></li>
+     <li class="check" data-config="keypopup"><span>__パネル入力__Panel inputting__</span></li>
+     <li class="check" data-config="keytarget"><span>__盤面にキー入力__Key input to Canvas__</span></li>
+     <hr>
+     <li data-config="language"><span>__言語__Language__</span> -&gt;<menu label="__言語__Language__">
+       <li class="child" data-value="ja"><span>日本語</span></li>
+       <li class="child" data-value="en"><span>English</span></li>
+     </menu></li>
+   </menu></li>
+   <li><span>__[その他]__[Others]__</span><menu label="__その他__Others__">
+     <li data-popup="credit"><span>__ぱずぷれv3について__About PUZ-PRE v3__</span></li>
+     <li data-menu-exec="jumpexp"><span>__操作説明__How to Input__</span></li>
+     <hr>
+     <li><span>__リンク__Link__</span> -&gt;<menu id="menu_link" label="__リンク__Link__">
+       <li><a target="_blank" href="./">__ぱずぷれv3のページへ__Jump to PUZ-PRE v3 page__</a></li>
+       <li><a target="_blank" href="http://indi.s58.xrea.com/">__連続発破保管庫TOPへ__Jump to indi.s58.xrea.com__</a></li>
+       <li><a target="_blank" href="http://d.hatena.ne.jp/sunanekoroom/">__はっぱ日記(blog)へ__Jump to my blog__</a></li>
+     </menu></li>
+     <li><span>__デバッグ__Debug__</span> -&gt;<menu>
+       <li data-menu-exec="dispdebug"><span>__pop_testを表示__Show pop_test window__</span></li>
+     </menu></li>
+   </menu></li>
+  </menu>
   <div id="usepanel" style="display:none;">
-    <div class="configtool" data-config="mode">
+    <div class="config" data-config="mode">
       <span>__モード__mode__</span> | 
       <div class="child" data-value="1">__問題入力モード__Edit mode__</div>
       <div class="child" data-value="3">__回答モード__Answer mode__</div>
     </div>
-    <div class="configtool" data-config="use">
+    <div class="config" data-config="use">
       <span>__操作方法__Input Type__</span> | 
       <div class="child" data-value="1">__左右ボタン__LR Button__</div>
       <div class="child" data-value="2">__1ボタン__One Button__</div>
     </div>
-    <div class="configtool" data-config="use_tri">
+    <div class="config" data-config="use_tri">
       <span>__三角形の入力方法__Input Triangle Type__</span> | 
       <div class="child" data-value="1">__クリックした位置__Corner-side__</div>
       <div class="child" data-value="2">__引っ張り入力__Pull-to-Input__</div>
       <div class="child" data-value="3">__1ボタン__One Button__</div>
     </div>
-    <div class="configtool" data-config="disptype_bosanowa">
+    <div class="config" data-config="disptype_bosanowa">
       <span>__表示形式__Display__</span> | 
       <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
       <div class="child" data-value="2">__倉庫番形式__Sokoban Type__</div>
@@ -42,83 +162,83 @@
     </div>
   </div>
   <div id="checkpanel" style="display:none;">
-    <div class="configtool" data-config="dispmove">
+    <div class="config" data-config="dispmove">
       <input type="checkbox">
       <span>__動かしたように描画を行う__Display as object moving__</span>
     </div>
-    <div class="configtool" data-config="redline">
+    <div class="config" data-config="redline">
       <input type="checkbox">
       <span>__線のつながりをチェックする__Check countinuous lines__</span>
     </div>
-    <div class="configtool" data-config="redblk">
+    <div class="config" data-config="redblk">
       <input type="checkbox">
       <span>__黒マスのつながりをチェックする__Check countinuous shaded cells__</span>
     </div>
-    <div class="configtool" data-config="redblkrb">
+    <div class="config" data-config="redblkrb">
       <input type="checkbox">
       <span>__ナナメ黒マスのつながりをチェックする__Check countinuous shaded cells with its corner__</span>
     </div>
-    <div class="configtool" data-config="redroad">
+    <div class="config" data-config="redroad">
       <input type="checkbox">
       <span>__クリックした矢印が通る道をチェックする__Check the road that passes clicked arrow.__</span>
     </div>
-    <div class="configtool" data-config="bgcolor">
+    <div class="config" data-config="bgcolor">
       <input type="checkbox">
       <span>__セルの中央をクリックした時に背景色の入力を有効にする__Enable to Input BGColor When the Center of the Cell is Clicked__</span>
     </div>
-    <div class="configtool" data-config="autocmp">
+    <div class="config" data-config="autocmp">
       <input type="checkbox">
       <span data-disp-pid="!kouchoku">__正しい数字をグレーにする__Grey if the number is correct__</span>
       <span data-disp-pid="kouchoku">__線が2本以上になったら点をグレーにする__Grey if the letter links over two segments__</span>
     </div>
-    <div class="configtool" data-config="autoerr">
+    <div class="config" data-config="autoerr">
       <input type="checkbox">
       <span data-disp-pid="hitori">__重複している数字を赤くする__Show overlapped number as red__</span>
       <span data-disp-pid="gokigen">__ループになっている斜線を赤くする__Draw loop line as red__</span>
       <span data-disp-pid="wagiri">__斜線を輪切りかのどちらかで色分けする__Encolor slashes whether it consists in a loop or not__</span>
     </div>
-    <div class="configtool" data-config="enbnonum">
+    <div class="config" data-config="enbnonum">
       <input type="checkbox">
       <span>__全ての数字が入っていない状態での正答判定を許可する__Allow answer check with empty cell in the board__</span>
     </div>
-    <div class="configtool" data-config="enline">
+    <div class="config" data-config="enline">
       <input type="checkbox">
       <span>__点の間のみ線を引けるようにする__Able to draw line only between the points__</span>
     </div>
-    <div class="configtool" data-config="lattice">
+    <div class="config" data-config="lattice">
       <input type="checkbox">
       <span>__点を通過する線を引けないようにする__Disable drawing segment passing over a lattice point__</span>
     </div>
-    <div class="configtool" data-config="uramashu">
+    <div class="config" data-config="uramashu">
       <input type="checkbox">
       <span>__裏ましゅにする__Change to Ura-Mashu__</span>
     </div>
-    <div class="configtool" data-config="snakebd">
+    <div class="config" data-config="snakebd">
       <input type="checkbox">
       <span>__へびの周りに境界線を表示する__Draw border around a snake__</span>
     </div>
-    <div class="configtool" data-config="bdpadding">
+    <div class="config" data-config="bdpadding">
       <input type="checkbox">
       <span>__URL生成時に周り1マス何もない部分をつける__Add Padding around the Board in outputting URL__</span>
     </div>
-    <div class="configtool" data-config="discolor">
+    <div class="config" data-config="discolor">
       <input type="checkbox">
       <span>__星クリックによる色分けを無効化する__Disable Coloring up by clicking star__</span>
     </div>
-    <div class="configtool" data-config="lrcheck">
+    <div class="config" data-config="lrcheck">
       <input type="checkbox">
       <span>__マウスの左右ボタンを反転する__Invert button of the mouse__</span>
     </div>
-    <div class="configtool" data-config="keypopup">
+    <div class="config" data-config="keypopup">
       <input type="checkbox">
       <span>__数字・記号をパネルで入力する__Input numbers by panel__</span>
     </div>
-    <div class="configtool" data-config="irowake">
+    <div class="config" data-config="irowake">
       <input type="checkbox">
       <span>__線の色分けをする__Color each lines__</span>
       <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the color of Line__</button>
     </div>
-    <div class="configtool" data-config="irowakeblk">
+    <div class="config" data-config="irowakeblk">
       <input type="checkbox">
       <span>__黒マスの色分けをする__Color each blocks__</span>
       <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the color of Line__</button>
@@ -143,9 +263,6 @@
 </div>
 
 </div> <!-- div#main close. -->
-
-<!-- フロートパネル用 -->
-<div id="float_parent" class="outofboard"></div>
 
 <!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
 <div id="popup_parent" class="outofboard">

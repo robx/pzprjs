@@ -32,7 +32,7 @@ ui.toolarea = {
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1){
 				/* ツールパネル領域 */
-				if(el.className==="configtool"){
+				if(el.className==="config"){
 					toolarea.items[el["data-config"] || el.dataset.config] = {el:el};
 				}
 				else if(el.className.match(/child/)){
@@ -69,7 +69,6 @@ ui.toolarea = {
 		});
 	},
 	walkElement2 : function(parent){
-		var toolarea = this;
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="SPAN"){
 				var disppid = el["data-disp-pid"] || el.dataset.dispPid;

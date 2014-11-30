@@ -23,25 +23,6 @@
 	/* 管理領域 */
 	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; text-align:left; border:1px red solid;}
 
-	/* メニュー領域 */
-	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt;}
-	/* メニュー項目 */
-	li.menu       { display:inline; color:blue; margin-right:4pt; cursor:pointer; text-decoration:underline;}
-	li.menu:hover { color:maroon; font-weight:bold; background-color:#efefef;}
-	/* li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;} */
-
-	/* フロートメニュー */
-	menu.floatmenu  { visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
-					  list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:#7f7f7f; z-index:101;}
-	/* フロートメニュー - サブメニュー項目 */
-	menu.floatmenu li { display:block; margin:0pt; padding:1pt 8pt 0pt 4pt; text-align:left; color:black; cursor:default;}
-	menu.floatmenu li.smenu       { background-color:white; cursor:pointer;}
-	menu.floatmenu li.smenu:hover { background-color:#ffcccc; text-decoration:underline;}
-	menu.floatmenu li.smenunull { background-color:#dfdfdf; color:gray;}
-
-	menu.floatmenu li.smenulabel{ display:inline; color:white;}
-	menu.floatmenu li.smenusep  { height:3pt; padding-top:0pt;}
-
 	/* メニューより下の管理領域 */
 	div#usepanel  { margin:8pt 0pt 0pt 6pt;}
 	div#checkpanel{ margin:4pt 0pt 6pt 16pt;}
@@ -57,10 +38,6 @@
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
 	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;}
 	div#btnarea { position:relative; margin-top:1.0em;}
-
-	/* (canvas.context.fillText代替用) */
-	div#numobj_parent{ position:absolute; left:0px; top:0px; z-index:20;}
-	div#numobj_parent div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
 
 	/* ポップアップウィンドウ */
 	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;
@@ -105,4 +82,164 @@
 
 	iframe#fileiopanel { width:200px; height:200px;}
 	form#fileform2     { width:100px; height:100px;}
+
+	/* ============================================================= */
+	/* メニュー領域 */
+	#menupanel {
+		display  : block;
+		position : relative;
+		top      : 0px;
+		left     : 0px;
+		height   : 1.2em;
+		margin   : 0;
+		padding  : 2pt 4px 2pt 4px;
+		background : #efefef;
+		font-size : 0.95em;
+	}
+
+	/* main-menu items */
+	#menupanel > li {
+		position   : relative;
+		float      : left;
+		height     : 100%;
+		list-style : none;
+		cursor     : pointer;
+		margin-right:4px;
+		text-decoration: underline;
+	}
+	#menupanel > li > span {
+		color       : blue;
+		line-height : 110%;
+		font-size   : 110%;
+		vertical-align : middle;
+	}
+	#menupanel > li:hover > span,
+	#menupanel > li.hover > span {
+		color : maroon;
+		font-weight : 900;
+	}
+
+	/* submenu popup (any level) */
+	#menupanel li:hover > menu,
+	#menupanel li.hover > menu {
+		display : block;
+	}
+
+	/* for all level1+ submenus */
+	#menupanel > li > menu {
+		font-size : 0.9em;
+	}
+	#menupanel menu {
+		display  : none;
+		position : absolute;
+		list-style-type : none;
+		background : lime;
+		background : lime linear-gradient(to right bottom, rgba(0,0,0,.5), rgba(0,0,0,0));
+		margin     : 0pt;
+		padding    : 3px;
+		text-align : left;
+		cursor     : default;
+
+		box-shadow : 6px 6px 6px rgba(64,64,64,.5), inset 32px 32px 48px -16px rgba(0,0,0,.5);
+		border-radius:8px;
+	}
+	#menupanel menu[label]:before {
+		margin  : 0pt;
+		padding : 4pt 8pt 4pt 4pt;
+		line-height : 140%;
+		white-space : nowrap;
+		color   : white;
+		content : attr(label);
+
+		text-shadow : 0px 0px 1px black;
+	}
+	#menupanel menu li:first-child {
+		border-top-left-radius :3px;
+		border-top-right-radius:3px;
+	}
+	#menupanel menu li:last-child {
+		border-bottom-left-radius :6px;
+		border-bottom-right-radius:6px;
+	}
+
+	/* level1, level2+ submenus */
+	#menupanel menu
+		{ left:0px;   top:1.2em;  min-width:132px; z-index:22;}
+	#menupanel menu menu[label]
+		{ left:120px; top:-1.5em; min-width:80px;  z-index:23;}
+	#menupanel menu menu
+		{ left:120px; top:-0.2em; min-width:80px;  z-index:23;}
+	#menupanel menu menu[label] menu
+		{ left:72px;  top:-1.5em; min-width:80px;  z-index:24;}
+
+	/* submenu items */
+	#menupanel menu li {
+		display    : block;
+		position   : relative;
+		line-height: 1.1;
+		float      : none;
+		list-style : none;
+		margin     : 0pt;
+		padding    : 0.2em 2pt 0.2em 4pt;
+		color      : black;
+		background : white;
+		cursor     : pointer;
+	}
+	#menupanel menu li:hover,
+	#menupanel menu li.hover {
+		background : #ffcccc;
+	}
+	#menupanel menu li:hover > span,
+	#menupanel menu li.hover > span {
+		font-weight : 900;
+		text-decoration : underline;
+	}
+	#menupanel menu hr {
+		margin  : 0px;
+		padding : 0px;
+		border  : none;
+		height  : 3px;
+		color   : lime;
+	}
+	#menupanel menu span {
+		white-space: nowrap;
+	}
+	#menupanel menu a {
+		color : black;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	/* disabled submenu items */
+	#menupanel menu li.disabled {
+		background : #dfdfdf;
+		color      : gray;
+		cursor     : default;
+	}
+	/* (cancel hover, for unsupporting :not(.disabled)) */
+	#menupanel menu li.disabled:hover,
+	#menupanel menu li.disabled.hover {
+		background : #dfdfdf;
+	}
+	#menupanel menu li.disabled:hover > span,
+	#menupanel menu li.disabled.hover > span {
+		font-weight : 100;
+		text-decoration : none;
+	}
+
+	/* toggle submenu items */
+	#menupanel menu li.check > span,
+	#menupanel menu li[data-value] > span
+		{ font-size:small; color:gray;}
+	#menupanel menu li.checked > span
+		{ font-size:small; color:black;}
+
+	#menupanel menu li.check > span:before,
+	#menupanel menu li[data-value] > span:before
+		{ padding:0pt 2pt 0pt 2pt; color:white; content:"_"; font-size:small;}
+	#menupanel menu li.checked > span:before
+		{ padding:0pt 2pt 0pt 2pt; color:black; content:"+"; font-size:small;}
+
+	#menu_link li
+		{ font-size: 0.9em;}
 

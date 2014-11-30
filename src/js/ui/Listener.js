@@ -114,7 +114,7 @@ ui.listener =
 		else if(!kc.isZ){ ut.stopKeyUndo();}
 		else if(!kc.isY){ ut.stopKeyRedo();}
 		
-		ui.menuarea.floatmenuclose(0);
+		/* ui.menuarea.floatmenuclose(0); */
 		return result;
 	},
 	onMouseInput : function(puzzle){
@@ -124,7 +124,7 @@ ui.listener =
 			mv.mousereset();
 			result = false;
 		}
-		ui.menuarea.floatmenuclose(0);
+		/* ui.menuarea.floatmenuclose(0); */
 		return result;
 	},
 	onHistoryChange : function(puzzle){
