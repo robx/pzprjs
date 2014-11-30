@@ -125,6 +125,36 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.getexec()  設定値を現在のパズルで有効かどうか返す
+	//---------------------------------------------------------------------------
+	getexec : function(name){
+		var puzzle = this.owner, pid = puzzle.pid, flags = puzzle.flags, exec = false;
+		switch(name){
+			case 'use':      exec = flags.use; break;
+			case 'use_tri':  exec = (pid==="shakashaka"); break;
+			case 'dispmove': exec = puzzle.board.linfo.moveline; break;
+			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
+			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
+			case 'bgcolor':  exec = flags.bgcolor; break;
+			case 'irowake':  exec = flags.irowake; break;
+			case 'irowakeblk':exec= flags.irowakeblk; break;
+			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'redline':  exec = flags.redline;   break;
+			case 'redblk':   exec = flags.redblk;    break;
+			case 'redblkrb': exec = flags.redblkrb;  break;
+			case 'redroad':  exec = (pid==="roma"); break;
+			case 'autocmp':  exec = (flags.autocmp!==''); break;
+			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
+			case 'enbnonum': exec = (pid==="fillomino"); break;
+			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
+			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
+			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;
+			default: exec = !!this.list[name];
+		}
+		return exec;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){

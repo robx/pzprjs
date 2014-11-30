@@ -161,10 +161,10 @@ ui.menuarea = {
 
 		ap('sep_disp1',  'disp');
 
-		if(ui.puzzle.flags.irowake){
+		if(ui.puzzle.validConfig("irowake")){
 			ac('irowake','disp', '線の色分け','Color coding');
 		}
-		if(ui.puzzle.flags.irowakeblk){
+		if(ui.puzzle.validConfig("irowakeblk")){
 			ac('irowakeblk','disp', '黒マスの色分け','Color coding');
 		}
 
@@ -206,7 +206,7 @@ ui.menuarea = {
 		as('poptest', 'debug', 'pop_testを表示', 'Show pop_test window');
 	},
 	createArea_setting : function(pp){
-		var flags = ui.puzzle.flags, pid = ui.puzzle.pid;
+		var puzzle = ui.puzzle, flags = puzzle.flags, pid = puzzle.pid;
 
 		pp.addMenu('setting', "設定", "Setting");
 
@@ -217,24 +217,24 @@ ui.menuarea = {
 		}
 
 		/* 操作方法の設定値 */
-		if(flags.use){
+		if(puzzle.validConfig("use")){
 			pp.addSelect('use','setting','操作方法', 'Input Type');
 			pp.addChild('use_1','use','左右ボタン','LR Button');
 			pp.addChild('use_2','use','1ボタン',   'One Button');
 		}
-		if(pid==='shakashaka'){
+		if(puzzle.validConfig("use_tri")){
 			pp.addSelect('use_tri','setting','操作方法', 'Input Type');
 			pp.addChild('use_tri_1', 'use_tri', 'クリックした位置', 'Corner-side');
 			pp.addChild('use_tri_2', 'use_tri', '引っ張り入力', 'Pull-to-Input');
 			pp.addChild('use_tri_3', 'use_tri', '1ボタン', 'One Button');
 		}
 
-		if(pid==='pipelinkr'){
+		if(puzzle.validConfig("disptype_pipelinkr")){
 			pp.addSelect('disptype_pipelinkr','setting','表示形式','Display');
 			pp.addChild('disptype_pipelinkr_1', 'disptype_pipelinkr', '○', 'Circle');
 			pp.addChild('disptype_pipelinkr_2', 'disptype_pipelinkr', '■', 'Icebarn');
 		}
-		if(pid==='bosanowa'){
+		if(puzzle.validConfig("disptype_bosanowa")){
 			pp.addSelect('disptype_bosanowa','setting','表示形式','Display');
 			pp.addChild('disptype_bosanowa_1', 'disptype_bosanowa', 'ニコリ紙面形式', 'Original Type');
 			pp.addChild('disptype_bosanowa_2', 'disptype_bosanowa', '倉庫番形式',     'Sokoban Type');
@@ -242,46 +242,50 @@ ui.menuarea = {
 		}
 
 		/* 盤面チェックの設定値 */
-		if(flags.redline){
+		if(puzzle.validConfig("redline")){
 			pp.addCheck('redline','setting','繋がりチェック','Continuous Check');
 		}
-		else if(flags.redblk){
+		else if(puzzle.validConfig("redblk")){
 			pp.addCheck('redblk','setting','繋がりチェック','Continuous Check');
 		}
-		else if(flags.redblkrb){
+		else if(puzzle.validConfig("redblkrb")){
 			pp.addCheck('redblkrb','setting','繋がりチェック','Continuous Check');
 		}
-		else if(pid==='roma'){
+		else if(puzzle.validConfig("redroad")){
 			pp.addCheck('redroad','setting','通り道のチェック', 'Check Road');
 		}
 
 		/* 背景色入力の設定値 */
-		if(flags.bgcolor){
+		if(puzzle.validConfig("bgcolor")){
 			pp.addCheck('bgcolor','setting', '背景色入力', 'Background-color');
 		}
 
 		/* 文字別正解表示の設定値 */
-		if(flags.autocmp==="number"){
-			pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
-		}
-		else if(flags.autocmp==='kouchoku'){
-			pp.addCheck('autocmp','setting','点をグレーにする','Set Grey Color');
+		if(puzzle.validConfig("autocmp")){
+			if(flags.autocmp==="number"){
+				pp.addCheck('autocmp','setting','数字をグレーにする','Set Grey Color');
+			}
+			else if(flags.autocmp==='kouchoku'){
+				pp.addCheck('autocmp','setting','点をグレーにする','Set Grey Color');
+			}
 		}
 
-		if(pid==='hitori'){
-			pp.addCheck('autoerr','setting', '重複した数字を表示', 'Show overlapped number');
-		}
-		else if(pid==='gokigen'||pid==='wagiri'){
-			pp.addCheck('autoerr','setting', '斜線の色分け', 'Slash with color');
+		if(puzzle.validConfig("autoerr")){
+			if(pid==='hitori'){
+				pp.addCheck('autoerr','setting', '重複した数字を表示', 'Show overlapped number');
+			}
+			else if(pid==='gokigen'||pid==='wagiri'){
+				pp.addCheck('autoerr','setting', '斜線の色分け', 'Slash with color');
+			}
 		}
 
 		/* 正当判定方法の設定値 */
-		if(pid==='fillomino'){
+		if(puzzle.validConfig("enbnonum")){
 			pp.addCheck('enbnonum','setting','未入力で正答判定','Allow Empty cell');
 		}
 
 		/* 線の引き方の設定値 */
-		if(pid==='kouchoku'){
+		if(puzzle.validConfig("kouchoku")){
 			pp.addCheck('enline','setting','線は点の間','Line between points');
 			pp.addCheck('lattice','setting','格子点チェック','Check lattice point');
 		}
@@ -292,32 +296,36 @@ ui.menuarea = {
 		}
 
 		/* 盤面表示形式の設定値 */
-		if(ui.puzzle.board.linfo.moveline){
+		if(puzzle.validConfig("dispmove")){
 			pp.addCheck('dispmove','setting','動かしたように描画', 'Paint as move');
 		}
 
-		if(pid==='snakes'){
+		if(puzzle.validConfig("snakebd")){
 			pp.addCheck('snakebd','setting','へび境界線有効','Enable snake border');
 		}
 
 		/* EDITOR時の設定値 */
-		if(pzpr.EDITOR && pid==='goishi'){
+		if(puzzle.validConfig("goishi")){
 			pp.addCheck('bdpadding','setting', '空隙つきURL', 'URL with Padding');
 		}
-		if(pzpr.EDITOR && pid==='tentaisho'){
+		if(puzzle.validConfig("discolor")){
 			pp.addCheck('discolor','setting','色分け無効化','Disable color');
 		}
 
 		/* 共通設定値 */
 		pp.addCheck('autocheck','setting', '正答自動判定', 'Auto Answer Check');
 
-		pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
+		if(puzzle.validConfig("lrcheck")){
+			pp.addCheck('lrcheck',  'setting', 'マウス左右反転', 'Mouse button inversion');
+		}
 
 		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
 			pp.addCheck('keypopup', 'setting', 'パネル入力', 'Panel inputting');
 		}
 
-		pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
+		if(puzzle.validConfig("keytarget")){
+			pp.addCheck('keytarget', 'setting', '盤面にキー入力', 'Key input to Canvas');
+		}
 
 		pp.addSelect('language', 'setting', '言語', 'Language');
 		pp.addChild('language_ja', 'language', '日本語',  '日本語');

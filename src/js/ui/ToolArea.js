@@ -27,80 +27,124 @@ ui.toolarea = {
 	// toolarea.createLabels()  管理領域に存在するデータを設定する
 	//---------------------------------------------------------------------------
 	createLabels : function(){
+		var puzzle = ui.puzzle, flags = puzzle.flags, pid = puzzle.pid;
+
 		/* mode */
-		this.addLabel('mode','モード', 'mode');
-		this.addLabel('mode_1', '問題作成モード', 'Edit mode'  );
-		this.addLabel('mode_3', '回答モード',     'Answer mode');
+		if(pzpr.EDITOR){
+			this.addLabel('mode','モード', 'mode');
+			this.addLabel('mode_1', '問題作成モード', 'Edit mode'  );
+			this.addLabel('mode_3', '回答モード',     'Answer mode');
+		}
 
 		/* 操作方法の設定値 */
-		this.addLabel('use', '操作方法', 'Input Type');
-		this.addLabel('use_1', '左右ボタン','LR Button');
-		this.addLabel('use_2', '1ボタン',   'One Button');
+		if(puzzle.validConfig("use")){
+			this.addLabel('use', '操作方法', 'Input Type');
+			this.addLabel('use_1', '左右ボタン','LR Button');
+			this.addLabel('use_2', '1ボタン',   'One Button');
+		}
+		if(puzzle.validConfig("use_tri")){
+			this.addLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
+			this.addLabel('use_tri_1', 'クリックした位置', 'Corner-side');
+			this.addLabel('use_tri_2', '引っ張り入力', 'Pull-to-Input');
+			this.addLabel('use_tri_3', '1ボタン', 'One Button');
+		}
 
-		this.addLabel('use_tri', '三角形の入力方法', 'Input Triangle Type');
-		this.addLabel('use_tri_1', 'クリックした位置', 'Corner-side');
-		this.addLabel('use_tri_2', '引っ張り入力', 'Pull-to-Input');
-		this.addLabel('use_tri_3', '1ボタン', 'One Button');
+		if(puzzle.validConfig("disptype_bosanowa")){
+			this.addLabel('disptype_bosanowa', '表示形式', 'Display');
+			this.addLabel('disptype_bosanowa_1', 'ニコリ紙面形式', 'Original Type');
+			this.addLabel('disptype_bosanowa_2', '倉庫番形式',     'Sokoban Type');
+			this.addLabel('disptype_bosanowa_3', 'ワリタイ形式',   'Waritai type');
+		}
 
 		/* 盤面表示形式の設定値 */
-		this.addLabel('dispmove', '動かしたように描画を行う', 'Display as object moving');
-
-		this.addLabel('disptype_bosanowa', '表示形式', 'Display');
-		this.addLabel('disptype_bosanowa_1', 'ニコリ紙面形式', 'Original Type');
-		this.addLabel('disptype_bosanowa_2', '倉庫番形式',     'Sokoban Type');
-		this.addLabel('disptype_bosanowa_3', 'ワリタイ形式',   'Waritai type');
+		if(puzzle.validConfig("dispmove")){
+			this.addLabel('dispmove', '動かしたように描画を行う', 'Display as object moving');
+		}
 
 		/* 盤面チェックの設定値 */
-		this.addLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
-		this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous shaded cells');
-		this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous shaded cells with its corner');
-		this.addLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
+		if(puzzle.validConfig("redline")){
+			this.addLabel('redline', '線のつながりをチェックする', 'Check countinuous lines');
+		}
+		else if(puzzle.validConfig("redblk")){
+			this.addLabel('redblk', '黒マスのつながりをチェックする', 'Check countinuous shaded cells');
+		}
+		else if(puzzle.validConfig("redblkrb")){
+			this.addLabel('redblkrb', 'ナナメ黒マスのつながりをチェックする', 'Check countinuous shaded cells with its corner');
+		}
+		else if(puzzle.validConfig("redroad")){
+			this.addLabel('redroad', 'クリックした矢印が通る道をチェックする', 'Check the road that passes clicked arrow.');
+		}
 
 		/* 背景色入力の設定値 */
-		this.addLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		if(puzzle.validConfig("bgcolor")){
+			this.addLabel('bgcolor', 'セルの中央をクリックした時に背景色の入力を有効にする', 'Enable to Input BGColor When the Center of the Cell is Clicked');
+		}
 
 		/* 文字別正解表示の設定値 */
-		var flags = ui.puzzle.flags, pid = ui.puzzle.pid;
-		if(flags.autocmp==="number"){
-			this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
-		}
-		else if(flags.autocmp==="kouchoku"){
-			this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+		if(puzzle.validConfig("autocmp")){
+			if(flags.autocmp==="number"){
+				this.addLabel('autocmp', '正しい数字をグレーにする', 'Grey if the number is correct.');
+			}
+			else if(flags.autocmp==="kouchoku"){
+				this.addLabel('autocmp', '線が2本以上になったら点をグレーにする', 'Grey if the letter links over two segments.');
+			}
 		}
 
-		if(pid==='hitori'){
-			this.addLabel('autoerr', '重複している数字を赤くする', 'Show overlapped number as red.');
-		}
-		else if(pid==='gokigen'){
-			this.addLabel('autoerr', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
-		}
-		else if(pid==='wagiri'){
-			this.addLabel('autoerr', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
+		if(puzzle.validConfig("autoerr")){
+			if(pid==='hitori'){
+				this.addLabel('autoerr', '重複している数字を赤くする', 'Show overlapped number as red.');
+			}
+			else if(pid==='gokigen'){
+				this.addLabel('autoerr', 'ループになっている斜線を赤くする', 'Draw loop line as red.');
+			}
+			else if(pid==='wagiri'){
+				this.addLabel('autoerr', '斜線を輪切りかのどちらかで色分けする', 'Encolor slashes whether it consists in a loop or not.');
+			}
 		}
 
 		/* 正当判定方法の設定値 */
-		this.addLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
+		if(puzzle.validConfig("enbnonum")){
+			this.addLabel('enbnonum', '全ての数字が入っていない状態での正答判定を許可する', 'Allow answer check with empty cell in the board.');
+		}
 
 		/* kouchoku: 線の引き方の設定値 */
-		this.addLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
-		this.addLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
+		if(puzzle.validConfig("kouchoku")){
+			this.addLabel('enline', '点の間のみ線を引けるようにする', 'Able to draw line only between the points.');
+			this.addLabel('lattice', '点を通過する線を引けないようにする', 'Disable drawing segment passing over a lattice point.');
+		}
 
 		/* 問題形式の設定値 */
-		this.addLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
+		if(pid==='mashu'){
+			this.addLabel('uramashu', '裏ましゅにする', 'Change to Ura-Mashu');
+		}
 
-		this.addLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
+		if(puzzle.validConfig("snakebd")){
+			this.addLabel('snakebd', 'へびの周りに境界線を表示する', 'Draw border around a snake.');
+		}
 
 		/* EDITOR時の設定値 */
-		this.addLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
+		if(puzzle.validConfig("goishi")){
+			this.addLabel('bdpadding', 'URL生成時に周り1マス何もない部分をつける', 'Add Padding around the Board in outputting URL.');
+		}
 
-		this.addLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+		if(puzzle.validConfig("discolor")){
+			this.addLabel('discolor', '星クリックによる色分けを無効化する', 'Disable Coloring up by clicking star');
+		}
 
-		this.addLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
+		if(puzzle.validConfig("lrcheck")){
+			this.addLabel('lrcheck', 'マウスの左右ボタンを反転する', 'Invert button of the mouse');
+		}
 
-		this.addLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
+		if(ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0){
+			this.addLabel('keypopup', '数字・記号をパネルで入力する', 'Input numbers by panel');
+		}
 
-		this.addLabel('irowake', '線の色分けをする', 'Color each lines');
-		this.addLabel('irowakeblk', '黒マスの色分けをする', 'Color each blocks');
+		if(puzzle.validConfig("irowake")){
+			this.addLabel('irowake', '線の色分けをする', 'Color each lines');
+		}
+		if(puzzle.validConfig("irowakeblk")){
+			this.addLabel('irowakeblk', '黒マスの色分けをする', 'Color each blocks');
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -172,7 +216,7 @@ ui.toolarea = {
 			
 			ui.event.addEvent(el, "mousedown", this, function(){ ui.puzzle.irowake();});
 			pzpr.util.unselectable(el);
-			var textnode = document.createTextNode();
+			var textnode = document.createTextNode("");
 			el.appendChild(textnode);
 			this.captions.push({textnode:textnode, str_jp:"色分けしなおす", str_en:"Change the color of Line"});
 			

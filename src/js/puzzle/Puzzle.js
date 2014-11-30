@@ -256,23 +256,14 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.getConfig()  設定値の取得を行う
 	// owner.setConfig()  設定値の設定を行う
+	// owner.validConfig() 設定値が現在のパズルで有効な設定値かどうか返す
 	// owner.execConfig() 設定値と、パズルごとに有効かどうかの条件をANDして返す
 	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.get(idname);},
 	setConfig : function(idname,val){ return this.config.set(idname,val);},
-	
+	validConfig : function(idname){ return this.config.getexec(idname);},
 	execConfig : function(idname){
-		var val = this.config.get(idname), flags = this.flags, exec = true;
-		switch(idname){
-			case 'dispmove': exec = this.board.linfo.moveline; break;
-			case 'irowake': case 'irowakeblk': exec = !!flags.irowake; break;
-			case 'redline':  exec = flags.redline;   break;
-			case 'redblk':   exec = flags.redblk;    break;
-			case 'redblkrb': exec = flags.redblkrb;  break;
-			case 'redroad':  exec = (this.pid==='roma'); break;
-			case 'autocmp':  exec = (flags.autocmp!==''); break;
-		}
-		return (val && exec);
+		return (this.config.get(idname) && this.config.getexec(idname));
 	},
 	
 	//------------------------------------------------------------------------------
@@ -312,6 +303,8 @@ function openExecute(puzzle, data, callback){
 //---------------------------------------------------------------------------
 function initObjects(puzzle){
 	// クラス初期化
+	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
+
 	puzzle.board   = new puzzle.Board();		// 盤面オブジェクト
 	puzzle.checker = new puzzle.AnsCheck();		// 正解判定オブジェクト
 	puzzle.painter = new puzzle.Graphic();		// 描画系オブジェクト
@@ -325,8 +318,6 @@ function initObjects(puzzle){
 
 	puzzle.enc = new puzzle.Encode();		// URL入出力用オブジェクト
 	puzzle.fio = new puzzle.FileIO();		// ファイル入出力用オブジェクト
-
-	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
 
 	puzzle.faillist = new puzzle.FailCode();	// 正答判定文字列を保持するオブジェクト
 }
