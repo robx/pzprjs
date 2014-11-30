@@ -6,16 +6,20 @@
 ui.toolarea = {
 	isdisp : true,		// ツールパネルを表示しているか
 
-	items : {},			// ツールパネルのエレメント等を保持する
+	items : null,		// ツールパネルのエレメント等を保持する
 	captions : [],		// 言語指定を切り替えた際のキャプションを保持する
 
 	//---------------------------------------------------------------------------
 	// toolarea.reset()  ツールパネル・ボタン領域の初期設定を行う
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.walkElement(getEL("usepanel"));
-		this.walkElement(getEL("checkpanel"));
-		this.walkElement(getEL('btnarea'));
+		if(this.items===null){
+			this.items = {};
+			this.walkElement(getEL("usepanel"));
+			this.walkElement(getEL("checkpanel"));
+			this.walkElement(getEL('btnarea'));
+		}
+		this.walkElement2(getEL("checkpanel"));
 		
 		this.display();
 	},
@@ -37,28 +41,24 @@ ui.toolarea = {
 					if(!item.children){ item.children=[];}
 					item.children.push(el);
 					
-					ui.event.addEvent(el, "mousedown", toolarea, toolarea.toolclick);
+					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea.toolclick);
 				}
 				else if(el.nodeName==="INPUT" && el.type==="checkbox"){
 					var parent = el.parentNode, idname = parent["data-config"] || parent.dataset.config;
 					if(!idname){ return;}
 					toolarea.items[idname].checkbox=el;
 					
-					ui.event.addEvent(el, "click", toolarea, toolarea.toolclick);
-				}
-				else if(el.nodeName==="SPAN"){
-					var disppid = el["data-disp-pid"] || el.dataset.dispPid;
-					if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
+					pzpr.util.addEvent(el, "click", toolarea, toolarea.toolclick);
 				}
 				
 				/* ボタン領域 */
 				var role = el['data-button-exec'] || el.dataset.buttonExec;
 				if(!!role){
-					ui.event.addEvent(el, "mousedown", toolarea, toolarea[role]);
+					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea[role]);
 				}
 				role = el['data-buttonup-exec'] || el.dataset.buttonupExec;
 				if(!!role){
-					ui.event.addEvent(el, "mouseup", toolarea, toolarea[role]);
+					pzpr.util.addEvent(el, "mouseup", toolarea, toolarea[role]);
 				}
 			}
 			else if(el.nodeType===3){
@@ -68,7 +68,16 @@ ui.toolarea = {
 			}
 		});
 	},
-
+	walkElement2 : function(parent){
+		var toolarea = this;
+		ui.misc.walker(parent, function(el){
+			if(el.nodeType===1 && el.nodeName==="SPAN"){
+				var disppid = el["data-disp-pid"] || el.dataset.dispPid;
+				if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
+			}
+		});
+	},
+	
 	//---------------------------------------------------------------------------
 	// toolarea.display()    全てのラベルに対して文字列を設定する
 	// toolarea.setdisplay() 管理パネルに表示する文字列を個別に設定する

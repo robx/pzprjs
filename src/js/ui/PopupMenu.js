@@ -141,10 +141,10 @@ ui.popupmgr.addpopup('template',
 		this.walkEvent(this.pop);
 		this.setFormEvent();
 		
-		ui.event.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
+		pzpr.util.addEvent(this.form, "submit", this, function(e){ e.preventDefault();});
 		if(!!this.titlebar){
 			var mgr = ui.popupmgr;
-			ui.event.addEvent(this.titlebar, "mousedown", mgr, mgr.titlebardown);
+			pzpr.util.addEvent(this.titlebar, "mousedown", mgr, mgr.titlebardown);
 		}
 	},
 	walkEvent : function(parent){
@@ -153,11 +153,11 @@ ui.popupmgr.addpopup('template',
 			if(el.nodeType!==1){ return;}
 			var role = (el.dataset!==void 0 ? el.dataset.buttonExec : el['data-button-exec']);
 			if(!!role){
-				ui.event.addEvent(el, "mousedown", popup, popup[role]);
+				pzpr.util.addEvent(el, "mousedown", popup, popup[role]);
 			}
 			role = (el.dataset!==void 0 ? el.dataset.changeExec : el['data-change-exec']);
 			if(!!role){
-				ui.event.addEvent(el, "change", popup, popup[role]);
+				pzpr.util.addEvent(el, "change", popup, popup[role]);
 			}
 		});
 	},
