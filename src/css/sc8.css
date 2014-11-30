@@ -21,10 +21,10 @@
 	#btnarea div#btnclear { color:red;}
 
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
+	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; text-align:left; border:1px red solid;}
 
 	/* メニュー領域 */
-	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt 0pt 6pt 0pt; padding:2pt 4pt 2pt 4pt;}
+	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt; padding:2pt 4pt 2pt 4pt;}
 	/* メニュー項目 */
 	li.menu       { display:inline; color:blue; margin-right:4pt; cursor:pointer; text-decoration:underline;}
 	li.menu:hover { color:maroon; font-weight:bold; background-color:#efefef;}
@@ -43,13 +43,15 @@
 	menu.floatmenu li.smenusep  { height:3pt; padding-top:0pt;}
 
 	/* メニューより下の管理領域 */
-	div#usepanel  { margin:2pt 0pt 0pt 6pt;}
-	div#checkpanel{ margin:4pt 0pt 0pt 16pt;}
-	hr#separator2 { margin-top:6pt; margin-bottom:6pt;}
-	div#timerpanel{ margin:2pt 0pt 0pt 6pt;}
+	div#usepanel  { margin:8pt 0pt 0pt 6pt;}
+	div#checkpanel{ margin:4pt 0pt 6pt 16pt;}
+	hr#separator2 { margin:0pt;}
+	div#timerpanel{ margin:6pt 6pt 6pt 12pt;}
 
 	div.child   { display:inline; cursor:pointer;}
 	div.childsel{ color:maroon; font-weight:bold; background-color:#efefef;}
+
+	div#checkpanel input[type="checkbox"]:disabled + span { color:silver;}
 
 	/* パズル表示部 */
 	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}

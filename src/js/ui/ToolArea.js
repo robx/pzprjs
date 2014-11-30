@@ -88,10 +88,9 @@ ui.toolarea = {
 		var mandisp  = (this.isdisp ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
 		getEL('checkpanel').style.display = mandisp;
-		getEL('menuboard').style.paddingBottom = (this.isdisp ? '8pt' : '0pt');
 		/* 経過時間の表示/非表示設定 */
-		getEL('separator2').style.display = ((pzpr.PLAYER && this.isdisp) ? 'block' : 'none');
-		getEL('timerpanel').style.display = (pzpr.PLAYER ? 'block' : 'none');
+		getEL('separator2').style.display = (pzpr.PLAYER ? "" : "none");
+		getEL('timerpanel').style.display = (pzpr.PLAYER ? "block" : "none");
 		
 		for(var idname in this.items){ this.setdisplay(idname);}
 		
@@ -143,10 +142,7 @@ ui.toolarea = {
 				var disabled = null;
 				if(idname==="keypopup"){ disabled = !ui.keypopup.paneltype[ui.getConfig("mode")];}
 				if(idname==="bgcolor") { disabled = (ui.getConfig("mode")!==3);}
-				if(disabled!==null){
-					toolitem.checkbox.disabled = (!disabled ? "" : "true");
-					toolitem.el.style.color    = (!disabled ? "" : "silver");
-				}
+				if(disabled!==null){ toolitem.checkbox.disabled = (!disabled ? "" : "true");}
 			}
 			
 			if((idname==="disptype_pipelinkr") && !!getEL('btncircle')){
