@@ -89,7 +89,7 @@ ui.listener =
 	// listener.onHistoryChange() 履歴変更時に呼び出される関数
 	//---------------------------------------------------------------------------
 	onKeyInput : function(puzzle, c){
-		var kc = puzzle.key, ut = puzzle.undotimer, result = true;
+		var kc = puzzle.key, ut = ui.undotimer, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
 			if(c==='ctrl+z' || c==='meta+z'){ ut.startKeyUndo(); result = false;}
@@ -123,6 +123,25 @@ ui.listener =
 			puzzle.modechange();
 			mv.mousereset();
 			result = false;
+		}
+		else if(ui.puzzle.pid === "goishi"){
+			if(mv.mousestart && ui.puzzle.playmode){
+				if(mv.btn.Left){
+					var cell = mv.getcell();
+					if(cell.isnull || !cell.isStone() || cell.anum!==-1){
+						ui.undotimer.startAnswerRedo();
+						result = false;
+					}
+				}
+				else if(mv.btn.Right){
+					ui.undotimer.startAnswerUndo();
+					result = false;
+				}
+			}
+			else if(mv.mouseend){
+				ui.undotimer.stop();
+				result = false;
+			}
 		}
 		/* ui.menuarea.floatmenuclose(0); */
 		return result;

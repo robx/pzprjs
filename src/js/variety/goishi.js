@@ -7,14 +7,11 @@ pzpr.classmgr.makeCustom(['goishi'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode && this.mousestart){
-			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ this.owner.undotimer.startAnswerUndo();}
+			if(this.btn.Left){ this.inputqans();}
 		}
 		else if(this.owner.editmode && this.mousestart){
 			this.inputstone();
 		}
-		
-		if(this.mouseend){ this.owner.undotimer.stop();}
 	},
 
 	inputstone : function(){
@@ -29,11 +26,6 @@ MouseEvent:{
 	},
 	inputqans : function(){
 		var cell = this.getcell();
-		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			this.owner.undotimer.startAnswerRedo();
-			return;
-		}
-
 		var max=0, bd = this.owner.board, bcell=bd.emptycell;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
@@ -340,31 +332,5 @@ AnsCheck:{
 
 FailCode:{
 	goishiRemains : ["拾われていない碁石があります。","There is remaining Goishi."]
-},
-
-//---------------------------------------------------------
-// 碁石拾い用の特殊UndiTimer
-UndoTimer:{
-	startAnswerUndo : function(){ this.inUNDO |= 4; this.proc();},
-	startAnswerRedo : function(){ this.inREDO |= 4; this.proc();},
-	stopAnswerUndo : function(){ this.inUNDO &= ~4; this.proc();},
-	stopAnswerRedo : function(){ this.inREDO &= ~4; this.proc();},
-
-	checknextprop : function(){
-		var opemgr = this.owner.opemgr;
-		var isenable = pzpr.common.UndoTimer.prototype.checknextprop.call(this);
-		
-		if(isenable){
-			if(this.inUNDO===4){
-				var nextopes = opemgr.ope[opemgr.position-1];
-				return nextopes[nextopes.length-1].property==='anum';
-			}
-			else if(this.inREDO===4){
-				var nextopes = opemgr.ope[opemgr.position];
-				return nextopes[0].property==='anum';
-			}
-		}
-		return isenable;
-	}
 }
 });

@@ -29,7 +29,6 @@
 		"puzzle/FileData",
 		"puzzle/Answer",
 		"puzzle/Operation",
-		"puzzle/UndoTimer",
 		"variety-common/Graphic",
 		"variety-common/KeyInput",
 		"variety-common/MouseInput",
