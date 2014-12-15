@@ -420,6 +420,47 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
+	// mv.inputTateyoko() 縦棒・横棒をドラッグで入力する
+	//---------------------------------------------------------------------------
+	inputTateyoko : function(){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+
+		var pos = cell.getaddr(), qa = cell.qans;
+		var amibo = (this.owner.pid==="amibo");
+
+		// 黒マス上なら何もしない
+		if     (!amibo && cell.getQues()===1){ }
+		else if( amibo && cell.isNum()){ }
+		// 初回 or 入力し続けていて別のマスに移動した場合
+		else if(this.mouseCell!==cell){
+			this.firstPoint.set(this.inputPoint);
+		}
+		// まだ入力していないセルの場合
+		else if(this.firstPoint.bx!==null){
+			var val=null;
+			if     (Math.abs(this.inputPoint.by-this.firstPoint.by)>=0.50){ val=1;}
+			else if(Math.abs(this.inputPoint.bx-this.firstPoint.bx)>=0.50){ val=2;}
+			
+			if(val!==null){
+				var shape = (!amibo ? {0:0,12:1,13:2}[qa] : qa);
+				var isValidVal = ((this.inputData===null) ? !(shape & val) : this.inputData>0);
+				this.inputData = val = (isValidVal ? val : (!amibo ? 0 : -val));
+				this.firstPoint.reset();
+				
+				// 描画・後処理
+				if(!amibo){ qa = [0,12,13,11][val];}
+				else{ if(val>0){ qa |= val;}else{ qa &= ~(-val);}}
+				cell.setQans(qa);
+				cell.draw();
+			}
+		}
+
+		this.prevPos   = pos;
+		this.mouseCell = cell;
+	},
+
+	//---------------------------------------------------------------------------
 	// mv.dispRed()  ひとつながりの黒マスを赤く表示する
 	// mv.dispRed8() ななめつながりの黒マスを赤く表示する
 	// mv.dispRedLine()   ひとつながりの線を赤く表示する

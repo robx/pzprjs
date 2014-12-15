@@ -20,54 +20,6 @@ MouseEvent:{
 		}
 	},
 
-	inputTateyoko : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
-
-		var pos = cell.getaddr();
-		var input=false;
-
-		// 初回はこの中に入ってきます。
-		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
-		// 黒マス上なら何もしない
-		else if(cell.isNum()){ }
-		// まだ入力されていない(1つめの入力の)場合
-		else if(this.inputData===null){
-			if(cell===this.mouseCell){
-				var mx=Math.abs(this.inputPoint.bx-this.firstPoint.bx);
-				var my=Math.abs(this.inputPoint.by-this.firstPoint.by);
-				if     (my>=0.25){ this.inputData=1; input=true;}
-				else if(mx>=0.25){ this.inputData=2; input=true;}
-			}
-			else{
-				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===cell.UP || dir===cell.DN){ this.inputData=1; input=true;}
-				else if(dir===cell.LT || dir===cell.RT){ this.inputData=2; input=true;}
-			}
-
-			if(input){
-				if(cell.getQans() & this.inputData){ this.inputData*=-1;}
-				this.firstPoint.reset();
-			}
-		}
-		// 入力し続けていて、別のマスに移動した場合
-		else if(cell!==this.mouseCell){
-			var dir = this.getdir(this.prevPos, pos);
-			if     (dir===cell.UP || dir===cell.DN){ this.inputData=(this.inputData>0?1:-1); input=true;}
-			else if(dir===cell.LT || dir===cell.RT){ this.inputData=(this.inputData>0?2:-2); input=true;}
-		}
-
-		// 描画・後処理
-		if(input){
-			if     (this.inputData=== 1){ cell.setQans([1,1,3,3][cell.getQans()]);}
-			else if(this.inputData=== 2){ cell.setQans([2,3,2,3][cell.getQans()]);}
-			else if(this.inputData===-1){ cell.setQans([0,0,2,2][cell.getQans()]);}
-			else if(this.inputData===-2){ cell.setQans([0,1,0,1][cell.getQans()]);}
-			cell.draw();
-		}
-		this.prevPos   = pos;
-		this.mouseCell = cell;
-	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
@@ -270,48 +222,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	getBarColor : function(cell,vert){
-		var err=cell.error, color="";
-		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor;}
-		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!this.owner.execConfig('irowake') || !cell.color){ color = this.linecolor;}
-		else{ color = cell.color;}
-		return color;
-	},
-
-	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges');
-
-		var headers = ["c_bar1_", "c_bar2_"];
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
-			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
-			var lp = (this.bw-lm);				//LinePadding
-
-			var qa=cell.qans;
-			if(qa!==-1){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(qa===1 || qa===3){
-					g.fillStyle = this.getBarColor(cell,true);
-					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRectCenter(px, py, lm, this.bh);
-					}
-				}
-				else{ g.vhide(headers[0]+id);}
-
-				if(qa===2 || qa===3){
-					g.fillStyle = this.getBarColor(cell,false);
-					if(this.vnop(headers[1]+id,this.FILL)){
-						g.fillRectCenter(px, py, this.bw, lm);
-					}
-				}
-				else{ g.vhide(headers[1]+id);}
-			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
-		}
 	},
 
 	// 白丸と線の間に隙間があいてしまうので、隙間部分を描画する

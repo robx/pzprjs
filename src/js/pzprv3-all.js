@@ -71,6 +71,7 @@
 		"variety/hitori",
 		"variety/icebarn",
 		"variety/ichimaga",
+		"variety/juosan",
 		"variety/kaero",
 		"variety/kakuro",
 		"variety/kakuru",
