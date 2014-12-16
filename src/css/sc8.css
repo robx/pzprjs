@@ -113,15 +113,13 @@
 		font-size   : 110%;
 		vertical-align : middle;
 	}
-	#menupanel > li:hover > span,
-	#menupanel > li.hover > span {
+	#menupanel > li:hover > span {
 		color : maroon;
 		font-weight : 900;
 	}
 
 	/* submenu popup (any level) */
-	#menupanel li:hover > menu,
-	#menupanel li.hover > menu {
+	#menupanel li:hover > menu {
 		display : block;
 	}
 
@@ -185,12 +183,10 @@
 		background : white;
 		cursor     : pointer;
 	}
-	#menupanel menu li:hover,
-	#menupanel menu li.hover {
+	#menupanel menu li:hover {
 		background : #ffcccc;
 	}
-	#menupanel menu li:hover > span,
-	#menupanel menu li.hover > span {
+	#menupanel menu li:hover > span {
 		font-weight : 900;
 		text-decoration : underline;
 	}
@@ -217,12 +213,10 @@
 		cursor     : default;
 	}
 	/* (cancel hover, for unsupporting :not(.disabled)) */
-	#menupanel menu li.disabled:hover,
-	#menupanel menu li.disabled.hover {
+	#menupanel menu li.disabled:hover {
 		background : #dfdfdf;
 	}
-	#menupanel menu li.disabled:hover > span,
-	#menupanel menu li.disabled.hover > span {
+	#menupanel menu li.disabled:hover > span {
 		font-weight : 100;
 		text-decoration : none;
 	}
