@@ -154,13 +154,13 @@ function getStorageData(key, key2){
 
 	// 移し変える処理
 	var str = localStorage[key];
-	if(str!==void 0){
+	if(typeof str==="string"){
 		delete localStorage[key];
 		sessionStorage[key2] = str;
 	}
 
 	str = sessionStorage[key2];
-	return (str!==void 0 ? str : null);
+	return (typeof str==="string" ? str : null);
 }
 
 //---------------------------------------------------------------------------
