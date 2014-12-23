@@ -87,6 +87,7 @@ pzpr.variety.register({
 	ichimaga  :[0,0,"イチマガ","Ichimaga",'ichimaga'],
 	ichimagam :[0,0,"磁石イチマガ","Magnetic Ichimaga",'ichimaga'],
 	ichimagax :[0,0,"一回曲がって交差もするの","Crossing Ichimaga",'ichimaga'],
+	juosan    :[0,0,"縦横さん","Juosan"],
 	kaero     :[1,0,"お家に帰ろう","Return Home"],
 	kakuro    :[0,1,"カックロ","Kakuro"],
 	kakuru    :[0,0,"カックル","Kakuru"],

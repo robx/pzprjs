@@ -15,54 +15,6 @@ MouseEvent:{
 		}
 	},
 
-	inputTateyoko : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
-
-		var pos = cell.getaddr();
-		var input=false;
-
-		// 初回はこの中に入ってきます。
-		if(this.mouseCell.isnull){ this.firstPoint.set(this.inputPoint);}
-		// 黒マス上なら何もしない
-		else if(cell.ques===1){ }
-		// まだ入力されていない(1つめの入力の)場合
-		else if(this.inputData===null){
-			if(cell===this.mouseCell){
-				var mx=Math.abs(this.inputPoint.bx-this.firstPoint.bx);
-				var my=Math.abs(this.inputPoint.by-this.firstPoint.by);
-				if     (my>=0.25){ this.inputData=12; input=true;}
-				else if(mx>=0.25){ this.inputData=13; input=true;}
-			}
-			else{
-				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===pos.UP || dir===pos.DN){ this.inputData=12; input=true;}
-				else if(dir===pos.LT || dir===pos.RT){ this.inputData=13; input=true;}
-			}
-
-			if(input){
-				if(cell.qans===this.inputData){ this.inputData=0;}
-				this.firstPoint.reset();
-			}
-		}
-		// 入力し続けていて、別のマスに移動した場合
-		else if(cell!==this.mouseCell){
-			if(this.inputData===0){ this.inputData=0; input=true;}
-			else{
-				var dir = this.getdir(this.prevPos, pos);
-				if     (dir===pos.UP || dir===pos.DN){ this.inputData=12; input=true;}
-				else if(dir===pos.LT || dir===pos.RT){ this.inputData=13; input=true;}
-			}
-		}
-
-		// 描画・後処理
-		if(input){
-			cell.setQans(this.inputData!==0?this.inputData:0);
-			cell.draw();
-		}
-		this.prevPos   = pos;
-		this.mouseCell = cell;
-	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
 		if(cell.isnull || cell.ques===1){ return;}
@@ -174,28 +126,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
-
-			var err = cell.error;
-			if     (err===1||err===4){ g.fillStyle = this.errlinecolor; lm+=0.5;}
-			else if(err===-1){ g.fillStyle = this.errlinebgcolor;}
-			else{ g.fillStyle = this.linecolor;}
-
-			g.vid = "c_bar1_"+cell.id;
-			if(cell.qans===12){ g.fillRectCenter(px, py, lm, this.bh);}else{ g.vhide();}
-
-			g.vid = "c_bar2_"+cell.id;
-			if(cell.qans===13){ g.fillRectCenter(px, py, this.bw, lm);}else{ g.vhide();}
-		}
 	},
 
 	drawShadeAtNumber : function(){

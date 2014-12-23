@@ -932,6 +932,47 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawTateyokos()   縦棒・横棒をCanvasに書き込む
+	// pc.getBarColor()     縦棒・横棒の色を取得する
+	//---------------------------------------------------------------------------
+	drawTateyokos : function(){
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
+		var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var qa=cell.qans;
+			if(this.owner.pid==="amibo"){ qa=[0,12,13,11][qa];}
+
+			g.vid = "c_bar1_"+cell.id;
+			if(qa===11 || qa===12){
+				g.fillStyle = this.getBarColor(cell,true);
+				g.fillRectCenter(px, py, lm+this.addlw/2, this.bh);
+			}
+			else{ g.vhide();}
+
+			g.vid = "c_bar2_"+cell.id;
+			if(qa===11 || qa===13){
+				g.fillStyle = this.getBarColor(cell,false);
+				g.fillRectCenter(px, py, this.bw, lm+this.addlw/2);
+			}
+			else{ g.vhide();}
+		}
+		this.addlw = 0;
+	},
+
+	getBarColor : function(cell,vert){
+		var err=cell.error, color="";
+		this.addlw = 0;
+		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
+		else if(err!==0){ color = this.errlinebgcolor;}
+		else if(!this.owner.execConfig('irowake') || !cell.color){ color = this.linecolor;}
+		else{ color = cell.color;}
+		return color;
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawQues51()         Ques===51があるようなパズルで、描画関数を呼び出す
 	// pc.drawSlash51Cells()   [＼]のナナメ線をCanvasに書き込む
 	// pc.drawSlash51EXcells() EXCell上の[＼]のナナメ線をCanvasに書き込む

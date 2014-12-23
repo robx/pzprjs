@@ -94,7 +94,7 @@ ui.timer =
 var KeyUndo = 1,
 	ButtonUndo = 2,
 	AnswerUndo = 4,
-	undoTimerInterval = 25;		/* タイマー割り込み間隔 */
+	undoTimerInterval = 25,		/* タイマー割り込み間隔 */
 	execWaitTime      = 300;	/* 1回目にwaitを多く入れるための値 */
 
 ui.undotimer = {
