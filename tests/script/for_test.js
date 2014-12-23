@@ -171,12 +171,20 @@ ui.debug.extend(
 	check_encode_kanpen : function(self){
 		if(pzpr.variety.info[self.pid].exists.pencilbox){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
+			var kanpen_url = o.getURL(pzpr.parser.URL_KANPEN);
+			var fails_org = self.fails;
 
-			o.open(o.getURL(pzpr.parser.URL_KANPEN), function(){
+			if(pzpr.parser.parse(kanpen_url).id!==o.pid){
+				self.addTextarea("Encode kanpen = id fail..."); self.fails++;
+			}
+			o.open(kanpen_url, function(){
 				ui.menuconfig.set('autocheck',false);
-
-				if(!self.bd_compare(bd,bd2)){ self.addTextarea("Encode kanpen = failure..."); self.fails++;}
-				else if(!self.alltimer){ self.addTextarea("Encode kanpen = pass");}
+				
+				if(!self.bd_compare(bd,bd2)){
+					self.addTextarea("Encode kanpen = failure..."); self.fails++;
+				}
+				
+				if(!self.alltimer && (fails_org===self.fails)){ self.addTextarea("Encode kanpen = pass");}
 				
 				setTimeout(function(){ self.check_answer(self);},0);
 			});
