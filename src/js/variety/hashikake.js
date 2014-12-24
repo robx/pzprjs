@@ -302,14 +302,23 @@ AnsCheck:{
 
 		if( !this.checkCellNumberNotOver() ){ return 'nmLineCntGt';}
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
+		if( !this.checkConnectAllNumber() ){ return 'lcDivided';}
 
 		if( !this.checkCellNumberNotLess() ){ return 'nmLineCntLt';}
 
 		return null;
 	},
 
+	checkConnectAllNumber : function(){
+		var linfo = this.owner.board.getLareaInfo();
+		var bd = this.owner.board;
+		if(linfo.max>1){
+			bd.border.seterr(-1);
+			linfo.setErrLareaByCell(bd.cell[1],1);
+			return false;
+		}
+		return true;
+	},
 	checkCellNumberNotOver :function(){
 		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum < cell.getCountOfBridges());});
 	},

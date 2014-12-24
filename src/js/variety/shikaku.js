@@ -132,7 +132,7 @@ AnsCheck:{
 
 		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},

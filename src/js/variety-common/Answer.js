@@ -113,7 +113,6 @@ AnsCheck:{
 
 	//---------------------------------------------------------------------------
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
-	// ans.checkOneLine()  線がひとつながりかどうかを判定する
 	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
 	// ans.checkLineCount() セルから出ている線の本数について判定する
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
@@ -121,15 +120,6 @@ AnsCheck:{
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			cinfo.area[1].clist.seterr(1);
-			return false;
-		}
-		return true;
-	},
-	checkOneLine : function(cinfo){
-		var bd = this.owner.board;
-		if(cinfo.max>1){
-			bd.border.seterr(-1);
-			cinfo.setErrLareaByCell(bd.cell[1],1);
 			return false;
 		}
 		return true;
@@ -145,6 +135,10 @@ AnsCheck:{
 		return true;
 	},
 
+	checkCrossLine   : function(){ return this.checkLineCount(4);},
+	checkBranchLine  : function(){ return this.checkLineCount(3);},
+	checkDeadendLine : function(){ return this.checkLineCount(1);},
+	checkNoLine      : function(){ return this.checkLineCount(0);},
 	checkLineCount : function(val){
 		var result = true, bd = this.owner.board;
 		if(bd.lines.ltotal[val]===0){ return true;}
@@ -173,7 +167,7 @@ AnsCheck:{
 		return result;
 	},
 
-	checkenableLineParts : function(val){
+	checkenableLineParts : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adb = cell.adjborder;
@@ -215,6 +209,7 @@ AnsCheck:{
 	// ans.checkAllArea()    すべてのエリアがevalfuncを満たすかどうか判定する
 	// ans.checkAllBlock()   すべてのfuncを満たすマスで構成されるエリアが
 	//                       evalfuncを満たすかどうか判定する
+	// ans.checkAllArea2()   すべてのエリアがareaを引数に取るevalfuncを満たすかどうか判定する
 	//---------------------------------------------------------------------------
 	checkAllArea : function(cinfo, evalfunc){ return this.checkAllBlock(cinfo, null, evalfunc);},
 	checkAllBlock : function(cinfo, func, evalfunc){
@@ -229,6 +224,18 @@ AnsCheck:{
 			if( !evalfunc(d.cols, d.rows, a, n) ){
 				if(this.checkOnly){ return false;}
 				clist.seterr(this.owner.pid!=="tateyoko"?1:4);
+				result = false;
+			}
+		}
+		return result;
+	},
+	checkAllArea2 : function(cinfo, evalfunc){
+		var result = true;
+		for(var id=1;id<=cinfo.max;id++){
+			var area = cinfo.area[id];
+			if( !!area && !evalfunc(area) ){
+				if(this.checkOnly){ return false;}
+				area.clist.seterr(1);
 				result = false;
 			}
 		}
@@ -429,6 +436,8 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
 	//---------------------------------------------------------------------------
+	checkBorderCross   : function(){ return this.checkBorderCount(4,0);},
+	checkBorderDeadend : function(){ return this.checkBorderCount(1,0);},
 	checkBorderCount : function(val, bp){
 		var result=true, bd=this.owner.board;
 		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
@@ -462,99 +471,24 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkErrorFlag_cell()  RoomInfoに付加されたエラー情報を調べます
+	// ans.checkAllPath()   すべての線がpathを引数に取るevalfunc==falseになるかどうか判定する
 	//---------------------------------------------------------------------------
-	checkErrorFlag_cell : function(rinfo, val){
-		var result = true;
-		for(var r=1;r<=rinfo.max;r++){
-			if(rinfo.area[r].error!==val){ continue;}
-
-			if(this.checkOnly){ return false;}
-			rinfo.area[r].clist.seterr(1);
-			result = false;
-		}
-		return result;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkErrorFlag_line()  LineInfoに付加されたエラー情報を調べます
-	// ans.getErrorFlag_line()    丸などで区切られた線を探索してエラー情報を付加します
-	// ans.serachErrorFlag_line() 丸などで区切られた線を探索します
-	// ans.isErrorFlag_line()     探索結果からエラー情報を付加します
-	//---------------------------------------------------------------------------
-	checkErrorFlag_line : function(xinfo, val){
+	checkAllPath : function(xinfo, evalfunc){
 		var result = true;
 		for(var id=1;id<=xinfo.max;id++){
-			if(xinfo.path[id].error!==val){ continue;}
+			var path = xinfo.path[id];
+			if(!path || !evalfunc(path)){ continue;}
 
 			if(this.checkOnly){ return false;}
-			var cells = xinfo.path[id].cells;
+			var cells = path.cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
 			if(result){ this.owner.board.border.seterr(-1);}
-			xinfo.path[id].blist.seterr(1);
+			path.blist.seterr(1);
 			result = false;
 		}
 		return result;
-	},
-
-	// 丸の場所で線を切り離して考える
-	getErrorFlag_line : function(){
-		var bd = this.owner.board, xinfo = new this.owner.LineInfo();
-		for(var id=0;id<bd.bdmax;id++){ xinfo.id[id]=(bd.border[id].isLine()?0:null);}
-
-		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], adb = cell.adjborder;
-			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
-			for(var a=0;a<4;a++){
-				var firstbd = dir4bd[a];
-				if(firstbd.isnull){ continue;}
-
-				var path = xinfo.addPath();
-				path.error  = 0;
-				path.cells  = [cell,null];	// 出発したセル、到達したセル
-				path.ccnt   = 0;			// 曲がった回数
-				path.length = [];
-				path.dir1   = (a+1);		// dir1 スタート地点で線が出発した方向
-				path.dir2   = 0;			// dir2 到達地点から見た、到達した線の方向
-
-				this.searchErrorFlag_line(xinfo,path);
-				if(path.blist.length===0){ continue;}
-
-				this.isErrorFlag_line(xinfo);
-			}
-		}
-		return xinfo;
-	},
-	searchErrorFlag_line : function(xinfo,path){
-		var dir = path.dir1, pos = path.cells[0].getaddr(), n = 0;
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = pos.getc(), adb = cell.adjborder;
-				if(cell.isnull || cell.isNum()){ break;}
-				else if(cell.iscrossing() && cell.lcnt>=3){ }
-				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ path.ccnt++;} dir=2;}
-				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ path.ccnt++;} dir=1;}
-				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ path.ccnt++;} dir=4;}
-				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ path.ccnt++;} dir=3;}
-			}
-			else{
-				var border = pos.getb();
-				if(border.isnull||xinfo.id[border.id]!==0){ break;}
-
-				path.blist[n++] = border;
-				xinfo.id[border.id] = path.id;
-
-				if(isNaN(path.length[path.ccnt])){ path.length[path.ccnt]=0;}else{ path.length[path.ccnt]++;}
-			}
-		}
-		path.blist.length = n;
-		path.cells[1] = pos.getc();
-		path.dir2 = [0,2,1,4,3][dir];
-	},
-	isErrorFlag_line : function(xinfo){ }
+	}
 },
 
 //---------------------------------------------------------------------------

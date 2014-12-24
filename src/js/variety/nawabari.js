@@ -251,7 +251,7 @@ AnsCheck:{
 
 		if( !this.checkdir4BorderAns() ){ return 'nmBorderNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 'bkSizeGt4';}
 		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 'bkSizeGt5';}

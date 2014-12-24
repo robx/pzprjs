@@ -446,9 +446,9 @@ AnsCheck:{
 		if( !this.checkStarOnLine() ){ return 'bkNoStar';}
 
 		var rinfo = this.owner.board.getAreaStarInfoAll();
-		if( !this.checkErrorFlag(rinfo, -1) ){ return 'bdPassStar';}
+		if( !this.checkAvoidStar(rinfo) ){ return 'bdPassStar';}
 		if( !this.checkFractal(rinfo) ){ return 'bkNotSymSt';}
-		if( !this.checkErrorFlag(rinfo, -2) ){ return 'bkPlStar';}
+		if( !this.checkStarRegion(rinfo) ){ return 'bkPlStar';}
 
 		return null;
 	},
@@ -490,6 +490,8 @@ AnsCheck:{
 		return result;
 	},
 
+	checkAvoidStar  : function(rinfo){ return this.checkErrorFlag(rinfo,-1);},
+	checkStarRegion : function(rinfo){ return this.checkErrorFlag(rinfo,-2);},
 	checkErrorFlag : function(rinfo, val){
 		var result = true;
 		for(var r=1;r<=rinfo.max;r++){

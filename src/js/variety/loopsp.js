@@ -242,9 +242,9 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkenableLineParts(1) ){ return 'ceAddLine';}
+		if( !this.checkenableLineParts() ){ return 'ceAddLine';}
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
 
 		if( !this.checkCrossOnNumber() ){ return 'lnCrossOnNum';}
 
@@ -254,8 +254,8 @@ AnsCheck:{
 
 		if( !this.checkCrossLineOnCross() ){ return 'lnNotCrossMk';}
 
-		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
+		if( !this.checkNoLine() ){ return 'ceEmpty';}
+		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		return null;
 	},

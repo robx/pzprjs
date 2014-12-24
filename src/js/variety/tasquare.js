@@ -113,13 +113,15 @@ AnsCheck:{
 		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
 
-		if( !this.checkNumberSquare(binfo,true) ){ return 'ceSumSizeNe';}
+		if( !this.checkSumOfSize(binfo) ){ return 'ceSumSizeNe';}
 
-		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoShade';}
+		if( !this.checkAtLeastOne(binfo) ){ return 'ceNoShade';}
 
 		return null;
 	},
 
+	checkSumOfSize  : function(binfo){ return this.checkNumberSquare(binfo,true);},
+	checkAtLeastOne : function(binfo){ return this.checkNumberSquare(binfo,false);},
 	checkNumberSquare : function(binfo, flag){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

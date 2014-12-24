@@ -366,11 +366,11 @@ AnsCheck:{
 		var sdata=this.owner.board.getSlashData();
 		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 'slLoop';}
 
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){ return 'slLoopGiri';}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata) ){ return 'slLoopGiri';}
 
 		if( !this.checkQnumCross() ){ return 'crConnSlNe';}
 
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){ return 'slNotLoopWa';}
+		if( (pid==='wagiri') && !this.checkNotLoopLine_wagiri(sdata) ){ return 'slNotLoopWa';}
 
 		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
 
@@ -382,7 +382,9 @@ AnsCheck:{
 		errclist.seterr(1);
 		return (errclist.length===0);
 	},
-	checkLoopLine_wagiri : function(sdata, checkLoop){
+	checkLoopLine_wagiri    : function(sdata){ return this.checkLoops_wagiri(sdata, false);},
+	checkNotLoopLine_wagiri : function(sdata){ return this.checkLoops_wagiri(sdata, true);},
+	checkLoops_wagiri : function(sdata, checkLoop){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}

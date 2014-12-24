@@ -346,16 +346,14 @@ AnsCheck:{
 		var bd = this.owner.board;
 
 		var binfo = bd.getBarInfo();
-		if( !this.checkOutgoingBars(binfo, 1) ){ return 'nmLineGt1';}
+		if( !this.checkNotMultiBar(binfo) ){ return 'nmLineGt1';}
 
-		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
-		if( !this.checkLoop() ){ return 'lbLoop';}
-		if( !this.checkPoleLength(binfo,1) ){ return 'lbLenGt';}
+		if( !this.checkLoop_amibo() ){ return 'lbLoop';}
+		if( !this.checkLongBar(binfo) ){ return 'lbLenGt';}
 		if( !this.checkCrossedLength(binfo) ){ return 'lbNotCrossEq';}
-		if( !this.checkPoleLength(binfo,2) ){ return 'lbLenLt';}
-		bd.cell.seterr(0);
+		if( !this.checkShortBar(binfo) ){ return 'lbLenLt';}
 
-		if( !this.checkOutgoingBars(binfo, 2) ){ return 'nmIsolate';}
+		if( !this.checkSingleBar(binfo) ){ return 'nmIsolate';}
 
 		var areainfo = bd.barinfo.getAreaInfo();
 		if( !this.checkOneArea(areainfo) ){ return 'lbDivide';}
@@ -367,6 +365,8 @@ AnsCheck:{
 		return (this.checkOneArea(areainfo) ? null : 'lbDivide');
 	},
 
+	checkNotMultiBar : function(binfo){ return this.checkOutgoingBars(binfo, 1);},
+	checkSingleBar   : function(binfo){ return this.checkOutgoingBars(binfo, 2);},
 	checkOutgoingBars : function(binfo, type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
@@ -381,6 +381,8 @@ AnsCheck:{
 		}
 		return result;
 	},
+	checkLongBar  : function(binfo){ return this.checkPoleLength(binfo, 1);},
+	checkShortBar : function(binfo){ return this.checkPoleLength(binfo, 2);},
 	checkPoleLength : function(binfo,type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
@@ -390,6 +392,7 @@ AnsCheck:{
 				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
 					if(this.checkOnly){ return false;}
+					if(result){ bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);}
 					cell.seterr(1);
 					clist.setErrorBar(bar.vert);
 					result = false;
@@ -407,6 +410,7 @@ AnsCheck:{
 			}
 			if(!check){
 				if(this.checkOnly){ return false;}
+				if(result){ this.owner.board.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);}
 				clist.setErrorBar(bar.vert);
 				result = false;
 			}
@@ -414,7 +418,7 @@ AnsCheck:{
 		return result;
 	},
 
-	checkLoop : function(){
+	checkLoop_amibo : function(){
 		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.barinfo.getLinkCell(bd.cell[c]);
@@ -429,6 +433,7 @@ AnsCheck:{
 
 		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
+			bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
 			errclist.seterr(4);
 			return false;
 		}

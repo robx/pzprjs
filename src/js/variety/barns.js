@@ -144,16 +144,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
 
 		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
 		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkLineCount(0) ){ return 'ceEmpty';}
+		if( !this.checkNoLine() ){ return 'ceEmpty';}
 
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
+		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		return null;
 	},

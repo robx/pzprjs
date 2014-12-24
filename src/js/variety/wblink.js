@@ -183,13 +183,13 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		if( !this.checkCrossLine() ){ return 'lnCross';}
 
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
 
-		if( !this.checkWBcircle(linfo, 1) ){ return 'lcInvWhite';}
-		if( !this.checkWBcircle(linfo, 2) ){ return 'lcInvBlack';}
+		if( !this.checkUnshadedCircle(linfo) ){ return 'lcInvWhite';}
+		if( !this.checkShadedCircle(linfo) ){ return 'lcInvBlack';}
 
 		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
@@ -200,6 +200,8 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
 	},
 
+	checkUnshadedCircle : function(linfo){ return this.checkWBcircle(linfo, 1);},
+	checkShadedCircle   : function(linfo){ return this.checkWBcircle(linfo, 2);},
 	checkWBcircle : function(linfo,val){
 		var result = true;
 		for(var r=1;r<=linfo.max;r++){

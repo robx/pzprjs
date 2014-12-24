@@ -98,14 +98,18 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkQnumCross(1) ){ return 'crShadeGt';}
+		if( !this.checkShadeOverNum() ){ return 'crShadeGt';}
+
 		var winfo = this.owner.board.getUnshadeInfo();
 		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
-		if( !this.checkQnumCross(2) ){ return 'crShadeLt';}
+
+		if( !this.checkShadeLessNum() ){ return 'crShadeLt';}
 
 		return null;
 	},
 
+	checkShadeOverNum : function(){ return this.checkQnumCross(1);},
+	checkShadeLessNum : function(){ return this.checkQnumCross(2);},
 	checkQnumCross : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){

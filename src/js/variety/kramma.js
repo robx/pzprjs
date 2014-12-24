@@ -202,8 +202,8 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		if( (pid!=='kramma') && !this.checkBorderCount(3,0) ){ return 'bdBranch';}
-		if( (pid!=='kramma') && !this.checkBorderCount(4,1) ){ return 'bdCrossBP';}
+		if( (pid!=='kramma') && !this.checkBorderBranch() ){ return 'bdBranch';}
+		if( (pid!=='kramma') && !this.checkBorderCrossOnBP() ){ return 'bdCrossBP';}
 		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 'bdCurveExBP';}
 
 		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 'bdNotChassis';}
@@ -213,14 +213,18 @@ AnsCheck:{
 
 		if( !this.checkDiffObjectInArea(rinfo) ){ return 'bkPlNum';}
 
-		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
+		if( (pid!=='kramma') && !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
+		if( (pid==='kramman') && !this.checkBorderNoneOnBP() ){ return 'bdIgnoreBP';}
 
 		return null;
 	},
 	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? null : 'bdDeadEnd');
+		return ((this.owner.pid==='kramma' || this.checkBorderDeadend()) ? null : 'bdDeadEnd');
 	},
+
+	checkBorderBranch : function(){ return this.checkBorderCount(3,0);},
+	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1);},
+	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
 
 	checkDiffObjectInArea : function(rinfo){
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});

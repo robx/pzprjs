@@ -210,7 +210,7 @@ FileIO:{
 		var bd=this.owner.board;
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 'csDivide8';}
+		if( !this.checkConnectUnshaded_mochikoro() ){ return 'csDivide8';}
 
 		var winfo = bd.getUnshadeInfo();
 		if( !this.checkAreaRect(winfo) ){ return 'cuNotRect';}
@@ -225,6 +225,9 @@ FileIO:{
 		return null;
 	},
 
+	checkConnectUnshaded_mochikoro : function(){
+		return this.checkOneArea( this.owner.board.getdir8WareaInfo() );
+	},
 	checkAreaNotRect : function(binfo){
 		return this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!==a);});
 	}

@@ -171,19 +171,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount_firefly(4) ){ return 'lnCross';}
+		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
+		if( !this.checkCrossLine_firefly() ){ return 'lnCross';}
 
-		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,4) ){ return 'lcInvDirB';}
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcInvDirW';}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveNe';}
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
+		var xinfo = this.owner.board.getLineShapeInfo();
+		if( !this.checkConnectPoints(xinfo) ){ return 'lcInvDirB';}
+		if( !this.checkConnectCircles(xinfo) ){ return 'lcInvDirW';}
+		if( !this.checkCurveCount(xinfo) ){ return 'lcCurveNe';}
+		if( !this.checkDeadendLine(xinfo) ){ return 'lcDeadEnd';}
 
 		var linfo = this.owner.board.getLareaInfo();
 		if( !this.checkOneArea(linfo) ){ return 'lcDivided';}
 
-		if( !this.checkLineCount_firefly(1) ){ return 'lnDeadEnd';}
+		if( !this.checkDeadendLine_firefly() ){ return 'lnDeadEnd';}
 
 		if( !this.checkFireflyBeam() ){ return 'nmNoLine';}
 
@@ -191,6 +191,9 @@ AnsCheck:{
 	},
 
 	/* 線のカウントはするが、○のある場所は除外する */
+	checkCrossLine_firefly   : function(){ return this.checkLineCount_firefly(4);},
+	checkBranchLine_firefly  : function(){ return this.checkLineCount_firefly(3);},
+	checkDeadendLine_firefly : function(){ return this.checkLineCount_firefly(1);},
 	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]===0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
@@ -209,19 +212,27 @@ AnsCheck:{
 		return result;
 	},
 
-	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt;
-		var cell1=path.cells[0], cell2=path.cells[1], dir1=path.dir1, dir2=path.dir2;
-
-		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=cell1.qdir, qd2=(!cell2.isnull ? cell2.qdir : cell2.NDIR), qn=-1, err=0;
-		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1 ? cell1 : cell2).qnum;}
-
-		if     (!cell2.isnull && (dir1===qd1) && (dir2===qd2)){ err=4;}
-		else if(!cell2.isnull && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
-		else if(!cell2.isnull && qn>=0 && qn!==ccnt){ err=2; path.cells=[cell1];}
-		else if( cell2.isnull){ err=1;}
-		path.error = err;
+	checkConnectPoints : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			return (!cell2.isnull && path.dir1===cell1.qdir && path.dir2===cell2.qdir);
+		});
+	},
+	checkConnectCircles : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			return (!cell2.isnull && path.dir1!==cell1.qdir && path.dir2!==cell2.qdir);
+		});
+	},
+	checkCurveCount : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			var qn=((path.dir1===cell1.qdir) ? cell1 : cell2).qnum;
+			return (!cell2.isnull && qn>=0 && qn!==path.ccnt);
+		});
+	},
+	checkDeadendLine : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){ return path.cells[1].isnull;});
 	}
 },
 

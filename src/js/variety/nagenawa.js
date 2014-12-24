@@ -221,11 +221,11 @@ AnsCheck:{
 
 		if( (pid==='ringring') && !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 
-		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
+		var rinfo = ((pid==='nagenawa') ? bd.getRoomInfo() : null);
 		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 'bkLineGt';}
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
+		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 'bkLineLt';}
 

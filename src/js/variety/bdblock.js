@@ -94,20 +94,25 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(3,2) ){ return 'bdBranchExBP';}
-		if( !this.checkBorderCount(4,2) ){ return 'bdCrossExBP';}
+		if( !this.checkBorderBranchExBP() ){ return 'bdBranchExBP';}
+		if( !this.checkBorderCrossExBP() ){ return 'bdCrossExBP';}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 		if( !this.checkDiffNumberInBlock(rinfo) ){ return 'bkPlNum';}
 		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-		if( !this.checkBorderCount(2,1) ){ return 'bdCountLt3BP';}
-		if( !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
+		if( !this.checkBorderPassOnBP() ){ return 'bdCountLt3BP';}
+		if( !this.checkBorderNoneOnBP() ){ return 'bdIgnoreBP';}
 
 		return null;
 	},
+
+	checkBorderBranchExBP : function(){ return this.checkBorderCount(3,2);},
+	checkBorderCrossExBP  : function(){ return this.checkBorderCount(4,2);},
+	checkBorderPassOnBP : function(){ return this.checkBorderCount(2,1);},
+	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
 
 	checkDiffNumberInBlock : function(rinfo){
 		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});

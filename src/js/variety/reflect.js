@@ -270,16 +270,16 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossOutOfMark() ){ return 'lnCrossExMk';}
 
-		if( !this.checkTriNumber(1) ){ return 'lnLenGt';}
+		if( !this.checkLongLines() ){ return 'lnLenGt';}
 		if( !this.checkTriangle() ){ return 'lnExTri';}
-		if( !this.checkTriNumber(2) ){ return 'lnLenLt';}
+		if( !this.checkShortLines() ){ return 'lnLenLt';}
 
 		if( !this.checkNotCrossOnMark() ){ return 'lnNotCrossMk';}
 
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
+		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
@@ -306,6 +306,8 @@ AnsCheck:{
 		return result;
 	},
 
+	checkLongLines  : function(){ return this.checkTriNumber(1);},
+	checkShortLines : function(){ return this.checkTriNumber(2);},
 	checkTriNumber : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

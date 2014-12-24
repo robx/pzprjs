@@ -399,7 +399,7 @@ AnsCheck:{
 
 		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		if( !this.checkLblock(rinfo) ){ return 'bkNotLshape';}
 

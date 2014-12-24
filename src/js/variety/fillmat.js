@@ -90,7 +90,7 @@ FileIO:{
 "AnsCheck@fillmat":{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		if( !this.checkBorderCross() ){ return 'bdCross';}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkSideAreaRoomSize(rinfo) ){ return 'sbSizeEq';}
@@ -98,7 +98,7 @@ FileIO:{
 		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},
@@ -113,14 +113,14 @@ FileIO:{
 "AnsCheck@usotatami":{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		if( !this.checkBorderCross() ){ return 'bdCross';}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
 		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
 		if( !this.checkTatamiDiffSize(rinfo) ){ return 'bkSizeEq';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
 

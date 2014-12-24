@@ -484,8 +484,8 @@ AnsCheck:{
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 'bkObjGe2';}
-		if( !this.checkMirrors(1) ){ return 'pairedLetterNe';}
-		if( !this.checkMirrors(2) ){ return 'pairedNumberNe';}
+		if( !this.checkPairMirror() ){ return 'pairedLetterNe';}
+		if( !this.checkReflection() ){ return 'pairedNumberNe';}
 		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
 
 		return null;
@@ -498,6 +498,8 @@ AnsCheck:{
 		return this.checkAllBlock(rinfo, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
 	},
 
+	checkPairMirror : function(){ return this.checkMirrors(1);},
+	checkReflection : function(){ return this.checkMirrors(2);},
 	checkMirrors : function(type){
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){

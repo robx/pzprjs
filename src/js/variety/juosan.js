@@ -147,13 +147,11 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		bd.cell.seterr(-1);
 		if( !this.checkParallelBarCount() ){ return 'baParaGe3';}
 
 		var rinfo = bd.getRoomInfo();
-		if( !this.checkMajorityBarCount(rinfo, true) ) { return 'bkMajorBarGt';}
-		if( !this.checkMajorityBarCount(rinfo, false) ){ return 'bkMajorBarLt';}
-		bd.cell.seterr(0);
+		if( !this.checkMajorityBarOver(rinfo) ){ return 'bkMajorBarGt';}
+		if( !this.checkMajorityBarLack(rinfo) ){ return 'bkMajorBarLt';}
 
 		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
@@ -174,6 +172,7 @@ AnsCheck:{
 				while((tx+2<bd.maxbx) && (categoryfunc(bd.getc(tx+2,by))===val)){ tx+=2;}
 				if(!evalfunc.call(this, [bx,by,false], bd.cellinside(bx,by,tx,by))){
 					if(!multierr || this.checkOnly){ return false;}
+					if(result){ bd.cell.filter(function(cell){ return cell.error===0;}).seterr(-1);}
 					result = false;
 				}
 				bx = tx; /* 次のループはbx=tx+2 */
@@ -185,6 +184,7 @@ AnsCheck:{
 				while((ty+2<bd.maxby) && (categoryfunc(bd.getc(bx,ty+2))===val)){ ty+=2;}
 				if(!evalfunc.call(this, [bx,by,true], bd.cellinside(bx,by,bx,ty))){
 					if(!multierr || this.checkOnly){ return false;}
+					if(result){ bd.cell.filter(function(cell){ return cell.error===0;}).seterr(-1);}
 					result = false;
 				}
 				by = ty; /* 次のループはbx=ty+2 */
@@ -201,6 +201,8 @@ AnsCheck:{
 		return true;
 	},
 
+	checkMajorityBarOver : function(rinfo){ return this.checkMajorityBarCount(rinfo, true);},
+	checkMajorityBarLack : function(rinfo){ return this.checkMajorityBarCount(rinfo, false);},
 	checkMajorityBarCount : function(rinfo, isover){
 		var result = true;
 		for(var id=1;id<=rinfo.max;id++){
@@ -214,6 +216,7 @@ AnsCheck:{
 			count = (vcount>hcount ? vcount : hcount);
 			if((area.top.qnum!==count) && (isover===(count>area.top.qnum))){
 				if(this.checkOnly){ return false;}
+				if(result){ this.owner.board.cell.seterr(-1);}
 				if     (vcount>hcount){ clist = clist.filter(function(cell){ return cell.qans===12;});}
 				else if(vcount<hcount){ clist = clist.filter(function(cell){ return cell.qans===13;});}
 				clist.seterr(4);

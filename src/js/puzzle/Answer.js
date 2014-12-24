@@ -53,7 +53,7 @@ AnsCheck:{
 		var bd = this.owner.board;
 		if(bd.lines.enabled && !bd.linfo.enabled){
 			if(bd.lines.isCenterLine || bd.lines.borderAsLine){
-				if(!this.checkLineCount(1)){ return 'lnDeadEnd';}
+				if(!this.checkDeadendLine()){ return 'lnDeadEnd';}
 			}
 		}
 		return this.check1st();

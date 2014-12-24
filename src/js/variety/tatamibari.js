@@ -185,7 +185,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		if( !this.checkBorderCross() ){ return 'bdCross';}
 
 		var rinfo = this.owner.board.getRoomInfo();
 		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
@@ -198,7 +198,7 @@ AnsCheck:{
 
 		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},

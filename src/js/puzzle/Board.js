@@ -508,7 +508,7 @@ Board:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// bd.getLineInfo()  線情報をAreaInfo型のオブジェクトで返す
+	// bd.getLineInfo()  線情報をLineInfo型のオブジェクトで返す
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
 	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
 	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
@@ -521,6 +521,11 @@ Board:{
 	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
 	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
 	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
+
+	//---------------------------------------------------------------------------
+	// bd.getLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
+	//---------------------------------------------------------------------------
+	getLineShapeInfo : function(){ return this.lines.getLineShapeInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

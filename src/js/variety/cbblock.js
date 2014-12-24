@@ -202,10 +202,10 @@ AnsCheck:{
 
 		/* 境界線で作られる領域の情報 */
 		var cinfo = this.owner.board.getBlockInfo();
-		if( !this.checkMiniBlockCount(cinfo, 1) ){ return 'bkSubLt2';}
+		if( !this.checkSingleBlock(cinfo) ){ return 'bkSubLt2';}
 		if( !this.checkBlockNotRect(cinfo) ){ return 'bkRect';}
 		if( !this.checkDifferentShapeBlock(cinfo) ){ return 'sbSameShape';}
-		if( !this.checkMiniBlockCount(cinfo, 3) ){ return 'bkSubGt2';}
+		if( !this.checkLargeBlock(cinfo) ){ return 'bkSubGt2';}
 
 		return null;
 	},
@@ -214,6 +214,8 @@ AnsCheck:{
 		return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h!==a);});
 	},
 
+	checkSingleBlock : function(cinfo){ return this.checkMiniBlockCount(cinfo, 1);},
+	checkLargeBlock  : function(cinfo){ return this.checkMiniBlockCount(cinfo, 3);},
 	checkMiniBlockCount : function(cinfo, flag){
 		var result=true;
 		for(var r=1;r<=cinfo.max;r++){

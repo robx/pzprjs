@@ -135,12 +135,12 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
+		if( !this.checkCrossLine() ){ return 'lnCross';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
+		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		if( !this.checkOutsideNumber() ){ return 'nmOutside';}
 		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}

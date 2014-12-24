@@ -89,7 +89,27 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	hasborder : 1
+	hasborder : 1,
+
+	getErrorRoomInfo : function(){
+		var rinfo = this.getRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){  /* rinfo.maxは領域を分割した時に増加します. */
+			var area = rinfo.area[id], clist = area.clist;
+			var nums = [];
+			var numkind=0, filled=-1;
+			for(var i=0;i<clist.length;i++){
+				var num = clist[i].getNum();
+				if(num!==-1){
+					if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
+					else{ nums[num]++;}
+				}
+			}
+			area.number  = filled;
+			area.numcnt  = nums[filled];
+			area.numkind = numkind;
+		}
+		return rinfo;
+	}
 },
 
 AreaNumberManager:{
@@ -163,15 +183,15 @@ AnsCheck:{
 
 		if( !this.checkSideAreaNumber() ){ return 'scNum';}
 
-		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 'bkPlNum';}
-		if( !this.checkErrorFlag_cell(rinfo, 1) ){ return 'nmCountGt';}
+		var rinfo = this.owner.board.getErrorRoomInfo();
+		if( !this.checkNotMultiNum(rinfo) ){ return 'bkPlNum';}
+		if( !this.checkNumCountOver(rinfo) ){ return 'nmCountGt';}
 
 		var numinfo = this.owner.board.getNumberInfo();
 		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
 
-		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 'nmCountLt';}
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 'bkNoNum';}
+		if( !this.checkNumCountLack(rinfo) ){ return 'nmCountLt';}
+		if( !this.checkNoEmptyArea(rinfo) ){ return 'bkNoNum';}
 
 		return null;
 	},
@@ -183,30 +203,10 @@ AnsCheck:{
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
 	},
 
-	getErrorFlag_cell : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		for(var id=1,max=rinfo.max;id<=max;id++){
-			var area = rinfo.area[id], clist = area.clist;
-			area.error  =  0;		// 後でエラー表示するエラーのフラグ
-			area.number = -1;		// そのエリアに入っている数字
-			var nums = [];			// キーの数字が入っている数
-			var numcnt = 0;			// エリアに入っている数字の種類数
-			var emptycell = 0;		// 数字が入っていないセルの数
-			var filled = 0;			// エリアに入っている数字
-			for(var i=0;i<clist.length;i++){
-				var num = clist[i].getNum();
-				if(num===-1){ emptycell++;}
-				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
-				else{ nums[num]++;}
-			}
-			if(numcnt>1)                                { area.error=4;}
-			else if(numcnt===0)                         { area.error=3;}
-			else if(numcnt===1 && filled < nums[filled]){ area.error=1; area.number=filled;}
-			else if(numcnt===1 && filled > nums[filled]){ area.error=2; area.number=filled;}
-			else                                        { area.error=-1;area.number=filled;}
-		}
-		return rinfo;
-	}
+	checkNotMultiNum  : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind>1);});},
+	checkNumCountLack : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
+	checkNumCountOver : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
+	checkNoEmptyArea  : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return area.numkind!==0;});}
 },
 
 FailCode:{

@@ -125,18 +125,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
+		var pid = this.owner.pid;
 
-		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
-		if( (this.owner.pid!=='ichimagax') && !this.checkLineCount_firefly(4) ){ return 'lnCross';}
+		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
+		if( (pid!=='ichimagax') && !this.checkCrossLine_firefly() ){ return 'lnCross';}
 
-		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcSameNum';}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveGt1';}
+		var xinfo = this.owner.board.getLineShapeInfo();
+		if( (pid==='ichimagam') && !this.checkConnectSameNum(xinfo) ){ return 'lcSameNum';}
+		if( !this.checkCurveCount(xinfo) ){ return 'lcCurveGt1';}
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
+		if( !this.checkConnectAllNumber() ){ return 'lcDivided';}
 
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
+		if( !this.checkDeadendLine(xinfo) ){ return 'lcDeadEnd';}
 
 		if( !this.checkOutgoingLine() ){ return 'nmLineNe';}
 
@@ -146,6 +146,8 @@ AnsCheck:{
 	},
 
 	/* 線のカウントはするが、○のある場所は除外する */
+	checkCrossLine_firefly  : function(){ return this.checkLineCount_firefly(4);},
+	checkBranchLine_firefly : function(){ return this.checkLineCount_firefly(3);},
 	checkLineCount_firefly : function(val){
 		if(this.owner.board.lines.ltotal[val]===0){ return true;}
 		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
@@ -157,15 +159,25 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);});
 	},
 
-	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt;
-		var cell1=path.cells[0], cell2=path.cells[1];
+	checkConnectSameNum : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;});
+	},
+	checkCurveCount : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){ return !path.cells[1].isnull && path.ccnt>1;});
+	},
+	checkDeadendLine : function(xinfo){
+		return this.checkAllPath(xinfo, function(path){ return path.cells[1].isnull;});
+	},
 
-		var qn1=cell1.qnum, qn2=(!cell2.isnull ? cell2.qnum : -1), err=0;
-		if((this.owner.pid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
-		else if(!cell2.isnull && ccnt>1){ err=2;}
-		else if( cell2.isnull){ err=1;}
-		path.error = err;
+	checkConnectAllNumber : function(){
+		var linfo = this.owner.board.getLareaInfo();
+		var bd = this.owner.board;
+		if(linfo.max>1){
+			bd.border.seterr(-1);
+			linfo.setErrLareaByCell(bd.cell[1],1);
+			return false;
+		}
+		return true;
 	}
 },
 

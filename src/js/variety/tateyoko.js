@@ -251,15 +251,13 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkShade(1) ){ return 'nmConnBarGt';}
+		if( !this.checkBarOverNum() ){ return 'nmConnBarGt';}
 
 		var binfo = bd.getBarInfo();
-		bd.cell.seterr(-1);
 		if( !this.checkDoubleNumber(binfo) ){ return 'baPlNum';}
 		if( !this.checkNumberAndSize(binfo) ){ return 'bkSizeNe';}
-		bd.cell.seterr(0);
 
-		if( !this.checkShade(2) ){ return 'nmConnBarLt';}
+		if( !this.checkBarLessNum() ){ return 'nmConnBarLt';}
 
 		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
@@ -269,6 +267,24 @@ AnsCheck:{
 		return (this.checkEmptyCell() ? null : 'ceEmpty');
 	},
 
+	/* エラー表示用オーバーライド */
+	checkDoubleNumber : function(binfo){
+		var bd = this.owner.board;
+		bd.cell.seterr(-1);
+		var result = this.common.checkDoubleNumber.call(this,binfo);
+		if(!result){ bd.cell.seterr(0);}
+		return result;
+	},
+	checkNumberAndSize : function(binfo){
+		var bd = this.owner.board;
+		bd.cell.seterr(-1);
+		var result = this.common.checkNumberAndSize.call(this,binfo);
+		if(!result){ bd.cell.seterr(0);}
+		return result;
+	},
+
+	checkBarOverNum : function(){ return this.checkShade(1);},
+	checkBarLessNum : function(){ return this.checkShade(2);},
 	checkShade : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

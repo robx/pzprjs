@@ -493,8 +493,8 @@ AnsCheck:{
 	checkAns : function(){
 		var bd = this.owner.board;
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		if( !this.checkBranchLine() ){ return 'lnBranch';}
+		if( !this.checkCrossLine() ){ return 'lnCross';}
 
 		var linfo = bd.getLareaInfo();
 

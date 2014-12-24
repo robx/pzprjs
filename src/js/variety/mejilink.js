@@ -181,18 +181,21 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkdir4Line_meji(3) ){ return 'lnBranch';}
-		if( !this.checkdir4Line_meji(4) ){ return 'lnCross';}
+		if( !this.checkBranchLine_meji() ){ return 'lnBranch';}
+		if( !this.checkCrossLine_meji() ){ return 'lnCross';}
 
 		if( !this.checkDotLength() ){ return 'bkNoLineNe';}
 
-		if( !this.checkdir4Line_meji(1) ){ return 'lnDeadEnd';}
+		if( !this.checkDeadendLine_meji() ){ return 'lnDeadEnd';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
 		return null;
 	},
 
+	checkCrossLine_meji   : function(){ return this.checkdir4Line_meji(4);},
+	checkBranchLine_meji  : function(){ return this.checkdir4Line_meji(3);},
+	checkDeadendLine_meji : function(){ return this.checkdir4Line_meji(1);},
 	checkdir4Line_meji : function(val){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){

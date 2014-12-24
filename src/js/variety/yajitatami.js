@@ -112,7 +112,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		if( !this.checkBorderCross() ){ return 'bdCross';}
 		if( !this.checkArrowNumber_border() ){ return 'arNoAdjBd';}
 
 		var rinfo = this.owner.board.getRoomInfo();
