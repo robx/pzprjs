@@ -151,11 +151,11 @@ ui.popupmgr.addpopup('template',
 		var popup = this;
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType!==1){ return;}
-			var role = (el.dataset!==void 0 ? el.dataset.buttonExec : el['data-button-exec']);
+			var role = ui.customAttr(el,"buttonExec");
 			if(!!role){
 				pzpr.util.addEvent(el, "mousedown", popup, popup[role]);
 			}
-			role = (el.dataset!==void 0 ? el.dataset.changeExec : el['data-change-exec']);
+			role = ui.customAttr(el,"changeExec");
 			if(!!role){
 				pzpr.util.addEvent(el, "change", popup, popup[role]);
 			}
@@ -631,7 +631,7 @@ ui.popupmgr.addpopup('colors',
 	refresh : function(name){
 		ui.misc.walker(this.form, function(el){
 			if(el.nodeName==="INPUT" && el.getAttribute("type")==="color"){
-				var target = (el.dataset!==void 0 ? el.dataset.colorTarget : el['data-color-target']);
+				var target = ui.customAttr(el,"colorTarget");
 				if(!!target && (!name || name===target)){
 					el.value = Candle.parse(ui.puzzle.painter[target]);
 				}
@@ -644,11 +644,11 @@ ui.popupmgr.addpopup('colors',
 	// clearcolor() 色の設定をクリアする
 	//------------------------------------------------------------------------------
 	setcolor : function(e){
-		var name = (e.target.dataset!==void 0 ? e.target.dataset.colorTarget : e.target['data-color-target']);
+		var name = ui.customAttr(e.target,"colorTarget");
 		ui.puzzle.setConfig("color_"+name, e.target.value);
 	},
 	clearcolor : function(e){
-		var name = (e.target.dataset!==void 0 ? e.target.dataset.colorTarget : e.target['data-color-target']);
+		var name = ui.customAttr(e.target,"colorTarget");
 		ui.puzzle.setConfig("color_"+name, "");
 		this.refresh(name);
 	}

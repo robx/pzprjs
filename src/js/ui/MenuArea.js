@@ -34,7 +34,7 @@ ui.menuarea = {
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="LI"){
 				var setevent = false;
-				var idname = el["data-config"] || el.dataset.config;
+				var idname = ui.customAttr(el,"config");
 				if(!!idname){
 					menuarea.menuitem[idname] = {el:el};
 					if(el.className==="check"){
@@ -42,9 +42,9 @@ ui.menuarea = {
 						setevent = true;
 					}
 				}
-				var value = el["data-value"] || el.dataset.value;
+				var value = ui.customAttr(el,"value");
 				if(!!value){
-					var parent = el.parentNode.parentNode, idname = parent["data-config"] || parent.dataset.config;
+					var parent = el.parentNode.parentNode, idname = ui.customAttr(parent,"config");
 					var item = menuarea.menuitem[idname];
 					if(!item.children){ item.children=[];}
 					item.children.push(el);
@@ -53,12 +53,12 @@ ui.menuarea = {
 					setevent = true;
 				}
 				
-				var role = el['data-menu-exec'] || el.dataset.menuExec;
+				var role = ui.customAttr(el,"menuExec");
 				if(!!role){
 					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea[role]);
 					setevent = true;
 				}
-				role = el['data-popup'] || el.dataset.popup;
+				role = ui.customAttr(el,"popup");
 				if(!!role){
 					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.disppopup);
 					setevent = true;
@@ -84,7 +84,7 @@ ui.menuarea = {
 	walkElement2 : function(parent){
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="SPAN"){
-				var disppid = el["data-disp-pid"] || el.dataset.dispPid;
+				var disppid = ui.customAttr(el,"dispPid");
 				if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
 			}
 		});
@@ -138,7 +138,7 @@ ui.menuarea = {
 			if(!!menuitem.children){
 				var children = menuitem.children;
 				for(var i=0;i<children.length;i++){
-					var child = children[i], selected = ((child["data-value"] || child.dataset.value)===""+ui.getConfig(idname));
+					var child = children[i], selected = (ui.customAttr(child,"value")===""+ui.getConfig(idname));
 					child.className = (selected ? "checked" : "");
 				}
 			}
@@ -160,7 +160,7 @@ ui.menuarea = {
 		var el = e.target;
 		if(el.nodeName==="SPAN"){ el = el.parentNode;}
 		
-		var idname = (el["data-config"] || el.dataset.config);
+		var idname = ui.customAttr(el,"config");
 		ui.setConfig(idname, !ui.getConfig(idname));
 	},
 	childclick : function(e){
@@ -168,9 +168,7 @@ ui.menuarea = {
 		if(el.nodeName==="SPAN"){ el = el.parentNode;}
 		
 		var parent = el.parentNode.parentNode;
-		var idname = (parent["data-config"] || parent.dataset.config);
-		var value = (el["data-value"] || el.dataset.value);
-		ui.setConfig(idname, value);
+		ui.setConfig(ui.customAttr(parent,"config"), ui.customAttr(el,"value"));
 	},
 
 	//---------------------------------------------------------------------------
@@ -199,7 +197,7 @@ ui.menuarea = {
 		var el = e.target;
 		if(el.nodeName==="SPAN"){ el = el.parentNode;}
 		if(el.className!=="disabled"){
-			var idname = el["data-popup"] || el.dataset.popup;
+			var idname = ui.customAttr(el,"popup");
 			var pos = pzpr.util.getPagePos(e);
 			ui.popupmgr.open(idname, pos.px-8, pos.py-8);
 		}

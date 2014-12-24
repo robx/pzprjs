@@ -33,10 +33,10 @@ ui.toolarea = {
 			if(el.nodeType===1){
 				/* ツールパネル領域 */
 				if(el.className==="config"){
-					toolarea.items[el["data-config"] || el.dataset.config] = {el:el};
+					toolarea.items[ui.customAttr(el,"config")] = {el:el};
 				}
 				else if(el.className.match(/child/)){
-					var parent = el.parentNode, idname = parent["data-config"] || parent.dataset.config;
+					var parent = el.parentNode, idname = ui.customAttr(parent,"config");
 					var item = toolarea.items[idname];
 					if(!item.children){ item.children=[];}
 					item.children.push(el);
@@ -44,7 +44,7 @@ ui.toolarea = {
 					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea.toolclick);
 				}
 				else if(el.nodeName==="INPUT" && el.type==="checkbox"){
-					var parent = el.parentNode, idname = parent["data-config"] || parent.dataset.config;
+					var parent = el.parentNode, idname = ui.customAttr(parent,"config");
 					if(!idname){ return;}
 					toolarea.items[idname].checkbox=el;
 					
@@ -52,11 +52,11 @@ ui.toolarea = {
 				}
 				
 				/* ボタン領域 */
-				var role = el['data-button-exec'] || el.dataset.buttonExec;
+				var role = ui.customAttr(el,"buttonExec");
 				if(!!role){
 					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea[role]);
 				}
-				role = el['data-buttonup-exec'] || el.dataset.buttonupExec;
+				role = ui.customAttr(el,"buttonupExec");
 				if(!!role){
 					pzpr.util.addEvent(el, "mouseup", toolarea, toolarea[role]);
 				}
@@ -71,7 +71,7 @@ ui.toolarea = {
 	walkElement2 : function(parent){
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="SPAN"){
-				var disppid = el["data-disp-pid"] || el.dataset.dispPid;
+				var disppid = ui.customAttr(el,"dispPid");
 				if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
 			}
 		});
@@ -129,7 +129,7 @@ ui.toolarea = {
 			if(!!toolitem.children){
 				var children = toolitem.children;
 				for(var i=0;i<children.length;i++){
-					var child = children[i], selected = ((child["data-value"] || child.dataset.value)===""+ui.getConfig(idname));
+					var child = children[i], selected = (ui.customAttr(child,"value")===""+ui.getConfig(idname));
 					child.className = (selected ? "child childsel" : "child");
 				}
 			}
@@ -158,9 +158,9 @@ ui.toolarea = {
 	//---------------------------------------------------------------------------
 	toolclick : function(e){
 		var el = e.target, parent = el.parentNode;
-		var idname = (parent["data-config"] || parent.dataset.config), value;
+		var idname = ui.customAttr(parent,"config"), value;
 		if(!!this.items[idname].checkbox){ value = !!el.checked;}
-		else                             { value = (el["data-value"] || el.dataset.value);}
+		else                             { value = ui.customAttr(el,"value");}
 		ui.setConfig(idname, value);
 	},
 
