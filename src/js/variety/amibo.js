@@ -24,7 +24,7 @@ MouseEvent:{
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
 
-		cell.setQans((this.btn.Left?[1,2,3,0]:[3,0,1,2])[cell.qans]);
+		cell.setQans((this.btn.Left?{0:12,12:13,13:11,11:0}:{0:11,11:13,13:12,12:0})[cell.qans]);
 		cell.draw();
 	}
 },
@@ -69,10 +69,11 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
+			var tans = {0:0,11:11,12:13,13:12};
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans([0,2,1,3][cell.qans]);
+				cell.setQans(tans[cell.qans]);
 			}
 		}
 	}
@@ -92,7 +93,7 @@ BoardExec:{
 	},
 	
 	calcLinkInfo : function(cell){
-		return (this.linkinfo[cell.id] = [0,19,28,31][cell.qans]);
+		return (this.linkinfo[cell.id] = {0:0,11:31,12:19,13:28}[cell.qans]);
 	},
 
 	irowakeEnable : function(){
@@ -108,7 +109,7 @@ BoardExec:{
 	getBarInfo : function(){
 		var puzzle = this.owner, bd = puzzle.board;
 		function eachcell(cell, vert){
-			var qa = cell.qans, isbar = (qa===3 || qa===(vert?1:2));
+			var qa = cell.qans, isbar = (qa===11 || qa===(vert?12:13));
 			if(!bar && isbar){
 				bar = binfo.addArea();
 				bar.vert = vert;
@@ -186,6 +187,16 @@ CellList:{
 	}
 },
 
+/* 互換性のための定義 */
+ObjectOperation:{
+	decode : function(strs){
+		var result = this.common.decode.call(this,strs);
+		this.old = [0,12,13,11][this.old];
+		this.num = [0,12,13,11][this.num];
+		return result;
+	},
+},
+
 Flags:{
 	irowake : true
 },
@@ -240,7 +251,7 @@ Graphic:{
 
 			var cell2 = cell.adjacent.top, qa = cell2.qans;
 			g.vid = "c_bars1a_"+cell.id;
-			if(isnum && (qa===1||qa===3)){
+			if(isnum && (qa===11||qa===12)){
 				g.fillStyle = this.getBarColor(cell2,true);
 				g.fillRect(px-bw+lp, py-bh, lw, bh);
 			}
@@ -248,7 +259,7 @@ Graphic:{
 
 			var cell2 = cell.adjacent.bottom, qa = cell2.qans;
 			g.vid = "c_bars1b_"+cell.id;
-			if(isnum && (qa===1||qa===3)){
+			if(isnum && (qa===11||qa===12)){
 				g.fillStyle = this.getBarColor(cell2,true);
 				g.fillRect(px-bw+lp, py+1, lw, bh);
 			}
@@ -256,7 +267,7 @@ Graphic:{
 
 			var cell2 = cell.adjacent.left, qa = cell2.qans;
 			g.vid = "c_bars2a_"+cell.id;
-			if(isnum && (qa===2||qa===3)){
+			if(isnum && (qa===11||qa===13)){
 				g.fillStyle = this.getBarColor(cell2,false);
 				g.fillRect(px-bw, py-bh+lp, bw, lw);
 			}
@@ -264,7 +275,7 @@ Graphic:{
 
 			var cell2 = cell.adjacent.right, qa = cell2.qans;
 			g.vid = "c_bars2b_"+cell.id;
-			if(isnum && (qa===2||qa===3)){
+			if(isnum && (qa===11||qa===13)){
 				g.fillStyle = this.getBarColor(cell2,false);
 				g.fillRect(px+1, py-bh+lp, bw, lw);
 			}
@@ -307,9 +318,9 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(obj,ca){
-			if     (ca==="l"){ obj.qans = 1;}
-			else if(ca==="-"){ obj.qans = 2;}
-			else if(ca==="+"){ obj.qans = 3;}
+			if     (ca==="l"){ obj.qans = 12;}
+			else if(ca==="-"){ obj.qans = 13;}
+			else if(ca==="+"){ obj.qans = 11;}
 			else if(ca==="#"){ obj.qnum = -2;}
 			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
@@ -317,9 +328,9 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qans=== 1){ return "l ";}
-			else if(obj.qans=== 2){ return "- ";}
-			else if(obj.qans=== 3){ return "+ ";}
+			if     (obj.qans===12){ return "l ";}
+			else if(obj.qans===13){ return "- ";}
+			else if(obj.qans===11){ return "+ ";}
 			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
 			else if(obj.qnum===-2){ return "# ";}
 			else                  { return ". ";}

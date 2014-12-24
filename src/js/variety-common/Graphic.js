@@ -936,14 +936,13 @@ Graphic:{
 	// pc.getBarColor()     縦棒・横棒の色を取得する
 	//---------------------------------------------------------------------------
 	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
+		var g = this.vinc('cell_tateyoko', 'crispEdges');
 		var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var qa=cell.qans;
-			if(this.owner.pid==="amibo"){ qa=[0,12,13,11][qa];}
 
 			g.vid = "c_bar1_"+cell.id;
 			if(qa===11 || qa===12){

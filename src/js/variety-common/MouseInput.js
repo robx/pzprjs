@@ -428,7 +428,6 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var amibo = (this.owner.pid==="amibo");
-		var pos = cell.getaddr(), qa = cell.qans;
 
 		// 黒マス上なら何もしない
 		if     (!amibo && cell.ques===1){ }
@@ -439,25 +438,30 @@ MouseEvent:{
 		}
 		// まだ入力していないセルの場合
 		else if(this.firstPoint.bx!==null){
-			var val=null;
-			if     (Math.abs(this.inputPoint.by-this.firstPoint.by)>=0.50){ val=1;}
-			else if(Math.abs(this.inputPoint.bx-this.firstPoint.bx)>=0.50){ val=2;}
+			var val=null,
+				dx = this.inputPoint.bx-this.firstPoint.bx,
+				dy = this.inputPoint.by-this.firstPoint.by;
+			if     (dy<=-0.50 || 0.50<=dy){ val=1;}
+			else if(dx<=-0.50 || 0.50<=dx){ val=2;}
 			
 			if(val!==null){
-				var shape = (!amibo ? {0:0,12:1,13:2}[qa] : qa);
-				var isValidVal = ((this.inputData===null) ? !(shape & val) : this.inputData>0);
-				this.inputData = val = (isValidVal ? val : (!amibo ? 0 : -val));
-				this.firstPoint.reset();
+				var shape = {0:0,11:3,12:1,13:2}[cell.qans];
+				if((this.inputData===null) ? (shape & val) : this.inputData<=0){
+					val = (!amibo ? 0 : -val);
+				}
 				
 				// 描画・後処理
-				if(!amibo){ qa = [0,12,13,11][val];}
-				else{ if(val>0){ qa |= val;}else{ qa &= ~(-val);}}
-				cell.setQans(qa);
+				if(!amibo)    { shape  = val;}
+				else if(val>0){ shape |= val;}
+				else          { shape &= ~(-val);}
+				cell.setQans([0,12,13,11][shape]);
 				cell.draw();
+				
+				this.inputData = +(val>0);
+				this.firstPoint.reset();
 			}
 		}
 
-		this.prevPos   = pos;
 		this.mouseCell = cell;
 	},
 
