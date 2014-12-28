@@ -144,20 +144,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkParallelBarCount() ){ return 'baParaGe3';}
-
-		if( !this.checkMajorityBarOver() ){ return 'bkMajorBarGt';}
-		if( !this.checkMajorityBarLack() ){ return 'bkMajorBarLt';}
-
-		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkEmptyCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkParallelBarCount", "baParaGe3"],
+		["checkMajorityBarOver",  "bkMajorBarGt"],
+		["checkMajorityBarLack",  "bkMajorBarLt"],
+		["checkEmptyCell",        "ceEmpty", "", 1]
+	],
 
 	checkParallelBarCount : function(){
 		return this.checkRowsColsSeparate(this.isParallelCount, function(cell){ return cell.qans;}, true);

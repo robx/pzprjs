@@ -215,7 +215,7 @@ ui.debug.extend(
 			ui.puzzle.open(acsstr[n][1]);
 			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+faildata.text();
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new ui.puzzle.CheckInfo(expectcode).text());
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}

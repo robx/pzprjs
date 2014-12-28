@@ -291,14 +291,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkOverThreeCells() ){ return 'bkSizeLt3';}
-		if( !this.checkRowsColsTileCount() ){ return 'asLblockNe';}
-		if( !this.checkLessThreeCells() ){ return 'bkSizeGt3';}
-
-		return null;
-	},
+	checklist : [
+		["checkOverThreeCells",    "bkSizeLt3"],
+		["checkRowsColsTileCount", "asLblockNe"],
+		["checkLessThreeCells",    "bkSizeGt3"]
+	],
 
 	getTileInfo : function(){
 		return (this._info.tile = this._info.tile || this.owner.board.getTileInfo());

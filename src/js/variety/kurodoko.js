@@ -114,16 +114,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
-
-		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkAdjacentShadeCell", "csAdjacent"],
+		["checkConnectUnshadeRB",  "cuDivideRB"],
+		["checkCellNumber",        "nmSumViewNe"]
+	],
 
 	checkCellNumber : function(){
 		var result = true, bd = this.owner.board;

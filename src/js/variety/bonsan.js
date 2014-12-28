@@ -247,7 +247,7 @@ Encode:{
 		var o=this.owner, bd=o.board;
 		if(o.pid==='bonsan'){
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ o.pid='heyabon'; break;}
+				if(bd.border[id].ques===1){ o.changepid("heyabon"); break;}
 			}
 		}
 	}
@@ -298,38 +298,26 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
+		["checkConnectObject",  "nmConnected"],
+		["checkLineOverLetter", "laOnNum"],
+		["checkCurveLine",      "laCurve"],
 
-		if( !this.checkConnectObject() ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
+		["checkMovedBlockRect", "csNotRect",   "rectslider"],
+		["checkMovedBlockSize", "bkSize1",     "rectslider"],
 
-		if( !this.checkCurveLine() ){ return 'laCurve';}
+		["checkLineLength",     "laLenNe"],
 
-		if(pid==='rectslider'){
-			if( !this.checkMovedBlockRect() ){ return 'csNotRect';}
-			if( !this.checkMovedBlockSize() ){ return 'bkSize1';}
-		}
+		["checkFractal",        "brObjNotSym", "bonsan"],
+		["checkFractal",        "bkObjNotSym", "heyabon"],
+		["checkNoObjectBlock",  "bkNoNum",     "heyabon"],
 
-		if( !this.checkLineLength() ){ return 'laLenNe';}
-
-		if(pid==='bonsan'){ 
-			if( !this.checkFractal() ){ return 'brObjNotSym';}
-		}
-		else if(pid==='heyabon'){
-			if( !this.checkFractal() ){ return 'bkObjNotSym';}
-			if( !this.checkNoObjectBlock() ){ return 'bkNoNum';}
-		}
-
-		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
-
-		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
-
-		return null;
-	},
+		["checkNoLineCircle",   "nmIsolate"],
+		["checkDisconnectLine", "laIsolate"]
+	],
 
 	checkCurveLine : function(){
 		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);});

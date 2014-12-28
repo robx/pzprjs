@@ -90,20 +90,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		/* 自動チェック時は最初にチェックする */
-		if( this.checkOnly && !this.checkDir5ShadeCell() ){ return 'nmShade5Ne';}
-
-		if( !this.checkSquareShade() ){ return 'csNotSquare';}
-
-		if( !this.checkLookair() ){ return 'lookairBC';}
-
-			/* チェック時は最後にチェックする */
-		if( !this.checkOnly && !this.checkDir5ShadeCell() ){ return 'nmShade5Ne';}
-
-		return null;
-	},
+	checklist : [
+		["checkSquareShade",   "csNotSquare"],
+		["checkLookair",       "lookairBC"],
+		["checkDir5ShadeCell", "nmShade5Ne", "", 1]
+	],
 
 	checkDir5ShadeCell : function(){
 		var result = true;

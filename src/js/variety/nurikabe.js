@@ -145,6 +145,34 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+"AnsCheck@nurikabe":{
+	checklist : [
+		["check2x2ShadeCell",          "cs2x2"],
+		["checkNoNumberInUnshade",     "bkNoNum"],
+		["checkConnectShade",          "csDivide"],
+		["checkDoubleNumberInUnshade", "bkNumGe2"],
+		["checkNumberAndUnshadeSize",  "bkSizeNe"]
+	]
+},
+"AnsCheck@nuribou#1":{
+	checklist : [
+		["checkBou",                   "csWidthGt1"],
+		["checkCorners",               "csCornerSize"],
+		["checkNoNumberInUnshade",     "bkNoNum"],
+		["checkDoubleNumberInUnshade", "bkNumGe2"],
+		["checkNumberAndUnshadeSize",  "bkSizeNe"]
+	]
+},
+"AnsCheck@mochikoro,mochinyoro#1":{
+	checklist : [
+		["check2x2ShadeCell",          "cs2x2"],
+		["checkConnectUnshaded_mochikoro", "csDivide8"],
+		["checkUnshadeRect",           "cuNotRect"],
+		["checkDoubleNumberInUnshade", "bkNumGe2"],
+		["checkNumberAndUnshadeSize",  "bkSizeNe"],
+		["checkShadeNotRect",          "csRect", "mochinyoro"]
+	]
+},
 AnsCheck : {
 	checkDoubleNumberInUnshade : function(){
 		return this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);} );
@@ -153,32 +181,7 @@ AnsCheck : {
 		return this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );
 	}
 },
-"AnsCheck@nurikabe":{
-	checkAns : function(){
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-
-		if( !this.checkNoNumberInUnshade() ){ return 'bkNoNum';}
-		if( !this.checkConnectShade() ){ return 'csDivide';}
-		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
-
-		return null;
-	}
-},
 "AnsCheck@nuribou":{
-	checkAns : function(){
-
-		if( !this.checkBou() ){ return 'csWidthGt1';}
-		if( !this.checkCorners() ){ return 'csCornerSize';}
-
-		if( !this.checkNoNumberInUnshade() ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
-
-		return null;
-	},
-
 	checkBou : function(){
 		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	},
@@ -214,22 +217,6 @@ AnsCheck : {
 	}
 },
 "AnsCheck@mochikoro,mochinyoro":{
-	checkAns : function(){
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkConnectUnshaded_mochikoro() ){ return 'csDivide8';}
-
-		if( !this.checkUnshadeRect() ){ return 'cuNotRect';}
-		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
-
-		if(this.owner.pid==='mochinyoro'){
-			if( !this.checkShadeNotRect() ){ return 'csRect';}
-		}
-
-		return null;
-	},
-
 	checkConnectUnshaded_mochikoro : function(){
 		return this.checkOneArea( this.owner.board.getdir8WareaInfo() );
 	},

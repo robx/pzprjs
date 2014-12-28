@@ -105,30 +105,21 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkTripleObject() ){ return 'lcTripleNum';}
-		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
-
-		if( !this.checkKusabiShape() ){ return 'lcNotKusabi';}
-		if( !this.checkProperLetter() ){ return 'lcInvalid';}
-		if( !this.checkCurveOver() ){ return 'lcCurveGt2';}
-		if( !this.checkCurveLack() ){ return 'lcCurveLt2';}
-		if( !this.checkLengthNotEq() ){ return 'lcLenInvNe';}
-		if( !this.checkLengthWrong() ){ return 'lcLenInvDiff';}
-		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
-
-		if( !this.checkDisconnectLine() ){ return 'lcIsolate';}
-
-		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkAloneCircle() ? null : 'nmIsolate');
-	},
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
+		["checkTripleObject",   "lcTripleNum"],
+		["checkLineOverLetter", "lcOnNum"],
+		["checkKusabiShape",    "lcNotKusabi"],
+		["checkProperLetter",   "lcInvalid"],
+		["checkCurveOver",      "lcCurveGt2"],
+		["checkCurveLack",      "lcCurveLt2"],
+		["checkLengthNotEq",    "lcLenInvNe"],
+		["checkLengthWrong",    "lcLenInvDiff"],
+		["checkDeadendLine",    "lcDeadEnd", "", 1],
+		["checkDisconnectLine", "lcIsolate"],
+		["checkAloneCircle",    "nmIsolate", "", 1]
+	],
 
 	checkAloneCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});

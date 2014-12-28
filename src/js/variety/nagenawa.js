@@ -214,26 +214,16 @@ Graphic:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid=this.owner.pid;
-
-		if( !this.checkNoLine() ){ return 'brNoLine';}
-
-		if( (pid==='ringring') && !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
-
-		if( (pid==='nagenawa') && !this.checkOverLineCount() ){ return 'bkLineGt';}
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		if( (pid==='nagenawa') && !this.checkLessLineCount() ){ return 'bkLineLt';}
-
-		if( !this.checkAllLoopRect() ){ return 'lnNotRect';}
-
-		if( (pid==='ringring') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		["checkNoLine",          "brNoLine"],
+		["checkLineOnShadeCell", "lnOnShade", "ringring"],
+		["checkOverLineCount",   "bkLineGt",  "nagenawa"],
+		["checkBranchLine",      "lnBranch"],
+		["checkDeadendLine",     "lnDeadEnd", "", 1],
+		["checkLessLineCount",   "bkLineLt",  "nagenawa"],
+		["checkAllLoopRect",     "lnNotRect"],
+		["checkUnreachedUnshadeCell", "ceEmpty", "ringring", 1]
+	],
 
 	checkNoLine : function(){
 		var bd = this.owner.board;

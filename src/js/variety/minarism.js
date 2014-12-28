@@ -333,18 +333,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-		if( !this.checkBDnumber() ){ return 'nmSubNe';}
-		if( !this.checkBDmark() ){ return 'nmIneqNe';}
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkRowsColsSameNumber", "nmDupRow"],
+		["checkBDnumber",           "nmSubNe"],
+		["checkBDmark",             "nmIneqNe"],
+		["checkNoNumCell",          "ceEmpty", "", 1]
+	],
 
 	checkRowsColsSameNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});

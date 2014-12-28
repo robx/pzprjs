@@ -5,8 +5,8 @@ ui.debug.addDebugData('pipelinkr', {
 	failcheck : [
 		['ceAddLine',   "pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 1 1 /0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 1 0 /"],
 		['lnBranch',    "pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /1 1 0 0 /0 0 0 0 /0 1 1 0 /0 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 1 0 /"],
-		['lnCrossExCir',"pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /1 1 0 0 /0 0 0 0 /1 1 1 0 /0 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 1 0 /"],
-		['lnCurveOnCir',"pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /1 1 0 0 /0 0 0 1 /0 1 1 -1 /0 0 0 1 /0 1 0 0 0 /0 1 0 1 0 /0 1 0 -1 1 /0 0 0 1 1 /"],
+		['lnCrossExIce',"pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /1 1 0 0 /0 0 0 0 /1 1 1 0 /0 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 1 0 /"],
+		['lnCurveOnIce',"pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 0 /1 1 0 0 /0 0 0 1 /0 1 1 -1 /0 0 0 1 /0 1 0 0 0 /0 1 0 1 0 /0 1 0 -1 1 /0 0 0 1 1 /"],
 		['lnPlLoop',    "pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 0 1 /1 1 1 1 /1 1 1 1 /0 1 1 -1 /0 1 0 1 /0 1 1 0 1 /0 1 1 -1 0 /0 1 1 -1 1 /0 0 1 1 1 /"],
 		['lnNotCrossMk',"pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /0 0 1 1 /0 1 1 1 /1 1 1 1 /0 1 1 -1 /0 1 0 1 /0 0 1 0 1 /0 1 1 -1 0 /0 1 1 -1 1 /0 0 1 1 1 /"],
 		['ceEmpty',     "pzprv3/pipelinkr/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /1 0 1 1 /1 1 1 1 /1 1 1 1 /0 1 1 -1 /0 1 0 1 /1 1 1 0 1 /0 1 1 -1 0 /0 1 1 -1 1 /0 0 1 1 1 /"],

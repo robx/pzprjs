@@ -96,16 +96,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkShadeOverNum() ){ return 'crShadeGt';}
-
-		if( !this.checkConnectUnshade() ){ return 'cuDivide';}
-
-		if( !this.checkShadeLessNum() ){ return 'crShadeLt';}
-
-		return null;
-	},
+	checklist : [
+		["checkShadeOverNum",   "crShadeGt"],
+		["checkConnectUnshade", "cuDivide"],
+		["checkShadeLessNum",   "crShadeLt"]
+	],
 
 	checkShadeOverNum : function(){ return this.checkQnumCross(1);},
 	checkShadeLessNum : function(){ return this.checkQnumCross(2);},

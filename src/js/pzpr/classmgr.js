@@ -40,18 +40,16 @@ pzpr.classmgr = {
 	getExtension : function(pid, custombase){
 		var extension = {};
 		for(var hashkey in custombase){
-			var name = hashkey, pidcond = [], isexist = false;
-			if(hashkey.match('@')){
-				pidcond = hashkey.substr(hashkey.indexOf('@')+1).split(/,/);
-				name    = hashkey.substr(0,hashkey.indexOf('@'));
+			var proto = custombase[hashkey], name = hashkey, pidcond = [], isexist = false;
+			var name = (!hashkey.match('#') ? hashkey : hashkey.substr(0,hashkey.indexOf('#')));
+			if(name.match('@')){
+				pidcond = name.substr(name.indexOf('@')+1).split(/,/);
+				name    = name.substr(0,name.indexOf('@'));
 				for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
-				if(!isexist){ name = '';}
+				if(!isexist){ continue;}
 			}
-			if(!!name){
-				var proto = custombase[hashkey];
-				if(!extension[name]){ extension[name]={};}
-				for(var key in proto){ extension[name][key] = proto[key];}
-			}
+			if(!extension[name]){ extension[name]={};}
+			for(var key in proto){ extension[name][key] = proto[key];}
 		}
 		return extension;
 	},

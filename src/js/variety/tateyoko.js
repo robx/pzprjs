@@ -248,22 +248,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBarOverNum() ){ return 'nmConnBarGt';}
-
-		if( !this.checkDoubleNumberInBar() ){ return 'baPlNum';}
-		if( !this.checkSizeAndNumberInBar() ){ return 'bkSizeNe';}
-
-		if( !this.checkBarLessNum() ){ return 'nmConnBarLt';}
-
-		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkEmptyCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkBarOverNum",         "nmConnBarGt"],
+		["checkDoubleNumberInBar",  "baPlNum"],
+		["checkSizeAndNumberInBar", "bkSizeNe"],
+		["checkBarLessNum",         "nmConnBarLt"],
+		["checkEmptyCell",          "ceEmpty", "", 1]
+	],
 
 	getBarInfo : function(){
 		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());

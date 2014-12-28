@@ -310,18 +310,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
-
-		if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-
-		if( !this.checkPointAtBiggestNumber() ){ return 'arNotMax';}
-
-		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		["checkOtherNumberInRoom",    "bkDupNum"],
+		["checkAdjacentDiffNumber",   "nmSameNum"],
+		["checkPointAtBiggestNumber", "arNotMax"],
+		["checkEmptyCell",            "ceEmpty", "", 1]
+	],
 
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
 	/* 矢印の先が空白マスである場合は判定をスルーします         */

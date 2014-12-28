@@ -183,24 +183,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBorderCross() ){ return 'bdCross';}
-
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		if( !this.checkSquareTatami() ){ return 'bkNotSquare';}
-		if( !this.checkHorizonLongTatami() ){ return 'bkNotHRect';}
-		if( !this.checkVertLongTatami() ){ return 'bkNotVRect';}
-
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-
-		if( !this.checkRoomRect() ){ return 'bkNotRect';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkBorderCross",       "bdCross"],
+		["checkNoNumber",          "bkNoNum"],
+		["checkSquareTatami",      "bkNotSquare"],
+		["checkHorizonLongTatami", "bkNotHRect"],
+		["checkVertLongTatami",    "bkNotVRect"],
+		["checkDoubleNumber",      "bkNumGe2"],
+		["checkRoomRect",          "bkNotRect"],
+		["checkBorderDeadend",     "bdDeadEnd", "", 1]
+	],
 
 	checkSquareTatami : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);});

@@ -283,14 +283,10 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSameColorTile() ){ return 'bkMixed';}
-
-		if( !this.checkRowsColsShadeCell() ){ return 'asShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkSameColorTile",     "bkMixed"],
+		["checkRowsColsShadeCell", "asShadeNe"]
+	],
 
 	checkRowsColsShadeCell : function(){
 		return this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, false);

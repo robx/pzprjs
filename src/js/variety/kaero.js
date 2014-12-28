@@ -227,22 +227,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
+		["checkConnectObject",  "nmConnected"],
+		["checkLineOverLetter", "laOnNum"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
+		["checkSameObjectInRoom_kaero", "bkPlNum"],
+		["checkGatheredObject",         "bkSepNum"],
+		["checkNoObjectBlock",          "bkNoNum"],
 
-		if( !this.checkConnectObject() ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
-
-		if( !this.checkSameObjectInRoom_kaero() ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject() ){ return 'bkSepNum';}
-		if( !this.checkNoObjectBlock() ){ return 'bkNoNum';}
-
-		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
-
-		return null;
-	},
+		["checkDisconnectLine", "laIsolate"]
+	],
 
 	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(){

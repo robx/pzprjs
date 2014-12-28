@@ -89,9 +89,9 @@ Encode:{
 		this.decode4Cell();
 
 		if(this.owner.pid==='ichimaga'){
-			if     (this.checkpflag("m")){ this.owner.pid="ichimagam";}
-			else if(this.checkpflag("x")){ this.owner.pid="ichimagax";}
-			else                         { this.owner.pid="ichimaga"; }
+			if     (this.checkpflag("m")){ this.owner.changepid("ichimagam");}
+			else if(this.checkpflag("x")){ this.owner.changepid("ichimagax");}
+			else                         { this.owner.changepid("ichimaga"); }
 		}
 	},
 	encodePzpr : function(type){
@@ -103,9 +103,9 @@ FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
 		if(this.owner.pid==='ichimaga'){
-			if     (pzlflag==="mag")  { this.owner.pid="ichimagam";}
-			else if(pzlflag==="cross"){ this.owner.pid="ichimagax";}
-			else                      { this.owner.pid="ichimaga"; }
+			if     (pzlflag==="mag")  { this.owner.changepid("ichimagam");}
+			else if(pzlflag==="cross"){ this.owner.changepid("ichimagax");}
+			else                      { this.owner.changepid("ichimaga"); }
 		}
 
 		this.decodeCellQnum();
@@ -124,25 +124,17 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		["checkBranchLine_firefly", "lnBranch"],
+		["checkCrossLine_firefly",  "lnCross",   "!ichimagax"],
+		["checkConnectSameNum",     "lcSameNum", "ichimagam"],
+		["checkCurveCount",         "lcCurveGt1"],
+		["checkConnectAllNumber",   "lcDivided"],
+		["checkDeadendLine",        "lcDeadEnd", "", 1],
 
-		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
-		if( (pid!=='ichimagax') && !this.checkCrossLine_firefly() ){ return 'lnCross';}
-
-		if( (pid==='ichimagam') && !this.checkConnectSameNum() ){ return 'lcSameNum';}
-		if( !this.checkCurveCount() ){ return 'lcCurveGt1';}
-
-		if( !this.checkConnectAllNumber() ){ return 'lcDivided';}
-
-		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
-
-		if( !this.checkOutgoingLine() ){ return 'nmLineNe';}
-
-		if( !this.checkNoLineObject() ){ return 'nmIsolate';}
-
-		return null;
-	},
+		["checkOutgoingLine",       "nmLineNe"],
+		["checkNoLineObject",       "nmIsolate"]
+	],
 
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkCrossLine_firefly  : function(){ return this.checkLineCount_firefly(4);},

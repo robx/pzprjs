@@ -110,18 +110,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBorderCross() ){ return 'bdCross';}
-		if( !this.checkArrowNumber_border() ){ return 'arNoAdjBd';}
-
-		if( !this.checkTatamiLength() ){ return 'bkSize1';}
-		if( !this.checkArrowNumber_tatami() ){ return 'anTatamiNe';}
-		if( !this.checkTatamiSize() ){ return 'bkSizeNe';}
-		if( !this.checkTatamiBreadth() ){ return 'bkWidthGt1';}
-
-		return null;
-	},
+	checklist : [
+		["checkBorderCross",        "bdCross"],
+		["checkArrowNumber_border", "arNoAdjBd"],
+		["checkTatamiLength",       "bkSize1"],
+		["checkArrowNumber_tatami", "anTatamiNe"],
+		["checkTatamiSize",         "bkSizeNe"],
+		["checkTatamiBreadth",      "bkWidthGt1"]
+	],
 
 	checkTatamiLength : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);});

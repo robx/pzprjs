@@ -105,18 +105,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSquareShade() ){ return 'csNotSquare';}
-
-		if( !this.checkConnectUnshade() ){ return 'cuDivide';}
-
-		if( !this.checkSumOfSize() ){ return 'ceSumSizeNe';}
-
-		if( !this.checkAtLeastOne() ){ return 'ceNoShade';}
-
-		return null;
-	},
+	checklist : [
+		["checkSquareShade",    "csNotSquare"],
+		["checkConnectUnshade", "cuDivide"],
+		["checkSumOfSize",      "ceSumSizeNe"],
+		["checkAtLeastOne",     "ceNoShade"]
+	],
 
 	checkSquareShade : function(){
 		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a && w===h);});

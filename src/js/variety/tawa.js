@@ -353,16 +353,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkThreeShadeCells() ){ return 'csConsecGt3';}
-
-		if( !this.checkUnderCells() ){ return 'csNotOnShade';}
-
-		if( !this.checkNumbers() ){ return 'ceShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkThreeShadeCells", "csConsecGt3"],
+		["checkUnderCells",      "csNotOnShade"],
+		["checkNumbers",         "ceShadeNe"]
+	],
 
 	checkThreeShadeCells : function(){
 		var result = true, bd = this.owner.board;

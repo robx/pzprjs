@@ -169,19 +169,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkdir4BorderLine() ){ return 'nmLineNe';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
+		["checkdir4BorderLine", "nmLineNe"],
+		["checkOneLoop",        "lnPlLoop"],
+		["checkDeadendLine",    "lnDeadEnd", "", 1]
+	],
 	
 	checkdir4BorderLine : function(){
 		var result = true, bd = this.owner.board;

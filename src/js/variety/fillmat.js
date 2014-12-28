@@ -88,19 +88,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 "AnsCheck@fillmat":{
-	checkAns : function(){
+	checklist : [
+		["checkBorderCross",      "bdCross"],
 
-		if( !this.checkBorderCross() ){ return 'bdCross';}
+		["checkSideAreaRoomSize", "sbSizeEq"],
+		["checkTatamiMaxSize",    "bkLenGt4"],
+		["checkDoubleNumber",     "bkNumGe2"],
+		["checkNumberAndSize",    "bkSizeNe"],
 
-		if( !this.checkSideAreaRoomSize() ){ return 'sbSizeEq';}
-		if( !this.checkTatamiMaxSize() ){ return 'bkLenGt4';}
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize() ){ return 'bkSizeNe';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		return null;
-	},
+		["checkBorderDeadend",    "bdDeadEnd", "", 1]
+	],
 
 	checkTatamiMaxSize : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
@@ -110,20 +107,17 @@ FileIO:{
 	}
 },
 "AnsCheck@usotatami":{
-	checkAns : function(){
+	checklist : [
+		["checkBorderCross",    "bdCross"],
 
-		if( !this.checkBorderCross() ){ return 'bdCross';}
+		["checkNoNumber",       "bkNoNum"],
+		["checkDoubleNumber",   "bkNumGe2"],
+		["checkTatamiDiffSize", "bkSizeEq"],
 
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-		if( !this.checkTatamiDiffSize() ){ return 'bkSizeEq';}
+		["checkBorderDeadend",  "bdDeadEnd", "", 1],
 
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		if( !this.checkTatamiBreadth() ){ return 'bkWidthGt1';}
-
-		return null;
-	},
+		["checkTatamiBreadth",  "bkWidthGt1"]
+	],
 
 	checkTatamiDiffSize : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);});

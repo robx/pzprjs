@@ -298,16 +298,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkCellNumberNotOver() ){ return 'nmLineCntGt';}
-
-		if( !this.checkConnectAllNumber() ){ return 'lcDivided';}
-
-		if( !this.checkCellNumberNotLess() ){ return 'nmLineCntLt';}
-
-		return null;
-	},
+	checklist : [
+		["checkCellNumberNotOver", "nmLineCntGt"],
+		["checkConnectAllNumber",  "lcDivided"],
+		["checkCellNumberNotLess", "nmLineCntLt"]
+	],
 
 	checkConnectAllNumber : function(){
 		var linfo = this.getLareaInfo();

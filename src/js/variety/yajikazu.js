@@ -107,16 +107,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
-
-		if( !this.checkArrowNumber() ){ return 'anShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkAdjacentShadeCell", "csAdjacent"],
+		["checkConnectUnshadeRB",  "cuDivideRB"],
+		["checkArrowNumber",       "anShadeNe"]
+	],
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.owner.board;

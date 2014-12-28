@@ -333,14 +333,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkOverTriangle() ){ return 'nmTriangleGt';}
-		if( !this.checkWhiteArea() )   { return 'cuNotRectx';}
-		if( !this.checkLessTriangle() ){ return 'nmTriangleLt';}
-
-		return null;
-	},
+	checklist : [
+		["checkOverTriangle", "nmTriangleGt"],
+		["checkWhiteArea",    "cuNotRectx"],
+		["checkLessTriangle", "nmTriangleLt"]
+	],
 
 	checkOverTriangle : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isTri();},2);

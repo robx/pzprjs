@@ -114,23 +114,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
-
-		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
-
-		if( (pid==='ripple') && !this.checkRippleNumber() ){ return 'nmSmallGap';}
-
-		if( (pid==='cojun') && !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-		if( (pid==='cojun') && !this.checkUpperNumber() ){ return 'bkSmallOnBig';}
-
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkOtherNumberInRoom",  "bkDupNum"],
+		["checkRippleNumber",       "nmSmallGap",   "ripple"],
+		["checkAdjacentDiffNumber", "nmSameNum",    "cojun"],
+		["checkUpperNumber",        "bkSmallOnBig", "cojun"],
+		["checkNoNumCell",          "ceEmpty",      "", 1]
+	],
 
 	checkRippleNumber : function(){
 		var result = true, bd = this.owner.board;

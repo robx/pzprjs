@@ -390,20 +390,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkArrowCorner1() ){ return 'awBlkEdge';}
-		if( !this.checkArrowCorner2() ){ return 'awNotPtCnr';}
-		if( !this.checkCircleCorner() ){ return 'ciNotOnCnr';}
-
-		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize() ){ return 'bkSizeNe';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		if( !this.checkLblock() ){ return 'bkNotLshape';}
-
-		return null;
-	},
+	checklist : [
+		["checkArrowCorner1",  "awBlkEdge"],
+		["checkArrowCorner2",  "awNotPtCnr"],
+		["checkCircleCorner",  "ciNotOnCnr"],
+		["checkNumberAndSize", "bkSizeNe", "sashigane", 1],
+		["checkBorderDeadend", "bdDeadEnd"],
+		["checkLblock",        "bkNotLshape"]
+	],
 
 	getLblockInfo : function(){
 		return (this._info.lbinfo = this._info.lbinfo || this.owner.board.getLblockInfo());

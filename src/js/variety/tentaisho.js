@@ -441,16 +441,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkStarOnLine() ){ return 'bkNoStar';}
-
-		if( !this.checkAvoidStar() ){ return 'bdPassStar';}
-		if( !this.checkFractal() ){ return 'bkNotSymSt';}
-		if( !this.checkStarRegion() ){ return 'bkPlStar';}
-
-		return null;
-	},
+	checklist : [
+		["checkStarOnLine", "bkNoStar"],
+		["checkAvoidStar",  "bdPassStar"],
+		["checkFractal",    "bkNotSymSt"],
+		["checkStarRegion", "bkPlStar"]
+	],
 
 	getStarAreaInfo : function(){
 		return (this._info.sarea = this._info.sarea || this.owner.board.getAreaStarInfoAll());

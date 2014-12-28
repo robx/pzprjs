@@ -596,32 +596,19 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSegmentExist() ){ return 'brNoLine';}
-
-		if( !this.checkSegmentPoint() ){ return 'lnIsolate';}
-
-		if( !this.checkSegmentBranch() ){ return 'lnBranch';}
-
-		if( !this.checkSegmentOverPoint() ){ return 'lnPassOver';}
-
-		if( !this.checkDuplicateSegment() ){ return 'lnOverlap';}
-
-		if( !this.checkDifferentLetter() ){ return 'nmConnDiff';}
-
-		if( !this.checkRightAngle() ){ return 'lnRightAngle';}
-
-		if( !this.checkOneSegmentLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkSegmentDeadend() ){ return 'lnDeadEnd';}
-
-		if( !this.checkAlonePoint() ){ return 'nmLineCount';}
-
-		if( !this.checkConsequentLetter() ){ return 'nmNotConseq';}
-
-		return null;
-	},
+	checklist : [
+		["checkSegmentExist",     "brNoLine"],
+		["checkSegmentPoint",     "lnIsolate"],
+		["checkSegmentBranch",    "lnBranch"],
+		["checkSegmentOverPoint", "lnPassOver"],
+		["checkDuplicateSegment", "lnOverlap"],
+		["checkDifferentLetter",  "nmConnDiff"],
+		["checkRightAngle",       "lnRightAngle"],
+		["checkOneSegmentLoop",   "lnPlLoop"],
+		["checkSegmentDeadend",   "lnDeadEnd"],
+		["checkAlonePoint",       "nmLineCount"],
+		["checkConsequentLetter", "nmNotConseq"]
+	],
 
 	checkSegmentExist : function(){
 		return (this.owner.board.segment.length!==0);

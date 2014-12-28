@@ -490,32 +490,23 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
+		["checkConnectObject",  "nmConnected"],
+		["checkLineOverLetter", "laOnNum"],
+		["checkLineOverHole",   "laOnHole"],
+		["checkCurveHalfway",   "laCurve"],
+		["checkMoveOver",       "laMoveOver"],
+		["checkStopHalfway",    "laLenNe"],
+		["checkWaterHazard",    "laWaterHazard"],
 
-		if( !this.checkConnectObject() ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
+		["checkCupIn",          "nmOutOfHole"],
+		["checkIgnoredHole",    "nmIgnored"],
 
-		if( !this.checkLineOverHole() ){ return 'laOnHole';}
-
-		if( !this.checkCurveHalfway() ){ return 'laCurve';}
-
-		if( !this.checkMoveOver() ){ return 'laMoveOver';}
-
-		if( !this.checkStopHalfway() ){ return 'laLenNe';}
-
-		if( !this.checkWaterHazard() ){ return 'laWaterHazard';}
-
-		if( !this.checkCupIn() ){ return 'nmOutOfHole';}
-
-		if( !this.checkIgnoredHole() ){ return 'nmIgnored';}
-
-		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
-
-		return null;
-	},
+		["checkDisconnectLine", "laIsolate"]
+	],
 	
 	checkMoveOver : function(){
 		var result = true, bd = this.owner.board;

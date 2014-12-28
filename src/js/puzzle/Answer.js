@@ -12,22 +12,44 @@ AnsCheck:{
 	initialize : function(){
 		this.inCheck = false;
 		this.checkOnly = false;
+		
+		this.makeCheckList();
 	},
 	failcode : (void 0),
 	_info    : (void 0),
 
 	//---------------------------------------------------------------------------
-	// ans.check()     答えのチェックを行う
-	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error) (オーバーライド用)
+	// ans.makeCheckList() 最初にchecklistの配列を生成する
 	//---------------------------------------------------------------------------
-	check : function(activemode){
+	makeCheckList : function(){
+		if(!this.checklist){ return;}
+
+		/* 当該パズルで使用しないchecklistのアイテムをフィルタリング */
+		var checklist = this.checklist, order = [];
+		for(var i=0;i<checklist.length;i++){
+			var item = checklist[i];
+			if(!item[2] || pzpr.util.checkpid(item[2], this.owner.pid)){
+				item[3] = item[3] || 0;
+				order.push(item);
+			}
+		}
+		this.checklist_normal = Array.prototype.concat.call([], order);
+
+		/* autocheck用のエラーをソートする */
+		this.checklist_auto = order.sort(function(a,b){ return b[3] - a[3];});
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.check()     答えのチェックを行う
+	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error)
+	//---------------------------------------------------------------------------
+	check : function(activemode, multierr){
 		var puzzle = this.owner, bd = puzzle.board;
 		this.inCheck = true;
 		
 		if(activemode){
 			this.checkOnly = false;
-			this.precheck();
-			this.failcode = this.checkAns();
+			this.failcode = this.checkAns(multierr);
 			if(!!this.failcode){
 				bd.haserror = true;
 				puzzle.redraw();
@@ -37,32 +59,30 @@ AnsCheck:{
 		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
-			this.precheck();
-			this.failcode = (this.autocheck1st() || this.checkAns());
+			this.failcode = this.checkAns(false);
 			bd.enableSetError();
 		}
 		
 		this.inCheck = false;
 		return new puzzle.CheckInfo(this.failcode);
 	},
-	precheck : function(){ return;},		//オーバーライド用
-	checkAns : function(){ return null;},	//オーバーライド用
-
-	//---------------------------------------------------------------------------
-	// ans.autocheck1st() autocheckの最初に、軽い正答判定を行う
-	// ans.check1st()     autocheckの最初に、軽い正答判定を行う(オーバーライド用)
-	//---------------------------------------------------------------------------
-	// リンク系は重いので最初に端点を判定する
-	autocheck1st : function(){
-		var bd = this.owner.board;
-		if(bd.lines.enabled && !bd.linfo.enabled){
-			if(bd.lines.isCenterLine || bd.lines.borderAsLine){
-				if(!this.checkDeadendLine()){ return 'lnDeadEnd';}
+	checkAns : function(multierr){
+		this.failcode = [];
+		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
+		var errcount = 0;
+		for(var i=0;i<checklist.length;i++){
+			var item = checklist[i], result = this[item[0]]();
+			if(result===false){
+				if(this.failcode[this.failcode.length-1]!==item[1]){ this.failcode.push(item[1]);}
 			}
+			else if(errcount<this.failcode.length){
+				result = false;
+			}
+			errcount = this.failcode.length;
+			if(!multierr && result===false){ break;}
 		}
-		return this.check1st();
+		return (errcount>0 ? this.failcode : null);
 	},
-	check1st : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
 	// ans.resetCache() 前回のエラー情報等を破棄する
@@ -78,21 +98,23 @@ AnsCheck:{
 //---------------------------------------------------------------------------
 CheckInfo:{
 	initialize : function(code){
-		this.add(code);
+		if(!!code){
+			if(code instanceof Array){ Array.prototype.push.apply(this, code);}
+			else{ Array.prototype.push.call(this, code);}
+			this.complete = false;
+		}
 	},
 	complete : true,
 	length : 0,
 	
-	add : function(code){
-		if(!!code){
-			Array.prototype.push.call(this, code);
-			this.complete = false;
-		}
-	},
 	text : function(lang){
-		var code = (this[0] || 'complete');
-		lang = lang || this.owner.getConfig('language');
-		return this.owner.faillist[code][lang==='ja'?0:1];
+		var puzzle = this.owner, texts = [];
+		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		if(this.length===0){ return puzzle.faillist.complete[langcode];}
+		for(var i=0;i<this.length;i++){
+			texts.push(puzzle.faillist[this[i]][langcode]);
+		}
+		return texts.join("\n");
 	}
 },
 

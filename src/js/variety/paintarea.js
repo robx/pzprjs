@@ -99,18 +99,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
-
-		if( !this.checkConnectShade() ){ return 'csDivide';}
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkDir4ShadeCell() ){ return 'nmShadeNe';}
-		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}
-
-		return null;
-	},
+	checklist : [
+		["checkSameColorTile",  "bkMixed"],		// 問題チェック用
+		["checkConnectShade",   "csDivide"],
+		["check2x2ShadeCell",   "cs2x2", "", 1],
+		["checkDir4ShadeCell",  "nmShadeNe"],
+		["check2x2UnshadeCell", "cu2x2", "", 2]
+	],
 
 	checkDir4ShadeCell : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);

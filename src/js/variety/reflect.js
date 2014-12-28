@@ -268,23 +268,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossOutOfMark() ){ return 'lnCrossExMk';}
-
-		if( !this.checkLongLines() ){ return 'lnLenGt';}
-		if( !this.checkTriangle() ){ return 'lnExTri';}
-		if( !this.checkShortLines() ){ return 'lnLenLt';}
-
-		if( !this.checkNotCrossOnMark() ){ return 'lnNotCrossMk';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossOutOfMark", "lnCrossExMk"],
+		["checkLongLines",      "lnLenGt"],
+		["checkTriangle",       "lnExTri"],
+		["checkShortLines",     "lnLenLt"],
+		["checkNotCrossOnMark", "lnNotCrossMk"],
+		["checkDeadendLine",    "lnDeadEnd", "", 1],
+		["checkOneLoop",        "lnPlLoop"]
+	],
 
 	checkCrossOutOfMark : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);});

@@ -336,21 +336,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkKitamakura() ){ return 'kitamakura';}
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkDir4PillowOver() ){ return 'nmPillowGt';}
-		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
-		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
-
-		if( !this.checkConnectShade() ){ return 'csDivide';}
-
-		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
-		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		["checkKitamakura",        "kitamakura"],
+		["check2x2ShadeCell",      "cs2x2"],
+		["checkDir4PillowOver",    "nmPillowGt"],
+		["checkFullSizeFuton",     "futonHalf"],
+		["checkFutonAisle",        "futonMidPos"],
+		["checkConnectShade",      "csDivide"],
+		["checkDir4PillowLess",    "nmPillowLt"],
+		["checkEmptyCell_shugaku", "ceEmpty", "", 1]
+	],
 
 	checkDir4PillowOver : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2);

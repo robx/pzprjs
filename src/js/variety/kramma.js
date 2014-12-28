@@ -175,7 +175,7 @@ Encode:{
 		var o=this.owner, bd=o.board;
 		if(o.pid==='kramma'){
 			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ o.pid='kramman'; break;}
+				if(bd.cross[c].qnum===1){ o.changepid('kramman'); break;}
 			}
 		}
 	}
@@ -199,27 +199,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		["checkBorderBranch",    "bdBranch",     "!kramma"],
+		["checkBorderCrossOnBP", "bdCrossBP",    "!kramma"],
+		["checkLcntCurve",       "bdCurveExBP",  "!kramma"],
+		["checkLineChassis",     "bdNotChassis", "shwolf"],
 
-		if( (pid!=='kramma') && !this.checkBorderBranch() ){ return 'bdBranch';}
-		if( (pid!=='kramma') && !this.checkBorderCrossOnBP() ){ return 'bdCrossBP';}
-		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 'bdCurveExBP';}
+		["checkNoNumber",         "bkNoNum"],
+		["checkSameObjectInArea", "bkPlNum"],
 
-		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 'bdNotChassis';}
-
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		if( !this.checkSameObjectInArea() ){ return 'bkPlNum';}
-
-		if( (pid!=='kramma') && !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-		if( (pid==='kramman') && !this.checkBorderNoneOnBP() ){ return 'bdIgnoreBP';}
-
-		return null;
-	},
-	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkBorderDeadend()) ? null : 'bdDeadEnd');
-	},
+		["checkBorderDeadend",   "bdDeadEnd",  "!kramma", 1],
+		["checkBorderNoneOnBP",  "bdIgnoreBP", "kramman"]
+	],
 
 	checkBorderBranch : function(){ return this.checkBorderCount(3,0);},
 	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1);},

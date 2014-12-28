@@ -205,13 +205,10 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSingleArrowInArea() ){ return 'bkDupNum';}
-		if( !this.checkBalls() ){ return 'stopHalfway';}
-
-		return null;
-	},
+	checklist : [
+		["checkSingleArrowInArea", "bkDupNum"],
+		["checkBalls",             "stopHalfway"]
+	],
 
 	checkSingleArrowInArea : function(){
 		return this.checkDifferentNumberInRoom(this.getRoomInfo(), function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});

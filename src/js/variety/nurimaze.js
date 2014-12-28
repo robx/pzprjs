@@ -458,24 +458,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
-		if( pzpr.EDITOR && !this.checkShadedObject() ){ return 'objShaded';}
-
-		if( !this.checkConnectUnshade() ){ return 'cuDivide';}
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}
-
-		if( !this.checkUnshadeLoop() ){ return 'cuLoop';}
-
-		var sdata = this.searchRoute();
-		if( !this.checkRouteCheckPoint(sdata) ){ return 'routeIgnoreCP';}
-		if( !this.checkRouteNoDeadEnd(sdata) ){ return 'routePassDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkSameColorTile",   "bkMixed"],	// 問題チェック用 
+		["checkShadedObject",    "objShaded"],	// 問題チェック用
+		["checkConnectUnshade",  "cuDivide"],
+		["check2x2ShadeCell",    "cs2x2", "", 1],
+		["check2x2UnshadeCell",  "cu2x2", "", 2],
+		["checkUnshadeLoop",     "cuLoop"],
+		["checkRouteCheckPoint", "routeIgnoreCP"],
+		["checkRouteNoDeadEnd",  "routePassDeadEnd"]
+	],
 
 	checkShadedObject : function(){
 		var bd=this.owner.board;
@@ -540,21 +532,26 @@ AnsCheck:{
 		}
 	},
 
-	checkRouteCheckPoint : function(sdata){
+	checkRouteCheckPoint : function(){
+		var sdata = this.getRouteInfo();
 		var result = this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);});
 		if(!result && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
 		return result;
 	},
-	checkRouteNoDeadEnd : function(sdata){
+	checkRouteNoDeadEnd : function(){
+		var sdata = this.getRouteInfo();
 		var result = this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);});
 		if(!result && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
 		return result;
 	},
-	searchRoute : function(sinfo, sdata){
+	getRouteInfo : function(){
+		return (this._info.maze = this._info.maze || this.searchRoute());
+	},
+	searchRoute : function(){
 		/* 白マスがどの隣接セルに接しているかの情報を取得する */
 		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

@@ -125,19 +125,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
-		if( !this.checkNumbersInRoom() ){ return 'bkNotSeqNum';}
-
-		if( !this.checkBorderSideNumber() ){ return 'scDiffLenNe';}
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkOtherNumberInRoom", "bkDupNum"],
+		["checkNumbersInRoom",     "bkNotSeqNum"],
+		["checkBorderSideNumber",  "scDiffLenNe"],
+		["checkNoNumCell",         "ceEmpty", "", 1]
+	],
 
 	checkNumbersInRoom : function(){
 		var result = true;

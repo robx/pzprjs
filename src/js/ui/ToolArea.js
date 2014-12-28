@@ -72,7 +72,7 @@ ui.toolarea = {
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="SPAN"){
 				var disppid = ui.customAttr(el,"dispPid");
-				if(!!disppid){ el.style.display = (ui.checkpid(disppid) ? "" : "none");}
+				if(!!disppid){ el.style.display = (pzpr.util.checkpid(disppid, ui.puzzle.pid) ? "" : "none");}
 			}
 		});
 	},

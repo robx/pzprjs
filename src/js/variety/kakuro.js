@@ -330,17 +330,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-		if( !this.checkRowsColsTotalNumber() ){ return 'nmSumRowNe';}
-		if( !this.checkEmptyCell_kakuro() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkEmptyCell_kakuro() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkRowsColsSameNumber",  "nmDupRow"],
+		["checkRowsColsTotalNumber", "nmSumRowNe"],
+		["checkEmptyCell_kakuro",    "ceEmpty", "", 1]
+	],
 
 	checkEmptyCell_kakuro : function(){
 		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.anum<=0);});

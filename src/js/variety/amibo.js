@@ -194,7 +194,7 @@ ObjectOperation:{
 		this.old = [0,12,13,11][this.old];
 		this.num = [0,12,13,11][this.num];
 		return result;
-	},
+	}
 },
 
 Flags:{
@@ -342,24 +342,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkNotMultiBar",   "nmLineGt1"],
 
-		if( !this.checkNotMultiBar() ){ return 'nmLineGt1';}
+		["checkLoop_amibo",    "lbLoop"],
+		["checkLongBar",       "lbLenGt"],
+		["checkCrossedLength", "lbNotCrossEq"],
+		["checkShortBar",      "lbLenLt"],
 
-		if( !this.checkLoop_amibo() ){ return 'lbLoop';}
-		if( !this.checkLongBar() ){ return 'lbLenGt';}
-		if( !this.checkCrossedLength() ){ return 'lbNotCrossEq';}
-		if( !this.checkShortBar() ){ return 'lbLenLt';}
+		["checkSingleBar",     "nmIsolate"],
 
-		if( !this.checkSingleBar() ){ return 'nmIsolate';}
-
-		if( !this.checkAllBarConnect() ){ return 'lbDivide';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkAllBarConnect() ? null : 'lbDivide');
-	},
+		["checkAllBarConnect", "lbDivide", "", 1]
+	],
 
 	getBarInfo : function(){
 		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());

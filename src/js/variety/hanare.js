@@ -135,18 +135,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-
-		if( !this.checkAnsNumberAndSize() ){ return 'bkSizeNe';}
-
-		if( !this.checkDiffNumber() ){ return 'nmDiffDistNe';}
-
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		return null;
-	},
+	checklist : [
+		["checkDoubleNumber",     "bkNumGe2"],
+		["checkAnsNumberAndSize", "bkSizeNe"],
+		["checkDiffNumber",       "nmDiffDistNe"],
+		["checkNoNumber",         "bkNoNum"]
+	],
 
 	checkDiffNumber : function(){
 		var cell, num, distance;

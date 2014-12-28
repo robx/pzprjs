@@ -177,22 +177,15 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.check2x2NumberCell() ){ return 'nm2x2';}
-
-		if( !this.checkSideAreaNumber() ){ return 'scNum';}
-
-		if( !this.checkNotMultiNum() ){ return 'bkPlNum';}
-		if( !this.checkNumCountOver() ){ return 'nmCountGt';}
-
-		if( !this.checkConnectNumber() ){ return 'nmDivide';}
-
-		if( !this.checkNumCountLack() ){ return 'nmCountLt';}
-		if( !this.checkNoEmptyArea() ){ return 'bkNoNum';}
-
-		return null;
-	},
+	checklist : [
+		["check2x2NumberCell",  "nm2x2"],
+		["checkSideAreaNumber", "scNum"],
+		["checkNotMultiNum",    "bkPlNum"],
+		["checkNumCountOver",   "nmCountGt"],
+		["checkConnectNumber",  "nmDivide"],
+		["checkNumCountLack",   "nmCountLt"],
+		["checkNoEmptyArea",    "bkNoNum"]
+	],
 
 	getErrorRoomInfo  : function(){
 		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());

@@ -240,25 +240,17 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkenableLineParts() ){ return 'ceAddLine';}
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-
-		if( !this.checkCrossOnNumber() ){ return 'lnCrossOnNum';}
-
-		if( !this.checkLoopNumber() ){ return 'lpPlNum';}
-		if( !this.checkNumberLoop() ){ return 'lpSepNum';}
-		if( !this.checkNumberInLoop() ){ return 'lpNoNum';}
-
-		if( !this.checkCrossLineOnCross() ){ return 'lnNotCrossMk';}
-
-		if( !this.checkNoLine() ){ return 'ceEmpty';}
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkenableLineParts",  "ceAddLine"],
+		["checkBranchLine",       "lnBranch"],
+		["checkCrossOnNumber",    "lnCrossOnNum"],
+		["checkLoopNumber",       "lpPlNum"],
+		["checkNumberLoop",       "lpSepNum"],
+		["checkNumberInLoop",     "lpNoNum"],
+		["checkCrossLineOnCross", "lnNotCrossMk"],
+		["checkNoLine",           "ceEmpty", "", 1],
+		["checkDeadendLine",      "lnDeadEnd", "", 2]
+	],
 
 	checkCrossOnNumber : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.isNum());});

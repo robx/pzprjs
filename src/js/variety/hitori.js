@@ -192,16 +192,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
-
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-
-		return null;
-	},
+	checklist : [
+		["checkAdjacentShadeCell",  "csAdjacent"],
+		["checkConnectUnshadeRB",   "cuDivideRB"],
+		["checkRowsColsSameNumber", "nmDupRow"]
+	],
 
 	checkRowsColsSameNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.qnum;});

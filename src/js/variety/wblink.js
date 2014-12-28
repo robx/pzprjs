@@ -181,19 +181,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkTripleObject() ){ return 'lcTripleNum';}
-
-		if( !this.checkUnshadedCircle() ){ return 'lcInvWhite';}
-		if( !this.checkShadedCircle() ){ return 'lcInvBlack';}
-
-		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
-
-		return null;
-	},
+	checklist : [
+		["checkCrossLine",      "lnCross"],
+		["checkTripleObject",   "lcTripleNum"],
+		["checkUnshadedCircle", "lcInvWhite"],
+		["checkShadedCircle",   "lcInvBlack"],
+		["checkAloneCircle",    "nmIsolate", "", 1]
+	],
 
 	checkAloneCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});

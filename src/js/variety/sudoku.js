@@ -112,17 +112,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBlockSameNumber() ){ return 'bkDupNum';}
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkBlockSameNumber",    "bkDupNum"],
+		["checkRowsColsSameNumber", "nmDupRow"],
+		["checkNoNumCell",          "ceEmpty", "", 1]
+	],
 
 	checkRowsColsSameNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});

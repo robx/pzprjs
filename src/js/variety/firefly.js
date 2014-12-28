@@ -169,24 +169,20 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBranchLine_firefly", "lnBranch"],
+		["checkCrossLine_firefly",  "lnCross"],
 
-		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
-		if( !this.checkCrossLine_firefly() ){ return 'lnCross';}
+		["checkConnectPoints",  "lcInvDirB"],
+		["checkConnectCircles", "lcInvDirW"],
+		["checkCurveCount",     "lcCurveNe"],
+		["checkDeadendLine",    "lcDeadEnd"],
+		["checkConnectAllLine", "lcDivided"],
 
-		if( !this.checkConnectPoints() ){ return 'lcInvDirB';}
-		if( !this.checkConnectCircles() ){ return 'lcInvDirW';}
-		if( !this.checkCurveCount() ){ return 'lcCurveNe';}
-		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
+		["checkDeadendLine_firefly", "lnDeadEnd", "", 1],
 
-		if( !this.checkConnectAllLine() ){ return 'lcDivided';}
-
-		if( !this.checkDeadendLine_firefly() ){ return 'lnDeadEnd';}
-
-		if( !this.checkFireflyBeam() ){ return 'nmNoLine';}
-
-		return null;
-	},
+		["checkFireflyBeam", "nmNoLine"]
+	],
 
 	/* 線のカウントはするが、○のある場所は除外する */
 	checkCrossLine_firefly   : function(){ return this.checkLineCount_firefly(4);},

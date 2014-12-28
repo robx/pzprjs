@@ -480,25 +480,22 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkSingleMirrorInRoom", "bkObjGe2"],
+		["checkPairMirror",         "pairedLetterNe"],
+		["checkReflectionCount",    "pairedNumberNe"],
+		["checkExistMirrorInRoom",  "bkNoObj"]
+	],
 
-		if( !this.checkNoPluralMirrorsInRoom() ){ return 'bkObjGe2';}
-		if( !this.checkPairMirror() ){ return 'pairedLetterNe';}
-		if( !this.checkReflection() ){ return 'pairedNumberNe';}
-		if( !this.checkExistMirrorInRoom() ){ return 'bkNoObj';}
-
-		return null;
-	},
-
-	checkNoPluralMirrorsInRoom : function(){
+	checkSingleMirrorInRoom : function(){
 		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);});
 	},
 	checkExistMirrorInRoom : function(){
 		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
 	},
 
-	checkPairMirror : function(){ return this.checkMirrors(1);},
-	checkReflection : function(){ return this.checkMirrors(2);},
+	checkPairMirror      : function(){ return this.checkMirrors(1);},
+	checkReflectionCount : function(){ return this.checkMirrors(2);},
 	checkMirrors : function(type){
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){

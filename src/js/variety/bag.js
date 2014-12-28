@@ -133,20 +133,17 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBranchLine",    "lnBranch"],
+		["checkCrossLine",     "lnCross"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
+		["checkOneLoop",       "lnPlLoop"],
 
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
+		["checkDeadendLine",   "lnDeadEnd", "", 1],
 
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		if( !this.checkOutsideNumber() ){ return 'nmOutside';}
-		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
-
-		return null;
-	},
+		["checkOutsideNumber", "nmOutside"],
+		["checkCellNumber",    "nmSumViewNe"]
+	],
 
 	checkOutsideNumber : function(){
 		this.owner.board.searchInsideArea();	/* cell.insideを設定する */

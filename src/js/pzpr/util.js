@@ -162,6 +162,21 @@ pzpr.util = {
 		var right  = rect.right  + scrollLeft;
 		var bottom = rect.bottom + scrollTop;
 		return { top:top, bottom:bottom, left:left, right:right};
+	},
+
+	//---------------------------------------------------------------------------
+	// pzpr.util.checkpid()  メニューなどが表示対象のパズルかどうか返す
+	//---------------------------------------------------------------------------
+	checkpid : function(str,pid){
+		var matches = str.match(/!?[a-z0-9]+/g), isdisp = true;
+		if(!!matches){
+			isdisp = false;
+			for(var i=0;i<matches.length;i++){
+				if(matches[i].charAt(0)!=="!"){ if(matches[i]===pid){ isdisp = true;}}
+				else                          { isdisp = (matches[i].substr(1)!==pid);}
+			}
+		}
+		return isdisp;
 	}
 };
 

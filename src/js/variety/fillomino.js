@@ -226,25 +226,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkNoEmptyArea() ){ return 'bkNoNum';}
-
-		if( !this.checkSmallArea() ){ return 'bkSizeLt';}
-
-		if( !this.checkSideAreaNumberSize() ){ return 'sbSameNum';}
-
-		if( !this.checkLargeArea() ){ return 'bkSizeGt';}
-
-		if( !this.checkNotMultiNum() ){ return 'bkPlNum';}
-
-		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return ((this.owner.getConfig('enbnonum') || this.checkNoNumCell()) ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkNoEmptyArea",         "bkNoNum"],
+		["checkSmallArea",           "bkSizeLt"],
+		["checkSideAreaNumberSize",  "sbSameNum"],
+		["checkLargeArea",           "bkSizeGt"],
+		["checkNotMultiNum",         "bkPlNum"],
+		["checkNoNumCell_fillomino", "ceEmpty", "", 1]
+	],
 
 	getErrorRoomInfo  : function(){
 		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());
@@ -270,6 +259,10 @@ AnsCheck:{
 			}
 		}
 		return result;
+	},
+
+	checkNoNumCell_fillomino : function(){	// オーバーライド
+		return this.owner.getConfig('enbnonum') || this.checkNoNumCell();
 	}
 },
 

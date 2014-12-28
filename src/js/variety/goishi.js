@@ -319,11 +319,9 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		if( !this.checkPickedStone() ){ return 'goishiRemains';}
-
-		return null;
-	},
+	checklist : [
+		["checkPickedStone", "goishiRemains"]
+	],
 
 	checkPickedStone :function(){
 		return this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);});

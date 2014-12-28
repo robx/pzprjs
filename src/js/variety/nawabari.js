@@ -236,27 +236,17 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid=this.owner.pid;
-
-		if( (pid==='nawabari') && !this.checkRoomRect() ){ return 'bkNotRect';}
-
-		if( (pid==='nawabari') && !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		if( (pid==='nawabari') && !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-
-		if( (pid==='fourcells') && !this.checkOverFourCells() ){ return 'bkSizeLt4';}
-		if( (pid==='fivecells') && !this.checkOverFiveCells() ){ return 'bkSizeLt5';}
-
-		if( !this.checkdir4BorderAns() ){ return 'nmBorderNe';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		if( (pid==='fourcells') && !this.checkLessFourCells() ){ return 'bkSizeGt4';}
-		if( (pid==='fivecells') && !this.checkLessFiveCells() ){ return 'bkSizeGt5';}
-
-		return null;
-	},
+	checklist : [
+		["checkRoomRect",      "bkNotRect", "nawabari"],
+		["checkNoNumber",      "bkNoNum",   "nawabari"],
+		["checkDoubleNumber",  "bkNumGe2",  "nawabari"],
+		["checkOverFourCells", "bkSizeLt4", "fourcells"],
+		["checkOverFiveCells", "bkSizeLt5", "fivecells"],
+		["checkdir4BorderAns", "nmBorderNe"],
+		["checkBorderDeadend", "bdDeadEnd", "", 1],
+		["checkLessFourCells", "bkSizeGt4", "fourcells"],
+		["checkLessFiveCells", "bkSizeGt5", "fivecells"]
+	],
 
 	checkOverFourCells : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);});

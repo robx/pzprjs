@@ -134,22 +134,22 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+"AnsCheck@shimaguni#1":{
+	checklist : [
+		["checkSideAreaShadeCell", "scShade"],
+		["checkSeqBlocksInRoom",   "bkShadeDivide"],
+		["checkShadeCellCount",    "bkShadeNe"],
+		["checkSideAreaLandSide",  "sbEqShade"],
+		["checkNoShadeCellInArea", "bkNoShade"]
+	]
+},
+"AnsCheck@chocona#1":{
+	checklist : [
+		["checkShadeRect",      "csNotRect"],
+		["checkShadeCellCount", "bkShadeNe"]
+	]
+},
 "AnsCheck@shimaguni":{
-	checkAns : function(){
-
-		if( !this.checkSideAreaShadeCell() ){ return 'scShade';}
-
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
-
-		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
-
-		if( !this.checkSideAreaLandSide() ){ return 'sbEqShade';}
-
-		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
-
-		return null;
-	},
-
 	checkSideAreaShadeCell : function(){
 		return this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
 	},
@@ -172,15 +172,6 @@ FileIO:{
 	}
 },
 "AnsCheck@chocona":{
-	checkAns : function(){
-
-		if( !this.checkShadeRect() ){ return 'csNotRect';}
-
-		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
-
-		return null;
-	},
-
 	checkShadeRect : function(){
 		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);});
 	}

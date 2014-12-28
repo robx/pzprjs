@@ -179,19 +179,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine_meji() ){ return 'lnBranch';}
-		if( !this.checkCrossLine_meji() ){ return 'lnCross';}
-
-		if( !this.checkDotLength() ){ return 'bkNoLineNe';}
-
-		if( !this.checkDeadendLine_meji() ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine_meji",  "lnBranch"],
+		["checkCrossLine_meji",   "lnCross"],
+		["checkDotLength",        "bkNoLineNe"],
+		["checkDeadendLine_meji", "lnDeadEnd"],
+		["checkOneLoop",          "lnPlLoop"]
+	],
 
 	checkCrossLine_meji   : function(){ return this.checkdir4Line_meji(4);},
 	checkBranchLine_meji  : function(){ return this.checkdir4Line_meji(3);},

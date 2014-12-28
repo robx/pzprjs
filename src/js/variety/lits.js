@@ -198,31 +198,32 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+"AnsCheck@lits#1":{
+	checklist : [
+		["check2x2ShadeCell",        "cs2x2"],
+		["checkOverShadeCellInArea", "bkShadeGt4"],
+		["checkSeqBlocksInRoom",     "bkShadeDivide"],
+		["checkTetromino",           "sbSameShape"],
+		["checkConnectShade",        "csDivide"],
+		["checkNoShadeCellInArea",   "bkNoShade"],
+		["checkLessShadeCellInArea", "bkShadeLt4"]
+	]
+},
+"AnsCheck@norinori#1":{
+	checklist : [
+		["checkOverShadeCell",         "csGt2"],
+		["checkOverShadeCellInArea",   "bkShadeGt2"],
+		["checkSingleShadeCell",       "csLt2"],
+		["checkSingleShadeCellInArea", "bkShadeLt2"],
+		["checkNoShadeCellInArea",     "bkNoShade"]
+	]
+},
 AnsCheck:{
 	checkShadeCellInArea : function(cinfo, evalfunc){
 		return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return evalfunc(a);});
 	}
 },
 "AnsCheck@lits":{
-	checkAns : function(){
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-
-		if( !this.checkOverShadeCellInArea() ){ return 'bkShadeGt4';}
-
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
-
-		if( !this.checkTetromino() ){ return 'sbSameShape';}
-
-		if( !this.checkConnectShade() ){ return 'csDivide';}
-
-		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
-
-		if( !this.checkLessShadeCellInArea() ){ return 'bkShadeLt4';}
-
-		return null;
-	},
-
 	checkOverShadeCellInArea : function(){
 		return this.checkShadeCellInArea(this.getRoomInfo(), function(a){ return (a<=4);});
 	},
@@ -258,21 +259,6 @@ AnsCheck:{
 	}
 },
 "AnsCheck@norinori":{
-	checkAns : function(){
-
-		if( !this.checkOverShadeCell() ){ return 'csGt2';}
-
-		if( !this.checkOverShadeCellInArea() ){ return 'bkShadeGt2';}
-
-		if( !this.checkSingleShadeCell() ){ return 'csLt2';}
-
-		if( !this.checkSingleShadeCellInArea() ){ return 'bkShadeLt2';}
-
-		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
-
-		return null;
-	},
-
 	checkOverShadeCell : function(){
 		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a<=2);} );
 	},

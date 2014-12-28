@@ -126,23 +126,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkTripleObject() ){ return 'lcTripleNum';}
-
-		if( !this.checkLinkSameNumber() ){ return 'nmConnDiff';}
-
-		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
-		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
-		if( !this.checkDisconnectLine() ){ return 'lcIsolate';}
-
-		if( !this.checkAloneNumber() ){ return 'nmIsolate';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine",     "lnBranch"],
+		["checkCrossLine",      "lnCross"],
+		["checkTripleObject",   "lcTripleNum"],
+		["checkLinkSameNumber", "nmConnDiff"],
+		["checkLineOverLetter", "lcOnNum"],
+		["checkDeadendLine",    "lcDeadEnd", "", 1],
+		["checkDisconnectLine", "lcIsolate"],
+		["checkAloneNumber",    "nmIsolate"]
+	],
 
 	checkLinkSameNumber : function(){
 		return this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();});

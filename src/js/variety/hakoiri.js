@@ -158,19 +158,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAroundMarks() ){ return 'nmAround';}
-
-		if( !this.checkOverFourMarksInBox() ){ return 'bkNumGt3';}
-		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
-
-		if( !this.checkConnectNumber() ){ return 'nmDivide';}
-
-		if( !this.checkAllMarkInBox() ){ return 'bkNumLt3';}
-
-		return null;
-	},
+	checklist : [
+		["checkAroundMarks",        "nmAround"],
+		["checkOverFourMarksInBox", "bkNumGt3"],
+		["checkOtherNumberInRoom",  "bkDupNum"],
+		["checkConnectNumber",      "nmDivide"],
+		["checkAllMarkInBox",       "bkNumLt3"]
+	],
 
 	checkOverFourMarksInBox : function(){
 		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});

@@ -165,19 +165,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkRowsColsSameAnsNumber() ){ return 'nmDupRow';}
-
-		if( !this.checkProductNumber() ){ return 'nmProduct';}
-
-		if( !this.checkNoAnumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoAnumCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkRowsColsSameAnsNumber", "nmDupRow"],
+		["checkProductNumber",         "nmProduct"],
+		["checkNoAnumCell",            "ceEmpty", "", 1]
+	],
 
 	checkRowsColsSameAnsNumber : function(){
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.anum;});

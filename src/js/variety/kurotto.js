@@ -137,12 +137,9 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkCellNumber_kurotto() ){ return 'nmSumSizeNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkCellNumber_kurotto", "nmSumSizeNe"]
+	],
 
 	checkCellNumber_kurotto : function(){
 		var result = true;

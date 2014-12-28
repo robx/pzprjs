@@ -149,25 +149,17 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkWhitePearl1() ){ return 'mashuWCurve';}
-		if( !this.checkBlackPearl1() ){ return 'mashuBStrig';}
-
-		if( !this.checkBlackPearl2() ){ return 'mashuBCvNbr';}
-		if( !this.checkWhitePearl2() ){ return 'mashuWStNbr';}
-
-		if( !this.checkNoLinePearl() ){ return 'mashuOnLine';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine",  "lnBranch"],
+		["checkCrossLine",   "lnCross"],
+		["checkWhitePearl1", "mashuWCurve"],
+		["checkBlackPearl1", "mashuBStrig"],
+		["checkBlackPearl2", "mashuBCvNbr"],
+		["checkWhitePearl2", "mashuWStNbr"],
+		["checkNoLinePearl", "mashuOnLine"],
+		["checkDeadendLine", "lnDeadEnd", "", 1],
+		["checkOneLoop",     "lnPlLoop"]
+	],
 
 	checkNoLinePearl : function(){
 		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});

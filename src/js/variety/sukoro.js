@@ -161,26 +161,15 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
-
-		if(pid!=='sukororoom'){
-			if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-		}
-		else{
-			if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
-			if( !this.checkNoMixedRoom() ){ return 'bkMixed';}
-		}
-
-		if( (pid!=='view') && !this.checkDir4NumberCount() ){ return 'nmNumberNe';}
-		if( (pid==='view') && !this.checkViewNumber() ){ return 'nmSumViewNe';}
-
-		if( !this.checkConnectNumber() ){ return 'nmDivide';}
-
-		if( !this.checkNoSuspendCell() ){ return 'ceSuspend';}
-
-		return null;
-	},
+	checklist : [
+		["checkAdjacentDiffNumber", "nmSameNum", "!sukororoom"],
+		["checkOtherNumberInRoom",  "bkDupNum",  "sukororoom"],
+		["checkNoMixedRoom",        "bkMixed",   "sukororoom"],
+		["checkDir4NumberCount", "nmNumberNe",   "!view"],
+		["checkViewNumber",      "nmSumViewNe",  "view"],
+		["checkConnectNumber",   "nmDivide"],
+		["checkNoSuspendCell",   "ceSuspend"]
+	],
 
 	checkNoMixedRoom : function(rinfo){
 		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return (cell.isNumberObj()?1:2);});

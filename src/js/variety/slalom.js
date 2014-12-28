@@ -731,32 +731,23 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	precheck : function(){
+	checklist : [
+		["generateGateNumber",   ""],
+		["checkLineOnShadeCell", "lnOnShade"],
+		["checkCrossLine",       "lnCross"],
+		["checkBranchLine",      "lnBranch"],
+		["checkPassGateOnce",    "gateRedup"],
+		["checkStartid",         "gateStart"],
+		["checkGateNumber",      "nmOrder"],
+		["checkDeadendLine",     "lnDeadEnd", "", 1],
+		["checkOneLoop",         "lnPlLoop"],
+		["checkPassAllGate",     "nmUnpass"]
+	],
+
+	generateGateNumber : function(){
 		this.owner.board.hinfo.generateAll();
+		return true;
 	},
-	checkAns : function(){
-
-		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
-
-		if( !this.checkCrossLine() ){ return 'lnCross';}
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-
-		if( !this.checkPassGateOnce() ){ return 'gateRedup';}
-
-		if( !this.checkStartid() ){ return 'gateStart';}
-
-		if( !this.checkGateNumber() ){ return 'nmOrder';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkPassAllGate() ){ return 'nmUnpass';}
-
-		return null;
-	},
-
 	checkLineOnShadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},

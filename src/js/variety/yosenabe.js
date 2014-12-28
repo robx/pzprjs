@@ -369,28 +369,24 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBranchLine",         "lnBranch"],
+		["checkCrossLine",          "lnCross"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-		if( !this.checkCrossLine() ){ return 'lnCross';}
+		["checkConnectObject",      "nmConnected"],
+		["checkLineOverLetter",     "laOnNum"],
 
-		if( !this.checkConnectObject() ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
+		["checkCurveLine",          "laCurve"],
 
-		if( !this.checkCurveLine() ){ return 'laCurve';}
+		["checkQuesNumber",         "bnIllegalPos"],	// 問題のチェック
+		["checkDoubleNumberInNabe", "bkDoubleBn"],		// 問題のチェック
 
-		// 問題のチェック
-		if( !this.checkQuesNumber() ){ return 'bnIllegalPos';}
-		if( !this.checkDoubleNumberInNabe() ){ return 'bkDoubleBn';}
+		["checkFillingCount",       "bkSumNeBn"],
+		["checkNoFillingNabe",      "bkNoNum"],
+		["checkFillingOutOfNabe",   "nmOutOfBk"],
 
-		if( !this.checkFillingCount() ){ return 'bkSumNeBn';}
-		if( !this.checkNoFillingNabe() ){ return 'bkNoNum';}
-		if( !this.checkFillingOutOfNabe() ){ return 'nmOutOfBk';}
-
-		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
-
-		return null;
-	},
+		["checkDisconnectLine",     "laIsolate"]
+	],
 
 	getNabeInfo : function(){
 		return (this._info.nabe = this._info.nabe || this.owner.board.iceinfo.getAreaInfo());

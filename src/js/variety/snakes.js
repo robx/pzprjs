@@ -234,16 +234,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSnakeSize() ){ return 'bkSizeNe5';}
-		if( !this.checkOtherAnsNumberInRoom() ){ return 'bkDupNum';}
-		if( !this.checkSideCell2() ){ return 'sbSnake';}
-		if( !this.checkArrowNumber() ){ return 'anNumberNe';}
-		if( !this.checkSnakesView() ){ return 'snakeAttack';}
-
-		return null;
-	},
+	checklist : [
+		["checkSnakeSize",   "bkSizeNe5"],
+		["checkOtherAnsNumberInRoom", "bkDupNum"],
+		["checkSideCell2",   "sbSnake"],
+		["checkArrowNumber", "anNumberNe"],
+		["checkSnakesView",  "snakeAttack"]
+	],
 
 	getSnakeInfo : function(){
 		return (this._info.snake = this._info.snake || this.owner.board.getSnakeInfo());

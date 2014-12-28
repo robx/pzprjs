@@ -142,21 +142,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-
-		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
-		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkNoLine() ){ return 'ceEmpty';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkBranchLine",    "lnBranch"],
+		["checkCrossOutOfIce", "lnCrossExIce"],
+		["checkIceLines",      "lnCurveOnIce"],
+		["checkOneLoop",       "lnPlLoop"],
+		["checkNoLine",        "ceEmpty"],
+		["checkDeadendLine",   "lnDeadEnd", "", 1]
+	],
 
 	checkCrossOutOfIce : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});

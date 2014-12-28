@@ -114,27 +114,15 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
-
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-
-		if(pid==='shikaku'){
-			if(!this.checkRoomRect() ){ return 'bkNotRect';}
-		}
-		else if(pid==='aho'){
-			if( !this.checkAhoSquare() ){ return 'bkNotRect3';}
-			if( !this.checkLshapeArea() ){ return 'bkNotLshape3';}
-		}
-
-		if( !this.checkNumberAndSize() ){ return 'bkSizeNe';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		["checkNoNumber",      "bkNoNum"],
+		["checkDoubleNumber",  "bkNumGe2"],
+		["checkRoomRect",      "bkNotRect",    "shikaku"],
+		["checkAhoSquare",     "bkNotRect3",   "aho"],
+		["checkLshapeArea",    "bkNotLshape3", "aho"],
+		["checkNumberAndSize", "bkSizeNe"],
+		["checkBorderDeadend", "bdDeadEnd", "", 1]
+	],
 
 	checkAhoSquare : function(){
 		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});

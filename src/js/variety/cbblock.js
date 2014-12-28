@@ -198,15 +198,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSingleBlock() ){ return 'bkSubLt2';}
-		if( !this.checkBlockNotRect() ){ return 'bkRect';}
-		if( !this.checkDifferentShapeBlock() ){ return 'sbSameShape';}
-		if( !this.checkLargeBlock() ){ return 'bkSubGt2';}
-
-		return null;
-	},
+	checklist : [
+		["checkSingleBlock",         "bkSubLt2"],
+		["checkBlockNotRect",        "bkRect"],
+		["checkDifferentShapeBlock", "sbSameShape"],
+		["checkLargeBlock",          "bkSubGt2"]
+	],
 
 	getCombiBlockInfo : function(){
 		/* 境界線で作られる領域の情報 */

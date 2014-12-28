@@ -182,16 +182,12 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
-
-		if( !this.checkAdjacentCountries() ){ return 'arAdjPair';}
-		if( !this.checkDirectionOfArrow() ){ return 'arAlone';}
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-
-		return null;
-	},
+	checklist : [
+		["checkDoubleNumber",      "bkNumGe2"],
+		["checkAdjacentCountries", "arAdjPair"],
+		["checkDirectionOfArrow",  "arAlone"],
+		["checkNoNumber",          "bkNoNum"]
+	],
 
 	getPairArrowInfo : function(){
 		return (this._info.parrow = this._info.parrow || this.owner.board.getPairedArrowsInfo());

@@ -165,22 +165,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
-
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal() ){ return 'bkNotSymShade';}
-
-		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
-
-		if( !this.checkCountinuousUnshadeCell() ){ return 'bkUnshadeConsecGt3';}
-
-		if( !this.checkRoomRect() ){ return 'bkNotRect';}
-
-		return null;
-	},
+	checklist : [
+		["checkAdjacentShadeCell", "csAdjacent"],
+		["checkConnectUnshadeRB",  "cuDivideRB"],
+		["checkFractal",           "bkNotSymShade", "ayeheya"],
+		["checkShadeCellCount",    "bkShadeNe"],
+		["checkCountinuousUnshadeCell", "bkUnshadeConsecGt3"],
+		["checkRoomRect",          "bkNotRect"]
+	],
 
 	checkFractal : function(){
 		var result = true;

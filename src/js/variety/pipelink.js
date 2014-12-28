@@ -222,7 +222,7 @@ Encode:{
 		var o=this.owner, bd=o.board;
 		if(o.pid==='pipelink'){
 			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques===6){ o.pid='pipelinkr'; break;}
+				if(bd.cell[c].ques===6){ o.changepid('pipelinkr'); break;}
 			}
 		}
 	}
@@ -259,28 +259,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkenableLineParts",  "ceAddLine"],
 
-		if( !this.checkenableLineParts() ){ return 'ceAddLine';}
+		["checkCrossOutOfMark",   "lnCrossExIce", "pipelinkr"],
+		["checkIceLines",         "lnCurveOnIce", "pipelinkr"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
-
-		if(this.owner.pid==='pipelinkr'){
-			var isdispice = (this.owner.getConfig('disptype_pipelinkr')===2);
-			if( !this.checkCrossOutOfMark() ){ return (isdispice ? 'lnCrossExIce' : 'lnCrossExCir');}
-			if( !this.checkIceLines() ){ return (isdispice ? 'lnCurveOnIce' : 'lnCurveOnCir');}
-		}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkCrossLineOnCross() ){ return 'lnNotCrossMk';}
-
-		if( !this.checkNoLine() ){ return 'ceEmpty';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+		["checkBranchLine",       "lnBranch"],
+		["checkOneLoop",          "lnPlLoop"],
+		["checkCrossLineOnCross", "lnNotCrossMk"],
+		["checkNoLine",           "ceEmpty"],
+		["checkDeadendLine",      "lnDeadEnd", "", 1]
+	],
 
 	checkCrossOutOfMark : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==6 && cell.ques!==11);});
@@ -289,7 +279,23 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
 	}
 },
-
+"CheckInfo@pipelinkr":{
+	text : function(lang){
+		var puzzle = this.owner, texts = [];
+		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		var isdispice = (puzzle.getConfig('disptype_pipelinkr')===2);
+		if(this.length===0){ return puzzle.faillist.complete[langcode];}
+		for(var i=0;i<this.length;i++){
+			var code = this[i];
+			if(!isdispice){
+				if     (code==="lnCrossExIce"){ code = "lnCrossExCir";}
+				else if(code==="lnCurveOnIce"){ code = "lnCurveOnCir";}
+			}
+			texts.push(puzzle.faillist[code][langcode]);
+		}
+		return texts.join("\n");
+	}
+},
 FailCode:{
 	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."],
 	lnCrossExCir : ["○の部分以外で線が交差しています。","there is a crossing line out of circles."],

@@ -221,14 +221,11 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkNotDuplicateAkari() ){ return 'akariDup';}
-		if( !this.checkDir4Akari() ){ return 'nmAkariNe';}
-		if( !this.checkShinedCell() ){ return 'ceDark';}
-
-		return null;
-	},
+	checklist : [
+		["checkNotDuplicateAkari", "akariDup"],
+		["checkDir4Akari",         "nmAkariNe"],
+		["checkShinedCell",        "ceDark"]
+	],
 
 	checkDir4Akari : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isAkari();},0);

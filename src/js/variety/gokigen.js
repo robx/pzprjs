@@ -360,21 +360,13 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
-
-		if( (pid==='gokigen') && !this.checkLoopLine_gokigen() ){ return 'slLoop';}
-
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri() ){ return 'slLoopGiri';}
-
-		if( !this.checkQnumCross() ){ return 'crConnSlNe';}
-
-		if( (pid==='wagiri') && !this.checkNotLoopLine_wagiri() ){ return 'slNotLoopWa';}
-
-		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		["checkLoopLine_gokigen",   "slLoop",      "gokigen"],
+		["checkLoopLine_wagiri",    "slLoopGiri",  "wagiri" ],
+		["checkQnumCross",          "crConnSlNe"            ],
+		["checkNotLoopLine_wagiri", "slNotLoopWa", "wagiri" ],
+		["checkNoSlashCell",        "ceEmpty",     "", 1]
+	],
 
 	getSlashInfo : function(){
 		return (this._info.slash = this._info.slash || this.owner.board.getSlashData());

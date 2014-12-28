@@ -320,12 +320,9 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkShadeCells() ){ return 'nmSumRowShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		["checkShadeCells", "nmSumRowShadeNe"]
+	],
 
 	checkShadeCells : function(type){
 		var result = true, bd = this.owner.board;

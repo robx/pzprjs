@@ -178,24 +178,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAroundPrenums() ){ return 'nqAroundDup';}
-		if( !this.checkNumber() ){ return 'nqAroundSumNe';}
-		if( !this.checkAroundNumbers() ){ return 'nmAround';}
-		if( !this.checkEmptyCell_kakuru() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkEmptyCell_kakuru() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkAroundPlNums",    "nqAroundDup"],
+		["checkSumOfNumber",     "nqAroundSumNe"],
+		["checkAdjacentNumbers", "nmAround"],
+		["checkEmptyCell_kakuru", "ceEmpty", "", 1]
+	],
 
 	checkEmptyCell_kakuru : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.noNum());});
 	},
 
-	checkAroundPrenums : function(type){
+	checkAroundPlNums : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -223,7 +217,7 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkNumber : function(type){
+	checkSumOfNumber : function(type){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -247,7 +241,7 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkAroundNumbers : function(){
+	checkAdjacentNumbers : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];

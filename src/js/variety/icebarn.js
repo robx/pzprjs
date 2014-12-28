@@ -790,7 +790,7 @@ Encode:{
 
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
-			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
+			this.owner.changepid(pzltype==="allwhite"?'icelom':'icelom2');
 		}
 
 		this.decodeCell( function(obj,ca){
@@ -821,36 +821,28 @@ Encode:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		["checkBranchLine",    "lnBranch"],
+		["checkCrossOutOfIce", "lnCrossExIce"],
+		["checkIceLines",      "lnCurveOnIce"],
 
-		if( !this.checkBranchLine() ){ return 'lnBranch';}
+		["checkValidStart",    "stInvalid"],
+		["checkLineOnStart",   "stNotLine"],
+		["checkDeadendRoad",   "stDeadEnd"],
+		["checkKeepInside",    "stOffField"],
+		["checkFollowArrow",   "awInverse", "icebarn"],
+		["checkNumberOrder",   "nmOrder",   "!icebarn"],
 
-		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
-		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
+		["checkOneLoop",       "lnPlLoop"],
 
-		if( !this.checkValidStart() ){ return 'stInvalid';}
-		if( !this.checkLineOnStart() ){ return 'stNotLine';}
+		["checkUnreachedUnshadeCell", "ceEmpty",   "icelom"],
+		["checkIgnoreIcebarn",        "bkNoLine",  "!icelom"],
 
-		if( !this.checkDeadendRoad() ){ return 'stDeadEnd';}
-		if( !this.checkKeepInside() ){ return 'stOffField';}
-		if( pid==='icebarn' && !this.checkFollowArrow() ){ return 'awInverse';}
-		if( pid!=='icebarn' && !this.checkNumberOrder() ){ return 'nmOrder';}
+		["checkAllArrow",             "lnExArrow", "icebarn"],
+		["checkNoLineNumber",         "nmUnpass",  "!icebarn"],
 
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( (pid==='icelom') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
-
-		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 'bkNoLine';}
-
-		if( (pid==='icebarn') && !this.checkAllArrow() ){ return 'lnExArrow';}
-
-		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 'nmUnpass';}
-
-		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+		["checkDeadendLine",          "lnDeadEnd", "", 1]
+	],
 
 	getTraceInfo : function(){
 		return (this._info.trace = this._info.trace || this.owner.board.getTraceInfo());

@@ -431,16 +431,10 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSubsNumber() ){ return 'nmSumOfDiff';}
-		if( !this.checkValidFillCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkValidFillCell() ? null : 'ceEmpty');
-	},
+	checklist : [
+		["checkSubsNumber",    "nmSumOfDiff"],
+		["checkValidFillCell", "ceEmpty", "", 1]
+	],
 
 	checkValidFillCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});

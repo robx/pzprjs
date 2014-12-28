@@ -92,21 +92,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		["checkBorderBranchExBP", "bdBranchExBP"],
+		["checkBorderCrossExBP",  "bdCrossExBP"],
 
-		if( !this.checkBorderBranchExBP() ){ return 'bdBranchExBP';}
-		if( !this.checkBorderCrossExBP() ){ return 'bdCrossExBP';}
+		["checkNoNumber",          "bkNoNum"],
+		["checkSameNumberInBlock", "bkPlNum"],
+		["checkGatheredObject",    "bkSepNum"],
 
-		if( !this.checkNoNumber() ){ return 'bkNoNum';}
-		if( !this.checkSameNumberInBlock() ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject() ){ return 'bkSepNum';}
-
-		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
-		if( !this.checkBorderPassOnBP() ){ return 'bdCountLt3BP';}
-		if( !this.checkBorderNoneOnBP() ){ return 'bdIgnoreBP';}
-
-		return null;
-	},
+		["checkBorderDeadend",  "bdDeadEnd", "", 1],
+		["checkBorderPassOnBP", "bdCountLt3BP"],
+		["checkBorderNoneOnBP", "bdIgnoreBP"]
+	],
 
 	checkBorderBranchExBP : function(){ return this.checkBorderCount(3,2);},
 	checkBorderCrossExBP  : function(){ return this.checkBorderCount(4,2);},
