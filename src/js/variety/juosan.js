@@ -145,57 +145,63 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkParallelBarCount", "baParaGe3"],
-		["checkMajorityBarOver",  "bkMajorBarGt"],
-		["checkMajorityBarLack",  "bkMajorBarLt"],
-		["checkEmptyCell",        "ceEmpty", "", 1]
+		"checkParallelBarCount",
+		"checkMajorityBarOver",
+		"checkMajorityBarLack",
+		"checkEmptyCell_juosan+"
 	],
 
 	checkParallelBarCount : function(){
-		return this.checkRowsColsSeparate(this.isParallelCount, function(cell){ return cell.qans;}, true);
+		this.checkRowsColsSeparate(this.isParallelCount, function(cell){ return cell.qans;}, "baParaGe3");
 	},
-	checkRowsColsSeparate : function(evalfunc, categoryfunc, multierr){
-		var result = true, bd = this.owner.board;
-		for(var by=1;by<=bd.maxby;by+=2){
+	checkRowsColsSeparate : function(evalfunc, categoryfunc, code){
+		if(!this.checkErrorColsSeparate(evalfunc, categoryfunc) || !this.checkErrorRowsSeparate(evalfunc, categoryfunc)){
+			this.failcode.add(code);
+			this.owner.board.cell.setnoerr();
+		}
+	},
+	checkErrorColsSeparate : function(evalfunc, categoryfunc){
+		var result = true, bd = this.owner.board, info = {isvert:false};
+		allloop: for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				var val = categoryfunc(bd.getc(bx,by)), tx = bx;
 				while((tx+2<bd.maxbx) && (categoryfunc(bd.getc(tx+2,by))===val)){ tx+=2;}
-				if(!evalfunc.call(this, [bx,by,false], bd.cellinside(bx,by,tx,by))){
-					if(!multierr || this.checkOnly){ return false;}
-					if(result){ bd.cell.filter(function(cell){ return cell.error===0;}).seterr(-1);}
+				if(!evalfunc.call(this, bd.cellinside(bx,by,tx,by), info)){
 					result = false;
+					if(this.checkOnly){ break allloop;}
 				}
 				bx = tx; /* 次のループはbx=tx+2 */
 			}
 		}
-		for(var bx=1;bx<=bd.maxbx;bx+=2){
+		return result;
+	},
+	checkErrorRowsSeparate : function(evalfunc, categoryfunc){
+		var result = true, bd = this.owner.board, info = {isvert:true};
+		allloop: for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
 				var val = categoryfunc(bd.getc(bx,by)), ty = by;
 				while((ty+2<bd.maxby) && (categoryfunc(bd.getc(bx,ty+2))===val)){ ty+=2;}
-				if(!evalfunc.call(this, [bx,by,true], bd.cellinside(bx,by,bx,ty))){
-					if(!multierr || this.checkOnly){ return false;}
-					if(result){ bd.cell.filter(function(cell){ return cell.error===0;}).seterr(-1);}
+				if(!evalfunc.call(this, bd.cellinside(bx,by,bx,ty), info)){
 					result = false;
+					if(this.checkOnly){ break allloop;}
 				}
 				by = ty; /* 次のループはbx=ty+2 */
 			}
 		}
 		return result;
 	},
-	isParallelCount : function(keycellpos, clist){
-		var cell0 = clist[0], isvert = keycellpos[2];
-		if     (cell0.qans===0)            { return true;}
-		else if(cell0.qans===12 &&  isvert){ return true;}
-		else if(cell0.qans===13 && !isvert){ return true;}
+	isParallelCount : function(clist, info){
+		if     (clist[0].qans===0)                 { return true;}
+		else if(clist[0].qans===12 &&  info.isvert){ return true;}
+		else if(clist[0].qans===13 && !info.isvert){ return true;}
 		else if(clist.length>=3){ clist.seterr(4); return false;}
 		return true;
 	},
 
-	checkMajorityBarOver : function(){ return this.checkMajorityBarCount(true);},
-	checkMajorityBarLack : function(){ return this.checkMajorityBarCount(false);},
-	checkMajorityBarCount : function(isover){
-		var result = true;
-		var rinfo = this.getRoomInfo();
+	checkMajorityBarOver : function(){ return this.checkMajorityBarCount(true,  "bkMajorBarGt");},
+	checkMajorityBarLack : function(){ return this.checkMajorityBarCount(false, "bkMajorBarLt");},
+	checkMajorityBarCount : function(isover, code){
+		var result = true, rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var area = rinfo.area[id];
 			if(!area.top.isValidNum()){ continue;}
@@ -206,23 +212,25 @@ AnsCheck:{
 			}
 			count = (vcount>hcount ? vcount : hcount);
 			if((area.top.qnum!==count) && (isover===(count>area.top.qnum))){
-				if(this.checkOnly){ return false;}
-				if(result){ this.owner.board.cell.seterr(-1);}
-				if     (vcount>hcount){ clist = clist.filter(function(cell){ return cell.qans===12;});}
-				else if(vcount<hcount){ clist = clist.filter(function(cell){ return cell.qans===13;});}
-				clist.seterr(4);
 				result = false;
+				if(this.checkOnly){ break;}
+				if     (vcount>hcount){ clist.filter(function(cell){ return cell.qans===12;}).seterr(4);}
+				else if(vcount<hcount){ clist.filter(function(cell){ return cell.qans===13;}).seterr(4);}
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			this.owner.board.cell.setnoerr();
+		}
 	},
 	
-	checkEmptyCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.qans===0);});
+	checkEmptyCell_juosan : function(){
+		this.checkAllCell(function(cell){ return (cell.qans===0);}, "ceNoBar");
 	}
 },
 
 FailCode:{
+	ceNoBar : ["何も入っていないマスがあります。","There is an empty cell."],
 	baParaGe3 : ["縦棒か横棒が3マス以上並んでいます。","There are at least there vertical or horizonal bars in parallel."],
 	bkMajorBarGt : ["縦棒か横棒の多い方の数が部屋の数字より多いです。","The number of majority of vartial or horizonal bars is grater than the number of the area."],
 	bkMajorBarLt : ["縦棒か横棒の多い方の数が部屋の数字より少ないです。","The number of majority of vartial or horizonal bars is less than the number of the area."]

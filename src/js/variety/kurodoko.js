@@ -115,15 +115,15 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentShadeCell", "csAdjacent"],
-		["checkConnectUnshadeRB",  "cuDivideRB"],
-		["checkCellNumber",        "nmSumViewNe"]
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkViewOfNumber"
 	],
 
-	checkCellNumber : function(){
-		var result = true, bd = this.owner.board;
-		for(var cc=0;cc<bd.cellmax;cc++){
-			var cell = bd.cell[cc];
+	checkViewOfNumber : function(){
+		var boardcell = this.owner.board.cell;
+		for(var cc=0;cc<boardcell.length;cc++){
+			var cell = boardcell[cc];
 			if(!cell.isValidNum()){ continue;}
 
 			var clist = new this.owner.CellList(), adc = cell.adjacent, target;
@@ -134,12 +134,11 @@ AnsCheck:{
 			target=adc.bottom; while(target.isUnshade()){ clist.add(target); target=target.adjacent.bottom;}
 
 			if(cell.qnum!==clist.length){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumViewNe");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

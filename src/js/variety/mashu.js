@@ -150,19 +150,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",  "lnBranch"],
-		["checkCrossLine",   "lnCross"],
-		["checkWhitePearl1", "mashuWCurve"],
-		["checkBlackPearl1", "mashuBStrig"],
-		["checkBlackPearl2", "mashuBCvNbr"],
-		["checkWhitePearl2", "mashuWStNbr"],
-		["checkNoLinePearl", "mashuOnLine"],
-		["checkDeadendLine", "lnDeadEnd", "", 1],
-		["checkOneLoop",     "lnPlLoop"]
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkWhitePearl1",
+		"checkBlackPearl1",
+		"checkBlackPearl2",
+		"checkWhitePearl2",
+		"checkNoLinePearl",
+		"checkDeadendLine+",
+		"checkOneLoop"
 	],
 
 	checkNoLinePearl : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
+		this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);}, "mashuOnLine");
 	},
 
 	checkWhitePearl1 : function(){
@@ -170,26 +170,30 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.qnum===1 && cell.lcnt===2 && !cell.isLineStraight()){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(1);
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.setCellLineError(1);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuWCurve");
+			bd.border.setnoerr();
+		}
 	},
 	checkBlackPearl1 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.qnum===2 && cell.lcnt===2 && cell.isLineStraight()){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(1);
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.setCellLineError(1);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuBStrig");
+			bd.border.setnoerr();
+		}
 	},
 
 	checkWhitePearl2 : function(){
@@ -204,13 +208,15 @@ AnsCheck:{
 			if(adb.right.isLine()  && adc.right.lcnt===2  && adc.right.isLineStraight() ){ stcnt++;}
 
 			if(stcnt>=2){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setErrorPearl();
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.setErrorPearl();
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuWStNbr");
+			bd.border.setnoerr();
+		}
 	},
 	checkBlackPearl2 : function(){
 		var result = true, bd = this.owner.board;
@@ -222,13 +228,15 @@ AnsCheck:{
 			   (adb.left.isLine()   && adc.left.lcnt===2   && !adc.left.isLineStraight()  ) ||
 			   (adb.right.isLine()  && adc.right.lcnt===2  && !adc.right.isLineStraight() ) )
 			{
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setErrorPearl();
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.setErrorPearl();
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuBCvNbr");
+			bd.border.setnoerr();
+		}
 	}
 },
 

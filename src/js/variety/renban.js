@@ -126,10 +126,10 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkOtherNumberInRoom", "bkDupNum"],
-		["checkNumbersInRoom",     "bkNotSeqNum"],
-		["checkBorderSideNumber",  "scDiffLenNe"],
-		["checkNoNumCell",         "ceEmpty", "", 1]
+		"checkDifferentNumberInRoom",
+		"checkNumbersInRoom",
+		"checkBorderSideNumber",
+		"checkNoNumCell+"
 	],
 
 	checkNumbersInRoom : function(){
@@ -148,16 +148,17 @@ AnsCheck:{
 			if(breakflag){ break;}
 
 			if(clist.length !== (max-min)+1){
-				if(this.checkOnly){ return false;}
+				if(this.checkOnly){ result = false; break;}
 				clist.seterr(1);
 				result = false;
 			}
 		}
+		if(!result){ this.failcode.add("bkNotSeqNum");}
 		return result;
 	},
 
 	checkBorderSideNumber : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		// 線の長さを取得する
 		var rdata = bd.getBorderLengthInfo();
 
@@ -170,21 +171,19 @@ AnsCheck:{
 
 			var blist = rdata.path[rdata.id[i]].blist;
 			if(Math.abs(val1-val2)!==blist.length){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("cbDiffLenNe");
+				if(this.checkOnly){ break;}
 				cell1.seterr(1);
 				cell2.seterr(1);
 				blist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
 	bkNotSeqNum : ["部屋に入る数字が正しくありません。","The numbers in the room are wrong."],
-	scDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	cbDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."]
 }
 });

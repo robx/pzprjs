@@ -237,47 +237,47 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkRoomRect",      "bkNotRect", "nawabari"],
-		["checkNoNumber",      "bkNoNum",   "nawabari"],
-		["checkDoubleNumber",  "bkNumGe2",  "nawabari"],
-		["checkOverFourCells", "bkSizeLt4", "fourcells"],
-		["checkOverFiveCells", "bkSizeLt5", "fivecells"],
-		["checkdir4BorderAns", "nmBorderNe"],
-		["checkBorderDeadend", "bdDeadEnd", "", 1],
-		["checkLessFourCells", "bkSizeGt4", "fourcells"],
-		["checkLessFiveCells", "bkSizeGt5", "fivecells"]
+		"checkRoomRect@nawabari",
+		"checkNoNumber@nawabari",
+		"checkDoubleNumber@nawabari",
+		"checkOverFourCells@fourcells",
+		"checkOverFiveCells@fivecells",
+		"checkdir4BorderAns",
+		"checkBorderDeadend+",
+		"checkLessFourCells@fourcells",
+		"checkLessFiveCells@fivecells"
 	],
 
 	checkOverFourCells : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);}, "bkSizeLt4");
 	},
 	checkLessFourCells : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=4);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=4);}, "bkSizeGt4");
 	},
 	checkOverFiveCells : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=5);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=5);}, "bkSizeLt5");
 	},
 	checkLessFiveCells : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=5);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=5);}, "bkSizeGt5");
 	},
 
 	checkdir4BorderAns : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmBorderNe");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	bkNoNum  : ["数字の入っていない部屋があります。","A room has no numbers."],
-	bkNumGe2 : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
+	nmBorderNe : ["数字の周りにある境界線の本数が違います。","The number is not equal to the number of border lines around it."],
+	bkNoNum   : ["数字の入っていない部屋があります。","A room has no numbers."],
+	bkNumGe2  : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
 	bkSizeLt4 : ["サイズが4マスより小さいブロックがあります。","The size of block is smaller than four."],
 	bkSizeLt5 : ["サイズが5マスより小さいブロックがあります。","The size of block is smaller than five."],
 	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of block is larger than four."],

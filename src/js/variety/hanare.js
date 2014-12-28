@@ -136,26 +136,25 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkDoubleNumber",     "bkNumGe2"],
-		["checkAnsNumberAndSize", "bkSizeNe"],
-		["checkDiffNumber",       "nmDiffDistNe"],
-		["checkNoNumber",         "bkNoNum"]
+		"checkDoubleNumber",
+		"checkAnsNumberAndSize",
+		"checkDiffNumber",
+		"checkNoNumber"
 	],
 
 	checkDiffNumber : function(){
 		var cell, num, distance;
+		var result = true, bd = this.owner.board;
 		function eachcell(cell2){
 			distance++;
 			if(!cell2.isNum()){ /* nop */ }
 			else if(!cell2.isValidNum(cell2)){ cell=null;}
 			else{
-				if(cell!==null){
-					if(Math.abs(num-cell2.getNum())!==distance){
-						if(this.checkOnly){ return false;}
-						cell.seterr(1);
-						cell2.seterr(1);
-						result = false;
-					}
+				if(cell!==null && Math.abs(num-cell2.getNum())!==distance){
+					this.failcode.add("nmDiffDistNe");
+					result = false;
+					cell.seterr(1);
+					cell2.seterr(1);
 				}
 				cell=cell2;
 				num=cell2.getNum();
@@ -163,36 +162,34 @@ AnsCheck:{
 			}
 		}
 
-		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 			cell=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-				eachcell(bd.getc(bx,by));
+				eachcell.call(this, bd.getc(bx,by));
+				if(!result && this.checkOnly){ return;}
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
 			cell=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				eachcell(bd.getc(bx,by));
+				eachcell.call(this, bd.getc(bx,by));
+				if(!result && this.checkOnly){ return;}
 			}
 		}
-		return result;
 	},
 
 	checkAnsNumberAndSize : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, num = -1;
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
 			if( num!==-1 && num!==clist.length ){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkSizeNe");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

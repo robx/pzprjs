@@ -166,16 +166,15 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentShadeCell", "csAdjacent"],
-		["checkConnectUnshadeRB",  "cuDivideRB"],
-		["checkFractal",           "bkNotSymShade", "ayeheya"],
-		["checkShadeCellCount",    "bkShadeNe"],
-		["checkCountinuousUnshadeCell", "bkUnshadeConsecGt3"],
-		["checkRoomRect",          "bkNotRect"]
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkFractal@ayeheya",
+		"checkShadeCellCount",
+		"checkCountinuousUnshadeCell",
+		"checkRoomRect"
 	],
 
 	checkFractal : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, d = clist.getRectSize();
@@ -183,19 +182,21 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isShade() ^ cell2.isShade()){
-					if(this.checkOnly){ return false;}
+					this.failcode.add("bkNotSymShade");
+					if(this.checkOnly){ return;}
 					clist.seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
 	},
 
 	checkCountinuousUnshadeCell : function(){
-		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, false);
+		var savedflag = this.checkOnly;
+		this.checkOnly = true;	/* エラー判定を一箇所だけにしたい */
+		this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, "bkUnshadeConsecGt3");
+		this.checkOnly = savedflag;
 	},
-	isBorderCount : function(keycellpos, clist){
+	isBorderCount : function(clist){
 		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;
 		if(d.x1===d.x2){
 			bx = d.x1;
@@ -210,8 +211,9 @@ AnsCheck:{
 			}
 		}
 
-		if(count>=2){ clist.seterr(1); return false;}
-		return true;
+		var result = (count<=1);
+		if(!result){ clist.seterr(1);}
+		return result;
 	}
 },
 

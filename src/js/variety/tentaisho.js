@@ -442,10 +442,10 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkStarOnLine", "bkNoStar"],
-		["checkAvoidStar",  "bdPassStar"],
-		["checkFractal",    "bkNotSymSt"],
-		["checkStarRegion", "bkPlStar"]
+		"checkStarOnLine",
+		"checkAvoidStar",
+		"checkFractal",
+		"checkStarRegion"
 	],
 
 	getStarAreaInfo : function(){
@@ -467,6 +467,7 @@ AnsCheck:{
 				result = false;
 			}
 		}
+		if(!result){ this.failcode.add("bdPassStar");}
 		return result;
 	},
 
@@ -487,21 +488,23 @@ AnsCheck:{
 				}
 			}
 		}
+		if(!result){ this.failcode.add("bkNotSymSt");}
 		return result;
 	},
 
-	checkAvoidStar  : function(){ return this.checkErrorFlag(-1);},
-	checkStarRegion : function(){ return this.checkErrorFlag(-2);},
-	checkErrorFlag : function(val){
+	checkAvoidStar  : function(){ return this.checkErrorFlag(-1, "bkNoStar");},
+	checkStarRegion : function(){ return this.checkErrorFlag(-2, "bkPlStar");},
+	checkErrorFlag : function(val, code){
 		var result = true;
 		var rinfo = this.getStarAreaInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.area[r].error!==val){ continue;}
 
-			if(this.checkOnly){ return false;}
+			if(this.checkOnly){ result = false; break;}
 			rinfo.area[r].clist.seterr(1);
 			result = false;
 		}
+		if(!result){ this.failcode.add(code);}
 		return result;
 	}
 },

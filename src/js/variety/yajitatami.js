@@ -111,22 +111,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBorderCross",        "bdCross"],
-		["checkArrowNumber_border", "arNoAdjBd"],
-		["checkTatamiLength",       "bkSize1"],
-		["checkArrowNumber_tatami", "anTatamiNe"],
-		["checkTatamiSize",         "bkSizeNe"],
-		["checkTatamiBreadth",      "bkWidthGt1"]
+		"checkBorderCross",
+		"checkArrowNumber_border",
+		"checkTatamiLength",
+		"checkArrowNumber_tatami",
+		"checkNumberAndSize",
+		"checkTatamiBreadth"
 	],
 
 	checkTatamiLength : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);});
-	},
-	checkTatamiSize : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n===a);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
 	},
 	checkTatamiBreadth : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	},
 
 	checkArrowNumber_tatami : function(){
@@ -144,12 +141,12 @@ AnsCheck:{
 
 			var count = blist.filter(function(border){ return border.isBorder();}).length;
 			if(cell.qnum!==count){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("anTatamiNe");}
 	},
 
 	checkArrowNumber_border : function(){
@@ -159,12 +156,12 @@ AnsCheck:{
 			if(!cell.isValidNum() || !dir){ continue;}
 
 			if(!cell.getaddr().movedir(dir,1).getb().isBorder()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("arNoAdjBd");}
 	}
 },
 

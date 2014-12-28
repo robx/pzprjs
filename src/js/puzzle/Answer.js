@@ -27,16 +27,25 @@ AnsCheck:{
 		/* 当該パズルで使用しないchecklistのアイテムをフィルタリング */
 		var checklist = this.checklist, order = [];
 		for(var i=0;i<checklist.length;i++){
-			var item = checklist[i];
-			if(!item[2] || pzpr.util.checkpid(item[2], this.owner.pid)){
-				item[3] = item[3] || 0;
-				order.push(item);
+			var item = checklist[i], isexist = true, prio = 0;
+			if(item.match('@')){
+				isexist = pzpr.util.checkpid(item.substr(item.indexOf('@')+1), this.owner.pid);
+				item = item.substr(0,item.indexOf('@'));
+			}
+			if(isexist){
+				prio = (item.match(/\+/)||[]).length;
+				item = item.replace(/\+/g,"");
+				order.push([this[item], prio]);
 			}
 		}
-		this.checklist_normal = Array.prototype.concat.call([], order);
-
+		
+		this.checklist_normal = [];
+		for(var i=0; i<order.length; i++){ this.checklist_normal.push(order[i][0]);}
+		
 		/* autocheck用のエラーをソートする */
-		this.checklist_auto = order.sort(function(a,b){ return b[3] - a[3];});
+		order = order.sort(function(a,b){ return b[1] - a[1];});
+		this.checklist_auto = [];
+		for(var i=0; i<order.length; i++){ this.checklist_auto.push(order[i][0]);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -49,8 +58,8 @@ AnsCheck:{
 		
 		if(activemode){
 			this.checkOnly = false;
-			this.failcode = this.checkAns(multierr);
-			if(!!this.failcode){
+			this.checkAns(multierr);
+			if(!this.failcode.complete){
 				bd.haserror = true;
 				puzzle.redraw();
 			}
@@ -59,29 +68,22 @@ AnsCheck:{
 		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
-			this.failcode = this.checkAns(false);
+			this.checkAns(false);
 			bd.enableSetError();
 		}
 		
 		this.inCheck = false;
-		return new puzzle.CheckInfo(this.failcode);
+		return this.failcode;
 	},
 	checkAns : function(multierr){
-		this.failcode = [];
+		this.failcode = new this.owner.CheckInfo();
 		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
 		var errcount = 0;
 		for(var i=0;i<checklist.length;i++){
-			var item = checklist[i], result = this[item[0]]();
-			if(result===false){
-				if(this.failcode[this.failcode.length-1]!==item[1]){ this.failcode.push(item[1]);}
-			}
-			else if(errcount<this.failcode.length){
-				result = false;
-			}
+			checklist[i].call(this);
+			if(!multierr && (errcount<this.failcode.length)){ break;}
 			errcount = this.failcode.length;
-			if(!multierr && result===false){ break;}
 		}
-		return (errcount>0 ? this.failcode : null);
 	},
 
 	//---------------------------------------------------------------------------
@@ -98,21 +100,24 @@ AnsCheck:{
 //---------------------------------------------------------------------------
 CheckInfo:{
 	initialize : function(code){
-		if(!!code){
-			if(code instanceof Array){ Array.prototype.push.apply(this, code);}
-			else{ Array.prototype.push.call(this, code);}
-			this.complete = false;
-		}
+		this.add(code);
 	},
 	complete : true,
 	length : 0,
+	lastcode : null,
 	
+	add : function(code){
+		if(!code){ return;}
+		if(code!==this.lastcode){ this[this.length++] = this.lastcode = code;}
+		this.complete = false;
+	},
 	text : function(lang){
-		var puzzle = this.owner, texts = [];
+		var puzzle = this.owner, textlist = puzzle.faillist, texts = [];
 		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
-		if(this.length===0){ return puzzle.faillist.complete[langcode];}
+		if(this.length===0){ return textlist.complete[langcode];}
 		for(var i=0;i<this.length;i++){
-			texts.push(puzzle.faillist[this[i]][langcode]);
+			var textitem = textlist[this[i]] || textlist.invalid;
+			texts.push(textitem[langcode]);
 		}
 		return texts.join("\n");
 	}

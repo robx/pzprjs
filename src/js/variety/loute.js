@@ -391,12 +391,12 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkArrowCorner1",  "awBlkEdge"],
-		["checkArrowCorner2",  "awNotPtCnr"],
-		["checkCircleCorner",  "ciNotOnCnr"],
-		["checkNumberAndSize", "bkSizeNe", "sashigane", 1],
-		["checkBorderDeadend", "bdDeadEnd"],
-		["checkLblock",        "bkNotLshape"]
+		"checkArrowCorner1",
+		"checkArrowCorner2",
+		"checkCircleCorner",
+		"checkNumberAndSize+@sashigane",
+		"checkBorderDeadend",
+		"checkLblock"
 	],
 
 	getLblockInfo : function(){
@@ -404,29 +404,27 @@ AnsCheck:{
 	},
 
 	checkArrowCorner1 : function(){
-		var result = true;
 		var rinfo = this.getLblockInfo();
-		for(var id=1;id<=rinfo.max;id++){
+		allloop: for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
-				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2){
-					if(this.checkOnly){ return false;}
+				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2)
+				{
+					this.failcode.add("awBlkEdge");
+					if(this.checkOnly){ break allloop;}
 					clist.seterr(1);
-					result = false;
 					break;
 				}
 			}
 		}
-		return result;
 	},
 
 	checkArrowCorner2 : function(){
-		var result = true;
 		var rinfo = this.getLblockInfo();
-		for(var id=1;id<=rinfo.max;id++){
+		allloop: for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
@@ -438,47 +436,43 @@ AnsCheck:{
 					(num===cell.LT && adb.left.isBorder()  ) ||
 					(num===cell.RT && adb.right.isBorder() ) ) )
 				{
-					if(this.checkOnly){ return false;}
+					this.failcode.add("awNotPtCnr");
+					if(this.checkOnly){ break allloop;}
 					clist.seterr(1);
-					result = false;
 					break;
 				}
 			}
 		}
-		return result;
 	},
 
 	checkCircleCorner : function(){
-		var result = true;
 		var rinfo = this.getLblockInfo();
-		for(var id=1;id<=rinfo.max;id++){
+		allloop: for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.isCircle() && rinfo.place[cell.id]!==3){
-					if(this.checkOnly){ return false;}
+				if(cell.isCircle() && rinfo.place[cell.id]!==3)
+				{
+					this.failcode.add("ciNotOnCnr");
+					if(this.checkOnly){ break allloop;}
 					clist.seterr(1);
-					result = false;
 					break;
 				}
 			}
 		}
-		return result;
 	},
 
 	checkLblock : function(){
-		var result = true;
 		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkNotLshape");
+				if(this.checkOnly){ break;}
 				rinfo.area[id].clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

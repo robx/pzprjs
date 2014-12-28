@@ -122,13 +122,13 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentShadeCell", "csAdjacent"],
-		["checkConnectUnshadeRB",  "cuDivideRB"],
-		["checkCellNumber",        "nmShootShadeNe1"]
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkShootSingle"
 	],
 
-	checkCellNumber : function(){
-		var result = true, bd = this.owner.board;
+	checkShootSingle : function(){
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -139,13 +139,12 @@ AnsCheck:{
 			cell2=cell.relcell(0,-num*2); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0, num*2); if(cell2.isShade()){ clist.add(cell2);}
 			if(clist.length!==1){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmShootShadeNe1");
+				if(this.checkOnly){ break;}
 				cell.seterr(4);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

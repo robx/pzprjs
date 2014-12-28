@@ -93,25 +93,25 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBorderBranchExBP", "bdBranchExBP"],
-		["checkBorderCrossExBP",  "bdCrossExBP"],
+		"checkBorderBranchExBP",
+		"checkBorderCrossExBP",
 
-		["checkNoNumber",          "bkNoNum"],
-		["checkSameNumberInBlock", "bkPlNum"],
-		["checkGatheredObject",    "bkSepNum"],
+		"checkNoNumber",
+		"checkSameNumberInBlock",
+		"checkGatheredObject",
 
-		["checkBorderDeadend",  "bdDeadEnd", "", 1],
-		["checkBorderPassOnBP", "bdCountLt3BP"],
-		["checkBorderNoneOnBP", "bdIgnoreBP"]
+		"checkBorderDeadend+",
+		"checkBorderPassOnBP",
+		"checkBorderNoneOnBP"
 	],
 
-	checkBorderBranchExBP : function(){ return this.checkBorderCount(3,2);},
-	checkBorderCrossExBP  : function(){ return this.checkBorderCount(4,2);},
-	checkBorderPassOnBP : function(){ return this.checkBorderCount(2,1);},
-	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
+	checkBorderBranchExBP : function(){ return this.checkBorderCount(3,2, "bdBranchExBP");},
+	checkBorderCrossExBP  : function(){ return this.checkBorderCount(4,2, "bdCrossExBP");},
+	checkBorderPassOnBP   : function(){ return this.checkBorderCount(2,1, "bdCountLt3BP");},
+	checkBorderNoneOnBP   : function(){ return this.checkBorderCount(0,1, "bdIgnoreBP");},
 
 	checkSameNumberInBlock : function(){
-		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();});
+		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
@@ -125,6 +125,7 @@ AnsCheck:{
 			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
 			else if(d[val[c]]!==rinfo.id[c]){
 				bd.cell.filter(function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}).seterr(1);
+				this.failcode.add("bkSepNum");
 				return false;
 			}
 		}

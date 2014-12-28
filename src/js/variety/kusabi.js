@@ -106,54 +106,47 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
-		["checkTripleObject",   "lcTripleNum"],
-		["checkLineOverLetter", "lcOnNum"],
-		["checkKusabiShape",    "lcNotKusabi"],
-		["checkProperLetter",   "lcInvalid"],
-		["checkCurveOver",      "lcCurveGt2"],
-		["checkCurveLack",      "lcCurveLt2"],
-		["checkLengthNotEq",    "lcLenInvNe"],
-		["checkLengthWrong",    "lcLenInvDiff"],
-		["checkDeadendLine",    "lcDeadEnd", "", 1],
-		["checkDisconnectLine", "lcIsolate"],
-		["checkAloneCircle",    "nmIsolate", "", 1]
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkTripleObject",
+		"checkLineOverLetter",
+		"checkKusabiShape",
+		"checkProperLetter",
+		"checkCurveOver",
+		"checkCurveLack",
+		"checkLengthNotEq",
+		"checkLengthWrong",
+		"checkDeadendConnectLine+",
+		"checkDisconnectLine",
+		"checkNoLineObject+"
 	],
 
-	checkAloneCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
-	},
-
 	checkKusabiShape : function(){
-		return this.checkLineShape(function(path){ return (path.ccnt===2 && path.dir1!==path.dir2);});
+		this.checkLineShape(function(path){ return (path.ccnt===2 && path.dir1!==path.dir2);}, "lcNotKusabi");
 	},
 	checkProperLetter : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum;
 			return (!cell2.isnull && path.ccnt===2 && !((qn1===1&&qn2===1) || (qn1===2&&qn2===3) || (qn1===3&&qn2===2) || qn1===-2 || qn2===-2));
-		});
+		}, "lcInvalid");
 	},
 	checkCurveOver : function(){
-		return this.checkLineShape(function(path){ return (path.ccnt>2);});
+		this.checkLineShape(function(path){ return (path.ccnt>2);}, "lcCurveGt2");
 	},
 	checkCurveLack : function(){
-		return this.checkLineShape(function(path){ return (!path.cells[1].isnull && path.ccnt<2);});
+		this.checkLineShape(function(path){ return (!path.cells[1].isnull && path.ccnt<2);}, "lcCurveLt2");
 	},
 	checkLengthNotEq : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum;
 			return (!cell2.isnull && path.ccnt===2 && (qn1===1 || qn2===1) && path.length[0]!==path.length[2]);
-		});
+		}, "lcLenInvNe");
 	},
 	checkLengthWrong : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum, length=path.length;
 			return (!cell2.isnull && path.ccnt===2 && (((qn1===2||qn2===3) && length[0]>=length[2]) || ((qn1===3||qn2===2) && length[0]<=length[2])));
-		});
-	},
-	checkDeadendLine : function(){
-		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
+		}, "lcLenInvDiff");
 	}
 },
 
@@ -167,6 +160,6 @@ FailCode:{
 	lcCurveLt2 : ["線が2回曲がっていません。","A line turns only once or lower."],
 	lcLenInvNe : ["線の長さが同じではありません。","The length of lines is differnet."],
 	lcLenInvDiff : ["線の長短の指示に反してます。","The length of lines is not suit for the label of object."],
-	nmIsolate : ["どこにもつながっていない○があります。","A circle is not connected another object."]
+	nmNoLine : ["どこにもつながっていない○があります。","A circle is not connected another object."]
 }
 });

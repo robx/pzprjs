@@ -206,27 +206,29 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSingleArrowInArea", "bkDupNum"],
-		["checkBalls",             "stopHalfway"]
+		"checkSingleArrowInArea",
+		"checkBalls"
 	],
 
 	checkSingleArrowInArea : function(){
-		return this.checkDifferentNumberInRoom(this.getRoomInfo(), function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
+		this.checkDifferentNumberInRoom_main(this.getRoomInfo(), this.isDifferentNumber_roma);
+	},
+	isDifferentNumber_roma : function(clist){
+		return this.isIndividualObject(clist, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
 	},
 
 	checkBalls : function(){
-		var ldata = [], bd=this.owner.board;
+		var result = true, ldata = [], bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
-			if(!bd.trackBall1(c,ldata) && this.checkOnly){ return false;}
+			if(!bd.trackBall1(c,ldata)){
+				result = false;
+				this.failcode.add("stopHalfway");
+				if(this.checkOnly){ break;}
+			}
 		}
-
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(ldata[c]===1){ bd.cell[c].seterr(1); result=false;}
-		}
-		return result;
+		if(!result && !this.checkOnly){ bd.cell.filter(function(cell){ return ldata[cell.id]===1;}).seterr(1);}
 	}
 },
 

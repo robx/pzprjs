@@ -166,20 +166,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkRowsColsSameAnsNumber", "nmDupRow"],
-		["checkProductNumber",         "nmProduct"],
-		["checkNoAnumCell",            "ceEmpty", "", 1]
+		"checkOtherAnsNumberInLine",
+		"checkProductNumber",
+		"checkNoAnumCell+"
 	],
 
-	checkRowsColsSameAnsNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.anum;});
+	checkOtherAnsNumberInLine : function(){
+		this.checkRowsCols(this.isDifferentAnsNumberInClist, "nmDupRow");
 	},
 	checkNoAnumCell : function(){
-		return this.checkAllCell( function(cell){ return cell.anum===-1;} );
+		this.checkAllCell( function(cell){ return cell.anum===-1;}, "ceNoNum" );
 	},
 
 	checkProductNumber : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var room = rinfo.area[id], clist = room.clist;
@@ -187,17 +186,15 @@ AnsCheck:{
 			if(product === 0){ continue;}
 
 			if(product !== room.top.qnum){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmProduct");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	nmProduct : ["ブロックの数字と数字の積が同じではありません。","A number of room is not equal to the product of these numbers."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmProduct : ["ブロックの数字と数字の積が同じではありません。","A number of room is not equal to the product of these numbers."]
 }
 });

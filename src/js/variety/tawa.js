@@ -354,13 +354,13 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkThreeShadeCells", "csConsecGt3"],
-		["checkUnderCells",      "csNotOnShade"],
-		["checkNumbers",         "ceShadeNe"]
+		"checkThreeShadeCells",
+		"checkUnderCells",
+		"checkNumbers"
 	],
 
 	checkThreeShadeCells : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			var clist = new this.owner.CellList();
 			for(var bx=0;bx<=bd.maxbx;bx++){
@@ -373,15 +373,14 @@ AnsCheck:{
 				else{ clist.add(cell);}
 			}
 			if(clist.length>=3){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("csConsecGt3");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 	checkNumbers : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -395,34 +394,32 @@ AnsCheck:{
 
 			var cnt=clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.qnum!==cnt){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmShadeNe");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 	checkUnderCells : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 
 			if(cell.relcell(-1,2).isUnshade() && cell.relcell(1,2).isUnshade()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("csNotOnShade");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell.relcell(-1,2).seterr(1);
 				cell.relcell(1,2).seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	ceShadeNe    : ["数字の周りに入っている黒マスの数が違います。","The number of shaded cells around a number is not correct."],
+	nmShadeNe    : ["数字の周りに入っている黒マスの数が違います。","The number of shaded cells around a number is not correct."],
 	csConsecGt3  : ["黒マスが横に3マス以上続いています。","There or more shaded cells continue horizonally."],
 	csNotOnShade : ["黒マスの下に黒マスがありません。","There are no shaded cells under a shaded cell."]
 }

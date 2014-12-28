@@ -343,16 +343,16 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkNotMultiBar",   "nmLineGt1"],
+		"checkNotMultiBar",
 
-		["checkLoop_amibo",    "lbLoop"],
-		["checkLongBar",       "lbLenGt"],
-		["checkCrossedLength", "lbNotCrossEq"],
-		["checkShortBar",      "lbLenLt"],
+		"checkLoop_amibo",
+		"checkLongBar",
+		"checkCrossedLength",
+		"checkShortBar",
 
-		["checkSingleBar",     "nmIsolate"],
+		"checkSingleBar",
 
-		["checkAllBarConnect", "lbDivide", "", 1]
+		"checkAllBarConnect+"
 	],
 
 	getBarInfo : function(){
@@ -362,43 +362,44 @@ AnsCheck:{
 		return (this._info.bararea = this._info.bararea || this.owner.board.barinfo.getAreaInfo());
 	},
 
-	checkNotMultiBar : function(){ return this.checkOutgoingBars(1);},
-	checkSingleBar   : function(){ return this.checkOutgoingBars(2);},
-	checkOutgoingBars : function(type){
-		var result = true, bd = this.owner.board;
+	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},
+	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},
+	checkOutgoingBars : function(type, code){
+		var bd = this.owner.board;
 		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
 			var cid = binfo.pole[c];
 			if((type===1 && cid.length>1) || (type===2 && cid.length===0)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
-	checkLongBar  : function(){ return this.checkPoleLength(1);},
-	checkShortBar : function(){ return this.checkPoleLength(2);},
-	checkPoleLength : function(type){
+	checkLongBar  : function(){ this.checkPoleLength(1, "lbLenGt");},
+	checkShortBar : function(){ this.checkPoleLength(2, "lbLenLt");},
+	checkPoleLength : function(type, code){
 		var result = true, bd = this.owner.board;
 		var binfo = this.getBarInfo();
-		for(var c=0;c<bd.cellmax;c++){
+		allloop: for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
 				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
 				if((type===1 && llen>qn) || (type===2 && llen<qn)){
-					if(this.checkOnly){ return false;}
-					if(result){ bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);}
+					result = false;
+					if(this.checkOnly){ break allloop;}
 					cell.seterr(1);
 					clist.setErrorBar(bar.vert);
-					result = false;
 				}
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+		}
 	},
 	checkCrossedLength : function(){
 		var result=true;
@@ -409,17 +410,19 @@ AnsCheck:{
 				if(clist.length===binfo.area[linkid[i]].clist.length){ check=true; break;}
 			}
 			if(!check){
-				if(this.checkOnly){ return false;}
-				if(result){ this.owner.board.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);}
-				clist.setErrorBar(bar.vert);
 				result = false;
+				if(this.checkOnly){ break;}
+				clist.setErrorBar(bar.vert);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("lbNotCrossEq");
+			this.owner.board.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+		}
 	},
 
 	checkAllBarConnect : function(){
-		return this.checkOneArea(this.getConnectionInfo());
+		this.checkOneArea(this.getConnectionInfo(), "lbDivide");
 	},
 
 	checkLoop_amibo : function(){
@@ -437,11 +440,10 @@ AnsCheck:{
 
 		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
-			bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
+			this.failcode.add("lbLoop");
+			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
 			errclist.seterr(4);
-			return false;
 		}
-		return true;
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
@@ -485,6 +487,6 @@ FailCode:{
 	lbLoop : ["棒で輪っかができています。","There is a looped bars."],
 	lbNotCrossEq : ["同じ長さの棒と交差していません。","A bar doesn't cross the bar whose length is the same."],
 	nmLineGt1 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
-	nmIsolate : ["白丸に線がつながっていません。","No bar connects to a white circle."]
+	nmNoLine  : ["白丸に線がつながっていません。","No bar connects to a white circle."]
 }
 });

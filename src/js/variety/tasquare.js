@@ -106,23 +106,23 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSquareShade",    "csNotSquare"],
-		["checkConnectUnshade", "cuDivide"],
-		["checkSumOfSize",      "ceSumSizeNe"],
-		["checkAtLeastOne",     "ceNoShade"]
+		"checkSquareShade",
+		"checkConnectUnshade",
+		"checkSumOfSize",
+		"checkAtLeastOne"
 	],
 
 	checkSquareShade : function(){
-		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a && w===h);});
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a && w===h);}, "csNotSquare");
 	},
-	checkSumOfSize  : function(){ return this.checkNumberSquare(true);},
-	checkAtLeastOne : function(){ return this.checkNumberSquare(false);},
-	checkNumberSquare : function(flag){
-		var result = true, bd = this.owner.board;
+	checkSumOfSize  : function(){ this.checkNumberSquare(true,  "nmSumSizeNe");},
+	checkAtLeastOne : function(){ this.checkNumberSquare(false, "nmNoSideShade");},
+	checkNumberSquare : function(flag, code){
+		var bd = this.owner.board;
 		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if((flag?(cell.qnum<0):(cell.qnum!==-2))){ continue;}
+			if((flag?(cell.qnum<0):(cell.qnum===-1))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
 			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
 			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
@@ -130,18 +130,17 @@ AnsCheck:{
 			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
 
 			if(flag?(clist.length!==cell.qnum):(clist.length===0)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	ceSumSizeNe : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
-	ceNoShade   : ["数字のない□に黒マスが接していません。","No shaded cells are adjacent to square mark without numbers."]
+	nmSumSizeNe   : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
+	nmNoSideShade : ["□に黒マスが接していません。","No shaded cells are adjacent to square marks."]
 }
 });

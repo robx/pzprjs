@@ -320,11 +320,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkPickedStone", "goishiRemains"]
+		"checkPickedStone"
 	],
 
 	checkPickedStone :function(){
-		return this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);});
+		this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);}, "goishiRemains");
 	}
 },
 

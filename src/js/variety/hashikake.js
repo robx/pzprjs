@@ -299,31 +299,30 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkCellNumberNotOver", "nmLineCntGt"],
-		["checkConnectAllNumber",  "lcDivided"],
-		["checkCellNumberNotLess", "nmLineCntLt"]
+		"checkCellNumberNotOver",
+		"checkConnectAllNumber",
+		"checkCellNumberNotLess"
 	],
 
 	checkConnectAllNumber : function(){
 		var linfo = this.getLareaInfo();
 		var bd = this.owner.board;
 		if(linfo.max>1){
-			bd.border.seterr(-1);
+			this.failcode.add("lcDivided");
+			bd.border.setnoerr();
 			linfo.setErrLareaByCell(bd.cell[1],1);
-			return false;
 		}
-		return true;
 	},
 	checkCellNumberNotOver :function(){
-		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum < cell.getCountOfBridges());});
+		this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum < cell.getCountOfBridges());}, "nmLineGt");
 	},
 	checkCellNumberNotLess :function(){
-		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum > cell.getCountOfBridges());});
+		this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum > cell.getCountOfBridges());}, "nmLineLt");
 	}
 },
 
 FailCode:{
-	nmLineCntGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
-	nmLineCntLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
+	nmLineGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
+	nmLineLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
 });

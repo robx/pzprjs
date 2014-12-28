@@ -115,20 +115,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkNoNumber",      "bkNoNum"],
-		["checkDoubleNumber",  "bkNumGe2"],
-		["checkRoomRect",      "bkNotRect",    "shikaku"],
-		["checkAhoSquare",     "bkNotRect3",   "aho"],
-		["checkLshapeArea",    "bkNotLshape3", "aho"],
-		["checkNumberAndSize", "bkSizeNe"],
-		["checkBorderDeadend", "bdDeadEnd", "", 1]
+		"checkNoNumber",
+		"checkDoubleNumber",
+		"checkRoomRect@shikaku",
+		"checkAhoSquare@aho",
+		"checkLshapeArea@aho",
+		"checkNumberAndSize",
+		"checkBorderDeadend+"
 	],
 
 	checkAhoSquare : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);}, "bkNotRect3");
 	},
 	checkLshapeArea : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
@@ -143,12 +142,11 @@ AnsCheck:{
 			var d2 = clist2.getRectSize();
 
 			if( clist2.length===0 || (d2.cols*d2.rows!==d2.cnt) || (d.x1!==d2.x1 && d.x2!==d2.x2) || (d.y1!==d2.y1 && d.y2!==d2.y2) ){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkNotLshape3");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

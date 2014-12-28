@@ -284,25 +284,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSameColorTile",     "bkMixed"],
-		["checkRowsColsShadeCell", "asShadeNe"]
+		"checkSameColorTile",
+		"checkRowsColsShadeCell"
 	],
 
 	checkRowsColsShadeCell : function(){
-		return this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, false);
+		this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, "asShadeNe");
 	},
-	isShadeCount : function(keycellpos, clist){
-		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.qnum;}
-		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
-
+	isShadeCount : function(clist, info){
+		var number = info.key51num;
 		var count = clist.filter(function(cell){ return cell.isShade();}).length;
-		if(number>=0 && count!==number){
-			keyobj.seterr(1);
+		var result = (number<0 || count===number);
+		if(!result){
+			info.keycell.seterr(1);
 			clist.seterr(1);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 

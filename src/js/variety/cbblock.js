@@ -199,10 +199,10 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSingleBlock",         "bkSubLt2"],
-		["checkBlockNotRect",        "bkRect"],
-		["checkDifferentShapeBlock", "sbSameShape"],
-		["checkLargeBlock",          "bkSubGt2"]
+		"checkSingleBlock",
+		"checkBlockNotRect",
+		"checkDifferentShapeBlock",
+		"checkLargeBlock"
 	],
 
 	getCombiBlockInfo : function(){
@@ -211,27 +211,25 @@ AnsCheck:{
 	},
 
 	checkBlockNotRect : function(){
-		return this.checkAllArea(this.getCombiBlockInfo(), function(w,h,a,n){ return (w*h!==a);});
+		this.checkAllArea(this.getCombiBlockInfo(), function(w,h,a,n){ return (w*h!==a);}, "bkRect");
 	},
 
-	checkSingleBlock : function(){ return this.checkMiniBlockCount(1);},
-	checkLargeBlock  : function(){ return this.checkMiniBlockCount(3);},
-	checkMiniBlockCount : function(flag){
-		var result=true;
+	checkSingleBlock : function(){ this.checkMiniBlockCount(1, "bkSubLt2");},
+	checkLargeBlock  : function(){ this.checkMiniBlockCount(3, "bkSubGt2");},
+	checkMiniBlockCount : function(flag, code){
 		var cinfo = this.getCombiBlockInfo();
 		for(var r=1;r<=cinfo.max;r++){
 			var cnt=cinfo.area[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				cinfo.area[r].clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 
 	checkDifferentShapeBlock : function(){
-		var result=true, cinfo = this.getCombiBlockInfo();
+		var cinfo = this.getCombiBlockInfo();
 		var sides=cinfo.getSideAreaInfo(), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
 			var area1 = cinfo.area[r];
@@ -243,14 +241,13 @@ AnsCheck:{
 				if(area1.size!==area2.size){ continue;}
 
 				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
-					if(this.checkOnly){ return false;}
+					this.failcode.add("bsSameShape");
+					if(this.checkOnly){ break;}
 					area1.clist.seterr(1);
 					area2.clist.seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
 	},
 	isDifferentShapeBlock : function(cinfo, r, s, sc){
 		if(!sc[r]){ sc[r]=cinfo.area[r].clist.getBlockShapes();}
@@ -264,7 +261,7 @@ AnsCheck:{
 
 FailCode:{
 	bkRect : ["ブロックが四角形になっています。","A block is rectangle."],
-	sbSameShape : ["同じ形のブロックが接しています。","The blocks that has the same shape are adjacent."],
+	bsSameShape : ["同じ形のブロックが接しています。","The blocks that has the same shape are adjacent."],
 	bkSubLt2 : ["ブロックが1つの点線からなる領域で構成されています。","A block has one area framed by dotted line."],
 	bkSubGt2 : ["ブロックが3つ以上の点線からなる領域で構成されています。","A block has three or more areas framed by dotted line."]
 }

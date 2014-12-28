@@ -334,46 +334,40 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkRowsColsSameNumber", "nmDupRow"],
-		["checkBDnumber",           "nmSubNe"],
-		["checkBDmark",             "nmIneqNe"],
-		["checkNoNumCell",          "ceEmpty", "", 1]
+		"checkDifferentNumberInLine",
+		"checkSubOfNumber",
+		"checkIneqMark",
+		"checkNoNumCell+"
 	],
 
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
-	},
-
-	checkBDnumber : function(){
-		return this.checkBDSideCell(function(border,a1,a2){
+	checkSubOfNumber : function(){
+		this.checkHintSideCell(function(border,a1,a2){
 			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));
-		});
+		}, "nmSubNe");
 	},
-	checkBDmark : function(){
-		return this.checkBDSideCell(function(border,a1,a2){
+	checkIneqMark : function(){
+		this.checkHintSideCell(function(border,a1,a2){
 			var mark = border.qdir;
 			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
-		});
+		}, "nmIneqNe");
 	},
-	checkBDSideCell : function(func){
-		var result = true, bd = this.owner.board;
-		for(var id=0;id<bd.bdmax;id++){
-			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+	checkHintSideCell : function(func, code){
+		var boardborder = this.owner.board.border;
+		for(var id=0;id<boardborder.length;id++){
+			var border = boardborder[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();
 			if(num1>0 && num2>0 && func(border,num1,num2)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				cell1.seterr(1);
 				cell2.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The Difference between two Adjacent cells is not equal to the number on circle."],
-	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."]
 }
 });

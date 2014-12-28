@@ -200,24 +200,24 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBorderBranch",    "bdBranch",     "!kramma"],
-		["checkBorderCrossOnBP", "bdCrossBP",    "!kramma"],
-		["checkLcntCurve",       "bdCurveExBP",  "!kramma"],
-		["checkLineChassis",     "bdNotChassis", "shwolf"],
+		"checkBorderBranch@!kramma",
+		"checkBorderCrossOnBP@!kramma",
+		"checkLcntCurve@!kramma",
+		"checkLineChassis@shwolf",
 
-		["checkNoNumber",         "bkNoNum"],
-		["checkSameObjectInArea", "bkPlNum"],
+		"checkNoNumber",
+		"checkSameObjectInArea",
 
-		["checkBorderDeadend",   "bdDeadEnd",  "!kramma", 1],
-		["checkBorderNoneOnBP",  "bdIgnoreBP", "kramman"]
+		"checkBorderDeadend+@!kramma",
+		"checkBorderNoneOnBP@kramman"
 	],
 
-	checkBorderBranch : function(){ return this.checkBorderCount(3,0);},
-	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1);},
-	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
+	checkBorderBranch    : function(){ return this.checkBorderCount(3,0, "bdBranch");},
+	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1, "bdCrossBP");},
+	checkBorderNoneOnBP  : function(){ return this.checkBorderCount(0,1, "bdIgnoreBP");},
 
 	checkSameObjectInArea : function(){
-		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();});
+		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	checkLcntCurve : function(){
@@ -235,6 +235,7 @@ AnsCheck:{
 				}
 			}
 		}
+		if(!result){ this.failcode.add("bdCurveExBP");}
 		return result;
 	},
 
@@ -260,12 +261,15 @@ AnsCheck:{
 		for(var id=0;id<bd.bdmax;id++){
 			if(lines[id]!==1){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			for(var i=0;i<bd.bdmax;i++){ if(lines[i]===1){ bd.border[i].seterr(1);} }
 			result = false;
+			if(this.checkOnly){ break;}
+			bd.border.filter(function(border){ return lines[border.id]===1;}).seterr(1);
 		}
 
+		if(!result){ 
+			this.failcode.add("bdNotChassis");
+			bd.border.setnoerr();
+		}
 		return result;
 	},
 	clearLineInfo : function(lines,pos,dir){

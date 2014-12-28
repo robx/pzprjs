@@ -260,23 +260,20 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkenableLineParts",  "ceAddLine"],
+		"checkenableLineParts",
 
-		["checkCrossOutOfMark",   "lnCrossExIce", "pipelinkr"],
-		["checkIceLines",         "lnCurveOnIce", "pipelinkr"],
+		"checkCrossOutOfMark@pipelinkr",
+		"checkIceLines@pipelinkr",
 
-		["checkBranchLine",       "lnBranch"],
-		["checkOneLoop",          "lnPlLoop"],
-		["checkCrossLineOnCross", "lnNotCrossMk"],
-		["checkNoLine",           "ceEmpty"],
-		["checkDeadendLine",      "lnDeadEnd", "", 1]
+		"checkBranchLine",
+		"checkOneLoop",
+		"checkNotCrossOnMark",
+		"checkNoLine",
+		"checkDeadendLine+"
 	],
 
 	checkCrossOutOfMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==6 && cell.ques!==11);});
-	},
-	checkCrossLineOnCross : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==6 && cell.ques!==11);}, "lnCrossExIce");
 	}
 },
 "CheckInfo@pipelinkr":{
@@ -297,8 +294,7 @@ AnsCheck:{
 	}
 },
 FailCode:{
-	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."],
-	lnCrossExCir : ["○の部分以外で線が交差しています。","there is a crossing line out of circles."],
+	lnCrossExCir : ["○の部分以外で線が交差しています。","There is a crossing line out of circles."],
 	lnCurveOnCir : ["○の部分で線が曲がっています。","A line curves on circles."]
 }
 });

@@ -100,18 +100,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSameColorTile",  "bkMixed"],		// 問題チェック用
-		["checkConnectShade",   "csDivide"],
-		["check2x2ShadeCell",   "cs2x2", "", 1],
-		["checkDir4ShadeCell",  "nmShadeNe"],
-		["check2x2UnshadeCell", "cu2x2", "", 2]
+		"checkSameColorTile",					// 問題チェック用
+		"checkConnectShade",
+		"check2x2ShadeCell+",
+		"checkDir4ShadeCell",
+		"check2x2UnshadeCell++"
 	],
 
 	checkDir4ShadeCell : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);
+		this.checkDir4Cell(function(cell){ return cell.isShade();},0, "nmShadeNe");
 	},
 	check2x2UnshadeCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
+		this.check2x2Block( function(cell){ return cell.isUnshade();}, "cu2x2" );
 	}
 },
 

@@ -127,35 +127,34 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
-		["checkTripleObject",   "lcTripleNum"],
-		["checkLinkSameNumber", "nmConnDiff"],
-		["checkLineOverLetter", "lcOnNum"],
-		["checkDeadendLine",    "lcDeadEnd", "", 1],
-		["checkDisconnectLine", "lcIsolate"],
-		["checkAloneNumber",    "nmIsolate"]
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkTripleObject",
+		"checkLinkSameNumber",
+		"checkLineOverLetter",
+		"checkDeadendConnectLine_numlin+",
+		"checkDisconnectLine",
+		"checkNoLineObject+"
 	],
 
 	checkLinkSameNumber : function(){
-		return this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();});
-	},
-	checkAloneNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
+		this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();}, "nmConnDiff");
 	},
 
-	checkDeadendLine : function(){
+	checkDeadendConnectLine_numlin : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!(cell.lcnt===1 && cell.noNum())){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			cell.setCellLineError(true);
 			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(true);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("lcDeadEnd");
+			bd.border.setnoerr();
+		}
 	}
 },
 

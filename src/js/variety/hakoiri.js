@@ -159,22 +159,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAroundMarks",        "nmAround"],
-		["checkOverFourMarksInBox", "bkNumGt3"],
-		["checkOtherNumberInRoom",  "bkDupNum"],
-		["checkConnectNumber",      "nmDivide"],
-		["checkAllMarkInBox",       "bkNumLt3"]
+		"checkAroundMarks",
+		"checkOverFourMarksInBox",
+		"checkDifferentNumberInRoom",
+		"checkConnectNumber",
+		"checkAllMarkInBox"
 	],
 
 	checkOverFourMarksInBox : function(){
-		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}, "bkNumGt3");
 	},
 	checkAllMarkInBox : function(){
-		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}, "bkNumLt3");
 	},
 
 	checkAroundMarks : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
@@ -188,12 +188,11 @@ AnsCheck:{
 			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
 
 			if(clist.length>1){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmAround");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

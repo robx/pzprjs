@@ -597,46 +597,48 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSegmentExist",     "brNoLine"],
-		["checkSegmentPoint",     "lnIsolate"],
-		["checkSegmentBranch",    "lnBranch"],
-		["checkSegmentOverPoint", "lnPassOver"],
-		["checkDuplicateSegment", "lnOverlap"],
-		["checkDifferentLetter",  "nmConnDiff"],
-		["checkRightAngle",       "lnRightAngle"],
-		["checkOneSegmentLoop",   "lnPlLoop"],
-		["checkSegmentDeadend",   "lnDeadEnd"],
-		["checkAlonePoint",       "nmLineCount"],
-		["checkConsequentLetter", "nmNotConseq"]
+		"checkSegmentExist",
+		"checkSegmentPoint",
+		"checkSegmentBranch",
+		"checkSegmentOverPoint",
+		"checkDuplicateSegment",
+		"checkDifferentLetter",
+		"checkRightAngle",
+		"checkOneSegmentLoop",
+		"checkSegmentDeadend",
+		"checkAlonePoint",
+		"checkConsequentLetter"
 	],
 
 	checkSegmentExist : function(){
-		return (this.owner.board.segment.length!==0);
+		if(this.owner.board.segment.length===0){ this.failcode.add("brNoLine");}
 	},
 
 	checkAlonePoint : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);}, "nmLineLt2");
 	},
 	checkSegmentPoint : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);}, "lnIsolate");
 	},
 	checkSegmentBranch : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length>2);});
+		this.checkSegment(function(cross){ return (cross.seglist.length>2);}, "lnBranch");
 	},
 	checkSegmentDeadend : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length===1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length===1);}, "lnDeadEnd");
 	},
-	checkSegment : function(func){
+	checkSegment : function(func, code){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
 			if(func(cross)){
-				if(result){ bd.segment.seterr(-1);}
-				cross.seglist.seterr(1);
 				result = false;
+				cross.seglist.seterr(1);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.segment.setnoerr();
+		}
 	},
 
 	checkOneSegmentLoop : function(){
@@ -645,45 +647,49 @@ AnsCheck:{
 			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
 			if(validcount>1){
-				bd.segment.seterr(-1);
+				this.failcode.add("lnPlLoop");
+				bd.segment.setnoerr();
 				bd.seginfo.seglist[r].seterr(1);
-				return false;
+				break;
 			}
 		}
-		return true;
 	},
 
 	checkSegmentOverPoint : function(){
-		var result = true, bd = this.owner.board;
-		bd.segment.each(function(seg){
+		var result = true, bd = this.owner.board, seglist = bd.segment;
+		seglist.each(function(seg){
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
 			for(var n=0;n<lattice.length;n++){
-				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				bd.cross[lattice[n]].seterr(1);
 				result = false;
 			}
 		});
-		return result;
+		if(!result){
+			this.failcode.add("lnPassOver");
+			seglist.setnoerr();
+		}
 	},
 
 	checkDifferentLetter : function(){
-		var result = true, bd = this.owner.board;
-		bd.segment.each(function(seg){
+		var result = true, bd = this.owner.board, seglist = bd.segment;
+		seglist.each(function(seg){
 			var cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
-				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				cross1.seterr(1);
 				cross2.seterr(1);
 				result = false;
 			}
 		});
-		return result;
+		if(!result){
+			this.failcode.add("nmConnDiff");
+			seglist.setnoerr();
+		}
 	},
 
 	checkConsequentLetter : function(){
-		var result = true, count = {}, qnlist = [], bd = this.owner.board;
+		var count = {}, qnlist = [], bd = this.owner.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
 		for(var c=0;c<bd.crossmax;c++){
@@ -706,14 +712,13 @@ AnsCheck:{
 		for(var i=0;i<qnlist.length;i++){
 			var qn = qnlist[i];
 			if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
+				this.failcode.add("nmNotConseq");
 				for(var c=0;c<bd.crossmax;c++){
 					var cross = bd.cross[c];
 					if(cross.qnum===qn){ cross.seterr(1);}
 				}
-				result = false;
 			}
 		}
-		return result;
 	},
 
 	checkDuplicateSegment : function(){
@@ -722,13 +727,15 @@ AnsCheck:{
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1===null||seg2===null){ continue;}
 			if(seg1.isOverLapSegment(seg2)){
-				if(result){ this.owner.board.segment.seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
 			}
 		}}
-		return result;
+		if(!result){
+			this.failcode.add("lnOverlap");
+			seglist.setnoerr();
+		}
 	},
 
 	checkRightAngle : function(seglist){
@@ -737,28 +744,30 @@ AnsCheck:{
 			var seg1=seglist[i], seg2=seglist[j];
 			if(seg1===null||seg2===null){ continue;}
 			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				if(result){ this.owner.board.segment.seterr(-1);}
 				seg1.seterr(1);
 				seg2.seterr(1);
 				result = false;
 			}
 		}}
-		return result;
+		if(!result){
+			this.failcode.add("lnRightAngle");
+			seglist.setnoerr();
+		}
 	}
 },
 
 FailCode:{
-	lnDeadEnd    : ["途中で途切れている線があります。","there is a dead-end segment."],
-	lnBranch     : ["分岐している線があります。","there is a branched segment."],
-	lnPlLoop     : ["輪っかが一つではありません。","there are plural loops."],
+	lnDeadEnd    : ["途中で途切れている線があります。","There is a dead-end segment."],
+	lnBranch     : ["分岐している線があります。","There is a branched segment."],
+	lnPlLoop     : ["輪っかが一つではありません。","There are plural loops."],
 	lnIsolate    : ["線が丸のないところから出ています。","A segment comes from out of circle."],
 	lnPassOver   : ["線が丸を通過しています。","A segment passes over a circle."],
 	lnOverlap    : ["線が同一直線上で重なっています。","Plural segments are overlapped."],
 	lnRightAngle : ["線が直角に交差していません。","Segments don't intersect at a right angle."],
 	nmConnDiff   : ["異なる文字が直接繋がっています。","Different Letters are connected directly."],
 	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Same Letters are not consequent."],
-	nmLineCount  : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
-	brNoLine     : ["線が存在していません。","there is no segment."]
+	nmLineLt2    : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
+	brNoLine     : ["線が存在していません。","There is no segment."]
 },
 
 //---------------------------------------------------------

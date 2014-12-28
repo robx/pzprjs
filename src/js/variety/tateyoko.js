@@ -249,11 +249,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBarOverNum",         "nmConnBarGt"],
-		["checkDoubleNumberInBar",  "baPlNum"],
-		["checkSizeAndNumberInBar", "bkSizeNe"],
-		["checkBarLessNum",         "nmConnBarLt"],
-		["checkEmptyCell",          "ceEmpty", "", 1]
+		"checkBarOverNum",
+		"checkDoubleNumberInBar",
+		"checkSizeAndNumberInBar",
+		"checkBarLessNum",
+		"checkEmptyCell_tateyoko+"
 	],
 
 	getBarInfo : function(){
@@ -261,24 +261,20 @@ AnsCheck:{
 	},
 
 	checkDoubleNumberInBar : function(){
-		var bd = this.owner.board;
-		bd.cell.seterr(-1);
-		var result = this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);} );
-		if(!result){ bd.cell.seterr(0);}
-		return result;
+		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "baPlNum");
+		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 	checkSizeAndNumberInBar : function(){
-		var bd = this.owner.board;
-		bd.cell.seterr(-1);
-		var result = this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );
-		if(!result){ bd.cell.seterr(0);}
-		return result;
+		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
+		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 
-	checkBarOverNum : function(){ return this.checkShade(1);},
-	checkBarLessNum : function(){ return this.checkShade(2);},
-	checkShade : function(type){
-		var result = true, bd = this.owner.board;
+	checkBarOverNum : function(){ return this.checkShade(1, "nmConnBarGt");},
+	checkBarLessNum : function(){ return this.checkShade(2, "nmConnBarLt");},
+	checkShade : function(type, code){
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.qnum;
 			if(cell.ques!==1 || num<0){ continue;}
@@ -290,20 +286,20 @@ AnsCheck:{
 			cell2=adc.right;  if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
 
 			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 	
-	checkEmptyCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.qans===0);});
+	checkEmptyCell_tateyoko : function(){
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.qans===0);}, "ceNoBar");
 	}
 },
 
 FailCode:{
+	ceNoBar     : ["何も入っていないマスがあります。","There is an empty cell."],
 	bkSizeNe    : ["数字と棒の長さが違います。","The number is different from the length of line."],
 	baPlNum     : ["1つの棒に2つ以上の数字が入っています。","A line passes plural numbers."],
 	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."],

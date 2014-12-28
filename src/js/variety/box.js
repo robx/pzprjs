@@ -321,11 +321,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkShadeCells", "nmSumRowShadeNe"]
+		"checkShadeCells"
 	],
 
 	checkShadeCells : function(type){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
 			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
@@ -349,13 +349,12 @@ AnsCheck:{
 			else{ continue;}
 
 			if(qn!==val){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumRowShadeNe");
+				if(this.checkOnly){ break;}
 				excell.seterr(1);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

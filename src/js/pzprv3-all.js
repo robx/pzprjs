@@ -98,6 +98,7 @@
 		"variety/nawabari",
 		"variety/numlin",
 		"variety/nurikabe",
+		"variety/nurimaze",
 		"variety/paintarea",
 		"variety/pipelink",
 		"variety/reflect",

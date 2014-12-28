@@ -125,56 +125,48 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine_firefly", "lnBranch"],
-		["checkCrossLine_firefly",  "lnCross",   "!ichimagax"],
-		["checkConnectSameNum",     "lcSameNum", "ichimagam"],
-		["checkCurveCount",         "lcCurveGt1"],
-		["checkConnectAllNumber",   "lcDivided"],
-		["checkDeadendLine",        "lcDeadEnd", "", 1],
+		"checkBranchLine_firefly",
+		"checkCrossLine_firefly@!ichimagax",
+		"checkConnectSameNum@ichimagam",
+		"checkCurveCount",
+		"checkConnectAllNumber",
+		"checkDeadendConnectLine+",
 
-		["checkOutgoingLine",       "nmLineNe"],
-		["checkNoLineObject",       "nmIsolate"]
+		"checkOutgoingLine",
+		"checkNoLineObject"
 	],
 
 	/* 線のカウントはするが、○のある場所は除外する */
-	checkCrossLine_firefly  : function(){ return this.checkLineCount_firefly(4);},
-	checkBranchLine_firefly : function(){ return this.checkLineCount_firefly(3);},
-	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]===0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
-	},
-	checkNoLineObject : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
+	checkCrossLine_firefly  : function(){ this.checkLineCount_firefly(4, "lnCross");},
+	checkBranchLine_firefly : function(){ this.checkLineCount_firefly(3, "lnBranch");},
+	checkLineCount_firefly : function(val, code){
+		if(this.owner.board.lines.ltotal[val]===0){ return;}
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
 	checkOutgoingLine : function(){
-		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);});
+		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);}, "nmLineNe");
 	},
 
 	checkConnectSameNum : function(){
-		return this.checkLineShape(function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;});
+		this.checkLineShape(function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;}, "lcSameNum");
 	},
 	checkCurveCount : function(){
-		return this.checkLineShape(function(path){ return !path.cells[1].isnull && path.ccnt>1;});
-	},
-	checkDeadendLine : function(){
-		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
+		this.checkLineShape(function(path){ return !path.cells[1].isnull && path.ccnt>1;}, "lcCurveGt1");
 	},
 
 	checkConnectAllNumber : function(){
 		var linfo = this.getLareaInfo();
 		var bd = this.owner.board;
 		if(linfo.max>1){
-			bd.border.seterr(-1);
+			this.failcode.add("lcDivided");
+			bd.border.setnoerr();
 			linfo.setErrLareaByCell(bd.cell[1],1);
-			return false;
 		}
-		return true;
 	}
 },
 
 FailCode:{
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."],
-	
+	nmNoLine : ["○から線が出ていません。","A circle doesn't start any line."],
 	nmLineNe : ["○から出る線の本数が正しくありません。", "The number is not equal to the number of lines out of the circle."],
 	lcSameNum : ["同じ数字同士が線で繋がっています。", "Same numbers are connected each other."],
 	lcCurveGt1 : ["線が2回以上曲がっています。", "The number of curves is twice or more."]

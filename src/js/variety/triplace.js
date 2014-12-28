@@ -292,9 +292,9 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkOverThreeCells",    "bkSizeLt3"],
-		["checkRowsColsTileCount", "asLblockNe"],
-		["checkLessThreeCells",    "bkSizeGt3"]
+		"checkOverThreeCells",
+		"checkRowsColsTileCount",
+		"checkLessThreeCells"
 	],
 
 	getTileInfo : function(){
@@ -302,33 +302,29 @@ AnsCheck:{
 	},
 
 	checkOverThreeCells : function(){
-		return this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a>=3);});
+		this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a>=3);}, "bkSizeLt3");
 	},
 	checkLessThreeCells : function(){
-		return this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a<=3);});
+		this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a<=3);}, "bkSizeGt3");
 	},
 
 	checkRowsColsTileCount : function(){
-		var evalfunc = function(pos,clist){ return this.isTileCount(pos,clist);};
-		return this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, false);
+		function evalfunc(pos,clist){ return this.isTileCount(pos,clist);}
+		this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, "asLblockNe");
 	},
-	isTileCount : function(keycellpos, clist){
+	isTileCount : function(clist, info){
 		var tiles = this.getTileInfo();
-		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.qnum;}
-		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
-
-		var count = 0, counted = [];
+		var number = info.key51num, count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
 			var tid = tiles.id[clist[i].id];
 			if(tiles.area[tid].is1x3===1 && !counted[tid]){ count++; counted[tid] = true;}
 		}
-		if(number>=0 && count!==number){
-			keyobj.seterr(1);
+		var result = (number<0 || count===number);
+		if(!result){
+			info.keycell.seterr(1);
 			clist.seterr(1);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 

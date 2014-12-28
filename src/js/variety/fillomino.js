@@ -227,12 +227,12 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkNoEmptyArea",         "bkNoNum"],
-		["checkSmallArea",           "bkSizeLt"],
-		["checkSideAreaNumberSize",  "sbSameNum"],
-		["checkLargeArea",           "bkSizeGt"],
-		["checkNotMultiNum",         "bkPlNum"],
-		["checkNoNumCell_fillomino", "ceEmpty", "", 1]
+		"checkNoEmptyArea",
+		"checkSmallArea",
+		"checkSideAreaNumberSize",
+		"checkLargeArea",
+		"checkNotMultiNum",
+		"checkNoNumCell_fillomino+"
 	],
 
 	getErrorRoomInfo  : function(){
@@ -240,34 +240,33 @@ AnsCheck:{
 	},
 
 	checkSideAreaNumberSize : function(){
-		return this.checkSideAreaSize(this.getErrorRoomInfo(), function(area){ return area.number;});
+		this.checkSideAreaSize(this.getErrorRoomInfo(), function(area){ return area.number;}, "bsSameNum");
 	},
 
-	checkNoEmptyArea : function(){ return this.checkAllErrorRoom(function(area){ return area.numkind!==0;});},
-	checkSmallArea   : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.clist.length);});},
-	checkLargeArea   : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.clist.length);});},
-	checkNotMultiNum : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
-	checkAllErrorRoom : function(evalfunc){
-		var result = true;
+	checkNoEmptyArea : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
+	checkSmallArea   : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.clist.length);}, "bkSizeLt");},
+	checkLargeArea   : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.clist.length);}, "bkSizeGt");},
+	checkNotMultiNum : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkAllErrorRoom : function(evalfunc, code){
 		var rinfo = this.getErrorRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var area = rinfo.area[id];
 			if( !!area && !evalfunc(area) ){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				area.clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 
-	checkNoNumCell_fillomino : function(){	// オーバーライド
-		return this.owner.getConfig('enbnonum') || this.checkNoNumCell();
+	checkNoNumCell_fillomino : function(){
+		if(!this.owner.getConfig('enbnonum')){ this.checkNoNumCell();}
 	}
 },
 
 FailCode:{
-	sbSameNum : ["同じ数字のブロックが辺を共有しています。","Adjacent blocks have the same number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	bkSizeLt : ["ブロックの大きさより数字のほうが大きいです。","A number is bigger than the size of block."],
+	bkSizeGt : ["ブロックの大きさよりも数字が小さいです。","A number is smaller than the size of block."],
+	bsSameNum : ["同じ数字のブロックが辺を共有しています。","Adjacent blocks have the same number."]
 }
 });

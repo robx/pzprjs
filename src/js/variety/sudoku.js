@@ -26,7 +26,24 @@ Cell:{
 },
 Board:{
 	qcols : 9,
-	qrows : 9
+	qrows : 9,
+
+	hasborder : 1,
+
+	initBoardSize : function(col,row){
+		this.common.initBoardSize.call(this,col,row);
+
+		var roomsize = (Math.sqrt(col)|0) * 2;
+		for(var i=0;i<this.bdmax;i++){
+			var border = this.border[i];
+			if(border.bx%roomsize===0 || border.by%roomsize===0){ border.ques = 1;}
+		}
+		this.resetInfo();
+	}
+},
+
+AreaRoomManager:{
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -35,39 +52,13 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawBlockBorders();
+		this.drawBorders();
 
 		this.drawNumbers();
 
 		this.drawChassis();
 
 		this.drawCursor();
-	},
-
-	drawBlockBorders : function(){
-		var g = this.vinc('border_block', 'crispEdges', true), bd = this.owner.board;
-
-		var lw = this.lw;
-		var max=bd.qcols;
-		var block=((Math.sqrt(max)+0.1)|0);
-
-		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
-		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
-
-		g.fillStyle = "black";
-		for(var i=1;i<block;i++){
-			if(x1-1<=i*block&&i*block<=x2+1){
-				g.vid = "bbx_"+i;
-				g.fillRect(i*block*this.cw-lw+0.5, y1*this.bh-lw+0.5, lw, (y2-y1)*this.bh+2*lw-1);
-			}
-		}
-		for(var i=1;i<block;i++){
-			if(y1-1<=i*block&&i*block<=y2+1){
-				g.vid = "bby_"+i;
-				g.fillRect(x1*this.bw-lw+0.5, i*block*this.ch-lw+0.5, (x2-x1)*this.bw+2*lw-1, lw);
-			}
-		}
 	}
 },
 
@@ -113,31 +104,9 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBlockSameNumber",    "bkDupNum"],
-		["checkRowsColsSameNumber", "nmDupRow"],
-		["checkNoNumCell",          "ceEmpty", "", 1]
-	],
-
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
-	},
-
-	checkBlockSameNumber : function(){
-		var result = true, bd = this.owner.board;
-		var max=bd.qcols;
-		var blk=((Math.sqrt(max)+0.1)|0);
-		for(var i=0;i<max;i++){
-			var clist = bd.cellinside(((i%blk)*blk)*2+1, (((i/blk)|0)*blk)*2+1, ((i%blk+1)*blk-1)*2+1, (((i/blk+1)|0)*blk-1)*2+1);
-			if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getNum();})){
-				if(this.checkOnly){ return false;}
-				result = false;
-			}
-		}
-		return result;
-	}
-},
-
-FailCode:{
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+		"checkDifferentNumberInRoom",
+		"checkDifferentNumberInLine",
+		"checkNoNumCell+"
+	]
 }
 });

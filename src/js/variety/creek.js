@@ -97,15 +97,15 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkShadeOverNum",   "crShadeGt"],
-		["checkConnectUnshade", "cuDivide"],
-		["checkShadeLessNum",   "crShadeLt"]
+		"checkShadeOverNum",
+		"checkConnectUnshade",
+		"checkShadeLessNum"
 	],
 
-	checkShadeOverNum : function(){ return this.checkQnumCross(1);},
-	checkShadeLessNum : function(){ return this.checkQnumCross(2);},
-	checkQnumCross : function(type){
-		var result = true, bd = this.owner.board;
+	checkShadeOverNum : function(){ return this.checkQnumCross(1, "crShadeGt");},
+	checkShadeLessNum : function(){ return this.checkQnumCross(2, "crShadeLt");},
+	checkQnumCross : function(type, code){
+		var bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0){ continue;}
@@ -115,12 +115,11 @@ AnsCheck:{
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 
 			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				cross.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

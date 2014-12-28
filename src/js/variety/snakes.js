@@ -235,11 +235,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSnakeSize",   "bkSizeNe5"],
-		["checkOtherAnsNumberInRoom", "bkDupNum"],
-		["checkSideCell2",   "sbSnake"],
-		["checkArrowNumber", "anNumberNe"],
-		["checkSnakesView",  "snakeAttack"]
+		"checkSnakeSize",
+		"checkOtherAnsNumberInRoom",
+		"checkSideCell_snakes",
+		"checkArrowNumber",
+		"checkSnakesView"
 	],
 
 	getSnakeInfo : function(){
@@ -247,13 +247,13 @@ AnsCheck:{
 	},
 
 	checkSnakeSize : function(){
-		return this.checkAllArea(this.getSnakeInfo(), function(w,h,a,n){ return (a===5);});
+		this.checkAllArea(this.getSnakeInfo(), function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
 	},
 	checkOtherAnsNumberInRoom : function(){
-		return this.checkDifferentNumberInRoom(this.getSnakeInfo(), function(cell){ return cell.anum;});
+		this.checkDifferentNumberInRoom_main(this.getSnakeInfo(), this.isDifferentAnsNumberInClist);
 	},
 
-	checkSideCell2 : function(){
+	checkSideCell_snakes : function(){
 		var result = true, bd = this.owner.board;
 		var sinfo = this.getSnakeInfo();
 		var func = function(sinfo,cell1,cell2){
@@ -263,20 +263,20 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				sinfo.getRoomByCell(cell).clist.seterr(1);
 				sinfo.getRoomByCell(cell2).clist.seterr(1);
-				result = false;
 			}
 			cell2 = cell.adjacent.bottom;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				sinfo.getRoomByCell(cell).clist.seterr(1);
 				sinfo.getRoomByCell(cell2).clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("bsSnake");}
 	},
 
 	checkArrowNumber : function(){
@@ -298,23 +298,22 @@ AnsCheck:{
 
 			// 矢印つき数字が0で、その先に回答の数字がある
 			if(num===0 && !noans(cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				if(num<=0){ cell2.seterr(1);}
-				result = false;
 			}
 			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
 			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("anNumberNe");}
 	},
 	checkSnakesView : function(sinfo){
-		var result = true;
 		var sinfo = this.getSnakeInfo();
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.area[r].clist;
@@ -341,21 +340,20 @@ AnsCheck:{
 
 			var sid=sinfo.getRoomID(cell);
 			if(!cell.isnull && cell.anum>0 && cell.qnum===-1 && sid>0 && r!==sid){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("snakeAttack");
+				if(this.checkOnly){ break;}
 				clist2.seterr(1);
 				clist.seterr(1);
 				sinfo.area[sid].clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
 	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
-	sbSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
+	bsSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
 	anNumberNe : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."],
 	snakeAttack: ["蛇の視線の先に別の蛇がいます。","A snake can see another snake."]
 }

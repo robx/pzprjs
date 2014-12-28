@@ -86,12 +86,14 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		var puzzle=this.owner, bd=puzzle.board, chk=puzzle.checker;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
-			var pt = puzzle.CellList.prototype, seterr = pt.seterr;
+			var pt = puzzle.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
 			chk.inCheck = true;
 			chk.checkOnly = false;
+			chk.failcode = {add:function(){}};
 			pt.seterr = pt.setinfo;
-			chk.checkRowsColsSameNumber();
+			chk.checkRowsColsSameQuesNumber();
 			pt.seterr = seterr;
+			chk.failcode = fcd;
 			chk.inCheck = false;
 
 			var clist = this.range.cells;
@@ -193,17 +195,17 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentShadeCell",  "csAdjacent"],
-		["checkConnectUnshadeRB",   "cuDivideRB"],
-		["checkRowsColsSameNumber", "nmDupRow"]
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkRowsColsSameQuesNumber"
 	],
 
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.qnum;});
+	checkRowsColsSameQuesNumber : function(){
+		this.checkRowsCols(this.isDifferentNumberInClist_hitori, "nmDupRow");
 	},
-	isDifferentNumberInClist_hitori : function(clist, numfunc){
+	isDifferentNumberInClist_hitori : function(clist){
 		var clist2 = clist.filter(function(cell){ return (cell.isUnshade() && cell.isNum());});
-		return this.isDifferentNumberInClist(clist2, numfunc);
+		return this.isIndividualObject(clist2, function(cell){ return cell.qnum;});
 	}
 }
 });

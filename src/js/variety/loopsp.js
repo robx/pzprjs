@@ -241,23 +241,23 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkenableLineParts",  "ceAddLine"],
-		["checkBranchLine",       "lnBranch"],
-		["checkCrossOnNumber",    "lnCrossOnNum"],
-		["checkLoopNumber",       "lpPlNum"],
-		["checkNumberLoop",       "lpSepNum"],
-		["checkNumberInLoop",     "lpNoNum"],
-		["checkCrossLineOnCross", "lnNotCrossMk"],
-		["checkNoLine",           "ceEmpty", "", 1],
-		["checkDeadendLine",      "lnDeadEnd", "", 2]
+		"checkenableLineParts",
+		"checkBranchLine",
+		"checkCrossOnNumber",
+		"checkLoopNumber",
+		"checkNumberLoop",
+		"checkNumberInLoop",
+		"checkNotCrossOnMark",
+		"checkNoLine+",
+		"checkDeadendLine++"
 	],
 
 	checkCrossOnNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.isNum());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.isNum());}, "lnCrossOnNum");
 	},
 
 	checkLoopNumber : function(){
-		return this.checkAllLoops(function(cells){
+		this.checkAllLoops(function(cells){
 			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
 			var number = null;
 			for(var n=0;n<sublist.length;n++){
@@ -268,52 +268,50 @@ AnsCheck:{
 				}
 			}
 			return true;
-		});
+		}, "lpPlNum");
 	},
 	checkNumberLoop : function(){
-		var bd = this.owner.board;
-		return this.checkAllLoops(function(cells){
+		var boardcell = this.owner.board.cell;
+		this.checkAllLoops(function(cells){
 			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
 			if(sublist.length===0){ return true;}
 			var number = sublist[0].getNum();
 
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
+			for(var c=0;c<boardcell.length;c++){
+				var cell = boardcell[c];
 				if(cell.getNum()===number && !sublist.include(cell)){
 					sublist.seterr(1);
 					return false;
 				}
 			}
 			return true;
-		});
+		}, "lpSepNum");
 	},
 	checkNumberInLoop : function(){
-		return this.checkAllLoops(function(cells){
+		this.checkAllLoops(function(cells){
 			return (cells.filter(function(cell){ return cell.isNum();}).length > 0);
-		});
+		}, "lpNoNum");
 	},
-	checkAllLoops : function(func){
-		var result = true, bd = this.owner.board;
+	checkAllLoops : function(func, code){
+		var result = true;
 		var linfo = this.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
 			var blist = linfo.path[r].blist;
 			if(func(blist.cellinside())){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			blist.seterr(1);
 			result = false;
+			if(this.checkOnly){ break;}
+			blist.seterr(1);
 		}
-		return result;
-	},
-	checkCrossLineOnCross : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===11 && cell.lcnt!==4);});
+		if(!result){
+			this.failcode.add(code);
+			this.owner.board.border.setnoerr();
+		}
 	}
 },
 
 FailCode:{
-	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."],
-	lnCrossOnNum : ["○の部分で線が交差しています。","the lines are crossed on the number."],
+	lnCrossOnNum : ["○の部分で線が交差しています。","The lines are crossed on the number."],
 	lpPlNum  : ["異なる数字を含んだループがあります。","A loop has plural kinds of number."],
 	lpSepNum : ["同じ数字が異なるループに含まれています。","A kind of numbers are in differernt loops."],
 	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]

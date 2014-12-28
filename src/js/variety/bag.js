@@ -134,23 +134,23 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",    "lnBranch"],
-		["checkCrossLine",     "lnCross"],
+		"checkBranchLine",
+		"checkCrossLine",
 
-		["checkOneLoop",       "lnPlLoop"],
+		"checkOneLoop",
 
-		["checkDeadendLine",   "lnDeadEnd", "", 1],
+		"checkDeadendLine+",
 
-		["checkOutsideNumber", "nmOutside"],
-		["checkCellNumber",    "nmSumViewNe"]
+		"checkOutsideNumber",
+		"checkViewOfNumber"
 	],
 
 	checkOutsideNumber : function(){
 		this.owner.board.searchInsideArea();	/* cell.insideを設定する */
-		return this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());});
+		this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}, "nmOutside");
 	},
-	checkCellNumber : function(icheck){
-		var result = true, bd = this.owner.board;
+	checkViewOfNumber : function(icheck){
+		var bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
@@ -163,12 +163,11 @@ AnsCheck:{
 			target=adc.bottom; while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.bottom;}
 
 			if(cell.qnum!==clist.length){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumViewNe");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

@@ -143,20 +143,16 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",    "lnBranch"],
-		["checkCrossOutOfIce", "lnCrossExIce"],
-		["checkIceLines",      "lnCurveOnIce"],
-		["checkOneLoop",       "lnPlLoop"],
-		["checkNoLine",        "ceEmpty"],
-		["checkDeadendLine",   "lnDeadEnd", "", 1]
+		"checkBranchLine",
+		"checkCrossOutOfIce",
+		"checkIceLines",
+		"checkOneLoop",
+		"checkNoLine",
+		"checkDeadendLine+"
 	],
 
 	checkCrossOutOfIce : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());}, "lnCrossExIce");
 	}
-},
-
-FailCode:{
-	ceEmpty : ["線が引かれていないマスがあります。","there is an empty cell."]
 }
 });

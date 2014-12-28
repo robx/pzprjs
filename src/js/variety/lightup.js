@@ -222,28 +222,28 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkNotDuplicateAkari", "akariDup"],
-		["checkDir4Akari",         "nmAkariNe"],
-		["checkShinedCell",        "ceDark"]
+		"checkNotDuplicateAkari",
+		"checkDir4Akari",
+		"checkShinedCell"
 	],
 
 	checkDir4Akari : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isAkari();},0);
+		this.checkDir4Cell(function(cell){ return cell.isAkari();}, 0, "nmAkariNe");
 	},
 	checkShinedCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);});
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);}, "ceDark");
 	},
 
 	checkNotDuplicateAkari : function(){
-		return this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, true);
+		this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, "akariDup");
 	},
-	isPluralAkari : function(keycellpos, clist){
+	isPluralAkari : function(clist){
 		var akaris = clist.filter(function(cell){ return cell.isAkari();});
-		if(akaris.length>1){
+		var result = (akaris.length<=1);
+		if(!result){
 			akaris.seterr(4);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 

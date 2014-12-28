@@ -42,6 +42,8 @@ Cell:{
 	qnum : 0,
 	qnum2 : 0,
 
+	noNum : function(){ return !this.isnull && (this.qnum===0 && this.qnum2===0 && this.anum===-1);},
+
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
 
@@ -331,50 +333,40 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkRowsColsSameNumber",  "nmDupRow"],
-		["checkRowsColsTotalNumber", "nmSumRowNe"],
-		["checkEmptyCell_kakuro",    "ceEmpty", "", 1]
+		"checkSameNumberInLine",
+		"checkSumOfNumberInLine",
+		"checkNoNumCell+"
 	],
 
-	checkEmptyCell_kakuro : function(){
-		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.anum<=0);});
+	checkSameNumberInLine : function(){
+		this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, "nmDupRow");
+	},
+	isSameNumber : function(clist, info){
+		var result = this.isDifferentAnsNumberInClist(clist);
+		if(!result){ info.keycell.seterr(1);}
+		return result;
 	},
 
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true);
+	checkSumOfNumberInLine : function(){
+		this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, "nmSumRowNe");
 	},
-	isSameNumber : function(keycellpos, clist){
-		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.anum;})){
-			this.owner.board.getobj(keycellpos[0],keycellpos[1]).seterr(1);
-			return false;
-		}
-		return true;
-	},
-
-	checkRowsColsTotalNumber : function(){
-		return this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false);
-	},
-	isTotalNumber : function(keycellpos, clist){
-		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.qnum;}
-		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
-
-		var sum = 0;
+	isTotalNumber : function(clist, info){
+		var number = info.key51num, sum = 0;
 		for(var i=0;i<clist.length;i++){
 			if(clist[i].anum>0){ sum += clist[i].anum;}
 			else{ return true;}
 		}
-		if(number>0 && sum!==number){
-			keyobj.seterr(1);
+		var result = (number<=0 || sum===number);
+		if(!result){
+			info.keycell.seterr(1);
 			clist.seterr(1);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 
 FailCode:{
 	nmSumRowNe : ["数字の下か右にある数字の合計が間違っています。","The sum of the cells is not correct."],
-	ceEmpty    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
+	ceNoNum    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
 }
 });

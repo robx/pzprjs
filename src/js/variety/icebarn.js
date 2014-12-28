@@ -822,26 +822,26 @@ Encode:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",    "lnBranch"],
-		["checkCrossOutOfIce", "lnCrossExIce"],
-		["checkIceLines",      "lnCurveOnIce"],
+		"checkBranchLine",
+		"checkCrossOutOfIce",
+		"checkIceLines",
 
-		["checkValidStart",    "stInvalid"],
-		["checkLineOnStart",   "stNotLine"],
-		["checkDeadendRoad",   "stDeadEnd"],
-		["checkKeepInside",    "stOffField"],
-		["checkFollowArrow",   "awInverse", "icebarn"],
-		["checkNumberOrder",   "nmOrder",   "!icebarn"],
+		"checkValidStart",
+		"checkLineOnStart",
+		"checkDeadendRoad",
+		"checkKeepInside",
+		"checkFollowArrow@icebarn",
+		"checkNumberOrder@!icebarn",
 
-		["checkOneLoop",       "lnPlLoop"],
+		"checkOneLoop",
 
-		["checkUnreachedUnshadeCell", "ceEmpty",   "icelom"],
-		["checkIgnoreIcebarn",        "bkNoLine",  "!icelom"],
+		"checkUnreachedUnshadeCell@icelom",
+		"checkIgnoreIcebarn@!icelom",
 
-		["checkAllArrow",             "lnExArrow", "icebarn"],
-		["checkNoLineNumber",         "nmUnpass",  "!icebarn"],
+		"checkAllArrow@icebarn",
+		"checkNoLineNumber@!icebarn",
 
-		["checkDeadendLine",          "lnDeadEnd", "", 1]
+		"checkDeadendLine+"
 	],
 
 	getTraceInfo : function(){
@@ -849,69 +849,71 @@ AnsCheck:{
 	},
 
 	checkCrossOutOfIce : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());}, "lnCrossExIce");
 	},
 	checkUnreachedUnshadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 	checkIgnoreIcebarn : function(){
-		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);});
+		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkNoLineNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmUnpass");
 	},
 
 	checkAllArrow : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isArrow() && !border.isLine()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("lnExArrow");
+				if(this.checkOnly){ break;}
 				border.seterr(4);
-				result = false;
 			}
 		}
-		return result;
 	},
 
 	checkValidStart : function(){
 		var bd = this.owner.board, border = bd.arrowin.getb();
-		return (border.by!==bd.minby || border.by!==bd.maxby || border.bx!==bd.minbx || border.bx!==bd.maxbx);
+		if( !(border.by!==bd.minby || border.by!==bd.maxby || border.bx!==bd.minbx || border.bx!==bd.maxbx) ){
+			this.failcode.add("stInvalid");
+		}
 	},
 	checkLineOnStart : function(){
 		var border = this.owner.board.arrowin.getb();
-		if(!border.isLine()){ border.seterr(4); return false;}
-		return true;
+		if(!border.isLine()){
+			border.seterr(4);
+			this.failcode.add("stNoLine");
+		}
 	},
 
 	checkDeadendRoad : function(){
-		return this.checkTrace(function(info){ return info.lastborder.isLine();});
+		this.checkTrace(function(info){ return info.lastborder.isLine();}, "lrDeadEnd");
 	},
 	checkFollowArrow : function(){
-		return this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);});
+		this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);}, "awInverse");
 	},
 	checkKeepInside : function(){
-		return this.checkTrace(function(info){
+		this.checkTrace(function(info){
 			var border = info.lastborder, bd = border.owner.board;
 			return (border.id<bd.bdinside || border.id===bd.arrowout.getid());
-		});
+		}, "lrOffField");
 	},
 	checkNumberOrder : function(){
-		return this.checkTrace(function(info){
+		this.checkTrace(function(info){
 			var cell = info.lastcell;
 			if(cell.qnum<0 || cell.qnum===info.count){ return true;}
 			cell.seterr(1);
 			return false;
-		});
+		}, "lrOrder");
 	},
-	checkTrace : function(evalfunc){
+	checkTrace : function(evalfunc, code){
 		var info = this.getTraceInfo();
 		if(!evalfunc(info)){
-			this.owner.board.border.seterr(-1);
+			this.failcode.add(code);
+			this.owner.board.border.setnoerr();
 			info.blist.seterr(1);
-			return false;
 		}
-		return true;
 	}
 },
 
@@ -919,13 +921,13 @@ FailCode:{
 	bkNoLine  : ["すべてのアイスバーンを通っていません。", "A icebarn is not gone through."],
 	lnPlLoop  : ["線がひとつながりではありません。","Lines are not countinuous."],
 	lnExArrow : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
-	nmOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
+	lrOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
 	nmUnpass  : ["通過していない数字があります。","The line doesn't pass all of the number."],
 	stInvalid : ["スタート位置を特定できませんでした。","System can't detect start position."],
-	stNotLine : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
-	stDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
-	stOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
+	stNoLine  : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
+	lrDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
+	lrOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
 	awInverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
-	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
+	cuNoLine : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
 }
 });

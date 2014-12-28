@@ -170,28 +170,27 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
-		["checkdir4BorderLine", "nmLineNe"],
-		["checkOneLoop",        "lnPlLoop"],
-		["checkDeadendLine",    "lnDeadEnd", "", 1]
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkdir4BorderLine",
+		"checkOneLoop",
+		"checkDeadendLine+"
 	],
 	
 	checkdir4BorderLine : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], qn = cell.qnum;
 			if(qn>=0 && qn!==cell.getdir4BorderLine1()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmLineNe");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	nmLineNe : ["数字の周りにある線の本数が違います。","the number is not equal to the number of lines around it."]
+	nmLineNe : ["数字の周りにある線の本数が違います。","The number is not equal to the number of lines around it."]
 }
 });

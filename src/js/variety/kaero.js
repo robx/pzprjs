@@ -228,21 +228,20 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
-		["checkConnectObject",  "nmConnected"],
-		["checkLineOverLetter", "laOnNum"],
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkConnectObject",
+		"checkLineOverLetter",
 
-		["checkSameObjectInRoom_kaero", "bkPlNum"],
-		["checkGatheredObject",         "bkSepNum"],
-		["checkNoObjectBlock",          "bkNoNum"],
+		"checkSameObjectInRoom_kaero",
+		"checkGatheredObject",
+		"checkNoObjectBlock",
 
-		["checkDisconnectLine", "laIsolate"]
+		"checkDisconnectLine"
 	],
 
 	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, rnum=-1;
@@ -251,14 +250,13 @@ AnsCheck:{
 				var num=cbase[i].qnum;
 				if(rnum===-1){ rnum=num;}
 				else if(rnum!==num){
-					if(this.checkOnly){ return false;}
+					this.failcode.add("bkPlNum");
+					if(this.checkOnly){ return;}
 					if(!this.owner.execConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
@@ -272,17 +270,17 @@ AnsCheck:{
 				var r=rinfo.getRoomID(clist[i]);
 				if(rid===null){ rid=r;}
 				else if(r!==null && rid!==r){
+					this.failcode.add("bkSepNum");
 					if(!this.owner.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
-					return false;
+					return;
 				}
 			}
 		}
-		return true;
 	},
 
 	checkNoObjectBlock : function(){
-		return this.checkNoMovedObjectInRoom(this.getRoomInfo());
+		this.checkNoMovedObjectInRoom(this.getRoomInfo());
 	}
 },
 

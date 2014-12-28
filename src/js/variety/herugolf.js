@@ -491,21 +491,21 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
+		"checkBranchLine",
+		"checkCrossLine",
 
-		["checkConnectObject",  "nmConnected"],
-		["checkLineOverLetter", "laOnNum"],
-		["checkLineOverHole",   "laOnHole"],
-		["checkCurveHalfway",   "laCurve"],
-		["checkMoveOver",       "laMoveOver"],
-		["checkStopHalfway",    "laLenNe"],
-		["checkWaterHazard",    "laWaterHazard"],
+		"checkConnectObject",
+		"checkLineOverLetter",
+		"checkLineOverHole",
+		"checkCurveHalfway",
+		"checkMoveOver",
+		"checkStopHalfway",
+		"checkWaterHazard",
 
-		["checkCupIn",          "nmOutOfHole"],
-		["checkIgnoredHole",    "nmIgnored"],
+		"checkCupIn+",
+		"checkIgnoredHole+",
 
-		["checkDisconnectLine", "laIsolate"]
+		"checkDisconnectLine"
 	],
 	
 	checkMoveOver : function(){
@@ -515,37 +515,39 @@ AnsCheck:{
 			if(!border.isLine()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(cell1.distance<0 || cell2.distance<0){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
+				result = false;
+				if(this.checkOnly){ break;}
 				border.seterr(1);
 				(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add("laMoveOver");
+			bd.border.setnoerr();
+		}
 	},
 	checkLineOverHole : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===31 && cell.lcnt>=2);});
+		this.checkAllCell(function(cell){ return (cell.ques===31 && cell.lcnt>=2);}, "laOnHole");
 	},
 	checkStopHalfway : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===1 && cell.distance >=0 && !cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===1 && cell.distance >=0 && !cell.isViaPoint());}, "laLenNe");
 	},
 	checkCurveHalfway : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===2 && !cell.isLineStraight() && !cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===2 && !cell.isLineStraight() && !cell.isViaPoint());}, "laCurve");
 	},
 	checkWaterHazard : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());}, "laWaterHazard");
 	},
 	checkCupIn : function(){
 		if(this.owner.execConfig('dispmove')){
-			return this.checkAllCell(function(cell){ return (cell.ques!==31 && cell.isDestination());});
+			this.checkAllCell(function(cell){ return (cell.ques!==31 && cell.isDestination());}, "nmOutOfHole");
 		}
 		else{
-			return this.checkAllCell(function(cell){ return (cell.qnum!==-1 && cell.getDestination().ques!==31);});
+			this.checkAllCell(function(cell){ return (cell.qnum!==-1 && cell.getDestination().ques!==31);}, "nmOutOfHole");
 		}
 	},
 	checkIgnoredHole : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===31 && !cell.isDestination());});
+		this.checkAllCell(function(cell){ return (cell.ques===31 && !cell.isDestination());}, "nmIgnored");
 	}
 },
 

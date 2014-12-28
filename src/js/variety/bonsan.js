@@ -299,39 +299,38 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossLine",      "lnCross"],
+		"checkBranchLine",
+		"checkCrossLine",
 
-		["checkConnectObject",  "nmConnected"],
-		["checkLineOverLetter", "laOnNum"],
-		["checkCurveLine",      "laCurve"],
+		"checkConnectObject",
+		"checkLineOverLetter",
+		"checkCurveLine",
 
-		["checkMovedBlockRect", "csNotRect",   "rectslider"],
-		["checkMovedBlockSize", "bkSize1",     "rectslider"],
+		"checkMovedBlockRect@rectslider",
+		"checkMovedBlockSize@rectslider",
 
-		["checkLineLength",     "laLenNe"],
+		"checkLineLength",
 
-		["checkFractal",        "brObjNotSym", "bonsan"],
-		["checkFractal",        "bkObjNotSym", "heyabon"],
-		["checkNoObjectBlock",  "bkNoNum",     "heyabon"],
+		"checkFractal@!rectslider",
+		"checkNoObjectBlock@heyabon",
 
-		["checkNoLineCircle",   "nmIsolate"],
-		["checkDisconnectLine", "laIsolate"]
+		"checkNoMoveCircle",
+		"checkDisconnectLine"
 	],
 
 	checkCurveLine : function(){
-		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);});
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
 	},
 	checkLineLength : function(){
-		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (n<0||a===1||n===a-1);});
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
 	},
-	checkNoLineCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);});
+	checkNoMoveCircle : function(){
+		this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);}, "nmNoMove");
 	},
 
 	checkFractal : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
+		var errcode = (this.owner.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
 		for(var id=1;id<=rinfo.max;id++){
 			var clist = rinfo.area[id].clist, d = clist.getRectSize();
 			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
@@ -339,14 +338,13 @@ AnsCheck:{
 				var cell = clist[i];
 				if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
 					clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
-					result = false;
+					this.failcode.add(errcode);
 				}
 			}
 		}
-		return result;
 	},
 	checkNoObjectBlock : function(){
-		return this.checkNoMovedObjectInRoom(this.getRoomInfo());
+		this.checkNoMovedObjectInRoom(this.getRoomInfo());
 	}
 },
 "AnsCheck@rectslider":{
@@ -355,10 +353,10 @@ AnsCheck:{
 	},
 
 	checkMovedBlockRect : function(){
-		return this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (w*h===a);});
+		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
 	},
 	checkMovedBlockSize : function(){
-		return this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (a>1);});
+		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
 	}
 },
 
@@ -369,7 +367,7 @@ FailCode:{
 	laOnNum : ["○の上を線が通過しています。","A line goes through a circle."],
 	laIsolate : ["○につながっていない線があります。","A line doesn't connect any circle."],
 	nmConnected : ["○が繋がっています。","There are connected circles."],
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
+	nmNoMove : ["○から線が出ていません。","A circle doesn't start any line."]
 },
 "FailCode@rectslider":{
 	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
@@ -377,6 +375,6 @@ FailCode:{
 	laOnNum   : ["黒マスの上を線が通過しています。","A line goes through a shaded cell."],
 	laIsolate : ["黒マスにつながっていない線があります。","A line doesn't connect any shaded cell."],
 	nmConnected : ["黒マスが繋がっています。","There are connected shaded cells."],
-	nmIsolate : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
+	nmNoMove  : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
 }
 });

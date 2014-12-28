@@ -184,24 +184,24 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBorderCross",       "bdCross"],
-		["checkNoNumber",          "bkNoNum"],
-		["checkSquareTatami",      "bkNotSquare"],
-		["checkHorizonLongTatami", "bkNotHRect"],
-		["checkVertLongTatami",    "bkNotVRect"],
-		["checkDoubleNumber",      "bkNumGe2"],
-		["checkRoomRect",          "bkNotRect"],
-		["checkBorderDeadend",     "bdDeadEnd", "", 1]
+		"checkBorderCross",
+		"checkNoNumber",
+		"checkSquareTatami",
+		"checkHorizonLongTatami",
+		"checkVertLongTatami",
+		"checkDoubleNumber",
+		"checkRoomRect",
+		"checkBorderDeadend+"
 	],
 
 	checkSquareTatami : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);}, "bkNotSquare");
 	},
 	checkHorizonLongTatami : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);}, "bkNotHRect");
 	},
 	checkVertLongTatami : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);}, "bkNotVRect");
 	}
 },
 

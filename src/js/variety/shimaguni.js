@@ -136,57 +136,56 @@ FileIO:{
 // 正解判定処理実行部
 "AnsCheck@shimaguni#1":{
 	checklist : [
-		["checkSideAreaShadeCell", "scShade"],
-		["checkSeqBlocksInRoom",   "bkShadeDivide"],
-		["checkShadeCellCount",    "bkShadeNe"],
-		["checkSideAreaLandSide",  "sbEqShade"],
-		["checkNoShadeCellInArea", "bkNoShade"]
+		"checkSideAreaShadeCell",
+		"checkSeqBlocksInRoom",
+		"checkShadeCellCount",
+		"checkSideAreaLandSide",
+		"checkNoShadeCellInArea"
 	]
 },
 "AnsCheck@chocona#1":{
 	checklist : [
-		["checkShadeRect",      "csNotRect"],
-		["checkShadeCellCount", "bkShadeNe"]
+		"checkShadeRect",
+		"checkShadeCellCount"
 	]
 },
 "AnsCheck@shimaguni":{
 	checkSideAreaShadeCell : function(){
-		return this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
+		this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		return this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.getLandAreaOfClist();});
+		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var result = true, rooms = this.owner.board.rooms;
+		var rooms = this.owner.board.rooms;
 		for(var r=1;r<=rooms.max;r++){
 			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
 			if(!clist.isSeqBlock()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkShadeDivide");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 "AnsCheck@chocona":{
 	checkShadeRect : function(){
-		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);});
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
 	}
 },
 
 "FailCode@shimaguni":{
-	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","the number of shaded cells is not equals to the number."],
+	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","The number of shaded cells is not equals to the number."],
 	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are devided to plural ones."],
 	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
-	scShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
-	sbEqShade     : ["隣り合う海域にある国の大きさが同じです。","the size of countries that there are in adjacent marine areas are the same."]
+	cbShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
+	bsEqShade     : ["隣り合う海域にある国の大きさが同じです。","The size of countries that there are in adjacent marine areas are the same."]
 },
 
 "FailCode@chocona":{
 	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
-	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","the number of shaded cells in the area and the number written in the area is different."]
+	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","The number of shaded cells in the area and the number written in the area is different."]
 }
 });

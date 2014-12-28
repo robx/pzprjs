@@ -215,32 +215,29 @@ Graphic:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkNoLine",          "brNoLine"],
-		["checkLineOnShadeCell", "lnOnShade", "ringring"],
-		["checkOverLineCount",   "bkLineGt",  "nagenawa"],
-		["checkBranchLine",      "lnBranch"],
-		["checkDeadendLine",     "lnDeadEnd", "", 1],
-		["checkLessLineCount",   "bkLineLt",  "nagenawa"],
-		["checkAllLoopRect",     "lnNotRect"],
-		["checkUnreachedUnshadeCell", "ceEmpty", "ringring", 1]
+		"checkLineExist",
+		"checkLineOnShadeCell@ringring",
+		"checkOverLineCount@nagenawa",
+		"checkBranchLine",
+		"checkDeadendLine+",
+		"checkLessLineCount@nagenawa",
+		"checkAllLoopRect",
+		"checkUnreachedUnshadeCell+@ringring"
 	],
 
-	checkNoLine : function(){
+	checkLineExist : function(){
 		var bd = this.owner.board;
-		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
-		return false;
-	},
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
+		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return;} }
+		this.failcode.add("brNoLine");
 	},
 	checkOverLineCount : function(){
-		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);});
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);}, "bkLineGt");
 	},
 	checkLessLineCount : function(){
-		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n<=a);});
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n<=a);}, "bkLineLt");
 	},
 	checkUnreachedUnshadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);});
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 
 	checkAllLoopRect : function(){
@@ -250,12 +247,14 @@ AnsCheck:{
 			var blist = xinfo.path[r].blist;
 			if(this.isLoopRect(blist)){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			blist.seterr(1);
 			result = false;
+			if(this.checkOnly){ break;}
+			blist.seterr(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("lnNotRect");
+			bd.border.setnoerr();
+		}
 	},
 	isLoopRect : function(blist){
 		var bd = this.owner.board;
@@ -275,9 +274,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	lnNotRect : ["長方形か正方形でない輪っかがあります。","there is a non-rectangle loop."],
-	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
-	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
-	ceEmpty : ["白マスの上に線が引かれていません。","there is no line on the unshaded cell."]
+	lnNotRect : ["長方形か正方形でない輪っかがあります。","There is a non-rectangle loop."],
+	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","The number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","The number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	cuNoLine : ["白マスの上に線が引かれていません。","There is no line on the unshaded cell."]
 }
 });

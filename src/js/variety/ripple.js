@@ -115,61 +115,58 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkOtherNumberInRoom",  "bkDupNum"],
-		["checkRippleNumber",       "nmSmallGap",   "ripple"],
-		["checkAdjacentDiffNumber", "nmSameNum",    "cojun"],
-		["checkUpperNumber",        "bkSmallOnBig", "cojun"],
-		["checkNoNumCell",          "ceEmpty",      "", 1]
+		"checkDifferentNumberInRoom",
+		"checkRippleNumber@ripple",
+		"checkAdjacentDiffNumber@cojun",
+		"checkUpperNumber@cojun",
+		"checkNoNumCell+"
 	],
 
 	checkRippleNumber : function(){
 		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
+		allloop: for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
 			if(num<=0){ continue;}
 			for(var i=2;i<=num*2;i+=2){
 				var cell2 = bd.getc(bx+i,by);
 				if(!cell2.isnull && cell2.getNum()===num){
-					if(this.checkOnly){ return false;}
+					result = false;
+					if(this.checkOnly){ break allloop;}
 					cell.seterr(1);
 					cell2.seterr(1);
-					result = false;
 				}
 			}
 			for(var i=2;i<=num*2;i+=2){
 				var cell2 = bd.getc(bx,by+i);
 				if(!cell2.isnull && cell2.getNum()===num){
-					if(this.checkOnly){ return false;}
+					result = false;
+					if(this.checkOnly){ break allloop;}
 					cell.seterr(1);
 					cell2.seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("nmSmallGap");}
 	},
 
 	checkUpperNumber : function(){
-		var result = true, bd = this.owner.board;
-		var rinfo = this.getRoomInfo();
+		var bd = this.owner.board, rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
 			if(rinfo.id[c]!==rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell2.getNum()>cell.getNum()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkSmallOnBig");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkDupNum   : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
 	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is an small number on big number in a room."],
-	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The gap of the same kind of number is smaller than the number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The gap of the same kind of number is smaller than the number."]
 }
 });

@@ -178,13 +178,13 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["check2x2NumberCell",  "nm2x2"],
-		["checkSideAreaNumber", "scNum"],
-		["checkNotMultiNum",    "bkPlNum"],
-		["checkNumCountOver",   "nmCountGt"],
-		["checkConnectNumber",  "nmDivide"],
-		["checkNumCountLack",   "nmCountLt"],
-		["checkNoEmptyArea",    "bkNoNum"]
+		"check2x2NumberCell",
+		"checkSideAreaNumber",
+		"checkNotMultiNum",
+		"checkNumCountOver",
+		"checkConnectNumber",
+		"checkNumCountLack",
+		"checkNoEmptyArea"
 	],
 
 	getErrorRoomInfo  : function(){
@@ -192,35 +192,33 @@ AnsCheck:{
 	},
 
 	check2x2NumberCell : function(){
-		return this.check2x2Block(function(cell){ return cell.isNum();});
+		this.check2x2Block(function(cell){ return cell.isNum();}, "nm2x2");
 	},
 	checkSideAreaNumber : function(rinfo){
-		return this.checkSideAreaCell(this.getErrorRoomInfo(), function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
+		this.checkSideAreaCell(this.getErrorRoomInfo(), function(cell1,cell2){ return cell1.sameNumber(cell2);}, false, "cbSameNum");
 	},
 
-	checkNotMultiNum  : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
-	checkNumCountLack : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
-	checkNumCountOver : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
-	checkNoEmptyArea  : function(){ return this.checkAllErrorRoom(function(area){ return area.numkind!==0;});},
-	checkAllErrorRoom : function(evalfunc){
-		var result = true;
+	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkNumCountLack : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);}, "nmCountLt");},
+	checkNumCountOver : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);}, "nmCountGt");},
+	checkNoEmptyArea  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
+	checkAllErrorRoom : function(evalfunc, code){
 		var rinfo = this.getErrorRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var area = rinfo.area[id];
 			if( !!area && !evalfunc(area) ){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				area.clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkNoNum : ["数字が含まれていないブロックがあります。","A block has no number."],
 	nm2x2   : ["数字が2x2のかたまりになっています。","There is a 2x2 block of numbers."],
-	scNum   : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
+	cbSameNum : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
 	nmCountGt : ["入っている数字の数が数字より多いです。","A number is bigger than the size of block."],
 	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."]
 }

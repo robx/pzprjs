@@ -179,19 +179,15 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAroundPlNums",    "nqAroundDup"],
-		["checkSumOfNumber",     "nqAroundSumNe"],
-		["checkAdjacentNumbers", "nmAround"],
-		["checkEmptyCell_kakuru", "ceEmpty", "", 1]
+		"checkAroundPlNums",
+		"checkSumOfNumber",
+		"checkAdjacentNumbers",
+		"checkNoNumCell+"
 	],
 
-	checkEmptyCell_kakuru : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.noNum());});
-	},
-
 	checkAroundPlNums : function(type){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
+		var bd = this.owner.board;
+		allloop: for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
@@ -208,17 +204,16 @@ AnsCheck:{
 			}
 			for(var n=1;n<=9;n++){
 				if(d[n]>1){
-					if(this.checkOnly){ return false;}
+					this.failcode.add("nqAroundDup");
+					if(this.checkOnly){ break allloop;}
 					cell.seterr(1);
 					clist.filter(function(cell){ return (cell.anum===n);}).seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
 	},
 	checkSumOfNumber : function(type){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
@@ -235,14 +230,14 @@ AnsCheck:{
 				}
 			}
 			if(cell.qnum!==cnt){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1); result = false;
+				this.failcode.add("nqAroundSumNe");
+				if(this.checkOnly){ break;}
+				clist.seterr(1);
 			}
 		}
-		return result;
 	},
 	checkAdjacentNumbers : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.anum<=0){ continue;}
@@ -255,15 +250,16 @@ AnsCheck:{
 				if(cell!==cell2 && cell.anum===cell2.anum){ clist.add(cell2);}
 			}
 			if(clist.length>1){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1); result = false;
+				this.failcode.add("nmAround");
+				if(this.checkOnly){ break;}
+				clist.seterr(1);
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
+	nmAround : ["同じ数字がタテヨコナナメに隣接しています。","Same numbers are adjacent."],
 	nqAroundDup : ["初めから出ている数字の周りに同じ数字が入っています。","There are same numbers around the pre-numbered cell."],
 	nqAroundSumNe : ["初めから出ている数字の周りに入る数の合計が正しくありません。","A sum of numbers around the pre-numbered cell is incorrect."]
 }

@@ -170,67 +170,63 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine_firefly", "lnBranch"],
-		["checkCrossLine_firefly",  "lnCross"],
+		"checkBranchLine_firefly",
+		"checkCrossLine_firefly",
 
-		["checkConnectPoints",  "lcInvDirB"],
-		["checkConnectCircles", "lcInvDirW"],
-		["checkCurveCount",     "lcCurveNe"],
-		["checkDeadendLine",    "lcDeadEnd"],
-		["checkConnectAllLine", "lcDivided"],
+		"checkConnectPoints",
+		"checkConnectCircles",
+		"checkCurveCount",
+		"checkDeadendConnectLine",
+		"checkConnectAllLine",
 
-		["checkDeadendLine_firefly", "lnDeadEnd", "", 1],
+		"checkDeadendLine_firefly+",
 
-		["checkFireflyBeam", "nmNoLine"]
+		"checkFireflyBeam"
 	],
 
 	/* 線のカウントはするが、○のある場所は除外する */
-	checkCrossLine_firefly   : function(){ return this.checkLineCount_firefly(4);},
-	checkBranchLine_firefly  : function(){ return this.checkLineCount_firefly(3);},
-	checkDeadendLine_firefly : function(){ return this.checkLineCount_firefly(1);},
-	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]===0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
+	checkCrossLine_firefly   : function(){ return this.checkLineCount_firefly(4, "lnCross");},
+	checkBranchLine_firefly  : function(){ return this.checkLineCount_firefly(3, "lnBranch");},
+	checkDeadendLine_firefly : function(){ return this.checkLineCount_firefly(1, "lnDeadEnd");},
+	checkLineCount_firefly : function(val, code){
+		if(this.owner.board.lines.ltotal[val]===0){ return;}
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
 	checkFireflyBeam : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
 			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmNoLine");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 
 	checkConnectPoints : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			return (!cell2.isnull && path.dir1===cell1.qdir && path.dir2===cell2.qdir);
-		});
+		}, "lcInvDirB");
 	},
 	checkConnectCircles : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			return (!cell2.isnull && path.dir1!==cell1.qdir && path.dir2!==cell2.qdir);
-		});
+		}, "lcInvDirW");
 	},
 	checkCurveCount : function(){
-		return this.checkLineShape(function(path){
+		this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			var qn=((path.dir1===cell1.qdir) ? cell1 : cell2).qnum;
 			return (!cell2.isnull && qn>=0 && qn!==path.ccnt);
-		});
-	},
-	checkDeadendLine : function(){
-		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
+		}, "lcCurveNe");
 	},
 
 	checkConnectAllLine : function(){
-		return this.checkOneArea(this.getLareaInfo());
+		this.checkOneArea(this.getLareaInfo(), "lcDivided");
 	}
 },
 

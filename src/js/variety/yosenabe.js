@@ -370,22 +370,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",         "lnBranch"],
-		["checkCrossLine",          "lnCross"],
+		"checkBranchLine",
+		"checkCrossLine",
 
-		["checkConnectObject",      "nmConnected"],
-		["checkLineOverLetter",     "laOnNum"],
+		"checkConnectObject",
+		"checkLineOverLetter",
 
-		["checkCurveLine",          "laCurve"],
+		"checkCurveLine",
 
-		["checkQuesNumber",         "bnIllegalPos"],	// 問題のチェック
-		["checkDoubleNumberInNabe", "bkDoubleBn"],		// 問題のチェック
+		"checkQuesNumber",			// 問題のチェック
+		"checkDoubleNumberInNabe",	// 問題のチェック
 
-		["checkFillingCount",       "bkSumNeBn"],
-		["checkNoFillingNabe",      "bkNoNum"],
-		["checkFillingOutOfNabe",   "nmOutOfBk"],
+		"checkFillingCount",
+		"checkNoFillingNabe",
+		"checkFillingOutOfNabe",
 
-		["checkDisconnectLine",     "laIsolate"]
+		"checkDisconnectLine"
 	],
 
 	getNabeInfo : function(){
@@ -393,25 +393,24 @@ AnsCheck:{
 	},
 
 	checkCurveLine : function(){
-		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);});
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
 	},
 	checkQuesNumber : function(){
-		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);});
+		this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);}, "bnIllegalPos");
 	},
 
 	checkDoubleNumberInNabe : function(){
 		var iarea = this.getNabeInfo();
-		return this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);});
+		this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);}, "bkDoubleBn");
 	},
 	checkNoFillingNabe : function(){
-		return this.checkNoMovedObjectInRoom(this.getNabeInfo());
+		this.checkNoMovedObjectInRoom(this.getNabeInfo());
 	},
 	checkFillingOutOfNabe : function(){
-		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());}, "nmOutOfBk");
 	},
 
 	checkFillingCount : function(){
-		var result = true;
 		var iarea = this.getNabeInfo();
 		for(var id=1;id<=iarea.max;id++){
 			var clist = iarea.area[id].clist, num = null;
@@ -426,13 +425,12 @@ AnsCheck:{
 
 			var count = clist.getSumOfFilling();
 			if(count>0 && num!==count){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("bkSumNeBn");
+				if(this.checkOnly){ break;}
 				clist.getDeparture().seterr(4);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

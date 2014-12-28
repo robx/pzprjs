@@ -162,40 +162,39 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentDiffNumber", "nmSameNum", "!sukororoom"],
-		["checkOtherNumberInRoom",  "bkDupNum",  "sukororoom"],
-		["checkNoMixedRoom",        "bkMixed",   "sukororoom"],
-		["checkDir4NumberCount", "nmNumberNe",   "!view"],
-		["checkViewNumber",      "nmSumViewNe",  "view"],
-		["checkConnectNumber",   "nmDivide"],
-		["checkNoSuspendCell",   "ceSuspend"]
+		"checkAdjacentDiffNumber@!sukororoom",
+		"checkDifferentNumberInRoom@sukororoom",
+		"checkNoMixedRoom@sukororoom",
+		"checkDir4NumberCount@!view",
+		"checkViewOfNumber@view",
+		"checkConnectNumber",
+		"checkNoSuspendCell"
 	],
 
 	checkNoMixedRoom : function(rinfo){
-		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return (cell.isNumberObj()?1:2);});
+		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return (cell.isNumberObj()?1:2);}, "bkMixed");
 	},
 	checkDir4NumberCount : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0);
+		this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0, "nmNumberNe");
 	},
 	checkNoSuspendCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.qsub===1);});
+		this.checkAllCell(function(cell){ return (cell.qsub===1);}, "ceSuspend");
 	},
 
-	checkViewNumber : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
+	checkViewOfNumber : function(){
+		var boardcell = this.owner.board.cell;
+		for(var c=0;c<boardcell.length;c++){
+			var cell = boardcell[c];
 			if(!cell.isValidNum()){ continue;}
 
 			var clist = cell.getViewClist();
 			if(cell.getNum()!==clist.length){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumViewNe");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				clist.seterr(2);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

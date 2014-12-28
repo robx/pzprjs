@@ -138,21 +138,19 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkCellNumber_kurotto", "nmSumSizeNe"]
+		"checkCellNumber_kurotto"
 	],
 
 	checkCellNumber_kurotto : function(){
-		var result = true;
 		var bd = this.owner.board, cinfo = bd.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.checkComplete(cinfo)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumSizeNe");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

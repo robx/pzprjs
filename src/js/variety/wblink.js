@@ -182,20 +182,16 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkCrossLine",      "lnCross"],
-		["checkTripleObject",   "lcTripleNum"],
-		["checkUnshadedCircle", "lcInvWhite"],
-		["checkShadedCircle",   "lcInvBlack"],
-		["checkAloneCircle",    "nmIsolate", "", 1]
+		"checkCrossLine",
+		"checkTripleObject",
+		"checkUnshadedCircle",
+		"checkShadedCircle",
+		"checkNoLineObject+"
 	],
 
-	checkAloneCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
-	},
-
-	checkUnshadedCircle : function(){ return this.checkWBcircle(1);},
-	checkShadedCircle   : function(){ return this.checkWBcircle(2);},
-	checkWBcircle : function(val){
+	checkUnshadedCircle : function(){ return this.checkWBcircle(1, "lcInvWhite");},
+	checkShadedCircle   : function(){ return this.checkWBcircle(2, "lcInvBlack");},
+	checkWBcircle : function(val, code){
 		var result = true;
 		var linfo = this.getLareaInfo();
 		for(var r=1;r<=linfo.max;r++){
@@ -205,14 +201,16 @@ AnsCheck:{
 			var tip1 = clist[0], tip2 = clist[clist.length-1];
 			if(tip1.qnum!==val || tip2.qnum!==val){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ this.owner.board.border.seterr(-1);}
+			result = false;
+			if(this.checkOnly){ break;}
 			linfo.setErrLareaById(r,1);
 			tip1.seterr(1);
 			tip2.seterr(1);
-			result = false;
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			this.owner.board.border.setnoerr();
+		}
 	}
 },
 
@@ -220,6 +218,6 @@ FailCode:{
 	lcTripleNum : ["3つ以上の○が繋がっています。","Three or more objects are connected."],
 	lcInvWhite : ["白丸同士が繋がっています。","Two white circles are connected."],
 	lcInvBlack : ["黒丸同士が繋がっています。","Two black circles are connected."],
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
+	nmNoLine : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });

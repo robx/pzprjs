@@ -147,46 +147,46 @@ FileIO:{
 // 正解判定処理実行部
 "AnsCheck@nurikabe":{
 	checklist : [
-		["check2x2ShadeCell",          "cs2x2"],
-		["checkNoNumberInUnshade",     "bkNoNum"],
-		["checkConnectShade",          "csDivide"],
-		["checkDoubleNumberInUnshade", "bkNumGe2"],
-		["checkNumberAndUnshadeSize",  "bkSizeNe"]
+		"check2x2ShadeCell",
+		"checkNoNumberInUnshade",
+		"checkConnectShade",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize"
 	]
 },
 "AnsCheck@nuribou#1":{
 	checklist : [
-		["checkBou",                   "csWidthGt1"],
-		["checkCorners",               "csCornerSize"],
-		["checkNoNumberInUnshade",     "bkNoNum"],
-		["checkDoubleNumberInUnshade", "bkNumGe2"],
-		["checkNumberAndUnshadeSize",  "bkSizeNe"]
+		"checkBou",
+		"checkCorners",
+		"checkNoNumberInUnshade",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize"
 	]
 },
 "AnsCheck@mochikoro,mochinyoro#1":{
 	checklist : [
-		["check2x2ShadeCell",          "cs2x2"],
-		["checkConnectUnshaded_mochikoro", "csDivide8"],
-		["checkUnshadeRect",           "cuNotRect"],
-		["checkDoubleNumberInUnshade", "bkNumGe2"],
-		["checkNumberAndUnshadeSize",  "bkSizeNe"],
-		["checkShadeNotRect",          "csRect", "mochinyoro"]
+		"check2x2ShadeCell",
+		"checkConnectUnshaded_mochikoro",
+		"checkUnshadeRect",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize",
+		"checkShadeNotRect@mochinyoro"
 	]
 },
 AnsCheck : {
 	checkDoubleNumberInUnshade : function(){
-		return this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);} );
+		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "bkNumGe2");
 	},
 	checkNumberAndUnshadeSize : function(){
-		return this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );
+		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
 	}
 },
 "AnsCheck@nuribou":{
 	checkBou : function(){
-		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);});
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);}, "csWidthGt1");
 	},
 	checkCorners : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -202,29 +202,28 @@ AnsCheck : {
 			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
 				block2 = binfo.getRoomByCell(cells[i][1]).clist;
 			if(block1.length === block2.length){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("csCornerSize");
+				if(this.checkOnly){ break;}
 				block1.seterr(1);
 				block2.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 "AnsCheck@nurikabe,nuribou":{
 	checkNoNumberInUnshade : function(){
-		return this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);} );
+		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);}, "bkNoNum");
 	}
 },
 "AnsCheck@mochikoro,mochinyoro":{
 	checkConnectUnshaded_mochikoro : function(){
-		return this.checkOneArea( this.owner.board.getdir8WareaInfo() );
+		this.checkOneArea( this.owner.board.getdir8WareaInfo(), "csDivide8" );
 	},
 	checkUnshadeRect : function(){
-		return this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);});
+		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);}, "cuNotRect");
 	},
 	checkShadeNotRect : function(){
-		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h!==a);});
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h!==a);}, "csRect");
 	}
 },
 
@@ -234,7 +233,7 @@ FailCode:{
 	bkSizeNe : ["数字とシマの面積が違います。","The number is not equal to the number of the size of the area."]
 },
 "FailCode@nuribou":{
-	csWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","there is a mass of shaded cells, whose width is more than two."],
+	csWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","There is a mass of shaded cells, whose width is more than two."],
 	csCornerSize : ["同じ面積の黒マスのカタマリが、角を共有しています。","Masses of shaded cells whose length is the same share a corner."]
 },
 

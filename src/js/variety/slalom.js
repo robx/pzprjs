@@ -732,54 +732,49 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["generateGateNumber",   ""],
-		["checkLineOnShadeCell", "lnOnShade"],
-		["checkCrossLine",       "lnCross"],
-		["checkBranchLine",      "lnBranch"],
-		["checkPassGateOnce",    "gateRedup"],
-		["checkStartid",         "gateStart"],
-		["checkGateNumber",      "nmOrder"],
-		["checkDeadendLine",     "lnDeadEnd", "", 1],
-		["checkOneLoop",         "lnPlLoop"],
-		["checkPassAllGate",     "nmUnpass"]
+		"generateGateNumber",		/* エラー判定の準備のみ */
+		"checkLineOnShadeCell",
+		"checkCrossLine",
+		"checkBranchLine",
+		"checkPassGateOnce",
+		"checkStartid",
+		"checkGateNumber",
+		"checkDeadendLine+",
+		"checkOneLoop",
+		"checkPassAllGate"
 	],
 
 	generateGateNumber : function(){
 		this.owner.board.hinfo.generateAll();
 		return true;
 	},
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
-	},
 
 	checkStartid : function(){
 		var start = this.owner.board.startpos.getc();
 		if(start.lcnt!==2){
 			start.seterr(1);
-			return false;
+			this.failcode.add("stLineNe2");
 		}
-		return true;
 	},
-	checkPassGateOnce : function(){ return this.checkGateLine(1);},
-	checkPassAllGate  : function(){ return this.checkGateLine(2);},
-	checkGateLine : function(type){
-		var result = true, bd = this.owner.board;
+	checkPassGateOnce : function(){ return this.checkGateLine(1, "gateRedup");},
+	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
+	checkGateLine : function(type, code){
+		var bd = this.owner.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.data[r].clist;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
 			if((type===1 && cnt>1)||(type===2 && cnt===0)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add(code);
+				if(this.checkOnly){ break;}
 				clist.seterr(4);
 				bd.hinfo.getGatePole(r).seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 	checkGateNumber : function(){
-		var sid = [], bd = this.owner.board, adb = bd.startpos.getc().adjborder;
+		var result = true, sid = [], bd = this.owner.board, adb = bd.startpos.getc().adjborder;
 		if(adb.right.isLine() ){ sid.push({obj:adb.right, dir:4});}
 		if(adb.bottom.isLine()){ sid.push({obj:adb.bottom,dir:2});}
 		if(adb.left.isLine()  ){ sid.push({obj:adb.left,  dir:3});}
@@ -787,16 +782,16 @@ AnsCheck:{
 
 		for(var i=0;i<sid.length;i++){
 			var pos = sid[i].obj.getaddr();
-			var dir=sid[i].dir, ordertype=-1, passing=0;
+			var dir=sid[i].dir, ordertype=-1, passing=0, r = null;
 
 			while(1){
 				pos.movedir(dir,1);
 				if(pos.oncell()){
 					var cell = pos.getc();
-					if(bd.startpos.equals(cell)){ return true;} // ちゃんと戻ってきた
+					if(bd.startpos.equals(cell)){ return;} // ちゃんと戻ってきた
 
 					if(cell.ques===21 || cell.ques===22){
-						var r = bd.hinfo.getGateid(cell.id);
+						r = bd.hinfo.getGateid(cell.id);
 						var gatenumber = bd.hinfo.data[r].number;
 						passing++;
 						if(gatenumber<=0){ } // 何もしない
@@ -804,17 +799,9 @@ AnsCheck:{
 							if(gatenumber*2-1===bd.hinfo.max){ } // ど真ん中の数字なら何もしない
 							else if(passing===gatenumber)               { ordertype=1;}
 							else if(passing===bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
-							else{
-								bd.hinfo.data[r].clist.seterr(4);
-								bd.hinfo.getGatePole(r).seterr(1);
-								return false;
-							}
+							else                                        { result = false; break;}
 						}
-						else if(ordertype===1 && passing!==gatenumber){
-							bd.hinfo.data[r].clist.seterr(4);
-							bd.hinfo.getGatePole(r).seterr(1);
-							return false;
-						}
+						else if(ordertype===1 && passing!==gatenumber){ result = false; break;}
 					}
 
 					var adb = cell.adjborder;
@@ -828,16 +815,24 @@ AnsCheck:{
 					if(!pos.getb().isLine()){ break;} // 途切れてたら、何事もなかったように終了
 				}
 			}
+			/* エラーが確定したのでreturn */
+			if(!result){
+				this.failcode.add("lrOrder");
+				if(r!==null){
+					bd.hinfo.data[r].clist.seterr(4);
+					bd.hinfo.getGatePole(r).seterr(1);
+				}
+				break;
+			}
 		}
-		return true;
 	}
 },
 
 FailCode:{
 	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
-	gateStart : ["○から線が２本出ていません。","A line goes through a gate twice or more."],
-	nmOrder   : ["旗門を通過する順番が間違っています。","the order of passing the gate is wrong."],
-	nmUnpass  : ["線が通過していない旗門があります。","there is a gate that the line is not passing."]
+	gateUnpass: ["線が通過していない旗門があります。","There is a gate that the line is not passing."],
+	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
+	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
 },
 
 //---------------------------------------------------------

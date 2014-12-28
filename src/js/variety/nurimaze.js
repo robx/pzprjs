@@ -459,23 +459,23 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSameColorTile",   "bkMixed"],	// 問題チェック用 
-		["checkShadedObject",    "objShaded"],	// 問題チェック用
-		["checkConnectUnshade",  "cuDivide"],
-		["check2x2ShadeCell",    "cs2x2", "", 1],
-		["check2x2UnshadeCell",  "cu2x2", "", 2],
-		["checkUnshadeLoop",     "cuLoop"],
-		["checkRouteCheckPoint", "routeIgnoreCP"],
-		["checkRouteNoDeadEnd",  "routePassDeadEnd"]
+		"checkSameColorTile",					// 問題チェック用 
+		"checkShadedObject",					// 問題チェック用
+		"checkConnectUnshade",
+		"check2x2ShadeCell+",
+		"check2x2UnshadeCell++",
+		"checkUnshadeLoop",
+		"checkRouteCheckPoint",
+		"checkRouteNoDeadEnd"
 	],
 
 	checkShadedObject : function(){
 		var bd=this.owner.board;
-		return this.checkAllCell( function(cell){ return cell.qans===1 && (cell.ques!==0 || bd.startpos.equals(cell) || bd.goalpos.equals(cell));} );
+		this.checkAllCell( function(cell){ return cell.qans===1 && (cell.ques!==0 || bd.startpos.equals(cell) || bd.goalpos.equals(cell));}, "objShaded" );
 	},
 
 	check2x2UnshadeCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
+		this.check2x2Block( function(cell){ return cell.isUnshade();}, "cu2x2" );
 	},
 
 	checkUnshadeLoop : function(){
@@ -493,10 +493,9 @@ AnsCheck:{
 
 		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
+			this.failcode.add("cuLoop");
 			errclist.seterr(1);
-			return false;
 		}
-		return true;
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
@@ -533,20 +532,18 @@ AnsCheck:{
 	},
 
 	checkRouteCheckPoint : function(){
-		var sdata = this.getRouteInfo();
-		var result = this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);});
-		if(!result && !this.checkOnly){
+		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
+		this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);}, "routeIgnoreCP");
+		if((errcount!==this.failcode.length) && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
-		return result;
 	},
 	checkRouteNoDeadEnd : function(){
-		var sdata = this.getRouteInfo();
-		var result = this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);});
-		if(!result && !this.checkOnly){
+		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
+		this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);}, "routePassDeadEnd");
+		if((errcount!==this.failcode.length) && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
-		return result;
 	},
 	getRouteInfo : function(){
 		return (this._info.maze = this._info.maze || this.searchRoute());

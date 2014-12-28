@@ -432,13 +432,9 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSubsNumber",    "nmSumOfDiff"],
-		["checkValidFillCell", "ceEmpty", "", 1]
+		"checkSubsNumber",
+		"checkNoNumCell+"
 	],
-
-	checkValidFillCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});
-	},
 
 	checkSubsNumber : function(){
 		var subs=[], bd=this.owner.board, UNDEF=-1;
@@ -453,7 +449,6 @@ AnsCheck:{
 			else{ subs[id]=null;}
 		}
 
-		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty() || cell.noNum()){ continue;}
@@ -464,17 +459,15 @@ AnsCheck:{
 			sub=subs[adb.left.id  ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.right.id ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			if(num!==sum){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("nmSumOfDiff");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."]
 }
 });

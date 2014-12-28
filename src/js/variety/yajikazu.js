@@ -108,9 +108,9 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkAdjacentShadeCell", "csAdjacent"],
-		["checkConnectUnshadeRB",  "cuDivideRB"],
-		["checkArrowNumber",       "anShadeNe"]
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkArrowNumber"
 	],
 
 	checkArrowNumber : function(){
@@ -129,13 +129,13 @@ AnsCheck:{
 
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.qnum!==cnt){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("anShadeNe");}
 	}
 }
 });

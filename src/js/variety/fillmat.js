@@ -89,41 +89,41 @@ FileIO:{
 // 正解判定処理実行部
 "AnsCheck@fillmat":{
 	checklist : [
-		["checkBorderCross",      "bdCross"],
+		"checkBorderCross",
 
-		["checkSideAreaRoomSize", "sbSizeEq"],
-		["checkTatamiMaxSize",    "bkLenGt4"],
-		["checkDoubleNumber",     "bkNumGe2"],
-		["checkNumberAndSize",    "bkSizeNe"],
+		"checkSideAreaRoomSize",
+		"checkTatamiMaxSize",
+		"checkDoubleNumber",
+		"checkNumberAndSize",
 
-		["checkBorderDeadend",    "bdDeadEnd", "", 1]
+		"checkBorderDeadend+"
 	],
 
 	checkTatamiMaxSize : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;}, "bkLenGt4");
 	},
 	checkSideAreaRoomSize : function(){
-		return this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.length;});
+		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.length;}, "bsSizeEq");
 	}
 },
 "AnsCheck@usotatami":{
 	checklist : [
-		["checkBorderCross",    "bdCross"],
+		"checkBorderCross",
 
-		["checkNoNumber",       "bkNoNum"],
-		["checkDoubleNumber",   "bkNumGe2"],
-		["checkTatamiDiffSize", "bkSizeEq"],
+		"checkNoNumber",
+		"checkDoubleNumber",
+		"checkTatamiDiffSize",
 
-		["checkBorderDeadend",  "bdDeadEnd", "", 1],
+		"checkBorderDeadend+",
 
-		["checkTatamiBreadth",  "bkWidthGt1"]
+		"checkTatamiBreadth"
 	],
 
 	checkTatamiDiffSize : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);}, "bkSizeEq");
 	},
 	checkTatamiBreadth : function(){
-		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);});
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	}
 },
 
@@ -133,6 +133,6 @@ FailCode:{
 	bkSizeNe : ["数字とタタミの大きさが違います。","The size of tatami and the number written in Tatami is different."],
 	bkSizeEq : ["数字とタタミの大きさが同じです。","The size of tatami and the number is the same."],
 	bkLenGt4 : ["「幅１マス、長さ１～４マス」ではないタタミがあります。","The width of Tatami is over 1 or the length is over 4."],
-	sbSizeEq : ["隣り合うタタミの大きさが同じです。","the same size Tatami are adjacent."]
+	bsSizeEq : ["隣り合うタタミの大きさが同じです。","The same size Tatami are adjacent."]
 }
 });

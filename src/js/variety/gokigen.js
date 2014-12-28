@@ -361,51 +361,56 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkLoopLine_gokigen",   "slLoop",      "gokigen"],
-		["checkLoopLine_wagiri",    "slLoopGiri",  "wagiri" ],
-		["checkQnumCross",          "crConnSlNe"            ],
-		["checkNotLoopLine_wagiri", "slNotLoopWa", "wagiri" ],
-		["checkNoSlashCell",        "ceEmpty",     "", 1]
+		"checkSlashLoop",
+		"checkQnumCross",
+		"checkNoSlashLoop@wagiri",
+		"checkNoSlashCell+"
 	],
 
 	getSlashInfo : function(){
 		return (this._info.slash = this._info.slash || this.owner.board.getSlashData());
 	},
 
-	checkLoopLine_gokigen : function(){
+	checkQnumCross : function(){
+		var bd = this.owner.board, sinfo = bd.getSlashInfo();
+		for(var c=0;c<bd.crossmax;c++){
+			var cross = bd.cross[c], qn = cross.qnum;
+			if(qn>=0 && qn!==sinfo.cross[c].length){
+				this.failcode.add("crConnSlNe");
+				if(this.checkOnly){ break;}
+				cross.seterr(1);
+			}
+		}
+	},
+
+	checkNoSlashCell : function(){
+		this.checkAllCell(function(cell){ return (cell.qans===0);}, "ceNoSlash");
+	}
+},
+"AnsCheck@gokigen":{
+	checkSlashLoop : function(){
 		var sdata = this.getSlashInfo();
 		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
-		errclist.seterr(1);
-		return (errclist.length===0);
-	},
-	checkLoopLine_wagiri    : function(){ return this.checkLoops_wagiri(false);},
-	checkNotLoopLine_wagiri : function(){ return this.checkLoops_wagiri(true);},
-	checkLoops_wagiri : function(checkLoop){
+		if(errclist.length>0){
+			this.failcode.add("slLoop");
+			errclist.seterr(1);
+		}
+	}
+},
+"AnsCheck@wagiri":{
+	checkSlashLoop   : function(){ return this.checkLoops_wagiri(false, "slLoopGiri");},
+	checkNoSlashLoop : function(){ return this.checkLoops_wagiri(true,  "slNotLoopWa");},
+	checkLoops_wagiri : function(checkLoop, code){
 		var result = true, bd = this.owner.board;
 		var sdata = this.getSlashInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}
 			if( checkLoop && sdata[c]===2 && bd.cell[c].qnum===1){ result = false;}
 		}
-		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} } }
-		return result;
-	},
-
-	checkQnumCross : function(){
-		var result = true, bd = this.owner.board, sinfo = bd.getSlashInfo();
-		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], qn = cross.qnum;
-			if(qn>=0 && qn!==sinfo.cross[c].length){
-				if(this.checkOnly){ return false;}
-				cross.seterr(1);
-				result = false;
-			}
+		if(!result){
+			this.failcode.add(code);
+			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
 		}
-		return result;
-	},
-
-	checkNoSlashCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.qans===0);});
 	}
 },
 
@@ -414,6 +419,6 @@ FailCode:{
 	slLoopGiri  : ["'切'が含まれた線が輪っかになっています。", "There is a loop that consists '切'."],
 	slNotLoopWa : ["'輪'が含まれた線が輪っかになっていません。", "There is not a loop that consists '輪'."],
 	crConnSlNe  : ["数字に繋がる線の数が間違っています。", "A number is not equal to count of lines that is connected to it."],
-	ceEmpty     : ["斜線がないマスがあります。","There is an empty cell."]
+	ceNoSlash   : ["斜線がないマスがあります。","There is an empty cell."]
 }
 });

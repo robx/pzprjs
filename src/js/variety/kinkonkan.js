@@ -481,22 +481,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkSingleMirrorInRoom", "bkObjGe2"],
-		["checkPairMirror",         "pairedLetterNe"],
-		["checkReflectionCount",    "pairedNumberNe"],
-		["checkExistMirrorInRoom",  "bkNoObj"]
+		"checkSingleMirrorInRoom",
+		"checkPairMirror",
+		"checkReflectionCount",
+		"checkExistMirrorInRoom"
 	],
 
 	checkSingleMirrorInRoom : function(){
-		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);});
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);}, "bkObjGe2");
 	},
 	checkExistMirrorInRoom : function(){
-		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);}, "bkNoObj");
 	},
 
-	checkPairMirror      : function(){ return this.checkMirrors(1);},
-	checkReflectionCount : function(){ return this.checkMirrors(2);},
-	checkMirrors : function(type){
+	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
+	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
+	checkMirrors : function(type, code){
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
@@ -505,11 +505,11 @@ AnsCheck:{
 			if( (type===1&& (excell.qchar!==excell2.qchar) )||
 				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){
-				return false;
+				this.failcode.add(code);
+				break;
 			}
 			d[ec]=1; d[ret.dest]=1;
 		}
-		return true;
 	}
 },
 

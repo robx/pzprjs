@@ -269,39 +269,35 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",     "lnBranch"],
-		["checkCrossOutOfMark", "lnCrossExMk"],
-		["checkLongLines",      "lnLenGt"],
-		["checkTriangle",       "lnExTri"],
-		["checkShortLines",     "lnLenLt"],
-		["checkNotCrossOnMark", "lnNotCrossMk"],
-		["checkDeadendLine",    "lnDeadEnd", "", 1],
-		["checkOneLoop",        "lnPlLoop"]
+		"checkBranchLine",
+		"checkCrossOutOfMark",
+		"checkLongLines",
+		"checkTriangle",
+		"checkShortLines",
+		"checkNotCrossOnMark",
+		"checkDeadendLine+",
+		"checkOneLoop"
 	],
 
 	checkCrossOutOfMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);});
-	},
-	checkNotCrossOnMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);}, "lnCrossExMk");
 	},
 
 	checkTriangle : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.lcnt===0 && (cell.ques>=2 && cell.ques<=5)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("lnExTri");
+				if(this.checkOnly){ break;}
 				cell.seterr(4);
-				result = false;
 			}
 		}
-		return result;
 	},
 
-	checkLongLines  : function(){ return this.checkTriNumber(1);},
-	checkShortLines : function(){ return this.checkTriNumber(2);},
-	checkTriNumber : function(type){
+	checkLongLines  : function(){ this.checkTriNumber(1, "lnLenGt");},
+	checkShortLines : function(){ this.checkTriNumber(2, "lnLenLt");},
+	checkTriNumber : function(type, code){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -309,18 +305,21 @@ AnsCheck:{
 
 			var blist = cell.getTriLine();
 			if(type===1?cell.qnum<(blist.length+1):cell.qnum>(blist.length+1)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(4);
-				if(result){ bd.border.seterr(-1);}
-				blist.seterr(1);
 				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(4);
+				blist.seterr(1);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.border.setnoerr();
+		}
 	}
 },
 
 FailCode:{
+	lnCrossExMk : ["十字以外の場所で線が交差しています。","There is a crossing line out of cross mark."],
 	lnExTri : ["線が三角形を通過していません。","A line doesn't goes through a triangle."],
 	lnLenGt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."],
 	lnLenLt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."]

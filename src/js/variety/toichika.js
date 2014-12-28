@@ -183,10 +183,10 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkDoubleNumber",      "bkNumGe2"],
-		["checkAdjacentCountries", "arAdjPair"],
-		["checkDirectionOfArrow",  "arAlone"],
-		["checkNoNumber",          "bkNoNum"]
+		"checkDoubleNumber",
+		"checkAdjacentCountries",
+		"checkDirectionOfArrow",
+		"checkNoNumber"
 	],
 
 	getPairArrowInfo : function(){
@@ -202,7 +202,7 @@ AnsCheck:{
 				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("arAlone");}
 	},
 	checkAdjacentCountries : function(){
 		var rinfo = this.getRoomInfo(), ainfo = this.getPairArrowInfo();
@@ -225,7 +225,7 @@ AnsCheck:{
 				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("arAdjPair");}
 	}
 },
 

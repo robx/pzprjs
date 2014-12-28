@@ -337,45 +337,44 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkKitamakura",        "kitamakura"],
-		["check2x2ShadeCell",      "cs2x2"],
-		["checkDir4PillowOver",    "nmPillowGt"],
-		["checkFullSizeFuton",     "futonHalf"],
-		["checkFutonAisle",        "futonMidPos"],
-		["checkConnectShade",      "csDivide"],
-		["checkDir4PillowLess",    "nmPillowLt"],
-		["checkEmptyCell_shugaku", "ceEmpty", "", 1]
+		"checkKitamakura",
+		"check2x2ShadeCell",
+		"checkDir4PillowOver",
+		"checkFullSizeFuton",
+		"checkFutonAisle",
+		"checkConnectShade",
+		"checkDir4PillowLess",
+		"checkEmptyCell_shugaku+"
 	],
 
 	checkDir4PillowOver : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2);
+		this.checkDir4Cell(function(cell){ return cell.isPillow();},2, "nmPillowGt");
 	},
 	checkDir4PillowLess : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isPillow();},1);
+		this.checkDir4Cell(function(cell){ return cell.isPillow();},1, "nmPillowLt");
 	},
 	checkFullSizeFuton : function(){
-		return this.checkAllCell(function(cell){ return (cell.qans===41||cell.qans===46);});
+		this.checkAllCell(function(cell){ return (cell.qans===41||cell.qans===46);}, "futonHalf");
 	},
 	checkEmptyCell_shugaku : function(){
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.qans===0);});
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.qans===0);}, "ceEmpty");
 	},
 
 	checkKitamakura : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.qans===43){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("kitamakura");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell.adjacent.bottom.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 
 	checkFutonAisle : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}
@@ -391,13 +390,12 @@ AnsCheck:{
 			if( cell.countDir4Cell(function(cell){ return cell.isShade();})===0 &&
 				adj .countDir4Cell(function(cell){ return cell.isShade();})===0 )
 			{
-				if(this.checkOnly){ return false;}
+				this.failcode.add("futonMidPos");
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				adj.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	}
 },
 

@@ -334,31 +334,29 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkOverTriangle", "nmTriangleGt"],
-		["checkWhiteArea",    "cuNotRectx"],
-		["checkLessTriangle", "nmTriangleLt"]
+		"checkOverTriangle",
+		"checkWhiteArea",
+		"checkLessTriangle"
 	],
 
 	checkOverTriangle : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isTri();},2);
+		this.checkDir4Cell(function(cell){ return cell.isTri();},2, "nmTriangleGt");
 	},
 	checkLessTriangle : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isTri();},1);
+		this.checkDir4Cell(function(cell){ return cell.isTri();},1, "nmTriangleLt");
 	},
 
 	checkWhiteArea : function(){
-		var result = true;
 		var winfo = this.owner.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;
 			if(d.cols*d.rows!==cnt && !this.isAreaRect_slope(winfo,id)){
-				if(this.checkOnly){ return false;}
+				this.failcode.add("cuNotRectx");
+				if(this.checkOnly){ break;}
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
 	},
 	// 斜め領域判定用
 	isAreaRect_slope : function(winfo,id){

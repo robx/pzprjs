@@ -168,21 +168,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkBranchLine",        "lnBranch"],
-		["checkCrossLine",         "lnCross"],
-		["checkLineOnShadeCell",   "lnOnShade"],
-		["checkAdjacentShadeCell", "csAdjacent"],
-		["checkDeadendLine",       "lnDeadEnd", "", 1],
-		["checkArrowNumber",       "anShadeNe"],
-		["checkOneLoop",           "lnPlLoop"],
-		["checkBlankCell",         "ceEmpty",   "", 1]
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkLineOnShadeCell",
+		"checkAdjacentShadeCell",
+		"checkDeadendLine+",
+		"checkArrowNumber",
+		"checkOneLoop",
+		"checkEmptyCell_yajirin+"
 	],
 
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isShade());});
-	},
-	checkBlankCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());});
+	checkEmptyCell_yajirin : function(){
+		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());}, "ceEmpty");
 	},
 
 	checkArrowNumber : function(){
@@ -201,13 +198,13 @@ AnsCheck:{
 
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 			if(cell.qnum!==cnt){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("anShadeNe");}
 	}
 },
 

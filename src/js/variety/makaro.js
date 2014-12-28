@@ -311,10 +311,10 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		["checkOtherNumberInRoom",    "bkDupNum"],
-		["checkAdjacentDiffNumber",   "nmSameNum"],
-		["checkPointAtBiggestNumber", "arNotMax"],
-		["checkEmptyCell",            "ceEmpty", "", 1]
+		"checkDifferentNumberInRoom",
+		"checkAdjacentDiffNumber",
+		"checkPointAtBiggestNumber",
+		"checkNoNumCell+"
 	],
 
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
@@ -339,25 +339,20 @@ AnsCheck:{
 			}
 			
 			if(invalidarrow || (!isempty && (dupnum || cell.qdir!==maxdir))){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				for(var i=0;i<list.length;i++){
 					if(list[i][0].getNum()!==-1){ list[i][0].seterr(1);}
 				}
-				result = false;
 			}
 		}
-		return result;
-	},
-
-	checkEmptyCell : function(){
-		return this.checkAllCell( function(cell){ return cell.ques===0 && cell.noNum();} );
+		if(!result){ this.failcode.add("arNotMax");}
 	}
 },
 
 FailCode:{
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
-	arNotMax : ["矢印の先が最も大きい数字でありません。", "An arrow doesn't point out biggest number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	arNotMax : ["矢印の先が最も大きい数字でありません。", "An arrow doesn't point out biggest number."]
 }
 });
