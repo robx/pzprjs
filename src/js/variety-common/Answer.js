@@ -229,18 +229,6 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkAllArea2 : function(cinfo, evalfunc){
-		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var area = cinfo.area[id];
-			if( !!area && !evalfunc(area) ){
-				if(this.checkOnly){ return false;}
-				area.clist.seterr(1);
-				result = false;
-			}
-		}
-		return result;
-	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する

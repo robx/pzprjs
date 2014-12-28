@@ -203,10 +203,22 @@ AnsCheck:{
 		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
 	},
 
-	checkNotMultiNum  : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind>1);});},
-	checkNumCountLack : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
-	checkNumCountOver : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
-	checkNoEmptyArea  : function(rinfo){ return this.checkAllArea2(rinfo, function(area){ return area.numkind!==0;});}
+	checkNotMultiNum  : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
+	checkNumCountLack : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
+	checkNumCountOver : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
+	checkNoEmptyArea  : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return area.numkind!==0;});},
+	checkAllErrorRoom : function(cinfo, evalfunc){
+		var result = true;
+		for(var id=1;id<=cinfo.max;id++){
+			var area = cinfo.area[id];
+			if( !!area && !evalfunc(area) ){
+				if(this.checkOnly){ return false;}
+				area.clist.seterr(1);
+				result = false;
+			}
+		}
+		return result;
+	}
 },
 
 FailCode:{

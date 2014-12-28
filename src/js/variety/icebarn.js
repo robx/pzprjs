@@ -167,15 +167,15 @@ Board:{
 		this.arrowout.draw();
 	},
 
-	getFollowInfo : function(){
+	getTraceInfo : function(){
 		var border = this.arrowin.getb(), dir=border.qdir, pos = border.getaddr();
-		var info = {cell:this.emptycell, border:border, blist:(new this.owner.BorderList()), dir:dir, count:1};
+		var info = {lastcell:this.emptycell, lastborder:border, blist:(new this.owner.BorderList()), dir:dir, count:1};
 		info.blist.add(border);
 
 		while(1){
 			pos.movedir(dir,1);
 			if(pos.oncell()){
-				var cell = info.cell = pos.getc();
+				var cell = info.lastcell = pos.getc();
 				if(cell.isnull){ break;}
 				else if(!cell.ice()){
 					var adb = cell.adjborder;
@@ -196,7 +196,7 @@ Board:{
 				}
 			}
 			else{
-				border = info.border = pos.getb();
+				border = info.lastborder = pos.getb();
 				if(!border.isLine()){ break;}
 				
 				info.blist.add(border);
@@ -832,7 +832,7 @@ AnsCheck:{
 		if( !this.checkValidStart() ){ return 'stInvalid';}
 		if( !this.checkLineOnStart() ){ return 'stNotLine';}
 
-		var info = this.owner.board.getFollowInfo();
+		var info = this.owner.board.getTraceInfo();
 		if( !this.checkDeadendRoad(info) ){ return 'stDeadEnd';}
 		if( !this.checkKeepInside(info) ){ return 'stOffField';}
 		if( pid==='icebarn' && !this.checkAlongArrow(info) ){ return 'awInverse';}
@@ -888,17 +888,17 @@ AnsCheck:{
 		if(!border.isLine()){ border.seterr(4); return false;}
 		return true;
 	},
-	checkDeadendRoad : function(info){ return this.checkTrace(info, function(info){ return info.border.isLine();});},
-	checkAlongArrow  : function(info){ return this.checkTrace(info, function(info){ return (info.border.getArrow()===info.dir);});},
+	checkDeadendRoad : function(info){ return this.checkTrace(info, function(info){ return info.lastborder.isLine();});},
+	checkAlongArrow  : function(info){ return this.checkTrace(info, function(info){ return (info.lastborder.getArrow()===info.dir);});},
 	checkKeepInside : function(info){
 		return this.checkTrace(info, function(info){
-			var border = info.border, bd = border.owner.board;
+			var border = info.lastborder, bd = border.owner.board;
 			return (border.id<bd.bdinside || border.id===bd.arrowout.getid());
 		});
 	},
 	checkNumberOrder : function(info){
 		return this.checkTrace(info, function(info){
-			var cell = info.cell;
+			var cell = info.lastcell;
 			if(cell.qnum<0 || cell.qnum===info.count){ return true;}
 			cell.seterr(1);
 			return false;
