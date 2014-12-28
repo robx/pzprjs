@@ -302,7 +302,7 @@ AnsCheck:{
 	},
 	checkAllLoops : function(func){
 		var result = true, bd = this.owner.board;
-		var linfo = bd.getLineInfo();
+		var linfo = this.getLineInfo();
 		for(var r=1;r<=linfo.max;r++){
 			var blist = linfo.path[r].blist;
 			if(func(blist.cellinside())){ continue;}

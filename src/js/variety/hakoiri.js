@@ -162,23 +162,21 @@ AnsCheck:{
 
 		if( !this.checkAroundMarks() ){ return 'nmAround';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverFourMarksInBox(rinfo) ){ return 'bkNumGt3';}
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
+		if( !this.checkOverFourMarksInBox() ){ return 'bkNumGt3';}
+		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
 
-		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
+		if( !this.checkConnectNumber() ){ return 'nmDivide';}
 
-		if( !this.checkAllMarkInBox(rinfo) ){ return 'bkNumLt3';}
+		if( !this.checkAllMarkInBox() ){ return 'bkNumLt3';}
 
 		return null;
 	},
 
-	checkOverFourMarksInBox : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
+	checkOverFourMarksInBox : function(){
+		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
 	},
-	checkAllMarkInBox : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});
+	checkAllMarkInBox : function(){
+		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});
 	},
 
 	checkAroundMarks : function(){

@@ -491,14 +491,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = bd.getLareaInfo();
-
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkConnectObject() ){ return 'nmConnected';}
 		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
 		if( !this.checkLineOverHole() ){ return 'laOnHole';}
@@ -515,7 +512,7 @@ AnsCheck:{
 
 		if( !this.checkIgnoredHole() ){ return 'nmIgnored';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
 
 		return null;
 	},

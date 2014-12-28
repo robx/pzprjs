@@ -482,20 +482,19 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 'bkObjGe2';}
+		if( !this.checkNoPluralMirrorsInRoom() ){ return 'bkObjGe2';}
 		if( !this.checkPairMirror() ){ return 'pairedLetterNe';}
 		if( !this.checkReflection() ){ return 'pairedNumberNe';}
-		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
+		if( !this.checkExistMirrorInRoom() ){ return 'bkNoObj';}
 
 		return null;
 	},
 
-	checkNoPluralMirrorsInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);});
+	checkNoPluralMirrorsInRoom : function(){
+		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);});
 	},
-	checkExistMirrorInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
+	checkExistMirrorInRoom : function(){
+		return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);});
 	},
 
 	checkPairMirror : function(){ return this.checkMirrors(1);},

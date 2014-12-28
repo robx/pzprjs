@@ -214,8 +214,7 @@ AnsCheck:{
 	},
 
 	checkSingleArrowInArea : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
+		return this.checkDifferentNumberInRoom(this.getRoomInfo(), function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
 	},
 
 	checkBalls : function(){

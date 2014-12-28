@@ -114,7 +114,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		if( !this.checkRoomNumber() ){ return 'bkDupNum';}
+		if( !this.checkBlockSameNumber() ){ return 'bkDupNum';}
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
@@ -128,7 +128,7 @@ AnsCheck:{
 		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
 	},
 
-	checkRoomNumber : function(){
+	checkBlockSameNumber : function(){
 		var result = true, bd = this.owner.board;
 		var max=bd.qcols;
 		var blk=((Math.sqrt(max)+0.1)|0);

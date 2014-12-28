@@ -109,20 +109,18 @@ AnsCheck:{
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
+		if( !this.checkTripleObject() ){ return 'lcTripleNum';}
 		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
 
-		var xinfo = this.owner.board.getLineShapeInfo();
-		if( !this.checkKusabiShape(xinfo) ){ return 'lcNotKusabi';}
-		if( !this.checkProperLetter(xinfo) ){ return 'lcInvalid';}
-		if( !this.checkCurveOver(xinfo) ){ return 'lcCurveGt2';}
-		if( !this.checkCurveLack(xinfo) ){ return 'lcCurveLt2';}
-		if( !this.checkLengthNotEq(xinfo) ){ return 'lcLenInvNe';}
-		if( !this.checkLengthWrong(xinfo) ){ return 'lcLenInvDiff';}
-		if( !this.checkDeadendLine(xinfo) ){ return 'lcDeadEnd';}
+		if( !this.checkKusabiShape() ){ return 'lcNotKusabi';}
+		if( !this.checkProperLetter() ){ return 'lcInvalid';}
+		if( !this.checkCurveOver() ){ return 'lcCurveGt2';}
+		if( !this.checkCurveLack() ){ return 'lcCurveLt2';}
+		if( !this.checkLengthNotEq() ){ return 'lcLenInvNe';}
+		if( !this.checkLengthWrong() ){ return 'lcLenInvDiff';}
+		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 'lcIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'lcIsolate';}
 
 		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
 
@@ -136,35 +134,35 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
 	},
 
-	checkKusabiShape : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return (path.ccnt===2 && path.dir1!==path.dir2);});
+	checkKusabiShape : function(){
+		return this.checkLineShape(function(path){ return (path.ccnt===2 && path.dir1!==path.dir2);});
 	},
-	checkProperLetter : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkProperLetter : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum;
 			return (!cell2.isnull && path.ccnt===2 && !((qn1===1&&qn2===1) || (qn1===2&&qn2===3) || (qn1===3&&qn2===2) || qn1===-2 || qn2===-2));
 		});
 	},
-	checkCurveOver : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return (path.ccnt>2);});
+	checkCurveOver : function(){
+		return this.checkLineShape(function(path){ return (path.ccnt>2);});
 	},
-	checkCurveLack : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return (!path.cells[1].isnull && path.ccnt<2);});
+	checkCurveLack : function(){
+		return this.checkLineShape(function(path){ return (!path.cells[1].isnull && path.ccnt<2);});
 	},
-	checkLengthNotEq : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkLengthNotEq : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum;
 			return (!cell2.isnull && path.ccnt===2 && (qn1===1 || qn2===1) && path.length[0]!==path.length[2]);
 		});
 	},
-	checkLengthWrong : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkLengthWrong : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1], qn1=cell1.qnum, qn2=cell2.qnum, length=path.length;
 			return (!cell2.isnull && path.ccnt===2 && (((qn1===2||qn2===3) && length[0]>=length[2]) || ((qn1===3||qn2===2) && length[0]<=length[2])));
 		});
 	},
-	checkDeadendLine : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return path.cells[1].isnull;});
+	checkDeadendLine : function(){
+		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
 	}
 },
 

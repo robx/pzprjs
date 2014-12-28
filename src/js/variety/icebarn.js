@@ -832,11 +832,10 @@ AnsCheck:{
 		if( !this.checkValidStart() ){ return 'stInvalid';}
 		if( !this.checkLineOnStart() ){ return 'stNotLine';}
 
-		var info = this.owner.board.getTraceInfo();
-		if( !this.checkDeadendRoad(info) ){ return 'stDeadEnd';}
-		if( !this.checkKeepInside(info) ){ return 'stOffField';}
-		if( pid==='icebarn' && !this.checkAlongArrow(info) ){ return 'awInverse';}
-		if( pid!=='icebarn' && !this.checkNumberOrder(info) ){ return 'nmOrder';}
+		if( !this.checkDeadendRoad() ){ return 'stDeadEnd';}
+		if( !this.checkKeepInside() ){ return 'stOffField';}
+		if( pid==='icebarn' && !this.checkFollowArrow() ){ return 'awInverse';}
+		if( pid!=='icebarn' && !this.checkNumberOrder() ){ return 'nmOrder';}
 
 		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
 
@@ -851,6 +850,10 @@ AnsCheck:{
 		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
 		return null;
+	},
+
+	getTraceInfo : function(){
+		return (this._info.trace = this._info.trace || this.owner.board.getTraceInfo());
 	},
 
 	checkCrossOutOfIce : function(){
@@ -888,23 +891,29 @@ AnsCheck:{
 		if(!border.isLine()){ border.seterr(4); return false;}
 		return true;
 	},
-	checkDeadendRoad : function(info){ return this.checkTrace(info, function(info){ return info.lastborder.isLine();});},
-	checkAlongArrow  : function(info){ return this.checkTrace(info, function(info){ return (info.lastborder.getArrow()===info.dir);});},
-	checkKeepInside : function(info){
-		return this.checkTrace(info, function(info){
+
+	checkDeadendRoad : function(){
+		return this.checkTrace(function(info){ return info.lastborder.isLine();});
+	},
+	checkFollowArrow : function(){
+		return this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);});
+	},
+	checkKeepInside : function(){
+		return this.checkTrace(function(info){
 			var border = info.lastborder, bd = border.owner.board;
 			return (border.id<bd.bdinside || border.id===bd.arrowout.getid());
 		});
 	},
-	checkNumberOrder : function(info){
-		return this.checkTrace(info, function(info){
+	checkNumberOrder : function(){
+		return this.checkTrace(function(info){
 			var cell = info.lastcell;
 			if(cell.qnum<0 || cell.qnum===info.count){ return true;}
 			cell.seterr(1);
 			return false;
 		});
 	},
-	checkTrace : function(info, evalfunc){
+	checkTrace : function(evalfunc){
+		var info = this.getTraceInfo();
 		if(!evalfunc(info)){
 			this.owner.board.border.seterr(-1);
 			info.blist.seterr(1);

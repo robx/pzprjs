@@ -208,28 +208,26 @@ AnsCheck:{
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt4';}
+		if( !this.checkOverShadeCellInArea() ){ return 'bkShadeGt4';}
 
 		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
 
-		if( !this.checkTetromino(rinfo) ){ return 'sbSameShape';}
+		if( !this.checkTetromino() ){ return 'sbSameShape';}
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
+		if( !this.checkConnectShade() ){ return 'csDivide';}
 
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
+		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
 
-		if( !this.checkLessShadeCellInArea(rinfo) ){ return 'bkShadeLt4';}
+		if( !this.checkLessShadeCellInArea() ){ return 'bkShadeLt4';}
 
 		return null;
 	},
 
-	checkOverShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=4);});
+	checkOverShadeCellInArea : function(){
+		return this.checkShadeCellInArea(this.getRoomInfo(), function(a){ return (a<=4);});
 	},
-	checkLessShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a>=4);});
+	checkLessShadeCellInArea : function(){
+		return this.checkShadeCellInArea(this.getRoomInfo(), function(a){ return (a>=4);});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -246,7 +244,8 @@ AnsCheck:{
 		return result;
 	},
 
-	checkTetromino : function(rinfo){
+	checkTetromino : function(){
+		var rinfo = this.getRoomInfo();
 		var dinfo = this.owner.board.getTetrominoInfo(rinfo), result = true;
 		for(var r=1;r<=dinfo.max;r++){
 			var clist = dinfo.area[r].clist;
@@ -261,33 +260,31 @@ AnsCheck:{
 "AnsCheck@norinori":{
 	checkAns : function(){
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOverShadeCell(binfo) ){ return 'csGt2';}
+		if( !this.checkOverShadeCell() ){ return 'csGt2';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt2';}
+		if( !this.checkOverShadeCellInArea() ){ return 'bkShadeGt2';}
 
-		if( !this.checkSingleShadeCell(binfo) ){ return 'csLt2';}
+		if( !this.checkSingleShadeCell() ){ return 'csLt2';}
 
-		if( !this.checkSingleShadeCellInArea(rinfo) ){ return 'bkShadeLt2';}
+		if( !this.checkSingleShadeCellInArea() ){ return 'bkShadeLt2';}
 
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
+		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
 
 		return null;
 	},
 
-	checkOverShadeCell : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} );
+	checkOverShadeCell : function(){
+		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a<=2);} );
 	},
-	checkSingleShadeCell : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (a>=2);} );
+	checkSingleShadeCell : function(){
+		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a>=2);} );
 	},
 
-	checkOverShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=2);});
+	checkOverShadeCellInArea : function(){
+		return this.checkShadeCellInArea(this.getRoomInfo(), function(a){ return (a<=2);});
 	},
-	checkSingleShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a!==1);});
+	checkSingleShadeCellInArea : function(){
+		return this.checkShadeCellInArea(this.getRoomInfo(), function(a){ return (a!==1);});
 	}
 },
 

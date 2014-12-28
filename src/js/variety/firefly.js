@@ -174,14 +174,12 @@ AnsCheck:{
 		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
 		if( !this.checkCrossLine_firefly() ){ return 'lnCross';}
 
-		var xinfo = this.owner.board.getLineShapeInfo();
-		if( !this.checkConnectPoints(xinfo) ){ return 'lcInvDirB';}
-		if( !this.checkConnectCircles(xinfo) ){ return 'lcInvDirW';}
-		if( !this.checkCurveCount(xinfo) ){ return 'lcCurveNe';}
-		if( !this.checkDeadendLine(xinfo) ){ return 'lcDeadEnd';}
+		if( !this.checkConnectPoints() ){ return 'lcInvDirB';}
+		if( !this.checkConnectCircles() ){ return 'lcInvDirW';}
+		if( !this.checkCurveCount() ){ return 'lcCurveNe';}
+		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneArea(linfo) ){ return 'lcDivided';}
+		if( !this.checkConnectAllLine() ){ return 'lcDivided';}
 
 		if( !this.checkDeadendLine_firefly() ){ return 'lnDeadEnd';}
 
@@ -212,27 +210,31 @@ AnsCheck:{
 		return result;
 	},
 
-	checkConnectPoints : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkConnectPoints : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			return (!cell2.isnull && path.dir1===cell1.qdir && path.dir2===cell2.qdir);
 		});
 	},
-	checkConnectCircles : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkConnectCircles : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			return (!cell2.isnull && path.dir1!==cell1.qdir && path.dir2!==cell2.qdir);
 		});
 	},
-	checkCurveCount : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){
+	checkCurveCount : function(){
+		return this.checkLineShape(function(path){
 			var cell1=path.cells[0], cell2=path.cells[1];
 			var qn=((path.dir1===cell1.qdir) ? cell1 : cell2).qnum;
 			return (!cell2.isnull && qn>=0 && qn!==path.ccnt);
 		});
 	},
-	checkDeadendLine : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return path.cells[1].isnull;});
+	checkDeadendLine : function(){
+		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
+	},
+
+	checkConnectAllLine : function(){
+		return this.checkOneArea(this.getLareaInfo());
 	}
 },
 

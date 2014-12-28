@@ -162,30 +162,28 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var o = this.owner, bd = o.board, pid = o.pid;
+		var pid = this.owner.pid;
 
 		if(pid!=='sukororoom'){
 			if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
 		}
 		else{
-			var rinfo = bd.getRoomInfo();
-			if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
-			if( !this.checkNumberOrNotInRoom(rinfo) ){ return 'bkMixed';}
+			if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
+			if( !this.checkNoMixedRoom() ){ return 'bkMixed';}
 		}
 
 		if( (pid!=='view') && !this.checkDir4NumberCount() ){ return 'nmNumberNe';}
 		if( (pid==='view') && !this.checkViewNumber() ){ return 'nmSumViewNe';}
 
-		var numinfo = bd.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
+		if( !this.checkConnectNumber() ){ return 'nmDivide';}
 
 		if( !this.checkNoSuspendCell() ){ return 'ceSuspend';}
 
 		return null;
 	},
 
-	checkNumberOrNotInRoom : function(rinfo){
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return (cell.isNumberObj()?1:2);});
+	checkNoMixedRoom : function(rinfo){
+		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return (cell.isNumberObj()?1:2);});
 	},
 	checkDir4NumberCount : function(){
 		return this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0);

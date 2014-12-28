@@ -215,19 +215,18 @@ Graphic:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var o=this.owner, bd=o.board, pid=o.pid;
+		var pid=this.owner.pid;
 
 		if( !this.checkNoLine() ){ return 'brNoLine';}
 
 		if( (pid==='ringring') && !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 
-		var rinfo = ((pid==='nagenawa') ? bd.getRoomInfo() : null);
-		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 'bkLineGt';}
+		if( (pid==='nagenawa') && !this.checkOverLineCount() ){ return 'bkLineGt';}
 
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
-		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 'bkLineLt';}
+		if( (pid==='nagenawa') && !this.checkLessLineCount() ){ return 'bkLineLt';}
 
 		if( !this.checkAllLoopRect() ){ return 'lnNotRect';}
 
@@ -244,11 +243,11 @@ AnsCheck:{
 	checkLineOnShadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
 	},
-	checkOverLineCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);});
+	checkOverLineCount : function(){
+		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);});
 	},
-	checkLessLineCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);});
+	checkLessLineCount : function(){
+		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n<=a);});
 	},
 	checkUnreachedUnshadeCell : function(){
 		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);});
@@ -256,7 +255,7 @@ AnsCheck:{
 
 	checkAllLoopRect : function(){
 		var result = true, bd = this.owner.board;
-		var xinfo = bd.getLineInfo();
+		var xinfo = this.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
 			var blist = xinfo.path[r].blist;
 			if(this.isLoopRect(blist)){ continue;}

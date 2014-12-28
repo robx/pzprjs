@@ -145,43 +145,46 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+AnsCheck : {
+	checkDoubleNumberInUnshade : function(){
+		return this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);} );
+	},
+	checkNumberAndUnshadeSize : function(){
+		return this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );
+	}
+},
 "AnsCheck@nurikabe":{
 	checkAns : function(){
-		var bd=this.owner.board;
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
-		var binfo = bd.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
+		if( !this.checkNoNumberInUnshade() ){ return 'bkNoNum';}
+		if( !this.checkConnectShade() ){ return 'csDivide';}
+		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
+		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
 
 		return null;
 	}
 },
 "AnsCheck@nuribou":{
 	checkAns : function(){
-		var bd=this.owner.board;
 
-		var binfo = bd.getShadeInfo();
-		if( !this.checkBou(binfo) ){ return 'csWidthGt1';}
-		if( !this.checkCorners(binfo) ){ return 'csCornerSize';}
+		if( !this.checkBou() ){ return 'csWidthGt1';}
+		if( !this.checkCorners() ){ return 'csCornerSize';}
 
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
+		if( !this.checkNoNumberInUnshade() ){ return 'bkNoNum';}
+		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
+		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
 
 		return null;
 	},
 
-	checkBou : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkBou : function(){
+		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	},
-	checkCorners : function(binfo){
+	checkCorners : function(){
 		var result = true, bd = this.owner.board;
+		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
@@ -205,21 +208,23 @@ FileIO:{
 		return result;
 	}
 },
+"AnsCheck@nurikabe,nuribou":{
+	checkNoNumberInUnshade : function(){
+		return this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);} );
+	}
+},
 "AnsCheck@mochikoro,mochinyoro":{
 	checkAns : function(){
-		var bd=this.owner.board;
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 		if( !this.checkConnectUnshaded_mochikoro() ){ return 'csDivide8';}
 
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkAreaRect(winfo) ){ return 'cuNotRect';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
+		if( !this.checkUnshadeRect() ){ return 'cuNotRect';}
+		if( !this.checkDoubleNumberInUnshade() ){ return 'bkNumGe2';}
+		if( !this.checkNumberAndUnshadeSize() ){ return 'bkSizeNe';}
 
 		if(this.owner.pid==='mochinyoro'){
-			var binfo = bd.getShadeInfo();
-			if( !this.checkAreaNotRect(binfo) ){ return 'csRect';}
+			if( !this.checkShadeNotRect() ){ return 'csRect';}
 		}
 
 		return null;
@@ -228,8 +233,11 @@ FileIO:{
 	checkConnectUnshaded_mochikoro : function(){
 		return this.checkOneArea( this.owner.board.getdir8WareaInfo() );
 	},
-	checkAreaNotRect : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!==a);});
+	checkUnshadeRect : function(){
+		return this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);});
+	},
+	checkShadeNotRect : function(){
+		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h!==a);});
 	}
 },
 

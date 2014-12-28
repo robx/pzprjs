@@ -131,22 +131,21 @@ AnsCheck:{
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
+		if( !this.checkTripleObject() ){ return 'lcTripleNum';}
 
-		if( !this.checkLinkDiffNumber(linfo) ){ return 'nmConnDiff';}
+		if( !this.checkLinkSameNumber() ){ return 'nmConnDiff';}
 
 		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
 		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
-		if( !this.checkDisconnectLine(linfo) ){ return 'lcIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'lcIsolate';}
 
 		if( !this.checkAloneNumber() ){ return 'nmIsolate';}
 
 		return null;
 	},
 
-	checkLinkDiffNumber : function(linfo){
-		return this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();});
+	checkLinkSameNumber : function(){
+		return this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();});
 	},
 	checkAloneNumber : function(){
 		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});

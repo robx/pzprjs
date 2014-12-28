@@ -71,7 +71,7 @@ ui.debug =
 
 	perfeval : function(){
 		var ans = ui.puzzle.checker;
-		this.timeeval("正答判定測定", function(){ ans.checkAns();});
+		this.timeeval("正答判定測定", function(){ ans.resetCache(); ans.checkAns();});
 	},
 	painteval : function(){
 		this.timeeval("描画時間測定", function(){ ui.puzzle.redraw();});

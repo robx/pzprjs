@@ -344,8 +344,7 @@ AnsCheck:{
 		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
 		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
+		if( !this.checkConnectShade() ){ return 'csDivide';}
 
 		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
 		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}

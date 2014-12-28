@@ -731,8 +731,10 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	precheck : function(){
 		this.owner.board.hinfo.generateAll();
+	},
+	checkAns : function(){
 
 		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
 

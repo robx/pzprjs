@@ -392,22 +392,26 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getLblockInfo();
-		if( !this.checkArrowCorner1(rinfo) ){ return 'awBlkEdge';}
-		if( !this.checkArrowCorner2(rinfo) ){ return 'awNotPtCnr';}
-		if( !this.checkCircleCorner(rinfo) ){ return 'ciNotOnCnr';}
+		if( !this.checkArrowCorner1() ){ return 'awBlkEdge';}
+		if( !this.checkArrowCorner2() ){ return 'awNotPtCnr';}
+		if( !this.checkCircleCorner() ){ return 'ciNotOnCnr';}
 
-		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
+		if( (this.owner.pid==='sashigane') && !this.checkNumberAndSize() ){ return 'bkSizeNe';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
-		if( !this.checkLblock(rinfo) ){ return 'bkNotLshape';}
+		if( !this.checkLblock() ){ return 'bkNotLshape';}
 
 		return null;
 	},
 
-	checkArrowCorner1 : function(rinfo){
+	getLblockInfo : function(){
+		return (this._info.lbinfo = this._info.lbinfo || this.owner.board.getLblockInfo());
+	},
+
+	checkArrowCorner1 : function(){
 		var result = true;
+		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
@@ -425,8 +429,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkArrowCorner2 : function(rinfo){
+	checkArrowCorner2 : function(){
 		var result = true;
+		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
@@ -449,8 +454,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkCircleCorner : function(rinfo){
+	checkCircleCorner : function(){
 		var result = true;
+		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
@@ -468,8 +474,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkLblock : function(rinfo){
+	checkLblock : function(){
 		var result = true;
+		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){
 				if(this.checkOnly){ return false;}

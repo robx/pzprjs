@@ -208,10 +208,9 @@ AnsCheck:{
 
 		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 'bdNotChassis';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
 
-		if( !this.checkDiffObjectInArea(rinfo) ){ return 'bkPlNum';}
+		if( !this.checkSameObjectInArea() ){ return 'bkPlNum';}
 
 		if( (pid!=='kramma') && !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 		if( (pid==='kramman') && !this.checkBorderNoneOnBP() ){ return 'bdIgnoreBP';}
@@ -226,8 +225,8 @@ AnsCheck:{
 	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1);},
 	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
 
-	checkDiffObjectInArea : function(rinfo){
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
+	checkSameObjectInArea : function(){
+		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();});
 	},
 
 	checkLcntCurve : function(){

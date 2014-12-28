@@ -183,34 +183,37 @@ AnsCheck:{
 
 		if( !this.checkSideAreaNumber() ){ return 'scNum';}
 
-		var rinfo = this.owner.board.getErrorRoomInfo();
-		if( !this.checkNotMultiNum(rinfo) ){ return 'bkPlNum';}
-		if( !this.checkNumCountOver(rinfo) ){ return 'nmCountGt';}
+		if( !this.checkNotMultiNum() ){ return 'bkPlNum';}
+		if( !this.checkNumCountOver() ){ return 'nmCountGt';}
 
-		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
+		if( !this.checkConnectNumber() ){ return 'nmDivide';}
 
-		if( !this.checkNumCountLack(rinfo) ){ return 'nmCountLt';}
-		if( !this.checkNoEmptyArea(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNumCountLack() ){ return 'nmCountLt';}
+		if( !this.checkNoEmptyArea() ){ return 'bkNoNum';}
 
 		return null;
+	},
+
+	getErrorRoomInfo  : function(){
+		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());
 	},
 
 	check2x2NumberCell : function(){
 		return this.check2x2Block(function(cell){ return cell.isNum();});
 	},
 	checkSideAreaNumber : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
+		return this.checkSideAreaCell(this.getErrorRoomInfo(), function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
 	},
 
-	checkNotMultiNum  : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
-	checkNumCountLack : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
-	checkNumCountOver : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
-	checkNoEmptyArea  : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return area.numkind!==0;});},
-	checkAllErrorRoom : function(cinfo, evalfunc){
+	checkNotMultiNum  : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
+	checkNumCountLack : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);});},
+	checkNumCountOver : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);});},
+	checkNoEmptyArea  : function(){ return this.checkAllErrorRoom(function(area){ return area.numkind!==0;});},
+	checkAllErrorRoom : function(evalfunc){
 		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var area = cinfo.area[id];
+		var rinfo = this.getErrorRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){
+			var area = rinfo.area[id];
 			if( !!area && !evalfunc(area) ){
 				if(this.checkOnly){ return false;}
 				area.clist.seterr(1);

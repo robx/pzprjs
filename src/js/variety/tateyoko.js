@@ -249,13 +249,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
 		if( !this.checkBarOverNum() ){ return 'nmConnBarGt';}
 
-		var binfo = bd.getBarInfo();
-		if( !this.checkDoubleNumber(binfo) ){ return 'baPlNum';}
-		if( !this.checkNumberAndSize(binfo) ){ return 'bkSizeNe';}
+		if( !this.checkDoubleNumberInBar() ){ return 'baPlNum';}
+		if( !this.checkSizeAndNumberInBar() ){ return 'bkSizeNe';}
 
 		if( !this.checkBarLessNum() ){ return 'nmConnBarLt';}
 
@@ -267,18 +265,21 @@ AnsCheck:{
 		return (this.checkEmptyCell() ? null : 'ceEmpty');
 	},
 
-	/* エラー表示用オーバーライド */
-	checkDoubleNumber : function(binfo){
+	getBarInfo : function(){
+		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+	},
+
+	checkDoubleNumberInBar : function(){
 		var bd = this.owner.board;
 		bd.cell.seterr(-1);
-		var result = this.common.checkDoubleNumber.call(this,binfo);
+		var result = this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);} );
 		if(!result){ bd.cell.seterr(0);}
 		return result;
 	},
-	checkNumberAndSize : function(binfo){
+	checkSizeAndNumberInBar : function(){
 		var bd = this.owner.board;
 		bd.cell.seterr(-1);
-		var result = this.common.checkNumberAndSize.call(this,binfo);
+		var result = this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );
 		if(!result){ bd.cell.seterr(0);}
 		return result;
 	},

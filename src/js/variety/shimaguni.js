@@ -137,25 +137,24 @@ FileIO:{
 "AnsCheck@shimaguni":{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaShadeCell(rinfo) ){ return 'scShade';}
+		if( !this.checkSideAreaShadeCell() ){ return 'scShade';}
 
 		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
 
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
+		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
 
-		if( !this.checkSideAreaLandSide(rinfo) ){ return 'sbEqShade';}
+		if( !this.checkSideAreaLandSide() ){ return 'sbEqShade';}
 
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
+		if( !this.checkNoShadeCellInArea() ){ return 'bkNoShade';}
 
 		return null;
 	},
 
-	checkSideAreaShadeCell : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
+	checkSideAreaShadeCell : function(){
+		return this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
 	},
-	checkSideAreaLandSide : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.getLandAreaOfClist();});
+	checkSideAreaLandSide : function(){
+		return this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.getLandAreaOfClist();});
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -175,13 +174,15 @@ FileIO:{
 "AnsCheck@chocona":{
 	checkAns : function(){
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaRect(binfo) ){ return 'csNotRect';}
+		if( !this.checkShadeRect() ){ return 'csNotRect';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
+		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
 
 		return null;
+	},
+
+	checkShadeRect : function(){
+		return this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);});
 	}
 },
 

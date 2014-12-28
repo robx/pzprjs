@@ -100,8 +100,7 @@ AnsCheck:{
 
 		if( !this.checkShadeOverNum() ){ return 'crShadeGt';}
 
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
+		if( !this.checkConnectUnshade() ){ return 'cuDivide';}
 
 		if( !this.checkShadeLessNum() ){ return 'crShadeLt';}
 

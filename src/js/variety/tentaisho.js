@@ -445,12 +445,15 @@ AnsCheck:{
 
 		if( !this.checkStarOnLine() ){ return 'bkNoStar';}
 
-		var rinfo = this.owner.board.getAreaStarInfoAll();
-		if( !this.checkAvoidStar(rinfo) ){ return 'bdPassStar';}
-		if( !this.checkFractal(rinfo) ){ return 'bkNotSymSt';}
-		if( !this.checkStarRegion(rinfo) ){ return 'bkPlStar';}
+		if( !this.checkAvoidStar() ){ return 'bdPassStar';}
+		if( !this.checkFractal() ){ return 'bkNotSymSt';}
+		if( !this.checkStarRegion() ){ return 'bkPlStar';}
 
 		return null;
+	},
+
+	getStarAreaInfo : function(){
+		return (this._info.sarea = this._info.sarea || this.owner.board.getAreaStarInfoAll());
 	},
 
 	checkStarOnLine : function(){
@@ -471,8 +474,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkFractal : function(rinfo){
+	checkFractal : function(){
 		var result = true;
+		var rinfo = this.getStarAreaInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			var star = rinfo.area[r].star;
@@ -490,10 +494,11 @@ AnsCheck:{
 		return result;
 	},
 
-	checkAvoidStar  : function(rinfo){ return this.checkErrorFlag(rinfo,-1);},
-	checkStarRegion : function(rinfo){ return this.checkErrorFlag(rinfo,-2);},
-	checkErrorFlag : function(rinfo, val){
+	checkAvoidStar  : function(){ return this.checkErrorFlag(-1);},
+	checkStarRegion : function(){ return this.checkErrorFlag(-2);},
+	checkErrorFlag : function(val){
 		var result = true;
+		var rinfo = this.getStarAreaInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.area[r].error!==val){ continue;}
 

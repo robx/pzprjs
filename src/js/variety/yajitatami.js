@@ -115,23 +115,22 @@ AnsCheck:{
 		if( !this.checkBorderCross() ){ return 'bdCross';}
 		if( !this.checkArrowNumber_border() ){ return 'arNoAdjBd';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkTatamiLength(rinfo) ){ return 'bkSize1';}
+		if( !this.checkTatamiLength() ){ return 'bkSize1';}
 		if( !this.checkArrowNumber_tatami() ){ return 'anTatamiNe';}
-		if( !this.checkTatamiSize(rinfo) ){ return 'bkSizeNe';}
-		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
+		if( !this.checkTatamiSize() ){ return 'bkSizeNe';}
+		if( !this.checkTatamiBreadth() ){ return 'bkWidthGt1';}
 
 		return null;
 	},
 
-	checkTatamiLength : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
+	checkTatamiLength : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);});
 	},
-	checkTatamiSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n===a);});
+	checkTatamiSize : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n===a);});
 	},
-	checkTatamiBreadth : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkTatamiBreadth : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	},
 
 	checkArrowNumber_tatami : function(){

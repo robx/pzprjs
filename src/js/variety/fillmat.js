@@ -92,22 +92,21 @@ FileIO:{
 
 		if( !this.checkBorderCross() ){ return 'bdCross';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaRoomSize(rinfo) ){ return 'sbSizeEq';}
-		if( !this.checkTatamiMaxSize(rinfo) ){ return 'bkLenGt4';}
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
+		if( !this.checkSideAreaRoomSize() ){ return 'sbSizeEq';}
+		if( !this.checkTatamiMaxSize() ){ return 'bkLenGt4';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
+		if( !this.checkNumberAndSize() ){ return 'bkSizeNe';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},
 
-	checkTatamiMaxSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
+	checkTatamiMaxSize : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
 	},
-	checkSideAreaRoomSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.length;});
+	checkSideAreaRoomSize : function(){
+		return this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.length;});
 	}
 },
 "AnsCheck@usotatami":{
@@ -115,23 +114,22 @@ FileIO:{
 
 		if( !this.checkBorderCross() ){ return 'bdCross';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-		if( !this.checkTatamiDiffSize(rinfo) ){ return 'bkSizeEq';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
+		if( !this.checkTatamiDiffSize() ){ return 'bkSizeEq';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
-		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
+		if( !this.checkTatamiBreadth() ){ return 'bkWidthGt1';}
 
 		return null;
 	},
 
-	checkTatamiDiffSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n!==a);});
+	checkTatamiDiffSize : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);});
 	},
-	checkTatamiBreadth : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkTatamiBreadth : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	}
 },
 

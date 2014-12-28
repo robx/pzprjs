@@ -103,8 +103,7 @@ AnsCheck:{
 
 		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
+		if( !this.checkConnectShade() ){ return 'csDivide';}
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 		if( !this.checkDir4ShadeCell() ){ return 'nmShadeNe';}

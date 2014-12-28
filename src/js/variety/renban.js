@@ -127,9 +127,8 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
-		if( !this.checkNumbersInRoom(rinfo) ){ return 'bkNotSeqNum';}
+		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
+		if( !this.checkNumbersInRoom() ){ return 'bkNotSeqNum';}
 
 		if( !this.checkBorderSideNumber() ){ return 'scDiffLenNe';}
 		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
@@ -140,8 +139,9 @@ AnsCheck:{
 		return (this.checkNoNumCell() ? null : 'ceEmpty');
 	},
 
-	checkNumbersInRoom : function(rinfo){
+	checkNumbersInRoom : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			if(clist.length<=1){ continue;}

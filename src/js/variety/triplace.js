@@ -293,33 +293,37 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var tiles = this.owner.board.getTileInfo();
-		if( !this.checkOverThreeCells(tiles) ){ return 'bkSizeLt3';}
-		if( !this.checkRowsColsTileCount(tiles) ){ return 'asLblockNe';}
-		if( !this.checkLessThreeCells(tiles) ){ return 'bkSizeGt3';}
+		if( !this.checkOverThreeCells() ){ return 'bkSizeLt3';}
+		if( !this.checkRowsColsTileCount() ){ return 'asLblockNe';}
+		if( !this.checkLessThreeCells() ){ return 'bkSizeGt3';}
 
 		return null;
 	},
 
-	checkOverThreeCells : function(tiles){
-		return this.checkAllArea(tiles, function(w,h,a,n){ return (a>=3);});
-	},
-	checkLessThreeCells : function(tiles){
-		return this.checkAllArea(tiles, function(w,h,a,n){ return (a<=3);});
+	getTileInfo : function(){
+		return (this._info.tile = this._info.tile || this.owner.board.getTileInfo());
 	},
 
-	checkRowsColsTileCount : function(tiles){
-		var evalfunc = function(pos,clist){ return this.isTileCount(pos,clist,tiles);};
+	checkOverThreeCells : function(){
+		return this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a>=3);});
+	},
+	checkLessThreeCells : function(){
+		return this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a<=3);});
+	},
+
+	checkRowsColsTileCount : function(){
+		var evalfunc = function(pos,clist){ return this.isTileCount(pos,clist);};
 		return this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, false);
 	},
-	isTileCount : function(keycellpos, clist, tiles){
+	isTileCount : function(keycellpos, clist){
+		var tiles = this.getTileInfo();
 		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
 		if     (dir===keyobj.RT){ number = keyobj.qnum;}
 		else if(dir===keyobj.DN){ number = keyobj.qnum2;}
 
 		var count = 0, counted = [];
 		for(var i=0;i<clist.length;i++){
-			var tid = tiles.getRoomID(clist[i]);
+			var tid = tiles.id[clist[i].id];
 			if(tiles.area[tid].is1x3===1 && !counted[tid]){ count++; counted[tid] = true;}
 		}
 		if(number>=0 && count!==number){

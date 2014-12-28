@@ -114,13 +114,12 @@ AnsCheck:{
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoom2(rinfo) ){ return 'lnPassTwice';}
+		if( !this.checkRoom2() ){ return 'lnPassTwice';}
 
-		if( !this.checkRoadCount(rinfo) ){ return 'bkLineNe';}
-		if( !this.checkNoRoadCountry(rinfo) ){ return 'bkNoLine';}
+		if( !this.checkRoadCount() ){ return 'bkLineNe';}
+		if( !this.checkNoRoadCountry() ){ return 'bkNoLine';}
 
-		if( !this.checkSideAreaGrass(rinfo) ){ return 'scNoLine';}
+		if( !this.checkSideAreaGrass() ){ return 'scNoLine';}
 
 		if( !this.checkDeadendLine() ){ return 'lnDeadEnd';}
 
@@ -129,18 +128,19 @@ AnsCheck:{
 		return null;
 	},
 
-	checkRoadCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n===a);});
+	checkRoadCount : function(){
+		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0||n===a);});
 	},
-	checkNoRoadCountry : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!==0);});
+	checkNoRoadCountry : function(){
+		return this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (a!==0);});
 	},
-	checkSideAreaGrass : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false);
+	checkSideAreaGrass : function(){
+		return this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false);
 	},
 
-	checkRoom2 : function(rinfo){
+	checkRoom2 : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var cnt=0, clist=rinfo.area[r].clist;
 			for(var i=0;i<clist.length;i++){

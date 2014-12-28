@@ -117,13 +117,12 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
+		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
 
 		if( (pid==='ripple') && !this.checkRippleNumber() ){ return 'nmSmallGap';}
 
 		if( (pid==='cojun') && !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-		if( (pid==='cojun') && !this.checkUpperNumber(rinfo) ){ return 'bkSmallOnBig';}
+		if( (pid==='cojun') && !this.checkUpperNumber() ){ return 'bkSmallOnBig';}
 
 		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
 
@@ -160,8 +159,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkUpperNumber : function(rinfo){
+	checkUpperNumber : function(){
 		var result = true, bd = this.owner.board;
+		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
 			if(rinfo.id[c]!==rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}

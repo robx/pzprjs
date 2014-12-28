@@ -236,25 +236,29 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var sinfo = this.owner.board.getSnakeInfo();
-		if( !this.checkSnakeSize(sinfo) ){ return 'bkSizeNe5';}
-		if( !this.checkDiffAnsNumberInRoom(sinfo) ){ return 'bkDupNum';}
-		if( !this.checkSideCell2(sinfo) ){ return 'sbSnake';}
+		if( !this.checkSnakeSize() ){ return 'bkSizeNe5';}
+		if( !this.checkOtherAnsNumberInRoom() ){ return 'bkDupNum';}
+		if( !this.checkSideCell2() ){ return 'sbSnake';}
 		if( !this.checkArrowNumber() ){ return 'anNumberNe';}
-		if( !this.checkSnakesView(sinfo) ){ return 'snakeAttack';}
+		if( !this.checkSnakesView() ){ return 'snakeAttack';}
 
 		return null;
 	},
 
-	checkSnakeSize : function(sinfo){
-		return this.checkAllArea(sinfo, function(w,h,a,n){ return (a===5);});
-	},
-	checkDiffAnsNumberInRoom : function(sinfo){
-		return this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.anum;});
+	getSnakeInfo : function(){
+		return (this._info.snake = this._info.snake || this.owner.board.getSnakeInfo());
 	},
 
-	checkSideCell2 : function(sinfo){
+	checkSnakeSize : function(){
+		return this.checkAllArea(this.getSnakeInfo(), function(w,h,a,n){ return (a===5);});
+	},
+	checkOtherAnsNumberInRoom : function(){
+		return this.checkDifferentNumberInRoom(this.getSnakeInfo(), function(cell){ return cell.anum;});
+	},
+
+	checkSideCell2 : function(){
 		var result = true, bd = this.owner.board;
+		var sinfo = this.getSnakeInfo();
 		var func = function(sinfo,cell1,cell2){
 			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
 			return (r1>0 && r2>0 && r1!==r2);
@@ -314,6 +318,7 @@ AnsCheck:{
 	},
 	checkSnakesView : function(sinfo){
 		var result = true;
+		var sinfo = this.getSnakeInfo();
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.area[r].clist;
 			var cell = clist.filter(function(cell){ return (cell.anum===1);})[0];

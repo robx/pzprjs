@@ -97,10 +97,9 @@ AnsCheck:{
 		if( !this.checkBorderBranchExBP() ){ return 'bdBranchExBP';}
 		if( !this.checkBorderCrossExBP() ){ return 'bdCrossExBP';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-		if( !this.checkDiffNumberInBlock(rinfo) ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
+		if( !this.checkSameNumberInBlock() ){ return 'bkPlNum';}
+		if( !this.checkGatheredObject() ){ return 'bkSepNum';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 		if( !this.checkBorderPassOnBP() ){ return 'bdCountLt3BP';}
@@ -114,13 +113,14 @@ AnsCheck:{
 	checkBorderPassOnBP : function(){ return this.checkBorderCount(2,1);},
 	checkBorderNoneOnBP : function(){ return this.checkBorderCount(0,1);},
 
-	checkDiffNumberInBlock : function(rinfo){
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
+	checkSameNumberInBlock : function(){
+		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();});
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
-	checkGatheredObject : function(rinfo){
+	checkGatheredObject : function(){
 		var d=[], dmax=0, val=[], bd=this.owner.board;
+		var rinfo = this.owner.board.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){

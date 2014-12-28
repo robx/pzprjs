@@ -463,8 +463,7 @@ AnsCheck:{
 		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
 		if( pzpr.EDITOR && !this.checkShadedObject() ){ return 'objShaded';}
 
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
+		if( !this.checkConnectUnshade() ){ return 'cuDivide';}
 
 		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
 		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}

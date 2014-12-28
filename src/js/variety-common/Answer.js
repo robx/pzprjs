@@ -3,6 +3,37 @@
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 AnsCheck:{
+	//--------------------------------------------------------------------------------
+	// ans.getLineInfo()  線情報を返す
+	// ans.getRoomInfo()  部屋情報を返す
+	// ans.getLareaInfo() 線つながり情報を返す
+	// ans.getShadeInfo()    黒マスの領域情報を返す
+	// ans.getUnshadeInfo()  白マスの領域情報を返す
+	// ans.getNumberInfo()   数字の領域/繋がり情報を返す
+	// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を付加して返す
+	//--------------------------------------------------------------------------------
+	getLineInfo : function(){
+		return (this._info.line = this._info.line || this.owner.board.getLineInfo());
+	},
+	getRoomInfo : function(){
+		return (this._info.room = this._info.room || this.owner.board.getRoomInfo());
+	},
+	getLareaInfo : function(){
+		return (this._info.linfo = this._info.linfo || this.owner.board.getLareaInfo());
+	},
+	getShadeInfo : function(){
+		return (this._info.bcell = this._info.bcell || this.owner.board.getShadeInfo());
+	},
+	getUnshadeInfo : function(){
+		return (this._info.wcell = this._info.wcell || this.owner.board.getUnshadeInfo());
+	},
+	getNumberInfo : function(){
+		return (this._info.num = this._info.num || this.owner.board.getNumberInfo());
+	},
+	getLineShapeInfo : function(){
+		return (this._info.lshape = this._info.lshape || this.owner.board.getLineShapeInfo());
+	},
+
 	//---------------------------------------------------------------------------
 	// ans.checkAllCell()   条件func==trueになるマスがあったらエラーを設定する
 	// ans.checkNoNumCell() 数字の入っていないセルがあるか判定する
@@ -112,11 +143,15 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkConnectShade()    黒マスがひとつながりかどうかを判定する
+	// ans.checkConnectUnshade()  白マスがひとつながりかどうかを判定する
+	// ans.checkConnectNumber()   数字がひとつながりかどうかを判定する
 	// ans.checkOneArea()  白マス/黒マス/線がひとつながりかどうかを判定する
-	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
-	// ans.checkLineCount() セルから出ている線の本数について判定する
-	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
+	// ans.checkConnectUnshadeRB() 連黒分断禁のパズルで白マスが分断されているかチェックする
 	//---------------------------------------------------------------------------
+	checkConnectShade   : function(){ return this.checkOneArea(this.getShadeInfo());},
+	checkConnectUnshade : function(){ return this.checkOneArea(this.getUnshadeInfo());},
+	checkConnectNumber  : function(){ return this.checkOneArea(this.getNumberInfo());},
 	checkOneArea : function(cinfo){
 		if(cinfo.max>1){
 			cinfo.area[1].clist.seterr(1);
@@ -125,8 +160,30 @@ AnsCheck:{
 		return true;
 	},
 
+	checkConnectUnshadeRB : function(){
+		var winfo = this.getUnshadeInfo();
+		if(winfo.max>1){
+			var errclist = new this.owner.CellList();
+			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], list=cell.getdir4clist(), fid=null;
+				for(var n=0;n<list.length;n++){
+					var cell2=list[n][0];
+					if(fid===null){ fid=winfo.getRoomID(cell2);}
+					else if(fid!==winfo.getRoomID(cell2)){ errclist.add(cell); break;}
+				}
+			}
+			errclist.seterr(1);
+			return false;
+		}
+		return true;
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
+	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
-		var bd = this.owner.board, xinfo = bd.getLineInfo();
+		var bd = this.owner.board, xinfo = this.getLineInfo();
 		if(xinfo.max>1){
 			bd.border.seterr(-1);
 			xinfo.path[1].blist.seterr(1);
@@ -135,6 +192,9 @@ AnsCheck:{
 		return true;
 	},
 
+	//---------------------------------------------------------------------------
+	// ans.checkLineCount() セルから出ている線の本数について判定する
+	//---------------------------------------------------------------------------
 	checkCrossLine   : function(){ return this.checkLineCount(4);},
 	checkBranchLine  : function(){ return this.checkLineCount(3);},
 	checkDeadendLine : function(){ return this.checkLineCount(1);},
@@ -167,6 +227,9 @@ AnsCheck:{
 		return result;
 	},
 
+	//---------------------------------------------------------------------------
+	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
+	//---------------------------------------------------------------------------
 	checkenableLineParts : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
@@ -182,27 +245,6 @@ AnsCheck:{
 			}
 		}
 		return result;
-	},
-
-	//---------------------------------------------------------------------------
-	// ans.checkRBShadeCell() 連黒分断禁のパズルで白マスが分断されているかチェックする
-	//---------------------------------------------------------------------------
-	checkRBShadeCell : function(winfo){
-		if(winfo.max>1){
-			var errclist = new this.owner.CellList();
-			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
-			for(var i=0;i<clist.length;i++){
-				var cell=clist[i], list=cell.getdir4clist(), fid=null;
-				for(var n=0;n<list.length;n++){
-					var cell2=list[n][0];
-					if(fid===null){ fid=winfo.getRoomID(cell2);}
-					else if(fid!==winfo.getRoomID(cell2)){ errclist.add(cell); break;}
-				}
-			}
-			errclist.seterr(1);
-			return false;
-		}
-		return true;
 	},
 
 	//---------------------------------------------------------------------------
@@ -231,27 +273,25 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkNumberAndSize()  エリアにある数字と面積が等しいか判定する
-	// ans.checkAreaRect()       領域が全て四角形であるかどうか判定する
-	// ans.checkAreaSquare()     領域が全て正方形であるかどうか判定する
+	// ans.checkNumberAndSize()  部屋にある数字と面積が等しいか判定する
+	// ans.checkRoomRect()       領域が全て四角形であるかどうか判定する
 	//---------------------------------------------------------------------------
-	checkNumberAndSize   : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (n<=0 || n===a);} );},
-	checkAreaRect        : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h===a);});},
-	checkAreaSquare      : function(cinfo){ return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h===a && w===h);});},
+	checkNumberAndSize   : function(){ return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n===a);} );},
+	checkRoomRect        : function(){ return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w*h===a);});},
 
 	//---------------------------------------------------------------------------
 	// ans.checkNoNumber()       部屋に数字が含まれていないかの判定を行う
 	// ans.checkDoubleNumber()   部屋に数字が2つ以上含まれていないように判定を行う
 	//---------------------------------------------------------------------------
-	checkNoNumber        : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);} );},
-	checkDoubleNumber    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<  2);} );},
+	checkNoNumber     : function(){ return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);} );},
+	checkDoubleNumber : function(){ return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<  2);} );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkShadeCellCount() 領域内の数字と黒マスの数が等しいか判定する
 	// ans.checkNoShadeCellInArea()  部屋に黒マスがあるか判定する
 	//---------------------------------------------------------------------------
-	checkShadeCellCount    : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (n<0 || n===a);});},
-	checkNoShadeCellInArea : function(cinfo){ return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>0);}         );},
+	checkShadeCellCount    : function(){ return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (n<0 || n===a);});},
+	checkNoShadeCellInArea : function(){ return this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>0);}         );},
 
 	//---------------------------------------------------------------------------
 	// ans.checkLinesInArea()  領域の中で線が通っているセルの数を判定する
@@ -265,15 +305,16 @@ AnsCheck:{
 
 	//---------------------------------------------------------------------------
 	// ans.checkDisconnectLine() 数字などに繋がっていない線の判定を行う
-	// ans.checkDoubleObject()   数字が線で2つ以上繋がっていないように判定を行う
+	// ans.checkConnectObject()  数字が線で2つ以上繋がっていないように判定を行う
 	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
 	// ans.checkConnectObjectCount() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	checkDisconnectLine : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a>0);});},
-	checkDoubleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<2);});},
-	checkTripleObject   : function(linfo){ return this.checkConnectObjectCount(linfo, function(a){ return(a<3);});},
-	checkConnectObjectCount : function(linfo, evalfunc){
+	checkDisconnectLine : function(){ return this.checkConnectObjectCount(function(a){ return(a>0);});},
+	checkConnectObject  : function(){ return this.checkConnectObjectCount(function(a){ return(a<2);});},
+	checkTripleObject   : function(){ return this.checkConnectObjectCount(function(a){ return(a<3);});},
+	checkConnectObjectCount : function(evalfunc){
 		var result = true;
+		var linfo = this.getLareaInfo();
 		for(var id=1;id<=linfo.max;id++){
 			var count = linfo.area[id].clist.filter(function(cell){ return cell.isNum();}).length;
 			if( !evalfunc(count) ){
@@ -324,7 +365,7 @@ AnsCheck:{
 
 	//---------------------------------------------------------------------------
 	// ans.checkSameObjectInRoom()  部屋の中のgetvalueの値が1種類であるか判定する
-	// ans.checkDiffNumberInRoom()  部屋の中に同じ数字が存在しないことを判定する
+	// ans.checkOtherNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 	// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 	//---------------------------------------------------------------------------
@@ -345,8 +386,8 @@ AnsCheck:{
 		return result;
 	},
 
-	checkDiffNumberInRoom : function(rinfo){
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ return cell.getNum();});
+	checkOtherNumberInRoom : function(){
+		return this.checkDifferentNumberInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();});
 	},
 	checkDifferentNumberInRoom : function(rinfo, numfunc){
 		var result = true;
@@ -459,10 +500,11 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkAllPath()   すべての線がpathを引数に取るevalfunc==falseになるかどうか判定する
+	// ans.checkLineShape()  すべての丸などで区切られた線が、pathを引数に取るevalfunc==falseになるかどうか判定する
 	//---------------------------------------------------------------------------
-	checkAllPath : function(xinfo, evalfunc){
+	checkLineShape : function(evalfunc){
 		var result = true;
+		var xinfo = this.getLineShapeInfo();
 		for(var id=1;id<=xinfo.max;id++){
 			var path = xinfo.path[id];
 			if(!path || !evalfunc(path)){ continue;}

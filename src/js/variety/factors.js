@@ -169,8 +169,7 @@ AnsCheck:{
 
 		if( !this.checkRowsColsSameAnsNumber() ){ return 'nmDupRow';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoomNumber(rinfo) ){ return 'nmProduct';}
+		if( !this.checkProductNumber() ){ return 'nmProduct';}
 
 		if( !this.checkNoAnumCell() ){ return 'ceEmpty';}
 
@@ -187,8 +186,9 @@ AnsCheck:{
 		return this.checkAllCell( function(cell){ return cell.anum===-1;} );
 	},
 
-	checkRoomNumber : function(rinfo){
+	checkProductNumber : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var room = rinfo.area[id], clist = room.clist;
 			var product = clist.getProduct();

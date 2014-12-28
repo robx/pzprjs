@@ -145,13 +145,11 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
 		if( !this.checkParallelBarCount() ){ return 'baParaGe3';}
 
-		var rinfo = bd.getRoomInfo();
-		if( !this.checkMajorityBarOver(rinfo) ){ return 'bkMajorBarGt';}
-		if( !this.checkMajorityBarLack(rinfo) ){ return 'bkMajorBarLt';}
+		if( !this.checkMajorityBarOver() ){ return 'bkMajorBarGt';}
+		if( !this.checkMajorityBarLack() ){ return 'bkMajorBarLt';}
 
 		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
 
@@ -201,10 +199,11 @@ AnsCheck:{
 		return true;
 	},
 
-	checkMajorityBarOver : function(rinfo){ return this.checkMajorityBarCount(rinfo, true);},
-	checkMajorityBarLack : function(rinfo){ return this.checkMajorityBarCount(rinfo, false);},
-	checkMajorityBarCount : function(rinfo, isover){
+	checkMajorityBarOver : function(){ return this.checkMajorityBarCount(true);},
+	checkMajorityBarLack : function(){ return this.checkMajorityBarCount(false);},
+	checkMajorityBarCount : function(isover){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var area = rinfo.area[id];
 			if(!area.top.isValidNum()){ continue;}

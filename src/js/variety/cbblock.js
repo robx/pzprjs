@@ -200,24 +200,28 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		/* 境界線で作られる領域の情報 */
-		var cinfo = this.owner.board.getBlockInfo();
-		if( !this.checkSingleBlock(cinfo) ){ return 'bkSubLt2';}
-		if( !this.checkBlockNotRect(cinfo) ){ return 'bkRect';}
-		if( !this.checkDifferentShapeBlock(cinfo) ){ return 'sbSameShape';}
-		if( !this.checkLargeBlock(cinfo) ){ return 'bkSubGt2';}
+		if( !this.checkSingleBlock() ){ return 'bkSubLt2';}
+		if( !this.checkBlockNotRect() ){ return 'bkRect';}
+		if( !this.checkDifferentShapeBlock() ){ return 'sbSameShape';}
+		if( !this.checkLargeBlock() ){ return 'bkSubGt2';}
 
 		return null;
 	},
 
-	checkBlockNotRect : function(cinfo){
-		return this.checkAllArea(cinfo, function(w,h,a,n){ return (w*h!==a);});
+	getCombiBlockInfo : function(){
+		/* 境界線で作られる領域の情報 */
+		return (this._info.cbinfo = this._info.cbinfo || this.owner.board.getBlockInfo());
 	},
 
-	checkSingleBlock : function(cinfo){ return this.checkMiniBlockCount(cinfo, 1);},
-	checkLargeBlock  : function(cinfo){ return this.checkMiniBlockCount(cinfo, 3);},
-	checkMiniBlockCount : function(cinfo, flag){
+	checkBlockNotRect : function(){
+		return this.checkAllArea(this.getCombiBlockInfo(), function(w,h,a,n){ return (w*h!==a);});
+	},
+
+	checkSingleBlock : function(){ return this.checkMiniBlockCount(1);},
+	checkLargeBlock  : function(){ return this.checkMiniBlockCount(3);},
+	checkMiniBlockCount : function(flag){
 		var result=true;
+		var cinfo = this.getCombiBlockInfo();
 		for(var r=1;r<=cinfo.max;r++){
 			var cnt=cinfo.area[r].dotcnt;
 			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
@@ -229,8 +233,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkDifferentShapeBlock : function(cinfo){
-		var result=true, sides=cinfo.getSideAreaInfo(), sc={};
+	checkDifferentShapeBlock : function(){
+		var result=true, cinfo = this.getCombiBlockInfo();
+		var sides=cinfo.getSideAreaInfo(), sc={};
 		for(var r=1;r<=cinfo.max-1;r++){
 			var area1 = cinfo.area[r];
 			if(area1.dotcnt!==2){ continue;}

@@ -118,7 +118,7 @@ LineManager:{
 	isCenterLine : true
 },
 
-"AreaRoomManager@heyabon":{
+"AreaRoomManager@bonsan,heyabon":{
 	enabled : true
 },
 AreaLineManager:{
@@ -299,74 +299,78 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var pid = this.owner.pid, bd = this.owner.board;
+		var pid = this.owner.pid;
 
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkConnectObject() ){ return 'nmConnected';}
 		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
-		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
+		if( !this.checkCurveLine() ){ return 'laCurve';}
 
 		if(pid==='rectslider'){
-			var rectinfo = bd.rects.getAreaInfo();
-			if( !this.checkAreaRect(rectinfo) ){ return 'csNotRect';}
-			if( !this.checkBlockSize(rectinfo) ){ return 'bkSize1';}
+			if( !this.checkMovedBlockRect() ){ return 'csNotRect';}
+			if( !this.checkMovedBlockSize() ){ return 'bkSize1';}
 		}
 
-		if( !this.checkLineLength(linfo) ){ return 'laLenNe';}
+		if( !this.checkLineLength() ){ return 'laLenNe';}
 
 		if(pid==='bonsan'){ 
-			if( !this.checkFractal_board() ){ return 'brObjNotSym';}
+			if( !this.checkFractal() ){ return 'brObjNotSym';}
 		}
 		else if(pid==='heyabon'){
-			var rinfo = bd.getRoomInfo();
-			if( !this.checkFractal(rinfo) ){ return 'bkObjNotSym';}
-			if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
+			if( !this.checkFractal() ){ return 'bkObjNotSym';}
+			if( !this.checkNoObjectBlock() ){ return 'bkNoNum';}
 		}
 
 		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
 
 		return null;
 	},
 
-	checkCurveLine : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkCurveLine : function(){
+		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	},
-	checkLineLength : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||a===1||n===a-1);});
+	checkLineLength : function(){
+		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (n<0||a===1||n===a-1);});
 	},
 	checkNoLineCircle : function(){
 		return this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);});
 	},
-	checkBlockSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
-	},
 
-	checkFractal : function(rinfo){
+	checkFractal : function(){
+		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			if(!this.checkFractal_clist(rinfo.area[id].clist)){ return false;}
-		}
-		return true;
-	},
-	checkFractal_board : function(){
-		return this.checkFractal_clist(this.owner.board.cell);
-	},
-	checkFractal_clist : function(clist){
-		var d = clist.getRectSize();
-		d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
-				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
-				return false;
+			var clist = rinfo.area[id].clist, d = clist.getRectSize();
+			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
+					clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
+					result = false;
+				}
 			}
 		}
-		return true;
+		return result;
+	},
+	checkNoObjectBlock : function(){
+		return this.checkNoMovedObjectInRoom(this.getRoomInfo());
+	}
+},
+"AnsCheck@rectslider":{
+	getRectInfo : function(){
+		return (this._info.rect = this._info.rect || this.owner.board.rects.getAreaInfo());
+	},
+
+	checkMovedBlockRect : function(){
+		return this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (w*h===a);});
+	},
+	checkMovedBlockSize : function(){
+		return this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (a>1);});
 	}
 },
 

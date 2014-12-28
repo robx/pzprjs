@@ -130,13 +130,12 @@ AnsCheck:{
 		if( !this.checkBranchLine_firefly() ){ return 'lnBranch';}
 		if( (pid!=='ichimagax') && !this.checkCrossLine_firefly() ){ return 'lnCross';}
 
-		var xinfo = this.owner.board.getLineShapeInfo();
-		if( (pid==='ichimagam') && !this.checkConnectSameNum(xinfo) ){ return 'lcSameNum';}
-		if( !this.checkCurveCount(xinfo) ){ return 'lcCurveGt1';}
+		if( (pid==='ichimagam') && !this.checkConnectSameNum() ){ return 'lcSameNum';}
+		if( !this.checkCurveCount() ){ return 'lcCurveGt1';}
 
 		if( !this.checkConnectAllNumber() ){ return 'lcDivided';}
 
-		if( !this.checkDeadendLine(xinfo) ){ return 'lcDeadEnd';}
+		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
 
 		if( !this.checkOutgoingLine() ){ return 'nmLineNe';}
 
@@ -159,18 +158,18 @@ AnsCheck:{
 		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);});
 	},
 
-	checkConnectSameNum : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;});
+	checkConnectSameNum : function(){
+		return this.checkLineShape(function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;});
 	},
-	checkCurveCount : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return !path.cells[1].isnull && path.ccnt>1;});
+	checkCurveCount : function(){
+		return this.checkLineShape(function(path){ return !path.cells[1].isnull && path.ccnt>1;});
 	},
-	checkDeadendLine : function(xinfo){
-		return this.checkAllPath(xinfo, function(path){ return path.cells[1].isnull;});
+	checkDeadendLine : function(){
+		return this.checkLineShape(function(path){ return path.cells[1].isnull;});
 	},
 
 	checkConnectAllNumber : function(){
-		var linfo = this.owner.board.getLareaInfo();
+		var linfo = this.getLareaInfo();
 		var bd = this.owner.board;
 		if(linfo.max>1){
 			bd.border.seterr(-1);

@@ -14,6 +14,7 @@ AnsCheck:{
 		this.checkOnly = false;
 	},
 	failcode : (void 0),
+	_info    : (void 0),
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う
@@ -25,6 +26,7 @@ AnsCheck:{
 		
 		if(activemode){
 			this.checkOnly = false;
+			this.precheck();
 			this.failcode = this.checkAns();
 			if(!!this.failcode){
 				bd.haserror = true;
@@ -35,6 +37,7 @@ AnsCheck:{
 		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
+			this.precheck();
 			this.failcode = (this.autocheck1st() || this.checkAns());
 			bd.enableSetError();
 		}
@@ -42,6 +45,7 @@ AnsCheck:{
 		this.inCheck = false;
 		return new puzzle.CheckInfo(this.failcode);
 	},
+	precheck : function(){ return;},		//オーバーライド用
 	checkAns : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
@@ -61,9 +65,12 @@ AnsCheck:{
 	check1st : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
-	// ans.resetCache() 前回のエラー情報を破棄する
+	// ans.resetCache() 前回のエラー情報等を破棄する
 	//---------------------------------------------------------------------------
-	resetCache : function(){ this.failcode = void 0;}
+	resetCache : function(){
+		this.failcode = void 0;
+		this._info    = {};
+	}
 },
 
 //---------------------------------------------------------------------------

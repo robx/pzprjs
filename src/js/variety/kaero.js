@@ -228,28 +228,26 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkConnectObject() ){ return 'nmConnected';}
 		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
-		var rinfo = bd.getRoomInfo();
-		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
-		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkSameObjectInRoom_kaero() ){ return 'bkPlNum';}
+		if( !this.checkGatheredObject() ){ return 'bkSepNum';}
+		if( !this.checkNoObjectBlock() ){ return 'bkNoNum';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
 
 		return null;
 	},
 
 	// checkSameObjectInRoom()にbaseを付加した関数
-	checkSameObjectInRoom_kaero : function(rinfo){
-		var result=true;
+	checkSameObjectInRoom_kaero : function(){
+		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, rnum=-1;
 			var cbase = clist.getDeparture();
@@ -268,8 +266,9 @@ AnsCheck:{
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
-	checkGatheredObject : function(rinfo){
+	checkGatheredObject : function(){
 		var max=0, bd=this.owner.board;
+		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
@@ -284,6 +283,10 @@ AnsCheck:{
 			}
 		}
 		return true;
+	},
+
+	checkNoObjectBlock : function(){
+		return this.checkNoMovedObjectInRoom(this.getRoomInfo());
 	}
 },
 

@@ -169,23 +169,22 @@ AnsCheck:{
 
 		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
+		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 'bkNotSymShade';}
+		if( (this.owner.pid==='ayeheya') && !this.checkFractal() ){ return 'bkNotSymShade';}
 
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
+		if( !this.checkShadeCellCount() ){ return 'bkShadeNe';}
 
 		if( !this.checkCountinuousUnshadeCell() ){ return 'bkUnshadeConsecGt3';}
 
-		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
+		if( !this.checkRoomRect() ){ return 'bkNotRect';}
 
 		return null;
 	},
 
-	checkFractal : function(rinfo){
+	checkFractal : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;

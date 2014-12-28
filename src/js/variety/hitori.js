@@ -196,8 +196,7 @@ AnsCheck:{
 
 		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
 
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
+		if( !this.checkConnectUnshadeRB() ){ return 'cuDivideRB';}
 
 		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
 

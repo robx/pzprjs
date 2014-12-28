@@ -184,19 +184,22 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
 
-		var ainfo = this.owner.board.getPairedArrowsInfo();
-		if( !this.checkAdjacentCountries(rinfo, ainfo) ){ return 'arAdjPair';}
-		if( !this.checkDirectionOfArrow(ainfo) ){ return 'arAlone';}
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkAdjacentCountries() ){ return 'arAdjPair';}
+		if( !this.checkDirectionOfArrow() ){ return 'arAlone';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
 
 		return null;
 	},
 
-	checkDirectionOfArrow : function(ainfo){
+	getPairArrowInfo : function(){
+		return (this._info.parrow = this._info.parrow || this.owner.board.getPairedArrowsInfo());
+	},
+
+	checkDirectionOfArrow : function(){
 		var result = true;
+		var ainfo = this.getPairArrowInfo();
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){
 				this.owner.board.cell[ainfo[i]].seterr(1);
@@ -205,7 +208,8 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkAdjacentCountries : function(rinfo, ainfo){
+	checkAdjacentCountries : function(){
+		var rinfo = this.getRoomInfo(), ainfo = this.getPairArrowInfo();
 		// 隣接エリア情報を取得して、形式を変換
 		var sides=rinfo.getSideAreaInfo(), adjs=[];
 		for(var r=1;r<=rinfo.max-1;r++){

@@ -187,30 +187,29 @@ AnsCheck:{
 
 		if( !this.checkBorderCross() ){ return 'bdCross';}
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
 
-		if( !this.checkSquareTatami(rinfo) ){ return 'bkNotSquare';}
-		if( !this.checkHorizonLongTatami(rinfo) ){ return 'bkNotHRect';}
-		if( !this.checkVertLongTatami(rinfo) ){ return 'bkNotVRect';}
+		if( !this.checkSquareTatami() ){ return 'bkNotSquare';}
+		if( !this.checkHorizonLongTatami() ){ return 'bkNotHRect';}
+		if( !this.checkVertLongTatami() ){ return 'bkNotVRect';}
 
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
 
-		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
+		if( !this.checkRoomRect() ){ return 'bkNotRect';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},
 
-	checkSquareTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);});
+	checkSquareTatami : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);});
 	},
-	checkHorizonLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);});
+	checkHorizonLongTatami : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);});
 	},
-	checkVertLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);});
+	checkVertLongTatami : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);});
 	}
 },
 

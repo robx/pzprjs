@@ -363,29 +363,34 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		var sdata=this.owner.board.getSlashData();
-		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 'slLoop';}
+		if( (pid==='gokigen') && !this.checkLoopLine_gokigen() ){ return 'slLoop';}
 
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata) ){ return 'slLoopGiri';}
+		if( (pid==='wagiri') && !this.checkLoopLine_wagiri() ){ return 'slLoopGiri';}
 
 		if( !this.checkQnumCross() ){ return 'crConnSlNe';}
 
-		if( (pid==='wagiri') && !this.checkNotLoopLine_wagiri(sdata) ){ return 'slNotLoopWa';}
+		if( (pid==='wagiri') && !this.checkNotLoopLine_wagiri() ){ return 'slNotLoopWa';}
 
 		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
 
 		return null;
 	},
 
-	checkLoopLine_gokigen : function(sdata){
+	getSlashInfo : function(){
+		return (this._info.slash = this._info.slash || this.owner.board.getSlashData());
+	},
+
+	checkLoopLine_gokigen : function(){
+		var sdata = this.getSlashInfo();
 		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		errclist.seterr(1);
 		return (errclist.length===0);
 	},
-	checkLoopLine_wagiri    : function(sdata){ return this.checkLoops_wagiri(sdata, false);},
-	checkNotLoopLine_wagiri : function(sdata){ return this.checkLoops_wagiri(sdata, true);},
-	checkLoops_wagiri : function(sdata, checkLoop){
+	checkLoopLine_wagiri    : function(){ return this.checkLoops_wagiri(false);},
+	checkNotLoopLine_wagiri : function(){ return this.checkLoops_wagiri(true);},
+	checkLoops_wagiri : function(checkLoop){
 		var result = true, bd = this.owner.board;
+		var sdata = this.getSlashInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}
 			if( checkLoop && sdata[c]===2 && bd.cell[c].qnum===1){ result = false;}

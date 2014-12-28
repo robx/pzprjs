@@ -370,50 +370,53 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
 		if( !this.checkBranchLine() ){ return 'lnBranch';}
 		if( !this.checkCrossLine() ){ return 'lnCross';}
 
-		var linfo = bd.getLareaInfo();
-
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
+		if( !this.checkConnectObject() ){ return 'nmConnected';}
 		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
 
-		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
+		if( !this.checkCurveLine() ){ return 'laCurve';}
 
-		// 問題のチェック (1)
+		// 問題のチェック
 		if( !this.checkQuesNumber() ){ return 'bnIllegalPos';}
+		if( !this.checkDoubleNumberInNabe() ){ return 'bkDoubleBn';}
 
-		var iarea = bd.iceinfo.getAreaInfo();
-		// 問題のチェック (2)
-		if( !this.checkDoubleNumberInNabe(iarea) ){ return 'bkDoubleBn';}
-
-		if( !this.checkFillingCount(iarea) ){ return 'bkSumNeBn';}
-		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 'bkNoNum';}
+		if( !this.checkFillingCount() ){ return 'bkSumNeBn';}
+		if( !this.checkNoFillingNabe() ){ return 'bkNoNum';}
 		if( !this.checkFillingOutOfNabe() ){ return 'nmOutOfBk';}
 
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
+		if( !this.checkDisconnectLine() ){ return 'laIsolate';}
 
 		return null;
 	},
 
-	checkCurveLine : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
+	getNabeInfo : function(){
+		return (this._info.nabe = this._info.nabe || this.owner.board.iceinfo.getAreaInfo());
+	},
+
+	checkCurveLine : function(){
+		return this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);});
 	},
 	checkQuesNumber : function(){
 		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);});
 	},
 
-	checkDoubleNumberInNabe : function(iarea){
+	checkDoubleNumberInNabe : function(){
+		var iarea = this.getNabeInfo();
 		return this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);});
+	},
+	checkNoFillingNabe : function(){
+		return this.checkNoMovedObjectInRoom(this.getNabeInfo());
 	},
 	checkFillingOutOfNabe : function(){
 		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
 	},
 
-	checkFillingCount : function(iarea){
+	checkFillingCount : function(){
 		var result = true;
+		var iarea = this.getNabeInfo();
 		for(var id=1;id<=iarea.max;id++){
 			var clist = iarea.area[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){

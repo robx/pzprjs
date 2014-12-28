@@ -228,16 +228,15 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getErrorRoomInfo();
-		if( !this.checkNoEmptyArea(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNoEmptyArea() ){ return 'bkNoNum';}
 
-		if( !this.checkSmallArea(rinfo) ){ return 'bkSizeLt';}
+		if( !this.checkSmallArea() ){ return 'bkSizeLt';}
 
-		if( !this.checkSideAreaNumberSize(rinfo) ){ return 'sbSameNum';}
+		if( !this.checkSideAreaNumberSize() ){ return 'sbSameNum';}
 
-		if( !this.checkLargeArea(rinfo) ){ return 'bkSizeGt';}
+		if( !this.checkLargeArea() ){ return 'bkSizeGt';}
 
-		if( !this.checkNotMultiNum(rinfo) ){ return 'bkPlNum';}
+		if( !this.checkNotMultiNum() ){ return 'bkPlNum';}
 
 		if( !this.owner.getConfig('enbnonum') && !this.checkNoNumCell() ){ return 'ceEmpty';}
 
@@ -247,18 +246,23 @@ AnsCheck:{
 		return ((this.owner.getConfig('enbnonum') || this.checkNoNumCell()) ? null : 'ceEmpty');
 	},
 
-	checkSideAreaNumberSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(area){ return area.number;});
+	getErrorRoomInfo  : function(){
+		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());
 	},
 
-	checkNoEmptyArea : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return area.numkind!==0;});},
-	checkSmallArea   : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number>area.clist.length);});},
-	checkLargeArea   : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind===1 && area.number<area.clist.length);});},
-	checkNotMultiNum : function(rinfo){ return this.checkAllErrorRoom(rinfo, function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
-	checkAllErrorRoom : function(cinfo, evalfunc){
+	checkSideAreaNumberSize : function(){
+		return this.checkSideAreaSize(this.getErrorRoomInfo(), function(area){ return area.number;});
+	},
+
+	checkNoEmptyArea : function(){ return this.checkAllErrorRoom(function(area){ return area.numkind!==0;});},
+	checkSmallArea   : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.clist.length);});},
+	checkLargeArea   : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.clist.length);});},
+	checkNotMultiNum : function(){ return this.checkAllErrorRoom(function(area){ return !(area.numkind>1);});},	/* jshint ignore:line */
+	checkAllErrorRoom : function(evalfunc){
 		var result = true;
-		for(var id=1;id<=cinfo.max;id++){
-			var area = cinfo.area[id];
+		var rinfo = this.getErrorRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){
+			var area = rinfo.area[id];
 			if( !!area && !evalfunc(area) ){
 				if(this.checkOnly){ return false;}
 				area.clist.seterr(1);

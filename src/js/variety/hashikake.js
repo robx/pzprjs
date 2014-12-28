@@ -310,7 +310,7 @@ AnsCheck:{
 	},
 
 	checkConnectAllNumber : function(){
-		var linfo = this.owner.board.getLareaInfo();
+		var linfo = this.getLareaInfo();
 		var bd = this.owner.board;
 		if(linfo.max>1){
 			bd.border.seterr(-1);

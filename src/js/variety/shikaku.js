@@ -117,31 +117,31 @@ AnsCheck:{
 	checkAns : function(){
 		var pid = this.owner.pid;
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
 
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
 
 		if(pid==='shikaku'){
-			if(!this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
+			if(!this.checkRoomRect() ){ return 'bkNotRect';}
 		}
 		else if(pid==='aho'){
-			if( !this.checkAhoSquare(rinfo) ){ return 'bkNotRect3';}
-			if( !this.checkLshapeArea(rinfo) ){ return 'bkNotLshape3';}
+			if( !this.checkAhoSquare() ){ return 'bkNotRect3';}
+			if( !this.checkLshapeArea() ){ return 'bkNotLshape3';}
 		}
 
-		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
+		if( !this.checkNumberAndSize() ){ return 'bkSizeNe';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
 		return null;
 	},
 
-	checkAhoSquare : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});
+	checkAhoSquare : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});
 	},
-	checkLshapeArea : function(rinfo){
+	checkLshapeArea : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			var cell = clist.getQnumCell();

@@ -343,32 +343,36 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var bd = this.owner.board;
 
-		var binfo = bd.getBarInfo();
-		if( !this.checkNotMultiBar(binfo) ){ return 'nmLineGt1';}
+		if( !this.checkNotMultiBar() ){ return 'nmLineGt1';}
 
 		if( !this.checkLoop_amibo() ){ return 'lbLoop';}
-		if( !this.checkLongBar(binfo) ){ return 'lbLenGt';}
-		if( !this.checkCrossedLength(binfo) ){ return 'lbNotCrossEq';}
-		if( !this.checkShortBar(binfo) ){ return 'lbLenLt';}
+		if( !this.checkLongBar() ){ return 'lbLenGt';}
+		if( !this.checkCrossedLength() ){ return 'lbNotCrossEq';}
+		if( !this.checkShortBar() ){ return 'lbLenLt';}
 
-		if( !this.checkSingleBar(binfo) ){ return 'nmIsolate';}
+		if( !this.checkSingleBar() ){ return 'nmIsolate';}
 
-		var areainfo = bd.barinfo.getAreaInfo();
-		if( !this.checkOneArea(areainfo) ){ return 'lbDivide';}
+		if( !this.checkAllBarConnect() ){ return 'lbDivide';}
 
 		return null;
 	},
 	check1st : function(){
-		var areainfo = this.owner.board.barinfo.getAreaInfo();
-		return (this.checkOneArea(areainfo) ? null : 'lbDivide');
+		return (this.checkAllBarConnect() ? null : 'lbDivide');
 	},
 
-	checkNotMultiBar : function(binfo){ return this.checkOutgoingBars(binfo, 1);},
-	checkSingleBar   : function(binfo){ return this.checkOutgoingBars(binfo, 2);},
-	checkOutgoingBars : function(binfo, type){
+	getBarInfo : function(){
+		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+	},
+	getConnectionInfo : function(){
+		return (this._info.bararea = this._info.bararea || this.owner.board.barinfo.getAreaInfo());
+	},
+
+	checkNotMultiBar : function(){ return this.checkOutgoingBars(1);},
+	checkSingleBar   : function(){ return this.checkOutgoingBars(2);},
+	checkOutgoingBars : function(type){
 		var result = true, bd = this.owner.board;
+		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
@@ -381,10 +385,11 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkLongBar  : function(binfo){ return this.checkPoleLength(binfo, 1);},
-	checkShortBar : function(binfo){ return this.checkPoleLength(binfo, 2);},
-	checkPoleLength : function(binfo,type){
+	checkLongBar  : function(){ return this.checkPoleLength(1);},
+	checkShortBar : function(){ return this.checkPoleLength(2);},
+	checkPoleLength : function(type){
 		var result = true, bd = this.owner.board;
+		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -401,8 +406,9 @@ AnsCheck:{
 		}
 		return result;
 	},
-	checkCrossedLength : function(binfo){
+	checkCrossedLength : function(){
 		var result=true;
+		var binfo = this.getBarInfo();
 		for(var id=1,max=binfo.max;id<=max;id++){
 			var check = false, bar = binfo.area[id], linkid = bar.link, clist = bar.clist;
 			for(var i=0,len=linkid.length;i<len;i++){
@@ -416,6 +422,10 @@ AnsCheck:{
 			}
 		}
 		return result;
+	},
+
+	checkAllBarConnect : function(){
+		return this.checkOneArea(this.getConnectionInfo());
 	},
 
 	checkLoop_amibo : function(){

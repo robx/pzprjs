@@ -137,14 +137,13 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
+		if( !this.checkDoubleNumber() ){ return 'bkNumGe2';}
 
-		if( !this.checkAnsNumberAndSize(rinfo) ){ return 'bkSizeNe';}
+		if( !this.checkAnsNumberAndSize() ){ return 'bkSizeNe';}
 
 		if( !this.checkDiffNumber() ){ return 'nmDiffDistNe';}
 
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( !this.checkNoNumber() ){ return 'bkNoNum';}
 
 		return null;
 	},
@@ -186,8 +185,9 @@ AnsCheck:{
 		return result;
 	},
 
-	checkAnsNumberAndSize : function(rinfo){
+	checkAnsNumberAndSize : function(){
 		var result = true;
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, num = -1;
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}

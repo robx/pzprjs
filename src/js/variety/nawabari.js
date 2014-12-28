@@ -237,39 +237,38 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checkAns : function(){
-		var o=this.owner, bd=o.board, pid=o.pid;
+		var pid=this.owner.pid;
 
-		var rinfo = bd.getRoomInfo();
-		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
+		if( (pid==='nawabari') && !this.checkRoomRect() ){ return 'bkNotRect';}
 
-		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+		if( (pid==='nawabari') && !this.checkNoNumber() ){ return 'bkNoNum';}
 
-		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
+		if( (pid==='nawabari') && !this.checkDoubleNumber() ){ return 'bkNumGe2';}
 
-		if( (pid==='fourcells') && !this.checkOverFourCells(rinfo) ){ return 'bkSizeLt4';}
-		if( (pid==='fivecells') && !this.checkOverFiveCells(rinfo) ){ return 'bkSizeLt5';}
+		if( (pid==='fourcells') && !this.checkOverFourCells() ){ return 'bkSizeLt4';}
+		if( (pid==='fivecells') && !this.checkOverFiveCells() ){ return 'bkSizeLt5';}
 
 		if( !this.checkdir4BorderAns() ){ return 'nmBorderNe';}
 
 		if( !this.checkBorderDeadend() ){ return 'bdDeadEnd';}
 
-		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 'bkSizeGt4';}
-		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 'bkSizeGt5';}
+		if( (pid==='fourcells') && !this.checkLessFourCells() ){ return 'bkSizeGt4';}
+		if( (pid==='fivecells') && !this.checkLessFiveCells() ){ return 'bkSizeGt5';}
 
 		return null;
 	},
 
-	checkOverFourCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);});
+	checkOverFourCells : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);});
 	},
-	checkLessFourCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);});
+	checkLessFourCells : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=4);});
 	},
-	checkOverFiveCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);});
+	checkOverFiveCells : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=5);});
 	},
-	checkLessFiveCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);});
+	checkLessFiveCells : function(){
+		return this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=5);});
 	},
 
 	checkdir4BorderAns : function(){

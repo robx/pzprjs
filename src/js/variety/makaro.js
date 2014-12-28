@@ -312,8 +312,7 @@ FileIO:{
 AnsCheck:{
 	checkAns : function(){
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
+		if( !this.checkOtherNumberInRoom() ){ return 'bkDupNum';}
 
 		if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
 
