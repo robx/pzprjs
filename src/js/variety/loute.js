@@ -405,61 +405,61 @@ AnsCheck:{
 
 	checkArrowCorner1 : function(){
 		var rinfo = this.getLblockInfo();
-		allloop: for(var id=1;id<=rinfo.max;id++){
+		allloop:
+		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
-				if(num>=1 && num<=4 && rinfo.place[cell.id]!==2)
-				{
-					this.failcode.add("awBlkEdge");
-					if(this.checkOnly){ break allloop;}
-					clist.seterr(1);
-					break;
-				}
+				if(num<1 || num>4 || rinfo.place[cell.id]===2){ continue;}
+				
+				this.failcode.add("awBlkEdge");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
+				break;
 			}
 		}
 	},
 
 	checkArrowCorner2 : function(){
 		var rinfo = this.getLblockInfo();
-		allloop: for(var id=1;id<=rinfo.max;id++){
+		allloop:
+		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], adb = cell.adjborder, num = cell.getObjNum();
-				if(num>=1 && num<=4 &&
-				   ((num===cell.UP && adb.top.isBorder()   ) ||
+				if(num<1 || num>4 ||
+				  !((num===cell.UP && adb.top.isBorder()   ) ||
 					(num===cell.DN && adb.bottom.isBorder()) ||
 					(num===cell.LT && adb.left.isBorder()  ) ||
-					(num===cell.RT && adb.right.isBorder() ) ) )
-				{
-					this.failcode.add("awNotPtCnr");
-					if(this.checkOnly){ break allloop;}
-					clist.seterr(1);
-					break;
-				}
+					(num===cell.RT && adb.right.isBorder() ) ) ){ continue;}
+				
+				this.failcode.add("awNotPtCnr");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
+				break;
 			}
 		}
 	},
 
 	checkCircleCorner : function(){
 		var rinfo = this.getLblockInfo();
-		allloop: for(var id=1;id<=rinfo.max;id++){
+		allloop:
+		for(var id=1;id<=rinfo.max;id++){
 			if(rinfo.area[id].shape===0){ continue;}
 
 			var clist = rinfo.area[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.isCircle() && rinfo.place[cell.id]!==3)
-				{
-					this.failcode.add("ciNotOnCnr");
-					if(this.checkOnly){ break allloop;}
-					clist.seterr(1);
-					break;
-				}
+				if(!cell.isCircle() || rinfo.place[cell.id]===3){ continue;}
+				
+				this.failcode.add("ciNotOnCnr");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
+				break;
 			}
 		}
 	},
@@ -467,11 +467,11 @@ AnsCheck:{
 	checkLblock : function(){
 		var rinfo = this.getLblockInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.area[id].shape===0){
-				this.failcode.add("bkNotLshape");
-				if(this.checkOnly){ break;}
-				rinfo.area[id].clist.seterr(1);
-			}
+			if(rinfo.area[id].shape!==0){ continue;}
+			
+			this.failcode.add("bkNotLshape");
+			if(this.checkOnly){ break;}
+			rinfo.area[id].clist.seterr(1);
 		}
 	}
 },

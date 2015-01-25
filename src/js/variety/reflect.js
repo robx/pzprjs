@@ -287,11 +287,11 @@ AnsCheck:{
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.lcnt===0 && (cell.ques>=2 && cell.ques<=5)){
-				this.failcode.add("lnExTri");
-				if(this.checkOnly){ break;}
-				cell.seterr(4);
-			}
+			if(cell.ques===0 || cell.ques===11 || cell.lcnt>0){ continue;}
+			
+			this.failcode.add("lnExTri");
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
 		}
 	},
 
@@ -301,15 +301,15 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.ques<2 || cell.ques>5 || !cell.isValidNum()){ continue;}
+			if(cell.ques===0 || cell.ques===11 || !cell.isValidNum()){ continue;}
 
 			var blist = cell.getTriLine();
-			if(type===1?cell.qnum<(blist.length+1):cell.qnum>(blist.length+1)){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(4);
-				blist.seterr(1);
-			}
+			if(type===1 ? cell.qnum>=(blist.length+1) : cell.qnum<=(blist.length+1)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
+			blist.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);

@@ -351,11 +351,11 @@ AnsCheck:{
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;
-			if(d.cols*d.rows!==cnt && !this.isAreaRect_slope(winfo,id)){
-				this.failcode.add("cuNotRectx");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(d.cols*d.rows===cnt || this.isAreaRect_slope(winfo,id)){ continue;}
+			
+			this.failcode.add("cuNotRectx");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 	// 斜め領域判定用

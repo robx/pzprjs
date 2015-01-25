@@ -129,12 +129,12 @@ AnsCheck:{
 			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}
 			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
 
-			if(flag?(clist.length!==cell.qnum):(clist.length===0)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-				cell.seterr(1);
-			}
+			if(flag ? (clist.length===cell.qnum) : (clist.length>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
+			cell.seterr(1);
 		}
 	}
 },

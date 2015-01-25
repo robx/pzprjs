@@ -256,10 +256,10 @@ AnsCheck:{
 	checkSideCell_snakes : function(){
 		var result = true, bd = this.owner.board;
 		var sinfo = this.getSnakeInfo();
-		var func = function(sinfo,cell1,cell2){
+		function func(sinfo,cell1,cell2){
 			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
 			return (r1>0 && r2>0 && r1!==r2);
-		};
+		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
@@ -281,11 +281,13 @@ AnsCheck:{
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.owner.board;
-		var gonext = function(){
+		function gonext(){
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
-		};
-		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);};
+		}
+		function noans(cell2){
+			return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);
+		}
 
 		for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.qnum, dir=cell.qdir;
@@ -339,13 +341,13 @@ AnsCheck:{
 			// cellは数字のあるマスか、null(盤面外)を指す
 
 			var sid=sinfo.getRoomID(cell);
-			if(!cell.isnull && cell.anum>0 && cell.qnum===-1 && sid>0 && r!==sid){
-				this.failcode.add("snakeAttack");
-				if(this.checkOnly){ break;}
-				clist2.seterr(1);
-				clist.seterr(1);
-				sinfo.area[sid].clist.seterr(1);
-			}
+			if(cell.isnull || cell.anum<=0 || cell.qnum!==-1 || sid<=0 || r===sid){ continue;}
+			
+			this.failcode.add("snakeAttack");
+			if(this.checkOnly){ break;}
+			clist2.seterr(1);
+			clist.seterr(1);
+			sinfo.area[sid].clist.seterr(1);
 		}
 	}
 },

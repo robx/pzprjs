@@ -187,7 +187,8 @@ AnsCheck:{
 
 	checkAroundPlNums : function(type){
 		var bd = this.owner.board;
-		allloop: for(var c=0;c<bd.cellmax;c++){
+		allloop:
+		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
@@ -203,12 +204,12 @@ AnsCheck:{
 				}
 			}
 			for(var n=1;n<=9;n++){
-				if(d[n]>1){
-					this.failcode.add("nqAroundDup");
-					if(this.checkOnly){ break allloop;}
-					cell.seterr(1);
-					clist.filter(function(cell){ return (cell.anum===n);}).seterr(1);
-				}
+				if(d[n]<=1){ continue;}
+				
+				this.failcode.add("nqAroundDup");
+				if(this.checkOnly){ break allloop;}
+				cell.seterr(1);
+				clist.filter(function(cell){ return (cell.anum===n);}).seterr(1);
 			}
 		}
 	},
@@ -229,11 +230,11 @@ AnsCheck:{
 					else    { cnt=cell.qnum; break;}
 				}
 			}
-			if(cell.qnum!==cnt){
-				this.failcode.add("nqAroundSumNe");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(cell.qnum===cnt){ continue;}
+			
+			this.failcode.add("nqAroundSumNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 	checkAdjacentNumbers : function(){
@@ -249,11 +250,11 @@ AnsCheck:{
 				var cell2 = clist0[i];
 				if(cell!==cell2 && cell.anum===cell2.anum){ clist.add(cell2);}
 			}
-			if(clist.length>1){
-				this.failcode.add("nmAround");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(clist.length<=1){ continue;}
+			
+			this.failcode.add("nmAround");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

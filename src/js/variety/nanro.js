@@ -206,11 +206,11 @@ AnsCheck:{
 		var rinfo = this.getErrorRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var area = rinfo.area[id];
-			if( !!area && !evalfunc(area) ){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				area.clist.seterr(1);
-			}
+			if( !area || evalfunc(area) ){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			area.clist.seterr(1);
 		}
 	}
 },

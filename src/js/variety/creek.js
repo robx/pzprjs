@@ -102,8 +102,8 @@ AnsCheck:{
 		"checkShadeLessNum"
 	],
 
-	checkShadeOverNum : function(){ return this.checkQnumCross(1, "crShadeGt");},
-	checkShadeLessNum : function(){ return this.checkQnumCross(2, "crShadeLt");},
+	checkShadeOverNum : function(){ this.checkQnumCross(1, "crShadeGt");},
+	checkShadeLessNum : function(){ this.checkQnumCross(2, "crShadeLt");},
 	checkQnumCross : function(type, code){
 		var bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
@@ -113,12 +113,11 @@ AnsCheck:{
 			var bx=cross.bx, by=cross.by;
 			var clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-
-			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cross.seterr(1);
-			}
+			if((type===1 && qn>=cnt) || (type===2 && qn<=cnt)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cross.seterr(1);
 		}
 	}
 },

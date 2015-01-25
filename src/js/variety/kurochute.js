@@ -138,12 +138,12 @@ AnsCheck:{
 			cell2=cell.relcell( num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0,-num*2); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0, num*2); if(cell2.isShade()){ clist.add(cell2);}
-			if(clist.length!==1){
-				this.failcode.add("nmShootShadeNe1");
-				if(this.checkOnly){ break;}
-				cell.seterr(4);
-				clist.seterr(1);
-			}
+			if(clist.length===1){ continue;}
+			
+			this.failcode.add("nmShootShadeNe1");
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
+			clist.seterr(1);
 		}
 	}
 },

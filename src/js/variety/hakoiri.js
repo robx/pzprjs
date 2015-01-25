@@ -186,12 +186,11 @@ AnsCheck:{
 			target = cell.relcell( 0,2); if(func(target)){ clist.add(target);}
 			target = cell.relcell(-2,2); if(func(target)){ clist.add(target);}
 			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
-
-			if(clist.length>1){
-				this.failcode.add("nmAround");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(clist.length<=1){ continue;}
+			
+			this.failcode.add("nmAround");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

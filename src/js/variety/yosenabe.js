@@ -424,12 +424,12 @@ AnsCheck:{
 			if(num===null){ continue;}
 
 			var count = clist.getSumOfFilling();
-			if(count>0 && num!==count){
-				this.failcode.add("bkSumNeBn");
-				if(this.checkOnly){ break;}
-				clist.getDeparture().seterr(4);
-				clist.seterr(1);
-			}
+			if(count===0 || num===count){ continue;}
+			
+			this.failcode.add("bkSumNeBn");
+			if(this.checkOnly){ break;}
+			clist.getDeparture().seterr(4);
+			clist.seterr(1);
 		}
 	}
 },

@@ -309,8 +309,7 @@ AnsCheck:{
 	},
 
 	checkRowsColsTileCount : function(){
-		function evalfunc(pos,clist){ return this.isTileCount(pos,clist);}
-		this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, "asLblockNe");
+		this.checkRowsColsPartly(this.isTileCount, function(cell){ return cell.is51cell();}, "asLblockNe");
 	},
 	isTileCount : function(clist, info){
 		var tiles = this.getTileInfo();

@@ -183,11 +183,11 @@ AnsCheck:{
 	},
 
 	checkArrowNumber : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
-			var pos = cell.getaddr(), dir = cell.qdir, cnt=0;
+			var pos = cell.getaddr(), dir = cell.qdir;
 			var clist = new this.owner.CellList();
 			while(1){
 				pos.movedir(dir,2);
@@ -195,16 +195,13 @@ AnsCheck:{
 				if(cell2.isnull){ break;}
 				clist.add(cell2);
 			}
-
-			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.qnum!==cnt){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				clist.seterr(1);
-			}
+			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			
+			this.failcode.add("anShadeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(1);
 		}
-		if(!result){ this.failcode.add("anShadeNe");}
 	}
 },
 

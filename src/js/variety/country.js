@@ -145,11 +145,11 @@ AnsCheck:{
 				border=adb.left;   if(border.ques===1 && border.line===1){ cnt++;}
 				border=adb.right;  if(border.ques===1 && border.line===1){ cnt++;}
 			}
-			if(cnt>2){
-				this.failcode.add("bkPassTwice");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(cnt<=2){ continue;}
+			
+			this.failcode.add("bkPassTwice");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

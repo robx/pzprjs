@@ -453,27 +453,23 @@ AnsCheck:{
 	},
 
 	checkStarOnLine : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s];
-			if(star.getStar()<=0){ continue;}
-
-			if(star.validcell()===null){
-				if(this.checkOnly){ return false;}
-				if(star.obj.group==='cross')
-					{ star.obj.setCrossBorderError();}
-				else if(star.obj.group==='border')
-					{ star.obj.seterr(1);}
-				result = false;
+			if(star.getStar()<=0 || star.validcell()!==null){ continue;}
+			
+			this.failcode.add("bdPassStar");
+			if(this.checkOnly){ break;}
+			switch(star.obj.group){
+				case "cross":  star.obj.setCrossBorderError(); break
+				case "border": star.obj.seterr(1);             break
 			}
 		}
-		if(!result){ this.failcode.add("bdPassStar");}
-		return result;
 	},
 
 	checkFractal : function(){
-		var result = true;
 		var rinfo = this.getStarAreaInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			var star = rinfo.area[r].star;
@@ -481,31 +477,26 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				var cell2 = this.owner.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
-				if(cell2.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(cell2)){
-					if(this.checkOnly){ return false;}
-					clist.seterr(1);
-					result = false;
-				}
+				if(!cell2.isnull && rinfo.getRoomID(cell)===rinfo.getRoomID(cell2)){ continue;}
+				
+				this.failcode.add("bkNotSymSt");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
 			}
 		}
-		if(!result){ this.failcode.add("bkNotSymSt");}
-		return result;
 	},
 
-	checkAvoidStar  : function(){ return this.checkErrorFlag(-1, "bkNoStar");},
-	checkStarRegion : function(){ return this.checkErrorFlag(-2, "bkPlStar");},
+	checkAvoidStar  : function(){ this.checkErrorFlag(-1, "bkNoStar");},
+	checkStarRegion : function(){ this.checkErrorFlag(-2, "bkPlStar");},
 	checkErrorFlag : function(val, code){
-		var result = true;
 		var rinfo = this.getStarAreaInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.area[r].error!==val){ continue;}
 
-			if(this.checkOnly){ result = false; break;}
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
 			rinfo.area[r].clist.seterr(1);
-			result = false;
 		}
-		if(!result){ this.failcode.add(code);}
-		return result;
 	}
 },
 

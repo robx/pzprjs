@@ -514,12 +514,12 @@ AnsCheck:{
 			var border = bd.border[id];
 			if(!border.isLine()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(cell1.distance<0 || cell2.distance<0){
-				result = false;
-				if(this.checkOnly){ break;}
-				border.seterr(1);
-				(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
-			}
+			if(cell1.distance>=0 && cell2.distance>=0){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			border.seterr(1);
+			(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
 		}
 		if(!result){
 			this.failcode.add("laMoveOver");

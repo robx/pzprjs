@@ -140,8 +140,9 @@ AnsCheck:{
 	checkCrossLine_firefly  : function(){ this.checkLineCount_firefly(4, "lnCross");},
 	checkBranchLine_firefly : function(){ this.checkLineCount_firefly(3, "lnBranch");},
 	checkLineCount_firefly : function(val, code){
-		if(this.owner.board.lines.ltotal[val]===0){ return;}
-		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
+		if(this.owner.board.lines.ltotal[val]>0){
+			this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
+		}
 	},
 	checkOutgoingLine : function(){
 		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);}, "nmLineNe");

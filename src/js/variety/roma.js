@@ -218,17 +218,16 @@ AnsCheck:{
 	},
 
 	checkBalls : function(){
-		var result = true, ldata = [], bd=this.owner.board;
+		var ldata = [], bd=this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
-			if(!bd.trackBall1(c,ldata)){
-				result = false;
-				this.failcode.add("stopHalfway");
-				if(this.checkOnly){ break;}
-			}
+			if(bd.trackBall1(c,ldata)){ continue;}
+			
+			this.failcode.add("stopHalfway");
+			if(this.checkOnly){ break;}
+			bd.cell.filter(function(cell){ return ldata[cell.id]===1;}).seterr(1);
 		}
-		if(!result && !this.checkOnly){ bd.cell.filter(function(cell){ return ldata[cell.id]===1;}).seterr(1);}
 	}
 },
 

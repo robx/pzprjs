@@ -127,7 +127,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -138,30 +138,24 @@ AnsCheck:{
 			else if(dir===cell.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
 			else if(dir===cell.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
-
-			var count = blist.filter(function(border){ return border.isBorder();}).length;
-			if(cell.qnum!==count){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(cell.qnum===blist.filter(function(border){ return border.isBorder();}).length){ continue;}
+			
+			this.failcode.add("anTatamiNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		if(!result){ this.failcode.add("anTatamiNe");}
 	},
 
 	checkArrowNumber_border : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir = cell.qdir;
-			if(!cell.isValidNum() || !dir){ continue;}
-
-			if(!cell.getaddr().movedir(dir,1).getb().isBorder()){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(!cell.isValidNum() || !dir || cell.getaddr().movedir(dir,1).getb().isBorder()){ continue;}
+			
+			this.failcode.add("arNoAdjBd");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		if(!result){ this.failcode.add("arNoAdjBd");}
 	}
 },
 

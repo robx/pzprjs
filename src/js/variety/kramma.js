@@ -212,31 +212,27 @@ AnsCheck:{
 		"checkBorderNoneOnBP@kramman"
 	],
 
-	checkBorderBranch    : function(){ return this.checkBorderCount(3,0, "bdBranch");},
-	checkBorderCrossOnBP : function(){ return this.checkBorderCount(4,1, "bdCrossBP");},
-	checkBorderNoneOnBP  : function(){ return this.checkBorderCount(0,1, "bdIgnoreBP");},
+	checkBorderBranch    : function(){ this.checkBorderCount(3,0, "bdBranch");},
+	checkBorderCrossOnBP : function(){ this.checkBorderCount(4,1, "bdCrossBP");},
+	checkBorderNoneOnBP  : function(){ this.checkBorderCount(0,1, "bdIgnoreBP");},
 
 	checkSameObjectInArea : function(){
-		return this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
+		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	checkLcntCurve : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		var crosses = bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2);
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c], adb = cross.adjborder;
-			if(cross.lcnt===2 && cross.qnum!==1){
-				if( !(adb.top.qans===1 && adb.bottom.qans===1) &&
-					!(adb.left.qans===1 && adb.right.qans===1) )
-				{
-					if(this.checkOnly){ return false;}
-					cross.setCrossBorderError();
-					result = false;
-				}
-			}
+			if(cross.lcnt!==2 || cross.qnum===1){ continue;}
+			if( (adb.top.qans===1 && adb.bottom.qans===1) ||
+				(adb.left.qans===1 && adb.right.qans===1) ){ continue;}
+			
+			this.failcode.add("bdCurveExBP");
+			if(this.checkOnly){ break;}
+			cross.setCrossBorderError();
 		}
-		if(!result){ this.failcode.add("bdCurveExBP");}
-		return result;
 	},
 
 	// ヤギとオオカミ用
@@ -270,7 +266,6 @@ AnsCheck:{
 			this.failcode.add("bdNotChassis");
 			bd.border.setnoerr();
 		}
-		return result;
 	},
 	clearLineInfo : function(lines,pos,dir){
 		var stack = [[pos.clone(),dir]];
@@ -303,7 +298,7 @@ AnsCheck:{
 FailCode:{
 	bkNoNum     : ["白丸も黒丸も含まれない領域があります。","An area has no marks."],
 	bkPlNum     : ["白丸と黒丸が両方含まれる領域があります。","An area has both white and black circles."],
-	bdBranch    : ["分岐している線があります。","there is a branch line."],
+	bdBranch    : ["分岐している線があります。","There is a branch line."],
 	bdCurveExBP : ["黒点以外のところで線が曲がっています。","A line curves out of the points."],
 	bdCrossBP   : ["黒点上で線が交差しています。","There is a crossing line on the point."],
 	bdIgnoreBP  : ["黒点上を線が通過していません。","A point has no line."]

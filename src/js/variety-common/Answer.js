@@ -45,11 +45,11 @@ AnsCheck:{
 	checkAllCell : function(func, code){
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
-			if(func(cell)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(!func(cell)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 	checkNoNumCell : function(){
@@ -76,11 +76,11 @@ AnsCheck:{
 			var cell = this.owner.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
-			if((type!==1 && num<count) || (type!==2 && num>count)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if((type===0 && num===count) || (type===1 && num<=count) || (type===2 && num>=count)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 
@@ -108,7 +108,6 @@ AnsCheck:{
 			}
 		}
 		if(!result){ this.failcode.add(code);}
-		return result;
 	},
 	checkAdjacentShadeCell : function(){
 		this.checkSideCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, "csAdjacent");
@@ -125,15 +124,15 @@ AnsCheck:{
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.bx<bd.maxbx-1 && cell.by<bd.maxby-1){
-				var bx=cell.bx, by=cell.by;
-				var clist = bd.cellinside(bx, by, bx+2, by+2).filter(func);
-				if(clist.length===4){
-					this.failcode.add(code);
-					if(this.checkOnly){ break;}
-					clist.seterr(1);
-				}
-			}
+			if(cell.bx>=bd.maxbx-1 || cell.by>=bd.maxby-1){ continue;}
+			
+			var bx=cell.bx, by=cell.by;
+			var clist = bd.cellinside(bx, by, bx+2, by+2).filter(func);
+			if(clist.length<4){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 	check2x2ShadeCell : function(){
@@ -159,14 +158,15 @@ AnsCheck:{
 	checkConnectNumber  : function(){ this.checkOneArea(this.getNumberInfo(),  "nmDivide");},
 	checkOneArea : function(cinfo, code){
 		if(cinfo.max>1){
-			cinfo.area[1].clist.seterr(1);
 			this.failcode.add(code);
+			cinfo.area[1].clist.seterr(1);
 		}
 	},
 
 	checkConnectUnshadeRB : function(){
 		var winfo = this.getUnshadeInfo();
 		if(winfo.max>1){
+			this.failcode.add("cuDivideRB");
 			var errclist = new this.owner.CellList();
 			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
 			for(var i=0;i<clist.length;i++){
@@ -177,7 +177,6 @@ AnsCheck:{
 					else if(fid!==winfo.getRoomID(cell2)){ errclist.add(cell); break;}
 				}
 			}
-			this.failcode.add("cuDivideRB");
 			errclist.seterr(1);
 		}
 	},
@@ -204,25 +203,15 @@ AnsCheck:{
 	checkLineCount : function(val, code){
 		var result = true, bd = this.owner.board;
 		if(bd.lines.ltotal[val]===0){ return;}
-		if(bd.lines.isCenterLine){
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
-				if(cell.lcnt===val){
-					result = false;
-					if(this.checkOnly){ break;}
-					cell.setCellLineError(true);
-				}
-			}
-		}
-		else if(bd.lines.borderAsLine){
-			for(var c=0;c<bd.crossmax;c++){
-				var cross = bd.cross[c];
-				if(cross.lcnt===val){
-					result = false;
-					if(this.checkOnly){ break;}
-					cross.setCrossBorderError();
-				}
-			}
+		
+		var objs = (bd.lines.borderAsLine ? bd.cross : bd.cell);
+		for(var c=0;c<objs.length;c++){
+			if(objs[c].lcnt!==val){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			if     (objs[c].group==="cell") { objs[c].setCellLineError(true);}
+			else if(objs[c].group==="cross"){ objs[c].setCrossBorderError();}
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -237,15 +226,15 @@ AnsCheck:{
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adb = cell.adjborder;
-			if( (adb.top.isLine()    && cell.noLP(cell.UP)) ||
-				(adb.bottom.isLine() && cell.noLP(cell.DN)) ||
-				(adb.left.isLine()   && cell.noLP(cell.LT)) ||
-				(adb.right.isLine()  && cell.noLP(cell.RT)) )
-			{
-				this.failcode.add("ceAddLine");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if( (!adb.top.isLine()    || !cell.noLP(cell.UP)) &&
+				(!adb.bottom.isLine() || !cell.noLP(cell.DN)) &&
+				(!adb.left.isLine()   || !cell.noLP(cell.LT)) &&
+				(!adb.right.isLine()  || !cell.noLP(cell.RT)) )
+			{ continue;}
+		
+			this.failcode.add("ceAddLine");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 
@@ -263,12 +252,11 @@ AnsCheck:{
 			var d = clist.getRectSize();
 			var a = (!!filterfunc ? clist.filter(filterfunc) : clist).length;
 			var n = (!top.isnull ? top.qnum : -1);
-
-			if( !evalfunc(d.cols, d.rows, a, n) ){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				clist.seterr(this.owner.pid!=="tateyoko"?1:4);
-			}
+			if( evalfunc(d.cols, d.rows, a, n) ){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(this.owner.pid!=="tateyoko"?1:4);
 		}
 	},
 
@@ -315,12 +303,11 @@ AnsCheck:{
 	checkConnectObjectCount : function(evalfunc, code){
 		var result = true, linfo = this.getLareaInfo();
 		for(var id=1;id<=linfo.max;id++){
-			var count = linfo.area[id].clist.filter(function(cell){ return cell.isNum();}).length;
-			if( !evalfunc(count) ){
-				result = false;
-				if(this.checkOnly){ break;}
-				linfo.setErrLareaById(id,1);
-			}
+			if( evalfunc( linfo.area[id].clist.filter(function(cell){ return cell.isNum();}).length ) ){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			linfo.setErrLareaById(id,1);
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -334,15 +321,16 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkSideAreaSize : function(rinfo, getval, code){
 		var sides = rinfo.getSideAreaInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max-1;r++){
 			for(var i=0;i<sides[r].length;i++){
 				var s=sides[r][i], a1=getval(rinfo.area[r]), a2=getval(rinfo.area[s]);
-				if(a1>0 && a2>0 && a1===a2){
-					this.failcode.add(code);
-					rinfo.area[r].clist.seterr(1);
-					rinfo.area[s].clist.seterr(1);
-					return;
-				}
+				if(a1<=0 || a2<=0 || a1!==a2){ continue;}
+				
+				this.failcode.add(code);
+				if(this.checkOnly){ break allloop;}
+				rinfo.area[r].clist.seterr(1);
+				rinfo.area[s].clist.seterr(1);
 			}
 		}
 	},
@@ -352,14 +340,14 @@ AnsCheck:{
 			var border = this.owner.board.border[id];
 			if(!border.isBorder()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull && !cell2.isnull && func(cell1, cell2)){
-				this.failcode.add(code);
-				if(!flag){ cell1.seterr(1); cell2.seterr(1);}
-				else{
-					rinfo.getRoomByCell(cell1).clist.seterr(1);
-					rinfo.getRoomByCell(cell2).clist.seterr(1);
-				}
-				break;
+			if(cell1.isnull || cell2.isnull || !func(cell1, cell2)){ continue;}
+
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			if(!flag){ cell1.seterr(1); cell2.seterr(1);}
+			else{
+				rinfo.getRoomByCell(cell1).clist.seterr(1);
+				rinfo.getRoomByCell(cell2).clist.seterr(1);
 			}
 		}
 	},
@@ -390,11 +378,11 @@ AnsCheck:{
 	checkDifferentNumberInRoom_main : function(rinfo, evalfunc){
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
-			if(!evalfunc.call(this, clist)){
-				this.failcode.add("bkDupNum");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if( evalfunc.call(this, clist) ){ continue;}
+			
+			this.failcode.add("bkDupNum");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 
@@ -428,10 +416,10 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var by=1;by<=bd.maxby;by+=2){
 			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
-			if(!evalfunc.call(this, clist)){
-				result = false;
-				if(this.checkOnly){ break;}
-			}
+			if( evalfunc.call(this, clist) ){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
 		}
 		return result;
 	},
@@ -440,18 +428,16 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
-			if(!evalfunc.call(this, clist)){
-				result = false;
-				if(this.checkOnly){ break;}
-			}
+			if( evalfunc.call(this, clist) ){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
 		}
 		return result;
 	},
-	checkDifferentNumberInLine : function(){
-		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
-	},
 	//---------------------------------------------------------------------------
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
+	// ans.checkRowsColsFor51cell()   [＼]で分かれるタテ列・ヨコ列の数字の判定を行う
 	//---------------------------------------------------------------------------
 	checkRowsColsPartly : function(evalfunc, termfunc, code){
 		if(!this.checkErrorColsPartly(evalfunc, termfunc) || !this.checkErrorRowsPartly(evalfunc, termfunc)){
@@ -492,6 +478,9 @@ AnsCheck:{
 		}
 		return result;
 	},
+	checkRowsColsFor51cell : function(evalfunc, code){
+		this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, code);
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
@@ -503,11 +492,11 @@ AnsCheck:{
 		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c];
-			if(cross.lcnt===val && (bp===0 || (bp===1 && cross.qnum===1) || (bp===2 && cross.qnum!==1) )){
-				result = false;
-				if(this.checkOnly){ break;}
-				cross.setCrossBorderError();
-			}
+			if(cross.lcnt!==val || ((bp===1 && cross.qnum!==1) || (bp===2 && cross.qnum===1) )){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cross.setCrossBorderError();
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -522,11 +511,11 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.lcnt>=2 && cell.isNum()){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.setCellLineError(true);
-			}
+			if(cell.lcnt<2 || !cell.isNum()){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(true);
 		}
 		if(!result){
 			this.failcode.add(this.owner.board.linfo.moveline ? "laOnNum" : "lcOnNum");

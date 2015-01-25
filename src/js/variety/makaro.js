@@ -320,7 +320,6 @@ AnsCheck:{
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
 	/* 矢印の先が空白マスである場合は判定をスルーします         */
 	checkPointAtBiggestNumber : function(){
-		var result = true;
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(cell.ques!==1 || cell.qdir===cell.NDIR){ continue;}
@@ -337,17 +336,15 @@ AnsCheck:{
 					if(num===-1){ isempty = true;}
 				}
 			}
+			if(!invalidarrow && (isempty || (!dupnum && cell.qdir===maxdir))){ continue;}
 			
-			if(invalidarrow || (!isempty && (dupnum || cell.qdir!==maxdir))){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				for(var i=0;i<list.length;i++){
-					if(list[i][0].getNum()!==-1){ list[i][0].seterr(1);}
-				}
+			this.failcode.add("arNotMax");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			for(var i=0;i<list.length;i++){
+				if(list[i][0].getNum()!==-1){ list[i][0].seterr(1);}
 			}
 		}
-		if(!result){ this.failcode.add("arNotMax");}
 	}
 },
 

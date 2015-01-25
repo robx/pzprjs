@@ -243,6 +243,7 @@ AnsCheck:{
 	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(){
 		var rinfo = this.getRoomInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, rnum=-1;
 			var cbase = clist.getDeparture();
@@ -251,7 +252,7 @@ AnsCheck:{
 				if(rnum===-1){ rnum=num;}
 				else if(rnum!==num){
 					this.failcode.add("bkPlNum");
-					if(this.checkOnly){ return;}
+					if(this.checkOnly){ break allloop;}
 					if(!this.owner.execConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
 				}
@@ -264,6 +265,7 @@ AnsCheck:{
 		var max=0, bd=this.owner.board;
 		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
+		allloop:
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
 			for(var i=0;i<clist.length;i++){
@@ -273,7 +275,7 @@ AnsCheck:{
 					this.failcode.add("bkSepNum");
 					if(!this.owner.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
-					return;
+					break allloop;
 				}
 			}
 		}

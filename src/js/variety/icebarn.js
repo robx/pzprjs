@@ -855,7 +855,7 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 	checkIgnoreIcebarn : function(){
-		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
+		this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkNoLineNumber : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmUnpass");
@@ -865,11 +865,11 @@ AnsCheck:{
 		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
-			if(border.isArrow() && !border.isLine()){
-				this.failcode.add("lnExArrow");
-				if(this.checkOnly){ break;}
-				border.seterr(4);
-			}
+			if(!(border.isArrow() && !border.isLine())){ continue;}
+			
+			this.failcode.add("lnExArrow");
+			if(this.checkOnly){ break;}
+			border.seterr(4);
 		}
 	},
 

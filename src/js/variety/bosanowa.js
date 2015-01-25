@@ -458,11 +458,11 @@ AnsCheck:{
 			sub=subs[adb.bottom.id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.left.id  ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.right.id ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
-			if(num!==sum){
-				this.failcode.add("nmSumOfDiff");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(num===sum){ continue;}
+			
+			this.failcode.add("nmSumOfDiff");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	}
 },

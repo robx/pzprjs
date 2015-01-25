@@ -363,7 +363,7 @@ AnsCheck:{
 	checklist : [
 		"checkSlashLoop",
 		"checkQnumCross",
-		"checkNoSlashLoop@wagiri",
+		"checkSlashNoLoop@wagiri",
 		"checkNoSlashCell+"
 	],
 
@@ -375,11 +375,11 @@ AnsCheck:{
 		var bd = this.owner.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
-			if(qn>=0 && qn!==sinfo.cross[c].length){
-				this.failcode.add("crConnSlNe");
-				if(this.checkOnly){ break;}
-				cross.seterr(1);
-			}
+			if(qn<0 || qn===sinfo.cross[c].length){ continue;}
+			
+			this.failcode.add("crConnSlNe");
+			if(this.checkOnly){ break;}
+			cross.seterr(1);
 		}
 	},
 
@@ -398,8 +398,8 @@ AnsCheck:{
 	}
 },
 "AnsCheck@wagiri":{
-	checkSlashLoop   : function(){ return this.checkLoops_wagiri(false, "slLoopGiri");},
-	checkNoSlashLoop : function(){ return this.checkLoops_wagiri(true,  "slNotLoopWa");},
+	checkSlashLoop   : function(){ this.checkLoops_wagiri(false, "slLoopGiri");},
+	checkSlashNoLoop : function(){ this.checkLoops_wagiri(true,  "slNotLoopWa");},
 	checkLoops_wagiri : function(checkLoop, code){
 		var result = true, bd = this.owner.board;
 		var sdata = this.getSlashInfo();

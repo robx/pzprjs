@@ -189,8 +189,8 @@ AnsCheck:{
 		"checkNoLineObject+"
 	],
 
-	checkUnshadedCircle : function(){ return this.checkWBcircle(1, "lcInvWhite");},
-	checkShadedCircle   : function(){ return this.checkWBcircle(2, "lcInvBlack");},
+	checkUnshadedCircle : function(){ this.checkWBcircle(1, "lcInvWhite");},
+	checkShadedCircle   : function(){ this.checkWBcircle(2, "lcInvBlack");},
 	checkWBcircle : function(val, code){
 		var result = true;
 		var linfo = this.getLareaInfo();

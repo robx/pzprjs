@@ -630,10 +630,11 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
-			if(func(cross)){
-				result = false;
-				cross.seglist.seterr(1);
-			}
+			if(!func(cross)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cross.seglist.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -646,12 +647,12 @@ AnsCheck:{
 		for(var r=1;r<=bd.seginfo.linemax;r++){
 			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
-			if(validcount>1){
-				this.failcode.add("lnPlLoop");
-				bd.segment.setnoerr();
-				bd.seginfo.seglist[r].seterr(1);
-				break;
-			}
+			if(validcount<=1){ continue;}
+			
+			this.failcode.add("lnPlLoop");
+			bd.segment.setnoerr();
+			bd.seginfo.seglist[r].seterr(1);
+			break;
 		}
 	},
 
@@ -711,26 +712,25 @@ AnsCheck:{
 		});
 		for(var i=0;i<qnlist.length;i++){
 			var qn = qnlist[i];
-			if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
-				this.failcode.add("nmNotConseq");
-				for(var c=0;c<bd.crossmax;c++){
-					var cross = bd.cross[c];
-					if(cross.qnum===qn){ cross.seterr(1);}
-				}
-			}
+			if(count[qn][2]===2 && (count[qn][1]===count[qn][0]-1)){ continue;}
+			
+			this.failcode.add("nmNotConseq");
+			if(this.checkOnly){ break;}
+			bd.cross.filter(function(cross){ return cross.qnum===qn;}).seterr(1);
 		}
 	},
 
 	checkDuplicateSegment : function(){
 		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
-			if(seg1===null||seg2===null){ continue;}
-			if(seg1.isOverLapSegment(seg2)){
-				seg1.seterr(1);
-				seg2.seterr(1);
-				result = false;
-			}
+			if(seg1===null || seg2===null || !seg1.isOverLapSegment(seg2)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break allloop;}
+			seg1.seterr(1);
+			seg2.seterr(1);
 		}}
 		if(!result){
 			this.failcode.add("lnOverlap");
@@ -740,14 +740,15 @@ AnsCheck:{
 
 	checkRightAngle : function(seglist){
 		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
-			if(seg1===null||seg2===null){ continue;}
-			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				seg1.seterr(1);
-				seg2.seterr(1);
-				result = false;
-			}
+			if(seg1===null || seg2===null || !seg1.isCrossing(seg2) || seg1.isRightAngle(seg2)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break allloop;}
+			seg1.seterr(1);
+			seg2.seterr(1);
 		}}
 		if(!result){
 			this.failcode.add("lnRightAngle");

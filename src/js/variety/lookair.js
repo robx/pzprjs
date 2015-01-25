@@ -99,12 +99,11 @@ AnsCheck:{
 	checkDir5ShadeCell : function(){
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
-			if(!cell.isValidNum()){ continue;}
-			if(cell.getNum()!==cell.countDir5ShadedCell()){
-				this.failcode.add("nmShade5Ne");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(!cell.isValidNum() || cell.getNum()===cell.countDir5ShadedCell()){ continue;}
+			
+			this.failcode.add("nmShade5Ne");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 	
@@ -129,20 +128,21 @@ AnsCheck:{
 			return 1;	/* break with no error (reach another shaded block) */
 		}
 
+		allloop:
 		for(var r=1;r<=binfo.max;r++){
 			var base = binfo.area[r].clist, d = base.getRectSize();
 			/* 相互に見る必要は無いので、上と左だけ確認する */
 			for(var bx=d.x1; bx<=d.x2; bx+=2){
 				for(var by=d.y1-2; by>=this.owner.board.minby; by-=2){
 					var ret = subcheck.call(this,base,bx,by);
-					if(ret===1){ break;}else if(ret===2){ return;}
+					if(ret===1){ break;}else if(ret===2){ break allloop;}
 				}
 			}
 
 			for(var by=d.y1; by<=d.y2; by+=2){
 				for(var bx=d.x1-2; bx>=this.owner.board.minbx; bx-=2){
 					var ret = subcheck.call(this,base,bx,by);
-					if(ret===1){ break;}else if(ret===2){ return;}
+					if(ret===1){ break;}else if(ret===2){ break allloop;}
 				}
 			}
 		}

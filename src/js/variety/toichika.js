@@ -194,15 +194,14 @@ AnsCheck:{
 	},
 
 	checkDirectionOfArrow : function(){
-		var result = true;
 		var ainfo = this.getPairArrowInfo();
 		for(var i=0;i<ainfo.length;i++){
-			if(ainfo[i].length===1){
-				this.owner.board.cell[ainfo[i]].seterr(1);
-				result = false;
-			}
+			if(ainfo[i].length!==1){ continue;}
+			
+			this.failcode.add("arAlone");
+			if(this.checkOnly){ break;}
+			this.owner.board.cell[ainfo[i]].seterr(1);
 		}
-		if(!result){ this.failcode.add("arAlone");}
 	},
 	checkAdjacentCountries : function(){
 		var rinfo = this.getRoomInfo(), ainfo = this.getPairArrowInfo();
@@ -215,17 +214,16 @@ AnsCheck:{
 		}
 
 		// ここから実際の判定
-		var result = true;
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){ continue;}
 			var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
-			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])>0){
-				rinfo.area[r1].clist.seterr(1);
-				rinfo.area[r2].clist.seterr(1);
-				result = false;
-			}
+			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])<=0){ continue;}
+			
+			this.failcode.add("arAdjPair");
+			if(this.checkOnly){ break;}
+			rinfo.area[r1].clist.seterr(1);
+			rinfo.area[r2].clist.seterr(1);
 		}
-		if(!result){ this.failcode.add("arAdjPair");}
 	}
 },
 

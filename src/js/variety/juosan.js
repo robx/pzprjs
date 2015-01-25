@@ -162,7 +162,8 @@ AnsCheck:{
 	},
 	checkErrorColsSeparate : function(evalfunc, categoryfunc){
 		var result = true, bd = this.owner.board, info = {isvert:false};
-		allloop: for(var by=1;by<=bd.maxby;by+=2){
+		allloop:
+		for(var by=1;by<=bd.maxby;by+=2){
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				var val = categoryfunc(bd.getc(bx,by)), tx = bx;
 				while((tx+2<bd.maxbx) && (categoryfunc(bd.getc(tx+2,by))===val)){ tx+=2;}
@@ -177,7 +178,8 @@ AnsCheck:{
 	},
 	checkErrorRowsSeparate : function(evalfunc, categoryfunc){
 		var result = true, bd = this.owner.board, info = {isvert:true};
-		allloop: for(var bx=1;bx<=bd.maxbx;bx+=2){
+		allloop:
+		for(var bx=1;bx<=bd.maxbx;bx+=2){
 			for(var by=1;by<=bd.maxby;by+=2){
 				var val = categoryfunc(bd.getc(bx,by)), ty = by;
 				while((ty+2<bd.maxby) && (categoryfunc(bd.getc(bx,ty+2))===val)){ ty+=2;}
@@ -198,8 +200,8 @@ AnsCheck:{
 		return true;
 	},
 
-	checkMajorityBarOver : function(){ return this.checkMajorityBarCount(true,  "bkMajorBarGt");},
-	checkMajorityBarLack : function(){ return this.checkMajorityBarCount(false, "bkMajorBarLt");},
+	checkMajorityBarOver : function(){ this.checkMajorityBarCount(true,  "bkMajorBarGt");},
+	checkMajorityBarLack : function(){ this.checkMajorityBarCount(false, "bkMajorBarLt");},
 	checkMajorityBarCount : function(isover, code){
 		var result = true, rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
@@ -211,12 +213,12 @@ AnsCheck:{
 				else if(clist[i].qans===13){ hcount++;}
 			}
 			count = (vcount>hcount ? vcount : hcount);
-			if((area.top.qnum!==count) && (isover===(count>area.top.qnum))){
-				result = false;
-				if(this.checkOnly){ break;}
-				if     (vcount>hcount){ clist.filter(function(cell){ return cell.qans===12;}).seterr(4);}
-				else if(vcount<hcount){ clist.filter(function(cell){ return cell.qans===13;}).seterr(4);}
-			}
+			if((area.top.qnum===count) || (isover===(count<=area.top.qnum))){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			if     (vcount>hcount){ clist.filter(function(cell){ return cell.qans===12;}).seterr(4);}
+			else if(vcount<hcount){ clist.filter(function(cell){ return cell.qans===13;}).seterr(4);}
 		}
 		if(!result){
 			this.failcode.add(code);

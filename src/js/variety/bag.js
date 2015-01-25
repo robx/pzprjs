@@ -162,11 +162,11 @@ AnsCheck:{
 			target=adc.top;    while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.top;   }
 			target=adc.bottom; while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.bottom;}
 
-			if(cell.qnum!==clist.length){
-				this.failcode.add("nmSumViewNe");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(cell.qnum===clist.length){ continue;}
+			
+			this.failcode.add("nmSumViewNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

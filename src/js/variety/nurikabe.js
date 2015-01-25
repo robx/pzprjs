@@ -201,12 +201,12 @@ AnsCheck : {
 
 			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
 				block2 = binfo.getRoomByCell(cells[i][1]).clist;
-			if(block1.length === block2.length){
-				this.failcode.add("csCornerSize");
-				if(this.checkOnly){ break;}
-				block1.seterr(1);
-				block2.seterr(1);
-			}
+			if(block1.length !== block2.length){ continue;}
+			
+			this.failcode.add("csCornerSize");
+			if(this.checkOnly){ break;}
+			block1.seterr(1);
+			block2.seterr(1);
 		}
 	}
 },

@@ -107,6 +107,10 @@ AnsCheck:{
 		"checkDifferentNumberInRoom",
 		"checkDifferentNumberInLine",
 		"checkNoNumCell+"
-	]
+	],
+
+	checkDifferentNumberInLine : function(){
+		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
+	}
 }
 });

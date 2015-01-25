@@ -330,16 +330,17 @@ AnsCheck:{
 
 	checkFractal : function(){
 		var rinfo = this.getRoomInfo();
-		var errcode = (this.owner.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
+		allloop:
 		for(var id=1;id<=rinfo.max;id++){
 			var clist = rinfo.area[id].clist, d = clist.getRectSize();
 			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
-					clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
-					this.failcode.add(errcode);
-				}
+				if(cell.isDestination() === this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){ continue;}
+				
+				this.failcode.add(this.owner.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
+				if(this.checkOnly){ break allloop;}
+				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
 			}
 		}
 	},

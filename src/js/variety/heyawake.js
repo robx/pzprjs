@@ -176,16 +176,17 @@ AnsCheck:{
 
 	checkFractal : function(){
 		var rinfo = this.getRoomInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
-				if(cell.isShade() ^ cell2.isShade()){
-					this.failcode.add("bkNotSymShade");
-					if(this.checkOnly){ return;}
-					clist.seterr(1);
-				}
+				if(cell.isShade() === cell2.isShade()){ continue;}
+				
+				this.failcode.add("bkNotSymShade");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
 			}
 		}
 	},

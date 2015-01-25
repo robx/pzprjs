@@ -372,11 +372,11 @@ AnsCheck:{
 				}
 				else{ clist.add(cell);}
 			}
-			if(clist.length>=3){
-				this.failcode.add("csConsecGt3");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(clist.length<3){ continue;}
+			
+			this.failcode.add("csConsecGt3");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 	checkNumbers : function(){
@@ -391,14 +391,12 @@ AnsCheck:{
 			clist.add(cell.relcell( 2, 0));
 			clist.add(cell.relcell(-1, 2));
 			clist.add(cell.relcell( 1, 2));
-
-			var cnt=clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.qnum!==cnt){
-				this.failcode.add("nmShadeNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				clist.seterr(1);
-			}
+			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			
+			this.failcode.add("nmShadeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(1);
 		}
 	},
 	checkUnderCells : function(){
@@ -407,13 +405,13 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 
-			if(cell.relcell(-1,2).isUnshade() && cell.relcell(1,2).isUnshade()){
-				this.failcode.add("csNotOnShade");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				cell.relcell(-1,2).seterr(1);
-				cell.relcell(1,2).seterr(1);
-			}
+			if(cell.relcell(-1,2).isShade() || cell.relcell(1,2).isShade()){ continue;}
+			
+			this.failcode.add("csNotOnShade");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			cell.relcell(-1,2).seterr(1);
+			cell.relcell(1,2).seterr(1);
 		}
 	}
 },

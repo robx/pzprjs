@@ -124,7 +124,8 @@ AnsCheck:{
 
 	checkRippleNumber : function(){
 		var result = true, bd = this.owner.board;
-		allloop: for(var c=0;c<bd.cellmax;c++){
+		allloop:
+		for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
 			if(num<=0){ continue;}
 			for(var i=2;i<=num*2;i+=2){
@@ -154,12 +155,12 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
 			if(rinfo.id[c]!==rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
-			if(cell2.getNum()>cell.getNum()){
-				this.failcode.add("bkSmallOnBig");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				cell2.seterr(1);
-			}
+			if(cell.getNum()>=cell2.getNum()){ continue;}
+			
+			this.failcode.add("bkSmallOnBig");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			cell2.seterr(1);
 		}
 	}
 },

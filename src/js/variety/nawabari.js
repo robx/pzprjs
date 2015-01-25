@@ -262,15 +262,7 @@ AnsCheck:{
 	},
 
 	checkdir4BorderAns : function(){
-		var bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum){
-				this.failcode.add("nmBorderNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
-		}
+		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum);}, "nmBorderNe");
 	}
 },
 

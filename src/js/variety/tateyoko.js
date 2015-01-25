@@ -271,8 +271,8 @@ AnsCheck:{
 		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 
-	checkBarOverNum : function(){ return this.checkShade(1, "nmConnBarGt");},
-	checkBarLessNum : function(){ return this.checkShade(2, "nmConnBarLt");},
+	checkBarOverNum : function(){ this.checkShade(1, "nmConnBarGt");},
+	checkBarLessNum : function(){ this.checkShade(2, "nmConnBarLt");},
 	checkShade : function(type, code){
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
@@ -284,12 +284,11 @@ AnsCheck:{
 			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.qans===12){ cnt1++;}else if(cell2.qans===13){ cnt2++;} }
 			cell2=adc.left;   if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
 			cell2=adc.right;  if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
-
-			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if((type===1 && (num<=4-cnt2 && num>=cnt1)) || (type===2 && num===cnt1)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 	

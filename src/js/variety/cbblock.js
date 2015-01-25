@@ -79,6 +79,8 @@ Board:{
 
 CellList:{
 	getBlockShapes : function(){
+		if(!!this.shape){ return this.shape;}
+		
 		var bd=this.owner.board;
 		var d=this.getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
@@ -99,7 +101,7 @@ CellList:{
 		data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
 		data[6]=data[5].concat().reverse(); data[7]=data[4].concat().reverse();
 		for(var i=0;i<8;i++){ shapes.data[i]=data[i].join('');}
-		return shapes;
+		return this.shape = shapes;
 	}
 },
 
@@ -220,41 +222,38 @@ AnsCheck:{
 		var cinfo = this.getCombiBlockInfo();
 		for(var r=1;r<=cinfo.max;r++){
 			var cnt=cinfo.area[r].dotcnt;
-			if((flag===1&&cnt===1) || (flag===3&&cnt>=3)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cinfo.area[r].clist.seterr(1);
-			}
+			if((flag===1&&cnt>1) || (flag===3&&cnt<=2)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cinfo.area[r].clist.seterr(1);
 		}
 	},
 
 	checkDifferentShapeBlock : function(){
 		var cinfo = this.getCombiBlockInfo();
-		var sides=cinfo.getSideAreaInfo(), sc={};
+		var sides = cinfo.getSideAreaInfo();
+		allloop:
 		for(var r=1;r<=cinfo.max-1;r++){
 			var area1 = cinfo.area[r];
 			if(area1.dotcnt!==2){ continue;}
 			for(var i=0;i<sides[r].length;i++){
 				var s = sides[r][i], area2 = cinfo.area[s];
-				// サイズ等は先に確認
-				if(area2.dotcnt!==2){ continue;}
-				if(area1.size!==area2.size){ continue;}
-
-				if(!this.isDifferentShapeBlock(cinfo, r, s, sc)){
-					this.failcode.add("bsSameShape");
-					if(this.checkOnly){ break;}
-					area1.clist.seterr(1);
-					area2.clist.seterr(1);
-				}
+				if(this.isDifferentShapeBlock(area1, area2)){ continue;}
+				
+				this.failcode.add("bsSameShape");
+				if(this.checkOnly){ break allloop;}
+				area1.clist.seterr(1);
+				area2.clist.seterr(1);
 			}
 		}
 	},
-	isDifferentShapeBlock : function(cinfo, r, s, sc){
-		if(!sc[r]){ sc[r]=cinfo.area[r].clist.getBlockShapes();}
-		if(!sc[s]){ sc[s]=cinfo.area[s].clist.getBlockShapes();}
-		var t1=((sc[r].cols===sc[s].cols && sc[r].rows===sc[s].rows)?0:4);
-		var t2=((sc[r].cols===sc[s].rows && sc[r].rows===sc[s].cols)?8:4);
-		for(var t=t1;t<t2;t++){ if(sc[r].data[0]===sc[s].data[t]){ return false;}}
+	isDifferentShapeBlock : function(area1, area2){
+		if(area1.dotcnt!==2 || area2.dotcnt!==2 || area1.size!==area2.size){ return true;}
+		var s1 = area1.clist.getBlockShapes(), s2 = area2.clist.getBlockShapes();
+		var t1=((s1.cols===s2.cols && s1.rows===s2.rows)?0:4);
+		var t2=((s1.cols===s2.rows && s1.rows===s2.cols)?8:4);
+		for(var t=t1;t<t2;t++){ if(s2.data[0]===s1.data[t]){ return false;}}
 		return true;
 	}
 },

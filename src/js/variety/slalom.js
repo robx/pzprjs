@@ -765,12 +765,12 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
-			if((type===1 && cnt>1)||(type===2 && cnt===0)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				clist.seterr(4);
-				bd.hinfo.getGatePole(r).seterr(1);
-			}
+			if((type===1 && cnt<=1)||(type===2 && cnt>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(4);
+			bd.hinfo.getGatePole(r).seterr(1);
 		}
 	},
 	checkGateNumber : function(){

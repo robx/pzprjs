@@ -162,11 +162,11 @@ FileIO:{
 		var rooms = this.owner.board.rooms;
 		for(var r=1;r<=rooms.max;r++){
 			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
-			if(!clist.isSeqBlock()){
-				this.failcode.add("bkShadeDivide");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(clist.isSeqBlock()){ continue;}
+			
+			this.failcode.add("bkShadeDivide");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

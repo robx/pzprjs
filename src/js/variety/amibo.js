@@ -371,11 +371,11 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
 			var cid = binfo.pole[c];
-			if((type===1 && cid.length>1) || (type===2 && cid.length===0)){
-				this.failcode.add(code);
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if((type===1 && cid.length<=1) || (type===2 && cid.length>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 	checkLongBar  : function(){ this.checkPoleLength(1, "lbLenGt");},
@@ -383,17 +383,19 @@ AnsCheck:{
 	checkPoleLength : function(type, code){
 		var result = true, bd = this.owner.board;
 		var binfo = this.getBarInfo();
-		allloop: for(var c=0;c<bd.cellmax;c++){
+		
+		allloop:
+		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
 				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
-				if((type===1 && llen>qn) || (type===2 && llen<qn)){
-					result = false;
-					if(this.checkOnly){ break allloop;}
-					cell.seterr(1);
-					clist.setErrorBar(bar.vert);
-				}
+				if((type===1 && llen<=qn) || (type===2 && llen>=qn)){ continue;}
+				
+				result = false;
+				if(this.checkOnly){ break allloop;}
+				cell.seterr(1);
+				clist.setErrorBar(bar.vert);
 			}
 		}
 		if(!result){
@@ -409,11 +411,11 @@ AnsCheck:{
 			for(var i=0,len=linkid.length;i<len;i++){
 				if(clist.length===binfo.area[linkid[i]].clist.length){ check=true; break;}
 			}
-			if(!check){
-				result = false;
-				if(this.checkOnly){ break;}
-				clist.setErrorBar(bar.vert);
-			}
+			if(check){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			clist.setErrorBar(bar.vert);
 		}
 		if(!result){
 			this.failcode.add("lbNotCrossEq");

@@ -178,15 +178,7 @@ AnsCheck:{
 	],
 	
 	checkdir4BorderLine : function(){
-		var bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], qn = cell.qnum;
-			if(qn>=0 && qn!==cell.getdir4BorderLine1()){
-				this.failcode.add("nmLineNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
-		}
+		this.checkAllCell(function(cell){ return (cell.qnum>=0 && cell.getdir4BorderLine1()!==cell.qnum);}, "nmLineNe");
 	}
 },
 

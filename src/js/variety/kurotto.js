@@ -145,11 +145,11 @@ AnsCheck:{
 		var bd = this.owner.board, cinfo = bd.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.checkComplete(cinfo)){
-				this.failcode.add("nmSumSizeNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(cell.checkComplete(cinfo)){ continue;}
+			
+			this.failcode.add("nmSumSizeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	}
 },

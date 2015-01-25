@@ -198,11 +198,11 @@ AnsCheck:{
 			if(adb.right.isLine() ){ cnt++;}
 			if(adb.top.isLine()   ){ cnt++;}
 			if(adb.bottom.isLine()){ cnt++;}
-			if(cnt===val){
-				result = false;
-				if(this.checkOnly){ break;}
-				cross.setCrossBorderError();
-			}
+			if(cnt!==val){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cross.setCrossBorderError();
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -228,11 +228,11 @@ AnsCheck:{
 		}
 		for(var r=1;r<=tarea.max;r++){
 			var clist = tarea.area[r].clist;
-			if(tcount[r]>=0 && tcount[r]!==clist.length){
-				this.failcode.add("bkNoLineNe");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(tcount[r]<0 || tcount[r]===clist.length){ continue;}
+			
+			this.failcode.add("bkNoLineNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

@@ -183,13 +183,11 @@ AnsCheck:{
 		for(var id=1;id<=rinfo.max;id++){
 			var room = rinfo.area[id], clist = room.clist;
 			var product = clist.getProduct();
-			if(product === 0){ continue;}
-
-			if(product !== room.top.qnum){
-				this.failcode.add("nmProduct");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(product === 0 || product === room.top.qnum){ continue;}
+			
+			this.failcode.add("nmProduct");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	}
 },

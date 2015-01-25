@@ -185,23 +185,24 @@ AnsCheck:{
 	],
 
 	/* 線のカウントはするが、○のある場所は除外する */
-	checkCrossLine_firefly   : function(){ return this.checkLineCount_firefly(4, "lnCross");},
-	checkBranchLine_firefly  : function(){ return this.checkLineCount_firefly(3, "lnBranch");},
-	checkDeadendLine_firefly : function(){ return this.checkLineCount_firefly(1, "lnDeadEnd");},
+	checkCrossLine_firefly   : function(){ this.checkLineCount_firefly(4, "lnCross");},
+	checkBranchLine_firefly  : function(){ this.checkLineCount_firefly(3, "lnBranch");},
+	checkDeadendLine_firefly : function(){ this.checkLineCount_firefly(1, "lnDeadEnd");},
 	checkLineCount_firefly : function(val, code){
-		if(this.owner.board.lines.ltotal[val]===0){ return;}
-		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
+		if(this.owner.board.lines.ltotal[val]>0){
+			this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
+		}
 	},
 	checkFireflyBeam : function(){
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
-			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
-				this.failcode.add("nmNoLine");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
+			if(cell.getaddr().movedir(dir,1).getb().isLine()){ continue;}
+			
+			this.failcode.add("nmNoLine");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
 	},
 

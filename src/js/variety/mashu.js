@@ -169,11 +169,11 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum===1 && cell.lcnt===2 && !cell.isLineStraight()){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.setCellLineError(1);
-			}
+			if(cell.qnum!==1 || cell.lcnt!==2 || cell.isLineStraight()){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(1);
 		}
 		if(!result){
 			this.failcode.add("mashuWCurve");
@@ -184,11 +184,11 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum===2 && cell.lcnt===2 && cell.isLineStraight()){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.setCellLineError(1);
-			}
+			if(cell.qnum!==2 || cell.lcnt!==2 || !cell.isLineStraight()){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(1);
 		}
 		if(!result){
 			this.failcode.add("mashuBStrig");
@@ -202,16 +202,15 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
 			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
-			if(adb.top.isLine()    && adc.top.lcnt===2    && adc.top.isLineStraight()   ){ stcnt++;}
+			if(adb.top.isLine()    && adc.top.lcnt   ===2 && adc.top.isLineStraight()   ){ stcnt++;}
 			if(adb.bottom.isLine() && adc.bottom.lcnt===2 && adc.bottom.isLineStraight()){ stcnt++;}
-			if(adb.left.isLine()   && adc.left.lcnt===2   && adc.left.isLineStraight()  ){ stcnt++;}
-			if(adb.right.isLine()  && adc.right.lcnt===2  && adc.right.isLineStraight() ){ stcnt++;}
-
-			if(stcnt>=2){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.setErrorPearl();
-			}
+			if(adb.left.isLine()   && adc.left.lcnt  ===2 && adc.left.isLineStraight()  ){ stcnt++;}
+			if(adb.right.isLine()  && adc.right.lcnt ===2 && adc.right.isLineStraight() ){ stcnt++;}
+			if(stcnt<2){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setErrorPearl();
 		}
 		if(!result){
 			this.failcode.add("mashuWStNbr");
@@ -223,15 +222,15 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}
-			if((adb.top.isLine()    && adc.top.lcnt===2    && !adc.top.isLineStraight()   ) ||
-			   (adb.bottom.isLine() && adc.bottom.lcnt===2 && !adc.bottom.isLineStraight()) ||
-			   (adb.left.isLine()   && adc.left.lcnt===2   && !adc.left.isLineStraight()  ) ||
-			   (adb.right.isLine()  && adc.right.lcnt===2  && !adc.right.isLineStraight() ) )
-			{
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.setErrorPearl();
-			}
+			if((!adb.top.isLine()    || adc.top.lcnt   !==2 || adc.top.isLineStraight()   ) &&
+			   (!adb.bottom.isLine() || adc.bottom.lcnt!==2 || adc.bottom.isLineStraight()) &&
+			   (!adb.left.isLine()   || adc.left.lcnt  !==2 || adc.left.isLineStraight()  ) &&
+			   (!adb.right.isLine()  || adc.right.lcnt !==2 || adc.right.isLineStraight() ) )
+			{ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setErrorPearl();
 		}
 		if(!result){
 			this.failcode.add("mashuBCvNbr");

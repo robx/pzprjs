@@ -188,12 +188,12 @@ AnsCheck:{
 			if(!cell.isValidNum()){ continue;}
 
 			var clist = cell.getViewClist();
-			if(cell.getNum()!==clist.length){
-				this.failcode.add("nmSumViewNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				clist.seterr(2);
-			}
+			if(cell.getNum()===clist.length){ continue;}
+			
+			this.failcode.add("nmSumViewNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(2);
 		}
 	}
 },

@@ -231,11 +231,11 @@ FileIO:{
 		var bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
 			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
-			if(!clist.isSeqBlock()){
-				this.failcode.add("bkShadeDivide");
-				if(this.checkOnly){ break;}
-				clist.seterr(1);
-			}
+			if(clist.isSeqBlock()){ continue;}
+			
+			this.failcode.add("bkShadeDivide");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
 	},
 

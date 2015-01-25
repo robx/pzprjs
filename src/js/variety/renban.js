@@ -133,7 +133,6 @@ AnsCheck:{
 	],
 
 	checkNumbersInRoom : function(){
-		var result = true;
 		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
@@ -147,14 +146,12 @@ AnsCheck:{
 			}
 			if(breakflag){ break;}
 
-			if(clist.length !== (max-min)+1){
-				if(this.checkOnly){ result = false; break;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(clist.length === (max-min)+1){ continue;}
+			
+			this.failcode.add("bkNotSeqNum");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		if(!result){ this.failcode.add("bkNotSeqNum");}
-		return result;
 	},
 
 	checkBorderSideNumber : function(){
@@ -170,13 +167,13 @@ AnsCheck:{
 			if(val1<=0 || val2<=0){ continue;}
 
 			var blist = rdata.path[rdata.id[i]].blist;
-			if(Math.abs(val1-val2)!==blist.length){
-				this.failcode.add("cbDiffLenNe");
-				if(this.checkOnly){ break;}
-				cell1.seterr(1);
-				cell2.seterr(1);
-				blist.seterr(1);
-			}
+			if(Math.abs(val1-val2)===blist.length){ continue;}
+			
+			this.failcode.add("cbDiffLenNe");
+			if(this.checkOnly){ break;}
+			cell1.seterr(1);
+			cell2.seterr(1);
+			blist.seterr(1);
 		}
 	}
 },
