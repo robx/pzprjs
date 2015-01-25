@@ -253,12 +253,15 @@ pzpr.Puzzle.prototype =
 		this.execListener('modechange');
 		if(!this.ready){ return;}
 
-		this.key.keyreset();
-		this.board.errclear();
 		this.cursor.adjust_modechange();
+		this.key.keyreset();
 
-		this.board.haserror=true;
-		this.redraw();
+		if(this.board.haserror){
+			this.board.errclear();
+		}
+		else{
+			this.redraw();
+		}
 	},
 
 	//------------------------------------------------------------------------------

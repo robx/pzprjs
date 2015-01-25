@@ -458,10 +458,7 @@ OperationManager:{
 		this.disableRecord();
 
 		puzzle.painter.suspend();
-		if(bd.haserror){
-			bd.errclear();
-			puzzle.redraw();
-		}
+		bd.errclear();
 		if(this.reqReset){
 			bd.disableInfo();
 		}

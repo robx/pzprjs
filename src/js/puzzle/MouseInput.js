@@ -145,7 +145,6 @@ MouseEvent:{
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
 				puzzle.board.errclear();
-				puzzle.redraw();
 			}
 			else{ puzzle.opemgr.newChain();}
 			

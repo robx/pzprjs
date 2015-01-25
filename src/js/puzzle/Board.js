@@ -311,11 +311,15 @@ Board:{
 	},
 
 	errclear : function(){
-		this.cell.errclear();
-		this.cross.errclear();
-		this.border.errclear();
-		this.excell.errclear();
-		this.haserror = false;
+		if(this.haserror){
+			this.cell.errclear();
+			this.cross.errclear();
+			this.border.errclear();
+			this.excell.errclear();
+			this.haserror = false;
+			
+			this.owner.adjustCanvasSize();	/* 強制的に一から再描画を行う */
+		}
 	},
 
 	//---------------------------------------------------------------------------

@@ -164,7 +164,6 @@ KeyEvent:{
 
 		if(this.keydown && !this.isZ){
 			puzzle.board.errclear();
-			puzzle.redraw();
 		}
 
 		if(!puzzle.execListener('key',c)){ return;}

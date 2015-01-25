@@ -329,10 +329,7 @@ Graphic:{
 		this.addlw = 0;
 		if(border.isLine()){
 			var info = border.error || border.qinfo;
-			if(info===1){
-				if(this.context.use.canvas){ this.addlw=1;}
-				return this.errlinecolor;
-			}
+			if     (info===1) { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			
 			var cells = border.sidecell;

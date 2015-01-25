@@ -201,8 +201,9 @@ Board:{
 		this.common.ansclear.call(this);
 	},
 	errclear : function(){
-		this.segment.errclear();
-		
+		if(this.haserror){
+			this.segment.errclear();
+		}
 		this.common.errclear.call(this);
 	},
 

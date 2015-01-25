@@ -624,10 +624,7 @@ Graphic:{
 		this.addlw = 0;
 		if(border.isLine()){
 			var info = border.error || border.qinfo, puzzle = this.owner;
-			if(info===1){
-				if(this.context.use.canvas){ this.addlw=1;}
-				return this.errlinecolor;
-			}
+			if     (info===1)  { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
 			else if(!puzzle.execConfig('irowake') || !border.color){ return this.linecolor;}
@@ -936,7 +933,7 @@ Graphic:{
 	// pc.getBarColor()     縦棒・横棒の色を取得する
 	//---------------------------------------------------------------------------
 	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges');
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
 		var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
 
 		var clist = this.range.cells;
