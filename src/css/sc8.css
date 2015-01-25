@@ -40,15 +40,45 @@
 	div#btnarea { position:relative; margin-top:1.0em;}
 
 	/* ポップアップウィンドウ */
-	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;
-			   background-color:#efefff; border:1px black solid; font-size:0.9em; line-height:1.6; z-index:100;}
-	div.popup div.titlebar
-			 { display:block; text-align:left; background-color:gray; color:white; cursor:pointer;
-			   margin:0pt; padding:1pt 12pt 1pt 8pt; font-size:1.0em;}
-	div.popup form
-			 { margin:2pt 8pt 4pt 4pt; padding:0pt;}
+	div.popup {
+		display    : none;
+		position   : absolute;
+		background : #efefef;
+		left   : 0pt;
+		top    : 0pt;
+		margin : 0pt;
+		border : 1px #999999 solid;
+		border-radius : 6px;
+		box-shadow : 6px 6px 6px rgba(64,64,64,.5);
+		
+		text-align : left;
+		font-size  : 0.9em;
+		line-height: 1.6;
+		z-index    : 100;
+	}
+	div.popup div.titlebar {
+		display    : block;
+		background : gray;
+		background : #999999 linear-gradient(to right bottom, rgba(0,0,0,0), rgba(0,0,0,.5));
+		margin  : 0pt;
+		padding : 1pt 12pt 1pt 8pt;
+		color   : white;
+		cursor  : pointer;
+		text-align : left;
+		font-size  : 1.0em;
+	}
+	div.popup form {
+		margin  : 2pt 8pt 4pt 4pt;
+		padding : 0pt;
+	}
 
-	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
+	div#credit3_1 {
+		margin  : 4pt 0pt 2pt 4pt;
+		line-height : 1.1;
+	}
+	div#poptest {
+		z-index : 1;
+	}
 
 	/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
 	#nb_shape_tawa { margin-top:4pt; margin-bottom:4pt;}
