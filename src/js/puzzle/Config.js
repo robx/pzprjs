@@ -62,6 +62,7 @@ Config.prototype =
 		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */
+		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
 		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
 
 		/* EDITORのみ */

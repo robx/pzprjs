@@ -209,12 +209,12 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.check()          正答判定処理を行う
 	//------------------------------------------------------------------------------
-	check : function(activemode, multierr){
+	check : function(activemode){
 		if(!!activemode){
 			this.key.keyreset();
 			this.mouse.mousereset();
 		}
-		return this.checker.check(!!activemode, !!multierr);
+		return this.checker.check(!!activemode);
 	},
 
 	//------------------------------------------------------------------------------

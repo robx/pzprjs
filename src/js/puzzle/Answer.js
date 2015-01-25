@@ -52,13 +52,13 @@ AnsCheck:{
 	// ans.check()     答えのチェックを行う
 	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error)
 	//---------------------------------------------------------------------------
-	check : function(activemode, multierr){
+	check : function(activemode){
 		var puzzle = this.owner, bd = puzzle.board;
 		this.inCheck = true;
 		
 		if(activemode){
 			this.checkOnly = false;
-			this.checkAns(multierr);
+			this.checkAns();
 			if(!this.failcode.complete){
 				bd.haserror = true;
 				puzzle.redraw();
@@ -75,13 +75,13 @@ AnsCheck:{
 		this.inCheck = false;
 		return this.failcode;
 	},
-	checkAns : function(multierr){
+	checkAns : function(){
 		this.failcode = new this.owner.CheckInfo();
 		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
 		var errcount = 0;
 		for(var i=0;i<checklist.length;i++){
 			checklist[i].call(this);
-			if(!multierr && (errcount<this.failcode.length)){ break;}
+			if(!this.owner.getConfig("multierr") && (errcount<this.failcode.length)){ break;}
 			errcount = this.failcode.length;
 		}
 	},
