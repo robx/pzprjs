@@ -191,6 +191,7 @@ ui.menuarea = {
 	},
 	repaint : function(){ ui.puzzle.redraw();},
 	jumpexp : function(){
+		ui.saveConfig();	/* faq.htmlで言語設定を使用するので、一旦Config値を保存 */
 		window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), '');
 	},
 	disppopup : function(e){

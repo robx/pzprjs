@@ -1,27 +1,103 @@
 @charset "UTF-8" ;
 
-	BODY{ color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	body {
+		margin  : 0pt;
+		padding : 0pt;
+		color : black;
+		line-height : 120%;
+		text-align  : center;
+	}
 
 	/* メインの白背景領域 */
-	div#main{ width:80%; background-color:white; text-align:center;
-			  margin:auto; margin-top:8pt; padding-bottom:6pt; border:2pt green solid;}
+	div#main {
+		width : 80%;
+		background-color : white;
+		margin         : auto;
+		margin-top     : 8pt;
+		padding-bottom : 6pt;
+		border     : 2pt green solid;
+		text-align : center;
+	}
 
-	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
+	h2#title {
+		margin : 16pt 0pt 24pt 0pt;
+		text-align : center;
+	}
 
 	/* 盤面外の表示部分(管理領域・メニュー・ポップアップ・ボタン) */
-	.outofboard { font-size:1.0em; line-height:1.2;}
+	.outofboard {
+		font-size   : 1.0em;
+		line-height : 1.2;
+	}
 
-	.btn { display:inline; text-align:center; vertical-align:middle; font:90%/1.2 sans-serif; cursor:default;
-		   margin:2pt; padding:2pt 4pt 2pt 4pt; border-radius:4pt; border:solid 1pt gray;
-		   background: silver; background: linear-gradient(to bottom, white, silver);}
-	.btn-ok   { background: blue; background: linear-gradient(to bottom, #afafff, blue); color:white;}
-	.btn-info { background: #993366; background: linear-gradient(to bottom, #cc6699, #993366);  color:white;}
-	.btn-warn { background: yellow;  background: linear-gradient(to bottom, yellow, #cccc00);}
-	.btn-danger { background: red;   background: linear-gradient(to bottom, #ffafaf, red);  color:white;}
+	.btn {
+		display : inline;
+		margin  : 2pt;
+		padding : 2pt 4pt 2pt 4pt;
+		border-radius : 4pt;
+		border        : solid 1pt gray;
+		
+		background     : silver;
+		background     : linear-gradient(to bottom, white, silver);
+		text-align     : center;
+		vertical-align : middle;
+		font   : 90%/1.2 sans-serif;
+		cursor : default;
+	}
+	.btn:active {
+		background : #afafaf;
+		background : linear-gradient(to bottom, #afafaf, #cccccc);
+	}
+	
+	.btn-ok {
+		background : blue;
+		background : linear-gradient(to bottom, #afafff, blue);
+		color : white;
+	}
+	.btn-ok:active {
+		background : navy;
+		background : linear-gradient(to bottom, navy, blue);
+	}
+	
+	.btn-info {
+		background : #993366;
+		background : linear-gradient(to bottom, #cc6699, #993366);
+		color : white;
+	}
+	.btn-info:active {
+		background : #66334f;
+		background : linear-gradient(to bottom, #99334f, #993366);
+	}
+	
+	.btn-warn {
+		background : yellow;
+		background : linear-gradient(to bottom, yellow, #cccc00);
+	}
+	.btn-warn:active {
+		background : #999900;
+		background : linear-gradient(to bottom, #999900, #cccc00);
+	}
+	
+	.btn-danger {
+		background : red;
+		background : linear-gradient(to bottom, #ffafaf, red);
+		color:white;
+	}
+	.btn-danger:active {
+		background : #cc0000;
+		background : linear-gradient(to bottom, #cc0000, red);
+	}
+	
 	#btnarea div#btnclear { color:red;}
 
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; text-align:left; border:1px red solid;}
+	div#menuboard{
+		width : 380pt;
+		margin        : auto;
+		margin-bottom : 8pt;
+		border : 1px red solid;
+		text-align : left;
+	}
 
 	/* メニューより下の管理領域 */
 	div#usepanel  { margin:8pt 0pt 0pt 6pt;}
@@ -35,9 +111,23 @@
 	div#checkpanel input[type="checkbox"]:disabled + span { color:silver;}
 
 	/* パズル表示部 */
-	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
-	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;}
-	div#btnarea { position:relative; margin-top:1.0em;}
+	div#quesboard {
+		margin     : 16pt auto 16pt auto;
+		text-align : center;
+	}
+	div#divques {
+		display:inline-block;
+		position:relative;
+		border:solid 1px gray;
+		cursor:default;
+		margin-left:auto;
+		margin-right:auto;
+		padding:8px;
+	}
+	div#btnarea {
+		position : relative;
+		margin-top : 1.0em;
+	}
 
 	/* ポップアップウィンドウ */
 	div.popup {
@@ -59,7 +149,7 @@
 	div.popup div.titlebar {
 		display    : block;
 		background : gray;
-		background : #999999 linear-gradient(to right bottom, rgba(0,0,0,0), rgba(0,0,0,.5));
+		background : #999999 linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,0));
 		margin  : 0pt;
 		padding : 1pt 12pt 1pt 8pt;
 		color   : white;
@@ -94,8 +184,16 @@
 	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}
 
-	div.kpcell { width:32px; height:32px; margin:1px; position:relative; float:left;
-				 cursor:pointer; text-align:center; line-height:32px;}
+	div.kpcell {
+		width  : 32px;
+		height : 32px;
+		margin : 1px;
+		position : relative;
+		float    : left;
+		cursor : pointer;
+		text-align  : center;
+		line-height : 32px;
+	}
 	div.kpcellempty { cursor:default;}
 	div.kpcellvalid { background-color:white;}
 
@@ -161,15 +259,16 @@
 		display  : none;
 		position : absolute;
 		list-style-type : none;
-		background : lime;
-		background : lime linear-gradient(to right bottom, rgba(0,0,0,.5), rgba(0,0,0,0));
+		background : #cccccc;
+		background : #cccccc linear-gradient(to right bottom, rgba(0,0,0,.75), rgba(0,0,0,0));
 		margin     : 0pt;
 		padding    : 3px;
+		border-radius:8px;
+		box-shadow : 6px 6px 6px rgba(64,64,64,.5);
+		/* box-shadow : 6px 6px 6px rgba(64,64,64,.5), inset 32px 32px 48px -16px rgba(0,0,0,.5); */
+		
 		text-align : left;
 		cursor     : default;
-
-		box-shadow : 6px 6px 6px rgba(64,64,64,.5), inset 32px 32px 48px -16px rgba(0,0,0,.5);
-		border-radius:8px;
 	}
 	#menupanel menu[label]:before {
 		margin  : 0pt;

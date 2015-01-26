@@ -5,9 +5,10 @@
 var v3index = {
 	typelist : [],
 	current  : '',
-	language : 'ja',
+	doclang  : (!location.href.match("index_en.html")?"ja":"en"),
 	complete : false,
 	LS       : false,
+	captions : [],
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
@@ -53,9 +54,9 @@ v3index.extend({
 				el = el.nextSibling;
 			}
 			if(!self.current && typelist.length>0){ self.current = typelist[0];}
+			getEL("puztypes").style.display = "block";
 
-			var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-			if(userlang.substr(0,2)!=='ja'){ self.language = 'en';}
+			// self.setTranslation();
 		}
 		self.disp();
 	},
@@ -99,7 +100,34 @@ v3index.extend({
 				table.style.display = 'none';
 			}
 		}
+		// self.translate();
 	}
+
+//	もし各パズルへのリンクのキャプションんを自動生成したくなったら以下を有効にする
+//	setTranslation : function(){
+//		var tables = [_doc.getElementById("table_all"),
+//					  _doc.getElementById("table_lunch"),
+//					  _doc.getElementById("table_nigun"),
+//					  _doc.getElementById("table_omopa"),
+//					  _doc.getElementById("table_other")];
+//		for(var i=0;i<tables.length;i++){
+//			if(!tables[i]){ continue;}
+//			ui.misc.walker(tables[i], function(el){
+//				if(el.nodeType===1 && el.nodeName==="LI"){
+//					var href = el.firstChild.href;
+//					var pid  = pzpr.variety.toPID(href.substr(href.indexOf("?")+1));
+//					self.captions.push({textnode:el.firstChild.firstChild, str_jp:pzpr.variety.info[pid].ja, str_en:pzpr.variety.info[pid].en});
+//				}
+//			});
+//		}
+//	},
+//	translate : function(){
+//		/* キャプションの設定 */
+//		for(var i=0;i<this.captions.length;i++){
+//			var obj = this.captions[i];
+//			if(!!obj.textnode) { obj.textnode.data = (self.doclang==="ja" ? obj.str_jp : obj.str_en);}
+//		}
+//	}
 });
 
 /* addEventListener */
@@ -317,14 +345,12 @@ v3index.dbif.extend({
 			return str;
 		})();
 
-		var language = (!location.href.match("index_en.html")?"ja":"en");
-
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.variety.info[row.pid][language]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][v3index.doclang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][language]+"&nbsp;");
+			str += (hardstr[row.hard][v3index.doclang]+"&nbsp;");
 		}
 		str += ("("+datestr+")");
 		return str;

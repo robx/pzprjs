@@ -153,7 +153,7 @@ ui.popupmgr.addpopup('template',
 			if(el.nodeType!==1){ return;}
 			var role = ui.customAttr(el,"buttonExec");
 			if(!!role){
-				pzpr.util.addEvent(el, "mousedown", popup, popup[role]);
+				pzpr.util.addEvent(el, (!pzpr.env.API.touchevent ? "click" : "mousedown"), popup, popup[role]);
 			}
 			role = ui.customAttr(el,"changeExec");
 			if(!!role){

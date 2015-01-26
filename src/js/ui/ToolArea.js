@@ -54,6 +54,10 @@ ui.toolarea = {
 				/* ボタン領域 */
 				var role = ui.customAttr(el,"buttonExec");
 				if(!!role){
+					pzpr.util.addEvent(el, (!pzpr.env.API.touchevent ? "click" : "mousedown"), toolarea, toolarea[role]);
+				}
+				role = ui.customAttr(el,"buttondownExec");
+				if(!!role){
 					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea[role]);
 				}
 				role = ui.customAttr(el,"buttonupExec");
