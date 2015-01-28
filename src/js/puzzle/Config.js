@@ -166,6 +166,10 @@ Config.prototype =
 			puzzle.redraw();
 			break;
 		
+		case 'multierr':
+			puzzle.checker.resetCache();
+			break;
+		
 		case 'disptype_bosanowa': case 'font':
 			puzzle.adjustCanvasSize();
 			break;

@@ -64,13 +64,14 @@ AnsCheck:{
 				puzzle.adjustCanvasSize();	/* 強制的に一から再描画を行う */
 			}
 		}
-		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
+		/* activemodeでなく、前回の判定結果が残っていない場合はチェックします */
 		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
 			this.checkAns(false);
 			bd.enableSetError();
 		}
+		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
 		
 		this.inCheck = false;
 		return this.failcode;
@@ -78,11 +79,10 @@ AnsCheck:{
 	checkAns : function(){
 		this.failcode = new this.owner.CheckInfo();
 		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
-		var errcount = 0;
+		var checkSingleError = (this.checkOnly || !this.owner.getConfig("multierr"));
 		for(var i=0;i<checklist.length;i++){
 			checklist[i].call(this);
-			if(!this.owner.getConfig("multierr") && (errcount<this.failcode.length)){ break;}
-			errcount = this.failcode.length;
+			if(checkSingleError && (this.failcode.length>0)){ break;}
 		}
 	},
 
