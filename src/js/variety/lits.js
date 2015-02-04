@@ -12,8 +12,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------

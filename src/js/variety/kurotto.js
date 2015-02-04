@@ -12,8 +12,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------

@@ -15,12 +15,6 @@ MouseEvent:{
 			else if(puzzle.pid==='wagiri') { this.inputquestion();}
 		}
 	},
-	inputRed : function(){
-		var puzzle = this.owner;
-		if(puzzle.playmode){
-			if(puzzle.pid==='gokigen'){ this.dispBlue();}
-		}
-	},
 
 	inputslash : function(){
 		var cell = this.getcell();
@@ -34,6 +28,11 @@ MouseEvent:{
 	}
 },
 "MouseEvent@gokigen":{
+	dispRed : function(){
+		var puzzle = this.owner, flag = (puzzle.playmode && puzzle.key.isZ);
+		if(flag){ this.dispBlue();}
+		return flag;
+	},
 	dispBlue : function(){
 		var cell = this.getcell();
 		this.mousereset();

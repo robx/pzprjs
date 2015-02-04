@@ -129,7 +129,6 @@ MouseEvent:{
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
-	// mv.isDispred()  inputRed()処理を呼び出すかどうか判定する
 	//---------------------------------------------------------------------------
 	mouseevent : function(addr, step){
 		this.inputPoint.set(addr);
@@ -148,30 +147,32 @@ MouseEvent:{
 			}
 			else{ puzzle.opemgr.newChain();}
 			
-			if(this.mousestart && this.isDispred()){ this.inputRed();}
-			else{
+			if(!this.mousestart || !this.dispRed()){
 				this.mouseinput();		/* 各パズルのルーチンへ */
 			}
 		}
 		
 		if(this.mouseend){ this.mousereset();}
 	},
-	isDispred : function(){
-		var puzzle = this.owner, flag = false;
-		if     (puzzle.execConfig('redline')) { flag = true;}
-		else if(puzzle.execConfig('redblk'))  { flag = true;}
-		else if(puzzle.execConfig('redblkrb')){ flag = true;}
-		else if(puzzle.execConfig('redroad')) { flag = true;}
-		return puzzle.key.isZ ^ flag;
+
+	//---------------------------------------------------------------------------
+	// mv.dispRed()   赤く表示する際などのイベント処理
+	//---------------------------------------------------------------------------
+	dispRed : function(){
+		var puzzle = this.owner, isZ = puzzle.key.isZ;
+		var flagline = puzzle.validConfig('redline') && !!(puzzle.getConfig('redline') ^isZ);
+		var flagblk  = puzzle.validConfig('redblk') && !!(puzzle.getConfig('redblk') ^isZ);
+		
+		if     (flagline){ this.dispRedLine();}
+		else if(flagblk) { this.dispRedBlk();}
+		return (flagline || flagblk);
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseinput() マウスイベント処理。各パズルのファイルでオーバーライドされる。
-	// mv.inputRed()  赤く表示する際などのイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
 	mouseinput : function(){ },
-	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する

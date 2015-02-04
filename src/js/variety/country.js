@@ -22,8 +22,7 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------

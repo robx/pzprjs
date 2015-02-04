@@ -53,8 +53,7 @@ Config.prototype =
 
 		/* 補助入力設定 */
 		this.add('redline', false);			/* 線の繋がりチェック */
-		this.add('redblk', false);			/* 黒マスつながりチェック */
-		this.add('redblkrb', false);		/* 連黒分断禁黒マス繋がりチェック */
+		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
 
 		/* 回答お助け機能 */
@@ -142,7 +141,6 @@ Config.prototype =
 			case 'snakebd':  exec = (pid==="snakes"); break;
 			case 'redline':  exec = flags.redline;   break;
 			case 'redblk':   exec = flags.redblk;    break;
-			case 'redblkrb': exec = flags.redblkrb;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
 			case 'autocmp':  exec = (flags.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
@@ -200,7 +198,6 @@ Flags:{
 	autocmp  : '',
 	redline  : false,
 	redblk   : false,
-	redblkrb : false,
 	bgcolor  : false,
 	irowake    : false,			// 色分け設定
 	irowakeblk : false,			// 色分け設定

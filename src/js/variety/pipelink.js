@@ -18,8 +18,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------

@@ -24,13 +24,17 @@ MouseEvent:{
 			}
 		}
 	},
-	inputRed : function(){ this.dispRoad();},
-
+	dispRed : function(){
+		var puzzle = this.owner, flag = (puzzle.execConfig('redroad')^puzzle.key.isZ);
+		if(flag){ this.dispRoad();}
+		return flag;
+	},
 	dispRoad : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var ldata = [], bd=this.owner.board;
+		var puzzle = this.owner;
+		var ldata = [], bd=puzzle.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
 		for(var c=0;c<bd.cellmax;c++){
@@ -38,7 +42,7 @@ MouseEvent:{
 			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
 		bd.haserror = true;
-		this.owner.redraw();
+		puzzle.redraw();
 		this.mousereset();
 	}
 },

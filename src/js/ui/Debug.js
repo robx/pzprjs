@@ -15,7 +15,7 @@ ui.popupmgr.addpopup('debug',
 			form.starttest.style.display = "none";
 			form.all_test.style.display = "none";
 			form.loadperf.style.display = "none";
-			form.inputchk.style.display = "none";
+			form.inputcheck_popup.style.display = "none";
 		}
 	},
 	handler : function(e){

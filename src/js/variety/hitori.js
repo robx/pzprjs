@@ -14,8 +14,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -56,8 +55,8 @@ AreaUnshadeManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------

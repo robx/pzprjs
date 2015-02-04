@@ -19,8 +19,7 @@ MouseEvent:{
 				if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
 			}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -55,8 +54,8 @@ AreaUnshadeManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------

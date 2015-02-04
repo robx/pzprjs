@@ -14,8 +14,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 "MouseEvent@ringring":{
 	mouseinput : function(){

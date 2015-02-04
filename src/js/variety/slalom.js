@@ -20,7 +20,6 @@ MouseEvent:{
 			else if(this.mouseend){ this.inputEdit_end();}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputEdit : function(){
 		var cell = this.getcell();

@@ -19,7 +19,6 @@ MouseEvent:{
 			if(this.mousestart){ this.inputLoopsp();}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputLoopsp : function(){
 		var cell = this.getcell();

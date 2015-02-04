@@ -22,7 +22,6 @@ MouseEvent:{
 			}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputIcebarn : function(){
 		var cell = this.getcell();

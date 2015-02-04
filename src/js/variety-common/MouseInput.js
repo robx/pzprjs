@@ -466,20 +466,20 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRed()  ひとつながりの黒マスを赤く表示する
-	// mv.dispRed8() ななめつながりの黒マスを赤く表示する
+	// mv.dispRedBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispRedBlk8() ななめつながりの黒マスを赤く表示する
 	// mv.dispRedLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRed : function(){
+	dispRedBlk : function(){
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
-		else{ this.dispRed8(cell);}
+		else{ this.dispRedBlk8(cell);}
 		this.owner.board.haserror = true;
 		this.owner.redraw();
 	},
-	dispRed8 : function(cell0){
+	dispRedBlk8 : function(cell0){
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell = stack.pop();

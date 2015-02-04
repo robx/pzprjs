@@ -13,8 +13,7 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------

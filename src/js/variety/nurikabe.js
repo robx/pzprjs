@@ -14,9 +14,6 @@ MouseEvent:{
 		}
 	}
 },
-"MouseEvent@nurikabe":{
-	inputRed : function(){ this.dispRed();}
-},
 
 //---------------------------------------------------------
 // キーボード入力系
