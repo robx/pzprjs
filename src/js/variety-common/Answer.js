@@ -113,7 +113,7 @@ AnsCheck:{
 		this.checkSideCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, "csAdjacent");
 	},
 	checkAdjacentDiffNumber : function(){
-		this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}, "caSameNum");
+		this.checkSideCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}, "nmAdjacent");
 	},
 
 	//---------------------------------------------------------------------------
@@ -182,7 +182,7 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneLoop()  交差あり線が一つかどうか判定する
+	// ans.checkOneLoop()  盤面に引かれている線が一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
 		var xinfo = this.getLineInfo();
@@ -191,6 +191,15 @@ AnsCheck:{
 			this.owner.board.border.setnoerr();
 			xinfo.path[1].blist.seterr(1);
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkLineExist()  盤面に少なくとも一本は線が引かれていることを判定する
+	//---------------------------------------------------------------------------
+	checkLineExist : function(){
+		var bd = this.owner.board;
+		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return;} }
+		this.failcode.add("brNoLine");
 	},
 
 	//---------------------------------------------------------------------------
@@ -562,7 +571,6 @@ FailCode:{
 	csDivide    : ["黒マスが分断されています。","Shaded cells are devided,"],
 	cuDivide    : ["白マスが分断されています。","Unshaded cells are devided."],
 	cuDivideRB  : ["白マスが分断されています。","Unshaded cells are devided."], /* 連黒分断禁 */
-	caSameNum   : ["同じ数字がタテヨコに連続しています。","Same numbers are adjacent."],
 
 	/* ** 領域＋数字 ** */
 	bkNoNum  : ["数字のないブロックがあります。","A block has no number."],
@@ -621,6 +629,7 @@ FailCode:{
 	anShadeNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of shaded cells are not correct."],
 
 	/* ** 数字系 ** */
+	nmAdjacent  : ["同じ数字がタテヨコに連続しています。","Same numbers are adjacent."],
 	nmDupRow : ["同じ列に同じ数字が入っています。","There are same numbers in a row."],
 	nmDivide : ["タテヨコにつながっていない数字があります。","Numbers are devided."]
 }

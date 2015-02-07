@@ -890,7 +890,7 @@ AnsCheck:{
 		this.checkTrace(function(info){ return info.lastborder.isLine();}, "lrDeadEnd");
 	},
 	checkFollowArrow : function(){
-		this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);}, "awInverse");
+		this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);}, "lrReverse");
 	},
 	checkKeepInside : function(){
 		this.checkTrace(function(info){
@@ -926,7 +926,7 @@ FailCode:{
 	stNoLine  : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
 	lrDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
 	lrOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
-	awInverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
+	lrReverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
 	cuNoLine : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
 }
 });

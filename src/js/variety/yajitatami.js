@@ -152,7 +152,7 @@ AnsCheck:{
 			var cell = bd.cell[c], dir = cell.qdir;
 			if(!cell.isValidNum() || !dir || cell.getaddr().movedir(dir,1).getb().isBorder()){ continue;}
 			
-			this.failcode.add("arNoAdjBd");
+			this.failcode.add("anNoAdjBd");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
 		}
@@ -163,6 +163,6 @@ FailCode:{
 	bkSizeNe   : ["数字とタタミの大きさが違います。","The size of tatami and the number written in Tatami is different."],
 	bkSize1    : ["長さが１マスのタタミがあります。","The length of the tatami is one."],
 	anTatamiNe : ["矢印の方向にあるタタミの数が正しくありません。","The number of tatamis are not correct."],
-	arNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
+	anNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
 }
 });

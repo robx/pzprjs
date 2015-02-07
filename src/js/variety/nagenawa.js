@@ -224,11 +224,6 @@ AnsCheck:{
 		"checkUnreachedUnshadeCell+@ringring"
 	],
 
-	checkLineExist : function(){
-		var bd = this.owner.board;
-		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return;} }
-		this.failcode.add("brNoLine");
-	},
 	checkOverLineCount : function(){
 		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);}, "bkLineGt");
 	},

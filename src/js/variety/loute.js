@@ -414,7 +414,7 @@ AnsCheck:{
 				var cell = clist[i], num = cell.getObjNum();
 				if(num<1 || num>4 || rinfo.place[cell.id]===2){ continue;}
 				
-				this.failcode.add("awBlkEdge");
+				this.failcode.add("arBlkEdge");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
 				break;
@@ -437,7 +437,7 @@ AnsCheck:{
 					(num===cell.LT && adb.left.isBorder()  ) ||
 					(num===cell.RT && adb.right.isBorder() ) ) ){ continue;}
 				
-				this.failcode.add("awNotPtCnr");
+				this.failcode.add("arNotPtCnr");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
 				break;
@@ -478,8 +478,8 @@ AnsCheck:{
 
 FailCode:{
 	bkNotLshape : ["ブロックが幅1のL字型になっていません。","A block is not L-shape or whose width is not one."],
-	awBlkEdge  : ["矢印がブロックの端にありません。","An arrow is not at the edge of the block."],
-	awNotPtCnr : ["矢印の先にブロックの角がありません。","An arrow doesn't indicate the corner of a block."],
+	arBlkEdge  : ["矢印がブロックの端にありません。","An arrow is not at the edge of the block."],
+	arNotPtCnr : ["矢印の先にブロックの角がありません。","An arrow doesn't indicate the corner of a block."],
 	ciNotOnCnr : ["白丸がブロックの角にありません。","A circle is out of the corner."]
 }
 });
