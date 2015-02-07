@@ -101,7 +101,7 @@ CellList:{
 		data[2]=data[1].concat().reverse(); data[3]=data[0].concat().reverse();
 		data[6]=data[5].concat().reverse(); data[7]=data[4].concat().reverse();
 		for(var i=0;i<8;i++){ shapes.data[i]=data[i].join('');}
-		return this.shape = shapes;
+		return (this.shape = shapes);
 	}
 },
 

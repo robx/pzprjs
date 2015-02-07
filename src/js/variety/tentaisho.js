@@ -461,8 +461,8 @@ AnsCheck:{
 			this.failcode.add("bdPassStar");
 			if(this.checkOnly){ break;}
 			switch(star.obj.group){
-				case "cross":  star.obj.setCrossBorderError(); break
-				case "border": star.obj.seterr(1);             break
+				case "cross":  star.obj.setCrossBorderError(); break;
+				case "border": star.obj.seterr(1);             break;
 			}
 		}
 	},
