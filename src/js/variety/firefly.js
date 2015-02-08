@@ -80,6 +80,7 @@ Graphic:{
 	globalfontsizeratio : 0.85,
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDashedCenterLines();
 		this.drawLines();
 

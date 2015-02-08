@@ -133,8 +133,6 @@ AreaLineManager:{
 Graphic:{
 	gridcolor_type : "THIN",
 
-	errbcolor1 : "white",
-
 	circlefillcolor_func   : "qnum2",
 	circlestrokecolor_func : "qnum2",
 
@@ -144,6 +142,7 @@ Graphic:{
 	lwratio : 8,
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
 
 		this.drawPekes();

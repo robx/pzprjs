@@ -198,6 +198,7 @@ Graphic:{
 	mbcolor : "green",
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDashedGrid();
 
 		this.drawTip();
