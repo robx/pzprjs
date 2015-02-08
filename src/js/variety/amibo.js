@@ -286,7 +286,7 @@ Graphic:{
 	drawPekeBorder : function(){
 		var g = this.vinc('border_pbd', 'crispEdges', true);
 
-		g.fillStyle = "rgb(64,64,64)";
+		g.fillStyle = this.borderQsubcolor2;
 		var rw = this.bw*0.6;
 		var lm = this.lm;
 

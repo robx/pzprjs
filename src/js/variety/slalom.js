@@ -217,6 +217,54 @@ Board:{
 
 		this.startpos.set(this.cell[0]);
 		this.hinfo.init();
+	},
+
+	getTraceInfo : function(){
+		var info = {errgateid:null};
+		var startcell = this.startpos.getc();
+		
+		for(var dir=1;dir<=4;dir++){
+			info = this.searchTraceInfo(startcell, dir);
+			if(info.errgateid!==null){ break;}
+		}
+		return info;
+	},
+	searchTraceInfo : function(cell1, dir){
+		var info = {errgateid:null};
+		var pos = cell1.getaddr(), passed = 0, ordertype=-1;
+
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = pos.getc();
+				if(cell1===cell){ break;} // ちゃんと戻ってきた
+
+				if(cell.ques===21 || cell.ques===22){
+					var r = this.hinfo.getGateid(cell.id);
+					passed++;
+					var gatenumber = this.hinfo.data[r].number;
+					if(gatenumber<=0){ } // 何もしない
+					else if(ordertype===-1){
+						if(gatenumber*2-1===this.hinfo.max){ } // ど真ん中の数字なら何もしない
+						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
+						else if(passed===this.hinfo.max+1-gatenumber){ break;}         // 逆方向なので別の方向から回る
+						else                                         { info.errgateid = r; break;} // 通過順間違い
+					}
+					else if(ordertype===1 && passed!==gatenumber)    { info.errgateid = r; break;} // 通過順間違い
+				}
+
+				var adb = cell.adjborder;
+				if     (cell.lcnt!==2){ break;}
+				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+			}
+			else{
+				if(!pos.getb().isLine()){ break;} // 途切れてたら終了
+			}
+		}
+		return info;
 	}
 },
 BoardExec:{
@@ -731,7 +779,6 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"generateGateNumber",		/* エラー判定の準備のみ */
 		"checkLineOnShadeCell",
 		"checkCrossLine",
 		"checkBranchLine",
@@ -744,8 +791,10 @@ AnsCheck:{
 	],
 
 	generateGateNumber : function(){
-		this.owner.board.hinfo.generateAll();
-		return true;
+		if(!this._info.gate){
+			this.owner.board.hinfo.generateAll();
+			this._info.gate = true;
+		}
 	},
 
 	checkStartid : function(){
@@ -758,6 +807,7 @@ AnsCheck:{
 	checkPassGateOnce : function(){ return this.checkGateLine(1, "gateRedup");},
 	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
 	checkGateLine : function(type, code){
+		this.generateGateNumber();
 		var bd = this.owner.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.data[r].clist;
@@ -773,56 +823,13 @@ AnsCheck:{
 		}
 	},
 	checkGateNumber : function(){
-		var result = true, sid = [], bd = this.owner.board, adb = bd.startpos.getc().adjborder;
-		if(adb.right.isLine() ){ sid.push({obj:adb.right, dir:4});}
-		if(adb.bottom.isLine()){ sid.push({obj:adb.bottom,dir:2});}
-		if(adb.left.isLine()  ){ sid.push({obj:adb.left,  dir:3});}
-		if(adb.top.isLine()   ){ sid.push({obj:adb.top,   dir:1});}
-
-		for(var i=0;i<sid.length;i++){
-			var pos = sid[i].obj.getaddr();
-			var dir=sid[i].dir, ordertype=-1, passing=0, r = null;
-
-			while(1){
-				pos.movedir(dir,1);
-				if(pos.oncell()){
-					var cell = pos.getc();
-					if(bd.startpos.equals(cell)){ return;} // ちゃんと戻ってきた
-
-					if(cell.ques===21 || cell.ques===22){
-						r = bd.hinfo.getGateid(cell.id);
-						var gatenumber = bd.hinfo.data[r].number;
-						passing++;
-						if(gatenumber<=0){ } // 何もしない
-						else if(ordertype===-1){
-							if(gatenumber*2-1===bd.hinfo.max){ } // ど真ん中の数字なら何もしない
-							else if(passing===gatenumber)               { ordertype=1;}
-							else if(passing===bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
-							else                                        { result = false; break;}
-						}
-						else if(ordertype===1 && passing!==gatenumber){ result = false; break;}
-					}
-
-					var adb = cell.adjborder;
-					if     (cell.lcnt!==2){ break;}
-					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
-				}
-				else{
-					if(!pos.getb().isLine()){ break;} // 途切れてたら、何事もなかったように終了
-				}
-			}
-			/* エラーが確定したのでreturn */
-			if(!result){
-				this.failcode.add("lrOrder");
-				if(r!==null){
-					bd.hinfo.data[r].clist.seterr(4);
-					bd.hinfo.getGatePole(r).seterr(1);
-				}
-				break;
-			}
+		this.generateGateNumber();
+		var bd = this.owner.board, info = bd.getTraceInfo();
+		var r = info.errgateid;
+		if(r!==null){
+			this.failcode.add("lrOrder");
+			bd.hinfo.data[r].clist.seterr(4);
+			bd.hinfo.getGatePole(r).seterr(1);
 		}
 	}
 },

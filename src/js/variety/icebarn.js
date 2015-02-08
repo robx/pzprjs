@@ -866,7 +866,7 @@ AnsCheck:{
 			var border = bd.border[id];
 			if(!(border.isArrow() && !border.isLine())){ continue;}
 			
-			this.failcode.add("lnExArrow");
+			this.failcode.add("arNoLine");
 			if(this.checkOnly){ break;}
 			border.seterr(4);
 		}
@@ -919,7 +919,7 @@ AnsCheck:{
 FailCode:{
 	bkNoLine  : ["すべてのアイスバーンを通っていません。", "A icebarn is not gone through."],
 	lnPlLoop  : ["線がひとつながりではありません。","Lines are not countinuous."],
-	lnExArrow : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
+	arNoLine  : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
 	lrOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
 	nmUnpass  : ["通過していない数字があります。","The line doesn't pass all of the number."],
 	stInvalid : ["スタート位置を特定できませんでした。","System can't detect start position."],

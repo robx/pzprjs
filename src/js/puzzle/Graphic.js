@@ -97,6 +97,7 @@ Graphic:{
 	borderQuescolor : "black",
 	borderQanscolor : "rgb(0, 191, 0)",
 	borderQsubcolor : "rgb(255, 0, 255)",
+	borderQsubcolor2 : "rgb(64, 64, 64)",
 
 	errborderbgcolor : "rgb(160, 160, 160)",	// エラー表示時, エラーでない境界線の描画色
 

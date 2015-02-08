@@ -93,6 +93,7 @@
 		"variety/mashu",
 		"variety/mejilink",
 		"variety/minarism",
+		"variety/nagare",
 		"variety/nagenawa",
 		"variety/nanro",
 		"variety/nawabari",

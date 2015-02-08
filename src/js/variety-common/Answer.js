@@ -202,7 +202,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
 		var bd = this.owner.board;
-		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return;} }
+		if(bd.lines.ltotal[0]!==(!bd.lines.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
 		this.failcode.add("brNoLine");
 	},
 

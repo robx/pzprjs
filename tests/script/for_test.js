@@ -28,10 +28,14 @@ ui.debug.extend(
 	},
 	
 	accheck1 : function(){
+		ui.puzzle.checker.checkOnly = false;
+		ui.puzzle.checker.checkAns();
 		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.checker.checkAns();
+		var failcode  = ui.puzzle.checker.failcode[0];
 		var failstr   = (!!failcode ? "\""+failcode+"\"" : "null");
+		ui.puzzle.board.haserror = true;
 		ui.puzzle.board.errclear();
+		ui.puzzle.redraw();
 		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 

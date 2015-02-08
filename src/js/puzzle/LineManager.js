@@ -405,15 +405,17 @@ LineManager:{
 	//---------------------------------------------------------------------------
 	// info.getLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
 	// info.serachLineShapeInfo() 丸などで区切られた線を探索します
+	// info.getLineShapeBase()    線を探索する際のスタート位置を取得します
+	// info.getLineShapeSeparator() 何で区切るか設定します
 	//---------------------------------------------------------------------------
 	// 丸の場所で線を切り離して考える
 	getLineShapeInfo : function(){
 		var bd = this.owner.board, info = new this.owner.LineInfo();
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(this.id[id]>0?0:null);}
 
-		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], adb = cell.adjborder;
+		var clists = this.getLineShapeBase();
+		for(var n=0;n<clists.length;n++){ for(var i=0;i<clists[n].length;i++){
+			var cell = clists[n][i], adb = cell.adjborder;
 			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
 			for(var a=0;a<4;a++){
 				var firstbd = dir4bd[a];
@@ -422,7 +424,7 @@ LineManager:{
 				var path = this.serachLineShapeInfo(info,cell,(a+1));
 				if(!!path){ info.addPathByPath(path);}
 			}
-		}
+		}}
 		return info;
 	},
 	serachLineShapeInfo : function(info,cell1,dir){
@@ -438,7 +440,7 @@ LineManager:{
 			pos.movedir(dir,1);
 			if(pos.oncell()){
 				var cell = pos.getc(), adb = cell.adjborder;
-				if(cell.isnull || cell.isNum()){ break;}
+				if(cell.isnull || cell1===cell || this.getLineShapeSeparator(cell)){ break;}
 				else if(cell.iscrossing() && cell.lcnt>=3){ }
 				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ path.ccnt++;} dir=2;}
 				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ path.ccnt++;} dir=1;}
@@ -463,6 +465,12 @@ LineManager:{
 			return path;
 		}
 		return null;
+	},
+	getLineShapeBase : function(){
+		return [ this.owner.board.cell.filter(this.getLineShapeSeparator) ];
+	},
+	getLineShapeSeparator : function(cell){
+		return cell.isNum();
 	}
 },
 

@@ -34,8 +34,10 @@ Graphic:{
 		return this.getCellColor(cell);
 	},
 	getCellColor_ques : function(cell){
-		if(cell.ques===1){ return this.quescolor;}
-		return null;
+		if(cell.ques!==1){ return null;}
+		var info = cell.error || cell.qinfo;
+		if     (info===0){ return this.quescolor;}
+		else if(info===1){ return this.errcolor1;}
 	},
 	getCellColor_qnum : function(cell){
 		if(cell.qnum===-1){ return null;}
@@ -191,20 +193,32 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawCellArrows : function(){
 		var g = this.vinc('cell_arrow', 'auto');
+		var al, aw, tl, tw;
 
-		var ll = this.cw*0.8;				//LineLength
-		var lw = Math.max(this.cw/18, 2);	//LineWidth
-		var al = ll*0.5, aw = lw*0.5;	// ArrowLength, ArrowWidth
-		var tl = ll*0.5-ll*0.3;			// 矢じりの長さの座標(中心-長さ)
-		var tw = Math.max(ll*0.2, 5);	// 矢じりの幅
+		if(this.owner.pid!=="nagare"){
+			al = this.cw*0.4;		// ArrowLength
+			aw = this.cw*0.03;		// ArrowWidth
+			tl = this.cw*0.16;		// 矢じりの長さの座標(中心-長さ)
+			tw = this.cw*0.16;		// 矢じりの幅
+		}
+		else{
+			/* 太い矢印 */
+			al = this.cw*0.35;		// ArrowLength
+			aw = this.cw*0.12;		// ArrowWidth
+			tl = 0;					// 矢じりの長さの座標(中心-長さ)
+			tw = this.cw*0.35;		// 矢じりの幅
+		}
+		aw = (aw>=1?aw:1);
+		tw = (tw>=5?tw:5);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], dir=(!cell.numberAsObject ? cell.qdir : cell.getNum());
+			var color = ((dir>=1 && dir<=4) ? this.getCellArrowColor(cell) : null);
 			
 			g.vid = "c_arrow_"+cell.id;
-			if(dir>=1 && dir<=4){
-				g.fillStyle = ((!cell.numberAsObject||cell.qnum!==-1)?this.arrowQuescolor:this.arrowQanscolor);
+			if(!!color){
+				g.fillStyle = color;
 				g.beginPath();
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				switch(dir){
@@ -217,6 +231,13 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	},
+	getCellArrowColor : function(cell){
+		var dir=(!cell.numberAsObject ? cell.qdir : cell.getNum());
+		if(dir>=1 && dir<=4){
+			return ((!cell.numberAsObject||cell.qnum!==-1)?this.arrowQuescolor:this.arrowQanscolor);
+		}
+		return null;
 	},
 
 	//---------------------------------------------------------------------------

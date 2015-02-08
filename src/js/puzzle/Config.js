@@ -48,6 +48,7 @@ Config.prototype =
 		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
 
 		this.add('bgcolor', false);			/* 背景色入力 */
+		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
@@ -145,6 +146,7 @@ Config.prototype =
 			case 'autocmp':  exec = (flags.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'enbnonum': exec = (pid==="fillomino"); break;
+			case 'dirauxmark': exec = (pid==="nagare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;

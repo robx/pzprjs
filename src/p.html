@@ -107,6 +107,7 @@
                                             ><span data-disp-pid="gokigen,wagiri">__斜線の色分け__Slash with color__</span></li>
      <li class="check" data-config="multierr"><span>__複数エラー検出__Check multiple errors__</span></li>
      <li class="check" data-config="enbnonum"><span>__空セル許可__Allow Empty cell__</span></li>
+     <li class="check" data-config="dirauxmark"><span>__方向の補助記号__Direction Aux. Mark__</span></li>
      <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
      <li class="check" data-config="uramashu"><span>__裏ましゅ__Ura-Mashu__</span></li>
@@ -202,9 +203,13 @@
       <input type="checkbox">
       <span>__全ての数字が入っていない状態での正答判定を許可する__Allow answer check with empty cell in the board__</span>
     </div>
+    <div class="config" data-config="dirauxmark">
+      <input type="checkbox">
+      <span>__方向を表す補助記号を入力する__Enable to input aux mark of direction__</span>
+    </div>
     <div class="config" data-config="enline">
       <input type="checkbox">
-      <span>__点の間のみ線を引けるようにする__Able to draw line only between the points__</span>
+      <span>__点の間のみ線を引けるようにする__Enable to draw line only between the points__</span>
     </div>
     <div class="config" data-config="lattice">
       <input type="checkbox">
@@ -256,7 +261,7 @@
     <button type="button" class="btn" id="btnundo"    data-buttondown-exec="undo" data-buttonup-exec="undostop">__戻__&lt;-__</button
    ><button type="button" class="btn" id="btnredo"    data-buttondown-exec="redo" data-buttonup-exec="redostop">__進__-&gt;__</button>
     <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__回答消去__Erase Answer__</button
-   ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase Auxiliary Marks__</button>
+   ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase Aux. Marks__</button>
     <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change the color of Line__</button>
     <button type="button" class="btn" id="btncircle"  data-button-exec="toggledisp">○</button>
     <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__色をつける__Color up__</button>

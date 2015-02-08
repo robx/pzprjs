@@ -110,6 +110,7 @@ pzpr.variety.register({
 	minarism  :[1,0,"マイナリズム","Minarism"],
 	mochikoro :[1,0,"モチコロ","Mochikoro",'nurikabe'],
 	mochinyoro:[1,0,"モチにょろ","Mochinyoro",'nurikabe'],
+	nagare    :[0,0,"流れるループ","Nagareru-Loop"],
 	nagenawa  :[0,0,"なげなわ","Nagenawa",'nagenawa'],
 	nanro     :[0,1,"ナンロー","Nanro"],
 	nawabari  :[1,0,"なわばり","Territory",'nawabari'],
