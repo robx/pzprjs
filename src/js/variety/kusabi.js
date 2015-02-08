@@ -116,7 +116,7 @@ AnsCheck:{
 		"checkCurveLack",
 		"checkLengthNotEq",
 		"checkLengthWrong",
-		"checkDeadendConnectLine+",
+		"checkLineShapeDeadend",
 		"checkDisconnectLine",
 		"checkNoLineObject+"
 	],

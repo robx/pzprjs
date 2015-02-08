@@ -41,6 +41,15 @@ Cell:{
 		if(adb.bottom.isLine()){ adc.bottom.setCellLineError(0);}
 		if(adb.left.isLine()  ){ adc.left.setCellLineError(0);  }
 		if(adb.right.isLine() ){ adc.right.setCellLineError(0); }
+	},
+
+	//---------------------------------------------------------------------------
+	// cell.setCellLineError()    セルと周りの線にエラーフラグを設定する
+	//---------------------------------------------------------------------------
+	setCellLineError : function(flag){
+		var bx=this.bx, by=this.by;
+		if(flag){ this.seterr(1);}
+		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 },
 
@@ -168,7 +177,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum!==1 || cell.lcnt!==2 || cell.isLineStraight()){ continue;}
+			if(!(cell.qnum===1 && cell.isLineCurve())){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
@@ -183,7 +192,7 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum!==2 || cell.lcnt!==2 || !cell.isLineStraight()){ continue;}
+			if(!(cell.qnum===2 && cell.isLineStraight())){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
@@ -201,10 +210,10 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
 			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
-			if(adb.top.isLine()    && adc.top.lcnt   ===2 && adc.top.isLineStraight()   ){ stcnt++;}
-			if(adb.bottom.isLine() && adc.bottom.lcnt===2 && adc.bottom.isLineStraight()){ stcnt++;}
-			if(adb.left.isLine()   && adc.left.lcnt  ===2 && adc.left.isLineStraight()  ){ stcnt++;}
-			if(adb.right.isLine()  && adc.right.lcnt ===2 && adc.right.isLineStraight() ){ stcnt++;}
+			if(adb.top.isLine()    && adc.top.isLineStraight()   ){ stcnt++;}
+			if(adb.bottom.isLine() && adc.bottom.isLineStraight()){ stcnt++;}
+			if(adb.left.isLine()   && adc.left.isLineStraight()  ){ stcnt++;}
+			if(adb.right.isLine()  && adc.right.isLineStraight() ){ stcnt++;}
 			if(stcnt<2){ continue;}
 			
 			result = false;
@@ -221,10 +230,10 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}
-			if((!adb.top.isLine()    || adc.top.lcnt   !==2 || adc.top.isLineStraight()   ) &&
-			   (!adb.bottom.isLine() || adc.bottom.lcnt!==2 || adc.bottom.isLineStraight()) &&
-			   (!adb.left.isLine()   || adc.left.lcnt  !==2 || adc.left.isLineStraight()  ) &&
-			   (!adb.right.isLine()  || adc.right.lcnt !==2 || adc.right.isLineStraight() ) )
+			if(!(adb.top.isLine()    && adc.top.isLineCurve()   ) &&
+			   !(adb.bottom.isLine() && adc.bottom.isLineCurve()) &&
+			   !(adb.left.isLine()   && adc.left.isLineCurve()  ) &&
+			   !(adb.right.isLine()  && adc.right.isLineCurve() ) )
 			{ continue;}
 			
 			result = false;

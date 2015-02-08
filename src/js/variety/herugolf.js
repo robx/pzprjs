@@ -530,7 +530,7 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.lcnt===1 && cell.distance >=0 && !cell.isViaPoint());}, "laLenNe");
 	},
 	checkCurveHalfway : function(){
-		this.checkAllCell(function(cell){ return (cell.lcnt===2 && !cell.isLineStraight() && !cell.isViaPoint());}, "laCurve");
+		this.checkAllCell(function(cell){ return (cell.isLineCurve() && !cell.isViaPoint());}, "laCurve");
 	},
 	checkWaterHazard : function(){
 		this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());}, "laWaterHazard");

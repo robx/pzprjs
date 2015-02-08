@@ -179,35 +179,13 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkBranchLine_meji",
-		"checkCrossLine_meji",
+		"checkBranchLine",
+		"checkCrossLine",
 		"checkDotLength",
-		"checkDeadendLine_meji",
+		"checkDeadendLine",
 		"checkOneLoop"
 	],
 
-	checkCrossLine_meji   : function(){ this.checkdir4Line_meji(4, "lnCross");},
-	checkBranchLine_meji  : function(){ this.checkdir4Line_meji(3, "lnBranch");},
-	checkDeadendLine_meji : function(){ this.checkdir4Line_meji(1, "lnDeadEnd");},
-	checkdir4Line_meji : function(val, code){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.crossmax;c++){
-			var cnt = 0, cross = bd.cross[c], adb = cross.adjborder;
-			if(adb.left.isLine()  ){ cnt++;}
-			if(adb.right.isLine() ){ cnt++;}
-			if(adb.top.isLine()   ){ cnt++;}
-			if(adb.bottom.isLine()){ cnt++;}
-			if(cnt!==val){ continue;}
-			
-			result = false;
-			if(this.checkOnly){ break;}
-			cross.setCrossBorderError();
-		}
-		if(!result){
-			this.failcode.add(code);
-			bd.border.setnoerr();
-		}
-	},
 	checkDotLength : function(){
 		var bd = this.owner.board;
 		var tarea = bd.tiles.getAreaInfo();

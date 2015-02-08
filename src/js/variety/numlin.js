@@ -131,29 +131,13 @@ AnsCheck:{
 		"checkTripleObject",
 		"checkLinkSameNumber",
 		"checkLineOverLetter",
-		"checkDeadendConnectLine_numlin+",
+		"checkDeadendConnectLine+",
 		"checkDisconnectLine",
 		"checkNoLineObject+"
 	],
 
 	checkLinkSameNumber : function(){
 		this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();}, "nmConnDiff");
-	},
-
-	checkDeadendConnectLine_numlin : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(!(cell.lcnt===1 && cell.noNum())){ continue;}
-
-			result = false;
-			if(this.checkOnly){ break;}
-			cell.setCellLineError(true);
-		}
-		if(!result){
-			this.failcode.add("lcDeadEnd");
-			bd.border.setnoerr();
-		}
 	}
 },
 

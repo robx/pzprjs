@@ -259,11 +259,15 @@ pzpr.classmgr.makeCommon({
 
 	//---------------------------------------------------------------------------
 	// cell.isLineStraight()   セルの上で線が直進しているか判定する
+	// cell.isLineCurve()      セルの上で線がカーブしているか判定する
 	//---------------------------------------------------------------------------
-	isLineStraight : function(){
-		if     (this.adjborder.top.isLine() && this.adjborder.bottom.isLine()){ return true;}
-		else if(this.adjborder.left.isLine() && this.adjborder.right.isLine()){ return true;}
-		return false;
+	isLineStraight : function(){ // 0:直進ではない 1:縦に直進 2:横に直進
+		if     (this.lcnt===2 && this.adjborder.top.isLine() && this.adjborder.bottom.isLine()){ return 1;}
+		else if(this.lcnt===2 && this.adjborder.left.isLine() && this.adjborder.right.isLine()){ return 2;}
+		return 0;
+	},
+	isLineCurve : function(){
+		return this.lcnt===2 && !this.isLineStraight();
 	},
 
 	//---------------------------------------------------------------------------
@@ -338,15 +342,6 @@ pzpr.classmgr.makeCommon({
 			if(cells[i].group==="cell" && !cells[i].isnull || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
 		}
 		return cblist;
-	},
-
-	//---------------------------------------------------------------------------
-	// cell.setCellLineError()    セルと周りの線にエラーフラグを設定する
-	//---------------------------------------------------------------------------
-	setCellLineError : function(flag){
-		var bx=this.bx, by=this.by;
-		if(flag){ this.seterr(1);}
-		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 },
 

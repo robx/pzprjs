@@ -41,6 +41,7 @@ AnsCheck:{
 	// ans.checkNotCrossOnMark()  十字のマーク上で線が交差していることを判定する
 	// ans.checkLineOnShadeCell() 黒マス上に線がないことを判定する
 	// ans.checkNoLineObject()    線が出ていない数字や○がないかどうか判定する
+	// ans.checkLineOverLetter()  線が数字などを通過しているか判定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func, code){
 		for(var c=0;c<this.owner.board.cellmax;c++){
@@ -56,7 +57,7 @@ AnsCheck:{
 		this.checkAllCell( function(cell){ return (cell.ques===0 && cell.noNum());}, "ceNoNum" );
 	},
 	checkIceLines : function(){
-		this.checkAllCell( function(cell){ return (cell.lcnt===2 && cell.ice() && !cell.isLineStraight());}, "lnCurveOnIce");
+		this.checkAllCell( function(cell){ return (cell.ice() && cell.isLineCurve());}, "lnCurveOnIce");
 	},
 	checkNotCrossOnMark : function(){
 		this.checkAllCell( function(cell){ return (cell.lcnt!==4 && cell.ques===11);}, "lnNotCrossMk");
@@ -66,6 +67,9 @@ AnsCheck:{
 	},
 	checkNoLineObject : function(){
 		this.checkAllCell( function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmNoLine");
+	},
+	checkLineOverLetter : function(){
+		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.owner.board.linfo.moveline ? "laOnNum" : "lcOnNum"));
 	},
 
 	//---------------------------------------------------------------------------
@@ -213,19 +217,35 @@ AnsCheck:{
 		var result = true, bd = this.owner.board;
 		if(bd.lines.ltotal[val]===0){ return;}
 		
-		var objs = (bd.lines.borderAsLine ? bd.cross : bd.cell);
-		for(var c=0;c<objs.length;c++){
-			if(objs[c].lcnt!==val){ continue;}
-			
-			result = false;
-			if(this.checkOnly){ break;}
-			if     (objs[c].group==="cell") { objs[c].setCellLineError(true);}
-			else if(objs[c].group==="cross"){ objs[c].setCrossBorderError();}
+		if(!bd.lines.borderAsLine){
+			this.checkAllCell(function(cell){ return cell.lcnt===val;}, code);
 		}
-		if(!result){
-			this.failcode.add(code);
-			bd.border.setnoerr();
+		else{
+			var boardcross = bd.cross;
+			for(var c=0;c<boardcross.length;c++){
+				if(boardcross[c].lcnt!==val){ continue;}
+				
+				result = false;
+				if(this.checkOnly){ break;}
+				boardcross[c].setCrossBorderError();
+			}
+			if(!result){
+				this.failcode.add(code);
+				bd.border.setnoerr();
+			}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkConnectLineCount() ○などがないセルから出ている線の本数について判定する
+	//---------------------------------------------------------------------------
+	checkCrossConnectLine   : function(){ this.checkConnectLineCount(4, "lnCross");},
+	checkBranchConnectLine  : function(){ this.checkConnectLineCount(3, "lnBranch");},
+	checkDeadendConnectLine : function(){ this.checkConnectLineCount(1, "lnDeadEnd");},
+	checkConnectLineCount : function(val, code){
+		if(this.owner.board.lines.ltotal[val]===0){ return;}
+		
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
 
 	//---------------------------------------------------------------------------
@@ -514,27 +534,8 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkLineOverLetter()  線が数字などを通過しているか判定する
-	//---------------------------------------------------------------------------
-	checkLineOverLetter : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.lcnt<2 || !cell.isNum()){ continue;}
-			
-			result = false;
-			if(this.checkOnly){ break;}
-			cell.setCellLineError(true);
-		}
-		if(!result){
-			this.failcode.add(this.owner.board.linfo.moveline ? "laOnNum" : "lcOnNum");
-			bd.border.setnoerr();
-		}
-	},
-
-	//---------------------------------------------------------------------------
 	// ans.checkLineShape()  すべての丸などで区切られた線が、pathを引数に取るevalfunc==falseになるかどうか判定する
-	// ans.checkDeadendConnectLine()  オブジェクトを結ぶ線が途中で途切れていることを判定する
+	// ans.checkLineShapeDeadend()  オブジェクトを結ぶ線が途中で途切れていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineShape : function(evalfunc, code){
 		var result = true;
@@ -555,7 +556,7 @@ AnsCheck:{
 			this.owner.board.border.setnoerr();
 		}
 	},
-	checkDeadendConnectLine : function(){
+	checkLineShapeDeadend : function(){
 		this.checkLineShape(function(path){ return path.cells[1].isnull;}, "lcDeadEnd");
 	}
 },

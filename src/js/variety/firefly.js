@@ -170,29 +170,20 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkBranchLine_firefly",
-		"checkCrossLine_firefly",
+		"checkBranchConnectLine",
+		"checkCrossConnectLine",
 
 		"checkConnectPoints",
 		"checkConnectCircles",
 		"checkCurveCount",
-		"checkDeadendConnectLine",
+		"checkLineShapeDeadend",
 		"checkConnectAllLine",
 
-		"checkDeadendLine_firefly+",
+		"checkDeadendConnectLine+",
 
 		"checkFireflyBeam"
 	],
 
-	/* 線のカウントはするが、○のある場所は除外する */
-	checkCrossLine_firefly   : function(){ this.checkLineCount_firefly(4, "lnCross");},
-	checkBranchLine_firefly  : function(){ this.checkLineCount_firefly(3, "lnBranch");},
-	checkDeadendLine_firefly : function(){ this.checkLineCount_firefly(1, "lnDeadEnd");},
-	checkLineCount_firefly : function(val, code){
-		if(this.owner.board.lines.ltotal[val]>0){
-			this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
-		}
-	},
 	checkFireflyBeam : function(){
 		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
