@@ -56,13 +56,13 @@ ui.toolarea = {
 				if(!!role){
 					pzpr.util.addEvent(el, (!pzpr.env.API.touchevent ? "click" : "mousedown"), toolarea, toolarea[role]);
 				}
-				role = ui.customAttr(el,"buttondownExec");
+				role = ui.customAttr(el,"pressExec");
 				if(!!role){
-					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea[role]);
-				}
-				role = ui.customAttr(el,"buttonupExec");
-				if(!!role){
-					pzpr.util.addEvent(el, "mouseup", toolarea, toolarea[role]);
+					var roles = role.split(/,/);
+					pzpr.util.addEvent(el, "mousedown", toolarea, toolarea[roles[0]]);
+					if(!!role[1]){
+						pzpr.util.addEvent(el, "mouseup", toolarea, toolarea[roles[1]]);
+					}
 				}
 			}
 			else if(el.nodeType===3){
