@@ -79,7 +79,7 @@ pzpr.variety.register({
 	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{kanpen:'hashi'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
-	heyabon   :[1,0,"へやぼん","Heya-Bon",'bonsan'],
+	heyabon   :[1,1,"へやぼん","Heya-Bon",'bonsan',{kanpen:'satogaeri'}],
 	hitori    :[0,1,"ひとりにしてくれ","Hitori"],
 	icebarn   :[1,0,"アイスバーン","Icebarn",'icebarn'],
 	icelom    :[0,0,"アイスローム","Icelom",'icebarn'],

@@ -289,7 +289,7 @@ ui.debug.extend(
 			bd.resetInfo();
 
 			o.open(outputstr, function(){
-				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
+				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
 				self.qsubf = true;

@@ -98,6 +98,9 @@ Cell:{
 	},
 	minnum : 0
 },
+"Cell@heyabon":{
+	distance : null,
+},
 
 Board:{
 	qcols : 8,
@@ -110,7 +113,7 @@ Board:{
 		this.common.initialize.call(this);
 
 		/* AreaLineManagerより後にすること */
-		this.rects = this.addInfoList(this.owner.AreaSlideMaanger);
+		this.rects = this.addInfoList(this.owner.AreaSlideManager);
 	}
 },
 
@@ -125,7 +128,40 @@ AreaLineManager:{
 	enabled : true,
 	moveline : true
 },
-"AreaSlideMaanger:AreaShadeManager@rectslider":{
+"AreaLineManager@heyabon":{
+	initMovedBase : function(clist){
+		for(var i=0;i<clist.length;i++){ clist[i].distance = null;}
+		
+		pzpr.common.AreaLineManager.prototype.initMovedBase.call(this, clist);
+	},
+	setMovedBase : function(areaid){
+		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
+		
+		var area = this.area[areaid];
+		if(!area.movevalid){ return;}
+		
+		var cell = area.departure, num = area.departure.qnum;
+		num = (num>=0 ? num : this.owner.board.cellmax);
+		cell.distance = num;
+		
+		/* area.departureは線が1方向にしかふられていないはず */
+		var dir = +({1:1,2:2,4:3,8:4}[this.linkinfo[cell.id] & 0x0F]);
+		var pos = cell.getaddr(), n = cell.distance;
+		while(1){
+			pos.movedir(dir,2);
+			var cell = pos.getc(), adb = cell.adjborder;
+			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
+			
+			cell.distance = --n;
+			if(cell===area.destination){ break;}
+			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+			else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+			else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+			else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+		}
+	}
+},
+"AreaSlideManager:AreaShadeManager@rectslider":{
 	enabled : true,
 	relation : ['cell','line'],
 	isvalid : function(cell){ return cell.base.qnum!==-1;},
@@ -251,6 +287,15 @@ Encode:{
 				if(bd.border[id].ques===1){ o.changepid("heyabon"); break;}
 			}
 		}
+	},
+
+	decodeKanpen : function(){
+		this.owner.fio.decodeAreaRoom();
+		this.owner.fio.decodeQnum_PBox_Sato();
+	},
+	encodeKanpen : function(){
+		this.owner.fio.encodeAreaRoom();
+		this.owner.fio.encodeQnum_PBox_Sato();
 	}
 },
 "Encode@rectslider":{
@@ -292,6 +337,52 @@ FileIO:{
 		this.encodeCell( function(obj){
 			var num = obj.qsub + (obj.qcmp << 4);
 			return (num.toString() + " ");
+		});
+	},
+
+	/* さとがえり用出力です */
+	kanpenOpen : function(){
+		this.decodeAreaRoom();
+		this.decodeQnum_PBox_Sato();
+		this.decodeLine_PBox_Sato();
+	},
+	kanpenSave : function(){
+		this.encodeAreaRoom();
+		this.encodeQnum_PBox_Sato();
+		this.encodeLine_PBox_Sato();
+	},
+	decodeQnum_PBox_Sato : function(){
+		this.decodeCell( function(cell,ca){
+			console.log(ca);
+			if     (ca==="-"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+		});
+	},
+	encodeQnum_PBox_Sato : function(){
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=  0){ return (cell.qnum.toString() + " ");}
+			else if(cell.qnum===-2){ return "- ";}
+			else                   { return ". ";}
+		});
+	},
+	decodeLine_PBox_Sato : function(){
+		this.decodeCell( function(cell,ca){
+			var adb = cell.adjborder;
+			if     (ca==="0"){ adb.top.line    = 1;}
+			else if(ca==="1"){ adb.left.line   = 1;}
+			else if(ca==="2"){ adb.bottom.line = 1;}
+			else if(ca==="3"){ adb.right.line  = 1;}
+		});
+	},
+	encodeLine_PBox_Sato : function(){
+		this.encodeCell( function(cell){
+			var adc = cell.adjacent, adb = cell.adjborder, direc = cell.distance-1;
+			if     (cell.isDestination())                              { return "8 ";}
+			else if(adb.top.isLine()    && adc.top.distance   ===direc){ return "0 ";}
+			else if(adb.left.isLine()   && adc.left.distance  ===direc){ return "1 ";}
+			else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return "2 ";}
+			else if(adb.right.isLine()  && adc.right.distance ===direc){ return "3 ";}
+			else                                                       { return ". ";}
 		});
 	}
 },
