@@ -64,7 +64,7 @@ window.ui = {
 		else{
 			var lowername = "data-";
 			for(var i=0;i<name.length;i++){
-				var ch = name[i];
+				var ch = name[i] || name.charAt(i);
 				lowername += ((ch>="A" && ch<="Z") ? ("-" + ch.toLowerCase()) : ch);
 			}
 			value = el[lowername] || el.getAttribute(lowername) || "";
