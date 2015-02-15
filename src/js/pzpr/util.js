@@ -1,5 +1,28 @@
 // util.js v3.4.0
 
+(function(){
+
+var api = pzpr.env.API,
+	eventMouseDown = "mousedown",
+	eventMouseMove = "mousemove",
+	eventMouseUp   = "mouseup";
+
+if(api.pointerevent){
+	eventMouseDown = "pointerdown";
+	eventMouseMove = "pointermove";
+	eventMouseUp   = "pointerup";
+}
+else if(api.mspointerevent){
+	eventMouseDown = "MSPointerDown";
+	eventMouseMove = "MSPointerMove";
+	eventMouseUp   = "MSPointerUp";
+}
+else if(api.touchevent){
+	eventMouseDown = "touchstart";
+	eventMouseMove = "touchmove";
+	eventMouseUp   = "touchend";
+}
+
 //----------------------------------------------------------------------
 // EventやDOM関連のツール的関数群
 //----------------------------------------------------------------------
@@ -42,60 +65,24 @@ pzpr.util = {
 
 	//----------------------------------------------------------------------
 	// pzpr.util.addEvent()          addEventListener(など)を呼び出す
-	// pzpr.util.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// pzpr.util.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// pzpr.util.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	// pzpr.util.eventWrapper()      イベント発生時のイベントWrapper関数を作成する
 	//----------------------------------------------------------------------
-	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){
-			e = e || window.event;
-			if(!e.target){ e.target = e.srcElement;}
-			callback.call(self, e);
-		};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
+	addEvent : function(el, type, self, callback, capt){
+		if     (type==="mousedown"){ type = eventMouseDown;}
+		else if(type==="mousemove"){ type = eventMouseMove;}
+		else if(type==="mouseup")  { type = eventMouseUp;}
+		
+		function executer(e){ callback.call(self, pzpr.util.eventWrapper(e));}
+		if(!!el.addEventListener){ el.addEventListener(type, executer, !!capt);}
+		else                     { el.attachEvent('on'+type, executer);}
+		return executer;
 	},
-	addMouseDownEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointerdown", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerDown", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchstart", self, func);
-		}
-		else{
-			this.addEvent(el, "mousedown", self, func);
-		}
-	},
-	addMouseMoveEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointermove", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerMove", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchmove",  self, func);
-		}
-		else{
-			this.addEvent(el, "mousemove", self, func);
-		}
-	},
-	addMouseUpEvent : function(el, self, func){
-		if(pzpr.env.API.pointerevent){
-			this.addEvent(el, "pointerup", self, func);
-		}
-		else if(pzpr.env.API.mspointerevent){
-			this.addEvent(el, "MSPointerUp", self, func);
-		}
-		else if(pzpr.env.API.touchevent){
-			this.addEvent(el, "touchend", self, func);
-		}
-		else{
-			this.addEvent(el, "mouseup", self, func);
-		}
+	eventWrapper : function(e){
+		e = e || window.event;
+		if(!e.target){ e.target = e.srcElement;}
+		if(!e.stopPropagation){ e.stopPropagation = function(){ this.cancelBubble = true;};}
+		if(!e.preventDefault) { e.preventDefault  = function(){ this.returnValue = false;};}
+		return e;
 	},
 
 	//---------------------------------------------------------------------------
@@ -128,10 +115,9 @@ pzpr.util = {
 	// pzpr.util.pageY()      イベントが起こったページ上のY座標を返す
 	//----------------------------------------------------------------------
 	getPagePos : function(e){
-		return {px:this.pageX(e), py:this.pageY(e)}
+		return {px:this.pageX(e), py:this.pageY(e)};
 	},
 	pageX : function(e){
-		function scrollLeft(){ return (document.documentElement.scrollLeft || document.body.scrollLeft);}
 		if(e.touches!==void 0 && e.touches.length>0){
 			var len=e.touches.length, pos=0;
 			if(len>0){
@@ -140,11 +126,10 @@ pzpr.util = {
 			}
 		}
 		else if(!isNaN(e.pageX)){ return e.pageX;}
-		else if(!isNaN(e.clientX)){ return e.clientX + scrollLeft();}
+		else if(!isNaN(e.clientX)){ return e.clientX + document.documentElement.scrollLeft;} /* IE8以下向け */
 		return 0;
 	},
 	pageY : function(e){
-		function scrollTop(){ return (document.documentElement.scrollTop  || document.body.scrollTop );}
 		if(e.touches!==void 0 && e.touches.length>0){
 			var len=e.touches.length, pos=0;
 			if(len>0){
@@ -153,7 +138,7 @@ pzpr.util = {
 			}
 		}
 		else if(!isNaN(e.pageY)){ return e.pageY;}
-		else if(!isNaN(e.clientY)){ return e.clientY + scrollTop();}
+		else if(!isNaN(e.clientY)){ return e.clientY + document.documentElement.scrollTop;} /* IE8以下向け */
 		return 0;
 	},
 
@@ -161,54 +146,38 @@ pzpr.util = {
 	// pzpr.util.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
-		this.getRect = ((!!document.createElement('div').getBoundingClientRect) ?
-			function(el){
-				var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
-				if(!window.scrollX==void 0){
-					scrollLeft = window.scrollX;
-					scrollTop  = window.scrollY;
-				}
-				else{
-					_html = document.documentElement; _body = document.body;
-					scrollLeft = (_body.scrollLeft || _html.scrollLeft) - _html.clientLeft;
-					scrollTop  = (_body.scrollTop  || _html.scrollTop ) - _html.clientTop;
-				}
-				var left   = rect.left   + scrollLeft;
-				var top    = rect.top    + scrollTop;
-				var right  = rect.right  + scrollLeft;
-				var bottom = rect.bottom + scrollTop;
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		:
-			function(el){
-				var left = 0, top = 0, el2 = el;
-				while(!!el2){
-					left += +(!isNaN(el2.offsetLeft) ? el2.offsetLeft : el2.clientLeft);
-					top  += +(!isNaN(el2.offsetTop)  ? el2.offsetTop  : el2.clientTop );
-					el2 = el2.offsetParent;
-				}
-				var right  = left + (el.offsetWidth  || el.clientWidth);
-				var bottom = top  + (el.offsetHeight || el.clientHeight);
-				return { top:top, bottom:bottom, left:left, right:right};
-			}
-		);
-		return this.getRect(el);
+		var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+		if(window.scrollX!==void 0){
+			scrollLeft = window.scrollX;
+			scrollTop  = window.scrollY;
+		}
+		else{
+			/* IE8以下向け */
+			_html = document.documentElement; _body = document.body;
+			scrollLeft = _body.scrollLeft - _html.clientLeft;
+			scrollTop  = _body.scrollTop  - _html.clientTop;
+		}
+		var left   = rect.left   + scrollLeft;
+		var top    = rect.top    + scrollTop;
+		var right  = rect.right  + scrollLeft;
+		var bottom = rect.bottom + scrollTop;
+		return { top:top, bottom:bottom, left:left, right:right};
 	},
 
-	//----------------------------------------------------------------------
-	// Eventオブジェクト関連
-	// 
-	// stopPropagation() イベントの起こったエレメントより上にイベントを
-	//                   伝播させないようにする
-	// preventDefault()  イベントの起こったエレメントで、デフォルトの
-	//                   イベントが起こらないようにする
-	//----------------------------------------------------------------------
-	stopPropagation : function(e){
-		if(!!e.stopPropagation){ e.stopPropagation();}
-		else{ e.cancelBubble = true;}
-	},
-	preventDefault : function(e){
-		if(!!e.preventDefault){ e.preventDefault();}
-		else{ e.returnValue = false;}
+	//---------------------------------------------------------------------------
+	// pzpr.util.checkpid()  メニューなどが表示対象のパズルかどうか返す
+	//---------------------------------------------------------------------------
+	checkpid : function(str,pid){
+		var matches = str.match(/!?[a-z0-9]+/g), isdisp = true;
+		if(!!matches){
+			isdisp = false;
+			for(var i=0;i<matches.length;i++){
+				if(matches[i].charAt(0)!=="!"){ if(matches[i]===pid){ isdisp = true;}}
+				else                          { isdisp = (matches[i].substr(1)!==pid);}
+			}
+		}
+		return isdisp;
 	}
 };
+
+})();

@@ -1,4 +1,4 @@
-
+/* jshint node: true, browser: false */
 module.exports = function(grunt){
   var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
@@ -78,10 +78,29 @@ module.exports = function(grunt){
           "cd .."
         ].join('; ')
       }
+    },
+
+    jshint: {
+      options: {
+        jshintrc: true
+      },
+      all: {
+        src: [
+          'Gruntfile.js',
+          'src/js/*.js',
+          'src/js/pzpr/*.js',
+          'src/js/puzzle/*.js',
+          'src/js/variety/*.js',
+          'src/js/variety-common/*.js',
+          'src/js/ui/*.js',
+          'tests/**/*.js'
+        ]
+      }
     }
   });
   
-  grunt.registerTask('default', ['clean',                   'copy:debug'                    ]);
-  grunt.registerTask('release', ['clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('lint', ['newer:jshint:all']);
+  grunt.registerTask('default', [        'clean',                   'copy:debug'                    ]);
+  grunt.registerTask('release', ['lint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
   grunt.registerTask('zipfile', ['shell:release']);
 };

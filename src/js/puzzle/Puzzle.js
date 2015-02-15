@@ -1,4 +1,5 @@
 // Puzzle.js v3.4.1
+/* global Candle:false */
 (function(){
 
 //---------------------------------------------------------------------------
@@ -164,6 +165,14 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// puzzle.changepid()  後から種類を分割したパズルにおいて、パズルの種類のみを変更する
+	//---------------------------------------------------------------------------
+	changepid : function(pid){
+		this.pid = pid;
+		this.checker.makeCheckList();
+	},
+
+	//---------------------------------------------------------------------------
 	// owner.resetTime()      開始時間をリセットする
 	// owner.getTime()        開始からの時間をミリ秒単位で取得する
 	//---------------------------------------------------------------------------
@@ -239,38 +248,33 @@ pzpr.Puzzle.prototype =
 	modechange : function(num){
 		if(pzpr.PLAYER){ return;}
 		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
-		this.editmode = (num==this.MODE_EDITOR);
-		this.playmode = (num==this.MODE_PLAYER);
+		this.editmode = (num===this.MODE_EDITOR);
+		this.playmode = (num===this.MODE_PLAYER);
 		this.execListener('modechange');
 		if(!this.ready){ return;}
 
-		this.key.keyreset();
-		this.board.errclear();
 		this.cursor.adjust_modechange();
+		this.key.keyreset();
 
-		this.board.haserror=true;
-		this.redraw();
+		if(this.board.haserror){
+			this.board.errclear();
+		}
+		else{
+			this.redraw();
+		}
 	},
 
 	//------------------------------------------------------------------------------
 	// owner.getConfig()  設定値の取得を行う
 	// owner.setConfig()  設定値の設定を行う
+	// owner.validConfig() 設定値が現在のパズルで有効な設定値かどうか返す
 	// owner.execConfig() 設定値と、パズルごとに有効かどうかの条件をANDして返す
 	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.get(idname);},
 	setConfig : function(idname,val){ return this.config.set(idname,val);},
-	
+	validConfig : function(idname){ return this.config.getexec(idname);},
 	execConfig : function(idname){
-		var val = this.config.get(idname), flags = this.flags, exec = true;
-		switch(idname){
-			case 'dispmove': exec = this.board.linfo.moveline; break;
-			case 'irowake': case 'irowakeblk': exec = !!flags.irowake; break;
-			case 'redline':  exec = flags.redline;   break;
-			case 'redblk':   exec = flags.redblk;    break;
-			case 'redblkrb': exec = flags.redblkrb;  break;
-			case 'redroad':  exec = (this.pid==='roma'); break;
-		}
-		return (val && exec);
+		return (this.config.get(idname) && this.config.getexec(idname));
 	},
 	
 	//------------------------------------------------------------------------------
@@ -310,6 +314,8 @@ function openExecute(puzzle, data, callback){
 //---------------------------------------------------------------------------
 function initObjects(puzzle){
 	// クラス初期化
+	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
+
 	puzzle.board   = new puzzle.Board();		// 盤面オブジェクト
 	puzzle.checker = new puzzle.AnsCheck();		// 正解判定オブジェクト
 	puzzle.painter = new puzzle.Graphic();		// 描画系オブジェクト
@@ -322,8 +328,6 @@ function initObjects(puzzle){
 
 	puzzle.enc = new puzzle.Encode();		// URL入出力用オブジェクト
 	puzzle.fio = new puzzle.FileIO();		// ファイル入出力用オブジェクト
-
-	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
 
 	puzzle.faillist = new puzzle.FailCode();	// 正答判定文字列を保持するオブジェクト
 }
@@ -405,18 +409,18 @@ function firstCanvasReady(puzzle){
 //  exec????()        マウス入力へ分岐する(puzzle.mouseが不変でないためバイパスする)
 //---------------------------------------------------------------------------
 function setCanvasEvents(puzzle){
-	var canvas = puzzle.canvas;
+	function ae(type,func){ pzpr.util.addEvent(puzzle.canvas, type, puzzle, func);}
 	
 	// マウス入力イベントの設定
-	pzpr.util.addMouseDownEvent(canvas, puzzle, execMouseDown);
-	pzpr.util.addMouseMoveEvent(canvas, puzzle, execMouseMove);
-	pzpr.util.addMouseUpEvent  (canvas, puzzle, execMouseUp);
-	pzpr.util.addEvent(canvas, "mouseout", puzzle, execMouseOut);
-	canvas.oncontextmenu = function(){ return false;};
+	ae("mousedown", execMouseDown);
+	ae("mousemove", execMouseMove);
+	ae("mouseup",   execMouseUp);
+	ae("mouseout",  execMouseOut);
+	puzzle.canvas.oncontextmenu = function(){ return false;};
 	
 	// キー入力イベントの設定
-	pzpr.util.addEvent(canvas, 'keydown',  puzzle, execKeyDown);
-	pzpr.util.addEvent(canvas, 'keyup',    puzzle, execKeyUp);
+	ae("keydown", execKeyDown);
+	ae("keyup",   execKeyUp);
 }
 function execMouseDown(e){
 	/* キー入力のフォーカスを当てる */

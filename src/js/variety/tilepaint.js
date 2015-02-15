@@ -24,7 +24,7 @@ MouseEvent:{
 	inputBGcolor1 : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.is51cell()){ return;}
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		if(this.inputData===null){ this.inputData=(cell.qsub===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
@@ -283,30 +283,23 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSameColorTile() ){ return 'bkMixed';}
-
-		if( !this.checkRowsColsShadeCell() ){ return 'asShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		"checkSameColorTile",
+		"checkRowsColsShadeCell"
+	],
 
 	checkRowsColsShadeCell : function(){
-		return this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, false);
+		this.checkRowsColsPartly(this.isShadeCount, function(cell){ return cell.is51cell();}, "asShadeNe");
 	},
-	isShadeCount : function(keycellpos, clist){
-		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
-		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
-
+	isShadeCount : function(clist, info){
+		var number = info.key51num;
 		var count = clist.filter(function(cell){ return cell.isShade();}).length;
-		if(number>=0 && count!=number){
-			keyobj.seterr(1)
+		var result = (number<0 || count===number);
+		if(!result){
+			info.keycell.seterr(1);
 			clist.seterr(1);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 

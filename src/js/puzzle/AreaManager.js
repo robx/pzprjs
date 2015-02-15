@@ -127,10 +127,10 @@ AreaManager:{
 	calcLinkInfo : function(cell){
 		if(cell.isnull){ return false;}
 		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
-		if(adc.top.validcell    && !this.bdfunc(adb.top   )){ val+=1;}
-		if(adc.bottom.validcell && !this.bdfunc(adb.bottom)){ val+=2;}
-		if(adc.left.validcell   && !this.bdfunc(adb.left  )){ val+=4;}
-		if(adc.right.validcell  && !this.bdfunc(adb.right )){ val+=8;}
+		if(adc.top.group   ==="cell" && !adc.top.isnull    && !this.bdfunc(adb.top   )){ val+=1;}
+		if(adc.bottom.group==="cell" && !adc.bottom.isnull && !this.bdfunc(adb.bottom)){ val+=2;}
+		if(adc.left.group  ==="cell" && !adc.left.isnull   && !this.bdfunc(adb.left  )){ val+=4;}
+		if(adc.right.group ==="cell" && !adc.right.isnull  && !this.bdfunc(adb.right )){ val+=8;}
 		if(this.isvalid(cell)){ val+=16;}
 		return (this.linkinfo[cell.id] = val);
 	},
@@ -485,7 +485,7 @@ AreaManager:{
 		if(merged.isNum()){
 			// 数字が消える部屋にしかない場合 -> 残るほうに移動させる
 			if(keep.noNum()){
-				keep.setQnum(merged.getQnum());
+				keep.setQnum(merged.qnum);
 				keep.draw();
 			}
 			merged.setQnum(-1);
@@ -729,7 +729,7 @@ AreaInfo:{
 	//---------------------------------------------------------------------------
 	addArea : function(){
 		var areaid = ++this.max;
-		return this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid};
+		return (this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid});
 	},
 	addAreaByClist : function(clist){
 		var areaid = ++this.max;

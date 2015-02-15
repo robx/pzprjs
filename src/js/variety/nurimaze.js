@@ -34,7 +34,7 @@ MouseEvent:{
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
-			cell2.setQsub(this.inputData==2?1:0);
+			cell2.setQsub(this.inputData===2?1:0);
 		}
 		clist.draw();
 	},
@@ -122,11 +122,11 @@ KeyEvent:{
 		var cell = this.cursor.getc(), bd = this.owner.board;
 
 		var old=cell.ques, newques=-1;
-		if     (ca=='1'||ca=='q'){ newques=(old!=41?41:0);}
-		else if(ca=='2'||ca=='w'){ newques=(old!=42?42:0);}
-		else if(ca=='3'||ca=='e'||ca==' '){ newques=0;}
-		else if(ca=='s'){ bd.startpos.input(cell);}
-		else if(ca=='g'){ bd.goalpos.input(cell);}
+		if     (ca==='1'||ca==='q'){ newques=(old!==41?41:0);}
+		else if(ca==='2'||ca==='w'){ newques=(old!==42?42:0);}
+		else if(ca==='3'||ca==='e'||ca===' '){ newques=0;}
+		else if(ca==='s'){ bd.startpos.input(cell);}
+		else if(ca==='g'){ bd.goalpos.input(cell);}
 
 		if(newques!==old && (newques===0 || (!bd.startpos.equals(cell) && !bd.goalpos.equals(cell)))){
 			cell.setQues(newques);
@@ -247,7 +247,7 @@ BoardExec:{
 	},
 	decode : function(strs){
 		if(strs[0]!=='PS' && strs[0]!=='PG'){ return false;}
-		this.property = (strs[0]=='PS'?'start':'goal');
+		this.property = (strs[0]==='PS'?'start':'goal');
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];
 		this.bx2 = +strs[3];
@@ -255,7 +255,7 @@ BoardExec:{
 		return true;
 	},
 	toString : function(){
-		return [(this.property=='start'?'PS':'PG'), this.bx1, this.by1, this.bx2, this.by2].join(',');
+		return [(this.property==='start'?'PS':'PG'), this.bx1, this.by1, this.bx2, this.by2].join(',');
 	},
 
 	isModify : function(lastope){
@@ -325,49 +325,52 @@ Graphic:{
 		var g = this.vinc('cell_sg', 'auto');
 		var bd = this.owner.board, d = this.range;
 		
+		g.vid = "text_stpos";
 		var cell = bd.startpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData==10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
-			var option = { key:"text_stpos", color:color };
-			this.disptext("S", px, py, option);
+			if(!cell.isnull){
+				g.fillStyle = (this.owner.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				this.disptext("S", cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
+		
+		g.vid = "text_glpos";
 		cell = bd.goalpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var color = (this.owner.mouse.inputData==11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
-			var option = { key:"text_glpos", color:color };
-			this.disptext("G", px, py, option);
+			if(!cell.isnull){
+				g.fillStyle = (this.owner.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				this.disptext("G", cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	drawQuesMarks : function(){
-		var g = this.vinc('cell_mark', 'auto');
+		var g = this.vinc('cell_mark', 'auto', true);
 
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var lampcolor = "rgb(0, 127, 96)";
-		var headers = ["c_mk1_", "c_mk2_"];
 		g.lineWidth = 2;
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num=cell.ques;
-			g.vhide([headers[0]+id, headers[1]+id]);
-			if(num<=0){ continue;}
-
-			g.strokeStyle = this.getCellNumberColor(cell);
+			var cell = clist[i], num=cell.ques;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(this.vnop(headers[(num-41)]+id,this.STROKE)){
-				switch(num){
-				case 41:
-					g.strokeCircle(px, py, rsize);
-					break;
-				case 42:
-					g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
-					g.stroke();
-					break;
-				}
+			g.strokeStyle = this.getCellNumberColor(cell);
+			
+			g.vid = "c_mk1_"+cell.id;
+			if(num===41){
+				g.strokeCircle(px, py, rsize);
 			}
+			else{ g.vhide();}
+			
+			g.vid = "c_mk2_"+cell.id;
+			if(num===42){
+				g.beginPath();
+				g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+				g.stroke();
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -455,33 +458,24 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
-		if( pzpr.EDITOR && !this.checkShadedObject() ){ return 'objShaded';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}
-
-		if( !this.checkUnshadeLoop() ){ return 'cuLoop';}
-
-		var sdata = this.searchRoute();
-		if( !this.checkRouteCheckPoint(sdata) ){ return 'routeIgnoreCP';}
-		if( !this.checkRouteNoDeadEnd(sdata) ){ return 'routePassDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		"checkSameColorTile",					// 問題チェック用 
+		"checkShadedObject",					// 問題チェック用
+		"checkConnectUnshade",
+		"check2x2ShadeCell+",
+		"check2x2UnshadeCell++",
+		"checkUnshadeLoop",
+		"checkRouteCheckPoint",
+		"checkRouteNoDeadEnd"
+	],
 
 	checkShadedObject : function(){
 		var bd=this.owner.board;
-		return this.checkAllCell( function(cell){ return cell.qans===1 && (cell.ques!==0 || bd.startpos.equals(cell) || bd.goalpos.equals(cell));} );
+		this.checkAllCell( function(cell){ return cell.qans===1 && (cell.ques!==0 || bd.startpos.equals(cell) || bd.goalpos.equals(cell));}, "objShaded" );
 	},
 
 	check2x2UnshadeCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
+		this.check2x2Block( function(cell){ return cell.isUnshade();}, "cu2x2" );
 	},
 
 	checkUnshadeLoop : function(){
@@ -497,12 +491,11 @@ AnsCheck:{
 			this.searchloop(c, sinfo, sdata);
 		}
 
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1)});
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
+			this.failcode.add("cuLoop");
 			errclist.seterr(1);
-			return false;
 		}
-		return true;
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
@@ -538,21 +531,24 @@ AnsCheck:{
 		}
 	},
 
-	checkRouteCheckPoint : function(sdata){
-		result = this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);});
-		if(!result && !this.checkOnly){
+	checkRouteCheckPoint : function(){
+		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
+		this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);}, "routeIgnoreCP");
+		if((errcount!==this.failcode.length) && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
-		return result;
 	},
-	checkRouteNoDeadEnd : function(sdata){
-		result = this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);});
-		if(!result && !this.checkOnly){
+	checkRouteNoDeadEnd : function(){
+		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
+		this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);}, "routePassDeadEnd");
+		if((errcount!==this.failcode.length) && !this.checkOnly){
 			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
-		return result;
 	},
-	searchRoute : function(sinfo, sdata){
+	getRouteInfo : function(){
+		return (this._info.maze = this._info.maze || this.searchRoute());
+	},
+	searchRoute : function(){
 		/* 白マスがどの隣接セルに接しているかの情報を取得する */
 		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){

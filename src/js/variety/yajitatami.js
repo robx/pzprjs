@@ -110,66 +110,52 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBorderCross",
+		"checkArrowNumber_border",
+		"checkTatamiLength",
+		"checkArrowNumber_tatami",
+		"checkNumberAndSize",
+		"checkTatamiBreadth"
+	],
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
-		if( !this.checkArrowNumber_border() ){ return 'arNoAdjBd';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkTatamiLength(rinfo) ){ return 'bkSize1';}
-		if( !this.checkArrowNumber_tatami() ){ return 'anTatamiNe';}
-		if( !this.checkTatamiSize(rinfo) ){ return 'bkSizeNe';}
-		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
-
-		return null;
+	checkTatamiLength : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
 	},
-
-	checkTatamiLength : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
-	},
-	checkTatamiSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n===a);});
-	},
-	checkTatamiBreadth : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkTatamiBreadth : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	},
 
 	checkArrowNumber_tatami : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 
-			var bx = cell.bx, by = cell.by, dir = cell.getQdir(), blist;
+			var bx = cell.bx, by = cell.by, dir = cell.qdir, blist;
 			if     (dir===cell.UP){ blist = bd.borderinside(bx,bd.minby,bx,by);}
 			else if(dir===cell.DN){ blist = bd.borderinside(bx,by,bx,bd.maxby);}
 			else if(dir===cell.LT){ blist = bd.borderinside(bd.minbx,by,bx,by);}
 			else if(dir===cell.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
-
-			var count = blist.filter(function(border){ return border.isBorder();}).length;
-			if(cell.getQnum()!==count){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===blist.filter(function(border){ return border.isBorder();}).length){ continue;}
+			
+			this.failcode.add("anTatamiNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	},
 
 	checkArrowNumber_border : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], dir = cell.getQdir();
-			if(!cell.isValidNum() || !dir){ continue;}
-
-			if(!cell.getaddr().movedir(dir,1).getb().isBorder()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			var cell = bd.cell[c], dir = cell.qdir;
+			if(!cell.isValidNum() || !dir || cell.getaddr().movedir(dir,1).getb().isBorder()){ continue;}
+			
+			this.failcode.add("anNoAdjBd");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	}
 },
 
@@ -177,6 +163,6 @@ FailCode:{
 	bkSizeNe   : ["数字とタタミの大きさが違います。","The size of tatami and the number written in Tatami is different."],
 	bkSize1    : ["長さが１マスのタタミがあります。","The length of the tatami is one."],
 	anTatamiNe : ["矢印の方向にあるタタミの数が正しくありません。","The number of tatamis are not correct."],
-	arNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
+	anNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
 }
 });

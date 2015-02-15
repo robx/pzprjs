@@ -28,12 +28,12 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull||cell===this.mouseCell){ return;}
 		if(this.mouseCell.isnull){
-			this.inputData = cell.getAnum()!==-1?cell.getAnum():10;
+			this.inputData = cell.anum!==-1?cell.anum:10;
 			this.mouseCell = cell;
 		}
-		else if(cell.getQnum()==-1 && this.inputData>=1 && this.inputData<=5){
-			if     (this.btn.Left ) this.inputData++;
-			else if(this.btn.Right) this.inputData--;
+		else if(cell.qnum===-1 && this.inputData>=1 && this.inputData<=5){
+			if     (this.btn.Left ){ this.inputData++;}
+			else if(this.btn.Right){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
@@ -42,7 +42,7 @@ MouseEvent:{
 				cell.draw();
 			}
 		}
-		else if(cell.getQnum()===-1 && this.inputData==10){
+		else if(cell.qnum===-1 && this.inputData===10){
 			cell.setAnum(-1);
 			cell.setQsub(0);
 			cell.draw();
@@ -55,8 +55,8 @@ MouseEvent:{
 		if(cell.isnull||cell===this.mouseCell){ return (this.inputData<0);}
 
 		if(this.inputData===null){
-			if(cell.getAnum()===-1){
-				this.inputData = (cell.getQsub()!==1?-2:-3);
+			if(cell.anum===-1){
+				this.inputData = (cell.qsub!==1?-2:-3);
 				return true;
 			}
 			return false;
@@ -71,10 +71,8 @@ MouseEvent:{
 	inputqnum_snakes : function(){
 		var cell = this.getcell();
 		if(!cell.isnull){
-			if(this.owner.playmode){ cell.minnum = 1;}
 			this.mouseCell = this.owner.board.emptycell;
 			this.inputqnum();
-			cell.minnum = 0;
 		}
 	}
 },
@@ -101,7 +99,9 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : 5,
-	minnum : 0,
+	minnum : function(){
+		return (this.owner.playmode ? 1 : 0);
+	},
 
 	draw : function(){
 		if(!this.owner.getConfig('snakebd')){
@@ -198,11 +198,13 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = (cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "";
-			var option = { key:"cell_ansnum_"+cell.id };
-			option.color = this.fontAnscolor;
-			this.disptext(text, px, py, option);
+			var cell = clist[i];
+			g.vid = "cell_ansnum_"+cell.id;
+			if(cell.qnum===-1 && cell.anum>0){
+				g.fillStyle = this.fontAnscolor;
+				this.disptext(""+cell.anum, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -232,60 +234,63 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkSnakeSize",
+		"checkOtherAnsNumberInRoom",
+		"checkSideCell_snakes",
+		"checkArrowNumber",
+		"checkSnakesView"
+	],
 
-		var sinfo = this.owner.board.getSnakeInfo();
-		if( !this.checkSnakeSize(sinfo) ){ return 'bkSizeNe5';}
-		if( !this.checkDiffAnsNumberInRoom(sinfo) ){ return 'bkDupNum';}
-		if( !this.checkSideCell2(sinfo) ){ return 'sbSnake';}
-		if( !this.checkArrowNumber() ){ return 'anNumberNe';}
-		if( !this.checkSnakesView(sinfo) ){ return 'snakeAttack';}
-
-		return null;
+	getSnakeInfo : function(){
+		return (this._info.snake = this._info.snake || this.owner.board.getSnakeInfo());
 	},
 
-	checkSnakeSize : function(sinfo){
-		return this.checkAllArea(sinfo, function(w,h,a,n){ return (a===5);});
+	checkSnakeSize : function(){
+		this.checkAllArea(this.getSnakeInfo(), function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
 	},
-	checkDiffAnsNumberInRoom : function(sinfo){
-		return this.checkDifferentNumberInRoom(sinfo, function(cell){ return cell.getAnum();});
+	checkOtherAnsNumberInRoom : function(){
+		this.checkDifferentNumberInRoom_main(this.getSnakeInfo(), this.isDifferentAnsNumberInClist);
 	},
 
-	checkSideCell2 : function(sinfo){
+	checkSideCell_snakes : function(){
 		var result = true, bd = this.owner.board;
-		var func = function(sinfo,cell1,cell2){
+		var sinfo = this.getSnakeInfo();
+		function func(sinfo,cell1,cell2){
 			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
 			return (r1>0 && r2>0 && r1!==r2);
-		};
+		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				sinfo.getRoomByCell(cell).clist.seterr(1);
 				sinfo.getRoomByCell(cell2).clist.seterr(1);
-				result = false;
 			}
 			cell2 = cell.adjacent.bottom;
 			if(!cell2.isnull && func(sinfo,cell,cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				sinfo.getRoomByCell(cell).clist.seterr(1);
 				sinfo.getRoomByCell(cell2).clist.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("bsSnake");}
 	},
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.owner.board;
-		var gonext = function(){
+		function gonext(){
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
-		};
-		var noans = function(cell2){ return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);}
+		}
+		function noans(cell2){
+			return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);
+		}
 
 		for(var c=0;c<bd.cellmax;c++){
-			var cell=bd.cell[c], num=cell.getQnum(), dir=cell.getQdir();
+			var cell=bd.cell[c], num=cell.qnum, dir=cell.qdir;
 			if(num<0 || dir===0){ continue;}
 
 			var cell2, pos=cell.getaddr();
@@ -295,33 +300,33 @@ AnsCheck:{
 
 			// 矢印つき数字が0で、その先に回答の数字がある
 			if(num===0 && !noans(cell2)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				if(num<=0){ cell2.seterr(1);}
-				result = false;
 			}
 			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
 			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
-				if(this.checkOnly){ return false;}
+				result = false;
+				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
-				result = false;
 			}
 		}
-		return result;
+		if(!result){ this.failcode.add("anNumberNe");}
 	},
 	checkSnakesView : function(sinfo){
-		var result = true;
+		var sinfo = this.getSnakeInfo();
 		for(var r=1;r<=sinfo.max;r++){
 			var clist = sinfo.area[r].clist;
-			var cell = clist.filter(function(cell){ return (cell.getAnum()===1)})[0];
+			var cell = clist.filter(function(cell){ return (cell.anum===1);})[0];
 			if(!cell){ continue;}
 
 			var cell2, dir=cell.NDIR, adc=cell.adjacent;
-			cell2=adc.bottom; if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.UP;}
-			cell2=adc.top;    if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.DN;}
-			cell2=adc.right;  if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.LT;}
-			cell2=adc.left;   if(!cell2.isnull && cell2.getAnum()===2){ dir=cell.RT;}
+			cell2=adc.bottom; if(!cell2.isnull && cell2.anum===2){ dir=cell.UP;}
+			cell2=adc.top;    if(!cell2.isnull && cell2.anum===2){ dir=cell.DN;}
+			cell2=adc.right;  if(!cell2.isnull && cell2.anum===2){ dir=cell.LT;}
+			cell2=adc.left;   if(!cell2.isnull && cell2.anum===2){ dir=cell.RT;}
 			if(dir===cell.NDIR){ continue;}
 
 			var pos = cell.getaddr(), clist2 = new this.owner.CellList();
@@ -336,22 +341,21 @@ AnsCheck:{
 			// cellは数字のあるマスか、null(盤面外)を指す
 
 			var sid=sinfo.getRoomID(cell);
-			if(!cell.isnull && cell.getAnum()>0 && cell.getQnum()===-1 && sid>0 && r!=sid){
-				if(this.checkOnly){ return false;}
-				clist2.seterr(1);
-				clist.seterr(1);
-				sinfo.area[sid].clist.seterr(1);
-				result = false;
-			}
+			if(cell.isnull || cell.anum<=0 || cell.qnum!==-1 || sid<=0 || r===sid){ continue;}
+			
+			this.failcode.add("snakeAttack");
+			if(this.checkOnly){ break;}
+			clist2.seterr(1);
+			clist.seterr(1);
+			sinfo.area[sid].clist.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
 	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
-	sbSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
+	bsSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
 	anNumberNe : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."],
 	snakeAttack: ["蛇の視線の先に別の蛇がいます。","A snake can see another snake."]
 }

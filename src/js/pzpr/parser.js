@@ -64,7 +64,7 @@ pzpr.parser = {
 //---------------------------------------------------------------------------
 pzpr.parser.URLData = function(url){
 	this.url = url;
-}
+};
 pzpr.parser.URLData.prototype = {
 	id      : '',
 	type    : URL_AUTO,	/* ==0 */
@@ -156,27 +156,24 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
-		var url = "", type = this.type;
+		var domain = document.domain, url = "";
+		if(!!domain){ domain += location.pathname;}
+		else{ domain = "pzv.jp/p.html";}
 		switch(this.type){
-			case this.URL_PZPRV3:  url="http://%DOMAIN%/p.html?%PID%/"; break;
-			case this.URL_PZPRV3E: url="http://%DOMAIN%/p.html?%PID%_edit/"; break;
+			case this.URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
+			case this.URL_PZPRV3E: url="http://"+domain+"?%PID%_edit/"; break;
 			case this.URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
 			case this.URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
 			case this.URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
 			case this.URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 		}
 
-		var domain = document.domain;
-		if(!domain){ domain = "pzv.jp";}
-		else if(domain == "indi.s58.xrea.com"){ domain = "indi.s58.xrea.com/pzpr/v3";}
-
 		if(this.type===this.URL_PZPRAPP){
 			if     (this.id==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
 			else if(this.id==='heyabon')  { url=url.replace("%PID%","bonsan");}
 		}
 
-		return url.replace("%DOMAIN%", domain)
-				  .replace("%PID%", pzpr.variety.toURLID(this.id))
+		return url.replace("%PID%", pzpr.variety.toURLID(this.id))
 				  .replace("%KID%", pzpr.variety.toKanpen(this.id));
 	},
 
@@ -198,7 +195,7 @@ pzpr.parser.URLData.prototype = {
 				row = +inp.shift() - 1;
 				col = +inp.shift() - 1;
 			}
-			else if(this.id=="sudoku"){
+			else if(this.id==="sudoku"){
 				row = col = +inp.shift();
 			}
 			else{
@@ -268,7 +265,7 @@ pzpr.parser.URLData.prototype = {
 pzpr.parser.FileData = function(fstr, variety){
 	this.id   = (!!variety ? variety : '');
 	this.fstr = fstr;
-}
+};
 pzpr.parser.FileData.prototype = {
 	id      : '',
 	type    : FILE_AUTO,	/* == 0 */
@@ -373,7 +370,7 @@ pzpr.parser.FileData.prototype = {
 				cnt = count;
 				count += (lines[i].match(/\{/g)||[]).length;
 				count -= (lines[i].match(/\}/g)||[]).length;
-				if(cnt>0 && count==0){ break;}
+				if(cnt>0 && count===0){ break;}
 			}
 			this.history = histrs.join("\n");
 			this.type = this.FILE_PZPH;

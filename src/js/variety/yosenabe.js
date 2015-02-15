@@ -26,12 +26,12 @@ MouseEvent:{
 	inputdark : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base);
+		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.getQcmp()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
 			targetcell.draw();
 		}
 	},
@@ -40,7 +40,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(cell.isNum()){ this.inputqnum(); return;}
-		else if(cell.getQnum2()!==-1){ this.inputqnum_yosenabe(); return;}
+		else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
@@ -62,10 +62,10 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputnumber_yosenabe : function(cell){
-		var max = cell.nummaxfunc(), num, type, val=-1;
+		var max = cell.getmaxnum(), num, type, val=-1;
 
-		if     (cell.getQnum() !==-1){ num=cell.getQnum();  type=1;} /* ○数字 */
-		else if(cell.getQnum2()!==-1){ num=cell.getQnum2(); type=2;} /* なべの数字 */
+		if     (cell.qnum !==-1){ num=cell.qnum;  type=1;} /* ○数字 */
+		else if(cell.qnum2!==-1){ num=cell.qnum2; type=2;} /* なべの数字 */
 		else{ num=-1; type=(cell.ice()?2:1);}
 
 		if(this.btn.Left){
@@ -99,18 +99,18 @@ KeyEvent:{
 	key_inputqnum_yosenabe : function(ca){
 		var cell = this.cursor.getc(), num;
 		if(ca==='q'||ca==='q1'||ca==='q2'){
-			if(ca==='q') { ca = (cell.getQnum()!==-1?'q1':'q2');}
-			if     (ca==='q1' && cell.getQnum() !==-1){ cell.setQnum2(cell.getQnum()); cell.setQnum(-1);}
-			else if(ca==='q2' && cell.getQnum2()!==-1){ cell.setQnum(cell.getQnum2()); cell.setQnum2(-1);}
+			if(ca==='q') { ca = (cell.qnum!==-1?'q1':'q2');}
+			if     (ca==='q1' && cell.qnum !==-1){ cell.setQnum2(cell.qnum); cell.setQnum(-1);}
+			else if(ca==='q2' && cell.qnum2!==-1){ cell.setQnum(cell.qnum2); cell.setQnum2(-1);}
 		}
-		else if(ca=='w'){
+		else if(ca==='w'){
 			cell.setQues(cell.ice()?0:6);
 		}
 		else{
-			var max = cell.nummaxfunc(), val=-1, cur=-1, type;
+			var max = cell.getmaxnum(), val=-1, cur=-1, type;
 
-			if     (cell.getQnum() !==-1){ cur=cell.getQnum();  type=1;} /* ○数字 */
-			else if(cell.getQnum2()!==-1){ cur=cell.getQnum2(); type=2;} /* なべの数字 */
+			if     (cell.qnum !==-1){ cur=cell.qnum;  type=1;} /* ○数字 */
+			else if(cell.qnum2!==-1){ cur=cell.qnum2; type=2;} /* なべの数字 */
 			else{ cur=-1; type=(cell.ice()?2:1);}
 
 			if('0'<=ca && ca<='9'){
@@ -223,40 +223,41 @@ Graphic:{
 	},
 
 	drawFillingNumBase : function(){
-		var g = this.vinc('cell_filling_back', 'crispEdges');
-		var header = "c_full_nb_";
+		var g = this.vinc('cell_filling_back', 'crispEdges', true);
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			if(!!color && cell.qnum2!==-1 && this.owner.execConfig('dispmove') && cell.isDestination()){
+			g.vid = "c_full_nb_"+cell.id;
+			if(!!color && cell.qnum2!==-1 && isdrawmove && cell.isDestination()){
+				var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
 				g.fillStyle = color;
-				if(this.vnop(header+cell.id,this.FILL)){
-					var rx = (cell.bx-0.9)*this.bw-0.5, ry = (cell.by-0.9)*this.bh-0.5;
-					g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
-				}
+				g.fillRect(rx, ry, this.bw*0.8, this.bh*0.8);
 			}
-			else{ g.vhide(header+cell.id); continue;}
+			else{ g.vhide();}
 		}
 	},
 	drawFillingNumbers : function(){
 		var g = this.vinc('cell_filling_number', 'auto');
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum2, px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = (num>0 ? ""+num : (num!==-1 ? "?" : ""));
-			var topleft = (this.owner.execConfig('dispmove') && cell.isDestination());
-			var option = {};
-			option.color = this.getCellNumberColor(cell);
-			option.style = "bold";
-			
-			option.key = 'cell_fill1_text_'+cell.id;
-			option.globalratio = 0.8;
-			this.disptext((!topleft ? text : ""), px, py, option);
-			
-			option.key = 'cell_fill5_text_'+cell.id;
-			option.position = this.TOPLEFT;
-			option.globalratio = 0.5;
-			this.disptext((!topleft ? "" : text), px, py, option);
+			g.vid = 'cell_fill_text_'+cell.id;
+			if(num!==-1){
+				var text = (num>0 ? ""+num : "?");
+				var option = {style:"bold"};
+				if(isdrawmove && cell.isDestination()){
+					option.position = this.TOPLEFT;
+					option.globalratio = 0.5;
+				}
+				else{
+					option.globalratio = 0.8;
+				}
+				g.fillStyle = this.getCellNumberColor(cell);
+				this.disptext(text, px, py, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -279,12 +280,12 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qnum = parseInt(ca,16);}
-			else if(ca == '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == '.'){ cell.qnum = -2;}
-			else if(ca == 'i'){ cell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=1;}
-			else if(ca == 'g'){ cell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca == 'h'){ cell.qnum2 = -2;}
+							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === '.'){ cell.qnum = -2;}
+			else if(ca === 'i'){ cell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=1;}
+			else if(ca === 'g'){ cell.qnum2 = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === 'h'){ cell.qnum2 = -2;}
 			else if(ca >= 'j' && ca <= 'z'){ c += (parseInt(ca,36)-19);}
 
 			c++;
@@ -297,16 +298,16 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qnum2;
 
-			if     (qn== -2          ){ pstr = ".";}
+			if     (qn===-2          ){ pstr = ".";}
 			else if(qn>=  0 && qn< 16){ pstr =       qn.toString(16);}
 			else if(qn>= 16 && qn<256){ pstr = "-" + qn.toString(16);}
-			else if(qd== -2          ){ pstr = "h";}
+			else if(qd===-2          ){ pstr = "h";}
 			else if(qd>=  0 && qd< 16){ pstr = "i" + qd.toString(16);}
 			else if(qd>= 16 && qd<256){ pstr = "g" + qd.toString(16);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr || count==17){ cm+=((18+count).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===17){ cm+=((18+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(18+count).toString(36);}
 
@@ -317,8 +318,8 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(cell,ca){
-			if(ca.charAt(0)=='i'){ cell.ques=6; ca=ca.substr(1);}
-			if(ca.charAt(0)=='o'){
+			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
+			if(ca.charAt(0)==='o'){
 				ca=ca.substr(1);
 				if(!!ca){ cell.qnum=parseInt(ca);}
 				else{ cell.qnum=-2;}
@@ -368,55 +369,53 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var bd = this.owner.board;
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkConnectObject",
+		"checkLineOverLetter",
 
-		var linfo = bd.getLareaInfo();
+		"checkCurveLine",
 
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
+		"checkQuesNumber",			// 問題のチェック
+		"checkDoubleNumberInNabe",	// 問題のチェック
 
-		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
+		"checkFillingCount",
+		"checkNoFillingNabe",
+		"checkFillingOutOfNabe",
 
-		// 問題のチェック (1)
-		if( !this.checkQuesNumber() ){ return 'bnIllegalPos';}
+		"checkDisconnectLine"
+	],
 
-		var iarea = bd.iceinfo.getAreaInfo();
-		// 問題のチェック (2)
-		if( !this.checkDoubleNumberInNabe(iarea) ){ return 'bkDoubleBn';}
-
-		if( !this.checkFillingCount(iarea) ){ return 'bkSumNeBn';}
-		if( !this.checkNoMovedObjectInRoom(iarea) ){ return 'bkNoNum';}
-		if( !this.checkFillingOutOfNabe() ){ return 'nmOutOfBk';}
-
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
-
-		return null;
+	getNabeInfo : function(){
+		return (this._info.nabe = this._info.nabe || this.owner.board.iceinfo.getAreaInfo());
 	},
 
-	checkCurveLine : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkCurveLine : function(){
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
 	},
 	checkQuesNumber : function(){
-		return this.checkAllCell(function(cell){ return (!cell.ice() && cell.getQnum2()!==-1);});
+		this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);}, "bnIllegalPos");
 	},
 
-	checkDoubleNumberInNabe : function(iarea){
-		return this.checkAllBlock(iarea, function(cell){ return (cell.getQnum2()!==-1);}, function(w,h,a,n){ return (a<2);});
+	checkDoubleNumberInNabe : function(){
+		var iarea = this.getNabeInfo();
+		this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);}, "bkDoubleBn");
+	},
+	checkNoFillingNabe : function(){
+		this.checkNoMovedObjectInRoom(this.getNabeInfo());
 	},
 	checkFillingOutOfNabe : function(){
-		return this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());}, "nmOutOfBk");
 	},
 
-	checkFillingCount : function(iarea){
-		var result = true;
+	checkFillingCount : function(){
+		var iarea = this.getNabeInfo();
 		for(var id=1;id<=iarea.max;id++){
 			var clist = iarea.area[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
-				var qd = clist[i].getQnum2();
+				var qd = clist[i].qnum2;
 				if(qd!==-1){
 					if(num!==null && num!==qd){ num=null; break;}
 					num=qd;
@@ -425,14 +424,13 @@ AnsCheck:{
 			if(num===null){ continue;}
 
 			var count = clist.getSumOfFilling();
-			if(count>0 && num!==count){
-				if(this.checkOnly){ return false;}
-				clist.getDeparture().seterr(4);
-				clist.seterr(1);
-				result = false;
-			}
+			if(count===0 || num===count){ continue;}
+			
+			this.failcode.add("bkSumNeBn");
+			if(this.checkOnly){ break;}
+			clist.getDeparture().seterr(4);
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

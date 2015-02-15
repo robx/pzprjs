@@ -29,12 +29,12 @@ KeyEvent:{
 	key_inputMarks : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'||ca=='1'){ cell.setQnum(1); }
-		else if(ca=='w'||ca=='2'){ cell.setQnum(2); }
-		else if(ca=='e'||ca=='3'){ cell.setQnum(3); }
-		else if(ca=='r'||ca=='4'){ cell.setQnum(-1); }
-		else if(ca==' '         ){ cell.setQnum(-1); }
-		else if(ca=='-'         ){ cell.setQnum(cell.getQnum()!==-2?-2:-1); }
+		if     (ca==='q'||ca==='1'){ cell.setQnum(1); }
+		else if(ca==='w'||ca==='2'){ cell.setQnum(2); }
+		else if(ca==='e'||ca==='3'){ cell.setQnum(3); }
+		else if(ca==='r'||ca==='4'){ cell.setQnum(-1); }
+		else if(ca===' '          ){ cell.setQnum(-1); }
+		else if(ca==='-'          ){ cell.setQnum(cell.qnum!==-2?-2:-1); }
 		else{ return;}
 
 		cell.draw();
@@ -57,7 +57,7 @@ BoardExec:{
 			var tques = {2:3,3:2};
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQnum()];
+				var cell = clist[i], val = tques[cell.qnum];
 				if(!!val){ cell.setQnum(val);}
 			}
 		}
@@ -91,30 +91,22 @@ Graphic:{
 	},
 
 	drawMarks : function(){
-		var g = this.vinc('cell_ques', 'crispEdges');
+		var g = this.vinc('cell_ques', 'crispEdges', true);
 
 		var lm = Math.max(this.cw/12, 3)/2;	//LineWidth
 		var lp = this.bw*0.70;				//LineLength
-		var headers = ["c_lp1_", "c_lp2_"];
 		g.fillStyle = this.borderQuescolor;
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, qn = cell.qnum;
+			var cell = clist[i], qn = cell.qnum;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(qn===1||qn===2){
-				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRectCenter(px, py, lm, lp);
-				}
-			}
-			else{ g.vhide(headers[0]+id);}
 
-			if(qn===1||qn===3){
-				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRectCenter(px, py, lp, lm);
-				}
-			}
-			else{ g.vhide(headers[1]+id);}
+			g.vid = "c_lp1_"+cell.id;
+			if(qn===1||qn===2){ g.fillRectCenter(px, py, lm, lp);}else{ g.vhide();}
+
+			g.vid = "c_lp2_"+cell.id;
+			if(qn===1||qn===3){ g.fillRectCenter(px, py, lp, lm);}else{ g.vhide();}
 		}
 	}
 },
@@ -148,7 +140,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTatamibari : function(){
-		var count=0, pass, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 			if     (qn===-2){ pstr = ".";}
@@ -157,8 +149,8 @@ Encode:{
 			else if(qn=== 3){ pstr = "2";}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
 
@@ -191,34 +183,25 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBorderCross",
+		"checkNoNumber",
+		"checkSquareTatami",
+		"checkHorizonLongTatami",
+		"checkVertLongTatami",
+		"checkDoubleNumber",
+		"checkRoomRect",
+		"checkBorderDeadend+"
+	],
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-
-		if( !this.checkSquareTatami(rinfo) ){ return 'bkNotSquare';}
-		if( !this.checkHorizonLongTatami(rinfo) ){ return 'bkNotHRect';}
-		if( !this.checkVertLongTatami(rinfo) ){ return 'bkNotVRect';}
-
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-
-		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
-
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-
-		return null;
+	checkSquareTatami : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);}, "bkNotSquare");
 	},
-
-	checkSquareTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=1||a<=0||(w*h!=a)||w==h);});
+	checkHorizonLongTatami : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);}, "bkNotHRect");
 	},
-	checkHorizonLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=3||a<=0||(w*h!=a)||w>h);});
-	},
-	checkVertLongTatami : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n!=2||a<=0||(w*h!=a)||w<h);});
+	checkVertLongTatami : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);}, "bkNotVRect");
 	}
 },
 

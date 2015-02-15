@@ -22,8 +22,7 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -35,8 +34,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
-		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
+	maxnum : function(){
+		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Board:{
@@ -109,38 +108,33 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkRoomPassOnce",
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkRoom2(rinfo) ){ return 'lnPassTwice';}
+		"checkRoadCount",
+		"checkNoRoadCountry",
 
-		if( !this.checkRoadCount(rinfo) ){ return 'bkLineNe';}
-		if( !this.checkNoRoadCountry(rinfo) ){ return 'bkNoLine';}
+		"checkSideAreaGrass",
 
-		if( !this.checkSideAreaGrass(rinfo) ){ return 'scNoLine';}
+		"checkDeadendLine+",
+		"checkOneLoop"
+	],
 
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
+	checkRoadCount : function(){
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0||n===a);}, "bkLineNe");
+	},
+	checkNoRoadCountry : function(){
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
+	},
+	checkSideAreaGrass : function(){
+		this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false, "cbNoLine");
 	},
 
-	checkRoadCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0||n==a);});
-	},
-	checkNoRoadCountry : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (a!=0);});
-	},
-	checkSideAreaGrass : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false);
-	},
-
-	checkRoom2 : function(rinfo){
-		var result = true;
+	checkRoomPassOnce : function(){
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var cnt=0, clist=rinfo.area[r].clist;
 			for(var i=0;i<clist.length;i++){
@@ -150,19 +144,19 @@ AnsCheck:{
 				border=adb.left;   if(border.ques===1 && border.line===1){ cnt++;}
 				border=adb.right;  if(border.ques===1 && border.line===1){ cnt++;}
 			}
-			if(cnt>2){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(cnt<=2){ continue;}
+			
+			this.failcode.add("bkPassTwice");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","the number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
-	scNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","the cells that is not passed any line are adjacent over border line."],
-	lnPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."]
+	bkPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
+	bkNoLine : ["線の通っていない国があります。","There is a country that is not passed any line."],
+	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","The number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
+	cbNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","The cells that is not passed any line are adjacent over border line."]
 }
 });

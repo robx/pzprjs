@@ -2,31 +2,77 @@
 
 pzpr.classmgr.makeCommon({
 //----------------------------------------------------------------------------
-// ★RawAddressクラス (bx,by)座標を扱う ※端数あり
+// ★Positionクラス RawAddress, Pieceクラスのベースクラス
 //---------------------------------------------------------------------------
-RawAddress:{
-	initialize : function(bx,by){
-		if(arguments.length>=2){ this.init(bx,by);}
-	},
-
+Position:{
 	bx : null,
 	by : null,
 
-	reset  : function()   { this.bx = null;  this.by = null;},
-	equals : function(addr){return (this.bx===addr.bx && this.by===addr.by);},
-	clone  : function()   { return (new this.constructor(this.bx, this.by));},
-
-	set  : function(addr) { this.bx = addr.bx; this.by = addr.by; return this;},
-	init : function(bx,by){ this.bx  = bx; this.by  = by; return this;},
-	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
-	rel  : function(dx,dy){ return (new this.constructor(this.bx+dx, this.by+dy));},
-
-	// 方向を表す定数 (Pieceと同じ)
+	// 方向を表す定数
 	NDIR : 0,	// 方向なし
 	UP   : 1,	// up, top
 	DN   : 2,	// down, bottom
 	LT   : 3,	// left
 	RT   : 4,	// right
+
+	//---------------------------------------------------------------------------
+	// pos.equals() 同じ位置にあるかどうか判定する
+	//---------------------------------------------------------------------------
+	equals : function(pos){
+		return (this.bx===pos.bx && this.by===pos.by);
+	},
+
+	//---------------------------------------------------------------------------
+	// pos.getaddr() 位置をAddressクラスのオブジェクトで取得する
+	//---------------------------------------------------------------------------
+	getaddr : function(){
+		return (new this.owner.Address(this.bx, this.by));
+	},
+
+	//---------------------------------------------------------------------------
+	// relcell(), relcross(), relbd(), relexcell(), relobj() 相対位置に存在するオブジェクトを返す
+	//---------------------------------------------------------------------------
+	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
+	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
+	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
+	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
+	relobj    : function(dx,dy){ return this.owner.board.getobj(this.bx+dx,this.by+dy);},
+
+	//---------------------------------------------------------------------------
+	// pos.draw() 盤面に自分の周囲を描画する
+	// pos.drawaround() 盤面に自分の周囲1マスを含めて描画する
+	//---------------------------------------------------------------------------
+	draw : function(){
+		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+	},
+	drawaround : function(){
+		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
+	},
+
+	//---------------------------------------------------------------------------
+	// pos.isinside() この場所が盤面内かどうか判断する
+	//---------------------------------------------------------------------------
+	isinside : function(){
+		var bd = this.owner.board;
+		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
+				this.by>=bd.minby && this.by<=bd.maxby);
+	}
+},
+
+//----------------------------------------------------------------------------
+// ★RawAddressクラス (bx,by)座標を扱う ※端数あり
+//---------------------------------------------------------------------------
+"RawAddress:Position":{
+	initialize : function(bx,by){
+		if(arguments.length>=2){ this.init(bx,by);}
+	},
+
+	reset : function(){ this.bx = null;  this.by = null;},
+	clone : function(){ return (new this.constructor(this.bx, this.by));},
+
+	set  : function(addr) { this.bx = addr.bx; this.by = addr.by; return this;},
+	init : function(bx,by){ this.bx  = bx; this.by  = by; return this;},
+	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
 
 	//---------------------------------------------------------------------------
 	// addr.movedir() 指定した方向に指定した数移動する
@@ -39,33 +85,6 @@ RawAddress:{
 			case this.RT: this.bx+=dd; break;
 		}
 		return this;
-	},
-
-	//---------------------------------------------------------------------------
-	// addr.getaddr() 位置をAddressクラスのオブジェクトで取得する
-	//---------------------------------------------------------------------------
-	getaddr : function(){
-		return (new this.owner.Address(this.bx, this.by));
-	},
-
-	//---------------------------------------------------------------------------
-	// addr.draw() 盤面に自分の周囲を描画する
-	// addr.drawaround() 盤面に自分の周囲1マスを含めて描画する
-	//---------------------------------------------------------------------------
-	draw : function(){
-		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
-	},
-	drawaround : function(){
-		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
-	},
-
-	//---------------------------------------------------------------------------
-	// addr.isinside() この場所が盤面内かどうか判断する
-	//---------------------------------------------------------------------------
-	isinside : function(){
-		var bd = this.owner.board;
-		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
-				this.by>=bd.minby && this.by<=bd.maxby);
 	}
 },
 

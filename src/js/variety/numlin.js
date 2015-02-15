@@ -18,8 +18,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -67,25 +66,20 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges', true);
 
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
-		var header = "c_sq_";
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if(cell.qnum!==-1){
-				if(cell.error===1){ g.fillStyle = this.errbcolor1;}
-				else              { g.fillStyle = "white";}
-
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -131,44 +125,19 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkTripleObject",
+		"checkLinkSameNumber",
+		"checkLineOverLetter",
+		"checkDeadendConnectLine+",
+		"checkDisconnectLine",
+		"checkNoLineObject+"
+	],
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
-
-		if( !this.checkLinkDiffNumber(linfo) ){ return 'nmConnDiff';}
-
-		if( !this.checkLineOverLetter() ){ return 'lcOnNum';}
-		if( !this.checkDeadendLine() ){ return 'lcDeadEnd';}
-		if( !this.checkDisconnectLine(linfo) ){ return 'lcIsolate';}
-
-		if( !this.checkAloneNumber() ){ return 'nmIsolate';}
-
-		return null;
-	},
-
-	checkLinkDiffNumber : function(linfo){
-		return this.checkSameObjectInRoom(linfo, function(cell){ return cell.getNum();});
-	},
-	checkAloneNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
-	},
-
-	checkDeadendLine : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(!(cell.lcnt===1 && cell.noNum())){ continue;}
-
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			cell.setCellLineError(true);
-			result = false;
-		}
-		return result;
+	checkLinkSameNumber : function(){
+		this.checkSameObjectInRoom(this.getLareaInfo(), function(cell){ return cell.getNum();}, "nmConnDiff");
 	}
 },
 

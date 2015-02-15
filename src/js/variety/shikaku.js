@@ -114,53 +114,39 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		"checkNoNumber",
+		"checkDoubleNumber",
+		"checkRoomRect@shikaku",
+		"checkAhoSquare@aho",
+		"checkLshapeArea@aho",
+		"checkNumberAndSize",
+		"checkBorderDeadend+"
+	],
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-
-		if(pid==='shikaku'){
-			if(!this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
-		}
-		else if(pid==='aho'){
-			if( !this.checkAhoSquare(rinfo) ){ return 'bkNotRect3';}
-			if( !this.checkLshapeArea(rinfo) ){ return 'bkNotLshape3';}
-		}
-
-		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
-
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-
-		return null;
+	checkAhoSquare : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);}, "bkNotRect3");
 	},
-
-	checkAhoSquare : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);});
-	},
-	checkLshapeArea : function(rinfo){
-		var result = true;
+	checkLshapeArea : function(){
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			var cell = clist.getQnumCell();
 			if(cell.isnull){ continue;}
 
-			var n = cell.getQnum();
+			var n = cell.qnum;
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 
 			var clist2 = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var d2 = clist2.getRectSize();
 
-			if( clist2.length===0 || (d2.cols*d2.rows!=d2.cnt) || (d.x1!==d2.x1 && d.x2!==d2.x2) || (d.y1!==d2.y1 && d.y2!==d2.y2) ){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if( clist2.length>0 && (d2.cols*d2.rows===d2.cnt) && (d.x1===d2.x1 || d.x2===d2.x2) && (d.y1===d2.y1 || d.y2===d2.y2) ){ continue;}
+
+			this.failcode.add("bkNotLshape3");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

@@ -1,4 +1,5 @@
 // Listener.js v3.4.1
+/* global ui:false */
 
 //---------------------------------------------------------------------------
 // ★UIListener Puzzleに付加するListenerイベント設定の管理を行う
@@ -58,7 +59,6 @@ ui.listener =
 		ui.event.adjustcellsize();
 		ui.keypopup.display();
 		
-		ui.undotimer.reset();
 		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
 
@@ -89,11 +89,11 @@ ui.listener =
 	// listener.onHistoryChange() 履歴変更時に呼び出される関数
 	//---------------------------------------------------------------------------
 	onKeyInput : function(puzzle, c){
-		var kc = puzzle.key, result = true;
+		var kc = puzzle.key, ut = ui.undotimer, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
-			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.startUndo(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.startRedo(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ut.startKeyUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ut.startKeyRedo(); result = false;}
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(pzpr.EDITOR){
@@ -106,10 +106,15 @@ ui.listener =
 		}
 		else if(kc.keyup){
 			/* TimerのUndo/Redoを停止する */
-			if(c==='ctrl+z' || c==='meta+z'){ ui.undotimer.stop(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ui.undotimer.stop(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ut.stopKeyUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ut.stopKeyRedo(); result = false;}
 		}
-		ui.menuarea.floatmenuclose(0);
+		
+		if(!kc.isCTRL && !kc.isMETA){ ut.reset();}
+		else if(!kc.isZ){ ut.stopKeyUndo();}
+		else if(!kc.isY){ ut.stopKeyRedo();}
+		
+		/* ui.menuarea.floatmenuclose(0); */
 		return result;
 	},
 	onMouseInput : function(puzzle){
@@ -119,7 +124,26 @@ ui.listener =
 			mv.mousereset();
 			result = false;
 		}
-		ui.menuarea.floatmenuclose(0);
+		else if(ui.puzzle.pid === "goishi"){
+			if(mv.mousestart && ui.puzzle.playmode){
+				if(mv.btn.Left){
+					var cell = mv.getcell();
+					if(cell.isnull || !cell.isStone() || cell.anum!==-1){
+						ui.undotimer.startAnswerRedo();
+						result = false;
+					}
+				}
+				else if(mv.btn.Right){
+					ui.undotimer.startAnswerUndo();
+					result = false;
+				}
+			}
+			else if(mv.mouseend){
+				ui.undotimer.stop();
+				result = false;
+			}
+		}
+		/* ui.menuarea.floatmenuclose(0); */
 		return result;
 	},
 	onHistoryChange : function(puzzle){
@@ -171,7 +195,7 @@ ui.listener =
 				padding = 0.05; break;
 			
 			case 'bosanowa':
-				padding = (puzzle.getConfig('disptype_bosanowa')!=2?0.50:0.05); break;
+				padding = (puzzle.getConfig('disptype_bosanowa')!==2?0.50:0.05); break;
 			
 			default: padding = 0.50; break;
 		}

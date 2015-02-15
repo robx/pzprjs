@@ -19,8 +19,7 @@ MouseEvent:{
 				if(this.prevPos.getc()===this.getcell()){ this.inputqnum();}
 			}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -55,8 +54,8 @@ AreaUnshadeManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -107,24 +106,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
-
-		if( !this.checkArrowNumber() ){ return 'anShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkArrowNumber"
+	],
 
 	checkArrowNumber : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isShade()){ continue;}
-			var pos = cell.getaddr(), dir = cell.getQdir();
+			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
+			var pos = cell.getaddr(), dir = cell.qdir;
 			var clist = new this.owner.CellList();
 			while(1){
 				pos.movedir(dir,2);
@@ -132,16 +125,13 @@ AnsCheck:{
 				if(cell2.isnull){ break;}
 				clist.add(cell2);
 			}
-
-			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.getQnum()!==cnt){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				clist.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			
+			this.failcode.add("anShadeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(1);
 		}
-		return result;
 	}
 }
 });

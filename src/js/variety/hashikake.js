@@ -38,7 +38,7 @@ MouseEvent:{
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			
-			if(this.inputData===null){ this.inputData = [1,2,0][border.getLineVal()];}
+			if(this.inputData===null){ this.inputData = [1,2,0][border.line];}
 			if(this.inputData>0 && (dir===border.UP||dir===border.LT)){ borders.reverse();} // 色分けの都合上の処理
 			borders.setLineVal(this.inputData);
 			borders.setQsub(0);
@@ -70,7 +70,7 @@ MouseEvent:{
 		var border = pos.getb();
 		if(border.isnull){ return;}
 
-		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
+		if(this.inputData===null){ this.inputData=(border.qsub!==2?2:0);}
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
@@ -145,6 +145,7 @@ AreaLineManager:{
 },
 
 Flags:{
+	autocmp : "number",
 	irowake : true
 },
 
@@ -177,41 +178,39 @@ Graphic:{
 
 	// オーバーライド
 	drawLines_hashikake : function(id){
-		var g = this.vinc('line', 'crispEdges');
+		var g = this.vinc('line', 'crispEdges', true);
 
 		// LineWidth, LineMargin, LineSpace
 		var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
 
-		var headers = ["b_line_","b_dline1_","b_dline2_"];
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id, color = this.getLineColor(border);
-			if(!!color){
-				g.fillStyle = color;
-				var isvert = border.isVert();
-				var px = border.bx*this.bw, py = border.by*this.bh;
+			var border = blist[i], color = this.getLineColor(border);
+			var isvert = border.isVert();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-				if(border.line===1){
-					if(this.vnop(headers[0]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py, this.bw+lm, lm);}
-					}
-				}
-				else{ g.vhide(headers[0]+id);}
-
-				if(border.line===2){
-					if(this.vnop(headers[1]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px-ls, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py-ls, this.bw+lm, lm);}
-					}
-					if(this.vnop(headers[2]+id,this.FILL)){
-						if(!isvert){ g.fillRectCenter(px+ls, py, lm, this.bh+lm);}
-						else       { g.fillRectCenter(px, py+ls, this.bw+lm, lm);}
-					}
-				}
-				else{ g.vhide([headers[1]+id, headers[2]+id]);}
+			g.fillStyle = color;
+			g.vid = "b_line_"+border.id;
+			if(!!color && border.line===1){
+				if(!isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
+				else       { g.fillRectCenter(px, py, this.bw+lm, lm);}
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);}
+			else{ g.vhide();}
+
+			g.vid = "b_dline_"+border.id;
+			if(!!color && border.line===2){
+				g.beginPath();
+				if(!isvert){
+					g.rectcenter(px-ls, py, lm, this.bh+lm);
+					g.rectcenter(px+ls, py, lm, this.bh+lm);
+				}
+				else{
+					g.rectcenter(px, py-ls, this.bw+lm, lm);
+					g.rectcenter(px, py+ls, this.bw+lm, lm);
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
 		}
 	},
 
@@ -299,28 +298,31 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkCellNumberNotOver",
+		"checkConnectAllNumber",
+		"checkCellNumberNotLess"
+	],
 
-		if( !this.checkCellNumberNotOver() ){ return 'nmLineCntGt';}
-
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
-
-		if( !this.checkCellNumberNotLess() ){ return 'nmLineCntLt';}
-
-		return null;
+	checkConnectAllNumber : function(){
+		var linfo = this.getLareaInfo();
+		var bd = this.owner.board;
+		if(linfo.max>1){
+			this.failcode.add("lcDivided");
+			bd.border.setnoerr();
+			linfo.setErrLareaByCell(bd.cell[1],1);
+		}
 	},
-
 	checkCellNumberNotOver :function(){
-		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.getQnum() < cell.getCountOfBridges());});
+		this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum < cell.getCountOfBridges());}, "nmLineGt");
 	},
 	checkCellNumberNotLess :function(){
-		return this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.getQnum() > cell.getCountOfBridges());});
+		this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum > cell.getCountOfBridges());}, "nmLineLt");
 	}
 },
 
 FailCode:{
-	nmLineCntGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
-	nmLineCntLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
+	nmLineGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
+	nmLineLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
 });

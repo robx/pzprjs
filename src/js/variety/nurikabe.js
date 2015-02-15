@@ -14,9 +14,6 @@ MouseEvent:{
 		}
 	}
 },
-"MouseEvent@nurikabe":{
-	inputRed : function(){ this.dispRed();}
-},
 
 //---------------------------------------------------------
 // キーボード入力系
@@ -146,42 +143,48 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 "AnsCheck@nurikabe":{
-	checkAns : function(){
-		var bd=this.owner.board;
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
-		var binfo = bd.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
-
-		return null;
+	checklist : [
+		"check2x2ShadeCell",
+		"checkNoNumberInUnshade",
+		"checkConnectShade",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize"
+	]
+},
+"AnsCheck@nuribou#1":{
+	checklist : [
+		"checkBou",
+		"checkCorners",
+		"checkNoNumberInUnshade",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize"
+	]
+},
+"AnsCheck@mochikoro,mochinyoro#1":{
+	checklist : [
+		"check2x2ShadeCell",
+		"checkConnectUnshaded_mochikoro",
+		"checkUnshadeRect",
+		"checkDoubleNumberInUnshade",
+		"checkNumberAndUnshadeSize",
+		"checkShadeNotRect@mochinyoro"
+	]
+},
+AnsCheck : {
+	checkDoubleNumberInUnshade : function(){
+		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "bkNumGe2");
+	},
+	checkNumberAndUnshadeSize : function(){
+		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
 	}
 },
 "AnsCheck@nuribou":{
-	checkAns : function(){
-		var bd=this.owner.board;
-
-		var binfo = bd.getShadeInfo();
-		if( !this.checkBou(binfo) ){ return 'csWidthGt1';}
-		if( !this.checkCorners(binfo) ){ return 'csCornerSize';}
-
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkNoNumber(winfo) ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
-
-		return null;
+	checkBou : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);}, "csWidthGt1");
 	},
-
-	checkBou : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (w==1||h==1);});
-	},
-	checkCorners : function(binfo){
-		var result = true, bd = this.owner.board;
+	checkCorners : function(){
+		var bd = this.owner.board;
+		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
@@ -195,38 +198,29 @@ FileIO:{
 
 			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
 				block2 = binfo.getRoomByCell(cells[i][1]).clist;
-			if(block1.length == block2.length){
-				if(this.checkOnly){ return false;}
-				block1.seterr(1);
-				block2.seterr(1);
-				result = false;
-			}
+			if(block1.length !== block2.length){ continue;}
+			
+			this.failcode.add("csCornerSize");
+			if(this.checkOnly){ break;}
+			block1.seterr(1);
+			block2.seterr(1);
 		}
-		return result;
+	}
+},
+"AnsCheck@nurikabe,nuribou":{
+	checkNoNumberInUnshade : function(){
+		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);}, "bkNoNum");
 	}
 },
 "AnsCheck@mochikoro,mochinyoro":{
-	checkAns : function(){
-		var bd=this.owner.board;
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkOneArea( bd.getdir8WareaInfo() ) ){ return 'csDivide8';}
-
-		var winfo = bd.getUnshadeInfo();
-		if( !this.checkAreaRect(winfo) ){ return 'cuNotRect';}
-		if( !this.checkDoubleNumber(winfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(winfo) ){ return 'bkSizeNe';}
-
-		if(this.owner.pid==='mochinyoro'){
-			var binfo = bd.getShadeInfo();
-			if( !this.checkAreaNotRect(binfo) ){ return 'csRect';}
-		}
-
-		return null;
+	checkConnectUnshaded_mochikoro : function(){
+		this.checkOneArea( this.owner.board.getdir8WareaInfo(), "csDivide8" );
 	},
-
-	checkAreaNotRect : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (w*h!==a);});
+	checkUnshadeRect : function(){
+		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);}, "cuNotRect");
+	},
+	checkShadeNotRect : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h!==a);}, "csRect");
 	}
 },
 
@@ -236,7 +230,7 @@ FailCode:{
 	bkSizeNe : ["数字とシマの面積が違います。","The number is not equal to the number of the size of the area."]
 },
 "FailCode@nuribou":{
-	csWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","there is a mass of shaded cells, whose width is more than two."],
+	csWidthGt1   : ["「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。","There is a mass of shaded cells, whose width is more than two."],
 	csCornerSize : ["同じ面積の黒マスのカタマリが、角を共有しています。","Masses of shaded cells whose length is the same share a corner."]
 },
 

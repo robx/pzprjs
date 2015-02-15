@@ -40,18 +40,16 @@ pzpr.classmgr = {
 	getExtension : function(pid, custombase){
 		var extension = {};
 		for(var hashkey in custombase){
-			var name = hashkey, pidcond = [], isexist = false;
-			if(hashkey.match('@')){
-				pidcond = hashkey.substr(hashkey.indexOf('@')+1).split(/,/);
-				name    = hashkey.substr(0,hashkey.indexOf('@'));
+			var proto = custombase[hashkey], name = hashkey, pidcond = [], isexist = false;
+			var name = (!hashkey.match('#') ? hashkey : hashkey.substr(0,hashkey.indexOf('#')));
+			if(name.match('@')){
+				pidcond = name.substr(name.indexOf('@')+1).split(/,/);
+				name    = name.substr(0,name.indexOf('@'));
 				for(var n=0;n<pidcond.length;n++){ if(pidcond[n]===pid){ isexist=true; break;}}
-				if(!isexist){ name = '';}
+				if(!isexist){ continue;}
 			}
-			if(!!name){
-				var proto = custombase[hashkey];
-				if(!extension[name]){ extension[name]={};}
-				for(var key in proto){ extension[name][key] = proto[key];}
-			}
+			if(!extension[name]){ extension[name]={};}
+			for(var key in proto){ extension[name][key] = proto[key];}
 		}
 		return extension;
 	},
@@ -92,14 +90,14 @@ pzpr.classmgr = {
 		return {base:(basename||realname), real:realname};
 	},
 	createClass : function(BaseClass){
-		function NewClass(){};
+		function NewClass(){}
 		if(!!BaseClass){ this.extendPrototype( NewClass.prototype, BaseClass.prototype );}
 		return NewClass;
 	},
 	extendPrototype : function(NewProto, proto){
 		proto = proto || {};
 		for(var name in proto){
-			if(proto[name]!=null && (typeof proto[name]==='object') && proto[name].constructor===Object){
+			if((proto[name]!==null) && (typeof proto[name]==='object') && proto[name].constructor===Object){
 				if(!NewProto[name]){ NewProto[name] = {};}
 				this.extendPrototype(NewProto[name], proto[name]);
 			}
@@ -128,7 +126,7 @@ pzpr.classmgr = {
 	//---------------------------------------------------------------------------
 	setPuzzleClass : function(puzzle, newpid, callback){
 		/* 今のパズルと別idの時 */
-		if(puzzle.pid != newpid){
+		if(puzzle.pid !== newpid){
 			this.includeCustomFile(newpid);
 		}
 		/* Customファイルが読み込みできるまで待つ */
@@ -137,7 +135,7 @@ pzpr.classmgr = {
 			return;
 		}
 
-		if(puzzle.pid != newpid){
+		if(puzzle.pid !== newpid){
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 			puzzle.pid = newpid;

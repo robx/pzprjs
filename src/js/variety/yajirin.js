@@ -17,8 +17,7 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputdirec();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -167,39 +166,27 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkLineOnShadeCell",
+		"checkAdjacentShadeCell",
+		"checkDeadendLine+",
+		"checkArrowNumber",
+		"checkOneLoop",
+		"checkEmptyCell_yajirin+"
+	],
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
-
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkArrowNumber() ){ return 'anShadeNe';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkBlankCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt>0 && cell.isShade());});
-	},
-	checkBlankCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());});
+	checkEmptyCell_yajirin : function(){
+		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());}, "ceEmpty");
 	},
 
 	checkArrowNumber : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.getQdir()===0 || cell.isShade()){ continue;}
-			var pos = cell.getaddr(), dir = cell.getQdir(), cnt=0;
+			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
+			var pos = cell.getaddr(), dir = cell.qdir;
 			var clist = new this.owner.CellList();
 			while(1){
 				pos.movedir(dir,2);
@@ -207,16 +194,13 @@ AnsCheck:{
 				if(cell2.isnull){ break;}
 				clist.add(cell2);
 			}
-
-			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.getQnum()!==cnt){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				clist.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			
+			this.failcode.add("anShadeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

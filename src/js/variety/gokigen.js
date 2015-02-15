@@ -15,35 +15,35 @@ MouseEvent:{
 			else if(puzzle.pid==='wagiri') { this.inputquestion();}
 		}
 	},
-	inputRed : function(){
-		if(puzzle.playmode){
-			if(puzzle.pid==='gokigen'){ this.dispBlue();}
-		}
-	},
 
 	inputslash : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
 		var use = this.owner.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.qans;
-		if     (use==1){ cell.setQans(qa!==sl?sl:0);}
-		else if(use==2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
+		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
+		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
 		cell.drawaround();
 	}
 },
 "MouseEvent@gokigen":{
+	dispRed : function(){
+		var puzzle = this.owner, flag = (puzzle.playmode && puzzle.key.isZ);
+		if(flag){ this.dispBlue();}
+		return flag;
+	},
 	dispBlue : function(){
 		var cell = this.getcell();
 		this.mousereset();
-		if(cell.isnull || cell.getQans()===0){ return;}
+		if(cell.isnull || cell.qans===0){ return;}
 
 		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
 		var bd = this.owner.board, check = bd.searchline(fcross);
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
-			if(cell2.getQans()===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
-			if(cell2.getQans()===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
+			if(cell2.qans===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
+			if(cell2.qans===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
 		}
 
 		bd.haserror = true;
@@ -70,7 +70,7 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
-		cell.setNum(trans[cell.getQnum()+2]);
+		cell.setNum(trans[cell.qnum+2]);
 		cell.draw();
 	}
 },
@@ -99,10 +99,10 @@ MouseEvent:{
 		}
 		else if(cursor.oncell()){
 			var cell = cursor.getc(), val = 0;
-			if     (ca=='1'){ val= 1;}
-			else if(ca=='2'){ val= 2;}
-			else if(ca=='-'){ val=-2;}
-			else if(ca==' '){ val=-1;}
+			if     (ca==='1'){ val= 1;}
+			else if(ca==='2'){ val= 2;}
+			else if(ca==='-'){ val=-2;}
+			else if(ca===' '){ val=-1;}
 
 			if(!cell.isnull && val!==0){
 				cell.setNum(val);
@@ -160,7 +160,7 @@ Board:{
 			if(cc!==null){
 				var xc2 = sinfo.cell[cc][((sinfo.cell[cc][0]!==xc)?0:1)];
 				history.push({cell:cc,cross:null});
-				sinfo.cell[cc] = []
+				sinfo.cell[cc] = [];
 
 				// ループになった場合 => ループフラグをセットする
 				if(!!passed[xc2]){
@@ -210,22 +210,21 @@ Board:{
 			check[cross.id]=1;
 
 			var nc;
-			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).getQans()===31){ stack.push(nc);}
-			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).getQans()===32){ stack.push(nc);}
-			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).getQans()===32){ stack.push(nc);}
-			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).getQans()===31){ stack.push(nc);}
+			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).qans===31){ stack.push(nc);}
+			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).qans===32){ stack.push(nc);}
+			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).qans===32){ stack.push(nc);}
+			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).qans===31){ stack.push(nc);}
 		}
 		return check;
 	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
 		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans({0:0,31:32,32:31}[cell.getQans()]);
+				cell.setQans({0:0,31:32,32:31}[cell.qans]);
 			}
 		}
 	}
@@ -296,11 +295,13 @@ Graphic:{
 	errcolor2 : "rgb(0, 0, 127)",
 
 	drawNumber1 : function(cell){
-		var text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.70];
-		this.disptext(text, px, py, option);
+		var g = this.context, text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
+		g.vid = "cell_text_"+cell.id;
+		if(!!text){
+			g.fillStyle = this.fontcolor;
+			this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.70]});
+		}
+		else{ g.vhide();}
 	},
 
 	drawTarget : function(){
@@ -314,8 +315,8 @@ Graphic:{
 "Encode@gokigen":{
 	decodePzpr : function(type){
 		var parser = pzpr.parser;
-		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c"))
-					|| (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
+		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c")) ||
+					   (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
@@ -358,53 +359,57 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		"checkSlashLoop",
+		"checkQnumCross",
+		"checkSlashNoLoop@wagiri",
+		"checkNoSlashCell+"
+	],
 
-		var sdata=this.owner.board.getSlashData();
-		if( (pid==='gokigen') && !this.checkLoopLine_gokigen(sdata) ){ return 'slLoop';}
-
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, false) ){ return 'slLoopGiri';}
-
-		if( !this.checkQnumCross() ){ return 'crConnSlNe';}
-
-		if( (pid==='wagiri') && !this.checkLoopLine_wagiri(sdata, true) ){ return 'slNotLoopWa';}
-
-		if( !this.checkNoSlashCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-
-	checkLoopLine_gokigen : function(sdata){
-		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
-		errclist.seterr(1);
-		return (errclist.length===0);
-	},
-	checkLoopLine_wagiri : function(sdata, checkLoop){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			if(!checkLoop && sdata[c]==1 && bd.cell[c].getQnum()===2){ result = false;}
-			if( checkLoop && sdata[c]==2 && bd.cell[c].getQnum()===1){ result = false;}
-		}
-		if(!result){ for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} } }
-		return result;
+	getSlashInfo : function(){
+		return (this._info.slash = this._info.slash || this.owner.board.getSlashData());
 	},
 
 	checkQnumCross : function(){
-		var result = true, bd = this.owner.board, sinfo = bd.getSlashInfo();
+		var bd = this.owner.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], qn = cross.getQnum();
-			if(qn>=0 && qn!=sinfo.cross[c].length){
-				if(this.checkOnly){ return false;}
-				cross.seterr(1);
-				result = false;
-			}
+			var cross = bd.cross[c], qn = cross.qnum;
+			if(qn<0 || qn===sinfo.cross[c].length){ continue;}
+			
+			this.failcode.add("crConnSlNe");
+			if(this.checkOnly){ break;}
+			cross.seterr(1);
 		}
-		return result;
 	},
 
 	checkNoSlashCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQans()===0);});
+		this.checkAllCell(function(cell){ return (cell.qans===0);}, "ceNoSlash");
+	}
+},
+"AnsCheck@gokigen":{
+	checkSlashLoop : function(){
+		var sdata = this.getSlashInfo();
+		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
+		if(errclist.length>0){
+			this.failcode.add("slLoop");
+			errclist.seterr(1);
+		}
+	}
+},
+"AnsCheck@wagiri":{
+	checkSlashLoop   : function(){ this.checkLoops_wagiri(false, "slLoopGiri");},
+	checkSlashNoLoop : function(){ this.checkLoops_wagiri(true,  "slNotLoopWa");},
+	checkLoops_wagiri : function(checkLoop, code){
+		var result = true, bd = this.owner.board;
+		var sdata = this.getSlashInfo();
+		for(var c=0;c<bd.cellmax;c++){
+			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}
+			if( checkLoop && sdata[c]===2 && bd.cell[c].qnum===1){ result = false;}
+		}
+		if(!result){
+			this.failcode.add(code);
+			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
+		}
 	}
 },
 
@@ -413,6 +418,6 @@ FailCode:{
 	slLoopGiri  : ["'切'が含まれた線が輪っかになっています。", "There is a loop that consists '切'."],
 	slNotLoopWa : ["'輪'が含まれた線が輪っかになっていません。", "There is not a loop that consists '輪'."],
 	crConnSlNe  : ["数字に繋がる線の数が間違っています。", "A number is not equal to count of lines that is connected to it."],
-	ceEmpty     : ["斜線がないマスがあります。","There is an empty cell."]
+	ceNoSlash   : ["斜線がないマスがあります。","There is an empty cell."]
 }
 });

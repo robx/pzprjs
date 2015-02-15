@@ -139,13 +139,9 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], keyimg = ['cell',cell.id,'quesimg'].join('_');
-			g.vid = keyimg;
-			if(cell.qnum>0){
-				var rx = (cell.bx-1)*this.bw, ry = (cell.by-1)*this.bh;
-				g.vshow(keyimg);
-				this.imgtile.putImage(g, cell.qnum-1, rx,ry,this.cw,this.ch);
-			}
-			else{ g.vhide(keyimg);}
+			var rx = (cell.bx-1)*this.bw, ry = (cell.by-1)*this.bh;
+			
+			this.imgtile.putImage(g, keyimg, (cell.qnum>0?cell.qnum-1:null), rx,ry,this.cw,this.ch);
 		}
 	}
 },
@@ -179,7 +175,7 @@ Encode:{
 		var o=this.owner, bd=o.board;
 		if(o.pid==='kramma'){
 			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ o.pid='kramman'; break;}
+				if(bd.cross[c].qnum===1){ o.changepid('kramman'); break;}
 			}
 		}
 	}
@@ -203,56 +199,47 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		"checkBorderBranch@!kramma",
+		"checkBorderCrossOnBP@!kramma",
+		"checkLcntCurve@!kramma",
+		"checkLineChassis@shwolf",
 
-		if( (pid!=='kramma') && !this.checkBorderCount(3,0) ){ return 'bdBranch';}
-		if( (pid!=='kramma') && !this.checkBorderCount(4,1) ){ return 'bdCrossBP';}
-		if( (pid!=='kramma') && !this.checkLcntCurve() ){ return 'bdCurveExBP';}
+		"checkNoNumber",
+		"checkSameObjectInArea",
 
-		if( (pid==='shwolf') && !this.checkLineChassis() ){ return 'bdNotChassis';}
+		"checkBorderDeadend+@!kramma",
+		"checkBorderNoneOnBP@kramman"
+	],
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
+	checkBorderBranch    : function(){ this.checkBorderCount(3,0, "bdBranch");},
+	checkBorderCrossOnBP : function(){ this.checkBorderCount(4,1, "bdCrossBP");},
+	checkBorderNoneOnBP  : function(){ this.checkBorderCount(0,1, "bdIgnoreBP");},
 
-		if( !this.checkDiffObjectInArea(rinfo) ){ return 'bkPlNum';}
-
-		if( (pid!=='kramma') && !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-		if( (pid==='kramman') && !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
-
-		return null;
-	},
-	check1st : function(){
-		return ((this.owner.pid==='kramma' || this.checkBorderCount(1,0)) ? null : 'bdDeadEnd');
-	},
-
-	checkDiffObjectInArea : function(rinfo){
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
+	checkSameObjectInArea : function(){
+		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	checkLcntCurve : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		var crosses = bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2);
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c], adb = cross.adjborder;
-			if(cross.lcnt===2 && cross.qnum!==1){
-				if(    !(adb.top.qans===1 && adb.bottom.qans===1)
-					&& !(adb.left.qans===1 && adb.right.qans===1) )
-				{
-					if(this.checkOnly){ return false;}
-					cross.setCrossBorderError();
-					result = false;
-				}
-			}
+			if(cross.lcnt!==2 || cross.qnum===1){ continue;}
+			if( (adb.top.qans===1 && adb.bottom.qans===1) ||
+				(adb.left.qans===1 && adb.right.qans===1) ){ continue;}
+			
+			this.failcode.add("bdCurveExBP");
+			if(this.checkOnly){ break;}
+			cross.setCrossBorderError();
 		}
-		return result;
 	},
 
 	// ヤギとオオカミ用
 	checkLineChassis : function(){
 		var result = true, bd = this.owner.board;
 		var lines = [];
-		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].getQans();}
+		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].qans;}
 
 		var pos = new this.owner.Address(0,0);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
@@ -270,13 +257,15 @@ AnsCheck:{
 		for(var id=0;id<bd.bdmax;id++){
 			if(lines[id]!==1){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			for(var i=0;i<bd.bdmax;i++){ if(lines[i]==1){ bd.border[i].seterr(1);} }
 			result = false;
+			if(this.checkOnly){ break;}
+			bd.border.filter(function(border){ return lines[border.id]===1;}).seterr(1);
 		}
 
-		return result;
+		if(!result){ 
+			this.failcode.add("bdNotChassis");
+			bd.border.setnoerr();
+		}
 	},
 	clearLineInfo : function(lines,pos,dir){
 		var stack = [[pos.clone(),dir]];
@@ -288,11 +277,11 @@ AnsCheck:{
 				pos.movedir(dir,1);
 				if(pos.oncross()){
 					var cross = pos.getx(), adb = cross.adjborder;
-					if(!cross.isnull && cross.getQnum()===1){
-						if(adb.top.getQans()   ){ stack.push([pos.clone(),1]);}
-						if(adb.bottom.getQans()){ stack.push([pos.clone(),2]);}
-						if(adb.left.getQans()  ){ stack.push([pos.clone(),3]);}
-						if(adb.right.getQans() ){ stack.push([pos.clone(),4]);}
+					if(!cross.isnull && cross.qnum===1){
+						if(adb.top.qans   ){ stack.push([pos.clone(),1]);}
+						if(adb.bottom.qans){ stack.push([pos.clone(),2]);}
+						if(adb.left.qans  ){ stack.push([pos.clone(),3]);}
+						if(adb.right.qans ){ stack.push([pos.clone(),4]);}
 						break;
 					}
 				}
@@ -309,7 +298,7 @@ AnsCheck:{
 FailCode:{
 	bkNoNum     : ["白丸も黒丸も含まれない領域があります。","An area has no marks."],
 	bkPlNum     : ["白丸と黒丸が両方含まれる領域があります。","An area has both white and black circles."],
-	bdBranch    : ["分岐している線があります。","there is a branch line."],
+	bdBranch    : ["分岐している線があります。","There is a branch line."],
 	bdCurveExBP : ["黒点以外のところで線が曲がっています。","A line curves out of the points."],
 	bdCrossBP   : ["黒点上で線が交差しています。","There is a crossing line on the point."],
 	bdIgnoreBP  : ["黒点上を線が通過していません。","A point has no line."]
@@ -343,7 +332,7 @@ FailCode:{
 	loaded : false,
 	
 	waitload : function(){
-		if(!(this.image.height>0)){
+		if(!this.image.height){
 			var self = this;
 			setTimeout(function(){ self.waitload();},10);
 			return;
@@ -353,11 +342,13 @@ FailCode:{
 		this.loaded = true;
 	},
 
-	putImage : function(ctx,n,dx,dy,dw,dh){
+	putImage : function(ctx,key,n,dx,dy,dw,dh){
 		var sw=this.cwidth, sh=this.cheight;
 		var sx=sw*(n%this.cols), sy=sh*((n/this.cols)|0);
 		if(dw===(void 0)){ dw=sw; dh=sh;}
-		ctx.drawImage(this.image, sx,sy,sw,sh, dx,dy,dw,dh);
+		
+		ctx.vid = key;
+		ctx.drawImage((n!==null?this.image:null), sx,sy,sw,sh, dx,dy,dw,dh);
 	}
 }
 });

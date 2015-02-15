@@ -18,8 +18,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -42,6 +41,15 @@ Cell:{
 		if(adb.bottom.isLine()){ adc.bottom.setCellLineError(0);}
 		if(adb.left.isLine()  ){ adc.left.setCellLineError(0);  }
 		if(adb.right.isLine() ){ adc.right.setCellLineError(0); }
+	},
+
+	//---------------------------------------------------------------------------
+	// cell.setCellLineError()    セルと周りの線にエラーフラグを設定する
+	//---------------------------------------------------------------------------
+	setCellLineError : function(flag){
+		var bx=this.bx, by=this.by;
+		if(flag){ this.seterr(1);}
+		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 },
 
@@ -149,55 +157,51 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		if( !this.checkWhitePearl1() ){ return 'mashuWCurve';}
-		if( !this.checkBlackPearl1() ){ return 'mashuBStrig';}
-
-		if( !this.checkBlackPearl2() ){ return 'mashuBCvNbr';}
-		if( !this.checkWhitePearl2() ){ return 'mashuWStNbr';}
-
-		if( !this.checkNoLinePearl() ){ return 'mashuOnLine';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkWhitePearl1",
+		"checkBlackPearl1",
+		"checkBlackPearl2",
+		"checkWhitePearl2",
+		"checkNoLinePearl",
+		"checkDeadendLine+",
+		"checkOneLoop"
+	],
 
 	checkNoLinePearl : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
+		this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);}, "mashuOnLine");
 	},
 
 	checkWhitePearl1 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum===1 && cell.lcnt===2 && !cell.isLineStraight()){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(1);
-				result = false;
-			}
+			if(!(cell.qnum===1 && cell.isLineCurve())){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuWCurve");
+			bd.border.setnoerr();
+		}
 	},
 	checkBlackPearl1 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.qnum===2 && cell.lcnt===2 && cell.isLineStraight()){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setCellLineError(1);
-				result = false;
-			}
+			if(!(cell.qnum===2 && cell.isLineStraight())){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setCellLineError(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuBStrig");
+			bd.border.setnoerr();
+		}
 	},
 
 	checkWhitePearl2 : function(){
@@ -206,37 +210,40 @@ AnsCheck:{
 			var cell = bd.cell[c];
 			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
 			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
-			if(adb.top.isLine()    && adc.top.lcnt===2    && adc.top.isLineStraight()   ){ stcnt++;}
-			if(adb.bottom.isLine() && adc.bottom.lcnt===2 && adc.bottom.isLineStraight()){ stcnt++;}
-			if(adb.left.isLine()   && adc.left.lcnt===2   && adc.left.isLineStraight()  ){ stcnt++;}
-			if(adb.right.isLine()  && adc.right.lcnt===2  && adc.right.isLineStraight() ){ stcnt++;}
-
-			if(stcnt>=2){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setErrorPearl();
-				result = false;
-			}
+			if(adb.top.isLine()    && adc.top.isLineStraight()   ){ stcnt++;}
+			if(adb.bottom.isLine() && adc.bottom.isLineStraight()){ stcnt++;}
+			if(adb.left.isLine()   && adc.left.isLineStraight()  ){ stcnt++;}
+			if(adb.right.isLine()  && adc.right.isLineStraight() ){ stcnt++;}
+			if(stcnt<2){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setErrorPearl();
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuWStNbr");
+			bd.border.setnoerr();
+		}
 	},
 	checkBlackPearl2 : function(){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}
-			if((adb.top.isLine()    && adc.top.lcnt===2    && !adc.top.isLineStraight()   ) ||
-			   (adb.bottom.isLine() && adc.bottom.lcnt===2 && !adc.bottom.isLineStraight()) ||
-			   (adb.left.isLine()   && adc.left.lcnt===2   && !adc.left.isLineStraight()  ) ||
-			   (adb.right.isLine()  && adc.right.lcnt===2  && !adc.right.isLineStraight() ) )
-			{
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cell.setErrorPearl();
-				result = false;
-			}
+			if(!(adb.top.isLine()    && adc.top.isLineCurve()   ) &&
+			   !(adb.bottom.isLine() && adc.bottom.isLineCurve()) &&
+			   !(adb.left.isLine()   && adc.left.isLineCurve()  ) &&
+			   !(adb.right.isLine()  && adc.right.isLineCurve() ) )
+			{ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.setErrorPearl();
 		}
-		return result;
+		if(!result){
+			this.failcode.add("mashuBCvNbr");
+			bd.border.setnoerr();
+		}
 	}
 },
 

@@ -25,7 +25,6 @@ MouseEvent:{
 			}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputIcebarn : function(){
 		var cell = this.getcell();
@@ -89,7 +88,7 @@ MouseEvent:{
 		var cell = this.cursor.getc();
 
 		if(ca==='q'){
-			cell.getQues(cell.ice()?0:6);
+			cell.setQues(cell.ice()?0:6);
 		}
 		else if(ca===' ' && cell.noNum()){
 			cell.setQues(0);
@@ -165,6 +164,47 @@ Board:{
 		
 		this.arrowin.draw();
 		this.arrowout.draw();
+	},
+
+	getTraceInfo : function(){
+		var border = this.arrowin.getb(), dir=border.qdir, pos = border.getaddr();
+		var info = {lastcell:this.emptycell, lastborder:border, blist:(new this.owner.BorderList()), dir:dir, count:1};
+		info.blist.add(border);
+
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = info.lastcell = pos.getc();
+				if(cell.isnull){ break;}
+				else if(!cell.ice()){
+					var adb = cell.adjborder;
+					if     (cell.lcnt!==2){ }
+					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+					info.dir = dir;
+				}
+
+				if(this.owner.pid!=='icebarn'){
+					var num = cell.getNum();
+					if(num!==-1){
+						if(num!==-2 && num!==info.count){ break;}
+						info.count++;
+					}
+				}
+			}
+			else{
+				border = info.lastborder = pos.getb();
+				if(!border.isLine()){ break;}
+				
+				info.blist.add(border);
+				var arrow = border.getArrow();
+				if(arrow!==border.NDIR && dir!==arrow){ break;}
+			}
+		}
+
+		return info;
 	}
 },
 BoardExec:{
@@ -282,7 +322,7 @@ BoardExec:{
 	},
 	decode : function(strs){
 		if(strs[0]!=='PI' && strs[0]!=='PO'){ return false;}
-		this.property = (strs[0]=='PI'?'in':'out');
+		this.property = (strs[0]==='PI'?'in':'out');
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];
 		this.bx2 = +strs[3];
@@ -290,13 +330,13 @@ BoardExec:{
 		return true;
 	},
 	toString : function(){
-		return [(this.property=='in'?'PI':'PO'), this.bx1, this.by1, this.bx2, this.by2].join(',');
+		return [(this.property==='in'?'PI':'PO'), this.bx1, this.by1, this.bx2, this.by2].join(',');
 	},
 
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var bd = this.owner.board, border = bd.getb(bx,by), border0;
+		var bd = this.owner.board, border = bd.getb(bx,by);
 		if     (this.property==='in') { bd.arrowin.set(border);}
 		else if(this.property==='out'){ bd.arrowout.set(border);}
 	}
@@ -397,66 +437,79 @@ Graphic:{
 	},
 
 	drawBorderArrows : function(){
-		var g = this.vinc('border_arrow', 'crispEdges');
+		var g = this.vinc('border_arrow', 'crispEdges', true);
 
 		var ll = this.cw*0.35;				//LineLength
 		var lw = Math.max(this.cw/36, 1);	//LineWidth
 		var lm = lw/2;						//LineMargin
 
-		var headers = ["b_ar_","b_tipa_","b_tipb_"]; /* 1つのidでは2方向しかとれないはず */
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id, dir=border.getArrow();
+			var border = blist[i], dir=border.getArrow();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
-			if(dir>=1 && dir<=4){
-				var px = border.bx*this.bw, py = border.by*this.bh;
-
-				g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(headers[0]+id,this.FILL)){
-					switch(dir){
-						case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
-						case border.LT: case border.RT: g.fillRectCenter(px, py, ll, lm); break;
-					}
-				}
-
-				if(this.vnop(headers[((dir+1)&1)+1]+id,this.FILL)){
-					switch(dir){
-						case border.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
-						case border.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
-						case border.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
-						case border.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
-					}
-					g.fill();
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			g.vid = "b_ar_"+border.id;
+			if(dir!==border.NDIR){
+				switch(dir){
+					case border.UP: case border.DN: g.fillRectCenter(px, py, lm, ll); break;
+					case border.LT: case border.RT: g.fillRectCenter(px, py, ll, lm); break;
 				}
 			}
+			else{ g.vhide();}
+
+			/* 1つのidでは2方向しかとれないはず */
+			g.vid = "b_tipa_"+border.id;
+			if(dir===border.UP||dir===border.LT){
+				g.beginPath();
+				switch(dir){
+					case border.UP: g.setOffsetLinePath(px,py ,0,-ll ,-ll/2,-ll*0.4 ,ll/2,-ll*0.4, true); break;
+					case border.LT: g.setOffsetLinePath(px,py ,-ll,0 ,-ll*0.4,-ll/2 ,-ll*0.4,ll/2, true); break;
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
+
+			g.vid = "b_tipb_"+border.id;
+			if(dir===border.DN||dir===border.RT){
+				g.beginPath();
+				switch(dir){
+					case border.DN: g.setOffsetLinePath(px,py ,0,+ll ,-ll/2, ll*0.4 ,ll/2, ll*0.4, true); break;
+					case border.RT: g.setOffsetLinePath(px,py , ll,0 , ll*0.4,-ll/2 , ll*0.4,ll/2, true); break;
+				}
+				g.fill();
+			}
+			else{ g.vhide();}
 		}
 	},
 	drawInOut : function(){
 		var g = this.context, bd = this.owner.board, border;
 
+		g.vid = "string_in";
 		border = bd.arrowin.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.5*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
-			g.vdel("string_in");
-			this.disptext("IN", px, py, {key:"string_in",ratio:[0.55]});
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			this.disptext("IN", px, py, {ratio:[0.55]});
 		}
+		else{ g.vhide();}
+
+		g.vid = "string_out";
 		border = bd.arrowout.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
-			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby){                  py-=0.6*this.ch;}
 			else if(by===bd.maxby){                  py+=0.6*this.ch;}
 			else if(bx===bd.minbx){ px-=0.7*this.cw; py-=0.3*this.ch;}
 			else if(bx===bd.maxbx){ px+=0.7*this.cw; py-=0.3*this.ch;}
-			g.vdel("string_out");
-			this.disptext("OUT", px, py, {key:"string_out",ratio:[0.55]});
+			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
+			this.disptext("OUT", px, py, {ratio:[0.55]});
 		}
+		else{ g.vhide();}
 	},
 
 	repaintParts : function(blist){
@@ -736,7 +789,7 @@ Encode:{
 
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
-			this.owner.pid = (pzltype==="allwhite"?'icelom':'icelom2');
+			this.owner.changepid(pzltype==="allwhite"?'icelom':'icelom2');
 		}
 
 		this.decodeCell( function(obj,ca){
@@ -767,122 +820,113 @@ Encode:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid;
+	checklist : [
+		"checkBranchLine",
+		"checkCrossOutOfIce",
+		"checkIceLines",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
+		"checkValidStart",
+		"checkLineOnStart",
+		"checkDeadendRoad",
+		"checkKeepInside",
+		"checkFollowArrow@icebarn",
+		"checkNumberOrder@!icebarn",
 
-		if( !this.checkCrossOutOfIce() ){ return 'lnCrossExIce';}
-		if( !this.checkIceLines() ){ return 'lnCurveOnIce';}
+		"checkOneLoop",
 
-		var flag = this.checkLine();
-		if( flag==-1 ){ return 'stInvalid';}
-		if( flag==1 ){ return 'stNotLine';}
-		if( flag==2 ){ return 'stDeadEnd';}
-		if( flag==3 ){ return 'stOffField';}
-		if( pid==='icebarn' && flag==4 ){ return 'awInverse';}
-		if( pid!=='icebarn' && flag==5 ){ return 'nmOrder';}
+		"checkUnreachedUnshadeCell@icelom",
+		"checkIgnoreIcebarn@!icelom",
 
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
+		"checkAllArrow@icebarn",
+		"checkNoLineNumber@!icebarn",
 
-		if( (pid==='icelom') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
+		"checkDeadendLine+"
+	],
 
-		if( (pid!=='icelom') && !this.checkIgnoreIcebarn() ){ return 'bkNoLine';}
-
-		if( (pid==='icebarn') && !this.checkAllArrow() ){ return 'lnExArrow';}
-
-		if( (pid!=='icebarn') && !this.checkNoLineNumber() ){ return 'nmUnpass';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		return null;
+	getTraceInfo : function(){
+		return (this._info.trace = this._info.trace || this.owner.board.getTraceInfo());
 	},
 
 	checkCrossOutOfIce : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());}, "lnCrossExIce");
 	},
 	checkUnreachedUnshadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.ice());});
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 	checkIgnoreIcebarn : function(){
-		return this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!=0);})
+		this.checkLinesInArea(this.owner.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkNoLineNumber : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmUnpass");
 	},
 
 	checkAllArrow : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
-			if(border.isArrow() && !border.isLine()){
-				if(this.checkOnly){ return false;}
-				border.seterr(4);
-				result = false;
-			}
+			if(!(border.isArrow() && !border.isLine())){ continue;}
+			
+			this.failcode.add("arNoLine");
+			if(this.checkOnly){ break;}
+			border.seterr(4);
 		}
-		return result;
 	},
 
-	checkLine : function(){
-		var bd = this.owner.board, border = bd.arrowin.getb(), dir=0, count=1;
-		if     (border.by===bd.minby){ dir=2;}else if(border.by===bd.maxby){ dir=1;}
-		else if(border.bx===bd.minbx){ dir=4;}else if(border.bx===bd.maxbx){ dir=3;}
-		if(dir==0){ return -1;}
-		if(!border.isLine()){ border.seterr(4); return 1;}
-
-		bd.border.seterr(-1);
-		border.seterr(1);
-
-		var pos = border.getaddr();
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = pos.getc();
-				if(cell.isnull){ continue;}
-				else if(!cell.ice()){
-					var adb = cell.adjborder;
-					if     (cell.lcnt!==2){ dir=dir;}
-					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
-				}
-
-				if(this.owner.pid!=='icebarn'){
-					var num = cell.getNum();
-					if(num===-1){ continue;}
-					if(num!==-2 && num!==count){ cell.seterr(1); return 5;}
-					count++;
-				}
-			}
-			else{
-				var border = pos.getb();
-				border.seterr(1);
-				if(!border.isLine()){ return 2;}
-				if(bd.arrowout.equals(border)){ break;}
-				else if(border.id>=bd.bdinside){ return 3;}
-				if(dir===[0,2,1,4,3][border.getArrow()]){ return 4;}
-			}
+	checkValidStart : function(){
+		var bd = this.owner.board, border = bd.arrowin.getb();
+		if( !(border.by!==bd.minby || border.by!==bd.maxby || border.bx!==bd.minbx || border.bx!==bd.maxbx) ){
+			this.failcode.add("stInvalid");
 		}
+	},
+	checkLineOnStart : function(){
+		var border = this.owner.board.arrowin.getb();
+		if(!border.isLine()){
+			border.seterr(4);
+			this.failcode.add("stNoLine");
+		}
+	},
 
-		bd.border.seterr(0);
-
-		return 0;
+	checkDeadendRoad : function(){
+		this.checkTrace(function(info){ return info.lastborder.isLine();}, "lrDeadEnd");
+	},
+	checkFollowArrow : function(){
+		this.checkTrace(function(info){ return (info.lastborder.getArrow()===info.dir);}, "lrReverse");
+	},
+	checkKeepInside : function(){
+		this.checkTrace(function(info){
+			var border = info.lastborder, bd = border.owner.board;
+			return (border.id<bd.bdinside || border.id===bd.arrowout.getid());
+		}, "lrOffField");
+	},
+	checkNumberOrder : function(){
+		this.checkTrace(function(info){
+			var cell = info.lastcell;
+			if(cell.qnum<0 || cell.qnum===info.count){ return true;}
+			cell.seterr(1);
+			return false;
+		}, "lrOrder");
+	},
+	checkTrace : function(evalfunc, code){
+		var info = this.getTraceInfo();
+		if(!evalfunc(info)){
+			this.failcode.add(code);
+			this.owner.board.border.setnoerr();
+			info.blist.seterr(1);
+		}
 	}
 },
 
 FailCode:{
 	bkNoLine  : ["すべてのアイスバーンを通っていません。", "A icebarn is not gone through."],
 	lnPlLoop  : ["線がひとつながりではありません。","Lines are not countinuous."],
-	lnExArrow : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
-	nmOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
+	arNoLine  : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
+	lrOrder   : ["数字の通過順が間違っています。","A line goes through an arrow reverse."],
 	nmUnpass  : ["通過していない数字があります。","The line doesn't pass all of the number."],
 	stInvalid : ["スタート位置を特定できませんでした。","System can't detect start position."],
-	stNotLine : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
-	stDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
-	stOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
-	awInverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
-	ceEmpty : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
+	stNoLine  : ["INに線が通っていません。","The line doesn't go through the 'IN' arrow."],
+	lrDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
+	lrOffField : ["盤面の外に出てしまった線があります","A line is not reached out the 'OUT' arrow."],
+	lrReverse : ["矢印を逆に通っています。","A line goes through an arrow reverse."],
+	cuNoLine : ["通過していない白マスがあります。","The line doesn't pass all of the non-icy cell."]
 }
 });

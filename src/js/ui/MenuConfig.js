@@ -1,8 +1,11 @@
 // MenuConfig.js v3.4.1
+/* global pzpr:false, ui:false */
 
+(function(){
 //---------------------------------------------------------------------------
 // ★MenuConfigクラス UI側の設定値を管理する
 //---------------------------------------------------------------------------
+var Config = pzpr.Puzzle.prototype.Config.prototype;
 
 // メニュー描画/取得/html表示系
 // Menuクラス
@@ -12,6 +15,7 @@ ui.menuconfig = {
 
 	//---------------------------------------------------------------------------
 	// menuconfig.init()  MenuConfigの初期化を行う
+	// menuconfig.add()   初期化時に設定を追加する
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.list = {};
@@ -25,11 +29,7 @@ ui.menuconfig = {
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
 	},
-	add : function(name, defvalue, option){
-		var item = {val:defvalue, defval:defvalue};
-		if(!!option){ item.option = option;}
-		this.list[name] = item;
-	},
+	add : Config.add,
 
 	//---------------------------------------------------------------------------
 	// menu.set()   アイスと○などの表示切り替え時の処理を行う
@@ -37,21 +37,10 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	set : function(idname, newval){
 		if(!this.list[idname]){ return;}
-		this.list[idname].val = newval;
-		ui.setdisplay(idname);
-		switch(idname){
-		case 'keypopup':
-			ui.keypopup.display();
-			break;
-			
-		case 'adjsize': case 'cellsize': case 'fullwidth':
-			ui.event.adjustcellsize();
-			break;
-		}
+		this.setproper(idname, newval);
+		this.configevent(idname,newval);
 	},
-	get : function(idname){
-		return (!!this.list[idname]?this.list[idname].val:null);
-	},
+	get : Config.get,
 
 	//---------------------------------------------------------------------------
 	// menu.getAll()  全フラグの設定値を返す
@@ -66,11 +55,35 @@ ui.menuconfig = {
 		delete object.autocheck;
 		return JSON.stringify(object);
 	},
-	setAll : function(json){
-		var object = JSON.parse(json);
-		this.init();
-		for(var key in this.list){
-			if(object[key]!==void 0){ this.list[key].val = object[key];}
+	setAll : Config.setAll,
+
+	//---------------------------------------------------------------------------
+	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
+	// menuconfig.gettype()      設定値の持つ型を返す
+	// menuconfig.valid()        設定値が有効なパズルかどうかを返す
+	//---------------------------------------------------------------------------
+	setproper : Config.setproper,
+	gettype : Config.gettype,
+	valid : function(idname){
+		if(idname==="keypopup"){ return (ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0);}
+		return !!this.list[idname];
+	},
+
+	//---------------------------------------------------------------------------
+	// config.configevent()  設定変更時の動作を記述する
+	//---------------------------------------------------------------------------
+	configevent : function(idname, newval){
+		ui.setdisplay(idname);
+		switch(idname){
+		case 'keypopup':
+			ui.keypopup.display();
+			break;
+			
+		case 'adjsize': case 'cellsize': case 'fullwidth':
+			ui.event.adjustcellsize();
+			break;
 		}
 	}
 };
+
+})();

@@ -12,8 +12,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -139,8 +138,8 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		var parser = pzpr.parser;
-		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d"))
-					|| (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
+		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d")) ||
+					   (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.owner.pid==='norinori'){
 			this.decodeBorder();
 		}
@@ -170,7 +169,7 @@ Encode:{
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!=bstr.charAt(cell2.id)){ border.ques = 1;}
+			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!==bstr.charAt(cell2.id)){ border.ques = 1;}
 		}
 		this.outbstr = bstr.substr(bd.cellmax);
 	}
@@ -198,103 +197,80 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
-	checkShadeCellInArea : function(cinfo, evalfunc){
-		return this.checkAllBlock(cinfo, function(cell){ return cell.isShade();}, function(w,h,a,n){ return evalfunc(a);});
-	}
+"AnsCheck@lits#1":{
+	checklist : [
+		"check2x2ShadeCell",
+		"checkOverShadeCellInArea",
+		"checkSeqBlocksInRoom",
+		"checkTetromino",
+		"checkConnectShade",
+		"checkNoShadeCellInArea",
+		"checkLessShadeCellInArea"
+	]
+},
+"AnsCheck@norinori#1":{
+	checklist : [
+		"checkOverShadeCell",
+		"checkOverShadeCellInArea",
+		"checkSingleShadeCell",
+		"checkSingleShadeCellInArea",
+		"checkNoShadeCellInArea"
+	]
 },
 "AnsCheck@lits":{
-	checkAns : function(){
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt4';}
-
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
-
-		if( !this.checkTetromino(rinfo) ){ return 'sbSameShape';}
-
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
-
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
-
-		if( !this.checkLessShadeCellInArea(rinfo) ){ return 'bkShadeLt4';}
-
-		return null;
+	checkOverShadeCellInArea : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=4);}, "bkShadeGt4");
 	},
-
-	checkOverShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=4);});
-	},
-	checkLessShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a>=4);});
+	checkLessShadeCellInArea : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>=4);}, "bkShadeLt4");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
-			if(!clist.isSeqBlock()){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
+			if(clist.isSeqBlock()){ continue;}
+			
+			this.failcode.add("bkShadeDivide");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	},
 
-	checkTetromino : function(rinfo){
-		var dinfo = this.owner.board.getTetrominoInfo(rinfo), result = true;
+	checkTetromino : function(){
+		var rinfo = this.getRoomInfo();
+		var dinfo = this.owner.board.getTetrominoInfo(rinfo);
 		for(var r=1;r<=dinfo.max;r++){
 			var clist = dinfo.area[r].clist;
 			if(clist.length<=4){ continue;}
-			if(this.checkOnly){ return false;}
+			
+			this.failcode.add("bsSameShape");
+			if(this.checkOnly){ break;}
 			clist.seterr(2);
-			result = false;
 		}
-		return result;
 	}
 },
 "AnsCheck@norinori":{
-	checkAns : function(){
-
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOverShadeCell(binfo) ){ return 'csGt2';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverShadeCellInArea(rinfo) ){ return 'bkShadeGt2';}
-
-		if( !this.checkSingleShadeCell(binfo) ){ return 'csLt2';}
-
-		if( !this.checkSingleShadeCellInArea(rinfo) ){ return 'bkShadeLt2';}
-
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
-
-		return null;
+	checkOverShadeCell : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a<=2);}, "csGt2");
+	},
+	checkSingleShadeCell : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a>=2);}, "csLt2");
 	},
 
-	checkOverShadeCell : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (a<=2);} );
+	checkOverShadeCellInArea : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=2);}, "bkShadeGt2");
 	},
-	checkSingleShadeCell : function(binfo){
-		return this.checkAllArea(binfo, function(w,h,a,n){ return (a>=2);} );
-	},
-
-	checkOverShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a<=2);});
-	},
-	checkSingleShadeCellInArea : function(rinfo){
-		return this.checkShadeCellInArea(rinfo, function(a){ return (a!=1);});
+	checkSingleShadeCellInArea : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a!==1);}, "bkShadeLt2");
 	}
 },
 
 "FailCode@lits":{
 	bkShadeLt4 : ["黒マスのカタマリが４マス未満の部屋があります。","A room has three or less shaded cells."],
 	bkShadeGt4 : ["５マス以上の黒マスがある部屋が存在します。", "A room has five or more shaded cells."],
-	sbSameShape : ["同じ形のテトロミノが接しています。","Some Tetrominos that are the same shape are Adjacent."]
+	bsSameShape : ["同じ形のテトロミノが接しています。","Some Tetrominos that are the same shape are Adjacent."]
 },
 
 "FailCode@norinori":{

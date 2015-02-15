@@ -78,7 +78,7 @@ MouseEvent:{
 		this.mouseCell = cross;
 	},
 	inputnumber : function(cross){
-		var qn = cross.getQnum();
+		var qn = cross.qnum;
 		if(this.btn.Left){
 			if     (qn===26){ cross.setQnum(-1);}
 			else if(qn===-1){ cross.setQnum(-2);}
@@ -127,11 +127,11 @@ KeyEvent:{
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-9;
-			if(cross.getQnum()===num){ cross.setQnum(-1);}
+			if(cross.qnum===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
-		else if(ca=='-'){ cross.setQnum(cross.getQnum()!==-2?-2:-1);}
-		else if(ca==' '){ cross.setQnum(-1);}
+		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
+		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 
 		this.prev = cross;
@@ -201,8 +201,9 @@ Board:{
 		this.common.ansclear.call(this);
 	},
 	errclear : function(){
-		this.segment.errclear();
-		
+		if(this.haserror){
+			this.segment.errclear();
+		}
 		this.common.errclear.call(this);
 	},
 
@@ -225,7 +226,6 @@ Board:{
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
 
-		var bd = this, seglist = new this.owner.SegmentList();
 		var pseudoSegment = new this.owner.Segment(x1,y1,x2,y2);
 		return this.segment.filter(function(seg){
 			if(seg.isAreaOverLap(pseudoSegment)){
@@ -287,7 +287,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		var bd=this.owner.board;
 		if(key & this.REDUCE){
-			var seglist=bd.segment, sublist=new this.owner.SegmentList();
+			var sublist=new this.owner.SegmentList();
 			bd.segment.each(function(seg){
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
@@ -330,7 +330,7 @@ BoardExec:{
 	name : 'SegmentList',
 
 	getRange : function(){
-		if(this.length==0){ return null;}
+		if(this.length===0){ return null;}
 		var bd = this.owner.board;
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
 		for(var i=0;i<this.length;i++){
@@ -396,7 +396,8 @@ OperationManager:{
 
 Flags:{
 	disable_subclear : true,
-	irowake : true
+	irowake : true,
+	autocmp : "kouchoku"
 },
 
 //---------------------------------------------------------
@@ -420,7 +421,7 @@ Graphic:{
 
 	repaintSegments : function(seglist){
 		if(!this.context.use.canvas){
-			var g = this.vinc('segment', 'auto');
+			this.vinc('segment', 'auto');
 			for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 		}
 		else{
@@ -430,7 +431,8 @@ Graphic:{
 	},
 
 	drawSegments : function(){
-		var g = this.vinc('segment', 'auto'), bd = this.owner.board;
+		var bd = this.owner.board;
+		this.vinc('segment', 'auto');
 
 		var seglist = bd.segment;
 		/* 全領域の30%以下なら範囲指定 */
@@ -441,7 +443,7 @@ Graphic:{
 		for(var i=0;i<seglist.length;i++){ this.drawSegment1(seglist[i],true);}
 	},
 	eraseSegment1 : function(seg){
-		var g = this.vinc('segment', 'auto');
+		this.vinc('segment', 'auto');
 		this.drawSegment1(seg,false);
 	},
 	drawSegment1 : function(seg,isdraw){
@@ -450,84 +452,77 @@ Graphic:{
 		var g = this.context;
 
 		g.lineWidth = this.lw;
-
-		var header_id = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
+		g.vid = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
 			else if(!this.owner.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
-			if(this.vnop(header_id,this.STROKE)){
-				var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
-					py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
-				g.strokeLine(px1,py1,px2,py2);
-			}
+			var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
+				py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;
+			g.strokeLine(px1,py1,px2,py2);
 		}
-		else{ g.vhide(header_id);}
+		else{ g.vhide();}
 	},
 
 	drawCrosses_kouchoku : function(){
-		var g = this.vinc('cross_base', 'auto');
+		var g = this.vinc('cross_base', 'auto', true);
 
-		var isgray = this.owner.getConfig('autocmp');
+		var isgray = this.owner.execConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
-		var headers = ["x_cp_", "x_cm_"];
 		g.lineWidth = 1;
 
+		var option = {ratio:[0.55]};
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
-			var cross = clist[i], id = cross.id;
+			var cross = clist[i];
 			var graydisp = (isgray && cross.error===0 && cross.seglist.length>=2);
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			// ○の描画
+			g.vid = "x_cp_"+cross.id;
 			if(cross.qnum>0){
 				g.fillStyle = (cross.error===1 ? this.errbcolor1 : "white");
 				g.strokeStyle = (graydisp ? "gray" : "black");
-				if(this.vnop(headers[0]+id,this.FILL_STROKE)){
-					g.shapeCircle(px, py, csize1);
-				}
+				g.shapeCircle(px, py, csize1);
 			}
-			else{ g.vhide([headers[0]+id]);}
+			else{ g.vhide();}
 
 			// アルファベットの描画
-			var text = ((cross.qnum>0) ? (cross.qnum+9).toString(36).toUpperCase() : "");
-			var option = { key:"cross_text_"+id };
-			option.ratio = [0.55];
-			option.color = (graydisp ? "gray" : this.fontcolor);
-			this.disptext(text, px, py, option);
+			g.vid = "cross_text_"+cross.id;
+			if(cross.qnum>0){
+				g.fillStyle = (graydisp ? "gray" : this.fontcolor);
+				this.disptext((cross.qnum+9).toString(36).toUpperCase(), px, py, option);
+			}
+			else{ g.vhide();}
 
 			// ●の描画
+			g.vid = "x_cm_"+cross.id;
 			if(cross.qnum===-2){
 				g.fillStyle = (cross.error===1 ? this.errcolor1 : this.quescolor);
 				if(graydisp){ g.fillStyle="gray";}
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(px, py, csize2);
-				}
+				g.fillCircle(px, py, csize2);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 		}
 	},
 
 	drawSegmentTarget : function(){
-		var g = this.vinc('cross_target_', 'auto');
+		var g = this.vinc('cross_target_', 'auto', true);
 
 		var csize = this.cw*0.32;
-		var header = "x_point_";
 		g.strokeStyle = "rgb(64,127,255)";
 		g.lineWidth = this.lw*1.5;
 
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
+			g.vid = "x_point_"+cross.id;
 			if(this.owner.mouse.targetPoint[0]===cross ||
 			   this.owner.mouse.targetPoint[1]===cross){
-				if(this.vnop(header+cross.id,this.STROKE)){
-					var px = cross.bx*this.bw, py = cross.by*this.bh;
-					g.strokeCircle(px, py, csize);
-				}
+				g.strokeCircle(cross.bx*this.bw, cross.by*this.bh, csize);
 			}
-			else{ g.vhide(header+cross.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -548,7 +543,7 @@ Encode:{
 			var obj = bd.cross[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
 			else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
-			else if(ca=="."){ obj.qnum=-2;}
+			else if(ca==="."){ obj.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}
@@ -602,107 +597,101 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSegmentExist() ){ return 'brNoLine';}
-
-		if( !this.checkSegmentPoint() ){ return 'lnIsolate';}
-
-		if( !this.checkSegmentBranch() ){ return 'lnBranch';}
-
-		if( !this.checkSegmentOverPoint() ){ return 'lnPassOver';}
-
-		if( !this.checkDuplicateSegment() ){ return 'lnOverlap';}
-
-		if( !this.checkDifferentLetter() ){ return 'nmConnDiff';}
-
-		if( !this.checkRightAngle() ){ return 'lnRightAngle';}
-
-		if( !this.checkOneSegmentLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkSegmentDeadend() ){ return 'lnDeadEnd';}
-
-		if( !this.checkAlonePoint() ){ return 'nmLineCount';}
-
-		if( !this.checkConsequentLetter() ){ return 'nmNotConseq';}
-
-		return null;
-	},
+	checklist : [
+		"checkSegmentExist",
+		"checkSegmentPoint",
+		"checkSegmentBranch",
+		"checkSegmentOverPoint",
+		"checkDuplicateSegment",
+		"checkDifferentLetter",
+		"checkRightAngle",
+		"checkOneSegmentLoop",
+		"checkSegmentDeadend",
+		"checkAlonePoint",
+		"checkConsequentLetter"
+	],
 
 	checkSegmentExist : function(){
-		return (this.owner.board.segment.length!==0);
+		if(this.owner.board.segment.length===0){ this.failcode.add("brNoLine");}
 	},
 
 	checkAlonePoint : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);}, "nmLineLt2");
 	},
 	checkSegmentPoint : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);}, "lnIsolate");
 	},
 	checkSegmentBranch : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length>2);});
+		this.checkSegment(function(cross){ return (cross.seglist.length>2);}, "lnBranch");
 	},
 	checkSegmentDeadend : function(){
-		return this.checkSegment(function(cross){ return (cross.seglist.length===1);});
+		this.checkSegment(function(cross){ return (cross.seglist.length===1);}, "lnDeadEnd");
 	},
-	checkSegment : function(func){
+	checkSegment : function(func, code){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
-			if(func(cross)){
-				if(result){ bd.segment.seterr(-1);}
-				cross.seglist.seterr(1);
-				result = false;
-			}
+			if(!func(cross)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cross.seglist.seterr(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.segment.setnoerr();
+		}
 	},
 
 	checkOneSegmentLoop : function(){
-		var result = false, bd = this.owner.board, validcount = 0;
+		var bd = this.owner.board, validcount = 0;
 		for(var r=1;r<=bd.seginfo.linemax;r++){
 			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
-			if(validcount>1){
-				bd.segment.seterr(-1);
-				bd.seginfo.seglist[r].seterr(1);
-				return false;
-			}
+			if(validcount<=1){ continue;}
+			
+			this.failcode.add("lnPlLoop");
+			bd.segment.setnoerr();
+			bd.seginfo.seglist[r].seterr(1);
+			break;
 		}
-		return true;
 	},
 
 	checkSegmentOverPoint : function(){
-		var result = true, bd = this.owner.board;
-		bd.segment.each(function(seg){
+		var result = true, bd = this.owner.board, seglist = bd.segment;
+		seglist.each(function(seg){
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
 			for(var n=0;n<lattice.length;n++){
-				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				bd.cross[lattice[n]].seterr(1);
 				result = false;
 			}
 		});
-		return result;
+		if(!result){
+			this.failcode.add("lnPassOver");
+			seglist.setnoerr();
+		}
 	},
 
 	checkDifferentLetter : function(){
-		var result = true, bd = this.owner.board;
-		bd.segment.each(function(seg){
+		var result = true, bd = this.owner.board, seglist = bd.segment;
+		seglist.each(function(seg){
 			var cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
-				if(result){ bd.segment.seterr(-1);}
 				seg.seterr(1);
 				cross1.seterr(1);
 				cross2.seterr(1);
 				result = false;
 			}
 		});
-		return result;
+		if(!result){
+			this.failcode.add("nmConnDiff");
+			seglist.setnoerr();
+		}
 	},
 
 	checkConsequentLetter : function(){
-		var result = true, count = {}, qnlist = [], bd = this.owner.board;
+		var count = {}, qnlist = [], bd = this.owner.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
 		for(var c=0;c<bd.crossmax;c++){
@@ -724,60 +713,63 @@ AnsCheck:{
 		});
 		for(var i=0;i<qnlist.length;i++){
 			var qn = qnlist[i];
-			if(count[qn][2]!==2 || (count[qn][1]!==count[qn][0]-1)){
-				for(var c=0;c<bd.crossmax;c++){
-					var cross = bd.cross[c];
-					if(cross.qnum===qn){ cross.seterr(1);}
-				}
-				result = false;
-			}
+			if(count[qn][2]===2 && (count[qn][1]===count[qn][0]-1)){ continue;}
+			
+			this.failcode.add("nmNotConseq");
+			if(this.checkOnly){ break;}
+			bd.cross.filter(function(cross){ return cross.qnum===qn;}).seterr(1);
 		}
-		return result;
 	},
 
 	checkDuplicateSegment : function(){
 		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
-			if(seg1===null||seg2===null){ continue;}
-			if(seg1.isOverLapSegment(seg2)){
-				if(result){ this.owner.board.segment.seterr(-1);}
-				seg1.seterr(1);
-				seg2.seterr(1);
-				result = false;
-			}
+			if(seg1===null || seg2===null || !seg1.isOverLapSegment(seg2)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break allloop;}
+			seg1.seterr(1);
+			seg2.seterr(1);
 		}}
-		return result;
+		if(!result){
+			this.failcode.add("lnOverlap");
+			seglist.setnoerr();
+		}
 	},
 
 	checkRightAngle : function(seglist){
 		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
-			if(seg1===null||seg2===null){ continue;}
-			if(seg1.isCrossing(seg2) && !seg1.isRightAngle(seg2)){
-				if(result){ this.owner.board.segment.seterr(-1);}
-				seg1.seterr(1);
-				seg2.seterr(1);
-				result = false;
-			}
+			if(seg1===null || seg2===null || !seg1.isCrossing(seg2) || seg1.isRightAngle(seg2)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break allloop;}
+			seg1.seterr(1);
+			seg2.seterr(1);
 		}}
-		return result;
+		if(!result){
+			this.failcode.add("lnRightAngle");
+			seglist.setnoerr();
+		}
 	}
 },
 
 FailCode:{
-	lnDeadEnd    : ["途中で途切れている線があります。","there is a dead-end segment."],
-	lnBranch     : ["分岐している線があります。","there is a branched segment."],
-	lnPlLoop     : ["輪っかが一つではありません。","there are plural loops."],
+	lnDeadEnd    : ["途中で途切れている線があります。","There is a dead-end segment."],
+	lnBranch     : ["分岐している線があります。","There is a branched segment."],
+	lnPlLoop     : ["輪っかが一つではありません。","There are plural loops."],
 	lnIsolate    : ["線が丸のないところから出ています。","A segment comes from out of circle."],
 	lnPassOver   : ["線が丸を通過しています。","A segment passes over a circle."],
 	lnOverlap    : ["線が同一直線上で重なっています。","Plural segments are overlapped."],
 	lnRightAngle : ["線が直角に交差していません。","Segments don't intersect at a right angle."],
 	nmConnDiff   : ["異なる文字が直接繋がっています。","Different Letters are connected directly."],
 	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Same Letters are not consequent."],
-	nmLineCount  : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
-	brNoLine     : ["線が存在していません。","there is no segment."]
+	nmLineLt2    : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
+	brNoLine     : ["線が存在していません。","There is no segment."]
 },
 
 //---------------------------------------------------------
@@ -786,18 +778,18 @@ Segment:{
 	initialize : function(bx1, by1, bx2, by2){
 		this.id = null;
 
-		this.cross1;	// 端点1のIDを保持する
-		this.cross2;	// 端点2のIDを保持する
+		this.cross1 = null;	// 端点1の交点を保持する
+		this.cross2 = null;	// 端点2の交点を保持する
 
-		this.bx1;		// 端点1のX座標(border座標系)を保持する
-		this.by1;		// 端点1のY座標(border座標系)を保持する
-		this.bx2;		// 端点2のX座標(border座標系)を保持する
-		this.by2;		// 端点2のY座標(border座標系)を保持する
+		this.bx1 = null;		// 端点1のX座標(border座標系)を保持する
+		this.by1 = null;		// 端点1のY座標(border座標系)を保持する
+		this.bx2 = null;		// 端点2のX座標(border座標系)を保持する
+		this.by2 = null;		// 端点2のY座標(border座標系)を保持する
 
-		this.dx;		// X座標の差分を保持する
-		this.dy;		// Y座標の差分を保持する
+		this.dx = 0;	// X座標の差分を保持する
+		this.dy = 0;	// Y座標の差分を保持する
 
-		this.lattices;	// 途中で通過する格子点を保持する
+		this.lattices = [];	// 途中で通過する格子点を保持する
 
 		this.color = "";
 		this.error = 0;
@@ -878,7 +870,7 @@ Segment:{
 		if(!this.isAreaOverLap(seg)){ return false;}
 
 		var bx11=this.bx1, bx12=this.bx2, by11=this.by1, by12=this.by2, dx1=this.dx, dy1=this.dy;
-		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy, tmp;
+		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy;
 
 		/* 交差している位置を調べる */
 		if     (dx1===0){ /* 片方の線だけ垂直 */
@@ -1001,7 +993,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 			if(cross.isnull){ return self.typeA;}
 			else{ return ((cross.seglist.length===(isset?0:1))?self.typeA:self.typeB);}
 		};
-		var id = seg.id, cross1 = seg.cross1, cross2 = seg.cross2;
+		var cross1 = seg.cross1, cross2 = seg.cross2;
 		var type1 = gettype(cross1), type2 = gettype(cross2);
 
 		if(isset){

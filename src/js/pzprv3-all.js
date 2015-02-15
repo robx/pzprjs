@@ -1,6 +1,8 @@
 
 /* concat前のテスト用スクリプト */
 
+/* jshint node: true, evil: true */
+
 (function(){
 	var component = [
 		"lib/candle",
@@ -91,11 +93,13 @@
 		"variety/mashu",
 		"variety/mejilink",
 		"variety/minarism",
+		"variety/nagare",
 		"variety/nagenawa",
 		"variety/nanro",
 		"variety/nawabari",
 		"variety/numlin",
 		"variety/nurikabe",
+		"variety/nurimaze",
 		"variety/paintarea",
 		"variety/pipelink",
 		"variety/reflect",

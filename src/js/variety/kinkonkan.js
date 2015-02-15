@@ -24,7 +24,7 @@ MouseEvent:{
 		}
 		
 		if(this.mouseend){
-			if(this.inputData==12){ this.owner.board.lightclear();}
+			if(this.inputData===12){ this.owner.board.lightclear();}
 		}
 	},
 
@@ -36,16 +36,16 @@ MouseEvent:{
 		else if(this.inputData===4){ cell.setQans(0); cell.setQsub(0);}
 		else if(this.inputData!==null){ return;}
 		else if(this.btn.Left){
-			if     (cell.getQans()===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else if(cell.getQans()===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
-			else if(cell.getQsub()=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else                        { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+			if     (cell.qans===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else if(cell.qans===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
+			else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else                   { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
 		}
 		else if(this.btn.Right){
-			if     (cell.getQans()===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else if(cell.getQans()===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
-			else if(cell.getQsub()=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else                        { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
+			if     (cell.qans===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
+			else if(cell.qans===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+			else if(cell.qsub=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
+			else                   { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
 		}
 
 		cell.drawaround();
@@ -55,7 +55,7 @@ MouseEvent:{
 		if(excell.isnull || this.mouseCell===excell){ return;}
 		if(excell.id>=this.owner.board.excellmax-4){ return;}
 
-		if(this.inputData!=11 && this.inputData!==null){ }
+		if(this.inputData!==11 && this.inputData!==null){ }
 		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
 		else{
 			this.owner.board.flashlight(excell.id);
@@ -130,35 +130,35 @@ KeyEvent:{
 		if((excell.bx===bd.minbx+1||excell.bx===bd.maxbx-1)&&
 		   (excell.by===bd.minby+1||excell.by===bd.maxby-1)){ return;}
 
-		var qn = excell.getQnum();
+		var qn = excell.qnum;
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
+			var num = parseInt(ca), max = excell.getmaxnum();
 
 			if(qn<=0 || this.prev!==excell){
-				if(num<=excell.maxnum){ excell.setQnum(num);}
+				if(num<=max){ excell.setQnum(num);}
 			}
 			else{
-				if(qn*10+num<=excell.maxnum){ excell.setQnum(qn*10+num);}
-				else if (num<=excell.maxnum){ excell.setQnum(num);}
+				if(qn*10+num<=max){ excell.setQnum(qn*10+num);}
+				else if (num<=max){ excell.setQnum(num);}
 			}
 		}
 		else if(ca.length===1 && 'a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = excell.getQchar();
-			if     ((canum-1)%26==num && canum>0 && canum<79){ excell.setQchar(canum+26);}
-			else if((canum-1)%26==num){ excell.setQchar(0);}
+			var canum = excell.qchar;
+			if     ((canum-1)%26===num && canum>0 && canum<79){ excell.setQchar(canum+26);}
+			else if((canum-1)%26===num){ excell.setQchar(0);}
 			else{ excell.setQchar(num+1);}
 		}
-		else if(ca=='-'){
+		else if(ca==='-'){
 			if(qn!==-1){ excell.setQnum(-1);}
 			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
-		else if(ca=='F4'){
+		else if(ca==='F4'){
 			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
 			else{ this.owner.board.lightclear();}
 			this.owner.redraw();
 		}
-		else if(ca==' '){ excell.setQnum(-1); excell.setQchar(0);}
+		else if(ca===' '){ excell.setQnum(-1); excell.setQchar(0);}
 		else{ return;}
 
 		this.prev = excell;
@@ -223,7 +223,7 @@ Board:{
 			var cell = pos.getc();
 			if(cell.isnull){ break;}
 
-			var qb = cell.getQans(), cc = cell.id;
+			var qb = cell.qans, cc = cell.id;
 			if(qb===31){
 				if     (dir===1){ ldata[cc]=(!isNaN({4:1,1:1}[ldata[cc]])?1:2); dir=3;}
 				else if(dir===2){ ldata[cc]=(!isNaN({2:1,1:1}[ldata[cc]])?1:4); dir=4;}
@@ -256,12 +256,11 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
 		if(key & this.TURNFLIP){ // 反転・回転全て
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans({0:0,31:32,32:31}[cell.getQans()]);
+				cell.setQans({0:0,31:32,32:31}[cell.qans]);
 			}
 		}
 	}
@@ -301,22 +300,17 @@ Graphic:{
 	drawBGCells_kinkonkan : function(){
 		var g = this.vinc('cell_back', 'crispEdges');
 
-		var headers = ["c_full_", "c_tri2_", "c_tri3_", "c_tri4_", "c_tri5_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, err = cell.error, ql = cell.qlight;
-			if(err!==0 || ql!==0){
-				if     (err==1){ g.fillStyle = this.errbcolor1;}
-				else if(ql > 0){ g.fillStyle = this.lightcolor;}
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(err===1 || ql===1){
-					if(this.vnop(headers[0]+id,this.FILL)){
-						g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
-					}
-				}
-				else{ this.drawTriangle1(px, py, ql, headers[ql-1]+id);}
-			}
-			else{ g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id, headers[4]+id, headers[5]+id]);}
+			var cell = clist[i], info = cell.error || cell.qlight;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			
+			g.fillStyle = (cell.error!==0 ? this.errbcolor1 : this.lightcolor);
+			
+			g.vid = "c_bglight_"+cell.id;
+			if     (info===1){ g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);}
+			else if(info!==0){ this.drawTriangle1(px, py, cell.qlight);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -327,24 +321,24 @@ Graphic:{
 	drawNumbers_kinkonkan : function(){
 		var g = this.vinc('excell_number', 'auto');
 
-		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
-			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			var text = "";
-			if(canum===0 && num===-1){}
-			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-			if(num>=0){ text+=num.toString(10);}
+			g.vid = "excell_text_"+excell.id;
+			if(canum!==0 || num!==-1){
+				var text="";
+				if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+				else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+				else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+				if(num>=0){ text+=num.toString(10);}
 
-			var option = { key:"excell_text_"+excell.id };
-			option.color = this.fontErrcolor;
-			if(excell.error!==1){ option.color = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
-			option.ratio = ((canum===0||num<10) ? [0.66] : [0.55]);
-			this.disptext(text, px, py, option);
+				g.fillStyle = this.fontErrcolor;
+				if(excell.error!==1){ g.fillStyle = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
+				var option = {ratio:((canum===0||num<10) ? [0.66] : [0.55])};
+				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -400,9 +394,9 @@ Encode:{
 				if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
 				else       { pstr = (((val-1)/26-1)|0).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
 
-				if     (qnum==-2){ cm2+=".";}
-				else if(qnum <16){ cm2+=("" +qnum.toString(16));}
-				else             { cm2+=("-"+qnum.toString(16));}
+				if     (qnum===-2){ cm2+=".";}
+				else if(qnum  <16){ cm2+=("" +qnum.toString(16));}
+				else              { cm2+=("-"+qnum.toString(16));}
 			}
 			else{ count++;}
 
@@ -433,7 +427,7 @@ FileIO:{
 				continue;
 			}
 
-			if(this.filever==1){
+			if(this.filever===1){
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull){
 					if     (ca==="+"){ cell.qsub = 1;}
@@ -443,7 +437,7 @@ FileIO:{
 			}
 		}
 
-		if(this.filever==0){
+		if(this.filever===0){
 			this.decodeCell( function(obj,ca){
 				if     (ca==="+"){ obj.qsub = 1;}
 				else if(ca==="1"){ obj.qans = 31;}
@@ -463,7 +457,7 @@ FileIO:{
 					var dir=excell.qchar, qn=excell.qnum;
 					var str1 = (dir!== 0?dir.toString():"");
 					var str2 = (qn !==-1?qn.toString():"");
-					this.datastr += ((str1=="" && str2=="")?(". "):(""+str1+","+str2+" "));
+					this.datastr += ((str1==="" && str2==="")?(". "):(""+str1+","+str2+" "));
 					continue;
 				}
 
@@ -486,38 +480,36 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkSingleMirrorInRoom",
+		"checkPairMirror",
+		"checkReflectionCount",
+		"checkExistMirrorInRoom"
+	],
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoPluralMirrorsInRoom(rinfo) ){ return 'bkObjGe2';}
-		if( !this.checkMirrors(1) ){ return 'pairedLetterNe';}
-		if( !this.checkMirrors(2) ){ return 'pairedNumberNe'}
-		if( !this.checkExistMirrorInRoom(rinfo) ){ return 'bkNoObj';}
-
-		return null;
+	checkSingleMirrorInRoom : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);}, "bkObjGe2");
+	},
+	checkExistMirrorInRoom : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);}, "bkNoObj");
 	},
 
-	checkNoPluralMirrorsInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a<=1);});
-	},
-	checkExistMirrorInRoom : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.getQans()!==0;}, function(w,h,a,n){ return (a!=0);});
-	},
-
-	checkMirrors : function(type){
+	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
+	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
+	checkMirrors : function(type, code){
 		var d = [], bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
-			if(!isNaN(d[ec]) || excell.getQnum()===-1 || excell.getQchar()===0){ continue;}
+			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
 			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
-			if( (type==1&& (excell.getQchar()!==excell2.getQchar()) )||
-				(type==2&&((excell.getQnum() !==excell2.getQnum()) || excell.getQnum()!==ret.cnt))
+			if( (type===1&& (excell.qchar!==excell2.qchar) )||
+				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){
-				return false;
+				this.failcode.add(code);
+				break;
 			}
 			d[ec]=1; d[ret.dest]=1;
 		}
-		return true;
 	}
 },
 

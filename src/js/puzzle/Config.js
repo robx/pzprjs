@@ -11,41 +11,10 @@ var Config = pzpr.Puzzle.prototype.Config = function(owner){
 Config.prototype =
 {
 	list : null,		/* 設定値 */
-	
-	//---------------------------------------------------------------------------
-	// config.get()  各フラグの設定値を返す
-	// config.set()  各フラグの設定値を設定する
-	//---------------------------------------------------------------------------
-	get : function(name){
-		return this.list[name]?this.list[name].val:null;
-	},
-	set : function(name, newval){
-		this.configevent(name, newval);
-		this.owner.execListener('config', name, newval);
-	},
-
-	//---------------------------------------------------------------------------
-	// config.getAll()  全フラグの設定値を返す
-	// config.setAll()  全フラグの設定値を設定する
-	//---------------------------------------------------------------------------
-	getAll : function(){
-		var object = {};
-		for(var key in this.list){
-			var item = this.list[key];
-			if(item.val!==item.defval){ object[key] = item.val;}
-		}
-		return JSON.stringify(object);
-	},
-	setAll : function(json){
-		var object = JSON.parse(json);
-		this.init();
-		for(var key in this.list){
-			if(object[key]!==void 0){ this.list[key].val = object[key];}
-		}
-	},
 
 	//---------------------------------------------------------------------------
 	// config.init()        各設定値を初期化する
+	// config.add()         初期化時に設定を追加する
 	//---------------------------------------------------------------------------
 	init : function(){
 		this.list = {};
@@ -79,13 +48,13 @@ Config.prototype =
 		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
 
 		this.add('bgcolor', false);			/* 背景色入力 */
+		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
 		this.add('redline', false);			/* 線の繋がりチェック */
-		this.add('redblk', false);			/* 黒マスつながりチェック */
-		this.add('redblkrb', false);		/* 連黒分断禁黒マス繋がりチェック */
+		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
 
 		/* 回答お助け機能 */
@@ -93,6 +62,7 @@ Config.prototype =
 		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */
+		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
 		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
 
 		/* EDITORのみ */
@@ -106,18 +76,98 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.get()  各フラグの設定値を返す
+	// config.set()  各フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	get : function(name){
+		return this.list[name]?this.list[name].val:null;
+	},
+	set : function(name, newval){
+		if(!this.list[name]){ return;}
+		this.setproper(name, newval);
+		this.configevent(name, newval);
+		this.owner.execListener('config', name, newval);
+	},
+
+	//---------------------------------------------------------------------------
+	// config.getAll()  全フラグの設定値を返す
+	// config.setAll()  全フラグの設定値を設定する
+	//---------------------------------------------------------------------------
+	getAll : function(){
+		var object = {};
+		for(var key in this.list){
+			var item = this.list[key];
+			if(item.val!==item.defval){ object[key] = item.val;}
+		}
+		return JSON.stringify(object);
+	},
+	setAll : function(json){
+		var object = JSON.parse(json);
+		this.init();
+		for(var key in this.list){
+			if(object[key]!==void 0){ this.setproper(key,object[key]);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// config.setproper()    設定値の型を正しいものに変換して設定変更する
+	// config.gettype()      設定値の持つ型を返す
+	//---------------------------------------------------------------------------
+	setproper : function(name, newval){
+		var item = this.list[name];
+		switch(typeof item.defval){
+			case "boolean": item.val = !!newval;  break;
+			case "number":  item.val = +newval;   break;
+			case "string":  item.val = ""+newval; break;
+		}
+	},
+	gettype : function(name){
+		return (typeof this.list[name].defval);
+	},
+
+	//---------------------------------------------------------------------------
+	// config.getexec()  設定値を現在のパズルで有効かどうか返す
+	//---------------------------------------------------------------------------
+	getexec : function(name){
+		var puzzle = this.owner, pid = puzzle.pid, flags = puzzle.flags, exec = false;
+		switch(name){
+			case 'use':      exec = flags.use; break;
+			case 'use_tri':  exec = (pid==="shakashaka"); break;
+			case 'dispmove': exec = puzzle.board.linfo.moveline; break;
+			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
+			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
+			case 'bgcolor':  exec = flags.bgcolor; break;
+			case 'irowake':  exec = flags.irowake; break;
+			case 'irowakeblk':exec= flags.irowakeblk; break;
+			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'redline':  exec = flags.redline;   break;
+			case 'redblk':   exec = flags.redblk;    break;
+			case 'redroad':  exec = (pid==="roma"); break;
+			case 'autocmp':  exec = (flags.autocmp!==''); break;
+			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
+			case 'enbnonum': exec = (pid==="fillomino"); break;
+			case 'dirauxmark': exec = (pid==="nagare"); break;
+			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
+			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
+			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;
+			default: exec = !!this.list[name];
+		}
+		return exec;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		if(!this.list[name]){ return;}
-		
-		this.list[name].val = newval;
-
 		var result = true, puzzle = this.owner;
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
 			puzzle.redraw();
+			break;
+		
+		case 'multierr':
+			puzzle.checker.resetCache();
 			break;
 		
 		case 'disptype_bosanowa': case 'font':
@@ -147,9 +197,9 @@ pzpr.classmgr.makeCommon({
 Flags:{
 	/* フラグ */
 	use      : false,
+	autocmp  : '',
 	redline  : false,
 	redblk   : false,
-	redblkrb : false,
 	bgcolor  : false,
 	irowake    : false,			// 色分け設定
 	irowakeblk : false,			// 色分け設定

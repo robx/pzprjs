@@ -1,4 +1,6 @@
 // Misc.js v3.4.1
+/* jshint latedef:false */
+/* global ui:false, _doc:false */
 
 //---------------------------------------------------------------------------
 // ★Miscクラス html表示系 (Menu, Button以外)の制御を行う
@@ -53,6 +55,23 @@ ui.misc = {
 			}
 		}
 		return modified;
+	},
+
+	//--------------------------------------------------------------------------------
+	// misc.walker()        DOMツリーをたどる
+	// misc.elementWalker() 要素のみDOMツリーをたどる
+	//--------------------------------------------------------------------------------
+	walker : function(parent, func){
+		var els = [parent.firstChild];
+		while(els.length>0){
+			var el = els.pop();
+			func(el);
+			if(!!el.nextSibling){ els.push(el.nextSibling);}
+			if(el.childNodes.length>0){ els.push(el.firstChild);}
+		}
+	},
+	elementWalker : function(parent, func){
+		this.walker(parent, function(el){ if(el.nodeType===1){ func(el);}});
 	}
 };
 
@@ -117,6 +136,7 @@ function toBGimage(pid){
 	minarism  :['AD//4H+/y','HYyPqcutAKN8DNBlU75oa/6FoOF141EG0po67vsWADs='],
 	mochikoro :['AAAAICAgC','IYwDqXmNq9yBUT7alr1wU2Z9gPeRWFiip6RNKfs6otkdBQA7'],
 	mochinyoro:['MDAwKCgoC','FoSPqct9AaOctNqLs4au+29s4kiWUwEAOw=='],
+	nagare    :['N/Z/+7r/y','H4SPEJtt7FqItFo678t3ceWF4iGWIWim6sqirbtubQEAOw=='],
 	nagenawa  :['ACAgACeoC','JYSPacHdCgKUiiaL8NFrO7eF3RiJJWml5geS2QRX8TWxDITnegEAOw=='],
 	nanro     :['MD//+H//y','IIQfGcet2+KLUlFnL8rs+Q+G4khOWKJtaAqYqavBlwwUADs='],
 	nawabari  :['MD//////y','IwRihsnK2xI88dnqJM68zhl9G6V5wYmmagc24vZisavWKYsVADs='],
@@ -174,4 +194,4 @@ function toBGimage(pid){
 	else                  { header='R0lGODdhEAAQAKEAA';}
 
 	return "data:image/gif;base64,"+header+data[0]+'wAAAAAEAAQAAAC'+data[1];
-};
+}

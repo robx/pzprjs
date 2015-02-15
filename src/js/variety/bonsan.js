@@ -24,7 +24,7 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -51,11 +51,11 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var puzzle = this.owner;
-		if(puzzle.pid!=='rectslider' && puzzle.getConfig('autocmp') && this.inputdark(cell)){ return;}
+		if(puzzle.pid!=='rectslider' && puzzle.execConfig('autocmp') && this.inputdark(cell)){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
 		cell.draw();
 	},
 	inputdark : function(cell){
@@ -64,7 +64,7 @@ MouseEvent:{
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
 		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.getQcmp()===0 ? 1 : 0);
+			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
 			targetcell.draw();
 			return true;
 		}
@@ -90,13 +90,16 @@ Cell:{
 		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
 	},
 	
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
 		return Math.max(col, row);
 	},
 	minnum : 0
+},
+"Cell@heyabon":{
+	distance : null,
 },
 
 Board:{
@@ -110,7 +113,7 @@ Board:{
 		this.common.initialize.call(this);
 
 		/* AreaLineManagerより後にすること */
-		this.rects = this.addInfoList(this.owner.AreaSlideMaanger);
+		this.rects = this.addInfoList(this.owner.AreaSlideManager);
 	}
 },
 
@@ -118,14 +121,47 @@ LineManager:{
 	isCenterLine : true
 },
 
-"AreaRoomManager@heyabon":{
+"AreaRoomManager@bonsan,heyabon":{
 	enabled : true
 },
 AreaLineManager:{
 	enabled : true,
 	moveline : true
 },
-"AreaSlideMaanger:AreaShadeManager@rectslider":{
+"AreaLineManager@heyabon":{
+	initMovedBase : function(clist){
+		for(var i=0;i<clist.length;i++){ clist[i].distance = null;}
+		
+		pzpr.common.AreaLineManager.prototype.initMovedBase.call(this, clist);
+	},
+	setMovedBase : function(areaid){
+		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
+		
+		var area = this.area[areaid];
+		if(!area.movevalid){ return;}
+		
+		var cell = area.departure, num = area.departure.qnum;
+		num = (num>=0 ? num : this.owner.board.cellmax);
+		cell.distance = num;
+		
+		/* area.departureは線が1方向にしかふられていないはず */
+		var dir = +({1:1,2:2,4:3,8:4}[this.linkinfo[cell.id] & 0x0F]);
+		var pos = cell.getaddr(), n = cell.distance;
+		while(1){
+			pos.movedir(dir,2);
+			var cell = pos.getc(), adb = cell.adjborder;
+			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
+			
+			cell.distance = --n;
+			if(cell===area.destination){ break;}
+			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+			else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+			else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+			else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+		}
+	}
+},
+"AreaSlideManager:AreaShadeManager@rectslider":{
 	enabled : true,
 	relation : ['cell','line'],
 	isvalid : function(cell){ return cell.base.qnum!==-1;},
@@ -152,6 +188,10 @@ AreaLineManager:{
 		}
 		this.remakeInfo(cidlist);
 	}
+},
+
+Flags:{
+	autocmp : "number"
 },
 
 //---------------------------------------------------------
@@ -194,6 +234,7 @@ Graphic:{
 	mbcolor : "green",
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDashedGrid();
 
 		this.drawTip();
@@ -221,7 +262,7 @@ Graphic:{
 		return null;
 	},
 	getCellNumberColor : function(cell){
-		return (this.owner.getConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
+		return (this.owner.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 
@@ -243,9 +284,18 @@ Encode:{
 		var o=this.owner, bd=o.board;
 		if(o.pid==='bonsan'){
 			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ o.pid='heyabon'; break;}
+				if(bd.border[id].ques===1){ o.changepid("heyabon"); break;}
 			}
 		}
+	},
+
+	decodeKanpen : function(){
+		this.owner.fio.decodeAreaRoom();
+		this.owner.fio.decodeQnum_PBox_Sato();
+	},
+	encodeKanpen : function(){
+		this.owner.fio.encodeAreaRoom();
+		this.owner.fio.encodeQnum_PBox_Sato();
 	}
 },
 "Encode@rectslider":{
@@ -288,81 +338,117 @@ FileIO:{
 			var num = obj.qsub + (obj.qcmp << 4);
 			return (num.toString() + " ");
 		});
+	},
+
+	/* さとがえり用出力です */
+	kanpenOpen : function(){
+		this.decodeAreaRoom();
+		this.decodeQnum_PBox_Sato();
+		this.decodeLine_PBox_Sato();
+	},
+	kanpenSave : function(){
+		this.encodeAreaRoom();
+		this.encodeQnum_PBox_Sato();
+		this.encodeLine_PBox_Sato();
+	},
+	decodeQnum_PBox_Sato : function(){
+		this.decodeCell( function(cell,ca){
+			if     (ca==="-"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+		});
+	},
+	encodeQnum_PBox_Sato : function(){
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=  0){ return (cell.qnum.toString() + " ");}
+			else if(cell.qnum===-2){ return "- ";}
+			else                   { return ". ";}
+		});
+	},
+	decodeLine_PBox_Sato : function(){
+		this.decodeCell( function(cell,ca){
+			var adb = cell.adjborder;
+			if     (ca==="0"){ adb.top.line    = 1;}
+			else if(ca==="1"){ adb.left.line   = 1;}
+			else if(ca==="2"){ adb.bottom.line = 1;}
+			else if(ca==="3"){ adb.right.line  = 1;}
+		});
+	},
+	encodeLine_PBox_Sato : function(){
+		this.encodeCell( function(cell){
+			var adc = cell.adjacent, adb = cell.adjborder, direc = cell.distance-1;
+			if     (cell.isDestination())                              { return "8 ";}
+			else if(adb.top.isLine()    && adc.top.distance   ===direc){ return "0 ";}
+			else if(adb.left.isLine()   && adc.left.distance  ===direc){ return "1 ";}
+			else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return "2 ";}
+			else if(adb.right.isLine()  && adc.right.distance ===direc){ return "3 ";}
+			else                                                       { return ". ";}
+		});
 	}
 },
 
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var pid = this.owner.pid, bd = this.owner.board;
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkConnectObject",
+		"checkLineOverLetter",
+		"checkCurveLine",
 
-		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
+		"checkMovedBlockRect@rectslider",
+		"checkMovedBlockSize@rectslider",
 
-		if( !this.checkCurveLine(linfo) ){ return 'laCurve';}
+		"checkLineLength",
 
-		if(pid==='rectslider'){
-			var rectinfo = bd.rects.getAreaInfo();
-			if( !this.checkAreaRect(rectinfo) ){ return 'csNotRect';}
-			if( !this.checkBlockSize(rectinfo) ){ return 'bkSize1';}
-		}
+		"checkFractal@!rectslider",
+		"checkNoObjectBlock@heyabon",
 
-		if( !this.checkLineLength(linfo) ){ return 'laLenNe';}
+		"checkNoMoveCircle",
+		"checkDisconnectLine"
+	],
 
-		if(pid==='bonsan'){ 
-			if( !this.checkFractal_board() ){ return 'brObjNotSym';}
-		}
-		else if(pid==='heyabon'){
-			var rinfo = bd.getRoomInfo();
-			if( !this.checkFractal(rinfo) ){ return 'bkObjNotSym';}
-			if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
-		}
-
-		if( !this.checkNoLineCircle() ){ return 'nmIsolate';}
-
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
-
-		return null;
+	checkCurveLine : function(){
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
+	},
+	checkLineLength : function(){
+		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
+	},
+	checkNoMoveCircle : function(){
+		this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);}, "nmNoMove");
 	},
 
-	checkCurveLine : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (w===1||h===1);});
-	},
-	checkLineLength : function(linfo){
-		return this.checkAllArea(linfo, function(w,h,a,n){ return (n<0||a===1||n===a-1);});
-	},
-	checkNoLineCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);});
-	},
-	checkBlockSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>1);});
-	},
-
-	checkFractal : function(rinfo){
+	checkFractal : function(){
+		var rinfo = this.getRoomInfo();
+		allloop:
 		for(var id=1;id<=rinfo.max;id++){
-			if(!this.checkFractal_clist(rinfo.area[id].clist)){ return false;}
-		}
-		return true;
-	},
-	checkFractal_board : function(){
-		return this.checkFractal_clist(this.owner.board.cell);
-	},
-	checkFractal_clist : function(clist){
-		var d = clist.getRectSize();
-		d.xx=d.x1+d.x2, d.yy=d.y1+d.y2;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.isDestination() ^ this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){
+			var clist = rinfo.area[id].clist, d = clist.getRectSize();
+			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				if(cell.isDestination() === this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){ continue;}
+				
+				this.failcode.add(this.owner.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
+				if(this.checkOnly){ break allloop;}
 				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
-				return false;
 			}
 		}
-		return true;
+	},
+	checkNoObjectBlock : function(){
+		this.checkNoMovedObjectInRoom(this.getRoomInfo());
+	}
+},
+"AnsCheck@rectslider":{
+	getRectInfo : function(){
+		return (this._info.rect = this._info.rect || this.owner.board.rects.getAreaInfo());
+	},
+
+	checkMovedBlockRect : function(){
+		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
+	},
+	checkMovedBlockSize : function(){
+		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
 	}
 },
 
@@ -373,7 +459,7 @@ FailCode:{
 	laOnNum : ["○の上を線が通過しています。","A line goes through a circle."],
 	laIsolate : ["○につながっていない線があります。","A line doesn't connect any circle."],
 	nmConnected : ["○が繋がっています。","There are connected circles."],
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
+	nmNoMove : ["○から線が出ていません。","A circle doesn't start any line."]
 },
 "FailCode@rectslider":{
 	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
@@ -381,6 +467,6 @@ FailCode:{
 	laOnNum   : ["黒マスの上を線が通過しています。","A line goes through a shaded cell."],
 	laIsolate : ["黒マスにつながっていない線があります。","A line doesn't connect any shaded cell."],
 	nmConnected : ["黒マスが繋がっています。","There are connected shaded cells."],
-	nmIsolate : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
+	nmNoMove  : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
 }
 });

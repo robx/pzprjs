@@ -20,7 +20,6 @@ MouseEvent:{
 			else if(this.mouseend){ this.inputEdit_end();}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputEdit : function(){
 		var cell = this.getcell();
@@ -52,7 +51,7 @@ MouseEvent:{
 			this.inputData = 10;
 		}
 		// 数字つき黒マスの上なら矢印入力ルーチンへ移行
-		else if(cell.getQues()===1 && cell.isNum()){
+		else if(cell.ques===1 && cell.isNum()){
 			this.inputData = 2;
 		}
 		// その他はゲート入力チェックへ
@@ -64,7 +63,7 @@ MouseEvent:{
 		var pos = cell.getaddr(), input = false;
 		
 		// 黒マス上なら何もしない
-		if(cell.getQues()===1){}
+		if(cell.ques===1){}
 		// まだ入力されていない(1つめの入力の)場合
 		else if(this.inputData===null){
 			if(cell===this.mouseCell){
@@ -80,13 +79,13 @@ MouseEvent:{
 			}
 			
 			if(input){
-				if(cell.getQues()===this.inputData){ this.inputData=0;}
+				if(cell.ques===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
 			}
 		}
 		// 入力し続けていて、別のマスに移動した場合
 		else if(cell!==this.mouseCell){
-			if(this.inputData==0){ this.inputData=0; input=true;}
+			if(this.inputData===0){ this.inputData=0; input=true;}
 			else{
 				var dir = this.getdir(this.prevPos, pos);
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
@@ -111,7 +110,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 		
-		if(this.inputData==10){
+		if(this.inputData===10){
 			this.inputData = null;
 			cell.draw();
 		}
@@ -126,8 +125,8 @@ MouseEvent:{
 	},
 	inputGateNumber :function(cell){
 		var bd = this.owner.board;
-		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.getQues()]);}
-		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.getQues()]);}
+		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
+		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
 		bd.hinfo.generateGates();
 
@@ -144,7 +143,7 @@ KeyEvent:{
 	keyup_event : true,
 	moveTarget : function(ca){
 		if(ca.match(/shift/)){ return false;}
-		if(this.owner.editmode && ca!='x'){ return this.moveTCell(ca);}
+		if(this.owner.editmode && ca!=='x'){ return this.moveTCell(ca);}
 		return false;
 	},
 
@@ -163,26 +162,26 @@ KeyEvent:{
 	key_inputqnum_slalom : function(ca){
 		var cell = this.cursor.getc(), bd = this.owner.board;
 
-		if(ca=='q'||ca=='w'||ca=='e'||ca=='r'||ca=='s'||ca==' '){
-			var old=cell.getQues(), newques=-1;
-			if     (ca=='q'){ newques=(old!=1?1:0);}
-			else if(ca=='w'){ newques=21;}
-			else if(ca=='e'){ newques=22;}
-			else if(ca=='r'||ca==' '){ newques= 0;}
-			else if(ca=='s'){ bd.startpos.input(cell);}
+		if(ca==='q'||ca==='w'||ca==='e'||ca==='r'||ca==='s'||ca===' '){
+			var old=cell.ques, newques=-1;
+			if     (ca==='q'){ newques=(old!==1?1:0);}
+			else if(ca==='w'){ newques=21;}
+			else if(ca==='e'){ newques=22;}
+			else if(ca==='r'||ca===' '){ newques= 0;}
+			else if(ca==='s'){ bd.startpos.input(cell);}
 			else{ return;}
-			if(old==newques){ return;}
+			if(old===newques){ return;}
 
 			if(newques!==-1){
 				cell.setQues(newques);
-				if(newques==0){ cell.setNum(-1);}
-				if(old==21||old==22||newques==21||newques==22){ bd.hinfo.generateGates();}
+				if(newques===0){ cell.setNum(-1);}
+				if(old===21||old===22||newques===21||newques===22){ bd.hinfo.generateGates();}
 
 				cell.draw();
 				bd.startpos.draw();
 			}
 		}
-		else if(cell.getQues()===1){
+		else if(cell.ques===1){
 			this.key_inputqnum(ca);
 		}
 	}
@@ -193,8 +192,8 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
-	nummaxfunc : function(){
-		return Math.min(this.owner.board.hinfo.max, this.maxnum);
+	maxnum : function(){
+		return Math.min(255, this.owner.board.hinfo.max);
 	}
 },
 Border:{
@@ -218,6 +217,54 @@ Board:{
 
 		this.startpos.set(this.cell[0]);
 		this.hinfo.init();
+	},
+
+	getTraceInfo : function(){
+		var info = {errgateid:null};
+		var startcell = this.startpos.getc();
+		
+		for(var dir=1;dir<=4;dir++){
+			info = this.searchTraceInfo(startcell, dir);
+			if(info.errgateid!==null){ break;}
+		}
+		return info;
+	},
+	searchTraceInfo : function(cell1, dir){
+		var info = {errgateid:null};
+		var pos = cell1.getaddr(), passed = 0, ordertype=-1;
+
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = pos.getc();
+				if(cell1===cell){ break;} // ちゃんと戻ってきた
+
+				if(cell.ques===21 || cell.ques===22){
+					var r = this.hinfo.getGateid(cell.id);
+					passed++;
+					var gatenumber = this.hinfo.data[r].number;
+					if(gatenumber<=0){ } // 何もしない
+					else if(ordertype===-1){
+						if(gatenumber*2-1===this.hinfo.max){ } // ど真ん中の数字なら何もしない
+						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
+						else if(passed===this.hinfo.max+1-gatenumber){ break;}         // 逆方向なので別の方向から回る
+						else                                         { info.errgateid = r; break;} // 通過順間違い
+					}
+					else if(ordertype===1 && passed!==gatenumber)    { info.errgateid = r; break;} // 通過順間違い
+				}
+
+				var adb = cell.adjborder;
+				if     (cell.lcnt!==2){ break;}
+				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+			}
+			else{
+				if(!pos.getb().isLine()){ break;} // 途切れてたら終了
+			}
+		}
+		return info;
 	}
 },
 BoardExec:{
@@ -228,7 +275,7 @@ BoardExec:{
 			var tques = {21:22,22:21};
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}
@@ -340,7 +387,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawGates()
+		this.drawGates();
 
 		this.drawShadedCells();
 		this.drawArrowNumbers();
@@ -364,51 +411,34 @@ Graphic:{
 	},
 
 	drawGates : function(){
-		var g = this.vinc('cell_gate', 'auto');
+		var g = this.vinc('cell_gate', 'auto', true);
 
 		var lw = Math.max(this.cw/10, 3);	//LineWidth
 		var lm = lw/2;						//LineMargin
 		var ll = lw*1.1;					//LineLength
-		var headers = ["c_dl21", "c_dl22"];
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.quescolor);
 
+			g.vid = "c_dl21_"+cell.id;
 			if(cell.ques===21){ //たて
-				if(this.vnop([headers[0],id].join("_"),this.FILL)){
-					var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
-					g.beginPath();
-					for(py=ry;py<max;py+=ll*2){
-						g.moveTo(px,   py);
-						g.lineTo(px+lw,py);
-						g.lineTo(px+lw,py+ll);
-						g.lineTo(px,   py+ll);
-						g.lineTo(px,   py);
-					}
-					g.closePath();
-					g.fill();
-				}
+				var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
+				g.beginPath();
+				for(py=ry;py<max;py+=ll*2){ g.rect(px,py,lw,ll);}
+				g.fill();
 			}
-			else{ g.vhide([headers[0],id].join("_"));}
+			else{ g.vhide();}
 
+			g.vid = "c_dl22_"+cell.id;
 			if(cell.ques===22){ //よこ
-				if(this.vnop([headers[1],id].join("_"),this.FILL)){
-					var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
-					g.beginPath();
-					for(px=rx;px<max;px+=ll*2){
-						g.moveTo(px,   py);
-						g.lineTo(px+ll,py);
-						g.lineTo(px+ll,py+lw);
-						g.lineTo(px,   py+lw);
-						g.lineTo(px,   py);
-					}
-					g.closePath();
-					g.fill();
-				}
+				var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
+				g.beginPath();
+				for(px=rx;px<max;px+=ll*2){ g.rect(px,py,ll,lw);}
+				g.fill();
 			}
-			else{ g.vhide([headers[1],id].join("_"));}
+			else{ g.vhide();}
 		}
 	},
 
@@ -419,18 +449,17 @@ Graphic:{
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var csize = this.cw*0.42, linewidth = Math.max(this.cw*0.05, 1);
-		g.vdel(["c_stpos", "text_stpos"]);
+		var csize = this.cw*0.42;
 
-		g.lineWidth = linewidth;
+		g.vid = "c_stpos";
+		g.lineWidth   = Math.max(this.cw*0.05, 1);
 		g.strokeStyle = this.quescolor;
-		g.fillStyle = (this.owner.mouse.inputData==10 ? this.errbcolor1 : "white");
-		if(this.vnop("c_stpos",this.FILL)){
-			g.shapeCircle(px, py, csize);
-		}
+		g.fillStyle   = (this.owner.mouse.inputData===10 ? this.errbcolor1 : "white");
+		g.shapeCircle(px, py, csize);
 
-		var option = { key:"text_stpos", ratio:[0.75, 0.66], color:this.quescolor };
-		this.disptext(""+bd.hinfo.max, px, py, option);
+		g.vid = "text_stpos";
+		g.fillStyle = this.quescolor;
+		this.disptext(""+bd.hinfo.max, px, py, {ratio:[0.75, 0.66]});
 	},
 
 	repaintParts : function(blist){
@@ -449,7 +478,7 @@ Graphic:{
 
 	// Xキー押した時に数字を表示するメソッド
 	drawNumbersOnGate : function(keydown){
-		var bd = this.owner.board;
+		var g = this.context, bd = this.owner.board;
 		if(keydown){ bd.hinfo.generateGateNumber();}
 
 		for(var c=0;c<bd.cellmax;c++){
@@ -457,12 +486,13 @@ Graphic:{
 			if(cell.ques!==21 && cell.ques!==22){ continue;}
 
 			var r = bd.hinfo.getGateid(c);
-			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (r>0?bd.hinfo.data[r].number:-1);
-			var text = ((keydown && num>0) ? ""+num : "");
-			var option = { key: "cell_text_"+c };
-			option.color = "tomato";
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_"+c;
+			if(keydown && num>0){
+				g.fillStyle = "tomato";
+				this.disptext(""+num, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -546,7 +576,7 @@ Encode:{
 					if((ver===1) && (this.include(ca,"0","9")||this.include(ca,"a","f"))){
 						cell.qnum = parseInt(ca,16);
 					}
-					else if((ver===1) && ca=='-'){
+					else if((ver===1) && ca==='-'){
 						cell.qnum = parseInt(bstr.substr(i+1,2),16);
 						i+=2;
 					}
@@ -624,9 +654,9 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if     (this.filever==2){ this.decodeBoard_pzpr2();}
-		else if(this.filever==1){ this.decodeBoard_pzpr1();}
-		else if(this.filever==0){ this.decodeBoard_old();}
+		if     (this.filever===2){ this.decodeBoard_pzpr2();}
+		else if(this.filever===1){ this.decodeBoard_pzpr1();}
+		else if(this.filever===0){ this.decodeBoard_old();}
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
@@ -748,118 +778,67 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		this.owner.board.hinfo.generateAll();
+	checklist : [
+		"checkLineOnShadeCell",
+		"checkCrossLine",
+		"checkBranchLine",
+		"checkPassGateOnce",
+		"checkStartid",
+		"checkGateNumber",
+		"checkDeadendLine+",
+		"checkOneLoop",
+		"checkPassAllGate"
+	],
 
-		if( !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
-
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-
-		if( !this.checkGateLine(1) ){ return 'gateRedup';}
-
-		if( !this.checkStartid() ){ return 'gateStart';}
-
-		if( !this.checkGateNumber() ){ return 'nmOrder';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkGateLine(2) ){ return 'nmUnpass';}
-
-		return null;
-	},
-
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
+	generateGateNumber : function(){
+		if(!this._info.gate){
+			this.owner.board.hinfo.generateAll();
+			this._info.gate = true;
+		}
 	},
 
 	checkStartid : function(){
 		var start = this.owner.board.startpos.getc();
 		if(start.lcnt!==2){
 			start.seterr(1);
-			return false;
+			this.failcode.add("stLineNe2");
 		}
-		return true;
 	},
-	checkGateLine : function(type){
-		var result = true, bd = this.owner.board;
+	checkPassGateOnce : function(){ return this.checkGateLine(1, "gateRedup");},
+	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
+	checkGateLine : function(type, code){
+		this.generateGateNumber();
+		var bd = this.owner.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.data[r].clist;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
-			if((type==1 && cnt>1)||(type==2 && cnt==0)){
-				if(this.checkOnly){ return false;}
-				clist.seterr(4);
-				bd.hinfo.getGatePole(r).seterr(1)
-				result = false;
-			}
+			if((type===1 && cnt<=1)||(type===2 && cnt>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(4);
+			bd.hinfo.getGatePole(r).seterr(1);
 		}
-		return result;
 	},
 	checkGateNumber : function(){
-		var sid = [], bd = this.owner.board, adb = bd.startpos.getc().adjborder;
-		if(adb.right.isLine() ){ sid.push({obj:adb.right, dir:4});}
-		if(adb.bottom.isLine()){ sid.push({obj:adb.bottom,dir:2});}
-		if(adb.left.isLine()  ){ sid.push({obj:adb.left,  dir:3});}
-		if(adb.top.isLine()   ){ sid.push({obj:adb.top,   dir:1});}
-
-		for(var i=0;i<sid.length;i++){
-			var pos = sid[i].obj.getaddr();
-			var dir=sid[i].dir, ordertype=-1, passing=0;
-
-			while(1){
-				pos.movedir(dir,1);
-				if(pos.oncell()){
-					var cell = pos.getc();
-					if(bd.startpos.equals(cell)){ return true;} // ちゃんと戻ってきた
-
-					if(cell.getQues()===21 || cell.getQues()===22){
-						var r = bd.hinfo.getGateid(cell.id);
-						var gatenumber = bd.hinfo.data[r].number;
-						passing++;
-						if(gatenumber<=0){ } // 何もしない
-						else if(ordertype==-1){
-							if(gatenumber*2-1==bd.hinfo.max){ } // ど真ん中の数字なら何もしない
-							else if(passing==gatenumber)               { ordertype=1;}
-							else if(passing==bd.hinfo.max+1-gatenumber){ break;      } // 逆方向なので逆の方向から回る
-							else{
-								bd.hinfo.data[r].clist.seterr(4);
-								bd.hinfo.getGatePole(r).seterr(1);
-								return false;
-							}
-						}
-						else if(ordertype==1 && passing!=gatenumber){
-							bd.hinfo.data[r].clist.seterr(4);
-							bd.hinfo.getGatePole(r).seterr(1);
-							return false;
-						}
-					}
-
-					var adb = cell.adjborder;
-					if     (cell.lcnt!==2){ break;}
-					else if(dir!=1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!=2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!=3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!=4 && adb.left.isLine()  ){ dir=3;}
-				}
-				else{
-					if(!pos.getb().isLine()){ break;} // 途切れてたら、何事もなかったように終了
-				}
-			}
+		this.generateGateNumber();
+		var bd = this.owner.board, info = bd.getTraceInfo();
+		var r = info.errgateid;
+		if(r!==null){
+			this.failcode.add("lrOrder");
+			bd.hinfo.data[r].clist.seterr(4);
+			bd.hinfo.getGatePole(r).seterr(1);
 		}
-		return true;
 	}
 },
 
 FailCode:{
 	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
-	gateStart : ["○から線が２本出ていません。","A line goes through a gate twice or more."],
-	nmOrder   : ["旗門を通過する順番が間違っています。","the order of passing the gate is wrong."],
-	nmUnpass  : ["線が通過していない旗門があります。","there is a gate that the line is not passing."]
+	gateUnpass: ["線が通過していない旗門があります。","There is a gate that the line is not passing."],
+	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
+	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
 },
 
 //---------------------------------------------------------
@@ -884,26 +863,26 @@ HurdleManager:{
 	getGatePole : function(gateid){
 		var bd = this.owner.board;
 		var clist = new this.owner.CellList(), cell1, cell2;
-		if(this.data[gateid].val==21){
+		if(this.data[gateid].val===21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
 		}
-		else if(this.data[gateid].val==22){
+		else if(this.data[gateid].val===22){
 			cell1 = bd.getc(this.data[gateid].x1-2, this.data[gateid].y1);
 			cell2 = bd.getc(this.data[gateid].x2+2, this.data[gateid].y1);
 		}
 		else{ return [];}
-		if(!cell1.isnull && cell1.getQues()===1){ clist.add(cell1);}
-		if(!cell2.isnull && cell2.getQues()===1){ clist.add(cell2);}
+		if(!cell1.isnull && cell1.ques===1){ clist.add(cell1);}
+		if(!cell2.isnull && cell2.ques===1){ clist.add(cell2);}
 		return clist;
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(c){
 		var bd = this.owner.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
-		cell2=adc.top;    if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.bottom; if(!cell2.isnull && cell2.getQues()===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.left;   if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.right;  if(!cell2.isnull && cell2.getQues()===22){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.top;    if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.bottom; if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.left;   if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
+		cell2=adc.right;  if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
 		return idlist;
 	},
 
@@ -956,20 +935,20 @@ HurdleManager:{
 		for(var r=1;r<=this.max;r++){ nums[r] = [];}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()===1){
-				var qn = cell.getNum(), dir = cell.getQdir(), adc = cell.adjacent;
+			if(cell.ques===1){
+				var qn = cell.getNum(), dir = cell.qdir, adc = cell.adjacent;
 				if(qn<=0 || qn>this.max){ continue;}
-				if((dir===cell.NDIR||dir===cell.UP) && adc.top.getQues()   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.getQues()===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.LT) && adc.left.getQues()  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.RT) && adc.right.getQues() ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
 			}
 		}
 
 		// セットされた数字を全てのnumsから消す関数
 		var self = this, delnum = function(dn){ for(var r=1;r<=self.max;r++){
 			var atmp = [];
-			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!=1){ atmp.push(nums[r][i]);} }
+			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!==1){ atmp.push(nums[r][i]);} }
 			nums[r] = atmp;
 		} };
 		var decnumber = [];
@@ -977,9 +956,9 @@ HurdleManager:{
 
 		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
 		for(var r=1;r<=this.max;r++){
-			if(nums[r].length==2 && nums[r][0]>0 && nums[r][0]==nums[r][1]){
+			if(nums[r].length===2 && nums[r][0]>0 && nums[r][0]===nums[r][1]){
 				this.data[r].number = nums[r][0];
-				decnumber[nums[r][0]] = 1
+				decnumber[nums[r][0]] = 1;
 				nums[r] = [];
 			}
 		}
@@ -994,13 +973,13 @@ HurdleManager:{
 
 			// 競合していない数字がいくつ残っているか数える
 			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
-			for(var r=1;r<=this.max;r++){ if(nums[r].length==1){ numcnt[nums[r][0]]++;} }
+			for(var r=1;r<=this.max;r++){ if(nums[r].length===1){ numcnt[nums[r][0]]++;} }
 
 			// 各旗門をチェック
 			for(var r=1;r<=this.max;r++){
 				// 2つ以上の数字が繋がっている場合はダメです
 				// また、複数箇所の旗門の候補になっている場合もダメ
-				var cand=(nums[r].length==1?nums[r][0]:-1);
+				var cand=(nums[r].length===1?nums[r][0]:-1);
 				if(cand>0 && numcnt[cand]>1){ cand=-1;}
 
 				// 旗門に数字をセット
@@ -1024,7 +1003,7 @@ HurdleManager:{
 			for(var r=1;r<=this.max;r++){
 				var cand=-1;
 				for(var i=0;i<nums[r].length;i++){
-					if(numcnt[nums[r][i]]==1){ cand=(cand==-1?nums[r][i]:-1);}
+					if(numcnt[nums[r][i]]===1){ cand=(cand===-1?nums[r][i]:-1);}
 				}
 
 				// 旗門に数字をセット

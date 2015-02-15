@@ -88,50 +88,42 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 "AnsCheck@fillmat":{
-	checkAns : function(){
+	checklist : [
+		"checkBorderCross",
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		"checkSideAreaRoomSize",
+		"checkTatamiMaxSize",
+		"checkDoubleNumber",
+		"checkNumberAndSize",
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaRoomSize(rinfo) ){ return 'sbSizeEq';}
-		if( !this.checkTatamiMaxSize(rinfo) ){ return 'bkLenGt4';}
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-		if( !this.checkNumberAndSize(rinfo) ){ return 'bkSizeNe';}
+		"checkBorderDeadend+"
+	],
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-
-		return null;
+	checkTatamiMaxSize : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;}, "bkLenGt4");
 	},
-
-	checkTatamiMaxSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1)&&a<=4;});
-	},
-	checkSideAreaRoomSize : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.length;});
+	checkSideAreaRoomSize : function(){
+		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.length;}, "bsSizeEq");
 	}
 },
 "AnsCheck@usotatami":{
-	checkAns : function(){
+	checklist : [
+		"checkBorderCross",
 
-		if( !this.checkBorderCount(4,0) ){ return 'bdCross';}
+		"checkNoNumber",
+		"checkDoubleNumber",
+		"checkTatamiDiffSize",
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-		if( !this.checkTatamiDiffSize(rinfo) ){ return 'bkSizeEq';}
+		"checkBorderDeadend+",
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
+		"checkTatamiBreadth"
+	],
 
-		if( !this.checkTatamiBreadth(rinfo) ){ return 'bkWidthGt1';}
-
-		return null;
+	checkTatamiDiffSize : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);}, "bkSizeEq");
 	},
-
-	checkTatamiDiffSize : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (n<0||n!==a);});
-	},
-	checkTatamiBreadth : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (w===1||h===1);});
+	checkTatamiBreadth : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	}
 },
 
@@ -141,6 +133,6 @@ FailCode:{
 	bkSizeNe : ["数字とタタミの大きさが違います。","The size of tatami and the number written in Tatami is different."],
 	bkSizeEq : ["数字とタタミの大きさが同じです。","The size of tatami and the number is the same."],
 	bkLenGt4 : ["「幅１マス、長さ１～４マス」ではないタタミがあります。","The width of Tatami is over 1 or the length is over 4."],
-	sbSizeEq : ["隣り合うタタミの大きさが同じです。","the same size Tatami are adjacent."]
+	bsSizeEq : ["隣り合うタタミの大きさが同じです。","The same size Tatami are adjacent."]
 }
 });

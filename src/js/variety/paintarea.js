@@ -13,8 +13,7 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -99,25 +98,19 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( pzpr.EDITOR && !this.checkSameColorTile() ){ return 'bkMixed';}
-
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
-
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkDir4ShadeCell() ){ return 'nmShadeNe';}
-		if( !this.check2x2UnshadeCell() ){ return 'cu2x2';}
-
-		return null;
-	},
+	checklist : [
+		"checkSameColorTile",					// 問題チェック用
+		"checkConnectShade",
+		"check2x2ShadeCell+",
+		"checkDir4ShadeCell",
+		"check2x2UnshadeCell++"
+	],
 
 	checkDir4ShadeCell : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isShade();},0);
+		this.checkDir4Cell(function(cell){ return cell.isShade();},0, "nmShadeNe");
 	},
 	check2x2UnshadeCell : function(){
-		return this.check2x2Block( function(cell){ return cell.isUnshade();} );
+		this.check2x2Block( function(cell){ return cell.isUnshade();}, "cu2x2" );
 	}
 },
 

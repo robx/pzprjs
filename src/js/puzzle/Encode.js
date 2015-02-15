@@ -58,7 +58,7 @@ Encode:{
 		var pzl = new pzpr.parser.URLData('');
 		
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
-		if(type===pzl.URL_KANPEN && puzzle.pid=='lits'){ type = pzl.URL_KANPENP;}
+		if(type===pzl.URL_KANPEN && puzzle.pid==='lits'){ type = pzl.URL_KANPENP;}
 
 		this.outpflag = null;
 		this.outcols = bd.qcols;
@@ -77,7 +77,7 @@ Encode:{
 
 		case pzl.URL_KANPEN:
 			puzzle.fio.datastr = "";
-			this.encodeKanpen()
+			this.encodeKanpen();
 			this.outbstr = puzzle.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
 			puzzle.fio.datastr = "";
 			break;

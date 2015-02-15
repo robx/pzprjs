@@ -20,7 +20,6 @@ MouseEvent:{
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	getpos : function(rc){
-		var pc = this.owner.painter;
 		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by&~1)+1));
 	}
 },
@@ -76,8 +75,8 @@ Board:{
 	estimateSize : function(type, col, row){
 		var total = 0;
 		if(type==='cell'){
-			if     (this.shape==0){ total = (row>>1)*(2*col-1)+((row%2==1)?col:0);}
-			else if(this.shape==3 || this.shape==undefined){ total = (row>>1)*(2*col+1)+((row%2==1)?col:0);}
+			if     (this.shape===0){ total = (row>>1)*(2*col-1)+((row%2===1)?col:0);}
+			else if(this.shape===3 || this.shape===undefined){ total = (row>>1)*(2*col+1)+((row%2===1)?col:0);}
 			else{ total = col*row;}
 		}
 		return total;
@@ -89,22 +88,22 @@ Board:{
 			obj.id = id;
 			obj.isnull = false;
 
-			if(this.shape==0){
+			if(this.shape===0){
 				var row = (((2*id)/(2*this.qcols-1))|0);
 				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==1){
+			else if(this.shape===1){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==2){
+			else if(this.shape===2){
 				var row = ((id/this.qcols)|0);
 				obj.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
 				obj.by = row*2+1;
 			}
-			else if(this.shape==3){
+			else if(this.shape===3){
 				var row = (((2*id+1)/(2*this.qcols+1))|0);
 				obj.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
 				obj.by = row*2+1;
@@ -227,7 +226,7 @@ Graphic:{
 		this.drawTarget();
 	},
 	flushCanvas : function(){
-		var g = this.vinc('background', 'crispEdges');
+		var g = this.vinc('background', 'crispEdges', true);
 		var minbx, minby, bwidth, bheight;
 		var bw = this.bw, bh = this.bh;
 
@@ -246,14 +245,13 @@ Graphic:{
 			bheight = bd.maxby - minby;
 		}
 
+		g.vid = "BG";
 		g.fillStyle = this.bgcolor;
-		if(this.vnop("BG",this.NONE)){
-			g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
-		}
+		g.fillRect(minbx*bw-0.5, minby*bh-0.5, bwidth*bw+1, bheight*bh+1);
 	},
 
 	drawGrid_tawa : function(){
-		var g = this.vinc('grid', 'crispEdges'), bd = this.owner.board;
+		var g = this.vinc('grid', 'crispEdges', true), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -261,27 +259,24 @@ Graphic:{
 
 		var lw = Math.max(this.cw/36, 1);
 		var lm = (lw-1)/2;
-		var headers = ["bdx_", "bdy"];
 
 		g.fillStyle = this.gridcolor;
 		var xa = Math.max(x1,bd.minbx), xb = Math.min(x2,bd.maxbx);
 		var ya = Math.max(y1,bd.minby), yb = Math.min(y2,bd.maxby);
 		ya-=(ya&1);
 		for(var by=ya;by<=yb;by+=2){
-			var cy = (by>>1);
-			if(this.vnop(headers[0]+by,this.NONE)){
-				var redx = 0, redw = 0;
-				if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
-				else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
-				else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
-				g.fillRect((x1+redx)*this.bw-lm-0.5, by*this.bh-lm-0.5, (x2-x1-redw)*this.bw+1, lw);
-			}
-			if(by>=bd.maxby){ break;}
+			var cy = (by>>1), redx = 0, redw = 0;
+			if     ((bd.shape===3 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===0 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=2;}
+			else if((bd.shape===2 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===1 && (by===bd.maxby&&!(cy&1)))){ redx=1; redw=1;}
+			else if((bd.shape===1 && (by===bd.minby||(by===bd.maxby&&(cy&1)))) || (bd.shape===2 && (by===bd.maxby&&!(cy&1)))){ redx=0; redw=1;}
+			g.vid = "bdx_"+by;
+			g.fillRect((x1+redx)*this.bw-lm-0.5, by*this.bh-lm-0.5, (x2-x1-redw)*this.bw+1, lw);
 
-			var xs = xa;
-			if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
-			for(var bx=xs;bx<=xb;bx+=2){
-				if(this.vnop([headers[1],bx,by].join("_"),this.NONE)){
+			if(by<bd.maxby){
+				var xs = xa;
+				if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
+				for(var bx=xs;bx<=xb;bx+=2){
+					g.vid = ["bdy_",bx,by].join("_");
 					g.fillRect(bx*this.bw-lm-0.5, by*this.bh-lm-0.5, lw, this.ch+1);
 				}
 			}
@@ -358,19 +353,14 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkThreeShadeCells() ){ return 'csConsecGt3';}
-
-		if( !this.checkUnderCells() ){ return 'csNotOnShade';}
-
-		if( !this.checkNumbers() ){ return 'ceShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		"checkThreeShadeCells",
+		"checkUnderCells",
+		"checkNumbers"
+	],
 
 	checkThreeShadeCells : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			var clist = new this.owner.CellList();
 			for(var bx=0;bx<=bd.maxbx;bx++){
@@ -382,16 +372,15 @@ AnsCheck:{
 				}
 				else{ clist.add(cell);}
 			}
-			if(clist.length>=3){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(clist.length<3){ continue;}
+			
+			this.failcode.add("csConsecGt3");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	},
 	checkNumbers : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -402,37 +391,33 @@ AnsCheck:{
 			clist.add(cell.relcell( 2, 0));
 			clist.add(cell.relcell(-1, 2));
 			clist.add(cell.relcell( 1, 2));
-
-			var cnt=clist.filter(function(cell){ return cell.isShade();}).length;
-			if(cell.getQnum()!==cnt){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				clist.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			
+			this.failcode.add("nmShadeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.seterr(1);
 		}
-		return result;
 	},
 	checkUnderCells : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 
-			if(cell.relcell(-1,2).isUnshade() && cell.relcell(1,2).isUnshade()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				cell.relcell(-1,2).seterr(1);
-				cell.relcell(1,2).seterr(1);
-				result = false;
-			}
+			if(cell.relcell(-1,2).isShade() || cell.relcell(1,2).isShade()){ continue;}
+			
+			this.failcode.add("csNotOnShade");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			cell.relcell(-1,2).seterr(1);
+			cell.relcell(1,2).seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	ceShadeNe    : ["数字の周りに入っている黒マスの数が違います。","The number of shaded cells around a number is not correct."],
+	nmShadeNe    : ["数字の周りに入っている黒マスの数が違います。","The number of shaded cells around a number is not correct."],
 	csConsecGt3  : ["黒マスが横に3マス以上続いています。","There or more shaded cells continue horizonally."],
 	csNotOnShade : ["黒マスの下に黒マスがありません。","There are no shaded cells under a shaded cell."]
 }

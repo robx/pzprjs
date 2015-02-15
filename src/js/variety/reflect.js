@@ -18,8 +18,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputQues([0,2,3,4,5,11]);}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -34,12 +33,12 @@ KeyEvent:{
 	key_inputLineParts : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='q'){ cell.setQues(2); cell.setQnum(-1);}
-		else if(ca=='w'){ cell.setQues(3); cell.setQnum(-1);}
-		else if(ca=='e'){ cell.setQues(4); cell.setQnum(-1);}
-		else if(ca=='r'){ cell.setQues(5); cell.setQnum(-1);}
-		else if(ca=='t'){ cell.setQues(11);cell.setQnum(-1);}
-		else if(ca=='y'){ cell.setQues(0); cell.setQnum(-1);}
+		if     (ca==='q'){ cell.setQues(2); cell.setQnum(-1);}
+		else if(ca==='w'){ cell.setQues(3); cell.setQnum(-1);}
+		else if(ca==='e'){ cell.setQues(4); cell.setQnum(-1);}
+		else if(ca==='r'){ cell.setQues(5); cell.setQnum(-1);}
+		else if(ca==='t'){ cell.setQues(11);cell.setQnum(-1);}
+		else if(ca==='y'){ cell.setQues(0); cell.setQnum(-1);}
 		else{ return false;}
 
 		cell.drawaround();
@@ -83,7 +82,7 @@ BoardExec:{
 			}
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = tques[cell.getQues()];
+				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
 			}
 		}
@@ -130,60 +129,52 @@ Graphic:{
 	},
 
 	drawTriangleBorder : function(){
-		var g = this.vinc('cell_triangle_border', 'crispEdges');
+		var g = this.vinc('cell_triangle_border', 'crispEdges', true);
 
-		var header = "b_tb_";
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], lflag = border.isVert();
 			var qs1 = border.sidecell[0].ques, qs2 = border.sidecell[1].ques;
 			var px = border.bx*this.bw, py = border.by*this.bh;
 
+			g.vid = "b_tb_"+border.id;
 			g.fillStyle = this.gridcolor;
 			if(lflag && (qs1===3||qs1===4)&&(qs2===2||qs2===5)){
-				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRectCenter(px, py, 0.5, this.bh);
-				}
+				g.fillRectCenter(px, py, 0.5, this.bh);
 			}
 			else if(!lflag && (qs1===2||qs1===3)&&(qs2===4||qs2===5)){
-				if(this.vnop(header+border.id,this.NONE)){
-					g.fillRectCenter(px, py, this.bw, 0.5);
-				}
+				g.fillRectCenter(px, py, this.bw, 0.5);
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	},
 	draw11s : function(){
-		var g = this.vinc('cell_ques', 'crispEdges');
-		var headers = ["c_lp1_", "c_lp2_"];
+		var g = this.vinc('cell_ques', 'crispEdges', true);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 
+			g.vid = "c_lp11_"+cell.id;
 			if(cell.ques===11){
-				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.76;
+				var lw = this.lw+2, lm=(lw-1)/2, ll=this.cw*0.38;
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				g.fillStyle = this.quescolor;
-
-				if(this.vnop(headers[0]+id,this.NONE)){
-					g.fillRectCenter(px, py, lm, ll/2);
-				}
-				if(this.vnop(headers[1]+id,this.NONE)){
-					g.fillRectCenter(px, py, ll/2, lm);
-				}
+				g.beginPath();
+				g.setOffsetLinePath(px,py, -lm,-lm, -lm,-ll, lm,-ll, lm,-lm, ll,-lm, ll,lm, lm,lm, lm,ll, -lm,ll, -lm,lm, -ll,lm, -ll,-lm, true);
+				g.fill();
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumber1 : function(cell){
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var text = ((cell.ques>=2 && cell.ques<=5) && cell.qnum>0 ? ""+cell.qnum : "");
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.45];
-		option.color = "white";
-		option.position = cell.ques;
-		this.disptext(text, px, py, option);
+		var g = this.context;
+		g.vid = "cell_text_"+cell.id;
+		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
+			g.fillStyle = "white";
+			this.disptext(""+cell.qnum, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
+		}
+		else{ g.vhide();}
 	},
 
 	repaintParts : function(blist){
@@ -276,64 +267,58 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkCrossOutOfMark() ){ return 'lnCrossExMk';}
-
-		if( !this.checkTriNumber(1) ){ return 'lnLenGt';}
-		if( !this.checkTriangle() ){ return 'lnExTri';}
-		if( !this.checkTriNumber(2) ){ return 'lnLenLt';}
-
-		if( !this.checkNotCrossOnMark() ){ return 'lnNotCrossMk';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
+	checklist : [
+		"checkBranchLine",
+		"checkCrossOutOfMark",
+		"checkLongLines",
+		"checkTriangle",
+		"checkShortLines",
+		"checkNotCrossOnMark",
+		"checkDeadendLine+",
+		"checkOneLoop"
+	],
 
 	checkCrossOutOfMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);});
-	},
-	checkNotCrossOnMark : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt!==4 && cell.ques===11);});
+		this.checkAllCell(function(cell){ return (cell.lcnt===4 && cell.ques!==11);}, "lnCrossExMk");
 	},
 
 	checkTriangle : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.lcnt===0 && (cell.ques>=2 && cell.ques<=5)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(4);
-				result = false;
-			}
+			if(cell.ques===0 || cell.ques===11 || cell.lcnt>0){ continue;}
+			
+			this.failcode.add("lnExTri");
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
 		}
-		return result;
 	},
 
-	checkTriNumber : function(type){
+	checkLongLines  : function(){ this.checkTriNumber(1, "lnLenGt");},
+	checkShortLines : function(){ this.checkTriNumber(2, "lnLenLt");},
+	checkTriNumber : function(type, code){
 		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQues()<2 || cell.getQues()>5 || !cell.isValidNum()){ continue;}
+			if(cell.ques===0 || cell.ques===11 || !cell.isValidNum()){ continue;}
 
 			var blist = cell.getTriLine();
-			if(type==1?cell.getQnum()<(blist.length+1):cell.getQnum()>(blist.length+1)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(4);
-				if(result){ bd.border.seterr(-1);}
-				blist.seterr(1);
-				result = false;
-			}
+			if(type===1 ? cell.qnum>=(blist.length+1) : cell.qnum<=(blist.length+1)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
+			blist.seterr(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.border.setnoerr();
+		}
 	}
 },
 
 FailCode:{
+	lnCrossExMk : ["十字以外の場所で線が交差しています。","There is a crossing line out of cross mark."],
 	lnExTri : ["線が三角形を通過していません。","A line doesn't goes through a triangle."],
 	lnLenGt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."],
 	lnLenLt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."]

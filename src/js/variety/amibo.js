@@ -24,7 +24,7 @@ MouseEvent:{
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
 
-		cell.setQans((this.btn.Left?[1,2,3,0]:[3,0,1,2])[cell.getQans()]);
+		cell.setQans((this.btn.Left?{0:12,12:13,13:11,11:0}:{0:11,11:13,13:12,12:0})[cell.qans]);
 		cell.draw();
 	}
 },
@@ -40,7 +40,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd=this.owner.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
@@ -69,10 +69,11 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
+			var tans = {0:0,11:11,12:13,13:12};
 			var clist = this.owner.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans([0,2,1,3][cell.getQans()]);
+				cell.setQans(tans[cell.qans]);
 			}
 		}
 	}
@@ -92,7 +93,7 @@ BoardExec:{
 	},
 	
 	calcLinkInfo : function(cell){
-		return (this.linkinfo[cell.id] = [0,19,28,31][cell.qans]);
+		return (this.linkinfo[cell.id] = {0:0,11:31,12:19,13:28}[cell.qans]);
 	},
 
 	irowakeEnable : function(){
@@ -108,7 +109,7 @@ BoardExec:{
 	getBarInfo : function(){
 		var puzzle = this.owner, bd = puzzle.board;
 		function eachcell(cell, vert){
-			var qa = cell.qans, isbar = (qa===3 || qa===(vert?1:2));
+			var qa = cell.qans, isbar = (qa===11 || qa===(vert?12:13));
 			if(!bar && isbar){
 				bar = binfo.addArea();
 				bar.vert = vert;
@@ -141,7 +142,7 @@ BoardExec:{
 		}
 		
 		for(var c=0;c<bd.cellmax;c++){
-			if(binfo.id[c].length==2){ /* 0～2になる */
+			if(binfo.id[c].length===2){ /* 0～2になる */
 				binfo.area[binfo.id[c][0]].link.push(binfo.id[c][1]);
 				binfo.area[binfo.id[c][1]].link.push(binfo.id[c][0]);
 			}
@@ -168,10 +169,10 @@ BoardExec:{
 	},
 	addArea : function(){
 		var areaid = ++this.max;
-		return this.area[areaid] = {
+		return (this.area[areaid] = {
 			clist:(new this.owner.CellList()), id:areaid,
 			link:[], pole:[], vert:false
-		};
+		});
 	}
 },
 CellList:{
@@ -183,6 +184,16 @@ CellList:{
 			else if(err===6){ if( vert){ cell.seterr(4);}}
 			else{ cell.seterr(vert?5:6);}
 		}
+	}
+},
+
+/* 互換性のための定義 */
+ObjectOperation:{
+	decode : function(strs){
+		var result = this.common.decode.call(this,strs);
+		this.old = [0,12,13,11][this.old];
+		this.num = [0,12,13,11][this.num];
+		return result;
 	}
 },
 
@@ -211,7 +222,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawTateyokos()
+		this.drawTateyokos();
 		this.drawTateyokos_sub();
 
 		this.drawCircles();
@@ -226,81 +237,69 @@ Graphic:{
 
 	// 白丸と線の間に隙間があいてしまうので、隙間部分を描画する
 	drawTateyokos_sub : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges'); /* 同じレイヤでよい */
+		var g = this.vinc('cell_tateyoko', 'crispEdges', true); /* 同じレイヤでよい */
 
 		g.fillStyle = this.linecolor;
-
-		var headers = ["c_bars1_", "c_bars2_", "c_bars3_", "c_bars4_"];
 		var clist = this.range.cells;
 		var bw = this.bw, bh = this.bh;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
-			if(!cell.isNum()){
-				g.vhide([headers[0]+id, headers[1]+id, headers[2]+id, headers[3]+id]);
-				continue;
-			}
+			var cell = clist[i], isnum = cell.isNum();
 
-			var lw = Math.max(this.cw/6, 3);	//LineWidth
-			var lp = (this.bw-lw/2);			//LinePadding
-			var px = cell.bx*this.bw-0.5, py = cell.by*this.bh-0.5;
+			var lw = Math.max(bw/3, 3);			//LineWidth
+			var lp = (bw-lw/2);					//LinePadding
+			var px = cell.bx*bw, py = cell.by*bh;
 
 			var cell2 = cell.adjacent.top, qa = cell2.qans;
-			if(qa===1||qa===3){
+			g.vid = "c_bars1a_"+cell.id;
+			if(isnum && (qa===11||qa===12)){
 				g.fillStyle = this.getBarColor(cell2,true);
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.fillRect(px-bw+lp, py-bh, lw, bh);
-				}
+				g.fillRect(px-bw+lp, py-bh, lw, bh);
 			}
-			else{ g.vhide(headers[0]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.bottom, qa = cell2.qans;
-			if(qa===1||qa===3){
+			g.vid = "c_bars1b_"+cell.id;
+			if(isnum && (qa===11||qa===12)){
 				g.fillStyle = this.getBarColor(cell2,true);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillRect(px-bw+lp, py+1, lw, bh);
-				}
+				g.fillRect(px-bw+lp, py+1, lw, bh);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.left, qa = cell2.qans;
-			if(qa===2||qa===3){
+			g.vid = "c_bars2a_"+cell.id;
+			if(isnum && (qa===11||qa===13)){
 				g.fillStyle = this.getBarColor(cell2,false);
-				if(this.vnop(headers[2]+id,this.FILL)){
-					g.fillRect(px-bw, py-bh+lp, bw, lw);
-				}
+				g.fillRect(px-bw, py-bh+lp, bw, lw);
 			}
-			else{ g.vhide(headers[2]+id);}
+			else{ g.vhide();}
 
 			var cell2 = cell.adjacent.right, qa = cell2.qans;
-			if(qa===2||qa===3){
+			g.vid = "c_bars2b_"+cell.id;
+			if(isnum && (qa===11||qa===13)){
 				g.fillStyle = this.getBarColor(cell2,false);
-				if(this.vnop(headers[3]+id,this.FILL)){
-					g.fillRect(px+1, py-bh+lp, bw, lw);
-				}
+				g.fillRect(px+1, py-bh+lp, bw, lw);
 			}
-			else{ g.vhide(headers[3]+id);}
+			else{ g.vhide();}
 		}
 	},
 
 	drawPekeBorder : function(){
-		var g = this.vinc('border_pbd', 'crispEdges');
+		var g = this.vinc('border_pbd', 'crispEdges', true);
 
-		g.fillStyle = "rgb(64,64,64)";
-		var header = "b_qsub2_";
+		g.fillStyle = this.borderQsubcolor2;
 		var rw = this.bw*0.6;
+		var lm = this.lm;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
+			g.vid = "b_qsub2_"+border.id;
 			if(border.qsub===2){
-				if(this.vnop(header+border.id,this.NONE)){
-					var lw = this.lw + this.addlw, lm = this.lm;
-					var px = border.bx*this.bw, py = border.by*this.bh;
-					if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
-					else               { g.fillRectCenter(px, py, rw+lm, lm);}
-				}
+				var px = border.bx*this.bw, py = border.by*this.bh;
+				if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
+				else               { g.fillRectCenter(px, py, rw+lm, lm);}
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -319,9 +318,9 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(obj,ca){
-			if     (ca==="l"){ obj.qans = 1;}
-			else if(ca==="-"){ obj.qans = 2;}
-			else if(ca==="+"){ obj.qans = 3;}
+			if     (ca==="l"){ obj.qans = 12;}
+			else if(ca==="-"){ obj.qans = 13;}
+			else if(ca==="+"){ obj.qans = 11;}
 			else if(ca==="#"){ obj.qnum = -2;}
 			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
@@ -329,9 +328,9 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qans=== 1){ return "l ";}
-			else if(obj.qans=== 2){ return "- ";}
-			else if(obj.qans=== 3){ return "+ ";}
+			if     (obj.qans===12){ return "l ";}
+			else if(obj.qans===13){ return "- ";}
+			else if(obj.qans===11){ return "+ ";}
 			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
 			else if(obj.qnum===-2){ return "# ";}
 			else                  { return ". ";}
@@ -343,97 +342,110 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkNotMultiBar",
+
+		"checkLoop_amibo",
+		"checkLongBar",
+		"checkCrossedLength",
+		"checkShortBar",
+
+		"checkSingleBar",
+
+		"checkAllBarConnect+"
+	],
+
+	getBarInfo : function(){
+		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+	},
+	getConnectionInfo : function(){
+		return (this._info.bararea = this._info.bararea || this.owner.board.barinfo.getAreaInfo());
+	},
+
+	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},
+	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},
+	checkOutgoingBars : function(type, code){
 		var bd = this.owner.board;
-
-		var binfo = bd.getBarInfo();
-		if( !this.checkOutgoingBars(binfo, 1) ){ return 'nmLineGt1';}
-
-		bd.cell.filter(function(cell){ return cell.noNum();}).seterr(-1);
-		if( !this.checkLoop() ){ return 'lbLoop';}
-		if( !this.checkPoleLength(binfo,1) ){ return 'lbLenGt';}
-		if( !this.checkCrossedLength(binfo) ){ return 'lbNotCrossEq';}
-		if( !this.checkPoleLength(binfo,2) ){ return 'lbLenLt';}
-		bd.cell.seterr(0);
-
-		if( !this.checkOutgoingBars(binfo, 2) ){ return 'nmIsolate';}
-
-		var areainfo = bd.barinfo.getAreaInfo();
-		if( !this.checkOneArea(areainfo) ){ return 'lbDivide';}
-
-		return null;
-	},
-	check1st : function(){
-		var areainfo = this.owner.board.barinfo.getAreaInfo();
-		return (this.checkOneArea(areainfo) ? null : 'lbDivide');
-	},
-
-	checkOutgoingBars : function(binfo, type){
-		var result = true, bd = this.owner.board;
+		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
 			var cid = binfo.pole[c];
-			if((type===1 && cid.length>1) || (type===2 && cid.length===0)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			if((type===1 && cid.length<=1) || (type===2 && cid.length>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	},
-	checkPoleLength : function(binfo,type){
+	checkLongBar  : function(){ this.checkPoleLength(1, "lbLenGt");},
+	checkShortBar : function(){ this.checkPoleLength(2, "lbLenLt");},
+	checkPoleLength : function(type, code){
 		var result = true, bd = this.owner.board;
+		var binfo = this.getBarInfo();
+		
+		allloop:
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			for(var i=0,len=binfo.pole[c].length;i<len;i++){
 				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
-				if((type===1 && llen>qn) || (type===2 && llen<qn)){
-					if(this.checkOnly){ return false;}
-					cell.seterr(1);
-					clist.setErrorBar(bar.vert);
-					result = false;
-				}
+				if((type===1 && llen<=qn) || (type===2 && llen>=qn)){ continue;}
+				
+				result = false;
+				if(this.checkOnly){ break allloop;}
+				cell.seterr(1);
+				clist.setErrorBar(bar.vert);
 			}
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+		}
 	},
-	checkCrossedLength : function(binfo){
+	checkCrossedLength : function(){
 		var result=true;
+		var binfo = this.getBarInfo();
 		for(var id=1,max=binfo.max;id<=max;id++){
 			var check = false, bar = binfo.area[id], linkid = bar.link, clist = bar.clist;
 			for(var i=0,len=linkid.length;i<len;i++){
 				if(clist.length===binfo.area[linkid[i]].clist.length){ check=true; break;}
 			}
-			if(!check){
-				if(this.checkOnly){ return false;}
-				clist.setErrorBar(bar.vert);
-				result = false;
-			}
+			if(check){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			clist.setErrorBar(bar.vert);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("lbNotCrossEq");
+			this.owner.board.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+		}
 	},
 
-	checkLoop : function(){
+	checkAllBarConnect : function(){
+		this.checkOneArea(this.getConnectionInfo(), "lbDivide");
+	},
+
+	checkLoop_amibo : function(){
 		var sinfo={cell:[]}, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.barinfo.getLinkCell(bd.cell[c]);
 		}
 
 		var sdata=[];
-		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].getQans()!==0?0:null);}
+		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].qans!==0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(sdata[c]!==0){ continue;}
 			this.searchloop(c, sinfo, sdata);
 		}
 
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1)});
+		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
+			this.failcode.add("lbLoop");
+			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
 			errclist.seterr(4);
-			return false;
 		}
-		return true;
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
@@ -477,6 +489,6 @@ FailCode:{
 	lbLoop : ["棒で輪っかができています。","There is a looped bars."],
 	lbNotCrossEq : ["同じ長さの棒と交差していません。","A bar doesn't cross the bar whose length is the same."],
 	nmLineGt1 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
-	nmIsolate : ["白丸に線がつながっていません。","No bar connects to a white circle."]
+	nmNoLine  : ["白丸に線がつながっていません。","No bar connects to a white circle."]
 }
 });

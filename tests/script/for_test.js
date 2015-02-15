@@ -1,4 +1,5 @@
 // for_test.js v3.4.0
+/* jshint evil:true, es3:false */
 (function(){
 
 var _doc = document;
@@ -15,11 +16,26 @@ ui.debug.extend(
 		});
 	},
 	
+	keydown : function(ca){
+		if(ca==='alt+p'){ this.disppoptest();}
+		else if(ca==='F7'){ this.accheck1();}
+		else if(ca==='ctrl+F9'){ this.starttest();}
+		else if(ca==='shift+ctrl+F10'){ this.all_test();}
+		else{ return false;}
+		
+		ui.puzzle.key.stopEvent();	/* カーソルを移動させない */
+		return true;
+	},
+	
 	accheck1 : function(){
+		ui.puzzle.checker.checkOnly = false;
+		ui.puzzle.checker.checkAns();
 		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.checker.checkAns();
+		var failcode  = ui.puzzle.checker.failcode[0];
 		var failstr   = (!!failcode ? "\""+failcode+"\"" : "null");
+		ui.puzzle.board.haserror = true;
 		ui.puzzle.board.errclear();
+		ui.puzzle.redraw();
 		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 
@@ -53,9 +69,9 @@ ui.debug.extend(
 				ui.puzzle.modechange(ui.puzzle.MODE_EDITOR);
 				break;
 			case 'setconfig':
-				if     (strs[2]=="true") { ui.puzzle.setConfig(strs[1], true);}
-				else if(strs[2]=="false"){ ui.puzzle.setConfig(strs[1], false);}
-				else                     { ui.puzzle.setConfig(strs[1], strs[2]);}
+				if     (strs[2]==="true") { ui.puzzle.setConfig(strs[1], true);}
+				else if(strs[2]==="false"){ ui.puzzle.setConfig(strs[1], false);}
+				else                      { ui.puzzle.setConfig(strs[1], strs[2]);}
 				break;
 			case 'key':
 				for(var i=1;i<strs.length;i++){
@@ -94,6 +110,9 @@ ui.debug.extend(
 			mv.mouseevent(addr,2);
 		}
 	},
+	inputcheck_popup : function(){
+		this.inputcheck(getEL('testarea').value);
+	},
 	inputcheck : function(text){
 		ui.saveConfig();
 		var inparray = eval("["+text+"]");
@@ -113,7 +132,7 @@ ui.debug.extend(
 	phase : 99,
 	pid : '',
 	all_test : function(){
-		if(this.alltimer != null){ return;}
+		if(this.alltimer !== null){ return;}
 		var pnum=0, term, idlist=[], self = this;
 		self.phase = 99;
 
@@ -128,7 +147,7 @@ ui.debug.extend(
 				return;
 			}
 
-			if(self.phase != 99){ return;}
+			if(self.phase !== 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
 			ui.puzzle.open(newid+"/"+self.urls[newid], function(){
@@ -163,7 +182,7 @@ ui.debug.extend(
 		var inp = pzl.outputURLType() + self.urls[self.pid];
 		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
 
-		if(inp!=ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
+		if(inp!==ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
 
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
@@ -195,12 +214,12 @@ ui.debug.extend(
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
-		var acsstr = self.acs[self.pid], len = self.acs[self.pid].length;
+		var acsstr = self.acs[self.pid];
 		for(var n=0;n<acsstr.length;n++){
 			ui.puzzle.open(acsstr[n][1]);
 			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+faildata.text();
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new ui.puzzle.CheckInfo(expectcode).text());
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
@@ -270,7 +289,7 @@ ui.debug.extend(
 			bd.resetInfo();
 
 			o.open(outputstr, function(){
-				self.qsubf = !(pid=='fillomino'||pid=='hashikake'||pid=='kurodoko'||pid=='shikaku'||pid=='tentaisho');
+				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
 				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
 				self.qsubf = true;
@@ -437,35 +456,35 @@ ui.debug.extend(
 //		this.taenable = false;
 		var result = true;
 		for(var c=0,len=Math.min(bd1.cell.length,bd2.cell.length);c<len;c++){
-			if(bd1.cell[c].ques!=bd2.cell[c].ques){ result = false; this.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
-			if(bd1.cell[c].qnum!=bd2.cell[c].qnum){ result = false; this.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
-			if(bd1.cell[c].qdir!=bd2.cell[c].qdir){ result = false; this.addTextarea("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
-			if(bd1.cell[c].anum!=bd2.cell[c].anum){ result = false; this.addTextarea("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
-			if(bd1.cell[c].qans!=bd2.cell[c].qans){ result = false; this.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
-			if(bd1.cell[c].qsub!=bd2.cell[c].qsub){
+			if(bd1.cell[c].ques!==bd2.cell[c].ques){ result = false; this.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
+			if(bd1.cell[c].qnum!==bd2.cell[c].qnum){ result = false; this.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
+			if(bd1.cell[c].qdir!==bd2.cell[c].qdir){ result = false; this.addTextarea("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
+			if(bd1.cell[c].anum!==bd2.cell[c].anum){ result = false; this.addTextarea("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
+			if(bd1.cell[c].qans!==bd2.cell[c].qans){ result = false; this.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
+			if(bd1.cell[c].qsub!==bd2.cell[c].qsub){
 				if(this.qsubf){ result = false; this.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" &lt;- "+bd2.cell[c].qsub);}
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
 		if(!!bd1.isexcell){
 			for(var c=0;c<bd1.excell.length;c++){
-				if(bd1.excell[c].qnum!=bd2.excell[c].qnum ){ result = false;}
-				if(bd1.excell[c].qdir!=bd2.excell[c].qdir){ result = false;}
+				if(bd1.excell[c].qnum!==bd2.excell[c].qnum ){ result = false;}
+				if(bd1.excell[c].qdir!==bd2.excell[c].qdir){ result = false;}
 			}
 		}
 		if(!!bd1.iscross){
 			for(var c=0;c<bd1.cross.length;c++){
-				if(bd1.cross[c].ques!=bd2.cross[c].ques){ result = false;}
-				if(bd1.cross[c].qnum!=bd2.cross[c].qnum){ result = false;}
+				if(bd1.cross[c].ques!==bd2.cross[c].ques){ result = false;}
+				if(bd1.cross[c].qnum!==bd2.cross[c].qnum){ result = false;}
 			}
 		}
 		if(!!bd1.isborder){
 			for(var i=0;i<bd1.border.length;i++){
-				if(bd1.border[i].ques!=bd2.border[i].ques){ result = false; this.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
-				if(bd1.border[i].qnum!=bd2.border[i].qnum){ result = false; this.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
-				if(bd1.border[i].qans!=bd2.border[i].qans){ result = false; this.addTextarea("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
-				if(bd1.border[i].line!=bd2.border[i].line){ result = false; this.addTextarea("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
-				if(bd1.border[i].qsub!=bd2.border[i].qsub){
+				if(bd1.border[i].ques!==bd2.border[i].ques){ result = false; this.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
+				if(bd1.border[i].qnum!==bd2.border[i].qnum){ result = false; this.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
+				if(bd1.border[i].qans!==bd2.border[i].qans){ result = false; this.addTextarea("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
+				if(bd1.border[i].line!==bd2.border[i].line){ result = false; this.addTextarea("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
+				if(bd1.border[i].qsub!==bd2.border[i].qsub){
 					if(this.qsubf){ result = false; this.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" &lt;- "+bd2.border[i].qsub);}
 					else{ bd1.border[i].qsub = bd2.border[i].qsub;}
 				}

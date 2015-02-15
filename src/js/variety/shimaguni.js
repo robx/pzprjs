@@ -25,8 +25,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
-		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
+	maxnum : function(){
+		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 "Cell@chocona":{
@@ -134,67 +134,58 @@ FileIO:{
 
 //---------------------------------------------------------
 // 正解判定処理実行部
+"AnsCheck@shimaguni#1":{
+	checklist : [
+		"checkSideAreaShadeCell",
+		"checkSeqBlocksInRoom",
+		"checkShadeCellCount",
+		"checkSideAreaLandSide",
+		"checkNoShadeCellInArea"
+	]
+},
+"AnsCheck@chocona#1":{
+	checklist : [
+		"checkShadeRect",
+		"checkShadeCellCount"
+	]
+},
 "AnsCheck@shimaguni":{
-	checkAns : function(){
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkSideAreaShadeCell(rinfo) ){ return 'scShade';}
-
-		if( !this.checkSeqBlocksInRoom() ){ return 'bkShadeDivide';}
-
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
-
-		if( !this.checkSideAreaLandSide(rinfo) ){ return 'sbEqShade';}
-
-		if( !this.checkNoShadeCellInArea(rinfo) ){ return 'bkNoShade';}
-
-		return null;
+	checkSideAreaShadeCell : function(){
+		this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
-
-	checkSideAreaShadeCell : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true);
-	},
-	checkSideAreaLandSide : function(rinfo){
-		return this.checkSideAreaSize(rinfo, function(area){ return area.clist.getLandAreaOfClist();});
+	checkSideAreaLandSide : function(){
+		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var result = true, rooms = this.owner.board.rooms;
+		var rooms = this.owner.board.rooms;
 		for(var r=1;r<=rooms.max;r++){
-			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade()});
-			if(!clist.isSeqBlock()){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
+			if(clist.isSeqBlock()){ continue;}
+			
+			this.failcode.add("bkShadeDivide");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 "AnsCheck@chocona":{
-	checkAns : function(){
-
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaRect(binfo) ){ return 'csNotRect';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
-
-		return null;
+	checkShadeRect : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
 	}
 },
 
 "FailCode@shimaguni":{
-	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","the number of shaded cells is not equals to the number."],
+	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","The number of shaded cells is not equals to the number."],
 	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are devided to plural ones."],
 	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
-	scShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
-	sbEqShade     : ["隣り合う海域にある国の大きさが同じです。","the size of countries that there are in adjacent marine areas are the same."]
+	cbShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
+	bsEqShade     : ["隣り合う海域にある国の大きさが同じです。","The size of countries that there are in adjacent marine areas are the same."]
 },
 
 "FailCode@chocona":{
 	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
-	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","the number of shaded cells in the area and the number written in the area is different."]
+	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","The number of shaded cells in the area and the number written in the area is different."]
 }
 });

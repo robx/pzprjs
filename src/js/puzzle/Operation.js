@@ -92,8 +92,8 @@ Operation:{
 	},
 	toString : function(){
 		var prefix = '';
-		for(var i in this.STRGROUP){ if(this.group   ==this.STRGROUP[i]){ prefix+=i; break;}}
-		for(var i in this.STRPROP) { if(this.property==this.STRPROP[i]) { prefix+=i; break;}}
+		for(var i in this.STRGROUP){ if(this.group   ===this.STRGROUP[i]){ prefix+=i; break;}}
+		for(var i in this.STRPROP) { if(this.property===this.STRPROP[i]) { prefix+=i; break;}}
 		return [prefix, this.bx, this.by, this.old, this.num].join(',');
 	},
 
@@ -238,9 +238,9 @@ Operation:{
 // OperationManagerクラス
 OperationManager:{
 	initialize : function(){
-		this.lastope;		// this.opeの最後に追加されたOperationへのポインタ
-		this.ope;			// Operationクラスを保持する二次元配列
-		this.position;		// 現在の表示操作番号を保持する
+		this.lastope = null;	// this.opeの最後に追加されたOperationへのポインタ
+		this.ope = [];			// Operationクラスを保持する二次元配列
+		this.position = 0;		// 現在の表示操作番号を保持する
 
 		this.broken   = false;	// "以前の操作"を消して元に戻れなくなった状態
 		this.initpos  = 0;		// 盤面初期化時のposition
@@ -458,10 +458,7 @@ OperationManager:{
 		this.disableRecord();
 
 		puzzle.painter.suspend();
-		if(bd.haserror){
-			bd.errclear();
-			puzzle.redraw();
-		}
+		bd.errclear();
 		if(this.reqReset){
 			bd.disableInfo();
 		}

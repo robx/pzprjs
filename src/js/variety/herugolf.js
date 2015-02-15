@@ -28,7 +28,7 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.getConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
@@ -152,14 +152,14 @@ KeyEvent:{
 		this.key_inputqnum_herugolf(ca);
 	},
 	key_inputqnum_herugolf : function(ca){
-		var cell = this.cursor.getc(), num;
-		if(ca=='q'||ca=='w'){
+		var cell = this.cursor.getc();
+		if(ca==='q'||ca==='w'){
 			cell.setQues(cell.ice()?0:6);
 		}
-		else if(ca=='h'){
+		else if(ca==='h'){
 			cell.setQues(cell.ques===31?0:31);
 		}
-		else if(ca==' '){
+		else if(ca===' '){
 			cell.setQues(0);
 		}
 		else if(!cell.ice()){
@@ -193,7 +193,7 @@ Cell:{
 		}
 		return false;
 	},
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd = this.owner.board, cx = (this.bx>>1), cy = (this.by>>1);
 		return Math.max(cx, cy, bd.qcols-1-cx, bd.qrows-1-cy);
 	},
@@ -233,7 +233,7 @@ AreaLineManager:{
 	setMovedBase : function(areaid){
 		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
 		
-		var area = this.area[areaid], clist = area.clist;
+		var area = this.area[areaid];
 		if(!area.movevalid){ return;}
 		
 		var cell = area.departure, num = area.departure.qnum;
@@ -261,6 +261,10 @@ AreaLineManager:{
 	enabled : true,
 	relation : ['cell'],
 	isvalid : function(cell){ return cell.ice();}
+},
+
+Flags:{
+	autocmp : "number"
 },
 
 //---------------------------------------------------------
@@ -299,12 +303,13 @@ Graphic:{
 	},
 
 	drawNumber1 : function(cell){
-		var text = this.getCircleCaption(cell);
-		var option = { key: "cell_text_"+cell.id };
+		var g = this.context, text = this.getCircleCaption(cell);
+		g.vid = "cell_text_"+cell.id;
 		if(!!text){
-			option.color = this.getCellNumberColor(cell);
+			g.fillStyle = this.getCellNumberColor(cell);
+			this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 		}
-		this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
+		else{ g.vhide();}
 	},
 	getCircleCaption : function(cell){
 		if(this.owner.execConfig('dispmove')){
@@ -323,11 +328,8 @@ Graphic:{
 	getLineColor : function(border){
 		this.addlw = 0;
 		if(border.isLine()){
-			var info = border.error || border.qinfo, puzzle = this.owner;
-			if(info===1){
-				if(this.context.use.canvas){ this.addlw=1;}
-				return this.errlinecolor;
-			}
+			var info = border.error || border.qinfo;
+			if     (info===1) { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			
 			var cells = border.sidecell;
@@ -347,20 +349,19 @@ Graphic:{
 
 		var tsize = this.cw*0.30;
 		var tplus = this.cw*0.05;
-		var header = "c_tip_";
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			g.vdel(header+cell.id);
+			var cell = clist[i], dir=0, border=null;
 			if(cell.qnum===-1 && !this.owner.execConfig('dispmove')){
-				var adc = cell.adjacent, adb = cell.adjborder, dir=0, border=null;
+				var adc = cell.adjacent, adb = cell.adjborder;
 				if     (adb.top.isLine()    && (cell.lcnt===1 || (cell.isViaPoint() && adc.top.distance   ===cell.distance+1))){ dir=2; border=adb.top;   }
 				else if(adb.bottom.isLine() && (cell.lcnt===1 || (cell.isViaPoint() && adc.bottom.distance===cell.distance+1))){ dir=1; border=adb.bottom;}
 				else if(adb.left.isLine()   && (cell.lcnt===1 || (cell.isViaPoint() && adc.left.distance  ===cell.distance+1))){ dir=4; border=adb.left;  }
 				else if(adb.right.isLine()  && (cell.lcnt===1 || (cell.isViaPoint() && adc.right.distance ===cell.distance+1))){ dir=3; border=adb.right; }
-				else{ continue;}
+			}
 
+			g.vid = "c_tip_"+cell.id;
+			if(dir!==0){
 				g.lineWidth = this.lw; //LineWidth
 				var info = border.error || border.qinfo;
 				if     (info=== 1)       { g.strokeStyle = this.errlinecolor; g.lineWidth=g.lineWidth+1;}
@@ -368,46 +369,49 @@ Graphic:{
 				else if(cell.distance>=0){ g.strokeStyle = this.linecolor;}
 				else                     { g.strokeStyle = this.invalidlinecolor;}
 
-				if(this.vnop(header+cell.id,this.STROKE)){
-					var px = cell.bx*this.bw+1, py = cell.by*this.bh+1;
-					if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
-					else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
-					else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
-					else if(dir===4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
-					g.stroke();
-				}
+				g.beginPath();
+				var px = cell.bx*this.bw+1, py = cell.by*this.bh+1;
+				if     (dir===1){ g.setOffsetLinePath(px,py ,-tsize, tsize ,0,-tplus , tsize, tsize, false);}
+				else if(dir===2){ g.setOffsetLinePath(px,py ,-tsize,-tsize ,0, tplus , tsize,-tsize, false);}
+				else if(dir===3){ g.setOffsetLinePath(px,py , tsize,-tsize ,-tplus,0 , tsize, tsize, false);}
+				else if(dir===4){ g.setOffsetLinePath(px,py ,-tsize,-tsize , tplus,0 ,-tsize, tsize, false);}
+				g.stroke();
 			}
+			else{ g.vhide();}
 		}
 	},
 
 	drawHoles : function(){
 		var g = this.vinc('cell_hole', 'auto');
 
+		g.fillStyle = this.fontcolor;
+		var option = {globalratio:1};
+		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], text = ((cell.ques===31 && !(this.owner.execConfig('dispmove') && cell.isDestination())) ? "H" : "");
-			var option = { key:"cell_hole_text_"+cell.id };
-			option.globalratio = 1;
-			this.disptext(text, (cell.bx*this.bw), (cell.by*this.bh), option);
+			var cell = clist[i];
+			g.vid = "cell_hole_text_"+cell.id;
+			if(cell.ques===31 && !(isdrawmove && cell.isDestination())){
+				this.disptext("H", cell.bx*this.bw, cell.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	// drawDeparturesから派生
 	drawViaPoints : function(){
-		var g = this.vinc('cell_via', 'auto');
+		var g = this.vinc('cell_via', 'auto', true);
+		g.fillStyle = this.movelinecolor;
 		var rsize  = this.cw*0.15;
-		var header = "c_dcir_";
 		var isdrawmove = this.owner.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var cell = clist[i];
+			g.vid = "c_dcir_"+cell.id;
 			if(isdrawmove && cell.isViaPoint()){
-				g.fillStyle = this.movelinecolor;
-				if(this.vnop(header+cell.id,this.NONE)){
-					g.fillCircle(px, py, rsize);
-				}
+				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, rsize);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -431,8 +435,8 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							  { cell.qnum = parseInt(ca,16);}
-			else if(ca == 'h'){ cell.ques = 31;}
+							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === 'h'){ cell.ques = 31;}
 			else if(ca >= 'i' && ca <= 'z'){ c += (parseInt(ca,36)-18);}
 
 			c++;
@@ -445,14 +449,14 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", cell = bd.cell[c], qn = cell.qnum, qu = cell.ques;
 
-			if     (qn== -2          ){ pstr = ".";}
+			if     (qn===-2          ){ pstr = ".";}
 			else if(qn>=  0 && qn< 16){ pstr =       qn.toString(16);}
 			else if(qn>= 16 && qn<256){ pstr = "-" + qn.toString(16);}
-			else if(qu== 31          ){ pstr = "h";}
+			else if(qu===31          ){ pstr = "h";}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr || count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}
 
@@ -483,35 +487,23 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var bd = this.owner.board;
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkConnectObject",
+		"checkLineOverLetter",
+		"checkLineOverHole",
+		"checkCurveHalfway",
+		"checkMoveOver",
+		"checkStopHalfway",
+		"checkWaterHazard",
 
-		var linfo = bd.getLareaInfo();
+		"checkCupIn+",
+		"checkIgnoredHole+",
 
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
-
-		if( !this.checkLineOverHole() ){ return 'laOnHole';}
-
-		if( !this.checkCurveHalfway() ){ return 'laCurve';}
-
-		if( !this.checkMoveOver() ){ return 'laMoveOver';}
-
-		if( !this.checkStopHalfway() ){ return 'laLenNe';}
-
-		if( !this.checkWaterHazard() ){ return 'laWaterHazard';}
-
-		if( !this.checkCupIn() ){ return 'nmOutOfHole';}
-
-		if( !this.checkIgnoredHole() ){ return 'nmIgnored';}
-
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
-
-		return null;
-	},
+		"checkDisconnectLine"
+	],
 	
 	checkMoveOver : function(){
 		var result = true, bd = this.owner.board;
@@ -519,38 +511,40 @@ AnsCheck:{
 			var border = bd.border[id];
 			if(!border.isLine()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(cell1.distance<0 || cell2.distance<0){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				border.seterr(1);
-				(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
-				result = false;
-			}
+			if(cell1.distance>=0 && cell2.distance>=0){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			border.seterr(1);
+			(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("laMoveOver");
+			bd.border.setnoerr();
+		}
 	},
 	checkLineOverHole : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===31 && cell.lcnt>=2);});
+		this.checkAllCell(function(cell){ return (cell.ques===31 && cell.lcnt>=2);}, "laOnHole");
 	},
 	checkStopHalfway : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===1 && cell.distance >=0 && !cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.lcnt===1 && cell.distance >=0 && !cell.isViaPoint());}, "laLenNe");
 	},
 	checkCurveHalfway : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===2 && !cell.isLineStraight() && !cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.isLineCurve() && !cell.isViaPoint());}, "laCurve");
 	},
 	checkWaterHazard : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());});
+		this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());}, "laWaterHazard");
 	},
 	checkCupIn : function(){
 		if(this.owner.execConfig('dispmove')){
-			return this.checkAllCell(function(cell){ return (cell.ques!==31 && cell.isDestination());});
+			this.checkAllCell(function(cell){ return (cell.ques!==31 && cell.isDestination());}, "nmOutOfHole");
 		}
 		else{
-			return this.checkAllCell(function(cell){ return (cell.qnum!==-1 && cell.getDestination().ques!==31);});
+			this.checkAllCell(function(cell){ return (cell.qnum!==-1 && cell.getDestination().ques!==31);}, "nmOutOfHole");
 		}
 	},
 	checkIgnoredHole : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===31 && !cell.isDestination());});
+		this.checkAllCell(function(cell){ return (cell.ques===31 && !cell.isDestination());}, "nmIgnored");
 	}
 },
 

@@ -4,15 +4,10 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 // ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
 //---------------------------------------------------------------------------
-BoardPiece:{
-	bx : -1,	// X座標(border座標系)を保持する
-	by : -1,	// Y座標(border座標系)を保持する
-
+"BoardPiece:Position":{
 	group  : 'none',
 	id     : null,
 	isnull : true,
-
-	validcell : false,
 
 	// デフォルト値
 	/* 問題データを保持するプロパティ */
@@ -35,7 +30,7 @@ BoardPiece:{
 
 	/* 補助データを保持するプロパティ */
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
-				// border:(1:補助線 2:×)
+				// border:(1:補助線 2:× 11-14:方向記号)
 	qcmp : 0,	// cell  :
 
 	/* 履歴保存しないプロパティ */
@@ -53,79 +48,40 @@ BoardPiece:{
 	maxnum : 255,
 	minnum : 1,
 
-	// 方向を表す定数 (RawAddressと同じ)
-	NDIR : 0,	// 方向なし
-	UP   : 1,	// up, top
-	DN   : 2,	// down, bottom
-	LT   : 3,	// left
-	RT   : 4,	// right
-
-	//---------------------------------------------------------------------------
-	// getaddr() 自分の盤面中での位置を返す
-	// relcell(), relcross(), relbd(), relexcell() 相対位置に存在するオブジェクトを返す
-	//---------------------------------------------------------------------------
-	getaddr : function(){ return (new this.owner.Address(this.bx, this.by));},
-
-	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
-	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
-	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
-	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
-
 	//---------------------------------------------------------------------------
 	// initAdjacent()   隣接セルの情報を設定する
 	// initAdjBorder()  隣接境界線の情報を設定する
 	//---------------------------------------------------------------------------
 	initAdjacent : function(){
-		var bd = this.owner.board;
 		this.adjacent = {
-			top    : bd.getobj(this.bx,this.by-2),
-			bottom : bd.getobj(this.bx,this.by+2),
-			left   : bd.getobj(this.bx-2,this.by),
-			right  : bd.getobj(this.bx+2,this.by)
+			top    : this.relobj(0,-2),
+			bottom : this.relobj(0, 2),
+			left   : this.relobj(-2,0),
+			right  : this.relobj( 2,0)
 		};
 	},
 	initAdjBorder : function(){
-		var bd = this.owner.board;
 		this.adjborder = {
-			top    : bd.getb(this.bx,this.by-1),
-			bottom : bd.getb(this.bx,this.by+1),
-			left   : bd.getb(this.bx-1,this.by),
-			right  : bd.getb(this.bx+1,this.by)
+			top    : this.relbd(0,-1),
+			bottom : this.relbd(0, 1),
+			left   : this.relbd(-1,0),
+			right  : this.relbd( 1,0)
 		};
 	},
 
 	//---------------------------------------------------------------------------
 	// オブジェクト設定値のgetter/setter
 	//---------------------------------------------------------------------------
-	getQues : function(){ return this.ques;},
-	setQues : function(val){ this.setdata('ques', val);},
-
-	getQans : function(){ return this.qans;},
-	setQans : function(val){ this.setdata('qans', val);},
-
-	getQdir : function(){ return this.qdir;},
-	setQdir : function(val){ this.setdata('qdir', val);},
-
-	getQnum : function(){ return this.qnum;},
-	setQnum : function(val){ this.setdata('qnum', val);},
-
-	getQnum2 : function(){ return this.qnum2;},
-	setQnum2 : function(val){ this.setdata('qnum2', val);},
-
-	getQchar : function(){ return this.qchar;},
-	setQchar : function(val){ this.setdata('qchar', val);},
-
-	getAnum : function(){ return this.anum;},
-	setAnum : function(val){ this.setdata('anum', val);},
-
-	getLineVal : function(){ return this.line;},
+	setQues :    function(val){ this.setdata('ques', val);},
+	setQans :    function(val){ this.setdata('qans', val);},
+	setQdir :    function(val){ this.setdata('qdir', val);},
+	setQnum :    function(val){ this.setdata('qnum', val);},
+	setQnum2 :   function(val){ this.setdata('qnum2', val);},
+	setQchar :   function(val){ this.setdata('qchar', val);},
+	setAnum :    function(val){ this.setdata('anum', val);},
 	setLineVal : function(val){ this.setdata('line', val);},
-
-	getQsub : function(){ return this.qsub;},
-	setQsub : function(val){ this.setdata('qsub', val);},
-
-	getQcmp : function(){ return this.qcmp;},
-	setQcmp : function(val){ this.setdata('qcmp', val);},
+	setQsub :    function(val){ this.setdata('qsub', val);},
+	setQcmp :    function(val){ this.setdata('qcmp', val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -145,11 +101,11 @@ BoardPiece:{
 	},
 	
 	//---------------------------------------------------------------------------
-	// nummaxfunc() 入力できる数字の最大値を返す
-	// numminfunc() 入力できる数字の最小値を返す
+	// getmaxnum() 入力できる数字の最大値を返す
+	// getminnum() 入力できる数字の最小値を返す
 	//---------------------------------------------------------------------------
-	nummaxfunc : function(){ return this.maxnum;},
-	numminfunc : function(){ return this.minnum;},
+	getmaxnum : function(){ return (typeof this.maxnum==="function" ? this.maxnum() : this.maxnum);},
+	getminnum : function(){ return (typeof this.minnum==="function" ? this.minnum() : this.minnum);},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -157,11 +113,6 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	prehook  : {},
 	posthook : {},
-
-	//---------------------------------------------------------------------------
-	// draw()   盤面に自分の周囲を描画する
-	//---------------------------------------------------------------------------
-	draw : function(){ this.getaddr().draw();},
 
 	//---------------------------------------------------------------------------
 	// seterr()  error値を設定する
@@ -200,9 +151,9 @@ BoardPiece:{
 	//---------------------------------------------------------------------------
 	prehook : {
 		ques  : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
-		qnum  : function(num){ return (this.minnum>0 && num===0);},
-		qnum2 : function(num){ return (this.minnum>0 && num===0);},
-		anum  : function(num){ return (this.minnum>0 && num===0);}
+		qnum  : function(num){ return (this.getminnum()>0 && num===0);},
+		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
+		anum  : function(num){ return (this.getminnum()>0 && num===0);}
 	},
 	posthook : {
 		ques  : function(num){ this.owner.board.setInfoByCell(this);},
@@ -217,11 +168,6 @@ BoardPiece:{
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
 	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
-
-	//---------------------------------------------------------------------------
-	// cell.drawaround() 盤面に自分の周囲1マスを含めて描画する
-	//---------------------------------------------------------------------------
-	drawaround : function(){ this.getaddr().drawaround();},
 
 	//---------------------------------------------------------------------------
 	// cell.isShade()   該当するCellが黒マスかどうか返す
@@ -240,7 +186,7 @@ BoardPiece:{
 	//-----------------------------------------------------------------------
 	getNum : function(){ return (this.qnum!==-1 ? this.qnum : this.anum);},
 	setNum : function(val){
-		if(this.minnum>0 && val===0){ return;}
+		if(this.getminnum()>0 && val===0){ return;}
 		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
 		if(this.owner.editmode){
 			val = (((this.numberAsObject||val===-2) && this.qnum===val)?-1:val);
@@ -313,11 +259,15 @@ BoardPiece:{
 
 	//---------------------------------------------------------------------------
 	// cell.isLineStraight()   セルの上で線が直進しているか判定する
+	// cell.isLineCurve()      セルの上で線がカーブしているか判定する
 	//---------------------------------------------------------------------------
-	isLineStraight : function(){
-		if     (this.adjborder.top.isLine() && this.adjborder.bottom.isLine()){ return true;}
-		else if(this.adjborder.left.isLine() && this.adjborder.right.isLine()){ return true;}
-		return false;
+	isLineStraight : function(){ // 0:直進ではない 1:縦に直進 2:横に直進
+		if     (this.lcnt===2 && this.adjborder.top.isLine() && this.adjborder.bottom.isLine()){ return 1;}
+		else if(this.lcnt===2 && this.adjborder.left.isLine() && this.adjborder.right.isLine()){ return 2;}
+		return 0;
+	},
+	isLineCurve : function(){
+		return this.lcnt===2 && !this.isLineStraight();
 	},
 
 	//---------------------------------------------------------------------------
@@ -364,10 +314,10 @@ BoardPiece:{
 	// cell.countDir4Cell()  上下左右4方向で条件func==trueになるマスの数をカウントする
 	//---------------------------------------------------------------------------
 	countDir4Cell : function(func){
-		var adc = this.adjacent, cell, cnt = 0;
+		var adc = this.adjacent, cnt = 0;
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell && func(cells[i])){ cnt++;}
+			if(cells[i].group==="cell" && !cells[i].isnull && func(cells[i])){ cnt++;}
 		}
 		return cnt;
 	},
@@ -377,30 +327,21 @@ BoardPiece:{
 	// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
 	//---------------------------------------------------------------------------
 	getdir4clist : function(){
-		var adc = this.adjacent, cell, list=[];
+		var adc = this.adjacent, list=[];
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell){ list.push([cells[i],(i+1)]);} /* i+1==dir */
+			if(cells[i].group==="cell" && !cells[i].isnull){ list.push([cells[i],(i+1)]);} /* i+1==dir */
 		}
 		return list;
 	},
 	getdir4cblist : function(){
-		var adc = this.adjacent, adb = this.adjborder, cell, border, cblist=[];
+		var adc = this.adjacent, adb = this.adjborder, cblist=[];
 		var cells = [adc.top, adc.bottom, adc.left, adc.right];
 		var bds   = [adb.top, adb.bottom, adb.left, adb.right];
 		for(var i=0;i<4;i++){
-			if(cells[i].validcell || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
+			if(cells[i].group==="cell" && !cells[i].isnull || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
 		}
 		return cblist;
-	},
-
-	//---------------------------------------------------------------------------
-	// cell.setCellLineError()    セルと周りの線にエラーフラグを設定する
-	//---------------------------------------------------------------------------
-	setCellLineError : function(flag){
-		var bx=this.bx, by=this.by;
-		if(flag){ this.seterr(1);}
-		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 },
 

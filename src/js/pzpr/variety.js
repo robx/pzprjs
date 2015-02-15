@@ -1,4 +1,5 @@
 // Variety.js v3.4.1
+/* jshint latedef: false */
 
 pzpr.variety = {
 	info   : {},
@@ -75,10 +76,10 @@ pzpr.variety.register({
 	gokigen   :[1,0,"ごきげんななめ","Gokigen-naname",'gokigen'],
 	hakoiri   :[1,0,"はこいり○△□","Triplets"],
 	hanare    :[0,0,"はなれ組","Hanare-gumi",'hanare'],
-	hashikake :[0,1,"橋をかけろ","Bridges",'',{kanpen:'hashi'}],
+	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{kanpen:'hashi'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
-	heyabon   :[1,0,"へやぼん","Heya-Bon",'bonsan'],
+	heyabon   :[1,1,"へやぼん","Heya-Bon",'bonsan',{kanpen:'satogaeri'}],
 	hitori    :[0,1,"ひとりにしてくれ","Hitori"],
 	icebarn   :[1,0,"アイスバーン","Icebarn",'icebarn'],
 	icelom    :[0,0,"アイスローム","Icelom",'icebarn'],
@@ -109,6 +110,7 @@ pzpr.variety.register({
 	minarism  :[1,0,"マイナリズム","Minarism"],
 	mochikoro :[1,0,"モチコロ","Mochikoro",'nurikabe'],
 	mochinyoro:[1,0,"モチにょろ","Mochinyoro",'nurikabe'],
+	nagare    :[0,0,"流れるループ","Nagareru-Loop"],
 	nagenawa  :[0,0,"なげなわ","Nagenawa",'nagenawa'],
 	nanro     :[0,1,"ナンロー","Nanro"],
 	nawabari  :[1,0,"なわばり","Territory",'nawabari'],
@@ -128,7 +130,7 @@ pzpr.variety.register({
 	roma      :[0,0,"ろーま","Roma"],
 	sashigane :[0,0,"さしがね","Sashigane",'loute'],
 	shakashaka:[0,1,"シャカシャカ","ShakaShaka"],
-	shikaku   :[0,1,"四角に切れ","Shikaku",'shikaku'],
+	shikaku   :[0,1,"四角に切れ","Shikaku (Devide by Box)",'shikaku'],
 	shimaguni :[1,0,"島国","Islands",'shimaguni'],
 	shugaku   :[1,0,"修学旅行の夜","School Trip"],
 	shwolf    :[0,0,"ヤギとオオカミ","Sheeps and Wolves",'kramma'],

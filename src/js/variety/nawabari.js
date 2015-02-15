@@ -26,14 +26,14 @@ KeyEvent:{
 
 "KeyEvent@fourcells,fivecells":{
 	keyinput : function(ca){
-		if(ca=='w'){ this.key_inputvalid(ca);}
+		if(ca==='w'){ this.key_inputvalid(ca);}
 		else{ this.key_inputqnum(ca);}
 	},
 	key_inputvalid : function(ca){
-		if(ca=='w'){
+		if(ca==='w'){
 			var cell = this.cursor.getc();
 			if(!cell.isnull){
-				cell.setQues(cell.getQues()!==7?7:0);
+				cell.setQues(cell.ques!==7?7:0);
 				cell.setNum(-1);
 				cell.drawaround();
 			}
@@ -142,28 +142,25 @@ Graphic:{
 	},
 
 	drawValidDashedGrid : function(){
-		var g = this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges', true);
 
 		var dotmax   = this.cw/10+3;
 		var dotCount = Math.max(this.cw/dotmax, 1);
 		var dotSize  = this.cw/(dotCount*2);
 
-		var csize = this.cw*0.20;
-		var header = "b_grid_wari_";
+		g.lineWidth = 1;
+		g.strokeStyle = this.gridcolor;
+
 		var blist = this.range.borders;
 		for(var n=0;n<blist.length;n++){
 			var border = blist[n];
+			g.vid = "b_grid_wari_"+border.id;
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(this.vnop(header+border.id,this.NONE)){
-					g.lineWidth = 1;
-					g.strokeStyle = this.gridcolor;
-
-					if(border.isVert()){ g.strokeDashedLine(px, py-this.bh, px, py+this.bh, [dotSize]);}
-					else               { g.strokeDashedLine(px-this.bw, py, px+this.bw, py, [dotSize]);}
-				}
+				if(border.isVert()){ g.strokeDashedLine(px, py-this.bh, px, py+this.bh, [dotSize]);}
+				else               { g.strokeDashedLine(px-this.bw, py, px+this.bw, py, [dotSize]);}
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -185,8 +182,8 @@ Encode:{
 			var obj = bd.cell[c], ca = bstr.charAt(i);
 
 			obj.ques = 0;
-			if     (ca == '7')				 { obj.ques = 7;}
-			else if(ca == '.')				 { obj.qnum = -2;}
+			if     (ca === '7')				 { obj.ques = 7;}
+			else if(ca === '.')				 { obj.qnum = -2;}
 			else if(this.include(ca,"0","9")){ obj.qnum = parseInt(ca,10);}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
@@ -205,8 +202,8 @@ Encode:{
 			else if(qn!==-1){ pstr = qn.toString(10);} // 0～3
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr || count==26){ cm+=((9+count).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
 
@@ -239,59 +236,40 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var o=this.owner, bd=o.board, pid=o.pid;
+	checklist : [
+		"checkRoomRect@nawabari",
+		"checkNoNumber@nawabari",
+		"checkDoubleNumber@nawabari",
+		"checkOverFourCells@fourcells",
+		"checkOverFiveCells@fivecells",
+		"checkdir4BorderAns",
+		"checkBorderDeadend+",
+		"checkLessFourCells@fourcells",
+		"checkLessFiveCells@fivecells"
+	],
 
-		var rinfo = bd.getRoomInfo();
-		if( (pid==='nawabari') && !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
-
-		if( (pid==='nawabari') && !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-
-		if( (pid==='nawabari') && !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-
-		if( (pid==='fourcells') && !this.checkOverFourCells(rinfo) ){ return 'bkSizeLt4';}
-		if( (pid==='fivecells') && !this.checkOverFiveCells(rinfo) ){ return 'bkSizeLt5';}
-
-		if( !this.checkdir4BorderAns() ){ return 'nmBorderNe';}
-
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-
-		if( (pid==='fourcells') && !this.checkLessFourCells(rinfo) ){ return 'bkSizeGt4';}
-		if( (pid==='fivecells') && !this.checkLessFiveCells(rinfo) ){ return 'bkSizeGt5';}
-
-		return null;
+	checkOverFourCells : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);}, "bkSizeLt4");
 	},
-
-	checkOverFourCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=4);});
+	checkLessFourCells : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=4);}, "bkSizeGt4");
 	},
-	checkLessFourCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=4);});
+	checkOverFiveCells : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=5);}, "bkSizeLt5");
 	},
-	checkOverFiveCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a>=5);});
-	},
-	checkLessFiveCells : function(rinfo){
-		return this.checkAllArea(rinfo, function(w,h,a,n){ return (a<=5);});
+	checkLessFiveCells : function(){
+		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=5);}, "bkSizeGt5");
 	},
 
 	checkdir4BorderAns : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.isValidNum() && cell.getdir4BorderCount()!=cell.getQnum()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
-		}
-		return result;
+		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum);}, "nmBorderNe");
 	}
 },
 
 FailCode:{
-	bkNoNum  : ["数字の入っていない部屋があります。","A room has no numbers."],
-	bkNumGe2 : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
+	nmBorderNe : ["数字の周りにある境界線の本数が違います。","The number is not equal to the number of border lines around it."],
+	bkNoNum   : ["数字の入っていない部屋があります。","A room has no numbers."],
+	bkNumGe2  : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
 	bkSizeLt4 : ["サイズが4マスより小さいブロックがあります。","The size of block is smaller than four."],
 	bkSizeLt5 : ["サイズが5マスより小さいブロックがあります。","The size of block is smaller than five."],
 	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of block is larger than four."],

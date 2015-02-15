@@ -32,12 +32,12 @@ MouseEvent:{
 			this.inputData = cell.getNum();
 			if     (this.inputData===-2){ this.inputData=null;}
 			else if(this.inputData===-1){
-				if     (cell.getQsub()===1){ this.inputData=-2;}
-				else if(cell.getQsub()===2){ this.inputData=-3;}
+				if     (cell.qsub===1){ this.inputData=-2;}
+				else if(cell.qsub===2){ this.inputData=-3;}
 			}
 			this.mouseCell = cell;
 		}
-		else if(cell.getQnum()===-1){
+		else if(cell.qnum===-1){
 			cell.setNum(this.inputData);
 			this.mouseCell = cell;
 			cell.draw();
@@ -46,9 +46,9 @@ MouseEvent:{
 	inputDot_nanro : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
-		if(this.inputData===null){ this.inputData = (cell.getQsub()===2?0:2);}
-		if     (this.inputData==2){ cell.setAnum(-1); cell.setQsub(2);}
-		else if(this.inputData==0){ cell.setAnum(-1); cell.setQsub(0);}
+		if(this.inputData===null){ this.inputData = (cell.qsub===2?0:2);}
+		if     (this.inputData===2){ cell.setAnum(-1); cell.setQsub(2);}
+		else if(this.inputData===0){ cell.setAnum(-1); cell.setQsub(0);}
 		this.mouseCell = cell;
 		cell.draw();
 	}
@@ -69,8 +69,8 @@ KeyEvent:{
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && cell.getAnum()===1)        { ca='s1';}
-			else if(ca==='2' && cell.getAnum()===2)        { ca='s2';}
+			else if(ca==='1' && cell.anum===1)             { ca='s1';}
+			else if(ca==='2' && cell.anum===2)             { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	}
@@ -81,7 +81,7 @@ KeyEvent:{
 Cell:{
 	numberWithMB : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return this.owner.board.rooms.getCntOfRoomByCell(this);
 	}
 },
@@ -89,7 +89,27 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	hasborder : 1
+	hasborder : 1,
+
+	getErrorRoomInfo : function(){
+		var rinfo = this.getRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){  /* rinfo.maxは領域を分割した時に増加します. */
+			var area = rinfo.area[id], clist = area.clist;
+			var nums = [];
+			var numkind=0, filled=-1;
+			for(var i=0;i<clist.length;i++){
+				var num = clist[i].getNum();
+				if(num!==-1){
+					if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
+					else{ nums[num]++;}
+				}
+			}
+			area.number  = filled;
+			area.numcnt  = nums[filled];
+			area.numkind = numkind;
+		}
+		return rinfo;
+	}
 },
 
 AreaNumberManager:{
@@ -157,62 +177,48 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"check2x2NumberCell",
+		"checkSideAreaNumber",
+		"checkNotMultiNum",
+		"checkNumCountOver",
+		"checkConnectNumber",
+		"checkNumCountLack",
+		"checkNoEmptyArea"
+	],
 
-		if( !this.check2x2NumberCell() ){ return 'nm2x2';}
-
-		if( !this.checkSideAreaNumber() ){ return 'scNum';}
-
-		var rinfo = this.getErrorFlag_cell();
-		if( !this.checkErrorFlag_cell(rinfo, 4) ){ return 'bkPlNum';}
-		if( !this.checkErrorFlag_cell(rinfo, 1) ){ return 'nmCountGt';}
-
-		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
-
-		if( !this.checkErrorFlag_cell(rinfo, 2) ){ return 'nmCountLt';}
-		if( !this.checkErrorFlag_cell(rinfo, 3) ){ return 'bkNoNum';}
-
-		return null;
+	getErrorRoomInfo  : function(){
+		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());
 	},
 
 	check2x2NumberCell : function(){
-		return this.check2x2Block(function(cell){ return cell.isNum();});
+		this.check2x2Block(function(cell){ return cell.isNum();}, "nm2x2");
 	},
 	checkSideAreaNumber : function(rinfo){
-		return this.checkSideAreaCell(rinfo, function(cell1,cell2){ return cell1.sameNumber(cell2);}, false);
+		this.checkSideAreaCell(this.getErrorRoomInfo(), function(cell1,cell2){ return cell1.sameNumber(cell2);}, false, "cbSameNum");
 	},
 
-	getErrorFlag_cell : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		for(var id=1,max=rinfo.max;id<=max;id++){
-			var area = rinfo.area[id], clist = area.clist;
-			area.error  =  0;		// 後でエラー表示するエラーのフラグ
-			area.number = -1;		// そのエリアに入っている数字
-			var nums = [];			// キーの数字が入っている数
-			var numcnt = 0;			// エリアに入っている数字の種類数
-			var emptycell = 0;		// 数字が入っていないセルの数
-			var filled = 0;			// エリアに入っている数字
-			for(var i=0;i<clist.length;i++){
-				var num = clist[i].getNum();
-				if(num==-1){ emptycell++;}
-				else if(isNaN(nums[num])){ numcnt++; filled=num; nums[num]=1;}
-				else{ nums[num]++;}
-			}
-			if(numcnt>1)                               { area.error=4;}
-			else if(numcnt==0)                         { area.error=3;}
-			else if(numcnt==1 && filled < nums[filled]){ area.error=1; area.number=filled;}
-			else if(numcnt==1 && filled > nums[filled]){ area.error=2; area.number=filled;}
-			else                                       { area.error=-1;area.number=filled;}
+	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkNumCountLack : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);}, "nmCountLt");},
+	checkNumCountOver : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);}, "nmCountGt");},
+	checkNoEmptyArea  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
+	checkAllErrorRoom : function(evalfunc, code){
+		var rinfo = this.getErrorRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){
+			var area = rinfo.area[id];
+			if( !area || evalfunc(area) ){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			area.clist.seterr(1);
 		}
-		return rinfo;
 	}
 },
 
 FailCode:{
 	bkNoNum : ["数字が含まれていないブロックがあります。","A block has no number."],
 	nm2x2   : ["数字が2x2のかたまりになっています。","There is a 2x2 block of numbers."],
-	scNum   : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
+	cbSameNum : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
 	nmCountGt : ["入っている数字の数が数字より多いです。","A number is bigger than the size of block."],
 	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."]
 }

@@ -12,12 +12,45 @@ AnsCheck:{
 	initialize : function(){
 		this.inCheck = false;
 		this.checkOnly = false;
+		
+		this.makeCheckList();
 	},
 	failcode : (void 0),
+	_info    : (void 0),
+
+	//---------------------------------------------------------------------------
+	// ans.makeCheckList() 最初にchecklistの配列を生成する
+	//---------------------------------------------------------------------------
+	makeCheckList : function(){
+		if(!this.checklist){ return;}
+
+		/* 当該パズルで使用しないchecklistのアイテムをフィルタリング */
+		var checklist = this.checklist, order = [];
+		for(var i=0;i<checklist.length;i++){
+			var item = checklist[i], isexist = true, prio = 0;
+			if(item.match('@')){
+				isexist = pzpr.util.checkpid(item.substr(item.indexOf('@')+1), this.owner.pid);
+				item = item.substr(0,item.indexOf('@'));
+			}
+			if(isexist){
+				prio = (item.match(/\+/)||[]).length;
+				item = item.replace(/\+/g,"");
+				order.push([this[item], prio]);
+			}
+		}
+		
+		this.checklist_normal = [];
+		for(var i=0; i<order.length; i++){ this.checklist_normal.push(order[i][0]);}
+		
+		/* autocheck用のエラーをソートする */
+		order = order.sort(function(a,b){ return b[1] - a[1];});
+		this.checklist_auto = [];
+		for(var i=0; i<order.length; i++){ this.checklist_auto.push(order[i][0]);}
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.check()     答えのチェックを行う
-	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error) (オーバーライド用)
+	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
 		var puzzle = this.owner, bd = puzzle.board;
@@ -25,45 +58,41 @@ AnsCheck:{
 		
 		if(activemode){
 			this.checkOnly = false;
-			this.failcode = this.checkAns();
-			if(!!this.failcode){
+			this.checkAns();
+			if(!this.failcode.complete){
 				bd.haserror = true;
-				puzzle.redraw();
+				puzzle.adjustCanvasSize();	/* 強制的に一から再描画を行う */
 			}
 		}
-		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
+		/* activemodeでなく、前回の判定結果が残っていない場合はチェックします */
 		else if(this.failcode===void 0){
 			bd.disableSetError();
 			this.checkOnly = true;
-			this.failcode = (this.autocheck1st() || this.checkAns());
+			this.checkAns(false);
 			bd.enableSetError();
 		}
+		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
 		
 		this.inCheck = false;
-		return new puzzle.CheckInfo(this.failcode);
+		return this.failcode;
 	},
-	checkAns : function(){ return null;},	//オーバーライド用
-
-	//---------------------------------------------------------------------------
-	// ans.autocheck1st() autocheckの最初に、軽い正答判定を行う
-	// ans.check1st()     autocheckの最初に、軽い正答判定を行う(オーバーライド用)
-	//---------------------------------------------------------------------------
-	// リンク系は重いので最初に端点を判定する
-	autocheck1st : function(){
-		var bd = this.owner.board;
-		if(bd.lines.enabled && !bd.linfo.enabled){
-			if(bd.lines.isCenterLine || bd.lines.borderAsLine){
-				if(!this.checkLineCount(1)){ return 'lnDeadEnd';}
-			}
+	checkAns : function(){
+		this.failcode = new this.owner.CheckInfo();
+		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
+		var checkSingleError = (this.checkOnly || !this.owner.getConfig("multierr"));
+		for(var i=0;i<checklist.length;i++){
+			checklist[i].call(this);
+			if(checkSingleError && (this.failcode.length>0)){ break;}
 		}
-		return this.check1st();
 	},
-	check1st : function(){ return null;},	//オーバーライド用
 
 	//---------------------------------------------------------------------------
-	// ans.resetCache() 前回のエラー情報を破棄する
+	// ans.resetCache() 前回のエラー情報等を破棄する
 	//---------------------------------------------------------------------------
-	resetCache : function(){ this.failcode = void 0;}
+	resetCache : function(){
+		this.failcode = void 0;
+		this._info    = {};
+	}
 },
 
 //---------------------------------------------------------------------------
@@ -75,17 +104,22 @@ CheckInfo:{
 	},
 	complete : true,
 	length : 0,
+	lastcode : null,
 	
 	add : function(code){
-		if(!!code){
-			Array.prototype.push.call(this, code);
-			this.complete = false;
-		}
+		if(!code){ return;}
+		if(code!==this.lastcode){ this[this.length++] = this.lastcode = code;}
+		this.complete = false;
 	},
 	text : function(lang){
-		var code = (this[0] || 'complete');
-		lang = lang || this.owner.getConfig('language');
-		return this.owner.faillist[code][lang==='ja'?0:1];
+		var puzzle = this.owner, textlist = puzzle.faillist, texts = [];
+		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		if(this.length===0){ return textlist.complete[langcode];}
+		for(var i=0;i<this.length;i++){
+			var textitem = textlist[this[i]] || textlist.invalid;
+			texts.push(textitem[langcode]);
+		}
+		return texts.join("\n");
 	}
 },
 

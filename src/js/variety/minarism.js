@@ -26,7 +26,7 @@ MouseEvent:{
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
 			this.inputData = this.getdir(this.prevPos, pos);
-			border.setQdir(this.inputData!==border.getQdir()?this.inputData:0);
+			border.setQdir(this.inputData!==border.qdir?this.inputData:0);
 			border.draw();
 			this.mousereset();
 			return;
@@ -87,16 +87,16 @@ KeyEvent:{
 		var border = this.cursor.getb();
 		if(border.isnull){ return;}
 
-		if(ca=='q'||ca=='w'||ca=='e' || ca==' ' || ca=='-'){
+		if(ca==='q'||ca==='w'||ca==='e'||ca===' '||ca==='-'){
 			var tmp=border.NDIR;
-			if(ca=='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
-			if(ca=='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
+			if(ca==='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
+			if(ca==='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
 
-			border.setQdir(border.getQdir()!==tmp?tmp:border.NDIR);
+			border.setQdir(border.qdir!==tmp?tmp:border.NDIR);
 			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = border.getQnum();
+			var num = parseInt(ca), cur = border.qnum;
 			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 
 			border.setQdir(border.NDIR);
@@ -123,7 +123,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	}
 },
@@ -177,47 +177,57 @@ Graphic:{
 		}
 	},
 	drawBDNumbers_and_IneqSigns : function(){
-		var g = this.vinc('border_marks', 'auto');
+		var g = this.vinc('border_marks', 'auto', true);
 
 		var csize = this.cw*0.27;
 		var ssize = this.cw*0.22;
-		var headers = ["b_cp_", "b_is1_", "b_is2_"];
 
 		g.lineWidth = 1;
 		g.strokeStyle = this.quescolor;
 
+		var option = {ratio:[0.45]};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border=blist[i], id=border.id;
-			var px = border.bx*this.bw, py = border.by*this.bh;
+			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
+
 			// ○の描画
-			if(border.qnum!=-1){
+			g.vid = "b_cp_"+border.id;
+			if(border.qnum!==-1){
 				g.fillStyle = (border.error===1 ? this.errcolor1 : "white");
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.shapeCircle(px, py, csize);
-				}
+				g.shapeCircle(px, py, csize);
 			}
-			else{ g.vhide([headers[0]+id]);}
+			else{ g.vhide();}
 
 			// 数字の描画
-			var text = (border.qnum>0 ? ""+border.qnum : "");
-			var option = { key:"border_text_"+id };
-			option.ratio = [0.45];
-			this.disptext(text, px, py, option);
+			g.vid = "border_text_"+border.id;
+			if(border.qnum>0){
+				g.fillStyle = this.fontcolor;
+				this.disptext(""+border.qnum, px, py, option);
+			}
+			else{ g.vhide();}
 
 			// 不等号の描画
-			g.vhide([headers[1]+id, headers[2]+id]);
-			if(border.qdir!==border.NDIR){
-				if(this.vnop(headers[((border.qdir+1)&1)+1]+id,this.NONE)){
-					switch(border.qdir){
-						case border.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
-						case border.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
-						case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
-						case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
-					}
-					g.stroke();
+			g.vid = "b_is1_"+border.id;
+			if(border.qdir===border.UP||border.qdir===border.LT){
+				g.beginPath();
+				switch(border.qdir){
+					case border.UP: g.setOffsetLinePath(px,py ,-ssize,+ssize ,0,-ssize ,+ssize,+ssize, false); break;
+					case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize ,-ssize,0 ,+ssize,+ssize, false); break;
 				}
+				g.stroke();
 			}
+			else{ g.vhide();}
+			
+			g.vid = "b_is2_"+border.id;
+			if(border.qdir===border.DN||border.qdir===border.RT){
+				g.beginPath();
+				switch(border.qdir){
+					case border.DN: g.setOffsetLinePath(px,py ,-ssize,-ssize ,0,+ssize ,+ssize,-ssize, false); break;
+					case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize ,+ssize,0 ,-ssize,+ssize, false); break;
+				}
+				g.stroke();
+			}
+			else{ g.vhide();}
 		}
 	},
 
@@ -268,15 +278,16 @@ Encode:{
 	},
 	encodeMinarism : function(type){
 		var parser = pzpr.parser;
-		var cm="", count=0, mgn=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.owner.board;
 		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
 			if(type===1){
-				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)==0){ count++;}
-				if(id==(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
+				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)===0){ count++;}
+				if(id===(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
+			var pstr="";
 			if(id<bd.bdmax){
-				var pstr="", border=bd.border[id], dir=border.qdir, qnum=border.qnum;
+				var border=bd.border[id], dir=border.qdir, qnum=border.qnum;
 
 				if     (dir===border.UP||dir===border.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
 				else if(dir===border.DN||dir===border.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
@@ -287,8 +298,8 @@ Encode:{
 			}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr||count==18){ cm+=((17+count).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr||count===18){ cm+=((17+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(17+count).toString(36);}
 
@@ -322,53 +333,44 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkDifferentNumberInLine",
+		"checkSubOfNumber",
+		"checkIneqMark",
+		"checkNoNumCell+"
+	],
 
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-		if( !this.checkBDnumber() ){ return 'nmSubNe';}
-		if( !this.checkBDmark() ){ return 'nmIneqNe';}
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
+	checkDifferentNumberInLine : function(){
+		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
 	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
+	checkSubOfNumber : function(){
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));
+		}, "nmSubNe");
 	},
-
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist, function(cell){ return cell.getNum();});
+	checkIneqMark : function(){
+		this.checkHintSideCell(function(border,a1,a2){
+			var mark = border.qdir;
+			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
+		}, "nmIneqNe");
 	},
-
-	checkBDnumber : function(){
-		return this.checkBDSideCell(function(border,a1,a2){
-			return (border.getQnum()>0 && border.getQnum()!==Math.abs(a1-a2));
-		});
-	},
-	checkBDmark : function(){
-		return this.checkBDSideCell(function(border,a1,a2){
-			var mark = border.getQdir();
-			return !(mark==0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
-		});
-	},
-	checkBDSideCell : function(func){
-		var result = true, bd = this.owner.board;
-		for(var id=0;id<bd.bdmax;id++){
-			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+	checkHintSideCell : function(func, code){
+		var boardborder = this.owner.board.border;
+		for(var id=0;id<boardborder.length;id++){
+			var border = boardborder[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();
-			if(num1>0 && num2>0 && func(border,num1,num2)){
-				if(this.checkOnly){ return false;}
-				cell1.seterr(1);
-				cell2.seterr(1);
-				result = false;
-			}
+			if(num1<=0 || num2<=0 || !func(border,num1,num2)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell1.seterr(1);
+			cell2.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The Difference between two Adjacent cells is not equal to the number on circle."],
-	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."]
 }
 });

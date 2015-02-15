@@ -14,8 +14,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -29,7 +28,7 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
 	},
 
@@ -56,8 +55,8 @@ AreaUnshadeManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -86,12 +85,14 @@ Graphic:{
 	drawNumbers_hitori : function(){
 		var puzzle=this.owner, bd=puzzle.board, chk=puzzle.checker;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
-			var pt = puzzle.CellList.prototype, seterr = pt.seterr;
+			var pt = puzzle.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
 			chk.inCheck = true;
 			chk.checkOnly = false;
+			chk.failcode = {add:function(){}};
 			pt.seterr = pt.setinfo;
-			chk.checkRowsColsSameNumber();
+			chk.checkRowsColsSameQuesNumber();
 			pt.seterr = seterr;
+			chk.failcode = fcd;
 			chk.inCheck = false;
 
 			var clist = this.range.cells;
@@ -142,7 +143,7 @@ Encode:{
 			else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(36);}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
+			if(count===0){ cm += pstr;}
 			else{ cm+="."; count=0;}
 		}
 		if(count>0){ cm+=".";}
@@ -192,24 +193,18 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkRowsColsSameQuesNumber"
+	],
 
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
-
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-
-		return null;
+	checkRowsColsSameQuesNumber : function(){
+		this.checkRowsCols(this.isDifferentNumberInClist_hitori, "nmDupRow");
 	},
-
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsCols(this.isDifferentNumberInClist_hitori, function(cell){ return cell.getQnum();});
-	},
-	isDifferentNumberInClist_hitori : function(clist, numfunc){
+	isDifferentNumberInClist_hitori : function(clist){
 		var clist2 = clist.filter(function(cell){ return (cell.isUnshade() && cell.isNum());});
-		return this.isDifferentNumberInClist(clist2, numfunc);
+		return this.isIndividualObject(clist2, function(cell){ return cell.qnum;});
 	}
 }
 });

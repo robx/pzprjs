@@ -38,9 +38,9 @@ MouseEvent:{
 
 	inputDot : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
+		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.qsub===1?0:1);}
 
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
@@ -56,7 +56,7 @@ Cell:{
 		if(val>=0){
 			var o=this.owner, rooms=o.board.rooms;
 			val = rooms.getCntOfRoomByCell(this);
-			if(val>this.maxnum){ return null;}
+			if(val>this.getmaxnum()){ return null;}
 
 			var clist = rooms.getClistByCell(this), cell2=null;
 			for(var i=0;i<clist.length;i++){
@@ -135,33 +135,26 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-
-		if( !this.checkAnsNumberAndSize(rinfo) ){ return 'bkSizeNe';}
-
-		if( !this.checkDiffNumber() ){ return 'nmDiffDistNe';}
-
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-
-		return null;
-	},
+	checklist : [
+		"checkDoubleNumber",
+		"checkAnsNumberAndSize",
+		"checkDiffNumber",
+		"checkNoNumber"
+	],
 
 	checkDiffNumber : function(){
+		var cell, num, distance;
+		var result = true, bd = this.owner.board;
 		function eachcell(cell2){
 			distance++;
 			if(!cell2.isNum()){ /* nop */ }
-			else if(!cell2.isValidNum(cell2)){ c=null;}
+			else if(!cell2.isValidNum(cell2)){ cell=null;}
 			else{
-				if(cell!==null){
-					if(Math.abs(num-cell2.getNum())!==distance){
-						if(this.checkOnly){ return false;}
-						cell.seterr(1);
-						cell2.seterr(1)
-						result = false;
-					}
+				if(cell!==null && Math.abs(num-cell2.getNum())!==distance){
+					this.failcode.add("nmDiffDistNe");
+					result = false;
+					cell.seterr(1);
+					cell2.seterr(1);
 				}
 				cell=cell2;
 				num=cell2.getNum();
@@ -169,35 +162,34 @@ AnsCheck:{
 			}
 		}
 
-		var result = true, bd = this.owner.board;
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var cell=null, num, distance;
+			cell=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-				eachcell(bd.getc(bx,by));
+				eachcell.call(this, bd.getc(bx,by));
+				if(!result && this.checkOnly){ return;}
 			}
 		}
 		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var cell=null, num, distance;
+			cell=null;
 			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				eachcell(bd.getc(bx,by));
+				eachcell.call(this, bd.getc(bx,by));
+				if(!result && this.checkOnly){ return;}
 			}
 		}
-		return result;
 	},
 
-	checkAnsNumberAndSize : function(rinfo){
-		var result = true;
+	checkAnsNumberAndSize : function(){
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, num = -1;
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
-			if( num!==-1 && num!==clist.length ){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if( num===-1 || num===clist.length ){ continue;}
+			
+			this.failcode.add("bkSizeNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

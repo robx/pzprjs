@@ -17,9 +17,9 @@ MouseEvent:{
 
 	clickTateyoko : function(){
 		var cell  = this.getcell();
-		if(cell.isnull || cell.getQues()===1){ return;}
+		if(cell.isnull || cell.ques===1){ return;}
 
-		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.getQans()]);
+		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.qans]);
 		cell.draw();
 	}
 },
@@ -35,14 +35,14 @@ KeyEvent:{
 	},
 	key_inputqnum_tateyoko : function(ca){
 		var cell = this.cursor.getc();
-		if(ca=='q'||ca=='q1'||ca=='q2'){
-			if(ca=='q'){ ca = (cell.getQues()!=1?'q1':'q2');}
-			if(ca=='q1'){
+		if(ca==='q'||ca==='q1'||ca==='q2'){
+			if(ca==='q'){ ca = (cell.ques!==1?'q1':'q2');}
+			if(ca==='q1'){
 				cell.setQues(1);
 				cell.setQans(0);
-				if(cell.getQnum()>4){ cell.setQnum(-1);}
+				if(cell.qnum>4){ cell.setQnum(-1);}
 			}
-			else if(ca=='q2'){ cell.setQues(0);}
+			else if(ca==='q2'){ cell.setQues(0);}
 		}
 		else{ return false;}
 
@@ -55,7 +55,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		var bd = this.owner.board;
 		return (this.ques===1?4:Math.max(bd.qcols,bd.qrows));
 	},
@@ -74,7 +74,7 @@ BoardExec:{
 			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				cell.setQans(tans[cell.getQans()]);
+				cell.setQans(tans[cell.qans]);
 			}
 		}
 	}
@@ -86,7 +86,7 @@ AreaBarManager:{
 		var binfo = new this.owner.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			binfo.id[c]=((cell.getQues()===1||cell.getQans()===0) ? null : 0);
+			binfo.id[c]=((cell.ques===1||cell.qans===0) ? null : 0);
 		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -118,7 +118,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		this.drawTateyokos()
+		this.drawTateyokos();
 
 		this.drawShadeAtNumber();
 		this.drawNumbers_tateyoko();
@@ -129,20 +129,17 @@ Graphic:{
 	},
 
 	drawShadeAtNumber : function(){
-		var g = this.vinc('cell_bcells', 'crispEdges');
+		var g = this.vinc('cell_bcells', 'crispEdges', true);
 
-		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
+			g.vid = "c_full_"+cell.id;
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbers_tateyoko : function(){
@@ -150,11 +147,13 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var num = cell.qnum, text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
-			var option = { key: "cell_text_"+cell.id };
-			option.color = (cell.ques!==1 ? this.fontcolor : "white");
-			this.disptext(text, px, py, option);
+			var cell = clist[i], num = cell.qnum;
+			g.vid = "cell_text_"+cell.id;
+			if(num!==-1){
+				g.fillStyle = (cell.ques!==1 ? this.fontcolor : "white");
+				this.disptext((num>=0 ? ""+num : "?"), cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -229,7 +228,7 @@ FileIO:{
 	encodeData : function(){
 		this.encodeCell( function(obj){
 			if(obj.ques===1){
-				if(obj.qnum==-1||obj.qnum==-2){ return "f ";}
+				if(obj.qnum===-1||obj.qnum===-2){ return "f ";}
 				else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[obj.qnum];}
 			}
 			else if(obj.qnum===-2){ return "? ";}
@@ -249,54 +248,57 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBarOverNum",
+		"checkDoubleNumberInBar",
+		"checkSizeAndNumberInBar",
+		"checkBarLessNum",
+		"checkEmptyCell_tateyoko+"
+	],
+
+	getBarInfo : function(){
+		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+	},
+
+	checkDoubleNumberInBar : function(){
+		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "baPlNum");
+		if(errcount!==this.failcode.length){ cells.setnoerr();}
+	},
+	checkSizeAndNumberInBar : function(){
+		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
+		if(errcount!==this.failcode.length){ cells.setnoerr();}
+	},
+
+	checkBarOverNum : function(){ this.checkShade(1, "nmConnBarGt");},
+	checkBarLessNum : function(){ this.checkShade(2, "nmConnBarLt");},
+	checkShade : function(type, code){
 		var bd = this.owner.board;
-
-		if( !this.checkShade(1) ){ return 'nmConnBarGt';}
-
-		var binfo = bd.getBarInfo();
-		bd.cell.seterr(-1);
-		if( !this.checkDoubleNumber(binfo) ){ return 'baPlNum';}
-		if( !this.checkNumberAndSize(binfo) ){ return 'bkSizeNe';}
-		bd.cell.seterr(0);
-
-		if( !this.checkShade(2) ){ return 'nmConnBarLt';}
-
-		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkEmptyCell() ? null : 'ceEmpty');
-	},
-
-	checkShade : function(type){
-		var result = true, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], num = cell.getQnum();
-			if(cell.getQues()!==1 || num<0){ continue;}
+			var cell = bd.cell[c], num = cell.qnum;
+			if(cell.ques!==1 || num<0){ continue;}
 
 			var cnt1=0, cnt2=0, cell2, adc=cell.adjacent;
-			cell2=adc.top;    if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.getQans()===12){ cnt1++;}else if(cell2.getQans()===13){ cnt2++;} }
-			cell2=adc.left;   if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
-			cell2=adc.right;  if(!cell2.isnull){ if(cell2.getQans()===13){ cnt1++;}else if(cell2.getQans()===12){ cnt2++;} }
-
-			if((type===1 && (num>4-cnt2 || num<cnt1)) || (type===2 && num!==cnt1)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			cell2=adc.top;    if(!cell2.isnull){ if(cell2.qans===12){ cnt1++;}else if(cell2.qans===13){ cnt2++;} }
+			cell2=adc.bottom; if(!cell2.isnull){ if(cell2.qans===12){ cnt1++;}else if(cell2.qans===13){ cnt2++;} }
+			cell2=adc.left;   if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
+			cell2=adc.right;  if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
+			if((type===1 && (num<=4-cnt2 && num>=cnt1)) || (type===2 && num===cnt1)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	},
 	
-	checkEmptyCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQues()===0 && cell.getQans()===0);});
+	checkEmptyCell_tateyoko : function(){
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.qans===0);}, "ceNoBar");
 	}
 },
 
 FailCode:{
+	ceNoBar     : ["何も入っていないマスがあります。","There is an empty cell."],
 	bkSizeNe    : ["数字と棒の長さが違います。","The number is different from the length of line."],
 	baPlNum     : ["1つの棒に2つ以上の数字が入っています。","A line passes plural numbers."],
 	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."],

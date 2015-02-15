@@ -62,25 +62,22 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_square', 'crispEdges');
+		var g = this.vinc('cell_square', 'crispEdges', true);
 
 		var rw = this.bw*0.8-1;
 		var rh = this.bh*0.8-1;
-		var header = "c_sq_";
 
+		g.lineWidth = 1;
+		g.strokeStyle = "black";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if(cell.qnum!==-1){
-				g.lineWidth = 1;
-				g.strokeStyle = "black";
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeRectCenter(px, py, rw, rh);
-				}
+				g.shapeRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -108,45 +105,42 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkSquareShade",
+		"checkConnectUnshade",
+		"checkSumOfSize",
+		"checkAtLeastOne"
+	],
 
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkAreaSquare(binfo) ){ return 'csNotSquare';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
-
-		if( !this.checkNumberSquare(binfo,true) ){ return 'ceSumSizeNe';}
-
-		if( !this.checkNumberSquare(binfo,false) ){ return 'ceNoShade';}
-
-		return null;
+	checkSquareShade : function(){
+		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a && w===h);}, "csNotSquare");
 	},
-
-	checkNumberSquare : function(binfo, flag){
-		var result = true, bd = this.owner.board;
+	checkSumOfSize  : function(){ this.checkNumberSquare(true,  "nmSumSizeNe");},
+	checkAtLeastOne : function(){ this.checkNumberSquare(false, "nmNoSideShade");},
+	checkNumberSquare : function(flag, code){
+		var bd = this.owner.board;
+		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if((flag?(cell.getQnum()<0):(cell.getQnum()!==-2))){ continue;}
+			if((flag?(cell.qnum<0):(cell.qnum===-1))){ continue;}
 			var clist=new this.owner.CellList(), adc=cell.adjacent;
 			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
 			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
 			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}
 			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
 
-			if(flag?(clist.length!==cell.getQnum()):(clist.length===0)){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				cell.seterr(1);
-				result = false;
-			}
+			if(flag ? (clist.length===cell.qnum) : (clist.length>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
+			cell.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	ceSumSizeNe : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
-	ceNoShade   : ["数字のない□に黒マスが接していません。","No shaded cells are adjacent to square mark without numbers."]
+	nmSumSizeNe   : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
+	nmNoSideShade : ["□に黒マスが接していません。","No shaded cells are adjacent to square marks."]
 }
 });

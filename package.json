@@ -1,6 +1,6 @@
 {
   "name": "pzprv3",
-  "version": "3.4.4",
+  "version": "3.5.0beta1",
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
   "directories": {
@@ -16,10 +16,12 @@
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.2",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.7",
-    "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-newer": "^0.7.0",
     "grunt-shell": "~0.6.4"
   }
 }

@@ -160,18 +160,15 @@ Graphic:{
 
 		var rsize = this.cw*0.40;
 		var lampcolor = "rgb(0, 127, 96)";
-		var header = "c_AK_";
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_AK_"+cell.id;
 			if(cell.isAkari()){
 				g.fillStyle = (cell.error!==4 ? lampcolor : this.errcolor1);
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
+				g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -224,32 +221,29 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkNotDuplicateAkari() ){ return 'akariDup';}
-		if( !this.checkDir4Akari() ){ return 'nmAkariNe';}
-		if( !this.checkShinedCell() ){ return 'ceDark';}
-
-		return null;
-	},
+	checklist : [
+		"checkNotDuplicateAkari",
+		"checkDir4Akari",
+		"checkShinedCell"
+	],
 
 	checkDir4Akari : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isAkari();},0);
+		this.checkDir4Cell(function(cell){ return cell.isAkari();}, 0, "nmAkariNe");
 	},
 	checkShinedCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);});
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.qlight!==1);}, "ceDark");
 	},
 
 	checkNotDuplicateAkari : function(){
-		return this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, true);
+		this.checkRowsColsPartly(this.isPluralAkari, function(cell){ return cell.isNum();}, "akariDup");
 	},
-	isPluralAkari : function(keycellpos, clist){
+	isPluralAkari : function(clist){
 		var akaris = clist.filter(function(cell){ return cell.isAkari();});
-		if(akaris.length>1){
+		var result = (akaris.length<=1);
+		if(!result){
 			akaris.seterr(4);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 

@@ -1,0 +1,22 @@
+{
+  "curly": true,    // Warn no curly brancket in loop or conditions
+  "undef": true,    // Warn unused variable (that will become global variable)
+  "unused": "vars", // Warn unused variables, not detect arguments
+  "newcap": true,   // Warn if first letter is not capital
+  "nonew": true,    // Warn contructor call
+  "regexp": true,   // Warn use . in regexp
+  "eqeqeq": true,   // Warn ==, != to compare
+  "latedef": true,  // Warn use variable before definition
+  "es3": true,      // Enable ES3 mode (to find out extra-comma)
+
+  // false means enable access, prohibits overwrite
+  "globals": {
+    "pzpr": false,
+    "ui": false
+  },
+  "browser": true,  // Allow to use browser defined variable (not console, alert etc.)
+
+  "shadow": true,   // Allow redefine variable (TODO: this option disable)
+  "loopfunc": true, // Allow function definition in loop
+  "sub": true       // Allow object access via obj["name"]
+}

@@ -1,4 +1,5 @@
 // Event.js v3.4.0
+/* global ui:false, _doc:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
@@ -11,24 +12,12 @@ ui.event =
 	evlist : [],
 
 	//----------------------------------------------------------------------
-	// event.addEvent()          addEventListener(など)を呼び出す
-	// event.addMouseDownEvent() マウスを押したときのイベントを設定する
-	// event.addMouseMoveEvent() マウスを動かしたときのイベントを設定する
-	// event.addMouseUpEvent()   マウスボタンを離したときのイベントを設定する
+	// event.addEvent()        addEventListener(など)を呼び出す
 	//----------------------------------------------------------------------
 	addEvent : function(el, event, self, callback, capt){
-		var func = function(e){
-			e = e||window.event;
-			if(!e.target){ e.target = e.srcElement;}
-			return callback.call(self, e);
-		};
-		if(!!el.addEventListener){ el.addEventListener(event, func, !!capt);}
-		else                     { el.attachEvent('on'+event, func);}
+		var func = pzpr.util.addEvent(el, event, self, callback, !!capt);
 		this.evlist.push({el:el, event:event, func:func, capt:!!capt});
 	},
-	addMouseDownEvent : pzpr.util.addMouseDownEvent,
-	addMouseMoveEvent : pzpr.util.addMouseMoveEvent,
-	addMouseUpEvent   : pzpr.util.addMouseUpEvent,
 
 	//----------------------------------------------------------------------
 	// event.removeAllEvents() addEventで登録されたイベントを削除する
@@ -111,7 +100,7 @@ ui.event =
 		if(pzpr.PLAYER || !ui.puzzle.ismodified()){ return;}
 		
 		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
-		e.returnValue = msg
+		e.returnValue = msg;
 		return msg;
 	},
 
@@ -120,7 +109,7 @@ ui.event =
 	//---------------------------------------------------------------------------
 	adjustcellsize : function(){
 		var puzzle = ui.puzzle, bd = puzzle.board, pc = puzzle.painter;
-		var cols = pc.getCanvasCols(), rows = pc.getCanvasRows();
+		var cols = pc.getCanvasCols();
 		var wwidth = ui.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 		var uiconf = ui.menuconfig;
 

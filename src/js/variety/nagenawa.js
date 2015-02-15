@@ -14,8 +14,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 "MouseEvent@ringring":{
 	mouseinput : function(){
@@ -34,7 +33,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQues(cell.getQues()===0?1:0);
+		cell.setQues(cell.ques===0?1:0);
 		cell.draw();
 	}
 },
@@ -48,8 +47,8 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
-		return Math.min(this.maxnum, this.owner.board.rooms.getCntOfRoomByCell(this));
+	maxnum : function(){
+		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
 	},
 	minnum : 0
 },
@@ -107,12 +106,14 @@ Graphic:{
 
 	//オーバーライド
 	drawNumber1 : function(cell){
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var text = (cell.qnum!==-1 ? (cell.qnum>=0 ? ""+cell.qnum : "?") : "");
-		var option = { key:"cell_text_"+cell.id };
-		option.ratio = [0.45];
-		option.position = this.TOPLEFT;
-		this.disptext(text, px, py, option);
+		var g = this.context;
+		g.vid = "cell_text_"+cell.id;
+		if(cell.qnum!==-1){
+			var option = {ratio:[0.45], position:this.TOPLEFT};
+			g.fillStyle = this.fontcolor;
+			this.disptext((cell.qnum>=0 ? ""+cell.qnum : "?"), cell.bx*this.bw, cell.by*this.bh, option);
+		}
+		else{ g.vhide();}
 	}
 },
 "Graphic@ringring":{
@@ -151,7 +152,7 @@ Graphic:{
 				cc += parseInt(ca,36);
 				bd.cell[cc].ques = 1;
 			}
-			else if(ca == '.'){ cc+=35;}
+			else if(ca === '.'){ cc+=35;}
 
 			cc++;
 			if(cc>=bd.cellmax){ i++; break;}
@@ -166,7 +167,7 @@ Graphic:{
 			else{ count++;}
 
 			if(pstr){ cm += count.toString(36); count=0;}
-			else if(count==36){ cm += "."; count=0;}
+			else if(count===36){ cm += "."; count=0;}
 		}
 		//if(count>0){ cm += count.toString(36);}
 
@@ -212,59 +213,42 @@ Graphic:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var o=this.owner, bd=o.board, pid=o.pid;
+	checklist : [
+		"checkLineExist",
+		"checkLineOnShadeCell@ringring",
+		"checkOverLineCount@nagenawa",
+		"checkBranchLine",
+		"checkDeadendLine+",
+		"checkLessLineCount@nagenawa",
+		"checkAllLoopRect",
+		"checkUnreachedUnshadeCell+@ringring"
+	],
 
-		if( !this.checkNoLine() ){ return 'brNoLine';}
-
-		if( (pid==='ringring') && !this.checkLineOnShadeCell() ){ return 'lnOnShade';}
-
-		var rinfo = (bd.rooms.enabled ? bd.getRoomInfo() : null);
-		if( (pid==='nagenawa') && !this.checkOverLineCount(rinfo) ){ return 'bkLineGt';}
-
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( (pid==='nagenawa') && !this.checkLessLineCount(rinfo) ){ return 'bkLineLt';}
-
-		if( !this.checkAllLoopRect() ){ return 'lnNotRect';}
-
-		if( (pid==='ringring') && !this.checkUnreachedUnshadeCell() ){ return 'ceEmpty';}
-
-		return null;
+	checkOverLineCount : function(){
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);}, "bkLineGt");
 	},
-
-	checkNoLine : function(){
-		var bd = this.owner.board;
-		for(var i=0;i<bd.bdmax;i++){ if(bd.border[i].isLine()){ return true;} }
-		return false;
-	},
-	checkLineOnShadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===1 && cell.lcnt>0);});
-	},
-	checkOverLineCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n>=a);});
-	},
-	checkLessLineCount : function(rinfo){
-		return this.checkLinesInArea(rinfo, function(w,h,a,n){ return (n<=0 || n<=a);});
+	checkLessLineCount : function(){
+		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n<=a);}, "bkLineLt");
 	},
 	checkUnreachedUnshadeCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);});
+		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 
 	checkAllLoopRect : function(){
 		var result = true, bd = this.owner.board;
-		var xinfo = bd.getLineInfo();
+		var xinfo = this.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
 			var blist = xinfo.path[r].blist;
 			if(this.isLoopRect(blist)){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ bd.border.seterr(-1);}
-			blist.seterr(1);
 			result = false;
+			if(this.checkOnly){ break;}
+			blist.seterr(1);
 		}
-		return result;
+		if(!result){
+			this.failcode.add("lnNotRect");
+			bd.border.setnoerr();
+		}
 	},
 	isLoopRect : function(blist){
 		var bd = this.owner.board;
@@ -284,9 +268,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	lnNotRect : ["長方形か正方形でない輪っかがあります。","there is a non-rectangle loop."],
-	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
-	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","the number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
-	ceEmpty : ["白マスの上に線が引かれていません。","there is no line on the unshaded cell."]
+	lnNotRect : ["長方形か正方形でない輪っかがあります。","There is a non-rectangle loop."],
+	bkLineGt : ["数字のある部屋と線が通過するマスの数が違います。","The number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","The number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
+	cuNoLine : ["白マスの上に線が引かれていません。","There is no line on the unshaded cell."]
 }
 });

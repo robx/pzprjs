@@ -14,8 +14,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -29,7 +28,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return this.owner.board.qcols+this.owner.board.qrows-1;
 	},
 	minnum : 2
@@ -44,8 +43,8 @@ AreaUnshadeManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -114,22 +113,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkViewOfNumber"
+	],
 
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
-
-		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
-
-		return null;
-	},
-
-	checkCellNumber : function(){
-		var result = true, bd = this.owner.board;
-		for(var cc=0;cc<bd.cellmax;cc++){
-			var cell = bd.cell[cc];
+	checkViewOfNumber : function(){
+		var boardcell = this.owner.board.cell;
+		for(var cc=0;cc<boardcell.length;cc++){
+			var cell = boardcell[cc];
 			if(!cell.isValidNum()){ continue;}
 
 			var clist = new this.owner.CellList(), adc = cell.adjacent, target;
@@ -138,14 +131,12 @@ AnsCheck:{
 			target=adc.right;  while(target.isUnshade()){ clist.add(target); target=target.adjacent.right; }
 			target=adc.top;    while(target.isUnshade()){ clist.add(target); target=target.adjacent.top;   }
 			target=adc.bottom; while(target.isUnshade()){ clist.add(target); target=target.adjacent.bottom;}
-
-			if(cell.getQnum()!==clist.length){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===clist.length){ continue;}
+			
+			this.failcode.add("nmSumViewNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

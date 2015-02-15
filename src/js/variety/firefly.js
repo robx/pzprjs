@@ -80,61 +80,67 @@ Graphic:{
 	globalfontsizeratio : 0.85,
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDashedCenterLines();
 		this.drawLines();
 
 		this.drawPekes();
 
-		this.drawFireflies();
+		this.drawFireflies1();
+		this.drawFireflies2();
 		this.drawNumbers();
 
 		this.drawTarget();
 	},
 
-	drawFireflies : function(){
-		var g = this.vinc('cell_firefly', 'auto');
+	drawFireflies1 : function(){
+		var g = this.vinc('cell_firefly', 'auto', true);
 
 		g.lineWidth = 1.5;
 		g.strokeStyle = this.quescolor;
-
 		var rsize  = this.cw*0.40;
-		var rsize3 = this.cw*0.10;
-
-		var headers = ["c_cira_", "c_cirb_"];
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id;
+			var cell = clist[i];
 
+			g.vid = "c_cira_"+cell.id;
 			if(cell.qnum!==-1){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(headers[0]+id,this.FILL)){
-					g.shapeCircle(px, py, rsize);
-				}
-
-				g.vdel(headers[1]+id);
-				if(cell.qdir!==0){
-					g.fillStyle = this.quescolor;
-					switch(cell.qdir){
-						case cell.UP: py-=(rsize-1); break;
-						case cell.DN: py+=(rsize-1); break;
-						case cell.LT: px-=(rsize-1); break;
-						case cell.RT: px+=(rsize-1); break;
-					}
-					if(this.vnop(headers[1]+id,this.NONE)){
-						g.fillCircle(px, py, rsize3);
-					}
-				}
+				g.shapeCircle(cell.bx*this.bw, cell.by*this.bh, rsize);
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
+		}
+	},
+	drawFireflies2 : function(){
+		var g = this.vinc('cell_firefly', 'auto');
+
+		g.fillStyle = this.quescolor;
+		var rsize  = this.cw*0.40;
+		var rsize3 = this.cw*0.10;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+
+			g.vid = "c_cirb_"+cell.id;
+			if(cell.qnum!==-1 && cell.qdir!==cell.NDIR){
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				switch(cell.qdir){
+					case cell.UP: py-=(rsize-1); break;
+					case cell.DN: py+=(rsize-1); break;
+					case cell.LT: px-=(rsize-1); break;
+					case cell.RT: px+=(rsize-1); break;
+				}
+				g.fillCircle(px, py, rsize3);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawFireflies();
+		this.drawFireflies1();
+		this.drawFireflies2();
 		this.drawNumbers();
 	}
 },
@@ -164,59 +170,56 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchConnectLine",
+		"checkCrossConnectLine",
 
-		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount_firefly(4) ){ return 'lnCross';}
+		"checkConnectPoints",
+		"checkConnectCircles",
+		"checkCurveCount",
+		"checkLineShapeDeadend",
+		"checkConnectAllLine",
 
-		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,4) ){ return 'lcInvDirB';}
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcInvDirW';}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveNe';}
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
+		"checkDeadendConnectLine+",
 
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneArea(linfo) ){ return 'lcDivided';}
+		"checkFireflyBeam"
+	],
 
-		if( !this.checkLineCount_firefly(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkFireflyBeam() ){ return 'nmNoLine';}
-
-		return null;
-	},
-
-	/* 線のカウントはするが、○のある場所は除外する */
-	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
-	},
 	checkFireflyBeam : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], dir=cell.getQdir();
+			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
-			if(!cell.getaddr().movedir(dir,1).getb().isLine()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			if(cell.getaddr().movedir(dir,1).getb().isLine()){ continue;}
+			
+			this.failcode.add("nmNoLine");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	},
 
-	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
-		var cell1=path.cells[0], cell2=path.cells[1], dir1=path.dir1, dir2=path.dir2;
+	checkConnectPoints : function(){
+		this.checkLineShape(function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			return (!cell2.isnull && path.dir1===cell1.qdir && path.dir2===cell2.qdir);
+		}, "lcInvDirB");
+	},
+	checkConnectCircles : function(){
+		this.checkLineShape(function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			return (!cell2.isnull && path.dir1!==cell1.qdir && path.dir2!==cell2.qdir);
+		}, "lcInvDirW");
+	},
+	checkCurveCount : function(){
+		this.checkLineShape(function(path){
+			var cell1=path.cells[0], cell2=path.cells[1];
+			var qn=((path.dir1===cell1.qdir) ? cell1 : cell2).qnum;
+			return (!cell2.isnull && qn>=0 && qn!==path.ccnt);
+		}, "lcCurveNe");
+	},
 
-		// qd1 スタート地点の黒点の方向 qd2 到達地点の線の方向
-		var qd1=cell1.qdir, qd2=(!cell2.isnull ? cell2.qdir : cell2.NDIR), qn=-1, err=0;
-		if((dir1===qd1)^(dir2===qd2)){ qn=(dir1===qd1 ? cell1 : cell2).qnum;}
-
-		if     (!cell2.isnull && (dir1===qd1) && (dir2===qd2)){ err=4;}
-		else if(!cell2.isnull && (dir1!==qd1) && (dir2!==qd2)){ err=3;}
-		else if(!cell2.isnull && qn>=0 && qn!==ccnt){ err=2; path.cells=[cell1];}
-		else if( cell2.isnull){ err=1;}
-		path.error = err;
+	checkConnectAllLine : function(){
+		this.checkOneArea(this.getLareaInfo(), "lcDivided");
 	}
 },
 

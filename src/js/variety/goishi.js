@@ -5,22 +5,13 @@ pzpr.classmgr.makeCustom(['goishi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
-		this.ut = new this.owner.UndoTimer_goishi();
-	},
-
 	mouseinput : function(){
 		if(this.owner.playmode && this.mousestart){
-			if     (this.btn.Left) { this.inputqans();}
-			else if(this.btn.Right){ this.ut.startMouseUndo();}
+			if(this.btn.Left){ this.inputqans();}
 		}
 		else if(this.owner.editmode && this.mousestart){
 			this.inputstone();
 		}
-		
-		if(this.mouseend){ this.ut.stop();}
 	},
 
 	inputstone : function(){
@@ -35,11 +26,6 @@ MouseEvent:{
 	},
 	inputqans : function(){
 		var cell = this.getcell();
-		if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-			this.ut.startMouseRedo();
-			return;
-		}
-
 		var max=0, bd = this.owner.board, bcell=bd.emptycell;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
@@ -86,7 +72,7 @@ KeyEvent:{
 		this.key_inputstone(ca);
 	},
 	key_inputstone : function(ca){
-		if(ca=='q'){
+		if(ca==='q'){
 			var cell = this.cursor.getc();
 			cell.setStone();
 			cell.draw();
@@ -129,16 +115,25 @@ Graphic:{
 	},
 
 	drawCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges'), bd = this.owner.board;
+		var g = this.vinc('centerline', 'crispEdges', true), bd = this.owner.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
 		if(y1<bd.minby+1){ y1=bd.minby+1;} if(y2>bd.maxby-1){ y2=bd.maxby-1;}
-		x1-=(~x1&1), y1-=(~y1&1), x2+=(~x2&1), y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
+		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
+		g.lineWidth = 1;
 		g.fillStyle = this.gridcolor;
-		for(var i=x1;i<=x2;i+=2){ if(this.vnop("cliney_"+i,this.NONE)){ g.fillRect( i*this.bw-0.5, y1*this.bh-0.5, 1, (y2-y1)*this.bh+1);} }
-		for(var i=y1;i<=y2;i+=2){ if(this.vnop("clinex_"+i,this.NONE)){ g.fillRect(x1*this.bw-0.5,  i*this.bh-0.5, (x2-x1)*this.bw+1, 1);} }
+		for(var i=x1;i<=x2;i+=2){
+			var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
+			g.vid = "cliney_"+i;
+			g.strokeLine(px, py1, px, py2);
+		}
+		for(var i=y1;i<=y2;i+=2){
+			var py = i*this.bh, px1 = x1*this.bw, px2 = x2*this.bw;
+			g.vid = "clinex_"+i;
+			g.strokeLine(px1, py, px2, py);
+		}
 	},
 
 	getCircleStrokeColor : function(cell){
@@ -159,19 +154,16 @@ Graphic:{
 
 		var rw = this.bw*0.8-2;
 		var rh = this.bh*0.8-2;
-		var header = "c_sq2_";
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			
+			g.vid = "c_sq_"+cell.id;
 			if(cell.isStone() && cell.anum!==-1){
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -218,7 +210,7 @@ Encode:{
 			for(var bx=d.x1;bx<=d.x2;bx+=2){
 				var cell = this.owner.board.getc(bx,by);
 				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
-				if(count==5){ cm += pass.toString(32); count=0; pass=0;}
+				if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 			}
 		}
 		if(count>0){ cm += pass.toString(32);}
@@ -239,7 +231,7 @@ Encode:{
 			if(y2<cell.by){ y2=cell.by;}
 			count++;
 		}
-		if(count==0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
+		if(count===0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
 		if(this.owner.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 		return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 	}
@@ -327,95 +319,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		if( !this.checkPickedStone() ){ return 'goishiRemains';}
-
-		return null;
-	},
+	checklist : [
+		"checkPickedStone"
+	],
 
 	checkPickedStone :function(){
-		return this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);});
+		this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);}, "goishiRemains");
 	}
 },
 
 FailCode:{
 	goishiRemains : ["拾われていない碁石があります。","There is remaining Goishi."]
-},
-
-//---------------------------------------------------------
-// 碁石拾い用の特殊UndiTimer
-UndoTimer_goishi:{
-	initialize : function(){
-		// ** Undoタイマー
-		this.TID           = null;	// タイマーID
-		this.timerInterval = 25
-
-		this.inUNDO = false;
-		this.inREDO = false;
-
-		// Undo/Redo用変数
-		this.undoWaitTime  = 300;	// 1回目にwaitを多く入れるための値
-		this.undoWaitCount = 0;
-
-		this.stop();
-	},
-
-	//---------------------------------------------------------------------------
-	// ut.startMouseUndo() 碁石拾いの石がない場所のマウスクリックでUndoする
-	// ut.startMouseRedo() 碁石拾いの石がない場所のマウスクリックでRedoする
-	// ut.startProc() Undo/Redo呼び出しを開始する
-	// 
-	// ut.stop()      Undo/Redo呼び出しを終了する
-	//---------------------------------------------------------------------------
-	startMouseUndo : function(){ if(!this.inUNDO){ this.inUNDO=true; this.startProc();}},
-	startMouseRedo : function(){ if(!this.inREDO){ this.inREDO=true; this.startProc();}},
-	startProc : function(){
-		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
-		if(!this.TID){
-			var self = this;
-			this.TID = setInterval(function(){ self.proc();}, this.timerInterval);
-		}
-		this.exec();
-	},
-
-	stop : function(){
-		this.inUNDO = false;
-		this.inREDO = false;
-
-		clearInterval(this.TID);
-		this.TID = null;
-	},
-
-	//---------------------------------------------------------------------------
-	// ut.proc()  Undo/Redo呼び出しを実行する
-	// ut.exec()  Undo/Redo関数を呼び出す
-	//---------------------------------------------------------------------------
-	proc : function(){
-		if (!this.inUNDO && !this.inREDO){ this.stop();}
-		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
-		else{ this.exec();}
-	},
-	exec : function(){
-		var o = this.owner, opemgr = o.opemgr;
-		if(this.inUNDO){
-			var nextopes = opemgr.ope[opemgr.position-1];
-			var prop = (opemgr.enableUndo ? nextopes[nextopes.length-1].property : '');
-			if(prop!=='anum'){ this.stop();}
-		}
-		else if(this.inREDO){
-			var nextopes = opemgr.ope[opemgr.position];
-			var prop = (opemgr.enableRedo ? nextopes[0].property : '');
-			if(prop!=='anum'){ this.stop();}
-		}
-		
-		if(!!this.TID){
-			if(this.inUNDO){
-				if(!o.undo()){ this.stop();}
-			}
-			else if(this.inREDO){
-				if(!o.redo()){ this.stop();}
-			}
-		}
-	}
 }
 });

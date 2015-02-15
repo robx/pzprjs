@@ -30,7 +30,6 @@ MouseEvent:{
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
-	inputRed : function(){ this.dispRedLine();},
 
 	inputBGcolor0 : function(){
 		return this.getpos(0.25).oncell();
@@ -169,35 +168,20 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		if( !this.checkdir4BorderLine() ){ return 'nmLineNe';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		return null;
-	},
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkdir4BorderLine",
+		"checkOneLoop",
+		"checkDeadendLine+"
+	],
 	
 	checkdir4BorderLine : function(){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], qn = cell.getQnum();
-			if(qn>=0 && qn!==cell.getdir4BorderLine1()){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
-		}
-		return result;
+		this.checkAllCell(function(cell){ return (cell.qnum>=0 && cell.getdir4BorderLine1()!==cell.qnum);}, "nmLineNe");
 	}
 },
 
 FailCode:{
-	nmLineNe : ["数字の周りにある線の本数が違います。","the number is not equal to the number of lines around it."]
+	nmLineNe : ["数字の周りにある線の本数が違います。","The number is not equal to the number of lines around it."]
 }
 });

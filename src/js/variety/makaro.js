@@ -150,7 +150,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		return Math.min(99, this.owner.board.rooms.getCntOfRoomByCell(this));
 	}
 },
@@ -225,8 +225,8 @@ Encode:{
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
 			if(this.include(ca,"0","9")){ cell.qnum = parseInt(ca,10)+1;}
-			else if(ca == '-')          { cell.qnum = parseInt(bstr.substr(i+1,2),10)+1; i+=2;}
-			else if(ca>='a' && ca<='e') { cell.ques = 1, cell.qdir = parseInt(ca,36)-10;}
+			else if(ca === '-')         { cell.qnum = parseInt(bstr.substr(i+1,2),10)+1; i+=2;}
+			else if(ca>='a' && ca<='e') { cell.ques = 1; cell.qdir = parseInt(ca,36)-10;}
 			else if(ca>='g' && ca<='z') { c+=(parseInt(ca,36)-16);}
 
 			c++;
@@ -310,24 +310,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
-
-		if( !this.checkAdjacentDiffNumber() ){ return 'nmSameNum';}
-
-		if( !this.checkPointAtBiggestNumber() ){ return 'arNotMax';}
-
-		if( !this.checkEmptyCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		"checkDifferentNumberInRoom",
+		"checkAdjacentDiffNumber",
+		"checkPointAtBiggestNumber",
+		"checkNoNumCell+"
+	],
 
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
 	/* 矢印の先が空白マスである場合は判定をスルーします         */
 	checkPointAtBiggestNumber : function(){
-		var result = true;
 		for(var c=0;c<this.owner.board.cellmax;c++){
 			var cell = this.owner.board.cell[c];
 			if(cell.ques!==1 || cell.qdir===cell.NDIR){ continue;}
@@ -344,27 +336,20 @@ AnsCheck:{
 					if(num===-1){ isempty = true;}
 				}
 			}
+			if(!invalidarrow && (isempty || (!dupnum && cell.qdir===maxdir))){ continue;}
 			
-			if(invalidarrow || (!isempty && (dupnum || cell.qdir!==maxdir))){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				for(var i=0;i<list.length;i++){
-					if(list[i][0].getNum()!==-1){ list[i][0].seterr(1);}
-				}
-				result = false;
+			this.failcode.add("arNotMax");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			for(var i=0;i<list.length;i++){
+				if(list[i][0].getNum()!==-1){ list[i][0].seterr(1);}
 			}
 		}
-		return result;
-	},
-
-	checkEmptyCell : function(){
-		return this.checkAllCell( function(cell){ return cell.ques===0 && cell.noNum();} );
 	}
 },
 
 FailCode:{
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
-	arNotMax : ["矢印の先が最も大きい数字でありません。", "An arrow doesn't point out biggest number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	arNotMax : ["矢印の先が最も大きい数字でありません。", "An arrow doesn't point out biggest number."]
 }
 });

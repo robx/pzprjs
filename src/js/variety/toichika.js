@@ -24,9 +24,9 @@ MouseEvent:{
 
 	inputDot : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
+		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.qsub===1?0:1);}
 		
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
@@ -182,30 +182,29 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkDoubleNumber",
+		"checkAdjacentCountries",
+		"checkDirectionOfArrow",
+		"checkNoNumber"
+	],
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDoubleNumber(rinfo) ){ return 'bkNumGe2';}
-
-		var ainfo = this.owner.board.getPairedArrowsInfo();
-		if( !this.checkAdjacentCountries(rinfo, ainfo) ){ return 'arAdjPair';}
-		if( !this.checkDirectionOfArrow(ainfo) ){ return 'arAlone';}
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-
-		return null;
+	getPairArrowInfo : function(){
+		return (this._info.parrow = this._info.parrow || this.owner.board.getPairedArrowsInfo());
 	},
 
-	checkDirectionOfArrow : function(ainfo){
-		var result = true;
+	checkDirectionOfArrow : function(){
+		var ainfo = this.getPairArrowInfo();
 		for(var i=0;i<ainfo.length;i++){
-			if(ainfo[i].length===1){
-				this.owner.board.cell[ainfo[i]].seterr(1);
-				result = false;
-			}
+			if(ainfo[i].length!==1){ continue;}
+			
+			this.failcode.add("arAlone");
+			if(this.checkOnly){ break;}
+			this.owner.board.cell[ainfo[i]].seterr(1);
 		}
-		return result;
 	},
-	checkAdjacentCountries : function(rinfo, ainfo){
+	checkAdjacentCountries : function(){
+		var rinfo = this.getRoomInfo(), ainfo = this.getPairArrowInfo();
 		// 隣接エリア情報を取得して、形式を変換
 		var sides=rinfo.getSideAreaInfo(), adjs=[];
 		for(var r=1;r<=rinfo.max-1;r++){
@@ -215,17 +214,16 @@ AnsCheck:{
 		}
 
 		// ここから実際の判定
-		var result = true;
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){ continue;}
 			var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
-			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])>0){
-				rinfo.area[r1].clist.seterr(1);
-				rinfo.area[r2].clist.seterr(1);
-				result = false;
-			}
+			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])<=0){ continue;}
+			
+			this.failcode.add("arAdjPair");
+			if(this.checkOnly){ break;}
+			rinfo.area[r1].clist.seterr(1);
+			rinfo.area[r2].clist.seterr(1);
 		}
-		return result;
 	}
 },
 

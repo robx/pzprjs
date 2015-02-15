@@ -24,7 +24,7 @@ MouseEvent:{
 		var cell = pos.getc();
 		if(cell.isnull){ return;}
 
-		var max = cell.nummaxfunc(), ques = cell.getQues(), num = cell.getNum();
+		var max = cell.getmaxnum(), ques = cell.ques, num = cell.getNum();
 		if(this.owner.editmode){
 			if(this.btn.Left){
 				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
@@ -70,24 +70,24 @@ KeyEvent:{
 		if(cursor.oncell()){
 			var cell = cursor.getc();
 			if(this.owner.editmode){
-				if     (ca=='w'){ cell.setQues(cell.getQues()!==7?7:0); cell.setNum(-1);}
-				else if(ca=='-'||ca==' '){ cell.setQues(0); cell.setNum(-1);}
+				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
+				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
 				else if('0'<=ca && ca<='9'){
-					if(cell.getQues()!==0){ cell.setQues(0); cell.setNum(-1);}
+					if(cell.ques!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
 				}
 				else{ return;}
 			}
 			else if(this.owner.playmode){
-				if(cell.getQues()===0){ this.key_inputqnum(ca);}
+				if(cell.ques===0){ this.key_inputqnum(ca);}
 				else{ return;}
 			}
 		}
 		else if(cursor.onborder()){
-			var border = cursor.getb(), cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+			var border = cursor.getb();
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
-				var num = parseInt(ca), qs = border.getQsub();
+				var num = parseInt(ca), qs = border.qsub;
 				var qsubmax = 99;
 
 				if(qs<=0 || this.prev!==border){ if(num<=qsubmax){ border.setQsub(num);}}
@@ -97,7 +97,7 @@ KeyEvent:{
 				}
 				this.prev = border;
 			}
-			else if(ca=='-'||ca==' '){ border.setQsub(-1);}
+			else if(ca==='-'||ca===' '){ border.setQsub(-1);}
 			else{ return;}
 		}
 		else{ return;}
@@ -179,28 +179,25 @@ Graphic:{
 
 	getCanvasCols : function(){
 		var disptype = this.owner.getConfig('disptype_bosanowa');
-		return this.getBoardCols()+2*this.margin+(disptype==2?2:0);
+		return this.getBoardCols()+2*this.margin+(disptype===2?2:0);
 	},
 	getCanvasRows : function(){
 		var disptype = this.owner.getConfig('disptype_bosanowa');
-		return this.getBoardRows()+2*this.margin+(disptype==2?2:0);
+		return this.getBoardRows()+2*this.margin+(disptype===2?2:0);
 	},
 
 	drawErrorCells_bosanowa : function(){
-		var g = this.vinc('cell_back', 'crispEdges');
+		var g = this.vinc('cell_back', 'crispEdges', true);
 
-		var header = "c_fullerr_";
 		g.fillStyle = this.errbcolor1;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_fullerr_"+cell.id;
 			if(cell.error===1){
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw, this.bh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw, this.bh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -213,112 +210,107 @@ Graphic:{
 	circlefillcolor_func : "null",
 
 	drawGrid_souko : function(){
-		var g = this.vinc('grid_souko', 'crispEdges');
+		var g = this.vinc('grid_souko', 'crispEdges', true);
 
-		var header = "b_grids_";
 		g.lineWidth = 1;
-		g.fillStyle="rgb(127,127,127)";
 		g.strokeStyle="rgb(127,127,127)";
-
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
+			g.vid = "b_grids_"+border.id;
 			if(border.isGrid()){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				if(this.vnop(header+border.id,this.NONE)){
-					if(border.isVert()){
-						var py1 = py-this.bh, py2 = py+this.bh+1;
-						g.strokeDashedLine(px, py1, px, py2, [3]);
-					}
-					else{
-						var px1 = px-this.bw, px2 = px+this.bw+1;
-						g.strokeDashedLine(px1, py, px2, py, [3]);
-					}
+				if(border.isVert()){
+					var py1 = py-this.bh, py2 = py+this.bh+1;
+					g.strokeDashedLine(px, py1, px, py2, [3]);
+				}
+				else{
+					var px1 = px-this.bw, px2 = px+this.bw+1;
+					g.strokeDashedLine(px1, py, px2, py, [3]);
 				}
 			}
-			else{ if(!g.use.canvas){ g.vhide(header+border.id);}}
+			else{ g.vhide();}
 		}
 	},
 	drawGrid_waritai : function(){
-		var g = this.vinc('grid_waritai', 'crispEdges');
+		var g = this.vinc('grid_waritai', 'crispEdges', true);
 
 		var csize = this.cw*0.20;
-		var headers = ["b_grid_", "b_grid2_"];
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border = blist[i], id = border.id;
-			if(border.isGrid()){
-				var px = border.bx*this.bw, py = border.by*this.bh;
-				g.fillStyle=this.gridcolor;
-				if(this.vnop(headers[0]+id,this.NONE)){
-					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, this.bh);}
-					else               { g.fillRectCenter(px, py, this.bw, 0.5);}
-				}
+			var border = blist[i], isgrid = border.isGrid();
+			var px = border.bx*this.bw, py = border.by*this.bh;
 
-				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					if(border.isVert()){ g.fillRectCenter(px, py, 0.5, csize);}
-					else               { g.fillRectCenter(px, py, csize, 0.5);}
-				}
+			g.vid = "b_grid_"+border.id;
+			if(isgrid){
+				g.fillStyle=this.gridcolor;
+				if(border.isVert()){ g.fillRectCenter(px, py, 0.5, this.bh);}
+				else               { g.fillRectCenter(px, py, this.bw, 0.5);}
 			}
-			else{ g.vhide([headers[0]+id, headers[1]+id]);}
+			else{ g.vhide();}
+
+			g.vid = "b_grid2_"+border.id;
+			if(isgrid){
+				g.fillStyle = ((border.error===0) ? "white" : this.errbcolor1);
+				if(border.isVert()){ g.fillRectCenter(px, py, 0.5, csize);}
+				else               { g.fillRectCenter(px, py, csize, 0.5);}
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	drawBDnumbase : function(){
-		var g = this.vinc('border_number_base', 'crispEdges');
+		var g = this.vinc('border_number_base', 'crispEdges', true);
 
 		var csize = this.cw*0.20;
-		var header = "b_bbse_";
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
 
+			g.vid = "b_bbse_"+border.id;
 			if(border.qsub>=0 && border.isGrid()){
 				g.fillStyle = "white";
-				if(this.vnop(header+border.id,this.NONE)){
-					var px = border.bx*this.bw, py = border.by*this.bh;
-					g.fillRectCenter(px, py, csize, csize);
-				}
+				g.fillRectCenter(border.bx*this.bw, border.by*this.bh, csize, csize);
 			}
-			else{ g.vhide(header+border.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbersBD : function(){
 		var g = this.vinc('border_number', 'auto');
 
+		var option = {ratio:[0.35]};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
-			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
-			var text = (border.qsub>=0 ? ""+border.qsub : "");
-			var option = { key:"border_text_"+border.id };
-			option.ratio = [0.35];
-			option.color = "blue";
-			this.disptext(text, px, py, option);
+			var border=blist[i];
+			g.vid = "border_text_"+border.id;
+			if(border.qsub>=0){
+				g.fillStyle = "blue";
+				this.disptext(""+border.qsub, border.bx*this.bw, border.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	},
 
 	// 倉庫番の外側(グレー)描画用
 	drawOutside_souko : function(){
-		var g = this.vinc('cell_outside_souko', 'crispEdges');
+		var g = this.vinc('cell_outside_souko', 'crispEdges', true);
 
-		var header = "c_full_", d = this.range;
+		g.fillStyle = "rgb(127,127,127)";
+		var d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
-				var cell=this.owner.board.getc(bx,by);
-				var addr=new this.owner.Address(bx, by);
-				if( cell.isEmpty() && (
-					addr.rel(-2, 0).getc().ques===0 || addr.rel(2, 0).getc().ques===0 || 
-					addr.rel( 0,-2).getc().ques===0 || addr.rel(0, 2).getc().ques===0 || 
-					addr.rel(-2,-2).getc().ques===0 || addr.rel(2,-2).getc().ques===0 || 
-					addr.rel(-2, 2).getc().ques===0 || addr.rel(2, 2).getc().ques===0 ) )
+				var addr=new this.owner.Address(bx,by);
+				
+				g.vid = ["c_full_",bx,by].join('_');
+				if( addr.getc().isEmpty() && (
+					addr.relcell(-2, 0).ques===0 || addr.relcell(2, 0).ques===0 || 
+					addr.relcell( 0,-2).ques===0 || addr.relcell(0, 2).ques===0 || 
+					addr.relcell(-2,-2).ques===0 || addr.relcell(2,-2).ques===0 || 
+					addr.relcell(-2, 2).ques===0 || addr.relcell(2, 2).ques===0 ) )
 				{
-					g.fillStyle = "rgb(127,127,127)";
-					if(this.vnop([header,bx,by].join('_'),this.NONE)){
-						g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
-					}
+					g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
 				}
-				else{ g.vhide([header,bx,by].join('_'));}
+				else{ g.vhide();}
 			}
 		}
 	},
@@ -344,8 +336,8 @@ Encode:{
 		this.encodeBosanowa();
 
 		var puzzle = this.owner;
-		if     (puzzle.getConfig('disptype_bosanowa')==2){ this.outpflag="h";}
-		else if(puzzle.getConfig('disptype_bosanowa')==3){ this.outpflag="t";}
+		if     (puzzle.getConfig('disptype_bosanowa')===2){ this.outpflag="h";}
+		else if(puzzle.getConfig('disptype_bosanowa')===3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){
@@ -386,7 +378,7 @@ Encode:{
 		if(count>0){ cm += pass.toString(32);}
 		this.outbstr += cm;
 
-		cm="", count=0;
+		cm=""; count=0;
 		for(var by=y1;by<=y2;by+=2){
 			for(var bx=x1;bx<=x2;bx+=2){
 				var pstr="", qn=bd.getc(bx,by).qnum;
@@ -396,8 +388,8 @@ Encode:{
 				else if(qn>=16&&qn<256){ pstr = "-" + qn.toString(16);}
 				else{ count++;}
 
-				if(count==0){ cm += pstr;}
-				else if(pstr || count==20){ cm+=((15+count).toString(36)+pstr); count=0;}
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 			}
 		}
 		if(count>0){ cm+=(15+count).toString(36);}
@@ -439,20 +431,10 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSubsNumber() ){ return 'nmSumOfDiff';}
-		if( !this.checkValidFillCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkValidFillCell() ? null : 'ceEmpty');
-	},
-
-	checkValidFillCell : function(){
-		return this.checkAllCell(function(cell){ return (cell.isValid() && cell.noNum());});
-	},
+	checklist : [
+		"checkSubsNumber",
+		"checkNoNumCell+"
+	],
 
 	checkSubsNumber : function(){
 		var subs=[], bd=this.owner.board, UNDEF=-1;
@@ -467,7 +449,6 @@ AnsCheck:{
 			else{ subs[id]=null;}
 		}
 
-		var result = true;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty() || cell.noNum()){ continue;}
@@ -477,18 +458,16 @@ AnsCheck:{
 			sub=subs[adb.bottom.id]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.left.id  ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.right.id ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
-			if(num!==sum){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			if(num===sum){ continue;}
+			
+			this.failcode.add("nmSumOfDiff");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."]
 }
 });

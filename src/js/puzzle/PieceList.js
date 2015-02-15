@@ -71,12 +71,19 @@ PieceList:{
 	},
 	
 	//--------------------------------------------------------------------------------
-	// list.seterr()  保持しているオブジェクトにerror値を設定する
-	// list.setinfo() 保持しているオブジェクトにqinfo値を設定する
+	// list.seterr()   保持しているオブジェクトにerror値を設定する
+	// list.setnoerr() エラー値が設定されていないオブジェクトにerror=-1を設定する
+	// list.setinfo()  保持しているオブジェクトにqinfo値を設定する
 	//--------------------------------------------------------------------------------
 	seterr : function(num){
 		if(!this.owner.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
+	},
+	setnoerr : function(){
+		if(!this.owner.board.isenableSetError()){ return;}
+		for(var i=0;i<this.length;i++){
+			if(this[i].error===0){ this[i].error = -1;}
+		}
 	},
 	setinfo : function(num){
 		for(var i=0;i<this.length;i++){ this[i].qinfo = num;}

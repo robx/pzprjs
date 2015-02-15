@@ -58,8 +58,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
-		return Math.min(this.maxnum, this.owner.board.qcols+this.owner.board.qrows-1);
+	maxnum : function(){
+		return Math.min(255, this.owner.board.qcols+this.owner.board.qrows-1);
 	},
 	minnum : 2,
 
@@ -133,27 +133,24 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkOneLoop",
 
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
+		"checkDeadendLine+",
 
-		if( !this.checkLineCount(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOutsideNumber() ){ return 'nmOutside';}
-		if( !this.checkCellNumber() ){ return 'nmSumViewNe';}
-
-		return null;
-	},
+		"checkOutsideNumber",
+		"checkViewOfNumber"
+	],
 
 	checkOutsideNumber : function(){
 		this.owner.board.searchInsideArea();	/* cell.insideを設定する */
-		return this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());});
+		this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}, "nmOutside");
 	},
-	checkCellNumber : function(icheck){
-		var result = true, bd = this.owner.board;
+	checkViewOfNumber : function(icheck){
+		var bd = this.owner.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
@@ -165,13 +162,12 @@ AnsCheck:{
 			target=adc.top;    while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.top;   }
 			target=adc.bottom; while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.bottom;}
 
-			if(cell.getQnum()!==clist.length){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(cell.qnum===clist.length){ continue;}
+			
+			this.failcode.add("nmSumViewNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

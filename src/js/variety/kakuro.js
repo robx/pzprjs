@@ -42,6 +42,8 @@ Cell:{
 	qnum : 0,
 	qnum2 : 0,
 
+	noNum : function(){ return !this.isnull && (this.qnum===0 && this.qnum2===0 && this.anum===-1);},
+
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
 
@@ -103,7 +105,7 @@ Graphic:{
 
 	// オーバーライド drawBGCells用
 	getBGCellColor : function(cell){
-		if     (cell.error== 1){ return this.errbcolor1;}
+		if     (cell.error===1){ return this.errbcolor1;}
 		else if(cell.ques===51){ return "rgb(192,192,192)";}
 		return null;
 	},
@@ -126,10 +128,12 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
-			var option = { key:['cell_text',cell.id,'anum'].join('_') };
-			option.color = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
-			this.disptext(text, px, py, option);
+			g.vid = "cell_text_anum"+cell.id;
+			if(!cell.is51cell() && cell.anum>0){
+				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
+				this.disptext(""+cell.anum, px, py);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -159,7 +163,7 @@ Encode:{
 			if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
 			else{
 				obj.ques = 51;
-				if(ca!='.'){
+				if(ca!=='.'){
 					obj.qnum2 = this.decval(ca);
 					obj.qnum  = this.decval(bstr.charAt(i+1));
 					i++;
@@ -261,11 +265,11 @@ FileIO:{
 
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
-			else if(item[0]==0 && item[1]==0){ }
-			else if(item[0]==0 || item[1]==0){
+			else if(item[0]==="0" && item[1]==="0"){ }
+			else if(item[0]==="0" || item[1]==="0"){
 				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==0){ excell.qnum2 = parseInt(item[3]);}
-				else if(item[1]==0){ excell.qnum  = parseInt(item[2]);}
+				if     (item[0]==="0"){ excell.qnum2 = parseInt(item[3]);}
+				else if(item[1]==="0"){ excell.qnum  = parseInt(item[2]);}
 			}
 			else{
 				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
@@ -302,9 +306,9 @@ FileIO:{
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if(arr[(bx+1)>>1]==''){ continue;}
+				if(arr[(bx+1)>>1]===''){ continue;}
 				var cell = bd.getc(bx,by);
-				if(!cell.isnull && arr[(bx+1)>>1]!="." && arr[(bx+1)>>1]!="0"){
+				if(!cell.isnull && arr[(bx+1)>>1]!=="." && arr[(bx+1)>>1]!=="0"){
 					cell.anum = parseInt(arr[(bx+1)>>1]);
 				}
 			}
@@ -328,57 +332,41 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkSameNumberInLine",
+		"checkSumOfNumberInLine",
+		"checkNoNumCell+"
+	],
 
-		if( !this.checkRowsColsSameNumber() ){ return 'nmDupRow';}
-		if( !this.checkRowsColsTotalNumber() ){ return 'nmSumRowNe';}
-		if( !this.checkEmptyCell_kakuro() ){ return 'ceEmpty';}
-
-		return null;
+	checkSameNumberInLine : function(){
+		this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, "nmDupRow");
 	},
-	check1st : function(){
-		return (this.checkEmptyCell_kakuro() ? null : 'ceEmpty');
-	},
-
-	checkEmptyCell_kakuro : function(){
-		return this.checkAllCell(function(cell){ return (!cell.is51cell() && cell.getAnum()<=0);});
-	},
-
-	checkRowsColsSameNumber : function(){
-		return this.checkRowsColsPartly(this.isSameNumber, function(cell){ return cell.is51cell();}, true);
-	},
-	isSameNumber : function(keycellpos, clist){
-		if(!this.isDifferentNumberInClist(clist, function(cell){ return cell.getAnum();})){
-			this.owner.board.getobj(keycellpos[0],keycellpos[1]).seterr(1);
-			return false;
-		}
-		return true;
+	isSameNumber : function(clist, info){
+		var result = this.isDifferentAnsNumberInClist(clist);
+		if(!result){ info.keycell.seterr(1);}
+		return result;
 	},
 
-	checkRowsColsTotalNumber : function(){
-		return this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, false);
+	checkSumOfNumberInLine : function(){
+		this.checkRowsColsPartly(this.isTotalNumber, function(cell){ return cell.is51cell();}, "nmSumRowNe");
 	},
-	isTotalNumber : function(keycellpos, clist){
-		var number, keyobj=this.owner.board.getobj(keycellpos[0], keycellpos[1]), dir=keycellpos[2];
-		if     (dir===keyobj.RT){ number = keyobj.getQnum();}
-		else if(dir===keyobj.DN){ number = keyobj.getQnum2();}
-
-		var sum = 0;
+	isTotalNumber : function(clist, info){
+		var number = info.key51num, sum = 0;
 		for(var i=0;i<clist.length;i++){
-			if(clist[i].getAnum()>0){ sum += clist[i].getAnum();}
+			if(clist[i].anum>0){ sum += clist[i].anum;}
 			else{ return true;}
 		}
-		if(number>0 && sum!=number){
-			keyobj.seterr(1);
+		var result = (number<=0 || sum===number);
+		if(!result){
+			info.keycell.seterr(1);
 			clist.seterr(1);
-			return false;
 		}
-		return true;
+		return result;
 	}
 },
 
 FailCode:{
 	nmSumRowNe : ["数字の下か右にある数字の合計が間違っています。","The sum of the cells is not correct."],
-	ceEmpty    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
+	ceNoNum    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
 }
 });

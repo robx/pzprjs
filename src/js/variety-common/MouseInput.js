@@ -15,35 +15,35 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberRemainsUnshaded && cell.getQnum()!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
+		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 
-		(this.inputData==1?cell.setShade:cell.clrShade).call(cell);
+		(this.inputData===1?cell.setShade:cell.clrShade).call(cell);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.owner.getConfig('use')==1){
+		if(this.owner.getConfig('use')===1){
 			if     (this.btn.Left) { this.inputData=(cell.isUnshade()  ? 1 : 0); }
-			else if(this.btn.Right){ this.inputData=((cell.getQsub()!==1)? 2 : 0); }
+			else if(this.btn.Right){ this.inputData=((cell.qsub!==1)? 2 : 0); }
 		}
-		else if(this.owner.getConfig('use')==2){
-			if(cell.numberRemainsUnshaded && cell.getQnum()!==-1){
-				this.inputData=((cell.getQsub()!==1)? 2 : 0);
+		else if(this.owner.getConfig('use')===2){
+			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
+				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
 			else if(this.btn.Left){
-				if     (cell.isShade())    { this.inputData=2;}
-				else if(cell.getQsub()===1){ this.inputData=0;}
+				if     (cell.isShade()){ this.inputData=2;}
+				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn.Right){
-				if     (cell.isShade())    { this.inputData=0;}
-				else if(cell.getQsub()===1){ this.inputData=1;}
+				if     (cell.isShade()){ this.inputData=0;}
+				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
 			}
 		}
@@ -82,8 +82,8 @@ MouseEvent:{
 
 		if(puzzle.playmode && cell.qnum!==puzzle.Cell.prototype.qnum){ return;}
 
-		var max=cell.nummaxfunc(), min=cell.numminfunc();
-		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.getQsub());
+		var max=cell.getmaxnum(), min=cell.getminnum();
+		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.qsub);
 		var val=-1, ishatena=(puzzle.editmode && !cell.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
@@ -133,7 +133,7 @@ MouseEvent:{
 		}
 	},
 	inputQues_main : function(array,cell){
-		var qu = cell.getQues(), len = array.length;
+		var qu = cell.ques, len = array.length;
 		if(this.btn.Left){
 			for(var i=0;i<=len-1;i++){
 				if(qu===array[i]){
@@ -160,7 +160,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.getQsub()]);
+		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.qsub]);
 		cell.draw();
 	},
 
@@ -175,10 +175,10 @@ MouseEvent:{
 
 		var cell = this.prevPos.getc();
 		if(!cell.isnull){
-			if(cell.getQnum()!==-1){
+			if(cell.qnum!==-1){
 				var dir = this.getdir(this.prevPos, pos);
 				if(dir!==cell.NDIR){
-					cell.setQdir(cell.getQdir()!==dir?dir:0);
+					cell.setQdir(cell.qdir!==dir?dir:0);
 					cell.draw();
 				}
 			}
@@ -226,9 +226,9 @@ MouseEvent:{
 		var clist = this.owner.board.rooms.getClistByCell(cell);
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
-			if(this.inputData===1 || cell2.getQsub()!==3){
+			if(this.inputData===1 || cell2.qsub!==3){
 				(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
-				cell2.setQsub(this.inputData==2?1:0);
+				cell2.setQsub(this.inputData===2?1:0);
 			}
 		}
 		clist.draw();
@@ -277,10 +277,10 @@ MouseEvent:{
 	},
 	inputcross_main : function(cross){
 		if(this.btn.Left){
-			cross.setQnum(cross.getQnum()!==4 ? cross.getQnum()+1 : -2);
+			cross.setQnum(cross.qnum!==4 ? cross.qnum+1 : -2);
 		}
 		else if(this.btn.Right){
-			cross.setQnum(cross.getQnum()!==-2 ? cross.getQnum()-1 : 4);
+			cross.setQnum(cross.qnum!==-2 ? cross.qnum-1 : 4);
 		}
 		cross.draw();
 	},
@@ -294,7 +294,7 @@ MouseEvent:{
 		if(cross.isnull){ return;}
 
 		this.owner.opemgr.disCombine = true;
-		cross.setQnum(cross.getQnum()===1?-1:1);
+		cross.setQnum(cross.qnum===1?-1:1);
 		this.owner.opemgr.disCombine = false;
 
 		cross.draw();
@@ -322,7 +322,7 @@ MouseEvent:{
 
 		var border = this.getnb(this.prevPos, pos);
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQsub()===0?1:0);}
+			if(this.inputData===null){ this.inputData=(border.qsub===0?1:0);}
 			if     (this.inputData===1){ border.setQsub(1);}
 			else if(this.inputData===0){ border.setQsub(0);}
 			border.draw();
@@ -335,15 +335,16 @@ MouseEvent:{
 	// mv.inputMoveLine() 移動系パズル向けに盤面の線を入力する
 	//---------------------------------------------------------------------------
 	inputLine : function(){
+		var pos, border;
 		if(this.owner.board.lines.isCenterLine){
-			var pos = this.getpos(0);
+			pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
-			var border = this.getnb(this.prevPos, pos);
+			border = this.getnb(this.prevPos, pos);
 		}
 		else{
-			var pos = this.getpos(0.35);
+			pos = this.getpos(0.35);
 			if(this.prevPos.equals(pos)){ return;}
-			var border = this.getborderobj(this.prevPos, pos);
+			border = this.getborderobj(this.prevPos, pos);
 		}
 		
 		if(!border.isnull){
@@ -388,10 +389,10 @@ MouseEvent:{
 	// mv.getborderobj()  入力対象となる境界線オブジェクトを取得する
 	//---------------------------------------------------------------------------
 	getnb : function(base, current){
-		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.rel(0,-1).getb();}
-		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.rel(0, 1).getb();}
-		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.rel(-1,0).getb();}
-		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.rel( 1,0).getb();}
+		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.relbd(0,-1);}
+		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.relbd(0, 1);}
+		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.relbd(-1,0);}
+		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.relbd( 1,0);}
 		return this.owner.board.emptyborder;
 	},
 	getborderobj : function(base, current){
@@ -410,7 +411,7 @@ MouseEvent:{
 
 		var border = pos.getb();
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQsub()===0?2:3);}
+			if(this.inputData===null){ this.inputData=(border.qsub===0?2:3);}
 			if(this.inputData===2 && border.isLine() && this.owner.execConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
 			else if(this.inputData===3){ border.removeLine();}
@@ -426,11 +427,10 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var pos = cell.getaddr(), qa = cell.qans;
 		var amibo = (this.owner.pid==="amibo");
 
 		// 黒マス上なら何もしない
-		if     (!amibo && cell.getQues()===1){ }
+		if     (!amibo && cell.ques===1){ }
 		else if( amibo && cell.isNum()){ }
 		// 初回 or 入力し続けていて別のマスに移動した場合
 		else if(this.mouseCell!==cell){
@@ -438,43 +438,48 @@ MouseEvent:{
 		}
 		// まだ入力していないセルの場合
 		else if(this.firstPoint.bx!==null){
-			var val=null;
-			if     (Math.abs(this.inputPoint.by-this.firstPoint.by)>=0.50){ val=1;}
-			else if(Math.abs(this.inputPoint.bx-this.firstPoint.bx)>=0.50){ val=2;}
+			var val=null,
+				dx = this.inputPoint.bx-this.firstPoint.bx,
+				dy = this.inputPoint.by-this.firstPoint.by;
+			if     (dy<=-0.50 || 0.50<=dy){ val=1;}
+			else if(dx<=-0.50 || 0.50<=dx){ val=2;}
 			
 			if(val!==null){
-				var shape = (!amibo ? {0:0,12:1,13:2}[qa] : qa);
-				var isValidVal = ((this.inputData===null) ? !(shape & val) : this.inputData>0);
-				this.inputData = val = (isValidVal ? val : (!amibo ? 0 : -val));
-				this.firstPoint.reset();
+				var shape = {0:0,11:3,12:1,13:2}[cell.qans];
+				if((this.inputData===null) ? (shape & val) : this.inputData<=0){
+					val = (!amibo ? 0 : -val);
+				}
 				
 				// 描画・後処理
-				if(!amibo){ qa = [0,12,13,11][val];}
-				else{ if(val>0){ qa |= val;}else{ qa &= ~(-val);}}
-				cell.setQans(qa);
+				if(!amibo)    { shape  = val;}
+				else if(val>0){ shape |= val;}
+				else          { shape &= ~(-val);}
+				cell.setQans([0,12,13,11][shape]);
 				cell.draw();
+				
+				this.inputData = +(val>0);
+				this.firstPoint.reset();
 			}
 		}
 
-		this.prevPos   = pos;
 		this.mouseCell = cell;
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRed()  ひとつながりの黒マスを赤く表示する
-	// mv.dispRed8() ななめつながりの黒マスを赤く表示する
+	// mv.dispRedBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispRedBlk8() ななめつながりの黒マスを赤く表示する
 	// mv.dispRedLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRed : function(){
+	dispRedBlk : function(){
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ this.owner.board.bcell.getClistByCell(cell).setinfo(1);}
-		else{ this.dispRed8(cell);}
+		else{ this.dispRedBlk8(cell);}
 		this.owner.board.haserror = true;
 		this.owner.redraw();
 	},
-	dispRed8 : function(cell0){
+	dispRedBlk8 : function(cell0){
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell = stack.pop();

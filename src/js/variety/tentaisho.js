@@ -26,7 +26,7 @@ MouseEvent:{
 	inputBGcolor1 : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===0)?3:0;}
+		if(this.inputData===null){ this.inputData=(cell.qsub===0)?3:0;}
 		cell.setQsub(this.inputData);
 		this.mouseCell = cell; 
 		cell.draw();
@@ -50,7 +50,7 @@ MouseEvent:{
 
 		var border = this.getborderobj(this.prevPos, pos);
 		if(!border.isnull){
-			if(this.inputData===null){ this.inputData=(border.getQans()===0?1:0);}
+			if(this.inputData===null){ this.inputData=(border.qans===0?1:0);}
 			border.setQans(this.inputData);
 			border.draw();
 		}
@@ -82,9 +82,9 @@ KeyEvent:{
 	key_inputstar : function(ca){
 		var star = this.cursor.gets();
 		if(star!==null){
-			if     (ca=='1'){ star.setStar(1);}
-			else if(ca=='2'){ star.setStar(2);}
-			else if(ca==' '||ca=='-'||ca=='0'||ca=='3'){ star.setStar(0);}
+			if     (ca==='1'){ star.setStar(1);}
+			else if(ca==='2'){ star.setStar(2);}
+			else if(ca===' '||ca==='-'||ca==='0'||ca==='3'){ star.setStar(0);}
 			star.draw();
 		}
 	}
@@ -126,7 +126,7 @@ Star:{
 	obj : null,
 
 	getStar : function(){
-		return this.obj.getQnum();
+		return this.obj.qnum;
 	},
 	setStar : function(val){
 		this.owner.opemgr.disCombine = true;
@@ -168,8 +168,8 @@ CellList:{
 		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
-			if(pzpr.EDITOR && cell.getQsub()===3 && ret!=2){ continue;}
-			else if(cell.getQsub()!==(ret>0?ret:0)){
+			if(pzpr.EDITOR && cell.qsub===3 && ret!==2){ continue;}
+			else if(cell.qsub!==(ret>0?ret:0)){
 				cell.setQsub(ret>0?ret:0);
 				flag = true;
 			}
@@ -215,7 +215,6 @@ Board:{
 	initStar : function(col,row){
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
-		var pos = new this.owner.Address(0,0);
 		for(var id=0;id<this.starmax;id++){
 			this.star[id] = new this.owner.Star();
 			var star = this.star[id];
@@ -300,32 +299,28 @@ Graphic:{
 	},
 
 	drawStars : function(){
-		var g = this.vinc('star', 'auto');
+		var g = this.vinc('star', 'auto', true);
 
 		g.lineWidth = Math.max(this.cw*0.04, 1);
-		var headers = ["s_star1_", "s_star2_"];
-
 		var d = this.range;
 		var slist = this.owner.board.starinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<slist.length;i++){
-			var star = slist[i], id=star.id, bx=star.bx, by=star.by;
+			var star = slist[i], bx=star.bx, by=star.by;
 
+			g.vid = "s_star1_"+star.id;
 			if(star.getStar()===1){
 				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
 				g.fillStyle   = "white";
-				if(this.vnop(headers[0]+id,this.STROKE)){
-					g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
-				}
+				g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
 			}
-			else{ g.vhide(headers[0]+id);}
+			else{ g.vhide();}
 
+			g.vid = "s_star2_"+star.id;
 			if(star.getStar()===2){
 				g.fillStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
-				if(this.vnop(headers[1]+id,this.FILL)){
-					g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
-				}
+				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
 			}
-			else{ g.vhide(headers[1]+id);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -385,8 +380,8 @@ Encode:{
 			}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr || count==20){ cm += ((count+15).toString(36)+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm += ((count+15).toString(36));}
 
@@ -446,38 +441,35 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkStarOnLine",
+		"checkAvoidStar",
+		"checkFractal",
+		"checkStarRegion"
+	],
 
-		if( !this.checkStarOnLine() ){ return 'bkNoStar';}
-
-		var rinfo = this.owner.board.getAreaStarInfoAll();
-		if( !this.checkErrorFlag(rinfo, -1) ){ return 'bdPassStar';}
-		if( !this.checkFractal(rinfo) ){ return 'bkNotSymSt';}
-		if( !this.checkErrorFlag(rinfo, -2) ){ return 'bkPlStar';}
-
-		return null;
+	getStarAreaInfo : function(){
+		return (this._info.sarea = this._info.sarea || this.owner.board.getAreaStarInfoAll());
 	},
 
 	checkStarOnLine : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s];
-			if(star.getStar()<=0){ continue;}
-
-			if(star.validcell()===null){
-				if(this.checkOnly){ return false;}
-				if(star.obj.group==='cross')
-					{ star.obj.setCrossBorderError();}
-				else if(star.obj.group==='border')
-					{ star.obj.seterr(1);}
-				result = false;
+			if(star.getStar()<=0 || star.validcell()!==null){ continue;}
+			
+			this.failcode.add("bdPassStar");
+			if(this.checkOnly){ break;}
+			switch(star.obj.group){
+				case "cross":  star.obj.setCrossBorderError(); break;
+				case "border": star.obj.seterr(1);             break;
 			}
 		}
-		return result;
 	},
 
-	checkFractal : function(rinfo){
-		var result = true;
+	checkFractal : function(){
+		var rinfo = this.getStarAreaInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			var star = rinfo.area[r].star;
@@ -485,26 +477,26 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				var cell2 = this.owner.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
-				if(cell2.isnull || rinfo.getRoomID(cell)!==rinfo.getRoomID(cell2)){
-					if(this.checkOnly){ return false;}
-					clist.seterr(1);
-					result = false;
-				}
+				if(!cell2.isnull && rinfo.getRoomID(cell)===rinfo.getRoomID(cell2)){ continue;}
+				
+				this.failcode.add("bkNotSymSt");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
 			}
 		}
-		return result;
 	},
 
-	checkErrorFlag : function(rinfo, val){
-		var result = true;
+	checkAvoidStar  : function(){ this.checkErrorFlag(-1, "bkNoStar");},
+	checkStarRegion : function(){ this.checkErrorFlag(-2, "bkPlStar");},
+	checkErrorFlag : function(val, code){
+		var rinfo = this.getStarAreaInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			if(rinfo.area[r].error!==val){ continue;}
 
-			if(this.checkOnly){ return false;}
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
 			rinfo.area[r].clist.seterr(1);
-			result = false;
 		}
-		return result;
 	}
 },
 

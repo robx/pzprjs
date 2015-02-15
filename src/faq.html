@@ -29,10 +29,10 @@
 <!-- ////////////////////////////////////////////////////////////////////// -->
 
  <menu id="puztypes">
-  <li class="puzmenu" id="puzmenu_expression">パズルの操作説明</li>
-  <li class="puzmenu" id="puzmenu_common">操作説明</li>
-  <li class="puzmenu" id="puzmenu_menu1">メニュー(ファイル・編集)</li>
-  <li class="puzmenu" id="puzmenu_menu2">メニュー(表示・設定・その他)</li>
+   <li class="puzmenu" id="puzmenu_expression">パズルの操作説明</li
+  ><li class="puzmenu" id="puzmenu_common">操作説明</li
+  ><li class="puzmenu" id="puzmenu_menu1">メニュー(ファイル・編集)</li
+  ><li class="puzmenu" id="puzmenu_menu2">メニュー(表示・設定・その他)</li>
  </menu>
 
 <br clear="all">
@@ -109,8 +109,8 @@
     <dt>-(minus) key</dt><dd>Input or Erase question marks at the cursor (in edit mode).</dd>
     <dt>DEL/Space key</dt><dd>Clear at the cursor.</dd>
     <dt>Pressing Shift/Command key</dt><dd>Toggle Mouse Left/Right button.</dd>
-    <dt>Ctrl/Command + Y key</dt><dd>Undo</dd>
-    <dt>Ctrl/Command + Z key</dt><dd>Redo</dd>
+    <dt>Ctrl/Command + Z key</dt><dd>Undo</dd>
+    <dt>Ctrl/Command + Y key</dt><dd>Redo</dd>
     <dt>Pressing Z key</dt><dd>Emphasis connected line or black cells if the feature enabled.</dd>
     <dt>Alt + C key</dt><dd>(Editor only) Toggle edit or play mode.</dd>
     <dt>F2 key</dt><dd>(Editor only) To edit mode.</dd>
@@ -291,7 +291,7 @@
 <!-- ////////////////////////////////////////////////////////////////////// -->
 
 <script type="text/javascript">
-var expression_p="", expression_e="";
+var expression_p="", expression_e="", dummypuzzle = null;
 var langcode='ja', puzzleid='', EDITOR=false, PLAYER=false;
 window.pzprfaq = true;
 
@@ -330,8 +330,12 @@ function onload_func_FAQ(){
 		v3index.reset_func();
 	}
 
-	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-	langcode = (userlang.substr(0,2)!=='ja'?'en':'ja');
+  dummypuzzle = pzpr.createPuzzle();
+  if(pzpr.env.storage.localST && !!window.JSON){
+    var json_puzzle = localStorage['pzprv3_config:puzzle'];
+    if(!!json_puzzle){ dummypuzzle.restoreConfig(json_puzzle);}
+  }
+  langcode = dummypuzzle.getConfig("language");
 
 	if(!!puzzleid && !!strinfo[puzzleid]){
 		var edit=strinfo[puzzleid][1], play=strinfo[puzzleid][0];

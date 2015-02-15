@@ -1,77 +1,199 @@
 @charset "UTF-8" ;
 
-	BODY{ color:black; line-height:120%; text-align:center; margin:0pt; padding:0pt;}
+	body {
+		margin  : 0pt;
+		padding : 0pt;
+		color : black;
+		line-height : 120%;
+		text-align  : center;
+	}
 
 	/* メインの白背景領域 */
-	div#main{ width:80%; background-color:white; text-align:center;
-			  margin:auto; margin-top:8pt; padding-bottom:6pt; border:2pt green solid;}
+	div#main {
+		width : 80%;
+		background-color : white;
+		margin         : auto;
+		margin-top     : 8pt;
+		padding-bottom : 6pt;
+		border     : 2pt green solid;
+		text-align : center;
+	}
 
-	h2#title{ text-align:center;margin:16pt 0pt 24pt 0pt;}
+	h2#title {
+		margin : 16pt 0pt 24pt 0pt;
+		text-align : center;
+	}
 
 	/* 盤面外の表示部分(管理領域・メニュー・ポップアップ・ボタン) */
-	.outofboard { font-size:1.0em; line-height:1.2;}
+	.outofboard {
+		font-size   : 1.0em;
+		line-height : 1.2;
+	}
+
+	.btn {
+		display : inline;
+		margin  : 2pt;
+		padding : 2pt 4pt 2pt 4pt;
+		border-radius : 4pt;
+		border        : solid 1pt gray;
+		
+		background     : silver;
+		background     : linear-gradient(to bottom, white, silver);
+		text-align     : center;
+		vertical-align : middle;
+		font   : 90%/1.2 sans-serif;
+		cursor : default;
+	}
+	.btn:active {
+		background : #afafaf;
+		background : linear-gradient(to bottom, #afafaf, #cccccc);
+	}
+	
+	.btn-ok {
+		background : blue;
+		background : linear-gradient(to bottom, #afafff, blue);
+		color : white;
+	}
+	.btn-ok:active {
+		background : navy;
+		background : linear-gradient(to bottom, navy, blue);
+	}
+	
+	.btn-info {
+		background : #993366;
+		background : linear-gradient(to bottom, #cc6699, #993366);
+		color : white;
+	}
+	.btn-info:active {
+		background : #66334f;
+		background : linear-gradient(to bottom, #99334f, #993366);
+	}
+	
+	.btn-warn {
+		background : yellow;
+		background : linear-gradient(to bottom, yellow, #cccc00);
+	}
+	.btn-warn:active {
+		background : #999900;
+		background : linear-gradient(to bottom, #999900, #cccc00);
+	}
+	
+	.btn-danger {
+		background : red;
+		background : linear-gradient(to bottom, #ffafaf, red);
+		color:white;
+	}
+	.btn-danger:active {
+		background : #cc0000;
+		background : linear-gradient(to bottom, #cc0000, red);
+	}
+	
+	#btnarea div#btnclear { color:red;}
 
 	/* 管理領域 */
-	div#menuboard{ width:380pt; margin:auto; margin-bottom:8pt; padding:0pt 0pt 8pt 0pt; text-align:left; border:1px red solid;}
-
-	/* メニュー領域 */
-	menu#menupanel{ display:block; font-size:0.9em; background-color:#efefef; margin:0pt 0pt 6pt 0pt; padding:2pt 4pt 2pt 4pt;}
-	/* メニュー項目 */
-	li.menu       { display:inline; color:blue; margin-right:4pt; cursor:pointer; text-decoration:underline;}
-	li.menu:hover { color:maroon; font-weight:bold; background-color:#efefef;}
-	/* li.menunull{ display:inline; margin-right:4pt; color:silver; cursor:pointer;} */
-
-	/* フロートメニュー */
-	menu.floatmenu  { visibility:visible; display:none; margin:0pt; padding:2pt; position:absolute;
-					  list-style-type:none; text-align:left; font-size:0.9em; line-height:1.33; background-color:#7f7f7f; z-index:101;}
-	/* フロートメニュー - サブメニュー項目 */
-	menu.floatmenu li { display:block; margin:0pt; padding:1pt 8pt 0pt 4pt; text-align:left; color:black; cursor:default;}
-	menu.floatmenu li.smenu       { background-color:white; cursor:pointer;}
-	menu.floatmenu li.smenu:hover { background-color:#ffcccc; text-decoration:underline;}
-	menu.floatmenu li.smenunull { background-color:#dfdfdf; color:gray;}
-
-	menu.floatmenu li.smenulabel{ display:inline; color:white;}
-	menu.floatmenu li.smenusep  { height:3pt; padding-top:0pt;}
+	div#menuboard{
+		width : 380pt;
+		margin        : auto;
+		margin-bottom : 8pt;
+		border : 1px red solid;
+		text-align : left;
+	}
 
 	/* メニューより下の管理領域 */
-	div#usepanel  { margin:2pt 0pt 0pt 6pt;}
-	div#checkpanel{ margin:4pt 0pt 0pt 16pt;}
-	hr#separator2 { margin-top:6pt; margin-bottom:6pt;}
-	div#timerpanel{ margin:2pt 0pt 0pt 6pt;}
+	div#usepanel  { margin:8pt 0pt 0pt 6pt;}
+	div#checkpanel{ margin:4pt 0pt 6pt 16pt;}
+	hr#separator2 { margin:0pt;}
+	div#timerpanel{ margin:6pt 6pt 6pt 12pt;}
 
 	div.child   { display:inline; cursor:pointer;}
-	div.childsel{ display:inline; cursor:pointer; color:maroon; font-weight:bold; background-color:#efefef;}
+	div.childsel{ color:maroon; font-weight:bold; background-color:#efefef;}
+
+	div#checkpanel input[type="checkbox"]:disabled + span { color:silver;}
 
 	/* パズル表示部 */
-	div#quesboard{ margin:auto; margin-top:16pt; margin-bottom:16pt; text-align:center;}
-	div#divques { display:inline-block; position:relative; border:solid 1px gray; cursor:default; margin-left:auto; margin-right:auto; padding:8px;}
-	div#btnarea { position:relative; margin-top:1.0em;}
-
-	/* (canvas.context.fillText代替用) */
-	div#numobj_parent{ position:absolute; left:0px; top:0px; z-index:20;}
-	div#numobj_parent div.divnum{ display:inline; position:absolute; cursor:default; line-height:100%;}
+	div#quesboard {
+		margin     : 16pt auto 16pt auto;
+		text-align : center;
+	}
+	div#divques {
+		display:inline-block;
+		position:relative;
+		border:solid 1px gray;
+		cursor:default;
+		margin-left:auto;
+		margin-right:auto;
+		padding:8px;
+	}
+	div#btnarea {
+		position : relative;
+		margin-top : 1.0em;
+	}
 
 	/* ポップアップウィンドウ */
-	div.popup{ display:none; position:absolute; left:0pt; top:0pt; margin:0pt; text-align:left;
-			   background-color:#efefff; border:1px black solid; font-size:0.9em; line-height:1.6; z-index:100;}
-	div.popup div.titlebar
-			 { display:block; text-align:left; background-color:gray; color:white; cursor:pointer;
-			   margin:0pt; padding:1pt 0pt 1pt 8pt; font-size:1.0em;}
-	div.popup form
-			 { margin:2pt 8pt 4pt 4pt; padding:0pt;}
+	div.popup {
+		display    : none;
+		position   : absolute;
+		background : #efefef;
+		left   : 0pt;
+		top    : 0pt;
+		margin : 0pt;
+		border : 1px #999999 solid;
+		border-radius : 6px;
+		box-shadow : 6px 6px 6px rgba(64,64,64,.5);
+		
+		text-align : left;
+		font-size  : 0.9em;
+		line-height: 1.6;
+		z-index    : 100;
+	}
+	div.popup div.titlebar {
+		display    : block;
+		background : gray;
+		background : #999999 linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,0));
+		margin  : 0pt;
+		padding : 1pt 12pt 1pt 8pt;
+		color   : white;
+		cursor  : pointer;
+		text-align : left;
+		font-size  : 1.0em;
+	}
+	div.popup form {
+		margin  : 2pt 8pt 4pt 4pt;
+		padding : 0pt;
+	}
 
-	div#credit3_1{ line-height:1.1; margin:4pt 0pt 2pt 4pt;}
+	div#credit3_1 {
+		margin  : 4pt 0pt 2pt 4pt;
+		line-height : 1.1;
+	}
+	div#poptest {
+		z-index : 1;
+	}
 
 	/* cw=32, margin=2, width&height=cw+(margin*2)=36 */
-	#tawa_shape div { display:block; position:relative; width:36px; height:36px;}
-	#tawa_shape img { position:absolute; margin:2px;}
+	#nb_shape_tawa { margin-top:4pt; margin-bottom:4pt;}
+	#nb_shape_tawa tr  { padding-bottom:2pt;}
+	#nb_shape_tawa div { display:block; position:relative; width:36px; height:36px;}
+	#nb_shape_tawa img { position:absolute; margin:2px; width:128px; height:32px; top:0px;}
+	#nb_shape_tawa #nb_shape_0 img { left:-0px; clip:rect(0px,32px,32px,0px);}
+	#nb_shape_tawa #nb_shape_1 img { left:-32px;clip:rect(0px,64px,32px,32px);}
+	#nb_shape_tawa #nb_shape_2 img { left:-64px;clip:rect(0px,96px,32px,64px);}
+	#nb_shape_tawa #nb_shape_3 img { left:-96px;clip:rect(0px,128px,32px,96px);}
 
 	/* キーポップアップ用 */
 	div#keypopup { background-color:silver; line-height:1;}
 	div.panelbase{ margin:1pt;}
 
-	div.kpcell { width:32px; height:32px; margin:1px; position:relative; float:left;
-				 cursor:pointer; text-align:center; line-height:32px;}
+	div.kpcell {
+		width  : 32px;
+		height : 32px;
+		margin : 1px;
+		position : relative;
+		float    : left;
+		cursor : pointer;
+		text-align  : center;
+		line-height : 32px;
+	}
 	div.kpcellempty { cursor:default;}
 	div.kpcellvalid { background-color:white;}
 
@@ -80,7 +202,7 @@
 
 	/* 置換要素 */
 	input, button, select, textarea{ font-size:1.0em; line-height:1;}
-	input[type="button"] { font-size:0.9em;}
+	input[type="button"], button { font-size:0.9em; line-height:1.2;}
 	input[type="checkbox"] { width:0.9em; height:0.9em;}
 
 	/* (ファイル入出力用)隠しエレメント */
@@ -88,4 +210,159 @@
 
 	iframe#fileiopanel { width:200px; height:200px;}
 	form#fileform2     { width:100px; height:100px;}
+
+	/* ============================================================= */
+	/* メニュー領域 */
+	#menupanel {
+		display  : block;
+		position : relative;
+		top      : 0px;
+		left     : 0px;
+		height   : 1.2em;
+		margin   : 0;
+		padding  : 2pt 4px 2pt 4px;
+		background : #efefef;
+		font-size : 0.95em;
+	}
+
+	/* main-menu items */
+	#menupanel > li {
+		position   : relative;
+		float      : left;
+		height     : 100%;
+		list-style : none;
+		cursor     : pointer;
+		margin-right:4px;
+		text-decoration: underline;
+	}
+	#menupanel > li > span {
+		color       : blue;
+		line-height : 110%;
+		font-size   : 110%;
+		vertical-align : middle;
+	}
+	#menupanel > li:hover > span {
+		color : maroon;
+		font-weight : 900;
+	}
+
+	/* submenu popup (any level) */
+	#menupanel li:hover > menu {
+		display : block;
+	}
+
+	/* for all level1+ submenus */
+	#menupanel > li > menu {
+		font-size : 0.9em;
+	}
+	#menupanel menu {
+		display  : none;
+		position : absolute;
+		list-style-type : none;
+		background : #cccccc;
+		background : #cccccc linear-gradient(to right bottom, rgba(0,0,0,.75), rgba(0,0,0,0));
+		margin     : 0pt;
+		padding    : 3px;
+		border-radius:8px;
+		box-shadow : 6px 6px 6px rgba(64,64,64,.5);
+		/* box-shadow : 6px 6px 6px rgba(64,64,64,.5), inset 32px 32px 48px -16px rgba(0,0,0,.5); */
+		
+		text-align : left;
+		cursor     : default;
+	}
+	#menupanel menu[label]:before {
+		margin  : 0pt;
+		padding : 4pt 8pt 4pt 4pt;
+		line-height : 140%;
+		white-space : nowrap;
+		color   : white;
+		content : attr(label);
+
+		text-shadow : 0px 0px 1px black;
+	}
+	#menupanel menu li:first-child {
+		border-top-left-radius :3px;
+		border-top-right-radius:3px;
+	}
+	#menupanel menu li:last-child {
+		border-bottom-left-radius :6px;
+		border-bottom-right-radius:6px;
+	}
+
+	/* level1, level2+ submenus */
+	#menupanel menu
+		{ left:0px;   top:1.2em;  min-width:132px; z-index:22;}
+	#menupanel menu menu[label]
+		{ left:120px; top:-1.5em; min-width:80px;  z-index:23;}
+	#menupanel menu menu
+		{ left:120px; top:-0.2em; min-width:80px;  z-index:23;}
+	#menupanel menu menu[label] menu
+		{ left:72px;  top:-1.5em; min-width:80px;  z-index:24;}
+
+	/* submenu items */
+	#menupanel menu li {
+		display    : block;
+		position   : relative;
+		line-height: 1.1;
+		float      : none;
+		list-style : none;
+		margin     : 0pt;
+		padding    : 0.2em 2pt 0.2em 4pt;
+		color      : black;
+		background : white;
+		cursor     : pointer;
+	}
+	#menupanel menu li:hover {
+		background : #ffcccc;
+	}
+	#menupanel menu li:hover > span {
+		font-weight : 900;
+		text-decoration : underline;
+	}
+	#menupanel menu hr {
+		margin  : 0px;
+		padding : 0px;
+		border  : none;
+		height  : 3px;
+		color   : lime;
+	}
+	#menupanel menu span {
+		white-space: nowrap;
+	}
+	#menupanel menu a {
+		color : black;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	/* disabled submenu items */
+	#menupanel menu li.disabled {
+		background : #dfdfdf;
+		color      : gray;
+		cursor     : default;
+	}
+	/* (cancel hover, for unsupporting :not(.disabled)) */
+	#menupanel menu li.disabled:hover {
+		background : #dfdfdf;
+	}
+	#menupanel menu li.disabled:hover > span {
+		font-weight : 100;
+		text-decoration : none;
+	}
+
+	/* toggle submenu items */
+	#menupanel menu li.check > span,
+	#menupanel menu li[data-value] > span
+		{ font-size:small; color:gray;}
+	#menupanel menu li.checked > span
+		{ font-size:small; color:black;}
+
+	#menupanel menu li.check > span:before,
+	#menupanel menu li[data-value] > span:before
+		{ padding:0pt 2pt 0pt 2pt; color:white; content:"_"; font-size:small;}
+	#menupanel menu li.checked > span:before
+		{ padding:0pt 2pt 0pt 2pt; color:black; content:"+"; font-size:small;}
+
+	#menu_link li
+		{ font-size: 0.9em;}
 

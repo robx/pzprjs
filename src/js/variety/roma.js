@@ -24,13 +24,17 @@ MouseEvent:{
 			}
 		}
 	},
-	inputRed : function(){ this.dispRoad();},
-
+	dispRed : function(){
+		var puzzle = this.owner, flag = (puzzle.execConfig('redroad')^puzzle.key.isZ);
+		if(flag){ this.dispRoad();}
+		return flag;
+	},
 	dispRoad : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var ldata = [], bd=this.owner.board;
+		var puzzle = this.owner;
+		var ldata = [], bd=puzzle.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
 		for(var c=0;c<bd.cellmax;c++){
@@ -38,7 +42,7 @@ MouseEvent:{
 			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
 		bd.haserror = true;
-		this.owner.redraw();
+		puzzle.redraw();
 		this.mousereset();
 	}
 },
@@ -73,7 +77,7 @@ KeyEvent:{
 Cell:{
 	numberAsObject : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return (this.owner.editmode?5:4);
 	}
 },
@@ -114,7 +118,7 @@ Board:{
 		}
 
 		for(var c=0;c<this.cellmax;c++){
-			if(ldata[c]===0){ ldata[c] = (result?2:1)}
+			if(ldata[c]===0){ ldata[c] = (result?2:1);}
 		}
 		return result;
 	}
@@ -160,20 +164,18 @@ Graphic:{
 	},
 
 	drawGoals : function(){
-		var g = this.vinc('cell_circle', 'auto');
+		var g = this.vinc('cell_circle', 'auto', true);
 
 		var rsize = this.cw*this.circleratio[0];
-		var header = "c_cir_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_cir_"+cell.id;
 			if(cell.qnum===5){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
-				if(this.vnop(header+cell.id,this.FILL)){
-					g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
-				}
+				g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -207,17 +209,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkSingleArrowInArea() ){ return 'bkDupNum';}
-		if( !this.checkBalls() ){ return 'stopHalfway';}
-
-		return null;
-	},
+	checklist : [
+		"checkSingleArrowInArea",
+		"checkBalls"
+	],
 
 	checkSingleArrowInArea : function(){
-		var rinfo = this.owner.board.getRoomInfo();
-		return this.checkDifferentNumberInRoom(rinfo, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
+		this.checkDifferentNumberInRoom_main(this.getRoomInfo(), this.isDifferentNumber_roma);
+	},
+	isDifferentNumber_roma : function(clist){
+		return this.isIndividualObject(clist, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});
 	},
 
 	checkBalls : function(){
@@ -225,14 +226,12 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}
-			if(!bd.trackBall1(c,ldata) && this.checkOnly){ return false;}
+			if(bd.trackBall1(c,ldata)){ continue;}
+			
+			this.failcode.add("stopHalfway");
+			if(this.checkOnly){ break;}
+			bd.cell.filter(function(cell){ return ldata[cell.id]===1;}).seterr(1);
 		}
-
-		var result = true;
-		for(var c=0;c<bd.cellmax;c++){
-			if(ldata[c]===1){ bd.cell[c].seterr(1); result=false;}
-		}
-		return result;
 	}
 },
 

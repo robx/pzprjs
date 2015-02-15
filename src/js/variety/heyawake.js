@@ -15,8 +15,7 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -28,7 +27,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	nummaxfunc : function(){
+	maxnum : function(){
 		var d = this.owner.board.rooms.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
@@ -60,8 +59,8 @@ AreaRoomManager:{
 },
 
 Flags:{
-	use      : true,
-	redblkrb : true
+	use    : true,
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -132,7 +131,7 @@ Encode:{
 	encodeHeyaApp : function(){
 		var barray=[], bd=this.owner.board, rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[r].clist.getRectSize();
+			var d = rinfo.area[id].clist.getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
 			barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 		}
@@ -165,46 +164,39 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkFractal@ayeheya",
+		"checkShadeCellCount",
+		"checkCountinuousUnshadeCell",
+		"checkRoomRect"
+	],
 
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( (this.owner.pid==='ayeheya') && !this.checkFractal(rinfo) ){ return 'bkNotSymShade';}
-
-		if( !this.checkShadeCellCount(rinfo) ){ return 'bkShadeNe';}
-
-		if( !this.checkCountinuousUnshadeCell() ){ return 'bkUnshadeConsecGt3';}
-
-		if( !this.checkAreaRect(rinfo) ){ return 'bkNotRect';}
-
-		return null;
-	},
-
-	checkFractal : function(rinfo){
-		var result = true;
+	checkFractal : function(){
+		var rinfo = this.getRoomInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
-				if(cell.isShade() ^ cell2.isShade()){
-					if(this.checkOnly){ return false;}
-					clist.seterr(1);
-					result = false;
-				}
+				if(cell.isShade() === cell2.isShade()){ continue;}
+				
+				this.failcode.add("bkNotSymShade");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
 			}
 		}
-		return result;
 	},
 
 	checkCountinuousUnshadeCell : function(){
-		return this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, false);
+		var savedflag = this.checkOnly;
+		this.checkOnly = true;	/* エラー判定を一箇所だけにしたい */
+		this.checkRowsColsPartly(this.isBorderCount, function(cell){ return cell.isShade();}, "bkUnshadeConsecGt3");
+		this.checkOnly = savedflag;
 	},
-	isBorderCount : function(keycellpos, clist){
+	isBorderCount : function(clist){
 		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;
 		if(d.x1===d.x2){
 			bx = d.x1;
@@ -219,8 +211,9 @@ AnsCheck:{
 			}
 		}
 
-		if(count>=2){ clist.seterr(1); return false;}
-		return true;
+		var result = (count<=1);
+		if(!result){ clist.seterr(1);}
+		return result;
 	}
 },
 

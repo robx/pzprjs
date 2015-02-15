@@ -92,41 +92,43 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBorderBranchExBP",
+		"checkBorderCrossExBP",
 
-		if( !this.checkBorderCount(3,2) ){ return 'bdBranchExBP';}
-		if( !this.checkBorderCount(4,2) ){ return 'bdCrossExBP';}
+		"checkNoNumber",
+		"checkSameNumberInBlock",
+		"checkGatheredObject",
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkNoNumber(rinfo) ){ return 'bkNoNum';}
-		if( !this.checkDiffNumberInBlock(rinfo) ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
+		"checkBorderDeadend+",
+		"checkBorderPassOnBP",
+		"checkBorderNoneOnBP"
+	],
 
-		if( !this.checkBorderCount(1,0) ){ return 'bdDeadEnd';}
-		if( !this.checkBorderCount(2,1) ){ return 'bdCountLt3BP';}
-		if( !this.checkBorderCount(0,1) ){ return 'bdIgnoreBP';}
+	checkBorderBranchExBP : function(){ this.checkBorderCount(3,2, "bdBranchExBP");},
+	checkBorderCrossExBP  : function(){ this.checkBorderCount(4,2, "bdCrossExBP");},
+	checkBorderPassOnBP   : function(){ this.checkBorderCount(2,1, "bdCountLt3BP");},
+	checkBorderNoneOnBP   : function(){ this.checkBorderCount(0,1, "bdIgnoreBP");},
 
-		return null;
-	},
-
-	checkDiffNumberInBlock : function(rinfo){
-		return this.checkSameObjectInRoom(rinfo, function(cell){ return cell.getNum();});
+	checkSameNumberInBlock : function(){
+		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
-	checkGatheredObject : function(rinfo){
+	checkGatheredObject : function(){
 		var d=[], dmax=0, val=[], bd=this.owner.board;
+		var rinfo = this.owner.board.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(val[c]===-1){ continue;}
 			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
 			else if(d[val[c]]!==rinfo.id[c]){
+				this.failcode.add("bkSepNum");
 				bd.cell.filter(function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}).seterr(1);
-				return false;
+				break;
 			}
 		}
-		return true;
 	}
 },
 

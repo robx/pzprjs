@@ -63,6 +63,7 @@ Graphic:{
 	globalfontsizeratio : 0.85,
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDashedCenterLines();
 		this.drawLines();
 
@@ -89,9 +90,9 @@ Encode:{
 		this.decode4Cell();
 
 		if(this.owner.pid==='ichimaga'){
-			if     (this.checkpflag("m")){ this.owner.pid="ichimagam";}
-			else if(this.checkpflag("x")){ this.owner.pid="ichimagax";}
-			else                         { this.owner.pid="ichimaga"; }
+			if     (this.checkpflag("m")){ this.owner.changepid("ichimagam");}
+			else if(this.checkpflag("x")){ this.owner.changepid("ichimagax");}
+			else                         { this.owner.changepid("ichimaga"); }
 		}
 	},
 	encodePzpr : function(type){
@@ -103,9 +104,9 @@ FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
 		if(this.owner.pid==='ichimaga'){
-			if     (pzlflag=="mag")  { this.owner.pid="ichimagam";}
-			else if(pzlflag=="cross"){ this.owner.pid="ichimagax";}
-			else                     { this.owner.pid="ichimaga"; }
+			if     (pzlflag==="mag")  { this.owner.changepid("ichimagam");}
+			else if(pzlflag==="cross"){ this.owner.changepid("ichimagax");}
+			else                      { this.owner.changepid("ichimaga"); }
 		}
 
 		this.decodeCellQnum();
@@ -124,54 +125,42 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchConnectLine",
+		"checkCrossConnectLine@!ichimagax",
+		"checkConnectSameNum@ichimagam",
+		"checkCurveCount",
+		"checkConnectAllNumber",
+		"checkLineShapeDeadend",
 
-		if( !this.checkLineCount_firefly(3) ){ return 'lnBranch';}
-		if( (this.owner.pid!=='ichimagax') && !this.checkLineCount_firefly(4) ){ return 'lnCross';}
+		"checkOutgoingLine",
+		"checkNoLineObject"
+	],
 
-		var xinfo = this.getErrorFlag_line();
-		if( !this.checkErrorFlag_line(xinfo,3) ){ return 'lcSameNum';}
-		if( !this.checkErrorFlag_line(xinfo,2) ){ return 'lcCurveGt1';}
-
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkOneLine(linfo) ){ return 'lcDivided';}
-
-		if( !this.checkErrorFlag_line(xinfo,1) ){ return 'lcDeadEnd';}
-
-		if( !this.checkOutgoingLine() ){ return 'nmLineNe';}
-
-		if( !this.checkNoLineObject() ){ return 'nmIsolate';}
-
-		return null;
-	},
-
-	/* 線のカウントはするが、○のある場所は除外する */
-	checkLineCount_firefly : function(val){
-		if(this.owner.board.lines.ltotal[val]==0){ return true;}
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);});
-	},
-	checkNoLineObject : function(){
-		return this.checkAllCell(function(cell){ return (cell.isNum() && cell.lcnt===0);});
-	},
 	checkOutgoingLine : function(){
-		return this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);});
+		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.qnum!==cell.lcnt);}, "nmLineNe");
 	},
 
-	isErrorFlag_line : function(xinfo){
-		var path=xinfo.path[xinfo.max], ccnt=path.ccnt, length=path.length;
-		var cell1=path.cells[0], cell2=path.cells[1];
+	checkConnectSameNum : function(){
+		this.checkLineShape(function(path){ return path.cells[0].qnum!==-2 && path.cells[0].qnum===path.cells[1].qnum;}, "lcSameNum");
+	},
+	checkCurveCount : function(){
+		this.checkLineShape(function(path){ return !path.cells[1].isnull && path.ccnt>1;}, "lcCurveGt1");
+	},
 
-		var qn1=cell1.qnum, qn2=(!cell2.isnull ? cell2.qnum : -1), err=0;
-		if((this.owner.pid==='ichimagam') && qn1!==-2 && qn1===qn2){ err=3;}
-		else if(!cell2.isnull && ccnt>1){ err=2;}
-		else if( cell2.isnull){ err=1;}
-		path.error = err;
+	checkConnectAllNumber : function(){
+		var linfo = this.getLareaInfo();
+		var bd = this.owner.board;
+		if(linfo.max>1){
+			this.failcode.add("lcDivided");
+			bd.border.setnoerr();
+			linfo.setErrLareaByCell(bd.cell[1],1);
+		}
 	}
 },
 
 FailCode:{
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."],
-	
+	nmNoLine : ["○から線が出ていません。","A circle doesn't start any line."],
 	nmLineNe : ["○から出る線の本数が正しくありません。", "The number is not equal to the number of lines out of the circle."],
 	lcSameNum : ["同じ数字同士が線で繋がっています。", "Same numbers are connected each other."],
 	lcCurveGt1 : ["線が2回以上曲がっています。", "The number of curves is twice or more."]

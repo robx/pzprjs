@@ -72,12 +72,12 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var oldflag = ((type==1 && !this.checkpflag("c")) || (type==0 && this.checkpflag("d")));
+		var oldflag = ((type===1 && !this.checkpflag("c")) || (type===0 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type==1){ this.outpflag = 'c';}
+		if(type===1){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },
@@ -96,33 +96,29 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkShadeOverNum",
+		"checkConnectUnshade",
+		"checkShadeLessNum"
+	],
 
-		if( !this.checkQnumCross(1) ){ return 'crShadeGt';}
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkOneArea(winfo) ){ return 'cuDivide';}
-		if( !this.checkQnumCross(2) ){ return 'crShadeLt';}
-
-		return null;
-	},
-
-	checkQnumCross : function(type){
-		var result = true, bd = this.owner.board;
+	checkShadeOverNum : function(){ this.checkQnumCross(1, "crShadeGt");},
+	checkShadeLessNum : function(){ this.checkQnumCross(2, "crShadeLt");},
+	checkQnumCross : function(type, code){
+		var bd = this.owner.board;
 		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], qn = cross.getQnum();
+			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0){ continue;}
 
 			var bx=cross.bx, by=cross.by;
 			var clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
-
-			if((type===1 && qn<cnt) || (type===2 && qn>cnt)){
-				if(this.checkOnly){ return false;}
-				cross.seterr(1);
-				result = false;
-			}
+			if((type===1 && qn>=cnt) || (type===2 && qn<=cnt)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			cross.seterr(1);
 		}
-		return result;
 	}
 },
 

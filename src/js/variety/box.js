@@ -26,7 +26,7 @@ MouseEvent:{
 		}
 	},
 	inputnumber : function(excell){
-		var qn = excell.getQnum(), max=excell.nummaxfunc();
+		var qn = excell.qnum, max=excell.getmaxnum();
 		if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
 		else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
 
@@ -64,8 +64,8 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getex(), qn = excell.getQnum();
-		var max = excell.nummaxfunc();
+		var excell = this.cursor.getex(), qn = excell.qnum;
+		var max = excell.getmaxnum();
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca);
@@ -78,7 +78,7 @@ KeyEvent:{
 				else if (num<=max){ excell.setQnum(num);}
 			}
 		}
-		else if(ca==' ' || ca=='-'){ excell.setQnum(0);}
+		else if(ca===' ' || ca==='-'){ excell.setQnum(0);}
 		else{ return;}
 
 		this.prev = excell;
@@ -99,9 +99,9 @@ EXCell:{
 
 	disInputHatena : true,
 
-	nummaxfunc : function(){
-		var bx=this.bx, by=this.by, cnt;
-		if(bx===-1 && by===-1){ return;}
+	maxnum : function(){
+		var bx=this.bx, by=this.by;
+		if(bx===-1 && by===-1){ return 0;}
 		var sum=0;
 		for(var n=(bx===-1?this.owner.board.qrows:this.owner.board.qcols);n>0;n--){ sum+=n;}
 		return sum;
@@ -122,8 +122,8 @@ BoardExec:{
 		this.qnumh = [];
 
 		var bd=this.owner.board;
-		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).getQnum();}
-		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).getQnum();}
+		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).qnum;}
+		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).qnum;}
 	},
 	adjustBoardData2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
@@ -186,17 +186,17 @@ Graphic:{
 	drawNumbers_box : function(){
 		var g = this.vinc('excell_number', 'auto');
 
-		var header = "ex_full_";
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
 			if(excell.id>=this.owner.board.qcols+this.owner.board.qrows){ continue;}
 
-			if(excell.bx===-1 && excell.by===-1){ continue;}
-			var px = excell.bx*this.bw, py = excell.by*this.bh;
-			var option = { key:"excell_text_"+excell.id };
-			option.color = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
-			this.disptext(""+excell.qnum, px, py, option);
+			g.vi = "excell_text_"+excell.id;
+			if(excell.bx>=0 || excell.by>=0){
+				g.fillStyle = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
+				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
 	},
 
@@ -206,28 +206,29 @@ Graphic:{
 		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ list.push([bd.maxbx+1,by]);}}
 		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ list.push([bx,bd.maxby+1]);}}
 
-		var g = this.vinc('excell_circle', 'auto');
-		var header = "ex2_cir_", rsize  = this.cw*0.36;
+		var g = this.vinc('excell_circle', 'auto', true);
+		var rsize = this.cw*0.36;
 		g.fillStyle   = this.circledcolor;
 		g.strokeStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
-			if(num<=0){ continue;}
-
-			if(this.vnop([header,list[i][0],list[i][1]].join("_"),this.NONE)){
+			g.vid = ["ex2_cir_",list[i][0],list[i][1]].join("_");
+			if(num>0){
 				g.shapeCircle(list[i][0]*this.bw, list[i][1]*this.bh, rsize);
 			}
+			else{ g.vhide();}
 		}
 
-		var g = this.vinc('excell_number2', 'auto');
-		var header = "ex2_cirtext_";
+		var option = {globalratio:0.95};
+		g = this.vinc('excell_number2', 'auto');
+		g.fillStyle = this.fontcolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
-			if(num<=0){ continue;}
-
-			var option = { key: [header,list[i][0],list[i][1]].join("_") };
-			option.globalratio = 0.95;
-			this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
+			g.vid = ["ex2_cirtext_",list[i][0],list[i][1]].join("_");
+			if(num>0){
+				this.disptext(""+num, list[i][0]*this.bw, list[i][1]*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -243,7 +244,7 @@ Encode:{
 	},
 
 	decodeBox : function(){
-		var cm="", ec=0, bstr = this.outbstr, bd = this.owner.board;
+		var ec=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var a=0;a<bstr.length;a++){
 			var ca=bstr.charAt(a), obj=bd.excell[ec];
 			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
@@ -271,7 +272,7 @@ FileIO:{
 		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
-			if(ca=="."){ continue;}
+			if(ca==="."){ continue;}
 
 			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
 			var excell = bd.getex(bx,by);
@@ -319,18 +320,15 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkShadeCells() ){ return 'nmSumRowShadeNe';}
-
-		return null;
-	},
+	checklist : [
+		"checkShadeCells"
+	],
 
 	checkShadeCells : function(type){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
-			var qn=excell.getQnum(), pos=excell.getaddr(), val=0, cell;
+			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
 			var clist=new this.owner.CellList();
 			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
 				cell = pos.move(0,2).getc();
@@ -349,15 +347,13 @@ AnsCheck:{
 				}
 			}
 			else{ continue;}
-
-			if(qn!==val){
-				if(this.checkOnly){ return false;}
-				excell.seterr(1);
-				clist.seterr(1);
-				result = false;
-			}
+			if(qn===val){ continue;}
+			
+			this.failcode.add("nmSumRowShadeNe");
+			if(this.checkOnly){ break;}
+			excell.seterr(1);
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

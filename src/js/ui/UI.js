@@ -1,19 +1,17 @@
 // UI.js v3.4.0
+/* global ui:false, File:false */
+/* exported ui, _doc, getEL, createEL */
 
 /* ui.js Locals */
 var _doc = document;
 function getEL(id){ return _doc.getElementById(id);}
 function createEL(tagName){ return _doc.createElement(tagName);}
-function createButton(){
-	var button = createEL('input');
-	button.type = 'button';
-	return button;
-}
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
-var ui = {
+/* extern */
+window.ui = {
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,
 	
@@ -28,7 +26,6 @@ var ui = {
 	popupmgr  : null,
 	keypopup  : null,
 	timer     : null,
-	undotimer : null,
 	
 	debugmode : false,
 	
@@ -57,6 +54,24 @@ var ui = {
 		ui.toolarea.setdisplay(idname);
 	},
 
+	//---------------------------------------------------------------------------
+	// ui.customAttr()   エレメントのカスタムattributeの値を返す
+	//---------------------------------------------------------------------------
+	customAttr : function(el, name){
+		var value = "";
+		if(el.dataset!==void 0){ value = el.dataset[name];}
+		/* IE10, Firefox5, Chrome7, Safari5.1以下のフォールバック */
+		else{
+			var lowername = "data-";
+			for(var i=0;i<name.length;i++){
+				var ch = name[i];
+				lowername += ((ch>="A" && ch<="Z") ? ("-" + ch.toLowerCase()) : ch);
+			}
+			value = el[lowername] || el.getAttribute(lowername) || "";
+		}
+		return value;
+	},
+
 	//----------------------------------------------------------------------
 	// ui.windowWidth()   ウィンドウの幅を返す
 	//----------------------------------------------------------------------
@@ -73,18 +88,20 @@ var ui = {
 		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	alertStr : function(strJP, strEN){
-		alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		window.alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	confirmStr : function(strJP, strEN){
-		return confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		return window.confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
 	},
 	promptStr : function(strJP, strEN, initialStr){
-		return prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
+		return window.prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
 	},
 
 	//---------------------------------------------------------------------------
 	// ui.setConfig()   値設定の共通処理
 	// ui.getConfig()   値設定の共通処理
+	// ui.validConfig() 設定が有効なパズルかどうかを返す共通処理
+	// ui.getConfigType() 設定値の型を返す共通処理
 	//---------------------------------------------------------------------------
 	setConfig : function(idname, newval){
 		if(!!ui.puzzle.config.list[idname]){
@@ -98,7 +115,7 @@ var ui = {
 			ui.listener.onConfigSet(ui.puzzle, idname, newval);
 		}
 		else if(idname==='mode'){
-			ui.puzzle.modechange(newval);
+			ui.puzzle.modechange(+newval);
 		}
 	},
 	getConfig : function(idname){
@@ -113,6 +130,34 @@ var ui = {
 		}
 		else if(idname==='mode'){
 			return ui.puzzle.playmode ? 3 : 1;
+		}
+	},
+	validConfig : function(idname){
+		if(!!ui.puzzle.config.list[idname]){
+			return ui.puzzle.validConfig(idname);
+		}
+		else if(!!ui.menuconfig.list[idname]){
+			return ui.menuconfig.valid(idname);
+		}
+		else if(idname==='uramashu'){
+			return ui.puzzle.pid==="mashu";
+		}
+		else if(idname==='mode'){
+			return pzpr.EDITOR;
+		}
+	},
+	getConfigType : function(idname){
+		if(!!ui.puzzle.config.list[idname]){
+			return ui.puzzle.config.gettype(idname);
+		}
+		else if(!!ui.menuconfig.list[idname]){
+			return ui.menuconfig.gettype(idname);
+		}
+		else if(idname==='uramashu'){
+			return "boolean";
+		}
+		else if(idname==='mode'){
+			return "number";
 		}
 	},
 
@@ -141,14 +186,14 @@ var ui = {
 	//----------------------------------------------------------------------
 	initFileReadMethod : function(){
 		// File Reader (あれば)の初期化処理
-		if(typeof FileReader != 'undefined'){
+		if(typeof FileReader !== 'undefined'){
 			this.reader = new FileReader();
 			this.reader.onload = function(e){ ui.puzzle.open(e.target.result);};
 			this.enableReadText = true;
 		}
 		else{
 			this.reader = null;
-			this.enableGetText = (typeof FileList != 'undefined' && typeof File.prototype.getAsText != 'undefined');
+			this.enableGetText = (typeof FileList !== 'undefined' && typeof File.prototype.getAsText !== 'undefined');
 		}
 	},
 
@@ -167,5 +212,3 @@ var ui = {
 		this.fileio = (_doc.domain==='indi.s58.xrea.com'?"fileio.xcg":"fileio.cgi");
 	}
 };
-/* extern */
-window.ui = ui;

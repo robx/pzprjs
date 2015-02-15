@@ -3,26 +3,28 @@
 //---------------------------------------------------------------------------
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
 //---------------------------------------------------------------------------
+/* jshint ignore:start */
 try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
 	localStorage = globalStorage[location.host];
 }}catch(e){}
+/* jshint ignore:end */
 
 if(!Array.prototype.forEach){
 	Array.prototype.forEach = function(func){
 		for(var i=0;i<this.length;i++){ func(this[i]);}
-	}
+	};
 }
 if(!Array.prototype.indexOf){
 	Array.prototype.indexOf = function(obj){
 		for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}
 		return -1;
-	}
+	};
 }
 if(!Array.prototype.some){
 	Array.prototype.some = function(cond){
 		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
 		return false;
-	}
+	};
 }
 
 /**************/
@@ -37,6 +39,7 @@ pzpr.env = (function(){
 		IE9     : (IEversion===9),
 		Presto: (!!window.opera)
 	};
+	
 	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
 	var Gecko7orOlder = (Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
 	

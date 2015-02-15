@@ -8,6 +8,7 @@ my $q = new CGI;
 if   ($q->param('operation') eq 'open')     { &fileopen();}
 elsif($q->param('operation') eq 'save')     { &filesave();}
 elsif($q->param('operation') eq 'imagesave'){ &imagesave();}
+else{ printf("Content-type: text/plain\n\n"); }
 
 exit(0);
 
@@ -70,11 +71,6 @@ sub filesave{
 	printf("Content-type: application/octet-stream\n");
 	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
 	printf("\n");
-
-	#$rn = '';
-	#if($q->param('platform') eq 'Win'){ $rn = "\015\012";}
-	#elsif($q->param('platform') eq 'Mac'){ $rn = "\015";}
-	#else{ $rn = "\012";}
 
 	$rn = "\012";
 

@@ -1,4 +1,5 @@
 // Boot.js v3.4.0
+/* global ui:false, ActiveXObject:false */
 
 (function(){
 /********************************/
@@ -12,7 +13,6 @@ var require_accesslog = true;
 var onload_pzl = null;
 var onload_option = {imagesave:true};
 
-pzpr.addLoadListener(boot);
 //---------------------------------------------------------------------------
 // ★boot() window.onload直後の処理
 //---------------------------------------------------------------------------
@@ -21,6 +21,7 @@ function boot(){
 	else if(importData() && includeDebugFile()){ startPuzzle();}
 	else{ setTimeout(boot,0);}
 }
+pzpr.addLoadListener(boot);
 
 function importData(){
 	/* pzpr, uiオブジェクト生成待ち */
@@ -179,11 +180,11 @@ function accesslog(){
 
 	// 送信
 	var xmlhttp = false;
-	if(typeof ActiveXObject != "undefined"){
+	if(typeof ActiveXObject !== "undefined"){
 		try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
 		catch (e) { xmlhttp = false;}
 	}
-	if(!xmlhttp && typeof XMLHttpRequest != "undefined") {
+	if(!xmlhttp && typeof XMLHttpRequest !== "undefined") {
 		xmlhttp = new XMLHttpRequest();
 	}
 	if(xmlhttp){

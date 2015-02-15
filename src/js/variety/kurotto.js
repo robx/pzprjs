@@ -12,8 +12,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-	},
-	inputRed : function(){ this.dispRed();}
+	}
 },
 
 //---------------------------------------------------------
@@ -27,7 +26,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		var max=this.owner.board.qcols*this.owner.board.qrows-1;
 		return (max<=255?max:255);
 	},
@@ -44,7 +43,7 @@ Cell:{
 					if(idlist[j]===r){ r=null; break;}
 				}
 				if(r!==null){
-					cnt += cinfo.area[r].clist.length
+					cnt += cinfo.area[r].clist.length;
 					idlist.push(r);
 				}
 			}
@@ -58,7 +57,8 @@ AreaShadeManager:{
 },
 
 Flags:{
-	use : true
+	use : true,
+	autocmp : "number"
 },
 
 //---------------------------------------------------------
@@ -76,7 +76,7 @@ Graphic:{
 	// オーバーライド
 	setRange : function(x1,y1,x2,y2){
  		var puzzle = this.owner, bd = puzzle.board;
-		if(puzzle.getConfig('autocmp')){
+		if(puzzle.execConfig('autocmp')){
 			x1 = bd.minbx-2;
 			y1 = bd.minby-2;
 			x2 = bd.maxbx+2;
@@ -88,7 +88,7 @@ Graphic:{
 
 	paint : function(){
 		var puzzle = this.owner, bd = puzzle.board;
-		this.check_binfo = (puzzle.getConfig('autocmp') ? bd.getShadeInfo() : null);
+		this.check_binfo = (puzzle.execConfig('autocmp') ? bd.getShadeInfo() : null);
 		
 		this.drawDotCells(false);
 		this.drawGrid();
@@ -136,25 +136,20 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkCellNumber_kurotto() ){ return 'nmSumSizeNe';}
-
-		return null;
-	},
+	checklist : [
+		"checkCellNumber_kurotto"
+	],
 
 	checkCellNumber_kurotto : function(){
-		var result = true;
 		var bd = this.owner.board, cinfo = bd.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(!cell.checkComplete(cinfo)){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				result = false;
-			}
+			if(cell.checkComplete(cinfo)){ continue;}
+			
+			this.failcode.add("nmSumSizeNe");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
 		}
-		return result;
 	}
 },
 

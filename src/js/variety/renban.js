@@ -125,27 +125,19 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkDifferentNumberInRoom",
+		"checkNumbersInRoom",
+		"checkBorderSideNumber",
+		"checkNoNumCell+"
+	],
 
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
-		if( !this.checkNumbersInRoom(rinfo) ){ return 'bkNotSeqNum';}
-
-		if( !this.checkBorderSideNumber() ){ return 'scDiffLenNe';}
-		if( !this.checkNoNumCell() ){ return 'ceEmpty';}
-
-		return null;
-	},
-	check1st : function(){
-		return (this.checkNoNumCell() ? null : 'ceEmpty');
-	},
-
-	checkNumbersInRoom : function(rinfo){
-		var result = true;
+	checkNumbersInRoom : function(){
+		var rinfo = this.getRoomInfo();
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist;
 			if(clist.length<=1){ continue;}
-			var max=-1, min=clist[0].maxnum, breakflag=false;
+			var max=-1, min=clist[0].getmaxnum(), breakflag=false;
 			for(var i=0,len=clist.length;i<len;i++){
 				var val = clist[i].getNum();
 				if(val===-1 || val===-2){ breakflag=true; break;}
@@ -154,17 +146,16 @@ AnsCheck:{
 			}
 			if(breakflag){ break;}
 
-			if(clist.length !== (max-min)+1){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(clist.length === (max-min)+1){ continue;}
+			
+			this.failcode.add("bkNotSeqNum");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	},
 
 	checkBorderSideNumber : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		// 線の長さを取得する
 		var rdata = bd.getBorderLengthInfo();
 
@@ -176,22 +167,20 @@ AnsCheck:{
 			if(val1<=0 || val2<=0){ continue;}
 
 			var blist = rdata.path[rdata.id[i]].blist;
-			if(Math.abs(val1-val2)!==blist.length){
-				if(this.checkOnly){ return false;}
-				cell1.seterr(1);
-				cell2.seterr(1);
-				blist.seterr(1);
-				result = false;
-			}
+			if(Math.abs(val1-val2)===blist.length){ continue;}
+			
+			this.failcode.add("cbDiffLenNe");
+			if(this.checkOnly){ break;}
+			cell1.seterr(1);
+			cell2.seterr(1);
+			blist.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
 	bkNotSeqNum : ["部屋に入る数字が正しくありません。","The numbers in the room are wrong."],
-	scDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."],
-	ceEmpty : ["数字の入っていないマスがあります。","There is an empty cell."]
+	cbDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."]
 }
 });

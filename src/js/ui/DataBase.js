@@ -1,4 +1,5 @@
 // DataBase.js v3.4.0
+/* global ui:false, createEL:false */
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
@@ -50,114 +51,14 @@ ui.ProblemData.prototype =
 ui.popupmgr.addpopup('database',
 {
 	formname : 'database',
-	disable_remove : true,
-	
-	//------------------------------------------------------------------------------
-	// 要素作成用関数
-	//------------------------------------------------------------------------------
-	createElement : function(tagname, attr, style){
-		var el = createEL(tagname);
-		if(!!attr) { for(var att in attr){ el[att]=attr[att];}}
-		if(!!style){ for(var name in style){ el.style[name]=style[name];}}
-		return el;
-	},
-	
-	//------------------------------------------------------------------------------
-	// テーブルレイアウト作成用の関数
-	//------------------------------------------------------------------------------
-	table : null,
-	tbody : null,
-	trow  : null,
-	initTable : function(attr, style){
-		this.table = this.createElement('table', attr, style);
-		this.addElement(this.table);
-		
-		this.tbody = this.createElement('tbody');
-		this.table.appendChild(this.tbody);
-	},
-	initRow : function(attr, style){
-		this.trow = this.createElement('tr', attr, style);
-		this.tbody.appendChild(this.trow);
-	},
-	initCell : function(attr, style){
-		this.form = this.createElement('td', attr, style);
-		this.trow.appendChild(this.form);
-	},
-	
-	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
-	//------------------------------------------------------------------------------
-	makeForm : function(){
-		var popup = this, handler = function(e){ popup.database_handler(e||window.event);};
-		var form = this.form;
-		
-		this.settitle("ブラウザ保存/復帰", "Browser Saved Data");
-		
-		this.initTable({},{borderCollapse:'collapse'});
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({rowSpan:3},{paddingRight:'12pt'});
-		
-		var sortitem = [
-			{name:'idlist',  str_jp:"ID順",            str_en:"ID order"},
-			{name:'newsave', str_jp:"保存が新しい順",  str_en:"Latest Save"},
-			{name:'oldsave', str_jp:"保存が古い順",    str_en:"Oldest Save"},
-			{name:'size',    str_jp:"サイズ/難易度順", str_en:"Size, Dif. order"}
-		];
-		this.addSelect({name:'sorts'},sortitem);
-		form.sorts.onchange = handler;
-		this.addExecButton('▲', 'Up',   handler, {name:'tableup'});
-		this.addExecButton('▼', 'Down', handler, {name:'tabledn'});
-		this.addBR();
-		this.addBR();
-		
-		this.addSelect({name:'datalist', size:'8'}, []);
-		form.datalist.style.width = '100%';
-		form.datalist.onchange = handler;
-		
-		/* ----------------------------------------------------------------- */
-		this.initCell({colSpan:2},{verticalAlign:'middle'});
-		
-		this.addText("コメント:", "Comment:");
-		this.addBR();
-		this.addTextArea({name:"comtext", cols:'24', rows:'3', wrap:'hard', readonly:'readonly'});
-		form.comtext.style.backgroundColor = '#dfdfdf';
-		
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({rowSpan:2},{verticalAlign:'bottom',paddingRight:'8pt'});
-		
-		this.addExecButton("盤面を保存",         "Save",           handler, {name:'save'});
-		this.addBR();
-		this.addExecButton("コメントを編集する", "Edit Comment",   handler, {name:'comedit'});
-		this.addBR();
-		this.addExecButton("難易度を設定する",   "Set difficulty", handler, {name:'difedit'});
-		this.addBR();
-		this.addExecButton("データを読み込む",   "Load",           handler, {name:'open'});
-		
-		/* ----------------------------------------------------------------- */
-		this.initCell({},{verticalAlign:'top',paddingRight:'4pt'});
-		
-		this.addExecButton("削除", "Delete", handler, {name:'del'});
-		form.del.style.color = 'red';
-		
-		/* ----------------------------------------------------------------- */
-		this.initRow();
-		this.initCell({},{verticalAlign:'bottom'});
-		
-		this.addCloseButton();
-		/* ----------------------------------------------------------------- */
-		
-		this.form = form;
-	},
 	
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
 		ui.database.openDialog();
 	},
-	hide : function(){
+	close : function(){
 		ui.database.closeDialog();
-		ui.popupmgr.popups.template.hide.call(this);
+		ui.popupmgr.popups.template.close.call(this);
 	},
 
 	//---------------------------------------------------------------------------
@@ -207,6 +108,7 @@ ui.database = {
 		if(this.sync===false){ return;}
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
+			/* falls through */
 			case 'datalist': this.selectDataTable();   break;
 			case 'tableup' : this.upDataTable_M();     break;
 			case 'tabledn' : this.downDataTable_M();   break;
@@ -223,8 +125,9 @@ ui.database = {
 	// dbm.updateDialog() 管理テーブル情報やダイアログの表示を更新する
 	//---------------------------------------------------------------------------
 	getDataID : function(){
+		/* jshint eqeqeq:false */
 		var val = document.database.datalist.value;
-		if(val!="new" && val!=""){
+		if(val!=="new" && val!==""){
 			for(var i=0;i<this.DBlist.length;i++){
 				if(this.DBlist[i].id==val){ return i;}
 			}
@@ -260,6 +163,7 @@ ui.database = {
 		this.appendNewOption(-1, ui.selectStr("&nbsp;&lt;新しく保存する&gt;","&nbsp;&lt;New Save&gt;"));
 	},
 	appendNewOption : function(id, str){
+		/* jshint eqeqeq:false */
 		var opt = createEL('option');
 		opt.setAttribute('value', (id!=-1 ? id : "new"));
 		opt.innerHTML = str;
@@ -268,6 +172,7 @@ ui.database = {
 		document.database.datalist.appendChild(opt);
 	},
 	getRowString : function(row){
+		/* jshint eqeqeq:false */
 		var hardstr = [
 			{ja:'−'      , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
@@ -301,22 +206,24 @@ ui.database = {
 	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
-		var selected = this.getDataID(), _doc = document;
+		var selected = this.getDataID(), form = document.database;
 		if(selected>=0){
-			_doc.database.comtext.value = ""+this.DBlist[selected].comment;
+			form.comtext.value = ""+this.DBlist[selected].comment;
 			this.DBsid = parseInt(this.DBlist[selected].id);
 		}
 		else{
-			_doc.database.comtext.value = "";
+			form.comtext.value = "";
 			this.DBsid = -1;
 		}
 
-		_doc.database.tableup.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===1);
-		_doc.database.tabledn.disabled = (_doc.database.sorts.value!=='idlist' || this.DBsid===-1 || this.DBsid===this.DBlist.length);
-		_doc.database.comedit.disabled = (this.DBsid===-1);
-		_doc.database.difedit.disabled = (this.DBsid===-1);
-		_doc.database.open.disabled    = (this.DBsid===-1);
-		_doc.database.del.disabled     = (this.DBsid===-1);
+		var sid = this.DBsid; /* selected id */
+		var sortbyid = (form.sorts.value==='idlist');
+		form.tableup.disabled = (!sortbyid || sid===-1 || sid===1);
+		form.tabledn.disabled = (!sortbyid || sid===-1 || sid===this.DBlist.length);
+		form.comedit.disabled = (sid===-1);
+		form.difedit.disabled = (sid===-1);
+		form.open.style.color = (sid===-1 ? "silver" : "");
+		form.del.style.color  = (sid===-1 ? "silver" : "");
 	},
 
 	//---------------------------------------------------------------------------
@@ -386,7 +293,7 @@ ui.database = {
 		var id = this.getDataID(); if(id===-1){ return;}
 
 		var str = ui.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
-		if(str==null){ return;}
+		if(str===null){ return;}
 		this.DBlist[id].comment = str;
 
 		this.sync = false;
@@ -397,8 +304,8 @@ ui.database = {
 
 		var hard = ui.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
 									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
-		if(hard==null){ return;}
-		this.DBlist[id].hard = ((hard=='1'||hard=='2'||hard=='3'||hard=='4')?hard:0);
+		if(hard===null){ return;}
+		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:'0');
 
 		this.sync = false;
 		this.dbh.updateDifficult(this, id, this.update);
@@ -438,7 +345,7 @@ ui.DataBaseHandler_LS.prototype =
 		parent.DBlist = [];
 		for(var i=1;true;i++){
 			var row = new ui.ProblemData(localStorage[this.pheader+i]);
-			if(row.id==null){ break;}
+			if(row.id===null){ break;}
 			parent.DBlist.push(row);
 		}
 		if(!!callback){ callback();}

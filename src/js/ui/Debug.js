@@ -1,76 +1,29 @@
 // Debug.js v3.4.0
+/* global ui:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('debug',
 {
-	formname : 'testform',
-	disable_remove : true,
+	formname : 'debug',
+	multipopup : true,
 	
-	//------------------------------------------------------------------------------
-	// makeForm() URL入力のポップアップメニューを作成する
-	//------------------------------------------------------------------------------
-	makeForm : function(){
-		this.settitle("pop_test", "pop_test");
-		
-		this.addTextArea({name:"testarea", id:"testarea", cols:'40', rows:'16', wrap:'off'});
-		this.form.testarea.style.fontSize = '10pt';
-		this.addBR();
-		
-		var debug = ui.debug;
-		if(ui.debugmode){
-			this.addExecButton("テスト", "Test", function(){ debug.starttest();}, {name:'starttest'});
-			this.addText(" ", " ");
-			this.addExecButton("ALL", "ALL-Test", function(){ debug.all_test();}, {name:'all_test'});
-			this.addText(" ", " ");
-		}
-		
-		this.addExecButton("T1", "T1", function(){ debug.perfeval();});
-		this.addExecButton("T2", "T2", function(){ debug.painteval()});
-		this.addExecButton("T3", "T3", function(){ debug.resizeeval()});
-		this.addText(" ", " ");
-		
-		if(ui.debugmode){
-			this.addExecButton("Perf", "Perf", function(){ debug.loadperf();});
-		}
-		if(pzpr.env.storage.localST){
-			this.addExecButton("DB", "DB", function(){ debug.dispdatabase();});
-		}
-		this.addExecButton("INP", "INP", function(){ debug.inputcheck(getEL('testarea').value);});
-		this.addBR();
-		
-		this.addExecButton("Save", "Save", function(){ debug.filesave()});
-		this.addExecButton("PBSave", "PBSave", function(){ debug.filesave_pencilbox()});
-		this.addText(" ", " ");
-		
-		this.addExecButton("Load", "Load", function(){ debug.fileopen();});
-		this.addExecButton("消去", "Cls", function(){ debug.erasetext();});
-		this.addCloseButton();
-
-		/* テスト用文字列出力要素を追加 */
-		if(ui.debugmode && !getEL('testdiv')){
-			var el = document.createElement('div');
-			el.id = 'testdiv';
-			el.style.textAlign  = 'left';
-			el.style.fontSize   = '8pt';
-			el.style.lineHeight = '100%';
-			document.body.appendChild(el);
+	setFormEvent : function(){
+		if(!ui.debugmode){
+			var form = this.form;
+			form.starttest.style.display = "none";
+			form.all_test.style.display = "none";
+			form.loadperf.style.display = "none";
+			form.inputcheck_popup.style.display = "none";
 		}
 	},
-	
-	remove : function(){
-		/* removeさせない */
+	handler : function(e){
+		ui.debug[e.target.name]();
 	},
+	
 	show : function(px,py){
-		if(!this.pop){
-			this.makeElement();
-			this.makeForm();
-			this.setEvent();
-		}
-		this.pop.style.display = 'inline';
-		this.pop.style.left = '40px';
-		this.pop.style.top  = '80px';
+		ui.popupmgr.popups.template.show.call(this,40,80);
 	}
 });
 
@@ -85,26 +38,15 @@ ui.debug =
 
 	// debugmode===true時はオーバーライドされます
 	keydown : function(ca){
-		var kc = ui.puzzle.key;
-		if(!ui.debugmode){
-			if(ca==='alt+p'){ this.disppoptest();}
-			else{ return false;}
-		}
-		else{
-			if(ca==='F7'){ this.accheck1();}
-			else if(ca==='alt+p'){ this.disppoptest();}
-			else if(ca==='ctrl+F9'){ this.starttest();}
-			else if(ca==='shift+ctrl+F10'){ this.all_test();}
-			else{ return false;}
-		}
-		kc.stopEvent();	/* カーソルを移動させない */
+		if(ca==='alt+p'){ this.disppoptest();}
+		else{ return false;}
+		
+		ui.puzzle.key.stopEvent();	/* カーソルを移動させない */
 		return true;
 	},
 	disppoptest : function(){
 		ui.popupmgr.popups.debug.show();
 	},
-
-	starttest : function(){},
 
 	filesave : function(){
 		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));
@@ -129,7 +71,7 @@ ui.debug =
 
 	perfeval : function(){
 		var ans = ui.puzzle.checker;
-		this.timeeval("正答判定測定", function(){ ans.checkAns();});
+		this.timeeval("正答判定測定", function(){ ans.resetCache(); ans.checkAns();});
 	},
 	painteval : function(){
 		this.timeeval("描画時間測定", function(){ ui.puzzle.redraw();});
@@ -147,7 +89,7 @@ ui.debug =
 		}
 		var time = pzpr.util.currentTime() - old;
 
-		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms")
+		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms");
 	},
 
 	dispdatabase : function(){

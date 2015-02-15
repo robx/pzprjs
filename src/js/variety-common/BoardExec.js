@@ -79,17 +79,17 @@ BoardExec:{
 
 		var bd = this.owner.board;
 		for(var by=by1;by<=d.y2;by+=2){
-			this.qnumw[by] = [bd.getex(-1,by).getQnum()];
+			this.qnumw[by] = [bd.getex(-1,by).qnum];
 			for(var bx=bx1;bx<=d.x2;bx+=2){
 				var cell = bd.getc(bx,by);
-				if(cell.is51cell()){ this.qnumw[by].push(cell.getQnum());}
+				if(cell.is51cell()){ this.qnumw[by].push(cell.qnum);}
 			}
 		}
 		for(var bx=bx1;bx<=d.x2;bx+=2){
-			this.qnumh[bx] = [bd.getex(bx,-1).getQnum2()];
+			this.qnumh[bx] = [bd.getex(bx,-1).qnum2];
 			for(var by=by1;by<=d.y2;by+=2){
 				var cell = bd.getc(bx,by);
-				if(cell.is51cell()){ this.qnumh[bx].push(cell.getQnum2());}
+				if(cell.is51cell()){ this.qnumh[bx].push(cell.qnum2);}
 			}
 		}
 	},

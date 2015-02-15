@@ -25,9 +25,9 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.getQsub()===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.getQsub()===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
 		cell.draw();
 	}
 },
@@ -46,13 +46,13 @@ KeyEvent:{
 		if(ca.length>1){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
-			var canum = cell.getQnum();
-			if     ((canum-1)%26==num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
-			else if((canum-1)%26==num){ cell.setQnum(-1);}
+			var canum = cell.qnum;
+			if     ((canum-1)%26===num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
+			else if((canum-1)%26===num){ cell.setQnum(-1);}
 			else{ cell.setQnum(num+1);}
 		}
-		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
-		else if(ca==' '){ cell.setQnum(-1);}
+		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
+		else if(ca===' '){ cell.setQnum(-1);}
 		else{ return;}
 
 		this.prev = cell;
@@ -116,48 +116,47 @@ Graphic:{
 	},
 
 	drawCellSquare : function(){
-		var g = this.vinc('cell_number_base', 'crispEdges');
+		var g = this.vinc('cell_number_base', 'crispEdges', true);
 
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
-		var header = "c_sq_";
 		var isdrawmove = this.owner.execConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			g.vid = "c_sq_"+cell.id;
 			if((!isdrawmove && cell.isDeparture()) || (isdrawmove && cell.isDestination())){
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
 				else                   { g.fillStyle = "white";}
 
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, rw, rh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawNumbers_kaero : function(){
 		var g = this.vinc('cell_number', 'auto');
 		var isdrawmove = this.owner.execConfig('dispmove');
 
+		var option = {ratio:[0.85]};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
 			var num = (isdrawmove ? cell.base : cell).qnum, text = "";
-			if     (num===-1)        { text = "";}
-			else if(num===-2)        { text = "?";}
-			else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-			else{ text+=num;}
+			g.vid = "cell_text_"+cell.id;
+			if(num!==-1){
+				if     (num===-2)        { text = "?";}
+				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+				else{ text+=num;}
 
-			var option = { key:"cell_text_"+cell.id };
-			option.ratio = [0.85];
-			option.color = this.getCellNumberColor(cell);
-			this.disptext(text, px, py, option);
+				g.fillStyle = this.getCellNumberColor(cell);
+				this.disptext(text, px, py, option);
+			}
+			else{ g.vhide();}
 		}
 	}
 },
@@ -195,14 +194,14 @@ Encode:{
 		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qnum = bd.cell[c].qnum;
-			if     (qnum==-2){ pstr = ".";}
+			if     (qnum===-2){ pstr = ".";}
 			else if(qnum>= 1 && qnum<=26){ pstr = ""+ (qnum+9).toString(36).toUpperCase();}
 			else if(qnum>=27 && qnum<=36){ pstr = ""+ (qnum-27).toString(10);}
 			else if(qnum>=37 && qnum<=72){ pstr = "-"+ (qnum-37).toString(36).toUpperCase();}
 			else{ count++;}
 
-			if(count==0){ cm += pstr;}
-			else if(pstr||count==26){ cm+=((9+count).toString(36).toLowerCase()+pstr); count=0;}
+			if(count===0){ cm += pstr;}
+			else if(pstr||count===26){ cm+=((9+count).toString(36).toLowerCase()+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36).toLowerCase();}
 
@@ -228,29 +227,23 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-		var bd = this.owner.board;
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkConnectObject",
+		"checkLineOverLetter",
 
-		if( !this.checkLineCount(3) ){ return 'lnBranch';}
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
+		"checkSameObjectInRoom_kaero",
+		"checkGatheredObject",
+		"checkNoObjectBlock",
 
-		var linfo = bd.getLareaInfo();
-		if( !this.checkDoubleObject(linfo) ){ return 'nmConnected';}
-		if( !this.checkLineOverLetter() ){ return 'laOnNum';}
-
-		var rinfo = bd.getRoomInfo();
-		if( !this.checkSameObjectInRoom_kaero(rinfo) ){ return 'bkPlNum';}
-		if( !this.checkGatheredObject(rinfo) ){ return 'bkSepNum';}
-		if( !this.checkNoMovedObjectInRoom(rinfo) ){ return 'bkNoNum';}
-
-		if( !this.checkDisconnectLine(linfo) ){ return 'laIsolate';}
-
-		return null;
-	},
+		"checkDisconnectLine"
+	],
 
 	// checkSameObjectInRoom()にbaseを付加した関数
-	checkSameObjectInRoom_kaero : function(rinfo){
-		var result=true;
+	checkSameObjectInRoom_kaero : function(){
+		var rinfo = this.getRoomInfo();
+		allloop:
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist, rnum=-1;
 			var cbase = clist.getDeparture();
@@ -258,33 +251,38 @@ AnsCheck:{
 				var num=cbase[i].qnum;
 				if(rnum===-1){ rnum=num;}
 				else if(rnum!==num){
-					if(this.checkOnly){ return false;}
+					this.failcode.add("bkPlNum");
+					if(this.checkOnly){ break allloop;}
 					if(!this.owner.execConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
-					result = false;
 				}
 			}
 		}
-		return result;
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
-	checkGatheredObject : function(rinfo){
+	checkGatheredObject : function(){
 		var max=0, bd=this.owner.board;
+		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
+		allloop:
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
 			for(var i=0;i<clist.length;i++){
 				var r=rinfo.getRoomID(clist[i]);
 				if(rid===null){ rid=r;}
 				else if(r!==null && rid!==r){
+					this.failcode.add("bkSepNum");
 					if(!this.owner.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
-					return false;
+					break allloop;
 				}
 			}
 		}
-		return true;
+	},
+
+	checkNoObjectBlock : function(){
+		this.checkNoMovedObjectInRoom(this.getRoomInfo());
 	}
 },
 

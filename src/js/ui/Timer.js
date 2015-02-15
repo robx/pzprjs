@@ -1,16 +1,17 @@
 // Timer.js v3.4.0
+/* global ui:false */
 
 (function(){
 
 //---------------------------------------------------------------------------
 // ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)
 //---------------------------------------------------------------------------
+var timerInterval = 100;					/* タイマー割り込み間隔 */
+
 ui.timer =
 {
 	/* メンバ変数 */
-	TID           : null,					/* タイマーID */
-	timerInterval : 100,					/* タイマー割り込み間隔 */
-
+	TID      : null,					/* タイマーID */
 	current  : 0,		/* 現在のgetTime()取得値(ミリ秒) */
 
 	/* 経過時間表示用変数 */
@@ -36,7 +37,7 @@ ui.timer =
 	},
 	start : function(){
 		var self = this;
-		this.TID = setInterval(function(){ self.update();}, this.timerInterval);
+		this.TID = setInterval(function(){ self.update();}, timerInterval);
 	},
 	update : function(){
 		this.current = pzpr.util.currentTime();
@@ -51,14 +52,14 @@ ui.timer =
 	//---------------------------------------------------------------------------
 	updatetime : function(){
 		var seconds = (ui.puzzle.getTime()/1000)|0;
-		if(this.bseconds == seconds){ return;}
+		if(this.bseconds === seconds){ return;}
 
 		var hours   = (seconds/3600)|0;
 		var minutes = ((seconds/60)|0) - hours*60;
 		seconds = seconds - minutes*60 - hours*3600;
 
-		if(minutes < 10) minutes = "0" + minutes;
-		if(seconds < 10) seconds = "0" + seconds;
+		if(minutes < 10){ minutes = "0" + minutes;}
+		if(seconds < 10){ seconds = "0" + seconds;}
 
 		this.timerEL.innerHTML = [this.label(), (!!hours?hours+":":""), minutes, ":", seconds].join('');
 
@@ -90,18 +91,19 @@ ui.timer =
 //---------------------------------------------------------------------------
 // ★UndoTimerクラス   Undo/Redo用タイマー
 //---------------------------------------------------------------------------
-ui.undotimer =
-{
+var KeyUndo = 1,
+	ButtonUndo = 2,
+	AnswerUndo = 4,
+	undoTimerInterval = 25,		/* タイマー割り込み間隔 */
+	execWaitTime      = 300;	/* 1回目にwaitを多く入れるための値 */
+
+ui.undotimer = {
 	/* メンバ変数 */
-	TID           : null,	/* タイマーID */
-	timerInterval : 25,		/* タイマー割り込み間隔 */
-
-	inUNDO        : false,	/* Undo実行中 */
-	inREDO        : false,	/* Redo実行中 */
-
-	/* Undo/Redo用変数 */
-	undoWaitTime  : 300,	/* 1回目にwaitを多く入れるための値 */
-	undoWaitCount : 0,
+	TID    : null,	/* タイマーID */
+	
+	/* bit1:button bit0:key */
+	inUNDO : 0,	/* Undo実行中 */
+	inREDO : 0,	/* Redo実行中 */
 
 	//---------------------------------------------------------------------------
 	// ut.reset()  タイマーをスタートする
@@ -111,31 +113,66 @@ ui.undotimer =
 	},
 
 	//---------------------------------------------------------------------------
-	// ut.startUndo() Undo呼び出しを開始する
-	// ut.startRedo() Redo呼び出しを開始する
-	// ut.startProc() Undo/Redo呼び出しを開始する
-	// 
-	// ut.stop()      Undo/Redo呼び出しを終了する
+	// ut.startKeyUndo() キー入力によるUndoを開始する
+	// ut.startKeyRedo() キー入力によるRedoを開始する
+	// ut.startButtonUndo() ボタンによるUndoを開始する
+	// ut.startButtonRedo() ボタンによるRedoを開始する
+	// ut.startAnswerUndo() 碁石ひろい用のマウスによるUndoを開始する
+	// ut.startAnswerRedo() 碁石ひろい用のマウスによるRedoを開始する
 	//---------------------------------------------------------------------------
-	startUndo : function(){ if(!this.inUNDO){ this.inUNDO=true; this.startProc();}},
-	startRedo : function(){ if(!this.inREDO){ this.inREDO=true; this.startProc();}},
-	startProc : function(){
-		this.undoWaitCount = this.undoWaitTime/this.timerInterval;
-		if(!this.TID){
-			var self = this;
-			this.TID = setInterval(function(){ self.proc();}, this.timerInterval);
+	startKeyUndo    : function(){ this.startUndo(KeyUndo);},
+	startKeyRedo    : function(){ this.startRedo(KeyUndo);},
+	startButtonUndo : function(){ this.startUndo(ButtonUndo);},
+	startButtonRedo : function(){ this.startRedo(ButtonUndo);},
+	startAnswerUndo : function(){ this.startUndo(AnswerUndo);},
+	startAnswerRedo : function(){ this.startRedo(AnswerUndo);},
+
+	//---------------------------------------------------------------------------
+	// ut.stopKeyUndo() キー入力によるUndoを停止する
+	// ut.stopKeyRedo() キー入力によるRedoを停止する
+	// ut.stopButtonUndo() ボタンによるUndoを停止する
+	// ut.stopButtonRedo() ボタンによるRedoを停止する
+	// ut.startAnswerUndo() 碁石ひろい用のマウスによるUndoを停止する
+	// ut.startAnswerRedo() 碁石ひろい用のマウスによるRedoを停止する
+	//---------------------------------------------------------------------------
+	stopKeyUndo    : function(){ this.stopUndo(KeyUndo);},
+	stopKeyRedo    : function(){ this.stopRedo(KeyUndo);},
+	stopButtonUndo : function(){ this.stopUndo(ButtonUndo);},
+	stopButtonRedo : function(){ this.stopRedo(ButtonUndo);},
+	/* stopAnswerUndo : function(){ this.stopUndo(AnswerUndo);}, */
+	/* stopAnswerRedo : function(){ this.stopRedo(AnswerUndo);}, */
+
+	//---------------------------------------------------------------------------
+	// ut.startUndo() Undo開始共通処理
+	// ut.startRedo() Redo開始共通処理
+	// ut.stopUndo() Undo停止共通処理
+	// ut.stopRedo() Redo停止共通処理
+	//---------------------------------------------------------------------------
+	startUndo : function(bit){ if(!(this.inUNDO & bit)){ this.inUNDO |=  bit; this.proc();}},
+	startRedo : function(bit){ if(!(this.inREDO & bit)){ this.inREDO |=  bit; this.proc();}},
+	stopUndo  : function(bit){ if(  this.inUNDO & bit ){ this.inUNDO &= ~bit; this.proc();}},
+	stopRedo  : function(bit){ if(  this.inREDO & bit ){ this.inREDO &= ~bit; this.proc();}},
+
+	//---------------------------------------------------------------------------
+	// ut.start() Undo/Redo呼び出しを開始する
+	// ut.stop()  Undo/Redo呼び出しを終了する
+	//---------------------------------------------------------------------------
+	start : function(){
+		var self = this;
+		function handler(){ self.proc();}
+		function inithandler(){
+			clearInterval(self.TID);
+			self.TID = setInterval(handler, undoTimerInterval);
 		}
+		this.TID = setInterval(inithandler, execWaitTime);
 		this.exec();
 	},
-
 	stop : function(){
-		this.inUNDO = false;
-		this.inREDO = false;
-
-		if(!!this.TID){
-			clearInterval(this.TID);
-			this.TID = null;
-		}
+		this.inUNDO = 0;
+		this.inREDO = 0;
+		
+		clearInterval(this.TID);
+		this.TID = null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -143,24 +180,33 @@ ui.undotimer =
 	// ut.exec()  Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
 	proc : function(){
-		if (!this.inUNDO && !this.inREDO){ this.stop();}
-		else if(this.undoWaitCount>0){ this.undoWaitCount--;}
-		else{ this.exec();}
+		if     (!!(this.inUNDO | this.inREDO) &&  !this.TID){ this.start();}
+		else if( !(this.inUNDO | this.inREDO) && !!this.TID){ this.stop();}
+		else if(!!this.TID){ this.exec();}
 	},
 	exec : function(){
-		var o = ui.puzzle, kc = o.key;
-		if(!kc.isCTRL && !kc.isMETA)   { this.stop();}
-		else if(this.inUNDO && !kc.isZ){ this.stop();}
-		else if(this.inREDO && !kc.isY){ this.stop();}
-		
-		if(!!this.TID){
-			if(this.inUNDO){
-				if(!o.undo()){ this.stop();}
+		if(!this.checknextprop()){ this.stop();}
+		else if(this.inUNDO){ ui.puzzle.undo();}
+		else if(this.inREDO){ ui.puzzle.redo();}
+	},
+
+	//---------------------------------------------------------------------------
+	// ut.checknextprop()  次にUndo/Redoができるかどうかの判定を行う
+	//---------------------------------------------------------------------------
+	checknextprop : function(){
+		var opemgr = ui.puzzle.opemgr;
+		var isenable = ((this.inUNDO && opemgr.enableUndo) || (this.inREDO && opemgr.enableRedo));
+		if(isenable && ui.puzzle.pid==="goishi"){
+			if(this.inUNDO===AnswerUndo){
+				var nextopes = opemgr.ope[opemgr.position-1];
+				isenable = (nextopes[nextopes.length-1].property==='anum');
 			}
-			else if(this.inREDO){
-				if(!o.redo()){ this.stop();}
+			else if(this.inREDO===AnswerUndo){
+				var nextopes = opemgr.ope[opemgr.position];
+				isenable = (nextopes[0].property==='anum');
 			}
 		}
+		return isenable;
 	}
 };
 

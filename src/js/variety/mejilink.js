@@ -21,8 +21,7 @@ MouseEvent:{
 		else if(this.owner.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
-	},
-	inputRed : function(){ this.dispRedLine();}
+	}
 },
 
 //---------------------------------------------------------
@@ -146,7 +145,7 @@ Encode:{
 	},
 	encodeMejilink : function(){
 		var count = 0, bd = this.owner.board;
-		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()) count++;}
+		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()){ count++;}}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
 			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
@@ -179,39 +178,16 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkDotLength",
+		"checkDeadendLine",
+		"checkOneLoop"
+	],
 
-		if( !this.checkdir4Line_meji(3) ){ return 'lnBranch';}
-		if( !this.checkdir4Line_meji(4) ){ return 'lnCross';}
-
-		if( !this.checkDotLength() ){ return 'bkNoLineNe';}
-
-		if( !this.checkdir4Line_meji(1) ){ return 'lnDeadEnd';}
-
-		if( !this.checkOneLoop() ){ return 'lnPlLoop';}
-
-		return null;
-	},
-
-	checkdir4Line_meji : function(val){
-		var result = true, bd = this.owner.board;
-		for(var c=0;c<bd.crossmax;c++){
-			var cnt = 0, cross = bd.cross[c], adb = cross.adjborder;
-			if(adb.left.isLine()  ){ cnt++;}
-			if(adb.right.isLine() ){ cnt++;}
-			if(adb.top.isLine()   ){ cnt++;}
-			if(adb.bottom.isLine()){ cnt++;}
-			if(cnt==val){
-				if(this.checkOnly){ return false;}
-				if(result){ bd.border.seterr(-1);}
-				cross.setCrossBorderError();
-				result = false;
-			}
-		}
-		return result;
-	},
 	checkDotLength : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		var tarea = bd.tiles.getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;
@@ -229,17 +205,16 @@ AnsCheck:{
 		}
 		for(var r=1;r<=tarea.max;r++){
 			var clist = tarea.area[r].clist;
-			if(tcount[r]>=0 && tcount[r]!==clist.length){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(tcount[r]<0 || tcount[r]===clist.length){ continue;}
+			
+			this.failcode.add("bkNoLineNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 
 FailCode:{
-	bkNoLineNe : ["タイルと周囲の線が引かれない点線の長さが異なります。","the size of the tile is not equal to the total of length of lines that is remained dotted around the tile."]
+	bkNoLineNe : ["タイルと周囲の線が引かれない点線の長さが異なります。","The size of the tile is not equal to the total of length of lines that is remained dotted around the tile."]
 }
 });

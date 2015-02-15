@@ -52,7 +52,7 @@ MouseEvent:{
 		var border = pos.getb();
 		if(border.isnull){ return;}
 
-		if(this.inputData===null){ this.inputData=(border.getQsub()!==2?2:0);}
+		if(this.inputData===null){ this.inputData=(border.qsub!==2?2:0);}
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
@@ -75,10 +75,10 @@ KeyEvent:{
 	key_inputcircle : function(ca){
 		var cell = this.cursor.getc();
 
-		if     (ca=='1'){ cell.setQnum(cell.getQnum()!==1?1:-1);}
-		else if(ca=='2'){ cell.setQnum(cell.getQnum()!==2?2:-1);}
-		else if(ca=='-'){ cell.setQnum(cell.getQnum()!==-2?-2:-1);}
-		else if(ca=='3'||ca==" "){ cell.setQnum(-1);}
+		if     (ca==='1'){ cell.setQnum(cell.qnum!==1?1:-1);}
+		else if(ca==='2'){ cell.setQnum(cell.qnum!==2?2:-1);}
+		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
+		else if(ca==='3'||ca===" "){ cell.setQnum(-1);}
 		else{ return;}
 
 		cell.draw();
@@ -133,8 +133,6 @@ AreaLineManager:{
 Graphic:{
 	gridcolor_type : "THIN",
 
-	errbcolor1 : "white",
-
 	circlefillcolor_func   : "qnum2",
 	circlestrokecolor_func : "qnum2",
 
@@ -144,6 +142,7 @@ Graphic:{
 	lwratio : 8,
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
 
 		this.drawPekes();
@@ -181,42 +180,36 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkCrossLine",
+		"checkTripleObject",
+		"checkUnshadedCircle",
+		"checkShadedCircle",
+		"checkNoLineObject+"
+	],
 
-		if( !this.checkLineCount(4) ){ return 'lnCross';}
-
-		var linfo = this.owner.board.getLareaInfo();
-		if( !this.checkTripleObject(linfo) ){ return 'lcTripleNum';}
-
-		if( !this.checkWBcircle(linfo, 1) ){ return 'lcInvWhite';}
-		if( !this.checkWBcircle(linfo, 2) ){ return 'lcInvBlack';}
-
-		if( !this.checkAloneCircle() ){ return 'nmIsolate';}
-
-		return null;
-	},
-
-	checkAloneCircle : function(){
-		return this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());});
-	},
-
-	checkWBcircle : function(linfo,val){
+	checkUnshadedCircle : function(){ this.checkWBcircle(1, "lcInvWhite");},
+	checkShadedCircle   : function(){ this.checkWBcircle(2, "lcInvBlack");},
+	checkWBcircle : function(val, code){
 		var result = true;
+		var linfo = this.getLareaInfo();
 		for(var r=1;r<=linfo.max;r++){
 			var clist = linfo.area[r].clist;
 			if(clist.length<=1){ continue;}
 
 			var tip1 = clist[0], tip2 = clist[clist.length-1];
-			if(tip1.getQnum()!==val || tip2.getQnum()!==val){ continue;}
+			if(tip1.qnum!==val || tip2.qnum!==val){ continue;}
 
-			if(this.checkOnly){ return false;}
-			if(result){ this.owner.board.border.seterr(-1);}
+			result = false;
+			if(this.checkOnly){ break;}
 			linfo.setErrLareaById(r,1);
 			tip1.seterr(1);
 			tip2.seterr(1);
-			result = false;
 		}
-		return result;
+		if(!result){
+			this.failcode.add(code);
+			this.owner.board.border.setnoerr();
+		}
 	}
 },
 
@@ -224,6 +217,6 @@ FailCode:{
 	lcTripleNum : ["3つ以上の○が繋がっています。","Three or more objects are connected."],
 	lcInvWhite : ["白丸同士が繋がっています。","Two white circles are connected."],
 	lcInvBlack : ["黒丸同士が繋がっています。","Two black circles are connected."],
-	nmIsolate : ["○から線が出ていません。","A circle doesn't start any line."]
+	nmNoLine : ["○から線が出ていません。","A circle doesn't start any line."]
 }
 });

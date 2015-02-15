@@ -1,12 +1,14 @@
+/* global File:false */
 (function(){
 
 /* variables */
 var v3index = {
 	typelist : [],
 	current  : '',
-	language : 'ja',
+	doclang  : (!location.href.match("index_en.html")?"ja":"en"),
 	complete : false,
 	LS       : false,
+	captions : [],
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
@@ -47,14 +49,14 @@ v3index.extend({
 					var typename = RegExp.$1;
 					typelist.push(typename);
 					self.addEvent(el,"click",self.click_tab);
-					if(el.className=="puzmenusel"){ self.current = typename;}
+					if(el.className==="puzmenusel"){ self.current = typename;}
 				}
 				el = el.nextSibling;
 			}
 			if(!self.current && typelist.length>0){ self.current = typelist[0];}
+			getEL("puztypes").style.display = "block";
 
-			var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-			if(userlang.substr(0,2)!=='ja'){ self.language = 'en';}
+			// self.setTranslation();
 		}
 		self.disp();
 	},
@@ -80,7 +82,7 @@ v3index.extend({
 	click_tab : function(e){
 		var el = (e.target || e.srcElement);
 		if(!!el){ self.current = el.id.substr(8); self.disp();}
-		if(self.current=="input"){ self.dbif.display();} /* iPhone用 */
+		if(self.current==="input"){ self.dbif.display();} /* iPhone用 */
 	},
 
 	/* display tabs and tables function */
@@ -98,7 +100,34 @@ v3index.extend({
 				table.style.display = 'none';
 			}
 		}
+		// self.translate();
 	}
+
+//	もし各パズルへのリンクのキャプションんを自動生成したくなったら以下を有効にする
+//	setTranslation : function(){
+//		var tables = [_doc.getElementById("table_all"),
+//					  _doc.getElementById("table_lunch"),
+//					  _doc.getElementById("table_nigun"),
+//					  _doc.getElementById("table_omopa"),
+//					  _doc.getElementById("table_other")];
+//		for(var i=0;i<tables.length;i++){
+//			if(!tables[i]){ continue;}
+//			ui.misc.walker(tables[i], function(el){
+//				if(el.nodeType===1 && el.nodeName==="LI"){
+//					var href = el.firstChild.href;
+//					var pid  = pzpr.variety.toPID(href.substr(href.indexOf("?")+1));
+//					self.captions.push({textnode:el.firstChild.firstChild, str_jp:pzpr.variety.info[pid].ja, str_en:pzpr.variety.info[pid].en});
+//				}
+//			});
+//		}
+//	},
+//	translate : function(){
+//		/* キャプションの設定 */
+//		for(var i=0;i<this.captions.length;i++){
+//			var obj = this.captions[i];
+//			if(!!obj.textnode) { obj.textnode.data = (self.doclang==="ja" ? obj.str_jp : obj.str_en);}
+//		}
+//	}
 });
 
 /* addEventListener */
@@ -166,8 +195,6 @@ var _doc = document;
 var _form;
 var self = v3index.fileif;
 
-function getEL(id){ return _doc.getElementById(id);}
-
 v3index.fileif.extend({
 	init : function(){
 		_form = _doc.fileform;
@@ -185,15 +212,15 @@ v3index.fileif.extend({
 
 	fileinput : function(e){
 		var fileEL = _doc.fileform.filebox;
-		if(typeof FileReader != 'undefined'){
+		if(typeof FileReader !== 'undefined'){
 			var reader = new FileReader();
 			reader.onload = function(e){
 				self.fileonload.call(self, e.target.result);
 			};
 			reader.readAsText(fileEL.files[0]);
 		}
-		else if(typeof FileList != 'undefined' &&
-			    typeof File.prototype.getAsText != 'undefined')
+		else if(typeof FileList !== 'undefined' &&
+			    typeof File.prototype.getAsText !== 'undefined')
 		{
 			if(!fileEL.files[0]){ return;}
 			this.fileonload(fileEL.files[0].getAsText(''));
@@ -209,7 +236,7 @@ v3index.fileif.extend({
 	fileonload : function(str){
 		if(!!str){
 			var farray = str.replace(/[\t\r]*\n/g,"\n").split(/\n/);
-			var fstr = "", fheader = ['',''];
+			var fstr = "";
 			for(var i=0;i<farray.length;i++){
 				if(farray[i].match(/^http\:\/\//)){ break;}
 				fstr += (farray[i]+"\n");
@@ -261,6 +288,7 @@ v3index.dbif.extend({
 		}
 	},
 	importlist : function(callback){
+		/* jshint eqnull:true */
 		DBlist = [];
 		for(var i=1;true;i++){
 			var data = localStorage[pheader+i];
@@ -300,6 +328,7 @@ v3index.dbif.extend({
 		}
 	},
 	getcaption : function(row){
+		/* jshint eqeqeq:false */
 		var hardstr = [
 			{ja:'−'       , en:'-'     },
 			{ja:'らくらく', en:'Easy'  },
@@ -316,14 +345,12 @@ v3index.dbif.extend({
 			return str;
 		})();
 
-		var language = (!location.href.match("index_en.html")?"ja":"en")
-
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.variety.info[row.pid][language]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][v3index.doclang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][language]+"&nbsp;");
+			str += (hardstr[row.hard][v3index.doclang]+"&nbsp;");
 		}
 		str += ("("+datestr+")");
 		return str;
@@ -344,8 +371,9 @@ v3index.dbif.extend({
 		}
 	},
 	getvalue : function(){
+		/* jshint eqeqeq:false */
 		var val = _form.datalist.value;
-		if(val!=""){
+		if(val!==""){
 			for(var i=0;i<DBlist.length;i++){
 				if(DBlist[i].id==val){ return i;}
 			}

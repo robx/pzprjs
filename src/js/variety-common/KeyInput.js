@@ -8,15 +8,15 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	key_inputcross : function(ca){
 		var cross = this.cursor.getx();
-		var max = cross.nummaxfunc(), val=-1;
+		var max = cross.getmaxnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cross.getQnum();
+			var num = parseInt(ca), cur = cross.qnum;
 			if(cur<=0 || cur*10+num>max){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca==='-'){ cross.setQnum(cross.getQnum()!==-2 ? -2 : -1);}
+		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2 ? -2 : -1);}
 		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
 
@@ -45,7 +45,7 @@ KeyEvent:{
 		}
 	},
 	key_inputqnum_main : function(cell,ca){
-		var max = cell.nummaxfunc(), min = cell.numminfunc(), val=-1;
+		var max = cell.getmaxnum(), min = cell.getminnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
 			var num = parseInt(ca), cur = cell.getNum();
@@ -78,7 +78,6 @@ KeyEvent:{
 			case 'shift+down':  dir = cell.DN; break;
 			case 'shift+left':  dir = cell.LT; break;
 			case 'shift+right': dir = cell.RT; break;
-			default: flag = false;
 		}
 
 		if(dir!==cell.NDIR){
@@ -110,7 +109,7 @@ KeyEvent:{
 				return;
 			}
 		}
-		if(target==0){ return;}
+		if(target===0){ return;}
 
 		var def = this.owner.Cell.prototype[(target===2?'qnum':'qnum2')];
 		var max = max_obj[target], val=def;
@@ -121,7 +120,7 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca=='-' || ca==' '){ val=def;}
+		else if(ca==='-' || ca===' '){ val=def;}
 		else{ return;}
 
 		this.setnum51(obj,target,val);
@@ -129,10 +128,11 @@ KeyEvent:{
 		cursor.draw();
 	},
 	setnum51 : function(obj,target,val){
-		(target==2 ? obj.setQnum(val) : obj.setQnum2(val));
+		if(target===2){ obj.setQnum(val);}
+		else          { obj.setQnum2(val);}
 	},
 	getnum51 : function(obj,target){
-		return (target==2 ? obj.getQnum() : obj.getQnum2());
+		return (target===2 ? obj.qnum : obj.qnum2);
 	}
 }
 });

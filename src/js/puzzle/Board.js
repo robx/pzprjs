@@ -58,8 +58,8 @@ Board:{
 		this.exec = new puzzle.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},
-	addInfoList : function(klass){
-		var instance = new klass();
+	addInfoList : function(Klass){
+		var instance = new Klass();
 		this.infolist.push(instance);
 		return instance;
 	},
@@ -192,7 +192,6 @@ Board:{
 			var obj = this.cell[id];
 			obj.id = id;
 			obj.isnull = false;
-			obj.validcell = true;
 
 			obj.bx = (id%qc)*2+1;
 			obj.by = ((id/qc)<<1)+1;
@@ -312,11 +311,15 @@ Board:{
 	},
 
 	errclear : function(){
-		this.cell.errclear();
-		this.cross.errclear();
-		this.border.errclear();
-		this.excell.errclear();
-		this.haserror = false;
+		if(this.haserror){
+			this.cell.errclear();
+			this.cross.errclear();
+			this.border.errclear();
+			this.excell.errclear();
+			this.haserror = false;
+			
+			this.owner.adjustCanvasSize();	/* 強制的に一から再描画を行う */
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -509,7 +512,7 @@ Board:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// bd.getLineInfo()  線情報をAreaInfo型のオブジェクトで返す
+	// bd.getLineInfo()  線情報をLineInfo型のオブジェクトで返す
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
 	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
 	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
@@ -522,6 +525,11 @@ Board:{
 	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
 	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
 	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
+
+	//---------------------------------------------------------------------------
+	// bd.getLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
+	//---------------------------------------------------------------------------
+	getLineShapeInfo : function(){ return this.lines.getLineShapeInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

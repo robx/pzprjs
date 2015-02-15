@@ -21,8 +21,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.getQsub()===0){ cell.setQsub(2);}
-		else if(cell.getQsub()===2){ cell.setQsub(0);}
+		if     (cell.qsub===0){ cell.setQsub(2);}
+		else if(cell.qsub===2){ cell.setQsub(0);}
 		cell.draw();
 	}
 },
@@ -38,7 +38,7 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true,
 
-	nummaxfunc : function(){
+	maxnum : function(){
 		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 	}
 },
@@ -121,37 +121,30 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkAdjacentShadeCell",
+		"checkConnectUnshadeRB",
+		"checkShootSingle"
+	],
 
-		if( !this.checkAdjacentShadeCell() ){ return 'csAdjacent';}
-
-		var winfo = this.owner.board.getUnshadeInfo();
-		if( !this.checkRBShadeCell(winfo) ){ return 'cuDivideRB';}
-
-		if( !this.checkCellNumber() ){ return 'nmShootShadeNe1';}
-
-		return null;
-	},
-
-	checkCellNumber : function(){
-		var result = true, bd = this.owner.board;
+	checkShootSingle : function(){
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			var num=cell.getQnum(), cell2;
+			var num=cell.qnum, cell2;
 			var clist = new this.owner.CellList();
 			cell2=cell.relcell(-num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell( num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0,-num*2); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0, num*2); if(cell2.isShade()){ clist.add(cell2);}
-			if(clist.length!==1){
-				if(this.checkOnly){ return false;}
-				cell.seterr(4);
-				clist.seterr(1);
-				result = false;
-			}
+			if(clist.length===1){ continue;}
+			
+			this.failcode.add("nmShootShadeNe1");
+			if(this.checkOnly){ break;}
+			cell.seterr(4);
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

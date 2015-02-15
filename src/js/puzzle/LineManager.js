@@ -384,6 +384,11 @@ LineManager:{
 	},
 
 	//--------------------------------------------------------------------------------
+	// info.getBlistByBorder() 指定した線が含まれる領域の線配列を取得する
+	//--------------------------------------------------------------------------------
+	getBlistByBorder : function(border){ return this.path[this.id[border.id]].blist;},
+
+	//--------------------------------------------------------------------------------
 	// lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
@@ -397,10 +402,76 @@ LineManager:{
 		return info;
 	},
 
-	//--------------------------------------------------------------------------------
-	// info.getBlistByBorder() 指定した線が含まれる領域の線配列を取得する
-	//--------------------------------------------------------------------------------
-	getBlistByBorder : function(border){ return this.path[this.id[border.id]].blist;}
+	//---------------------------------------------------------------------------
+	// info.getLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
+	// info.serachLineShapeInfo() 丸などで区切られた線を探索します
+	// info.getLineShapeBase()    線を探索する際のスタート位置を取得します
+	// info.getLineShapeSeparator() 何で区切るか設定します
+	//---------------------------------------------------------------------------
+	// 丸の場所で線を切り離して考える
+	getLineShapeInfo : function(){
+		var bd = this.owner.board, info = new this.owner.LineInfo();
+		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(this.id[id]>0?0:null);}
+
+		var clists = this.getLineShapeBase();
+		for(var n=0;n<clists.length;n++){ for(var i=0;i<clists[n].length;i++){
+			var cell = clists[n][i], adb = cell.adjborder;
+			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
+			for(var a=0;a<4;a++){
+				var firstbd = dir4bd[a];
+				if(firstbd.isnull){ continue;}
+
+				var path = this.serachLineShapeInfo(info,cell,(a+1));
+				if(!!path){ info.addPathByPath(path);}
+			}
+		}}
+		return info;
+	},
+	serachLineShapeInfo : function(info,cell1,dir){
+		var path = {blist:(new this.owner.BorderList()), id:null};
+		path.cells  = [cell1,null];	// 出発したセル、到達したセル
+		path.ccnt   = 0;			// 曲がった回数
+		path.length = [];			// 曲がった箇所で区切った、それぞれの線分の長さの配列
+		path.dir1   = dir;			// dir1 スタート地点で線が出発した方向
+		path.dir2   = 0;			// dir2 到達地点から見た、到達した線の方向
+
+		var pos = cell1.getaddr(), n = 0;
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = pos.getc(), adb = cell.adjborder;
+				if(cell.isnull || cell1===cell || this.getLineShapeSeparator(cell)){ break;}
+				else if(cell.iscrossing() && cell.lcnt>=3){ }
+				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ path.ccnt++;} dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ path.ccnt++;} dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ path.ccnt++;} dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ path.ccnt++;} dir=3;}
+			}
+			else{
+				var border = pos.getb();
+				if(border.isnull||info.id[border.id]!==0){ break;}
+
+				path.blist[n++] = border;
+				info.id[border.id] = path.id;
+
+				if(isNaN(path.length[path.ccnt])){ path.length[path.ccnt]=1;}else{ path.length[path.ccnt]++;}
+			}
+		}
+		
+		if(n>0){
+			path.blist.length = n;
+			path.cells[1] = pos.getc();
+			path.dir2 = [0,2,1,4,3][dir];
+			return path;
+		}
+		return null;
+	},
+	getLineShapeBase : function(){
+		return [ this.owner.board.cell.filter(this.getLineShapeSeparator) ];
+	},
+	getLineShapeSeparator : function(cell){
+		return cell.isNum();
+	}
 },
 
 //---------------------------------------------------------------------------
@@ -419,10 +490,11 @@ LineInfo:{
 	//---------------------------------------------------------------------------
 	// info.addPath()         空のPathを追加する
 	// info.addPathByBlist()  指定されたblistを持つPathを追加する
+	// info.addPathByPath()   指定されたPathを追加する
 	//---------------------------------------------------------------------------
 	addPath : function(){
 		var pathid = ++this.max;
-		return this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid};
+		return (this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid});
 	},
 	addPathByBlist : function(blist){
 		var pathid = ++this.max;
@@ -433,6 +505,11 @@ LineInfo:{
 		}
 		path.blist.extend(blist);
 		return path;
+	},
+	addPathByPath : function(path){
+		var pathid = ++this.max;
+		path.id = pathid;
+		return (this.path[pathid] = path);
 	}
 }
 });

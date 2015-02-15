@@ -27,9 +27,9 @@ MouseEvent:{
 
 	inputDot : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell || cell.getQnum()!==-1){ return;}
+		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}
 
-		if(this.inputData===null){ this.inputData=(cell.getQsub()===1?0:1);}
+		if(this.inputData===null){ this.inputData=(cell.qsub===1?0:1);}
 
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
@@ -100,32 +100,30 @@ Graphic:{
 	drawQnumMarks : function(){
 		var g = this.vinc('cell_mark', 'auto');
 
-		var rsize = this.cw*0.30, tsize=this.cw*0.26;
-		var lampcolor = "rgb(0, 127, 96)";
-		var headers = ["c_mk1_", "c_mk2_", "c_mk3_"];
 		g.lineWidth = 2;
-
+		var rsize = this.cw*0.30, tsize=this.cw*0.26;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], id = cell.id, num=cell.getNum();
-			g.vhide([headers[0]+id, headers[1]+id, headers[2]+id]);
-			if(num<=0){ continue;}
+			var cell = clist[i];
 
+			g.vid = "c_mk_"+cell.id;
 			g.strokeStyle = this.getCellNumberColor(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			if(this.vnop(headers[(num-1)]+id,this.STROKE)){
-				switch(num){
-				case 1:
-					g.strokeCircle(px, py, rsize);
-					break;
-				case 2:
-					g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
-					g.stroke();
-					break;
-				case 3:
-					g.strokeRectCenter(px, py, rsize, rsize);
-					break;
-				}
+			switch(cell.getNum()){
+			case 1:
+				g.strokeCircle(px, py, rsize);
+				break;
+			case 2:
+				g.beginPath();
+				g.setOffsetLinePath(px, py, 0,-tsize, -rsize,tsize, rsize,tsize, true);
+				g.stroke();
+				break;
+			case 3:
+				g.strokeRectCenter(px, py, rsize, rsize);
+				break;
+			default:
+				g.vhide();
+				break;
 			}
 		}
 	}
@@ -160,35 +158,27 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
+	checklist : [
+		"checkAroundMarks",
+		"checkOverFourMarksInBox",
+		"checkDifferentNumberInRoom",
+		"checkConnectNumber",
+		"checkAllMarkInBox"
+	],
 
-		if( !this.checkAroundMarks() ){ return 'nmAround';}
-
-		var rinfo = this.owner.board.getRoomInfo();
-		if( !this.checkOverFourMarksInBox(rinfo) ){ return 'bkNumGt3';}
-		if( !this.checkDiffNumberInRoom(rinfo) ){ return 'bkDupNum';}
-
-		var numinfo = this.owner.board.getNumberInfo();
-		if( !this.checkOneArea(numinfo) ){ return 'nmDivide';}
-
-		if( !this.checkAllMarkInBox(rinfo) ){ return 'bkNumLt3';}
-
-		return null;
+	checkOverFourMarksInBox : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}, "bkNumGt3");
 	},
-
-	checkOverFourMarksInBox : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);});
-	},
-	checkAllMarkInBox : function(rinfo){
-		return this.checkAllBlock(rinfo, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);});
+	checkAllMarkInBox : function(){
+		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}, "bkNumLt3");
 	},
 
 	checkAroundMarks : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
-			var bx = cell.bx, by = cell.by, target=0, clist=new this.owner.CellList();
+			var target=0, clist=new this.owner.CellList();
 			var func = function(cell){ return (!cell.isnull && num===cell.getNum());};
 			// 右・左下・下・右下だけチェック
 			clist.add(cell);
@@ -196,14 +186,12 @@ AnsCheck:{
 			target = cell.relcell( 0,2); if(func(target)){ clist.add(target);}
 			target = cell.relcell(-2,2); if(func(target)){ clist.add(target);}
 			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
-
-			if(clist.length>1){
-				if(this.checkOnly){ return false;}
-				clist.seterr(1);
-				result = false;
-			}
+			if(clist.length<=1){ continue;}
+			
+			this.failcode.add("nmAround");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
 		}
-		return result;
 	}
 },
 

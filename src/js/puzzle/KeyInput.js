@@ -72,8 +72,8 @@ KeyEvent:{
 		if(c){ this.keyevent(c,0);}
 		
 		if(e.target===this.owner.canvas){
-			pzpr.util.stopPropagation(e);
-			pzpr.util.preventDefault(e);
+			e.stopPropagation();
+			e.preventDefault();
 		}
 	},
 	e_keyup : function(e){
@@ -85,8 +85,8 @@ KeyEvent:{
 		if(c){ this.keyevent(c,1);}
 		
 		if(e.target===this.owner.canvas){
-			pzpr.util.stopPropagation(e);
-			pzpr.util.preventDefault(e);
+			e.stopPropagation();
+			e.preventDefault();
 		}
 	},
 
@@ -123,17 +123,17 @@ KeyEvent:{
 
 		var key = '', keycode = (!!e.keyCode ? e.keyCode: e.charCode);
 
-		if     (keycode==38){ key = 'up';   }
-		else if(keycode==40){ key = 'down'; }
-		else if(keycode==37){ key = 'left'; }
-		else if(keycode==39){ key = 'right';}
+		if     (keycode===38){ key = 'up';   }
+		else if(keycode===40){ key = 'down'; }
+		else if(keycode===37){ key = 'left'; }
+		else if(keycode===39){ key = 'right';}
 		else if( 48<=keycode && keycode<= 57){ key = (keycode-48).toString(36);}
 		else if( 65<=keycode && keycode<= 90){ key = (keycode-55).toString(36);} //アルファベット
 		else if( 96<=keycode && keycode<=105){ key = (keycode-96).toString(36);} //テンキー対応
 		else if(112<=keycode && keycode<=123){ key = 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
-		else if(keycode==32 || keycode==46)  { key = ' ';} // 32はスペースキー 46はdelキー
-		else if(keycode==8)                  { key = 'BS';}
-		else if(keycode==109|| keycode==189) { key = '-';}
+		else if(keycode===32 || keycode===46) { key = ' ';} // 32はスペースキー 46はdelキー
+		else if(keycode===8)                  { key = 'BS';}
+		else if(keycode===109|| keycode===189){ key = '-';}
 
 		var keylist = (!!key ? [key] : []);
 		if(this.isMETA) { keylist.unshift('meta'); }
@@ -164,7 +164,6 @@ KeyEvent:{
 
 		if(this.keydown && !this.isZ){
 			puzzle.board.errclear();
-			puzzle.redraw();
 		}
 
 		if(!puzzle.execListener('key',c)){ return;}
@@ -174,7 +173,7 @@ KeyEvent:{
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
 	},
 	stopEvent : function(){
-		if(!!this.event){ pzpr.util.preventDefault(this.event);}
+		if(!!this.event){ this.event.preventDefault();}
 		this.keyreset();
 	},
 

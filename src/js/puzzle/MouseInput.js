@@ -16,21 +16,21 @@ MouseEvent:{
 		this.mouseoffset = {px:0,py:0};
 		if(pzpr.env.browser.legacyIE){ this.mouseoffset = {px:2,py:2};}
 
-		this.mouseCell;		// 入力されたセル等のID
-		this.firstCell;		// mousedownされた時のセルのID(連黒分断禁用)
+		this.mouseCell = null;		// 入力されたセル等のID
+		this.firstCell = null;		// mousedownされた時のセルのID(連黒分断禁用)
 
 		this.inputPoint = new this.owner.RawAddress();	// 入力イベントが発生したborder座標 ※端数あり
 		this.firstPoint = new this.owner.RawAddress();	// mousedownされた時のborder座標 ※端数あり
 		this.prevPos    = new this.owner.Address();		// 前回のマウス入力イベントのborder座標
 
-		this.btn = {};		// 押されているボタン
-		this.inputData;		// 入力中のデータ番号(実装依存)
+		this.btn = {};				// 押されているボタン
+		this.inputData = null;		// 入力中のデータ番号(実装依存)
 
-		this.bordermode;	// 境界線を入力中かどうか
+		this.bordermode = false;	// 境界線を入力中かどうか
 
-		this.mousestart;	// mousedown/touchstartイベントかどうか
-		this.mousemove;		// mousemove/touchmoveイベントかどうか
-		this.mouseend;		// mouseup/touchendイベントかどうか
+		this.mousestart = false;	// mousedown/touchstartイベントかどうか
+		this.mousemove = false;		// mousemove/touchmoveイベントかどうか
+		this.mouseend = false;		// mouseup/touchendイベントかどうか
 
 		this.mousereset();
 	},
@@ -44,7 +44,7 @@ MouseEvent:{
 		var cell0 = this.mouseCell;
 
 		this.mouseCell = // 下の行へ続く
-		this.firstCell = this.owner.board.emptycell
+		this.firstCell = this.owner.board.emptycell;
 
 		this.firstPoint.reset();
 		this.prevPos.reset();
@@ -75,8 +75,8 @@ MouseEvent:{
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
 		this.mouseevent(this.getBoardAddress(e), 0);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
@@ -84,16 +84,16 @@ MouseEvent:{
 		/* 座標は前のイベントのものを使用する */
 		this.mouseevent(this.inputPoint, 2);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
 		this.mouseevent(this.getBoardAddress(e), 1);
 		
-		pzpr.util.stopPropagation(e);
-		pzpr.util.preventDefault(e);
+		e.stopPropagation();
+		e.preventDefault();
 	},
 	e_mouseout : function(e){ },
 
@@ -120,13 +120,15 @@ MouseEvent:{
 		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
 		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
 		var g = pc.context;
-		if(!!g && g.use.vml){ addr.move(+0.33,+0.33);}
+		if(!!g && g.use.vml){
+			if(puzzle.board.hasexcell>0){ addr.move(+2.33,+2.33);}
+			else{ addr.move(+0.33,+0.33);}
+		}
 		return addr;
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
-	// mv.isDispred()  inputRed()処理を呼び出すかどうか判定する
 	//---------------------------------------------------------------------------
 	mouseevent : function(addr, step){
 		this.inputPoint.set(addr);
@@ -142,34 +144,35 @@ MouseEvent:{
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
 				puzzle.board.errclear();
-				puzzle.redraw();
 			}
 			else{ puzzle.opemgr.newChain();}
 			
-			if(this.mousestart && this.isDispred()){ this.inputRed();}
-			else{
+			if(!this.mousestart || !this.dispRed()){
 				this.mouseinput();		/* 各パズルのルーチンへ */
 			}
 		}
 		
 		if(this.mouseend){ this.mousereset();}
 	},
-	isDispred : function(){
-		var puzzle = this.owner, flag = false;
-		if     (puzzle.execConfig('redline')) { flag = true;}
-		else if(puzzle.execConfig('redblk'))  { flag = true;}
-		else if(puzzle.execConfig('redblkrb')){ flag = true;}
-		else if(puzzle.execConfig('redroad')) { flag = true;}
-		return puzzle.key.isZ ^ flag;
+
+	//---------------------------------------------------------------------------
+	// mv.dispRed()   赤く表示する際などのイベント処理
+	//---------------------------------------------------------------------------
+	dispRed : function(){
+		var puzzle = this.owner, isZ = puzzle.key.isZ;
+		var flagline = puzzle.validConfig('redline') && !!(puzzle.getConfig('redline') ^isZ);
+		var flagblk  = puzzle.validConfig('redblk') && !!(puzzle.getConfig('redblk') ^isZ);
+		
+		if     (flagline){ this.dispRedLine();}
+		else if(flagblk) { this.dispRedBlk();}
+		return (flagline || flagblk);
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseinput() マウスイベント処理。各パズルのファイルでオーバーライドされる。
-	// mv.inputRed()  赤く表示する際などのイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	//オーバーライド用
 	mouseinput : function(){ },
-	inputRed : function(){ return false;},
 
 	//---------------------------------------------------------------------------
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する

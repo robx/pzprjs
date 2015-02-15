@@ -43,7 +43,7 @@ MouseEvent:{
 				else if(dx-dy<0 && dx+dy<0){ adj=adc.left;   this.inputData=4;}
 				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
 			}
-			if(old!=this.inputData){ this.mouseCell.drawaround();}
+			if(old!==this.inputData){ this.mouseCell.drawaround();}
 		}
 	},
 	inputFuton2 : function(){
@@ -53,10 +53,10 @@ MouseEvent:{
 		this.changeHalf(cell);
 		if(this.inputData!==1 && this.inputData!==6){ cell.setQans(40+this.inputData); cell.setQsub(0);}
 		else if(this.inputData=== 6){ cell.setQans(41); cell.setQsub(0);}
-		else if(cell.getQans()===41){ cell.setQans(46); cell.setQsub(0);}
-		else if(cell.getQans()===46){ cell.setQans(0);  cell.setQsub(1);}
-//		else if(cell.getQans()=== 1){ cell.setQans(0);  cell.setQsub(0);}
-		else                        { cell.setQans(41); cell.setQsub(0);}
+		else if(cell.qans===41){ cell.setQans(46); cell.setQsub(0);}
+		else if(cell.qans===46){ cell.setQans(0);  cell.setQsub(1);}
+//		else if(cell.qans=== 1){ cell.setQans(0);  cell.setQsub(0);}
+		else                   { cell.setQans(41); cell.setQsub(0);}
 
 		var adj = this.currentTargetADJ();
 		if(!adj.isnull){
@@ -74,29 +74,29 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
 		if(this.inputData===null){
-			if     (cell.getQans()===1){ this.inputData = 2;}
-			else if(cell.getQsub()===1){ this.inputData = 3;}
+			if     (cell.qans===1){ this.inputData = 2;}
+			else if(cell.qsub===1){ this.inputData = 3;}
 			else{ this.inputData = 1;}
 		}
 		this.changeHalf(cell);
 		this.mouseCell = cell;
 
-		cell.setQans(this.inputData==1?1:0);
-		cell.setQsub(this.inputData==2?1:0);
+		cell.setQans(this.inputData===1?1:0);
+		cell.setQsub(this.inputData===2?1:0);
 
 		cell.drawaround();
 	},
 
 	changeHalf : function(cell){
-		var qa=cell.getQans(), adc=cell.adjacent, adj=null;
+		var qa=cell.qans, adc=cell.adjacent, adj=null;
 		if     (qa===42 || qa===47){ adj=adc.top;   }
 		else if(qa===43 || qa===48){ adj=adc.bottom;}
 		else if(qa===44 || qa===49){ adj=adc.left;  }
 		else if(qa===45 || qa===50){ adj=adc.right; }
 
 		if     (adj===null){ /* nop */ }
-		else if(adj.getQans()>=42 && adj.getQans()<=45){ adj.setQans(41);}
-		else if(adj.getQans()>=47 && adj.getQans()<=50){ adj.setQans(46);}
+		else if(adj.qans>=42 && adj.qans<=45){ adj.setQans(41);}
+		else if(adj.qans>=47 && adj.qans<=50){ adj.setQans(46);}
 	},
 	currentTargetADJ : function(){
 		if(!this.mouseCell.isnull){
@@ -200,7 +200,7 @@ Graphic:{
 	},
 
 	drawFutons : function(){
-		var g = this.vinc('cell_back', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_back', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -208,7 +208,6 @@ Graphic:{
 			adj = mv.currentTargetADJ();
 		}
 
-		var header = "c_full_";
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], isdraw = (cell.qans>=41);
@@ -217,18 +216,16 @@ Graphic:{
 				if(cell===tc || cell===adj){ isdraw=true; color=this.targetbgcolor;}
 			}
 
+			g.vid = "c_full_"+cell.id;
 			if(isdraw){
 				g.fillStyle = color;
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.fillRectCenter(px, py, this.bw, this.bh);
-				}
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw, this.bh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 	drawPillows : function(){
-		var g = this.vinc('cell_pillow', 'crispEdges'), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_pillow', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -236,7 +233,6 @@ Graphic:{
 			adj = mv.currentTargetADJ();
 		}
 
-		var header = "c_pillow_";
 		var clist = this.range.cells;
 		var rw = this.bw*0.7-1, rh = this.bh*0.7-1;
 		for(var i=0;i<clist.length;i++){
@@ -246,19 +242,16 @@ Graphic:{
 				else if( isdraw && adj===cell){ isdraw = false;}
 			}
 
+			g.vid = "c_pillow_"+cell.id;
 			if(isdraw){
 				g.lineWidth = 1;
 				g.strokeStyle = "black";
 				if     (inputting && tc===cell){ g.fillStyle = this.targetbgcolor;}
 				else if(cell.error===1)        { g.fillStyle = this.errbcolor1;   }
 				else                           { g.fillStyle = "white";}
-
-				if(this.vnop(header+cell.id,this.FILL)){
-					var px = cell.bx*this.bw, py = cell.by*this.bh;
-					g.shapeRectCenter(px, py, rw, rh);
-				}
+				g.shapeRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
-			else{ g.vhide(header+cell.id);}
+			else{ g.vhide();}
 		}
 	},
 
@@ -343,74 +336,65 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checkAns : function(){
-
-		if( !this.checkKitamakura() ){ return 'kitamakura';}
-		if( !this.check2x2ShadeCell() ){ return 'cs2x2';}
-		if( !this.checkDir4PillowOver() ){ return 'nmPillowGt';}
-		if( !this.checkFullSizeFuton() ){ return 'futonHalf';}
-		if( !this.checkFutonAisle() ){ return 'futonMidPos';}
-
-		var binfo = this.owner.board.getShadeInfo();
-		if( !this.checkOneArea(binfo) ){ return 'csDivide';}
-
-		if( !this.checkDir4PillowLess() ){ return 'nmPillowLt';}
-		if( !this.checkEmptyCell_shugaku() ){ return 'ceEmpty';}
-
-		return null;
-	},
+	checklist : [
+		"checkKitamakura",
+		"check2x2ShadeCell",
+		"checkDir4PillowOver",
+		"checkFullSizeFuton",
+		"checkFutonAisle",
+		"checkConnectShade",
+		"checkDir4PillowLess",
+		"checkEmptyCell_shugaku+"
+	],
 
 	checkDir4PillowOver : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isPillow();},2)
+		this.checkDir4Cell(function(cell){ return cell.isPillow();},2, "nmPillowGt");
 	},
 	checkDir4PillowLess : function(){
-		return this.checkDir4Cell(function(cell){ return cell.isPillow();},1);
+		this.checkDir4Cell(function(cell){ return cell.isPillow();},1, "nmPillowLt");
 	},
 	checkFullSizeFuton : function(){
-		return this.checkAllCell(function(cell){ return (cell.getQans()===41||cell.getQans()===46);});
+		this.checkAllCell(function(cell){ return (cell.qans===41||cell.qans===46);}, "futonHalf");
 	},
 	checkEmptyCell_shugaku : function(){
-		return this.checkAllCell(function(cell){ return (cell.noNum() && cell.getQans()===0);});
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.qans===0);}, "ceEmpty");
 	},
 
 	checkKitamakura : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.getQans()===43){
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				cell.adjacent.bottom.seterr(1);
-				result = false;
-			}
+			if(cell.qans!==43){ continue;}
+			
+			this.failcode.add("kitamakura");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			cell.adjacent.bottom.seterr(1);
 		}
-		return result;
 	},
 
 	checkFutonAisle : function(){
-		var result = true, bd = this.owner.board;
+		var bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}
 
 			var adc=cell.adjacent, adj=null;
-			switch(cell.getQans()){
+			switch(cell.qans){
 				case 42: adj = adc.top;    break;
 				case 43: adj = adc.bottom; break;
 				case 44: adj = adc.left;   break;
 				case 45: adj = adc.right;  break;
 				default: continue;
 			}
-			if( cell.countDir4Cell(function(cell){ return cell.isShade();})===0 &&
-				adj .countDir4Cell(function(cell){ return cell.isShade();})===0 )
-			{
-				if(this.checkOnly){ return false;}
-				cell.seterr(1);
-				adj.seterr(1);
-				result = false;
-			}
+			if( cell.countDir4Cell(function(cell){ return cell.isShade();})>0 ||
+				adj .countDir4Cell(function(cell){ return cell.isShade();})>0 ){ continue;}
+			
+			this.failcode.add("futonMidPos");
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			adj.seterr(1);
 		}
-		return result;
 	}
 },
 
