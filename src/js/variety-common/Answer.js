@@ -186,7 +186,7 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
-	// ans.checkOneLoop()  盤面に引かれている線が一つに繋がっていることを判定する
+	// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
 		var xinfo = this.getLineInfo();
@@ -194,6 +194,19 @@ AnsCheck:{
 			this.failcode.add("lnPlLoop");
 			this.owner.board.border.setnoerr();
 			xinfo.path[1].blist.seterr(1);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// ans.checkConnectAllNumber() 盤面に引かれている線が一つに繋がっていることを判定する
+	//---------------------------------------------------------------------------
+	checkConnectAllNumber : function(){
+		var linfo = this.getLareaInfo();
+		var bd = this.owner.board;
+		if(linfo.max>1){
+			this.failcode.add("lcDivided");
+			bd.border.setnoerr();
+			linfo.setErrLareaByCell(bd.cell[1],1);
 		}
 	},
 

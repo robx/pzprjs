@@ -146,16 +146,6 @@ AnsCheck:{
 	},
 	checkCurveCount : function(){
 		this.checkLineShape(function(path){ return !path.cells[1].isnull && path.ccnt>1;}, "lcCurveGt1");
-	},
-
-	checkConnectAllNumber : function(){
-		var linfo = this.getLareaInfo();
-		var bd = this.owner.board;
-		if(linfo.max>1){
-			this.failcode.add("lcDivided");
-			bd.border.setnoerr();
-			linfo.setErrLareaByCell(bd.cell[1],1);
-		}
 	}
 },
 

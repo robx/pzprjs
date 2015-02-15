@@ -178,7 +178,7 @@ AnsCheck:{
 		"checkConnectCircles",
 		"checkCurveCount",
 		"checkLineShapeDeadend",
-		"checkConnectAllLine",
+		"checkConnectAllNumber",
 
 		"checkDeadendConnectLine+",
 
@@ -216,10 +216,6 @@ AnsCheck:{
 			var qn=((path.dir1===cell1.qdir) ? cell1 : cell2).qnum;
 			return (!cell2.isnull && qn>=0 && qn!==path.ccnt);
 		}, "lcCurveNe");
-	},
-
-	checkConnectAllLine : function(){
-		this.checkOneArea(this.getLareaInfo(), "lcDivided");
 	}
 },
 
