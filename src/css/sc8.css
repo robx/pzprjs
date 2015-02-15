@@ -259,7 +259,7 @@
 		display  : none;
 		position : absolute;
 		list-style-type : none;
-		background : #cccccc;
+		background : gray;
 		background : #cccccc linear-gradient(to right bottom, rgba(0,0,0,.75), rgba(0,0,0,0));
 		margin     : 0pt;
 		padding    : 3px;

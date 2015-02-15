@@ -99,7 +99,7 @@ Cell:{
 	minnum : 0
 },
 "Cell@heyabon":{
-	distance : null,
+	distance : null
 },
 
 Board:{
