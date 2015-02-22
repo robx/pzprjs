@@ -58,6 +58,15 @@ ui.menuarea = {
 					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea[role]);
 					setevent = true;
 				}
+				role = ui.customAttr(el,"pressExec");
+				if(!!role){
+					var roles = role.split(/,/);
+					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea[roles[0]]);
+					if(!!role[1]){
+						pzpr.util.addEvent(el, "mouseup", menuarea, menuarea[roles[1]]);
+					}
+					setevent = true;
+				}
 				role = ui.customAttr(el,"popup");
 				if(!!role){
 					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.disppopup);
@@ -175,11 +184,13 @@ ui.menuarea = {
 	// メニューがクリックされた時の動作を呼び出す
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
-	undoall : function(){ ui.puzzle.undoall();},
-	undo    : function(){ ui.puzzle.undo();},
-	redo    : function(){ ui.puzzle.redo();},
-	redoall : function(){ ui.puzzle.redoall();},
 	anscheck : function(){ this.answercheck();},
+	undo     : function(){ ui.undotimer.startButtonUndo();},
+	undostop : function(){ ui.undotimer.stopButtonUndo();},
+	undoall  : function(){ ui.puzzle.undoall();},
+	redo     : function(){ ui.undotimer.startButtonRedo();},
+	redostop : function(){ ui.undotimer.stopButtonRedo();},
+	redoall  : function(){ ui.puzzle.redoall();},
 	ansclear : function(){ this.ACconfirm();},
 	subclear : function(){ this.ASconfirm();},
 	duplicate: function(){ this.duplicate_board();},
