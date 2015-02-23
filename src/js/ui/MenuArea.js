@@ -134,7 +134,7 @@ ui.menuarea = {
 			var str;
 			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
 			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
-			getEL('menu_toolarea').innerHTML = str;
+			getEL('menu_toolarea').childNodes[0].data = str;
 		}
 		else if(this.menuitem===null || !this.menuitem[idname]){
 			/* DO NOTHING */
