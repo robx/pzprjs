@@ -66,7 +66,6 @@ ui.debug =
 
 	erasetext : function(){
 		this.setTA('');
-		if(ui.debugmode){ getEL('testdiv').innerHTML = '';}
 	},
 
 	perfeval : function(){
