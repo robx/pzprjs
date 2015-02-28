@@ -81,20 +81,10 @@ window.ui = {
 
 	//--------------------------------------------------------------------------------
 	// ui.selectStr()  現在の言語に応じた文字列を返す
-	// ui.alertStr()   現在の言語に応じたダイアログを表示する
-	// ui.confirmStr() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	//--------------------------------------------------------------------------------
 	selectStr : function(strJP, strEN){
+		if(!strEN){ return strJP;}
 		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	alertStr : function(strJP, strEN){
-		window.alert(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	confirmStr : function(strJP, strEN){
-		return window.confirm(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
-	},
-	promptStr : function(strJP, strEN, initialStr){
-		return window.prompt(ui.puzzle.getConfig('language')==='ja' ? strJP : strEN, initialStr);
 	},
 
 	//---------------------------------------------------------------------------

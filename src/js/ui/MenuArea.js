@@ -242,16 +242,14 @@ ui.menuarea = {
 	// menuarea.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		window.alert( ui.puzzle.check(true).text() );
+		var str = "", texts = ui.puzzle.check(true).text().split(/\n/);
+		for(var i=0;i<texts.length;i++){ str += "<div style=\"margin-bottom:6pt;\">"+texts[i]+"</div>";}
+		ui.notify.alert(str);
 	},
 	ACconfirm : function(){
-		if(ui.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			ui.puzzle.ansclear();
-		}
+		ui.notify.confirm("回答を消去しますか？","Do you want to erase the Answer?", function(){ ui.puzzle.ansclear();});
 	},
 	ASconfirm : function(){
-		if(ui.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			ui.puzzle.subclear();
-		}
+		ui.notify.confirm("補助記号を消去しますか？","Do you want to erase the auxiliary marks?", function(){ ui.puzzle.subclear();});
 	}
 };

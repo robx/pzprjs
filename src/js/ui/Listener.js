@@ -48,6 +48,7 @@ ui.listener =
 			ui.menuarea.reset();
 			ui.toolarea.reset();
 			ui.popupmgr.reset();
+			ui.notify.reset();
 			ui.misc.displayDesign();
 			
 			/* Windowへのイベント設定 */

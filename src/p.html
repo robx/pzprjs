@@ -270,6 +270,36 @@
 
 </div> <!-- div#main close. -->
 
+<div id="notifies" class="outofboard">
+
+  <!-- チェック用ダイアログ -->
+  <div class="notify" id="assertbox">
+    <div class="titlebar">Notice</div>
+    <div class="content">
+      <span id="notification"></span>
+      <div class="buttons">
+        <button class="btn btn-ok" data-button-exec="closealert">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- クリア用ダイアログ -->
+  <div class="notify" id="confirmbox">
+    <div class="titlebar">Confirmation</div>
+    <div class="content">
+      <span id="confirmcaption"></span>
+      <div class="buttons">
+        <button class="btn btn-danger" data-button-exec="confirmtrue">OK</button>
+        <button class="btn" data-button-exec="confirmfalse">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景色を暗くする＆入力操作を効かなくするためのエレメント -->
+  <div id="notifybg"></div>
+
+</div>
+
 <!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
 <div id="popup_parent" class="outofboard">
 
@@ -368,35 +398,43 @@
     </form>
   </div>
 
-  <div class="popup">
+  <div class="popup" id="popup_database">
     <div class="titlebar">__ブラウザ保存/復帰__Browser Saved Data__</div>
     <form name="database">
-      <table border=0><tr>
-      <td style="padding-right:12pt;">
+      <div>
         <select name="sorts" data-change-exec="database_handler">
           <option value="idlist">__ID順__ID order__</option>
-          <option value="newsave">__保存が新しい順__Latest Save__</option>
-          <option value="oldsave">__保存が古い順__Oldest Save__</option>
+          <option value="newsave">__保存が新しい順__Newer First__</option>
+          <option value="oldsave">__保存が古い順__Older First__</option>
           <option value="size">__サイズ/難易度順__Size, Dif. order__</option>
         </select>
         <button type="button" class="btn" data-button-exec="database_handler" name="tableup">__▲__Up__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="tabledn">__▼__Down__</button>
         <br />
         <select name="datalist" size=8 data-change-exec="database_handler"></select>
-      </td>
-      <td>
-        <span>__コメント:__Comment:__</span><br />
-        <textarea name="comtext" cols=28 rows=5 wrap="hard" readonly style="background-color:#dfdfdf"></textarea><br />
-        <button type="button" class="btn" data-button-exec="database_handler" name="comedit">__コメント編集__Edit Comment__</button>
-        <button type="button" class="btn" data-button-exec="database_handler" name="difedit">__難易度設定__Set difficulty__</button>
-        <button type="button" class="btn btn-danger" data-button-exec="database_handler" name="del">__削除__Delete__</button>
         <br />
-        <br />
-        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
-        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
+        <button type="button" class="btn btn-ok" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
         <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
-      </td>
-      </tr></table>
+      </div>
+      <div>
+        <span>Information</span> <span id="database_cand"></span><br>
+        <label>__種類:__Variety:__</label><span id="database_variety"></span><br>
+        <label>__難易度:__Difficulity:__</label>
+        <select name="hard" data-change-exec="database_handler">
+          <option value="0">-</option>
+          <option value="1">__らくらく__Easy__</option>
+          <option value="2">__おてごろ__Normal__</option>
+          <option value="3">__たいへん__Hard__</option>
+          <option value="4">__アゼン__Expert__</option>
+        </select><br>
+        <label>__日時:__Date:__</label><span id="database_date"></span><br>
+        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard"></textarea><br>
+        <br>
+        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
+        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="overwrite">__上書き保存__Overwrite__</button>
+        <button type="button" class="btn" data-button-exec="database_handler" name="updateinfo">__情報更新__Update Info__</button>
+        <button type="button" class="btn btn-danger" data-button-exec="database_handler" name="del">__削除__Delete__</button>
+      </div>
     </form>
   </div>
 

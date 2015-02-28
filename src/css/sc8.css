@@ -5,7 +5,6 @@
 		padding : 0pt;
 		color : black;
 		line-height : 120%;
-		text-align  : center;
 	}
 
 	/* メインの白背景領域 */
@@ -128,6 +127,44 @@
 		margin-top : 1.0em;
 	}
 
+	/* OK/Cancel表示用 */
+	div#notifies {
+		position : absolute;
+		width : 100%;
+		top : 0;
+	}
+	div.notify {
+		display    : none;
+		position   : absolute;
+		background : #f7f7f7;
+		min-width : 240px;
+		max-width : 480px;
+		border  : 2px gray solid;
+		
+		text-align : left;
+		z-index : 61; /* ポップアップウィンドウより上 */
+	}
+	div.notify div.content {
+		padding : 8px 6px 6px 12px;
+	}
+	div.notify div.buttons {
+		margin-top: 4pt;
+		text-align:right;
+	}
+
+	div#notifybg {
+		display    : none;
+		position   : fixed;
+		background : black;
+		opacity    : 0.2;
+		top    : 0;
+		left   : 0;
+		width  : 100%;
+		height : 100%;
+		z-index : 60;
+		cursor : not-allowed;
+	}
+
 	/* ポップアップウィンドウ */
 	div.popup {
 		display    : none;
@@ -143,9 +180,9 @@
 		text-align : left;
 		font-size  : 0.9em;
 		line-height: 1.6;
-		z-index    : 100;
+		z-index    : 40;
 	}
-	div.popup div.titlebar {
+	div div.titlebar {
 		display    : block;
 		background : gray;
 		background : #999999 linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,0));
@@ -161,6 +198,22 @@
 		padding : 0pt;
 	}
 
+	div#popup_database label {
+		display: inline-block;
+		vertical-align : top;
+		min-width: 72px;
+	}
+	div#popup_database form div {
+		float : left;
+		margin-bottom: 6pt;
+	}
+	div#popup_database form textarea {
+		padding: 2pt;
+		font-size: 0.9em;
+	}
+	div#popup_database form div:not(:last-child) {
+		margin-right : 12pt;
+	}
 	div#credit3_1 {
 		margin  : 4pt 0pt 2pt 4pt;
 		line-height : 1.1;

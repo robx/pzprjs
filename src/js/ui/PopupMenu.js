@@ -409,7 +409,7 @@ ui.popupmgr.addpopup('filesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
@@ -511,7 +511,7 @@ ui.popupmgr.addpopup('imagesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		/* 画像出力ルーチン */
@@ -528,7 +528,7 @@ ui.popupmgr.addpopup('imagesave',
 			}
 		}
 		catch(e){
-			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.notify.alert('画像の出力に失敗しました','Fail to Output the Image');
 		}
 
 		/* 出力された画像の保存ルーチン */
@@ -563,7 +563,7 @@ ui.popupmgr.addpopup('imagesave',
 			dataurl = ui.puzzle.toDataURL(type,cellsize);
 		}
 		catch(e){
-			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.notify.alert('画像の出力に失敗しました','Fail to Output the Image');
 		}
 		
 		/* 出力された画像を開くルーチン */

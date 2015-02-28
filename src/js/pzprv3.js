@@ -45,6 +45,7 @@
 		"ui/MenuArea",
 		"ui/PopupMenu",
 		"ui/ToolArea",
+		"ui/Notify",
 		"ui/KeyPopup",
 		"ui/DataBase",
 		"ui/Timer",

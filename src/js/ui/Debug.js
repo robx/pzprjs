@@ -1,5 +1,5 @@
 // Debug.js v3.4.0
-/* global ui:false, getEL:false */
+/* global ui:false */
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
