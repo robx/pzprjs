@@ -12,8 +12,7 @@
 	div#main {
 		width : 80%;
 		background-color : white;
-		margin         : auto;
-		margin-top     : 8pt;
+		margin         : 8pt auto;
 		padding-bottom : 6pt;
 		border     : 2pt green solid;
 		text-align : center;

@@ -341,6 +341,7 @@ function setCanvas_main(puzzle, type, callback){
 	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
 	Candle.start(puzzle.canvas, type, function(g){
+		Candle.ME.style.top = "0px"; /* WA */
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
