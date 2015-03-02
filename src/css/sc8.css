@@ -129,13 +129,13 @@
 
 	/* OK/Cancel表示用 */
 	div#notifies {
-		position : absolute;
+		position : fixed;
 		width : 100%;
 		top : 0;
 	}
 	div.notify {
 		display    : none;
-		position   : absolute;
+		position   : fixed;
 		background : #f7f7f7;
 		min-width : 240px;
 		max-width : 480px;
