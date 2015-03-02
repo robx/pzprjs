@@ -449,76 +449,71 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	/* ともにevalfuncはAnswerクラスの関数限定 */
 	checkRowsCols : function(evalfunc, code){
-		if(!this.checkErrorCols(evalfunc) || !this.checkErrorRows(evalfunc)){
+		var result = true, bd = this.owner.board;
+		allloop: do{
+			/* 横方向サーチ */
+			for(var by=1;by<=bd.maxby;by+=2){
+				var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
+				if( evalfunc.call(this, clist) ){ continue;}
+				
+				result = false;
+				if(this.checkOnly){ break allloop;}
+			}
+			/* 縦方向サーチ */
+			for(var bx=1;bx<=bd.maxbx;bx+=2){
+				var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
+				if( evalfunc.call(this, clist) ){ continue;}
+				
+				result = false;
+				if(this.checkOnly){ break allloop;}
+			}
+		} while(0);
+		
+		if(!result){
 			this.failcode.add(code);
 		}
 	},
-	/* 横方向サーチ */
-	checkErrorCols : function(evalfunc){
-		var result = true, bd = this.owner.board;
-		for(var by=1;by<=bd.maxby;by+=2){
-			var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
-			if( evalfunc.call(this, clist) ){ continue;}
-			
-			result = false;
-			if(this.checkOnly){ break;}
-		}
-		return result;
-	},
-	/* 縦方向サーチ */
-	checkErrorRows : function(evalfunc){
-		var result = true, bd = this.owner.board;
-		for(var bx=1;bx<=bd.maxbx;bx+=2){
-			var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
-			if( evalfunc.call(this, clist) ){ continue;}
-			
-			result = false;
-			if(this.checkOnly){ break;}
-		}
-		return result;
-	},
+
 	//---------------------------------------------------------------------------
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う
 	// ans.checkRowsColsFor51cell()   [＼]で分かれるタテ列・ヨコ列の数字の判定を行う
 	//---------------------------------------------------------------------------
 	checkRowsColsPartly : function(evalfunc, termfunc, code){
-		if(!this.checkErrorColsPartly(evalfunc, termfunc) || !this.checkErrorRowsPartly(evalfunc, termfunc)){
+		var result = true, bd = this.owner.board, info;
+		allloop: do{
+			/* 横方向サーチ */
+			info = {keycell:null, key51num:-1, isvert:false};
+			for(var by=1;by<=bd.maxby;by+=2){
+				for(var bx=1;bx<=bd.maxbx;bx+=2){
+					for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
+					info.keycell = bd.getobj(bx-2,by);
+					info.key51num = info.keycell.qnum;
+					if(tx>bx && !evalfunc.call(this, bd.cellinside(bx,by,tx-2,by), info)){
+						result = false;
+						if(this.checkOnly){ break allloop;}
+					}
+					bx = tx; /* 次のループはbx=tx+2 */
+				}
+			}
+			/* 縦方向サーチ */
+			info = {keycell:null, key51num:-1, isvert:true};
+			for(var bx=1;bx<=bd.maxbx;bx+=2){
+				for(var by=1;by<=bd.maxby;by+=2){
+					for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
+					info.keycell = bd.getobj(bx,by-2);
+					info.key51num = info.keycell.qnum2;
+					if(ty>by && !evalfunc.call(this, bd.cellinside(bx,by,bx,ty-2), info)){
+						result = false;
+						if(this.checkOnly){ break allloop;}
+					}
+					by = ty; /* 次のループはbx=ty+2 */
+				}
+			}
+		} while(0);
+		
+		if(!result){
 			this.failcode.add(code);
 		}
-	},
-	/* 横方向サーチ */
-	checkErrorColsPartly : function(evalfunc, termfunc){
-		var result = true, bd = this.owner.board, info = {keycell:null, key51num:-1, isvert:false};
-		allloop: for(var by=1;by<=bd.maxby;by+=2){
-			for(var bx=1;bx<=bd.maxbx;bx+=2){
-				for(var tx=bx;tx<=bd.maxbx;tx+=2){ if(termfunc(bd.getc(tx,by))){ break;}}
-				info.keycell = bd.getobj(bx-2,by);
-				info.key51num = info.keycell.qnum;
-				if(tx>bx && !evalfunc.call(this, bd.cellinside(bx,by,tx-2,by), info)){
-					result = false;
-					if(this.checkOnly){ break allloop;}
-				}
-				bx = tx; /* 次のループはbx=tx+2 */
-			}
-		}
-		return result;
-	},
-	/* 縦方向サーチ */
-	checkErrorRowsPartly : function(evalfunc, termfunc){
-		var result = true, bd = this.owner.board, info = {keycell:null, key51num:-1, isvert:true};
-		allloop: for(var bx=1;bx<=bd.maxbx;bx+=2){
-			for(var by=1;by<=bd.maxby;by+=2){
-				for(var ty=by;ty<=bd.maxby;ty+=2){ if(termfunc(bd.getc(bx,ty))){ break;}}
-				info.keycell = bd.getobj(bx,by-2);
-				info.key51num = info.keycell.qnum2;
-				if(ty>by && !evalfunc.call(this, bd.cellinside(bx,by,bx,ty-2), info)){
-					result = false;
-					if(this.checkOnly){ break allloop;}
-				}
-				by = ty; /* 次のループはbx=ty+2 */
-			}
-		}
-		return result;
 	},
 	checkRowsColsFor51cell : function(evalfunc, code){
 		this.checkRowsColsPartly(evalfunc, function(cell){ return cell.is51cell();}, code);
