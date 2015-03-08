@@ -240,7 +240,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
-		if(!insuspend){ this.suspendAll();}
+		this.suspendAll();
 		
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
@@ -255,7 +255,7 @@ Graphic:{
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
-		if(!insuspend){ this.suspendAll();}
+		this.suspendAll();
 		
 		this.cw = cellsize || this.cw;
 		this.ch = cellsize || this.ch;
