@@ -318,7 +318,7 @@ Board:{
 			this.excell.errclear();
 			this.haserror = false;
 			
-			this.owner.adjustCanvasSize();	/* 強制的に一から再描画を行う */
+			this.owner.redraw();	/* 全盤面再描画 */
 		}
 	},
 

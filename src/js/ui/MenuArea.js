@@ -197,7 +197,7 @@ ui.menuarea = {
 	toolarea : function(){
 		ui.toolarea.isdisp = !ui.toolarea.isdisp;
 		ui.displayAll();
-		ui.puzzle.adjustCanvasSize();
+		ui.puzzle.adjustCanvasPos();
 		this.setdisplay("toolarea");
 	},
 	repaint : function(){ ui.puzzle.redraw();},

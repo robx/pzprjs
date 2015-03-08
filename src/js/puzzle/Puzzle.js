@@ -92,8 +92,6 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
-	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
-	// owner.resetPagePos()            ページサイズの変更時等に、Canvasの左上座標を変更する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
 		if(this.painter){
@@ -113,7 +111,11 @@ pzpr.Puzzle.prototype =
 		}
 	},
 
-	adjustCanvasSize : function(){
+	//---------------------------------------------------------------------------
+	// owner.adjustCanvas()    盤面サイズの再設定等を行い、盤面の再描画を行う
+	// owner.adjustCanvasPos() ページサイズの変更時等に盤面の左上座標のみを変更し、再描画は行わない
+	//---------------------------------------------------------------------------
+	adjustCanvas : function(){
 		if(!this.getConfig('fixsize')){
 			this.painter.resizeCanvasByCellSize();
 		}
@@ -121,8 +123,7 @@ pzpr.Puzzle.prototype =
 			this.painter.resizeCanvas();
 		}
 	},
-
-	resetPagePos : function(){
+	adjustCanvasPos : function(){
 		if(this.ready && this.painter){
 			this.painter.setPagePos();
 		}

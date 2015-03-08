@@ -168,7 +168,7 @@ ui.listener =
 		}
 		else if(idname==='language'){
 			ui.displayAll();
-			puzzle.adjustCanvasSize();
+			puzzle.adjustCanvasPos();
 		}
 		else if(idname==='uramashu'){
 			puzzle.board.revCircleMain();

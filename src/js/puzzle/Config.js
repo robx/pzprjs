@@ -161,7 +161,7 @@ Config.prototype =
 	configevent : function(name, newval){
 		var result = true, puzzle = this.owner;
 		switch(name){
-		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
+		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
 			puzzle.redraw();
 			break;
@@ -170,8 +170,8 @@ Config.prototype =
 			puzzle.checker.resetCache();
 			break;
 		
-		case 'disptype_bosanowa': case 'font':
-			puzzle.adjustCanvasSize();
+		case 'disptype_bosanowa':
+			puzzle.adjustCanvas();
 			break;
 		
 		case 'keytarget':
