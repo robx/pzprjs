@@ -76,7 +76,7 @@ ui.debug =
 		this.timeeval("描画時間測定", function(){ ui.puzzle.redraw();});
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定", function(){ ui.puzzle.adjustCanvas();});
+		this.timeeval("resize描画測定", function(){ ui.puzzle.redrawForce();});
 	},
 	timeeval : function(text,func){
 		this.addTA(text);

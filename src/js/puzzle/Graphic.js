@@ -237,6 +237,7 @@ Graphic:{
 	//                      (指定なしの場合は、前のキャンバスのサイズを用いる)
 	// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 	//                             (指定なしの場合は、前のセルのサイズを用いる)
+	// pc.adjustCanvas()    キャンバスのサイズを再設定する
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
@@ -245,13 +246,8 @@ Graphic:{
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
 		
-		if(!!this.context){
-			this.resize_canvas_main();
-			if(!insuspend){ this.unsuspend();}
-		}
-		else{
-			this.pendingResize = true;
-		}
+		this.pendingResize = true;
+		if(!insuspend){ this.unsuspend();}
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
@@ -262,13 +258,11 @@ Graphic:{
 		this.canvasWidth  = this.cw*this.getCanvasCols();
 		this.canvasHeight = this.ch*this.getCanvasRows();
 		
-		if(!!this.context){
-			this.resize_canvas_main();
-			if(!insuspend){ this.unsuspend();}
-		}
-		else{
-			this.pendingResize = true;
-		}
+		this.pendingResize = true;
+		if(!insuspend){ this.unsuspend();}
+	},
+	adjustCanvas : function(){
+		this.resizeCanvas();
 	},
 
 	//---------------------------------------------------------------------------

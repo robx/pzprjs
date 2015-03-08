@@ -116,12 +116,7 @@ pzpr.Puzzle.prototype =
 	// owner.adjustCanvasPos() ページサイズの変更時等に盤面の左上座標のみを変更し、再描画は行わない
 	//---------------------------------------------------------------------------
 	adjustCanvas : function(){
-		if(!this.getConfig('fixsize')){
-			this.painter.resizeCanvasByCellSize();
-		}
-		else{
-			this.painter.resizeCanvas();
-		}
+		this.painter.adjustCanvas();
 	},
 	adjustCanvasPos : function(){
 		if(this.ready && this.painter){
@@ -130,11 +125,15 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.redraw()   盤面の再描画を行う
-	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
+	// owner.redraw()      盤面の再描画を行う
+	// owner.redrawForce() 盤面キャッシュを破棄して再描画を行う
+	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(){
 		if(this.ready){ this.painter.paintAll();}
+	},
+	redrawForce : function(){
+		if(this.ready){ this.painter.adjustCanvas();}
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
