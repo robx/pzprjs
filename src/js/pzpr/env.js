@@ -47,6 +47,7 @@ pzpr.env = (function(){
 	var android = (UA.indexOf('Android') > -1);
 	var os = {
 		iOS    : (ios),
+		Android: (android),
 		mobile : (ios || android)
 	};
 	
