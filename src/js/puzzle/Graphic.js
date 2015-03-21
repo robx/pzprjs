@@ -393,7 +393,7 @@ Graphic:{
 			var rect = pzpr.util.getRect(this.context.canvas);
 			this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
 		}
-		else if(this.pendingResize){
+		if(this.pendingResize){
 			this.pendingResize = false;
 			this.resize_canvas_main();
 		}
