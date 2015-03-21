@@ -270,26 +270,35 @@
 		position : relative;
 		top      : 0px;
 		left     : 0px;
-		height   : 1.2em;
+		height   : 1.5em;
 		margin   : 0;
-		padding  : 2pt 4px 2pt 4px;
+		padding  : 0 0 0 2pt;
 		background : #efefef;
 		font-size : 0.95em;
+		border-bottom: silver 1px solid;
+		
+		user-select         : none;
+		-ms-user-select     : none;
+		-moz-user-select    : none;
+		-webkit-user-select : none;
 	}
 
 	/* main-menu items */
 	#menupanel > li {
 		position   : relative;
 		float      : left;
+		margin     : 0;
+		padding    : 0pt 4pt;
 		height     : 100%;
 		list-style : none;
 		cursor     : pointer;
-		margin-right:4px;
-		text-decoration: underline;
+	}
+	#menupanel > li:hover {
+		background : #ffcccc;
 	}
 	#menupanel > li > span {
 		color       : blue;
-		line-height : 110%;
+		line-height : 1.5;
 		font-size   : 110%;
 		vertical-align : middle;
 	}
@@ -343,7 +352,7 @@
 
 	/* level1, level2+ submenus */
 	#menupanel menu
-		{ left:0px;   top:1.2em;  min-width:132px; z-index:22;}
+		{ left:0px;   top:1.5em;  min-width:132px; z-index:22;}
 	#menupanel menu menu[label]
 		{ left:120px; top:-1.5em; min-width:80px;  z-index:23;}
 	#menupanel menu menu
@@ -370,6 +379,8 @@
 	#menupanel menu li:hover > span {
 		font-weight : 900;
 		text-decoration : underline;
+	}
+	#menupanel menu li + li {
 	}
 	#menupanel menu hr {
 		margin  : 0px;
@@ -411,9 +422,9 @@
 
 	#menupanel menu li.check > span:before,
 	#menupanel menu li[data-value] > span:before
-		{ padding:0pt 2pt 0pt 2pt; color:white; content:"_"; font-size:small;}
+		{ padding:0pt 2pt; color:white; content:"_"; font-size:small;}
 	#menupanel menu li.checked > span:before
-		{ padding:0pt 2pt 0pt 2pt; color:black; content:"+"; font-size:small;}
+		{ padding:0pt 2pt; color:black; content:"+"; font-size:small;}
 
 	#menu_link li
 		{ font-size: 0.9em;}

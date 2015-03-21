@@ -21,6 +21,7 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	createMenu : function(){
 		if(this.menuitem===null){
+			this.modifyDesign();
 			this.modifySelector();
 			
 			this.menuitem = {};
@@ -117,6 +118,7 @@ ui.menuarea = {
 
 	//--------------------------------------------------------------------------------
 	// menuarea.modifySelector()  MenuAreaに関するCSSセレクタテキストを変更する (Android向け)
+	// menuarea.modifyDesign()    タッチ対応UI向けにCSSのデザインを修正する
 	//--------------------------------------------------------------------------------
 	modifySelector : function(){
 		/* Android 4.0以上向け処理です */
@@ -134,6 +136,19 @@ ui.menuarea = {
 			}
 		}
 		this.nohover = true;
+	},
+	modifyDesign : function(){
+		/* タッチUI向けの修正です */
+		if(!pzpr.env.OS.mobile){ return;}
+		/* タッチしやすいようにCSSを変更 */
+		ui.misc.modifyCSS({
+			"#menupanel"              : { height:"1.8em"},
+			"#menupanel > li > span"  : { lineHeight:"1.8"},
+			"#menupanel menu"         : { top:"2.0em"},
+			"#menupanel menu li"      : { lineHeight:"1.8"},
+			"#menupanel menu li + li" : { marginTop:"1px"},
+			"#menupanel menu hr"      : { height:"4px"}
+		});
 	},
 	
 	//--------------------------------------------------------------------------------
@@ -191,7 +206,7 @@ ui.menuarea = {
 			var str;
 			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
 			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
-			getEL('menu_toolarea').	childNodes[0].data = str;
+			getEL('menu_toolarea').childNodes[0].data = str;
 		}
 		else if(this.menuitem===null || !this.menuitem[idname]){
 			/* DO NOTHING */
