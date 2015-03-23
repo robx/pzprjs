@@ -129,7 +129,7 @@
 
 	/* OK/Cancel表示用 */
 	div#notifies {
-		position : fixed;
+		position : absolute;
 		width : 100%;
 		top : 0;
 	}
