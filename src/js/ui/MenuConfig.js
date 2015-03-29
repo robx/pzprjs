@@ -73,8 +73,6 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	configevent : function(idname, newval){
 		ui.setdisplay(idname);
-		if(idname==='cellsizeval'){ ui.setdisplay("cellsize");}
-		
 		switch(idname){
 		case 'keypopup':
 			ui.keypopup.display();
