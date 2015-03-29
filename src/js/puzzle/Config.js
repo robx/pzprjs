@@ -198,8 +198,13 @@ Config.prototype =
 				puzzle.cursor.adjust_modechange();
 				puzzle.key.keyreset();
 				puzzle.mouse.mousereset();
+				if(puzzle.board.haserror){
+					puzzle.board.errclear();
+				}
+				else{
+					puzzle.redraw();
+				}
 			}
-			puzzle.redraw();
 			break;
 		
 		case 'uramashu':

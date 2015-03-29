@@ -130,10 +130,7 @@ pzpr.Puzzle.prototype =
 	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(){
-		if(this.ready){
-			if(this.board.haserror){ this.board.errclear();}
-			else                   { this.painter.paintAll();}
-		}
+		if(this.ready){ this.painter.paintAll();}
 	},
 	redrawForce : function(){
 		if(this.ready){ this.painter.adjustCanvas();}
