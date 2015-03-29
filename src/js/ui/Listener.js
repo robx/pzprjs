@@ -56,7 +56,7 @@ ui.listener =
 		
 		ui.currentpid = pid;
 		
-		ui.event.adjustcellsize();
+		ui.adjustcellsize();
 		ui.keypopup.display();
 		
 		ui.timer.reset();					/* タイマーリセット(最後) */

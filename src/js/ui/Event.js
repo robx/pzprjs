@@ -1,5 +1,5 @@
 // Event.js v3.4.0
-/* global ui:false, _doc:false, getEL:false */
+/* global ui:false, _doc:false */
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
@@ -30,12 +30,6 @@ ui.event =
 			else    { e.el.detachEvent('on'+e.event, e.func);}
 		}
 		this.evlist=[];
-	},
-
-	//---------------------------------------------------------------------------
-	// event.setUIEvents()  ぱずぷれv3で使用するイベントを設定する
-	//---------------------------------------------------------------------------
-	setUIEvents : function(){
 	},
 
 	//---------------------------------------------------------------------------
@@ -90,7 +84,7 @@ ui.event =
 	//---------------------------------------------------------------------------
 	onresize_func : function(){
 		if(this.resizetimer){ clearTimeout(this.resizetimer);}
-		this.resizetimer = setTimeout(function(){ ui.event.adjustcellsize();},250);
+		this.resizetimer = setTimeout(function(){ ui.adjustcellsize();},250);
 	},
 	onblur_func : function(){
 		ui.puzzle.key.keyreset();
@@ -102,50 +96,5 @@ ui.event =
 		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
 		e.returnValue = msg;
 		return msg;
-	},
-
-	//---------------------------------------------------------------------------
-	// event.adjustcellsize()  resizeイベント時に、pc.cw, pc.chのサイズを(自動)調節する
-	//---------------------------------------------------------------------------
-	adjustcellsize : function(){
-		var puzzle = ui.puzzle, bd = puzzle.board, pc = puzzle.painter;
-		var cols = pc.getCanvasCols();
-		var wwidth = ui.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
-		var uiconf = ui.menuconfig;
-
-		var cellsize, cellsizeval = uiconf.get('cellsizeval');
-		var cr = {base:1.0,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
-		ci[0] = (wwidth*ws.base )/(cellsizeval*cr.base );
-		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
-
-		// 横幅いっぱいに広げたい場合
-		if(uiconf.get('fullwidth')){
-			mwidth = wwidth*0.98;
-			cellsize = (mwidth*0.92)/cols;
-		}
-		// 縮小が必要ない場合
-		else if(!uiconf.get('adjsize') || cols < ci[0]){
-			mwidth = wwidth*ws.base-4;
-			cellsize = cellsizeval*cr.base;
-		}
-		// base～limit間でサイズを自動調節する場合
-		else if(cols < ci[1]){
-			var ws_tmp = ws.base+(ws.limit-ws.base)*((bd.qcols-ci[0])/(ci[1]-ci[0]));
-			mwidth = wwidth*ws_tmp-4;
-			cellsize = mwidth/cols; // 外枠ぎりぎりにする
-		}
-		// 自動調整の下限値を超える場合
-		else{
-			mwidth = wwidth*ws.limit-4;
-			cellsize = cellsizeval*cr.limit;
-		}
-
-		// mainのサイズ変更
-		if(!pc.outputImage){
-			getEL('main').style.width = ''+(mwidth|0)+'px';
-			if(uiconf.get('fullwidth')){ getEL('menuboard').style.width = '90%';}
-		}
-
-		puzzle.setCanvasSizeByCellSize(cellsize);
 	}
 };

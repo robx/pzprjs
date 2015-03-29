@@ -79,7 +79,7 @@ ui.menuconfig = {
 			break;
 			
 		case 'adjsize': case 'cellsizeval': case 'fullwidth':
-			ui.event.adjustcellsize();
+			ui.adjustcellsize();
 			break;
 		}
 	}

@@ -673,10 +673,7 @@ ui.popupmgr.addpopup('dispsize',
 	//------------------------------------------------------------------------------
 	changesize : function(e){
 		var csize = parseInt(this.form.cellsize.value);
-		if(csize>0){
-			ui.menuconfig.set('cellsizeval', (csize|0));
-			ui.event.adjustcellsize();
-		}
+		if(csize>0){ ui.menuconfig.set('cellsizeval', (csize|0));}
 		this.close();
 	}
 });
