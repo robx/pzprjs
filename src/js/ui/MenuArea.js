@@ -197,7 +197,7 @@ ui.menuarea = {
 		else if(this.menuitem===null || !this.menuitem[idname]){
 			/* DO NOTHING */
 		}
-		else if(ui.validConfig(idname)){
+		else if(ui.validConfig(idname) || idname==="cellsize"){
 			var menuitem = this.menuitem[idname];
 			menuitem.el.style.display = "";
 			
@@ -205,7 +205,9 @@ ui.menuarea = {
 			if(!!menuitem.children){
 				var children = menuitem.children;
 				for(var i=0;i<children.length;i++){
-					var child = children[i], selected = (ui.customAttr(child,"value")===""+ui.getConfig(idname));
+					var child = children[i], val = ui.customAttr(child,"value");
+					var trueval = (idname!=="cellsize" ? val : ""+{0:19, 1:27, 2:36, 3:54, 4:108}[val]);
+					var selected = (trueval===""+ui.getConfig(idname!=="cellsize" ? idname : "cellsizeval"));
 					child.className = (selected ? "checked" : "");
 				}
 			}
@@ -235,7 +237,12 @@ ui.menuarea = {
 		if(el.nodeName==="SPAN"){ el = el.parentNode;}
 		
 		var parent = el.parentNode.parentNode;
-		ui.setConfig(ui.customAttr(parent,"config"), ui.customAttr(el,"value"));
+		var idname = ui.customAttr(parent,"config"), val = ui.customAttr(el,"value");
+		if(idname==="cellsize"){
+			idname = "cellsizeval";
+			val = {0:19, 1:27, 2:36, 3:54, 4:108}[val];
+		}
+		ui.setConfig(idname, val);
 	},
 
 	//---------------------------------------------------------------------------

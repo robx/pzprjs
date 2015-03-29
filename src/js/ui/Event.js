@@ -113,9 +113,8 @@ ui.event =
 		var wwidth = ui.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
 		var uiconf = ui.menuconfig;
 
-		var cellsizeval = uiconf.get('cellsizeval'), cellsize = 36;
-		var cratio = {0:(19/36), 1:0.75, 2:1.0, 3:1.5, 4:3.0}[uiconf.get('cellsize')];
-		var cr = {base:cratio,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
+		var cellsize, cellsizeval = uiconf.get('cellsizeval');
+		var cr = {base:1.0,limit:0.40}, ws = {base:0.80,limit:0.96}, ci=[];
 		ci[0] = (wwidth*ws.base )/(cellsizeval*cr.base );
 		ci[1] = (wwidth*ws.limit)/(cellsizeval*cr.limit);
 

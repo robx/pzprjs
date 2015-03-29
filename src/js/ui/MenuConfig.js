@@ -25,7 +25,6 @@ ui.menuconfig = {
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
 		
 		this.add('adjsize', true);							/* 自動横幅調節 */
-		this.add('cellsize', 2, [0,1,2,3,4]);				/* 表示サイズ */
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
 		
@@ -76,12 +75,14 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	configevent : function(idname, newval){
 		ui.setdisplay(idname);
+		if(idname==='cellsizeval'){ ui.setdisplay("cellsize");}
+		
 		switch(idname){
 		case 'keypopup':
 			ui.keypopup.display();
 			break;
 			
-		case 'adjsize': case 'cellsize': case 'fullwidth':
+		case 'adjsize': case 'cellsizeval': case 'fullwidth':
 			ui.event.adjustcellsize();
 			break;
 		}

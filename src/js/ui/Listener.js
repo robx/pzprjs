@@ -169,6 +169,9 @@ ui.listener =
 			ui.displayAll();
 			puzzle.adjustCanvasPos();
 		}
+		else if(idname==='cellsizeval'){
+			ui.setdisplay("cellsize");
+		}
 		else if(idname==='uramashu'){
 			puzzle.board.revCircleMain();
 			puzzle.redraw();
