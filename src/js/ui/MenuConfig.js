@@ -39,7 +39,7 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	set : function(idname, newval){
 		if(!this.list[idname]){ return;}
-		this.setproper(idname, newval);
+		newval = this.setproper(idname, newval);
 		this.configevent(idname,newval);
 	},
 	get : Config.get,

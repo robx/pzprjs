@@ -84,7 +84,7 @@ Config.prototype =
 	},
 	set : function(name, newval){
 		if(!this.list[name]){ return;}
-		this.setproper(name, newval);
+		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.owner.execListener('config', name, newval);
 	},
@@ -120,6 +120,7 @@ Config.prototype =
 			case "number":  item.val = +newval;   break;
 			case "string":  item.val = ""+newval; break;
 		}
+		return item.val;
 	},
 	gettype : function(name){
 		return (typeof this.list[name].defval);
@@ -159,7 +160,7 @@ Config.prototype =
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		var result = true, puzzle = this.owner;
+		var puzzle = this.owner;
 		switch(name){
 		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
@@ -175,18 +176,13 @@ Config.prototype =
 			break;
 		
 		case 'keytarget':
-			this.owner.key.setfocus();
+			puzzle.key.setfocus();
 			break;
 		
 		case 'color_qanscolor':
 			puzzle.painter.setColor('qanscolor', newval);
 			break;
-		
-		default:
-			result = false;
-			break;
 		}
-		return result;
 	}
 };
 
