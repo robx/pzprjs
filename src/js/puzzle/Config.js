@@ -117,7 +117,6 @@ Config.prototype =
 
 	//---------------------------------------------------------------------------
 	// config.setproper()    設定値の型を正しいものに変換して設定変更する
-	// config.gettype()      設定値の持つ型を返す
 	//---------------------------------------------------------------------------
 	setproper : function(name, newval){
 		var item = this.list[name];
@@ -127,9 +126,6 @@ Config.prototype =
 			case "string":  item.val = ""+newval; break;
 		}
 		return item.val;
-	},
-	gettype : function(name){
-		return (typeof this.list[name].defval);
 	},
 
 	//---------------------------------------------------------------------------

@@ -60,11 +60,9 @@ ui.menuconfig = {
 
 	//---------------------------------------------------------------------------
 	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
-	// menuconfig.gettype()      設定値の持つ型を返す
 	// menuconfig.valid()        設定値が有効なパズルかどうかを返す
 	//---------------------------------------------------------------------------
 	setproper : Config.setproper,
-	gettype : Config.gettype,
 	valid : function(idname){
 		if(idname==="keypopup"){ return (ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0);}
 		return !!this.list[idname];

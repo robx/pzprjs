@@ -91,7 +91,6 @@ window.ui = {
 	// ui.setConfig()   値設定の共通処理
 	// ui.getConfig()   値設定の共通処理
 	// ui.validConfig() 設定が有効なパズルかどうかを返す共通処理
-	// ui.getConfigType() 設定値の型を返す共通処理
 	//---------------------------------------------------------------------------
 	setConfig : function(idname, newval){
 		if(!!ui.puzzle.config.list[idname]){
@@ -115,14 +114,6 @@ window.ui = {
 		}
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.valid(idname);
-		}
-	},
-	getConfigType : function(idname){
-		if(!!ui.puzzle.config.list[idname]){
-			return ui.puzzle.config.gettype(idname);
-		}
-		else if(!!ui.menuconfig.list[idname]){
-			return ui.menuconfig.gettype(idname);
 		}
 	},
 
