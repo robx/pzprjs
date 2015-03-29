@@ -172,7 +172,7 @@ Config.prototype =
 			break;
 		
 		case 'disptype_bosanowa':
-			puzzle.adjustCanvas();
+			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
 			break;
 		
 		case 'keytarget':
