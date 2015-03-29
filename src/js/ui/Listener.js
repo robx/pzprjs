@@ -20,7 +20,6 @@ ui.listener =
 		puzzle.addListener('history',  this.onHistoryChange);
 		
 		puzzle.addListener('config',     this.onConfigSet);
-		puzzle.addListener('modechange', this.onModeChange);
 		
 		puzzle.addListener('resize',     this.onResize);
 	},
@@ -98,8 +97,8 @@ ui.listener =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(pzpr.EDITOR){
-				if     (puzzle.editmode && c==='F2'      ){ puzzle.modechange(puzzle.MODE_PLAYER); result = false;}
-				else if(puzzle.playmode && c==='shift+F2'){ puzzle.modechange(puzzle.MODE_EDITOR); result = false;}
+				if     (puzzle.editmode && c==='F2'      ){ puzzle.setConfig("mode", puzzle.MODE_PLAYER); result = false;}
+				else if(puzzle.playmode && c==='shift+F2'){ puzzle.setConfig("mode", puzzle.MODE_EDITOR); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -155,7 +154,6 @@ ui.listener =
 
 	//---------------------------------------------------------------------------
 	// listener.onConfigSet()  config設定時に呼び出される関数
-	// listener.onModeChange() 回答入力/問題入力切り替え時に呼び出される関数
 	//---------------------------------------------------------------------------
 	onConfigSet : function(puzzle, idname, newval){
 		ui.setdisplay(idname);
@@ -169,16 +167,6 @@ ui.listener =
 			ui.displayAll();
 			puzzle.adjustCanvasPos();
 		}
-		else if(idname==='cellsizeval'){
-			ui.setdisplay("cellsize");
-		}
-		else if(idname==='uramashu'){
-			puzzle.board.revCircleMain();
-			puzzle.redraw();
-		}
-	},
-	onModeChange : function(puzzle){
-		ui.listener.onConfigSet(puzzle, 'mode');
 	},
 
 	//---------------------------------------------------------------------------

@@ -130,7 +130,10 @@ pzpr.Puzzle.prototype =
 	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(){
-		if(this.ready){ this.painter.paintAll();}
+		if(this.ready){
+			if(this.board.haserror){ this.board.errclear();}
+			else                   { this.painter.paintAll();}
+		}
 	},
 	redrawForce : function(){
 		if(this.ready){ this.painter.adjustCanvas();}
@@ -248,20 +251,7 @@ pzpr.Puzzle.prototype =
 	modechange : function(num){
 		if(pzpr.PLAYER){ return;}
 		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
-		this.editmode = (num===this.MODE_EDITOR);
-		this.playmode = (num===this.MODE_PLAYER);
-		this.execListener('modechange');
-		if(!this.ready){ return;}
-
-		this.cursor.adjust_modechange();
-		this.key.keyreset();
-
-		if(this.board.haserror){
-			this.board.errclear();
-		}
-		else{
-			this.redraw();
-		}
+		this.setConfig('mode', num);
 	},
 
 	//------------------------------------------------------------------------------

@@ -68,6 +68,10 @@ Config.prototype =
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
+
+		/* その他の特殊項目(保存なし) */
+		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
+		this.add('uramashu', false);		/* 裏ましゅにする */
 	},
 	add : function(name, defvalue, option){
 		var item = {val:defvalue, defval:defvalue};
@@ -83,7 +87,7 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(!this.list[name]){ return;}
+		if(!this.list[name] || (name==="mode" && pzpr.PLAYER)){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.owner.execListener('config', name, newval);
@@ -99,6 +103,8 @@ Config.prototype =
 			var item = this.list[key];
 			if(item.val!==item.defval){ object[key] = item.val;}
 		}
+		delete object.mode;
+		delete object.uramashu;
 		return JSON.stringify(object);
 	},
 	setAll : function(json){
@@ -151,6 +157,8 @@ Config.prototype =
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;
+			case 'mode':     exec = pzpr.EDITOR; break;
+			case 'uramashu': exec = (pid==="mashu"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;
@@ -181,6 +189,23 @@ Config.prototype =
 		
 		case 'color_qanscolor':
 			puzzle.painter.setColor('qanscolor', newval);
+			break;
+		
+		case "mode":
+			puzzle.editmode = (newval===puzzle.MODE_EDITOR);
+			puzzle.playmode = (newval===puzzle.MODE_PLAYER);
+			if(puzzle.ready){
+				puzzle.cursor.adjust_modechange();
+				puzzle.key.keyreset();
+				puzzle.mouse.mousereset();
+			}
+			puzzle.redraw();
+			break;
+		
+		case 'uramashu':
+			puzzle.board.uramashu = newval;
+			puzzle.board.revCircleMain();
+			puzzle.redraw();
 			break;
 		}
 	}

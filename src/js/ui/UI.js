@@ -100,13 +100,6 @@ window.ui = {
 		else if(!!ui.menuconfig.list[idname]){
 			ui.menuconfig.set(idname, newval);
 		}
-		else if(idname==='uramashu'){
-			ui.puzzle.board.uramashu = newval;
-			ui.listener.onConfigSet(ui.puzzle, idname, newval);
-		}
-		else if(idname==='mode'){
-			ui.puzzle.modechange(+newval);
-		}
 	},
 	getConfig : function(idname){
 		if(!!ui.puzzle.config.list[idname]){
@@ -114,12 +107,6 @@ window.ui = {
 		}
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.get(idname);
-		}
-		else if(idname==='uramashu'){
-			return ui.puzzle.board.uramashu;
-		}
-		else if(idname==='mode'){
-			return ui.puzzle.playmode ? 3 : 1;
 		}
 	},
 	validConfig : function(idname){
@@ -129,12 +116,6 @@ window.ui = {
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.valid(idname);
 		}
-		else if(idname==='uramashu'){
-			return ui.puzzle.pid==="mashu";
-		}
-		else if(idname==='mode'){
-			return pzpr.EDITOR;
-		}
 	},
 	getConfigType : function(idname){
 		if(!!ui.puzzle.config.list[idname]){
@@ -142,12 +123,6 @@ window.ui = {
 		}
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.gettype(idname);
-		}
-		else if(idname==='uramashu'){
-			return "boolean";
-		}
-		else if(idname==='mode'){
-			return "number";
 		}
 	},
 
