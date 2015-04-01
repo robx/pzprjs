@@ -436,6 +436,7 @@ Encode:{
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							   { cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca === 'h'){ cell.ques = 31;}
 			else if(ca >= 'i' && ca <= 'z'){ c += (parseInt(ca,36)-18);}
 
