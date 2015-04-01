@@ -467,7 +467,7 @@ AreaManager:{
 		this.owner.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.hastop){
-			this.area[newid].top = this.calcTopOfRoom(newid);
+			this.area[newid].top = this.area[newid].clist.getTopCell();
 		}
 	},
 
@@ -494,21 +494,8 @@ AreaManager:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// rooms.calcTopOfRoom()   部屋のTOPになりそうなセルのIDを返す
 	// rooms.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
 	//--------------------------------------------------------------------------------
-	calcTopOfRoom : function(areaid){
-		var bd=this.owner.board, cc=null, bx=bd.maxbx, by=bd.maxby;
-		var clist = this.area[areaid].clist;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
-			cc=clist[i].id;
-			bx=cell.bx;
-			by=cell.by;
-		}
-		return cc;
-	},
 	resetRoomNumber : function(){
 		for(var r=1;r<=this.max;r++){
 			var val = -1, clist = this.area[r].clist, top = this.getTopOfRoom(r);
@@ -516,7 +503,7 @@ AreaManager:{
 				var cell = clist[i];
 				if(this.id[cell.id]===r && cell.qnum!==-1){
 					if(val===-1){ val = cell.qnum;}
-					if(top!==cell.id){ cell.qnum = -1;}
+					if(top!==cell){ cell.qnum = -1;}
 				}
 			}
 			if(val!==-1 && top.qnum===-1){
@@ -536,8 +523,8 @@ AreaManager:{
 	getRoomID : function(cell){ return this.id[cell.id];},
 //	setRoomID : function(cell,val){ this.id[cell.id] = val;},
 
-	getTopOfRoomByCell : function(cell){ return this.owner.board.cell[this.area[this.id[cell.id]].top];},
-	getTopOfRoom       : function(id)  { return this.owner.board.cell[this.area[id].top];},
+	getTopOfRoomByCell : function(cell){ return this.area[this.id[cell.id]].top;},
+	getTopOfRoom       : function(id)  { return this.area[id].top;},
 
 	getCntOfRoomByCell : function(cell){ return this.area[this.id[cell.id]].clist.length;}
 //	getCntOfRoom       : function(id)  { return this.area[id].clist.length;},

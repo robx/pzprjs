@@ -27,8 +27,8 @@ Board:{
 			var clist = rinfo.area[r].clist.filter(function(cell){ return cell.isShade();});
 			var len = clist.length;
 			if(len===4){
-				var bx0=clist[0].bx, by0=clist[0].by, value=0;
-				for(var i=1;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
+				var cell0=clist.getTopCell(), bx0=cell0.bx, by0=cell0.by, value=0;
+				for(var i=0;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
 				switch(value){
 					case 13: case 15: case 27: case 31: case 33: case 49: case 51:
 						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="L";} break;
