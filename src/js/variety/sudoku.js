@@ -33,10 +33,12 @@ Board:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		var roomsize = (Math.sqrt(this.qcols)|0) * 2;
+		var roomsizex, roomsizey;
+		roomsizex = roomsizey = (Math.sqrt(this.qcols)|0) * 2;
+		if(this.qcols===6){ roomsizex = 6;}
 		for(var i=0;i<this.bdmax;i++){
 			var border = this.border[i];
-			if(border.bx%roomsize===0 || border.by%roomsize===0){ border.ques = 1;}
+			if(border.bx%roomsizex===0 || border.by%roomsizey===0){ border.ques = 1;}
 		}
 		this.resetInfo();
 	}

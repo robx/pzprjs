@@ -219,6 +219,7 @@ ui.popupmgr.addpopup('newboard',
 			if     (col===16){ getEL("nb_size_sudoku_2").checked = true;}
 			else if(col===25){ getEL("nb_size_sudoku_3").checked = true;}
 			else if(col=== 4){ getEL("nb_size_sudoku_0").checked = true;}
+			else if(col=== 6){ getEL("nb_size_sudoku_4").checked = true;}
 			else             { getEL("nb_size_sudoku_1").checked = true;}
 		}
 		
@@ -259,10 +260,11 @@ ui.popupmgr.addpopup('newboard',
 			row = (parseInt(NB.row.value))|0;
 		}
 		else{
-			if     (NB.size[2].checked){ col=row=16;}
-			else if(NB.size[3].checked){ col=row=25;}
-			else if(NB.size[0].checked){ col=row= 4;}
-			else                       { col=row= 9;}
+			if     (getEL("nb_size_sudoku_2").checked){ col=row=16;}
+			else if(getEL("nb_size_sudoku_3").checked){ col=row=25;}
+			else if(getEL("nb_size_sudoku_0").checked){ col=row= 4;}
+			else if(getEL("nb_size_sudoku_4").checked){ col=row= 6;}
+			else                                      { col=row= 9;}
 		}
 		if(!!col && !!row){ url = [col, row];}
 		
