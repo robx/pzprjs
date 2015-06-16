@@ -33,7 +33,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		var roomsize = (Math.sqrt(col)|0) * 2;
+		var roomsize = (Math.sqrt(this.qcols)|0) * 2;
 		for(var i=0;i<this.bdmax;i++){
 			var border = this.border[i];
 			if(border.bx%roomsize===0 || border.by%roomsize===0){ border.ques = 1;}
