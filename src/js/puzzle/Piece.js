@@ -88,6 +88,7 @@ pzpr.classmgr.makeCommon({
 	// addOpe()  履歴情報にプロパティの変更を通知する
 	//---------------------------------------------------------------------------
 	setdata : function(prop, num){
+		if(this[prop]===num){ return;}
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
 
 		this.addOpe(prop, this[prop], num);
