@@ -36,7 +36,7 @@ ui.debug.extend(
 		ui.puzzle.board.haserror = true;
 		ui.puzzle.board.errclear();
 		ui.puzzle.redraw();
-		this.addTextarea("\t\t["+failstr+",\""+outputstr+"\"],");
+		this.addTA("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 
 	urls : {},
@@ -111,7 +111,7 @@ ui.debug.extend(
 		}
 	},
 	inputcheck_popup : function(){
-		this.inputcheck(getEL('testarea').value);
+		this.inputcheck(this.getTA());
 	},
 	inputcheck : function(text){
 		ui.saveConfig();
@@ -153,7 +153,7 @@ ui.debug.extend(
 			ui.puzzle.open(newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
-				self.addTextarea("Test ("+pnum+", "+newid+") start.");
+				self.addTA("Test ("+pnum+", "+newid+") start.");
 				pnum++;
 				if(pnum >= term){ clearInterval(self.alltimer);}
 			});
@@ -182,8 +182,8 @@ ui.debug.extend(
 		var inp = pzl.outputURLType() + self.urls[self.pid];
 		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
 
-		if(inp!==ta){ self.addTextarea("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("Encode test   = pass");}
+		if(inp!==ta){ self.addTA("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
+		else if(!self.alltimer){ self.addTA("Encode test   = pass");}
 
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
@@ -194,16 +194,16 @@ ui.debug.extend(
 			var fails_org = self.fails;
 
 			if(pzpr.parser.parse(kanpen_url).id!==o.pid){
-				self.addTextarea("Encode kanpen = id fail..."); self.fails++;
+				self.addTA("Encode kanpen = id fail..."); self.fails++;
 			}
 			o.open(kanpen_url, function(){
 				ui.menuconfig.set('autocheck',false);
 				
 				if(!self.bd_compare(bd,bd2)){
-					self.addTextarea("Encode kanpen = failure..."); self.fails++;
+					self.addTA("Encode kanpen = failure..."); self.fails++;
 				}
 				
-				if(!self.alltimer && (fails_org===self.fails)){ self.addTextarea("Encode kanpen = pass");}
+				if(!self.alltimer && (fails_org===self.fails)){ self.addTA("Encode kanpen = pass");}
 				
 				setTimeout(function(){ self.check_answer(self);},0);
 			});
@@ -225,7 +225,7 @@ ui.debug.extend(
 			if(iserror){ self.fails++;}
 
 			if(iserror || !self.alltimer){
-				self.addTextarea("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
+				self.addTA("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
 		setTimeout(function(){ self.check_input(self);},0);
@@ -247,12 +247,12 @@ ui.debug.extend(
 				if(data.result!==void 0 && !!data.result){
 					var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
 					count++;
-					if(iserror){ self.fails++; self.addTextarea("Input Error No."+n);}
+					if(iserror){ self.fails++; self.addTA("Input Error No."+n);}
 					if(!iserror){ pass++;}
 				}
 			}
 			if(!self.alltimer || pass!==count){
-				self.addTextarea("Input test Pass = "+pass+"/"+count);
+				self.addTA("Input test Pass = "+pass+"/"+count);
 			}
 			self.execinput("playmode");
 			ui.restoreConfig();
@@ -272,8 +272,8 @@ ui.debug.extend(
 		bd.resetInfo();
 
 		o.open(outputstr, function(){
-			if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO test   = failure..."); self.fails++;}
-			else if(!self.alltimer){ self.addTextarea("FileIO test   = pass");}
+			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
 			setTimeout(function(){ self.check_file_pbox(self);},0);
 		});
@@ -290,8 +290,8 @@ ui.debug.extend(
 
 			o.open(outputstr, function(){
 				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-				if(!self.bd_compare(bd,bd2)){ self.addTextarea("FileIO kanpen = failure..."); self.fails++;}
-				else if(!self.alltimer){ self.addTextarea("FileIO kanpen = pass");}
+				if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
+				else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
 				self.qsubf = true;
 
 				setTimeout(function(){ self.check_turnR1(self);},0);
@@ -308,8 +308,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 1  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("TurnR test 1  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 1  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("TurnR test 1  = pass");}
 
 		setTimeout(function(){ self.check_turnR2(self);},0);
 	},
@@ -317,8 +317,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ ui.puzzle.undo();}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnR test 2  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("TurnR test 2  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 2  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("TurnR test 2  = pass");}
 
 		setTimeout(function(){ self.check_turnL1(self);},0);
 	},
@@ -327,8 +327,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnl');}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 1  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("TurnL test 1  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 1  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("TurnL test 1  = pass");}
 
 		setTimeout(function(){ self.check_turnL2(self);},0);
 	},
@@ -336,8 +336,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ ui.puzzle.undo();}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("TurnL test 2  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("TurnL test 2  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 2  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("TurnL test 2  = pass");}
 
 		setTimeout(function(){ self.check_flipX1(self);},0);
 	},
@@ -346,8 +346,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.exec.execadjust('flipx');}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 1  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("FlipX test 1  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 1  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("FlipX test 1  = pass");}
 
 		setTimeout(function(){ self.check_flipX2(self);},0);
 	},
@@ -355,8 +355,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ ui.puzzle.undo();}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipX test 2  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("FlipX test 2  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 2  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("FlipX test 2  = pass");}
 
 		setTimeout(function(){ self.check_flipY1(self);},0);
 	},
@@ -365,8 +365,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.exec.execadjust('flipy');}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 1  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("FlipY test 1  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 1  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("FlipY test 1  = pass");}
 
 		setTimeout(function(){ self.check_flipY2(self);},0);
 	},
@@ -374,8 +374,8 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ ui.puzzle.undo();}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("FlipY test 2  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("FlipY test 2  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 2  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("FlipY test 2  = pass");}
 
 		setTimeout(function(){ self.check_adjust1(self);},0);
 	},
@@ -385,8 +385,8 @@ ui.debug.extend(
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
 		for(var i=0;i<8;i++){ bd.exec.execadjust(names[i]);}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 1  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("Adjust test 1  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 1  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("Adjust test 1  = pass");}
 
 		setTimeout(function(){ self.check_adjust2(self);},0);
 	},
@@ -394,24 +394,15 @@ ui.debug.extend(
 		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<8;i++){ ui.puzzle.undo();}
 
-		if(!self.bd_compare(bd,bd2)){ self.addTextarea("Adjust test 2  = failure..."); self.fails++;}
-		else if(!self.alltimer){ self.addTextarea("Adjust test 2  = pass");}
+		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 2  = failure..."); self.fails++;}
+		else if(!self.alltimer){ self.addTA("Adjust test 2  = pass");}
 
 		setTimeout(function(){ self.check_end(self);},0);
 	},
 	//test end--------------------------------------------------------------
 	check_end : function(self){
-		if(!self.alltimer){ self.addTextarea("Test end.");}
+		if(!self.alltimer){ self.addTA("Test end.");}
 		self.phase = 99;
-	},
-
-	taenable : true,
-	addTextarea : function(str){
-		if(!pzpr.env.browser.Gecko){ getEL('testarea').value += (str+"\n");}
-		else{
-			getEL('testdiv').appendChild(_doc.createTextNode(str));
-			getEL('testdiv').appendChild(_doc.createElement('br'));
-		}
 	},
 
 	qsubf : true,
@@ -453,16 +444,15 @@ ui.debug.extend(
 		return bd2;
 	},
 	bd_compare : function(bd1,bd2){
-//		this.taenable = false;
 		var result = true;
 		for(var c=0,len=Math.min(bd1.cell.length,bd2.cell.length);c<len;c++){
-			if(bd1.cell[c].ques!==bd2.cell[c].ques){ result = false; this.addTextarea("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
-			if(bd1.cell[c].qnum!==bd2.cell[c].qnum){ result = false; this.addTextarea("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
-			if(bd1.cell[c].qdir!==bd2.cell[c].qdir){ result = false; this.addTextarea("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
-			if(bd1.cell[c].anum!==bd2.cell[c].anum){ result = false; this.addTextarea("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
-			if(bd1.cell[c].qans!==bd2.cell[c].qans){ result = false; this.addTextarea("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
+			if(bd1.cell[c].ques!==bd2.cell[c].ques){ result = false; this.addTA("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
+			if(bd1.cell[c].qnum!==bd2.cell[c].qnum){ result = false; this.addTA("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
+			if(bd1.cell[c].qdir!==bd2.cell[c].qdir){ result = false; this.addTA("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
+			if(bd1.cell[c].anum!==bd2.cell[c].anum){ result = false; this.addTA("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
+			if(bd1.cell[c].qans!==bd2.cell[c].qans){ result = false; this.addTA("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
 			if(bd1.cell[c].qsub!==bd2.cell[c].qsub){
-				if(this.qsubf){ result = false; this.addTextarea("cell qsub "+c+" "+bd1.cell[c].qsub+" &lt;- "+bd2.cell[c].qsub);}
+				if(this.qsubf){ result = false; this.addTA("cell qsub "+c+" "+bd1.cell[c].qsub+" &lt;- "+bd2.cell[c].qsub);}
 				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
 			}
 		}
@@ -480,17 +470,16 @@ ui.debug.extend(
 		}
 		if(!!bd1.isborder){
 			for(var i=0;i<bd1.border.length;i++){
-				if(bd1.border[i].ques!==bd2.border[i].ques){ result = false; this.addTextarea("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
-				if(bd1.border[i].qnum!==bd2.border[i].qnum){ result = false; this.addTextarea("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
-				if(bd1.border[i].qans!==bd2.border[i].qans){ result = false; this.addTextarea("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
-				if(bd1.border[i].line!==bd2.border[i].line){ result = false; this.addTextarea("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
+				if(bd1.border[i].ques!==bd2.border[i].ques){ result = false; this.addTA("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
+				if(bd1.border[i].qnum!==bd2.border[i].qnum){ result = false; this.addTA("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
+				if(bd1.border[i].qans!==bd2.border[i].qans){ result = false; this.addTA("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
+				if(bd1.border[i].line!==bd2.border[i].line){ result = false; this.addTA("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
 				if(bd1.border[i].qsub!==bd2.border[i].qsub){
-					if(this.qsubf){ result = false; this.addTextarea("border qsub "+i+" "+bd1.border[i].qsub+" &lt;- "+bd2.border[i].qsub);}
+					if(this.qsubf){ result = false; this.addTA("border qsub "+i+" "+bd1.border[i].qsub+" &lt;- "+bd2.border[i].qsub);}
 					else{ bd1.border[i].qsub = bd2.border[i].qsub;}
 				}
 			}
 		}
-//		this.taenable = true;
 		return result;
 	}
 });
