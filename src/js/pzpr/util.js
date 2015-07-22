@@ -161,7 +161,7 @@ pzpr.util = {
 		var top    = rect.top    + scrollTop;
 		var right  = rect.right  + scrollLeft;
 		var bottom = rect.bottom + scrollTop;
-		return { top:top, bottom:bottom, left:left, right:right};
+		return { top:top, bottom:bottom, left:left, right:right, height:(bottom-top), width:(right-left)};
 	},
 
 	//---------------------------------------------------------------------------

@@ -90,7 +90,8 @@
 
 	/* 管理領域 */
 	div#menuboard{
-		width : 380pt;
+		width     : 90%;
+		max-width : 560px;
 		margin        : auto;
 		margin-bottom : 8pt;
 		border : 1px red solid;

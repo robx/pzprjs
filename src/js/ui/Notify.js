@@ -59,8 +59,8 @@ ui.notify =
 		
 		/* innerHeightがIE8以下にないので、代わりに背景要素の高さ(height=100%), 幅を取得します */
 		var rect = pzpr.util.getRect(el), rectbg = pzpr.util.getRect(elbg);
-		el.style.top  = (((rectbg.bottom - rectbg.top) - (rect.bottom - rect.top)) / 2) + "px";
-		el.style.left = (((rectbg.right - rectbg.left) - (rect.right - rect.left)) / 2) + "px";
+		el.style.top  = ((rectbg.height - rect.height) / 2) + "px";
+		el.style.left = ((rectbg.width -  rect.width ) / 2) + "px";
 	},
 
 	//---------------------------------------------------------------------------

@@ -391,7 +391,7 @@ Graphic:{
 		
 		if(this.canvasWidth===null || this.canvasHeight===null){
 			var rect = pzpr.util.getRect(this.context.canvas);
-			this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
+			this.resizeCanvas(rect.width, rect.height);
 		}
 		if(this.pendingResize){
 			this.pendingResize = false;
