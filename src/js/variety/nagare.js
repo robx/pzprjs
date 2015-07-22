@@ -125,9 +125,6 @@ Border:{
 Board:{
 	hasborder : 1,
 
-	qcols : 8,
-	qrows : 8,
-
 	generateWind : function(){
 		for(var i=0;i<this.cellmax;i++){ this.cell[i].wind = 0;}
 		for(var i=0;i<this.bdmax;i++){ this.border[i].wind = 0;}
