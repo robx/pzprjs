@@ -21,6 +21,7 @@ ui.listener =
 		
 		puzzle.addListener('config',     this.onConfigSet);
 		
+		puzzle.addListener('adjust',     this.onAdjust);
 		puzzle.addListener('resize',     this.onResize);
 	},
 
@@ -167,6 +168,13 @@ ui.listener =
 			ui.displayAll();
 			puzzle.adjustCanvasPos();
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// listener.onAdjust()  盤面の大きさが変わったときの処理を呼び出す
+	//---------------------------------------------------------------------------
+	onAdjust : function(puzzle){
+		ui.adjustcellsize();
 	},
 
 	//---------------------------------------------------------------------------

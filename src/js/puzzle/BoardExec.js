@@ -103,6 +103,7 @@ BoardExec:{
 
 		// Canvasを更新する
 		o.adjustCanvas();
+		o.execListener('adjust');
 		o.painter.unsuspend();
 	},
 

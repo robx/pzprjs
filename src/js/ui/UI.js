@@ -117,8 +117,8 @@ window.ui = {
 		}
 		// 自動調整の下限値を超える場合
 		else{
-			mwidth = wwidth*ws.limit-4;
 			cellsize = cellsizeval*cr.limit;
+			mwidth = cellsize*cols;
 		}
 
 		// mainのサイズ変更
