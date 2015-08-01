@@ -1,9 +1,6 @@
-// for_test.js v3.4.0
+// for_test.js v3.5.0
 /* jshint evil:true, es3:false */
 (function(){
-
-var _doc = document;
-function getEL(id){ return _doc.getElementById(id);}
 
 /* Debug用オブジェクトに関数などを追加する */
 ui.debug.extend(
