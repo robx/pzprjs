@@ -24,7 +24,7 @@ ui.ProblemData.prototype =
 		this.pid = puzzle.pid;
 		this.col = puzzle.board.qcols;
 		this.row = puzzle.board.qrows;
-		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
 	},
 	getFileData : function(){
