@@ -92,8 +92,6 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.setCanvasSize()           盤面のサイズを設定する
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
-	// owner.adjustCanvasSize()        サイズの再設定を含めて盤面の再描画を行う
-	// owner.resetPagePos()            ページサイズの変更時等に、Canvasの左上座標を変更する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
 		if(this.painter){
@@ -113,27 +111,29 @@ pzpr.Puzzle.prototype =
 		}
 	},
 
-	adjustCanvasSize : function(){
-		if(!this.getConfig('fixsize')){
-			this.painter.resizeCanvasByCellSize();
-		}
-		else{
-			this.painter.resizeCanvas();
-		}
+	//---------------------------------------------------------------------------
+	// owner.adjustCanvas()    盤面サイズの再設定等を行い、盤面の再描画を行う
+	// owner.adjustCanvasPos() ページサイズの変更時等に盤面の左上座標のみを変更し、再描画は行わない
+	//---------------------------------------------------------------------------
+	adjustCanvas : function(){
+		this.painter.adjustCanvas();
 	},
-
-	resetPagePos : function(){
+	adjustCanvasPos : function(){
 		if(this.ready && this.painter){
 			this.painter.setPagePos();
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.redraw()   盤面の再描画を行う
-	// owner.irowake()  色分けをする場合、色をふり直すルーチンを呼び出す
+	// owner.redraw()      盤面の再描画を行う
+	// owner.redrawForce() 盤面キャッシュを破棄して再描画を行う
+	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(){
 		if(this.ready){ this.painter.paintAll();}
+	},
+	redrawForce : function(){
+		if(this.ready){ this.painter.adjustCanvas();}
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
@@ -248,20 +248,7 @@ pzpr.Puzzle.prototype =
 	modechange : function(num){
 		if(pzpr.PLAYER){ return;}
 		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
-		this.editmode = (num===this.MODE_EDITOR);
-		this.playmode = (num===this.MODE_PLAYER);
-		this.execListener('modechange');
-		if(!this.ready){ return;}
-
-		this.cursor.adjust_modechange();
-		this.key.keyreset();
-
-		if(this.board.haserror){
-			this.board.errclear();
-		}
-		else{
-			this.redraw();
-		}
+		this.setConfig('mode', num);
 	},
 
 	//------------------------------------------------------------------------------
@@ -341,6 +328,7 @@ function setCanvas_main(puzzle, type, callback){
 	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
 	Candle.start(puzzle.canvas, type, function(g){
+		Candle.ME.style.top = "0px"; /* WA */
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}

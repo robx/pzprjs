@@ -146,22 +146,22 @@ pzpr.util = {
 	// pzpr.util.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
-		var rect = el.getBoundingClientRect(), _html, _body, scrollLeft, scrollTop;
+		var rect = el.getBoundingClientRect(), scrollLeft, scrollTop;
 		if(window.scrollX!==void 0){
 			scrollLeft = window.scrollX;
 			scrollTop  = window.scrollY;
 		}
 		else{
-			/* IE8以下向け */
-			_html = document.documentElement; _body = document.body;
-			scrollLeft = _body.scrollLeft - _html.clientLeft;
-			scrollTop  = _body.scrollTop  - _html.clientTop;
+			/* IE11以下向け */
+			var _html = document.documentElement;
+			scrollLeft = _html.scrollLeft;
+			scrollTop  = _html.scrollTop;
 		}
 		var left   = rect.left   + scrollLeft;
 		var top    = rect.top    + scrollTop;
 		var right  = rect.right  + scrollLeft;
 		var bottom = rect.bottom + scrollTop;
-		return { top:top, bottom:bottom, left:left, right:right};
+		return { top:top, bottom:bottom, left:left, right:right, height:(bottom-top), width:(right-left)};
 	},
 
 	//---------------------------------------------------------------------------

@@ -20,8 +20,8 @@ ui.listener =
 		puzzle.addListener('history',  this.onHistoryChange);
 		
 		puzzle.addListener('config',     this.onConfigSet);
-		puzzle.addListener('modechange', this.onModeChange);
 		
+		puzzle.addListener('adjust',     this.onAdjust);
 		puzzle.addListener('resize',     this.onResize);
 	},
 
@@ -48,6 +48,7 @@ ui.listener =
 			ui.menuarea.reset();
 			ui.toolarea.reset();
 			ui.popupmgr.reset();
+			ui.notify.reset();
 			ui.misc.displayDesign();
 			
 			/* Windowへのイベント設定 */
@@ -56,7 +57,7 @@ ui.listener =
 		
 		ui.currentpid = pid;
 		
-		ui.event.adjustcellsize();
+		ui.adjustcellsize();
 		ui.keypopup.display();
 		
 		ui.timer.reset();					/* タイマーリセット(最後) */
@@ -97,8 +98,8 @@ ui.listener =
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(pzpr.EDITOR){
-				if     (puzzle.editmode && c==='F2'      ){ puzzle.modechange(puzzle.MODE_PLAYER); result = false;}
-				else if(puzzle.playmode && c==='shift+F2'){ puzzle.modechange(puzzle.MODE_EDITOR); result = false;}
+				if     (puzzle.editmode && c==='F2'      ){ puzzle.setConfig("mode", puzzle.MODE_PLAYER); result = false;}
+				else if(puzzle.playmode && c==='shift+F2'){ puzzle.setConfig("mode", puzzle.MODE_EDITOR); result = false;}
 			}
 
 			/* デバッグ用ルーチンを通す */
@@ -114,7 +115,6 @@ ui.listener =
 		else if(!kc.isZ){ ut.stopKeyUndo();}
 		else if(!kc.isY){ ut.stopKeyRedo();}
 		
-		/* ui.menuarea.floatmenuclose(0); */
 		return result;
 	},
 	onMouseInput : function(puzzle){
@@ -143,7 +143,7 @@ ui.listener =
 				result = false;
 			}
 		}
-		/* ui.menuarea.floatmenuclose(0); */
+		
 		return result;
 	},
 	onHistoryChange : function(puzzle){
@@ -155,7 +155,6 @@ ui.listener =
 
 	//---------------------------------------------------------------------------
 	// listener.onConfigSet()  config設定時に呼び出される関数
-	// listener.onModeChange() 回答入力/問題入力切り替え時に呼び出される関数
 	//---------------------------------------------------------------------------
 	onConfigSet : function(puzzle, idname, newval){
 		ui.setdisplay(idname);
@@ -167,41 +166,22 @@ ui.listener =
 		}
 		else if(idname==='language'){
 			ui.displayAll();
-			puzzle.adjustCanvasSize();
-		}
-		else if(idname==='uramashu'){
-			puzzle.board.revCircleMain();
-			puzzle.redraw();
+			puzzle.adjustCanvasPos();
 		}
 	},
-	onModeChange : function(puzzle){
-		ui.listener.onConfigSet(puzzle, 'mode');
+
+	//---------------------------------------------------------------------------
+	// listener.onAdjust()  盤面の大きさが変わったときの処理を呼び出す
+	//---------------------------------------------------------------------------
+	onAdjust : function(puzzle){
+		ui.adjustcellsize();
 	},
 
 	//---------------------------------------------------------------------------
 	// listener.onResize()  canvasのサイズを変更したときの処理を呼び出す
 	//---------------------------------------------------------------------------
 	onResize : function(puzzle){
-		var padding = 0, pc = puzzle.painter;
-		switch(puzzle.pid){
-			case 'firefly': case 'hashikake': case 'wblink':
-			case 'ichimaga': case 'ichimagam': case 'ichimagax':
-				padding = 0.30; break;
-			
-			case 'kouchoku': case 'gokigen': case 'wagiri': case 'creek':
-				padding = 0.20; break;
-			
-			case 'kinkonkan': case 'box':
-				padding = 0.05; break;
-			
-			case 'bosanowa':
-				padding = (puzzle.getConfig('disptype_bosanowa')!==2?0.50:0.05); break;
-			
-			default: padding = 0.50; break;
-		}
-		if(ui.menuconfig.get('fullwidth')){ padding = 0;}
-		
-		var val = (padding*Math.min(pc.cw, pc.ch))|0;
+		var pc = puzzle.painter, val = (ui.getBoardPadding()*Math.min(pc.cw, pc.ch))|0;
 		puzzle.canvas.style.padding = val+'px';
 		
 		if(pc.context.use.vml){

@@ -1,10 +1,11 @@
 // MenuArea.js v3.4.0
-/* global ui:false, getEL:false */
+/* global ui:false, getEL:false, _doc:false */
 
 // メニュー描画/取得/html表示系
 ui.menuarea = {
 	captions : [],				// 言語指定を切り替えた際のキャプションを保持する
 	menuitem : null,			// メニューの設定切り替え用エレメント等を保持する
+	nohover : false,			// :hover擬似クラスを使用しないでhover表示する
 	
 	//---------------------------------------------------------------------------
 	// menuarea.reset()  メニュー、サブメニュー、フロートメニューの初期設定を行う
@@ -20,10 +21,13 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	createMenu : function(){
 		if(this.menuitem===null){
+			this.modifySelector();
+			
 			this.menuitem = {};
 			this.walkElement(getEL("menupanel"));
 		}
 		this.walkElement2(getEL("menupanel"));
+		this.stopHovering();
 	},
 
 	//---------------------------------------------------------------------------
@@ -31,6 +35,10 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	walkElement : function(parent){
 		var menuarea = this;
+		function addmdevent(el,func){ pzpr.util.addEvent(el, "mousedown", menuarea, func);}
+		function mdfactory(role){
+			return function(e){ menuarea[role](e); if(menuarea.nohover){ e.stopPropagation();}};
+		}
 		ui.misc.walker(parent, function(el){
 			if(el.nodeType===1 && el.nodeName==="LI"){
 				var setevent = false;
@@ -38,7 +46,7 @@ ui.menuarea = {
 				if(!!idname){
 					menuarea.menuitem[idname] = {el:el};
 					if(el.className==="check"){
-						pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.checkclick);
+						addmdevent(el, menuarea.checkclick);
 						setevent = true;
 					}
 				}
@@ -49,29 +57,46 @@ ui.menuarea = {
 					if(!item.children){ item.children=[];}
 					item.children.push(el);
 					
-					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.childclick);
+					addmdevent(el, menuarea.childclick);
 					setevent = true;
 				}
 				
 				var role = ui.customAttr(el,"menuExec");
 				if(!!role){
-					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea[role]);
+					addmdevent(el, mdfactory(role));
+					setevent = true;
+				}
+				role = ui.customAttr(el,"pressExec");
+				if(!!role){
+					var roles = role.split(/,/);
+					addmdevent(el, mdfactory(roles[0]));
+					if(!!role[1]){
+						pzpr.util.addEvent(el, "mouseup", menuarea, menuarea[roles[1]]);
+					}
 					setevent = true;
 				}
 				role = ui.customAttr(el,"popup");
 				if(!!role){
-					pzpr.util.addEvent(el, "mousedown", menuarea, menuarea.disppopup);
+					addmdevent(el, mdfactory("disppopup"));
 					setevent = true;
 				}
 				
 				if(!setevent){
-					pzpr.util.addEvent(el, "mousedown", menuarea, function(e){ e.preventDefault();});
+					if(!menuarea.nohover || !el.querySelector("menu")){
+						addmdevent(el, function(e){ e.preventDefault();});
+					}
+					else{
+						addmdevent(el, function(e){ menuarea.showHovering(e,el);});
+					}
 				}
 			}
 			else if(el.nodeType===1 && el.nodeName==="MENU"){
 				var label = el.getAttribute("label");
 				if(!!label && label.match(/^__(.+)__(.+)__$/)){
 					menuarea.captions.push({menu:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+					if(menuarea.nohover){
+						addmdevent(el, function(e){ e.stopPropagation();});
+					}
 				}
 			}
 			else if(el.nodeType===3){
@@ -87,6 +112,47 @@ ui.menuarea = {
 				var disppid = ui.customAttr(el,"dispPid");
 				if(!!disppid){ el.style.display = (pzpr.util.checkpid(disppid, ui.puzzle.pid) ? "" : "none");}
 			}
+		});
+	},
+
+	//--------------------------------------------------------------------------------
+	// menuarea.modifySelector()  MenuAreaに関するCSSセレクタテキストを変更する (Android向け)
+	//--------------------------------------------------------------------------------
+	modifySelector : function(){
+		/* Android 4.0以上向け処理です */
+		if(!pzpr.env.OS.Android || !getEL("menupanel").classList){ return;}
+		var sheet = _doc.styleSheets[0];
+		var rules = sheet.cssRules || sheet.rules;
+		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
+		
+		for(var i=0,len=rules.length;i<len;i++){
+			var rule = rules[i];
+			if(!rule.selectorText){ continue;}
+			if(rule.selectorText.match(/\#menupanel.+\:hover.*/)){
+				sheet.insertRule(rule.cssText.replace(":hover",".hovering"), i);
+				sheet.deleteRule(i+1);
+			}
+		}
+		this.nohover = true;
+	},
+	
+	//--------------------------------------------------------------------------------
+	// menuarea.showHovering()  MenuAreaのポップアップを表示する (Android向け)
+	// menuarea.stopHovering()  MenuAreaのポップアップを消去する (Android向け)
+	//--------------------------------------------------------------------------------
+	showHovering : function(e,el0){
+		if(!this.nohover){ return;}
+		el0.classList.toggle("hovering");
+		ui.misc.walker(getEL("menupanel"), function(el){
+			if(el.nodeType===1 && !!el.classList && !el.contains(el0)){ el.classList.remove("hovering");}
+		});
+		e.preventDefault();
+		e.stopPropagation();
+	},
+	stopHovering : function(){
+		if(!this.nohover){ return;}
+		ui.misc.walker(getEL("menupanel"), function(el){
+			if(el.nodeType===1 && !!el.classList){ el.classList.remove("hovering");}
 		});
 	},
 	
@@ -105,6 +171,7 @@ ui.menuarea = {
 		
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");
+		this.setdisplay("toolarea");
 		
 		/* キャプションの設定 */
 		for(var i=0;i<this.captions.length;i++){
@@ -123,9 +190,9 @@ ui.menuarea = {
 		}
 		else if(idname==="toolarea"){
 			var str;
-			if(!ui.toolarea.isdisp){ str = ui.selectStr("管理領域を表示","Show management area");}
-			else                   { str = ui.selectStr("管理領域を隠す","Hide management area");}
-			getEL('menu_toolarea').innerHTML = str;
+			if(ui.getConfig("toolarea")===0){ str = ui.selectStr("ツールエリアを表示","Show tool area");}
+			else                            { str = ui.selectStr("ツールエリアを隠す","Hide tool area");}
+			getEL('menu_toolarea').childNodes[0].data = str;
 		}
 		else if(this.menuitem===null || !this.menuitem[idname]){
 			/* DO NOTHING */
@@ -175,19 +242,20 @@ ui.menuarea = {
 	// メニューがクリックされた時の動作を呼び出す
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
-	undoall : function(){ ui.puzzle.undoall();},
-	undo    : function(){ ui.puzzle.undo();},
-	redo    : function(){ ui.puzzle.redo();},
-	redoall : function(){ ui.puzzle.redoall();},
 	anscheck : function(){ this.answercheck();},
+	undo     : function(){ ui.undotimer.startButtonUndo();},
+	undostop : function(){ ui.undotimer.stopButtonUndo();},
+	undoall  : function(){ ui.puzzle.undoall();},
+	redo     : function(){ ui.undotimer.startButtonRedo();},
+	redostop : function(){ ui.undotimer.stopButtonRedo();},
+	redoall  : function(){ ui.puzzle.redoall();},
 	ansclear : function(){ this.ACconfirm();},
 	subclear : function(){ this.ASconfirm();},
 	duplicate: function(){ this.duplicate_board();},
 	toolarea : function(){
-		ui.toolarea.isdisp = !ui.toolarea.isdisp;
+		ui.setConfig("toolarea", (ui.getConfig("toolarea")===0?1:0));
 		ui.displayAll();
-		ui.puzzle.adjustCanvasSize();
-		this.setdisplay("toolarea");
+		ui.puzzle.adjustCanvasPos();
 	},
 	repaint : function(){ ui.puzzle.redraw();},
 	jumpexp : function(){
@@ -201,9 +269,13 @@ ui.menuarea = {
 			var idname = ui.customAttr(el,"popup");
 			var pos = pzpr.util.getPagePos(e);
 			ui.popupmgr.open(idname, pos.px-8, pos.py-8);
+			this.stopHovering();
 		}
 	},
-	dispdebug : function(){ ui.popupmgr.open("debug", 0, 0);},
+	dispdebug : function(){
+		ui.popupmgr.open("debug", 0, 0);
+		this.stopHovering();
+	},
 
 	//------------------------------------------------------------------------------
 	// menuarea.duplicate_board() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
@@ -223,6 +295,7 @@ ui.menuarea = {
 			localStorage['pzprv3_filedata'] = filestr;
 			window.open(url,'');
 		}
+		this.stopHovering();
 	},
 
 	//------------------------------------------------------------------------------
@@ -231,16 +304,17 @@ ui.menuarea = {
 	// menuarea.ASconfirm()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck : function(){
-		window.alert( ui.puzzle.check(true).text() );
+		var str = "", texts = ui.puzzle.check(true).text().split(/\n/);
+		for(var i=0;i<texts.length;i++){ str += "<div style=\"margin-bottom:6pt;\">"+texts[i]+"</div>";}
+		this.stopHovering();
+		ui.notify.alert(str);
 	},
 	ACconfirm : function(){
-		if(ui.confirmStr("回答を消去しますか？","Do you want to erase the Answer?")){
-			ui.puzzle.ansclear();
-		}
+		this.stopHovering();
+		ui.notify.confirm("回答を消去しますか？","Do you want to erase the Answer?", function(){ ui.puzzle.ansclear();});
 	},
 	ASconfirm : function(){
-		if(ui.confirmStr("補助記号を消去しますか？","Do you want to erase the auxiliary marks?")){
-			ui.puzzle.subclear();
-		}
+		this.stopHovering();
+		ui.notify.confirm("補助記号を消去しますか？","Do you want to erase the auxiliary marks?", function(){ ui.puzzle.subclear();});
 	}
 };

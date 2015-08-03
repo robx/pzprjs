@@ -165,6 +165,21 @@ PieceList:{
 		return this.owner.board.emptycell;
 	},
 
+	//--------------------------------------------------------------------------------
+	// clist.getTopCell()  指定されたClistの中で一番左上にあるセルを返す
+	//--------------------------------------------------------------------------------
+	getTopCell : function(){
+		var bd=this.owner.board, tcell=null, bx=bd.maxbx, by=bd.maxby;
+		for(var i=0;i<this.length;i++){
+			var cell = this[i];
+			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
+			tcell = this[i];
+			bx = cell.bx;
+			by = cell.by;
+		}
+		return tcell;
+	},
+
 	//---------------------------------------------------------------------------
 	// clist.draw()   盤面に自分の周囲を描画する
 	//---------------------------------------------------------------------------

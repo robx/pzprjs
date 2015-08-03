@@ -4,8 +4,6 @@
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
 ui.toolarea = {
-	isdisp : true,		// ツールパネルを表示しているか
-
 	items : null,		// ツールパネルのエレメント等を保持する
 	captions : [],		// 言語指定を切り替えた際のキャプションを保持する
 
@@ -88,7 +86,7 @@ ui.toolarea = {
 	display : function(){
 		/* ツールパネル領域 */
 		/* -------------- */
-		var mandisp  = (this.isdisp ? 'block' : 'none');
+		var mandisp  = (ui.getConfig("toolarea")!==0 ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
 		getEL('checkpanel').style.display = mandisp;
 		/* 経過時間の表示/非表示設定 */
@@ -107,7 +105,7 @@ ui.toolarea = {
 		getEL('btncircle').style.display  = (ui.puzzle.pid==='pipelinkr' ? "" : "none");
 		getEL('btncolor').style.display   = (ui.puzzle.pid==='tentaisho' ? "" : "none");
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
-		getEL('btnirowake').style.display = (((ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk) && !this.isdisp) ? "" : "none");
+		getEL('btnirowake').style.display = (((ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk) && (ui.getConfig("toolarea")===0)) ? "" : "none");
 		
 		/* 共通：キャプションの設定 */
 		/* --------------------- */

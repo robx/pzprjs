@@ -1,5 +1,6 @@
 // Debug.js v3.4.0
-/* global ui:false, getEL:false */
+/* jshint devel:true */
+/* global ui:false */
 
 //---------------------------------------------------------------------------
 // ★Popup_Debugクラス  poptest関連のポップアップメニュー表示用
@@ -66,21 +67,19 @@ ui.debug =
 
 	erasetext : function(){
 		this.setTA('');
-		if(ui.debugmode){ getEL('testdiv').innerHTML = '';}
 	},
 
 	perfeval : function(){
 		var ans = ui.puzzle.checker;
-		this.timeeval("正答判定測定", function(){ ans.resetCache(); ans.checkAns();});
+		this.timeeval("正答判定", function(){ ans.resetCache(); ans.checkAns();});
 	},
 	painteval : function(){
-		this.timeeval("描画時間測定", function(){ ui.puzzle.redraw();});
+		this.timeeval("描画時間", function(){ ui.puzzle.redraw();});
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画測定", function(){ ui.puzzle.adjustCanvasSize();});
+		this.timeeval("resize描画", function(){ ui.puzzle.redrawForce();});
 	},
 	timeeval : function(text,func){
-		this.addTA(text);
 		var count=0, old = pzpr.util.currentTime();
 		while(pzpr.util.currentTime() - old < 3000){
 			count++;
@@ -88,8 +87,7 @@ ui.debug =
 			func();
 		}
 		var time = pzpr.util.currentTime() - old;
-
-		this.addTA("測定データ "+time+"ms / "+count+"回\n"+"平均時間   "+(time/count)+"ms");
+		this.addTA(text+" ave. "+(time/count)+"ms");
 	},
 
 	dispdatabase : function(){
@@ -105,7 +103,10 @@ ui.debug =
 
 	getTA : function(){ return document.getElementById('testarea').value;},
 	setTA : function(str){ document.getElementById('testarea').value  = str;},
-	addTA : function(str){ document.getElementById('testarea').value += (str+"\n");},
+	addTA : function(str){
+		if(!!window.console){ console.log(str);}
+		document.getElementById('testarea').value += (str+"\n");
+	},
 
 	includeDebugScript : function(filename){
 		if(!!this.includedScript[filename]){ return;}

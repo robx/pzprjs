@@ -7,24 +7,17 @@ pzpr.classmgr.makeCustom(['kinkonkan'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.owner.playmode){
-			if(this.mousestart){
+			if(this.mousestart || (this.mousemove && this.inputData!==null)){
 				this.inputslash();
-			}
-			else if(this.mousemove){
-				if(this.inputData!==null){ this.inputslash();}
 			}
 		}
 		else if(this.owner.editmode){
 			if(this.mousestart){
-				this.input_onstart();
+				this.inputedit_onstart();
 			}
 			else if(this.mousemove){
 				if(this.btn.Left){ this.inputborder();}
 			}
-		}
-		
-		if(this.mouseend){
-			if(this.inputData===12){ this.owner.board.lightclear();}
 		}
 	},
 
@@ -32,40 +25,43 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ this.inputflash(); return;}
 
-		if     (this.inputData===3){ cell.setQans(0); cell.setQsub(1);}
-		else if(this.inputData===4){ cell.setQans(0); cell.setQsub(0);}
-		else if(this.inputData!==null){ return;}
-		else if(this.btn.Left){
-			if     (cell.qans===31){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else if(cell.qans===32){ cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
-			else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else                   { cell.setQans(31); cell.setQsub(0); this.inputData=1;}
+		var state = this.inputData;
+		// ドラッグ入力時のインプットルーチン
+		if     (state===-1 || state===0){ }
+		else if(state!==null){ return;} // 1,2,11,12
+		// マウスボタン押下時のインプットルーチン
+		else{
+			var current = cell.getState();
+			if     (this.btn.Left) { state = ((current + 6) % 4) - 1;}
+			else if(this.btn.Right){ state = ((current + 4) % 4) - 1;}
 		}
-		else if(this.btn.Right){
-			if     (cell.qans===31){ cell.setQans(0);  cell.setQsub(0); this.inputData=4;}
-			else if(cell.qans===32){ cell.setQans(31); cell.setQsub(0); this.inputData=1;}
-			else if(cell.qsub=== 1){ cell.setQans(32); cell.setQsub(0); this.inputData=2;}
-			else                   { cell.setQans(0);  cell.setQsub(1); this.inputData=3;}
-		}
-
+		
+		cell.setState(state);
 		cell.drawaround();
+		
+		this.inputData = state;
 	},
 	inputflash : function(){
-		var excell = this.getpos(0).getex();
+		var excell = this.getpos(0).getex(), puzzle = this.owner, board = puzzle.board;
 		if(excell.isnull || this.mouseCell===excell){ return;}
-		if(excell.id>=this.owner.board.excellmax-4){ return;}
 
 		if(this.inputData!==11 && this.inputData!==null){ }
-		else if(this.inputData===null && excell.qlight===1){ this.inputData=12;}
+		else if(excell.id>=board.excellmax-4){
+			board.lightclear();
+		}
+		else if(this.inputData===null && excell.qlight===1){
+			board.lightclear();
+			this.inputData=12;
+		}
 		else{
-			this.owner.board.flashlight(excell.id);
-			this.owner.redraw();
+			board.flashlight(excell);
 			this.inputData=11;
 		}
 		this.mouseCell = excell;
 	},
-	input_onstart : function(){
-		var obj = this.getcell_excell();
+
+	inputedit_onstart : function(){
+		var obj = this.getcell_excell(), board = this.owner.board;
 		if(obj.isnull){ return;}
 
 		if(obj.group!=='excell'){
@@ -77,9 +73,8 @@ MouseEvent:{
 		}
 		else{
 			var excell = obj;
-			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
-			else{ this.owner.board.lightclear();}
-			this.owner.redraw();
+			if(excell.qlight!==1){ board.flashlight(excell);}
+			else{ board.lightclear();}
 
 			this.mousereset();
 		}
@@ -154,9 +149,8 @@ KeyEvent:{
 			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
 		else if(ca==='F4'){
-			if(excell.qlight!==1){ this.owner.board.flashlight(excell.id);}
-			else{ this.owner.board.lightclear();}
-			this.owner.redraw();
+			if(excell.qlight!==1){ bd.flashlight(excell);}
+			else{ bd.lightclear();}
 		}
 		else if(ca===' '){ excell.setQnum(-1); excell.setQchar(0);}
 		else{ return;}
@@ -177,7 +171,18 @@ TargetCursor:{
 Cell:{
 	qlight : 0,
 	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 }
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
+	
+	// Qans/Qsubを統合して扱うkanpen的な関数
+	// ここでは なし=0, 斜線=1/2, 補助記号=-1
+	getState : function(){
+		return (this.qans>30 ? this.qans-30 : (this.qsub!==0 ? -1 : 0));
+	},
+	setState : function(val){
+		var qans = [-1,0,31,32][val+1];
+		if(qans!==-1){ this.setQans(qans); this.setQsub(0);}
+		else         { this.setQans(0);    this.setQsub(1);}
+	}
 },
 
 EXCell:{
@@ -201,17 +206,19 @@ Board:{
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].qlight=0;}
 		this.haslight = false;
+		this.owner.redraw();
 	},
-	flashlight : function(ec){
+	flashlight : function(excell){
 		this.lightclear();
-		this.searchLight(ec, true);
+		this.searchLight(excell, true);
+		this.owner.redraw();
 	},
 
-	searchLight : function(startec, setlight){
+	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cellmax;c++){ ldata[c]=0;}
 
-		var pos = this.excell[startec].getaddr(), dir=0;
+		var pos = startexcell.getaddr(), dir=0;
 		if     (pos.by===this.minby+1){ dir=2;}
 		else if(pos.by===this.maxby-1){ dir=1;}
 		else if(pos.bx===this.minbx+1){ dir=4;}
@@ -245,7 +252,7 @@ Board:{
 		var destec = pos.getex().id;
 		if(!!setlight){
 			for(var c=0;c<this.excellmax;c++){ this.excell[c].qlight=0;}
-			this.excell[startec].qlight = 1;
+			startexcell.qlight = 1;
 			this.excell[destec].qlight  = 1;
 			for(var c=0;c<this.cellmax;c++){ this.cell[c].qlight=ldata[c];}
 			this.haslight = true;
@@ -501,7 +508,7 @@ AnsCheck:{
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
-			var ret = bd.searchLight(excell.id, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
+			var ret = bd.searchLight(excell, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
 			if( (type===1&& (excell.qchar!==excell2.qchar) )||
 				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){

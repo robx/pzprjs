@@ -78,7 +78,7 @@ ui.timer =
 			if(puzzle.check().complete){
 				puzzle.mouse.mousereset();
 				ui.menuconfig.set('autocheck',false);
-				ui.alertStr("正解です！","Complete!");
+				ui.notify.alert("正解です！","Complete!");
 				return;
 			}
 

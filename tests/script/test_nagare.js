@@ -22,6 +22,7 @@ ui.debug.addDebugData('nagare', {
 	],
 	inputs : [
 		/* 回答入力テスト */
+		{ input:["setconfig,cursor,false"]},
 		{ input:["newboard,3,3", "editmode", "mouse,left, 3,3", "playmode", "mouse,left, 1,3, 5,3, 5,5, 3,5, 3,1"],
 		  result:"pzprv3/nagare/3/3/. . . /. N . /. . . /0 0 /0 0 /0 1 /0 0 0 /0 0 1 /"},
 		{ input:["mouse,right, 3,3, 5,3, 5,5, 3,5, 3,3"],

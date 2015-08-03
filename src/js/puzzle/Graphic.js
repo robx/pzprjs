@@ -237,38 +237,32 @@ Graphic:{
 	//                      (指定なしの場合は、前のキャンバスのサイズを用いる)
 	// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 	//                             (指定なしの場合は、前のセルのサイズを用いる)
+	// pc.adjustCanvas()    キャンバスのサイズを再設定する
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
-		if(!insuspend){ this.suspendAll();}
+		this.suspendAll();
 		
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
 		
-		if(!!this.context){
-			this.resize_canvas_main();
-			if(!insuspend){ this.unsuspend();}
-		}
-		else{
-			this.pendingResize = true;
-		}
+		this.pendingResize = true;
+		if(!insuspend){ this.unsuspend();}
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
-		if(!insuspend){ this.suspendAll();}
+		this.suspendAll();
 		
 		this.cw = cellsize || this.cw;
 		this.ch = cellsize || this.ch;
 		this.canvasWidth  = this.cw*this.getCanvasCols();
 		this.canvasHeight = this.ch*this.getCanvasRows();
 		
-		if(!!this.context){
-			this.resize_canvas_main();
-			if(!insuspend){ this.unsuspend();}
-		}
-		else{
-			this.pendingResize = true;
-		}
+		this.pendingResize = true;
+		if(!insuspend){ this.unsuspend();}
+	},
+	adjustCanvas : function(){
+		this.resizeCanvas();
 	},
 
 	//---------------------------------------------------------------------------
@@ -397,9 +391,9 @@ Graphic:{
 		
 		if(this.canvasWidth===null || this.canvasHeight===null){
 			var rect = pzpr.util.getRect(this.context.canvas);
-			this.resizeCanvas((rect.right-rect.left), (rect.bottom-rect.top));
+			this.resizeCanvas(rect.width, rect.height);
 		}
-		else if(this.pendingResize){
+		if(this.pendingResize){
 			this.pendingResize = false;
 			this.resize_canvas_main();
 		}

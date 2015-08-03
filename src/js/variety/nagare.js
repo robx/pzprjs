@@ -72,11 +72,13 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(this.inputData===null){ this.inputData = (cell.ques===1?0:1);}
-
-		cell.setQues(this.inputData);
-		cell.drawaround();
-		this.mouseCell = cell;
+		if(cell!==this.cursor.getc() && this.owner.getConfig('cursor')){
+			this.setcursor(cell);
+		}
+		else{
+			cell.setQues(cell.ques===1?0:1);
+			cell.drawaround();
+		}
 	}
 },
 
@@ -122,9 +124,6 @@ Border:{
 },
 Board:{
 	hasborder : 1,
-
-	qcols : 8,
-	qrows : 8,
 
 	generateWind : function(){
 		for(var i=0;i<this.cellmax;i++){ this.cell[i].wind = 0;}

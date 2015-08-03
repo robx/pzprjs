@@ -61,7 +61,7 @@ AnsCheck:{
 			this.checkAns();
 			if(!this.failcode.complete){
 				bd.haserror = true;
-				puzzle.adjustCanvasSize();	/* 強制的に一から再描画を行う */
+				puzzle.redrawForce();	/* 描画キャッシュを破棄して描画し直す */
 			}
 		}
 		/* activemodeでなく、前回の判定結果が残っていない場合はチェックします */

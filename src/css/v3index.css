@@ -33,7 +33,6 @@
 
 	menu#puztypes {
 		display : none;
-		float   : left;
 		position: relative;
 		margin  : auto;
 		padding : 6pt 0pt 6pt 0pt;
@@ -41,7 +40,8 @@
 		/* box-shadow : 4px 4px 2px rgba(127,127,127,.5); */
 	}
 	menu#puztypes li {
-		display : inline;
+		display : block;
+		float   : left;
 		margin-right : 0pt;
 		padding      : 6pt;
 		border       : solid 1px silver;

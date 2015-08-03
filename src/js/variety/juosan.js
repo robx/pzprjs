@@ -155,40 +155,39 @@ AnsCheck:{
 		this.checkRowsColsSeparate(this.isParallelCount, function(cell){ return cell.qans;}, "baParaGe3");
 	},
 	checkRowsColsSeparate : function(evalfunc, categoryfunc, code){
-		if(!this.checkErrorColsSeparate(evalfunc, categoryfunc) || !this.checkErrorRowsSeparate(evalfunc, categoryfunc)){
+		var result = true, bd = this.owner.board, info;
+		allloop: do{
+			/* 横方向サーチ */
+			info = {isvert:false};
+			for(var by=1;by<=bd.maxby;by+=2){
+				for(var bx=1;bx<=bd.maxbx;bx+=2){
+					var val = categoryfunc(bd.getc(bx,by)), tx = bx;
+					while((tx+2<bd.maxbx) && (categoryfunc(bd.getc(tx+2,by))===val)){ tx+=2;}
+					if(!evalfunc.call(this, bd.cellinside(bx,by,tx,by), info)){
+						result = false;
+						if(this.checkOnly){ break allloop;}
+					}
+					bx = tx; /* 次のループはbx=tx+2 */
+				}
+			}
+			/* 縦方向サーチ */
+			info = {isvert:true};
+			for(var bx=1;bx<=bd.maxbx;bx+=2){
+				for(var by=1;by<=bd.maxby;by+=2){
+					var val = categoryfunc(bd.getc(bx,by)), ty = by;
+					while((ty+2<bd.maxby) && (categoryfunc(bd.getc(bx,ty+2))===val)){ ty+=2;}
+					if(!evalfunc.call(this, bd.cellinside(bx,by,bx,ty), info)){
+						result = false;
+						if(this.checkOnly){ break allloop;}
+					}
+					by = ty; /* 次のループはbx=ty+2 */
+				}
+			}
+		} while(0);
+		
+		if(!result){
 			this.failcode.add(code);
 			this.owner.board.cell.setnoerr();
-		}
-	},
-	checkErrorColsSeparate : function(evalfunc, categoryfunc){
-		var result = true, bd = this.owner.board, info = {isvert:false};
-		allloop:
-		for(var by=1;by<=bd.maxby;by+=2){
-			for(var bx=1;bx<=bd.maxbx;bx+=2){
-				var val = categoryfunc(bd.getc(bx,by)), tx = bx;
-				while((tx+2<bd.maxbx) && (categoryfunc(bd.getc(tx+2,by))===val)){ tx+=2;}
-				if(!evalfunc.call(this, bd.cellinside(bx,by,tx,by), info)){
-					result = false;
-					if(this.checkOnly){ break allloop;}
-				}
-				bx = tx; /* 次のループはbx=tx+2 */
-			}
-		}
-		return result;
-	},
-	checkErrorRowsSeparate : function(evalfunc, categoryfunc){
-		var result = true, bd = this.owner.board, info = {isvert:true};
-		allloop:
-		for(var bx=1;bx<=bd.maxbx;bx+=2){
-			for(var by=1;by<=bd.maxby;by+=2){
-				var val = categoryfunc(bd.getc(bx,by)), ty = by;
-				while((ty+2<bd.maxby) && (categoryfunc(bd.getc(bx,ty+2))===val)){ ty+=2;}
-				if(!evalfunc.call(this, bd.cellinside(bx,by,bx,ty), info)){
-					result = false;
-					if(this.checkOnly){ break allloop;}
-				}
-				by = ty; /* 次のループはbx=ty+2 */
-			}
 		}
 		return result;
 	},

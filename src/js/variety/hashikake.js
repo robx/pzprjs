@@ -304,15 +304,6 @@ AnsCheck:{
 		"checkCellNumberNotLess"
 	],
 
-	checkConnectAllNumber : function(){
-		var linfo = this.getLareaInfo();
-		var bd = this.owner.board;
-		if(linfo.max>1){
-			this.failcode.add("lcDivided");
-			bd.border.setnoerr();
-			linfo.setErrLareaByCell(bd.cell[1],1);
-		}
-	},
 	checkCellNumberNotOver :function(){
 		this.checkAllCell(function(cell){ return cell.isValidNum() && (cell.qnum < cell.getCountOfBridges());}, "nmLineGt");
 	},

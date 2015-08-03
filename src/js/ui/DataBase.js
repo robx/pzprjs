@@ -1,5 +1,5 @@
 // DataBase.js v3.4.0
-/* global ui:false, createEL:false */
+/* global ui:false, createEL:false, getEL:false */
 
 //---------------------------------------------------------------------------
 // ★ProblemDataクラス データベースに保存する1つのデータを保持する
@@ -18,15 +18,17 @@ ui.ProblemData = function(){
 };
 ui.ProblemData.prototype =
 {
-	setnewData : function(id, owner){
+	updatePuzzleData : function(id){
+		var puzzle = ui.puzzle;
 		this.id = id;
-		this.pid = owner.pid;
-		this.col = owner.board.qcols;
-		this.row = owner.board.qrows;
-		this.hard = 0;
-		this.pdata = owner.getFileData(pzpr.parser.FILE_PZPH).replace(/\r?\n/g,"/");
+		this.pid = puzzle.pid;
+		this.col = puzzle.board.qcols;
+		this.row = puzzle.board.qrows;
+		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
-		this.comment = '';
+	},
+	getFileData : function(){
+		return this.pdata.replace(/\//g,"\n");
 	},
 	toString : function(){
 		var data = {
@@ -65,7 +67,7 @@ ui.popupmgr.addpopup('database',
 	// database_handler() データベースmanagerへ処理を渡します
 	//---------------------------------------------------------------------------
 	database_handler : function(e){
-		ui.database.clickHandler(e.target.name, ui.puzzle);
+		ui.database.clickHandler(e.target.name);
 	}
 });
 
@@ -78,8 +80,7 @@ ui.database = {
 	DBsid  : -1,	// 現在選択されているリスト中のID
 	DBlist : [],	// 現在一覧にある問題のリスト
 
-	sync   : false,
-	lang   : null,
+	sync   : false,	// 一覧がDataBaseのデータと合っているかどうかを表す
 
 	update : function(){ ui.database.updateDialog();},
 
@@ -89,13 +90,12 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	openDialog : function(){
 		// データベースを開く
-		if(pzpr.env.storage.localST){ this.dbh = new ui.DataBaseHandler_LS();}
+		if(pzpr.env.storage.localST){ this.dbh = new ui.DataBaseHandler_LS(this);}
 		else{ return;}
 
-		this.lang = ui.getConfig('language');
 		this.sync = false;
 		this.dbh.convert();
-		this.dbh.importDBlist(this, this.update);
+		this.dbh.importDBlist();
 	},
 	closeDialog : function(){
 		this.DBlist = [];
@@ -104,19 +104,19 @@ ui.database = {
 	//---------------------------------------------------------------------------
 	// dbm.clickHandler()  フォーム上のボタンが押された時、各関数にジャンプする
 	//---------------------------------------------------------------------------
-	clickHandler : function(name, owner){
+	clickHandler : function(name){
 		if(this.sync===false){ return;}
 		switch(name){
 			case 'sorts'   : this.displayDataTableList();	// breakがないのはわざとです
 			/* falls through */
-			case 'datalist': this.selectDataTable();   break;
-			case 'tableup' : this.upDataTable_M();     break;
-			case 'tabledn' : this.downDataTable_M();   break;
-			case 'open'    : this.openDataTable_M(owner); break;
-			case 'save'    : this.saveDataTable_M(owner); break;
-			case 'comedit' : this.editComment_M();     break;
-			case 'difedit' : this.editDifficult_M();   break;
-			case 'del'     : this.deleteDataTable_M(); break;
+			case 'datalist': this.selectDataTable(); break;
+			case 'tableup' : this.upDataTable();     break;
+			case 'tabledn' : this.downDataTable();   break;
+			case 'open'    : this.openDataTable();   break;
+			case 'save'    : this.saveDataTable();   break;
+			case 'overwrite' : this.saveDataTable(); break;
+			case 'updateinfo': this.updateInfo();    break;
+			case 'del'     : this.deleteDataTable(); break;
 		}
 	},
 
@@ -135,7 +135,7 @@ ui.database = {
 		return -1;
 	},
 	updateDialog : function(){
-		this.dbh.updateManageData(this);
+		this.dbh.updateManageData();
 		this.displayDataTableList();
 		this.selectDataTable();
 		this.sync = true;
@@ -183,66 +183,71 @@ ui.database = {
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.variety.info[row.pid][this.lang]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][ui.getConfig('language')]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][this.lang]+"&nbsp;");
+			str += (hardstr[row.hard][ui.getConfig('language')]+"&nbsp;");
 		}
 		str += ("("+this.dateString(row.time*1000)+")");
 		return str;
 	},
 	dateString : function(time){
-		var ni   = function(num){ return (num<10?"0":"")+num;};
-		var str  = "";
+		function ni(num){ return (num<10?"0":"")+num;}
 		var date = new Date();
 		date.setTime(time);
-
-		str += (ni(date.getFullYear()%100) + "/" + ni(date.getMonth()+1) + "/" + ni(date.getDate())+" ");
-		str += (ni(date.getHours()) + ":" + ni(date.getMinutes()));
-		return str;
+		return (ni(date.getFullYear()%100)+"/"+ni(date.getMonth()+1)+"/"+ni(date.getDate())+ " " +
+				ni(date.getHours()) + ":" + ni(date.getMinutes()));
 	},
 
 	//---------------------------------------------------------------------------
 	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
-		var selected = this.getDataID(), form = document.database;
+		var selected = this.getDataID(), form = document.database, item;
 		if(selected>=0){
-			form.comtext.value = ""+this.DBlist[selected].comment;
-			this.DBsid = parseInt(this.DBlist[selected].id);
+			item = this.DBlist[selected];
+			getEL("database_cand").innerHTML = "";
 		}
 		else{
-			form.comtext.value = "";
-			this.DBsid = -1;
+			item = new ui.ProblemData();
+			item.updatePuzzleData(-1);
+			getEL("database_cand").innerHTML = ui.selectStr("(新規保存)", "(Candidate)");
 		}
+		form.comtext.value = ""+item.comment;
+		form.hard.value    = ""+item.hard;
+		getEL("database_variety").innerHTML = pzpr.variety.info[item.pid][ui.getConfig('language')] + "&nbsp;" + item.col+"×"+item.row;
+		getEL("database_date").innerHTML    = this.dateString(item.time*1000);
 
-		var sid = this.DBsid; /* selected id */
+		var sid = this.DBsid = parseInt(item.id); /* selected id */
 		var sortbyid = (form.sorts.value==='idlist');
 		form.tableup.disabled = (!sortbyid || sid===-1 || sid===1);
 		form.tabledn.disabled = (!sortbyid || sid===-1 || sid===this.DBlist.length);
-		form.comedit.disabled = (sid===-1);
-		form.difedit.disabled = (sid===-1);
+		form.updateinfo.disabled = (sid===-1);
 		form.open.style.color = (sid===-1 ? "silver" : "");
 		form.del.style.color  = (sid===-1 ? "silver" : "");
+		form.save.style.display      = (sid===-1 ? "" : "none");
+		form.overwrite.style.display = (sid===-1 ? "none" : "");
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.upDataTable_M()      データの一覧での位置をひとつ上にする
-	// dbm.downDataTable_M()    データの一覧での位置をひとつ下にする
-	// dbm.convertDataTable_M() データの一覧での位置を入れ替える
+	// dbm.upDataTable()      データの一覧での位置をひとつ上にする
+	// dbm.downDataTable()    データの一覧での位置をひとつ下にする
+	// dbm.convertDataTable() データの一覧での位置を入れ替える
 	//---------------------------------------------------------------------------
-	upDataTable_M : function(){
+	upDataTable : function(){
 		var selected = this.getDataID();
 		if(selected===-1 || selected===0){ return;}
-		this.convertDataTable_M(selected, selected-1);
+		this.convertDataTable(selected, selected-1);
 	},
-	downDataTable_M : function(){
+	downDataTable : function(){
 		var selected = this.getDataID();
 		if(selected===-1 || selected===this.DBlist.length-1){ return;}
-		this.convertDataTable_M(selected, selected+1);
+		this.convertDataTable(selected, selected+1);
 	},
-	convertDataTable_M : function(sid, tid){
+	convertDataTable : function(sid, tid){
 		this.DBsid = this.DBlist[tid].id;
+
+		/* idプロパティ以外を入れ替える */
 		var id = this.DBlist[sid].id;
 		this.DBlist[sid].id = this.DBlist[tid].id;
 		this.DBlist[tid].id = id;
@@ -251,87 +256,77 @@ ui.database = {
 		this.DBlist[tid] = row;
 
 		this.sync = false;
-		this.dbh.convertDataTableID(this, sid, tid, this.update);
+		this.dbh.saveItem(sid, tid);
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.openDataTable_M()  データの盤面に読み込む
-	// dbm.saveDataTable_M()  データの盤面を保存する
+	// dbm.openDataTable()  データの盤面に読み込む
+	// dbm.saveDataTable()  データの盤面を保存/上書きする
 	//---------------------------------------------------------------------------
-	openDataTable_M : function(owner){
+	openDataTable : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
-		if(!ui.confirmStr("このデータを読み込みますか？ (現在の盤面は破棄されます)",
-						  "Recover selected data? (Current board is erased)")){ return;}
-
-		this.dbh.openDataTable(this, id, null, owner);
+		var filestr = this.DBlist[id].getFileData();
+		ui.notify.confirm("このデータを読み込みますか？ (現在の盤面は破棄されます)",
+						  "Recover selected data? (Current board is erased)",
+						  function(){ ui.puzzle.open(filestr);});
 	},
-	saveDataTable_M : function(owner){
-		var id = this.getDataID(), refresh = false;
-		if(id===-1){
-			id = this.DBlist.length;
-			refresh = true;
-
-			this.DBlist[id] = new ui.ProblemData();
-			this.DBlist[id].setnewData(id+1, owner);
-			var str = ui.promptStr("コメントがある場合は入力してください。","Input comment if you want.","");
-			this.DBlist[id].comment = (!!str ? str : '');
-			this.DBsid = this.DBlist[id].id;
+	saveDataTable : function(){
+		var id = this.getDataID(), dbm = this;
+		function refresh(){
+			var list = dbm.DBlist, item = list[id];
+			if(id===-1){ /* newSave */
+				id = list.length;
+				item = list[id] = new ui.ProblemData();
+				item.comment = document.database.comtext.value;
+				item.hard    = document.database.hard.value;
+			}
+			item.updatePuzzleData(id+1);
+			dbm.DBsid = item.id;
+			
+			dbm.sync = false;
+			dbm.dbh.saveItem(id);
 		}
-		else{
-			if(!ui.confirmStr("このデータに上書きしますか？","Update selected data?")){ return;}
-		}
-
-		this.sync = false;
-		this.dbh.saveDataTable(this, id, this.update, owner);
+		
+		if(id===-1){ refresh();}
+		else       { ui.notify.confirm("このデータに上書きしますか？","Overwrite selected data?", refresh);}
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.editComment_M()   データのコメントを更新する
-	// dbm.editDifficult_M() データの難易度を更新する
+	// dbm.editComment()   データのコメントを更新する
+	// dbm.editDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
-	editComment_M : function(){
+	updateInfo : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		var str = ui.promptStr("この問題に対するコメントを入力してください。","Input command for selected data.",this.DBlist[id].comment);
-		if(str===null){ return;}
-		this.DBlist[id].comment = str;
+		this.DBlist[id].comment = document.database.comtext.value;
+		this.DBlist[id].hard    = document.database.hard.value;
 
 		this.sync = false;
-		this.dbh.updateComment(this, id, this.update);
-	},
-	editDifficult_M : function(){
-		var id = this.getDataID(); if(id===-1){ return;}
-
-		var hard = ui.promptStr("この問題の難易度を設定してください。\n[0:なし 1:らくらく 2:おてごろ 3:たいへん 4:アゼン]",
-									 "Set the difficulty for selected data. (0:none 1:Easy 2:Normal 3:Hard 4:Expart)",this.DBlist[id].hard);
-		if(hard===null){ return;}
-		this.DBlist[id].hard = ((hard==='1'||hard==='2'||hard==='3'||hard==='4')?hard:'0');
-
-		this.sync = false;
-		this.dbh.updateDifficult(this, id, this.update);
+		this.dbh.saveItem(id);
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.deleteDataTable_M() 選択している盤面データを削除する
+	// dbm.deleteDataTable() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	deleteDataTable_M : function(){
-		var id = this.getDataID(); if(id===-1){ return;}
-		if(!ui.confirmStr("このデータを完全に削除しますか？","Delete selected data?")){ return;}
+	deleteDataTable : function(){
+		var id = this.getDataID(), dbm = this; if(id===-1){ return;}
+		ui.notify.confirm("このデータを完全に削除しますか？","Delete selected data?", function(){
+			var list = dbm.DBlist, sID = list[id].id, max = list.length;
+			for(var i=sID-1;i<max-1;i++){ list[i] = list[i+1]; list[i].id--;}
+			list.pop();
 
-		var sID = this.DBlist[id].id, max = this.DBlist.length;
-		for(var i=sID-1;i<max-1;i++){ this.DBlist[i] = this.DBlist[i+1]; this.DBlist[i].id--;}
-		this.DBlist.pop();
-
-		this.sync = false;
-		this.dbh.deleteDataTable(this, sID, max, this.update);
+			dbm.sync = false;
+			dbm.dbh.deleteItem(sID, max);
+		});
 	}
 };
 
 //---------------------------------------------------------------------------
 // ★DataBaseHandler_LSクラス Web localStorage用 データベースハンドラ
 //---------------------------------------------------------------------------
-ui.DataBaseHandler_LS = function(){
+ui.DataBaseHandler_LS = function(parent){
 	this.pheader = 'pzprv3_storage:data:';
+	this.parent = parent;
 
 	this.createManageDataTable();
 	this.createDataBase();
@@ -341,14 +336,14 @@ ui.DataBaseHandler_LS.prototype =
 	//---------------------------------------------------------------------------
 	// dbm.dbh.importDBlist()  DataBaseからDBlistを作成する
 	//---------------------------------------------------------------------------
-	importDBlist : function(parent, callback){
-		parent.DBlist = [];
+	importDBlist : function(){
+		this.parent.DBlist = [];
 		for(var i=1;true;i++){
 			var row = new ui.ProblemData(localStorage[this.pheader+i]);
 			if(row.id===null){ break;}
-			parent.DBlist.push(row);
+			this.parent.DBlist.push(row);
 		}
-		if(!!callback){ callback();}
+		this.parent.update();
 	},
 
 	//---------------------------------------------------------------------------
@@ -358,8 +353,8 @@ ui.DataBaseHandler_LS.prototype =
 	createManageDataTable : function(){
 		localStorage['pzprv3_storage:version'] = '2.0';
 	},
-	updateManageData : function(parent){
-		localStorage['pzprv3_storage:count'] = parent.DBlist.length;
+	updateManageData : function(){
+		localStorage['pzprv3_storage:count'] = this.parent.DBlist.length;
 		localStorage['pzprv3_storage:time']  = (pzpr.util.currentTime()/1000)|0;
 	},
 
@@ -370,52 +365,28 @@ ui.DataBaseHandler_LS.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.dbh.convertDataTableID() データのIDを付け直す
+	// dbm.dbh.saveItem() databaseの指定されたIDを保存する
 	//---------------------------------------------------------------------------
-	convertDataTableID : function(parent, sid, tid, callback){
-		var sID = parent.DBlist[sid].id, tID = parent.DBlist[tid].id;
-		localStorage[this.pheader+sID] = parent.DBlist[sid].toString();
-		localStorage[this.pheader+tID] = parent.DBlist[tid].toString();
-		if(!!callback){ callback();}
+	saveItem : function(){
+		var args = arguments;
+		for(var i=0;i<args.length;i++){
+			var item = this.parent.DBlist[args[i]];
+			localStorage[this.pheader+item.id] = item.toString();
+		}
+		this.parent.update();
 	},
 
 	//---------------------------------------------------------------------------
-	// dbm.dbh.openDataTable()   データの盤面に読み込む
-	// dbm.dbh.saveDataTable()   データの盤面を保存する
+	// dbm.dbh.deleteItem() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
-	openDataTable : function(parent, id, callback, owner){
-		var data = new ui.ProblemData(localStorage[this.pheader+parent.DBlist[id].id]);
-		ui.puzzle.open(data.pdata.replace(/\//g,"\n"));
-		if(!!callback){ callback();}
-	},
-	saveDataTable : function(parent, id, callback, owner){
-		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
-		if(!!callback){ callback();}
-	},
-
-	//---------------------------------------------------------------------------
-	// dbm.dbh.updateComment()   データのコメントを更新する
-	// dbm.dbh.updateDifficult() データの難易度を更新する
-	//---------------------------------------------------------------------------
-	updateComment : function(parent, id, callback){
-		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
-		if(!!callback){ callback();}
-	},
-	updateDifficult : function(parent, id, callback){
-		localStorage[this.pheader+parent.DBlist[id].id] = parent.DBlist[id].toString();
-		if(!!callback){ callback();}
-	},
-	//---------------------------------------------------------------------------
-	// dbm.dbh.deleteDataTable() 選択している盤面データを削除する
-	//---------------------------------------------------------------------------
-	deleteDataTable : function(parent, sID, max, callback){
+	deleteItem : function(sID, max){
 		for(var i=parseInt(sID);i<max;i++){
 			var data = new ui.ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();
 		}
 		localStorage.removeItem(this.pheader+max);
-		if(!!callback){ callback();}
+		this.parent.update();
 	},
 
 	//---------------------------------------------------------------------------

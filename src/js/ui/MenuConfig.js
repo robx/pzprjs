@@ -25,9 +25,10 @@ ui.menuconfig = {
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
 		
 		this.add('adjsize', true);							/* 自動横幅調節 */
-		this.add('cellsize', 2, [0,1,2,3,4]);				/* 表示サイズ */
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
+		
+		this.add('toolarea', 1, [0,1]);						/* ツールエリアの表示 */
 	},
 	add : Config.add,
 
@@ -37,7 +38,7 @@ ui.menuconfig = {
 	//---------------------------------------------------------------------------
 	set : function(idname, newval){
 		if(!this.list[idname]){ return;}
-		this.setproper(idname, newval);
+		newval = this.setproper(idname, newval);
 		this.configevent(idname,newval);
 	},
 	get : Config.get,
@@ -59,11 +60,9 @@ ui.menuconfig = {
 
 	//---------------------------------------------------------------------------
 	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
-	// menuconfig.gettype()      設定値の持つ型を返す
 	// menuconfig.valid()        設定値が有効なパズルかどうかを返す
 	//---------------------------------------------------------------------------
 	setproper : Config.setproper,
-	gettype : Config.gettype,
 	valid : function(idname){
 		if(idname==="keypopup"){ return (ui.keypopup.paneltype[1]!==0 || ui.keypopup.paneltype[3]!==0);}
 		return !!this.list[idname];
@@ -79,8 +78,8 @@ ui.menuconfig = {
 			ui.keypopup.display();
 			break;
 			
-		case 'adjsize': case 'cellsize': case 'fullwidth':
-			ui.event.adjustcellsize();
+		case 'adjsize': case 'cellsizeval': case 'fullwidth':
+			ui.adjustcellsize();
 			break;
 		}
 	}

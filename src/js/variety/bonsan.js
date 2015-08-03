@@ -99,7 +99,7 @@ Cell:{
 	minnum : 0
 },
 "Cell@heyabon":{
-	distance : null,
+	distance : null
 },
 
 Board:{
@@ -234,7 +234,6 @@ Graphic:{
 	mbcolor : "green",
 
 	paint : function(){
-		this.drawBGCells();
 		this.drawDashedGrid();
 
 		this.drawTip();
@@ -252,9 +251,9 @@ Graphic:{
 	},
 
 	getCellColor : function(cell){
-		var puzzle = this.owner, targetcell = (puzzle.execConfig('dispmove') ? cell.base : cell);
-		if(targetcell.qnum===-1){ return null;}
-		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===targetcell){ return this.movecolor;}
+		var puzzle = this.owner;
+		if((puzzle.execConfig('dispmove') ? cell.base : cell).qnum===-1){ return null;}
+		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
 		
 		var info = cell.error || cell.qinfo;
 		if     (info===0){ return this.quescolor;}
@@ -353,7 +352,6 @@ FileIO:{
 	},
 	decodeQnum_PBox_Sato : function(){
 		this.decodeCell( function(cell,ca){
-			console.log(ca);
 			if     (ca==="-"){ cell.qnum = -2;}
 			else if(ca!=="."){ cell.qnum = parseInt(ca);}
 		});

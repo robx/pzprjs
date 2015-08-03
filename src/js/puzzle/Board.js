@@ -317,8 +317,7 @@ Board:{
 			this.border.errclear();
 			this.excell.errclear();
 			this.haserror = false;
-			
-			this.owner.adjustCanvasSize();	/* 強制的に一から再描画を行う */
+			this.owner.redrawForce();	/* 描画キャッシュを破棄して描画し直す */
 		}
 	},
 

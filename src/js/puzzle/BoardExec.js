@@ -102,7 +102,8 @@ BoardExec:{
 		bd.resetInfo();
 
 		// Canvasを更新する
-		o.adjustCanvasSize();
+		o.adjustCanvas();
+		o.execListener('adjust');
 		o.painter.unsuspend();
 	},
 
@@ -367,8 +368,8 @@ BoardExec:{
 		}
 		for(var i=0;i<qnums.length;i++){
 			var data = qnums[i], areaid = data.areaid;
-			var top = bd.rooms.calcTopOfRoom(areaid);
-			if(top===null){
+			var tcell = bd.rooms.area[areaid].clist.getTopCell();
+			if(tcell.isnull){
 				var opemgr = this.owner.opemgr;
 				if(!opemgr.undoExec && !opemgr.redoExec){
 					opemgr.forceRecord = true;
@@ -377,7 +378,7 @@ BoardExec:{
 				}
 			}
 			else{
-				bd.cell[top].qnum = data.val;
+				tcell.qnum = data.val;
 			}
 		}
 	},

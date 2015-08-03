@@ -285,16 +285,16 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd=this.owner.board;
+		var bd=this.owner.board, bexec=this;
 		if(key & this.REDUCE){
 			var sublist=new this.owner.SegmentList();
 			bd.segment.each(function(seg){
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
-					case this.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.add(seg);} break;
-					case this.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.add(seg);} break;
-					case this.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.add(seg);} break;
-					case this.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.add(seg);} break;
+					case bexec.REDUCEUP: if(by1<bd.minby+2||by2<bd.minby+2){ sublist.add(seg);} break;
+					case bexec.REDUCEDN: if(by1>bd.maxby-2||by2>bd.maxby-2){ sublist.add(seg);} break;
+					case bexec.REDUCELT: if(bx1<bd.minbx+2||bx2<bd.minbx+2){ sublist.add(seg);} break;
+					case bexec.REDUCERT: if(bx1>bd.maxbx-2||bx2>bd.maxbx-2){ sublist.add(seg);} break;
 				}
 			});
 
@@ -305,22 +305,22 @@ BoardExec:{
 		}
 	},
 	adjustBoardData2 : function(key,d){
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		var bexec=this, xx=(d.x1+d.x2), yy=(d.y1+d.y2);
 		this.owner.board.segment.each(function(seg){
 			var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 			switch(key){
-				case this.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
-				case this.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
-				case this.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
-				case this.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
-				case this.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
-				case this.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
-				case this.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
-				case this.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
-				case this.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
-				case this.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case bexec.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
+				case bexec.FLIPX: seg.setpos(xx-bx1,by1,xx-bx2,by2); break;
+				case bexec.TURNR: seg.setpos(yy-by1,bx1,yy-by2,bx2); break;
+				case bexec.TURNL: seg.setpos(by1,xx-bx1,by2,xx-bx2); break;
+				case bexec.EXPANDUP: seg.setpos(bx1,  by1+2,bx2,  by2+2); break;
+				case bexec.EXPANDDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case bexec.EXPANDLT: seg.setpos(bx1+2,by1,  bx2+2,by2  ); break;
+				case bexec.EXPANDRT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case bexec.REDUCEUP: seg.setpos(bx1,  by1-2,bx2,  by2-2); break;
+				case bexec.REDUCEDN: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
+				case bexec.REDUCELT: seg.setpos(bx1-2,by1,  bx2-2,by2  ); break;
+				case bexec.REDUCERT: seg.setpos(bx1,  by1,  bx2,  by2  ); break;
 			}
 		});
 	}

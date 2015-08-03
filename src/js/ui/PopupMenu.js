@@ -219,6 +219,7 @@ ui.popupmgr.addpopup('newboard',
 			if     (col===16){ getEL("nb_size_sudoku_2").checked = true;}
 			else if(col===25){ getEL("nb_size_sudoku_3").checked = true;}
 			else if(col=== 4){ getEL("nb_size_sudoku_0").checked = true;}
+			else if(col=== 6){ getEL("nb_size_sudoku_4").checked = true;}
 			else             { getEL("nb_size_sudoku_1").checked = true;}
 		}
 		
@@ -259,10 +260,11 @@ ui.popupmgr.addpopup('newboard',
 			row = (parseInt(NB.row.value))|0;
 		}
 		else{
-			if     (NB.size[2].checked){ col=row=16;}
-			else if(NB.size[3].checked){ col=row=25;}
-			else if(NB.size[0].checked){ col=row= 4;}
-			else                       { col=row= 9;}
+			if     (getEL("nb_size_sudoku_2").checked){ col=row=16;}
+			else if(getEL("nb_size_sudoku_3").checked){ col=row=25;}
+			else if(getEL("nb_size_sudoku_0").checked){ col=row= 4;}
+			else if(getEL("nb_size_sudoku_4").checked){ col=row= 6;}
+			else                                      { col=row= 9;}
 		}
 		if(!!col && !!row){ url = [col, row];}
 		
@@ -409,7 +411,7 @@ ui.popupmgr.addpopup('filesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
@@ -511,7 +513,7 @@ ui.popupmgr.addpopup('imagesave',
 		var filename = form.filename.value;
 		var prohibit = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
 		for(var i=0;i<prohibit.length;i++){
-			if(filename.indexOf(prohibit[i])!==-1){ window.alert('ファイル名として使用できない文字が含まれています。'); return;}
+			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
 		/* 画像出力ルーチン */
@@ -528,7 +530,7 @@ ui.popupmgr.addpopup('imagesave',
 			}
 		}
 		catch(e){
-			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.notify.alert('画像の出力に失敗しました','Fail to Output the Image');
 		}
 
 		/* 出力された画像の保存ルーチン */
@@ -563,7 +565,7 @@ ui.popupmgr.addpopup('imagesave',
 			dataurl = ui.puzzle.toDataURL(type,cellsize);
 		}
 		catch(e){
-			ui.alertStr('画像の出力に失敗しました','Fail to Output the Image');
+			ui.notify.alert('画像の出力に失敗しました','Fail to Output the Image');
 		}
 		
 		/* 出力された画像を開くルーチン */
@@ -673,10 +675,7 @@ ui.popupmgr.addpopup('dispsize',
 	//------------------------------------------------------------------------------
 	changesize : function(e){
 		var csize = parseInt(this.form.cellsize.value);
-		if(csize>0){
-			ui.menuconfig.set('cellsizeval', (csize|0));
-			ui.event.adjustcellsize();
-		}
+		if(csize>0){ ui.menuconfig.set('cellsizeval', (csize|0));}
 		this.close();
 	}
 });

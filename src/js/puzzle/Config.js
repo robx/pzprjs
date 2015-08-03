@@ -68,6 +68,10 @@ Config.prototype =
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
+
+		/* その他の特殊項目(保存なし) */
+		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
+		this.add('uramashu', false);		/* 裏ましゅにする */
 	},
 	add : function(name, defvalue, option){
 		var item = {val:defvalue, defval:defvalue};
@@ -83,8 +87,8 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(!this.list[name]){ return;}
-		this.setproper(name, newval);
+		if(!this.list[name] || (name==="mode" && pzpr.PLAYER)){ return;}
+		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.owner.execListener('config', name, newval);
 	},
@@ -99,6 +103,8 @@ Config.prototype =
 			var item = this.list[key];
 			if(item.val!==item.defval){ object[key] = item.val;}
 		}
+		delete object.mode;
+		delete object.uramashu;
 		return JSON.stringify(object);
 	},
 	setAll : function(json){
@@ -111,7 +117,6 @@ Config.prototype =
 
 	//---------------------------------------------------------------------------
 	// config.setproper()    設定値の型を正しいものに変換して設定変更する
-	// config.gettype()      設定値の持つ型を返す
 	//---------------------------------------------------------------------------
 	setproper : function(name, newval){
 		var item = this.list[name];
@@ -120,9 +125,7 @@ Config.prototype =
 			case "number":  item.val = +newval;   break;
 			case "string":  item.val = ""+newval; break;
 		}
-	},
-	gettype : function(name){
-		return (typeof this.list[name].defval);
+		return item.val;
 	},
 
 	//---------------------------------------------------------------------------
@@ -150,6 +153,8 @@ Config.prototype =
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;
+			case 'mode':     exec = pzpr.EDITOR; break;
+			case 'uramashu': exec = (pid==="mashu"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;
@@ -159,9 +164,9 @@ Config.prototype =
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		var result = true, puzzle = this.owner;
+		var puzzle = this.owner;
 		switch(name){
-		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
+		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
 			puzzle.redraw();
 			break;
@@ -170,23 +175,40 @@ Config.prototype =
 			puzzle.checker.resetCache();
 			break;
 		
-		case 'disptype_bosanowa': case 'font':
-			puzzle.adjustCanvasSize();
+		case 'disptype_bosanowa':
+			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
 			break;
 		
 		case 'keytarget':
-			this.owner.key.setfocus();
+			puzzle.key.setfocus();
 			break;
 		
 		case 'color_qanscolor':
 			puzzle.painter.setColor('qanscolor', newval);
 			break;
 		
-		default:
-			result = false;
+		case "mode":
+			puzzle.editmode = (newval===puzzle.MODE_EDITOR);
+			puzzle.playmode = (newval===puzzle.MODE_PLAYER);
+			if(puzzle.ready){
+				puzzle.cursor.adjust_modechange();
+				puzzle.key.keyreset();
+				puzzle.mouse.mousereset();
+				if(puzzle.board.haserror){
+					puzzle.board.errclear();
+				}
+				else{
+					puzzle.redraw();
+				}
+			}
+			break;
+		
+		case 'uramashu':
+			puzzle.board.uramashu = newval;
+			puzzle.board.revCircleMain();
+			puzzle.redraw();
 			break;
 		}
-		return result;
 	}
 };
 

@@ -17,7 +17,7 @@
 
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
-   <li><span>__[ファイル]__[File]__</span><menu label="__ファイル__File__">
+   <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
      <li data-popup="newboard"><span>__新規作成__New Board__</span></li>
      <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
      <li data-popup="urloutput"><span>__URL出力__Export URL__</span></li>
@@ -28,11 +28,11 @@
      <hr>
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
    </menu></li>
-   <li><span>__[編集]__[Edit]__</span><menu label="__編集__Edit__">
+   <li><span>__編集__Edit__</span><menu label="__編集__Edit__">
      <li><span>__履歴__History__</span> -&gt;<menu label="__履歴__History__">
        <li id="menu_oldest" data-menu-exec="undoall"><span>__最初にジャンプ__Jump to oldest__</span></li>
-       <li id="menu_undo" data-menu-exec="undo"><span>__元に戻す/Undo__Undo__</span></li>
-       <li id="menu_redo" data-menu-exec="redo"><span>__やり直し/Redo__Redo__</span></li>
+       <li id="menu_undo" data-press-exec="undo,undostop"><span>__元に戻す/Undo__Undo__</span></li>
+       <li id="menu_redo" data-press-exec="redo,redostop"><span>__やり直し/Redo__Redo__</span></li>
        <li id="menu_latest" data-menu-exec="redoall"><span>__最後にジャンプ__Jump to latest__</span></li>
      </menu></li>
      <li><span>__盤面__Board__</span> -&gt;<menu label="__盤面__Board__">
@@ -46,16 +46,15 @@
      <hr>
      <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
    </menu></li>
-   <li><span>__[表示]__[Display]__</span><menu label="__表示__Display__">
-     <li data-config="cellsize"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
-       <li data-popup="dispsize"><span>__数値指定__Size Number__</span></li>
-       <li data-config="cellsize"><span>__倍率指定__Size Ratio__</span> -&gt;<menu label="__表示倍率__Size Ratio__">
-         <li data-value="0"><span>__サイズ 極小__Ex Small__</span></li>
-         <li data-value="1"><span>__サイズ 小__Small__</span></li>
-         <li data-value="2"><span>__サイズ 標準__Normal__</span></li>
-         <li data-value="3"><span>__サイズ 大__Large__</span></li>
-         <li data-value="4"><span>__サイズ 特大__Ex Large__</span></li>
-       </menu></li>
+   <li><span>__表示__Display__</span><menu label="__表示__Display__">
+     <li data-config="cellsizeval"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
+       <li data-popup="dispsize"><span>__数値指定__Set by Number__</span></li>
+       <hr>
+       <li data-value="19"><span>__サイズ 極小__Ex Small__</span></li>
+       <li data-value="27"><span>__サイズ 小__Small__</span></li>
+       <li data-value="36"><span>__サイズ 標準__Normal__</span></li>
+       <li data-value="54"><span>__サイズ 大__Large__</span></li>
+       <li data-value="108"><span>__サイズ 特大__Ex Large__</span></li>
      </menu></li>
      <li data-config="font"><span>__フォント__Font Family__</span> -&gt;<menu label="__フォント__Font Family__">
        <li data-value="1"><span>__ゴシック__Sans-Serif__</span></li>
@@ -70,9 +69,9 @@
      <hr>
      <li data-popup="colors"><span>__色の設定__Change Color__</span></li>
      <li data-menu-exec="repaint"><span>__盤面の再描画__Repaint whole board__</span></li>
-     <li data-menu-exec="toolarea"><span id="menu_toolarea">__管理領域を隠す__Hide Management Area__</span></li>
+     <li data-menu-exec="toolarea"><span id="menu_toolarea">ツールエリアを隠す</span></li>
    </menu></li>
-   <li><span>__[設定]__[Setting]__</span><menu label="__設定__Setting__">
+   <li><span>__設定__Setting__</span><menu label="__設定__Setting__">
      <li data-config="mode"><span>__モード__mode__</span> -&gt;<menu label="__モード__mode__">
        <li data-value="1"><span>__問題作成モード__Edit mode__</span></li>
        <li data-value="3"><span>__回答モード__Answer mode__</span></li>
@@ -125,7 +124,7 @@
        <li class="child" data-value="en"><span>English</span></li>
      </menu></li>
    </menu></li>
-   <li><span>__[その他]__[Others]__</span><menu label="__その他__Others__">
+   <li><span>__その他__Others__</span><menu label="__その他__Others__">
      <li data-popup="credit"><span>__ぱずぷれv3について__About PUZ-PRE v3__</span></li>
      <li data-menu-exec="jumpexp"><span>__操作説明__How to Input__</span></li>
      <hr>
@@ -270,6 +269,36 @@
 
 </div> <!-- div#main close. -->
 
+<div id="notifies" class="outofboard">
+
+  <!-- チェック用ダイアログ -->
+  <div class="notify" id="assertbox">
+    <div class="titlebar">Notice</div>
+    <div class="content">
+      <span id="notification"></span>
+      <div class="buttons">
+        <button class="btn btn-ok" data-button-exec="closealert">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- クリア用ダイアログ -->
+  <div class="notify" id="confirmbox">
+    <div class="titlebar">Confirmation</div>
+    <div class="content">
+      <span id="confirmcaption"></span>
+      <div class="buttons">
+        <button class="btn btn-danger" data-button-exec="confirmtrue">OK</button>
+        <button class="btn" data-button-exec="confirmfalse">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景色を暗くする＆入力操作を効かなくするためのエレメント -->
+  <div id="notifybg"></div>
+
+</div>
+
 <!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
 <div id="popup_parent" class="outofboard">
 
@@ -289,6 +318,7 @@
       </div>
       <div id="nb_size_sudoku">
         <input type="radio" name="size" id="nb_size_sudoku_0" value="0" /> 4x4<br />
+        <input type="radio" name="size" id="nb_size_sudoku_4" value="4" /> 6x6<br />
         <input type="radio" name="size" id="nb_size_sudoku_1" value="1" checked /> 9x9<br />
         <input type="radio" name="size" id="nb_size_sudoku_2" value="2" /> 16x16<br />
         <input type="radio" name="size" id="nb_size_sudoku_3" value="3" /> 25x25
@@ -368,35 +398,43 @@
     </form>
   </div>
 
-  <div class="popup">
+  <div class="popup" id="popup_database">
     <div class="titlebar">__ブラウザ保存/復帰__Browser Saved Data__</div>
     <form name="database">
-      <table border=0><tr>
-      <td style="padding-right:12pt;">
+      <div>
         <select name="sorts" data-change-exec="database_handler">
           <option value="idlist">__ID順__ID order__</option>
-          <option value="newsave">__保存が新しい順__Latest Save__</option>
-          <option value="oldsave">__保存が古い順__Oldest Save__</option>
+          <option value="newsave">__保存が新しい順__Newer First__</option>
+          <option value="oldsave">__保存が古い順__Older First__</option>
           <option value="size">__サイズ/難易度順__Size, Dif. order__</option>
         </select>
         <button type="button" class="btn" data-button-exec="database_handler" name="tableup">__▲__Up__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="tabledn">__▼__Down__</button>
         <br />
         <select name="datalist" size=8 data-change-exec="database_handler"></select>
-      </td>
-      <td>
-        <span>__コメント:__Comment:__</span><br />
-        <textarea name="comtext" cols=28 rows=5 wrap="hard" readonly style="background-color:#dfdfdf"></textarea><br />
-        <button type="button" class="btn" data-button-exec="database_handler" name="comedit">__コメント編集__Edit Comment__</button>
-        <button type="button" class="btn" data-button-exec="database_handler" name="difedit">__難易度設定__Set difficulty__</button>
-        <button type="button" class="btn btn-danger" data-button-exec="database_handler" name="del">__削除__Delete__</button>
         <br />
-        <br />
-        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
-        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
+        <button type="button" class="btn btn-ok" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
         <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
-      </td>
-      </tr></table>
+      </div>
+      <div>
+        <span>Information</span> <span id="database_cand"></span><br>
+        <label>__種類:__Variety:__</label><span id="database_variety"></span><br>
+        <label>__難易度:__Difficulity:__</label>
+        <select name="hard" data-change-exec="database_handler">
+          <option value="0">-</option>
+          <option value="1">__らくらく__Easy__</option>
+          <option value="2">__おてごろ__Normal__</option>
+          <option value="3">__たいへん__Hard__</option>
+          <option value="4">__アゼン__Expert__</option>
+        </select><br>
+        <label>__日時:__Date:__</label><span id="database_date"></span><br>
+        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard"></textarea><br>
+        <br>
+        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
+        <button type="button" class="btn btn-info" data-button-exec="database_handler" name="overwrite">__上書き保存__Overwrite__</button>
+        <button type="button" class="btn" data-button-exec="database_handler" name="updateinfo">__情報更新__Update Info__</button>
+        <button type="button" class="btn btn-danger" data-button-exec="database_handler" name="del">__削除__Delete__</button>
+      </div>
     </form>
   </div>
 
@@ -527,10 +565,6 @@
     <div class="panelbase" id="panelbase3"></div>
   </div>
 
-</div>
-
-<!-- テスト用文字列出力要素 -->
-<div id="testdiv" style="text-align:left;font-size:8pt;line-height:100%;">
 </div>
 
 <!-- 隠し要素 -->
