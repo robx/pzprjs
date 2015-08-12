@@ -80,6 +80,7 @@ ui.keypopup =
 		nanro      : [10,10],
 		view       : [10,10],
 		kakuru     : [10,10],
+		kazunori   : [10,10],
 		tilepaint  : [51,0],
 		triplace   : [51,0],
 		kakuro     : [51,10],
@@ -230,7 +231,7 @@ ui.keypopup =
 		else if(pid==='rectslider'){
 			cap = '■';
 		}
-		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
+		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'||pid==='kazunori'){
 			cap = '○';
 		}
 		if(cap!==null){ itemlist.push(['-',cap]);}

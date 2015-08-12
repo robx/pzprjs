@@ -78,6 +78,7 @@
 		"variety/kaero",
 		"variety/kakuro",
 		"variety/kakuru",
+		"variety/kazunori",
 		"variety/kinkonkan",
 		"variety/kouchoku",
 		"variety/kramma",
