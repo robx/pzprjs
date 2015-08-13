@@ -117,6 +117,7 @@
 		"variety/snakes",
 		"variety/sudoku",
 		"variety/sukoro",
+		"variety/tapa",
 		"variety/tasquare",
 		"variety/tatamibari",
 		"variety/tateyoko",

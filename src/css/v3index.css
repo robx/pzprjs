@@ -86,11 +86,12 @@
 	/* for index.html, index_en.html, index_test.html */
 	li.lunch { color:black;}
 	li.lunch2{ color:#666666;}
-	li.testa { color:blue; }
-	li.nigun { color:lime; }
+	li.testa { color:navy; }
+	li.nigun { color:blue; }
 	li.trial { color:green;}
 	li.omopa { color:gray; }
 	li.orig  { color:#afafaf; }
+	li.genre { color:red; }
 	td.lists { padding:4pt 0pt 12pt 4pt; vertical-align:top; width:34%;}
 	td.blocks  { background-color:#ffdfdf;}
 	td.loops   { background-color:#dfdfff;}
