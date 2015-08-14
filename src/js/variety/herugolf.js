@@ -556,7 +556,7 @@ FailCode:{
 	laCurve      : ["ボールが移動途中に曲がっています。","A ball curves halfway."],
 	laLenNe      : ["ボールが移動途中に止まっています。","A ball stops halfway."],
 	laMoveOver   : ["ボールが指示された打数を超えて動いています。","You make a bogey or more."],
-	laWaterHazard: ["ウォーターハザードになっています。", ""],
+	laWaterHazard: ["ウォーターハザードになっています。", "There is a water hazaad ball."],
 	nmConnected  : ["ボールが繋がっています。","There are connected balls."],
 	nmOutOfHole  : ["ホールに入っていないボールがあります。","A ball doesn't cup in."],
 	nmIgnored    : ["ボールの入っていないホールがあります。","There is a Hole without a ball."]

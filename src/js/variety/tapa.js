@@ -311,7 +311,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], bx = cell.bx, by = cell.by;
-			var nums = cell.qnums, n = nums.length
+			var nums = cell.qnums, n = nums.length;
 
 			g.fillStyle = this.getCellNumberColor(cell);
 			for(var k=0;k<4;k++){
@@ -343,7 +343,7 @@ Encode:{
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","8")){ cell.qnums = [parseInt(ca,10)];}
-			else if(ca === '9'){ cell.qnums = [1,1,1,1]}
+			else if(ca === '9'){ cell.qnums = [1,1,1,1];}
 			else if(ca === '.'){ cell.qnums = [-2];}
 			else if(this.include(ca,"a","f")){
 				var num = parseInt(bstr.substr(i,2),36), val = [];

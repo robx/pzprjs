@@ -42,6 +42,6 @@ ui.debug.addDebugData('tapa', {
 		  result:"pzprv3/tapa/1/7/8 -,- 5,1 -,-,- 3,1,1 1,1,1,1 . /" },
 		{ input:["newboard,9,1"] },
 		{ input:["cursor,0,0", "mouse,rightx2, 1,1", "mouse,rightx3, 3,1", "mouse,rightx40, 5,1", "mouse,rightx41, 7,1", "mouse,rightx66, 9,1", "mouse,rightx67, 11,1", "mouse,rightx75, 13,1", "mouse,rightx76, 15,1", "mouse,rightx77, 17,1"],
-		  result:"pzprv3/tapa/1/9/1,1,1,1 3,1,1 -,-,- 5,1 -,- 8 0 - . /" },
+		  result:"pzprv3/tapa/1/9/1,1,1,1 3,1,1 -,-,- 5,1 -,- 8 0 - . /" }
 	]
 });
