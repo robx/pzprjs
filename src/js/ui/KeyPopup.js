@@ -41,6 +41,7 @@ ui.keypopup =
 		lookair    : [5,0],
 		tawa       : [6,0],
 		hashikake  : [8,0],
+		tapa       : [8,0],
 		amibo      : [10,0],
 		bag        : [10,0],
 		bdblock    : [10,0],
@@ -80,6 +81,7 @@ ui.keypopup =
 		nanro      : [10,10],
 		view       : [10,10],
 		kakuru     : [10,10],
+		kazunori   : [10,10],
 		tilepaint  : [51,0],
 		triplace   : [51,0],
 		kakuro     : [51,10],
@@ -230,7 +232,7 @@ ui.keypopup =
 		else if(pid==='rectslider'){
 			cap = '■';
 		}
-		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'){
+		else if(pid==='kurotto'||pid==='bonsan'||pid==='heyabon'||pid==='yosenabe'||pid==='herugolf'||pid==='kazunori'){
 			cap = '○';
 		}
 		if(cap!==null){ itemlist.push(['-',cap]);}
@@ -256,7 +258,12 @@ ui.keypopup =
 		this.generate_main(['1','2','3','4','5','6','0',' ',['-','?']],3);
 	},
 	gentable8 : function(mode){
-		this.generate_main(['1','2','3','4','5','6','7','8',' ',['-','○']],4);
+		if(ui.puzzle.pid!=='tapa'){
+			this.generate_main(['1','2','3','4','5','6','7','8',' ',['-','○']],4);
+		}
+		else{
+			this.generate_main(['1','2','3','4','5','6','7','8','0',' ',['-','?']],4);
+		}
 	},
 
 	//---------------------------------------------------------------------------

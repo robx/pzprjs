@@ -10,7 +10,7 @@ module.exports = function(grunt){
   grunt.initConfig({
     pkg: pkg,
 
-    clean: ['dist/*', 'pzprv3-*.zip', 'pzprv3-*.tar.gz'],
+    clean: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
 
     concat: {
       options: {
@@ -70,12 +70,20 @@ module.exports = function(grunt){
 
     shell: {
       release: {
+        options: {
+          execOptions: {
+            cwd: "dist",
+            env: {
+              FILENAME: "pzprv3-<%= pkg.version %>",
+              EXCLUDE_TAR: "--exclude *.concat.js --exclude .DS_Store",
+              EXCLUDE_ZIP: "-x *.concat.js -x .DS_Store"
+            }
+          },
+        },
         command: [
-          "cd dist",
-          "tar cvzf pzprv3-<%= pkg.version %>.tar.gz --exclude *.concat.js --exclude \".DS_Store\" *",
-          "zip -9r pzprv3-<%= pkg.version %>.zip * -x *.concat.js -x .DS_Store",
-          "mv pzprv3-<%= pkg.version %>.* ..",
-          "cd .."
+          "sh -c 'tar cvzf $0 $EXCLUDE_TAR *; mv $0 ..' $FILENAME.tar.gz",
+          "sh -c 'tar cvjf $0 $EXCLUDE_TAR *; mv $0 ..' $FILENAME.tar.bz2",
+          "sh -c 'zip -9r $0 * $EXCLUDE_ZIP; mv $0 ..' $FILENAME.zip"
         ].join('; ')
       }
     },

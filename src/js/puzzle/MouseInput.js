@@ -90,7 +90,15 @@ MouseEvent:{
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		this.mouseevent(this.getBoardAddress(e), 1);
+		/* 前回の位置からの差分を順番に入力していきます */
+		var addr = this.inputPoint.clone(), addrtarget = this.getBoardAddress(e);
+		var dx = (addrtarget.bx-addr.bx), dy = (addrtarget.by-addr.by);
+		var distance = (((dx>=0?dx:-dx)+(dy>=0?dy:-dy))*2+0.9)|0; /* 0.5くらいずつ動かす */
+		var mx = dx/distance, my = dy/distance;
+		for(var i=0;i<distance-1;i++){
+			this.mouseevent(addr.move(mx,my),1);
+		}
+		this.mouseevent(addrtarget,1);
 		
 		e.stopPropagation();
 		e.preventDefault();

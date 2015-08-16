@@ -1,6 +1,6 @@
 {
   "name": "pzprv3",
-  "version": "3.5.0",
+  "version": "3.5.1-pre",
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
   "directories": {
@@ -14,6 +14,19 @@
   ],
   "author": "sabo2",
   "license": "MIT",
+  "repository": {
+    "type": "hg",
+    "url": "https://bitbucket.org/sabo2/pzprv3"
+  },
+  "scripts": {
+    "build":       "grunt default",
+    "release":     "grunt release",
+    "release:gzip":"sh -c 'cd dist; tar czf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzprv3-$npm_package_version.tar.gz",
+    "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzprv3-$npm_package_version.tar.bz2",
+    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x .DS_Store; mv $0 ..' pzprv3-$npm_package_version.zip",
+    "clean":       "grunt clean",
+    "lint":        "grunt newer:jshint"
+  },
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-clean": "~0.5.0",
