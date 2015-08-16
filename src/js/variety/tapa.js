@@ -188,12 +188,14 @@ Cell:{
 			if(!cell.isnull){ shaded += ""+(cell.isShade()?1:0);}
 		}
 		var shades = shaded.split(/0+/);
-		if(shades[0].length===0){ shades.shift();}
-		if(shades[shades.length-1].length===0){ shades.pop();}
-		if(shaded.length===8 && shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
-			shades[0] += shades.pop();
+		if(shades.length>0){
+			if(shades[0].length===0){ shades.shift();}
+			if(shades[shades.length-1].length===0){ shades.pop();}
+			if(shaded.length===8 && shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
+				shades[0] += shades.pop();
+			}
+			for(var i=0;i<shades.length;i++){ result.push(shades[i].length);}
 		}
-		for(var i=0;i<shades.length;i++){ result.push(shades[i].length);}
 		if(result.length===0){ result = [0];}
 		return result;
 	}
