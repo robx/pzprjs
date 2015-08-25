@@ -30,6 +30,22 @@ ui.misc = {
 	},
 
 	//--------------------------------------------------------------------------------
+	// misc.setkeyfocus()     キャンバスにフォーカスをセットするか外す
+	//--------------------------------------------------------------------------------
+	setkeyfocus : function(){
+		var canvas = ui.puzzle.canvas;
+		if(!canvas){}
+		else if(ui.getConfig('keyboard') && ui.puzzle.key.isenablemode()){
+			canvas.focus();
+			canvas.contentEditable = true;
+		}
+		else{
+			canvas.blur();
+			canvas.contentEditable = false;
+		}
+	},
+
+	//--------------------------------------------------------------------------------
 	// misc.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	modifyCSS : function(input){

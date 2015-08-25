@@ -370,7 +370,6 @@ function postCanvasReady(puzzle, callback){
 	puzzle.painter.unsuspend();
 	
 	if(!puzzle.ready){
-		puzzle.key.setfocus();
 		puzzle.resetTime();
 		puzzle.ready = true;
 		puzzle.execListener('ready');
@@ -411,8 +410,6 @@ function setCanvasEvents(puzzle){
 	ae("keyup",   execKeyUp);
 }
 function execMouseDown(e){
-	/* キー入力のフォーカスを当てる */
-	if(!!this.key){ this.key.setfocus();}
 	if(!!this.mouse){ this.mouse.e_mousedown(e);}
 }
 function execMouseMove(e){

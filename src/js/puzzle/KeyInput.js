@@ -23,7 +23,6 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	// kc.keyreset()     キーボード入力に関する情報を初期化する
 	// kc.isenablemode() 現在のモードでキー入力が有効か判定する
-	// kc.setfocus()     キャンバスにフォーカスをセットするか外す
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
@@ -44,18 +43,6 @@ KeyEvent:{
 	},
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
-	},
-	setfocus : function(){
-		var canvas = this.owner.canvas;
-		if(!canvas){}
-		else if(this.owner.getConfig('keytarget') && this.isenablemode()){
-			canvas.focus();
-			canvas.contentEditable = true;
-		}
-		else{
-			canvas.blur();
-			canvas.contentEditable = false;
-		}
 	},
 
 	//---------------------------------------------------------------------------

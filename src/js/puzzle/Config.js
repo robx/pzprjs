@@ -44,8 +44,6 @@ Config.prototype =
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
 
-		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
-
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
@@ -176,10 +174,6 @@ Config.prototype =
 		
 		case 'disptype_bosanowa':
 			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
-			break;
-		
-		case 'keytarget':
-			puzzle.key.setfocus();
 			break;
 		
 		case 'color_qanscolor':

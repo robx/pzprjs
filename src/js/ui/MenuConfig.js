@@ -23,7 +23,8 @@ ui.menuconfig = {
 		this.add('autocheck', pzpr.PLAYER);					/* 正解自動判定機能 */
 		
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
-		
+		this.add('keyboard', false);						/* 盤面をキー入力のターゲットにする */
+
 		this.add('adjsize', true);							/* 自動横幅調節 */
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
@@ -76,6 +77,10 @@ ui.menuconfig = {
 		switch(idname){
 		case 'keypopup':
 			ui.keypopup.display();
+			break;
+			
+		case 'keyboard':
+			ui.misc.setkeyfocus();
 			break;
 			
 		case 'adjsize': case 'cellsizeval': case 'fullwidth':

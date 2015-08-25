@@ -59,6 +59,7 @@ ui.listener =
 		
 		ui.adjustcellsize();
 		ui.keypopup.display();
+		ui.misc.setkeyfocus();
 		
 		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
@@ -163,6 +164,7 @@ ui.listener =
 			ui.setdisplay('keypopup');
 			ui.setdisplay('bgcolor');
 			ui.keypopup.display();
+			ui.misc.setkeyfocus();
 		}
 		else if(idname==='language'){
 			ui.displayAll();
