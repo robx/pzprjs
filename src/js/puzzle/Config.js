@@ -34,7 +34,6 @@ Config.prototype =
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
-		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 表示色の設定 */
 		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
