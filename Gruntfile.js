@@ -31,7 +31,7 @@ module.exports = function(grunt){
           process: true
         },
         files: [
-          { src: require('./src/js/pzprv3.js').files.filter(function(filename){ return !filename.match(/^ui\//);}), dest: 'dist/lib/pzpr.concat.js' }
+          { src: require('./src/js/pzprv3.js').files.filter(function(filename){ return !filename.match(/\/ui\//);}), dest: 'dist/lib/pzpr.concat.js' }
         ]
       }
     },
