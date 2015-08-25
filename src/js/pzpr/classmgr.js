@@ -115,7 +115,7 @@ pzpr.classmgr = {
 		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = pzpr.util.getpath()+"../js/variety/"+pzpr.variety.toScript(pid)+".js";
+		_script.src = pzpr.util.getpath()+"./variety/"+pzpr.variety.toScript(pid)+".js";
 		document.getElementsByTagName('head')[0].appendChild(_script);
 		this.includedFile[pid] = true;
 	},

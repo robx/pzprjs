@@ -6,6 +6,8 @@ module.exports = function(grunt){
   var fs = require('fs');
   var banner_min  = fs.readFileSync('./src/js/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/js/common/banner_full.js', 'utf-8');
+  var banner_min_pzpr  = banner_min.replace("pzprv3.js", "pzpr.js");
+  var banner_full_pzpr = banner_full.replace("pzprv3.js", "pzpr.js");
 
   grunt.initConfig({
     pkg: pkg,
@@ -13,14 +15,23 @@ module.exports = function(grunt){
     clean: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
 
     concat: {
-      options: {
-        banner: banner_full,
-        process: true
-      },
       release: {
+        options: {
+          banner: banner_full,
+          process: true
+        },
         files: [
           { src: require('./src/js/pzprv3.js').files,     dest: 'dist/js/pzprv3.concat.js' },
           { src: require('./src/js/pzprv3-all.js').files, dest: 'dist/js/pzprv3-all.concat.js' }
+        ]
+      },
+      core: {
+        options: {
+          banner: banner_full_pzpr,
+          process: true
+        },
+        files: [
+          { src: require('./src/js/pzprv3.js').files.filter(function(filename){ return !filename.match(/^ui\//);}), dest: 'dist/lib/pzpr.concat.js' }
         ]
       }
     },
@@ -54,16 +65,26 @@ module.exports = function(grunt){
     },
 
     uglify: {
-      options: {
-        banner: banner_min,
-        report: 'min',
-      },
       release: {
+        options: {
+          banner: banner_min,
+          report: 'min',
+        },
         files: [
           { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/js/variety' },
           { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js' },
           { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
           { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },
+        ]
+      },
+      core: {
+        options: {
+          banner: banner_min_pzpr,
+          report: 'min',
+        },
+        files: [
+          { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/lib/variety' },
+          { src: 'dist/lib/pzpr.concat.js', dest: 'dist/lib/pzpr.js' }
         ]
       }
     },
@@ -110,5 +131,6 @@ module.exports = function(grunt){
   grunt.registerTask('lint', ['newer:jshint:all']);
   grunt.registerTask('default', [        'clean',                   'copy:debug'                    ]);
   grunt.registerTask('release', ['lint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
+  grunt.registerTask('core',    ['lint', 'clean', 'concat:core',                    'uglify:core'   ]);
   grunt.registerTask('zipfile', ['shell:release']);
 };
