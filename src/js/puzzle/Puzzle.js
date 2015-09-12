@@ -1,4 +1,4 @@
-// Puzzle.js v3.4.1
+// Puzzle.js v3.5.2
 /* global Candle:false */
 (function(){
 
@@ -6,7 +6,15 @@
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 pzpr.Puzzle = function(canvas, option){
+	var canvasNotElement;
+	try{ canvasNotElement = !(canvas instanceof HTMLElement);}
+	/* IE8以下だとHTMLElementが定義されておらずエラーになる */
+	catch(e){ canvasNotElement = !(canvas && canvas.style);}
+	if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
+
 	option = (!!option ? option : {});
+	if(pzpr.env.browser.Presto){ option.graphic='canvas';}
+
 	this.opt = option;
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード

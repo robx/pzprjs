@@ -43,7 +43,7 @@ pzpr.addLoadListener(function addWindowEvents(){
 });
 function execResize(e){
 	for(var i=0,len=pzpr.puzzles.length;i<len;i++){
-		pzpr.puzzles[i].adjustCanvasPos();
+		// pzpr.puzzles[i].adjustCanvasPos();
 	}
 }
 
