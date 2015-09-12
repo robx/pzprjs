@@ -86,7 +86,10 @@ pzpr.Puzzle.prototype =
 		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
 		type = type || this.opt.graphic || '';
 		
+		var rect = pzpr.util.getRect(el);
 		var _div = document.createElement('div');
+		_div.style.width  = rect.width+'px';
+		_div.style.height = rect.height+'px';
 		el.appendChild(_div);
 		this.canvas = _div;
 		
