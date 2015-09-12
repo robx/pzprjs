@@ -327,6 +327,31 @@ FileIO:{
 			else if(obj.qans>=  2){ return (obj.qans.toString() + " ");}
 			else                  { return ". ";}
 		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellShakashaka_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellShakashaka_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -2,
+	
+	decodeCellShakashaka_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if(name.charAt(0)==='n'){ cell.qans = (((+name.substr(1))-1)&3)+2;}
+			else if(name==='s') { cell.qsub = 1;}
+		});
+	},
+	encodeCellShakashaka_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if     (cell.qans>0)  { return 'n'+(((cell.qans-1)&3)+4);}
+			else if(cell.qsub===1){ return 's';}
+			return 'u';
+		});
 	}
 },
 

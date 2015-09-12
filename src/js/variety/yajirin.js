@@ -121,7 +121,7 @@ FileIO:{
 		this.encodeBorderLine();
 	},
 
-	kanpenOpen : function(array){
+	kanpenOpen : function(){
 		this.decodeCellDirecQnum_kanpen(false);
 		this.decodeBorderLine();
 	},
@@ -134,6 +134,7 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if     (ca==="#" && !isurl){ obj.qans = 1;}
 			else if(ca==="+" && !isurl){ obj.qsub = 1;}
+			else if(ca==="-4"){ obj.qnum = -2;}
 			else if(ca!=="."){
 				var num = parseInt(ca), dir = ((num & 0x30) >> 4);
 				if     (dir===0){ obj.qdir = obj.UP;}
@@ -154,11 +155,53 @@ FileIO:{
 				else if(obj.qdir===obj.RT){ dir = 3;}
 				return (""+((dir<<4)+(num&0x0F))+" ");
 			}
+			else if(obj.qnum===-2){ return "-4 ";}
 			else if(!isurl){
 				if     (obj.qans===1){ return "# ";}
 				else if(obj.qsub===1){ return "+ ";}
 			}
 			return ". ";
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellDirecQnum_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellDirecQnum_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+	},
+
+	decodeCellDirecQnum_XMLBoard : function(){
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val>=0){
+				var dir = ((val & 0x30) >> 4);
+				if     (dir===0){ cell.qdir = cell.UP;}
+				else if(dir===1){ cell.qdir = cell.LT;}
+				else if(dir===2){ cell.qdir = cell.DN;}
+				else if(dir===3){ cell.qdir = cell.RT;}
+				cell.qnum = (val & 0x0F);
+			}
+			else if(val===-1){ cell.qsub = 1;}
+			else if(val===-2){ cell.qans = 1;}
+			else if(val===-4){ cell.qnum = -2;}
+		});
+	},
+	encodeCellDirecQnum_XMLBoard : function(){
+		this.encodeCellXMLBoard(function(cell){
+			var val = -3, dir = 0;
+			if(cell.qnum!==-1 && cell.qdir!==cell.NDIR){
+				if     (cell.qdir===cell.UP){ dir = 0;}
+				else if(cell.qdir===cell.LT){ dir = 1;}
+				else if(cell.qdir===cell.DN){ dir = 2;}
+				else if(cell.qdir===cell.RT){ dir = 3;}
+				val = ((dir<<4)+(cell.qnum&0x0F));
+			}
+			else if(cell.qnum===-2){ val = -4;}
+			else if(cell.qans===1) { val = -2;}
+			else if(cell.qsub===1) { val = -1;}
+			return val;
 		});
 	}
 },

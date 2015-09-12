@@ -313,6 +313,48 @@ FileIO:{
 			var item = [(i+1), stones[i][1], stones[i][0]];
 			this.datastr += (item.join(" ")+"\n");
 		}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_goishi_XMLBoard();
+		this.decodeQansPos_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_goishi_XMLBoard();
+		this.encodeQansPos_XMLAnswer();
+	},
+
+	decodeCellQnum_goishi_XMLBoard : function(){
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val===1){ cell.ques = 0;}
+		});
+	},
+	encodeCellQnum_goishi_XMLBoard : function(){
+		this.encodeCellXMLBoard(function(cell){
+			return (cell.ques===0 ? '1' : null);
+		});
+	},
+
+	decodeQansPos_XMLAnswer : function(){
+		var nodes = this.xmldoc.querySelectorAll('answer picked');
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx = 2*(+node.getAttribute('c'))-1;
+			var by = 2*(+node.getAttribute('r'))-1;
+			this.owner.board.getc(bx,by).anum = +node.getAttribute('n');
+		}
+	},
+	encodeQansPos_XMLAnswer : function(){
+		var boardnode = this.xmldoc.querySelector('answer');
+		var bd = this.owner.board;
+		for(var ans=1;;ans++){
+			var cell = null;
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].anum===ans){ cell = bd.cell[c]; break;}
+			}
+			if(!cell){ break;}
+			boardnode.appendChild(this.createXMLNode('picked',{n:ans,r:(cell.by>>1)+1,c:(cell.bx>>1)+1}));
+		}
 	}
 },
 

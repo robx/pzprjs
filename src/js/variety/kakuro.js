@@ -326,7 +326,59 @@ FileIO:{
 			}
 			if(by<bd.maxby-1){ this.datastr += "\n";}
 		}
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum51_XMLBoard();
+		this.decodeCellAnum_kakuro_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum51_XMLBoard();
+		this.encodeCellAnum_kakuro_XMLAnswer();
+	},
+
+	decodeCellQnum51_XMLBoard : function(){
+		var nodes = this.xmldoc.querySelectorAll('board wall');
+		var bd = this.owner.board;
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx = 2*(+node.getAttribute('c'))-3;
+			var by = 2*(+node.getAttribute('r'))-3;
+			var a = +node.getAttribute('a');
+			var b = +node.getAttribute('b');
+			var obj = bd.getobj(bx,by); /* cell or excell */
+			obj.ques = 51;
+			if(a>0){ obj.qnum  = a;}
+			if(b>0){ obj.qnum2 = b;}
+		}
+	},
+	encodeCellQnum51_XMLBoard : function(){
+		var boardnode = this.xmldoc.querySelector('board');
+		var bd = this.owner.board;
+		for(var by=-1;by<bd.maxby;by+=2){
+			for(var bx=-1;bx<bd.maxbx;bx+=2){
+				var obj = bd.getobj(bx,by); /* cell or excell */
+				if(obj.ques===51){
+					var a = (obj.qnum  > 0 ? obj.qnum  : 0);
+					var b = (obj.qnum2 > 0 ? obj.qnum2 : 0);
+					boardnode.appendChild(this.createXMLNode('wall',{r:((by+3)>>1),c:((bx+3)>>1),a:a,b:b}));
+				}
+			}
+		}
+	},
+
+	PBOX_ADJUST : 2,
+	decodeCellAnum_kakuro_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if(name!=='n-1' && name!=='n0' && cell.ques!==51){ cell.anum = +name.substr(1);}
+		});
+	},
+	encodeCellAnum_kakuro_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if(cell.ques===0 && cell.anum===-1){ return 'n0';}
+			return 'n'+cell.anum;
+		});
+	},
 },
 
 //---------------------------------------------------------

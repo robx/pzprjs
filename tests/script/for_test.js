@@ -272,31 +272,47 @@ ui.debug.extend(
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
-			setTimeout(function(){ self.check_file_pbox(self);},0);
+			setTimeout(function(){
+				if(pzpr.variety.info[self.pid].exists.kanpen){ self.check_file_pbox(self);}
+				else{ self.check_turnR1(self);}
+			},0);
 		});
 	},
 	check_file_pbox : function(self){
-		if(pzpr.variety.info[self.pid].exists.kanpen){
-			var o = ui.puzzle, bd = o.board, pid = o.pid;
-			var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
-			var bd2 = self.bd_freezecopy(bd);
+		var o = ui.puzzle, bd = o.board, pid = o.pid;
+		var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
+		var bd2 = self.bd_freezecopy(bd);
 
-			o.painter.suspendAll();
-			bd.initBoardSize(1,1);
-			bd.resetInfo();
+		o.painter.suspendAll();
+		bd.initBoardSize(1,1);
+		bd.resetInfo();
 
-			o.open(outputstr, function(){
-				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-				if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
-				else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
-				self.qsubf = true;
+		o.open(outputstr, function(){
+			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
+			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
+			self.qsubf = true;
 
-				setTimeout(function(){ self.check_turnR1(self);},0);
-			});
-		}
-		else{
+			setTimeout(function(){ self.check_file_pbox_xml(self);},0);
+		});
+	},
+	check_file_pbox_xml : function(self){
+		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
+		var bd2 = self.bd_freezecopy(bd);
+
+		puzzle.painter.suspendAll();
+		bd.initBoardSize(1,1);
+		bd.resetInfo();
+
+		puzzle.open(outputstr, function(){
+			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
+			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpenXML = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTA("FileIO kanpenXML = pass");}
+			self.qsubf = true;
+
 			setTimeout(function(){ self.check_turnR1(self);},0);
-		}
+		});
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){

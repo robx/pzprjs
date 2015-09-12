@@ -383,10 +383,11 @@
       <input type="hidden" name="ques" value="" />
       <input type="hidden" name="urlstr" value="" />
       <span>__ファイル形式__File format__</span>
-      <select name="filetype">
+      <select name="filetype" data-change-exec="changefilename">
         <option value="filesave">__ぱずぷれv3形式__Puz-Pre v3 format__</option>
    <!-- <option value="filesave3">__ぱずぷれv3(履歴つき)__Puz-Pre v3 with history__</option> -->
-        <option value="filesave2">__pencilbox形式__Pencilbox format__</option>
+        <option value="filesave2">__pencilbox形式__Pencilbox Text format__</option>
+        <option value="filesave4">__pencilbox XML形式__Pencilbox XML format__</option>
       </select>
       <br />
       <span>__ファイル名__Filename__</span>
@@ -552,7 +553,8 @@
         <button type="button" class="btn" data-button-exec="handler" name="inputcheck_popup">INP</button>
       <br />
         <button type="button" class="btn" data-button-exec="handler" name="filesave">Save</button
-      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox">PBSave</button>
+      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox">PBSave</button
+      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox_xml">PBSaveX</button>
         <button type="button" class="btn" data-button-exec="handler" name="fileopen">Load</button
       /><button type="button" class="btn" data-button-exec="handler" name="erasetext">__消去__Clear__</button
       /><button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>

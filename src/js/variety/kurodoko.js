@@ -107,6 +107,27 @@ FileIO:{
 	},
 	kanpenSave : function(){
 		this.encodeCellQnumAns_kanpen();
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellAns_kurodoko_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -4,
+
+	encodeCellAns_kurodoko_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if(cell.qnum===-1){
+				if     (cell.qans===1){ return 'w';}
+				else if(cell.qsub===1){ return 's';}
+			}
+			return 'u';
+		});
 	}
 },
 

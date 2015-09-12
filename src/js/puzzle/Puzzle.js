@@ -281,7 +281,7 @@ function openExecute(puzzle, data, callback){
 	puzzle.ready = false;
 	var Board = (!!puzzle.Board ? puzzle.Board : null);
 	var pzl = pzpr.parser.parse(data, puzzle.pid);
-	
+
 	pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.Board){ initObjects(puzzle);}

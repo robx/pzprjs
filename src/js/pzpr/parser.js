@@ -12,7 +12,8 @@ var URL_AUTO    = 0,
 	
 	FILE_AUTO = 0,
 	FILE_PZPR = 1,
-	FILE_PBOX = 2;
+	FILE_PBOX = 2,
+	FILE_PBOX_XML = 3;
 
 pzpr.parser = {
 	
@@ -29,6 +30,7 @@ pzpr.parser = {
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
+	FILE_PBOX_XML : FILE_PBOX_XML,
 	
 	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
@@ -52,7 +54,9 @@ pzpr.parser = {
 	parseFile : function(fstr, variety){
 		if(fstr instanceof this.FileData){ return fstr;}
 		
-		fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
+		if(!fstr.match(/^\<\?xml/)){
+			fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
+		}
 		return (new pzpr.parser.FileData(fstr, variety)).parse();
 	}
 };
@@ -274,6 +278,7 @@ pzpr.parser.FileData.prototype = {
 	rows    : 0,
 	bstr    : "",
 	history : "",
+	xmldoc  : null,
 	
 	isfile : true,
 	
@@ -281,6 +286,7 @@ pzpr.parser.FileData.prototype = {
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
+	FILE_PBOX_XML : FILE_PBOX_XML,
 	
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());
@@ -299,15 +305,26 @@ pzpr.parser.FileData.prototype = {
 		var firstline = lines.shift();
 		
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
-		var type = this.type = (firstline.match(/^pzprv3/) ? this.FILE_PZPR : this.FILE_PBOX);
-		if(type===this.FILE_PZPR){
+		if(firstline.match(/^pzprv3/)){
+			this.type = this.FILE_PZPR;
 			if(firstline.match(/pzprv3\.(\d+)/)){ this.filever = +RegExp.$1;}
 			this.id = lines.shift();
+			this.qdata = lines.join("\n");
 		}
-		else if(type===this.FILE_PBOX){
+		else{
+			this.type = ((!firstline.match(/^\<\?xml/)) ? this.FILE_PBOX : this.FILE_PBOX_XML);
 			lines.unshift(firstline);
+			this.qdata = lines.join("\n");
+			
+			if(this.type===this.FILE_PBOX_XML){
+				if(!!DOMParser){
+					this.xmldoc = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
+					this.id = this.xmldoc.querySelector('puzzle').getAttribute('type');
+				}
+				else{ this.id = '';}
+			}
 		}
-		this.qdata = lines.join("\n");
+		this.id = pzpr.variety.toPID(this.id);
 		
 		return (!!this.id);
 	},
@@ -320,6 +337,9 @@ pzpr.parser.FileData.prototype = {
 		if(this.type===this.FILE_PZPR){
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.id, ""].join("\n");
 		}
+		else if(this.type===this.FILE_PBOX_XML){
+			this.xmldoc.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.id));
+		}
 		return "";
 	},
 	
@@ -330,7 +350,12 @@ pzpr.parser.FileData.prototype = {
 		var lines = this.qdata.split("\n"), col = 0, row = 0;
 		
 		/* サイズを表す文字列 */
-		if(this.type===this.FILE_PBOX && this.id==="kakuro"){
+		if(this.type===this.FILE_PBOX_XML){
+			row = +this.xmldoc.querySelector('size').getAttribute('row');
+			col = +this.xmldoc.querySelector('size').getAttribute('col');
+			if(this.id==="slither"||this.id==='kakuro'){ row--; col--;}
+		}
+		else if(this.type===this.FILE_PBOX && this.id==="kakuro"){
 			row = +lines.shift() - 1;
 			col = +lines.shift() - 1;
 		}
@@ -346,30 +371,38 @@ pzpr.parser.FileData.prototype = {
 		this.cols = col;
 		
 		/* サイズ以降のデータを取得 */
-		var bstrs = [], historypos = null;
-		for(var i=0;i<lines.length;i++){
-			/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
-			if(lines[i].match(/^http\:\/\//)){ break;}
-			
-			/* 履歴行に到達した場合 */
-			if(lines[i].match(/history:\{|__HISTORY__/)){ historypos=i; break;}
-			
-			bstrs.push(lines[i]);
-		}
-		this.bstr = bstrs.join("\n");
-		
-		/* 履歴部分の読み込み */
-		if(this.type===this.FILE_PZPR && historypos!==null){
-			var histrs = [], count = 0, cnt;
-			for(var i=historypos;i<lines.length;i++){
-				histrs.push(lines[i]);
+		if(this.type===this.FILE_PZPR){
+			var bstrs = [], historypos = null;
+			for(var i=0;i<lines.length;i++){
+				/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
+				if(lines[i].match(/^http\:\/\//)){ break;}
 				
-				cnt = count;
-				count += (lines[i].match(/\{/g)||[]).length;
-				count -= (lines[i].match(/\}/g)||[]).length;
-				if(cnt>0 && count===0){ break;}
+				/* 履歴行に到達した場合 */
+				if(lines[i].match(/history:\{|__HISTORY__/)){ historypos=i; break;}
+				
+				bstrs.push(lines[i]);
 			}
-			this.history = histrs.join("\n");
+			this.bstr = bstrs.join("\n");
+			
+			/* 履歴部分の読み込み */
+			if(historypos!==null){
+				var histrs = [], count = 0, cnt;
+				for(var i=historypos;i<lines.length;i++){
+					histrs.push(lines[i]);
+					
+					cnt = count;
+					count += (lines[i].match(/\{/g)||[]).length;
+					count -= (lines[i].match(/\}/g)||[]).length;
+					if(cnt>0 && count===0){ break;}
+				}
+				this.history = histrs.join("\n");
+			}
+		}
+		else if(this.type===this.FILE_PBOX){
+			this.bstr = lines.join("\n");
+		}
+		else{
+			this.bstr = this.qdata;
 		}
 		
 		return true;
@@ -379,6 +412,8 @@ pzpr.parser.FileData.prototype = {
 	// ★ outputFileData() パズル種類, URL種類, fstrからファイルのデータを生成する
 	//---------------------------------------------------------------------------
 	outputFileData : function(){
+		if(this.type===this.FILE_PBOX_XML){ return this.outputFileDataXML();}
+		
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
 
 		/* サイズを表す文字列 */
@@ -403,6 +438,34 @@ pzpr.parser.FileData.prototype = {
 		}
 
 		return out.join("\n");
+	},
+
+	//---------------------------------------------------------------------------
+	// ★ outputFileDataXML() pencilboxのXML向けファイルのデータを生成する
+	//---------------------------------------------------------------------------
+	createXMLNode : function(name, attrs){
+		var node = this.xmldoc.createElement(name);
+		if(!!attrs){ for(var i in attrs){ node.setAttribute(i, attrs[i]);} }
+		return node;
+	},
+	outputFileDataXML : function(){
+		var puzzlenode = this.xmldoc.querySelector('puzzle');
+		
+		var row = this.rows, col = this.cols;
+		if(this.id==="slither"||this.id==='kakuro'){ row++; col++;}
+		puzzlenode.appendChild(this.createXMLNode('size', {row:row, col:col}));
+		
+		var propnode = this.createXMLNode('property');
+		propnode.appendChild(this.createXMLNode('author', {value:''}));
+		propnode.appendChild(this.createXMLNode('source', {value:''}));
+		propnode.appendChild(this.createXMLNode('difficulty', {value:''}));
+		puzzlenode.appendChild(propnode);
+		
+		// 順番を入れ替え
+		puzzlenode.appendChild(puzzlenode.querySelector('board'));
+		puzzlenode.appendChild(puzzlenode.querySelector('answer'));
+		
+		return (new XMLSerializer()).serializeToString(this.xmldoc);
 	}
 };
 

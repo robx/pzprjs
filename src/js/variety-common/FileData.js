@@ -229,14 +229,9 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	// fio.decodeAreaRoom() 部屋のデコードを行う
 	// fio.encodeAreaRoom() 部屋のエンコードを行う
-	// fio.decodeAnsAreaRoom() (回答用)部屋のデコードを行う
-	// fio.encodeAnsAreaRoom() (回答用)部屋のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeAreaRoom : function(){ this.decodeAreaRoom_com(true);},
 	encodeAreaRoom : function(){ this.encodeAreaRoom_com(true);},
-	decodeAnsAreaRoom : function(){ this.decodeAreaRoom_com(false);},
-	encodeAnsAreaRoom : function(){ this.encodeAreaRoom_com(false);},
-
 	decodeAreaRoom_com : function(isques){
 		this.readLine();
 		this.rdata2Border(isques, this.getItemList(this.owner.board.qrows));
@@ -349,64 +344,155 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if     (ca==="#"){ obj.qans = 1;}
 			else if(ca==="+"){ obj.qsub = 1;}
+			else if(ca==="?"){ obj.qnum = -2;}
 			else if(ca!=="."){ obj.qnum = parseInt(ca);}
 		});
 	},
 	encodeCellQnumAns_kanpen : function(){
 		this.encodeCell( function(obj){
 			if     (obj.qnum>=0 ){ return (obj.qnum.toString() + " ");}
+			else if(obj.qnum===-2){return "? ";}
 			else if(obj.qans===1){ return "# ";}
 			else if(obj.qsub===1){ return "+ ";}
 			else                 { return ". ";}
 		});
 	},
-	//---------------------------------------------------------------------------
-	// fio.decodeSquareRoom() pencilbox用四角形の部屋のデコードを行う
-	// fio.encodeSquareRoom() pencilbox用四角形の部屋のエンコードを行う
-	// fio.decodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のデコードを行う
-	// fio.encodeAnsSquareRoom() (回答用)pencilbox用四角形の部屋のエンコードを行う
-	//---------------------------------------------------------------------------
-	decodeSquareRoom : function(){ this.decodeSquareRoom_com(true);},
-	encodeSquareRoom : function(){ this.encodeSquareRoom_com(true);},
-	decodeAnsSquareRoom : function(){ this.decodeSquareRoom_com(false);},
-	encodeAnsSquareRoom : function(){ this.encodeSquareRoom_com(false);},
 
-	decodeSquareRoom_com : function(isques){
-		var rmax = parseInt(this.readLine());
-		var barray = this.readLines(rmax);
+	//---------------------------------------------------------------------------
+	// fio.decodeCellQnum_XMLBoard() pencilbox XML用問題用数字のデコードを行う
+	// fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字のエンコードを行う
+	//---------------------------------------------------------------------------
+	UNDECIDED_NUM_XML : -1,
+	decodeCellQnum_XMLBoard : function(){
+		var minnum = (this.owner.board.cell[0].getminnum()>0 ? 1 : 0);
+		var undecnum = this.UNDECIDED_NUM_XML;
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val===undecnum)  { cell.qnum = -2;}
+			else if(val>=minnum){ cell.qnum = val;}
+		});
+	},
+	encodeCellQnum_XMLBoard : function(){
+		var minnum = (this.owner.board.cell[0].getminnum()>0 ? 1 : 0);
+		var undecnum = this.UNDECIDED_NUM_XML;
+		this.encodeCellXMLBoard(function(cell){
+			var val = null;
+			if     (cell.qnum===-2)   { val = undecnum;}
+			else if(cell.qnum>=minnum){ val = cell.qnum;}
+			return val;
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.decodeCellQnum_XMLBoard() pencilbox XML用問題用数字(browタイプ)のデコードを行う
+	// fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字(browタイプ)のエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeCellQnum_XMLBoard_Brow : function(){
+		var undecnum = this.UNDECIDED_NUM_XML;
+		this.decodeCellXMLBrow(function(cell, name){
+			if(name==='n'+undecnum){ cell.qnum = -2;}
+			else if(name!=='s'){ cell.qnum = +name.substr(1);}
+		});
+	},
+	encodeCellQnum_XMLBoard_Brow : function(){
+		var undecnum = this.UNDECIDED_NUM_XML;
+		this.encodeCellXMLBrow(function(cell){
+			if(cell.qnum===-2){ return 'n'+undecnum;}
+			else if(cell.qnum>=0){ return 'n'+cell.qnum;}
+			return 's';
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.decodeCellAnum_XMLBoard() pencilbox XML用回答用数字のデコードを行う
+	// fio.encodeCellAnum_XMLBoard() pencilbox XML用回答用数字のエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeCellAnum_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if(name==='n0'){ cell.anum = -1;}
+			else if(name!=='s'){ cell.anum = +name.substr(1);}
+		});
+	},
+	encodeCellAnum_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if(cell.anum>0){ return 'n'+cell.anum;}
+			else if(cell.anum===-1){ return 'n0';}
+			return 's';
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.decodeAreaRoom_XMLBoard() pencilbox XML用問題用不定形部屋のデコードを行う
+	// fio.encodeAreaRoom_XMLBoard() pencilbox XML用問題用不定形部屋のエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeAreaRoom_XMLBoard : function(){
 		var rdata = [];
-		for(var i=0;i<barray.length;i++){
-			if(barray[i]===""){ break;}
-			var pce = barray[i].split(" ");
-			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=parseInt(pce[n]);} }
-
-			var sp = {y1:2*pce[0]+1, x1:2*pce[1]+1, y2:2*pce[2]+1, x2:2*pce[3]+1};
-			if(isques && pce[4]!==""){
-				var cell = this.owner.board.getc(sp.x1,sp.y1);
-				cell.qnum = parseInt(pce[4],10);
-			}
-			this.setRdataRect(rdata, i, sp);
-		}
-		this.rdata2Border(isques, rdata);
-
+		this.decodeCellXMLBrow(function(cell, name){
+			rdata.push(+name.substr(1));
+		});
+		this.rdata2Border(true, rdata);
 		this.owner.board.rooms.reset();
 	},
-	setRdataRect : function(rdata, i, sp){
-		for(var bx=sp.x1;bx<=sp.x2;bx+=2){
-			for(var by=sp.y1;by<=sp.y2;by+=2){
-				rdata[this.owner.board.getc(bx,by).id] = i;
-			}
-		}
-	},
-	encodeSquareRoom_com : function(isques){
+	encodeAreaRoom_XMLBoard : function(){
 		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		this.xmldoc.querySelector('board').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
+		this.encodeCellXMLBrow(function(cell){
+			return 'n'+(rinfo.id[cell.id]>0 ? rinfo.id[cell.id]-1 : -1);
+		});
+	},
 
-		this.datastr += (rinfo.max+"\n");
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize();
-			var num = (isques ? bd.rooms.getTopOfRoom(id).qnum : -1);
-			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
-		}
+	//---------------------------------------------------------------------------
+	// fio.decodeCellAns_XMLAnswer() pencilbox XML用黒マスのデコードを行う
+	// fio.encodeCellAns_XMLAnswer() pencilbox XML用黒マスのエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeCellAns_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if     (name==='w'){ cell.qans = 1;}
+			else if(name==='s'){ cell.qsub = 1;}
+		});
+	},
+	encodeCellAns_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if     (cell.qans===1){ return 'w';}
+			else if(cell.qsub===1){ return 's';}
+			return 'u';
+		});
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.decodeBorderLine_XMLAnswer() pencilbox XML用Lineのデコードを行う
+	// fio.encodeBorderLine_XMLAnswer() pencilbox XML用Lineのエンコードを行う
+	//---------------------------------------------------------------------------
+	decodeBorderLine_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			var val = 0;
+			var bdh = cell.adjborder.bottom, bdv = cell.adjborder.right;
+			if(name.charAt(0)==='n'){ val = +name.substr(1);}
+			else{
+				if(name.match(/h/)){ val+=1;}
+				if(name.match(/v/)){ val+=2;}
+			}
+			if(val&1){ bdh.line = 1;}
+			if(val&2){ bdv.line = 1;}
+			if(val&4){ bdh.qsub = 2;}
+			if(val&8){ bdv.qsub = 2;}
+		});
+	},
+	encodeBorderLine_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			var val = 0, nodename = '';
+			var bdh = cell.adjborder.bottom, bdv = cell.adjborder.right;
+			if(bdh.line===1){ val += 1;}
+			if(bdv.line===1){ val += 2;}
+			if(bdh.qsub===2){ val += 4;}
+			if(bdv.qsub===2){ val += 8;}
+			
+			if     (val===0){ nodename = 's';}
+			else if(val===1){ nodename = 'h';}
+			else if(val===2){ nodename = 'v';}
+			else if(val===3){ nodename = 'hv';}
+			else{ nodename = 'n'+val;}
+			return nodename;
+		});
 	}
 }
 });

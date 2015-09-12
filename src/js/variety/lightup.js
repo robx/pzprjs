@@ -215,7 +215,18 @@ FileIO:{
 			else if(obj.qnum===-2){ return "5 ";}
 			else                  { return ". ";}
 		});
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellAns_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 5
 },
 
 //---------------------------------------------------------

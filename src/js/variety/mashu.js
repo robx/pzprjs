@@ -151,7 +151,21 @@ FileIO:{
 		this.encodeCellQnum_kanpen();
 		this.encodeBorderLine();
 		this.owner.board.revCircle();
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+		this.owner.board.revCircle();
+	},
+	kanpenSaveXML : function(){
+		this.owner.board.revCircle();
+		this.encodeCellQnum_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+		this.owner.board.revCircle();
+	},
+
+	UNDECIDED_NUM_XML : 3
 },
 
 //---------------------------------------------------------

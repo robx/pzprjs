@@ -435,6 +435,55 @@ FileIO:{
 			}
 			this.datastr += "\n";
 		}
+	},
+	decodeAnsAreaRoom : function(){
+		this.decodeAreaRoom_com(false);
+	},
+	encodeAnsAreaRoom : function(){
+		this.encodeAreaRoom_com(false);
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeStar_XMLBoard();
+		this.decodeAnsAreaRoom_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeStar_XMLBoard();
+		this.encodeAnsAreaRoom_XMLAnswer();
+	},
+	decodeStar_XMLBoard : function(){
+		var nodes = this.xmldoc.querySelectorAll('board number');
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var star = this.owner.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
+			if(star!==null){ star.setStar(+node.getAttribute('n'));}
+		}
+	},
+	encodeStar_XMLBoard : function(){
+		var boardnode = this.xmldoc.querySelector('board');
+		var bd = this.owner.board;
+		for(var s=0;s<bd.starmax;s++){
+			var star = bd.star[s], val = star.getStar();
+			if(val>0){
+				boardnode.appendChild(this.createXMLNode('number',{r:star.by,c:star.bx,n:val}));
+			}
+		}
+	},
+	decodeAnsAreaRoom_XMLAnswer : function(){
+		var rdata = [];
+		this.decodeCellXMLArow(function(cell, name){
+			if(name==='u'){ rdata.push(-1);}
+			else{ rdata.push(+name.substr(1)+1);}
+		});
+		this.rdata2Border(false, rdata);
+		this.owner.board.rooms.reset();
+	},
+	encodeAnsAreaRoom_XMLAnswer : function(){
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
+		this.encodeCellXMLArow(function(cell){
+			return (rinfo.id[cell.id]>0 ? 'n'+(rinfo.id[cell.id]-1) : 'u');
+		});
 	}
 },
 

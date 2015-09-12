@@ -137,6 +137,33 @@ FileIO:{
 	},
 	kanpenSave : function(){
 		this.encodeCellQnumAns_kanpen();
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnumAns_XMLBoard();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnumAns_XMLBoard();
+		this.encodeCellAns_XMLAnswer();
+	},
+
+	decodeCellQnumAns_XMLBoard : function(){
+		this.decodeCellXMLBoard(function(cell, val){
+			if     (val>0)   { cell.qnum = val;}
+			else if(val===-1){ cell.qsub = 1;}
+			else if(val===-2){ cell.qans = 1;}
+			else if(val===-3){ cell.qnum = -2;}
+		});
+	},
+	encodeCellQnumAns_XMLBoard : function(){
+		this.encodeCellXMLBoard(function(cell){
+			var val = 0;
+			if     (cell.qnum>0)   { val = cell.qnum;}
+			else if(cell.qnum===-2){ val = -3;}
+			else if(cell.qans===1) { val = -2;}
+			else if(cell.qsub===1) { val = -1;}
+			return val;
+		});
 	}
 },
 

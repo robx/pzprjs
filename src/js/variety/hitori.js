@@ -187,6 +187,15 @@ FileIO:{
 		this.encodeCell( function(obj){
 			return ((obj.qnum>0)?(obj.qnum.toString() + " "):"0 ");
 		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard_Brow();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard_Brow();
+		this.encodeCellAns_XMLAnswer();
 	}
 },
 

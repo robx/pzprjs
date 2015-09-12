@@ -504,8 +504,6 @@ Encode:{
 		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
 	},
 	encodePzpr : function(type){
-		this.owner.board.hinfo.generateAll();
-
 		var parser = pzpr.parser;
 		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
 
@@ -514,7 +512,6 @@ Encode:{
 
 	decodeKanpen : function(){
 		this.owner.fio.decodeBoard_kanpen();
-		this.owner.board.hinfo.generateGates();
 	},
 	encodeKanpen : function(){
 		this.owner.fio.encodeBoard_kanpen();
@@ -603,6 +600,7 @@ Encode:{
 	},
 	encodeSlalom : function(ver){
 		var cm="", count=0, bd=this.owner.board;
+		bd.hinfo.generateAll();
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "1";}
@@ -660,8 +658,6 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.owner.board.hinfo.generateAll();
-
 		this.filever = 2;
 		this.encodeBoard_pzpr2();
 		this.encodeBorderLine();
@@ -670,12 +666,8 @@ FileIO:{
 	kanpenOpen : function(){
 		this.decodeBoard_kanpen();
 		this.decodeBorderLine();
-
-		this.owner.board.hinfo.generateGates();
 	},
 	kanpenSave : function(){
-		this.owner.board.hinfo.generateAll();
-
 		this.encodeBoard_kanpen();
 		this.encodeBorderLine();
 	},
@@ -689,7 +681,7 @@ FileIO:{
 			else if(ca==="#"){ obj.ques = 1;}
 			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
 		});
-		this.owner.board.hinfo.generateGates();
+		bd.hinfo.generateGates();
 	},
 	decodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
@@ -705,10 +697,11 @@ FileIO:{
 				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
 			}
 		});
-		this.owner.board.hinfo.generateGates();
+		bd.hinfo.generateGates();
 	},
 	encodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
+		bd.hinfo.generateAll();
 		this.encodeCell( function(obj){
 			if     (bd.startpos.equals(obj)){ return "o ";}
 			else if(obj.ques===21){ return "i ";}
@@ -732,9 +725,11 @@ FileIO:{
 			else if(ca==="0"){ obj.ques = 1;}
 			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
 		});
+		bd.hinfo.generateGates();
 	},
 	encodeBoard_kanpen : function(){
 		var bd = this.owner.board;
+		bd.hinfo.generateAll();
 		this.encodeCell( function(obj){
 			if     (bd.startpos.equals(obj)){ return "+ ";}
 			else if(obj.ques===21){ return "| ";}
@@ -743,6 +738,44 @@ FileIO:{
 				return (obj.qnum>0 ? obj.qnum.toString() : "0")+" ";
 			}
 			else{ return ". ";}
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellSlalom_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellSlalom_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -3,
+	decodeCellSlalom_XMLBoard : function(){
+		var bd = this.owner.board;
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val>=0){
+				cell.ques = 1;
+				if(val>0){ cell.qnum = val;}
+			}
+			else if(val===-5){ cell.ques = 21;}
+			else if(val===-4){ cell.ques = 22;}
+			else if(val===-1){ bd.startpos.set(cell);}
+		});
+		bd.hinfo.generateGates();
+	},
+	encodeCellSlalom_XMLBoard : function(){
+		var bd = this.owner.board;
+		bd.hinfo.generateAll();
+		this.encodeCellXMLBoard(function(cell){
+			var val = -3;
+			if(cell.ques=== 1){
+				val = (cell.qnum>0 ? cell.qnum.toString() : 0);
+			}
+			else if(cell.ques===21){ val = -5;}
+			else if(cell.ques===22){ val = -4;}
+			else if(bd.startpos.equals(cell)){ val = -1;}
+			return val;
 		});
 	},
 

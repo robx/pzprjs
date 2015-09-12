@@ -106,7 +106,32 @@ Cell:{
 		return this.qnum === this.getCountOfBridges();
 	},
 
-	iscrossing : function(){ return this.noNum();}
+	iscrossing : function(){ return this.noNum();},
+
+	// pencilbox互換関数 ここではファイル入出力用
+	getState : function(){
+		if(this.qnum!==-1){ return 0;}
+		var uborder=this.adjborder.top, lborder=this.adjborder.left;
+		var datah = (!uborder.isnull ? uborder.line : 0);
+		var dataw = (!lborder.isnull ? lborder.line : 0);
+		return (datah>0?datah:0)+(dataw>0?(dataw<<2):0);
+	},
+	setState : function(val){
+		if(val===0){ return;}
+		var adb = this.adjborder;
+		var datah = (val&3);
+		if(datah>0){
+			var uborder=adb.top, dborder=adb.bottom;
+			if(!uborder.isnull){ uborder.line = datah;}
+			if(!dborder.isnull){ dborder.line = datah;}
+		}
+		var dataw = ((val&12)>>2);
+		if(dataw>0){
+			var lborder=adb.left, rborder=adb.right;
+			if(!lborder.isnull){ lborder.line = dataw;}
+			if(!rborder.isnull){ rborder.line = dataw;}
+		}
+	}
 },
 Border:{
 	getlinesize : function(){
@@ -261,22 +286,8 @@ FileIO:{
 			if(ca>="1" && ca<="8"){ obj.qnum = parseInt(ca);}
 			else if(ca==="9")     { obj.qnum = -2;}
 		});
-		this.decodeCell( function(obj,ca){
-			if(ca==="0"){ return;}
-			var adb = obj.adjborder;
-			var val = parseInt(ca);
-			var datah = (val&3);
-			if(datah>0){
-				var uborder=adb.top, dborder=adb.bottom;
-				if(!uborder.isnull){ uborder.line = datah;}
-				if(!dborder.isnull){ dborder.line = datah;}
-			}
-			var dataw = ((val&12)>>2);
-			if(dataw>0){
-				var lborder=adb.left, rborder=adb.right;
-				if(!lborder.isnull){ lborder.line = dataw;}
-				if(!rborder.isnull){ rborder.line = dataw;}
-			}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="0"){ cell.setState(+ca);}
 		});
 	},
 	kanpenSave : function(){
@@ -285,12 +296,30 @@ FileIO:{
 			else if(obj.qnum===-2){ return "9 ";}
 			else                  { return ". ";}
 		});
-		this.encodeCell( function(obj){
-			if(obj.qnum!==-1){ return "0 ";}
-			var uborder=obj.adjborder.top, lborder=obj.adjborder.left;
-			var datah = (!uborder.isnull ? uborder.line : 0);
-			var dataw = (!lborder.isnull ? lborder.line : 0);
-			return ""+((datah>0?datah:0)+(dataw>0?(dataw<<2):0))+" ";
+		this.encodeCell( function(cell){
+			return ''+cell.getState()+' ';
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeBorderLine_hashikake_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeBorderLine_hashikake_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 9,
+
+	decodeBorderLine_hashikake_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			cell.setState(+name.substr(1));
+		});
+	},
+	encodeBorderLine_hashikake_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			return 'n'+cell.getState();
 		});
 	}
 },

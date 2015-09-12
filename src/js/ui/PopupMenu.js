@@ -388,7 +388,7 @@ ui.popupmgr.addpopup('filesave',
 		var ispencilbox = pzpr.variety.info[ui.puzzle.pid].exists.pencilbox;
 		this.form.filetype.options[1].disabled = !ispencilbox;
 		
-		this.form.filename.value = ui.puzzle.pid+".txt";
+		this.form.filename.value = ui.puzzle.pid+(this.form.filetype.value!=='filesave4'?'.txt':'.xml');
 	},
 	/* オーバーライド */
 	show : function(px,py){
@@ -400,6 +400,10 @@ ui.popupmgr.addpopup('filesave',
 		if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
 		
 		ui.popupmgr.popups.template.close.call(this);
+	},
+	changefilename : function(){
+		var filename = this.form.filename.value.replace('.xml','.').replace('.txt','.');
+		this.form.filename.value = filename + (this.form.filetype.value!=='filesave4'?'txt':'xml');
 	},
 	
 	//------------------------------------------------------------------------------
@@ -417,6 +421,7 @@ ui.popupmgr.addpopup('filesave',
 		var parser = pzpr.parser, filetype = parser.FILE_PZPR, option = {};
 		switch(form.filetype.value){
 			case 'filesave2': filetype = parser.FILE_PBOX; break;
+			case 'filesave4': filetype = parser.FILE_PBOX_XML; break;
 			case 'filesave3': filetype = parser.FILE_PZPR; option.history = true; break;
 		}
 

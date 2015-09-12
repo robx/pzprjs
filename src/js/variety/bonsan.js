@@ -99,7 +99,26 @@ Cell:{
 	minnum : 0
 },
 "Cell@heyabon":{
-	distance : null
+	distance : null,
+
+	// pencilbox互換関数 ここではファイル入出力用
+	getState : function(){
+		var adc = this.adjacent, adb = this.adjborder, direc = this.distance-1;
+		if     (this.isDestination())                              { return 8;}
+		else if(adb.top.isLine()    && adc.top.distance   ===direc){ return 0;}
+		else if(adb.left.isLine()   && adc.left.distance  ===direc){ return 1;}
+		else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return 2;}
+		else if(adb.right.isLine()  && adc.right.distance ===direc){ return 3;}
+		return -1;
+	},
+	setState : function(val){
+		if(val===0){ return;}
+		var adb = this.adjborder;
+		if     (val===0){ adb.top.line    = 1;}
+		else if(val===1){ adb.left.line   = 1;}
+		else if(val===2){ adb.bottom.line = 1;}
+		else if(val===3){ adb.right.line  = 1;}
+	}
 },
 
 Board:{
@@ -365,22 +384,38 @@ FileIO:{
 	},
 	decodeLine_PBox_Sato : function(){
 		this.decodeCell( function(cell,ca){
-			var adb = cell.adjborder;
-			if     (ca==="0"){ adb.top.line    = 1;}
-			else if(ca==="1"){ adb.left.line   = 1;}
-			else if(ca==="2"){ adb.bottom.line = 1;}
-			else if(ca==="3"){ adb.right.line  = 1;}
+			cell.setState(+ca);
 		});
 	},
 	encodeLine_PBox_Sato : function(){
 		this.encodeCell( function(cell){
-			var adc = cell.adjacent, adb = cell.adjborder, direc = cell.distance-1;
-			if     (cell.isDestination())                              { return "8 ";}
-			else if(adb.top.isLine()    && adc.top.distance   ===direc){ return "0 ";}
-			else if(adb.left.isLine()   && adc.left.distance  ===direc){ return "1 ";}
-			else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return "2 ";}
-			else if(adb.right.isLine()  && adc.right.distance ===direc){ return "3 ";}
-			else                                                       { return ". ";}
+			var val = cell.getState();
+			if(val>=0){ return ''+val+' ';}
+			return '. ';
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeAreaRoom_XMLBoard();
+		this.decodeCellQnum_XMLBoard();
+		this.decodeBorderLine_satogaeri_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeAreaRoom_XMLBoard();
+		this.encodeCellQnum_XMLBoard();
+		this.encodeBorderLine_satogaeri_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -2,
+
+	decodeBorderLine_satogaeri_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			cell.setState(+name.substr(1));
+		});
+	},
+	encodeBorderLine_satogaeri_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			return 'n'+cell.getState();
 		});
 	}
 },

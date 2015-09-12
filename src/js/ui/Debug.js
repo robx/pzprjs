@@ -60,6 +60,14 @@ ui.debug =
 			this.setTA("");
 		}
 	},
+	filesave_pencilbox_xml : function(){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
+			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
+		}
+		else{
+			this.setTA("");
+		}
+	},
 
 	fileopen : function(){
 		ui.puzzle.open(this.getTA());
