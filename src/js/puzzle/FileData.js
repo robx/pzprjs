@@ -24,15 +24,12 @@ FileIO:{
 		this.lineseek = 0;
 		this.dataarray = pzl.bstr.split("\n");
 		this.currentType = pzl.type;
-		if(pzl.type===pzl.FILE_PZPH){ this.currentType = pzl.FILE_PZPR;}
 
 		// メイン処理
 		if     (this.currentType===pzl.FILE_PZPR){ this.decodeData();}
 		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenOpen();}
 
-		if(pzl.type===pzl.FILE_PZPH){
-			puzzle.opemgr.decodeLines(pzl.history);
-		}
+		if(pzl.history){ puzzle.opemgr.decodeLines(pzl.history);}
 
 		puzzle.board.resetInfo();
 
@@ -43,23 +40,23 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数
 	//---------------------------------------------------------------------------
-	fileencode : function(type){
+	fileencode : function(type, option){
 		var puzzle = this.owner, bd = puzzle.board;
 		var pzl = new pzpr.parser.FileData('', puzzle.pid);
 		
 		type = type || pzl.FILE_PZPR; /* type===pzl.FILE_AUTO(0)もまとめて変換する */
+		option = option || {};
 
 		this.filever = 0;
 		this.datastr = "";
 		this.currentType = type;
-		if(this.currentType===pzl.FILE_PZPH){ this.currentType = pzl.FILE_PZPR;}
 
 		// メイン処理
 		if     (this.currentType===pzl.FILE_PZPR){ this.encodeData();}
 		else if(this.currentType===pzl.FILE_PBOX){ this.kanpenSave();}
 		
 		var history = "";
-		if(type===pzl.FILE_PZPH){ history = puzzle.opemgr.toString();}
+		if(option.history){ history = puzzle.opemgr.toString();}
 
 		pzl.type  = type;
 		pzl.filever = this.filever;

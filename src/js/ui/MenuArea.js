@@ -281,7 +281,7 @@ ui.menuarea = {
 	//------------------------------------------------------------------------------
 	duplicate_board : function(){
 		if(getEL("menu_duplicate").className==="disabled"){ return;}
-		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
+		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true});
 		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
 		if(!pzpr.env.browser.Presto){
 			var old = sessionStorage['filedata'];

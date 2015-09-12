@@ -12,8 +12,7 @@ var URL_AUTO    = 0,
 	
 	FILE_AUTO = 0,
 	FILE_PZPR = 1,
-	FILE_PBOX = 2,
-	FILE_PZPH = 3;
+	FILE_PBOX = 2;
 
 pzpr.parser = {
 	
@@ -30,7 +29,6 @@ pzpr.parser = {
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
-	FILE_PZPH : FILE_PZPH,
 	
 	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
@@ -283,7 +281,6 @@ pzpr.parser.FileData.prototype = {
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
-	FILE_PZPH : FILE_PZPH,
 	
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());
@@ -320,7 +317,7 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileType : function(){
 		/* ヘッダの処理 */
-		if(this.type===this.FILE_PZPR || this.type===this.FILE_PZPH){
+		if(this.type===this.FILE_PZPR){
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.id, ""].join("\n");
 		}
 		return "";
@@ -373,7 +370,6 @@ pzpr.parser.FileData.prototype = {
 				if(cnt>0 && count===0){ break;}
 			}
 			this.history = histrs.join("\n");
-			this.type = this.FILE_PZPH;
 		}
 		
 		return true;
@@ -402,7 +398,7 @@ pzpr.parser.FileData.prototype = {
 		out.push(pzl.bstr);
 
 		/* 履歴出力がある形式ならば出力する */
-		if(pzl.type===this.FILE_PZPH){
+		if(pzl.history){
 			out.push(pzl.history);
 		}
 

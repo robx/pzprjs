@@ -50,7 +50,7 @@ ui.debug =
 	},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){
 		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){

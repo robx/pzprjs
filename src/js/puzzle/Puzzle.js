@@ -158,8 +158,8 @@ pzpr.Puzzle.prototype =
 	getURL : function(type){
 		return this.enc.encodeURL(type);
 	},
-	getFileData : function(type){
-		return this.fio.fileencode(type);
+	getFileData : function(type, option){
+		return this.fio.fileencode(type, option);
 	},
 
 	//---------------------------------------------------------------------------

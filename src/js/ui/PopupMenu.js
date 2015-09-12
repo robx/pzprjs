@@ -414,18 +414,18 @@ ui.popupmgr.addpopup('filesave',
 			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
-		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
+		var parser = pzpr.parser, filetype = parser.FILE_PZPR, option = {};
 		switch(form.filetype.value){
 			case 'filesave2': filetype = parser.FILE_PBOX; break;
-			case 'filesave3': filetype = parser.FILE_PZPH; break;
+			case 'filesave3': filetype = parser.FILE_PZPR; option.history = true; break;
 		}
 
 		var blob = null, filedata = null;
 		if(ui.enableSaveBlob || !!this.anchor){
-			blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
+			blob = new Blob([ui.puzzle.getFileData(filetype, option)], {type:'text/plain'});
 		}
 		else{
-			filedata = ui.puzzle.getFileData(filetype);
+			filedata = ui.puzzle.getFileData(filetype, option);
 		}
 
 		if(ui.enableSaveBlob){
