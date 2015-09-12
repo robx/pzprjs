@@ -255,7 +255,6 @@ ui.menuarea = {
 	toolarea : function(){
 		ui.setConfig("toolarea", (ui.getConfig("toolarea")===0?1:0));
 		ui.displayAll();
-		ui.puzzle.adjustCanvasPos();
 	},
 	repaint : function(){ ui.puzzle.redraw();},
 	jumpexp : function(){

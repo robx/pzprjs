@@ -6,16 +6,12 @@
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 pzpr.Puzzle = function(canvas, option){
-	var canvasNotElement;
-	try{ canvasNotElement = !(canvas instanceof HTMLElement);}
-	/* IE8以下だとHTMLElementが定義されておらずエラーになる */
-	catch(e){ canvasNotElement = !(canvas && canvas.style);}
-	if(arguments.length===1 && canvasNotElement){ option=canvas; canvas=(void 0);}
+	if(arguments.length===1 && (!canvas || !canvas.parentNode)){
+		option=canvas; canvas=(void 0);
+	}
 
-	option = (!!option ? option : {});
-	if(pzpr.env.browser.Presto){ option.graphic='canvas';}
-
-	this.opt = option;
+	this.opt = option || {};
+	if(pzpr.env.browser.Presto){ this.opt.graphic='canvas';}
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -28,9 +24,7 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.config = new this.Config(this);
 
-	if(!!canvas){
-		this.setCanvas(canvas, option.graphic);
-	}
+	if(!!canvas){ this.setCanvas(canvas);}
 };
 pzpr.Puzzle.prototype =
 {
@@ -92,7 +86,9 @@ pzpr.Puzzle.prototype =
 		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
 		type = type || this.opt.graphic || '';
 		
-		this.canvas = el;
+		var _div = document.createElement('div');
+		el.appendChild(_div);
+		this.canvas = _div;
 		
 		setCanvas_main(this, type, callback);
 	},
@@ -121,15 +117,9 @@ pzpr.Puzzle.prototype =
 
 	//---------------------------------------------------------------------------
 	// owner.adjustCanvas()    盤面サイズの再設定等を行い、盤面の再描画を行う
-	// owner.adjustCanvasPos() ページサイズの変更時等に盤面の左上座標のみを変更し、再描画は行わない
 	//---------------------------------------------------------------------------
 	adjustCanvas : function(){
 		this.painter.adjustCanvas();
-	},
-	adjustCanvasPos : function(){
-		if(this.ready && this.painter){
-			this.painter.setPagePos();
-		}
 	},
 
 	//---------------------------------------------------------------------------

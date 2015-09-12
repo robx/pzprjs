@@ -1,4 +1,4 @@
-// MouseInput.js v3.4.1
+// MouseInput.js v3.5.2
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -12,9 +12,6 @@ MouseEvent:{
 		this.cursor = this.owner.cursor;
 
 		this.enableMouse = true;	// マウス入力は有効か
-
-		this.mouseoffset = {px:0,py:0};
-		if(pzpr.env.browser.legacyIE){ this.mouseoffset = {px:2,py:2};}
 
 		this.mouseCell = null;		// 入力されたセル等のID
 		this.firstCell = null;		// mousedownされた時のセルのID(連黒分断禁用)
@@ -123,16 +120,20 @@ MouseEvent:{
 		}
 	},
 	getBoardAddress : function(e){
-		var puzzle = this.owner, pc = puzzle.painter, pagePos = pzpr.util.getPagePos(e);
-		var px = (pagePos.px - pc.pageX - this.mouseoffset.px);
-		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
-		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
+		var puzzle = this.owner, pc = puzzle.painter;
+		var pix = (!isNaN(e.offsetX) ? {px:e.offsetX, py:e.offsetY} : {px:e.layerX, py:e.layerY}); // Firefox 39以前対応
 		var g = pc.context;
 		if(!!g && g.use.vml){
-			if(puzzle.board.hasexcell>0){ addr.move(+2.33,+2.33);}
-			else{ addr.move(+0.33,+0.33);}
+			var pagePos = pzpr.util.getPagePos(e),
+				rect = pzpr.util.getRect(pc.context.child);
+			pix.px = (pagePos.px - rect.left - 2) + 0.33 * pc.bw;
+			pix.py = (pagePos.py - rect.top  - 2) + 0.33 * pc.bh;
+			if(puzzle.board.hasexcell>0){
+				pix.px += 2 * pc.bw;
+				pix.py += 2 * pc.bh;
+			}
 		}
-		return addr;
+		return new puzzle.RawAddress((pix.px-pc.x0)/pc.bw, (pix.py-pc.y0)/pc.bh);
 	},
 
 	//---------------------------------------------------------------------------

@@ -168,7 +168,6 @@ ui.listener =
 		}
 		else if(idname==='language'){
 			ui.displayAll();
-			puzzle.adjustCanvasPos();
 		}
 	},
 
@@ -184,11 +183,7 @@ ui.listener =
 	//---------------------------------------------------------------------------
 	onResize : function(puzzle){
 		var pc = puzzle.painter, val = (ui.getBoardPadding()*Math.min(pc.cw, pc.ch))|0;
-		puzzle.canvas.style.padding = val+'px';
-		
-		if(pc.context.use.vml){
-			pc.context.translate(pc.x0+val, pc.y0+val);
-		}
+		puzzle.canvas.parentNode.style.padding = val+'px';
 		
 		ui.keypopup.resizepanel();
 	}
