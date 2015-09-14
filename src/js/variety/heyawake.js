@@ -195,7 +195,7 @@ FileIO:{
 	},
 
 	decodeSquareRoom_XMLBoard : function(){
-		var nodes = this.xmldoc.querySelector('board').children;
+		var nodes = this.xmldoc.querySelectorAll('board area');
 		var bd = this.owner.board, rdata = [];
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];

@@ -241,8 +241,9 @@ FileIO:{
 		var ADJ = this.PBOX_ADJUST;
 		for(var b=0;b<rownodes.length;b++){
 			var bx=1-ADJ, by = (+rownodes[b].getAttribute('row'))*2-1-ADJ;
-			var nodes = rownodes[b].children;
+			var nodes = rownodes[b].childNodes;
 			for(var i=0;i<nodes.length;i++){
+				if(nodes[i].nodeType!==1){ continue;}
 				var name = nodes[i].nodeName, n = nodes[i].getAttribute('n') || 1;
 				if     (name==='z'){ name = 'n0';}
 				else if(name==='n'){ name = 'n'+(+nodes[i].getAttribute('v'));}
