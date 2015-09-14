@@ -120,7 +120,7 @@ KeyEvent:{
 		else if(112<=keycode && keycode<=123){ key = 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
 		else if(keycode===32 || keycode===46) { key = ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode===8)                  { key = 'BS';}
-		else if(keycode===109|| keycode===189){ key = '-';}
+		else if(keycode===109|| keycode===189|| keycode===173){ key = '-';}
 
 		var keylist = (!!key ? [key] : []);
 		if(this.isMETA) { keylist.unshift('meta'); }
