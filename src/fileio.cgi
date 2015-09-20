@@ -41,18 +41,23 @@ sub fileopen{
 	$str =~ s/\r?\n/\n/g;
 	$str =~ s/\"/\\\"/g;
 
+	my @strs = split(/\n/g, $str);
+	my $filestr = "[";
+	$filestr .= "'".(shift @strs)."'";
+	foreach my $sstr (@strs){ $filestr .= ",'$sstr'";}
+	$filestr .= "].join('".'\n'."')";
+
 	print <<"EOL";
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
 <META NAME="robots" CONTENT="noindex,nofollow">
 <script type="text/javascript">
-var filestr = "$str";
+var filestr = $filestr;
 if(!!parent.pzpr && !!parent.ui){
-	var errmsg = parent.ui.openPuzzle(filestr);
-	if(!!errmsg){ alert(errmsg);}
+	parent.ui.puzzle.open(filestr);
 }
-if(!!parent.v3index){
+else if(!!parent.v3index){
 	parent.v3index.fileonload(filestr);
 }
 </script>
