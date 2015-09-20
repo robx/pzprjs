@@ -465,7 +465,9 @@ pzpr.parser.FileData.prototype = {
 		puzzlenode.appendChild(puzzlenode.querySelector('board'));
 		puzzlenode.appendChild(puzzlenode.querySelector('answer'));
 		
-		return (new XMLSerializer()).serializeToString(this.xmldoc);
+		var outputdata = (new XMLSerializer()).serializeToString(this.xmldoc);
+		if(!outputdata.match(/^\<\?xml/)){ outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;} // IE向け回避策
+		return outputdata;
 	}
 };
 

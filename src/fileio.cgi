@@ -7,6 +7,7 @@ my $q = new CGI;
 
 if   ($q->param('operation') eq 'open')     { &fileopen();}
 elsif($q->param('operation') eq 'save')     { &filesave();}
+elsif($q->param('operation') eq 'savexml')  { &filesaveXML();}
 elsif($q->param('operation') eq 'imagesave'){ &imagesave();}
 else{ printf("Content-type: text/plain\n\n"); }
 
@@ -83,11 +84,20 @@ sub filesave{
 	if($#lines>=3){
 		foreach(@lines){ printf "$_$rn";}
 	}
+}
 
-	if($q->param('urlstr')){
-		@lines = split(/\r?\n/, $q->param('urlstr'));
-		foreach(@lines){ printf "$_$rn";}
-	}
+###########################
+# ファイル保存処理(XML用) #
+###########################
+sub filesaveXML{
+	printf("Content-type: application/octet-stream\n");
+	printf("Content-Disposition: attachment; filename=\"%s\"\n", $q->param('filename'));
+	printf("\n");
+
+	$rn = "\012";
+
+	my @lines = split(/\r?\n/, $q->param('ques'));
+	foreach(@lines){ printf "$_$rn";}
 }
 
 ################

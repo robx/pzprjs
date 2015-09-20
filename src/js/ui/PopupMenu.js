@@ -387,8 +387,10 @@ ui.popupmgr.addpopup('filesave',
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety.info[ui.puzzle.pid].exists.pencilbox;
 		this.form.filetype.options[1].disabled = !ispencilbox;
+		this.form.filetype.options[2].disabled = (!ispencilbox || pzpr.env.browser.legacyIE);
 		
-		this.form.filename.value = ui.puzzle.pid+(this.form.filetype.value!=='filesave4'?'.txt':'.xml');
+		this.form.filename.value = ui.puzzle.pid + '.txt';
+		this.changefilename();
 	},
 	/* オーバーライド */
 	show : function(px,py){
@@ -402,8 +404,18 @@ ui.popupmgr.addpopup('filesave',
 		ui.popupmgr.popups.template.close.call(this);
 	},
 	changefilename : function(){
-		var filename = this.form.filename.value.replace('.xml','.').replace('.txt','.');
-		this.form.filename.value = filename + (this.form.filetype.value!=='filesave4'?'txt':'xml');
+		var filetype = this.form.filetype.value;
+		var filename = this.form.filename.value.replace('.xml','').replace('.txt','');
+		var ext = (filetype!=='filesave4'?'.txt':'.xml');
+		if(pzpr.variety.toPID(filename)===ui.puzzle.pid){
+			if(filetype==='filesave'||filetype==='filesave3'){
+				filename = pzpr.variety.toURLID(ui.puzzle.pid);
+			}
+			else{
+				filename = pzpr.variety.toKanpen(ui.puzzle.pid);
+			}
+		}
+		this.form.filename.value = filename + ext;
 	},
 	
 	//------------------------------------------------------------------------------
@@ -446,6 +458,7 @@ ui.popupmgr.addpopup('filesave',
 		}
 		else{
 			form.ques.value = filedata;
+			form.operation.value = (form.filetype.value!=='filesave4' ? 'save' : 'savexml');
 			form.submit();
 			this.close();
 		}
@@ -474,7 +487,7 @@ ui.popupmgr.addpopup('imagesave',
 			if(option.value==="png" && !ui.enableSaveImage){ filetype.removeChild(option);}
 		}
 		
-		this.form.filename.value = ui.puzzle.pid+".png";
+		this.form.filename.value = pzpr.variety.toURLID(ui.puzzle.pid)+".png";
 		this.form.cellsize.value = ui.menuconfig.get('cellsizeval');
 		
 		this.changefilename();
