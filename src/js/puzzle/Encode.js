@@ -70,7 +70,11 @@ Encode:{
 			this.encodePzpr(pzl.URL_PZPRV3);
 			break;
 
-		case pzl.URL_PZPRAPP: case pzl.URL_KANPENP:
+		case pzl.URL_KANPENP:
+			var ispencilbox = pzpr.variety.info[puzzle.pid].exists.pencilbox;
+			if(!ispencilbox){ throw "no Implemention";}
+			/* FALL THROUGH */
+		case pzl.URL_PZPRAPP:
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;
@@ -85,6 +89,10 @@ Encode:{
 		case pzl.URL_HEYAAPP:
 			this.encodeHeyaApp();
 			break;
+
+		default:
+			throw "no Implemention";
+			break;
 		}
 
 		pzl.id    = puzzle.pid;
@@ -98,11 +106,11 @@ Encode:{
 	},
 
 	// オーバーライド用
-	decodePzpr : function(type){ },
-	encodePzpr : function(type){ },
-	decodeKanpen : function(){ },
-	encodeKanpen : function(){ },
-	decodeHeyaApp : function(){ },
-	encodeHeyaApp : function(){ }
+	decodePzpr : function(type){ throw "no Implemention";},
+	encodePzpr : function(type){ throw "no Implemention";},
+	decodeKanpen : function(){ throw "no Implemention";},
+	encodeKanpen : function(){ throw "no Implemention";},
+	decodeHeyaApp : function(){ throw "no Implemention";},
+	encodeHeyaApp : function(){ throw "no Implemention";}
 }
 });

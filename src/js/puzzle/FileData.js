@@ -69,6 +69,7 @@ FileIO:{
 		if     (filetype===pzl.FILE_PZPR)    { this.encodeData();}
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
+		else{ throw "no Implemention";}
 		
 		var history = "";
 		if(filetype===pzl.FILE_PZPR){
@@ -91,6 +92,14 @@ FileIO:{
 
 		return pzl.generate();
 	},
+
+	// オーバーライド用
+	decodeData : function(){ throw "no Implemention";},
+	encodeData : function(){ throw "no Implemention";},
+	kanpenOpen : function(){ throw "no Implemention";},
+	kanpenSave : function(){ throw "no Implemention";},
+	kanpenOpenXML : function(){ throw "no Implemention";},
+	kanpenSaveXML : function(){ throw "no Implemention";},
 
 	//---------------------------------------------------------------------------
 	// fio.readLine()    ファイルに書かれている1行の文字列を返す
