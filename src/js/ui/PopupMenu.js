@@ -635,6 +635,36 @@ ui.popupmgr.addpopup('turnflip',
 });
 
 //---------------------------------------------------------------------------
+// ★Popup_Metadataクラス メタデータの設定・表示を行うメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('metadata',
+{
+	formname : 'metadata',
+	
+	show : function(px,py){
+		ui.popupmgr.popups.template.show.call(this,px,py);
+		
+		var form = this.form;
+		var puzzle = ui.puzzle, bd = puzzle.board, meta = puzzle.metadata;
+		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][ui.getConfig('language')] + "&nbsp;" + bd.qcols+"×"+bd.qrows;
+		form.author.value  = meta.author;
+		form.source.value  = meta.source;
+		form.hard.value    = meta.hard;
+		form.comment.value = meta.comment;
+	},
+
+	save : function(){
+		var form = this.form;
+		var puzzle = ui.puzzle, meta = puzzle.metadata;
+		meta.author  = form.author.value;
+		meta.source  = form.source.value;
+		meta.hard    = form.hard.value;
+		meta.comment = form.comment.value;
+		this.close();
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★Popup_Colorsクラス 色の選択を行うメニューを作成したり表示します
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('colors',

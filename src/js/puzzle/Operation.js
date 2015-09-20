@@ -352,56 +352,40 @@ OperationManager:{
 	},
 
 	//---------------------------------------------------------------------------
-	// um.decodeLines() ファイル等から読み込んだ文字列を履歴情報に変換する
-	// um.decodeHistory() 文字列を履歴情報に変換する
-	// um.decodeOpe()   1つの履歴を履歴情報に変換する
-	// um.toString()    履歴情報を文字列に変換する
+	// um.decodeHistory() オブジェクトを履歴情報に変換する
+	// um.encodeHistory() 履歴情報をオブジェクトに変換する
 	//---------------------------------------------------------------------------
-	decodeLines : function(str){
+	decodeHistory :function(history){
 		this.allerase();
 		
-		/* ファイル内容のデコード */
-		try{
-			this.decodeHistory(str);
-		}
-		catch(e){ /*　デコードできなかったとか　*/ }
-		
-		this.checkexec();
-	},
-	decodeHistory :function(str){
-		if(str.substr(0,8)!=="history:" || !window.JSON){ return;}
-		
-		var history = JSON.parse(str.substr(8));
 		this.ope = [];
 		this.initpos = this.position = history.current;
 		for(var i=0,len=history.datas.length;i<len;i++){
 			this.ope.push([]);
 			for(var j=0,len2=history.datas[i].length;j<len2;j++){
-				var ope = this.decodeOpe(history.datas[i][j]);
+				var strs = history.datas[i][j].split(/,/);
+				var ope = null, List = this.operationlist;
+				for(var k=0;k<List.length;k++){
+					var ope1 = new List[k]();
+					if(ope1.decode(strs)){ ope = ope1; break;}
+				}
 				if(!!ope){
 					this.ope[this.ope.length-1].push(ope);
 					this.lastope = ope;
 				}
 			}
 		}
+		
+		this.checkexec();
 	},
-	decodeOpe : function(str){
-		var ope, List = this.operationlist, strs = str.split(/,/);
-		for(var i=0;i<List.length;i++){
-			ope = new List[i]();
-			if(ope.decode(strs)){ return ope;}
-		}
-		return null;
-	},
-	toString : function(){
-		if(!window.JSON){ return '';}
+	encodeHistory : function(){
 		this.initpos = this.position;
-		return "history:" + JSON.stringify({
+		return {
 			type    : 'pzpr',
 			version : 0.3,
 			current : this.position,
 			datas   : this.ope
-		},null,1);
+		};
 	},
 
 	//---------------------------------------------------------------------------

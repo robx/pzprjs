@@ -45,6 +45,8 @@
      <li data-popup="turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
      <hr>
      <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
+     <hr>
+     <li data-popup="metadata" id="menu_metadata"><span>__プロパティの編集__Edit the board peoperty__</span></li>
    </menu></li>
    <li><span>__表示__Display__</span><menu label="__表示__Display__">
      <li data-config="cellsizeval"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
@@ -500,6 +502,20 @@
       <br />
       <br />
       <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup" id="popup_metadata">
+    <div class="titlebar">__パズルのプロパティ__This puzzle's Peoperty__</div>
+    <form name="metadata">
+      <label>__種類:__Variety:__</label> <span id="metadata_variety"></span><br>
+      <label>__作者:__Author:__</label> <input name="author" type="text"></input><br>
+      <label>__出典:__Source:__</label> <input name="source" type="text"></input><br>
+      <label>__難易度:__Difficulty:__</label> <input name="hard" type="text"></input><br>
+      <label>__コメント:__Comment:__</label> <textarea name="comment" cols=28 rows=3 wrap="hard"></textarea><br>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="save">OK</button>
+      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
     </form>
   </div>
 

@@ -28,7 +28,7 @@ FileIO:{
 			this.dataarray = pzl.bstr.split("\n");
 		}
 		else{
-			this.xmldoc = (new DOMParser()).parseFromString(pzl.bstr, 'text/xml');
+			this.xmldoc = pzl.xmldoc;
 		}
 
 		// メイン処理
@@ -36,8 +36,9 @@ FileIO:{
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenOpen();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenOpenXML();}
 
-		if(filetype===pzl.FILE_PZPR){
-			if(pzl.history){ puzzle.opemgr.decodeLines(pzl.history);}
+		puzzle.metadata.copydata(pzl.metadata);
+		if(pzl.history && (filetype===pzl.FILE_PZPR)){
+			puzzle.opemgr.decodeHistory(pzl.history);
 		}
 
 		puzzle.board.resetInfo();
@@ -70,11 +71,6 @@ FileIO:{
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
 		else{ throw "no Implemention";}
-		
-		var history = "";
-		if(filetype===pzl.FILE_PZPR){
-			if(option.history){ history = puzzle.opemgr.toString();}
-		}
 
 		pzl.type  = filetype;
 		pzl.filever = this.filever;
@@ -86,7 +82,10 @@ FileIO:{
 		else{
 			pzl.xmldoc = this.xmldoc;
 		}
-		pzl.history = history;
+		pzl.metadata.copydata(puzzle.metadata);
+		if(option.history && (filetype===pzl.FILE_PZPR)){
+			pzl.history = puzzle.opemgr.encodeHistory();
+		}
 
 		this.datastr = "";
 

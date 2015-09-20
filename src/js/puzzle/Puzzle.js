@@ -22,6 +22,8 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.listeners = {};
 
+	this.metadata =  new this.MetaData();
+
 	this.config = new this.Config(this);
 
 	if(!!canvas){ this.setCanvas(canvas);}
@@ -45,6 +47,8 @@ pzpr.Puzzle.prototype =
 	listeners : null,
 	
 	config : null,
+	
+	metadata : null,	// 作者やコメントなどの情報
 	
 	initCanvasSize  : false,
 	initCanvasEvent : false,
@@ -284,6 +288,7 @@ function openExecute(puzzle, data, variety, callback){
 		if(Board!==puzzle.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
+		puzzle.metadata = new puzzle.MetaData();
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
@@ -443,5 +448,28 @@ function getLocalCanvas(puzzle, type, cellsize){
 	
 	return pc2.context.canvas;
 }
+
+//---------------------------------------------------------------------------
+//  MetaData構造体  作者やコメントなどの情報を保持する
+//---------------------------------------------------------------------------
+var MetaData = pzpr.Puzzle.prototype.MetaData = function(){};
+MetaData.prototype =
+{
+	author  : '',
+	source  : '',
+	hard    : '',
+	comment : '',
+	
+	copydata : function(metadata){
+		if(!metadata){ return;}
+		this.author  = metadata.author;
+		this.source  = metadata.source;
+		this.hard    = metadata.hard;
+		this.comment = metadata.comment;
+	},
+	empty : function(){
+		return ((!this.author)&&(!this.source)&&(!this.hard)&&(!this.comment));
+	}
+};
 
 })();
