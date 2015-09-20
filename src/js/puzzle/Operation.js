@@ -471,6 +471,7 @@ OperationManager:{
 			bd.enableInfo();
 			bd.resetInfo();
 			puzzle.redraw(true);
+			puzzle.execListener('adjust');
 		}
 		puzzle.painter.unsuspend();
 
