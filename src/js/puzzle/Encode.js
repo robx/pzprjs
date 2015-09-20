@@ -73,7 +73,7 @@ Encode:{
 		case pzl.URL_KANPENP:
 			var ispencilbox = pzpr.variety.info[puzzle.pid].exists.pencilbox;
 			if(!ispencilbox){ throw "no Implemention";}
-			/* FALL THROUGH */
+			/* falls through */
 		case pzl.URL_PZPRAPP:
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
@@ -92,7 +92,6 @@ Encode:{
 
 		default:
 			throw "no Implemention";
-			break;
 		}
 
 		pzl.id    = puzzle.pid;

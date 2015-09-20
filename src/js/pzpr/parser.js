@@ -49,7 +49,7 @@ pzpr.parser = {
 	parseFile : function(fstr, variety){
 		if(fstr instanceof this.FileData){ return fstr;}
 		
-		if(!fstr.match(/^\<\?xml/)){
+		if(!fstr.match(/^\<\?xml/)){ // jshint ignore:line
 			fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
 		}
 		return (new pzpr.parser.FileData(fstr, variety)).parse();
@@ -308,7 +308,7 @@ pzpr.parser.FileData.prototype = {
 			this.id = lines.shift();
 			this.qdata = lines.join("\n");
 		}
-		else if(firstline.match(/^\<\?xml/)){
+		else if(firstline.match(/^\<\?xml/)){ // jshint ignore:line
 			this.type = this.FILE_PBOX_XML;
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
@@ -491,7 +491,9 @@ pzpr.parser.FileData.prototype = {
 		}
 		else{
 			outputdata = (new XMLSerializer()).serializeToString(this.xmldoc);
-			if(!outputdata.match(/^\<\?xml/)){ outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;} // IE向け回避策
+			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
+				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata; // IE向け回避策
+			}
 		}
 		return outputdata;
 	},
