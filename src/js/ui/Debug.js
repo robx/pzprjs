@@ -85,7 +85,7 @@ ui.debug =
 		this.timeeval("描画時間", function(){ ui.puzzle.redraw();});
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画", function(){ ui.puzzle.redrawForce();});
+		this.timeeval("resize描画", function(){ ui.puzzle.redraw(true);});
 	},
 	timeeval : function(text,func){
 		var count=0, old = pzpr.util.currentTime();

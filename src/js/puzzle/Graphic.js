@@ -233,7 +233,6 @@ Graphic:{
 	//                      (指定なしの場合は、前のキャンバスのサイズを用いる)
 	// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 	//                             (指定なしの場合は、前のセルのサイズを用いる)
-	// pc.adjustCanvas()    キャンバスのサイズを再設定する
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
@@ -256,9 +255,6 @@ Graphic:{
 		
 		this.pendingResize = true;
 		if(!insuspend){ this.unsuspend();}
-	},
-	adjustCanvas : function(){
-		this.resizeCanvas();
 	},
 
 	//---------------------------------------------------------------------------

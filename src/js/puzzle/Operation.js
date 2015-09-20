@@ -470,7 +470,7 @@ OperationManager:{
 			bd.setminmax();
 			bd.enableInfo();
 			bd.resetInfo();
-			puzzle.adjustCanvas();
+			puzzle.redraw(true);
 		}
 		puzzle.painter.unsuspend();
 

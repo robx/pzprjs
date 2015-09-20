@@ -102,7 +102,7 @@ BoardExec:{
 		bd.resetInfo();
 
 		// Canvasを更新する
-		o.adjustCanvas();
+		o.painter.resizeCanvas();
 		o.execListener('adjust');
 		o.painter.unsuspend();
 	},

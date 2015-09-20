@@ -119,22 +119,14 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.adjustCanvas()    盤面サイズの再設定等を行い、盤面の再描画を行う
-	//---------------------------------------------------------------------------
-	adjustCanvas : function(){
-		this.painter.adjustCanvas();
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.redraw()      盤面の再描画を行う
-	// owner.redrawForce() 盤面キャッシュを破棄して再描画を行う
 	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
-	redraw : function(){
-		if(this.ready){ this.painter.paintAll();}
-	},
-	redrawForce : function(){
-		if(this.ready){ this.painter.adjustCanvas();}
+	redraw : function(forcemode){
+		if(this.ready){
+			if(!forcemode){ this.painter.paintAll();}     // 盤面キャッシュを保持して再描画
+			else          { this.painter.resizeCanvas();} // 盤面キャッシュを破棄して再描画
+		}
 	},
 	irowake : function(){
 		this.board.irowakeRemake();

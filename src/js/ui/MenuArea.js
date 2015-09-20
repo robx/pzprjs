@@ -256,7 +256,7 @@ ui.menuarea = {
 		ui.setConfig("toolarea", (ui.getConfig("toolarea")===0?1:0));
 		ui.displayAll();
 	},
-	repaint : function(){ ui.puzzle.redraw();},
+	repaint : function(){ ui.puzzle.redraw(true);},
 	jumpexp : function(){
 		ui.saveConfig();	/* faq.htmlで言語設定を使用するので、一旦Config値を保存 */
 		window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), '');
