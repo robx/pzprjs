@@ -373,12 +373,14 @@ function postCanvasReady(puzzle, callback){
 	
 	if(!!callback){ callback(puzzle);}
 	
-	puzzle.painter.unsuspend();
-	
 	if(!puzzle.ready){
-		puzzle.resetTime();
 		puzzle.ready = true;
 		puzzle.execListener('ready');
+		puzzle.painter.unsuspend();
+		puzzle.resetTime();
+	}
+	else{
+		puzzle.painter.unsuspend();
 	}
 }
 function firstCanvasReady(puzzle){
