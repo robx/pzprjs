@@ -37,12 +37,7 @@ pzpr.parser = {
 	parse : function(data, variety){
 		if(data instanceof this.URLData || data instanceof this.FileData){ return data;}
 		
-		/* 改行が2つ以上ある場合はファイルデータ、それ以下ではURLとして扱います */
-		/* orでつなげようとしましたが、URLの/を改行扱いしてしまうのでダメでした */
-		if(data.indexOf("pzprv3")===0 || data.indexOf("\n",data.indexOf("\n"))>-1){
-			return this.parseFile(data, variety);
-		}
-		return this.parseURL(data);
+		return this.parseFile(data, variety) || this.parseURL(data);
 	},
 	
 	parseURL : function(url){
@@ -311,19 +306,22 @@ pzpr.parser.FileData.prototype = {
 			this.id = lines.shift();
 			this.qdata = lines.join("\n");
 		}
-		else{
-			this.type = ((!firstline.match(/^\<\?xml/)) ? this.FILE_PBOX : this.FILE_PBOX_XML);
+		else if(firstline.match(/^\<\?xml/)){
+			this.type = this.FILE_PBOX_XML;
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
-			
-			if(this.type===this.FILE_PBOX_XML){
-				if(!!DOMParser){
-					this.xmldoc = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
-					this.id = this.xmldoc.querySelector('puzzle').getAttribute('type');
-				}
-				else{ this.id = '';}
+			if(!!DOMParser){
+				this.xmldoc = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
+				this.id = this.xmldoc.querySelector('puzzle').getAttribute('type');
 			}
+			else{ this.id = '';}
 		}
+		else if(firstline.match(/^\d+$/)){
+			this.type = this.FILE_PBOX;
+			lines.unshift(firstline);
+			this.qdata = lines.join("\n");
+		}
+		else{ this.id = '';}
 		this.id = pzpr.variety.toPID(this.id);
 		
 		return (!!this.id);

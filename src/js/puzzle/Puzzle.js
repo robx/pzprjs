@@ -6,7 +6,7 @@
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 pzpr.Puzzle = function(canvas, option){
-	if(arguments.length===1 && (!canvas || !canvas.parentNode)){
+	if(option===void 0 && (!canvas || !canvas.parentNode)){
 		option=canvas; canvas=(void 0);
 	}
 
@@ -56,8 +56,8 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
-	open : function(data, callback){
-		return openExecute(this, data, callback);
+	open : function(data, variety, callback){
+		return openExecute(this, data, variety, callback);
 	},
 
 	//---------------------------------------------------------------------------
@@ -277,12 +277,17 @@ pzpr.Puzzle.prototype =
 //---------------------------------------------------------------------------
 //  openExecute()      各オブジェクトの生成などの処理
 //---------------------------------------------------------------------------
-function openExecute(puzzle, data, callback){
+function openExecute(puzzle, data, variety, callback){
+	if(typeof variety==='function' && !callback){
+		callback = variety;
+		variety = void 0;
+	}
+
 	puzzle.ready = false;
 	var Board = (!!puzzle.Board ? puzzle.Board : null);
-	var pzl = pzpr.parser.parse(data, puzzle.pid);
+	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
 
-	pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
+	pzpr.classmgr.setPuzzleClass(puzzle, pzl.id, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
