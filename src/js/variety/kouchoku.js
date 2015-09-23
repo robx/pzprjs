@@ -540,10 +540,10 @@ Encode:{
 	decodeCrossABC : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cross[c], ca = bstr.charAt(i);
-			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
+			var cross = bd.cross[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"a","z")){ cross.qnum = parseInt(ca,36)-9;}
 			else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
-			else if(ca==="."){ obj.qnum=-2;}
+			else if(ca==="."){ cross.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}

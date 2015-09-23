@@ -123,29 +123,29 @@ Star:{
 	isnull : true,
 	id : null,
 
-	obj : null,
+	piece : null,
 
 	getStar : function(){
-		return this.obj.qnum;
+		return this.piece.qnum;
 	},
 	setStar : function(val){
 		this.owner.opemgr.disCombine = true;
-		this.obj.setQnum(val);
+		this.piece.setQnum(val);
 		this.owner.opemgr.disCombine = false;
 	},
 	iserror : function(){
-		return (this.obj.error>0);
+		return (this.piece.error>0);
 	},
 
 	// 星に線が通っていないなら、近くのセルを返す
 	validcell : function(){
-		var obj = this.obj, cell = null;
-		if(obj.group==='cell')
-			{ cell = obj;}
-		else if(obj.group==='cross' && obj.lcnt===0)
-			{ cell = obj.relcell(-1,-1);}
-		else if(obj.group==='border' && obj.qans===0)
-			{ cell = obj.sidecell[0];}
+		var piece = this.piece, cell = null;
+		if(piece.group==='cell')
+			{ cell = piece;}
+		else if(piece.group==='cross' && piece.lcnt===0)
+			{ cell = piece.relcell(-1,-1);}
+		else if(piece.group==='border' && piece.qans===0)
+			{ cell = piece.sidecell[0];}
 		return cell;
 	},
 
@@ -223,7 +223,7 @@ Board:{
 
 			star.bx = id%(2*col-1)+1;
 			star.by = ((id/(2*col-1))|0)+1;
-			star.obj = star.getaddr().getobj();
+			star.piece = star.getaddr().getobj();
 		}
 	},
 	gets : function(bx,by,qc,qr){
@@ -509,9 +509,9 @@ AnsCheck:{
 			
 			this.failcode.add("bdPassStar");
 			if(this.checkOnly){ break;}
-			switch(star.obj.group){
-				case "cross":  star.obj.setCrossBorderError(); break;
-				case "border": star.obj.seterr(1);             break;
+			switch(star.piece.group){
+				case "cross":  star.piece.setCrossBorderError(); break;
+				case "border": star.piece.seterr(1);             break;
 			}
 		}
 	},

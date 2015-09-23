@@ -180,13 +180,13 @@ Encode:{
 	decodeLoopsp : function(){
 		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj = bd.cell[c];
+			var ca = bstr.charAt(i), cell = bd.cell[c];
 
-			if     (ca ==='.'){ obj.qnum = -2;}
-			else if(ca ==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca >= '0' && ca <= '9'){ obj.qnum = parseInt(ca,16);}
-			else if(ca >= 'a' && ca <= 'f'){ obj.qnum = parseInt(ca,16);}
-			else if(ca >= 'g' && ca <= 'm'){ obj.ques = parseInt(ca,36)-5;}
+			if     (ca ==='.'){ cell.qnum = -2;}
+			else if(ca ==='-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca >= '0' && ca <= '9'){ cell.qnum = parseInt(ca,16);}
+			else if(ca >= 'a' && ca <= 'f'){ cell.qnum = parseInt(ca,16);}
+			else if(ca >= 'g' && ca <= 'm'){ cell.ques = parseInt(ca,36)-5;}
 			else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
 			c++;
@@ -216,21 +216,21 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ obj.ques = 6;}
-			else if(ca==="-"){ obj.ques =-2;}
-			else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+1;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ cell.ques = 6;}
+			else if(ca==="-"){ cell.ques =-2;}
+			else if(ca>="a" && ca<="g"){ cell.ques = parseInt(ca,36)+1;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if     (obj.ques===6) { return "o ";}
-			else if(obj.ques>=11 && obj.ques<=17) { return ""+(obj.ques-1).toString(36)+" ";}
-			else if(obj.ques===-2){ return "- ";}
-			else if(obj.qnum!==-1){ return obj.qnum+" ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.ques===6) { return "o ";}
+			else if(cell.ques>=11 && cell.ques<=17) { return ""+(cell.ques-1).toString(36)+" ";}
+			else if(cell.ques===-2){ return "- ";}
+			else if(cell.qnum!==-1){ return cell.qnum+" ";}
+			else                   { return ". ";}
 		});
 		this.encodeBorderLine();
 	}

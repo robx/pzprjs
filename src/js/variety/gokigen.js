@@ -340,18 +340,18 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCrossNum();
 		if(this.owner.pid==='wagiri'){ this.decodeCellQnum();}
-		this.decodeCell( function(obj,ca){
-			if     (ca==="1"){ obj.qans = 31;}
-			else if(ca==="2"){ obj.qans = 32;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="1"){ cell.qans = 31;}
+			else if(ca==="2"){ cell.qans = 32;}
 		});
 	},
 	encodeData : function(){
 		this.encodeCrossNum();
 		if(this.owner.pid==='wagiri'){ this.encodeCellQnum();}
-		this.encodeCell( function(obj){
-			if     (obj.qans===31){ return "1 ";}
-			else if(obj.qans===32){ return "2 ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans===31){ return "1 ";}
+			else if(cell.qans===32){ return "2 ";}
+			else                   { return ". ";}
 		});
 	}
 },

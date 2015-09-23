@@ -179,13 +179,13 @@ FileIO:{
 	},
 
 	decodeCellQnum_kanpen_hitori : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca!=="0" && ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="0" && ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnum_kanpen_hitori : function(){
-		this.encodeCell( function(obj){
-			return ((obj.qnum>0) ? obj.qnum+" " : "0 ");
+		this.encodeCell( function(cell){
+			return ((cell.qnum>0) ? cell.qnum+" " : "0 ");
 		});
 	},
 

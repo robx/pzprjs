@@ -282,19 +282,19 @@ FileIO:{
 	},
 
 	kanpenOpen : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca>="1" && ca<="8"){ obj.qnum = +ca;}
-			else if(ca==="9")     { obj.qnum = -2;}
+		this.decodeCell( function(cell,ca){
+			if(ca>="1" && ca<="8"){ cell.qnum = +ca;}
+			else if(ca==="9")     { cell.qnum = -2;}
 		});
 		this.decodeCell( function(cell,ca){
 			if(ca!=="0"){ cell.setState(+ca);}
 		});
 	},
 	kanpenSave : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum  > 0){ return obj.qnum+" ";}
-			else if(obj.qnum===-2){ return "9 ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum  > 0){ return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "9 ";}
+			else                   { return ". ";}
 		});
 		this.encodeCell( function(cell){
 			return ''+cell.getState()+' ';

@@ -176,23 +176,23 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="3" ){ obj.ques = 0; obj.qans = 1; obj.qsub = 1;}
-			else if(ca==="1" ){ obj.ques = 0; obj.qans = 1;}
-			else if(ca==="-1"){ obj.ques = 1; obj.qsub = 1;}
-			else if(ca==="-2"){ obj.ques = 0; obj.qsub = 1;}
-			else if(ca==="2" ){ obj.ques = 0;}
-			else              { obj.ques = 1;}
+		this.decodeBorder( function(border,ca){
+			if     (ca==="3" ){ border.ques = 0; border.qans = 1; border.qsub = 1;}
+			else if(ca==="1" ){ border.ques = 0; border.qans = 1;}
+			else if(ca==="-1"){ border.ques = 1; border.qsub = 1;}
+			else if(ca==="-2"){ border.ques = 0; border.qsub = 1;}
+			else if(ca==="2" ){ border.ques = 0;}
+			else              { border.ques = 1;}
 		});
 	},
 	encodeData : function(){
-		this.encodeBorder( function(obj){
-			if     (obj.qans===1 && obj.qsub===1){ return "3 ";}
-			else if(obj.qans===1){ return "1 ";}
-			else if(obj.ques===1 && obj.qsub===1){ return "-1 ";}
-			else if(obj.ques===0 && obj.qsub===1){ return "-2 ";}
-			else if(obj.ques===0){ return "2 ";}
-			else                 { return "0 ";}
+		this.encodeBorder( function(border){
+			if     (border.qans===1 && border.qsub===1){ return "3 ";}
+			else if(border.qans===1){ return "1 ";}
+			else if(border.ques===1 && border.qsub===1){ return "-1 ";}
+			else if(border.ques===0 && border.qsub===1){ return "-2 ";}
+			else if(border.ques===0){ return "2 ";}
+			else                    { return "0 ";}
 		});
 	}
 },

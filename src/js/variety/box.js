@@ -246,9 +246,9 @@ Encode:{
 	decodeBox : function(){
 		var ec=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var a=0;a<bstr.length;a++){
-			var ca=bstr.charAt(a), obj=bd.excell[ec];
-			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
-			else        { obj.qnum = parseInt(ca,32);}
+			var ca=bstr.charAt(a), excell=bd.excell[ec];
+			if(ca==='-'){ excell.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
+			else        { excell.qnum = parseInt(ca,32);}
 			ec++;
 			if(ec >= bd.qcols+bd.qrows){ a++; break;}
 		}

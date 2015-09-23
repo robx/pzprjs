@@ -282,22 +282,22 @@ KeyEvent:{
 		this.draw();
 		return true;
 	},
-	detectTarget : function(obj){
-		var bd = this.owner.board, adc=obj.adjacent;
-		if(obj.isnull){ return 0;}
-		else if(obj.group==='cell'){
-			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}
+	detectTarget : function(piece){
+		var bd = this.owner.board, adc=piece.adjacent;
+		if(piece.isnull){ return 0;}
+		else if(piece.group==='cell'){
+			if     (piece.ques!==51 || piece.id===bd.cellmax-1){ return 0;}
 			else if((adc.right.isnull  || adc.right.ques ===51) &&
 				    (adc.bottom.isnull || adc.bottom.ques===51)){ return 0;}
 			else if (adc.right.isnull  || adc.right.ques ===51) { return 4;}
 			else if (adc.bottom.isnull || adc.bottom.ques===51) { return 2;}
 		}
-		else if(obj.group==='excell'){
-			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
-			else if((obj.by===-1 && adc.bottom.ques===51) ||
-				    (obj.bx===-1 && adc.right.ques ===51)){ return 0;}
-			else if(obj.by===-1){ return 4;}
-			else if(obj.bx===-1){ return 2;}
+		else if(piece.group==='excell'){
+			if     (piece.id===bd.qcols+bd.qrows){ return 0;}
+			else if((piece.by===-1 && adc.bottom.ques===51) ||
+				    (piece.bx===-1 && adc.right.ques ===51)){ return 0;}
+			else if(piece.by===-1){ return 4;}
+			else if(piece.bx===-1){ return 2;}
 		}
 		else{ return 0;}
 

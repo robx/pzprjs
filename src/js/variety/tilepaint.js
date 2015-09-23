@@ -262,20 +262,20 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 		this.decodeCellQnum51();
-		this.decodeCell( function(obj,ca){
-			if     (ca==="#"){ obj.qans = 1;}
-			else if(ca==="+"){ obj.qsub = 1;}
-			else if(ca==="-"){ obj.qsub = 3;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="#"){ cell.qans = 1;}
+			else if(ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qsub = 3;}
 		});
 	},
 	encodeData : function(){
 		this.encodeAreaRoom();
 		this.encodeCellQnum51();
-		this.encodeCell( function(obj){
-			if     (obj.qans===1){ return "# ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else if(obj.qsub===3){ return "- ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans===1){ return "# ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else if(cell.qsub===3){ return "- ";}
+			else                  { return ". ";}
 		});
 	}
 },

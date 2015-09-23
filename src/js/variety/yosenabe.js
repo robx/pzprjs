@@ -350,16 +350,16 @@ FileIO:{
 
 	/* decode/encodeCellQsubの上位互換です */
 	decodeCellQsubQcmp : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=="0"){
-				obj.qsub = +ca & 0x0f;
-				obj.qcmp = +ca >> 4; // int
+				cell.qsub = +ca & 0x0f;
+				cell.qcmp = +ca >> 4; // int
 			}
 		});
 	},
 	encodeCellQsubQcmp : function(){
-		this.encodeCell( function(obj){
-			return (obj.qsub + (obj.qcmp << 4))+" ";
+		this.encodeCell( function(cell){
+			return (cell.qsub + (cell.qcmp << 4))+" ";
 		});
 	}
 },

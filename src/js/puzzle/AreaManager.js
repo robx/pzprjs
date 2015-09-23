@@ -125,7 +125,7 @@ AreaManager:{
 		return change;
 	},
 	calcLinkInfo : function(cell){
-		if(cell.isnull){ return false;}
+		if(cell.isnull){ return 0;}
 		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
 		if(adc.top.group   ==="cell" && !adc.top.isnull    && !this.bdfunc(adb.top   )){ val+=1;}
 		if(adc.bottom.group==="cell" && !adc.bottom.isnull && !this.bdfunc(adb.bottom)){ val+=2;}
@@ -707,7 +707,7 @@ AreaInfo:{
 		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
 		this.area = [];	// 各部屋のidlist等の情報を保持する(info.area[id].clistで取得)
 	},
-	getRoomID : function(obj){ return this.id[obj.id];},
+	getRoomID : function(cell){ return this.id[cell.id];},
 	getRoomByCell : function(cell){ return this.area[this.id[cell.id]];},
 
 	//---------------------------------------------------------------------------

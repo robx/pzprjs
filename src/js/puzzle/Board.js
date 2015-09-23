@@ -121,9 +121,9 @@ Board:{
 		else if(clen<len){
 			var group2 = new group.constructor();
 			for(var id=clen;id<len;id++){
-				var obj = this.newObject(type, id);
-				group.add(obj);
-				group2.add(obj);
+				var piece = this.newObject(type, id);
+				group.add(piece);
+				group2.add(piece);
 			}
 			group2.allclear(false);
 		}
@@ -151,13 +151,13 @@ Board:{
 		return 0;
 	},
 	newObject : function(type, id){
-		var obj = this.nullobj, puzzle = this.owner;
-		if     (type==='cell')  { obj = new puzzle.Cell();}
-		else if(type==='cross') { obj = new puzzle.Cross();}
-		else if(type==='border'){ obj = new puzzle.Border();}
-		else if(type==='excell'){ obj = new puzzle.EXCell();}
-		if(obj!==this.nullobj && id!==void 0){ obj.id = id;}
-		return obj;
+		var piece = this.nullobj, puzzle = this.owner;
+		if     (type==='cell')  { piece = new puzzle.Cell();}
+		else if(type==='cross') { piece = new puzzle.Cross();}
+		else if(type==='border'){ piece = new puzzle.Border();}
+		else if(type==='excell'){ piece = new puzzle.EXCell();}
+		if(piece!==this.nullobj && id!==void 0){ piece.id = id;}
+		return piece;
 	},
  
 	//---------------------------------------------------------------------------
@@ -189,29 +189,29 @@ Board:{
 		var qc = this.qcols;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
-			var obj = this.cell[id];
-			obj.id = id;
-			obj.isnull = false;
+			var cell = this.cell[id];
+			cell.id = id;
+			cell.isnull = false;
 
-			obj.bx = (id%qc)*2+1;
-			obj.by = ((id/qc)<<1)+1;
+			cell.bx = (id%qc)*2+1;
+			cell.by = ((id/qc)<<1)+1;
 
-			obj.initAdjacent();
-			obj.initAdjBorder();
+			cell.initAdjacent();
+			cell.initAdjBorder();
 		}
 	},
 	setposCrosses : function(){
 		var qc = this.qcols;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
-			var obj = this.cross[id];
-			obj.id = id;
-			obj.isnull = false;
+			var cross = this.cross[id];
+			cross.id = id;
+			cross.isnull = false;
 
-			obj.bx = (id%(qc+1))*2;
-			obj.by = (id/(qc+1))<<1;
+			cross.bx = (id%(qc+1))*2;
+			cross.by = (id/(qc+1))<<1;
 
-			obj.initAdjBorder();
+			cross.initAdjBorder();
 		}
 	},
 	setposBorders : function(){
@@ -219,48 +219,48 @@ Board:{
 		this.bdmax = this.border.length;
 		this.bdinside = this.bdmax - (this.hasborder===2 ? 2*(qc+qr) : 0);
 		for(var id=0;id<this.bdmax;id++){
-			var obj=this.border[id], i=id;
-			obj.id = id;
-			obj.isnull = false;
+			var border=this.border[id], i=id;
+			border.id = id;
+			border.isnull = false;
 
-			if(i>=0 && i<(qc-1)*qr){ obj.bx=(i%(qc-1))*2+2; obj.by=((i/(qc-1))<<1)+1;} i-=((qc-1)*qr);
-			if(i>=0 && i<qc*(qr-1)){ obj.bx=(i%qc)*2+1;     obj.by=((i/qc)<<1)+2;    } i-=(qc*(qr-1));
+			if(i>=0 && i<(qc-1)*qr){ border.bx=(i%(qc-1))*2+2; border.by=((i/(qc-1))<<1)+1;} i-=((qc-1)*qr);
+			if(i>=0 && i<qc*(qr-1)){ border.bx=(i%qc)*2+1;     border.by=((i/qc)<<1)+2;    } i-=(qc*(qr-1));
 			if(this.hasborder===2){
-				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=0;    } i-=qc;
-				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=2*qr; } i-=qc;
-				if(i>=0 && i<qr){ obj.bx=0;     obj.by=i*2+1;} i-=qr;
-				if(i>=0 && i<qr){ obj.bx=2*qc;  obj.by=i*2+1;} i-=qr;
+				if(i>=0 && i<qc){ border.bx=i*2+1; border.by=0;    } i-=qc;
+				if(i>=0 && i<qc){ border.bx=i*2+1; border.by=2*qr; } i-=qc;
+				if(i>=0 && i<qr){ border.bx=0;     border.by=i*2+1;} i-=qr;
+				if(i>=0 && i<qr){ border.bx=2*qc;  border.by=i*2+1;} i-=qr;
 			}
-			obj.isvert = !(obj.bx&1);
+			border.isvert = !(border.bx&1);
 
-			obj.initSideObject();
+			border.initSideObject();
 		}
 	},
 	setposEXcells : function(){
 		var qc = this.qcols, qr = this.qrows;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
-			var obj = this.excell[id], i=id;
-			obj.id = id;
-			obj.isnull = false;
+			var excell = this.excell[id], i=id;
+			excell.id = id;
+			excell.isnull = false;
 
 			if(this.hasexcell===1){
-				if(i>=0 && i<qc){ obj.bx=i*2+1; obj.by=-1;   } i-=qc;
-				if(i>=0 && i<qr){ obj.bx=-1;    obj.by=i*2+1;} i-=qr;
-				if(i===0)       { obj.bx=-1;    obj.by=-1;   } i--;
+				if(i>=0 && i<qc){ excell.bx=i*2+1; excell.by=-1;   } i-=qc;
+				if(i>=0 && i<qr){ excell.bx=-1;    excell.by=i*2+1;} i-=qr;
+				if(i===0)       { excell.bx=-1;    excell.by=-1;   } i--;
 			}
 			else if(this.hasexcell===2){
-				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=-1;    } i-=qc;
-				if(i>=0 && i<qc){ obj.bx=i*2+1;  obj.by=2*qr+1;} i-=qc;
-				if(i>=0 && i<qr){ obj.bx=-1;     obj.by=i*2+1; } i-=qr;
-				if(i>=0 && i<qr){ obj.bx=2*qc+1; obj.by=i*2+1; } i-=qr;
-				if(i===0)       { obj.bx=-1;     obj.by=-1;    } i--;
-				if(i===0)       { obj.bx=2*qc+1; obj.by=-1;    } i--;
-				if(i===0)       { obj.bx=-1;     obj.by=2*qr+1;} i--;
-				if(i===0)       { obj.bx=2*qc+1; obj.by=2*qr+1;} i--;
+				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=-1;    } i-=qc;
+				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=2*qr+1;} i-=qc;
+				if(i>=0 && i<qr){ excell.bx=-1;     excell.by=i*2+1; } i-=qr;
+				if(i>=0 && i<qr){ excell.bx=2*qc+1; excell.by=i*2+1; } i-=qr;
+				if(i===0)       { excell.bx=-1;     excell.by=-1;    } i--;
+				if(i===0)       { excell.bx=2*qc+1; excell.by=-1;    } i--;
+				if(i===0)       { excell.bx=-1;     excell.by=2*qr+1;} i--;
+				if(i===0)       { excell.bx=2*qc+1; excell.by=2*qr+1;} i--;
 			}
 
-			obj.initAdjacent();
+			excell.initAdjacent();
 		}
 	},
 

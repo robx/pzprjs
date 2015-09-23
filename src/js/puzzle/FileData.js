@@ -269,7 +269,7 @@ FileIO:{
 		for(var by=1-ADJ;by<=bd.maxby;by+=2){
 			var rownode = this.createXMLNode(targetnodename,{row:(((by+ADJ)/2)|0)+1});
 			for(var bx=1-ADJ;bx<=bd.maxbx;bx+=2){
-				var obj = bd.getobj(bx,by), nodename = func(obj), node;
+				var piece = bd.getobj(bx,by), nodename = func(piece), node;
 				if(nodename.match(/n(\d\d+)/) || nodename.match(/n(\-\d+)/)){
 					node = this.createXMLNode('n', {v:RegExp.$1});
 				}

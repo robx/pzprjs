@@ -201,8 +201,8 @@ MouseEvent:{
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
-		var pos = this.getpos(0), obj = pos.getex();
-		return (!obj.isnull ? obj : pos.getc());
+		var pos = this.getpos(0), excell = pos.getex();
+		return (!excell.isnull ? excell : pos.getc());
 	},
 	getcross : function(){
 		return this.getpos(0.5).getx();

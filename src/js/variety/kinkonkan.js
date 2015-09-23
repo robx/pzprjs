@@ -61,20 +61,21 @@ MouseEvent:{
 	},
 
 	inputedit_onstart : function(){
-		var obj = this.getcell_excell(), board = this.owner.board;
-		if(obj.isnull){ return;}
+		var piece = this.getcell_excell(); /* cell or excell */
+		var bd = this.owner.board;
+		if(piece.isnull){ return;}
 
-		if(obj.group!=='excell'){
+		if(piece.group!=='excell'){
 			this.inputborder();
 		}
-		else if(obj!==this.cursor.getobj()){
-			this.setcursor(obj);
+		else if(piece!==this.cursor.getobj()){
+			this.setcursor(piece);
 			this.mousereset();
 		}
 		else{
-			var excell = obj;
-			if(excell.qlight!==1){ board.flashlight(excell);}
-			else{ board.lightclear();}
+			var excell = piece;
+			if(excell.qlight!==1){ bd.flashlight(excell);}
+			else{ bd.lightclear();}
 
 			this.mousereset();
 		}
@@ -367,10 +368,10 @@ Encode:{
 		var subint = [];
 		var ec=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.excell[ec];
+			var ca = bstr.charAt(i), excell=bd.excell[ec];
 
-			if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9;}
-			else if(this.include(ca,'0','9')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1),10)+1)*26; i++;}
+			if     (this.include(ca,'A','Z')){ subint.push(ec); excell.qchar = parseInt(ca,36)-9;}
+			else if(this.include(ca,'0','9')){ subint.push(ec); excell.qchar = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1),10)+1)*26; i++;}
 			else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
 			ec++;
@@ -378,10 +379,10 @@ Encode:{
 		}
 		ec=0;
 		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.excell[subint[ec]];
-			if     (ca==='.'){ obj.qnum = -2;}
-			else if(ca==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { obj.qnum = parseInt(bstr.substr(i  ,1),16);}
+			var ca = bstr.charAt(i), excell=bd.excell[subint[ec]];
+			if     (ca==='.'){ excell.qnum = -2;}
+			else if(ca==='-'){ excell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { excell.qnum = parseInt(bstr.substr(i  ,1),16);}
 
 			ec++;
 			if(ec>=subint.length){ a=i+1; break;}
@@ -445,10 +446,10 @@ FileIO:{
 		}
 
 		if(this.filever===0){
-			this.decodeCell( function(obj,ca){
-				if     (ca==="+"){ obj.qsub = 1;}
-				else if(ca==="1"){ obj.qans = 31;}
-				else if(ca==="2"){ obj.qans = 32;}
+			this.decodeCell( function(cell,ca){
+				if     (ca==="+"){ cell.qsub = 1;}
+				else if(ca==="1"){ cell.qans = 31;}
+				else if(ca==="2"){ cell.qans = 32;}
 			});
 		}
 	},

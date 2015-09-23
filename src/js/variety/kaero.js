@@ -176,12 +176,12 @@ Encode:{
 	decodeKaero : function(){
 		var c=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[c];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
-			if     (this.include(ca,'0','9')){ obj.qnum = parseInt(ca,36)+27;}
-			else if(this.include(ca,'A','Z')){ obj.qnum = parseInt(ca,36)-9; }
-			else if(ca==="-"){ obj.qnum = parseInt(bstr.charAt(i+1),36)+37; i++;}
-			else if(ca==="."){ obj.qnum = -2;}
+			if     (this.include(ca,'0','9')){ cell.qnum = parseInt(ca,36)+27;}
+			else if(this.include(ca,'A','Z')){ cell.qnum = parseInt(ca,36)-9; }
+			else if(ca==="-"){ cell.qnum = parseInt(bstr.charAt(i+1),36)+37; i++;}
+			else if(ca==="."){ cell.qnum = -2;}
 			else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
 
 			c++;

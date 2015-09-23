@@ -72,11 +72,11 @@ Operation:{
 	// ope.decode()   ファイル出力された履歴の入力用ルーチン
 	// ope.toString() ファイル出力する履歴の出力用ルーチン
 	//---------------------------------------------------------------------------
-	setData : function(obj, property, old, num){
-		this.group = obj.group;
+	setData : function(piece, property, old, num){
+		this.group = piece.group;
 		this.property = property;
-		this.bx  = obj.bx;
-		this.by  = obj.by;
+		this.bx  = piece.bx;
+		this.by  = piece.by;
 		this.old = old;
 		this.num = num;
 	},
@@ -124,14 +124,14 @@ Operation:{
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	exec : function(num){
-		var bd = this.owner.board, obj = bd.getObjectPos(this.group, this.bx, this.by);
-		if(this.group!==obj.group){ return true;}
+		var bd = this.owner.board, piece = bd.getObjectPos(this.group, this.bx, this.by);
+		if(this.group!==piece.group){ return true;}
 		
-		obj.setdata(this.property, num);
-		obj.draw();
+		piece.setdata(this.property, num);
+		piece.draw();
 		
 		switch(this.property){
-			case 'qcmp': bd.cell.each(function(cell){ if(obj===cell.base){ cell.draw();}}); break;
+			case 'qcmp': bd.cell.each(function(cell){ if(piece===cell.base){ cell.draw();}}); break;
 			case 'qsub': break;
 			default:     this.owner.checker.resetCache(); break;
 		}

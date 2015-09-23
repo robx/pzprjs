@@ -674,27 +674,27 @@ FileIO:{
 
 	decodeBoard_pzpr1 : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startpos.set(obj);}
-			else if(ca==="i"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="#"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
 		bd.hinfo.generateGates();
 	},
 	decodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startpos.set(obj);}
-			else if(ca==="i"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="#"){ obj.ques = 1;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
 			else if(ca!=="."){
 				var inp = ca.split(",");
-				obj.ques = 1;
-				obj.qdir = (inp[0]!=="0"?+inp[0]: 0);
-				obj.qnum = (inp[1]!=="-"?+inp[1]:-2);
+				cell.ques = 1;
+				cell.qdir = (inp[0]!=="0"?+inp[0]: 0);
+				cell.qnum = (inp[1]!=="-"?+inp[1]:-2);
 			}
 		});
 		bd.hinfo.generateGates();
@@ -702,14 +702,14 @@ FileIO:{
 	encodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
 		bd.hinfo.generateAll();
-		this.encodeCell( function(obj){
-			if     (bd.startpos.equals(obj)){ return "o ";}
-			else if(obj.ques===21){ return "i ";}
-			else if(obj.ques===22){ return "- ";}
-			else if(obj.ques=== 1 && obj.qnum<=0){ return "# ";}
-			else if(obj.ques=== 1){
-				var ca1 = (obj.qdir!== 0 ? ""+obj.qdir : "0");
-				var ca2 = (obj.qnum!==-2 ? ""+obj.qnum : "-");
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "o ";}
+			else if(cell.ques===21){ return "i ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1 && cell.qnum<=0){ return "# ";}
+			else if(cell.ques=== 1){
+				var ca1 = (cell.qdir!== 0 ? ""+cell.qdir : "0");
+				var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
 				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
@@ -718,24 +718,24 @@ FileIO:{
 
 	decodeBoard_kanpen : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ bd.startpos.set(obj);}
-			else if(ca==="|"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="0"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ bd.startpos.set(cell);}
+			else if(ca==="|"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="0"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
 		bd.hinfo.generateGates();
 	},
 	encodeBoard_kanpen : function(){
 		var bd = this.owner.board;
 		bd.hinfo.generateAll();
-		this.encodeCell( function(obj){
-			if     (bd.startpos.equals(obj)){ return "+ ";}
-			else if(obj.ques===21){ return "| ";}
-			else if(obj.ques===22){ return "- ";}
-			else if(obj.ques=== 1){
-				return (obj.qnum>0 ? obj.qnum+" " : "0 ");
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "+ ";}
+			else if(cell.ques===21){ return "| ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1){
+				return (cell.qnum>0 ? cell.qnum+" " : "0 ");
 			}
 			else{ return ". ";}
 		});
@@ -781,14 +781,14 @@ FileIO:{
 
 	decodeBoard_old : function(){
 		var sv_num = [], bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			var c = obj.id;
+		this.decodeCell( function(cell,ca){
+			var c = cell.id;
 			sv_num[c]=-1;
-			if     (ca==="#"){ obj.ques = 1;}
-			else if(ca==="o"){ bd.startpos.set(obj);}
+			if     (ca==="#"){ cell.ques = 1;}
+			else if(ca==="o"){ bd.startpos.set(cell);}
 			else if(ca!=="."){
-				if     (ca.charAt(0)==="i"){ obj.ques = 21;}
-				else if(ca.charAt(0)==="w"){ obj.ques = 22;}
+				if     (ca.charAt(0)==="i"){ cell.ques = 21;}
+				else if(ca.charAt(0)==="w"){ cell.ques = 22;}
 				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
 			}
 		});

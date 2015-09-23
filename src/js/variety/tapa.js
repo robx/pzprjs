@@ -422,30 +422,30 @@ FileIO:{
 	},
 
 	decodeCellQnumAns_tapa : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="#"){ obj.qans = 1;}
-			else if(ca==="+"){ obj.qsub = 1;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="#"){ cell.qans = 1;}
+			else if(ca==="+"){ cell.qsub = 1;}
 			else if(ca!=="."){
-				obj.qnums = [];
+				cell.qnums = [];
 				var array = ca.split(/,/);
 				for(var i=0;i<array.length;i++){
-					obj.qnums.push(array[i]!=="-"?+array[i]:-2);
+					cell.qnums.push(array[i]!=="-"?+array[i]:-2);
 				}
 			}
 		});
 	},
 	encodeCellQnumAns_tapa : function(){
-		this.encodeCell( function(obj){
-			if(obj.qnums.length>0){
+		this.encodeCell( function(cell){
+			if(cell.qnums.length>0){
 				var array = [];
-				for(var i=0;i<obj.qnums.length;i++){
-					array.push(obj.qnums[i]>=0?""+obj.qnums[i]:"-");
+				for(var i=0;i<cell.qnums.length;i++){
+					array.push(cell.qnums[i]>=0?""+cell.qnums[i]:"-");
 				}
 				return (array.join(',')+" ");
 			}
-			else if(obj.qans===1){ return "# ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else                 { return ". ";}
+			else if(cell.qans===1){ return "# ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else                  { return ". ";}
 		});
 	}
 },

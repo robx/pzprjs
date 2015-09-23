@@ -257,19 +257,19 @@ Encode:{
 				if     (id<bd.qcols*bd.qrows)  { mgn=((id/bd.qcols)|0);}
 				else if(id<2*bd.qcols*bd.qrows){ mgn=bd.qrows;}
 			}
-			var obj = bd.border[id-mgn];
+			var border = bd.border[id-mgn];
 
 			var tmp=0;
-			if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ obj.qnum = parseInt(ca,16);}
-			else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca==="."){ obj.qnum = -2;}
+			if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ border.qnum = parseInt(ca,16);}
+			else if(ca==="-"){ border.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca==="."){ border.qnum = -2;}
 			else if(ca==="g"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?1:2);}
 			else if(ca==="h"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?2:1);}
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
 
-			if     (tmp===1){ obj.qdir = (obj.isHorz()?obj.UP:obj.LT);}
-			else if(tmp===2){ obj.qdir = (obj.isHorz()?obj.DN:obj.RT);}
+			if     (tmp===1){ border.qdir = (border.isHorz()?border.UP:border.LT);}
+			else if(tmp===2){ border.qdir = (border.isHorz()?border.DN:border.RT);}
 
 			id++;
 			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
@@ -309,22 +309,22 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="a"){ obj.qdir = (obj.isHorz()?obj.UP:obj.LT);}
-			else if(ca==="b"){ obj.qdir = (obj.isHorz()?obj.DN:obj.RT);}
-			else if(ca==="."){ obj.qnum = -2;}
-			else if(ca!=="0"){ obj.qnum = +ca;}
+		this.decodeBorder( function(border,ca){
+			if     (ca==="a"){ border.qdir = (border.isHorz()?border.UP:border.LT);}
+			else if(ca==="b"){ border.qdir = (border.isHorz()?border.DN:border.RT);}
+			else if(ca==="."){ border.qnum = -2;}
+			else if(ca!=="0"){ border.qnum = +ca;}
 		});
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		this.encodeBorder( function(obj){
-			var dir=obj.qdir;
-			if     (dir===obj.UP||dir===obj.LT){ return "a ";}
-			else if(dir===obj.DN||dir===obj.RT){ return "b ";}
-			else if(obj.qnum===-2){ return ". ";}
-			else if(obj.qnum!==-1){ return obj.qnum+" ";}
-			else                  { return "0 ";}
+		this.encodeBorder( function(border){
+			var dir=border.qdir;
+			if     (dir===border.UP||dir===border.LT){ return "a ";}
+			else if(dir===border.DN||dir===border.RT){ return "b ";}
+			else if(border.qnum===-2){ return ". ";}
+			else if(border.qnum!==-1){ return border.qnum+" ";}
+			else                     { return "0 ";}
 		});
 		this.encodeCellAnumsub();
 	}

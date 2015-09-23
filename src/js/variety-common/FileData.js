@@ -8,16 +8,16 @@ FileIO:{
 	// fio.encodeCellQnum() 問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="-"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnum : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum>=0)  { return obj.qnum+" ";}
-			else if(obj.qnum===-2){ return "- ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=0)  { return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "- ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -25,16 +25,16 @@ FileIO:{
 	// fio.encodeCellQnumb() 黒背景な問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumb : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="5"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnumb : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum>=0)  { return obj.qnum+" ";}
-			else if(obj.qnum===-2){ return "5 ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=0)  { return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "5 ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -42,20 +42,20 @@ FileIO:{
 	// fio.encodeCellQnumAns() 問題数字＋黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="#"){ obj.qans = 1;}
-			else if(ca==="+"){ obj.qsub = 1;}
-			else if(ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="#"){ cell.qans = 1;}
+			else if(ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnumAns : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum>=0) { return obj.qnum + " ";}
-			else if(obj.qnum===-2){return "- ";}
-			else if(obj.qans===1){ return "# ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=0) { return cell.qnum+" ";}
+			else if(cell.qnum===-2){return "- ";}
+			else if(cell.qans===1){ return "# ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -63,19 +63,19 @@ FileIO:{
 	// fio.encodeCellDirecQnum() 方向＋問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellDirecQnum : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=="."){
 				var inp = ca.split(",");
-				obj.qdir = (inp[0]!=="0" ? +inp[0] :  0);
-				obj.qnum = (inp[1]!=="-" ? +inp[1] : -2);
+				cell.qdir = (inp[0]!=="0" ? +inp[0] :  0);
+				cell.qnum = (inp[1]!=="-" ? +inp[1] : -2);
 			}
 		});
 	},
 	encodeCellDirecQnum : function(){
-		this.encodeCell( function(obj){
-			if(obj.qnum!==-1){
-				var ca1 = (obj.qdir!== 0 ? ""+obj.qdir : "0");
-				var ca2 = (obj.qnum!==-2 ? ""+obj.qnum : "-");
+		this.encodeCell( function(cell){
+			if(cell.qnum!==-1){
+				var ca1 = (cell.qdir!== 0 ? ""+cell.qdir : "0");
+				var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
 				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
@@ -86,16 +86,16 @@ FileIO:{
 	// fio.encodeCellAns() 黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellAns : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="#"){ obj.qans = 1;}
-			else if(ca==="+"){ obj.qsub = 1;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="#"){ cell.qans = 1;}
+			else if(ca==="+"){ cell.qsub = 1;}
 		});
 	},
 	encodeCellAns : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qans===1){ return "# ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans===1){ return "# ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -103,22 +103,22 @@ FileIO:{
 	// fio.encodeCellQanssub() 黒マスと背景色のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQanssub : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.qsub = 1;}
-			else if(ca==="-"){ obj.qsub = 2;}
-			else if(ca==="="){ obj.qsub = 3;}
-			else if(ca==="%"){ obj.qsub = 4;}
-			else if(ca!=="."){ obj.qans = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qsub = 2;}
+			else if(ca==="="){ cell.qsub = 3;}
+			else if(ca==="%"){ cell.qsub = 4;}
+			else if(ca!=="."){ cell.qans = +ca;}
 		});
 	},
 	encodeCellQanssub : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qans!==0){ return obj.qans + " ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else if(obj.qsub===2){ return "- ";}
-			else if(obj.qsub===3){ return "= ";}
-			else if(obj.qsub===4){ return "% ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans!==0){ return cell.qans+" ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else if(cell.qsub===2){ return "- ";}
+			else if(cell.qsub===3){ return "= ";}
+			else if(cell.qsub===4){ return "% ";}
+			else                  { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -126,22 +126,22 @@ FileIO:{
 	// fio.encodeCellAnumsub() 回答数字と背景色のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellAnumsub : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.qsub = 1;}
-			else if(ca==="-"){ obj.qsub = 2;}
-			else if(ca==="="){ obj.qsub = 3;}
-			else if(ca==="%"){ obj.qsub = 4;}
-			else if(ca!=="."){ obj.anum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qsub = 2;}
+			else if(ca==="="){ cell.qsub = 3;}
+			else if(ca==="%"){ cell.qsub = 4;}
+			else if(ca!=="."){ cell.anum = +ca;}
 		});
 	},
 	encodeCellAnumsub : function(){
-		this.encodeCell( function(obj){
-			if     (obj.anum!==-1){ return obj.anum + " ";}
-			else if(obj.qsub===1) { return "+ ";}
-			else if(obj.qsub===2) { return "- ";}
-			else if(obj.qsub===3) { return "= ";}
-			else if(obj.qsub===4) { return "% ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.anum!==-1){ return cell.anum+" ";}
+			else if(cell.qsub===1) { return "+ ";}
+			else if(cell.qsub===2) { return "- ";}
+			else if(cell.qsub===3) { return "= ";}
+			else if(cell.qsub===4) { return "% ";}
+			else                   { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -149,14 +149,14 @@ FileIO:{
 	// fio.encodeCellQsub() 背景色のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQsub : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca!=="0"){ obj.qsub = +ca;}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="0"){ cell.qsub = +ca;}
 		});
 	},
 	encodeCellQsub : function(){
-		this.encodeCell( function(obj){
-			if(obj.qsub>0){ return obj.qsub + " ";}
-			else          { return "0 ";}
+		this.encodeCell( function(cell){
+			if(cell.qsub>0){ return cell.qsub+" ";}
+			else           { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -164,16 +164,16 @@ FileIO:{
 	// fio.encodeCrossNum() 交点の数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCrossNum : function(){
-		this.decodeCross( function(obj,ca){
-			if     (ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCross( function(cross,ca){
+			if     (ca==="-"){ cross.qnum = -2;}
+			else if(ca!=="."){ cross.qnum = +ca;}
 		});
 	},
 	encodeCrossNum : function(){
-		this.encodeCross( function(obj){
-			if     (obj.qnum>=0)  { return obj.qnum + " ";}
-			else if(obj.qnum===-2){ return "- ";}
-			else                  { return ". ";}
+		this.encodeCross( function(cross){
+			if     (cross.qnum>=0)  { return cross.qnum+" ";}
+			else if(cross.qnum===-2){ return "- ";}
+			else                    { return ". ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -181,13 +181,13 @@ FileIO:{
 	// fio.encodeBorderQues() 問題の境界線のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderQues : function(){
-		this.decodeBorder( function(obj,ca){
-			if(ca==="1"){ obj.ques = 1;}
+		this.decodeBorder( function(border,ca){
+			if(ca==="1"){ border.ques = 1;}
 		});
 	},
 	encodeBorderQues : function(){
-		this.encodeBorder( function(obj){
-			return (obj.ques===1?"1":"0")+" ";
+		this.encodeBorder( function(border){
+			return (border.ques===1?"1":"0")+" ";
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -195,18 +195,18 @@ FileIO:{
 	// fio.encodeBorderAns() 問題・回答の境界線のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderAns : function(){
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="2" ){ obj.qans = 1; obj.qsub = 1;}
-			else if(ca==="1" ){ obj.qans = 1;}
-			else if(ca==="-1"){ obj.qsub = 1;}
+		this.decodeBorder( function(border,ca){
+			if     (ca==="2" ){ border.qans = 1; border.qsub = 1;}
+			else if(ca==="1" ){ border.qans = 1;}
+			else if(ca==="-1"){ border.qsub = 1;}
 		});
 	},
 	encodeBorderAns : function(){
-		this.encodeBorder( function(obj){
-			if     (obj.qans===1 && obj.qsub===1){ return "2 ";}
-			else if(obj.qans===1){ return "1 ";}
-			else if(obj.qsub===1){ return "-1 ";}
-			else                 { return "0 ";}
+		this.encodeBorder( function(border){
+			if     (border.qans===1 && border.qsub===1){ return "2 ";}
+			else if(border.qans===1){ return "1 ";}
+			else if(border.qsub===1){ return "-1 ";}
+			else                    { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -214,16 +214,16 @@ FileIO:{
 	// fio.encodeBorderLine() Lineのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeBorderLine : function(){
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="-1"){ obj.qsub = 2;}
-			else if(ca!=="0" ){ obj.line = +ca;}
+		this.decodeBorder( function(border,ca){
+			if     (ca==="-1"){ border.qsub = 2;}
+			else if(ca!=="0" ){ border.line = +ca;}
 		});
 	},
 	encodeBorderLine : function(){
-		this.encodeBorder( function(obj){
-			if     (obj.line>  0){ return ""+obj.line+" ";}
-			else if(obj.qsub===2){ return "-1 ";}
-			else                 { return "0 ";}
+		this.encodeBorder( function(border){
+			if     (border.line>  0){ return border.line+" ";}
+			else if(border.qsub===2){ return "-1 ";}
+			else                   { return "0 ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -311,13 +311,13 @@ FileIO:{
 	// fio.encodeCellQnum_kanpen() pencilbox用問題数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum_kanpen : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnum_kanpen : function(){
-		this.encodeCell( function(obj){
-			return ((obj.qnum>=0) ? obj.qnum+" " : ". ");
+		this.encodeCell( function(cell){
+			return ((cell.qnum>=0) ? cell.qnum+" " : ". ");
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -325,15 +325,15 @@ FileIO:{
 	// fio.encodeCellAnum_kanpen() pencilbox用回答数字のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellAnum_kanpen : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca!=="."&&ca!=="0"){ obj.anum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="."&&ca!=="0"){ cell.anum = +ca;}
 		});
 	},
 	encodeCellAnum_kanpen : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum!==-1){ return ". ";}
-			else if(obj.anum===-1){ return "0 ";}
-			else                  { return obj.anum+" ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum!==-1){ return ". ";}
+			else if(cell.anum===-1){ return "0 ";}
+			else                   { return cell.anum+" ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -341,20 +341,20 @@ FileIO:{
 	// fio.encodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnumAns_kanpen : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="#"){ obj.qans = 1;}
-			else if(ca==="+"){ obj.qsub = 1;}
-			else if(ca==="?"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="#"){ cell.qans = 1;}
+			else if(ca==="+"){ cell.qsub = 1;}
+			else if(ca==="?"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQnumAns_kanpen : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum>=0 ){ return obj.qnum+" ";}
-			else if(obj.qnum===-2){return "? ";}
-			else if(obj.qans===1){ return "# ";}
-			else if(obj.qsub===1){ return "+ ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=0 ){ return cell.qnum+" ";}
+			else if(cell.qnum===-2){return "? ";}
+			else if(cell.qans===1){ return "# ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else                  { return ". ";}
 		});
 	},
 

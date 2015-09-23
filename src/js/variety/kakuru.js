@@ -102,25 +102,25 @@ Encode:{
 	},
 
 	decodeKakuru : function(){
-		var cell=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[cell];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
-			if     (ca==='+'){ obj.ques = 1;}
-			else if(this.include(ca,"k","z")){ cell+=(parseInt(ca,36)-19);}
-			else if(ca!=='.'){ obj.qnum = this.decval(ca);}
+			if     (ca==='+'){ cell.ques = 1;}
+			else if(this.include(ca,"k","z")){ c+=(parseInt(ca,36)-19);}
+			else if(ca!=='.'){ cell.qnum = this.decval(ca);}
 
-			cell++;
-			if(cell>=bd.cellmax){ break;}
+			c++;
+			if(c>=bd.cellmax){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeKakuru : function(type){
 		var cm="", count=0, bd = this.owner.board;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr="", obj=bd.cell[c];
-			if     (obj.ques=== 1){ pstr = "+";}
-			else if(obj.qnum!==-1){ pstr = this.encval(obj.qnum);}
+			var pstr="", cell=bd.cell[c];
+			if     (cell.ques=== 1){ pstr = "+";}
+			else if(cell.qnum!==-1){ pstr = this.encval(cell.qnum);}
 			else{ count++;}
 
 			if(count===0){ cm+=pstr;}
@@ -140,7 +140,7 @@ Encode:{
 		else if(ca>='0'&&ca<='9'){ return parseInt(ca,36);}
 		else if(ca>='a'&&ca<='j'){ return parseInt(ca,36);}
 		else if(ca>='A'&&ca<='Z'){ return parseInt(ca,36)+10;}
-		return "";
+		return -1;
 	},
 	encval : function(val){
 		if     (val===-2)        { return "_";}
@@ -152,25 +152,25 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="b"){ obj.ques = 1;}
-			else if(ca==="?"){ obj.qnum =-2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="b"){ cell.ques = 1;}
+			else if(ca==="?"){ cell.qnum =-2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
-		this.decodeCell( function(obj,ca){
-			if(ca!=="."&&ca!=="0"){ obj.anum = +ca;}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="."&&ca!=="0"){ cell.anum = +ca;}
 		});
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if     (obj.ques=== 1){ return "b ";}
-			else if(obj.qnum===-2){ return "? ";}
-			else if(obj.qnum>=  0){ return obj.qnum+" ";}
+		this.encodeCell( function(cell){
+			if     (cell.ques=== 1){ return "b ";}
+			else if(cell.qnum===-2){ return "? ";}
+			else if(cell.qnum>=  0){ return cell.qnum+" ";}
 			else{ return ". ";}
 		});
-		this.encodeCell( function(obj){
-			if(obj.ques===1||obj.qnum!==-1){ return ". ";}
-			return (obj.anum!==-1 ? obj.anum+" " : "0 ");
+		this.encodeCell( function(cell){
+			if(cell.ques===1||cell.qnum!==-1){ return ". ";}
+			return (cell.anum!==-1 ? cell.anum+" " : "0 ");
 		});
 	}
 },

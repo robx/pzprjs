@@ -272,18 +272,18 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum51();
 		this.decodeBorderAns();
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.qsub = 1;}
-			else if(ca==="-"){ obj.qsub = 2;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qsub = 2;}
 		});
 	},
 	encodeData : function(){
 		this.encodeCellQnum51();
 		this.encodeBorderAns();
-		this.encodeCell( function(obj){
-			if     (obj.qsub===1){ return "+ ";}
-			else if(obj.qsub===2){ return "- ";}
-			else                 { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qsub===1){ return "+ ";}
+			else if(cell.qsub===2){ return "- ";}
+			else                  { return ". ";}
 		});
 	}
 },

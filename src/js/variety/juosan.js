@@ -125,17 +125,17 @@ FileIO:{
 	},
 	
 	decodeCellBar : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="1"){ obj.qans = 12;}
-			else if(ca==="2"){ obj.qans = 13;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="1"){ cell.qans = 12;}
+			else if(ca==="2"){ cell.qans = 13;}
 		});
 	},
 	encodeCellBar : function(){
-		this.encodeCell( function(obj){
-			if(obj.ques!==1){
-				if     (obj.qans===0) { return "0 ";}
-				else if(obj.qans===12){ return "1 ";}
-				else if(obj.qans===13){ return "2 ";}
+		this.encodeCell( function(cell){
+			if(cell.ques!==1){
+				if     (cell.qans===0) { return "0 ";}
+				else if(cell.qans===12){ return "1 ";}
+				else if(cell.qans===13){ return "2 ";}
 			}
 			return ". ";
 		});

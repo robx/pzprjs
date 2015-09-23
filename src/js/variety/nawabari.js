@@ -179,12 +179,12 @@ Encode:{
 	decodeFivecells : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cell[c], ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
-			obj.ques = 0;
-			if     (ca === '7')				 { obj.ques = 7;}
-			else if(ca === '.')				 { obj.qnum = -2;}
-			else if(this.include(ca,"0","9")){ obj.qnum = parseInt(ca,10);}
+			cell.ques = 0;
+			if     (ca === '7')				 { cell.ques = 7;}
+			else if(ca === '.')				 { cell.qnum = -2;}
+			else if(this.include(ca,"0","9")){ cell.qnum = parseInt(ca,10);}
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
@@ -213,21 +213,21 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			obj.ques = 0;
-			if     (ca==="*"){ obj.ques = 7;}
-			else if(ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = +ca;}
+		this.decodeCell( function(cell,ca){
+			cell.ques = 0;
+			if     (ca==="*"){ cell.ques = 7;}
+			else if(ca==="-"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
 		if(this.owner.pid==='fourcells'){ this.filever=1;}
-		this.encodeCell( function(obj){
-			if     (obj.ques=== 7){ return "* ";}
-			else if(obj.qnum===-2){ return "- ";}
-			else if(obj.qnum>=  0){ return obj.qnum+" ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.ques=== 7){ return "* ";}
+			else if(cell.qnum===-2){ return "- ";}
+			else if(cell.qnum>=  0){ return cell.qnum+" ";}
+			else                   { return ". ";}
 		});
 		this.encodeBorderAns();
 	}

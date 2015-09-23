@@ -84,29 +84,29 @@ Board:{
 	setposCells : function(){
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
-			var obj = this.cell[id];
-			obj.id = id;
-			obj.isnull = false;
+			var cell = this.cell[id];
+			cell.id = id;
+			cell.isnull = false;
 
 			if(this.shape===0){
 				var row = (((2*id)/(2*this.qcols-1))|0);
-				obj.bx = (((2*id)%(2*this.qcols-1))|0)+1;
-				obj.by = row*2+1;
+				cell.bx = (((2*id)%(2*this.qcols-1))|0)+1;
+				cell.by = row*2+1;
 			}
 			else if(this.shape===1){
 				var row = ((id/this.qcols)|0);
-				obj.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
-				obj.by = row*2+1;
+				cell.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
+				cell.by = row*2+1;
 			}
 			else if(this.shape===2){
 				var row = ((id/this.qcols)|0);
-				obj.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
-				obj.by = row*2+1;
+				cell.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
+				cell.by = row*2+1;
 			}
 			else if(this.shape===3){
 				var row = (((2*id+1)/(2*this.qcols+1))|0);
-				obj.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
-				obj.by = row*2+1;
+				cell.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
+				cell.by = row*2+1;
 			}
 		}
 	},
@@ -196,13 +196,13 @@ BoardExec:{
 
 		bd.setposAll();
 	},
-	distObj : function(key,obj){
+	distObj : function(key,piece){
 		var bd = this.owner.board;
 		key &= 0x0F;
-		if     (key===this.UP){ return obj.by;}
-		else if(key===this.DN){ return bd.maxby-obj.by;}
-		else if(key===this.LT){ return obj.bx;}
-		else if(key===this.RT){ return bd.maxbx-obj.bx;}
+		if     (key===this.UP){ return piece.by;}
+		else if(key===this.DN){ return bd.maxby-piece.by;}
+		else if(key===this.LT){ return piece.bx;}
+		else if(key===this.RT){ return bd.maxbx-piece.bx;}
 		return -1;
 	}
 },
@@ -274,7 +274,7 @@ Graphic:{
 
 			if(by<bd.maxby){
 				var xs = xa;
-				if((bd.shape===2 || bd.shape===3) ^ ((cy&1)!==(xs&1))){ xs++;}
+				if((bd.shape===2 || bd.shape===3)!==((cy&1)!==(xs&1))){ xs++;}
 				for(var bx=xs;bx<=xb;bx+=2){
 					g.vid = ["bdy_",bx,by].join("_");
 					g.fillRect(bx*this.bw-lm-0.5, by*this.bh-lm-0.5, lw, this.ch+1);

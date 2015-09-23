@@ -255,25 +255,25 @@ FileIO:{
 	},
 
 	decodeGoishiFile : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=='.'){
-				obj.ques = 0;
-				if(ca!=='0'){ obj.anum = +ca;}
+				cell.ques = 0;
+				if(ca!=='0'){ cell.anum = +ca;}
 			}
 		});
 	},
 	encodeGoishiFile : function(){
-		this.encodeCell( function(obj){
-			if(obj.ques===0){
-				return (obj.anum!==-1 ? ""+obj.anum+" " : "0 ");
+		this.encodeCell( function(cell){
+			if(cell.ques===0){
+				return (cell.anum!==-1 ? cell.anum+" " : "0 ");
 			}
 			return ". ";
 		});
 	},
 
 	decodeGoishi_kanpen : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca==='1'){ obj.ques = 0;}
+		this.decodeCell( function(cell,ca){
+			if(ca==='1'){ cell.ques = 0;}
 		});
 	},
 	encodeGoishi_kanpen : function(){
