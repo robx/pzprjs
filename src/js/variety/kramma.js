@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['kramma','kramman','shwolf'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
-			if(this.mousestart && this.owner.pid!=='kramma'){ this.inputcrossMark();}
+		else if(this.puzzle.editmode){
+			if(this.mousestart && this.pid!=='kramma'){ this.inputcrossMark();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
 	},
@@ -28,13 +28,13 @@ MouseEvent:{
 			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
 
 			var d = border.getlinesize();
-			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<borders.length;i++){
 				if     (this.inputData===1){ borders[i].setBorder();}
 				else if(this.inputData===0){ borders[i].removeBorder();}
 			}
 
-			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+			this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	}
@@ -103,10 +103,10 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		if(this.owner.pid!=='shwolf'){ this.drawCircles();}
-		else                         { this.drawSheepWolf();}
+		if(this.pid!=='shwolf'){ this.drawCircles();}
+		else                   { this.drawSheepWolf();}
 
-		if(this.owner.pid!=='kramma'){ this.drawCrossMarks();}
+		if(this.pid!=='kramma'){ this.drawCrossMarks();}
 
 		this.drawHatenas();
 
@@ -123,7 +123,7 @@ Graphic:{
 
 		/* imgtileの初期設定を追加 */
 		var imgsrc = (!pzpr.env.browser.legacyIE ? this.imgsrc_dataurl : this.imgsrc_imgfile);
-		this.imgtile = new this.owner.ImageTile(imgsrc, 2, 1);
+		this.imgtile = new this.klass.ImageTile(imgsrc, 2, 1);
 	},
 	imgsrc_dataurl : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC",
 	imgsrc_imgfile : pzpr.util.getpath()+'../img/shwolf_obj.png',
@@ -150,7 +150,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		if(this.owner.pid==='shwolf' || !this.checkpflag("c")){
+		if(this.pid==='shwolf' || !this.checkpflag("c")){
 			this.decodeCrossMark();
 			this.decodeCircle();
 		}
@@ -158,10 +158,10 @@ Encode:{
 			this.decodeCircle();
 		}
 
-		this.checkPuzzleid();
+		if(this.pid==='kramma'){ this.checkPuzzleid();}
 	},
 	encodePzpr : function(type){
-		if(this.owner.pid!=='kramma'){
+		if(this.pid!=='kramma'){
 			this.encodeCrossMark();
 			this.encodeCircle();
 		}
@@ -172,11 +172,9 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		var o=this.owner, bd=o.board;
-		if(o.pid==='kramma'){
-			for(var c=0;c<bd.crossmax;c++){
-				if(bd.cross[c].qnum===1){ o.changepid('kramman'); break;}
-			}
+		var puzzle=this.puzzle, bd=puzzle.board;
+		for(var c=0;c<bd.crossmax;c++){
+			if(bd.cross[c].qnum===1){ puzzle.changepid('kramman'); break;}
 		}
 	}
 },
@@ -187,7 +185,7 @@ FileIO:{
 		this.decodeCrossNum();
 		this.decodeBorderAns();
 
-		this.owner.enc.checkPuzzleid();
+		if(this.pid==='kramma'){ this.puzzle.enc.checkPuzzleid();}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();
@@ -221,7 +219,7 @@ AnsCheck:{
 	},
 
 	checkLcntCurve : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var crosses = bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2);
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c], adb = cross.adjborder;
@@ -237,15 +235,15 @@ AnsCheck:{
 
 	// ヤギとオオカミ用
 	checkLineChassis : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		var lines = [];
 		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].qans;}
 
-		var pos = new this.owner.Address(0,0);
+		var pos = new this.klass.Address(0,0);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
 			for(pos.by=bd.minby;pos.by<=bd.maxby;pos.by+=2){
 				/* 盤面端から探索をスタートする */
-				if((pos.bx===bd.minbx||pos.bx===bd.maxbx)^(pos.by===bd.minby||pos.by===bd.maxby)){
+				if((pos.bx===bd.minbx||pos.bx===bd.maxbx)!==(pos.by===bd.minby||pos.by===bd.maxby)){
 					if     (pos.by===bd.minby){ this.clearLineInfo(lines,pos,2);}
 					else if(pos.by===bd.maxby){ this.clearLineInfo(lines,pos,1);}
 					else if(pos.bx===bd.minbx){ this.clearLineInfo(lines,pos,4);}

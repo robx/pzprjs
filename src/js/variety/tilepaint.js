@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['tilepaint'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputborder();}
 			}
@@ -38,8 +38,8 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.inputnumber51(ca,
-			{2 : (this.owner.board.qcols-(this.cursor.bx>>1)-1),
-			 4 : (this.owner.board.qrows-(this.cursor.by>>1)-1)});
+			{2 : (this.board.qcols-(this.cursor.bx>>1)-1),
+			 4 : (this.board.qrows-(this.cursor.by>>1)-1)});
 	}
 },
 
@@ -161,7 +161,7 @@ Encode:{
 
 	decodeTilePaint : function(){
 		// 盤面内数字のデコード
-		var id=0, a=0, bstr = this.outbstr, bd = this.owner.board;
+		var id=0, a=0, bstr = this.outbstr, bd = this.board;
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[id];
@@ -218,7 +218,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeTilePaint : function(type){
-		var cm="", bd = this.owner.board;
+		var cm="", bd = this.board;
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;

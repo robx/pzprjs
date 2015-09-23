@@ -6,8 +6,8 @@ pzpr.classmgr.makeCustom(['shakashaka'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
-			var use = +this.owner.getConfig('use_tri');
+		if(this.puzzle.playmode){
+			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){
 				if(this.btn.Left){
 					if(this.mousestart){ this.inputTriangle_corner();}
@@ -42,7 +42,7 @@ MouseEvent:{
 				if(this.mousestart){ this.inputTriangle_onebtn();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -209,7 +209,7 @@ Cell:{
 },
 Board:{
 	getSlopeWareaInfo : function(){
-		var winfo = new this.owner.AreaInfo();
+		var winfo = new this.klass.AreaInfo();
 		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].noNum()?0:null);}
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
@@ -244,7 +244,7 @@ BoardExec:{
 			case this.TURNL: trans=[0,1,3,4,5,2]; break;	// 左90°回転
 			default: return;
 		}
-		var clist = this.owner.board.cell;
+		var clist = this.board.cell;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], val = trans[cell.qans];
 			if(!!val){ cell.qans=val;}
@@ -289,10 +289,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnumb();
+		this.puzzle.fio.decodeCellQnumb();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnumb();
+		this.puzzle.fio.encodeCellQnumb();
 	}
 },
 //---------------------------------------------------------
@@ -372,7 +372,7 @@ AnsCheck:{
 	},
 
 	checkWhiteArea : function(){
-		var winfo = this.owner.board.getSlopeWareaInfo();
+		var winfo = this.board.getSlopeWareaInfo();
 		for(var id=1;id<=winfo.max;id++){
 			var clist=winfo.area[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;

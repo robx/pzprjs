@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['lits','norinori'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
 	}
@@ -21,7 +21,7 @@ Board:{
 	hasborder : 1,
 
 	getTetrominoInfo : function(rinfo){
-		var tinfo = new this.owner.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
+		var tinfo = new this.klass.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
 		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
 		for(var r=1;r<=rinfo.max;r++){
 			var clist = rinfo.area[r].clist.filter(function(cell){ return cell.isShade();});
@@ -44,7 +44,7 @@ Board:{
 		return this.getBlockInfo(tinfo);
 	},
 	getBlockInfo : function(tinfo){
-		var dinfo = new this.owner.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
+		var dinfo = new this.klass.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
 		for(var c=0;c<this.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!==null?0:null);}
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
@@ -107,15 +107,15 @@ Flags:{
 Graphic:{
 	paint : function(){
 		this.drawBGCells();
-		if(this.owner.pid==='lits'){ this.drawDotCells(false);}
+		if(this.pid==='lits'){ this.drawDotCells(false);}
 		this.drawGrid();
-		if(this.owner.pid==='norinori'){ this.drawShadedCells();}
+		if(this.pid==='norinori'){ this.drawShadedCells();}
 
 		this.drawBorders();
 
 		this.drawChassis();
 
-		if(this.owner.pid==='norinori'){ this.drawBoxBorders(false);}
+		if(this.pid==='norinori'){ this.drawBoxBorders(false);}
 	}
 },
 "Graphic@lits":{
@@ -140,7 +140,7 @@ Encode:{
 		var parser = pzpr.parser;
 		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d")) ||
 					   (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
-		if(!oldflag || this.owner.pid==='norinori'){
+		if(!oldflag || this.pid==='norinori'){
 			this.decodeBorder();
 		}
 		else{
@@ -148,7 +148,7 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===pzpr.parser.URL_PZPRV3 || this.owner.pid==='norinori'){
+		if(type===pzpr.parser.URL_PZPRV3 || this.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{
@@ -158,14 +158,14 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeAreaRoom();
+		this.puzzle.fio.decodeAreaRoom();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeAreaRoom();
+		this.puzzle.fio.encodeAreaRoom();
 	},
 
 	decodeLITS_old : function(){
-		var bstr = this.outbstr, bd = this.owner.board;
+		var bstr = this.outbstr, bd = this.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
@@ -236,7 +236,7 @@ FileIO:{
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var r=1;r<=bd.rooms.max;r++){
 			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
 			if(clist.isSeqBlock()){ continue;}
@@ -249,7 +249,7 @@ FileIO:{
 
 	checkTetromino : function(){
 		var rinfo = this.getRoomInfo();
-		var dinfo = this.owner.board.getTetrominoInfo(rinfo);
+		var dinfo = this.board.getTetrominoInfo(rinfo);
 		for(var r=1;r<=dinfo.max;r++){
 			var clist = dinfo.area[r].clist;
 			if(clist.length<=4){ continue;}

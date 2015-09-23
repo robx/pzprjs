@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['herugolf'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputMoveLine();}
 				else if(this.btn.Right){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			var cell = this.getcell();
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Right && cell.ques!==31 && cell.qnum===-1){ this.inputWater();}
@@ -28,19 +28,19 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.puzzle.execConfig('autocmp') && !this.puzzle.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
 	inputautodark : function(){
 		/* 最後に入力した線を取得する */
-		var opemgr = this.owner.opemgr, lastope = opemgr.lastope;
+		var opemgr = this.puzzle.opemgr, lastope = opemgr.lastope;
 		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
-		var border = this.owner.board.getb(lastope.bx, lastope.by);
+		var border = this.board.getb(lastope.bx, lastope.by);
 		
 		/* 線を引いた/消した箇所にある領域を取得 */
-		var linfo = this.owner.board.linfo;
-		var clist = new this.owner.CellList();
+		var linfo = this.board.linfo;
+		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.lineedge);
 		clist = clist.notnull().filter(function(cell){ return !!linfo.id[cell.id];});
 		
@@ -52,7 +52,7 @@ MouseEvent:{
 
 	inputMoveLine : function(){
 		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.owner.execConfig('dispmove')){
+		if(!this.puzzle.execConfig('dispmove')){
 			this.inputLine();
 			return;
 		}
@@ -182,11 +182,11 @@ Cell:{
 		return (n===0);
 	},
 	isCmp : function(){
-		if(this.owner.execConfig('dispmove')){
+		if(this.puzzle.execConfig('dispmove')){
 			return (this.ques===31 && this.base.qnum!==-1 && this.isViaPoint());
 		}
 		else if(this.qnum!==-1){
-			var clist = this.owner.board.linfo.getClistByCell(this);
+			var clist = this.board.linfo.getClistByCell(this);
 			for(var i=0,len=clist.length;i<len;i++){
 				if(clist[i].base===this && clist[i].ques===31 && clist[i].isViaPoint()){ return true;}
 			}
@@ -194,16 +194,16 @@ Cell:{
 		return false;
 	},
 	maxnum : function(){
-		var bd = this.owner.board, cx = (this.bx>>1), cy = (this.by>>1);
+		var bd = this.board, cx = (this.bx>>1), cy = (this.by>>1);
 		return Math.max(cx, cy, bd.qcols-1-cx, bd.qrows-1-cy);
 	},
 
 	getDestination : function(){
-		var bd = this.owner.board, linfo = bd.linfo, areaid = linfo.id[this.id];
+		var bd = this.board, linfo = bd.linfo, areaid = linfo.id[this.id];
 		return (areaid!==null ? linfo.area[areaid].destination : bd.emptycell);
 	},
 	getDeparture : function(){
-		var bd = this.owner.board, linfo = bd.linfo, areaid = linfo.id[this.id];
+		var bd = this.board, linfo = bd.linfo, areaid = linfo.id[this.id];
 		return (areaid!==null ? linfo.area[areaid].departure : bd.emptycell);
 	}
 },
@@ -213,7 +213,7 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.waterinfo = this.addInfoList(this.owner.AreaWaterManager);
+		this.waterinfo = this.addInfoList(this.klass.AreaWaterManager);
 	}
 },
 
@@ -237,7 +237,7 @@ AreaLineManager:{
 		if(!area.movevalid){ return;}
 		
 		var cell = area.departure, num = area.departure.qnum;
-		num = (num>0 ? num : this.owner.board.cellmax);
+		num = (num>0 ? num : this.board.cellmax);
 		cell.distance = (num+1)*num/2;
 		
 		/* area.departureは線が1方向にしかふられていないはず */
@@ -312,7 +312,7 @@ Graphic:{
 		else{ g.vhide();}
 	},
 	getCircleCaption : function(cell){
-		if(this.owner.execConfig('dispmove')){
+		if(this.puzzle.execConfig('dispmove')){
 			if(!cell.isDestination() || cell.base.qnum<0){ return "";}
 			/* cell.isViaPointに似ている関数 */
 			var n=cell.distance, k=0;
@@ -334,7 +334,7 @@ Graphic:{
 			
 			var cells = border.sidecell;
 			var isvalidline = (cells[0].distance>=0 && cells[1].distance>=0);
-			if(this.owner.execConfig('dispmove')){
+			if(this.puzzle.execConfig('dispmove')){
 				return (isvalidline ? this.movelinecolor : this.errlinecolor);
 			}
 			else{
@@ -352,7 +352,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], dir=0, border=null;
-			if(cell.qnum===-1 && !this.owner.execConfig('dispmove')){
+			if(cell.qnum===-1 && !this.puzzle.execConfig('dispmove')){
 				var adc = cell.adjacent, adb = cell.adjborder;
 				if     (adb.top.isLine()    && (cell.lcnt===1 || (cell.isViaPoint() && adc.top.distance   ===cell.distance+1))){ dir=2; border=adb.top;   }
 				else if(adb.bottom.isLine() && (cell.lcnt===1 || (cell.isViaPoint() && adc.bottom.distance===cell.distance+1))){ dir=1; border=adb.bottom;}
@@ -386,7 +386,7 @@ Graphic:{
 
 		g.fillStyle = this.fontcolor;
 		var option = {globalratio:1};
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
@@ -403,7 +403,7 @@ Graphic:{
 		var g = this.vinc('cell_via', 'auto', true);
 		g.fillStyle = this.movelinecolor;
 		var rsize  = this.cw*0.15;
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
@@ -430,7 +430,7 @@ Encode:{
 
 	/* 0-9a-fは数字、hはHole, i-zは空白とします (gは未使用) */
 	decodeNumber16_herugolf : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -446,7 +446,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16_herugolf : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", cell = bd.cell[c], qn = cell.qnum, qu = cell.ques;
 
@@ -507,7 +507,7 @@ AnsCheck:{
 	],
 	
 	checkMoveOver : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(!border.isLine()){ continue;}
@@ -517,7 +517,7 @@ AnsCheck:{
 			result = false;
 			if(this.checkOnly){ break;}
 			border.seterr(1);
-			(this.owner.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
+			(this.puzzle.execConfig('dispmove') ? cell1.getDestination() : cell1.getDeparture()).seterr(1);
 		}
 		if(!result){
 			this.failcode.add("laMoveOver");
@@ -537,7 +537,7 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.ques===6 && cell.isViaPoint());}, "laWaterHazard");
 	},
 	checkCupIn : function(){
-		if(this.owner.execConfig('dispmove')){
+		if(this.puzzle.execConfig('dispmove')){
 			this.checkAllCell(function(cell){ return (cell.ques!==31 && cell.isDestination());}, "nmOutOfHole");
 		}
 		else{

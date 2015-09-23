@@ -6,11 +6,11 @@ pzpr.classmgr.makeCustom(['tateyoko'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
 			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -56,14 +56,14 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		return (this.ques===1?4:Math.max(bd.qcols,bd.qrows));
 	},
 	minnum : 0
 },
 Board:{
 	getBarInfo : function(){
-		var barinfo = new this.owner.AreaBarManager();
+		var barinfo = new this.klass.AreaBarManager();
 		return barinfo.getBarInfo();
 	}
 },
@@ -71,7 +71,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
 			var tans = {0:0,12:13,13:12};
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				cell.setQans(tans[cell.qans]);
@@ -82,8 +82,8 @@ BoardExec:{
 
 AreaBarManager:{
 	getBarInfo : function(){
-		var bd = this.owner.board;
-		var binfo = new this.owner.AreaInfo();
+		var bd = this.board;
+		var binfo = new this.klass.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			binfo.id[c]=((cell.ques===1||cell.qans===0) ? null : 0);
@@ -169,7 +169,7 @@ Encode:{
 	},
 
 	decodeTateyoko : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -185,7 +185,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTateyoko : function(type){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qu=bd.cell[c].ques, qn=bd.cell[c].qnum;
 			if(qu===0){
@@ -257,16 +257,16 @@ AnsCheck:{
 	],
 
 	getBarInfo : function(){
-		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+		return (this._info.bar = this._info.bar || this.board.getBarInfo());
 	},
 
 	checkDoubleNumberInBar : function(){
-		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		var cells = this.board.cell, errcount = this.failcode.length;
 		this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "baPlNum");
 		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 	checkSizeAndNumberInBar : function(){
-		var cells = this.owner.board.cell, errcount = this.failcode.length;
+		var cells = this.board.cell, errcount = this.failcode.length;
 		this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
 		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
@@ -274,7 +274,7 @@ AnsCheck:{
 	checkBarOverNum : function(){ this.checkShade(1, "nmConnBarGt");},
 	checkBarLessNum : function(){ this.checkShade(2, "nmConnBarLt");},
 	checkShade : function(type, code){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.qnum;
 			if(cell.ques!==1 || num<0){ continue;}

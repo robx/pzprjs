@@ -27,7 +27,7 @@ KeyEvent:{
 	// kc.key_inputqnum() 上限maxまでの数字をCellの問題データをして入力する(keydown時)
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
-		var cell = this.cursor.getc(), cell0=cell, puzzle=this.owner, bd=puzzle.board;
+		var cell = this.cursor.getc(), cell0=cell, puzzle=this.puzzle, bd=puzzle.board;
 		if(puzzle.editmode && bd.rooms.hastop){
 			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
 		}
@@ -53,7 +53,7 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
 		}
-		else if(ca==='-') { val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
+		else if(ca==='-') { val = ((this.puzzle.editmode&&!cell.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else if(ca==='s1'){ val = -2;}
 		else if(ca==='s2'){ val = -3;}
@@ -67,7 +67,7 @@ KeyEvent:{
 	// kc.key_inputdirec()  四方向の矢印などを設定する
 	//---------------------------------------------------------------------------
 	key_inputdirec : function(ca){
-		var cell = this.cursor.getc(), pid = this.owner.pid;
+		var cell = this.cursor.getc(), pid = this.pid;
 		/* 矢印つき数字の場合 */
 		var arrownum = (pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin");
 		if(arrownum && cell.qnum===-1){ return false;}
@@ -111,7 +111,7 @@ KeyEvent:{
 		}
 		if(target===0){ return;}
 
-		var def = this.owner.Cell.prototype[(target===2?'qnum':'qnum2')];
+		var def = this.klass.Cell.prototype[(target===2?'qnum':'qnum2')];
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){

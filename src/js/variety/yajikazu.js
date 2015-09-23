@@ -8,10 +8,10 @@ MouseEvent:{
 	RBShadeCell : true,
 
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.notInputted()){ this.inputdirec();}
 			}
@@ -113,12 +113,12 @@ AnsCheck:{
 	],
 
 	checkArrowNumber : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
 			var pos = cell.getaddr(), dir = cell.qdir;
-			var clist = new this.owner.CellList();
+			var clist = new this.klass.CellList();
 			while(1){
 				pos.movedir(dir,2);
 				var cell2 = pos.getc();

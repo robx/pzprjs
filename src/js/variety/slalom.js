@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['slalom'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputEdit();}
 			else if(this.mouseend){ this.inputEdit_end();}
 		}
@@ -32,7 +32,7 @@ MouseEvent:{
 		
 		// startposの入力中の場合
 		if(this.inputData===10){
-			this.owner.board.startpos.input(cell);
+			this.board.startpos.input(cell);
 		}
 		// 矢印の入力中の場合
 		else if(this.inputData===2){
@@ -47,7 +47,7 @@ MouseEvent:{
 	},
 	inputEdit_first : function(cell){
 		// startposの上ならstartpos移動ルーチンへ移行
-		if(cell===this.owner.board.startpos.getc()){
+		if(cell===this.board.startpos.getc()){
 			this.inputData = 10;
 		}
 		// 数字つき黒マスの上なら矢印入力ルーチンへ移行
@@ -97,7 +97,7 @@ MouseEvent:{
 		
 		// 描画・後処理
 		if(input){
-			var bd = this.owner.board;
+			var bd = this.board;
 			cell.setQues(this.inputData);
 			bd.hinfo.generateGates();
 			
@@ -124,7 +124,7 @@ MouseEvent:{
 		}
 	},
 	inputGateNumber :function(cell){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
 		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
@@ -143,24 +143,24 @@ KeyEvent:{
 	keyup_event : true,
 	moveTarget : function(ca){
 		if(ca.match(/shift/)){ return false;}
-		if(this.owner.editmode && ca!=='x'){ return this.moveTCell(ca);}
+		if(this.puzzle.editmode && ca!=='x'){ return this.moveTCell(ca);}
 		return false;
 	},
 
 	keyinput : function(ca){
 		if(ca!=='x'){
-			if(this.keydown && this.owner.editmode){
+			if(this.keydown && this.puzzle.editmode){
 				if(this.key_inputdirec(ca)){ return;}
 				this.key_inputqnum_slalom(ca);
 			}
 		}
 		else{
 			/* 押した時:true, 離したとき:false */
-			this.owner.painter.drawNumbersOnGate(!!this.keydown);
+			this.puzzle.painter.drawNumbersOnGate(!!this.keydown);
 		}
 	},
 	key_inputqnum_slalom : function(ca){
-		var cell = this.cursor.getc(), bd = this.owner.board;
+		var cell = this.cursor.getc(), bd = this.board;
 
 		if(ca==='q'||ca==='w'||ca==='e'||ca==='r'||ca==='s'||ca===' '){
 			var old=cell.ques, newques=-1;
@@ -193,7 +193,7 @@ Cell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		return Math.min(255, this.owner.board.hinfo.max);
+		return Math.min(255, this.board.hinfo.max);
 	}
 },
 Border:{
@@ -208,8 +208,8 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.startpos = new this.owner.StartPosAddress(1,1);
-		this.hinfo = new this.owner.HurdleManager();
+		this.startpos = new this.klass.StartPosAddress(1,1);
+		this.hinfo = new this.klass.HurdleManager();
 	},
 
 	initBoardSize : function(col,row){
@@ -270,7 +270,7 @@ Board:{
 BoardExec:{
 	posinfo : {},
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(key & this.TURN){
 			var tques = {21:22,22:21};
 			var clist = bd.cellinside(d.x1,d.y1,d.x2,d.y2);
@@ -285,7 +285,7 @@ BoardExec:{
 		this.adjustNumberArrow(key,d);
 	},
 	adjustBoardData2 : function(key,d){
-		var bd = this.owner.board, opemgr = this.owner.opemgr;
+		var bd = this.board, opemgr = this.puzzle.opemgr;
 		var info = this.posinfo, isrec;
 		
 		isrec = ((key & this.REDUCE) && (info.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
@@ -312,8 +312,8 @@ BoardExec:{
 		this.by = pos.by;
 	},
 	addOpe : function(bx, by){
-		if(!this.owner.ready || (this.bx===bx && this.by===by)){ return;}
-		this.owner.opemgr.add(new this.owner.StartposOperation(this.bx,this.by, bx,by));
+		if(!this.puzzle.ready || (this.bx===bx && this.by===by)){ return;}
+		this.puzzle.opemgr.add(new this.klass.StartposOperation(this.bx,this.by, bx,by));
 	}
 },
 "StartposOperation:Operation":{
@@ -348,7 +348,7 @@ BoardExec:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var bd = this.owner.board, cell = bd.getc(bx, by);
+		var bd = this.board, cell = bd.getc(bx, by);
 		bd.startpos.input(cell);
 	}
 },
@@ -357,7 +357,7 @@ OperationManager:{
 	initialize : function(){
 		this.common.initialize.call(this);
 		
-		this.operationlist.push(this.owner.StartposOperation);
+		this.operationlist.push(this.klass.StartposOperation);
 	}
 },
 
@@ -445,7 +445,7 @@ Graphic:{
 	drawStartpos : function(){
 		var g = this.vinc('cell_circle', 'auto');
 
-		var bd = this.owner.board, cell = bd.startpos.getc(), d = this.range;
+		var bd = this.board, cell = bd.startpos.getc(), d = this.range;
 		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
 
 		var px = cell.bx*this.bw, py = cell.by*this.bh;
@@ -454,7 +454,7 @@ Graphic:{
 		g.vid = "c_stpos";
 		g.lineWidth   = Math.max(this.cw*0.05, 1);
 		g.strokeStyle = this.quescolor;
-		g.fillStyle   = (this.owner.mouse.inputData===10 ? this.errbcolor1 : "white");
+		g.fillStyle   = (this.puzzle.mouse.inputData===10 ? this.errbcolor1 : "white");
 		g.shapeCircle(px, py, csize);
 
 		g.vid = "text_stpos";
@@ -466,7 +466,7 @@ Graphic:{
 		var clist = blist.cellinside();
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			if(!this.owner.board.startpos.equals(cell)){ continue;}
+			if(!this.board.startpos.equals(cell)){ continue;}
 
 			this.range = {x1:cell.bx,y1:cell.by,x2:cell.bx,y2:cell.by};
 			this.drawStartpos();
@@ -478,7 +478,7 @@ Graphic:{
 
 	// Xキー押した時に数字を表示するメソッド
 	drawNumbersOnGate : function(keydown){
-		var g = this.context, bd = this.owner.board;
+		var g = this.context, bd = this.board;
 		if(keydown){ bd.hinfo.generateGateNumber();}
 
 		for(var c=0;c<bd.cellmax;c++){
@@ -511,17 +511,17 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeBoard_kanpen();
+		this.puzzle.fio.decodeBoard_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeBoard_kanpen();
+		this.puzzle.fio.encodeBoard_kanpen();
 	},
 
 	decodeSlalom : function(ver){
 		var bstr = this.outbstr;
 		var array = bstr.split("/");
 
-		var c=0, i=0, bd = this.owner.board;
+		var c=0, i=0, bd = this.board;
 		for(i=0;i<array[0].length;i++){
 			var ca = array[0].charAt(i), cell = bd.cell[c];
 
@@ -599,7 +599,7 @@ Encode:{
 		this.outbstr = array[0].substr(i);
 	},
 	encodeSlalom : function(ver){
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		bd.hinfo.generateAll();
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
@@ -673,7 +673,7 @@ FileIO:{
 	},
 
 	decodeBoard_pzpr1 : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.decodeCell( function(cell,ca){
 			if     (ca==="o"){ bd.startpos.set(cell);}
 			else if(ca==="i"){ cell.ques = 21;}
@@ -684,7 +684,7 @@ FileIO:{
 		bd.hinfo.generateGates();
 	},
 	decodeBoard_pzpr2 : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.decodeCell( function(cell,ca){
 			if     (ca==="o"){ bd.startpos.set(cell);}
 			else if(ca==="i"){ cell.ques = 21;}
@@ -700,7 +700,7 @@ FileIO:{
 		bd.hinfo.generateGates();
 	},
 	encodeBoard_pzpr2 : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.hinfo.generateAll();
 		this.encodeCell( function(cell){
 			if     (bd.startpos.equals(cell)){ return "o ";}
@@ -717,7 +717,7 @@ FileIO:{
 	},
 
 	decodeBoard_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.decodeCell( function(cell,ca){
 			if     (ca==="+"){ bd.startpos.set(cell);}
 			else if(ca==="|"){ cell.ques = 21;}
@@ -728,7 +728,7 @@ FileIO:{
 		bd.hinfo.generateGates();
 	},
 	encodeBoard_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.hinfo.generateAll();
 		this.encodeCell( function(cell){
 			if     (bd.startpos.equals(cell)){ return "+ ";}
@@ -752,7 +752,7 @@ FileIO:{
 
 	UNDECIDED_NUM_XML : -3,
 	decodeCellSlalom_XMLBoard : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.decodeCellXMLBoard(function(cell, val){
 			if(val>=0){
 				cell.ques = 1;
@@ -765,7 +765,7 @@ FileIO:{
 		bd.hinfo.generateGates();
 	},
 	encodeCellSlalom_XMLBoard : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.hinfo.generateAll();
 		this.encodeCellXMLBoard(function(cell){
 			var val = -3;
@@ -780,7 +780,7 @@ FileIO:{
 	},
 
 	decodeBoard_old : function(){
-		var sv_num = [], bd = this.owner.board;
+		var sv_num = [], bd = this.board;
 		this.decodeCell( function(cell,ca){
 			var c = cell.id;
 			sv_num[c]=-1;
@@ -825,13 +825,13 @@ AnsCheck:{
 
 	generateGateNumber : function(){
 		if(!this._info.gate){
-			this.owner.board.hinfo.generateAll();
+			this.board.hinfo.generateAll();
 			this._info.gate = true;
 		}
 	},
 
 	checkStartid : function(){
-		var start = this.owner.board.startpos.getc();
+		var start = this.board.startpos.getc();
 		if(start.lcnt!==2){
 			start.seterr(1);
 			this.failcode.add("stLineNe2");
@@ -841,7 +841,7 @@ AnsCheck:{
 	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
 	checkGateLine : function(type, code){
 		this.generateGateNumber();
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var r=1;r<=bd.hinfo.max;r++){
 			var cnt=0, clist=bd.hinfo.data[r].clist;
 			for(var i=0;i<clist.length;i++){
@@ -857,7 +857,7 @@ AnsCheck:{
 	},
 	checkGateNumber : function(){
 		this.generateGateNumber();
-		var bd = this.owner.board, info = bd.getTraceInfo();
+		var bd = this.board, info = bd.getTraceInfo();
 		var r = info.errgateid;
 		if(r!==null){
 			this.failcode.add("lrOrder");
@@ -878,7 +878,7 @@ FailCode:{
 //---------------------------------------------------------
 HurdleData:{
 	initialize : function(){
-		this.clist  = new this.owner.CellList();	// この旗門に含まれるセルのリスト
+		this.clist  = new this.klass.CellList();	// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
 		this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
@@ -888,14 +888,14 @@ HurdleData:{
 HurdleManager:{
 	// 旗門が持つ旗門IDを取得する
 	getGateid : function(cc){
-		if(cc<0 || cc>=this.owner.board.cellmax){ return -1;}
+		if(cc<0 || cc>=this.board.cellmax){ return -1;}
 		return this.gateid[cc];
 	},
 
 	// 旗門の両端にある黒マスの場所のセルを取得する
 	getGatePole : function(gateid){
-		var bd = this.owner.board;
-		var clist = new this.owner.CellList(), cell1, cell2;
+		var bd = this.board;
+		var clist = new this.klass.CellList(), cell1, cell2;
 		if(this.data[gateid].val===21){
 			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
 			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
@@ -911,7 +911,7 @@ HurdleManager:{
 	},
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
 	getConnectingGate : function(c){
-		var bd = this.owner.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
+		var bd = this.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
 		cell2=adc.top;    if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
 		cell2=adc.bottom; if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
 		cell2=adc.left;   if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
@@ -923,7 +923,7 @@ HurdleManager:{
 	init : function(){
 		this.max=0;
 		this.gateid=[];
-		for(var c=0;c<this.owner.board.cellmax;c++){ this.gateid[c] = -1;}
+		for(var c=0;c<this.board.cellmax;c++){ this.gateid[c] = -1;}
 		this.data=[];
 	},
 
@@ -933,7 +933,7 @@ HurdleManager:{
 	},
 
 	generateGates : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.init();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], val = cell.ques;
@@ -942,7 +942,7 @@ HurdleManager:{
 			var pos = cell.getaddr(), isvert=(val===21);
 
 			var gateid = ++this.max;
-			var gate = this.data[gateid] = new this.owner.HurdleData();
+			var gate = this.data[gateid] = new this.klass.HurdleData();
 			while(1){
 				var cell2 = pos.getc();
 				if(cell2.isnull || cell2.ques!==val){ break;}
@@ -964,7 +964,7 @@ HurdleManager:{
 		for(var r=1;r<=this.max;r++){ this.data[r].number=-1;}
 
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
-		var nums = [], bd = this.owner.board;
+		var nums = [], bd = this.board;
 		for(var r=1;r<=this.max;r++){ nums[r] = [];}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];

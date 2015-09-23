@@ -19,11 +19,11 @@ ui.ProblemData = function(){
 ui.ProblemData.prototype =
 {
 	updatePuzzleData : function(id){
-		var puzzle = ui.puzzle;
+		var puzzle = ui.puzzle, bd = puzzle.board;
 		this.id = id;
 		this.pid = puzzle.pid;
-		this.col = puzzle.board.qcols;
-		this.row = puzzle.board.qrows;
+		this.col = bd.qcols;
+		this.row = bd.qrows;
 		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
 	},

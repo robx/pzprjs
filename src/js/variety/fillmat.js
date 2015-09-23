@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['fillmat','usotatami'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}

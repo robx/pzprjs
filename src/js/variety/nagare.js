@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['nagare'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.clickmark();}
@@ -17,7 +17,7 @@ MouseEvent:{
 				else if(this.mousemove) { this.inputmark_mousemove();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove)       { this.inputarrow_cell();}
 			else if(this.mouseend && this.notInputted()){ this.inputShadeCell();}
 		}
@@ -30,7 +30,7 @@ MouseEvent:{
 		var border = pos.getb();
 		if(border.isnull){ return;}
 
-		var trans = {0:2,2:0}, diraux = this.owner.getConfig("dirauxmark");
+		var trans = {0:2,2:0}, diraux = this.puzzle.getConfig("dirauxmark");
 		if(diraux){
 			if(!border.isvert){ trans = (this.btn.Left?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
 			else              { trans = (this.btn.Left?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
@@ -41,7 +41,7 @@ MouseEvent:{
 	},
 	inputmark_mousedown : function(){
 		var pos = this.getpos(0.22), border = pos.getb();
-		if(!this.owner.getConfig("dirauxmark") || !border.isnull){
+		if(!this.puzzle.getConfig("dirauxmark") || !border.isnull){
 			this.inputData = ((border.isnull||border.qsub!==2)?2:3);
 			this.inputpeke();
 		}
@@ -72,7 +72,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getc() && this.owner.getConfig('cursor')){
+		if(cell!==this.cursor.getc() && this.puzzle.getConfig('cursor')){
 			this.setcursor(cell);
 		}
 		else{
@@ -128,10 +128,10 @@ Board:{
 	generateWind : function(){
 		for(var i=0;i<this.cellmax;i++){ this.cell[i].wind = 0;}
 		for(var i=0;i<this.bdmax;i++){ this.border[i].wind = 0;}
-		this.owner.checker.checkRowsColsPartly(this.setWind, function(cell){ return cell.ques===1;}, null);
+		this.puzzle.checker.checkRowsColsPartly(this.setWind, function(cell){ return cell.ques===1;}, null);
 	},
 	setWind : function(clist, info){
-		var bd = this.owner.board; /* this=ansになってしまうので修正  */
+		var bd = this.board; /* this=ansになってしまうので修正  */
 		var d = clist.getRectSize();
 		var cell1 = (info.isvert ? bd.getc(d.x1,d.y1-2) : bd.getc(d.x1-2,d.y1));
 		var cell2 = (info.isvert ? bd.getc(d.x2,d.y2+2) : bd.getc(d.x2+2,d.y2));
@@ -177,7 +177,7 @@ Board:{
 		return traces;
 	},
 	searchTraceInfo : function(cell1, dir){
-		var info = {clist:(new this.owner.CellList()), blist:(new this.owner.BorderList())};
+		var info = {clist:(new this.klass.CellList()), blist:(new this.klass.BorderList())};
 		var pos = cell1.getaddr(), c = 0, n = 0;
 
 		while(1){
@@ -213,7 +213,7 @@ LineManager:{
 	
 	// オーバーライド (孤立した線やループも判定対象にする)
 	getLineShapeBase : function(){
-		var boardcell = this.owner.board.cell;
+		var boardcell = this.board.cell;
 		return [ boardcell.filter(this.getLineShapeSeparator),
 				 boardcell.filter(function(cell){ return cell.isLineCurve();}) ];
 	},
@@ -228,7 +228,7 @@ BoardExec:{
 		
 		if(key & this.TURNFLIP){
 			var trans = this.getTranslateDir(key);
-			var blist = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var blist = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<blist.length;i++){
 				var border=blist[i], val;
 				val=trans[border.qsub-10]; if(!!val){ border.setQsub(val+10);}
@@ -307,7 +307,7 @@ Encode:{
 	},
 
 	decodeNagare : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -324,7 +324,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNagare : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c], qu=cell.ques, dir=cell.qdir;
 
@@ -405,12 +405,12 @@ AnsCheck:{
 
 	getTraceInfo : function(){
 		this.generateWind();
-		return (this._info.trace = this._info.trace || this.owner.board.getTraceInfo());
+		return (this._info.trace = this._info.trace || this.board.getTraceInfo());
 	},
 
 	generateWind : function(){
 		if(!this._info.wind){
-			this.owner.board.generateWind();
+			this.board.generateWind();
 			this._info.wind = true;
 		}
 	},
@@ -421,7 +421,7 @@ AnsCheck:{
 	},
 	checkArrowAgainst : function(){
 		this.generateWind();
-		var boardcell = this.owner.board.cell;
+		var boardcell = this.board.cell;
 		for(var i=0;i<boardcell.length;i++){
 			var cell = boardcell[i], arwind = (cell.wind&(15^[0,1,2,4,8][cell.qdir]));
 			if(cell.qdir===0 || cell.ques===1 || !arwind){ continue;}
@@ -433,7 +433,7 @@ AnsCheck:{
 	},
 	checkAcrossWind : function(){
 		this.generateWind();
-		var boardcell = this.owner.board.cell;
+		var boardcell = this.board.cell;
 		for(var i=0;i<boardcell.length;i++){
 			var cell = boardcell[i];
 			var errv = ((cell.wind&3)!==0 && cell.isLineStraight()===2);
@@ -465,7 +465,7 @@ AnsCheck:{
 			this.failcode.add("lrAgainstWind");
 			if(this.checkOnly){ break;}
 			
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 			for(var j=0;j<blist.length;j++){
 				this.setBorderErrorToWindBase(blist[j], blist[j].wind);
 			}

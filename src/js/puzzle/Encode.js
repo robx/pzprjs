@@ -27,9 +27,9 @@ Encode:{
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
 	decodeURL : function(url){
-		var pzl = pzpr.parser.parseURL(url), puzzle = this.owner;
+		var pzl = pzpr.parser.parseURL(url), puzzle = this.puzzle, bd = puzzle.board;
 
-		puzzle.board.initBoardSize(pzl.cols, pzl.rows);
+		bd.initBoardSize(pzl.cols, pzl.rows);
 
 		if(!!pzl.bstr){
 			this.pflag = pzl.pflag;
@@ -49,16 +49,16 @@ Encode:{
 			}
 		}
 
-		puzzle.board.resetInfo();
+		bd.resetInfo();
 
 		puzzle.execListener('openurl', pzl.url);
 	},
 	encodeURL : function(type){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, pid = puzzle.pid, fileio = puzzle.fio, bd = puzzle.board;
 		var pzl = new pzpr.parser.URLData('');
 		
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
-		if(type===pzl.URL_KANPEN && puzzle.pid==='lits'){ type = pzl.URL_KANPENP;}
+		if(type===pzl.URL_KANPEN && pid==='lits'){ type = pzl.URL_KANPENP;}
 
 		this.outpflag = null;
 		this.outcols = bd.qcols;
@@ -71,7 +71,7 @@ Encode:{
 			break;
 
 		case pzl.URL_KANPENP:
-			var ispencilbox = pzpr.variety.info[puzzle.pid].exists.pencilbox;
+			var ispencilbox = pzpr.variety.info[pid].exists.pencilbox;
 			if(!ispencilbox){ throw "no Implemention";}
 			/* falls through */
 		case pzl.URL_PZPRAPP:
@@ -80,10 +80,10 @@ Encode:{
 			break;
 
 		case pzl.URL_KANPEN:
-			puzzle.fio.datastr = "";
+			fileio.datastr = "";
 			this.encodeKanpen();
-			this.outbstr = puzzle.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
-			puzzle.fio.datastr = "";
+			this.outbstr = fileio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
+			fileio.datastr = "";
 			break;
 
 		case pzl.URL_HEYAAPP:
@@ -94,7 +94,7 @@ Encode:{
 			throw "no Implemention";
 		}
 
-		pzl.id    = puzzle.pid;
+		pzl.id    = pid;
 		pzl.type  = type;
 		pzl.pflag = this.outpflag;
 		pzl.cols  = this.outcols;

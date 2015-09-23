@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['kazunori'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){ this.inputborder();}
 			}
@@ -55,14 +55,14 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if     (this.owner.editmode){ return this.moveTBorder(ca);}
-		else if(this.owner.playmode){ return this.moveTCell(ca);}
+		if     (this.puzzle.editmode){ return this.moveTBorder(ca);}
+		else if(this.puzzle.playmode){ return this.moveTCell(ca);}
 		return false;
 	},
 
 	keyinput : function(ca){
-		if     (this.owner.editmode){ this.key_inputmark(ca);}
-		else if(this.owner.playmode){ this.key_inputqnum(ca);}
+		if     (this.puzzle.editmode){ this.key_inputmark(ca);}
+		else if(this.puzzle.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
 		var border = this.cursor.getb();
@@ -94,7 +94,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return ((this.owner.board.rooms.getCntOfRoomByCell(this)+1)/2)|0;
+		return ((this.board.rooms.getCntOfRoomByCell(this)+1)/2)|0;
 	}
 },
 Border:{
@@ -109,7 +109,7 @@ Board:{
 	hasborder : 1,
 
 	getNoriInfo : function(){
-		var ninfo = new this.owner.AreaInfo(); /* 同じ部屋に含まれる同じ数字のつながり情報 */
+		var ninfo = new this.klass.AreaInfo(); /* 同じ部屋に含まれる同じ数字のつながり情報 */
 		for(var c=0;c<this.cellmax;c++){ ninfo.id[c]=(this.cell[c].anum>0?0:null);}
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
@@ -199,7 +199,7 @@ Graphic:{
 	},
 
 	drawTarget_minarism : function(){
-		this.drawCursor(this.owner.playmode);
+		this.drawCursor(this.puzzle.playmode);
 	}
 },
 
@@ -216,7 +216,7 @@ Encode:{
 	},
 
 	decodeBorderNumber : function(){
-		var id=0, bstr = this.outbstr, bd=this.owner.board;
+		var id=0, bstr = this.outbstr, bd=this.board;
 		for(var i=0;i<bstr.length;i++){
 			var border = bd.border[id], ca = bstr.charAt(i);
 
@@ -231,7 +231,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeBorderNumber : function(){
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		for(var id=0,max=bd.bdmax;id<max;id++){
 			var pstr="", border=bd.border[id], qnum=border.qnum;
 
@@ -285,7 +285,7 @@ AnsCheck:{
 	],
 
 	getNoriInfo : function(){
-		return (this._info.nori = this._info.nori || this.owner.board.getNoriInfo());
+		return (this._info.nori = this._info.nori || this.board.getNoriInfo());
 	},
 
 	checkBlockEvenSize : function(){
@@ -295,7 +295,7 @@ AnsCheck:{
 		this.checkAllArea(this.getNoriInfo(), function(w,h,a,n){ return (a>=2);}, "nmNotLink");
 	},
 	checkSumOfNumber : function(){
-		var boardborder = this.owner.board.border;
+		var boardborder = this.board.border;
 		for(var id=0;id<boardborder.length;id++){
 			var border = boardborder[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(border.qnum<=0){ continue;}
@@ -310,7 +310,7 @@ AnsCheck:{
 		}
 	},
 	check2x2SameNumber : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		allloop:
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], bx=cell.bx, by=cell.by;

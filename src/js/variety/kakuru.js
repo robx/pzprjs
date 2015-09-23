@@ -32,11 +32,11 @@ KeyEvent:{
 			if(!this.key_inputqnum_main(cell,ca)){ return;}
 		}
 		else if(ca===' '){
-			if(this.owner.editmode){ cell.setQues(0);}
+			if(this.puzzle.editmode){ cell.setQues(0);}
 			cell.setNum(-1);
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
-		else if(this.owner.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
+		else if(this.puzzle.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
 			if(ca==='q'){ ca = (cell.ques!==1?'q1':'q2');}
 			if(ca==='q1'){
 				cell.setQues(1);
@@ -55,7 +55,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return (this.owner.editmode?44:9);
+		return (this.puzzle.editmode?44:9);
 	}
 },
 Board:{
@@ -102,7 +102,7 @@ Encode:{
 	},
 
 	decodeKakuru : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -116,7 +116,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeKakuru : function(type){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "+";}
@@ -186,7 +186,7 @@ AnsCheck:{
 	],
 
 	checkAroundPlNums : function(type){
-		var bd = this.owner.board;
+		var bd = this.board;
 		allloop:
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -194,7 +194,7 @@ AnsCheck:{
 
 			var bx=cell.bx, by=cell.by;
 			var d={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-			var clist=new this.owner.CellList(), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var clist=new this.klass.CellList(), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
 			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
 				var cell2 = clist0[i];
@@ -214,13 +214,13 @@ AnsCheck:{
 		}
 	},
 	checkSumOfNumber : function(type){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
 			var cnt=0, bx=cell.bx, by=cell.by;
-			var clist=new this.owner.CellList(), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
+			var clist=new this.klass.CellList(), clist0 = bd.cellinside(bx-2,by-2,bx+2,by+2);
 			clist.add(cell);
 			for(var i=0;i<clist0.length;i++){
 				var cell2 = clist0[i];
@@ -238,12 +238,12 @@ AnsCheck:{
 		}
 	},
 	checkAdjacentNumbers : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.anum<=0){ continue;}
 			var bx = cell.bx, by = cell.by;
-			var clist=new this.owner.CellList(), clist0 = bd.cellinside(bx,by,bx+2,by+2);
+			var clist=new this.klass.CellList(), clist0 = bd.cellinside(bx,by,bx+2,by+2);
 			clist.add(cell);
 			clist0.add(bd.getc(bx-2,by+2)); // 右・左下・下・右下の4箇所だけチェック
 			for(var i=0;i<clist0.length;i++){

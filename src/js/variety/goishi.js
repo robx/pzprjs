@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['goishi'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode && this.mousestart){
+		if(this.puzzle.playmode && this.mousestart){
 			if(this.btn.Left){ this.inputqans();}
 		}
-		else if(this.owner.editmode && this.mousestart){
+		else if(this.puzzle.editmode && this.mousestart){
 			this.inputstone();
 		}
 	},
@@ -26,7 +26,7 @@ MouseEvent:{
 	},
 	inputqans : function(){
 		var cell = this.getcell();
-		var max=0, bd = this.owner.board, bcell=bd.emptycell;
+		var max=0, bd = this.board, bcell=bd.emptycell;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.anum>max){
@@ -115,7 +115,7 @@ Graphic:{
 	},
 
 	drawCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('centerline', 'crispEdges', true), bd = this.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -179,14 +179,14 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeGoishi_kanpen();
+		this.puzzle.fio.decodeGoishi_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeGoishi_kanpen();
+		this.puzzle.fio.encodeGoishi_kanpen();
 	},
 
 	decodeGoishi : function(){
-		var bstr = this.outbstr, c=0, bd=this.owner.board, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, c=0, bd=this.board, twi=[16,8,4,2,1];
 		bd.disableInfo();
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
@@ -208,7 +208,7 @@ Encode:{
 		var cm="", count=0, pass=0, twi=[16,8,4,2,1];
 		for(var by=d.y1;by<=d.y2;by+=2){
 			for(var bx=d.x1;bx<=d.x2;bx+=2){
-				var cell = this.owner.board.getc(bx,by);
+				var cell = this.board.getc(bx,by);
 				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
 				if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 			}
@@ -221,7 +221,7 @@ Encode:{
 	},
 
 	getSizeOfBoard_goishi : function(){
-		var x1=9999, x2=-1, y1=9999, y2=-1, count=0, bd = this.owner.board;
+		var x1=9999, x2=-1, y1=9999, y2=-1, count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isStone()){ continue;}
@@ -232,7 +232,7 @@ Encode:{
 			count++;
 		}
 		if(count===0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
-		if(this.owner.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
+		if(this.puzzle.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
 		return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 	}
 },
@@ -277,7 +277,7 @@ FileIO:{
 		});
 	},
 	encodeGoishi_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				this.datastr += (bd.getc(bx,by).isStone() ? "1 " : ". ");
@@ -294,14 +294,14 @@ FileIO:{
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
-				var cell = this.owner.board.getc((+item[2])*2+1,(+item[1])*2+1);
+				var cell = this.board.getc((+item[2])*2+1,(+item[1])*2+1);
 				cell.ques = 0;
 				cell.anum = +item[0];
 			}
 		}
 	},
 	encodeQansPos_kanpen : function(){
-		var stones = [], bd = this.owner.board;
+		var stones = [], bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 			var cell = bd.getc(bx,by);
 			if(cell.ques!==0 || cell.anum===-1){ continue;}
@@ -341,12 +341,12 @@ FileIO:{
 			var node = nodes[i];
 			var bx = 2*(+node.getAttribute('c'))-1;
 			var by = 2*(+node.getAttribute('r'))-1;
-			this.owner.board.getc(bx,by).anum = +node.getAttribute('n');
+			this.board.getc(bx,by).anum = +node.getAttribute('n');
 		}
 	},
 	encodeQansPos_XMLAnswer : function(){
 		var boardnode = this.xmldoc.querySelector('answer');
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var ans=1;;ans++){
 			var cell = null;
 			for(var c=0;c<bd.cellmax;c++){

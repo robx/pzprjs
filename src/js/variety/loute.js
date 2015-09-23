@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['loute','sashigane'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
 		}
@@ -35,7 +35,7 @@ MouseEvent:{
 		}
 	},
 	inputcell_loute : function(cell){
-		var dir = cell.qdir;
+		var dir = cell.qdir, pid = this.pid;
 		if(dir!==5){
 			var array = [0,5,1,2,3,4,-2], len = array.length;
 			if(this.btn.Left){
@@ -53,20 +53,20 @@ MouseEvent:{
 						break;
 					}
 				}
-				if(cell.qdir===5 && this.owner.pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
+				if(cell.qdir===5 && pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
 			}
 		}
 		else{
 			var qn = cell.getNum(), min, max;
-			if(this.owner.pid==='sashigane'){ max=cell.getmaxnum(); min=cell.getminnum();}
+			if(pid==='sashigane'){ max=cell.getmaxnum(); min=cell.getminnum();}
 			if(this.btn.Left){
-				if(this.owner.pid==='loute'){ cell.setQdir(1);}
+				if(pid==='loute'){ cell.setQdir(1);}
 				else if(qn<min){ cell.setNum(min);}
 				else if(qn<max){ cell.setNum(qn+1);}
 				else           { cell.setNum(-1); cell.setQdir(1);}
 			}
 			else if(this.btn.Right){
-				if(this.owner.pid==='loute'){ cell.setQdir(0);}
+				if(pid==='loute'){ cell.setQdir(0);}
 				else if(qn>max){ cell.setNum(max);}
 				else if(qn>min){ cell.setNum(qn-1);}
 				else if(qn!==-1){ cell.setNum(-1);}
@@ -89,10 +89,10 @@ KeyEvent:{
 	keyinput : function(ca){
 		if(this.key_inputdirec(ca)){ return;}
 
-		if(this.owner.pid==='loute'){
+		if(this.pid==='loute'){
 			this.key_arrow_loute(ca);
 		}
-		else if(this.owner.pid==='sashigane'){
+		else if(this.pid==='sashigane'){
 			this.key_inputqnum_sashigane(ca);
 		}
 	},
@@ -147,13 +147,13 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		var bd=this.owner.board, bx=this.bx, by=this.by;
+		var bd=this.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx+2):bx+2)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by+2):by+2)>>1);
 		return (col+row-1);
 	},
 	minnum : function(){
-		return ((this.owner.board.qcols>=2?2:1)+(this.owner.board.qrows>=2?2:1)-1);
+		return ((this.board.qcols>=2?2:1)+(this.board.qrows>=2?2:1)-1);
 	},
 
 	getObjNum : function(){ return this.qdir;},
@@ -235,7 +235,7 @@ Graphic:{
 		this.drawCellArrows();
 		this.drawCircles();
 		this.drawHatenas_loute();
-		if(this.owner.pid==='sashigane'){ this.drawNumbers();}
+		if(this.pid==='sashigane'){ this.drawNumbers();}
 
 		this.drawBorderQsubs();
 
@@ -252,7 +252,7 @@ Graphic:{
 
 	drawHatenas_loute : function(){
 		var g = this.vinc('cell_hatena', 'auto');
-		var option = {ratio:(this.owner.pid==='sashigane' ? [0.8] : [0.94])};
+		var option = {ratio:(this.pid==='sashigane' ? [0.8] : [0.94])};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
@@ -280,7 +280,7 @@ Graphic:{
 	},
 
 	decodeLoute : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -295,7 +295,7 @@ Graphic:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeLoute : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", dir = bd.cell[c].qdir;
 
@@ -320,7 +320,7 @@ Graphic:{
 	},
 
 	decodeSashigane : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -338,7 +338,7 @@ Graphic:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeSashigane : function(){
-		var cm = "", count = 0, bd = this.owner.board;
+		var cm = "", count = 0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if(dir===5){
@@ -373,7 +373,7 @@ FileIO:{
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
-		var pid = this.owner.pid;
+		var pid = this.pid;
 		this.encodeCell( function(cell){
 			if(pid==='sashigane' && cell.qdir===5){
 				return "o"+(cell.qnum!==-1?cell.qnum:'')+" ";
@@ -400,7 +400,7 @@ AnsCheck:{
 	],
 
 	getLblockInfo : function(){
-		return (this._info.lbinfo = this._info.lbinfo || this.owner.board.getLblockInfo());
+		return (this._info.lbinfo = this._info.lbinfo || this.board.getLblockInfo());
 	},
 
 	checkArrowCorner1 : function(){

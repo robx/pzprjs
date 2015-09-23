@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['hakoiri'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart){ this.inputqnum();}
 			}
@@ -14,7 +14,7 @@ MouseEvent:{
 				if(this.mousemove){ this.inputDot();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				this.inputborder();
 			}
@@ -174,11 +174,11 @@ AnsCheck:{
 	},
 
 	checkAroundMarks : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
-			var target=0, clist=new this.owner.CellList();
+			var target=0, clist=new this.klass.CellList();
 			var func = function(cell){ return (!cell.isnull && num===cell.getNum());};
 			// 右・左下・下・右下だけチェック
 			clist.add(cell);

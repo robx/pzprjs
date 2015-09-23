@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['yajirin'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputLine();}
 				else if(this.btn.Right){ this.inputcell();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputdirec();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -102,10 +102,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellDirecQnum_kanpen(true);
+		this.puzzle.fio.decodeCellDirecQnum_kanpen(true);
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellDirecQnum_kanpen(true);
+		this.puzzle.fio.encodeCellDirecQnum_kanpen(true);
 	}
 },
 //---------------------------------------------------------
@@ -225,12 +225,12 @@ AnsCheck:{
 	},
 
 	checkArrowNumber : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
 			var pos = cell.getaddr(), dir = cell.qdir;
-			var clist = new this.owner.CellList();
+			var clist = new this.klass.CellList();
 			while(1){
 				pos.movedir(dir,2);
 				var cell2 = pos.getc();

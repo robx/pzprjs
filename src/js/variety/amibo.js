@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['amibo'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputTateyoko();}
 				else if(this.btn.Right){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				this.clickTateyoko();
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -41,7 +41,7 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		var bd=this.owner.board, bx=this.bx, by=this.by;
+		var bd=this.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
 		return Math.max(col, row);
@@ -57,7 +57,7 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.barinfo = this.addInfoList(this.owner.AreaBarManager);
+		this.barinfo = this.addInfoList(this.klass.AreaBarManager);
 	},
 
 	irowakeRemake : function(){
@@ -70,7 +70,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
 			var tans = {0:0,11:11,12:13,13:12};
-			var clist = this.owner.board.cell;
+			var clist = this.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				cell.setQans(tans[cell.qans]);
@@ -88,7 +88,7 @@ BoardExec:{
 	},
 	
 	rebuild : function(){
-		this.owner.AreaManager.prototype.rebuild.call(this);
+		this.klass.AreaManager.prototype.rebuild.call(this);
 		this.newIrowake();
 	},
 	
@@ -97,17 +97,17 @@ BoardExec:{
 	},
 
 	irowakeEnable : function(){
-		return this.owner.flags.irowake;
+		return this.puzzle.flags.irowake;
 	},
 	irowakeValid : function(){
-		return this.owner.getConfig('irowake');
+		return this.puzzle.getConfig('irowake');
 	},
 	getNewColor : function(){
-		return this.owner.painter.getNewLineColor();
+		return this.puzzle.painter.getNewLineColor();
 	},
 
 	getBarInfo : function(){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		function eachcell(cell, vert){
 			var qa = cell.qans, isbar = (qa===11 || qa===(vert?12:13));
 			if(!bar && isbar){
@@ -127,7 +127,7 @@ BoardExec:{
 			cell2 = cell;
 		}
 
-		var binfo = new puzzle.AreaBarInfo();
+		var binfo = new puzzle.klass.AreaBarInfo();
 		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
 			var bar=null, cell2=null;
 			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
@@ -158,11 +158,11 @@ BoardExec:{
 },
 "AreaBarInfo:AreaInfo":{
 	initialize : function(){
-		this.owner.AreaInfo.prototype.initialize.call(this);
+		this.klass.AreaInfo.prototype.initialize.call(this);
 
 		this.pole = [];
 
-		for(var c=0,len=this.owner.board.cellmax;c<len;c++){
+		for(var c=0,len=this.board.cellmax;c<len;c++){
 			this.id[c]=[];
 			this.pole[c]=[];
 		}
@@ -170,7 +170,7 @@ BoardExec:{
 	addArea : function(){
 		var areaid = ++this.max;
 		return (this.area[areaid] = {
-			clist:(new this.owner.CellList()), id:areaid,
+			clist:(new this.klass.CellList()), id:areaid,
 			link:[], pole:[], vert:false
 		});
 	}
@@ -356,16 +356,16 @@ AnsCheck:{
 	],
 
 	getBarInfo : function(){
-		return (this._info.bar = this._info.bar || this.owner.board.getBarInfo());
+		return (this._info.bar = this._info.bar || this.board.getBarInfo());
 	},
 	getConnectionInfo : function(){
-		return (this._info.bararea = this._info.bararea || this.owner.board.barinfo.getAreaInfo());
+		return (this._info.bararea = this._info.bararea || this.board.barinfo.getAreaInfo());
 	},
 
 	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},
 	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},
 	checkOutgoingBars : function(type, code){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -381,7 +381,7 @@ AnsCheck:{
 	checkLongBar  : function(){ this.checkPoleLength(1, "lbLenGt");},
 	checkShortBar : function(){ this.checkPoleLength(2, "lbLenLt");},
 	checkPoleLength : function(type, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		var binfo = this.getBarInfo();
 		
 		allloop:
@@ -419,7 +419,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add("lbNotCrossEq");
-			this.owner.board.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+			this.board.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
 		}
 	},
 
@@ -428,7 +428,7 @@ AnsCheck:{
 	},
 
 	checkLoop_amibo : function(){
-		var sinfo={cell:[]}, bd = this.owner.board;
+		var sinfo={cell:[]}, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.barinfo.getLinkCell(bd.cell[c]);
 		}
@@ -449,7 +449,7 @@ AnsCheck:{
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
-		for(var c=0;c<this.owner.board.cellmax;c++){ passed[c]=false;}
+		for(var c=0;c<this.board.cellmax;c++){ passed[c]=false;}
 
 		while(history.length>0){
 			var c = history[history.length-1];

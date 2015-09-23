@@ -8,10 +8,10 @@ MouseEvent:{
 	RBShadeCell : true,
 
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -28,7 +28,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		var d = this.owner.board.rooms.getClistByCell(this).getRectSize();
+		var d = this.board.rooms.getClistByCell(this).getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}
@@ -103,14 +103,14 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeSquareRoom();
+		this.puzzle.fio.decodeSquareRoom();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeSquareRoom();
+		this.puzzle.fio.encodeSquareRoom();
 	},
 
 	decodeHeyaApp : function(){
-		var c=0, rdata=[], bd = this.owner.board;
+		var c=0, rdata=[], bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){ rdata[c]=null;}
 
 		var i=0, inp=this.outbstr.split("/");
@@ -122,14 +122,14 @@ Encode:{
 				if(RegExp.$1.length>0){ cell.qnum = +RegExp.$1;}
 				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$2) - 2;
 				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$3) - 2;
-				this.owner.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
+				this.puzzle.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;
 		}
-		this.owner.fio.rdata2Border(true, rdata);
+		this.puzzle.fio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
-		var barray=[], bd=this.owner.board, rinfo=bd.getRoomInfo();
+		var barray=[], bd=this.board, rinfo=bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.area[id].clist.getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
@@ -162,7 +162,7 @@ FileIO:{
 
 	decodeSquareRoom : function(){
 		var barray = this.readLines(+this.readLine());
-		var bd = this.owner.board, rdata = [];
+		var bd = this.board, rdata = [];
 		for(var i=0;i<barray.length;i++){
 			if(barray[i]===""){ break;}
 			var pce = barray[i].split(" ");
@@ -176,7 +176,7 @@ FileIO:{
 		bd.rooms.reset();
 	},
 	encodeSquareRoom : function(){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		this.datastr += (rinfo.max+"\n");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.area[id].clist.getRectSize();
@@ -196,7 +196,7 @@ FileIO:{
 
 	decodeSquareRoom_XMLBoard : function(){
 		var nodes = this.xmldoc.querySelectorAll('board area');
-		var bd = this.owner.board, rdata = [];
+		var bd = this.board, rdata = [];
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
 			var bx1 = 2*(+node.getAttribute('c0'))-1;
@@ -214,7 +214,7 @@ FileIO:{
 	},
 	encodeSquareRoom_XMLBoard : function(){
 		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.area[id].clist.getRectSize(), num = bd.rooms.getTopOfRoom(id).qnum;
 			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1,n:num}));
@@ -241,7 +241,7 @@ AnsCheck:{
 			var clist = rinfo.area[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], cell2 = this.owner.board.getc(sx-cell.bx, sy-cell.by);
+				var cell = clist[i], cell2 = this.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isShade() === cell2.isShade()){ continue;}
 				
 				this.failcode.add("bkNotSymShade");
@@ -258,7 +258,7 @@ AnsCheck:{
 		this.checkOnly = savedflag;
 	},
 	isBorderCount : function(clist){
-		var d = clist.getRectSize(), count = 0, bd = this.owner.board, bx, by;
+		var d = clist.getRectSize(), count = 0, bd = this.board, bx, by;
 		if(d.x1===d.x2){
 			bx = d.x1;
 			for(by=d.y1+1;by<=d.y2-1;by+=2){

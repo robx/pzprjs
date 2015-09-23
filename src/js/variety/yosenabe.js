@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['yosenabe'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputMoveLine();}
 				else if(this.btn.Right){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputdark();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Right){ this.inputNabe();}
 			}
@@ -26,7 +26,7 @@ MouseEvent:{
 	inputdark : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base),
+		var targetcell = (!this.puzzle.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -136,7 +136,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){
-		return (!this.owner.execConfig('dispmove') ? this : this.base).qcmp===1;
+		return (!this.puzzle.execConfig('dispmove') ? this : this.base).qcmp===1;
 	}
 },
 CellList:{
@@ -158,7 +158,7 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.iceinfo = this.addInfoList(this.owner.AreaCrockManager);
+		this.iceinfo = this.addInfoList(this.klass.AreaCrockManager);
 	}
 },
 
@@ -211,7 +211,7 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		var puzzle = this.owner, error = cell.error || cell.qinfo;
+		var puzzle = this.puzzle, error = cell.error || cell.qinfo;
 		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
@@ -224,7 +224,7 @@ Graphic:{
 
 	drawFillingNumBase : function(){
 		var g = this.vinc('cell_filling_back', 'crispEdges', true);
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
@@ -239,7 +239,7 @@ Graphic:{
 	},
 	drawFillingNumbers : function(){
 		var g = this.vinc('cell_filling_number', 'auto');
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum2, px = cell.bx*this.bw, py = cell.by*this.bh;
@@ -275,7 +275,7 @@ Encode:{
 	},
 
 	decodeNumber16_yosenabe : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -294,7 +294,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16_yosenabe : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qnum2;
 
@@ -387,7 +387,7 @@ AnsCheck:{
 	],
 
 	getNabeInfo : function(){
-		return (this._info.nabe = this._info.nabe || this.owner.board.iceinfo.getAreaInfo());
+		return (this._info.nabe = this._info.nabe || this.board.iceinfo.getAreaInfo());
 	},
 
 	checkCurveLine : function(){

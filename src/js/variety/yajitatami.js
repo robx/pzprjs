@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['yajitatami'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.inputdirec();}
@@ -88,8 +88,8 @@ Encode:{
 	},
 
 	encodeBorder_if_exist : function(){
-		for(var id=0;id<this.owner.board.bdmax;id++){
-			if(this.owner.board.border[id].ques===1){ this.encodeBorder(); break;}
+		for(var id=0;id<this.board.bdmax;id++){
+			if(this.board.border[id].ques===1){ this.encodeBorder(); break;}
 		}
 	}
 },
@@ -127,7 +127,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_tatami : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
@@ -147,7 +147,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber_border : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir = cell.qdir;
 			if(!cell.isValidNum() || !dir || cell.getaddr().movedir(dir,1).getb().isBorder()){ continue;}

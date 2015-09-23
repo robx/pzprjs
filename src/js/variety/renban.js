@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['renban'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputborder();}
 				else if(this.btn.Right){ this.inputQsubLine();}
@@ -38,7 +38,7 @@ Board:{
 
 	// 正答判定用
 	getBorderLengthInfo : function(){
-		var rdata = new this.owner.BorderInfo();
+		var rdata = new this.klass.BorderInfo();
 		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
 		for(var i=0;i<this.bdmax;i++){
 			var border0 = this.border[i];
@@ -155,7 +155,7 @@ AnsCheck:{
 	},
 
 	checkBorderSideNumber : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		// 線の長さを取得する
 		var rdata = bd.getBorderLengthInfo();
 

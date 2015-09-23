@@ -4,8 +4,8 @@
 //---------------------------------------------------------------------------
 // ★Configクラス 設定値の値などを保持する
 //---------------------------------------------------------------------------
-var Config = pzpr.Puzzle.prototype.Config = function(owner){
-	this.owner = owner;
+var Config = pzpr.Puzzle.prototype.Config = function(puzzle){
+	this.puzzle = puzzle;
 	this.init();
 };
 Config.prototype =
@@ -67,7 +67,7 @@ Config.prototype =
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 
 		/* その他の特殊項目(保存なし) */
-		this.add('mode', (this.owner.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
+		this.add('mode', (this.puzzle.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
 		this.add('uramashu', false);		/* 裏ましゅにする */
 	},
 	add : function(name, defvalue, option){
@@ -87,7 +87,7 @@ Config.prototype =
 		if(!this.list[name] || (name==="mode" && pzpr.PLAYER)){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
-		this.owner.execListener('config', name, newval);
+		this.puzzle.execListener('config', name, newval);
 	},
 
 	//---------------------------------------------------------------------------
@@ -129,7 +129,7 @@ Config.prototype =
 	// config.getexec()  設定値を現在のパズルで有効かどうか返す
 	//---------------------------------------------------------------------------
 	getexec : function(name){
-		var puzzle = this.owner, pid = puzzle.pid, flags = puzzle.flags, exec = false;
+		var puzzle = this.puzzle, pid = puzzle.pid, flags = puzzle.flags, exec = false;
 		switch(name){
 			case 'use':      exec = flags.use; break;
 			case 'use_tri':  exec = (pid==="shakashaka"); break;
@@ -161,7 +161,7 @@ Config.prototype =
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		switch(name){
 		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
@@ -187,8 +187,8 @@ Config.prototype =
 				puzzle.cursor.adjust_modechange();
 				puzzle.key.keyreset();
 				puzzle.mouse.mousereset();
-				if(puzzle.board.haserror){
-					puzzle.board.errclear();
+				if(bd.haserror){
+					bd.errclear();
 				}
 				else{
 					puzzle.redraw();
@@ -197,8 +197,8 @@ Config.prototype =
 			break;
 		
 		case 'uramashu':
-			puzzle.board.uramashu = newval;
-			puzzle.board.revCircleMain();
+			bd.uramashu = newval;
+			bd.revCircleMain();
 			puzzle.redraw();
 			break;
 		}

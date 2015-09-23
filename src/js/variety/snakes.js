@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['snakes'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(!this.inputDot_snakes()){
 					this.dragnumber_snakes();
 				}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || (this.mousemove && this.notInputted())){
 				this.inputdirec();
 			}
@@ -71,7 +71,7 @@ MouseEvent:{
 	inputqnum_snakes : function(){
 		var cell = this.getcell();
 		if(!cell.isnull){
-			this.mouseCell = this.owner.board.emptycell;
+			this.mouseCell = this.board.emptycell;
 			this.inputqnum();
 		}
 	}
@@ -88,9 +88,9 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(this.owner.editmode && this.key_inputdirec(ca)){ return;}
+		if(this.puzzle.editmode && this.key_inputdirec(ca)){ return;}
 
-		if(this.owner.playmode && (ca==='q'||ca==='-')){ ca='s1';}
+		if(this.puzzle.playmode && (ca==='q'||ca==='-')){ ca='s1';}
 		this.key_inputqnum(ca);
 	}
 },
@@ -100,15 +100,15 @@ KeyEvent:{
 Cell:{
 	maxnum : 5,
 	minnum : function(){
-		return (this.owner.playmode ? 1 : 0);
+		return (this.puzzle.playmode ? 1 : 0);
 	},
 
 	draw : function(){
-		if(!this.owner.getConfig('snakebd')){
+		if(!this.puzzle.getConfig('snakebd')){
 			this.getaddr().draw();
 		}
 		else{
-			this.owner.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
+			this.puzzle.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
 		}
 	}
 },
@@ -116,7 +116,7 @@ Board:{
 	hasborder : 1,
 
 	getSnakeInfo : function(){
-		var sinfo = new this.owner.AreaInfo();
+		var sinfo = new this.klass.AreaInfo();
 		for(var c=0;c<this.cellmax;c++){ sinfo.id[c]=(this.cell[c].anum>0?0:-1);}
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
@@ -180,7 +180,7 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		if(!this.owner.getConfig('snakebd')){ return false;}
+		if(!this.puzzle.getConfig('snakebd')){ return false;}
 
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 		if(!cell1.isnull && !cell2.isnull &&
@@ -243,7 +243,7 @@ AnsCheck:{
 	],
 
 	getSnakeInfo : function(){
-		return (this._info.snake = this._info.snake || this.owner.board.getSnakeInfo());
+		return (this._info.snake = this._info.snake || this.board.getSnakeInfo());
 	},
 
 	checkSnakeSize : function(){
@@ -254,7 +254,7 @@ AnsCheck:{
 	},
 
 	checkSideCell_snakes : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		var sinfo = this.getSnakeInfo();
 		function func(sinfo,cell1,cell2){
 			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
@@ -280,7 +280,7 @@ AnsCheck:{
 	},
 
 	checkArrowNumber : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		function gonext(){
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
@@ -329,7 +329,7 @@ AnsCheck:{
 			cell2=adc.left;   if(!cell2.isnull && cell2.anum===2){ dir=cell.RT;}
 			if(dir===cell.NDIR){ continue;}
 
-			var pos = cell.getaddr(), clist2 = new this.owner.CellList();
+			var pos = cell.getaddr(), clist2 = new this.klass.CellList();
 			clist2.add(cell);
 			while(!cell.isnull){
 				pos.movedir(dir,2);

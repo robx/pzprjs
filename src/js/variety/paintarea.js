@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['paintarea'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}

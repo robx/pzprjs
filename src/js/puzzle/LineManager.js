@@ -19,8 +19,8 @@ LineManager:{
 	},
 	init : function(){
 		if(this.enabled){
-			this.owner.board.validinfo.line.push(this);
-			this.owner.board.validinfo.all.push(this);
+			this.board.validinfo.line.push(this);
+			this.board.validinfo.all.push(this);
 		}
 	},
 	// relation : ['line'],
@@ -49,7 +49,7 @@ LineManager:{
 		this.invalidid = [];
 
 		// lcnt, ltotal変数(配列)初期化
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(this.isCenterLine){
 			for(var c=0;c<bd.cellmax;c++){ bd.cell[c].lcnt=0;}
 			this.ltotal=[bd.cellmax, 0, 0, 0, 0];
@@ -64,7 +64,7 @@ LineManager:{
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var id=0;id<bd.bdmax;id++){ this.id[id] = 0;}
 
 		for(var id=0;id<bd.bdmax;id++){
@@ -77,13 +77,13 @@ LineManager:{
 		}
 
 		this.searchLine(bd.border);
-		if(this.owner.flags.irowake){ this.newIrowake();}
+		if(this.puzzle.flags.irowake){ this.newIrowake();}
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.max;i++){
 			var blist = this.path[i].blist;
 			if(blist.length>0){
-				var newColor = this.owner.painter.getNewLineColor();
+				var newColor = this.puzzle.painter.getNewLineColor();
 				for(var n=0;n<blist.length;n++){ blist[n].color = newColor;}
 			}
 		}
@@ -112,7 +112,7 @@ LineManager:{
 		//   │ ←id                    
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
-		return !this.owner.board.getb( 2*piece.bx-border.bx, 2*piece.by-border.by ).isLine();
+		return !this.board.getb( 2*piece.bx-border.bx, 2*piece.by-border.by ).isLine();
 	},
 
 	//---------------------------------------------------------------------------
@@ -186,7 +186,7 @@ LineManager:{
 
 		if(border2===null){
 			pathid = this.addPath();
-			border.color = this.owner.painter.getNewLineColor();
+			border.color = this.puzzle.painter.getNewLineColor();
 		}
 		else{
 			pathid = this.id[border2.id];
@@ -211,9 +211,9 @@ LineManager:{
 		var longColor = this.getLongColor(blist_sub);
 		
 		// つながった線の線情報を一旦0にする
-		var blist = new this.owner.BorderList();
+		var blist = new this.klass.BorderList();
 		for(var i=0;i<blist_sub.length;i++){
-			var id=blist_sub[i].id, r=this.id[id], bd=this.owner.board;
+			var id=blist_sub[i].id, r=this.id[id], bd=this.board;
 			if(r!==null && r!==0){ blist.extend(this.removePath(r));}
 			else if(r===null)    { blist.add(bd.border[id]);}
 		}
@@ -235,14 +235,14 @@ LineManager:{
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ newid = ++this.max;}
 
-		this.path[newid] = {blist:(new this.owner.BorderList())};
+		this.path[newid] = {blist:(new this.klass.BorderList())};
 		return newid;
 	},
 	removePath : function(id){
 		var blist = this.path[id].blist;
 		for(var i=0;i<blist.length;i++){ this.id[blist[i].id] = null;}
 		
-		this.path[id] = {blist:(new this.owner.BorderList())};
+		this.path[id] = {blist:(new this.klass.BorderList())};
 		this.invalidid.push(id);
 		return blist;
 	},
@@ -262,13 +262,13 @@ LineManager:{
 				longColor = blist[i].color;
 			}
 		}
-		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
+		return (!!longColor ? longColor : this.puzzle.painter.getNewLineColor());
 	},
 	setLongColor : function(assign, longColor){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		
 		/* assign:影響のあったareaidの配列 */
-		var blist_all = new puzzle.BorderList();
+		var blist_all = new puzzle.klass.BorderList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -297,7 +297,7 @@ LineManager:{
 		// 交差ありでborderAsLine==true(->isCenterLine==false)のパズルは作ってないはず
 		// 今までのオモパで該当するのもスリザーボックスくらいだったような、、
 
-		var lines = new this.owner.BorderList();
+		var lines = new this.klass.BorderList();
 		if(!obj1.isnull){
 			var iscrossing=obj1.iscrossing(), lcnt=obj1.lcnt;
 			if(iscrossing && lcnt>=(4-erase)){
@@ -344,8 +344,8 @@ LineManager:{
 	},
 	searchSingle : function(border, newid){
 		var bx=border.bx, by=border.by;
-		var pos = new this.owner.Address(null, null);
-		var stack=((!this.isCenterLine^border.isHorz())?[[bx,by+1,1],[bx,by,2]]:[[bx+1,by,3],[bx,by,4]]);
+		var pos = new this.klass.Address(null, null);
+		var stack=((this.isCenterLine===border.isHorz())?[[bx,by+1,1],[bx,by,2]]:[[bx+1,by,3],[bx,by,4]]);
 		while(stack.length>0){
 			var dat=stack.pop(), dir=dat[2];
 			pos.init(dat[0], dat[1]);
@@ -392,7 +392,7 @@ LineManager:{
 	// lines.getLineInfo()    線情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		var bd = this.owner.board, info = new this.owner.LineInfo();
+		var bd = this.board, info = new this.klass.LineInfo();
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(this.id[id]>0?0:null);}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
@@ -410,7 +410,7 @@ LineManager:{
 	//---------------------------------------------------------------------------
 	// 丸の場所で線を切り離して考える
 	getLineShapeInfo : function(){
-		var bd = this.owner.board, info = new this.owner.LineInfo();
+		var bd = this.board, info = new this.klass.LineInfo();
 		for(var id=0;id<bd.bdmax;id++){ info.id[id]=(this.id[id]>0?0:null);}
 
 		var clists = this.getLineShapeBase();
@@ -428,7 +428,7 @@ LineManager:{
 		return info;
 	},
 	serachLineShapeInfo : function(info,cell1,dir){
-		var path = {blist:(new this.owner.BorderList()), id:null};
+		var path = {blist:(new this.klass.BorderList()), id:null};
 		path.cells  = [cell1,null];	// 出発したセル、到達したセル
 		path.ccnt   = 0;			// 曲がった回数
 		path.length = [];			// 曲がった箇所で区切った、それぞれの線分の長さの配列
@@ -467,7 +467,7 @@ LineManager:{
 		return null;
 	},
 	getLineShapeBase : function(){
-		return [ this.owner.board.cell.filter(this.getLineShapeSeparator) ];
+		return [ this.board.cell.filter(this.getLineShapeSeparator) ];
 	},
 	getLineShapeSeparator : function(cell){
 		return cell.isNum();
@@ -494,11 +494,11 @@ LineInfo:{
 	//---------------------------------------------------------------------------
 	addPath : function(){
 		var pathid = ++this.max;
-		return (this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid});
+		return (this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid});
 	},
 	addPathByBlist : function(blist){
 		var pathid = ++this.max;
-		var path = this.path[pathid] = {blist:(new this.owner.BorderList()), id:pathid};
+		var path = this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid};
 
 		for(var i=0;i<blist.length;i++){
 			this.id[blist[i].id] = pathid;

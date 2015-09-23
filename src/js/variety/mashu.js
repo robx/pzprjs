@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['mashu'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -49,7 +49,7 @@ Cell:{
 	setCellLineError : function(flag){
 		var bx=this.bx, by=this.by;
 		if(flag){ this.seterr(1);}
-		this.owner.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
+		this.board.borderinside(bx-1,by-1,bx+1,by+1).seterr(1);
 	}
 },
 
@@ -109,22 +109,22 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodeCircle();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 	encodePzpr : function(type){
-		this.owner.board.revCircle();
+		this.board.revCircle();
 		this.encodeCircle();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
-		this.owner.board.revCircle();
+		this.puzzle.fio.decodeCellQnum_kanpen();
+		this.board.revCircle();
 	},
 	encodeKanpen : function(){
-		this.owner.board.revCircle();
-		this.owner.fio.encodeCellQnum_kanpen();
-		this.owner.board.revCircle();
+		this.board.revCircle();
+		this.puzzle.fio.encodeCellQnum_kanpen();
+		this.board.revCircle();
 	}
 },
 //---------------------------------------------------------
@@ -132,37 +132,37 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
 		this.decodeBorderLine();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 	encodeData : function(){
-		this.owner.board.revCircle();
+		this.board.revCircle();
 		this.encodeCellQnum();
 		this.encodeBorderLine();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 
 	kanpenOpen : function(){
 		this.decodeCellQnum_kanpen();
 		this.decodeBorderLine();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 	kanpenSave : function(){
-		this.owner.board.revCircle();
+		this.board.revCircle();
 		this.encodeCellQnum_kanpen();
 		this.encodeBorderLine();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 
 	kanpenOpenXML : function(){
 		this.decodeCellQnum_XMLBoard();
 		this.decodeBorderLine_XMLAnswer();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 	kanpenSaveXML : function(){
-		this.owner.board.revCircle();
+		this.board.revCircle();
 		this.encodeCellQnum_XMLBoard();
 		this.encodeBorderLine_XMLAnswer();
-		this.owner.board.revCircle();
+		this.board.revCircle();
 	},
 
 	UNDECIDED_NUM_XML : 3
@@ -188,7 +188,7 @@ AnsCheck:{
 	},
 
 	checkWhitePearl1 : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===1 && cell.isLineCurve())){ continue;}
@@ -203,7 +203,7 @@ AnsCheck:{
 		}
 	},
 	checkBlackPearl1 : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===2 && cell.isLineStraight())){ continue;}
@@ -219,7 +219,7 @@ AnsCheck:{
 	},
 
 	checkWhitePearl2 : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
@@ -240,7 +240,7 @@ AnsCheck:{
 		}
 	},
 	checkBlackPearl2 : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}

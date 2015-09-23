@@ -195,7 +195,7 @@ Graphic:{
 		var g = this.vinc('cell_arrow', 'auto');
 		var al, aw, tl, tw;
 
-		if(this.owner.pid!=="nagare"){
+		if(this.pid!=="nagare"){
 			al = this.cw*0.4;		// ArrowLength
 			aw = this.cw*0.03;		// ArrowWidth
 			tl = this.cw*0.16;		// 矢じりの長さの座標(中心-長さ)
@@ -284,7 +284,7 @@ Graphic:{
 	},
 	drawNumber1 : function(cell){
 		var g = this.context;
-		var num  = (this.owner.execConfig('dispmove') ? cell.base : cell).getNum();
+		var num  = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
 		g.vid = "cell_text_"+cell.id;
 		if(num>=0 || (!this.hideHatena && num===-2)){
 			g.fillStyle = this.getCellNumberColor(cell);
@@ -293,7 +293,7 @@ Graphic:{
 		else{ g.vhide();}
 	},
 	getCellNumberColor : function(cell){
-		var color = this.fontcolor, puzzle = this.owner;
+		var color = this.fontcolor, puzzle = this.puzzle;
 		if((cell.ques>=1 && cell.ques<=5) || (cell.qans>=1 && cell.qans<=5)){
 			color = this.fontShadecolor;
 		}
@@ -575,8 +575,8 @@ Graphic:{
 				// この関数を呼ぶ場合は全てhasborder===1なので
 				// 外枠用の考慮部分を削除しています。
 				var adb = cell.adjborder;
-				var UPin = (cell.by>2), DNin = (cell.by<2*this.owner.board.qrows-2);
-				var LTin = (cell.bx>2), RTin = (cell.bx<2*this.owner.board.qcols-2);
+				var UPin = (cell.by>2), DNin = (cell.by<2*this.board.qrows-2);
+				var LTin = (cell.bx>2), RTin = (cell.bx<2*this.board.qcols-2);
 
 				var isUP = (!UPin || adb.top.ques   ===1);
 				var isDN = (!DNin || adb.bottom.ques===1);
@@ -630,7 +630,7 @@ Graphic:{
 			g.vid = "b_line_"+border.id;
 			if(!!color){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				var isvert = (this.owner.board.lines.isCenterLine^border.isVert());
+				var isvert = (this.board.lines.isCenterLine^border.isVert());
 				var lm = this.lm + this.addlw/2;
 				
 				g.fillStyle = color;
@@ -644,7 +644,7 @@ Graphic:{
 	getLineColor : function(border){
 		this.addlw = 0;
 		if(border.isLine()){
-			var info = border.error || border.qinfo, puzzle = this.owner;
+			var info = border.error || border.qinfo, puzzle = this.puzzle;
 			if     (info===1)  { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
@@ -666,7 +666,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], dir=0, border=null;
-			if(cell.lcnt===1 && cell.qnum===-1 && !this.owner.execConfig('dispmove')){
+			if(cell.lcnt===1 && cell.qnum===-1 && !this.puzzle.execConfig('dispmove')){
 				var adb = cell.adjborder;
 				if     (adb.top.isLine()   ){ dir=2; border=adb.top;   }
 				else if(adb.bottom.isLine()){ dir=1; border=adb.bottom;}
@@ -754,7 +754,7 @@ Graphic:{
 	},
 	drawTriangle1 : function(px,py,num){
 		var g = this.context;
-		var mgn = (this.owner.pid==="reflect"?1:0), bw = this.bw+1-mgn, bh = this.bh+1-mgn;
+		var mgn = (this.pid==="reflect"?1:0), bw = this.bw+1-mgn, bh = this.bh+1-mgn;
 		g.beginPath();
 		switch(num){
 			case 2: g.setOffsetLinePath(px,py, -bw,-bh, -bw,bh, bw,bh, true); break;
@@ -799,7 +799,7 @@ Graphic:{
 		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
 		
 		/* fillとstrokeの間に線を描画するスキマを与える */
-		if(this.owner.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
+		if(this.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -840,7 +840,7 @@ Graphic:{
 		return this.getCircleStrokeColor(cell);
 	},
 	getCircleStrokeColor_qnum : function(cell){
-		var puzzle = this.owner, error = cell.error || cell.qinfo;
+		var puzzle = this.puzzle, error = cell.error || cell.qinfo;
 		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
@@ -885,7 +885,7 @@ Graphic:{
 		return null;
 	},
 	getCircleFillColor_qcmp : function(cell){
-		var puzzle = this.owner, error = cell.error || cell.qinfo;
+		var puzzle = this.puzzle, error = cell.error || cell.qinfo;
 		var isdrawmove = puzzle.execConfig('dispmove');
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
@@ -904,7 +904,7 @@ Graphic:{
 		g.fillStyle = this.movelinecolor;
 		
 		var rsize  = this.cw*0.15;
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
@@ -984,7 +984,7 @@ Graphic:{
 		this.addlw = 0;
 		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
 		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!this.owner.execConfig('irowake') || !cell.color){ color = this.linecolor;}
+		else if(!this.puzzle.execConfig('irowake') || !cell.color){ color = this.linecolor;}
 		else{ color = cell.color;}
 		return color;
 	},
@@ -1040,13 +1040,13 @@ Graphic:{
 			var px = excell.bx*this.bw, py = excell.by*this.bh;
 
 			g.vid = "ex_bdx_"+excell.id;
-			if(excell.by===-1 && excell.bx<this.owner.board.maxbx){
+			if(excell.by===-1 && excell.bx<this.board.maxbx){
 				g.fillRectCenter(px+this.bw, py, 0.5, this.bh);
 			}
 			else{ g.vhide();}
 
 			g.vid = "ex_bdy_"+excell.id;
-			if(excell.bx===-1 && excell.by<this.owner.board.maxby){
+			if(excell.bx===-1 && excell.by<this.board.maxby){
 				g.fillRectCenter(px, py+this.bh, this.bw, 0.5);
 			}
 			else{ g.vhide();}
@@ -1063,7 +1063,7 @@ Graphic:{
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
-				var piece = this.owner.board.getobj(bx,by); /* cell or excell */
+				var piece = this.board.getobj(bx,by); /* cell or excell */
 				if(!piece.isnull){ this.drawNumbersOn51_1(piece);}
 			}
 		}
@@ -1100,13 +1100,13 @@ Graphic:{
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
 	drawTarget : function(){
-		this.drawCursor(true, this.owner.editmode);
+		this.drawCursor(true, this.puzzle.editmode);
 	},
 
 	drawCursor : function(islarge,isdraw){
 		var g = this.vinc('target_cursor', 'crispEdges');
 
-		var d = this.range, cursor = this.owner.cursor;
+		var d = this.range, cursor = this.puzzle.cursor;
 		if(cursor.bx < d.x1-1 || d.x2+1 < cursor.bx){ return;}
 		if(cursor.by < d.y1-1 || d.y2+1 < cursor.by){ return;}
 
@@ -1114,8 +1114,8 @@ Graphic:{
 		if(islarge!==false){ w = (Math.max(this.cw/16, 2))|0; size = this.bw-0.5;}
 		else	           { w = (Math.max(this.cw/24, 1))|0; size = this.bw*0.56;}
 
-		isdraw = (isdraw!==false && this.owner.getConfig('cursor') && !this.outputImage);
-		g.fillStyle = (this.owner.editmode ? this.targetColor1 : this.targetColor3);
+		isdraw = (isdraw!==false && this.puzzle.getConfig('cursor') && !this.outputImage);
+		g.fillStyle = (this.puzzle.editmode ? this.targetColor1 : this.targetColor3);
 
 		g.vid = "ti1_"; if(isdraw){ g.fillRect(px-size,   py-size,   size*2, w);}else{ g.vhide();}
 		g.vid = "ti2_"; if(isdraw){ g.fillRect(px-size,   py-size,   w, size*2);}else{ g.vhide();}
@@ -1126,7 +1126,7 @@ Graphic:{
 	drawTargetTriangle : function(){
 		var g = this.vinc('target_triangle', 'auto');
 
-		var d = this.range, cursor = this.owner.cursor;
+		var d = this.range, cursor = this.puzzle.cursor;
 		if(cursor.bx < d.x1 || d.x2 < cursor.bx){ return;}
 		if(cursor.by < d.y1 || d.y2 < cursor.by){ return;}
 
@@ -1134,7 +1134,7 @@ Graphic:{
 
 		g.vid = "target_triangle";
 		g.fillStyle = this.ttcolor;
-		if(this.owner.editmode && target!==0){
+		if(this.puzzle.editmode && target!==0){
 			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===2?4:2));
 		}
 		else{ g.vhide();}
@@ -1144,7 +1144,7 @@ Graphic:{
 	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------
 	drawDashedCenterLines : function(){
-		var g = this.vinc('centerline', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('centerline', 'crispEdges', true), bd = this.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx+1){ x1=bd.minbx+1;} if(x2>bd.maxbx-1){ x2=bd.maxbx-1;}
@@ -1173,7 +1173,7 @@ Graphic:{
 	// pc.drawDashedGrid()  セルの枠線(点線)をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawGrid : function(haschassis, isdraw){
-		var g = this.vinc('grid', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
@@ -1206,7 +1206,7 @@ Graphic:{
 		}
 	},
 	drawDashedGrid : function(haschassis){
-		var g = this.vinc('grid', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -1239,14 +1239,14 @@ Graphic:{
 	// pc.drawChassis_ex1() bd.hasexcell==1の時の外枠をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawChassis : function(){
-		var g = this.vinc('chassis', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('chassis', 'crispEdges', true), bd = this.board;
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 
-		var lw = (this.owner.pid!=='bosanowa'?this.lw:1);
+		var lw = (this.pid!=='bosanowa'?this.lw:1);
 		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
 		g.fillStyle = "black";
 		g.vid = "chs1_"; g.fillRect(-(lw-0.5),       -(lw-0.5), lw, boardHeight+2*lw-2);
@@ -1255,7 +1255,7 @@ Graphic:{
 		g.vid = "chs4_"; g.fillRect(-(lw-0.5), boardHeight-0.5, boardWidth+2*lw-2, lw);
 	},
 	drawChassis_ex1 : function(boldflag){
-		var g = this.vinc('chassis_ex1', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('chassis_ex1', 'crispEdges', true), bd = this.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<=0){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}

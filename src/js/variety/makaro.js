@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['makaro'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum_makaro();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.inputarrow_cell();}
@@ -41,7 +41,7 @@ MouseEvent:{
 			this.setcursor(cell);
 		}
 		else{
-			if(this.owner.editmode){
+			if(this.puzzle.editmode){
 				if(this.inputcell_makaro_edit(cell)){ return;}
 			}
 			
@@ -107,7 +107,7 @@ KeyEvent:{
 	keyinput : function(ca){
 		var cell = this.cursor.getc();
 		
-		if(this.owner.editmode){
+		if(this.puzzle.editmode){
 			if(this.key_inputcell_makaro_edit(cell,ca)){ return;}
 		}
 		
@@ -151,7 +151,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(99, this.owner.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(99, this.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Border:{
@@ -220,7 +220,7 @@ Encode:{
 	},
 
 	decodeMakaro : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -235,7 +235,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeMakaro : function(){
-		var cm = "", count = 0, bd = this.owner.board;
+		var cm = "", count = 0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c], qn=cell.qnum;
 			if     (qn>= 1&&qn< 11){ pstr =     (qn-1).toString(10);}
@@ -254,7 +254,7 @@ Encode:{
 	encodeBorder_makaro : function(){
 		/* 同じ見た目のパズルにおけるURLを同じにするため、        */
 		/* 一時的にcell.ques=1にしてURLを出力してから元に戻します */
-		var bd = this.owner.board, sv_ques = [];
+		var bd = this.board, sv_ques = [];
 		for(var id=0;id<bd.bdmax;id++){
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
@@ -320,8 +320,8 @@ AnsCheck:{
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
 	/* 矢印の先が空白マスである場合は判定をスルーします         */
 	checkPointAtBiggestNumber : function(){
-		for(var c=0;c<this.owner.board.cellmax;c++){
-			var cell = this.owner.board.cell[c];
+		for(var c=0;c<this.board.cellmax;c++){
+			var cell = this.board.cell[c];
 			if(cell.ques!==1 || cell.qdir===cell.NDIR){ continue;}
 			var list = cell.getdir4clist(), maxnum = -1, maxdir = cell.NDIR;
 			var dupnum = false, isempty = false, invalidarrow = true;

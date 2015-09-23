@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['country'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){ this.inputLine();}
 			}
@@ -14,7 +14,7 @@ MouseEvent:{
 				this.inputMB();
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				this.inputborder();
 			}
@@ -35,7 +35,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Board:{

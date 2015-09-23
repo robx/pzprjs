@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['numlin'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -95,10 +95,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

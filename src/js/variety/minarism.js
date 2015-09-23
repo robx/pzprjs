@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['minarism'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){ this.inputmark_mousemove();}
 			}
@@ -46,7 +46,7 @@ MouseEvent:{
 			if(border.isnull){ return;}
 
 			var qn=border.qnum, qs=border.qdir, qm=(border.isHorz()?0:2);
-			var max=Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
+			var max=Math.max(this.board.qcols,this.board.qrows)-1;
 			if(this.btn.Left){
 				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
 				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
@@ -74,14 +74,14 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if     (this.owner.editmode){ return this.moveTBorder(ca);}
-		else if(this.owner.playmode){ return this.moveTCell(ca);}
+		if     (this.puzzle.editmode){ return this.moveTBorder(ca);}
+		else if(this.puzzle.playmode){ return this.moveTCell(ca);}
 		return false;
 	},
 
 	keyinput : function(ca){
-		if     (this.owner.editmode){ this.key_inputmark(ca);}
-		else if(this.owner.playmode){ this.key_inputqnum(ca);}
+		if     (this.puzzle.editmode){ this.key_inputmark(ca);}
+		else if(this.puzzle.playmode){ this.key_inputqnum(ca);}
 	},
 	key_inputmark : function(ca){
 		var border = this.cursor.getb();
@@ -97,7 +97,7 @@ KeyEvent:{
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = +ca, cur = border.qnum;
-			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
+			var max = Math.max(this.board.qcols,this.board.qrows)-1;
 
 			border.setQdir(border.NDIR);
 			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
@@ -124,7 +124,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
+		return Math.max(this.board.qcols,this.board.qrows);
 	}
 },
 Board:{
@@ -232,7 +232,7 @@ Graphic:{
 	},
 
 	drawTarget_minarism : function(){
-		this.drawCursor(this.owner.playmode);
+		this.drawCursor(this.puzzle.playmode);
 	}
 },
 
@@ -249,7 +249,7 @@ Encode:{
 	decodeMinarism : function(type){
 		// 盤面外数字のデコード
 		var parser = pzpr.parser;
-		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.owner.board;
+		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -278,7 +278,7 @@ Encode:{
 	},
 	encodeMinarism : function(type){
 		var parser = pzpr.parser;
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
 			if(type===1){
 				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)===0){ count++;}
@@ -355,7 +355,7 @@ AnsCheck:{
 		}, "nmIneqNe");
 	},
 	checkHintSideCell : function(func, code){
-		var boardborder = this.owner.board.border;
+		var boardborder = this.board.border;
 		for(var id=0;id<boardborder.length;id++){
 			var border = boardborder[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();

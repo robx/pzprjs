@@ -17,10 +17,10 @@ FileIO:{
 	// fio.filedecode()  ファイルデータ(文字列)からのデコード実行関数
 	//---------------------------------------------------------------------------
 	filedecode : function(datastr){
-		var puzzle = this.owner, pzl = pzpr.parser.parseFile(datastr, puzzle.pid);
+		var puzzle = this.puzzle, bd = puzzle.board, pzl = pzpr.parser.parseFile(datastr, puzzle.pid);
 		var filetype = this.currentType = pzl.type;
 
-		puzzle.board.initBoardSize(pzl.cols, pzl.rows);
+		bd.initBoardSize(pzl.cols, pzl.rows);
 
 		this.filever = pzl.filever;
 		if(filetype!==pzl.FILE_PBOX_XML){
@@ -41,7 +41,7 @@ FileIO:{
 			puzzle.opemgr.decodeHistory(pzl.history);
 		}
 
-		puzzle.board.resetInfo();
+		bd.resetInfo();
 
 		this.dataarray = null;
 
@@ -51,7 +51,7 @@ FileIO:{
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数
 	//---------------------------------------------------------------------------
 	fileencode : function(filetype, option){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		var pzl = new pzpr.parser.FileData('', puzzle.pid);
 		
 		this.currentType = filetype = filetype || pzl.FILE_PZPR; /* type===pzl.FILE_AUTO(0)もまとめて変換する */
@@ -139,7 +139,7 @@ FileIO:{
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(this.owner.board.getObjectPos(group, bx, by), item[i]);
+			func(this.board.getObjectPos(group, bx, by), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -147,14 +147,14 @@ FileIO:{
 		}
 	},
 	decodeCell   : function(func){
-		this.decodeObj(func, 'cell', 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
+		this.decodeObj(func, 'cell', 1, 1, 2*this.board.qcols-1, 2*this.board.qrows-1);
 	},
 	decodeCross  : function(func){
-		this.decodeObj(func, 'cross', 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
+		this.decodeObj(func, 'cross', 0, 0, 2*this.board.qcols,   2*this.board.qrows  );
 	},
 	decodeBorder : function(func){
-		var o = this.owner, bd = o.board;
-		if(bd.hasborder===1 || o.pid==='bosanowa' || (o.pid==='fourcells' && this.filever===0)){
+		var puzzle = this.puzzle, bd = puzzle.board;
+		if(bd.hasborder===1 || puzzle.pid==='bosanowa' || (puzzle.pid==='fourcells' && this.filever===0)){
 			this.decodeObj(func, 'border', 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.decodeObj(func, 'border', 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
@@ -181,20 +181,20 @@ FileIO:{
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(this.owner.board.getObjectPos(group, bx, by));
+				this.datastr += func(this.board.getObjectPos(group, bx, by));
 			}
 			this.datastr += "\n";
 		}
 	},
 	encodeCell   : function(func){
-		this.encodeObj(func, 'cell', 1, 1, 2*this.owner.board.qcols-1, 2*this.owner.board.qrows-1);
+		this.encodeObj(func, 'cell', 1, 1, 2*this.board.qcols-1, 2*this.board.qrows-1);
 	},
 	encodeCross  : function(func){
-		this.encodeObj(func, 'cross', 0, 0, 2*this.owner.board.qcols,   2*this.owner.board.qrows  );
+		this.encodeObj(func, 'cross', 0, 0, 2*this.board.qcols,   2*this.board.qrows  );
 	},
 	encodeBorder : function(func){
-		var o = this.owner, bd = o.board;
-		if(bd.hasborder===1 || o.pid==='bosanowa'){
+		var puzzle = this.puzzle, bd = puzzle.board;
+		if(bd.hasborder===1 || puzzle.pid==='bosanowa'){
 			this.encodeObj(func, 'border', 2, 1, 2*bd.qcols-2, 2*bd.qrows-1);
 			this.encodeObj(func, 'border', 1, 2, 2*bd.qcols-1, 2*bd.qrows-2);
 		}
@@ -224,13 +224,13 @@ FileIO:{
 		var nodes = this.xmldoc.querySelectorAll('board number');
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
-			var cell = this.owner.board.getc(+node.getAttribute('c')*2-1, +node.getAttribute('r')*2-1);
+			var cell = this.board.getc(+node.getAttribute('c')*2-1, +node.getAttribute('r')*2-1);
 			if(!cell.isnull){ func(cell, +node.getAttribute('n'));}
 		}
 	},
 	encodeCellXMLBoard : function(func){
 		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var i=0;i<bd.cell.length;i++){
 			var cell = bd.cell[i], val = func(cell);
 			if(val!==null){
@@ -256,7 +256,7 @@ FileIO:{
 				if     (name==='z'){ name = 'n0';}
 				else if(name==='n'){ name = 'n'+(+nodes[i].getAttribute('v'));}
 				for(var j=0;j<n;j++){
-					func(this.owner.board.getobj(bx,by), name);
+					func(this.board.getobj(bx,by), name);
 					bx+=2;
 				}
 			}
@@ -265,7 +265,7 @@ FileIO:{
 	encodeCellXMLrow_com : function(func, parentnodename, targetnodename){
 		var boardnode = this.xmldoc.querySelector(parentnodename);
 		var ADJ = this.PBOX_ADJUST;
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=1-ADJ;by<=bd.maxby;by+=2){
 			var rownode = this.createXMLNode(targetnodename,{row:(((by+ADJ)/2)|0)+1});
 			for(var bx=1-ADJ;bx<=bd.maxbx;bx+=2){

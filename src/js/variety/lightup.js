@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['lightup'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && (this.inputData!==1))){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -65,12 +65,12 @@ Cell:{
 		}
 
 		var d=this.akariRange();
-		this.owner.painter.paintRange(d.x1-1, this.by-1, d.x2+1, this.by+1);
-		this.owner.painter.paintRange(this.bx-1, d.y1-1, this.bx+1, d.y2+1);
+		this.puzzle.painter.paintRange(d.x1-1, this.by-1, d.x2+1, this.by+1);
+		this.puzzle.painter.paintRange(this.bx-1, d.y1-1, this.bx+1, d.y2+1);
 	},
 
 	akariRangeClist : function(){
-		var cell, clist=new this.owner.CellList(), adc=this.adjacent;
+		var cell, clist=new this.klass.CellList(), adc=this.adjacent;
 
 		clist.add(this);
 		cell=adc.left;   while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.left;  }
@@ -184,10 +184,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnumb();
+		this.puzzle.fio.decodeCellQnumb();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnumb();
+		this.puzzle.fio.encodeCellQnumb();
 	}
 },
 //---------------------------------------------------------

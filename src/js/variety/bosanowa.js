@@ -25,7 +25,7 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var max = cell.getmaxnum(), ques = cell.ques, num = cell.getNum();
-		if(this.owner.editmode){
+		if(this.puzzle.editmode){
 			if(this.btn.Left){
 				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
 				else if(num===-1) { cell.setNum(1);  cell.setQues(0);}
@@ -39,7 +39,7 @@ MouseEvent:{
 				else{ cell.setNum(num-1);}
 			}
 		}
-		if(this.owner.playmode && ques===0){
+		if(this.puzzle.playmode && ques===0){
 			if(this.btn.Left){
 				if     (num===max){ cell.setNum(-1);}
 				else if(num===-1) { cell.setNum(1);}
@@ -69,7 +69,7 @@ KeyEvent:{
 		var cursor = this.cursor;
 		if(cursor.oncell()){
 			var cell = cursor.getc();
-			if(this.owner.editmode){
+			if(this.puzzle.editmode){
 				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
 				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
 				else if('0'<=ca && ca<='9'){
@@ -78,7 +78,7 @@ KeyEvent:{
 				}
 				else{ return;}
 			}
-			else if(this.owner.playmode){
+			else if(this.puzzle.playmode){
 				if(cell.ques===0){ this.key_inputqnum(ca);}
 				else{ return;}
 			}
@@ -108,7 +108,7 @@ KeyEvent:{
 
 TargetCursor:{
 	initCursor : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.bx = ((bd.qcols-1)&~1)+1;
 		this.by = ((bd.qrows-1)&~1)+1;
 	}
@@ -138,7 +138,7 @@ Board:{
 		this.common.initBoardSize.call(this,col,row);
 
 		if(pzpr.EDITOR){
-			var cell = this.owner.cursor.getc(); /* 真ん中にあるはず */
+			var cell = this.puzzle.cursor.getc(); /* 真ん中にあるはず */
 			if(!cell.isnull){ cell.ques = 0;}
 		}
 	}
@@ -152,7 +152,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		var disptype = +this.owner.getConfig('disptype_bosanowa');
+		var disptype = +this.puzzle.getConfig('disptype_bosanowa');
 		if(disptype===1){
 			this.drawCircles();
 			this.drawBDnumbase();
@@ -178,11 +178,11 @@ Graphic:{
 	},
 
 	getCanvasCols : function(){
-		var disptype = this.owner.getConfig('disptype_bosanowa');
+		var disptype = this.puzzle.getConfig('disptype_bosanowa');
 		return this.getBoardCols()+2*this.margin+(disptype===2?2:0);
 	},
 	getCanvasRows : function(){
-		var disptype = this.owner.getConfig('disptype_bosanowa');
+		var disptype = this.puzzle.getConfig('disptype_bosanowa');
 		return this.getBoardRows()+2*this.margin+(disptype===2?2:0);
 	},
 
@@ -299,7 +299,7 @@ Graphic:{
 		var d = this.range;
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
-				var addr=new this.owner.Address(bx,by);
+				var addr=new this.klass.Address(bx,by);
 				
 				g.vid = ["c_full_",bx,by].join('_');
 				if( addr.getc().isEmpty() && (
@@ -316,7 +316,7 @@ Graphic:{
 	},
 
 	drawTarget_bosanowa : function(){
-		var islarge = this.owner.cursor.oncell();
+		var islarge = this.puzzle.cursor.oncell();
 		this.drawCursor(islarge);
 	}
 },
@@ -328,20 +328,20 @@ Encode:{
 		this.decodeBoard();
 		this.decodeNumber16();
 
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if     (this.checkpflag("h")){ puzzle.setConfig('disptype_bosanowa',2);}
 		else if(this.checkpflag("t")){ puzzle.setConfig('disptype_bosanowa',3);}
 	},
 	encodePzpr : function(type){
 		this.encodeBosanowa();
 
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if     (puzzle.getConfig('disptype_bosanowa')===2){ this.outpflag="h";}
 		else if(puzzle.getConfig('disptype_bosanowa')===3){ this.outpflag="t";}
 	},
 
 	decodeBoard : function(){
-		var bstr = this.outbstr, c=0, bd = this.owner.board, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, c=0, bd = this.board, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -357,7 +357,7 @@ Encode:{
 
 	// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 	encodeBosanowa : function(type){
-		var x1=9999, x2=-1, y1=9999, y2=-1, bd=this.owner.board;
+		var x1=9999, x2=-1, y1=9999, y2=-1, bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty()){ continue;}
@@ -437,7 +437,7 @@ AnsCheck:{
 	],
 
 	checkSubsNumber : function(){
-		var subs=[], bd=this.owner.board, UNDEF=-1;
+		var subs=[], bd=this.board, UNDEF=-1;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(border.isGrid()){

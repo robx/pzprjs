@@ -8,7 +8,7 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Board:{
 	initialize : function(){
-		var puzzle = this.owner;
+		var classes = this.klass;
 		
 		// 盤面の範囲
 		this.minbx = 0;
@@ -22,10 +22,10 @@ Board:{
 		// エラー表示中かどうか
 		this.haserror = false;
 
-		this.cell   = new puzzle.CellList();
-		this.cross  = new puzzle.CrossList();
-		this.border = new puzzle.BorderList();
-		this.excell = new puzzle.EXCellList();
+		this.cell   = new classes.CellList();
+		this.cross  = new classes.CrossList();
+		this.border = new classes.BorderList();
+		this.excell = new classes.EXCellList();
 
 		this.cellmax   = 0;	// セルの数
 		this.crossmax  = 0;	// 交点の数
@@ -35,27 +35,27 @@ Board:{
 		this.bdinside  = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
 
 		// 空オブジェクト
-		this.nullobj = new puzzle.BoardPiece();
-		this.emptycell   = new puzzle.Cell();
-		this.emptycross  = new puzzle.Cross();
-		this.emptyborder = new puzzle.Border();
-		this.emptyexcell = new puzzle.EXCell();
+		this.nullobj = new classes.BoardPiece();
+		this.emptycell   = new classes.Cell();
+		this.emptycross  = new classes.Cross();
+		this.emptyborder = new classes.Border();
+		this.emptyexcell = new classes.EXCell();
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
-		this.lines = this.addInfoList(puzzle.LineManager);			// 線情報管理オブジェクト
+		this.lines = this.addInfoList(classes.LineManager);			// 線情報管理オブジェクト
 
-		this.rooms = this.addInfoList(puzzle.AreaRoomManager);		// 部屋情報を保持する
-		this.linfo = this.addInfoList(puzzle.AreaLineManager);		// 線つながり情報を保持する
+		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
+		this.linfo = this.addInfoList(classes.AreaLineManager);		// 線つながり情報を保持する
 
-		this.bcell = this.addInfoList(puzzle.AreaShadeManager);		// 黒マス情報を保持する
-		this.wcell = this.addInfoList(puzzle.AreaUnshadeManager);		// 白マス情報を保持する
-		this.ncell = this.addInfoList(puzzle.AreaNumberManager);	// 数字情報を保持する
+		this.bcell = this.addInfoList(classes.AreaShadeManager);	// 黒マス情報を保持する
+		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
+		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
 
-		this.exec = new puzzle.BoardExec();
+		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},
 	addInfoList : function(Klass){
@@ -100,8 +100,8 @@ Board:{
 		this.initInfoList();
 		this.resetInfo();
 
-		this.owner.cursor.initCursor();
-		this.owner.opemgr.allerase();
+		this.puzzle.cursor.initCursor();
+		this.puzzle.opemgr.allerase();
 	},
 
 	//---------------------------------------------------------------------------
@@ -135,7 +135,7 @@ Board:{
 		else if(type==='cross') { return this.cross;}
 		else if(type==='border'){ return this.border;}
 		else if(type==='excell'){ return this.excell;}
-		return new this.owner.PieceList();
+		return new this.klass.PieceList();
 	},
 	estimateSize : function(type, col, row){
 		if     (type==='cell')  { return col*row;}
@@ -151,11 +151,11 @@ Board:{
 		return 0;
 	},
 	newObject : function(type, id){
-		var piece = this.nullobj, puzzle = this.owner;
-		if     (type==='cell')  { piece = new puzzle.Cell();}
-		else if(type==='cross') { piece = new puzzle.Cross();}
-		else if(type==='border'){ piece = new puzzle.Border();}
-		else if(type==='excell'){ piece = new puzzle.EXCell();}
+		var piece = this.nullobj, classes = this.klass;
+		if     (type==='cell')  { piece = new classes.Cell();}
+		else if(type==='cross') { piece = new classes.Cross();}
+		else if(type==='border'){ piece = new classes.Border();}
+		else if(type==='excell'){ piece = new classes.EXCell();}
 		if(piece!==this.nullobj && id!==void 0){ piece.id = id;}
 		return piece;
 	},
@@ -275,7 +275,7 @@ Board:{
 		this.maxbx = (!extDR ? 2*this.qcols : 2*this.qcols+2);
 		this.maxby = (!extDR ? 2*this.qrows : 2*this.qrows+2);
 
-		this.owner.cursor.setminmax();
+		this.puzzle.cursor.setminmax();
 	},
 
 	//---------------------------------------------------------------------------
@@ -293,7 +293,7 @@ Board:{
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
-		this.owner.opemgr.newOperation();
+		this.puzzle.opemgr.newOperation();
 		
 		this.cell.ansclear();
 		this.cross.ansclear();
@@ -302,7 +302,7 @@ Board:{
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
-		this.owner.opemgr.newOperation();
+		this.puzzle.opemgr.newOperation();
 		
 		this.cell.subclear();
 		this.cross.subclear();
@@ -317,7 +317,7 @@ Board:{
 			this.border.errclear();
 			this.excell.errclear();
 			this.haserror = false;
-			this.owner.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
+			this.puzzle.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
 		}
 	},
 
@@ -412,7 +412,7 @@ Board:{
 		else if(type==='cross') { return this.crossinside (x1,y1,x2,y2);}
 		else if(type==='border'){ return this.borderinside(x1,y1,x2,y2);}
 		else if(type==='excell'){ return this.excellinside(x1,y1,x2,y2);}
-		return new this.owner.PieceList();
+		return new this.klass.PieceList();
 	},
 
 	//---------------------------------------------------------------------------
@@ -422,7 +422,7 @@ Board:{
 	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
-		var clist = new this.owner.CellList();
+		var clist = new this.klass.CellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -430,7 +430,7 @@ Board:{
 		return clist;
 	},
 	crossinside : function(x1,y1,x2,y2){
-		var clist = new this.owner.CrossList();
+		var clist = new this.klass.CrossList();
 		if(!!this.hascross){
 			for(var by=y1+(y1&1);by<=y2;by+=2){ for(var bx=x1+(x1&1);bx<=x2;bx+=2){
 				var cross = this.getx(bx,by);
@@ -440,7 +440,7 @@ Board:{
 		return clist;
 	},
 	borderinside : function(x1,y1,x2,y2){
-		var blist = new this.owner.BorderList();
+		var blist = new this.klass.BorderList();
 		if(!!this.hasborder){
 			for(var by=y1;by<=y2;by++){ for(var bx=x1+(((x1+by)&1)^1);bx<=x2;bx+=2){
 				var border = this.getb(bx,by);
@@ -450,7 +450,7 @@ Board:{
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
-		var exlist = new this.owner.EXCellList();
+		var exlist = new this.klass.EXCellList();
 		if(!!this.hasexcell){
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 				var excell = this.getex(bx,by);
@@ -466,11 +466,11 @@ Board:{
 	// bd.isenableInfo() 操作の登録できるかを返す
 	//---------------------------------------------------------------------------
 	disableInfo : function(){
-		this.owner.opemgr.disableRecord();
+		this.puzzle.opemgr.disableRecord();
 		this.disrecinfo++;
 	},
 	enableInfo : function(){
-		this.owner.opemgr.enableRecord();
+		this.puzzle.opemgr.enableRecord();
 		if(this.disrecinfo>0){ this.disrecinfo--;}
 	},
 	isenableInfo : function(){

@@ -16,10 +16,10 @@ pzpr.classmgr.makeCustom(['tapa'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_tapa();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum_tapa();}
 		}
 	},
@@ -32,7 +32,7 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberRemainsUnshaded && cell.qnums.length!==0 && (this.inputData===1||(this.inputData===2 && this.owner.painter.bcolor==="white"))){ return;}
+		if(cell.numberRemainsUnshaded && cell.qnums.length!==0 && (this.inputData===1||(this.inputData===2 && this.puzzle.painter.bcolor==="white"))){ return;}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
@@ -45,11 +45,11 @@ MouseEvent:{
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.owner.getConfig('use')===1){
+		if(this.puzzle.getConfig('use')===1){
 			if     (this.btn.Left) { this.inputData=(cell.isUnshade()? 1 : 0); }
 			else if(this.btn.Right){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
-		else if(this.owner.getConfig('use')===2){
+		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnums.length!==0){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
@@ -170,12 +170,12 @@ Cell:{
 	},
 	addOpeQnums : function(old, val){
 		if(sameArray(old, val)){ return;}
-		this.owner.opemgr.add(new this.owner.ObjectOperation2(this, old, val));
+		this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
 	},
 
 	getShadedLength : function(){
 		var addrs = [], result = [], shaded = "";
-		var bx = this.bx, by = this.by, bd = this.owner.board;
+		var bx = this.bx, by = this.by, bd = this.board;
 		if(bx>bd.minbx+1 && bx<bd.maxbx-1 && by>bd.minby+1 && by<bd.maxby-1){
 			addrs = [-2,-2, 0,-2, 2,-2, 2,0, 2,2, 0,2, -2,2, -2,0];
 		}
@@ -260,7 +260,7 @@ CellList:{
 	undo : function(){ this.exec(this.old);},
 	redo : function(){ this.exec(this.val);},
 	exec : function(val){
-		var puzzle = this.owner, cell = puzzle.board.getc(this.bx, this.by);
+		var puzzle = this.puzzle, cell = puzzle.board.getc(this.bx, this.by);
 		cell.setQnums(val);
 		cell.draw();
 		puzzle.checker.resetCache();
@@ -271,7 +271,7 @@ OperationManager:{
 	initialize : function(){
 		this.common.initialize.call(this);
 		
-		this.operationlist.push(this.owner.ObjectOperation2);
+		this.operationlist.push(this.klass.ObjectOperation2);
 	}
 },
 
@@ -340,7 +340,7 @@ Encode:{
 	},
 
 	decodeNumber_tapa : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -382,7 +382,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber_tapa : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnums;
 

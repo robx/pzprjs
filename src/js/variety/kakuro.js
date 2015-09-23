@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['kakuro'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.input51();}
 		}
 	}
@@ -22,14 +22,14 @@ KeyEvent:{
 	enableplay : true,
 
 	keyinput : function(ca){
-		if     (this.owner.editmode){ this.inputnumber51(ca,{2:45,4:45});}
-		else if(this.owner.playmode){ this.key_inputqnum(ca);}
+		if     (this.puzzle.editmode){ this.inputnumber51(ca,{2:45,4:45});}
+		else if(this.puzzle.playmode){ this.key_inputqnum(ca);}
 	}
 },
 
 TargetCursor:{
 	adjust_modechange : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.bx<1){ this.bx = 1;}
 			if(this.by<1){ this.by = 1;}
 		}
@@ -149,15 +149,15 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum51_kanpen();
+		this.puzzle.fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum51_kanpen();
+		this.puzzle.fio.encodeCellQnum51_kanpen();
 	},
 
 	decodeKakuro : function(){
 		// 盤面内数字のデコード
-		var c=0, a=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, a=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 			if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-19);}
@@ -191,7 +191,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeKakuro : function(type){
-		var cm="", bd = this.owner.board;
+		var cm="", bd = this.board;
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;
@@ -258,7 +258,7 @@ FileIO:{
 	},
 
 	decodeCellQnum51_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(;;){
 			var data = this.readLine();
 			if(!data){ break;}
@@ -280,7 +280,7 @@ FileIO:{
 		}
 	},
 	encodeCellQnum51_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 			var item=[(by+1)>>1,(bx+1)>>1,0,0];
 
@@ -301,7 +301,7 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		var bd = this.owner.board, barray = this.readLines(bd.qrows+1);
+		var bd = this.board, barray = this.readLines(bd.qrows+1);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");
@@ -315,7 +315,7 @@ FileIO:{
 		}
 	},
 	encodeQans_kanpen : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				var cell = bd.getc(bx,by);
@@ -339,7 +339,7 @@ FileIO:{
 
 	decodeCellQnum51_XMLBoard : function(){
 		var nodes = this.xmldoc.querySelectorAll('board wall');
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
 			var bx = 2*(+node.getAttribute('c'))-3;
@@ -354,7 +354,7 @@ FileIO:{
 	},
 	encodeCellQnum51_XMLBoard : function(){
 		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var piece = bd.getobj(bx,by); /* cell or excell */

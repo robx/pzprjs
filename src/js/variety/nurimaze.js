@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['nurimaze'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile_nurimaze();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputEdit();}
 			else if(this.mouseend){ this.inputEdit_end();}
 		}
@@ -20,7 +20,7 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){ this.decIC(cell);}
 
-		var bd = this.owner.board, clist = bd.rooms.getClistByCell(cell);
+		var bd = this.board, clist = bd.rooms.getClistByCell(cell);
 		if(this.inputData===1){
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].ques!==0 || bd.startpos.equals(clist[i]) || bd.goalpos.equals(clist[i])){
@@ -50,11 +50,11 @@ MouseEvent:{
 		
 		// startposの入力中の場合
 		if(this.inputData===10){
-			this.owner.board.startpos.input(cell);
+			this.board.startpos.input(cell);
 		}
 		// goalposの入力中の場合
 		else if(this.inputData===11){
-			this.owner.board.goalpos.input(cell);
+			this.board.goalpos.input(cell);
 		}
 		// 境界線の入力中の場合
 		else if(this.inputData!==null){
@@ -62,7 +62,7 @@ MouseEvent:{
 		}
 	},
 	inputEdit_first : function(){
-		var pos = this.getpos(0.33), bd = this.owner.board;
+		var pos = this.getpos(0.33), bd = this.board;
 		// startposの上ならstartpos移動ルーチンへ移行
 		if(bd.startpos.equals(pos)){
 			this.inputData = 10;
@@ -97,7 +97,7 @@ MouseEvent:{
 	},
 
 	inputQuesMark :function(cell){
-		var bd = this.owner.board, newques=-1;
+		var bd = this.board, newques=-1;
 		if     (this.btn.Left ){ newques={0:41,41:42,42:0}[cell.ques];}
 		else if(this.btn.Right){ newques={0:42,42:41,41:0}[cell.ques];}
 
@@ -114,12 +114,12 @@ KeyEvent:{
 	enablemake : true,
 	
 	keyinput : function(ca){
-		if(this.keydown && this.owner.editmode){
+		if(this.keydown && this.puzzle.editmode){
 			this.key_inputqnum_nurimaze(ca);
 		}
 	},
 	key_inputqnum_nurimaze : function(ca){
-		var cell = this.cursor.getc(), bd = this.owner.board;
+		var cell = this.cursor.getc(), bd = this.board;
 
 		var old=cell.ques, newques=-1;
 		if     (ca==='1'||ca==='q'){ newques=(old!==41?41:0);}
@@ -146,9 +146,9 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		var puzzle = this.owner;
-		this.startpos = new puzzle.StartAddress(1,1);
-		this.goalpos  = new puzzle.GoalAddress(this.qcols*2-1,this.qrows*2-1);
+		var classes = this.klass;
+		this.startpos = new classes.StartAddress(1,1);
+		this.goalpos  = new classes.GoalAddress(this.qcols*2-1,this.qrows*2-1);
 		this.startpos.partner = this.goalpos;
 		this.goalpos.partner  = this.startpos;
 	},
@@ -175,13 +175,13 @@ Board:{
 BoardExec:{
 	posinfo : {},
 	adjustBoardData : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 
 		this.posinfo_start = this.getAfterPos(key,d,bd.startpos.getc());
 		this.posinfo_goal  = this.getAfterPos(key,d,bd.goalpos.getc());
 	},
 	adjustBoardData2 : function(key,d){
-		var bd = this.owner.board, opemgr = this.owner.opemgr;
+		var bd = this.board, opemgr = this.puzzle.opemgr;
 		var info1 = this.posinfo_start, info2 = this.posinfo_goal, isrec;
 		
 		isrec = ((key & this.REDUCE) && (info1.isdel || info2.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
@@ -212,7 +212,7 @@ BoardExec:{
 			}
 		}
 		else{
-			this.owner.board.exchangestartgoal();
+			this.board.exchangestartgoal();
 		}
 	},
 	set : function(pos){
@@ -228,7 +228,7 @@ BoardExec:{
 
 	addOpe : function(bx, by){
 		if(this.bx===bx && this.by===by){ return;}
-		this.owner.opemgr.add(new this.owner.StartGoalOperation(this.type, this.bx,this.by, bx,by));
+		this.puzzle.opemgr.add(new this.klass.StartGoalOperation(this.type, this.bx,this.by, bx,by));
 	}
 },
 "StartAddress:StartGoalAddress":{
@@ -271,7 +271,7 @@ BoardExec:{
 	undo : function(){ this.exec(this.bx1, this.by1);},
 	redo : function(){ this.exec(this.bx2, this.by2);},
 	exec : function(bx, by){
-		var bd = this.owner.board, cell = bd.getc(bx, by);
+		var bd = this.board, cell = bd.getc(bx, by);
 		if     (this.property==='start'){ bd.startpos.set(cell);}
 		else if(this.property==='goal') { bd.goalpos.set(cell);}
 	}
@@ -280,7 +280,7 @@ OperationManager:{
 	initialize : function(){
 		this.common.initialize.call(this);
 		
-		this.operationlist.push(this.owner.StartGoalOperation);
+		this.operationlist.push(this.klass.StartGoalOperation);
 	}
 },
 
@@ -323,13 +323,13 @@ Graphic:{
 
 	drawStartGoal : function(){
 		var g = this.vinc('cell_sg', 'auto');
-		var bd = this.owner.board, d = this.range;
+		var bd = this.board, d = this.range;
 		
 		g.vid = "text_stpos";
 		var cell = bd.startpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
 			if(!cell.isnull){
-				g.fillStyle = (this.owner.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				g.fillStyle = (this.puzzle.mouse.inputData===10 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
 				this.disptext("S", cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
@@ -339,7 +339,7 @@ Graphic:{
 		cell = bd.goalpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
 			if(!cell.isnull){
-				g.fillStyle = (this.owner.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
+				g.fillStyle = (this.puzzle.mouse.inputData===11 ? "red" : (cell.qans===1 ? this.fontShadecolor : this.quescolor));
 				this.disptext("G", cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
@@ -388,7 +388,7 @@ Encode:{
 	},
 	
 	decodeCell_nurimaze : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell = bd.cell[c];
 
@@ -404,7 +404,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeCell_nurimaze : function(){
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (bd.startpos.equals(cell)){ pstr = "1";}
@@ -435,7 +435,7 @@ FileIO:{
 	},
 	
 	decodeCellQues_nurimaze : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.decodeCell( function(cell,ca){
 			if     (ca==="s"){ bd.startpos.set(cell);}
 			else if(ca==="g"){ bd.goalpos.set(cell);}
@@ -444,7 +444,7 @@ FileIO:{
 		});
 	},
 	encodeCellQues_nurimaze : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.encodeCell( function(cell){
 			if     (bd.startpos.equals(cell)){ return "s ";}
 			else if(bd.goalpos.equals(cell)) { return "g ";}
@@ -470,7 +470,7 @@ AnsCheck:{
 	],
 
 	checkShadedObject : function(){
-		var bd=this.owner.board;
+		var bd=this.board;
 		this.checkAllCell( function(cell){ return cell.qans===1 && (cell.ques!==0 || bd.startpos.equals(cell) || bd.goalpos.equals(cell));}, "objShaded" );
 	},
 
@@ -479,7 +479,7 @@ AnsCheck:{
 	},
 
 	checkUnshadeLoop : function(){
-		var sinfo={cell:[]}, bd = this.owner.board;
+		var sinfo={cell:[]}, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.wcell.getLinkCell(bd.cell[c]);
 		}
@@ -499,7 +499,7 @@ AnsCheck:{
 	},
 	searchloop : function(fc, sinfo, sdata){
 		var passed=[], history=[fc];
-		for(var c=0;c<this.owner.board.cellmax;c++){ passed[c]=false;}
+		for(var c=0;c<this.board.cellmax;c++){ passed[c]=false;}
 
 		while(history.length>0){
 			var c = history[history.length-1];
@@ -535,14 +535,14 @@ AnsCheck:{
 		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
 		this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);}, "routeIgnoreCP");
 		if((errcount!==this.failcode.length) && !this.checkOnly){
-			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
+			this.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
 	},
 	checkRouteNoDeadEnd : function(){
 		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
 		this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);}, "routePassDeadEnd");
 		if((errcount!==this.failcode.length) && !this.checkOnly){
-			this.owner.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
+			this.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
 		}
 	},
 	getRouteInfo : function(){
@@ -550,7 +550,7 @@ AnsCheck:{
 	},
 	searchRoute : function(){
 		/* 白マスがどの隣接セルに接しているかの情報を取得する */
-		var sinfo={cell:[]}, bd = this.owner.board;
+		var sinfo={cell:[]}, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			sinfo.cell[c] = bd.wcell.getLinkCell(bd.cell[c]);
 		}

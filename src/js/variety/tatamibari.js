@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['tatamibari'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -55,7 +55,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){
 			var tques = {2:3,3:2};
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], val = tques[cell.qnum];
 				if(!!val){ cell.setQnum(val);}
@@ -122,7 +122,7 @@ Encode:{
 	},
 
 	decodeTatamibari : function(){
-		var c=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell = bd.cell[c];
 
@@ -140,7 +140,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTatamibari : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 			if     (qn===-2){ pstr = ".";}

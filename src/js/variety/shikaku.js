@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['shikaku','aho'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -84,10 +84,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------
@@ -112,7 +112,7 @@ FileIO:{
 
 	decodeAnsSquareRoom : function(){
 		var barray = this.readLines(+this.readLine());
-		var bd = this.owner.board, rdata = [];
+		var bd = this.board, rdata = [];
 		for(var i=0;i<barray.length;i++){
 			if(barray[i]===""){ break;}
 			var pce = barray[i].split(" ");
@@ -125,7 +125,7 @@ FileIO:{
 		bd.rooms.reset();
 	},
 	encodeAnsSquareRoom : function(){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		this.datastr += (rinfo.max+"\n");
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.area[id].clist.getRectSize();
@@ -159,7 +159,7 @@ FileIO:{
 
 	decodeAnsSquareRoom_XMLAnswer : function(){
 		var nodes = this.xmldoc.querySelectorAll('answer area');
-		var bd = this.owner.board, rdata = [];
+		var bd = this.board, rdata = [];
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
 			var bx1 = 2*(+node.getAttribute('c0'))-1;
@@ -175,7 +175,7 @@ FileIO:{
 	},
 	encodeAnsSquareRoom_XMLAnswer : function(){
 		var boardnode = this.xmldoc.querySelector('answer');
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){
 			var d = rinfo.area[id].clist.getRectSize();
 			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1}));
@@ -209,7 +209,7 @@ AnsCheck:{
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 
-			var clist2 = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
+			var clist2 = this.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
 			var d2 = clist2.getRectSize();
 
 			if( clist2.length>0 && (d2.cols*d2.rows===d2.cnt) && (d.x1===d2.x1 || d.x2===d2.x2) && (d.y1===d2.y1 || d.y2===d2.y2) ){ continue;}

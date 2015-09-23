@@ -76,11 +76,11 @@ PieceList:{
 	// list.setinfo()  保持しているオブジェクトにqinfo値を設定する
 	//--------------------------------------------------------------------------------
 	seterr : function(num){
-		if(!this.owner.board.isenableSetError()){ return;}
+		if(!this.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){ this[i].error = num;}
 	},
 	setnoerr : function(){
-		if(!this.owner.board.isenableSetError()){ return;}
+		if(!this.board.isenableSetError()){ return;}
 		for(var i=0;i<this.length;i++){
 			if(this[i].error===0){ this[i].error = -1;}
 		}
@@ -140,7 +140,7 @@ PieceList:{
 	// clist.getRectSize()  指定されたCellのリストの上下左右の端と、セルの数を返す
 	//---------------------------------------------------------------------------
 	getRectSize : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1, cols:0, rows:0, cnt:0};
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
@@ -162,14 +162,14 @@ PieceList:{
 		for(var i=0,len=this.length;i<len;i++){
 			if(this[i].isNum()){ return this[i];}
 		}
-		return this.owner.board.emptycell;
+		return this.board.emptycell;
 	},
 
 	//--------------------------------------------------------------------------------
 	// clist.getTopCell()  指定されたClistの中で一番左上にあるセルを返す
 	//--------------------------------------------------------------------------------
 	getTopCell : function(){
-		var bd=this.owner.board, tcell=null, bx=bd.maxbx, by=bd.maxby;
+		var bd=this.board, tcell=null, bx=bd.maxbx, by=bd.maxby;
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
 			if(cell.bx>bx || (cell.bx===bx && cell.by>=by)){ continue;}
@@ -185,7 +185,7 @@ PieceList:{
 	//---------------------------------------------------------------------------
 	draw : function(){
 		var d = this.getRectSize();
-		this.owner.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
+		this.puzzle.painter.paintRange(d.x1-1, d.y1-1, d.x2+1, d.y2+1);
 	}
 },
 
@@ -204,7 +204,7 @@ PieceList:{
 	// blist.crossinside() 線が重なる交点のリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(){
-		var clist = new this.owner.CellList(), pushed = [];
+		var clist = new this.klass.CellList(), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cell1=border.sidecell[0], cell2=border.sidecell[1];
 			if(!cell1.isnull && pushed[cell1.id]!==true){ clist.add(cell1); pushed[cell1.id]=true;}
@@ -213,7 +213,7 @@ PieceList:{
 		return clist;
 	},
 	crossinside : function(){
-		var clist = new this.owner.CrossList(), pushed = [];
+		var clist = new this.klass.CrossList(), pushed = [];
 		for(var i=0;i<this.length;i++){
 			var border=this[i], cross1=border.sidecross[0], cross2=border.sidecross[1];
 			if(!cross1.isnull && pushed[cross1.id]!==true){ clist.add(cross1); pushed[cross1.id]=true;}

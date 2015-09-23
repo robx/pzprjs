@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['fillomino'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode && (this.mousestart || this.mousemove)){
+		if(this.puzzle.playmode && (this.mousestart || this.mousemove)){
 			if(this.btn.Left){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.dragnumber_fillomino();}
@@ -15,7 +15,7 @@ MouseEvent:{
 		}
 
 		if(this.mouseend && this.notInputted()){
-			this.mouseCell = this.owner.board.emptycell;
+			this.mouseCell = this.board.emptycell;
 			this.inputqnum();
 		}
 	},
@@ -40,7 +40,7 @@ MouseEvent:{
 		}
 		else if(this.inputData<=-3){
 			var cell2 = this.mouseCell;
-			var border = this.owner.board.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
+			var border = this.board.getb(((cell.bx+cell2.bx)>>1), ((cell.by+cell2.by)>>1));
 			if(this.inputData===-3){ this.inputData=(border.qsub===1?-5:-4);}
 			if(!border.isnull){
 				border.setQsub(this.inputData===-4?1:0);
@@ -57,7 +57,7 @@ KeyEvent:{
 	enablemake : true,
 	enableplay : true,
 	moveTarget : function(ca){
-		if(this.owner.playmode && (this.isCTRL || this.isX || this.isZ)){
+		if(this.puzzle.playmode && (this.isCTRL || this.isX || this.isZ)){
 			return this.move_fillomino(ca);
 		}
 		return this.moveTCell(ca);
@@ -183,10 +183,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------
@@ -214,7 +214,7 @@ FileIO:{
 	},
 
 	inputBorderFromNumber : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			border.qans = 0;
@@ -252,7 +252,7 @@ AnsCheck:{
 	],
 
 	getErrorRoomInfo  : function(){
-		return (this._info.eroom = this._info.eroom || this.owner.board.getErrorRoomInfo());
+		return (this._info.eroom = this._info.eroom || this.board.getErrorRoomInfo());
 	},
 
 	checkSideAreaNumberSize : function(){
@@ -276,7 +276,7 @@ AnsCheck:{
 	},
 
 	checkNoNumCell_fillomino : function(){
-		if(!this.owner.getConfig('enbnonum')){
+		if(!this.puzzle.getConfig('enbnonum')){
 			this.checkNoNumCell();
 		}
 	}

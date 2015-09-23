@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['cbblock'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				this.inputborder();
 			}
@@ -43,8 +43,8 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.tiles = this.addInfoList(this.owner.AreaTileManager);
-		this.blocks = this.addInfoList(this.owner.AreaBlockManager);
+		this.tiles  = this.addInfoList(this.klass.AreaTileManager);
+		this.blocks = this.addInfoList(this.klass.AreaBlockManager);
 	},
 
 	getBlockInfo : function(){
@@ -81,7 +81,7 @@ CellList:{
 	getBlockShapes : function(){
 		if(!!this.shape){ return this.shape;}
 		
-		var bd=this.owner.board;
+		var bd=this.board;
 		var d=this.getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
 		var shapes={cols:d.cols, rows:d.rows, data:[]};
@@ -150,7 +150,7 @@ Encode:{
 	},
 
 	decodeCBBlock : function(){
-		var bstr = this.outbstr, bd = this.owner.board, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, bd = this.board, twi=[16,8,4,2,1];
 		var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),32);
@@ -164,7 +164,7 @@ Encode:{
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeCBBlock : function(){
-		var num=0, pass=0, cm="", bd = this.owner.board, twi=[16,8,4,2,1];
+		var num=0, pass=0, cm="", bd = this.board, twi=[16,8,4,2,1];
 		for(var id=0,max=bd.bdmax;id<max;id++){
 			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
@@ -209,7 +209,7 @@ AnsCheck:{
 
 	getCombiBlockInfo : function(){
 		/* 境界線で作られる領域の情報 */
-		return (this._info.cbinfo = this._info.cbinfo || this.owner.board.getBlockInfo());
+		return (this._info.cbinfo = this._info.cbinfo || this.board.getBlockInfo());
 	},
 
 	checkBlockNotRect : function(){

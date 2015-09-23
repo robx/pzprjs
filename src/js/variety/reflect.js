@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['reflect'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputQues([0,2,3,4,5,11]);}
 		}
 	}
@@ -54,7 +54,7 @@ Cell:{
 	minnum : 3,
 
 	getTriLine : function(){
-		var blist=new this.owner.BorderList(), adb = this.adjborder, border;
+		var blist=new this.klass.BorderList(), adb = this.adjborder, border;
 
 		border=adb.left;   while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd(-2,0);}
 		border=adb.right;  while(!border.isnull && border.isLine()){ blist.add(border); border=border.relbd( 2,0);}
@@ -80,7 +80,7 @@ BoardExec:{
 				case this.TURNR: tques={2:5,3:2,4:3,5:4}; break;
 				case this.TURNL: tques={2:3,3:4,4:5,5:2}; break;
 			}
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
@@ -195,7 +195,7 @@ Encode:{
 	},
 
 	decodeReflectlink : function(){
-		var c=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -220,7 +220,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeReflectlink : function(type){
-		var cm="", pstr="", count=0, bd = this.owner.board;
+		var cm="", pstr="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var qu=bd.cell[c].ques;
 			if     (qu===11){ pstr = "5";}
@@ -283,7 +283,7 @@ AnsCheck:{
 	},
 
 	checkTriangle : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===0 || cell.ques===11 || cell.lcnt>0){ continue;}
@@ -297,7 +297,7 @@ AnsCheck:{
 	checkLongLines  : function(){ this.checkTriNumber(1, "lnLenGt");},
 	checkShortLines : function(){ this.checkTriNumber(2, "lnLenLt");},
 	checkTriNumber : function(type, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===0 || cell.ques===11 || !cell.isValidNum()){ continue;}

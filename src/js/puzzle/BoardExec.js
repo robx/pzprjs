@@ -77,7 +77,7 @@ BoardExec:{
 	// bd.exec.execadjust()   盤面の調整、回転、反転で対応する関数へジャンプする
 	//------------------------------------------------------------------------------
 	execadjust : function(name){
-		var o = this.owner, bd = o.board;
+		var puzzle = this.puzzle, bd = this.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
 				if(bd.qrows<=1){ return;}
@@ -87,9 +87,9 @@ BoardExec:{
 			}
 		}
 
-		o.opemgr.newOperation();
+		puzzle.opemgr.newOperation();
 
-		o.painter.suspendAll();
+		puzzle.painter.suspendAll();
 
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
 		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
@@ -102,9 +102,9 @@ BoardExec:{
 		bd.resetInfo();
 
 		// Canvasを更新する
-		o.painter.resizeCanvas();
-		o.execListener('adjust');
-		o.painter.unsuspend();
+		puzzle.painter.resizeCanvas();
+		puzzle.execListener('adjust');
+		puzzle.painter.unsuspend();
 	},
 
 
@@ -112,9 +112,9 @@ BoardExec:{
 	// bd.exec.addOpe() 指定された盤面(拡大・縮小, 回転・反転)操作を追加する
 	//------------------------------------------------------------------------------
 	addOpe : function(d, name){
-		var key = this.boardtype[name][1], puzzle = this.owner, ope;
-		if(key & this.TURNFLIP){ ope = new puzzle.BoardFlipOperation(d, name);}
-		else                   { ope = new puzzle.BoardAdjustOperation(name);}
+		var key = this.boardtype[name][1], puzzle = this.puzzle, ope;
+		if(key & this.TURNFLIP){ ope = new puzzle.klass.BoardFlipOperation(d, name);}
+		else                   { ope = new puzzle.klass.BoardAdjustOperation(name);}
 		puzzle.opemgr.add(ope);
 	},
 
@@ -125,7 +125,7 @@ BoardExec:{
 	// bd.exec.isdel()        消去されるオブジェクトかどうか判定する
 	//------------------------------------------------------------------------------
 	expandreduce : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
 		if(bd.rooms.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
@@ -154,7 +154,7 @@ BoardExec:{
 		bd.enableInfo();
 	},
 	expandGroup : function(type,key){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
 		var group = bd.getGroup(type);
 		var group2 = new group.constructor();
@@ -174,7 +174,7 @@ BoardExec:{
 		if(type==='border'){ this.expandborder(key);}
 	},
 	reduceGroup : function(type,key){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(type==='border'){ this.reduceborder(key);}
 
 		var margin=0, group = bd.getGroup(type), group2 = new group.constructor();
@@ -187,7 +187,7 @@ BoardExec:{
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
 		}
-		var opemgr = this.owner.opemgr;
+		var opemgr = this.puzzle.opemgr;
 		if(!opemgr.undoExec && !opemgr.redoExec){
 			opemgr.forceRecord = true;
 			group2.allclear(true);
@@ -204,7 +204,7 @@ BoardExec:{
 	// bd.exec.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
 	//------------------------------------------------------------------------------
 	turnflip : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
 
@@ -225,7 +225,7 @@ BoardExec:{
 		bd.enableInfo();
 	},
 	turnflipGroup : function(type,key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(type==='excell' && bd.hasexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
@@ -269,7 +269,7 @@ BoardExec:{
 	// bd.exec.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
 	distObj : function(key,piece){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(piece.isnull){ return -1;}
 
 		key &= 0x0F;
@@ -285,10 +285,10 @@ BoardExec:{
 	// bd.exec.reduceborder() 盤面の縮小時、線を移動する
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
-		var bd = this.owner.board;
+		var bd = this.board;
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
-		if(bd.lines.borderAsLine || !bd.owner.opemgr.undoExec){
-			var group2 = new this.owner.BorderList();
+		if(bd.lines.borderAsLine || !bd.puzzle.opemgr.undoExec){
+			var group2 = new this.klass.BorderList();
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
@@ -305,7 +305,7 @@ BoardExec:{
 		}
 	},
 	reduceborder : function(key){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(bd.lines.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
 				var border = bd.border[id];
@@ -325,14 +325,14 @@ BoardExec:{
 	copyBorder : function(border1,border2){
 		border1.ques  = border2.ques;
 		border1.qans  = border2.qans;
-		if(this.owner.board.lines.borderAsLine){
+		if(this.board.lines.borderAsLine){
 			border1.line  = border2.line;
 			border1.qsub  = border2.qsub;
 			border1.color = border2.color;
 		}
 	},
 	innerBorder : function(id,key){
-		var border=this.owner.board.border[id];
+		var border=this.board.border[id];
 		key &= 0x0F;
 		if     (key===this.UP){ return border.relbd(0, 2);}
 		else if(key===this.DN){ return border.relbd(0,-2);}
@@ -341,7 +341,7 @@ BoardExec:{
 		return null;
 	},
 	outerBorder : function(id,key){
-		var border=this.owner.board.border[id];
+		var border=this.board.border[id];
 		key &= 0x0F;
 		if     (key===this.UP){ return border.relbd(0,-2);}
 		else if(key===this.DN){ return border.relbd(0, 2);}
@@ -355,7 +355,7 @@ BoardExec:{
 	//---------------------------------------------------------------------------
 	reduceRoomNumber : function(key,d){
 		var qnums = [];
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!!this.insex.cell[this.distObj(key,cell)]){
@@ -370,7 +370,7 @@ BoardExec:{
 			var data = qnums[i], areaid = data.areaid;
 			var tcell = bd.rooms.area[areaid].clist.getTopCell();
 			if(tcell.isnull){
-				var opemgr = this.owner.opemgr;
+				var opemgr = this.puzzle.opemgr;
 				if(!opemgr.undoExec && !opemgr.redoExec){
 					opemgr.forceRecord = true;
 					data.cell.addOpe('qnum', data.val, -1);

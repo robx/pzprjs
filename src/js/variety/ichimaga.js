@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['ichimaga','ichimagam','ichimagax'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -89,10 +89,10 @@ Encode:{
 	decodePzpr : function(type){
 		this.decode4Cell();
 
-		if(this.owner.pid==='ichimaga'){
-			if     (this.checkpflag("m")){ this.owner.changepid("ichimagam");}
-			else if(this.checkpflag("x")){ this.owner.changepid("ichimagax");}
-			else                         { this.owner.changepid("ichimaga"); }
+		if(this.pid==='ichimaga'){
+			if     (this.checkpflag("m")){ this.puzzle.changepid("ichimagam");}
+			else if(this.checkpflag("x")){ this.puzzle.changepid("ichimagax");}
+			else                         { this.puzzle.changepid("ichimaga"); }
 		}
 	},
 	encodePzpr : function(type){
@@ -103,19 +103,19 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var pzlflag = this.readLine();
-		if(this.owner.pid==='ichimaga'){
-			if     (pzlflag==="mag")  { this.owner.changepid("ichimagam");}
-			else if(pzlflag==="cross"){ this.owner.changepid("ichimagax");}
-			else                      { this.owner.changepid("ichimaga"); }
+		if(this.pid==='ichimaga'){
+			if     (pzlflag==="mag")  { this.puzzle.changepid("ichimagam");}
+			else if(pzlflag==="cross"){ this.puzzle.changepid("ichimagax");}
+			else                      { this.puzzle.changepid("ichimaga"); }
 		}
 
 		this.decodeCellQnum();
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		if     (this.owner.pid==="ichimagam"){ this.datastr+="mag\n";}
-		else if(this.owner.pid==="ichimagax"){ this.datastr+="cross\n";}
-		else                                 { this.datastr+="def\n";}
+		if     (this.pid==="ichimagam"){ this.datastr+="mag\n";}
+		else if(this.pid==="ichimagax"){ this.datastr+="cross\n";}
+		else                           { this.datastr+="def\n";}
 
 		this.encodeCellQnum();
 		this.encodeBorderLine();

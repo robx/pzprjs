@@ -6,11 +6,11 @@ pzpr.classmgr.makeCustom(['juosan'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
 			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -35,7 +35,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 Board:{
@@ -46,7 +46,7 @@ BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURN){ // 回転だけ
 			var tans = {0:0,12:13,13:12};
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				cell.setQans(tans[cell.qans]);
@@ -155,7 +155,7 @@ AnsCheck:{
 		this.checkRowsColsSeparate(this.isParallelCount, function(cell){ return cell.qans;}, "baParaGe3");
 	},
 	checkRowsColsSeparate : function(evalfunc, categoryfunc, code){
-		var result = true, bd = this.owner.board, info;
+		var result = true, bd = this.board, info;
 		allloop: do{
 			/* 横方向サーチ */
 			info = {isvert:false};
@@ -187,7 +187,7 @@ AnsCheck:{
 		
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.cell.setnoerr();
+			this.board.cell.setnoerr();
 		}
 		return result;
 	},
@@ -221,7 +221,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.cell.setnoerr();
+			this.board.cell.setnoerr();
 		}
 	},
 	

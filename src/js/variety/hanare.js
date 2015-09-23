@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['hanare'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart){ this.inputqnum_hanare();}
 				else if(this.mousemove){ this.inputDot();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputDot();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				this.inputborder();
 			}
@@ -54,7 +54,7 @@ MouseEvent:{
 Cell:{
 	setNum_hanare : function(val){
 		if(val>=0){
-			var o=this.owner, rooms=o.board.rooms;
+			var puzzle=this.puzzle, rooms=puzzle.board.rooms;
 			val = rooms.getCntOfRoomByCell(this);
 			if(val>this.getmaxnum()){ return null;}
 
@@ -62,10 +62,10 @@ Cell:{
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].isNum()){ cell2=clist[i]; break;}
 			}
-			if(this===cell2){ val=(o.playmode?-2:-1);}
+			if(this===cell2){ val=(puzzle.playmode?-2:-1);}
 			else if(cell2!==null){
-				if(o.playmode && cell2.qnum!==-1){ return null;}
-				cell2.setNum(o.playmode?-2:-1);
+				if(puzzle.playmode && cell2.qnum!==-1){ return null;}
+				cell2.setNum(puzzle.playmode?-2:-1);
 				cell2.draw();
 			}
 			else{ /* c2===null */
@@ -144,7 +144,7 @@ AnsCheck:{
 
 	checkDiffNumber : function(){
 		var cell, num, distance;
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		function eachcell(cell2){
 			distance++;
 			if(!cell2.isNum()){ /* nop */ }

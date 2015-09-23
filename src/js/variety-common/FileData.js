@@ -234,12 +234,12 @@ FileIO:{
 	encodeAreaRoom : function(){ this.encodeAreaRoom_com(true);},
 	decodeAreaRoom_com : function(isques){
 		this.readLine();
-		this.rdata2Border(isques, this.getItemList(this.owner.board.qrows));
+		this.rdata2Border(isques, this.getItemList(this.board.qrows));
 
-		this.owner.board.rooms.reset();
+		this.board.rooms.reset();
 	},
 	encodeAreaRoom_com : function(isques){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 
 		this.datastr += (rinfo.max+"\n");
 		for(var c=0;c<bd.cellmax;c++){
@@ -251,7 +251,7 @@ FileIO:{
 	// fio.rdata2Border() 入力された配列から境界線を入力する
 	//---------------------------------------------------------------------------
 	rdata2Border : function(isques, rdata){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!==rdata[cell2.id]);
@@ -263,7 +263,7 @@ FileIO:{
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
-		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
+		var bd = this.board, item = this.getItemList(bd.qrows+1);
 		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
 			if(item[i]==="."){ continue;}
@@ -285,7 +285,7 @@ FileIO:{
 		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
-		var bd = this.owner.board, str = "";
+		var bd = this.board, str = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				if     (bx===-1 && by===-1){ str += "0 ";}
@@ -364,7 +364,7 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	UNDECIDED_NUM_XML : -1,
 	decodeCellQnum_XMLBoard : function(){
-		var minnum = (this.owner.board.cell[0].getminnum()>0 ? 1 : 0);
+		var minnum = (this.board.cell[0].getminnum()>0 ? 1 : 0);
 		var undecnum = this.UNDECIDED_NUM_XML;
 		this.decodeCellXMLBoard(function(cell, val){
 			if(val===undecnum)  { cell.qnum = -2;}
@@ -372,7 +372,7 @@ FileIO:{
 		});
 	},
 	encodeCellQnum_XMLBoard : function(){
-		var minnum = (this.owner.board.cell[0].getminnum()>0 ? 1 : 0);
+		var minnum = (this.board.cell[0].getminnum()>0 ? 1 : 0);
 		var undecnum = this.UNDECIDED_NUM_XML;
 		this.encodeCellXMLBoard(function(cell){
 			var val = null;
@@ -430,10 +430,10 @@ FileIO:{
 			rdata.push(+name.substr(1));
 		});
 		this.rdata2Border(true, rdata);
-		this.owner.board.rooms.reset();
+		this.board.rooms.reset();
 	},
 	encodeAreaRoom_XMLBoard : function(){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		this.xmldoc.querySelector('board').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
 		this.encodeCellXMLBrow(function(cell){
 			return 'n'+(rinfo.id[cell.id]>0 ? rinfo.id[cell.id]-1 : -1);

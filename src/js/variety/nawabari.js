@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['nawabari','fourcells','fivecells'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -86,7 +86,7 @@ Cell:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		var odd = (col*row)%(this.owner.pid==='fivecells'?5:4);
+		var odd = (col*row)%(this.pid==='fivecells'?5:4);
 		if(odd>=1){ this.getc(this.minbx+1,this.minby+1).ques=7;}
 		if(odd>=2){ this.getc(this.maxbx-1,this.minby+1).ques=7;}
 		if(odd>=3){ this.getc(this.minbx+1,this.maxby-1).ques=7;}
@@ -106,7 +106,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		if(this.owner.pid==='nawabari'){
+		if(this.pid==='nawabari'){
 			this.drawDashedGrid();
 			this.drawBorders();
 		}
@@ -119,7 +119,7 @@ Graphic:{
 		this.drawNumbers();
 		this.drawBorderQsubs();
 
-		if(this.owner.pid==='nawabari'){ this.drawChassis();}
+		if(this.pid==='nawabari'){ this.drawChassis();}
 
 		this.drawTarget();
 	}
@@ -177,7 +177,7 @@ Encode:{
 
 	// decode/encodeNumber10関数の改造版にします
 	decodeFivecells : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -193,7 +193,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeFivecells : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 
@@ -222,7 +222,7 @@ FileIO:{
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
-		if(this.owner.pid==='fourcells'){ this.filever=1;}
+		if(this.pid==='fourcells'){ this.filever=1;}
 		this.encodeCell( function(cell){
 			if     (cell.ques=== 7){ return "* ";}
 			else if(cell.qnum===-2){ return "- ";}

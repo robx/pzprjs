@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['bag'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if(puzzle.playmode){
 			var inputbg = false;
 			if     (this.mousestart){ inputbg = (!!puzzle.getConfig('bgcolor') && this.inputBGcolor0());}
@@ -59,7 +59,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.qcols+this.owner.board.qrows-1);
+		return Math.min(255, this.board.qcols+this.board.qrows-1);
 	},
 	minnum : 2,
 
@@ -146,16 +146,16 @@ AnsCheck:{
 	],
 
 	checkOutsideNumber : function(){
-		this.owner.board.searchInsideArea();	/* cell.insideを設定する */
+		this.board.searchInsideArea();	/* cell.insideを設定する */
 		this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}, "nmOutside");
 	},
 	checkViewOfNumber : function(icheck){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var cc=0;cc<bd.cellmax;cc++){
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
 
-			var clist = new this.owner.CellList(), adc = cell.adjacent, target;
+			var clist = new this.klass.CellList(), adc = cell.adjacent, target;
 			clist.add(cell);
 			target=adc.left;   while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.left;  }
 			target=adc.right;  while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.right; }

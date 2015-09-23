@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['shimaguni','chocona'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -26,7 +26,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
 	}
 },
 "Cell@chocona":{
@@ -159,7 +159,7 @@ FileIO:{
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var rooms = this.owner.board.rooms;
+		var rooms = this.board.rooms;
 		for(var r=1;r<=rooms.max;r++){
 			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
 			if(clist.isSeqBlock()){ continue;}

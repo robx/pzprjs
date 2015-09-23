@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['loopsp'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputLoopsp();}
 		}
 	},
@@ -107,7 +107,7 @@ BoardExec:{
 				case this.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
 				case this.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
@@ -178,7 +178,7 @@ Encode:{
 	},
 
 	decodeLoopsp : function(){
-		var c=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell = bd.cell[c];
 
@@ -196,7 +196,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeLoopsp : function(){
-		var cm="", pstr="", count=0, bd=this.owner.board;
+		var cm="", pstr="", count=0, bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 			if     (qn===-2)       { pstr = ".";}
@@ -270,7 +270,7 @@ AnsCheck:{
 		}, "lpPlNum");
 	},
 	checkNumberLoop : function(){
-		var boardcell = this.owner.board.cell;
+		var boardcell = this.board.cell;
 		this.checkAllLoops(function(cells){
 			var sublist = cells.filter(function(cell){ return cell.isValidNum();});
 			if(sublist.length===0){ return true;}
@@ -304,7 +304,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 		}
 	}
 },

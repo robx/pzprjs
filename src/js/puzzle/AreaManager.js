@@ -21,7 +21,7 @@ AreaManager:{
 	},
 	init : function(){
 		if(this.enabled){
-			var info = this.owner.board.validinfo;
+			var info = this.board.validinfo;
 			for(var i=0;i<this.relation.length;i++){
 				info[this.relation[i]].push(this);
 				info.all.push(this);
@@ -62,7 +62,7 @@ AreaManager:{
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){ this.id[c] = 0;}
 
 		for(var id=0;id<bd.bdmax;id++){ /* hasborder=0の時はbdmax=0です */
@@ -93,7 +93,7 @@ AreaManager:{
 			
 			// 新たに黒マス(白マス)くっつける場合 => 自分に領域IDを設定するだけ
 			if(isadd && (cidlist.length<=1)){
-				this.assignCell(cell, (cidlist.length===1?this.owner.board.cell[cidlist[0]]:null));
+				this.assignCell(cell, (cidlist.length===1?this.board.cell[cidlist[0]]:null));
 			}
 			// 端の黒マス(白マス)ではなくなった時 => まわりの数が0か1なら情報or自分を消去するだけ
 			else if(isremove && (cidlist.length<=1)){
@@ -109,7 +109,7 @@ AreaManager:{
 		var old = this.linkinfo[cell.id], val = this.calcLinkInfo(cell);
 		var change = [(old^val), 0, 0, 0, 0];
 		
-		if(this.owner.board.hasborder){
+		if(this.board.hasborder){
 			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
 			var cblist=cell.getdir4cblist();
 			for(var i=0;i<cblist.length;i++){
@@ -224,9 +224,9 @@ AreaManager:{
 
 		/* info.popArea() 指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す */
 		/* 周りのセルから、周りのセルを含む領域のセル全体に対象を拡大する */
-		var clist = new this.owner.CellList();
+		var clist = new this.klass.CellList();
 		for(var i=0;i<cidlist.length;i++){
-			var r=this.id[cidlist[i]], bd=this.owner.board;
+			var r=this.id[cidlist[i]], bd=this.board;
 			if(r!==null && r!==0){ clist.extend(this.removeArea(r));}
 			else if(r===null)    { clist.add(bd.cell[cidlist[i]]);}
 		}
@@ -244,14 +244,14 @@ AreaManager:{
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ newid = ++this.max;}
 
-		this.area[newid] = {clist:(new this.owner.CellList())};
+		this.area[newid] = {clist:(new this.klass.CellList())};
 		return newid;
 	},
 	removeArea : function(id){
 		var clist = this.area[id].clist;
 		for(var i=0;i<clist.length;i++){ this.id[clist[i].id] = null;}
 		
-		this.area[id] = {clist:(new this.owner.CellList())};
+		this.area[id] = {clist:(new this.klass.CellList())};
 		this.invalidid.push(id);
 		return clist;
 	},
@@ -263,10 +263,10 @@ AreaManager:{
 	// info.newIrowake()     線の情報が再構築された際、ブロックに色をつける
 	//--------------------------------------------------------------------------------
 	irowakeEnable : function(){
-		return this.owner.flags.irowakeblk;
+		return this.puzzle.flags.irowakeblk;
 	},
 	irowakeValid : function(){
-		return this.owner.getConfig('irowakeblk');
+		return this.puzzle.getConfig('irowakeblk');
 	},
 	getNewColor : function(){
 		return "";
@@ -293,14 +293,14 @@ AreaManager:{
 			if(r===null){ continue;}
 			if(largeid===null || this.area[largeid].clist.length < this.area[r].clist.length){
 				largeid = r;
-				longColor = this.owner.board.cell[cidlist[i]].color;
+				longColor = this.board.cell[cidlist[i]].color;
 			}
 		}
 		return (!!longColor ? longColor : this.getNewColor());
 	},
 	setLongColor : function(assign, longColor){
 		/* assign:影響のあったareaidの配列 */
-		var clist_all = new this.owner.CellList();
+		var clist_all = new this.klass.CellList();
 		
 		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
 		// それ以外の線には新しい色を付加する
@@ -320,7 +320,7 @@ AreaManager:{
 			clist_all.extend(clist);
 		}
 		
-		if(this.irowakeValid()){ this.owner.painter.repaintBlocks(clist_all);}
+		if(this.irowakeValid()){ this.puzzle.painter.repaintBlocks(clist_all);}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ AreaManager:{
 
 			var cidlist = this.getLinkCell(cell);
 			for(var i=0;i<cidlist.length;i++){
-				if(this.id[cidlist[i]]===0){ stack.push(this.owner.board.cell[cidlist[i]]);}
+				if(this.id[cidlist[i]]===0){ stack.push(this.board.cell[cidlist[i]]);}
 			}
 		}
 	},
@@ -361,7 +361,7 @@ AreaManager:{
 	// info.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getAreaInfo : function(){
-		var bd = this.owner.board, info = new this.owner.AreaInfo();
+		var bd = this.board, info = new this.klass.AreaInfo();
 		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -413,14 +413,14 @@ AreaManager:{
 		if(!this.enabled){ return;}
 
 		/* 外枠のカウントをあらかじめ足しておく */
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
 			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
 			cross.lcnt = (ischassis?2:0);
 		}
 
-		this.owner.AreaManager.prototype.rebuild.call(this);
+		this.klass.AreaManager.prototype.rebuild.call(this);
 
 		if(this.enabled && this.hastop){ this.resetRoomNumber();}
 	},
@@ -435,7 +435,7 @@ AreaManager:{
 			if(!cross1.isnull){ cross1.lcnt += (isbd?1:-1);}
 			if(!cross2.isnull){ cross2.lcnt += (isbd?1:-1);}
 			this.separate[border.id]=isbd;
-			if(border.id<this.owner.board.bdinside){ return true;}
+			if(border.id<this.board.bdinside){ return true;}
 		}
 		return false;
 	},
@@ -445,7 +445,7 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	checkExecSearch : function(border){
-		if(!this.owner.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
+		if(!this.klass.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
 
 		// 途切れた線だったとき
 		var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
@@ -464,7 +464,7 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	searchSingle : function(cell, newid){
-		this.owner.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		this.klass.AreaManager.prototype.searchSingle.call(this, cell, newid);
 
 		if(this.hastop){
 			this.area[newid].top = this.area[newid].clist.getTopCell();
@@ -536,8 +536,9 @@ AreaManager:{
 'AreaLineManager:AreaManager':{
 	initialize : function(){
 		this.bdcnt = [];		// セルの周りの領域を分断する境界線の数
+		this.SuperClass = this.puzzle.klass.AreaManager.prototype;
 
-		this.owner.AreaManager.prototype.initialize.call(this);
+		this.SuperClass.initialize.call(this);
 	},
 	relation : ['cell', 'line'],
 	isvalid : function(cell){ return (this.bdcnt[cell.id]<4 || (this.moveline && cell.isNum()));},
@@ -552,13 +553,13 @@ AreaManager:{
 	reset : function(){
 		this.bdcnt = [];
 
-		this.owner.AreaManager.prototype.reset.call(this);
+		this.SuperClass.reset.call(this);
 	},
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
 		/* 外枠のカウントをあらかじめ足しておく */
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var bx=bd.cell[c].bx, by=bd.cell[c].by;
 			this.bdcnt[c]=0;
@@ -566,7 +567,7 @@ AreaManager:{
 			if(by===bd.minby+1||by===bd.maxby-1){ this.bdcnt[c]++;}
 		}
 
-		this.owner.AreaManager.prototype.rebuild.call(this);
+		this.SuperClass.rebuild.call(this);
 
 		if(this.moveline){ this.resetMovedBase();}
 	},
@@ -581,7 +582,7 @@ AreaManager:{
 			if(cc1!==null){ this.bdcnt[cc1]+=(isbd?1:-1);}
 			if(cc2!==null){ this.bdcnt[cc2]+=(isbd?1:-1);}
 			this.separate[border.id]=isbd;
-			if(border.id<this.owner.board.bdinside){ return true;}
+			if(border.id<this.board.bdinside){ return true;}
 		}
 		return false;
 	},
@@ -590,7 +591,7 @@ AreaManager:{
 	// linfo.setCell()        黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
 	//--------------------------------------------------------------------------------
 	setCell : function(cell){
-		this.owner.AreaManager.prototype.setCell.call(this, cell);
+		this.SuperClass.setCell.call(this, cell);
 
 		var newid = this.id[cell.id];
 		if(this.moveline && newid!==null){ this.setMovedBase(newid);}
@@ -609,13 +610,13 @@ AreaManager:{
 	//--------------------------------------------------------------------------------
 	// オーバーライド
 	assignCell : function(cell, cell2){
-		this.owner.AreaManager.prototype.assignCell.call(this, cell, cell2);
+		this.SuperClass.assignCell.call(this, cell, cell2);
 
 		/* AreaLineManagerではCell入力で他とくっつくことはないので、cell2===nullとして考える */
 		if(this.moveline){ this.setMovedBase(this.id[cell.id]);}
 	},
 	removeCell : function(cell){
-		this.owner.AreaManager.prototype.removeCell.call(this, cell);
+		this.SuperClass.removeCell.call(this, cell);
 
 		if(this.moveline){ this.initMovedBase([cell]);}
 	},
@@ -629,10 +630,10 @@ AreaManager:{
 		/* searchSingleにはIDがついた領域しかこないので、先にbaseを初期値にする */
 		if(this.moveline){ this.initMovedBase(clist);}
 
-		this.owner.AreaManager.prototype.searchIdlist.call(this, clist);
+		this.SuperClass.searchIdlist.call(this, clist);
 	},
 	searchSingle : function(cell, newid){
-		this.owner.AreaManager.prototype.searchSingle.call(this, cell, newid);
+		this.SuperClass.searchSingle.call(this, cell, newid);
 
 		if(this.moveline){ this.setMovedBase(newid);}
 	},
@@ -643,16 +644,16 @@ AreaManager:{
 	// linfo.setMovedBase()    指定された領域の移動情報を設定する
 	//--------------------------------------------------------------------------------
 	resetMovedBase : function(){
-		this.initMovedBase(this.owner.board.cell);
+		this.initMovedBase(this.board.cell);
 		for(var r=1;r<=this.max;r++){ this.setMovedBase(r);}
 	},
 	initMovedBase : function(clist){
 		for(var i=0;i<clist.length;i++){
-			clist[i].base = ((this.id[clist[i].id]!==null && clist[i].isNum()) ? clist[i] : this.owner.board.emptycell);
+			clist[i].base = ((this.id[clist[i].id]!==null && clist[i].isNum()) ? clist[i] : this.board.emptycell);
 		}
 	},
 	setMovedBase : function(areaid){
-		var area = this.area[areaid], emptycell = this.owner.board.emptycell;
+		var area = this.area[areaid], emptycell = this.board.emptycell;
 		area.departure = area.destination = emptycell;
 		area.movevalid = false;
 		
@@ -688,7 +689,7 @@ AreaManager:{
 		if(this.id[cell.id]===null){ return;}
 		var clist = this.getClistByCell(cell), count = 0;
 		for(var i=0,len=clist.length;i<len;i++){ for(var j=i+1;j<len;j++){
-			var border = this.owner.mouse.getnb(clist[i].getaddr(), clist[j].getaddr());
+			var border = this.puzzle.mouse.getnb(clist[i].getaddr(), clist[j].getaddr());
 			if(!border.isnull){ border.removeLine(); count++;}
 		}}
 		if(count>0){ clist.draw();}
@@ -716,11 +717,11 @@ AreaInfo:{
 	//---------------------------------------------------------------------------
 	addArea : function(){
 		var areaid = ++this.max;
-		return (this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid});
+		return (this.area[areaid] = {clist:(new this.klass.CellList()), id:areaid});
 	},
 	addAreaByClist : function(clist){
 		var areaid = ++this.max;
-		var area = this.area[areaid] = {clist:(new this.owner.CellList()), id:areaid};
+		var area = this.area[areaid] = {clist:(new this.klass.CellList()), id:areaid};
 
 		for(var i=0;i<clist.length;i++){
 			this.id[clist[i].id] = areaid;
@@ -733,7 +734,7 @@ AreaInfo:{
 	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
 	//---------------------------------------------------------------------------
 	getSideAreaInfo : function(){
-		var adjs=[], sides=[], max=this.max, bd=this.owner.board;
+		var adjs=[], sides=[], max=this.max, bd=this.board;
 		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
 
 		for(var id=0;id<bd.bdmax;id++){
@@ -764,12 +765,12 @@ AreaInfo:{
 	},
 	setErrLareaById : function(areaid, val){
 		var self = this;
-		this.owner.board.border.filter(function(border){
+		this.board.border.filter(function(border){
 			var cc1 = border.sidecell[0].id, cc2 = border.sidecell[1].id;
 			return (border.isLine() && self.id[cc1]===areaid && self.id[cc2]===areaid);
 		}).seterr(val);
 
-		this.owner.board.cell.filter(function(cell){
+		this.board.cell.filter(function(cell){
 			return (self.id[cell.id]===areaid && cell.isNum());
 		}).seterr(4);
 	}

@@ -8,10 +8,10 @@ MouseEvent:{
 	RBShadeCell : true,
 
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -29,16 +29,16 @@ Cell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		return Math.max(this.owner.board.qcols,this.owner.board.qrows);
+		return Math.max(this.board.qcols,this.board.qrows);
 	},
 
 	posthook : {
-		qnum : function(num){ this.owner.board.setInfoByCell(this); this.redDisp();},
-		qans : function(num){ this.owner.board.setInfoByCell(this); this.redDisp();}
+		qnum : function(num){ this.board.setInfoByCell(this); this.redDisp();},
+		qans : function(num){ this.board.setInfoByCell(this); this.redDisp();}
 	},
 
 	redDisp : function(){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		if(puzzle.getConfig('autoerr')){
 			puzzle.painter.paintRange(bd.minbx-1, this.by-1, bd.maxbx+1, this.by+1);
 			puzzle.painter.paintRange(this.bx-1, bd.minby-1, this.bx+1, bd.maxby+1);
@@ -83,9 +83,9 @@ Graphic:{
 	},
 
 	drawNumbers_hitori : function(){
-		var puzzle=this.owner, bd=puzzle.board, chk=puzzle.checker;
+		var puzzle=this.puzzle, bd=puzzle.board, chk=puzzle.checker;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
-			var pt = puzzle.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
+			var pt = puzzle.klass.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
 			chk.inCheck = true;
 			chk.checkOnly = false;
 			chk.failcode = {add:function(){}};
@@ -119,7 +119,7 @@ Encode:{
 	},
 
 	decodeHitori : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -134,7 +134,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeHitori : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn= bd.cell[c].qnum;
 
@@ -152,10 +152,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen_hitori();
+		this.puzzle.fio.decodeCellQnum_kanpen_hitori();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen_hitori();
+		this.puzzle.fio.encodeCellQnum_kanpen_hitori();
 	}
 },
 //---------------------------------------------------------

@@ -191,12 +191,12 @@ Graphic:{
 		}
 	},
 	initCanvasCheck : function(){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		return  (!puzzle.canvas    || !!puzzle.canvas.getContext   ) &&
 				(!puzzle.subcanvas || !!puzzle.subcanvas.getContext);
 	},
 	initCanvas_main : function(callback){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		this.context    = (!!puzzle.canvas    ? puzzle.canvas.getContext("2d")    : null);
 		this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
 
@@ -218,7 +218,7 @@ Graphic:{
 	// pc.setColor()    描画色の設定を行う
 	//---------------------------------------------------------------------------
 	initColor : function(){
-		var configlist = this.owner.config.list;
+		var configlist = this.puzzle.config.list;
 		for(var key in configlist){
 			if(key.substr(0,6)==="color_"){ this.setColor(key.substr(6), configlist[key].val);}
 		}
@@ -273,7 +273,7 @@ Graphic:{
 		this.setOffset();
 
 		// Listener呼び出し
-		this.owner.execListener('resize');
+		this.puzzle.execListener('resize');
 
 		// contextのclear等を呼び出す
 		this.clearObject();
@@ -284,7 +284,7 @@ Graphic:{
 		var cols = this.getCanvasCols(), rows = this.getCanvasRows();
 		var cw = (cwid/cols)|0, ch = (chgt/rows)|0;
 
-		if(this.owner.getConfig('squarecell')){
+		if(this.puzzle.getConfig('squarecell')){
 			this.cw = this.ch = Math.min(cw,ch);
 		}
 		else{
@@ -339,21 +339,21 @@ Graphic:{
 	},
 
 	getBoardCols : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		return (bd.maxbx-bd.minbx)/2;
 	},
 	getBoardRows : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		return (bd.maxby-bd.minby)/2;
 	},
 
 	getOffsetCols : function(){
 		/* 右にずらしたい分プラス、左にずらしたい分マイナス */
-		return (0-this.owner.board.minbx)/2;
+		return (0-this.board.minbx)/2;
 	},
 	getOffsetRows : function(){
 		/* 下にずらしたい分プラス、上にずらしたい分マイナス */
-		return (0-this.owner.board.minby)/2;
+		return (0-this.board.minby)/2;
 	},
 
 	//---------------------------------------------------------------------------
@@ -381,7 +381,7 @@ Graphic:{
 		}
 		
 		if(this.suspendedAll){
-			var bd = this.owner.board;
+			var bd = this.board;
 			this.setRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 			this.suspendedAll = false;
 		}
@@ -404,7 +404,7 @@ Graphic:{
 	prepaint : function(){
 		if(this.suspended || !this.context){ return;}
 
-		var bd = this.owner.board, bm=2*this.margin,
+		var bd = this.board, bm=2*this.margin,
 			x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
 		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-bm){
@@ -442,23 +442,23 @@ Graphic:{
 		if(this.range.y2 < y2){ this.range.y2 = y2;}
 	},
 	setRangeObject : function(x1,y1,x2,y2){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.range.cells   = bd.cellinside(x1,y1,x2,y2);
 		this.range.crosses = bd.crossinside(x1,y1,x2,y2);
 		this.range.borders = bd.borderinside(x1,y1,x2,y2);
 		this.range.excells = bd.excellinside(x1,y1,x2,y2);
 	},
 	resetRange : function(){
-		var o = this.owner, bd = o.board;
+		var puzzle = this.puzzle, bd = puzzle.board, classes = puzzle.klass;
 		this.range = {
 			x1 : bd.maxbx+1,
 			y1 : bd.maxby+1,
 			x2 : bd.minbx-1,
 			y2 : bd.minby-1,
-			cells   : (new o.CellList()),
-			crosses : (new o.CrossList()),
-			borders : (new o.BorderList()),
-			excells : (new o.EXCellList())
+			cells   : (new classes.CellList()),
+			crosses : (new classes.CrossList()),
+			borders : (new classes.BorderList()),
+			excells : (new classes.EXCellList())
 		};
 	},
 
@@ -472,7 +472,7 @@ Graphic:{
 	},
 	paintAll : function(){
 		if(this.suspended){ this.suspendedAll = true;}
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.paintRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);
 	},
 
@@ -549,7 +549,7 @@ Graphic:{
 			bheight = Math.min(d.y2, g.canvas.clientHeight/bh) - minby;
 		}
 		else{
-			var bd = this.owner.board;
+			var bd = this.board;
 			minbx   = bd.minbx;
 			minby   = bd.minby;
 			bwidth  = bd.maxbx - minbx;
@@ -585,7 +585,7 @@ Graphic:{
 		var g = this.context;
 
 		var style = (option.style ? option.style+" " : "");
-		var fontfamily = (this.owner.getConfig('font')===1 ? 'sans-serif' : 'serif');
+		var fontfamily = (this.puzzle.getConfig('font')===1 ? 'sans-serif' : 'serif');
 		var ratioarray = option.ratio || this.fontsizeratio;
 		var ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);

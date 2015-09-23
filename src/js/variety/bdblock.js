@@ -6,13 +6,13 @@ pzpr.classmgr.makeCustom(['bdblock'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if     (this.mousestart){ this.inputcrossMark();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -116,8 +116,8 @@ AnsCheck:{
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(){
-		var d=[], dmax=0, val=[], bd=this.owner.board;
-		var rinfo = this.owner.board.getRoomInfo();
+		var d=[], dmax=0, val=[], bd=this.board;
+		var rinfo = this.board.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
 		for(var i=0;i<=dmax;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){

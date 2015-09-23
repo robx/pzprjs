@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['tentaisho'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left && this.isBorderMode()){ this.inputborder_tentaisho();}
 				else{ this.inputQsubLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart && this.btn.Left){
 				this.inputstar();
 			}
@@ -32,7 +32,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
-		if(pzpr.EDITOR && this.owner.getConfig('discolor')){ return;}
+		if(pzpr.EDITOR && this.puzzle.getConfig('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
 		var star = pos.gets();
@@ -40,7 +40,7 @@ MouseEvent:{
 
 		var cell = star.validcell();
 		if(cell!==null){
-			var clist = this.owner.board.rooms.getClistByCell(cell);
+			var clist = this.board.rooms.getClistByCell(cell);
 			if(clist.encolor()){ clist.draw();}
 		}
 	},
@@ -129,9 +129,9 @@ Star:{
 		return this.piece.qnum;
 	},
 	setStar : function(val){
-		this.owner.opemgr.disCombine = true;
+		this.puzzle.opemgr.disCombine = true;
 		this.piece.setQnum(val);
-		this.owner.opemgr.disCombine = false;
+		this.puzzle.opemgr.disCombine = false;
 	},
 	iserror : function(){
 		return (this.piece.error>0);
@@ -150,17 +150,17 @@ Star:{
 	},
 
 	draw : function(){
-		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+		this.puzzle.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 	getaddr : function(){
-		return (new this.owner.Address(this.bx, this.by));
+		return (new this.klass.Address(this.bx, this.by));
 	}
 },
 Address:{
-	gets : function(){ return this.owner.board.gets(this.bx, this.by);}
+	gets : function(){ return this.board.gets(this.bx, this.by);}
 },
 TargetCursor:{
-	gets : function(){ return this.owner.board.gets(this.bx, this.by);}
+	gets : function(){ return this.board.gets(this.bx, this.by);}
 },
 CellList:{
 	encolor : function(){
@@ -180,7 +180,7 @@ CellList:{
 		var ret = {star:null, err:-1};
 		for(var i=0;i<this.length;i++){
 			var cell=this[i];
-			var slist = this.owner.board.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
+			var slist = this.board.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
 			for(var n=0;n<slist.length;n++){
 				var star=slist[n];
 				if(star.getStar()>0 && star.validcell()!==null){
@@ -216,7 +216,7 @@ Board:{
 		this.starmax = (2*col-1)*(2*row-1);
 		this.star = [];
 		for(var id=0;id<this.starmax;id++){
-			this.star[id] = new this.owner.Star();
+			this.star[id] = new this.klass.Star();
 			var star = this.star[id];
 			star.id = id;
 			star.isnull = false;
@@ -235,7 +235,7 @@ Board:{
 		return (id!==null ? this.star[id] : null);
 	},
 	starinside : function(x1,y1,x2,y2){
-		var slist = new this.owner.PieceList();
+		var slist = new this.klass.PieceList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			var star = this.gets(bx,by);
 			if(star!==null){ slist.add(star);}
@@ -247,7 +247,7 @@ Board:{
 	encolorall : function(){
 		var rinfo = this.getRoomInfo();
 		for(var id=1;id<=rinfo.max;id++){ rinfo.area[id].clist.encolor();}
-		this.owner.redraw();
+		this.puzzle.redraw();
 	},
 
 	// 領域と入っている星を取得する関数
@@ -263,7 +263,7 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData2 : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.initStar(bd.qcols, bd.qrows);
 	}
 },
@@ -303,7 +303,7 @@ Graphic:{
 
 		g.lineWidth = Math.max(this.cw*0.04, 1);
 		var d = this.range;
-		var slist = this.owner.board.starinside(d.x1,d.y1,d.x2,d.y2);
+		var slist = this.board.starinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<slist.length;i++){
 			var star = slist[i], bx=star.bx, by=star.by;
 
@@ -325,7 +325,7 @@ Graphic:{
 	},
 
 	drawTarget_tentaisho : function(){
-		this.drawCursor(false,this.owner.editmode);
+		this.drawCursor(false,this.puzzle.editmode);
 	}
 },
 
@@ -340,14 +340,14 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeStarFile();
+		this.puzzle.fio.decodeStarFile();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeStarFile();
+		this.puzzle.fio.encodeStarFile();
 	},
 
 	decodeStar : function(bstr){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.disableInfo();
 		var s=0, bstr = this.outbstr;
 		for(var i=0;i<bstr.length;i++){
@@ -365,7 +365,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeStar : function(){
-		var count = 0, cm = "", bd = this.owner.board;
+		var count = 0, cm = "", bd = this.board;
 		for(var s=0;s<bd.starmax;s++){
 			var pstr = "", star = bd.star[s];
 			if(star.getStar()>0){
@@ -411,7 +411,7 @@ FileIO:{
 	},
 
 	decodeStarFile : function(){
-		var bd = this.owner.board, array = this.readLines(2*bd.qrows-1), s=0;
+		var bd = this.board, array = this.readLines(2*bd.qrows-1), s=0;
 		bd.disableInfo();
 		for(var i=0;i<array.length;i++){
 			for(var c=0;c<array[i].length;c++){
@@ -424,7 +424,7 @@ FileIO:{
 		bd.enableInfo();
 	},
 	encodeStarFile : function(){
-		var bd = this.owner.board, s=0;
+		var bd = this.board, s=0;
 		for(var by=1;by<=2*bd.qrows-1;by++){
 			for(var bx=1;bx<=2*bd.qcols-1;bx++){
 				var star = bd.star[s];
@@ -455,13 +455,13 @@ FileIO:{
 		var nodes = this.xmldoc.querySelectorAll('board number');
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
-			var star = this.owner.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
+			var star = this.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
 			if(star!==null){ star.setStar(+node.getAttribute('n'));}
 		}
 	},
 	encodeStar_XMLBoard : function(){
 		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s], val = star.getStar();
 			if(val>0){
@@ -476,10 +476,10 @@ FileIO:{
 			else{ rdata.push(+name.substr(1)+1);}
 		});
 		this.rdata2Border(false, rdata);
-		this.owner.board.rooms.reset();
+		this.board.rooms.reset();
 	},
 	encodeAnsAreaRoom_XMLAnswer : function(){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		var bd = this.board, rinfo = bd.getRoomInfo();
 		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
 		this.encodeCellXMLArow(function(cell){
 			return (rinfo.id[cell.id]>0 ? 'n'+(rinfo.id[cell.id]-1) : 'u');
@@ -498,11 +498,11 @@ AnsCheck:{
 	],
 
 	getStarAreaInfo : function(){
-		return (this._info.sarea = this._info.sarea || this.owner.board.getAreaStarInfoAll());
+		return (this._info.sarea = this._info.sarea || this.board.getAreaStarInfoAll());
 	},
 
 	checkStarOnLine : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s];
 			if(star.getStar()<=0 || star.validcell()!==null){ continue;}
@@ -525,7 +525,7 @@ AnsCheck:{
 			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				var cell2 = this.owner.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
+				var cell2 = this.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
 				if(!cell2.isnull && rinfo.getRoomID(cell)===rinfo.getRoomID(cell2)){ continue;}
 				
 				this.failcode.add("bkNotSymSt");

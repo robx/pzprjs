@@ -6,11 +6,11 @@ pzpr.classmgr.makeCustom(['kouchoku'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputsegment();}
 			else if(this.mouseend){ this.inputsegment_up();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputcross_kouchoku();}
 		}
 	},
@@ -37,7 +37,7 @@ MouseEvent:{
 	inputsegment_up : function(){
 		if(this.inputData!==1){ return;}
 
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
 		this.targetPoint = [null, null];
 		if(cross1!==null){ cross1.draw();}
@@ -60,7 +60,7 @@ MouseEvent:{
 		else if(bx1===bx2 && by1 > by2) { tmp=by1;by1=by2;by2=tmp;}
 		else if(bx1===bx2 && by1===by2) { return;}
 
-		var bd = this.owner.board, id = bd.getSegment(bx1,by1,bx2,by2);
+		var bd = this.board, id = bd.getSegment(bx1,by1,bx2,by2);
 		if(id===null){ bd.addSegmentByAddr(bx1,by1,bx2,by2);}
 		else         { bd.removeSegment(id);}
 	},
@@ -99,7 +99,7 @@ MouseEvent:{
 	},
 	mouseout_kouchoku : function(e){
 		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
-		var pos = pzpr.util.getPagePos(e), rect=pzpr.util.getRect(this.owner.canvas);
+		var pos = pzpr.util.getPagePos(e), rect=pzpr.util.getRect(this.puzzle.canvas);
 		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
@@ -149,7 +149,7 @@ Cross:{
 	maxnum : 26,
 
 	initialize : function(){
-		this.seglist = new this.owner.SegmentList();
+		this.seglist = new this.klass.SegmentList();
 	}
 },
 
@@ -164,7 +164,7 @@ Board:{
 
 		this.common.initialize.call(this);
 
-		this.seginfo = this.addInfoList(this.owner.SegmentManager);
+		this.seginfo = this.addInfoList(this.klass.SegmentManager);
 	},
 
 	initBoardSize : function(col,row){
@@ -177,10 +177,10 @@ Board:{
 
 	initSegmentGroup : function(){
 		if(!!this.segment){
-			var pc = this.owner.painter;
+			var pc = this.puzzle.painter;
 			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
 		}
-		this.segment = new this.owner.SegmentList();
+		this.segment = new this.klass.SegmentList();
 		this.segmax = 0;
 		this.seginvalid = [];
 	},
@@ -212,7 +212,7 @@ Board:{
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
-		var seg = new this.owner.Segment(bx1,by1,bx2,by2), lattice = [];
+		var seg = new this.klass.Segment(bx1,by1,bx2,by2), lattice = [];
 		for(var i=0;i<seg.lattices.length;i++){
 			var xc = seg.lattices[i][2];
 			if(xc!==null && this.cross[xc].qnum!==-1){ lattice.push(xc);}
@@ -226,7 +226,7 @@ Board:{
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
 
-		var pseudoSegment = new this.owner.Segment(x1,y1,x2,y2);
+		var pseudoSegment = new this.klass.Segment(x1,y1,x2,y2);
 		return this.segment.filter(function(seg){
 			if(seg.isAreaOverLap(pseudoSegment)){
 				var cnt=0;
@@ -250,7 +250,7 @@ Board:{
 		if(this.seginvalid.length>0){ newsegid = this.seginvalid.shift();}
 		else{ newsegid = this.segmax++; this.segment.length++;}
 		
-		var seg = new this.owner.Segment(bx1,by1,bx2,by2);
+		var seg = new this.klass.Segment(bx1,by1,bx2,by2);
 		seg.id = newsegid;
 		this.segment[newsegid] = seg;
 		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg, true);}
@@ -262,10 +262,10 @@ Board:{
 	removeSegment : function(seg){
 		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg, false);}
 		seg.addOpe(1, 0);
-		this.owner.painter.eraseSegment1(seg);
+		this.puzzle.painter.eraseSegment1(seg);
 		
 		this.seginvalid.push(seg.id);
-		this.segment[seg.id] = new this.owner.Segment();
+		this.segment[seg.id] = new this.klass.Segment();
 	},
 
 	//---------------------------------------------------------------------------
@@ -285,9 +285,9 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		var bd=this.owner.board, bexec=this;
+		var bd=this.board, bexec=this;
 		if(key & this.REDUCE){
-			var sublist=new this.owner.SegmentList();
+			var sublist=new this.klass.SegmentList();
 			bd.segment.each(function(seg){
 				var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 				switch(key){
@@ -298,7 +298,7 @@ BoardExec:{
 				}
 			});
 
-			var opemgr = this.owner.opemgr, isrec = (!opemgr.undoExec && !opemgr.redoExec);
+			var opemgr = this.puzzle.opemgr, isrec = (!opemgr.undoExec && !opemgr.redoExec);
 			if(isrec){ opemgr.forceRecord = true;}
 			for(var i=0;i<sublist.length;i++){ bd.removeSegment(sublist[i]);}
 			if(isrec){ opemgr.forceRecord = false;}
@@ -306,7 +306,7 @@ BoardExec:{
 	},
 	adjustBoardData2 : function(key,d){
 		var bexec=this, xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		this.owner.board.segment.each(function(seg){
+		this.board.segment.each(function(seg){
 			var bx1=seg.bx1, by1=seg.by1, bx2=seg.bx2, by2=seg.by2;
 			switch(key){
 				case bexec.FLIPY: seg.setpos(bx1,yy-by1,bx2,yy-by2); break;
@@ -331,7 +331,7 @@ BoardExec:{
 
 	getRange : function(){
 		if(this.length===0){ return null;}
-		var bd = this.owner.board;
+		var bd = this.board;
 		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
 		for(var i=0;i<this.length;i++){
 			var seg=this[i];
@@ -378,11 +378,11 @@ BoardExec:{
 	},
 
 	exec : function(num){
-		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, o=this.owner, tmp;
-		if     (num===1){ o.board.addSegmentByAddr   (bx1,by1,bx2,by2);}
-		else if(num===0){ o.board.removeSegmentByAddr(bx1,by1,bx2,by2);}
+		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, puzzle=this.puzzle, tmp;
+		if     (num===1){ puzzle.board.addSegmentByAddr   (bx1,by1,bx2,by2);}
+		else if(num===0){ puzzle.board.removeSegmentByAddr(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
-		o.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
+		puzzle.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
 },
 
@@ -390,7 +390,7 @@ OperationManager:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.operationlist.push(this.owner.SegmentOperation);
+		this.operationlist.push(this.klass.SegmentOperation);
 	}
 },
 
@@ -431,7 +431,7 @@ Graphic:{
 	},
 
 	drawSegments : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.vinc('segment', 'auto');
 
 		var seglist = bd.segment;
@@ -456,7 +456,7 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.owner.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
+			else if(!this.puzzle.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
 			else{ g.strokeStyle = seg.color;}
 
 			var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
@@ -469,7 +469,7 @@ Graphic:{
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto', true);
 
-		var isgray = this.owner.execConfig('autocmp');
+		var isgray = this.puzzle.execConfig('autocmp');
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		g.lineWidth = 1;
 
@@ -518,8 +518,8 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
 			g.vid = "x_point_"+cross.id;
-			if(this.owner.mouse.targetPoint[0]===cross ||
-			   this.owner.mouse.targetPoint[1]===cross){
+			if(this.puzzle.mouse.targetPoint[0]===cross ||
+			   this.puzzle.mouse.targetPoint[1]===cross){
 				g.strokeCircle(cross.bx*this.bw, cross.by*this.bh, csize);
 			}
 			else{ g.vhide();}
@@ -538,7 +538,7 @@ Encode:{
 	},
 
 	decodeCrossABC : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cross = bd.cross[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"a","z")){ cross.qnum = parseInt(ca,36)-9;}
@@ -551,7 +551,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeCrossABC : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
@@ -582,11 +582,11 @@ FileIO:{
 		var len = +this.readLine();
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
-			this.owner.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);
+			this.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);
 		}
 	},
 	encodeSegment : function(){
-		var fio = this, seglist = this.owner.board.segment.filter(function(seg){ return (seg.id!==null);});
+		var fio = this, seglist = this.board.segment.filter(function(seg){ return (seg.id!==null);});
 		this.datastr += (seglist.length+"\n");
 		seglist.each(function(seg){
 			fio.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
@@ -612,7 +612,7 @@ AnsCheck:{
 	],
 
 	checkSegmentExist : function(){
-		if(this.owner.board.segment.length===0){ this.failcode.add("brNoLine");}
+		if(this.board.segment.length===0){ this.failcode.add("brNoLine");}
 	},
 
 	checkAlonePoint : function(){
@@ -628,7 +628,7 @@ AnsCheck:{
 		this.checkSegment(function(cross){ return (cross.seglist.length===1);}, "lnDeadEnd");
 	},
 	checkSegment : function(func, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c];
 			if(!func(cross)){ continue;}
@@ -644,7 +644,7 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(){
-		var bd = this.owner.board, validcount = 0;
+		var bd = this.board, validcount = 0;
 		for(var r=1;r<=bd.seginfo.linemax;r++){
 			if(bd.seginfo.seglist[r].length===0){ continue;}
 			validcount++;
@@ -658,7 +658,7 @@ AnsCheck:{
 	},
 
 	checkSegmentOverPoint : function(){
-		var result = true, bd = this.owner.board, seglist = bd.segment;
+		var result = true, bd = this.board, seglist = bd.segment;
 		seglist.each(function(seg){
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
 			for(var n=0;n<lattice.length;n++){
@@ -674,7 +674,7 @@ AnsCheck:{
 	},
 
 	checkDifferentLetter : function(){
-		var result = true, bd = this.owner.board, seglist = bd.segment;
+		var result = true, bd = this.board, seglist = bd.segment;
 		seglist.each(function(seg){
 			var cross1=seg.cross1, cross2=seg.cross2;
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
@@ -691,7 +691,7 @@ AnsCheck:{
 	},
 
 	checkConsequentLetter : function(){
-		var count = {}, qnlist = [], bd = this.owner.board;
+		var count = {}, qnlist = [], bd = this.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
 		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
 		for(var c=0;c<bd.crossmax;c++){
@@ -722,7 +722,7 @@ AnsCheck:{
 	},
 
 	checkDuplicateSegment : function(){
-		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		var result = true, seglist = this.board.segment, len = seglist.length;
 		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
@@ -740,7 +740,7 @@ AnsCheck:{
 	},
 
 	checkRightAngle : function(seglist){
-		var result = true, seglist = this.owner.board.segment, len = seglist.length;
+		var result = true, seglist = this.board.segment, len = seglist.length;
 		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=seglist[i], seg2=seglist[j];
@@ -797,8 +797,8 @@ Segment:{
 		this.setpos(bx1,by1,bx2,by2);
 	},
 	setpos : function(bx1,by1,bx2,by2){
-		this.cross1 = this.owner.board.getx(bx1,by1);
-		this.cross2 = this.owner.board.getx(bx2,by2);
+		this.cross1 = this.board.getx(bx1,by1);
+		this.cross2 = this.board.getx(bx2,by2);
 
 		this.bx1 = bx1;
 		this.by1 = by1;
@@ -822,7 +822,7 @@ Segment:{
 		for(var a=1;a<div;a++){
 			var bx=this.bx1+this.dx*(a/div);
 			var by=this.by1+this.dy*(a/div);
-			var cross=this.owner.board.getx(bx,by);
+			var cross=this.board.getx(bx,by);
 			this.lattices.push([bx,by,cross.id]);
 		}
 	},
@@ -832,14 +832,14 @@ Segment:{
 	},
 
 	seterr : function(num){
-		if(this.owner.board.isenableSetError()){ this.error = num;}
+		if(this.board.isenableSetError()){ this.error = num;}
 	},
 
 	//---------------------------------------------------------------------------
 	// addOpe()  履歴情報にプロパティの変更を通知する
 	//---------------------------------------------------------------------------
 	addOpe : function(old, num){
-		this.owner.opemgr.add(new this.owner.SegmentOperation(this, old, num));
+		this.puzzle.opemgr.add(new this.klass.SegmentOperation(this, old, num));
 	},
 
 	//---------------------------------------------------------------------------
@@ -930,7 +930,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.invalidid = [];
 	},
 	init : function(){
-		this.owner.board.validinfo.all.push(this);
+		this.board.validinfo.all.push(this);
 	},
 
 	typeA : 'A',
@@ -948,9 +948,9 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		this.linemax = 0;
 		this.invalidid = [];
 
-		var o = this.owner, bd=o.board;
+		var puzzle = this.puzzle, bd=puzzle.board;
 		for(var c=0,len=bd.crossmax;c<len;c++){
-			bd.cross[c].seglist=new o.SegmentList();
+			bd.cross[c].seglist=new puzzle.klass.SegmentList();
 		}
 
 		this.rebuild();
@@ -958,8 +958,8 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	rebuild : function(){
 		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
 
-		var seglist = new this.owner.SegmentList(), seginfo = this;
-		this.owner.board.segment.each(function(seg){
+		var seglist = new this.klass.SegmentList(), seginfo = this;
+		this.board.segment.each(function(seg){
 			seginfo.lineid[seg.id] = 0;
 			seglist.add(seg);
 
@@ -968,13 +968,13 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		});
 		this.searchLine(seglist);
 
-		// if(this.owner.flags.irowake){ this.newIrowake();} irowake==trueなので削除
+		// if(this.puzzle.flags.irowake){ this.newIrowake();} irowake==trueなので削除
 		this.newIrowake();
 	},
 	newIrowake : function(){
 		for(var i=1;i<=this.linemax;i++){
 			if(this.seglist[i].length>0){
-				var newColor = this.owner.painter.getNewLineColor();
+				var newColor = this.puzzle.painter.getNewLineColor();
 				for(var n=0;n<this.seglist[i].length;n++){
 					this.seglist[i][n].color = newColor;
 				}
@@ -1042,7 +1042,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 
 		if(seg2===null){
 			pathid = this.addPath();
-			seg.color = this.owner.painter.getNewLineColor();
+			seg.color = this.puzzle.painter.getNewLineColor();
 		}
 		else{
 			pathid = this.lineid[seg2.id];
@@ -1069,7 +1069,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		var longColor = this.getLongColor(segs);
 		
 		// つながった線の線情報を一旦0にする
-		var seglist = new this.owner.SegmentList();
+		var seglist = new this.klass.SegmentList();
 		for(var i=0,len=segs.length;i<len;i++){
 			var id=segs[i].id, r=this.lineid[id];
 			if(r!==null && r!==0){ seglist.extend(this.removePath(r));}
@@ -1093,14 +1093,14 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
 		else{ newid = ++this.linemax;}
 
-		this.seglist[newid] = new this.owner.SegmentList();
+		this.seglist[newid] = new this.klass.SegmentList();
 		return newid;
 	},
 	removePath : function(r){
 		var seglist = this.seglist[r];
 		for(var i=0,len=seglist.length;i<len;i++){ this.lineid[seglist[i].id] = null;}
 		
-		this.seglist[r] = new this.owner.SegmentList();
+		this.seglist[r] = new this.klass.SegmentList();
 		this.invalidid.push(r);
 		return seglist;
 	},
@@ -1120,12 +1120,12 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 				longColor = seglist[i].color;
 			}
 		}
-		return (!!longColor ? longColor : this.owner.painter.getNewLineColor());
+		return (!!longColor ? longColor : this.puzzle.painter.getNewLineColor());
 	},
 	setLongColor : function(assign, longColor){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		/* assign:影響のあったareaidの配列 */
-		var seglist = new puzzle.SegmentList();
+		var seglist = new puzzle.klass.SegmentList();
 		
 		// できた線の中でもっとも長いものを取得する
 		var longid = assign[0];
@@ -1150,7 +1150,7 @@ SegmentManager:{ /* LineManagerクラスを拡張してます */
 	// seginfo.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//---------------------------------------------------------------------------
 	getaround : function(seg){
-		var seglist = new this.owner.SegmentList();
+		var seglist = new this.klass.SegmentList();
 		var cross1 = seg.cross1, cross2 = seg.cross2;
 		for(var i=0,len=cross1.seglist.length;i<len;i++){
 			if(cross1.seglist[i].id!==seg.id){ seglist.add(cross1.seglist[i]);}

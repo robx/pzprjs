@@ -13,25 +13,25 @@ AnsCheck:{
 	// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を付加して返す
 	//--------------------------------------------------------------------------------
 	getLineInfo : function(){
-		return (this._info.line = this._info.line || this.owner.board.getLineInfo());
+		return (this._info.line = this._info.line || this.board.getLineInfo());
 	},
 	getRoomInfo : function(){
-		return (this._info.room = this._info.room || this.owner.board.getRoomInfo());
+		return (this._info.room = this._info.room || this.board.getRoomInfo());
 	},
 	getLareaInfo : function(){
-		return (this._info.linfo = this._info.linfo || this.owner.board.getLareaInfo());
+		return (this._info.linfo = this._info.linfo || this.board.getLareaInfo());
 	},
 	getShadeInfo : function(){
-		return (this._info.bcell = this._info.bcell || this.owner.board.getShadeInfo());
+		return (this._info.bcell = this._info.bcell || this.board.getShadeInfo());
 	},
 	getUnshadeInfo : function(){
-		return (this._info.wcell = this._info.wcell || this.owner.board.getUnshadeInfo());
+		return (this._info.wcell = this._info.wcell || this.board.getUnshadeInfo());
 	},
 	getNumberInfo : function(){
-		return (this._info.num = this._info.num || this.owner.board.getNumberInfo());
+		return (this._info.num = this._info.num || this.board.getNumberInfo());
 	},
 	getLineShapeInfo : function(){
-		return (this._info.lshape = this._info.lshape || this.owner.board.getLineShapeInfo());
+		return (this._info.lshape = this._info.lshape || this.board.getLineShapeInfo());
 	},
 
 	//---------------------------------------------------------------------------
@@ -44,8 +44,8 @@ AnsCheck:{
 	// ans.checkLineOverLetter()  線が数字などを通過しているか判定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func, code){
-		for(var c=0;c<this.owner.board.cellmax;c++){
-			var cell = this.owner.board.cell[c];
+		for(var c=0;c<this.board.cellmax;c++){
+			var cell = this.board.cell[c];
 			if(!func(cell)){ continue;}
 			
 			this.failcode.add(code);
@@ -69,15 +69,15 @@ AnsCheck:{
 		this.checkAllCell( function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmNoLine");
 	},
 	checkLineOverLetter : function(){
-		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.owner.board.linfo.moveline ? "laOnNum" : "lcOnNum"));
+		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linfo.moveline ? "laOnNum" : "lcOnNum"));
 	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkDir4Cell()  セルの周囲4マスの条件がfunc==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkDir4Cell : function(iscount, type, code){ // type = 0:違う 1:numより小さい 2:numより大きい
-		for(var c=0;c<this.owner.board.cellmax;c++){
-			var cell = this.owner.board.cell[c];
+		for(var c=0;c<this.board.cellmax;c++){
+			var cell = this.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
 			if((type===0 && num===count) || (type===1 && num<=count) || (type===2 && num>=count)){ continue;}
@@ -94,7 +94,7 @@ AnsCheck:{
 	// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkSideCell : function(func, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(cell.bx<bd.maxbx-1 && func(cell,cell2)){
@@ -125,7 +125,7 @@ AnsCheck:{
 	// ans.check2x2ShadeCell()  2x2のセルが黒マスの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	check2x2Block : function(func, code){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx>=bd.maxbx-1 || cell.by>=bd.maxby-1){ continue;}
@@ -171,8 +171,8 @@ AnsCheck:{
 		var winfo = this.getUnshadeInfo();
 		if(winfo.max>1){
 			this.failcode.add("cuDivideRB");
-			var errclist = new this.owner.CellList();
-			var clist = this.owner.board.cell.filter(function(cell){ return cell.isShade();});
+			var errclist = new this.klass.CellList();
+			var clist = this.board.cell.filter(function(cell){ return cell.isShade();});
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], list=cell.getdir4clist(), fid=null;
 				for(var n=0;n<list.length;n++){
@@ -192,7 +192,7 @@ AnsCheck:{
 		var xinfo = this.getLineInfo();
 		if(xinfo.max>1){
 			this.failcode.add("lnPlLoop");
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 			xinfo.path[1].blist.seterr(1);
 		}
 	},
@@ -202,7 +202,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkConnectAllNumber : function(){
 		var linfo = this.getLareaInfo();
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(linfo.max>1){
 			this.failcode.add("lcDivided");
 			bd.border.setnoerr();
@@ -214,7 +214,7 @@ AnsCheck:{
 	// ans.checkLineExist()  盤面に少なくとも一本は線が引かれていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(bd.lines.ltotal[0]!==(!bd.lines.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
 		this.failcode.add("brNoLine");
 	},
@@ -227,7 +227,7 @@ AnsCheck:{
 	checkDeadendLine : function(){ this.checkLineCount(1, "lnDeadEnd");},
 	checkNoLine      : function(){ this.checkLineCount(0, "ceNoLine");},
 	checkLineCount : function(val, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		if(bd.lines.ltotal[val]===0){ return;}
 		
 		if(!bd.lines.borderAsLine){
@@ -256,7 +256,7 @@ AnsCheck:{
 	checkBranchConnectLine  : function(){ this.checkConnectLineCount(3, "lnBranch");},
 	checkDeadendConnectLine : function(){ this.checkConnectLineCount(1, "lnDeadEnd");},
 	checkConnectLineCount : function(val, code){
-		if(this.owner.board.lines.ltotal[val]===0){ return;}
+		if(this.board.lines.ltotal[val]===0){ return;}
 		
 		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
@@ -265,7 +265,7 @@ AnsCheck:{
 	// ans.checkenableLineParts() '一部があかされている'線の部分に、線が引かれているか判定する
 	//---------------------------------------------------------------------------
 	checkenableLineParts : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], adb = cell.adjborder;
 			if( (!adb.top.isLine()    || !cell.noLP(cell.UP)) &&
@@ -298,7 +298,7 @@ AnsCheck:{
 			
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
-			clist.seterr(this.owner.pid!=="tateyoko"?1:4);
+			clist.seterr(this.pid!=="tateyoko"?1:4);
 		}
 	},
 
@@ -339,7 +339,7 @@ AnsCheck:{
 	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
 	// ans.checkConnectObjectCount() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.owner.board.linfo.moveline ? "laIsolate" : "lcIsolate"));},
+	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.board.linfo.moveline ? "laIsolate" : "lcIsolate"));},
 	checkConnectObject  : function(){ this.checkConnectObjectCount(function(a){ return(a<2);}, "nmConnected");},
 	checkTripleObject   : function(){ this.checkConnectObjectCount(function(a){ return(a<3);}, "lcTripleNum");},
 	checkConnectObjectCount : function(evalfunc, code){
@@ -353,7 +353,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 		}
 	},
 
@@ -378,8 +378,8 @@ AnsCheck:{
 	},
 
 	checkSideAreaCell : function(rinfo, func, flag, code){
-		for(var id=0;id<this.owner.board.bdmax;id++){
-			var border = this.owner.board.border[id];
+		for(var id=0;id<this.board.bdmax;id++){
+			var border = this.board.border[id];
 			if(!border.isBorder()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(cell1.isnull || cell2.isnull || !func(cell1, cell2)){ continue;}
@@ -400,7 +400,7 @@ AnsCheck:{
 	// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 	//---------------------------------------------------------------------------
 	checkSameObjectInRoom : function(rinfo, getvalue, code){
-		var d=[], val=[], bd = this.owner.board;
+		var d=[], val=[], bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){ val[c]=getvalue(bd.cell[c]);}
 		for(var i=1;i<=rinfo.max;i++){ d[i]=-1;}
 		for(var c=0;c<bd.cellmax;c++){
@@ -449,7 +449,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	/* ともにevalfuncはAnswerクラスの関数限定 */
 	checkRowsCols : function(evalfunc, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		allloop: do{
 			/* 横方向サーチ */
 			for(var by=1;by<=bd.maxby;by+=2){
@@ -479,7 +479,7 @@ AnsCheck:{
 	// ans.checkRowsColsFor51cell()   [＼]で分かれるタテ列・ヨコ列の数字の判定を行う
 	//---------------------------------------------------------------------------
 	checkRowsColsPartly : function(evalfunc, termfunc, code){
-		var result = true, bd = this.owner.board, info;
+		var result = true, bd = this.board, info;
 		allloop: do{
 			/* 横方向サーチ */
 			info = {keycell:null, key51num:-1, isvert:false};
@@ -525,7 +525,7 @@ AnsCheck:{
 	checkBorderCross   : function(){ this.checkBorderCount(4,0, "bdCross");},
 	checkBorderDeadend : function(){ this.checkBorderCount(1,0, "bdDeadEnd");},
 	checkBorderCount : function(val, bp, code){
-		var result=true, bd=this.owner.board;
+		var result=true, bd=this.board;
 		var crosses=(bd.hascross===2 ? bd.cross : bd.crossinside(bd.minbx+2,bd.minby+2,bd.maxbx-2,bd.maxby-2));
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c];
@@ -561,7 +561,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 		}
 	},
 	checkLineShapeDeadend : function(){

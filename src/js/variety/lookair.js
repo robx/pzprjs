@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['lookair'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -97,8 +97,9 @@ AnsCheck:{
 	],
 
 	checkDir5ShadeCell : function(){
-		for(var c=0;c<this.owner.board.cellmax;c++){
-			var cell = this.owner.board.cell[c];
+		var bd = this.board;
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getNum()===cell.countDir5ShadedCell()){ continue;}
 			
 			this.failcode.add("nmShade5Ne");
@@ -112,7 +113,7 @@ AnsCheck:{
 	},
 	checkLookair : function(){
 		var binfo = this.getShadeInfo();
-		var bd = this.owner.board;
+		var bd = this.board;
 		function subcheck(base,bx,by){
 			var cell = bd.getc(bx,by);
 			if(cell.isnull){ return 1;}	/* break with no error (end of board) */
@@ -133,14 +134,14 @@ AnsCheck:{
 			var base = binfo.area[r].clist, d = base.getRectSize();
 			/* 相互に見る必要は無いので、上と左だけ確認する */
 			for(var bx=d.x1; bx<=d.x2; bx+=2){
-				for(var by=d.y1-2; by>=this.owner.board.minby; by-=2){
+				for(var by=d.y1-2; by>=bd.minby; by-=2){
 					var ret = subcheck.call(this,base,bx,by);
 					if(ret===1){ break;}else if(ret===2){ break allloop;}
 				}
 			}
 
 			for(var by=d.y1; by<=d.y2; by+=2){
-				for(var bx=d.x1-2; bx>=this.owner.board.minbx; bx-=2){
+				for(var bx=d.x1-2; bx>=bd.minbx; bx-=2){
 					var ret = subcheck.call(this,base,bx,by);
 					if(ret===1){ break;}else if(ret===2){ break allloop;}
 				}

@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['hashikake'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -23,7 +23,7 @@ MouseEvent:{
 	prevblist : null,
 	mousereset : function(){
 		this.common.mousereset.call(this);
-		this.prevblist = new this.owner.BorderList();
+		this.prevblist = new this.klass.BorderList();
 	},
 
 	inputLine : function(){
@@ -34,7 +34,7 @@ MouseEvent:{
 		if(!border.isnull){
 			var dir = this.getlinedir(this.prevPos, pos);
 			var d = border.getlinesize();
-			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
 			
@@ -44,7 +44,7 @@ MouseEvent:{
 			borders.setQsub(0);
 			this.prevblist = borders;
 
-			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+			this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
@@ -52,7 +52,7 @@ MouseEvent:{
 		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return this.owner.board.nullobj;
+		return this.board.nullobj;
 	},
 	getlinedir : function(base, current){
 		var dx = (current.bx-base.bx), dy = (current.by-base.by);
@@ -74,10 +74,10 @@ MouseEvent:{
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
+		this.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
 		this.prevPos = pos;
 
-		this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		border.draw();
 	}
 },
@@ -190,7 +190,7 @@ Graphic:{
 	lwratio : 8,
 
 	paint : function(){
-		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
+		this.drawGrid(false, (this.puzzle.editmode && !this.outputImage));
 
 		this.drawPekes();
 		this.drawLines_hashikake();
@@ -264,10 +264,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

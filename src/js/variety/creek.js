@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['creek'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputcross();}
 		}
 	}
@@ -105,7 +105,7 @@ AnsCheck:{
 	checkShadeOverNum : function(){ this.checkQnumCross(1, "crShadeGt");},
 	checkShadeLessNum : function(){ this.checkQnumCross(2, "crShadeLt");},
 	checkQnumCross : function(type, code){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0){ continue;}

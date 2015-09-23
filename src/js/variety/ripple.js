@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['ripple','cojun'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || (this.mousemove && this.btn.Left)){
 				this.inputborder();
 			}
@@ -31,7 +31,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return this.owner.board.rooms.getCntOfRoomByCell(this);
+		return this.board.rooms.getCntOfRoomByCell(this);
 	}
 },
 Board:{
@@ -78,12 +78,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeAreaRoom();
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeAreaRoom();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeAreaRoom();
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeAreaRoom();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------
@@ -136,7 +136,7 @@ AnsCheck:{
 	],
 
 	checkRippleNumber : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		allloop:
 		for(var c=0;c<bd.cellmax;c++){
 			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
@@ -164,7 +164,7 @@ AnsCheck:{
 	},
 
 	checkUpperNumber : function(){
-		var bd = this.owner.board, rinfo = this.getRoomInfo();
+		var bd = this.board, rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
 			if(rinfo.id[c]!==rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}

@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['kaero'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputMoveLine();}
 				else if(this.btn.Right){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				this.inputlight();
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -120,7 +120,7 @@ Graphic:{
 
 		var rw = this.bw*0.7-1;
 		var rh = this.bh*0.7-1;
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -139,7 +139,7 @@ Graphic:{
 	},
 	drawNumbers_kaero : function(){
 		var g = this.vinc('cell_number', 'auto');
-		var isdrawmove = this.owner.execConfig('dispmove');
+		var isdrawmove = this.puzzle.execConfig('dispmove');
 
 		var option = {ratio:[0.85]};
 		var clist = this.range.cells;
@@ -174,7 +174,7 @@ Encode:{
 	},
 
 	decodeKaero : function(){
-		var c=0, a=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, a=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -191,7 +191,7 @@ Encode:{
 		this.outbstr = bstr.substring(a);
 	},
 	encodeKaero : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qnum = bd.cell[c].qnum;
 			if     (qnum===-2){ pstr = ".";}
@@ -253,7 +253,7 @@ AnsCheck:{
 				else if(rnum!==num){
 					this.failcode.add("bkPlNum");
 					if(this.checkOnly){ break allloop;}
-					if(!this.owner.execConfig('dispmove')){ cbase.seterr(4);}
+					if(!this.puzzle.execConfig('dispmove')){ cbase.seterr(4);}
 					clist.seterr(1);
 				}
 			}
@@ -262,7 +262,7 @@ AnsCheck:{
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(){
-		var max=0, bd=this.owner.board;
+		var max=0, bd=this.board;
 		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
 		allloop:
@@ -273,7 +273,7 @@ AnsCheck:{
 				if(rid===null){ rid=r;}
 				else if(r!==null && rid!==r){
 					this.failcode.add("bkSepNum");
-					if(!this.owner.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
+					if(!this.puzzle.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
 					break allloop;
 				}

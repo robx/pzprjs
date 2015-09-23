@@ -8,11 +8,11 @@ MouseEvent:{
 	RBShadeCell : true,
 
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqsub();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -39,7 +39,7 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		return Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
+		return Math.max(this.board.qcols,this.board.qrows)-1;
 	}
 },
 Board:{
@@ -100,10 +100,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------
@@ -128,12 +128,12 @@ AnsCheck:{
 	],
 
 	checkShootSingle : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num=cell.qnum, cell2;
-			var clist = new this.owner.CellList();
+			var clist = new this.klass.CellList();
 			cell2=cell.relcell(-num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell( num*2,0); if(cell2.isShade()){ clist.add(cell2);}
 			cell2=cell.relcell(0,-num*2); if(cell2.isShade()){ clist.add(cell2);}

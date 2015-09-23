@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['mejilink'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){
@@ -18,7 +18,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
 	}
@@ -39,7 +39,7 @@ Border:{
 BorderList:{
 	allclear : function(isrec){
 		/* quesは共通ルーチンを使用しない */
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var i=0;i<this.length;i++){
 			var border = this[i];
 			/* border.quesの真の初期値は↓ */
@@ -62,7 +62,7 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.tiles = this.addInfoList(this.owner.AreaTileManager);
+		this.tiles = this.addInfoList(this.klass.AreaTileManager);
 	},
 
 	initBoardSize : function(col,row){
@@ -130,7 +130,7 @@ Encode:{
 	},
 
 	decodeMejilink : function(){
-		var bstr = this.outbstr, bd = this.owner.board, twi=[16,8,4,2,1];
+		var bstr = this.outbstr, bd = this.board, twi=[16,8,4,2,1];
 		var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),32);
@@ -144,7 +144,7 @@ Encode:{
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeMejilink : function(){
-		var count = 0, bd = this.owner.board;
+		var count = 0, bd = this.board;
 		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()){ count++;}}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
 		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
@@ -187,7 +187,7 @@ AnsCheck:{
 	],
 
 	checkDotLength : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var tarea = bd.tiles.getAreaInfo();
 
 		var tcount = [], numerous_value = 999999;

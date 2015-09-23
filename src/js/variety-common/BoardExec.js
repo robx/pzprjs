@@ -21,7 +21,7 @@ BoardExec:{
 	},
 	adjustCellArrow : function(key,d){
 		if(key & this.TURNFLIP){
-			if(this.owner.Cell.prototype.numberAsObject){
+			if(this.klass.Cell.prototype.numberAsObject){
 				this.adjustCellQnumArrow(key,d);
 			}
 			else{
@@ -31,7 +31,7 @@ BoardExec:{
 	},
 	adjustCellQdirArrow : function(key,d){
 		var trans = this.getTranslateDir(key);
-		var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			var val=trans[cell.qdir]; if(!!val){ cell.setQdir(val);}
@@ -39,7 +39,7 @@ BoardExec:{
 	},
 	adjustCellQnumArrow : function(key,d){
 		var trans = this.getTranslateDir(key);
-		var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			var val = trans[cell.qnum]; if(!!val){ cell.setQnum(val);}
@@ -50,7 +50,7 @@ BoardExec:{
 	adjustBorderArrow : function(key,d){
 		if(key & this.TURNFLIP){
 			var trans = this.getTranslateDir(key);
-			var blist = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var blist = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<blist.length;i++){
 				var border=blist[i], val;
 				val=trans[border.qdir]; if(!!val){ border.setQdir(val);}
@@ -77,7 +77,7 @@ BoardExec:{
 		this.qnumw = [];
 		this.qnumh = [];
 
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=by1;by<=d.y2;by+=2){
 			this.qnumw[by] = [bd.getex(-1,by).qnum];
 			for(var bx=bx1;bx<=d.x2;bx+=2){
@@ -96,7 +96,7 @@ BoardExec:{
 	adjustQues51_2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1), idx;
 
-		var bd = this.owner.board;
+		var bd = this.board;
 		switch(key){
 		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
@@ -164,7 +164,7 @@ BoardExec:{
 	// bd.exec.getAfterPos()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
 	getAfterPos : function(key,d,piece){
-		var puzzle=this.owner, bd=puzzle.board;
+		var puzzle=this.puzzle, bd=puzzle.board;
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=piece.bx, by1=piece.by, bx2, by2;
 		switch(key){
 			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
@@ -182,7 +182,7 @@ BoardExec:{
 			default: bx2 = bx1; by2 = by1; break;
 		}
 		
-		return { pos:new puzzle.Address(bx2,by2), isdel:this.isdel(key,piece) };
+		return { pos:new puzzle.klass.Address(bx2,by2), isdel:this.isdel(key,piece) };
 	}
 }
 });

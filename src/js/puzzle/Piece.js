@@ -98,7 +98,7 @@ pzpr.classmgr.makeCommon({
 	},
 	addOpe : function(property, old, num){
 		if(old===num){ return;}
-		this.owner.opemgr.add(new this.owner.ObjectOperation(this, property, old, num));
+		this.puzzle.opemgr.add(new this.klass.ObjectOperation(this, property, old, num));
 	},
 	
 	//---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ pzpr.classmgr.makeCommon({
 	// setinfo() qinfo値を設定する
 	//---------------------------------------------------------------------------
 	seterr : function(num){
-		if(this.owner.board.isenableSetError()){ this.error = num;}
+		if(this.board.isenableSetError()){ this.error = num;}
 	},
 	setinfo : function(num){ this.qinfo = num;}
 },
@@ -151,24 +151,24 @@ pzpr.classmgr.makeCommon({
 	// posthook 値の設定後にやっておく処理を行う
 	//---------------------------------------------------------------------------
 	prehook : {
-		ques  : function(num){ if(this.owner.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
+		ques  : function(num){ if(this.klass.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
 		qnum  : function(num){ return (this.getminnum()>0 && num===0);},
 		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
 		anum  : function(num){ return (this.getminnum()>0 && num===0);}
 	},
 	posthook : {
-		ques  : function(num){ this.owner.board.setInfoByCell(this);},
-		qnum  : function(num){ this.owner.board.setInfoByCell(this);},
-		qnum2 : function(num){ this.owner.board.setInfoByCell(this);},
-		anum  : function(num){ this.owner.board.setInfoByCell(this);},
-		qans  : function(num){ this.owner.board.setInfoByCell(this);},
-		qsub  : function(num){ if(this.numberWithMB){ this.owner.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
+		ques  : function(num){ this.board.setInfoByCell(this);},
+		qnum  : function(num){ this.board.setInfoByCell(this);},
+		qnum2 : function(num){ this.board.setInfoByCell(this);},
+		anum  : function(num){ this.board.setInfoByCell(this);},
+		qans  : function(num){ this.board.setInfoByCell(this);},
+		qsub  : function(num){ if(this.numberWithMB){ this.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
 	},
 
 	//---------------------------------------------------------------------------
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
+	iscrossing : function(){ return this.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// cell.isShade()   該当するCellが黒マスかどうか返す
@@ -189,12 +189,12 @@ pzpr.classmgr.makeCommon({
 	setNum : function(val){
 		if(this.getminnum()>0 && val===0){ return;}
 		// editmode時 val>=0は数字 val=-1は消去 val=-2は？など
-		if(this.owner.editmode){
+		if(this.puzzle.editmode){
 			val = (((this.numberAsObject||val===-2) && this.qnum===val)?-1:val);
 			this.setQnum(val);
 			this.setAnum(-1);
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
-			if(this.owner.painter.bcolor==="white"){ this.setQsub(0);}
+			if(this.puzzle.painter.bcolor==="white"){ this.setQsub(0);}
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
 		else if(this.qnum===-1){
@@ -277,9 +277,9 @@ pzpr.classmgr.makeCommon({
 	// cell.noLP()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
 	setCombinedLine : function(){	// cell.setQuesから呼ばれる
-		if(this.owner.Border.prototype.enableLineCombined){
+		if(this.klass.Border.prototype.enableLineCombined){
 			var bx=this.bx, by=this.by;
-			var blist = this.owner.board.borderinside(bx-1,by-1,bx+1,by+1);
+			var blist = this.board.borderinside(bx-1,by-1,bx+1,by+1);
 			for(var i=0;i<blist.length;i++){
 				var border=blist[i];
 				if        (border.line===0 && border.isLineEX()){ border.setLineVal(1);}
@@ -361,14 +361,14 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	iscrossing : function(){ return this.owner.board.lines.isLineCross;},
+	iscrossing : function(){ return this.board.lines.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// cross.setCrossBorderError() 交点とその周り四方向にエラーフラグを設定する
 	//---------------------------------------------------------------------------
 	setCrossBorderError : function(){
 		this.seterr(1);
-		this.owner.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
+		this.board.borderinside(this.bx-1,this.by-1,this.bx+1,this.by+1).seterr(1);
 	}
 },
 
@@ -409,7 +409,7 @@ pzpr.classmgr.makeCommon({
 		}
 
 		// LineManager用
-		this.lineedge = (!this.owner.board.lines.borderAsLine ? this.sidecell : this.sidecross);
+		this.lineedge = (!this.board.lines.borderAsLine ? this.sidecell : this.sidecross);
 	},
 
 	//---------------------------------------------------------------------------
@@ -421,16 +421,16 @@ pzpr.classmgr.makeCommon({
 		line : function(num){ return (this.checkStableLine(num));}
 	},
 	posthook : {
-		ques : function(num){ this.owner.board.setInfoByBorder(this);},
-		qans : function(num){ this.owner.board.setInfoByBorder(this);},
-		line : function(num){ this.owner.board.setInfoByLine(this);}
+		ques : function(num){ this.board.setInfoByBorder(this);},
+		qans : function(num){ this.board.setInfoByBorder(this);},
+		line : function(num){ this.board.setInfoByLine(this);}
 	},
 
 	//---------------------------------------------------------------------------
 	// border.draw() 盤面に自分の周囲を描画する (Borderはちょっと範囲が広い)
 	//---------------------------------------------------------------------------
 	draw : function(){
-		this.owner.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
+		this.puzzle.painter.paintRange(this.bx-2, this.by-2, this.bx+2, this.by+2);
 	},
 
 	//-----------------------------------------------------------------------
@@ -451,11 +451,11 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	isBorder  : function(){ return (this.ques>0 || this.qans>0);},
 	setBorder : function(){
-		if(this.owner.editmode){ this.setQues(1); this.setQans(0);}
+		if(this.puzzle.editmode){ this.setQues(1); this.setQans(0);}
 		else if(this.ques!==1){ this.setQans(1);}
 	},
 	removeBorder : function(){
-		if(this.owner.editmode){ this.setQues(0); this.setQans(0);}
+		if(this.puzzle.editmode){ this.setQues(0); this.setQans(0);}
 		else if(this.ques!==1){ this.setQans(0);}
 	},
 

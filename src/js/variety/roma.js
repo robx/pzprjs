@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['roma'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				this.inputarrow_cell();
 			}
@@ -14,7 +14,7 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.inputarrow_cell();}
@@ -25,7 +25,7 @@ MouseEvent:{
 		}
 	},
 	dispRed : function(){
-		var puzzle = this.owner, flag = (puzzle.execConfig('redroad')^puzzle.key.isZ);
+		var puzzle = this.puzzle, flag = (puzzle.execConfig('redroad')^puzzle.key.isZ);
 		if(flag){ this.dispRoad();}
 		return flag;
 	},
@@ -33,7 +33,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		var ldata = [], bd=puzzle.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
@@ -66,7 +66,7 @@ KeyEvent:{
 		else if(ca==='3'||(ca==='shift+down'))              { ca='2';}
 		else if(ca==='4'||(ca==='shift+left'))              { ca='3';}
 		else if(ca==='q')                                   { ca='5';}
-		else if(this.owner.editmode && (ca==='5'||ca==='-')){ ca='s1';}
+		else if(this.puzzle.editmode &&(ca==='5'||ca==='-')){ ca='s1';}
 		else if(ca==='6'||ca===' ')                         { ca=' ';}
 		this.key_inputqnum(ca);
 	}
@@ -78,7 +78,7 @@ Cell:{
 	numberAsObject : true,
 
 	maxnum : function(){
-		return (this.owner.editmode?5:4);
+		return (this.puzzle.editmode?5:4);
 	}
 },
 Board:{
@@ -222,7 +222,7 @@ AnsCheck:{
 	},
 
 	checkBalls : function(){
-		var ldata = [], bd=this.owner.board;
+		var ldata = [], bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
 		for(var c=0;c<bd.cellmax;c++){
 			if(ldata[c]!==-1){ continue;}

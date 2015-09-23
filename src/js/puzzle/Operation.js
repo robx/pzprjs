@@ -8,7 +8,7 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
 Operation:{
 	initialize : function(){
-		this.manager = this.owner.opemgr;
+		this.manager = this.puzzle.opemgr;
 		
 		if(arguments.length>0){
 			var args = Array.prototype.slice.call(arguments);
@@ -124,7 +124,7 @@ Operation:{
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	exec : function(num){
-		var bd = this.owner.board, piece = bd.getObjectPos(this.group, this.bx, this.by);
+		var bd = this.board, piece = bd.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==piece.group){ return true;}
 		
 		piece.setdata(this.property, num);
@@ -133,7 +133,7 @@ Operation:{
 		switch(this.property){
 			case 'qcmp': bd.cell.each(function(cell){ if(piece===cell.base){ cell.draw();}}); break;
 			case 'qsub': break;
-			default:     this.owner.checker.resetCache(); break;
+			default:     this.puzzle.checker.resetCache(); break;
 		}
 	}
 },
@@ -165,16 +165,16 @@ Operation:{
 	// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 	//---------------------------------------------------------------------------
 	undo : function(){
-		var key_undo = this.owner.board.exec.boardtype[this.old][0];
+		var key_undo = this.board.exec.boardtype[this.old][0];
 		this.exec(key_undo);
 	},
 	redo : function(){
-		var key_redo = this.owner.board.exec.boardtype[this.num][1];
+		var key_redo = this.board.exec.boardtype[this.num][1];
 		this.exec(key_redo);
 	},
 	exec : function(num){
-		var puzzle = this.owner, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
-		puzzle.board.exec.expandreduce(num,d);
+		var puzzle = this.puzzle, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
+		bd.exec.expandreduce(num,d);
 		puzzle.redraw();
 	}
 },
@@ -215,18 +215,18 @@ Operation:{
 	undo : function(){
 		// とりあえず盤面全部の対応だけ
 		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
-		var key_undo = this.owner.board.exec.boardtype[this.old][0];
+		var key_undo = this.board.exec.boardtype[this.old][0];
 		if(key_undo & this.TURN){ var tmp=d.x1;d.x1=d.y1;d.y1=tmp;}
 		this.exec(key_undo,d);
 	},
 	redo : function(){
 		// とりあえず盤面全部の対応だけ
 		var d0 = this.area, d = {x1:d0.x1,y1:d0.y1,x2:d0.x2,y2:d0.y2};
-		var key_redo = this.owner.board.exec.boardtype[this.num][1];
+		var key_redo = this.board.exec.boardtype[this.num][1];
 		this.exec(key_redo,d);
 	},
 	exec : function(num,d){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		puzzle.board.exec.turnflip(num,d);
 		puzzle.redraw();
 	}
@@ -258,11 +258,11 @@ OperationManager:{
 		this.redoExec = false;		// Redo中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
 
-		var puzzle = this.owner;
+		var classes = this.klass;
 		this.operationlist = [
-			puzzle.ObjectOperation,
-			puzzle.BoardAdjustOperation,
-			puzzle.BoardFlipOperation
+			classes.ObjectOperation,
+			classes.BoardAdjustOperation,
+			classes.BoardFlipOperation
 		];
 	},
 
@@ -288,7 +288,7 @@ OperationManager:{
 		this.enableUndo = (this.position>0);
 		this.enableRedo = (this.position<this.ope.length);
 
-		this.owner.execListener('history');
+		this.puzzle.execListener('history');
 	},
 	allerase : function(){
 		this.lastope  = null;
@@ -299,7 +299,7 @@ OperationManager:{
 		this.changeflag = false;
 		this.chainflag = false;
 		this.checkexec();
-		this.owner.checker.resetCache();
+		this.puzzle.checker.resetCache();
 	},
 	newOperation : function(){
 		this.changeflag = false;
@@ -317,7 +317,7 @@ OperationManager:{
 	// um.add()  指定された操作を追加する(共通操作)
 	//---------------------------------------------------------------------------
 	add : function(newope){
-		if(!this.owner.ready || (!this.forceRecord && this.disrec>0)){ return;}
+		if(!this.puzzle.ready || (!this.forceRecord && this.disrec>0)){ return;}
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 		if(this.enableRedo){
@@ -327,7 +327,7 @@ OperationManager:{
 		}
 
 		/* 前の履歴を更新するかどうか判定 */
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if( this.disCombine || !this.lastope ||
 			!newope.isModify || !newope.isModify(this.lastope) )
 		{
@@ -438,7 +438,7 @@ OperationManager:{
 		return result;
 	},
 	preproc : function(opes){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		this.disableRecord();
 
 		puzzle.painter.suspend();
@@ -448,7 +448,7 @@ OperationManager:{
 		}
 	},
 	postproc : function(){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		if(this.reqReset){
 			bd.setposAll();
 			bd.setminmax();

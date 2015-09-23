@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['shugaku'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputFuton();}
 				else if(this.mouseend){ this.inputFuton2();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputcell_shugaku();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -67,7 +67,7 @@ MouseEvent:{
 
 		this.mousereset();
 		cell.drawaround();
-		this.mouseCell = this.owner.board.emptycell;
+		this.mouseCell = this.board.emptycell;
 	},
 
 	inputcell_shugaku : function(){
@@ -108,7 +108,7 @@ MouseEvent:{
 				case 5: return adc.right;
 			}
 		}
-		return this.owner.board.emptycell;
+		return this.board.emptycell;
 	}
 },
 
@@ -157,7 +157,7 @@ BoardExec:{
 			case this.TURNL: trans={42:44,44:43,43:45,45:42,47:49,49:48,48:50,50:47}; break;	// 左90°回転
 			default: return;
 		}
-		var clist = this.owner.board.cell;
+		var clist = this.board.cell;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], val = trans[cell.qans];
 			if(!!val){ cell.qans=val;}
@@ -200,7 +200,7 @@ Graphic:{
 	},
 
 	drawFutons : function(){
-		var g = this.vinc('cell_back', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_back', 'crispEdges', true), mv = this.puzzle.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -225,7 +225,7 @@ Graphic:{
 		}
 	},
 	drawPillows : function(){
-		var g = this.vinc('cell_pillow', 'crispEdges', true), mv = this.owner.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_pillow', 'crispEdges', true), mv = this.puzzle.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -256,7 +256,7 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		var isdraw = border.isBorder(), mv = this.owner.mouse;
+		var isdraw = border.isBorder(), mv = this.puzzle.mouse;
 
 		if(!mv.mouseCell.isnull && mv.firstPoint.bx!==null){ // ふとん入力中
 			var cc1 = border.sidecell[0], cc2 = border.sidecell[1];
@@ -282,7 +282,7 @@ Encode:{
 	},
 
 	decodeShugaku : function(){
-		var c=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell = bd.cell[c];
 			if     (ca>='0' && ca<='4'){ cell.qnum = parseInt(ca,36);}
@@ -295,7 +295,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeShugaku : function(){
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
@@ -361,7 +361,7 @@ AnsCheck:{
 	},
 
 	checkKitamakura : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.qans!==43){ continue;}
@@ -374,7 +374,7 @@ AnsCheck:{
 	},
 
 	checkFutonAisle : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}

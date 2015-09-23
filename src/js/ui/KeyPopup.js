@@ -205,7 +205,7 @@ ui.keypopup =
 	},
 	gentable10 : function(mode){
 		var pid = ui.puzzle.pid, itemlist = [];
-		if((mode===3)&&(ui.puzzle.Cell.prototype.numberWithMB)){
+		if((mode===3)&&(ui.puzzle.klass.Cell.prototype.numberWithMB)){
 			var mbcolor = ui.puzzle.painter.mbcolor;
 			itemlist.push(
 				['q',{text:'○',color:mbcolor}],
@@ -218,7 +218,7 @@ ui.keypopup =
 		}
 		
 		itemlist.push('0','1','2','3','4','5','6','7','8','9');
-		itemlist.push(((mode===1)||(!ui.puzzle.Cell.prototype.numberWithMB)) ? ' ' : null);
+		itemlist.push(((mode===1)||(!ui.puzzle.klass.Cell.prototype.numberWithMB)) ? ' ' : null);
 		
 		var cap = null;
 		if((mode===3)||(pid==='kakuru'||pid==='tateyoko')){

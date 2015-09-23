@@ -9,7 +9,7 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 KeyEvent:{
 	initialize : function(){
-		this.cursor = this.owner.cursor;
+		this.cursor = this.puzzle.cursor;
 
 		this.enableKey = true;		// キー入力は有効か
 
@@ -42,7 +42,7 @@ KeyEvent:{
 		this.prev = null;
 	},
 	isenablemode : function(){
-		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
+		return ((this.puzzle.editmode&&this.enablemake)||(this.puzzle.playmode&&this.enableplay));
 	},
 
 	//---------------------------------------------------------------------------
@@ -58,7 +58,7 @@ KeyEvent:{
 		this.checkbutton(c,0);
 		if(c){ this.keyevent(c,0);}
 		
-		if(e.target===this.owner.canvas){
+		if(e.target===this.puzzle.canvas){
 			e.stopPropagation();
 			e.preventDefault();
 		}
@@ -71,7 +71,7 @@ KeyEvent:{
 		this.checkbutton(c,1);
 		if(c){ this.keyevent(c,1);}
 		
-		if(e.target===this.owner.canvas){
+		if(e.target===this.puzzle.canvas){
 			e.stopPropagation();
 			e.preventDefault();
 		}
@@ -142,7 +142,7 @@ KeyEvent:{
 	// kc.stopEvent() カーソル移動時などに、ウィンドウがスクロールしないようにする
 	//---------------------------------------------------------------------------
 	keyevent : function(c, step){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		this.keydown = (step===0);
 		this.keyup   = (step===1);
 
@@ -169,7 +169,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	keyexec : function(c){
 		if(this.keydown && c==='alt+c' && pzpr.EDITOR){
-			this.owner.modechange();
+			this.puzzle.modechange();
 			return false;
 		}
 		return true;
@@ -240,7 +240,7 @@ KeyEvent:{
 	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
 	//---------------------------------------------------------------------------
 	setminmax : function(){
-		var bd = this.owner.board, bm = (!this.crosstype?1:0);
+		var bd = this.board, bm = (!this.crosstype?1:0);
 		this.minx = bd.minbx + bm;
 		this.miny = bd.minby + bm;
 		this.maxx = bd.maxbx - bm;
@@ -283,7 +283,7 @@ KeyEvent:{
 		return true;
 	},
 	detectTarget : function(piece){
-		var bd = this.owner.board, adc=piece.adjacent;
+		var bd = this.board, adc=piece.adjacent;
 		if(piece.isnull){ return 0;}
 		else if(piece.group==='cell'){
 			if     (piece.ques!==51 || piece.id===bd.cellmax-1){ return 0;}

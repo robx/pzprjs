@@ -15,7 +15,7 @@ Encode:{
 	// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cell : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"0","4")){ cell.qnum = parseInt(ca,16);}
@@ -30,7 +30,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cell : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
@@ -55,7 +55,7 @@ Encode:{
 	// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decode4Cross : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cross = bd.cross[c], ca = bstr.charAt(i);
 			if     (this.include(ca,"0","4")){ cross.qnum = parseInt(ca,16);}
@@ -70,7 +70,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cross : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
@@ -95,7 +95,7 @@ Encode:{
 	// enc.encodeNumber10()  quesが0～9までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber10 : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -109,7 +109,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber10 : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
@@ -130,7 +130,7 @@ Encode:{
 	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeNumber16 : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -149,7 +149,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16 : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", qn = bd.cell[c].qnum;
 
@@ -174,7 +174,7 @@ Encode:{
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeRoomNumber16 : function(){
-		var r=1, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var r=1, i=0, bstr = this.outbstr, bd = this.board;
 		bd.rooms.reset();
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), top=bd.rooms.getTopOfRoom(r);
@@ -195,7 +195,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeRoomNumber16 : function(){
-		var count=0, cm="", bd = this.owner.board;
+		var count=0, cm="", bd = this.board;
 		bd.rooms.reset();
 		for(var r=1;r<=bd.rooms.max;r++){
 			var pstr = "", qn = bd.rooms.getTopOfRoom(r).qnum;
@@ -222,7 +222,7 @@ Encode:{
 	// enc.encodeArrowNumber16()  矢印付きquesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
 	decodeArrowNumber16 : function(){
-		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
@@ -245,7 +245,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeArrowNumber16 : function(){
-		var cm = "", count = 0, bd = this.owner.board;
+		var cm = "", count = 0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if     (qn===-2)        { pstr=(dir  )+".";}
@@ -267,7 +267,7 @@ Encode:{
 	//---------------------------------------------------------------------------
 	decodeBorder : function(){
 		var pos1, pos2, bstr = this.outbstr, id, twi=[16,8,4,2,1];
-		var bd = this.owner.board;
+		var bd = this.board;
 
 		if(bstr){
 			pos1 = Math.min(((((bd.qcols-1)*bd.qrows+4)/5)|0)     , bstr.length);
@@ -302,7 +302,7 @@ Encode:{
 	},
 	encodeBorder : function(){
 		var cm="", twi=[16,8,4,2,1], num = 0, pass = 0;
-		var bd = this.owner.board;
+		var bd = this.board;
 
 		for(var id=0;id<(bd.qcols-1)*bd.qrows;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
@@ -325,7 +325,7 @@ Encode:{
 	// enc.encodeCrossMark() 黒点をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCrossMark : function(){
-		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var cc=0, i=0, bstr = this.outbstr, bd = this.board;
 		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(i=0;i<bstr.length;i++){
@@ -347,7 +347,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeCrossMark : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
 		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
 		for(var c=0,max=cols*rows;c<max;c++){
@@ -371,7 +371,7 @@ Encode:{
 	// enc.encodeCircle() 白丸・黒丸をエンコードする
 	//---------------------------------------------------------------------------
 	decodeCircle : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.qcols*bd.qrows);
 		var pos = (bstr ? Math.min(((bd.qcols*bd.qrows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
@@ -387,7 +387,7 @@ Encode:{
 		this.outbstr = bstr.substr(pos);
 	},
 	encodeCircle : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var cm="", num=0, pass=0, tri=[9,3,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].qnum>0){ pass+=(bd.cell[c].qnum*tri[num]);}
@@ -404,7 +404,7 @@ Encode:{
 	// enc.encodeIce() cell.ques===6をエンコードする
 	//---------------------------------------------------------------------------
 	decodeIce : function(){
-		var bstr = this.outbstr, bd = this.owner.board;
+		var bstr = this.outbstr, bd = this.board;
 
 		var c=0, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
@@ -420,7 +420,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeIce : function(){
-		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.owner.board;
+		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
@@ -434,7 +434,7 @@ Encode:{
 	// enc.decodecross_old() Crossの問題部をデコードする(旧形式)
 	//---------------------------------------------------------------------------
 	decodecross_old : function(){
-		var bstr = this.outbstr, c=0, bd = this.owner.board;
+		var bstr = this.outbstr, c=0, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca,10);}

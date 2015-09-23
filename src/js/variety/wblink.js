@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['wblink'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -27,14 +27,14 @@ MouseEvent:{
 		var border = this.getlineobj(this.prevPos, pos);
 		if(!border.isnull){
 			var d = border.getlinesize();
-			var borders = this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2);
+			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
 			if     (this.inputData===1){ borders.setLine();}
 			else if(this.inputData===0){ borders.removeLine();}
 			this.inputData=2;
 
-			this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+			this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
 	},
@@ -42,7 +42,7 @@ MouseEvent:{
 		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
 		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
 			{ return (base.onborder() ? base : current).getb();}
-		return this.owner.board.nullobj;
+		return this.board.nullobj;
 	},
 
 	inputpeke : function(){
@@ -56,10 +56,10 @@ MouseEvent:{
 		border.setQsub(this.inputData);
 
 		var d = border.getlinesize();
-		this.owner.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
+		this.board.borderinside(d.x1,d.y1,d.x2,d.y2).setLineVal(0);
 		this.prevPos = pos;
 
-		this.owner.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
+		this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		border.draw();
 	}
 },
@@ -143,7 +143,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawGrid(false, (this.owner.editmode && !this.outputImage));
+		this.drawGrid(false, (this.puzzle.editmode && !this.outputImage));
 
 		this.drawPekes();
 		this.drawLines();
@@ -208,7 +208,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.owner.board.border.setnoerr();
+			this.board.border.setnoerr();
 		}
 	}
 },

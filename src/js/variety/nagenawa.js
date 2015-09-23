@@ -6,11 +6,11 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 // マウス入力系
 "MouseEvent@nagenawa":{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ if(this.btn.Left){ this.inputLine();}}
 			else if(this.mouseend && this.notInputted()){ this.inputMB();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -18,13 +18,13 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 },
 "MouseEvent@ringring":{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputLine();}
 				else if(this.btn.Right){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputblock();}
 		}
 	},
@@ -48,7 +48,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
 	},
 	minnum : 0
 },
@@ -83,21 +83,22 @@ Graphic:{
 	gridcolor_type : "SLIGHT",
 
 	paint : function(){
+		var pid = this.pid;
 		this.drawBGCells();
 
 		this.drawDashedGrid();
 
-		if(this.owner.pid==='nagenawa'){
+		if(pid==='nagenawa'){
 			this.drawNumbers();
 			this.drawMBs();
 			this.drawBorders();
 		}
-		else if(this.owner.pid==='ringring'){
+		else if(pid==='ringring'){
 			this.drawShadedCells();
 		}
 
 		this.drawLines();
-		if(this.owner.pid==='ringring'){ this.drawPekes();}
+		if(pid==='ringring'){ this.drawPekes();}
 
 		this.drawChassis();
 
@@ -144,7 +145,7 @@ Graphic:{
 
 	// 元ネタはencode/decodeCrossMark
 	decodeBlockCell : function(){
-		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var cc=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -160,7 +161,7 @@ Graphic:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeBlockCell : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="";
 			if(bd.cell[c].ques===1){ pstr = ".";}
@@ -235,7 +236,7 @@ AnsCheck:{
 	},
 
 	checkAllLoopRect : function(){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		var xinfo = this.getLineInfo();
 		for(var r=1;r<=xinfo.max;r++){
 			var blist = xinfo.path[r].blist;
@@ -251,7 +252,7 @@ AnsCheck:{
 		}
 	},
 	isLoopRect : function(blist){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var x1=bd.maxbx, x2=bd.minbx, y1=bd.maxby, y2=bd.minby;
 		for(var i=0;i<blist.length;i++){
 			if(x1>blist[i].bx){ x1=blist[i].bx;}

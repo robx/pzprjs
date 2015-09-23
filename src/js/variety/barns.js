@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['barns'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputborder();}
 				else if(this.btn.Right){ this.inputIcebarn();}
@@ -96,7 +96,7 @@ Encode:{
 	},
 
 	decodeBarns : function(){
-		var c=0, bstr = this.outbstr, bd=this.owner.board, twi=[16,8,4,2,1];
+		var c=0, bstr = this.outbstr, bd=this.board, twi=[16,8,4,2,1];
 		for(var i=0;i<bstr.length;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -110,7 +110,7 @@ Encode:{
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeBarns : function(){
-		var cm="", num=0, pass=0, bd=this.owner.board, twi=[16,8,4,2,1];
+		var cm="", num=0, pass=0, bd=this.board, twi=[16,8,4,2,1];
 		for(var c=0;c<bd.cellmax;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}

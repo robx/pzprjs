@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['tasquare'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -118,12 +118,12 @@ AnsCheck:{
 	checkSumOfSize  : function(){ this.checkNumberSquare(true,  "nmSumSizeNe");},
 	checkAtLeastOne : function(){ this.checkNumberSquare(false, "nmNoSideShade");},
 	checkNumberSquare : function(flag, code){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.qnum<0):(cell.qnum===-1))){ continue;}
-			var clist=new this.owner.CellList(), adc=cell.adjacent;
+			var clist=new this.klass.CellList(), adc=cell.adjacent;
 			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
 			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
 			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}

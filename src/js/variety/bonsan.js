@@ -6,15 +6,15 @@ pzpr.classmgr.makeCustom(['bonsan','heyabon','rectslider'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){ this.inputMoveLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputlight();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.owner.pid==='heyabon'){ this.inputborder();}
+				if(this.pid==='heyabon'){ this.inputborder();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -24,19 +24,19 @@ MouseEvent:{
 		this.common.inputLine.call(this);
 		
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
-		if(this.owner.execConfig('autocmp') && !this.owner.execConfig('dispmove') && !this.notInputted()){
+		if(this.puzzle.execConfig('autocmp') && !this.puzzle.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
 		}
 	},
 	inputautodark : function(){
 		/* 最後に入力した線を取得する */
-		var opemgr = this.owner.opemgr, lastope = opemgr.lastope;
+		var opemgr = this.puzzle.opemgr, lastope = opemgr.lastope;
 		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
-		var border = this.owner.board.getb(lastope.bx, lastope.by);
+		var border = this.board.getb(lastope.bx, lastope.by);
 		
 		/* 線を引いた/消した箇所にある領域を取得 */
-		var linfo = this.owner.board.linfo;
-		var clist = new this.owner.CellList();
+		var linfo = this.board.linfo;
+		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.lineedge);
 		clist = clist.notnull().filter(function(cell){ return !!linfo.id[cell.id];});
 		
@@ -50,7 +50,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if(puzzle.pid!=='rectslider' && puzzle.execConfig('autocmp') && this.inputdark(cell)){ return;}
 
 		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
@@ -59,7 +59,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputdark : function(cell){
-		var targetcell = (!this.owner.execConfig('dispmove') ? cell : cell.base),
+		var targetcell = (!this.puzzle.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
@@ -81,17 +81,17 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){
-		var targetcell = (!this.owner.execConfig('dispmove') ? this : this.base);
+		var targetcell = (!this.puzzle.execConfig('dispmove') ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
 		
 		var	num   = targetcell.getNum(),
-			clist = this.owner.board.linfo.getClistByCell(this),
+			clist = this.board.linfo.getClistByCell(this),
 			d     = clist.getRectSize();
 		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
 	},
 	
 	maxnum : function(){
-		var bd=this.owner.board, bx=this.bx, by=this.by;
+		var bd=this.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
 		return Math.max(col, row);
@@ -132,7 +132,7 @@ Board:{
 		this.common.initialize.call(this);
 
 		/* AreaLineManagerより後にすること */
-		this.rects = this.addInfoList(this.owner.AreaSlideManager);
+		this.rects = this.addInfoList(this.klass.AreaSlideManager);
 	}
 },
 
@@ -160,7 +160,7 @@ AreaLineManager:{
 		if(!area.movevalid){ return;}
 		
 		var cell = area.departure, num = area.departure.qnum;
-		num = (num>=0 ? num : this.owner.board.cellmax);
+		num = (num>=0 ? num : this.board.cellmax);
 		cell.distance = num;
 		
 		/* area.departureは線が1方向にしかふられていないはず */
@@ -190,7 +190,7 @@ AreaLineManager:{
 		if(!this.enabled){ return;}
 		
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		var linfo = this.owner.board.linfo, clist = new this.owner.CellList(), rects = this;
+		var linfo = this.board.linfo, clist = new this.klass.CellList(), rects = this;
 		var id1 = linfo.id[cell1.id], id2 = linfo.id[cell2.id];
 		if(id1===id2 && id1!==null){ clist.extend(linfo.getClistByCell(cell1));}
 		else{
@@ -231,7 +231,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		if(this.owner.pid==='heyabon'){ this.drawBorders();}
+		if(this.pid==='heyabon'){ this.drawBorders();}
 
 		this.drawTip();
 		this.drawDepartures();
@@ -270,7 +270,7 @@ Graphic:{
 	},
 
 	getCellColor : function(cell){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if((puzzle.execConfig('dispmove') ? cell.base : cell).qnum===-1){ return null;}
 		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
 		
@@ -280,7 +280,7 @@ Graphic:{
 		return null;
 	},
 	getCellNumberColor : function(cell){
-		return (this.owner.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
+		return (this.puzzle.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 
@@ -291,29 +291,27 @@ Encode:{
 		if(!this.checkpflag("c")){ this.decodeBorder();}
 		this.decodeNumber16();
 
-		this.checkPuzzleid();
+		if(this.pid==='bonsan'){ this.checkPuzzleid();}
 	},
 	encodePzpr : function(type){
-		if(type===1 || this.owner.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
+		if(type===1 || this.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 		this.encodeNumber16();
 	},
 
 	checkPuzzleid : function(){
-		var o=this.owner, bd=o.board;
-		if(o.pid==='bonsan'){
-			for(var id=0;id<bd.bdmax;id++){
-				if(bd.border[id].ques===1){ o.changepid("heyabon"); break;}
-			}
+		var puzzle=this.puzzle, bd=puzzle.board;
+		for(var id=0;id<bd.bdmax;id++){
+			if(bd.border[id].ques===1){ puzzle.changepid("heyabon"); break;}
 		}
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeAreaRoom();
-		this.owner.fio.decodeQnum_PBox_Sato();
+		this.puzzle.fio.decodeAreaRoom();
+		this.puzzle.fio.decodeQnum_PBox_Sato();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeAreaRoom();
-		this.owner.fio.encodeQnum_PBox_Sato();
+		this.puzzle.fio.encodeAreaRoom();
+		this.puzzle.fio.encodeQnum_PBox_Sato();
 	}
 },
 "Encode@rectslider":{
@@ -329,15 +327,15 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
 		this.decodeCellQsubQcmp();
-		if(this.owner.pid!=='rectslider'){ this.decodeBorderQues();}
+		if(this.pid!=='rectslider'){ this.decodeBorderQues();}
 		this.decodeBorderLine();
 
-		this.owner.enc.checkPuzzleid();
+		if(this.pid==='bonsan'){ this.puzzle.enc.checkPuzzleid();}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();
 		this.encodeCellQsubQcmp();
-		if(this.owner.pid!=='rectslider'){ this.encodeBorderQues();}
+		if(this.pid!=='rectslider'){ this.encodeBorderQues();}
 		this.encodeBorderLine();
 	},
 
@@ -459,9 +457,9 @@ AnsCheck:{
 			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(cell.isDestination() === this.owner.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){ continue;}
+				if(cell.isDestination() === this.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){ continue;}
 				
-				this.failcode.add(this.owner.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
+				this.failcode.add(this.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
 				if(this.checkOnly){ break allloop;}
 				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);
 			}
@@ -473,7 +471,7 @@ AnsCheck:{
 },
 "AnsCheck@rectslider":{
 	getRectInfo : function(){
-		return (this._info.rect = this._info.rect || this.owner.board.rects.getAreaInfo());
+		return (this._info.rect = this._info.rect || this.board.rects.getAreaInfo());
 	},
 
 	checkMovedBlockRect : function(){

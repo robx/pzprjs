@@ -29,7 +29,7 @@ AnsCheck:{
 		for(var i=0;i<checklist.length;i++){
 			var item = checklist[i], isexist = true, prio = 0;
 			if(item.match('@')){
-				isexist = pzpr.util.checkpid(item.substr(item.indexOf('@')+1), this.owner.pid);
+				isexist = pzpr.util.checkpid(item.substr(item.indexOf('@')+1), this.puzzle.pid);
 				item = item.substr(0,item.indexOf('@'));
 			}
 			if(isexist){
@@ -53,7 +53,7 @@ AnsCheck:{
 	// ans.checkAns()  答えのチェックを行い、エラーコードを返す(nullはNo Error)
 	//---------------------------------------------------------------------------
 	check : function(activemode){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = this.board;
 		this.inCheck = true;
 		
 		if(activemode){
@@ -77,9 +77,9 @@ AnsCheck:{
 		return this.failcode;
 	},
 	checkAns : function(){
-		this.failcode = new this.owner.CheckInfo();
+		this.failcode = new this.klass.CheckInfo();
 		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
-		var checkSingleError = (this.checkOnly || !this.owner.getConfig("multierr"));
+		var checkSingleError = (this.checkOnly || !this.puzzle.getConfig("multierr"));
 		for(var i=0;i<checklist.length;i++){
 			checklist[i].call(this);
 			if(checkSingleError && (this.failcode.length>0)){ break;}
@@ -112,7 +112,7 @@ CheckInfo:{
 		this.complete = false;
 	},
 	text : function(lang){
-		var puzzle = this.owner, textlist = puzzle.faillist, texts = [];
+		var puzzle = this.puzzle, textlist = puzzle.faillist, texts = [];
 		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
 		if(this.length===0){ return textlist.complete[langcode];}
 		for(var i=0;i<this.length;i++){

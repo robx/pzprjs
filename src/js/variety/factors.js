@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['factors'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn.Left){ this.inputborder();}
 			}
@@ -20,12 +20,12 @@ MouseEvent:{
 	},
 
 	inputqnum_main : function(cell){
-		if(this.owner.editmode){
-			cell = this.owner.board.rooms.getTopOfRoomByCell(cell);
+		if(this.puzzle.editmode){
+			cell = this.board.rooms.getTopOfRoomByCell(cell);
 		}
 
 		var max=cell.getmaxnum(), min=cell.getminnum();
-		var num=(this.owner.editmode ? cell.qnum : cell.anum), val=-1;
+		var num=(this.puzzle.editmode ? cell.qnum : cell.anum), val=-1;
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
@@ -58,12 +58,12 @@ Cell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		return this.owner.editmode?999999:Math.max(this.owner.board.qcols,this.owner.board.qrows);
+		return this.puzzle.editmode?999999:Math.max(this.board.qcols,this.board.qrows);
 	},
 
 	setNum : function(val){
 		if(val===0){ return;}
-		if(this.owner.editmode){ this.setQnum(val);}else{ this.setAnum(val);}
+		if(this.puzzle.editmode){ this.setQnum(val);}else{ this.setAnum(val);}
 	}
 },
 

@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['nurikabe','nuribou','mochikoro','mochinyoro'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -28,7 +28,7 @@ Cell:{
 },
 Board:{
 	getdir8WareaInfo : function(){
-		var winfo = new this.owner.AreaInfo();
+		var winfo = new this.klass.AreaInfo();
 		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].isUnshade()?0:null);}
 		for(var c=0;c<this.cellmax;c++){
 			var cell0 = this.cell[c];
@@ -77,7 +77,7 @@ Flags:{
 Graphic:{
 	paint : function(){
 		this.drawBGCells();
-		if(this.owner.pid==='nurikabe'){ this.drawDotCells(false);}
+		if(this.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 		this.drawShadedCells();
 
@@ -102,34 +102,33 @@ Encode:{
 	},
 	encodePzpr : function(type){
 		this.encodeNumber16();
-	},
-
+	}
+},
+"Encode@nurikabe":{
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(this.owner.pid==='nurikabe'){
-			this.decodeCellQnumAns();
-		}
-		else{
-			this.decodeCellQnum();
-			this.decodeCellAns();
-		}
+		this.decodeCellQnum();
+		this.decodeCellAns();
 	},
 	encodeData : function(){
-		if(this.owner.pid==='nurikabe'){
-			this.encodeCellQnumAns();
-		}
-		else{
-			this.encodeCellQnum();
-			this.encodeCellAns();
-		}
+		this.encodeCellQnum();
+		this.encodeCellAns();
+	}
+},
+"FileIO@nurikabe":{
+	decodeData : function(){
+		this.decodeCellQnumAns();
+	},
+	encodeData : function(){
+		this.encodeCellQnumAns();
 	},
 
 	kanpenOpen : function(){
@@ -210,7 +209,7 @@ AnsCheck : {
 		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);}, "csWidthGt1");
 	},
 	checkCorners : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
@@ -241,7 +240,7 @@ AnsCheck : {
 },
 "AnsCheck@mochikoro,mochinyoro":{
 	checkConnectUnshaded_mochikoro : function(){
-		this.checkOneArea( this.owner.board.getdir8WareaInfo(), "csDivide8" );
+		this.checkOneArea( this.board.getdir8WareaInfo(), "csDivide8" );
 	},
 	checkUnshadeRect : function(){
 		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);}, "cuNotRect");

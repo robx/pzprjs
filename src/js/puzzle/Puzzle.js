@@ -32,7 +32,7 @@ pzpr.Puzzle.prototype =
 {
 	pid : '',			// パズルのID("creek"など)
 	
-	classlist : null,
+	klass    : null,
 	
 	ready    : false,
 	editmode : false,	// 問題配置モード
@@ -166,6 +166,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	changepid : function(pid){
 		this.pid = pid;
+		pzpr.classmgr.setPrototypeRef(this, 'pid', pid);
 		this.checker.makeCheckList();
 	},
 
@@ -280,12 +281,14 @@ function openExecute(puzzle, data, variety, callback){
 	}
 
 	puzzle.ready = false;
-	var Board = (!!puzzle.Board ? puzzle.Board : null);
+
+	var classes = puzzle.klass;
+	var Board = ((!!classes && !!classes.Board) ? classes.Board : null);
 	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
 
 	pzpr.classmgr.setPuzzleClass(puzzle, pzl.id, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
-		if(Board!==puzzle.Board){ initObjects(puzzle);}
+		if(Board!==puzzle.klass.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
 		puzzle.metadata = new puzzle.MetaData();
@@ -303,23 +306,27 @@ function openExecute(puzzle, data, variety, callback){
 //  initObjects()      各オブジェクトの生成などの処理
 //---------------------------------------------------------------------------
 function initObjects(puzzle){
+	var classes = puzzle.klass;
+
 	// クラス初期化
-	puzzle.flags = new puzzle.Flags();		// パズルの初期設定値を保持するオブジェクト
+	puzzle.flags = new classes.Flags();		// パズルの初期設定値を保持するオブジェクト
 
-	puzzle.board   = new puzzle.Board();		// 盤面オブジェクト
-	puzzle.checker = new puzzle.AnsCheck();		// 正解判定オブジェクト
-	puzzle.painter = new puzzle.Graphic();		// 描画系オブジェクト
+	puzzle.board   = new classes.Board();		// 盤面オブジェクト
+	pzpr.classmgr.setPrototypeRef(puzzle, 'board', puzzle.board);
 
-	puzzle.cursor = new puzzle.TargetCursor();	// 入力用カーソルオブジェクト
-	puzzle.mouse  = new puzzle.MouseEvent();	// マウス入力オブジェクト
-	puzzle.key    = new puzzle.KeyEvent();		// キーボード入力オブジェクト
+	puzzle.checker = new classes.AnsCheck();	// 正解判定オブジェクト
+	puzzle.painter = new classes.Graphic();		// 描画系オブジェクト
 
-	puzzle.opemgr = new puzzle.OperationManager();	// 操作情報管理オブジェクト
+	puzzle.cursor = new classes.TargetCursor();	// 入力用カーソルオブジェクト
+	puzzle.mouse  = new classes.MouseEvent();	// マウス入力オブジェクト
+	puzzle.key    = new classes.KeyEvent();		// キーボード入力オブジェクト
 
-	puzzle.enc = new puzzle.Encode();		// URL入出力用オブジェクト
-	puzzle.fio = new puzzle.FileIO();		// ファイル入出力用オブジェクト
+	puzzle.opemgr = new classes.OperationManager();	// 操作情報管理オブジェクト
 
-	puzzle.faillist = new puzzle.FailCode();	// 正答判定文字列を保持するオブジェクト
+	puzzle.enc = new classes.Encode();		// URL入出力用オブジェクト
+	puzzle.fio = new classes.FileIO();		// ファイル入出力用オブジェクト
+
+	puzzle.faillist = new classes.FailCode();	// 正答判定文字列を保持するオブジェクト
 }
 
 //---------------------------------------------------------------------------
@@ -438,7 +445,7 @@ function execKeyUp(e){
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
 	var el = puzzle.imgcanvas[type.match(/svg/)?1:0];
-	var pc2 = new puzzle.Graphic();
+	var pc2 = new puzzle.klass.Graphic();
 	pc2.initCanvas_special(el);
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	

@@ -6,12 +6,12 @@ pzpr.classmgr.makeCustom(['kinkonkan'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && this.inputData!==null)){
 				this.inputslash();
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){
 				this.inputedit_onstart();
 			}
@@ -42,7 +42,7 @@ MouseEvent:{
 		this.inputData = state;
 	},
 	inputflash : function(){
-		var excell = this.getpos(0).getex(), puzzle = this.owner, board = puzzle.board;
+		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull || this.mouseCell===excell){ return;}
 
 		if(this.inputData!==11 && this.inputData!==null){ }
@@ -62,7 +62,7 @@ MouseEvent:{
 
 	inputedit_onstart : function(){
 		var piece = this.getcell_excell(); /* cell or excell */
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(piece.isnull){ return;}
 
 		if(piece.group!=='excell'){
@@ -122,7 +122,7 @@ KeyEvent:{
 		this.key_inputexcell(ca);
 	},
 	key_inputexcell : function(ca){
-		var excell = this.cursor.getex(), bd = this.owner.board;
+		var excell = this.cursor.getex(), bd = this.board;
 		if((excell.bx===bd.minbx+1||excell.bx===bd.maxbx-1)&&
 		   (excell.by===bd.minby+1||excell.by===bd.maxby-1)){ return;}
 
@@ -207,12 +207,12 @@ Board:{
 		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
 		for(var i=0;i<this.excellmax;i++){ this.excell[i].qlight=0;}
 		this.haslight = false;
-		this.owner.redraw();
+		this.puzzle.redraw();
 	},
 	flashlight : function(excell){
 		this.lightclear();
 		this.searchLight(excell, true);
-		this.owner.redraw();
+		this.puzzle.redraw();
 	},
 
 	searchLight : function(startexcell, setlight){
@@ -265,7 +265,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			var clist = this.owner.board.cell;
+			var clist = this.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				cell.setQans({0:0,31:32,32:31}[cell.qans]);
@@ -366,7 +366,7 @@ Encode:{
 	decodeKinkonkan : function(){
 		// 盤面外数字のデコード
 		var subint = [];
-		var ec=0, a=0, bstr = this.outbstr, bd = this.owner.board;
+		var ec=0, a=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), excell=bd.excell[ec];
 
@@ -391,7 +391,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeKinkonkan : function(){
-		var cm="", cm2="", bd = this.owner.board;
+		var cm="", cm2="", bd = this.board;
 
 		// 盤面外部分のエンコード
 		var count=0;
@@ -421,7 +421,7 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 
-		var bd = this.owner.board, item = this.getItemList(bd.qrows+2);
+		var bd = this.board, item = this.getItemList(bd.qrows+2);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
@@ -457,7 +457,7 @@ FileIO:{
 		this.filever = 1;
 		this.encodeAreaRoom();
 
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
@@ -505,7 +505,7 @@ AnsCheck:{
 	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
 	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
 	checkMirrors : function(type, code){
-		var d = [], bd = this.owner.board;
+		var d = [], bd = this.board;
 		for(var ec=0;ec<bd.excellmax-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}

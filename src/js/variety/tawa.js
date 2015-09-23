@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['tawa'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
@@ -20,7 +20,7 @@ MouseEvent:{
 		return (!cand.isnull ? cand : pos.move(1,0).getc());
 	},
 	getpos : function(rc){
-		return (new this.owner.Address(this.inputPoint.bx|0, (this.inputPoint.by&~1)+1));
+		return (new this.klass.Address(this.inputPoint.bx|0, (this.inputPoint.by&~1)+1));
 	}
 },
 
@@ -116,7 +116,7 @@ Board:{
 		this.maxbx = 2*this.qcols + [0,1,1,2][this.shape];
 		this.maxby = 2*this.qrows;
 
-		this.owner.cursor.setminmax();
+		this.puzzle.cursor.setminmax();
 	},
 
 	getc : function(bx,by,qc,qr){
@@ -136,7 +136,7 @@ Board:{
 		return this.getc(bx,by,qc,qr);
 	},
 	cellinside : function(x1,y1,x2,y2){
-		var clist = new this.owner.CellList();
+		var clist = new this.klass.CellList();
 		for(var by=(y1|1);by<=y2;by+=2){ for(var bx=x1;bx<=x2;bx++){
 			var cell = this.getc(bx,by);
 			if(!cell.isnull){ clist.add(cell);}
@@ -147,7 +147,7 @@ Board:{
 BoardExec:{
 	// 拡大縮小・回転反転時の関数
 	execadjust : function(name){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
 				if(bd.qrows<=1){ return;}
@@ -160,7 +160,7 @@ BoardExec:{
 		this.common.execadjust.call(this, name);
 	},
 	expandreduce : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		if(key & this.EXPAND){
 			switch(key & 0x0F){
 				case this.LT: bd.qcols+=[0,0,1,1][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
@@ -186,7 +186,7 @@ BoardExec:{
 	},
 
 	turnflip : function(key,d){
-		var bd = this.owner.board;
+		var bd = this.board;
 		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
 		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
@@ -197,7 +197,7 @@ BoardExec:{
 		bd.setposAll();
 	},
 	distObj : function(key,piece){
-		var bd = this.owner.board;
+		var bd = this.board;
 		key &= 0x0F;
 		if     (key===this.UP){ return piece.by;}
 		else if(key===this.DN){ return bd.maxby-piece.by;}
@@ -238,7 +238,7 @@ Graphic:{
 			bheight = d.y2 - minby;
 		}
 		else{
-			var bd = this.owner.board;
+			var bd = this.board;
 			minbx   = bd.minbx;
 			minby   = bd.minby;
 			bwidth  = bd.maxbx - minbx;
@@ -251,7 +251,7 @@ Graphic:{
 	},
 
 	drawGrid_tawa : function(){
-		var g = this.vinc('grid', 'crispEdges', true), bd = this.owner.board;
+		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
@@ -295,7 +295,7 @@ Encode:{
 	},
 
 	decodeTawamurenga : function(){
-		var barray = this.outbstr.split("/"), bd = this.owner.board;
+		var barray = this.outbstr.split("/"), bd = this.board;
 		bd.setShape(+barray[0]);
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
@@ -305,14 +305,14 @@ Encode:{
 		}
 	},
 	encodeTawamurenga : function(){
-		this.outbstr = (this.owner.board.shape+"/");
+		this.outbstr = (this.board.shape+"/");
 		this.encodeNumber10();
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		bd.setShape(+this.readLine());
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
@@ -330,7 +330,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.datastr = bd.shape+"\n";
 
 		var bstr = "";
@@ -360,15 +360,15 @@ AnsCheck:{
 	],
 
 	checkThreeShadeCells : function(){
-		var bd = this.owner.board;
+		var bd = this.board, CellList = this.klass.CellList;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var clist = new this.owner.CellList();
+			var clist = new CellList();
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ continue;}
 				else if(cell.isUnshade() || cell.isNum()){
 					if(clist.length>=3){ break;}
-					clist=new this.owner.CellList();
+					clist=new CellList();
 				}
 				else{ clist.add(cell);}
 			}
@@ -380,11 +380,11 @@ AnsCheck:{
 		}
 	},
 	checkNumbers : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			var clist = new this.owner.CellList();
+			var clist = new this.klass.CellList();
 			clist.add(cell.relcell(-1,-2));
 			clist.add(cell.relcell( 1,-2));
 			clist.add(cell.relcell(-2, 0));
@@ -400,7 +400,7 @@ AnsCheck:{
 		}
 	},
 	checkUnderCells : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}

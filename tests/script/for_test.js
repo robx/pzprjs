@@ -92,7 +92,7 @@ ui.debug.extend(
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");
 			mv.btn.Right = (strs[1].substr(0,5)==="right");
 			
-			var addr = new ui.puzzle.RawAddress();
+			var addr = new ui.puzzle.klass.RawAddress();
 			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
 			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
 				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
@@ -186,14 +186,14 @@ ui.debug.extend(
 	},
 	check_encode_kanpen : function(self){
 		if(pzpr.variety.info[self.pid].exists.pencilbox){
-			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
-			var kanpen_url = o.getURL(pzpr.parser.URL_KANPEN);
+			var puzzle = ui.puzzle, bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
 
-			if(pzpr.parser.parse(kanpen_url).id!==o.pid){
+			if(pzpr.parser.parse(kanpen_url).id!==puzzle.pid){
 				self.addTA("Encode kanpen = id fail..."); self.fails++;
 			}
-			o.open(kanpen_url, function(){
+			puzzle.open(kanpen_url, function(){
 				ui.menuconfig.set('autocheck',false);
 				
 				if(!self.bd_compare(bd,bd2)){
@@ -216,7 +216,7 @@ ui.debug.extend(
 			ui.puzzle.open(acsstr[n][1]);
 			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new ui.puzzle.CheckInfo(expectcode).text());
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new ui.puzzle.klass.CheckInfo(expectcode).text());
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
@@ -260,15 +260,15 @@ ui.debug.extend(
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var o = ui.puzzle, bd = o.board;
-		var outputstr = o.getFileData(pzpr.parser.FILE_PZPR);
+		var puzzle = ui.puzzle, bd = puzzle.board;
+		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
-		o.painter.suspendAll();
+		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		o.open(outputstr, function(){
+		puzzle.open(outputstr, function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
@@ -279,15 +279,15 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox : function(self){
-		var o = ui.puzzle, bd = o.board, pid = o.pid;
-		var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
+		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
 		var bd2 = self.bd_freezecopy(bd);
 
-		o.painter.suspendAll();
+		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.resetInfo();
 
-		o.open(outputstr, function(){
+		puzzle.open(outputstr, function(){
 			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}

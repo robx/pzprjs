@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['pipelink','pipelinkr'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.btn.Left){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -15,7 +15,7 @@ MouseEvent:{
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
 		}
 	}
@@ -30,7 +30,7 @@ KeyEvent:{
 		this.key_inputLineParts(ca);
 	},
 	key_inputLineParts : function(ca){
-		if(this.owner.playmode){ return false;}
+		if(this.puzzle.playmode){ return false;}
 		var cell = this.cursor.getc();
 
 		if     (ca==='q'){ cell.setQues(11);}
@@ -43,7 +43,7 @@ KeyEvent:{
 		else if(ca==='d'){ cell.setQues(16);}
 		else if(ca==='f'){ cell.setQues(17);}
 		else if(ca==='-'){ cell.setQues(cell.ques!==-2?-2:0);}
-		else if(this.owner.pid==='pipelinkr' && ca==='1'){ cell.setQues(6);}
+		else if(this.pid==='pipelinkr' && ca==='1'){ cell.setQues(6);}
 		else{ return false;}
 
 		cell.drawaround();
@@ -70,7 +70,7 @@ BoardExec:{
 				case this.TURNR: tques={12:13,13:12,14:17,15:14,16:15,17:16}; break;
 				case this.TURNL: tques={12:13,13:12,14:15,15:16,16:17,17:14}; break;
 			}
-			var clist = this.owner.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], val = tques[cell.ques];
 				if(!!val){ cell.setQues(val);}
@@ -103,7 +103,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid();
 
-		if(this.owner.pid==='pipelinkr'){
+		if(this.pid==='pipelinkr'){
 			this.drawCircles();
 			this.drawBorders();
 		}
@@ -122,12 +122,12 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
-		if     (cell.error===1)                                                 { return this.errbcolor1;}
-		else if(cell.ques===6 && this.owner.getConfig('disptype_pipelinkr')===2){ return this.icecolor;}
+		if     (cell.error===1)                                                  { return this.errbcolor1;}
+		else if(cell.ques===6 && this.puzzle.getConfig('disptype_pipelinkr')===2){ return this.icecolor;}
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.owner.getConfig('disptype_pipelinkr')===2){
+		if(this.puzzle.getConfig('disptype_pipelinkr')===2){
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 				return this.quescolor;
@@ -137,7 +137,7 @@ Graphic:{
 	},
 
 	getCircleStrokeColor : function(cell){
-		if((this.owner.getConfig('disptype_pipelinkr')===1) && cell.ques===6){
+		if((this.puzzle.getConfig('disptype_pipelinkr')===1) && cell.ques===6){
 			return this.quescolor;
 		}
 		return null;
@@ -157,18 +157,18 @@ Encode:{
 	decodePzpr : function(type){
 		this.decodePipelink();
 
-		this.checkPuzzleid();
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
+		if(puzzle.pid==='pipelink'){ this.checkPuzzleid();}
 		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
 	},
 	encodePzpr : function(type){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')===2)?"i":null);
 		this.encodePipelink(type);
 	},
 
 	decodePipelink : function(){
-		var c=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, bstr = this.outbstr, bd = this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -190,7 +190,7 @@ Encode:{
 	},
 	encodePipelink : function(type){
 		var parser = pzpr.parser;
-		var count, cm="", bd = this.owner.board;
+		var count, cm="", bd = this.board;
 
 		count=0;
 		for(var c=0;c<bd.cellmax;c++){
@@ -218,11 +218,9 @@ Encode:{
 	},
 
 	checkPuzzleid : function(){
-		var o=this.owner, bd=o.board;
-		if(o.pid==='pipelink'){
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].ques===6){ o.changepid('pipelinkr'); break;}
-			}
+		var puzzle=this.puzzle, bd=puzzle.board;
+		for(var c=0;c<bd.cellmax;c++){
+			if(bd.cell[c].ques===6){ puzzle.changepid('pipelinkr'); break;}
 		}
 	}
 },
@@ -237,12 +235,12 @@ FileIO:{
 		});
 		this.decodeBorderLine();
 
-		var puzzle = this.owner;
-		puzzle.enc.checkPuzzleid();
+		var puzzle = this.puzzle;
+		if(puzzle.pid==='pipelink'){ puzzle.enc.checkPuzzleid();}
 		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
 	},
 	encodeData : function(){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if     (puzzle.pid==='pipelink') { this.datastr += 'pipe\n';}
 		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')===1?"circle\n":"ice\n");}
 		this.encodeCell( function(cell){
@@ -277,7 +275,7 @@ AnsCheck:{
 },
 "CheckInfo@pipelinkr":{
 	text : function(lang){
-		var puzzle = this.owner, texts = [];
+		var puzzle = this.puzzle, texts = [];
 		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
 		var isdispice = (puzzle.getConfig('disptype_pipelinkr')===2);
 		if(this.length===0){ return puzzle.faillist.complete[langcode];}

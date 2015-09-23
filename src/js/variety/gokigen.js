@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['gokigen','wagiri'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if(puzzle.playmode && this.mousestart){
 			this.inputslash();
 		}
@@ -20,7 +20,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var use = this.owner.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.qans;
+		var use = this.puzzle.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.qans;
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
@@ -29,7 +29,7 @@ MouseEvent:{
 },
 "MouseEvent@gokigen":{
 	dispRed : function(){
-		var puzzle = this.owner, flag = (puzzle.playmode && puzzle.key.isZ);
+		var puzzle = this.puzzle, flag = (puzzle.playmode && puzzle.key.isZ);
 		if(flag){ this.dispBlue();}
 		return flag;
 	},
@@ -39,7 +39,7 @@ MouseEvent:{
 		if(cell.isnull || cell.qans===0){ return;}
 
 		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
-		var bd = this.owner.board, check = bd.searchline(fcross);
+		var bd = this.board, check = bd.searchline(fcross);
 		for(var c=0;c<bd.cellmax;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.qans===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
@@ -47,7 +47,7 @@ MouseEvent:{
 		}
 
 		bd.haserror = true;
-		this.owner.redraw();
+		this.puzzle.redraw();
 	}
 },
 "MouseEvent@wagiri":{
@@ -221,7 +221,7 @@ Board:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		if(key & this.TURNFLIP){ // 反転・回転全て
-			var clist = this.owner.board.cell;
+			var clist = this.board.cell;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				cell.setQans({0:0,31:32,32:31}[cell.qans]);
@@ -249,8 +249,8 @@ Graphic:{
 
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
-		var bd = this.owner.board;
-		if(!bd.haserror && this.owner.getConfig('autoerr')){
+		var bd = this.board;
+		if(!bd.haserror && this.puzzle.getConfig('autoerr')){
 			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
@@ -262,7 +262,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid(false);
 
-		if(this.owner.pid==='wagiri'){ this.drawNumbers();}
+		if(this.pid==='wagiri'){ this.drawNumbers();}
 		this.drawSlashes();
 
 		this.drawCrosses();
@@ -276,7 +276,7 @@ Graphic:{
 	},
 
 	drawSlashes : function(){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
 			var sdata=bd.getSlashData();
 			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
@@ -305,8 +305,8 @@ Graphic:{
 	},
 
 	drawTarget : function(){
-		var islarge = !this.owner.cursor.onborder();
-		this.drawCursor(islarge,this.owner.editmode);
+		var islarge = !this.puzzle.cursor.onborder();
+		this.drawCursor(islarge,this.puzzle.editmode);
 	}
 },
 
@@ -339,7 +339,7 @@ Graphic:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCrossNum();
-		if(this.owner.pid==='wagiri'){ this.decodeCellQnum();}
+		if(this.pid==='wagiri'){ this.decodeCellQnum();}
 		this.decodeCell( function(cell,ca){
 			if     (ca==="1"){ cell.qans = 31;}
 			else if(ca==="2"){ cell.qans = 32;}
@@ -347,7 +347,7 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCrossNum();
-		if(this.owner.pid==='wagiri'){ this.encodeCellQnum();}
+		if(this.pid==='wagiri'){ this.encodeCellQnum();}
 		this.encodeCell( function(cell){
 			if     (cell.qans===31){ return "1 ";}
 			else if(cell.qans===32){ return "2 ";}
@@ -367,11 +367,11 @@ AnsCheck:{
 	],
 
 	getSlashInfo : function(){
-		return (this._info.slash = this._info.slash || this.owner.board.getSlashData());
+		return (this._info.slash = this._info.slash || this.board.getSlashData());
 	},
 
 	checkQnumCross : function(){
-		var bd = this.owner.board, sinfo = bd.getSlashInfo();
+		var bd = this.board, sinfo = bd.getSlashInfo();
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0 || qn===sinfo.cross[c].length){ continue;}
@@ -389,7 +389,7 @@ AnsCheck:{
 "AnsCheck@gokigen":{
 	checkSlashLoop : function(){
 		var sdata = this.getSlashInfo();
-		var errclist = this.owner.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
+		var errclist = this.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
 		if(errclist.length>0){
 			this.failcode.add("slLoop");
 			errclist.seterr(1);
@@ -400,7 +400,7 @@ AnsCheck:{
 	checkSlashLoop   : function(){ this.checkLoops_wagiri(false, "slLoopGiri");},
 	checkSlashNoLoop : function(){ this.checkLoops_wagiri(true,  "slNotLoopWa");},
 	checkLoops_wagiri : function(checkLoop, code){
-		var result = true, bd = this.owner.board;
+		var result = true, bd = this.board;
 		var sdata = this.getSlashInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}

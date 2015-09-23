@@ -6,14 +6,14 @@ pzpr.classmgr.makeCustom(['toichika'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn.Left) { this.inputarrow_cell();}
 				else if(this.btn.Right){ this.inputDot();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.inputarrow_cell();}
@@ -135,7 +135,7 @@ Encode:{
 	},
 
 	decode4Cell_toichika : function(){
-		var c=0, i=0, bstr = this.outbstr, bd=this.owner.board;
+		var c=0, i=0, bstr = this.outbstr, bd=this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
 
@@ -149,7 +149,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encode4Cell_toichika : function(){
-		var cm="", count=0, bd=this.owner.board;
+		var cm="", count=0, bd=this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
@@ -190,7 +190,7 @@ AnsCheck:{
 	],
 
 	getPairArrowInfo : function(){
-		return (this._info.parrow = this._info.parrow || this.owner.board.getPairedArrowsInfo());
+		return (this._info.parrow = this._info.parrow || this.board.getPairedArrowsInfo());
 	},
 
 	checkDirectionOfArrow : function(){
@@ -200,7 +200,7 @@ AnsCheck:{
 			
 			this.failcode.add("arAlone");
 			if(this.checkOnly){ break;}
-			this.owner.board.cell[ainfo[i]].seterr(1);
+			this.board.cell[ainfo[i]].seterr(1);
 		}
 	},
 	checkAdjacentCountries : function(){

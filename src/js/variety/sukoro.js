@@ -11,10 +11,10 @@ pzpr.classmgr.makeCustom(['sukoro','view','sukororoom'], {
 },
 "MouseEvent@sukororoom":{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || (this.mousemove && this.btn.Left)){
 				this.inputborder();
 			}
@@ -35,7 +35,7 @@ KeyEvent:{
 		this.key_sukoro(ca);
 	},
 	key_sukoro : function(ca){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			var cell=this.cursor.getc();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca=(cell.qsub===1?'1':'s1');}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca=(cell.qsub===2?'2':'s2');}
@@ -56,9 +56,9 @@ Cell:{
 
 	// 正答判定用
 	getViewClist : function(){
-		var sx=this.bx, sy=this.by, clist=new this.owner.CellList();
+		var sx=this.bx, sy=this.by, clist=new this.klass.CellList();
 		for(var dir=1;dir<=4;dir++){
-			var pos = new this.owner.Address(sx,sy);
+			var pos = new this.klass.Address(sx,sy);
 			while(1){
 				pos.movedir(dir,2);
 				var cell = pos.getc();
@@ -71,7 +71,7 @@ Cell:{
 },
 "Cell@view":{
 	maxnum : function(){
-		return Math.min(255, this.owner.board.qcols+this.owner.board.qrows-2);
+		return Math.min(255, this.board.qcols+this.board.qrows-2);
 	},
 	minnum : 0
 },
@@ -101,7 +101,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		if(this.owner.pid==='sukororoom'){ this.drawBorders();}
+		if(this.pid==='sukororoom'){ this.drawBorders();}
 
 		this.drawMBs();
 		this.drawNumbers();
@@ -147,12 +147,12 @@ Graphic:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(this.owner.pid==='sukororoom'){ this.decodeBorderQues();}
+		if(this.pid==='sukororoom'){ this.decodeBorderQues();}
 		this.decodeCellQnum();
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
-		if(this.owner.pid==='sukororoom'){ this.encodeBorderQues();}
+		if(this.pid==='sukororoom'){ this.encodeBorderQues();}
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
 	}
@@ -182,7 +182,7 @@ AnsCheck:{
 	},
 
 	checkViewOfNumber : function(){
-		var boardcell = this.owner.board.cell;
+		var boardcell = this.board.cell;
 		for(var c=0;c<boardcell.length;c++){
 			var cell = boardcell[c];
 			if(!cell.isValidNum()){ continue;}

@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['box'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.input_onstart();}
 		}
 	},
@@ -103,7 +103,7 @@ EXCell:{
 		var bx=this.bx, by=this.by;
 		if(bx===-1 && by===-1){ return 0;}
 		var sum=0;
-		for(var n=(bx===-1?this.owner.board.qrows:this.owner.board.qcols);n>0;n--){ sum+=n;}
+		for(var n=(bx===-1?this.board.qrows:this.board.qcols);n>0;n--){ sum+=n;}
 		return sum;
 	},
 	minnum : 0
@@ -121,14 +121,14 @@ BoardExec:{
 		this.qnumw = [];
 		this.qnumh = [];
 
-		var bd=this.owner.board;
+		var bd=this.board;
 		for(var by=by1;by<=d.y2;by+=2){ this.qnumw[by] = bd.getex(-1,by).qnum;}
 		for(var bx=bx1;bx<=d.x2;bx+=2){ this.qnumh[bx] = bd.getex(bx,-1).qnum;}
 	},
 	adjustBoardData2 : function(key,d){
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1);
 
-		var bd=this.owner.board;
+		var bd=this.board;
 		switch(key){
 		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){ bd.getex(bx,-1).setQnum(this.qnumh[bx]);}
@@ -189,7 +189,7 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
-			if(excell.id>=this.owner.board.qcols+this.owner.board.qrows){ continue;}
+			if(excell.id>=this.board.qcols+this.board.qrows){ continue;}
 
 			g.vi = "excell_text_"+excell.id;
 			if(excell.bx>=0 || excell.by>=0){
@@ -201,7 +201,7 @@ Graphic:{
 	},
 
 	drawCircledNumbers_box : function(){
-		var list = [], bd = this.owner.board;
+		var list = [], bd = this.board;
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
 		if(x2>=bd.maxbx){ for(var by=(y1|1),max=Math.min(bd.maxby,y2);by<=max;by+=2){ list.push([bd.maxbx+1,by]);}}
 		if(y2>=bd.maxby){ for(var bx=(x1|1),max=Math.min(bd.maxbx,x2);bx<=max;bx+=2){ list.push([bx,bd.maxby+1]);}}
@@ -244,7 +244,7 @@ Encode:{
 	},
 
 	decodeBox : function(){
-		var ec=0, bstr = this.outbstr, bd = this.owner.board;
+		var ec=0, bstr = this.outbstr, bd = this.board;
 		for(var a=0;a<bstr.length;a++){
 			var ca=bstr.charAt(a), excell=bd.excell[ec];
 			if(ca==='-'){ excell.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
@@ -256,7 +256,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeBox : function(){
-		var cm="", bd = this.owner.board;
+		var cm="", bd = this.board;
 		for(var ec=0,len=bd.qcols+bd.qrows;ec<len;ec++){
 			var qnum=bd.excell[ec].qnum;
 			if(qnum<32){ cm+=("" +qnum.toString(32));}
@@ -269,7 +269,7 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var bd = this.owner.board, item = this.getItemList(bd.qrows+1);
+		var bd = this.board, item = this.getItemList(bd.qrows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
@@ -288,7 +288,7 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var by=-1;by<bd.maxby;by+=2){
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
@@ -325,11 +325,11 @@ AnsCheck:{
 	],
 
 	checkShadeCells : function(type){
-		var bd = this.owner.board;
+		var bd = this.board;
 		for(var ec=0;ec<bd.excellmax;ec++){
 			var excell = bd.excell[ec];
 			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
-			var clist=new this.owner.CellList();
+			var clist=new this.klass.CellList();
 			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
 				cell = pos.move(0,2).getc();
 				while(!cell.isnull){

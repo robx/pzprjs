@@ -26,34 +26,34 @@ Position:{
 	// pos.getaddr() 位置をAddressクラスのオブジェクトで取得する
 	//---------------------------------------------------------------------------
 	getaddr : function(){
-		return (new this.owner.Address(this.bx, this.by));
+		return (new this.klass.Address(this.bx, this.by));
 	},
 
 	//---------------------------------------------------------------------------
 	// relcell(), relcross(), relbd(), relexcell(), relobj() 相対位置に存在するオブジェクトを返す
 	//---------------------------------------------------------------------------
-	relcell   : function(dx,dy){ return this.owner.board.getc(this.bx+dx,this.by+dy);},
-	relcross  : function(dx,dy){ return this.owner.board.getx(this.bx+dx,this.by+dy);},
-	relbd     : function(dx,dy){ return this.owner.board.getb(this.bx+dx,this.by+dy);},
-	relexcell : function(dx,dy){ return this.owner.board.getex(this.bx+dx,this.by+dy);},
-	relobj    : function(dx,dy){ return this.owner.board.getobj(this.bx+dx,this.by+dy);},
+	relcell   : function(dx,dy){ return this.board.getc(this.bx+dx,this.by+dy);},
+	relcross  : function(dx,dy){ return this.board.getx(this.bx+dx,this.by+dy);},
+	relbd     : function(dx,dy){ return this.board.getb(this.bx+dx,this.by+dy);},
+	relexcell : function(dx,dy){ return this.board.getex(this.bx+dx,this.by+dy);},
+	relobj    : function(dx,dy){ return this.board.getobj(this.bx+dx,this.by+dy);},
 
 	//---------------------------------------------------------------------------
 	// pos.draw() 盤面に自分の周囲を描画する
 	// pos.drawaround() 盤面に自分の周囲1マスを含めて描画する
 	//---------------------------------------------------------------------------
 	draw : function(){
-		this.owner.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
+		this.puzzle.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
 	},
 	drawaround : function(){
-		this.owner.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
+		this.puzzle.painter.paintRange(this.bx-3, this.by-3, this.bx+3, this.by+3);
 	},
 
 	//---------------------------------------------------------------------------
 	// pos.isinside() この場所が盤面内かどうか判断する
 	//---------------------------------------------------------------------------
 	isinside : function(){
-		var bd = this.owner.board;
+		var bd = this.board;
 		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
 				this.by>=bd.minby && this.by<=bd.maxby);
 	}
@@ -97,10 +97,10 @@ Position:{
 	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
 	onborder : function(){ return !!((this.bx+this.by)&1);},
 	
-	getc  : function(){ return this.owner.board.getc(this.bx, this.by);},
-	getx  : function(){ return this.owner.board.getx(this.bx, this.by);},
-	getb  : function(){ return this.owner.board.getb(this.bx, this.by);},
-	getex : function(){ return this.owner.board.getex(this.bx, this.by);},
-	getobj: function(){ return this.owner.board.getobj(this.bx, this.by);}
+	getc  : function(){ return this.board.getc(this.bx, this.by);},
+	getx  : function(){ return this.board.getx(this.bx, this.by);},
+	getb  : function(){ return this.board.getb(this.bx, this.by);},
+	getex : function(){ return this.board.getex(this.bx, this.by);},
+	getobj: function(){ return this.board.getobj(this.bx, this.by);}
 }
 });

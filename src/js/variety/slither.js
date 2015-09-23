@@ -6,7 +6,7 @@ pzpr.classmgr.makeCustom(['slither'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		var puzzle = this.owner;
+		var puzzle = this.puzzle;
 		if(puzzle.playmode){
 			var inputbg = false;
 			if     (this.mousestart){ inputbg = (!!puzzle.getConfig('bgcolor') && this.inputBGcolor0());}
@@ -129,10 +129,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.owner.fio.decodeCellQnum_kanpen();
+		this.puzzle.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.owner.fio.encodeCellQnum_kanpen();
+		this.puzzle.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

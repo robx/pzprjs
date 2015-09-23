@@ -141,7 +141,6 @@ pzpr.classmgr = {
 
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
-			puzzle.pid = newpid;
 		}
 		
 		callback();
@@ -151,26 +150,36 @@ pzpr.classmgr = {
 	// パズル種類別のクラスをパズルのクラス一覧に設定する
 	//      共通クラス        (pzpr.common)
 	//   -> パズル種類別クラス (pzpr.custom)
-	//   -> パズルが保持するクラス (initialize()の呼び出しやthis.owner等がつく)
+	//   -> パズルが保持するクラス (initialize()の呼び出しやthis.puzzle等がつく)
 	// と、ちょっとずつ変わっている状態になります
 	//---------------------------------------------------------------
 	setClasses : function(puzzle, pid){
 		/* 現在のクラスを消去する */
-		for(var name in puzzle.classlist){
-			puzzle[name] = null; delete puzzle[name];
-		}
-		puzzle.classlist = [];
+		puzzle.klass = {};
 
 		var custom = pzpr.custom[pid];
 		for(var classname in custom){
-			var PuzzleClass = puzzle[classname] = function(){
+			var PuzzleClass = puzzle.klass[classname] = function(){
 				var args = Array.prototype.slice.apply(arguments);
 				if(!!this.initialize){ this.initialize.apply(this,args);}
 			};
 			var CustomProto = custom[classname].prototype;
 			for(var name in CustomProto){ PuzzleClass.prototype[name] = CustomProto[name];}
-			PuzzleClass.prototype.owner = puzzle;
-			puzzle.classlist.push(classname);
+		}
+
+		this.setPrototypeRef(puzzle, 'puzzle', puzzle);
+		this.setPrototypeRef(puzzle, 'klass', puzzle.klass);
+
+		puzzle.pid = pid;
+		this.setPrototypeRef(puzzle, 'pid', pid);
+	},
+
+	//---------------------------------------------------------------------------
+	// パズルオブジェクト下に存在するクラスのprototypeへ一括でプロパティを付加する
+	//---------------------------------------------------------------------------
+	setPrototypeRef : function(puzzle, name, ref){
+		for(var klassname in puzzle.klass){
+			puzzle.klass[klassname].prototype[name] = ref;
 		}
 	}
 };

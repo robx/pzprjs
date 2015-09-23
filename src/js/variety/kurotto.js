@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['kurotto'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
@@ -27,7 +27,7 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		var max=this.owner.board.qcols*this.owner.board.qrows-1;
+		var max=this.board.cellmax-1;
 		return (max<=255?max:255);
 	},
 	minnum : 0,
@@ -75,7 +75,7 @@ Graphic:{
 
 	// オーバーライド
 	setRange : function(x1,y1,x2,y2){
- 		var puzzle = this.owner, bd = puzzle.board;
+ 		var puzzle = this.puzzle, bd = puzzle.board;
 		if(puzzle.execConfig('autocmp')){
 			x1 = bd.minbx-2;
 			y1 = bd.minby-2;
@@ -87,7 +87,7 @@ Graphic:{
 	},
 
 	paint : function(){
-		var puzzle = this.owner, bd = puzzle.board;
+		var puzzle = this.puzzle, bd = puzzle.board;
 		this.check_binfo = (puzzle.execConfig('autocmp') ? bd.getShadeInfo() : null);
 		
 		this.drawDotCells(false);
@@ -141,7 +141,7 @@ AnsCheck:{
 	],
 
 	checkCellNumber_kurotto : function(){
-		var bd = this.owner.board, cinfo = bd.getShadeInfo();
+		var bd = this.board, cinfo = bd.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.checkComplete(cinfo)){ continue;}
