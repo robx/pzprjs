@@ -293,9 +293,9 @@ AnsCheck:{
 	},
 	checkAllLoops : function(func, code){
 		var result = true;
-		var linfo = this.getLineInfo();
-		for(var r=1;r<=linfo.max;r++){
-			var blist = linfo.path[r].blist;
+		var paths = this.board.paths;
+		for(var r=0;r<paths.length;r++){
+			var blist = paths[r].blist;
 			if(func(blist.cellinside())){ continue;}
 
 			result = false;

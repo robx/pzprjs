@@ -4,17 +4,13 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 AnsCheck:{
 	//--------------------------------------------------------------------------------
-	// ans.getLineInfo()  線情報を返す
 	// ans.getRoomInfo()  部屋情報を返す
 	// ans.getLareaInfo() 線つながり情報を返す
 	// ans.getShadeInfo()    黒マスの領域情報を返す
 	// ans.getUnshadeInfo()  白マスの領域情報を返す
 	// ans.getNumberInfo()   数字の領域/繋がり情報を返す
-	// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を付加して返す
+	// ans.setLineShapeInfo() 丸などで区切られた線を探索し情報を設定する
 	//--------------------------------------------------------------------------------
-	getLineInfo : function(){
-		return (this._info.line = this._info.line || this.board.getLineInfo());
-	},
 	getRoomInfo : function(){
 		return (this._info.room = this._info.room || this.board.getRoomInfo());
 	},
@@ -30,8 +26,8 @@ AnsCheck:{
 	getNumberInfo : function(){
 		return (this._info.num = this._info.num || this.board.getNumberInfo());
 	},
-	getLineShapeInfo : function(){
-		return (this._info.lshape = this._info.lshape || this.board.getLineShapeInfo());
+	setLineShapeInfo : function(){
+		if(!this._info.lshape){ this.board.setLineShapeInfo(); this._info.lshape=true;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -189,11 +185,11 @@ AnsCheck:{
 	// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
-		var xinfo = this.getLineInfo();
-		if(xinfo.max>1){
+		var bd = this.board, paths = bd.paths;
+		if(paths.length>1){
 			this.failcode.add("lnPlLoop");
-			this.board.border.setnoerr();
-			xinfo.path[1].blist.seterr(1);
+			bd.border.setnoerr();
+			paths[0].blist.seterr(1);
 		}
 	},
 
@@ -215,7 +211,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
 		var bd = this.board;
-		if(bd.lines.ltotal[0]!==(!bd.lines.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
+		if(bd.linemgr.ltotal[0]!==(!bd.linemgr.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
 		this.failcode.add("brNoLine");
 	},
 
@@ -228,9 +224,9 @@ AnsCheck:{
 	checkNoLine      : function(){ this.checkLineCount(0, "ceNoLine");},
 	checkLineCount : function(val, code){
 		var result = true, bd = this.board;
-		if(bd.lines.ltotal[val]===0){ return;}
+		if(bd.linemgr.ltotal[val]===0){ return;}
 		
-		if(!bd.lines.borderAsLine){
+		if(!bd.linemgr.borderAsLine){
 			this.checkAllCell(function(cell){ return cell.lcnt===val;}, code);
 		}
 		else{
@@ -256,7 +252,7 @@ AnsCheck:{
 	checkBranchConnectLine  : function(){ this.checkConnectLineCount(3, "lnBranch");},
 	checkDeadendConnectLine : function(){ this.checkConnectLineCount(1, "lnDeadEnd");},
 	checkConnectLineCount : function(val, code){
-		if(this.board.lines.ltotal[val]===0){ return;}
+		if(this.board.linemgr.ltotal[val]===0){ return;}
 		
 		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
@@ -546,18 +542,19 @@ AnsCheck:{
 	// ans.checkLineShapeDeadend()  オブジェクトを結ぶ線が途中で途切れていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineShape : function(evalfunc, code){
-		var result = true;
-		var xinfo = this.getLineShapeInfo();
-		for(var id=1;id<=xinfo.max;id++){
-			var path = xinfo.path[id];
-			if(!path || !evalfunc(path)){ continue;}
+		var result = true, bd = this.board;
+		this.setLineShapeInfo();
+		var pathsegs = bd.pathsegs;
+		for(var id=0;id<pathsegs.length;id++){
+			var pathseg = pathsegs[id];
+			if(!pathseg || !evalfunc(pathseg)){ continue;}
 
 			result = false;
 			if(this.checkOnly){ break;}
-			var cells = path.cells;
+			var cells = pathseg.cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
-			path.blist.seterr(1);
+			pathseg.blist.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -565,7 +562,7 @@ AnsCheck:{
 		}
 	},
 	checkLineShapeDeadend : function(){
-		this.checkLineShape(function(path){ return path.cells[1].isnull;}, "lcDeadEnd");
+		this.checkLineShape(function(pathseg){ return pathseg.cells[1].isnull;}, "lcDeadEnd");
 	}
 },
 

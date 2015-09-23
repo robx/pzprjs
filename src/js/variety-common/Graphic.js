@@ -630,7 +630,7 @@ Graphic:{
 			g.vid = "b_line_"+border.id;
 			if(!!color){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				var isvert = (this.board.lines.isCenterLine^border.isVert());
+				var isvert = (this.board.linemgr.isCenterLine!==border.isVert());
 				var lm = this.lm + this.addlw/2;
 				
 				g.fillStyle = color;

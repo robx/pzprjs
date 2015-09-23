@@ -336,7 +336,7 @@ MouseEvent:{
 	//---------------------------------------------------------------------------
 	inputLine : function(){
 		var pos, border;
-		if(this.board.lines.isCenterLine){
+		if(this.board.linemgr.isCenterLine){
 			pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
 			border = this.getnb(this.prevPos, pos);
@@ -500,7 +500,7 @@ MouseEvent:{
 		if(border.isnull){ return;}
 
 		if(!border.isLine()){
-			var piece = (!bd.lines.borderAsLine ? this.getcell() : this.getcross()); /* cell or cross */
+			var piece = (!bd.linemgr.borderAsLine ? this.getcell() : this.getcross()); /* cell or cross */
 			if(piece.isnull || (piece.iscrossing() && (piece.lcnt===3 || piece.lcnt===4))){ return;}
 			var adb = piece.adjborder;
 			if     (adb.left.isLine()  ){ border = adb.left;  }
@@ -511,9 +511,8 @@ MouseEvent:{
 		}
 		if(border.isnull){ return;}
 
-		var blist = bd.lines.getBlistByBorder(border);
 		bd.border.setinfo(-1);
-		blist.setinfo(1);
+		bd.border.path.blist.setinfo(1);
 		bd.haserror = true;
 		this.puzzle.redraw();
 	}

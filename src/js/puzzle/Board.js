@@ -46,7 +46,7 @@ Board:{
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
-		this.lines = this.addInfoList(classes.LineManager);			// 線情報管理オブジェクト
+		this.linemgr = this.addInfoList(classes.LineManager);			// 線情報管理オブジェクト
 
 		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
 		this.linfo = this.addInfoList(classes.AreaLineManager);		// 線つながり情報を保持する
@@ -54,6 +54,9 @@ Board:{
 		this.bcell = this.addInfoList(classes.AreaShadeManager);	// 黒マス情報を保持する
 		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
 		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
+
+		this.paths    = [];
+		this.pathsegs = [];
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
@@ -507,18 +510,16 @@ Board:{
 	// bd.irowakeRemake() 「色分けしなおす」ボタンを押した時などに色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		this.lines.newIrowake();
+		this.linemgr.newIrowake();
 	},
 
 	//--------------------------------------------------------------------------------
-	// bd.getLineInfo()  線情報をLineInfo型のオブジェクトで返す
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
 	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
 	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
 	// bd.getUnshadeInfo() 白マス情報をAreaInfo型のオブジェクトで返す
 	// bd.getNumberInfo()  数字情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
-	getLineInfo  : function(){ return this.lines.getLineInfo();},
 	getRoomInfo  : function(){ return this.rooms.getAreaInfo();},
 	getLareaInfo : function(){ return this.linfo.getAreaInfo();},
 	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
@@ -526,9 +527,9 @@ Board:{
 	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
 
 	//---------------------------------------------------------------------------
-	// bd.getLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
+	// bd.setLineShapeInfo()    丸などで区切られた線を探索し情報を付加します
 	//---------------------------------------------------------------------------
-	getLineShapeInfo : function(){ return this.lines.getLineShapeInfo();},
+	setLineShapeInfo : function(){ return this.linemgr.setLineShapeInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

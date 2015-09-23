@@ -285,28 +285,28 @@ BoardExec:{
 	// bd.exec.reduceborder() 盤面の縮小時、線を移動する
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
-		var bd = this.board;
+		var bd = this.board, bdAsLine = bd.linemgr.borderAsLine;
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
-		if(bd.lines.borderAsLine || !bd.puzzle.opemgr.undoExec){
+		if(bdAsLine || !bd.puzzle.opemgr.undoExec){
 			var group2 = new this.klass.BorderList();
 			// 直前のexpandGroupで、bx,byプロパティが不定なままなので設定する
 			bd.setposBorders();
 
-			var dist = (bd.lines.borderAsLine?2:1);
+			var dist = (bdAsLine?2:1);
 			for(var id=0;id<bd.bdmax;id++){
 				var border = bd.border[id];
 				if(this.distObj(key,border)!==dist){ continue;}
 
-				var source = (bd.lines.borderAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
+				var source = (bdAsLine ? this.outerBorder(id,key) : this.innerBorder(id,key));
 				this.copyBorder(border, source);
 				group2.add(source);
 			}
-			if(bd.lines.borderAsLine){ group2.allclear(false);}
+			if(bdAsLine){ group2.allclear(false);}
 		}
 	},
 	reduceborder : function(key){
 		var bd = this.board;
-		if(bd.lines.borderAsLine){
+		if(bd.linemgr.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
 				var border = bd.border[id];
 				if(this.distObj(key,border)!==0){ continue;}
@@ -325,7 +325,7 @@ BoardExec:{
 	copyBorder : function(border1,border2){
 		border1.ques  = border2.ques;
 		border1.qans  = border2.qans;
-		if(this.board.lines.borderAsLine){
+		if(this.board.linemgr.borderAsLine){
 			border1.line  = border2.line;
 			border1.qsub  = border2.qsub;
 			border1.color = border2.color;

@@ -64,7 +64,37 @@ AreaRoomManager:{
 	enabled : true
 },
 
-"BorderInfo:LineInfo":{
+BorderInfo:{
+	initialize : function(){
+		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
+		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
+		this.path = [];	// 各部屋のidlist等の情報を保持する(info.path[id].blistで取得)
+	},
+
+	//---------------------------------------------------------------------------
+	// info.addPath()         空のPathを追加する
+	// info.addPathByBlist()  指定されたblistを持つPathを追加する
+	// info.addPathByPath()   指定されたPathを追加する
+	//---------------------------------------------------------------------------
+	addPath : function(){
+		var pathid = ++this.max;
+		return (this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid});
+	},
+	addPathByBlist : function(blist){
+		var pathid = ++this.max;
+		var path = this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid};
+
+		for(var i=0;i<blist.length;i++){
+			this.id[blist[i].id] = pathid;
+		}
+		path.blist.extend(blist);
+		return path;
+	},
+	addPathByPath : function(path){
+		var pathid = ++this.max;
+		path.id = pathid;
+		return (this.path[pathid] = path);
+	}
 },
 
 //---------------------------------------------------------

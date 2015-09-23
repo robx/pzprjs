@@ -224,8 +224,8 @@ MouseEvent:{
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		var bd = this.board;
-		if(bd.lines.isLineCross){
-			if(!bd.lines.borderAsLine){
+		if(bd.linemgr.isLineCross){
+			if(!bd.linemgr.borderAsLine){
 				var m1=2*spc, m2=2*(1-spc);
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.emptyborder;}
 			}

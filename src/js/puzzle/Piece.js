@@ -168,7 +168,7 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// cell.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	iscrossing : function(){ return this.board.lines.isLineCross;},
+	iscrossing : function(){ return this.board.linemgr.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// cell.isShade()   該当するCellが黒マスかどうか返す
@@ -361,7 +361,7 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// cross.iscrossing() 指定されたセル/交点で線が交差する場合にtrueを返す
 	//---------------------------------------------------------------------------
-	iscrossing : function(){ return this.board.lines.isLineCross;},
+	iscrossing : function(){ return this.board.linemgr.isLineCross;},
 
 	//---------------------------------------------------------------------------
 	// cross.setCrossBorderError() 交点とその周り四方向にエラーフラグを設定する
@@ -387,6 +387,8 @@ pzpr.classmgr.makeCommon({
 
 	isvert: false,	// true:境界線が垂直(縦) false:境界線が水平(横)
 
+	path : null,	// このLineを含む線情報への参照
+
 	// isLineNG関連の変数など
 	enableLineNG       : false,
 	enableLineCombined : false,
@@ -409,7 +411,7 @@ pzpr.classmgr.makeCommon({
 		}
 
 		// LineManager用
-		this.lineedge = (!this.board.lines.borderAsLine ? this.sidecell : this.sidecross);
+		this.lineedge = (!this.board.linemgr.borderAsLine ? this.sidecell : this.sidecross);
 	},
 
 	//---------------------------------------------------------------------------

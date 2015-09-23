@@ -155,35 +155,49 @@ Board:{
 
 	getTraceInfo : function(){
 		var traces = [];
-		var xinfo = this.getLineShapeInfo();
-		for(var id=1;id<=xinfo.max;id++){
-			var path = xinfo.path[id], info;
-			var info1 = this.searchTraceInfo(path.cells[0], path.dir1);
-			var info2 = this.searchTraceInfo(path.cells[1], path.dir2);
-			
-			/* 矢印に反した数が少ない方を優先して出力する */
-			var invc1 = info1.clist.length;
-			var invc2 = info2.clist.length;
-			if     (invc1 < invc2){ info = info1;}
-			else if(invc1 > invc2){ info = info2;}
-			else{
-				/* 矢印が同じ場合、風に反した数が少ない方を優先して出力 */
-				var invb1 = info1.blist.length;
-				var invb2 = info2.blist.length;
-				info = (invb1 < invb2 ? info1 : info2);
+		var clist = this.board.cell.filter(function(cell){ return cell.lcnt>0;});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], adb = cell.adjborder;
+			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
+			for(var a=0;a<4;a++){
+				var firstbd = dir4bd[a];
+				if(firstbd.isnull){ continue;}
+
+				var info;
+				var info1 = this.searchTraceInfo(cell, (a+1));
+				var info2 = this.searchTraceInfo(info1.cells[1], info1.dir2);
+				
+				/* 矢印に反した数が少ない方を優先して出力する */
+				var invc1 = info1.clist.length;
+				var invc2 = info2.clist.length;
+				if     (invc1 < invc2){ info = info1;}
+				else if(invc1 > invc2){ info = info2;}
+				else{
+					/* 矢印が同じ場合、風に反した数が少ない方を優先して出力 */
+					var invb1 = info1.blist.length;
+					var invb2 = info2.blist.length;
+					info = (invb1 < invb2 ? info1 : info2);
+				}
+				traces.push(info);
 			}
-			traces.push(info);
 		}
 		return traces;
 	},
 	searchTraceInfo : function(cell1, dir){
-		var info = {clist:(new this.klass.CellList()), blist:(new this.klass.BorderList())};
-		var pos = cell1.getaddr(), c = 0, n = 0;
+		var info = {
+			clist : (new this.klass.CellList()),	// 風に反して進んだセル
+			blist : (new this.klass.BorderList()),	// 風に反して進んだLine
+			cells : [cell1, null],	// 出発したセル、到達したセル
+			dir1 : dir,
+			dir2 : 0
+		};
+		if(cell1===null||cell1.isnull){ return info;}
 
+		var pos = cell1.getaddr(), c = 0, n = 0;
 		while(1){
 			pos.movedir(dir,1);
 			if(pos.oncell()){
-				var cell = pos.getc();
+				var cell = info.cells[1] = pos.getc();
 				if(cell1===cell){ break;} // 一周して戻ってきた
 
 				if(cell.qdir!==cell.NDIR && cell.qdir!==dir){ info.clist[c++] = cell;}
@@ -204,22 +218,13 @@ Board:{
 		}
 		info.clist.length = c;
 		info.blist.length = n;
+		info.dir2 = [0,2,1,4,3][dir];
 		return info;
 	}
 },
 
 LineManager:{
-	isCenterLine : true,
-	
-	// オーバーライド (孤立した線やループも判定対象にする)
-	getLineShapeBase : function(){
-		var boardcell = this.board.cell;
-		return [ boardcell.filter(this.getLineShapeSeparator),
-				 boardcell.filter(function(cell){ return cell.isLineCurve();}) ];
-	},
-	getLineShapeSeparator : function(cell){
-		return cell.lcnt===1 || cell.lcnt>=3;
-	}
+	isCenterLine : true
 },
 
 BoardExec:{

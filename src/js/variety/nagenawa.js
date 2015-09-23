@@ -237,9 +237,9 @@ AnsCheck:{
 
 	checkAllLoopRect : function(){
 		var result = true, bd = this.board;
-		var xinfo = this.getLineInfo();
-		for(var r=1;r<=xinfo.max;r++){
-			var blist = xinfo.path[r].blist;
+		var paths = bd.paths;
+		for(var r=0;r<paths.length;r++){
+			var blist = paths[r].blist;
 			if(this.isLoopRect(blist)){ continue;}
 
 			result = false;
