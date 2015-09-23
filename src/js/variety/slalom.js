@@ -99,7 +99,7 @@ MouseEvent:{
 		if(input){
 			var bd = this.board;
 			cell.setQues(this.inputData);
-			bd.hinfo.generateGates();
+			bd.gatemgr.generateGates();
 			
 			cell.draw();
 			bd.startpos.draw();
@@ -128,7 +128,7 @@ MouseEvent:{
 		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
 		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 
 		cell.draw();
 		bd.startpos.draw();
@@ -175,7 +175,7 @@ KeyEvent:{
 			if(newques!==-1){
 				cell.setQues(newques);
 				if(newques===0){ cell.setNum(-1);}
-				if(old===21||old===22||newques===21||newques===22){ bd.hinfo.generateGates();}
+				if(old===21||old===22||newques===21||newques===22){ bd.gatemgr.generateGates();}
 
 				cell.draw();
 				bd.startpos.draw();
@@ -191,9 +191,19 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	disInputHatena : true,
-
 	maxnum : function(){
-		return Math.min(255, this.board.hinfo.max);
+		return Math.min(255, this.board.gates.length);
+	},
+
+	gate : null,
+	// 黒マスの周りに繋がっている旗門IDをリストにして返す
+	getConnectingGate : function(){
+		var adc=this.adjacent, cell2, gatelist=[];
+		cell2=adc.top;    if(!cell2.isnull && cell2.ques===21){ gatelist.push(cell2.gate);}
+		cell2=adc.bottom; if(!cell2.isnull && cell2.ques===21){ gatelist.push(cell2.gate);}
+		cell2=adc.left;   if(!cell2.isnull && cell2.ques===22){ gatelist.push(cell2.gate);}
+		cell2=adc.right;  if(!cell2.isnull && cell2.ques===22){ gatelist.push(cell2.gate);}
+		return gatelist;
 	}
 },
 Border:{
@@ -203,34 +213,36 @@ Board:{
 	hasborder : 1,
 
 	startpos : null,
-	hinfo : null,
+	gatemgr : null,
+	gates : null,
 
 	initialize : function(){
 		this.common.initialize.call(this);
 
 		this.startpos = new this.klass.StartPosAddress(1,1);
-		this.hinfo = new this.klass.HurdleManager();
+		this.gatemgr = new this.klass.HurdleManager();
+		this.gates = [];
 	},
 
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
 		this.startpos.set(this.cell[0]);
-		this.hinfo.init();
+		this.gatemgr.init();
 	},
 
 	getTraceInfo : function(){
-		var info = {errgateid:null};
+		var info = {errgate:null};
 		var startcell = this.startpos.getc();
 		
 		for(var dir=1;dir<=4;dir++){
 			info = this.searchTraceInfo(startcell, dir);
-			if(info.errgateid!==null){ break;}
+			if(info.errgate!==null){ break;}
 		}
 		return info;
 	},
 	searchTraceInfo : function(cell1, dir){
-		var info = {errgateid:null};
+		var info = {errgate:null};
 		var pos = cell1.getaddr(), passed = 0, ordertype=-1;
 
 		while(1){
@@ -240,17 +252,18 @@ Board:{
 				if(cell1===cell){ break;} // ちゃんと戻ってきた
 
 				if(cell.ques===21 || cell.ques===22){
-					var r = this.hinfo.getGateid(cell.id);
+					var gate = cell.gate;
 					passed++;
-					var gatenumber = this.hinfo.data[r].number;
+					var gatenumber = gate.number;
 					if(gatenumber<=0){ } // 何もしない
 					else if(ordertype===-1){
-						if(gatenumber*2-1===this.hinfo.max){ } // ど真ん中の数字なら何もしない
+						var revgatenumber = this.gates.length+1-gatenumber;
+						if(gatenumber===revgatenumber)               { } // ど真ん中の数字なら何もしない
 						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
-						else if(passed===this.hinfo.max+1-gatenumber){ break;}         // 逆方向なので別の方向から回る
-						else                                         { info.errgateid = r; break;} // 通過順間違い
+						else if(passed===revgatenumber)              { break;}         // 逆方向なので別の方向から回る
+						else                                         { info.errgate = gate; break;} // 通過順間違い
 					}
-					else if(ordertype===1 && passed!==gatenumber)    { info.errgateid = r; break;} // 通過順間違い
+					else if(ordertype===1 && passed!==gatenumber)    { info.errgate = gate; break;} // 通過順間違い
 				}
 
 				var adb = cell.adjborder;
@@ -293,7 +306,7 @@ BoardExec:{
 		bd.startpos.set(info.pos.getc());
 		if(isrec){ opemgr.forceRecord = false;}
 		
-		bd.hinfo.generateGates();	// 念のため
+		bd.gatemgr.generateGates();	// 念のため
 	}
 },
 
@@ -459,7 +472,7 @@ Graphic:{
 
 		g.vid = "text_stpos";
 		g.fillStyle = this.quescolor;
-		this.disptext(""+bd.hinfo.max, px, py, {ratio:[0.75, 0.66]});
+		this.disptext(""+bd.gates.length, px, py, {ratio:[0.75, 0.66]});
 	},
 
 	repaintParts : function(blist){
@@ -479,14 +492,13 @@ Graphic:{
 	// Xキー押した時に数字を表示するメソッド
 	drawNumbersOnGate : function(keydown){
 		var g = this.context, bd = this.board;
-		if(keydown){ bd.hinfo.generateGateNumber();}
+		if(keydown){ bd.gatemgr.generateGateNumber();}
 
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques!==21 && cell.ques!==22){ continue;}
 
-			var r = bd.hinfo.getGateid(c);
-			var num = (r>0?bd.hinfo.data[r].number:-1);
+			var num = cell.gate.number;
 			g.vid = "cell_text_"+c;
 			if(keydown && num>0){
 				g.fillStyle = "tomato";
@@ -533,29 +545,29 @@ Encode:{
 			c++;
 			if(c>=bd.cellmax){ break;}
 		}
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 
 		if(ver===0){
-			var r=1;
+			var r=0;
 			for(i=i+1;i<array[0].length;i++){
 				var ca = array[0].charAt(i);
 
 				if(this.include(ca,"0","9")||this.include(ca,"a","f")){
-					bd.hinfo.data[r].number = parseInt(ca,16);
+					bd.gates[r].number = parseInt(ca,16);
 				}
 				else if(ca==='-'){
-					bd.hinfo.data[r].number = parseInt(bstr.substr(i+1,2),16); i+=2;
+					bd.gates[r].number = parseInt(bstr.substr(i+1,2),16); i+=2;
 				}
 				else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-16);}
 
 				r++;
-				if(r>bd.hinfo.max){ break;}
+				if(r>bd.gates.length){ break;}
 			}
 
 			for(var c=0;c<bd.cellmax;c++){
-				var idlist=bd.hinfo.getConnectingGate(c), min=1000;
-				for(var i=0;i<idlist.length;i++){
-					var val=bd.hinfo.data[idlist[i]].number;
+				var gatelist=bd.cell[c].getConnectingGate(), min=1000;
+				for(var i=0;i<gatelist.length;i++){
+					var val=gatelist[i].number;
 					if(val>0){ min=Math.min(min,val);}
 				}
 				bd.cell[c].qnum = (min<1000?min:-1);
@@ -600,7 +612,7 @@ Encode:{
 	},
 	encodeSlalom : function(ver){
 		var cm="", count=0, bd=this.board;
-		bd.hinfo.generateAll();
+		bd.gatemgr.generateAll();
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "1";}
@@ -615,9 +627,9 @@ Encode:{
 
 		count=0;
 		if(ver===0){
-			for(var r=1;r<=bd.hinfo.max;r++){
+			for(var r=0;r<bd.gates.length;r++){
 				var pstr = "";
-				var val = bd.hinfo.data[r].number;
+				var val = bd.gates[r].number;
 
 				if     (val>= 0 && val< 16){ pstr =       val.toString(16);}
 				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
@@ -681,7 +693,7 @@ FileIO:{
 			else if(ca==="#"){ cell.ques = 1;}
 			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 	},
 	decodeBoard_pzpr2 : function(){
 		var bd = this.board;
@@ -697,11 +709,11 @@ FileIO:{
 				cell.qnum = (inp[1]!=="-"?+inp[1]:-2);
 			}
 		});
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 	},
 	encodeBoard_pzpr2 : function(){
 		var bd = this.board;
-		bd.hinfo.generateAll();
+		bd.gatemgr.generateAll();
 		this.encodeCell( function(cell){
 			if     (bd.startpos.equals(cell)){ return "o ";}
 			else if(cell.ques===21){ return "i ";}
@@ -725,11 +737,11 @@ FileIO:{
 			else if(ca==="0"){ cell.ques = 1;}
 			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 	},
 	encodeBoard_kanpen : function(){
 		var bd = this.board;
-		bd.hinfo.generateAll();
+		bd.gatemgr.generateAll();
 		this.encodeCell( function(cell){
 			if     (bd.startpos.equals(cell)){ return "+ ";}
 			else if(cell.ques===21){ return "| ";}
@@ -762,11 +774,11 @@ FileIO:{
 			else if(val===-4){ cell.ques = 22;}
 			else if(val===-1){ bd.startpos.set(cell);}
 		});
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 	},
 	encodeCellSlalom_XMLBoard : function(){
 		var bd = this.board;
-		bd.hinfo.generateAll();
+		bd.gatemgr.generateAll();
 		this.encodeCellXMLBoard(function(cell){
 			var val = -3;
 			if(cell.ques=== 1){
@@ -792,15 +804,15 @@ FileIO:{
 				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
 			}
 		});
-		bd.hinfo.generateGates();
+		bd.gatemgr.generateGates();
 
 		for(var c=0;c<bd.cellmax;c++){
-			if(sv_num[c]!==-1){ bd.hinfo.data[bd.hinfo.getGateid(c)].number = sv_num[c];}
+			if(sv_num[c]!==-1){ bd.cell[c].gate.number = sv_num[c];}
 		}
 		for(var c=0;c<bd.cellmax;c++){
-			var idlist=bd.hinfo.getConnectingGate(c), min=1000;
-			for(var i=0;i<idlist.length;i++){
-				var val=bd.hinfo.data[idlist[i]].number;
+			var gatelist=bd.cell[c].getConnectingGate(), min=1000;
+			for(var i=0;i<gatelist.length;i++){
+				var val=gatelist[i].number;
 				if(val>0){ min=Math.min(min,val);}
 			}
 			bd.cell[c].qnum = (min<1000?min:-1);
@@ -825,7 +837,7 @@ AnsCheck:{
 
 	generateGateNumber : function(){
 		if(!this._info.gate){
-			this.board.hinfo.generateAll();
+			this.board.gatemgr.generateAll();
 			this._info.gate = true;
 		}
 	},
@@ -842,8 +854,8 @@ AnsCheck:{
 	checkGateLine : function(type, code){
 		this.generateGateNumber();
 		var bd = this.board;
-		for(var r=1;r<=bd.hinfo.max;r++){
-			var cnt=0, clist=bd.hinfo.data[r].clist;
+		for(var r=0;r<bd.gates.length;r++){
+			var cnt=0, clist=bd.gates[r].clist;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].lcnt>0){ cnt++;}
 			}
@@ -852,17 +864,17 @@ AnsCheck:{
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			clist.seterr(4);
-			bd.hinfo.getGatePole(r).seterr(1);
+			bd.gates[r].getGatePole().seterr(1);
 		}
 	},
 	checkGateNumber : function(){
 		this.generateGateNumber();
 		var bd = this.board, info = bd.getTraceInfo();
-		var r = info.errgateid;
-		if(r!==null){
+		var gate = info.errgate;
+		if(gate!==null){
 			this.failcode.add("lrOrder");
-			bd.hinfo.data[r].clist.seterr(4);
-			bd.hinfo.getGatePole(r).seterr(1);
+			gate.clist.seterr(4);
+			gate.getGatePole().seterr(1);
 		}
 	}
 },
@@ -880,51 +892,35 @@ HurdleData:{
 	initialize : function(){
 		this.clist  = new this.klass.CellList();	// この旗門に含まれるセルのリスト
 		this.number = -1;		// この旗門が持つ順番
+		this.nums   = null;		// numberの計算用
 		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
 		this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
-	}
-},
-
-HurdleManager:{
-	// 旗門が持つ旗門IDを取得する
-	getGateid : function(cc){
-		if(cc<0 || cc>=this.board.cellmax){ return -1;}
-		return this.gateid[cc];
 	},
 
 	// 旗門の両端にある黒マスの場所のセルを取得する
-	getGatePole : function(gateid){
+	getGatePole : function(){
 		var bd = this.board;
 		var clist = new this.klass.CellList(), cell1, cell2;
-		if(this.data[gateid].val===21){
-			cell1 = bd.getc(this.data[gateid].x1, this.data[gateid].y1-2);
-			cell2 = bd.getc(this.data[gateid].x1, this.data[gateid].y2+2);
+		if(this.val===21){
+			cell1 = bd.getc(this.x1, this.y1-2);
+			cell2 = bd.getc(this.x1, this.y2+2);
 		}
-		else if(this.data[gateid].val===22){
-			cell1 = bd.getc(this.data[gateid].x1-2, this.data[gateid].y1);
-			cell2 = bd.getc(this.data[gateid].x2+2, this.data[gateid].y1);
+		else if(this.val===22){
+			cell1 = bd.getc(this.x1-2, this.y1);
+			cell2 = bd.getc(this.x2+2, this.y1);
 		}
 		else{ return [];}
 		if(!cell1.isnull && cell1.ques===1){ clist.add(cell1);}
 		if(!cell2.isnull && cell2.ques===1){ clist.add(cell2);}
 		return clist;
-	},
-	// 黒マスの周りに繋がっている旗門IDをリストにして返す
-	getConnectingGate : function(c){
-		var bd = this.board, cell=bd.cell[c], adc=cell.adjacent, cell2, idlist=[];
-		cell2=adc.top;    if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.bottom; if(!cell2.isnull && cell2.ques===21){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.left;   if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
-		cell2=adc.right;  if(!cell2.isnull && cell2.ques===22){ idlist.push(this.gateid[cell2.id]);}
-		return idlist;
-	},
+	}
+},
 
-	//---------------------------------------------------------
+HurdleManager:{
 	init : function(){
-		this.max=0;
-		this.gateid=[];
-		for(var c=0;c<this.board.cellmax;c++){ this.gateid[c] = -1;}
-		this.data=[];
+		var bd = this.board;
+		bd.gates = [];
+		for(var c=0;c<bd.cellmax;c++){ bd.cell[c].gate = null;}
 	},
 
 	generateAll : function(){
@@ -937,18 +933,18 @@ HurdleManager:{
 		this.init();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], val = cell.ques;
-			if(val===0 || val===1 || this.getGateid(cell.id)!==-1){ continue;}
+			if(val===0 || val===1 || cell.gate!==null){ continue;}
 
 			var pos = cell.getaddr(), isvert=(val===21);
 
-			var gateid = ++this.max;
-			var gate = this.data[gateid] = new this.klass.HurdleData();
+			var gate = new this.klass.HurdleData();
+			bd.gates.push(gate);
 			while(1){
 				var cell2 = pos.getc();
 				if(cell2.isnull || cell2.ques!==val){ break;}
 
 				gate.clist.add(cell2);
-				this.gateid[cell2.id] = gateid;
+				cell2.gate = gate;
 				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
 			}
 			gate.x1 = cell.bx;
@@ -960,39 +956,41 @@ HurdleManager:{
 	},
 
 	generateGateNumber : function(){
+		var bd = this.board, gates = bd.gates;
+
 		// 一旦すべての旗門のnumberを消す
-		for(var r=1;r<=this.max;r++){ this.data[r].number=-1;}
+		for(var r=0;r<gates.length;r++){ gates[r].number=-1;}
 
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
-		var nums = [], bd = this.board;
-		for(var r=1;r<=this.max;r++){ nums[r] = [];}
+		for(var r=0;r<gates.length;r++){ gates[r].nums = [];}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1){
 				var qn = cell.getNum(), dir = cell.qdir, adc = cell.adjacent;
-				if(qn<=0 || qn>this.max){ continue;}
-				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ nums[this.gateid[adc.top.id   ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ nums[this.gateid[adc.bottom.id]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ nums[this.gateid[adc.left.id  ]].push(qn);}
-				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ nums[this.gateid[adc.right.id ]].push(qn);}
+				if(qn<=0 || qn>=gates.length){ continue;}
+				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ adc.top   .gate.nums.push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ adc.bottom.gate.nums.push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ adc.left  .gate.nums.push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ adc.right .gate.nums.push(qn);}
 			}
 		}
 
 		// セットされた数字を全てのnumsから消す関数
-		var self = this, delnum = function(dn){ for(var r=1;r<=self.max;r++){
-			var atmp = [];
-			for(var i=0;i<nums[r].length;i++){ if(dn[nums[r][i]]!==1){ atmp.push(nums[r][i]);} }
+		function delnum(dn){ for(var r=0;r<gates.length;r++){
+			var atmp = [], nums = gates[r].nums;
+			for(var i=0;i<nums.length;i++){ if(dn[nums[i]]!==1){ atmp.push(nums[i]);} }
 			nums[r] = atmp;
-		} };
+		} }
 		var decnumber = [];
-		for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
+		for(var n=0;n<gates.length;n++){ decnumber[n] = 0;}
 
 		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
-		for(var r=1;r<=this.max;r++){
-			if(nums[r].length===2 && nums[r][0]>0 && nums[r][0]===nums[r][1]){
-				this.data[r].number = nums[r][0];
-				decnumber[nums[r][0]] = 1;
-				nums[r] = [];
+		for(var r=0;r<gates.length;r++){
+			var gate = gates[r], nums = gate.nums;
+			if(nums.length===2 && nums[0]>0 && nums[0]===nums[1]){
+				gate.number = nums[0];
+				decnumber[nums[0]] = 1;
+				gate.nums = [];
 			}
 		}
 		delnum(decnumber);
@@ -1001,25 +999,29 @@ HurdleManager:{
 		var repeatflag = true;
 		while(repeatflag){
 			repeatflag = false;
-			for(var n=1;n<=this.max;n++){ decnumber[n] = 0;}
+			for(var n=0;n<gates.length;n++){ decnumber[n] = 0;}
 			var numcnt = [];
 
 			// 競合していない数字がいくつ残っているか数える
-			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
-			for(var r=1;r<=this.max;r++){ if(nums[r].length===1){ numcnt[nums[r][0]]++;} }
+			for(var n=0;n<gates.length;n++){ numcnt[n] = 0;}
+			for(var r=0;r<gates.length;r++){
+				var nums = gates[r].nums;
+				if(nums.length===1){ numcnt[nums[0]]++;}
+			}
 
 			// 各旗門をチェック
-			for(var r=1;r<=this.max;r++){
+			for(var r=0;r<gates.length;r++){
 				// 2つ以上の数字が繋がっている場合はダメです
 				// また、複数箇所の旗門の候補になっている場合もダメ
-				var cand=(nums[r].length===1?nums[r][0]:-1);
+				var gate = gates[r], nums = gate.nums;
+				var cand=(nums.length===1?nums[0]:-1);
 				if(cand>0 && numcnt[cand]>1){ cand=-1;}
 
 				// 旗門に数字をセット
 				if(cand>0){
-					this.data[r].number = cand;
+					gate.number = cand;
 					decnumber[cand] = 1;
-					nums[r] = [];
+					gate.nums = [];
 					repeatflag = true;	//再ループする
 				}
 			}
@@ -1029,21 +1031,24 @@ HurdleManager:{
 			if(repeatflag){ continue;}
 
 			// 重なっていても、1つだけに繋がっている数字を判定したい。。
-			for(var n=1;n<=this.max;n++){ numcnt[n] = 0;}
-			for(var r=1;r<=this.max;r++){ for(var i=0;i<nums[r].length;i++){ numcnt[nums[r][i]]++;} }
+			for(var n=0;n<gates.length;n++){ numcnt[n] = 0;}
+			for(var r=0;r<gates.length;r++){
+				var nums = gates[r].nums;
+				for(var i=0;i<nums.length;i++){ numcnt[nums[i]]++;}
+			}
 
 			// 各旗門をチェック
-			for(var r=1;r<=this.max;r++){
-				var cand=-1;
-				for(var i=0;i<nums[r].length;i++){
-					if(numcnt[nums[r][i]]===1){ cand=(cand===-1?nums[r][i]:-1);}
+			for(var r=0;r<gates.length;r++){
+				var gate = gates[r], nums = gate.nums, cand = -1;
+				for(var i=0;i<nums.length;i++){
+					if(numcnt[nums[i]]===1){ cand=(cand===-1?nums[i]:-1);}
 				}
 
 				// 旗門に数字をセット
 				if(cand>0){
-					this.data[r].number = cand;
+					gate.number = cand;
 					decnumber[cand] = 1;
-					nums[r] = [];
+					gate.nums = [];
 					repeatflag = true;	//再ループする
 				}
 			}
