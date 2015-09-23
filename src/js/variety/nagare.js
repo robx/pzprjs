@@ -328,7 +328,7 @@ Encode:{
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c], qu=cell.ques, dir=cell.qdir;
 
-			if(qu===1 || (dir>=1&&dir<=4)){ pstr = (qu*5+dir).toString();}
+			if(qu===1 || (dir>=1&&dir<=4)){ pstr = (qu*5+dir).toString(10);}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
@@ -360,8 +360,8 @@ FileIO:{
 			}
 			
 			if(ca!=="" && ca!=="0"){
-				if(ca.charAt(0)==="-"){ border.line = -parseInt(ca)-1; border.qsub = 2;}
-				else                  { border.line = parseInt(ca);}
+				if(ca.charAt(0)==="-"){ border.line = (-ca)-1; border.qsub = 2;}
+				else                  { border.line = +ca;}
 			}
 		});
 	},

@@ -10,12 +10,12 @@ FileIO:{
 	decodeCellQnum : function(){
 		this.decodeCell( function(obj,ca){
 			if     (ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnum : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=0)  { return (obj.qnum.toString()+" ");}
+			if     (obj.qnum>=0)  { return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "- ";}
 			else                  { return ". ";}
 		});
@@ -27,12 +27,12 @@ FileIO:{
 	decodeCellQnumb : function(){
 		this.decodeCell( function(obj,ca){
 			if     (ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnumb : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=0)  { return (obj.qnum.toString()+" ");}
+			if     (obj.qnum>=0)  { return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "5 ";}
 			else                  { return ". ";}
 		});
@@ -46,12 +46,12 @@ FileIO:{
 			if     (ca==="#"){ obj.qans = 1;}
 			else if(ca==="+"){ obj.qsub = 1;}
 			else if(ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnumAns : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
+			if     (obj.qnum>=0) { return obj.qnum + " ";}
 			else if(obj.qnum===-2){return "- ";}
 			else if(obj.qans===1){ return "# ";}
 			else if(obj.qsub===1){ return "+ ";}
@@ -66,16 +66,16 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if(ca!=="."){
 				var inp = ca.split(",");
-				obj.qdir = (inp[0]!=="0"?parseInt(inp[0]): 0);
-				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
+				obj.qdir = (inp[0]!=="0" ? +inp[0] :  0);
+				obj.qnum = (inp[1]!=="-" ? +inp[1] : -2);
 			}
 		});
 	},
 	encodeCellDirecQnum : function(){
 		this.encodeCell( function(obj){
 			if(obj.qnum!==-1){
-				var ca1 = (obj.qdir!== 0?obj.qdir.toString():"0");
-				var ca2 = (obj.qnum!==-2?obj.qnum.toString():"-");
+				var ca1 = (obj.qdir!== 0 ? ""+obj.qdir : "0");
+				var ca2 = (obj.qnum!==-2 ? ""+obj.qnum : "-");
 				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
@@ -108,12 +108,12 @@ FileIO:{
 			else if(ca==="-"){ obj.qsub = 2;}
 			else if(ca==="="){ obj.qsub = 3;}
 			else if(ca==="%"){ obj.qsub = 4;}
-			else if(ca!=="."){ obj.qans = parseInt(ca);}
+			else if(ca!=="."){ obj.qans = +ca;}
 		});
 	},
 	encodeCellQanssub : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qans!==0){ return (obj.qans.toString() + " ");}
+			if     (obj.qans!==0){ return obj.qans + " ";}
 			else if(obj.qsub===1){ return "+ ";}
 			else if(obj.qsub===2){ return "- ";}
 			else if(obj.qsub===3){ return "= ";}
@@ -131,12 +131,12 @@ FileIO:{
 			else if(ca==="-"){ obj.qsub = 2;}
 			else if(ca==="="){ obj.qsub = 3;}
 			else if(ca==="%"){ obj.qsub = 4;}
-			else if(ca!=="."){ obj.anum = parseInt(ca);}
+			else if(ca!=="."){ obj.anum = +ca;}
 		});
 	},
 	encodeCellAnumsub : function(){
 		this.encodeCell( function(obj){
-			if     (obj.anum!==-1){ return (obj.anum.toString() + " ");}
+			if     (obj.anum!==-1){ return obj.anum + " ";}
 			else if(obj.qsub===1) { return "+ ";}
 			else if(obj.qsub===2) { return "- ";}
 			else if(obj.qsub===3) { return "= ";}
@@ -150,12 +150,12 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	decodeCellQsub : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca!=="0"){ obj.qsub = parseInt(ca);}
+			if(ca!=="0"){ obj.qsub = +ca;}
 		});
 	},
 	encodeCellQsub : function(){
 		this.encodeCell( function(obj){
-			if(obj.qsub>0){ return (obj.qsub.toString() + " ");}
+			if(obj.qsub>0){ return obj.qsub + " ";}
 			else          { return "0 ";}
 		});
 	},
@@ -166,12 +166,12 @@ FileIO:{
 	decodeCrossNum : function(){
 		this.decodeCross( function(obj,ca){
 			if     (ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCrossNum : function(){
 		this.encodeCross( function(obj){
-			if     (obj.qnum>=0)  { return (obj.qnum.toString() + " ");}
+			if     (obj.qnum>=0)  { return obj.qnum + " ";}
 			else if(obj.qnum===-2){ return "- ";}
 			else                  { return ". ";}
 		});
@@ -216,7 +216,7 @@ FileIO:{
 	decodeBorderLine : function(){
 		this.decodeBorder( function(obj,ca){
 			if     (ca==="-1"){ obj.qsub = 2;}
-			else if(ca!=="0" ){ obj.line = parseInt(ca);}
+			else if(ca!=="0" ){ obj.line = +ca;}
 		});
 	},
 	encodeBorderLine : function(){
@@ -272,14 +272,14 @@ FileIO:{
 			if(bx===-1 || by===-1){
 				var excell = bd.getex(bx,by);
 				var property = ((excell.by===-1)?'qnum2':'qnum');
-				excell[property] = parseInt(item[i]);
+				excell[property] = +item[i];
 			}
 			else{
 				var inp = item[i].split(",");
 				var cell = bd.getc(bx,by);
 				cell.set51cell();
-				cell.qnum  = parseInt(inp[0]);
-				cell.qnum2 = parseInt(inp[1]);
+				cell.qnum  = +inp[0];
+				cell.qnum2 = +inp[1];
 			}
 		}
 		bd.enableInfo(); /* mv.set51cell()用 */
@@ -292,12 +292,12 @@ FileIO:{
 				else if(bx===-1 || by===-1){
 					var excell = bd.getex(bx,by);
 					var property = ((excell.by===-1)?'qnum2':'qnum');
-					str += (""+excell[property].toString()+" ");
+					str += (excell[property]+" ");
 				}
 				else{
 					var cell = bd.getc(bx,by);
 					if(cell.ques===51){
-						str += (""+cell.qnum.toString()+","+cell.qnum2.toString()+" ");
+						str += (cell.qnum+","+cell.qnum2+" ");
 					}
 					else{ str += ". ";}
 				}
@@ -312,12 +312,12 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	decodeCellQnum_kanpen : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca!=="."){ obj.qnum = parseInt(ca);}
+			if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnum_kanpen : function(){
 		this.encodeCell( function(obj){
-			return ((obj.qnum>=0)?(obj.qnum.toString() + " "):". ");
+			return ((obj.qnum>=0) ? obj.qnum+" " : ". ");
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -326,14 +326,14 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	decodeCellAnum_kanpen : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca!=="."&&ca!=="0"){ obj.anum = parseInt(ca);}
+			if(ca!=="."&&ca!=="0"){ obj.anum = +ca;}
 		});
 	},
 	encodeCellAnum_kanpen : function(){
 		this.encodeCell( function(obj){
 			if     (obj.qnum!==-1){ return ". ";}
 			else if(obj.anum===-1){ return "0 ";}
-			else                  { return ""+obj.anum.toString()+" ";}
+			else                  { return obj.anum+" ";}
 		});
 	},
 	//---------------------------------------------------------------------------
@@ -345,12 +345,12 @@ FileIO:{
 			if     (ca==="#"){ obj.qans = 1;}
 			else if(ca==="+"){ obj.qsub = 1;}
 			else if(ca==="?"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnumAns_kanpen : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=0 ){ return (obj.qnum.toString() + " ");}
+			if     (obj.qnum>=0 ){ return obj.qnum+" ";}
 			else if(obj.qnum===-2){return "? ";}
 			else if(obj.qans===1){ return "# ";}
 			else if(obj.qsub===1){ return "+ ";}

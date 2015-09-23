@@ -579,7 +579,7 @@ FileIO:{
 	},
 
 	decodeSegment : function(){
-		var len = parseInt(this.readLine(),10);
+		var len = +this.readLine();
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
 			this.owner.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);

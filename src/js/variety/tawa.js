@@ -296,7 +296,7 @@ Encode:{
 
 	decodeTawamurenga : function(){
 		var barray = this.outbstr.split("/"), bd = this.owner.board;
-		bd.setShape(parseInt(barray[0]));
+		bd.setShape(+barray[0]);
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
 		if(!!barray[1]){
@@ -313,7 +313,7 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.setShape(parseInt(this.readLine()));
+		bd.setShape(+this.readLine());
 		bd.initBoardSize(bd.qcols, bd.qrows);
 
 		var n=0, item = this.getItemList(bd.qrows);
@@ -324,7 +324,7 @@ FileIO:{
 				else if(item[n]==="#"){ cell.qans = 1;}
 				else if(item[n]==="+"){ cell.qsub = 1;}
 				else if(item[n]==="-"){ cell.qnum =-2;}
-				else if(item[n]!=="."){ cell.qnum = parseInt(item[n]);}
+				else if(item[n]!=="."){ cell.qnum = +item[n];}
 				n++;
 			}
 		}

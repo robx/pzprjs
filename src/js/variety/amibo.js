@@ -322,7 +322,7 @@ FileIO:{
 			else if(ca==="-"){ obj.qans = 13;}
 			else if(ca==="+"){ obj.qans = 11;}
 			else if(ca==="#"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
@@ -331,7 +331,7 @@ FileIO:{
 			if     (obj.qans===12){ return "l ";}
 			else if(obj.qans===13){ return "- ";}
 			else if(obj.qans===11){ return "+ ";}
-			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+			else if(obj.qnum>=  0){ return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "# ";}
 			else                  { return ". ";}
 		});

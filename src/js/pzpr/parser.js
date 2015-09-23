@@ -182,7 +182,7 @@ pzpr.parser.URLData.prototype = {
 		var inp = this.qdata.split("/"), col = 0, row = 0;
 		/* URLにつけるオプション */
 		if(this.type!==this.URL_KANPEN && this.type!==this.URL_HEYAAPP){
-			if(!isNaN(parseInt(inp[0]))){ inp.unshift("");}
+			if(!isNaN(inp[0])){ inp.unshift("");}
 			this.pflag = inp.shift();
 		}
 		

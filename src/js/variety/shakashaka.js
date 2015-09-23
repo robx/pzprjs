@@ -309,22 +309,22 @@ FileIO:{
 	kanpenOpen : function(){
 		this.decodeCell( function(obj,ca){
 			if     (ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeCell( function(obj,ca){
 			if     (ca==="+"){ obj.qsub = 1;}
-			else if(ca!=="."){ obj.qans = parseInt(ca);}
+			else if(ca!=="."){ obj.qans = +ca;}
 		});
 	},
 	kanpenSave : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+			if     (obj.qnum>=  0){ return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "5 ";}
 			else                  { return ". ";}
 		});
 		this.encodeCell( function(obj){
 			if     (obj.qsub=== 1){ return "+ ";}
-			else if(obj.qans>=  2){ return (obj.qans.toString() + " ");}
+			else if(obj.qans>=  2){ return obj.qans+" ";}
 			else                  { return ". ";}
 		});
 	},

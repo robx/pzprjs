@@ -218,7 +218,7 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if     (ca>="a"&&ca<='f'){ obj.ques = 1; obj.qnum = {a:1,b:2,c:3,d:4,e:0,f:-1}[ca];}
 			else if(ca==="?"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeCell( function(obj,ca){
 			if     (ca==="1"){ obj.qans = 12;}

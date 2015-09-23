@@ -136,7 +136,7 @@ FileIO:{
 			else if(ca==="+" && !isurl){ obj.qsub = 1;}
 			else if(ca==="-4"){ obj.qnum = -2;}
 			else if(ca!=="."){
-				var num = parseInt(ca), dir = ((num & 0x30) >> 4);
+				var num = +ca, dir = ((num & 0x30) >> 4);
 				if     (dir===0){ obj.qdir = obj.UP;}
 				else if(dir===1){ obj.qdir = obj.LT;}
 				else if(dir===2){ obj.qdir = obj.DN;}

@@ -86,7 +86,7 @@ ui.debug.extend(
 	},
 	execmouse : function(strs){
 		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
-		var repeat = matches ? parseInt(matches[1]) : 1;
+		var repeat = matches ? +matches[1] : 1;
 		for(var t=0;t<repeat;t++){
 			var mv = ui.puzzle.mouse;
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");

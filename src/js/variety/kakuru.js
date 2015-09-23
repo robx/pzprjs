@@ -155,22 +155,22 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if     (ca==="b"){ obj.ques = 1;}
 			else if(ca==="?"){ obj.qnum =-2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeCell( function(obj,ca){
-			if(ca!=="."&&ca!=="0"){ obj.anum = parseInt(ca);}
+			if(ca!=="."&&ca!=="0"){ obj.anum = +ca;}
 		});
 	},
 	encodeData : function(){
 		this.encodeCell( function(obj){
 			if     (obj.ques=== 1){ return "b ";}
 			else if(obj.qnum===-2){ return "? ";}
-			else if(obj.qnum>=  0){ return ""+obj.qnum.toString()+" ";}
+			else if(obj.qnum>=  0){ return obj.qnum+" ";}
 			else{ return ". ";}
 		});
 		this.encodeCell( function(obj){
 			if(obj.ques===1||obj.qnum!==-1){ return ". ";}
-			return (obj.anum!==-1 ? ""+obj.anum.toString()+" " : "0 ");
+			return (obj.anum!==-1 ? obj.anum+" " : "0 ");
 		});
 	}
 },

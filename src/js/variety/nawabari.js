@@ -217,7 +217,7 @@ FileIO:{
 			obj.ques = 0;
 			if     (ca==="*"){ obj.ques = 7;}
 			else if(ca==="-"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeBorderAns();
 	},
@@ -226,7 +226,7 @@ FileIO:{
 		this.encodeCell( function(obj){
 			if     (obj.ques=== 7){ return "* ";}
 			else if(obj.qnum===-2){ return "- ";}
-			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+			else if(obj.qnum>=  0){ return obj.qnum+" ";}
 			else                  { return ". ";}
 		});
 		this.encodeBorderAns();

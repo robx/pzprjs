@@ -201,12 +201,12 @@ Encode:{
 
 			if     (ca==='5'){ obj.ques = 11;}
 			else if(this.include(ca,'1','4')){
-				obj.ques = parseInt(ca)+1;
+				obj.ques = parseInt(ca,10)+1;
 				obj.qnum = parseInt(bstr.substr(i+1,1),16);
 				i++;
 			}
 			else if(this.include(ca,'6','9')){
-				obj.ques = parseInt(ca)-4;
+				obj.ques = parseInt(ca,10)-4;
 				obj.qnum = parseInt(bstr.substr(i+1,2),16);
 				i+=2;
 			}
@@ -246,8 +246,8 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if     (ca==="+"){ obj.ques = 11;}
 			else if(ca!=="."){
-				obj.ques = parseInt(ca.charAt(0))+1;
-				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
+				obj.ques = (+ca.charAt(0))+1;
+				if(ca.length>1){ obj.qnum = +ca.substr(1);}
 			}
 		});
 		this.decodeBorderLine();

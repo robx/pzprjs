@@ -87,7 +87,7 @@ KeyEvent:{
 			var border = cursor.getb();
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
-				var num = parseInt(ca), qs = border.qsub;
+				var num = +ca, qs = border.qsub;
 				var qsubmax = 99;
 
 				if(qs<=0 || this.prev!==border){ if(num<=qsubmax){ border.setQsub(num);}}
@@ -404,26 +404,26 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCell( function(obj,ca){
 			obj.ques = (ca==="."?7:0);
-			if(ca!=="0"&&ca!=="."){ obj.qnum = parseInt(ca);}
+			if(ca!=="0"&&ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeCell( function(obj,ca){
-			if(ca!=="0"&&ca!=="."){ obj.anum = parseInt(ca);}
+			if(ca!=="0"&&ca!=="."){ obj.anum = +ca;}
 		});
 		this.decodeBorder( function(obj,ca){
-			if(ca!=="."){ obj.qsub = parseInt(ca);}
+			if(ca!=="."){ obj.qsub = +ca;}
 		});
 	},
 	encodeData : function(){
 		this.encodeCell(function(obj){
 			if(obj.ques===7){ return ". ";}
-			return (obj.qnum>=0 ? ""+obj.qnum.toString()+" " : "0 ");
+			return (obj.qnum>=0 ? obj.qnum+" " : "0 ");
 		});
 		this.encodeCell( function(obj){
 			if(obj.ques===7 || obj.qnum!==-1){ return ". ";}
-			return (obj.anum>=0 ? ""+obj.anum.toString()+" " : "0 ");
+			return (obj.anum>=0 ? obj.anum+" " : "0 ");
 		});
 		this.encodeBorder( function(obj){
-			return (obj.qsub!==-1 ? ""+obj.qsub.toString()+" " : ". ");
+			return (obj.qsub!==-1 ? obj.qsub+" " : ". ");
 		});
 	}
 },

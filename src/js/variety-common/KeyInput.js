@@ -11,7 +11,7 @@ KeyEvent:{
 		var max = cross.getmaxnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cross.qnum;
+			var num = +ca, cur = cross.qnum;
 			if(cur<=0 || cur*10+num>max){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
@@ -48,7 +48,7 @@ KeyEvent:{
 		var max = cell.getmaxnum(), min = cell.getminnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cell.getNum();
+			var num = +ca, cur = cell.getNum();
 			if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
@@ -115,7 +115,7 @@ KeyEvent:{
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
-			var num=parseInt(ca), cur=this.getnum51(obj,target);
+			var num=+ca, cur=this.getnum51(obj,target);
 			if(cur<=0 || cur*10+num>max || this.prev!==obj){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}

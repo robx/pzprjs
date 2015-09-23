@@ -96,7 +96,7 @@ KeyEvent:{
 			border.setQnum(-1);
 		}
 		else if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = border.qnum;
+			var num = +ca, cur = border.qnum;
 			var max = Math.max(this.owner.board.qcols,this.owner.board.qrows)-1;
 
 			border.setQdir(border.NDIR);
@@ -313,7 +313,7 @@ FileIO:{
 			if     (ca==="a"){ obj.qdir = (obj.isHorz()?obj.UP:obj.LT);}
 			else if(ca==="b"){ obj.qdir = (obj.isHorz()?obj.DN:obj.RT);}
 			else if(ca==="."){ obj.qnum = -2;}
-			else if(ca!=="0"){ obj.qnum = parseInt(ca);}
+			else if(ca!=="0"){ obj.qnum = +ca;}
 		});
 		this.decodeCellAnumsub();
 	},
@@ -323,7 +323,7 @@ FileIO:{
 			if     (dir===obj.UP||dir===obj.LT){ return "a ";}
 			else if(dir===obj.DN||dir===obj.RT){ return "b ";}
 			else if(obj.qnum===-2){ return ". ";}
-			else if(obj.qnum!==-1){ return ""+obj.qnum.toString()+" ";}
+			else if(obj.qnum!==-1){ return obj.qnum+" ";}
 			else                  { return "0 ";}
 		});
 		this.encodeCellAnumsub();

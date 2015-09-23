@@ -345,16 +345,14 @@ FileIO:{
 	decodeCellQsubQcmp : function(){
 		this.decodeCell( function(obj,ca){
 			if(ca!=="0"){
-				var num = parseInt(ca);
-				obj.qsub = num & 0x0f;
-				obj.qcmp = (num >> 4)|0;
+				obj.qsub = +ca & 0x0f;
+				obj.qcmp = +ca >> 4; // int
 			}
 		});
 	},
 	encodeCellQsubQcmp : function(){
 		this.encodeCell( function(obj){
-			var num = obj.qsub + (obj.qcmp << 4);
-			return (num.toString() + " ");
+			return (obj.qsub + (obj.qcmp << 4))+" ";
 		});
 	},
 
@@ -372,12 +370,12 @@ FileIO:{
 	decodeQnum_PBox_Sato : function(){
 		this.decodeCell( function(cell,ca){
 			if     (ca==="-"){ cell.qnum = -2;}
-			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeQnum_PBox_Sato : function(){
 		this.encodeCell( function(cell){
-			if     (cell.qnum>=  0){ return (cell.qnum.toString() + " ");}
+			if     (cell.qnum>=  0){ return cell.qnum+" ";}
 			else if(cell.qnum===-2){ return "- ";}
 			else                   { return ". ";}
 		});

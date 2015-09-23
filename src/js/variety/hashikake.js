@@ -283,7 +283,7 @@ FileIO:{
 
 	kanpenOpen : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca>="1" && ca<="8"){ obj.qnum = parseInt(ca);}
+			if(ca>="1" && ca<="8"){ obj.qnum = +ca;}
 			else if(ca==="9")     { obj.qnum = -2;}
 		});
 		this.decodeCell( function(cell,ca){
@@ -292,7 +292,7 @@ FileIO:{
 	},
 	kanpenSave : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum  > 0){ return (obj.qnum.toString() + " ");}
+			if     (obj.qnum  > 0){ return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "9 ";}
 			else                  { return ". ";}
 		});

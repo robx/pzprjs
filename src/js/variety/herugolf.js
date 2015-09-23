@@ -470,7 +470,7 @@ FileIO:{
 		this.decodeCell( function(cell,ca){
 			if     (ca==="H"){ cell.ques = 31;}
 			else if(ca==="i"){ cell.ques = 6;}
-			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
@@ -478,7 +478,7 @@ FileIO:{
 		this.encodeCell( function(cell){
 			if     (cell.ques===31){ return "H ";}
 			else if(cell.ques=== 6){ return "i ";}
-			else if(cell.qnum >  0){ return cell.qnum.toString()+" ";}
+			else if(cell.qnum >  0){ return cell.qnum+" ";}
 			else{ return ". ";}
 		});
 		this.encodeBorderLine();

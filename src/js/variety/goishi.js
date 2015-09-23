@@ -258,7 +258,7 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if(ca!=='.'){
 				obj.ques = 0;
-				if(ca!=='0'){ obj.anum = parseInt(ca);}
+				if(ca!=='0'){ obj.anum = +ca;}
 			}
 		});
 	},
@@ -294,9 +294,9 @@ FileIO:{
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
-				var cell = this.owner.board.getc(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
+				var cell = this.owner.board.getc((+item[2])*2+1,(+item[1])*2+1);
 				cell.ques = 0;
-				cell.anum = parseInt(item[0]);
+				cell.anum = +item[0];
 			}
 		}
 	},
@@ -306,7 +306,7 @@ FileIO:{
 			var cell = bd.getc(bx,by);
 			if(cell.ques!==0 || cell.anum===-1){ continue;}
 
-			var pos = [(bx>>1).toString(), (by>>1).toString()];
+			var pos = [bx>>1, by>>1];
 			stones[cell.anum-1] = pos;
 		}}
 		for(var i=0,len=stones.length;i<len;i++){

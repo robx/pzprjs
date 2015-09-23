@@ -218,7 +218,7 @@ ui.database = {
 		getEL("database_variety").innerHTML = pzpr.variety.info[item.pid][ui.getConfig('language')] + "&nbsp;" + item.col+"×"+item.row;
 		getEL("database_date").innerHTML    = this.dateString(item.time*1000);
 
-		var sid = this.DBsid = parseInt(item.id); /* selected id */
+		var sid = this.DBsid = +item.id; /* selected id */
 		var sortbyid = (form.sorts.value==='idlist');
 		form.tableup.disabled = (!sortbyid || sid===-1 || sid===1);
 		form.tabledn.disabled = (!sortbyid || sid===-1 || sid===this.DBlist.length);
@@ -380,7 +380,7 @@ ui.DataBaseHandler_LS.prototype =
 	// dbm.dbh.deleteItem() 選択している盤面データを削除する
 	//---------------------------------------------------------------------------
 	deleteItem : function(sID, max){
-		for(var i=parseInt(sID);i<max;i++){
+		for(var i=+sID;i<max;i++){
 			var data = new ui.ProblemData(localStorage[this.pheader+(i+1)]);
 			data.id--;
 			localStorage[this.pheader+i] = data.toString();

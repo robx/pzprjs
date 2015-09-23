@@ -318,12 +318,12 @@ FileIO:{
 			else if(ca==="#"){ obj.qans = 1;}
 			else if(ca==="-"){ obj.qsub = 1;}
 			else if(ca>="a" && ca<="j"){ obj.qans = parseInt(ca,20)+31;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeData : function(){
 		this.encodeCell( function(obj){
-			if     (obj.qnum>=0) { return (obj.qnum.toString() + " ");}
+			if     (obj.qnum>=0) { return obj.qnum+" ";}
 			else if(obj.qnum===-2){return "5 ";}
 			else if(obj.qans===1){ return "# ";}
 			else if(obj.qans>=41){ return ((obj.qans-31).toString(20) + " ");}

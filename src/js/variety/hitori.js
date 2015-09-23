@@ -180,12 +180,12 @@ FileIO:{
 
 	decodeCellQnum_kanpen_hitori : function(){
 		this.decodeCell( function(obj,ca){
-			if(ca!=="0" && ca!=="."){ obj.qnum = parseInt(ca);}
+			if(ca!=="0" && ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	encodeCellQnum_kanpen_hitori : function(){
 		this.encodeCell( function(obj){
-			return ((obj.qnum>0)?(obj.qnum.toString() + " "):"0 ");
+			return ((obj.qnum>0) ? obj.qnum+" " : "0 ");
 		});
 	},
 

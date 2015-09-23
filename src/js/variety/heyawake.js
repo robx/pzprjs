@@ -119,9 +119,9 @@ Encode:{
 
 			var cell = bd.cell[c];
 			if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-				if(RegExp.$1.length>0){ cell.qnum = parseInt(RegExp.$1);}
-				var x1 = cell.bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
-				var y1 = cell.by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
+				if(RegExp.$1.length>0){ cell.qnum = +RegExp.$1;}
+				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$2) - 2;
+				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$3) - 2;
 				this.owner.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;

@@ -267,34 +267,34 @@ FileIO:{
 			if(item.length<=1){ return;}
 			else if(item[0]==="0" && item[1]==="0"){ }
 			else if(item[0]==="0" || item[1]==="0"){
-				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==="0"){ excell.qnum2 = parseInt(item[3]);}
-				else if(item[1]==="0"){ excell.qnum  = parseInt(item[2]);}
+				var excell = bd.getex((+item[1])*2-1,(+item[0])*2-1);
+				if     (item[0]==="0"){ excell.qnum2 = +item[3];}
+				else if(item[1]==="0"){ excell.qnum  = +item[2];}
 			}
 			else{
-				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+				var cell = bd.getc((+item[1])*2-1,(+item[0])*2-1);
 				cell.ques = 51;
-				cell.qnum2 = parseInt(item[3]);
-				cell.qnum  = parseInt(item[2]);
+				cell.qnum2 = +item[3];
+				cell.qnum  = +item[2];
 			}
 		}
 	},
 	encodeCellQnum51_kanpen : function(){
 		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-			var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
+			var item=[(by+1)>>1,(bx+1)>>1,0,0];
 
 			if(bx===-1&&by===-1){ }
 			else if(bx===-1||by===-1){
 				var excell = bd.getex(bx,by);
-				if(bx===-1){ item[2]=excell.qnum.toString();}
-				if(by===-1){ item[3]=excell.qnum2.toString();}
+				if(bx===-1){ item[2]=excell.qnum;}
+				if(by===-1){ item[3]=excell.qnum2;}
 			}
 			else{
 				var cell = bd.getc(bx,by);
 				if(cell.ques!==51){ continue;}
-				item[2]=cell.qnum.toString();
-				item[3]=cell.qnum2.toString();
+				item[2]=cell.qnum;
+				item[3]=cell.qnum2;
 			}
 			this.datastr += (item.join(" ")+"\n");
 		}}
@@ -309,7 +309,7 @@ FileIO:{
 				if(arr[(bx+1)>>1]===''){ continue;}
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull && arr[(bx+1)>>1]!=="." && arr[(bx+1)>>1]!=="0"){
-					cell.anum = parseInt(arr[(bx+1)>>1]);
+					cell.anum = +arr[(bx+1)>>1];
 				}
 			}
 		}
@@ -321,7 +321,7 @@ FileIO:{
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ this.datastr += ". ";}
 				else if(cell.ques===51){ this.datastr += ". ";}
-				else if(cell.anum  > 0){ this.datastr += (cell.anum.toString() + " ");}
+				else if(cell.anum  > 0){ this.datastr += (cell.anum+" ");}
 				else                   { this.datastr += "0 ";}
 			}
 			if(by<bd.maxby-1){ this.datastr += "\n";}
@@ -378,7 +378,7 @@ FileIO:{
 			if(cell.ques===0 && cell.anum===-1){ return 'n0';}
 			return 'n'+cell.anum;
 		});
-	},
+	}
 },
 
 //---------------------------------------------------------

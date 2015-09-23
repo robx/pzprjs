@@ -204,14 +204,14 @@ FileIO:{
 			if     (ca==="+"){ obj.qans = 1;}
 			else if(ca==="*"){ obj.qsub = 1;}
 			else if(ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 	},
 	kanpenSave : function(){
 		this.encodeCell( function(obj){
 			if     (obj.qans=== 1){ return "+ ";}
 			else if(obj.qsub=== 1){ return "* ";}
-			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
+			else if(obj.qnum>=  0){ return obj.qnum+" ";}
 			else if(obj.qnum===-2){ return "5 ";}
 			else                  { return ". ";}
 		});

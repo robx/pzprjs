@@ -110,7 +110,7 @@ KeyEvent:{
 		var cell = this.cursor.getc(), nums = cell.qnums, val=[];
 
 		if(('0'<=ca && ca<='8') || ca==='-'){
-			var num = (ca!=='-' ? parseInt(ca) : -2);
+			var num = (ca!=='-' ? +ca : -2);
 			if(this.prev===cell && nums.length<=3){
 				for(var i=0;i<nums.length;i++){ val.push(nums[i]);}
 			}
@@ -429,7 +429,7 @@ FileIO:{
 				obj.qnums = [];
 				var array = ca.split(/,/);
 				for(var i=0;i<array.length;i++){
-					obj.qnums.push(array[i]!=="-"?parseInt(array[i]):-2);
+					obj.qnums.push(array[i]!=="-"?+array[i]:-2);
 				}
 			}
 		});

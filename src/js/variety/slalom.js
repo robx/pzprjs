@@ -594,7 +594,7 @@ Encode:{
 			}
 		}
 
-		bd.startpos.set( bd.cell[parseInt(array[1])] );
+		bd.startpos.set( bd.cell[+array[1]] );
 
 		this.outbstr = array[0].substr(i);
 	},
@@ -644,7 +644,7 @@ Encode:{
 			if(count>0){ cm+=(15+count).toString(36);}
 		}
 
-		cm += ("/"+bd.startpos.getc().id.toString());
+		cm += ("/"+bd.startpos.getc().id);
 
 		this.outbstr += cm;
 	}
@@ -679,7 +679,7 @@ FileIO:{
 			else if(ca==="i"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="#"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.ques = 1; obj.qnum = +ca;}
 		});
 		bd.hinfo.generateGates();
 	},
@@ -693,8 +693,8 @@ FileIO:{
 			else if(ca!=="."){
 				var inp = ca.split(",");
 				obj.ques = 1;
-				obj.qdir = (inp[0]!=="0"?parseInt(inp[0]): 0);
-				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
+				obj.qdir = (inp[0]!=="0"?+inp[0]: 0);
+				obj.qnum = (inp[1]!=="-"?+inp[1]:-2);
 			}
 		});
 		bd.hinfo.generateGates();
@@ -708,8 +708,8 @@ FileIO:{
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1 && obj.qnum<=0){ return "# ";}
 			else if(obj.ques=== 1){
-				var ca1 = (obj.qdir!== 0?obj.qdir.toString():"0");
-				var ca2 = (obj.qnum!==-2?obj.qnum.toString():"-");
+				var ca1 = (obj.qdir!== 0 ? ""+obj.qdir : "0");
+				var ca2 = (obj.qnum!==-2 ? ""+obj.qnum : "-");
 				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
@@ -723,7 +723,7 @@ FileIO:{
 			else if(ca==="|"){ obj.ques = 21;}
 			else if(ca==="-"){ obj.ques = 22;}
 			else if(ca==="0"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.ques = 1; obj.qnum = +ca;}
 		});
 		bd.hinfo.generateGates();
 	},
@@ -735,7 +735,7 @@ FileIO:{
 			else if(obj.ques===21){ return "| ";}
 			else if(obj.ques===22){ return "- ";}
 			else if(obj.ques=== 1){
-				return (obj.qnum>0 ? obj.qnum.toString() : "0")+" ";
+				return (obj.qnum>0 ? obj.qnum+" " : "0 ");
 			}
 			else{ return ". ";}
 		});
@@ -770,7 +770,7 @@ FileIO:{
 		this.encodeCellXMLBoard(function(cell){
 			var val = -3;
 			if(cell.ques=== 1){
-				val = (cell.qnum>0 ? cell.qnum.toString() : 0);
+				val = (cell.qnum>0 ? cell.qnum : 0);
 			}
 			else if(cell.ques===21){ val = -5;}
 			else if(cell.ques===22){ val = -4;}
@@ -789,7 +789,7 @@ FileIO:{
 			else if(ca!=="."){
 				if     (ca.charAt(0)==="i"){ obj.ques = 21;}
 				else if(ca.charAt(0)==="w"){ obj.ques = 22;}
-				if(ca.length>1){ sv_num[c] = parseInt(ca.substr(1));}
+				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
 			}
 		});
 		bd.hinfo.generateGates();

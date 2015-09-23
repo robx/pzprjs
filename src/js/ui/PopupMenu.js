@@ -72,8 +72,8 @@ ui.popupmgr =
 		var popel = e.target.parentNode;
 		var pos = pzpr.util.getPagePos(e);
 		this.movingpop = popel;
-		this.offset.px = pos.px - parseInt(popel.style.left);
-		this.offset.py = pos.py - parseInt(popel.style.top);
+		this.offset.px = pos.px - parseInt(popel.style.left,10);
+		this.offset.py = pos.py - parseInt(popel.style.top,10);
 		ui.event.enableMouse = false;
 	},
 	titlebarup : function(e){
@@ -256,8 +256,8 @@ ui.popupmgr.addpopup('newboard',
 		var col, row, url=[], NB=this.form;
 		
 		if(pid!=='sudoku'){
-			col = (parseInt(NB.col.value))|0;
-			row = (parseInt(NB.row.value))|0;
+			col = NB.col.value|0;
+			row = NB.row.value|0;
 		}
 		else{
 			if     (getEL("nb_size_sudoku_2").checked){ col=row=16;}
@@ -722,8 +722,8 @@ ui.popupmgr.addpopup('dispsize',
 	// changesize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	changesize : function(e){
-		var csize = parseInt(this.form.cellsize.value);
-		if(csize>0){ ui.menuconfig.set('cellsizeval', (csize|0));}
+		var csize = this.form.cellsize.value|0;
+		if(csize>0){ ui.menuconfig.set('cellsizeval', csize);}
 		this.close();
 	}
 });

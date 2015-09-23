@@ -107,7 +107,7 @@ KeyEvent:{
 
 		var cell = this.cursor.getc(), val=-1;
 
-		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (cell.qdir!==val?val:0);}
+		if('1'<=ca && ca<='4'){ val = +ca; val = (cell.qdir!==val?val:0);}
 		else if(ca==='-') { val = (cell.qdir!==-2?-2:0);}
 		else if(ca==='q') { val = (cell.qdir!==5?5:0);}
 		else if(ca===' ') { val = 0;}
@@ -364,10 +364,10 @@ FileIO:{
 		this.decodeCell( function(obj,ca){
 			if(ca.charAt(0)==="o"){
 				obj.qdir = 5;
-				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
+				if(ca.length>1){ obj.qnum = +ca.substr(1);}
 			}
 			else if(ca==="-"){ obj.qdir = -2;}
-			else if(ca!=="."){ obj.qdir = parseInt(ca);}
+			else if(ca!=="."){ obj.qdir = +ca;}
 		});
 
 		this.decodeBorderAns();

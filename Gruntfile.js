@@ -1,4 +1,4 @@
-/* jshint node: true, browser: false */
+/* jshint node: true, browser: false, es3:false */
 module.exports = function(grunt){
   var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}

@@ -651,7 +651,7 @@ Graphic:{
 		var id=0, a=0;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
@@ -659,7 +659,7 @@ Graphic:{
 		id=(bd.qcols-1)*bd.qrows;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=bd.bdinside){ a=i+1; break;}
@@ -725,8 +725,8 @@ Encode:{
 	decodeInOut : function(){
 		var barray = this.outbstr.split("/"), bd = this.owner.board;
 
-		bd.arrowin.seturlid (parseInt(barray[1]));
-		bd.arrowout.seturlid(parseInt(barray[2]));
+		bd.arrowin.seturlid (+barray[1]);
+		bd.arrowout.seturlid(+barray[2]);
 
 		this.outbstr = "";
 	},
@@ -739,8 +739,8 @@ Encode:{
 "FileIO@icebarn":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.arrowin.setid (parseInt(this.readLine()));
-		bd.arrowout.setid(parseInt(this.readLine()));
+		bd.arrowin.setid (+this.readLine());
+		bd.arrowout.setid(+this.readLine());
 
 		this.decodeCell( function(obj,ca){
 			if(ca==="1"){ obj.ques = 6;}
@@ -763,7 +763,7 @@ Encode:{
 		bd.disableInfo();
 		this.decodeBorder( function(obj,ca){
 			if(ca!=="0"){
-				var val = parseInt(ca), isvert = obj.isVert();
+				var val = +ca, isvert = obj.isVert();
 				if(val===1&&!isvert){ obj.setArrow(obj.UP);}
 				if(val===2&&!isvert){ obj.setArrow(obj.DN);}
 				if(val===1&& isvert){ obj.setArrow(obj.LT);}
@@ -784,8 +784,8 @@ Encode:{
 "FileIO@icelom,icelom2":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.arrowin.setid (parseInt(this.readLine()));
-		bd.arrowout.setid(parseInt(this.readLine()));
+		bd.arrowin.setid (+this.readLine());
+		bd.arrowout.setid(+this.readLine());
 
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
@@ -796,7 +796,7 @@ Encode:{
 			if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
 
 			if(ca!=='' && ca!=='.'){
-				obj.qnum = (ca!=='?' ? parseInt(ca) : -2);
+				obj.qnum = (ca!=='?' ? +ca : -2);
 			}
 		});
 		this.decodeBorderLine();

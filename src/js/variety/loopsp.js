@@ -220,7 +220,7 @@ FileIO:{
 			if     (ca==="o"){ obj.ques = 6;}
 			else if(ca==="-"){ obj.ques =-2;}
 			else if(ca>="a" && ca<="g"){ obj.ques = parseInt(ca,36)+1;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+			else if(ca!=="."){ obj.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
@@ -229,7 +229,7 @@ FileIO:{
 			if     (obj.ques===6) { return "o ";}
 			else if(obj.ques>=11 && obj.ques<=17) { return ""+(obj.ques-1).toString(36)+" ";}
 			else if(obj.ques===-2){ return "- ";}
-			else if(obj.qnum!==-1){ return obj.qnum.toString()+" ";}
+			else if(obj.qnum!==-1){ return obj.qnum+" ";}
 			else                  { return ". ";}
 		});
 		this.encodeBorderLine();
