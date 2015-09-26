@@ -165,7 +165,6 @@ Segment:{
 
 		this.lattices = [];	// 途中で通過する格子点を保持する
 
-		this.color = "";
 		this.error = 0;
 
 		this.setpos(bx1,by1,bx2,by2);
@@ -598,8 +597,8 @@ Graphic:{
 		if(isdraw){
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.puzzle.execConfig('irowake') || !seg.color){ g.strokeStyle = this.linecolor;}
-			else{ g.strokeStyle = seg.color;}
+			else if(!this.puzzle.execConfig('irowake') || !seg.path.color){ g.strokeStyle = this.linecolor;}
+			else{ g.strokeStyle = seg.path.color;}
 
 			var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
 				py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;

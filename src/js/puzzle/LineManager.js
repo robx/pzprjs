@@ -70,7 +70,7 @@ LineManagerBase:{
 	newIrowake : function(){
 		var paths = this.board.paths;
 		for(var i=0;i<paths.length;i++){
-			paths[i].objs.setColor(this.puzzle.painter.getNewLineColor());
+			paths[i].color = this.puzzle.painter.getNewLineColor();
 		}
 	},
 
@@ -121,14 +121,7 @@ LineManagerBase:{
 		var path = border.path;
 		if(path!==null){ return;}
 
-		if(!blist[0]){
-			path = this.addPath();
-			border.color = this.puzzle.painter.getNewLineColor();
-		}
-		else{
-			path = blist[0].path;
-			border.color  = blist[0].color;
-		}
+		path = (!blist[0] ? this.addPath() : blist[0].path);
 		path.objs.add(border);
 		border.path = path;
 	},
@@ -139,7 +132,6 @@ LineManagerBase:{
 		path.objs.remove(border);
 		if(path.objs.length===0){ this.removePath(path);}
 		border.path = null;
-		border.color = "";
 	},
 	remakeLineInfo : function(border, blist_sub){
 		if(this.isvalid(border)){ blist_sub.add(border);}
@@ -168,7 +160,7 @@ LineManagerBase:{
 	// info.removeArea() 部屋idを無効にする
 	//--------------------------------------------------------------------------------
 	addPath : function(){
-		var path = {objs:(new this.PieceList())};
+		var path = {objs:(new this.PieceList()), color:this.puzzle.painter.getNewLineColor()};
 		this.board.paths.push(path);
 		return path;
 	},
@@ -184,16 +176,15 @@ LineManagerBase:{
 	//--------------------------------------------------------------------------------
 	getLongColor : function(blist){
 		// 周りで一番大きな線は？
-		var largepath = null, longColor = "";
+		var largepath = null;
 		for(var i=0,len=blist.length;i<len;i++){
 			var path = blist[i].path;
 			if(path===null){ continue;}
 			if(largepath===null || largepath.objs.length < path.objs.length){
 				largepath = path;
-				longColor = blist[i].color;
 			}
 		}
-		return (!!longColor ? longColor : this.puzzle.painter.getNewLineColor());
+		return (!!largepath ? largepath.color : this.puzzle.painter.getNewLineColor());
 	},
 	setLongColor : function(newpaths, longColor){
 		var puzzle = this.puzzle;
@@ -209,7 +200,7 @@ LineManagerBase:{
 		// 新しい色の設定
 		for(var i=0;i<newpaths.length;i++){
 			var path = newpaths[i];
-			path.objs.setColor(path===longpath ? longColor : puzzle.painter.getNewLineColor());
+			path.color = (path===longpath ? longColor : puzzle.painter.getNewLineColor());
 			blist_all.extend(path.objs);
 		}
 		

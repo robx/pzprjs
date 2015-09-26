@@ -328,7 +328,6 @@ BoardExec:{
 		if(this.board.linemgr.borderAsLine){
 			border1.line  = border2.line;
 			border1.qsub  = border2.qsub;
-			border1.color = border2.color;
 		}
 	},
 	innerBorder : function(id,key){

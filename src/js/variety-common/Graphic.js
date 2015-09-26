@@ -251,19 +251,19 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], addwidth = 0;
-			var info = cell.error || cell.qinfo;
-			if     (info===1){ g.strokeStyle = this.errcolor1; addwidth = basewidth/2;}
-			else if(info===2){ g.strokeStyle = this.errcolor2;}
-			else if(info===-1){g.strokeStyle = this.errlinebgcolor;}
-			else{
-				if(info===3){ addwidth = basewidth/2;}
-				if(!irowake || !cell.color){ g.strokeStyle = this.qanscolor;}
-				else             { g.strokeStyle = cell.color;}
-			}
-
+			var cell = clist[i];
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
+				var info = cell.error || cell.qinfo, addwidth = 0;
+				if     (info===1){ g.strokeStyle = this.errcolor1; addwidth = basewidth/2;}
+				else if(info===2){ g.strokeStyle = this.errcolor2;}
+				else if(info===-1){g.strokeStyle = this.errlinebgcolor;}
+				else{
+					if(info===3){ addwidth = basewidth/2;}
+					if(!irowake || !cell.path.color){ g.strokeStyle = this.qanscolor;}
+					else             { g.strokeStyle = cell.path.color;}
+				}
+
 				g.lineWidth = basewidth + addwidth;
 				g.beginPath();
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
@@ -655,8 +655,8 @@ Graphic:{
 			if     (info===1)  { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
-			else if(!puzzle.execConfig('irowake') || !border.color){ return this.linecolor;}
-			else{ return border.color;}
+			else if(!puzzle.execConfig('irowake') || !border.path.color){ return this.linecolor;}
+			else{ return border.path.color;}
 		}
 		return null;
 	},

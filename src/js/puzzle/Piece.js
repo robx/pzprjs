@@ -34,12 +34,11 @@ pzpr.classmgr.makeCommon({
 	qcmp : 0,	// cell  :
 
 	/* 履歴保存しないプロパティ */
-	color : "",	// 色分けデータを保持する
 	error : 0,
 	qinfo : 0,
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
-	propans  : ['qans', 'anum', 'line', 'color'],
+	propans  : ['qans', 'anum', 'line'],
 	propsub  : ['qsub', 'qcmp'],
 	propinfo : ['error', 'qinfo'],
 	propnorec : { color:1, error:1, qinfo:1 },
