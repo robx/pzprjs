@@ -124,11 +124,8 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
-},
-
-AreaLineManager:{
-	enabled : true
+	isCenterLine : true,
+	makeClist : true
 },
 
 //---------------------------------------------------------
@@ -194,10 +191,9 @@ AnsCheck:{
 	checkUnshadedCircle : function(){ this.checkWBcircle(1, "lcInvWhite");},
 	checkShadedCircle   : function(){ this.checkWBcircle(2, "lcInvBlack");},
 	checkWBcircle : function(val, code){
-		var result = true;
-		var linfo = this.getLareaInfo();
-		for(var r=1;r<=linfo.max;r++){
-			var clist = linfo.area[r].clist;
+		var result = true, paths = this.board.paths;
+		for(var r=0;r<paths.length;r++){
+			var clist = paths[r].clist;
 			if(clist.length<=1){ continue;}
 
 			var tip1 = clist[0], tip2 = clist[clist.length-1];
@@ -205,7 +201,8 @@ AnsCheck:{
 
 			result = false;
 			if(this.checkOnly){ break;}
-			linfo.setErrLareaById(r,1);
+			paths[r].objs.seterr(1);
+			paths[r].clist.seterr(1);
 			tip1.seterr(1);
 			tip2.seterr(1);
 		}

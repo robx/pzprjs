@@ -133,7 +133,7 @@ Config.prototype =
 		switch(name){
 			case 'use':      exec = flags.use; break;
 			case 'use_tri':  exec = (pid==="shakashaka"); break;
-			case 'dispmove': exec = puzzle.board.linfo.moveline; break;
+			case 'dispmove': exec = puzzle.board.linemgr.moveline; break;
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
 			case 'bgcolor':  exec = flags.bgcolor; break;

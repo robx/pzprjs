@@ -37,13 +37,11 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 
-	keyinput : function(ca){
-		this.key_inputqnum_kaero(ca);
+	key_inputqnum_main : function(cell,ca){
+		return this.key_inputqnum_main_kaero(cell,ca);
 	},
-	key_inputqnum_kaero : function(ca){
-		var cell = this.cursor.getc();
-
-		if(ca.length>1){ return;}
+	key_inputqnum_main_kaero : function(cell,ca){
+		if(ca.length>1){ return false;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
 			var canum = cell.qnum;
@@ -53,10 +51,9 @@ KeyEvent:{
 		}
 		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
 		else if(ca===' '){ cell.setQnum(-1);}
-		else{ return;}
+		else{ return false;}
 
-		this.prev = cell;
-		cell.draw();
+		return true;
 	}
 },
 
@@ -77,15 +74,12 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
+	isCenterLine : true,
+	moveline : true
 },
 
 AreaRoomManager:{
 	enabled : true
-},
-AreaLineManager:{
-	enabled : true,
-	moveline : true
 },
 
 //---------------------------------------------------------

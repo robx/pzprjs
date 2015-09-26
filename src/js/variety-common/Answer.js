@@ -5,16 +5,12 @@ pzpr.classmgr.makeCommon({
 AnsCheck:{
 	//--------------------------------------------------------------------------------
 	// ans.getRoomInfo()  部屋情報を返す
-	// ans.getLareaInfo() 線つながり情報を返す
 	// ans.getShadeInfo()    黒マスの領域情報を返す
 	// ans.getUnshadeInfo()  白マスの領域情報を返す
 	// ans.getNumberInfo()   数字の領域/繋がり情報を返す
 	//--------------------------------------------------------------------------------
 	getRoomInfo : function(){
 		return (this._info.room = this._info.room || this.board.getRoomInfo());
-	},
-	getLareaInfo : function(){
-		return (this._info.linfo = this._info.linfo || this.board.getLareaInfo());
 	},
 	getShadeInfo : function(){
 		return (this._info.bcell = this._info.bcell || this.board.getShadeInfo());
@@ -61,7 +57,7 @@ AnsCheck:{
 		this.checkAllCell( function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmNoLine");
 	},
 	checkLineOverLetter : function(){
-		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linfo.moveline ? "laOnNum" : "lcOnNum"));
+		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linemgr.moveline ? "laOnNum" : "lcOnNum"));
 	},
 
 	//---------------------------------------------------------------------------
@@ -193,12 +189,12 @@ AnsCheck:{
 	// ans.checkConnectAllNumber() 盤面に引かれている線が一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkConnectAllNumber : function(){
-		var linfo = this.getLareaInfo();
 		var bd = this.board;
-		if(linfo.max>1){
+		if(bd.paths.length>1){
 			this.failcode.add("lcDivided");
 			bd.border.setnoerr();
-			linfo.setErrLareaByCell(bd.cell[1],1);
+			bd.paths[0].objs.seterr(1);
+			bd.paths[0].clist.seterr(4);
 		}
 	},
 
@@ -332,17 +328,20 @@ AnsCheck:{
 	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
 	// ans.checkConnectObjectCount() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.board.linfo.moveline ? "laIsolate" : "lcIsolate"));},
+	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.board.linemgr.moveline ? "laIsolate" : "lcIsolate"));},
 	checkConnectObject  : function(){ this.checkConnectObjectCount(function(a){ return(a<2);}, "nmConnected");},
 	checkTripleObject   : function(){ this.checkConnectObjectCount(function(a){ return(a<3);}, "lcTripleNum");},
 	checkConnectObjectCount : function(evalfunc, code){
-		var result = true, linfo = this.getLareaInfo();
-		for(var id=1;id<=linfo.max;id++){
-			if( evalfunc( linfo.area[id].clist.filter(function(cell){ return cell.isNum();}).length ) ){ continue;}
+		var result = true, paths = this.board.paths;
+		for(var id=0;id<paths.length;id++){
+			var clist = paths[id].clist;
+			if( evalfunc( clist.filter(function(cell){ return cell.isNum();}).length ) ){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
-			linfo.setErrLareaById(id,1);
+			this.board.border.setnoerr();
+			paths[id].objs.seterr(1);
+			paths[id].clist.seterr(4);
 		}
 		if(!result){
 			this.failcode.add(code);

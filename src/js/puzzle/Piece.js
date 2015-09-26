@@ -337,6 +337,19 @@ pzpr.classmgr.makeCommon({
 			if(cells[i].group==="cell" && !cells[i].isnull || !bds[i].isnull){ cblist.push([cells[i],bds[i],(i+1)]);} /* i+1==dir */
 		}
 		return cblist;
+	},
+
+	//--------------------------------------------------------------------------------
+	// cell.eraseMovedLines()  移動系パズルの丸が消えたとき等、領域に含まれる線を消去する
+	//--------------------------------------------------------------------------------
+	eraseMovedLines : function(){
+		if(this.path===null){ return;}
+		var clist = this.path.clist, count = 0;
+		for(var i=0,len=clist.length;i<len;i++){ for(var j=i+1;j<len;j++){
+			var border = clist[i].getnb(clist[j]);
+			if(!border.isnull){ border.removeLine(); count++;}
+		}}
+		if(count>0){ clist.draw();}
 	}
 },
 

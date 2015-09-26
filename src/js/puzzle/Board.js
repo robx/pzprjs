@@ -49,8 +49,6 @@ Board:{
 		this.linemgr = this.addInfoList(classes.LineManager);		// 線情報管理オブジェクト
 
 		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
-		this.linfo = this.addInfoList(classes.AreaLineManager);		// 線つながり情報を保持する
-
 		this.bcell = this.addInfoList(classes.AreaShadeManager);	// 黒マス情報を保持する
 		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
 		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
@@ -516,13 +514,11 @@ Board:{
 
 	//--------------------------------------------------------------------------------
 	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
-	// bd.getLareaInfo() 線つながり情報をAreaInfo型のオブジェクトで返す
 	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
 	// bd.getUnshadeInfo() 白マス情報をAreaInfo型のオブジェクトで返す
 	// bd.getNumberInfo()  数字情報をAreaInfo型のオブジェクトで返す
 	//--------------------------------------------------------------------------------
 	getRoomInfo  : function(){ return this.rooms.getAreaInfo();},
-	getLareaInfo : function(){ return this.linfo.getAreaInfo();},
 	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
 	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
 	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},

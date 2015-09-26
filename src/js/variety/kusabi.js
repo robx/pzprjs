@@ -39,11 +39,8 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
-},
-
-AreaLineManager:{
-	enabled : true
+	isCenterLine : true,
+	makeClist : true
 },
 
 //---------------------------------------------------------

@@ -156,12 +156,9 @@ Board:{
 LineManager:{
 	isCenterLine : true,
 	isLineCross  : true,
+	makeClist : true,
 
 	iscrossing : function(cell){ return cell.noNum();}
-},
-
-AreaLineManager:{
-	enabled : true
 },
 
 Flags:{

@@ -35,14 +35,14 @@ MouseEvent:{
 		var border = this.board.getb(lastope.bx, lastope.by);
 		
 		/* 線を引いた/消した箇所にある領域を取得 */
-		var linfo = this.board.linfo;
 		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.lineedge);
-		clist = clist.notnull().filter(function(cell){ return !!linfo.id[cell.id];});
+		clist = clist.notnull().filter(function(cell){ return cell.path!==null || cell.isNum();});
 		
 		/* 改めて描画対象となるセルを取得して再描画 */
 		clist.each(function(cell){
-			linfo.getClistByCell(cell).each(function(cell){ if(cell.isNum()){ cell.draw();}});
+			if(cell.path===null){ if(cell.isNum()){ cell.draw();}}
+			else{ cell.path.clist.each(function(cell){ if(cell.isNum()){ cell.draw();}});}
 		});
 	},
 
@@ -84,10 +84,13 @@ Cell:{
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
 		
-		var	num   = targetcell.getNum(),
-			clist = this.board.linfo.getClistByCell(this),
-			d     = clist.getRectSize();
-		return ((d.cols===1||d.rows===1) && (num===clist.length-1));
+		var	num = targetcell.getNum();
+		if(this.path===null){ return (num===0);}
+		else{
+			var clist = (this.path!==null ? this.path.clist : [this]);
+			var d = clist.getRectSize();
+			return ((d.cols===1||d.rows===1) && (num===clist.length-1));
+		}
 	},
 	
 	maxnum : function(){
@@ -131,40 +134,36 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		/* AreaLineManagerより後にすること */
+		/* LineManagerより後にすること */
 		this.rects = this.addInfoList(this.klass.AreaSlideManager);
 	}
 },
 
 LineManager:{
-	isCenterLine : true
-},
-
-"AreaRoomManager@bonsan,heyabon":{
-	enabled : true
-},
-AreaLineManager:{
-	enabled : true,
+	isCenterLine : true,
 	moveline : true
 },
-"AreaLineManager@heyabon":{
-	initMovedBase : function(clist){
-		for(var i=0;i<clist.length;i++){ clist[i].distance = null;}
+"LineManager@heyabon":{
+	initExtraData : function(blist){
+		var clist = blist.cellinside().filter(function(cell){ return cell.lcnt===0;});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], num = cell.qnum;
+			cell.distance = (num>=0 ? num : null);
+		}
 		
-		pzpr.common.AreaLineManager.prototype.initMovedBase.call(this, clist);
+		pzpr.common.LineManager.prototype.initExtraData.call(this, blist);
 	},
-	setMovedBase : function(areaid){
-		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
+	setExtraData : function(path){
+		pzpr.common.LineManager.prototype.setExtraData.call(this, path);
 		
-		var area = this.area[areaid];
-		if(!area.movevalid){ return;}
+		if(!path.movevalid){ return;}
 		
-		var cell = area.departure, num = area.departure.qnum;
+		var cell = path.departure, num = path.departure.qnum;
 		num = (num>=0 ? num : this.board.cellmax);
 		cell.distance = num;
 		
-		/* area.departureは線が1方向にしかふられていないはず */
-		var dir = +({1:1,2:2,4:3,8:4}[this.linkinfo[cell.id] & 0x0F]);
+		/* path.departureは線が1方向にしかふられていないはず */
+		var dir = cell.getdir(cell.seglist[0],1);
 		var pos = cell.getaddr(), n = cell.distance;
 		while(1){
 			pos.movedir(dir,2);
@@ -172,13 +171,17 @@ AreaLineManager:{
 			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
 			
 			cell.distance = --n;
-			if(cell===area.destination){ break;}
+			if(cell===path.destination){ break;}
 			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
 			else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
 			else if(dir!==3 && adb.right.isLine() ){ dir=4;}
 			else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
 		}
 	}
+},
+
+"AreaRoomManager@bonsan,heyabon":{
+	enabled : true
 },
 "AreaSlideManager:AreaShadeManager@rectslider":{
 	enabled : true,
@@ -190,12 +193,12 @@ AreaLineManager:{
 		if(!this.enabled){ return;}
 		
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		var linfo = this.board.linfo, clist = new this.klass.CellList(), rects = this;
-		var id1 = linfo.id[cell1.id], id2 = linfo.id[cell2.id];
-		if(id1===id2 && id1!==null){ clist.extend(linfo.getClistByCell(cell1));}
+		var clist = new this.klass.CellList(), rects = this;
+		var path1 = cell1.path, path2 = cell2.path;
+		if(path1===path2 && path1!==null){ clist.extend(path1.clist);}
 		else{
-			if(id1!==null){ clist.extend(linfo.area[id1].clist);}else{ clist.add(cell1);}
-			if(id2!==null){ clist.extend(linfo.area[id2].clist);}else{ clist.add(cell2);}
+			if(path1!==null){ clist.extend(path1.clist);}else{ clist.add(cell1);}
+			if(path2!==null){ clist.extend(path2.clist);}else{ clist.add(cell2);}
 		}
 		clist = clist.filter(function(cell){ return (cell.base.qnum!==-1 || rects.id[cell.id]!==null);});
 		
@@ -439,14 +442,30 @@ AnsCheck:{
 		"checkDisconnectLine"
 	],
 
-	checkCurveLine : function(){
-		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
-	},
-	checkLineLength : function(){
-		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
-	},
 	checkNoMoveCircle : function(){
 		this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);}, "nmNoMove");
+	},
+
+	checkCurveLine : function(){
+		this.checkAllLineArea(function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
+	},
+	checkLineLength : function(){
+		this.checkAllLineArea(function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
+	},
+	checkAllLineArea : function(evalfunc, code){
+		for(var id=0;id<this.board.paths.length;id++){
+			var path = this.board.paths[id], clist = path.clist;
+			var top = clist.getQnumCell();
+			var d = clist.getRectSize();
+			var a = clist.length;
+			var n = (!top.isnull ? top.qnum : -1);
+			if( evalfunc(d.cols, d.rows, a, n) ){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			this.board.border.setnoerr();
+			path.objs.seterr(1);
+		}
 	},
 
 	checkFractal : function(){

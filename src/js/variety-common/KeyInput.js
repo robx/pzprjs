@@ -39,7 +39,7 @@ KeyEvent:{
 		if(this.key_inputqnum_main(cell,ca)){
 			this.prev = cell;
 			if(puzzle.execConfig('dispmove') && cell.noNum()){
-				bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
+				cell.eraseMovedLines();		/* 丸数字がなくなったら付属する線も消去する */
 			}
 			cell0.draw();
 		}

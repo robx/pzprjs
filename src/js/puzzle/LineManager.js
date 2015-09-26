@@ -48,6 +48,7 @@ LineManagerBase:{
 			this.targetgroup[c].seglist=new this.PieceList();
 		}
 		this.ltotal=[this.targetgroup.length];
+		this.initExtraData(this.basegroup);
 
 		this.rebuild();
 	},
@@ -66,6 +67,7 @@ LineManagerBase:{
 
 		this.searchLine(blist);
 		if(this.puzzle.flags.irowake){ this.newIrowake();}
+		this.resetExtraData();
 	},
 	newIrowake : function(){
 		var paths = this.board.paths;
@@ -124,6 +126,8 @@ LineManagerBase:{
 		path = (!blist[0] ? this.addPath() : blist[0].path);
 		path.objs.add(border);
 		border.path = path;
+
+		this.setExtraData(path);
 	},
 	removeLineInfo : function(border, blist){
 		var path = border.path;
@@ -132,6 +136,11 @@ LineManagerBase:{
 		path.objs.remove(border);
 		if(path.objs.length===0){ this.removePath(path);}
 		border.path = null;
+
+		if(path.objs.length>0){ this.setExtraData(path);}
+		blist = new this.PieceList();
+		blist.add(border);
+		this.initExtraData(blist);
 	},
 	remakeLineInfo : function(border, blist_sub){
 		if(this.isvalid(border)){ blist_sub.add(border);}
@@ -239,6 +248,7 @@ LineManagerBase:{
 	// linemgr.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
 	//---------------------------------------------------------------------------
 	searchLine : function(blist){
+		this.initExtraData(blist);
 		var newpaths = [];
 		for(var i=0,len=blist.length;i<len;i++){
 			blist[i].path = null;
@@ -262,12 +272,24 @@ LineManagerBase:{
 
 			stack = stack.concat(Array.prototype.slice.apply(this.getaround(border)));
 		}
-	}
+
+		this.setExtraData(newpath);
+	},
+
+ 	//--------------------------------------------------------------------------------
+	// linemgr.resetExtraData() 情報の再構築時に行う拡張データ設定
+	// linemgr.initExtraData()  指定されたセルの拡張データを初期化する
+	// linemgr.setExtraData()   指定された領域の拡張データを設定する
+ 	//--------------------------------------------------------------------------------
+	resetExtraData : function(){},
+	initExtraData  : function(blist){},
+	setExtraData   : function(path){}
 },
 
 "LineManager:LineManagerBase":{
 	initialize : function(){
 		this.enabled = (this.isCenterLine || this.borderAsLine);
+		if(this.moveline){ this.relation.push('cell');}
 	},
 	init2 : function(){
 		this.PieceList   = this.klass.BorderList;
@@ -277,6 +299,84 @@ LineManagerBase:{
 
 	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
 	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
-	borderAsLine : false	// 境界線をlineとして扱う
+	borderAsLine : false,	// 境界線をlineとして扱う
+
+	makeClist : false,		// 線が存在するclistを生成する
+	moveline  : false,		// 丸数字などを動かすパズル
+
+	setCell : function(cell){
+		if(this.moveline){
+			if(!!cell.path){ this.setExtraData(cell.path);}
+			else           { cell.base = (cell.isNum() ? cell : this.board.emptycell);}
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linemgr.resetExtraData() 情報の再構築時に行う拡張データ設定
+	// linemgr.initExtraData()  指定されたセルの拡張データを初期化する
+	// linemgr.setExtraData()   指定された領域の拡張データを設定する
+	//--------------------------------------------------------------------------------
+	resetExtraData : function(){
+		if(this.moveline){ this.resetMovedBase();}
+	},
+	initExtraData : function(blist){
+		if(this.moveline){ this.initMovedBase(blist);}
+	},
+	setExtraData : function(path){
+		if(this.makeClist || this.moveline){
+			path.clist = path.objs.cellinside();
+			if(this.moveline){ this.setMovedBase(path);}
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linemgr.resetMovedBase()  情報の再構築時に移動情報を初期化する
+	// linemgr.initMovedBase()   指定されたセルの移動情報を初期化する
+	// linemgr.setMovedBase()    指定された領域の移動情報を設定する
+	//--------------------------------------------------------------------------------
+	resetMovedBase : function(){
+		var bd = this.board;
+		this.initMovedBase(bd.border);
+		for(var r=0;r<bd.paths.length;r++){ this.setMovedBase(bd.paths[r]);}
+	},
+	initMovedBase : function(blist){
+		var clist = blist.cellinside().filter(function(cell){ return cell.lcnt===0;});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			cell.base = (cell.isNum() ? cell : this.board.emptycell);
+			cell.path = null;
+		}
+	},
+	setMovedBase : function(path){
+		var emptycell = this.board.emptycell;
+		path.departure = path.destination = emptycell;
+		path.movevalid = false;
+		
+		var clist = path.clist;
+		if(clist.length<1){ return;}
+		
+		for(var i=0;i<clist.length;i++){ clist[i].path = path;}
+		
+		var before=null, after=null, point=0;
+		if(clist.length===1){
+			before = after = clist[0];
+			point = 2;
+		}
+		else{
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i];
+				cell.base = emptycell;
+				if(cell.lcnt===1){
+					point++;
+					if(cell.isNum()){ before=cell;}else{ after=cell;}
+				}
+			}
+		}
+		if(before!==null && after!==null && point===2){
+			path.departure   = after.base = before;
+			path.destination = after;
+			path.movevalid = true;
+		}
+	}
 }
 });

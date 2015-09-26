@@ -164,7 +164,6 @@ BoardExec:{
 		var boardcell = this.board.cell;
 		for(var c=0;c<boardcell.length;c++){
 			boardcell[c].setLineEdge();
-			boardcell[c].isloop = false;
 		}
 		this.SuperClass.reset.call(this);
 	},
@@ -181,18 +180,14 @@ BoardExec:{
 		this.setLine(cell);
 	},
 
-	removeLineInfo : function(cell, clist){
-		this.SuperClass.removeLineInfo.call(this, cell, clist);
-		cell.isloop = false;
+	initExtraData : function(clist){
+		for(var i=0;i<clist.length;i++){ clist[i].isloop = false;}
 	},
-
-	searchSingle : function(startcell, newpath){
-		this.klass.LineManagerBase.prototype.searchSingle.call(this, startcell, newpath);
-		
+	setExtraData : function(path){
 		// Loop判定を行う
 		var bd = this.board;
 		var prevcross;
-		var history = [newpath.objs[0].lineedge[0]];
+		var history = [path.objs[0].lineedge[0]];
 		var steps=[];
 		for(var by=bd.minby;by<=bd.maxby;by++){
 			steps[by] = [];

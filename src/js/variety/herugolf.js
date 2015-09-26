@@ -39,14 +39,14 @@ MouseEvent:{
 		var border = this.board.getb(lastope.bx, lastope.by);
 		
 		/* 線を引いた/消した箇所にある領域を取得 */
-		var linfo = this.board.linfo;
 		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.lineedge);
-		clist = clist.notnull().filter(function(cell){ return !!linfo.id[cell.id];});
+		clist = clist.notnull().filter(function(cell){ return cell.path!==null || cell.isNum();});
 		
 		/* 改めて描画対象となるセルを取得して再描画 */
 		clist.each(function(cell){
-			linfo.getClistByCell(cell).each(function(cell){ if(cell.isNum()){ cell.draw();}});
+			if(cell.path===null){ if(cell.isNum()){ cell.draw();}}
+			else{ cell.path.clist.each(function(cell){ if(cell.isNum()){ cell.draw();}});}
 		});
 	},
 
@@ -164,6 +164,7 @@ KeyEvent:{
 		}
 		else if(!cell.ice()){
 			this.key_inputqnum(ca);
+			return;
 		}
 		this.prev=cell;
 		cell.draw();
@@ -185,8 +186,8 @@ Cell:{
 		if(this.puzzle.execConfig('dispmove')){
 			return (this.ques===31 && this.base.qnum!==-1 && this.isViaPoint());
 		}
-		else if(this.qnum!==-1){
-			var clist = this.board.linfo.getClistByCell(this);
+		else if(this.qnum!==-1 && this.path!==null){
+			var clist = this.path.clist;
 			for(var i=0,len=clist.length;i<len;i++){
 				if(clist[i].base===this && clist[i].ques===31 && clist[i].isViaPoint()){ return true;}
 			}
@@ -199,12 +200,12 @@ Cell:{
 	},
 
 	getDestination : function(){
-		var bd = this.board, linfo = bd.linfo, areaid = linfo.id[this.id];
-		return (areaid!==null ? linfo.area[areaid].destination : bd.emptycell);
+		var bd = this.board, path = this.path;
+		return (path!==null ? path.destination : bd.emptycell);
 	},
 	getDeparture : function(){
-		var bd = this.board, linfo = bd.linfo, areaid = linfo.id[this.id];
-		return (areaid!==null ? linfo.area[areaid].departure : bd.emptycell);
+		var bd = this.board, path = this.path;
+		return (path!==null ? path.departure : bd.emptycell);
 	}
 },
 Board:{
@@ -218,30 +219,29 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
-},
-
-AreaLineManager:{
-	enabled : true,
+	isCenterLine : true,
 	moveline : true,
 
-	initMovedBase : function(clist){
-		for(var i=0;i<clist.length;i++){ clist[i].distance = null;}
+	initExtraData : function(blist){
+		var clist = blist.cellinside().filter(function(cell){ return cell.lcnt===0;});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], num = cell.qnum;
+			cell.distance = (num>=0 ? (num+1)*num/2 : null);
+		}
 		
-		pzpr.common.AreaLineManager.prototype.initMovedBase.call(this, clist);
+		pzpr.common.LineManager.prototype.initExtraData.call(this, blist);
 	},
-	setMovedBase : function(areaid){
-		pzpr.common.AreaLineManager.prototype.setMovedBase.call(this, areaid);
+	setExtraData : function(path){
+		pzpr.common.LineManager.prototype.setExtraData.call(this, path);
 		
-		var area = this.area[areaid];
-		if(!area.movevalid){ return;}
+		if(!path.movevalid){ return;}
 		
-		var cell = area.departure, num = area.departure.qnum;
+		var cell = path.departure, num = path.departure.qnum;
 		num = (num>0 ? num : this.board.cellmax);
 		cell.distance = (num+1)*num/2;
 		
-		/* area.departureは線が1方向にしかふられていないはず */
-		var dir = +({1:1,2:2,4:3,8:4}[this.linkinfo[cell.id] & 0x0F]);
+		/* path.departureは線が1方向にしかふられていないはず */
+		var dir = cell.getdir(cell.seglist[0],1);
 		var pos = cell.getaddr(), n = cell.distance;
 		while(1){
 			pos.movedir(dir,2);
@@ -249,7 +249,7 @@ AreaLineManager:{
 			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
 			
 			cell.distance = --n;
-			if(cell===area.destination){ break;}
+			if(cell===path.destination){ break;}
 			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
 			else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
 			else if(dir!==3 && adb.right.isLine() ){ dir=4;}

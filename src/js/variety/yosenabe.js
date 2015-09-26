@@ -93,11 +93,10 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 
-	keyinput : function(ca){
-		this.key_inputqnum_yosenabe(ca);
+	key_inputqnum_main : function(cell,ca){
+		return this.key_inputqnum_main_yosenabe(cell,ca);
 	},
-	key_inputqnum_yosenabe : function(ca){
-		var cell = this.cursor.getc(), num;
+	key_inputqnum_main_yosenabe : function(cell,ca){
 		if(ca==='q'||ca==='q1'||ca==='q2'){
 			if(ca==='q') { ca = (cell.qnum!==-1?'q1':'q2');}
 			if     (ca==='q1' && cell.qnum !==-1){ cell.setQnum2(cell.qnum); cell.setQnum(-1);}
@@ -117,7 +116,7 @@ KeyEvent:{
 				var num = +ca;
 				if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 				val = cur*10+num;
-				if(val>max){ return;}
+				if(val>max){ return false;}
 			}
 			else if(ca==='-') { val = -2;}
 			else if(ca===' ') { val = -1;}
@@ -126,9 +125,7 @@ KeyEvent:{
 			if     (type===1){ cell.setQnum(val);}
 			else if(type===2){ cell.setQnum2(val);}
 		}
-
-		this.prev=cell;
-		cell.draw();
+		return true;
 	}
 },
 
@@ -163,11 +160,7 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
-},
-
-AreaLineManager:{
-	enabled : true,
+	isCenterLine : true,
 	moveline : true
 },
 "AreaCrockManager:AreaManager":{
@@ -391,7 +384,17 @@ AnsCheck:{
 	},
 
 	checkCurveLine : function(){
-		this.checkAllArea(this.getLareaInfo(), function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
+		var paths = this.board.paths;
+		for(var id=0;id<paths.length;id++){
+			var path = paths[id], clist = path.clist;
+			var d = clist.getRectSize();
+			if(d.cols===1||d.rows===1){ continue;}
+			
+			this.failcode.add("laCurve");
+			if(this.checkOnly){ break;}
+			this.board.border.setnoerr();
+			paths[id].objs.seterr(1);
+		}
 	},
 	checkQuesNumber : function(){
 		this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);}, "bnIllegalPos");

@@ -112,7 +112,7 @@ MouseEvent:{
 		cell.setNum(val);
 
 		if(puzzle.execConfig('dispmove') && cell.noNum()){
-			bd.linfo.eraseLineByCell(cell);		/* 丸数字がなくなったら付属する線も消去する */
+			cell.eraseMovedLines();		/* 丸数字がなくなったら付属する線も消去する */
 		}
 
 		cell0.draw();
@@ -326,7 +326,7 @@ MouseEvent:{
 	//---------------------------------------------------------------------------
 	inputLine : function(){
 		var pos, border;
-		if(this.board.linemgr.isCenterLine){
+		if(!this.board.linemgr.borderAsLine){
 			pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
 			border = this.prevPos.getnb(pos);
