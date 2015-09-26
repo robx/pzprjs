@@ -190,7 +190,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
-			if(cell.getaddr().movedir(dir,1).getb().isLine()){ continue;}
+			if(cell.reldirbd(dir,1).isLine()){ continue;}
 			
 			this.failcode.add("nmNoLine");
 			if(this.checkOnly){ break;}

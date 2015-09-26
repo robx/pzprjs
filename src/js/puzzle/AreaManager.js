@@ -24,8 +24,8 @@ AreaManager:{
 			var info = this.board.validinfo;
 			for(var i=0;i<this.relation.length;i++){
 				info[this.relation[i]].push(this);
-				info.all.push(this);
 			}
+			info.all.push(this);
 		}
 	},
 	enabled : false,
@@ -177,12 +177,19 @@ AreaManager:{
 	// info.getLinkCell()   今自分が繋がっているセルを返す
 	//--------------------------------------------------------------------------------
 	getRemakeCell : function(cell, change){
+		var cidlist = [];
 		var link = (this.linkinfo[cell.id] | (change[0] || 0));
-		var cidlist = [], list = cell.getdir4clist(), pow=[0,1,2,4,8], pow2=[0,2,1,8,4];
-		for(var i=0;i<list.length;i++){
-			var cell2 = list[i][0], dir = list[i][1];
-			var link2 = (this.linkinfo[cell2.id] | (change[dir] || 0));
-			if(this.id[cell2.id]!==null && !!(link & pow[dir]) && !!(link2 & pow2[dir])){ cidlist.push(cell2.id);}
+		if(link>0){ // 自分から隣のセルにつながる情報が存在するか、していた
+			var list = cell.getdir4clist(), pow=[0,1,2,4,8], pow2=[0,2,1,8,4];
+			for(var i=0;i<list.length;i++){
+				var cell2 = list[i][0], dir = list[i][1];
+				var link2 = (this.linkinfo[cell2.id] | (change[dir] || 0));
+				if(link2 > 0){ // 隣のセルから自分につながる情報が存在するか、していた
+					if(this.id[cell2.id]!==null && !!(link & pow[dir]) && !!(link2 & pow2[dir])){
+						cidlist.push(cell2.id);
+					}
+				}
+			}
 		}
 		return cidlist;
 	},
@@ -689,7 +696,7 @@ AreaManager:{
 		if(this.id[cell.id]===null){ return;}
 		var clist = this.getClistByCell(cell), count = 0;
 		for(var i=0,len=clist.length;i<len;i++){ for(var j=i+1;j<len;j++){
-			var border = this.puzzle.mouse.getnb(clist[i].getaddr(), clist[j].getaddr());
+			var border = clist[i].getnb(clist[j]);
 			if(!border.isnull){ border.removeLine(); count++;}
 		}}
 		if(count>0){ clist.draw();}

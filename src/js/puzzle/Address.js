@@ -35,8 +35,13 @@ Position:{
 	relcell   : function(dx,dy){ return this.board.getc(this.bx+dx,this.by+dy);},
 	relcross  : function(dx,dy){ return this.board.getx(this.bx+dx,this.by+dy);},
 	relbd     : function(dx,dy){ return this.board.getb(this.bx+dx,this.by+dy);},
-	relexcell : function(dx,dy){ return this.board.getex(this.bx+dx,this.by+dy);},
+//	relexcell : function(dx,dy){ return this.board.getex(this.bx+dx,this.by+dy);}, // 未使用
 	relobj    : function(dx,dy){ return this.board.getobj(this.bx+dx,this.by+dy);},
+
+	//---------------------------------------------------------------------------
+	// reldirbd()  指定された方向にいるオブジェクトを返す
+	//---------------------------------------------------------------------------
+	reldirbd  : function(dir,dd){ return this.getaddr().movedir(dir,dd).getb();},
 
 	//---------------------------------------------------------------------------
 	// pos.draw() 盤面に自分の周囲を描画する
@@ -56,6 +61,36 @@ Position:{
 		var bd = this.board;
 		return (this.bx>=bd.minbx && this.bx<=bd.maxbx &&
 				this.by>=bd.minby && this.by<=bd.maxby);
+	},
+
+	//---------------------------------------------------------------------------
+	// pos.getdir() 指定されたPositionがどの方向にいるか判定する
+	//---------------------------------------------------------------------------
+	getdir : function(pos, diff){
+		var dx = (pos.bx-this.bx), dy = (pos.by-this.by);
+		if     (dx===    0 && dy===-diff){ return this.UP;}
+		else if(dx===    0 && dy=== diff){ return this.DN;}
+		else if(dx===-diff && dy===    0){ return this.LT;}
+		else if(dx=== diff && dy===    0){ return this.RT;}
+		return this.NDIR;
+	},
+
+	//---------------------------------------------------------------------------
+	// pos.getnb()         上下左右に隣接する境界線のIDを取得する
+	// pos.getborderobj()  入力対象となる境界線オブジェクトを取得する
+	//---------------------------------------------------------------------------
+	getnb : function(pos){
+		if     (pos.bx-this.bx=== 0 && pos.by-this.by===-2){ return this.relbd(0,-1);}
+		else if(pos.bx-this.bx=== 0 && pos.by-this.by=== 2){ return this.relbd(0, 1);}
+		else if(pos.bx-this.bx===-2 && pos.by-this.by=== 0){ return this.relbd(-1,0);}
+		else if(pos.bx-this.bx=== 2 && pos.by-this.by=== 0){ return this.relbd( 1,0);}
+		return this.board.emptyborder;
+	},
+	getborderobj : function(pos){
+		if(((pos.bx&1)===0 && this.bx===pos.bx && Math.abs(this.by-pos.by)===1) ||
+		   ((pos.by&1)===0 && this.by===pos.by && Math.abs(this.bx-pos.bx)===1) )
+			{ return (this.onborder() ? this : pos).getb();}
+		return this.board.nullobj;
 	}
 },
 

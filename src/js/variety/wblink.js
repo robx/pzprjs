@@ -24,7 +24,7 @@ MouseEvent:{
 		var pos = this.getpos(0.10);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getlineobj(this.prevPos, pos);
+		var border = this.prevPos.getlineobj(pos);
 		if(!border.isnull){
 			var d = border.getlinesize();
 			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
@@ -37,12 +37,6 @@ MouseEvent:{
 			this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
-	},
-	getlineobj : function(base, current){
-		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
-		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
-			{ return (base.onborder() ? base : current).getb();}
-		return this.board.nullobj;
 	},
 
 	inputpeke : function(){
@@ -111,6 +105,15 @@ BorderList:{
 	setLine    : function(){ this.each(function(border){ border.setLine();});},
 	removeLine : function(){ this.each(function(border){ border.removeLine();});},
 	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});}
+},
+
+Address:{
+	getlineobj : function(pos){
+		if(((pos.bx&1)===1 && this.bx===pos.bx && Math.abs(this.by-pos.by)===1) ||
+		   ((pos.by&1)===1 && this.by===pos.by && Math.abs(this.bx-pos.bx)===1) )
+			{ return (this.onborder() ? this : pos).getb();}
+		return this.board.nullobj;
+	}
 },
 
 Board:{

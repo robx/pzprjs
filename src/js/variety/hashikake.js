@@ -30,9 +30,9 @@ MouseEvent:{
 		var pos = this.getpos(0.20);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getlineobj(this.prevPos, pos);
+		var border = this.prevPos.getlineobj(pos);
 		if(!border.isnull){
-			var dir = this.getlinedir(this.prevPos, pos);
+			var dir = this.prevPos.getdir(pos,1);
 			var d = border.getlinesize();
 			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
@@ -47,20 +47,6 @@ MouseEvent:{
 			this.puzzle.painter.paintRange(d.x1-1,d.y1-1,d.x2+1,d.y2+1);
 		}
 		this.prevPos = pos;
-	},
-	getlineobj : function(base, current){
-		if(((current.bx&1)===1 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
-		   ((current.by&1)===1 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
-			{ return (base.onborder() ? base : current).getb();}
-		return this.board.nullobj;
-	},
-	getlinedir : function(base, current){
-		var dx = (current.bx-base.bx), dy = (current.by-base.by);
-		if     (dx=== 0 && dy===-1){ return base.UP;}
-		else if(dx=== 0 && dy=== 1){ return base.DN;}
-		else if(dx===-1 && dy=== 0){ return base.LT;}
-		else if(dx=== 1 && dy=== 0){ return base.RT;}
-		return base.NDIR;
 	},
 
 	inputpeke : function(){
@@ -149,6 +135,15 @@ Border:{
 BorderList:{
 	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});},
 	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});}
+},
+
+Address:{
+	getlineobj : function(pos){
+		if(((pos.bx&1)===1 && this.bx===pos.bx && Math.abs(this.by-pos.by)===1) ||
+		   ((pos.by&1)===1 && this.by===pos.by && Math.abs(this.bx-pos.bx)===1) )
+			{ return (this.onborder() ? this : pos).getb();}
+		return this.board.nullobj;
+	}
 },
 
 Board:{

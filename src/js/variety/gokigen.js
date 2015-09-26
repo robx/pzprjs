@@ -36,17 +36,10 @@ MouseEvent:{
 	dispBlue : function(){
 		var cell = this.getcell();
 		this.mousereset();
-		if(cell.isnull || cell.qans===0){ return;}
+		if(cell.isnull || cell.qans===0 || cell.path===null){ return;}
 
-		var fcross = cell.relcross((cell.qans===31?-1:1), -1);
-		var bd = this.board, check = bd.searchline(fcross);
-		for(var c=0;c<bd.cellmax;c++){
-			var cell2 = bd.cell[c];
-			if(cell2.qans===31 && check[cell2.relcross(-1,-1).id]===1){ cell2.seterr(2);}
-			if(cell2.qans===32 && check[cell2.relcross( 1,-1).id]===1){ cell2.seterr(2);}
-		}
-
-		bd.haserror = true;
+		cell.path.objs.seterr(2);
+		this.board.haserror = true;
 		this.puzzle.redraw();
 	}
 },
@@ -118,6 +111,17 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	setLineEdge : function(){
+		this.lineedge = [null,null];
+		if(this.qans===31){
+			this.lineedge = [this.relcross(-1,-1), this.relcross(1,1)];
+		}
+		else if(this.qans===32){
+			this.lineedge = [this.relcross(-1,1), this.relcross(1,-1)];
+		}
+	}
+},
 Cross:{
 	maxnum : 4,
 	minnum : 0
@@ -126,96 +130,10 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	// 正答判定用
-	getSlashData : function(){
-		var sdata=[], sinfo=this.getSlashInfo();
-		for(var c=0;c<this.cellmax;c++){ sdata[c] =(this.cell[c].qans!==0?0:-1);}
-		for(var c=0;c<this.cellmax;c++){
-			if(sdata[c]!==0){ continue;}
+	initialize : function(){
+		this.common.initialize.call(this);
 
-			var cell = this.cell[c];
-			var fcross = cell.relcross((cell.qans===31?-1:1), -1);
-			this.searchloop(fcross.id, sinfo, sdata);
-		}
-		for(var c=0;c<this.cellmax;c++){ if(sdata[c]===0){ sdata[c]=2;} }
-		return sdata;
-	},
-	searchloop : function(fc, sinfo, sdata){
-		var passed=[];
-		for(var xc=0;xc<this.crossmax;xc++){ passed[xc]=false;}
-
-		var xc=fc, history=[{cell:null,cross:fc}];
-
-		while(history.length>0){
-			var cc=null, xc=history[history.length-1].cross;
-			passed[xc] = true;
-
-			// 今まで通っていないセルを調べる
-			for(var i=0;i<sinfo.cross[xc].length;i++){
-				var cellid = sinfo.cross[xc][i];
-				if(!!sinfo.cell[cellid].length){ cc=cellid; break;}
-			}
-
-			// セルを経由してその先の交点へ
-			if(cc!==null){
-				var xc2 = sinfo.cell[cc][((sinfo.cell[cc][0]!==xc)?0:1)];
-				history.push({cell:cc,cross:null});
-				sinfo.cell[cc] = [];
-
-				// ループになった場合 => ループフラグをセットする
-				if(!!passed[xc2]){
-					for(var i=history.length-1;i>=0;i--){
-						if(history[i].cross===xc2){ break;}
-						sdata[history[i].cell] = 1;
-					}
-				}
-				// 先の交点でループ判定にならなかった場合 => 次のループへ
-				else{
-					history[history.length-1].cross = xc2;
-					continue;
-				}
-			}
-			else{ sinfo.cross[xc] = [];}	/* 全て通過済み */
-
-			// 一つ前に戻る
-			var h = history.pop();
-			if(sdata[h.cell]===0){ sdata[h.cell]=2;}
-		}
-	},
-
-	getSlashInfo : function(){
-		var sinfo={cell:[],cross:[]};
-		for(var c=0;c<this.crossmax;c++){ sinfo.cross[c]=[];}
-		for(var c=0;c<this.cellmax;c++){
-			sinfo.cell[c]=[];
-			var cell=this.cell[c], cross1, cross2;
-			if     (cell.qans===31){ cross1=cell.relcross(-1,-1); cross2=cell.relcross(1,1);}
-			else if(cell.qans===32){ cross1=cell.relcross(-1,1); cross2=cell.relcross(1,-1);}
-			else{ continue;}
-
-			sinfo.cell[c] = [cross1.id,cross2.id];
-			sinfo.cross[cross1.id].push(c);
-			sinfo.cross[cross2.id].push(c);
-		}
-		return sinfo;
-	},
-
-	searchline : function(fcross){
-		var check = [], stack=[fcross];
-		for(var i=0;i<this.crossmax;i++){ check[i]=0;}
-
-		while(stack.length>0){
-			var cross=stack.pop();
-			if(check[cross.id]!==0){ continue;}
-			check[cross.id]=1;
-
-			var nc;
-			nc=cross.relcross(-2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1,-1).qans===31){ stack.push(nc);}
-			nc=cross.relcross( 2,-2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1,-1).qans===32){ stack.push(nc);}
-			nc=cross.relcross(-2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell(-1, 1).qans===32){ stack.push(nc);}
-			nc=cross.relcross( 2, 2); if(!nc.isnull && check[nc.id]===0 && cross.relcell( 1, 1).qans===31){ stack.push(nc);}
-		}
-		return check;
+		this.slashmgr = this.addInfoList(this.klass.LineSlashManager);
 	}
 },
 BoardExec:{
@@ -226,6 +144,91 @@ BoardExec:{
 				var cell = clist[i];
 				cell.setQans({0:0,31:32,32:31}[cell.qans]);
 			}
+		}
+	}
+},
+
+"LineSlashManager:LineManagerBase":{
+	init2 : function(){
+		this.PieceList   = this.klass.CellList;
+		this.basegroup   = this.board.cell;
+		this.targetgroup = this.board.cross;
+		this.SuperClass = this.klass.LineManagerBase.prototype;
+	},
+	enabled : true,
+	relation : ['cell'],
+	isvalid : function(cell){ return (this.tmp_invalidcell!==cell) && cell.qans>0;},
+	tmp_invalidcell : null,
+
+	reset : function(){
+		var boardcell = this.board.cell;
+		for(var c=0;c<boardcell.length;c++){
+			boardcell[c].setLineEdge();
+			boardcell[c].isloop = false;
+		}
+		this.SuperClass.reset.call(this);
+	},
+
+	setCell : function(cell){
+		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
+		if((cell.qans>0)&&(cell.path!==null)){
+			this.tmp_invalidcell = cell;
+			this.setLine(cell);
+			this.tmp_invalidcell = null;
+		}
+		
+		if(cell.qans>0){ cell.setLineEdge();}
+		this.setLine(cell);
+	},
+
+	removeLineInfo : function(cell, clist){
+		this.SuperClass.removeLineInfo.call(this, cell, clist);
+		cell.isloop = false;
+	},
+
+	searchSingle : function(startcell, newpath){
+		this.klass.LineManagerBase.prototype.searchSingle.call(this, startcell, newpath);
+		
+		// Loop判定を行う
+		var bd = this.board;
+		var prevcross;
+		var history = [newpath.objs[0].lineedge[0]];
+		var steps=[];
+		for(var by=bd.minby;by<=bd.maxby;by++){
+			steps[by] = [];
+			for(var bx=bd.minbx;bx<=bd.maxbx;bx++){ steps[by][bx] = -1;}
+		}
+
+		while(history.length>0){
+			var obj = history[history.length-1], nextobj = null;
+			var step = steps[obj.by][obj.bx];
+			if(step===-1){
+				step = steps[obj.by][obj.bx] = history.length-1;
+				if(obj.group==='cell'){ obj.isloop = false;}
+			}
+			// ループになった場合 => ループフラグをセットする
+			else if((obj.group==='cross') && ((history.length-1)>step)){
+				for(var i=history.length-2;i>=0;i--){
+					if(history[i]===obj){ break;}
+					if(history[i].group==='cell'){ history[i].isloop = true;}
+				}
+			}
+			
+			if(obj.group==='cross'){
+				prevcross = obj;
+				for(var i=0;i<obj.seglist.length;i++){
+					var cell = obj.seglist[i];
+					if(steps[cell.by][cell.bx]===-1){ nextobj = cell; break;}
+				}
+			}
+			else{ // cellの時
+				for(var i=0;i<obj.lineedge.length;i++){
+					var cross = obj.lineedge[i];
+					if((cross!==prevcross) && (cross!==history[history.length-2])){ nextobj = cross; break;}
+				}
+			}
+			if(!!nextobj){ history.push(nextobj);}
+			else         { history.pop();}
 		}
 	}
 },
@@ -278,9 +281,8 @@ Graphic:{
 	drawSlashes : function(){
 		var puzzle = this.puzzle, bd = puzzle.board;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
-			var sdata=bd.getSlashData();
-			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (sdata[cell.id]===1?1:0);});}
-			else if(puzzle.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = sdata[cell.id];});}
+			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?1:0);});}
+			else if(puzzle.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?1:2);});}
 
 			this.common.drawSlashes.call(this);
 
@@ -366,15 +368,11 @@ AnsCheck:{
 		"checkNoSlashCell+"
 	],
 
-	getSlashInfo : function(){
-		return (this._info.slash = this._info.slash || this.board.getSlashData());
-	},
-
 	checkQnumCross : function(){
-		var bd = this.board, sinfo = bd.getSlashInfo();
+		var bd = this.board;
 		for(var c=0;c<bd.crossmax;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
-			if(qn<0 || qn===sinfo.cross[c].length){ continue;}
+			if(qn<0 || qn===cross.lcnt){ continue;}
 			
 			this.failcode.add("crConnSlNe");
 			if(this.checkOnly){ break;}
@@ -388,8 +386,7 @@ AnsCheck:{
 },
 "AnsCheck@gokigen":{
 	checkSlashLoop : function(){
-		var sdata = this.getSlashInfo();
-		var errclist = this.board.cell.filter(function(cell){ return (sdata[cell.id]===1);});
+		var errclist = this.board.cell.filter(function(cell){ return (cell.qans>0 && cell.isloop);});
 		if(errclist.length>0){
 			this.failcode.add("slLoop");
 			errclist.seterr(1);
@@ -401,14 +398,16 @@ AnsCheck:{
 	checkSlashNoLoop : function(){ this.checkLoops_wagiri(true,  "slNotLoopWa");},
 	checkLoops_wagiri : function(checkLoop, code){
 		var result = true, bd = this.board;
-		var sdata = this.getSlashInfo();
 		for(var c=0;c<bd.cellmax;c++){
-			if(!checkLoop && sdata[c]===1 && bd.cell[c].qnum===2){ result = false;}
-			if( checkLoop && sdata[c]===2 && bd.cell[c].qnum===1){ result = false;}
+			var cell = bd.cell[c];
+			if(!checkLoop &&  cell.isloop && cell.qans>0 && cell.qnum===2){ result = false; break;}
+			if( checkLoop && !cell.isloop && cell.qans>0 && cell.qnum===1){ result = false; break;}
 		}
 		if(!result){
 			this.failcode.add(code);
-			for(var c=0;c<bd.cellmax;c++){ if(sdata[c]>0){ bd.cell[c].seterr(sdata[c]);} }
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].qans>0){ bd.cell[c].seterr(!checkLoop?1:2);}
+			}
 		}
 	}
 },

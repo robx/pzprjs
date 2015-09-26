@@ -73,7 +73,7 @@ MouseEvent:{
 				else if(mx>=0.25){ this.inputData=22; input=true;}
 			}
 			else{
-				var dir = this.getdir(this.prevPos, pos);
+				var dir = this.prevPos.getdir(pos,2);
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
 				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}
@@ -87,7 +87,7 @@ MouseEvent:{
 		else if(cell!==this.mouseCell){
 			if(this.inputData===0){ this.inputData=0; input=true;}
 			else{
-				var dir = this.getdir(this.prevPos, pos);
+				var dir = this.prevPos.getdir(pos,2);
 				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
 				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
 			}

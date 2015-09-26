@@ -167,7 +167,6 @@ MouseEvent:{
 	//---------------------------------------------------------------------------
 	// mv.inputdirec()      Cellのdirec(方向)のデータを入力する
 	// mv.inputarrow_cell() Cellの矢印を入力する
-	// mv.getdir()          入力がどの方向になるか取得する
 	//---------------------------------------------------------------------------
 	inputdirec : function(){
 		var pos = this.getpos(0);
@@ -176,7 +175,7 @@ MouseEvent:{
 		var cell = this.prevPos.getc();
 		if(!cell.isnull){
 			if(cell.qnum!==-1){
-				var dir = this.getdir(this.prevPos, pos);
+				var dir = this.prevPos.getdir(pos,2);
 				if(dir!==cell.NDIR){
 					cell.setQdir(cell.qdir!==dir?dir:0);
 					cell.draw();
@@ -191,7 +190,7 @@ MouseEvent:{
 
 		var dir = pos.NDIR, cell = this.prevPos.getc();
 		if(!cell.isnull){
-			var dir = this.getdir(this.prevPos, pos);
+			var dir = this.prevPos.getdir(pos,2);
 			if(dir!==pos.NDIR){
 				this.inputarrow_cell_main(cell, dir);
 				cell.draw();
@@ -203,15 +202,6 @@ MouseEvent:{
 	},
 	inputarrow_cell_main : function(cell, dir){
 		if(cell.numberAsObject){ cell.setNum(dir);}
-	},
-
-	getdir : function(base, current){
-		var dx = (current.bx-base.bx), dy = (current.by-base.by);
-		if     (dx=== 0 && dy===-2){ return base.UP;}
-		else if(dx=== 0 && dy=== 2){ return base.DN;}
-		else if(dx===-2 && dy=== 0){ return base.LT;}
-		else if(dx=== 2 && dy=== 0){ return base.RT;}
-		return base.NDIR;
 	},
 
 	//---------------------------------------------------------------------------
@@ -307,7 +297,7 @@ MouseEvent:{
 		var pos = this.getpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getborderobj(this.prevPos, pos);
+		var border = this.prevPos.getborderobj(pos);
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
 			if     (this.inputData===1){ border.setBorder();}
@@ -320,7 +310,7 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.prevPos.getnb(pos);
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.qsub===0?1:0);}
 			if     (this.inputData===1){ border.setQsub(1);}
@@ -339,12 +329,12 @@ MouseEvent:{
 		if(this.board.linemgr.isCenterLine){
 			pos = this.getpos(0);
 			if(this.prevPos.equals(pos)){ return;}
-			border = this.getnb(this.prevPos, pos);
+			border = this.prevPos.getnb(pos);
 		}
 		else{
 			pos = this.getpos(0.35);
 			if(this.prevPos.equals(pos)){ return;}
-			border = this.getborderobj(this.prevPos, pos);
+			border = this.prevPos.getborderobj(pos);
 		}
 		
 		if(!border.isnull){
@@ -374,7 +364,7 @@ MouseEvent:{
 		}
 		/* 移動中の場合 */
 		else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
-			var border = this.getnb(this.prevPos, pos);
+			var border = this.prevPos.getnb(pos);
 			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
 				this.mouseCell = cell;
 				this.prevPos = pos;
@@ -382,24 +372,6 @@ MouseEvent:{
 				border.draw();
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.getnb()         上下左右に隣接する境界線のIDを取得する
-	// mv.getborderobj()  入力対象となる境界線オブジェクトを取得する
-	//---------------------------------------------------------------------------
-	getnb : function(base, current){
-		if     (current.bx-base.bx=== 0 && current.by-base.by===-2){ return base.relbd(0,-1);}
-		else if(current.bx-base.bx=== 0 && current.by-base.by=== 2){ return base.relbd(0, 1);}
-		else if(current.bx-base.bx===-2 && current.by-base.by=== 0){ return base.relbd(-1,0);}
-		else if(current.bx-base.bx=== 2 && current.by-base.by=== 0){ return base.relbd( 1,0);}
-		return this.board.emptyborder;
-	},
-	getborderobj : function(base, current){
-		if(((current.bx&1)===0 && base.bx===current.bx && Math.abs(base.by-current.by)===1) ||
-		   ((current.by&1)===0 && base.by===current.by && Math.abs(base.bx-current.bx)===1) )
-			{ return (base.onborder() ? base : current).getb();}
-		return this.board.nullobj;
 	},
 
 	//---------------------------------------------------------------------------

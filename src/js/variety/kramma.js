@@ -23,7 +23,7 @@ MouseEvent:{
 		var pos = this.getpos(0.35);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getborderobj(this.prevPos, pos);
+		var border = this.prevPos.getborderobj(pos);
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.isBorder()?0:1);}
 

@@ -50,9 +50,9 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(pos.getc().isnull){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.prevPos.getnb(pos);
 		if(!border.isnull){
-			var newval = null, dir = this.getdir(this.prevPos, pos);
+			var newval = null, dir = this.prevPos.getdir(pos,2);
 			if(this.inputData===null){ this.inputData = (border.qsub!==(10+dir)?11:0);}
 			if(this.inputData===11){ newval = 10+dir;}
 			else if(this.inputData===0 && border.qsub===10+dir){ newval = 0;}

@@ -6,28 +6,24 @@
 // LineManagerクラスの定義
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
-LineManager:{
-	initialize : function(){
-		this.enabled = (this.isCenterLine || this.borderAsLine);
-	},
+LineManagerBase:{
 	init : function(){
 		if(this.enabled){
-			this.board.validinfo.line.push(this);
-			this.board.validinfo.all.push(this);
-			this.PieceList   = this.klass.BorderList;
-			this.basegroup   = this.board.border;
-			this.targetgroup = this.board[this.isCenterLine ? 'cell' : 'cross'];
+			var info = this.board.validinfo;
+			for(var i=0;i<this.relation.length;i++){
+				info[this.relation[i]].push(this);
+			}
+			info.all.push(this);
+			this.init2();
 		}
 	},
-	// relation : ['line'],
-
-	ltotal : null,			// 線が0〜本引いてあるセル/交点がいくつあるか保持している
-
-	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
-	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
-	borderAsLine : false,	// 境界線をlineとして扱う
+	init2 : function(){},
+	enabled : false,
+	relation : ['line'],
 
 	isLineCross : false,	// 線が交差するパズル
+
+	ltotal : null,			// 線が0〜本引いてあるセル/交点がいくつあるか保持している
 
 	//--------------------------------------------------------------------------------
 	// linemgr.isvalid()    そのセルが有効かどうか返す
@@ -37,7 +33,7 @@ LineManager:{
 		return border.isLine();
 	},
 	iscrossing : function(){
-		return this.board.linemgr.isLineCross;
+		return this.isLineCross;
 	},
 
 	//---------------------------------------------------------------------------
@@ -177,8 +173,8 @@ LineManager:{
 		return path;
 	},
 	removePath : function(path){
-		var paths = this.board.paths, idx = paths.indexOf(path);
-		path.objs.each(function(border){ border.path=null;});
+		var paths = this.board.paths, prop = this.pathname, idx = paths.indexOf(path);
+		path.objs.each(function(border){ border[prop]=null;});
 		return (idx>=0 ? paths.splice(idx, 1)[0].objs : []);
 	},
 
@@ -227,19 +223,19 @@ LineManager:{
 		var lines = new this.PieceList();
 		for(var i=0;i<2;i++){
 			var obj = border.lineedge[i];
+			var lcnt = obj.lcnt+(this.isvalid(border)?0:1);
 			if(obj.isnull){ }
 			else if(this.iscrossing(obj)){
-				var lcnt = obj.lcnt+(this.isvalid(border)?0:1);
 				var straightborder = obj.relbd((obj.bx-border.bx),(obj.by-border.by));
-				if(lcnt>=4){
+				if(lcnt===4){
 					lines.add(straightborder); // objからのstraight
 				}
-				else if(lcnt<3 || this.isvalid(straightborder)){
+				else if(lcnt===2 || (lcnt===3 && this.isvalid(straightborder))){
 					lines.extend(obj.seglist);
 					lines.remove(border);
 				}
 			}
-			else{
+			else if(lcnt>=2){
 				lines.extend(obj.seglist);
 				lines.remove(border);
 			}
@@ -275,70 +271,21 @@ LineManager:{
 
 			stack = stack.concat(Array.prototype.slice.apply(this.getaround(border)));
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// info.setLineShapeInfo()    丸などで区切られた線を探索し情報を付加して返します
-	// info.serachLineShapeInfo() 丸などで区切られた線を探索します
-	//---------------------------------------------------------------------------
-	// 丸の場所で線を切り離して考える
-	setLineShapeInfo : function(){
-		var bd = this.board;
-		bd.pathsegs = [];
-		for(var id=0;id<bd.bdmax;id++){ bd.border[id].pathseg = null;}
-
-		var clist = this.board.cell.filter(function(cell){ return cell.isNum();});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], adb = cell.adjborder;
-			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
-			for(var a=0;a<4;a++){
-				var firstbd = dir4bd[a];
-				if(firstbd.isnull){ continue;}
-
-				var pathseg = this.serachLineShapeInfo(cell,(a+1));
-				if(!!pathseg){ bd.pathsegs.push(pathseg);}
-			}
-		}
-	},
-	serachLineShapeInfo : function(cell1,dir){
-		var pathseg = {
-			objs  :(new this.PieceList()),
-			cells : [cell1,null],	// 出発したセル、到達したセル
-			ccnt  : 0,				// 曲がった回数
-			length: [],				// 曲がった箇所で区切った、それぞれの線分の長さの配列
-			dir1  : dir,			// dir1 スタート地点で線が出発した方向
-			dir2  : 0				// dir2 到達地点から見た、到達した線の方向
-		};
-
-		var pos = cell1.getaddr();
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = pos.getc(), adb = cell.adjborder;
-				if(cell.isnull || cell1===cell || cell.isNum()){ break;}
-				else if(this.iscrossing(cell) && cell.lcnt>=3){ }
-				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ pathseg.ccnt++;} dir=2;}
-				else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ pathseg.ccnt++;} dir=1;}
-				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ pathseg.ccnt++;} dir=4;}
-				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ pathseg.ccnt++;} dir=3;}
-			}
-			else{
-				var border = pos.getb();
-				if(border.isnull || !border.isLine() || border.pathseg!==null){ break;}
-
-				pathseg.objs.add(border);
-				border.pathseg = pathseg;
-
-				if(isNaN(pathseg.length[pathseg.ccnt])){ pathseg.length[pathseg.ccnt]=1;}else{ pathseg.length[pathseg.ccnt]++;}
-			}
-		}
-		
-		if(pathseg.objs.length>0){
-			pathseg.cells[1] = pos.getc();
-			pathseg.dir2 = [0,2,1,4,3][dir];
-			return pathseg;
-		}
-		return null;
 	}
+},
+
+"LineManager:LineManagerBase":{
+	initialize : function(){
+		this.enabled = (this.isCenterLine || this.borderAsLine);
+	},
+	init2 : function(){
+		this.PieceList   = this.klass.BorderList;
+		this.basegroup   = this.board.border;
+		this.targetgroup = this.board[this.isCenterLine ? 'cell' : 'cross'];
+	},
+
+	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
+	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
+	borderAsLine : false	// 境界線をlineとして扱う
 }
 });

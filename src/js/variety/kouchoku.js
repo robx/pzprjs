@@ -485,16 +485,14 @@ BoardExec:{
 	}
 },
 
-"LineSegmentManager:LineManager":{
-	initialize : function(){
-		this.enabled = true;
-	},
-	init : function(){
-		this.board.validinfo.all.push(this);
+"LineSegmentManager:LineManagerBase":{
+	init2 : function(){
 		this.PieceList   = this.klass.SegmentList;
 		this.basegroup   = this.board.segment;
 		this.targetgroup = this.board.cross;
 	},
+	enabled : true,
+	relation : [],
 	isvalid : function(seg){ return !seg.isnull;}
 },
 

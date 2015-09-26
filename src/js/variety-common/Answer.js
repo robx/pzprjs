@@ -9,7 +9,6 @@ AnsCheck:{
 	// ans.getShadeInfo()    黒マスの領域情報を返す
 	// ans.getUnshadeInfo()  白マスの領域情報を返す
 	// ans.getNumberInfo()   数字の領域/繋がり情報を返す
-	// ans.setLineShapeInfo() 丸などで区切られた線を探索し情報を設定する
 	//--------------------------------------------------------------------------------
 	getRoomInfo : function(){
 		return (this._info.room = this._info.room || this.board.getRoomInfo());
@@ -25,9 +24,6 @@ AnsCheck:{
 	},
 	getNumberInfo : function(){
 		return (this._info.num = this._info.num || this.board.getNumberInfo());
-	},
-	setLineShapeInfo : function(){
-		if(!this._info.lshape){ this.board.setLineShapeInfo(); this._info.lshape=true;}
 	},
 
 	//---------------------------------------------------------------------------
@@ -543,9 +539,7 @@ AnsCheck:{
 	// ans.checkLineShapeDeadend()  オブジェクトを結ぶ線が途中で途切れていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineShape : function(evalfunc, code){
-		var result = true, bd = this.board;
-		this.setLineShapeInfo();
-		var pathsegs = bd.pathsegs;
+		var result = true, pathsegs = this.getLineShapeInfo();
 		for(var id=0;id<pathsegs.length;id++){
 			var pathseg = pathsegs[id];
 			if(!pathseg || !evalfunc(pathseg)){ continue;}
@@ -564,6 +558,73 @@ AnsCheck:{
 	},
 	checkLineShapeDeadend : function(){
 		this.checkLineShape(function(pathseg){ return pathseg.cells[1].isnull;}, "lcDeadEnd");
+	},
+
+	//--------------------------------------------------------------------------------
+	// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を設定する
+	// ans.serachLineShapeInfo() 丸などで区切られた線を探索します
+	//--------------------------------------------------------------------------------
+	getLineShapeInfo : function(){
+		if(this._info.num){ return this._info.num;}
+
+		var bd = this.board;
+		var pathsegs = [], passed = [];
+		for(var id=0;id<bd.bdmax;id++){ passed[id] = false;}
+ 
+		var clist = this.board.cell.filter(function(cell){ return cell.isNum();});
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], adb = cell.adjborder;
+			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
+			for(var a=0;a<4;a++){
+				var firstbd = dir4bd[a];
+				if(firstbd.isnull){ continue;}
+
+				var pathseg = this.serachLineShapeInfo(cell,(a+1),passed);
+				if(!!pathseg){ pathsegs.push(pathseg);}
+			}
+		}
+
+		return (this._info.num = pathsegs);
+	},
+	serachLineShapeInfo : function(cell1,dir,passed){
+		var pathseg = {
+			objs  :(new this.klass.BorderList()),
+			cells : [cell1,null],	// 出発したセル、到達したセル
+			ccnt  : 0,				// 曲がった回数
+			length: [],				// 曲がった箇所で区切った、それぞれの線分の長さの配列
+			dir1  : dir,			// dir1 スタート地点で線が出発した方向
+			dir2  : 0				// dir2 到達地点から見た、到達した線の方向
+		};
+
+		var pos = cell1.getaddr();
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = pos.getc(), adb = cell.adjborder;
+				if(cell.isnull || cell1===cell || cell.isNum()){ break;}
+				else if(this.board.linemgr.iscrossing(cell) && cell.lcnt>=3){ }
+				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ pathseg.ccnt++;} dir=2;}
+			else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ pathseg.ccnt++;} dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ pathseg.ccnt++;} dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ if(dir!==3){ pathseg.ccnt++;} dir=3;}
+			}
+			else{
+				var border = pos.getb();
+				if(border.isnull || !border.isLine() || passed[border.id]){ break;}
+
+				pathseg.objs.add(border);
+				passed[border.id] = true;
+
+				if(isNaN(pathseg.length[pathseg.ccnt])){ pathseg.length[pathseg.ccnt]=1;}else{ pathseg.length[pathseg.ccnt]++;}
+			}
+		}
+		
+		if(pathseg.objs.length>0){
+			pathseg.cells[1] = pos.getc();
+			pathseg.dir2 = [0,2,1,4,3][dir];
+			return pathseg;
+		}
+		return null;
 	}
 },
 

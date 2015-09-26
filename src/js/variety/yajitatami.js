@@ -150,7 +150,7 @@ AnsCheck:{
 		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], dir = cell.qdir;
-			if(!cell.isValidNum() || !dir || cell.getaddr().movedir(dir,1).getb().isBorder()){ continue;}
+			if(!cell.isValidNum() || !dir || cell.reldirbd(dir,1).isBorder()){ continue;}
 			
 			this.failcode.add("anNoAdjBd");
 			if(this.checkOnly){ break;}

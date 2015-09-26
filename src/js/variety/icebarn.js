@@ -41,9 +41,9 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.prevPos.getnb(pos);
 		if(!border.isnull && !this.mousestart){
-			var dir = this.getdir(this.prevPos, pos);
+			var dir = this.prevPos.getdir(pos,2);
 
 			if(border.id<this.board.bdinside){
 				if(this.pid==='icebarn'){

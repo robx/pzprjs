@@ -46,7 +46,7 @@ Board:{
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
-		this.linemgr = this.addInfoList(classes.LineManager);			// 線情報管理オブジェクト
+		this.linemgr = this.addInfoList(classes.LineManager);		// 線情報管理オブジェクト
 
 		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
 		this.linfo = this.addInfoList(classes.AreaLineManager);		// 線つながり情報を保持する
@@ -55,8 +55,7 @@ Board:{
 		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
 		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
 
-		this.paths    = [];
-		this.pathsegs = [];
+		this.paths = [];
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
@@ -527,11 +526,6 @@ Board:{
 	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
 	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
 	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
-
-	//---------------------------------------------------------------------------
-	// bd.setLineShapeInfo()    丸などで区切られた線を探索し情報を付加します
-	//---------------------------------------------------------------------------
-	setLineShapeInfo : function(){ return this.linemgr.setLineShapeInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

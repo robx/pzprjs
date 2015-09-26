@@ -23,9 +23,9 @@ MouseEvent:{
 		var pos = this.getpos(0);
 		if(pos.getc().isnull){ return;}
 
-		var border = this.getnb(this.prevPos, pos);
+		var border = this.prevPos.getnb(pos);
 		if(!border.isnull){
-			this.inputData = this.getdir(this.prevPos, pos);
+			this.inputData = this.prevPos.getdir(pos,2);
 			border.setQdir(this.inputData!==border.qdir?this.inputData:0);
 			border.draw();
 			this.mousereset();
