@@ -25,9 +25,8 @@ MouseEvent:{
 		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
 		cell.drawaround();
-	}
-},
-"MouseEvent@gokigen":{
+	},
+
 	dispRed : function(){
 		var puzzle = this.puzzle, flag = (puzzle.playmode && puzzle.key.isZ);
 		if(flag){ this.dispBlue();}
@@ -38,7 +37,8 @@ MouseEvent:{
 		this.mousereset();
 		if(cell.isnull || cell.qans===0 || cell.path===null){ return;}
 
-		cell.path.objs.seterr(2);
+		this.board.cell.setinfo(-1);
+		cell.path.objs.setinfo(2);
 		this.board.haserror = true;
 		this.puzzle.redraw();
 	}
@@ -234,6 +234,7 @@ BoardExec:{
 },
 
 Flags:{
+	irowake : true,
 	use : true,
 	disable_subclear : true
 },
@@ -281,8 +282,8 @@ Graphic:{
 	drawSlashes : function(){
 		var puzzle = this.puzzle, bd = puzzle.board;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
-			if     (puzzle.pid==='gokigen'){ bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?1:0);});}
-			else if(puzzle.pid==='wagiri') { bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?1:2);});}
+			var pid = this.pid;
+			bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?(pid==='gokigen'?1:3):0);});
 
 			this.common.drawSlashes.call(this);
 
@@ -291,11 +292,15 @@ Graphic:{
 		else{
 			this.common.drawSlashes.call(this);
 		}
+	},
+	repaintLines : function(clist){
+		this.range.cells = clist;
+		this.drawSlashes();
+
+		if(this.context.use.canvas){ this.drawCrosses();}
 	}
 },
 "Graphic@wagiri":{
-	errcolor2 : "rgb(0, 0, 127)",
-
 	drawNumber1 : function(cell){
 		var g = this.context, text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
 		g.vid = "cell_text_"+cell.id;
@@ -389,6 +394,7 @@ AnsCheck:{
 		var errclist = this.board.cell.filter(function(cell){ return (cell.qans>0 && cell.isloop);});
 		if(errclist.length>0){
 			this.failcode.add("slLoop");
+			this.board.cell.setnoerr();
 			errclist.seterr(1);
 		}
 	}
@@ -397,17 +403,13 @@ AnsCheck:{
 	checkSlashLoop   : function(){ this.checkLoops_wagiri(false, "slLoopGiri");},
 	checkSlashNoLoop : function(){ this.checkLoops_wagiri(true,  "slNotLoopWa");},
 	checkLoops_wagiri : function(checkLoop, code){
-		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(!checkLoop &&  cell.isloop && cell.qans>0 && cell.qnum===2){ result = false; break;}
-			if( checkLoop && !cell.isloop && cell.qans>0 && cell.qnum===1){ result = false; break;}
-		}
-		if(!result){
+		var filter = (checkLoop ? function(cell){ return (!cell.isloop && cell.qans>0 && cell.qnum===1);}
+		                        : function(cell){ return ( cell.isloop && cell.qans>0 && cell.qnum===2);});
+		var errclist = this.board.cell.filter(filter);
+		if(errclist.length>0){
 			this.failcode.add(code);
-			for(var c=0;c<bd.cellmax;c++){
-				if(bd.cell[c].qans>0){ bd.cell[c].seterr(!checkLoop?1:2);}
-			}
+			this.board.cell.setnoerr();
+			errclist.seterr(1);
 		}
 	}
 },

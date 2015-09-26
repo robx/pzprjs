@@ -246,18 +246,25 @@ Graphic:{
 	drawSlashes : function(){
 		var g = this.vinc('cell_slash', 'auto');
 
-		g.lineWidth = Math.max(this.cw/8, 2);
+		var basewidth = Math.max(this.bw/4, 2);
+		var irowake = this.puzzle.execConfig('irowake');
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
+			var cell = clist[i], addwidth = 0;
 			var info = cell.error || cell.qinfo;
-			if     (info===1){ g.strokeStyle = this.errcolor1;}
+			if     (info===1){ g.strokeStyle = this.errcolor1; addwidth = basewidth/2;}
 			else if(info===2){ g.strokeStyle = this.errcolor2;}
-			else             { g.strokeStyle = this.qanscolor;}
+			else if(info===-1){g.strokeStyle = this.errlinebgcolor;}
+			else{
+				if(info===3){ addwidth = basewidth/2;}
+				if(!irowake || !cell.color){ g.strokeStyle = this.qanscolor;}
+				else             { g.strokeStyle = cell.color;}
+			}
 
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
+				g.lineWidth = basewidth + addwidth;
 				g.beginPath();
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if     (cell.qans===31){ g.setOffsetLinePath(px,py, -this.bw,-this.bh, this.bw,this.bh, true);}
