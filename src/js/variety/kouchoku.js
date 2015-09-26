@@ -61,8 +61,8 @@ MouseEvent:{
 		else if(bx1===bx2 && by1===by2) { return;}
 
 		var bd = this.board, seg = bd.getSegment(bx1,by1,bx2,by2);
-		if(seg===null){ bd.addSegmentByAddr(bx1,by1,bx2,by2);}
-		else          { bd.removeSegment(seg);}
+		if(seg===null){ bd.segment.addSegmentByAddr(bx1,by1,bx2,by2);}
+		else          { bd.segment.remove(seg);}
 	},
 
 	inputcross_kouchoku : function(){
@@ -146,10 +146,231 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cross:{
-	maxnum : 26,
+	maxnum : 26
+},
+Segment:{
+	initialize : function(bx1, by1, bx2, by2){
+		this.path = null;
+		this.isnull = true;
 
-	initialize : function(){
-		this.seglist = new this.klass.SegmentList();
+		this.lineedge = [null,null];	// 2つの端点を指すオブジェクトを保持する
+
+		this.bx1 = null;		// 端点1のX座標(border座標系)を保持する
+		this.by1 = null;		// 端点1のY座標(border座標系)を保持する
+		this.bx2 = null;		// 端点2のX座標(border座標系)を保持する
+		this.by2 = null;		// 端点2のY座標(border座標系)を保持する
+
+		this.dx = 0;	// X座標の差分を保持する
+		this.dy = 0;	// Y座標の差分を保持する
+
+		this.lattices = [];	// 途中で通過する格子点を保持する
+
+		this.color = "";
+		this.error = 0;
+
+		this.setpos(bx1,by1,bx2,by2);
+	},
+	setpos : function(bx1,by1,bx2,by2){
+		this.lineedge[0] = this.board.getx(bx1,by1);
+		this.lineedge[1] = this.board.getx(bx2,by2);
+
+		this.bx1 = bx1;
+		this.by1 = by1;
+		this.bx2 = bx2;
+		this.by2 = by2;
+
+		this.dx = (bx2-bx1);
+		this.dy = (by2-by1);
+
+		this.setLattices();
+	},
+	setLattices : function(){
+		// ユークリッドの互助法で最大公約数を求める
+		var div=(this.dx>>1), n=(this.dy>>1), tmp;
+		div=(div<0?-div:div); n=(n<0?-n:n);
+		if(div<n){ tmp=div;div=n;n=tmp;} // (m,n)=(0,0)は想定外
+		while(n>0){ tmp=(div%n); div=n; n=tmp;}
+
+		// div-1が途中で通る格子点の数になってる
+		this.lattices = [];
+		for(var a=1;a<div;a++){
+			var bx=this.bx1+this.dx*(a/div);
+			var by=this.by1+this.dy*(a/div);
+			var cross=this.board.getx(bx,by);
+			this.lattices.push([bx,by,cross.id]);
+		}
+	},
+
+	seterr : function(num){
+		if(this.board.isenableSetError()){ this.error = num;}
+	},
+
+	//---------------------------------------------------------------------------
+	// addOpe()  履歴情報にプロパティの変更を通知する
+	//---------------------------------------------------------------------------
+	addOpe : function(old, num){
+		this.puzzle.opemgr.add(new this.klass.SegmentOperation(this, old, num));
+	},
+
+	//---------------------------------------------------------------------------
+	// seg.isRightAngle() 2本のsegmentが直角かどうか判定する
+	// seg.isParallel()   2本のsegmentが平行かどうか判定する
+	// seg.isCrossing()   2本のsegmentが平行でなく交差しているかどうか判定する
+	// seg.isOverLapSegment() 2本のsegmentが平行でさらに重なっているかどうか判定する
+	//---------------------------------------------------------------------------
+	isRightAngle : function(seg){
+		/* 傾きベクトルの内積が0かどうか */
+		return ((this.dx*seg.dx+this.dy*seg.dy)===0);
+	},
+	isParallel : function(seg){
+		var vert1=(this.dx===0), vert2=(seg.dx===0); // 縦線
+		var horz1=(this.dy===0), horz2=(seg.dy===0); // 横線
+		if(vert1&&vert2){ return true;} // 両方縦線
+		if(horz1&&horz2){ return true;} // 両方横線
+		if(!vert1&&!vert2&&!horz1&&!horz2){ // 両方ナナメ
+			return (this.dx*seg.dy===seg.dx*this.dy);
+		}
+		return false;
+	},
+	isCrossing : function(seg){
+		/* 平行ならここでは対象外 */
+		if(this.isParallel(seg)){ return false;}
+
+		/* X座標,Y座標が重なっているかどうか調べる */
+		if(!this.isOverLapRect(seg.bx1,seg.by1,seg.bx2,seg.by2)){ return false;}
+
+		var bx11=this.bx1, bx12=this.bx2, by11=this.by1, by12=this.by2, dx1=this.dx, dy1=this.dy;
+		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy;
+
+		/* 交差している位置を調べる */
+		if     (dx1===0){ /* 片方の線だけ垂直 */
+			var _by0=dy2*(bx11-bx21)+by21*dx2, t=dx2;
+			if(t<0){ _by0*=-1; t*=-1;} var _by11=by11*t, _by12=by12*t;
+			if(_by11<_by0 && _by0<_by12){ return true;}
+		}
+		else if(dx2===0){ /* 片方の線だけ垂直 */
+			var _by0=dy1*(bx21-bx11)+by11*dx1, t=dx1;
+			if(t<0){ _by0*=-1; t*=-1;} var _by21=by21*dx1, _by22=by22*dx1;
+			if(_by21<_by0 && _by0<_by22){ return true;}
+		}
+		else{ /* 2本とも垂直でない (仕様的にbx1<bx2になるはず) */
+			var _bx0=(bx21*dy2-by21*dx2)*dx1-(bx11*dy1-by11*dx1)*dx2, t=(dy2*dx1)-(dy1*dx2);
+			if(t<0){ _bx0*=-1; t*=-1;} var _bx11=bx11*t, _bx12=bx12*t, _bx21=bx21*t, _bx22=bx22*t;
+			if((_bx11<_bx0 && _bx0<_bx12)&&(_bx21<_bx0 && _bx0<_bx22)){ return true;}
+		}
+		return false;
+	},
+	/* 同じ傾きで重なっているSegmentかどうかを調べる */
+	isOverLapSegment : function(seg){
+		if(!this.isParallel(seg)){ return false;}
+		if(this.dx===0 && seg.dx===0){ // 2本とも垂直の時
+			if(this.bx1===seg.bx1){ // 垂直で両方同じX座標
+				if(this.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
+			}
+		}
+		else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
+			if((this.dx*this.by1-this.bx1*this.dy)*seg.dx===(seg.dx*seg.by1-seg.bx1*seg.dy)*this.dx){
+				if(this.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
+			}
+		}
+		return false;
+	},
+
+	//---------------------------------------------------------------------------
+	// seg.isOverLapRect() (x1,y1)-(x2,y2)の長方形内か縦か横にいることを判定する
+	// seg.isAreaInclude() (x1,y1)-(x2,y2)の長方形に含まれるかどうかを判定する
+	// seg.isOverLap()     一次元軸上で(a1-a2)と(b1-b2)の範囲が重なっているかどうか判定する
+	// seg.ispositive()    (端点1-P)と(P-端点2)で外積をとった時のZ軸方向の符号がが正か負か判定する
+	//                     端点1-P-端点2の経路が左曲がりの時、値が正になります (0は直線)
+	//---------------------------------------------------------------------------
+	isOverLapRect : function(bx1,by1,bx2,by2){
+		return (this.isOverLap(this.bx1,this.bx2,bx1,bx2) &&
+				this.isOverLap(this.by1,this.by2,by1,by2));
+	},
+	isAreaInclude : function(x1,y1,x2,y2){
+		if(this.isOverLapRect(x1,y1,x2,y2)){
+			var cnt=0;
+			if(this.ispositive(x1,y1)){ cnt++;}
+			if(this.ispositive(x1,y2)){ cnt++;}
+			if(this.ispositive(x2,y1)){ cnt++;}
+			if(this.ispositive(x2,y2)){ cnt++;}
+			if(cnt>0 && cnt<4){ return true;}
+		}
+		return false;
+	},
+	isOverLap : function(a1,a2,b1,b2){
+		var tmp;
+		if(a1>a2){ tmp=a1;a1=a2;a2=tmp;} if(b1>b2){ tmp=b1;b1=b2;b2=tmp;}
+		return (b1<a2 && a1<b2);
+	},
+	ispositive : function(bx,by){
+		return((bx-this.bx1)*(this.by2-by)-(this.bx2-bx)*(by-this.by1)>0);
+	}
+},
+"SegmentList:PieceList":{
+	name : 'SegmentList',
+
+	add : function(seg){
+		var bd = this.board;
+		if(this===bd.segment){
+			seg.isnull = false;
+		}
+		this.klass.PieceList.prototype.add.call(this, seg);
+		if(this===bd.segment){
+			if(bd.isenableInfo()){ bd.seginfo.setLine(seg);}
+			seg.addOpe(0, 1);
+		}
+	},
+	remove : function(seg){
+		var bd = this.board;
+		if(this===bd.segment){
+			seg.isnull = true;
+		}
+		this.klass.PieceList.prototype.remove.call(this, seg);
+		if(this===bd.segment){
+			if(bd.isenableInfo()){ bd.seginfo.setLine(seg);}
+			seg.addOpe(1, 0);
+			this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
+		}
+	},
+
+	allclear : function(){
+		this.ansclear();
+	},
+	ansclear : function(){
+		// Segmentのclearとは配列を空にすること
+		for(var i=this.length-1;i>=0;i--){ this.remove(this[i]);}
+	},
+	errclear : function(){
+		for(var i=0;i<this.length;i++){ this[i].error = 0;}
+	},
+
+	//---------------------------------------------------------------------------
+	// segment.getRange()    SegmentListが存在する範囲を返す
+	//---------------------------------------------------------------------------
+	getRange : function(){
+		if(this.length===0){ return null;}
+		var bd = this.board;
+		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
+		for(var i=0;i<this.length;i++){
+			var seg=this[i];
+			if(d.x1>seg.bx1){ d.x1=seg.bx1;}
+			if(d.x2<seg.bx2){ d.x2=seg.bx2;}
+			if(d.y1>seg.by1){ d.y1=seg.by1;}
+			if(d.y2<seg.by2){ d.y2=seg.by2;}
+		}
+		return d;
+	},
+
+	//---------------------------------------------------------------------------
+	// segment.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
+	// segment.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
+	//---------------------------------------------------------------------------
+	addSegmentByAddr : function(bx1,by1,bx2,by2){
+		this.add(new this.klass.Segment(bx1,by1,bx2,by2));
+	},
+	removeSegmentByAddr : function(bx1,by1,bx2,by2){
+		this.remove(this.board.getSegment(bx1,by1,bx2,by2));
 	}
 },
 
@@ -160,41 +381,20 @@ Board:{
 	seginfo : null,
 
 	initialize : function(){
-		this.initSegmentGroup();
-
 		this.common.initialize.call(this);
 
-		this.seginfo = this.addInfoList(this.klass.SegmentManager);
-	},
-
-	initBoardSize : function(col,row){
-		this.initSegmentGroup();
-
-		this.common.initBoardSize.call(this,col,row);
-	},
-
-	initSegmentGroup : function(){
-		if(!!this.segment){
-			var pc = this.puzzle.painter;
-			this.segment.each(function(seg){ pc.eraseSegment1(seg);});
-		}
 		this.segment = new this.klass.SegmentList();
-	},
-
-	resetInfo : function(){
-		this.seginfo.reset();
-		this.common.resetInfo.call(this);
+		this.seginfo = this.addInfoList(this.klass.LineSegmentManager);
 	},
 
 	allclear : function(isrec){
-		this.initSegmentGroup();
+		this.segment.allclear();
 		
 		this.common.allclear.call(this,isrec);
 	},
 	ansclear : function(){
 		this.puzzle.opemgr.newOperation();
-		this.segment.each(function(seg){ seg.addOpe(1, 0);});
-		this.initSegmentGroup();
+		this.segment.ansclear();
 		
 		this.common.ansclear.call(this);
 	},
@@ -224,41 +424,7 @@ Board:{
 	segmentinside : function(x1,y1,x2,y2){
 		if(x1<=this.minbx && x2>=this.maxbx && y1<=this.minby && y2>=this.maxby){ return this.segment;}
 
-		var pseudoSegment = new this.klass.Segment(x1,y1,x2,y2);
-		return this.segment.filter(function(seg){
-			if(seg.isAreaOverLap(pseudoSegment)){
-				var cnt=0;
-				if(seg.ispositive(x1,y1)){ cnt++;}
-				if(seg.ispositive(x1,y2)){ cnt++;}
-				if(seg.ispositive(x2,y1)){ cnt++;}
-				if(seg.ispositive(x2,y2)){ cnt++;}
-				if(cnt>0 && cnt<4){ return true;}
-			}
-			return false;
-		});
-	},
-
-	//---------------------------------------------------------------------------
-	// bd.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
-	// bd.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
-	// bd.removeSegment()       線を消す時に呼ぶ
-	//---------------------------------------------------------------------------
-	addSegmentByAddr : function(bx1,by1,bx2,by2){
-		var seg = new this.klass.Segment(bx1,by1,bx2,by2);
-		seg.isnull = false;
-		this.segment.add(seg);
-		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg);}
-		seg.addOpe(0, 1);
-	},
-	removeSegmentByAddr : function(bx1,by1,bx2,by2){
-		this.removeSegment(this.getSegment(bx1,by1,bx2,by2));
-	},
-	removeSegment : function(seg){
-		this.puzzle.painter.eraseSegment1(seg);
-		this.segment.remove(seg);
-		seg.isnull = true;
-		if(this.isenableInfo()){ this.seginfo.setSegmentInfo(seg);}
-		seg.addOpe(1, 0);
+		return this.segment.filter(function(seg){ return seg.isAreaInclude(x1,y1,x2,y2);});
 	},
 
 	//---------------------------------------------------------------------------
@@ -293,7 +459,7 @@ BoardExec:{
 
 			var opemgr = this.puzzle.opemgr, isrec = (!opemgr.undoExec && !opemgr.redoExec);
 			if(isrec){ opemgr.forceRecord = true;}
-			for(var i=0;i<sublist.length;i++){ bd.removeSegment(sublist[i]);}
+			for(var i=0;i<sublist.length;i++){ bd.segment.remove(sublist[i]);}
 			if(isrec){ opemgr.forceRecord = false;}
 		}
 	},
@@ -319,38 +485,17 @@ BoardExec:{
 	}
 },
 
-"SegmentList:PieceList":{
-	name : 'SegmentList',
-
-	getRange : function(){
-		if(this.length===0){ return null;}
-		var bd = this.board;
-		var d = { x1:bd.maxbx+1, x2:bd.minbx-1, y1:bd.maxby+1, y2:bd.minby-1};
-		for(var i=0;i<this.length;i++){
-			var seg=this[i];
-			if(d.x1>seg.bx1){ d.x1=seg.bx1;}
-			if(d.x2<seg.bx2){ d.x2=seg.bx2;}
-			if(d.y1>seg.by1){ d.y1=seg.by1;}
-			if(d.y2<seg.by2){ d.y2=seg.by2;}
-		}
-		return d;
+"LineSegmentManager:LineManager":{
+	initialize : function(){
+		this.enabled = true;
 	},
-	
-	each : function(func){
-		for(var i=0;i<this.length;i++){
-			if(this[i]!==null){ func(this[i]);}
-		}
+	init : function(){
+		this.board.validinfo.all.push(this);
+		this.PieceList   = this.klass.SegmentList;
+		this.basegroup   = this.board.segment;
+		this.targetgroup = this.board.cross;
 	},
-
-	setColor : function(color){
-		for(var i=0;i<this.length;i++){
-			this[i].color = color;
-		}
-	},
-
-	errclear : function(){
-		this.each(function(seg){ seg.error = 0;});
-	}
+	isvalid : function(seg){ return !seg.isnull;}
 },
 
 "SegmentOperation:Operation":{
@@ -378,8 +523,8 @@ BoardExec:{
 
 	exec : function(num){
 		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, puzzle=this.puzzle, tmp;
-		if     (num===1){ puzzle.board.addSegmentByAddr   (bx1,by1,bx2,by2);}
-		else if(num===0){ puzzle.board.removeSegmentByAddr(bx1,by1,bx2,by2);}
+		if     (num===1){ puzzle.board.segment.addSegmentByAddr   (bx1,by1,bx2,by2);}
+		else if(num===0){ puzzle.board.segment.removeSegmentByAddr(bx1,by1,bx2,by2);}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
 		puzzle.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
@@ -418,7 +563,7 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	repaintSegments : function(segs){
+	repaintLines : function(segs){
 		if(!this.context.use.canvas){
 			this.vinc('segment', 'auto');
 			for(var i=0;i<segs.length;i++){ this.drawSegment1(segs[i],true);}
@@ -476,7 +621,7 @@ Graphic:{
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
-			var graydisp = (isgray && cross.error===0 && cross.seglist.length>=2);
+			var graydisp = (isgray && cross.error===0 && cross.lcnt>=2);
 			var px = cross.bx*this.bw, py = cross.by*this.bh;
 			// ○の描画
 			g.vid = "x_cp_"+cross.id;
@@ -581,7 +726,7 @@ FileIO:{
 		var len = +this.readLine();
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
-			this.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);
+			this.board.segment.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);
 		}
 	},
 	encodeSegment : function(){
@@ -615,16 +760,16 @@ AnsCheck:{
 	},
 
 	checkAlonePoint : function(){
-		this.checkSegment(function(cross){ return (cross.seglist.length<2 && cross.qnum!==-1);}, "nmLineLt2");
+		this.checkSegment(function(cross){ return (cross.lcnt<2 && cross.qnum!==-1);}, "nmLineLt2");
 	},
 	checkSegmentPoint : function(){
-		this.checkSegment(function(cross){ return (cross.seglist.length>0 && cross.qnum===-1);}, "lnIsolate");
+		this.checkSegment(function(cross){ return (cross.lcnt>0 && cross.qnum===-1);}, "lnIsolate");
 	},
 	checkSegmentBranch : function(){
-		this.checkSegment(function(cross){ return (cross.seglist.length>2);}, "lnBranch");
+		this.checkSegment(function(cross){ return (cross.lcnt>2);}, "lnBranch");
 	},
 	checkSegmentDeadend : function(){
-		this.checkSegment(function(cross){ return (cross.seglist.length===1);}, "lnDeadEnd");
+		this.checkSegment(function(cross){ return (cross.lcnt===1);}, "lnDeadEnd");
 	},
 	checkSegment : function(func, code){
 		var result = true, bd = this.board;
@@ -645,13 +790,13 @@ AnsCheck:{
 	checkOneSegmentLoop : function(){
 		var bd = this.board, validcount = 0;
 		for(var r=0;r<bd.paths.length;r++){
-			if(bd.paths[r].length===0){ continue;}
+			if(bd.paths[r].objs.length===0){ continue;}
 			validcount++;
 			if(validcount<=1){ continue;}
 			
 			this.failcode.add("lnPlLoop");
 			bd.segment.setnoerr();
-			bd.paths[r].seterr(1);
+			bd.paths[r].objs.seterr(1);
 			break;
 		}
 	},
@@ -675,7 +820,7 @@ AnsCheck:{
 	checkDifferentLetter : function(){
 		var result = true, bd = this.board, segs = bd.segment;
 		segs.each(function(seg){
-			var cross1=seg.cross[0], cross2=seg.cross[1];
+			var cross1=seg.lineedge[0], cross2=seg.lineedge[1];
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
 				seg.seterr(1);
 				cross1.seterr(1);
@@ -701,7 +846,7 @@ AnsCheck:{
 			}
 		}
 		bd.segment.each(function(seg){
-			var cross1=seg.cross[0], cross2=seg.cross[1];
+			var cross1=seg.lineedge[0], cross2=seg.lineedge[1];
 			if(cross1.qnum>=0 && cross2.qnum>=0 && cross1.qnum===cross2.qnum){
 				var qn = cross1.qnum; if(qn>=0){ count[qn][1]++;}
 			}
@@ -769,401 +914,5 @@ FailCode:{
 	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Same Letters are not consequent."],
 	nmLineLt2    : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
 	brNoLine     : ["線が存在していません。","There is no segment."]
-},
-
-//---------------------------------------------------------
-//---------------------------------------------------------
-Segment:{
-	initialize : function(bx1, by1, bx2, by2){
-		this.path = null;
-		this.isnull = true;
-
-		this.cross = [null,null];	// 2つの端点を指すオブジェクトを保持する
-
-		this.bx1 = null;		// 端点1のX座標(border座標系)を保持する
-		this.by1 = null;		// 端点1のY座標(border座標系)を保持する
-		this.bx2 = null;		// 端点2のX座標(border座標系)を保持する
-		this.by2 = null;		// 端点2のY座標(border座標系)を保持する
-
-		this.dx = 0;	// X座標の差分を保持する
-		this.dy = 0;	// Y座標の差分を保持する
-
-		this.lattices = [];	// 途中で通過する格子点を保持する
-
-		this.color = "";
-		this.error = 0;
-
-		this.setpos(bx1,by1,bx2,by2);
-	},
-	setpos : function(bx1,by1,bx2,by2){
-		this.cross[0] = this.board.getx(bx1,by1);
-		this.cross[1] = this.board.getx(bx2,by2);
-
-		this.bx1 = bx1;
-		this.by1 = by1;
-		this.bx2 = bx2;
-		this.by2 = by2;
-
-		this.dx = (bx2-bx1);
-		this.dy = (by2-by1);
-
-		this.setLattices();
-	},
-	setLattices : function(){
-		// ユークリッドの互助法で最大公約数を求める
-		var div=(this.dx>>1), n=(this.dy>>1), tmp;
-		div=(div<0?-div:div); n=(n<0?-n:n);
-		if(div<n){ tmp=div;div=n;n=tmp;} // (m,n)=(0,0)は想定外
-		while(n>0){ tmp=(div%n); div=n; n=tmp;}
-
-		// div-1が途中で通る格子点の数になってる
-		this.lattices = [];
-		for(var a=1;a<div;a++){
-			var bx=this.bx1+this.dx*(a/div);
-			var by=this.by1+this.dy*(a/div);
-			var cross=this.board.getx(bx,by);
-			this.lattices.push([bx,by,cross.id]);
-		}
-	},
-	ispositive : function(bx,by){
-		/* (端点1-P)と(P-端点2)で外積をとった時のZ軸方向の符号がが正か負か */
-		return((bx-this.bx1)*(this.by2-by)-(this.bx2-bx)*(by-this.by1)>0);
-	},
-
-	seterr : function(num){
-		if(this.board.isenableSetError()){ this.error = num;}
-	},
-
-	//---------------------------------------------------------------------------
-	// addOpe()  履歴情報にプロパティの変更を通知する
-	//---------------------------------------------------------------------------
-	addOpe : function(old, num){
-		this.puzzle.opemgr.add(new this.klass.SegmentOperation(this, old, num));
-	},
-
-	//---------------------------------------------------------------------------
-	// seg.isRightAngle() 2本のsegmentが直角かどうか判定する
-	// seg.isParallel()   2本のsegmentが並行かどうか判定する
-	// seg.isCrossing()   2本のsegmentが並行でなく交差しているかどうか判定する
-	// seg.isOverLapSegment() 2本のsegmentが重なっているかどうか判定する
-	//---------------------------------------------------------------------------
-	isRightAngle : function(seg){
-		/* 傾きベクトルの内積が0かどうか */
-		return ((this.dx*seg.dx+this.dy*seg.dy)===0);
-	},
-	isParallel : function(seg){
-		var vert1=(this.dx===0), vert2=(seg.dx===0); // 縦線
-		var horz1=(this.dy===0), horz2=(seg.dy===0); // 横線
-		if(vert1&&vert2){ return true;} // 両方縦線
-		if(horz1&&horz2){ return true;} // 両方横線
-		if(!vert1&&!vert2&&!horz1&&!horz2){ // 両方ナナメ
-			return (this.dx*seg.dy===seg.dx*this.dy);
-		}
-		return false;
-	},
-	isCrossing : function(seg){
-		/* 平行ならここでは対象外 */
-		if(this.isParallel(seg)){ return false;}
-
-		/* X座標,Y座標が重なっているかどうか調べる */
-		if(!this.isAreaOverLap(seg)){ return false;}
-
-		var bx11=this.bx1, bx12=this.bx2, by11=this.by1, by12=this.by2, dx1=this.dx, dy1=this.dy;
-		var bx21= seg.bx1, bx22= seg.bx2, by21= seg.by1, by22= seg.by2, dx2= seg.dx, dy2= seg.dy;
-
-		/* 交差している位置を調べる */
-		if     (dx1===0){ /* 片方の線だけ垂直 */
-			var _by0=dy2*(bx11-bx21)+by21*dx2, t=dx2;
-			if(t<0){ _by0*=-1; t*=-1;} var _by11=by11*t, _by12=by12*t;
-			if(_by11<_by0 && _by0<_by12){ return true;}
-		}
-		else if(dx2===0){ /* 片方の線だけ垂直 */
-			var _by0=dy1*(bx21-bx11)+by11*dx1, t=dx1;
-			if(t<0){ _by0*=-1; t*=-1;} var _by21=by21*dx1, _by22=by22*dx1;
-			if(_by21<_by0 && _by0<_by22){ return true;}
-		}
-		else{ /* 2本とも垂直でない (仕様的にbx1<bx2になるはず) */
-			var _bx0=(bx21*dy2-by21*dx2)*dx1-(bx11*dy1-by11*dx1)*dx2, t=(dy2*dx1)-(dy1*dx2);
-			if(t<0){ _bx0*=-1; t*=-1;} var _bx11=bx11*t, _bx12=bx12*t, _bx21=bx21*t, _bx22=bx22*t;
-			if((_bx11<_bx0 && _bx0<_bx12)&&(_bx21<_bx0 && _bx0<_bx22)){ return true;}
-		}
-		return false;
-	},
-	/* X-Y座標でつくる長方形のエリアがかぶっているかどうか調べる */
-	isAreaOverLap : function(seg){
-		return (this.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2) &&
-				this.isOverLap(this.by1,this.by2,seg.by1,seg.by2));
-	},
-	/* 同じ傾きで重なっているSegmentかどうかを調べる */
-	isOverLapSegment : function(seg){
-		if(!this.isParallel(seg)){ return false;}
-		if(this.dx===0 && seg.dx===0){ // 2本とも垂直の時
-			if(this.bx1===seg.bx1){ // 垂直で両方同じX座標
-				if(this.isOverLap(this.by1,this.by2,seg.by1,seg.by2)){ return true;}
-			}
-		}
-		else{ // 垂直でない時 => bx=0の時のY座標の値を比較 => 割り算にならないように展開
-			if((this.dx*this.by1-this.bx1*this.dy)*seg.dx===(seg.dx*seg.by1-seg.bx1*seg.dy)*this.dx){
-				if(this.isOverLap(this.bx1,this.bx2,seg.bx1,seg.bx2)){ return true;}
-			}
-		}
-		return false;
-	},
-
-	/*  一次元で(a1-a2)と(b1-b2)の範囲が重なっているかどうか判定する */
-	isOverLap : function(a1,a2,b1,b2){
-		var tmp;
-		if(a1>a2){ tmp=a1;a1=a2;a2=tmp;} if(b1>b2){ tmp=b1;b1=b2;b2=tmp;}
-		return (b1<a2 && a1<b2);
-	}
-},
-
-SegmentManager:{ /* LineManagerクラスを拡張してます */
-	init : function(){
-		this.board.validinfo.all.push(this);
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.reset()      lcnts等の変数の初期化を行う
-	// seginfo.rebuild()    情報の再設定を行う
-	// seginfo.newIrowake() reset()時などに色情報を設定しなおす
-	//---------------------------------------------------------------------------
-	reset : function(){
-		var puzzle = this.puzzle, bd=puzzle.board;
-		bd.paths = [];
-		for(var c=0,len=bd.crossmax;c<len;c++){
-			bd.cross[c].seglist=new puzzle.klass.SegmentList();
-		}
-
-		this.rebuild();
-	},
-	rebuild : function(){
-		// if(!this.enabled){ return;} enabled==true扱いなのでここのif文は削除
-
-		var segs = new this.klass.SegmentList();
-		this.board.segment.each(function(seg){
-			seg.path = null;
-			seg.cross[0].seglist.add(seg);
-			seg.cross[1].seglist.add(seg);
-
-			segs.add(seg);
-		});
-		this.searchLine(segs);
-
-		// if(this.puzzle.flags.irowake){ this.newIrowake();} irowake==trueなので削除
-		this.newIrowake();
-	},
-	newIrowake : function(){
-		var paths = this.board.paths;
-		for(var i=0;i<paths.length;i++){
-			paths[i].setColor(this.puzzle.painter.getNewLineColor());
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.gettype()  線が引かれた/消された時に、typeA/typeBのいずれか判定する
-	//---------------------------------------------------------------------------
-	gettype : function(cross,isset){
-		if(cross.isnull){ return 'A';}
-		else{ return ((cross.seglist.length===(isset?1:0))?'A':'B');}
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.setSegmentInfo()    線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
-	//---------------------------------------------------------------------------
-	setSegmentInfo : function(seg){
-		var isset = !seg.isnull;
-		if(!isset && (seg.path===null)){ return;}
-
-		var cross1 = seg.cross[0], cross2 = seg.cross[1];
-		if(isset){
-			if(!cross1.isnull){ cross1.seglist.add(seg);}
-			if(!cross2.isnull){ cross2.seglist.add(seg);}
-		}
-		else{
-			if(!cross1.isnull){ cross1.seglist.remove(seg);}
-			if(!cross2.isnull){ cross2.seglist.remove(seg);}
-		}
-
-		var types = this.gettype(cross1,isset) + this.gettype(cross2,isset);
-		if(isset){
-			// (A)+(A)の場合 -> 新しい線idを割り当てる
-			if(types==='AA'){
-				this.assignLineInfo(seg, null);
-			}
-			// (A)+(B)の場合 -> 既存の線にくっつける
-			else if(types==='AB'||types==='BA'){
-				this.assignLineInfo(seg, this.getaround(seg)[0]);
-			}
-			// (B)+(B)の場合 -> くっついた線で、大きい方の線idに統一する
-			else{
-				this.remakeLineInfo(seg, true);
-			}
-		}
-		else{
-			// (A)+(A)の場合 -> 線id自体を消滅させる
-			// (A)+(B)の場合 -> 既存の線から取り除く
-			if(types!=='BB'){
-				this.removeLineInfo(seg);
-			}
-			// (B)+(B)の場合 -> 分かれた線にそれぞれ新しい線idをふる
-			else{
-				this.remakeLineInfo(seg, false);
-			}
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.assignLineInfo()  指定された線を有効な線として設定する
-	// seginfo.removeLineInfo()  指定されたセルを無効なセルとして設定する
-	// seginfo.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                           可能性がある場合の線idの再設定を行う
-	//---------------------------------------------------------------------------
-	assignLineInfo : function(seg, seg2){
-		var path = seg.path;
-		if(path!==null){ return;}
-
-		if(!seg2){
-			path = this.addPath();
-			seg.color = this.puzzle.painter.getNewLineColor();
-		}
-		else{
-			path = seg2.path;
-			seg.color = seg2.color;
-		}
-		path.add(seg);
-		seg.path = path;
-	},
-	removeLineInfo : function(seg){
-		var path = seg.path;
-		if(path===null){ return;}
-
-		path.remove(seg);
-		if(path.length===0){ this.removePath(path);}
-		seg.path = null;
-		seg.color = "";
-	},
-	remakeLineInfo : function(seg){
-		var aroundsegs = this.getaround(seg);
-		if(!seg.isnull){ aroundsegs.add(seg);}
-		else{ this.removeLineInfo(seg);}
-		
-		var longColor = this.getLongColor(aroundsegs);
-		
-		// つながった線の線情報を一旦消去する
-		var segs = new this.klass.SegmentList();
-		for(var i=0,len=aroundsegs.length;i<len;i++){
-			var path = aroundsegs[i].path;
-			if(path!==null){ segs.extend(this.removePath(path));}
-			else           { segs.add(aroundsegs[i]);}
-		}
-
-		// 新しいidを設定する
-		var newpaths = this.searchLine(segs);
-
-		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
-		// それ以外の線には新しい色を付加する
-		this.setLongColor(newpaths, longColor);
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.addPath()    新しく割り当てるidを取得する
-	// info.removePath() 部屋idを無効にする
-	//--------------------------------------------------------------------------------
-	addPath : function(){
-		var path = new this.klass.SegmentList();
-		this.board.paths.push(path);
-		return path;
-	},
-	removePath : function(path){
-		var paths = this.board.paths, idx = paths.indexOf(path);
-		path.each(function(seg){ seg.path=null;});
-		return (idx>=0 ? paths.splice(idx, 1)[0] : []);
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
-	// info.setLongColor() ブロックに色をつけなおす
-	//--------------------------------------------------------------------------------
-	getLongColor : function(segs){
-		// 周りで一番大きな線は？
-		var largepath = null, longColor = "";
-		for(var i=0,len=segs.length;i<len;i++){
-			var path = segs[i].path;
-			if(path===null){ continue;}
-			if(largepath===null || largepath.length < path.length){
-				largepath = path;
-				longColor = segs[i].color;
-			}
-		}
-		return (!!longColor ? longColor : this.puzzle.painter.getNewLineColor());
-	},
-	setLongColor : function(newpaths, longColor){
-		var puzzle = this.puzzle;
-		/* newpaths:新しく生成されたpathの配列 */
-		var segs = new puzzle.klass.SegmentList();
-		
-		// できた線の中でもっとも長いものを取得する
-		var longpath = newpaths[0];
-		for(var i=1;i<newpaths.length;i++){
-			if(longpath.length<newpaths[i].length){ longpath = newpaths[i];}
-		}
-		
-		// 新しい色の設定
-		for(var i=0;i<newpaths.length;i++){
-			var path = newpaths[i];
-			path.setColor(path===longpath ? longColor : puzzle.painter.getNewLineColor());
-			segs.extend(path);
-		}
-		
-		if(puzzle.execConfig('irowake')){ puzzle.painter.repaintSegments(segs);}
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.getaround()  指定したsegmentに繋がる線を全て取得する
-	//---------------------------------------------------------------------------
-	getaround : function(seg){
-		var segs = new this.klass.SegmentList();
-		for(var c=0;c<2;c++){
-			var seglist = seg.cross[c].seglist;
-			for(var i=0,len=seglist.length;i<len;i++){
-				if(seglist[i]!==seg){ segs.add(seglist[i]);}
-			}
-		}
-		return segs;
-	},
-
-	//---------------------------------------------------------------------------
-	// seginfo.searchLine() id=-1となっているsegmentにpathidを設定する
-	// seginfo.searchSingle() 初期idを含む一つの領域内のpathidを指定されたものにする
-	//---------------------------------------------------------------------------
-	searchLine : function(segs){
-		var newpaths = [];
-		for(var i=0,len=segs.length;i<len;i++){
-			segs[i].path = null;
-		}
-		for(var i=0,len=segs.length;i<len;i++){
-			if(segs[i].path!==null){ continue;}	// 既にidがついていたらスルー
-			var newpath = this.addPath();
-			this.searchSingle(segs[i], newpath);
-			newpaths.push(newpath);
-		}
-		return newpaths;
-	},
-	searchSingle : function(startseg, newpath){
-		var stack = [startseg];
-		while(stack.length>0){
-			var seg = stack.pop();
-			if(seg.path!==null){ continue;}
-
-			seg.path = newpath;
-			newpath.add(seg);
-
-			var around = this.getaround(seg);
-			for(var j=0;j<around.length;j++){
-				if(around[j].path===null){ stack.push(around[j]);}
-			}
-		}
-	}
 }
 });

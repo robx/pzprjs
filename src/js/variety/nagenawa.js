@@ -239,7 +239,7 @@ AnsCheck:{
 		var result = true, bd = this.board;
 		var paths = bd.paths;
 		for(var r=0;r<paths.length;r++){
-			var blist = paths[r].blist;
+			var blist = paths[r].objs;
 			if(this.isLoopRect(blist)){ continue;}
 
 			result = false;

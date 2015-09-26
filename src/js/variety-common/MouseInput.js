@@ -501,7 +501,7 @@ MouseEvent:{
 
 		if(!border.isLine()){
 			var piece = (!bd.linemgr.borderAsLine ? this.getcell() : this.getcross()); /* cell or cross */
-			if(piece.isnull || (piece.iscrossing() && (piece.lcnt===3 || piece.lcnt===4))){ return;}
+			if(piece.isnull || (bd.linemgr.isLineCross && (piece.lcnt===3 || piece.lcnt===4))){ return;}
 			var adb = piece.adjborder;
 			if     (adb.left.isLine()  ){ border = adb.left;  }
 			else if(adb.right.isLine() ){ border = adb.right; }
@@ -512,7 +512,7 @@ MouseEvent:{
 		if(border.isnull){ return;}
 
 		bd.border.setinfo(-1);
-		bd.border.path.blist.setinfo(1);
+		border.path.objs.setinfo(1);
 		bd.haserror = true;
 		this.puzzle.redraw();
 	}

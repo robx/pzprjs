@@ -30,9 +30,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : 4,
-
-	iscrossing : function(){ return this.noNum();}
+	maxnum : 4
 },
 
 Board:{
@@ -40,7 +38,10 @@ Board:{
 },
 
 LineManager:{
-	isCenterLine : true
+	isCenterLine : true,
+	isLineCross  : true,
+
+	iscrossing : function(cell){ return cell.noNum();}
 },
 
 AreaLineManager:{

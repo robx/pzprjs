@@ -106,8 +106,6 @@ Cell:{
 		return this.qnum === this.getCountOfBridges();
 	},
 
-	iscrossing : function(){ return this.noNum();},
-
 	// pencilbox互換関数 ここではファイル入出力用
 	getState : function(){
 		if(this.qnum!==-1){ return 0;}
@@ -162,7 +160,9 @@ Board:{
 
 LineManager:{
 	isCenterLine : true,
-	isLineCross  : true
+	isLineCross  : true,
+
+	iscrossing : function(cell){ return cell.noNum();}
 },
 
 AreaLineManager:{

@@ -189,7 +189,7 @@ AnsCheck:{
 		if(paths.length>1){
 			this.failcode.add("lnPlLoop");
 			bd.border.setnoerr();
-			paths[0].blist.seterr(1);
+			paths[0].objs.seterr(1);
 		}
 	},
 
@@ -236,7 +236,8 @@ AnsCheck:{
 				
 				result = false;
 				if(this.checkOnly){ break;}
-				boardcross[c].setCrossBorderError();
+				boardcross[c].seterr(1);
+				boardcross[c].seglist.seterr(1);
 			}
 			if(!result){
 				this.failcode.add(code);
@@ -554,7 +555,7 @@ AnsCheck:{
 			var cells = pathseg.cells;
 			if(!!cells[0] && cells[0]!==null){ cells[0].seterr(1);}
 			if(!!cells[1] && cells[1]!==null){ cells[1].seterr(1);}
-			pathseg.blist.seterr(1);
+			pathseg.objs.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);

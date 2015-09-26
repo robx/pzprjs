@@ -324,6 +324,7 @@ OperationManager:{
 			if(this.position<this.initpos){ this.broken = true;}
 			for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
 			this.position = this.ope.length;
+			this.chainflag = false;
 		}
 
 		/* 前の履歴を更新するかどうか判定 */

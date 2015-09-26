@@ -302,6 +302,8 @@ Board:{
 		this.cross.ansclear();
 		this.border.ansclear();
 		this.excell.ansclear();
+		
+		this.resetInfo();
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){

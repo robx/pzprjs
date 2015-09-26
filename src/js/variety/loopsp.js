@@ -295,7 +295,7 @@ AnsCheck:{
 		var result = true;
 		var paths = this.board.paths;
 		for(var r=0;r<paths.length;r++){
-			var blist = paths[r].blist;
+			var blist = paths[r].objs;
 			if(func(blist.cellinside())){ continue;}
 
 			result = false;
