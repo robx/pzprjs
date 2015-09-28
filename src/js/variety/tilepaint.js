@@ -111,7 +111,8 @@ BoardExec:{
 },
 
 AreaRoomManager:{
-	enabled : true
+	enabled : true,
+	isvalid : function(cell){ return (!cell.is51cell());}
 },
 
 Flags:{
