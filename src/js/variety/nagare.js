@@ -107,11 +107,107 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	windbase : 0, /* このセルから風が吹いているか(1,2,4,8) or 風をガードしているか(16) */
 	wind : 0, /* セルに風が吹いているかどうか判定するためのパラメータ (qdir値とは別) */
 			  /* 0-15:2進数の4桁がそれぞれ風の吹いてくる向きを表す 4方向から風が吹くと15 */
 
 	// 線を引かせたくないので上書き
-	noLP : function(dir){ return this.ques===1;}
+	noLP : function(dir){ return this.ques===1;},
+
+	posthook : {
+		ques : function(num){ this.setWindAround();},
+		qdir : function(num){ this.setWindAround();}
+	},
+
+	initWind : function(){
+		this.wind = 0;
+		if(this.ques===1){ return;}
+		var cell2, d = new this.klass.ViewRange(this.bx, this.by, function(cell){ return cell.ques!==0;});
+		cell2=this.board.getc(d.x0,d.y2+2); if(cell2.ques===1 && cell2.qdir===cell2.UP){ this.wind|=1;}
+		cell2=this.board.getc(d.x0,d.y1-2); if(cell2.ques===1 && cell2.qdir===cell2.DN){ this.wind|=2;}
+		cell2=this.board.getc(d.x2+2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.LT){ this.wind|=4;}
+		cell2=this.board.getc(d.x1-2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.RT){ this.wind|=8;}
+	},
+
+	calcWindBase : function(){
+		var old = this.windbase;
+		this.windbase = 0;
+		if(this.ques===1){ this.windbase |= 16|[0,1,2,4,8][this.qdir];}
+		return old^this.windbase;
+	},
+	setWindAround : function(){
+		if(this.calcWindBase()===0){ return;}
+		this.initWind();
+
+		var d = new this.klass.ViewRange(this.bx, this.by, function(cell){ return cell.ques!==0;});
+		for(var n=0;n<4;n++){
+			var dir = n+1;
+			var clist = d.getdirclist(dir);
+			var blist = d.getdirblist(dir);
+			var wind = (1<<n), wind1 = (((this.windbase&(16|wind))===(16|wind)) ? wind : 0);
+			for(var i=0; i<clist.length; i++){ clist[i].wind=clist[i].wind&(~wind)|wind1;}
+			for(var i=0; i<blist.length; i++){ blist[i].wind=blist[i].wind&(~wind)|wind1;}
+		}
+	}
+},
+Range:{
+	x1:-1,
+	y1:-1,
+	x2:-1,
+	y2:-1
+},
+"RectRange:Range":{
+	cellinside : function(){
+		return this.board.cellinside(this.x1,this.y1,this.x2,this.y2);
+	},
+	borderinside : function(){
+		return this.board.borderinside(this.x1,this.y1,this.x2,this.y2);
+	}
+},
+"ViewRange:Range":{
+	initialize : function(bx,by,func){
+		this.x0 = bx;
+		this.y0 = by;
+		if(!!func){ this.search(func);}
+	},
+	search : function(func){
+		var cell0 = this.board.getc(this.x0,this.y0), cell, cell2, adc=cell0.adjacent;
+		cell=cell0; cell2=adc.left;   while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.left;  } this.x1=cell.bx;
+		cell=cell0; cell2=adc.right;  while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.right; } this.x2=cell.bx;
+		cell=cell0; cell2=adc.top;    while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.top;   } this.y1=cell.by;
+		cell=cell0; cell2=adc.bottom; while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.bottom;} this.y2=cell.by;
+	},
+	
+	getdirclist : function(dir){
+		return this.getdirrange(dir).cellinside();
+	},
+	getdirblist : function(dir){
+		return this.getdirrange(dir).borderinside();
+	},
+	getdirrange : function(dir){
+		var range = new this.klass.RectRange();
+		if(dir===1){
+			range.x1 = range.x2 = this.x0;
+			range.y1 = this.y1;
+			range.y2 = this.y0-2;
+		}
+		else if(dir===2){
+			range.x1 = range.x2 = this.x0;
+			range.y1 = this.y0+2;
+			range.y2 = this.y2;
+		}
+		else if(dir===3){
+			range.x1 = this.x1;
+			range.x2 = this.x0-2;
+			range.y1 = range.y2 = this.y0;
+		}
+		else if(dir===4){
+			range.x1 = this.x0+2;
+			range.x2 = this.x2;
+			range.y1 = range.y2 = this.y0;
+		}
+		return range;
+	}
 },
 Border:{
 	wind : 0, /* 逆に進んでいないか判定するためのパラメータ (qdir値とは別) */
@@ -125,101 +221,22 @@ Border:{
 Board:{
 	hasborder : 1,
 
-	generateWind : function(){
-		for(var i=0;i<this.cellmax;i++){ this.cell[i].wind = 0;}
+	resetInfo : function(){
+		this.initWind();
+		pzpr.common.Board.prototype.resetInfo.call(this);
+	},
+
+	initWind : function(){
 		for(var i=0;i<this.bdmax;i++){ this.border[i].wind = 0;}
-		this.puzzle.checker.checkRowsColsPartly(this.setWind, function(cell){ return cell.ques===1;}, null);
-	},
-	setWind : function(clist, info){
-		var bd = this.board; /* this=ansになってしまうので修正  */
-		var d = clist.getRectSize();
-		var cell1 = (info.isvert ? bd.getc(d.x1,d.y1-2) : bd.getc(d.x1-2,d.y1));
-		var cell2 = (info.isvert ? bd.getc(d.x2,d.y2+2) : bd.getc(d.x2+2,d.y2));
-		var isdir1 = cell1.qdir===(info.isvert?cell1.DN:cell1.RT);
-		var isdir2 = cell2.qdir===(info.isvert?cell1.UP:cell1.LT);
-		if(isdir1 || isdir2){
-			var wind = 0;
-			if(isdir1 && isdir2){ wind = (info.isvert ? 3 : 12);} /* 向かい合わせに風が吹いている */
-			else if(isdir1){ wind = (info.isvert ? 2 : 8);}
-			else if(isdir2){ wind = (info.isvert ? 1 : 4);}
-			
-			for(var i=0; i<clist.length; i++){ clist[i].wind += wind;}
-			if(!cell1.isnull){ cell1.wind += wind;}
-			if(!cell2.isnull){ cell2.wind += wind;}
-			
-			var blist = bd.borderinside(d.x1, d.y1, d.x2, d.y2);
-			for(var i=0; i<blist.length; i++){ blist[i].wind += wind;}
+		for(var c=0;c<this.cellmax;c++){
+			var cell = this.cell[c];
+			cell.wind = 0;
+			cell.windbase = 0;
 		}
-		return true;
-	},
-
-	getTraceInfo : function(){
-		var traces = [];
-		var clist = this.board.cell.filter(function(cell){ return cell.lcnt>0;});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], adb = cell.adjborder;
-			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];
-			for(var a=0;a<4;a++){
-				var firstbd = dir4bd[a];
-				if(firstbd.isnull){ continue;}
-
-				var info;
-				var info1 = this.searchTraceInfo(cell, (a+1));
-				var info2 = this.searchTraceInfo(info1.cells[1], info1.dir2);
-				
-				/* 矢印に反した数が少ない方を優先して出力する */
-				var invc1 = info1.clist.length;
-				var invc2 = info2.clist.length;
-				if     (invc1 < invc2){ info = info1;}
-				else if(invc1 > invc2){ info = info2;}
-				else{
-					/* 矢印が同じ場合、風に反した数が少ない方を優先して出力 */
-					var invb1 = info1.blist.length;
-					var invb2 = info2.blist.length;
-					info = (invb1 < invb2 ? info1 : info2);
-				}
-				traces.push(info);
-			}
+		for(var c=0;c<this.cellmax;c++){
+			var cell = this.cell[c];
+			if(cell.ques===1&&cell.qdir!==0){ cell.setWindAround();}
 		}
-		return traces;
-	},
-	searchTraceInfo : function(cell1, dir){
-		var info = {
-			clist : (new this.klass.CellList()),	// 風に反して進んだセル
-			blist : (new this.klass.BorderList()),	// 風に反して進んだLine
-			cells : [cell1, null],	// 出発したセル、到達したセル
-			dir1 : dir,
-			dir2 : 0
-		};
-		if(cell1===null||cell1.isnull){ return info;}
-
-		var pos = cell1.getaddr(), c = 0, n = 0;
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = info.cells[1] = pos.getc();
-				if(cell1===cell){ break;} // 一周して戻ってきた
-
-				if(cell.qdir!==cell.NDIR && cell.qdir!==dir){ info.clist[c++] = cell;}
-
-				var adb = cell.adjborder;
-				if     (cell.lcnt!==2){ break;}
-				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
-				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
-				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
-				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
-			}
-			else{
-				var border = pos.getb();
-				if(!border.isLine()){ break;} // 途切れてたら終了
-
-				if(border.wind&(15^[0,1,2,4,8][dir])){ info.blist[n++] = border;}
-			}
-		}
-		info.clist.length = c;
-		info.blist.length = n;
-		info.dir2 = [0,2,1,4,3][dir];
-		return info;
 	}
 },
 
@@ -408,24 +425,10 @@ AnsCheck:{
 		"checkOneLoop"
 	],
 
-	getTraceInfo : function(){
-		this.generateWind();
-		return (this._info.trace = this._info.trace || this.board.getTraceInfo());
-	},
-
-	generateWind : function(){
-		if(!this._info.wind){
-			this.board.generateWind();
-			this._info.wind = true;
-		}
-	},
-
 	checkBothSideWind : function(){
-		this.generateWind();
-		this.checkAllCell(function(cell){ return cell.ques===1 && ((cell.wind&3)===3 || (cell.wind&12)===12);}, "windBothSide");
+		this.checkAllCell(function(cell){ return cell.ques===0 && ((cell.wind&3)===3 || (cell.wind&12)===12);}, "windBothSide");
 	},
 	checkArrowAgainst : function(){
-		this.generateWind();
 		var boardcell = this.board.cell;
 		for(var i=0;i<boardcell.length;i++){
 			var cell = boardcell[i], arwind = (cell.wind&(15^[0,1,2,4,8][cell.qdir]));
@@ -437,7 +440,6 @@ AnsCheck:{
 		}
 	},
 	checkAcrossWind : function(){
-		this.generateWind();
 		var boardcell = this.board.cell;
 		for(var i=0;i<boardcell.length;i++){
 			var cell = boardcell[i];
@@ -503,6 +505,73 @@ AnsCheck:{
 		if(wind&2){ cell2=border.sidecell[0]; while(!cell2.isnull){ if(cell2.ques===1){ cell2.seterr(1); break;} cell2=cell2.adjacent.top;   } }
 		if(wind&4){ cell2=border.sidecell[1]; while(!cell2.isnull){ if(cell2.ques===1){ cell2.seterr(1); break;} cell2=cell2.adjacent.right; } }
 		if(wind&8){ cell2=border.sidecell[0]; while(!cell2.isnull){ if(cell2.ques===1){ cell2.seterr(1); break;} cell2=cell2.adjacent.left;  } }
+	},
+
+	getTraceInfo : function(){
+		if(this._info.trace){ return this._info.trace;}
+		var traces = [];
+		for(var i=0;i<this.board.paths.length;i++){
+			traces.push(this.searchTraceInfo(this.board.paths[i]));
+		}
+		return (this._info.trace = traces);
+	},
+	searchTraceInfo : function(path){
+		var clist_sub = path.objs.cellinside().filter(function(cell){ return cell.lcnt!==2;});
+		var startcell = (clist_sub.length===0 ? path.objs[0].lineedge[0] : clist_sub[0]);
+		var dir = startcell.getdir(startcell.seglist[0],1);
+		var pos = startcell.getaddr();
+
+		var clist1 = [], clist2 = [], blist1 = [], blist2 = [];
+		var info = {
+			clist : (new this.klass.CellList()),   // 風に反して進んだセル
+			blist : (new this.klass.BorderList())  // 風に反して進んだLine
+		};
+		var step = 0;
+
+		while(1){
+			if(pos.oncell()){
+				var cell = pos.getc();
+
+				if(step>0 && cell===startcell){ break;} // 一周して戻ってきた
+
+				if(cell.qdir!==cell.NDIR){
+					if(cell.qdir===dir){ clist1.push(cell);}
+					else               { clist2.push(cell);}
+				}
+
+				var adb = cell.adjborder;
+				if     (step>0 && cell.lcnt!==2){ break;}
+				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+			}
+			else{
+				var border = pos.getb();
+				if(!border.isLine()){ break;} // 途切れてたら終了
+
+				if(border.wind!==0){
+					if(border.wind&([0,1,2,4,8][dir])){ blist1.push(border);}
+					else                              { blist2.push(border);}
+				}
+			}
+
+			pos.movedir(dir,1);
+			step++;
+		}
+
+		/* 矢印に反した数が少ない方を優先して出力する */
+		var choice = 1;
+		if     (clist1.length < clist2.length){ choice = 1;}
+		else if(clist1.length > clist2.length){ choice = 2;}
+		/* 矢印が同じ場合、風に反した数が少ない方を優先して出力 */
+		else{
+			choice = (blist1.length < blist2.length ? 1 : 2);
+		}
+		info.clist.extend(choice===1 ? clist1 : clist2);
+		info.blist.extend(choice===1 ? blist1 : blist2);
+
+		return info;
 	}
 },
 
