@@ -153,9 +153,9 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true,
+LineGraph:{
+	enabled : true,
+	isLineCross : true,
 	makeClist : true,
 
 	iscrossing : function(cell){ return cell.noNum();}
@@ -320,6 +320,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkCrossConnectLine",
 		"checkCellNumberNotOver",
 		"checkConnectAllNumber",
 		"checkCellNumberNotLess"

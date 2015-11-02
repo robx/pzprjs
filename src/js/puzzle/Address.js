@@ -2,7 +2,7 @@
 
 pzpr.classmgr.makeCommon({
 //----------------------------------------------------------------------------
-// ★Positionクラス RawAddress, Pieceクラスのベースクラス
+// ★Positionクラス Address, Pieceクラスのベースクラス
 //---------------------------------------------------------------------------
 Position:{
 	bx : null,
@@ -35,7 +35,7 @@ Position:{
 	relcell   : function(dx,dy){ return this.board.getc(this.bx+dx,this.by+dy);},
 	relcross  : function(dx,dy){ return this.board.getx(this.bx+dx,this.by+dy);},
 	relbd     : function(dx,dy){ return this.board.getb(this.bx+dx,this.by+dy);},
-//	relexcell : function(dx,dy){ return this.board.getex(this.bx+dx,this.by+dy);}, // 未使用
+	relexcell : function(dx,dy){ return this.board.getex(this.bx+dx,this.by+dy);},
 	relobj    : function(dx,dy){ return this.board.getobj(this.bx+dx,this.by+dy);},
 
 	//---------------------------------------------------------------------------
@@ -65,6 +65,7 @@ Position:{
 
 	//---------------------------------------------------------------------------
 	// pos.getdir() 指定されたPositionがどの方向にいるか判定する
+	// pos.getvert() 指定されたPositionが縦か横か判定する
 	//---------------------------------------------------------------------------
 	getdir : function(pos, diff){
 		var dx = (pos.bx-this.bx), dy = (pos.by-this.by);
@@ -73,6 +74,12 @@ Position:{
 		else if(dx===-diff && dy===    0){ return this.LT;}
 		else if(dx=== diff && dy===    0){ return this.RT;}
 		return this.NDIR;
+	},
+	getvert : function(pos, diff){
+		var dir = this.getdir(pos, diff);
+		if     (dir===this.UP || dir===this.DN){ return true;}
+		else if(dir===this.LT || dir===this.RT){ return false;}
+		return void 0;
 	},
 
 	//---------------------------------------------------------------------------
@@ -95,9 +102,9 @@ Position:{
 },
 
 //----------------------------------------------------------------------------
-// ★RawAddressクラス (bx,by)座標を扱う ※端数あり
+// ★Addressクラス (bx,by)座標を扱う
 //---------------------------------------------------------------------------
-"RawAddress:Position":{
+"Address:Position":{
 	initialize : function(bx,by){
 		if(arguments.length>=2){ this.init(bx,by);}
 	},
@@ -108,6 +115,22 @@ Position:{
 	set  : function(addr) { this.bx = addr.bx; this.by = addr.by; return this;},
 	init : function(bx,by){ this.bx  = bx; this.by  = by; return this;},
 	move : function(dx,dy){ this.bx += dx; this.by += dy; return this;},
+
+	//---------------------------------------------------------------------------
+	// oncell(), oncross(), onborder()  オブジェクトが存在する位置にいるかどうかを返す
+	//---------------------------------------------------------------------------
+	oncell   : function(){ return !!( (this.bx&1)&& (this.by&1));},
+	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
+	onborder : function(){ return !!((this.bx+this.by)&1);},
+
+	//---------------------------------------------------------------------------
+	// getc(), getx(), getb(), getex(), getobj() Positionに存在するオブジェクトを返す
+	//---------------------------------------------------------------------------
+	getc  : function(){ return this.board.getc(this.bx, this.by);},
+	getx  : function(){ return this.board.getx(this.bx, this.by);},
+	getb  : function(){ return this.board.getb(this.bx, this.by);},
+	getex : function(){ return this.board.getex(this.bx, this.by);},
+	getobj: function(){ return this.board.getobj(this.bx, this.by);},
 
 	//---------------------------------------------------------------------------
 	// addr.movedir() 指定した方向に指定した数移動する
@@ -124,18 +147,8 @@ Position:{
 },
 
 //----------------------------------------------------------------------------
-// ★Addressクラス (bx,by)座標を扱う ※端数無し
+// ★RawAddressクラス (bx,by)座標を扱う ※端数あり
 //---------------------------------------------------------------------------
-// Addressクラス
-'Address:RawAddress':{
-	oncell   : function(){ return !!( (this.bx&1)&& (this.by&1));},
-	oncross  : function(){ return !!(!(this.bx&1)&&!(this.by&1));},
-	onborder : function(){ return !!((this.bx+this.by)&1);},
-	
-	getc  : function(){ return this.board.getc(this.bx, this.by);},
-	getx  : function(){ return this.board.getx(this.bx, this.by);},
-	getb  : function(){ return this.board.getb(this.bx, this.by);},
-	getex : function(){ return this.board.getex(this.bx, this.by);},
-	getobj: function(){ return this.board.getobj(this.bx, this.by);}
+"RawAddress:Address":{
 }
 });

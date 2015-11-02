@@ -119,9 +119,8 @@ Board:{
 		this.puzzle.cursor.setminmax();
 	},
 
-	getc : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+	getc : function(bx,by){
+		var id = null, qc=this.qcols;
 		if(bx>=this.minbx+1 && bx<=this.maxbx-1 && by>=this.minby+1 && by<=this.maxby-1){
 			var cy = (by>>1);	// 上から数えて何段目か(0～qrows-1)
 			if     (this.shape===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
@@ -132,8 +131,8 @@ Board:{
 
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
-	getobj : function(bx,by,qc,qr){
-		return this.getc(bx,by,qc,qr);
+	getobj : function(bx,by){
+		return this.getc(bx,by);
 	},
 	cellinside : function(x1,y1,x2,y2){
 		var clist = new this.klass.CellList();

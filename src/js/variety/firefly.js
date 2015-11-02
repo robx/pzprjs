@@ -56,8 +56,8 @@ BoardExec:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
+LineGraph:{
+	enabled : true,
 	makeClist : true
 },
 

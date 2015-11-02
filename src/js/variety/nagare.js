@@ -240,8 +240,8 @@ Board:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true
+LineGraph:{
+	enabled : true
 },
 
 BoardExec:{
@@ -510,15 +510,16 @@ AnsCheck:{
 	getTraceInfo : function(){
 		if(this._info.trace){ return this._info.trace;}
 		var traces = [];
-		for(var i=0;i<this.board.paths.length;i++){
-			traces.push(this.searchTraceInfo(this.board.paths[i]));
+		for(var i=0;i<this.board.linegraph.components.length;i++){
+			traces.push(this.searchTraceInfo(this.board.linegraph.components[i]));
 		}
 		return (this._info.trace = traces);
 	},
 	searchTraceInfo : function(path){
-		var clist_sub = path.objs.cellinside().filter(function(cell){ return cell.lcnt!==2;});
-		var startcell = (clist_sub.length===0 ? path.objs[0].lineedge[0] : clist_sub[0]);
-		var dir = startcell.getdir(startcell.seglist[0],1);
+		var blist = new this.klass.BorderList(path.getedgeobjs());
+		var clist_sub = blist.cellinside().filter(function(cell){ return cell.lcnt!==2;});
+		var startcell = (clist_sub.length===0 ? blist[0].sideobj[0] : clist_sub[0]);
+		var dir = startcell.getdir(startcell.pathnodes[0].nodes[0].obj,2);
 		var pos = startcell.getaddr();
 
 		var clist1 = [], clist2 = [], blist1 = [], blist2 = [];

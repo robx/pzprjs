@@ -82,12 +82,11 @@ BorderInfo:{
 	},
 	addPathByBlist : function(blist){
 		var pathid = ++this.max;
-		var path = this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid};
+		var path = this.path[pathid] = {blist:(new this.klass.BorderList(blist)), id:pathid};
 
 		for(var i=0;i<blist.length;i++){
 			this.id[blist[i].id] = pathid;
 		}
-		path.blist.extend(blist);
 		return path;
 	},
 	addPathByPath : function(path){

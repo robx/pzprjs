@@ -116,9 +116,9 @@ BoardExec:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
+LineGraph:{
+	enabled : true,
+	isLineCross : true
 },
 
 Flags:{
@@ -293,9 +293,9 @@ AnsCheck:{
 	},
 	checkAllLoops : function(func, code){
 		var result = true;
-		var paths = this.board.paths;
+		var paths = this.board.linegraph.components;
 		for(var r=0;r<paths.length;r++){
-			var blist = paths[r].objs;
+			var blist = new this.klass.BorderList(paths[r].getedgeobjs());
 			if(func(blist.cellinside())){ continue;}
 
 			result = false;

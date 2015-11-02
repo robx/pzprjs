@@ -133,7 +133,7 @@ MouseEvent:{
 				pix.py += 2 * pc.bh;
 			}
 		}
-		return new puzzle.klass.RawAddress((pix.px-pc.x0)/pc.bw, (pix.py-pc.y0)/pc.bh);
+		return new puzzle.klass.Address((pix.px-pc.x0)/pc.bw, (pix.py-pc.y0)/pc.bh);
 	},
 
 	//---------------------------------------------------------------------------
@@ -224,8 +224,8 @@ MouseEvent:{
 
 		// 真ん中のあたりはどこにも該当しないようにする
 		var bd = this.board;
-		if(bd.linemgr.isLineCross){
-			if(!bd.linemgr.borderAsLine){
+		if(bd.linegraph.isLineCross){
+			if(!bd.borderAsLine){
 				var m1=2*spc, m2=2*(1-spc);
 				if((dx<m1||m2<dx) && (dy<m1||m2<dy)){ return bd.emptyborder;}
 			}

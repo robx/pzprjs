@@ -153,47 +153,47 @@ BoardExec:{
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
 	},
-	expandGroup : function(type,key){
+	expandGroup : function(group,key){
 		var bd = this.board;
-		var margin = bd.initGroup(type, bd.qcols, bd.qrows);
-		var group = bd.getGroup(type);
-		var group2 = new group.constructor();
-		bd.setposGroup(type);
-		for(var i=group.length-1;i>=0;i--){
-			var piece = group[i];
+		var margin = bd.initGroup(group, bd.qcols, bd.qrows);
+		var groups = bd.getGroup(group);
+		var groups2 = new groups.constructor();
+		bd.setposGroup(group);
+		for(var i=groups.length-1;i>=0;i--){
+			var piece = groups[i];
 			if(this.isdel(key,piece)){
-				piece = bd.newObject(type, i);
-				group[i] = piece;
-				group2.add(piece);
+				piece = bd.newObject(group, i);
+				groups[i] = piece;
+				groups2.add(piece);
 				margin--;
 			}
-			else if(margin>0){ group[i] = group[i-margin];}
+			else if(margin>0){ groups[i] = groups[i-margin];}
 		}
-		group2.allclear(false);
+		groups2.allclear(false);
 
-		if(type==='border'){ this.expandborder(key);}
+		if(group==='border'){ this.expandborder(key);}
 	},
-	reduceGroup : function(type,key){
+	reduceGroup : function(group,key){
 		var bd = this.board;
-		if(type==='border'){ this.reduceborder(key);}
+		if(group==='border'){ this.reduceborder(key);}
 
-		var margin=0, group = bd.getGroup(type), group2 = new group.constructor();
-		for(var i=0;i<group.length;i++){
-			var piece = group[i];
+		var margin=0, groups = bd.getGroup(group), groups2 = new groups.constructor();
+		for(var i=0;i<groups.length;i++){
+			var piece = groups[i];
 			if(this.isdel(key,piece)){
 				piece.id = i;
-				group2.add(piece);
+				groups2.add(piece);
 				margin++;
 			}
-			else if(margin>0){ group[i-margin] = group[i];}
+			else if(margin>0){ groups[i-margin] = groups[i];}
 		}
 		var opemgr = this.puzzle.opemgr;
 		if(!opemgr.undoExec && !opemgr.redoExec){
 			opemgr.forceRecord = true;
-			group2.allclear(true);
+			groups2.allclear(true);
 			opemgr.forceRecord = false;
 		}
-		for(var i=0;i<margin;i++){ group.pop();}
+		for(var i=0;i<margin;i++){ groups.pop();}
 	},
 	isdel : function(key,piece){
 		return !!this.insex[piece.group][this.distObj(key,piece)];
@@ -224,41 +224,41 @@ BoardExec:{
 		this.adjustBoardData2(key,d);
 		bd.enableInfo();
 	},
-	turnflipGroup : function(type,key,d){
+	turnflipGroup : function(group,key,d){
 		var bd = this.board;
-		if(type==='excell' && bd.hasexcell===1 && (key & this.FLIP)){
+		if(group==='excell' && bd.hasexcell===1 && (key & this.FLIP)){
 			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
 			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
 			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
 			d = d2;
 		}
 
-		var ch=[], objlist=bd.objectinside(type,d.x1,d.y1,d.x2,d.y2);
+		var ch=[], objlist=bd.objectinside(group,d.x1,d.y1,d.x2,d.y2);
 		for(var i=0;i<objlist.length;i++){ ch[objlist[i].id]=false;}
 
-		var group = bd.getGroup(type);
+		var groups = bd.getGroup(group);
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		for(var source=0;source<group.length;source++){
+		for(var source=0;source<groups.length;source++){
 			if(ch[source]!==false){ continue;}
 
-			var tmp = group[source], target = source, next;
+			var tmp = groups[source], target = source, next;
 			while(ch[target]===false){
 				ch[target]=true;
 				// nextになるものがtargetに移動してくる、、という考えかた。
 				// ここでは移動前のIDを取得しています
 				switch(key){
-					case this.FLIPY: next = bd.getObjectPos(type, group[target].bx, yy-group[target].by).id; break;
-					case this.FLIPX: next = bd.getObjectPos(type, xx-group[target].bx, group[target].by).id; break;
-					case this.TURNR: next = bd.getObjectPos(type, group[target].by, xx-group[target].bx, bd.qrows, bd.qcols).id; break;
-					case this.TURNL: next = bd.getObjectPos(type, yy-group[target].by, group[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.FLIPY: next = bd.getObjectPos(group, groups[target].bx, yy-groups[target].by).id; break;
+					case this.FLIPX: next = bd.getObjectPos(group, xx-groups[target].bx, groups[target].by).id; break;
+					case this.TURNR: next = bd.getObjectPosEx(group, groups[target].by, xx-groups[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.TURNL: next = bd.getObjectPosEx(group, yy-groups[target].by, groups[target].bx, bd.qrows, bd.qcols).id; break;
 				}
 
 				if(ch[next]===false){
-					group[target] = group[next];
+					groups[target] = groups[next];
 					target = next;
 				}
 				else{
-					group[target] = tmp;
+					groups[target] = tmp;
 					break;
 				}
 			}
@@ -285,7 +285,7 @@ BoardExec:{
 	// bd.exec.reduceborder() 盤面の縮小時、線を移動する
 	//---------------------------------------------------------------------------
 	expandborder : function(key){
-		var bd = this.board, bdAsLine = bd.linemgr.borderAsLine;
+		var bd = this.board, bdAsLine = bd.borderAsLine;
 		// borderAsLineじゃないUndo時は、後でオブジェクトを代入するので下の処理はパス
 		if(bdAsLine || !bd.puzzle.opemgr.undoExec){
 			var group2 = new this.klass.BorderList();
@@ -306,7 +306,7 @@ BoardExec:{
 	},
 	reduceborder : function(key){
 		var bd = this.board;
-		if(bd.linemgr.borderAsLine){
+		if(bd.borderAsLine){
 			for(var id=0;id<bd.bdmax;id++){
 				var border = bd.border[id];
 				if(this.distObj(key,border)!==0){ continue;}
@@ -325,7 +325,7 @@ BoardExec:{
 	copyBorder : function(border1,border2){
 		border1.ques  = border2.ques;
 		border1.qans  = border2.qans;
-		if(this.board.linemgr.borderAsLine){
+		if(this.board.borderAsLine){
 			border1.line  = border2.line;
 			border1.qsub  = border2.qsub;
 		}

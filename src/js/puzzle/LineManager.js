@@ -1,12 +1,11 @@
-// LineManager.js v3.4.1
+// LineManager.js
 
 //---------------------------------------------------------------------------
-// ★LineManagerクラス 主に色分けの情報を管理する
+// ★GraphBaseクラス 線や領域情報を管理する
 //---------------------------------------------------------------------------
-// LineManagerクラスの定義
+// GraphBaseクラスの定義
 pzpr.classmgr.makeCommon({
-//---------------------------------------------------------
-LineManagerBase:{
+GraphBase:{
 	init : function(){
 		if(this.enabled){
 			var info = this.board.validinfo;
@@ -17,345 +16,605 @@ LineManagerBase:{
 			this.init2();
 		}
 	},
+
 	init2 : function(){},
 	enabled : false,
-	relation : ['line'],
-
-	isLineCross : false,	// 線が交差するパズル
-
-	ltotal : null,			// 線が0〜本引いてあるセル/交点がいくつあるか保持している
-
+	relation : [],
+	
+	pointgroup : '',
+	linkgroup  : '',
+	
 	//--------------------------------------------------------------------------------
-	// linemgr.isvalid()    そのセルが有効かどうか返す
-	// linemgr.iscrossing() そのセルで交差するかどうか返す
+	// graph.removeFromArray()    Arrayからitemを取り除く
 	//--------------------------------------------------------------------------------
-	isvalid : function(border){
-		return border.isLine();
+	removeFromArray : function(array, item){
+		var idx = array.indexOf(item);
+		if(idx>=0){ Array.prototype.splice.call(array, idx, 1);}
 	},
-	iscrossing : function(){
-		return this.isLineCross;
-	},
-
+		
+	//--------------------------------------------------------------------------------
+	// graph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
+	// graph.isedgeexists()        linkobjにedgeが存在するか判定する
+	// 
+	// graph.getObjNodeList()      objにあるnodeを取得する
+	// graph.resetObjNodeList()    objからnodeをクリアする
+	//--------------------------------------------------------------------------------
+	setComponentRefs : function(obj, component){},
+	isedgeexists : function(linkobj){ return false;},
+	
+	getObjNodeList   : function(nodeobj){ return [];},
+	resetObjNodeList : function(nodeobj){ },
+	
+	//--------------------------------------------------------------------------------
+	// graph.isnodevalid()  そのセルにNodeが存在すべきかどうか返す
+	// graph.isedgevalid()  そのborderにEdgeが存在すべきかどうか返す
+	//--------------------------------------------------------------------------------
+	isnodevalid : function(nodeobj){ return false;},
+	isedgevalid : function(linkobj){ return false;},
+	
 	//---------------------------------------------------------------------------
-	// linemgr.reset()       lcnts等の変数の初期化を行う
-	// linemgr.rebuild()     既存の情報からデータを再設定する
-	// linemgr.newIrowake()  線の情報が再構築された際、線に色をつける
+	// graph.reset()    lcnts等の変数の初期化を行う
+	// graph.rebuild()  既存の情報からデータを再設定する
+	// graph.rebuild2() 継承先に固有のデータを設定する
 	//---------------------------------------------------------------------------
 	reset : function(){
-		this.board.paths = [];
-		for(var c=0;c<this.targetgroup.length;c++){
-			this.targetgroup[c].lcnt=0;
-			this.targetgroup[c].seglist=new this.PieceList();
-		}
-		this.ltotal=[this.targetgroup.length];
-		this.initExtraData(this.basegroup);
-
 		this.rebuild();
 	},
+	rebuildmode : false,
 	rebuild : function(){
 		if(!this.enabled){ return;}
 
-		var blist = new this.PieceList();
-		for(var id=0;id<this.basegroup.length;id++){
-			var border = this.basegroup[id];
-			border.path = null;
-			if(this.isvalid(border)){
-				blist.add(border);
-				this.incdecLineCount(border, true);
+		this.rebuildmode = true;
+
+		this.components  = [];
+		this.modifyNodes = [];
+
+		this.rebuild2();
+
+		this.searchGraph();
+
+		this.rebuildmode = false;
+	},
+	rebuild2 : function(){
+		var nodeobjs = this.board[this.pointgroup], linkobjs = this.board[this.linkgroup];
+		for(var c=0;c<nodeobjs.length;c++){
+			this.setComponentRefs(nodeobjs[c], null);
+			this.resetObjNodeList(nodeobjs[c]);
+			if(this.isnodevalid(nodeobjs[c])){ this.createNode(nodeobjs[c]);}
+		}
+		if(this.linkgroup){
+			for(var id=0;id<linkobjs.length;id++){
+				this.setComponentRefs(linkobjs[id], null);
+				if(this.isedgevalid(linkobjs[id])){ this.addEdgeByLinkObj(linkobjs[id]);}
 			}
 		}
-
-		this.searchLine(blist);
-		if(this.puzzle.flags.irowake){ this.newIrowake();}
-		this.resetExtraData();
+		else{ }
 	},
-	newIrowake : function(){
-		var paths = this.board.paths;
-		for(var i=0;i<paths.length;i++){
-			paths[i].color = this.puzzle.painter.getNewLineColor();
+
+	//---------------------------------------------------------------------------
+	// graph.createComponent()  GraphComponentオブジェクトを作成する
+	// graph.deleteComponent()  GraphComponentオブジェクトを削除してNodeをmodifyNodesに戻す
+	//---------------------------------------------------------------------------
+	createComponent : function(){
+		var component = new this.klass.GraphComponent();
+		this.components.push(component);
+		return component;
+	},
+	deleteComponent : function(component){
+		for(var i=0;i<component.nodes.length;i++){
+			this.modifyNodes.push(component.nodes[i]);
+			this.setComponentRefs(component.nodes[i].obj, null);
+			component.nodes[i].component = null;
 		}
+		this.removeFromArray(this.components, component);
 	},
 
 	//---------------------------------------------------------------------------
-	// linemgr.incdecLineCount() 線が引かれたり消された時に、lcnt変数, seglistを生成し直す
+	// graph.createNode()    GraphNodeオブジェクトを生成する
+	// graph.deleteNode()    GraphNodeオブジェクトをグラフから削除する (先にEdgeを0本にしてください)
 	//---------------------------------------------------------------------------
-	incdecLineCount : function(border, isset){
-		for(var i=0;i<2;i++){
-			var obj = border.lineedge[i];
-			if(!obj.isnull){
-				this.ltotal[obj.lcnt]--;
-				if(isset){ obj.lcnt++; obj.seglist.add(border);}
-				else     { obj.lcnt--; obj.seglist.remove(border);}
-				this.ltotal[obj.lcnt] = (this.ltotal[obj.lcnt] || 0) + 1;
+	createNode : function(cell){
+		var node = new this.klass.GraphNode(cell);
+		this.getObjNodeList(cell).push(node);
+		this.modifyNodes.push(node);
+		return node;
+	},
+	deleteNode : function(node){
+		var cell = node.obj;
+		this.setComponentRefs(cell, null);
+		this.removeFromArray(this.getObjNodeList(cell), node);
+		
+		// rebuildmode中にはこの関数は呼ばれません
+		this.removeFromArray(this.modifyNodes, node);
+		var component = node.component;
+		if(component!==null){
+			this.removeFromArray(component.nodes, node);
+			this.resetExtraData(cell);
+			if(component.nodes.length===0){
+				this.deleteComponent(component);
 			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// linemgr.setLine()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// linegraph.createNodeIfEmpty()  指定されたオブジェクトの場所にNodeを生成する
+	// linegraph.deleteNodeIfEmpty()  指定されたオブジェクトの場所からNodeを除去する
+	//---------------------------------------------------------------------------
+	createNodeIfEmpty : function(nodeobj, linkobj){
+		// 周囲のNode生成が必要かもしれないのでチェック＆create
+		if(this.getObjNodeList(nodeobj).length===0){
+			this.createNode(nodeobj);
+		}
+	},
+	deleteNodeIfEmpty : function(nodeobj, linkobj){
+		var nodes = this.getObjNodeList(nodeobj);
+		
+		// 周囲のNodeが消えるかもしれないのでチェック＆remove
+		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(nodeobj)){
+			this.deleteNode(nodes[0]);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.addEdge()    Node間にEdgeを追加する
+	// graph.removeEdge() Node間からEdgeを除外する
+	//---------------------------------------------------------------------------
+	addEdge : function(node1, node2){
+		if(node1.nodes.indexOf(node2)>=0){ return;} // 多重辺にしないため
+		node1.nodes.push(node2);
+		node2.nodes.push(node1);
+		
+		if(!this.rebuildmode){
+			if(this.modifyNodes.indexOf(node1)<0){ this.modifyNodes.push(node1);}
+			if(this.modifyNodes.indexOf(node2)<0){ this.modifyNodes.push(node2);}
+		}
+	},
+	removeEdge : function(node1, node2){
+		if(node1.nodes.indexOf(node2)<0){ return;} // 存在しない辺を削除しない
+		this.removeFromArray(node1.nodes, node2);
+		this.removeFromArray(node2.nodes, node1);
+		
+		if(!this.rebuildmode){
+			if(this.modifyNodes.indexOf(node1)<0){ this.modifyNodes.push(node1);}
+			if(this.modifyNodes.indexOf(node2)<0){ this.modifyNodes.push(node2);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.getSideObjByLinkObj() borderから接続するNodeにあるobjを取得する
+	// graph.getSideNodes()        borderからEdgeに接続するNodeを取得する
+	//---------------------------------------------------------------------------
+	getSideObjByLinkObj : function(linkobj){ return [];},
+	getSideNodes        : function(linkobj){ return [];},
+
+	//---------------------------------------------------------------------------
+	// graph.setEdgeByLinkObj() 線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	//---------------------------------------------------------------------------
+	setEdgeByLinkObj : function(linkobj){
+		var isset = this.isedgevalid(linkobj);
+		if(isset===this.isedgeexists(linkobj)){ return;}
+
+		this.modifyNodes = [];
+
+		if(isset){ this.addEdgeByLinkObj(linkobj);}
+		else     { this.removeEdgeByLinkObj(linkobj);}
+
+		this.remakeComponent();
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.addEdgeByLinkObj()    指定されたオブジェクトの場所にEdgeを生成する
+	// linegraph.removeEdgeByLinkObj() 指定されたオブジェクトの場所からEdgeを除去する
+	//---------------------------------------------------------------------------
+	addEdgeByLinkObj : function(linkobj){
+		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
+		
+		// 周囲のNodeをグラフに追加するかどうか確認する
+		this.createNodeIfEmpty(sidenodeobj[0]);
+		this.createNodeIfEmpty(sidenodeobj[1]);
+
+		// linkするNodeを取得する
+		var sidenodes = this.getSideNodes(linkobj);
+
+		// 周囲のNodeとlink
+		this.addEdge(sidenodes[0], sidenodes[1]);
+	},
+	removeEdgeByLinkObj : function(linkobj){
+		// unlinkするNodeを取得する
+		var sidenodes = this.getSideNodes(linkobj);
+
+		// 周囲のNodeとunlink
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+
+		// 周囲のNodeをグラフから取り除くかどうか確認する
+		this.deleteNodeIfEmpty(sidenodes[0].obj);
+		this.deleteNodeIfEmpty(sidenodes[1].obj);
+
+		if(this.linkgroup){
+			this.setComponentRefs(linkobj, null);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.remakeComponent() modifyNodesに含まれるsubgraph成分からremakeしたりします
+	// graph.getAffectedComponents() modifyNodesを含むcomponentsを取得します
+	// graph.checkDividedComponent() 指定されたComponentがひとつながりかどうか探索します
+	// graph.remakeMaximalComonents()指定されたcomponentsを探索し直します
+	//---------------------------------------------------------------------------
+	remakeComponent : function(){
+		// subgraph中にcomponentが何種類あるか調べる
+		var remakeComponents = this.getAffectedComponents();
+		
+		// Component数が1ならsubgraphが分断していないかどうかチェック
+		if(remakeComponents.length===1){
+			this.checkDividedComponent(remakeComponents[0]);
+		}
+		
+		// Component数が0なら現在のmodifyNodesに新規IDを割り振り終了
+		// Component数が2以上ならmodifyNodesに極大部分グラフを取り込んで再探索
+		if(this.modifyNodes.length>0){
+			this.remakeMaximalComonents(remakeComponents);
+		}
+	},
+	getAffectedComponents : function(){
+		var remakeComponents = [];
+		for(var i=0;i<this.modifyNodes.length;i++){
+			var component = this.modifyNodes[i].component;
+			if(component!==null){
+				if(!component.isremake){
+					remakeComponents.push(component);
+					component.isremake = true;
+				}
+			}
+		}
+		return remakeComponents;
+	},
+	checkDividedComponent : function(component){
+		// 1つだけsubgraphを生成してみる
+		for(var i=0,len=this.modifyNodes.length;i<len;i++){
+			var node = this.modifyNodes[i];
+			node.component = null;
+			this.setComponentRefs(node.obj, null);
+			this.removeFromArray(component.nodes, node);
+		}
+		var pseudoComponent = new this.klass.GraphComponent();
+		this.searchSingle(this.modifyNodes[0], pseudoComponent);
+		// subgraphがひとつながりならComponentに属していないNodeをそのComponentに割り当てる
+		if(pseudoComponent.nodes.length===this.modifyNodes.length){
+			for(var i=0;i<this.modifyNodes.length;i++){
+				var node = this.modifyNodes[i];
+				node.component = component;
+				this.setComponentRefs(node.obj, component);
+				component.nodes.push(node);
+			}
+			this.modifyNodes = [];
+			this.setExtraData(component);
+			delete component.isremake;
+		}
+		// subgraphがひとつながりでないなら再探索ルーチンを回す
+	},
+	remakeMaximalComonents : function(remakeComponents){
+		var longColor = this.getLongColor(remakeComponents);
+		for(var p=0;p<remakeComponents.length;p++){
+			this.deleteComponent(remakeComponents[p]);
+		}
+		var newComponents = this.searchGraph();
+		this.setLongColor(newComponents, longColor);
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.searchGraph()  ひとつながりの線にlineidを設定する
+	// graph.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	//---------------------------------------------------------------------------
+	searchGraph : function(){
+		var partslist = this.modifyNodes;
+		var newcomponents = [];
+		for(var i=0,len=partslist.length;i<len;i++){
+			partslist[i].component = null;
+		}
+		for(var i=0,len=partslist.length;i<len;i++){
+			if(partslist[i].component!==null){ continue;}	// 既にidがついていたらスルー
+			var component = this.createComponent();
+			this.searchSingle(partslist[i], component);
+			this.setExtraData(component);
+			newcomponents.push(component);
+		}
+		this.modifyNodes = [];
+		return newcomponents;
+	},
+	searchSingle : function(startparts, component){
+		var stack = [startparts];
+		while(stack.length>0){
+			var node = stack.pop();
+			if(node.component!==null){ continue;}
+
+			node.component = component;
+			component.nodes.push(node);
+
+			for(var i=0;i<node.nodes.length;i++){ stack.push(node.nodes[i]);}
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// graph.resetExtraData() 指定されたオブジェクトの拡張データをリセットする
+	// graph.setExtraData()   指定された領域の拡張データを設定する
+	//--------------------------------------------------------------------------------
+	resetExtraData : function(nodeobj){},
+	setExtraData : function(component){
+		var edges = 0;
+		for(var i=0;i<component.nodes.length;i++){
+			var node = component.nodes[i];
+			edges += node.nodes.length;
+			
+			this.setComponentRefs(node.obj, component);
+		}
+		component.circuits = (edges>>1) - component.nodes.length + 1;
+	},
+
+	//--------------------------------------------------------------------------------
+	// graph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
+	// graph.setLongColor() ブロックに色をつけなおす
+	//--------------------------------------------------------------------------------
+	getLongColor : function(components){},
+	setLongColor : function(components, longColor){}
+},
+GraphComponent:{
+	initialize : function(){
+		this.nodes = [];
+		this.color = '';
+		this.circuits = -1;
+	},
+
+	//---------------------------------------------------------------------------
+	// component.getLinkObjByNodes()  node間のオブジェクトを取得する
+	//---------------------------------------------------------------------------
+	getLinkObjByNodes : function(node1, node2){
+		var bx1=node1.obj.bx, by1=node1.obj.by, bx2=node2.obj.bx, by2=node2.obj.by;
+		if(bx1>bx2||((bx1===bx2)&&(by1>by2))){ return null;}
+		return this.board.getobj(((bx1+bx2)>>1), ((by1+by2)>>1));
+	},
+
+	//---------------------------------------------------------------------------
+	// component.getnodeobjs()  nodeのオブジェクトリストを取得する
+	// component.getedgeobjs()  edgeのオブジェクトリストを取得する
+	//---------------------------------------------------------------------------
+	getnodeobjs : function(){
+		var objs = new (this.board.getGroup(this.nodes[0].obj.group).constructor)();
+		for(var i=0;i<this.nodes.length;i++){ objs.add(this.nodes[i].obj);}
+		return objs;
+	},
+	getedgeobjs : function(){
+		var objs = [];
+		for(var i=0;i<this.nodes.length;i++){
+			var node = this.nodes[i];
+			for(var n=0;n<node.nodes.length;n++){
+				var obj = this.getLinkObjByNodes(node, node.nodes[n]);
+				if(!!obj){ objs.push(obj);}
+			}
+		}
+		return objs;
+	},
+
+	//---------------------------------------------------------------------------
+	// component.setedgeerr()   edgeにerror値を設定する
+	// component.setedgeinfo()  edgeにqinfo値を設定する
+	//---------------------------------------------------------------------------
+	setedgeerr : function(val){
+		var objs = this.getedgeobjs();
+		for(var i=0;i<objs.length;i++){ objs[i].seterr(val);}
+	},
+	setedgeinfo : function(val){
+		var objs = this.getedgeobjs();
+		for(var i=0;i<objs.length;i++){ objs[i].setinfo(val);}
+	}
+},
+GraphNode:{
+	initialize : function(obj){
+		this.obj   = obj;
+		this.nodes = [];	// Array of Linked GraphNode
+		this.component = null;
+	}
+},
+
+//---------------------------------------------------------------------------
+// ★LineManagerクラス 主に線や色分けの情報を管理する
+//---------------------------------------------------------------------------
+"LineGraph:GraphBase":{
+	initialize : function(){
+		if(this.moveline){ this.relation.push('cell');}
+	},
+	
+	enabled : false,
+	relation : ['line'],
+	
+	pointgroup : 'cell',
+	linkgroup  : 'border',
+	
+	isLineCross : false,	// 線が交差するパズル
+	
+	makeClist : false,		// 線が存在するclistを生成する
+	moveline  : false,		// 丸数字などを動かすパズル
+	
+	//--------------------------------------------------------------------------------
+	// linegraph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
+	// linegraph.isedgeexists()        linkobjにedgeが存在するか判定する
+	// 
+	// linegraph.getObjNodeList()      objにあるnodeを取得する
+	// linegraph.resetObjNodeList()    objからnodeをクリアする
+	//--------------------------------------------------------------------------------
+	setComponentRefs : function(obj, component){ obj.path = component;},
+	isedgeexists     : function(linkobj){ return linkobj.path!==null;},
+	
+	getObjNodeList   : function(nodeobj){ return nodeobj.pathnodes;},
+	resetObjNodeList : function(nodeobj){
+		nodeobj.pathnodes = [];
+		if(this.moveline){ this.resetExtraData(nodeobj);}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linegraph.isnodevalid()  そのセルにNodeが存在すべきかどうか返す
+	// linegraph.isedgevalid()  そのborderにEdgeが存在すべきかどうか返す
+	// linegraph.iscrossing()   そのセルで交差するかどうか返す
+	//--------------------------------------------------------------------------------
+	isnodevalid : function(cell)  { return cell.lcnt>0 || (this.moveline && cell.isNum());},
+	isedgevalid : function(border){ return border.isLine();},
+	iscrossing  : function(cell)  { return this.isLineCross;},
+
+	//---------------------------------------------------------------------------
+	// linegraph.rebuild2() 継承先に固有のデータを設定する
+	//---------------------------------------------------------------------------
+	rebuild2 : function(){
+		var cells = this.board[this.pointgroup];
+		this.ltotal=[cells.length];
+		for(var c=0;c<cells.length;c++){ cells[c].lcnt = 0;}
+		
+		pzpr.common.GraphBase.prototype.rebuild2.call(this);
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
+	//---------------------------------------------------------------------------
+	incdecLineCount : function(cell, isset){
+		if(!cell.isnull){
+			this.ltotal[cell.lcnt]--;
+			if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
+			this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.getSideObjByLinkObj() borderから接続するNodeにあるobjを取得する
+	// linegraph.getSideNodes()        borderからEdgeに接続するNodeを取得する
+	//---------------------------------------------------------------------------
+	getSideObjByLinkObj : function(border){
+		return border.sideobj;
+	},
+	getSideNodes : function(border){
+		var sidenodes = [], sidenodeobj = this.getSideObjByLinkObj(border);
+		for(var i=0;i<sidenodeobj.length;i++){
+			var cell = sidenodeobj[i], nodes = this.getObjNodeList(cell), node = nodes[0];
+			// 交差あり盤面の特殊処理 border.isvertはfalseの時タテヨコ線
+			if(!!nodes[1] && border.isvert){ node = nodes[1];}
+			sidenodes.push(node);
+		}
+		return sidenodes;
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.setLine()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
 	setLine : function(border){
 		if(!this.enabled){ return;}
-
-		var isset = this.isvalid(border);
-		if(isset===(border.path!==null)){ return;}
-
-		this.incdecLineCount(border, isset);
-
-		var blist = this.getaround(border);
-		if(blist.length<=1){
-			if(isset){ this.assignLineInfo(border, blist);} // 新しい線idを割り当て or 既存の線にくっつける
-			else     { this.removeLineInfo(border, blist);} // 線idの削除 or 既存の線から削除する
-		}
-		// つながる線が2つ以上ある場合 -> 分かれた線にそれぞれ新しい線idをふる
-		else{
-			this.remakeLineInfo(border, blist);
-		}
+		this.setEdgeByLinkObj(border);
 	},
 
 	//---------------------------------------------------------------------------
-	// linemgr.assignLineInfo()  指定された線を有効な線として設定する
-	// linemgr.removeLineInfo()  指定されたセルを無効なセルとして設定する
-	// linemgr.remakeLineInfo()  線が引かれたり消された時、新たに2つ以上の線ができる
-	//                           可能性がある場合の線idの再設定を行う
+	// linegraph.setCell()     移動系パズルで数字などが入力された時に線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	assignLineInfo : function(border, blist){
-		var path = border.path;
-		if(path!==null){ return;}
-
-		path = (!blist[0] ? this.addPath() : blist[0].path);
-		path.objs.add(border);
-		border.path = path;
-
-		this.setExtraData(path);
-	},
-	removeLineInfo : function(border, blist){
-		var path = border.path;
-		if(path===null){ return;}
-
-		path.objs.remove(border);
-		if(path.objs.length===0){ this.removePath(path);}
-		border.path = null;
-
-		if(path.objs.length>0){ this.setExtraData(path);}
-		blist = new this.PieceList();
-		blist.add(border);
-		this.initExtraData(blist);
-	},
-	remakeLineInfo : function(border, blist_sub){
-		if(this.isvalid(border)){ blist_sub.add(border);}
-		else{ this.removeLineInfo(border);}
-		
-		var longColor = this.getLongColor(blist_sub);
-		
-		// つながった線の線情報を一旦0にする
-		var blist = new this.PieceList();
-		for(var i=0;i<blist_sub.length;i++){
-			var path = blist_sub[i].path;
-			if(path!==null){ blist.extend(this.removePath(path));}
-			else           { blist.add(blist_sub[i]);}
-		}
-
-		// 新しいidを設定する
-		var newpaths = this.searchLine(blist);
-
-		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
-		// それ以外の線には新しい色を付加する
-		this.setLongColor(newpaths, longColor);
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.addArea()    新しく割り当てるidを取得する
-	// info.removeArea() 部屋idを無効にする
-	//--------------------------------------------------------------------------------
-	addPath : function(){
-		var path = {objs:(new this.PieceList()), color:this.puzzle.painter.getNewLineColor()};
-		this.board.paths.push(path);
-		return path;
-	},
-	removePath : function(path){
-		var paths = this.board.paths, prop = this.pathname, idx = paths.indexOf(path);
-		path.objs.each(function(border){ border[prop]=null;});
-		return (idx>=0 ? paths.splice(idx, 1)[0].objs : []);
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
-	// info.setLongColor() ブロックに色をつけなおす
-	//--------------------------------------------------------------------------------
-	getLongColor : function(blist){
-		// 周りで一番大きな線は？
-		var largepath = null;
-		for(var i=0,len=blist.length;i<len;i++){
-			var path = blist[i].path;
-			if(path===null){ continue;}
-			if(largepath===null || largepath.objs.length < path.objs.length){
-				largepath = path;
-			}
-		}
-		return (!!largepath ? largepath.color : this.puzzle.painter.getNewLineColor());
-	},
-	setLongColor : function(newpaths, longColor){
-		var puzzle = this.puzzle;
-		/* newpaths:新しく生成されたpathの配列 */
-		var blist_all = new this.PieceList();
-		
-		// できた線の中でもっとも長いものを取得する
-		var longpath = newpaths[0];
-		for(var i=1;i<newpaths.length;i++){
-			if(longpath.objs.length < newpaths[i].objs.length){ longpath = newpaths[i];}
-		}
-		
-		// 新しい色の設定
-		for(var i=0;i<newpaths.length;i++){
-			var path = newpaths[i];
-			path.color = (path===longpath ? longColor : puzzle.painter.getNewLineColor());
-			blist_all.extend(path.objs);
-		}
-		
-		if(puzzle.execConfig('irowake')){ puzzle.painter.repaintLines(blist_all);}
-	},
-
-	//---------------------------------------------------------------------------
-	// linemgr.getaround()     自分に線が存在するものとして、自分に繋がる線(最大6箇所)を全て取得する
-	//---------------------------------------------------------------------------
-	getaround : function(border){
-		var lines = new this.PieceList();
-		for(var i=0;i<2;i++){
-			var obj = border.lineedge[i];
-			var lcnt = obj.lcnt+(this.isvalid(border)?0:1);
-			if(obj.isnull){ }
-			else if(this.iscrossing(obj)){
-				var straightborder = obj.relbd((obj.bx-border.bx),(obj.by-border.by));
-				if(lcnt===4){
-					lines.add(straightborder); // objからのstraight
-				}
-				else if(lcnt===2 || (lcnt===3 && this.isvalid(straightborder))){
-					lines.extend(obj.seglist);
-					lines.remove(border);
-				}
-			}
-			else if(lcnt>=2){
-				lines.extend(obj.seglist);
-				lines.remove(border);
-			}
-		}
-		return lines;
-	},
-
-	//---------------------------------------------------------------------------
-	// linemgr.searchLine()   ひとつながりの線にlineidを設定する
-	// linemgr.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
-	//---------------------------------------------------------------------------
-	searchLine : function(blist){
-		this.initExtraData(blist);
-		var newpaths = [];
-		for(var i=0,len=blist.length;i<len;i++){
-			blist[i].path = null;
-		}
-		for(var i=0,len=blist.length;i<len;i++){
-			if(blist[i].path!==null){ continue;}	// 既にidがついていたらスルー
-			var newpath = this.addPath();
-			this.searchSingle(blist[i], newpath);
-			newpaths.push(newpath);
-		}
-		return newpaths;
-	},
-	searchSingle : function(startborder, newpath){
-		var stack = [startborder];
-		while(stack.length>0){
-			var border = stack.pop();
-			if(border.path!==null||!this.isvalid(border)){ continue;}
-
-			border.path = newpath;
-			newpath.objs.add(border);
-
-			stack = stack.concat(Array.prototype.slice.apply(this.getaround(border)));
-		}
-
-		this.setExtraData(newpath);
-	},
-
- 	//--------------------------------------------------------------------------------
-	// linemgr.resetExtraData() 情報の再構築時に行う拡張データ設定
-	// linemgr.initExtraData()  指定されたセルの拡張データを初期化する
-	// linemgr.setExtraData()   指定された領域の拡張データを設定する
- 	//--------------------------------------------------------------------------------
-	resetExtraData : function(){},
-	initExtraData  : function(blist){},
-	setExtraData   : function(path){}
-},
-
-"LineManager:LineManagerBase":{
-	initialize : function(){
-		this.enabled = (this.isCenterLine || this.borderAsLine);
-		if(this.moveline){ this.relation.push('cell');}
-	},
-	init2 : function(){
-		this.PieceList   = this.klass.BorderList;
-		this.basegroup   = this.board.border;
-		this.targetgroup = this.board[this.isCenterLine ? 'cell' : 'cross'];
-	},
-
-	// 下記の2フラグはどちらかがtrueになります(両方trueはだめです)
-	isCenterLine : false,	// マスの真ん中を通る線を回答として入力するパズル
-	borderAsLine : false,	// 境界線をlineとして扱う
-
-	makeClist : false,		// 線が存在するclistを生成する
-	moveline  : false,		// 丸数字などを動かすパズル
-
 	setCell : function(cell){
 		if(this.moveline){
 			if(!!cell.path){ this.setExtraData(cell.path);}
-			else           { cell.base = (cell.isNum() ? cell : this.board.emptycell);}
+			else           { this.resetExtraData(cell);}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.createNodeIfEmpty()  指定されたオブジェクトの場所にNodeを生成する
+	// linegraph.deleteNodeIfEmpty()  指定されたオブジェクトの場所からNodeを除去する
+	//---------------------------------------------------------------------------
+	createNodeIfEmpty : function(cell){
+		var nodes = this.getObjNodeList(cell);
+		
+		// ここどうする？
+		this.incdecLineCount(cell, true);
+		
+		// 周囲のNode生成が必要かもしれないのでチェック＆create
+		if(nodes.length===0){
+			this.createNode(cell);
+		}
+		// 交差あり盤面の処理
+		else if(!nodes[1] && nodes[0].nodes.length===2 && this.iscrossing(cell)){
+			// 2本->3本になる時はNodeを追加して分離します
+			this.createNode(cell);
+			
+			// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
+			var nbnodes = nodes[0].nodes;
+			var isvert = [cell.getvert(nbnodes[0].obj, 2), cell.getvert(nbnodes[1].obj, 2)];
+			if(isvert[0]!==isvert[1]){
+				var lrnode = nbnodes[!isvert[0]?0:1];
+				this.removeEdge(nodes[0], lrnode);
+				this.addEdge(nodes[1], lrnode);
+			}
+			// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
+			else if(!isvert[0] && !isvert[1]){
+				nodes.push(nodes.shift());
+			}
+		}
+	},
+	deleteNodeIfEmpty : function(cell){
+		var nodes = this.getObjNodeList(cell);
+		
+		// ここどうする？
+		this.incdecLineCount(cell, false);
+		
+		// 周囲のNodeが消えるかもしれないのでチェック＆remove
+		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(cell)){
+			this.deleteNode(nodes[0]);
+		}
+		// 交差あり盤面の処理
+		else if(!!nodes[1] && nodes[0].nodes.length+nodes[1].nodes.length===2 && this.iscrossing(cell)){
+			// 3本->2本になってnodes[0], nodes[1]に1本ずつEdgeが存在する場合はnodes[0]に統合
+			if(nodes[1].nodes.length===1){
+				var lrnode = nodes[1].nodes[0];
+				this.removeEdge(nodes[1], lrnode);
+				this.addEdge(nodes[0], lrnode);
+			}
+			// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に2本、nodes[1]に0本にする
+			else if(nodes[1].nodes.length===2){
+				nodes.push(nodes.shift());
+			}
+			
+			// 不要になったNodeを削除
+			this.deleteNode(nodes[1]);
 		}
 	},
 
 	//--------------------------------------------------------------------------------
-	// linemgr.resetExtraData() 情報の再構築時に行う拡張データ設定
-	// linemgr.initExtraData()  指定されたセルの拡張データを初期化する
-	// linemgr.setExtraData()   指定された領域の拡張データを設定する
+	// linegraph.resetExtraData() 指定されたオブジェクトの拡張データをリセットする
+	// linegraph.setExtraData()   指定された領域の拡張データを設定する
 	//--------------------------------------------------------------------------------
-	resetExtraData : function(){
-		if(this.moveline){ this.resetMovedBase();}
+	resetExtraData : function(nodeobj){
+		if(this.moveline){ nodeobj.base = (nodeobj.isNum() ? nodeobj : this.board.emptycell);}
 	},
-	initExtraData : function(blist){
-		if(this.moveline){ this.initMovedBase(blist);}
-	},
-	setExtraData : function(path){
+	setExtraData : function(component){
+		pzpr.common.GraphBase.prototype.setExtraData.call(this,component);
+		
+		if(!component.color){
+			component.color = this.puzzle.painter.getNewLineColor();
+		}
+		
+		var edgeobjs = component.getedgeobjs();
+		for(var i=0;i<edgeobjs.length;i++){
+			this.setComponentRefs(edgeobjs[i], component);
+		}
+		
 		if(this.makeClist || this.moveline){
-			path.clist = path.objs.cellinside();
-			if(this.moveline){ this.setMovedBase(path);}
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+			if(this.moveline){ this.setMovedBase(component);}
 		}
 	},
 
 	//--------------------------------------------------------------------------------
-	// linemgr.resetMovedBase()  情報の再構築時に移動情報を初期化する
 	// linemgr.initMovedBase()   指定されたセルの移動情報を初期化する
 	// linemgr.setMovedBase()    指定された領域の移動情報を設定する
 	//--------------------------------------------------------------------------------
-	resetMovedBase : function(){
-		var bd = this.board;
-		this.initMovedBase(bd.border);
-		for(var r=0;r<bd.paths.length;r++){ this.setMovedBase(bd.paths[r]);}
-	},
-	initMovedBase : function(blist){
-		var clist = blist.cellinside().filter(function(cell){ return cell.lcnt===0;});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			cell.base = (cell.isNum() ? cell : this.board.emptycell);
-			cell.path = null;
-		}
-	},
-	setMovedBase : function(path){
+	setMovedBase : function(component){
 		var emptycell = this.board.emptycell;
-		path.departure = path.destination = emptycell;
-		path.movevalid = false;
+		component.departure = component.destination = emptycell;
+		component.movevalid = false;
 		
-		var clist = path.clist;
+		var clist = component.clist;
 		if(clist.length<1){ return;}
-		
-		for(var i=0;i<clist.length;i++){ clist[i].path = path;}
 		
 		var before=null, after=null, point=0;
 		if(clist.length===1){
@@ -373,9 +632,56 @@ LineManagerBase:{
 			}
 		}
 		if(before!==null && after!==null && point===2){
-			path.departure   = after.base = before;
-			path.destination = after;
-			path.movevalid = true;
+			component.departure   = after.base = before;
+			component.destination = after;
+			component.movevalid = true;
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// linegraph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
+	// linegraph.setLongColor() ブロックに色をつけなおす
+	//--------------------------------------------------------------------------------
+	getLongColor : function(components){
+		// 周りで一番大きな線は？
+		var largeComponent = components[0];
+		for(var i=1;i<components.length;i++){
+			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		}
+		return (!!largeComponent ? largeComponent.color : this.puzzle.painter.getNewLineColor());
+	},
+	setLongColor : function(components, longColor){
+		if(components.length===0){ return;}
+		var puzzle = this.puzzle;
+		
+		// できた線の中でもっとも長いものを取得する
+		var largeComponent = components[0];
+		for(var i=1;i<components.length;i++){
+			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		}
+		
+		// 新しい色の設定
+		for(var i=0;i<components.length;i++){
+			var path = components[i];
+			path.color = (path===largeComponent ? longColor : path.color);
+		}
+		
+		if(puzzle.execConfig('irowake')){
+			var blist_all = new this.klass.BorderList();
+			for(var i=0;i<components.length;i++){
+				blist_all.extend(components[i].getedgeobjs());
+			}
+			puzzle.painter.repaintLines(blist_all);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.newIrowake()  線の情報が再構築された際、線に色をつける
+	//---------------------------------------------------------------------------
+	newIrowake : function(){
+		var paths = this.components;
+		for(var i=0;i<paths.length;i++){
+			paths[i].color = this.puzzle.painter.getNewLineColor();
 		}
 	}
 }

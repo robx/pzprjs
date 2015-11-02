@@ -153,7 +153,7 @@ Segment:{
 		this.path = null;
 		this.isnull = true;
 
-		this.lineedge = [null,null];	// 2つの端点を指すオブジェクトを保持する
+		this.sideobj = [null,null];	// 2つの端点を指すオブジェクトを保持する
 
 		this.bx1 = null;		// 端点1のX座標(border座標系)を保持する
 		this.by1 = null;		// 端点1のY座標(border座標系)を保持する
@@ -170,8 +170,8 @@ Segment:{
 		this.setpos(bx1,by1,bx2,by2);
 	},
 	setpos : function(bx1,by1,bx2,by2){
-		this.lineedge[0] = this.board.getx(bx1,by1);
-		this.lineedge[1] = this.board.getx(bx2,by2);
+		this.sideobj[0] = this.board.getx(bx1,by1);
+		this.sideobj[1] = this.board.getx(bx2,by2);
 
 		this.bx1 = bx1;
 		this.by1 = by1;
@@ -316,7 +316,9 @@ Segment:{
 		}
 		this.klass.PieceList.prototype.add.call(this, seg);
 		if(this===bd.segment){
-			if(bd.isenableInfo()){ bd.seginfo.setLine(seg);}
+			bd.getx(seg.bx1, seg.by1).seglist.add(seg);
+			bd.getx(seg.bx2, seg.by2).seglist.add(seg);
+			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
 			seg.addOpe(0, 1);
 		}
 	},
@@ -327,7 +329,9 @@ Segment:{
 		}
 		this.klass.PieceList.prototype.remove.call(this, seg);
 		if(this===bd.segment){
-			if(bd.isenableInfo()){ bd.seginfo.setLine(seg);}
+			bd.getx(seg.bx1, seg.by1).seglist.remove(seg);
+			bd.getx(seg.bx2, seg.by2).seglist.remove(seg);
+			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
 			seg.addOpe(1, 0);
 			this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
 		}
@@ -377,13 +381,20 @@ Board:{
 	qcols : 7,
 	qrows : 7,
 
-	seginfo : null,
-
 	initialize : function(){
 		this.common.initialize.call(this);
 
 		this.segment = new this.klass.SegmentList();
-		this.seginfo = this.addInfoList(this.klass.LineSegmentManager);
+	},
+
+	setposCrosses : function(){
+		pzpr.common.Board.prototype.setposCrosses.call(this);
+		
+		for(var id=0;id<this.crossmax;id++){
+			if(!this.cross[id].seglist){
+				this.cross[id].seglist = new this.klass.PieceList();
+			}
+		}
 	},
 
 	allclear : function(isrec){
@@ -402,10 +413,6 @@ Board:{
 			this.segment.errclear();
 		}
 		this.common.errclear.call(this);
-	},
-
-	irowakeRemake : function(){
-		this.seginfo.newIrowake();
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){
@@ -484,15 +491,20 @@ BoardExec:{
 	}
 },
 
-"LineSegmentManager:LineManagerBase":{
-	init2 : function(){
-		this.PieceList   = this.klass.SegmentList;
-		this.basegroup   = this.board.segment;
-		this.targetgroup = this.board.cross;
-	},
+LineGraph:{
 	enabled : true,
 	relation : [],
-	isvalid : function(seg){ return !seg.isnull;}
+	
+	pointgroup : 'cross',
+	linkgroup  : 'segment',
+	
+	isedgevalid : function(seg){ return !seg.isnull;}
+},
+GraphComponent:{
+	getLinkObjByNodes : function(node1, node2){
+		var bx1=node1.obj.bx, by1=node1.obj.by, bx2=node2.obj.bx, by2=node2.obj.by;
+		return this.board.getSegment(bx1, by1, bx2, by2);
+	}
 },
 
 "SegmentOperation:Operation":{
@@ -776,7 +788,9 @@ AnsCheck:{
 			
 			result = false;
 			if(this.checkOnly){ break;}
-			cross.seglist.seterr(1);
+			if(cross.pathnodes.length>0){
+				cross.pathnodes[0].nodes.forEach(function(node){ node.obj.seterr(1);});
+			}
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -786,14 +800,14 @@ AnsCheck:{
 
 	checkOneSegmentLoop : function(){
 		var bd = this.board, validcount = 0;
-		for(var r=0;r<bd.paths.length;r++){
-			if(bd.paths[r].objs.length===0){ continue;}
+		for(var r=0;r<bd.linegraph.components.length;r++){
+			if(bd.linegraph.components[r].length===0){ continue;}
 			validcount++;
 			if(validcount<=1){ continue;}
 			
 			this.failcode.add("lnPlLoop");
 			bd.segment.setnoerr();
-			bd.paths[r].objs.seterr(1);
+			bd.linegraph.components[r].setedgeerr(1);
 			break;
 		}
 	},
@@ -817,7 +831,7 @@ AnsCheck:{
 	checkDifferentLetter : function(){
 		var result = true, bd = this.board, segs = bd.segment;
 		segs.each(function(seg){
-			var cross1=seg.lineedge[0], cross2=seg.lineedge[1];
+			var cross1=seg.sideobj[0], cross2=seg.sideobj[1];
 			if(cross1.qnum!==-2 && cross2.qnum!==-2 && cross1.qnum!==cross2.qnum){
 				seg.seterr(1);
 				cross1.seterr(1);
@@ -843,7 +857,7 @@ AnsCheck:{
 			}
 		}
 		bd.segment.each(function(seg){
-			var cross1=seg.lineedge[0], cross2=seg.lineedge[1];
+			var cross1=seg.sideobj[0], cross2=seg.sideobj[1];
 			if(cross1.qnum>=0 && cross2.qnum>=0 && cross1.qnum===cross2.qnum){
 				var qn = cross1.qnum; if(qn>=0){ count[qn][1]++;}
 			}

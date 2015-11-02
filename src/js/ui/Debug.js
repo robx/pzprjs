@@ -87,6 +87,21 @@ ui.debug =
 	resizeeval : function(){
 		this.timeeval("resize描画", function(){ ui.puzzle.redraw(true);});
 	},
+	searcheval : function(){
+//		var borders = ui.puzzle.board.border.filter(function(border){ return border.isLine();});
+//		this.timeeval("search linemgr", function(){ ui.puzzle.board.linemgr.searchLine(borders);});
+		var linegraph = ui.puzzle.board.linegraph;
+		linegraph.reset();
+		var nodes = linegraph.components[0].nodes;
+		this.timeeval("search linemgr", function(){
+			linegraph.components = [];
+			linegraph.modifyNodes = nodes;
+			linegraph.searchGraph();
+		});
+	},
+	rebuildeval : function(){
+		this.timeeval("reset linemgr", function(){ ui.puzzle.board.linegraph.reset();});
+	},
 	timeeval : function(text,func){
 		var count=0, old = pzpr.util.currentTime();
 		while(pzpr.util.currentTime() - old < 3000){

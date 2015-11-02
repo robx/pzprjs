@@ -79,11 +79,13 @@ Cell:{
 },
 
 Board:{
-	hasborder : 2
+	hasborder : 2,
+	borderAsLine : true
 },
 
-LineManager:{
-	borderAsLine : true
+LineGraph:{
+	pointgroup : 'cross',
+	enabled : true
 },
 
 Flags:{

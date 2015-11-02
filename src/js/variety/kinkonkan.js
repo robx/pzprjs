@@ -68,7 +68,7 @@ MouseEvent:{
 		if(piece.group!=='excell'){
 			this.inputborder();
 		}
-		else if(piece!==this.cursor.getobj()){
+		else if(piece!==this.cursor.getex()){
 			this.setcursor(piece);
 			this.mousereset();
 		}

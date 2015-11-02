@@ -38,7 +38,7 @@ MouseEvent:{
 		if(cell.isnull || cell.qans===0 || cell.path===null){ return;}
 
 		this.board.cell.setinfo(-1);
-		cell.path.objs.setinfo(2);
+		cell.path.setedgeinfo(2);
 		this.board.haserror = true;
 		this.puzzle.redraw();
 	}
@@ -112,13 +112,13 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	setLineEdge : function(){
-		this.lineedge = [null,null];
+	setSideObj : function(){
+		this.sideobj = [null,null];
 		if(this.qans===31){
-			this.lineedge = [this.relcross(-1,-1), this.relcross(1,1)];
+			this.sideobj = [this.relcross(-1,-1), this.relcross(1,1)];
 		}
 		else if(this.qans===32){
-			this.lineedge = [this.relcross(-1,1), this.relcross(1,-1)];
+			this.sideobj = [this.relcross(-1,1), this.relcross(1,-1)];
 		}
 	}
 },
@@ -128,13 +128,7 @@ Cross:{
 },
 Board:{
 	qcols : 7,
-	qrows : 7,
-
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		this.slashmgr = this.addInfoList(this.klass.LineSlashManager);
-	}
+	qrows : 7
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -148,46 +142,52 @@ BoardExec:{
 	}
 },
 
-"LineSlashManager:LineManagerBase":{
-	init2 : function(){
-		this.PieceList   = this.klass.CellList;
-		this.basegroup   = this.board.cell;
-		this.targetgroup = this.board.cross;
-		this.SuperClass = this.klass.LineManagerBase.prototype;
-	},
+LineGraph:{
 	enabled : true,
 	relation : ['cell'],
-	isvalid : function(cell){ return (this.tmp_invalidcell!==cell) && cell.qans>0;},
-	tmp_invalidcell : null,
-
-	reset : function(){
+	
+	pointgroup : 'cross',
+	linkgroup  : 'cell',
+	
+	rebuild2 : function(){
 		var boardcell = this.board.cell;
 		for(var c=0;c<boardcell.length;c++){
-			boardcell[c].setLineEdge();
-		}
-		this.SuperClass.reset.call(this);
-	},
-
-	setCell : function(cell){
-		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
-		if((cell.qans>0)&&(cell.path!==null)){
-			this.tmp_invalidcell = cell;
-			this.setLine(cell);
-			this.tmp_invalidcell = null;
+			boardcell[c].setSideObj();
+			boardcell[c].isloop = false;
 		}
 		
-		if(cell.qans>0){ cell.setLineEdge();}
-		this.setLine(cell);
+		pzpr.common.LineGraph.prototype.rebuild2.call(this);
 	},
+	
+	isedgevalid : function(cell){ return cell.qans>0;},
+	
+	setCell : function(cell){
+		this.modifyNodes = [];
 
-	initExtraData : function(clist){
-		for(var i=0;i<clist.length;i++){ clist[i].isloop = false;}
+		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
+		if(cell.path!==null){
+			this.removeEdgeByLinkObj(cell);
+		}
+		if(cell.qans>0){
+			cell.setSideObj();
+			this.addEdgeByLinkObj(cell);
+		}
+
+		this.remakeComponent();
 	},
-	setExtraData : function(path){
-		// Loop判定を行う
+	
+	setExtraData : function(component){
+		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
+		
+		// Loopがない場合はisloopにfalseを設定してreturn
+		var edgeobjs = component.getedgeobjs();
+		for(var c=0;c<edgeobjs.length;c++){ edgeobjs[c].isloop = false;}
+		if(component.circuits<=0){ return;}
+		
+		// どこにLoopが存在するか判定を行う
 		var bd = this.board;
 		var prevcross;
-		var history = [path.objs[0].lineedge[0]];
+		var history = [component.nodes[0].obj];
 		var steps=[];
 		for(var by=bd.minby;by<=bd.maxby;by++){
 			steps[by] = [];
@@ -199,7 +199,6 @@ BoardExec:{
 			var step = steps[obj.by][obj.bx];
 			if(step===-1){
 				step = steps[obj.by][obj.bx] = history.length-1;
-				if(obj.group==='cell'){ obj.isloop = false;}
 			}
 			// ループになった場合 => ループフラグをセットする
 			else if((obj.group==='cross') && ((history.length-1)>step)){
@@ -211,14 +210,15 @@ BoardExec:{
 			
 			if(obj.group==='cross'){
 				prevcross = obj;
-				for(var i=0;i<obj.seglist.length;i++){
-					var cell = obj.seglist[i];
+				for(var i=0;i<obj.pathnodes[0].nodes.length;i++){
+					var cell = bd.getc(((obj.bx+obj.pathnodes[0].nodes[i].obj.bx)>>1),
+									   ((obj.by+obj.pathnodes[0].nodes[i].obj.by)>>1));
 					if(steps[cell.by][cell.bx]===-1){ nextobj = cell; break;}
 				}
 			}
 			else{ // cellの時
-				for(var i=0;i<obj.lineedge.length;i++){
-					var cross = obj.lineedge[i];
+				for(var i=0;i<obj.sideobj.length;i++){
+					var cross = obj.sideobj[i];
 					if((cross!==prevcross) && (cross!==history[history.length-2])){ nextobj = cross; break;}
 				}
 			}

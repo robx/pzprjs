@@ -57,7 +57,7 @@ AnsCheck:{
 		this.checkAllCell( function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmNoLine");
 	},
 	checkLineOverLetter : function(){
-		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linemgr.moveline ? "laOnNum" : "lcOnNum"));
+		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linegraph.moveline ? "laOnNum" : "lcOnNum"));
 	},
 
 	//---------------------------------------------------------------------------
@@ -177,11 +177,11 @@ AnsCheck:{
 	// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
-		var bd = this.board, paths = bd.paths;
+		var bd = this.board, paths = bd.linegraph.components;
 		if(paths.length>1){
 			this.failcode.add("lnPlLoop");
 			bd.border.setnoerr();
-			paths[0].objs.seterr(1);
+			paths[0].setedgeerr(1);
 		}
 	},
 
@@ -190,11 +190,11 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkConnectAllNumber : function(){
 		var bd = this.board;
-		if(bd.paths.length>1){
+		if(bd.linegraph.components.length>1){
 			this.failcode.add("lcDivided");
 			bd.border.setnoerr();
-			bd.paths[0].objs.seterr(1);
-			bd.paths[0].clist.seterr(4);
+			bd.linegraph.components[0].setedgeerr(1);
+			bd.linegraph.components[0].clist.seterr(4);
 		}
 	},
 
@@ -203,7 +203,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
 		var bd = this.board;
-		if(bd.linemgr.ltotal[0]!==(!bd.linemgr.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
+		if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
 		this.failcode.add("brNoLine");
 	},
 
@@ -216,20 +216,21 @@ AnsCheck:{
 	checkNoLine      : function(){ this.checkLineCount(0, "ceNoLine");},
 	checkLineCount : function(val, code){
 		var result = true, bd = this.board;
-		if(bd.linemgr.ltotal[val]===0){ return;}
+		if(!bd.linegraph.ltotal[val]){ return;}
 		
-		if(!bd.linemgr.borderAsLine){
+		if(!bd.borderAsLine){
 			this.checkAllCell(function(cell){ return cell.lcnt===val;}, code);
 		}
 		else{
 			var boardcross = bd.cross;
 			for(var c=0;c<boardcross.length;c++){
-				if(boardcross[c].lcnt!==val){ continue;}
+				var cross = boardcross[c];
+				if(cross.lcnt!==val){ continue;}
 				
 				result = false;
 				if(this.checkOnly){ break;}
-				boardcross[c].seterr(1);
-				boardcross[c].seglist.seterr(1);
+				cross.seterr(1);
+				bd.borderinside(cross.bx-1,cross.by-1,cross.bx+1,cross.by+1).seterr(1);
 			}
 			if(!result){
 				this.failcode.add(code);
@@ -245,7 +246,7 @@ AnsCheck:{
 	checkBranchConnectLine  : function(){ this.checkConnectLineCount(3, "lnBranch");},
 	checkDeadendConnectLine : function(){ this.checkConnectLineCount(1, "lnDeadEnd");},
 	checkConnectLineCount : function(val, code){
-		if(this.board.linemgr.ltotal[val]===0){ return;}
+		if(!this.board.linegraph.ltotal[val]){ return;}
 		
 		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
@@ -328,11 +329,11 @@ AnsCheck:{
 	// ans.checkTripleObject()   数字が線で3つ以上繋がっていないように判定を行う
 	// ans.checkConnectObjectCount() 上記関数の共通処理
 	//---------------------------------------------------------------------------
-	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.board.linemgr.moveline ? "laIsolate" : "lcIsolate"));},
+	checkDisconnectLine : function(){ this.checkConnectObjectCount(function(a){ return(a>0);}, (this.board.linegraph.moveline ? "laIsolate" : "lcIsolate"));},
 	checkConnectObject  : function(){ this.checkConnectObjectCount(function(a){ return(a<2);}, "nmConnected");},
 	checkTripleObject   : function(){ this.checkConnectObjectCount(function(a){ return(a<3);}, "lcTripleNum");},
 	checkConnectObjectCount : function(evalfunc, code){
-		var result = true, paths = this.board.paths;
+		var result = true, paths = this.board.linegraph.components;
 		for(var id=0;id<paths.length;id++){
 			var clist = paths[id].clist;
 			if( evalfunc( clist.filter(function(cell){ return cell.isNum();}).length ) ){ continue;}
@@ -340,7 +341,7 @@ AnsCheck:{
 			result = false;
 			if(this.checkOnly){ break;}
 			this.board.border.setnoerr();
-			paths[id].objs.seterr(1);
+			paths[id].setedgeerr(1);
 			paths[id].clist.seterr(4);
 		}
 		if(!result){
@@ -601,7 +602,7 @@ AnsCheck:{
 			if(pos.oncell()){
 				var cell = pos.getc(), adb = cell.adjborder;
 				if(cell.isnull || cell1===cell || cell.isNum()){ break;}
-				else if(this.board.linemgr.iscrossing(cell) && cell.lcnt>=3){ }
+				else if(this.board.linegraph.iscrossing(cell) && cell.lcnt>=3){ }
 				else if(dir!==1 && adb.bottom.isLine()){ if(dir!==2){ pathseg.ccnt++;} dir=2;}
 			else if(dir!==2 && adb.top.isLine()   ){ if(dir!==1){ pathseg.ccnt++;} dir=1;}
 				else if(dir!==3 && adb.right.isLine() ){ if(dir!==4){ pathseg.ccnt++;} dir=4;}

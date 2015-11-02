@@ -73,8 +73,8 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
+LineGraph:{
+	enabled : true,
 	moveline : true
 },
 

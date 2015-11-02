@@ -28,7 +28,7 @@ ui.debug.addDebugData('icebarn', {
 		  result:"pzprv3/icebarn/2/5/13/15/0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /2 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /" },
 		{ input:["anslear", "mouse,left, -1,1, 1,1, 1,-1"],
 		  result:"pzprv3/icebarn/2/5/13/15/0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /2 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /0 0 0 0 0 0 /1 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /" },
-		/* LineManagerでエラーしないか確認 */
+		/* LineGraphでエラーしないか確認 */
 		{ input:["anslear", "mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
 		  result:"pzprv3/icebarn/2/5/13/15/0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /2 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 1 0 0 /0 0 1 -1 1 0 /1 0 0 0 0 /0 0 -1 0 0 /0 0 0 0 0 /"},
 		{ input:["newboard,5,4", "mouse,left, 1,3, 5,3, 5,5, 1,5", "mouse,left, 5,3, 7,3, 7,7, 5,7, 5,5, 7,5", "mouse,left, 7,3, 7,5"],

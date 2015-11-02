@@ -33,8 +33,8 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
+LineGraph:{
+	enabled : true,
 	makeClist : true
 },
 
@@ -146,7 +146,7 @@ AnsCheck:{
 
 	// checkSameObjectInRoom()でpath.clistを参照するようにした関数
 	checkLinkSameNumber : function(){
-		var paths = this.board.paths;
+		var paths = this.board.linegraph.components;
 		allloop:
 		for(var id=0;id<paths.length;id++){
 			var clist = paths[id].clist;
@@ -159,7 +159,7 @@ AnsCheck:{
 						this.failcode.add("nmConnDiff");
 						if(this.checkOnly){ break allloop;}
 						this.board.border.setnoerr();
-						paths[id].objs.seterr(1);
+						paths[id].setedgeerr(1);
 					}
 				}
 			}

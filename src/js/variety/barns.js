@@ -50,9 +50,9 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
+LineGraph:{
+	enabled : true,
+	isLineCross : true
 },
 
 Flags:{

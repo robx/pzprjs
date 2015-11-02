@@ -68,6 +68,7 @@ Cell:{
 
 Board:{
 	hasborder : 2,
+	borderAsLine : true,
 
 	searchInsideArea : function(){
 		this.cell[0].inside = (this.cross[0].lcnt!==0);
@@ -80,8 +81,9 @@ Board:{
 	}
 },
 
-LineManager:{
-	borderAsLine : true
+LineGraph:{
+	enabled : true,
+	pointgroup : 'cross'
 },
 
 Flags:{

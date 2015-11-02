@@ -71,8 +71,8 @@ Board:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true
+LineGraph:{
+	enabled : true
 },
 
 Flags:{

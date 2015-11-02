@@ -46,14 +46,15 @@ Board:{
 		this.validinfo = {cell:[],border:[],line:[],all:[]};
 		this.infolist = [];
 
-		this.linemgr = this.addInfoList(classes.LineManager);		// 線情報管理オブジェクト
+		this.linegraph  = this.addInfoList(classes.LineGraph);		// 交差なし線のグラフ
+//		this.linexgraph = this.addInfoList(classes.CrossLineGraph);	// 交差あり線のグラフ
+
+//		this.linemgr = this.addInfoList(classes.LineManager);		// 線情報管理オブジェクト
 
 		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
 		this.bcell = this.addInfoList(classes.AreaShadeManager);	// 黒マス情報を保持する
 		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
 		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
-
-		this.paths = [];
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
@@ -77,6 +78,7 @@ Board:{
 	hascross  : 2,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	hasexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+	borderAsLine : false,	// 境界線をlineとして扱う
 
 	//---------------------------------------------------------------------------
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
@@ -110,52 +112,52 @@ Board:{
 	// bd.estimateSize()  指定したオブジェクトがいくつになるか計算を行う
 	// bd.newObject()     指定されたタイプの新しいオブジェクトを返す
 	//---------------------------------------------------------------------------
-	initGroup : function(type, col, row){
-		var group = this.getGroup(type);
-		var len = this.estimateSize(type, col, row), clen = group.length;
+	initGroup : function(group, col, row){
+		var groups = this.getGroup(group);
+		var len = this.estimateSize(group, col, row), clen = groups.length;
 		// 既存のサイズより小さくなるならdeleteする
 		if(clen>len){
-			for(var id=clen-1;id>=len;id--){ group.pop();}
+			for(var id=clen-1;id>=len;id--){ groups.pop();}
 		}
 		// 既存のサイズより大きくなるなら追加する
 		else if(clen<len){
-			var group2 = new group.constructor();
+			var groups2 = new groups.constructor();
 			for(var id=clen;id<len;id++){
-				var piece = this.newObject(type, id);
-				group.add(piece);
-				group2.add(piece);
+				var piece = this.newObject(group, id);
+				groups.add(piece);
+				groups2.add(piece);
 			}
-			group2.allclear(false);
+			groups2.allclear(false);
 		}
-		group.length = len;
+		groups.length = len;
 		return (len-clen);
 	},
-	getGroup : function(type){
-		if     (type==='cell')  { return this.cell;}
-		else if(type==='cross') { return this.cross;}
-		else if(type==='border'){ return this.border;}
-		else if(type==='excell'){ return this.excell;}
+	getGroup : function(group){
+		if     (group==='cell')  { return this.cell;}
+		else if(group==='cross') { return this.cross;}
+		else if(group==='border'){ return this.border;}
+		else if(group==='excell'){ return this.excell;}
 		return new this.klass.PieceList();
 	},
-	estimateSize : function(type, col, row){
-		if     (type==='cell')  { return col*row;}
-		else if(type==='cross') { return (col+1)*(row+1);}
-		else if(type==='border'){
+	estimateSize : function(group, col, row){
+		if     (group==='cell')  { return col*row;}
+		else if(group==='cross') { return (col+1)*(row+1);}
+		else if(group==='border'){
 			if     (this.hasborder===1){ return 2*col*row-(col+row);}
 			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
-		else if(type==='excell'){
+		else if(group==='excell'){
 			if     (this.hasexcell===1){ return col+row+1;}
 			else if(this.hasexcell===2){ return 2*col+2*row+4;}
 		}
 		return 0;
 	},
-	newObject : function(type, id){
+	newObject : function(group, id){
 		var piece = this.nullobj, classes = this.klass;
-		if     (type==='cell')  { piece = new classes.Cell();}
-		else if(type==='cross') { piece = new classes.Cross();}
-		else if(type==='border'){ piece = new classes.Border();}
-		else if(type==='excell'){ piece = new classes.EXCell();}
+		if     (group==='cell')  { piece = new classes.Cell();}
+		else if(group==='cross') { piece = new classes.Cross();}
+		else if(group==='border'){ piece = new classes.Border();}
+		else if(group==='excell'){ piece = new classes.EXCell();}
 		if(piece!==this.nullobj && id!==void 0){ piece.id = id;}
 		return piece;
 	},
@@ -178,11 +180,11 @@ Board:{
 		this.setposEXcells();
 		this.latticemax = (this.qcols+1)*(this.qrows+1);
 	},
-	setposGroup : function(type){
-		if     (type==='cell')  { this.setposCells();}
-		else if(type==='cross') { this.setposCrosses();}
-		else if(type==='border'){ this.setposBorders();}
-		else if(type==='excell'){ this.setposEXcells();}
+	setposGroup : function(group){
+		if     (group==='cell')  { this.setposCells();}
+		else if(group==='cross') { this.setposCrosses();}
+		else if(group==='border'){ this.setposBorders();}
+		else if(group==='excell'){ this.setposEXcells();}
 	},
 
 	setposCells : function(){
@@ -324,34 +326,41 @@ Board:{
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを計算して返す
+	// bd.getObjectPosEx()(X,Y)の位置にあるオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
-	getObjectPos : function(type,bx,by,qc,qr){
-		if     (type==='cell')  { return this.getc(bx,by,qc,qr);}
-		else if(type==='cross') { return this.getx(bx,by,qc,qr);}
-		else if(type==='border'){ return this.getb(bx,by,qc,qr);}
-		else if(type==='excell'){ return this.getex(bx,by,qc,qr);}
-		return this.nullobj;
+	getObjectPos : function(group,bx,by){
+		var obj = this.nullobj;
+		if     (group==='cell')  { obj = this.getc(bx,by);}
+		else if(group==='cross') { obj = this.getx(bx,by);}
+		else if(group==='border'){ obj = this.getb(bx,by);}
+		else if(group==='excell'){ obj = this.getex(bx,by);}
+		return obj;
+	},
+	getObjectPosEx : function(group,bx,by,qc,qr){
+		var qc0 = this.qcols, qr0 = this.qrows;
+		this.qcols = qc; this.qrows = qr;
+		var obj = this.getObjectPos(group,bx,by);
+		this.qcols = qc0; this.qrows = qr0;
+		return obj;
 	},
 
 	//---------------------------------------------------------------------------
-	// bd.getc()  (X,Y)の位置にあるCellオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.getx()  (X,Y)の位置にあるCrossオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.getb()  (X,Y)の位置にあるBorderオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.getex() (X,Y)の位置にあるextendCellオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
-	// bd.getobj() (X,Y)の位置にある何らかのオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
+	// bd.getc()  (X,Y)の位置にあるCellオブジェクトを返す
+	// bd.getx()  (X,Y)の位置にあるCrossオブジェクトを返す
+	// bd.getb()  (X,Y)の位置にあるBorderオブジェクトを返す
+	// bd.getex() (X,Y)の位置にあるextendCellオブジェクトを返す
+	// bd.getobj() (X,Y)の位置にある何らかのオブジェクトを返す
 	//---------------------------------------------------------------------------
-	getc : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+	getc : function(bx,by){
+		var id = null, qc=this.qcols, qr=this.qrows;
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*qc;}
 
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
- 	getx : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+ 	getx : function(bx,by){
+		var id = null, qc=this.qcols, qr=this.qrows;
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*(qc+1);}
 
@@ -360,9 +369,8 @@ Board:{
 		}
 		return this.emptycross;
 	},
-	getb : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+	getb : function(bx,by){
+		var id = null, qc=this.qcols, qr=this.qrows;
 		if(!!this.hasborder && (bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1)){
 			if     (!(bx&1) &&  (by&1)){ id = ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ id = (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
@@ -376,9 +384,8 @@ Board:{
 
 		return (id!==null ? this.border[id] : this.emptyborder);
 	},
-	getex : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+	getex : function(bx,by){
+		var id = null, qc=this.qcols, qr=this.qrows;
 		if(this.hasexcell===1){
 			if(bx===-1&&by===-1){ id = qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}
@@ -398,22 +405,22 @@ Board:{
 		return (id!==null ? this.excell[id] : this.emptyexcell);
 	},
 
-	getobj : function(bx,by,qc,qr){
-		if     ((bx+by)&1)       { return this.getb(bx,by,qc,qr);}
-		else if(!(bx&1)&&!(by&1)){ return this.getx(bx,by,qc,qr);}
+	getobj : function(bx,by){
+		if     ((bx+by)&1)       { return this.getb(bx,by);}
+		else if(!(bx&1)&&!(by&1)){ return this.getx(bx,by);}
 
-		var cell = this.getc(bx,by,qc,qr);
-		return ((cell!==this.emptycell || !this.hasexcell) ? cell : this.getex(bx,by,qc,qr));
+		var cell = this.getc(bx,by);
+		return ((cell!==this.emptycell || !this.hasexcell) ? cell : this.getex(bx,by));
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.objectinside() 座標(x1,y1)-(x2,y2)に含まれるオブジェクトのリストを取得する
 	//---------------------------------------------------------------------------
-	objectinside : function(type,x1,y1,x2,y2){
-		if     (type==='cell')  { return this.cellinside  (x1,y1,x2,y2);}
-		else if(type==='cross') { return this.crossinside (x1,y1,x2,y2);}
-		else if(type==='border'){ return this.borderinside(x1,y1,x2,y2);}
-		else if(type==='excell'){ return this.excellinside(x1,y1,x2,y2);}
+	objectinside : function(group,x1,y1,x2,y2){
+		if     (group==='cell')  { return this.cellinside  (x1,y1,x2,y2);}
+		else if(group==='cross') { return this.crossinside (x1,y1,x2,y2);}
+		else if(group==='border'){ return this.borderinside(x1,y1,x2,y2);}
+		else if(group==='excell'){ return this.excellinside(x1,y1,x2,y2);}
 		return new this.klass.PieceList();
 	},
 
@@ -509,7 +516,7 @@ Board:{
 	// bd.irowakeRemake() 「色分けしなおす」ボタンを押した時などに色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		this.linemgr.newIrowake();
+		this.linegraph.newIrowake();
 	},
 
 	//--------------------------------------------------------------------------------

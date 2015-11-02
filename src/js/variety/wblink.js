@@ -123,8 +123,8 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
+LineGraph:{
+	enabled : true,
 	makeClist : true
 },
 
@@ -191,7 +191,7 @@ AnsCheck:{
 	checkUnshadedCircle : function(){ this.checkWBcircle(1, "lcInvWhite");},
 	checkShadedCircle   : function(){ this.checkWBcircle(2, "lcInvBlack");},
 	checkWBcircle : function(val, code){
-		var result = true, paths = this.board.paths;
+		var result = true, paths = this.board.linegraph.components;
 		for(var r=0;r<paths.length;r++){
 			var clist = paths[r].clist;
 			if(clist.length<=1){ continue;}
@@ -201,7 +201,7 @@ AnsCheck:{
 
 			result = false;
 			if(this.checkOnly){ break;}
-			paths[r].objs.seterr(1);
+			paths[r].setedgeerr(1);
 			paths[r].clist.seterr(1);
 			tip1.seterr(1);
 			tip2.seterr(1);

@@ -62,9 +62,9 @@ Board:{
 	hasborder : 1
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
+LineGraph:{
+	enabled : true,
+	isLineCross : true
 },
 
 "AreaRoomManager@nagenawa":{
@@ -237,31 +237,31 @@ AnsCheck:{
 
 	checkAllLoopRect : function(){
 		var result = true, bd = this.board;
-		var paths = bd.paths;
+		var paths = bd.linegraph.components;
 		for(var r=0;r<paths.length;r++){
-			var blist = paths[r].objs;
-			if(this.isLoopRect(blist)){ continue;}
+			var borders = paths[r].getedgeobjs();
+			if(this.isLoopRect(borders)){ continue;}
 
 			result = false;
 			if(this.checkOnly){ break;}
-			blist.seterr(1);
+			paths[r].setedgeerr(1);
 		}
 		if(!result){
 			this.failcode.add("lnNotRect");
 			bd.border.setnoerr();
 		}
 	},
-	isLoopRect : function(blist){
+	isLoopRect : function(borders){
 		var bd = this.board;
 		var x1=bd.maxbx, x2=bd.minbx, y1=bd.maxby, y2=bd.minby;
-		for(var i=0;i<blist.length;i++){
-			if(x1>blist[i].bx){ x1=blist[i].bx;}
-			if(x2<blist[i].bx){ x2=blist[i].bx;}
-			if(y1>blist[i].by){ y1=blist[i].by;}
-			if(y2<blist[i].by){ y2=blist[i].by;}
+		for(var i=0;i<borders.length;i++){
+			if(x1>borders[i].bx){ x1=borders[i].bx;}
+			if(x2<borders[i].bx){ x2=borders[i].bx;}
+			if(y1>borders[i].by){ y1=borders[i].by;}
+			if(y2<borders[i].by){ y2=borders[i].by;}
 		}
-		for(var i=0;i<blist.length;i++){
-			var border = blist[i];
+		for(var i=0;i<borders.length;i++){
+			var border = borders[i];
 			if(border.bx!==x1 && border.bx!==x2 && border.by!==y1 && border.by!==y2){ return false;}
 		}
 		return true;

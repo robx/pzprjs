@@ -25,7 +25,7 @@ ui.debug.addDebugData('mashu', {
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /1 0 0 0 /0 1 0 0 /0 1 0 0 0 /" },
 		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /" },
-		/* LineManagerでエラーしないか確認 */
+		/* LineGraphでエラーしないか確認 */
 		{ input:["anslear", "mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 -1 1 /0 0 -1 0 0 /"},
 		/* 問題入力テスト */

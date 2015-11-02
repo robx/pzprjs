@@ -58,6 +58,7 @@ Board:{
 	qrows : 8,
 
 	hasborder : 2,
+	borderAsLine : true,
 
 	initialize : function(){
 		this.common.initialize.call(this);
@@ -72,8 +73,9 @@ Board:{
 	}
 },
 
-LineManager:{
-	borderAsLine : true
+LineGraph:{
+	enabled : true,
+	pointgroup : 'cross'
 },
 "AreaTileManager:AreaManager":{
 	enabled : true,

@@ -79,9 +79,9 @@ BoardExec:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
+LineGraph:{
+	enabled : true,
+	isLineCross : true
 },
 
 Flags:{

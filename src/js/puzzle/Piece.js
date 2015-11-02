@@ -247,10 +247,10 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// cell.isDeparture()   オブジェクトを動かすパズルで移動元セルかどうか判定する
 	// cell.isDestination() オブジェクトを動かすパズルで移動先セルかどうか判定する
-	// ※動いていない場合は、idDestinationのみtrueを返します
+	// ※動いていない場合は、isDestinationのみtrueを返します
 	//---------------------------------------------------------------------------
-	isDeparture   : function(){ return (!this.isnull &&  this.base.isnull && this.isNum());},
-	isDestination : function(){ return (!this.isnull && !this.base.isnull);},
+	isDeparture   : function(){ return (!this.isnull && !!this.base &&  this.base.isnull && this.isNum());},
+	isDestination : function(){ return (!this.isnull && !!this.base && !this.base.isnull);},
 
 	//---------------------------------------------------------------------------
 	// cell.isLineStraight()   セルの上で線が直進しているか判定する
@@ -383,7 +383,7 @@ pzpr.classmgr.makeCommon({
 	initialize : function(){
 		this.sidecell  = [null,null];	// 隣接セルのオブジェクト
 		this.sidecross = [null,null];	// 隣接交点のオブジェクト
-		this.lineedge  = [];			// LineManager用
+		this.sideobj   = [];			// LineManager用
 	},
 	group : 'border',
 
@@ -399,21 +399,22 @@ pzpr.classmgr.makeCommon({
 	// initSideObject() 隣接オブジェクトの情報を設定する
 	//---------------------------------------------------------------------------
 	initSideObject : function(){
+		var allowexcell = (this.board.hasborder===2 && this.board.hasexcell===2);
 		if(this.isvert){
-			this.sidecell[0] = this.relcell(-1,0);
-			this.sidecell[1] = this.relcell( 1,0);
+			this.sidecell[0] = ((!allowexcell||this.bx>0)                  ? this.relcell(-1,0) : this.relexcell(-1,0));
+			this.sidecell[1] = ((!allowexcell||this.bx<this.board.qcols*2) ? this.relcell( 1,0) : this.relexcell( 1,0));
 			this.sidecross[0] = this.relcross(0,-1);
 			this.sidecross[1] = this.relcross(0, 1);
 		}
 		else{
-			this.sidecell[0] = this.relcell(0,-1);
-			this.sidecell[1] = this.relcell(0, 1);
+			this.sidecell[0] = ((!allowexcell||this.by>0)                  ? this.relcell(0,-1) : this.relexcell(0,-1));
+			this.sidecell[1] = ((!allowexcell||this.by<this.board.qrows*2) ? this.relcell(0, 1) : this.relexcell(0, 1));
 			this.sidecross[0] = this.relcross(-1,0);
 			this.sidecross[1] = this.relcross( 1,0);
 		}
 
 		// LineManager用
-		this.lineedge = (!this.board.linemgr.borderAsLine ? this.sidecell : this.sidecross);
+		this.sideobj = (!this.board.borderAsLine ? this.sidecell : this.sidecross);
 	},
 
 	//---------------------------------------------------------------------------
@@ -516,6 +517,11 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// excell.is51cell()   [＼]のセルかチェックする
 	//---------------------------------------------------------------------------
-	is51cell : function(){ return (this.ques===51);}
+	is51cell : function(){ return (this.ques===51);},
+
+	//---------------------------------------------------------------------------
+	// excell.ice() アイスのマスかどうか判定する
+	//---------------------------------------------------------------------------
+	ice : function(){ return false;}
 }
 });

@@ -73,9 +73,11 @@ MouseEvent:{
 				else if(mx>=0.25){ this.inputData=22; input=true;}
 			}
 			else{
-				var dir = this.prevPos.getdir(pos,2);
-				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
-				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
+				var isvert = this.prevPos.getvert(pos,2);
+				if(isvert!==void 0){
+					this.inputData = (isvert?21:22);
+					input = true;
+				}
 			}
 			
 			if(input){
@@ -87,9 +89,11 @@ MouseEvent:{
 		else if(cell!==this.mouseCell){
 			if(this.inputData===0){ this.inputData=0; input=true;}
 			else{
-				var dir = this.prevPos.getdir(pos,2);
-				if     (dir===pos.UP || dir===pos.DN){ this.inputData=21; input=true;}
-				else if(dir===pos.LT || dir===pos.RT){ this.inputData=22; input=true;}
+				var isvert = this.prevPos.getvert(pos,2);
+				if(isvert!==void 0){
+					this.inputData = (isvert?21:22);
+					input = true;
+				}
 			}
 		}
 		
@@ -374,8 +378,8 @@ OperationManager:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true
+LineGraph:{
+	enabled : true
 },
 
 Flags:{

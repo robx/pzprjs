@@ -159,8 +159,8 @@ Board:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
+LineGraph:{
+	enabled : true,
 	moveline : true
 },
 "AreaCrockManager:AreaManager":{
@@ -384,7 +384,7 @@ AnsCheck:{
 	},
 
 	checkCurveLine : function(){
-		var paths = this.board.paths;
+		var paths = this.board.linegraph.components;
 		for(var id=0;id<paths.length;id++){
 			var path = paths[id], clist = path.clist;
 			var d = clist.getRectSize();
@@ -393,7 +393,7 @@ AnsCheck:{
 			this.failcode.add("laCurve");
 			if(this.checkOnly){ break;}
 			this.board.border.setnoerr();
-			paths[id].objs.seterr(1);
+			paths[id].setedgeerr(1);
 		}
 	},
 	checkQuesNumber : function(){

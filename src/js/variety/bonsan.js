@@ -36,7 +36,7 @@ MouseEvent:{
 		
 		/* 線を引いた/消した箇所にある領域を取得 */
 		var clist = new this.klass.CellList();
-		Array.prototype.push.apply(clist, border.lineedge);
+		Array.prototype.push.apply(clist, border.sideobj);
 		clist = clist.notnull().filter(function(cell){ return cell.path!==null || cell.isNum();});
 		
 		/* 改めて描画対象となるセルを取得して再描画 */
@@ -134,36 +134,30 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		/* LineManagerより後にすること */
+		/* LineGraphより後にすること */
 		this.rects = this.addInfoList(this.klass.AreaSlideManager);
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
-	moveline : true
-},
-"LineManager@heyabon":{
-	initExtraData : function(blist){
-		var clist = blist.cellinside().filter(function(cell){ return cell.lcnt===0;});
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], num = cell.qnum;
-			cell.distance = (num>=0 ? num : null);
-		}
+LineGraph:{
+	enabled : true,
+	moveline : true,
+	
+	resetExtraData : function(cell){
+		cell.distance = (cell.qnum>=0 ? cell.qnum : null);
 		
-		pzpr.common.LineManager.prototype.initExtraData.call(this, blist);
+		pzpr.common.LineGraph.prototype.resetExtraData.call(this, cell);
 	},
-	setExtraData : function(path){
-		pzpr.common.LineManager.prototype.setExtraData.call(this, path);
+	setExtraData : function(component){
+		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
 		
-		if(!path.movevalid){ return;}
-		
-		var cell = path.departure, num = path.departure.qnum;
+		var cell = component.departure, num = cell.qnum;
 		num = (num>=0 ? num : this.board.cellmax);
 		cell.distance = num;
+		if(cell.lcnt===0){ return;}
 		
-		/* path.departureは線が1方向にしかふられていないはず */
-		var dir = cell.getdir(cell.seglist[0],1);
+		/* component.departureは線が1方向にしかふられていないはず */
+		var dir = cell.getdir(cell.pathnodes[0].nodes[0].obj,2);
 		var pos = cell.getaddr(), n = cell.distance;
 		while(1){
 			pos.movedir(dir,2);
@@ -171,7 +165,7 @@ LineManager:{
 			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
 			
 			cell.distance = --n;
-			if(cell===path.destination){ break;}
+			if(cell===component.destination){ break;}
 			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
 			else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
 			else if(dir!==3 && adb.right.isLine() ){ dir=4;}
@@ -453,8 +447,8 @@ AnsCheck:{
 		this.checkAllLineArea(function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
 	},
 	checkAllLineArea : function(evalfunc, code){
-		for(var id=0;id<this.board.paths.length;id++){
-			var path = this.board.paths[id], clist = path.clist;
+		for(var id=0;id<this.board.linegraph.components.length;id++){
+			var path = this.board.linegraph.components[id], clist = path.clist;
 			var top = clist.getQnumCell();
 			var d = clist.getRectSize();
 			var a = clist.length;
@@ -464,7 +458,7 @@ AnsCheck:{
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			this.board.border.setnoerr();
-			path.objs.seterr(1);
+			path.setedgeerr(1);
 		}
 	},
 

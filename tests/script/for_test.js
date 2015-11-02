@@ -92,7 +92,7 @@ ui.debug.extend(
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");
 			mv.btn.Right = (strs[1].substr(0,5)==="right");
 			
-			var addr = new ui.puzzle.klass.RawAddress();
+			var addr = new ui.puzzle.klass.Address();
 			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
 			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
 				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);

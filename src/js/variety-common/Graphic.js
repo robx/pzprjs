@@ -503,7 +503,7 @@ Graphic:{
 	},
 	getBorderColor_ice : function(border){
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		if(!cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
+		if(border.id<this.board.bdinside && !cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 			return this.quescolor;
 		}
 		return null;
@@ -637,7 +637,7 @@ Graphic:{
 			g.vid = "b_line_"+border.id;
 			if(!!color){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				var isvert = (this.board.linemgr.isCenterLine!==border.isVert());
+				var isvert = (this.board.borderAsLine===border.isVert());
 				var lm = this.lm + this.addlw/2;
 				
 				g.fillStyle = color;
@@ -655,7 +655,7 @@ Graphic:{
 			if     (info===1)  { this.addlw=1; return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
 			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
-			else if(!puzzle.execConfig('irowake') || !border.path.color){ return this.linecolor;}
+			else if(!puzzle.execConfig('irowake') || !border.path || !border.path.color){ return this.linecolor;}
 			else{ return border.path.color;}
 		}
 		return null;
@@ -1215,9 +1215,10 @@ Graphic:{
 	drawDashedGrid : function(haschassis){
 		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
+		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<bd.minbx){ x1=bd.minbx;} if(x2>bd.maxbx){ x2=bd.maxbx;}
-		if(y1<bd.minby){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
+		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
 		x1-=(x1&1); y1-=(y1&1); x2+=(x2&1); y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);

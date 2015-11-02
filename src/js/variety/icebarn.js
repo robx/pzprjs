@@ -67,10 +67,10 @@ MouseEvent:{
 	checkinout : function(border,dir){
 		if(border.isnull){ return 0;}
 		var bd=this.board, bx=border.bx, by=border.by;
-		if     ((bx===bd.minbx && dir===border.RT)||(bx===bd.maxbx && dir===border.LT)||
-				(by===bd.minby && dir===border.DN)||(by===bd.maxby && dir===border.UP)){ return 1;}
-		else if((bx===bd.minbx && dir===border.LT)||(bx===bd.maxbx && dir===border.RT)||
-				(by===bd.minby && dir===border.UP)||(by===bd.maxby && dir===border.DN)){ return 2;}
+		if     ((bx===bd.minbx+2 && dir===border.RT)||(bx===bd.maxbx-2 && dir===border.LT)||
+				(by===bd.minby+2 && dir===border.DN)||(by===bd.maxby-2 && dir===border.UP)){ return 1;}
+		else if((bx===bd.minbx+2 && dir===border.LT)||(bx===bd.maxbx-2 && dir===border.RT)||
+				(by===bd.minby+2 && dir===border.UP)||(by===bd.maxby-2 && dir===border.DN)){ return 2;}
 		return 0;
 	}
 },
@@ -123,6 +123,7 @@ Board:{
 	qrows : 8,
 
 	hasborder : 2,
+	hasexcell : 2, /* LineGraph用 */
 
 	arrowin  : null,
 	arrowout : null,
@@ -144,12 +145,12 @@ Board:{
 
 		this.disableInfo();
 		if(col>=3){
-			this.arrowin.init (this.minbx+1, this.minby);
-			this.arrowout.init(this.minbx+5, this.minby);
+			this.arrowin.init (this.minbx+3, this.minby+2);
+			this.arrowout.init(this.minbx+7, this.minby+2);
 		}
 		else{
-			this.arrowin.init (1, this.minby);
-			this.arrowout.init(1, this.maxby);
+			this.arrowin.init (1, this.minby+2);
+			this.arrowout.init(1, this.maxby-2);
 		}
 		this.enableInfo();
 	},
@@ -292,10 +293,10 @@ BoardExec:{
 	setarrow : function(border){
 		/* setarrowin_arrow */
 		var bd = this.board;
-		if     (border.by===bd.maxby){ border.setArrow(border.UP);}
-		else if(border.by===bd.minby){ border.setArrow(border.DN);}
-		else if(border.bx===bd.maxbx){ border.setArrow(border.LT);}
-		else if(border.bx===bd.minbx){ border.setArrow(border.RT);}
+		if     (border.by===bd.maxby-2){ border.setArrow(border.UP);}
+		else if(border.by===bd.minby+2){ border.setArrow(border.DN);}
+		else if(border.bx===bd.maxbx-2){ border.setArrow(border.LT);}
+		else if(border.bx===bd.minbx+2){ border.setArrow(border.RT);}
 	}
 },
 "OutAddress:InOutAddress":{
@@ -304,10 +305,10 @@ BoardExec:{
 	setarrow : function(border){
 		/* setarrowout_arrow */
 		var bd = this.board;
-		if     (border.by===bd.minby){ border.setArrow(border.UP);}
-		else if(border.by===bd.maxby){ border.setArrow(border.DN);}
-		else if(border.bx===bd.minbx){ border.setArrow(border.LT);}
-		else if(border.bx===bd.maxbx){ border.setArrow(border.RT);}
+		if     (border.by===bd.minby+2){ border.setArrow(border.UP);}
+		else if(border.by===bd.maxby-2){ border.setArrow(border.DN);}
+		else if(border.bx===bd.minbx+2){ border.setArrow(border.LT);}
+		else if(border.bx===bd.maxbx-2){ border.setArrow(border.RT);}
 	}
 },
 "InOutOperation:Operation":{
@@ -350,9 +351,25 @@ OperationManager:{
 	}
 },
 
-LineManager:{
-	isCenterLine : true,
-	isLineCross  : true
+LineGraph:{
+	enabled : true,
+	isLineCross : true,
+
+	rebuild2 : function(){
+		var excells = this.board.excell;
+		for(var c=0;c<excells.length;c++){
+			this.setComponentRefs(excells[c], null);
+			this.resetObjNodeList(excells[c]);
+		}
+		
+		pzpr.common.LineGraph.prototype.rebuild2.call(this);
+	},
+
+	incdecLineCount : function(cell, isset){
+		if(cell.group==='cell' && !cell.isnull){
+			pzpr.common.LineGraph.prototype.incdecLineCount.call(this, cell, isset);
+		}
+	}
 },
 
 "AreaIcebarnManager:AreaManager":{
@@ -404,8 +421,8 @@ Graphic:{
 	getCanvasCols : function(){
 		var bd = this.board, cols = this.getBoardCols()+2*this.margin;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.7;}
-			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols+=0.7;}
+			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.7;}
+			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols+=0.7;}
 		}
 		else{ cols+=1.4;}
 		return cols;
@@ -413,25 +430,35 @@ Graphic:{
 	getCanvasRows : function(){
 		var bd = this.board, rows = this.getBoardRows()+2*this.margin;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.7;}
-			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows+=0.7;}
+			if(bd.arrowin.by===bd.minby+2 || bd.arrowout.by===bd.minby+2){ rows+=0.7;}
+			if(bd.arrowin.by===bd.maxby-2 || bd.arrowout.by===bd.maxby-2){ rows+=0.7;}
 		}
 		else{ rows+=1.4;}
 		return rows;
 	},
+
+	getBoardCols : function(){
+		var bd = this.board;
+		return (bd.maxbx-bd.minbx)/2-2;
+	},
+	getBoardRows : function(){
+		var bd = this.board;
+		return (bd.maxby-bd.minby)/2-2;
+	},
+
 	getOffsetCols : function(){
 		var bd = this.board, cols = 0;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.bx===bd.minbx || bd.arrowout.bx===bd.minbx){ cols+=0.35;}
-			if(bd.arrowin.bx===bd.maxbx || bd.arrowout.bx===bd.maxbx){ cols-=0.35;}
+			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.35;}
+			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols-=0.35;}
 		}
 		return cols;
 	},
 	getOffsetRows : function(){
 		var bd = this.board, rows = 0;
 		if(pzpr.PLAYER){
-			if(bd.arrowin.by===bd.minby || bd.arrowout.by===bd.minby){ rows+=0.35;}
-			if(bd.arrowin.by===bd.maxby || bd.arrowout.by===bd.maxby){ rows-=0.35;}
+			if(bd.arrowin.by===bd.minby+2 || bd.arrowout.by===bd.minby+2){ rows+=0.35;}
+			if(bd.arrowin.by===bd.maxby-2 || bd.arrowout.by===bd.maxby-2){ rows-=0.35;}
 		}
 		return rows;
 	},
@@ -489,10 +516,10 @@ Graphic:{
 		border = bd.arrowin.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
-			if     (by===bd.minby){                  py-=0.6*this.ch;}
-			else if(by===bd.maxby){                  py+=0.6*this.ch;}
-			else if(bx===bd.minbx){ px-=0.5*this.cw; py-=0.3*this.ch;}
-			else if(bx===bd.maxbx){ px+=0.5*this.cw; py-=0.3*this.ch;}
+			if     (by===bd.minby+2){              py-=1.2*this.bh;}
+			else if(by===bd.maxby-2){              py+=1.2*this.bh;}
+			else if(bx===bd.minbx+2){ px-=this.bw; py-=0.6*this.bh;}
+			else if(bx===bd.maxbx-2){ px+=this.bw; py-=0.6*this.bh;}
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			this.disptext("IN", px, py, {ratio:[0.55]});
 		}
@@ -502,10 +529,10 @@ Graphic:{
 		border = bd.arrowout.getb();
 		if(border.id>=bd.bdinside && border.id<bd.bdmax){
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
-			if     (by===bd.minby){                  py-=0.6*this.ch;}
-			else if(by===bd.maxby){                  py+=0.6*this.ch;}
-			else if(bx===bd.minbx){ px-=0.7*this.cw; py-=0.3*this.ch;}
-			else if(bx===bd.maxbx){ px+=0.7*this.cw; py-=0.3*this.ch;}
+			if     (by===bd.minby+2){                  py-=1.2*this.bh;}
+			else if(by===bd.maxby-2){                  py+=1.2*this.bh;}
+			else if(bx===bd.minbx+2){ px-=1.4*this.bw; py-=0.6*this.bh;}
+			else if(bx===bd.maxbx-2){ px+=1.4*this.bw; py-=0.6*this.bh;}
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
 			this.disptext("OUT", px, py, {ratio:[0.55]});
 		}
@@ -874,7 +901,7 @@ AnsCheck:{
 
 	checkValidStart : function(){
 		var bd = this.board, border = bd.arrowin.getb();
-		if( !(border.by!==bd.minby || border.by!==bd.maxby || border.bx!==bd.minbx || border.bx!==bd.maxbx) ){
+		if( !(border.by!==bd.minby+2 || border.by!==bd.maxby-2 || border.bx!==bd.minbx+2 || border.bx!==bd.maxbx-2) ){
 			this.failcode.add("stInvalid");
 		}
 	},
