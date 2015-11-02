@@ -41,7 +41,7 @@ FileIO:{
 			puzzle.opemgr.decodeHistory(pzl.history);
 		}
 
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		this.dataarray = null;
 

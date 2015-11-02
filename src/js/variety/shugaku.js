@@ -165,7 +165,7 @@ BoardExec:{
 	}
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
 

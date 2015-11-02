@@ -21,7 +21,7 @@ MouseEvent:{
 
 	inputqnum_main : function(cell){
 		if(this.puzzle.editmode){
-			cell = this.board.rooms.getTopOfRoomByCell(cell);
+			cell = cell.room.top;
 		}
 
 		var max=cell.getmaxnum(), min=cell.getminnum();
@@ -85,7 +85,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
 	hastop : true
 },
@@ -179,9 +179,9 @@ AnsCheck:{
 	},
 
 	checkProductNumber : function(){
-		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var room = rinfo.area[id], clist = room.clist;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r], clist = room.clist;
 			var product = clist.getProduct();
 			if(product === 0 || product === room.top.qnum){ continue;}
 			

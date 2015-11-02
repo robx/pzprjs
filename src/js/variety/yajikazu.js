@@ -49,7 +49,7 @@ BoardExec:{
 	}
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
 

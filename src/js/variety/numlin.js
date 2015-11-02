@@ -144,26 +144,8 @@ AnsCheck:{
 		"checkNoLineObject+"
 	],
 
-	// checkSameObjectInRoom()でpath.clistを参照するようにした関数
 	checkLinkSameNumber : function(){
-		var paths = this.board.linegraph.components;
-		allloop:
-		for(var id=0;id<paths.length;id++){
-			var clist = paths[id].clist;
-			var roomval = -1;
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i], val = cell.getNum();
-				if(val!==-1 && roomval!==val){
-					if(roomval===-1){ roomval = val;}
-					else{
-						this.failcode.add("nmConnDiff");
-						if(this.checkOnly){ break allloop;}
-						this.board.border.setnoerr();
-						paths[id].setedgeerr(1);
-					}
-				}
-			}
-		}
+		this.checkSameObjectInRoom(this.board.linegraph, function(cell){ return cell.qnum;}, "nmConnDiff");
 	}
 },
 

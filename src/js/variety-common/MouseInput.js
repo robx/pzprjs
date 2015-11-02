@@ -66,8 +66,8 @@ MouseEvent:{
 	},
 	inputqnum_main : function(cell){
 		var cell0=cell, puzzle=this.puzzle, bd=puzzle.board;
-		if(puzzle.editmode && bd.rooms.hastop){
-			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
+		if(puzzle.editmode && bd.roommgr.hastop){
+			cell0 = cell = cell.room.top;
 		}
 		else if(puzzle.execConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}
@@ -213,7 +213,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		var clist = this.board.rooms.getClistByCell(cell);
+		var clist = cell.room.clist;
 		for(var i=0;i<clist.length;i++){
 			var cell2 = clist[i];
 			if(this.inputData===1 || cell2.qsub!==3){
@@ -446,7 +446,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
-		if(!this.RBShadeCell){ this.board.bcell.getClistByCell(cell).setinfo(1);}
+		if(!this.RBShadeCell){ cell.sblk.clist.setinfo(1);}
 		else{ this.dispRedBlk8(cell);}
 		this.board.haserror = true;
 		this.puzzle.redraw();

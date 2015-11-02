@@ -40,7 +40,7 @@ MouseEvent:{
 
 		var cell = star.validcell();
 		if(cell!==null){
-			var clist = this.board.rooms.getClistByCell(cell);
+			var clist = cell.room.clist;
 			if(clist.encolor()){ clist.draw();}
 		}
 	},
@@ -207,6 +207,7 @@ Board:{
 		this.common.initBoardSize.call(this,col,row);
 
 		this.initStar(this.qcols,this.qrows);
+		this.rebuildInfo();
 	},
 
 	// 星アクセス用関数
@@ -226,9 +227,8 @@ Board:{
 			star.piece = star.getaddr().getobj();
 		}
 	},
-	gets : function(bx,by,qc,qr){
-		var id = null;
-		if(qc===(void 0)){ qc=this.qcols; qr=this.qrows;}
+	gets : function(bx,by){
+		var id = null, qc=this.qcols, qr=this.qrows;
 		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ }
 		else{ id = (bx-1)+(by-1)*(2*qc-1);}
 
@@ -238,27 +238,16 @@ Board:{
 		var slist = new this.klass.PieceList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
 			var star = this.gets(bx,by);
-			if(star!==null){ slist.add(star);}
+			if(!!star){ slist.add(star);}
 		}}
 		return slist;
 	},
 
 	// 色をつける系関数
 	encolorall : function(){
-		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){ rinfo.area[id].clist.encolor();}
+		var rooms = this.board.roommgr.components;
+		for(var id=0;id<rooms.length;id++){ rooms[id].clist.encolor();}
 		this.puzzle.redraw();
-	},
-
-	// 領域と入っている星を取得する関数
-	getAreaStarInfoAll : function(){
-		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var area = rinfo.area[id], ret = area.clist.getAreaStarInfo();
-			area.star  = ret.star;
-			area.error = ret.err;
-		}
-		return rinfo;
 	}
 },
 BoardExec:{
@@ -268,8 +257,15 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
-	enabled : true
+AreaRoomGraph:{
+	enabled : true,
+
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		var ret = component.clist.getAreaStarInfo();
+		component.star  = ret.star;
+		component.error = ret.err;
+	}
 },
 
 //---------------------------------------------------------
@@ -473,16 +469,19 @@ FileIO:{
 		var rdata = [];
 		this.decodeCellXMLArow(function(cell, name){
 			if(name==='u'){ rdata.push(-1);}
-			else{ rdata.push(+name.substr(1)+1);}
+			else{ rdata.push(+name.substr(1));}
 		});
 		this.rdata2Border(false, rdata);
-		this.board.rooms.reset();
+		this.board.roommgr.rebuild();
 	},
 	encodeAnsAreaRoom_XMLAnswer : function(){
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rooms.length}));
 		this.encodeCellXMLArow(function(cell){
-			return (rinfo.id[cell.id]>0 ? 'n'+(rinfo.id[cell.id]-1) : 'u');
+			var roomid = rooms.indexOf(cell.room);
+			return (roomid>=0 ? 'n'+roomid : 'u');
 		});
 	}
 },
@@ -496,10 +495,6 @@ AnsCheck:{
 		"checkFractal",
 		"checkStarRegion"
 	],
-
-	getStarAreaInfo : function(){
-		return (this._info.sarea = this._info.sarea || this.board.getAreaStarInfoAll());
-	},
 
 	checkStarOnLine : function(){
 		var bd = this.board;
@@ -517,16 +512,16 @@ AnsCheck:{
 	},
 
 	checkFractal : function(){
-		var rinfo = this.getStarAreaInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist;
-			var star = rinfo.area[r].star;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist;
+			var star = rooms[r].star;
 			if(star===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				var cell2 = this.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
-				if(!cell2.isnull && rinfo.getRoomID(cell)===rinfo.getRoomID(cell2)){ continue;}
+				if(!cell2.isnull && cell.room===cell2.room){ continue;}
 				
 				this.failcode.add("bkNotSymSt");
 				if(this.checkOnly){ break allloop;}
@@ -538,13 +533,13 @@ AnsCheck:{
 	checkAvoidStar  : function(){ this.checkErrorFlag(-1, "bkNoStar");},
 	checkStarRegion : function(){ this.checkErrorFlag(-2, "bkPlStar");},
 	checkErrorFlag : function(val, code){
-		var rinfo = this.getStarAreaInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			if(rinfo.area[r].error!==val){ continue;}
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			if(rooms[r].error!==val){ continue;}
 
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
-			rinfo.area[r].clist.seterr(1);
+			rooms[r].clist.seterr(1);
 		}
 	}
 },

@@ -54,11 +54,11 @@ MouseEvent:{
 Cell:{
 	setNum_hanare : function(val){
 		if(val>=0){
-			var puzzle=this.puzzle, rooms=puzzle.board.rooms;
-			val = rooms.getCntOfRoomByCell(this);
+			var puzzle=this.puzzle;
+			val = this.room.clist.length;
 			if(val>this.getmaxnum()){ return null;}
 
-			var clist = rooms.getClistByCell(this), cell2=null;
+			var clist = this.room.clist, cell2=null;
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].isNum()){ cell2=clist[i]; break;}
 			}
@@ -83,7 +83,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -179,9 +179,9 @@ AnsCheck:{
 	},
 
 	checkAnsNumberAndSize : function(){
-		var rinfo = this.getRoomInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist, num = -1;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, num = -1;
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
 			if( num===-1 || num===clist.length ){ continue;}

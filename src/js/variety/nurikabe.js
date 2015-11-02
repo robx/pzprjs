@@ -26,42 +26,49 @@ KeyEvent:{
 Cell:{
 	numberRemainsUnshaded : true
 },
-Board:{
-	getdir8WareaInfo : function(){
-		var winfo = new this.klass.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].isUnshade()?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(winfo.id[cell0.id]!==0){ continue;}
-			var area = winfo.addArea();
-			var stack=[cell0], n=0;
-			while(stack.length>0){
-				var cell = stack.pop();
-				if(winfo.id[cell.id]!==0){ continue;}
-
-				area.clist[n++] = cell;
-				winfo.id[cell.id] = area.id;
-
-				var bx=cell.bx, by=cell.by;
-				var clist = this.cellinside(bx-2, by-2, bx+2, by+2);
-				for(var i=0;i<clist.length;i++){
-					if(winfo.id[clist[i].id]===0){ stack.push(clist[i]);}
-				}
-			}
-			area.clist.length = n;
+"Cell@mochikoro,mochinyoro":{
+	getdir8clist : function(){
+		var list=[];
+		var cells = [
+			this.relcell(-2,-2), this.relcell( 0,-2), this.relcell( 2,-2),
+			this.relcell(-2, 0),                      this.relcell( 2, 0),
+			this.relcell(-2, 2), this.relcell( 0, 2), this.relcell( 2, 2)
+		];
+		for(var i=0;i<8;i++){
+			if(cells[i].group==="cell" && !cells[i].isnull){ list.push([cells[i],(i+1)]);} /* i+1==dir */
 		}
-		return winfo;
+		return list;
+	}
+},
+"Board@mochikoro,mochinyoro":{
+	initialize : function(){
+		this.common.initialize.call(this);
+		this.ublk8mgr = this.addInfoList(this.klass.AreaUnshade8Graph);
 	}
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
-"AreaShadeManager@mochikoro":{
+"AreaShadeGraph@mochikoro":{
 	enabled : false
 },
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
+},
+"AreaUnshade8Graph:AreaUnshadeGraph@mochikoro,mochinyoro":{
+	setComponentRefs : function(obj, component){ obj.ublk8 = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.ublk8nodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.ublk8nodes = [];},
+	
+	getSideObjByNodeObj : function(cell){
+		var list = cell.getdir8clist(), cells = [];
+		for(var i=0;i<list.length;i++){
+			var cell2 = list[i][0];
+			if(this.isnodevalid(cell2)){ cells.push(cell2);}
+		}
+		return cells;
+	}
 },
 
 Flags:{
@@ -198,19 +205,18 @@ FileIO:{
 },
 AnsCheck : {
 	checkDoubleNumberInUnshade : function(){
-		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "bkNumGe2");
+		this.checkAllBlock(this.board.ublkmgr, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "bkNumGe2");
 	},
 	checkNumberAndUnshadeSize : function(){
-		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
+		this.checkAllArea(this.board.ublkmgr, function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
 	}
 },
 "AnsCheck@nuribou":{
 	checkBou : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w===1||h===1);}, "csWidthGt1");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w===1||h===1);}, "csWidthGt1");
 	},
 	checkCorners : function(){
 		var bd = this.board;
-		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
@@ -222,8 +228,7 @@ AnsCheck : {
 			}
 			if(i===2){ continue;}
 
-			var block1 = binfo.getRoomByCell(cells[i][0]).clist,
-				block2 = binfo.getRoomByCell(cells[i][1]).clist;
+			var block1 = cells[i][0].sblk.clist, block2 = cells[i][1].sblk.clist;
 			if(block1.length !== block2.length){ continue;}
 			
 			this.failcode.add("csCornerSize");
@@ -235,18 +240,20 @@ AnsCheck : {
 },
 "AnsCheck@nurikabe,nuribou":{
 	checkNoNumberInUnshade : function(){
-		this.checkAllBlock(this.getUnshadeInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);}, "bkNoNum");
+		this.checkAllBlock(this.board.ublkmgr, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a!==0);}, "bkNoNum");
 	}
 },
 "AnsCheck@mochikoro,mochinyoro":{
 	checkConnectUnshaded_mochikoro : function(){
-		this.checkOneArea( this.board.getdir8WareaInfo(), "csDivide8" );
+		this.checkOneArea(this.board.ublk8mgr, "csDivide8");
 	},
 	checkUnshadeRect : function(){
-		this.checkAllArea(this.getUnshadeInfo(), function(w,h,a,n){ return (w*h===a);}, "cuNotRect");
-	},
+		this.checkAllArea(this.board.ublkmgr, function(w,h,a,n){ return (w*h===a);}, "cuNotRect");
+	}
+},
+"AnsCheck@mochinyoro":{
 	checkShadeNotRect : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h!==a);}, "csRect");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w*h!==a);}, "csRect");
 	}
 },
 

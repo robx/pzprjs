@@ -64,7 +64,7 @@ Cell:{
 			if(val===2){ this.qlight = 0;}
 		}
 
-		var d=this.akariRange();
+		var d=this.viewRange();
 		this.puzzle.painter.paintRange(d.x1-1, this.by-1, d.x2+1, this.by+1);
 		this.puzzle.painter.paintRange(this.bx-1, d.y1-1, this.bx+1, d.y2+1);
 	},
@@ -79,7 +79,7 @@ Cell:{
 		cell=adc.bottom; while(!cell.isnull && cell.qnum===-1){ clist.add(cell); cell=cell.adjacent.bottom;}
 		return clist;
 	},
-	akariRange : function(){
+	viewRange : function(){
 		var cell, cell2, d={}, adc=this.adjacent;
 
 		cell=this; cell2=adc.left;   while(!cell2.isnull && cell2.qnum===-1){ cell=cell2; cell2=cell.adjacent.left;  } d.x1=cell.bx;
@@ -91,7 +91,7 @@ Cell:{
 },
 
 Board:{
-	resetInfo : function(){
+	rebuildInfo : function(){
 		this.initQlight();
 	},
 

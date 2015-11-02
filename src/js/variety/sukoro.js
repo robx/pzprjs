@@ -87,10 +87,10 @@ Cell:{
 	hasborder : 1
 },
 
-AreaNumberManager:{
+AreaNumberGraph:{
 	enabled : true
 },
-"AreaRoomManager@sukororoom":{
+"AreaRoomGraph@sukororoom":{
 	enabled : true
 },
 
@@ -171,8 +171,8 @@ AnsCheck:{
 		"checkNoSuspendCell"
 	],
 
-	checkNoMixedRoom : function(rinfo){
-		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return (cell.isNumberObj()?1:2);}, "bkMixed");
+	checkNoMixedRoom : function(){
+		this.checkSameObjectInRoom(this.board.roommgr, function(cell){ return (cell.isNumberObj()?1:2);}, "bkMixed");
 	},
 	checkDir4NumberCount : function(){
 		this.checkDir4Cell(function(cell){ return cell.isNumberObj();},0, "nmNumberNe");

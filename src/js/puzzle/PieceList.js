@@ -185,6 +185,18 @@ PieceList:{
 	},
 
 	//---------------------------------------------------------------------------
+	// clist.eraseLines()  Clistに含まれるlineを消去します
+	//---------------------------------------------------------------------------
+	eraseLines : function(){
+		var count = 0;
+		for(var i=0,len=this.length;i<len;i++){ for(var j=i+1;j<len;j++){
+			var border = this.puzzle.mouse.getnb(this[i].getaddr(), this[j].getaddr());
+			if(!border.isnull){ border.removeLine(); count++;}
+		}}
+		if(count>0){ this.draw();}
+	},
+
+	//---------------------------------------------------------------------------
 	// clist.draw()   盤面に自分の周囲を描画する
 	//---------------------------------------------------------------------------
 	draw : function(){

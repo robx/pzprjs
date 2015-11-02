@@ -99,7 +99,7 @@ BoardExec:{
 		this.addOpe(d, name);
 
 		bd.setminmax();
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		// Canvasを更新する
 		puzzle.painter.resizeCanvas();
@@ -128,7 +128,7 @@ BoardExec:{
 		var bd = this.board;
 		bd.disableInfo();
 		this.adjustBoardData(key,d);
-		if(bd.rooms.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
+		if(bd.roommgr.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
 
 		if(key & this.EXPAND){
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
@@ -359,15 +359,15 @@ BoardExec:{
 			var cell = bd.cell[c];
 			if(!!this.insex.cell[this.distObj(key,cell)]){
 				if(cell.qnum!==-1){
-					qnums.push({cell:cell, areaid:bd.rooms.getRoomID(cell), pos:[cell.bx,cell.by], val:cell.qnum});
+					qnums.push({cell:cell, area:cell.room, pos:[cell.bx,cell.by], val:cell.qnum});
 					cell.qnum=-1;
 				}
-				bd.rooms.removeCell(cell);
+				cell.room.clist.remove(cell);
 			}
 		}
 		for(var i=0;i<qnums.length;i++){
-			var data = qnums[i], areaid = data.areaid;
-			var tcell = bd.rooms.area[areaid].clist.getTopCell();
+			var data = qnums[i], area = data.area;
+			var tcell = area.clist.getTopCell();
 			if(tcell.isnull){
 				var opemgr = this.puzzle.opemgr;
 				if(!opemgr.undoExec && !opemgr.redoExec){

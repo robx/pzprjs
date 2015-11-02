@@ -50,7 +50,7 @@ Board:{
 	qrows : 8
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
 

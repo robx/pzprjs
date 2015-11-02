@@ -94,7 +94,7 @@ Cell:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -249,16 +249,16 @@ AnsCheck:{
 	],
 
 	checkOverFourCells : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=4);}, "bkSizeLt4");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>=4);}, "bkSizeLt4");
 	},
 	checkLessFourCells : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=4);}, "bkSizeGt4");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a<=4);}, "bkSizeGt4");
 	},
 	checkOverFiveCells : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>=5);}, "bkSizeLt5");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>=5);}, "bkSizeLt5");
 	},
 	checkLessFiveCells : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a<=5);}, "bkSizeGt5");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a<=5);}, "bkSizeGt5");
 	},
 
 	checkdir4BorderAns : function(){

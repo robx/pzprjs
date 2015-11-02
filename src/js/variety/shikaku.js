@@ -30,7 +30,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -122,13 +122,15 @@ FileIO:{
 			}}
 		}
 		this.rdata2Border(false, rdata);
-		bd.rooms.reset();
+		bd.roommgr.rebuild();
 	},
 	encodeAnsSquareRoom : function(){
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		this.datastr += (rinfo.max+"\n");
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize();
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.datastr += (rooms.length+"\n");
+		for(var id=0;id<rooms.length;id++){
+			var d = rooms[id].clist.getRectSize();
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" \n");
 		}
 	},
@@ -171,13 +173,15 @@ FileIO:{
 			}}
 		}
 		this.rdata2Border(false, rdata);
-		bd.rooms.reset();
+		bd.roommgr.rebuild();
 	},
 	encodeAnsSquareRoom_XMLAnswer : function(){
 		var boardnode = this.xmldoc.querySelector('answer');
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize();
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		for(var id=0;id<rooms.length;id++){
+			var d = rooms[id].clist.getRectSize();
 			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1}));
 		}
 	}
@@ -196,12 +200,13 @@ AnsCheck:{
 	],
 
 	checkAhoSquare : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);}, "bkNotRect3");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (n<0 || (n%3)===0 || w*h===a);}, "bkNotRect3");
 	},
 	checkLshapeArea : function(){
-		var rinfo = this.getRoomInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			var clist = room.clist;
 			var cell = clist.getQnumCell();
 			if(cell.isnull){ continue;}
 
@@ -209,7 +214,7 @@ AnsCheck:{
 			if(n<0 || (n%3)!==0){ continue;}
 			var d = clist.getRectSize();
 
-			var clist2 = this.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
+			var clist2 = this.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (cell.room!==room);});
 			var d2 = clist2.getRectSize();
 
 			if( clist2.length>0 && (d2.cols*d2.rows===d2.cnt) && (d.x1===d2.x1 || d.x2===d2.x2) && (d.y1===d2.y1 || d.y2===d2.y2) ){ continue;}

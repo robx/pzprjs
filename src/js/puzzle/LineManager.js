@@ -53,13 +53,9 @@ GraphBase:{
 	isedgevalid : function(linkobj){ return false;},
 	
 	//---------------------------------------------------------------------------
-	// graph.reset()    lcnts等の変数の初期化を行う
 	// graph.rebuild()  既存の情報からデータを再設定する
 	// graph.rebuild2() 継承先に固有のデータを設定する
 	//---------------------------------------------------------------------------
-	reset : function(){
-		this.rebuild();
-	},
 	rebuildmode : false,
 	rebuild : function(){
 		if(!this.enabled){ return;}
@@ -88,7 +84,11 @@ GraphBase:{
 				if(this.isedgevalid(linkobjs[id])){ this.addEdgeByLinkObj(linkobjs[id]);}
 			}
 		}
-		else{ }
+		else{
+			for(var c=0;c<nodeobjs.length;c++){
+				if(this.isnodevalid(nodeobjs[c])){ this.putEdgeByNodeObj(nodeobjs[c]);}
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -140,17 +140,17 @@ GraphBase:{
 	// linegraph.createNodeIfEmpty()  指定されたオブジェクトの場所にNodeを生成する
 	// linegraph.deleteNodeIfEmpty()  指定されたオブジェクトの場所からNodeを除去する
 	//---------------------------------------------------------------------------
-	createNodeIfEmpty : function(nodeobj, linkobj){
+	createNodeIfEmpty : function(nodeobj){
 		// 周囲のNode生成が必要かもしれないのでチェック＆create
 		if(this.getObjNodeList(nodeobj).length===0){
 			this.createNode(nodeobj);
 		}
 	},
-	deleteNodeIfEmpty : function(nodeobj, linkobj){
+	deleteNodeIfEmpty : function(nodeobj){
 		var nodes = this.getObjNodeList(nodeobj);
 		
 		// 周囲のNodeが消えるかもしれないのでチェック＆remove
-		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(nodeobj)){
+		if(nodes[0].nodes.length===0 && !this.isnodevalid(nodeobj)){
 			this.deleteNode(nodes[0]);
 		}
 	},
@@ -181,11 +181,11 @@ GraphBase:{
 	},
 
 	//---------------------------------------------------------------------------
-	// graph.getSideObjByLinkObj() borderから接続するNodeにあるobjを取得する
-	// graph.getSideNodes()        borderからEdgeに接続するNodeを取得する
+	// graph.getSideObjByLinkObj()   borderから接続するNodeにあるobjを取得する
+	// graph.getSideNodesByLinkObj() borderからEdgeに接続するNodeを取得する
 	//---------------------------------------------------------------------------
-	getSideObjByLinkObj : function(linkobj){ return [];},
-	getSideNodes        : function(linkobj){ return [];},
+	getSideObjByLinkObj   : function(linkobj){ return [];},
+	getSideNodesByLinkObj : function(linkobj){ return [];},
 
 	//---------------------------------------------------------------------------
 	// graph.setEdgeByLinkObj() 線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
@@ -214,14 +214,14 @@ GraphBase:{
 		this.createNodeIfEmpty(sidenodeobj[1]);
 
 		// linkするNodeを取得する
-		var sidenodes = this.getSideNodes(linkobj);
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
 
 		// 周囲のNodeとlink
 		this.addEdge(sidenodes[0], sidenodes[1]);
 	},
 	removeEdgeByLinkObj : function(linkobj){
 		// unlinkするNodeを取得する
-		var sidenodes = this.getSideNodes(linkobj);
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
 
 		// 周囲のNodeとunlink
 		this.removeEdge(sidenodes[0], sidenodes[1]);
@@ -252,7 +252,7 @@ GraphBase:{
 		
 		// Component数が0なら現在のmodifyNodesに新規IDを割り振り終了
 		// Component数が2以上ならmodifyNodesに極大部分グラフを取り込んで再探索
-		if(this.modifyNodes.length>0){
+		if(!!this.modifyNodes && this.modifyNodes.length>0){
 			this.remakeMaximalComonents(remakeComponents);
 		}
 	},
@@ -288,8 +288,8 @@ GraphBase:{
 				component.nodes.push(node);
 			}
 			this.modifyNodes = [];
-			this.setExtraData(component);
-			delete component.isremake;
+			this.setComponentInfo(component);
+			component.isremake = false;
 		}
 		// subgraphがひとつながりでないなら再探索ルーチンを回す
 	},
@@ -316,7 +316,7 @@ GraphBase:{
 			if(partslist[i].component!==null){ continue;}	// 既にidがついていたらスルー
 			var component = this.createComponent();
 			this.searchSingle(partslist[i], component);
-			this.setExtraData(component);
+			this.setComponentInfo(component);
 			newcomponents.push(component);
 		}
 		this.modifyNodes = [];
@@ -336,11 +336,9 @@ GraphBase:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// graph.resetExtraData() 指定されたオブジェクトの拡張データをリセットする
-	// graph.setExtraData()   指定された領域の拡張データを設定する
+	// graph.setComponentInfo() Componentオブジェクトのデータを設定する
 	//--------------------------------------------------------------------------------
-	resetExtraData : function(nodeobj){},
-	setExtraData : function(component){
+	setComponentInfo : function(component){
 		var edges = 0;
 		for(var i=0;i<component.nodes.length;i++){
 			var node = component.nodes[i];
@@ -349,13 +347,22 @@ GraphBase:{
 			this.setComponentRefs(node.obj, component);
 		}
 		component.circuits = (edges>>1) - component.nodes.length + 1;
+		
+		this.setExtraData(component);
 	},
+
+	//--------------------------------------------------------------------------------
+	// graph.resetExtraData() 指定されたオブジェクトの拡張データをリセットする
+	// graph.setExtraData()   指定された領域の拡張データを設定する
+	//--------------------------------------------------------------------------------
+	resetExtraData : function(nodeobj){},
+	setExtraData : function(component){},
 
 	//--------------------------------------------------------------------------------
 	// graph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
 	// graph.setLongColor() ブロックに色をつけなおす
 	//--------------------------------------------------------------------------------
-	getLongColor : function(components){},
+	getLongColor : function(components){ return '';},
 	setLongColor : function(components, longColor){}
 },
 GraphComponent:{
@@ -483,13 +490,13 @@ GraphNode:{
 	},
 
 	//---------------------------------------------------------------------------
-	// linegraph.getSideObjByLinkObj() borderから接続するNodeにあるobjを取得する
-	// linegraph.getSideNodes()        borderからEdgeに接続するNodeを取得する
+	// linegraph.getSideObjByLinkObj()   borderから接続するNodeにあるobjを取得する
+	// linegraph.getSideNodesByLinkObj() borderからEdgeに接続するNodeを取得する
 	//---------------------------------------------------------------------------
 	getSideObjByLinkObj : function(border){
 		return border.sideobj;
 	},
-	getSideNodes : function(border){
+	getSideNodesByLinkObj : function(border){
 		var sidenodes = [], sidenodeobj = this.getSideObjByLinkObj(border);
 		for(var i=0;i<sidenodeobj.length;i++){
 			var cell = sidenodeobj[i], nodes = this.getObjNodeList(cell), node = nodes[0];
@@ -513,7 +520,7 @@ GraphNode:{
 	//---------------------------------------------------------------------------
 	setCell : function(cell){
 		if(this.moveline){
-			if(!!cell.path){ this.setExtraData(cell.path);}
+			if(!!cell.path){ this.setComponentInfo(cell.path);}
 			else           { this.resetExtraData(cell);}
 		}
 	},
@@ -587,8 +594,6 @@ GraphNode:{
 		if(this.moveline){ nodeobj.base = (nodeobj.isNum() ? nodeobj : this.board.emptycell);}
 	},
 	setExtraData : function(component){
-		pzpr.common.GraphBase.prototype.setExtraData.call(this,component);
-		
 		if(!component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}
@@ -641,6 +646,7 @@ GraphNode:{
 	//--------------------------------------------------------------------------------
 	// linegraph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
 	// linegraph.setLongColor() ブロックに色をつけなおす
+	// linegraph.repaintNodes() ブロックを再描画する
 	//--------------------------------------------------------------------------------
 	getLongColor : function(components){
 		// 周りで一番大きな線は？
@@ -667,12 +673,15 @@ GraphNode:{
 		}
 		
 		if(puzzle.execConfig('irowake')){
-			var blist_all = new this.klass.BorderList();
-			for(var i=0;i<components.length;i++){
-				blist_all.extend(components[i].getedgeobjs());
-			}
-			puzzle.painter.repaintLines(blist_all);
+			this.repaintNodes(components);
 		}
+	},
+	repaintNodes : function(components){
+		var blist_all = new this.klass.BorderList();
+		for(var i=0;i<components.length;i++){
+			blist_all.extend(components[i].getedgeobjs());
+		}
+		this.puzzle.painter.repaintLines(blist_all);
 	},
 
 	//---------------------------------------------------------------------------

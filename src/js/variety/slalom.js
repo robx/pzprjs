@@ -103,7 +103,7 @@ MouseEvent:{
 		if(input){
 			var bd = this.board;
 			cell.setQues(this.inputData);
-			bd.gatemgr.generateGates();
+			bd.gatemgr.rebuild();
 			
 			cell.draw();
 			bd.startpos.draw();
@@ -132,7 +132,7 @@ MouseEvent:{
 		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
 		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
-		bd.gatemgr.generateGates();
+		bd.gatemgr.rebuild();
 
 		cell.draw();
 		bd.startpos.draw();
@@ -179,7 +179,7 @@ KeyEvent:{
 			if(newques!==-1){
 				cell.setQues(newques);
 				if(newques===0){ cell.setNum(-1);}
-				if(old===21||old===22||newques===21||newques===22){ bd.gatemgr.generateGates();}
+				if(old===21||old===22||newques===21||newques===22){ bd.gatemgr.rebuild();}
 
 				cell.draw();
 				bd.startpos.draw();
@@ -196,7 +196,7 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 	maxnum : function(){
-		return Math.min(255, this.board.gates.length);
+		return Math.min(255, this.board.gatemgr.components.length);
 	},
 
 	gate : null,
@@ -224,8 +224,7 @@ Board:{
 		this.common.initialize.call(this);
 
 		this.startpos = new this.klass.StartPosAddress(1,1);
-		this.gatemgr = new this.klass.HurdleManager();
-		this.gates = [];
+		this.gatemgr = this.addInfoList(this.klass.AreaHurdleGraph);
 	},
 
 	initBoardSize : function(col,row){
@@ -233,55 +232,6 @@ Board:{
 
 		this.startpos.set(this.cell[0]);
 		this.gatemgr.init();
-	},
-
-	getTraceInfo : function(){
-		var info = {errgate:null};
-		var startcell = this.startpos.getc();
-		
-		for(var dir=1;dir<=4;dir++){
-			info = this.searchTraceInfo(startcell, dir);
-			if(info.errgate!==null){ break;}
-		}
-		return info;
-	},
-	searchTraceInfo : function(cell1, dir){
-		var info = {errgate:null};
-		var pos = cell1.getaddr(), passed = 0, ordertype=-1;
-
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = pos.getc();
-				if(cell1===cell){ break;} // ちゃんと戻ってきた
-
-				if(cell.ques===21 || cell.ques===22){
-					var gate = cell.gate;
-					passed++;
-					var gatenumber = gate.number;
-					if(gatenumber<=0){ } // 何もしない
-					else if(ordertype===-1){
-						var revgatenumber = this.gates.length+1-gatenumber;
-						if(gatenumber===revgatenumber)               { } // ど真ん中の数字なら何もしない
-						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
-						else if(passed===revgatenumber)              { break;}         // 逆方向なので別の方向から回る
-						else                                         { info.errgate = gate; break;} // 通過順間違い
-					}
-					else if(ordertype===1 && passed!==gatenumber)    { info.errgate = gate; break;} // 通過順間違い
-				}
-
-				var adb = cell.adjborder;
-				if     (cell.lcnt!==2){ break;}
-				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
-				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
-				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
-				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
-			}
-			else{
-				if(!pos.getb().isLine()){ break;} // 途切れてたら終了
-			}
-		}
-		return info;
 	}
 },
 BoardExec:{
@@ -310,7 +260,7 @@ BoardExec:{
 		bd.startpos.set(info.pos.getc());
 		if(isrec){ opemgr.forceRecord = false;}
 		
-		bd.gatemgr.generateGates();	// 念のため
+		bd.gatemgr.rebuild();	// 念のため
 	}
 },
 
@@ -382,585 +332,42 @@ LineGraph:{
 	enabled : true
 },
 
-Flags:{
-	redline : true,
-	irowake : 1
-},
-
-//---------------------------------------------------------
-// 画像表示系
-Graphic:{
-	gridcolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
-
-	fontcolor    : "white",
-	fontErrcolor : "white",
-
-	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
-	errlinebgcolor : "rgb(160, 150, 255)",
-	pekecolor : "rgb(0, 160, 0)",
-
-	paint : function(){
-		this.drawBGCells();
-		this.drawGrid();
-
-		this.drawGates();
-
-		this.drawShadedCells();
-		this.drawArrowNumbers();
-
-		this.drawPekes();
-		this.drawLines();
-
-		this.drawStartpos();
-
-		this.drawChassis();
-
-		this.drawTarget();
+"AreaHurdleGraph:AreaGraphBase":{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.gate = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.gatenodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.gatenodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.ques===21||cell.ques===22);},
+	isseparate : function(cell1, cell2){
+		var dir = cell1.getdir(cell2,2);
+		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.ques!==21||cell2.ques!==21);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.ques!==22||cell2.ques!==22);}
+		return true;
 	},
 
-	getCellColor : function(cell){
-		if(cell.ques===1){
-			if     (cell.error===0){ return this.quescolor;}
-			else if(cell.error===1){ return this.errcolor1;}
-		}
-		return null;
+	rebuild : function(){
+		this.klass.AreaGraphBase.prototype.rebuild.call(this);
+		
+		this.generateGateNumberAll();
+	},
+	remakeComponent : function(){
+		this.klass.AreaGraphBase.prototype.remakeComponent.call(this);
+		
+		this.generateGateNumberAll();
 	},
 
-	drawGates : function(){
-		var g = this.vinc('cell_gate', 'auto', true);
-
-		var lw = Math.max(this.cw/10, 3);	//LineWidth
-		var lm = lw/2;						//LineMargin
-		var ll = lw*1.1;					//LineLength
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.quescolor);
-
-			g.vid = "c_dl21_"+cell.id;
-			if(cell.ques===21){ //たて
-				var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
-				g.beginPath();
-				for(py=ry;py<max;py+=ll*2){ g.rect(px,py,lw,ll);}
-				g.fill();
-			}
-			else{ g.vhide();}
-
-			g.vid = "c_dl22_"+cell.id;
-			if(cell.ques===22){ //よこ
-				var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
-				g.beginPath();
-				for(px=rx;px<max;px+=ll*2){ g.rect(px,py,ll,lw);}
-				g.fill();
-			}
-			else{ g.vhide();}
-		}
+	resetExtraData : function(cell){
+		cell.gate = null;
+	},
+	setExtraData : function(gate){
+		gate.clist = new this.klass.CellList(gate.getnodeobjs());
+		gate.vert  = (gate.clist[0].ques===21);
+		gate.number = -1;		// この旗門が持つ順番
 	},
 
-	drawStartpos : function(){
-		var g = this.vinc('cell_circle', 'auto');
-
-		var bd = this.board, cell = bd.startpos.getc(), d = this.range;
-		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
-
-		var px = cell.bx*this.bw, py = cell.by*this.bh;
-		var csize = this.cw*0.42;
-
-		g.vid = "c_stpos";
-		g.lineWidth   = Math.max(this.cw*0.05, 1);
-		g.strokeStyle = this.quescolor;
-		g.fillStyle   = (this.puzzle.mouse.inputData===10 ? this.errbcolor1 : "white");
-		g.shapeCircle(px, py, csize);
-
-		g.vid = "text_stpos";
-		g.fillStyle = this.quescolor;
-		this.disptext(""+bd.gates.length, px, py, {ratio:[0.75, 0.66]});
-	},
-
-	repaintParts : function(blist){
-		var clist = blist.cellinside();
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(!this.board.startpos.equals(cell)){ continue;}
-
-			this.range = {x1:cell.bx,y1:cell.by,x2:cell.bx,y2:cell.by};
-			this.drawStartpos();
-
-			// startは一箇所だけなので、描画したら終了してよい
-			break;
-		}
-	},
-
-	// Xキー押した時に数字を表示するメソッド
-	drawNumbersOnGate : function(keydown){
-		var g = this.context, bd = this.board;
-		if(keydown){ bd.gatemgr.generateGateNumber();}
-
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(cell.ques!==21 && cell.ques!==22){ continue;}
-
-			var num = cell.gate.number;
-			g.vid = "cell_text_"+c;
-			if(keydown && num>0){
-				g.fillStyle = "tomato";
-				this.disptext(""+num, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
-	}
-},
-
-//---------------------------------------------------------
-// URLエンコード/デコード処理
-Encode:{
-	decodePzpr : function(type){
-		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
-	},
-	encodePzpr : function(type){
-		var parser = pzpr.parser;
-		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
-
-		return this.encodeSlalom((type===parser.URL_PZPRV3?2:0));
-	},
-
-	decodeKanpen : function(){
-		this.puzzle.fio.decodeBoard_kanpen();
-	},
-	encodeKanpen : function(){
-		this.puzzle.fio.encodeBoard_kanpen();
-	},
-
-	decodeSlalom : function(ver){
-		var bstr = this.outbstr;
-		var array = bstr.split("/");
-
-		var c=0, i=0, bd = this.board;
-		for(i=0;i<array[0].length;i++){
-			var ca = array[0].charAt(i), cell = bd.cell[c];
-
-			if     (ca==='1'){ cell.ques = 1;}
-			else if(ca==='2'){ cell.ques = 21;}
-			else if(ca==='3'){ cell.ques = 22;}
-			else if(this.include(ca,"4","9")||this.include(ca,"a","z")){ c+=(parseInt(ca,36)-4);}
-
-			c++;
-			if(c>=bd.cellmax){ break;}
-		}
-		bd.gatemgr.generateGates();
-
-		if(ver===0){
-			var r=0;
-			for(i=i+1;i<array[0].length;i++){
-				var ca = array[0].charAt(i);
-
-				if(this.include(ca,"0","9")||this.include(ca,"a","f")){
-					bd.gates[r].number = parseInt(ca,16);
-				}
-				else if(ca==='-'){
-					bd.gates[r].number = parseInt(bstr.substr(i+1,2),16); i+=2;
-				}
-				else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-16);}
-
-				r++;
-				if(r>bd.gates.length){ break;}
-			}
-
-			for(var c=0;c<bd.cellmax;c++){
-				var gatelist=bd.cell[c].getConnectingGate(), min=1000;
-				for(var i=0;i<gatelist.length;i++){
-					var val=gatelist[i].number;
-					if(val>0){ min=Math.min(min,val);}
-				}
-				bd.cell[c].qnum = (min<1000?min:-1);
-			}
-		}
-		else if(ver===1 || ver===2){
-			var c=0, spare=0;
-			for(i=i+1;i<array[0].length;i++){
-				var cell = bd.cell[c];
-				if(cell.ques!==1){ i--;}
-				else if(spare>0){ i--; spare--;}
-				else{
-					var ca = array[0].charAt(i);
-
-					if((ver===1) && (this.include(ca,"0","9")||this.include(ca,"a","f"))){
-						cell.qnum = parseInt(ca,16);
-					}
-					else if((ver===1) && ca==='-'){
-						cell.qnum = parseInt(bstr.substr(i+1,2),16);
-						i+=2;
-					}
-					else if((ver===2) && this.include(ca,"0","4")){
-						cell.qdir = parseInt(ca,16);
-						cell.qnum = parseInt(bstr.charAt(i+1),16);
-						i++;
-					}
-					else if((ver===2) && this.include(ca,"5","9")){
-						cell.qdir = parseInt(ca,16)-5;
-						cell.qnum = parseInt(bstr.substr(i+1,2),16);
-						i+=2;
-					}
-					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
-				}
-				c++;
-				if(c>=bd.cellmax){ break;}
-			}
-		}
-
-		bd.startpos.set( bd.cell[+array[1]] );
-
-		this.outbstr = array[0].substr(i);
-	},
-	encodeSlalom : function(ver){
-		var cm="", count=0, bd=this.board;
-		bd.gatemgr.generateAll();
-		for(var c=0;c<bd.cellmax;c++){
-			var pstr="", cell=bd.cell[c];
-			if     (cell.ques=== 1){ pstr = "1";}
-			else if(cell.ques===21){ pstr = "2";}
-			else if(cell.ques===22){ pstr = "3";}
-			else{ count++;}
-
-			if(count===0){ cm += pstr;}
-			else if(pstr || count===32){ cm+=((3+count).toString(36)+pstr); count=0;}
-		}
-		if(count>0){ cm+=(3+count).toString(36);}
-
-		count=0;
-		if(ver===0){
-			for(var r=0;r<bd.gates.length;r++){
-				var pstr = "";
-				var val = bd.gates[r].number;
-
-				if     (val>= 0 && val< 16){ pstr =       val.toString(16);}
-				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
-				else{ count++;}
-
-				if(count===0){ cm += pstr;}
-				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
-			}
-			if(count>0){ cm+=(15+count).toString(36);}
-		}
-		else if(ver===1 || ver===2){
-			for(var c=0;c<bd.cellmax;c++){
-				var cell = bd.cell[c];
-				if(cell.ques!==1){ continue;}
-
-				var pstr = "", val = cell.qnum, dir = cell.qdir;
-				if     (val>= 1 && val< 16){ pstr = (ver===1 ? ""  : ""+dir)     + val.toString(16);}
-				else if(val>=16 && val<256){ pstr = (ver===1 ? "-" : ""+(dir+5)) + val.toString(16);}
-				else{ count++;}
-
-				if(count===0){ cm += pstr;}
-				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
-			}
-			if(count>0){ cm+=(15+count).toString(36);}
-		}
-
-		cm += ("/"+bd.startpos.getc().id);
-
-		this.outbstr += cm;
-	}
-},
-//---------------------------------------------------------
-FileIO:{
-	decodeData : function(){
-		if     (this.filever===2){ this.decodeBoard_pzpr2();}
-		else if(this.filever===1){ this.decodeBoard_pzpr1();}
-		else if(this.filever===0){ this.decodeBoard_old();}
-		this.decodeBorderLine();
-	},
-	encodeData : function(){
-		this.filever = 2;
-		this.encodeBoard_pzpr2();
-		this.encodeBorderLine();
-	},
-
-	kanpenOpen : function(){
-		this.decodeBoard_kanpen();
-		this.decodeBorderLine();
-	},
-	kanpenSave : function(){
-		this.encodeBoard_kanpen();
-		this.encodeBorderLine();
-	},
-
-	decodeBoard_pzpr1 : function(){
-		var bd = this.board;
-		this.decodeCell( function(cell,ca){
-			if     (ca==="o"){ bd.startpos.set(cell);}
-			else if(ca==="i"){ cell.ques = 21;}
-			else if(ca==="-"){ cell.ques = 22;}
-			else if(ca==="#"){ cell.ques = 1;}
-			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
-		});
-		bd.gatemgr.generateGates();
-	},
-	decodeBoard_pzpr2 : function(){
-		var bd = this.board;
-		this.decodeCell( function(cell,ca){
-			if     (ca==="o"){ bd.startpos.set(cell);}
-			else if(ca==="i"){ cell.ques = 21;}
-			else if(ca==="-"){ cell.ques = 22;}
-			else if(ca==="#"){ cell.ques = 1;}
-			else if(ca!=="."){
-				var inp = ca.split(",");
-				cell.ques = 1;
-				cell.qdir = (inp[0]!=="0"?+inp[0]: 0);
-				cell.qnum = (inp[1]!=="-"?+inp[1]:-2);
-			}
-		});
-		bd.gatemgr.generateGates();
-	},
-	encodeBoard_pzpr2 : function(){
-		var bd = this.board;
-		bd.gatemgr.generateAll();
-		this.encodeCell( function(cell){
-			if     (bd.startpos.equals(cell)){ return "o ";}
-			else if(cell.ques===21){ return "i ";}
-			else if(cell.ques===22){ return "- ";}
-			else if(cell.ques=== 1 && cell.qnum<=0){ return "# ";}
-			else if(cell.ques=== 1){
-				var ca1 = (cell.qdir!== 0 ? ""+cell.qdir : "0");
-				var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
-				return [ca1, ",", ca2, " "].join('');
-			}
-			else{ return ". ";}
-		});
-	},
-
-	decodeBoard_kanpen : function(){
-		var bd = this.board;
-		this.decodeCell( function(cell,ca){
-			if     (ca==="+"){ bd.startpos.set(cell);}
-			else if(ca==="|"){ cell.ques = 21;}
-			else if(ca==="-"){ cell.ques = 22;}
-			else if(ca==="0"){ cell.ques = 1;}
-			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
-		});
-		bd.gatemgr.generateGates();
-	},
-	encodeBoard_kanpen : function(){
-		var bd = this.board;
-		bd.gatemgr.generateAll();
-		this.encodeCell( function(cell){
-			if     (bd.startpos.equals(cell)){ return "+ ";}
-			else if(cell.ques===21){ return "| ";}
-			else if(cell.ques===22){ return "- ";}
-			else if(cell.ques=== 1){
-				return (cell.qnum>0 ? cell.qnum+" " : "0 ");
-			}
-			else{ return ". ";}
-		});
-	},
-
-	kanpenOpenXML : function(){
-		this.decodeCellSlalom_XMLBoard();
-		this.decodeBorderLine_XMLAnswer();
-	},
-	kanpenSaveXML : function(){
-		this.encodeCellSlalom_XMLBoard();
-		this.encodeBorderLine_XMLAnswer();
-	},
-
-	UNDECIDED_NUM_XML : -3,
-	decodeCellSlalom_XMLBoard : function(){
-		var bd = this.board;
-		this.decodeCellXMLBoard(function(cell, val){
-			if(val>=0){
-				cell.ques = 1;
-				if(val>0){ cell.qnum = val;}
-			}
-			else if(val===-5){ cell.ques = 21;}
-			else if(val===-4){ cell.ques = 22;}
-			else if(val===-1){ bd.startpos.set(cell);}
-		});
-		bd.gatemgr.generateGates();
-	},
-	encodeCellSlalom_XMLBoard : function(){
-		var bd = this.board;
-		bd.gatemgr.generateAll();
-		this.encodeCellXMLBoard(function(cell){
-			var val = -3;
-			if(cell.ques=== 1){
-				val = (cell.qnum>0 ? cell.qnum : 0);
-			}
-			else if(cell.ques===21){ val = -5;}
-			else if(cell.ques===22){ val = -4;}
-			else if(bd.startpos.equals(cell)){ val = -1;}
-			return val;
-		});
-	},
-
-	decodeBoard_old : function(){
-		var sv_num = [], bd = this.board;
-		this.decodeCell( function(cell,ca){
-			var c = cell.id;
-			sv_num[c]=-1;
-			if     (ca==="#"){ cell.ques = 1;}
-			else if(ca==="o"){ bd.startpos.set(cell);}
-			else if(ca!=="."){
-				if     (ca.charAt(0)==="i"){ cell.ques = 21;}
-				else if(ca.charAt(0)==="w"){ cell.ques = 22;}
-				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
-			}
-		});
-		bd.gatemgr.generateGates();
-
-		for(var c=0;c<bd.cellmax;c++){
-			if(sv_num[c]!==-1){ bd.cell[c].gate.number = sv_num[c];}
-		}
-		for(var c=0;c<bd.cellmax;c++){
-			var gatelist=bd.cell[c].getConnectingGate(), min=1000;
-			for(var i=0;i<gatelist.length;i++){
-				var val=gatelist[i].number;
-				if(val>0){ min=Math.min(min,val);}
-			}
-			bd.cell[c].qnum = (min<1000?min:-1);
-		}
-	}
-},
-
-//---------------------------------------------------------
-// 正解判定処理実行部
-AnsCheck:{
-	checklist : [
-		"checkLineOnShadeCell",
-		"checkCrossLine",
-		"checkBranchLine",
-		"checkPassGateOnce",
-		"checkStartid",
-		"checkGateNumber",
-		"checkDeadendLine+",
-		"checkOneLoop",
-		"checkPassAllGate"
-	],
-
-	generateGateNumber : function(){
-		if(!this._info.gate){
-			this.board.gatemgr.generateAll();
-			this._info.gate = true;
-		}
-	},
-
-	checkStartid : function(){
-		var start = this.board.startpos.getc();
-		if(start.lcnt!==2){
-			start.seterr(1);
-			this.failcode.add("stLineNe2");
-		}
-	},
-	checkPassGateOnce : function(){ return this.checkGateLine(1, "gateRedup");},
-	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
-	checkGateLine : function(type, code){
-		this.generateGateNumber();
-		var bd = this.board;
-		for(var r=0;r<bd.gates.length;r++){
-			var cnt=0, clist=bd.gates[r].clist;
-			for(var i=0;i<clist.length;i++){
-				if(clist[i].lcnt>0){ cnt++;}
-			}
-			if((type===1 && cnt<=1)||(type===2 && cnt>0)){ continue;}
-			
-			this.failcode.add(code);
-			if(this.checkOnly){ break;}
-			clist.seterr(4);
-			bd.gates[r].getGatePole().seterr(1);
-		}
-	},
-	checkGateNumber : function(){
-		this.generateGateNumber();
-		var bd = this.board, info = bd.getTraceInfo();
-		var gate = info.errgate;
-		if(gate!==null){
-			this.failcode.add("lrOrder");
-			gate.clist.seterr(4);
-			gate.getGatePole().seterr(1);
-		}
-	}
-},
-
-FailCode:{
-	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
-	gateUnpass: ["線が通過していない旗門があります。","There is a gate that the line is not passing."],
-	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
-	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
-},
-
-//---------------------------------------------------------
-//---------------------------------------------------------
-HurdleData:{
-	initialize : function(){
-		this.clist  = new this.klass.CellList();	// この旗門に含まれるセルのリスト
-		this.number = -1;		// この旗門が持つ順番
-		this.nums   = null;		// numberの計算用
-		this.val    = 0;		// この旗門の方向(21:タテ 22:ヨコ)
-		this.x1 = this.x2 = this.y1 = this.y2 = -1; // 旗門のサイズ(両端の黒マスIDを取得するのに必要)
-	},
-
-	// 旗門の両端にある黒マスの場所のセルを取得する
-	getGatePole : function(){
-		var bd = this.board;
-		var clist = new this.klass.CellList(), cell1, cell2;
-		if(this.val===21){
-			cell1 = bd.getc(this.x1, this.y1-2);
-			cell2 = bd.getc(this.x1, this.y2+2);
-		}
-		else if(this.val===22){
-			cell1 = bd.getc(this.x1-2, this.y1);
-			cell2 = bd.getc(this.x2+2, this.y1);
-		}
-		else{ return [];}
-		if(!cell1.isnull && cell1.ques===1){ clist.add(cell1);}
-		if(!cell2.isnull && cell2.ques===1){ clist.add(cell2);}
-		return clist;
-	}
-},
-
-HurdleManager:{
-	init : function(){
-		var bd = this.board;
-		bd.gates = [];
-		for(var c=0;c<bd.cellmax;c++){ bd.cell[c].gate = null;}
-	},
-
-	generateAll : function(){
-		this.generateGates();
-		this.generateGateNumber();
-	},
-
-	generateGates : function(){
-		var bd = this.board;
-		this.init();
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c], val = cell.ques;
-			if(val===0 || val===1 || cell.gate!==null){ continue;}
-
-			var pos = cell.getaddr(), isvert=(val===21);
-
-			var gate = new this.klass.HurdleData();
-			bd.gates.push(gate);
-			while(1){
-				var cell2 = pos.getc();
-				if(cell2.isnull || cell2.ques!==val){ break;}
-
-				gate.clist.add(cell2);
-				cell2.gate = gate;
-				if(isvert){ pos.move(0,2);}else{ pos.move(2,0);}
-			}
-			gate.x1 = cell.bx;
-			gate.y1 = cell.by;
-			gate.x2 = (!isvert ? pos.bx-2 : pos.bx);
-			gate.y2 = ( isvert ? pos.by-2 : pos.by);
-			gate.val = val;
-		}
-	},
-
-	generateGateNumber : function(){
-		var bd = this.board, gates = bd.gates;
+	generateGateNumberAll : function(){
+		var bd = this.board, gates = this.components;
 
 		// 一旦すべての旗門のnumberを消す
 		for(var r=0;r<gates.length;r++){ gates[r].number=-1;}
@@ -1058,6 +465,563 @@ HurdleManager:{
 			}
 			delnum(decnumber);
 		}
+		
+		for(var r=0;r<gates.length;r++){ gates[r].nums = null;}
+	},
+
+	setGateError : function(gate,val){
+		var bd = this.board;
+		var clist = new this.klass.CellList(), cell1, cell2;
+		var d = gate.clist.getRectSize();
+		if(gate.vert){
+			cell1 = bd.getc(d.x1, d.y1-2);
+			cell2 = bd.getc(d.x1, d.y2+2);
+		}
+		else{
+			cell1 = bd.getc(d.x1-2, d.y1);
+			cell2 = bd.getc(d.x2+2, d.y1);
+		}
+		if(!cell1.isnull && cell1.ques===1){ clist.add(cell1);}
+		if(!cell2.isnull && cell2.ques===1){ clist.add(cell2);}
+		clist.seterr(val);
 	}
+},
+
+Flags:{
+	redline : true,
+	irowake : 1
+},
+
+//---------------------------------------------------------
+// 画像表示系
+Graphic:{
+	gridcolor_type : "LIGHT",
+	errbcolor1_type : "DARK",
+
+	fontcolor    : "white",
+	fontErrcolor : "white",
+
+	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
+	errlinebgcolor : "rgb(160, 150, 255)",
+	pekecolor : "rgb(0, 160, 0)",
+
+	paint : function(){
+		this.drawBGCells();
+		this.drawGrid();
+
+		this.drawGates();
+
+		this.drawShadedCells();
+		this.drawArrowNumbers();
+
+		this.drawPekes();
+		this.drawLines();
+
+		this.drawStartpos();
+
+		this.drawChassis();
+
+		this.drawTarget();
+	},
+
+	getCellColor : function(cell){
+		if(cell.ques===1){
+			if     (cell.error===0){ return this.quescolor;}
+			else if(cell.error===1){ return this.errcolor1;}
+		}
+		return null;
+	},
+
+	drawGates : function(){
+		var g = this.vinc('cell_gate', 'auto', true);
+
+		var lw = Math.max(this.cw/10, 3);	//LineWidth
+		var lm = lw/2;						//LineMargin
+		var ll = lw*1.1;					//LineLength
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			g.fillStyle = (cell.error===4 ? this.errcolor1 : this.quescolor);
+
+			g.vid = "c_dl21_"+cell.id;
+			if(cell.ques===21){ //たて
+				var px = (cell.bx*this.bw)-lm+1, py, ry = (cell.by-1)*this.bh, max = ry+this.ch;
+				g.beginPath();
+				for(py=ry;py<max;py+=ll*2){ g.rect(px,py,lw,ll);}
+				g.fill();
+			}
+			else{ g.vhide();}
+
+			g.vid = "c_dl22_"+cell.id;
+			if(cell.ques===22){ //よこ
+				var px, py = (cell.by*this.bh)-lm+1, rx = (cell.bx-1)*this.bw, max = rx+this.cw;
+				g.beginPath();
+				for(px=rx;px<max;px+=ll*2){ g.rect(px,py,ll,lw);}
+				g.fill();
+			}
+			else{ g.vhide();}
+		}
+	},
+
+	drawStartpos : function(){
+		var g = this.vinc('cell_circle', 'auto');
+
+		var bd = this.board, cell = bd.startpos.getc(), d = this.range;
+		if(cell.bx<d.x1 || d.x2<cell.bx || cell.by<d.y1 || d.y2<cell.by){ return;}
+
+		var px = cell.bx*this.bw, py = cell.by*this.bh;
+		var csize = this.cw*0.42;
+
+		g.vid = "c_stpos";
+		g.lineWidth   = Math.max(this.cw*0.05, 1);
+		g.strokeStyle = this.quescolor;
+		g.fillStyle   = (this.puzzle.mouse.inputData===10 ? this.errbcolor1 : "white");
+		g.shapeCircle(px, py, csize);
+
+		g.vid = "text_stpos";
+		g.fillStyle = this.quescolor;
+		this.disptext(""+bd.gatemgr.components.length, px, py, {ratio:[0.75, 0.66]});
+	},
+
+	repaintParts : function(blist){
+		var clist = blist.cellinside();
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			if(!this.board.startpos.equals(cell)){ continue;}
+
+			this.range = {x1:cell.bx,y1:cell.by,x2:cell.bx,y2:cell.by};
+			this.drawStartpos();
+
+			// startは一箇所だけなので、描画したら終了してよい
+			break;
+		}
+	},
+
+	// Xキー押した時に数字を表示するメソッド
+	drawNumbersOnGate : function(keydown){
+		var g = this.context, bd = this.board;
+		if(keydown){ bd.gatemgr.generateGateNumberAll();}
+
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
+			if(cell.ques!==21 && cell.ques!==22){ continue;}
+
+			var num = cell.gate.number;
+			g.vid = "cell_text_"+c;
+			if(keydown && num>0){
+				g.fillStyle = "tomato";
+				this.disptext(""+num, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
+		}
+	}
+},
+
+//---------------------------------------------------------
+// URLエンコード/デコード処理
+Encode:{
+	decodePzpr : function(type){
+		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
+	},
+	encodePzpr : function(type){
+		var parser = pzpr.parser;
+		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
+
+		return this.encodeSlalom((type===parser.URL_PZPRV3?2:0));
+	},
+
+	decodeKanpen : function(){
+		this.puzzle.fio.decodeBoard_kanpen();
+	},
+	encodeKanpen : function(){
+		this.puzzle.fio.encodeBoard_kanpen();
+	},
+
+	decodeSlalom : function(ver){
+		var bstr = this.outbstr;
+		var array = bstr.split("/");
+
+		var c=0, i=0, bd = this.board;
+		for(i=0;i<array[0].length;i++){
+			var ca = array[0].charAt(i), cell = bd.cell[c];
+
+			if     (ca==='1'){ cell.ques = 1;}
+			else if(ca==='2'){ cell.ques = 21;}
+			else if(ca==='3'){ cell.ques = 22;}
+			else if(this.include(ca,"4","9")||this.include(ca,"a","z")){ c+=(parseInt(ca,36)-4);}
+
+			c++;
+			if(c>=bd.cellmax){ break;}
+		}
+		bd.gatemgr.rebuild();
+
+		if(ver===0){
+			var r=0;
+			for(i=i+1;i<array[0].length;i++){
+				var ca = array[0].charAt(i);
+
+				if(this.include(ca,"0","9")||this.include(ca,"a","f")){
+					bd.gatemgr.components[r].number = parseInt(ca,16);
+				}
+				else if(ca==='-'){
+					bd.gatemgr.components[r].number = parseInt(bstr.substr(i+1,2),16); i+=2;
+				}
+				else if(this.include(ca,"g","z")){ r+=(parseInt(ca,36)-16);}
+
+				r++;
+				if(r>bd.gatemgr.components.length){ break;}
+			}
+
+			for(var c=0;c<bd.cellmax;c++){
+				var gatelist=bd.cell[c].getConnectingGate(), min=1000;
+				for(var i=0;i<gatelist.length;i++){
+					var val=gatelist[i].number;
+					if(val>0){ min=Math.min(min,val);}
+				}
+				bd.cell[c].qnum = (min<1000?min:-1);
+			}
+		}
+		else if(ver===1 || ver===2){
+			var c=0, spare=0;
+			for(i=i+1;i<array[0].length;i++){
+				var cell = bd.cell[c];
+				if(cell.ques!==1){ i--;}
+				else if(spare>0){ i--; spare--;}
+				else{
+					var ca = array[0].charAt(i);
+
+					if((ver===1) && (this.include(ca,"0","9")||this.include(ca,"a","f"))){
+						cell.qnum = parseInt(ca,16);
+					}
+					else if((ver===1) && ca==='-'){
+						cell.qnum = parseInt(bstr.substr(i+1,2),16);
+						i+=2;
+					}
+					else if((ver===2) && this.include(ca,"0","4")){
+						cell.qdir = parseInt(ca,16);
+						cell.qnum = parseInt(bstr.charAt(i+1),16);
+						i++;
+					}
+					else if((ver===2) && this.include(ca,"5","9")){
+						cell.qdir = parseInt(ca,16)-5;
+						cell.qnum = parseInt(bstr.substr(i+1,2),16);
+						i+=2;
+					}
+					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
+				}
+				c++;
+				if(c>=bd.cellmax){ break;}
+			}
+		}
+
+		bd.startpos.set( bd.cell[+array[1]] );
+
+		this.outbstr = array[0].substr(i);
+	},
+	encodeSlalom : function(ver){
+		var cm="", count=0, bd=this.board;
+		for(var c=0;c<bd.cellmax;c++){
+			var pstr="", cell=bd.cell[c];
+			if     (cell.ques=== 1){ pstr = "1";}
+			else if(cell.ques===21){ pstr = "2";}
+			else if(cell.ques===22){ pstr = "3";}
+			else{ count++;}
+
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===32){ cm+=((3+count).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm+=(3+count).toString(36);}
+
+		count=0;
+		if(ver===0){
+			for(var r=0;r<bd.gatemgr.components.length;r++){
+				var pstr = "";
+				var val = bd.gatemgr.components[r].number;
+
+				if     (val>= 0 && val< 16){ pstr =       val.toString(16);}
+				else if(val>=16 && val<256){ pstr = "-" + val.toString(16);}
+				else{ count++;}
+
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			}
+			if(count>0){ cm+=(15+count).toString(36);}
+		}
+		else if(ver===1 || ver===2){
+			for(var c=0;c<bd.cellmax;c++){
+				var cell = bd.cell[c];
+				if(cell.ques!==1){ continue;}
+
+				var pstr = "", val = cell.qnum, dir = cell.qdir;
+				if     (val>= 1 && val< 16){ pstr = (ver===1 ? ""  : ""+dir)     + val.toString(16);}
+				else if(val>=16 && val<256){ pstr = (ver===1 ? "-" : ""+(dir+5)) + val.toString(16);}
+				else{ count++;}
+
+				if(count===0){ cm += pstr;}
+				else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
+			}
+			if(count>0){ cm+=(15+count).toString(36);}
+		}
+
+		cm += ("/"+bd.startpos.getc().id);
+
+		this.outbstr += cm;
+	}
+},
+//---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
+		if     (this.filever===2){ this.decodeBoard_pzpr2();}
+		else if(this.filever===1){ this.decodeBoard_pzpr1();}
+		else if(this.filever===0){ this.decodeBoard_old();}
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		this.filever = 2;
+		this.encodeBoard_pzpr2();
+		this.encodeBorderLine();
+	},
+
+	kanpenOpen : function(){
+		this.decodeBoard_kanpen();
+		this.decodeBorderLine();
+	},
+	kanpenSave : function(){
+		this.encodeBoard_kanpen();
+		this.encodeBorderLine();
+	},
+
+	decodeBoard_pzpr1 : function(){
+		var bd = this.board;
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
+		});
+		bd.gatemgr.rebuild();
+	},
+	decodeBoard_pzpr2 : function(){
+		var bd = this.board;
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
+			else if(ca!=="."){
+				var inp = ca.split(",");
+				cell.ques = 1;
+				cell.qdir = (inp[0]!=="0"?+inp[0]: 0);
+				cell.qnum = (inp[1]!=="-"?+inp[1]:-2);
+			}
+		});
+		bd.gatemgr.rebuild();
+	},
+	encodeBoard_pzpr2 : function(){
+		var bd = this.board;
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "o ";}
+			else if(cell.ques===21){ return "i ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1 && cell.qnum<=0){ return "# ";}
+			else if(cell.ques=== 1){
+				var ca1 = (cell.qdir!== 0 ? ""+cell.qdir : "0");
+				var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
+				return [ca1, ",", ca2, " "].join('');
+			}
+			else{ return ". ";}
+		});
+	},
+
+	decodeBoard_kanpen : function(){
+		var bd = this.board;
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ bd.startpos.set(cell);}
+			else if(ca==="|"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="0"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
+		});
+		bd.gatemgr.rebuild();
+	},
+	encodeBoard_kanpen : function(){
+		var bd = this.board;
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "+ ";}
+			else if(cell.ques===21){ return "| ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1){
+				return (cell.qnum>0 ? cell.qnum+" " : "0 ");
+			}
+			else{ return ". ";}
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellSlalom_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellSlalom_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -3,
+	decodeCellSlalom_XMLBoard : function(){
+		var bd = this.board;
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val>=0){
+				cell.ques = 1;
+				if(val>0){ cell.qnum = val;}
+			}
+			else if(val===-5){ cell.ques = 21;}
+			else if(val===-4){ cell.ques = 22;}
+			else if(val===-1){ bd.startpos.set(cell);}
+		});
+		bd.gatemgr.rebuild();
+	},
+	encodeCellSlalom_XMLBoard : function(){
+		var bd = this.board;
+		this.encodeCellXMLBoard(function(cell){
+			var val = -3;
+			if(cell.ques=== 1){
+				val = (cell.qnum>0 ? cell.qnum : 0);
+			}
+			else if(cell.ques===21){ val = -5;}
+			else if(cell.ques===22){ val = -4;}
+			else if(bd.startpos.equals(cell)){ val = -1;}
+			return val;
+		});
+	},
+
+	decodeBoard_old : function(){
+		var sv_num = [], bd = this.board;
+		this.decodeCell( function(cell,ca){
+			var c = cell.id;
+			sv_num[c]=-1;
+			if     (ca==="#"){ cell.ques = 1;}
+			else if(ca==="o"){ bd.startpos.set(cell);}
+			else if(ca!=="."){
+				if     (ca.charAt(0)==="i"){ cell.ques = 21;}
+				else if(ca.charAt(0)==="w"){ cell.ques = 22;}
+				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
+			}
+		});
+		bd.gatemgr.rebuild();
+
+		for(var c=0;c<bd.cellmax;c++){
+			if(sv_num[c]!==-1){ bd.cell[c].gate.number = sv_num[c];}
+		}
+		for(var c=0;c<bd.cellmax;c++){
+			var gatelist=bd.cell[c].getConnectingGate(), min=1000;
+			for(var i=0;i<gatelist.length;i++){
+				var val=gatelist[i].number;
+				if(val>0){ min=Math.min(min,val);}
+			}
+			bd.cell[c].qnum = (min<1000?min:-1);
+		}
+	}
+},
+
+//---------------------------------------------------------
+// 正解判定処理実行部
+AnsCheck:{
+	checklist : [
+		"checkLineOnShadeCell",
+		"checkCrossLine",
+		"checkBranchLine",
+		"checkPassGateOnce",
+		"checkStartid",
+		"checkGateNumber",
+		"checkDeadendLine+",
+		"checkOneLoop",
+		"checkPassAllGate"
+	],
+
+	checkStartid : function(){
+		var start = this.board.startpos.getc();
+		if(start.lcnt!==2){
+			start.seterr(1);
+			this.failcode.add("stLineNe2");
+		}
+	},
+	checkPassGateOnce : function(){ return this.checkGateLine(1, "gateRedup");},
+	checkPassAllGate  : function(){ return this.checkGateLine(2, "gateUnpass");},
+	checkGateLine : function(type, code){
+		var bd = this.board, gates = bd.gatemgr.components;
+		for(var r=0;r<gates.length;r++){
+			var cnt=0, clist=gates[r].clist;
+			for(var i=0;i<clist.length;i++){
+				if(clist[i].lcnt>0){ cnt++;}
+			}
+			if((type===1 && cnt<=1)||(type===2 && cnt>0)){ continue;}
+			
+			this.failcode.add(code);
+			if(this.checkOnly){ break;}
+			clist.seterr(4);
+			bd.gatemgr.setGateError(gates[r],1);
+		}
+	},
+	checkGateNumber : function(){
+		var errgate = this.getTraceInfo();
+		if(errgate!==null){
+			this.failcode.add("lrOrder");
+			errgate.clist.seterr(4);
+			this.board.gatemgr.setGateError(errgate,1);
+		}
+	},
+
+	getTraceInfo : function(){
+		return this.searchTraceInfo(this.board.startpos.getc());
+	},
+	searchTraceInfo : function(cell1){
+		if(cell1.lcnt===0){ return null;}
+		var errgate = null;
+		var dir = cell1.getdir(cell1.pathnodes[0].nodes[0].obj,2);
+		var pos = cell1.getaddr(), passed = 0, ordertype=-1, gatecount = this.board.gatemgr.components.length;
+
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = pos.getc();
+				if(cell1===cell){ break;} // ちゃんと戻ってきた
+
+				if(cell.ques===21 || cell.ques===22){
+					var gate = cell.gate;
+					passed++;
+					var gatenumber = gate.number;
+					if(gatenumber<=0){ } // 何もしない
+					else if(ordertype===-1){
+						var revgatenumber = gatecount+1-gatenumber;
+						if(gatenumber===revgatenumber)               { } // ど真ん中の数字なら何もしない
+						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
+						else if(passed===revgatenumber)              { break;}         // 逆方向なので別の方向から回る
+						else                                         { errgate = gate; break;} // 通過順間違い
+					}
+					else if(ordertype===1 && passed!==gatenumber)    { errgate = gate; break;} // 通過順間違い
+				}
+
+				var adb = cell.adjborder;
+				if     (cell.lcnt!==2){ break;}
+				else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+				else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+				else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+				else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+			}
+			else{
+				if(!pos.getb().isLine()){ break;} // 途切れてたら終了
+			}
+		}
+		return errgate;
+	}
+},
+
+FailCode:{
+	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
+	gateUnpass: ["線が通過していない旗門があります。","There is a gate that the line is not passing."],
+	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
+	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
 }
 });

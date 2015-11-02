@@ -275,7 +275,7 @@ OperationManager:{
 	}
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
 

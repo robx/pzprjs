@@ -90,22 +90,7 @@ EXCell:{
 },
 Board:{
 	hasborder : 1,
-	hasexcell : 1,
-
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		this.tiles = this.addInfoList(this.klass.AreaTriTileManager);
-	},
-
-	getTileInfo : function(){
-		var tinfo = this.tiles.getAreaInfo();
-		for(var r=1;r<=tinfo.max;r++){
-			var d = tinfo.area[r].clist.getRectSize();
-			tinfo.area[r].is1x3=((((d.x1===d.x2)||(d.y1===d.y2))&&d.cnt===3)?1:0);
-		}
-		return tinfo;
-	}
+	hasexcell : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -116,11 +101,17 @@ BoardExec:{
 	}
 },
 
-"AreaTriTileManager:AreaManager":{
+AreaRoomGraph:{
 	enabled : true,
-	relation : ['cell','border'],
-	isvalid : function(cell){ return (!cell.is51cell());},
-	bdfunc : function(border){ return border.isBorder();}
+	isnodevalid : function(cell){ return !cell.is51cell();},
+
+	// オーバーライド
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		
+		var d = component.clist.getRectSize();
+		component.is1x3 = (((d.x1===d.x2)||(d.y1===d.y2)) && d.cnt===3);
+	}
 },
 
 //---------------------------------------------------------
@@ -297,31 +288,29 @@ AnsCheck:{
 		"checkLessThreeCells"
 	],
 
-	getTileInfo : function(){
-		return (this._info.tile = this._info.tile || this.board.getTileInfo());
-	},
-
 	checkOverThreeCells : function(){
-		this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a>=3);}, "bkSizeLt3");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>=3);}, "bkSizeLt3");
 	},
 	checkLessThreeCells : function(){
-		this.checkAllArea(this.getTileInfo(), function(w,h,a,n){ return (a<=3);}, "bkSizeGt3");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a<=3);}, "bkSizeGt3");
 	},
 
 	checkRowsColsTileCount : function(){
 		this.checkRowsColsPartly(this.isTileCount, function(cell){ return cell.is51cell();}, "asLblockNe");
 	},
 	isTileCount : function(clist, info){
-		var tiles = this.getTileInfo();
-		var number = info.key51num, count = 0, counted = [];
+		var number = info.key51num, count = 0;
 		for(var i=0;i<clist.length;i++){
-			var tid = tiles.id[clist[i].id];
-			if(tiles.area[tid].is1x3===1 && !counted[tid]){ count++; counted[tid] = true;}
+			var tile = clist[i].room;
+			if(tile.is1x3 && !tile.counted){ count++; tile.counted = true;}
 		}
 		var result = (number<0 || count===number);
 		if(!result){
 			info.keycell.seterr(1);
 			clist.seterr(1);
+		}
+		for(var i=0;i<clist.length;i++){
+			clist[i].room.counted = false;
 		}
 		return result;
 	}

@@ -156,6 +156,7 @@ Cell:{
 		return ((this.board.qcols>=2?2:1)+(this.board.qrows>=2?2:1)-1);
 	},
 
+	place : 0, // setLblockInfoでの設定用
 	getObjNum : function(){ return this.qdir;},
 	isCircle : function(){ return this.qdir===5;}
 },
@@ -164,48 +165,7 @@ Board:{
 	qcols : 8,
 	qrows : 8,
 
-	hasborder : 1,
-
-	getLblockInfo : function(){
-		var rinfo = this.getRoomInfo();
-		rinfo.place = [];
-
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist, d = clist.getRectSize();
-
-			/* 四角形のうち別エリアとなっている部分を調べる */
-			/* 幅が1なので座標自体は調べなくてよいはず      */
-			var subclist = this.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (rinfo.getRoomID(cell)!==r);});
-			var dl = subclist.getRectSize();
-			if( subclist.length===0 || (dl.cols*dl.rows!==dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
-				rinfo.area[r].shape = 0;
-				for(var i=0;i<clist.length;i++){ rinfo.place[clist[i].id] = 0;}
-			}
-			else{
-				rinfo.area[r].shape = 1; /* 幅が1のL字型 */
-				for(var i=0;i<clist.length;i++){ rinfo.place[clist[i].id] = 1;} /* L字型ブロックのセル */
-
-				/* 端のセル */
-				var edge1=null, edge2=null;
-				if     ((d.x1===dl.x1&&d.y1===dl.y1)||(d.x2===dl.x2&&d.y2===dl.y2))
-							{ edge1 = this.getc(d.x1,d.y2).id; edge2 = this.getc(d.x2,d.y1).id;}
-				else if((d.x1===dl.x1&&d.y2===dl.y2)||(d.x2===dl.x2&&d.y1===dl.y1))
-							{ edge1 = this.getc(d.x1,d.y1).id; edge2 = this.getc(d.x2,d.y2).id;}
-				rinfo.place[edge1] = 2;
-				rinfo.place[edge2] = 2;
-
-				/* 角のセル */
-				var corner=null;
-				if     (d.x1===dl.x1 && d.y1===dl.y1){ corner = this.getc(d.x2,d.y2).id;}
-				else if(d.x1===dl.x1 && d.y2===dl.y2){ corner = this.getc(d.x2,d.y1).id;}
-				else if(d.x2===dl.x2 && d.y1===dl.y1){ corner = this.getc(d.x1,d.y2).id;}
-				else if(d.x2===dl.x2 && d.y2===dl.y2){ corner = this.getc(d.x1,d.y1).id;}
-				rinfo.place[corner] = 3;
-			}
-		}
-		
-		return rinfo;
-	}
+	hasborder : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -213,8 +173,44 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
-	enabled : true
+AreaRoomGraph:{
+	enabled : true,
+
+	// オーバーライド
+	resetExtraData : function(cell){
+		cell.place = 0;
+	},
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		component.shape = 0;
+
+		var clist = component.clist, d = clist.getRectSize(), bd = this.board;
+
+		/* 四角形のうち別エリアとなっている部分を調べる */
+		/* 幅が1なので座標自体は調べなくてよいはず      */
+		var subclist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2).filter(function(cell){ return (cell.room!==component);});
+		var dl = subclist.getRectSize();
+		if( subclist.length===0 || (dl.cols*dl.rows!==dl.cnt) || ((d.cols-1)!==dl.cols) || ((d.rows-1)!==dl.rows) ){
+			component.shape = 0;
+			for(var i=0;i<clist.length;i++){ clist[i].place = 0;}
+		}
+		else{
+			component.shape = 1; /* 幅が1のL字型 */
+			for(var i=0;i<clist.length;i++){ clist[i].place = 1;} /* L字型ブロックのセル */
+
+			/* 端のセル */
+			var isUL = (d.x1===dl.x1&&d.y1===dl.y1), isUR = (d.x2===dl.x2&&d.y1===dl.y1),
+				isDL = (d.x1===dl.x1&&d.y2===dl.y2), isDR = (d.x2===dl.x2&&d.y2===dl.y2);
+			if     (isUL||isDR){ bd.getc(d.x1,d.y2).place = 2; bd.getc(d.x2,d.y1).place = 2;}
+			else if(isDL||isUR){ bd.getc(d.x1,d.y1).place = 2; bd.getc(d.x2,d.y2).place = 2;}
+
+			/* 角のセル */
+			if     (isUL){ bd.getc(d.x2,d.y2).place = 3;}
+			else if(isDL){ bd.getc(d.x2,d.y1).place = 3;}
+			else if(isUR){ bd.getc(d.x1,d.y2).place = 3;}
+			else if(isDR){ bd.getc(d.x1,d.y1).place = 3;}
+		}
+	}
 },
 
 //---------------------------------------------------------
@@ -399,20 +395,16 @@ AnsCheck:{
 		"checkLblock"
 	],
 
-	getLblockInfo : function(){
-		return (this._info.lbinfo = this._info.lbinfo || this.board.getLblockInfo());
-	},
-
 	checkArrowCorner1 : function(){
-		var rinfo = this.getLblockInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.area[id].shape===0){ continue;}
+		for(var id=0;id<rooms.length;id++){
+			if(rooms[id].shape===0){ continue;}
 
-			var clist = rinfo.area[id].clist;
+			var clist = rooms[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
-				if(num<1 || num>4 || rinfo.place[cell.id]===2){ continue;}
+				if(num<1 || num>4 || cell.place===2){ continue;}
 				
 				this.failcode.add("arBlkEdge");
 				if(this.checkOnly){ break allloop;}
@@ -423,12 +415,12 @@ AnsCheck:{
 	},
 
 	checkArrowCorner2 : function(){
-		var rinfo = this.getLblockInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.area[id].shape===0){ continue;}
+		for(var id=0;id<rooms.length;id++){
+			if(rooms[id].shape===0){ continue;}
 
-			var clist = rinfo.area[id].clist;
+			var clist = rooms[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], adb = cell.adjborder, num = cell.getObjNum();
 				if(num<1 || num>4 ||
@@ -446,15 +438,15 @@ AnsCheck:{
 	},
 
 	checkCircleCorner : function(){
-		var rinfo = this.getLblockInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.area[id].shape===0){ continue;}
+		for(var id=0;id<rooms.length;id++){
+			if(rooms[id].shape===0){ continue;}
 
-			var clist = rinfo.area[id].clist;
+			var clist = rooms[id].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				if(!cell.isCircle() || rinfo.place[cell.id]===3){ continue;}
+				if(!cell.isCircle() || cell.place===3){ continue;}
 				
 				this.failcode.add("ciNotOnCnr");
 				if(this.checkOnly){ break allloop;}
@@ -465,13 +457,13 @@ AnsCheck:{
 	},
 
 	checkLblock : function(){
-		var rinfo = this.getLblockInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			if(rinfo.area[id].shape!==0){ continue;}
+		var rooms = this.board.roommgr.components;
+		for(var id=0;id<rooms.length;id++){
+			if(rooms[id].shape!==0){ continue;}
 			
 			this.failcode.add("bkNotLshape");
 			if(this.checkOnly){ break;}
-			rinfo.area[id].clist.seterr(1);
+			rooms[id].clist.seterr(1);
 		}
 	}
 },

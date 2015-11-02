@@ -31,7 +31,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return this.board.rooms.getCntOfRoomByCell(this);
+		return this.room.clist.length;
 	}
 },
 Board:{
@@ -42,7 +42,7 @@ Board:{
 	qrows : 8
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -164,10 +164,10 @@ AnsCheck:{
 	},
 
 	checkUpperNumber : function(){
-		var bd = this.board, rinfo = this.getRoomInfo();
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax-bd.qcols;c++){
-			var cell=bd.cell[c], cell2=cell.adjacent.bottom, dc=cell2.id;
-			if(rinfo.id[c]!==rinfo.id[dc] || !cell.isNum() || !cell2.isNum()){ continue;}
+			var cell=bd.cell[c], cell2=cell.adjacent.bottom;
+			if(cell.room!==cell2.room || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell.getNum()>=cell2.getNum()){ continue;}
 			
 			this.failcode.add("bkSmallOnBig");

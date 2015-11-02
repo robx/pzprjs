@@ -155,7 +155,7 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.iceinfo = this.addInfoList(this.klass.AreaCrockManager);
+		this.icegraph = this.addInfoList(this.klass.AreaCrockGraph);
 	}
 },
 
@@ -163,10 +163,12 @@ LineGraph:{
 	enabled : true,
 	moveline : true
 },
-"AreaCrockManager:AreaManager":{
+"AreaCrockGraph:AreaGraphBase":{
 	enabled : true,
-	relation : ['cell'],
-	isvalid : function(cell){ return cell.ice();}
+	setComponentRefs : function(obj, component){ obj.icebarn = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.icebarnnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.icebarnnodes = [];},
+	isnodevalid : function(cell){ return cell.ice();}
 },
 
 //---------------------------------------------------------
@@ -379,42 +381,27 @@ AnsCheck:{
 		"checkDisconnectLine"
 	],
 
-	getNabeInfo : function(){
-		return (this._info.nabe = this._info.nabe || this.board.iceinfo.getAreaInfo());
-	},
-
 	checkCurveLine : function(){
-		var paths = this.board.linegraph.components;
-		for(var id=0;id<paths.length;id++){
-			var path = paths[id], clist = path.clist;
-			var d = clist.getRectSize();
-			if(d.cols===1||d.rows===1){ continue;}
-			
-			this.failcode.add("laCurve");
-			if(this.checkOnly){ break;}
-			this.board.border.setnoerr();
-			paths[id].setedgeerr(1);
-		}
+		this.checkAllArea(this.board.linegraph, function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
 	},
 	checkQuesNumber : function(){
 		this.checkAllCell(function(cell){ return (!cell.ice() && cell.qnum2!==-1);}, "bnIllegalPos");
 	},
 
 	checkDoubleNumberInNabe : function(){
-		var iarea = this.getNabeInfo();
-		this.checkAllBlock(iarea, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);}, "bkDoubleBn");
+		this.checkAllBlock(this.board.icegraph, function(cell){ return (cell.qnum2!==-1);}, function(w,h,a,n){ return (a<2);}, "bkDoubleBn");
 	},
 	checkNoFillingNabe : function(){
-		this.checkNoMovedObjectInRoom(this.getNabeInfo());
+		this.checkNoMovedObjectInRoom(this.board.icegraph);
 	},
 	checkFillingOutOfNabe : function(){
 		this.checkAllCell(function(cell){ return (cell.isDestination() && !cell.ice());}, "nmOutOfBk");
 	},
 
 	checkFillingCount : function(){
-		var iarea = this.getNabeInfo();
-		for(var id=1;id<=iarea.max;id++){
-			var clist = iarea.area[id].clist, num = null;
+		var iareas = this.board.icegraph.components;
+		for(var id=0;id<iareas.length;id++){
+			var clist = iareas[id].clist, num = null;
 			for(var i=0;i<clist.length;i++){
 				var qd = clist[i].qnum2;
 				if(qd!==-1){

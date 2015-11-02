@@ -31,7 +31,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -111,21 +111,21 @@ AnsCheck:{
 	checkBorderNoneOnBP   : function(){ this.checkBorderCount(0,1, "bdIgnoreBP");},
 
 	checkSameNumberInBlock : function(){
-		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
+		this.checkSameObjectInRoom(this.board.roommgr, function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(){
 		var d=[], dmax=0, val=[], bd=this.board;
-		var rinfo = this.board.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ val[c]=bd.cell[c].getNum(); if(dmax<val[c]){ dmax=val[c];} }
-		for(var i=0;i<=dmax;i++){ d[i]=-1;}
+		for(var i=0;i<=dmax;i++){ d[i]=null;}
 		for(var c=0;c<bd.cellmax;c++){
 			if(val[c]===-1){ continue;}
-			if(d[val[c]]===-1){ d[val[c]] = rinfo.id[c];}
-			else if(d[val[c]]!==rinfo.id[c]){
+			var room = bd.cell[c].room;
+			if(d[val[c]]===null){ d[val[c]] = room;}
+			else if(d[val[c]]!==room){
 				this.failcode.add("bkSepNum");
-				bd.cell.filter(function(cell){ return (rinfo.id[c]===rinfo.id[cell.id] || d[val[c]]===rinfo.id[cell.id]);}).seterr(1);
+				bd.cell.filter(function(cell){ return (room===cell.room || d[val[c]]===cell.room);}).seterr(1);
 				break;
 			}
 		}

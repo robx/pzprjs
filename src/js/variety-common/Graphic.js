@@ -991,8 +991,7 @@ Graphic:{
 		this.addlw = 0;
 		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
 		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!this.puzzle.execConfig('irowake') || !cell.color){ color = this.linecolor;}
-		else{ color = cell.color;}
+		else{ color = this.linecolor;}
 		return color;
 	},
 

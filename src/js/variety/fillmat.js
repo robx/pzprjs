@@ -38,7 +38,7 @@ Board:{
 	qrows : 8
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -100,10 +100,10 @@ FileIO:{
 	],
 
 	checkTatamiMaxSize : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1)&&a<=4;}, "bkLenGt4");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (w===1||h===1)&&a<=4;}, "bkLenGt4");
 	},
 	checkSideAreaRoomSize : function(){
-		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.length;}, "bsSizeEq");
+		this.checkSideAreaSize(function(area){ return area.clist.length;}, "bsSizeEq");
 	}
 },
 "AnsCheck@usotatami":{
@@ -120,10 +120,10 @@ FileIO:{
 	],
 
 	checkTatamiDiffSize : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n<0||n!==a);}, "bkSizeEq");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (n<0||n!==a);}, "bkSizeEq");
 	},
 	checkTatamiBreadth : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	}
 },
 

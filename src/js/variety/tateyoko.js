@@ -62,9 +62,10 @@ Cell:{
 	minnum : 0
 },
 Board:{
-	getBarInfo : function(){
-		var barinfo = new this.klass.AreaBarManager();
-		return barinfo.getBarInfo();
+	initialize : function(){
+		this.common.initialize.call(this);
+
+		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	}
 },
 BoardExec:{
@@ -80,26 +81,18 @@ BoardExec:{
 	}
 },
 
-AreaBarManager:{
-	getBarInfo : function(){
-		var bd = this.board;
-		var binfo = new this.klass.AreaInfo();
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			binfo.id[c]=((cell.ques===1||cell.qans===0) ? null : 0);
-		}
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(binfo.id[cell.id]!==0){ continue;}
-			var pos=cell.getaddr(), val=cell.qans, list=[];
-			while(!cell.isnull && cell.qans===val){
-				list.push(cell);
-				if(val===12){ pos.move(0,2);}else{ pos.move(2,0);}
-				cell = pos.getc();
-			}
-			binfo.addAreaByClist(list);
-		}
-		return binfo;
+"AreaBarGraph:AreaGraphBase":{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.bar = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.qans>0);},
+	isseparate : function(cell1, cell2){
+		var dir = cell1.getdir(cell2,2);
+		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.qans!==12||cell2.qans!==12);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans!==13||cell2.qans!==13);}
+		return true;
 	}
 },
 
@@ -256,18 +249,14 @@ AnsCheck:{
 		"checkEmptyCell_tateyoko+"
 	],
 
-	getBarInfo : function(){
-		return (this._info.bar = this._info.bar || this.board.getBarInfo());
-	},
-
 	checkDoubleNumberInBar : function(){
 		var cells = this.board.cell, errcount = this.failcode.length;
-		this.checkAllBlock(this.getBarInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "baPlNum");
+		this.checkAllBlock(this.board.bargraph, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "baPlNum");
 		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 	checkSizeAndNumberInBar : function(){
 		var cells = this.board.cell, errcount = this.failcode.length;
-		this.checkAllArea(this.getBarInfo(), function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
+		this.checkAllArea(this.board.bargraph, function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
 		if(errcount!==this.failcode.length){ cells.setnoerr();}
 	},
 

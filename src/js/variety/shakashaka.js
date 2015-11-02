@@ -208,30 +208,9 @@ Cell:{
 	isTri : function(){ return this.qans!==0;}
 },
 Board:{
-	getSlopeWareaInfo : function(){
-		var winfo = new this.klass.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ winfo.id[c]=(this.cell[c].noNum()?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(winfo.id[cell0.id]!==0){ continue;}
-			var area = winfo.addArea();
-			var stack=[cell0], n=0;
-			while(stack.length>0){
-				var cell=stack.pop();
-				if(winfo.id[cell.id]!==0){ continue;}
-
-				area.clist[n++] = cell;
-				winfo.id[cell.id] = area.id;
-
-				var a=cell.qans, b, cell2, adc=cell.adjacent;
-				cell2=adc.top;    if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==4&&a!==5) && (b!==2&&b!==3)){ stack.push(cell2);} }
-				cell2=adc.bottom; if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==3) && (b!==4&&b!==5)){ stack.push(cell2);} }
-				cell2=adc.left;   if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==2&&a!==5) && (b!==3&&b!==4)){ stack.push(cell2);} }
-				cell2=adc.right;  if(!cell2.isnull){ b=cell2.qans; if(winfo.id[cell2.id]===0 && (a!==3&&a!==4) && (b!==2&&b!==5)){ stack.push(cell2);} }
-			}
-			area.clist.length = n;
-		}
-		return winfo;
+	initialize : function(){
+		this.common.initialize.call(this);
+		this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
 	}
 },
 BoardExec:{
@@ -249,6 +228,24 @@ BoardExec:{
 			var cell = clist[i], val = trans[cell.qans];
 			if(!!val){ cell.qans=val;}
 		}
+	}
+},
+"AreaWrectGraph:AreaGraphBase":{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.wrect = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.wrectnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.wrectnodes = [];},
+	
+	isnodevalid : function(cell){ return cell.qnum===-1;},
+	sldir : [[],
+		[false,true,false,false,true,true],
+		[false,true,true,true,false,false],
+		[false,true,true,false,false,true],
+		[false,true,false,true,true,false]
+	],
+	isseparate : function(cell1,cell2){
+		return (this.sldir[cell1.getdir(cell2,2)][cell1.qans] ||
+				this.sldir[cell2.getdir(cell1,2)][cell2.qans]);
 	}
 },
 
@@ -372,11 +369,11 @@ AnsCheck:{
 	},
 
 	checkWhiteArea : function(){
-		var winfo = this.board.getSlopeWareaInfo();
-		for(var id=1;id<=winfo.max;id++){
-			var clist=winfo.area[id].clist, d=clist.getRectSize();
+		var areas = this.board.wrectmgr.components;
+		for(var id=0;id<areas.length;id++){
+			var clist=areas[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;
-			if(d.cols*d.rows===cnt || this.isAreaRect_slope(winfo,id)){ continue;}
+			if(d.cols*d.rows===cnt || this.isAreaRect_slope(areas[id])){ continue;}
 			
 			this.failcode.add("cuNotRectx");
 			if(this.checkOnly){ break;}
@@ -384,14 +381,14 @@ AnsCheck:{
 		}
 	},
 	// 斜め領域判定用
-	isAreaRect_slope : function(winfo,id){
-		var clist = winfo.area[id].clist;
+	isAreaRect_slope : function(area){
+		var clist = area.clist;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], adc = cell.adjacent, a = cell.qans;
-			if( ((a===4||a===5)^(adc.top.isnull   ||winfo.getRoomID(adc.top   )!==id)) ||
-				((a===2||a===3)^(adc.bottom.isnull||winfo.getRoomID(adc.bottom)!==id)) ||
-				((a===2||a===5)^(adc.left.isnull  ||winfo.getRoomID(adc.left  )!==id)) ||
-				((a===3||a===4)^(adc.right.isnull ||winfo.getRoomID(adc.right )!==id)) )
+			if( ((a===4||a===5)!==(adc.top.wrect   !==area)) ||
+				((a===2||a===3)!==(adc.bottom.wrect!==area)) ||
+				((a===2||a===5)!==(adc.left.wrect  !==area)) ||
+				((a===3||a===4)!==(adc.right.wrect !==area)) )
 			{
 				return false;
 			}

@@ -43,38 +43,46 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.tiles  = this.addInfoList(this.klass.AreaTileManager);
-		this.blocks = this.addInfoList(this.klass.AreaBlockManager);
-	},
-
-	getBlockInfo : function(){
-		var tinfo = this.tiles.getAreaInfo();
-		var cinfo = this.blocks.getAreaInfo();
-
-		for(var r=1;r<=cinfo.max;r++){
-			var d=[], cnt=0, clist=cinfo.area[r].clist;
-			cinfo.area[r].size = clist.length;
-
-			for(var i=1;i<=tinfo.max;i++){ d[i]=0;}
-			for(var i=0;i<clist.length;i++){
-				d[ tinfo.getRoomID(clist[i]) ]++;
-			}
-			for(var i=1;i<=tinfo.max;i++){ if(d[i]>0){ cnt++;}}
-			cinfo.area[r].dotcnt = cnt;
-		}
-		return cinfo;
+		this.tilegraph  = this.addInfoList(this.klass.AreaTileGraph);
+		this.blockgraph = this.addInfoList(this.klass.AreaBlockGraph);
 	}
 },
 
-"AreaTileManager:AreaManager":{
+"AreaTileGraph:AreaRoomGraph":{
 	enabled : true,
-	relation : ['border'],
-	bdfunc : function(border){ return !border.isGround();}
+	countLcnt : false,
+	setComponentRefs : function(obj, component){ obj.tile = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
+	
+	isnodevalid : function(nodeobj){ return true;},
+	isedgevalid : function(border){ return border.isGround();},
+	isseparate : function(cell1, cell2){
+		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isGround();
+	}
 },
-"AreaBlockManager:AreaManager":{
+"AreaBlockGraph:AreaRoomGraph":{
 	enabled : true,
-	relation : ['border'],
-	bdfunc : function(border){ return border.qans>0;}
+	setComponentRefs : function(obj, component){ obj.block = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.blocknodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.blocknodes = [];},
+
+	isedgevalid : function(border){ return border.qans===0;},
+	isseparate : function(cell1, cell2){
+		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).qans>0;
+	},
+
+	setExtraData : function(component){
+		var cnt=0;
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		component.size = clist.length;
+
+		var tiles = this.board.tilegraph.components;
+		for(var i=0;i<tiles.length;i++){ tiles[i].count=0;}
+		for(var i=0;i<clist.length;i++){ clist[i].tile.count++;}
+		for(var i=0;i<tiles.length;i++){ if(tiles[i].count>0){ cnt++;}}
+		component.dotcnt = cnt;
+	}
 },
 
 CellList:{
@@ -207,45 +215,34 @@ AnsCheck:{
 		"checkLargeBlock"
 	],
 
-	getCombiBlockInfo : function(){
-		/* 境界線で作られる領域の情報 */
-		return (this._info.cbinfo = this._info.cbinfo || this.board.getBlockInfo());
-	},
-
 	checkBlockNotRect : function(){
-		this.checkAllArea(this.getCombiBlockInfo(), function(w,h,a,n){ return (w*h!==a);}, "bkRect");
+		this.checkAllArea(this.board.blockgraph, function(w,h,a,n){ return (w*h!==a);}, "bkRect");
 	},
 
 	checkSingleBlock : function(){ this.checkMiniBlockCount(1, "bkSubLt2");},
 	checkLargeBlock  : function(){ this.checkMiniBlockCount(3, "bkSubGt2");},
 	checkMiniBlockCount : function(flag, code){
-		var cinfo = this.getCombiBlockInfo();
-		for(var r=1;r<=cinfo.max;r++){
-			var cnt=cinfo.area[r].dotcnt;
+		var blocks = this.board.blockgraph.components;
+		for(var r=0;r<blocks.length;r++){
+			var cnt=blocks[r].dotcnt;
 			if((flag===1&&cnt>1) || (flag===3&&cnt<=2)){ continue;}
 			
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
-			cinfo.area[r].clist.seterr(1);
+			blocks[r].clist.seterr(1);
 		}
 	},
 
 	checkDifferentShapeBlock : function(){
-		var cinfo = this.getCombiBlockInfo();
-		var sides = cinfo.getSideAreaInfo();
-		allloop:
-		for(var r=1;r<=cinfo.max-1;r++){
-			var area1 = cinfo.area[r];
-			if(area1.dotcnt!==2){ continue;}
-			for(var i=0;i<sides[r].length;i++){
-				var s = sides[r][i], area2 = cinfo.area[s];
-				if(this.isDifferentShapeBlock(area1, area2)){ continue;}
-				
-				this.failcode.add("bsSameShape");
-				if(this.checkOnly){ break allloop;}
-				area1.clist.seterr(1);
-				area2.clist.seterr(1);
-			}
+		var sides = this.board.blockgraph.getSideAreaInfo('block');
+		for(var i=0;i<sides.length;i++){
+			var area1 = sides[i][0], area2 = sides[i][1];
+			if(this.isDifferentShapeBlock(area1, area2)){ continue;}
+			
+			this.failcode.add("bsSameShape");
+			if(this.checkOnly){ break;}
+			area1.clist.seterr(1);
+			area2.clist.seterr(1);
 		}
 	},
 	isDifferentShapeBlock : function(area1, area2){

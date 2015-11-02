@@ -48,7 +48,7 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -120,10 +120,10 @@ AnsCheck:{
 	],
 
 	checkTatamiLength : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>1);}, "bkSize1");
 	},
 	checkTatamiBreadth : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (w===1||h===1);}, "bkWidthGt1");
 	},
 
 	checkArrowNumber_tatami : function(){

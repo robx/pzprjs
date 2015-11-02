@@ -47,14 +47,16 @@ Board:{
 		this.infolist = [];
 
 		this.linegraph  = this.addInfoList(classes.LineGraph);		// 交差なし線のグラフ
-//		this.linexgraph = this.addInfoList(classes.CrossLineGraph);	// 交差あり線のグラフ
 
-//		this.linemgr = this.addInfoList(classes.LineManager);		// 線情報管理オブジェクト
+		this.roommgr = this.addInfoList(classes.AreaRoomGraph);			// 部屋情報を保持する
+		this.sblkmgr = this.addInfoList(classes.AreaShadeGraph);		// 黒マス情報を保持する
+		this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph);		// 白マス情報を保持する
+		this.nblkmgr = this.addInfoList(classes.AreaNumberGraph);		// 数字情報を保持する
 
-		this.rooms = this.addInfoList(classes.AreaRoomManager);		// 部屋情報を保持する
-		this.bcell = this.addInfoList(classes.AreaShadeManager);	// 黒マス情報を保持する
-		this.wcell = this.addInfoList(classes.AreaUnshadeManager);	// 白マス情報を保持する
-		this.ncell = this.addInfoList(classes.AreaNumberManager);	// 数字情報を保持する
+		this.rooms    = [];
+		this.sblks    = [];
+		this.ublks    = [];
+		this.nblks    = [];
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
@@ -100,7 +102,7 @@ Board:{
 		this.setposAll();
 
 		this.initInfoList();
-		this.resetInfo();
+		this.rebuildInfo();
 
 		this.puzzle.cursor.initCursor();
 		this.puzzle.opemgr.allerase();
@@ -302,7 +304,7 @@ Board:{
 		this.border.ansclear();
 		this.excell.ansclear();
 		
-		this.resetInfo();
+		this.rebuildInfo();
 	},
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
@@ -487,14 +489,14 @@ Board:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// bd.resetInfo()        部屋、黒マス、白マスの情報をresetする
+	// bd.rebuildInfo()      部屋、黒マス、白マスの情報を再生成する
 	// bd.setInfoByCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
 	// bd.setInfoByBorder()  境界線が引かれたり消されてたりした時に、部屋情報を更新する
 	// bd.setInfoByLine()    線が引かれたり消されてたりした時に、線情報を更新する
 	//--------------------------------------------------------------------------------
-	resetInfo : function(){
+	rebuildInfo : function(){
 		for(var i=0,len=this.validinfo.all.length;i<len;i++)
-			{ this.validinfo.all[i].reset();}
+			{ this.validinfo.all[i].rebuild();}
 	},
 	setInfoByCell : function(cell){
 		if(!this.isenableInfo()){ return;}
@@ -518,17 +520,6 @@ Board:{
 	irowakeRemake : function(){
 		this.linegraph.newIrowake();
 	},
-
-	//--------------------------------------------------------------------------------
-	// bd.getRoomInfo()  部屋情報をAreaInfo型のオブジェクトで返す
-	// bd.getShadeInfo()   黒マス情報をAreaInfo型のオブジェクトで返す
-	// bd.getUnshadeInfo() 白マス情報をAreaInfo型のオブジェクトで返す
-	// bd.getNumberInfo()  数字情報をAreaInfo型のオブジェクトで返す
-	//--------------------------------------------------------------------------------
-	getRoomInfo  : function(){ return this.rooms.getAreaInfo();},
-	getShadeInfo   : function(){ return this.bcell.getAreaInfo();},
-	getUnshadeInfo : function(){ return this.wcell.getAreaInfo();},
-	getNumberInfo  : function(){ return this.ncell.getAreaInfo();},
 
 	//---------------------------------------------------------------------------
 	// bd.disableSetError()  盤面のオブジェクトにエラーフラグを設定できないようにする

@@ -135,6 +135,12 @@ pzpr.classmgr.makeCommon({
 	lcnt : 0,		// セルに存在する線の本数
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
 	
+	room : null,	// このセルを含む部屋情報への参照
+	lblk : null,	// このセルを含むLブロック情報への参照
+	sblk : null,	// このセルを含む黒マス情報への参照
+	ublk : null,	// このセルを含む白マス情報への参照
+	nblk : null,	// このセルを含む数字繋がり情報への参照
+	
 	disInputHatena : false,	// qnum==-2を入力できないようにする
 	
 	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)

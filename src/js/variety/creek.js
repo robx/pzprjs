@@ -37,7 +37,7 @@ Cross:{
 	minnum : 0
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
 

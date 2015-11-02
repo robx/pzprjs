@@ -28,7 +28,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		var d = this.board.rooms.getClistByCell(this).getRectSize();
+		var d = this.room.clist.getRectSize();
 		var m=d.cols, n=d.rows; if(m>n){ var t=m;m=n;n=t;}
 		if     (m===1){ return ((n+1)>>1);}
 		else if(m===2){ return n;}
@@ -50,10 +50,10 @@ Board:{
 	hasborder : 1
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
 	hastop : true
 },
@@ -129,9 +129,9 @@ Encode:{
 		this.puzzle.fio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
-		var barray=[], bd=this.board, rinfo=bd.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize();
+		var barray=[], bd=this.board, rooms = bd.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var d = rooms[r].clist.getRectSize();
 			var ul = bd.getc(d.x1,d.y1).qnum;
 			barray.push((ul>=0 ? ""+ul+"in" : "")+d.cols+"x"+d.rows);
 		}
@@ -173,14 +173,16 @@ FileIO:{
 			}}
 		}
 		this.rdata2Border(true, rdata);
-		bd.rooms.reset();
+		bd.roommgr.rebuild();
 	},
 	encodeSquareRoom : function(){
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		this.datastr += (rinfo.max+"\n");
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize();
-			var num = bd.rooms.getTopOfRoom(id).qnum;
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.datastr += (rooms.length+"\n");
+		for(var r=0;r<rooms.length;r++){
+			var d = rooms[r].clist.getRectSize();
+			var num = rooms[r].top.qnum;
 			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
 		}
 	},
@@ -210,13 +212,15 @@ FileIO:{
 			}}
 		}
 		this.rdata2Border(true, rdata);
-		bd.rooms.reset();
+		bd.roommgr.rebuild();
 	},
 	encodeSquareRoom_XMLBoard : function(){
 		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var d = rinfo.area[id].clist.getRectSize(), num = bd.rooms.getTopOfRoom(id).qnum;
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var d = rooms[r].clist.getRectSize(), num = rooms[r].top.qnum;
 			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1,n:num}));
 		}
 	}
@@ -235,10 +239,10 @@ AnsCheck:{
 	],
 
 	checkFractal : function(){
-		var rinfo = this.getRoomInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist, d = clist.getRectSize();
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, d = clist.getRectSize();
 			var sx=d.x1+d.x2, sy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.board.getc(sx-cell.bx, sy-cell.by);

@@ -90,17 +90,18 @@ ui.debug =
 	searcheval : function(){
 //		var borders = ui.puzzle.board.border.filter(function(border){ return border.isLine();});
 //		this.timeeval("search linemgr", function(){ ui.puzzle.board.linemgr.searchLine(borders);});
-		var linegraph = ui.puzzle.board.linegraph;
-		linegraph.reset();
-		var nodes = linegraph.components[0].nodes;
+		var graph = ui.puzzle.board.bargraph;
+		graph.rebuild();
+		var nodes = graph.components[0].nodes;
 		this.timeeval("search linemgr", function(){
-			linegraph.components = [];
-			linegraph.modifyNodes = nodes;
-			linegraph.searchGraph();
+			graph.components = [];
+			graph.modifyNodes = nodes;
+			graph.searchGraph();
 		});
 	},
 	rebuildeval : function(){
-		this.timeeval("reset linemgr", function(){ ui.puzzle.board.linegraph.reset();});
+		var graph = ui.puzzle.board.bargraph;
+		this.timeeval("reset linemgr", function(){ graph.rebuild();});
 	},
 	timeeval : function(text,func){
 		var count=0, old = pzpr.util.currentTime();

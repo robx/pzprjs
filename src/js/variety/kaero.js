@@ -78,7 +78,7 @@ LineGraph:{
 	moveline : true
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -236,10 +236,10 @@ AnsCheck:{
 
 	// checkSameObjectInRoom()にbaseを付加した関数
 	checkSameObjectInRoom_kaero : function(){
-		var rinfo = this.getRoomInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist, rnum=-1;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, rnum=-1;
 			var cbase = clist.getDeparture();
 			for(var i=0;i<cbase.length;i++){
 				var num=cbase[i].qnum;
@@ -257,15 +257,14 @@ AnsCheck:{
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(){
 		var max=0, bd=this.board;
-		var rinfo = this.getRoomInfo();
 		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
 		allloop:
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;
 			for(var i=0;i<clist.length;i++){
-				var r=rinfo.getRoomID(clist[i]);
-				if(rid===null){ rid=r;}
-				else if(r!==null && rid!==r){
+				var room = clist[i].room;
+				if(rid===null){ rid=room;}
+				else if(room!==null && rid!==room){
 					this.failcode.add("bkSepNum");
 					if(!this.puzzle.execConfig('dispmove')){ clist.getDeparture().seterr(4);}
 					clist.seterr(1);
@@ -276,7 +275,7 @@ AnsCheck:{
 	},
 
 	checkNoObjectBlock : function(){
-		this.checkNoMovedObjectInRoom(this.getRoomInfo());
+		this.checkNoMovedObjectInRoom(this.board.roommgr);
 	}
 },
 

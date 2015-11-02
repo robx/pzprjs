@@ -67,29 +67,7 @@ Cell:{
 	maxnum : 4
 },
 Board:{
-	hasborder : 1,
-
-	getPairedArrowsInfo : function(){
-		var ainfo=[], isarrow=[];
-		for(var c=0;c<this.cellmax;c++){ isarrow[c]=this.cell[c].isNum();}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(cell0.noNum()){ continue;}
-			var pos=cell0.getaddr(), dir=cell0.getNum();
-
-			while(1){
-				pos.movedir(dir,2);
-				var cell = pos.getc();
-				if(cell.isnull){ ainfo.push([cell0.id]); break;}
-				if(!!isarrow[cell.id]){
-					if(cell.getNum()!==[0,cell.DN,cell.UP,cell.RT,cell.LT][dir]){ ainfo.push([cell0.id]);}
-					else{ ainfo.push([cell.id,cell0.id]);}
-					break;
-				}
-			}
-		}
-		return ainfo;
-	}
+	hasborder : 1
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -97,8 +75,25 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
-	enabled : true
+AreaRoomGraph:{
+	enabled : true,
+
+	// IDだけ必要
+	getSideAreaKeys : function(){
+		var len=this.components.length, adjs={len:len}, bd=this.board;
+		for(var r=0;r<len;r++){ this.components[r].id = r;}
+		for(var id=0;id<bd.bdmax;id++){
+			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
+			if(cell1.isnull || cell2.isnull){ continue;}
+			var room1=cell1.room, room2=cell2.room;
+			if(room1===room2 || room1===null || room2===null){ continue;}
+
+			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
+			if(!!adjs[key]){ continue;}
+			adjs[key] = true;
+		}
+		return adjs;
+	}
 },
 
 //---------------------------------------------------------
@@ -189,41 +184,53 @@ AnsCheck:{
 		"checkNoNumber"
 	],
 
-	getPairArrowInfo : function(){
-		return (this._info.parrow = this._info.parrow || this.board.getPairedArrowsInfo());
-	},
-
 	checkDirectionOfArrow : function(){
-		var ainfo = this.getPairArrowInfo();
+		var ainfo = this.getPairArrowsInfo();
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length!==1){ continue;}
 			
 			this.failcode.add("arAlone");
 			if(this.checkOnly){ break;}
-			this.board.cell[ainfo[i]].seterr(1);
+			ainfo[i][0].seterr(1);
 		}
 	},
 	checkAdjacentCountries : function(){
-		var rinfo = this.getRoomInfo(), ainfo = this.getPairArrowInfo();
-		// 隣接エリア情報を取得して、形式を変換
-		var sides=rinfo.getSideAreaInfo(), adjs=[];
-		for(var r=1;r<=rinfo.max-1;r++){
-			adjs[r]=[];
-			for(var i=0;i<sides[r].length;i++){ adjs[r][sides[r][i]]=true;}
-			for(var s=r+1;s<=rinfo.max;s++){ if(!adjs[r][s]){ adjs[r][s]=false;}}
-		}
-
-		// ここから実際の判定
+		var adjs=this.board.roommgr.getSideAreaKeys(), len = adjs.len;
+		var ainfo = this.getPairArrowsInfo();
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length===1){ continue;}
-			var r1 = rinfo.id[ainfo[i][0]], r2 = rinfo.id[ainfo[i][1]];
-			if((r1<r2 ? adjs[r1][r2] : adjs[r2][r1])<=0){ continue;}
+			var room1 = ainfo[i][0].room, room2 = ainfo[i][1].room;
+			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
+			if(!adjs[key]){ continue;}
 			
 			this.failcode.add("arAdjPair");
 			if(this.checkOnly){ break;}
-			rinfo.area[r1].clist.seterr(1);
-			rinfo.area[r2].clist.seterr(1);
+			room1.clist.seterr(1);
+			room2.clist.seterr(1);
 		}
+	},
+
+	getPairArrowsInfo : function(){
+		if(this._info.parrow){ return this._info.parrow;}
+		var ainfo=[], isarrow=[], bd = this.board;
+		for(var c=0;c<bd.cellmax;c++){ isarrow[c]=bd.cell[c].isNum();}
+		for(var c=0;c<bd.cellmax;c++){
+			var cell0 = bd.cell[c];
+			if(cell0.noNum()){ continue;}
+			var pos=cell0.getaddr(), dir=cell0.getNum();
+
+			while(1){
+				pos.movedir(dir,2);
+				var cell = pos.getc();
+				if(cell.isnull){ ainfo.push([cell0]); break;}
+				if(!!isarrow[cell.id]){
+					if(cell.getNum()!==[0,cell.DN,cell.UP,cell.RT,cell.LT][dir]){ ainfo.push([cell0]);}
+					else{ ainfo.push([cell,cell0]);}
+					break;
+				}
+			}
+		}
+		return (this._info.parrow = ainfo);
 	}
 },
 

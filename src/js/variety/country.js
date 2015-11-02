@@ -35,7 +35,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.room.clist.length);
 	}
 },
 Board:{
@@ -46,7 +46,7 @@ LineGraph:{
 	enabled : true
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
 	hastop : true
 },
@@ -124,19 +124,19 @@ AnsCheck:{
 	],
 
 	checkRoadCount : function(){
-		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0||n===a);}, "bkLineNe");
+		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (n<=0||n===a);}, "bkLineNe");
 	},
 	checkNoRoadCountry : function(){
-		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
+		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkSideAreaGrass : function(){
-		this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false, "cbNoLine");
+		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false, "cbNoLine");
 	},
 
 	checkRoomPassOnce : function(){
-		var rinfo = this.getRoomInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			var cnt=0, clist=rinfo.area[r].clist;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var cnt=0, clist=rooms[r].clist;
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i], adb=cell.adjborder, border;
 				border=adb.top;    if(border.ques===1 && border.line===1){ cnt++;}

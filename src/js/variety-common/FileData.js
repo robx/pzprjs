@@ -236,14 +236,16 @@ FileIO:{
 		this.readLine();
 		this.rdata2Border(isques, this.getItemList(this.board.qrows));
 
-		this.board.rooms.reset();
+		this.board.roommgr.rebuild();
 	},
 	encodeAreaRoom_com : function(isques){
-		var bd = this.board, rinfo = bd.getRoomInfo();
-
-		this.datastr += (rinfo.max+"\n");
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.datastr += (rooms.length+"\n");
 		for(var c=0;c<bd.cellmax;c++){
-			this.datastr += (""+(rinfo.id[c]>0 ? rinfo.id[c]-1 : ".")+" ");
+			var roomid = rooms.indexOf(bd.cell[c].room);
+			this.datastr += (""+(roomid>=0 ? roomid : ".")+" ");
 			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
 		}
 	},
@@ -430,13 +432,16 @@ FileIO:{
 			rdata.push(+name.substr(1));
 		});
 		this.rdata2Border(true, rdata);
-		this.board.rooms.reset();
+		this.board.roommgr.rebuild();
 	},
 	encodeAreaRoom_XMLBoard : function(){
-		var bd = this.board, rinfo = bd.getRoomInfo();
-		this.xmldoc.querySelector('board').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.xmldoc.querySelector('board').appendChild(this.createXMLNode('areas',{N:rooms.length}));
 		this.encodeCellXMLBrow(function(cell){
-			return 'n'+(rinfo.id[cell.id]>0 ? rinfo.id[cell.id]-1 : -1);
+			var roomid = rooms.indexOf(cell.room);
+			return 'n'+(roomid>0 ? roomid : -1);
 		});
 	},
 

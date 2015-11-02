@@ -110,9 +110,9 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
-	isvalid : function(cell){ return (!cell.is51cell());}
+	isnodevalid : function(cell){ return (!cell.is51cell());}
 },
 
 Flags:{

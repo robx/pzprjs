@@ -32,10 +32,10 @@ Board:{
 	hasborder : 1
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 

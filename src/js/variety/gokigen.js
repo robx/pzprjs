@@ -188,17 +188,13 @@ LineGraph:{
 		var bd = this.board;
 		var prevcross;
 		var history = [component.nodes[0].obj];
-		var steps=[];
-		for(var by=bd.minby;by<=bd.maxby;by++){
-			steps[by] = [];
-			for(var bx=bd.minbx;bx<=bd.maxbx;bx++){ steps[by][bx] = -1;}
-		}
+		var steps={}, rows = (bd.maxbx-bd.minbx+1);
 
 		while(history.length>0){
 			var obj = history[history.length-1], nextobj = null;
-			var step = steps[obj.by][obj.bx];
-			if(step===-1){
-				step = steps[obj.by][obj.bx] = history.length-1;
+			var step = steps[obj.by*rows+obj.bx];
+			if(step===void 0){
+				step = steps[obj.by*rows+obj.bx] = history.length-1;
 			}
 			// ループになった場合 => ループフラグをセットする
 			else if((obj.group==='cross') && ((history.length-1)>step)){
@@ -211,9 +207,9 @@ LineGraph:{
 			if(obj.group==='cross'){
 				prevcross = obj;
 				for(var i=0;i<obj.pathnodes[0].nodes.length;i++){
-					var cell = bd.getc(((obj.bx+obj.pathnodes[0].nodes[i].obj.bx)>>1),
-									   ((obj.by+obj.pathnodes[0].nodes[i].obj.by)>>1));
-					if(steps[cell.by][cell.bx]===-1){ nextobj = cell; break;}
+					var cross2 = obj.pathnodes[0].nodes[i].obj;
+					var cell = bd.getc((obj.bx+cross2.bx)>>1,(obj.by+cross2.by)>>1);
+					if(steps[cell.by*rows+cell.bx]===void 0){ nextobj = cell; break;}
 				}
 			}
 			else{ // cellの時

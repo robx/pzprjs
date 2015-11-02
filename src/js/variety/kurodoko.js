@@ -38,7 +38,7 @@ Board:{
 	qrows : 9
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
 

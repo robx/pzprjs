@@ -20,7 +20,7 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){ this.decIC(cell);}
 
-		var bd = this.board, clist = bd.rooms.getClistByCell(cell);
+		var bd = this.board, clist = cell.room.clist;
 		if(this.inputData===1){
 			for(var i=0;i<clist.length;i++){
 				if(clist[i].ques!==0 || bd.startpos.equals(clist[i]) || bd.goalpos.equals(clist[i])){
@@ -284,10 +284,10 @@ OperationManager:{
 	}
 },
 
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -479,115 +479,125 @@ AnsCheck:{
 	},
 
 	checkUnshadeLoop : function(){
-		var sinfo={cell:[]}, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.wcell.getLinkCell(bd.cell[c]);
-		}
-
-		var sdata=[];
-		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].qans===0?0:null);}
-		for(var c=0;c<bd.cellmax;c++){
-			if(sdata[c]!==0){ continue;}
-			this.searchloop(c, sinfo, sdata);
-		}
-
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
-		if(errclist.length>0){
+		var bd = this.board, ublks = bd.ublkmgr.components;
+		for(var r=0;r<ublks.length;r++){
+			if(ublks[r].circuits===0){ continue;}
+			
 			this.failcode.add("cuLoop");
-			errclist.seterr(1);
-		}
-	},
-	searchloop : function(fc, sinfo, sdata){
-		var passed=[], history=[fc];
-		for(var c=0;c<this.board.cellmax;c++){ passed[c]=false;}
-
-		while(history.length>0){
-			var c = history[history.length-1];
-			passed[c] = true;
-
-			// 隣接するセルへ
-			var cc = (sinfo.cell[c].length>0?sinfo.cell[c][0]:null);
-			if(cc!==null){
-				// 通過した道の参照を外す
-				for(var i=0;i<sinfo.cell[c].length;i++) { if(sinfo.cell[c][i]===cc){ sinfo.cell[c].splice(i,1);}}
-				for(var i=0;i<sinfo.cell[cc].length;i++){ if(sinfo.cell[cc][i]===c){ sinfo.cell[cc].splice(i,1);}}
-
-				// ループになった場合 => ループフラグをセットする
-				if(!!passed[cc]){
-					sdata[cc] = 1;
-					for(var i=history.length-1;i>=0;i--){
-						if(history[i]===cc){ break;}
-						sdata[history[i]] = 1;
-					}
-				}
-				// 先の交点でループ判定にならなかった場合 => 次のセルへ進む
-				else{ history.push(cc);}
-			}
-			else{
-				// 全て通過済み -> 一つ前に戻る
-				var cell = history.pop();
-				if(sdata[cell]===0){ sdata[cell]=2;}
-			}
+			if(this.checkOnly){ return;}
+			this.searchloop(ublks[r]).seterr(1);
 		}
 	},
 
 	checkRouteCheckPoint : function(){
-		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
-		this.checkAllCell(function(cell){ return (cell.ques===41 && sdata[cell.id]===2);}, "routeIgnoreCP");
-		if((errcount!==this.failcode.length) && !this.checkOnly){
-			this.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
+		var minfo = this.getMazeRouteInfo();
+		var errclist = minfo.outroute.filter(function(cell){ return cell.ques===41;});
+		if(errclist.length>0){
+			this.failcode.add("routeIgnoreCP");
+			if(this.checkOnly){ return;}
+			minfo.onroute.seterr(1);
 		}
 	},
 	checkRouteNoDeadEnd : function(){
-		var sdata = this.getRouteInfo(), errcount = this.failcode.length;
-		this.checkAllCell(function(cell){ return (cell.ques===42 && sdata[cell.id]===1);}, "routePassDeadEnd");
-		if((errcount!==this.failcode.length) && !this.checkOnly){
-			this.board.cell.filter(function(cell){ return sdata[cell.id]===1;}).seterr(2);
+		var minfo = this.getMazeRouteInfo();
+		var errclist = minfo.onroute.filter(function(cell){ return cell.ques===42;});
+		if(errclist.length>0){
+			this.failcode.add("routePassDeadEnd");
+			if(this.checkOnly){ return;}
+			minfo.onroute.seterr(1);
 		}
 	},
-	getRouteInfo : function(){
-		return (this._info.maze = this._info.maze || this.searchRoute());
-	},
-	searchRoute : function(){
-		/* 白マスがどの隣接セルに接しているかの情報を取得する */
-		var sinfo={cell:[]}, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.wcell.getLinkCell(bd.cell[c]);
+
+	searchloop : function(component){
+		// Loopがない場合は何もしないでreturn
+		if(component.circuits<=0){ return (new this.klass.CellList());}
+
+		// どこにLoopが存在するか判定を行う
+		var bd = this.board;
+		var errclist = new this.klass.CellList();
+		var history = [component.clist[0]], prevcell = null;
+		var steps={}, rows = (bd.maxbx-bd.minbx);
+
+		while(history.length>0){
+			var obj = history[history.length-1], nextobj = null;
+			var step = steps[obj.by*rows+obj.bx];
+			if(step===void 0){
+				step = steps[obj.by*rows+obj.bx] = history.length-1;
+			}
+			// ループになった場合 => ループフラグをセットする
+			else if((history.length-1)>step){
+				for(var i=history.length-2;i>=0;i--){
+					if(history[i].group==='cell'){ errclist.add(history[i]);}
+					if(history[i]===obj){ break;}
+				}
+			}
+
+			if(obj.group==='cell'){
+				prevcell = obj;
+				for(var i=0;i<obj.ublknodes[0].nodes.length;i++){
+					var cell2 = obj.ublknodes[0].nodes[i].obj;
+					var border = bd.getb((obj.bx+cell2.bx)>>1,(obj.by+cell2.by)>>1);
+					if(steps[border.by*rows+border.bx]===void 0){ nextobj = border; break;}
+				}
+			}
+			else{ // borderの時
+				for(var i=0;i<obj.sidecell.length;i++){
+					var cell = obj.sidecell[i];
+					if((cell!==prevcell) && (cell!==history[history.length-2])){ nextobj = cell; break;}
+				}
+			}
+			if(!!nextobj){ history.push(nextobj);}
+			else         { history.pop();}
 		}
 
-		/* 経路情報の初期値設定 */
-		var sdata=[];
-		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].qans===0?0:null);}
+		return errclist;
+	},
+
+	getMazeRouteInfo : function(){
+		if(this._info.maze){ return this._info.maze;}
 
 		/* Start->Goalの経路探索 */
-		var history=[bd.startpos.getc().id];
+		var bd = this.board;
+		var history=[bd.startpos.getc()];
+		var steps={}, onroutes={}, rows = (bd.maxbx-bd.minbx);
 		while(history.length>0){
-			var c = history[history.length-1];
+			var cell = history[history.length-1], nextcell = null;
+			var step = steps[cell.by*rows+cell.bx];
+			if(step===void 0){
+				step = steps[cell.by*rows+cell.bx] = history.length-1;
+			}
+
+			// Goalに到達した場合 => Goalフラグをセットして戻る
+			if(bd.goalpos.equals(cell)){
+				for(var i=history.length-1;i>=0;i--){
+					onroutes[history[i].by*rows+history[i].bx] = true;
+				}
+			}
 
 			// 隣接するセルへ
-			var cc = (sinfo.cell[c].length>0?sinfo.cell[c][0]:null);
-			if(cc!==null){
-				// 通過した道の参照を外す
-				for(var i=0;i<sinfo.cell[c].length;i++) { if(sinfo.cell[c][i]===cc){ sinfo.cell[c].splice(i,1);}}
-				for(var i=0;i<sinfo.cell[cc].length;i++){ if(sinfo.cell[cc][i]===c){ sinfo.cell[cc].splice(i,1);}}
-
-				// Goalに到達した場合 => Goalフラグをセットして戻る
-				if(bd.goalpos.equals(bd.cell[cc])){
-					sdata[cc] = 1;
-					for(var i=history.length;i>=0;i--){ sdata[history[i]] = 1;}
-				}
-				// 先の交点でループ判定にならなかった場合 => 次のセルへ進む
-				else{ history.push(cc);}
+			var nodes = (cell.ublknodes[0] ? cell.ublknodes[0].nodes : []);
+			for(var i=0;i<nodes.length;i++){
+				var cell1 = nodes[i].obj;
+				if(steps[cell1.by*rows+cell1.bx]===void 0){ nextcell = cell1; break;}
 			}
-			else{
-				// 全て通過済み -> 一つ前に戻る
-				var cell = history.pop();
-				if(sdata[cell]===0){ sdata[cell]=2;}
+
+			if(!!nextcell){ history.push(nextcell);}
+			else          { history.pop();}
+		}
+
+		var info = {
+			onroute  : (new this.klass.CellList()),
+			outroute : (new this.klass.CellList())
+		};
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c];
+			if(cell.isUnshade()){
+				if(!!onroutes[cell.by*rows+cell.bx]){ info.onroute.add(cell);}
+				else                                { info.outroute.add(cell);}
 			}
 		}
 
-		for(var c=0;c<bd.cellmax;c++){ if(sdata[c]===0){ sdata[c] = 2;}}
-		return sdata;
+		return (this._info.maze = info);
 	}
 },
 

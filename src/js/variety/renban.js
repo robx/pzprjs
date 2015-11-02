@@ -60,7 +60,7 @@ Board:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -72,27 +72,11 @@ BorderInfo:{
 	},
 
 	//---------------------------------------------------------------------------
-	// info.addPath()         空のPathを追加する
-	// info.addPathByBlist()  指定されたblistを持つPathを追加する
-	// info.addPathByPath()   指定されたPathを追加する
+	// info.addPath() 空のPathを追加する
 	//---------------------------------------------------------------------------
 	addPath : function(){
 		var pathid = ++this.max;
 		return (this.path[pathid] = {blist:(new this.klass.BorderList()), id:pathid});
-	},
-	addPathByBlist : function(blist){
-		var pathid = ++this.max;
-		var path = this.path[pathid] = {blist:(new this.klass.BorderList(blist)), id:pathid};
-
-		for(var i=0;i<blist.length;i++){
-			this.id[blist[i].id] = pathid;
-		}
-		return path;
-	},
-	addPathByPath : function(path){
-		var pathid = ++this.max;
-		path.id = pathid;
-		return (this.path[pathid] = path);
 	}
 },
 
@@ -162,9 +146,9 @@ AnsCheck:{
 	],
 
 	checkNumbersInRoom : function(){
-		var rinfo = this.getRoomInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist;
 			if(clist.length<=1){ continue;}
 			var max=-1, min=clist[0].getmaxnum(), breakflag=false;
 			for(var i=0,len=clist.length;i<len;i++){

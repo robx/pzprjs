@@ -151,7 +151,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(99, this.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(99, this.room.clist.length);
 	}
 },
 Border:{
@@ -168,10 +168,9 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
-
-	isvalid : function(cell){ return (cell.ques===0);}
+	isnodevalid : function(cell){ return (cell.ques===0);}
 },
 
 //---------------------------------------------------------

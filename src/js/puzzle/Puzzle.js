@@ -222,7 +222,7 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	ansclear : function(){
 		this.board.ansclear();
-		this.board.resetInfo();
+		this.board.rebuildInfo();
 		this.redraw();
 	},
 	subclear : function(){

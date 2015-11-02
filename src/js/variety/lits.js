@@ -17,81 +17,54 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	shape : null,	// getTetrominoInfo用
+	shapeblk : null	// getTetrominoInfo用
+},
 Board:{
 	hasborder : 1,
 
-	getTetrominoInfo : function(rinfo){
-		var tinfo = new this.klass.AreaInfo(); /* 各セルに入る黒マスのテトロミノの形が入る */
-		for(var c=0;c<this.cellmax;c++){ tinfo.id[c]=null;}
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist.filter(function(cell){ return cell.isShade();});
-			var len = clist.length;
-			if(len===4){
-				var cell0=clist.getTopCell(), bx0=cell0.bx, by0=cell0.by, value=0;
-				for(var i=0;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
-				switch(value){
-					case 13: case 15: case 27: case 31: case 33: case 49: case 51:
-						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="L";} break;
-					case 6: case 60:
-						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="I";} break;
-					case 14: case 30: case 39: case 41:
-						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="T";} break;
-					case 20: case 24: case 38: case 42:
-						for(var i=0;i<len;i++){ tinfo.id[clist[i].id]="S";} break;
-				}
-			}
-		}
-		return this.getBlockInfo(tinfo);
+	initialize : function(){
+		this.common.initialize.call(this);
+
+		this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
+	}
+},
+
+AreaShadeGraph:{
+	enabled : true
+},
+AreaRoomGraph:{
+	enabled : true
+},
+'AreaTetrominoGraph:AreaGraphBase':{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.tetro = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
+	
+	isnodevalid : function(cell){ return cell.isShade();},
+	isseparate : function(cell1, cell2){
+		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
 	},
-	getBlockInfo : function(tinfo){
-		var dinfo = new this.klass.AreaInfo(); /* 同じ部屋に含まれる黒マスのつながり情報 */
-		for(var c=0;c<this.cellmax;c++){ dinfo.id[c]=(tinfo.id[c]!==null?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(dinfo.id[cell0.id]!==0){ continue;}
-			var area = dinfo.addArea();
-			var stack=[cell0], n=0;
-			while(stack.length>0){
-				var cell = stack.pop();
-				if(dinfo.id[cell.id]!==0){ continue;}
 
-				area.clist[n++] = cell;
-				dinfo.id[cell.id] = area.id;
-
-				var list = cell.getdir4clist();
-				for(var i=0;i<list.length;i++){
-					if(tinfo.id[cell.id]===tinfo.id[list[i][0].id]){ stack.push(list[i][0]);}
-				}
-			}
-			area.clist.length = n;
-		}
-		return dinfo;
-	}
-},
-
-CellList:{
-	isSeqBlock : function(){
-		var stack=(this.length>0?[this[0]]:[]), count=this.length, passed={};
-		for(var i=0;i<count;i++){ passed[this[i].id]=0;}
-		while(stack.length>0){
-			var cell=stack.pop();
-			if(passed[cell.id]===1){ continue;}
-			count--;
-			passed[cell.id]=1;
-			var list = cell.getdir4clist();
-			for(var i=0;i<list.length;i++){
-				if(passed[list[i][0].id]===0){ stack.push(list[i][0]);}
+	resetExtraData : function(cell){ cell.shape = null;},
+	setExtraData : function(component){
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		var len = clist.length, shape = null;
+		if(len===4){
+			var cell0=clist.getTopCell(), bx0=cell0.bx, by0=cell0.by, value=0, shape = null;
+			for(var i=0;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
+			switch(value){
+				case 13: case 15: case 27:
+				case 31: case 33: case 49: case 51: shape = 'L'; break;
+				case 6:  case 60:                   shape = 'I'; break;
+				case 14: case 30: case 39: case 41: shape = 'T'; break;
+				case 20: case 24: case 38: case 42: shape = 'S'; break;
 			}
 		}
-		return (count===0);
+		component.shape = shape;
 	}
-},
-
-AreaShadeManager:{
-	enabled : true
-},
-AreaRoomManager:{
-	enabled : true
 },
 
 Flags:{
@@ -228,18 +201,25 @@ FileIO:{
 },
 "AnsCheck@lits":{
 	checkOverShadeCellInArea : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=4);}, "bkShadeGt4");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=4);}, "bkShadeGt4");
 	},
 	checkLessShadeCellInArea : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>=4);}, "bkShadeLt4");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a>=4);}, "bkShadeLt4");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var bd = this.board;
-		for(var r=1;r<=bd.rooms.max;r++){
-			var clist = bd.rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
-			if(clist.isSeqBlock()){ continue;}
+		var bd = this.board, rooms = bd.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, tetrobase = null, check = true;
+			for(var i=0;i<clist.length;i++){
+				if(clist[i].tetro===null){ }
+				else if(clist[i].tetro!==tetrobase){
+					if(tetrobase===null){ tetrobase=clist[i].tetro;}
+					else{ check = false; break;}
+				}
+			}
+			if(check){ continue;}
 			
 			this.failcode.add("bkShadeDivide");
 			if(this.checkOnly){ break;}
@@ -248,31 +228,43 @@ FileIO:{
 	},
 
 	checkTetromino : function(){
-		var rinfo = this.getRoomInfo();
-		var dinfo = this.board.getTetrominoInfo(rinfo);
-		for(var r=1;r<=dinfo.max;r++){
-			var clist = dinfo.area[r].clist;
-			if(clist.length<=4){ continue;}
-			
-			this.failcode.add("bsSameShape");
-			if(this.checkOnly){ break;}
-			clist.seterr(2);
+		var result = true, bd = this.board;
+		function func(cell1,cell2){
+			var r1 = cell1.tetro, r2 = cell2.tetro;
+			return (r1!==null && r2!==null && r1!==r2 && r1.shape!==null && r2.shape!==null && r1.shape===r2.shape);
 		}
+		for(var c=0;c<bd.cellmax;c++){
+			var cell = bd.cell[c], cell2 = cell.adjacent.right;
+			if(!cell2.isnull && func(cell,cell2)){
+				result = false;
+				if(this.checkOnly){ break;}
+				cell.tetro.clist.seterr(2);
+				cell2.tetro.clist.seterr(2);
+			}
+			cell2 = cell.adjacent.bottom;
+			if(!cell2.isnull && func(cell,cell2)){
+				result = false;
+				if(this.checkOnly){ break;}
+				cell.tetro.clist.seterr(2);
+				cell2.tetro.clist.seterr(2);
+			}
+		}
+		if(!result){ this.failcode.add("bsSameShape");}
 	}
 },
 "AnsCheck@norinori":{
 	checkOverShadeCell : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a<=2);}, "csGt2");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (a<=2);}, "csGt2");
 	},
 	checkSingleShadeCell : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (a>=2);}, "csLt2");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (a>=2);}, "csLt2");
 	},
 
 	checkOverShadeCellInArea : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=2);}, "bkShadeGt2");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a<=2);}, "bkShadeGt2");
 	},
 	checkSingleShadeCellInArea : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a!==1);}, "bkShadeLt2");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isShade();}, function(w,h,a,n){ return (a!==1);}, "bkShadeLt2");
 	}
 },
 

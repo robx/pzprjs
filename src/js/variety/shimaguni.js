@@ -26,7 +26,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.room.clist.length);
 	}
 },
 "Cell@chocona":{
@@ -63,10 +63,10 @@ CellList:{
 	}
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
 	hastop : true
 },
@@ -151,17 +151,17 @@ FileIO:{
 },
 "AnsCheck@shimaguni":{
 	checkSideAreaShadeCell : function(){
-		this.checkSideAreaCell(this.getRoomInfo(), function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
+		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		this.checkSideAreaSize(this.getRoomInfo(), function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
+		this.checkSideAreaSize(function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
-		var rooms = this.board.rooms;
-		for(var r=1;r<=rooms.max;r++){
-			var clist = rooms.area[r].clist.filter(function(cell){ return cell.isShade();});
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist.filter(function(cell){ return cell.isShade();});
 			if(clist.isSeqBlock()){ continue;}
 			
 			this.failcode.add("bkShadeDivide");
@@ -172,7 +172,7 @@ FileIO:{
 },
 "AnsCheck@chocona":{
 	checkShadeRect : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w*h===a);}, "csNotRect");
 	}
 },
 

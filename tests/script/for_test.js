@@ -266,7 +266,7 @@ ui.debug.extend(
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		puzzle.open(outputstr, function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
@@ -285,7 +285,7 @@ ui.debug.extend(
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		puzzle.open(outputstr, function(){
 			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
@@ -303,7 +303,7 @@ ui.debug.extend(
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		puzzle.open(outputstr, function(){
 			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');

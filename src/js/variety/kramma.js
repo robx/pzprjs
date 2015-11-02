@@ -81,7 +81,7 @@ Board:{
 	qrows : 8
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -215,7 +215,7 @@ AnsCheck:{
 	checkBorderNoneOnBP  : function(){ this.checkBorderCount(0,1, "bdIgnoreBP");},
 
 	checkSameObjectInArea : function(){
-		this.checkSameObjectInRoom(this.getRoomInfo(), function(cell){ return cell.getNum();}, "bkPlNum");
+		this.checkSameObjectInRoom(this.board.roommgr, function(cell){ return cell.getNum();}, "bkPlNum");
 	},
 
 	checkLcntCurve : function(){

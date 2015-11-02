@@ -68,10 +68,10 @@ Board:{
 	hasborder : 1
 },
 
-AreaNumberManager:{
+AreaNumberGraph:{
 	enabled : true
 },
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -167,10 +167,10 @@ AnsCheck:{
 	],
 
 	checkOverFourMarksInBox : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}, "bkNumGt3");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<=3);}, "bkNumGt3");
 	},
 	checkAllMarkInBox : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}, "bkNumLt3");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a>=3);}, "bkNumLt3");
 	},
 
 	checkAroundMarks : function(){

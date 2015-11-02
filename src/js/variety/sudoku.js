@@ -40,11 +40,11 @@ Board:{
 			var border = this.border[i];
 			if(border.bx%roomsizex===0 || border.by%roomsizey===0){ border.ques = 1;}
 		}
-		this.resetInfo();
+		this.rebuildInfo();
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 

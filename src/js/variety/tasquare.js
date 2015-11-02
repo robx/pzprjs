@@ -27,10 +27,10 @@ Cell:{
 	numberRemainsUnshaded : true
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
-AreaUnshadeManager:{
+AreaUnshadeGraph:{
 	enabled : true
 },
 
@@ -113,21 +113,20 @@ AnsCheck:{
 	],
 
 	checkSquareShade : function(){
-		this.checkAllArea(this.getShadeInfo(), function(w,h,a,n){ return (w*h===a && w===h);}, "csNotSquare");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w*h===a && w===h);}, "csNotSquare");
 	},
 	checkSumOfSize  : function(){ this.checkNumberSquare(true,  "nmSumSizeNe");},
 	checkAtLeastOne : function(){ this.checkNumberSquare(false, "nmNoSideShade");},
 	checkNumberSquare : function(flag, code){
 		var bd = this.board;
-		var binfo = this.getShadeInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.qnum<0):(cell.qnum===-1))){ continue;}
 			var clist=new this.klass.CellList(), adc=cell.adjacent;
-			if(adc.top.isShade()   ){ clist.extend(binfo.getRoomByCell(adc.top   ).clist);}
-			if(adc.bottom.isShade()){ clist.extend(binfo.getRoomByCell(adc.bottom).clist);}
-			if(adc.left.isShade()  ){ clist.extend(binfo.getRoomByCell(adc.left  ).clist);}
-			if(adc.right.isShade() ){ clist.extend(binfo.getRoomByCell(adc.right ).clist);}
+			if(adc.top.isShade()   ){ clist.extend(adc.top   .sblk.clist);}
+			if(adc.bottom.isShade()){ clist.extend(adc.bottom.sblk.clist);}
+			if(adc.left.isShade()  ){ clist.extend(adc.left  .sblk.clist);}
+			if(adc.right.isShade() ){ clist.extend(adc.right .sblk.clist);}
 
 			if(flag ? (clist.length===cell.qnum) : (clist.length>0)){ continue;}
 			

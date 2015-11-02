@@ -46,7 +46,16 @@ Cell:{
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by):by)>>1);
 		return Math.max(col, row);
 	},
-	minnum : 2
+	minnum : 2,
+
+	getPoleBar : function(){
+		var cell2, adc=this.adjacent, bars = [];
+		cell2=adc.top;    if(!cell2.isnull && (cell2.qans===11 || cell2.qans===12)){ bars.push(cell2.barnodes[0].component);}
+		cell2=adc.bottom; if(!cell2.isnull && (cell2.qans===11 || cell2.qans===12)){ bars.push(cell2.barnodes[0].component);}
+		cell2=adc.left;   if(!cell2.isnull && (cell2.qans===11 || cell2.qans===13)){ bars.push(cell2.barnodes[(cell2.barnodes.length<2) ? 0 : 1].component);}
+		cell2=adc.right;  if(!cell2.isnull && (cell2.qans===11 || cell2.qans===13)){ bars.push(cell2.barnodes[(cell2.barnodes.length<2) ? 0 : 1].component);}
+		return bars;
+	}
 },
 Board:{
 	hasborder : 1,
@@ -57,14 +66,13 @@ Board:{
 	initialize : function(){
 		this.common.initialize.call(this);
 
-		this.barinfo = this.addInfoList(this.klass.AreaBarManager);
+		this.netgraph = this.addInfoList(this.klass.AreaNetGraph);
+		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	},
 
 	irowakeRemake : function(){
-		this.barinfo.newIrowake();
-	},
-
-	getBarInfo : function(){ return this.barinfo.getBarInfo();}
+		this.netgraph.newIrowake();
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -79,100 +87,121 @@ BoardExec:{
 	}
 },
 
-"AreaBarManager:AreaManager":{
+"AreaNetGraph:AreaGraphBase":{
 	enabled : true,
-	relation : ['cell'],
+	setComponentRefs : function(obj, component){ obj.net = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.netnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
 	
-	isvalid : function(cell){
-		return (cell.qans>0);
+	isnodevalid : function(cell){ return (cell.qans>0);},
+	isseparate : function(cell1, cell2){
+		var dir = cell1.getdir(cell2,2);
+		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.qans===0||cell1.qans===13||cell2.qans===0||cell2.qans===13);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans===0||cell1.qans===12||cell2.qans===0||cell2.qans===12);}
+		return true;
 	},
 	
-	rebuild : function(){
-		this.klass.AreaManager.prototype.rebuild.call(this);
-		this.newIrowake();
-	},
-	
-	calcLinkInfo : function(cell){
-		return (this.linkinfo[cell.id] = {0:0,11:31,12:19,13:28}[cell.qans]);
-	},
-
-	irowakeEnable : function(){
-		return this.puzzle.flags.irowake;
-	},
-	irowakeValid : function(){
-		return this.puzzle.getConfig('irowake');
-	},
-	getNewColor : function(){
-		return this.puzzle.painter.getNewLineColor();
-	},
-
-	getBarInfo : function(){
-		var puzzle = this.puzzle, bd = puzzle.board;
-		function eachcell(cell, vert){
-			var qa = cell.qans, isbar = (qa===11 || qa===(vert?12:13));
-			if(!bar && isbar){
-				bar = binfo.addArea();
-				bar.vert = vert;
-				if(cell2!==null){ binfo.pole[cell2.id].push(bar.id);}
-			}
-			else if(!!bar && !isbar){
-				binfo.pole[cell.id].push(bar.id);
-				bar = null;
-			}
-			
-			if(!!bar && isbar){
-				bar.clist.add(cell);
-				binfo.id[cell.id].push(bar.id);	// タテヨコで別のIDにするため、配列にする
-			}
-			cell2 = cell;
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		if(!component.color){
+			component.color = this.puzzle.painter.getNewLineColor();
 		}
-
-		var binfo = new puzzle.klass.AreaBarInfo();
-		for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-			var bar=null, cell2=null;
-			for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-				eachcell(bd.getc(bx,by),true);
-			}
+	},
+	getLongColor : function(components){
+		return this.klass.LineGraph.prototype.getLongColor.call(this, components);
+	},
+	setLongColor : function(components, longColor){
+		this.klass.LineGraph.prototype.setLongColor.call(this, components, longColor);
+	},
+	repaintNodes : function(components){
+		var clist_all = new this.klass.CellList();
+		for(var i=0;i<components.length;i++){
+			clist_all.extend(components[i].getnodeobjs());
 		}
-		for(var by=bd.minby+1;by<=bd.maxby-1;by+=2){
-			var bar=null, cell2=null;
-			for(var bx=bd.minbx+1;bx<=bd.maxbx-1;bx+=2){
-				eachcell(bd.getc(bx,by),false);
-			}
-		}
-		
-		for(var c=0;c<bd.cellmax;c++){
-			if(binfo.id[c].length===2){ /* 0～2になる */
-				binfo.area[binfo.id[c][0]].link.push(binfo.id[c][1]);
-				binfo.area[binfo.id[c][1]].link.push(binfo.id[c][0]);
-			}
-			if(bd.cell[c].isNum()){
-				for(var i=0;i<binfo.pole[c].length;i++){
-					binfo.area[binfo.pole[c][i]].pole.push(c);
-				}
-			}
-			else{ binfo.pole[c] = [];}
-		}
-		return binfo;
+		this.puzzle.painter.repaintBlocks(clist_all);
+	},
+	newIrowake : function(){
+		this.klass.LineGraph.prototype.newIrowake.call(this);
 	}
 },
-"AreaBarInfo:AreaInfo":{
-	initialize : function(){
-		this.klass.AreaInfo.prototype.initialize.call(this);
+"AreaBarGraph:AreaGraphBase":{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.bar = component;}, // 2つのbarが設定されることがあるため信頼できない
+	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.qans>0);},
+	isseparate : function(cell1, cell2){
+		return this.klass.AreaNetGraph.prototype.isseparate.call(this,cell1,cell2);
+	},
 
-		this.pole = [];
+	calcNodeCount : function(cell){
+		return {0:0,11:2,12:1,13:1}[cell.qans];
+	},
+	removeEdgeByNodeObj : function(cell){
+		// Edgeの除去
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var nodes1 = this.getObjNodeList(cell);
+		for(var i=0;i<sidenodeobj.length;i++){
+			var dir = cell.getdir(sidenodeobj[i],2), lrlink = (dir===cell.LT||dir===cell.RT);
+			var nodes2 = this.getObjNodeList(sidenodeobj[i]);
+			var node1 = nodes1[(nodes1.length<2 || !lrlink) ? 0 : 1];
+			var node2 = nodes2[(nodes2.length<2 || !lrlink) ? 0 : 1];
+			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
+		}
 
-		for(var c=0,len=this.board.cellmax;c<len;c++){
-			this.id[c]=[];
-			this.pole[c]=[];
+		// Nodeを一旦取り除く
+		for(var i=nodes1.length;i>0;i--){ this.deleteNode(cell.barnodes[0]);}
+	},
+	addEdgeByNodeObj : function(cell){
+		// Nodeを付加する
+		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
+		
+		// Edgeの付加
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var nodes1 = this.getObjNodeList(cell);
+		for(var i=0;i<sidenodeobj.length;i++){
+			if(this.isseparate(cell, sidenodeobj[i])){ continue;}
+			var dir = cell.getdir(sidenodeobj[i],2), lrlink = (dir===cell.LT||dir===cell.RT);
+			var nodes2 = this.getObjNodeList(sidenodeobj[i]);
+			var node1 = nodes1[(nodes1.length<2 || !lrlink) ? 0 : 1];
+			var node2 = nodes2[(nodes2.length<2 || !lrlink) ? 0 : 1];
+			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
 		}
 	},
-	addArea : function(){
-		var areaid = ++this.max;
-		return (this.area[areaid] = {
-			clist:(new this.klass.CellList()), id:areaid,
-			link:[], pole:[], vert:false
-		});
+
+	searchGraph : function(){
+		var components = this.klass.AreaGraphBase.prototype.searchGraph.call(this);
+		
+		//全component生成後でないとcrossbarがうまく設定できない場合があるのでsetExtraDataを設定し直す
+		for(var i=0;i<components.length;i++){ this.setExtraData(components[i]);}
+		
+		return components;
+	},
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		component.size = component.clist.length;
+		
+		if(component.nodes>1){
+			var d = component.clist.getRectSize();
+			component.vert = (d.cols===1);
+		}
+		else if(component.nodes[0].obj.barnodes.length===1){
+			component.vert = (component.nodes[0].obj.qans===12)
+		}
+		else{
+			component.vert = (component.nodes[0].obj.barnodes.indexOf(component.nodes[0])===0);
+		}
+	},
+	getCrossBars : function(component){
+		var crossbar = [];
+		for(var i=0;i<component.nodes.length;i++){
+			var node = component.nodes[i];
+			if(node.obj.barnodes.length===2){
+				crossbar.push(node.obj.barnodes[node.obj.barnodes.indexOf(node)===1?0:1].component);
+			}
+		}
+		return crossbar;
 	}
 },
 CellList:{
@@ -301,6 +330,16 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	},
+
+	getBarColor : function(cell,vert){
+		var err=cell.error, color="";
+		this.addlw = 0;
+		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
+		else if(err!==0){ color = this.errlinebgcolor;}
+		else if(!this.puzzle.execConfig('irowake') || !cell.net || !cell.net.color){ color = this.linecolor;}
+		else{ color = cell.net.color;}
+		return color;
 	}
 },
 
@@ -355,23 +394,15 @@ AnsCheck:{
 		"checkAllBarConnect+"
 	],
 
-	getBarInfo : function(){
-		return (this._info.bar = this._info.bar || this.board.getBarInfo());
-	},
-	getConnectionInfo : function(){
-		return (this._info.bararea = this._info.bararea || this.board.barinfo.getAreaInfo());
-	},
-
 	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},
 	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},
 	checkOutgoingBars : function(type, code){
 		var bd = this.board;
-		var binfo = this.getBarInfo();
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
-			var cid = binfo.pole[c];
-			if((type===1 && cid.length<=1) || (type===2 && cid.length>0)){ continue;}
+			var poles = cell.getPoleBar();
+			if((type===1 && poles.length<=1) || (type===2 && poles.length>0)){ continue;}
 			
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
@@ -382,21 +413,21 @@ AnsCheck:{
 	checkShortBar : function(){ this.checkPoleLength(2, "lbLenLt");},
 	checkPoleLength : function(type, code){
 		var result = true, bd = this.board;
-		var binfo = this.getBarInfo();
-		
-		allloop:
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			for(var i=0,len=binfo.pole[c].length;i<len;i++){
-				var qn=cell.getNum(), id=binfo.pole[c][i], bar = binfo.area[id], clist = bar.clist, llen=clist.length;
-				if((type===1 && llen<=qn) || (type===2 && llen>=qn)){ continue;}
-				
-				result = false;
-				if(this.checkOnly){ break allloop;}
-				cell.seterr(1);
-				clist.setErrorBar(bar.vert);
-			}
+			
+			// polebarの数は0か1 (checkNotMultiBarが先にcheckされるため)
+			var bar=cell.getPoleBar()[0];
+			if(!bar){ continue;}
+			
+			var qn=cell.getNum(), clist=bar.clist, llen=clist.length;
+			if((type===1 && llen<=qn) || (type===2 && llen>=qn)){ continue;}
+			
+			result = false;
+			if(this.checkOnly){ break;}
+			cell.seterr(1);
+			clist.setErrorBar(bar.vert);
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -404,81 +435,84 @@ AnsCheck:{
 		}
 	},
 	checkCrossedLength : function(){
-		var result=true;
-		var binfo = this.getBarInfo();
-		for(var id=1,max=binfo.max;id<=max;id++){
-			var check = false, bar = binfo.area[id], linkid = bar.link, clist = bar.clist;
-			for(var i=0,len=linkid.length;i<len;i++){
-				if(clist.length===binfo.area[linkid[i]].clist.length){ check=true; break;}
+		var result=true, bd = this.board, bars = bd.bargraph.components;
+		for(var id=0,max=bars.length;id<max;id++){
+			var check = false, bar = bars[id], links = bd.bargraph.getCrossBars(bar);
+			for(var i=0,len=links.length;i<len;i++){
+				if(bar.size===links[i].size){ check=true; break;}
 			}
 			if(check){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
-			clist.setErrorBar(bar.vert);
+			bar.clist.setErrorBar(bar.vert);
 		}
 		if(!result){
 			this.failcode.add("lbNotCrossEq");
-			this.board.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
+			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
 		}
 	},
 
 	checkAllBarConnect : function(){
-		this.checkOneArea(this.getConnectionInfo(), "lbDivide");
+		this.checkOneArea(this.board.netgraph, "lbDivide");
 	},
 
 	checkLoop_amibo : function(){
-		var sinfo={cell:[]}, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
-			sinfo.cell[c] = bd.barinfo.getLinkCell(bd.cell[c]);
-		}
-
-		var sdata=[];
-		for(var c=0;c<bd.cellmax;c++){ sdata[c] =(bd.cell[c].qans!==0?0:null);}
-		for(var c=0;c<bd.cellmax;c++){
-			if(sdata[c]!==0){ continue;}
-			this.searchloop(c, sinfo, sdata);
-		}
-
-		var errclist = bd.cell.filter(function(cell){ return (sdata[cell.id]===1);});
-		if(errclist.length>0){
+		var bd = this.board, nets = bd.netgraph.components;
+		for(var r=0;r<nets.length;r++){
+			if(nets[r].circuits===0){ continue;}
+			
 			this.failcode.add("lbLoop");
+			if(this.checkOnly){ return;}
+			
 			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
-			errclist.seterr(4);
+			this.searchloop(nets[r]).seterr(4);
 		}
 	},
-	searchloop : function(fc, sinfo, sdata){
-		var passed=[], history=[fc];
-		for(var c=0;c<this.board.cellmax;c++){ passed[c]=false;}
+	// ぬりめいずのものと同じ
+	searchloop : function(component){
+		// Loopがない場合は何もしないでreturn
+		if(component.circuits<=0){ return (new this.klass.CellList());}
+
+		// どこにLoopが存在するか判定を行う
+		var bd = this.board;
+		var errclist = new this.klass.CellList();
+		var history = [component.clist[0]], prevcell = null;
+		var steps={}, rows = (bd.maxbx-bd.minbx);
 
 		while(history.length>0){
-			var c = history[history.length-1];
-			passed[c] = true;
-
-			// セルを経由してその先の交点へ
-			var cc = (sinfo.cell[c].length>0?sinfo.cell[c][0]:null);
-			if(cc!==null){
-				// 通過した道の参照を外す
-				for(var i=0;i<sinfo.cell[c].length;i++) { if(sinfo.cell[c][i]===cc){ sinfo.cell[c].splice(i,1);}}
-				for(var i=0;i<sinfo.cell[cc].length;i++){ if(sinfo.cell[cc][i]===c){ sinfo.cell[cc].splice(i,1);}}
-
-				// ループになった場合 => ループフラグをセットする
-				if(!!passed[cc]){
-					sdata[cc] = 1;
-					for(var i=history.length-1;i>=0;i--){
-						if(history[i]===cc){ break;}
-						sdata[history[i]] = 1;
-					}
+			var obj = history[history.length-1], nextobj = null;
+			var step = steps[obj.by*rows+obj.bx];
+			if(step===void 0){
+				step = steps[obj.by*rows+obj.bx] = history.length-1;
+			}
+			// ループになった場合 => ループフラグをセットする
+			else if((history.length-1)>step){
+				for(var i=history.length-2;i>=0;i--){
+					if(history[i].group==='cell'){ errclist.add(history[i]);}
+					if(history[i]===obj){ break;}
 				}
-				// 先の交点でループ判定にならなかった場合 => 次のセルへ進む
-				else{ history.push(cc);}
 			}
-			else{
-				// 全て通過済み -> 一つ前に戻る
-				var cell = history.pop();
-				if(sdata[cell]===0){ sdata[cell]=2;}
+
+			if(obj.group==='cell'){
+				prevcell = obj;
+				for(var i=0;i<obj.netnodes[0].nodes.length;i++){
+					var cell2 = obj.netnodes[0].nodes[i].obj;
+					var border = bd.getb((obj.bx+cell2.bx)>>1,(obj.by+cell2.by)>>1);
+					if(steps[border.by*rows+border.bx]===void 0){ nextobj = border; break;}
+				}
 			}
+			else{ // borderの時
+				for(var i=0;i<obj.sidecell.length;i++){
+					var cell = obj.sidecell[i];
+					if((cell!==prevcell) && (cell!==history[history.length-2])){ nextobj = cell; break;}
+				}
+			}
+			if(!!nextobj){ history.push(nextobj);}
+			else         { history.pop();}
 		}
+
+		return errclist;
 	}
 },
 

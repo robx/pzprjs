@@ -137,7 +137,7 @@ Board:{
 		this.arrowin.partner  = this.arrowout;
 		this.arrowout.partner = this.arrowin;
 
-		this.iceinfo = this.addInfoList(classes.AreaIcebarnManager);
+		this.icegraph = this.addInfoList(classes.AreaIcebarnGraph);
 	},
 
 	initBoardSize : function(col,row){
@@ -165,47 +165,6 @@ Board:{
 		
 		this.arrowin.draw();
 		this.arrowout.draw();
-	},
-
-	getTraceInfo : function(){
-		var border = this.arrowin.getb(), dir=border.qdir, pos = border.getaddr();
-		var info = {lastcell:this.emptycell, lastborder:border, blist:(new this.klass.BorderList()), dir:dir, count:1};
-		info.blist.add(border);
-
-		while(1){
-			pos.movedir(dir,1);
-			if(pos.oncell()){
-				var cell = info.lastcell = pos.getc();
-				if(cell.isnull){ break;}
-				else if(!cell.ice()){
-					var adb = cell.adjborder;
-					if     (cell.lcnt!==2){ }
-					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
-					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
-					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
-					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
-					info.dir = dir;
-				}
-
-				if(this.pid!=='icebarn'){
-					var num = cell.getNum();
-					if(num!==-1){
-						if(num!==-2 && num!==info.count){ break;}
-						info.count++;
-					}
-				}
-			}
-			else{
-				border = info.lastborder = pos.getb();
-				if(!border.isLine()){ break;}
-				
-				info.blist.add(border);
-				var arrow = border.getArrow();
-				if(arrow!==border.NDIR && dir!==arrow){ break;}
-			}
-		}
-
-		return info;
 	}
 },
 BoardExec:{
@@ -372,10 +331,12 @@ LineGraph:{
 	}
 },
 
-"AreaIcebarnManager:AreaManager":{
+"AreaIcebarnGraph:AreaGraphBase":{
 	enabled : true,
-	relation : ['cell'],
-	isvalid : function(cell){ return cell.ice();}
+	setComponentRefs : function(obj, component){ obj.icebarn = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.icebarnnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.icebarnnodes = [];},
+	isnodevalid : function(cell){ return cell.ice();}
 },
 
 Flags:{
@@ -870,10 +831,6 @@ AnsCheck:{
 		"checkDeadendLine+"
 	],
 
-	getTraceInfo : function(){
-		return (this._info.trace = this._info.trace || this.board.getTraceInfo());
-	},
-
 	checkCrossOutOfIce : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());}, "lnCrossExIce");
 	},
@@ -881,7 +838,7 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
 	},
 	checkIgnoreIcebarn : function(){
-		this.checkLinesInArea(this.board.iceinfo.getAreaInfo(), function(w,h,a,n){ return (a!==0);}, "bkNoLine");
+		this.checkLinesInArea(this.board.icegraph, function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkNoLineNumber : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===0 && cell.isNum());}, "nmUnpass");
@@ -940,6 +897,47 @@ AnsCheck:{
 			this.board.border.setnoerr();
 			info.blist.seterr(1);
 		}
+	},
+
+	getTraceInfo : function(){
+		var border = this.board.arrowin.getb(), dir=border.qdir, pos = border.getaddr();
+		var info = {lastcell:this.emptycell, lastborder:border, blist:(new this.klass.BorderList()), dir:dir, count:1};
+		info.blist.add(border);
+
+		while(1){
+			pos.movedir(dir,1);
+			if(pos.oncell()){
+				var cell = info.lastcell = pos.getc();
+				if(cell.isnull){ break;}
+				else if(!cell.ice()){
+					var adb = cell.adjborder;
+					if     (cell.lcnt!==2){ }
+					else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
+					else if(dir!==2 && adb.top.isLine()   ){ dir=1;}
+					else if(dir!==3 && adb.right.isLine() ){ dir=4;}
+					else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
+					info.dir = dir;
+				}
+
+				if(this.pid!=='icebarn'){
+					var num = cell.getNum();
+					if(num!==-1){
+						if(num!==-2 && num!==info.count){ break;}
+						info.count++;
+					}
+				}
+			}
+			else{
+				border = info.lastborder = pos.getb();
+				if(!border.isLine()){ break;}
+				
+				info.blist.add(border);
+				var arrow = border.getArrow();
+				if(arrow!==border.NDIR && dir!==arrow){ break;}
+			}
+		}
+
+		return info;
 	}
 },
 

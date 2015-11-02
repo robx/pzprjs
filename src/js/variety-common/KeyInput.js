@@ -28,8 +28,8 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	key_inputqnum : function(ca){
 		var cell = this.cursor.getc(), cell0=cell, puzzle=this.puzzle, bd=puzzle.board;
-		if(puzzle.editmode && bd.rooms.hastop){
-			cell0 = cell = bd.rooms.getTopOfRoomByCell(cell);
+		if(puzzle.editmode && bd.roommgr.hastop){
+			cell0 = cell = cell.room.top;
 		}
 		else if(puzzle.execConfig('dispmove')){
 			if(cell.isDestination()){ cell = cell.base;}

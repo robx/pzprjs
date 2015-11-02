@@ -274,7 +274,7 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -496,10 +496,10 @@ AnsCheck:{
 	],
 
 	checkSingleMirrorInRoom : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);}, "bkObjGe2");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a<=1);}, "bkObjGe2");
 	},
 	checkExistMirrorInRoom : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);}, "bkNoObj");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans!==0;}, function(w,h,a,n){ return (a!==0);}, "bkNoObj");
 	},
 
 	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},

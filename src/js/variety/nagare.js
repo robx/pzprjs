@@ -221,9 +221,9 @@ Border:{
 Board:{
 	hasborder : 1,
 
-	resetInfo : function(){
+	rebuildInfo : function(){
 		this.initWind();
-		pzpr.common.Board.prototype.resetInfo.call(this);
+		pzpr.common.Board.prototype.rebuildInfo.call(this);
 	},
 
 	initWind : function(){

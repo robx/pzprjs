@@ -49,7 +49,7 @@ Encode:{
 			}
 		}
 
-		bd.resetInfo();
+		bd.rebuildInfo();
 
 		puzzle.execListener('openurl', pzl.url);
 	},

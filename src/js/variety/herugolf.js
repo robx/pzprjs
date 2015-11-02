@@ -209,13 +209,7 @@ Cell:{
 	}
 },
 Board:{
-	hasborder : 1,
-
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		this.waterinfo = this.addInfoList(this.klass.AreaWaterManager);
-	}
+	hasborder : 1
 },
 
 LineGraph:{
@@ -250,11 +244,7 @@ LineGraph:{
 			else if(dir!==3 && adb.right.isLine() ){ dir=4;}
 			else if(dir!==4 && adb.left.isLine()  ){ dir=3;}
 		}
-	}},
-"AreaWaterManager:AreaManager":{
-	enabled : true,
-	relation : ['cell'],
-	isvalid : function(cell){ return cell.ice();}
+	}
 },
 
 Flags:{

@@ -35,7 +35,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.room.clist.length);
 	}
 },
 Board:{
@@ -55,7 +55,7 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
 	hastop : true
 },
@@ -202,9 +202,9 @@ AnsCheck:{
 	checkMajorityBarOver : function(){ this.checkMajorityBarCount(true,  "bkMajorBarGt");},
 	checkMajorityBarLack : function(){ this.checkMajorityBarCount(false, "bkMajorBarLt");},
 	checkMajorityBarCount : function(isover, code){
-		var result = true, rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var area = rinfo.area[id];
+		var result = true, rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var area = rooms[r];
 			if(!area.top.isValidNum()){ continue;}
 			var clist = area.clist, vcount=0, hcount=0, count=0;
 			for(var i=0;i<clist.length;i++){

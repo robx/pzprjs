@@ -94,7 +94,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return ((this.board.rooms.getCntOfRoomByCell(this)+1)/2)|0;
+		return ((this.room.clist.length+1)/2)|0;
 	}
 },
 Border:{
@@ -108,31 +108,11 @@ Board:{
 
 	hasborder : 1,
 
-	getNoriInfo : function(){
-		var ninfo = new this.klass.AreaInfo(); /* 同じ部屋に含まれる同じ数字のつながり情報 */
-		for(var c=0;c<this.cellmax;c++){ ninfo.id[c]=(this.cell[c].anum>0?0:null);}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(ninfo.id[cell0.id]!==0){ continue;}
-			var area = ninfo.addArea();
-			var stack=[cell0], n=0;
-			while(stack.length>0){
-				var cell = stack.pop();
-				if(ninfo.id[cell.id]!==0){ continue;}
+	initialize : function(){
+		this.common.initialize.call(this);
 
-				area.clist[n++] = cell;
-				ninfo.id[cell.id] = area.id;
-
-				var list = cell.getdir4clist();
-				for(var i=0;i<list.length;i++){
-					var cell2 = list[i][0];
-					if(cell.anum===cell2.anum && this.rooms.id[cell.id]===this.rooms.id[cell2.id]){ stack.push(cell2);}
-				}
-			}
-			area.clist.length = n;
-		}
-		return ninfo;
-	}
+		this.norigraph = this.addInfoList(this.klass.AreaNoriGraph);
+	},
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -140,8 +120,19 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
+},
+"AreaNoriGraph:AreaGraphBase":{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.nori = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.norinodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.norinodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.anum>0);},
+	isseparate : function(cell1, cell2){
+		return (cell1.anum!==cell2.anum) || this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	}
 },
 
 Flags:{
@@ -284,15 +275,11 @@ AnsCheck:{
 		"checkSingleNoriSize"
 	],
 
-	getNoriInfo : function(){
-		return (this._info.nori = this._info.nori || this.board.getNoriInfo());
-	},
-
 	checkBlockEvenSize : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return ((a&1)===0);}, "bkOddSize");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return ((a&1)===0);}, "bkOddSize");
 	},
 	checkSingleNoriSize : function(){
-		this.checkAllArea(this.getNoriInfo(), function(w,h,a,n){ return (a>=2);}, "nmNotLink");
+		this.checkAllArea(this.board.norigraph, function(w,h,a,n){ return (a>=2);}, "nmNotLink");
 	},
 	checkSumOfNumber : function(){
 		var boardborder = this.board.border;
@@ -328,9 +315,9 @@ AnsCheck:{
 		}
 	},
 	checkOverSaturatedNumberInRoom : function(){
-		var rinfo = this.getRoomInfo();
-		for(var r=1;r<=rinfo.max;r++){
-			var clist = rinfo.area[r].clist;
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist;
 			var d = [], max = clist[0].getmaxnum(), min = clist[0].getminnum();
 			for(var n=min;n<=max;n++){ d[n]=0;}
 			for(var i=0;i<clist.length;i++){ if(clist[i].anum>=min){ d[clist[i].anum]++;} }

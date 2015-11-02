@@ -64,7 +64,7 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -195,13 +195,13 @@ AnsCheck:{
 	],
 
 	checkSquareTatami : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);}, "bkNotSquare");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (n!==1||a<=0||(w*h!==a)||w===h);}, "bkNotSquare");
 	},
 	checkHorizonLongTatami : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);}, "bkNotHRect");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (n!==3||a<=0||(w*h!==a)||w>h);}, "bkNotHRect");
 	},
 	checkVertLongTatami : function(){
-		this.checkAllArea(this.getRoomInfo(), function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);}, "bkNotVRect");
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (n!==2||a<=0||(w*h!==a)||w<h);}, "bkNotVRect");
 	}
 },
 

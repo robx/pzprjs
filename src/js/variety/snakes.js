@@ -115,35 +115,26 @@ Cell:{
 Board:{
 	hasborder : 1,
 
-	getSnakeInfo : function(){
-		var sinfo = new this.klass.AreaInfo();
-		for(var c=0;c<this.cellmax;c++){ sinfo.id[c]=(this.cell[c].anum>0?0:-1);}
-		for(var c=0;c<this.cellmax;c++){
-			var cell0 = this.cell[c];
-			if(sinfo.id[cell0.id]!==0){ continue;}
-			var snake = sinfo.addArea();
-			var stack=[cell0], n=0;
-			while(stack.length>0){
-				var cell = stack.pop();
-				if(sinfo.id[cell.id]!==0){ continue;}
+	initialize : function(){
+		this.common.initialize.call(this);
 
-				snake.clist[n++] = cell;
-				sinfo.id[cell.id] = snake.id;
-
-				var list = cell.getdir4clist();
-				for(var i=0;i<list.length;i++){
-					var cell2 = list[i][0];
-					if(Math.abs(cell.anum-cell2.anum)===1){ stack.push(cell2);}
-				}
-			}
-			snake.clist.length = n;
-		}
-		return sinfo;
+		this.snakemgr = this.addInfoList(this.klass.AreaSnakeGraph);
 	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
+	}
+},
+'AreaSnakeGraph:AreaGraphBase':{
+	enabled : true,
+	setComponentRefs : function(obj, component){ obj.snake = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.snakenodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.snakenodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.anum>0);},
+	isseparate : function(cell1, cell2){
+		return ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1));
 	}
 },
 
@@ -186,7 +177,7 @@ Graphic:{
 		if(!cell1.isnull && !cell2.isnull &&
 		   (cell1.qnum===-1 && cell2.qnum===-1) &&
 		   (cell1.anum!==-1 || cell2.anum!==-1) &&
-		   ( ((cell1.anum===-1)^(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
+		   ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
 		{
 			return this.borderQanscolor;
 		}
@@ -242,38 +233,33 @@ AnsCheck:{
 		"checkSnakesView"
 	],
 
-	getSnakeInfo : function(){
-		return (this._info.snake = this._info.snake || this.board.getSnakeInfo());
-	},
-
 	checkSnakeSize : function(){
-		this.checkAllArea(this.getSnakeInfo(), function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
+		this.checkAllArea(this.board.snakemgr, function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
 	},
 	checkOtherAnsNumberInRoom : function(){
-		this.checkDifferentNumberInRoom_main(this.getSnakeInfo(), this.isDifferentAnsNumberInClist);
+		this.checkDifferentNumberInRoom_main(this.board.snakemgr, this.isDifferentAnsNumberInClist);
 	},
 
 	checkSideCell_snakes : function(){
 		var result = true, bd = this.board;
-		var sinfo = this.getSnakeInfo();
-		function func(sinfo,cell1,cell2){
-			var r1 = sinfo.getRoomID(cell1), r2 = sinfo.getRoomID(cell2);
-			return (r1>0 && r2>0 && r1!==r2);
+		function func(cell1,cell2){
+			var r1 = cell1.snake, r2 = cell2.snake;
+			return (r1!==null && r2!==null && r1!==r2);
 		}
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
-			if(!cell2.isnull && func(sinfo,cell,cell2)){
+			if(!cell2.isnull && func(cell,cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
-				sinfo.getRoomByCell(cell).clist.seterr(1);
-				sinfo.getRoomByCell(cell2).clist.seterr(1);
+				cell.snake.clist.seterr(1);
+				cell2.snake.clist.seterr(1);
 			}
 			cell2 = cell.adjacent.bottom;
-			if(!cell2.isnull && func(sinfo,cell,cell2)){
+			if(!cell2.isnull && func(cell,cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
-				sinfo.getRoomByCell(cell).clist.seterr(1);
-				sinfo.getRoomByCell(cell2).clist.seterr(1);
+				cell.snake.clist.seterr(1);
+				cell2.snake.clist.seterr(1);
 			}
 		}
 		if(!result){ this.failcode.add("bsSnake");}
@@ -315,10 +301,10 @@ AnsCheck:{
 		}
 		if(!result){ this.failcode.add("anNumberNe");}
 	},
-	checkSnakesView : function(sinfo){
-		var sinfo = this.getSnakeInfo();
-		for(var r=1;r<=sinfo.max;r++){
-			var clist = sinfo.area[r].clist;
+	checkSnakesView : function(){
+		var snakes = this.board.snakemgr.components;
+		for(var r=0;r<snakes.length;r++){
+			var clist = snakes[r].clist;
 			var cell = clist.filter(function(cell){ return (cell.anum===1);})[0];
 			if(!cell){ continue;}
 
@@ -340,14 +326,13 @@ AnsCheck:{
 			}
 			// cellは数字のあるマスか、null(盤面外)を指す
 
-			var sid=sinfo.getRoomID(cell);
-			if(cell.isnull || cell.anum<=0 || cell.qnum!==-1 || sid<=0 || r===sid){ continue;}
+			if(cell.isnull || cell.anum<=0 || cell.qnum!==-1 || cell.snake===null || cell.snake===snakes[r]){ continue;}
 			
 			this.failcode.add("snakeAttack");
 			if(this.checkOnly){ break;}
 			clist2.seterr(1);
 			clist.seterr(1);
-			sinfo.area[sid].clist.seterr(1);
+			cell.snake.clist.seterr(1);
 		}
 	}
 },
@@ -356,7 +341,7 @@ FailCode:{
 	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
 	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
 	bsSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
-	anNumberNe : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."],
+	anNumberNe : ["矢印の先にある数字が正しくありません。","There is a wrong number which is in front of the arrowed number."],
 	snakeAttack: ["蛇の視線の先に別の蛇がいます。","A snake can see another snake."]
 }
 });

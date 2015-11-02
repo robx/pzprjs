@@ -130,14 +130,6 @@ Board:{
 
 	hasborder : 1
 },
-"Board@rectslider":{
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		/* LineGraphより後にすること */
-		this.rects = this.addInfoList(this.klass.AreaSlideManager);
-	}
-},
 
 LineGraph:{
 	enabled : true,
@@ -174,35 +166,21 @@ LineGraph:{
 	}
 },
 
-"AreaRoomManager@bonsan,heyabon":{
+"AreaRoomGraph@bonsan,heyabon":{
 	enabled : true
 },
-"AreaSlideManager:AreaShadeManager@rectslider":{
+"AreaShadeGraph@rectslider":{
 	enabled : true,
 	relation : ['cell','line'],
-	isvalid : function(cell){ return cell.base.qnum!==-1;},
-	bdfunc : function(border){ return false;},
+	isnodevalid : function(cell){ return cell.base.qnum!==-1;},
 	
 	setLine : function(border){
-		if(!this.enabled){ return;}
-		
-		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		var clist = new this.klass.CellList(), rects = this;
-		var path1 = cell1.path, path2 = cell2.path;
-		if(path1===path2 && path1!==null){ clist.extend(path1.clist);}
-		else{
-			if(path1!==null){ clist.extend(path1.clist);}else{ clist.add(cell1);}
-			if(path2!==null){ clist.extend(path2.clist);}else{ clist.add(cell2);}
-		}
-		clist = clist.filter(function(cell){ return (cell.base.qnum!==-1 || rects.id[cell.id]!==null);});
-		
-		var cidlist = [];
-		for(var i=0;i<clist.length;i++){
-			this.calcLinkInfo(clist[i]);
-			cidlist.push(clist[i].id);
-			cidlist = cidlist.concat(this.getLinkCell(clist[i]));
-		}
-		this.remakeInfo(cidlist);
+		this.modifyNodes = [];
+
+		this.putEdgeByNodeObj(border.sidecell[0]);
+		this.putEdgeByNodeObj(border.sidecell[1]);
+
+		this.remakeComponent();
 	}
 },
 
@@ -436,37 +414,21 @@ AnsCheck:{
 		"checkDisconnectLine"
 	],
 
+	checkCurveLine : function(){
+		this.checkAllArea(this.board.linegraph, function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
+	},
+	checkLineLength : function(){
+		this.checkAllArea(this.board.linegraph, function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
+	},
 	checkNoMoveCircle : function(){
 		this.checkAllCell(function(cell){ return (cell.qnum>=1 && cell.lcnt===0);}, "nmNoMove");
 	},
 
-	checkCurveLine : function(){
-		this.checkAllLineArea(function(w,h,a,n){ return (w===1||h===1);}, "laCurve");
-	},
-	checkLineLength : function(){
-		this.checkAllLineArea(function(w,h,a,n){ return (n<0||a===1||n===a-1);}, "laLenNe");
-	},
-	checkAllLineArea : function(evalfunc, code){
-		for(var id=0;id<this.board.linegraph.components.length;id++){
-			var path = this.board.linegraph.components[id], clist = path.clist;
-			var top = clist.getQnumCell();
-			var d = clist.getRectSize();
-			var a = clist.length;
-			var n = (!top.isnull ? top.qnum : -1);
-			if( evalfunc(d.cols, d.rows, a, n) ){ continue;}
-			
-			this.failcode.add(code);
-			if(this.checkOnly){ break;}
-			this.board.border.setnoerr();
-			path.setedgeerr(1);
-		}
-	},
-
 	checkFractal : function(){
-		var rinfo = this.getRoomInfo();
+		var rooms = this.board.roommgr.components;
 		allloop:
-		for(var id=1;id<=rinfo.max;id++){
-			var clist = rinfo.area[id].clist, d = clist.getRectSize();
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, d = clist.getRectSize();
 			d.xx=d.x1+d.x2; d.yy=d.y1+d.y2;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
@@ -479,19 +441,15 @@ AnsCheck:{
 		}
 	},
 	checkNoObjectBlock : function(){
-		this.checkNoMovedObjectInRoom(this.getRoomInfo());
+		this.checkNoMovedObjectInRoom(this.board.roommgr);
 	}
 },
 "AnsCheck@rectslider":{
-	getRectInfo : function(){
-		return (this._info.rect = this._info.rect || this.board.rects.getAreaInfo());
-	},
-
 	checkMovedBlockRect : function(){
-		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (w*h===a);}, "csNotRect");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w*h===a);}, "csNotRect");
 	},
 	checkMovedBlockSize : function(){
-		this.checkAllArea(this.getRectInfo(), function(w,h,a,n){ return (a>1);}, "bkSize1");
+		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (a>1);}, "bkSize1");
 	}
 },
 

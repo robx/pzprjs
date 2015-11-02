@@ -32,19 +32,19 @@ Cell:{
 	},
 	minnum : 0,
 
-	checkComplete : function(cinfo){
+	checkComplete : function(){
 		if(!this.isValidNum()){ return true;}
 		
-		var cnt = 0, idlist = [], clist = this.getdir4clist();
-		for(var i=0;i<clist.length;i++){
-			var r = cinfo.getRoomID(clist[i][0]);
-			if(r!==null){
-				for(var j=0;j<idlist.length;j++){
-					if(idlist[j]===r){ r=null; break;}
+		var cnt = 0, arealist = [], list = this.getdir4clist();
+		for(var i=0;i<list.length;i++){
+			var area = list[i][0].sblk;
+			if(area!==null){
+				for(var j=0;j<arealist.length;j++){
+					if(arealist[j]===area){ area=null; break;}
 				}
-				if(r!==null){
-					cnt += cinfo.area[r].clist.length;
-					idlist.push(r);
+				if(area!==null){
+					cnt += area.clist.length;
+					arealist.push(area);
 				}
 			}
 		}
@@ -52,7 +52,7 @@ Cell:{
 	}
 },
 
-AreaShadeManager:{
+AreaShadeGraph:{
 	enabled : true
 },
 
@@ -87,9 +87,6 @@ Graphic:{
 	},
 
 	paint : function(){
-		var puzzle = this.puzzle, bd = puzzle.board;
-		this.check_binfo = (puzzle.execConfig('autocmp') ? bd.getShadeInfo() : null);
-		
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawShadedCells();
@@ -103,9 +100,8 @@ Graphic:{
 	},
 
 	getCircleFillColor : function(cell){
-		if(cell.isValidNum()){
-			var cmpcell = (!!this.check_binfo && cell.checkComplete(this.check_binfo));
-			return (cmpcell ? this.qcmpcolor : this.circledcolor);
+		if(this.puzzle.execConfig('autocmp') && cell.isValidNum()){
+			return (cell.checkComplete() ? this.qcmpcolor : this.circledcolor);
 		}
 		return null;
 	}
@@ -141,10 +137,10 @@ AnsCheck:{
 	],
 
 	checkCellNumber_kurotto : function(){
-		var bd = this.board, cinfo = bd.getShadeInfo();
+		var bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var cell = bd.cell[c];
-			if(cell.checkComplete(cinfo)){ continue;}
+			if(cell.checkComplete()){ continue;}
 			
 			this.failcode.add("nmSumSizeNe");
 			if(this.checkOnly){ break;}

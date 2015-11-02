@@ -82,41 +82,38 @@ Cell:{
 	numberWithMB : true,
 
 	maxnum : function(){
-		return this.board.rooms.getCntOfRoomByCell(this);
+		return this.room.clist.length;
 	}
 },
 Board:{
 	qcols : 8,
 	qrows : 8,
 
-	hasborder : 1,
+	hasborder : 1
+},
 
-	getErrorRoomInfo : function(){
-		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){  /* rinfo.maxは領域を分割した時に増加します. */
-			var area = rinfo.area[id], clist = area.clist;
-			var nums = [];
-			var numkind=0, filled=-1;
-			for(var i=0;i<clist.length;i++){
-				var num = clist[i].getNum();
-				if(num!==-1){
-					if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
-					else{ nums[num]++;}
-				}
+AreaNumberGraph:{
+	enabled : true
+},
+AreaRoomGraph:{
+	enabled : true,
+
+	// オーバーライド
+	setExtraData : function(component){
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		var nums = [];
+		var numkind=0, filled=-1;
+		for(var i=0;i<clist.length;i++){
+			var num = clist[i].getNum();
+			if(num!==-1){
+				if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
+				else{ nums[num]++;}
 			}
-			area.number  = filled;
-			area.numcnt  = nums[filled];
-			area.numkind = numkind;
 		}
-		return rinfo;
+		component.number  = filled;
+		component.numcnt  = nums[filled];
+		component.numkind = numkind;
 	}
-},
-
-AreaNumberManager:{
-	enabled : true
-},
-AreaRoomManager:{
-	enabled : true
 },
 
 //---------------------------------------------------------
@@ -187,15 +184,11 @@ AnsCheck:{
 		"checkNoEmptyArea"
 	],
 
-	getErrorRoomInfo  : function(){
-		return (this._info.eroom = this._info.eroom || this.board.getErrorRoomInfo());
-	},
-
 	check2x2NumberCell : function(){
 		this.check2x2Block(function(cell){ return cell.isNum();}, "nm2x2");
 	},
-	checkSideAreaNumber : function(rinfo){
-		this.checkSideAreaCell(this.getErrorRoomInfo(), function(cell1,cell2){ return cell1.sameNumber(cell2);}, false, "cbSameNum");
+	checkSideAreaNumber : function(){
+		this.checkSideAreaCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}, false, "cbSameNum");
 	},
 
 	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
@@ -203,9 +196,9 @@ AnsCheck:{
 	checkNumCountOver : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);}, "nmCountGt");},
 	checkNoEmptyArea  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
 	checkAllErrorRoom : function(evalfunc, code){
-		var rinfo = this.getErrorRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var area = rinfo.area[id];
+		var rooms = this.board.roommgr.components;
+		for(var id=0;id<rooms.length;id++){
+			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}
 			
 			this.failcode.add(code);

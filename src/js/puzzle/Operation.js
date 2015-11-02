@@ -256,7 +256,7 @@ OperationManager:{
 
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
-		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,resetInfo関数のcallを要求する
+		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
 		var classes = this.klass;
 		this.operationlist = [
@@ -454,7 +454,7 @@ OperationManager:{
 			bd.setposAll();
 			bd.setminmax();
 			bd.enableInfo();
-			bd.resetInfo();
+			bd.rebuildInfo();
 			puzzle.redraw(true);
 			puzzle.execListener('adjust');
 		}

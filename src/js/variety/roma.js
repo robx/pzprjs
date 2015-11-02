@@ -129,7 +129,7 @@ BoardExec:{
 	}
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true
 },
 
@@ -215,7 +215,7 @@ AnsCheck:{
 	],
 
 	checkSingleArrowInArea : function(){
-		this.checkDifferentNumberInRoom_main(this.getRoomInfo(), this.isDifferentNumber_roma);
+		this.checkDifferentNumberInRoom_main(this.board.roommgr, this.isDifferentNumber_roma);
 	},
 	isDifferentNumber_roma : function(clist){
 		return this.isIndividualObject(clist, function(cell){ var n=cell.getNum(); return ((n>=1&&n<=4)?n:-1);});

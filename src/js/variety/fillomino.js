@@ -95,59 +95,35 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	hasborder : 1,
-
-	getErrorRoomInfo : function(){
-		var rinfo = this.getRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){  /* rinfo.maxは領域を分割した時に増加します. */
-			var area = rinfo.area[id], clist = area.clist;
-			var nums = [];
-			var emptycell=0, numkind=0, filled=-1;
-			for(var i=0;i<clist.length;i++){
-				var num = clist[i].getNum();
-				if(num===-1){ emptycell++;}
-				else if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
-				else{ nums[num]++;}
-			}
-
-			area.number  = -1;
-			area.numkind = numkind;
-			if(numkind===1){ area.number=filled;}
-			else if(numkind>=2 && emptycell===0){
-				// emptycellが0で2種類以上の数字が入っている領域の場合
-				// -> それぞれに別の領域idを割り当てて判定できるようにする
-				for(var i=0;i<clist.length;i++){ rinfo.id[clist[i].id] = 0;}
-				for(var i=0;i<clist.length;i++){
-					// error,numberはあとでforループが回ってきた時に設定します
-					this.assignNewErrorRoomID(rinfo, clist[i]);
-				}
-				// 最後に自分の情報を無効にする
-				rinfo.area[id] = null;
-			}
-		}
-		return rinfo;
-	},
-	assignNewErrorRoomID : function(rinfo, cell0){
-		if(rinfo.id[cell0.id]!==0){ return;}
-		var area = rinfo.addArea(), stack=[cell0], n = 0;
-		while(stack.length>0){
-			var cell=stack.pop();
-			if(rinfo.id[cell.id]!==0){ continue;}
-
-			area.clist[n++] = cell;
-			rinfo.id[cell.id] = area.id;
-
-			var list = cell.getdir4clist();
-			for(var i=0;i<list.length;i++){
-				if(cell.sameNumber(list[i][0])){ stack.push(list[i][0]);}
-			}
-		}
-		area.clist.length = n;
-	}
+	hasborder : 1
 },
 
-AreaRoomManager:{
-	enabled : true
+AreaRoomGraph:{
+	enabled : true,
+	isedgevalid : function(border){
+		if(border.isBorder()){ return false;}
+		var num1 = border.sidecell[0].getNum(), num2 = border.sidecell[1].getNum();
+		return num1===-1 || num2===-1 || num1===num2;
+	},
+	isseparate : function(cell1, cell2){
+		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return true;}
+		var num1 = cell1.getNum(), num2 = cell2.getNum();
+		return num1!==-1 && num2!==-1 && num1!==num2;
+	},
+
+	setExtraData : function(component){
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		
+		var emptycell=0, nums = [], numkind=0, filled=-1;
+		for(var i=0;i<clist.length;i++){
+			var num = clist[i].getNum();
+			if(num===-1){ emptycell++;}
+			else if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
+			else{ nums[num]++;}
+		}
+		component.numkind = numkind;
+		component.number  = (numkind===1 ? filled : -1);
+	}
 },
 
 //---------------------------------------------------------
@@ -251,12 +227,8 @@ AnsCheck:{
 		"checkNoNumCell_fillomino+"
 	],
 
-	getErrorRoomInfo  : function(){
-		return (this._info.eroom = this._info.eroom || this.board.getErrorRoomInfo());
-	},
-
 	checkSideAreaNumberSize : function(){
-		this.checkSideAreaSize(this.getErrorRoomInfo(), function(area){ return area.number;}, "bsSameNum");
+		this.checkSideAreaSize(function(area){ return area.number;}, "bsSameNum");
 	},
 
 	checkNoEmptyArea : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
@@ -264,9 +236,9 @@ AnsCheck:{
 	checkLargeArea   : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.clist.length);}, "bkSizeGt");},
 	checkNotMultiNum : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
 	checkAllErrorRoom : function(evalfunc, code){
-		var rinfo = this.getErrorRoomInfo();
-		for(var id=1;id<=rinfo.max;id++){
-			var area = rinfo.area[id];
+		var rooms = this.board.roommgr.components;
+		for(var id=0;id<rooms.length;id++){
+			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}
 			
 			this.failcode.add(code);

@@ -1,490 +1,286 @@
-// AreaManager.js v3.4.1
+// AreaManager.js
 
-//--------------------------------------------------------------------------------
-// ★AreaManagerクラス セルの部屋情報などを保持するクラス
-//   ※このクラスで管理しているareaidは、処理を簡略化するために
-//     領域に属するIDがなくなっても情報としては消していません。
-//     そのため、1～maxまで全て中身が存在しているとは限りません。
-//     回答チェックやファイル出力前には一旦resetRoomNumber()等が必要です。
-//--------------------------------------------------------------------------------
 pzpr.classmgr.makeCommon({
-//---------------------------------------------------------
-AreaManager:{
-	initialize : function(){
-		this.id = [];			// 各々のセルのid
-		this.area = [];			// つながっている領域の情報を保持する
-		this.max = 0;			// 1からいくつまでidが使用されているか保持する
-		this.invalidid = [];	// 使わなくなったIDのリスト
-
-		this.linkinfo = [];		// セルの情報を保持しておく
-		this.separate = [];		// 境界線に線が引いてあるかどうか
-	},
-	init : function(){
-		if(this.enabled){
-			var info = this.board.validinfo;
-			for(var i=0;i<this.relation.length;i++){
-				info[this.relation[i]].push(this);
-			}
-			info.all.push(this);
-		}
-	},
-	enabled : false,
+//--------------------------------------------------------------------------------
+// ★AreaGraphBaseクラス セルの部屋情報などを保持するクラス
+//   ※このクラスで管理しているroomsは左上からの順番に並ばないので
+//     回答チェックやURL出力前には一旦resetRoomNumber()等が必要です。
+//--------------------------------------------------------------------------------
+"AreaGraphBase:GraphBase":{
 	relation : ['cell'],
-
+	pointgroup : 'cell',
+	
 	//--------------------------------------------------------------------------------
-	// info.isvalid() そのセルが有効かどうか返す
-	// info.bdfunc()  境界線が存在するかどうかを返す
+	// areagraph.isedgeexists()        linkobjにedgeが存在するか判定する
+	// areagraph.isseparate()          接続してはいけないかどうか判定する
 	//--------------------------------------------------------------------------------
-	isvalid : function(cell){
-		return (cell.ques!==7);
-	},
-	bdfunc : function(border){
-		return false;
-	},
+	isedgeexists : function(linkobj){ return true;},
+	isseparate : function(nodeobj1, nodeobj2){ return false;},
 
-	//--------------------------------------------------------------------------------
-	// info.reset()   ファイル読み込み時などに、保持している情報を再構築する
-	// info.rebuild() 既存の情報からデータを再設定する
-	//--------------------------------------------------------------------------------
-	reset : function(){
-		// 基本変数初期化
-		this.id        = [];
-		this.area      = [];
-		this.max       = 0;
-		this.invalidid = [];
-
-		// 状態のチェックに使用する変数初期化
-		this.linkinfo  = [];
-		this.separate  = [];
-
-		this.rebuild();
-	},
-	rebuild : function(){
-		if(!this.enabled){ return;}
-
-		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){ this.id[c] = 0;}
-
-		for(var id=0;id<bd.bdmax;id++){ /* hasborder=0の時はbdmax=0です */
-			this.separate[id] = false;
-			this.checkSeparateInfo(bd.border[id]);
+	//---------------------------------------------------------------------------
+	// areagraph.getSideObjByNodeObj()   cellから接続するNodeにあるobjを取得する
+	//---------------------------------------------------------------------------
+	getSideObjByNodeObj : function(cell){
+		var list = cell.getdir4clist(), cells = [];
+		for(var i=0;i<list.length;i++){
+			var cell2 = list[i][0];
+			if(this.isnodevalid(cell2)){ cells.push(cell2);}
 		}
-
-		for(var c=0;c<bd.cellmax;c++){
-			this.calcLinkInfo(bd.cell[c]);
-		}
-
-		this.searchIdlist(bd.cell);
+		return cells;
 	},
 
-	//--------------------------------------------------------------------------------
-	// info.setCell()        黒マス・白マスが入力されたり消された時などに、IDの情報を変更する
-	// info.checkLinkInfo()  自分のセルと4方向の接続情報を設定する
-	// info.calcLinkInfo()   上下左右にのセルに繋がることが可能かどうかの情報を取得する
-	//--------------------------------------------------------------------------------
+	//---------------------------------------------------------------------------
+	// areagraph.setCell()     黒マスになったりした時にブロックの情報を生成しなおす
+	//---------------------------------------------------------------------------
 	setCell : function(cell){
 		if(!this.enabled){ return;}
+		this.setEdgeByNodeObj(cell);
+	},
 
-		var change = this.checkLinkInfo(cell);
-		if(change[0]!==0){
-			var val = this.linkinfo[cell.id];
-			var isadd = !!((val&16)&&(change[0]&16)), isremove = !!(!(val&16)&&(change[0]&16));
-			var cidlist = this.getRemakeCell(cell, change);
+	//---------------------------------------------------------------------------
+	// areagraph.setEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
+	// areagraph.putEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
+	// areagraph.calcNodeCount()    そのセルにあるべきNode数を返す
+	// areagraph.removeEdgeByNodeObj() 黒マスになったりした時にブロックの情報を消去する
+	// areagraph.addEdgeByNodeObj()    黒マスになったりした時にブロックの情報を生成する
+	//---------------------------------------------------------------------------
+	setEdgeByNodeObj : function(nodeobj){
+		this.modifyNodes = [];
+
+		this.putEdgeByNodeObj(nodeobj);
+
+		this.remakeComponent();
+	},
+	putEdgeByNodeObj : function(cell){
+		if(this.calcNodeCount(cell)===0 && this.getObjNodeList(cell).length===0){ return;}
+		
+		// 一度Edgeを取り外す
+		this.removeEdgeByNodeObj(cell);
 			
-			// 新たに黒マス(白マス)くっつける場合 => 自分に領域IDを設定するだけ
-			if(isadd && (cidlist.length<=1)){
-				this.assignCell(cell, (cidlist.length===1?this.board.cell[cidlist[0]]:null));
-			}
-			// 端の黒マス(白マス)ではなくなった時 => まわりの数が0か1なら情報or自分を消去するだけ
-			else if(isremove && (cidlist.length<=1)){
-				this.removeCell(cell);
-			}
-			else{
-				cidlist.push(cell.id);
-				this.remakeInfo(cidlist);
-			}
-		}
+		// Edgeを付け直す
+		this.addEdgeByNodeObj(cell);
 	},
-	checkLinkInfo : function(cell){
-		var old = this.linkinfo[cell.id], val = this.calcLinkInfo(cell);
-		var change = [(old^val), 0, 0, 0, 0];
+
+	calcNodeCount : function(cell){
+		return (this.isnodevalid(cell)?1:0);
+	},
+	removeEdgeByNodeObj : function(cell){
+		// Edgeの除去
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var node1 = this.getObjNodeList(cell)[0];
+		for(var i=0;i<sidenodeobj.length;i++){
+			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
+			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
+		}
+
+		// Nodeを一旦取り除く
+		if(!!node1){ this.deleteNode(node1);}
+	},
+	addEdgeByNodeObj : function(cell){
+		// Nodeを付加する
+		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
 		
-		if(this.board.hasborder){
-			/* 自分の状態によってseparate状態が変わる場合があるのでチェックします */
-			var cblist=cell.getdir4cblist();
-			for(var i=0;i<cblist.length;i++){
-				var cell2 = cblist[i][0], border2 = cblist[i][1], dir2 = cblist[i][2];
-				
-				var old2 = this.linkinfo[cell2.id], val2 = this.calcLinkInfo(cell2);
-				change[dir2] = (old2^val2);
-				
-				this.checkSeparateInfo(border2);
+		// Edgeの付加
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var node1 = this.getObjNodeList(cell)[0];
+		for(var i=0;i<sidenodeobj.length;i++){
+			if(this.isseparate(cell, sidenodeobj[i])){ continue;}
+			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
+			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// areagraph.setExtraData()   指定された領域の拡張データを設定する
+	//--------------------------------------------------------------------------------
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+	},
+
+	//---------------------------------------------------------------------------
+	// areagraph.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
+	//---------------------------------------------------------------------------
+	getSideAreaInfo : function(cellinfo){
+		var sides=[], len=this.components.length, adjs={}, bd=this.board;
+		for(var r=0;r<this.components.length;r++){ this.components[r].id = r;}
+		for(var id=0;id<bd.bdmax;id++){
+			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
+			if(cell1.isnull || cell2.isnull){ continue;}
+			var room1=cell1[cellinfo], room2=cell2[cellinfo];
+			if(room1===room2 || room1===null || room2===null){ continue;}
+
+			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
+			if(!!adjs[key]){ continue;}
+			adjs[key] = true;
+
+			sides.push([room1,room2]);
+		}
+		return sides;
+	}
+},
+
+//--------------------------------------------------------------------------------
+// ☆AreaShadeGraphクラス  黒マス情報オブジェクトのクラス
+// ☆AreaUnshadeGraphクラス  白マス情報オブジェクトのクラス
+// ☆AreaNumberGraphクラス 数字情報オブジェクトのクラス
+//--------------------------------------------------------------------------------
+'AreaShadeGraph:AreaGraphBase':{
+	setComponentRefs : function(obj, component){ obj.sblk = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.sblknodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.sblknodes = [];},
+	
+	isnodevalid : function(cell){ return cell.isShade();}
+},
+
+'AreaUnshadeGraph:AreaGraphBase':{
+	setComponentRefs : function(obj, component){ obj.ublk = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.ublknodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.ublknodes = [];},
+	
+	isnodevalid : function(cell){ return cell.isUnshade();}
+},
+
+'AreaNumberGraph:AreaGraphBase':{
+	setComponentRefs : function(obj, component){ obj.nblk = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.nblknodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.nblknodes = [];},
+	
+	isnodevalid : function(cell){ return cell.isNumberObj();}
+},
+
+//--------------------------------------------------------------------------------
+// ☆AreaRoomGraphクラス 部屋情報オブジェクトのクラス
+//--------------------------------------------------------------------------------
+'AreaRoomGraph:AreaGraphBase':{
+	relation : ['cell', 'border'],
+	pointgroup : 'cell',
+
+	hastop : false,
+	countLcnt : true,
+
+	setComponentRefs : function(obj, component){ obj.room = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.roomnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.roomnodes = [];},
+	
+	isnodevalid : function(cell){ return (cell.ques!==7);},
+	isedgeexists : function(border){
+		var sidenodes = this.getSideNodesBySeparator(border);
+		if(!sidenodes[0] || !sidenodes[1]){ return false;}
+		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
+	},
+	isedgevalid : function(border){ return !border.isBorder();},
+	isseparate : function(cell1, cell2){
+		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	},
+
+	//--------------------------------------------------------------------------------
+	// roomgraph.rebuild2() 部屋情報の再設定を行う
+	//--------------------------------------------------------------------------------
+	rebuild2 : function(){
+		var bd = this.board;
+		if(this.countLcnt){
+			this.ltotal=[];
+			/* 外枠のカウントをあらかじめ足しておく */
+			for(var c=0;c<bd.crossmax;c++){
+				var cross = bd.cross[c], bx = cross.bx, by = cross.by;
+				var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
+				cross.lcnt = (ischassis?2:0);
+				this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
 			}
 		}
-		
-		return change;
-	},
-	calcLinkInfo : function(cell){
-		if(cell.group!=='cell'||cell.isnull){ return 0;}
-		var val = 0, adc = cell.adjacent, adb = cell.adjborder;
-		if(adc.top.group   ==="cell" && !adc.top.isnull    && !this.bdfunc(adb.top   )){ val+=1;}
-		if(adc.bottom.group==="cell" && !adc.bottom.isnull && !this.bdfunc(adb.bottom)){ val+=2;}
-		if(adc.left.group  ==="cell" && !adc.left.isnull   && !this.bdfunc(adb.left  )){ val+=4;}
-		if(adc.right.group ==="cell" && !adc.right.isnull  && !this.bdfunc(adb.right )){ val+=8;}
-		if(this.isvalid(cell)){ val+=16;}
-		return (this.linkinfo[cell.id] = val);
-	},
 
-	//--------------------------------------------------------------------------------
-	// info.setBorder()     境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// info.checkSeparateInfo() 境界線情報と実際の境界線の差異を調べて設定する
-	// info.checkExecSearch()   部屋情報が変化したかsearch前にチェックする
-	//--------------------------------------------------------------------------------
-	setBorder : function(border){
-		if(!this.enabled){ return;}
-		
-		if(this.checkSeparateInfo(border)){
-			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(!cell1.isnull){ this.calcLinkInfo(cell1);}
-			if(!cell2.isnull){ this.calcLinkInfo(cell2);}
-			if(cell1.isnull || cell2.isnull || !this.checkExecSearch(border)){ return;}
+		this.klass.AreaGraphBase.prototype.rebuild2.call(this);
 
-			this.remakeInfo([cell1.id, cell2.id]);
-		}
-	},
-	checkSeparateInfo : function(border){
-		var isbd = this.bdfunc(border);
-		if(this.separate[border.id]!==isbd){
-			this.separate[border.id]=isbd;
-			return true;
-		}
-		return false;
-	},
-	checkExecSearch : function(border){
-		var cc1 = border.sidecell[0].id,  cc2 = border.sidecell[1].id;
-
-		if(this.separate[border.id]){ /* 部屋を分けるのに、最初から分かれていた */
-			if(this.id[cc1]===null || this.id[cc2]===null || this.id[cc1]!==this.id[cc2]){ return false;} // はじめから分かれていた
-		}
-		else{ /* 部屋を繋げるのに、最初から同じ部屋だった */
-			if(this.id[cc1]!==null && this.id[cc1]===this.id[cc2]){ return false;}
-		}
-		return true;
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getRemakeCell() 自分＋接する最大4箇所のセルのうち、自分に繋がることができるものを返す
-	// info.getLinkCell()   今自分が繋がっているセルを返す
-	//--------------------------------------------------------------------------------
-	getRemakeCell : function(cell, change){
-		var cidlist = [];
-		var link = (this.linkinfo[cell.id] | (change[0] || 0));
-		if(link>0){ // 自分から隣のセルにつながる情報が存在するか、していた
-			var list = cell.getdir4clist(), pow=[0,1,2,4,8], pow2=[0,2,1,8,4];
-			for(var i=0;i<list.length;i++){
-				var cell2 = list[i][0], dir = list[i][1];
-				var link2 = (this.linkinfo[cell2.id] | (change[dir] || 0));
-				if(link2 > 0){ // 隣のセルから自分につながる情報が存在するか、していた
-					if(this.id[cell2.id]!==null && !!(link & pow[dir]) && !!(link2 & pow2[dir])){
-						cidlist.push(cell2.id);
-					}
+		var borders = bd.border;
+		for(var id=0;id<borders.length;id++){
+			if(!this.isedgevalid(borders[id])){
+				var sidenodes = this.getSideNodesBySeparator(borders[id]);
+				if(!!sidenodes[0] && !!sidenodes[1]){
+					this.removeEdge(sidenodes[0], sidenodes[1]);
+				}
+				if(this.countLcnt){
+					this.incdecLineCount(borders[id].sidecross[0], true);
+					this.incdecLineCount(borders[id].sidecross[1], true);
 				}
 			}
 		}
-		return cidlist;
-	},
-	getLinkCell : function(cell){
-		return this.getRemakeCell(cell, []);
 	},
 
-	//--------------------------------------------------------------------------------
-	// info.assignCell() 指定されたセルを有効なセルとして設定する
-	// info.removeCell() 指定されたセルを無効なセルとして設定する
-	// info.remakeInfo() 線が引かれたり消された時、領域分割統合時のidの再設定を行う
-	//--------------------------------------------------------------------------------
-	assignCell : function(cell, cell2){
-		var areaid = this.id[cell.id];
-		if(areaid!==null && areaid!==0){ return;}
-
-		if(cell2===null){
-			areaid = this.addArea();
-			if(this.irowakeEnable()){ cell.color = this.getNewColor();}
-		}
-		else{
-			areaid = this.id[cell2.id];
-			if(this.irowakeEnable()){ cell.color = cell2.color;}
-		}
-		this.area[areaid].clist.add(cell);
-		this.id[cell.id] = areaid;
-	},
-	removeCell : function(cell){
-		var areaid = this.id[cell.id];
-		if(areaid===null || areaid===0){ return;}
-
-		this.area[areaid].clist.remove(cell);
-		this.id[cell.id] = null;
-		if(this.area[areaid].clist.length===0){ this.removeArea(areaid);}
-		if(this.irowakeEnable()){ cell.color = "";}
-	},
-	remakeInfo : function(cidlist){
-		var longColor = (this.irowakeEnable() ? this.getLongColor(cidlist) : "");
-
-		/* info.popArea() 指定された複数のセルが含まれる部屋を全て無効にしてidlistを返す */
-		/* 周りのセルから、周りのセルを含む領域のセル全体に対象を拡大する */
-		var clist = new this.klass.CellList();
-		for(var i=0;i<cidlist.length;i++){
-			var r=this.id[cidlist[i]], bd=this.board;
-			if(r!==null && r!==0){ clist.extend(this.removeArea(r));}
-			else if(r===null)    { clist.add(bd.cell[cidlist[i]]);}
-		}
-		var assign = this.searchIdlist(clist);
-
-		if(this.irowakeEnable()){ this.setLongColor(assign, longColor);}
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.addArea()    新しく割り当てるidを取得する
-	// info.removeArea() 部屋idを無効にする
-	//--------------------------------------------------------------------------------
-	addArea : function(){
-		var newid;
-		if(this.invalidid.length>0){ newid = this.invalidid.shift();}
-		else{ newid = ++this.max;}
-
-		this.area[newid] = {clist:(new this.klass.CellList())};
-		return newid;
-	},
-	removeArea : function(id){
-		var clist = this.area[id].clist;
-		for(var i=0;i<clist.length;i++){ this.id[clist[i].id] = null;}
-		
-		this.area[id] = {clist:(new this.klass.CellList())};
-		this.invalidid.push(id);
-		return clist;
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.irowakeEnable()  色分けが実行可能なパズルかどうかを返す
-	// info.irowakeValid()   色分けを実行するかどうかを返す
-	// info.getNewColor()    新しい色を返す
-	// info.newIrowake()     線の情報が再構築された際、ブロックに色をつける
-	//--------------------------------------------------------------------------------
-	irowakeEnable : function(){
-		return this.puzzle.flags.irowakeblk;
-	},
-	irowakeValid : function(){
-		return this.puzzle.getConfig('irowakeblk');
-	},
-	getNewColor : function(){
-		return "";
-	},
-	newIrowake : function(){
-		for(var i=1;i<=this.max;i++){
-			var clist = this.area[i].clist;
-			if(clist.length>0){
-				var newColor = this.getNewColor();
-				for(var n=0;n<clist.length;n++){ clist[n].color = newColor;}
-			}
+	//---------------------------------------------------------------------------
+	// roomgraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
+	//---------------------------------------------------------------------------
+	incdecLineCount : function(cross, isset){
+		if(!cross.isnull){
+			this.ltotal[cross.lcnt]--;
+			if(isset){ cross.lcnt++;}else{ cross.lcnt--;}
+			this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
 		}
 	},
 
-	//--------------------------------------------------------------------------------
-	// info.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
-	// info.setLongColor() ブロックに色をつけなおす
-	//--------------------------------------------------------------------------------
-	getLongColor : function(cidlist){
-		// 周りで一番大きな線は？
-		var largeid = null, longColor = "";
-		for(var i=0;i<cidlist.length;i++){
-			var r = this.id[cidlist[i]];
-			if(r===null){ continue;}
-			if(largeid===null || this.area[largeid].clist.length < this.area[r].clist.length){
-				largeid = r;
-				longColor = this.board.cell[cidlist[i]].color;
-			}
+	//---------------------------------------------------------------------------
+	// roomgraph.getSideObjByNodeObj()   cellから接続するNodeにあるobjを取得する
+	//---------------------------------------------------------------------------
+	getSideObjByNodeObj : function(cell){
+		var list = cell.getdir4clist(), cells = [];
+		for(var i=0;i<list.length;i++){
+			var cell2 = list[i][0];
+			if(this.isnodevalid(cell2)){ cells.push(cell2);}
 		}
-		return (!!longColor ? longColor : this.getNewColor());
+		return cells;
 	},
-	setLongColor : function(assign, longColor){
-		/* assign:影響のあったareaidの配列 */
-		var clist_all = new this.klass.CellList();
-		
-		// できた中でもっとも長い線に、従来最も長かった線の色を継承する
-		// それ以外の線には新しい色を付加する
-		// もしassign.length===1の場合、色が同じになる
-		
-		// できた線の中でもっとも長いものを取得する
-		var longid = assign[0];
-		for(var i=1;i<assign.length;i++){
-			if(this.area[longid].clist.length < this.area[assign[i]].clist.length){ longid = assign[i];}
+
+	//---------------------------------------------------------------------------
+	// roomgraph.getSideNodesBySeparator() borderからEdgeに接続するNodeを取得する
+	//---------------------------------------------------------------------------
+	getSideNodesBySeparator : function(border){
+		var sidenodes = [], sidenodeobj = border.sideobj;
+		for(var i=0;i<sidenodeobj.length;i++){
+			var nodes = this.getObjNodeList(sidenodeobj[i]);
+			sidenodes.push(!!nodes ? nodes[0] : null);
 		}
-		
-		// 新しい色の設定
-		for(var i=0;i<assign.length;i++){
-			var newColor = (assign[i]===longid ? longColor : this.getNewColor());
-			var clist = this.area[assign[i]].clist;
-			for(var n=0,len=clist.length;n<len;n++){ clist[n].color = newColor;}
-			clist_all.extend(clist);
-		}
-		
-		if(this.irowakeValid()){ this.puzzle.painter.repaintBlocks(clist_all);}
+		return sidenodes;
 	},
 
 	//--------------------------------------------------------------------------------
-	// info.searchIdlist() 盤面内のidlistに含まれるセルにIDを付け直す
-	// info.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
+	// roomgraph.setBorder() 部屋情報の再設定を行う
 	//--------------------------------------------------------------------------------
-	searchIdlist : function(clist){
-		var assign = [];
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			this.id[cell.id] = (this.isvalid(cell)?0:null);
-		}
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(this.id[cell.id]!==0){ continue;}
-			var newid = this.addArea();
-			this.searchSingle(cell, newid);
-			assign.push(newid);
-		}
-		return assign;
-	},
-	searchSingle : function(cell, newid){
-		var stack=[cell], iid=this.id[cell.id];
-		while(stack.length>0){
-			var cell=stack.pop();
-			if(this.id[cell.id]!==iid){ continue;}
-			this.id[cell.id] = newid;
-			this.area[newid].clist.add(cell);
-
-			var cidlist = this.getLinkCell(cell);
-			for(var i=0;i<cidlist.length;i++){
-				if(this.id[cidlist[i]]===0){ stack.push(this.board.cell[cidlist[i]]);}
-			}
-		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getAreaInfo()  情報をAreaInfo型のオブジェクトで返す
-	//--------------------------------------------------------------------------------
-	getAreaInfo : function(){
-		var bd = this.board, info = new this.klass.AreaInfo();
-		for(var c=0;c<bd.cellmax;c++){ info.id[c]=(this.id[c]>0?0:null);}
-		for(var c=0;c<bd.cellmax;c++){
-			var cell = bd.cell[c];
-			if(info.id[cell.id]!==0){ continue;}
-			var area = info.addAreaByClist( this.getClistByCell(cell) );
-			
-			if(!!this.hastop){ area.top = this.getTopOfRoomByCell(cell);}
-		}
-		return info;
-	},
-
-	//--------------------------------------------------------------------------------
-	// info.getClistByCell() 指定したセルが含まれる領域のセル配列を取得する
-	//--------------------------------------------------------------------------------
-	getClistByCell : function(cell){ return this.area[this.id[cell.id]].clist;}
-},
-
-//--------------------------------------------------------------------------------
-// ☆AreaShadeManagerクラス  黒マス情報オブジェクトのクラス
-// ☆AreaUnshadeManagerクラス  白マス情報オブジェクトのクラス
-// ☆AreaNumberManagerクラス 数字情報オブジェクトのクラス
-//--------------------------------------------------------------------------------
-'AreaShadeManager:AreaManager':{
-	isvalid : function(cell){ return cell.isShade();}
-},
-
-'AreaUnshadeManager:AreaManager':{
-	isvalid : function(cell){ return cell.isUnshade();}
-},
-
-'AreaNumberManager:AreaManager':{
-	isvalid : function(cell){ return cell.isNumberObj();}
-},
-
-//--------------------------------------------------------------------------------
-// ☆AreaRoomManagerクラス 部屋情報オブジェクトのクラス
-//--------------------------------------------------------------------------------
-'AreaRoomManager:AreaManager':{
-	relation : ['cell', 'border'],
-	bdfunc : function(border){ return border.isBorder();},
-
-	hastop : false,
-
-	//--------------------------------------------------------------------------------
-	// rooms.reset()   ファイル読み込み時などに、保持している情報を再構築する
-	// rooms.rebuild() 部屋情報の再設定を行う
-	//--------------------------------------------------------------------------------
-	rebuild : function(){
+	setBorder : function(border){
 		if(!this.enabled){ return;}
+		this.setEdgeBySeparator(border);
+	},
 
-		/* 外枠のカウントをあらかじめ足しておく */
-		var bd = this.board;
-		for(var c=0;c<bd.crossmax;c++){
-			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
-			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
-			cross.lcnt = (ischassis?2:0);
+	//---------------------------------------------------------------------------
+	// roomgraph.setEdgeBySeparator() 境界線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	//---------------------------------------------------------------------------
+	setEdgeBySeparator : function(border){
+		var isvalid = this.isedgevalid(border);
+		if(isvalid===this.isedgeexists(border)){ return;}
+
+		this.modifyNodes = [];
+
+		var sidenodes = this.getSideNodesBySeparator(border);
+		if(!!sidenodes[0] && !!sidenodes[1]){
+			if(isvalid){ 
+				this.addEdge(sidenodes[0], sidenodes[1]);
+				if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
+			}
+			else{ this.removeEdge(sidenodes[0], sidenodes[1]);}
+		}
+		if(this.countLcnt){
+			this.incdecLineCount(border.sidecross[0], !isvalid);
+			this.incdecLineCount(border.sidecross[1], !isvalid);
 		}
 
-		this.klass.AreaManager.prototype.rebuild.call(this);
-
-		if(this.enabled && this.hastop){ this.resetRoomNumber();}
+		this.remakeComponent();
 	},
 
 	//--------------------------------------------------------------------------------
-	// rooms.checkSeparateInfo()  境界線情報と実際の境界線の差異を調べて設定する
-	//--------------------------------------------------------------------------------
-	checkSeparateInfo : function(border){
-		var isbd = this.bdfunc(border);
-		if(this.separate[border.id]!==isbd){
-			var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
-			if(!cross1.isnull){ cross1.lcnt += (isbd?1:-1);}
-			if(!cross2.isnull){ cross2.lcnt += (isbd?1:-1);}
-			this.separate[border.id]=isbd;
-			if(border.id<this.board.bdinside){ return true;}
-		}
-		return false;
-	},
-
-	//--------------------------------------------------------------------------------
-	// rooms.checkExecSearch() 部屋情報が変化したかsearch前にチェックする
-	//--------------------------------------------------------------------------------
-	// オーバーライド
-	checkExecSearch : function(border){
-		if(!this.klass.AreaManager.prototype.checkExecSearch.call(this,border)){ return false;}
-
-		// 途切れた線だったとき
-		var cross1 = border.sidecross[0], cross2 = border.sidecross[1];
-		if     ( this.separate[border.id] && (cross1.lcnt===1 || cross2.lcnt===1)){ return false;}
-		else if(!this.separate[border.id] && (cross1.lcnt===0 || cross2.lcnt===0)){ return false;}
-
-		// TOPがある場合 どっちの数字を残すかは、TOP同士の位置で比較する
-		var cell1 = border.sidecell[0],  cell2 = border.sidecell[1];
-		if(!this.separate[border.id] && this.hastop){this.setTopOfRoom_combine(cell1,cell2);}
-
-		return true;
-	},
-
-	//--------------------------------------------------------------------------------
-	// rooms.searchSingle() 初期idを含む一つの領域内のareaidを指定されたものにする
-	//--------------------------------------------------------------------------------
-	// オーバーライド
-	searchSingle : function(cell, newid){
-		this.klass.AreaManager.prototype.searchSingle.call(this, cell, newid);
-
-		if(this.hastop){
-			this.area[newid].top = this.area[newid].clist.getTopCell();
-		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// rooms.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
+	// roommgr.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
 	//--------------------------------------------------------------------------------
 	setTopOfRoom_combine : function(cell1,cell2){
 		var merged, keep;
-		var tcell1 = this.getTopOfRoomByCell(cell1);
-		var tcell2 = this.getTopOfRoomByCell(cell2);
+		var tcell1 = cell1.room.top;
+		var tcell2 = cell2.room.top;
 		if(cell1.bx>cell2.bx || (cell1.bx===cell2.bx && cell1.id>cell2.id)){ merged = tcell1; keep = tcell2;}
 		else                                                               { merged = tcell2; keep = tcell1;}
 
@@ -501,100 +297,27 @@ AreaManager:{
 	},
 
 	//--------------------------------------------------------------------------------
-	// rooms.resetRoomNumber() 情報の再構築時に部屋のTOPのIDを設定したり、数字を移動する
+	// roommgr.setExtraData()   指定された領域の拡張データを設定する
 	//--------------------------------------------------------------------------------
-	resetRoomNumber : function(){
-		for(var r=1;r<=this.max;r++){
-			var val = -1, clist = this.area[r].clist, top = this.getTopOfRoom(r);
-			for(var i=0,len=clist.length;i<len;i++){
-				var cell = clist[i];
-				if(this.id[cell.id]===r && cell.qnum!==-1){
-					if(val===-1){ val = cell.qnum;}
-					if(top!==cell){ cell.qnum = -1;}
+	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
+		if(this.hastop){
+			component.top = component.clist.getTopCell();
+			
+			if(this.rebuildmode){
+				var val = -1, clist = component.clist, top = component.top;
+				for(var i=0,len=clist.length;i<len;i++){
+					var cell = clist[i];
+					if(cell.room===component && cell.qnum!==-1){
+						if(val===-1){ val = cell.qnum;}
+						if(top!==cell){ cell.qnum = -1;}
+					}
+				}
+				if(val!==-1 && top.qnum===-1){
+					top.qnum = val;
 				}
 			}
-			if(val!==-1 && top.qnum===-1){
-				top.qnum = val;
-			}
 		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// rooms.getRoomID()  このオブジェクトで管理しているセルの部屋IDを取得する
-	// rooms.setRoomID()  このオブジェクトで管理しているセルの部屋IDを設定する
-	// rooms.getTopOfRoomByCell() 指定したセルが含まれる領域のTOPの部屋を取得する
-	// rooms.getTopOfRoom()       指定した領域のTOPの部屋を取得する
-	// rooms.getCntOfRoomByCell() 指定したセルが含まれる領域の大きさを抽出する
-	// rooms.getCntOfRoom()       指定した領域の大きさを抽出する
-	//--------------------------------------------------------------------------------
-	getRoomID : function(cell){ return this.id[cell.id];},
-//	setRoomID : function(cell,val){ this.id[cell.id] = val;},
-
-	getTopOfRoomByCell : function(cell){ return this.area[this.id[cell.id]].top;},
-	getTopOfRoom       : function(id)  { return this.area[id].top;},
-
-	getCntOfRoomByCell : function(cell){ return this.area[this.id[cell.id]].clist.length;}
-//	getCntOfRoom       : function(id)  { return this.area[id].clist.length;},
-},
-
-//---------------------------------------------------------------------------
-// ★AreaInfoクラス 主に色分けの情報を管理する
-//   id : null   どの部屋にも属さないセル(黒マス情報で白マスのセル、等)
-//         0     どの部屋に属させるかの処理中
-//         1以上 その番号の部屋に属する
-//---------------------------------------------------------------------------
-AreaInfo:{
-	initialize : function(){
-		this.max  = 0;	// 最大の部屋番号(1〜maxまで存在するよう構成してください)
-		this.id   = [];	// 各セル/線などが属する部屋番号を保持する
-		this.area = [];	// 各部屋のidlist等の情報を保持する(info.area[id].clistで取得)
-	},
-	getRoomID : function(cell){ return this.id[cell.id];},
-	getRoomByCell : function(cell){ return this.area[this.id[cell.id]];},
-
-	//---------------------------------------------------------------------------
-	// info.addArea()         空の領域を追加する
-	// info.addAreaByClist()  指定されたclistを持つ領域を追加する
-	//---------------------------------------------------------------------------
-	addArea : function(){
-		var areaid = ++this.max;
-		return (this.area[areaid] = {clist:(new this.klass.CellList()), id:areaid});
-	},
-	addAreaByClist : function(clist){
-		var areaid = ++this.max;
-		var area = this.area[areaid] = {clist:(new this.klass.CellList()), id:areaid};
-
-		for(var i=0;i<clist.length;i++){
-			this.id[clist[i].id] = areaid;
-		}
-		area.clist.extend(clist);
-		return area;
-	},
-
-	//---------------------------------------------------------------------------
-	// info.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
-	//---------------------------------------------------------------------------
-	getSideAreaInfo : function(){
-		var adjs=[], sides=[], max=this.max, bd=this.board;
-		for(var r=1;r<=max-1;r++){ adjs[r]=[];}
-
-		for(var id=0;id<bd.bdmax;id++){
-			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
-			if(cell1.isnull || cell2.isnull){ continue;}
-			var r1=this.getRoomID(cell1), r2=this.getRoomID(cell2);
-			if(r1===null || r2===null){ continue;}
-
-			if(r1<r2){ adjs[r1][r2]=true;}
-			if(r1>r2){ adjs[r2][r1]=true;}
-		}
-
-		for(var r=1;r<=max-1;r++){
-			sides[r]=[];
-			for(var s=r+1;s<=max;s++){
-				if(!!adjs[r][s]){ sides[r].push(s);}
-			}
-		}
-		return sides;
 	}
 }
 });

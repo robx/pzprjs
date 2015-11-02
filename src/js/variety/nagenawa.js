@@ -48,7 +48,7 @@ pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.board.rooms.getCntOfRoomByCell(this));
+		return Math.min(255, this.room.clist.length);
 	},
 	minnum : 0
 },
@@ -67,7 +67,7 @@ LineGraph:{
 	isLineCross : true
 },
 
-"AreaRoomManager@nagenawa":{
+"AreaRoomGraph@nagenawa":{
 	enabled : true,
 	hastop : true
 },
@@ -226,10 +226,10 @@ AnsCheck:{
 	],
 
 	checkOverLineCount : function(){
-		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n>=a);}, "bkLineGt");
+		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (n<=0 || n>=a);}, "bkLineGt");
 	},
 	checkLessLineCount : function(){
-		this.checkLinesInArea(this.getRoomInfo(), function(w,h,a,n){ return (n<=0 || n<=a);}, "bkLineLt");
+		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (n<=0 || n<=a);}, "bkLineLt");
 	},
 	checkUnreachedUnshadeCell : function(){
 		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.lcnt===0);}, "cuNoLine");
