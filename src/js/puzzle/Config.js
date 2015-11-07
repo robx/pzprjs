@@ -60,7 +60,6 @@ Config.prototype =
 
 		/* 正解判定 */
 		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
-		this.add('enbnonum', false);		/* fillomino: 数字がすべて入っていなくても正解とする */
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
@@ -145,7 +144,6 @@ Config.prototype =
 			case 'redroad':  exec = (pid==="roma"); break;
 			case 'autocmp':  exec = (flags.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
-			case 'enbnonum': exec = (pid==="fillomino"); break;
 			case 'dirauxmark': exec = (pid==="nagare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;

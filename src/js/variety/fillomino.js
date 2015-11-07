@@ -102,13 +102,11 @@ AreaRoomGraph:{
 	enabled : true,
 	isedgevalidbylinkobj : function(border){
 		if(border.isBorder()){ return false;}
-		var num1 = border.sidecell[0].getNum(), num2 = border.sidecell[1].getNum();
-		return num1===-1 || num2===-1 || num1===num2;
+		return border.sidecell[0].getNum() === border.sidecell[1].getNum();
 	},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return false;}
-		var num1 = cell1.getNum(), num2 = cell2.getNum();
-		return num1!==-1 && num2!==-1 && num1!==num2;
+		return cell1.getNum() === cell2.getNum();
 	},
 
 	setExtraData : function(component){
@@ -121,8 +119,7 @@ AreaRoomGraph:{
 			else if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
 			else{ nums[num]++;}
 		}
-		component.numkind = numkind;
-		component.number  = (numkind===1 ? filled : -1);
+		component.number = (numkind===1 ? filled : -1);
 	}
 },
 
@@ -219,22 +216,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkNoEmptyArea",
-		"checkSmallArea",
-		"checkSideAreaNumberSize",
 		"checkLargeArea",
-		"checkNotMultiNum",
-		"checkNoNumCell_fillomino+"
+		"checkSideAreaNumberSize",
+		"checkSmallArea",
+		"checkNoNumCell+"
 	],
 
 	checkSideAreaNumberSize : function(){
 		this.checkSideAreaSize(function(area){ return area.number;}, "bsSameNum");
 	},
 
-	checkNoEmptyArea : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
-	checkSmallArea   : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.clist.length);}, "bkSizeLt");},
-	checkLargeArea   : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.clist.length);}, "bkSizeGt");},
-	checkNotMultiNum : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkSmallArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number>area.clist.length);}, "bkSizeLt");}, // jshint ignore:line
+	checkLargeArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number<area.clist.length && area.number>0);}, "bkSizeGt");},
 	checkAllErrorRoom : function(evalfunc, code){
 		var rooms = this.board.roommgr.components;
 		for(var id=0;id<rooms.length;id++){
@@ -244,12 +237,6 @@ AnsCheck:{
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			area.clist.seterr(1);
-		}
-	},
-
-	checkNoNumCell_fillomino : function(){
-		if(!this.puzzle.getConfig('enbnonum')){
-			this.checkNoNumCell();
 		}
 	}
 },
