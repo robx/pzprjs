@@ -112,7 +112,7 @@ Board:{
 		this.common.initialize.call(this);
 
 		this.norigraph = this.addInfoList(this.klass.AreaNoriGraph);
-	},
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -130,7 +130,7 @@ AreaRoomGraph:{
 	resetObjNodeList : function(nodeobj){ nodeobj.norinodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.anum>0);},
-	isseparate : function(cell1, cell2){
+	isedgevalidbynodeobj : function(cell1, cell2){
 		return (cell1.anum!==cell2.anum) || this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
 	}
 },

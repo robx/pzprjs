@@ -88,11 +88,11 @@ BoardExec:{
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.qans>0);},
-	isseparate : function(cell1, cell2){
+	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
-		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.qans!==12||cell2.qans!==12);}
-		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans!==13||cell2.qans!==13);}
-		return true;
+		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.qans===12 && cell2.qans===12);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans===13 && cell2.qans===13);}
+		return false;
 	}
 },
 

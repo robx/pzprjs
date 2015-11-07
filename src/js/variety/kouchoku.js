@@ -498,7 +498,7 @@ LineGraph:{
 	pointgroup : 'cross',
 	linkgroup  : 'segment',
 	
-	isedgevalid : function(seg){ return !seg.isnull;}
+	isedgevalidbylinkobj : function(seg){ return !seg.isnull;}
 },
 GraphComponent:{
 	getLinkObjByNodes : function(node1, node2){
@@ -799,15 +799,15 @@ AnsCheck:{
 	},
 
 	checkOneSegmentLoop : function(){
-		var bd = this.board, validcount = 0;
-		for(var r=0;r<bd.linegraph.components.length;r++){
-			if(bd.linegraph.components[r].length===0){ continue;}
+		var bd = this.board, paths = bd.linegraph.components, validcount = 0;
+		for(var r=0;r<paths.length;r++){
+			if(paths[r].length===0){ continue;}
 			validcount++;
 			if(validcount<=1){ continue;}
 			
 			this.failcode.add("lnPlLoop");
 			bd.segment.setnoerr();
-			bd.linegraph.components[r].setedgeerr(1);
+			paths[r].setedgeerr(1);
 			break;
 		}
 	},

@@ -339,11 +339,11 @@ LineGraph:{
 	resetObjNodeList : function(nodeobj){ nodeobj.gatenodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.ques===21||cell.ques===22);},
-	isseparate : function(cell1, cell2){
+	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
-		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.ques!==21||cell2.ques!==21);}
-		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.ques!==22||cell2.ques!==22);}
-		return true;
+		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.ques===21 && cell2.ques===21);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.ques===22 && cell2.ques===22);}
+		return false;
 	},
 
 	rebuild : function(){

@@ -159,7 +159,7 @@ LineGraph:{
 		pzpr.common.LineGraph.prototype.rebuild2.call(this);
 	},
 	
-	isedgevalid : function(cell){ return cell.qans>0;},
+	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
 	
 	setCell : function(cell){
 		this.modifyNodes = [];

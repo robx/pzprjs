@@ -100,13 +100,13 @@ Board:{
 
 AreaRoomGraph:{
 	enabled : true,
-	isedgevalid : function(border){
+	isedgevalidbylinkobj : function(border){
 		if(border.isBorder()){ return false;}
 		var num1 = border.sidecell[0].getNum(), num2 = border.sidecell[1].getNum();
 		return num1===-1 || num2===-1 || num1===num2;
 	},
-	isseparate : function(cell1, cell2){
-		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return true;}
+	isedgevalidbynodeobj : function(cell1, cell2){
+		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return false;}
 		var num1 = cell1.getNum(), num2 = cell2.getNum();
 		return num1!==-1 && num2!==-1 && num1!==num2;
 	},

@@ -77,31 +77,14 @@ LineGraph:{
 	enabled : true,
 	pointgroup : 'cross'
 },
-"AreaTileGraph:AreaRoomGraph":{
+"AreaTileGraph:AreaGraphBase":{
 	enabled : true,
-	countLcnt : false,
-	relation : ['border'],
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
 	
 	isnodevalid : function(nodeobj){ return true;},
-	isedgevalid : function(border){ return border.isGround();},
-	isseparate : function(cell1, cell2){
-		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isGround();
-	},
-
-	getSideNodesBySeparator : function(border){
-		var sidenodes = [], sidenodeobj = border.sidecell;
-		for(var i=0;i<sidenodeobj.length;i++){
-			var nodes = this.getObjNodeList(sidenodeobj[i]);
-			sidenodes.push(!!nodes ? nodes[0] : null);
-		}
-		return sidenodes;
-	},
-	setBorder : function(border){
-		this.setEdgeBySeparator(border);
-	}
+	isedgevalidbylinkobj : function(border){ return border.isGround();}
 },
 
 Flags:{
@@ -210,9 +193,9 @@ AnsCheck:{
 	],
 
 	checkDotLength : function(){
-		var bd = this.board;
+		var bd = this.board, tiles = bd.tilegraph.components;
 		var numerous_value = 999999;
-		for(var r=0;r<bd.tilegraph.components.length;r++){ bd.tilegraph.components[r].count=0;}
+		for(var r=0;r<tiles.length;r++){ tiles[r].count=0;}
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(border.isGround() && id>=bd.bdinside){
@@ -224,8 +207,8 @@ AnsCheck:{
 				if(!cell2.isnull){ cell2.tile.count++;}
 			}
 		}
-		for(var r=0;r<bd.tilegraph.components.length;r++){
-			var clist = bd.tilegraph.components[r].clist, count = bd.tilegraph.components[r].count;
+		for(var r=0;r<tiles.length;r++){
+			var clist = tiles[r].clist, count = tiles[r].count;
 			if(count<0 || count===clist.length){ continue;}
 			
 			this.failcode.add("bkNoLineNe");

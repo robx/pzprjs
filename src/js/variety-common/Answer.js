@@ -169,12 +169,12 @@ AnsCheck:{
 	// ans.checkConnectAllNumber() 盤面に引かれている線が一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkConnectAllNumber : function(){
-		var bd = this.board;
-		if(bd.linegraph.components.length>1){
+		var bd = this.board, paths = bd.linegraph.components;
+		if(paths.length>1){
 			this.failcode.add("lcDivided");
 			bd.border.setnoerr();
-			bd.linegraph.components[0].setedgeerr(1);
-			bd.linegraph.components[0].clist.seterr(4);
+			paths[0].setedgeerr(1);
+			paths.clist.seterr(4);
 		}
 	},
 

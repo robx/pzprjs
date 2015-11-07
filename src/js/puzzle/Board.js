@@ -53,11 +53,6 @@ Board:{
 		this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph);		// 白マス情報を保持する
 		this.nblkmgr = this.addInfoList(classes.AreaNumberGraph);		// 数字情報を保持する
 
-		this.rooms    = [];
-		this.sblks    = [];
-		this.ublks    = [];
-		this.nblks    = [];
-
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
 	},

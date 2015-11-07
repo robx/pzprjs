@@ -48,18 +48,14 @@ Board:{
 	}
 },
 
-"AreaTileGraph:AreaRoomGraph":{
+"AreaTileGraph:AreaGraphBase":{
 	enabled : true,
-	countLcnt : false,
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
 	
 	isnodevalid : function(nodeobj){ return true;},
-	isedgevalid : function(border){ return border.isGround();},
-	isseparate : function(cell1, cell2){
-		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isGround();
-	}
+	isedgevalidbylinkobj : function(border){ return border.isGround();}
 },
 "AreaBlockGraph:AreaRoomGraph":{
 	enabled : true,
@@ -67,10 +63,7 @@ Board:{
 	getObjNodeList   : function(nodeobj){ return nodeobj.blocknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.blocknodes = [];},
 
-	isedgevalid : function(border){ return border.qans===0;},
-	isseparate : function(cell1, cell2){
-		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).qans>0;
-	},
+	isedgevalidbylinkobj : function(border){ return border.qans===0;},
 
 	setExtraData : function(component){
 		var cnt=0;

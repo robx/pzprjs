@@ -133,8 +133,8 @@ BoardExec:{
 	resetObjNodeList : function(nodeobj){ nodeobj.snakenodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.anum>0);},
-	isseparate : function(cell1, cell2){
-		return ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1));
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return ((cell1.anum===-1)===(cell2.anum===-1)) && (Math.abs(cell1.anum-cell2.anum)===1);
 	}
 },
 

@@ -20,6 +20,7 @@
 		"puzzle/PieceList",
 		"puzzle/Board",
 		"puzzle/BoardExec",
+		"puzzle/GraphBase",
 		"puzzle/LineManager",
 		"puzzle/AreaManager",
 		"puzzle/Graphic",

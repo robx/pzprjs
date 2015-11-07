@@ -88,11 +88,12 @@ ui.debug =
 		this.timeeval("resize描画", function(){ ui.puzzle.redraw(true);});
 	},
 	searcheval : function(){
-//		var borders = ui.puzzle.board.border.filter(function(border){ return border.isLine();});
-//		this.timeeval("search linemgr", function(){ ui.puzzle.board.linemgr.searchLine(borders);});
-		var graph = ui.puzzle.board.bargraph;
+		var graph = ui.puzzle.board.linegraph;
 		graph.rebuild();
-		var nodes = graph.components[0].nodes;
+		var nodes = [];
+		for(var i=0;i<graph.components.length;i++){
+			nodes = nodes.concat(graph.components[i].nodes);
+		}
 		this.timeeval("search linemgr", function(){
 			graph.components = [];
 			graph.modifyNodes = nodes;
@@ -100,7 +101,7 @@ ui.debug =
 		});
 	},
 	rebuildeval : function(){
-		var graph = ui.puzzle.board.bargraph;
+		var graph = ui.puzzle.board.linegraph;
 		this.timeeval("reset linemgr", function(){ graph.rebuild();});
 	},
 	timeeval : function(text,func){

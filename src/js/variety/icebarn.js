@@ -322,12 +322,6 @@ LineGraph:{
 		}
 		
 		pzpr.common.LineGraph.prototype.rebuild2.call(this);
-	},
-
-	incdecLineCount : function(cell, isset){
-		if(cell.group==='cell' && !cell.isnull){
-			pzpr.common.LineGraph.prototype.incdecLineCount.call(this, cell, isset);
-		}
 	}
 },
 

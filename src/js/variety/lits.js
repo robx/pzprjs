@@ -44,8 +44,8 @@ AreaRoomGraph:{
 	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
 	
 	isnodevalid : function(cell){ return cell.isShade();},
-	isseparate : function(cell1, cell2){
-		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
 	},
 
 	resetExtraData : function(cell){ cell.shape = null;},

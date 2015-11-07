@@ -94,11 +94,11 @@ BoardExec:{
 	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.qans>0);},
-	isseparate : function(cell1, cell2){
+	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
-		if     (dir===cell1.UP||dir===cell1.DN){ return (cell1.qans===0||cell1.qans===13||cell2.qans===0||cell2.qans===13);}
-		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans===0||cell1.qans===12||cell2.qans===0||cell2.qans===12);}
-		return true;
+		if     (dir===cell1.UP||dir===cell1.DN){ return !(cell1.qans===0||cell1.qans===13||cell2.qans===0||cell2.qans===13);}
+		else if(dir===cell1.LT||dir===cell1.RT){ return !(cell1.qans===0||cell1.qans===12||cell2.qans===0||cell2.qans===12);}
+		return false;
 	},
 	
 	setExtraData : function(component){
@@ -131,8 +131,8 @@ BoardExec:{
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.qans>0);},
-	isseparate : function(cell1, cell2){
-		return this.klass.AreaNetGraph.prototype.isseparate.call(this,cell1,cell2);
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return !this.klass.AreaNetGraph.prototype.isedgevalidbynodeobj.call(this,cell1,cell2);
 	},
 
 	calcNodeCount : function(cell){
@@ -161,7 +161,7 @@ BoardExec:{
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var nodes1 = this.getObjNodeList(cell);
 		for(var i=0;i<sidenodeobj.length;i++){
-			if(this.isseparate(cell, sidenodeobj[i])){ continue;}
+			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
 			var dir = cell.getdir(sidenodeobj[i],2), lrlink = (dir===cell.LT||dir===cell.RT);
 			var nodes2 = this.getObjNodeList(sidenodeobj[i]);
 			var node1 = nodes1[(nodes1.length<2 || !lrlink) ? 0 : 1];
@@ -187,7 +187,7 @@ BoardExec:{
 			component.vert = (d.cols===1);
 		}
 		else if(component.nodes[0].obj.barnodes.length===1){
-			component.vert = (component.nodes[0].obj.qans===12)
+			component.vert = (component.nodes[0].obj.qans===12);
 		}
 		else{
 			component.vert = (component.nodes[0].obj.barnodes.indexOf(component.nodes[0])===0);

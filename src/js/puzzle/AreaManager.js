@@ -9,25 +9,6 @@ pzpr.classmgr.makeCommon({
 "AreaGraphBase:GraphBase":{
 	relation : ['cell'],
 	pointgroup : 'cell',
-	
-	//--------------------------------------------------------------------------------
-	// areagraph.isedgeexists()        linkobjにedgeが存在するか判定する
-	// areagraph.isseparate()          接続してはいけないかどうか判定する
-	//--------------------------------------------------------------------------------
-	isedgeexists : function(linkobj){ return true;},
-	isseparate : function(nodeobj1, nodeobj2){ return false;},
-
-	//---------------------------------------------------------------------------
-	// areagraph.getSideObjByNodeObj()   cellから接続するNodeにあるobjを取得する
-	//---------------------------------------------------------------------------
-	getSideObjByNodeObj : function(cell){
-		var list = cell.getdir4clist(), cells = [];
-		for(var i=0;i<list.length;i++){
-			var cell2 = list[i][0];
-			if(this.isnodevalid(cell2)){ cells.push(cell2);}
-		}
-		return cells;
-	},
 
 	//---------------------------------------------------------------------------
 	// areagraph.setCell()     黒マスになったりした時にブロックの情報を生成しなおす
@@ -35,59 +16,6 @@ pzpr.classmgr.makeCommon({
 	setCell : function(cell){
 		if(!this.enabled){ return;}
 		this.setEdgeByNodeObj(cell);
-	},
-
-	//---------------------------------------------------------------------------
-	// areagraph.setEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
-	// areagraph.putEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
-	// areagraph.calcNodeCount()    そのセルにあるべきNode数を返す
-	// areagraph.removeEdgeByNodeObj() 黒マスになったりした時にブロックの情報を消去する
-	// areagraph.addEdgeByNodeObj()    黒マスになったりした時にブロックの情報を生成する
-	//---------------------------------------------------------------------------
-	setEdgeByNodeObj : function(nodeobj){
-		this.modifyNodes = [];
-
-		this.putEdgeByNodeObj(nodeobj);
-
-		this.remakeComponent();
-	},
-	putEdgeByNodeObj : function(cell){
-		if(this.calcNodeCount(cell)===0 && this.getObjNodeList(cell).length===0){ return;}
-		
-		// 一度Edgeを取り外す
-		this.removeEdgeByNodeObj(cell);
-			
-		// Edgeを付け直す
-		this.addEdgeByNodeObj(cell);
-	},
-
-	calcNodeCount : function(cell){
-		return (this.isnodevalid(cell)?1:0);
-	},
-	removeEdgeByNodeObj : function(cell){
-		// Edgeの除去
-		var sidenodeobj = this.getSideObjByNodeObj(cell);
-		var node1 = this.getObjNodeList(cell)[0];
-		for(var i=0;i<sidenodeobj.length;i++){
-			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
-		}
-
-		// Nodeを一旦取り除く
-		if(!!node1){ this.deleteNode(node1);}
-	},
-	addEdgeByNodeObj : function(cell){
-		// Nodeを付加する
-		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
-		
-		// Edgeの付加
-		var sidenodeobj = this.getSideObjByNodeObj(cell);
-		var node1 = this.getObjNodeList(cell)[0];
-		for(var i=0;i<sidenodeobj.length;i++){
-			if(this.isseparate(cell, sidenodeobj[i])){ continue;}
-			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
-		}
 	},
 
 	//--------------------------------------------------------------------------------
@@ -156,89 +84,56 @@ pzpr.classmgr.makeCommon({
 	pointgroup : 'cell',
 
 	hastop : false,
-	countLcnt : true,
 
 	setComponentRefs : function(obj, component){ obj.room = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.roomnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.roomnodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.ques!==7);},
-	isedgeexists : function(border){
+	isedgeexistsbylinkobj : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(!sidenodes[0] || !sidenodes[1]){ return false;}
 		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
 	},
-	isedgevalid : function(border){ return !border.isBorder();},
-	isseparate : function(cell1, cell2){
-		return this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	isedgevalidbylinkobj : function(border){ return !border.isBorder();},
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return this.isedgevalidbylinkobj(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)));
 	},
 
 	//--------------------------------------------------------------------------------
 	// roomgraph.rebuild2() 部屋情報の再設定を行う
 	//--------------------------------------------------------------------------------
 	rebuild2 : function(){
-		var bd = this.board;
-		if(this.countLcnt){
-			this.ltotal=[];
-			/* 外枠のカウントをあらかじめ足しておく */
-			for(var c=0;c<bd.crossmax;c++){
-				var cross = bd.cross[c], bx = cross.bx, by = cross.by;
-				var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
-				cross.lcnt = (ischassis?2:0);
+		this.klass.AreaGraphBase.prototype.rebuild2.call(this);
+
+		var bd = this.board, borders = bd.border;
+		this.ltotal=[];
+		/* 外枠のカウントをあらかじめ足しておく */
+		for(var c=0;c<bd.crossmax;c++){
+			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
+			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
+			cross.lcnt = (ischassis?2:0);
+			this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
+		}
+		for(var id=0;id<borders.length;id++){
+			if(!this.isedgevalidbylinkobj(borders[id])){
+				this.incdecBorderCount(borders[id], true);
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// roomgraph.incdecBorderCount() 線が引かれたり消された時に、lcnt変数を生成し直す
+	//---------------------------------------------------------------------------
+	incdecBorderCount : function(border, isset){
+		for(var i=0;i<2;i++){
+			var cross = border.sidecross[i];
+			if(!cross.isnull){
+				this.ltotal[cross.lcnt]--;
+				if(isset){ cross.lcnt++;}else{ cross.lcnt--;}
 				this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
 			}
 		}
-
-		this.klass.AreaGraphBase.prototype.rebuild2.call(this);
-
-		var borders = bd.border;
-		for(var id=0;id<borders.length;id++){
-			if(!this.isedgevalid(borders[id])){
-				var sidenodes = this.getSideNodesBySeparator(borders[id]);
-				if(!!sidenodes[0] && !!sidenodes[1]){
-					this.removeEdge(sidenodes[0], sidenodes[1]);
-				}
-				if(this.countLcnt){
-					this.incdecLineCount(borders[id].sidecross[0], true);
-					this.incdecLineCount(borders[id].sidecross[1], true);
-				}
-			}
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// roomgraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
-	//---------------------------------------------------------------------------
-	incdecLineCount : function(cross, isset){
-		if(!cross.isnull){
-			this.ltotal[cross.lcnt]--;
-			if(isset){ cross.lcnt++;}else{ cross.lcnt--;}
-			this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
-		}
-	},
-
-	//---------------------------------------------------------------------------
-	// roomgraph.getSideObjByNodeObj()   cellから接続するNodeにあるobjを取得する
-	//---------------------------------------------------------------------------
-	getSideObjByNodeObj : function(cell){
-		var list = cell.getdir4clist(), cells = [];
-		for(var i=0;i<list.length;i++){
-			var cell2 = list[i][0];
-			if(this.isnodevalid(cell2)){ cells.push(cell2);}
-		}
-		return cells;
-	},
-
-	//---------------------------------------------------------------------------
-	// roomgraph.getSideNodesBySeparator() borderからEdgeに接続するNodeを取得する
-	//---------------------------------------------------------------------------
-	getSideNodesBySeparator : function(border){
-		var sidenodes = [], sidenodeobj = border.sideobj;
-		for(var i=0;i<sidenodeobj.length;i++){
-			var nodes = this.getObjNodeList(sidenodeobj[i]);
-			sidenodes.push(!!nodes ? nodes[0] : null);
-		}
-		return sidenodes;
 	},
 
 	//--------------------------------------------------------------------------------
@@ -250,28 +145,24 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// roomgraph.setEdgeBySeparator() 境界線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// roomgraph.addEdgeBySeparator()    指定されたオブジェクトの場所にEdgeを生成する
+	// roomgraph.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	setEdgeBySeparator : function(border){
-		var isvalid = this.isedgevalid(border);
-		if(isvalid===this.isedgeexists(border)){ return;}
-
-		this.modifyNodes = [];
-
+	addEdgeBySeparator : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
-		if(!!sidenodes[0] && !!sidenodes[1]){
-			if(isvalid){ 
-				this.addEdge(sidenodes[0], sidenodes[1]);
-				if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
-			}
-			else{ this.removeEdge(sidenodes[0], sidenodes[1]);}
-		}
-		if(this.countLcnt){
-			this.incdecLineCount(border.sidecross[0], !isvalid);
-			this.incdecLineCount(border.sidecross[1], !isvalid);
-		}
 
-		this.remakeComponent();
+		this.addEdge(sidenodes[0], sidenodes[1]);
+
+		if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
+
+		this.incdecBorderCount(border, false);
+	},
+	removeEdgeBySeparator : function(border){
+		var sidenodes = this.getSideNodesBySeparator(border);
+
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+
+		this.incdecBorderCount(border, true);
 	},
 
 	//--------------------------------------------------------------------------------
