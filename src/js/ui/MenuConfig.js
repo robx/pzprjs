@@ -55,7 +55,7 @@ ui.menuconfig = {
 			if(item.val!==item.defval){ object[key] = item.val;}
 		}
 		delete object.autocheck;
-		return JSON.stringify(object);
+		return object;
 	},
 	setAll : Config.setAll,
 
