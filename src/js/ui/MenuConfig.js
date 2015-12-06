@@ -20,7 +20,8 @@ ui.menuconfig = {
 	init : function(){
 		this.list = {};
 		
-		this.add('autocheck', pzpr.PLAYER);					/* 正解自動判定機能 */
+		this.add('autocheck',      pzpr.PLAYER);			/* 正解自動判定機能 */
+		this.add('autocheck_once', pzpr.PLAYER);			/* 正解自動判定機能 */
 		
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
 		this.add('keyboard', false);						/* 盤面をキー入力のターゲットにする */
@@ -54,10 +55,13 @@ ui.menuconfig = {
 			var item = this.list[key];
 			if(item.val!==item.defval){ object[key] = item.val;}
 		}
-		delete object.autocheck;
+		delete object.autocheck_once;
 		return object;
 	},
-	setAll : Config.setAll,
+	setAll : function(setting){
+		Config.setAll.call(this, setting);
+		this.list.autocheck_once.val = this.list.autocheck.val;
+	},
 
 	//---------------------------------------------------------------------------
 	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
@@ -85,6 +89,10 @@ ui.menuconfig = {
 			
 		case 'adjsize': case 'cellsizeval': case 'fullwidth':
 			ui.adjustcellsize();
+			break;
+			
+		case 'autocheck':
+			this.list.autocheck_once.val = newval;
 			break;
 		}
 	}
