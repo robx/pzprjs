@@ -43,7 +43,7 @@ ui.timer =
 		this.current = pzpr.util.currentTime();
 
 		if(pzpr.PLAYER){ this.updatetime();}
-		if(ui.menuconfig.get('autocheck')){ this.ACcheck();}
+		if(ui.menuconfig.get('autocheck_once')){ this.ACcheck();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -77,7 +77,7 @@ ui.timer =
 		if(this.current>this.nextACtime && puzzle.playmode && !puzzle.checker.inCheck){
 			if(puzzle.check().complete){
 				puzzle.mouse.mousereset();
-				ui.menuconfig.set('autocheck',false);
+				ui.menuconfig.set('autocheck_once',false);
 				ui.notify.alert("正解です！","Complete!");
 				return;
 			}
