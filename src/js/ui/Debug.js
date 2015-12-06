@@ -53,7 +53,7 @@ ui.debug =
 		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
 			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX));
 		}
 		else{
@@ -61,7 +61,7 @@ ui.debug =
 		}
 	},
 	filesave_pencilbox_xml : function(){
-		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
 			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
 		}
 		else{

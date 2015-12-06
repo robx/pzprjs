@@ -185,7 +185,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzpr.variety.info[self.pid].exists.pencilbox){
+		if(pzpr.variety.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 			var kanpen_url = o.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
@@ -273,7 +273,7 @@ ui.debug.extend(
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
 			setTimeout(function(){
-				if(pzpr.variety.info[self.pid].exists.kanpen){ self.check_file_pbox(self);}
+				if(pzpr.variety.info[self.pid].exists.pencilbox){ self.check_file_pbox(self);}
 				else{ self.check_turnR1(self);}
 			},0);
 		});

@@ -43,7 +43,7 @@ var Variety = function(pzprid, datalist){
 		kanpen  : !!datalist[1],
 		pencilbox : !!datalist[1]
 	};
-	this.exists.kanpen = this.exists.kanpen &&
+	this.exists.pencilbox = this.exists.pencilbox &&
 						 (pzprid!=="nanro" && pzprid!=="ayeheya" && pzprid!=="kurochute");
 	/* pzprurl : ぱずぷれID(URL出力用) */
 	/* kanpen  : カンペンID            */
