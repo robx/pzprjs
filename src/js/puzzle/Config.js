@@ -101,13 +101,12 @@ Config.prototype =
 		}
 		delete object.mode;
 		delete object.uramashu;
-		return JSON.stringify(object);
+		return object;
 	},
-	setAll : function(json){
-		var object = JSON.parse(json);
+	setAll : function(settings){
 		this.init();
 		for(var key in this.list){
-			if(object[key]!==void 0){ this.setproper(key,object[key]);}
+			if(settings[key]!==void 0){ this.setproper(key,settings[key]);}
 		}
 	},
 
