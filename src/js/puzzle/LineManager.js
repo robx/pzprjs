@@ -60,7 +60,7 @@ pzpr.classmgr.makeCommon({
 	// linegraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
 	//---------------------------------------------------------------------------
 	incdecLineCount : function(cell, isset){
-		if(cell.group==='cell' && !cell.isnull){
+		if(cell.group===this.pointgroup && !cell.isnull){
 			this.ltotal[cell.lcnt]--;
 			if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
 			this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;

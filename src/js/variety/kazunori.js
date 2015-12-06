@@ -130,8 +130,11 @@ AreaRoomGraph:{
 	resetObjNodeList : function(nodeobj){ nodeobj.norinodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.anum>0);},
+	isedgevalidbylinkobj : function(border){
+		return (border.sideobj[0].anum===border.sideobj[1].anum) && !border.isBorder();
+	},
 	isedgevalidbynodeobj : function(cell1, cell2){
-		return (cell1.anum!==cell2.anum) || this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+		return (cell1.anum===cell2.anum) && !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
 	}
 },
 

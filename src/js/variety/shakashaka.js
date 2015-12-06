@@ -244,7 +244,7 @@ BoardExec:{
 		[true,false,true,false,false,true]
 	],
 	isedgevalidbynodeobj : function(cell1,cell2){
-		return (this.sldir[cell1.getdir(cell2,2)][cell1.qans] ||
+		return (this.sldir[cell1.getdir(cell2,2)][cell1.qans] &&
 				this.sldir[cell2.getdir(cell1,2)][cell2.qans]);
 	}
 },

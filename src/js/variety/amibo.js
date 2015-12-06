@@ -132,7 +132,7 @@ BoardExec:{
 	
 	isnodevalid : function(cell){ return (cell.qans>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
-		return !this.klass.AreaNetGraph.prototype.isedgevalidbynodeobj.call(this,cell1,cell2);
+		return this.klass.AreaNetGraph.prototype.isedgevalidbynodeobj.call(this,cell1,cell2);
 	},
 
 	calcNodeCount : function(cell){

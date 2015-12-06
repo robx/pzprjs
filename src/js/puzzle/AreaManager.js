@@ -10,6 +10,10 @@ pzpr.classmgr.makeCommon({
 	relation : ['cell'],
 	pointgroup : 'cell',
 
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return this.isedgevalidbylinkobj(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)));
+	},
+
 	//---------------------------------------------------------------------------
 	// areagraph.setCell()     黒マスになったりした時にブロックの情報を生成しなおす
 	//---------------------------------------------------------------------------
@@ -90,15 +94,7 @@ pzpr.classmgr.makeCommon({
 	resetObjNodeList : function(nodeobj){ nodeobj.roomnodes = [];},
 	
 	isnodevalid : function(cell){ return (cell.ques!==7);},
-	isedgeexistsbylinkobj : function(border){
-		var sidenodes = this.getSideNodesBySeparator(border);
-		if(!sidenodes[0] || !sidenodes[1]){ return false;}
-		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
-	},
 	isedgevalidbylinkobj : function(border){ return !border.isBorder();},
-	isedgevalidbynodeobj : function(cell1, cell2){
-		return this.isedgevalidbylinkobj(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)));
-	},
 
 	//--------------------------------------------------------------------------------
 	// roomgraph.rebuild2() 部屋情報の再設定を行う

@@ -50,9 +50,13 @@ GraphBase:{
 	// graph.isedgeexistsbylinkobj() linkobjにedgeが存在するか判定する
 	//--------------------------------------------------------------------------------
 	isnodevalid           : function(nodeobj){ return false;},
-	isedgevalidbylinkobj  : function(linkobj){ return false;},
+	isedgevalidbylinkobj  : function(linkobj){ return true;},
 	isedgevalidbynodeobj  : function(nodeobj1, nodeobj2){ return true;},
-	isedgeexistsbylinkobj : function(linkobj){ return false;},
+	isedgeexistsbylinkobj : function(linkobj){
+		var sidenodes = this.getSideNodesBySeparator(linkobj);
+		if(!sidenodes[0] || !sidenodes[1]){ return false;}
+		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
+	},
 	
 	//--------------------------------------------------------------------------------
 	// graph.calcNodeCount()    そのセルにあるべきNode数を返す

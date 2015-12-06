@@ -174,7 +174,7 @@ AnsCheck:{
 			this.failcode.add("lcDivided");
 			bd.border.setnoerr();
 			paths[0].setedgeerr(1);
-			paths.clist.seterr(4);
+			paths[0].clist.seterr(4);
 		}
 	},
 
