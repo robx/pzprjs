@@ -390,6 +390,7 @@ function postCanvasReady(puzzle){
 	else{
 		puzzle.painter.unsuspend();
 	}
+	puzzle.emit('canvasReady');
 }
 function firstCanvasReady(puzzle){
 	if(!puzzle.initCanvasEvent && !!puzzle.canvas && !puzzle.opt.noinput){
