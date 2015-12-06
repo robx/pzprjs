@@ -75,7 +75,8 @@ MouseEvent:{
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
-		this.mouseevent(this.getBoardAddress(e), 0);
+		var addrtarget = this.getBoardAddress(e);
+		this.moveTo(addrtarget.bx, addrtarget.by);
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -83,8 +84,7 @@ MouseEvent:{
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		/* 座標は前のイベントのものを使用する */
-		this.mouseevent(this.inputPoint, 2);
+		this.inputEnd();
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -92,15 +92,8 @@ MouseEvent:{
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		/* 前回の位置からの差分を順番に入力していきます */
-		var addr = this.inputPoint.clone(), addrtarget = this.getBoardAddress(e);
-		var dx = (addrtarget.bx-addr.bx), dy = (addrtarget.by-addr.by);
-		var distance = (((dx>=0?dx:-dx)+(dy>=0?dy:-dy))*2+0.9)|0; /* 0.5くらいずつ動かす */
-		var mx = dx/distance, my = dy/distance;
-		for(var i=0;i<distance-1;i++){
-			this.mouseevent(addr.move(mx,my),1);
-		}
-		this.mouseevent(addrtarget,1);
+		var addrtarget = this.getBoardAddress(e);
+		this.lineTo(addrtarget.bx, addrtarget.by);
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -138,15 +131,39 @@ MouseEvent:{
 				pix.py += 2 * pc.bh;
 			}
 		}
-		return new puzzle.klass.Address((pix.px-pc.x0)/pc.bw, (pix.py-pc.y0)/pc.bh);
+		return {bx:(pix.px-pc.x0)/pc.bw, by:(pix.py-pc.y0)/pc.bh};
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.moveTo()   Canvas上にマウスの位置を設定する
+	// mv.lineTo()   Canvas上でマウスを動かす
+	// mv.inputEnd() Canvas上のマウス入力処理を終了する
+	//---------------------------------------------------------------------------
+	moveTo : function(bx,by){
+		this.inputPoint.init(bx,by);
+		this.mouseevent(0);
+	},
+	lineTo : function(bx,by){
+		/* 前回の位置からの差分を順番に入力していきます */
+		var dx = (bx-this.inputPoint.bx), dy = (by-this.inputPoint.by);
+		var distance = (((dx>=0?dx:-dx)+(dy>=0?dy:-dy))*2+0.9)|0; /* 0.5くらいずつ動かす */
+		var mx = dx/distance, my = dy/distance;
+		for(var i=0;i<distance-1;i++){
+			this.inputPoint.move(mx,my);
+			this.mouseevent(1);
+		}
+		this.inputPoint.init(bx,by);
+		this.mouseevent(1);
+	},
+	inputEnd : function(){
+		this.mouseevent(2);
+		this.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
 	//---------------------------------------------------------------------------
-	mouseevent : function(addr, step){
-		this.inputPoint.set(addr);
-		
+	mouseevent : function(step){
 		this.cancelEvent = false;
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
@@ -165,8 +182,6 @@ MouseEvent:{
 				this.mouseinput();		/* 各パズルのルーチンへ */
 			}
 		}
-		
-		if(this.mouseend){ this.mousereset();}
 	},
 
 	//---------------------------------------------------------------------------
