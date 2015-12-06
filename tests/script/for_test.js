@@ -92,19 +92,11 @@ ui.debug.extend(
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");
 			mv.btn.Right = (strs[1].substr(0,5)==="right");
 			
-			var addr = new ui.puzzle.RawAddress();
-			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
+			mv.moveTo(+strs[2], +strs[3]);
 			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
-				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
-				var distance = Math.sqrt(dx*dx+dy*dy)*10; /* 0.1ずつ動かす */
-				var mx = dx/distance, my = dy/distance;
-				for(var dist=0;dist<distance-1;dist++){
-					mv.mouseevent(addr.move(mx,my),1);
-				}
-				/* 最後 */
-				mv.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
+				mv.lineTo(+strs[i], +strs[i+1]);
 			}
-			mv.mouseevent(addr,2);
+			mv.inputEnd();
 		}
 	},
 	inputcheck_popup : function(){
