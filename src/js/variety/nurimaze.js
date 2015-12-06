@@ -126,7 +126,7 @@ KeyEvent:{
 		var old=cell.ques, newques=-1;
 		if     (ca==='1'||ca==='q'){ newques=(old!==41?41:0);}
 		else if(ca==='2'||ca==='w'){ newques=(old!==42?42:0);}
-		else if(ca==='3'||ca==='e'||ca===' '){ newques=0;}
+		else if(ca==='3'||ca==='e'||ca===' '||ca==='BS'){ newques=0;}
 		else if(ca==='s'){ bd.startpos.input(cell);}
 		else if(ca==='g'){ bd.goalpos.input(cell);}
 

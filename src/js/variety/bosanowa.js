@@ -72,7 +72,7 @@ KeyEvent:{
 			if(this.puzzle.editmode){
 				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
 				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
-				else if('0'<=ca && ca<='9'){
+				else if(('0'<=ca && ca<='9') || ca==='BS'){
 					if(cell.ques!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
 				}
@@ -96,6 +96,11 @@ KeyEvent:{
 					else if(num<=qsubmax){ border.setQsub(num);}
 				}
 				this.prev = border;
+			}
+			else if(ca==='BS'){
+				var num = border.qsub;
+				if(num<10){ border.setQsub(-1);}
+				else{ border.setQsub((num/10)|0);}
 			}
 			else if(ca==='-'||ca===' '){ border.setQsub(-1);}
 			else{ return;}

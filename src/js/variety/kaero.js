@@ -41,7 +41,7 @@ KeyEvent:{
 		return this.key_inputqnum_main_kaero(cell,ca);
 	},
 	key_inputqnum_main_kaero : function(cell,ca){
-		if(ca.length>1){ return false;}
+		if(ca.length>1 && ca!=='BS'){ return false;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-10;
 			var canum = cell.qnum;
@@ -50,6 +50,7 @@ KeyEvent:{
 			else{ cell.setQnum(num+1);}
 		}
 		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
+		else if(ca==='BS'){cell.setQnum(cell.qnum>=0?-2:-1);}
 		else if(ca===' '){ cell.setQnum(-1);}
 		else{ return false;}
 

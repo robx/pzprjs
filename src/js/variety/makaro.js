@@ -126,6 +126,17 @@ KeyEvent:{
 			cell.setAnum(-1);
 			retval = true;
 		}
+		else if(ca==='BS' && cell.ques===1){
+			if(cell.qdir!==cell.NDIR){
+				cell.setQdir(cell.NDIR);
+			}
+			else{
+				cell.setQues(0);
+				cell.setQnum(-1);
+				cell.setAnum(-1);
+			}
+			retval = true;
+		}
 		else if(ca==='-'){
 			cell.setQues(cell.ques===0 ? 1 : 0);
 			cell.setQdir(cell.NDIR);
