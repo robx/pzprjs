@@ -147,14 +147,14 @@ MouseEvent:{
 	mouseevent : function(addr, step){
 		this.inputPoint.set(addr);
 		
+		this.cancelEvent = false;
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
 		
 		var puzzle = this.puzzle;
-		if(!puzzle.execListener('mouse')){ }
-		else if(!this.btn.Left && !this.btn.Right){ }
-		else{
+		puzzle.emit('mouse');
+		if(!this.cancelEvent && (this.btn.Left || this.btn.Right)){
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
 				puzzle.board.errclear();

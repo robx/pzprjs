@@ -86,7 +86,7 @@ Config.prototype =
 		if(!this.list[name] || (name==="mode" && pzpr.PLAYER)){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
-		this.puzzle.execListener('config', name, newval);
+		this.puzzle.emit('config', name, newval);
 	},
 
 	//---------------------------------------------------------------------------

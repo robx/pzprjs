@@ -103,7 +103,7 @@ BoardExec:{
 
 		// Canvasを更新する
 		puzzle.painter.resizeCanvas();
-		puzzle.execListener('adjust');
+		puzzle.emit('adjust');
 		puzzle.painter.unsuspend();
 	},
 

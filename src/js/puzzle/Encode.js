@@ -51,7 +51,7 @@ Encode:{
 
 		bd.rebuildInfo();
 
-		puzzle.execListener('openurl', pzl.url);
+		puzzle.emit('openurl', pzl.url);
 	},
 	encodeURL : function(type){
 		var puzzle = this.puzzle, pid = puzzle.pid, fileio = puzzle.fio, bd = puzzle.board;

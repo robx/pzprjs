@@ -65,21 +65,20 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.addListener()  イベントが発生した時に呼ぶ関数を登録する
-	// owner.execListener() イベントが発生した時に呼ぶ関数を実行する
+	// owner.on()   イベントが発生した時に呼ぶ関数を登録する
+	// owner.emit() イベントが発生した時に呼ぶ関数を実行する
 	//---------------------------------------------------------------------------
-	addListener : function(eventname, func){
+	on : function(eventname, func){
 		if(!this.listeners[eventname]){ this.listeners[eventname] = [];}
 		this.listeners[eventname].push(func);
 	},
-	execListener : function(){
+	emit : function(){
 		var args = Array.prototype.slice.apply(arguments), eventname = args.shift();
-		var evlist = this.listeners[eventname], result = true;
+		var evlist = this.listeners[eventname];
 		if(!!evlist){
 			args.unshift(this);
-			for(var i=0;i<evlist.length;i++){ if(!evlist[i].apply(window,args)){ result=false;}}
+			for(var i=0;i<evlist.length;i++){ evlist[i].apply(window,args);}
 		}
-		return result;
 	},
 
 	//---------------------------------------------------------------------------
@@ -381,7 +380,7 @@ function postCanvasReady(puzzle, callback){
 	
 	if(!puzzle.ready){
 		puzzle.ready = true;
-		puzzle.execListener('ready');
+		puzzle.emit('ready');
 		puzzle.painter.unsuspend();
 		puzzle.resetTime();
 	}

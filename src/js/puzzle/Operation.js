@@ -288,7 +288,7 @@ OperationManager:{
 		this.enableUndo = (this.position>0);
 		this.enableRedo = (this.position<this.ope.length);
 
-		this.puzzle.execListener('history');
+		this.puzzle.emit('history');
 	},
 	allerase : function(){
 		this.lastope  = null;
@@ -456,7 +456,7 @@ OperationManager:{
 			bd.enableInfo();
 			bd.rebuildInfo();
 			puzzle.redraw(true);
-			puzzle.execListener('adjust');
+			puzzle.emit('adjust');
 		}
 		puzzle.painter.unsuspend();
 

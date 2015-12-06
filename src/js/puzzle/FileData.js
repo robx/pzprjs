@@ -45,7 +45,7 @@ FileIO:{
 
 		this.dataarray = null;
 
-		puzzle.execListener('openfile', pzl.fstr);
+		puzzle.emit('openfile', pzl.fstr);
 	},
 	//---------------------------------------------------------------------------
 	// fio.fileencode() ファイルデータ(文字列)へのエンコード実行関数

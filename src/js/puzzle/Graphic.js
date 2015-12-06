@@ -280,7 +280,7 @@ Graphic:{
 		this.setOffset();
 
 		// Listener呼び出し
-		this.puzzle.execListener('resize');
+		this.puzzle.emit('resize');
 
 		// contextのclear等を呼び出す
 		this.clearObject();

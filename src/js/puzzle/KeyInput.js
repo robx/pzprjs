@@ -143,6 +143,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	keyevent : function(c, step){
 		var puzzle = this.puzzle;
+		this.cancelEvent = false;
 		this.keydown = (step===0);
 		this.keyup   = (step===1);
 
@@ -153,7 +154,8 @@ KeyEvent:{
 			puzzle.board.errclear();
 		}
 
-		if(!puzzle.execListener('key',c)){ return;}
+		puzzle.emit('key',c);
+		if(this.cancelEvent){ return;}
 		if(!this.keyexec(c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ return;}

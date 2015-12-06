@@ -11,18 +11,16 @@ ui.listener =
 	// listener.setListeners()  PuzzleのListenerを登録する
 	//---------------------------------------------------------------------------
 	setListeners : function(puzzle){
-		puzzle.addListener('ready',    this.onReady);
-//		puzzle.addListener('openurl',  this.onOpenURL);
-//		puzzle.addListener('openfile', this.onOpenFile);
+		puzzle.on('ready',    this.onReady);
 		
-		puzzle.addListener('key',      this.onKeyInput);
-		puzzle.addListener('mouse',    this.onMouseInput);
-		puzzle.addListener('history',  this.onHistoryChange);
+		puzzle.on('key',      this.onKeyInput);
+		puzzle.on('mouse',    this.onMouseInput);
+		puzzle.on('history',  this.onHistoryChange);
 		
-		puzzle.addListener('config',     this.onConfigSet);
+		puzzle.on('config',     this.onConfigSet);
 		
-		puzzle.addListener('adjust',     this.onAdjust);
-		puzzle.addListener('resize',     this.onResize);
+		puzzle.on('adjust',     this.onAdjust);
+		puzzle.on('resize',     this.onResize);
 	},
 
 	//---------------------------------------------------------------------------
@@ -64,27 +62,6 @@ ui.listener =
 		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
 
-//	//---------------------------------------------------------------------------
-//	// listener.onOpenURL()  URL読み込み終了時に呼び出される関数 (readyより前)
-//	// listener.onOpenFile() ファイルデータ読み込み終了時に呼び出される関数 (readyより前)
-//	// listener.setImportData() 上記関数の共通処理
-//	//---------------------------------------------------------------------------
-//	onOpenURL : function(puzzle, url){
-//		ui.listener.setImportData('urldata', url);
-//	},
-//	onOpenFile : function(puzzle, filestr){
-//		ui.listener.setImportData('filedata', filestr);
-//	},
-//	setImportData : function(key, str){
-//		if(!pzpr.env.storage.localST || !pzpr.env.storage.session){ return null;}
-//
-//		delete localStorage['filedata'];
-//		delete localStorage['urldata'];
-//		if(str!==void 0){
-//			sessionStorage[key] = str;
-//		}
-//	},
-
 	//---------------------------------------------------------------------------
 	// listener.onKeyInput()    キー入力時に呼び出される関数 (return false = 処理をキャンセル)
 	// listener.onMouseInput()  盤面へのマウス入力時に呼び出される関数 (return false = 処理をキャンセル)
@@ -116,7 +93,7 @@ ui.listener =
 		else if(!kc.isZ){ ut.stopKeyUndo();}
 		else if(!kc.isY){ ut.stopKeyRedo();}
 		
-		return result;
+		kc.cancelEvent = !result;
 	},
 	onMouseInput : function(puzzle){
 		var mv = puzzle.mouse, result = true;
@@ -145,7 +122,7 @@ ui.listener =
 			}
 		}
 		
-		return result;
+		mv.cancelEvent = !result;
 	},
 	onHistoryChange : function(puzzle){
 		if(!!ui.currentpid){
