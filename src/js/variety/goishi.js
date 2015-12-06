@@ -99,8 +99,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	gridcolor_type : "LIGHT",
-
 	errcolor1 : "rgb(208, 0, 0)",
 	errbcolor1 : "rgb(255, 192, 192)",
 
@@ -123,7 +121,7 @@ Graphic:{
 		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
 		g.lineWidth = 1;
-		g.fillStyle = this.gridcolor;
+		g.strokeStyle = this.gridcolor;
 		for(var i=x1;i<=x2;i+=2){
 			var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
 			g.vid = "cliney_"+i;
