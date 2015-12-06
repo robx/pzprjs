@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['slalom'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -487,14 +489,11 @@ LineGraph:{
 	}
 },
 
-Flags:{
-	redline : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	gridcolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
 

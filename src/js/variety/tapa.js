@@ -15,6 +15,9 @@ pzpr.classmgr.makeCustom(['tapa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use    : true,
+	redblk : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_tapa();}
@@ -277,11 +280,6 @@ OperationManager:{
 
 AreaShadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

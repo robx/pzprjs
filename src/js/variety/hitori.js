@@ -6,6 +6,8 @@ pzpr.classmgr.makeCustom(['hitori'], {
 // マウス入力系
 MouseEvent:{
 	RBShadeCell : true,
+	use    : true,
+	redblk : true,
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
@@ -52,11 +54,6 @@ Board:{
 
 AreaUnshadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

@@ -6,6 +6,8 @@ pzpr.classmgr.makeCustom(['yajikazu'], {
 // マウス入力系
 MouseEvent:{
 	RBShadeCell : true,
+	use    : true,
+	redblk : true,
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
@@ -51,11 +53,6 @@ BoardExec:{
 
 AreaUnshadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

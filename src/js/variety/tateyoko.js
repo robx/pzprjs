@@ -62,6 +62,8 @@ Cell:{
 	minnum : 0
 },
 Board:{
+	disable_subclear : true,
+
 	initialize : function(){
 		this.common.initialize.call(this);
 
@@ -94,10 +96,6 @@ BoardExec:{
 		else if(dir===cell1.LT||dir===cell1.RT){ return (cell1.qans===13 && cell2.qans===13);}
 		return false;
 	}
-},
-
-Flags:{
-	disable_subclear : true
 },
 
 //---------------------------------------------------------

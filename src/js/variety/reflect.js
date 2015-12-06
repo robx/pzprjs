@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['reflect'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -94,15 +96,12 @@ LineGraph:{
 	isLineCross : true
 },
 
-Flags:{
-	redline : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+
+	irowake : true,
 
 	gridcolor_type : "LIGHT",
 

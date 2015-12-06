@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['bag'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	bgcolor : true,
+	
 	mouseinput : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
@@ -84,10 +86,6 @@ Board:{
 LineGraph:{
 	enabled : true,
 	pointgroup : 'cross'
-},
-
-Flags:{
-	bgcolor : true
 },
 
 //---------------------------------------------------------

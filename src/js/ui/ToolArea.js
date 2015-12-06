@@ -101,11 +101,11 @@ ui.toolarea = {
 		pzpr.util.unselectable(getEL('btnarea'));
 		
 		this.setdisplay("operation");
-		getEL('btnclear2').style.display  = (!ui.puzzle.flags.disable_subclear ? "" : "none");
+		getEL('btnclear2').style.display  = (!ui.puzzle.board.disable_subclear ? "" : "none");
 		getEL('btncircle').style.display  = (ui.puzzle.pid==='pipelinkr' ? "" : "none");
 		getEL('btncolor').style.display   = (ui.puzzle.pid==='tentaisho' ? "" : "none");
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
-		getEL('btnirowake').style.display = (((ui.puzzle.flags.irowake || ui.puzzle.flags.irowakeblk) && (ui.getConfig("toolarea")===0)) ? "" : "none");
+		getEL('btnirowake').style.display = (((ui.puzzle.painter.irowake || ui.puzzle.painter.irowakeblk) && (ui.getConfig("toolarea")===0)) ? "" : "none");
 		
 		/* 共通：キャプションの設定 */
 		/* --------------------- */

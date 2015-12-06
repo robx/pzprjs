@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['numlin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -36,10 +38,6 @@ Board:{
 LineGraph:{
 	enabled : true,
 	makeClist : true
-},
-
-Flags:{
-	redline : true
 },
 
 //---------------------------------------------------------

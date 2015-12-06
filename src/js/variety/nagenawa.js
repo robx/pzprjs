@@ -4,6 +4,9 @@
 pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
+MouseEvent:{
+	redline : true
+},
 "MouseEvent@nagenawa":{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
@@ -72,14 +75,11 @@ LineGraph:{
 	hastop : true
 },
 
-Flags:{
-	redline : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	gridcolor_type : "SLIGHT",
 
 	paint : function(){

@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['gokigen','wagiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+
 	mouseinput : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode && this.mousestart){
@@ -128,7 +130,8 @@ Cross:{
 },
 Board:{
 	qcols : 7,
-	qrows : 7
+	qrows : 7,
+	disable_subclear : true
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -224,15 +227,11 @@ LineGraph:{
 	}
 },
 
-Flags:{
-	irowake : true,
-	use : true,
-	disable_subclear : true
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	margin : 0.50,
 
 	gridcolor_type : "DLIGHT",

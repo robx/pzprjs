@@ -247,14 +247,12 @@ LineGraph:{
 	}
 },
 
-Flags:{
-	autocmp : "number"
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+
+	autocmp : "number",
 
 	gridcolor_type : "LIGHT",
 

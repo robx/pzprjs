@@ -176,6 +176,13 @@ Graphic:{
 	// Cellのqnumが-2のときに？を表示しないパズルごとの設定
 	hideHatena : false,
 
+	// 正解条件を満たしたオブジェクトを描画するかどうかの設定
+	autocmp    : '',
+
+	// 色分け設定
+	irowake    : false,
+	irowakeblk : false,
+
 	//---------------------------------------------------------------------------
 	// pc.initCanvas()       このオブジェクトで使用するキャンバスを設定する
 	// pc.initCanvasCheck()  initCanvas_mainを呼び出せるか確認する

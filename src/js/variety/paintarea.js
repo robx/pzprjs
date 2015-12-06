@@ -5,6 +5,9 @@ pzpr.classmgr.makeCustom(['paintarea'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use    : true,
+	redblk : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
@@ -37,11 +40,6 @@ AreaShadeGraph:{
 },
 AreaRoomGraph:{
 	enabled : true
-},
-
-Flags:{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

@@ -128,21 +128,21 @@ Config.prototype =
 	// config.getexec()  設定値を現在のパズルで有効かどうか返す
 	//---------------------------------------------------------------------------
 	getexec : function(name){
-		var puzzle = this.puzzle, pid = puzzle.pid, flags = puzzle.flags, exec = false;
+		var puzzle = this.puzzle, pid = puzzle.pid, exec = false;
 		switch(name){
-			case 'use':      exec = flags.use; break;
+			case 'use':      exec = puzzle.mouse.use; break;
 			case 'use_tri':  exec = (pid==="shakashaka"); break;
 			case 'dispmove': exec = puzzle.board.linegraph.moveline; break;
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
-			case 'bgcolor':  exec = flags.bgcolor; break;
-			case 'irowake':  exec = flags.irowake; break;
-			case 'irowakeblk':exec= flags.irowakeblk; break;
+			case 'bgcolor':  exec = puzzle.mouse.bgcolor; break;
+			case 'irowake':  exec = puzzle.painter.irowake; break;
+			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
 			case 'snakebd':  exec = (pid==="snakes"); break;
-			case 'redline':  exec = flags.redline;   break;
-			case 'redblk':   exec = flags.redblk;    break;
+			case 'redline':  exec = puzzle.mouse.redline; break;
+			case 'redblk':   exec = puzzle.mouse.redblk;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
-			case 'autocmp':  exec = (flags.autocmp!==''); break;
+			case 'autocmp':  exec = (puzzle.painter.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'dirauxmark': exec = (pid==="nagare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
@@ -202,23 +202,5 @@ Config.prototype =
 		}
 	}
 };
-
-pzpr.classmgr.makeCommon({
-//---------------------------------------------------------------------------
-// ★Flagsクラス 設定値の値などを保持する
-//---------------------------------------------------------------------------
-Flags:{
-	/* フラグ */
-	use      : false,
-	autocmp  : '',
-	redline  : false,
-	redblk   : false,
-	bgcolor  : false,
-	irowake    : false,			// 色分け設定
-	irowakeblk : false,			// 色分け設定
-
-	disable_subclear : false	// "補助消去"ボタンを作らない
-}
-});
 
 })();

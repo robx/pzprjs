@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['kurotto'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -56,15 +58,12 @@ AreaShadeGraph:{
 	enabled : true
 },
 
-Flags:{
-	use : true,
-	autocmp : "number"
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+
+	autocmp : "number",
 
 	gridcolor_type : "DLIGHT",
 

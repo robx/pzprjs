@@ -6,6 +6,8 @@ pzpr.classmgr.makeCustom(['heyawake','ayeheya'], {
 // マウス入力系
 MouseEvent:{
 	RBShadeCell : true,
+	use    : true,
+	redblk : true,
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
@@ -56,11 +58,6 @@ AreaUnshadeGraph:{
 AreaRoomGraph:{
 	enabled : true,
 	hastop : true
-},
-
-Flags:{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

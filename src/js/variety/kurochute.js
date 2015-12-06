@@ -6,6 +6,7 @@ pzpr.classmgr.makeCustom(['kurochute'], {
 // マウス入力系
 MouseEvent:{
 	RBShadeCell : true,
+	use : true,
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
@@ -49,10 +50,6 @@ Board:{
 
 AreaUnshadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

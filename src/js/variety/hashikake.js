@@ -161,15 +161,13 @@ LineGraph:{
 	iscrossing : function(cell){ return cell.noNum();}
 },
 
-Flags:{
-	autocmp : "number",
-	irowake : true
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+
+	autocmp : "number",
+	irowake : true,
 
 	gridcolor_type : "THIN",
 

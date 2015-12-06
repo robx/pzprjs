@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['nurikabe','nuribou','mochikoro','mochinyoro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -13,6 +15,9 @@ MouseEvent:{
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
+},
+"MouseEvent@nurikabe":{
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -69,14 +74,6 @@ AreaUnshadeGraph:{
 		}
 		return cells;
 	}
-},
-
-Flags:{
-	use : true
-},
-"Flags@nurikabe":{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

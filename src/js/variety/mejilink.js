@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['mejilink'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -85,10 +87,6 @@ LineGraph:{
 	
 	isnodevalid : function(nodeobj){ return true;},
 	isedgevalidbylinkobj : function(border){ return border.isGround();}
-},
-
-Flags:{
-	redline : true
 },
 
 //---------------------------------------------------------

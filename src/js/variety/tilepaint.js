@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['tilepaint'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
@@ -113,10 +115,6 @@ BoardExec:{
 AreaRoomGraph:{
 	enabled : true,
 	isnodevalid : function(cell){ return (!cell.is51cell());}
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

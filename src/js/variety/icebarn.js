@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['icebarn','icelom','icelom2'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -333,14 +335,11 @@ LineGraph:{
 	isnodevalid : function(cell){ return cell.ice();}
 },
 
-Flags:{
-	redline : true,
-	irowake : true
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	gridcolor_type : "LIGHT",
 	linecolor_type : "LIGHT",
 

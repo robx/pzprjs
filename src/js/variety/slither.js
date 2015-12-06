@@ -5,6 +5,9 @@ pzpr.classmgr.makeCustom(['slither'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	bgcolor : true,
+	
 	mouseinput : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
@@ -88,15 +91,11 @@ LineGraph:{
 	enabled : true
 },
 
-Flags:{
-	redline : true,
-	bgcolor : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	bgcellcolor_func : "qsub2",
 
 	paint : function(){

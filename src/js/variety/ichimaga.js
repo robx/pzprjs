@@ -45,14 +45,12 @@ LineGraph:{
 	iscrossing : function(cell){ return cell.noNum();}
 },
 
-Flags:{
-	irowake : true
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+
+	irowake : true,
 
 	gridcolor_type : "LIGHT",
 

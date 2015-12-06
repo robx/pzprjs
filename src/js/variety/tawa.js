@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['tawa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -204,10 +206,6 @@ BoardExec:{
 		else if(key===this.RT){ return bd.maxbx-piece.bx;}
 		return -1;
 	}
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

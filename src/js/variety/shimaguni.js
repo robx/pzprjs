@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['shimaguni','chocona'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -69,10 +71,6 @@ AreaShadeGraph:{
 AreaRoomGraph:{
 	enabled : true,
 	hastop : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

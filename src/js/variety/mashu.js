@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['mashu'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn.Left){
@@ -75,14 +77,11 @@ LineGraph:{
 	enabled : true
 },
 
-Flags:{
-	redline : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	gridcolor_type : "LIGHT",
 
 	circlefillcolor_func   : "qnum2",

@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['lookair'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -39,10 +41,6 @@ Cell:{
 
 AreaShadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

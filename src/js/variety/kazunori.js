@@ -107,6 +107,7 @@ Board:{
 	qrows : 8,
 
 	hasborder : 1,
+	disable_subclear : true,
 
 	initialize : function(){
 		this.common.initialize.call(this);
@@ -138,9 +139,6 @@ AreaRoomGraph:{
 	}
 },
 
-Flags:{
-	disable_subclear : true
-},
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{

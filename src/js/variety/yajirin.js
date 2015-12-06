@@ -5,6 +5,9 @@ pzpr.classmgr.makeCustom(['yajirin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use     : true,
+	redline : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -61,15 +64,11 @@ LineGraph:{
 	enabled : true
 },
 
-Flags:{
-	use     : true,
-	redline : true,
-	irowake : 1
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	irowake : true,
+
 	gridcolor_type : "LIGHT",
 
 	dotcolor : "rgb(255, 96, 191)",

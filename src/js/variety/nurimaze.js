@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['nurimaze'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile_nurimaze();}
@@ -289,10 +291,6 @@ AreaUnshadeGraph:{
 },
 AreaRoomGraph:{
 	enabled : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

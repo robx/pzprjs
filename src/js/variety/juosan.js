@@ -39,7 +39,8 @@ Cell:{
 	}
 },
 Board:{
-	hasborder : 1
+	hasborder : 1,
+	disable_subclear : true
 },
 
 BoardExec:{
@@ -58,10 +59,6 @@ BoardExec:{
 AreaRoomGraph:{
 	enabled : true,
 	hastop : true
-},
-
-Flags:{
-	disable_subclear : true
 },
 
 //---------------------------------------------------------

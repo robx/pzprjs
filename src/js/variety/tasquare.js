@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['tasquare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -32,10 +34,6 @@ AreaShadeGraph:{
 },
 AreaUnshadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

@@ -309,8 +309,6 @@ function initObjects(puzzle){
 	var classes = puzzle.klass;
 
 	// クラス初期化
-	puzzle.flags = new classes.Flags();		// パズルの初期設定値を保持するオブジェクト
-
 	puzzle.board   = new classes.Board();		// 盤面オブジェクト
 	pzpr.classmgr.setPrototypeRef(puzzle, 'board', puzzle.board);
 

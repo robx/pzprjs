@@ -167,7 +167,7 @@ ui.menuarea = {
 		getEL("menu_imagesave").className = ((ui.enableSaveImage || ui.enableSaveSVG) ? "" : "disabled");
 		
 		getEL("menu_duplicate").className = (pzpr.env.storage.session ? "" : "disabled");
-		getEL("menu_subclear").style.display  = (!ui.puzzle.flags.disable_subclear ? "" : "none");
+		getEL("menu_subclear").style.display  = (!ui.puzzle.board.disable_subclear ? "" : "none");
 		
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");

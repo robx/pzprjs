@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['lightup'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && (this.inputData!==1))){ this.inputcell();}
@@ -111,10 +113,6 @@ Board:{
 			for(var i=0;i<clist.length;i++){ clist[i].qlight=1;}
 		}
 	}
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

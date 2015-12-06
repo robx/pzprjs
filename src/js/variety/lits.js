@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['lits','norinori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -13,6 +15,9 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 		}
 	}
+},
+"MouseEvent@lits":{
+	redblk : true
 },
 
 //---------------------------------------------------------
@@ -65,14 +70,6 @@ AreaRoomGraph:{
 		}
 		component.shape = shape;
 	}
-},
-
-Flags:{
-	use : true
-},
-"Flags@lits":{
-	use    : true,
-	redblk : true
 },
 
 //---------------------------------------------------------

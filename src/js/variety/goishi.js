@@ -92,7 +92,7 @@ Cell:{
 	}
 },
 
-Flags:{
+Board:{
 	disable_subclear : true
 },
 

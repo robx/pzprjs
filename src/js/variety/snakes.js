@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['snakes'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -136,10 +138,6 @@ BoardExec:{
 	isedgevalidbynodeobj : function(cell1, cell2){
 		return ((cell1.anum===-1)===(cell2.anum===-1)) && (Math.abs(cell1.anum-cell2.anum)===1);
 	}
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

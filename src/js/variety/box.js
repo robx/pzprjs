@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['box'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -149,10 +151,6 @@ BoardExec:{
 			break;
 		}
 	}
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

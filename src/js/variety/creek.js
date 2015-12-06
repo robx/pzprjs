@@ -5,6 +5,8 @@ pzpr.classmgr.makeCustom(['creek'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
+
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -39,10 +41,6 @@ Cross:{
 
 AreaUnshadeGraph:{
 	enabled : true
-},
-
-Flags:{
-	use : true
 },
 
 //---------------------------------------------------------

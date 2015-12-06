@@ -380,6 +380,7 @@ Segment:{
 Board:{
 	qcols : 7,
 	qrows : 7,
+	disable_subclear : true,
 
 	initialize : function(){
 		this.common.initialize.call(this);
@@ -547,18 +548,16 @@ OperationManager:{
 	}
 },
 
-Flags:{
-	disable_subclear : true,
-	irowake : true,
-	autocmp : "kouchoku"
-},
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
 	margin : 0.50,
 
 	hideHatena : true,
+
+	irowake : true,
+
+	autocmp : "kouchoku",
 
 	gridcolor_type : "DLIGHT",
 
