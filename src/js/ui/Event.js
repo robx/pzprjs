@@ -59,6 +59,12 @@ ui.event =
 
 		// onunloadイベントを割り当てる
 		this.addEvent(window, 'unload', this, this.onunload_func);
+
+		// エラー表示を消去する
+		this.addEvent(document.getElementById('quesboard'), 'mousedown', this, function(e){
+			ui.puzzle.errclear();
+			e.stopPropagation();
+		});
 	},
 
 	//---------------------------------------------------------------------------

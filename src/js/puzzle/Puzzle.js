@@ -218,6 +218,7 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.ansclear()       回答を消去する
 	// owner.subclear()       補助記号を消去する
+	// owner.errclear()       エラー表示を消去する
 	// owner.clear()          回答・履歴を消去する
 	//------------------------------------------------------------------------------
 	ansclear : function(){
@@ -228,6 +229,9 @@ pzpr.Puzzle.prototype =
 	subclear : function(){
 		this.board.subclear();
 		this.redraw();
+	},
+	errclear : function(){
+		this.board.errclear();
 	},
 	clear : function(){
 		if(pzpr.PLAYER){
