@@ -11,6 +11,7 @@ ui.listener =
 	// listener.setListeners()  PuzzleのListenerを登録する
 	//---------------------------------------------------------------------------
 	setListeners : function(puzzle){
+		puzzle.once('ready',  this.onFirstReady);
 		puzzle.on('ready',    this.onReady);
 		
 		puzzle.on('key',      this.onKeyInput);
@@ -24,18 +25,15 @@ ui.listener =
 	},
 
 	//---------------------------------------------------------------------------
+	// listener.onFirstReady() 初回のパズル読み込み完了時に呼び出される関数
 	// listener.onReady()  パズル読み込み完了時に呼び出される関数
 	//---------------------------------------------------------------------------
+	onFirstReady : function(puzzle){
+		ui.initImageSaveMethod(puzzle);
+	},
 	onReady : function(puzzle){
-		var pid = puzzle.pid;
-		
-		/* 初回だけ */
-		if(!ui.currentpid){
-			ui.initImageSaveMethod(puzzle);
-		}
-		
 		/* パズルの種類が同じならMenuArea等の再設定は行わない */
-		if(ui.currentpid !== pid){
+		if(ui.currentpid !== puzzle.pid){
 			/* 以前設定済みのイベントを削除する */
 			ui.event.removeAllEvents();
 			
@@ -53,7 +51,7 @@ ui.listener =
 			ui.event.setWindowEvents();
 		}
 		
-		ui.currentpid = pid;
+		ui.currentpid = puzzle.pid;
 		
 		ui.adjustcellsize();
 		ui.keypopup.display();

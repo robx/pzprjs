@@ -77,16 +77,14 @@ function startPuzzle(){
 	ui.event.onload_func();
 	
 	// 単体初期化処理のルーチンへ
-	if(!ui.debugmode){
-		puzzle.open(pzl, accesslog);
-	}
-	else{
-		var inputdata = (!!pzl.qdata ? pzl : pid+"/"+ui.debug.urls[pid]);
-		puzzle.open(inputdata, function(puzzle){
+	puzzle.once('ready', function(puzzle){
+		if(!ui.debugmode){ accesslog();}
+		else{
 			ui.setConfig("mode", puzzle.MODE_PLAYER);
 			ui.setConfig('autocheck', true);
-		});
-	}
+		}
+	});
+	puzzle.open((!ui.debugmode || !!pzl.qdata) ? pzl : pid+"/"+ui.debug.urls[pid]);
 	
 	return true;
 }

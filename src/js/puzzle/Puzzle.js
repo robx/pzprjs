@@ -60,34 +60,44 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
-	open : function(data, variety, callback){
-		return openExecute(this, data, variety, callback);
+	open : function(data, variety){
+		return openExecute(this, data, variety);
 	},
 
 	//---------------------------------------------------------------------------
 	// owner.on()   イベントが発生した時に呼ぶ関数を登録する
+	// owner.once() イベントが発生した時に1回だけ呼ぶ関数を登録する
+	// owner.addListener() on, onceの共通処理
 	// owner.emit() イベントが発生した時に呼ぶ関数を実行する
 	//---------------------------------------------------------------------------
 	on : function(eventname, func){
+		this.addListener(eventname, func, false);
+	},
+	once : function(eventname, func){
+		this.addListener(eventname, func, true);
+	},
+	addListener : function(eventname, func, once){
 		if(!this.listeners[eventname]){ this.listeners[eventname] = [];}
-		this.listeners[eventname].push(func);
+		this.listeners[eventname].push({func:func, once:!!once});
 	},
 	emit : function(){
 		var args = Array.prototype.slice.apply(arguments), eventname = args.shift();
 		var evlist = this.listeners[eventname];
 		if(!!evlist){
 			args.unshift(this);
-			for(var i=0;i<evlist.length;i++){ evlist[i].apply(window,args);}
+			for(var i=0;i<evlist.length;i++){
+				var ev = evlist[i];
+				if(evlist[i].once){ evlist.splice(i,1); i--;}
+				ev.func.apply(window,args);
+			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// owner.setCanvas()  描画キャンバスをセットする
 	//---------------------------------------------------------------------------
-	setCanvas : function(el, type, callback){
+	setCanvas : function(el){
 		if(!el){ return;}
-		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
-		type = type || this.opt.graphic || '';
 		
 		var rect = pzpr.util.getRect(el);
 		var _div = document.createElement('div');
@@ -96,7 +106,7 @@ pzpr.Puzzle.prototype =
 		el.appendChild(_div);
 		this.canvas = _div;
 		
-		setCanvas_main(this, type, callback);
+		setCanvas_main(this, (this.opt.graphic || ''));
 	},
 
 	//---------------------------------------------------------------------------
@@ -277,12 +287,7 @@ pzpr.Puzzle.prototype =
 //---------------------------------------------------------------------------
 //  openExecute()      各オブジェクトの生成などの処理
 //---------------------------------------------------------------------------
-function openExecute(puzzle, data, variety, callback){
-	if(typeof variety==='function' && !callback){
-		callback = variety;
-		variety = void 0;
-	}
-
+function openExecute(puzzle, data, variety){
 	puzzle.ready = false;
 
 	var classes = puzzle.klass;
@@ -298,8 +303,8 @@ function openExecute(puzzle, data, variety, callback){
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
-		if(!!puzzle.canvas){ waitCanvasReady(puzzle, callback);}
-		else               { postCanvasReady(puzzle, callback);}
+		if(!!puzzle.canvas){ waitCanvasReady(puzzle);}
+		else               { postCanvasReady(puzzle);}
 	});
 	
 	return puzzle;
@@ -334,7 +339,7 @@ function initObjects(puzzle){
 //  setCanvas_main()  描画キャンバスをセットする
 //  createSubCanvas() 補助キャンバスを作成する
 //---------------------------------------------------------------------------
-function setCanvas_main(puzzle, type, callback){
+function setCanvas_main(puzzle, type){
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
 	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
@@ -343,7 +348,7 @@ function setCanvas_main(puzzle, type, callback){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
-		if(puzzle.ready){ waitCanvasReady(puzzle, callback);}
+		if(puzzle.ready){ waitCanvasReady(puzzle);}
 		
 		/* 画像出力用canvasの準備 */
 		if(!puzzle.opt.imagesave){ return;}
@@ -370,13 +375,11 @@ function createSubCanvas(type){
 //  postCanvasReady()  Canvasの初期化終了後の処理を行う
 //  firstCanvasReady() Canvasの初回初期化終了後の処理を行う
 //---------------------------------------------------------------------------
-function waitCanvasReady(puzzle, callback){
-	puzzle.painter.initCanvas( function(){ postCanvasReady(puzzle, callback);} );
+function waitCanvasReady(puzzle){
+	puzzle.painter.initCanvas( function(){ postCanvasReady(puzzle);} );
 }
-function postCanvasReady(puzzle, callback){
+function postCanvasReady(puzzle){
 	firstCanvasReady(puzzle);
-	
-	if(!!callback){ callback(puzzle);}
 	
 	if(!puzzle.ready){
 		puzzle.ready = true;

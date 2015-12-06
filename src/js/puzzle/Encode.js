@@ -50,8 +50,6 @@ Encode:{
 		}
 
 		bd.rebuildInfo();
-
-		puzzle.emit('openurl', pzl.url);
 	},
 	encodeURL : function(type){
 		var puzzle = this.puzzle, pid = puzzle.pid, fileio = puzzle.fio, bd = puzzle.board;

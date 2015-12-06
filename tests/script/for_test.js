@@ -6,11 +6,12 @@
 ui.debug.extend(
 {
 	loadperf : function(){
-		ui.puzzle.open(perfstr, function(puzzle){
+		ui.puzzle.once('ready', function(puzzle){
 			ui.menuconfig.set('autocheck',false);
 			puzzle.modechange(puzzle.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
+		ui.puzzle.open(perfstr);
 	},
 	
 	keydown : function(ca){
@@ -147,13 +148,14 @@ ui.debug.extend(
 			if(self.phase !== 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
-			ui.puzzle.open(newid+"/"+self.urls[newid], function(){
+			ui.puzzle.once('ready', function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTA("Test ("+pnum+", "+newid+") start.");
 				pnum++;
 				if(pnum >= term){ clearInterval(self.alltimer);}
 			});
+			ui.puzzle.open(newid+"/"+self.urls[newid]);
 		},100);
 	},
 
@@ -193,7 +195,7 @@ ui.debug.extend(
 			if(pzpr.parser.parse(kanpen_url).id!==puzzle.pid){
 				self.addTA("Encode kanpen = id fail..."); self.fails++;
 			}
-			puzzle.open(kanpen_url, function(){
+			puzzle.once('ready', function(){
 				ui.menuconfig.set('autocheck',false);
 				
 				if(!self.bd_compare(bd,bd2)){
@@ -204,6 +206,7 @@ ui.debug.extend(
 				
 				setTimeout(function(){ self.check_answer(self);},0);
 			});
+			puzzle.open(kanpen_url);
 		}
 		else{
 			setTimeout(function(){ self.check_answer(self);},0);
@@ -256,7 +259,8 @@ ui.debug.extend(
 			ui.displayAll();
 		}
 
-		ui.puzzle.open(filedata,function(){ self.check_file(self);});
+		ui.puzzle.once('ready',function(){ self.check_file(self);});
+		ui.puzzle.open(filedata);
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
@@ -268,7 +272,7 @@ ui.debug.extend(
 		bd.initBoardSize(1,1);
 		bd.rebuildInfo();
 
-		puzzle.open(outputstr, function(){
+		puzzle.once('ready', function(){
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
@@ -277,6 +281,7 @@ ui.debug.extend(
 				else{ self.check_turnR1(self);}
 			},0);
 		});
+		puzzle.open(outputstr);
 	},
 	check_file_pbox : function(self){
 		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
@@ -287,7 +292,7 @@ ui.debug.extend(
 		bd.initBoardSize(1,1);
 		bd.rebuildInfo();
 
-		puzzle.open(outputstr, function(){
+		puzzle.once('ready', function(){
 			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
@@ -295,6 +300,7 @@ ui.debug.extend(
 
 			setTimeout(function(){ self.check_file_pbox_xml(self);},0);
 		});
+		puzzle.open(outputstr);
 	},
 	check_file_pbox_xml : function(self){
 		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
@@ -305,7 +311,7 @@ ui.debug.extend(
 		bd.initBoardSize(1,1);
 		bd.rebuildInfo();
 
-		puzzle.open(outputstr, function(){
+		puzzle.once('ready', function(){
 			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpenXML = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO kanpenXML = pass");}
@@ -313,6 +319,7 @@ ui.debug.extend(
 
 			setTimeout(function(){ self.check_turnR1(self);},0);
 		});
+		puzzle.open(outputstr);
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
