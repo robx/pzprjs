@@ -582,7 +582,6 @@ AnsCheck:{
 		else{
 			choice = (blist1.length < blist2.length ? 1 : 2);
 		}
-		console.log([clist1, clist2, blist1, blist2]);
 		info.clist.extend(choice===1 ? clist1 : clist2);
 		info.blist.extend(choice===1 ? blist1 : blist2);
 
