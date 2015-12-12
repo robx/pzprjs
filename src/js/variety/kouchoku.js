@@ -124,12 +124,13 @@ KeyEvent:{
 	key_inputqnum_kouchoku : function(ca){
 		var cross = this.cursor.getx();
 
-		if(ca.length>1){ return;}
+		if(ca.length>1 && ca!=='BS'){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-9;
 			if(cross.qnum===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
+		else if(ca==='BS'){cross.setQnum(cross.qnum>=0?-2:-1);}
 		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
 		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}

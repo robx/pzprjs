@@ -53,6 +53,12 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
 		}
+		else if(ca==='BS'){
+			var num = cell.getNum();
+			if(num<0){ val = -1;}
+			else if(num<10){ val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
+			else{ val = (num/10)|0;}
+		}
 		else if(ca==='-') { val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
 		else if(ca==='s1'){ val = -2;}

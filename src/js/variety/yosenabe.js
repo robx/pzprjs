@@ -119,7 +119,12 @@ KeyEvent:{
 				val = cur*10+num;
 				if(val>max){ return;}
 			}
-			else if(ca==='-') { val = -2;}
+			else if(ca==='BS'){
+				if(cur<0){ val = -1;}
+				else if(cur<10){ val = -2;}
+				else{ val = (cur/10)|0;}
+			}
+			else if(ca==='-') { val = (cur!==-2?-2:-1);}
 			else if(ca===' ') { val = -1;}
 			else{ return;}
 

@@ -27,7 +27,7 @@ KeyEvent:{
 	key_inputqnum_kakuru : function(ca){
 		var cell = this.cursor.getc();
 
-		if(('0'<=ca && ca<='9') || ca==='-'){
+		if(('0'<=ca && ca<='9') || ca==='BS' || ca==='-'){
 			if(cell.ques===1){ return;}
 			if(!this.key_inputqnum_main(cell,ca)){ return;}
 		}

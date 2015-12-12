@@ -155,12 +155,15 @@ KeyEvent:{
 		var cell = this.cursor.getc();
 		if(ca==='q'||ca==='w'){
 			cell.setQues(cell.ice()?0:6);
+			cell.setQnum(-1);
 		}
 		else if(ca==='h'){
 			cell.setQues(cell.ques===31?0:31);
+			cell.setQnum(-1);
 		}
 		else if(ca===' '){
 			cell.setQues(0);
+			cell.setQnum(-1);
 		}
 		else if(!cell.ice()){
 			this.key_inputqnum(ca);
