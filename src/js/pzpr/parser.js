@@ -206,8 +206,8 @@ pzpr.parser.URLData.prototype = {
 			row = +size[1];
 		}
 		else{
-			col = +inp.shift();
-			row = +inp.shift();
+			col = +inp.shift() || NaN;
+			row = +inp.shift() || NaN;
 		}
 		this.rows = row;
 		this.cols = col;
