@@ -12,6 +12,7 @@
 		"pzpr/env",
 		"pzpr/variety",
 		"pzpr/parser",
+		"pzpr/metadata",
 		"pzpr/util",
 		"puzzle/Puzzle",
 		"puzzle/Config",

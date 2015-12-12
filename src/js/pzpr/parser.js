@@ -262,7 +262,7 @@ pzpr.parser.URLData.prototype = {
 pzpr.parser.FileData = function(fstr, variety){
 	this.id   = (!!variety ? variety : '');
 	this.fstr = fstr;
-	this.metadata = new pzpr.Puzzle.prototype.MetaData();
+	this.metadata = new pzpr.MetaData();
 };
 pzpr.parser.FileData.prototype = {
 	id      : '',

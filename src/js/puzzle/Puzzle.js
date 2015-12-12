@@ -22,7 +22,7 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.listeners = {};
 
-	this.metadata =  new this.MetaData();
+	this.metadata =  new pzpr.MetaData();
 
 	this.config = new this.Config(this);
 
@@ -294,7 +294,7 @@ function openExecute(puzzle, data, variety, callback){
 		if(Board!==puzzle.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
-		puzzle.metadata = new puzzle.MetaData();
+		puzzle.metadata.reset();
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
@@ -457,32 +457,5 @@ function getLocalCanvas(puzzle, type, cellsize){
 	
 	return pc2.context.canvas;
 }
-
-//---------------------------------------------------------------------------
-//  MetaData構造体  作者やコメントなどの情報を保持する
-//---------------------------------------------------------------------------
-var MetaData = pzpr.Puzzle.prototype.MetaData = function(){};
-MetaData.prototype =
-{
-	author  : '',
-	source  : '',
-	hard    : '',
-	comment : '',
-	items : {author:'',source:'',hard:'',comment:''},
-	
-	copydata : function(metadata){
-		if(!metadata){ return;}
-		for(var i in this.items){ if(!!metadata[i]){ this[i] = metadata[i];}}
-	},
-	getvaliddata : function(){
-		var obj = {};
-		for(var i in this.items){ if(!!this[i]){ obj[i] = this[i];}}
-		return obj;
-	},
-	empty : function(){
-		for(var i in this.items){ if(!!this[i]){ return false;}}
-		return true;
-	}
-};
 
 })();
