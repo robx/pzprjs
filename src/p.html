@@ -414,25 +414,18 @@
         <button type="button" class="btn" data-button-exec="database_handler" name="tableup">__▲__Up__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="tabledn">__▼__Down__</button>
         <br />
-        <select name="datalist" size=8 data-change-exec="database_handler"></select>
+        <select name="datalist" size=9 data-change-exec="database_handler"></select>
         <br />
         <button type="button" class="btn btn-ok" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
         <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
       </div>
       <div>
         <span>Information</span> <span id="database_cand"></span><br>
-        <label>__種類:__Variety:__</label><span id="database_variety"></span><br>
-        <label>__難易度:__Difficulity:__</label>
-        <select name="hard" data-change-exec="database_handler">
-          <option value="0">-</option>
-          <option value="1">__らくらく__Easy__</option>
-          <option value="2">__おてごろ__Normal__</option>
-          <option value="3">__たいへん__Hard__</option>
-          <option value="4">__アゼン__Expert__</option>
-        </select><br>
-        <label>__日時:__Date:__</label><span id="database_date"></span><br>
-        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard"></textarea><br>
-        <br>
+        <span id="database_info"></span><br>
+        <label>__作者:__Author:__</label> <input name="author" type="text"></input><br>
+        <label>__出典:__Source:__</label> <input name="source" type="text"></input><br>
+        <label>__難易度:__Difficulty:__</label> <input name="hard" type="text"></input><br>
+        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard" style="margin-bottom:1em;"></textarea><br>
         <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
         <button type="button" class="btn btn-info" data-button-exec="database_handler" name="overwrite">__上書き保存__Overwrite__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="updateinfo">__情報更新__Update Info__</button>
