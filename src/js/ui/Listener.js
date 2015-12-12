@@ -55,6 +55,7 @@ ui.listener =
 			ui.event.setWindowEvents();
 		}
 		
+		ui.menuconfig.set('autocheck_once', ui.menuconfig.get('autocheck'));
 		ui.currentpid = pid;
 		
 		ui.adjustcellsize();
