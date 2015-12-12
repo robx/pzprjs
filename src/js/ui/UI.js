@@ -159,6 +159,15 @@ window.ui = {
 	},
 
 	//---------------------------------------------------------------------------
+	// ui.getCurrentConfigList() 現在のパズルで有効な設定と設定値を返す
+	//---------------------------------------------------------------------------
+	getCurrentConfigList : function(){
+		var conf = ui.puzzle.getCurrentConfig(), conf2 = ui.menuconfig.getList();
+		for(var idname in conf2){ conf[idname] = conf2[idname];}
+		return conf;
+	},
+
+	//---------------------------------------------------------------------------
 	// ui.setConfig()   値設定の共通処理
 	// ui.getConfig()   値設定の共通処理
 	// ui.validConfig() 設定が有効なパズルかどうかを返す共通処理

@@ -266,9 +266,11 @@ pzpr.Puzzle.prototype =
 	},
 	
 	//------------------------------------------------------------------------------
+	// owner.getCurrentConfig() 現在有効な設定と設定値を返す
 	// owner.saveConfig()     設定値の保存を行う
 	// owner.restoreConfig()  設定値の復帰を行う
 	//------------------------------------------------------------------------------
+	getCurrentConfig : function(){ return this.config.getList();},
 	saveConfig : function(){ return this.config.getAll();},
 	restoreConfig : function(json){ this.config.setAll(json);}
 };
