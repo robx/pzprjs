@@ -385,7 +385,9 @@ function postCanvasReady(puzzle, callback){
 	else{
 		puzzle.painter.unsuspend();
 	}
-	puzzle.execListener('canvasReady');
+	if(!!puzzle.canvas){
+		puzzle.execListener('canvasReady');
+	}
 }
 function firstCanvasReady(puzzle){
 	if(!puzzle.initCanvasEvent && !!puzzle.canvas && !puzzle.opt.noinput){
