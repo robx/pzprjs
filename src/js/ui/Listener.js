@@ -167,9 +167,6 @@ ui.listener =
 			ui.keypopup.display();
 			ui.misc.setkeyfocus();
 		}
-		else if(idname==='language'){
-			ui.displayAll();
-		}
 	},
 
 	//---------------------------------------------------------------------------

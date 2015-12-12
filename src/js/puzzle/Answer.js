@@ -113,7 +113,7 @@ CheckInfo:{
 	},
 	text : function(lang){
 		var puzzle = this.owner, textlist = puzzle.faillist, texts = [];
-		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
 		if(this.length===0){ return textlist.complete[langcode];}
 		for(var i=0;i<this.length;i++){
 			var textitem = textlist[this[i]] || textlist.invalid;

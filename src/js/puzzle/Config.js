@@ -19,9 +19,6 @@ Config.prototype =
 	init : function(){
 		this.list = {};
 
-		/* 全般的な設定 */
-		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
-
 		/* 盤面表示設定 */
 		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */

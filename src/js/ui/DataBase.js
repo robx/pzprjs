@@ -183,10 +183,10 @@ ui.database = {
 
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.variety.info[row.pid][ui.getConfig('language')]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][pzpr.lang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
 		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][ui.getConfig('language')]+"&nbsp;");
+			str += (hardstr[row.hard][pzpr.lang]+"&nbsp;");
 		}
 		str += ("("+this.dateString(row.time*1000)+")");
 		return str;
@@ -215,7 +215,7 @@ ui.database = {
 		}
 		form.comtext.value = ""+item.comment;
 		form.hard.value    = ""+item.hard;
-		getEL("database_variety").innerHTML = pzpr.variety.info[item.pid][ui.getConfig('language')] + "&nbsp;" + item.col+"×"+item.row;
+		getEL("database_variety").innerHTML = pzpr.variety.info[item.pid][pzpr.lang] + "&nbsp;" + item.col+"×"+item.row;
 		getEL("database_date").innerHTML    = this.dateString(item.time*1000);
 
 		var sid = this.DBsid = +item.id; /* selected id */

@@ -86,3 +86,8 @@ pzpr.env = (function(){
 		API     : api
 	};
 })();
+
+pzpr.lang = (function(){
+	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+	return ((userlang.substr(0,2)==='ja')?'ja':'en');
+})();

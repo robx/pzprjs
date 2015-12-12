@@ -278,7 +278,7 @@ AnsCheck:{
 "CheckInfo@pipelinkr":{
 	text : function(lang){
 		var puzzle = this.owner, texts = [];
-		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
 		var isdispice = (puzzle.getConfig('disptype_pipelinkr')===2);
 		if(this.length===0){ return puzzle.faillist.complete[langcode];}
 		for(var i=0;i<this.length;i++){
