@@ -468,16 +468,20 @@ MetaData.prototype =
 	source  : '',
 	hard    : '',
 	comment : '',
+	items : {author:'',source:'',hard:'',comment:''},
 	
 	copydata : function(metadata){
 		if(!metadata){ return;}
-		this.author  = metadata.author;
-		this.source  = metadata.source;
-		this.hard    = metadata.hard;
-		this.comment = metadata.comment;
+		for(var i in this.items){ if(!!metadata[i]){ this[i] = metadata[i];}}
+	},
+	getvaliddata : function(){
+		var obj = {};
+		for(var i in this.items){ if(!!this[i]){ obj[i] = this[i];}}
+		return obj;
 	},
 	empty : function(){
-		return ((!this.author)&&(!this.source)&&(!this.hard)&&(!this.comment));
+		for(var i in this.items){ if(!!this[i]){ return false;}}
+		return true;
 	}
 };
 

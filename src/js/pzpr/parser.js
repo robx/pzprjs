@@ -372,7 +372,7 @@ pzpr.parser.FileData.prototype = {
 		
 		/* サイズ以降のデータを取得 */
 		if(this.type===this.FILE_PZPR){
-			var historypos = null, str = "", isinfo = false;
+			var historypos = null, str = "", strs = [], isinfo = false;
 			for(var i=0;i<lines.length;i++){
 				/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
 				if(lines[i].match(/^http\:\/\//)){ break;}
@@ -383,8 +383,9 @@ pzpr.parser.FileData.prototype = {
 				/* 履歴行に到達した場合 */
 				if(lines[i].match(/history:\{|__HISTORY__/)){ historypos=i; break;}
 				
-				this.bstr += lines[i]+'\n';
+				strs.push(lines[i]);
 			}
+			this.bstr += strs.join('\n');
 			
 			/* 履歴部分の読み込み */
 			if(historypos!==null && !!window.JSON){
@@ -460,7 +461,7 @@ pzpr.parser.FileData.prototype = {
 		/* 履歴・メタデータ出力がある形式ならば出力する */
 		if((this.type===this.FILE_PZPR) && !!window.JSON){
 			if(!pzl.metadata.empty()){
-				var info = {metadata:pzl.metadata};
+				var info = {metadata:pzl.metadata.getvaliddata()};
 				if(pzl.history){ info.history = pzl.history;}
 				out.push("info:" + JSON.stringify(info,null,1));
 			}
