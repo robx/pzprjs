@@ -60,6 +60,7 @@
 		"variety/cbblock",
 		"variety/country",
 		"variety/creek",
+		"variety/dosufuwa",
 		"variety/factors",
 		"variety/fillmat",
 		"variety/fillomino",
