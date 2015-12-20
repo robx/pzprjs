@@ -285,7 +285,10 @@ ui.debug.extend(
 			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
 			self.qsubf = true;
 
-			setTimeout(function(){ self.check_file_pbox_xml(self);},0);
+			setTimeout(function(){
+				if(!pzpr.env.browser.legacyIE){ self.check_file_pbox_xml(self);}
+				else{ self.check_turnR1(self);}
+			},0);
 		});
 	},
 	check_file_pbox_xml : function(self){
