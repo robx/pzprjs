@@ -18,9 +18,9 @@
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
    <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
-     <li data-popup="newboard"><span>__新規作成__New Board__</span></li>
+     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
      <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
-     <li data-popup="urloutput"><span>__URL出力__Export URL__</span></li>
+     <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
      <hr>
      <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
      <li data-popup="filesave"><span>__ファイル保存__Save file as ...__</span></li>
@@ -42,9 +42,9 @@
        <li data-menu-exec="ansclear"><span>__回答消去__Erase answer__</span></li>
        <li data-menu-exec="subclear" id="menu_subclear"><span>__補助記号消去__Erase auxiliary marks__</span></li>
      </menu></li>
-     <hr>
-     <li data-popup="adjust"><span>__盤面の調整__Adjust the Board__</span></li>
-     <li data-popup="turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
+     <hr id="menu_sep_edit1">
+     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
+     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
      <hr>
      <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
    </menu></li>

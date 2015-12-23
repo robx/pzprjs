@@ -169,6 +169,13 @@ ui.menuarea = {
 		getEL("menu_duplicate").className = (pzpr.env.storage.session ? "" : "disabled");
 		getEL("menu_subclear").style.display  = (!ui.puzzle.flags.disable_subclear ? "" : "none");
 		
+		getEL("menu_newboard").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_urloutput").style.display = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_metadata").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_adjust").style.display    = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_turnflip").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_sep_edit1").style.display = (pzpr.EDITOR ? "" : "none");
+		
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");
 		this.setdisplay("toolarea");
