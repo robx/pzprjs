@@ -44,13 +44,6 @@ pzpr.util = {
 	currentTime : function(){ return (new Date()).getTime();},
 
 	//---------------------------------------------------------------
-	// 言語環境をチェックして日本語かどうか判定する
-	getUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		return ((userlang.substr(0,2)==='ja')?'ja':'en');
-	},
-
-	//---------------------------------------------------------------
 	// Elementの生成関連
 	//---------------------------------------------------------------
 	unselectable : function(el){

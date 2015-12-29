@@ -19,9 +19,6 @@ Config.prototype =
 	init : function(){
 		this.list = {};
 
-		/* 全般的な設定 */
-		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
-
 		/* 盤面表示設定 */
 		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */
@@ -87,6 +84,17 @@ Config.prototype =
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
+	},
+
+	//---------------------------------------------------------------------------
+	// config.getList()  現在有効な設定値のリストを返す
+	//---------------------------------------------------------------------------
+	getList : function(){
+		var conf = {};
+		for(var idname in this.list){
+			if(this.getexec(idname)){ conf[idname] = this.get(idname);}
+		}
+		return conf;
 	},
 
 	//---------------------------------------------------------------------------

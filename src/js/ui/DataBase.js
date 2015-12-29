@@ -6,13 +6,8 @@
 //---------------------------------------------------------------------------
 ui.ProblemData = function(){
 	this.id = null;
-	this.pid = '';
-	this.col = '';
-	this.row = '';
-	this.hard = 0;
 	this.pdata = '';
 	this.time = 0;
-	this.comment = '';
 
 	if(arguments.length>0){ this.parse(arguments[0]);}
 };
@@ -21,28 +16,38 @@ ui.ProblemData.prototype =
 	updatePuzzleData : function(id){
 		var puzzle = ui.puzzle, bd = puzzle.board;
 		this.id = id;
+		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
+		this.time = (pzpr.util.currentTime()/1000)|0;
 		this.pid = puzzle.pid;
 		this.col = bd.qcols;
 		this.row = bd.qrows;
-		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
-		this.time = (pzpr.util.currentTime()/1000)|0;
+	},
+	updateMetaData : function(){
+		var metadata = new pzpr.MetaData(), form = document.database;
+		metadata.comment = form.comtext.value;
+		metadata.hard    = form.hard.value;
+		metadata.author  = form.author.value;
+		metadata.source  = form.source.value;
+		var pzl = pzpr.parser.parse(this.pdata);
+		pzl.metadata.copydata(metadata);
+		this.pdata = pzl.generate();
+		return metadata;
 	},
 	getFileData : function(){
 		return this.pdata.replace(/\//g,"\n");
 	},
 	toString : function(){
-		var data = {
-			id:this.id, pid:this.pid,
-			col:this.col, row:this.row,
-			hard:this.hard, pdata:this.pdata,
-			time:this.time, comment:this.comment
-		};
+		var data = { id:this.id, pdata:this.pdata, time:this.time};
 		return JSON.stringify(data);
 	},
 	parse : function(str){
 		if(str===(void 0)){ this.id=null; return this;}
 		var data = JSON.parse(str);
 		for(var key in data){ this[key]=data[key];}
+		var pzl = pzpr.parser.parse(this.pdata);
+		this.pid = pzl.id;
+		this.col = pzl.cols;
+		this.row = pzl.rows;
 		return this;
 	}
 };
@@ -152,7 +157,7 @@ ui.database = {
 			case 'idlist' : this.DBlist = this.DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 			case 'newsave': this.DBlist = this.DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
 			case 'oldsave': this.DBlist = this.DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
-			case 'size'   : this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
+			case 'size'   : this.DBlist = this.DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.id-b.id);}); break;
 		}
 
 		document.database.datalist.innerHTML = "";
@@ -172,22 +177,11 @@ ui.database = {
 		document.database.datalist.appendChild(opt);
 	},
 	getRowString : function(row){
-		/* jshint eqeqeq:false */
-		var hardstr = [
-			{ja:'−'      , en:'-'     },
-			{ja:'らくらく', en:'Easy'  },
-			{ja:'おてごろ', en:'Normal'},
-			{ja:'たいへん', en:'Hard'  },
-			{ja:'アゼン'  , en:'Expert'}
-		];
-
 		var str = "";
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
-		str += (pzpr.variety.info[row.pid][ui.getConfig('language')]+"&nbsp;");
+		str += (pzpr.variety.info[row.pid][pzpr.lang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
-		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][ui.getConfig('language')]+"&nbsp;");
-		}
+		str += (pzpr.parser.parse(row.pdata).metadata.hard+"&nbsp;");
 		str += ("("+this.dateString(row.time*1000)+")");
 		return str;
 	},
@@ -203,20 +197,24 @@ ui.database = {
 	// dbm.selectDataTable() データを選択して、コメントなどを表示する
 	//---------------------------------------------------------------------------
 	selectDataTable : function(){
-		var selected = this.getDataID(), form = document.database, item;
+		var selected = this.getDataID(), form = document.database, item, metadata;
 		if(selected>=0){
 			item = this.DBlist[selected];
+			metadata = pzpr.parser.parse(item.pdata).metadata;
 			getEL("database_cand").innerHTML = "";
 		}
 		else{
 			item = new ui.ProblemData();
 			item.updatePuzzleData(-1);
+			metadata = ui.puzzle.metadata;
 			getEL("database_cand").innerHTML = ui.selectStr("(新規保存)", "(Candidate)");
 		}
-		form.comtext.value = ""+item.comment;
-		form.hard.value    = ""+item.hard;
-		getEL("database_variety").innerHTML = pzpr.variety.info[item.pid][ui.getConfig('language')] + "&nbsp;" + item.col+"×"+item.row;
-		getEL("database_date").innerHTML    = this.dateString(item.time*1000);
+		form.comtext.value = ""+metadata.comment;
+		form.hard.value    = ""+metadata.hard;
+		form.author.value  = ""+metadata.author;
+		form.source.value  = ""+metadata.source;
+		getEL("database_info").innerHTML = pzpr.variety.info[item.pid][pzpr.lang] + "&nbsp;" + item.col+"×"+item.row +
+										   "&nbsp;&nbsp;&nbsp;(" + this.dateString(item.time*1000) + ")";
 
 		var sid = this.DBsid = +item.id; /* selected id */
 		var sortbyid = (form.sorts.value==='idlist');
@@ -277,10 +275,10 @@ ui.database = {
 			if(id===-1){ /* newSave */
 				id = list.length;
 				item = list[id] = new ui.ProblemData();
-				item.comment = document.database.comtext.value;
-				item.hard    = document.database.hard.value;
 			}
 			item.updatePuzzleData(id+1);
+			var metadata = item.updateMetaData();
+			ui.puzzle.metadata.copydata(metadata);
 			dbm.DBsid = item.id;
 			
 			dbm.sync = false;
@@ -293,13 +291,11 @@ ui.database = {
 
 	//---------------------------------------------------------------------------
 	// dbm.editComment()   データのコメントを更新する
-	// dbm.editDifficult() データの難易度を更新する
 	//---------------------------------------------------------------------------
 	updateInfo : function(){
 		var id = this.getDataID(); if(id===-1){ return;}
 
-		this.DBlist[id].comment = document.database.comtext.value;
-		this.DBlist[id].hard    = document.database.hard.value;
+		this.DBlist[id].updateMetaData();
 
 		this.sync = false;
 		this.dbh.saveItem(id);
@@ -327,6 +323,7 @@ ui.database = {
 ui.DataBaseHandler_LS = function(parent){
 	this.pheader = 'pzprv3_storage:data:';
 	this.parent = parent;
+	this.currentVersion = localStorage['pzprv3_storage:version'] || '0';
 
 	this.createManageDataTable();
 	this.createDataBase();
@@ -351,7 +348,7 @@ ui.DataBaseHandler_LS.prototype =
 	// dbm.dbh.updateManageData()      管理情報レコードを更新する
 	//---------------------------------------------------------------------------
 	createManageDataTable : function(){
-		localStorage['pzprv3_storage:version'] = '2.0';
+		localStorage['pzprv3_storage:version'] = '3.0';
 	},
 	updateManageData : function(){
 		localStorage['pzprv3_storage:count'] = this.parent.DBlist.length;
@@ -393,8 +390,31 @@ ui.DataBaseHandler_LS.prototype =
 	// dbm.dbh.convert() データ形式をコンバート
 	//---------------------------------------------------------------------------
 	convert : function(){
+		if(!!localStorage['pzprv3_manage']) { this.convertfrom1();}
+		else if(this.currentVersion==='2.0'){ this.convertfrom2();}
+		this.currentVersion = '3.0';
+	},
+	hardstr : [
+		{ja:'−'      , en:'-'     },
+		{ja:'らくらく', en:'Easy'  },
+		{ja:'おてごろ', en:'Normal'},
+		{ja:'たいへん', en:'Hard'  },
+		{ja:'アゼン'  , en:'Expert'}
+	],
+	convertfrom2 : function(){
+		/* jshint eqeqeq:false */
+		for(var i=1;true;i++){
+			var item = new ui.ProblemData(localStorage[this.pheader+i]);
+			if(item.id===null){ break;}
+			var pzl = pzpr.parser.parse(item.pdata);
+			if(item.hard!='0'){ pzl.metadata.hard    = this.hardstr[item.hard][pzpr.lang];}
+			if(!!item.comment){ pzl.metadata.comment = item.comment;}
+			item.pdata = pzl.generate();
+			localStorage[this.pheader+i] = item.toString();
+		}
+	},
+	convertfrom1 : function(){
 		var keys=['id', 'col', 'row', 'hard', 'pdata', 'time', 'comment'];
-		if(!localStorage['pzprv3_manage']){ return;}
 
 		var timemax=0, countall=0;
 		delete localStorage['pzprv3_manage'];
@@ -417,17 +437,24 @@ ui.DataBaseHandler_LS.prototype =
 			for(var i=0;i<count;i++){
 				var pheader = 'pzprv3_'+pid+':puzdata!'+(i+1)+'!';
 				var row = new ui.ProblemData();
-				row.pid = pid;
 				for(var c=0;c<7;c++){
 					row[keys[c]] = localStorage[pheader+keys[c]];
 					delete localStorage[pheader+keys[c]];
 				}
+				var pzl = pzpr.parser.parse(row.pdata);
+				pzl.metadata.hard    = this.hardstr[row.hard][pzpr.lang];
+				pzl.metadata.comment = row.comment;
+				row.pdata = pzl.generate();
+				delete row.hard;
+				delete row.comment;
+				delete row.col;
+				delete row.row;
 				puzzles.push(row);
 			}
 		}
 
 		puzzles.sort(function(a,b){ return (a.time-b.time || a.id-b.id);});
-		localStorage['pzprv3_storage:version'] = '2.0';
+		localStorage['pzprv3_storage:version'] = '3.0';
 		localStorage['pzprv3_storage:count'] = puzzles.length;
 		localStorage['pzprv3_storage:time']  = (pzpr.util.currentTime()/1000)|0;
 		for(var i=0;i<puzzles.length;i++){

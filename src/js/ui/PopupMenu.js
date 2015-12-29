@@ -646,7 +646,7 @@ ui.popupmgr.addpopup('metadata',
 		
 		var form = this.form;
 		var puzzle = ui.puzzle, bd = puzzle.board, meta = puzzle.metadata;
-		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][ui.getConfig('language')] + "&nbsp;" + bd.qcols+"×"+bd.qrows;
+		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][pzpr.lang] + "&nbsp;" + bd.qcols+"×"+bd.qrows;
 		form.author.value  = meta.author;
 		form.source.value  = meta.source;
 		form.hard.value    = meta.hard;

@@ -119,8 +119,8 @@ ui.menuarea = {
 	// menuarea.modifySelector()  MenuAreaに関するCSSセレクタテキストを変更する (Android向け)
 	//--------------------------------------------------------------------------------
 	modifySelector : function(){
-		/* Android 4.0以上向け処理です */
-		if(!pzpr.env.OS.Android || !getEL("menupanel").classList){ return;}
+		/* Android 4.0, iOS5.1以上向け処理です */
+		if(!pzpr.env.OS.mobile || !getEL("menupanel").classList){ return;}
 		var sheet = _doc.styleSheets[0];
 		var rules = sheet.cssRules || sheet.rules;
 		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
@@ -168,6 +168,13 @@ ui.menuarea = {
 		
 		getEL("menu_duplicate").className = (pzpr.env.storage.session ? "" : "disabled");
 		getEL("menu_subclear").style.display  = (!ui.puzzle.board.disable_subclear ? "" : "none");
+		
+		getEL("menu_newboard").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_urloutput").style.display = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_metadata").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_adjust").style.display    = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_turnflip").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_sep_edit1").style.display = (pzpr.EDITOR ? "" : "none");
 		
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");

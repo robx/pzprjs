@@ -119,16 +119,23 @@ MouseEvent:{
 	},
 	getBoardAddress : function(e){
 		var puzzle = this.puzzle, pc = puzzle.painter;
-		var pix = (!isNaN(e.offsetX) ? {px:e.offsetX, py:e.offsetY} : {px:e.layerX, py:e.layerY}); // Firefox 39以前対応
+		var pix = {px:NaN,py:NaN};
 		var g = pc.context;
-		if(!!g && g.use.vml){
-			var pagePos = pzpr.util.getPagePos(e),
-				rect = pzpr.util.getRect(pc.context.child);
-			pix.px = (pagePos.px - rect.left - 2) + 0.33 * pc.bw;
-			pix.py = (pagePos.py - rect.top  - 2) + 0.33 * pc.bh;
-			if(puzzle.board.hasexcell>0){
-				pix.px += 2 * pc.bw;
-				pix.py += 2 * pc.bh;
+		if(!g){ return pix;}
+		if(!pzpr.env.API.touchevent || pzpr.env.OS.iOS){
+			if(!isNaN(e.offsetX)){ pix = {px:e.offsetX, py:e.offsetY};}
+			else                 { pix = {px:e.layerX, py:e.layerY};}  // Firefox 39以前, iOSはこちら
+		}
+		else{
+			var pagePos = pzpr.util.getPagePos(e), rect = pzpr.util.getRect(pc.context.child);
+			pix = {px:(pagePos.px-rect.left), py:(pagePos.py-rect.top)};
+			if(g.use.vml){
+				pix.px += (0.33 * pc.bw - 2);
+				pix.py += (0.33 * pc.bh - 2);
+				if(puzzle.board.hasexcell>0){
+					pix.px += 2 * pc.bw;
+					pix.py += 2 * pc.bh;
+				}
 			}
 		}
 		return {bx:(pix.px-pc.x0)/pc.bw, by:(pix.py-pc.y0)/pc.bh};

@@ -5,13 +5,10 @@
 * Nurikabe
 * Heyawake
 * Hitori
-* LITS
 * Norinori
-* Kurodoko (Kuromasu)
-
-### Reserver
-* Kurotto
 * Nuri-maze
+* Kurodoko (Kuromasu)
+* LITS
 
 ### Nigun (Legacy)
 * Yajisan-Kazusan
@@ -19,6 +16,7 @@
 * Creek
 * Shimaguni
 * Tasquare
+* Kurotto
 
 ### Omopa
 * Nuribou
@@ -29,6 +27,7 @@
 * Look-air
 
 ### Non-nikoli puzzle
+* Tapa
 * Ekawayeh
 * Mochinyoro
 
@@ -38,6 +37,9 @@
 * Masyu (Pearl Puzzle)
 * Yajirin
 * Slalom
+
+### Reserver
+* Nagareru-loop
 
 ### Nigun (Legacy)
 * BAG (Correl)
@@ -56,7 +58,6 @@
 * Icelom2
 * Kouchoku
 * Ring-ring
-* Nagareru-loop
 
 ## Line Puzzles
 ### Regular
@@ -64,14 +65,14 @@
 * Bridges (Hashi)
 * Herugolf
 
+### Reserver
+* Juosan
+
 ### Nigun (Legacy)
 * Hotaru Beam
 * Tatebo-yokobo
 * Return home
 * Yosenabe
-
-### Reserver
-* Juosan
 
 ### Omopa
 * Shirokuro-link
@@ -140,6 +141,7 @@
 * Renban-madoguchi
 * Sukoro room
 * Hanaregumi
+* Kazunori's Room
 
 ### Puzzles (not in puzzle communication nikoli)
 * View
@@ -149,6 +151,9 @@
 * Goishi
 * Akari
 * Shakashaka
+
+### Reserver
+* Dosun-Fuwari
 
 ### Nigun (Legacy)
 * Kinkonkan

@@ -51,6 +51,7 @@ ui.listener =
 			ui.event.setWindowEvents();
 		}
 		
+		ui.menuconfig.set('autocheck_once', ui.menuconfig.get('autocheck'));
 		ui.currentpid = puzzle.pid;
 		
 		ui.adjustcellsize();
@@ -140,9 +141,6 @@ ui.listener =
 			ui.setdisplay('bgcolor');
 			ui.keypopup.display();
 			ui.misc.setkeyfocus();
-		}
-		else if(idname==='language'){
-			ui.displayAll();
 		}
 	},
 

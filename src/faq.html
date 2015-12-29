@@ -330,12 +330,7 @@ function onload_func_FAQ(){
 		v3index.reset_func();
 	}
 
-  dummypuzzle = pzpr.createPuzzle();
-  if(pzpr.env.storage.localST && !!window.JSON){
-    var json_puzzle = localStorage['pzprv3_config:puzzle'];
-    if(!!json_puzzle){ dummypuzzle.restoreConfig(json_puzzle);}
-  }
-  langcode = dummypuzzle.getConfig("language");
+	langcode = pzpr.lang;
 
 	if(!!puzzleid && !!strinfo[puzzleid]){
 		var edit=strinfo[puzzleid][1], play=strinfo[puzzleid][0];

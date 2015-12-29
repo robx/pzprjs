@@ -22,7 +22,7 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.listeners = {};
 
-	this.metadata =  new this.MetaData();
+	this.metadata =  new pzpr.MetaData();
 
 	this.config = new this.Config(this);
 
@@ -276,9 +276,11 @@ pzpr.Puzzle.prototype =
 	},
 	
 	//------------------------------------------------------------------------------
+	// owner.getCurrentConfig() 現在有効な設定と設定値を返す
 	// owner.saveConfig()     設定値の保存を行う
 	// owner.restoreConfig()  設定値の復帰を行う
 	//------------------------------------------------------------------------------
+	getCurrentConfig : function(){ return this.config.getList();},
 	saveConfig : function(){ return this.config.getAll();},
 	restoreConfig : function(json){ this.config.setAll(json);}
 };
@@ -299,7 +301,7 @@ function openExecute(puzzle, data, variety){
 		if(Board!==puzzle.klass.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
-		puzzle.metadata = new puzzle.MetaData();
+		puzzle.metadata.reset();
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
@@ -390,7 +392,9 @@ function postCanvasReady(puzzle){
 	else{
 		puzzle.painter.unsuspend();
 	}
-	puzzle.emit('canvasReady');
+	if(!!puzzle.canvas){
+		puzzle.emit('canvasReady');
+	}
 }
 function firstCanvasReady(puzzle){
 	if(!puzzle.initCanvasEvent && !!puzzle.canvas && !puzzle.opt.noinput){
@@ -460,28 +464,5 @@ function getLocalCanvas(puzzle, type, cellsize){
 	
 	return pc2.context.canvas;
 }
-
-//---------------------------------------------------------------------------
-//  MetaData構造体  作者やコメントなどの情報を保持する
-//---------------------------------------------------------------------------
-var MetaData = pzpr.Puzzle.prototype.MetaData = function(){};
-MetaData.prototype =
-{
-	author  : '',
-	source  : '',
-	hard    : '',
-	comment : '',
-	
-	copydata : function(metadata){
-		if(!metadata){ return;}
-		this.author  = metadata.author;
-		this.source  = metadata.source;
-		this.hard    = metadata.hard;
-		this.comment = metadata.comment;
-	},
-	empty : function(){
-		return ((!this.author)&&(!this.source)&&(!this.hard)&&(!this.comment));
-	}
-};
 
 })();

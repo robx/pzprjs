@@ -124,11 +124,11 @@ Cell:{
 	initWind : function(){
 		this.wind = 0;
 		if(this.ques===1){ return;}
-		var cell2, d = new this.klass.ViewRange(this.bx, this.by, function(cell){ return cell.ques!==0;});
-		cell2=this.board.getc(d.x0,d.y2+2); if(cell2.ques===1 && cell2.qdir===cell2.UP){ this.wind|=1;}
-		cell2=this.board.getc(d.x0,d.y1-2); if(cell2.ques===1 && cell2.qdir===cell2.DN){ this.wind|=2;}
-		cell2=this.board.getc(d.x2+2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.LT){ this.wind|=4;}
-		cell2=this.board.getc(d.x1-2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.RT){ this.wind|=8;}
+		var cell2, bd = this.board, d = new this.klass.ViewRange(this.bx, this.by, function(cell){ return cell.ques!==0;});
+		cell2=bd.getc(d.x0,d.y2+2); if(cell2.ques===1 && cell2.qdir===cell2.UP){ this.wind|=1;}
+		cell2=bd.getc(d.x0,d.y1-2); if(cell2.ques===1 && cell2.qdir===cell2.DN){ this.wind|=2;}
+		cell2=bd.getc(d.x2+2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.LT){ this.wind|=4;}
+		cell2=bd.getc(d.x1-2,d.y0); if(cell2.ques===1 && cell2.qdir===cell2.RT){ this.wind|=8;}
 	},
 
 	calcWindBase : function(){

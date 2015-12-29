@@ -155,7 +155,16 @@ window.ui = {
 	//--------------------------------------------------------------------------------
 	selectStr : function(strJP, strEN){
 		if(!strEN){ return strJP;}
-		return (ui.puzzle.getConfig('language')==='ja' ? strJP : strEN);
+		return (pzpr.lang==='ja' ? strJP : strEN);
+	},
+
+	//---------------------------------------------------------------------------
+	// ui.getCurrentConfigList() 現在のパズルで有効な設定と設定値を返す
+	//---------------------------------------------------------------------------
+	getCurrentConfigList : function(){
+		var conf = ui.puzzle.getCurrentConfig(), conf2 = ui.menuconfig.getList();
+		for(var idname in conf2){ conf[idname] = conf2[idname];}
+		return conf;
 	},
 
 	//---------------------------------------------------------------------------
@@ -170,6 +179,10 @@ window.ui = {
 		else if(!!ui.menuconfig.list[idname]){
 			ui.menuconfig.set(idname, newval);
 		}
+		else if(idname==='language'){
+			pzpr.lang = newval;
+			ui.displayAll();
+		}
 	},
 	getConfig : function(idname){
 		if(!!ui.puzzle.config.list[idname]){
@@ -178,6 +191,9 @@ window.ui = {
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.get(idname);
 		}
+		else if(idname==='language'){
+			return pzpr.lang;
+		}
 	},
 	validConfig : function(idname){
 		if(!!ui.puzzle.config.list[idname]){
@@ -185,6 +201,9 @@ window.ui = {
 		}
 		else if(!!ui.menuconfig.list[idname]){
 			return ui.menuconfig.valid(idname);
+		}
+		else if(idname==='language'){
+			return true;
 		}
 	},
 
@@ -199,12 +218,14 @@ window.ui = {
 			var json_menu   = localStorage['pzprv3_config:ui'];
 			if(!!json_puzzle){ ui.puzzle.restoreConfig(JSON.parse(json_puzzle));}
 			if(!!json_menu)  { ui.menuconfig.setAll(JSON.parse(json_menu));}
+			pzpr.lang = localStorage['pzprv3_config:language'] || pzpr.lang;
 		}
 	},
 	saveConfig : function(){
 		if(pzpr.env.storage.localST && !!window.JSON){
 			localStorage['pzprv3_config:puzzle'] = JSON.stringify(ui.puzzle.saveConfig());
 			localStorage['pzprv3_config:ui']     = JSON.stringify(ui.menuconfig.getAll());
+			localStorage['pzprv3_config:language'] = pzpr.lang;
 		}
 	},
 
