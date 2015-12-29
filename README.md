@@ -18,7 +18,7 @@ This script is developed against HTML5 features and JavaScript.
 * Firefox (latest stable version)
 * Google Chrome (latest stable version)
 * Safari 9.0+
-* Internet Explorer 11+
+* Internet Explorer 11
 
 ### Browser Support (Possible)
 
@@ -40,6 +40,7 @@ This script is developed against HTML5 features and JavaScript.
 * Pressing long is required for mousemove (inputting lines or so) for Nintendo 3DS
 
 ## Releases
+* 2015/12/29 v3.5.2
 * 2015/08/16 v3.5.1
 * 2015/08/08 v3.5.0
 * 2015/03/08 v3.5.0beta3
