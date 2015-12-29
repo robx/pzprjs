@@ -119,8 +119,8 @@ ui.menuarea = {
 	// menuarea.modifySelector()  MenuAreaに関するCSSセレクタテキストを変更する (Android向け)
 	//--------------------------------------------------------------------------------
 	modifySelector : function(){
-		/* Android 4.0以上向け処理です */
-		if(!pzpr.env.OS.Android || !getEL("menupanel").classList){ return;}
+		/* Android 4.0, iOS5.1以上向け処理です */
+		if(!pzpr.env.OS.mobile || !getEL("menupanel").classList){ return;}
 		var sheet = _doc.styleSheets[0];
 		var rules = sheet.cssRules || sheet.rules;
 		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
