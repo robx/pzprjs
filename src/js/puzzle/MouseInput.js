@@ -1,4 +1,4 @@
-// MouseInput.js v3.4.1
+// MouseInput.js v3.5.2
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
@@ -12,9 +12,6 @@ MouseEvent:{
 		this.cursor = this.owner.cursor;
 
 		this.enableMouse = true;	// マウス入力は有効か
-
-		this.mouseoffset = {px:0,py:0};
-		if(pzpr.env.browser.legacyIE){ this.mouseoffset = {px:2,py:2};}
 
 		this.mouseCell = null;		// 入力されたセル等のID
 		this.firstCell = null;		// mousedownされた時のセルのID(連黒分断禁用)
@@ -73,7 +70,8 @@ MouseEvent:{
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
-		this.mouseevent(this.getBoardAddress(e), 0);
+		var addrtarget = this.getBoardAddress(e);
+		this.moveTo(addrtarget.bx, addrtarget.by);
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -81,8 +79,7 @@ MouseEvent:{
 	e_mouseup   : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		/* 座標は前のイベントのものを使用する */
-		this.mouseevent(this.inputPoint, 2);
+		this.inputEnd();
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -90,15 +87,8 @@ MouseEvent:{
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		/* 前回の位置からの差分を順番に入力していきます */
-		var addr = this.inputPoint.clone(), addrtarget = this.getBoardAddress(e);
-		var dx = (addrtarget.bx-addr.bx), dy = (addrtarget.by-addr.by);
-		var distance = (((dx>=0?dx:-dx)+(dy>=0?dy:-dy))*2+0.9)|0; /* 0.5くらいずつ動かす */
-		var mx = dx/distance, my = dy/distance;
-		for(var i=0;i<distance-1;i++){
-			this.mouseevent(addr.move(mx,my),1);
-		}
-		this.mouseevent(addrtarget,1);
+		var addrtarget = this.getBoardAddress(e);
+		this.lineTo(addrtarget.bx, addrtarget.by);
 		
 		e.stopPropagation();
 		e.preventDefault();
@@ -123,24 +113,60 @@ MouseEvent:{
 		}
 	},
 	getBoardAddress : function(e){
-		var puzzle = this.owner, pc = puzzle.painter, pagePos = pzpr.util.getPagePos(e);
-		var px = (pagePos.px - pc.pageX - this.mouseoffset.px);
-		var py = (pagePos.py - pc.pageY - this.mouseoffset.py);
-		var addr = new puzzle.RawAddress(px/pc.bw, py/pc.bh);
+		var puzzle = this.owner, pc = puzzle.painter;
+		var pix = {px:NaN,py:NaN};
 		var g = pc.context;
-		if(!!g && g.use.vml){
-			if(puzzle.board.hasexcell>0){ addr.move(+2.33,+2.33);}
-			else{ addr.move(+0.33,+0.33);}
+		if(!g){ return pix;}
+		if(!pzpr.env.API.touchevent || pzpr.env.OS.iOS){
+			if(!isNaN(e.offsetX)){ pix = {px:e.offsetX, py:e.offsetY};}
+			else                 { pix = {px:e.layerX, py:e.layerY};}  // Firefox 39以前, iOSはこちら
 		}
-		return addr;
+		else{
+			var pagePos = pzpr.util.getPagePos(e), rect = pzpr.util.getRect(pc.context.child);
+			pix = {px:(pagePos.px-rect.left), py:(pagePos.py-rect.top)};
+			if(g.use.vml){
+				pix.px += (0.33 * pc.bw - 2);
+				pix.py += (0.33 * pc.bh - 2);
+				if(puzzle.board.hasexcell>0){
+					pix.px += 2 * pc.bw;
+					pix.py += 2 * pc.bh;
+				}
+			}
+		}
+		return {bx:(pix.px-pc.x0)/pc.bw, by:(pix.py-pc.y0)/pc.bh};
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.moveTo()   Canvas上にマウスの位置を設定する
+	// mv.lineTo()   Canvas上でマウスを動かす
+	// mv.inputEnd() Canvas上のマウス入力処理を終了する
+	//---------------------------------------------------------------------------
+	moveTo : function(bx,by){
+		this.inputPoint.init(bx,by);
+		this.mouseevent(0);
+	},
+	lineTo : function(bx,by){
+		/* 前回の位置からの差分を順番に入力していきます */
+		var dx = (bx-this.inputPoint.bx), dy = (by-this.inputPoint.by);
+		var distance = (((dx>=0?dx:-dx)+(dy>=0?dy:-dy))*2+0.9)|0; /* 0.5くらいずつ動かす */
+		var mx = dx/distance, my = dy/distance;
+		for(var i=0;i<distance-1;i++){
+			this.inputPoint.move(mx,my);
+			this.mouseevent(1);
+		}
+		this.inputPoint.init(bx,by);
+		this.mouseevent(1);
+	},
+	inputEnd : function(){
+		this.mouseevent(2);
+		this.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
 	// mv.mouseevent() マウスイベント処理
 	//---------------------------------------------------------------------------
-	mouseevent : function(addr, step){
-		this.inputPoint.set(addr);
-		
+	mouseevent : function(step){
+		this.cancelEvent = false;
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
@@ -159,8 +185,6 @@ MouseEvent:{
 				this.mouseinput();		/* 各パズルのルーチンへ */
 			}
 		}
-		
-		if(this.mouseend){ this.mousereset();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -200,8 +224,8 @@ MouseEvent:{
 		return this.getpos(0).getc();
 	},
 	getcell_excell : function(){
-		var pos = this.getpos(0), obj = pos.getex();
-		return (!obj.isnull ? obj : pos.getc());
+		var pos = this.getpos(0), excell = pos.getex();
+		return (!excell.isnull ? excell : pos.getc());
 	},
 	getcross : function(){
 		return this.getpos(0.5).getx();

@@ -197,21 +197,21 @@ Encode:{
 	decodeReflectlink : function(){
 		var c=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[c];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
-			if     (ca==='5'){ obj.ques = 11;}
+			if     (ca==='5'){ cell.ques = 11;}
 			else if(this.include(ca,'1','4')){
-				obj.ques = parseInt(ca)+1;
-				obj.qnum = parseInt(bstr.substr(i+1,1),16);
+				cell.ques = parseInt(ca,10)+1;
+				cell.qnum = parseInt(bstr.substr(i+1,1),16);
 				i++;
 			}
 			else if(this.include(ca,'6','9')){
-				obj.ques = parseInt(ca)-4;
-				obj.qnum = parseInt(bstr.substr(i+1,2),16);
+				cell.ques = parseInt(ca,10)-4;
+				cell.qnum = parseInt(bstr.substr(i+1,2),16);
 				i+=2;
 			}
 			else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
-			if(obj.qnum===0){ obj.qnum=-1;}
+			if(cell.qnum===0){ cell.qnum=-1;}
 
 			c++;
 			if(c>=bd.cellmax){ break;}
@@ -243,20 +243,20 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.ques = 11;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.ques = 11;}
 			else if(ca!=="."){
-				obj.ques = parseInt(ca.charAt(0))+1;
-				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
+				cell.ques = (+ca.charAt(0))+1;
+				if(ca.length>1){ cell.qnum = +ca.substr(1);}
 			}
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if     (obj.ques===11) { return "+ ";}
-			else if(obj.ques>=2 && obj.ques<=5) {
-				return ""+(obj.ques-1)+(obj.qnum!==-1 ? obj.qnum : "")+" ";
+		this.encodeCell( function(cell){
+			if     (cell.ques===11) { return "+ ";}
+			else if(cell.ques>=2 && cell.ques<=5) {
+				return ""+(cell.ques-1)+(cell.qnum!==-1 ? cell.qnum : "")+" ";
 			}
 			else{ return ". ";}
 		});

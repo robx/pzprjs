@@ -19,9 +19,6 @@ Config.prototype =
 	init : function(){
 		this.list = {};
 
-		/* 全般的な設定 */
-		this.add('language', pzpr.util.getUserLang(), ['ja','en']);	/* 言語設定 */
-
 		/* 盤面表示設定 */
 		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */
@@ -34,7 +31,6 @@ Config.prototype =
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
-		this.add('fixsize', false);								/* 拡大縮小してもcanvasのサイズを変えない */
 
 		/* 表示色の設定 */
 		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
@@ -44,8 +40,6 @@ Config.prototype =
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
 		this.add('lrcheck', false);			/* マウス左右反転 */
-
-		this.add('keytarget', true);		/* 盤面をキー入力のターゲットにする */
 
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
@@ -94,6 +88,17 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.getList()  現在有効な設定値のリストを返す
+	//---------------------------------------------------------------------------
+	getList : function(){
+		var conf = {};
+		for(var idname in this.list){
+			if(this.getexec(idname)){ conf[idname] = this.get(idname);}
+		}
+		return conf;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.getAll()  全フラグの設定値を返す
 	// config.setAll()  全フラグの設定値を設定する
 	//---------------------------------------------------------------------------
@@ -105,13 +110,12 @@ Config.prototype =
 		}
 		delete object.mode;
 		delete object.uramashu;
-		return JSON.stringify(object);
+		return object;
 	},
-	setAll : function(json){
-		var object = JSON.parse(json);
+	setAll : function(settings){
 		this.init();
 		for(var key in this.list){
-			if(object[key]!==void 0){ this.setproper(key,object[key]);}
+			if(settings[key]!==void 0){ this.setproper(key,settings[key]);}
 		}
 	},
 
@@ -177,10 +181,6 @@ Config.prototype =
 		
 		case 'disptype_bosanowa':
 			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
-			break;
-		
-		case 'keytarget':
-			puzzle.key.setfocus();
 			break;
 		
 		case 'color_qanscolor':

@@ -295,6 +295,10 @@ v3index.dbif.extend({
 			if(!data){ break;}
 			var row = JSON.parse(data);
 			if(row.id==null){ break;}
+			var pzl = pzpr.parser.parse(row.pdata);
+			row.pid = pzl.id;
+			row.col = pzl.cols;
+			row.row = pzl.rows;
 			DBlist.push(row);
 		}
 
@@ -305,7 +309,7 @@ v3index.dbif.extend({
 			case 'idlist' : DBlist = DBlist.sort(function(a,b){ return (a.id-b.id);}); break;
 			case 'newsave': DBlist = DBlist.sort(function(a,b){ return (b.time-a.time || a.id-b.id);}); break;
 			case 'oldsave': DBlist = DBlist.sort(function(a,b){ return (a.time-b.time || a.id-b.id);}); break;
-			case 'size'   : DBlist = DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.hard-b.hard || a.id-b.id);}); break;
+			case 'size'   : DBlist = DBlist.sort(function(a,b){ return (a.col-b.col || a.row-b.row || a.id-b.id);}); break;
 		}
 
 		_form.datalist.innerHTML = "";
@@ -320,7 +324,10 @@ v3index.dbif.extend({
 		}
 		if(DBlist.length>=1){
 			_form.datalist.firstChild.setAttribute('selected', 'selected');
-			_form.comtext.value = DBlist[0].comment;
+			var metadata = pzpr.parser.parse(DBlist[0].pdata).metadata;
+			_form.comtext.value = metadata.comment;
+			_form.author.value  = metadata.author;
+			_form.source.value  = metadata.source;
 		}
 		else{
 			_form.comtext.value = "";
@@ -329,14 +336,6 @@ v3index.dbif.extend({
 	},
 	getcaption : function(row){
 		/* jshint eqeqeq:false */
-		var hardstr = [
-			{ja:'−'       , en:'-'     },
-			{ja:'らくらく', en:'Easy'  },
-			{ja:'おてごろ', en:'Normal'},
-			{ja:'たいへん', en:'Hard'  },
-			{ja:'アゼン'  , en:'Expert'}
-		];
-
 		var datestr = (function(){
 			var ni = function(num){ return (num<10?"0":"")+num;}, str = "", date = new Date();
 			date.setTime(row.time*1000);
@@ -349,16 +348,17 @@ v3index.dbif.extend({
 		str += ((row.id<10?"&nbsp;":"")+row.id+" :&nbsp;");
 		str += (pzpr.variety.info[row.pid][v3index.doclang]+"&nbsp;");
 		str += (""+row.col+"×"+row.row+" &nbsp;");
-		if(!!row.hard || row.hard=='0'){
-			str += (hardstr[row.hard][v3index.doclang]+"&nbsp;");
-		}
+		str += (pzpr.parser.parse(row.pdata).metadata.hard+"&nbsp;");
 		str += ("("+datestr+")");
 		return str;
 	},
 
 	select : function(){
 		var selected = self.getvalue();
-		_form.comtext.value = (selected>=0 ? ""+DBlist[selected].comment : "");
+		var metadata = (selected>=0 ? pzpr.parser.parse(DBlist[selected].pdata).metadata : {});
+		_form.comtext.value = metadata.comment;
+		_form.author.value  = metadata.author;
+		_form.source.value  = metadata.source;
 	},
 	open : function(){
 		var selected = self.getvalue();

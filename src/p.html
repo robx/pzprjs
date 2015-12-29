@@ -18,15 +18,17 @@
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
    <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
-     <li data-popup="newboard"><span>__新規作成__New Board__</span></li>
+     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
      <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
-     <li data-popup="urloutput"><span>__URL出力__Export URL__</span></li>
+     <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
      <hr>
      <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
      <li data-popup="filesave"><span>__ファイル保存__Save file as ...__</span></li>
      <li data-popup="database" id="menu_database"><span>__ブラウザ保存__Browser Save__</span></li>
      <hr>
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
+     <hr>
+     <li data-popup="metadata" id="menu_metadata"><span>__プロパティの編集__Edit the board peoperty__</span></li>
    </menu></li>
    <li><span>__編集__Edit__</span><menu label="__編集__Edit__">
      <li><span>__履歴__History__</span> -&gt;<menu label="__履歴__History__">
@@ -40,9 +42,9 @@
        <li data-menu-exec="ansclear"><span>__回答消去__Erase answer__</span></li>
        <li data-menu-exec="subclear" id="menu_subclear"><span>__補助記号消去__Erase auxiliary marks__</span></li>
      </menu></li>
-     <hr>
-     <li data-popup="adjust"><span>__盤面の調整__Adjust the Board__</span></li>
-     <li data-popup="turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
+     <hr id="menu_sep_edit1">
+     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
+     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
      <hr>
      <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
    </menu></li>
@@ -117,9 +119,9 @@
      <li class="check" data-config="autocheck"><span>__正答自動判定__Auto Answer Check__</span></li>
      <li class="check" data-config="lrcheck"><span>__マウス左右反転__Mouse button inversion__</span></li>
      <li class="check" data-config="keypopup"><span>__パネル入力__Panel inputting__</span></li>
-     <li class="check" data-config="keytarget"><span>__盤面にキー入力__Key input to Canvas__</span></li>
+     <li class="check" data-config="keyboard"><span>__盤面にキー入力__Key input to Canvas__</span></li>
      <hr>
-     <li data-config="language"><span>__言語__Language__</span> -&gt;<menu label="__言語__Language__">
+     <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
        <li class="child" data-value="ja"><span>日本語</span></li>
        <li class="child" data-value="en"><span>English</span></li>
      </menu></li>
@@ -383,10 +385,11 @@
       <input type="hidden" name="ques" value="" />
       <input type="hidden" name="urlstr" value="" />
       <span>__ファイル形式__File format__</span>
-      <select name="filetype">
+      <select name="filetype" data-change-exec="changefilename">
         <option value="filesave">__ぱずぷれv3形式__Puz-Pre v3 format__</option>
    <!-- <option value="filesave3">__ぱずぷれv3(履歴つき)__Puz-Pre v3 with history__</option> -->
-        <option value="filesave2">__pencilbox形式__Pencilbox format__</option>
+        <option value="filesave2">__pencilbox形式__Pencilbox Text format__</option>
+        <option value="filesave4">__pencilbox XML形式__Pencilbox XML format__</option>
       </select>
       <br />
       <span>__ファイル名__Filename__</span>
@@ -411,25 +414,18 @@
         <button type="button" class="btn" data-button-exec="database_handler" name="tableup">__▲__Up__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="tabledn">__▼__Down__</button>
         <br />
-        <select name="datalist" size=8 data-change-exec="database_handler"></select>
+        <select name="datalist" size=9 data-change-exec="database_handler"></select>
         <br />
         <button type="button" class="btn btn-ok" data-button-exec="database_handler" name="open">__データ読み込み__Load__</button>
         <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
       </div>
       <div>
         <span>Information</span> <span id="database_cand"></span><br>
-        <label>__種類:__Variety:__</label><span id="database_variety"></span><br>
-        <label>__難易度:__Difficulity:__</label>
-        <select name="hard" data-change-exec="database_handler">
-          <option value="0">-</option>
-          <option value="1">__らくらく__Easy__</option>
-          <option value="2">__おてごろ__Normal__</option>
-          <option value="3">__たいへん__Hard__</option>
-          <option value="4">__アゼン__Expert__</option>
-        </select><br>
-        <label>__日時:__Date:__</label><span id="database_date"></span><br>
-        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard"></textarea><br>
-        <br>
+        <span id="database_info"></span><br>
+        <label>__作者:__Author:__</label> <input name="author" type="text"></input><br>
+        <label>__出典:__Source:__</label> <input name="source" type="text"></input><br>
+        <label>__難易度:__Difficulty:__</label> <input name="hard" type="text"></input><br>
+        <label>__コメント:__Comment:__</label><textarea name="comtext" cols=28 rows=3 wrap="hard" style="margin-bottom:1em;"></textarea><br>
         <button type="button" class="btn btn-info" data-button-exec="database_handler" name="save">__盤面保存__Save__</button>
         <button type="button" class="btn btn-info" data-button-exec="database_handler" name="overwrite">__上書き保存__Overwrite__</button>
         <button type="button" class="btn" data-button-exec="database_handler" name="updateinfo">__情報更新__Update Info__</button>
@@ -502,6 +498,20 @@
     </form>
   </div>
 
+  <div class="popup" id="popup_metadata">
+    <div class="titlebar">__パズルのプロパティ__This puzzle's Peoperty__</div>
+    <form name="metadata">
+      <label>__種類:__Variety:__</label> <span id="metadata_variety"></span><br>
+      <label>__作者:__Author:__</label> <input name="author" type="text"></input><br>
+      <label>__出典:__Source:__</label> <input name="source" type="text"></input><br>
+      <label>__難易度:__Difficulty:__</label> <input name="hard" type="text"></input><br>
+      <label>__コメント:__Comment:__</label> <textarea name="comment" cols=28 rows=3 wrap="hard"></textarea><br>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="save">OK</button>
+      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+    </form>
+  </div>
+
   <div class="popup">
     <div class="titlebar">__表示サイズの変更__Change size__</div>
     <form name="dispsize">
@@ -552,7 +562,8 @@
         <button type="button" class="btn" data-button-exec="handler" name="inputcheck_popup">INP</button>
       <br />
         <button type="button" class="btn" data-button-exec="handler" name="filesave">Save</button
-      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox">PBSave</button>
+      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox">PBSave</button
+      /><button type="button" class="btn" data-button-exec="handler" name="filesave_pencilbox_xml">PBSaveX</button>
         <button type="button" class="btn" data-button-exec="handler" name="fileopen">Load</button
       /><button type="button" class="btn" data-button-exec="handler" name="erasetext">__消去__Clear__</button
       /><button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>

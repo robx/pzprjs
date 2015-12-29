@@ -119,8 +119,8 @@ ui.menuarea = {
 	// menuarea.modifySelector()  MenuAreaに関するCSSセレクタテキストを変更する (Android向け)
 	//--------------------------------------------------------------------------------
 	modifySelector : function(){
-		/* Android 4.0以上向け処理です */
-		if(!pzpr.env.OS.Android || !getEL("menupanel").classList){ return;}
+		/* Android 4.0, iOS5.1以上向け処理です */
+		if(!pzpr.env.OS.mobile || !getEL("menupanel").classList){ return;}
 		var sheet = _doc.styleSheets[0];
 		var rules = sheet.cssRules || sheet.rules;
 		if(rules===null){} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします
@@ -168,6 +168,13 @@ ui.menuarea = {
 		
 		getEL("menu_duplicate").className = (pzpr.env.storage.session ? "" : "disabled");
 		getEL("menu_subclear").style.display  = (!ui.puzzle.flags.disable_subclear ? "" : "none");
+		
+		getEL("menu_newboard").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_urloutput").style.display = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_metadata").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_adjust").style.display    = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_turnflip").style.display  = (pzpr.EDITOR ? "" : "none");
+		getEL("menu_sep_edit1").style.display = (pzpr.EDITOR ? "" : "none");
 		
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");
@@ -255,9 +262,8 @@ ui.menuarea = {
 	toolarea : function(){
 		ui.setConfig("toolarea", (ui.getConfig("toolarea")===0?1:0));
 		ui.displayAll();
-		ui.puzzle.adjustCanvasPos();
 	},
-	repaint : function(){ ui.puzzle.redraw();},
+	repaint : function(){ ui.puzzle.redraw(true);},
 	jumpexp : function(){
 		ui.saveConfig();	/* faq.htmlで言語設定を使用するので、一旦Config値を保存 */
 		window.open('./faq.html?'+ui.puzzle.pid+(pzpr.EDITOR?"_edit":""), '');
@@ -282,7 +288,7 @@ ui.menuarea = {
 	//------------------------------------------------------------------------------
 	duplicate_board : function(){
 		if(getEL("menu_duplicate").className==="disabled"){ return;}
-		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPH);
+		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true});
 		var url = './p.html?'+ui.puzzle.pid+(pzpr.PLAYER?"_play":"");
 		if(!pzpr.env.browser.Presto){
 			var old = sessionStorage['filedata'];

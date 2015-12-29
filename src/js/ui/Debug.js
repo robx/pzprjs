@@ -50,11 +50,19 @@ ui.debug =
 	},
 
 	filesave : function(){
-		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPH));
+		this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.variety.info[ui.puzzle.pid].exists.kanpen){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
 			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX));
+		}
+		else{
+			this.setTA("");
+		}
+	},
+	filesave_pencilbox_xml : function(){
+		if(pzpr.variety.info[ui.puzzle.pid].exists.pencilbox){
+			this.setTA(ui.puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
 		}
 		else{
 			this.setTA("");
@@ -77,7 +85,7 @@ ui.debug =
 		this.timeeval("描画時間", function(){ ui.puzzle.redraw();});
 	},
 	resizeeval : function(){
-		this.timeeval("resize描画", function(){ ui.puzzle.redrawForce();});
+		this.timeeval("resize描画", function(){ ui.puzzle.redraw(true);});
 	},
 	timeeval : function(text,func){
 		var count=0, old = pzpr.util.currentTime();

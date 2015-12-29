@@ -107,9 +107,10 @@ KeyEvent:{
 
 		var cell = this.cursor.getc(), val=-1;
 
-		if('1'<=ca && ca<='4'){ val = parseInt(ca); val = (cell.qdir!==val?val:0);}
+		if('1'<=ca && ca<='4'){ val = +ca; val = (cell.qdir!==val?val:0);}
 		else if(ca==='-') { val = (cell.qdir!==-2?-2:0);}
 		else if(ca==='q') { val = (cell.qdir!==5?5:0);}
+		else if(ca==='BS'){ val = (cell.qdir>0?-2:0);}
 		else if(ca===' ') { val = 0;}
 		else if(ca==='s1'){ val = -2;}
 		else{ return;}
@@ -129,7 +130,19 @@ KeyEvent:{
 			cell.setQdir((cell.qdir!==-2||cell.qnum!==-1)?-2:0);
 			cell.setQnum(-1);
 		}
-		else if(ca===' '){
+		else if(ca==='BS' && cell.qdir===5){
+			if(cell.qnum!==-1){
+				this.key_inputqnum_main(cell,ca);
+				if(cell.qnum===-2){
+					cell.setQnum(-1);
+				}
+			}
+			else{
+				cell.setQdir(0);
+				cell.setQnum(-2);
+			}
+		}
+		else if(ca===' ' || ca==='BS'){
 			cell.setQdir(0);
 			cell.setQnum(-1);
 		}
@@ -282,11 +295,11 @@ Graphic:{
 	decodeLoute : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cell[c], ca = bstr.charAt(i);
+			var cell = bd.cell[c], ca = bstr.charAt(i);
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							   { obj.qdir = parseInt(ca,16);}
-			else if(ca === '.'){ obj.qdir = -2;}
+							   { cell.qdir = parseInt(ca,16);}
+			else if(ca === '.'){ cell.qdir = -2;}
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
@@ -322,14 +335,14 @@ Graphic:{
 	decodeSashigane : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[c];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							   { obj.qdir = 5; obj.qnum = parseInt(ca,16);}
-			else if(ca === '-'){ obj.qdir = 5; obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca === '.'){ obj.qdir = 5;}
-			else if(ca === '%'){ obj.qdir = -2;}
-			else if(ca>='g' && ca<='j'){ obj.qdir = (parseInt(ca,20)-15);}
+							   { cell.qdir = 5; cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qdir = 5; cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === '.'){ cell.qdir = 5;}
+			else if(ca === '%'){ cell.qdir = -2;}
+			else if(ca>='g' && ca<='j'){ cell.qdir = (parseInt(ca,20)-15);}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
 			c++;
@@ -361,25 +374,25 @@ Graphic:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca.charAt(0)==="o"){
-				obj.qdir = 5;
-				if(ca.length>1){ obj.qnum = parseInt(ca.substr(1));}
+				cell.qdir = 5;
+				if(ca.length>1){ cell.qnum = +ca.substr(1);}
 			}
-			else if(ca==="-"){ obj.qdir = -2;}
-			else if(ca!=="."){ obj.qdir = parseInt(ca);}
+			else if(ca==="-"){ cell.qdir = -2;}
+			else if(ca!=="."){ cell.qdir = +ca;}
 		});
 
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
 		var pid = this.owner.pid;
-		this.encodeCell( function(obj){
-			if(pid==='sashigane' && obj.qdir===5){
-				return "o"+(obj.qnum!==-1?obj.qnum:'')+" ";
+		this.encodeCell( function(cell){
+			if(pid==='sashigane' && cell.qdir===5){
+				return "o"+(cell.qnum!==-1?cell.qnum:'')+" ";
 			}
-			else if(obj.qdir===-2){ return "- ";}
-			else if(obj.qdir!== 0){ return obj.qdir+" ";}
+			else if(cell.qdir===-2){ return "- ";}
+			else if(cell.qdir!== 0){ return cell.qdir+" ";}
 			else{ return ". ";}
 		});
 

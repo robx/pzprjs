@@ -317,23 +317,23 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="l"){ obj.qans = 12;}
-			else if(ca==="-"){ obj.qans = 13;}
-			else if(ca==="+"){ obj.qans = 11;}
-			else if(ca==="#"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="l"){ cell.qans = 12;}
+			else if(ca==="-"){ cell.qans = 13;}
+			else if(ca==="+"){ cell.qans = 11;}
+			else if(ca==="#"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qans===12){ return "l ";}
-			else if(obj.qans===13){ return "- ";}
-			else if(obj.qans===11){ return "+ ";}
-			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
-			else if(obj.qnum===-2){ return "# ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans===12){ return "l ";}
+			else if(cell.qans===13){ return "- ";}
+			else if(cell.qans===11){ return "+ ";}
+			else if(cell.qnum>=  0){ return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "# ";}
+			else                   { return ". ";}
 		});
 		this.encodeBorderLine();
 	}

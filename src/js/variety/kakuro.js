@@ -116,7 +116,7 @@ Graphic:{
 	// オーバーライド 境界線用
 	getBorderColor : function(border){
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		if(!cell1.isnull && !cell2.isnull && ((cell1.ques===51)^(cell2.ques===51))){
+		if(!cell1.isnull && !cell2.isnull && ((cell1.ques===51)!==(cell2.ques===51))){
 			return this.quescolor;
 		}
 		return null;
@@ -157,20 +157,20 @@ Encode:{
 
 	decodeKakuro : function(){
 		// 盤面内数字のデコード
-		var cell=0, a=0, bstr = this.outbstr, bd = this.owner.board;
+		var c=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[cell];
-			if(ca>='k' && ca<='z'){ cell+=(parseInt(ca,36)-19);}
+			var ca = bstr.charAt(i), cell=bd.cell[c];
+			if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-19);}
 			else{
-				obj.ques = 51;
+				cell.ques = 51;
 				if(ca!=='.'){
-					obj.qnum2 = this.decval(ca);
-					obj.qnum  = this.decval(bstr.charAt(i+1));
+					cell.qnum2 = this.decval(ca);
+					cell.qnum  = this.decval(bstr.charAt(i+1));
 					i++;
 				}
-				cell++;
+				c++;
 			}
-			if(cell>=bd.cellmax){ a=i+1; break;}
+			if(c>=bd.cellmax){ a=i+1; break;}
 		}
 
 		// 盤面外数字のデコード
@@ -196,11 +196,11 @@ Encode:{
 		// 盤面内側の数字部分のエンコード
 		var count=0;
 		for(var c=0;c<bd.cellmax;c++){
-			var pstr="", obj=bd.cell[c];
+			var pstr="", cell=bd.cell[c];
 
-			if(obj.ques===51){
-				if(obj.qnum<=0 && obj.qnum2<=0){ pstr = ".";}
-				else{ pstr = ""+this.encval(obj.qnum2)+this.encval(obj.qnum);}
+			if(cell.ques===51){
+				if(cell.qnum<=0 && cell.qnum2<=0){ pstr = ".";}
+				else{ pstr = ""+this.encval(cell.qnum2)+this.encval(cell.qnum);}
 			}
 			else{ count++;}
 
@@ -228,7 +228,7 @@ Encode:{
 		if     (ca>='0'&&ca<='9'){ return parseInt(ca,36);}
 		else if(ca>='a'&&ca<='j'){ return parseInt(ca,36);}
 		else if(ca>='A'&&ca<='Z'){ return parseInt(ca,36)+10;}
-		return "";
+		return 0;
 	},
 	encval : function(val){
 		if     (val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
@@ -267,34 +267,34 @@ FileIO:{
 			if(item.length<=1){ return;}
 			else if(item[0]==="0" && item[1]==="0"){ }
 			else if(item[0]==="0" || item[1]==="0"){
-				var excell = bd.getex(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
-				if     (item[0]==="0"){ excell.qnum2 = parseInt(item[3]);}
-				else if(item[1]==="0"){ excell.qnum  = parseInt(item[2]);}
+				var excell = bd.getex((+item[1])*2-1,(+item[0])*2-1);
+				if     (item[0]==="0"){ excell.qnum2 = +item[3];}
+				else if(item[1]==="0"){ excell.qnum  = +item[2];}
 			}
 			else{
-				var cell = bd.getc(parseInt(item[1])*2-1,parseInt(item[0])*2-1);
+				var cell = bd.getc((+item[1])*2-1,(+item[0])*2-1);
 				cell.ques = 51;
-				cell.qnum2 = parseInt(item[3]);
-				cell.qnum  = parseInt(item[2]);
+				cell.qnum2 = +item[3];
+				cell.qnum  = +item[2];
 			}
 		}
 	},
 	encodeCellQnum51_kanpen : function(){
 		var bd = this.owner.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){ for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-			var item=[((by+1)>>1).toString(),((bx+1)>>1).toString(),0,0];
+			var item=[(by+1)>>1,(bx+1)>>1,0,0];
 
 			if(bx===-1&&by===-1){ }
 			else if(bx===-1||by===-1){
 				var excell = bd.getex(bx,by);
-				if(bx===-1){ item[2]=excell.qnum.toString();}
-				if(by===-1){ item[3]=excell.qnum2.toString();}
+				if(bx===-1){ item[2]=excell.qnum;}
+				if(by===-1){ item[3]=excell.qnum2;}
 			}
 			else{
 				var cell = bd.getc(bx,by);
 				if(cell.ques!==51){ continue;}
-				item[2]=cell.qnum.toString();
-				item[3]=cell.qnum2.toString();
+				item[2]=cell.qnum;
+				item[3]=cell.qnum2;
 			}
 			this.datastr += (item.join(" ")+"\n");
 		}}
@@ -309,7 +309,7 @@ FileIO:{
 				if(arr[(bx+1)>>1]===''){ continue;}
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull && arr[(bx+1)>>1]!=="." && arr[(bx+1)>>1]!=="0"){
-					cell.anum = parseInt(arr[(bx+1)>>1]);
+					cell.anum = +arr[(bx+1)>>1];
 				}
 			}
 		}
@@ -321,11 +321,63 @@ FileIO:{
 				var cell = bd.getc(bx,by);
 				if(cell.isnull){ this.datastr += ". ";}
 				else if(cell.ques===51){ this.datastr += ". ";}
-				else if(cell.anum  > 0){ this.datastr += (cell.anum.toString() + " ");}
+				else if(cell.anum  > 0){ this.datastr += (cell.anum+" ");}
 				else                   { this.datastr += "0 ";}
 			}
 			if(by<bd.maxby-1){ this.datastr += "\n";}
 		}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum51_XMLBoard();
+		this.decodeCellAnum_kakuro_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum51_XMLBoard();
+		this.encodeCellAnum_kakuro_XMLAnswer();
+	},
+
+	decodeCellQnum51_XMLBoard : function(){
+		var nodes = this.xmldoc.querySelectorAll('board wall');
+		var bd = this.owner.board;
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx = 2*(+node.getAttribute('c'))-3;
+			var by = 2*(+node.getAttribute('r'))-3;
+			var a = +node.getAttribute('a');
+			var b = +node.getAttribute('b');
+			var piece = bd.getobj(bx,by); /* cell or excell */
+			piece.ques = 51;
+			if(a>0){ piece.qnum  = a;}
+			if(b>0){ piece.qnum2 = b;}
+		}
+	},
+	encodeCellQnum51_XMLBoard : function(){
+		var boardnode = this.xmldoc.querySelector('board');
+		var bd = this.owner.board;
+		for(var by=-1;by<bd.maxby;by+=2){
+			for(var bx=-1;bx<bd.maxbx;bx+=2){
+				var piece = bd.getobj(bx,by); /* cell or excell */
+				if(piece.ques===51){
+					var a = (piece.qnum  > 0 ? piece.qnum  : 0);
+					var b = (piece.qnum2 > 0 ? piece.qnum2 : 0);
+					boardnode.appendChild(this.createXMLNode('wall',{r:((by+3)>>1),c:((bx+3)>>1),a:a,b:b}));
+				}
+			}
+		}
+	},
+
+	PBOX_ADJUST : 2,
+	decodeCellAnum_kakuro_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if(name!=='n-1' && name!=='n0' && cell.ques!==51){ cell.anum = +name.substr(1);}
+		});
+	},
+	encodeCellAnum_kakuro_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if(cell.ques===0 && cell.anum===-1){ return 'n0';}
+			return 'n'+cell.anum;
+		});
 	}
 },
 

@@ -102,7 +102,7 @@ BoardExec:{
 		bd.resetInfo();
 
 		// Canvasを更新する
-		o.adjustCanvas();
+		o.painter.resizeCanvas();
 		o.execListener('adjust');
 		o.painter.unsuspend();
 	},
@@ -160,11 +160,11 @@ BoardExec:{
 		var group2 = new group.constructor();
 		bd.setposGroup(type);
 		for(var i=group.length-1;i>=0;i--){
-			var obj = group[i];
-			if(this.isdel(key,obj)){
-				obj = bd.newObject(type, i);
-				group[i] = obj;
-				group2.add(obj);
+			var piece = group[i];
+			if(this.isdel(key,piece)){
+				piece = bd.newObject(type, i);
+				group[i] = piece;
+				group2.add(piece);
 				margin--;
 			}
 			else if(margin>0){ group[i] = group[i-margin];}
@@ -179,10 +179,10 @@ BoardExec:{
 
 		var margin=0, group = bd.getGroup(type), group2 = new group.constructor();
 		for(var i=0;i<group.length;i++){
-			var obj = group[i];
-			if(this.isdel(key,obj)){
-				obj.id = i;
-				group2.add(obj);
+			var piece = group[i];
+			if(this.isdel(key,piece)){
+				piece.id = i;
+				group2.add(piece);
 				margin++;
 			}
 			else if(margin>0){ group[i-margin] = group[i];}
@@ -195,8 +195,8 @@ BoardExec:{
 		}
 		for(var i=0;i<margin;i++){ group.pop();}
 	},
-	isdel : function(key,obj){
-		return !!this.insex[obj.group][this.distObj(key,obj)];
+	isdel : function(key,piece){
+		return !!this.insex[piece.group][this.distObj(key,piece)];
 	},
 
 	//------------------------------------------------------------------------------
@@ -268,15 +268,15 @@ BoardExec:{
 	//---------------------------------------------------------------------------
 	// bd.exec.distObj()      上下左右いずれかの外枠との距離を求める
 	//---------------------------------------------------------------------------
-	distObj : function(key,obj){
+	distObj : function(key,piece){
 		var bd = this.owner.board;
-		if(obj.isnull){ return -1;}
+		if(piece.isnull){ return -1;}
 
 		key &= 0x0F;
-		if     (key===this.UP){ return obj.by;}
-		else if(key===this.DN){ return 2*bd.qrows-obj.by;}
-		else if(key===this.LT){ return obj.bx;}
-		else if(key===this.RT){ return 2*bd.qcols-obj.bx;}
+		if     (key===this.UP){ return piece.by;}
+		else if(key===this.DN){ return 2*bd.qrows-piece.by;}
+		else if(key===this.LT){ return piece.bx;}
+		else if(key===this.RT){ return 2*bd.qcols-piece.bx;}
 		return -1;
 	},
 

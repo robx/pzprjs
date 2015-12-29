@@ -108,9 +108,80 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeCellQnum_kanpen();
 		this.encodeAnsSquareRoom();
+	},
+
+	decodeAnsSquareRoom : function(){
+		var barray = this.readLines(+this.readLine());
+		var bd = this.owner.board, rdata = [];
+		for(var i=0;i<barray.length;i++){
+			if(barray[i]===""){ break;}
+			var pce = barray[i].split(" ");
+			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=2*(+pce[n])+1;} }
+			for(var bx=pce[1];bx<=pce[3];bx+=2){ for(var by=pce[0];by<=pce[2];by+=2){
+				rdata[bd.getc(bx,by).id] = i;
+			}}
+		}
+		this.rdata2Border(false, rdata);
+		bd.rooms.reset();
+	},
+	encodeAnsSquareRoom : function(){
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		this.datastr += (rinfo.max+"\n");
+		for(var id=1;id<=rinfo.max;id++){
+			var d = rinfo.area[id].clist.getRectSize();
+			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" \n");
+		}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_shikaku_XMLBoard();
+		this.decodeAnsSquareRoom_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_shikaku_XMLBoard();
+		this.encodeAnsSquareRoom_XMLAnswer();
+	},
+
+	decodeCellQnum_shikaku_XMLBoard : function(){
+		this.decodeCellXMLBoard(function(cell, val){
+			if     (val>=  1){ cell.qnum = val;}
+			else if(val===-1){ cell.qnum = -2;}
+		});
+	},
+	encodeCellQnum_shikaku_XMLBoard : function(){
+		this.encodeCellXMLBoard(function(cell){
+			var val = 0;
+			if     (cell.qnum>=  1){ val = cell.qnum;}
+			else if(cell.qnum===-2){ val = -1;}
+			return val;
+		});
+	},
+
+	decodeAnsSquareRoom_XMLAnswer : function(){
+		var nodes = this.xmldoc.querySelectorAll('answer area');
+		var bd = this.owner.board, rdata = [];
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx1 = 2*(+node.getAttribute('c0'))-1;
+			var by1 = 2*(+node.getAttribute('r0'))-1;
+			var bx2 = 2*(+node.getAttribute('c1'))-1;
+			var by2 = 2*(+node.getAttribute('r1'))-1;
+			for(var bx=bx1;bx<=bx2;bx+=2){ for(var by=by1;by<=by2;by+=2){
+				rdata[bd.getc(bx,by).id] = i;
+			}}
+		}
+		this.rdata2Border(false, rdata);
+		bd.rooms.reset();
+	},
+	encodeAnsSquareRoom_XMLAnswer : function(){
+		var boardnode = this.xmldoc.querySelector('answer');
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){
+			var d = rinfo.area[id].clist.getRectSize();
+			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1}));
+		}
 	}
 },
-
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{

@@ -72,7 +72,7 @@ KeyEvent:{
 			if(this.owner.editmode){
 				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
 				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
-				else if('0'<=ca && ca<='9'){
+				else if(('0'<=ca && ca<='9') || ca==='BS'){
 					if(cell.ques!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
 				}
@@ -87,7 +87,7 @@ KeyEvent:{
 			var border = cursor.getb();
 			if(!border.isGrid()){ return;}
 			if('0'<=ca && ca<='9'){
-				var num = parseInt(ca), qs = border.qsub;
+				var num = +ca, qs = border.qsub;
 				var qsubmax = 99;
 
 				if(qs<=0 || this.prev!==border){ if(num<=qsubmax){ border.setQsub(num);}}
@@ -96,6 +96,11 @@ KeyEvent:{
 					else if(num<=qsubmax){ border.setQsub(num);}
 				}
 				this.prev = border;
+			}
+			else if(ca==='BS'){
+				var num = border.qsub;
+				if(num<10){ border.setQsub(-1);}
+				else{ border.setQsub((num/10)|0);}
 			}
 			else if(ca==='-'||ca===' '){ border.setQsub(-1);}
 			else{ return;}
@@ -402,28 +407,28 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			obj.ques = (ca==="."?7:0);
-			if(ca!=="0"&&ca!=="."){ obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			cell.ques = (ca==="."?7:0);
+			if(ca!=="0"&&ca!=="."){ cell.qnum = +ca;}
 		});
-		this.decodeCell( function(obj,ca){
-			if(ca!=="0"&&ca!=="."){ obj.anum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if(ca!=="0"&&ca!=="."){ cell.anum = +ca;}
 		});
-		this.decodeBorder( function(obj,ca){
-			if(ca!=="."){ obj.qsub = parseInt(ca);}
+		this.decodeBorder( function(cell,ca){
+			if(ca!=="."){ cell.qsub = +ca;}
 		});
 	},
 	encodeData : function(){
-		this.encodeCell(function(obj){
-			if(obj.ques===7){ return ". ";}
-			return (obj.qnum>=0 ? ""+obj.qnum.toString()+" " : "0 ");
+		this.encodeCell(function(cell){
+			if(cell.ques===7){ return ". ";}
+			return (cell.qnum>=0 ? cell.qnum+" " : "0 ");
 		});
-		this.encodeCell( function(obj){
-			if(obj.ques===7 || obj.qnum!==-1){ return ". ";}
-			return (obj.anum>=0 ? ""+obj.anum.toString()+" " : "0 ");
+		this.encodeCell( function(cell){
+			if(cell.ques===7 || cell.qnum!==-1){ return ". ";}
+			return (cell.anum>=0 ? cell.anum+" " : "0 ");
 		});
-		this.encodeBorder( function(obj){
-			return (obj.qsub!==-1 ? ""+obj.qsub.toString()+" " : ". ");
+		this.encodeBorder( function(cell){
+			return (cell.qsub!==-1 ? cell.qsub+" " : ". ");
 		});
 	}
 },

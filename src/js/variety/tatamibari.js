@@ -160,21 +160,21 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="a"){ obj.qnum = 2;}
-			else if(ca==="b"){ obj.qnum = 3;}
-			else if(ca==="c"){ obj.qnum = 1;}
-			else if(ca==="-"){ obj.qnum =-2;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="a"){ cell.qnum = 2;}
+			else if(ca==="b"){ cell.qnum = 3;}
+			else if(ca==="c"){ cell.qnum = 1;}
+			else if(ca==="-"){ cell.qnum =-2;}
 		});
 		this.decodeBorderAns();
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum===-2){ return "- ";}
-			else if(obj.qnum=== 1){ return "c ";}
-			else if(obj.qnum=== 2){ return "a ";}
-			else if(obj.qnum=== 3){ return "b ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum===-2){ return "- ";}
+			else if(cell.qnum=== 1){ return "c ";}
+			else if(cell.qnum=== 2){ return "a ";}
+			else if(cell.qnum=== 3){ return "b ";}
+			else                   { return ". ";}
 		});
 		this.encodeBorderAns();
 	}

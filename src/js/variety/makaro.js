@@ -126,6 +126,17 @@ KeyEvent:{
 			cell.setAnum(-1);
 			retval = true;
 		}
+		else if(ca==='BS' && cell.ques===1){
+			if(cell.qdir!==cell.NDIR){
+				cell.setQdir(cell.NDIR);
+			}
+			else{
+				cell.setQues(0);
+				cell.setQnum(-1);
+				cell.setAnum(-1);
+			}
+			retval = true;
+		}
 		else if(ca==='-'){
 			cell.setQues(cell.ques===0 ? 1 : 0);
 			cell.setQdir(cell.NDIR);
@@ -288,7 +299,7 @@ FileIO:{
 			else if(ca==="r"){ cell.ques = 1; cell.qdir = 4;}
 			else if(ca==="#"){ cell.ques = 1; cell.qdir = 0;}
 			else if(ca==="-"){ cell.qnum = -2;}
-			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeCellQuesData_makaro : function(){
@@ -300,7 +311,7 @@ FileIO:{
 				else if(cell.qdir===4){ return "r ";}
 				else                  { return "# ";}
 			}
-			else if(cell.qnum>=0)  { return (cell.qnum.toString()+" ");}
+			else if(cell.qnum>=0)  { return cell.qnum+" ";}
 			else if(cell.qnum===-2){ return "- ";}
 			else{ return ". ";}
 		});

@@ -123,29 +123,29 @@ Star:{
 	isnull : true,
 	id : null,
 
-	obj : null,
+	piece : null,
 
 	getStar : function(){
-		return this.obj.qnum;
+		return this.piece.qnum;
 	},
 	setStar : function(val){
 		this.owner.opemgr.disCombine = true;
-		this.obj.setQnum(val);
+		this.piece.setQnum(val);
 		this.owner.opemgr.disCombine = false;
 	},
 	iserror : function(){
-		return (this.obj.error>0);
+		return (this.piece.error>0);
 	},
 
 	// 星に線が通っていないなら、近くのセルを返す
 	validcell : function(){
-		var obj = this.obj, cell = null;
-		if(obj.group==='cell')
-			{ cell = obj;}
-		else if(obj.group==='cross' && obj.lcnt===0)
-			{ cell = obj.relcell(-1,-1);}
-		else if(obj.group==='border' && obj.qans===0)
-			{ cell = obj.sidecell[0];}
+		var piece = this.piece, cell = null;
+		if(piece.group==='cell')
+			{ cell = piece;}
+		else if(piece.group==='cross' && piece.lcnt===0)
+			{ cell = piece.relcell(-1,-1);}
+		else if(piece.group==='border' && piece.qans===0)
+			{ cell = piece.sidecell[0];}
 		return cell;
 	},
 
@@ -223,7 +223,7 @@ Board:{
 
 			star.bx = id%(2*col-1)+1;
 			star.by = ((id/(2*col-1))|0)+1;
-			star.obj = star.getaddr().getobj();
+			star.piece = star.getaddr().getobj();
 		}
 	},
 	gets : function(bx,by,qc,qr){
@@ -435,6 +435,55 @@ FileIO:{
 			}
 			this.datastr += "\n";
 		}
+	},
+	decodeAnsAreaRoom : function(){
+		this.decodeAreaRoom_com(false);
+	},
+	encodeAnsAreaRoom : function(){
+		this.encodeAreaRoom_com(false);
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeStar_XMLBoard();
+		this.decodeAnsAreaRoom_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeStar_XMLBoard();
+		this.encodeAnsAreaRoom_XMLAnswer();
+	},
+	decodeStar_XMLBoard : function(){
+		var nodes = this.xmldoc.querySelectorAll('board number');
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var star = this.owner.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
+			if(star!==null){ star.setStar(+node.getAttribute('n'));}
+		}
+	},
+	encodeStar_XMLBoard : function(){
+		var boardnode = this.xmldoc.querySelector('board');
+		var bd = this.owner.board;
+		for(var s=0;s<bd.starmax;s++){
+			var star = bd.star[s], val = star.getStar();
+			if(val>0){
+				boardnode.appendChild(this.createXMLNode('number',{r:star.by,c:star.bx,n:val}));
+			}
+		}
+	},
+	decodeAnsAreaRoom_XMLAnswer : function(){
+		var rdata = [];
+		this.decodeCellXMLArow(function(cell, name){
+			if(name==='u'){ rdata.push(-1);}
+			else{ rdata.push(+name.substr(1)+1);}
+		});
+		this.rdata2Border(false, rdata);
+		this.owner.board.rooms.reset();
+	},
+	encodeAnsAreaRoom_XMLAnswer : function(){
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rinfo.max}));
+		this.encodeCellXMLArow(function(cell){
+			return (rinfo.id[cell.id]>0 ? 'n'+(rinfo.id[cell.id]-1) : 'u');
+		});
 	}
 },
 
@@ -460,9 +509,9 @@ AnsCheck:{
 			
 			this.failcode.add("bdPassStar");
 			if(this.checkOnly){ break;}
-			switch(star.obj.group){
-				case "cross":  star.obj.setCrossBorderError(); break;
-				case "border": star.obj.seterr(1);             break;
+			switch(star.piece.group){
+				case "cross":  star.piece.setCrossBorderError(); break;
+				case "border": star.piece.seterr(1);             break;
 			}
 		}
 	},

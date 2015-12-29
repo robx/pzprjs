@@ -307,25 +307,50 @@ FileIO:{
 	},
 
 	kanpenOpen : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="5"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.qsub = 1;}
-			else if(ca!=="."){ obj.qans = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca!=="."){ cell.qans = +ca;}
 		});
 	},
 	kanpenSave : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
-			else if(obj.qnum===-2){ return "5 ";}
+		this.encodeCell( function(cell){
+			if     (cell.qnum>=  0){ return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "5 ";}
 			else                  { return ". ";}
 		});
-		this.encodeCell( function(obj){
-			if     (obj.qsub=== 1){ return "+ ";}
-			else if(obj.qans>=  2){ return (obj.qans.toString() + " ");}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qsub=== 1){ return "+ ";}
+			else if(cell.qans>=  2){ return cell.qans+" ";}
+			else                   { return ". ";}
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellShakashaka_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellShakashaka_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -2,
+	
+	decodeCellShakashaka_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			if(name.charAt(0)==='n'){ cell.qans = (((+name.substr(1))-1)&3)+2;}
+			else if(name==='s') { cell.qsub = 1;}
+		});
+	},
+	encodeCellShakashaka_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			if     (cell.qans>0)  { return 'n'+(((cell.qans-1)&3)+4);}
+			else if(cell.qsub===1){ return 's';}
+			return 'u';
 		});
 	}
 },

@@ -99,8 +99,6 @@ Flags:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	gridcolor_type : "LIGHT",
-
 	errcolor1 : "rgb(208, 0, 0)",
 	errbcolor1 : "rgb(255, 192, 192)",
 
@@ -123,7 +121,7 @@ Graphic:{
 		x1-=(~x1&1); y1-=(~y1&1); x2+=(~x2&1); y2+=(~y2&1); /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
 		g.lineWidth = 1;
-		g.fillStyle = this.gridcolor;
+		g.strokeStyle = this.gridcolor;
 		for(var i=x1;i<=x2;i+=2){
 			var px = i*this.bw, py1 = y1*this.bh, py2 = y2*this.bh;
 			g.vid = "cliney_"+i;
@@ -255,25 +253,25 @@ FileIO:{
 	},
 
 	decodeGoishiFile : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=='.'){
-				obj.ques = 0;
-				if(ca!=='0'){ obj.anum = parseInt(ca);}
+				cell.ques = 0;
+				if(ca!=='0'){ cell.anum = +ca;}
 			}
 		});
 	},
 	encodeGoishiFile : function(){
-		this.encodeCell( function(obj){
-			if(obj.ques===0){
-				return (obj.anum!==-1 ? ""+obj.anum+" " : "0 ");
+		this.encodeCell( function(cell){
+			if(cell.ques===0){
+				return (cell.anum!==-1 ? cell.anum+" " : "0 ");
 			}
 			return ". ";
 		});
 	},
 
 	decodeGoishi_kanpen : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca==='1'){ obj.ques = 0;}
+		this.decodeCell( function(cell,ca){
+			if(ca==='1'){ cell.ques = 0;}
 		});
 	},
 	encodeGoishi_kanpen : function(){
@@ -294,9 +292,9 @@ FileIO:{
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
-				var cell = this.owner.board.getc(parseInt(item[2])*2+1,parseInt(item[1])*2+1);
+				var cell = this.owner.board.getc((+item[2])*2+1,(+item[1])*2+1);
 				cell.ques = 0;
-				cell.anum = parseInt(item[0]);
+				cell.anum = +item[0];
 			}
 		}
 	},
@@ -306,12 +304,54 @@ FileIO:{
 			var cell = bd.getc(bx,by);
 			if(cell.ques!==0 || cell.anum===-1){ continue;}
 
-			var pos = [(bx>>1).toString(), (by>>1).toString()];
+			var pos = [bx>>1, by>>1];
 			stones[cell.anum-1] = pos;
 		}}
 		for(var i=0,len=stones.length;i<len;i++){
 			var item = [(i+1), stones[i][1], stones[i][0]];
 			this.datastr += (item.join(" ")+"\n");
+		}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_goishi_XMLBoard();
+		this.decodeQansPos_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_goishi_XMLBoard();
+		this.encodeQansPos_XMLAnswer();
+	},
+
+	decodeCellQnum_goishi_XMLBoard : function(){
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val===1){ cell.ques = 0;}
+		});
+	},
+	encodeCellQnum_goishi_XMLBoard : function(){
+		this.encodeCellXMLBoard(function(cell){
+			return (cell.ques===0 ? '1' : null);
+		});
+	},
+
+	decodeQansPos_XMLAnswer : function(){
+		var nodes = this.xmldoc.querySelectorAll('answer picked');
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx = 2*(+node.getAttribute('c'))-1;
+			var by = 2*(+node.getAttribute('r'))-1;
+			this.owner.board.getc(bx,by).anum = +node.getAttribute('n');
+		}
+	},
+	encodeQansPos_XMLAnswer : function(){
+		var boardnode = this.xmldoc.querySelector('answer');
+		var bd = this.owner.board;
+		for(var ans=1;;ans++){
+			var cell = null;
+			for(var c=0;c<bd.cellmax;c++){
+				if(bd.cell[c].anum===ans){ cell = bd.cell[c]; break;}
+			}
+			if(!cell){ break;}
+			boardnode.appendChild(this.createXMLNode('picked',{n:ans,r:(cell.by>>1)+1,c:(cell.bx>>1)+1}));
 		}
 	}
 },

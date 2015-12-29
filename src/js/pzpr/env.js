@@ -33,7 +33,7 @@ if(!Array.prototype.some){
 pzpr.env = (function(){
 	var UA  = navigator.userAgent;
 	
-	var IEversion = (UA.match(/MSIE (\d+)/) ? parseInt(RegExp.$1) : 0);
+	var IEversion = (UA.match(/MSIE (\d+)/) ? +RegExp.$1 : 0);
 	var bz = {
 		legacyIE: (IEversion>0 && IEversion<=8),
 		IE9     : (IEversion===9),
@@ -41,7 +41,7 @@ pzpr.env = (function(){
 	};
 	
 	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
-	var Gecko7orOlder = (Gecko && UA.match(/rv\:(\d+\.\d+)/) && parseFloat(RegExp.$1)< 8.0); /* Firefox8.0よりも前 */
+	var Gecko7orOlder = (Gecko && UA.match(/rv\:(\d+\.\d+)/) && +RegExp.$1<8.0); /* Firefox8.0よりも前 */
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
@@ -85,4 +85,9 @@ pzpr.env = (function(){
 		storage : storage,
 		API     : api
 	};
+})();
+
+pzpr.lang = (function(){
+	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+	return ((userlang.substr(0,2)==='ja')?'ja':'en');
 })();

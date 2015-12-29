@@ -1,4 +1,4 @@
-// Puzzle.js v3.4.1
+// Puzzle.js v3.5.2
 /* global Candle:false */
 (function(){
 
@@ -6,8 +6,12 @@
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 pzpr.Puzzle = function(canvas, option){
-	option = (!!option ? option : {});
-	this.opt = option;
+	if(option===void 0 && (!canvas || !canvas.parentNode)){
+		option=canvas; canvas=(void 0);
+	}
+
+	this.opt = option || {};
+	if(pzpr.env.browser.Presto){ this.opt.graphic='canvas';}
 
 	this.editmode = pzpr.EDITOR;		// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -18,11 +22,11 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.listeners = {};
 
+	this.metadata =  new pzpr.MetaData();
+
 	this.config = new this.Config(this);
 
-	if(!!canvas){
-		this.setCanvas(canvas, option.graphic);
-	}
+	if(!!canvas){ this.setCanvas(canvas);}
 };
 pzpr.Puzzle.prototype =
 {
@@ -44,6 +48,8 @@ pzpr.Puzzle.prototype =
 	
 	config : null,
 	
+	metadata : null,	// 作者やコメントなどの情報
+	
 	initCanvasSize  : false,
 	initCanvasEvent : false,
 	
@@ -54,8 +60,8 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
-	open : function(data, callback){
-		return openExecute(this, data, callback);
+	open : function(data, variety, callback){
+		return openExecute(this, data, variety, callback);
 	},
 
 	//---------------------------------------------------------------------------
@@ -84,7 +90,12 @@ pzpr.Puzzle.prototype =
 		if(arguments.length===2 && (typeof type)!=='string'){ callback=type; type=(void 0);}
 		type = type || this.opt.graphic || '';
 		
-		this.canvas = el;
+		var rect = pzpr.util.getRect(el);
+		var _div = document.createElement('div');
+		_div.style.width  = rect.width+'px';
+		_div.style.height = rect.height+'px';
+		el.appendChild(_div);
+		this.canvas = _div;
 		
 		setCanvas_main(this, type, callback);
 	},
@@ -112,28 +123,14 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// owner.adjustCanvas()    盤面サイズの再設定等を行い、盤面の再描画を行う
-	// owner.adjustCanvasPos() ページサイズの変更時等に盤面の左上座標のみを変更し、再描画は行わない
-	//---------------------------------------------------------------------------
-	adjustCanvas : function(){
-		this.painter.adjustCanvas();
-	},
-	adjustCanvasPos : function(){
-		if(this.ready && this.painter){
-			this.painter.setPagePos();
-		}
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.redraw()      盤面の再描画を行う
-	// owner.redrawForce() 盤面キャッシュを破棄して再描画を行う
 	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
-	redraw : function(){
-		if(this.ready){ this.painter.paintAll();}
-	},
-	redrawForce : function(){
-		if(this.ready){ this.painter.adjustCanvas();}
+	redraw : function(forcemode){
+		if(this.ready){
+			if(!forcemode){ this.painter.paintAll();}     // 盤面キャッシュを保持して再描画
+			else          { this.painter.resizeCanvas();} // 盤面キャッシュを破棄して再描画
+		}
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
@@ -160,8 +157,8 @@ pzpr.Puzzle.prototype =
 	getURL : function(type){
 		return this.enc.encodeURL(type);
 	},
-	getFileData : function(type){
-		return this.fio.fileencode(type);
+	getFileData : function(type, option){
+		return this.fio.fileencode(type, option);
 	},
 
 	//---------------------------------------------------------------------------
@@ -220,6 +217,7 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.ansclear()       回答を消去する
 	// owner.subclear()       補助記号を消去する
+	// owner.errclear()       エラー表示を消去する
 	// owner.clear()          回答・履歴を消去する
 	//------------------------------------------------------------------------------
 	ansclear : function(){
@@ -230,6 +228,9 @@ pzpr.Puzzle.prototype =
 	subclear : function(){
 		this.board.subclear();
 		this.redraw();
+	},
+	errclear : function(){
+		this.board.errclear();
 	},
 	clear : function(){
 		if(pzpr.PLAYER){
@@ -265,9 +266,11 @@ pzpr.Puzzle.prototype =
 	},
 	
 	//------------------------------------------------------------------------------
+	// owner.getCurrentConfig() 現在有効な設定と設定値を返す
 	// owner.saveConfig()     設定値の保存を行う
 	// owner.restoreConfig()  設定値の復帰を行う
 	//------------------------------------------------------------------------------
+	getCurrentConfig : function(){ return this.config.getList();},
 	saveConfig : function(){ return this.config.getAll();},
 	restoreConfig : function(json){ this.config.setAll(json);}
 };
@@ -276,16 +279,22 @@ pzpr.Puzzle.prototype =
 //---------------------------------------------------------------------------
 //  openExecute()      各オブジェクトの生成などの処理
 //---------------------------------------------------------------------------
-function openExecute(puzzle, data, callback){
+function openExecute(puzzle, data, variety, callback){
+	if(typeof variety==='function' && !callback){
+		callback = variety;
+		variety = void 0;
+	}
+
 	puzzle.ready = false;
 	var Board = (!!puzzle.Board ? puzzle.Board : null);
-	var pzl = pzpr.parser.parse(data, puzzle.pid);
-	
-	pzpr.classmgr.setPuzzleClass(puzzle, (pzl.id||puzzle.pid), function(){
+	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
+
+	pzpr.classmgr.setPuzzleClass(puzzle, pzl.id, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
+		puzzle.metadata.reset();
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
@@ -367,13 +376,17 @@ function postCanvasReady(puzzle, callback){
 	
 	if(!!callback){ callback(puzzle);}
 	
-	puzzle.painter.unsuspend();
-	
 	if(!puzzle.ready){
-		puzzle.key.setfocus();
-		puzzle.resetTime();
 		puzzle.ready = true;
 		puzzle.execListener('ready');
+		puzzle.painter.unsuspend();
+		puzzle.resetTime();
+	}
+	else{
+		puzzle.painter.unsuspend();
+	}
+	if(!!puzzle.canvas){
+		puzzle.execListener('canvasReady');
 	}
 }
 function firstCanvasReady(puzzle){
@@ -411,8 +424,6 @@ function setCanvasEvents(puzzle){
 	ae("keyup",   execKeyUp);
 }
 function execMouseDown(e){
-	/* キー入力のフォーカスを当てる */
-	if(!!this.key){ this.key.setfocus();}
 	if(!!this.mouse){ this.mouse.e_mousedown(e);}
 }
 function execMouseMove(e){

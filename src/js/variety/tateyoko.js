@@ -171,12 +171,12 @@ Encode:{
 	decodeTateyoko : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.cell[c];
+			var ca = bstr.charAt(i), cell=bd.cell[c];
 
-			if     (ca==='x'){ obj.ques = 1;}
-			else if(this.include(ca,"o","s")){ obj.ques = 1; obj.qnum = (parseInt(ca,29)-24);}
-			else if(this.include(ca,"0","9")||this.include(ca,"a","f")){ obj.qnum = parseInt(ca,16);}
-			else if(ca==="-"){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			if     (ca==='x'){ cell.ques = 1;}
+			else if(this.include(ca,"o","s")){ cell.ques = 1; cell.qnum = (parseInt(ca,29)-24);}
+			else if(this.include(ca,"0","9")||this.include(ca,"a","f")){ cell.qnum = parseInt(ca,16);}
+			else if(ca==="-"){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca==="i"){ c+=(parseInt(bstr.charAt(i+1),16)-1); i++;}
 
 			c++;
@@ -215,31 +215,31 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca>="a"&&ca<='f'){ obj.ques = 1; obj.qnum = {a:1,b:2,c:3,d:4,e:0,f:-1}[ca];}
-			else if(ca==="?"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca>="a"&&ca<='f'){ cell.ques = 1; cell.qnum = {a:1,b:2,c:3,d:4,e:0,f:-1}[ca];}
+			else if(ca==="?"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
-		this.decodeCell( function(obj,ca){
-			if     (ca==="1"){ obj.qans = 12;}
-			else if(ca==="2"){ obj.qans = 13;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="1"){ cell.qans = 12;}
+			else if(ca==="2"){ cell.qans = 13;}
 		});
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			if(obj.ques===1){
-				if(obj.qnum===-1||obj.qnum===-2){ return "f ";}
-				else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[obj.qnum];}
+		this.encodeCell( function(cell){
+			if(cell.ques===1){
+				if(cell.qnum===-1||cell.qnum===-2){ return "f ";}
+				else{ return {0:"e ",1:"a ",2:"b ",3:"c ",4:"d "}[cell.qnum];}
 			}
-			else if(obj.qnum===-2){ return "? ";}
-			else if(obj.qnum>=  0){ return ""+obj.qnum+" ";}
+			else if(cell.qnum===-2){ return "? ";}
+			else if(cell.qnum>=  0){ return ""+cell.qnum+" ";}
 			else{ return ". ";}
 		});
-		this.encodeCell( function(obj){
-			if(obj.ques!==1){
-				if     (obj.qans===0) { return "0 ";}
-				else if(obj.qans===12){ return "1 ";}
-				else if(obj.qans===13){ return "2 ";}
+		this.encodeCell( function(cell){
+			if(cell.ques!==1){
+				if     (cell.qans===0) { return "0 ";}
+				else if(cell.qans===12){ return "1 ";}
+				else if(cell.qans===13){ return "2 ";}
 			}
 			return ". ";
 		});

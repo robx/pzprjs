@@ -16,9 +16,9 @@ ui.debug.addDebugData('tilepaint', {
 		  result:"pzprv3/tilepaint/2/5/1/0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 2 0 /0 . . . . . /0 . . . . . /. . . . . /. . . . . /" },
 		{ input:["newboard,2,2"] },
 		{ input:["cursor,0,0", "mouse,leftx2, 1,1", "key,1", "mouse,left, 1,1", "key,0", "mouse,left, 1,1"],
-		  result:"pzprv3/tilepaint/2/2/1/0 0 /0 0 /0 0 0 /0 1,0 . /0 . . /. . /. . /" },
+		  result:"pzprv3/tilepaint/2/2/1/. 0 /0 0 /0 0 0 /0 1,0 . /0 . . /. . /. . /" },
 		{ input:["newboard,2,2"] },
 		{ input:["cursor,1,1", "key,q,0,shift,1,shift"],
-		  result:"pzprv3/tilepaint/2/2/1/0 0 /0 0 /0 0 0 /0 0,1 . /0 . . /. . /. . /" }
+		  result:"pzprv3/tilepaint/2/2/1/. 0 /0 0 /0 0 0 /0 0,1 . /0 . . /. . /. . /" }
 	]
 });

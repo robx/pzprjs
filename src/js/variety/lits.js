@@ -192,6 +192,15 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeAreaRoom();
 		this.encodeCellAns();
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeAreaRoom_XMLBoard();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeAreaRoom_XMLBoard();
+		this.encodeCellAns_XMLAnswer();
 	}
 },
 

@@ -238,15 +238,15 @@ MouseEvent:{
 	// mv.input51()   [＼]を作ったり消したりする
 	//---------------------------------------------------------------------------
 	input51 : function(){
-		var obj = this.getcell_excell();
-		if(obj.isnull){ return;}
+		var piece = this.getcell_excell(); /* piece : cell or excell */
+		if(piece.isnull){ return;}
 
-		var group = obj.group;
-		if(group==='excell' || (group==='cell' && obj!==this.cursor.getc())){
-			this.setcursor(obj);
+		var group = piece.group;
+		if(group==='excell' || (group==='cell' && piece!==this.cursor.getc())){
+			this.setcursor(piece);
 		}
 		else if(group==='cell'){
-			this.input51_main(obj);
+			this.input51_main(piece);
 		}
 	},
 	input51_main : function(cell){
@@ -500,9 +500,9 @@ MouseEvent:{
 		if(border.isnull){ return;}
 
 		if(!border.isLine()){
-			var obj = (!bd.lines.borderAsLine ? this.getcell() : this.getcross());
-			if(obj.isnull || (obj.iscrossing() && (obj.lcnt===3 || obj.lcnt===4))){ return;}
-			var adb = obj.adjborder;
+			var piece = (!bd.lines.borderAsLine ? this.getcell() : this.getcross()); /* cell or cross */
+			if(piece.isnull || (piece.iscrossing() && (piece.lcnt===3 || piece.lcnt===4))){ return;}
+			var adb = piece.adjborder;
 			if     (adb.left.isLine()  ){ border = adb.left;  }
 			else if(adb.right.isLine() ){ border = adb.right; }
 			else if(adb.top.isLine()   ){ border = adb.top;   }

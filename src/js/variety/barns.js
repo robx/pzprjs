@@ -123,15 +123,15 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCell( function(obj,ca){
-			if(ca==="1"){ obj.ques = 6;}
+		this.decodeCell( function(cell,ca){
+			if(ca==="1"){ cell.ques = 6;}
 		});
 		this.decodeBorderQues();
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.encodeCell( function(obj){
-			return (obj.ques===6?"1 ":". ");
+		this.encodeCell( function(cell){
+			return (cell.ques===6?"1 ":". ");
 		});
 		this.encodeBorderQues();
 		this.encodeBorderLine();

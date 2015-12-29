@@ -61,20 +61,21 @@ MouseEvent:{
 	},
 
 	inputedit_onstart : function(){
-		var obj = this.getcell_excell(), board = this.owner.board;
-		if(obj.isnull){ return;}
+		var piece = this.getcell_excell(); /* cell or excell */
+		var bd = this.owner.board;
+		if(piece.isnull){ return;}
 
-		if(obj.group!=='excell'){
+		if(piece.group!=='excell'){
 			this.inputborder();
 		}
-		else if(obj!==this.cursor.getobj()){
-			this.setcursor(obj);
+		else if(piece!==this.cursor.getobj()){
+			this.setcursor(piece);
 			this.mousereset();
 		}
 		else{
-			var excell = obj;
-			if(excell.qlight!==1){ board.flashlight(excell);}
-			else{ board.lightclear();}
+			var excell = piece;
+			if(excell.qlight!==1){ bd.flashlight(excell);}
+			else{ bd.lightclear();}
 
 			this.mousereset();
 		}
@@ -127,7 +128,7 @@ KeyEvent:{
 
 		var qn = excell.qnum;
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), max = excell.getmaxnum();
+			var num = +ca, max = excell.getmaxnum();
 
 			if(qn<=0 || this.prev!==excell){
 				if(num<=max){ excell.setQnum(num);}
@@ -367,10 +368,10 @@ Encode:{
 		var subint = [];
 		var ec=0, a=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.excell[ec];
+			var ca = bstr.charAt(i), excell=bd.excell[ec];
 
-			if     (this.include(ca,'A','Z')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9;}
-			else if(this.include(ca,'0','9')){ subint.push(ec); obj.qchar = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1))+1)*26; i++;}
+			if     (this.include(ca,'A','Z')){ subint.push(ec); excell.qchar = parseInt(ca,36)-9;}
+			else if(this.include(ca,'0','9')){ subint.push(ec); excell.qchar = parseInt(ca,36)-9+(parseInt(bstr.charAt(i+1),10)+1)*26; i++;}
 			else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
 			ec++;
@@ -378,10 +379,10 @@ Encode:{
 		}
 		ec=0;
 		for(var i=a;i<bstr.length;i++){
-			var ca = bstr.charAt(i), obj=bd.excell[subint[ec]];
-			if     (ca==='.'){ obj.qnum = -2;}
-			else if(ca==='-'){ obj.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else             { obj.qnum = parseInt(bstr.substr(i  ,1),16);}
+			var ca = bstr.charAt(i), excell=bd.excell[subint[ec]];
+			if     (ca==='.'){ excell.qnum = -2;}
+			else if(ca==='-'){ excell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else             { excell.qnum = parseInt(bstr.substr(i  ,1),16);}
 
 			ec++;
 			if(ec>=subint.length){ a=i+1; break;}
@@ -399,7 +400,7 @@ Encode:{
 
 			if(val> 0 && val<=104){
 				if(val<=26){ pstr = (val+9).toString(36).toUpperCase();}
-				else       { pstr = (((val-1)/26-1)|0).toString() + ((val-1)%26+10).toString(16).toUpperCase();}
+				else       { pstr = (((val-1)/26-1)|0).toString(10) + ((val-1)%26+10).toString(16).toUpperCase();}
 
 				if     (qnum===-2){ cm2+=".";}
 				else if(qnum  <16){ cm2+=("" +qnum.toString(16));}
@@ -429,8 +430,8 @@ FileIO:{
 			var excell = bd.getex(bx,by);
 			if(!excell.isnull){
 				var inp = ca.split(",");
-				if(inp[0]!==""){ excell.qchar = parseInt(inp[0]);}
-				if(inp[1]!==""){ excell.qnum  = parseInt(inp[1]);}
+				if(inp[0]!==""){ excell.qchar = +inp[0];}
+				if(inp[1]!==""){ excell.qnum  = +inp[1];}
 				continue;
 			}
 
@@ -445,10 +446,10 @@ FileIO:{
 		}
 
 		if(this.filever===0){
-			this.decodeCell( function(obj,ca){
-				if     (ca==="+"){ obj.qsub = 1;}
-				else if(ca==="1"){ obj.qans = 31;}
-				else if(ca==="2"){ obj.qans = 32;}
+			this.decodeCell( function(cell,ca){
+				if     (ca==="+"){ cell.qsub = 1;}
+				else if(ca==="1"){ cell.qans = 31;}
+				else if(ca==="2"){ cell.qans = 32;}
 			});
 		}
 	},
@@ -462,9 +463,9 @@ FileIO:{
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
 					var dir=excell.qchar, qn=excell.qnum;
-					var str1 = (dir!== 0?dir.toString():"");
-					var str2 = (qn !==-1?qn.toString():"");
-					this.datastr += ((str1==="" && str2==="")?(". "):(""+str1+","+str2+" "));
+					var str1 = (dir!== 0 ? ""+dir : "");
+					var str2 = (qn !==-1 ? ""+qn  : "");
+					this.datastr += ((str1==="" && str2==="")?(". "):(str1+","+str2+" "));
 					continue;
 				}
 

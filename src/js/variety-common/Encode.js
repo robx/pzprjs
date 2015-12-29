@@ -437,7 +437,7 @@ Encode:{
 		var bstr = this.outbstr, c=0, bd = this.owner.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca);}
+			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca,10);}
 
 			c++;
 			if(c>=bd.crossmax){ i++; break;}

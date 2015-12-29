@@ -114,12 +114,17 @@ KeyEvent:{
 			else{ cur=-1; type=(cell.ice()?2:1);}
 
 			if('0'<=ca && ca<='9'){
-				var num = parseInt(ca);
+				var num = +ca;
 				if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 				val = cur*10+num;
 				if(val>max){ return;}
 			}
-			else if(ca==='-') { val = -2;}
+			else if(ca==='BS'){
+				if(cur<0){ val = -1;}
+				else if(cur<10){ val = -2;}
+				else{ val = (cur/10)|0;}
+			}
+			else if(ca==='-') { val = (cur!==-2?-2:-1);}
 			else if(ca===' ') { val = -1;}
 			else{ return;}
 
@@ -321,10 +326,10 @@ FileIO:{
 			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
 			if(ca.charAt(0)==='o'){
 				ca=ca.substr(1);
-				if(!!ca){ cell.qnum=parseInt(ca);}
+				if(!!ca){ cell.qnum=+ca;}
 				else{ cell.qnum=-2;}
 			}
-			else if(!!ca&&ca!=='.'){ cell.qnum2=parseInt(ca);}
+			else if(!!ca&&ca!=='.'){ cell.qnum2=+ca;}
 		});
 		this.decodeBorderLine();
 		if(this.filever>=1){
@@ -338,9 +343,9 @@ FileIO:{
 			if(cell.ques===6){ ca += "i";}
 			if(cell.qnum!==-1){
 				ca += "o";
-				if(cell.qnum>=0){ ca += cell.qnum.toString();}
+				if(cell.qnum>=0){ ca += (""+cell.qnum);}
 			}
-			else if(cell.qnum2>0){ ca += cell.qnum2.toString();}
+			else if(cell.qnum2>0){ ca += (""+cell.qnum2);}
 
 			return ((!!ca?ca:".")+" ");
 		});
@@ -350,18 +355,16 @@ FileIO:{
 
 	/* decode/encodeCellQsubの上位互換です */
 	decodeCellQsubQcmp : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=="0"){
-				var num = parseInt(ca);
-				obj.qsub = num & 0x0f;
-				obj.qcmp = (num >> 4)|0;
+				cell.qsub = +ca & 0x0f;
+				cell.qcmp = +ca >> 4; // int
 			}
 		});
 	},
 	encodeCellQsubQcmp : function(){
-		this.encodeCell( function(obj){
-			var num = obj.qsub + (obj.qcmp << 4);
-			return (num.toString() + " ");
+		this.encodeCell( function(cell){
+			return (cell.qsub + (cell.qcmp << 4))+" ";
 		});
 	}
 },

@@ -651,7 +651,7 @@ Graphic:{
 		var id=0, a=0;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
@@ -659,7 +659,7 @@ Graphic:{
 		id=(bd.qcols-1)*bd.qrows;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
-			if     (ca>='0' && ca<='9'){ var num=parseInt(ca), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
+			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
 			if(id>=bd.bdinside){ a=i+1; break;}
@@ -725,8 +725,8 @@ Encode:{
 	decodeInOut : function(){
 		var barray = this.outbstr.split("/"), bd = this.owner.board;
 
-		bd.arrowin.seturlid (parseInt(barray[1]));
-		bd.arrowout.seturlid(parseInt(barray[2]));
+		bd.arrowin.seturlid (+barray[1]);
+		bd.arrowout.seturlid(+barray[2]);
 
 		this.outbstr = "";
 	},
@@ -739,11 +739,11 @@ Encode:{
 "FileIO@icebarn":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.arrowin.setid (parseInt(this.readLine()));
-		bd.arrowout.setid(parseInt(this.readLine()));
+		bd.arrowin.setid (+this.readLine());
+		bd.arrowout.setid(+this.readLine());
 
-		this.decodeCell( function(obj,ca){
-			if(ca==="1"){ obj.ques = 6;}
+		this.decodeCell( function(cell,ca){
+			if(ca==="1"){ cell.ques = 6;}
 		});
 		this.decodeBorderArrow();
 		this.decodeBorderLine();
@@ -751,8 +751,8 @@ Encode:{
 	encodeData : function(){
 		var bd = this.owner.board;
 		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
-		this.encodeCell( function(obj){
-			return (obj.ques===6?"1 ":"0 ");
+		this.encodeCell( function(cell){
+			return (cell.ques===6?"1 ":"0 ");
 		});
 		this.encodeBorderArrow();
 		this.encodeBorderLine();
@@ -761,42 +761,42 @@ Encode:{
 	decodeBorderArrow : function(){
 		var bd = this.owner.board;
 		bd.disableInfo();
-		this.decodeBorder( function(obj,ca){
+		this.decodeBorder( function(border,ca){
 			if(ca!=="0"){
-				var val = parseInt(ca), isvert = obj.isVert();
-				if(val===1&&!isvert){ obj.setArrow(obj.UP);}
-				if(val===2&&!isvert){ obj.setArrow(obj.DN);}
-				if(val===1&& isvert){ obj.setArrow(obj.LT);}
-				if(val===2&& isvert){ obj.setArrow(obj.RT);}
+				var val = +ca, isvert = border.isVert();
+				if(val===1&&!isvert){ border.setArrow(border.UP);}
+				if(val===2&&!isvert){ border.setArrow(border.DN);}
+				if(val===1&& isvert){ border.setArrow(border.LT);}
+				if(val===2&& isvert){ border.setArrow(border.RT);}
 			}
 		});
 		bd.enableInfo();
 	},
 	encodeBorderArrow : function(){
-		this.encodeBorder( function(obj){
-			var dir = obj.getArrow();
-			if     (dir===obj.UP||dir===obj.LT){ return "1 ";}
-			else if(dir===obj.DN||dir===obj.RT){ return "2 ";}
-			else                               { return "0 ";}
+		this.encodeBorder( function(border){
+			var dir = border.getArrow();
+			if     (dir===border.UP||dir===border.LT){ return "1 ";}
+			else if(dir===border.DN||dir===border.RT){ return "2 ";}
+			else                                     { return "0 ";}
 		});
 	}
 },
 "FileIO@icelom,icelom2":{
 	decodeData : function(){
 		var bd = this.owner.board;
-		bd.arrowin.setid (parseInt(this.readLine()));
-		bd.arrowout.setid(parseInt(this.readLine()));
+		bd.arrowin.setid (+this.readLine());
+		bd.arrowout.setid(+this.readLine());
 
 		var pzltype = this.readLine();
 		if(this.owner.pid==='icelom'){
 			this.owner.changepid(pzltype==="allwhite"?'icelom':'icelom2');
 		}
 
-		this.decodeCell( function(obj,ca){
-			if(ca.charAt(0)==='i'){ obj.ques=6; ca=ca.substr(1);}
+		this.decodeCell( function(cell,ca){
+			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
 
 			if(ca!=='' && ca!=='.'){
-				obj.qnum = (ca!=='?' ? parseInt(ca) : -2);
+				cell.qnum = (ca!=='?' ? +ca : -2);
 			}
 		});
 		this.decodeBorderLine();
@@ -806,11 +806,11 @@ Encode:{
 		var pzltype = (this.owner.pid==='icelom'?"allwhite":"skipwhite");
 
 		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n"+pzltype+"\n");
-		this.encodeCell( function(obj){
-			var istr = (obj.ques===6 ? "i" : ""), qstr='';
-			if     (obj.qnum===-1){ qstr = (istr==="" ? ". " : " ");}
-			else if(obj.qnum===-2){ qstr = "? ";}
-			else{ qstr = obj.qnum+" ";}
+		this.encodeCell( function(cell){
+			var istr = (cell.ques===6 ? "i" : ""), qstr='';
+			if     (cell.qnum===-1){ qstr = (istr==="" ? ". " : " ");}
+			else if(cell.qnum===-2){ qstr = "? ";}
+			else{ qstr = cell.qnum+" ";}
 			return istr+qstr;
 		});
 		this.encodeBorderLine();

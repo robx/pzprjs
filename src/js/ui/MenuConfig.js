@@ -20,10 +20,12 @@ ui.menuconfig = {
 	init : function(){
 		this.list = {};
 		
-		this.add('autocheck', pzpr.PLAYER);					/* 正解自動判定機能 */
+		this.add('autocheck',      pzpr.PLAYER);			/* 正解自動判定機能 */
+		this.add('autocheck_once', pzpr.PLAYER);			/* 正解自動判定機能 */
 		
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
-		
+		this.add('keyboard', false);						/* 盤面をキー入力のターゲットにする */
+
 		this.add('adjsize', true);							/* 自動横幅調節 */
 		this.add('cellsizeval', 36);						/* セルのサイズ設定用 */
 		this.add('fullwidth', (ui.windowWidth()<600));		/* キャンバスを横幅いっぱいに広げる */
@@ -44,6 +46,11 @@ ui.menuconfig = {
 	get : Config.get,
 
 	//---------------------------------------------------------------------------
+	// config.getList()  現在有効な設定値のリストを返す
+	//---------------------------------------------------------------------------
+	getList : Config.getList,
+
+	//---------------------------------------------------------------------------
 	// menu.getAll()  全フラグの設定値を返す
 	// menu.setAll()  全フラグの設定値を設定する
 	//---------------------------------------------------------------------------
@@ -53,10 +60,13 @@ ui.menuconfig = {
 			var item = this.list[key];
 			if(item.val!==item.defval){ object[key] = item.val;}
 		}
-		delete object.autocheck;
-		return JSON.stringify(object);
+		delete object.autocheck_once;
+		return object;
 	},
-	setAll : Config.setAll,
+	setAll : function(setting){
+		Config.setAll.call(this, setting);
+		this.list.autocheck_once.val = this.list.autocheck.val;
+	},
 
 	//---------------------------------------------------------------------------
 	// menuconfig.setproper()    設定値の型を正しいものに変換して設定変更する
@@ -78,8 +88,16 @@ ui.menuconfig = {
 			ui.keypopup.display();
 			break;
 			
+		case 'keyboard':
+			ui.misc.setkeyfocus();
+			break;
+			
 		case 'adjsize': case 'cellsizeval': case 'fullwidth':
 			ui.adjustcellsize();
+			break;
+			
+		case 'autocheck':
+			this.list.autocheck_once.val = newval;
 			break;
 		}
 	}

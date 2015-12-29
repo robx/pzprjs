@@ -155,12 +155,15 @@ KeyEvent:{
 		var cell = this.cursor.getc();
 		if(ca==='q'||ca==='w'){
 			cell.setQues(cell.ice()?0:6);
+			cell.setQnum(-1);
 		}
 		else if(ca==='h'){
 			cell.setQues(cell.ques===31?0:31);
+			cell.setQnum(-1);
 		}
 		else if(ca===' '){
 			cell.setQues(0);
+			cell.setQnum(-1);
 		}
 		else if(!cell.ice()){
 			this.key_inputqnum(ca);
@@ -470,7 +473,7 @@ FileIO:{
 		this.decodeCell( function(cell,ca){
 			if     (ca==="H"){ cell.ques = 31;}
 			else if(ca==="i"){ cell.ques = 6;}
-			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeBorderLine();
 	},
@@ -478,7 +481,7 @@ FileIO:{
 		this.encodeCell( function(cell){
 			if     (cell.ques===31){ return "H ";}
 			else if(cell.ques=== 6){ return "i ";}
-			else if(cell.qnum >  0){ return cell.qnum.toString()+" ";}
+			else if(cell.qnum >  0){ return cell.qnum+" ";}
 			else{ return ". ";}
 		});
 		this.encodeBorderLine();

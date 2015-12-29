@@ -7,7 +7,7 @@
   "regexp": true,   // Warn use . in regexp
   "eqeqeq": true,   // Warn ==, != to compare
   "latedef": true,  // Warn use variable before definition
-//"es3": true,      // Enable ES3 mode (to find out extra-comma)
+  "es3": true,      // Enable ES3 mode (to find out extra-comma)
 
   // false means enable access, prohibits overwrite
   "globals": {

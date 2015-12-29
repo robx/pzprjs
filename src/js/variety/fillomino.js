@@ -206,7 +206,14 @@ FileIO:{
 		this.decodeCellQnum_kanpen();
 		this.decodeCellAnum_kanpen();
 
-		// 境界線を自動入力
+		this.inputBorderFromNumber(); // 境界線を自動入力
+	},
+	kanpenSave : function(){
+		this.encodeCellQnum_kanpen();
+		this.encodeCellAnum_kanpen();
+	},
+
+	inputBorderFromNumber : function(){
 		var bd = this.owner.board;
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
@@ -217,10 +224,19 @@ FileIO:{
 			}
 		}
 	},
-	kanpenSave : function(){
-		this.encodeCellQnum_kanpen();
-		this.encodeCellAnum_kanpen();
-	}
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellAnum_XMLAnswer();
+
+		this.inputBorderFromNumber(); // 境界線を自動入力
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellAnum_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 0
 },
 
 //---------------------------------------------------------

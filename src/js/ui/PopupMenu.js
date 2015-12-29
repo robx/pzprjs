@@ -72,8 +72,8 @@ ui.popupmgr =
 		var popel = e.target.parentNode;
 		var pos = pzpr.util.getPagePos(e);
 		this.movingpop = popel;
-		this.offset.px = pos.px - parseInt(popel.style.left);
-		this.offset.py = pos.py - parseInt(popel.style.top);
+		this.offset.px = pos.px - parseInt(popel.style.left,10);
+		this.offset.py = pos.py - parseInt(popel.style.top,10);
 		ui.event.enableMouse = false;
 	},
 	titlebarup : function(e){
@@ -256,8 +256,8 @@ ui.popupmgr.addpopup('newboard',
 		var col, row, url=[], NB=this.form;
 		
 		if(pid!=='sudoku'){
-			col = (parseInt(NB.col.value))|0;
-			row = (parseInt(NB.row.value))|0;
+			col = NB.col.value|0;
+			row = NB.row.value|0;
 		}
 		else{
 			if     (getEL("nb_size_sudoku_2").checked){ col=row=16;}
@@ -387,8 +387,10 @@ ui.popupmgr.addpopup('filesave',
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety.info[ui.puzzle.pid].exists.pencilbox;
 		this.form.filetype.options[1].disabled = !ispencilbox;
+		this.form.filetype.options[2].disabled = (!ispencilbox || pzpr.env.browser.legacyIE);
 		
-		this.form.filename.value = ui.puzzle.pid+".txt";
+		this.form.filename.value = ui.puzzle.pid + '.txt';
+		this.changefilename();
 	},
 	/* オーバーライド */
 	show : function(px,py){
@@ -400,6 +402,20 @@ ui.popupmgr.addpopup('filesave',
 		if(!!this.filesaveurl){ URL.revokeObjectURL(this.filesaveurl);}
 		
 		ui.popupmgr.popups.template.close.call(this);
+	},
+	changefilename : function(){
+		var filetype = this.form.filetype.value;
+		var filename = this.form.filename.value.replace('.xml','').replace('.txt','');
+		var ext = (filetype!=='filesave4'?'.txt':'.xml');
+		if(pzpr.variety.toPID(filename)===ui.puzzle.pid){
+			if(filetype==='filesave'||filetype==='filesave3'){
+				filename = pzpr.variety.toURLID(ui.puzzle.pid);
+			}
+			else{
+				filename = pzpr.variety.toKanpen(ui.puzzle.pid);
+			}
+		}
+		this.form.filename.value = filename + ext;
 	},
 	
 	//------------------------------------------------------------------------------
@@ -414,18 +430,19 @@ ui.popupmgr.addpopup('filesave',
 			if(filename.indexOf(prohibit[i])!==-1){ ui.notify.alert('ファイル名として使用できない文字が含まれています。'); return;}
 		}
 
-		var parser = pzpr.parser, filetype = parser.FILE_PZPR;
+		var parser = pzpr.parser, filetype = parser.FILE_PZPR, option = {};
 		switch(form.filetype.value){
 			case 'filesave2': filetype = parser.FILE_PBOX; break;
-			case 'filesave3': filetype = parser.FILE_PZPH; break;
+			case 'filesave4': filetype = parser.FILE_PBOX_XML; break;
+			case 'filesave3': filetype = parser.FILE_PZPR; option.history = true; break;
 		}
 
 		var blob = null, filedata = null;
 		if(ui.enableSaveBlob || !!this.anchor){
-			blob = new Blob([ui.puzzle.getFileData(filetype)], {type:'text/plain'});
+			blob = new Blob([ui.puzzle.getFileData(filetype, option)], {type:'text/plain'});
 		}
 		else{
-			filedata = ui.puzzle.getFileData(filetype);
+			filedata = ui.puzzle.getFileData(filetype, option);
 		}
 
 		if(ui.enableSaveBlob){
@@ -441,6 +458,7 @@ ui.popupmgr.addpopup('filesave',
 		}
 		else{
 			form.ques.value = filedata;
+			form.operation.value = (form.filetype.value!=='filesave4' ? 'save' : 'savexml');
 			form.submit();
 			this.close();
 		}
@@ -469,7 +487,7 @@ ui.popupmgr.addpopup('imagesave',
 			if(option.value==="png" && !ui.enableSaveImage){ filetype.removeChild(option);}
 		}
 		
-		this.form.filename.value = ui.puzzle.pid+".png";
+		this.form.filename.value = pzpr.variety.toURLID(ui.puzzle.pid)+".png";
 		this.form.cellsize.value = ui.menuconfig.get('cellsizeval');
 		
 		this.changefilename();
@@ -617,6 +635,36 @@ ui.popupmgr.addpopup('turnflip',
 });
 
 //---------------------------------------------------------------------------
+// ★Popup_Metadataクラス メタデータの設定・表示を行うメニューを作成したり表示します
+//---------------------------------------------------------------------------
+ui.popupmgr.addpopup('metadata',
+{
+	formname : 'metadata',
+	
+	show : function(px,py){
+		ui.popupmgr.popups.template.show.call(this,px,py);
+		
+		var form = this.form;
+		var puzzle = ui.puzzle, bd = puzzle.board, meta = puzzle.metadata;
+		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][pzpr.lang] + "&nbsp;" + bd.qcols+"×"+bd.qrows;
+		form.author.value  = meta.author;
+		form.source.value  = meta.source;
+		form.hard.value    = meta.hard;
+		form.comment.value = meta.comment;
+	},
+
+	save : function(){
+		var form = this.form;
+		var puzzle = ui.puzzle, meta = puzzle.metadata;
+		meta.author  = form.author.value;
+		meta.source  = form.source.value;
+		meta.hard    = form.hard.value;
+		meta.comment = form.comment.value;
+		this.close();
+	}
+});
+
+//---------------------------------------------------------------------------
 // ★Popup_Colorsクラス 色の選択を行うメニューを作成したり表示します
 //---------------------------------------------------------------------------
 ui.popupmgr.addpopup('colors',
@@ -674,8 +722,8 @@ ui.popupmgr.addpopup('dispsize',
 	// changesize()  Canvasでのマス目の表示サイズを変更する
 	//------------------------------------------------------------------------------
 	changesize : function(e){
-		var csize = parseInt(this.form.cellsize.value);
-		if(csize>0){ ui.menuconfig.set('cellsizeval', (csize|0));}
+		var csize = this.form.cellsize.value|0;
+		if(csize>0){ ui.menuconfig.set('cellsizeval', csize);}
 		this.close();
 	}
 });

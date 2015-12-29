@@ -61,7 +61,7 @@ AnsCheck:{
 			this.checkAns();
 			if(!this.failcode.complete){
 				bd.haserror = true;
-				puzzle.redrawForce();	/* 描画キャッシュを破棄して描画し直す */
+				puzzle.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
 			}
 		}
 		/* activemodeでなく、前回の判定結果が残っていない場合はチェックします */
@@ -113,7 +113,7 @@ CheckInfo:{
 	},
 	text : function(lang){
 		var puzzle = this.owner, textlist = puzzle.faillist, texts = [];
-		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
 		if(this.length===0){ return textlist.complete[langcode];}
 		for(var i=0;i<this.length;i++){
 			var textitem = textlist[this[i]] || textlist.invalid;

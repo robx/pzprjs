@@ -23,7 +23,6 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	// kc.keyreset()     キーボード入力に関する情報を初期化する
 	// kc.isenablemode() 現在のモードでキー入力が有効か判定する
-	// kc.setfocus()     キャンバスにフォーカスをセットするか外す
 	//---------------------------------------------------------------------------
 	keyreset : function(){
 		this.isCTRL  = false;
@@ -44,18 +43,6 @@ KeyEvent:{
 	},
 	isenablemode : function(){
 		return ((this.owner.editmode&&this.enablemake)||(this.owner.playmode&&this.enableplay));
-	},
-	setfocus : function(){
-		var canvas = this.owner.canvas;
-		if(!canvas){}
-		else if(this.owner.getConfig('keytarget') && this.isenablemode()){
-			canvas.focus();
-			canvas.contentEditable = true;
-		}
-		else{
-			canvas.blur();
-			canvas.contentEditable = false;
-		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -133,7 +120,7 @@ KeyEvent:{
 		else if(112<=keycode && keycode<=123){ key = 'F'+(keycode - 111).toString(10);} /* 112～123はF1～F12キー */
 		else if(keycode===32 || keycode===46) { key = ' ';} // 32はスペースキー 46はdelキー
 		else if(keycode===8)                  { key = 'BS';}
-		else if(keycode===109|| keycode===189){ key = '-';}
+		else if(keycode===109|| keycode===189|| keycode===173){ key = '-';}
 
 		var keylist = (!!key ? [key] : []);
 		if(this.isMETA) { keylist.unshift('meta'); }
@@ -295,22 +282,22 @@ KeyEvent:{
 		this.draw();
 		return true;
 	},
-	detectTarget : function(obj){
-		var bd = this.owner.board, adc=obj.adjacent;
-		if(obj.isnull){ return 0;}
-		else if(obj.group==='cell'){
-			if     (obj.ques!==51 || obj.id===bd.cellmax-1){ return 0;}
+	detectTarget : function(piece){
+		var bd = this.owner.board, adc=piece.adjacent;
+		if(piece.isnull){ return 0;}
+		else if(piece.group==='cell'){
+			if     (piece.ques!==51 || piece.id===bd.cellmax-1){ return 0;}
 			else if((adc.right.isnull  || adc.right.ques ===51) &&
 				    (adc.bottom.isnull || adc.bottom.ques===51)){ return 0;}
 			else if (adc.right.isnull  || adc.right.ques ===51) { return 4;}
 			else if (adc.bottom.isnull || adc.bottom.ques===51) { return 2;}
 		}
-		else if(obj.group==='excell'){
-			if     (obj.id===bd.qcols+bd.qrows){ return 0;}
-			else if((obj.by===-1 && adc.bottom.ques===51) ||
-				    (obj.bx===-1 && adc.right.ques ===51)){ return 0;}
-			else if(obj.by===-1){ return 4;}
-			else if(obj.bx===-1){ return 2;}
+		else if(piece.group==='excell'){
+			if     (piece.id===bd.qcols+bd.qrows){ return 0;}
+			else if((piece.by===-1 && adc.bottom.ques===51) ||
+				    (piece.bx===-1 && adc.right.ques ===51)){ return 0;}
+			else if(piece.by===-1){ return 4;}
+			else if(piece.bx===-1){ return 2;}
 		}
 		else{ return 0;}
 

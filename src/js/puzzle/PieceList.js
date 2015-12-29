@@ -33,7 +33,7 @@ PieceList:{
 	//--------------------------------------------------------------------------------
 	each    : Array.prototype.forEach,
 	some    : Array.prototype.some,
-	include : function(target){ return this.some(function(obj){ return (obj===target);});},
+	include : function(target){ return this.some(function(piece){ return (piece===target);});},
 	
 	//--------------------------------------------------------------------------------
 	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
@@ -48,7 +48,7 @@ PieceList:{
 		list.length = n;
 		return list;
 	},
-	notnull : function(cond){ return this.filter(function(obj){ return !obj.isnull;});},
+	notnull : function(cond){ return this.filter(function(piece){ return !piece.isnull;});},
 	
 	//--------------------------------------------------------------------------------
 	// list.map()      clistの各要素に指定された関数を適用したclistを新たに作成する
@@ -65,8 +65,8 @@ PieceList:{
 	// list.remove()   与えられたオブジェクトを配列から取り除く
 	//--------------------------------------------------------------------------------
 	indexOf : Array.prototype.indexOf,
-	remove : function(obj){
-		var idx = this.indexOf(obj);
+	remove : function(piece){
+		var idx = this.indexOf(piece);
 		if(idx>=0){ Array.prototype.splice.call(this, idx, 1);}
 	},
 	
@@ -104,13 +104,13 @@ PieceList:{
 	propclear : function(props, isrec){
 		var norec = (this.length>0?this[0].propnorec:{});
 		for(var i=0;i<this.length;i++){
-			var obj = this[i];
+			var piece = this[i];
 			for(var j=0;j<props.length;j++){
 				var pp = props[j];
-				var def = obj.constructor.prototype[pp];
-				if(obj[pp]!==def){
-					if(isrec && !norec[pp]){ obj.addOpe(pp, obj[pp], def);}
-					obj[pp] = def;
+				var def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
 				}
 			}
 		}

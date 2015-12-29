@@ -158,19 +158,19 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeBorder( function(obj,ca){
-			if     (ca==="2" ){ obj.ques = 0; obj.line = 1;}
-			else if(ca==="-1"){ obj.ques = 0; obj.qsub = 2;}
-			else if(ca==="1" ){ obj.ques = 0;}
-			else              { obj.ques = 1;}
+		this.decodeBorder( function(border,ca){
+			if     (ca==="2" ){ border.ques = 0; border.line = 1;}
+			else if(ca==="-1"){ border.ques = 0; border.qsub = 2;}
+			else if(ca==="1" ){ border.ques = 0;}
+			else              { border.ques = 1;}
 		});
 	},
 	encodeData : function(){
-		this.encodeBorder( function(obj){
-			if     (obj.line===1){ return "2 ";}
-			else if(obj.qsub===2){ return "-1 ";}
-			else if(obj.ques===0){ return "1 ";}
-			else                 { return "0 ";}
+		this.encodeBorder( function(border){
+			if     (border.line===1){ return "2 ";}
+			else if(border.qsub===2){ return "-1 ";}
+			else if(border.ques===0){ return "1 ";}
+			else                    { return "0 ";}
 		});
 	}
 },

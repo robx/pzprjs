@@ -119,7 +119,18 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeCellQnum_kanpen();
 		this.encodeBorderLine();
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -1
 },
 
 //---------------------------------------------------------

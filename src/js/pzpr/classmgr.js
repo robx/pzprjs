@@ -115,7 +115,7 @@ pzpr.classmgr = {
 		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = pzpr.util.getpath()+"../js/variety/"+pzpr.variety.toScript(pid)+".js";
+		_script.src = pzpr.util.getpath()+"./variety/"+pzpr.variety.toScript(pid)+".js";
 		document.getElementsByTagName('head')[0].appendChild(_script);
 		this.includedFile[pid] = true;
 	},
@@ -125,17 +125,20 @@ pzpr.classmgr = {
 	// 新しくパズルのファイルを開く時の処理
 	//---------------------------------------------------------------------------
 	setPuzzleClass : function(puzzle, newpid, callback){
+		if(!pzpr.variety.info[newpid]){
+			throw "Invalid Puzzle Variety Selected";
+		}
+
 		/* 今のパズルと別idの時 */
 		if(puzzle.pid !== newpid){
 			this.includeCustomFile(newpid);
-		}
-		/* Customファイルが読み込みできるまで待つ */
-		if(!pzpr.custom[newpid]){
-			setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
-			return;
-		}
+	
+			/* Customファイルが読み込みできるまで待つ */
+			if(!pzpr.custom[newpid]){
+				setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
+				return;
+			}
 
-		if(puzzle.pid !== newpid){
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 			puzzle.pid = newpid;

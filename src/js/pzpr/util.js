@@ -30,7 +30,7 @@ pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
 	getpath : function(filename){
-		filename = filename || "pzprv3.js";
+		filename = filename || "pzpr(v3)?.js";
 		var srcs=document.getElementsByTagName('script');
 		for(var i=0;i<srcs.length;i++){
 			var result = srcs[i].src.match(new RegExp("^(.*\\/)"+filename+"$"));
@@ -42,13 +42,6 @@ pzpr.util = {
 	//---------------------------------------------------------------
 	// 現在の時間を取得
 	currentTime : function(){ return (new Date()).getTime();},
-
-	//---------------------------------------------------------------
-	// 言語環境をチェックして日本語かどうか判定する
-	getUserLang : function(){
-		var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
-		return ((userlang.substr(0,2)==='ja')?'ja':'en');
-	},
 
 	//---------------------------------------------------------------
 	// Elementの生成関連

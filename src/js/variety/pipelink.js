@@ -230,10 +230,10 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var disptype = this.readLine();
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ obj.ques = 6; }
-			else if(ca==="-"){ obj.ques = -2;}
-			else if(ca!=="."){ obj.ques = parseInt(ca,36)+1;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ cell.ques = 6; }
+			else if(ca==="-"){ cell.ques = -2;}
+			else if(ca!=="."){ cell.ques = parseInt(ca,36)+1;}
 		});
 		this.decodeBorderLine();
 
@@ -245,10 +245,10 @@ FileIO:{
 		var puzzle = this.owner;
 		if     (puzzle.pid==='pipelink') { this.datastr += 'pipe\n';}
 		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')===1?"circle\n":"ice\n");}
-		this.encodeCell( function(obj){
-			if     (obj.ques===6) { return "o ";}
-			else if(obj.ques===-2){ return "- ";}
-			else if(obj.ques>=11 && obj.ques<=17){ return ""+(obj.ques-1).toString(36)+" ";}
+		this.encodeCell( function(cell){
+			if     (cell.ques===6) { return "o ";}
+			else if(cell.ques===-2){ return "- ";}
+			else if(cell.ques>=11 && cell.ques<=17){ return ""+(cell.ques-1).toString(36)+" ";}
 			else                  { return ". ";}
 		});
 		this.encodeBorderLine();
@@ -278,7 +278,7 @@ AnsCheck:{
 "CheckInfo@pipelinkr":{
 	text : function(lang){
 		var puzzle = this.owner, texts = [];
-		var langcode = ((lang || puzzle.getConfig('language'))==="ja"?0:1);
+		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
 		var isdispice = (puzzle.getConfig('disptype_pipelinkr')===2);
 		if(this.length===0){ return puzzle.faillist.complete[langcode];}
 		for(var i=0;i<this.length;i++){

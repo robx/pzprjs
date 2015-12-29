@@ -162,6 +162,54 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeCellQnum_kanpen();
 		this.encodeBorderLine();
+	},
+
+	kanpenOpenXML : function(){
+		this.PBOX_ADJUST = 0;
+		this.decodeCellQnum_XMLBoard_Brow();
+		this.PBOX_ADJUST = 1;
+		this.decodeBorderLine_slither_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.PBOX_ADJUST = 0;
+		this.encodeCellQnum_XMLBoard_Brow();
+		this.PBOX_ADJUST = 1;
+		this.encodeBorderLine_slither_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 5,
+	PBOX_ADJUST : 1,
+	decodeBorderLine_slither_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cross, name){
+			var val = 0;
+			var bdh = cross.relbd(0,1), bdv = cross.relbd(1,0);
+			if(name.charAt(0)==='n'){ val = +name.substr(1);}
+			else{
+				if(name.match(/h/)){ val+=1;}
+				if(name.match(/v/)){ val+=2;}
+			}
+			if(val&1){ bdh.line = 1;}
+			if(val&2){ bdv.line = 1;}
+			if(val&4){ bdh.qsub = 2;}
+			if(val&8){ bdv.qsub = 2;}
+		});
+	},
+	encodeBorderLine_slither_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cross){
+			var val = 0, nodename = '';
+			var bdh = cross.relbd(0,1), bdv = cross.relbd(1,0);
+			if(bdh.line===1){ val += 1;}
+			if(bdv.line===1){ val += 2;}
+			if(bdh.qsub===2){ val += 4;}
+			if(bdv.qsub===2){ val += 8;}
+			
+			if     (val===0){ nodename = 's';}
+			else if(val===1){ nodename = 'h';}
+			else if(val===2){ nodename = 'v';}
+			else if(val===3){ nodename = 'hv';}
+			else{ nodename = 'n'+val;}
+			return nodename;
+		});
 	}
 },
 

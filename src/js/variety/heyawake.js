@@ -119,9 +119,9 @@ Encode:{
 
 			var cell = bd.cell[c];
 			if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-				if(RegExp.$1.length>0){ cell.qnum = parseInt(RegExp.$1);}
-				var x1 = cell.bx, x2 = x1 + 2*parseInt(RegExp.$2) - 2;
-				var y1 = cell.by, y2 = y1 + 2*parseInt(RegExp.$3) - 2;
+				if(RegExp.$1.length>0){ cell.qnum = +RegExp.$1;}
+				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$2) - 2;
+				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$3) - 2;
 				this.owner.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;
@@ -158,6 +158,67 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeSquareRoom();
 		this.encodeCellAns();
+	},
+
+	decodeSquareRoom : function(){
+		var barray = this.readLines(+this.readLine());
+		var bd = this.owner.board, rdata = [];
+		for(var i=0;i<barray.length;i++){
+			if(barray[i]===""){ break;}
+			var pce = barray[i].split(" ");
+			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=2*(+pce[n])+1;} }
+			if(pce[4]!==""){ bd.getc(pce[1],pce[0]).qnum = +pce[4];}
+			for(var bx=pce[1];bx<=pce[3];bx+=2){ for(var by=pce[0];by<=pce[2];by+=2){
+				rdata[bd.getc(bx,by).id] = i;
+			}}
+		}
+		this.rdata2Border(true, rdata);
+		bd.rooms.reset();
+	},
+	encodeSquareRoom : function(){
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		this.datastr += (rinfo.max+"\n");
+		for(var id=1;id<=rinfo.max;id++){
+			var d = rinfo.area[id].clist.getRectSize();
+			var num = bd.rooms.getTopOfRoom(id).qnum;
+			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
+		}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeSquareRoom_XMLBoard();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeSquareRoom_XMLBoard();
+		this.encodeCellAns_XMLAnswer();
+	},
+
+	decodeSquareRoom_XMLBoard : function(){
+		var nodes = this.xmldoc.querySelectorAll('board area');
+		var bd = this.owner.board, rdata = [];
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var bx1 = 2*(+node.getAttribute('c0'))-1;
+			var by1 = 2*(+node.getAttribute('r0'))-1;
+			var bx2 = 2*(+node.getAttribute('c1'))-1;
+			var by2 = 2*(+node.getAttribute('r1'))-1;
+			var num = +node.getAttribute('n');
+			if(num>=0){ bd.getc(bx1,by1).qnum = num;}
+			for(var bx=bx1;bx<=bx2;bx+=2){ for(var by=by1;by<=by2;by+=2){
+				rdata[bd.getc(bx,by).id] = i;
+			}}
+		}
+		this.rdata2Border(true, rdata);
+		bd.rooms.reset();
+	},
+	encodeSquareRoom_XMLBoard : function(){
+		var boardnode = this.xmldoc.querySelector('board');
+		var bd = this.owner.board, rinfo = bd.getRoomInfo();
+		for(var id=1;id<=rinfo.max;id++){
+			var d = rinfo.area[id].clist.getRectSize(), num = bd.rooms.getTopOfRoom(id).qnum;
+			boardnode.appendChild(this.createXMLNode('area',{r0:(d.y1>>1)+1,c0:(d.x1>>1)+1,r1:(d.y2>>1)+1,c1:(d.x2>>1)+1,n:num}));
+		}
 	}
 },
 

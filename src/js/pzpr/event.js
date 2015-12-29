@@ -32,21 +32,6 @@ else{
 	window.attachEvent('onload', postload);
 }
 
-//---------------------------------------------------------------
-// addWindowEvents()   リサイズ時のCanvas位置再指定を呼び出す設定を行う
-//---------------------------------------------------------------
-pzpr.addLoadListener(function addWindowEvents(){
-	var ev = ['resize', 'orientationchange', 'pageshow', 'focus'];
-	for(var i=0;i<ev.length;i++){
-		pzpr.util.addEvent(window, ev[i], pzpr, execResize);
-	}
-});
-function execResize(e){
-	for(var i=0,len=pzpr.puzzles.length;i<len;i++){
-		pzpr.puzzles[i].adjustCanvasPos();
-	}
-}
-
 //---------------------------------------------------------------------------
 // addKeyEvents()  キーボード入力発生時に指定されたパズルへ通知する準備を行う
 // exec????()      各パズルのキー入力へ分岐する

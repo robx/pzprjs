@@ -86,25 +86,17 @@ ui.debug.extend(
 	},
 	execmouse : function(strs){
 		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
-		var repeat = matches ? parseInt(matches[1]) : 1;
+		var repeat = matches ? +matches[1] : 1;
 		for(var t=0;t<repeat;t++){
 			var mv = ui.puzzle.mouse;
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");
 			mv.btn.Right = (strs[1].substr(0,5)==="right");
 			
-			var addr = new ui.puzzle.RawAddress();
-			mv.mouseevent(addr.init(+strs[2], +strs[3]),0);
+			mv.moveTo(+strs[2], +strs[3]);
 			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
-				var dx = (+strs[i]-addr.bx), dy = (+strs[i+1]-addr.by);
-				var distance = Math.sqrt(dx*dx+dy*dy)*10; /* 0.1ずつ動かす */
-				var mx = dx/distance, my = dy/distance;
-				for(var dist=0;dist<distance-1;dist++){
-					mv.mouseevent(addr.move(mx,my),1);
-				}
-				/* 最後 */
-				mv.mouseevent(addr.init(+strs[i], +strs[i+1]),1);
+				mv.lineTo(+strs[i], +strs[i+1]);
 			}
-			mv.mouseevent(addr,2);
+			mv.inputEnd();
 		}
 	},
 	inputcheck_popup : function(){
@@ -130,7 +122,7 @@ ui.debug.extend(
 	pid : '',
 	all_test : function(){
 		if(this.alltimer !== null){ return;}
-		var pnum=0, term, idlist=[], self = this;
+		var pnum=0, term, idlist=[], self = this, starttime = pzpr.util.currentTime();
 		self.phase = 99;
 
 		for(var id in pzpr.variety.info){ idlist.push(id);}
@@ -152,7 +144,11 @@ ui.debug.extend(
 				self.sccheck();
 				self.addTA("Test ("+pnum+", "+newid+") start.");
 				pnum++;
-				if(pnum >= term){ clearInterval(self.alltimer);}
+				if(pnum >= term){
+					clearInterval(self.alltimer);
+					var ms = ((pzpr.util.currentTime() - starttime)/100)|0;
+					self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
+				}
 			});
 		},100);
 	},
@@ -185,7 +181,7 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzpr.variety.info[self.pid].exists.pencilbox){
+		if(pzpr.variety.info[self.pid].exists.kanpen){
 			var o = ui.puzzle, bd = o.board, bd2 = self.bd_freezecopy(bd);
 			var kanpen_url = o.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
@@ -272,31 +268,50 @@ ui.debug.extend(
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
-			setTimeout(function(){ self.check_file_pbox(self);},0);
+			setTimeout(function(){
+				if(pzpr.variety.info[self.pid].exists.pencilbox){ self.check_file_pbox(self);}
+				else{ self.check_turnR1(self);}
+			},0);
 		});
 	},
 	check_file_pbox : function(self){
-		if(pzpr.variety.info[self.pid].exists.kanpen){
-			var o = ui.puzzle, bd = o.board, pid = o.pid;
-			var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
-			var bd2 = self.bd_freezecopy(bd);
+		var o = ui.puzzle, bd = o.board, pid = o.pid;
+		var outputstr = o.getFileData(pzpr.parser.FILE_PBOX);
+		var bd2 = self.bd_freezecopy(bd);
 
-			o.painter.suspendAll();
-			bd.initBoardSize(1,1);
-			bd.resetInfo();
+		o.painter.suspendAll();
+		bd.initBoardSize(1,1);
+		bd.resetInfo();
 
-			o.open(outputstr, function(){
-				self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-				if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
-				else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
-				self.qsubf = true;
+		o.open(outputstr, function(){
+			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
+			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
+			self.qsubf = true;
 
-				setTimeout(function(){ self.check_turnR1(self);},0);
-			});
-		}
-		else{
+			setTimeout(function(){
+				if(!pzpr.env.browser.legacyIE){ self.check_file_pbox_xml(self);}
+				else{ self.check_turnR1(self);}
+			},0);
+		});
+	},
+	check_file_pbox_xml : function(self){
+		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
+		var bd2 = self.bd_freezecopy(bd);
+
+		puzzle.painter.suspendAll();
+		bd.initBoardSize(1,1);
+		bd.resetInfo();
+
+		puzzle.open(outputstr, function(){
+			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
+			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpenXML = failure..."); self.fails++;}
+			else if(!self.alltimer){ self.addTA("FileIO kanpenXML = pass");}
+			self.qsubf = true;
+
 			setTimeout(function(){ self.check_turnR1(self);},0);
-		}
+		});
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){

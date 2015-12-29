@@ -124,12 +124,13 @@ KeyEvent:{
 	key_inputqnum_kouchoku : function(ca){
 		var cross = this.cursor.getx();
 
-		if(ca.length>1){ return;}
+		if(ca.length>1 && ca!=='BS'){ return;}
 		else if('a'<=ca && ca<='z'){
 			var num = parseInt(ca,36)-9;
 			if(cross.qnum===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
+		else if(ca==='BS'){cross.setQnum(cross.qnum>=0?-2:-1);}
 		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
 		else if(ca===' '){ cross.setQnum(-1);}
 		else{ return;}
@@ -540,10 +541,10 @@ Encode:{
 	decodeCrossABC : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.owner.board;
 		for(i=0;i<bstr.length;i++){
-			var obj = bd.cross[c], ca = bstr.charAt(i);
-			if     (this.include(ca,"a","z")){ obj.qnum = parseInt(ca,36)-9;}
+			var cross = bd.cross[c], ca = bstr.charAt(i);
+			if     (this.include(ca,"a","z")){ cross.qnum = parseInt(ca,36)-9;}
 			else if(this.include(ca,"0","9")){ c+=(parseInt(ca,36));}
-			else if(ca==="."){ obj.qnum=-2;}
+			else if(ca==="."){ cross.qnum=-2;}
 
 			c++;
 			if(c>=bd.crossmax){ break;}
@@ -579,7 +580,7 @@ FileIO:{
 	},
 
 	decodeSegment : function(){
-		var len = parseInt(this.readLine(),10);
+		var len = +this.readLine();
 		for(var i=0;i<len;i++){
 			var data = this.readLine().split(" ");
 			this.owner.board.addSegmentByAddr(+data[0], +data[1], +data[2], +data[3]);

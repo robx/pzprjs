@@ -99,7 +99,26 @@ Cell:{
 	minnum : 0
 },
 "Cell@heyabon":{
-	distance : null
+	distance : null,
+
+	// pencilbox互換関数 ここではファイル入出力用
+	getState : function(){
+		var adc = this.adjacent, adb = this.adjborder, direc = this.distance-1;
+		if     (this.isDestination())                              { return 8;}
+		else if(adb.top.isLine()    && adc.top.distance   ===direc){ return 0;}
+		else if(adb.left.isLine()   && adc.left.distance  ===direc){ return 1;}
+		else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return 2;}
+		else if(adb.right.isLine()  && adc.right.distance ===direc){ return 3;}
+		return -1;
+	},
+	setState : function(val){
+		if(isNaN(val)){ return;}
+		var adb = this.adjborder;
+		if     (val===0){ adb.top.line    = 1;}
+		else if(val===1){ adb.left.line   = 1;}
+		else if(val===2){ adb.bottom.line = 1;}
+		else if(val===3){ adb.right.line  = 1;}
+	}
 },
 
 Board:{
@@ -324,18 +343,16 @@ FileIO:{
 
 	/* decode/encodeCellQsubの上位互換です */
 	decodeCellQsubQcmp : function(){
-		this.decodeCell( function(obj,ca){
+		this.decodeCell( function(cell,ca){
 			if(ca!=="0"){
-				var num = parseInt(ca);
-				obj.qsub = num & 0x0f;
-				obj.qcmp = (num >> 4)|0;
+				cell.qsub = +ca & 0x0f;
+				cell.qcmp = +ca >> 4; // int
 			}
 		});
 	},
 	encodeCellQsubQcmp : function(){
-		this.encodeCell( function(obj){
-			var num = obj.qsub + (obj.qcmp << 4);
-			return (num.toString() + " ");
+		this.encodeCell( function(cell){
+			return (cell.qsub + (cell.qcmp << 4))+" ";
 		});
 	},
 
@@ -353,34 +370,50 @@ FileIO:{
 	decodeQnum_PBox_Sato : function(){
 		this.decodeCell( function(cell,ca){
 			if     (ca==="-"){ cell.qnum = -2;}
-			else if(ca!=="."){ cell.qnum = parseInt(ca);}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	encodeQnum_PBox_Sato : function(){
 		this.encodeCell( function(cell){
-			if     (cell.qnum>=  0){ return (cell.qnum.toString() + " ");}
+			if     (cell.qnum>=  0){ return cell.qnum+" ";}
 			else if(cell.qnum===-2){ return "- ";}
 			else                   { return ". ";}
 		});
 	},
 	decodeLine_PBox_Sato : function(){
 		this.decodeCell( function(cell,ca){
-			var adb = cell.adjborder;
-			if     (ca==="0"){ adb.top.line    = 1;}
-			else if(ca==="1"){ adb.left.line   = 1;}
-			else if(ca==="2"){ adb.bottom.line = 1;}
-			else if(ca==="3"){ adb.right.line  = 1;}
+			cell.setState(+ca);
 		});
 	},
 	encodeLine_PBox_Sato : function(){
 		this.encodeCell( function(cell){
-			var adc = cell.adjacent, adb = cell.adjborder, direc = cell.distance-1;
-			if     (cell.isDestination())                              { return "8 ";}
-			else if(adb.top.isLine()    && adc.top.distance   ===direc){ return "0 ";}
-			else if(adb.left.isLine()   && adc.left.distance  ===direc){ return "1 ";}
-			else if(adb.bottom.isLine() && adc.bottom.distance===direc){ return "2 ";}
-			else if(adb.right.isLine()  && adc.right.distance ===direc){ return "3 ";}
-			else                                                       { return ". ";}
+			var val = cell.getState();
+			if(val>=0){ return ''+val+' ';}
+			return '. ';
+		});
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeAreaRoom_XMLBoard();
+		this.decodeCellQnum_XMLBoard();
+		this.decodeBorderLine_satogaeri_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeAreaRoom_XMLBoard();
+		this.encodeCellQnum_XMLBoard();
+		this.encodeBorderLine_satogaeri_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -2,
+
+	decodeBorderLine_satogaeri_XMLAnswer : function(){
+		this.decodeCellXMLArow(function(cell, name){
+			cell.setState(+name.substr(1));
+		});
+	},
+	encodeBorderLine_satogaeri_XMLAnswer : function(){
+		this.encodeCellXMLArow(function(cell){
+			return 'n'+cell.getState();
 		});
 	}
 },

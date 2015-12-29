@@ -70,9 +70,9 @@ LineManager:{
 		for(var id=0;id<bd.bdmax;id++){
 			var border = bd.border[id];
 			if(border.isLine()){
-				var obj1 = border.lineedge[0], obj2 = border.lineedge[1];
-				if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt++; this.ltotal[obj1.lcnt]++;}
-				if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt++; this.ltotal[obj2.lcnt]++;}
+				var piece1 = border.lineedge[0], piece2 = border.lineedge[1]; /* cell or cross */
+				if(!piece1.isnull){ this.ltotal[piece1.lcnt]--; piece1.lcnt++; this.ltotal[piece1.lcnt]++;}
+				if(!piece2.isnull){ this.ltotal[piece2.lcnt]--; piece2.lcnt++; this.ltotal[piece2.lcnt]++;}
 			}
 		}
 
@@ -93,26 +93,26 @@ LineManager:{
 	// lines.gettype()    線が引かれた/消された時に、typeA/typeB/typeCのいずれか判定する
 	// lines.isTpos()     pieceが、指定されたcc内でidの反対側にあるか判定する
 	//---------------------------------------------------------------------------
-	gettype : function(obj,border,isset){
+	gettype : function(piece,border,isset){ /* piece : cell or cross */
 		var erase = (isset?0:1);
-		if(obj.isnull){
+		if(piece.isnull){
 			return this.typeA;
 		}
-		else if(!obj.iscrossing()){
-			return ((obj.lcnt===(1-erase))?this.typeA:this.typeB);
+		else if(!piece.iscrossing()){
+			return ((piece.lcnt===(1-erase))?this.typeA:this.typeB);
 		}
 		else{
-			var lcnt = obj.lcnt;
-			if     (lcnt===(1-erase) || (lcnt===(3-erase) && this.isTpos(obj,border))){ return this.typeA;}
+			var lcnt = piece.lcnt;
+			if     (lcnt===(1-erase) || (lcnt===(3-erase) && this.isTpos(piece,border))){ return this.typeA;}
 			else if(lcnt===(2-erase) ||  lcnt===(4-erase)){ return this.typeB;}
 			return this.typeC;
 		}
 	},
-	isTpos : function(obj,border){
+	isTpos : function(piece,border){ /* piece : cell or cross */
 		//   │ ←id                    
 		// ━┷━                       
 		//   ・ ←この場所に線があるか？
-		return !this.owner.board.getb( 2*obj.bx-border.bx, 2*obj.by-border.by ).isLine();
+		return !this.owner.board.getb( 2*piece.bx-border.bx, 2*piece.by-border.by ).isLine();
 	},
 
 	//---------------------------------------------------------------------------
@@ -121,17 +121,17 @@ LineManager:{
 	setLine : function(border){
 		if(!this.enabled){ return;}
 
-		var border = border, isset = border.isLine();
+		var isset = border.isLine();
 		if(isset===(this.id[border.id]!==null)){ return;}
 
-		var obj1 = border.lineedge[0], obj2 = border.lineedge[1];
+		var piece1 = border.lineedge[0], piece2 = border.lineedge[1]; /* cell or cross */
 		if(isset){
-			if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt++; this.ltotal[obj1.lcnt]++;}
-			if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt++; this.ltotal[obj2.lcnt]++;}
+			if(!piece1.isnull){ this.ltotal[piece1.lcnt]--; piece1.lcnt++; this.ltotal[piece1.lcnt]++;}
+			if(!piece2.isnull){ this.ltotal[piece2.lcnt]--; piece2.lcnt++; this.ltotal[piece2.lcnt]++;}
 		}
 		else{
-			if(!obj1.isnull){ this.ltotal[obj1.lcnt]--; obj1.lcnt--; this.ltotal[obj1.lcnt]++;}
-			if(!obj2.isnull){ this.ltotal[obj2.lcnt]--; obj2.lcnt--; this.ltotal[obj2.lcnt]++;}
+			if(!piece1.isnull){ this.ltotal[piece1.lcnt]--; piece1.lcnt--; this.ltotal[piece1.lcnt]++;}
+			if(!piece2.isnull){ this.ltotal[piece2.lcnt]--; piece2.lcnt--; this.ltotal[piece2.lcnt]++;}
 		}
 
 		//---------------------------------------------------------------------------
@@ -145,7 +145,7 @@ LineManager:{
 		//  ━┛・ => ━┷━   既存の線情報が別々になってしまう
 		//    ・        ・   
 		//---------------------------------------------------------------------------
-		var type1 = this.gettype(obj1,border,isset), type2 = this.gettype(obj2,border,isset);
+		var type1 = this.gettype(piece1,border,isset), type2 = this.gettype(piece2,border,isset);
 		if(isset){
 			// (A)+(A)の場合 -> 新しい線idを割り当てる
 			if(type1===this.typeA && type2===this.typeA){
@@ -353,11 +353,11 @@ LineManager:{
 				pos.movedir(dir,1);
 				if(!pos.onborder()){
 					var bx=pos.bx, by=pos.by;
-					var obj = (this.isCenterLine ? pos.getc() : pos.getx());
-					var adb = obj.adjborder;
-					if(obj.isnull){ break;}
-					else if(obj.lcnt>=3){
-						if(!obj.iscrossing()){
+					var piece = (this.isCenterLine ? pos.getc() : pos.getx());
+					var adb = piece.adjborder;
+					if(piece.isnull){ break;}
+					else if(piece.lcnt>=3){
+						if(!piece.iscrossing()){
 							if(adb.top.isLine()   ){ stack.push([bx,by,1]);}
 							if(adb.bottom.isLine()){ stack.push([bx,by,2]);}
 							if(adb.left.isLine()  ){ stack.push([bx,by,3]);}

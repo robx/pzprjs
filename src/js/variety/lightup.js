@@ -200,22 +200,33 @@ FileIO:{
 	},
 
 	kanpenOpen : function(){
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ obj.qans = 1;}
-			else if(ca==="*"){ obj.qsub = 1;}
-			else if(ca==="5"){ obj.qnum = -2;}
-			else if(ca!=="."){ obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qans = 1;}
+			else if(ca==="*"){ cell.qsub = 1;}
+			else if(ca==="5"){ cell.qnum = -2;}
+			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 	},
 	kanpenSave : function(){
-		this.encodeCell( function(obj){
-			if     (obj.qans=== 1){ return "+ ";}
-			else if(obj.qsub=== 1){ return "* ";}
-			else if(obj.qnum>=  0){ return (obj.qnum.toString() + " ");}
-			else if(obj.qnum===-2){ return "5 ";}
-			else                  { return ". ";}
+		this.encodeCell( function(cell){
+			if     (cell.qans=== 1){ return "+ ";}
+			else if(cell.qsub=== 1){ return "* ";}
+			else if(cell.qnum>=  0){ return cell.qnum+" ";}
+			else if(cell.qnum===-2){ return "5 ";}
+			else                   { return ". ";}
 		});
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellAns_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellAns_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 5
 },
 
 //---------------------------------------------------------

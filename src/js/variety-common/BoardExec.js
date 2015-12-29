@@ -163,9 +163,9 @@ BoardExec:{
 	//------------------------------------------------------------------------------
 	// bd.exec.getAfterPos()  回転・反転開始前のIN/OUTなどの位置の調整
 	//------------------------------------------------------------------------------
-	getAfterPos : function(key,d,obj){
+	getAfterPos : function(key,d,piece){
 		var puzzle=this.owner, bd=puzzle.board;
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=obj.bx, by1=obj.by, bx2, by2;
+		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=piece.bx, by1=piece.by, bx2, by2;
 		switch(key){
 			case this.FLIPY: bx2 = bx1; by2 = yy-by1; break;
 			case this.FLIPX: bx2 = xx-bx1; by2 = by1; break;
@@ -182,7 +182,7 @@ BoardExec:{
 			default: bx2 = bx1; by2 = by1; break;
 		}
 		
-		return { pos:new puzzle.Address(bx2,by2), isdel:this.isdel(key,obj) };
+		return { pos:new puzzle.Address(bx2,by2), isdel:this.isdel(key,piece) };
 	}
 }
 });

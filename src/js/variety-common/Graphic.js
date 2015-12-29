@@ -1063,30 +1063,30 @@ Graphic:{
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
-				var obj = this.owner.board.getobj(bx,by);
-				if(!obj.isnull){ this.drawNumbersOn51_1(obj);}
+				var piece = this.owner.board.getobj(bx,by); /* cell or excell */
+				if(!piece.isnull){ this.drawNumbersOn51_1(piece);}
 			}
 		}
 	},
-	drawNumbersOn51_1 : function(obj){
-		var g = this.context, val, adj, px = obj.bx*this.bw, py = obj.by*this.bh;
+	drawNumbersOn51_1 : function(piece){ /* cell or excell */
+		var g = this.context, val, adj, px = piece.bx*this.bw, py = piece.by*this.bh;
 		var option = {ratio:[0.45]};
-		g.fillStyle = (obj.error===1||obj.qinfo===1 ? this.fontErrcolor : this.fontcolor);
+		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.fontErrcolor : this.fontcolor);
 
-		adj = obj.relcell(2,0);
-		val = (obj.ques===51 ? obj.qnum : -1);
+		adj = piece.relcell(2,0);
+		val = (piece.ques===51 ? piece.qnum : -1);
 
-		g.vid = [obj.group, obj.id, 'text_ques51_rt'].join('_');
+		g.vid = [piece.group, piece.id, 'text_ques51_rt'].join('_');
 		if(val>=0 && !adj.isnull && adj.ques!==51){
 			option.position = this.TOPRIGHT;
 			this.disptext(""+val, px, py, option);
 		}
 		else{ g.vhide();}
 
-		adj = obj.relcell(0,2);
-		val = (obj.ques===51 ? obj.qnum2 : -1);
+		adj = piece.relcell(0,2);
+		val = (piece.ques===51 ? piece.qnum2 : -1);
 
-		g.vid = [obj.group, obj.id, 'text_ques51_dn'].join('_');
+		g.vid = [piece.group, piece.id, 'text_ques51_dn'].join('_');
 		if(val>=0 && !adj.isnull && adj.ques!==51){
 			option.position = this.BOTTOMLEFT;
 			this.disptext(""+val, px, py, option);

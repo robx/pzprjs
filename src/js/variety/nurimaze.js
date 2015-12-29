@@ -124,7 +124,7 @@ KeyEvent:{
 		var old=cell.ques, newques=-1;
 		if     (ca==='1'||ca==='q'){ newques=(old!==41?41:0);}
 		else if(ca==='2'||ca==='w'){ newques=(old!==42?42:0);}
-		else if(ca==='3'||ca==='e'||ca===' '){ newques=0;}
+		else if(ca==='3'||ca==='e'||ca===' '||ca==='BS'){ newques=0;}
 		else if(ca==='s'){ bd.startpos.input(cell);}
 		else if(ca==='g'){ bd.goalpos.input(cell);}
 
@@ -436,20 +436,20 @@ FileIO:{
 	
 	decodeCellQues_nurimaze : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="s"){ bd.startpos.set(obj);}
-			else if(ca==="g"){ bd.goalpos.set(obj);}
-			else if(ca==="o"){ obj.ques = 41;}
-			else if(ca==="t"){ obj.ques = 42;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="s"){ bd.startpos.set(cell);}
+			else if(ca==="g"){ bd.goalpos.set(cell);}
+			else if(ca==="o"){ cell.ques = 41;}
+			else if(ca==="t"){ cell.ques = 42;}
 		});
 	},
 	encodeCellQues_nurimaze : function(){
 		var bd = this.owner.board;
-		this.encodeCell( function(obj){
-			if     (bd.startpos.equals(obj)){ return "s ";}
-			else if(bd.goalpos.equals(obj)) { return "g ";}
-			else if(obj.ques===41){ return "o ";}
-			else if(obj.ques===42){ return "t ";}
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "s ";}
+			else if(bd.goalpos.equals(cell)) { return "g ";}
+			else if(cell.ques===41){ return "o ";}
+			else if(cell.ques===42){ return "t ";}
 			else{ return ". ";}
 		});
 	}

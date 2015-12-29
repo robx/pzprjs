@@ -11,7 +11,7 @@ KeyEvent:{
 		var max = cross.getmaxnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cross.qnum;
+			var num = +ca, cur = cross.qnum;
 			if(cur<=0 || cur*10+num>max){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
@@ -48,10 +48,16 @@ KeyEvent:{
 		var max = cell.getmaxnum(), min = cell.getminnum(), val=-1;
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = cell.getNum();
+			var num = +ca, cur = cell.getNum();
 			if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ return false;}
+		}
+		else if(ca==='BS'){
+			var num = cell.getNum();
+			if(num<0){ val = -1;}
+			else if(num<10){ val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
+			else{ val = (num/10)|0;}
 		}
 		else if(ca==='-') { val = ((this.owner.editmode&&!cell.disInputHatena)?-2:-1);}
 		else if(ca===' ') { val = -1;}
@@ -99,12 +105,12 @@ KeyEvent:{
 		var cursor = this.cursor;
 		if(ca==='shift'){ cursor.chtarget(); return;}
 
-		var obj = cursor.getobj();
-		var target = cursor.detectTarget(obj);
-		if(target===0 || (obj.group==='cell' && obj.is51cell())){
-			if(ca==='q' && !obj.isnull){
-				if(!obj.is51cell()){ obj.set51cell();}
-				else               { obj.remove51cell();}
+		var piece = cursor.getobj(); /* cell or excell */
+		var target = cursor.detectTarget(piece);
+		if(target===0 || (piece.group==='cell' && piece.is51cell())){
+			if(ca==='q' && !piece.isnull){
+				if(!piece.is51cell()){ piece.set51cell();}
+				else                 { piece.remove51cell();}
 				cursor.drawaround();
 				return;
 			}
@@ -115,24 +121,24 @@ KeyEvent:{
 		var max = max_obj[target], val=def;
 
 		if('0'<=ca && ca<='9'){
-			var num=parseInt(ca), cur=this.getnum51(obj,target);
-			if(cur<=0 || cur*10+num>max || this.prev!==obj){ cur=0;}
+			var num=+ca, cur=this.getnum51(piece,target);
+			if(cur<=0 || cur*10+num>max || this.prev!==piece){ cur=0;}
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
 		else if(ca==='-' || ca===' '){ val=def;}
 		else{ return;}
 
-		this.setnum51(obj,target,val);
-		this.prev = obj;
+		this.setnum51(piece,target,val);
+		this.prev = piece;
 		cursor.draw();
 	},
-	setnum51 : function(obj,target,val){
-		if(target===2){ obj.setQnum(val);}
-		else          { obj.setQnum2(val);}
+	setnum51 : function(piece,target,val){ /* piece : cell or excell */
+		if(target===2){ piece.setQnum(val);}
+		else          { piece.setQnum2(val);}
 	},
-	getnum51 : function(obj,target){
-		return (target===2 ? obj.qnum : obj.qnum2);
+	getnum51 : function(piece,target){ /* piece : cell or excell */
+		return (target===2 ? piece.qnum : piece.qnum2);
 	}
 }
 });

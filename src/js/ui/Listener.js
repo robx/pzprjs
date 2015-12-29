@@ -55,10 +55,12 @@ ui.listener =
 			ui.event.setWindowEvents();
 		}
 		
+		ui.menuconfig.set('autocheck_once', ui.menuconfig.get('autocheck'));
 		ui.currentpid = pid;
 		
 		ui.adjustcellsize();
 		ui.keypopup.display();
+		ui.misc.setkeyfocus();
 		
 		ui.timer.reset();					/* タイマーリセット(最後) */
 	},
@@ -163,10 +165,7 @@ ui.listener =
 			ui.setdisplay('keypopup');
 			ui.setdisplay('bgcolor');
 			ui.keypopup.display();
-		}
-		else if(idname==='language'){
-			ui.displayAll();
-			puzzle.adjustCanvasPos();
+			ui.misc.setkeyfocus();
 		}
 	},
 
@@ -182,11 +181,7 @@ ui.listener =
 	//---------------------------------------------------------------------------
 	onResize : function(puzzle){
 		var pc = puzzle.painter, val = (ui.getBoardPadding()*Math.min(pc.cw, pc.ch))|0;
-		puzzle.canvas.style.padding = val+'px';
-		
-		if(pc.context.use.vml){
-			pc.context.translate(pc.x0+val, pc.y0+val);
-		}
+		puzzle.canvas.parentNode.style.padding = val+'px';
 		
 		ui.keypopup.resizepanel();
 	}

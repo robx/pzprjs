@@ -139,10 +139,6 @@ Graphic:{
 	canvasWidth  : null,
 	canvasHeight : null,
 
-	// 盤面のページ内の左上座標
-	pageX : 0,
-	pageY : 0,
-
 	// canvas内での盤面の左上座標
 	x0 : 0,
 	y0 : 0,
@@ -237,7 +233,6 @@ Graphic:{
 	//                      (指定なしの場合は、前のキャンバスのサイズを用いる)
 	// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 	//                             (指定なしの場合は、前のセルのサイズを用いる)
-	// pc.adjustCanvas()    キャンバスのサイズを再設定する
 	//---------------------------------------------------------------------------
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
@@ -261,9 +256,6 @@ Graphic:{
 		this.pendingResize = true;
 		if(!insuspend){ this.unsuspend();}
 	},
-	adjustCanvas : function(){
-		this.resizeCanvas();
-	},
 
 	//---------------------------------------------------------------------------
 	// pc.resize_canvas_main() ウィンドウのLoad/Resize時の処理。
@@ -282,9 +274,6 @@ Graphic:{
 
 		// Listener呼び出し
 		this.owner.execListener('resize');
-
-		// 盤面のページ内における座標を設定 (Canvasのサイズ確定後に取得する)
-		this.setPagePos();
 
 		// contextのclear等を呼び出す
 		this.clearObject();
@@ -329,13 +318,6 @@ Graphic:{
 			g.translate(x0, y0);
 			if(!!g2){ g2.translate(x0, y0);}
 		}
-	},
-	setPagePos : function(){
-		var rect, g = this.context;
-		if(!g){ return;}
-		rect = pzpr.util.getRect(g.child);
-		this.pageX = this.x0 + (rect.left|0);
-		this.pageY = this.y0 + (rect.top|0);
 	},
 	clearObject : function(){
 		this.context.clear();

@@ -504,8 +504,6 @@ Encode:{
 		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
 	},
 	encodePzpr : function(type){
-		this.owner.board.hinfo.generateAll();
-
 		var parser = pzpr.parser;
 		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
 
@@ -514,7 +512,6 @@ Encode:{
 
 	decodeKanpen : function(){
 		this.owner.fio.decodeBoard_kanpen();
-		this.owner.board.hinfo.generateGates();
 	},
 	encodeKanpen : function(){
 		this.owner.fio.encodeBoard_kanpen();
@@ -597,12 +594,13 @@ Encode:{
 			}
 		}
 
-		bd.startpos.set( bd.cell[parseInt(array[1])] );
+		bd.startpos.set( bd.cell[+array[1]] );
 
 		this.outbstr = array[0].substr(i);
 	},
 	encodeSlalom : function(ver){
 		var cm="", count=0, bd=this.owner.board;
+		bd.hinfo.generateAll();
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "1";}
@@ -646,7 +644,7 @@ Encode:{
 			if(count>0){ cm+=(15+count).toString(36);}
 		}
 
-		cm += ("/"+bd.startpos.getc().id.toString());
+		cm += ("/"+bd.startpos.getc().id);
 
 		this.outbstr += cm;
 	}
@@ -660,8 +658,6 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.owner.board.hinfo.generateAll();
-
 		this.filever = 2;
 		this.encodeBoard_pzpr2();
 		this.encodeBorderLine();
@@ -670,53 +666,50 @@ FileIO:{
 	kanpenOpen : function(){
 		this.decodeBoard_kanpen();
 		this.decodeBorderLine();
-
-		this.owner.board.hinfo.generateGates();
 	},
 	kanpenSave : function(){
-		this.owner.board.hinfo.generateAll();
-
 		this.encodeBoard_kanpen();
 		this.encodeBorderLine();
 	},
 
 	decodeBoard_pzpr1 : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startpos.set(obj);}
-			else if(ca==="i"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="#"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
-		this.owner.board.hinfo.generateGates();
+		bd.hinfo.generateGates();
 	},
 	decodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="o"){ bd.startpos.set(obj);}
-			else if(ca==="i"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="#"){ obj.ques = 1;}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="o"){ bd.startpos.set(cell);}
+			else if(ca==="i"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="#"){ cell.ques = 1;}
 			else if(ca!=="."){
 				var inp = ca.split(",");
-				obj.ques = 1;
-				obj.qdir = (inp[0]!=="0"?parseInt(inp[0]): 0);
-				obj.qnum = (inp[1]!=="-"?parseInt(inp[1]):-2);
+				cell.ques = 1;
+				cell.qdir = (inp[0]!=="0"?+inp[0]: 0);
+				cell.qnum = (inp[1]!=="-"?+inp[1]:-2);
 			}
 		});
-		this.owner.board.hinfo.generateGates();
+		bd.hinfo.generateGates();
 	},
 	encodeBoard_pzpr2 : function(){
 		var bd = this.owner.board;
-		this.encodeCell( function(obj){
-			if     (bd.startpos.equals(obj)){ return "o ";}
-			else if(obj.ques===21){ return "i ";}
-			else if(obj.ques===22){ return "- ";}
-			else if(obj.ques=== 1 && obj.qnum<=0){ return "# ";}
-			else if(obj.ques=== 1){
-				var ca1 = (obj.qdir!== 0?obj.qdir.toString():"0");
-				var ca2 = (obj.qnum!==-2?obj.qnum.toString():"-");
+		bd.hinfo.generateAll();
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "o ";}
+			else if(cell.ques===21){ return "i ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1 && cell.qnum<=0){ return "# ";}
+			else if(cell.ques=== 1){
+				var ca1 = (cell.qdir!== 0 ? ""+cell.qdir : "0");
+				var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
 				return [ca1, ",", ca2, " "].join('');
 			}
 			else{ return ". ";}
@@ -725,38 +718,78 @@ FileIO:{
 
 	decodeBoard_kanpen : function(){
 		var bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			if     (ca==="+"){ bd.startpos.set(obj);}
-			else if(ca==="|"){ obj.ques = 21;}
-			else if(ca==="-"){ obj.ques = 22;}
-			else if(ca==="0"){ obj.ques = 1;}
-			else if(ca!=="."){ obj.ques = 1; obj.qnum = parseInt(ca);}
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ bd.startpos.set(cell);}
+			else if(ca==="|"){ cell.ques = 21;}
+			else if(ca==="-"){ cell.ques = 22;}
+			else if(ca==="0"){ cell.ques = 1;}
+			else if(ca!=="."){ cell.ques = 1; cell.qnum = +ca;}
 		});
+		bd.hinfo.generateGates();
 	},
 	encodeBoard_kanpen : function(){
 		var bd = this.owner.board;
-		this.encodeCell( function(obj){
-			if     (bd.startpos.equals(obj)){ return "+ ";}
-			else if(obj.ques===21){ return "| ";}
-			else if(obj.ques===22){ return "- ";}
-			else if(obj.ques=== 1){
-				return (obj.qnum>0 ? obj.qnum.toString() : "0")+" ";
+		bd.hinfo.generateAll();
+		this.encodeCell( function(cell){
+			if     (bd.startpos.equals(cell)){ return "+ ";}
+			else if(cell.ques===21){ return "| ";}
+			else if(cell.ques===22){ return "- ";}
+			else if(cell.ques=== 1){
+				return (cell.qnum>0 ? cell.qnum+" " : "0 ");
 			}
 			else{ return ". ";}
 		});
 	},
 
+	kanpenOpenXML : function(){
+		this.decodeCellSlalom_XMLBoard();
+		this.decodeBorderLine_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellSlalom_XMLBoard();
+		this.encodeBorderLine_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : -3,
+	decodeCellSlalom_XMLBoard : function(){
+		var bd = this.owner.board;
+		this.decodeCellXMLBoard(function(cell, val){
+			if(val>=0){
+				cell.ques = 1;
+				if(val>0){ cell.qnum = val;}
+			}
+			else if(val===-5){ cell.ques = 21;}
+			else if(val===-4){ cell.ques = 22;}
+			else if(val===-1){ bd.startpos.set(cell);}
+		});
+		bd.hinfo.generateGates();
+	},
+	encodeCellSlalom_XMLBoard : function(){
+		var bd = this.owner.board;
+		bd.hinfo.generateAll();
+		this.encodeCellXMLBoard(function(cell){
+			var val = -3;
+			if(cell.ques=== 1){
+				val = (cell.qnum>0 ? cell.qnum : 0);
+			}
+			else if(cell.ques===21){ val = -5;}
+			else if(cell.ques===22){ val = -4;}
+			else if(bd.startpos.equals(cell)){ val = -1;}
+			return val;
+		});
+	},
+
 	decodeBoard_old : function(){
 		var sv_num = [], bd = this.owner.board;
-		this.decodeCell( function(obj,ca){
-			var c = obj.id;
+		this.decodeCell( function(cell,ca){
+			var c = cell.id;
 			sv_num[c]=-1;
-			if     (ca==="#"){ obj.ques = 1;}
-			else if(ca==="o"){ bd.startpos.set(obj);}
+			if     (ca==="#"){ cell.ques = 1;}
+			else if(ca==="o"){ bd.startpos.set(cell);}
 			else if(ca!=="."){
-				if     (ca.charAt(0)==="i"){ obj.ques = 21;}
-				else if(ca.charAt(0)==="w"){ obj.ques = 22;}
-				if(ca.length>1){ sv_num[c] = parseInt(ca.substr(1));}
+				if     (ca.charAt(0)==="i"){ cell.ques = 21;}
+				else if(ca.charAt(0)==="w"){ cell.ques = 22;}
+				if(ca.length>1){ sv_num[c] = +ca.substr(1);}
 			}
 		});
 		bd.hinfo.generateGates();

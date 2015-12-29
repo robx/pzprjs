@@ -99,7 +99,18 @@ FileIO:{
 	kanpenSave : function(){
 		this.encodeCellQnum_kanpen();
 		this.encodeCellAnum_kanpen();
-	}
+	},
+
+	kanpenOpenXML : function(){
+		this.decodeCellQnum_XMLBoard();
+		this.decodeCellAnum_XMLAnswer();
+	},
+	kanpenSaveXML : function(){
+		this.encodeCellQnum_XMLBoard();
+		this.encodeCellAnum_XMLAnswer();
+	},
+
+	UNDECIDED_NUM_XML : 0
 },
 
 //---------------------------------------------------------

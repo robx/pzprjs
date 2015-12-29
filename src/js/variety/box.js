@@ -68,7 +68,7 @@ KeyEvent:{
 		var max = excell.getmaxnum();
 
 		if('0'<=ca && ca<='9'){
-			var num = parseInt(ca);
+			var num = +ca;
 
 			if(qn<=0 || this.prev!==excell){
 				if(num<=max){ excell.setQnum(num);}
@@ -246,9 +246,9 @@ Encode:{
 	decodeBox : function(){
 		var ec=0, bstr = this.outbstr, bd = this.owner.board;
 		for(var a=0;a<bstr.length;a++){
-			var ca=bstr.charAt(a), obj=bd.excell[ec];
-			if(ca==='-'){ obj.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
-			else        { obj.qnum = parseInt(ca,32);}
+			var ca=bstr.charAt(a), excell=bd.excell[ec];
+			if(ca==='-'){ excell.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
+			else        { excell.qnum = parseInt(ca,32);}
 			ec++;
 			if(ec >= bd.qcols+bd.qrows){ a++; break;}
 		}
@@ -277,7 +277,7 @@ FileIO:{
 			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
 			var excell = bd.getex(bx,by);
 			if(!excell.isnull){
-				excell.qnum = parseInt(ca);
+				excell.qnum = +ca;
 			}
 
 			var cell = bd.getc(bx,by);
@@ -294,7 +294,7 @@ FileIO:{
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
 					if(excell.id<bd.qcols+bd.qrows){
-						this.datastr += (excell.qnum.toString()+" ");
+						this.datastr += (excell.qnum+" ");
 					}
 					else{
 						this.datastr += ". ";

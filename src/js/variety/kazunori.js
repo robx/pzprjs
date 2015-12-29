@@ -71,7 +71,7 @@ KeyEvent:{
 		if     (ca===' '){ border.setQnum(-1);}
 		else if(ca==='-'){ border.setQnum(border.qnum!==-2 ? -2 : -1);}
 		else if('0'<=ca && ca<='9'){
-			var num = parseInt(ca), cur = border.qnum;
+			var num = +ca, cur = border.qnum;
 			var max = border.maxnum();
 			if(this.prev===border && cur>0 && cur*10+num<=max){ num = cur*10+num;}
 			if(num>0 && num<=max){ border.setQnum(num);}
@@ -257,14 +257,14 @@ FileIO:{
 			else if(ca==="!"){ border.qnum = -2;}
 			else if(ca!=="."){
 				if(ca.charAt(0)!=="!"){ border.ques = 1;}else{ ca = ca.substr(1);}
-				border.qnum = parseInt(ca);
+				border.qnum = +ca;
 			}
 		});
 		this.decodeCellAnumsub();
 	},
 	encodeData : function(){
 		this.encodeBorder( function(border){
-			if     (border.qnum>=  0){ return (border.ques===1?"":"!")+border.qnum.toString()+" ";}
+			if     (border.qnum>=  0){ return (border.ques===1?"":"!")+border.qnum+" ";}
 			else if(border.qnum===-2){ return (border.ques===1?"- ":"! ");}
 			else                     { return (border.ques===1?"| ":". ");}
 		});
