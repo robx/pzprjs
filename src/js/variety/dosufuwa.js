@@ -6,10 +6,10 @@ pzpr.classmgr.makeCustom(['dosufuwa'], {
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.owner.playmode){
+		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && (this.inputData<=0))){ this.inputcell_dosufuwa();}
 		}
-		else if(this.owner.editmode){
+		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
 			else if(this.mouseend && this.notInputted()){ this.inputblock();}
 		}
@@ -66,9 +66,9 @@ Board:{
 	hasborder : 1
 },
 
-AreaRoomManager:{
+AreaRoomGraph:{
 	enabled : true,
-	isvalid : function(cell){ return (cell.ques===0);}
+	isnodevalid : function(cell){ return (cell.ques===0);}
 },
 
 //---------------------------------------------------------
@@ -123,7 +123,7 @@ Encode:{
 
 	// 元ネタはencode/decodeCrossMark
 	decodeBlockCell : function(){
-		var cc=0, i=0, bstr = this.outbstr, bd = this.owner.board;
+		var cc=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -139,7 +139,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodeBlockCell : function(){
-		var cm="", count=0, bd = this.owner.board;
+		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cellmax;c++){
 			var pstr="";
 			if(bd.cell[c].ques===1){ pstr = ".";}
@@ -156,7 +156,7 @@ Encode:{
 	encodeBorder_makaro : function(){
 		/* 同じ見た目のパズルにおけるURLを同じにするため、          */
 		/* 一時的にborder.ques=1にしてURLを出力してから元に戻します */
-		var bd = this.owner.board, sv_ques = [];
+		var bd = this.board, sv_ques = [];
 		for(var id=0;id<bd.bdmax;id++){
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
@@ -182,7 +182,7 @@ FileIO:{
 
 	// オーバーライド
 	decodeAreaRoom_com : function(isques){
-		var bd = this.owner.board;
+		var bd = this.board;
 		this.readLine();
 		var items = this.getItemList(bd.qrows);
 		this.rdata2Border(isques, items);
@@ -191,14 +191,16 @@ FileIO:{
 			if(items[c]==='#'){ bd.cell[c].ques = 1;}
 		}
 
-		bd.rooms.reset();
+		bd.roommgr.rebuild();
 	},
 	encodeAreaRoom_com : function(isques){
-		var bd = this.owner.board, rinfo = bd.getRoomInfo();
-
-		this.datastr += (rinfo.max+"\n");
+		var bd = this.board;
+		bd.roommgr.rebuild();
+		var rooms = bd.roommgr.components;
+		this.datastr += (rooms.length+"\n");
 		for(var c=0;c<bd.cellmax;c++){
-			this.datastr += (""+(rinfo.id[c]>0 ? rinfo.id[c]-1 : "#")+" ");
+			var roomid = rooms.indexOf(bd.cell[c].room);
+			this.datastr += (""+(roomid>=0 ? roomid : "#")+" ");
 			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
 		}
 	}
@@ -217,16 +219,16 @@ AnsCheck:{
 	],
 
 	checkOverUnshadeCircle : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans===1;}, function(w,h,a,n){ return (a<=1);}, "bkUCGe2");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans===1;}, function(w,h,a,n){ return (a<=1);}, "bkUCGe2");
 	},
 	checkOverShadeCircle : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans===2;}, function(w,h,a,n){ return (a<=1);}, "bkSCGe2");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans===2;}, function(w,h,a,n){ return (a<=1);}, "bkSCGe2");
 	},
 	checkNoUnshadeCircle : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans===1;}, function(w,h,a,n){ return (a>=1);}, "bkNoUC");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans===1;}, function(w,h,a,n){ return (a>=1);}, "bkNoUC");
 	},
 	checkNoShadeCircle : function(){
-		this.checkAllBlock(this.getRoomInfo(), function(cell){ return cell.qans===2;}, function(w,h,a,n){ return (a>=1);}, "bkNoSC");
+		this.checkAllBlock(this.board.roommgr, function(cell){ return cell.qans===2;}, function(w,h,a,n){ return (a>=1);}, "bkNoSC");
 	},
 
 	checkBalloonIsTop : function(){
