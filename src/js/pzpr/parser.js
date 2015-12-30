@@ -63,7 +63,7 @@ pzpr.parser.URLData = function(url){
 	this.url = url;
 };
 pzpr.parser.URLData.prototype = {
-	id      : '',
+	pid     : '',
 	type    : URL_AUTO,	/* ==0 */
 	url     : "",
 	qdata   : "",
@@ -95,7 +95,7 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	// ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
 	//                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
-	//                   出力={id:パズル種類, type:URL種類, qdata:タテヨコ以下のデータ}
+	//                   出力={pid:パズル種類, type:URL種類, qdata:タテヨコ以下のデータ}
 	//                         qdata -> [(pflag)/](cols)/(rows)/(bstr)
 	//---------------------------------------------------------------------------
 	parseURLType : function(){
@@ -104,48 +104,48 @@ pzpr.parser.URLData.prototype = {
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			url.match(/([0-9a-z]+)\.html/);
-			this.id = RegExp.$1;
+			this.pid = RegExp.$1;
 			// カンペンだけどデータ形式はへやわけアプレット
 			if(url.indexOf("?heyawake=")>=0){
 				this.qdata = url.substr(url.indexOf("?heyawake=")+10);
-				this.type = this.URL_HEYAAPP;
+				this.type = URL_HEYAAPP;
 			}
 			// カンペンだけどデータ形式はぱずぷれ
 			else if(url.indexOf("?pzpr=")>=0){
 				this.qdata = url.substr(url.indexOf("?pzpr=")+6);
-				this.type = this.URL_PZPRV3;
+				this.type = URL_PZPRV3;
 			}
 			else{
 				this.qdata = url.substr(url.indexOf("?problem=")+9);
-				this.type = this.URL_KANPEN;
+				this.type = URL_KANPEN;
 			}
 		}
 		// へやわけアプレットの場合
 		else if(url.match(/www\.geocities(\.co)?\.jp\/heyawake/)){
-			this.id = 'heyawake';
+			this.pid = 'heyawake';
 			this.qdata = url.substr(url.indexOf("?problem=")+9);
-			this.type = this.URL_HEYAAPP;
+			this.type = URL_HEYAAPP;
 		}
 		// ぱずぷれアプレットの場合
 		else if(url.match(/indi\.s58\.xrea\.com\/(.+)\/(sa|sc)\//)){
-			this.id = RegExp.$1;
+			this.pid = RegExp.$1;
 			this.qdata = url.substr(url.indexOf("?"));
-			this.type = this.URL_PZPRAPP;
+			this.type = URL_PZPRAPP;
 		}
 		// ぱずぷれv3の場合
 		else{
 			var qs = url.indexOf("/", url.indexOf("?"));
 			if(qs>-1){
-				this.id = url.substring(url.indexOf("?")+1,qs);
+				this.pid = url.substring(url.indexOf("?")+1,qs);
 				this.qdata = url.substr(qs+1);
 			}
 			else{
-				this.id = url.substr(url.indexOf("?")+1);
+				this.pid = url.substr(url.indexOf("?")+1);
 			}
-			this.id = this.id.replace(/(m\+|_edit|_test|_play)/,'');
-			this.type = this.URL_PZPRV3;
+			this.pid = this.pid.replace(/(m\+|_edit|_test|_play)/,'');
+			this.type = URL_PZPRV3;
 		}
-		this.id = pzpr.variety.toPID(this.id);
+		this.pid = pzpr.variety.toPID(this.pid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -153,25 +153,25 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
-		var domain = document.domain, url = "";
+		var domain = document.domain, url = "", pid = this.pid;
 		if(!!domain){ domain += location.pathname;}
 		else{ domain = "pzv.jp/p.html";}
 		switch(this.type){
-			case this.URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
-			case this.URL_PZPRV3E: url="http://"+domain+"?%PID%_edit/"; break;
-			case this.URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
-			case this.URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
-			case this.URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
-			case this.URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
+			case URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
+			case URL_PZPRV3E: url="http://"+domain+"?%PID%_edit/"; break;
+			case URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
+			case URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
+			case URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
+			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 		}
 
-		if(this.type===this.URL_PZPRAPP){
-			if     (this.id==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
-			else if(this.id==='heyabon')  { url=url.replace("%PID%","bonsan");}
+		if(this.type===URL_PZPRAPP){
+			if     (pid==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
+			else if(pid==='heyabon')  { url=url.replace("%PID%","bonsan");}
 		}
 
-		return url.replace("%PID%", pzpr.variety.toURLID(this.id))
-				  .replace("%KID%", pzpr.variety.toKanpen(this.id));
+		return url.replace("%PID%", pzpr.variety.toURLID(pid))
+				  .replace("%KID%", pzpr.variety.toKanpen(pid));
 	},
 
 	//---------------------------------------------------------------------------
@@ -181,18 +181,18 @@ pzpr.parser.URLData.prototype = {
 	parseURLData : function(){
 		var inp = this.qdata.split("/"), col = 0, row = 0;
 		/* URLにつけるオプション */
-		if(this.type!==this.URL_KANPEN && this.type!==this.URL_HEYAAPP){
+		if(this.type!==URL_KANPEN && this.type!==URL_HEYAAPP){
 			if(!isNaN(inp[0])){ inp.unshift("");}
 			this.pflag = inp.shift();
 		}
 		
 		/* サイズを表す文字列 */
-		if(this.type===this.URL_KANPEN){
-			if(this.id==="kakuro"){
+		if(this.type===URL_KANPEN){
+			if(this.pid==="kakuro"){
 				row = +inp.shift() - 1;
 				col = +inp.shift() - 1;
 			}
-			else if(this.id==="sudoku"){
+			else if(this.pid==="sudoku"){
 				row = col = +inp.shift();
 			}
 			else{
@@ -200,7 +200,7 @@ pzpr.parser.URLData.prototype = {
 				col = +inp.shift();
 			}
 		}
-		else if(this.type===this.URL_HEYAAPP){
+		else if(this.type===URL_HEYAAPP){
 			var size = inp.shift().split("x");
 			col = +size[0];
 			row = +size[1];
@@ -223,17 +223,17 @@ pzpr.parser.URLData.prototype = {
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
 
 		/* URLにつけるオプション */
-		if(pzl.type!==this.URL_KANPEN && pzl.type!==this.URL_HEYAAPP){
+		if(pzl.type!==URL_KANPEN && pzl.type!==URL_HEYAAPP){
 			if(pzl.pflag!==null){ out.push(pzl.pflag);}
 		}
 
 		/* サイズを表す文字列 */
-		if(pzl.type===this.URL_KANPEN){
-			if(pzl.id==="kakuro"){
+		if(pzl.type===URL_KANPEN){
+			if(pzl.pid==="kakuro"){
 				out.push(row + 1);
 				out.push(col + 1);
 			}
-			else if(pzl.id==="sudoku"){
+			else if(pzl.pid==="sudoku"){
 				out.push(col);
 			}
 			else{
@@ -241,7 +241,7 @@ pzpr.parser.URLData.prototype = {
 				out.push(col);
 			}
 		}
-		else if(pzl.type===this.URL_HEYAAPP){
+		else if(pzl.type===URL_HEYAAPP){
 			out.push([col, row].join("x"));
 		}
 		else{
@@ -260,12 +260,12 @@ pzpr.parser.URLData.prototype = {
 // ★ FileData() ファイルデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
 pzpr.parser.FileData = function(fstr, variety){
-	this.id   = (!!variety ? variety : '');
+	this.pid  = (!!variety ? variety : '');
 	this.fstr = fstr;
 	this.metadata = new pzpr.MetaData();
 };
 pzpr.parser.FileData.prototype = {
-	id      : '',
+	pid     : '',
 	type    : FILE_AUTO,	/* == 0 */
 	filever : 0,
 	fstr    : "",
@@ -295,7 +295,7 @@ pzpr.parser.FileData.prototype = {
 	
 	//---------------------------------------------------------------------------
 	// ★ parseFileType() 入力されたファイルのデータからどのパズルか、およびパズルの種類を抽出する
-	//                   出力={id:パズル種類, type:ファイル種類, fstr:ファイルの内容}
+	//                   出力={pid:パズル種類, type:ファイル種類, fstr:ファイルの内容}
 	//---------------------------------------------------------------------------
 	parseFileType : function(){
 		var lines = this.fstr.split("\n");
@@ -303,30 +303,30 @@ pzpr.parser.FileData.prototype = {
 		
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
 		if(firstline.match(/^pzprv3/)){
-			this.type = this.FILE_PZPR;
+			this.type = FILE_PZPR;
 			if(firstline.match(/pzprv3\.(\d+)/)){ this.filever = +RegExp.$1;}
-			this.id = lines.shift();
+			this.pid = lines.shift();
 			this.qdata = lines.join("\n");
 		}
 		else if(firstline.match(/^\<\?xml/)){ // jshint ignore:line
-			this.type = this.FILE_PBOX_XML;
+			this.type = FILE_PBOX_XML;
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
 			if(!!DOMParser){
 				this.xmldoc = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
-				this.id = this.xmldoc.querySelector('puzzle').getAttribute('type');
+				this.pid = this.xmldoc.querySelector('puzzle').getAttribute('type');
 			}
-			else{ this.id = '';}
+			else{ this.pid = '';}
 		}
 		else if(firstline.match(/^\d+$/)){
-			this.type = this.FILE_PBOX;
+			this.type = FILE_PBOX;
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
 		}
-		else{ this.id = '';}
-		this.id = pzpr.variety.toPID(this.id);
+		else{ this.pid = '';}
+		this.pid = pzpr.variety.toPID(this.pid);
 		
-		return (!!this.id);
+		return (!!this.pid);
 	},
 	
 	//---------------------------------------------------------------------------
@@ -334,11 +334,11 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileType : function(){
 		/* ヘッダの処理 */
-		if(this.type===this.FILE_PZPR){
-			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.id, ""].join("\n");
+		if(this.type===FILE_PZPR){
+			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.pid, ""].join("\n");
 		}
-		else if(this.type===this.FILE_PBOX_XML){
-			this.xmldoc.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.id));
+		else if(this.type===FILE_PBOX_XML){
+			this.xmldoc.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.pid));
 		}
 		return "";
 	},
@@ -350,16 +350,16 @@ pzpr.parser.FileData.prototype = {
 		var lines = this.qdata.split("\n"), col = 0, row = 0;
 		
 		/* サイズを表す文字列 */
-		if(this.type===this.FILE_PBOX_XML){
+		if(this.type===FILE_PBOX_XML){
 			row = +this.xmldoc.querySelector('size').getAttribute('row');
 			col = +this.xmldoc.querySelector('size').getAttribute('col');
-			if(this.id==="slither"||this.id==='kakuro'){ row--; col--;}
+			if(this.pid==="slither"||this.pid==='kakuro'){ row--; col--;}
 		}
-		else if(this.type===this.FILE_PBOX && this.id==="kakuro"){
+		else if(this.type===FILE_PBOX && this.pid==="kakuro"){
 			row = +lines.shift() - 1;
 			col = +lines.shift() - 1;
 		}
-		else if(this.id==="sudoku"){
+		else if(this.pid==="sudoku"){
 			row = col = +lines.shift();
 		}
 		else{
@@ -371,7 +371,7 @@ pzpr.parser.FileData.prototype = {
 		this.cols = col;
 		
 		/* サイズ以降のデータを取得 */
-		if(this.type===this.FILE_PZPR){
+		if(this.type===FILE_PZPR){
 			var historypos = null, str = "", strs = [], isinfo = false;
 			for(var i=0;i<lines.length;i++){
 				/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
@@ -412,10 +412,10 @@ pzpr.parser.FileData.prototype = {
 				}
 			}
 		}
-		else if(this.type===this.FILE_PBOX){
+		else if(this.type===FILE_PBOX){
 			this.bstr = lines.join("\n");
 		}
-		else if(this.type===this.FILE_PBOX_XML){
+		else if(this.type===FILE_PBOX_XML){
 			if(!!DOMParser){
 				var metanode = this.xmldoc.querySelector('property'), meta = this.metadata;
 				meta.author = metanode.querySelector('author').getAttribute('value');
@@ -434,18 +434,18 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileData : function(){
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
-		var puzzlenode = (this.type===this.FILE_PBOX_XML ? this.xmldoc.querySelector('puzzle') : null);
+		var puzzlenode = (this.type===FILE_PBOX_XML ? this.xmldoc.querySelector('puzzle') : null);
 
 		/* サイズを表す文字列 */
-		if(this.type===this.FILE_PBOX_XML){
-			if(this.id==="slither"||this.id==='kakuro'){ row++; col++;}
+		if(pzl.type===FILE_PBOX_XML){
+			if(pzl.pid==="slither"||pzl.pid==='kakuro'){ row++; col++;}
 			puzzlenode.appendChild(this.createXMLNode('size', {row:row, col:col}));
 		}
-		else if(pzl.type===this.FILE_PBOX && pzl.id==="kakuro"){
+		else if(pzl.type===FILE_PBOX && pzl.pid==="kakuro"){
 			out.push(row + 1);
 			out.push(col + 1);
 		}
-		else if(pzl.id==="sudoku"){
+		else if(pzl.pid==="sudoku"){
 			out.push(col);
 		}
 		else{
@@ -454,12 +454,12 @@ pzpr.parser.FileData.prototype = {
 		}
 
 		/* サイズ以降のデータを設定 */
-		if(this.type!==this.FILE_PBOX_XML){
+		if(pzl.type!==FILE_PBOX_XML){
 			out.push(pzl.bstr);
 		}
 
 		/* 履歴・メタデータ出力がある形式ならば出力する */
-		if((this.type===this.FILE_PZPR) && !!window.JSON){
+		if((pzl.type===FILE_PZPR) && !!window.JSON){
 			if(!pzl.metadata.empty()){
 				var info = {metadata:pzl.metadata.getvaliddata()};
 				if(pzl.history){ info.history = pzl.history;}
@@ -469,7 +469,7 @@ pzpr.parser.FileData.prototype = {
 				out.push("history:" + JSON.stringify(pzl.history,null,1));
 			}
 		}
-		else if(this.type===this.FILE_PBOX_XML){
+		else if(pzl.type===FILE_PBOX_XML){
 			var propnode = this.createXMLNode('property'), meta = pzl.metadata;
 			propnode.appendChild(this.createXMLNode('author',     {value:meta.author}));
 			propnode.appendChild(this.createXMLNode('source',     {value:meta.source}));
@@ -487,7 +487,7 @@ pzpr.parser.FileData.prototype = {
 		}
 
 		var outputdata;
-		if(this.type!==this.FILE_PBOX_XML){
+		if(pzl.type!==FILE_PBOX_XML){
 			outputdata = out.join("\n");
 		}
 		else{

@@ -172,7 +172,7 @@ ui.debug.extend(
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
 		var pzl = new pzpr.parser.URLData('');
-		pzl.id    = self.pid;
+		pzl.pid   = self.pid;
 		pzl.type  = pzl.URL_PZPRV3;
 		var inp = pzl.outputURLType() + self.urls[self.pid];
 		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
@@ -188,7 +188,7 @@ ui.debug.extend(
 			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
 
-			if(pzpr.parser.parse(kanpen_url).id!==puzzle.pid){
+			if(pzpr.parser.parse(kanpen_url).pid!==puzzle.pid){
 				self.addTA("Encode kanpen = id fail..."); self.fails++;
 			}
 			puzzle.once('ready', function(){

@@ -296,7 +296,7 @@ v3index.dbif.extend({
 			var row = JSON.parse(data);
 			if(row.id==null){ break;}
 			var pzl = pzpr.parser.parse(row.pdata);
-			row.pid = pzl.id;
+			row.pid = pzl.pid;
 			row.col = pzl.cols;
 			row.row = pzl.rows;
 			DBlist.push(row);

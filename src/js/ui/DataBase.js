@@ -45,7 +45,7 @@ ui.ProblemData.prototype =
 		var data = JSON.parse(str);
 		for(var key in data){ this[key]=data[key];}
 		var pzl = pzpr.parser.parse(this.pdata);
-		this.pid = pzl.id;
+		this.pid = pzl.pid;
 		this.col = pzl.cols;
 		this.row = pzl.rows;
 		return this;

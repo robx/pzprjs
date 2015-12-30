@@ -296,7 +296,7 @@ function openExecute(puzzle, data, variety){
 	var Board = ((!!classes && !!classes.Board) ? classes.Board : null);
 	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
 
-	pzpr.classmgr.setPuzzleClass(puzzle, pzl.id, function(){
+	pzpr.classmgr.setPuzzleClass(puzzle, pzl.pid, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.klass.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}

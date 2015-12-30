@@ -33,7 +33,7 @@ function importData(){
 		onload_pzl = (importFileData() || importURL());
 		
 		/* 指定されたパズルがない場合はさようなら～ */
-		if(!onload_pzl || !onload_pzl.id){
+		if(!onload_pzl || !onload_pzl.pid){
 			var title2 = document.getElementById('title2');
 			if(!!title2){ title2.innerHTML = "Fail to import puzzle data or URL.";}
 			throw new Error("No Include Puzzle Data Exception");
@@ -44,7 +44,7 @@ function importData(){
 }
 
 function includeDebugFile(){
-	var pid = onload_pzl.id, result = true;
+	var pid = onload_pzl.pid, result = true;
 	
 	/* 必要な場合、テスト用ファイルのinclude         */
 	/* importURL()後でないと必要かどうか判定できない */
@@ -66,7 +66,7 @@ function includeDebugFile(){
 }
 
 function startPuzzle(){
-	var pzl = onload_pzl, pid = pzl.id;
+	var pzl = onload_pzl, pid = pzl.pid;
 	
 	/* パズルオブジェクトの作成 */
 	var element = document.getElementById('divques');
@@ -166,7 +166,7 @@ function getStorageData(key, key2){
 // ★accesslog() playerのアクセスログをとる
 //---------------------------------------------------------------------------
 function accesslog(){
-	if(pzpr.EDITOR || !onload_pzl.id || !require_accesslog){ return;}
+	if(pzpr.EDITOR || !onload_pzl.pid || !require_accesslog){ return;}
 
 	if(document.domain!=='indi.s58.xrea.com' &&
 	   document.domain!=='pzprv3.sakura.ne.jp' &&
@@ -188,7 +188,7 @@ function accesslog(){
 	if(xmlhttp){
 		var data = [
 			("scr="     + "pzprv3"),
-			("pid="     + onload_pzl.id),
+			("pid="     + onload_pzl.pid),
 			("referer=" + refer),
 			("pzldata=" + onload_pzl.qdata)
 		].join('&');

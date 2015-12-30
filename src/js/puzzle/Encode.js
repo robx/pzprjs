@@ -92,7 +92,7 @@ Encode:{
 			throw "no Implemention";
 		}
 
-		pzl.id    = pid;
+		pzl.pid   = pid;
 		pzl.type  = type;
 		pzl.pflag = this.outpflag;
 		pzl.cols  = this.outcols;
