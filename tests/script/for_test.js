@@ -123,7 +123,7 @@ ui.debug.extend(
 	pid : '',
 	all_test : function(){
 		if(this.alltimer !== null){ return;}
-		var pnum=0, term, idlist=[], self = this;
+		var pnum=0, term, idlist=[], self = this, starttime = pzpr.util.currentTime();
 		self.phase = 99;
 
 		for(var id in pzpr.variety.info){ idlist.push(id);}
@@ -145,7 +145,11 @@ ui.debug.extend(
 				self.sccheck();
 				self.addTA("Test ("+pnum+", "+newid+") start.");
 				pnum++;
-				if(pnum >= term){ clearInterval(self.alltimer);}
+				if(pnum >= term){
+					clearInterval(self.alltimer);
+					var ms = ((pzpr.util.currentTime() - starttime)/100)|0;
+					self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
+				}
 			});
 			ui.puzzle.open(newid+"/"+self.urls[newid]);
 		},100);
