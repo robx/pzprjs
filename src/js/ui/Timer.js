@@ -42,7 +42,7 @@ ui.timer =
 	update : function(){
 		this.current = pzpr.util.currentTime();
 
-		if(pzpr.PLAYER){ this.updatetime();}
+		if(ui.puzzle.playeronly){ this.updatetime();}
 		if(ui.menuconfig.get('autocheck_once')){ this.ACcheck();}
 	},
 

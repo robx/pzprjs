@@ -121,8 +121,7 @@ function importURL(){
 	var pzl = pzpr.parser.parseURL(search);
 
 	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
-	pzpr.EDITOR = (startmode==='EDITOR');
-	pzpr.PLAYER = !pzpr.EDITOR;
+	if(startmode==='PLAYER'){ onload_option.playeronly = true;}
 
 	return pzl;
 }
@@ -138,8 +137,6 @@ function importFileData(){
 	var pzl = pzpr.parser.parseFile(fstr, '');
 	if(!pzl){ return null;}
 
-	pzpr.EDITOR = true;
-	pzpr.PLAYER = false;
 	require_accesslog = false;
 	
 	return pzl;

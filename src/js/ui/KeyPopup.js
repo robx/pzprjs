@@ -128,7 +128,7 @@ ui.keypopup =
 		var type = this.type[ui.puzzle.pid];
 		if(!type){ type=[0,0];}
 		
-		this.paneltype = { 1:(pzpr.EDITOR?type[0]:0), 3:(type[1])};
+		this.paneltype = { 1:(!ui.puzzle.playeronly?type[0]:0), 3:(type[1])};
 		if(!this.paneltype[1] && !this.paneltype[3]){ return;}
 		
 		if(!this.element){

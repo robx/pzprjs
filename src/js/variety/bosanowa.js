@@ -142,7 +142,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		if(pzpr.EDITOR){
+		if(!this.puzzle.playeronly){
 			var cell = this.puzzle.cursor.getc(); /* 真ん中にあるはず */
 			if(!cell.isnull){ cell.ques = 0;}
 		}
@@ -175,7 +175,7 @@ Graphic:{
 		this.drawNumbers();
 		this.drawNumbersBD();
 
-		if(pzpr.EDITOR && !this.outputImage){
+		if(!this.puzzle.playeronly && !this.outputImage){
 			this.drawChassis();
 		}
 

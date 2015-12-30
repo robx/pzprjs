@@ -97,7 +97,7 @@ ui.event =
 		ui.puzzle.mouse.mousereset();
 	},
 	onbeforeunload_func : function(e){
-		if(pzpr.PLAYER || !ui.puzzle.ismodified()){ return;}
+		if(ui.puzzle.playeronly || !ui.puzzle.ismodified()){ return;}
 		
 		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
 		e.returnValue = msg;

@@ -375,7 +375,7 @@ Graphic:{
 
 	getCanvasCols : function(){
 		var bd = this.board, cols = this.getBoardCols()+2*this.margin;
-		if(pzpr.PLAYER){
+		if(this.puzzle.playeronly){
 			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.7;}
 			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols+=0.7;}
 		}
@@ -384,7 +384,7 @@ Graphic:{
 	},
 	getCanvasRows : function(){
 		var bd = this.board, rows = this.getBoardRows()+2*this.margin;
-		if(pzpr.PLAYER){
+		if(this.puzzle.playeronly){
 			if(bd.arrowin.by===bd.minby+2 || bd.arrowout.by===bd.minby+2){ rows+=0.7;}
 			if(bd.arrowin.by===bd.maxby-2 || bd.arrowout.by===bd.maxby-2){ rows+=0.7;}
 		}
@@ -403,7 +403,7 @@ Graphic:{
 
 	getOffsetCols : function(){
 		var bd = this.board, cols = 0;
-		if(pzpr.PLAYER){
+		if(this.puzzle.playeronly){
 			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.35;}
 			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols-=0.35;}
 		}
@@ -411,7 +411,7 @@ Graphic:{
 	},
 	getOffsetRows : function(){
 		var bd = this.board, rows = 0;
-		if(pzpr.PLAYER){
+		if(this.puzzle.playeronly){
 			if(bd.arrowin.by===bd.minby+2 || bd.arrowout.by===bd.minby+2){ rows+=0.35;}
 			if(bd.arrowin.by===bd.maxby-2 || bd.arrowout.by===bd.maxby-2){ rows-=0.35;}
 		}

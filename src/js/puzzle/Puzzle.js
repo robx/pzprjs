@@ -13,7 +13,8 @@ pzpr.Puzzle = function(canvas, option){
 	this.opt = option || {};
 	if(pzpr.env.browser.Presto){ this.opt.graphic='canvas';}
 
-	this.editmode = pzpr.EDITOR;		// 問題配置モード
+	this.playeronly = !!this.opt.playeronly;	// 回答モードのみで動作する
+	this.editmode = !this.playeronly;	// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
 
 	this.resetTime();
@@ -37,6 +38,7 @@ pzpr.Puzzle.prototype =
 	ready    : false,
 	editmode : false,	// 問題配置モード
 	playmode : false,	// 回答モード
+	playeronly : false,	// 回答モードのみで動作する
 	
 	starttime : 0,
 	
@@ -243,7 +245,7 @@ pzpr.Puzzle.prototype =
 		this.board.errclear();
 	},
 	clear : function(){
-		if(pzpr.PLAYER){
+		if(this.playeronly){
 			this.ansclear();
 			this.opemgr.allerase();
 		}
@@ -257,7 +259,7 @@ pzpr.Puzzle.prototype =
 	// owner.modechange() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
 	modechange : function(num){
-		if(pzpr.PLAYER){ return;}
+		if(this.playeronly){ return;}
 		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
 		this.setConfig('mode', num);
 	},

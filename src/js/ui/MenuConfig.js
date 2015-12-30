@@ -20,8 +20,8 @@ ui.menuconfig = {
 	init : function(){
 		this.list = {};
 		
-		this.add('autocheck',      pzpr.PLAYER);			/* 正解自動判定機能 */
-		this.add('autocheck_once', pzpr.PLAYER);			/* 正解自動判定機能 */
+		this.add('autocheck',      ui.puzzle.playeronly);	/* 正解自動判定機能 */
+		this.add('autocheck_once', ui.puzzle.playeronly);	/* 正解自動判定機能 */
 		
 		this.add('keypopup', false);						/* キーポップアップ (数字などのパネル入力) */
 		this.add('keyboard', false);						/* 盤面をキー入力のターゲットにする */

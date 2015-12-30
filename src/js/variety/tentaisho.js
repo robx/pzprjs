@@ -32,7 +32,7 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
-		if(pzpr.EDITOR && this.puzzle.getConfig('discolor')){ return;}
+		if(!this.puzzle.playeronly && this.puzzle.getConfig('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
 		var star = pos.gets();
@@ -168,7 +168,7 @@ CellList:{
 		var flag = false, ret = (star!==null ? star.getStar() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
-			if(pzpr.EDITOR && cell.qsub===3 && ret!==2){ continue;}
+			if(!this.puzzle.playeronly && cell.qsub===3 && ret!==2){ continue;}
 			else if(cell.qsub!==(ret>0?ret:0)){
 				cell.setQsub(ret>0?ret:0);
 				flag = true;

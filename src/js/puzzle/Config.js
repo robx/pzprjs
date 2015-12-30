@@ -80,7 +80,7 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(!this.list[name] || (name==="mode" && pzpr.PLAYER)){ return;}
+		if(!this.list[name] || (name==="mode" && this.puzzle.playeronly)){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
@@ -135,7 +135,7 @@ Config.prototype =
 	// config.getexec()  設定値を現在のパズルで有効かどうか返す
 	//---------------------------------------------------------------------------
 	getexec : function(name){
-		var puzzle = this.puzzle, pid = puzzle.pid, exec = false;
+		var puzzle = this.puzzle, pid = puzzle.pid, EDITOR = !puzzle.playeronly, exec = false;
 		switch(name){
 			case 'use':      exec = puzzle.mouse.use; break;
 			case 'use_tri':  exec = (pid==="shakashaka"); break;
@@ -153,9 +153,9 @@ Config.prototype =
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'dirauxmark': exec = (pid==="nagare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
-			case 'bdpadding': exec = (pzpr.EDITOR && pid==='goishi'); break;
-			case 'discolor':  exec = (pzpr.EDITOR && pid==='tentaisho'); break;
-			case 'mode':     exec = pzpr.EDITOR; break;
+			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
+			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
+			case 'mode':     exec = EDITOR; break;
 			case 'uramashu': exec = (pid==="mashu"); break;
 			default: exec = !!this.list[name];
 		}

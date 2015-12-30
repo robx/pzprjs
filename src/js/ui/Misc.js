@@ -14,8 +14,8 @@ ui.misc = {
 		var pid = ui.puzzle.pid;
 		var pinfo = pzpr.variety.info[pid];
 		var title = ui.selectStr(pinfo.ja, pinfo.en);
-		if(pzpr.EDITOR){ title += ui.selectStr(" エディタ - ぱずぷれv3"," editor - PUZ-PRE v3");}
-		else		   { title += ui.selectStr(" player - ぱずぷれv3"  ," player - PUZ-PRE v3");}
+		title += (ui.puzzle.playeronly ? " player" : ui.selectStr(" エディタ"," editor"));
+		title += ui.selectStr(" - ぱずぷれv3"," - PUZ-PRE v3");
 
 		_doc.title = title;
 		var titleEL = _doc.getElementById('title2');

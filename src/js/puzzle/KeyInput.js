@@ -170,7 +170,7 @@ KeyEvent:{
 	// kc.keyexec() モードに共通で行う処理を実行します
 	//---------------------------------------------------------------------------
 	keyexec : function(c){
-		if(this.keydown && c==='alt+c' && pzpr.EDITOR){
+		if(this.keydown && c==='alt+c' && !this.puzzle.playeronly){
 			this.puzzle.modechange();
 			return false;
 		}
