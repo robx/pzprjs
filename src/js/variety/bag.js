@@ -151,7 +151,7 @@ AnsCheck:{
 	},
 	checkViewOfNumber : function(icheck){
 		var bd = this.board;
-		for(var cc=0;cc<bd.cellmax;cc++){
+		for(var cc=0;cc<bd.cell.length;cc++){
 			var cell=bd.cell[cc];
 			if(!cell.isValidNum()){ continue;}
 

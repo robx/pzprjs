@@ -117,7 +117,7 @@ AnsCheck:{
 	checkAtLeastOne : function(){ this.checkNumberSquare(false, "nmNoSideShade");},
 	checkNumberSquare : function(flag, code){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if((flag?(cell.qnum<0):(cell.qnum===-1))){ continue;}
 			var clist=new this.klass.CellList(), adc=cell.adjacent;

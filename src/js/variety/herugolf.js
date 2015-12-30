@@ -228,7 +228,7 @@ LineGraph:{
 		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
 		
 		var cell = component.departure, num = cell.qnum;
-		num = (num>=0 ? num : this.board.cellmax);
+		num = (num>=0 ? num : this.board.cell.length);
 		cell.distance = (num+1)*num/2;
 		if(cell.lcnt===0){ return;}
 		
@@ -426,13 +426,13 @@ Encode:{
 			else if(ca >= 'i' && ca <= 'z'){ c += (parseInt(ca,36)-18);}
 
 			c++;
-			if(c >= bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16_herugolf : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", cell = bd.cell[c], qn = cell.qnum, qu = cell.ques;
 
 			if     (qn===-2          ){ pstr = ".";}
@@ -493,7 +493,7 @@ AnsCheck:{
 	
 	checkMoveOver : function(){
 		var result = true, bd = this.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id];
 			if(!border.isLine()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];

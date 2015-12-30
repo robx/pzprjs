@@ -388,6 +388,7 @@ pzpr.classmgr.makeCommon({
 	group : 'border',
 
 	isvert: false,	// true:境界線が垂直(縦) false:境界線が水平(横)
+	inside: false,	// true:盤面内 false:外枠上or盤面外
 
 	path : null,	// このLineを含む線情報への参照
 

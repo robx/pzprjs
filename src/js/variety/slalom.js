@@ -376,7 +376,7 @@ LineGraph:{
 
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
 		for(var r=0;r<gates.length;r++){ gates[r].nums = [];}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1){
 				var qn = cell.getNum(), dir = cell.qdir, adc = cell.adjacent;
@@ -602,7 +602,7 @@ Graphic:{
 		var g = this.context, bd = this.board;
 		if(keydown){ bd.gatemgr.generateGateNumberAll();}
 
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques!==21 && cell.ques!==22){ continue;}
 
@@ -651,7 +651,7 @@ Encode:{
 			else if(this.include(ca,"4","9")||this.include(ca,"a","z")){ c+=(parseInt(ca,36)-4);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		bd.gatemgr.rebuild();
 
@@ -672,7 +672,7 @@ Encode:{
 				if(r>bd.gatemgr.components.length){ break;}
 			}
 
-			for(var c=0;c<bd.cellmax;c++){
+			for(var c=0;c<bd.cell.length;c++){
 				var gatelist=bd.cell[c].getConnectingGate(), min=1000;
 				for(var i=0;i<gatelist.length;i++){
 					var val=gatelist[i].number;
@@ -710,7 +710,7 @@ Encode:{
 					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
 				}
 				c++;
-				if(c>=bd.cellmax){ break;}
+				if(!bd.cell[c]){ break;}
 			}
 		}
 
@@ -720,7 +720,7 @@ Encode:{
 	},
 	encodeSlalom : function(ver){
 		var cm="", count=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "1";}
 			else if(cell.ques===21){ pstr = "2";}
@@ -748,7 +748,7 @@ Encode:{
 			if(count>0){ cm+=(15+count).toString(36);}
 		}
 		else if(ver===1 || ver===2){
-			for(var c=0;c<bd.cellmax;c++){
+			for(var c=0;c<bd.cell.length;c++){
 				var cell = bd.cell[c];
 				if(cell.ques!==1){ continue;}
 
@@ -910,10 +910,10 @@ FileIO:{
 		});
 		bd.gatemgr.rebuild();
 
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(sv_num[c]!==-1){ bd.cell[c].gate.number = sv_num[c];}
 		}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var gatelist=bd.cell[c].getConnectingGate(), min=1000;
 			for(var i=0;i<gatelist.length;i++){
 				var val=gatelist[i].number;

@@ -175,7 +175,7 @@ AnsCheck:{
 
 	checkAroundMarks : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], num = cell.getNum();
 			if(num<0){ continue;}
 			var target=0, clist=new this.klass.CellList();

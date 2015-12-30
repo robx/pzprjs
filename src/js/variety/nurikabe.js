@@ -214,7 +214,7 @@ AnsCheck : {
 	},
 	checkCorners : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.bx===bd.maxbx-1 || cell.by===bd.maxby-1){ continue;}
 

@@ -65,7 +65,7 @@ Board:{
 		this.revCircleMain();
 	},
 	revCircleMain : function(){
-		for(var c=0;c<this.cellmax;c++){
+		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
 			if     (cell.qnum===1){ cell.setQnum(2);}
 			else if(cell.qnum===2){ cell.setQnum(1);}
@@ -188,7 +188,7 @@ AnsCheck:{
 
 	checkWhitePearl1 : function(){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===1 && cell.isLineCurve())){ continue;}
 			
@@ -203,7 +203,7 @@ AnsCheck:{
 	},
 	checkBlackPearl1 : function(){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===2 && cell.isLineStraight())){ continue;}
 			
@@ -219,7 +219,7 @@ AnsCheck:{
 
 	checkWhitePearl2 : function(){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.qnum!==1 || cell.lcnt!==2){ continue;}
 			var adc = cell.adjacent, adb = cell.adjborder, stcnt = 0;
@@ -240,7 +240,7 @@ AnsCheck:{
 	},
 	checkBlackPearl2 : function(){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], adc = cell.adjacent, adb = cell.adjborder;
 			if(cell.qnum!==2 || cell.lcnt!==2){ continue;}
 			if(!(adb.top.isLine()    && adc.top.isLineCurve()   ) &&

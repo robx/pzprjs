@@ -138,7 +138,7 @@ AnsCheck:{
 	checkRippleNumber : function(){
 		var result = true, bd = this.board;
 		allloop:
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell=bd.cell[c], num=cell.getNum(), bx=cell.bx, by=cell.by;
 			if(num<=0){ continue;}
 			for(var i=2;i<=num*2;i+=2){
@@ -165,7 +165,7 @@ AnsCheck:{
 
 	checkUpperNumber : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax-bd.cols;c++){
+		for(var c=0;c<bd.cell.length-bd.cols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom;
 			if(cell.room!==cell2.room || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell.getNum()>=cell2.getNum()){ continue;}

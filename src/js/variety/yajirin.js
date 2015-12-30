@@ -225,7 +225,7 @@ AnsCheck:{
 
 	checkArrowNumber : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
 			var pos = cell.getaddr(), dir = cell.qdir;

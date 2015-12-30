@@ -243,7 +243,7 @@ FileIO:{
 		bd.roommgr.rebuild();
 		var rooms = bd.roommgr.components;
 		this.datastr += (rooms.length+"\n");
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
 			this.datastr += (""+(roomid>=0 ? roomid : ".")+" ");
 			if((c+1)%bd.cols===0){ this.datastr += "\n";}
@@ -254,7 +254,7 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	rdata2Border : function(isques, rdata){
 		var bd = this.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var isdiff = (!cell1.isnull && !cell2.isnull && rdata[cell1.id]!==rdata[cell2.id]);
 			border[(isques?'ques':'qans')] = (isdiff?1:0);

@@ -350,12 +350,12 @@ Encode:{
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
+				if(!!bd.cell[c]){
 					bd.cell[c].ques = (num&twi[w]?7:0);
 					c++;
 				}
 			}
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
@@ -363,7 +363,7 @@ Encode:{
 	// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 	encodeBosanowa : function(type){
 		var x1=9999, x2=-1, y1=9999, y2=-1, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty()){ continue;}
 			if(x1>cell.bx){ x1=cell.bx;}
@@ -443,7 +443,7 @@ AnsCheck:{
 
 	checkSubsNumber : function(){
 		var subs=[], bd=this.board, UNDEF=-1;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(border.isGrid()){
 				if(cell1.isValidNum() && cell2.isValidNum()){
@@ -454,7 +454,7 @@ AnsCheck:{
 			else{ subs[id]=null;}
 		}
 
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.isEmpty() || cell.noNum()){ continue;}
 

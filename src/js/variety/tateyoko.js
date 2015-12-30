@@ -171,13 +171,13 @@ Encode:{
 			else if(ca==="i"){ c+=(parseInt(bstr.charAt(i+1),16)-1); i++;}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeTateyoko : function(type){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qu=bd.cell[c].ques, qn=bd.cell[c].qnum;
 			if(qu===0){
 				if     (qn===-1){ count++;}
@@ -262,7 +262,7 @@ AnsCheck:{
 	checkBarLessNum : function(){ this.checkShade(2, "nmConnBarLt");},
 	checkShade : function(type, code){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], num = cell.qnum;
 			if(cell.ques!==1 || num<0){ continue;}
 

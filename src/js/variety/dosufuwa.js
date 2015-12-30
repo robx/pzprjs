@@ -134,13 +134,13 @@ Encode:{
 			else if(ca === '.'){ cc+=35;}
 
 			cc++;
-			if(cc>=bd.cellmax){ i++; break;}
+			if(!bd.cell[cc]){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeBlockCell : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="";
 			if(bd.cell[c].ques===1){ pstr = ".";}
 			else{ count++;}
@@ -157,14 +157,14 @@ Encode:{
 		/* 同じ見た目のパズルにおけるURLを同じにするため、          */
 		/* 一時的にborder.ques=1にしてURLを出力してから元に戻します */
 		var bd = this.board, sv_ques = [];
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
 		}
 		
 		this.encodeBorder();
 		
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			bd.border[id].ques = sv_ques[id];
 		}
 	}
@@ -198,7 +198,7 @@ FileIO:{
 		bd.roommgr.rebuild();
 		var rooms = bd.roommgr.components;
 		this.datastr += (rooms.length+"\n");
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
 			this.datastr += (""+(roomid>=0 ? roomid : "#")+" ");
 			if((c+1)%bd.cols===0){ this.datastr += "\n";}

@@ -173,7 +173,7 @@ Encode:{
 
 	checkPuzzleid : function(){
 		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			if(bd.cross[c].qnum===1){ puzzle.changepid('kramman'); break;}
 		}
 	}
@@ -237,7 +237,7 @@ AnsCheck:{
 	checkLineChassis : function(){
 		var result = true, bd = this.board;
 		var lines = [];
-		for(var id=0;id<bd.bdmax;id++){ lines[id]=bd.border[id].qans;}
+		for(var id=0;id<bd.border.length;id++){ lines[id]=bd.border[id].qans;}
 
 		var pos = new this.klass.Address(0,0);
 		for(pos.bx=bd.minbx;pos.bx<=bd.maxbx;pos.bx+=2){
@@ -252,7 +252,7 @@ AnsCheck:{
 			}
 		}
 
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			if(lines[id]!==1){ continue;}
 
 			result = false;

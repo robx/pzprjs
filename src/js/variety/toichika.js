@@ -82,7 +82,7 @@ AreaRoomGraph:{
 	getSideAreaKeys : function(){
 		var len=this.components.length, adjs={len:len}, bd=this.board;
 		for(var r=0;r<len;r++){ this.components[r].id = r;}
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
 			if(cell1.isnull || cell2.isnull){ continue;}
 			var room1=cell1.room, room2=cell2.room;
@@ -139,13 +139,13 @@ Encode:{
 			else                        { c += (parseInt(ca,36)-5);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encode4Cell_toichika : function(){
 		var cm="", count=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
 			if     (val===-2)        { pstr = ".";}
@@ -213,8 +213,8 @@ AnsCheck:{
 	getPairArrowsInfo : function(){
 		if(this._info.parrow){ return this._info.parrow;}
 		var ainfo=[], isarrow=[], bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){ isarrow[c]=bd.cell[c].isNum();}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){ isarrow[c]=bd.cell[c].isNum();}
+		for(var c=0;c<bd.cell.length;c++){
 			var cell0 = bd.cell[c];
 			if(cell0.noNum()){ continue;}
 			var pos=cell0.getaddr(), dir=cell0.getNum();

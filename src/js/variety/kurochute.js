@@ -126,7 +126,7 @@ AnsCheck:{
 
 	checkShootSingle : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num=cell.qnum, cell2;

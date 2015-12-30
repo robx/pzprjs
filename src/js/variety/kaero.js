@@ -180,14 +180,14 @@ Encode:{
 			else if(this.include(ca,'a','z')){ c+=(parseInt(ca,36)-10);}
 
 			c++;
-			if(c>=bd.cellmax){ a=i+1; break;}
+			if(!bd.cell[c]){ a=i+1; break;}
 		}
 
 		this.outbstr = bstr.substring(a);
 	},
 	encodeKaero : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", qnum = bd.cell[c].qnum;
 			if     (qnum===-2){ pstr = ".";}
 			else if(qnum>= 1 && qnum<=26){ pstr = ""+ (qnum+9).toString(36).toUpperCase();}
@@ -258,7 +258,7 @@ AnsCheck:{
 	// 同じ値であれば、同じ部屋に存在することを判定する
 	checkGatheredObject : function(){
 		var max=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
+		for(var c=0;c<bd.cell.length;c++){ var num=bd.cell[c].base.qnum; if(max<num){ max=num;} }
 		allloop:
 		for(var num=0;num<=max;num++){
 			var clist = bd.cell.filter(function(cell){ return (num===cell.base.qnum);}), rid=null;

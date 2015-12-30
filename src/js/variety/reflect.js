@@ -213,14 +213,14 @@ Encode:{
 			if(cell.qnum===0){ cell.qnum=-1;}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 
 		this.outbstr = bstr.substr(i);
 	},
 	encodeReflectlink : function(type){
 		var cm="", pstr="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var qu=bd.cell[c].ques;
 			if     (qu===11){ pstr = "5";}
 			else if(qu>=2 && qu<=5){
@@ -283,7 +283,7 @@ AnsCheck:{
 
 	checkTriangle : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===0 || cell.ques===11 || cell.lcnt>0){ continue;}
 			
@@ -297,7 +297,7 @@ AnsCheck:{
 	checkShortLines : function(){ this.checkTriNumber(2, "lnLenLt");},
 	checkTriNumber : function(type, code){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===0 || cell.ques===11 || !cell.isValidNum()){ continue;}
 

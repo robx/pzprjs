@@ -189,14 +189,14 @@ Encode:{
 			else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeLoopsp : function(){
 		var cm="", pstr="", count=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 			if     (qn===-2)       { pstr = ".";}
 			else if(qn>= 0&&qn< 16){ pstr =     qn.toString(16);}

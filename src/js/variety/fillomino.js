@@ -188,7 +188,7 @@ FileIO:{
 
 	inputBorderFromNumber : function(){
 		var bd = this.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			border.qans = 0;
 			if(!cell1.isnull && !cell2.isnull){

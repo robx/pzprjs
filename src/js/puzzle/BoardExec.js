@@ -293,7 +293,7 @@ BoardExec:{
 			bd.setposBorders();
 
 			var dist = (bdAsLine?2:1);
-			for(var id=0;id<bd.bdmax;id++){
+			for(var id=0;id<bd.border.length;id++){
 				var border = bd.border[id];
 				if(this.distObj(key,border)!==dist){ continue;}
 
@@ -307,7 +307,7 @@ BoardExec:{
 	reduceborder : function(key){
 		var bd = this.board;
 		if(bd.borderAsLine){
-			for(var id=0;id<bd.bdmax;id++){
+			for(var id=0;id<bd.border.length;id++){
 				var border = bd.border[id];
 				if(this.distObj(key,border)!==0){ continue;}
 

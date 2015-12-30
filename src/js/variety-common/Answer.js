@@ -13,7 +13,7 @@ AnsCheck:{
 	// ans.checkLineOverLetter()  線が数字などを通過しているか判定する
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func, code){
-		for(var c=0;c<this.board.cellmax;c++){
+		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
 			if(!func(cell)){ continue;}
 			
@@ -45,7 +45,7 @@ AnsCheck:{
 	// ans.checkDir4Cell()  セルの周囲4マスの条件がfunc==trueの時、エラーを設定する
 	//---------------------------------------------------------------------------
 	checkDir4Cell : function(iscount, type, code){ // type = 0:違う 1:numより小さい 2:numより大きい
-		for(var c=0;c<this.board.cellmax;c++){
+		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
@@ -64,7 +64,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkSideCell : function(func, code){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(cell.bx<bd.maxbx-1 && func(cell,cell2)){
 				result = false;
@@ -95,7 +95,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	check2x2Block : function(func, code){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.bx>=bd.maxbx-1 || cell.by>=bd.maxby-1){ continue;}
 			
@@ -183,7 +183,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
 		var bd = this.board;
-		if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cellmax : bd.crossmax)){ return;}
+		if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cell : bd.cross).length){ return;}
 		this.failcode.add("brNoLine");
 	},
 
@@ -236,7 +236,7 @@ AnsCheck:{
 	//---------------------------------------------------------------------------
 	checkenableLineParts : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], adb = cell.adjborder;
 			if( (!adb.top.isLine()    || !cell.noLP(cell.UP)) &&
 				(!adb.bottom.isLine() || !cell.noLP(cell.DN)) &&
@@ -355,7 +355,7 @@ AnsCheck:{
 	},
 
 	checkSideAreaCell : function(func, flag, code){
-		for(var id=0;id<this.board.bdmax;id++){
+		for(var id=0;id<this.board.border.length;id++){
 			var border = this.board.border[id];
 			if(!border.isBorder()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
@@ -564,9 +564,9 @@ AnsCheck:{
 
 		var bd = this.board;
 		var pathsegs = [], passed = [];
-		for(var id=0;id<bd.bdmax;id++){ passed[id] = false;}
+		for(var id=0;id<bd.border.length;id++){ passed[id] = false;}
  
-		var clist = this.board.cell.filter(function(cell){ return cell.isNum();});
+		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], adb = cell.adjborder;
 			var dir4bd = [adb.top, adb.bottom, adb.left, adb.right];

@@ -136,12 +136,12 @@ Encode:{
 
 	decodeLITS_old : function(){
 		var bstr = this.outbstr, bd = this.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id];
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(!cell1.isnull && !cell2.isnull && bstr.charAt(cell1.id)!==bstr.charAt(cell2.id)){ border.ques = 1;}
 		}
-		this.outbstr = bstr.substr(bd.cellmax);
+		this.outbstr = bstr.substr(bd.cell.length);
 	}
 },
 //---------------------------------------------------------
@@ -230,7 +230,7 @@ FileIO:{
 			var r1 = cell1.tetro, r2 = cell2.tetro;
 			return (r1!==null && r2!==null && r1!==r2 && r1.shape!==null && r2.shape!==null && r1.shape===r2.shape);
 		}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(cell,cell2)){
 				result = false;

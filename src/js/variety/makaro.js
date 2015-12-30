@@ -240,13 +240,13 @@ Encode:{
 			else if(ca>='g' && ca<='z') { c+=(parseInt(ca,36)-16);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeMakaro : function(){
 		var cm = "", count = 0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c], qn=cell.qnum;
 			if     (qn>= 1&&qn< 11){ pstr =     (qn-1).toString(10);}
 			else if(qn>=11&&qn<100){ pstr = "-"+(qn-1).toString(10);}
@@ -265,14 +265,14 @@ Encode:{
 		/* 同じ見た目のパズルにおけるURLを同じにするため、        */
 		/* 一時的にcell.ques=1にしてURLを出力してから元に戻します */
 		var bd = this.board, sv_ques = [];
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
 		}
 		
 		this.encodeBorder();
 		
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			bd.border[id].ques = sv_ques[id];
 		}
 	}
@@ -330,7 +330,7 @@ AnsCheck:{
 	/* 矢印が盤外を向いている場合も、この関数でエラー判定します */
 	/* 矢印の先が空白マスである場合は判定をスルーします         */
 	checkPointAtBiggestNumber : function(){
-		for(var c=0;c<this.board.cellmax;c++){
+		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
 			if(cell.ques!==1 || cell.qdir===cell.NDIR){ continue;}
 			var list = cell.getdir4clist(), maxnum = -1, maxdir = cell.NDIR;

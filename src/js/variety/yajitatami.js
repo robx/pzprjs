@@ -88,7 +88,7 @@ Encode:{
 	},
 
 	encodeBorder_if_exist : function(){
-		for(var id=0;id<this.board.bdmax;id++){
+		for(var id=0;id<this.board.border.length;id++){
 			if(this.board.border[id].ques===1){ this.encodeBorder(); break;}
 		}
 	}
@@ -128,7 +128,7 @@ AnsCheck:{
 
 	checkArrowNumber_tatami : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 
@@ -148,7 +148,7 @@ AnsCheck:{
 
 	checkArrowNumber_border : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], dir = cell.qdir;
 			if(!cell.isValidNum() || !dir || cell.reldirbd(dir,1).isBorder()){ continue;}
 			

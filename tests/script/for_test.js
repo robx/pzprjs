@@ -424,7 +424,7 @@ ui.debug.extend(
 	qsubf : true,
 	bd_freezecopy : function(bd1){
 		var bd2 = {cell:[],cross:[],border:[],excell:[]};
-		for(var c=0;c<bd1.cellmax;c++){
+		for(var c=0;c<bd1.cell.length;c++){
 			bd2.cell[c] = {};
 			bd2.cell[c].ques=bd1.cell[c].ques;
 			bd2.cell[c].qnum=bd1.cell[c].qnum;
@@ -433,29 +433,23 @@ ui.debug.extend(
 			bd2.cell[c].qans=bd1.cell[c].qans;
 			bd2.cell[c].qsub=bd1.cell[c].qsub;
 		}
-		if(!!bd1.isexcell){
-			for(var c=0;c<bd1.excellmax;c++){
-				bd2.excell[c] = {};
-				bd2.excell[c].qnum=bd1.excell[c].qnum;
-				bd2.excell[c].qdir=bd1.excell[c].qdir;
-			}
+		for(var c=0;c<bd1.excell.length;c++){
+			bd2.excell[c] = {};
+			bd2.excell[c].qnum=bd1.excell[c].qnum;
+			bd2.excell[c].qdir=bd1.excell[c].qdir;
 		}
-		if(!!bd1.iscross){
-			for(var c=0;c<bd1.crossmax;c++){
-				bd2.cross[c] = {};
-				bd2.cross[c].ques=bd1.cross[c].ques;
-				bd2.cross[c].qnum=bd1.cross[c].qnum;
-			}
+		for(var c=0;c<bd1.cross.length;c++){
+			bd2.cross[c] = {};
+			bd2.cross[c].ques=bd1.cross[c].ques;
+			bd2.cross[c].qnum=bd1.cross[c].qnum;
 		}
-		if(!!bd1.isborder){
-			for(var i=0;i<bd1.bdmax;i++){
-				bd2.border[i] = {};
-				bd2.border[i].ques=bd1.border[i].ques;
-				bd2.border[i].qnum=bd1.border[i].qnum;
-				bd2.border[i].qans=bd1.border[i].qans;
-				bd2.border[i].qsub=bd1.border[i].qsub;
-				bd2.border[i].line=bd1.border[i].line;
-			}
+		for(var i=0;i<bd1.border.length;i++){
+			bd2.border[i] = {};
+			bd2.border[i].ques=bd1.border[i].ques;
+			bd2.border[i].qnum=bd1.border[i].qnum;
+			bd2.border[i].qans=bd1.border[i].qans;
+			bd2.border[i].qsub=bd1.border[i].qsub;
+			bd2.border[i].line=bd1.border[i].line;
 		}
 		return bd2;
 	},

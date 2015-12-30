@@ -288,7 +288,7 @@ KeyEvent:{
 		var bd = this.board, adc=piece.adjacent;
 		if(piece.isnull){ return 0;}
 		else if(piece.group==='cell'){
-			if     (piece.ques!==51 || piece.id===bd.cellmax-1){ return 0;}
+			if     (piece.ques!==51 || piece.id===bd.cell.length-1){ return 0;}
 			else if((adc.right.isnull  || adc.right.ques ===51) &&
 				    (adc.bottom.isnull || adc.bottom.ques===51)){ return 0;}
 			else if (adc.right.isnull  || adc.right.ques ===51) { return 4;}

@@ -503,7 +503,7 @@ Graphic:{
 	},
 	getBorderColor_ice : function(border){
 		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		if(border.id<this.board.bdinside && !cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
+		if(border.inside && !cell1.isnull && !cell2.isnull && (cell1.ice()^cell2.ice())){
 			return this.quescolor;
 		}
 		return null;

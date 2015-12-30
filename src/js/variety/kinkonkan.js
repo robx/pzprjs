@@ -46,7 +46,7 @@ MouseEvent:{
 		if(excell.isnull || this.mouseCell===excell){ return;}
 
 		if(this.inputData!==11 && this.inputData!==null){ }
-		else if(excell.id>=board.excellmax-4){
+		else if(excell.id>=board.excell.length-4){
 			board.lightclear();
 		}
 		else if(this.inputData===null && excell.qlight===1){
@@ -204,8 +204,8 @@ Board:{
 	haslight : false,
 	lightclear : function(){
 		if(!this.haslight){ return;}
-		for(var i=0;i<this.cellmax  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excellmax;i++){ this.excell[i].qlight=0;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
 		this.haslight = false;
 		this.puzzle.redraw();
 	},
@@ -217,7 +217,7 @@ Board:{
 
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
-		for(var c=0;c<this.cellmax;c++){ ldata[c]=0;}
+		for(var c=0;c<this.cell.length;c++){ ldata[c]=0;}
 
 		var pos = startexcell.getaddr(), dir=0;
 		if     (pos.by===this.minby+1){ dir=2;}
@@ -247,15 +247,15 @@ Board:{
 			else{ ldata[cc]=1; continue;}
 
 			ccnt++;
-			if(ccnt>this.cellmax){ break;} // 念のためガード条件(多分引っかからない)
+			if(ccnt>this.cell.length){ break;} // 念のためガード条件(多分引っかからない)
 		}
 
 		var destec = pos.getex().id;
 		if(!!setlight){
-			for(var c=0;c<this.excellmax;c++){ this.excell[c].qlight=0;}
+			for(var c=0;c<this.excell.length;c++){ this.excell[c].qlight=0;}
 			startexcell.qlight = 1;
 			this.excell[destec].qlight  = 1;
-			for(var c=0;c<this.cellmax;c++){ this.cell[c].qlight=ldata[c];}
+			for(var c=0;c<this.cell.length;c++){ this.cell[c].qlight=ldata[c];}
 			this.haslight = true;
 		}
 
@@ -375,7 +375,7 @@ Encode:{
 			else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
 			ec++;
-			if(ec>=bd.excellmax-4){ a=i+1; break;}
+			if(ec>=bd.excell.length-4){ a=i+1; break;}
 		}
 		ec=0;
 		for(var i=a;i<bstr.length;i++){
@@ -395,7 +395,7 @@ Encode:{
 
 		// 盤面外部分のエンコード
 		var count=0;
-		for(var ec=0;ec<bd.excellmax-4;ec++){
+		for(var ec=0;ec<bd.excell.length-4;ec++){
 			var pstr = "", val = bd.excell[ec].qchar, qnum = bd.excell[ec].qnum;
 
 			if(val> 0 && val<=104){
@@ -506,7 +506,7 @@ AnsCheck:{
 	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
 	checkMirrors : function(type, code){
 		var d = [], bd = this.board;
-		for(var ec=0;ec<bd.excellmax-4;ec++){
+		for(var ec=0;ec<bd.excell.length-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
 			var ret = bd.searchLight(excell, (!this.checkOnly)), excell2 = bd.excell[ret.dest];

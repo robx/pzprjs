@@ -299,13 +299,13 @@ Graphic:{
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c > bd.cell.length){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeLoute : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", dir = bd.cell[c].qdir;
 
 			if     (dir===-2){ pstr = ".";}
@@ -342,13 +342,13 @@ Graphic:{
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeSashigane : function(){
 		var cm = "", count = 0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if(dir===5){
 				if     (qn>= 0&&qn<  16){ pstr=    qn.toString(16);}

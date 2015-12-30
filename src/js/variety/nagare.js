@@ -229,13 +229,13 @@ Board:{
 	},
 
 	initWind : function(){
-		for(var i=0;i<this.bdmax;i++){ this.border[i].wind = 0;}
-		for(var c=0;c<this.cellmax;c++){
+		for(var i=0;i<this.border.length;i++){ this.border[i].wind = 0;}
+		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
 			cell.wind = 0;
 			cell.windbase = 0;
 		}
-		for(var c=0;c<this.cellmax;c++){
+		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
 			if(cell.ques===1&&cell.qdir!==0){ cell.setWindAround();}
 		}
@@ -340,13 +340,13 @@ Encode:{
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNagare : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c], qu=cell.ques, dir=cell.qdir;
 
 			if(qu===1 || (dir>=1&&dir<=4)){ pstr = (qu*5+dir).toString(10);}

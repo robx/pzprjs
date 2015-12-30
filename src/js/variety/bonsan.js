@@ -144,7 +144,7 @@ LineGraph:{
 		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
 		
 		var cell = component.departure, num = cell.qnum;
-		num = (num>=0 ? num : this.board.cellmax);
+		num = (num>=0 ? num : this.board.cell.length);
 		cell.distance = num;
 		if(cell.lcnt===0){ return;}
 		
@@ -273,7 +273,7 @@ Encode:{
 
 	checkPuzzleid : function(){
 		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			if(bd.border[id].ques===1){ puzzle.changepid("heyabon"); break;}
 		}
 	},

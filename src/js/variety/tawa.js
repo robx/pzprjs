@@ -84,8 +84,7 @@ Board:{
 		return total;
 	},
 	setposCells : function(){
-		this.cellmax = this.cell.length;
-		for(var id=0;id<this.cellmax;id++){
+		for(var id=0;id<this.cell.length;id++){
 			var cell = this.cell[id];
 			cell.id = id;
 			cell.isnull = false;
@@ -378,7 +377,7 @@ AnsCheck:{
 	},
 	checkNumbers : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			var clist = new this.klass.CellList();
@@ -398,7 +397,7 @@ AnsCheck:{
 	},
 	checkUnderCells : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 

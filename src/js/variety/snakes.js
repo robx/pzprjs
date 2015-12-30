@@ -244,7 +244,7 @@ AnsCheck:{
 			var r1 = cell1.snake, r2 = cell2.snake;
 			return (r1!==null && r2!==null && r1!==r2);
 		}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
 			if(!cell2.isnull && func(cell,cell2)){
 				result = false;
@@ -273,7 +273,7 @@ AnsCheck:{
 			return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);
 		}
 
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell=bd.cell[c], num=cell.qnum, dir=cell.qdir;
 			if(num<0 || dir===0){ continue;}
 

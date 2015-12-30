@@ -111,13 +111,13 @@ Encode:{
 			else if(ca!=='.'){ cell.qnum = this.decval(ca);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeKakuru : function(type){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (cell.ques=== 1){ pstr = "+";}
 			else if(cell.qnum!==-1){ pstr = this.encval(cell.qnum);}
@@ -188,7 +188,7 @@ AnsCheck:{
 	checkAroundPlNums : function(type){
 		var bd = this.board;
 		allloop:
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
@@ -215,7 +215,7 @@ AnsCheck:{
 	},
 	checkSumOfNumber : function(type){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1 || cell.qnum<=0){ continue;}
 
@@ -239,7 +239,7 @@ AnsCheck:{
 	},
 	checkAdjacentNumbers : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.anum<=0){ continue;}
 			var bx = cell.bx, by = cell.by;

@@ -170,7 +170,7 @@ Encode:{
 				}
 				c++;
 			}
-			if(c>=bd.cellmax){ a=i+1; break;}
+			if(!bd.cell[c]){ a=i+1; break;}
 		}
 
 		// 盤面外数字のデコード
@@ -195,7 +195,7 @@ Encode:{
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c];
 
 			if(cell.ques===51){

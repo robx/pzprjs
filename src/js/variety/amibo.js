@@ -396,7 +396,7 @@ AnsCheck:{
 	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},
 	checkOutgoingBars : function(type, code){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isNum()){ continue;}
 			var poles = cell.getPoleBar();
@@ -411,7 +411,7 @@ AnsCheck:{
 	checkShortBar : function(){ this.checkPoleLength(2, "lbLenLt");},
 	checkPoleLength : function(type, code){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
 			

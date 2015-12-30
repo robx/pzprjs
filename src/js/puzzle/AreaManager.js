@@ -35,7 +35,7 @@ pzpr.classmgr.makeCommon({
 	getSideAreaInfo : function(cellinfo){
 		var sides=[], len=this.components.length, adjs={}, bd=this.board;
 		for(var r=0;r<this.components.length;r++){ this.components[r].id = r;}
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
 			if(cell1.isnull || cell2.isnull){ continue;}
 			var room1=cell1[cellinfo], room2=cell2[cellinfo];
@@ -105,7 +105,7 @@ pzpr.classmgr.makeCommon({
 		var bd = this.board, borders = bd.border;
 		this.ltotal=[];
 		/* 外枠のカウントをあらかじめ足しておく */
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
 			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
 			cross.lcnt = (ischassis?2:0);

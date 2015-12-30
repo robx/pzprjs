@@ -96,7 +96,7 @@ AnsCheck:{
 
 	checkDir5ShadeCell : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getNum()===cell.countDir5ShadedCell()){ continue;}
 			

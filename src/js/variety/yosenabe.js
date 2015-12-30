@@ -289,13 +289,13 @@ Encode:{
 			else if(ca >= 'j' && ca <= 'z'){ c += (parseInt(ca,36)-19);}
 
 			c++;
-			if(c >= bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16_yosenabe : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", qn = bd.cell[c].qnum, qd = bd.cell[c].qnum2;
 
 			if     (qn===-2          ){ pstr = ".";}

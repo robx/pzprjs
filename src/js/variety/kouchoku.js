@@ -392,7 +392,7 @@ Board:{
 	setposCrosses : function(){
 		pzpr.common.Board.prototype.setposCrosses.call(this);
 		
-		for(var id=0;id<this.crossmax;id++){
+		for(var id=0;id<this.cross.length;id++){
 			if(!this.cross[id].seglist){
 				this.cross[id].seglist = new this.klass.PieceList();
 			}
@@ -699,13 +699,13 @@ Encode:{
 			else if(ca==="."){ cross.qnum=-2;}
 
 			c++;
-			if(c>=bd.crossmax){ break;}
+			if(!bd.cross[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeCrossABC : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
 			if     (qn>=  0){ pstr=(9+qn).toString(36);}
@@ -782,7 +782,7 @@ AnsCheck:{
 	},
 	checkSegment : function(func, code){
 		var result = true, bd = this.board;
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c];
 			if(!func(cross)){ continue;}
 			
@@ -848,8 +848,11 @@ AnsCheck:{
 	checkConsequentLetter : function(){
 		var count = {}, qnlist = [], bd = this.board;
 		// この関数に来る時は、線は黒－黒、黒－文字、文字－文字(同じ)のいずれか
-		for(var c=0;c<bd.crossmax;c++){ var qn = bd.cross[c].qnum; if(qn>=0){ count[qn] = [0,0,0];}}
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
+			var qn = bd.cross[c].qnum;
+			if(qn>=0){ count[qn] = [0,0,0];}
+		}
+		for(var c=0;c<bd.cross.length;c++){
 			var qn = bd.cross[c].qnum;
 			if(qn>=0){
 				if(count[qn][0]===0){ qnlist.push(qn);}

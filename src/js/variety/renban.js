@@ -39,8 +39,8 @@ Board:{
 	// 正答判定用
 	getBorderLengthInfo : function(){
 		var rdata = new this.klass.BorderInfo();
-		for(var i=0;i<this.bdmax;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
-		for(var i=0;i<this.bdmax;i++){
+		for(var i=0;i<this.border.length;i++){ rdata.id[i] = (this.border[i].isBorder()?0:null);}
+		for(var i=0;i<this.border.length;i++){
 			var border0 = this.border[i];
 			if(rdata.id[border0.id]!==0){ continue;}
 			var path = rdata.addPath();
@@ -173,7 +173,7 @@ AnsCheck:{
 		var rdata = bd.getBorderLengthInfo();
 
 		// 実際に差を調査する
-		for(var i=0;i<bd.bdmax;i++){
+		for(var i=0;i<bd.border.length;i++){
 			if(rdata.id[i]===null){ continue;}
 			var border = bd.border[i], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var val1=cell1.getNum(), val2=cell2.getNum();

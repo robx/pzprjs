@@ -188,13 +188,13 @@ Encode:{
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
-			if(c > bd.cellmax){ break;}
+			if(c > bd.cell.length){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeFivecells : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qn=bd.cell[c].qnum, qu=bd.cell[c].ques;
 
 			if     (qu=== 7){ pstr = "7";}

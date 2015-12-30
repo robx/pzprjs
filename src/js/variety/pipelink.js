@@ -174,7 +174,7 @@ Encode:{
 			if     (ca==='.'){ bd.cell[c].ques = -2;}
 			else if(ca>='0' && ca<='9'){
 				for(var n=0,max=parseInt(ca,10)+1;n<max;n++){
-					if(c<bd.cellmax){ bd.cell[c].ques = 6; c++;}
+					if(!!bd.cell[c]){ bd.cell[c].ques = 6; c++;}
 				}
 				c--;
 			}
@@ -182,7 +182,7 @@ Encode:{
 			else if(ca>='h' && ca<='z'){ c += (parseInt(ca,36)-17);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 
 		this.outbstr = bstr.substr(i);
@@ -192,14 +192,14 @@ Encode:{
 		var count, cm="", bd = this.board;
 
 		count=0;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qu=bd.cell[c].ques;
 
 			if     (qu===-2){ pstr = ".";}
 			else if(qu=== 6){
 				if(type===parser.URL_PZPRV3){
 					for(var n=1;n<10;n++){
-						if((c+n)>=bd.cellmax || bd.cell[c+n].ques!==6){ break;}
+						if(!bd.cell[c+n] || bd.cell[c+n].ques!==6){ break;}
 					}
 					pstr=(n-1).toString(10); c=(c+n-1);
 				}
@@ -218,7 +218,7 @@ Encode:{
 
 	checkPuzzleid : function(){
 		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].ques===6){ puzzle.changepid('pipelinkr'); break;}
 		}
 	}

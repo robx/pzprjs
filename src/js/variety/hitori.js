@@ -126,13 +126,13 @@ Encode:{
 			else if(ca==='%'){ cell.qnum = -2;}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeHitori : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", qn= bd.cell[c].qnum;
 
 			if     (qn===-2)       { pstr = "%";}

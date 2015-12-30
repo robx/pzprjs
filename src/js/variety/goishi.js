@@ -27,7 +27,7 @@ MouseEvent:{
 	inputqans : function(){
 		var cell = this.getcell();
 		var max=0, bd = this.board, bcell=bd.emptycell;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell2 = bd.cell[c];
 			if(cell2.anum>max){
 				max = cell2.anum;
@@ -189,12 +189,12 @@ Encode:{
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
+				if(!!bd.cell[c]){
 					bd.cell[c].setQues(num&twi[w]?7:0);
 					c++;
 				}
 			}
-			if(c>=bd.cols*bd.rows){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		bd.enableInfo();
 		this.outbstr = bstr.substr(i+1);
@@ -220,7 +220,7 @@ Encode:{
 
 	getSizeOfBoard_goishi : function(){
 		var x1=9999, x2=-1, y1=9999, y2=-1, count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isStone()){ continue;}
 			if(x1>cell.bx){ x1=cell.bx;}
@@ -347,7 +347,7 @@ FileIO:{
 		var bd = this.board;
 		for(var ans=1;;ans++){
 			var cell = null;
-			for(var c=0;c<bd.cellmax;c++){
+			for(var c=0;c<bd.cell.length;c++){
 				if(bd.cell[c].anum===ans){ cell = bd.cell[c]; break;}
 			}
 			if(!cell){ break;}

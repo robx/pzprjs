@@ -266,7 +266,7 @@ Encode:{
 			else if(ca==="g"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.cols*bd.rows)?1:2);}
 			else if(ca==="h"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.cols*bd.rows)?2:1);}
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
-			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
+			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cell.length-1;}
 
 			if     (tmp===1){ border.qdir = (border.isHorz()?border.UP:border.LT);}
 			else if(tmp===2){ border.qdir = (border.isHorz()?border.DN:border.RT);}
@@ -279,18 +279,18 @@ Encode:{
 	encodeMinarism : function(type){
 		var parser = pzpr.parser;
 		var cm="", count=0, bd=this.board;
-		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.cols);id<max;id++){
+		for(var id=0,max=bd.border.length+(type===parser.URL_PZPRV3?0:bd.cols);id<max;id++){
 			if(type===1){
 				if(id>0 && id<=(bd.cols-1)*bd.rows && id%(bd.cols-1)===0){ count++;}
 				if(id===(bd.cols-1)*bd.rows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
-			var pstr="";
-			if(id<bd.bdmax){
-				var border=bd.border[id], dir=border.qdir, qnum=border.qnum;
+			var pstr="", border=bd.border[id];
+			if(!!border){
+				var dir=border.qdir, qnum=border.qnum;
 
-				if     (dir===border.UP||dir===border.LT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"g":"h");}
-				else if(dir===border.DN||dir===border.RT){ pstr = ((type===parser.URL_PZPRV3 || id<bd.cellmax)?"h":"g");}
+				if     (dir===border.UP||dir===border.LT){ pstr = ((type===parser.URL_PZPRV3 || !!bd.cell[id])?"g":"h");}
+				else if(dir===border.DN||dir===border.RT){ pstr = ((type===parser.URL_PZPRV3 || !!bd.cell[id])?"h":"g");}
 				else if(qnum===-2){ pstr = ".";}
 				else if(qnum>= 0&&qnum< 16){ pstr = ""+ qnum.toString(16);}
 				else if(qnum>=16&&qnum<256){ pstr = "-"+qnum.toString(16);}

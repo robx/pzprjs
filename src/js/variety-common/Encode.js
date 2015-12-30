@@ -25,13 +25,13 @@ Encode:{
 			else if(ca==="."){ cell.qnum=-2;}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cell : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
 			if(qn>=0){
@@ -65,13 +65,13 @@ Encode:{
 			else if(ca==="."){ cross.qnum=-2;}
 
 			c++;
-			if(c>=bd.crossmax){ break;}
+			if(!bd.cross[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encode4Cross : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			var pstr="", qn=bd.cross[c].qnum;
 
 			if(qn>=0){
@@ -104,13 +104,13 @@ Encode:{
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber10 : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
 			if     (qn===-2)       { pstr = ".";}
@@ -144,13 +144,13 @@ Encode:{
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", qn = bd.cell[c].qnum;
 
 			if     (qn=== -2           ){ pstr = ".";}
@@ -240,13 +240,13 @@ Encode:{
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-10);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeArrowNumber16 : function(){
 		var cm = "", count = 0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
 			if     (qn===-2)        { pstr=(dir  )+".";}
 			else if(qn>= 0&&qn<  16){ pstr=(dir  )+qn.toString(16);}
@@ -290,8 +290,9 @@ Encode:{
 		for(var i=pos1;i<pos2;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(id<bd.bdinside){
-					bd.border[id].ques=((ca&twi[w])?1:0);
+				var border = bd.border[id];
+				if(!!border && border.inside){
+					border.ques=((ca&twi[w])?1:0);
 					id++;
 				}
 			}
@@ -311,7 +312,7 @@ Encode:{
 		if(num>0){ cm += pass.toString(32);}
 
 		num = 0; pass = 0;
-		for(var id=(bd.cols-1)*bd.rows;id<bd.bdinside;id++){
+		for(var id=(bd.cols-1)*bd.rows;id<(2*bd.cols*bd.rows-bd.cols-bd.rows);id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
@@ -372,12 +373,12 @@ Encode:{
 	//---------------------------------------------------------------------------
 	decodeCircle : function(){
 		var bd = this.board;
-		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.cols*bd.rows);
+		var bstr = this.outbstr, c=0, tri=[9,3,1];
 		var pos = (bstr ? Math.min(((bd.cols*bd.rows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),27);
 			for(var w=0;w<3;w++){
-				if(c<max){
+				if(!!bd.cell[c]){
 					var val = ((ca/tri[w])|0)%3;
 					if(val>0){ bd.cell[c].qnum=val;}
 					c++;
@@ -389,7 +390,7 @@ Encode:{
 	encodeCircle : function(){
 		var bd = this.board;
 		var cm="", num=0, pass=0, tri=[9,3,1];
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].qnum>0){ pass+=(bd.cell[c].qnum*tri[num]);}
 			num++;
 			if(num===3){ cm += pass.toString(27); num=0; pass=0;}
@@ -410,18 +411,18 @@ Encode:{
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(c<bd.cellmax){
+				if(!!bd.cell[c]){
 					bd.cell[c].ques = (num&twi[w]?6:0);
 					c++;
 				}
 			}
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeIce : function(){
 		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
@@ -440,7 +441,7 @@ Encode:{
 			if(this.include(ca,"0","4")){ bd.cross[c].qnum = parseInt(ca,10);}
 
 			c++;
-			if(c>=bd.crossmax){ i++; break;}
+			if(!bd.cross[c]){ i++; break;}
 		}
 
 		this.outbstr = bstr.substr(i);

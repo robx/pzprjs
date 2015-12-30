@@ -397,13 +397,13 @@ Encode:{
 			else if(this.include(ca,"5","9")||this.include(ca,"a","z")){ c+=(parseInt(ca,36)-5);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeCell_nurimaze : function(){
 		var cm="", count=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", cell=bd.cell[c];
 			if     (bd.startpos.equals(cell)){ pstr = "1";}
 			else if(bd.goalpos.equals(cell) ){ pstr = "2";}
@@ -587,7 +587,7 @@ AnsCheck:{
 			onroute  : (new this.klass.CellList()),
 			outroute : (new this.klass.CellList())
 		};
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.isUnshade()){
 				if(!!onroutes[cell.by*rows+cell.bx]){ info.onroute.add(cell);}

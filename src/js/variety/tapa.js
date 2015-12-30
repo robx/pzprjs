@@ -383,13 +383,13 @@ Encode:{
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeNumber_tapa : function(){
 		var count=0, cm="", bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", qn = bd.cell[c].qnums;
 
 			if(qn.length===1){

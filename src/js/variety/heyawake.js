@@ -108,10 +108,10 @@ Encode:{
 
 	decodeHeyaApp : function(){
 		var c=0, rdata=[], bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){ rdata[c]=null;}
+		for(var c=0;c<bd.cell.length;c++){ rdata[c]=null;}
 
 		var i=0, inp=this.outbstr.split("/");
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(rdata[c]!==null){ continue;}
 
 			var cell = bd.cell[c];

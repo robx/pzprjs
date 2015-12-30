@@ -35,9 +35,9 @@ MouseEvent:{
 
 		var puzzle = this.puzzle;
 		var ldata = [], bd=puzzle.board;
-		for(var c=0;c<bd.cellmax;c++){ ldata[c]=-1;}
+		for(var c=0;c<bd.cell.length;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if     (ldata[c]===1){ bd.cell[c].seterr(2);}
 			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
 		}
@@ -117,7 +117,7 @@ Board:{
 			tcell=adc.right;  if( dir!==4 && !tcell.isnull && ldata[tcell.id]===-1 && tcell.getNum()===3 ){ stack.push(tcell);}
 		}
 
-		for(var c=0;c<this.cellmax;c++){
+		for(var c=0;c<this.cell.length;c++){
 			if(ldata[c]===0){ ldata[c] = (result?2:1);}
 		}
 		return result;
@@ -223,8 +223,8 @@ AnsCheck:{
 
 	checkBalls : function(){
 		var ldata = [], bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){ ldata[c]=(bd.cell[c].getNum()===5?2:-1);}
+		for(var c=0;c<bd.cell.length;c++){
 			if(ldata[c]!==-1){ continue;}
 			if(bd.trackBall1(c,ldata)){ continue;}
 			

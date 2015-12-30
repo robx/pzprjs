@@ -188,7 +188,7 @@ Encode:{
 			}
 
 			id++;
-			if(id>=bd.cellmax){ a=i+1; break;}
+			if(!bd.cell[id]){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
@@ -218,7 +218,7 @@ Encode:{
 
 		// 盤面内側の数字部分のエンコード
 		var count=0;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", cell=bd.cell[c];
 
 			if(cell.ques===51){

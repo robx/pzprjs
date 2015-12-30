@@ -41,11 +41,10 @@ Border:{
 BorderList:{
 	allclear : function(isrec){
 		/* quesは共通ルーチンを使用しない */
-		var bd = this.board;
 		for(var i=0;i<this.length;i++){
 			var border = this[i];
 			/* border.quesの真の初期値は↓ */
-			var def = (border.id<bd.bdinside ? 1 : 0);
+			var def = (border.inside ? 1 : 0);
 			if(border.ques!==def){
 				if(isrec){ border.addOpe('ques', border.ques, def);}
 				border.ques = def;
@@ -135,11 +134,11 @@ Encode:{
 
 	decodeMejilink : function(){
 		var bstr = this.outbstr, bd = this.board, twi=[16,8,4,2,1];
-		var pos = (bstr?Math.min((((bd.bdmax+4)/5)|0),bstr.length):0), id=0;
+		var pos = (bstr?Math.min((((bd.border.length+4)/5)|0),bstr.length):0), id=0;
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(id<bd.bdmax){
+				if(!!bd.border[id]){
 					bd.border[id].ques = (ca&twi[w]?1:0);
 					id++;
 				}
@@ -149,9 +148,10 @@ Encode:{
 	},
 	encodeMejilink : function(){
 		var count = 0, bd = this.board;
-		for(var id=bd.bdinside;id<bd.bdmax;id++){ if(bd.border[id].isGround()){ count++;}}
+		var bdinside = 2*bd.cols*bd.rows-bd.cols-bd.rows;
+		for(var id=bdinside;id<bd.border.length;id++){ if(bd.border[id].isGround()){ count++;}}
 		var num=0, pass=0, cm="", twi=[16,8,4,2,1];
-		for(var id=0,max=(count===0?bd.bdinside:bd.bdmax);id<max;id++){
+		for(var id=0,max=(count===0?bdinside:bd.border.length);id<max;id++){
 			if(bd.border[id].isGround()){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
@@ -194,9 +194,9 @@ AnsCheck:{
 		var bd = this.board, tiles = bd.tilegraph.components;
 		var numerous_value = 999999;
 		for(var r=0;r<tiles.length;r++){ tiles[r].count=0;}
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-			if(border.isGround() && id>=bd.bdinside){
+			if(border.isGround() && !border.inside){
 				if(!cell1.isnull){ cell1.tile.count -= numerous_value;}
 				if(!cell2.isnull){ cell2.tile.count -= numerous_value;}
 			}

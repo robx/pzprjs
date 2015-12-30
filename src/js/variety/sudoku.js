@@ -36,7 +36,7 @@ Board:{
 		var roomsizex, roomsizey;
 		roomsizex = roomsizey = (Math.sqrt(this.cols)|0) * 2;
 		if(this.cols===6){ roomsizex = 6;}
-		for(var i=0;i<this.bdmax;i++){
+		for(var i=0;i<this.border.length;i++){
 			var border = this.border[i];
 			if(border.bx%roomsizex===0 || border.by%roomsizey===0){ border.ques = 1;}
 		}

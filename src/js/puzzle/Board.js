@@ -27,13 +27,6 @@ Board:{
 		this.border = new classes.BorderList();
 		this.excell = new classes.EXCellList();
 
-		this.cellmax   = 0;	// セルの数
-		this.crossmax  = 0;	// 交点の数
-		this.bdmax     = 0;	// 境界線の数
-		this.excellmax = 0;	// 拡張セルの数
-
-		this.bdinside  = 0;	// 盤面の内側(外枠上でない)に存在する境界線の本数
-
 		// 空オブジェクト
 		this.nullobj = new classes.BoardPiece();
 		this.emptycell   = new classes.Cell();
@@ -176,7 +169,6 @@ Board:{
 		this.setposCrosses();
 		this.setposBorders();
 		this.setposEXcells();
-		this.latticemax = (this.cols+1)*(this.rows+1);
 	},
 	setposGroup : function(group){
 		if     (group==='cell')  { this.setposCells();}
@@ -187,8 +179,7 @@ Board:{
 
 	setposCells : function(){
 		var qc = this.cols;
-		this.cellmax = this.cell.length;
-		for(var id=0;id<this.cellmax;id++){
+		for(var id=0;id<this.cell.length;id++){
 			var cell = this.cell[id];
 			cell.id = id;
 			cell.isnull = false;
@@ -202,8 +193,7 @@ Board:{
 	},
 	setposCrosses : function(){
 		var qc = this.cols;
-		this.crossmax = this.cross.length;
-		for(var id=0;id<this.crossmax;id++){
+		for(var id=0;id<this.cross.length;id++){
 			var cross = this.cross[id];
 			cross.id = id;
 			cross.isnull = false;
@@ -216,9 +206,8 @@ Board:{
 	},
 	setposBorders : function(){
 		var qc = this.cols, qr = this.rows;
-		this.bdmax = this.border.length;
-		this.bdinside = this.bdmax - (this.hasborder===2 ? 2*(qc+qr) : 0);
-		for(var id=0;id<this.bdmax;id++){
+		var bdinside = (2*qc*qr-qc-qr);
+		for(var id=0;id<this.border.length;id++){
 			var border=this.border[id], i=id;
 			border.id = id;
 			border.isnull = false;
@@ -232,14 +221,14 @@ Board:{
 				if(i>=0 && i<qr){ border.bx=2*qc;  border.by=i*2+1;} i-=qr;
 			}
 			border.isvert = !(border.bx&1);
+			border.inside = (id < bdinside);
 
 			border.initSideObject();
 		}
 	},
 	setposEXcells : function(){
 		var qc = this.cols, qr = this.rows;
-		this.excellmax = this.excell.length;
-		for(var id=0;id<this.excellmax;id++){
+		for(var id=0;id<this.excell.length;id++){
 			var excell = this.excell[id], i=id;
 			excell.id = id;
 			excell.isnull = false;

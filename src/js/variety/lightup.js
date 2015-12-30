@@ -98,14 +98,14 @@ Board:{
 	},
 
 	initQlight : function(){
-		for(var c=0;c<this.cellmax;c++){
+		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
 			cell.qlight = 0;
 			cell.akariinfo = 0;
 			if     (cell.qnum!==-1){ cell.akariinfo=2;}
 			else if(cell.qans=== 1){ cell.akariinfo=1;}
 		}
-		for(var c=0;c<this.cellmax;c++){
+		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];
 			if(cell.akariinfo!==1){ continue;}
 

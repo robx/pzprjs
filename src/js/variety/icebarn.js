@@ -47,7 +47,7 @@ MouseEvent:{
 		if(!border.isnull && !this.mousestart){
 			var dir = this.prevPos.getdir(pos,2);
 
-			if(border.id<this.board.bdinside){
+			if(border.inside){
 				if(this.pid==='icebarn'){
 					if(this.inputData===null){ this.inputData=((border.getArrow()!==dir)?1:0);}
 					border.setArrow((this.inputData===1)?dir:0);
@@ -213,11 +213,12 @@ BoardExec:{
 		this.input(this.board.border[id]);
 	},
 	geturlid : function(){
-		return this.getb().id - this.board.bdinside;
+		var bd = this.board;
+		return this.getb().id - (2*bd.cols*bd.rows-bd.cols-bd.rows);
 	},
 	seturlid : function(id){
 		var bd = this.board;
-		this.input(bd.border[id + bd.bdinside]);
+		this.input(bd.border[id + (2*bd.cols*bd.rows-bd.cols-bd.rows)]);
 	},
 
 	input : function(border){
@@ -468,7 +469,7 @@ Graphic:{
 
 		g.vid = "string_in";
 		border = bd.arrowin.getb();
-		if(border.id>=bd.bdinside && border.id<bd.bdmax){
+		if(!border.inside && border.id<bd.border.length){
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby+2){              py-=1.2*this.bh;}
 			else if(by===bd.maxby-2){              py+=1.2*this.bh;}
@@ -481,7 +482,7 @@ Graphic:{
 
 		g.vid = "string_out";
 		border = bd.arrowout.getb();
-		if(border.id>=bd.bdinside && border.id<bd.bdmax){
+		if(!border.inside && border.id<bd.border.length){
 			var bx = border.bx, by = border.by, px = bx*this.bw, py = by*this.bh;
 			if     (by===bd.minby+2){                  py-=1.2*this.bh;}
 			else if(by===bd.maxby-2){                  py+=1.2*this.bh;}
@@ -541,18 +542,18 @@ Graphic:{
 		for(var i=0;i<bstr.length;i++){
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<4;w++){
-				if(c<bd.cellmax){
+				if(!!bd.cell[c]){
 					bd.cell[c].ques = (num&twi[w]?6:0);
 					c++;
 				}
 			}
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeIce_old1 : function(){
 		var cm = "", num=0, pass=0, bd = this.board, twi=[8,4,2,1];
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
 			if(num===4){ cm += pass.toString(16); num=0; pass=0;}
 		}
@@ -563,6 +564,7 @@ Graphic:{
 
 	decodeBorderArrow : function(){
 		var bstr = this.outbstr, bd = this.board;
+		var bdinside = 2*bd.cols*bd.rows-bd.cols-bd.rows;
 
 		bd.disableInfo();
 		var id=0, a=0;
@@ -570,14 +572,14 @@ Graphic:{
 			var ca = bstr.charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){
+				if(id<bdinside){
 					var border = bd.border[id];
 					border.setArrow(border.isHorz()?border.UP:border.LT);
 				}
 				id++;
 			}
 			else{ id+=35;}
-			if(id>=bd.bdinside){ a=i+1; break;}
+			if(id>=bdinside){ a=i+1; break;}
 		}
 
 		id=0;
@@ -585,14 +587,14 @@ Graphic:{
 			var ca = bstr.charAt(i);
 			if(ca!=='z'){
 				id += parseInt(ca,36);
-				if(id<bd.bdinside){
+				if(id<bdinside){
 					var border = bd.border[id];
 					border.setArrow(border.isHorz()?border.DN:border.RT);
 				}
 				id++;
 			}
 			else{ id+=35;}
-			if(id>=bd.bdinside){ a=i+1; break;}
+			if(id>=bdinside){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
@@ -600,7 +602,8 @@ Graphic:{
 	},
 	encodeBorderArrow : function(){
 		var cm = "", num=0, bd=this.board;
-		for(var id=0;id<bd.bdinside;id++){
+		var bdinside = 2*bd.cols*bd.rows-bd.cols-bd.rows;
+		for(var id=0;id<bdinside;id++){
 			var border = bd.border[id];
 			var dir = border.getArrow();
 			if(dir===border.UP||dir===border.LT){ cm+=num.toString(36); num=0;}
@@ -612,7 +615,7 @@ Graphic:{
 		if(num>0){ cm+=num.toString(36);}
 
 		num=0;
-		for(var id=0;id<bd.bdinside;id++){
+		for(var id=0;id<bdinside;id++){
 			var border = bd.border[id];
 			var dir = border.getArrow();
 			if(dir===border.DN||dir===border.RT){ cm+=num.toString(36); num=0;}
@@ -643,7 +646,7 @@ Graphic:{
 			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
-			if(id>=bd.bdinside){ a=i+1; break;}
+			if(id>=(2*bd.cols*bd.rows-bd.cols-bd.rows)){ a=i+1; break;}
 		}
 		bd.enableInfo();
 
@@ -676,10 +679,10 @@ Graphic:{
 	encodeBorderArrow_old1 : function(){
 		var cm = "", bd = this.board;
 
-		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.id<bd.bdinside && border.getArrow()===border.UP);}).join("+"));
-		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.id<bd.bdinside && border.getArrow()===border.DN);}).join("+"));
-		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.id<bd.bdinside && border.getArrow()===border.LT);}).join("+"));
-		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.id<bd.bdinside && border.getArrow()===border.RT);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.inside && border.getArrow()===border.RT);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.inside && border.getArrow()===border.UP);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.bottom; return (border.inside && border.getArrow()===border.DN);}).join("+"));
+		cm += ("/" + bd.cell.filter(function(cell){ var border=cell.adjborder.right;  return (border.inside && border.getArrow()===border.LT);}).join("+"));
 
 		this.outbstr += cm;
 	}
@@ -839,7 +842,7 @@ AnsCheck:{
 
 	checkAllArrow : function(){
 		var bd = this.board;
-		for(var id=0;id<bd.bdmax;id++){
+		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id];
 			if(!(border.isArrow() && !border.isLine())){ continue;}
 			
@@ -872,7 +875,7 @@ AnsCheck:{
 	checkKeepInside : function(){
 		this.checkTrace(function(info){
 			var border = info.lastborder, bd = border.puzzle.board;
-			return (border.id<bd.bdinside || border.id===bd.arrowout.getid());
+			return (border.inside || border.id===bd.arrowout.getid());
 		}, "lrOffField");
 	},
 	checkNumberOrder : function(){

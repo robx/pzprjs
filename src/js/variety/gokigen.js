@@ -365,7 +365,7 @@ AnsCheck:{
 
 	checkQnumCross : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.crossmax;c++){
+		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0 || qn===cross.lcnt){ continue;}
 			

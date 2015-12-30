@@ -218,13 +218,13 @@ Encode:{
 			else if(this.include(ca,'g','z')){ id+=(parseInt(ca,36)-16);}
 
 			id++;
-			if(id>=bd.bdmax){ break;}
+			if(!bd.border[id]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeBorderNumber : function(){
 		var cm="", count=0, bd=this.board;
-		for(var id=0,max=bd.bdmax;id<max;id++){
+		for(var id=0,max=bd.border.length;id<max;id++){
 			var pstr="", border=bd.border[id], qnum=border.qnum;
 
 			if     (qnum===-2)         { pstr = ".";}
@@ -300,7 +300,7 @@ AnsCheck:{
 	check2x2SameNumber : function(){
 		var bd = this.board;
 		allloop:
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], bx=cell.bx, by=cell.by;
 			if(bx>=bd.maxbx-1 || by>=bd.maxby-1){ continue;}
 			

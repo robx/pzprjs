@@ -324,7 +324,7 @@ AnsCheck:{
 
 	checkShadeCells : function(type){
 		var bd = this.board;
-		for(var ec=0;ec<bd.excellmax;ec++){
+		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
 			var clist=new this.klass.CellList();

@@ -290,13 +290,13 @@ Encode:{
 			else{ c+=(parseInt(ca,36)-6);}
 
 			c++;
-			if(c>=bd.cellmax){ break;}
+			if(!bd.cell[c]){ break;}
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
 	encodeShugaku : function(){
 		var cm="", count=0, bd=this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr = "", val = bd.cell[c].qnum;
 
 			if     (val===-2){ pstr = "5";}
@@ -362,7 +362,7 @@ AnsCheck:{
 
 	checkKitamakura : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.qans!==43){ continue;}
 			
@@ -375,7 +375,7 @@ AnsCheck:{
 
 	checkFutonAisle : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.isNum()){ continue;}
 

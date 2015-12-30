@@ -29,7 +29,7 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		var max=this.board.cellmax-1;
+		var max=this.board.cell.length-1;
 		return (max<=255?max:255);
 	},
 	minnum : 0,
@@ -137,7 +137,7 @@ AnsCheck:{
 
 	checkCellNumber_kurotto : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.checkComplete()){ continue;}
 			

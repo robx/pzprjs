@@ -156,13 +156,13 @@ Graphic:{
 			else if(ca === '.'){ cc+=35;}
 
 			cc++;
-			if(cc>=bd.cellmax){ i++; break;}
+			if(!bd.cell[cc]){ i++; break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},
 	encodeBlockCell : function(){
 		var cm="", count=0, bd = this.board;
-		for(var c=0;c<bd.cellmax;c++){
+		for(var c=0;c<bd.cell.length;c++){
 			var pstr="";
 			if(bd.cell[c].ques===1){ pstr = ".";}
 			else{ count++;}
