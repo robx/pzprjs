@@ -29,7 +29,7 @@ ui.ProblemData.prototype =
 		metadata.author  = form.author.value;
 		metadata.source  = form.source.value;
 		var pzl = pzpr.parser.parse(this.pdata);
-		pzl.metadata.copydata(metadata);
+		pzl.metadata.update(metadata);
 		this.pdata = pzl.generate();
 		return metadata;
 	},
@@ -278,7 +278,7 @@ ui.database = {
 			}
 			item.updatePuzzleData(id+1);
 			var metadata = item.updateMetaData();
-			ui.puzzle.metadata.copydata(metadata);
+			ui.puzzle.metadata.update(metadata);
 			dbm.DBsid = item.id;
 			
 			dbm.sync = false;

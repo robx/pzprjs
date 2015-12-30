@@ -12,9 +12,9 @@ pzpr.MetaData.prototype =
 	comment : '',
 	items : {author:'',source:'',hard:'',comment:''},
 	
-	copydata : function(metadata){
+	update : function(metadata){
 		if(!metadata){ return;}
-		for(var i in this.items){ if(!!metadata[i]){ this[i] = metadata[i];}}
+		for(var i in this.items){ this[i] = metadata[i];}
 	},
 	getvaliddata : function(){
 		var obj = {};
@@ -22,7 +22,7 @@ pzpr.MetaData.prototype =
 		return obj;
 	},
 	reset : function(){
-		for(var i in this.items){ delete this[i];}
+		for(var i in this.items){ this[i] = '';}
 	},
 	empty : function(){
 		for(var i in this.items){ if(!!this[i]){ return false;}}

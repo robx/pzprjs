@@ -404,7 +404,7 @@ pzpr.parser.FileData.prototype = {
 			if(!!window.JSON){
 				if(isinfo && (str.substr(0,5)==="info:")){
 					var info = JSON.parse(str.substr(5));
-					this.metadata.copydata(info.metadata);
+					this.metadata.update(info.metadata);
 					this.history = info.history || '';
 				}
 				else if(str.substr(0,8)==="history:"){

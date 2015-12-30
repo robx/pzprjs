@@ -36,7 +36,7 @@ FileIO:{
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenOpen();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenOpenXML();}
 
-		puzzle.metadata.copydata(pzl.metadata);
+		puzzle.metadata.update(pzl.metadata);
 		if(pzl.history && (filetype===pzl.FILE_PZPR)){
 			puzzle.opemgr.decodeHistory(pzl.history);
 		}
@@ -80,7 +80,7 @@ FileIO:{
 		else{
 			pzl.xmldoc = this.xmldoc;
 		}
-		pzl.metadata.copydata(puzzle.metadata);
+		pzl.metadata.update(puzzle.metadata);
 		if(option.history && (filetype===pzl.FILE_PZPR)){
 			pzl.history = puzzle.opemgr.encodeHistory();
 		}
