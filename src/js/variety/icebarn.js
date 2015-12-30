@@ -121,8 +121,8 @@ Border:{
 },
 
 Board:{
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	hasborder : 2,
 	hasexcell : 2, /* LineGraph用 */
@@ -635,9 +635,9 @@ Graphic:{
 			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.LT:border.RT)); id+=((num>>1)+1);}
 			else if(ca>='a' && ca<='z'){ var num=parseInt(ca,36); id+=(num-9);}
 			else{ id++;}
-			if(id>=(bd.qcols-1)*bd.qrows){ a=i+1; break;}
+			if(id>=(bd.cols-1)*bd.rows){ a=i+1; break;}
 		}
-		id=(bd.qcols-1)*bd.qrows;
+		id=(bd.cols-1)*bd.rows;
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 			if     (ca>='0' && ca<='9'){ var num=parseInt(ca,10), border=bd.border[id]; border.setArrow((!(num&1)?border.UP:border.DN)); id+=((num>>1)+1);}

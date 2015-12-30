@@ -234,7 +234,7 @@ FileIO:{
 	encodeAreaRoom : function(){ this.encodeAreaRoom_com(true);},
 	decodeAreaRoom_com : function(isques){
 		this.readLine();
-		this.rdata2Border(isques, this.getItemList(this.board.qrows));
+		this.rdata2Border(isques, this.getItemList(this.board.rows));
 
 		this.board.roommgr.rebuild();
 	},
@@ -246,7 +246,7 @@ FileIO:{
 		for(var c=0;c<bd.cellmax;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
 			this.datastr += (""+(roomid>=0 ? roomid : ".")+" ");
-			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
+			if((c+1)%bd.cols===0){ this.datastr += "\n";}
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -265,12 +265,12 @@ FileIO:{
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
-		var bd = this.board, item = this.getItemList(bd.qrows+1);
+		var bd = this.board, item = this.getItemList(bd.rows+1);
 		bd.disableInfo(); /* mv.set51cell()用 */
 		for(var i=0;i<item.length;i++) {
 			if(item[i]==="."){ continue;}
 
-			var bx=(i%(bd.qcols+1)-1)*2+1, by=(((i/(bd.qcols+1))|0)-1)*2+1;
+			var bx=(i%(bd.cols+1)-1)*2+1, by=(((i/(bd.cols+1))|0)-1)*2+1;
 			if(bx===-1 || by===-1){
 				var excell = bd.getex(bx,by);
 				var property = ((excell.by===-1)?'qnum2':'qnum');

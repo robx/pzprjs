@@ -67,8 +67,8 @@ EXCell:{
 },
 
 Board:{
-	qcols : 11,
-	qrows : 11,
+	cols : 11,
+	rows : 11,
 
 	hasborder : 1,
 	hasexcell : 1
@@ -301,7 +301,7 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		var bd = this.board, barray = this.readLines(bd.qrows+1);
+		var bd = this.board, barray = this.readLines(bd.rows+1);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			if(((by+1)>>1)>=barray.length){ break;}
 			var arr = barray[(by+1)>>1].split(" ");

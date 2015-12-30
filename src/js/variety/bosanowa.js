@@ -114,8 +114,8 @@ KeyEvent:{
 TargetCursor:{
 	initCursor : function(){
 		var bd = this.board;
-		this.bx = ((bd.qcols-1)&~1)+1;
-		this.by = ((bd.qrows-1)&~1)+1;
+		this.bx = ((bd.cols-1)&~1)+1;
+		this.by = ((bd.rows-1)&~1)+1;
 	}
 },
 

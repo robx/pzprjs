@@ -46,8 +46,8 @@ Border:{
 },
 
 Board:{
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	hasborder : 1
 },

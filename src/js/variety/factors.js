@@ -58,7 +58,7 @@ Cell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		return this.puzzle.editmode?999999:Math.max(this.board.qcols,this.board.qrows);
+		return this.puzzle.editmode?999999:Math.max(this.board.cols,this.board.rows);
 	},
 
 	setNum : function(val){
@@ -79,8 +79,8 @@ CellList:{
 },
 
 Board:{
-	qcols : 9,
-	qrows : 9,
+	cols : 9,
+	rows : 9,
 
 	hasborder : 1
 },

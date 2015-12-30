@@ -173,7 +173,7 @@ Operation:{
 		this.exec(key_redo);
 	},
 	exec : function(num){
-		var puzzle = this.puzzle, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.qcols,y2:2*bd.qrows};
+		var puzzle = this.puzzle, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.cols,y2:2*bd.rows};
 		bd.exec.expandreduce(num,d);
 		puzzle.redraw();
 	}

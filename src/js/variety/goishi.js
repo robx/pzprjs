@@ -194,7 +194,7 @@ Encode:{
 					c++;
 				}
 			}
-			if(c>=bd.qcols*bd.qrows){ break;}
+			if(c>=bd.cols*bd.rows){ break;}
 		}
 		bd.enableInfo();
 		this.outbstr = bstr.substr(i+1);

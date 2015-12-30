@@ -147,8 +147,8 @@ Address:{
 },
 
 Board:{
-	qcols : 9,
-	qrows : 9,
+	cols : 9,
+	rows : 9,
 
 	hasborder : 1
 },

@@ -582,8 +582,8 @@ Graphic:{
 				// この関数を呼ぶ場合は全てhasborder===1なので
 				// 外枠用の考慮部分を削除しています。
 				var adb = cell.adjborder;
-				var UPin = (cell.by>2), DNin = (cell.by<2*this.board.qrows-2);
-				var LTin = (cell.bx>2), RTin = (cell.bx<2*this.board.qcols-2);
+				var UPin = (cell.by>2), DNin = (cell.by<2*this.board.rows-2);
+				var LTin = (cell.bx>2), RTin = (cell.bx<2*this.board.cols-2);
 
 				var isUP = (!UPin || adb.top.ques   ===1);
 				var isDN = (!DNin || adb.bottom.ques===1);
@@ -1183,13 +1183,13 @@ Graphic:{
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
-		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
+		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 		x1-=(x1&1); y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
 
 		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0), bw = this.bw, bh = this.bh;
-		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.qcols-bs);
-		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*bd.qrows-bs);
+		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.cols-bs);
+		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*bd.rows-bs);
 
 		// isdraw!==false: 指定無しかtrueのときは描画する
 		g.lineWidth = 1;
@@ -1216,8 +1216,8 @@ Graphic:{
 
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
-		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
+		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 		x1-=(x1&1); y1-=(y1&1); x2+=(x2&1); y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
@@ -1250,11 +1250,11 @@ Graphic:{
 
 		// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*bd.qcols){ x2=2*bd.qcols;}
-		if(y1<0){ y1=0;} if(y2>2*bd.qrows){ y2=2*bd.qrows;}
+		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
+		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 
 		var lw = (this.pid!=='bosanowa'?this.lw:1);
-		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
+		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
 		g.fillStyle = "black";
 		g.vid = "chs1_"; g.fillRect(-(lw-0.5),       -(lw-0.5), lw, boardHeight+2*lw-2);
 		g.vid = "chs2_"; g.fillRect(boardWidth-0.5,  -(lw-0.5), lw, boardHeight+2*lw-2);
@@ -1269,7 +1269,7 @@ Graphic:{
 		if(y1<=0){ y1=bd.minby;} if(y2>bd.maxby){ y2=bd.maxby;}
 
 		var lw = this.lw, lm = this.lm;
-		var boardWidth = bd.qcols*this.cw, boardHeight = bd.qrows*this.ch;
+		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
 
 		// extendcell==1も含んだ外枠の描画
 		g.fillStyle = "black";

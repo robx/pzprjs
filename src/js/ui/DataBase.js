@@ -19,8 +19,8 @@ ui.ProblemData.prototype =
 		this.pdata = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g,"/");
 		this.time = (pzpr.util.currentTime()/1000)|0;
 		this.pid = puzzle.pid;
-		this.col = bd.qcols;
-		this.row = bd.qrows;
+		this.col = bd.cols;
+		this.row = bd.rows;
 	},
 	updateMetaData : function(){
 		var metadata = new pzpr.MetaData(), form = document.database;

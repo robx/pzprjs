@@ -68,8 +68,8 @@ CellList:{
 },
 
 Board:{
-	qcols : 6,
-	qrows : 6,
+	cols : 6,
+	rows : 6,
 
 	hasborder : 1
 },

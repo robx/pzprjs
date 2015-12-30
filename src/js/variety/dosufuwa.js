@@ -184,7 +184,7 @@ FileIO:{
 	decodeAreaRoom_com : function(isques){
 		var bd = this.board;
 		this.readLine();
-		var items = this.getItemList(bd.qrows);
+		var items = this.getItemList(bd.rows);
 		this.rdata2Border(isques, items);
 		
 		for(var c=0;c<bd.cell.length;c++){
@@ -201,7 +201,7 @@ FileIO:{
 		for(var c=0;c<bd.cellmax;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
 			this.datastr += (""+(roomid>=0 ? roomid : "#")+" ");
-			if((c+1)%bd.qcols===0){ this.datastr += "\n";}
+			if((c+1)%bd.cols===0){ this.datastr += "\n";}
 		}
 	}
 },

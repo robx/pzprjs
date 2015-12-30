@@ -38,8 +38,8 @@ Board:{
 	hasborder : 1
 },
 "Board@cojun":{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 
 AreaRoomGraph:{
@@ -165,7 +165,7 @@ AnsCheck:{
 
 	checkUpperNumber : function(){
 		var bd = this.board;
-		for(var c=0;c<bd.cellmax-bd.qcols;c++){
+		for(var c=0;c<bd.cellmax-bd.cols;c++){
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom;
 			if(cell.room!==cell2.room || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell.getNum()>=cell2.getNum()){ continue;}

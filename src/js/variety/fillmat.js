@@ -34,8 +34,8 @@ Board:{
 	hasborder : 1
 },
 "Board@usotatami":{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 
 AreaRoomGraph:{

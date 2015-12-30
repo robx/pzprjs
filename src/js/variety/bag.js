@@ -61,7 +61,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.board.qcols+this.board.qrows-1);
+		return Math.min(255, this.board.cols+this.board.rows-1);
 	},
 	minnum : 2,
 

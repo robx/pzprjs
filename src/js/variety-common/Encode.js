@@ -270,8 +270,8 @@ Encode:{
 		var bd = this.board;
 
 		if(bstr){
-			pos1 = Math.min(((((bd.qcols-1)*bd.qrows+4)/5)|0)     , bstr.length);
-			pos2 = Math.min((((bd.qcols*(bd.qrows-1)+4)/5)|0)+pos1, bstr.length);
+			pos1 = Math.min(((((bd.cols-1)*bd.rows+4)/5)|0)     , bstr.length);
+			pos2 = Math.min((((bd.cols*(bd.rows-1)+4)/5)|0)+pos1, bstr.length);
 		}
 		else{ pos1 = 0; pos2 = 0;}
 
@@ -279,14 +279,14 @@ Encode:{
 		for(var i=0;i<pos1;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
-				if(id<(bd.qcols-1)*bd.qrows){
+				if(id<(bd.cols-1)*bd.rows){
 					bd.border[id].ques=((ca&twi[w])?1:0);
 					id++;
 				}
 			}
 		}
 
-		id = (bd.qcols-1)*bd.qrows;
+		id = (bd.cols-1)*bd.rows;
 		for(var i=pos1;i<pos2;i++){
 			var ca = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
@@ -304,14 +304,14 @@ Encode:{
 		var cm="", twi=[16,8,4,2,1], num = 0, pass = 0;
 		var bd = this.board;
 
-		for(var id=0;id<(bd.qcols-1)*bd.qrows;id++){
+		for(var id=0;id<(bd.cols-1)*bd.rows;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
 		num = 0; pass = 0;
-		for(var id=(bd.qcols-1)*bd.qrows;id<bd.bdinside;id++){
+		for(var id=(bd.cols-1)*bd.rows;id<bd.bdinside;id++){
 			pass+=(bd.border[id].ques * twi[num]); num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
@@ -327,7 +327,7 @@ Encode:{
 	decodeCrossMark : function(){
 		var cc=0, i=0, bstr = this.outbstr, bd = this.board;
 		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
-		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
+		var rows=(bd.rows-1+cp2), cols=(bd.cols-1+cp2);
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -349,7 +349,7 @@ Encode:{
 	encodeCrossMark : function(){
 		var cm="", count=0, bd = this.board;
 		var cp=(bd.hascross===2?1:0), cp2=(cp<<1);
-		var rows=(bd.qrows-1+cp2), cols=(bd.qcols-1+cp2);
+		var rows=(bd.rows-1+cp2), cols=(bd.cols-1+cp2);
 		for(var c=0,max=cols*rows;c<max;c++){
 			var pstr="";
 			var bx = ((  c%cols    +(1-cp))<<1);
@@ -372,8 +372,8 @@ Encode:{
 	//---------------------------------------------------------------------------
 	decodeCircle : function(){
 		var bd = this.board;
-		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.qcols*bd.qrows);
-		var pos = (bstr ? Math.min(((bd.qcols*bd.qrows+2)/3)|0, bstr.length) : 0);
+		var bstr = this.outbstr, c=0, tri=[9,3,1], max=(bd.cols*bd.rows);
+		var pos = (bstr ? Math.min(((bd.cols*bd.rows+2)/3)|0, bstr.length) : 0);
 		for(var i=0;i<pos;i++){
 			var ca = parseInt(bstr.charAt(i),27);
 			for(var w=0;w<3;w++){

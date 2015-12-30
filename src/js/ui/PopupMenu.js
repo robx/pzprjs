@@ -202,7 +202,7 @@ ui.popupmgr.addpopup('newboard',
 		getEL("nb_size").style.display        = ((pid!=='sudoku') ? "" : "none");
 		getEL("nb_size_sudoku").style.display = ((pid==='sudoku') ? "" : "none");
 		
-		var col = bd.qcols, row = bd.qrows;
+		var col = bd.cols, row = bd.rows;
 		if(pid==='tawa' && bd.shape===3){ col++;}
 		
 		if(pid!=='sudoku'){
@@ -646,7 +646,7 @@ ui.popupmgr.addpopup('metadata',
 		
 		var form = this.form;
 		var puzzle = ui.puzzle, bd = puzzle.board, meta = puzzle.metadata;
-		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][pzpr.lang] + "&nbsp;" + bd.qcols+"×"+bd.qrows;
+		getEL("metadata_variety").innerHTML = pzpr.variety.info[puzzle.pid][pzpr.lang] + "&nbsp;" + bd.cols+"×"+bd.rows;
 		form.author.value  = meta.author;
 		form.source.value  = meta.source;
 		form.hard.value    = meta.hard;

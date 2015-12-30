@@ -195,8 +195,8 @@ EXCell:{
 },
 
 Board:{
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	hasborder : 1,
 	hasexcell : 2,
@@ -421,12 +421,12 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 
-		var bd = this.board, item = this.getItemList(bd.qrows+2);
+		var bd = this.board, item = this.getItemList(bd.rows+2);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
 
-			var bx = i%(bd.qcols+2)*2-1, by = ((i/(bd.qcols+2))<<1)-1;
+			var bx = i%(bd.cols+2)*2-1, by = ((i/(bd.cols+2))<<1)-1;
 			var excell = bd.getex(bx,by);
 			if(!excell.isnull){
 				var inp = ca.split(",");

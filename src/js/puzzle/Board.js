@@ -69,8 +69,8 @@ Board:{
 	},
 	infolist : [],
 
-	qcols : 10,		/* 盤面の横幅(デフォルト) */
-	qrows : 10,		/* 盤面の縦幅(デフォルト) */
+	cols : 10,		/* 盤面の横幅(デフォルト) */
+	rows : 10,		/* 盤面の縦幅(デフォルト) */
 
 	hascross  : 2,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
 	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
@@ -82,7 +82,7 @@ Board:{
 	// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	initBoardSize : function(col,row){
-		if(col===(void 0)||isNaN(col)){ col=this.qcols; row=this.qrows;}
+		if(col===(void 0)||isNaN(col)){ col=this.cols; row=this.rows;}
 
 		this.allclear(false); // initGroupで、新Objectに対しては別途allclearが呼ばれます
 
@@ -91,8 +91,8 @@ Board:{
 		this.initGroup('border', col, row);
 		this.initGroup('excell', col, row);
 
-		this.qcols = col;
-		this.qrows = row;
+		this.cols = col;
+		this.rows = row;
 
 		this.setminmax();
 		this.setposAll();
@@ -176,7 +176,7 @@ Board:{
 		this.setposCrosses();
 		this.setposBorders();
 		this.setposEXcells();
-		this.latticemax = (this.qcols+1)*(this.qrows+1);
+		this.latticemax = (this.cols+1)*(this.rows+1);
 	},
 	setposGroup : function(group){
 		if     (group==='cell')  { this.setposCells();}
@@ -186,7 +186,7 @@ Board:{
 	},
 
 	setposCells : function(){
-		var qc = this.qcols;
+		var qc = this.cols;
 		this.cellmax = this.cell.length;
 		for(var id=0;id<this.cellmax;id++){
 			var cell = this.cell[id];
@@ -201,7 +201,7 @@ Board:{
 		}
 	},
 	setposCrosses : function(){
-		var qc = this.qcols;
+		var qc = this.cols;
 		this.crossmax = this.cross.length;
 		for(var id=0;id<this.crossmax;id++){
 			var cross = this.cross[id];
@@ -215,7 +215,7 @@ Board:{
 		}
 	},
 	setposBorders : function(){
-		var qc = this.qcols, qr = this.qrows;
+		var qc = this.cols, qr = this.rows;
 		this.bdmax = this.border.length;
 		this.bdinside = this.bdmax - (this.hasborder===2 ? 2*(qc+qr) : 0);
 		for(var id=0;id<this.bdmax;id++){
@@ -237,7 +237,7 @@ Board:{
 		}
 	},
 	setposEXcells : function(){
-		var qc = this.qcols, qr = this.qrows;
+		var qc = this.cols, qr = this.rows;
 		this.excellmax = this.excell.length;
 		for(var id=0;id<this.excellmax;id++){
 			var excell = this.excell[id], i=id;
@@ -272,8 +272,8 @@ Board:{
 		var extDR = (this.hasexcell===2);
 		this.minbx = (!extUL ? 0 : -2);
 		this.minby = (!extUL ? 0 : -2);
-		this.maxbx = (!extDR ? 2*this.qcols : 2*this.qcols+2);
-		this.maxby = (!extDR ? 2*this.qrows : 2*this.qrows+2);
+		this.maxbx = (!extDR ? 2*this.cols : 2*this.cols+2);
+		this.maxby = (!extDR ? 2*this.rows : 2*this.rows+2);
 
 		this.puzzle.cursor.setminmax();
 	},
@@ -336,10 +336,10 @@ Board:{
 		return obj;
 	},
 	getObjectPosEx : function(group,bx,by,qc,qr){
-		var qc0 = this.qcols, qr0 = this.qrows;
-		this.qcols = qc; this.qrows = qr;
+		var qc0 = this.cols, qr0 = this.rows;
+		this.cols = qc; this.rows = qr;
 		var obj = this.getObjectPos(group,bx,by);
-		this.qcols = qc0; this.qrows = qr0;
+		this.cols = qc0; this.rows = qr0;
 		return obj;
 	},
 
@@ -351,14 +351,14 @@ Board:{
 	// bd.getobj() (X,Y)の位置にある何らかのオブジェクトを返す
 	//---------------------------------------------------------------------------
 	getc : function(bx,by){
-		var id = null, qc=this.qcols, qr=this.qrows;
+		var id = null, qc=this.cols, qr=this.rows;
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!(bx&1))||(!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*qc;}
 
 		return (id!==null ? this.cell[id] : this.emptycell);
 	},
  	getx : function(bx,by){
-		var id = null, qc=this.qcols, qr=this.qrows;
+		var id = null, qc=this.cols, qr=this.rows;
 		if((bx<0||bx>(qc<<1)||by<0||by>(qr<<1))||(!!(bx&1))||(!!(by&1))){ }
 		else{ id = (bx>>1)+(by>>1)*(qc+1);}
 
@@ -368,7 +368,7 @@ Board:{
 		return this.emptycross;
 	},
 	getb : function(bx,by){
-		var id = null, qc=this.qcols, qr=this.qrows;
+		var id = null, qc=this.cols, qr=this.rows;
 		if(!!this.hasborder && (bx>=1&&bx<=2*qc-1&&by>=1&&by<=2*qr-1)){
 			if     (!(bx&1) &&  (by&1)){ id = ((bx>>1)-1)+(by>>1)*(qc-1);}
 			else if( (bx&1) && !(by&1)){ id = (bx>>1)+((by>>1)-1)*qc+(qc-1)*qr;}
@@ -383,7 +383,7 @@ Board:{
 		return (id!==null ? this.border[id] : this.emptyborder);
 	},
 	getex : function(bx,by){
-		var id = null, qc=this.qcols, qr=this.qrows;
+		var id = null, qc=this.cols, qr=this.rows;
 		if(this.hasexcell===1){
 			if(bx===-1&&by===-1){ id = qc+qr;}
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}

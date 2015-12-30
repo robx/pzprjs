@@ -206,7 +206,7 @@ Board:{
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
-		this.initStar(this.qcols,this.qrows);
+		this.initStar(this.cols,this.rows);
 		this.rebuildInfo();
 	},
 
@@ -228,7 +228,7 @@ Board:{
 		}
 	},
 	gets : function(bx,by){
-		var id = null, qc=this.qcols, qr=this.qrows;
+		var id = null, qc=this.cols, qr=this.rows;
 		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ }
 		else{ id = (bx-1)+(by-1)*(2*qc-1);}
 
@@ -253,7 +253,7 @@ Board:{
 BoardExec:{
 	adjustBoardData2 : function(key,d){
 		var bd = this.board;
-		bd.initStar(bd.qcols, bd.qrows);
+		bd.initStar(bd.cols, bd.rows);
 	}
 },
 
@@ -407,7 +407,7 @@ FileIO:{
 	},
 
 	decodeStarFile : function(){
-		var bd = this.board, array = this.readLines(2*bd.qrows-1), s=0;
+		var bd = this.board, array = this.readLines(2*bd.rows-1), s=0;
 		bd.disableInfo();
 		for(var i=0;i<array.length;i++){
 			for(var c=0;c<array[i].length;c++){
@@ -421,8 +421,8 @@ FileIO:{
 	},
 	encodeStarFile : function(){
 		var bd = this.board, s=0;
-		for(var by=1;by<=2*bd.qrows-1;by++){
-			for(var bx=1;bx<=2*bd.qcols-1;bx++){
+		for(var by=1;by<=2*bd.rows-1;by++){
+			for(var bx=1;bx<=2*bd.cols-1;bx++){
 				var star = bd.star[s];
 				if     (star.getStar()===1){ this.datastr += "1";}
 				else if(star.getStar()===2){ this.datastr += "2";}

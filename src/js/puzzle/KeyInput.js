@@ -295,7 +295,7 @@ KeyEvent:{
 			else if (adc.bottom.isnull || adc.bottom.ques===51) { return 2;}
 		}
 		else if(piece.group==='excell'){
-			if     (piece.id===bd.qcols+bd.qrows){ return 0;}
+			if     (piece.id===bd.cols+bd.rows){ return 0;}
 			else if((piece.by===-1 && adc.bottom.ques===51) ||
 				    (piece.bx===-1 && adc.right.ques ===51)){ return 0;}
 			else if(piece.by===-1){ return 4;}

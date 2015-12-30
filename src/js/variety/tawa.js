@@ -63,8 +63,8 @@ Cell:{
 	minnum : 0
 },
 Board:{
-	qcols : 6,	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
-	qrows : 7,
+	cols : 6,	// ※本スクリプトでは一番上の段のマスの数を表すこととする.
+	rows : 7,
 	shape : 3,	// 2段目は => 0:左右引っ込み 1:右のみ出っ張り 2:左のみ出っ張り 3:左右出っ張り
 
 	hascross : 0,
@@ -91,23 +91,23 @@ Board:{
 			cell.isnull = false;
 
 			if(this.shape===0){
-				var row = (((2*id)/(2*this.qcols-1))|0);
-				cell.bx = (((2*id)%(2*this.qcols-1))|0)+1;
+				var row = (((2*id)/(2*this.cols-1))|0);
+				cell.bx = (((2*id)%(2*this.cols-1))|0)+1;
 				cell.by = row*2+1;
 			}
 			else if(this.shape===1){
-				var row = ((id/this.qcols)|0);
-				cell.bx = ((id%this.qcols)|0)*2+(!!(row&1)?1:0)+1;
+				var row = ((id/this.cols)|0);
+				cell.bx = ((id%this.cols)|0)*2+(!!(row&1)?1:0)+1;
 				cell.by = row*2+1;
 			}
 			else if(this.shape===2){
-				var row = ((id/this.qcols)|0);
-				cell.bx = ((id%this.qcols)|0)*2+(!(row&1)?1:0)+1;
+				var row = ((id/this.cols)|0);
+				cell.bx = ((id%this.cols)|0)*2+(!(row&1)?1:0)+1;
 				cell.by = row*2+1;
 			}
 			else if(this.shape===3){
-				var row = (((2*id+1)/(2*this.qcols+1))|0);
-				cell.bx = (((2*id+1)%(2*this.qcols+1))|0)+1;
+				var row = (((2*id+1)/(2*this.cols+1))|0);
+				cell.bx = (((2*id+1)%(2*this.cols+1))|0)+1;
 				cell.by = row*2+1;
 			}
 		}
@@ -115,16 +115,16 @@ Board:{
 	setminmax : function(){
 		this.minbx = 0;
 		this.minby = 0;
-		this.maxbx = 2*this.qcols + [0,1,1,2][this.shape];
-		this.maxby = 2*this.qrows;
+		this.maxbx = 2*this.cols + [0,1,1,2][this.shape];
+		this.maxby = 2*this.rows;
 
 		this.puzzle.cursor.setminmax();
 	},
 
 	getc : function(bx,by){
-		var id = null, qc=this.qcols;
+		var id = null, qc=this.cols;
 		if(bx>=this.minbx+1 && bx<=this.maxbx-1 && by>=this.minby+1 && by<=this.maxby-1){
-			var cy = (by>>1);	// 上から数えて何段目か(0～qrows-1)
+			var cy = (by>>1);	// 上から数えて何段目か(0～rows-1)
 			if     (this.shape===0){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc-1))>>1;}}
 			else if(this.shape===1){ if(!!((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
 			else if(this.shape===2){ if( !((bx+cy)&1)){ id = ((bx-1)+cy*(2*qc  ))>>1;}}
@@ -151,10 +151,10 @@ BoardExec:{
 		var bd = this.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
-				if(bd.qrows<=1){ return;}
+				if(bd.rows<=1){ return;}
 			}
 			else if(name==="reducelt"||name==="reducert"){
-				if(bd.qcols<=1 && (bd.shape!==3)){ return;}
+				if(bd.cols<=1 && (bd.shape!==3)){ return;}
 			}
 		}
 
@@ -164,10 +164,10 @@ BoardExec:{
 		var bd = this.board;
 		if(key & this.EXPAND){
 			switch(key & 0x0F){
-				case this.LT: bd.qcols+=[0,0,1,1][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
-				case this.RT: bd.qcols+=[0,1,0,1][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
-				case this.UP: bd.qcols+=[-1,0,0,1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.qrows++; break;
-				case this.DN: bd.qrows++; break;
+				case this.LT: bd.cols+=[0,0,1,1][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
+				case this.RT: bd.cols+=[0,1,0,1][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
+				case this.UP: bd.cols+=[-1,0,0,1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.rows++; break;
+				case this.DN: bd.rows++; break;
 			}
 			bd.setminmax();
 
@@ -177,10 +177,10 @@ BoardExec:{
 			this.reduceGroup('cell',key);
 
 			switch(key & 0x0F){
-				case this.LT: bd.qcols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
-				case this.RT: bd.qcols-=[1,0,1,0][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
-				case this.UP: bd.qcols-=[1,0,0,-1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.qrows--; break;
-				case this.DN: bd.qrows--; break;
+				case this.LT: bd.cols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
+				case this.RT: bd.cols-=[1,0,1,0][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
+				case this.UP: bd.cols-=[1,0,0,-1][bd.shape]; bd.shape=[3,2,1,0][bd.shape]; bd.rows--; break;
+				case this.DN: bd.rows--; break;
 			}
 		}
 		bd.setposAll();
@@ -190,7 +190,7 @@ BoardExec:{
 		var bd = this.board;
 		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
-		if     (key===this.FLIPY){ if(!(bd.qrows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
+		if     (key===this.FLIPY){ if(!(bd.rows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
 		else if(key===this.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
 
 		this.turnflipGroup('cell', key, d);
@@ -294,7 +294,7 @@ Encode:{
 	decodeTawamurenga : function(){
 		var barray = this.outbstr.split("/"), bd = this.board;
 		bd.setShape(+barray[0]);
-		bd.initBoardSize(bd.qcols, bd.qrows);
+		bd.initBoardSize(bd.cols, bd.rows);
 
 		if(!!barray[1]){
 			this.outbstr = barray[1];
@@ -311,9 +311,9 @@ FileIO:{
 	decodeData : function(){
 		var bd = this.board;
 		bd.setShape(+this.readLine());
-		bd.initBoardSize(bd.qcols, bd.qrows);
+		bd.initBoardSize(bd.cols, bd.rows);
 
-		var n=0, item = this.getItemList(bd.qrows);
+		var n=0, item = this.getItemList(bd.rows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell=bd.getc(bx,by);

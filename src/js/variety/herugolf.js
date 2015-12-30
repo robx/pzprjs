@@ -199,7 +199,7 @@ Cell:{
 	},
 	maxnum : function(){
 		var bd = this.board, cx = (this.bx>>1), cy = (this.by>>1);
-		return Math.max(cx, cy, bd.qcols-1-cx, bd.qrows-1-cy);
+		return Math.max(cx, cy, bd.cols-1-cx, bd.rows-1-cy);
 	},
 
 	getDestination : function(){

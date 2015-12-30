@@ -57,7 +57,7 @@ KeyEvent:{
 Cell:{
 	maxnum : function(){
 		var bd = this.board;
-		return (this.ques===1?4:Math.max(bd.qcols,bd.qrows));
+		return (this.ques===1?4:Math.max(bd.cols,bd.rows));
 	},
 	minnum : 0
 },

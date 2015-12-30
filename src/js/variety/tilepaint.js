@@ -40,8 +40,8 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		this.inputnumber51(ca,
-			{2 : (this.board.qcols-(this.cursor.bx>>1)-1),
-			 4 : (this.board.qrows-(this.cursor.by>>1)-1)});
+			{2 : (this.board.cols-(this.cursor.bx>>1)-1),
+			 4 : (this.board.rows-(this.cursor.by>>1)-1)});
 	}
 },
 
@@ -203,7 +203,7 @@ Encode:{
 			else if(ca==='-'){ excell.qnum2 = parseInt(bstr.substr(i+1,1),16); i+=2;}
 			else             { excell.qnum2 = parseInt(ca,16);}
 			id++;
-			if(id>=bd.qcols){ a=i+1; break;}
+			if(id>=bd.cols){ a=i+1; break;}
 		}
 		for(var i=a;i<bstr.length;i++){
 			var ca = bstr.charAt(i), excell = bd.excell[id];
@@ -211,7 +211,7 @@ Encode:{
 			else if(ca==='-'){ excell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else             { excell.qnum = parseInt(ca,16);}
 			id++;
-			if(id>=bd.qcols+bd.qrows){ a=i+1; break;}
+			if(id>=bd.cols+bd.rows){ a=i+1; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
@@ -240,13 +240,13 @@ Encode:{
 		if(count>0){ cm += (count+15).toString(36);}
 
 		// 盤面外側の数字部分のエンコード
-		for(var c=0;c<bd.qcols;c++){
+		for(var c=0;c<bd.cols;c++){
 			var num = bd.excell[c].qnum2;
 			if     (num<  0){ cm += ".";}
 			else if(num< 16){ cm += num.toString(16);}
 			else if(num<256){ cm += ("-"+num.toString(16));}
 		}
-		for(var c=bd.qcols;c<bd.qcols+bd.qrows;c++){
+		for(var c=bd.cols;c<bd.cols+bd.rows;c++){
 			var num = bd.excell[c].qnum;
 			if     (num<  0){ cm += ".";}
 			else if(num< 16){ cm += num.toString(16);}

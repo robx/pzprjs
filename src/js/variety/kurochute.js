@@ -40,12 +40,12 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		return Math.max(this.board.qcols,this.board.qrows)-1;
+		return Math.max(this.board.cols,this.board.rows)-1;
 	}
 },
 Board:{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 
 AreaUnshadeGraph:{

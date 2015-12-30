@@ -31,13 +31,13 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	maxnum : function(){
-		return this.board.qcols+this.board.qrows-1;
+		return this.board.cols+this.board.rows-1;
 	},
 	minnum : 2
 },
 Board:{
-	qcols : 9,
-	qrows : 9
+	cols : 9,
+	rows : 9
 },
 
 AreaUnshadeGraph:{

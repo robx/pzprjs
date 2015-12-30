@@ -46,7 +46,7 @@ MouseEvent:{
 			if(border.isnull){ return;}
 
 			var qn=border.qnum, qs=border.qdir, qm=(border.isHorz()?0:2);
-			var max=Math.max(this.board.qcols,this.board.qrows)-1;
+			var max=Math.max(this.board.cols,this.board.rows)-1;
 			if(this.btn.Left){
 				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
 				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
@@ -97,7 +97,7 @@ KeyEvent:{
 		}
 		else if('0'<=ca && ca<='9'){
 			var num = +ca, cur = border.qnum;
-			var max = Math.max(this.board.qcols,this.board.qrows)-1;
+			var max = Math.max(this.board.cols,this.board.rows)-1;
 
 			border.setQdir(border.NDIR);
 			if(cur<=0 || this.prev!==border){ if(num<=max){ border.setQnum(num);}}
@@ -124,12 +124,12 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.max(this.board.qcols,this.board.qrows);
+		return Math.max(this.board.cols,this.board.rows);
 	}
 },
 Board:{
-	qcols : 7,
-	qrows : 7,
+	cols : 7,
+	rows : 7,
 
 	hasborder : 1
 },
@@ -254,8 +254,8 @@ Encode:{
 			var ca = bstr.charAt(i);
 
 			if(type===parser.URL_PZPRAPP){
-				if     (id<bd.qcols*bd.qrows)  { mgn=((id/bd.qcols)|0);}
-				else if(id<2*bd.qcols*bd.qrows){ mgn=bd.qrows;}
+				if     (id<bd.cols*bd.rows)  { mgn=((id/bd.cols)|0);}
+				else if(id<2*bd.cols*bd.rows){ mgn=bd.rows;}
 			}
 			var border = bd.border[id-mgn];
 
@@ -263,8 +263,8 @@ Encode:{
 			if     (this.include(ca,'0','9')||this.include(ca,'a','f')){ border.qnum = parseInt(ca,16);}
 			else if(ca==="-"){ border.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca==="."){ border.qnum = -2;}
-			else if(ca==="g"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?1:2);}
-			else if(ca==="h"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.qcols*bd.qrows)?2:1);}
+			else if(ca==="g"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.cols*bd.rows)?1:2);}
+			else if(ca==="h"){ tmp = ((type===parser.URL_PZPRV3 || id<bd.cols*bd.rows)?2:1);}
 			else if(this.include(ca,'i','z')){ id+=(parseInt(ca,36)-18);}
 			else if(type===parser.URL_PZPRAPP && ca==="/"){ id=bd.cellmax-1;}
 
@@ -272,17 +272,17 @@ Encode:{
 			else if(tmp===2){ border.qdir = (border.isHorz()?border.DN:border.RT);}
 
 			id++;
-			if(id>=2*bd.qcols*bd.qrows){ a=i+1; break;}
+			if(id>=2*bd.cols*bd.rows){ a=i+1; break;}
 		}
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
 		var parser = pzpr.parser;
 		var cm="", count=0, bd=this.board;
-		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.qcols);id<max;id++){
+		for(var id=0,max=bd.bdmax+(type===parser.URL_PZPRV3?0:bd.cols);id<max;id++){
 			if(type===1){
-				if(id>0 && id<=(bd.qcols-1)*bd.qrows && id%(bd.qcols-1)===0){ count++;}
-				if(id===(bd.qcols-1)*bd.qrows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
+				if(id>0 && id<=(bd.cols-1)*bd.rows && id%(bd.cols-1)===0){ count++;}
+				if(id===(bd.cols-1)*bd.rows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
 			}
 
 			var pstr="";

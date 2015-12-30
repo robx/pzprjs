@@ -71,18 +71,18 @@ Cell:{
 },
 "Cell@view":{
 	maxnum : function(){
-		return Math.min(255, this.board.qcols+this.board.qrows-2);
+		return Math.min(255, this.board.cols+this.board.rows-2);
 	},
 	minnum : 0
 },
 
 "Board@view":{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 "Board@sukororoom":{
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	hasborder : 1
 },

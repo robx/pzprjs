@@ -31,7 +31,7 @@ Cell:{
 	disInputHatena : true,
 
 	maxnum : function(){
-		return Math.max(this.board.qcols,this.board.qrows);
+		return Math.max(this.board.cols,this.board.rows);
 	},
 
 	posthook : {
@@ -48,8 +48,8 @@ Cell:{
 	}
 },
 Board:{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 
 AreaUnshadeGraph:{

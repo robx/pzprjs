@@ -150,7 +150,7 @@ Board:{
 
 		var classes = this.klass;
 		this.startpos = new classes.StartAddress(1,1);
-		this.goalpos  = new classes.GoalAddress(this.qcols*2-1,this.qrows*2-1);
+		this.goalpos  = new classes.GoalAddress(this.cols*2-1,this.rows*2-1);
 		this.startpos.partner = this.goalpos;
 		this.goalpos.partner  = this.startpos;
 	},
@@ -160,7 +160,7 @@ Board:{
 
 		this.disableInfo();
 		this.startpos.init(1,1);
-		this.goalpos.init(this.qcols*2-1,this.qrows*2-1);
+		this.goalpos.init(this.cols*2-1,this.rows*2-1);
 		this.enableInfo();
 	},
 

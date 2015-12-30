@@ -21,12 +21,12 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.max(this.board.qcols,this.board.qrows);
+		return Math.max(this.board.cols,this.board.rows);
 	}
 },
 Board:{
-	qcols : 9,
-	qrows : 9,
+	cols : 9,
+	rows : 9,
 
 	hasborder : 1,
 
@@ -34,8 +34,8 @@ Board:{
 		this.common.initBoardSize.call(this,col,row);
 
 		var roomsizex, roomsizey;
-		roomsizex = roomsizey = (Math.sqrt(this.qcols)|0) * 2;
-		if(this.qcols===6){ roomsizex = 6;}
+		roomsizex = roomsizey = (Math.sqrt(this.cols)|0) * 2;
+		if(this.cols===6){ roomsizex = 6;}
 		for(var i=0;i<this.bdmax;i++){
 			var border = this.border[i];
 			if(border.bx%roomsizex===0 || border.by%roomsizey===0){ border.ques = 1;}

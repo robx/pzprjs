@@ -166,7 +166,7 @@ Cell:{
 		return (col+row-1);
 	},
 	minnum : function(){
-		return ((this.board.qcols>=2?2:1)+(this.board.qrows>=2?2:1)-1);
+		return ((this.board.cols>=2?2:1)+(this.board.rows>=2?2:1)-1);
 	},
 
 	place : 0, // setLblockInfoでの設定用
@@ -175,8 +175,8 @@ Cell:{
 },
 
 Board:{
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	hasborder : 1
 },

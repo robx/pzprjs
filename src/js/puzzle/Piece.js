@@ -401,14 +401,14 @@ pzpr.classmgr.makeCommon({
 	initSideObject : function(){
 		var allowexcell = (this.board.hasborder===2 && this.board.hasexcell===2);
 		if(this.isvert){
-			this.sidecell[0] = ((!allowexcell||this.bx>0)                  ? this.relcell(-1,0) : this.relexcell(-1,0));
-			this.sidecell[1] = ((!allowexcell||this.bx<this.board.qcols*2) ? this.relcell( 1,0) : this.relexcell( 1,0));
+			this.sidecell[0] = ((!allowexcell||this.bx>0)                 ? this.relcell(-1,0) : this.relexcell(-1,0));
+			this.sidecell[1] = ((!allowexcell||this.bx<this.board.cols*2) ? this.relcell( 1,0) : this.relexcell( 1,0));
 			this.sidecross[0] = this.relcross(0,-1);
 			this.sidecross[1] = this.relcross(0, 1);
 		}
 		else{
-			this.sidecell[0] = ((!allowexcell||this.by>0)                  ? this.relcell(0,-1) : this.relexcell(0,-1));
-			this.sidecell[1] = ((!allowexcell||this.by<this.board.qrows*2) ? this.relcell(0, 1) : this.relexcell(0, 1));
+			this.sidecell[0] = ((!allowexcell||this.by>0)                 ? this.relcell(0,-1) : this.relexcell(0,-1));
+			this.sidecell[1] = ((!allowexcell||this.by<this.board.rows*2) ? this.relcell(0, 1) : this.relexcell(0, 1));
 			this.sidecross[0] = this.relcross(-1,0);
 			this.sidecross[1] = this.relcross( 1,0);
 		}

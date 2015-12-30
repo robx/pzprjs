@@ -60,8 +60,8 @@ Cell:{
 Board:{
 	hasborder : 1,
 
-	qcols : 8,
-	qrows : 8,
+	cols : 8,
+	rows : 8,
 
 	initialize : function(){
 		this.common.initialize.call(this);

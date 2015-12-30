@@ -77,8 +77,8 @@ Board:{
 	hasborder : 1
 },
 "Board@kramma,krammar":{
-	qcols : 8,
-	qrows : 8
+	cols : 8,
+	rows : 8
 },
 
 AreaRoomGraph:{

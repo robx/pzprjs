@@ -105,15 +105,15 @@ EXCell:{
 		var bx=this.bx, by=this.by;
 		if(bx===-1 && by===-1){ return 0;}
 		var sum=0;
-		for(var n=(bx===-1?this.board.qrows:this.board.qcols);n>0;n--){ sum+=n;}
+		for(var n=(bx===-1?this.board.rows:this.board.cols);n>0;n--){ sum+=n;}
 		return sum;
 	},
 	minnum : 0
 },
 
 Board:{
-	qcols : 9,
-	qrows : 9,
+	cols : 9,
+	rows : 9,
 
 	hasexcell : 1
 },
@@ -187,7 +187,7 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
-			if(excell.id>=this.board.qcols+this.board.qrows){ continue;}
+			if(excell.id>=this.board.cols+this.board.rows){ continue;}
 
 			g.vi = "excell_text_"+excell.id;
 			if(excell.bx>=0 || excell.by>=0){
@@ -248,14 +248,14 @@ Encode:{
 			if(ca==='-'){ excell.qnum = parseInt(bstr.substr(a+1,2),32); a+=2;}
 			else        { excell.qnum = parseInt(ca,32);}
 			ec++;
-			if(ec >= bd.qcols+bd.qrows){ a++; break;}
+			if(ec >= bd.cols+bd.rows){ a++; break;}
 		}
 
 		this.outbstr = bstr.substr(a);
 	},
 	encodeBox : function(){
 		var cm="", bd = this.board;
-		for(var ec=0,len=bd.qcols+bd.qrows;ec<len;ec++){
+		for(var ec=0,len=bd.cols+bd.rows;ec<len;ec++){
 			var qnum=bd.excell[ec].qnum;
 			if(qnum<32){ cm+=("" +qnum.toString(32));}
 			else       { cm+=("-"+qnum.toString(32));}
@@ -267,12 +267,12 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var bd = this.board, item = this.getItemList(bd.qrows+1);
+		var bd = this.board, item = this.getItemList(bd.rows+1);
 		for(var i=0;i<item.length;i++) {
 			var ca = item[i];
 			if(ca==="."){ continue;}
 
-			var bx = i%(bd.qcols+1)*2-1, by = ((i/(bd.qcols+1))<<1)-1;
+			var bx = i%(bd.cols+1)*2-1, by = ((i/(bd.cols+1))<<1)-1;
 			var excell = bd.getex(bx,by);
 			if(!excell.isnull){
 				excell.qnum = +ca;
@@ -291,7 +291,7 @@ FileIO:{
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
-					if(excell.id<bd.qcols+bd.qrows){
+					if(excell.id<bd.cols+bd.rows){
 						this.datastr += (excell.qnum+" ");
 					}
 					else{
@@ -328,7 +328,7 @@ AnsCheck:{
 			var excell = bd.excell[ec];
 			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
 			var clist=new this.klass.CellList();
-			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.qcols){
+			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.cols){
 				cell = pos.move(0,2).getc();
 				while(!cell.isnull){
 					if(cell.qans===1){ val+=((pos.by+1)>>1);}
@@ -336,7 +336,7 @@ AnsCheck:{
 					cell = pos.move(0,2).getc();
 				}
 			}
-			else if(pos.bx===-1 && pos.by>0 && pos.by<2*bd.qrows){
+			else if(pos.bx===-1 && pos.by>0 && pos.by<2*bd.rows){
 				cell = pos.move(2,0).getc();
 				while(!cell.isnull){
 					if(cell.qans===1){ val+=((pos.bx+1)>>1);}

@@ -129,8 +129,8 @@ Cross:{
 	minnum : 0
 },
 Board:{
-	qcols : 7,
-	qrows : 7,
+	cols : 7,
+	rows : 7,
 	disable_subclear : true
 },
 BoardExec:{

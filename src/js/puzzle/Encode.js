@@ -59,8 +59,8 @@ Encode:{
 		if(type===pzl.URL_KANPEN && pid==='lits'){ type = pzl.URL_KANPENP;}
 
 		this.outpflag = null;
-		this.outcols = bd.qcols;
-		this.outrows = bd.qrows;
+		this.outcols = bd.cols;
+		this.outrows = bd.rows;
 		this.outbstr = '';
 
 		switch(type){

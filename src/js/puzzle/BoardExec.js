@@ -80,10 +80,10 @@ BoardExec:{
 		var puzzle = this.puzzle, bd = this.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){
-				if(bd.qrows<=1){ return;}
+				if(bd.rows<=1){ return;}
 			}
 			else if(name==="reducelt"||name==="reducert"){
-				if(bd.qcols<=1){ return;}
+				if(bd.cols<=1){ return;}
 			}
 		}
 
@@ -92,7 +92,7 @@ BoardExec:{
 		puzzle.painter.suspendAll();
 
 		// undo/redo時はexpandreduce・turnflipを直接呼びます
-		var d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows}; // 範囲が必要なのturnflipだけかも..
+		var d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows}; // 範囲が必要なのturnflipだけかも..
 		var key = this.boardtype[name][1];
 		if(key & this.TURNFLIP){ this.turnflip(key,d);}
 		else                   { this.expandreduce(key,d);}
@@ -131,8 +131,8 @@ BoardExec:{
 		if(bd.roommgr.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
 
 		if(key & this.EXPAND){
-			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.qrows++;}
-			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.qcols++;}
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.rows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.cols++;}
 
 			this.expandGroup('cell',   key);
 			this.expandGroup('cross',  key);
@@ -145,8 +145,8 @@ BoardExec:{
 			this.reduceGroup('border', key);
 			this.reduceGroup('excell', key);
 
-			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.qrows--;}
-			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.qcols--;}
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.rows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.cols--;}
 		}
 		bd.setposAll();
 
@@ -155,7 +155,7 @@ BoardExec:{
 	},
 	expandGroup : function(group,key){
 		var bd = this.board;
-		var margin = bd.initGroup(group, bd.qcols, bd.qrows);
+		var margin = bd.initGroup(group, bd.cols, bd.rows);
 		var groups = bd.getGroup(group);
 		var groups2 = new groups.constructor();
 		bd.setposGroup(group);
@@ -209,9 +209,9 @@ BoardExec:{
 		this.adjustBoardData(key,d);
 
 		if(key & this.TURN){
-			var tmp = bd.qcols; bd.qcols = bd.qrows; bd.qrows = tmp;
+			var tmp = bd.cols; bd.cols = bd.rows; bd.rows = tmp;
 			bd.setposAll();
-			d = {x1:0, y1:0, x2:2*bd.qcols, y2:2*bd.qrows};
+			d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows};
 		}
 
 		this.turnflipGroup('cell',   key, d);
@@ -249,8 +249,8 @@ BoardExec:{
 				switch(key){
 					case this.FLIPY: next = bd.getObjectPos(group, groups[target].bx, yy-groups[target].by).id; break;
 					case this.FLIPX: next = bd.getObjectPos(group, xx-groups[target].bx, groups[target].by).id; break;
-					case this.TURNR: next = bd.getObjectPosEx(group, groups[target].by, xx-groups[target].bx, bd.qrows, bd.qcols).id; break;
-					case this.TURNL: next = bd.getObjectPosEx(group, yy-groups[target].by, groups[target].bx, bd.qrows, bd.qcols).id; break;
+					case this.TURNR: next = bd.getObjectPosEx(group, groups[target].by, xx-groups[target].bx, bd.rows, bd.cols).id; break;
+					case this.TURNL: next = bd.getObjectPosEx(group, yy-groups[target].by, groups[target].bx, bd.rows, bd.cols).id; break;
 				}
 
 				if(ch[next]===false){
@@ -274,9 +274,9 @@ BoardExec:{
 
 		key &= 0x0F;
 		if     (key===this.UP){ return piece.by;}
-		else if(key===this.DN){ return 2*bd.qrows-piece.by;}
+		else if(key===this.DN){ return 2*bd.rows-piece.by;}
 		else if(key===this.LT){ return piece.bx;}
-		else if(key===this.RT){ return 2*bd.qcols-piece.bx;}
+		else if(key===this.RT){ return 2*bd.cols-piece.bx;}
 		return -1;
 	},
 
