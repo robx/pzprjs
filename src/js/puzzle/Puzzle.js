@@ -36,7 +36,7 @@ pzpr.Puzzle.prototype =
 	
 	klass    : null,
 	
-	ready    : false,
+	ready    : false,	// 盤面の準備ができたかを示す (Canvas準備完了前にtrueになる)
 	editmode : false,	// 問題配置モード
 	playmode : false,	// 回答モード
 	playeronly : false,	// 回答モードのみで動作する
@@ -60,8 +60,8 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
-	open : function(data, variety){
-		return openExecute(this, data, variety);
+	open : function(data, variety, callback){
+		return openExecute(this, data, variety, callback);
 	},
 
 	//---------------------------------------------------------------------------
@@ -289,7 +289,12 @@ pzpr.Puzzle.prototype =
 //---------------------------------------------------------------------------
 //  openExecute()      各オブジェクトの生成などの処理
 //---------------------------------------------------------------------------
-function openExecute(puzzle, data, variety){
+function openExecute(puzzle, data, variety, callback){
+	if(typeof variety!=='string' && !callback){
+		callback = variety;
+		variety = void 0;
+	}
+
 	puzzle.ready = false;
 
 	var classes = puzzle.klass;
@@ -311,6 +316,8 @@ function openExecute(puzzle, data, variety){
 		if(!!puzzle.canvas){ postCanvasReady(puzzle);}
 		
 		puzzle.resetTime();
+		
+		if(!!callback){ callback(puzzle);}
 	});
 	
 	return puzzle;
