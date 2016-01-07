@@ -185,39 +185,24 @@ Graphic:{
 
 	//---------------------------------------------------------------------------
 	// pc.initCanvas()       このオブジェクトで使用するキャンバスを設定する
-	// pc.initCanvasCheck()  initCanvas_mainを呼び出せるか確認する
-	// pc.initCanvas_main()  キャンバスを設定する
 	//---------------------------------------------------------------------------
-	initCanvas : function(callback){
-		if(this.initCanvasCheck()){
-			this.initCanvas_main(callback);
-		}
-		else{
-			var pc = this;
-			setTimeout(function(){ pc.initCanvas(callback);},10);
-		}
-	},
-	initCanvasCheck : function(){
+	initCanvas : function(){
 		var puzzle = this.puzzle;
-		return  (!puzzle.canvas    || !!puzzle.canvas.getContext   ) &&
-				(!puzzle.subcanvas || !!puzzle.subcanvas.getContext);
-	},
-	initCanvas_main : function(callback){
-		var puzzle = this.puzzle;
-		this.context    = (!!puzzle.canvas    ? puzzle.canvas.getContext("2d")    : null);
-		this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
-
-		var g = this.context;
-		this.useBuffer = (!!g.use.canvas && !!this.subcontext);
-
-		if(!!callback){ callback();}
-	},
-
-	//---------------------------------------------------------------------------
-	// pc.initCanvas_special() 画像出力時に使用するキャンバスを設定する
-	//---------------------------------------------------------------------------
-	initCanvas_special : function(canvas){
-		this.context = canvas.getContext("2d");
+		var g = this.context = (!!puzzle.canvas ? puzzle.canvas.getContext("2d") : null);
+		if(g.use.canvas){
+			this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
+			this.useBuffer = !!this.subcontext;
+		}
+		
+		if(this.canvasWidth===null || this.canvasHeight===null){
+			var rect = pzpr.util.getRect(puzzle.canvas);
+			this.resizeCanvas(rect.width, rect.height);
+		}
+		
+		this.resize_canvas_main();
+		puzzle.emit('canvasReady');
+		
+		this.unsuspend();
 	},
 
 	//---------------------------------------------------------------------------
@@ -273,6 +258,9 @@ Graphic:{
 	// pc.clearObject()        contextのclearなどを呼び出す関数
 	//---------------------------------------------------------------------------
 	resize_canvas_main : function(){
+		if(!this.pendingResize){ return;}
+		this.pendingResize = false;
+
 		// セルのサイズなどを取得・設定
 		this.setParameter();
 
@@ -376,16 +364,9 @@ Graphic:{
 		this.suspended = true;
 	},
 	unsuspend : function(){
-		if(!this.context){ return false;}
+		if(!this.context){ return;}
 		
-		if(this.canvasWidth===null || this.canvasHeight===null){
-			var rect = pzpr.util.getRect(this.context.canvas);
-			this.resizeCanvas(rect.width, rect.height);
-		}
-		if(this.pendingResize){
-			this.pendingResize = false;
-			this.resize_canvas_main();
-		}
+		this.resize_canvas_main();
 		
 		if(this.suspendedAll){
 			var bd = this.board;
@@ -396,8 +377,6 @@ Graphic:{
 			this.suspended = false;
 			this.prepaint();
 		}
-		
-		return true;
 	},
 
 	//---------------------------------------------------------------------------

@@ -20,6 +20,7 @@ pzpr.Puzzle = function(canvas, option){
 	this.resetTime();
 
 	this.imgcanvas = [null, null];
+	this.preInitCanvas = true;
 
 	this.listeners = {};
 
@@ -51,9 +52,6 @@ pzpr.Puzzle.prototype =
 	config : null,
 	
 	metadata : null,	// 作者やコメントなどの情報
-	
-	initCanvasSize  : false,
-	initCanvasEvent : false,
 	
 	// モード設定用定数
 	MODE_EDITOR : 1,
@@ -307,8 +305,12 @@ function openExecute(puzzle, data, variety){
 		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
 		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
 		
-		if(!!puzzle.canvas){ waitCanvasReady(puzzle);}
-		else               { postCanvasReady(puzzle);}
+		puzzle.ready = true;
+		puzzle.emit('ready');
+		
+		if(!!puzzle.canvas){ postCanvasReady(puzzle);}
+		
+		puzzle.resetTime();
 	});
 	
 	return puzzle;
@@ -352,12 +354,13 @@ function setCanvas_main(puzzle, type){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
-		if(puzzle.ready){ waitCanvasReady(puzzle);}
+		if(puzzle.ready){ postCanvasReady(puzzle);}
 		
 		/* 画像出力用canvasの準備 */
-		if(!puzzle.opt.imagesave){ return;}
-		puzzle.imgcanvas[0] = puzzle.subcanvas || createSubCanvas('canvas');
-		puzzle.imgcanvas[1] = createSubCanvas('svg');
+		if(!!puzzle.opt.imagesave){
+			puzzle.imgcanvas[0] = puzzle.subcanvas || createSubCanvas('canvas');
+			puzzle.imgcanvas[1] = createSubCanvas('svg');
+		}
 	});
 }
 function createSubCanvas(type){
@@ -375,43 +378,25 @@ function createSubCanvas(type){
 }
 
 //---------------------------------------------------------------------------
-//  waitCanvasReady()  Canvasの初期化待ちを行う
-//  postCanvasReady()  Canvasの初期化終了後の処理を行う
-//  firstCanvasReady() Canvasの初回初期化終了後の処理を行う
+//  postCanvasReady()  Canvas設定＆ready後の初期化処理を行う
 //---------------------------------------------------------------------------
-function waitCanvasReady(puzzle){
-	puzzle.painter.initCanvas( function(){ postCanvasReady(puzzle);} );
-}
 function postCanvasReady(puzzle){
-	firstCanvasReady(puzzle);
+	var pc = puzzle.painter, opt = puzzle.opt;
 	
-	if(!puzzle.ready){
-		puzzle.ready = true;
-		puzzle.emit('ready');
-		puzzle.painter.unsuspend();
-		puzzle.resetTime();
-	}
-	else{
-		puzzle.painter.unsuspend();
-	}
-	if(!!puzzle.canvas){
-		puzzle.emit('canvasReady');
-	}
-}
-function firstCanvasReady(puzzle){
-	if(!puzzle.initCanvasEvent && !!puzzle.canvas && !puzzle.opt.noinput){
-		setCanvasEvents(puzzle);
-		puzzle.initCanvasEvent = true;
-	}
-	if(!puzzle.initCanvasSize){
-		if(!!puzzle.opt.width && !!puzzle.opt.height){
-			puzzle.setCanvasSize(puzzle.opt.width, puzzle.opt.height);
+	if(puzzle.preInitCanvas){
+		if(!opt.noinput){
+			setCanvasEvents(puzzle);
 		}
-		else if(!!puzzle.opt.cellsize){
-			puzzle.setCanvasSizeByCellSize(puzzle.opt.cellsize);
+		if(!!opt.width && !!opt.height){
+			pc.resizeCanvas(opt.width, opt.height);
 		}
-		puzzle.initCanvasSize = true;
+		else if(!!opt.cellsize){
+			pc.resizeCanvasByCellSize(opt.cellsize);
+		}
+		delete puzzle.preInitCanvas;
 	}
+	
+	pc.initCanvas();
 }
 
 //---------------------------------------------------------------------------
@@ -457,7 +442,7 @@ function execKeyUp(e){
 function getLocalCanvas(puzzle, type, cellsize){
 	var el = puzzle.imgcanvas[type.match(/svg/)?1:0];
 	var pc2 = new puzzle.klass.Graphic();
-	pc2.initCanvas_special(el);
+	pc2.context = el.getContext("2d");
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	
 	// canvasの設定を適用して、再描画
