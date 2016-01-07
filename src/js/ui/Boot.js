@@ -122,7 +122,7 @@ function importURL(){
 	var pzl = pzpr.parser.parseURL(search);
 
 	startmode = startmode || (!pzl.bstr ? 'EDITOR' : 'PLAYER');
-	if(startmode==='PLAYER'){ onload_option.playeronly = true;}
+	if(startmode==='PLAYER'){ onload_option.mode = 'player';}
 
 	return pzl;
 }

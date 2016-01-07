@@ -13,7 +13,8 @@ pzpr.Puzzle = function(canvas, option){
 	this.opt = option || {};
 	if(pzpr.env.browser.Presto){ this.opt.graphic='canvas';}
 
-	this.playeronly = !!this.opt.playeronly;	// 回答モードのみで動作する
+	var modeid = {player:1,viewer:2}[this.opt.mode||0] || 0;
+	this.playeronly = !!modeid;			// 回答モードのみで動作する
 	this.editmode = !this.playeronly;	// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
 
@@ -391,7 +392,7 @@ function postCanvasReady(puzzle){
 	var pc = puzzle.painter, opt = puzzle.opt;
 	
 	if(puzzle.preInitCanvas){
-		if(!opt.noinput){
+		if(opt.mode!=='viewer'){
 			setCanvasEvents(puzzle);
 		}
 		if(!!opt.width && !!opt.height){
