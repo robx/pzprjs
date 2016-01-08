@@ -31,7 +31,6 @@ pzpr.addLoadListener(function(){
 		
 		puzzle.open(!!pzl.qdata ? pzl : pid+"/"+debug.urls[pid]);
 		puzzle.on('key', debug.keydown);
-		puzzle.on('mouse', debug.mousedown);
 	});
 });
 
@@ -46,20 +45,6 @@ var debug = window.debug =
 			else{ return;}
 			
 			puzzle.key.stopEvent();	/* カーソルを移動させない */
-		}
-	},
-	mousedown : function(puzzle){
-		var mv = puzzle.mouse;
-		if(puzzle.pid === "goishi" && mv.mousestart && puzzle.playmode){
-			var result = true;
-			if(mv.btn.Left){
-				var cell = mv.getcell();
-				result = !(cell.isnull || !cell.isStone() || cell.anum!==-1);
-			}
-			else if(mv.btn.Right){
-				result = false;
-			}
-			mv.cancelEvent = !result;
 		}
 	},
 

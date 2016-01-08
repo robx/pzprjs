@@ -26,6 +26,8 @@ MouseEvent:{
 	},
 	inputqans : function(){
 		var cell = this.getcell();
+		if(cell.isnull || !cell.isStone() || cell.anum!==-1){ return;}
+
 		var max=0, bd = this.board, bcell=bd.emptycell;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell2 = bd.cell[c];
