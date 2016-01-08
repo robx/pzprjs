@@ -20,7 +20,6 @@ pzpr.Puzzle = function(canvas, option){
 
 	this.resetTime();
 
-	this.imgcanvas = [null, null];
 	this.preInitCanvas = true;
 
 	this.listeners = {};
@@ -47,7 +46,6 @@ pzpr.Puzzle.prototype =
 	
 	canvas    : null,	// 描画canvas本体
 	subcanvas : null,	// 補助canvas
-	imgcanvas : null,	// 画像出力用canvas
 	
 	listeners : null,
 	
@@ -155,10 +153,16 @@ pzpr.Puzzle.prototype =
 	// owner.toBlob()    盤面画像をBlobとして出力する
 	//---------------------------------------------------------------------------
 	toDataURL : function(type, cellsize){
-		return getLocalCanvas(this, (type||""), cellsize).toDataURL();
+		var canvas = getLocalCanvas(this, (type||""), cellsize);
+		var dataurl = canvas.toDataURL();
+		canvas.parentNode.removeChild(canvas);
+		return dataurl;
 	},
 	toBlob : function(type, cellsize){
-		return getLocalCanvas(this, (type||""), cellsize).toBlob();
+		var canvas = getLocalCanvas(this, (type||""), cellsize);
+		var blob = canvas.toBlob();
+		canvas.parentNode.removeChild(canvas);
+		return blob;
 	},
 
 	//---------------------------------------------------------------------------
@@ -364,12 +368,6 @@ function setCanvas_main(puzzle, type){
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
 		if(puzzle.ready){ postCanvasReady(puzzle);}
-		
-		/* 画像出力用canvasの準備 */
-		if(!!puzzle.opt.imagesave){
-			puzzle.imgcanvas[0] = puzzle.subcanvas || createSubCanvas('canvas');
-			puzzle.imgcanvas[1] = createSubCanvas('svg');
-		}
 	});
 }
 function createSubCanvas(type){
@@ -449,16 +447,17 @@ function execKeyUp(e){
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
-	var el = puzzle.imgcanvas[type.match(/svg/)?1:0];
+	var imgcanvas = createSubCanvas(type.match(/svg/)?'svg':'canvas');
+	
 	var pc2 = new puzzle.klass.Graphic();
-	pc2.context = el.getContext("2d");
+	pc2.context = imgcanvas.getContext("2d");
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	
 	// canvasの設定を適用して、再描画
 	pc2.resizeCanvasByCellSize(cellsize || puzzle.painter.cw);
 	pc2.unsuspend();
 	
-	return pc2.context.canvas;
+	return imgcanvas;
 }
 
 })();
