@@ -1,5 +1,5 @@
 {
-  "name": "pzprv3",
+  "name": "pzpr",
   "version": "3.6.0-pre",
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
@@ -19,14 +19,13 @@
     "url": "https://bitbucket.org/sabo2/pzprv3"
   },
   "scripts": {
-    "build":       "grunt default",
-    "release":     "grunt release",
-    "release:core":"grunt core",
-    "release:gzip":"sh -c 'cd dist; tar czf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzprv3-$npm_package_version.tar.gz",
-    "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzprv3-$npm_package_version.tar.bz2",
-    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x .DS_Store; mv $0 ..' pzprv3-$npm_package_version.zip",
-    "clean":       "grunt clean",
-    "lint":        "grunt newer:jshint"
+    "build": "grunt default",
+    "release": "grunt release",
+    "release:gzip": "sh -c 'cd dist; tar czf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.gz",
+    "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.bz2",
+    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
+    "clean": "grunt clean",
+    "lint": "grunt newer:jshint"
   },
   "devDependencies": {
     "grunt": "~0.4.2",
@@ -35,7 +34,6 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "~0.2.7",
-    "grunt-newer": "^0.7.0",
-    "grunt-shell": "~0.6.4"
+    "grunt-newer": "^0.7.0"
   }
 }

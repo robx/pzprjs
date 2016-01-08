@@ -4,10 +4,8 @@ module.exports = function(grunt){
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
   
   var fs = require('fs');
-  var banner_min  = fs.readFileSync('./src/js/common/banner_min.js',  'utf-8');
-  var banner_full = fs.readFileSync('./src/js/common/banner_full.js', 'utf-8');
-  var banner_min_pzpr  = banner_min.replace("pzprv3.js", "pzpr.js");
-  var banner_full_pzpr = banner_full.replace("pzprv3.js", "pzpr.js");
+  var banner_min  = fs.readFileSync('./src/common/banner_min.js',  'utf-8');
+  var banner_full = fs.readFileSync('./src/common/banner_full.js', 'utf-8');
 
   grunt.initConfig({
     pkg: pkg,
@@ -15,98 +13,52 @@ module.exports = function(grunt){
     clean: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
 
     concat: {
-      release: {
+      all: {
         options: {
           banner: banner_full,
           process: true
         },
         files: [
-          { src: require('./src/js/pzprv3.js').files,     dest: 'dist/js/pzprv3.concat.js' },
-          { src: require('./src/js/pzprv3-all.js').files, dest: 'dist/js/pzprv3-all.concat.js' }
+          { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
         ]
       },
-      core: {
+      "variety-all": {
         options: {
-          banner: banner_full_pzpr,
+          banner: banner_full,
           process: true
         },
         files: [
-          { src: require('./src/js/pzprv3.js').files.filter(function(filename){ return !filename.match(/\/ui\//);}), dest: 'dist/lib/pzpr.concat.js' }
+          { src: ['dist/variety/*.js'], dest: 'dist/variety-all.js' }
         ]
       }
     },
 
     copy: {
-      options: {
-        process: function(content, srcpath){ return grunt.template.process(content);},
-        noProcess: ['**/*.{png,gif,ico}'],
-        mode: true
-      },
       debug: {
         files : [
-          { expand: true, cwd: 'src/js',  src: ['**/*.js'], dest: 'dist/js'  },
-          { expand: true, cwd: 'src/css', src: ['*.css'],   dest: 'dist/css' },
-          { expand: true, cwd: 'src/img', src: ['*'],       dest: 'dist/img' },
-          { expand: true, cwd: 'src',     src: ['*'],       dest: 'dist' },
-          { src: 'LICENSE.txt',          dest: 'dist/LICENSE.txt'      },
-          { src: 'src/js/pzprv3.js',     dest: 'dist/js/pzprv3.js'     },
-          { src: 'src/js/pzprv3-all.js', dest: 'dist/js/pzprv3-all.js' },
-          { src: 'src/js/v3index.js',    dest: 'dist/js/v3index.js'  }
+          { expand: true, cwd: 'src', src: ['**/*.js'], dest: 'dist' },
+          { src: 'src/pzpr.js',        dest: 'dist/pzpr.js'        },
+          { src: 'src/variety-all.js', dest: 'dist/variety-all.js' }
         ]
       },
-      release: {
+      license: {
         files : [
-          { expand: true, cwd: 'src/css', src: ['*.css'], dest: 'dist/css' },
-          { expand: true, cwd: 'src/img', src: ['*'],     dest: 'dist/img' },
-          { expand: true, cwd: 'src',     src: ['*'],     dest: 'dist' },
-          { src: 'LICENSE.txt',          dest: 'dist/LICENSE.txt'      }
+          { src: 'LICENSE.txt', dest: 'dist/LICENSE.txt'}
         ]
       }
     },
 
     uglify: {
-      release: {
+      release:{
         options: {
           banner: banner_min,
           report: 'min',
         },
         files: [
-          { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/js/variety' },
-          { src: 'dist/js/pzprv3.concat.js',     dest: 'dist/js/pzprv3.js' },
-          { src: 'dist/js/pzprv3-all.concat.js', dest: 'dist/js/pzprv3-all.js' },
-          { src: 'src/js/v3index.js',            dest: 'dist/js/v3index.js' },
+          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/variety' },
+          { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
         ]
-      },
-      core: {
-        options: {
-          banner: banner_min_pzpr,
-          report: 'min',
-        },
-        files: [
-          { expand: true, cwd: 'src/js/variety', src: ['*.js'], dest: 'dist/lib/variety' },
-          { src: 'dist/lib/pzpr.concat.js', dest: 'dist/lib/pzpr.js' }
-        ]
-      }
-    },
-
-    shell: {
-      release: {
-        options: {
-          execOptions: {
-            cwd: "dist",
-            env: {
-              FILENAME: "pzprv3-<%= pkg.version %>",
-              EXCLUDE_TAR: "--exclude *.concat.js --exclude .DS_Store",
-              EXCLUDE_ZIP: "-x *.concat.js -x .DS_Store"
-            }
-          },
-        },
-        command: [
-          "sh -c 'tar cvzf $0 $EXCLUDE_TAR *; mv $0 ..' $FILENAME.tar.gz",
-          "sh -c 'tar cvjf $0 $EXCLUDE_TAR *; mv $0 ..' $FILENAME.tar.bz2",
-          "sh -c 'zip -9r $0 * $EXCLUDE_ZIP; mv $0 ..' $FILENAME.zip"
-        ].join('; ')
-      }
+	  }
     },
 
     jshint: {
@@ -116,12 +68,11 @@ module.exports = function(grunt){
       all: {
         src: [
           'Gruntfile.js',
-          'src/js/*.js',
-          'src/js/pzpr/*.js',
-          'src/js/puzzle/*.js',
-          'src/js/variety/*.js',
-          'src/js/variety-common/*.js',
-          'src/js/ui/*.js',
+          'src/*.js',
+          'src/pzpr/*.js',
+          'src/puzzle/*.js',
+          'src/variety/*.js',
+          'src/variety-common/*.js',
           'tests/**/*.js'
         ]
       }
@@ -129,8 +80,6 @@ module.exports = function(grunt){
   });
   
   grunt.registerTask('lint', ['newer:jshint:all']);
-  grunt.registerTask('default', [        'clean',                   'copy:debug'                    ]);
-  grunt.registerTask('release', ['lint', 'clean', 'concat:release', 'copy:release', 'uglify:release']);
-  grunt.registerTask('core',    ['lint', 'clean', 'concat:core',                    'uglify:core'   ]);
-  grunt.registerTask('zipfile', ['shell:release']);
+  grunt.registerTask('default', [        'clean',               'copy:debug',                                         ]);
+  grunt.registerTask('release', ['lint', 'clean', 'concat:all', 'copy:license', 'uglify:release', 'concat:variety-all']);
 };

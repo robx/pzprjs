@@ -14,7 +14,6 @@
 </style>
 <script type="text/javascript">
 function bglist(){
-  if(!window.ui){ setTimeout(bglist,16); return;}
   var main = document.getElementById("main");
   var list = [], commons = {};
   var FC = pzpr.common.FailCode.prototype;
@@ -60,11 +59,9 @@ function bglist(){
   }
 }
 window.addEventListener('load', bglist, false);
-
-window.pzpr = {consts:{}};
-window.ui = {};
 </script>
-<script type="text/javascript" src="../dist/js/pzprv3-all.js"></script>
+<script type="text/javascript" src="../dist/pzpr.js"></script>
+<script type="text/javascript" src="../dist/variety-all.js"></script>
 </HEAD>
 <BODY>
 <div id=main></div>

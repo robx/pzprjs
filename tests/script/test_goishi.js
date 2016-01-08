@@ -17,10 +17,6 @@ ui.debug.addDebugData('goishi', {
 		{ input:["playmode", "mouse,left, 1,1"],
 		  result:"pzprv3/goishi/4/4/. . . . /. 0 . . /. 0 0 . /. . . . /" },
 		{ input:["mouse,left, 3,3", "mouse,left, 5,5", "mouse,left, 3,5"],
-		  result:"pzprv3/goishi/4/4/. . . . /. 1 . . /. 2 0 . /. . . . /" },
-		{ input:["mouse,right, 0,0"],
-		  result:"pzprv3/goishi/4/4/. . . . /. 1 . . /. 0 0 . /. . . . /" },
-		{ input:["mouse,left, 0,0"],
 		  result:"pzprv3/goishi/4/4/. . . . /. 1 . . /. 2 0 . /. . . . /" }
 	]
 });

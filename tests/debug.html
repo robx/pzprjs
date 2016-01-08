@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<HTML lang="ja">
+<HEAD>
+<META CHARSET="utf-8">
+<script type="text/javascript" src="../dist/pzpr.js"></script>
+<script type="text/javascript" src="./script/for_test.js"></script>
+<TITLE>ぱずぷれv3 Debug</TITLE>
+</HEAD>
+
+<BODY>
+
+<div style="float:left;">
+  <div id="divques" style="width:320px;height:320px;"></div>	<!-- Canvas用 -->
+  <button type="button" onclick="alert(puzzle.check(true).text())">Check</button>
+  <button type="button" onclick="puzzle.ansclear()">AnsClear</button>
+</div>
+
+</div> <!-- div#main close. -->
+
+<!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
+<div style="float:left;">
+
+  <textarea name="testarea" id="testarea" cols=40 rows=16 wrap="off" style="font-size:10pt;"></textarea>
+  <br>
+    <button type="button" onclick="debug.starttest()">Test</button
+   ><button type="button" onclick="debug.all_test()">ALL-Test</button>
+    <button type="button" onclick="debug.loadperf()">Perf</button>
+    <button type="button" onclick="debug.inputcheck_popup()">INP</button>
+  <br>
+    <button type="button" onclick="debug.filesave()">Save</button
+  /><button type="button" onclick="debug.filesave_pencilbox()">PBSave</button
+  /><button type="button" onclick="debug.filesave_pencilbox_xml()">PBSaveX</button>
+    <button type="button" onclick="debug.fileopen()">Load</button>
+  <br>
+    <button type="button" onclick="debug.perfeval()">T1</button
+   ><button type="button" onclick="debug.painteval()">T2</button
+   ><button type="button" onclick="debug.resizeeval()">T3</button
+   ><button type="button" onclick="debug.searcheval()">T4</button
+   ><button type="button" onclick="debug.rebuildeval()">T5</button>
+    <button type="button" onclick="debug.erasetext()">Clear</button>
+
+</div>
+
+</BODY>
+</HTML>

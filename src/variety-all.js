@@ -5,53 +5,6 @@
 
 (function(){
 	var component = [
-		"lib/candle",
-		"pzpr/core",
-		"pzpr/event",
-		"pzpr/classmgr",
-		"pzpr/env",
-		"pzpr/variety",
-		"pzpr/parser",
-		"pzpr/metadata",
-		"pzpr/util",
-		"puzzle/Puzzle",
-		"puzzle/Config",
-		"puzzle/Address",
-		"puzzle/Piece",
-		"puzzle/PieceList",
-		"puzzle/Board",
-		"puzzle/BoardExec",
-		"puzzle/GraphBase",
-		"puzzle/LineManager",
-		"puzzle/AreaManager",
-		"puzzle/Graphic",
-		"puzzle/MouseInput",
-		"puzzle/KeyInput",
-		"puzzle/Encode",
-		"puzzle/FileData",
-		"puzzle/Answer",
-		"puzzle/Operation",
-		"variety-common/Graphic",
-		"variety-common/KeyInput",
-		"variety-common/MouseInput",
-		"variety-common/Answer",
-		"variety-common/BoardExec",
-		"variety-common/Encode",
-		"variety-common/FileData",
-		"ui/Boot",
-		"ui/UI",
-		"ui/Event",
-		"ui/Listener",
-		"ui/MenuConfig",
-		"ui/Misc",
-		"ui/MenuArea",
-		"ui/PopupMenu",
-		"ui/ToolArea",
-		"ui/KeyPopup",
-		"ui/Notify",
-		"ui/DataBase",
-		"ui/Timer",
-		"ui/Debug",
 		"variety/amibo",
 		"variety/bag",
 		"variety/barns",
@@ -144,7 +97,7 @@
 		var dir = (function getpath(){
 			var srcs=document.getElementsByTagName('script');
 			for(var i=0;i<srcs.length;i++){
-				var result = srcs[i].src.match(/^(.*\/)pzprv3\-all\.js$/);
+				var result = srcs[i].src.match(/^(.*\/)pzpr\.js$/);
 				if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
 			}
 			return "";
@@ -159,7 +112,7 @@
 		component.unshift("common/intro");
 		component.push   ("common/outro");
 
-		var dir = "src/js/";
+		var dir = "src/";
 		exports.files = component.map(function(mod){ return dir+mod+".js";});
 	}
 })();

@@ -1,38 +1,175 @@
-// for_test.js v3.5.0
-/* jshint evil:true */
+// for_test.js v3.6.0
+/* jshint evil:true, devel:true, latedef:false */
 (function(){
 
+var puzzle = window.puzzle;
+
+pzpr.addLoadListener(function(){
+	/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
+	var search = location.search;
+	
+	/* 一旦先頭の?記号を取り除く */
+	if(search.charAt(0)==="?"){ search = search.substr(1);}
+	
+	var onload_option = {};
+	while(search.match(/^(\w+)\=(\w+)\&(.*)/)){
+		onload_option[RegExp.$1] = RegExp.$2;
+		search = RegExp.$3;
+	}
+	if(search.match(/^(\w+)\=(\w+)$/)){
+		onload_option[RegExp.$1] = RegExp.$2;
+		search = '';
+	}
+	
+	// エディタモードかplayerモードか、等を判定する
+	if(!search){ search = 'country';}
+
+	var pzl = pzpr.parser.parseURL(search), pid = pzl.pid;
+
+	/* テスト用ファイルのinclude */
+	debug.includeDebugScript(pid, function(){
+		/* パズルオブジェクトの作成 */
+		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
+		puzzle.setConfig('irowake', true);
+		pzpr.connectKeyEvents(puzzle);
+		
+		puzzle.open(!!pzl.qdata ? pzl : pid+"/"+debug.urls[pid]);
+		puzzle.once('ready', function(puzzle){
+			puzzle.modechange(puzzle.MODE_PLAYER);
+		});
+		puzzle.on('key', debug.keydown);
+		puzzle.on('mouse', debug.mousedown);
+	});
+});
+
 /* Debug用オブジェクトに関数などを追加する */
-ui.debug.extend(
+var debug = window.debug =
 {
+	keydown : function(puzzle, ca){
+		if(puzzle.key.keydown){
+			if(ca==='F7'){ debug.accheck1();}
+			else if(ca==='ctrl+F9'){ debug.starttest();}
+			else if(ca==='shift+ctrl+F10'){ debug.all_test();}
+			else{ return;}
+			
+			puzzle.key.stopEvent();	/* カーソルを移動させない */
+		}
+	},
+	mousedown : function(puzzle){
+		var mv = puzzle.mouse;
+		if(puzzle.pid === "goishi" && mv.mousestart && puzzle.playmode){
+			var result = true;
+			if(mv.btn.Left){
+				var cell = mv.getcell();
+				result = !(cell.isnull || !cell.isStone() || cell.anum!==-1);
+			}
+			else if(mv.btn.Right){
+				result = false;
+			}
+			mv.cancelEvent = !result;
+		}
+	},
+
+	filesave : function(){
+		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
+	},
+	filesave_pencilbox : function(){
+		if(pzpr.variety.info[puzzle.pid].exists.pencilbox){
+			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX));
+		}
+		else{
+			this.setTA("");
+		}
+	},
+	filesave_pencilbox_xml : function(){
+		if(pzpr.variety.info[puzzle.pid].exists.pencilbox){
+			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
+		}
+		else{
+			this.setTA("");
+		}
+	},
+
+	fileopen : function(){
+		puzzle.open(this.getTA());
+	},
+
+	erasetext : function(){
+		this.setTA('');
+	},
+
+	perfeval : function(){
+		var ans = puzzle.checker;
+		this.timeeval("正答判定", function(){ ans.resetCache(); ans.checkAns();});
+	},
+	painteval : function(){
+		this.timeeval("描画時間", function(){ puzzle.redraw();});
+	},
+	resizeeval : function(){
+		this.timeeval("resize描画", function(){ puzzle.redraw(true);});
+	},
+	searcheval : function(){
+		var graph = puzzle.board.linegraph;
+		graph.rebuild();
+		var nodes = [];
+		for(var i=0;i<graph.components.length;i++){
+			nodes = nodes.concat(graph.components[i].nodes);
+		}
+		this.timeeval("search linemgr", function(){
+			graph.components = [];
+			graph.modifyNodes = nodes;
+			graph.searchGraph();
+		});
+	},
+	rebuildeval : function(){
+		var graph = puzzle.board.linegraph;
+		this.timeeval("reset linemgr", function(){ graph.rebuild();});
+	},
+	timeeval : function(text,func){
+		var count=0, old = pzpr.util.currentTime();
+		while(pzpr.util.currentTime() - old < 3000){
+			count++;
+
+			func();
+		}
+		var time = pzpr.util.currentTime() - old;
+		this.addTA(text+" ave. "+(time/count)+"ms");
+	},
+
+	getTA : function(){ return document.getElementById('testarea').value;},
+	setTA : function(str){ document.getElementById('testarea').value  = str;},
+	addTA : function(str){
+		if(!!window.console){ console.log(str);}
+		document.getElementById('testarea').value += (str+"\n");
+	},
+
+	includeDebugScript : function(pid, callback){
+		if(!!this.includedScript[pid]){ return;}
+		var _script = document.createElement('script');
+		_script.type = 'text/javascript';
+		_script.src = pzpr.util.getpath()+'../tests/script/test_'+pid+'.js';
+		if(!!callback){ _script.onload = callback;}
+		document.getElementsByTagName('head')[0].appendChild(_script);
+		this.includedScript[pid] = true;
+	},
+	includedScript : {},
+
 	loadperf : function(){
-		ui.puzzle.open(perfstr, function(puzzle){
-			ui.menuconfig.set('autocheck',false);
-			puzzle.modechange(ui.puzzle.MODE_PLAYER);
+		puzzle.open(perfstr, function(puzzle){
+			puzzle.modechange(puzzle.MODE_PLAYER);
 			puzzle.setConfig('irowake',true);
 		});
 	},
-	
-	keydown : function(ca){
-		if(ca==='alt+p'){ this.disppoptest();}
-		else if(ca==='F7'){ this.accheck1();}
-		else if(ca==='ctrl+F9'){ this.starttest();}
-		else if(ca==='shift+ctrl+F10'){ this.all_test();}
-		else{ return false;}
-		
-		ui.puzzle.key.stopEvent();	/* カーソルを移動させない */
-		return true;
-	},
-	
+
 	accheck1 : function(){
-		ui.puzzle.checker.checkOnly = false;
-		ui.puzzle.checker.checkAns();
-		var outputstr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
-		var failcode  = ui.puzzle.checker.failcode[0];
+		puzzle.checker.checkOnly = false;
+		puzzle.checker.checkAns();
+		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
+		var failcode  = puzzle.checker.failcode[0];
 		var failstr   = (!!failcode ? "\""+failcode+"\"" : "null");
-		ui.puzzle.board.haserror = true;
-		ui.puzzle.board.errclear();
-		ui.puzzle.redraw();
+		puzzle.board.haserror = true;
+		puzzle.board.errclear();
+		puzzle.redraw();
 		this.addTA("\t\t["+failstr+",\""+outputstr+"\"],");
 	},
 
@@ -40,44 +177,44 @@ ui.debug.extend(
 	acs  : {},
 	inputs : {},
 	addDebugData : function(pid, data){
-		this.urls[pid] = data.url;
-		this.acs[pid] = data.failcheck;
-		this.inputs[pid] = data.inputs || [];
+		debug.urls[pid]   = data.url;
+		debug.acs[pid]    = data.failcheck;
+		debug.inputs[pid] = data.inputs || [];
 	},
 
 	execinput : function(str){
 		var strs = str.split(/,/);
 		switch(strs[0]){
 			case 'newboard':
-				var urls = [ui.puzzle.pid, strs[1], strs[2]];
-				if(ui.puzzle.pid==='tawa'){ urls.push(strs[3]);}
-				ui.puzzle.open(urls.join("/"));
+				var urls = [puzzle.pid, strs[1], strs[2]];
+				if(puzzle.pid==='tawa'){ urls.push(strs[3]);}
+				puzzle.open(urls.join("/"));
 				break;
 			case 'clear':
-				ui.puzzle.clear();
+				puzzle.clear();
 				break;
 			case 'ansclear':
-				ui.puzzle.ansclear();
+				puzzle.ansclear();
 				break;
 			case 'playmode':
-				ui.puzzle.modechange(ui.puzzle.MODE_PLAYER);
+				puzzle.modechange(puzzle.MODE_PLAYER);
 				break;
 			case 'editmode':
-				ui.puzzle.modechange(ui.puzzle.MODE_EDITOR);
+				puzzle.modechange(puzzle.MODE_EDITOR);
 				break;
 			case 'setconfig':
-				if     (strs[2]==="true") { ui.puzzle.setConfig(strs[1], true);}
-				else if(strs[2]==="false"){ ui.puzzle.setConfig(strs[1], false);}
-				else                      { ui.puzzle.setConfig(strs[1], strs[2]);}
+				if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}
+				else if(strs[2]==="false"){ puzzle.setConfig(strs[1], false);}
+				else                      { puzzle.setConfig(strs[1], strs[2]);}
 				break;
 			case 'key':
 				for(var i=1;i<strs.length;i++){
-					ui.puzzle.key.keyevent(strs[i],0);
-					ui.puzzle.key.keyevent(strs[i],1);
+					puzzle.key.keyevent(strs[i],0);
+					puzzle.key.keyevent(strs[i],1);
 				}
 				break;
 			case 'cursor':
-				ui.puzzle.cursor.init(+strs[1], +strs[2]);
+				puzzle.cursor.init(+strs[1], +strs[2]);
 				break;
 			case 'mouse':
 				this.execmouse(strs);
@@ -88,7 +225,7 @@ ui.debug.extend(
 		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
 		var repeat = matches ? +matches[1] : 1;
 		for(var t=0;t<repeat;t++){
-			var mv = ui.puzzle.mouse;
+			var mv = puzzle.mouse;
 			mv.btn.Left  = (strs[1].substr(0,4)==="left");
 			mv.btn.Right = (strs[1].substr(0,5)==="right");
 			
@@ -103,7 +240,7 @@ ui.debug.extend(
 		this.inputcheck(this.getTA());
 	},
 	inputcheck : function(text){
-		ui.saveConfig();
+		var config = puzzle.saveConfig();
 		var inparray = eval("["+text+"]");
 		for(var n=0;n<inparray.length;n++){
 			var data = inparray[n];
@@ -113,8 +250,7 @@ ui.debug.extend(
 			}
 		}
 		this.execinput("playmode");
-		ui.restoreConfig();
-		ui.displayAll();
+		puzzle.restoreConfig(config);
 	},
 
 	alltimer : null,
@@ -132,14 +268,14 @@ ui.debug.extend(
 		self.alltimer = setInterval(function(){
 			var newid = idlist[pnum];
 			if(!self.urls[newid]){
-				self.includeDebugScript("test_"+newid+".js");
+				self.includeDebugScript(newid);
 				return;
 			}
 
 			if(self.phase !== 99){ return;}
 			self.phase = 0;
 			self.pid = newid;
-			ui.puzzle.open(newid+"/"+self.urls[newid], function(){
+			puzzle.open(newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTA("Test ("+pnum+", "+newid+") start.");
@@ -160,11 +296,10 @@ ui.debug.extend(
 
 	fails : 0,
 	sccheck : function(){
-		ui.menuconfig.set('autocheck',false);
 		var self = this;
 
 		self.fails = 0;
-		self.pid = ui.puzzle.pid;
+		self.pid = puzzle.pid;
 		setTimeout(function(){ self.check_encode(self);},0);
 	},
 	//Encode test--------------------------------------------------------------
@@ -173,7 +308,7 @@ ui.debug.extend(
 		pzl.pid   = self.pid;
 		pzl.type  = pzl.URL_PZPRV3;
 		var inp = pzl.outputURLType() + self.urls[self.pid];
-		var ta  = ui.puzzle.getURL(pzl.URL_PZPRV3);
+		var ta  = puzzle.getURL(pzl.URL_PZPRV3);
 
 		if(inp!==ta){ self.addTA("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Encode test   = pass");}
@@ -182,7 +317,7 @@ ui.debug.extend(
 	},
 	check_encode_kanpen : function(self){
 		if(pzpr.variety.info[self.pid].exists.kanpen){
-			var puzzle = ui.puzzle, bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+			var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
 
@@ -190,8 +325,6 @@ ui.debug.extend(
 				self.addTA("Encode kanpen = id fail..."); self.fails++;
 			}
 			puzzle.open(kanpen_url, function(){
-				ui.menuconfig.set('autocheck',false);
-				
 				if(!self.bd_compare(bd,bd2)){
 					self.addTA("Encode kanpen = failure..."); self.fails++;
 				}
@@ -209,10 +342,10 @@ ui.debug.extend(
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid];
 		for(var n=0;n<acsstr.length;n++){
-			ui.puzzle.open(acsstr[n][1]);
-			var faildata = ui.puzzle.check(true), expectcode = acsstr[n][0];
+			puzzle.open(acsstr[n][1]);
+			var faildata = puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new ui.puzzle.klass.CheckInfo(expectcode).text());
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new puzzle.klass.CheckInfo(expectcode).text());
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
@@ -225,11 +358,11 @@ ui.debug.extend(
 	},
 	//Input test---------------------------------------------------------------
 	check_input : function(self){
-		var filedata = ui.puzzle.getFileData();
+		var filedata = puzzle.getFileData();
 		var inps = self.inputs[self.pid];
 		if(inps.length>0){
 			var count=0, pass=0;
-			ui.saveConfig();
+			var config = puzzle.saveConfig();
 			for(var n=0;n<inps.length;n++){
 				var data = inps[n];
 				if(data.input!==void 0 && !!data.input){
@@ -238,7 +371,7 @@ ui.debug.extend(
 					}
 				}
 				if(data.result!==void 0 && !!data.result){
-					var iserror = (data.result!==ui.puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
+					var iserror = (data.result!==puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/"));
 					count++;
 					if(iserror){ self.fails++; self.addTA("Input Error No."+n);}
 					if(!iserror){ pass++;}
@@ -248,15 +381,14 @@ ui.debug.extend(
 				self.addTA("Input test Pass = "+pass+"/"+count);
 			}
 			self.execinput("playmode");
-			ui.restoreConfig();
-			ui.displayAll();
+			puzzle.restoreConfig(config);
 		}
 
-		ui.puzzle.open(filedata,function(){ self.check_file(self);});
+		puzzle.open(filedata,function(){ self.check_file(self);});
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var puzzle = ui.puzzle, bd = puzzle.board;
+		var bd = puzzle.board;
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
 		var bd2 = self.bd_freezecopy(bd);
 
@@ -275,7 +407,7 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox : function(self){
-		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var bd = puzzle.board, pid = puzzle.pid;
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
 		var bd2 = self.bd_freezecopy(bd);
 
@@ -293,7 +425,7 @@ ui.debug.extend(
 		});
 	},
 	check_file_pbox_xml : function(self){
-		var puzzle = ui.puzzle, bd = puzzle.board, pid = puzzle.pid;
+		var bd = puzzle.board, pid = puzzle.pid;
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
 		var bd2 = self.bd_freezecopy(bd);
 
@@ -312,9 +444,7 @@ ui.debug.extend(
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		ui.menuconfig.set('autocheck',false);
-
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 1  = failure..."); self.fails++;}
@@ -323,8 +453,8 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_turnR2(self);},0);
 	},
 	check_turnR2 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ ui.puzzle.undo();}
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<4;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnR test 2  = pass");}
@@ -333,7 +463,7 @@ ui.debug.extend(
 	},
 
 	check_turnL1 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<4;i++){ bd.exec.execadjust('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 1  = failure..."); self.fails++;}
@@ -342,8 +472,8 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_turnL2(self);},0);
 	},
 	check_turnL2 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ ui.puzzle.undo();}
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<4;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnL test 2  = pass");}
@@ -352,7 +482,7 @@ ui.debug.extend(
 	},
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.exec.execadjust('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 1  = failure..."); self.fails++;}
@@ -361,8 +491,8 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_flipX2(self);},0);
 	},
 	check_flipX2 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ ui.puzzle.undo();}
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<2;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipX test 2  = pass");}
@@ -371,7 +501,7 @@ ui.debug.extend(
 	},
 
 	check_flipY1 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		for(var i=0;i<2;i++){ bd.exec.execadjust('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 1  = failure..."); self.fails++;}
@@ -380,8 +510,8 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_flipY2(self);},0);
 	},
 	check_flipY2 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ ui.puzzle.undo();}
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<2;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipY test 2  = pass");}
@@ -390,7 +520,7 @@ ui.debug.extend(
 	},
 	//Adjust test--------------------------------------------------------------
 	check_adjust1 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
 		for(var i=0;i<8;i++){ bd.exec.execadjust(names[i]);}
 
@@ -400,8 +530,8 @@ ui.debug.extend(
 		setTimeout(function(){ self.check_adjust2(self);},0);
 	},
 	check_adjust2 : function(self){
-		var bd = ui.puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<8;i++){ ui.puzzle.undo();}
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		for(var i=0;i<8;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Adjust test 2  = pass");}
@@ -485,7 +615,9 @@ ui.debug.extend(
 		}
 		return result;
 	}
-});
+};
+
+window.ui = {debug:{addDebugData: debug.addDebugData}};
 
 var perfstr = "pzprv3/country/10/18/44/0 0 1 1 1 2 2 2 3 4 4 4 5 5 6 6 7 8 /0 9 1 10 10 10 11 2 3 4 12 4 4 5 6 13 13 8 /0 9 1 1 10 10 11 2 3 12 12 12 4 5 14 13 13 15 /0 9 9 9 10 16 16 16 16 17 12 18 4 5 14 13 15 15 /19 19 19 20 20 20 21 17 17 17 22 18 18 14 14 23 23 24 /19 25 25 26 26 21 21 17 22 22 22 18 27 27 27 24 24 24 /28 28 29 26 30 31 21 32 22 33 33 33 33 34 35 35 35 36 /28 29 29 26 30 31 32 32 32 37 38 39 34 34 40 40 35 36 /41 29 29 42 30 31 31 32 31 37 38 39 34 34 34 40 35 36 /41 43 42 42 30 30 31 31 31 37 38 38 38 40 40 40 36 36 /3 . 6 . . 4 . . 2 . . . . . . . . 1 /. . . 5 . . . . . . . . . . . . . . /. . . . . . . . . 1 . . . . . . . . /. . . . . . . . . . . . . . . . . . /3 . . 2 . . . 4 . . . . . . . . . . /. . . 3 . . . . 4 . . . 2 . . . . . /. . . . 3 6 . . . 4 . . . . . . . . /. 5 . . . . . . . 2 . . 3 . . . . . /. . . . . . . . . . . . . . . . . . /. . . . . . . . . . . . . . . . 5 . /0 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 0 /1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 1 /0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 /0 1 1 0 0 0 1 0 0 1 1 0 1 0 0 0 1 /1 1 0 0 1 0 0 1 1 0 0 0 0 1 0 1 0 /0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 1 /1 0 1 0 0 0 0 1 0 1 1 1 0 0 1 1 0 /0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 /0 1 1 0 1 1 0 0 1 0 1 0 0 0 0 0 0 /1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 /0 0 1 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 /1 1 1 0 0 1 1 1 1 0 0 0 1 0 1 0 0 1 /1 1 0 1 1 0 1 0 0 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 0 1 0 1 0 1 0 1 1 0 1 0 /0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 /0 1 0 1 1 0 1 0 1 0 0 0 1 1 0 0 0 1 /1 0 1 0 1 0 1 1 0 1 0 0 0 1 1 0 1 1 /1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 1 1 1 /1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 1 1 1 /2 2 1 1 1 2 0 0 2 0 1 0 0 0 0 0 0 2 /1 1 1 2 1 1 0 0 0 1 2 1 0 0 1 2 0 0 /1 0 1 1 1 1 0 0 1 2 2 2 1 0 1 2 2 0 /1 0 0 1 1 2 1 0 2 1 1 1 1 0 1 2 1 0 /1 1 0 2 1 1 2 0 0 0 2 1 2 1 1 1 0 2 /2 1 0 1 1 1 0 2 0 0 0 0 1 1 2 1 0 0 /1 0 1 1 1 2 1 1 0 0 0 0 0 0 1 0 0 0 /0 1 1 2 1 2 1 1 2 1 2 0 1 0 1 0 0 0 /0 1 1 0 1 1 1 2 0 1 0 1 2 2 2 1 0 0 /0 0 0 1 2 2 1 1 0 2 0 0 1 0 1 0 0 0 /".replace(/\//g, "\n");
 
