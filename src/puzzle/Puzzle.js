@@ -28,6 +28,7 @@ pzpr.Puzzle = function(canvas, option){
 	this.metadata =  new pzpr.MetaData();
 
 	this.config = new this.Config(this);
+	if(!!this.opt.config){ this.config.setAll(this.opt.config);}
 
 	if(!!canvas){ this.setCanvas(canvas);}
 };

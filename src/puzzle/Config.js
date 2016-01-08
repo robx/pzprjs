@@ -113,9 +113,7 @@ Config.prototype =
 	},
 	setAll : function(settings){
 		this.init();
-		for(var key in this.list){
-			if(settings[key]!==void 0){ this.setproper(key,settings[key]);}
-		}
+		for(var key in settings){ this.set(key,settings[key]);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -174,7 +172,7 @@ Config.prototype =
 			break;
 		
 		case 'multierr':
-			puzzle.checker.resetCache();
+			if(puzzle.ready){ puzzle.checker.resetCache();}
 			break;
 		
 		case 'disptype_bosanowa':
@@ -182,7 +180,7 @@ Config.prototype =
 			break;
 		
 		case 'color_qanscolor':
-			puzzle.painter.setColor('qanscolor', newval);
+			if(puzzle.ready){ puzzle.painter.setColor('qanscolor', newval);}
 			break;
 		
 		case "mode":
@@ -202,8 +200,10 @@ Config.prototype =
 			break;
 		
 		case 'uramashu':
-			bd.uramashu = newval;
-			bd.revCircleMain();
+			if(puzzle.ready){
+				bd.uramashu = newval;
+				bd.revCircleMain();
+			}
 			puzzle.redraw();
 			break;
 		}

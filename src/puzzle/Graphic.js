@@ -199,6 +199,7 @@ Graphic:{
 			this.resizeCanvas(rect.width, rect.height);
 		}
 		
+		this.pendingResize = true;
 		this.resize_canvas_main();
 		puzzle.emit('canvasReady');
 		

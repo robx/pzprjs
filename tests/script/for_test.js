@@ -12,13 +12,9 @@ pzpr.addLoadListener(function(){
 	if(search.charAt(0)==="?"){ search = search.substr(1);}
 	
 	var onload_option = {};
-	while(search.match(/^(\w+)\=(\w+)\&(.*)/)){
+	while(search.match(/^(\w+)\=(\w+)(.*)/)){
 		onload_option[RegExp.$1] = RegExp.$2;
 		search = RegExp.$3;
-	}
-	if(search.match(/^(\w+)\=(\w+)$/)){
-		onload_option[RegExp.$1] = RegExp.$2;
-		search = '';
 	}
 	
 	// エディタモードかplayerモードか、等を判定する
@@ -29,14 +25,11 @@ pzpr.addLoadListener(function(){
 	/* テスト用ファイルのinclude */
 	debug.includeDebugScript(pid, function(){
 		/* パズルオブジェクトの作成 */
+		onload_option.config = {mode:pzpr.Puzzle.prototype.MODE_PLAYER, irowake:true};
 		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
-		puzzle.setConfig('irowake', true);
 		pzpr.connectKeyEvents(puzzle);
 		
 		puzzle.open(!!pzl.qdata ? pzl : pid+"/"+debug.urls[pid]);
-		puzzle.once('ready', function(puzzle){
-			puzzle.modechange(puzzle.MODE_PLAYER);
-		});
 		puzzle.on('key', debug.keydown);
 		puzzle.on('mouse', debug.mousedown);
 	});
