@@ -9,9 +9,7 @@ pzpr.Puzzle = function(canvas, option){
 	if(option===void 0 && (!canvas || !canvas.parentNode)){
 		option=canvas; canvas=(void 0);
 	}
-
 	this.opt = option || {};
-	if(pzpr.env.browser.Presto){ this.opt.graphic='canvas';}
 
 	var modeid = {player:1,viewer:2}[this.opt.mode||0] || 0;
 	this.playeronly = !!modeid;			// 回答モードのみで動作する
