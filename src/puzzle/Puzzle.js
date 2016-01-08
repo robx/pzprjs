@@ -361,7 +361,6 @@ function setCanvas_main(puzzle, type){
 	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
 	Candle.start(puzzle.canvas, type, function(g){
-		Candle.ME.style.top = "0px"; /* WA */
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
@@ -445,7 +444,7 @@ function execKeyUp(e){
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
-	var imgcanvas = createSubCanvas(type.match(/svg/)?'svg':'canvas');
+	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : Candle.current);
 	
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");

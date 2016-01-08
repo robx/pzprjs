@@ -17,6 +17,7 @@ var loadfun = [];
 function postload(e){
 	if(!preinit){}
 	else if(!window.Candle){ setTimeout(postload,10);}
+	else if(window.scriptcount>0){ setTimeout(postload,10);}
 	else{
 		preinit = false;
 		for(var i=0;i<loadfun.length;i++){ loadfun[i]();}
@@ -24,7 +25,10 @@ function postload(e){
 	}
 }
 
-if(!!document.addEventListener){
+if(document.readyState==='complete'){
+	setTimeout(postload,10);
+}
+else if(!!document.addEventListener){
 	document.addEventListener('DOMContentLoaded', postload, false);
 	window.addEventListener('load', postload, false);
 }

@@ -3,6 +3,8 @@
 
 /* jshint node: true, evil: true */
 
+var scriptcount = scriptcount || 0;
+
 (function(){
 	var component = [
 		"lib/candle",
@@ -55,8 +57,10 @@
 		})();
 		
 		for(var i=0; i<component.length; i++){
+			if(component[i].match(/^ui/)){ continue;}
+			scriptcount++;
 			var file = dir+component[i]+".js";
-			document.write('<script type="text/javascript" src="'+file+'"></script>');
+			document.write('<script type="text/javascript" src="'+file+'" onload="scriptcount--;"></script>');
 		}
 	}
 	else{
