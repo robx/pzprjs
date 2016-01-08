@@ -12,7 +12,7 @@ pzpr.addLoadListener(function(){
 	if(search.charAt(0)==="?"){ search = search.substr(1);}
 	
 	var onload_option = {};
-	while(search.match(/^(\w+)\=(\w+)(.*)/)){
+	while(search.match(/^(\w+)\=(\w+)\&?(.*)/)){
 		onload_option[RegExp.$1] = RegExp.$2;
 		search = RegExp.$3;
 	}

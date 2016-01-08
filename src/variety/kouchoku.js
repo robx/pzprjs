@@ -500,7 +500,15 @@ LineGraph:{
 	pointgroup : 'cross',
 	linkgroup  : 'segment',
 	
-	isedgevalidbylinkobj : function(seg){ return !seg.isnull;}
+	isedgevalidbylinkobj : function(seg){ return !seg.isnull;},
+	
+	repaintNodes : function(components){
+		var segs_all = new this.klass.SegmentList();
+		for(var i=0;i<components.length;i++){
+			segs_all.extend(components[i].getedgeobjs());
+		}
+		this.puzzle.painter.repaintLines(segs_all);
+	}
 },
 GraphComponent:{
 	getLinkObjByNodes : function(node1, node2){
