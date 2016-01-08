@@ -1,6 +1,8 @@
 // Variety.js v3.4.1
 /* jshint latedef: false */
 
+(function(){
+
 pzpr.variety = {
 	info   : {},
 
@@ -160,3 +162,5 @@ pzpr.variety.register({
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
+
+})();

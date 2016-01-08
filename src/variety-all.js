@@ -113,9 +113,6 @@ var scriptcount = scriptcount || 0;
 		}
 	}
 	else{
-		component.unshift("common/intro");
-		component.push   ("common/outro");
-
 		var dir = "src/";
 		exports.files = component.map(function(mod){ return dir+mod+".js";});
 	}
