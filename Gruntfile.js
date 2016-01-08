@@ -13,7 +13,7 @@ module.exports = function(grunt){
     clean: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
 
     concat: {
-      all: {
+      pzpr: {
         options: {
           banner: banner_full,
           process: true
@@ -49,16 +49,20 @@ module.exports = function(grunt){
     },
 
     uglify: {
-      release:{
-        options: {
-          banner: banner_min,
-          report: 'min',
-        },
+      options: {
+        banner: banner_min,
+        report: 'min',
+      },
+      pzpr:{
         files: [
-          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/variety' },
           { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
         ]
-	  }
+      },
+      variety:{
+        files: [
+          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/variety' }
+        ]
+      }
     },
 
     jshint: {
@@ -75,11 +79,27 @@ module.exports = function(grunt){
           'src/variety-common/*.js',
           'tests/**/*.js'
         ]
+      },
+      pzpr:{
+        src: [
+          'src/*.js',
+          'src/pzpr/*.js',
+          'src/puzzle/*.js',
+          'src/variety-common/*.js'
+        ]
+      },
+      variety:{
+        src: [
+          'src/variety/*.js',
+          'tests/**/*.js'
+        ]
       }
     }
   });
   
   grunt.registerTask('lint', ['newer:jshint:all']);
-  grunt.registerTask('default', [        'clean',               'copy:debug',                                         ]);
-  grunt.registerTask('release', ['lint', 'clean', 'concat:all', 'copy:license', 'uglify:release', 'concat:variety-all']);
+  grunt.registerTask('default', ['clean', 'copy:debug']);
+  grunt.registerTask('release:pzpr',    ['newer:jshint:pzpr',    'concat:pzpr',          'uglify:pzpr']);
+  grunt.registerTask('release:variety', ['newer:jshint:variety', 'newer:uglify:variety', 'concat:variety-all']);
+  grunt.registerTask('release', ['lint', 'clean', 'copy:license', 'release:pzpr', 'release:variety']);
 };
