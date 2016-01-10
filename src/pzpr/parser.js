@@ -153,7 +153,7 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
-		var domain = document.domain, url = "", pid = this.pid;
+		var domain = (typeof document!=='undefined' ? document.domain : ''), url = "", pid = this.pid;
 		if(!!domain){ domain += location.pathname;}
 		else{ domain = "pzv.jp/p.html";}
 		switch(this.type){
@@ -388,7 +388,7 @@ pzpr.parser.FileData.prototype = {
 			this.bstr += strs.join('\n');
 			
 			/* 履歴部分の読み込み */
-			if(historypos!==null && !!window.JSON){
+			if(historypos!==null && !!JSON){
 				var count = 0, cnt;
 				for(var i=historypos;i<lines.length;i++){
 					str += lines[i];
@@ -401,7 +401,7 @@ pzpr.parser.FileData.prototype = {
 			}
 			
 			/* 履歴出力があったら入力する */
-			if(!!window.JSON){
+			if(!!JSON){
 				if(isinfo && (str.substr(0,5)==="info:")){
 					var info = JSON.parse(str.substr(5));
 					this.metadata.update(info.metadata);
@@ -416,7 +416,7 @@ pzpr.parser.FileData.prototype = {
 			this.bstr = lines.join("\n");
 		}
 		else if(this.type===FILE_PBOX_XML){
-			if(!!DOMParser){
+			if(!!this.xmldoc){
 				var metanode = this.xmldoc.querySelector('property'), meta = this.metadata;
 				meta.author = metanode.querySelector('author').getAttribute('value');
 				meta.source = metanode.querySelector('source').getAttribute('value');
@@ -459,7 +459,7 @@ pzpr.parser.FileData.prototype = {
 		}
 
 		/* 履歴・メタデータ出力がある形式ならば出力する */
-		if((pzl.type===FILE_PZPR) && !!window.JSON){
+		if((pzl.type===FILE_PZPR) && !!JSON){
 			if(!pzl.metadata.empty()){
 				var info = {metadata:pzl.metadata.getvaliddata()};
 				if(pzl.history){ info.history = pzl.history;}
@@ -472,7 +472,7 @@ pzpr.parser.FileData.prototype = {
 		else if(pzl.type===FILE_PBOX_XML){
 			var propnode = this.createXMLNode('property'), meta = pzl.metadata;
 			propnode.appendChild(this.createXMLNode('author',     {value:meta.author}));
-			propnode.appendChild(this.createXMLNode('source',     {value:meta.source}));
+			propnode.appendChild(this.createXMLNode('sou-rce',    {value:meta.source})); // jsdomで閉じタグが消えてしまう回避策
 			propnode.appendChild(this.createXMLNode('difficulty', {value:meta.hard}));
 			if(!!meta.comment){
 				var commentnode = this.createXMLNode('comment');
@@ -492,8 +492,9 @@ pzpr.parser.FileData.prototype = {
 		}
 		else{
 			outputdata = (new XMLSerializer()).serializeToString(this.xmldoc);
+			outputdata = outputdata.replace(/sou\-rce/g,'source');
 			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
-				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata; // IE向け回避策
+				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
 			}
 		}
 		return outputdata;

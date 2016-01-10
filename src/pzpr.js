@@ -42,11 +42,7 @@ var scriptcount = scriptcount || 0;
 		"variety-common/FileData"
 	];
 
-	var isbrowser = true;
-	try{ isbrowser = !exports;}
-	catch(e){}
-	
-	if(isbrowser){
+	if(typeof exports==='undefined'){
 		var dir = (function getpath(){
 			var srcs=document.getElementsByTagName('script');
 			for(var i=0;i<srcs.length;i++){

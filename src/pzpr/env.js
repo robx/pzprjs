@@ -1,4 +1,5 @@
 // env.js v3.4.0
+// jshint node:true
 
 //---------------------------------------------------------------------------
 // localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
@@ -27,17 +28,38 @@ if(!Array.prototype.some){
 	};
 }
 
+/* jshint ignore:start */
+if(typeof navigator==='undefined' || navigator.noUI){
+	if(typeof require!=='undefined'){
+		DOMParser = function(){ this.parseFromString = function(str,mimetype){
+			return require('jsdom').jsdom(str,{parsingMode:'xml'});
+		}};
+	}
+	else{ // jsdom
+		DOMParser = function(){ this.parseFromString = function(str,mimetype){
+			var doc = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'puzzle', null);
+			doc.innerHTML = str;
+			return doc;
+		}};
+	}
+	XMLSerializer = function(){ this.serializeToString = function(xmldoc){
+		return xmldoc.documentElement.outerHTML;
+	}};
+}
+/* jshint ignore:end */
+
 /**************/
 /* 環境の取得 */
 /**************/
 pzpr.env = (function(){
-	var UA  = navigator.userAgent;
+	var isbrowser = (typeof window!=='undefined');
+	var UA  = (isbrowser ? navigator.userAgent : '');
 	
 	var IEversion = (UA.match(/MSIE (\d+)/) ? +RegExp.$1 : 0);
 	var bz = {
 		legacyIE: (IEversion>0 && IEversion<=8),
 		IE9     : (IEversion===9),
-		Presto: (!!window.opera)
+		Presto: isbrowser && (!!window.opera)
 	};
 	
 	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
@@ -73,10 +95,10 @@ pzpr.env = (function(){
 	})();
 	
 	var api = {
-		touchevent      : ((!!window.ontouchstart) || (!!document.createTouch)),
-		pointerevent    : (!!navigator.pointerEnabled),
-		mspointerevent  : (!!navigator.msPointerEnabled),
-		anchor_download : (document.createElement("a").download!==(void 0))
+		touchevent      : isbrowser && ((!!window.ontouchstart) || (!!document.createTouch)),
+		pointerevent    : isbrowser && (!!navigator.pointerEnabled),
+		mspointerevent  : isbrowser && (!!navigator.msPointerEnabled),
+		anchor_download : isbrowser && (document.createElement("a").download!==(void 0))
 	};
 	
 	return {
@@ -88,6 +110,6 @@ pzpr.env = (function(){
 })();
 
 pzpr.lang = (function(){
-	var userlang = (navigator.browserLanguage || navigator.language || navigator.userLanguage || '');
-	return ((userlang.substr(0,2)==='ja')?'ja':'en');
+	var userlang = (typeof process!=='undefined' ? process.env.LANG : (navigator.browserLanguage || navigator.language || navigator.userLanguage));
+	return ((!userlang||userlang.substr(0,2)==='ja')?'ja':'en');
 })();

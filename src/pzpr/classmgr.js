@@ -1,4 +1,5 @@
-// classmgr.js v3.4.1
+// classmgr.js v3.6.0
+// jshint node:true
 
 //---------------------------------------------------------------
 // クラス設定用関数など
@@ -112,12 +113,16 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile : function(pid){
-		if(!!pzpr.custom[pid] || !!this.includedFile[pid]){ return;}
-		var _script = document.createElement('script');
-		_script.type = 'text/javascript';
-		_script.src = pzpr.util.getpath()+"./variety/"+pzpr.variety.toScript(pid)+".js";
-		document.getElementsByTagName('head')[0].appendChild(_script);
-		this.includedFile[pid] = true;
+		var customfile = pzpr.util.getpath()+'./variety/'+pzpr.variety.toScript(pid)+'.js';
+		if(typeof document!=='undefined'){
+			var _script = document.createElement('script');
+			_script.type = 'text/javascript';
+			_script.src = customfile;
+			document.getElementsByTagName('head')[0].appendChild(_script);
+		}
+		else{
+			require(customfile);
+		}
 	},
 	includedFile : {},
 
@@ -131,12 +136,16 @@ pzpr.classmgr = {
 
 		/* 今のパズルと別idの時 */
 		if(puzzle.pid !== newpid){
-			this.includeCustomFile(newpid);
-	
-			/* Customファイルが読み込みできるまで待つ */
 			if(!pzpr.custom[newpid]){
-				setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
-				return;
+				if(!this.includedFile[newpid]){
+					this.includeCustomFile(newpid);
+					this.includedFile[newpid] = true;
+				}
+				if(!pzpr.custom[newpid]){
+					/* Customファイルが読み込みできるまで待つ */
+					setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);
+					return;
+				}
 			}
 
 			/* 各クラスをpzpr.customから設定する */

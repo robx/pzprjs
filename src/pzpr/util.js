@@ -1,4 +1,5 @@
 // util.js v3.4.0
+// jshint node:true
 
 (function(){
 
@@ -29,12 +30,16 @@ else if(api.touchevent){
 pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
-	getpath : function(filename){
-		filename = filename || "pzpr(v3)?.js";
-		var srcs=document.getElementsByTagName('script');
-		for(var i=0;i<srcs.length;i++){
-			var result = srcs[i].src.match(new RegExp("^(.*\\/)"+filename+"$"));
-			if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
+	getpath : function(){
+		if(typeof window!=='undefined'){
+			var srcs=document.getElementsByTagName('script');
+			for(var i=0;i<srcs.length;i++){
+				var result = srcs[i].src.match(new RegExp("^(.*\\/)"+"pzpr.js$"));
+				if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
+			}
+		}
+		else{
+			return require('path').dirname(__filename) + '/' + (__filename.match('pzpr.js') ? '' : '../');
 		}
 		return "";
 	},

@@ -25,7 +25,8 @@ function postload(e){
 	}
 }
 
-if(document.readyState==='complete'){
+if(typeof window==='undefined'){}
+else if(document.readyState==='complete'){
 	setTimeout(postload,10);
 }
 else if(!!document.addEventListener){
