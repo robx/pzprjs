@@ -10,13 +10,18 @@ module.exports = function(grunt){
   grunt.initConfig({
     pkg: pkg,
 
-    clean: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
+    clean: {
+      all:     ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
+      pzpr:    ['dist/pzpr*', 'dist/{common,lib,puzzle,variety-common}', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
+      variety: ['dist/{variety,variety-all.js*}', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
+    },
 
     concat: {
       pzpr: {
         options: {
           banner: banner_full,
-          process: true
+          process: true,
+          sourceMap: true
         },
         files: [
           { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
@@ -25,7 +30,8 @@ module.exports = function(grunt){
       "variety-all": {
         options: {
           banner: banner_full,
-          process: true
+          process: true,
+          sourceMap: true
         },
         files: [
           { src: ['dist/variety/*.js'], dest: 'dist/variety-all.js' }
@@ -51,14 +57,22 @@ module.exports = function(grunt){
     uglify: {
       options: {
         banner: banner_min,
-        report: 'min',
+        report: 'min'
       },
       pzpr:{
+        options: {
+          sourceMap : 'dist/pzpr.js.map',
+          sourceMapIn : 'dist/pzpr.concat.js.map',
+          sourceMapIncludeSources : true
+        },
         files: [
           { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
         ]
       },
       variety:{
+        options: {
+          sourceMap : function(filename){ return filename+'.map';}
+        },
         files: [
           { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/variety' }
         ]
@@ -98,8 +112,8 @@ module.exports = function(grunt){
   });
   
   grunt.registerTask('lint', ['newer:jshint:all']);
-  grunt.registerTask('default', ['clean', 'copy:debug']);
+  grunt.registerTask('default', ['clean:pzpr', 'copy:debug']);
   grunt.registerTask('release:pzpr',    ['newer:jshint:pzpr',    'concat:pzpr',          'uglify:pzpr']);
   grunt.registerTask('release:variety', ['newer:jshint:variety', 'newer:uglify:variety', 'concat:variety-all']);
-  grunt.registerTask('release', ['lint', 'clean', 'copy:license', 'release:pzpr', 'release:variety']);
+  grunt.registerTask('release', ['lint', 'clean:all', 'copy:license', 'release:pzpr', 'release:variety']);
 };
