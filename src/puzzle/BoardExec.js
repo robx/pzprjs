@@ -226,11 +226,16 @@ BoardExec:{
 	},
 	turnflipGroup : function(group,key,d){
 		var bd = this.board;
-		if(group==='excell' && bd.hasexcell===1 && (key & this.FLIP)){
-			var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
-			if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
-			else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
-			d = d2;
+		if(group==='excell'){
+			if(bd.hasexcell===1 && (key & this.FLIP)){
+				var d2 = {x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2};
+				if     (key===this.FLIPY){ d2.x1 = d2.x2 = -1;}
+				else if(key===this.FLIPX){ d2.y1 = d2.y2 = -1;}
+				d = d2;
+			}
+			else if(bd.hasexcell===2){
+				d = {x1:-1, y1:-1, x2:d.x2+1, y2:d.y2+1};
+			}
 		}
 
 		var ch=[], objlist=bd.objectinside(group,d.x1,d.y1,d.x2,d.y2);
