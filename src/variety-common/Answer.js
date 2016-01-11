@@ -421,7 +421,8 @@ AnsCheck:{
 	isIndividualObject : function(clist, numfunc){
 		if(clist.length<=0){ return true;}
 		var result = true, d = [], num = [];
-		var max = clist[0].getmaxnum(), bottom = clist[0].getminnum();
+		var max = -1, bottom = clist[0].getminnum();
+		for(var i=0;i<clist.length;i++){ if(max<numfunc(clist[i])){ max=numfunc(clist[i]);}}
 		for(var n=bottom;n<=max;n++){ d[n]=0;}
 		for(var i=0;i<clist.length;i++){ num[clist[i].id] = numfunc(clist[i]);}
 

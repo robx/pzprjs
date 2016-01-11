@@ -141,7 +141,6 @@ for(var pid in pzpr.variety.info){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
 
-				puzzle.open(pid+'/1/1');
 				puzzle.open(outputstr, function(){ assert_equal_board(bd,bd2);});
 			});
 			if(!pzpr.variety.info[pid].exists.pencilbox){ return;}
@@ -150,7 +149,6 @@ for(var pid in pzpr.variety.info){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
 
-				puzzle.open(pid+'/1/1');
 				var props_sv = props;
 				if(ignore_qsub){ props = ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qcmp'];}
 				puzzle.open(outputstr, function(){ assert_equal_board(bd,bd2);});
@@ -160,7 +158,6 @@ for(var pid in pzpr.variety.info){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
 
-				puzzle.open(pid+'/1/1');
 				var props_sv = props;
 				if(ignore_qsub){ props = ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qcmp'];}
 				puzzle.open(outputstr, function(){ assert_equal_board(bd,bd2);});
