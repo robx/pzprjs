@@ -7,7 +7,7 @@ pzpr.classmgr.makeCustom(['dosufuwa'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || (this.mousemove && (this.inputData<=0))){ this.inputcell_dosufuwa();}
+			if(this.mousestart || this.mousemove){ this.inputcell_dosufuwa();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
@@ -18,7 +18,7 @@ MouseEvent:{
 	inputcell_dosufuwa : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.ques===1){ return;}
-		this.mouseCell = cell;
+
 		if(this.inputData===null){
 			if(this.btn.Left){
 				if     (cell.qans===1){ this.inputData=2;}
@@ -33,6 +33,8 @@ MouseEvent:{
 				else{ this.inputData=-2;}
 			}
 		}
+		else if((this.inputData===1 && this.mouseCell.getdir(cell,2)!==cell.UP) ||
+				(this.inputData===2 && this.mouseCell.getdir(cell,2)!==cell.DN)){ return;}
 
 		if(this.inputData>=0){
 			cell.setQans(this.inputData);
@@ -43,6 +45,8 @@ MouseEvent:{
 			cell.setQsub(1);
 		}
 		cell.draw();
+		cell.room.clist.drawCmp();
+		this.mouseCell = cell;
 	},
 	inputblock : function(){
 		var cell = this.getcell();
@@ -57,9 +61,29 @@ MouseEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	posthook : {
+		qans : function(num){}
+	}
+},
 Border:{
 	isBorder : function(){
 		return this.isnull || this.ques>0 || !!(this.sidecell[0].ques===1 || this.sidecell[1].ques===1);
+	}
+},
+CellList:{
+	cmp : null,
+	drawCmp : function(){
+		var bcnt=0, icnt=0;
+		for(var i=0;i<this.length;i++){
+			if(this[i].qans===1){ bcnt++;}
+			else if(this[i].qans===2){ icnt++;}
+		}
+		var iscmp = (bcnt===1 && icnt===1);
+		if(this.cmp !== iscmp){
+			this.cmp = iscmp;
+			this.draw();
+		}
 	}
 },
 Board:{
@@ -68,7 +92,12 @@ Board:{
 
 AreaRoomGraph:{
 	enabled : true,
-	isnodevalid : function(cell){ return (cell.ques===0);}
+	isnodevalid : function(cell){ return (cell.ques===0);},
+	
+	setExtraData : function(component){
+		pzpr.common.AreaRoomGraph.prototype.setExtraData.call(this, component);
+		component.clist.drawCmp();
+	}
 },
 
 //---------------------------------------------------------
@@ -76,8 +105,11 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
+	autocmp : 'qans',
+
 	cellcolor_func : "ques",
 	dotcolor_type : "PINK",
+	qsubcolor1 : "rgb(224, 224, 255)",
 
 	paint : function(){
 		this.drawBGCells();
@@ -90,6 +122,11 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawChassis();
+	},
+	getBGCellColor : function(cell){
+		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.clist.cmp){ return this.qsubcolor1;}
+		return null;
 	},
 
 	getCircleStrokeColor : function(cell){
