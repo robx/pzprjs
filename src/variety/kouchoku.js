@@ -334,7 +334,9 @@ Segment:{
 			bd.getx(seg.bx2, seg.by2).seglist.remove(seg);
 			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
 			seg.addOpe(1, 0);
-			this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
+			if(!!this.puzzle.canvas){
+				this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
+			}
 		}
 	},
 

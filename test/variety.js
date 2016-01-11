@@ -86,7 +86,6 @@ function execinput(str){
 }
 
 for(var pid in pzpr.variety.info){
-	if(pid==='kouchoku'){ continue;}
 	require('../tests/script/test_'+pid+'.js');
 	puzzle.open(pid);
 
