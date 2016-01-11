@@ -86,38 +86,38 @@ function execinput(str){
 }
 
 for(var pid in pzpr.variety.info){
-	if(pid==='kouchoku'||pid==='shwolf'){ continue;}
+	if(pid==='kouchoku'){ continue;}
 	require('../tests/script/test_'+pid+'.js');
 	puzzle.open(pid);
 
-	describe(puzzle.pid+' test', () => {
-		describe('URL', () => {
+	describe(puzzle.pid+' test', function(){
+		describe('URL', function(){
 			puzzle.open(puzzle.pid+'/'+testdata.url);
 			var urlstr = puzzle.getURL();
 			var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(puzzle.pid)+'/'+testdata.url;
-			it('pzpr URL', () => {
+			it('pzpr URL', function(){
 				assert.equal(urlstr, expurl);
 			});
 			if(!pzpr.variety.info[pid].exists.kanpen){ return;}
 			puzzle.open(puzzle.pid+'/'+testdata.url);
 			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var current_pid = puzzle.pid;
-			it('kanpen URL', () => {
+			it('kanpen URL', function(){
 				assert.equal(pzpr.parser.parse(kanpen_url).pid, current_pid);
 
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				puzzle.open(kanpen_url, function(){ assert_equal_board(bd,bd2);});
 			});
 		});
-		describe('Answer check', () => {
+		describe('Answer check', function(){
 			for(var testcase of testdata.failcheck){
-				it('Check: '+testcase[0], () => {
+				it('Check: '+testcase[0], function(){
 					puzzle.open(testcase[1]);
 					assert.equal(puzzle.check()[0], testcase[0]);
 				});
 			}
 		});
-		describe('Input check', () => {
+		describe('Input check', function(){
 			var inps = testdata.inputs || [];
 			if(inps.length===0){ return;}
 			var config = puzzle.saveConfig(), testcount = 0;
@@ -128,7 +128,7 @@ for(var pid in pzpr.variety.info){
 					testcount++;
 					var filestr = puzzle.getFileData();
 					var resultstr = data.result.replace(/\//g,'\n');
-					it('execinput '+testcount, () => {
+					it('execinput '+testcount, function(){
 						assert.equal(filestr, resultstr);
 					});
 				}
@@ -136,9 +136,9 @@ for(var pid in pzpr.variety.info){
 			puzzle.modechange(puzzle.MODE_PLAYMODE);
 			puzzle.restoreConfig(config);
 		});
-		describe('File I/O', () => {
+		describe('File I/O', function(){
 			var pid = puzzle.pid;
-			it('pzpr file', () => {
+			it('pzpr file', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
 
@@ -147,7 +147,7 @@ for(var pid in pzpr.variety.info){
 			});
 			if(!pzpr.variety.info[pid].exists.pencilbox){ return;}
 			var ignore_qsub = (pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-			it('Kanpen file', () => {
+			it('Kanpen file', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
 
@@ -157,7 +157,7 @@ for(var pid in pzpr.variety.info){
 				puzzle.open(outputstr, function(){ assert_equal_board(bd,bd2);});
 				props = props_sv;
 			});
-			it('Kanpen XML file', () => {
+			it('Kanpen XML file', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
 
@@ -168,11 +168,11 @@ for(var pid in pzpr.variety.info){
 				props = props_sv;
 			});
 		});
-		describe('Turn', () => {
+		describe('Turn', function(){
 			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
 
 			if(puzzle.pid==='tawa'){ return;}
-			it('turn right', () => {
+			it('turn right', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					bd.exec.execadjust('turnr');
@@ -180,7 +180,7 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			it('turn right undo', () => {
+			it('turn right undo', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					puzzle.undo();
@@ -188,7 +188,7 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			it('turn left', () => {
+			it('turn left', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					bd.exec.execadjust('turnl');
@@ -196,7 +196,7 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			it('turn left undo', () => {
+			it('turn left undo', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					puzzle.undo();
@@ -205,11 +205,11 @@ for(var pid in pzpr.variety.info){
 				assert_equal_board(bd,bd2);
 			});
 		});
-		describe('Flip', () => {
+		describe('Flip', function(){
 			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
 			var relyonanydir = (pid==='box'||pid==='shugaku');
 
-			it('flipX', () => {
+			it('flipX', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					bd.exec.execadjust('flipx');
@@ -217,7 +217,7 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			it('flipX undo', () => {
+			it('flipX undo', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					puzzle.undo();
@@ -226,7 +226,7 @@ for(var pid in pzpr.variety.info){
 				assert_equal_board(bd,bd2);
 			});
 			if(puzzle.pid==='tawa'){ return;}
-			it('flipY', () => {
+			it('flipY', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					bd.exec.execadjust('flipy');
@@ -234,7 +234,7 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			it('flipY undo', () => {
+			it('flipY undo', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
 					puzzle.undo();
@@ -243,8 +243,8 @@ for(var pid in pzpr.variety.info){
 				assert_equal_board(bd,bd2);
 			});
 		});
-		describe('Adjust', () => {
-			it('expand/reduce', () => {
+		describe('Adjust', function(){
+			it('expand/reduce', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert']
 					.forEach(function(a){ bd.exec.execadjust(a);});
@@ -252,7 +252,7 @@ for(var pid in pzpr.variety.info){
 				assert_equal_board(bd,bd2);
 				assert.equal(puzzle.check()[0], null);
 			});
-			it('expand/reduce undo', () => {
+			it('expand/reduce undo', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<8;i++){ puzzle.undo();}
 

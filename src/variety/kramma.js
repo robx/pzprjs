@@ -118,23 +118,17 @@ Graphic:{
 	}
 },
 "Graphic@shwolf":{
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	resize_canvas_main : function(){
 		/* imgtileの初期設定を追加 */
-		var imgsrc = (!pzpr.env.browser.legacyIE ? this.imgsrc_dataurl : this.imgsrc_imgfile);
-		this.imgtile = new this.klass.ImageTile(imgsrc, 2, 1);
-	},
-	imgsrc_dataurl : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC",
-	imgsrc_imgfile : pzpr.util.getpath()+'../img/shwolf_obj.png',
+		if(!this.imgtile){ this.imgtile = new this.klass.ImageTile();}
 
-	initCanvasCheck : function(){
-		/* imgtileの条件判定を追加 */
-		return this.common.initCanvasCheck.call(this) && this.imgtile.loaded;
+		this.common.resize_canvas_main.call(this);
 	},
 
 	drawSheepWolf : function(){
 		var g = this.vinc('cell_number_image', 'auto');
+
+		if(!this.imgtile){ return;}
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -308,37 +302,28 @@ FailCode:{
 },
 
 "ImageTile@shwolf":{
-	initialize : function(src,col,row){
-		this.image = new Image();
-		this.image.src = src;
-
-		this.cols = col;
-		this.rows = row;
-
-		this.waitload();
-	},
-	
-	/* initialize()で設定する変数 */
-	image : null,
-	
-	cols : 0,
-	rows : 0,
-	
-	/* waitload()で設定する変数 */
-	cwidth  : 0,
-	cheight : 0,
-	loaded : false,
-	
-	waitload : function(){
-		if(!this.image.height){
-			var self = this;
-			setTimeout(function(){ self.waitload();},10);
-			return;
+	initialize : function(){
+		if(!pzpr.env.node){
+			this.image = new Image();
 		}
+		else{
+			// jshint node:true
+			this.image = new require('jsdom').jsdom('').defaultView.Image();
+		}
+		this.image.src = (!pzpr.env.browser.legacyIE ? this.imgsrc_dataurl : this.imgsrc_imgfile);
+		this.image.height = 64;
+		this.image.width  = 128;
+
+		this.cols = 2;
+		this.rows = 1;
+
 		this.cwidth  = this.image.width /this.cols;
 		this.cheight = this.image.height/this.rows;
 		this.loaded = true;
 	},
+	
+	imgsrc_dataurl : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABABAMAAAAg+GJMAAAAMFBMVEUAAACtAADv97X/a/f//wD///////////////////////////////////////////81EdaHAAAAEHRSTlP///8A////////////////8M8+MgAAAk5JREFUeJzF10FywyAMBdDvuNmTG2RyAmZ8gS56AG96/6sUAYIPCDduOymbJLb1ImSCFWy/HPgzAC2F9STgW8A/BXg0AIeAPGAyz/ilBbi0AH0E7HQ8GMDlDj73IOBmCwgnChAiGuDyuBPgrEkASws86CJcyMMtCEMKPsQTECKOAGMSiIc7QMoiYwv5PBpgmERMgAGJoNEDveBjAg0Q466fMsKbSw90ZfDpIAF3jZaxSw4VWNLF0BlCj7kCyKlPHqDllwHHU9SsFOjjYw5NvWMKi77RpNYMeM6/Eu18aTglFRjDG0G/eXS2BHgY8SKssxRqAgJ4M4FYya4KXXzKXk7b8UFYFTAEp8A0gQqYKeT8MKtAqkK7GscKCDBPgFMwgHzmYAY1Bes+VGAeH1J4AigJIC3oHbSwFTCW0gCAgetJYIcAlPk1HTsE1grA+DHFfPYDwCmAazPrUn9RnwG2uHcM92IHP5IOgfRUHID4S2sA1J0FDORiWkAZEXAfH2knTK8OJwDkwHd5ffspECLfQ6R7S87tPOB0M19+CJhL8e+Abini5YDvge3lAL4HXP5FOOs2vh4AWqBbCHsHxMXHAM4CQhBQW6YZ0HV10sIsBFD7Ud4099FqLEuH4hZqGxnIW2vYDrsaFiED3HaWKz0DuwFob9j1jBXgIpiAPORdLCafpf8VhyVIl8S7p9vpAHCjeQjgCcCMD+2ay/8SLKA2CrME5Ckf62ADmz4hp3+ycpvQ7TX8vjbTk2Gc5k/+u/h0RTu/g6snQlefk8A4/h/4AjUhvQ8aixc0AAAAAElFTkSuQmCC",
+	imgsrc_imgfile : pzpr.util.getpath()+'../img/shwolf_obj.png',
 
 	putImage : function(ctx,key,n,dx,dy,dw,dh){
 		var sw=this.cwidth, sh=this.cheight;
