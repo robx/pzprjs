@@ -4,7 +4,7 @@
   "description": "Playing and editing puzzles by Javascript",
   "main": "index.html",
   "directories": {
-    "test": "tests"
+    "test": "test"
   },
   "keywords": [
     "puzzle",
@@ -25,7 +25,8 @@
     "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude \"*.map\" --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.bz2",
     "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
     "clean": "grunt clean",
-    "lint": "grunt lint"
+    "lint": "grunt lint",
+    "test": "grunt lint && mocha -R progress"
   },
   "dependencies": {
     "jsdom": "^7.2.2"
