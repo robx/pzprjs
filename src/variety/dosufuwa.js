@@ -45,7 +45,6 @@ MouseEvent:{
 			cell.setQsub(1);
 		}
 		cell.draw();
-		cell.room.clist.drawCmp();
 		this.mouseCell = cell;
 	},
 	inputblock : function(){
@@ -63,7 +62,7 @@ MouseEvent:{
 // 盤面管理系
 Cell:{
 	posthook : {
-		qans : function(num){}
+		qans : function(num){ this.room.clist.drawCmp();}
 	}
 },
 Border:{
