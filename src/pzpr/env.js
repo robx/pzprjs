@@ -52,7 +52,7 @@ if(typeof navigator==='undefined' || navigator.noUI){
 /* 環境の取得 */
 /**************/
 pzpr.env = (function(){
-	var isbrowser = (typeof window!=='undefined');
+	var isbrowser = (typeof module==='undefined' || typeof exports==='undefined');
 	var UA  = (isbrowser ? navigator.userAgent : '');
 	
 	var IEversion = (UA.match(/MSIE (\d+)/) ? +RegExp.$1 : 0);
@@ -105,11 +105,12 @@ pzpr.env = (function(){
 		browser : bz,
 		OS      : os,
 		storage : storage,
-		API     : api
+		API     : api,
+		node    : !isbrowser
 	};
 })();
 
 pzpr.lang = (function(){
-	var userlang = (typeof process!=='undefined' ? process.env.LANG : (navigator.browserLanguage || navigator.language || navigator.userLanguage));
+	var userlang = (pzpr.env.node ? process.env.LANG : (navigator.browserLanguage || navigator.language || navigator.userLanguage));
 	return ((!userlang||userlang.substr(0,2)==='ja')?'ja':'en');
 })();

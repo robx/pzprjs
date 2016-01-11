@@ -21,13 +21,11 @@
   "scripts": {
     "build": "grunt default",
     "release": "grunt release",
-    "release-pzpr": "grunt release:pzpr",
-    "release-variety": "grunt release:variety",
     "release:gzip": "sh -c 'cd dist; tar czf $0 --exclude *.concat.js --exclude \"*.map\" --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.gz",
     "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude \"*.map\" --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.bz2",
-    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
+    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
     "clean": "grunt clean",
-    "lint": "grunt newer:jshint"
+    "lint": "grunt lint"
   },
   "dependencies": {
     "jsdom": "^7.2.2"

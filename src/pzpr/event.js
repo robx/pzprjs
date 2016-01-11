@@ -15,17 +15,14 @@ pzpr.addLoadListener = function(func){
 var preinit = true;
 var loadfun = [];
 function postload(e){
-	if(!preinit){}
-	else if(!window.Candle){ setTimeout(postload,10);}
-	else if(window.scriptcount>0){ setTimeout(postload,10);}
-	else{
+	if(preinit){
 		preinit = false;
 		for(var i=0;i<loadfun.length;i++){ loadfun[i]();}
 		loadfun = [];
 	}
 }
 
-if(typeof window==='undefined'){}
+if(pzpr.env.node){}
 else if(document.readyState==='complete'){
 	setTimeout(postload,10);
 }

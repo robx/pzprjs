@@ -31,7 +31,7 @@ pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
 	getpath : function(){
-		if(typeof window!=='undefined'){
+		if(!pzpr.env.node){
 			var srcs=document.getElementsByTagName('script');
 			for(var i=0;i<srcs.length;i++){
 				var result = srcs[i].src.match(new RegExp("^(.*\\/)"+"pzpr.js$"));

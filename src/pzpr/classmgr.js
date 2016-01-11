@@ -113,8 +113,8 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile : function(pid){
-		var customfile = pzpr.util.getpath()+'./variety/'+pzpr.variety.toScript(pid)+'.js';
-		if(typeof document!=='undefined'){
+		var customfile = pzpr.util.getpath()+'./pzpr-variety/'+pzpr.variety.toScript(pid)+'.js';
+		if(!pzpr.env.node){
 			var _script = document.createElement('script');
 			_script.type = 'text/javascript';
 			_script.src = customfile;

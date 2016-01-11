@@ -17,5 +17,8 @@ var pzpr = { /* jshint ignore:line */
 	}
 };
 
-if(typeof module==='object'&&typeof exports==='object'){ module.exports = global.pzpr = pzpr;}
+if(typeof module==='object'&&typeof exports==='object'){
+	global.Candle = module.exports;
+	module.exports = global.pzpr = pzpr;
+}
 else{ this.pzpr = pzpr;}

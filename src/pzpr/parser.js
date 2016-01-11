@@ -154,7 +154,7 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
-		var domain = (typeof document!=='undefined' ? document.domain : ''), url = "", pid = this.pid;
+		var domain = (!pzpr.env.node ? document.domain : ''), url = "", pid = this.pid;
 		if(!!domain){ domain += location.pathname;}
 		else{ domain = "pzv.jp/p.html";}
 		switch(this.type){

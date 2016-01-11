@@ -11,45 +11,31 @@ module.exports = function(grunt){
     pkg: pkg,
 
     clean: {
-      all:     ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
-      pzpr:    ['dist/pzpr*', 'dist/{common,lib,puzzle,variety-common}', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
-      variety: ['dist/{variety,variety-all.js*}', 'pzprv3-*.{zip,tar.gz,tar.bz2}'],
+      all: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}']
     },
 
-    concat: {
-      pzpr: {
-        options: {
-          banner: banner_full,
-          process: true,
-          sourceMap: true
-        },
-        files: [
-          { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
-        ]
-      },
-      "variety-all": {
-        options: {
-          banner: banner_full,
-          process: true,
-          sourceMap: true
-        },
-        files: [
-          { src: ['dist/variety/*.js'], dest: 'dist/variety-all.js' }
+    copy: {
+      license: {
+        files : [
+          { src: 'LICENSE.txt', dest: 'dist/LICENSE.txt'}
         ]
       }
     },
 
-    copy: {
-      debug: {
-        files : [
-          { expand: true, cwd: 'src', src: ['**/*.js'], dest: 'dist' },
-          { src: 'src/pzpr.js',        dest: 'dist/pzpr.js'        },
-          { src: 'src/variety-all.js', dest: 'dist/variety-all.js' }
+    concat: {
+      options: {
+        banner: banner_full,
+        process: true,
+        sourceMap: true
+      },
+      pzpr: {
+        files: [
+          { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
         ]
       },
-      license: {
-        files : [
-          { src: 'LICENSE.txt', dest: 'dist/LICENSE.txt'}
+      variety: {
+        files: [
+          { src: ['dist/pzpr-variety/*.js'], dest: 'dist/pzpr-variety-all.js' }
         ]
       }
     },
@@ -74,7 +60,7 @@ module.exports = function(grunt){
           sourceMap : function(filename){ return filename+'.map';}
         },
         files: [
-          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/variety' }
+          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/pzpr-variety' }
         ]
       }
     },
@@ -94,26 +80,23 @@ module.exports = function(grunt){
           'tests/**/*.js'
         ]
       },
-      pzpr:{
+      source:{
         src: [
           'src/*.js',
           'src/pzpr/*.js',
           'src/puzzle/*.js',
-          'src/variety-common/*.js'
-        ]
-      },
-      variety:{
-        src: [
           'src/variety/*.js',
-          'tests/**/*.js'
+          'src/variety-common/*.js'
         ]
       }
     }
   });
   
-  grunt.registerTask('lint', ['newer:jshint:all']);
-  grunt.registerTask('default', ['clean:pzpr', 'copy:debug']);
-  grunt.registerTask('release:pzpr',    ['newer:jshint:pzpr',    'concat:pzpr',          'uglify:pzpr']);
-  grunt.registerTask('release:variety', ['newer:jshint:variety', 'newer:uglify:variety', 'concat:variety-all']);
-  grunt.registerTask('release', ['lint', 'clean:all', 'copy:license', 'release:pzpr', 'release:variety']);
+  grunt.registerTask('default', ['lint:source',                              'build']);
+  grunt.registerTask('release', ['lint:source', 'clean:all', 'copy:license', 'build']);
+  grunt.registerTask('lint',        ['newer:jshint:all']);
+  grunt.registerTask('lint:source', ['newer:jshint:source']);
+  grunt.registerTask('build',        ['build:pzpr', 'build:variety']);
+  grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
+  grunt.registerTask('build:variety',['newer:uglify:variety', 'newer:concat:variety']);
 };
