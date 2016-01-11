@@ -47,6 +47,11 @@ Board:{
 
 	hasborder : 1
 },
+BoardExec:{
+	adjustBoardData : function(key,d){
+		this.adjustNumberArrow(key,d);
+	}
+},
 
 AreaRoomGraph:{
 	enabled : true
