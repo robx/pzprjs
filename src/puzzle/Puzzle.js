@@ -149,6 +149,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.toDataURL() 盤面画像をDataURLとして出力する
 	// owner.toBlob()    盤面画像をBlobとして出力する
+	// owner.toSVG()     盤面画像をSVGファイルデータそのままで出力する
 	//---------------------------------------------------------------------------
 	toDataURL : function(type, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
@@ -161,6 +162,12 @@ pzpr.Puzzle.prototype =
 		var blob = canvas.toBlob();
 		canvas.parentNode.removeChild(canvas);
 		return blob;
+	},
+	toSVG : function(cellsize){
+		var canvas = getLocalCanvas(this, 'svg', cellsize);
+		var svgdata = canvas.firstChild.outerHTML || new XMLSerializer().serializeToString(canvas.firstChild);
+		canvas.parentNode.removeChild(canvas);
+		return '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
 	},
 
 	//---------------------------------------------------------------------------
