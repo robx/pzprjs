@@ -9,18 +9,18 @@ MouseEvent:{
 		if(this.puzzle.playmode){
 			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){
-				if(this.btn.Left){
+				if(this.btn==='left'){
 					if(this.mousestart){ this.inputTriangle_corner();}
 					else if(this.mousemove && this.inputData!==null){
 						this.inputMove();
 					}
 				}
-				else if(this.btn.Right){
+				else if(this.btn==='right'){
 					if(this.mousestart || this.mousemove){ this.inputDot();}
 				}
 			}
 			else if(use===2){
-				if(this.btn.Left){
+				if(this.btn==='left'){
 					if(this.mousestart){
 						this.inputTriangle_pull_start();
 					}
@@ -34,7 +34,7 @@ MouseEvent:{
 						this.inputTriangle_pull_end();
 					}
 				}
-				else if(this.btn.Right){
+				else if(this.btn==='right'){
 					if(this.mousestart || this.mousemove){ this.inputDot();}
 				}
 			}
@@ -171,8 +171,8 @@ MouseEvent:{
 		if(cell.isnull || cell.isNum()){ return;}
 
 		var ans = cell.getAnswer();
-		if     (this.btn.Left) { this.inputData = [0,2,1,3,4,5,-1][ans+1];}
-		else if(this.btn.Right){ this.inputData = [5,-1,1,0,2,3,4][ans+1];}
+		if     (this.btn==='left') { this.inputData = [0,2,1,3,4,5,-1][ans+1];}
+		else if(this.btn==='right'){ this.inputData = [5,-1,1,0,2,3,4][ans+1];}
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();

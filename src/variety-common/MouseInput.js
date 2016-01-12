@@ -29,19 +29,19 @@ MouseEvent:{
 	},
 	decIC : function(cell){
 		if(this.puzzle.getConfig('use')===1){
-			if     (this.btn.Left) { this.inputData=(cell.isUnshade()  ? 1 : 0); }
-			else if(this.btn.Right){ this.inputData=((cell.qsub!==1)? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=(cell.isUnshade()  ? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
-			else if(this.btn.Left){
+			else if(this.btn==='left'){
 				if     (cell.isShade()){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (cell.isShade()){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
@@ -88,7 +88,7 @@ MouseEvent:{
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if     (num>=max){ val = ((subtype>=1) ? -2 : -1);}
 			else if(qs === 1){ val = ((subtype>=2) ? -3 : -1);}
 			else if(qs === 2){ val = -1;}
@@ -96,7 +96,7 @@ MouseEvent:{
 			else if(num< min){ val = min;}
 			else             { val = num+1;}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if     (qs === 1){ val = max;}
 			else if(qs === 2){ val = -2;}
 			else if(num===-1){
@@ -134,7 +134,7 @@ MouseEvent:{
 	},
 	inputQues_main : function(array,cell){
 		var qu = cell.ques, len = array.length;
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			for(var i=0;i<=len-1;i++){
 				if(qu===array[i]){
 					cell.setQues(array[((i<len-1)?i+1:0)]);
@@ -142,7 +142,7 @@ MouseEvent:{
 				}
 			}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			for(var i=len-1;i>=0;i--){
 				if(qu===array[i]){
 					cell.setQues(array[((i>0)?i-1:len-1)]);
@@ -160,7 +160,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQsub((this.btn.Left?[1,2,0]:[2,0,1])[cell.qsub]);
+		cell.setQsub((this.btn==='left'?[1,2,0]:[2,0,1])[cell.qsub]);
 		cell.draw();
 	},
 
@@ -240,11 +240,11 @@ MouseEvent:{
 		}
 	},
 	input51_main : function(cell){
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if(!cell.is51cell()){ cell.set51cell();}
 			else{ this.cursor.chtarget();}
 		}
-		else if(this.btn.Right){ cell.remove51cell();}
+		else if(this.btn==='right'){ cell.remove51cell();}
 
 		cell.drawaround();
 	},
@@ -266,10 +266,10 @@ MouseEvent:{
 		this.mouseCell = cross;
 	},
 	inputcross_main : function(cross){
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			cross.setQnum(cross.qnum!==4 ? cross.qnum+1 : -2);
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			cross.setQnum(cross.qnum!==-2 ? cross.qnum-1 : 4);
 		}
 		cross.draw();

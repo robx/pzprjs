@@ -29,8 +29,8 @@ MouseEvent:{
 	},
 	inputnumber : function(excell){
 		var qn = excell.qnum, max=excell.getmaxnum();
-		if(this.btn.Left){ excell.setQnum(qn!==max ? qn+1 : 0);}
-		else if(this.btn.Right){ excell.setQnum(qn!==0 ? qn-1 : max);}
+		if(this.btn==='left'){ excell.setQnum(qn!==max ? qn+1 : 0);}
+		else if(this.btn==='right'){ excell.setQnum(qn!==0 ? qn-1 : max);}
 
 		excell.draw();
 	}

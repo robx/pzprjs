@@ -9,14 +9,14 @@ MouseEvent:{
 	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){
 					this.prevPos.reset();
 					this.inputpeke();
 				}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}

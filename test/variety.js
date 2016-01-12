@@ -35,8 +35,8 @@ function execmouse(strs){
 	var repeat = matches ? +matches[1] : 1;
 	for(var t=0;t<repeat;t++){
 		var mv = puzzle.mouse;
-		mv.btn.Left  = (strs[1].substr(0,4)==="left");
-		mv.btn.Right = (strs[1].substr(0,5)==="right");
+		if     (strs[1].substr(0,4)==="left") { mv.btn='left';}
+		else if(strs[1].substr(0,5)==="right"){ mv.btn='right';}
 		
 		mv.moveTo(+strs[2], +strs[3]);
 		for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */

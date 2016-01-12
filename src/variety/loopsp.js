@@ -9,11 +9,11 @@ MouseEvent:{
 	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
@@ -36,7 +36,7 @@ MouseEvent:{
 	},
 	inputcell_loopsp : function(cell){
 		var qu = cell.ques, qn = cell.qnum;
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if(qn===-1){
 				if     (qu===0)        { cell.setQues(11);}
 				else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
@@ -46,7 +46,7 @@ MouseEvent:{
 			else if(qn<cell.getmaxnum()){ cell.setQnum(qn+1);}
 			else{ cell.setQues(0); cell.setQnum(-1);}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if(qn===-1){
 				if     (qu===0)        { cell.setQues(0); cell.setQnum(-2);}
 				else if(qu===11)       { cell.setQues(0); cell.setQnum(-1);}

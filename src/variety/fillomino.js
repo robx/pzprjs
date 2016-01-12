@@ -7,11 +7,11 @@ pzpr.classmgr.makeCustom(['fillomino'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode && (this.mousestart || this.mousemove)){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.isBorderMode()){ this.inputborder();}
 				else                   { this.dragnumber_fillomino();}
 			}
-			else if(this.btn.Right){ this.inputQsubLine();}
+			else if(this.btn==='right'){ this.inputQsubLine();}
 		}
 
 		if(this.mouseend && this.notInputted()){

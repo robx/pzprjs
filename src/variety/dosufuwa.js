@@ -20,13 +20,13 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell || cell.ques===1){ return;}
 
 		if(this.inputData===null){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qans===2){ this.inputData=-2;}
 				else if(cell.qsub===1){ this.inputData=0;}
 				else{ this.inputData=1;}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qans===2){ this.inputData=1;}
 				else if(cell.qsub===1){ this.inputData=2;}

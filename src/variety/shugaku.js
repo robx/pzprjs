@@ -7,11 +7,11 @@ pzpr.classmgr.makeCustom(['shugaku'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputFuton();}
 				else if(this.mouseend){ this.inputFuton2();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputcell_shugaku();}
 			}
 		}

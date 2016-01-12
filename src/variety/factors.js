@@ -11,7 +11,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left){ this.inputborder();}
+				if(this.btn==='left'){ this.inputborder();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputqnum();
@@ -29,12 +29,12 @@ MouseEvent:{
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if     (num>=max){ val = -1;}
 			else if(num===-1){ val = 1;}
 			else{ val = num+1;}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if     (num===-1){ val = max;}
 			else if(num<=min){ val = -1;}
 			else{ val = num-1;}

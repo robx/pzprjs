@@ -20,7 +20,7 @@ MouseEvent:{
 		this.firstPoint = new this.klass.RawAddress();	// mousedownされた時のborder座標 ※端数あり
 		this.prevPos    = new this.klass.Address();		// 前回のマウス入力イベントのborder座標
 
-		this.btn = {};				// 押されているボタン
+		this.btn = '';				// 押されているボタン
 		this.inputData = null;		// 入力中のデータ番号(実装依存)
 
 		this.bordermode = false;	// 境界線を入力中かどうか
@@ -51,7 +51,7 @@ MouseEvent:{
 		this.firstPoint.reset();
 		this.prevPos.reset();
 
-		this.btn = { Left:false, Middle:false, Right:false};
+		this.btn = '';
 		this.inputData = null;
 
 		this.bordermode = false;
@@ -111,10 +111,8 @@ MouseEvent:{
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
 		if((kc.isSHIFT || kc.isMETA)!==this.puzzle.getConfig('lrcheck')){
-			if(this.btn.Left !== this.btn.Right){
-				this.btn.Left  = !this.btn.Left;
-				this.btn.Right = !this.btn.Right;
-			}
+			if     (this.btn==='left'){ this.btn = 'right';}
+			else if(this.btn==='right'){ this.btn = 'left';}
 		}
 	},
 	getBoardAddress : function(e){
@@ -178,7 +176,7 @@ MouseEvent:{
 		
 		var puzzle = this.puzzle;
 		puzzle.emit('mouse');
-		if(!this.cancelEvent && (this.btn.Left || this.btn.Right)){
+		if(!this.cancelEvent && (this.btn==='left' || this.btn==='right')){
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
 				puzzle.board.errclear();

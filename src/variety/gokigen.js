@@ -22,9 +22,9 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var use = this.puzzle.getConfig('use'), sl=(this.btn.Left?31:32), qa = cell.qans;
+		var use = this.puzzle.getConfig('use'), sl=(this.btn==='left'?31:32), qa = cell.qans;
 		if     (use===1){ cell.setQans(qa!==sl?sl:0);}
-		else if(use===2){ cell.setQans((this.btn.Left?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
+		else if(use===2){ cell.setQans((this.btn==='left'?{0:31,31:32,32:0}:{0:32,31:0,32:31})[qa]);}
 
 		cell.drawaround();
 	},
@@ -64,7 +64,7 @@ MouseEvent:{
 		var cell = pos.getc();
 		if(cell.isnull){ return;}
 
-		var trans = (this.btn.Left ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
+		var trans = (this.btn==='left' ? [-1,1,0,2,-2] : [2,-2,0,-1,1]);
 		cell.setNum(trans[cell.qnum+2]);
 		cell.draw();
 	}

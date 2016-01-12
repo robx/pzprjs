@@ -9,18 +9,18 @@ MouseEvent:{
 	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputborder();}
-				else if(this.btn.Right){ this.inputIcebarn();}
+				if     (this.btn==='left') { this.inputborder();}
+				else if(this.btn==='right'){ this.inputIcebarn();}
 			}
 		}
 	},

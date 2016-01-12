@@ -7,11 +7,11 @@ pzpr.classmgr.makeCustom(['wblink'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
@@ -41,7 +41,7 @@ MouseEvent:{
 
 	inputpeke : function(){
 		var pos = this.getpos(0.22);
-		if(this.btn.Right && this.prevPos.equals(pos)){ return;}
+		if(this.btn==='right' && this.prevPos.equals(pos)){ return;}
 
 		var border = pos.getb();
 		if(border.isnull){ return;}

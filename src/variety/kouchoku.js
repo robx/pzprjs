@@ -79,13 +79,13 @@ MouseEvent:{
 	},
 	inputnumber : function(cross){
 		var qn = cross.qnum;
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if     (qn===26){ cross.setQnum(-1);}
 			else if(qn===-1){ cross.setQnum(-2);}
 			else if(qn===-2){ cross.setQnum(1);}
 			else{ cross.setQnum(qn+1);}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if     (qn===-2){ cross.setQnum(-1);}
 			else if(qn===-1){ cross.setQnum(26);}
 			else if(qn=== 1){ cross.setQnum(-2);}

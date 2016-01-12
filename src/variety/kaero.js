@@ -8,8 +8,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputMoveLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+				if     (this.btn==='left') { this.inputMoveLine();}
+				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputlight();
@@ -25,9 +25,9 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn==='left'?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn==='left'?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn==='left'?0:1);}
 		cell.draw();
 	}
 },

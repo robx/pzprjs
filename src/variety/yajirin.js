@@ -11,8 +11,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputcell();}
+				if     (this.btn==='left') { this.inputLine();}
+				else if(this.btn==='right'){ this.inputcell();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputcell();}
 		}

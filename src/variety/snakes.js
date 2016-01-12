@@ -34,8 +34,8 @@ MouseEvent:{
 			this.mouseCell = cell;
 		}
 		else if(cell.qnum===-1 && this.inputData>=1 && this.inputData<=5){
-			if     (this.btn.Left ){ this.inputData++;}
-			else if(this.btn.Right){ this.inputData--;}
+			if     (this.btn==='left' ){ this.inputData++;}
+			else if(this.btn==='right'){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
@@ -51,7 +51,7 @@ MouseEvent:{
 		}
 	},
 	inputDot_snakes : function(){
-		if(!this.btn.Right || (this.inputData!==null && this.inputData>=0)){ return false;}
+		if(this.btn!=='right' || (this.inputData!==null && this.inputData>=0)){ return false;}
 
 		var cell = this.getcell();
 		if(cell.isnull||cell===this.mouseCell){ return (this.inputData<0);}

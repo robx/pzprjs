@@ -8,14 +8,14 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputMoveLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+				if     (this.btn==='left') { this.inputMoveLine();}
+				else if(this.btn==='right'){ this.inputpeke();}
 			}
 		}
 		else if(this.puzzle.editmode){
 			var cell = this.getcell();
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Right && cell.ques!==31 && cell.qnum===-1){ this.inputWater();}
+				if(this.btn==='right' && cell.ques!==31 && cell.qnum===-1){ this.inputWater();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				if(!cell.ice()){ this.inputqnum_herugolf();}
@@ -113,14 +113,14 @@ MouseEvent:{
 		var val = null;
 		/* inputqnum_mainの空白-?マーク間にHoleのフェーズを挿入する */
 		if(cell.ques===31){
-			if     (this.btn.Left) { val = -2;}
-			else if(this.btn.Right){ val = -1;}
+			if     (this.btn==='left') { val = -2;}
+			else if(this.btn==='right'){ val = -1;}
 		}
 		else if(cell.ques===0 && cell.qnum===-1){
-			if(this.btn.Left){ val = -3;}
+			if(this.btn==='left'){ val = -3;}
 		}
 		else if(cell.qnum===-2){
-			if(this.btn.Right){ val = -3;}
+			if(this.btn==='right'){ val = -3;}
 		}
 
 		if(val===-3){

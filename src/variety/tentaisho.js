@@ -8,16 +8,16 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left && this.isBorderMode()){ this.inputborder_tentaisho();}
+				if(this.btn==='left' && this.isBorderMode()){ this.inputborder_tentaisho();}
 				else{ this.inputQsubLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputBGcolor3();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart && this.btn.Left){
+			if(this.mousestart && this.btn==='left'){
 				this.inputstar();
 			}
-			else if((this.mousestart || this.mousemove) && this.btn.Right){
+			else if((this.mousestart || this.mousemove) && this.btn==='right'){
 				this.inputBGcolor1();
 			}
 		}
@@ -62,8 +62,8 @@ MouseEvent:{
 
 		var star = pos.gets();
 		if(star!==null){
-			if     (this.btn.Left) { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
-			else if(this.btn.Right){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
+			if     (this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
+			else if(this.btn==='right'){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
 			star.draw();
 		}
 		this.prevPos = pos;

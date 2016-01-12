@@ -8,14 +8,14 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputMoveLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+				if     (this.btn==='left') { this.inputMoveLine();}
+				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputdark();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Right){ this.inputNabe();}
+				if(this.btn==='right'){ this.inputNabe();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputqnum_yosenabe();
@@ -68,13 +68,13 @@ MouseEvent:{
 		else if(cell.qnum2!==-1){ num=cell.qnum2; type=2;} /* なべの数字 */
 		else{ num=-1; type=(cell.ice()?2:1);}
 
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if     (num===max){ val = -1;}
 			else if(num===-1) { val = -2;}
 			else if(num===-2) { val = 1;}
 			else              { val = num+1;}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if     (num===-1){ val = max;}
 			else if(num===-2){ val = -1;}
 			else if(num=== 1){ val = -2;}

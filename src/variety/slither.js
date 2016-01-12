@@ -16,14 +16,14 @@ MouseEvent:{
 			else if(this.mousemove) { inputbg = (!!puzzle.getConfig('bgcolor') && this.inputData>=10);}
 
 			if(!inputbg){
-				if(this.btn.Left){
+				if(this.btn==='left'){
 					if(this.mousestart || this.mousemove){ this.inputLine();}
 					else if(this.mouseend && this.notInputted()){
 						this.prevPos.reset();
 						this.inputpeke();
 					}
 				}
-				else if(this.btn.Right){
+				else if(this.btn==='right'){
 					if(this.mousestart || this.mousemove){ this.inputpeke();}
 				}
 			}
@@ -41,7 +41,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (cell.qsub===0){ this.inputData=11;}
 				else if(cell.qsub===1){ this.inputData=12;}
 				else                  { this.inputData=10;}

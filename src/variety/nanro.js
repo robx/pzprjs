@@ -8,8 +8,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.dragnumber_nanro();}
-				else if(this.mousemove && this.btn.Right){ this.inputDot_nanro();}
+				if     (this.btn==='left') { this.dragnumber_nanro();}
+				else if(this.mousemove && this.btn==='right'){ this.inputDot_nanro();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.mouseCell = this.board.emptycell;

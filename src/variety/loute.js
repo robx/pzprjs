@@ -8,7 +8,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
+				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}
@@ -38,7 +38,7 @@ MouseEvent:{
 		var dir = cell.qdir, pid = this.pid;
 		if(dir!==5){
 			var array = [0,5,1,2,3,4,-2], len = array.length;
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				for(var i=0;i<=len-1;i++){
 					if(dir===array[i]){
 						cell.setQdir(array[((i<len-1)?i+1:0)]);
@@ -46,7 +46,7 @@ MouseEvent:{
 					}
 				}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				for(var i=len-1;i>=0;i--){
 					if(dir===array[i]){
 						cell.setQdir(array[((i>0)?i-1:len-1)]);
@@ -59,13 +59,13 @@ MouseEvent:{
 		else{
 			var qn = cell.getNum(), min, max;
 			if(pid==='sashigane'){ max=cell.getmaxnum(); min=cell.getminnum();}
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(pid==='loute'){ cell.setQdir(1);}
 				else if(qn<min){ cell.setNum(min);}
 				else if(qn<max){ cell.setNum(qn+1);}
 				else           { cell.setNum(-1); cell.setQdir(1);}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(pid==='loute'){ cell.setQdir(0);}
 				else if(qn>max){ cell.setNum(max);}
 				else if(qn>min){ cell.setNum(qn-1);}

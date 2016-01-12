@@ -26,13 +26,13 @@ MouseEvent:{
 
 		var max = cell.getmaxnum(), ques = cell.ques, num = cell.getNum();
 		if(this.puzzle.editmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (ques===7) { cell.setNum(-1); cell.setQues(0);}
 				else if(num===-1) { cell.setNum(1);  cell.setQues(0);}
 				else if(num===max){ cell.setNum(-1); cell.setQues(7);}
 				else{ cell.setNum(num+1);}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (ques===7) { cell.setNum(max); cell.setQues(0);}
 				else if(num=== 1) { cell.setNum(-1);  cell.setQues(0);}
 				else if(num===-1) { cell.setNum(-1);  cell.setQues(7);}
@@ -40,12 +40,12 @@ MouseEvent:{
 			}
 		}
 		if(this.puzzle.playmode && ques===0){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (num===max){ cell.setNum(-1);}
 				else if(num===-1) { cell.setNum(1);}
 				else{ cell.setNum(num+1);}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (num===-1) { cell.setNum(max);}
 				else if(num=== 1) { cell.setNum(-1);}
 				else{ cell.setNum(num-1);}

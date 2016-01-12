@@ -11,7 +11,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left){ this.inputborder();}
+				if(this.btn==='left'){ this.inputborder();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputmark_mouseup();
@@ -32,13 +32,13 @@ MouseEvent:{
 			if(border.isnull){ return;}
 
 			var qn=border.qnum, max=border.maxnum();
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (qn===-1){ border.setQnum(-2);}
 				else if(qn===-2){ border.setQnum( 2);}
 				else if(qn>=max){ border.setQnum(-1);}
 				else{ border.setQnum(qn+1);}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (qn===-1){ border.setQnum(max);}
 				else if(qn=== 2){ border.setQnum(-2);}
 				else if(qn===-2){ border.setQnum(-1);}

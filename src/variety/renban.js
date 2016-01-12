@@ -11,8 +11,8 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputborder();}
-				else if(this.btn.Right){ this.inputQsubLine();}
+				if     (this.btn==='left') { this.inputborder();}
+				else if(this.btn==='right'){ this.inputQsubLine();}
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputqnum();

@@ -7,10 +7,10 @@ pzpr.classmgr.makeCustom(['hakoiri'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart){ this.inputqnum();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousemove){ this.inputDot();}
 			}
 		}

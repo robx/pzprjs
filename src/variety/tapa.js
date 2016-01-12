@@ -49,19 +49,19 @@ MouseEvent:{
 	},
 	decIC : function(cell){
 		if(this.puzzle.getConfig('use')===1){
-			if     (this.btn.Left) { this.inputData=(cell.isUnshade()? 1 : 0); }
-			else if(this.btn.Right){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=(cell.isUnshade()? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnums.length!==0){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
-			else if(this.btn.Left){
+			else if(this.btn==='left'){
 				if     (cell.isShade()){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (cell.isShade()){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
@@ -87,11 +87,11 @@ MouseEvent:{
 			if(sameArray(cell.qnums, states[i])){ state = i; break;}
 		}
 
-		if(this.btn.Left){
+		if(this.btn==='left'){
 			if(state<states.length-1){ state++;}
 			else{ state = 0;}
 		}
-		else if(this.btn.Right){
+		else if(this.btn==='right'){
 			if(state>0){ state--;}
 			else{ state = states.length-1;}
 		}

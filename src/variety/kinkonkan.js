@@ -16,7 +16,7 @@ MouseEvent:{
 				this.inputedit_onstart();
 			}
 			else if(this.mousemove){
-				if(this.btn.Left){ this.inputborder();}
+				if(this.btn==='left'){ this.inputborder();}
 			}
 		}
 	},
@@ -32,8 +32,8 @@ MouseEvent:{
 		// マウスボタン押下時のインプットルーチン
 		else{
 			var current = cell.getState();
-			if     (this.btn.Left) { state = ((current + 6) % 4) - 1;}
-			else if(this.btn.Right){ state = ((current + 4) % 4) - 1;}
+			if     (this.btn==='left') { state = ((current + 6) % 4) - 1;}
+			else if(this.btn==='right'){ state = ((current + 4) % 4) - 1;}
 		}
 		
 		cell.setState(state);

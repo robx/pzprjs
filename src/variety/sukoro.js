@@ -15,7 +15,7 @@ pzpr.classmgr.makeCustom(['sukoro','view','sukororoom'], {
 			if(this.mousestart){ this.inputqnum();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart || (this.mousemove && this.btn.Left)){
+			if(this.mousestart || (this.mousemove && this.btn==='left')){
 				this.inputborder();
 			}
 			else if(this.mouseend && this.notInputted()){

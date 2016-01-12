@@ -8,7 +8,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left){ this.inputMoveLine();}
+				if(this.btn==='left'){ this.inputMoveLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputlight();}
 		}
@@ -53,9 +53,9 @@ MouseEvent:{
 		var puzzle = this.puzzle;
 		if(puzzle.pid!=='rectslider' && puzzle.execConfig('autocmp') && this.inputdark(cell)){ return;}
 
-		if     (cell.qsub===0){ cell.setQsub(this.btn.Left?1:2);}
-		else if(cell.qsub===1){ cell.setQsub(this.btn.Left?2:0);}
-		else if(cell.qsub===2){ cell.setQsub(this.btn.Left?0:1);}
+		if     (cell.qsub===0){ cell.setQsub(this.btn==='left'?1:2);}
+		else if(cell.qsub===1){ cell.setQsub(this.btn==='left'?2:0);}
+		else if(cell.qsub===2){ cell.setQsub(this.btn==='left'?0:1);}
 		cell.draw();
 	},
 	inputdark : function(cell){

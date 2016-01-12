@@ -9,11 +9,11 @@ MouseEvent:{
 	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
 			}
 		}
@@ -131,8 +131,8 @@ MouseEvent:{
 	},
 	inputGateNumber :function(cell){
 		var bd = this.board;
-		if     (this.btn.Left ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
-		else if(this.btn.Right){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
+		if     (this.btn==='left' ){ cell.setQues({0:1,1:21,21:22,22:0}[cell.ques]);}
+		else if(this.btn==='right'){ cell.setQues({0:22,22:21,21:1,1:0}[cell.ques]);}
 		cell.setNum(-1);
 		bd.gatemgr.rebuild();
 

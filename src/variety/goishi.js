@@ -7,7 +7,7 @@ pzpr.classmgr.makeCustom(['goishi'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode && this.mousestart){
-			if(this.btn.Left){ this.inputqans();}
+			if(this.btn==='left'){ this.inputqans();}
 		}
 		else if(this.puzzle.editmode && this.mousestart){
 			this.inputstone();

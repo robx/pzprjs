@@ -20,7 +20,7 @@ MouseEvent:{
 		var cell  = this.getcell();
 		if(cell.isnull){ return;}
 
-		cell.setQans((this.btn.Left?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.qans]);
+		cell.setQans((this.btn==='left'?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.qans]);
 		cell.draw();
 	}
 },

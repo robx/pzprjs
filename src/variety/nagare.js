@@ -9,11 +9,11 @@ MouseEvent:{
 	
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.clickmark();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (this.mousestart){ this.inputmark_mousedown();}
 				else if(this.inputData===2 || this.inputData===3){ this.inputpeke();}
 				else if(this.mousemove) { this.inputmark_mousemove();}
@@ -34,8 +34,8 @@ MouseEvent:{
 
 		var trans = {0:2,2:0}, diraux = this.puzzle.getConfig("dirauxmark");
 		if(diraux){
-			if(!border.isvert){ trans = (this.btn.Left?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
-			else              { trans = (this.btn.Left?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
+			if(!border.isvert){ trans = (this.btn==='left'?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
+			else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
 		}
 		border.setQsub(trans[border.qsub] || 0);
 		if(!diraux){ border.setLineVal(0);}

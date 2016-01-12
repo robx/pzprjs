@@ -7,11 +7,11 @@ pzpr.classmgr.makeCustom(['hanare'], {
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart){ this.inputqnum_hanare();}
 				else if(this.mousemove){ this.inputDot();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputDot();}
 			}
 		}

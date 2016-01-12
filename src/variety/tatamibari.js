@@ -8,7 +8,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
+				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
 			}
 		}

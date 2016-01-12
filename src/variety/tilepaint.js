@@ -12,10 +12,10 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputborder();}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputBGcolor1();}
 			}
 			

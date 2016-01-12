@@ -9,7 +9,7 @@ MouseEvent:{
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(!this.puzzle.key.isZ){
-					if(this.btn.Left && this.isBorderMode()){ this.inputborder();}
+					if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
 					else{ this.inputQsubLine();}
 				}
 				else{ this.inputBGcolor();}
@@ -27,12 +27,12 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
-			if(this.btn.Left){
+			if(this.btn==='left'){
 				if     (cell.qsub===0){ this.inputData=1;}
 				else if(cell.qsub===1){ this.inputData=2;}
 				else                  { this.inputData=0;}
 			}
-			else if(this.btn.Right){
+			else if(this.btn==='right'){
 				if     (cell.qsub===0){ this.inputData=2;}
 				else if(cell.qsub===1){ this.inputData=0;}
 				else                  { this.inputData=1;}

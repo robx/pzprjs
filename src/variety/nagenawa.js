@@ -10,7 +10,7 @@ MouseEvent:{
 "MouseEvent@nagenawa":{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ if(this.btn.Left){ this.inputLine();}}
+			if(this.mousestart || this.mousemove){ if(this.btn==='left'){ this.inputLine();}}
 			else if(this.mouseend && this.notInputted()){ this.inputMB();}
 		}
 		else if(this.puzzle.editmode){
@@ -23,8 +23,8 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputpeke();}
+				if     (this.btn==='left') { this.inputLine();}
+				else if(this.btn==='right'){ this.inputpeke();}
 			}
 		}
 		else if(this.puzzle.editmode){

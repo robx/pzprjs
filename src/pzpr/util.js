@@ -86,19 +86,14 @@ pzpr.util = {
 	// pzpr.util.getMouseButton() 左/中/右ボタンが押されているかチェックする
 	//---------------------------------------------------------------------------
 	getMouseButton : function(e){
-		var left=false, mid=false, right=false;
 		if(e.touches!==void 0){
 			/* touchイベントだった場合 */
-			left  = (e.touches.length===1);
-			right = (e.touches.length>1);
+			if(e.touches.length>=1){
+				return (e.touches.length===1 ? 'left' : 'right');
+			}
+			return '';
 		}
-		else{
-			left  = (e.button!==void 0 ? e.button===0 : e.which===1);
-			mid   = (e.button!==void 0 ? e.button===1 : e.which===2);
-			right = (e.button!==void 0 ? e.button===2 : e.which===3);
-		}
-
-		return {Left:left, Middle:mid, Right:right};
+		return ['left','middle','right'][(e.button!==void 0 ? e.button : e.which-1)] || '';
 	},
 
 	//----------------------------------------------------------------------

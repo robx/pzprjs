@@ -16,8 +16,8 @@ MouseEvent:{
 			else{ return;}
 
 			if(!inputbg){
-				if     (this.btn.Left) { this.inputLine();}
-				else if(this.btn.Right){ this.inputBGcolor(true);}
+				if     (this.btn==='left') { this.inputLine();}
+				else if(this.btn==='right'){ this.inputBGcolor(true);}
 			}
 			else{ this.inputBGcolor(false);}
 		}
@@ -33,7 +33,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
-			if(isnormal || this.btn.Left){
+			if(isnormal || this.btn==='left'){
 				if     (cell.qsub===0){ this.inputData=11;}
 				else if(cell.qsub===1){ this.inputData=12;}
 				else                  { this.inputData=10;}

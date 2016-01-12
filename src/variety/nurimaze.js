@@ -100,8 +100,8 @@ MouseEvent:{
 
 	inputQuesMark :function(cell){
 		var bd = this.board, newques=-1;
-		if     (this.btn.Left ){ newques={0:41,41:42,42:0}[cell.ques];}
-		else if(this.btn.Right){ newques={0:42,42:41,41:0}[cell.ques];}
+		if     (this.btn==='left' ){ newques={0:41,41:42,42:0}[cell.ques];}
+		else if(this.btn==='right'){ newques={0:42,42:41,41:0}[cell.ques];}
 
 		if(newques===0 || (!bd.startpos.equals(cell) && !bd.goalpos.equals(cell))){
 			cell.setQues(newques);

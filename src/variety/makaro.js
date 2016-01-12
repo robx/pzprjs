@@ -57,15 +57,15 @@ MouseEvent:{
 			val = -3;
 		}
 		else if(cell.ques===1 && cell.qdir===cell.NDIR){
-			if     (this.btn.Left) { val = -2;}
-			else if(this.btn.Right){ val = -1;}
+			if     (this.btn==='left') { val = -2;}
+			else if(this.btn==='right'){ val = -1;}
 		}
 		/* inputqnum_mainの空白-?マーク間に黒マスのフェーズを挿入する */
 		else if(cell.ques===0 && cell.qnum===-1){
-			if(this.btn.Left){ val = -3;}
+			if(this.btn==='left'){ val = -3;}
 		}
 		else if(cell.qnum===-2){
-			if(this.btn.Right){ val = -3;}
+			if(this.btn==='right'){ val = -3;}
 		}
 
 		if(val===-3){
