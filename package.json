@@ -1,8 +1,8 @@
 {
   "name": "pzpr",
-  "version": "3.6.0-pre",
-  "description": "Playing and editing puzzles by Javascript",
-  "main": "index.html",
+  "version": "3.6.0-pre.160112",
+  "description": "Scripts for handling puzzle objects",
+  "main": "./index.js",
   "directories": {
     "test": "test"
   },
@@ -18,6 +18,10 @@
     "type": "hg",
     "url": "https://bitbucket.org/sabo2/pzprv3"
   },
+  "homepage": "https://bitbucket.org/sabo2/pzprv3",
+  "engines": {
+    "node": ">= 4.0.0"
+  },
   "scripts": {
     "build": "grunt default",
     "release": "grunt release",
@@ -26,7 +30,8 @@
     "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
     "clean": "grunt clean",
     "lint": "grunt lint",
-    "test": "grunt lint && mocha -R progress"
+    "test": "grunt lint && mocha -R progress",
+    "prepublish": "npm run release"
   },
   "dependencies": {
     "jsdom": "^7.2.2"

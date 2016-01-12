@@ -1,0 +1,9 @@
+.git*
+.hg*
+
+/.vscode
+/Grunffile.js
+
+.jshintrc
+/test
+/tests
