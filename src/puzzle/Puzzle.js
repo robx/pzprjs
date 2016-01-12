@@ -1,5 +1,5 @@
-// Puzzle.js v3.5.2
-/* global Candle:false */
+// Puzzle.js v3.6.0
+
 (function(){
 
 //---------------------------------------------------------------------------
@@ -365,9 +365,9 @@ function initObjects(puzzle){
 //---------------------------------------------------------------------------
 function setCanvas_main(puzzle, type){
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
-	if(type==='canvas' && !!Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
+	if(type==='canvas' && !!pzpr.Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
-	Candle.start(puzzle.canvas, type, function(g){
+	pzpr.Candle.start(puzzle.canvas, type, function(g){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
@@ -375,14 +375,14 @@ function setCanvas_main(puzzle, type){
 	});
 }
 function createSubCanvas(type){
-	if(!Candle.enable[type]){ return null;}
+	if(!pzpr.Candle.enable[type]){ return null;}
 	var el = null;
 	el = document.createElement('div');
 	el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
 	el.style.left = '-10000px';
 	el.style.top = '0px';
 	document.body.appendChild(el);
-	Candle.start(el, type, function(g){
+	pzpr.Candle.start(el, type, function(g){
 		g.canvas.style.position = 'absolute';
 	});
 	return el;
@@ -451,7 +451,7 @@ function execKeyUp(e){
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
-	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : Candle.current);
+	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : pzpr.Candle.current);
 	
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");

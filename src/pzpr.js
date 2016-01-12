@@ -1,8 +1,10 @@
 /* jshint node: true */
 
 exports.files = [
-	"lib/candle",
 	"pzpr/core",
+	"lib/candle-intro",
+	"lib/candle",
+	"lib/candle-outro",
 	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",
