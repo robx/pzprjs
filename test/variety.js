@@ -5,14 +5,19 @@
 
 var assert = require('assert');
 
-var testdata = {};
-global.ui = {debug:{addDebugData: function(pid,data){ testdata = data;}}};
-
 var pzpr = require('../dist/pzpr.js'); // jshint ignore:line
-var puzzle = new pzpr.Puzzle();
+
+// Load test data
+var testdata = {};
+global.ui = {debug:{addDebugData: function(pid,data){
+	testdata[pid] = data;
+	testdata[pid].fullfile = data.failcheck[data.failcheck.length-1][1];
+}}};
+for(var pid in pzpr.variety.info){
+	require('../tests/script/test_'+pid+'.js');
+}
 
 var props = ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp'];
-
 function bd_freezecopy(bd1){
 	var bd2 = {cell:[],cross:[],border:[],excell:[]};
 	for(var group in bd2){
@@ -30,11 +35,10 @@ function assert_equal_board(bd1,bd2){
 		}
 	}
 }
-function execmouse(strs){
+function execmouse(mv,strs){
 	var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
 	var repeat = matches ? +matches[1] : 1;
 	for(var t=0;t<repeat;t++){
-		var mv = puzzle.mouse;
 		if     (strs[1].substr(0,4)==="left") { mv.btn='left';}
 		else if(strs[1].substr(0,5)==="right"){ mv.btn='right';}
 		
@@ -45,7 +49,7 @@ function execmouse(strs){
 		mv.inputEnd(2);
 	}
 }
-function execinput(str){
+function execinput(puzzle,str){
 	var strs = str.split(/,/);
 	switch(strs[0]){
 		case 'newboard':
@@ -80,25 +84,22 @@ function execinput(str){
 			puzzle.cursor.init(+strs[1], +strs[2]);
 			break;
 		case 'mouse':
-			execmouse(strs);
+			execmouse(puzzle.mouse,strs);
 			break;
 	}
 }
 
 for(var pid in pzpr.variety.info){
-	require('../tests/script/test_'+pid+'.js');
-	puzzle.open(pid);
-
-	describe(puzzle.pid+' test', function(){
+	describe(pid+' test', function(){
 		describe('URL', function(){
-			puzzle.open(puzzle.pid+'/'+testdata.url);
+			var puzzle = new pzpr.Puzzle().open(pid+'/'+testdata[pid].url);
 			var urlstr = puzzle.getURL();
-			var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(puzzle.pid)+'/'+testdata.url;
+			var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(puzzle.pid)+'/'+testdata[pid].url;
 			it('pzpr URL', function(){
 				assert.equal(urlstr, expurl);
 			});
 			if(!pzpr.variety.info[pid].exists.kanpen){ return;}
-			puzzle.open(puzzle.pid+'/'+testdata.url);
+			puzzle.open(puzzle.pid+'/'+testdata[pid].url);
 			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var current_pid = puzzle.pid;
 			it('kanpen URL', function(){
@@ -109,7 +110,8 @@ for(var pid in pzpr.variety.info){
 			});
 		});
 		describe('Answer check', function(){
-			for(var testcase of testdata.failcheck){
+			var puzzle = new pzpr.Puzzle();
+			for(var testcase of testdata[pid].failcheck){
 				it('Check: '+testcase[0], function(){
 					puzzle.open(testcase[1]);
 					assert.equal(puzzle.check()[0], testcase[0]);
@@ -117,12 +119,13 @@ for(var pid in pzpr.variety.info){
 			}
 		});
 		describe('Input check', function(){
-			var inps = testdata.inputs || [];
+			var inps = testdata[pid].inputs || [];
 			if(inps.length===0){ return;}
+			var puzzle = new pzpr.Puzzle().open(pid);
 			var config = puzzle.saveConfig(), testcount = 0;
 			for(var n=0;n<inps.length;n++){
 				var data = inps[n], action = data.input || [];
-				action.forEach((a) => execinput(a));
+				action.forEach((a) => execinput(puzzle,a));
 				if(!!data.result){
 					testcount++;
 					var filestr = puzzle.getFileData();
@@ -136,7 +139,7 @@ for(var pid in pzpr.variety.info){
 			puzzle.restoreConfig(config);
 		});
 		describe('File I/O', function(){
-			var pid = puzzle.pid;
+			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
 			it('pzpr file', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
@@ -165,6 +168,7 @@ for(var pid in pzpr.variety.info){
 			});
 		});
 		describe('Turn', function(){
+			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
 			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
 
 			if(puzzle.pid==='tawa'){ return;}
@@ -202,6 +206,7 @@ for(var pid in pzpr.variety.info){
 			});
 		});
 		describe('Flip', function(){
+			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
 			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
 			var relyonanydir = (pid==='box'||pid==='shugaku');
 
@@ -240,6 +245,7 @@ for(var pid in pzpr.variety.info){
 			});
 		});
 		describe('Adjust', function(){
+			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
 			it('expand/reduce', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert']
