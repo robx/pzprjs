@@ -2,32 +2,8 @@
 // jshint node:true
 
 //---------------------------------------------------------------------------
-// localStorageがなくてglobalStorage対応(Firefox3.0)ブラウザのハック
+// node.js環境向けの対策
 //---------------------------------------------------------------------------
-/* jshint ignore:start */
-try{ if(typeof localStorage != "object" && typeof globalStorage == "object"){
-	localStorage = globalStorage[location.host];
-}}catch(e){}
-/* jshint ignore:end */
-
-if(!Array.prototype.forEach){
-	Array.prototype.forEach = function(func){
-		for(var i=0;i<this.length;i++){ func(this[i]);}
-	};
-}
-if(!Array.prototype.indexOf){
-	Array.prototype.indexOf = function(obj){
-		for(var i=0;i<this.length;i++){ if(this[i]===obj){ return i;}}
-		return -1;
-	};
-}
-if(!Array.prototype.some){
-	Array.prototype.some = function(cond){
-		for(var i=0;i<this.length;i++){ if(cond(this[i])){ return true;}}
-		return false;
-	};
-}
-
 /* jshint ignore:start */
 if(typeof navigator==='undefined' || navigator.noUI){
 	if(typeof require!=='undefined'){
@@ -55,10 +31,7 @@ pzpr.env = (function(){
 	var isbrowser = (typeof module==='undefined' || typeof exports==='undefined');
 	var UA  = (isbrowser ? navigator.userAgent : '');
 	
-	var IEversion = (UA.match(/MSIE (\d+)/) ? +RegExp.$1 : 0);
 	var bz = {
-		legacyIE: (IEversion>0 && IEversion<=8),
-		IE9     : (IEversion===9),
 		Presto: isbrowser && (!!window.opera)
 	};
 	

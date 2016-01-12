@@ -26,12 +26,9 @@ if(pzpr.env.node){}
 else if(document.readyState==='complete'){
 	setTimeout(postload,10);
 }
-else if(!!document.addEventListener){
+else{
 	document.addEventListener('DOMContentLoaded', postload, false);
 	window.addEventListener('load', postload, false);
-}
-else{
-	window.attachEvent('onload', postload);
 }
 
 //---------------------------------------------------------------------------

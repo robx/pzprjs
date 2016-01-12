@@ -62,7 +62,7 @@ pzpr.util = {
 	},
 
 	//----------------------------------------------------------------------
-	// pzpr.util.addEvent()          addEventListener(など)を呼び出す
+	// pzpr.util.addEvent()          addEventListener()を呼び出す
 	// pzpr.util.eventWrapper()      イベント発生時のイベントWrapper関数を作成する
 	//----------------------------------------------------------------------
 	addEvent : function(el, type, self, callback, capt){
@@ -71,8 +71,7 @@ pzpr.util = {
 		else if(type==="mouseup")  { type = eventMouseUp;}
 		
 		function executer(e){ callback.call(self, pzpr.util.eventWrapper(e));}
-		if(!!el.addEventListener){ el.addEventListener(type, executer, !!capt);}
-		else                     { el.attachEvent('on'+type, executer);}
+		el.addEventListener(type, executer, !!capt);
 		return executer;
 	},
 	eventWrapper : function(e){
@@ -93,15 +92,10 @@ pzpr.util = {
 			left  = (e.touches.length===1);
 			right = (e.touches.length>1);
 		}
-		else if(!pzpr.env.browser.legacyIE){
-			left  = (!!e.which ? e.which===1 : e.button===0);
-			mid   = (!!e.which ? e.which===2 : e.button===1);
-			right = (!!e.which ? e.which===3 : e.button===2);
-		}
 		else{
-			left  = (e.button===1);
-			mid   = (e.button===4);
-			right = (e.button===2);
+			left  = (e.button!==void 0 ? e.button===0 : e.which===1);
+			mid   = (e.button!==void 0 ? e.button===1 : e.which===2);
+			right = (e.button!==void 0 ? e.button===2 : e.which===3);
 		}
 
 		return {Left:left, Middle:mid, Right:right};
