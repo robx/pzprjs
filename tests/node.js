@@ -1,6 +1,6 @@
 /* jshint browser:false, node:true */
 
-var pzpr = require('../dist/pzpr.js'); // jshint ignore:line
+var pzpr = require('../dist/pzpr.js');
 
 console.log(pzpr.version);
 

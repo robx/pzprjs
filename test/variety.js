@@ -1,11 +1,11 @@
 // test/variety.js
 //  usage: mocha
-// jshint node:true, browser:false, es3:false, esnext:true
+// jshint node:true, browser:false, esnext:true
 /* global describe:false, it:false */
 
 var assert = require('assert');
 
-var pzpr = require('../dist/pzpr.js'); // jshint ignore:line
+var pzpr = require('../dist/pzpr.js');
 
 // Load test data
 var testdata = {};

@@ -1,4 +1,4 @@
-/* jshint browser:false, node:true, es3:false, esnext:true */
+/* jshint browser:false, node:true, esnext:true */
 
 var jsdom = require('jsdom').jsdom;
 var virtualConsole = require("jsdom").createVirtualConsole().sendTo(console);

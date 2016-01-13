@@ -6,7 +6,7 @@
 // ★pzprオブジェクト
 //---------------------------------------------------------------------------
 /* extern */
-var pzpr = { /* jshint ignore:line */
+var pzpr = {
 	version : '<%= pkg.version %>'
 };
 
