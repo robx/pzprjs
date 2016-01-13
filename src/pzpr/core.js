@@ -7,14 +7,7 @@
 //---------------------------------------------------------------------------
 /* extern */
 var pzpr = { /* jshint ignore:line */
-	version : '<%= pkg.version %>',
-
-	//---------------------------------------------------------------
-	// パズルを生成する
-	//---------------------------------------------------------------
-	createPuzzle : function(canvas, option){
-		return new pzpr.Puzzle(canvas, option);
-	}
+	version : '<%= pkg.version %>'
 };
 
 if(typeof module==='object'&&typeof exports==='object'){ module.exports = global.pzpr = pzpr;}

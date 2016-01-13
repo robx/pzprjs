@@ -6,10 +6,10 @@
 <script type="text/javascript">
 var pzl, pzl2;
 pzpr.addLoadListener(function(){
-	pzl = pzpr.createPuzzle(document.getElementById('divques'),{mode:'player'}).open('tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
+	pzl = new pzpr.Puzzle(document.getElementById('divques'),{mode:'player'}).open('tasquare/6/6/1g.i4j1i3j5i5j.i2g1');
 	
 	var filedata = "pzprv3/firefly/5/5/4,0 . . . 2,1 /. 3,- . 3,0 . /. . . . . /. 1,0 . 2,2 . /1,1 . . . 1,1 /0 0 0 0 /0 -1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 -1 1 0 0 /0 0 1 0 0 /0 0 1 0 0 /0 0 0 0 0 /";
-	pzl2 = pzpr.createPuzzle({mode:'player'}).open(filedata);
+	pzl2 = new pzpr.Puzzle({mode:'player'}).open(filedata);
 	pzl2.setConfig('irowake',true);
 	pzl2.setCanvasSizeByCellSize(32);
 	pzl2.setCanvas(document.getElementById('divques2'));
