@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 メジリンク版 mejilink.js v3.4.1
+// パズル固有スクリプト部 メジリンク版 mejilink.js
 //
-pzpr.classmgr.makeCustom(['mejilink'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['mejilink'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

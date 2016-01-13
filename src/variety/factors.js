@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 因子の部屋版 factors.js v3.4.1
+// パズル固有スクリプト部 因子の部屋版 factors.js
 //
-pzpr.classmgr.makeCustom(['factors'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['factors'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

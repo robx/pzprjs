@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 クリーク版 creek.js v3.4.1
+// パズル固有スクリプト部 クリーク版 creek.js
 //
-pzpr.classmgr.makeCustom(['creek'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['creek'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

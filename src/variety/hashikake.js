@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 橋をかけろ版 hashikake.js v3.4.1
+// パズル固有スクリプト部 橋をかけろ版 hashikake.js
 //
-pzpr.classmgr.makeCustom(['hashikake'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['hashikake'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 環状線スペシャル版 loopsp.js v3.4.1
+// パズル固有スクリプト部 環状線スペシャル版 loopsp.js
 //
-pzpr.classmgr.makeCustom(['loopsp'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['loopsp'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

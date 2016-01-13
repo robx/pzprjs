@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ボサノワ版 bosanowa.js v3.4.1
+// パズル固有スクリプト部 ボサノワ版 bosanowa.js
 //
-pzpr.classmgr.makeCustom(['bosanowa'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['bosanowa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

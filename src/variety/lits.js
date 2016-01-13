@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js v3.4.1
+// パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js
 //
-pzpr.classmgr.makeCustom(['lits','norinori'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['lits','norinori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -107,7 +111,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var oldflag = ((type===parser.URL_PZPRV3  &&  this.checkpflag("d")) ||
 					   (type===parser.URL_PZPRAPP && !this.checkpflag("c")));
 		if(!oldflag || this.pid==='norinori'){
@@ -118,7 +122,7 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===pzpr.parser.URL_PZPRV3 || this.pid==='norinori'){
+		if(type===this.puzzle.pzpr.parser.URL_PZPRV3 || this.pid==='norinori'){
 			this.encodeBorder();
 		}
 		else{

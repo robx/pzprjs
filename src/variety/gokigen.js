@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js v3.4.1
+// パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js
 //
-pzpr.classmgr.makeCustom(['gokigen','wagiri'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['gokigen','wagiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -159,7 +163,7 @@ LineGraph:{
 			boardcell[c].isloop = false;
 		}
 		
-		pzpr.common.LineGraph.prototype.rebuild2.call(this);
+		this.common.rebuild2.call(this);
 	},
 	
 	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
@@ -180,7 +184,7 @@ LineGraph:{
 	},
 	
 	setExtraData : function(component){
-		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
+		this.common.setExtraData.call(this, component);
 		
 		// Loopがない場合はisloopにfalseを設定してreturn
 		var edgeobjs = component.getedgeobjs();
@@ -311,14 +315,14 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@gokigen":{
 	decodePzpr : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var oldflag = ((type===parser.URL_PZPRAPP && !this.checkpflag("c")) ||
 					   (type===parser.URL_PZPRV3  &&  this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type===pzpr.parser.URL_PZPRAPP){ this.outpflag = 'c';}
+		if(type===this.puzzle.pzpr.parser.URL_PZPRAPP){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },

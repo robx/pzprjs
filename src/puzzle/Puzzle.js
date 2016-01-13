@@ -1,4 +1,5 @@
 // Puzzle.js v3.6.0
+/* global pzpr:false */
 
 (function(){
 
@@ -6,6 +7,8 @@
 // ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 //---------------------------------------------------------------------------
 pzpr.Puzzle = function(canvas, option){
+	this.pzpr = pzpr;
+
 	if(option===void 0 && (!canvas || !canvas.parentNode)){
 		option=canvas; canvas=(void 0);
 	}

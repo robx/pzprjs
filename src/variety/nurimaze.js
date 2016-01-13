@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ぬりめいず版 nurimaze.js v3.4.2
+// パズル固有スクリプト部 ぬりめいず版 nurimaze.js
 //
-pzpr.classmgr.makeCustom(['nurimaze'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['nurimaze'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

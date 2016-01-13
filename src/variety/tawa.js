@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 たわむれんが版 tawa.js v3.4.1
+// パズル固有スクリプト部 たわむれんが版 tawa.js
 //
-pzpr.classmgr.makeCustom(['tawa'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['tawa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

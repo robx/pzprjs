@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 お家に帰ろう版 kaero.js v3.4.1
+// パズル固有スクリプト部 お家に帰ろう版 kaero.js
 //
-pzpr.classmgr.makeCustom(['kaero'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kaero'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

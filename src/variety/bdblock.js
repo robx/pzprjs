@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ボーダーブロック版 bdblock.js v3.4.1
+// パズル固有スクリプト部 ボーダーブロック版 bdblock.js
 //
-pzpr.classmgr.makeCustom(['bdblock'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['bdblock'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 エルート・さしがね版 loute.js v3.4.1
+// パズル固有スクリプト部 エルート・さしがね版 loute.js
 //
-pzpr.classmgr.makeCustom(['loute','sashigane'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['loute','sashigane'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

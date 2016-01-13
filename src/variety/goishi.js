@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 碁石ひろい版 goishi.js v3.4.1
+// パズル固有スクリプト部 碁石ひろい版 goishi.js
 //
-pzpr.classmgr.makeCustom(['goishi'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['goishi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 フィルオミノ版 fillomino.js v3.4.1
+// パズル固有スクリプト部 フィルオミノ版 fillomino.js
 //
-pzpr.classmgr.makeCustom(['fillomino'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['fillomino'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

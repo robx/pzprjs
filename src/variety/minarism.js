@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js v3.4.1
+// パズル固有スクリプト部 マイナリズム版 minarism.js
 //
-pzpr.classmgr.makeCustom(['minarism'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['minarism'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -248,7 +252,7 @@ Encode:{
 
 	decodeMinarism : function(type){
 		// 盤面外数字のデコード
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.board;
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
@@ -277,7 +281,7 @@ Encode:{
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var cm="", count=0, bd=this.board;
 		for(var id=0,max=bd.border.length+(type===parser.URL_PZPRV3?0:bd.cols);id<max;id++){
 			if(type===1){

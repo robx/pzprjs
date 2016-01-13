@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 タタミバリ版 tatamibari.js v3.4.1
+// パズル固有スクリプト部 タタミバリ版 tatamibari.js
 //
-pzpr.classmgr.makeCustom(['tatamibari'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['tatamibari'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

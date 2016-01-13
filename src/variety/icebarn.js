@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js v3.4.1
+// パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js
 //
-pzpr.classmgr.makeCustom(['icebarn','icelom','icelom2'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['icebarn','icelom','icelom2'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -324,7 +328,7 @@ LineGraph:{
 			this.resetObjNodeList(excells[c]);
 		}
 		
-		pzpr.common.LineGraph.prototype.rebuild2.call(this);
+		this.common.rebuild2.call(this);
 	}
 },
 
@@ -505,7 +509,7 @@ Graphic:{
 // URLエンコード/デコード処理
 "Encode@icebarn":{
 	decodePzpr : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var urlver = (type===parser.URL_PZPRV3 ? 3 : (this.checkpflag("c") ? 2 : 1));
 		
 		if(urlver===2){
@@ -523,7 +527,7 @@ Graphic:{
 		this.decodeInOut();
 	},
 	encodePzpr : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var urlver = (type===parser.URL_PZPRV3 ? 3 : 1);
 		
 		if(urlver===3){ this.encodeIce();}

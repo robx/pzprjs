@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ヤジタタミ版 yajitatami.js v3.4.1
+// パズル固有スクリプト部 ヤジタタミ版 yajitatami.js
 //
-pzpr.classmgr.makeCustom(['yajitatami'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['yajitatami'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

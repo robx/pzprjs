@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 なわばり・フォーセルズ・ファイブセルズ版 nawabari.js v3.4.1
+// パズル固有スクリプト部 なわばり・フォーセルズ・ファイブセルズ版 nawabari.js
 //
-pzpr.classmgr.makeCustom(['nawabari','fourcells','fivecells'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['nawabari','fourcells','fivecells'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

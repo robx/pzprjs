@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 縦横さん版 juosan.js v3.4.4
+// パズル固有スクリプト部 縦横さん版 juosan.js
 //
-pzpr.classmgr.makeCustom(['juosan'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['juosan'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

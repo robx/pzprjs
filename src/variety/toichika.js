@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 遠い誓い版 toichika.js v3.4.1
+// パズル固有スクリプト部 遠い誓い版 toichika.js
 //
-pzpr.classmgr.makeCustom(['toichika'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['toichika'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

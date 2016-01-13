@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 シャカシャカ版 shakashaka.js v3.4.1
+// パズル固有スクリプト部 シャカシャカ版 shakashaka.js
 //
-pzpr.classmgr.makeCustom(['shakashaka'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['shakashaka'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js v3.4.1
+// パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js
 //
-pzpr.classmgr.makeCustom(['nagenawa','ringring'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

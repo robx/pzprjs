@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ナンバーリンク版 numlin.js v3.4.1
+// パズル固有スクリプト部 ナンバーリンク版 numlin.js
 //
-pzpr.classmgr.makeCustom(['numlin'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['numlin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

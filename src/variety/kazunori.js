@@ -1,7 +1,11 @@
 //
 // パズル固有スクリプト部 かずのりのへや版 kazunori.js
 //
-pzpr.classmgr.makeCustom(['kazunori'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kazunori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

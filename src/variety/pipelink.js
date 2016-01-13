@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js v3.4.1
+// パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js
 //
-pzpr.classmgr.makeCustom(['pipelink','pipelinkr'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['pipelink','pipelinkr'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -188,7 +192,7 @@ Encode:{
 		this.outbstr = bstr.substr(i);
 	},
 	encodePipelink : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		var count, cm="", bd = this.board;
 
 		count=0;
@@ -275,7 +279,7 @@ AnsCheck:{
 "CheckInfo@pipelinkr":{
 	text : function(lang){
 		var puzzle = this.puzzle, texts = [];
-		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
+		var langcode = ((lang || this.puzzle.pzpr.lang)==="ja"?0:1);
 		var isdispice = (puzzle.getConfig('disptype_pipelinkr')===2);
 		if(this.length===0){ return puzzle.faillist.complete[langcode];}
 		for(var i=0;i<this.length;i++){

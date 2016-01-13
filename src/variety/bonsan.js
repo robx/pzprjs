@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js v3.4.2
+// パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js
 //
-pzpr.classmgr.makeCustom(['bonsan','heyabon','rectslider'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['bonsan','heyabon','rectslider'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -138,10 +142,10 @@ LineGraph:{
 	resetExtraData : function(cell){
 		cell.distance = (cell.qnum>=0 ? cell.qnum : null);
 		
-		pzpr.common.LineGraph.prototype.resetExtraData.call(this, cell);
+		this.common.resetExtraData.call(this, cell);
 	},
 	setExtraData : function(component){
-		pzpr.common.LineGraph.prototype.setExtraData.call(this, component);
+		this.common.setExtraData.call(this, component);
 		
 		var cell = component.departure, num = cell.qnum;
 		num = (num>=0 ? num : this.board.cell.length);

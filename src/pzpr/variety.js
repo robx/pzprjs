@@ -1,16 +1,9 @@
 // Variety.js v3.4.1
 /* jshint latedef: false */
-
-(function(){
+/* global pzpr:false */
 
 pzpr.variety = {
 	info   : {},
-
-	register : function(obj){
-		for(var pzprid in obj){
-			pzpr.variety.info[pzprid] = new Variety(pzprid,obj[pzprid]);
-		}
-	},
 	exists : function(name){
 		return !!this.toPID(name);
 	},
@@ -35,7 +28,12 @@ pzpr.variety = {
 	}
 };
 
-var Variety = function(pzprid, datalist){
+(function(Variety, obj){
+	for(var pzprid in obj){
+		pzpr.variety.info[pzprid] = new Variety(pzprid,obj[pzprid]);
+	}
+})
+(function Variety(pzprid, datalist){
 	this.pzprid = pzprid;		/* パズルID */
 	this.script = (!!datalist[4] ? datalist[4] : pzprid);	/* スクリプトファイル(クラス) */
 	this.ja     = datalist[2];	/* 日本語パズル名 */
@@ -51,9 +49,8 @@ var Variety = function(pzprid, datalist){
 	/* kanpen  : カンペンID            */
 	/* kanpen2 : カンペンID(入力のみ)  */
 	this.alias  = (!!datalist[5] ? datalist[5] : {});
-};
-
-pzpr.variety.register({
+},
+{
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
@@ -162,5 +159,3 @@ pzpr.variety.register({
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
-
-})();

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 交差は直角に限る版 kouchoku.js v3.4.1
+// パズル固有スクリプト部 交差は直角に限る版 kouchoku.js
 //
-pzpr.classmgr.makeCustom(['kouchoku'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kouchoku'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -99,7 +103,8 @@ MouseEvent:{
 	},
 	mouseout_kouchoku : function(e){
 		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
-		var pos = pzpr.util.getPagePos(e), rect=pzpr.util.getRect(this.puzzle.canvas);
+		var pos = this.puzzle.pzpr.util.getPagePos(e),
+			rect= this.puzzle.pzpr.util.getRect(this.puzzle.canvas);
 		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
 			if(this.inputData===1){
 				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
@@ -392,7 +397,7 @@ Board:{
 	},
 
 	setposCrosses : function(){
-		pzpr.common.Board.prototype.setposCrosses.call(this);
+		this.common.setposCrosses.call(this);
 		
 		for(var id=0;id<this.cross.length;id++){
 			if(!this.cross[id].seglist){

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 バッグ版 bag.js v3.4.1
+// パズル固有スクリプト部 バッグ版 bag.js
 //
-pzpr.classmgr.makeCustom(['bag'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['bag'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

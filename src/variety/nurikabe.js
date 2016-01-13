@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ版 nurikabe.js v3.4.1
+// パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ版 nurikabe.js
 //
-pzpr.classmgr.makeCustom(['nurikabe','nuribou','mochikoro','mochinyoro'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['nurikabe','nuribou','mochikoro','mochinyoro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

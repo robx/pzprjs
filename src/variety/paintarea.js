@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ペイントエリア版 paintarea.js v3.4.1
+// パズル固有スクリプト部 ペイントエリア版 paintarea.js
 //
-pzpr.classmgr.makeCustom(['paintarea'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['paintarea'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

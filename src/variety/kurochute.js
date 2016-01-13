@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 クロシュート版 kurochute.js v3.4.1
+// パズル固有スクリプト部 クロシュート版 kurochute.js
 //
-pzpr.classmgr.makeCustom(['kurochute'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kurochute'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

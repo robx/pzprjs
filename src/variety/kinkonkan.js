@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 キンコンカン版 kinkonkan.js v3.4.1
+// パズル固有スクリプト部 キンコンカン版 kinkonkan.js
 //
-pzpr.classmgr.makeCustom(['kinkonkan'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kinkonkan'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

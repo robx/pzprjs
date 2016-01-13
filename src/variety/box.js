@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ボックス版 box.js v3.4.1
+// パズル固有スクリプト部 ボックス版 box.js
 //
-pzpr.classmgr.makeCustom(['box'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['box'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,5 +1,6 @@
 // classmgr.js v3.6.0
 // jshint node:true
+/* global pzpr:false */
 
 //---------------------------------------------------------------
 // クラス設定用関数など
@@ -121,7 +122,8 @@ pzpr.classmgr = {
 			document.getElementsByTagName('head')[0].appendChild(_script);
 		}
 		else{
-			require(customfile);
+			var exporteddata = require(customfile);
+			this.makeCustom(exporteddata[0], exporteddata[1]);
 		}
 	},
 	includedFile : {},

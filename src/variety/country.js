@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 カントリーロード版 country.js v3.4.1
+// パズル固有スクリプト部 カントリーロード版 country.js
 //
-pzpr.classmgr.makeCustom(['country'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['country'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

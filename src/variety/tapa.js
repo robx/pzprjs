@@ -11,7 +11,11 @@
 		return true;
 	}
 
-pzpr.classmgr.makeCustom(['tapa'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['tapa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -213,7 +217,7 @@ Cell:{
 },
 CellList:{
 	allclear : function(isrec){
-		pzpr.common.CellList.prototype.allclear.call(this,isrec);
+		this.common.allclear.call(this,isrec);
 		
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];

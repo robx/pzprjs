@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js v3.4.1
+// パズル固有スクリプト部 へびいちご版 snakes.js
 //
-pzpr.classmgr.makeCustom(['snakes'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['snakes'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

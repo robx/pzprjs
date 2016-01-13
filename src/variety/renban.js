@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 連番窓口版 renban.js v3.4.1
+// パズル固有スクリプト部 連番窓口版 renban.js
 //
-pzpr.classmgr.makeCustom(['renban'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['renban'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 マカロ版 makaro.js v3.4.1
+// パズル固有スクリプト部 マカロ版 makaro.js
 //
-pzpr.classmgr.makeCustom(['makaro'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['makaro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 カックロ版 kakuro.js v3.4.1
+// パズル固有スクリプト部 カックロ版 kakuro.js
 //
-pzpr.classmgr.makeCustom(['kakuro'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kakuro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

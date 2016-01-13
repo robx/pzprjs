@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 数コロ・ヴィウ・数コロ部屋版 sukoro.js v3.4.1
+// パズル固有スクリプト部 数コロ・ヴィウ・数コロ部屋版 sukoro.js
 //
-pzpr.classmgr.makeCustom(['sukoro','view','sukororoom'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['sukoro','view','sukororoom'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{

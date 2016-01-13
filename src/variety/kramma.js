@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js v3.4.1
+// パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js
 //
-pzpr.classmgr.makeCustom(['kramma','kramman','shwolf'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['kramma','kramman','shwolf'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -303,7 +307,7 @@ FailCode:{
 
 "ImageTile@shwolf":{
 	initialize : function(){
-		if(!pzpr.env.node){
+		if(!this.puzzle.pzpr.env.node){
 			this.image = new Image();
 		}
 		else{

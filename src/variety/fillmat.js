@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 フィルマット・ウソタタミ版 fillmat.js v3.4.1
+// パズル固有スクリプト部 フィルマット・ウソタタミ版 fillmat.js
 //
-pzpr.classmgr.makeCustom(['fillmat','usotatami'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['fillmat','usotatami'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 スラローム版 slalom.js v3.4.1
+// パズル固有スクリプト部 スラローム版 slalom.js
 //
-pzpr.classmgr.makeCustom(['slalom'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['slalom'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -624,7 +628,7 @@ Encode:{
 		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
 	},
 	encodePzpr : function(type){
-		var parser = pzpr.parser;
+		var parser = this.puzzle.pzpr.parser;
 		if(type===parser.URL_PZPRV3){ this.outpflag='d';}
 
 		return this.encodeSlalom((type===parser.URL_PZPRV3?2:0));

@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 美術館版 lightup.js v3.4.1
+// パズル固有スクリプト部 美術館版 lightup.js
 //
-pzpr.classmgr.makeCustom(['lightup'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['lightup'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

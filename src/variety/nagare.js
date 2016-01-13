@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 流れるループ版 nagare.js v3.5.0
+// パズル固有スクリプト部 流れるループ版 nagare.js
 //
-pzpr.classmgr.makeCustom(['nagare'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['nagare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -225,7 +229,7 @@ Board:{
 
 	rebuildInfo : function(){
 		this.initWind();
-		pzpr.common.Board.prototype.rebuildInfo.call(this);
+		this.common.rebuildInfo.call(this);
 	},
 
 	initWind : function(){

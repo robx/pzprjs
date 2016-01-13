@@ -1,7 +1,11 @@
 //
-// パズル固有スクリプト部 ドッスンフワリ版 dosufuwa.js v3.5.2
+// パズル固有スクリプト部 ドッスンフワリ版 dosufuwa.js
 //
-pzpr.classmgr.makeCustom(['dosufuwa'], {
+(function(pidlist, classbase){
+	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
+	else{ module.exports = [pidlist, classbase];}
+})
+(['dosufuwa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -94,7 +98,7 @@ AreaRoomGraph:{
 	isnodevalid : function(cell){ return (cell.ques===0);},
 	
 	setExtraData : function(component){
-		pzpr.common.AreaRoomGraph.prototype.setExtraData.call(this, component);
+		this.common.setExtraData.call(this, component);
 		component.clist.drawCmp();
 	}
 },
