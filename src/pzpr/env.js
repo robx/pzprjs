@@ -5,23 +5,31 @@
 // node.js環境向けの対策
 //---------------------------------------------------------------------------
 /* jshint ignore:start */
-if(typeof navigator==='undefined' || navigator.noUI){
+var document  = this.document;
+var window    = this.window;
+var navigator = this.navigator;
+
+if(typeof window==='undefined' || typeof document==='undefined'){
 	if(typeof require!=='undefined'){
-		DOMParser = function(){ this.parseFromString = function(str,mimetype){
-			return require('jsdom').jsdom(str,{parsingMode:'xml'});
-		}};
+		document  = require('jsdom').jsdom('');
+		window    = document.defaultView;
+		navigator = window.navigator;
 	}
-	else{ // jsdom
-		DOMParser = function(){ this.parseFromString = function(str,mimetype){
-			var doc = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'puzzle', null);
-			doc.innerHTML = str;
-			return doc;
-		}};
-	}
-	XMLSerializer = function(){ this.serializeToString = function(xmldoc){
+}
+var DOMParser = this.DOMParser || ((typeof require!=='undefined') ?
+	function(){ this.parseFromString = function(str,mimetype){
+		return require('jsdom').jsdom(str,{parsingMode:'xml'});
+	}}
+:  // jsdom
+	function(){ this.parseFromString = function(str,mimetype){
+		var doc = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'puzzle', null);
+		doc.innerHTML = str;
+		return doc;
+	}}
+);
+var XMLSerializer = this.XMLSerializer || function(){ this.serializeToString = function(xmldoc){
 		return xmldoc.documentElement.outerHTML;
 	}};
-}
 /* jshint ignore:end */
 
 /**************/

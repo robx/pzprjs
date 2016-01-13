@@ -1,11 +1,12 @@
 /* jshint node: true */
 
 exports.files = [
+	"common/intro",
 	"pzpr/core",
+	"pzpr/env",
 	"lib/candle-intro",
 	"lib/candle",
 	"lib/candle-outro",
-	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",
 	"pzpr/variety",
@@ -35,5 +36,6 @@ exports.files = [
 	"variety-common/Answer",
 	"variety-common/BoardExec",
 	"variety-common/Encode",
-	"variety-common/FileData"
+	"variety-common/FileData",
+	"common/outro"
 ].map(function(mod){ return "src/"+mod+".js";});
