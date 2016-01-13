@@ -36,14 +36,6 @@ module.exports = function(grunt){
         files: [
           { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
         ]
-      },
-      variety: {
-        options: {
-          sourceMap: !PRODUCTION
-        },
-        files: [
-          { src: ['dist/pzpr-variety/*.js'], dest: 'dist/pzpr-variety-all.js' }
-        ]
       }
     },
 
@@ -106,5 +98,5 @@ module.exports = function(grunt){
   grunt.registerTask('lint:source', ['newer:jshint:source']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety']);
   grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
-  grunt.registerTask('build:variety',['newer:uglify:variety', 'newer:concat:variety']);
+  grunt.registerTask('build:variety',['newer:uglify:variety']);
 };

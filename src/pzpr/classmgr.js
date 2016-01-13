@@ -114,6 +114,10 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile : function(pid){
+		pid = pzpr.variety.toScript(pid);
+		if(this.includedFile[pid]){ return;}
+		this.includedFile[pid] = true;
+
 		var customfile = pzpr.util.getpath()+'./pzpr-variety/'+pzpr.variety.toScript(pid)+'.js';
 		if(!pzpr.env.node){
 			var _script = document.createElement('script');
@@ -139,10 +143,7 @@ pzpr.classmgr = {
 		/* 今のパズルと別idの時 */
 		if(puzzle.pid !== newpid){
 			if(!pzpr.custom[newpid]){
-				if(!this.includedFile[newpid]){
-					this.includeCustomFile(newpid);
-					this.includedFile[newpid] = true;
-				}
+				this.includeCustomFile(newpid);
 				if(!pzpr.custom[newpid]){
 					/* Customファイルが読み込みできるまで待つ */
 					setTimeout(function(){ pzpr.classmgr.setPuzzleClass(puzzle,newpid,callback);},10);

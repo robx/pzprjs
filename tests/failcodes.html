@@ -14,6 +14,16 @@
 </style>
 <script type="text/javascript">
 function bglist(){
+  for(var pid in pzpr.variety.info){
+    pzpr.classmgr.includeCustomFile(pid);
+  }
+  for(var pid in pzpr.variety.info){
+    if(!pzpr.custom[pid]){
+      setTimeout(bglist,10);
+      return;
+    }
+  }
+
   var main = document.getElementById("main");
   var list = [], commons = {};
   var FC = pzpr.common.FailCode.prototype;
@@ -61,7 +71,6 @@ function bglist(){
 window.addEventListener('load', bglist, false);
 </script>
 <script type="text/javascript" src="../dist/pzpr.js"></script>
-<script type="text/javascript" src="../dist/pzpr-variety-all.js"></script>
 </HEAD>
 <BODY>
 <div id=main></div>
