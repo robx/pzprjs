@@ -7,6 +7,8 @@ module.exports = function(grunt){
   var banner_min  = fs.readFileSync('./src/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/common/banner_full.js', 'utf-8');
 
+  var PRODUCTION = (grunt.cli.tasks.indexOf('release') >= 0);
+
   grunt.initConfig({
     pkg: pkg,
 
@@ -29,26 +31,16 @@ module.exports = function(grunt){
 	  },
       pzpr: {
         options: {
-          sourceMap: true
+          sourceMap: !PRODUCTION
         },
-        files: [
-          { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
-        ]
-      },
-      'pzpr-rel': {
         files: [
           { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
         ]
       },
       variety: {
         options: {
-          sourceMap: true
+          sourceMap: !PRODUCTION
         },
-        files: [
-          { src: ['dist/pzpr-variety/*.js'], dest: 'dist/pzpr-variety-all.js' }
-        ]
-      },
-      'variety-rel': {
         files: [
           { src: ['dist/pzpr-variety/*.js'], dest: 'dist/pzpr-variety-all.js' }
         ]
@@ -61,29 +53,19 @@ module.exports = function(grunt){
         report: 'min'
       },
       pzpr:{
-        options: {
+        options: (PRODUCTION ? {} : {
           sourceMap : 'dist/pzpr.js.map',
           sourceMapIn : 'dist/pzpr.concat.js.map',
           sourceMapIncludeSources : true
-        },
-        files: [
-          { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
-        ]
-      },
-      'pzpr-rel':{
+        }),
         files: [
           { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
         ]
       },
       variety:{
-        options: {
+        options: (PRODUCTION ? {} : {
           sourceMap : function(filename){ return filename+'.map';}
-        },
-        files: [
-          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/pzpr-variety' }
-        ]
-      },
-      'variety-rel':{
+        }),
         files: [
           { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/pzpr-variety' }
         ]
@@ -119,13 +101,10 @@ module.exports = function(grunt){
   });
   
   grunt.registerTask('default', ['lint:source',                              'build']);
-  grunt.registerTask('release', ['lint:source', 'clean:all', 'copy:license', 'build-rel']);
+  grunt.registerTask('release', ['lint:source', 'clean:all', 'copy:license', 'build']);
   grunt.registerTask('lint',        ['newer:jshint:all']);
   grunt.registerTask('lint:source', ['newer:jshint:source']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety']);
   grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
   grunt.registerTask('build:variety',['newer:uglify:variety', 'newer:concat:variety']);
-  grunt.registerTask('build-rel',        ['build-rel:pzpr', 'build-rel:variety']);
-  grunt.registerTask('build-rel:pzpr',   ['newer:concat:pzpr-rel', 'newer:uglify:pzpr-rel']);
-  grunt.registerTask('build-rel:variety',['newer:uglify:variety-rel', 'newer:concat:variety-rel']);
 };
