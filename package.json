@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "3.6.0-pre.160112",
+  "version": "0.0.1-pre.160113",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
   "directories": {
