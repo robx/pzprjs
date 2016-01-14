@@ -160,15 +160,9 @@ pzpr.parser.URLData.prototype = {
 		switch(this.type){
 			case URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
 			case URL_PZPRV3E: url="http://"+domain+"?%PID%_edit/"; break;
-			case URL_PZPRAPP: url="http://indi.s58.xrea.com/%PID%/sa/q.html?"; break;
 			case URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
 			case URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
-		}
-
-		if(this.type===URL_PZPRAPP){
-			if     (pid==='pipelinkr'){ url=url.replace("%PID%","pipelink");}
-			else if(pid==='heyabon')  { url=url.replace("%PID%","bonsan");}
 		}
 
 		return url.replace("%PID%", pzpr.variety.toURLID(pid))

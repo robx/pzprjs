@@ -72,7 +72,6 @@ Encode:{
 			var iskanpen = pzpr.variety.info[pid].exists.kanpen;
 			if(!iskanpen){ throw "no Implemention";}
 			/* falls through */
-		case pzl.URL_PZPRAPP:
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;
