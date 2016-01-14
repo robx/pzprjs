@@ -381,6 +381,7 @@ var debug = window.debug =
 
 			setTimeout(function(){
 				if(pzpr.variety.info[self.pid].exists.pencilbox){ self.check_file_pbox(self);}
+				else if(puzzle.pid==='tawa'){ self.check_flipX1(self);}
 				else{ self.check_turnR1(self);}
 			},0);
 		});

@@ -210,7 +210,6 @@ BoardExec:{
 
 		if(key & this.TURN){
 			var tmp = bd.cols; bd.cols = bd.rows; bd.rows = tmp;
-			bd.setposAll();
 			d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows};
 		}
 
@@ -238,36 +237,21 @@ BoardExec:{
 			}
 		}
 
-		var ch=[], objlist=bd.objectinside(group,d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<objlist.length;i++){ ch[objlist[i].id]=false;}
+		var objlist = bd.objectinside(group,d.x1,d.y1,d.x2,d.y2);
+		var converted = {}, xx=(d.x1+d.x2), yy=(d.y1+d.y2);
+		for(var i=0;i<objlist.length;i++){
+			var obj = objlist[i], id = null;
+			switch(key){
+				case this.FLIPY: id = bd.getObjectPos(group, obj.bx, yy-obj.by).id; break;
+				case this.FLIPX: id = bd.getObjectPos(group, xx-obj.bx, obj.by).id; break;
+				case this.TURNL: id = bd.getObjectPos(group, obj.by, yy-obj.bx).id; break;
+				case this.TURNR: id = bd.getObjectPos(group, xx-obj.by, obj.bx).id; break;
+			}
+			converted[id] = obj;
+		}
 
 		var groups = bd.getGroup(group);
-		var xx=(d.x1+d.x2), yy=(d.y1+d.y2);
-		for(var source=0;source<groups.length;source++){
-			if(ch[source]!==false){ continue;}
-
-			var tmp = groups[source], target = source, next;
-			while(ch[target]===false){
-				ch[target]=true;
-				// nextになるものがtargetに移動してくる、、という考えかた。
-				// ここでは移動前のIDを取得しています
-				switch(key){
-					case this.FLIPY: next = bd.getObjectPos(group, groups[target].bx, yy-groups[target].by).id; break;
-					case this.FLIPX: next = bd.getObjectPos(group, xx-groups[target].bx, groups[target].by).id; break;
-					case this.TURNR: next = bd.getObjectPosEx(group, groups[target].by, xx-groups[target].bx, bd.rows, bd.cols).id; break;
-					case this.TURNL: next = bd.getObjectPosEx(group, yy-groups[target].by, groups[target].bx, bd.rows, bd.cols).id; break;
-				}
-
-				if(ch[next]===false){
-					groups[target] = groups[next];
-					target = next;
-				}
-				else{
-					groups[target] = tmp;
-					break;
-				}
-			}
-		}
+		for(var n in converted){ groups[+n] = converted[n];}
 	},
 
 	//---------------------------------------------------------------------------

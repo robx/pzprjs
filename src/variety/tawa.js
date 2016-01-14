@@ -193,8 +193,9 @@ BoardExec:{
 		var bd = this.board;
 		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
 
-		if     (key===this.FLIPY){ if(!(bd.rows&1)){ bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];} }
+		if     (key===this.FLIPY){ if(!(bd.rows&1)){ bd.cols-=[1,0,0,-1][bd.shape]; bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];}}
 		else if(key===this.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
+		else{ throw "Tawamurenga can't accept turning operation!";}
 
 		this.turnflipGroup('cell', key, d);
 

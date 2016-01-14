@@ -314,7 +314,6 @@ Board:{
 
 	//---------------------------------------------------------------------------
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを計算して返す
-	// bd.getObjectPosEx()(X,Y)の位置にあるオブジェクトを、盤面の大きさを(qc×qr)で計算して返す
 	//---------------------------------------------------------------------------
 	getObjectPos : function(group,bx,by){
 		var obj = this.nullobj;
@@ -322,13 +321,6 @@ Board:{
 		else if(group==='cross') { obj = this.getx(bx,by);}
 		else if(group==='border'){ obj = this.getb(bx,by);}
 		else if(group==='excell'){ obj = this.getex(bx,by);}
-		return obj;
-	},
-	getObjectPosEx : function(group,bx,by,qc,qr){
-		var qc0 = this.cols, qr0 = this.rows;
-		this.cols = qc; this.rows = qr;
-		var obj = this.getObjectPos(group,bx,by);
-		this.cols = qc0; this.rows = qr0;
 		return obj;
 	},
 

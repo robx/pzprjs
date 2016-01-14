@@ -207,7 +207,7 @@ for(var pid in pzpr.variety.info){
 		});
 		describe('Flip', function(){
 			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
-			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
+			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku'||pid==='tawa');
 			var relyonanydir = (pid==='box'||pid==='shugaku');
 
 			it('flipX', function(){
@@ -226,7 +226,6 @@ for(var pid in pzpr.variety.info){
 				}
 				assert_equal_board(bd,bd2);
 			});
-			if(puzzle.pid==='tawa'){ return;}
 			it('flipY', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
