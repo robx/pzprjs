@@ -71,7 +71,7 @@ pzpr.parser.URLData.prototype = {
 	pflag   : null,
 	cols    : 0,
 	rows    : 0,
-	bstr    : "",
+	body    : "",
 	
 	isurl : true,
 	
@@ -102,6 +102,7 @@ pzpr.parser.URLData.prototype = {
 	parseURLType : function(){
 		/* URLからパズルの種類・URLの種類を判定する */
 		var url = this.url;
+		delete this.url;
 		// カンペンの場合
 		if(url.match(/www\.kanpen\.net/) || url.match(/www\.geocities(\.co)?\.jp\/pencil_applet/) ){
 			url.match(/([0-9a-z]+)\.html/);
@@ -114,7 +115,7 @@ pzpr.parser.URLData.prototype = {
 			// カンペンだけどデータ形式はぱずぷれ
 			else if(url.indexOf("?pzpr=")>=0){
 				this.qdata = url.substr(url.indexOf("?pzpr=")+6);
-				this.type = URL_PZPRV3;
+				this.type = URL_KANPENP;
 			}
 			else{
 				this.qdata = url.substr(url.indexOf("?problem=")+9);
@@ -144,7 +145,7 @@ pzpr.parser.URLData.prototype = {
 				this.pid = url.substr(url.indexOf("?")+1);
 			}
 			this.pid = this.pid.replace(/(m\+|_edit|_test|_play)/,'');
-			this.type = URL_PZPRV3;
+			this.type = (RegExp.$1!=='_edit' ? URL_PZPRV3 : URL_PZPRV3E);
 		}
 		this.pid = pzpr.variety.toPID(this.pid);
 	},
@@ -175,9 +176,10 @@ pzpr.parser.URLData.prototype = {
 	//---------------------------------------------------------------------------
 	parseURLData : function(){
 		var inp = this.qdata.split("/"), col = 0, row = 0;
+		delete this.qdata;
 		/* URLにつけるオプション */
 		if(this.type!==URL_KANPEN && this.type!==URL_HEYAAPP){
-			if(!isNaN(inp[0])){ inp.unshift("");}
+			if(!!inp[0] && !isNaN(inp[0])){ inp.unshift("");}
 			this.pflag = inp.shift();
 		}
 		
@@ -208,7 +210,7 @@ pzpr.parser.URLData.prototype = {
 		this.cols = col;
 
 		/* サイズ以降のデータを取得 */
-		this.bstr = inp.join("/");
+		this.body = inp.join("/");
 	},
 
 	//---------------------------------------------------------------------------
@@ -219,7 +221,7 @@ pzpr.parser.URLData.prototype = {
 
 		/* URLにつけるオプション */
 		if(pzl.type!==URL_KANPEN && pzl.type!==URL_HEYAAPP){
-			if(pzl.pflag!==null){ out.push(pzl.pflag);}
+			if(pzl.type===URL_KANPENP || !!pzl.pflag){ out.push(pzl.pflag);}
 		}
 
 		/* サイズを表す文字列 */
@@ -245,7 +247,7 @@ pzpr.parser.URLData.prototype = {
 		}
 
 		/* サイズ以降のデータを設定 */
-		out.push(pzl.bstr);
+		out.push(pzl.body);
 
 		return out.join("/");
 	}
@@ -267,7 +269,7 @@ pzpr.parser.FileData.prototype = {
 	qdata   : "",
 	cols    : 0,
 	rows    : 0,
-	bstr    : "",
+	body    : "",
 	history : "",
 	metadata: null,
 	xmldoc  : null,
@@ -295,6 +297,7 @@ pzpr.parser.FileData.prototype = {
 	parseFileType : function(){
 		var lines = this.fstr.split("\n");
 		var firstline = lines.shift();
+		delete this.fstr;
 		
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
 		if(firstline.match(/^pzprv3/)){
@@ -308,8 +311,8 @@ pzpr.parser.FileData.prototype = {
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
 			if(!!DOMParser){
-				this.xmldoc = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
-				this.pid = this.xmldoc.querySelector('puzzle').getAttribute('type');
+				this.body = (new DOMParser()).parseFromString(this.qdata, 'text/xml');
+				this.pid = this.body.querySelector('puzzle').getAttribute('type');
 			}
 			else{ this.pid = '';}
 		}
@@ -333,7 +336,7 @@ pzpr.parser.FileData.prototype = {
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.pid, ""].join("\n");
 		}
 		else if(this.type===FILE_PBOX_XML){
-			this.xmldoc.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.pid));
+			this.body.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.pid));
 		}
 		return "";
 	},
@@ -343,11 +346,12 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	parseFileData : function(){
 		var lines = this.qdata.split("\n"), col = 0, row = 0;
+		delete this.qdata;
 		
 		/* サイズを表す文字列 */
 		if(this.type===FILE_PBOX_XML){
-			row = +this.xmldoc.querySelector('size').getAttribute('row');
-			col = +this.xmldoc.querySelector('size').getAttribute('col');
+			row = +this.body.querySelector('size').getAttribute('row');
+			col = +this.body.querySelector('size').getAttribute('col');
 			if(this.pid==="slither"||this.pid==='kakuro'){ row--; col--;}
 		}
 		else if(this.type===FILE_PBOX && this.pid==="kakuro"){
@@ -380,7 +384,7 @@ pzpr.parser.FileData.prototype = {
 				
 				strs.push(lines[i]);
 			}
-			this.bstr += strs.join('\n');
+			this.body += strs.join('\n');
 			
 			/* 履歴部分の読み込み */
 			if(historypos!==null && !!JSON){
@@ -408,11 +412,11 @@ pzpr.parser.FileData.prototype = {
 			}
 		}
 		else if(this.type===FILE_PBOX){
-			this.bstr = lines.join("\n");
+			this.body = lines.join("\n");
 		}
 		else if(this.type===FILE_PBOX_XML){
-			if(!!this.xmldoc){
-				var metanode = this.xmldoc.querySelector('property'), meta = this.metadata;
+			if(!!this.body){
+				var metanode = this.body.querySelector('property'), meta = this.metadata;
 				meta.author = metanode.querySelector('author').getAttribute('value');
 				meta.source = metanode.querySelector('source').getAttribute('value');
 				meta.hard   = metanode.querySelector('difficulty').getAttribute('value');
@@ -429,7 +433,7 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	outputFileData : function(){
 		var pzl = this, col = pzl.cols, row = pzl.rows, out = [];
-		var puzzlenode = (this.type===FILE_PBOX_XML ? this.xmldoc.querySelector('puzzle') : null);
+		var puzzlenode = (this.type===FILE_PBOX_XML ? this.body.querySelector('puzzle') : null);
 
 		/* サイズを表す文字列 */
 		if(pzl.type===FILE_PBOX_XML){
@@ -450,7 +454,7 @@ pzpr.parser.FileData.prototype = {
 
 		/* サイズ以降のデータを設定 */
 		if(pzl.type!==FILE_PBOX_XML){
-			out.push(pzl.bstr);
+			out.push(pzl.body);
 		}
 
 		/* 履歴・メタデータ出力がある形式ならば出力する */
@@ -471,7 +475,7 @@ pzpr.parser.FileData.prototype = {
 			propnode.appendChild(this.createXMLNode('difficulty', {value:meta.hard}));
 			if(!!meta.comment){
 				var commentnode = this.createXMLNode('comment');
-				commentnode.appendChild(this.xmldoc.createTextNode(meta.comment));
+				commentnode.appendChild(this.body.createTextNode(meta.comment));
 				propnode.appendChild(commentnode);
 			}
 			puzzlenode.appendChild(propnode);
@@ -486,7 +490,7 @@ pzpr.parser.FileData.prototype = {
 			outputdata = out.join("\n");
 		}
 		else{
-			outputdata = (new XMLSerializer()).serializeToString(this.xmldoc);
+			outputdata = (new XMLSerializer()).serializeToString(this.body);
 			outputdata = outputdata.replace(/sou\-rce/g,'source');
 			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
 				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
@@ -496,7 +500,7 @@ pzpr.parser.FileData.prototype = {
 	},
 
 	createXMLNode : function(name, attrs){
-		var node = this.xmldoc.createElement(name);
+		var node = this.body.createElement(name);
 		if(!!attrs){ for(var i in attrs){ node.setAttribute(i, attrs[i]);} }
 		return node;
 	}

@@ -74,7 +74,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		var oldflag = ((type===1 && !this.checkpflag("c")) || (type===0 && this.checkpflag("d")));
+		var oldflag = ((type===1 && !this.checkpflag("c")) || (type===6 && this.checkpflag("d")));
 		if(!oldflag){ this.decode4Cross();}
 		else        { this.decodecross_old();}
 	},

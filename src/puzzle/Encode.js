@@ -31,12 +31,15 @@ Encode:{
 
 		bd.initBoardSize(pzl.cols, pzl.rows);
 
-		if(!!pzl.bstr){
+		if(!!pzl.body){
 			this.pflag = pzl.pflag;
-			this.outbstr = pzl.bstr;
+			this.outbstr = pzl.body;
 			switch(pzl.type){
-			case pzl.URL_PZPRV3: case pzl.URL_PZPRAPP: case pzl.URL_PZPRV3E:
-				this.decodePzpr(pzl.type);
+			case pzl.URL_PZPRV3: case pzl.URL_PZPRV3E: case pzl.URL_KANPENP:
+				this.decodePzpr(pzl.URL_PZPRV3);
+				break;
+			case pzl.URL_PZPRAPP:
+				this.decodePzpr(pzl.URL_PZPRAPP);
 				break;
 			case pzl.URL_KANPEN:
 				puzzle.fio.lineseek = 0;
@@ -96,7 +99,7 @@ Encode:{
 		pzl.pflag = this.outpflag;
 		pzl.cols  = this.outcols;
 		pzl.rows  = this.outrows;
-		pzl.bstr  = this.outbstr;
+		pzl.body  = this.outbstr;
 
 		return pzl.generate();
 	},

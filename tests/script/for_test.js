@@ -30,7 +30,7 @@ pzpr.addLoadListener(function(){
 		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
 		pzpr.connectKeyEvents(puzzle);
 		
-		puzzle.open(!!pzl.qdata ? pzl : pid+"/"+debug.urls[pid]);
+		puzzle.open((!!pzl.cols && !!pzl.rows && !!pzl.body) ? pzl : pid+"/"+debug.urls[pid]);
 		puzzle.on('key', debug.keydown);
 	});
 });

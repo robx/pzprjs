@@ -25,10 +25,10 @@ FileIO:{
 		this.filever = pzl.filever;
 		if(filetype!==pzl.FILE_PBOX_XML){
 			this.lineseek = 0;
-			this.dataarray = pzl.bstr.split("\n");
+			this.dataarray = pzl.body.split("\n");
 		}
 		else{
-			this.xmldoc = pzl.xmldoc;
+			this.xmldoc = pzl.body;
 		}
 
 		// メイン処理
@@ -75,10 +75,10 @@ FileIO:{
 		pzl.cols  = bd.cols;
 		pzl.rows  = bd.rows;
 		if(filetype!==pzl.FILE_PBOX_XML){
-			pzl.bstr = this.datastr;
+			pzl.body = this.datastr;
 		}
 		else{
-			pzl.xmldoc = this.xmldoc;
+			pzl.body = this.xmldoc;
 		}
 		pzl.metadata.update(puzzle.metadata);
 		if(option.history && (filetype===pzl.FILE_PZPR)){
