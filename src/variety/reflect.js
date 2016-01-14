@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['reflect'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['reflect'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -326,4 +326,4 @@ FailCode:{
 	lnLenGt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."],
 	lnLenLt : ["三角形の数字とそこから延びる線の長さが一致していません。","A number on triangle is not equal to sum of the length of lines from it."]
 }
-});
+}));

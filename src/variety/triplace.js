@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 トリプレイス版 triplace.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['triplace'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['triplace'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -325,4 +325,4 @@ FailCode:{
 	bkSizeGt3 : ["サイズが3マスより大きいブロックがあります。","The size of block is larger than three."],
 	asLblockNe : ["数字の下か右にあるまっすぐのブロックの数が間違っています。","The number of straight blocks underward or rightward is not correct."]
 }
-});
+}));

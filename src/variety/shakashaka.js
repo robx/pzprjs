@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['shakashaka'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['shakashaka'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -406,4 +406,4 @@ FailCode:{
 	nmTriangleGt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is bigger than it."],
 	nmTriangleLt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is smaller than it."]
 }
-});
+}));

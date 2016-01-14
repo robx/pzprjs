@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 マカロ版 makaro.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['makaro'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['makaro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -366,4 +366,4 @@ FailCode:{
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
 	arNotMax : ["矢印の先が最も大きい数字でありません。", "An arrow doesn't point out biggest number."]
 }
-});
+}));

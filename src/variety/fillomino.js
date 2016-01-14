@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['fillomino'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['fillomino'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -250,4 +250,4 @@ FailCode:{
 	bkSizeGt : ["ブロックの大きさよりも数字が小さいです。","A number is smaller than the size of block."],
 	bsSameNum : ["同じ数字のブロックが辺を共有しています。","Adjacent blocks have the same number."]
 }
-});
+}));

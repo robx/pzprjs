@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 碁石ひろい版 goishi.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['goishi'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['goishi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -377,4 +377,4 @@ AnsCheck:{
 FailCode:{
 	goishiRemains : ["拾われていない碁石があります。","There is remaining Goishi."]
 }
-});
+}));

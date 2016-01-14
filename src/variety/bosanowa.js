@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ボサノワ版 bosanowa.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['bosanowa'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['bosanowa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -479,4 +479,4 @@ AnsCheck:{
 FailCode:{
 	nmSumOfDiff : ["数字とその隣の数字の差の合計が合っていません。", "Sum of the differences between the number and adjacent numbers is not equal to the number."]
 }
-});
+}));

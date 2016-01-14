@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ドッスンフワリ版 dosufuwa.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['dosufuwa'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['dosufuwa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -287,4 +287,4 @@ FailCode:{
 	cuNotTop    : ["風船の上に風船や黒マスがありません。","A balloon is not on the top of the row or under another balloon."],
 	csNotBottom : ["鉄球の下の鉄球や黒マスがありません。","An iron ball is not on the bottom of the row or on another iron ball."]
 }
-});
+}));

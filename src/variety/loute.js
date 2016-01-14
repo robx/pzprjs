@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 エルート・さしがね版 loute.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['loute','sashigane'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['loute','sashigane'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -491,4 +491,4 @@ FailCode:{
 	arNotPtCnr : ["矢印の先にブロックの角がありません。","An arrow doesn't indicate the corner of a block."],
 	ciNotOnCnr : ["白丸がブロックの角にありません。","A circle is out of the corner."]
 }
-});
+}));

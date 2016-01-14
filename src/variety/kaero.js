@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 お家に帰ろう版 kaero.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kaero'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kaero'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -289,4 +289,4 @@ FailCode:{
 	bkPlNum : ["１つのブロックに異なるアルファベットが入っています。","A block has plural kinds of letters."],
 	bkSepNum : ["同じアルファベットが異なるブロックに入っています。","Same kinds of letters are placed different blocks."]
 }
-});
+}));

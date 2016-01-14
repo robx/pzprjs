@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 クサビリンク版 kusabi.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kusabi'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kusabi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -163,4 +163,4 @@ FailCode:{
 	lcLenInvDiff : ["線の長短の指示に反してます。","The length of lines is not suit for the label of object."],
 	nmNoLine : ["どこにもつながっていない○があります。","A circle is not connected another object."]
 }
-});
+}));

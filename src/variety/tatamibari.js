@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tatamibari'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tatamibari'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -217,4 +217,4 @@ FailCode:{
 	bkNotHRect : ["横長ではないタタミがあります。","A tatami is not horizontally long rectangle."],
 	bkNotVRect : ["縦長ではないタタミがあります。","A tatami is not vertically long rectangle."]
 }
-});
+}));

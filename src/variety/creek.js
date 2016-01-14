@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 クリーク版 creek.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['creek'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['creek'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -128,4 +128,4 @@ FailCode:{
 	crShadeGt : ["数字のまわりにある黒マスの数が間違っています。","The number of shaded cells around a number on crossing is big."],
 	crShadeLt : ["数字のまわりにある黒マスの数が間違っています。","The number of shaded cells around a number on crossing is small."]
 }
-});
+}));

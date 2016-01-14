@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 シロクロリンク版 wblink.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['wblink'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['wblink'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -223,4 +223,4 @@ FailCode:{
 	lcInvBlack : ["黒丸同士が繋がっています。","Two black circles are connected."],
 	nmNoLine : ["○から線が出ていません。","A circle doesn't start any line."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['bonsan','heyabon','rectslider'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['bonsan','heyabon','rectslider'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -472,4 +472,4 @@ FailCode:{
 	nmConnected : ["黒マスが繋がっています。","There are connected shaded cells."],
 	nmNoMove  : ["黒マスから線が出ていません。","A shaded cell doesn't start any line."]
 }
-});
+}));

@@ -36,7 +36,7 @@ var XMLSerializer = this.XMLSerializer || function(){ this.serializeToString = f
 /* 環境の取得 */
 /**************/
 pzpr.env = (function(){
-	var isbrowser = (typeof module==='undefined' || typeof exports==='undefined');
+	var isbrowser = !(typeof module==='object' && module.exports);
 	var UA  = (isbrowser ? navigator.userAgent : '');
 	
 	var bz = {

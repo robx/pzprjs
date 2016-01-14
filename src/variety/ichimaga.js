@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 イチマガ・磁石イチマガ・一回曲がって交差もするの版 ichimaga.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['ichimaga','ichimagam','ichimagax'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['ichimaga','ichimagam','ichimagax'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -155,4 +155,4 @@ FailCode:{
 	lcSameNum : ["同じ数字同士が線で繋がっています。", "Same numbers are connected each other."],
 	lcCurveGt1 : ["線が2回以上曲がっています。", "The number of curves is twice or more."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tateyoko'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tateyoko'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -295,4 +295,4 @@ FailCode:{
 	nmConnBarGt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."],
 	nmConnBarLt : ["黒マスに繋がる線の数が正しくありません。","The number of lines connected to a shaded cell is wrong."]
 }
-});
+}));

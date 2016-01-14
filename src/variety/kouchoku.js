@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 交差は直角に限る版 kouchoku.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kouchoku'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kouchoku'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -944,4 +944,4 @@ FailCode:{
 	nmLineLt2    : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
 	brNoLine     : ["線が存在していません。","There is no segment."]
 }
-});
+}));

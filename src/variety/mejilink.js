@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 メジリンク版 mejilink.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['mejilink'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['mejilink'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -223,4 +223,4 @@ AnsCheck:{
 FailCode:{
 	bkNoLineNe : ["タイルと周囲の線が引かれない点線の長さが異なります。","The size of the tile is not equal to the total of length of lines that is remained dotted around the tile."]
 }
-});
+}));

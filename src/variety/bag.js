@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 バッグ版 bag.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['bag'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['bag'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -179,4 +179,4 @@ FailCode:{
 	nmOutside   : ["輪の内側に入っていない数字があります。","There is an outside number."],
 	nmSumViewNe : ["数字と輪の内側になる4方向のマスの合計が違います。","The number and the sum of the inside cells of four direction is different."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['shugaku'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['shugaku'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -411,4 +411,4 @@ FailCode:{
 	futonMidPos: ["通路に接していない布団があります。", "There is a futon separated to aisle."],
 	ceEmpty : ["布団でも黒マスでもないマスがあります。", "There is an empty cell."]
 }
-});
+}));

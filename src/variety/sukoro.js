@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 数コロ・ヴィウ・数コロ部屋版 sukoro.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['sukoro','view','sukororoom'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['sukoro','view','sukororoom'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{
@@ -209,4 +209,4 @@ FailCode:{
 	nmSumViewNe : ["数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。","Sum of four-way gaps to another number is not equal to the number."],
 	ceSuspend  : ["数字の入っていないマスがあります。","There is a cell that is not filled in number."]
 }
-});
+}));

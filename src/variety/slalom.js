@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 スラローム版 slalom.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['slalom'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['slalom'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -1027,4 +1027,4 @@ FailCode:{
 	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
 	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
 }
-});
+}));

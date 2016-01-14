@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 因子の部屋版 factors.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['factors'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['factors'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -199,4 +199,4 @@ AnsCheck:{
 FailCode:{
 	nmProduct : ["ブロックの数字と数字の積が同じではありません。","A number of room is not equal to the product of these numbers."]
 }
-});
+}));

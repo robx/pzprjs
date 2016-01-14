@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['heyawake','ayeheya'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['heyawake','ayeheya'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -287,4 +287,4 @@ FailCode:{
 	bkUnshadeConsecGt3 : ["白マスが3部屋連続で続いています。","Unshaded cells are continued for three consecutive room."],
 	bkNotSymShade      : ["部屋の中の黒マスが点対称に配置されていません。","Position of shaded cells in the room is not point symmetric."]
 }
-});
+}));

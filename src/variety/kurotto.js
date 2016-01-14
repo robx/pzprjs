@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 クロット版 kurotto.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kurotto'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kurotto'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -155,4 +155,4 @@ AnsCheck:{
 FailCode:{
 	nmSumSizeNe : ["隣り合う黒マスの個数の合計が数字と違います。","The number is not equal to sum of adjacent masses of shaded cells."]
 }
-});
+}));

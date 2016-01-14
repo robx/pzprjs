@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 あみぼー版 amibo.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['amibo'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['amibo'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -527,4 +527,4 @@ FailCode:{
 	nmLineGt1 : ["白丸に線が2本以上つながっています。","Prural lines connect to a white circle."],
 	nmNoLine  : ["白丸に線がつながっていません。","No bar connects to a white circle."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク版 pipelink.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['pipelink','pipelinkr'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['pipelink','pipelinkr'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -297,4 +297,4 @@ FailCode:{
 	lnCrossExCir : ["○の部分以外で線が交差しています。","There is a crossing line out of circles."],
 	lnCurveOnCir : ["○の部分で線が曲がっています。","A line curves on circles."]
 }
-});
+}));

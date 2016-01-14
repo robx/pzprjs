@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 カックロ版 kakuro.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kakuro'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kakuro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -425,4 +425,4 @@ FailCode:{
 	nmSumRowNe : ["数字の下か右にある数字の合計が間違っています。","The sum of the cells is not correct."],
 	ceNoNum    : ["すべてのマスに数字が入っていません。","There is an empty cell."]
 }
-});
+}));

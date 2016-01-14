@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 クロシュート版 kurochute.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kurochute'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kurochute'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -152,4 +152,4 @@ AnsCheck:{
 FailCode:{
 	nmShootShadeNe1 : ["数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。","The number of shaded cells at aparted cell by the number is not one."]
 }
-});
+}));

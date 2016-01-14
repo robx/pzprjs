@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 はこいり○△□版 hakoiri.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['hakoiri'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['hakoiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -206,4 +206,4 @@ FailCode:{
 	nmDivide : ["タテヨコにつながっていない記号があります。","Marks are devided."],
 	nmAround : ["同じ記号がタテヨコナナメに隣接しています。","Same marks are adjacent."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 天体ショー版 tentaisho.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tentaisho'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tentaisho'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -554,4 +554,4 @@ FailCode:{
 	bkNotSymSt : ["領域が星を中心に点対称になっていません。", "An area is not point symmetric about the star."],
 	bkPlStar   : ["星が複数含まれる領域があります。","A block has two or more stars."]
 }
-});
+}));

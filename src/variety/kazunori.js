@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 かずのりのへや版 kazunori.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kazunori'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kazunori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -343,4 +343,4 @@ FailCode:{
 	bkSameNumGt2 : ["部屋の同じ数字が3つ以上入っています","The room has three or more same numbers."],
 	bkOddSize    : ["部屋のサイズが奇数になっています。", "The size of the room is not even."]
 }
-});
+}));

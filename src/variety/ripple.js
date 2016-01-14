@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 波及効果・コージュン版 ripple.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['ripple','cojun'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['ripple','cojun'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -187,4 +187,4 @@ FailCode:{
 	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is an small number on big number in a room."],
 	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The gap of the same kind of number is smaller than the number."]
 }
-});
+}));

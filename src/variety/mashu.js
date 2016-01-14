@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ましゅ版 mashu.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['mashu'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['mashu'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -271,4 +271,4 @@ FailCode:{
 	mashuBStrig : ["黒丸の上で線が直進しています。","Lines go straight on black pearl."],
 	mashuBCvNbr : ["黒丸の隣で線が曲がっています。","Lines curve next to black pearl."]
 }
-});
+}));

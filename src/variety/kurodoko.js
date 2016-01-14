@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kurodoko'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kurodoko'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -165,4 +165,4 @@ AnsCheck:{
 FailCode:{
 	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous unshaded cells of four direction is different."]
 }
-});
+}));

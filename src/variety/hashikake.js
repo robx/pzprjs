@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['hashikake'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['hashikake'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -340,4 +340,4 @@ FailCode:{
 	nmLineGt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."],
 	nmLineLt : ["数字につながる橋の数が違います。","The number of connecting bridges to a number is not correct."]
 }
-});
+}));

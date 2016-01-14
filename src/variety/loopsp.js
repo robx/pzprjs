@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 環状線スペシャル版 loopsp.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['loopsp'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['loopsp'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -318,4 +318,4 @@ FailCode:{
 	lpSepNum : ["同じ数字が異なるループに含まれています。","A kind of numbers are in differernt loops."],
 	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
 }
-});
+}));

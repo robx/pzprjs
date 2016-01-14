@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ボーダーブロック版 bdblock.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['bdblock'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['bdblock'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -142,4 +142,4 @@ FailCode:{
 	bdCountLt3BP : ["黒点から線が３本以上出ていません。","A point has two or less lines."],
 	bdIgnoreBP   : ["黒点上を線が通過していません。","A point has no line."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 遠い誓い版 toichika.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['toichika'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['toichika'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -244,4 +244,4 @@ FailCode:{
 	arAdjPair : ["辺を共有する国にペアとなる矢印が入っています。","There are paired arrows in adjacent countries."],
 	arAlone   : ["矢印の先にペアとなる矢印がいません。","There is not paired arrow in the direction of an arrow."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 たすくえあ版 tasquare.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tasquare'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tasquare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -144,4 +144,4 @@ FailCode:{
 	nmSumSizeNe   : ["数字とそれに接する黒マスの大きさの合計が一致しません。","Sum of the adjacent masses of shaded cells is not equal to the number."],
 	nmNoSideShade : ["□に黒マスが接していません。","No shaded cells are adjacent to square marks."]
 }
-});
+}));

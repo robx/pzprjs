@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['shikaku','aho'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['shikaku','aho'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -238,4 +238,4 @@ FailCode:{
 	bkNotRect3 : ["大きさが3の倍数ではないのに四角形ではない領域があります。","An area whose size is not multiples of three is not rectangle."],
 	bkNotLshape3 : ["大きさが3の倍数である領域がL字型になっていません。","An area whose size is multiples of three is not L-shape."]
 }
-});
+}));

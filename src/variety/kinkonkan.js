@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 キンコンカン版 kinkonkan.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kinkonkan'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kinkonkan'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -531,4 +531,4 @@ FailCode:{
 	pairedLetterNe : ["光が同じ文字の場所へ到達しません。", "Beam from a light doesn't reach one's pair."],
 	pairedNumberNe : ["光の反射回数が正しくありません。", "The count of refrection is wrong."]
 }
-});
+}));

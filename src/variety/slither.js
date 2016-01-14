@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 スリザーリンク版 slither.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['slither'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['slither'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -237,4 +237,4 @@ AnsCheck:{
 FailCode:{
 	nmLineNe : ["数字の周りにある線の本数が違います。","The number is not equal to the number of lines around it."]
 }
-});
+}));

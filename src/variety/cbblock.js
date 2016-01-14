@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 コンビブロック版 cbblock.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['cbblock'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['cbblock'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -258,4 +258,4 @@ FailCode:{
 	bkSubLt2 : ["ブロックが1つの点線からなる領域で構成されています。","A block has one area framed by dotted line."],
 	bkSubGt2 : ["ブロックが3つ以上の点線からなる領域で構成されています。","A block has three or more areas framed by dotted line."]
 }
-});
+}));

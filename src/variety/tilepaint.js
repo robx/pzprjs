@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 タイルペイント版 tilepaint.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tilepaint'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tilepaint'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -309,4 +309,4 @@ AnsCheck:{
 FailCode:{
 	asShadeNe : ["数字の下か右にある黒マスの数が間違っています。","The number of shaded cells underward or rightward is not correct."]
 }
-});
+}));

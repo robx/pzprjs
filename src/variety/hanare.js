@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 はなれ組版 hanare.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['hanare'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['hanare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -203,4 +203,4 @@ FailCode:{
 	bkSizeNe : ["数字と部屋の大きさが違います。","The size of the room is not equal to the number."],
 	nmDiffDistNe : ["２つの数字の差とその間隔が正しくありません。","The distance of the paired numbers is not equal to the diff of them."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 よせなべ版 yosenabe.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['yosenabe'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['yosenabe'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -441,4 +441,4 @@ FailCode:{
 	bkSumNeBn    : ["具材の合計値が正しくありません。","Sum of filling is not equal to a crock."],
 	bkNoNum      : ["具材のない鍋があります。","A crock has no circle."]
 }
-});
+}));

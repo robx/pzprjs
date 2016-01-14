@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 島国・チョコナ版 shimaguni.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['shimaguni','chocona'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['shimaguni','chocona'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -190,4 +190,4 @@ FileIO:{
 	csNotRect : ["黒マスのカタマリが正方形か長方形ではありません。","A mass of shaded cells is not rectangle."],
 	bkShadeNe : ["数字のある領域と、領域の中にある黒マスの数が違います。","The number of shaded cells in the area and the number written in the area is different."]
 }
-});
+}));

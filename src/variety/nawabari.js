@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 なわばり・フォーセルズ・ファイブセルズ版 nawabari.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nawabari','fourcells','fivecells'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nawabari','fourcells','fivecells'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -279,4 +279,4 @@ FailCode:{
 	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of block is larger than four."],
 	bkSizeGt5 : ["サイズが5マスより大きいブロックがあります。","The size of block is larger than five."]
 }
-});
+}));

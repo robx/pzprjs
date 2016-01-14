@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ナンバーリンク版 numlin.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['numlin'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['numlin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -154,4 +154,4 @@ AnsCheck:{
 FailCode:{
 	nmConnDiff : ["異なる数字がつながっています。","Different numbers are connected."]
 }
-});
+}));

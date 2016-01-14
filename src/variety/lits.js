@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['lits','norinori'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['lits','norinori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -281,4 +281,4 @@ FileIO:{
 	bkShadeLt2 : ["１マスしか黒マスがない部屋があります。","A room has only one shaded cell."],
 	bkShadeGt2 : ["２マス以上の黒マスがある部屋が存在します。","A room has three or mode shaded cells."]
 }
-});
+}));

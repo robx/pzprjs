@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 へびいちご版 snakes.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['snakes'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['snakes'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -346,4 +346,4 @@ FailCode:{
 	anNumberNe : ["矢印の先にある数字が正しくありません。","There is a wrong number which is in front of the arrowed number."],
 	snakeAttack: ["蛇の視線の先に別の蛇がいます。","A snake can see another snake."]
 }
-});
+}));

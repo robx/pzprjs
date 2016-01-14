@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 流れるループ版 nagare.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nagare'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nagare'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -588,4 +588,4 @@ FailCode:{
 	lrAgainstWind  : ["線が風上に向かって進んでいます。","The line passes against the wind."],
 	lrAgainstArrow : ["線が矢印に反して進んでいます。","The line passes against an arrow."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 バーンズ版 barns.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['barns'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['barns'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -157,4 +157,4 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.lcnt===4 && !cell.ice());}, "lnCrossExIce");
 	}
 }
-});
+}));

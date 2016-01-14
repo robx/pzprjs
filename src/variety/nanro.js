@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ナンロー版 nanro.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nanro'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nanro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -219,4 +219,4 @@ FailCode:{
 	nmCountGt : ["入っている数字の数が数字より多いです。","A number is bigger than the size of block."],
 	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."]
 }
-});
+}));

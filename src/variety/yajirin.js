@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ヤジリン版 yajirin.js
 // 
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['yajirin'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['yajirin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -253,4 +253,4 @@ AnsCheck:{
 FailCode:{
 	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
 }
-});
+}));

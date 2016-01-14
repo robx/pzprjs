@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ぬりめいず版 nurimaze.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nurimaze'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nurimaze'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -610,4 +610,4 @@ FailCode:{
 	routePassDeadEnd: ["△がSからGへの経路上にあります。","There is a triangle on the shortest route from S to G."],
 	objShaded : ["オブジェクトが黒マスになっています。","An object is shaded."]
 }
-});
+}));

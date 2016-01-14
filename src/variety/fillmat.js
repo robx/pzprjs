@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 フィルマット・ウソタタミ版 fillmat.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['fillmat','usotatami'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['fillmat','usotatami'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -139,4 +139,4 @@ FailCode:{
 	bkLenGt4 : ["「幅１マス、長さ１～４マス」ではないタタミがあります。","The width of Tatami is over 1 or the length is over 4."],
 	bsSizeEq : ["隣り合うタタミの大きさが同じです。","The same size Tatami are adjacent."]
 }
-});
+}));

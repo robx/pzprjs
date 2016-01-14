@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ホタルビーム版 firefly.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['firefly'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['firefly'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -224,4 +224,4 @@ FailCode:{
 	lcInvDirW : ["白丸の、黒点でない部分どうしがくっついています。","Fireflies are connected without a line starting from point."],
 	lcCurveNe : ["線の曲がった回数が数字と違っています。","The number of curves is different from a firefly's number."]
 }
-});
+}));

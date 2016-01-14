@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 縦横さん版 juosan.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['juosan'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['juosan'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -237,4 +237,4 @@ FailCode:{
 	bkMajorBarGt : ["縦棒か横棒の多い方の数が部屋の数字より多いです。","The number of majority of vartial or horizonal bars is grater than the number of the area."],
 	bkMajorBarLt : ["縦棒か横棒の多い方の数が部屋の数字より少ないです。","The number of majority of vartial or horizonal bars is less than the number of the area."]
 }
-});
+}));

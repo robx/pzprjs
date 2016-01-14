@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ヘルゴルフ版 herugolf.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['herugolf'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['herugolf'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -550,4 +550,4 @@ FailCode:{
 	nmOutOfHole  : ["ホールに入っていないボールがあります。","A ball doesn't cup in."],
 	nmIgnored    : ["ボールの入っていないホールがあります。","There is a Hole without a ball."]
 }
-});
+}));

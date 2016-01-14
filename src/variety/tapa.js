@@ -12,10 +12,10 @@
 	}
 
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tapa'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tapa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -489,6 +489,6 @@ AnsCheck:{
 FailCode:{
 	ceTapaNe : ["数字と周囲の黒マスの長さが異なっています。","The number is not equal to the length of surrounding shaded cells."]
 }
-});
+}));
 
 })();

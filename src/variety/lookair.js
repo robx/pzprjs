@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 るっくえあ版 lookair.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['lookair'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['lookair'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -155,4 +155,4 @@ FailCode:{
 	nmShade5Ne : ["数字およびその上下左右にある黒マスの数が間違っています。","the number is not equal to the number of shaded cells in the cell and four adjacent cells."],
 	lookairBC : ["同じ大きさの黒マスのカタマリの間に他の黒マスのカタマリがありません。","A mass of shaded cells can looks other same size mass of shaded cells."]
 }
-});
+}));

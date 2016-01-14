@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['kramma','kramman','shwolf'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['kramma','kramman','shwolf'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -337,4 +337,4 @@ FailCode:{
 		ctx.drawImage((n!==null?this.image:null), sx,sy,sw,sh, dx,dy,dw,dh);
 	}
 }
-});
+}));

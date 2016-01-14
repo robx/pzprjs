@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 マイナリズム版 minarism.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['minarism'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['minarism'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -377,4 +377,4 @@ FailCode:{
 	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The Difference between two Adjacent cells is not equal to the number on circle."],
 	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."]
 }
-});
+}));

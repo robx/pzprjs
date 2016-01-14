@@ -10,5 +10,5 @@ var pzpr = { // jshint ignore:line
 	version : '<%= pkg.version %>'
 };
 
-if(typeof module==='object'&&typeof exports==='object'){ module.exports = pzpr;}
+if(typeof module==='object' && module.exports){ module.exports = pzpr;}
 else{ this.pzpr = pzpr;}

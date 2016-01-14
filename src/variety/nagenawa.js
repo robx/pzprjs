@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nagenawa','ringring'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -278,4 +278,4 @@ FailCode:{
 	bkLineLt : ["数字のある部屋と線が通過するマスの数が違います。","The number of the cells that is passed any line in the room and the number written in the room is diffrerent."],
 	cuNoLine : ["白マスの上に線が引かれていません。","There is no line on the unshaded cell."]
 }
-});
+}));

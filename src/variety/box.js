@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ボックス版 box.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['box'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['box'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -362,4 +362,4 @@ AnsCheck:{
 FailCode:{
 	nmSumRowShadeNe : ["数字と黒マスになった数字の合計が正しくありません。","A number is not equal to the sum of the number of shaded cells."]
 }
-});
+}));

@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 美術館版 lightup.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['lightup'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['lightup'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -265,4 +265,4 @@ FailCode:{
 	akariDup  : ["照明に別の照明の光が当たっています。","Akari is shined from another Akari."],
 	ceDark    : ["照明に照らされていないセルがあります。","A cell is not shined."]
 }
-});
+}));

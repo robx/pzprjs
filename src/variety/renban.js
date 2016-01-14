@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 連番窓口版 renban.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['renban'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['renban'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -200,4 +200,4 @@ FailCode:{
 	bkNotSeqNum : ["部屋に入る数字が正しくありません。","The numbers in the room are wrong."],
 	cbDiffLenNe : ["数字の差がその間にある線の長さと等しくありません。","The differnece between two numbers is not equal to the length of the line between them."]
 }
-});
+}));

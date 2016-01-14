@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ろーま版 roma.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['roma'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['roma'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -243,4 +243,4 @@ FailCode:{
 	bkDupNum : ["1つの領域に2つ以上の同じ矢印が入っています。","An area has plural same arrows."],
 	stopHalfway : ["ゴールにたどり着かないセルがあります。","A cell cannot reach a goal."]
 }
-});
+}));

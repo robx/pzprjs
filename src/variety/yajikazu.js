@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 やじさんかずさん版 yajikazu.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['yajikazu'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['yajikazu'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -135,4 +135,4 @@ AnsCheck:{
 		}
 	}
 }
-});
+}));

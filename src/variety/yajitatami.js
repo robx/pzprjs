@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ヤジタタミ版 yajitatami.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['yajitatami'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['yajitatami'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -174,4 +174,4 @@ FailCode:{
 	anTatamiNe : ["矢印の方向にあるタタミの数が正しくありません。","The number of tatamis are not correct."],
 	anNoAdjBd  : ["矢印の方向に境界線がありません。","There is no border in front of the arrowed number."]
 }
-});
+}));

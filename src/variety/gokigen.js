@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['gokigen','wagiri'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['gokigen','wagiri'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -415,4 +415,4 @@ FailCode:{
 	crConnSlNe  : ["数字に繋がる線の数が間違っています。", "A number is not equal to count of lines that is connected to it."],
 	ceNoSlash   : ["斜線がないマスがあります。","There is an empty cell."]
 }
-});
+}));

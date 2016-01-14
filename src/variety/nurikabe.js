@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ版 nurikabe.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['nurikabe','nuribou','mochikoro','mochinyoro'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['nurikabe','nuribou','mochikoro','mochinyoro'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -273,4 +273,4 @@ FailCode:{
 	csRect    : ["四角形になっている黒マスのブロックがあります。","There is a block of shaded cells that is rectangle."],
 	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are devided."]
 }
-});
+}));

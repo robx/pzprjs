@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 ひとりにしてくれ hitori.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['hitori'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['hitori'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -217,4 +217,4 @@ AnsCheck:{
 		return this.isIndividualObject(clist2, function(cell){ return cell.qnum;});
 	}
 }
-});
+}));

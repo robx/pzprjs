@@ -2,10 +2,10 @@
 // パズル固有スクリプト部 たわむれんが版 tawa.js
 //
 (function(pidlist, classbase){
-	if(typeof pzpr!=='undefined'){ pzpr.classmgr.makeCustom(pidlist, classbase);}
-	else{ module.exports = [pidlist, classbase];}
-})
-(['tawa'], {
+	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
+	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
+}(
+['tawa'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -421,4 +421,4 @@ FailCode:{
 	csConsecGt3  : ["黒マスが横に3マス以上続いています。","There or more shaded cells continue horizonally."],
 	csNotOnShade : ["黒マスの下に黒マスがありません。","There are no shaded cells under a shaded cell."]
 }
-});
+}));
