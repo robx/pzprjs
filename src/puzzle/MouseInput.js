@@ -127,14 +127,6 @@ MouseEvent:{
 		else{
 			var pagePos = pzpr.util.getPagePos(e), rect = pzpr.util.getRect(pc.context.child);
 			pix = {px:(pagePos.px-rect.left), py:(pagePos.py-rect.top)};
-			if(g.use.vml){
-				pix.px += (0.33 * pc.bw - 2);
-				pix.py += (0.33 * pc.bh - 2);
-				if(puzzle.board.hasexcell>0){
-					pix.px += 2 * pc.bw;
-					pix.py += 2 * pc.bh;
-				}
-			}
 		}
 		return {bx:(pix.px-pc.x0)/pc.bw, by:(pix.py-pc.y0)/pc.bh};
 	},
