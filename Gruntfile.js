@@ -76,7 +76,7 @@ module.exports = function(grunt){
           'src/puzzle/*.js',
           'src/variety/*.js',
           'src/variety-common/*.js',
-          'tests/**/*.js',
+          'sample/*.js',
           'test/**/*.js'
         ]
       },

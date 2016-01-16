@@ -126,7 +126,7 @@ var debug = window.debug =
 		if(!!this.includedScript[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = pzpr.util.getpath()+'../tests/script/test_'+pid+'.js';
+		_script.src = './script/test_'+pid+'.js';
 		if(!!callback){ _script.onload = callback;}
 		document.getElementsByTagName('head')[0].appendChild(_script);
 		this.includedScript[pid] = true;

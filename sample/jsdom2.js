@@ -1,11 +1,11 @@
-/* jshint browser:false, node:true, esnext:true */
+/* jshint esnext:true */
 
 var jsdom = require('jsdom').jsdom;
 var virtualConsole = require("jsdom").createVirtualConsole().sendTo(console);
 
 var srctext = '<head><script src="./dist/pzpr.js"></script>';
-var document = jsdom(srctext, {virtualConsole}); // jshint ignore:line
-var window = document.defaultView;               // jshint ignore:line
+var document = jsdom(srctext, {virtualConsole});
+var window = document.defaultView;
 
 window.addEventListener('load', () => {
 	new window.pzpr.Puzzle().open('nurikabe/5/5/g5k2o1k3g', function(puzzle){

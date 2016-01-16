@@ -14,7 +14,7 @@ global.ui = {debug:{addDebugData: function(pid,data){
 	testdata[pid].fullfile = data.failcheck[data.failcheck.length-1][1];
 }}};
 for(var pid in pzpr.variety.info){
-	require('../tests/script/test_'+pid+'.js');
+	require('./script/test_'+pid+'.js');
 }
 
 var props = ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp'];
