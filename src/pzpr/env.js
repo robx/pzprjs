@@ -10,7 +10,7 @@ var window    = this.window;
 var navigator = this.navigator;
 
 if(typeof window==='undefined' || typeof document==='undefined'){
-	if(typeof require!=='undefined'){
+	if(typeof require==='function' && typeof process==='object' && process.argv.indexOf('--no-dom')===-1 && process.execArgv.indexOf('--no-dom')===-1){
 		document  = require('jsdom').jsdom('');
 		window    = document.defaultView;
 		navigator = window.navigator;
