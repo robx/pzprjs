@@ -207,7 +207,6 @@ Encode:{
 					}
 					pstr=(n-1).toString(10); c=(c+n-1);
 				}
-				else if(type===parser.URL_PZPRAPP){ pstr="0";}
 			}
 			else if(qu>=11 && qu<=17){ pstr = (qu-1).toString(36);}
 			else{ count++;}

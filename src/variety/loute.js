@@ -303,7 +303,7 @@ Graphic:{
 			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
-			if(c > bd.cell.length){ break;}
+			if(c >= bd.cell.length){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},

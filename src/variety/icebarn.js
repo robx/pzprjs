@@ -713,8 +713,8 @@ Encode:{
 	decodeInOut : function(){
 		var barray = this.outbstr.split("/"), bd = this.board;
 
-		bd.arrowin.seturlid (+barray[1]);
-		bd.arrowout.seturlid(+barray[2]);
+		bd.arrowin.seturlid (+barray[1] || 0);
+		bd.arrowout.seturlid(+barray[2] || 0);
 
 		this.outbstr = "";
 	},

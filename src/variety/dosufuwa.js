@@ -169,7 +169,7 @@ Encode:{
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","z")){
 				cc += parseInt(ca,36);
-				bd.cell[cc].ques = 1;
+				if(bd.cell[cc]){ bd.cell[cc].ques = 1;}
 			}
 			else if(ca === '.'){ cc+=35;}
 

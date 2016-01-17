@@ -254,6 +254,8 @@ Encode:{
 		// 盤面外数字のデコード
 		var parser = this.puzzle.pzpr.parser;
 		var id=0, a=0, mgn=0, bstr = this.outbstr, bd=this.board;
+		var bdmax = bd.border.length;
+		if(type===parser.URL_PZPRAPP){ bdmax+=(bd.cols+bd.rows);}
 		for(var i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i);
 
@@ -276,19 +278,14 @@ Encode:{
 			else if(tmp===2){ border.qdir = (border.isHorz()?border.DN:border.RT);}
 
 			id++;
-			if(id>=2*bd.cols*bd.rows){ a=i+1; break;}
+			if(id>=bdmax){ a=i+1; break;}
 		}
 		this.outbstr = bstr.substr(a);
 	},
 	encodeMinarism : function(type){
 		var parser = this.puzzle.pzpr.parser;
 		var cm="", count=0, bd=this.board;
-		for(var id=0,max=bd.border.length+(type===parser.URL_PZPRV3?0:bd.cols);id<max;id++){
-			if(type===1){
-				if(id>0 && id<=(bd.cols-1)*bd.rows && id%(bd.cols-1)===0){ count++;}
-				if(id===(bd.cols-1)*bd.rows){ if(count>0){ cm+=(17+count).toString(36); count=0;} cm += "/";}
-			}
-
+		for(var id=0;id<bd.border.length;id++){
 			var pstr="", border=bd.border[id];
 			if(!!border){
 				var dir=border.qdir, qnum=border.qnum;

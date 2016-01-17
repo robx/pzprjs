@@ -625,7 +625,8 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeSlalom((this.checkpflag("d")?2:(this.checkpflag("p")?1:0)));
+		var urlver = (this.checkpflag("d") ? 2 : (this.checkpflag("p") ? 1 : 0));
+		this.decodeSlalom(urlver);
 	},
 	encodePzpr : function(type){
 		var parser = this.puzzle.pzpr.parser;
@@ -718,7 +719,7 @@ Encode:{
 			}
 		}
 
-		bd.startpos.set( bd.cell[+array[1]] );
+		bd.startpos.set( bd.cell[+array[1]] || 0 );
 
 		this.outbstr = array[0].substr(i);
 	},

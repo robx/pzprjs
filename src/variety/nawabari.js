@@ -192,7 +192,7 @@ Encode:{
 			else if(this.include(ca,"a","z")){ c += (parseInt(ca,36)-10);}
 
 			c++;
-			if(c > bd.cell.length){ break;}
+			if(c >= bd.cell.length){ break;}
 		}
 		this.outbstr = bstr.substr(i);
 	},

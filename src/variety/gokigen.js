@@ -322,7 +322,6 @@ Graphic:{
 		else        { this.decodecross_old();}
 	},
 	encodePzpr : function(type){
-		if(type===this.puzzle.pzpr.parser.URL_PZPRAPP){ this.outpflag = 'c';}
 		this.encode4Cross();
 	}
 },
