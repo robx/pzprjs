@@ -437,6 +437,8 @@ pzpr.parser.FileData.prototype = {
 
 		/* サイズを表す文字列 */
 		if(pzl.type===FILE_PBOX_XML){
+			var sizenode = puzzlenode.querySelector('size');
+			if(sizenode){ puzzlenode.removeChild(sizenode);}
 			if(pzl.pid==="slither"||pzl.pid==='kakuro'){ row++; col++;}
 			puzzlenode.appendChild(this.createXMLNode('size', {row:row, col:col}));
 		}
@@ -469,7 +471,10 @@ pzpr.parser.FileData.prototype = {
 			}
 		}
 		else if(pzl.type===FILE_PBOX_XML){
-			var propnode = this.createXMLNode('property'), meta = pzl.metadata;
+			var propnode = puzzlenode.querySelector('property');
+			if(propnode){ puzzlenode.removeChild(propnode);}
+			propnode = this.createXMLNode('property');
+			var meta = pzl.metadata;
 			propnode.appendChild(this.createXMLNode('author',     {value:meta.author}));
 			propnode.appendChild(this.createXMLNode('sou-rce',    {value:meta.source})); // jsdomで閉じタグが消えてしまう回避策
 			propnode.appendChild(this.createXMLNode('difficulty', {value:meta.hard}));
