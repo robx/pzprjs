@@ -3,6 +3,7 @@
 ui.debug.addDebugData('tapa', {
 	url : '5/5/3n5hchhajn2',
 	failcheck : [
+		['brNoShade',"pzprv3/tapa/5/5"],
 		["cs2x2",   "pzprv3/tapa/5/5/3 # . . . /# # . . 5 /# # 3,1,1 . . /3,1 . . . . /. . . . 2 /"],
 		["ceTapaNe","pzprv3/tapa/5/5/3 # . . . /# # . . 5 /# . 3,1,1 . . /3,1 . . . . /. . . . 2 /"],
 		["ceTapaNe","pzprv3/tapa/5/5/3 # . # # /# # . # 5 /# + 3,1,1 # # /3,1 # # # . /# # . . 2 /"],

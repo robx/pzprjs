@@ -147,6 +147,7 @@ FileIO:{
 },
 "AnsCheck@chocona#1":{
 	checklist : [
+		"checkShadeCellExist",
 		"checkShadeRect",
 		"checkShadeCellCount"
 	]

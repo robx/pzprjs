@@ -228,12 +228,20 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkNumberExist",
 		"checkSnakeSize",
 		"checkOtherAnsNumberInRoom",
 		"checkSideCell_snakes",
 		"checkArrowNumber",
 		"checkSnakesView"
 	],
+
+	checkNumberExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
+			this.failcode.add("brNoValidNum");
+		}
+	},
 
 	checkSnakeSize : function(){
 		this.checkAllArea(this.board.snakemgr, function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
@@ -340,6 +348,7 @@ AnsCheck:{
 },
 
 FailCode:{
+	brNoValidNum : ["盤面に数字がありません。","There are no numbers on the board."],
 	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
 	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
 	bsSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],

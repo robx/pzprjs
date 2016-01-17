@@ -3,6 +3,7 @@
 ui.debug.addDebugData('mochikoro', {
 	url : '5/5/4p2n1i1',
 	failcheck : [
+		['brNoShade',"pzprv3/mochikoro/5/5"],
 		['cs2x2',    "pzprv3/mochikoro/5/5/4 . . . . /. . . . . /. 2 . . . /. . . . . /1 . . . 1 /. . . # # /. . . # # /. . . . . /. . . . . /. . . . . /"],
 		['csDivide8',"pzprv3/mochikoro/5/5/4 . . . . /. . . . . /. 2 . . . /. . . . . /1 . . . 1 /+ + + + # /# # # # # /. . . . . /. . . . . /. . . . . /"],
 		['cuNotRect',"pzprv3/mochikoro/5/5/4 . . . . /. . . . . /. 2 . . . /. . . . . /1 . . . 1 /+ + + + # /# # # # + /. . # + + /. . . # # /. . . . . /"],

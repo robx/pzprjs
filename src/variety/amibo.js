@@ -384,6 +384,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkBarExist+",
 		"checkNotMultiBar",
 
 		"checkLoop_amibo",
@@ -395,6 +396,13 @@ AnsCheck:{
 
 		"checkAllBarConnect+"
 	],
+
+	checkBarExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.netgraph.components.length>0){ return;}
+			this.failcode.add("brNoLine");
+		}
+	},
 
 	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},
 	checkSingleBar   : function(){ this.checkOutgoingBars(2, "nmNoLine");},

@@ -360,10 +360,18 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkTriangleExist",
 		"checkOverTriangle",
 		"checkWhiteArea",
 		"checkLessTriangle"
 	],
+
+	checkTriangleExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.cell.some(function(cell){ return cell.qans>0;})){ return;}
+			this.failcode.add("brNoTriangle");
+		}
+	},
 
 	checkOverTriangle : function(){
 		this.checkDir4Cell(function(cell){ return cell.isTri();},2, "nmTriangleGt");
@@ -402,6 +410,7 @@ AnsCheck:{
 },
 
 FailCode:{
+	brNoTriangle : ["盤面に三角形がありません。","There are no triangles on the board."],
 	cuNotRectx : ["白マスが長方形(正方形)ではありません。","A white area is not rectangle."],
 	nmTriangleGt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is bigger than it."],
 	nmTriangleLt : ["数字のまわりにある黒い三角形の数が間違っています。","The number of triangles in four adjacent cells is smaller than it."]

@@ -366,8 +366,16 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkStoneExist",
 		"checkPickedStone"
 	],
+
+	checkStoneExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.cell.some(function(cell){ return cell.isStone();})){ return;}
+			this.failcode.add("brNoStone");
+		}
+	},
 
 	checkPickedStone :function(){
 		this.checkAllCell(function(cell){ return (cell.isStone() && cell.anum===-1);}, "goishiRemains");
@@ -375,6 +383,7 @@ AnsCheck:{
 },
 
 FailCode:{
+	brNoStone : ["盤面に碁石がありません。","There are no goishis on the board."],
 	goishiRemains : ["拾われていない碁石があります。","There is remaining Goishi."]
 }
 }));

@@ -111,32 +111,29 @@ for(var pid in pzpr.variety.info){
 		});
 		describe('Answer check', function(){
 			var puzzle = new pzpr.Puzzle();
-			for(var testcase of testdata[pid].failcheck){
+			testdata[pid].failcheck.forEach(function(testcase){
 				it('Check: '+testcase[0], function(){
 					puzzle.open(testcase[1]);
-					assert.equal(puzzle.check()[0], testcase[0]);
+					assert.equal(puzzle.check(true)[0], testcase[0]);
 				});
-			}
+			});
 		});
 		describe('Input check', function(){
 			var inps = testdata[pid].inputs || [];
 			if(inps.length===0){ return;}
-			var puzzle = new pzpr.Puzzle().open(pid);
-			var config = puzzle.saveConfig(), testcount = 0;
-			for(var n=0;n<inps.length;n++){
-				var data = inps[n], action = data.input || [];
-				action.forEach((a) => execinput(puzzle,a));
-				if(!!data.result){
-					testcount++;
-					var filestr = puzzle.getFileData();
-					var resultstr = data.result.replace(/\//g,'\n');
-					it('execinput '+testcount, function(){
+			var puzzle = new pzpr.Puzzle().open(pid), testcount = 0;
+			inps.forEach(function(data){
+				testcount++;
+				it('execinput '+testcount, function(){
+					var action = data.input || [];
+					action.forEach((a) => execinput(puzzle,a));
+					if(!!data.result){
+						var filestr = puzzle.getFileData();
+						var resultstr = data.result.replace(/\//g,'\n');
 						assert.equal(filestr, resultstr);
-					});
-				}
-			}
-			puzzle.modechange(puzzle.MODE_PLAYMODE);
-			puzzle.restoreConfig(config);
+					}
+				});
+			});
 		});
 		describe('File I/O', function(){
 			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);

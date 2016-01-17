@@ -196,6 +196,7 @@ FileIO:{
 },
 "AnsCheck@mochikoro,mochinyoro#1":{
 	checklist : [
+		"checkShadeCellExist",
 		"check2x2ShadeCell",
 		"checkConnectUnshaded_mochikoro",
 		"checkUnshadeRect",

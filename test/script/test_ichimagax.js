@@ -3,6 +3,7 @@
 ui.debug.addDebugData('ichimagax', {
 	url : '5/5/g8bgedgbeg8b',
 	failcheck : [
+		['brNoLine',  "pzprv3/ichimagax/5/5/cross"],
 		['lnBranch',  "pzprv3/ichimagax/5/5/cross/. 3 . 1 . /. . 4 . . /3 . . . 1 /. . 4 . . /. 3 . 1 . /1 1 0 0 /1 1 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 1 1 0 0 /1 0 1 0 0 /0 0 0 0 0 /0 0 0 0 0 /"],
 		['lcCurveGt1',"pzprv3/ichimagax/5/5/cross/. 3 . 1 . /. . 4 . . /3 . . . 1 /. . 4 . . /. 3 . 1 . /1 1 0 0 /0 1 1 0 /1 0 0 0 /0 1 0 0 /0 0 0 0 /1 1 1 0 0 /1 0 1 0 0 /0 1 0 0 0 /0 0 0 0 0 /"],
 		['lcDivided', "pzprv3/ichimagax/5/5/cross/. 3 . 1 . /. . 4 . . /3 . . . 1 /. . 4 . . /. 3 . 1 . /1 1 0 0 /0 1 1 0 /1 0 0 0 /0 0 0 0 /1 1 0 0 /1 1 1 0 0 /1 0 1 0 0 /1 0 0 0 0 /0 1 0 0 0 /"],

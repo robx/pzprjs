@@ -57,6 +57,7 @@ Config.prototype =
 
 		/* 正解判定 */
 		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
+		this.add('allowempty', false);		/* 盤面に線や黒マスがなくても正解と判定する */
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */

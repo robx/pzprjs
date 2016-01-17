@@ -3,6 +3,7 @@
 ui.debug.addDebugData('herugolf', {
 	url : '6/6/1cg00j803ihp2i2ihlhjhhj3l3k',
 	failcheck : [
+		['brNoLine',     "pzprv3/herugolf/6/6"],
 		['lnBranch',     "pzprv3/herugolf/6/6/3 . H . i . /i i . . i 2 /. 2 . H . . /. . H . . H /H i . 3 i i /. i 3 . . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /0 0 0 0 0 0 /"],
 		['lnCross',      "pzprv3/herugolf/6/6/3 . H . i . /i i . . i 2 /. 2 . H . . /. . H . . H /H i . 3 i i /. i 3 . . . /0 0 0 0 0 /1 1 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 1 0 0 /0 0 0 1 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /"],
 		['nmConnected',  "pzprv3/herugolf/6/6/3 . H . i . /i i . . i 2 /. 2 . H . . /. . H . . H /H i . 3 i i /. i 3 . . . /0 0 0 0 0 /1 1 1 1 1 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /1 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /"],

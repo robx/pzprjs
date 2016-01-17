@@ -145,7 +145,7 @@ var debug = window.debug =
 		puzzle.checker.checkAns();
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR).replace(/\r?\n/g, "/");
 		var failcode  = puzzle.checker.failcode[0];
-		var failstr   = (!!failcode ? "\""+failcode+"\"" : "null");
+		var failstr   = (!!failcode ? "'"+failcode+"'" : "null");
 		puzzle.board.haserror = true;
 		puzzle.board.errclear();
 		puzzle.redraw();

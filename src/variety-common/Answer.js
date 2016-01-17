@@ -154,6 +154,25 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkShadeCellExist()  盤面に少なくとも一つは黒マスがあることを判定する
+	//---------------------------------------------------------------------------
+	checkShadeCellExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			var bd = this.board;
+			if(bd.sblkmgr.enabled){
+				if(bd.sblkmgr.components.length>0){ return;}
+			}
+			else if(bd.ublkmgr.enabled){
+				if(bd.ublkmgr.components[0].nodes.length!==bd.cell.length){ return;}
+			}
+			else{
+				if(bd.cell.some(function(cell){ return cell.isShade();})){ return;}
+			}
+			this.failcode.add("brNoShade");
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkOneLoop : function(){
@@ -182,9 +201,11 @@ AnsCheck:{
 	// ans.checkLineExist()  盤面に少なくとも一本は線が引かれていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
-		var bd = this.board;
-		if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cell : bd.cross).length){ return;}
-		this.failcode.add("brNoLine");
+		if(!this.puzzle.execConfig('allowempty')){
+			var bd = this.board;
+			if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cell : bd.cross).length){ return;}
+			this.failcode.add("brNoLine");
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -635,6 +656,7 @@ FailCode:{
 	csDivide    : ["黒マスが分断されています。","Shaded cells are devided,"],
 	cuDivide    : ["白マスが分断されています。","Unshaded cells are devided."],
 	cuDivideRB  : ["白マスが分断されています。","Unshaded cells are devided."], /* 連黒分断禁 */
+	brNoShade   : ["盤面に黒マスがありません。","There are no shaded cells on the board."],
 
 	/* ** 領域＋数字 ** */
 	bkNoNum  : ["数字のないブロックがあります。","A block has no number."],

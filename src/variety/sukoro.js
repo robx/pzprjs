@@ -166,6 +166,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkNumberExist",
 		"checkAdjacentDiffNumber@!sukororoom",
 		"checkDifferentNumberInRoom@sukororoom",
 		"checkNoMixedRoom@sukororoom",
@@ -174,6 +175,13 @@ AnsCheck:{
 		"checkConnectNumber",
 		"checkNoSuspendCell"
 	],
+
+	checkNumberExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
+			this.failcode.add("brNoValidNum");
+		}
+	},
 
 	checkNoMixedRoom : function(){
 		this.checkSameObjectInRoom(this.board.roommgr, function(cell){ return (cell.isNumberObj()?1:2);}, "bkMixed");
@@ -203,6 +211,7 @@ AnsCheck:{
 },
 
 FailCode:{
+	brNoValidNum : ["盤面に数字がありません。","There are no numbers on the board."],
 	bkDupNum : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
 	bkMixed  : ["数字のあるなしが混在した部屋があります。","A room includes both numbered and non-numbered cells."],
 	nmNumberNe : ["数字と、その数字の上下左右に入る数字の数が一致していません。","The number of numbers placed in four adjacent cells is not equal to the number."],
