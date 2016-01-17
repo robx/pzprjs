@@ -37,7 +37,6 @@ KeyEvent:{
 		this.keyup   = false;
 
 		this.ca = '';
-		this.event = null;
 
 		this.prev = null;
 	},
@@ -53,12 +52,11 @@ KeyEvent:{
 	e_keydown : function(e){
 		if(!this.enableKey){ return;}
 		
-		this.event = e;
 		var c = this.getchar(e);
 		this.checkbutton(c,0);
 		if(c){ this.keyevent(c,0);}
 		
-		if(e.target===this.puzzle.canvas){
+		if(e.target===this.puzzle.canvas || this.cancelDefault){
 			e.stopPropagation();
 			e.preventDefault();
 		}
@@ -66,12 +64,11 @@ KeyEvent:{
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
 		
-		this.event = e;
 		var c = this.getchar(e);
 		this.checkbutton(c,1);
 		if(c){ this.keyevent(c,1);}
 		
-		if(e.target===this.puzzle.canvas){
+		if(e.target===this.puzzle.canvas || this.cancelDefault){
 			e.stopPropagation();
 			e.preventDefault();
 		}
@@ -82,23 +79,16 @@ KeyEvent:{
 	// kc.checkbutton()     Z, X, Yキーの押下状況をチェックする
 	//---------------------------------------------------------------------------
 	checkmodifiers : function(e){
-		if(this.isSHIFT ^ e.shiftKey){ this.isSHIFT = e.shiftKey;}
-		if(this.isCTRL  ^ e.ctrlKey) { this.isCTRL  = e.ctrlKey; }
-		if(this.isMETA  ^ e.metaKey) { this.isMETA  = e.metaKey; }
-		if(this.isALT   ^ e.altKey)  { this.isALT   = e.altKey;  }
+		this.isSHIFT = e.shiftKey;
+		this.isCTRL  = e.ctrlKey;
+		this.isMETA  = e.metaKey;
+		this.isALT   = e.altKey;
 	},
 	checkbutton : function(charall,step){
 		var c = charall.split(/\+/).pop();
-		if(step===0){
-			if(c==='z'){ this.isZ=true;}
-			if(c==='x'){ this.isX=true;}
-			if(c==='y'){ this.isY=true;}
-		}
-		else{
-			if(c==='z'){ this.isZ=false;}
-			if(c==='x'){ this.isX=false;}
-			if(c==='y'){ this.isY=false;}
-		}
+		if(c==='z'){ this.isZ=(step===0);}
+		if(c==='x'){ this.isX=(step===0);}
+		if(c==='y'){ this.isY=(step===0);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -139,11 +129,11 @@ KeyEvent:{
 
 	//---------------------------------------------------------------------------
 	// kc.keyevent()  キーイベント処理
-	// kc.stopEvent() カーソル移動時などに、ウィンドウがスクロールしないようにする
 	//---------------------------------------------------------------------------
 	keyevent : function(c, step){
 		var puzzle = this.puzzle;
 		this.cancelEvent = false;
+		this.cancelDefault = false;
 		this.keydown = (step===0);
 		this.keyup   = (step===1);
 
@@ -158,12 +148,8 @@ KeyEvent:{
 		if(this.cancelEvent){ return;}
 		if(!this.keyexec(c)){ return;}
 		if(!this.isenablemode()){ return;}
-		if(this.keydown && this.moveTarget(c)){ return;}
+		if(this.keydown && this.moveTarget(c)){ this.cancelDefault=true; return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
-	},
-	stopEvent : function(){
-		if(!!this.event){ this.event.preventDefault();}
-		this.keyreset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -207,13 +193,13 @@ KeyEvent:{
 			default: return false;
 		}
 
-		cursor.movedir(dir,mv);
+		if(dir!==cursor.NDIR){
+			cursor.movedir(dir,mv);
 
-		pos0.draw();
-		cursor.draw();
-		this.stopEvent();	/* カーソルを移動させない */
-
-		return true;
+			pos0.draw();
+			cursor.draw();
+		}
+		return (dir!==cursor.NDIR);
 	}
 },
 

@@ -90,7 +90,6 @@ KeyEvent:{
 			cell.setQdir(cell.qdir!==dir ? dir : cell.NDIR);
 			if(!arrownum){ cell.setQnum(-1);}
 			this.cursor.draw();
-			this.stopEvent();	/* カーソルを移動させない */
 			return true;
 		}
 		return false;

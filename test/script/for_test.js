@@ -44,8 +44,6 @@ var debug = window.debug =
 			else if(ca==='ctrl+F9'){ debug.starttest();}
 			else if(ca==='shift+ctrl+F10'){ debug.all_test();}
 			else{ return;}
-			
-			puzzle.key.stopEvent();	/* カーソルを移動させない */
 		}
 	},
 

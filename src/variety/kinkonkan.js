@@ -117,7 +117,6 @@ KeyEvent:{
 
 			excell0.draw();
 			cursor.draw();
-			this.stopEvent();	/* カーソルを移動させない */
 		}
 		return flag;
 	},

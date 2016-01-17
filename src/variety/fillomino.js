@@ -89,7 +89,6 @@ KeyEvent:{
 			else if(this.isX){ if(!nc.isnull){ nc.setAnum(cell.getNum());        this.cursor.setaddr(nc);}}
 
 			cell.draw();
-			this.stopEvent();	/* カーソルを移動させない */
 			return true;
 		}
 		return false;

@@ -63,23 +63,15 @@ pzpr.util = {
 
 	//----------------------------------------------------------------------
 	// pzpr.util.addEvent()          addEventListener()を呼び出す
-	// pzpr.util.eventWrapper()      イベント発生時のイベントWrapper関数を作成する
 	//----------------------------------------------------------------------
 	addEvent : function(el, type, self, callback, capt){
 		if     (type==="mousedown"){ type = eventMouseDown;}
 		else if(type==="mousemove"){ type = eventMouseMove;}
 		else if(type==="mouseup")  { type = eventMouseUp;}
 		
-		function executer(e){ callback.call(self, pzpr.util.eventWrapper(e));}
+		function executer(e){ callback.call(self, e);}
 		el.addEventListener(type, executer, !!capt);
 		return executer;
-	},
-	eventWrapper : function(e){
-		e = e || window.event;
-		if(!e.target){ e.target = e.srcElement;}
-		if(!e.stopPropagation){ e.stopPropagation = function(){ this.cancelBubble = true;};}
-		if(!e.preventDefault) { e.preventDefault  = function(){ this.returnValue = false;};}
-		return e;
 	},
 
 	//---------------------------------------------------------------------------
@@ -112,9 +104,7 @@ pzpr.util = {
 				return pos/len;
 			}
 		}
-		else if(!isNaN(e.pageX)){ return e.pageX;}
-		else if(!isNaN(e.clientX)){ return e.clientX + document.documentElement.scrollLeft;} /* IE8以下向け */
-		return 0;
+		return e.pageX || 0;
 	},
 	pageY : function(e){
 		if(e.touches!==void 0 && e.touches.length>0){
@@ -124,9 +114,7 @@ pzpr.util = {
 				return pos/len;
 			}
 		}
-		else if(!isNaN(e.pageY)){ return e.pageY;}
-		else if(!isNaN(e.clientY)){ return e.clientY + document.documentElement.scrollTop;} /* IE8以下向け */
-		return 0;
+		return e.pageY || 0;
 	},
 
 	//--------------------------------------------------------------------------------
