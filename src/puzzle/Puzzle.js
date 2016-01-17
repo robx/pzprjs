@@ -62,7 +62,8 @@ pzpr.Puzzle.prototype =
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
 	open : function(data, variety, callback){
-		return openExecute(this, data, variety, callback);
+		openExecute(this, data, variety, callback);
+		return this;
 	},
 
 	//---------------------------------------------------------------------------
@@ -320,21 +321,25 @@ function openExecute(puzzle, data, variety, callback){
 		if(Board!==puzzle.klass.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
 		
-		puzzle.metadata.reset();
-		if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
-		else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
-		
-		puzzle.ready = true;
-		puzzle.emit('ready');
-		
-		if(!!puzzle.canvas){ postCanvasReady(puzzle);}
-		
-		puzzle.resetTime();
-		
-		if(!!callback){ callback(puzzle);}
+		try{
+			puzzle.metadata.reset();
+			if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
+			else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
+			
+			puzzle.ready = true;
+			puzzle.emit('ready');
+			
+			if(!!puzzle.canvas){ postCanvasReady(puzzle);}
+			
+			puzzle.resetTime();
+			
+			if(!!callback){ callback(puzzle);}
+		}
+		catch(e){
+			puzzle.emit('fail-open');
+			throw e;
+		}
 	});
-	
-	return puzzle;
 }
 
 //---------------------------------------------------------------------------
