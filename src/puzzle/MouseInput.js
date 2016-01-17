@@ -67,7 +67,6 @@ MouseEvent:{
 	// mv.e_mousedown() Canvas上でマウスのボタンを押した際のイベント共通処理
 	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
 	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
-	// mv.e_mouseout()  マウスカーソルがウィンドウから離れた際のイベント共通処理
 	//---------------------------------------------------------------------------
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
@@ -92,13 +91,15 @@ MouseEvent:{
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		var addrtarget = this.getBoardAddress(e);
-		this.lineTo(addrtarget.bx, addrtarget.by);
+		if(e.which==='undefined' || e.which!==0){
+			var addrtarget = this.getBoardAddress(e);
+			this.lineTo(addrtarget.bx, addrtarget.by);
+		}
+		else{ this.mousereset();}
 		
 		e.stopPropagation();
 		e.preventDefault();
 	},
-	e_mouseout : function(e){ },
 
 	//---------------------------------------------------------------------------
 	// mv.setMouseButton()  イベントが起こったボタンを設定する

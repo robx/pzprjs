@@ -98,22 +98,14 @@ MouseEvent:{
 		cross.draw();
 	},
 
-	e_mouseout : function(e){
-		this.mouseout_kouchoku(e);
-	},
-	mouseout_kouchoku : function(e){
-		// 子要素に入ってもmouseoutイベントが起きてしまうので、サイズを確認する
-		var pos = this.puzzle.pzpr.util.getPagePos(e),
-			rect= this.puzzle.pzpr.util.getRect(this.puzzle.canvas);
-		if(pos.px<=rect.left || pos.px>=rect.right || pos.py<=rect.top || pos.py>=rect.bottom){
-			if(this.inputData===1){
-				var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
-				this.targetPoint = [null, null];
-				if(cross1!==null){ cross1.draw();}
-				if(cross2!==null){ cross2.draw();}
-			}
-			this.mousereset();
+	mousereset : function(e){
+		if(this.inputData===1){
+			var cross1=this.targetPoint[0], cross2=this.targetPoint[1];
+			this.targetPoint = [null, null];
+			if(cross1!==null){ cross1.draw();}
+			if(cross2!==null){ cross2.draw();}
 		}
+		this.common.mousereset.call(this);
 	}
 },
 

@@ -426,7 +426,6 @@ function setCanvasEvents(puzzle){
 	ae("mousedown", execMouseDown);
 	ae("mousemove", execMouseMove);
 	ae("mouseup",   execMouseUp);
-	ae("mouseout",  execMouseOut);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
 	
 	// キー入力イベントの設定
@@ -441,9 +440,6 @@ function execMouseMove(e){
 }
 function execMouseUp(e){
 	if(!!this.mouse){ this.mouse.e_mouseup(e);}
-}
-function execMouseOut(e){
-	if(!!this.mouse){ this.mouse.e_mouseout(e);}
 }
 function execKeyDown(e){
 	if(!!this.key){ this.key.e_keydown(e);}
