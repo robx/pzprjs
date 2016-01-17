@@ -156,7 +156,10 @@ Encode:{
 			this.decodeCircle();
 		}
 
-		if(this.pid==='kramma'){ this.checkPuzzleid();}
+		var puzzle = this.puzzle;
+		if(this.pid==='kramma' && puzzle.board.cross.some(function(cross){ return cross.qnum===1;})){
+			puzzle.changepid('kramman');
+		}
 	},
 	encodePzpr : function(type){
 		if(this.pid!=='kramma'){
@@ -167,13 +170,6 @@ Encode:{
 			this.outpflag="c";
 			this.encodeCircle();
 		}
-	},
-
-	checkPuzzleid : function(){
-		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var c=0;c<bd.cross.length;c++){
-			if(bd.cross[c].qnum===1){ puzzle.changepid('kramman'); break;}
-		}
 	}
 },
 //---------------------------------------------------------
@@ -183,7 +179,10 @@ FileIO:{
 		this.decodeCrossNum();
 		this.decodeBorderAns();
 
-		if(this.pid==='kramma'){ this.puzzle.enc.checkPuzzleid();}
+		var puzzle = this.puzzle;
+		if(this.pid==='kramma' && puzzle.board.cross.some(function(cross){ return cross.qnum===1;})){
+			puzzle.changepid('kramman');
+		}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

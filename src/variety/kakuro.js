@@ -153,10 +153,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeCellQnum51_kanpen();
+		this.fio.decodeCellQnum51_kanpen();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeCellQnum51_kanpen();
+		this.fio.encodeCellQnum51_kanpen();
 	},
 
 	decodeKakuro : function(){

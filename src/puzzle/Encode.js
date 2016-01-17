@@ -13,6 +13,7 @@ Encode:{
 	outcols  : null,
 	outrows  : null,
 	outbstr  : '',
+	fio      : null,
 
 	//---------------------------------------------------------------------------
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
@@ -42,9 +43,10 @@ Encode:{
 				this.decodePzpr(pzl.URL_PZPRAPP);
 				break;
 			case pzl.URL_KANPEN:
-				puzzle.fio.lineseek = 0;
-				puzzle.fio.dataarray = this.outbstr.replace(/_/g, " ").split("/");
+				this.fio = new puzzle.klass.FileIO();
+				this.fio.dataarray = this.outbstr.replace(/_/g, " ").split("/");
 				this.decodeKanpen();
+				this.fio = null;
 				break;
 			case pzl.URL_HEYAAPP:
 				this.decodeHeyaApp();
@@ -55,7 +57,7 @@ Encode:{
 		bd.rebuildInfo();
 	},
 	encodeURL : function(type){
-		var puzzle = this.puzzle, pid = puzzle.pid, fileio = puzzle.fio, bd = puzzle.board;
+		var puzzle = this.puzzle, pid = puzzle.pid, bd = puzzle.board;
 		var pzl = new pzpr.parser.URLData('');
 		
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
@@ -79,10 +81,10 @@ Encode:{
 			break;
 
 		case pzl.URL_KANPEN:
-			fileio.datastr = "";
+			this.fio = new puzzle.klass.FileIO();
 			this.encodeKanpen();
-			this.outbstr = fileio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
-			fileio.datastr = "";
+			this.outbstr = this.fio.datastr.replace(/\r?\n/g,"/").replace(/ /g, "_");
+			this.fio = null;
 			break;
 
 		case pzl.URL_HEYAAPP:

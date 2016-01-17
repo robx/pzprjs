@@ -179,10 +179,10 @@ pzpr.Puzzle.prototype =
 	// owner.getFileData() ファイルデータを取得する
 	//---------------------------------------------------------------------------
 	getURL : function(type){
-		return this.enc.encodeURL(type);
+		return new this.klass.Encode().encodeURL(type);
 	},
 	getFileData : function(type, option){
-		return this.fio.fileencode(type, option);
+		return new this.klass.FileIO().fileencode(type, option);
 	},
 
 	//---------------------------------------------------------------------------
@@ -323,8 +323,8 @@ function openExecute(puzzle, data, variety, callback){
 		
 		try{
 			puzzle.metadata.reset();
-			if     (pzl.isurl) { puzzle.enc.decodeURL(pzl);}
-			else if(pzl.isfile){ puzzle.fio.filedecode(pzl);}
+			if     (pzl.isurl) { new puzzle.klass.Encode().decodeURL(pzl);}
+			else if(pzl.isfile){ new puzzle.klass.FileIO().filedecode(pzl);}
 			
 			puzzle.ready = true;
 			puzzle.emit('ready');
@@ -360,9 +360,6 @@ function initObjects(puzzle){
 	puzzle.key    = new classes.KeyEvent();		// キーボード入力オブジェクト
 
 	puzzle.opemgr = new classes.OperationManager();	// 操作情報管理オブジェクト
-
-	puzzle.enc = new classes.Encode();		// URL入出力用オブジェクト
-	puzzle.fio = new classes.FileIO();		// ファイル入出力用オブジェクト
 
 	puzzle.faillist = new classes.FailCode();	// 正答判定文字列を保持するオブジェクト
 }

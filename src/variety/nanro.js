@@ -153,12 +153,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeAreaRoom();
-		this.puzzle.fio.decodeCellQnum_kanpen();
+		this.fio.decodeAreaRoom();
+		this.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeAreaRoom();
-		this.puzzle.fio.encodeCellQnum_kanpen();
+		this.fio.encodeAreaRoom();
+		this.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

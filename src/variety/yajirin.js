@@ -105,10 +105,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeCellDirecQnum_kanpen(true);
+		this.fio.decodeCellDirecQnum_kanpen(true);
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeCellDirecQnum_kanpen(true);
+		this.fio.encodeCellDirecQnum_kanpen(true);
 	}
 },
 //---------------------------------------------------------

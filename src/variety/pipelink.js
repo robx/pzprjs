@@ -161,8 +161,10 @@ Encode:{
 		this.decodePipelink();
 
 		var puzzle = this.puzzle;
-		if(puzzle.pid==='pipelink'){ this.checkPuzzleid();}
-		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
+		if(this.pid==='pipelink' && puzzle.board.cell.some(function(cell){ return cell.ques===6;})){
+			puzzle.changepid('pipelinkr');
+		}
+		if(this.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
 	},
 	encodePzpr : function(type){
 		var puzzle = this.puzzle;
@@ -217,13 +219,6 @@ Encode:{
 		if(count>0){ cm+=(16+count).toString(36);}
 
 		this.outbstr += cm;
-	},
-
-	checkPuzzleid : function(){
-		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var c=0;c<bd.cell.length;c++){
-			if(bd.cell[c].ques===6){ puzzle.changepid('pipelinkr'); break;}
-		}
 	}
 },
 //---------------------------------------------------------
@@ -238,8 +233,10 @@ FileIO:{
 		this.decodeBorderLine();
 
 		var puzzle = this.puzzle;
-		if(puzzle.pid==='pipelink'){ puzzle.enc.checkPuzzleid();}
-		if(puzzle.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
+		if(this.pid==='pipelink' && puzzle.board.cell.some(function(cell){ return cell.ques===6;})){
+			puzzle.changepid('pipelinkr');
+		}
+		if(this.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
 	},
 	encodeData : function(){
 		var puzzle = this.puzzle;

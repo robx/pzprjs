@@ -268,27 +268,23 @@ Encode:{
 		if(!this.checkpflag("c")){ this.decodeBorder();}
 		this.decodeNumber16();
 
-		if(this.pid==='bonsan'){ this.checkPuzzleid();}
+		var puzzle = this.puzzle;
+		if(this.pid==='bonsan' && puzzle.board.border.some(function(border){ return border.ques===1;})){
+			puzzle.changepid('heyabon');
+		}
 	},
 	encodePzpr : function(type){
 		if(type===1 || this.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
 		this.encodeNumber16();
 	},
 
-	checkPuzzleid : function(){
-		var puzzle=this.puzzle, bd=puzzle.board;
-		for(var id=0;id<bd.border.length;id++){
-			if(bd.border[id].ques===1){ puzzle.changepid("heyabon"); break;}
-		}
-	},
-
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeAreaRoom();
-		this.puzzle.fio.decodeQnum_PBox_Sato();
+		this.fio.decodeAreaRoom();
+		this.fio.decodeQnum_PBox_Sato();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeAreaRoom();
-		this.puzzle.fio.encodeQnum_PBox_Sato();
+		this.fio.encodeAreaRoom();
+		this.fio.encodeQnum_PBox_Sato();
 	}
 },
 "Encode@rectslider":{
@@ -307,7 +303,10 @@ FileIO:{
 		if(this.pid!=='rectslider'){ this.decodeBorderQues();}
 		this.decodeBorderLine();
 
-		if(this.pid==='bonsan'){ this.puzzle.enc.checkPuzzleid();}
+		var puzzle = this.puzzle;
+		if(this.pid==='bonsan' && puzzle.board.border.some(function(border){ return border.ques===1;})){
+			puzzle.changepid('heyabon');
+		}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

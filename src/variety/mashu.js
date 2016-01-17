@@ -121,12 +121,12 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeCellQnum_kanpen();
+		this.fio.decodeCellQnum_kanpen();
 		this.board.revCircle();
 	},
 	encodeKanpen : function(){
 		this.board.revCircle();
-		this.puzzle.fio.encodeCellQnum_kanpen();
+		this.fio.encodeCellQnum_kanpen();
 		this.board.revCircle();
 	}
 },

@@ -340,10 +340,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeStarFile();
+		this.fio.decodeStarFile();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeStarFile();
+		this.fio.encodeStarFile();
 	},
 
 	decodeStar : function(bstr){

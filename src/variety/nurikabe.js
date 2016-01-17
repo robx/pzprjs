@@ -114,10 +114,10 @@ Encode:{
 },
 "Encode@nurikabe":{
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeCellQnum_kanpen();
+		this.fio.decodeCellQnum_kanpen();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeCellQnum_kanpen();
+		this.fio.encodeCellQnum_kanpen();
 	}
 },
 //---------------------------------------------------------

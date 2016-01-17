@@ -636,10 +636,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeBoard_kanpen();
+		this.fio.decodeBoard_kanpen();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeBoard_kanpen();
+		this.fio.encodeBoard_kanpen();
 	},
 
 	decodeSlalom : function(ver){

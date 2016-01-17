@@ -183,10 +183,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeGoishi_kanpen();
+		this.fio.decodeGoishi_kanpen();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeGoishi_kanpen();
+		this.fio.encodeGoishi_kanpen();
 	},
 
 	decodeGoishi : function(){

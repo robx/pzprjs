@@ -290,10 +290,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeCellQnumb();
+		this.fio.decodeCellQnumb();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeCellQnumb();
+		this.fio.encodeCellQnumb();
 	}
 },
 //---------------------------------------------------------

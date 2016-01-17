@@ -104,16 +104,17 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeSquareRoom();
+		this.fio.decodeSquareRoom();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeSquareRoom();
+		this.fio.encodeSquareRoom();
 	},
 
 	decodeHeyaApp : function(){
 		var c=0, rdata=[], bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){ rdata[c]=null;}
 
+		var fileio = new this.puzzle.klass.FileIO();
 		var i=0, inp=this.outbstr.split("/");
 		for(var c=0;c<bd.cell.length;c++){
 			if(rdata[c]!==null){ continue;}
@@ -123,11 +124,11 @@ Encode:{
 				if(RegExp.$1.length>0){ cell.qnum = +RegExp.$1;}
 				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$2) - 2;
 				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$3) - 2;
-				this.puzzle.fio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
+				fileio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
 			}
 			i++;
 		}
-		this.puzzle.fio.rdata2Border(true, rdata);
+		fileio.rdata2Border(true, rdata);
 	},
 	encodeHeyaApp : function(){
 		var barray=[], bd=this.board, rooms = bd.roommgr.components;

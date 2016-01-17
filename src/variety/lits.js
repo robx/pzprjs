@@ -132,10 +132,10 @@ Encode:{
 	},
 
 	decodeKanpen : function(){
-		this.puzzle.fio.decodeAreaRoom();
+		this.fio.decodeAreaRoom();
 	},
 	encodeKanpen : function(){
-		this.puzzle.fio.encodeAreaRoom();
+		this.fio.encodeAreaRoom();
 	},
 
 	decodeLITS_old : function(){
