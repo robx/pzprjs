@@ -163,7 +163,7 @@ AnsCheck:{
 				if(bd.sblkmgr.components.length>0){ return;}
 			}
 			else if(bd.ublkmgr.enabled){
-				if(bd.ublkmgr.components[0].nodes.length!==bd.cell.length){ return;}
+				if(bd.ublkmgr.components.length===0 || bd.ublkmgr.components[0].nodes.length!==bd.cell.length){ return;}
 			}
 			else{
 				if(bd.cell.some(function(cell){ return cell.isShade();})){ return;}

@@ -216,14 +216,6 @@ BoardExec:{
 	setid : function(id){
 		this.input(this.board.border[id]);
 	},
-	geturlid : function(){
-		var bd = this.board;
-		return this.getb().id - (2*bd.cols*bd.rows-bd.cols-bd.rows);
-	},
-	seturlid : function(id){
-		var bd = this.board;
-		this.input(bd.border[id + (2*bd.cols*bd.rows-bd.cols-bd.rows)]);
-	},
 
 	input : function(border){
 		if(!this.partner.equals(border)){
@@ -712,15 +704,17 @@ Graphic:{
 Encode:{
 	decodeInOut : function(){
 		var barray = this.outbstr.split("/"), bd = this.board;
+		var idoffset = (2*bd.cols*bd.rows-bd.cols-bd.rows);
 
-		bd.arrowin.seturlid (+barray[1] || 0);
-		bd.arrowout.seturlid(+barray[2] || 0);
+		bd.arrowin.setid ((+barray[1] || 0) + idoffset);
+		bd.arrowout.setid((+barray[2] || 0) + idoffset);
 
 		this.outbstr = "";
 	},
 	encodeInOut : function(){
 		var bd = this.board;
-		this.outbstr += ("/"+bd.arrowin.geturlid()+"/"+bd.arrowout.geturlid());
+		var idoffset = (2*bd.cols*bd.rows-bd.cols-bd.rows);
+		this.outbstr += ("/"+(bd.arrowin.getid()-idoffset)+"/"+(bd.arrowout.getid()-idoffset));
 	}
 },
 //---------------------------------------------------------

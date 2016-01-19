@@ -719,7 +719,7 @@ Encode:{
 			}
 		}
 
-		bd.startpos.set( bd.cell[+array[1]] || 0 );
+		bd.startpos.set( bd.cell[+array[1] || 0] );
 
 		this.outbstr = array[0].substr(i);
 	},
