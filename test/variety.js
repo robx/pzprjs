@@ -91,24 +91,37 @@ function execinput(puzzle,str){
 
 for(var pid in pzpr.variety.info){
 	describe(pid+' test', function(){
-		describe('URL', function(){
-			var puzzle = new pzpr.Puzzle().open(pid+'/'+testdata[pid].url);
-			var urlstr = puzzle.getURL();
-			var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(puzzle.pid)+'/'+testdata[pid].url;
+		describe('URL', function(){ (function(pid){
+			var puzzle = new pzpr.Puzzle();
 			it('pzpr URL', function(){
+				puzzle.open(pid+'/'+testdata[pid].url);
+				var urlstr = puzzle.getURL();
+				var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(pid)+'/'+testdata[pid].url;
 				assert.equal(urlstr, expurl);
 			});
+			it('pzpr invalid URL', function(){
+				puzzle.open(pid+'/'+testdata[pid].url);
+				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
+				var urlstr = puzzle.getURL();
+				assert.doesNotThrow(function(){
+					puzzle.open(urlstr+urlstr, function(){
+						if(pid!=='icebarn'&&pid!=='icelom'&&pid!=='icelom2'&&pid!=='mejilink'&&pid!=='yajitatami'){
+							assert_equal_board(bd,bd2);
+						}
+					});
+					assert.equal(puzzle.ready, true);
+				});
+			});
 			if(!pzpr.variety.info[pid].exists.kanpen){ return;}
-			puzzle.open(puzzle.pid+'/'+testdata[pid].url);
-			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
-			var current_pid = puzzle.pid;
 			it('kanpen URL', function(){
-				assert.equal(pzpr.parser.parse(kanpen_url).pid, current_pid);
+				puzzle.open(pid+'/'+testdata[pid].url);
+				var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
+				assert.equal(pzpr.parser.parse(kanpen_url).pid, pid);
 
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				puzzle.open(kanpen_url, function(){ assert_equal_board(bd,bd2);});
 			});
-		});
+		})(pid);});
 		describe('Answer check', function(){
 			var puzzle = new pzpr.Puzzle();
 			testdata[pid].failcheck.forEach(function(testcase){
