@@ -66,9 +66,11 @@ Config.prototype =
 		/* その他の特殊項目(保存なし) */
 		this.add('mode', (this.puzzle.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
 		this.add('uramashu', false);		/* 裏ましゅにする */
+		this.list.mode.volatile     = true;
+		this.list.uramashu.volatile = true;
 	},
 	add : function(name, defvalue, option){
-		var item = {val:defvalue, defval:defvalue};
+		var item = {val:defvalue, defval:defvalue, volatile:false};
 		if(!!option){ item.option = option;}
 		this.list[name] = item;
 	},
@@ -106,10 +108,8 @@ Config.prototype =
 		var object = {};
 		for(var key in this.list){
 			var item = this.list[key];
-			if(item.val!==item.defval){ object[key] = item.val;}
+			if(item.val!==item.defval && !item.volatile){ object[key] = item.val;}
 		}
-		delete object.mode;
-		delete object.uramashu;
 		return object;
 	},
 	setAll : function(settings){
