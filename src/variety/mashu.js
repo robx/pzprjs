@@ -68,6 +68,11 @@ Board:{
 		if(!this.uramashu){ return;}
 		this.revCircleMain();
 	},
+	revCircleConfig : function(newval){
+		if(this.uramashu===newval){ return;}
+		this.uramashu = newval;
+		this.revCircleMain();
+	},
 	revCircleMain : function(){
 		for(var c=0;c<this.cell.length;c++){
 			var cell = this.cell[c];

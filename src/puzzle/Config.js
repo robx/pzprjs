@@ -202,8 +202,7 @@ Config.prototype =
 		
 		case 'uramashu':
 			if(puzzle.ready){
-				bd.uramashu = newval;
-				bd.revCircleMain();
+				bd.revCircleConfig(newval);
 			}
 			puzzle.redraw();
 			break;
