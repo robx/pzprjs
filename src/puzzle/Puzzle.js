@@ -98,7 +98,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.setCanvas()  描画キャンバスをセットする
 	//---------------------------------------------------------------------------
-	setCanvas : function(el){
+	setCanvas : function(el, type){
 		if(!el){ return;}
 		
 		var rect = pzpr.util.getRect(el);
@@ -108,7 +108,7 @@ pzpr.Puzzle.prototype =
 		el.appendChild(_div);
 		this.canvas = _div;
 		
-		setCanvas_main(this, (this.opt.graphic || ''));
+		setCanvas_main(this, (type || this.opt.graphic || ''));
 	},
 
 	//---------------------------------------------------------------------------
@@ -418,11 +418,13 @@ function postCanvasReady(puzzle){
 		if(opt.mode!=='viewer'){
 			setCanvasEvents(puzzle);
 		}
-		if(!!opt.width && !!opt.height){
-			pc.resizeCanvas(opt.width, opt.height);
-		}
-		else if(!!opt.cellsize){
-			pc.resizeCanvasByCellSize(opt.cellsize);
+		if(!pc.canvasWidth || !pc.canvasHeight){
+			if(!!opt.width && !!opt.height){
+				pc.resizeCanvas(opt.width, opt.height);
+			}
+			else if(!!opt.cellsize){
+				pc.resizeCanvasByCellSize(opt.cellsize);
+			}
 		}
 		delete puzzle.preInitCanvas;
 	}
