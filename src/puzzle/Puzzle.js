@@ -186,6 +186,21 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// puzzle.clone()      オブジェクトを複製する
+	//---------------------------------------------------------------------------
+	clone : function(option){
+		option = option || {};
+		var opt = {
+			mode   : (option.mode   || this.opt.mode || ''),
+			width  : (option.width  || this.painter.canvasWidth),
+			height : (option.height || this.painter.canvasHeight)
+		};
+		var newpuzzle = new pzpr.Puzzle(opt).open(this.getFileData(1,{history:!!option.history}));
+		newpuzzle.restoreConfig(this.saveConfig());
+		return newpuzzle;
+	},
+
+	//---------------------------------------------------------------------------
 	// puzzle.changepid()  後から種類を分割したパズルにおいて、パズルの種類のみを変更する
 	//---------------------------------------------------------------------------
 	changepid : function(pid){
@@ -297,7 +312,7 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	getCurrentConfig : function(){ return this.config.getList();},
 	saveConfig : function(){ return this.config.getAll();},
-	restoreConfig : function(json){ this.config.setAll(json);}
+	restoreConfig : function(obj){ this.config.setAll(obj);}
 };
 
 
