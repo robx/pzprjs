@@ -14,7 +14,7 @@ pzpr.Puzzle = function(canvas, option){
 	}
 	this.opt = option || {};
 
-	var modeid = {player:1,viewer:2}[this.opt.mode||0] || 0;
+	var modeid = {player:1,viewer:2}[this.opt.type||0] || 0;
 	this.playeronly = !!modeid;			// 回答モードのみで動作する
 	this.editmode = !this.playeronly;	// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
@@ -191,7 +191,7 @@ pzpr.Puzzle.prototype =
 	clone : function(option){
 		option = option || {};
 		var opt = {
-			mode   : (option.mode   || this.opt.mode || ''),
+			type   : (option.type   || this.opt.type || ''),
 			width  : (option.width  || this.painter.canvasWidth),
 			height : (option.height || this.painter.canvasHeight)
 		};
@@ -415,7 +415,7 @@ function postCanvasReady(puzzle){
 	var pc = puzzle.painter, opt = puzzle.opt;
 	
 	if(puzzle.preInitCanvas){
-		if(opt.mode!=='viewer'){
+		if(opt.type!=='viewer'){
 			setCanvasEvents(puzzle);
 		}
 		if(!pc.canvasWidth || !pc.canvasHeight){
