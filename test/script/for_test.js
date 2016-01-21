@@ -201,16 +201,12 @@ var debug = window.debug =
 	execmouse : function(strs){
 		var matches = (strs[1].match(/(left|right)(.*)/)[2]||"").match(/x([0-9]+)/);
 		var repeat = matches ? +matches[1] : 1;
+		var args = [];
+		if     (strs[1].substr(0,4)==="left") { args.push('left');}
+		else if(strs[1].substr(0,5)==="right"){ args.push('right');}
+		for(var i=2;i<strs.length;i++){ args.push(+strs[i]);}
 		for(var t=0;t<repeat;t++){
-			var mv = puzzle.mouse;
-			if     (strs[1].substr(0,4)==="left") { mv.btn='left';}
-			else if(strs[1].substr(0,5)==="right"){ mv.btn='right';}
-			
-			mv.moveTo(+strs[2], +strs[3]);
-			for(var i=4;i<strs.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
-				mv.lineTo(+strs[i], +strs[i+1]);
-			}
-			mv.inputEnd(2);
+			puzzle.mouse.inputPath.apply(puzzle.mouse, args);
 		}
 	},
 	inputcheck_popup : function(){

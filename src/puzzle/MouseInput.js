@@ -136,6 +136,7 @@ MouseEvent:{
 	// mv.moveTo()   Canvas上にマウスの位置を設定する
 	// mv.lineTo()   Canvas上でマウスを動かす
 	// mv.inputEnd() Canvas上のマウス入力処理を終了する
+	// mv.inputPath() Canvas上でひとつながりになる線を入力する
 	//---------------------------------------------------------------------------
 	moveTo : function(bx,by){
 		this.inputPoint.init(bx,by);
@@ -156,6 +157,16 @@ MouseEvent:{
 	inputEnd : function(){
 		this.mouseevent(2);
 		this.mousereset();
+	},
+	inputPath : function(){
+		var args = Array.prototype.slice.call(arguments);
+		this.mousereset();
+		this.btn = (typeof args[0]==='string' ? args.shift() : 'left');
+		this.moveTo(args[0], args[1]);
+		for(var i=2;i<args.length-1;i+=2){ /* 奇数個の最後の一つは切り捨て */
+			this.lineTo(args[i], args[i+1]);
+		}
+		this.inputEnd();
 	},
 
 	//---------------------------------------------------------------------------
