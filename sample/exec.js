@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 
-process.argv.push('--no-dom');
-
 var pzpr = require('../');
 var puzzle = new pzpr.Puzzle();
 

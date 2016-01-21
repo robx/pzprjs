@@ -380,10 +380,27 @@ function initObjects(puzzle){
 }
 
 //---------------------------------------------------------------------------
+//  initCandle()  node.js環境でdocumentなどのオブジェクトをjsdomから設定する
+//---------------------------------------------------------------------------
+function initCandle(){
+	if(!window || !document){
+		if(typeof require==='function' && typeof process==='object'){
+			/* jshint ignore:start */
+			document  = require('jsdom').jsdom('');
+			window    = document.defaultView;
+			navigator = window.navigator;
+			/* jshint ignore:end */
+		}
+		pzpr.Candle.init();
+	}
+}
+
+//---------------------------------------------------------------------------
 //  setCanvas_main()  描画キャンバスをセットする
 //  createSubCanvas() 補助キャンバスを作成する
 //---------------------------------------------------------------------------
 function setCanvas_main(puzzle, type){
+	initCandle();
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
 	if(type==='canvas' && !!pzpr.Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
@@ -395,6 +412,7 @@ function setCanvas_main(puzzle, type){
 	});
 }
 function createSubCanvas(type){
+	initCandle();
 	if(!pzpr.Candle.enable[type]){ return null;}
 	var el = null;
 	el = document.createElement('div');
@@ -469,6 +487,7 @@ function execKeyUp(e){
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
+	initCandle();
 	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : pzpr.Candle.current);
 	
 	var pc2 = new puzzle.klass.Graphic();
