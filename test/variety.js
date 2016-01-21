@@ -185,7 +185,7 @@ for(var pid in pzpr.variety.info){
 			it('turn right', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
-					bd.exec.execadjust('turnr');
+					bd.operate('turnr');
 					if(!relyonupdn||i===3){ assert.equal(puzzle.check()[0], null);}
 				}
 				assert_equal_board(bd,bd2);
@@ -201,7 +201,7 @@ for(var pid in pzpr.variety.info){
 			it('turn left', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
-					bd.exec.execadjust('turnl');
+					bd.operate('turnl');
 					if(!relyonupdn||i===3){ assert.equal(puzzle.check()[0], null);}
 				}
 				assert_equal_board(bd,bd2);
@@ -223,7 +223,7 @@ for(var pid in pzpr.variety.info){
 			it('flipX', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
-					bd.exec.execadjust('flipx');
+					bd.operate('flipx');
 					if(!relyonanydir||i===3){ assert.equal(puzzle.check()[0], null);}
 				}
 				assert_equal_board(bd,bd2);
@@ -239,7 +239,7 @@ for(var pid in pzpr.variety.info){
 			it('flipY', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				for(var i=0;i<4;i++){
-					bd.exec.execadjust('flipy');
+					bd.operate('flipy');
 					if(!relyonupdn||i===3){ assert.equal(puzzle.check()[0], null);}
 				}
 				assert_equal_board(bd,bd2);
@@ -258,7 +258,7 @@ for(var pid in pzpr.variety.info){
 			it('expand/reduce', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert']
-					.forEach(function(a){ bd.exec.execadjust(a);});
+					.forEach(function(a){ bd.operate(a);});
 
 				assert_equal_board(bd,bd2);
 				assert.equal(puzzle.check()[0], null);

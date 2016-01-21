@@ -423,7 +423,7 @@ var debug = window.debug =
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ bd.exec.execadjust('turnr');}
+		for(var i=0;i<4;i++){ bd.operate('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnR test 1  = pass");}
@@ -442,7 +442,7 @@ var debug = window.debug =
 
 	check_turnL1 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<4;i++){ bd.exec.execadjust('turnl');}
+		for(var i=0;i<4;i++){ bd.operate('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnL test 1  = pass");}
@@ -461,7 +461,7 @@ var debug = window.debug =
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ bd.exec.execadjust('flipx');}
+		for(var i=0;i<2;i++){ bd.operate('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipX test 1  = pass");}
@@ -480,7 +480,7 @@ var debug = window.debug =
 
 	check_flipY1 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
-		for(var i=0;i<2;i++){ bd.exec.execadjust('flipy');}
+		for(var i=0;i<2;i++){ bd.operate('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipY test 1  = pass");}
@@ -500,7 +500,7 @@ var debug = window.debug =
 	check_adjust1 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
-		for(var i=0;i<8;i++){ bd.exec.execadjust(names[i]);}
+		for(var i=0;i<8;i++){ bd.operate(names[i]);}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Adjust test 1  = pass");}
