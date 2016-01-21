@@ -187,6 +187,8 @@ BoardExec:{
 		var puzzle = this.puzzle, bd = puzzle.board, opemgr = puzzle.opemgr;
 		var info1 = this.posinfo_in, info2 = this.posinfo_out, isrec;
 		
+		bd.disableInfo();
+		
 		isrec = ((key & this.REDUCE) && (info1.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.arrowin.set(info1.pos);
@@ -196,6 +198,8 @@ BoardExec:{
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.arrowout.set(info2.pos);
 		if(isrec){ opemgr.forceRecord = false;}
+		
+		bd.enableInfo();
 	}
 },
 

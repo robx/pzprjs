@@ -97,6 +97,7 @@ BoardExec:{
 		var xx=(d.x1+d.x2), yy=(d.y1+d.y2), bx1=(d.x1|1), by1=(d.y1|1), idx;
 
 		var bd = this.board;
+		bd.disableInfo();
 		switch(key){
 		case this.FLIPY: // 上下反転
 			for(var bx=bx1;bx<=d.x2;bx+=2){
@@ -158,6 +159,7 @@ BoardExec:{
 			}
 			break;
 		}
+		bd.enableInfo();
 	},
 
 	//------------------------------------------------------------------------------

@@ -174,7 +174,7 @@ Operation:{
 	},
 	exec : function(num){
 		var puzzle = this.puzzle, bd = puzzle.board, d = {x1:0,y1:0,x2:2*bd.cols,y2:2*bd.rows};
-		bd.exec.expandreduce(num,d);
+		bd.exec.execadjust_main(num,d);
 		puzzle.redraw();
 	}
 },
@@ -227,7 +227,7 @@ Operation:{
 	},
 	exec : function(num,d){
 		var puzzle = this.puzzle;
-		puzzle.board.exec.turnflip(num,d);
+		puzzle.board.exec.execadjust_main(num,d);
 		puzzle.redraw();
 	}
 },

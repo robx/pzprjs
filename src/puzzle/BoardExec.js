@@ -75,6 +75,7 @@ BoardExec:{
 
 	//------------------------------------------------------------------------------
 	// bd.exec.execadjust()   盤面の調整、回転、反転で対応する関数へジャンプする
+	// bd.exec.execadjust_main() 盤面の調整、回転、反転処理の実行部
 	//------------------------------------------------------------------------------
 	execadjust : function(name){
 		var puzzle = this.puzzle, bd = this.board;
@@ -91,11 +92,9 @@ BoardExec:{
 
 		puzzle.painter.suspendAll();
 
-		// undo/redo時はexpandreduce・turnflipを直接呼びます
-		var d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows}; // 範囲が必要なのturnflipだけかも..
-		var key = this.boardtype[name][1];
-		if(key & this.TURNFLIP){ this.turnflip(key,d);}
-		else                   { this.expandreduce(key,d);}
+		// undo/redo時はexecadjust_mainを直接呼びます
+		var d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows}; // TURNFLIPには範囲が必要
+		this.execadjust_main(this.boardtype[name][1],d);
 		this.addOpe(d, name);
 
 		bd.setminmax();
@@ -106,7 +105,35 @@ BoardExec:{
 		puzzle.emit('adjust');
 		puzzle.painter.unsuspend();
 	},
+	execadjust_main : function(key,d){
+		var bd = this.board;
+		this.adjustBoardData(key,d);
+		if(bd.roommgr.hastop && (key & REDUCE)){ this.reduceRoomNumber(key,d);}
 
+		if(key & TURN){
+			var tmp = bd.cols; bd.cols = bd.rows; bd.rows = tmp;
+			d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows};
+		}
+		else if(key & EXPAND){
+			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.rows++;}
+			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.cols++;}
+		}
+		
+		// main operation
+		['cell','cross','border','excell'].forEach(function(group){
+			if     (key & EXPAND){ bd.exec.expandGroup(group, key);}
+			else if(key & REDUCE){ bd.exec.reduceGroup(group, key);}
+			else                 { bd.exec.turnflipGroup(group, key, d);}
+		});
+		
+		if(key & REDUCE){
+			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.rows--;}
+			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.cols--;}
+		}
+		bd.setposAll();
+
+		this.adjustBoardData2(key,d);
+	},
 
 	//------------------------------------------------------------------------------
 	// bd.exec.addOpe() 指定された盤面(拡大・縮小, 回転・反転)操作を追加する
@@ -119,40 +146,10 @@ BoardExec:{
 	},
 
 	//------------------------------------------------------------------------------
-	// bd.exec.expandreduce() 盤面の拡大・縮小を実行する
 	// bd.exec.expandGroup()  オブジェクトの追加を行う
 	// bd.exec.reduceGroup()  オブジェクトの消去を行う
 	// bd.exec.isdel()        消去されるオブジェクトかどうか判定する
 	//------------------------------------------------------------------------------
-	expandreduce : function(key,d){
-		var bd = this.board;
-		bd.disableInfo();
-		this.adjustBoardData(key,d);
-		if(bd.roommgr.hastop && (key & this.REDUCE)){ this.reduceRoomNumber(key,d);}
-
-		if(key & this.EXPAND){
-			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.rows++;}
-			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.cols++;}
-
-			this.expandGroup('cell',   key);
-			this.expandGroup('cross',  key);
-			this.expandGroup('border', key);
-			this.expandGroup('excell', key);
-		}
-		else if(key & this.REDUCE){
-			this.reduceGroup('cell',   key);
-			this.reduceGroup('cross',  key);
-			this.reduceGroup('border', key);
-			this.reduceGroup('excell', key);
-
-			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.rows--;}
-			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.cols--;}
-		}
-		bd.setposAll();
-
-		this.adjustBoardData2(key,d);
-		bd.enableInfo();
-	},
 	expandGroup : function(group,key){
 		var bd = this.board;
 		var margin = bd.initGroup(group, bd.cols, bd.rows);
@@ -200,29 +197,8 @@ BoardExec:{
 	},
 
 	//------------------------------------------------------------------------------
-	// bd.exec.turnflip()      回転・反転処理を実行する
-	// bd.exec.turnflipGroup() turnflip()から内部的に呼ばれる回転実行部
+	// bd.exec.turnflipGroup() execadjust_main()から内部的に呼ばれる回転反転実行部
 	//------------------------------------------------------------------------------
-	turnflip : function(key,d){
-		var bd = this.board;
-		bd.disableInfo();
-		this.adjustBoardData(key,d);
-
-		if(key & this.TURN){
-			var tmp = bd.cols; bd.cols = bd.rows; bd.rows = tmp;
-			d = {x1:0, y1:0, x2:2*bd.cols, y2:2*bd.rows};
-		}
-
-		this.turnflipGroup('cell',   key, d);
-		this.turnflipGroup('cross',  key, d);
-		this.turnflipGroup('border', key, d);
-		this.turnflipGroup('excell', key, d);
-
-		bd.setposAll();
-
-		this.adjustBoardData2(key,d);
-		bd.enableInfo();
-	},
 	turnflipGroup : function(group,key,d){
 		var bd = this.board;
 		if(group==='excell'){

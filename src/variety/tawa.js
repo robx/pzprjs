@@ -163,9 +163,16 @@ BoardExec:{
 
 		this.common.execadjust.call(this, name);
 	},
-	expandreduce : function(key,d){
+	execadjust_main : function(key,d){
 		var bd = this.board;
-		if(key & this.EXPAND){
+
+		if(key & this.TURNFLIP){
+			d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
+			if     (key===this.FLIPY){ if(!(bd.rows&1)){ bd.cols-=[1,0,0,-1][bd.shape]; bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];}}
+			else if(key===this.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
+			else{ throw "Tawamurenga can't accept turning operation!";}
+		}
+		else if(key & this.EXPAND){
 			switch(key & 0x0F){
 				case this.LT: bd.cols+=[0,0,1,1][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
 				case this.RT: bd.cols+=[0,1,0,1][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
@@ -173,12 +180,14 @@ BoardExec:{
 				case this.DN: bd.rows++; break;
 			}
 			bd.setminmax();
-
-			this.expandGroup('cell',key);
 		}
-		else if(key & this.REDUCE){
-			this.reduceGroup('cell',key);
-
+		
+		// main operation
+		if     (key & this.EXPAND){ this.expandGroup('cell', key);}
+		else if(key & this.REDUCE){ this.reduceGroup('cell', key);}
+		else                      { this.turnflipGroup('cell', key, d);}
+		
+		if(key & this.REDUCE){
 			switch(key & 0x0F){
 				case this.LT: bd.cols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
 				case this.RT: bd.cols-=[1,0,1,0][bd.shape];  bd.shape=[1,0,3,2][bd.shape]; break;
@@ -186,18 +195,6 @@ BoardExec:{
 				case this.DN: bd.rows--; break;
 			}
 		}
-		bd.setposAll();
-	},
-
-	turnflip : function(key,d){
-		var bd = this.board;
-		var d = {x1:bd.minbx, y1:bd.minby, x2:bd.maxbx, y2:bd.maxby};
-
-		if     (key===this.FLIPY){ if(!(bd.rows&1)){ bd.cols-=[1,0,0,-1][bd.shape]; bd.shape = {0:3,1:2,2:1,3:0}[bd.shape];}}
-		else if(key===this.FLIPX){ bd.shape = {0:0,1:2,2:1,3:3}[bd.shape];}
-		else{ throw "Tawamurenga can't accept turning operation!";}
-
-		this.turnflipGroup('cell', key, d);
 
 		bd.setposAll();
 	},
