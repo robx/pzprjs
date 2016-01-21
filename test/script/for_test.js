@@ -133,7 +133,7 @@ var debug = window.debug =
 
 	loadperf : function(){
 		puzzle.open(perfstr, function(puzzle){
-			puzzle.modechange(puzzle.MODE_PLAYER);
+			puzzle.modechange('playmode');
 			puzzle.setConfig('irowake',true);
 		});
 	},
@@ -174,10 +174,8 @@ var debug = window.debug =
 				puzzle.ansclear();
 				break;
 			case 'playmode':
-				puzzle.modechange(puzzle.MODE_PLAYER);
-				break;
 			case 'editmode':
-				puzzle.modechange(puzzle.MODE_EDITOR);
+				puzzle.modechange(strs[0]);
 				break;
 			case 'setconfig':
 				if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}

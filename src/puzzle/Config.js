@@ -83,7 +83,14 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(!this.list[name] || (name==="mode" && this.puzzle.playeronly)){ return;}
+		if(name==='mode'){
+			if(this.puzzle.playeronly){ return;}
+			if(typeof newval==='string'){
+				newval = {edit:1, play:3}[newval.substr(0,4)];
+				if(newval===void 0){ return;}
+			}
+		}
+		if(!this.list[name]){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
