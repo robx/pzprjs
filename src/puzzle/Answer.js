@@ -15,6 +15,7 @@ AnsCheck:{
 		
 		this.makeCheckList();
 	},
+	failcodemode : (void 0),
 	failcode : (void 0),
 	_info    : (void 0),
 
@@ -56,19 +57,20 @@ AnsCheck:{
 		var puzzle = this.puzzle, bd = this.board;
 		this.inCheck = true;
 		
-		if(activemode){
+		if(!!activemode){
 			this.checkOnly = false;
-			this.checkAns();
+			this.checkAns(false);
 			if(!this.failcode.complete){
 				bd.haserror = true;
 				puzzle.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
 			}
 		}
 		/* activemodeでなく、前回の判定結果が残っていない場合はチェックします */
-		else if(this.failcode===void 0){
+		else if(this.failcode===void 0 || this.failcodemode!==activemode){
 			bd.disableSetError();
 			this.checkOnly = true;
-			this.checkAns(false);
+			this.checkAns(activemode===false);
+			this.failcodemode = activemode;
 			bd.enableSetError();
 		}
 		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
@@ -76,22 +78,22 @@ AnsCheck:{
 		this.inCheck = false;
 		return this.failcode;
 	},
-	checkAns : function(){
+	checkAns : function(break_if_error){
 		this.failcode = new this.klass.CheckInfo();
-		var checkSingleError = !this.puzzle.getConfig("multierr");
+		var checkSingleError = (!this.puzzle.getConfig("multierr") || break_if_error);
 		var checklist = ((this.checkOnly && checkSingleError) ? this.checklist_auto : this.checklist_normal);
 		for(var i=0;i<checklist.length;i++){
 			checklist[i].call(this);
 			if(checkSingleError && (this.failcode.length>0)){ break;}
 		}
-		this.failcode.text = this.failcode.gettext();
+		if(!break_if_error){ this.failcode.text = this.failcode.gettext();}
 	},
 
 	//---------------------------------------------------------------------------
 	// ans.resetCache() 前回のエラー情報等を破棄する
 	//---------------------------------------------------------------------------
 	resetCache : function(){
-		this.failcode = void 0;
+		this.failcode = this.failcodemode = void 0;
 		this._info    = {};
 	}
 },
@@ -104,6 +106,7 @@ CheckInfo:{
 		this.add(code);
 	},
 	complete : true,
+	text : '',
 	length : 0,
 	lastcode : null,
 	

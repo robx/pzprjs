@@ -219,11 +219,12 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.check([activemode])` Check if the board is modified or not.
     * Return value: `CheckInfo` which contains if the check succeed or not and failure information.
         * `info.complete` `true` if the answer is correct.
-        * `info.text` contains error description.
+        * `info.text` contains error description unless `activemode===false`.
         * `info.gettext(['en' or 'ja'])` method gets error description in English or Japanese.
     * `activemode:boolean`
-        * If `true`, checking answer routine sets error information and display what has error.
-        * Otherwise, it will only check whether the errors occur or not.
+        * If `true`, checking answer routine will set error information and display what has error.
+        * If `false`, it will only check errors, ignore `'multierr'` config and `info.text` remains empty.
+        * Otherwise, it will only check errors but respect `'multierr'` config and set `info.text`.
 * `puzzle.ansclear()` Clear answer data on the board but it preserves operation history data.
 * `puzzle.subclear()` Clear auxiliary marks on the board.
 * `puzzle.errclear()` Wipe out the error information given after check() is called.

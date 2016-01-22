@@ -251,7 +251,7 @@ pzpr.Puzzle.prototype =
 			this.key.keyreset();
 			this.mouse.mousereset();
 		}
-		return this.checker.check(!!activemode);
+		return this.checker.check(activemode);
 	},
 
 	//------------------------------------------------------------------------------
