@@ -40,7 +40,6 @@ console.log(puzzle.check().text);
 ```
 
 ## pzpr object
-------
 
 #### Methods
 
@@ -51,90 +50,14 @@ console.log(puzzle.check().text);
 
 #### Events
 
-* `load` Fire if pzpr object become ready. If this event is registered after pzpr is loaded, the listener will be executed immediately.
+* `'load'` Fire if pzpr object become ready. If this event is registered after pzpr is loaded, the listener will be executed immediately.
 
 #### Properties
 
 * `lang:string` Specific the language of pzpr.js. This value will be used for answer check. Possible value: `'en'` or `'ja'`.  Default value depends on browser or node.js env language.
 * `version:string` Indicate pzpr.js version.
 
-## pzpr.parser object
-------
-
-#### Methods
-
-* `pzpr.parse(data[, pid])` Parse given data then return parsed URLData or FileData.
-    * Return value: `URLData or FileData`
-    * `data:string` Data to be parsed.
-    * `pid:string` Predefined puzzle veriety name.
-
-### pzpr.parser.URLData class
-------
-
-#### Properties
-
-* `pid:string`  Parsed puzzle variety/genre.
-* `type:URLType`  Parsed URL type. See below
-* `rows:number`  The number of rows of the board.
-* `cols:number`  The number of cols of the board.
-* `pflag:string`  Extra flag in given URL.
-* `body:string`  Data in the URL other than type, rows, cols and pflag.
-* `isurl:boolean` `true`
-
-### pzpr.parser.FileData class
-------
-
-#### Propertes
-
-* `pid:string` Parsed puzzle variety/genre.
-* `type:FileType` Parsed File data type. See below.
-* `rows:number` The number of rows of the board.
-* `cols:number` The number of cols of the board.
-* `metadata:pzpr.Metadata` Author, source, difficulty and comment properies.
-* `history:HistoryData` History data in the file data, available if exists.
-* `body:string` Data in the URL other than type, rows, cols and pflag.
-* `isfile:boolean` `true`
-
-### pzpr.parser URLType definition
-------
-
-These values are defined under pzpr.parser.
-
-#### Const values
-
-* `URL_AUTO` Undefined URL type.
-* `URL_PZPRV3` PUZ-PRE v3 URL type.
-* `URL_PZPRV3E` PUZ-PRE v3 URL with opening editmode type.
-* `URL_PZPRAPP` PUZ-PRE Applet URL type.
-* `URL_KANPEN` Kanpen URL type.
-* `URL_KANPENP` Kanpen with PUZ-PRE data URL type.
-* `URL_HEYAAPP` Heyawaek Applet URL type.
-
-### pzpr.parser FileType definition
-------
-
-These values are defined under pzpr.parser.
-
-#### Const values
-
-* `FILE_AUTO` Undefined file type.
-* `FILE_PZPR` pzpr.js file type.
-* `FILE_PBOX` pencilbox (text) file type.
-* `FILE_PBOX_XML` pencilbox (XML) file type.
-
-## pzpr.variety object
-------
-
-This object contains each puzzle variety/genre information.
-
-#### Methods
-
-* `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
-    * Return value: `boolean`
-    * `pid:string` Puzzle variety type.
-
 ## class pzpr.Puzzle
-------
 
 #### Constructor
 
@@ -314,7 +237,6 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 * `puzzle.cursor:TargetCursor` Contains current cursor position.
 
 ## class pzpr.Metadata
-------
 
 #### Properties
 
@@ -331,12 +253,11 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 * `puzzle.metadata.update()` Return `true` if each metadata is empty.
 
 ## class pzpr.Puzzle.Config
-------
 
 #### The list of config for Graphic/Canvas
 
 |Name|Type|Default value|Description|
-|-|-|-|-|
+|---|---|---|---|
 |`font`|`number`|`1`|The font of the canvas.  <br> Possible value: `1: Serif, 2: Sans-serif`|
 |`cursor`|`boolean`|`true`|Display the cursor on the canvas|
 |`irowake`|`boolean`|`false`|Set individual color to lines|
@@ -351,7 +272,7 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 #### The list of config for input method
 
 |Name|Type|Default value|Description|
-|-|-|-|-|
+|---|---|---|---|
 |`use`|`number`|`1`|Input method for shaded cells from mouse <br> Possible value: `1 or 2`|
 |`use_tri`|`number`|`1`|Input method for triangles from mouse for `'Shakashaka'` <br> Possible value: `1, 2 or 3`|
 |`lecheck`|`boolean`|`false`|Invert mouse button's left and right|
@@ -366,7 +287,7 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 #### The list of config for answer check
 
 |Name|Type|Default value|Description|
-|-|-|-|-|
+|---|---|---|---|
 |`autocmp`|`boolean`|`false`|Show complete blocks/numbers apart from incompleted one automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
@@ -375,9 +296,77 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 #### The list of miscellaneous config
 
 |Name|Type|Default value|Description|
-|-|-|-|-|
+|---|---|---|---|
 |`bdpadding`|`boolean`|`true`|Output URL with one row padding for `'Goishi'`.|
 |`discolor`|`boolean`|`false`|Disable setting color for `'Tentai-show'`.|
 |`mode`|`number`||Indicate editmode(1) or playmode(3).|
 |`uramashu`|`boolean`|`false`|Ura-masyu mode.|
 
+## pzpr.parser object
+
+#### Methods
+
+* `pzpr.parser.parse(data[, pid])` Parse given data then return parsed `URLData` or `FileData`.
+    * Return value: `URLData or FileData`
+    * `data:string` Data to be parsed.
+    * `pid:string` Predefined puzzle veriety name.
+
+### pzpr.parser.URLData class
+
+#### Properties
+
+* `pid:string`  Parsed puzzle variety/genre.
+* `type:URLType`  Parsed URL type. See below
+* `rows:number`  The number of rows of the board.
+* `cols:number`  The number of cols of the board.
+* `pflag:string`  Extra flag in given URL.
+* `body:string`  Data in the URL other than type, rows, cols and pflag.
+* `isurl:boolean` `true`
+
+### pzpr.parser.FileData class
+
+#### Propertes
+
+* `pid:string` Parsed puzzle variety/genre.
+* `type:FileType` Parsed File data type. See below.
+* `rows:number` The number of rows of the board.
+* `cols:number` The number of cols of the board.
+* `metadata:pzpr.Metadata` Author, source, difficulty and comment properies.
+* `history:HistoryData` History data in the file data, available if exists.
+* `body:string` Data in the URL other than type, rows, cols and pflag.
+* `isfile:boolean` `true`
+
+### pzpr.parser URLType definition
+
+These values are defined under pzpr.parser.
+
+#### Const values
+
+* `URL_AUTO` Undefined URL type.
+* `URL_PZPRV3` PUZ-PRE v3 URL type.
+* `URL_PZPRV3E` PUZ-PRE v3 URL with opening editmode type.
+* `URL_PZPRAPP` PUZ-PRE Applet URL type.
+* `URL_KANPEN` Kanpen URL type.
+* `URL_KANPENP` Kanpen with PUZ-PRE data URL type.
+* `URL_HEYAAPP` Heyawaek Applet URL type.
+
+### pzpr.parser FileType definition
+
+These values are defined under pzpr.parser.
+
+#### Const values
+
+* `FILE_AUTO` Undefined file type.
+* `FILE_PZPR` pzpr.js file type.
+* `FILE_PBOX` pencilbox (text) file type.
+* `FILE_PBOX_XML` pencilbox (XML) file type.
+
+## pzpr.variety object
+
+This object contains each puzzle variety/genre information.
+
+#### Methods
+
+* `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
+    * Return value: `boolean`
+    * `pid:string` Puzzle variety type.
