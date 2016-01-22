@@ -108,7 +108,7 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	autocmp : 'qans',
+	autocmp : 'room',
 
 	cellcolor_func : "ques",
 	dotcolor_type : "PINK",
