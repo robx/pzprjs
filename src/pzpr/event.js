@@ -4,9 +4,11 @@
 //---------------------------------------------------------------
 // 起動時関連関数
 //---------------------------------------------------------------
-pzpr.addLoadListener = function(func){
-	if(preinit){ loadfun.push(func);}
-	else{ func();}
+pzpr.on = function(eventtype, func){
+	if(eventtype==='load'){
+		if(preinit){ loadfun.push(func);}
+		else{ func();}
+	}
 };
 
 //----------------------------------------------------------------------
@@ -36,7 +38,7 @@ else{
 // exec????()      各パズルのキー入力へ分岐する
 //---------------------------------------------------------------------------
 var keytarget = null;
-pzpr.addLoadListener(function addKeyEvents(){
+pzpr.on('load', function addKeyEvents(){
 	// キー入力イベントの設定
 	pzpr.util.addEvent(document, 'keydown', pzpr, execKeyDown);
 	pzpr.util.addEvent(document, 'keyup',   pzpr, execKeyUp);

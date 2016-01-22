@@ -5,7 +5,7 @@
 
 var puzzle = window.puzzle;
 
-pzpr.addLoadListener(function(){
+pzpr.on('load', function(){
 	/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
 	var search = location.search;
 	
@@ -26,7 +26,7 @@ pzpr.addLoadListener(function(){
 	/* テスト用ファイルのinclude */
 	debug.includeDebugScript(pid, function(){
 		/* パズルオブジェクトの作成 */
-		onload_option.config = {mode:pzpr.Puzzle.prototype.MODE_PLAYER, irowake:true};
+		onload_option.config = {mode:'play', irowake:true};
 		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
 		pzpr.connectKeyEvents(puzzle);
 		
