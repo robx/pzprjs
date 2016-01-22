@@ -78,12 +78,13 @@ AnsCheck:{
 	},
 	checkAns : function(){
 		this.failcode = new this.klass.CheckInfo();
-		var checklist = (this.checkOnly ? this.checklist_auto : this.checklist_normal);
-		var checkSingleError = (this.checkOnly || !this.puzzle.getConfig("multierr"));
+		var checkSingleError = !this.puzzle.getConfig("multierr");
+		var checklist = ((this.checkOnly && checkSingleError) ? this.checklist_auto : this.checklist_normal);
 		for(var i=0;i<checklist.length;i++){
 			checklist[i].call(this);
 			if(checkSingleError && (this.failcode.length>0)){ break;}
 		}
+		this.failcode.text = this.failcode.gettext();
 	},
 
 	//---------------------------------------------------------------------------
@@ -111,7 +112,7 @@ CheckInfo:{
 		if(code!==this.lastcode){ this[this.length++] = this.lastcode = code;}
 		this.complete = false;
 	},
-	text : function(lang){
+	gettext : function(lang){
 		var puzzle = this.puzzle, textlist = puzzle.faillist, texts = [];
 		var langcode = ((lang || pzpr.lang)==="ja"?0:1);
 		if(this.length===0){ return textlist.complete[langcode];}

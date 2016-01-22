@@ -11,7 +11,7 @@ puzzle.board.getc(5,1).setQans(1);
 puzzle.board.getc(1,3).setQans(1);
 puzzle.board.getc(3,3).setQans(1);
 
-console.log(puzzle.check().text());
+console.log(puzzle.check().text);
 
 try{ console.log(puzzle.getURL(2));}catch(e){}
 try{ console.log(puzzle.getURL(3));}catch(e){}

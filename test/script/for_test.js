@@ -316,7 +316,7 @@ var debug = window.debug =
 			puzzle.open(acsstr[n][1]);
 			var faildata = puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new puzzle.klass.CheckInfo(expectcode).text());
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new puzzle.klass.CheckInfo(expectcode).text);
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}

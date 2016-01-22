@@ -9,7 +9,7 @@ puzzle.open('?nurikabe/5/5');
 
 puzzle.board.cell[0].setQnum(1);
 
-console.log(puzzle.check().text());
+console.log(puzzle.check().text);
 
 try{ console.log(puzzle.getURL(2));}catch(e){}
 try{ console.log(puzzle.getURL(3));}catch(e){}
