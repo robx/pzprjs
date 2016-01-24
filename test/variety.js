@@ -62,7 +62,7 @@ function execinput(puzzle,str){
 			break;
 		case 'playmode':
 		case 'editmode':
-			puzzle.modechange(strs[0]);
+			puzzle.setMode(strs[0]);
 			break;
 		case 'setconfig':
 			if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}

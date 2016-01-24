@@ -105,8 +105,8 @@ If neither width, height nor cellsize is given, the size of given canvas element
 
 #### Methods for configuration
 
-* `puzzle.modechange([type])` It changes the puzzle into playmode or editmode when the puzzle type is 'editor'.
-    * `type` If `puzzle.MODE_PLAYER` or `'play'`, it will change the puzzle mode to `playmode`. <br> Otherwise `puzzle.MODE_EDITOR` or `'edit'`, puzzle mode will change into `editmode`. <br> If no argument is given, it will toggle the mode.
+* `puzzle.setMode([type])` It changes the puzzle into playmode or editmode when the puzzle type is 'editor'.
+    * `type` If `puzzle.MODE_PLAYER` or `'play'`, it will change the puzzle mode to `playmode`. <br> Otherwise `puzzle.MODE_EDITOR` or `'edit'`, puzzle mode will change into `editmode`.
 * `puzzle.getConfig(configname)` Get the value of the config data. See below to get the list of the config.
     * Return value: the value of the specified config.
     * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
@@ -299,7 +299,6 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 |---|---|---|---|
 |`bdpadding`|`boolean`|`true`|Output URL with one row padding for `'Goishi'`.|
 |`discolor`|`boolean`|`false`|Disable setting color for `'Tentai-show'`.|
-|`mode`|`number`||Indicate editmode(1) or playmode(3).|
 |`uramashu`|`boolean`|`false`|Ura-masyu mode.|
 
 ## pzpr.parser object

@@ -64,9 +64,7 @@ Config.prototype =
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 
 		/* その他の特殊項目(保存なし) */
-		this.add('mode', (this.puzzle.editmode?1:3), [1,3]);		/* mode 1:問題入力モード 3:回答入力モード */
 		this.add('uramashu', false);		/* 裏ましゅにする */
-		this.list.mode.volatile     = true;
 		this.list.uramashu.volatile = true;
 	},
 	add : function(name, defvalue, option){
@@ -83,13 +81,6 @@ Config.prototype =
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(name==='mode'){
-			if(this.puzzle.playeronly){ return;}
-			if(typeof newval==='string'){
-				newval = {edit:1, play:3}[newval.substr(0,4)];
-				if(newval===void 0){ return;}
-			}
-		}
 		if(!this.list[name]){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
@@ -161,7 +152,6 @@ Config.prototype =
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
-			case 'mode':     exec = EDITOR; break;
 			case 'uramashu': exec = (pid==="mashu"); break;
 			default: exec = !!this.list[name];
 		}
@@ -172,7 +162,7 @@ Config.prototype =
 	// config.configevent()  設定変更時の動作を記述する
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
-		var puzzle = this.puzzle, bd = puzzle.board;
+		var puzzle = this.puzzle;
 		switch(name){
 		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
@@ -191,25 +181,9 @@ Config.prototype =
 			if(puzzle.ready){ puzzle.painter.setColor('qanscolor', newval);}
 			break;
 		
-		case "mode":
-			puzzle.editmode = (newval===puzzle.MODE_EDITOR);
-			puzzle.playmode = (newval===puzzle.MODE_PLAYER);
-			if(puzzle.ready){
-				puzzle.cursor.adjust_modechange();
-				puzzle.key.keyreset();
-				puzzle.mouse.mousereset();
-				if(bd.haserror){
-					bd.errclear();
-				}
-				else{
-					puzzle.redraw();
-				}
-			}
-			break;
-		
 		case 'uramashu':
 			if(puzzle.ready){
-				bd.revCircleConfig(newval);
+				puzzle.board.revCircleConfig(newval);
 			}
 			puzzle.redraw();
 			break;

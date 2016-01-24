@@ -28,7 +28,8 @@ pzpr.Puzzle = function(canvas, option){
 	this.metadata =  new pzpr.MetaData();
 
 	this.config = new this.Config(this);
-	if(!!this.opt.config){ this.config.setAll(this.opt.config);}
+	if(this.opt.config!==void 0){ this.config.setAll(this.opt.config);}
+	if(this.opt.mode!==void 0){ this.setMode(this.opt.mode);}
 
 	if(!!canvas){ this.setCanvas(canvas);}
 };
@@ -284,12 +285,28 @@ pzpr.Puzzle.prototype =
 	},
 
 	//------------------------------------------------------------------------------
-	// owner.modechange() モード変更時の処理を行う
+	// owner.setMode() モード変更時の処理を行う
 	//------------------------------------------------------------------------------
-	modechange : function(num){
+	setMode : function(newval){
 		if(this.playeronly){ return;}
-		if(num===void 0){ num = (this.playmode ? this.MODE_EDITOR : this.MODE_PLAYER);}
-		this.setConfig('mode', num);
+		if(typeof newval==='string'){
+			newval = {edit:1, play:3}[newval.substr(0,4)];
+			if(newval===void 0){ return;}
+		}
+		this.editmode = (newval===this.MODE_EDITOR);
+		this.playmode = !this.editmode;
+		if(this.ready){
+			this.cursor.adjust_modechange();
+			this.key.keyreset();
+			this.mouse.mousereset();
+			if(this.board.haserror){
+				this.board.errclear();
+			}
+			else{
+				this.redraw();
+			}
+		}
+		this.emit('config', 'mode', newval);
 	},
 
 	//------------------------------------------------------------------------------

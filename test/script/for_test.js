@@ -26,7 +26,8 @@ pzpr.on('load', function(){
 	/* テスト用ファイルのinclude */
 	debug.includeDebugScript(pid, function(){
 		/* パズルオブジェクトの作成 */
-		onload_option.config = {mode:'play', irowake:true};
+		onload_option.mode = 'play';
+		onload_option.config = {irowake:true};
 		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
 		pzpr.connectKeyEvents(puzzle);
 		
@@ -133,7 +134,7 @@ var debug = window.debug =
 
 	loadperf : function(){
 		puzzle.open(perfstr, function(puzzle){
-			puzzle.modechange('playmode');
+			puzzle.setMode('playmode');
 			puzzle.setConfig('irowake',true);
 		});
 	},
@@ -175,7 +176,7 @@ var debug = window.debug =
 				break;
 			case 'playmode':
 			case 'editmode':
-				puzzle.modechange(strs[0]);
+				puzzle.setMode(strs[0]);
 				break;
 			case 'setconfig':
 				if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}
