@@ -185,7 +185,7 @@ var debug = window.debug =
 				break;
 			case 'key':
 				strs.shift();
-				puzzle.key.inputKeys(strs);
+				puzzle.key.inputKeys.apply(puzzle.key, strs);
 				break;
 			case 'cursor':
 				puzzle.cursor.init(+strs[1], +strs[2]);

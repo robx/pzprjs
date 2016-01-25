@@ -131,10 +131,9 @@ KeyEvent:{
 	// kc.inputKeys()   キーボードイベントを実行する
 	//---------------------------------------------------------------------------
 	inputKeys : function(array){
-		if(typeof array==='string'){ array = [array];}
-		for(var i=0;i<array.length;i++){
-			this.keyevent(array[i],0);
-			this.keyevent(array[i],1);
+		for(var i=0;i<arguments.length;i++){
+			this.keyevent(arguments[i],0);
+			this.keyevent(arguments[i],1);
 		}
 	},
 
