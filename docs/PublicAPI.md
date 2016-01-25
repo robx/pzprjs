@@ -216,6 +216,7 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 * `puzzle.opemgr:OperationManager` Contains operation history data.
 * `puzzle.checker:Answer` Check if the board is correct.
 * `puzzle.key:KeyInput` Used if keyboard event occured.
+    * `puzzle.key.inputKeys(char_array)` Emulate keydown and keyup event with given character array.
     * `puzzle.key.cancelEvent:boolean` Cancel mouse event from `key` listener.
     * `puzzle.key.keydown:boolean` `true` if kwydown event is detected.
     * `puzzle.key.keyup:boolean` `true` if keyup event is detected.

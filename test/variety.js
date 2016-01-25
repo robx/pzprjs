@@ -70,10 +70,8 @@ function execinput(puzzle,str){
 			else                      { puzzle.setConfig(strs[1], strs[2]);}
 			break;
 		case 'key':
-			for(var i=1;i<strs.length;i++){
-				puzzle.key.keyevent(strs[i],0);
-				puzzle.key.keyevent(strs[i],1);
-			}
+			strs.shift();
+			puzzle.key.inputKeys(strs);
 			break;
 		case 'cursor':
 			puzzle.cursor.init(+strs[1], +strs[2]);
