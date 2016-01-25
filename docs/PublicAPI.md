@@ -64,14 +64,15 @@ console.log(puzzle.check().text);
 * `pzpr.Puzzle([canvas][,option])` Create puzzle object.
     * `canvas:Node` The canvas of the puzzle.
     * `option:object` See below.
-    * `option.type:string`     Select puzzle object type.
-        * `option.type==='editor'` **Default value.** The puzzle can be inputted question data and answer data.
-        * `option.type==='player'` The puzzle can be only taken answer data.
-        * `option.type==='viewer'` The puzzle can display the puzzle but reject any input.
-    * `option.config:object`   Input initial config data as a object. See pzpr.Puzzle.Config section.
-    * `option.graphic:string`  Specify graphic type. It can be `'svg'` or `'canvas'`.
-    * `option.width:number` and `option.height:number` Specify the size of the canvas.
-    * `option.cellsize:number` Specify the size of the canvas by the cellsize of the board.
+        * `option.type:string`     Select puzzle object type.
+            * `option.type==='editor'` **Default value.** The puzzle can be inputted question data and answer data.
+            * `option.type==='player'` The puzzle can be only taken answer data.
+            * `option.type==='viewer'` The puzzle can display the puzzle but reject any input.
+        * `option.config:object`   Input initial config data as a object. See pzpr.Puzzle.Config section.
+        * `option.mode`            Select initial mode: `editmode` or `playmode`. Value is the same as `puzzle.setMain()`.
+        * `option.graphic:string`  Specify graphic type. It can be `'svg'` or `'canvas'`.
+        * `option.width:number` and `option.height:number` Specify the size of the canvas.
+        * `option.cellsize:number` Specify the size of the canvas by the cellsize of the board.
 
 If neither width, height nor cellsize is given, the size of given canvas element is used for the size of puzzle.
 
@@ -105,8 +106,8 @@ If neither width, height nor cellsize is given, the size of given canvas element
 
 #### Methods for configuration
 
-* `puzzle.setMode([type])` It changes the puzzle into playmode or editmode when the puzzle type is 'editor'.
-    * `type` If `puzzle.MODE_PLAYER` or `'play'`, it will change the puzzle mode to `playmode`. <br> Otherwise `puzzle.MODE_EDITOR` or `'edit'`, puzzle mode will change into `editmode`.
+* `puzzle.setMode(type)` It changes the puzzle into playmode or editmode when the puzzle type is 'editor'.
+    * `type` If `puzzle.MODE_PLAYER` or `'play'`, it will change the puzzle mode to `playmode`. <br> If `puzzle.MODE_EDITOR` or `'edit'`, puzzle mode will change into `editmode`.
 * `puzzle.getConfig(configname)` Get the value of the config data. See below to get the list of the config.
     * Return value: the value of the specified config.
     * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
@@ -117,7 +118,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Return value: `object`.
 * `puzzle.saveConfig()` Return current changed config list from default value as object.
     * Return value: `object`.
-* `puzzle.restoreConfig([object])` Set config list by given object. 
+* `puzzle.restoreConfig(object)` Set config list by given object. 
     * `object:object` the list of the config to be restored. Usually this is the object which `puzzle.saveConfig()` returned.
 
 #### Methods for canvas
@@ -134,7 +135,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Return value: Generated Data URL.
 * `puzzle.toBlob([cellsize][, graphictype])` Return the canvas graphic data as Blob.
     * Return value: Blob data. This API can be used undef browser environment.
-* `puzzle.toSVG([cellsize][, graphictype])` Return raw SVG data of the canvas as string.
+* `puzzle.toSVG([cellsize])` Return raw SVG data of the canvas as string.
     * Return value: Generated text which means SVG.
 
 #### Methods for the board model
@@ -164,7 +165,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
 #### Methods for general purpose
 
 * `puzzle.getTime()` Return consumed time from the puzzle data is created or URL/filedata is opened.
-    * Return value: consumed time millisecond.
+    * Return value: consumed time in millisecond scale.
 
 #### Events
 
@@ -172,23 +173,24 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Callback: `function(puzzle)`
 * `'fail-open'` Emitted if `puzzle.open` failed.
     * Callback: `function(puzzle)`
-* `'canvasReady'` Emitted after `puzzle.setCanvas()` or `new pzpr.Puzzle(canvas)` finished.
+* `'canvasReady'` Emitted after both canvas is initialized and puzzle become ready. It is fired after `'ready'` and `'resize'` events finished.
     * Callback: `function(puzzle)`
 * `'resize'` Emitted if the size of the canvas is changed.
     * Callback: `function(puzzle)`
-* `'adjust'` Emitted after the size of the board is expanded, reduced or the board is flipped or turned.
+* `'adjust'` Emitted after rows and cols on the board is expanded, reduced or the board is flipped or turned.
     * Callback: `function(puzzle)`
 * `'config'` Emitted after a config has changed.
     * Callback: `function(puzzle, configname, value)`
-* `'key'` Emitted if keyboard event routine of the puzzle is called, before common routine is called.
+* `'key'` Emitted when keyboard event is called, before common routine is called.
     * Callback: `function(puzzle, keycode)`
-* `'mouse'` Emitted if mouse/touch event routine of the puzzle is called, before common routine is called.
+* `'mouse'` Emitted when mouse/touch event is called, before common routine is called.
     * Callback: `function(puzzle)`
-* `'history'` Emitted after operation history is added or execute undo/redo.
+* `'history'` Emitted after operation history is added or undo/redo is executed.
     * Callback: `function(puzzle)`
 
 #### Properties
 
+* `puzzle.pzpr` Reference to pzpr object.
 * `puzzle.ready:boolean` `true` after the URL/FileData is opened and board, painter and other related objects are set.
 * `puzzle.pid:string` specifies the variety/genre of the current puzzle.
 * `puzzle.canvas:Node` The node currently the puzzle has been using.
