@@ -21,7 +21,7 @@ var DOMParser = this.DOMParser || ((typeof require!=='undefined') ?
 	}}
 );
 var XMLSerializer = this.XMLSerializer || function(){ this.serializeToString = function(xmldoc){
-		return xmldoc.documentElement.outerHTML;
+		return xmldoc.documentElement.outerHTML.replace(/<([\w\-]+)([^>]*)><\/\1>/g, '<$1$2/>');
 	}};
 /* jshint ignore:end */
 
