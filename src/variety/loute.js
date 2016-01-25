@@ -114,8 +114,7 @@ KeyEvent:{
 		if('1'<=ca && ca<='4'){ val = +ca; val = (cell.qdir!==val?val:0);}
 		else if(ca==='-') { val = (cell.qdir!==-2?-2:0);}
 		else if(ca==='q') { val = (cell.qdir!==5?5:0);}
-		else if(ca==='BS'){ val = (cell.qdir>0?-2:0);}
-		else if(ca===' ') { val = 0;}
+		else if(ca===' '||ca==='BS'){ val = 0;}
 		else if(ca==='s1'){ val = -2;}
 		else{ return;}
 

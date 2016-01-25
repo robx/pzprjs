@@ -135,9 +135,6 @@ KeyEvent:{
 			if(nums.length>1){
 				for(var i=0;i<nums.length-1;i++){ val.push(nums[i]);}
 			}
-			else if(nums[0]!==-2){
-				val = [-2];
-			}
 		}
 		else if(ca===' '){ val = [];}
 		else{ return;}

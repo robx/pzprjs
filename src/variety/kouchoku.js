@@ -127,9 +127,8 @@ KeyEvent:{
 			if(cross.qnum===num){ cross.setQnum(-1);}
 			else{ cross.setQnum(num);}
 		}
-		else if(ca==='BS'){cross.setQnum(cross.qnum>=0?-2:-1);}
 		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
-		else if(ca===' '){ cross.setQnum(-1);}
+		else if(ca===' '||ca==='BS'){ cross.setQnum(-1);}
 		else{ return;}
 
 		this.prev = cross;

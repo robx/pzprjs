@@ -54,8 +54,7 @@ KeyEvent:{
 			else{ cell.setQnum(num+1);}
 		}
 		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
-		else if(ca==='BS'){cell.setQnum(cell.qnum>=0?-2:-1);}
-		else if(ca===' '){ cell.setQnum(-1);}
+		else if(ca===' '||ca==='BS'){ cell.setQnum(-1);}
 		else{ return false;}
 
 		return true;

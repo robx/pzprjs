@@ -123,8 +123,7 @@ KeyEvent:{
 				if(val>max){ return false;}
 			}
 			else if(ca==='BS'){
-				if(cur<0){ val = -1;}
-				else if(cur<10){ val = -2;}
+				if(cur<10){ val = -1;}
 				else{ val = (cur/10)|0;}
 			}
 			else if(ca==='-') { val = (cur!==-2?-2:-1);}

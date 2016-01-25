@@ -55,8 +55,7 @@ KeyEvent:{
 		}
 		else if(ca==='BS'){
 			var num = cell.getNum();
-			if(num<0){ val = -1;}
-			else if(num<10){ val = ((this.puzzle.editmode&&!cell.disInputHatena)?-2:-1);}
+			if(num<10){ val = -1;}
 			else{ val = (num/10)|0;}
 		}
 		else if(ca==='-') { val = ((this.puzzle.editmode&&!cell.disInputHatena)?-2:-1);}
