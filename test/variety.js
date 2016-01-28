@@ -114,6 +114,15 @@ for(var pid in pzpr.variety.info){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				puzzle.open(kanpen_url, function(){ assert_equal_board(bd,bd2);});
 			});
+			if(pid!=='heyawake'){ return;}
+			it('Heyawake-Applet URL', function(){
+				puzzle.open(pid+'/'+testdata[pid].url);
+				var kanpen_url = puzzle.getURL(pzpr.parser.URL_HEYAAPP);
+				assert.equal(pzpr.parser.parse(kanpen_url).pid, pid);
+
+				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
+				puzzle.open(kanpen_url, function(){ assert_equal_board(bd,bd2);});
+			});
 		})(pid);});
 		describe('Answer check', function(){
 			var puzzle = new pzpr.Puzzle();

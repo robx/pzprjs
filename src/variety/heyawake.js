@@ -120,11 +120,13 @@ Encode:{
 			if(rdata[c]!==null){ continue;}
 
 			var cell = bd.cell[c];
-			if(inp[i].match(/(\d+in)?(\d+)x(\d+)$/)){
-				if(RegExp.$1.length>0){ cell.qnum = +RegExp.$1;}
-				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$2) - 2;
-				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$3) - 2;
-				fileio.setRdataRect(rdata, i, {x1:x1, x2:x2, y1:y1, y2:y2});
+			if(inp[i].match(/((\d+)in)?(\d+)x(\d+)$/)){
+				if(RegExp.$2.length>0){ cell.qnum = +RegExp.$2;}
+				var x1 = cell.bx, x2 = x1 + 2*(+RegExp.$3) - 2;
+				var y1 = cell.by, y2 = y1 + 2*(+RegExp.$4) - 2;
+				for(var bx=x1;bx<=x2;bx+=2){ for(var by=y1;by<=y2;by+=2){
+					rdata[bd.getc(bx,by).id] = i;
+				}}
 			}
 			i++;
 		}
