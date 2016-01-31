@@ -91,7 +91,7 @@ MouseEvent:{
 	e_mousemove : function(e){
 		if(!this.enableMouse){ return true;}
 		
-		if(typeof e.touches!=='undefined' || typeof e.which==='undefined' || e.which!==0){
+		if(e.touches!==void 0 || e.which===void 0 || e.which!==0 || (e.type.match(/pointermove/i) && e.buttons>0)){
 			var addrtarget = this.getBoardAddress(e);
 			this.lineTo(addrtarget.bx, addrtarget.by);
 		}
