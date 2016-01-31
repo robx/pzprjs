@@ -36,7 +36,7 @@ Encode:{
 			this.pflag = pzl.pflag;
 			this.outbstr = pzl.body;
 			switch(pzl.type){
-			case pzl.URL_PZPRV3: case pzl.URL_PZPRV3E: case pzl.URL_KANPENP:
+			case pzl.URL_PZPRV3: case pzl.URL_KANPENP:
 				this.decodePzpr(pzl.URL_PZPRV3);
 				break;
 			case pzl.URL_PZPRAPP:
@@ -69,13 +69,15 @@ Encode:{
 		this.outbstr = '';
 
 		switch(type){
-		case pzl.URL_PZPRV3: case pzl.URL_PZPRV3E:
+		case pzl.URL_PZPRV3:
 			this.encodePzpr(pzl.URL_PZPRV3);
 			break;
 
+		case pzl.URL_PZPRAPP:
+			throw "no Implemention";
+
 		case pzl.URL_KANPENP:
 			if(!pzpr.variety.info[pid].exists.kanpen){ throw "no Implemention";}
-			/* falls through */
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;
@@ -92,7 +94,7 @@ Encode:{
 			break;
 
 		default:
-			throw "no Implemention";
+			throw "invalid URL Type";
 		}
 
 		pzl.pid   = pid;

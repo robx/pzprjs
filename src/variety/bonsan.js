@@ -274,7 +274,12 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===1 || this.pid==='heyabon'){ this.encodeBorder();}else{ this.outpflag="c";}
+		if(type===this.puzzle.pzpr.parser.URL_PZPRAPP || this.pid==='heyabon'){
+			this.encodeBorder();
+		}
+		else{
+			this.outpflag='c';
+		}
 		this.encodeNumber16();
 	},
 

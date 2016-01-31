@@ -122,13 +122,8 @@ Encode:{
 		}
 	},
 	encodePzpr : function(type){
-		if(type===this.puzzle.pzpr.parser.URL_PZPRV3 || this.pid==='norinori'){
-			this.encodeBorder();
-		}
-		else{
-			this.outpflag='c';
-			this.encodeBorder();
-		}
+		if(type===this.puzzle.pzpr.parser.URL_PZPRAPP && this.pid==='lits'){ this.outpflag='c';}
+		this.encodeBorder();
 	},
 
 	decodeKanpen : function(){

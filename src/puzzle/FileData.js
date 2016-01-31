@@ -68,7 +68,7 @@ FileIO:{
 		if     (filetype===pzl.FILE_PZPR)    { this.encodeData();}
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
-		else{ throw "no Implemention";}
+		else{ throw "invalid URL Type";}
 
 		pzl.type  = filetype;
 		pzl.filever = this.filever;

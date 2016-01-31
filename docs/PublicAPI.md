@@ -346,7 +346,6 @@ These values are defined under pzpr.parser.
 
 * `URL_AUTO` Undefined URL type.
 * `URL_PZPRV3` PUZ-PRE v3 URL type.
-* `URL_PZPRV3E` PUZ-PRE v3 URL with opening editmode type.
 * `URL_PZPRAPP` PUZ-PRE Applet URL type.
 * `URL_KANPEN` Kanpen URL type.
 * `URL_KANPENP` Kanpen with PUZ-PRE data URL type.

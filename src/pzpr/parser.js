@@ -4,12 +4,11 @@
 (function(){
 
 var URL_AUTO    = 0,
-	URL_PZPRV3  = 6,
-	URL_PZPRV3E = 3,
-	URL_PZPRAPP = 1,
-	URL_KANPEN  = 2,
-	URL_KANPENP = 5,
-	URL_HEYAAPP = 4,
+	URL_PZPRV3  = 1,
+	URL_PZPRAPP = 2,
+	URL_KANPEN  = 3,
+	URL_KANPENP = 4,
+	URL_HEYAAPP = 5,
 	
 	FILE_AUTO = 0,
 	FILE_PZPR = 1,
@@ -21,7 +20,6 @@ pzpr.parser = {
 	// 定数(URL形式)
 	URL_AUTO    : URL_AUTO,
 	URL_PZPRV3  : URL_PZPRV3,
-	URL_PZPRV3E : URL_PZPRV3E,
 	URL_PZPRAPP : URL_PZPRAPP,
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
@@ -78,7 +76,6 @@ pzpr.parser.URLData.prototype = {
 	// 定数(URL形式)
 	URL_AUTO    : URL_AUTO,
 	URL_PZPRV3  : URL_PZPRV3,
-	URL_PZPRV3E : URL_PZPRV3E,
 	URL_PZPRAPP : URL_PZPRAPP,
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
@@ -144,8 +141,7 @@ pzpr.parser.URLData.prototype = {
 			else{
 				this.pid = url.substr(url.indexOf("?")+1);
 			}
-			this.pid = this.pid.replace(/(m\+|_edit|_test|_play)/,'');
-			this.type = (RegExp.$1!=='_edit' ? URL_PZPRV3 : URL_PZPRV3E);
+			this.type = URL_PZPRV3;
 		}
 		this.pid = pzpr.variety.toPID(this.pid);
 	},
@@ -160,7 +156,6 @@ pzpr.parser.URLData.prototype = {
 		else{ domain = "pzv.jp/p.html";}
 		switch(this.type){
 			case URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
-			case URL_PZPRV3E: url="http://"+domain+"?%PID%_edit/"; break;
 			case URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
 			case URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
