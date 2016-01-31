@@ -9,9 +9,6 @@ This script is developed against HTML5 features and JavaScript.
 
 [nikoli]: http://nikoli.co.jp/
 
-## Other documents
-* [Supported puzzles](https://github.com/sabo2/pzprv3/blob/develop/docs/SupportedPuzzles.md)
-
 ## Working environment
 
 ### Browser Support (Recommended)
@@ -23,7 +20,6 @@ This script is developed against HTML5 features and JavaScript.
 ### Browser Support (Possible)
 * Safari 5.1+
 * Opera 12.17
-* Internet Explorer 9+
 * iOS 9+
 * Android 4.4+
 * WiiU
@@ -49,7 +45,12 @@ console.log(puzzle.check().text);
 // -> 'An area of unshaded cells has plural numbers.'
 ```
 
-* [Public APIs for pzpr.js](https://github.com/sabo2/pzprv3/blob/develop/docs/PublicAPI.md)
+## Documents
+* [Supported puzzles](https://github.com/sabo2/pzprjs/blob/master/docs/SupportedPuzzles.md)
+* [Public APIs for pzpr.js](https://github.com/sabo2/pzprjs/blob/master/docs/PublicAPI.md)
+* [pzpr object](https://github.com/sabo2/pzprjs/blob/master/docs/pzpr.md)
+* [Puzzle object](https://github.com/sabo2/pzprjs/blob/master/docs/Puzzle.md)
+* [List of puzzle config](https://github.com/sabo2/pzprjs/blob/master/docs/Config.md)
 
 ## Releases
 * 2016/01/?? v0.0.1
@@ -63,4 +64,3 @@ console.log(puzzle.check().text);
 
 ## Links
 * [PUZ-PRE v3](http://pzv.jp/index_en.html)
-* [Access Counter](http://log.pzv.jp/logview.php)
