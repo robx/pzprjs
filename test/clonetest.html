@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="../dist/pzpr.js"></script>
+<script type="text/javascript">
+var pzl;
+pzpr.on('load', function(){
+	var filedata = "pzprv3/tapa/5/5/3 # . . . /# # . . 5 /# . 3,1,1 . . /3,1 . . . . /. . . . 2 /";
+	pzl = new pzpr.Puzzle({type:'player'}).open(filedata);
+	pzl.setConfig('irowakeblk',true);
+	pzl.setCanvasSizeByCellSize(32);
+	pzl.setCanvas(document.getElementById('divques'));
+});
+function clonePuzzle(puzzle){
+	var container = document.createElement('div');
+	container.className = 'container';
+	var quesnode = document.createElement('div');
+	container.appendChild(quesnode);
+	document.body.appendChild(container);
+	var newpuzzle = puzzle.clone({width:80,height:80});
+	//newpuzzle.setCanvasSizeByCellSize(12);
+	newpuzzle.setCanvas(quesnode);
+}
+</script>
+<style type="text/css">
+ div.container { float:left; width:auto; padding:12px; text-align:center;}
+</style>
+</head>
+<body>
+<div class="container">
+ <div id="divques" style="margin:auto;width:180px;height:180px;"></div>
+ <input type="button" value="チェック" onclick="alert(pzl.check(true).text);"></input>
+ <input type="button" value="一手戻す" onclick="pzl.undo();"></input>
+ <input type="button" value="回答消去" onclick="pzl.ansclear();"></input>
+ <input type="button" value="Clone"   onclick="clonePuzzle(pzl);"></input>
+</div>
+</body>
+</html>
