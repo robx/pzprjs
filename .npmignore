@@ -2,7 +2,10 @@
 .hg*
 
 /.vscode
-/Grunffile.js
+/Gruntfile.js
+/docs
+/src
+*.concat.js
 
 .jshintrc
 /sample
