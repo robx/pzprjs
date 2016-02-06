@@ -26,6 +26,7 @@ Graphic:{
 		this.resetRange();
 
 		this.initColor();
+		this.initFont();
 	},
 
 	context    : null,
@@ -129,6 +130,7 @@ Graphic:{
 	// その他サイズ指定
 	globalfontsizeratio : 1,			// Fontサイズの倍率
 	fontsizeratio : [0.8, 0.7, 0.55],	// 文字の長さ別Fontサイズの倍率
+	fontfamily    : '',
 	crosssize     : 0.4,
 	circleratio   : [0.40, 0.35],
 
@@ -207,7 +209,7 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.initColor()   初期化事に描画色の設定を行う
+	// pc.initColor()   初期化時に描画色の設定を行う
 	// pc.setColor()    描画色の設定を行う
 	//---------------------------------------------------------------------------
 	initColor : function(){
@@ -219,6 +221,18 @@ Graphic:{
 	setColor : function(name, color){
 		this[name] = color || this.constructor.prototype[name];
 		if(!this.suspended){ this.paintAll();}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.initFont()  数字を記入するためのフォントを設定する
+	//---------------------------------------------------------------------------
+	initFont : function(){
+		var isgothic = this.puzzle.getConfig('font')===1;
+		if(this.puzzle.pzpr.env.OS.Android){
+			this.fontfamily = (isgothic ? 'Helvetica, Verdana, Arial, ' : '"Times New Roman", ');
+		}
+		else{ this.fontfamily = '';}
+		this.fontfamily += (isgothic ? 'sans-serif' : 'serif');
 	},
 
 	//---------------------------------------------------------------------------
@@ -572,12 +586,11 @@ Graphic:{
 		var g = this.context;
 
 		var style = (option.style ? option.style+" " : "");
-		var fontfamily = (this.puzzle.getConfig('font')===1 ? 'sans-serif' : 'serif');
 		var ratioarray = option.ratio || this.fontsizeratio;
 		var ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
 		ratio *= (option.globalratio || this.globalfontsizeratio);
 		var realsize = ((this.cw * ratio)|0);
-		g.font = style + realsize + "px " + fontfamily;
+		g.font = style + realsize + "px " + this.fontfamily;
 
 		var position = option.position || CENTER;
 		switch(position){

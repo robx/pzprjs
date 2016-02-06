@@ -164,8 +164,13 @@ Config.prototype =
 	configevent : function(name, newval){
 		var puzzle = this.puzzle;
 		switch(name){
-		case 'irowake': case 'font': case 'cursor': case 'autocmp': case 'autoerr':
+		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
+			puzzle.redraw();
+			break;
+		
+		case 'font':
+			if(puzzle.ready){ puzzle.painter.initFont();}
 			puzzle.redraw();
 			break;
 		
