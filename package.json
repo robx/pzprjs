@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
   "directories": {
@@ -8,9 +8,7 @@
   },
   "keywords": [
     "puzzle",
-    "nikoli",
-    "HTML5",
-    "WebApp"
+    "HTML5"
   ],
   "author": "sabo2",
   "license": "MIT",

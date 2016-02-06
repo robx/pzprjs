@@ -3,11 +3,8 @@
 ## About pzpr.js
 
 pzpr.js enables to create or edit "pencil puzzles" which we solve with specific rules on boards.
-Currently, this project has a lot of puzzle genres which are mainly published by [nikoli][].
 
 This script is developed against HTML5 features and JavaScript.
-
-[nikoli]: http://nikoli.co.jp/
 
 ## Working environment
 
@@ -49,6 +46,7 @@ console.log(puzzle.check().text);
 * [List of puzzle config](https://github.com/sabo2/pzprjs/blob/master/docs/Config.md)
 
 ## Releases
+* 2016/02/06 v0.0.2
 * 2016/01/31 v0.0.1
 * 2015/12/29 pzprv3-v3.5.2
 * 2015/08/16 pzprv3-v3.5.1
