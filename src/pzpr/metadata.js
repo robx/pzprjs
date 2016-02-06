@@ -14,7 +14,7 @@ pzpr.MetaData.prototype =
 	
 	update : function(metadata){
 		if(!metadata){ return;}
-		for(var i in this.items){ this[i] = metadata[i];}
+		for(var i in this.items){ if(typeof metadata[i]==='string'){ this[i] = metadata[i];}}
 	},
 	getvaliddata : function(){
 		var obj = {};
