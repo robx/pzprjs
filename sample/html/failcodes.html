@@ -13,17 +13,20 @@
   #main span.stren { width:480px;}
 </style>
 <script type="text/javascript">
-function bglist(){
-  for(var pid in pzpr.variety.info){
+function loadAllScript(){
+  var loadedall = true;
+  pzpr.variety.each(function(pid){
     pzpr.classmgr.includeCustomFile(pid);
+    if(!pzpr.custom[pid]){ loadedall = false;}
+  });
+  if(!loadedall){
+    setTimeout(loadAllScript,10);
   }
-  for(var pid in pzpr.variety.info){
-    if(!pzpr.custom[pid]){
-      setTimeout(bglist,10);
-      return;
-    }
+  else{
+    bglist();
   }
-
+}
+function bglist(){
   var main = document.getElementById("main");
   var list = [], commons = {};
   var FC = pzpr.common.FailCode.prototype;
@@ -68,7 +71,7 @@ function bglist(){
     main.appendChild(document.createElement('br'));
   }
 }
-window.addEventListener('load', bglist, false);
+window.addEventListener('load', loadAllScript, false);
 </script>
 <script type="text/javascript" src="../../dist/pzpr.js"></script>
 </HEAD>

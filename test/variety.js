@@ -13,9 +13,9 @@ global.ui = {debug:{addDebugData: function(pid,data){
 	testdata[pid] = data;
 	testdata[pid].fullfile = data.failcheck[data.failcheck.length-1][1];
 }}};
-for(var pid in pzpr.variety.info){
+pzpr.variety.each(function(pid){
 	require('./script/test_'+pid+'.js');
-}
+});
 
 var props = ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp'];
 function bd_freezecopy(bd1){
@@ -82,14 +82,14 @@ function execinput(puzzle,str){
 	}
 }
 
-for(var pid in pzpr.variety.info){
+pzpr.variety.each(function(pid){
 	describe(pid+' test', function(){
 		describe('URL', function(){ (function(pid){
 			var puzzle = new pzpr.Puzzle();
 			it('pzpr URL', function(){
 				puzzle.open(pid+'/'+testdata[pid].url);
 				var urlstr = puzzle.getURL();
-				var expurl = 'http://pzv.jp/p.html?'+pzpr.variety.toURLID(pid)+'/'+testdata[pid].url;
+				var expurl = 'http://pzv.jp/p.html?'+pzpr.variety(pid).urlid+'/'+testdata[pid].url;
 				assert.equal(urlstr, expurl);
 			});
 			it('pzpr invalid URL', function(){
@@ -105,7 +105,7 @@ for(var pid in pzpr.variety.info){
 					assert.equal(puzzle.ready, true);
 				});
 			});
-			if(!pzpr.variety.info[pid].exists.kanpen){ return;}
+			if(!pzpr.variety(pid).exists.kanpen){ return;}
 			it('kanpen URL', function(){
 				puzzle.open(pid+'/'+testdata[pid].url);
 				var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
@@ -158,7 +158,7 @@ for(var pid in pzpr.variety.info){
 
 				puzzle.open(outputstr, function(){ assert_equal_board(bd,bd2);});
 			});
-			if(!pzpr.variety.info[pid].exists.pencilbox){ return;}
+			if(!pzpr.variety(pid).exists.pencilbox){ return;}
 			var ignore_qsub = (pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
 			it('Kanpen file', function(){
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
@@ -274,4 +274,4 @@ for(var pid in pzpr.variety.info){
 			});
 		});
 	});
-}
+});

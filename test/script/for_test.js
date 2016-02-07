@@ -52,7 +52,7 @@ var debug = window.debug =
 		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.variety.info[puzzle.pid].exists.pencilbox){
+		if(pzpr.variety(puzzle.pid).exists.pencilbox){
 			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX));
 		}
 		else{
@@ -60,7 +60,7 @@ var debug = window.debug =
 		}
 	},
 	filesave_pencilbox_xml : function(){
-		if(pzpr.variety.info[puzzle.pid].exists.pencilbox){
+		if(pzpr.variety(puzzle.pid).exists.pencilbox){
 			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
 		}
 		else{
@@ -231,8 +231,7 @@ var debug = window.debug =
 		var pnum=0, term, idlist=[], self = this, starttime = pzpr.util.currentTime();
 		self.phase = 99;
 
-		for(var id in pzpr.variety.info){ idlist.push(id);}
-		idlist.sort();
+		idlist = pzpr.variety.getList().sort();
 		term = idlist.length;
 
 		self.alltimer = setInterval(function(){
@@ -286,7 +285,7 @@ var debug = window.debug =
 		setTimeout(function(){ self.check_encode_kanpen(self);},0);
 	},
 	check_encode_kanpen : function(self){
-		if(pzpr.variety.info[self.pid].exists.kanpen){
+		if(pzpr.variety(self.pid).exists.kanpen){
 			var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 			var fails_org = self.fails;
@@ -371,7 +370,7 @@ var debug = window.debug =
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
 			setTimeout(function(){
-				if(pzpr.variety.info[self.pid].exists.pencilbox){ self.check_file_pbox(self);}
+				if(pzpr.variety(self.pid).exists.pencilbox){ self.check_file_pbox(self);}
 				else if(puzzle.pid==='tawa'){ self.check_flipX1(self);}
 				else{ self.check_turnR1(self);}
 			},0);
