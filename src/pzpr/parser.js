@@ -143,7 +143,7 @@ pzpr.parser.URLData.prototype = {
 			}
 			this.type = URL_PZPRV3;
 		}
-		this.pid = pzpr.variety(this.pid).pid;
+		this.pid = pzpr.variety.toPID(this.pid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -317,7 +317,7 @@ pzpr.parser.FileData.prototype = {
 			this.qdata = lines.join("\n");
 		}
 		else{ this.pid = '';}
-		this.pid = pzpr.variety(this.pid).pid;
+		this.pid = pzpr.variety.toPID(this.pid);
 		
 		return (!!this.pid);
 	},

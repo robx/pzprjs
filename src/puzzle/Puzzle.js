@@ -36,6 +36,7 @@ pzpr.Puzzle = function(canvas, option){
 pzpr.Puzzle.prototype =
 {
 	pid : '',			// パズルのID("creek"など)
+	info : {},			// VarietyInfoへの参照
 	
 	klass    : null,
 	
@@ -220,6 +221,7 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	changepid : function(pid){
 		this.pid = pid;
+		this.info = pzpr.variety(pid);
 		pzpr.classmgr.setPrototypeRef(this, 'pid', pid);
 		this.checker.makeCheckList();
 	},

@@ -184,6 +184,8 @@ pzpr.classmgr = {
 
 		puzzle.pid = pid;
 		this.setPrototypeRef(puzzle, 'pid', pid);
+
+		puzzle.info = pzpr.variety(pid);
 	},
 
 	//---------------------------------------------------------------------------

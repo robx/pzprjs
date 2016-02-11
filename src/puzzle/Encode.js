@@ -77,7 +77,7 @@ Encode:{
 			throw "no Implemention";
 
 		case pzl.URL_KANPENP:
-			if(!pzpr.variety(pid).exists.kanpen){ throw "no Implemention";}
+			if(!puzzle.info.exists.kanpen){ throw "no Implemention";}
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;

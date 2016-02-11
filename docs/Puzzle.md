@@ -137,6 +137,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.pzpr` Reference to pzpr object.
 * `puzzle.ready:boolean` `true` after the URL/FileData is opened and board, painter and other related objects are set.
 * `puzzle.pid:string` specifies the variety/genre of the current puzzle.
+* `puzzle.info:object` Reference to VarietyInfo of the current puzzle.
 * `puzzle.canvas:Node` The node currently the puzzle has been using.
 * `puzzle.editmode:boolean` `true` if the puzzle is inputting question data at the moment.
 * `puzzle.playmode:boolean` `true` if the puzzle is inputting answer data at the moment.

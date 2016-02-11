@@ -38,6 +38,11 @@ delete variety.extend;
 (function(Variety, obj){
 	for(var pzprid in obj){
 		_info[pzprid] = new Variety(pzprid,obj[pzprid]);
+		try{
+			Object.freeze(_info[pzprid]);
+			Object.freeze(_info[pzprid].exists);
+			Object.freeze(_info[pzprid].alias);
+		}catch(e){}
 	}
 })
 (function Variety(pzprid, datalist){
