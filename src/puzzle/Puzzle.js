@@ -175,8 +175,15 @@ pzpr.Puzzle.prototype =
 			data = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
 		}
 		else{
-			var dataurl = canvas.toDataURL('image/'+type);
-			data = window.atob(dataurl.replace(/^data:image\/\w+?;base64,/,''));
+			var dataurl = canvas.toDataURL('image/'+type).replace(/^data:image\/\w+?;base64,/,'');
+			if(!pzpr.env.node){
+				var binary = window.atob(dataurl);
+				data = new Uint8Array(binary.length);
+				for(var i=0;i<binary.length;i++){ data[i] = binary.charCodeAt(i);}
+			}
+			else{
+				data = new Buffer(dataurl, 'base64');
+			}
 		}
 		canvas.parentNode.removeChild(canvas);
 		return data;
