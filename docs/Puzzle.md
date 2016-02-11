@@ -75,11 +75,11 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.redraw([flush])` Redraw the whole canvas.
     * `flush:boolean` If `true`, it will destroy all cached data and redraw, otherwise cached data will be kept.
 * `puzzle.irowake()` Regenerate the color of the line if config.irowake (set individual color to line) is set.
-* `puzzle.toDataURL([cellsize][, graphictype])` Return the canvas graphic data as Data URL.
+* `puzzle.toDataURL([graphictype][, cellsize])` Return the canvas graphic data as Data URL.
     * Return value: Generated Data URL.
-* `puzzle.toBlob([cellsize][, graphictype])` Return the canvas graphic data as Blob.
+* `puzzle.toBlob([graphictype][, cellsize])` Return the canvas graphic data as Blob.
     * Return value: Blob data. This API can be used undef browser environment.
-* `puzzle.toSVG([cellsize])` Return raw SVG data of the canvas as string.
+* `puzzle.toImageFile([graphictype][, cellsize])` Return raw SVG data of the canvas as string.
     * Return value: Generated text which means SVG.
 
 ## Methods for the board model
