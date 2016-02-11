@@ -79,8 +79,8 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Return value: Generated Data URL.
 * `puzzle.toBlob([graphictype][, cellsize])` Return the canvas graphic data as Blob.
     * Return value: Blob data. This API can be used undef browser environment.
-* `puzzle.toImageFile([graphictype][, cellsize])` Return raw SVG data of the canvas as string.
-    * Return value: Generated text which means SVG.
+* `puzzle.toBuffer([graphictype][, cellsize])` Return raw image data of the canvas.
+    * Return value: Generated data as a string.
 
 ## Methods for the board model
 
