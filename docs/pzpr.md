@@ -77,9 +77,19 @@ These values are defined under pzpr.parser.
 ## pzpr.variety object
 
 This object contains each puzzle variety/genre information.
+In addition, pzpr.variety itself is a function to return puzzle genre's information.
 
 #### Methods
 
 * `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
     * Return value: `boolean`
     * `pid:string` Puzzle variety type.
+    * It is the same as `pzpr.variety(pid).valid`.
+
+* `pzpr.variety(pid)` Return puzzle genre's information.
+    * Return value: `VarietyInfo`
+
+* `VarietyInfo`
+    * `info.valid` Whether the given pid is valid.
+    * `info.en` Puzzle name in English.
+    * `info.ja` Puzzle name in Japanese.

@@ -114,11 +114,11 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile : function(pid){
-		pid = pzpr.variety.toScript(pid);
-		if(this.includedFile[pid]){ return;}
-		this.includedFile[pid] = true;
+		var scriptid = pzpr.variety(pid).script;
+		if(this.includedFile[scriptid]){ return;}
+		this.includedFile[scriptid] = true;
 
-		var customfile = pzpr.util.getpath()+'./pzpr-variety/'+pzpr.variety.toScript(pid)+'.js';
+		var customfile = pzpr.util.getpath()+'./pzpr-variety/'+scriptid+'.js';
 		if(!pzpr.env.node){
 			var _script = document.createElement('script');
 			_script.type = 'text/javascript';
@@ -136,7 +136,7 @@ pzpr.classmgr = {
 	// 新しくパズルのファイルを開く時の処理
 	//---------------------------------------------------------------------------
 	setPuzzleClass : function(puzzle, newpid, callback){
-		if(!pzpr.variety.info[newpid]){
+		if(!pzpr.variety(newpid).valid){
 			throw "Invalid Puzzle Variety Selected";
 		}
 

@@ -2,39 +2,47 @@
 /* jshint latedef: false */
 /* global pzpr:false */
 
-pzpr.variety = {
-	info   : {},
-	exists : function(name){
-		return !!this.toPID(name);
-	},
-	toPID : function(name){
-		if(!!this.info[name] && !!this.info[name].ja){ return name;}
-		for(var pid in this.info){
-			if(!this.info[pid].alias){ continue;}
-			for(var type in this.info[pid].alias){
-				if(this.info[pid].alias[type]===name){ return pid;}
-			}
+(function(){
+
+var _info = {}, _list = [];
+function toPID(name){
+	if(!!_info[name]){ return name;}
+	for(var pid in _info){
+		if(!_info[pid].alias){ continue;}
+		for(var type in _info[pid].alias){
+			if(_info[pid].alias[type]===name){ return pid;}
 		}
-		return '';
-	},
-	toScript : function(pid){
-		return (!!this.info[pid] ? this.info[pid].script : '');
-	},
-	toURLID : function(pid){
-		return (!!this.info[pid].alias.pzprurl ? this.info[pid].alias.pzprurl : pid);
-	},
-	toKanpen : function(pid){
-		return (!!this.info[pid].alias.kanpen ? this.info[pid].alias.kanpen : pid);
 	}
+	return '';
+}
+
+var variety = pzpr.variety = function(pid){
+	return _info[toPID(pid)] || {valid:false};
 };
+variety.extend = function(obj){ for(var n in obj){ this[n] = obj[n];}};
+variety.extend({
+	info   : _info,
+	toPID  : toPID,
+	exists : function(name){
+		return variety(name).valid;
+	},
+	each : function(func){
+		for(var pid in _info){ func(pid);}
+	},
+	getList : function(){
+		return _list.slice();
+	}
+});
+delete variety.extend;
 
 (function(Variety, obj){
 	for(var pzprid in obj){
-		pzpr.variety.info[pzprid] = new Variety(pzprid,obj[pzprid]);
+		_info[pzprid] = new Variety(pzprid,obj[pzprid]);
 	}
 })
 (function Variety(pzprid, datalist){
-	this.pzprid = pzprid;		/* パズルID */
+	this.valid  = true;
+	this.pid    = pzprid;		/* パズルID */
 	this.script = (!!datalist[4] ? datalist[4] : pzprid);	/* スクリプトファイル(クラス) */
 	this.ja     = datalist[2];	/* 日本語パズル名 */
 	this.en     = datalist[3];	/* 英語パズル名 */
@@ -49,6 +57,9 @@ pzpr.variety = {
 	/* kanpen  : カンペンID            */
 	/* kanpen2 : カンペンID(入力のみ)  */
 	this.alias  = (!!datalist[5] ? datalist[5] : {});
+	this.urlid  = this.alias.pzprurl || pzprid;
+	this.kanpenid = (!!datalist[1] ? (this.alias.kanpen  || pzprid) : '');
+	_list.push(pzprid);
 },
 {
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
@@ -159,3 +170,5 @@ pzpr.variety = {
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
+
+})();

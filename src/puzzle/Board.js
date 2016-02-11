@@ -28,11 +28,19 @@ Board:{
 		this.excell = new classes.EXCellList();
 
 		// 空オブジェクト
-		this.nullobj = new classes.BoardPiece();
+		this.nullobj     = new classes.BoardPiece();
 		this.emptycell   = new classes.Cell();
 		this.emptycross  = new classes.Cross();
 		this.emptyborder = new classes.Border();
 		this.emptyexcell = new classes.EXCell();
+		try{
+			Object.freeze(this.nullobj);
+			Object.freeze(this.emptycell);
+			Object.freeze(this.emptycross);
+			Object.freeze(this.emptyborder);
+			Object.freeze(this.emptyexcell);
+		}
+		catch(e){}
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;

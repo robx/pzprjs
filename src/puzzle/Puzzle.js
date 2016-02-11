@@ -154,25 +154,39 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	// owner.toDataURL() 盤面画像をDataURLとして出力する
 	// owner.toBlob()    盤面画像をBlobとして出力する
-	// owner.toSVG()     盤面画像をSVGファイルデータそのままで出力する
+	// owner.toBuffer()  盤面画像をファイルデータそのままで出力する
 	//---------------------------------------------------------------------------
 	toDataURL : function(type, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
-		var dataurl = canvas.toDataURL();
+		var dataurl = canvas.toDataURL('image/'+type);
 		canvas.parentNode.removeChild(canvas);
 		return dataurl;
 	},
 	toBlob : function(type, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
-		var blob = canvas.toBlob();
+		var blob = canvas.toBlob('image/'+type);
 		canvas.parentNode.removeChild(canvas);
 		return blob;
 	},
-	toSVG : function(cellsize){
-		var canvas = getLocalCanvas(this, 'svg', cellsize);
-		var svgdata = canvas.firstChild.outerHTML || new XMLSerializer().serializeToString(canvas.firstChild);
+	toBuffer : function(type, cellsize){
+		var canvas = getLocalCanvas(this, (type||""), cellsize), data;
+		if(canvas.getContext('2d').use.svg){
+			var svgdata = canvas.firstChild.outerHTML || new XMLSerializer().serializeToString(canvas.firstChild);
+			data = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
+		}
+		else{
+			var dataurl = canvas.toDataURL('image/'+type).replace(/^data:image\/\w+?;base64,/,'');
+			if(!pzpr.env.node){
+				var binary = window.atob(dataurl);
+				data = new Uint8Array(binary.length);
+				for(var i=0;i<binary.length;i++){ data[i] = binary.charCodeAt(i);}
+			}
+			else{
+				data = new Buffer(dataurl, 'base64');
+			}
+		}
 		canvas.parentNode.removeChild(canvas);
-		return '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
+		return data;
 	},
 
 	//---------------------------------------------------------------------------

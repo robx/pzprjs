@@ -143,7 +143,7 @@ pzpr.parser.URLData.prototype = {
 			}
 			this.type = URL_PZPRV3;
 		}
-		this.pid = pzpr.variety.toPID(this.pid);
+		this.pid = pzpr.variety(this.pid).pid;
 	},
 
 	//---------------------------------------------------------------------------
@@ -161,8 +161,8 @@ pzpr.parser.URLData.prototype = {
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 		}
 
-		return url.replace("%PID%", pzpr.variety.toURLID(pid))
-				  .replace("%KID%", pzpr.variety.toKanpen(pid));
+		return url.replace("%PID%", pzpr.variety(pid).urlid)
+				  .replace("%KID%", pzpr.variety(pid).kanpenid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -317,7 +317,7 @@ pzpr.parser.FileData.prototype = {
 			this.qdata = lines.join("\n");
 		}
 		else{ this.pid = '';}
-		this.pid = pzpr.variety.toPID(this.pid);
+		this.pid = pzpr.variety(this.pid).pid;
 		
 		return (!!this.pid);
 	},
@@ -331,7 +331,7 @@ pzpr.parser.FileData.prototype = {
 			return [(this.filever===0?"pzprv3":("pzprv3." + this.filever)), this.pid, ""].join("\n");
 		}
 		else if(this.type===FILE_PBOX_XML){
-			this.body.querySelector('puzzle').setAttribute('type', pzpr.variety.toKanpen(this.pid));
+			this.body.querySelector('puzzle').setAttribute('type', pzpr.variety(this.pid).kanpenid);
 		}
 		return "";
 	},
