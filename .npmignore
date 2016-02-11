@@ -4,6 +4,7 @@
 /.vscode
 /Gruntfile.js
 /docs
+/Changelog.md
 /src
 *.concat.js
 
