@@ -1,4 +1,16 @@
 
+## Version 0.2.0
+
+Release date: 2016/2/13
+
+#### Breaking Change
+
+* Puzzle: Add a callback to toBlob() as first augument.
+
+#### Improvement
+
+* nagare: Allow "wind from both side" if there is no line on the unit.
+
 ## Version 0.1.0
 
 Release date: 2016/2/11
