@@ -235,27 +235,29 @@ var debug = window.debug =
 		term = idlist.length;
 
 		self.alltimer = setInterval(function(){
+			if(self.phase !== 99){ return;}
+
 			var newid = idlist[pnum];
-			if(!self.urls[newid]){
+			if(!!newid && !self.urls[newid]){
 				self.includeDebugScript(newid);
 				return;
 			}
 
-			if(self.phase !== 99){ return;}
-			self.phase = 0;
-			self.pid = newid;
+			pnum++;
+			if(pnum > term){
+				clearInterval(self.alltimer);
+				self.alltimer = null;
+				var ms = ((pzpr.util.currentTime() - starttime)/100)|0;
+				self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
+				return;
+			}
+
 			puzzle.open(newid+"/"+self.urls[newid], function(){
 				/* スクリプトチェック開始 */
 				self.sccheck();
 				self.addTA("Test ("+pnum+", "+newid+") start.");
-				pnum++;
-				if(pnum >= term){
-					clearInterval(self.alltimer);
-					var ms = ((pzpr.util.currentTime() - starttime)/100)|0;
-					self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
-				}
 			});
-		},100);
+		},50);
 	},
 
 	starttest : function(){
@@ -266,10 +268,44 @@ var debug = window.debug =
 	fails : 0,
 	sccheck : function(){
 		var self = this;
-
+		self.phase = 0;
 		self.fails = 0;
+		self.testing = false;
 		self.pid = puzzle.pid;
-		setTimeout(function(){ self.check_encode(self);},0);
+
+		var testlist = [];
+		testlist.push('check_encode');
+		if(puzzle.info.exists.kanpen){
+			testlist.push('check_encode_kanpen');
+		}
+		testlist.push('check_answer');
+		testlist.push('check_input');
+		testlist.push('check_file');
+		if(puzzle.info.exists.pencilbox){
+			testlist.push('check_file_pbox');
+			testlist.push('check_file_pbox_xml');
+		}
+		if(self.pid!=='tawa'){
+			testlist.push('check_turnR1');
+			testlist.push('check_turnR2');
+			testlist.push('check_turnL1');
+			testlist.push('check_turnL2');
+		}
+		testlist.push('check_flipX1');
+		testlist.push('check_flipX2');
+		testlist.push('check_flipY1');
+		testlist.push('check_flipY2');
+		testlist.push('check_adjust1');
+		testlist.push('check_adjust2');
+		testlist.push('check_end');
+
+		setTimeout(function tests(){
+			while(!self.testing && testlist.length>0){
+				self.testing = true;
+				self[testlist.shift()](self);
+			}
+			if(testlist.length>0){ setTimeout(tests,0);}
+		},0);
 	},
 	//Encode test--------------------------------------------------------------
 	check_encode : function(self){
@@ -282,30 +318,23 @@ var debug = window.debug =
 		if(inp!==ta){ self.addTA("Encode test   = failure...<BR> "+inp+"<BR> "+ta); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Encode test   = pass");}
 
-		setTimeout(function(){ self.check_encode_kanpen(self);},0);
+		self.testing = false;
 	},
 	check_encode_kanpen : function(self){
-		if(puzzle.info.exists.kanpen){
-			var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
-			var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
-			var fails_org = self.fails;
+		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 
-			if(pzpr.parser.parse(kanpen_url).pid!==puzzle.pid){
-				self.addTA("Encode kanpen = id fail..."); self.fails++;
+		if(pzpr.parser.parse(kanpen_url).pid!==puzzle.pid){
+			self.addTA("Encode kanpen = id fail..."); self.fails++;
+		}
+		puzzle.open(kanpen_url, function(){
+			if(!self.bd_compare(bd,bd2)){
+				self.addTA("Encode kanpen = failure..."); self.fails++;
 			}
-			puzzle.open(kanpen_url, function(){
-				if(!self.bd_compare(bd,bd2)){
-					self.addTA("Encode kanpen = failure..."); self.fails++;
-				}
-				
-				if(!self.alltimer && (fails_org===self.fails)){ self.addTA("Encode kanpen = pass");}
-				
-				setTimeout(function(){ self.check_answer(self);},0);
-			});
-		}
-		else{
-			setTimeout(function(){ self.check_answer(self);},0);
-		}
+			else if(!self.alltimer){ self.addTA("Encode kanpen = pass");}
+			
+			self.testing = false;
+		});
 	},
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
@@ -323,13 +352,13 @@ var debug = window.debug =
 				self.addTA("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
-		setTimeout(function(){ self.check_input(self);},0);
+		self.testing = false;
 	},
 	//Input test---------------------------------------------------------------
 	check_input : function(self){
-		var filedata = puzzle.getFileData();
 		var inps = self.inputs[self.pid];
 		if(inps.length>0){
+			var filedata = puzzle.getFileData();
 			var count=0, pass=0;
 			var config = puzzle.saveConfig();
 			for(var n=0;n<inps.length;n++){
@@ -351,9 +380,9 @@ var debug = window.debug =
 			}
 			self.execinput("playmode");
 			puzzle.restoreConfig(config);
+			puzzle.open(filedata);
 		}
-
-		puzzle.open(filedata,function(){ self.check_file(self);});
+		self.testing = false;
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
@@ -369,11 +398,7 @@ var debug = window.debug =
 			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO test   = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO test   = pass");}
 
-			setTimeout(function(){
-				if(puzzle.info.exists.pencilbox){ self.check_file_pbox(self);}
-				else if(puzzle.pid==='tawa'){ self.check_flipX1(self);}
-				else{ self.check_turnR1(self);}
-			},0);
+			self.testing = false;
 		});
 	},
 	check_file_pbox : function(self){
@@ -391,7 +416,7 @@ var debug = window.debug =
 			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
 			self.qsubf = true;
 
-			setTimeout(function(){ self.check_file_pbox_xml(self);},0);
+			self.testing = false;
 		});
 	},
 	check_file_pbox_xml : function(self){
@@ -409,7 +434,7 @@ var debug = window.debug =
 			else if(!self.alltimer){ self.addTA("FileIO kanpenXML = pass");}
 			self.qsubf = true;
 
-			setTimeout(function(){ self.check_turnR1(self);},0);
+			self.testing = false;
 		});
 	},
 	//Turn test--------------------------------------------------------------
@@ -420,7 +445,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnR test 1  = pass");}
 
-		setTimeout(function(){ self.check_turnR2(self);},0);
+		self.testing = false;
 	},
 	check_turnR2 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
@@ -429,7 +454,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnR test 2  = pass");}
 
-		setTimeout(function(){ self.check_turnL1(self);},0);
+		self.testing = false;
 	},
 
 	check_turnL1 : function(self){
@@ -439,7 +464,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnL test 1  = pass");}
 
-		setTimeout(function(){ self.check_turnL2(self);},0);
+		self.testing = false;
 	},
 	check_turnL2 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
@@ -448,7 +473,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("TurnL test 2  = pass");}
 
-		setTimeout(function(){ self.check_flipX1(self);},0);
+		self.testing = false;
 	},
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
@@ -458,7 +483,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipX test 1  = pass");}
 
-		setTimeout(function(){ self.check_flipX2(self);},0);
+		self.testing = false;
 	},
 	check_flipX2 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
@@ -467,7 +492,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipX test 2  = pass");}
 
-		setTimeout(function(){ self.check_flipY1(self);},0);
+		self.testing = false;
 	},
 
 	check_flipY1 : function(self){
@@ -477,7 +502,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipY test 1  = pass");}
 
-		setTimeout(function(){ self.check_flipY2(self);},0);
+		self.testing = false;
 	},
 	check_flipY2 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
@@ -486,7 +511,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("FlipY test 2  = pass");}
 
-		setTimeout(function(){ self.check_adjust1(self);},0);
+		self.testing = false;
 	},
 	//Adjust test--------------------------------------------------------------
 	check_adjust1 : function(self){
@@ -497,7 +522,7 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 1  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Adjust test 1  = pass");}
 
-		setTimeout(function(){ self.check_adjust2(self);},0);
+		self.testing = false;
 	},
 	check_adjust2 : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
@@ -506,80 +531,35 @@ var debug = window.debug =
 		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 2  = failure..."); self.fails++;}
 		else if(!self.alltimer){ self.addTA("Adjust test 2  = pass");}
 
-		setTimeout(function(){ self.check_end(self);},0);
+		self.testing = false;
 	},
 	//test end--------------------------------------------------------------
 	check_end : function(self){
 		if(!self.alltimer){ self.addTA("Test end.");}
 		self.phase = 99;
+		self.testing = false;
 	},
 
 	qsubf : true,
+	props : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp'],
 	bd_freezecopy : function(bd1){
 		var bd2 = {cell:[],cross:[],border:[],excell:[]};
-		for(var c=0;c<bd1.cell.length;c++){
-			bd2.cell[c] = {};
-			bd2.cell[c].ques=bd1.cell[c].ques;
-			bd2.cell[c].qnum=bd1.cell[c].qnum;
-			bd2.cell[c].qdir=bd1.cell[c].qdir;
-			bd2.cell[c].anum=bd1.cell[c].anum;
-			bd2.cell[c].qans=bd1.cell[c].qans;
-			bd2.cell[c].qsub=bd1.cell[c].qsub;
-		}
-		for(var c=0;c<bd1.excell.length;c++){
-			bd2.excell[c] = {};
-			bd2.excell[c].qnum=bd1.excell[c].qnum;
-			bd2.excell[c].qdir=bd1.excell[c].qdir;
-		}
-		for(var c=0;c<bd1.cross.length;c++){
-			bd2.cross[c] = {};
-			bd2.cross[c].ques=bd1.cross[c].ques;
-			bd2.cross[c].qnum=bd1.cross[c].qnum;
-		}
-		for(var i=0;i<bd1.border.length;i++){
-			bd2.border[i] = {};
-			bd2.border[i].ques=bd1.border[i].ques;
-			bd2.border[i].qnum=bd1.border[i].qnum;
-			bd2.border[i].qans=bd1.border[i].qans;
-			bd2.border[i].qsub=bd1.border[i].qsub;
-			bd2.border[i].line=bd1.border[i].line;
+		for(var group in bd2){
+			for(var c=0;c<bd1[group].length;c++){
+				bd2[group][c] = {};
+				for(var a=0;a<this.props.length;a++){ bd2[group][c][this.props[a]] = bd1[group][c][this.props[a]];}
+			}
 		}
 		return bd2;
 	},
 	bd_compare : function(bd1,bd2){
 		var result = true;
-		for(var c=0,len=Math.min(bd1.cell.length,bd2.cell.length);c<len;c++){
-			if(bd1.cell[c].ques!==bd2.cell[c].ques){ result = false; this.addTA("cell ques "+c+" "+bd1.cell[c].ques+" &lt;- "+bd2.cell[c].ques);}
-			if(bd1.cell[c].qnum!==bd2.cell[c].qnum){ result = false; this.addTA("cell qnum "+c+" "+bd1.cell[c].qnum+" &lt;- "+bd2.cell[c].qnum);}
-			if(bd1.cell[c].qdir!==bd2.cell[c].qdir){ result = false; this.addTA("cell qdir "+c+" "+bd1.cell[c].qdir+" &lt;- "+bd2.cell[c].qdir);}
-			if(bd1.cell[c].anum!==bd2.cell[c].anum){ result = false; this.addTA("cell anum "+c+" "+bd1.cell[c].anum+" &lt;- "+bd2.cell[c].anum);}
-			if(bd1.cell[c].qans!==bd2.cell[c].qans){ result = false; this.addTA("cell qans "+c+" "+bd1.cell[c].qans+" &lt;- "+bd2.cell[c].qans);}
-			if(bd1.cell[c].qsub!==bd2.cell[c].qsub){
-				if(this.qsubf){ result = false; this.addTA("cell qsub "+c+" "+bd1.cell[c].qsub+" &lt;- "+bd2.cell[c].qsub);}
-				else{ bd1.cell[c].qsub = bd2.cell[c].qsub;}
-			}
-		}
-		if(!!bd1.isexcell){
-			for(var c=0;c<bd1.excell.length;c++){
-				if(bd1.excell[c].qnum!==bd2.excell[c].qnum ){ result = false;}
-				if(bd1.excell[c].qdir!==bd2.excell[c].qdir){ result = false;}
-			}
-		}
-		if(!!bd1.iscross){
-			for(var c=0;c<bd1.cross.length;c++){
-				if(bd1.cross[c].ques!==bd2.cross[c].ques){ result = false;}
-				if(bd1.cross[c].qnum!==bd2.cross[c].qnum){ result = false;}
-			}
-		}
-		if(!!bd1.isborder){
-			for(var i=0;i<bd1.border.length;i++){
-				if(bd1.border[i].ques!==bd2.border[i].ques){ result = false; this.addTA("border ques "+i+" "+bd1.border[i].ques+" &lt;- "+bd2.border[i].ques);}
-				if(bd1.border[i].qnum!==bd2.border[i].qnum){ result = false; this.addTA("border qnum "+i+" "+bd1.border[i].qnum+" &lt;- "+bd2.border[i].qnum);}
-				if(bd1.border[i].qans!==bd2.border[i].qans){ result = false; this.addTA("border qans "+i+" "+bd1.border[i].qans+" &lt;- "+bd2.border[i].qans);}
-				if(bd1.border[i].line!==bd2.border[i].line){ result = false; this.addTA("border line "+i+" "+bd1.border[i].line+" &lt;- "+bd2.border[i].line);}
-				if(bd1.border[i].qsub!==bd2.border[i].qsub){
-					if(this.qsubf){ result = false; this.addTA("border qsub "+i+" "+bd1.border[i].qsub+" &lt;- "+bd2.border[i].qsub);}
-					else{ bd1.border[i].qsub = bd2.border[i].qsub;}
+		for(var group in bd2){
+			for(var c=0;c<bd1[group].length;c++){
+				for(var a=0;a<this.props.length;a++){
+					if(!this.qsubf && (this.props[a]==='qsub' || this.props[a]==='qcmp')){ continue;}
+					var val2 = bd2[group][c][this.props[a]], val1 = bd1[group][c][this.props[a]];
+					if(val2!==val1){ result = false; this.addTA(group+"["+c+"]."+this.props[a]+" "+val1+" <- "+val2);}
 				}
 			}
 		}

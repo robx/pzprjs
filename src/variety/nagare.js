@@ -414,7 +414,6 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkLineExist+",
-		"checkBothSideWind", // 問題確認用
 		"checkArrowAgainst", // 問題確認用
 		"checkLineOnShadeCell",
 		"checkCrossLine+",
@@ -428,9 +427,6 @@ AnsCheck:{
 		"checkOneLoop"
 	],
 
-	checkBothSideWind : function(){
-		this.checkAllCell(function(cell){ return cell.ques===0 && ((cell.wind&3)===3 || (cell.wind&12)===12);}, "windBothSide");
-	},
 	checkArrowAgainst : function(){
 		var boardcell = this.board.cell;
 		for(var i=0;i<boardcell.length;i++){
@@ -527,7 +523,7 @@ AnsCheck:{
 
 		var clist1 = [], clist2 = [], blist1 = [], blist2 = [];
 		var info = {
-			clist : (new this.klass.CellList()),   // 風に反して進んだセル
+			clist : (new this.klass.CellList()),   // 矢印に反して進んだセル
 			blist : (new this.klass.BorderList())  // 風に反して進んだLine
 		};
 		var step = 0;
@@ -555,8 +551,8 @@ AnsCheck:{
 				if(!border.isLine()){ break;} // 途切れてたら終了
 
 				if(border.wind!==0){
-					if(border.wind&([0,1,2,4,8][dir])){ blist1.push(border);}
-					else                              { blist2.push(border);}
+					if(border.wind&[0,1,2,4,8][dir]){ blist1.push(border);}
+					if(border.wind&[0,2,1,8,4][dir]){ blist2.push(border);}
 				}
 			}
 
@@ -580,7 +576,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	windBothSide   : ["風が向かい合わせに吹いています。","The wind blows from both sides."],
 	arNoLine       : ["線が通っていない矢印があります。","A line doesn't go through some arrows."],
 	arAgainstWind  : ["矢印の向きが風の指示と合っていません。","The direction of the arrow is against the wind."],
 	lrAcrossWind   : ["線が風で流されずに横切っています。","The line passes across the wind."],
