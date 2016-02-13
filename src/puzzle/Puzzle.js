@@ -156,26 +156,27 @@ pzpr.Puzzle.prototype =
 	// owner.toBlob()    盤面画像をBlobとして出力する
 	// owner.toBuffer()  盤面画像をファイルデータそのままで出力する
 	//---------------------------------------------------------------------------
-	toDataURL : function(type, cellsize){
+	toDataURL : function(type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
-		var dataurl = canvas.toDataURL('image/'+type);
+		var dataurl = canvas.toDataURL('image/'+type, quality);
 		canvas.parentNode.removeChild(canvas);
 		return dataurl;
 	},
-	toBlob : function(type, cellsize){
+	toBlob : function(callback, type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
-		var blob = canvas.toBlob('image/'+type);
-		canvas.parentNode.removeChild(canvas);
-		return blob;
+		canvas.toBlob(function(blob){
+			callback(blob);
+			canvas.parentNode.removeChild(canvas);
+		}, 'image/'+type, quality);
 	},
-	toBuffer : function(type, cellsize){
+	toBuffer : function(type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize), data;
 		if(canvas.getContext('2d').use.svg){
 			var svgdata = canvas.firstChild.outerHTML || new XMLSerializer().serializeToString(canvas.firstChild);
 			data = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
 		}
 		else{
-			var dataurl = canvas.toDataURL('image/'+type).replace(/^data:image\/\w+?;base64,/,'');
+			var dataurl = canvas.toDataURL('image/'+type, quality).replace(/^data:image\/\w+?;base64,/,'');
 			if(!pzpr.env.node){
 				var binary = window.atob(dataurl);
 				data = new Uint8Array(binary.length);
