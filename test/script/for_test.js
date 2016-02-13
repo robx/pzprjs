@@ -323,7 +323,6 @@ var debug = window.debug =
 	check_encode_kanpen : function(self){
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
-		var fails_org = self.fails;
 
 		if(pzpr.parser.parse(kanpen_url).pid!==puzzle.pid){
 			self.addTA("Encode kanpen = id fail..."); self.fails++;
