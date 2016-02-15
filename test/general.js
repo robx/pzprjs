@@ -1,4 +1,4 @@
-// test/variety.js
+// test/general.js
 //  usage: mocha
 // jshint node:true, browser:false, esnext:true
 /* global describe:false, it:false */

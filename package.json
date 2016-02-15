@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
   "directories": {
@@ -28,7 +28,7 @@
     "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
     "clean": "grunt clean",
     "lint": "grunt lint",
-    "test": "grunt lint && mocha -R progress",
+    "test": "grunt lint && mocha -R progress test/general.js test/variety",
     "prepublish": "npm run release"
   },
   "dependencies": {

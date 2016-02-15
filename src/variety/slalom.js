@@ -378,51 +378,55 @@ LineGraph:{
 		// 一旦すべての旗門のnumberを消す
 		for(var r=0;r<gates.length;r++){ gates[r].number=-1;}
 
+		// 旗門につながる数字を保持する構造体
+		var decnumber = {
+			nums   : [], // 旗門rにつながる数字
+			done   : [], // すでにどこかの旗門へアサイン済みの数字かどうか
+			erase : function(){
+				for(var r=0;r<gates.length;r++){
+					this.nums[r] = this.nums[r].filter(function(num){ return !this.done[num];}.bind(this));
+				}
+			}
+		};
+		for(var r=0;r<gates.length;r++){ decnumber.nums[r] = [];}
+		for(var n=0;n<gates.length;n++){ decnumber.done[n] = false;}
+
 		// 数字がどの旗門に繋がっているかをnums配列にとってくる
-		for(var r=0;r<gates.length;r++){ gates[r].nums = [];}
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===1){
-				var qn = cell.getNum(), dir = cell.qdir, adc = cell.adjacent;
-				if(qn<=0 || qn>=gates.length){ continue;}
-				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ adc.top   .gate.nums.push(qn);}
-				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ adc.bottom.gate.nums.push(qn);}
-				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ adc.left  .gate.nums.push(qn);}
-				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ adc.right .gate.nums.push(qn);}
+				var qn = cell.qnum, dir = cell.qdir, adc = cell.adjacent;
+				if(qn<=0){ continue;}
+				if((dir===cell.NDIR||dir===cell.UP) && adc.top.ques   ===21){ decnumber.nums[gates.indexOf(adc.top   .gate)].push(qn);}
+				if((dir===cell.NDIR||dir===cell.DN) && adc.bottom.ques===21){ decnumber.nums[gates.indexOf(adc.bottom.gate)].push(qn);}
+				if((dir===cell.NDIR||dir===cell.LT) && adc.left.ques  ===22){ decnumber.nums[gates.indexOf(adc.left  .gate)].push(qn);}
+				if((dir===cell.NDIR||dir===cell.RT) && adc.right.ques ===22){ decnumber.nums[gates.indexOf(adc.right .gate)].push(qn);}
 			}
 		}
 
-		// セットされた数字を全てのnumsから消す関数
-		function delnum(dn){ for(var r=0;r<gates.length;r++){
-			var atmp = [], nums = gates[r].nums;
-			for(var i=0;i<nums.length;i++){ if(dn[nums[i]]!==1){ atmp.push(nums[i]);} }
-			nums[r] = atmp;
-		} }
-		var decnumber = [];
-		for(var n=0;n<gates.length;n++){ decnumber[n] = 0;}
-
-		// 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
+		// <A> 旗門nに繋がる数字が2つとも同じ数字の場合、無条件で旗門に数字をセット
 		for(var r=0;r<gates.length;r++){
-			var gate = gates[r], nums = gate.nums;
+			var nums = decnumber.nums[r];
 			if(nums.length===2 && nums[0]>0 && nums[0]===nums[1]){
-				gate.number = nums[0];
-				decnumber[nums[0]] = 1;
-				gate.nums = [];
+				gates[r].number = nums[0];
+				decnumber.done[nums[0]] = true;
+				decnumber.nums[r] = [];
 			}
 		}
-		delnum(decnumber);
+		decnumber.erase();
 
 		// 旗門に繋がる2つの数字が異なる場合、もしくは1つの数字が繋がる場合
 		var repeatflag = true;
 		while(repeatflag){
 			repeatflag = false;
-			for(var n=0;n<gates.length;n++){ decnumber[n] = 0;}
-			var numcnt = [];
 
-			// 競合していない数字がいくつ残っているか数える
+			// <B> 旗門に1つの数字だけが繋がっており、さらにその数字が複数箇所の候補になっていない数字を旗門の数字とする
+			//   [2]--[ ]--[ ] -> 左側の旗門のみの候補になっているのでOK
+			//   [ ]--[2]--[ ] -> 左右両方の候補になっているのでNG
+			var numcnt = [];
 			for(var n=0;n<gates.length;n++){ numcnt[n] = 0;}
 			for(var r=0;r<gates.length;r++){
-				var nums = gates[r].nums;
+				var nums = decnumber.nums[r];
 				if(nums.length===1){ numcnt[nums[0]]++;}
 			}
 
@@ -430,33 +434,35 @@ LineGraph:{
 			for(var r=0;r<gates.length;r++){
 				// 2つ以上の数字が繋がっている場合はダメです
 				// また、複数箇所の旗門の候補になっている場合もダメ
-				var gate = gates[r], nums = gate.nums;
+				var gate = gates[r], nums = decnumber.nums[r];
 				var cand=(nums.length===1?nums[0]:-1);
 				if(cand>0 && numcnt[cand]>1){ cand=-1;}
 
 				// 旗門に数字をセット
 				if(cand>0){
 					gate.number = cand;
-					decnumber[cand] = 1;
-					gate.nums = [];
+					decnumber.done[cand] = true;
+					decnumber.nums[r] = [];
 					repeatflag = true;	//再ループする
 				}
 			}
-			delnum(decnumber);
+			decnumber.erase();
 
 			// ここまででセットされたやつがあるなら、初めからループ
 			if(repeatflag){ continue;}
 
-			// 重なっていても、1つだけに繋がっている数字を判定したい。。
+			// <C> 1つの旗門に2つ以上の数字が繋がっていても、そのうち1つが単独候補で
+			//     もう1つが複数箇所の候補の場合は単独候補の数字を旗門の数字として採用します
+			//   [2]--[3]--[4] -> 左側の旗門は2, 右側の旗門は4とする
+			//   [2]--[3]      -> 2,3とも単独候補で選択できないのでアサインしない
 			for(var n=0;n<gates.length;n++){ numcnt[n] = 0;}
 			for(var r=0;r<gates.length;r++){
-				var nums = gates[r].nums;
-				for(var i=0;i<nums.length;i++){ numcnt[nums[i]]++;}
+				decnumber.nums[r].forEach(function(num){numcnt[num]++;});
 			}
 
 			// 各旗門をチェック
 			for(var r=0;r<gates.length;r++){
-				var gate = gates[r], nums = gate.nums, cand = -1;
+				var gate = gates[r], nums = decnumber.nums[r], cand = -1;
 				for(var i=0;i<nums.length;i++){
 					if(numcnt[nums[i]]===1){ cand=(cand===-1?nums[i]:-1);}
 				}
@@ -464,15 +470,13 @@ LineGraph:{
 				// 旗門に数字をセット
 				if(cand>0){
 					gate.number = cand;
-					decnumber[cand] = 1;
-					gate.nums = [];
+					decnumber.done[cand] = true;
+					decnumber.nums[r] = [];
 					repeatflag = true;	//再ループする
 				}
 			}
-			delnum(decnumber);
+			decnumber.erase();
 		}
-		
-		for(var r=0;r<gates.length;r++){ gates[r].nums = null;}
 	},
 
 	setGateError : function(gate,val){
@@ -1001,7 +1005,13 @@ AnsCheck:{
 						var revgatenumber = gatecount+1-gatenumber;
 						if(gatenumber===revgatenumber)               { } // ど真ん中の数字なら何もしない
 						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
-						else if(passed===revgatenumber)              { break;}         // 逆方向なので別の方向から回る
+						else if(passed===revgatenumber)              {                 // 逆方向なので別の方向から回る
+							if(cell1.lcnt<2){ break;} // 1つしか線がない場合は終了
+							dir = cell1.getdir(cell1.pathnodes[0].nodes[1].obj,2);
+							pos = cell1.getaddr();
+							passed = 0;
+							ordertype = 1;
+						}
 						else                                         { errgate = gate; break;} // 通過順間違い
 					}
 					else if(ordertype===1 && passed!==gatenumber)    { errgate = gate; break;} // 通過順間違い
@@ -1026,6 +1036,6 @@ FailCode:{
 	gateRedup : ["線が２回以上通過している旗門があります。","A line goes through a gate twice or more."],
 	gateUnpass: ["線が通過していない旗門があります。","There is a gate that the line is not passing."],
 	lrOrder   : ["旗門を通過する順番が間違っています。","The order of passing the gate is wrong."],
-	stLineNe2 : ["○から線が２本出ていません。","A line goes through a gate twice or more."]
+	stLineNe2 : ["○から線が２本出ていません。","Start/goal circle doesn't have two lines."]
 }
 }));

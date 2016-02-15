@@ -1,4 +1,14 @@
 
+## Version 0.2.2
+
+Release date: 2016/2/16
+
+#### BugFix
+
+* slalom: Fix miss-calculating gate number
+* slalom: Fix tracing line routine cannot trace correctly when it is aware of reverse tracing
+* slalom: Correct answer description about circle which doesn't have two lines
+
 ## Version 0.2.0
 
 Release date: 2016/2/13
