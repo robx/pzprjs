@@ -18,13 +18,12 @@ AnsCheck:{
 	failcodemode : (void 0),
 	failcode : (void 0),
 	_info    : (void 0),
+	checklist : [],
 
 	//---------------------------------------------------------------------------
 	// ans.makeCheckList() 最初にchecklistの配列を生成する
 	//---------------------------------------------------------------------------
 	makeCheckList : function(){
-		if(!this.checklist){ return;}
-
 		/* 当該パズルで使用しないchecklistのアイテムをフィルタリング */
 		var checklist = this.checklist, order = [];
 		for(var i=0;i<checklist.length;i++){
