@@ -46,7 +46,7 @@ console.log(puzzle.check().text);
 * [List of puzzle config](https://github.com/sabo2/pzprjs/blob/master/docs/Config.md)
 
 ## Releases
-* 2016/02/15 v0.2.1
+* 2016/02/16 v0.2.2
 * 2016/02/13 v0.2.0
 * 2016/02/11 v0.1.0
 * 2016/02/06 v0.0.2
