@@ -5,8 +5,8 @@
 //---------------------------------------------------------------
 // クラス設定用関数など
 //---------------------------------------------------------------
-pzpr.common = {};	// CoreClass保存用
-pzpr.custom = {};	// パズル別クラス保存用
+pzpr.common = {};		// CoreClass保存用
+pzpr.custom = {'':{}};	// パズル別クラス保存用
 
 //----------------------------------------------------------------------------
 // ★pzpr.classmgrオブジェクト (クラス作成関数等)
@@ -26,7 +26,7 @@ pzpr.classmgr = {
 				NewClass.prototype.common = NewClass.prototype;
 			}
 			this.extendPrototype( NewClass.prototype, commonbase[key] );
-			pzpr.common[names.real] = NewClass;
+			pzpr.common[names.real] = pzpr.custom[''][names.real] = NewClass;
 		}
 	},
 

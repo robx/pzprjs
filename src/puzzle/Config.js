@@ -163,6 +163,7 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
 		var puzzle = this.puzzle;
+		if(!this.getexec(name)){ return;}
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
@@ -170,12 +171,12 @@ Config.prototype =
 			break;
 		
 		case 'font':
-			if(puzzle.ready){ puzzle.painter.initFont();}
+			puzzle.painter.initFont();
 			puzzle.redraw();
 			break;
 		
 		case 'multierr':
-			if(puzzle.ready){ puzzle.checker.resetCache();}
+			puzzle.checker.resetCache();
 			break;
 		
 		case 'disptype_bosanowa':
@@ -183,13 +184,11 @@ Config.prototype =
 			break;
 		
 		case 'color_qanscolor':
-			if(puzzle.ready){ puzzle.painter.setColor('qanscolor', newval);}
+			puzzle.painter.setColor('qanscolor', newval);
 			break;
 		
 		case 'uramashu':
-			if(puzzle.ready){
-				puzzle.board.revCircleConfig(newval);
-			}
+			puzzle.board.revCircleConfig(newval);
 			puzzle.redraw();
 			break;
 		}

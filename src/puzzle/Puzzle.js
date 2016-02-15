@@ -32,10 +32,13 @@ pzpr.Puzzle = function(canvas, option){
 	if(this.opt.mode!==void 0){ this.setMode(this.opt.mode);}
 
 	if(!!canvas){ this.setCanvas(canvas);}
+
+	pzpr.classmgr.setClasses(this, '');
+	initObjects(this);
 };
 pzpr.Puzzle.prototype =
 {
-	pid : '',			// パズルのID("creek"など)
+	pid : null,			// パズルのID("creek"など)
 	info : {},			// VarietyInfoへの参照
 	
 	klass    : null,
@@ -140,10 +143,8 @@ pzpr.Puzzle.prototype =
 	// owner.irowake()     色分けをする場合、色をふり直すルーチンを呼び出す
 	//---------------------------------------------------------------------------
 	redraw : function(forcemode){
-		if(this.ready){
-			if(!forcemode){ this.painter.paintAll();}     // 盤面キャッシュを保持して再描画
-			else          { this.painter.resizeCanvas();} // 盤面キャッシュを破棄して再描画
-		}
+		if(!forcemode){ this.painter.paintAll();}     // 盤面キャッシュを保持して再描画
+		else          { this.painter.resizeCanvas();} // 盤面キャッシュを破棄して再描画
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
@@ -312,17 +313,17 @@ pzpr.Puzzle.prototype =
 		}
 		this.editmode = (newval===this.MODE_EDITOR);
 		this.playmode = !this.editmode;
-		if(this.ready){
-			this.cursor.adjust_modechange();
-			this.key.keyreset();
-			this.mouse.mousereset();
-			if(this.board.haserror){
-				this.board.errclear();
-			}
-			else{
-				this.redraw();
-			}
+
+		this.cursor.adjust_modechange();
+		this.key.keyreset();
+		this.mouse.mousereset();
+		if(this.board.haserror){
+			this.board.errclear();
 		}
+		else{
+			this.redraw();
+		}
+
 		this.emit('config', 'mode', newval);
 	},
 
