@@ -1,4 +1,10 @@
 
+## Version 0.2.1
+
+#### BugFix
+
+* slalom: Fix miss-calculating gate number
+
 ## Version 0.2.0
 
 Release date: 2016/2/13
