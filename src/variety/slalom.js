@@ -1005,7 +1005,13 @@ AnsCheck:{
 						var revgatenumber = gatecount+1-gatenumber;
 						if(gatenumber===revgatenumber)               { } // ど真ん中の数字なら何もしない
 						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
-						else if(passed===revgatenumber)              { break;}         // 逆方向なので別の方向から回る
+						else if(passed===revgatenumber)              {                 // 逆方向なので別の方向から回る
+							if(cell1.lcnt<2){ break;} // 1つしか線がない場合は終了
+							dir = cell1.getdir(cell1.pathnodes[0].nodes[1].obj,2);
+							pos = cell1.getaddr();
+							passed = 0;
+							ordertype = 1;
+						}
 						else                                         { errgate = gate; break;} // 通過順間違い
 					}
 					else if(ordertype===1 && passed!==gatenumber)    { errgate = gate; break;} // 通過順間違い

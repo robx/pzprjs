@@ -59,4 +59,26 @@ describe('Variety:slalom',function(){
 		assert.equal( 2,puzzle.board.getc(3,13).gate.number);
 		assert.equal( 3,puzzle.board.getc(5,11).gate.number);
 	});
+	it('StartGoal line Route 1', function(){
+		puzzle.open('pzprv3.2/slalom/7/4/o . . # /. # - # /. # . # /. # - # /. # . # /. # - # /. i . # ');
+		
+		puzzle.board.getc(3,13).gate.number = 2;
+		puzzle.board.getc(5,11).gate.number = 2;
+		
+		puzzle.setMode('play');
+		puzzle.mouse.inputPath(1,1, 5,1, 5,13, 1,13, 1,1);
+		
+		assert.equal('lrOrder', puzzle.check(false)[0]);
+	});
+	it('StartGoal line Route 2', function(){
+		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. # - # /. i . # ');
+		
+		puzzle.board.getc(3,13).gate.number = 2;
+		puzzle.board.getc(5,11).gate.number = 2;
+		
+		puzzle.setMode('play');
+		puzzle.mouse.inputPath(1,1, 5,1, 5,13, 1,13, 1,1);
+		
+		assert.equal('lrOrder', puzzle.check(false)[0]);
+	});
 });
