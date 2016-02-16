@@ -687,10 +687,6 @@ Graphic:{
 		this.decodeIce();
 		this.decodeNumber16();
 		this.decodeInOut();
-
-		if(this.pid==='icelom' && !this.checkpflag("a")){
-			this.puzzle.changepid('icelom2');
-		}
 	},
 	encodePzpr : function(type){
 		this.encodeIce();
@@ -767,11 +763,7 @@ Encode:{
 		var bd = this.board;
 		bd.arrowin.setid (+this.readLine());
 		bd.arrowout.setid(+this.readLine());
-
-		var pzltype = this.readLine();
-		if(this.pid==='icelom' && (pzltype==="skipwhite")){
-			this.puzzle.changepid('icelom2');
-		}
+		this.readLine();
 
 		this.decodeCell( function(cell,ca){
 			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
@@ -784,9 +776,9 @@ Encode:{
 	},
 	encodeData : function(){
 		var bd = this.board;
-		var pzltype = (this.pid==='icelom'?"allwhite":"skipwhite");
+		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
+		this.datastr += ((this.pid==='icelom'?"allwhite":"skipwhite")+"\n");
 
-		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n"+pzltype+"\n");
 		this.encodeCell( function(cell){
 			var istr = (cell.ques===6 ? "i" : ""), qstr='';
 			if     (cell.qnum===-1){ qstr = (istr==="" ? ". " : " ");}

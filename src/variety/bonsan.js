@@ -263,26 +263,27 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@bonsan":{
 	decodePzpr : function(type){
 		if(!this.checkpflag("c")){ this.decodeBorder();}
 		this.decodeNumber16();
-
-		var puzzle = this.puzzle;
-		if(this.pid==='bonsan' && puzzle.board.border.some(function(border){ return border.ques===1;})){
-			puzzle.changepid('heyabon');
-		}
 	},
 	encodePzpr : function(type){
-		if(type===this.puzzle.pzpr.parser.URL_PZPRAPP || this.pid==='heyabon'){
-			this.encodeBorder();
-		}
-		else{
-			this.outpflag='c';
-		}
+		this.outpflag='c';
+		this.encodeNumber16();
+	}
+},
+"Encode@heyabon":{
+	decodePzpr : function(type){
+		this.decodeBorder();
+		this.decodeNumber16();
+	},
+	encodePzpr : function(type){
+		this.encodeBorder();
 		this.encodeNumber16();
 	},
 
+	// heyabonのみ(さとがえり出力)
 	decodeKanpen : function(){
 		this.fio.decodeAreaRoom();
 		this.fio.decodeQnum_PBox_Sato();
@@ -307,11 +308,6 @@ FileIO:{
 		this.decodeCellQsubQcmp();
 		if(this.pid!=='rectslider'){ this.decodeBorderQues();}
 		this.decodeBorderLine();
-
-		var puzzle = this.puzzle;
-		if(this.pid==='bonsan' && puzzle.board.border.some(function(border){ return border.ques===1;})){
-			puzzle.changepid('heyabon');
-		}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

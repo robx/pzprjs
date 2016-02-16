@@ -86,6 +86,9 @@ pzpr.variety.each(function(pid){
 	describe(pid+' test', function(){
 		describe('URL', function(){ (function(pid){
 			var puzzle = new pzpr.Puzzle();
+			it('open PID', function(){
+				assert.doesNotThrow(()=>puzzle.open(pid));
+			});
 			it('pzpr URL', function(){
 				puzzle.open(pid+'/'+testdata[pid].url);
 				var urlstr = puzzle.getURL();

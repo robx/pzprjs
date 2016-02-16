@@ -159,17 +159,13 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodePipelink();
-
-		var puzzle = this.puzzle;
-		if(this.pid==='pipelink' && puzzle.board.cell.some(function(cell){ return cell.ques===6;})){
-			puzzle.changepid('pipelinkr');
-		}
-		if(this.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
+		
+		if(this.pid==='pipelinkr'){ this.puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
 	},
 	encodePzpr : function(type){
-		var puzzle = this.puzzle;
-		this.outpflag = ((puzzle.pid==='pipelinkr' && puzzle.getConfig('disptype_pipelinkr')===2)?"i":null);
 		this.encodePipelink(type);
+		
+		this.outpflag = ((this.pid==='pipelinkr' && this.puzzle.getConfig('disptype_pipelinkr')===2)?"i":null);
 	},
 
 	decodePipelink : function(){
@@ -225,23 +221,20 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		var disptype = this.readLine();
+		if(this.pid==='pipelinkr'){ this.puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
+		
 		this.decodeCell( function(cell,ca){
 			if     (ca==="o"){ cell.ques = 6; }
 			else if(ca==="-"){ cell.ques = -2;}
 			else if(ca!=="."){ cell.ques = parseInt(ca,36)+1;}
 		});
 		this.decodeBorderLine();
-
-		var puzzle = this.puzzle;
-		if(this.pid==='pipelink' && puzzle.board.cell.some(function(cell){ return cell.ques===6;})){
-			puzzle.changepid('pipelinkr');
-		}
-		if(this.pid==='pipelinkr'){ puzzle.setConfig('disptype_pipelinkr', (disptype==="circle"?1:2));}
 	},
 	encodeData : function(){
 		var puzzle = this.puzzle;
 		if     (puzzle.pid==='pipelink') { this.datastr += 'pipe\n';}
 		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')===1?"circle\n":"ice\n");}
+		
 		this.encodeCell( function(cell){
 			if     (cell.ques===6) { return "o ";}
 			else if(cell.ques===-2){ return "- ";}

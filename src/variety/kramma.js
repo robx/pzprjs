@@ -146,30 +146,24 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@kramma":{
 	decodePzpr : function(type){
-		if(this.pid==='shwolf' || !this.checkpflag("c")){
-			this.decodeCrossMark();
-			this.decodeCircle();
-		}
-		else{
-			this.decodeCircle();
-		}
-
-		var puzzle = this.puzzle;
-		if(this.pid==='kramma' && puzzle.board.cross.some(function(cross){ return cross.qnum===1;})){
-			puzzle.changepid('kramman');
-		}
+		if(!this.checkpflag("c")){ this.decodeCrossMark();}
+		this.decodeCircle();
 	},
 	encodePzpr : function(type){
-		if(this.pid!=='kramma'){
-			this.encodeCrossMark();
-			this.encodeCircle();
-		}
-		else{
-			this.outpflag="c";
-			this.encodeCircle();
-		}
+		this.outpflag="c";
+		this.encodeCircle();
+	}
+},
+"Encode@kramman,shwolf":{
+	decodePzpr : function(type){
+		this.decodeCrossMark();
+		this.decodeCircle();
+	},
+	encodePzpr : function(type){
+		this.encodeCrossMark();
+		this.encodeCircle();
 	}
 },
 //---------------------------------------------------------
@@ -178,11 +172,6 @@ FileIO:{
 		this.decodeCellQnum();
 		this.decodeCrossNum();
 		this.decodeBorderAns();
-
-		var puzzle = this.puzzle;
-		if(this.pid==='kramma' && puzzle.board.cross.some(function(cross){ return cross.qnum===1;})){
-			puzzle.changepid('kramman');
-		}
 	},
 	encodeData : function(){
 		this.encodeCellQnum();

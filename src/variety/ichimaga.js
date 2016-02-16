@@ -88,12 +88,6 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decode4Cell();
-
-		if(this.pid==='ichimaga'){
-			if     (this.checkpflag("m")){ this.puzzle.changepid("ichimagam");}
-			else if(this.checkpflag("x")){ this.puzzle.changepid("ichimagax");}
-			else                         { this.puzzle.changepid("ichimaga"); }
-		}
 	},
 	encodePzpr : function(type){
 		this.encode4Cell();
@@ -102,12 +96,7 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var pzlflag = this.readLine();
-		if(this.pid==='ichimaga'){
-			if     (pzlflag==="mag")  { this.puzzle.changepid("ichimagam");}
-			else if(pzlflag==="cross"){ this.puzzle.changepid("ichimagax");}
-			else                      { this.puzzle.changepid("ichimaga"); }
-		}
+		this.readLine();
 
 		this.decodeCellQnum();
 		this.decodeBorderLine();
