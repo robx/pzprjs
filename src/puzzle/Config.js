@@ -163,7 +163,7 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
 		var puzzle = this.puzzle;
-		if(!this.getexec(name)){ return;}
+		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
 		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':

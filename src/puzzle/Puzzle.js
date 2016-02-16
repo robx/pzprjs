@@ -314,14 +314,16 @@ pzpr.Puzzle.prototype =
 		this.editmode = (newval===this.MODE_EDITOR);
 		this.playmode = !this.editmode;
 
-		this.cursor.adjust_modechange();
-		this.key.keyreset();
-		this.mouse.mousereset();
-		if(this.board.haserror){
-			this.board.errclear();
-		}
-		else{
-			this.redraw();
+		if(!!this.klass){
+			this.cursor.adjust_modechange();
+			this.key.keyreset();
+			this.mouse.mousereset();
+			if(this.board.haserror){
+				this.board.errclear();
+			}
+			else{
+				this.redraw();
+			}
 		}
 
 		this.emit('config', 'mode', newval);
