@@ -44,11 +44,9 @@ Board:{
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
-		this.validinfo = {cell:[],border:[],line:[],all:[]};
-		this.infolist = [];
+		this.infolist = {cell:[],border:[],line:[],all:[]};
 
-		this.linegraph  = this.addInfoList(classes.LineGraph);		// 交差なし線のグラフ
-
+		this.linegraph  = this.addInfoList(classes.LineGraph);			// 交差なし線のグラフ
 		this.roommgr = this.addInfoList(classes.AreaRoomGraph);			// 部屋情報を保持する
 		this.sblkmgr = this.addInfoList(classes.AreaShadeGraph);		// 黒マス情報を保持する
 		this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph);		// 白マス情報を保持する
@@ -59,16 +57,14 @@ Board:{
 	},
 	addInfoList : function(Klass){
 		var instance = new Klass();
-		this.infolist.push(instance);
+		if(instance.enabled){
+			for(var i=0;i<instance.relation.length;i++){
+				this.infolist[instance.relation[i]].push(instance);
+			}
+			this.infolist.all.push(instance);
+		}
 		return instance;
 	},
-	initInfoList : function(){
-		this.validinfo = {cell:[],border:[],line:[],all:[]};
-		for(var i=0;i<this.infolist.length;i++){
-			this.infolist[i].init();
-		}
-	},
-	infolist : [],
 
 	cols : 10,		/* 盤面の横幅(デフォルト) */
 	rows : 10,		/* 盤面の縦幅(デフォルト) */
@@ -98,7 +94,6 @@ Board:{
 		this.setminmax();
 		this.setposAll();
 
-		this.initInfoList();
 		this.rebuildInfo();
 
 		this.puzzle.cursor.initCursor();
@@ -487,23 +482,19 @@ Board:{
 	// bd.setInfoByLine()    線が引かれたり消されてたりした時に、線情報を更新する
 	//--------------------------------------------------------------------------------
 	rebuildInfo : function(){
-		for(var i=0,len=this.validinfo.all.length;i<len;i++)
-			{ this.validinfo.all[i].rebuild();}
+		this.infolist.all.forEach(function(info){ info.rebuild();});
 	},
 	setInfoByCell : function(cell){
 		if(!this.isenableInfo()){ return;}
-		for(var i=0,len=this.validinfo.cell.length;i<len;i++)
-			{ this.validinfo.cell[i].setCell(cell);}
+		this.infolist.cell.forEach(function(info){ info.setCell(cell);});
 	},
 	setInfoByBorder : function(border){
 		if(!this.isenableInfo()){ return;}
-		for(var i=0,len=this.validinfo.border.length;i<len;i++)
-			{ this.validinfo.border[i].setBorder(border);}
+		this.infolist.border.forEach(function(info){ info.setBorder(border);});
 	},
 	setInfoByLine : function(border){
 		if(!this.isenableInfo()){ return;}
-		for(var i=0,len=this.validinfo.line.length;i<len;i++)
-			{ this.validinfo.line[i].setLine(border);}
+		this.infolist.line.forEach(function(info){ info.setLine(border);});
 	},
 
 	//---------------------------------------------------------------------------

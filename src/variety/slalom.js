@@ -237,7 +237,6 @@ Board:{
 		this.common.initBoardSize.call(this,col,row);
 
 		this.startpos.set(this.cell[0]);
-		this.gatemgr.init();
 	}
 },
 BoardExec:{

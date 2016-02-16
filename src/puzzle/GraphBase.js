@@ -6,18 +6,7 @@
 // GraphBaseクラスの定義
 pzpr.classmgr.makeCommon({
 GraphBase:{
-	init : function(){
-		if(this.enabled){
-			var info = this.board.validinfo;
-			for(var i=0;i<this.relation.length;i++){
-				info[this.relation[i]].push(this);
-			}
-			info.all.push(this);
-			this.init2();
-		}
-	},
 
-	init2 : function(){},
 	enabled : false,
 	relation : [],
 	
