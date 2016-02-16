@@ -226,16 +226,14 @@ Board:{
 	gatemgr : null,
 	gates : null,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		this.startpos = new this.klass.StartPosAddress(1,1);
+	addExtraInfo : function(){
 		this.gatemgr = this.addInfoList(this.klass.AreaHurdleGraph);
 	},
 
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	createExtraObject : function(){
+		this.startpos = new this.klass.StartPosAddress(1,1);
+	},
+	initExtraObject : function(col,row){
 		this.startpos.set(this.cell[0]);
 	}
 },
@@ -326,9 +324,7 @@ BoardExec:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.StartposOperation);
 	}
 },

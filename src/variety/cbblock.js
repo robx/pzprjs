@@ -44,9 +44,7 @@ Board:{
 	hascross  : 1,
 	hasborder : 1,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.tilegraph  = this.addInfoList(this.klass.AreaTileGraph);
 		this.blockgraph = this.addInfoList(this.klass.AreaBlockGraph);
 	}

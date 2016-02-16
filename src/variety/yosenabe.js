@@ -160,9 +160,7 @@ Board:{
 
 	hasborder : 1,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.icegraph = this.addInfoList(this.klass.AreaCrockGraph);
 	}
 },

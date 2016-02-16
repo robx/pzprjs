@@ -50,8 +50,7 @@ Cell:{
 	}
 },
 "Board@mochikoro,mochinyoro":{
-	initialize : function(){
-		this.common.initialize.call(this);
+	addExtraInfo : function(){
 		this.ublk8mgr = this.addInfoList(this.klass.AreaUnshade8Graph);
 	}
 },

@@ -22,6 +22,7 @@ Board:{
 		// エラー表示中かどうか
 		this.haserror = false;
 
+		// 盤面上にあるセル・境界線等のオブジェクト
 		this.cell   = new classes.CellList();
 		this.cross  = new classes.CrossList();
 		this.border = new classes.BorderList();
@@ -42,6 +43,8 @@ Board:{
 		}
 		catch(e){}
 
+		this.createExtraObject();
+
 		// 補助オブジェクト
 		this.disrecinfo = 0;
 		this.infolist = {cell:[],border:[],line:[],all:[]};
@@ -51,6 +54,8 @@ Board:{
 		this.sblkmgr = this.addInfoList(classes.AreaShadeGraph);		// 黒マス情報を保持する
 		this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph);		// 白マス情報を保持する
 		this.nblkmgr = this.addInfoList(classes.AreaNumberGraph);		// 数字情報を保持する
+
+		this.addExtraInfo();
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
@@ -65,6 +70,7 @@ Board:{
 		}
 		return instance;
 	},
+	addExtraInfo : function(){},
 
 	cols : 10,		/* 盤面の横幅(デフォルト) */
 	rows : 10,		/* 盤面の縦幅(デフォルト) */
@@ -90,15 +96,18 @@ Board:{
 
 		this.cols = col;
 		this.rows = row;
-
 		this.setminmax();
 		this.setposAll();
+
+		this.initExtraObject(col,row);
 
 		this.rebuildInfo();
 
 		this.puzzle.cursor.initCursor();
 		this.puzzle.opemgr.allerase();
 	},
+	createExtraObject : function(){},
+	initExtraObject : function(col,row){},
 
 	//---------------------------------------------------------------------------
 	// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う

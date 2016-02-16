@@ -212,8 +212,7 @@ Cell:{
 	isTri : function(){ return this.qans!==0;}
 },
 Board:{
-	initialize : function(){
-		this.common.initialize.call(this);
+	addExtraInfo : function(){
 		this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
 	}
 },

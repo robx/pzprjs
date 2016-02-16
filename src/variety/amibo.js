@@ -67,9 +67,7 @@ Board:{
 	cols : 8,
 	rows : 8,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.netgraph = this.addInfoList(this.klass.AreaNetGraph);
 		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	},

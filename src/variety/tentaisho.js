@@ -201,17 +201,11 @@ Board:{
 	hascross  : 1,
 	hasborder : 1,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	createExtraObject : function(){
 		this.star = []; /* インスタンス化 */
 	},
-
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	initExtraObject : function(col,row){
 		this.initStar(this.cols,this.rows);
-		this.rebuildInfo();
 	},
 
 	// 星アクセス用関数

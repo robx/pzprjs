@@ -264,7 +264,9 @@ OperationManager:{
 			classes.BoardAdjustOperation,
 			classes.BoardFlipOperation
 		];
+		this.addExtraOperation();
 	},
+	addExtraOperation : function(){},
 
 	//---------------------------------------------------------------------------
 	// um.disableRecord()  操作の登録を禁止する

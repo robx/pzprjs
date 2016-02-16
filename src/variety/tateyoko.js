@@ -68,9 +68,7 @@ Cell:{
 Board:{
 	disable_subclear : true,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	}
 },

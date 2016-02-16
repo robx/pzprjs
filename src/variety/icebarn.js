@@ -131,32 +131,29 @@ Board:{
 	hasborder : 2,
 	hasexcell : 2, /* LineGraph用 */
 
+	addExtraInfo : function(){
+		this.icegraph = this.addInfoList(this.klass.AreaIcebarnGraph);
+	},
+
 	arrowin  : null,
 	arrowout : null,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	createExtraObject : function(){
 		var classes = this.klass;
 		this.arrowin  = new classes.InAddress(2,0);
 		this.arrowout = new classes.OutAddress(4,0);
 		this.arrowin.partner  = this.arrowout;
 		this.arrowout.partner = this.arrowin;
-
-		this.icegraph = this.addInfoList(classes.AreaIcebarnGraph);
 	},
-
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	initExtraObject : function(col,row){
 		this.disableInfo();
 		if(col>=3){
-			this.arrowin.init (this.minbx+3, this.minby+2);
-			this.arrowout.init(this.minbx+7, this.minby+2);
+			this.arrowin.init (1, 0);
+			this.arrowout.init(5, 0);
 		}
 		else{
-			this.arrowin.init (1, this.minby+2);
-			this.arrowout.init(1, this.maxby-2);
+			this.arrowin.init (1, 0);
+			this.arrowout.init(1, 2*row);
 		}
 		this.enableInfo();
 	},
@@ -306,9 +303,7 @@ BoardExec:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.InOutOperation);
 	}
 },

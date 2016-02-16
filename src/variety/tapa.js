@@ -280,9 +280,7 @@ CellList:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.ObjectOperation2);
 	}
 },

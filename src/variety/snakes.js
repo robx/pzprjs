@@ -121,9 +121,7 @@ Cell:{
 Board:{
 	hasborder : 1,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.snakemgr = this.addInfoList(this.klass.AreaSnakeGraph);
 	}
 },
