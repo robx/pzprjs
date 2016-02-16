@@ -24,6 +24,7 @@ pzpr.classmgr = {
 			if(!NewClass){
 				NewClass = this.createClass( pzpr.common[names.base] );
 				NewClass.prototype.common = NewClass.prototype;
+				NewClass.prototype.pid = '';
 			}
 			this.extendPrototype( NewClass.prototype, commonbase[key] );
 			pzpr.common[names.real] = pzpr.custom[''][names.real] = NewClass;
@@ -64,6 +65,7 @@ pzpr.classmgr = {
 			var names = this.searchName(key), NewClass = custom[names.real];
 			if(!NewClass){
 				NewClass = this.createClass( custom[names.base] || pzpr.common[names.base] );
+				NewClass.prototype.pid = pid;
 			}
 			this.extendPrototype( NewClass.prototype, extension[key] );
 			custom[names.real] = NewClass;
@@ -72,7 +74,8 @@ pzpr.classmgr = {
 		// 指定がなかった残りの共通クラスを作成(コピー)する
 		for(var classname in pzpr.common){
 			if(!custom[classname]){
-				custom[classname] = pzpr.common[classname];
+				custom[classname] = this.createClass( pzpr.common[classname] );
+				custom[classname].prototype.pid = pid;
 			}
 		}
 
@@ -137,6 +140,7 @@ pzpr.classmgr = {
 	//---------------------------------------------------------------------------
 	setPuzzleClass : function(puzzle, newpid, callback){
 		if(!pzpr.variety(newpid).valid){
+			puzzle.emit('fail-open');
 			throw "Invalid Puzzle Variety Selected";
 		}
 
@@ -183,8 +187,6 @@ pzpr.classmgr = {
 		this.setPrototypeRef(puzzle, 'klass', puzzle.klass);
 
 		puzzle.pid = pid;
-		this.setPrototypeRef(puzzle, 'pid', pid);
-
 		puzzle.info = pzpr.variety(pid);
 	},
 
