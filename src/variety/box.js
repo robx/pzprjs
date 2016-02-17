@@ -192,7 +192,7 @@ Graphic:{
 			var excell = exlist[i];
 			if(excell.id>=this.board.cols+this.board.rows){ continue;}
 
-			g.vi = "excell_text_"+excell.id;
+			g.vid = "excell_text_"+excell.id;
 			if(excell.bx>=0 || excell.by>=0){
 				g.fillStyle = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
 				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
