@@ -319,15 +319,18 @@ Graphic:{
 	drawArrowNumbers : function(){
 		var g = this.vinc('cell_arrownumber', 'auto');
 
-		var ll = this.cw*0.7;				//LineLength
-		var ls = (this.cw-ll)/2;			//LineStart
-		var lw = Math.max(this.cw/24, 1);	//LineWidth
-		var lm = lw/2;						//LineMargin
+		var al = this.cw*0.4;		// ArrowLength
+		var aw = this.cw*0.03;		// ArrowWidth
+		var tl = this.cw*0.16;		// 矢じりの長さの座標(中心-長さ)
+		var tw = this.cw*0.12;		// 矢じりの幅
+		var dy = -this.bh*0.6;
+		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i], num=cell.qnum, dir=cell.qdir;
-			var ax=(cell.bx-1)*this.bw, ay=(cell.by-1)*this.bh;
+			var px = cell.bx*this.bw, py = cell.by*this.bh;
+			var digit = (num<10 ? 0 : (num<100 ? 1 : 2));
 			var info = cell.error || cell.qinfo;
 
 			if(dir!==cell.NDIR || num>=0 || (!this.hideHatena && num===-2)){
@@ -336,35 +339,15 @@ Graphic:{
 				else                  { g.fillStyle = this.fontcolor;}
 			}
 
-			// 矢印の線の描画
-			g.vid = "c_ar1_"+cell.id;
-			if(dir!==cell.NDIR){
-				g.beginPath();
-				// 矢印の描画(上下向き)
-				if(dir===cell.UP||dir===cell.DN){
-					ax+=(this.cw-ls*1.5-lm); ay+=(ls+1);
-					g.rect(ax, ay, lw, ll);
-					ax+=lw/2;
-				}
-				// 矢印の描画(左右向き)
-				else if(dir===cell.LT||dir===cell.RT){
-					ax+=(ls+1); ay+=(ls*1.5-lm);
-					g.rect(ax, ay, ll, lw);
-					ay+=lw/2;
-				}
-				g.fill();
-			}
-			else{ g.vhide();}
-
-			// 矢じりの描画
+			// 矢印の描画
 			g.vid = "c_dt1_"+cell.id;
 			if(dir!==cell.NDIR){
 				g.beginPath();
 				switch(dir){
-					case cell.UP: g.setOffsetLinePath(ax,ay,    0,0, -ll/6, ll/3,  ll/6, ll/3, true); break;
-					case cell.DN: g.setOffsetLinePath(ax,ay+ll, 0,0, -ll/6,-ll/3,  ll/6,-ll/3, true); break;
-					case cell.LT: g.setOffsetLinePath(ax,ay,    0,0,  ll/3,-ll/6,  ll/3, ll/6, true); break;
-					case cell.RT: g.setOffsetLinePath(ax+ll,ay, 0,0, -ll/3,-ll/6, -ll/3, ll/6, true); break;
+					case cell.UP: g.setOffsetLinePath(px+dx[digit],py, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
+					case cell.DN: g.setOffsetLinePath(px+dx[digit],py, 0, al, -tw, tl, -aw, tl, -aw,-al,  aw,-al, aw, tl,  tw, tl, true); break;
+					case cell.LT: g.setOffsetLinePath(px,py+dy,        -al,0, -tl,-tw, -tl,-aw,  al,-aw,  al, aw, -tl,aw, -tl, tw, true); break;
+					case cell.RT: g.setOffsetLinePath(px,py+dy,         al,0,  tl,-tw,  tl,-aw, -al,-aw, -al, aw,  tl,aw,  tl, tw, true); break;
 				}
 				g.fill();
 			}
@@ -376,7 +359,6 @@ Graphic:{
 				var option = {};
 				if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
 
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if     (dir===cell.UP||dir===cell.DN){ px-=this.cw*0.1;}
 				else if(dir===cell.LT||dir===cell.RT){ py+=this.ch*0.1;}
 
