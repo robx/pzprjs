@@ -158,21 +158,21 @@ pzpr.Puzzle.prototype =
 	// owner.toBlob()    盤面画像をBlobとして出力する
 	// owner.toBuffer()  盤面画像をファイルデータそのままで出力する
 	//---------------------------------------------------------------------------
-	toDataURL : function(type, quality, cellsize){
-		var canvas = getLocalCanvas(this, (type||""), cellsize);
+	toDataURL : function(type, quality, option){
+		var canvas = getLocalCanvas(this, type, option);
 		var dataurl = canvas.toDataURL('image/'+type, quality);
 		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return dataurl;
 	},
-	toBlob : function(callback, type, quality, cellsize){
-		var canvas = getLocalCanvas(this, (type||""), cellsize);
+	toBlob : function(callback, type, quality, option){
+		var canvas = getLocalCanvas(this, type, option);
 		canvas.toBlob(function(blob){
 			callback(blob);
 			if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		}, 'image/'+type, quality);
 	},
-	toBuffer : function(type, quality, cellsize){
-		var canvas = getLocalCanvas(this, (type||""), cellsize), data;
+	toBuffer : function(type, quality, option){
+		var canvas = getLocalCanvas(this, type, option), data;
 		var data = canvas.toBuffer('image/'+type, quality);
 		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return data;
@@ -481,15 +481,19 @@ function execKeyUp(e){
 //---------------------------------------------------------------------------
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
-function getLocalCanvas(puzzle, type, cellsize){
+function getLocalCanvas(puzzle, type, option){
+	if(typeof option==='number'){ option = {cellsize:option};}
+	option = option || {};
+	
 	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : pzpr.Candle.current);
 	
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
+	if('bgcolor' in option){ pc2.bgcolor = option.bgcolor;}
 	
 	// canvasの設定を適用して、再描画
-	pc2.resizeCanvasByCellSize(cellsize || puzzle.painter.cw);
+	pc2.resizeCanvasByCellSize(option.cellsize || puzzle.painter.cw);
 	pc2.unsuspend();
 	
 	return imgcanvas;

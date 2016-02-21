@@ -75,12 +75,15 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.redraw([flush])` Redraw the whole canvas.
     * `flush:boolean` If `true`, it will destroy all cached data and redraw, otherwise cached data will be kept.
 * `puzzle.irowake()` Regenerate the color of the line if config.irowake (set individual color to line) is set.
-* `puzzle.toDataURL([graphictype[, quality[, cellsize]]])` Return the canvas graphic data as Data URL.
+* `puzzle.toDataURL([graphictype[, quality[, option]]])` Return the canvas graphic data as Data URL.
     * Return value: Generated Data URL.
-    * `quality:number` Compression quality for `jpeg` or `webp`, but currently this is not used. 
-* `puzzle.toBuffer([graphictype[, quality[, cellsize]]])` Return raw image data of the canvas.
-    * Return value: Generated data as a string.
-* `puzzle.toBlob(callback[, graphictype[, quality[, cellsize]]])` Generate the canvas graphic data as Blob.
+    * `quality:number` Compression quality for `jpeg` or `webp`.
+    * If option is `number`, it will treat as `option.cellsize` for backward compatibility.
+    * `option.cellsize:number` Identify output size by the size of cells. 
+    * `option.bgcolor:string` Specify background color. If this is empty, background will become transparent.
+* `puzzle.toBuffer([graphictype[, quality[, option]]])` Return raw image data of the canvas.
+    * Return value: Generated data as a string.s
+* `puzzle.toBlob(callback[, graphictype[, quality[, option]]])` Generate the canvas graphic data as Blob.
     * Return value: No return value. Please use `callback(blob)`.
 
 ## Methods for the board model
