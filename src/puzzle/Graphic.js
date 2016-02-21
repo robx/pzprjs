@@ -539,23 +539,12 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	flushCanvas : function(){
 		var g = this.vinc('background', 'crispEdges', true);
-		var minbx, minby, bwidth, bheight;
 		var bw = this.bw, bh = this.bh;
-
-		if(g.use.canvas){
-			var d = this.range;
-			minbx   = Math.max(d.x1, -this.x0/bw);
-			minby   = Math.max(d.y1, -this.y0/bh);
-			bwidth  = Math.min(d.x2, g.canvas.clientWidth /bw) - minbx;
-			bheight = Math.min(d.y2, g.canvas.clientHeight/bh) - minby;
-		}
-		else{
-			var bd = this.board;
-			minbx   = bd.minbx;
-			minby   = bd.minby;
-			bwidth  = bd.maxbx - minbx;
-			bheight = bd.maxby - minby;
-		}
+		var bd = this.board;
+		var minbx   = bd.minbx;
+		var minby   = bd.minby;
+		var bwidth  = bd.maxbx - minbx;
+		var bheight = bd.maxby - minby;
 
 		g.vid = "BG";
 		g.fillStyle = this.bgcolor;
