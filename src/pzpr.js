@@ -3,10 +3,10 @@
 exports.files = [
 	"common/intro",
 	"pzpr/core",
-	"pzpr/env",
 	"lib/candle-intro",
 	"lib/candle",
 	"lib/candle-outro",
+	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",
 	"pzpr/variety",

@@ -161,34 +161,20 @@ pzpr.Puzzle.prototype =
 	toDataURL : function(type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
 		var dataurl = canvas.toDataURL('image/'+type, quality);
-		canvas.parentNode.removeChild(canvas);
+		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return dataurl;
 	},
 	toBlob : function(callback, type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize);
 		canvas.toBlob(function(blob){
 			callback(blob);
-			canvas.parentNode.removeChild(canvas);
+			if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		}, 'image/'+type, quality);
 	},
 	toBuffer : function(type, quality, cellsize){
 		var canvas = getLocalCanvas(this, (type||""), cellsize), data;
-		if(canvas.getContext('2d').use.svg){
-			var svgdata = canvas.firstChild.outerHTML || new XMLSerializer().serializeToString(canvas.firstChild);
-			data = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgdata;
-		}
-		else{
-			var dataurl = canvas.toDataURL('image/'+type, quality).replace(/^data:image\/\w+?;base64,/,'');
-			if(!pzpr.env.node){
-				var binary = window.atob(dataurl);
-				data = new Uint8Array(binary.length);
-				for(var i=0;i<binary.length;i++){ data[i] = binary.charCodeAt(i);}
-			}
-			else{
-				data = new Buffer(dataurl, 'base64');
-			}
-		}
-		canvas.parentNode.removeChild(canvas);
+		var data = canvas.toBuffer('image/'+type, quality);
+		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return data;
 	},
 
@@ -407,27 +393,10 @@ function initObjects(puzzle){
 }
 
 //---------------------------------------------------------------------------
-//  initCandle()  node.js環境でdocumentなどのオブジェクトをjsdomから設定する
-//---------------------------------------------------------------------------
-function initCandle(){
-	if(!window || !document){
-		if(typeof require==='function' && typeof process==='object'){
-			/* jshint ignore:start */
-			document  = require('jsdom').jsdom('');
-			window    = document.defaultView;
-			navigator = window.navigator;
-			/* jshint ignore:end */
-		}
-		pzpr.Candle.init();
-	}
-}
-
-//---------------------------------------------------------------------------
 //  setCanvas_main()  描画キャンバスをセットする
 //  createSubCanvas() 補助キャンバスを作成する
 //---------------------------------------------------------------------------
 function setCanvas_main(puzzle, type){
-	initCandle();
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
 	if(type==='canvas' && !!pzpr.Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
 	
@@ -439,14 +408,13 @@ function setCanvas_main(puzzle, type){
 	});
 }
 function createSubCanvas(type){
-	initCandle();
 	if(!pzpr.Candle.enable[type]){ return null;}
 	var el = null;
 	el = document.createElement('div');
 	el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
 	el.style.left = '-10000px';
 	el.style.top = '0px';
-	document.body.appendChild(el);
+	if(!!document.body){ document.body.appendChild(el);}
 	pzpr.Candle.start(el, type, function(g){
 		g.canvas.style.position = 'absolute';
 	});
@@ -514,7 +482,6 @@ function execKeyUp(e){
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, type, cellsize){
-	initCandle();
 	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : pzpr.Candle.current);
 	
 	var pc2 = new puzzle.klass.Graphic();

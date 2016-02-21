@@ -1,30 +1,6 @@
 // env.js v3.4.0
 // jshint node:true
 
-//---------------------------------------------------------------------------
-// node.js環境向けの対策
-//---------------------------------------------------------------------------
-/* jshint ignore:start */
-var document  = this.document;
-var window    = this.window;
-var navigator = this.navigator;
-
-var DOMParser = this.DOMParser || ((typeof require!=='undefined') ?
-	function(){ this.parseFromString = function(str,mimetype){
-		return require('jsdom').jsdom(str,{parsingMode:'xml'});
-	}}
-:  // jsdom
-	function(){ this.parseFromString = function(str,mimetype){
-		var doc = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'puzzle', null);
-		doc.innerHTML = str;
-		return doc;
-	}}
-);
-var XMLSerializer = this.XMLSerializer || function(){ this.serializeToString = function(xmldoc){
-		return xmldoc.documentElement.outerHTML.replace(/<([\w\-]+)([^>]*)><\/\1>/g, '<$1$2/>');
-	}};
-/* jshint ignore:end */
-
 /**************/
 /* 環境の取得 */
 /**************/

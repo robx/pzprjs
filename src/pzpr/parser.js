@@ -520,7 +520,7 @@ pzpr.parser.FileData.prototype = {
 			propnode = this.createXMLNode('property');
 			var meta = pzl.metadata;
 			propnode.appendChild(this.createXMLNode('author',     {value:meta.author}));
-			propnode.appendChild(this.createXMLNode('sou-rce',    {value:meta.source})); // jsdomで閉じタグが消えてしまう回避策
+			propnode.appendChild(this.createXMLNode('source',     {value:meta.source}));
 			propnode.appendChild(this.createXMLNode('difficulty', {value:meta.hard}));
 			if(!!meta.comment){
 				var commentnode = this.createXMLNode('comment');
@@ -539,8 +539,7 @@ pzpr.parser.FileData.prototype = {
 			outputdata = out.join("\n");
 		}
 		else{
-			outputdata = (new XMLSerializer()).serializeToString(this.body);
-			outputdata = outputdata.replace(/sou\-rce/g,'source');
+			outputdata = new XMLSerializer().serializeToString(this.body);
 			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
 				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
 			}

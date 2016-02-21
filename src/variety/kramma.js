@@ -124,7 +124,7 @@ Graphic:{
 "Graphic@shwolf":{
 	resize_canvas_main : function(){
 		/* imgtileの初期設定を追加 */
-		if(!this.imgtile){ this.imgtile = new this.klass.ImageTile();}
+		if(!this.imgtile){ this.imgtile = new this.klass.ImageTile(this.context.use.svg ? 'svg' : 'canvas');}
 
 		this.common.resize_canvas_main.call(this);
 	},
@@ -294,14 +294,14 @@ FailCode:{
 },
 
 "ImageTile@shwolf":{
-	initialize : function(){
-		if(!this.puzzle.pzpr.env.node){
+	initialize : function(type){
+		if(typeof Image!=='undefined'){
 			this.image = new Image();
 		}
-		else{
-			// jshint node:true
-			this.image = new require('jsdom').jsdom('').defaultView.Image();
+		else if(type==='canvas'){
+			this.image = new this.puzzle.pzpr.Candle.Canvas.Image();
 		}
+		else{ this.image = {};}
 		this.image.src = this.imgsrc_dataurl;
 		this.image.height = 64;
 		this.image.width  = 128;

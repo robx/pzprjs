@@ -121,6 +121,9 @@ pzpr.util = {
 	// pzpr.util.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
+		if(pzpr.env.node){
+			return { top:0, bottom:0, left:0, right:0, height:0, width:0};
+		}
 		var rect = el.getBoundingClientRect(), scrollLeft, scrollTop;
 		if(window.scrollX!==void 0){
 			scrollLeft = window.scrollX;
