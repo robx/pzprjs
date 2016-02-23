@@ -159,21 +159,24 @@ pzpr.Puzzle.prototype =
 	// owner.toBuffer()  盤面画像をファイルデータそのままで出力する
 	//---------------------------------------------------------------------------
 	toDataURL : function(type, quality, option){
-		var canvas = getLocalCanvas(this, type, option);
-		var dataurl = canvas.toDataURL('image/'+type, quality);
+		var imageopt = parseImageOption(type, quality, option);
+		var canvas = getLocalCanvas(this, imageopt);
+		var dataurl = canvas.toDataURL(imageopt.mimetype, imageopt.quality);
 		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return dataurl;
 	},
 	toBlob : function(callback, type, quality, option){
-		var canvas = getLocalCanvas(this, type, option);
+		var imageopt = parseImageOption(type, quality, option);
+		var canvas = getLocalCanvas(this, imageopt);
 		canvas.toBlob(function(blob){
 			callback(blob);
 			if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
-		}, 'image/'+type, quality);
+		}, imageopt.mimetype, imageopt.quality);
 	},
 	toBuffer : function(type, quality, option){
-		var canvas = getLocalCanvas(this, type, option), data;
-		var data = canvas.toBuffer('image/'+type, quality);
+		var imageopt = parseImageOption(type, quality, option);
+		var canvas = getLocalCanvas(this, imageopt);
+		var data = canvas.toBuffer(imageopt.mimetype, imageopt.quality);
 		if(!!canvas.parentNode){ canvas.parentNode.removeChild(canvas);}
 		return data;
 	},
@@ -483,23 +486,53 @@ function execKeyUp(e){
 //---------------------------------------------------------------------------
 //  generateLocalCanvas()  toDataURL, toBlobの共通処理
 //---------------------------------------------------------------------------
-function getLocalCanvas(puzzle, type, option){
-	if(typeof option==='number'){ option = {cellsize:option};}
-	option = option || {};
-	
-	var imgcanvas = createSubCanvas(!!type ? (type.match(/svg/)?'svg':'canvas') : pzpr.Candle.current);
+function getLocalCanvas(puzzle, imageopt){
+	var imgcanvas = createSubCanvas(imageopt.type);
 	
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
-	if('bgcolor' in option){ pc2.bgcolor = option.bgcolor;}
+	if('bgcolor' in imageopt){ pc2.bgcolor = imageopt.bgcolor;}
 	if(puzzle.pid==='kramma'){ pc2.imgtile = puzzle.painter.imgtile;}
 	
 	// canvasの設定を適用して、再描画
-	pc2.resizeCanvasByCellSize(option.cellsize || puzzle.painter.cw);
+	pc2.resizeCanvasByCellSize(imageopt.cellsize);
 	pc2.unsuspend();
 	
 	return imgcanvas;
+}
+
+//---------------------------------------------------------------------------
+//  generateLocalCanvas()  toDataURL, toBlobの入力オプション解析処理
+//---------------------------------------------------------------------------
+function parseImageOption(){ // (type,quality,option)のはず
+	var imageopt = {};
+	var type = pzpr.Candle.current;
+	var cellsize = null, bgcolor = null, quality = null;
+	for(var i=0;i<arguments.length;i++){
+		var argv = arguments[i];
+		switch(typeof argv){
+			case 'string':
+				type = argv;
+				break;
+			case 'number':
+				if(argv>1.1){ cellsize = argv;}else{ quality = argv;}
+				break;
+			case 'object':
+				cellsize = argv.cellsize || 0;
+				bgcolor = argv.bgcolor || '';
+				break;
+		}
+	}
+	
+	imageopt.type = ((type||pzpr.Candle.current).match(/svg/)?'svg':'canvas');
+	imageopt.mimetype = (imageopt.type!=='svg' ? 'image/'+type : 'image/svg+xml');
+	if(quality!==null && quality!==void 0){ imageopt.quality = quality;}
+	
+	if(cellsize!==null){ imageopt.cellsize = cellsize;}
+	if(bgcolor !==null){ imageopt.bgcolor  = bgcolor;}
+	
+	return imageopt;
 }
 
 })();
