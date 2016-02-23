@@ -34,6 +34,7 @@ Config.prototype =
 
 		/* 表示色の設定 */
 		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
+		this.add('color_bgcolor', "white");						/* 背景色の設定 */
 
 		/* 入力方法設定 */
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
@@ -185,6 +186,10 @@ Config.prototype =
 		
 		case 'color_qanscolor':
 			puzzle.painter.setColor('qanscolor', newval);
+			break;
+		
+		case 'color_bgcolor':
+			puzzle.painter.setColor('bgcolor', newval);
 			break;
 		
 		case 'uramashu':

@@ -219,7 +219,9 @@ Graphic:{
 		}
 	},
 	setColor : function(name, color){
-		this[name] = color || this.constructor.prototype[name];
+		if(name==='bgcolor'){ color = (typeof color==='string' ? color : this.constructor.prototype[name]);}
+		else{ color = (color || this.constructor.prototype[name]);}
+		this[name] = color;
 		if(!this.suspended){ this.paintAll();}
 	},
 
@@ -539,7 +541,6 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	flushCanvas : function(){
 		var g = this.vinc('background', 'crispEdges', true);
-		if(!this.bgcolor){ return;}
 		var bw = this.bw, bh = this.bh;
 		var bd = this.board;
 		var minbx   = bd.minbx;

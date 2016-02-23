@@ -7,9 +7,11 @@ Release date: 2016/2/
 
 * project: Update candle.js to v0.5.0 and remove jsdom dependency
 * candle: Update candle.js to v0.6.0 which suffers extra id attribute from being outputted
+* Puzzle: Jpeg quality augument for outputting image is now available
+* Puzzle: Allow some of the arguments of outputting image are not given
 * Puzzle, Graphic: Make bgcolor and transparency configurable for outputting image
+* Config: Add `color_bgcolor` to set background color
 * Graphic: Polish drawing arrows with number
-* Puzzle: Allow some of the arguments of toDataURL, toBuffer are not given
 
 #### BugFix
 
