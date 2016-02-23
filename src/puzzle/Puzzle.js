@@ -493,6 +493,7 @@ function getLocalCanvas(puzzle, type, option){
 	pc2.context = imgcanvas.getContext("2d");
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	if('bgcolor' in option){ pc2.bgcolor = option.bgcolor;}
+	if(puzzle.pid==='kramma'){ pc2.imgtile = puzzle.painter.imgtile;}
 	
 	// canvasの設定を適用して、再描画
 	pc2.resizeCanvasByCellSize(option.cellsize || puzzle.painter.cw);
