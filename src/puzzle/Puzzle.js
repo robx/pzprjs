@@ -311,11 +311,13 @@ pzpr.Puzzle.prototype =
 	//------------------------------------------------------------------------------
 	// owner.getConfig()  設定値の取得を行う
 	// owner.setConfig()  設定値の設定を行う
+	// owner.resetConfig()設定値を初期値に戻す
 	// owner.validConfig() 設定値が現在のパズルで有効な設定値かどうか返す
 	// owner.execConfig() 設定値と、パズルごとに有効かどうかの条件をANDして返す
 	//------------------------------------------------------------------------------
 	getConfig : function(idname){ return this.config.get(idname);},
 	setConfig : function(idname,val){ return this.config.set(idname,val);},
+	resetConfig : function(idname){ return this.config.reset(idname);},
 	validConfig : function(idname){ return this.config.getexec(idname);},
 	execConfig : function(idname){
 		return (this.config.get(idname) && this.config.getexec(idname));

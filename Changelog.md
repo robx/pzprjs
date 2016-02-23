@@ -10,7 +10,8 @@ Release date: 2016/2/
 * Puzzle: Jpeg quality augument for outputting image is now available
 * Puzzle: Allow some of the arguments of outputting image are not given
 * Puzzle, Graphic: Make bgcolor and transparency configurable for outputting image
-* Config: Add `color_bgcolor` to set background color
+* Config, Graphic: Add `color_bgcolor` to set background color
+* Puzzle, Config: Add puzzle.resetConfig() API
 * Graphic: Polish drawing arrows with number
 
 #### BugFix

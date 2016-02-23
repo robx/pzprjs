@@ -58,6 +58,8 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.setConfig(configname, value)` Set the config data to the given value.
     * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
     * `value` value to be set. Type is either `string`, `number` or `boolean`.
+* `puzzle.resetConfig(configname)` Reset the config data to the initial value. See below to get the list of the config.
+    * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
 * `puzzle.getCurrentConfig()` Return the list of the config values for current puzzle variety.
     * Return value: `object`.
 * `puzzle.saveConfig()` Return current changed config list from default value as object.

@@ -77,6 +77,7 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	// config.get()  各フラグの設定値を返す
 	// config.set()  各フラグの設定値を設定する
+	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
 	get : function(name){
 		return this.list[name]?this.list[name].val:null;
@@ -86,6 +87,10 @@ Config.prototype =
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
+	},
+	reset : function(name){
+		if(!this.list[name]){ return;}
+		this.set(name, this.list[name].defval);
 	},
 
 	//---------------------------------------------------------------------------
