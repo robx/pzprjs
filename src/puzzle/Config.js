@@ -40,17 +40,20 @@ Config.prototype =
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
-		this.add('lrcheck', false);			/* マウス左右反転 */
-
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
+		this.add('lrcheck', false);			/* マウス左右反転 */
 		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
+		this.list.lrcheck.volatile = true;
+		this.list.redline.volatile = true;
+		this.list.redblk.volatile = true;
+		this.list.redroad.volatile = true;
 
 		/* 回答お助け機能 */
 		this.add('autocmp', false);			/* 数字 or kouchokuの正解の点をグレーにする */

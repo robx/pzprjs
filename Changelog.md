@@ -30,6 +30,7 @@ Release date: 2016/2/
 * parser: Move the routine determining proper puzzle genre into pzpr.parser from Encode and FileData class
 * Puzzle: Update generating canvas method to be used for subcanvas or outputting images
 * test: Divide general.js into some scripts based on classes
+* Config: Make lrcheck, redblk, redline, redroad volatile
 
 ## Version 0.2.2
 
