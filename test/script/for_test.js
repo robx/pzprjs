@@ -3,6 +3,8 @@
 /* global pzpr:false */
 (function(){
 
+if(typeof window==='undefined'){ return;}
+
 var puzzle = window.puzzle;
 
 pzpr.on('load', function(){
