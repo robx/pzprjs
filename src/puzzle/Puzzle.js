@@ -403,21 +403,23 @@ function setCanvas_main(puzzle, type){
 	pzpr.Candle.start(puzzle.canvas, type, function(g){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
-		if(g.use.canvas && !puzzle.subcanvas){ puzzle.subcanvas = createSubCanvas('canvas');}
+		if(g.use.canvas && !puzzle.subcanvas){
+			var canvas = puzzle.subcanvas = createSubCanvas('canvas');
+			if(!!document.body){
+				canvas.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
+				canvas.style.position = 'absolute';
+				canvas.style.left = '-10000px';
+				canvas.style.top = '0px';
+				document.body.appendChild(canvas);
+			}
+		}
 		if(puzzle.ready){ postCanvasReady(puzzle);}
 	});
 }
 function createSubCanvas(type){
 	if(!pzpr.Candle.enable[type]){ return null;}
-	var el = null;
-	el = document.createElement('div');
-	el.id = "_"+(new Date()).getTime()+type; /* 何か他とかぶらないようなID */
-	el.style.left = '-10000px';
-	el.style.top = '0px';
-	if(!!document.body){ document.body.appendChild(el);}
-	pzpr.Candle.start(el, type, function(g){
-		g.canvas.style.position = 'absolute';
-	});
+	var el = document.createElement('div');
+	pzpr.Candle.start(el, type);
 	return el;
 }
 
