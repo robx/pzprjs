@@ -35,6 +35,7 @@ Graphic:{
 	cellcolor_func : "",	// getCellColor()の種類
 	bgcellcolor_func : "",	// getBGCellColor()の種類
 	bordercolor_func : "",	// getBorderColor()の種類
+	numbercolor_func : "",	// getNumberColor()の種類
 
 	circlefillcolor_func : "",		// getCircleFillColor()の種類
 	circlestrokecolor_func : "",	// getCircleStrokeColor()の種類

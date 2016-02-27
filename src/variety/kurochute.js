@@ -75,18 +75,17 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	getCellNumberColor : function(cell){
-		var color = this.fontcolor;
+	getNumberColor : function(cell){
 		if(cell.qsub===2){
-			color = this.qcmpcolor;
+			return this.qcmpcolor;
 		}
 		else if(cell.error===1){
-			color = this.fontErrcolor;
+			return this.fontErrcolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
-			color = this.fontAnscolor;
+			return this.fontAnscolor;
 		}
-		return color;
+		return this.fontcolor;
 	}
 },
 

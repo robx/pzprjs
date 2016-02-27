@@ -500,8 +500,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
 
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
 	errlinebgcolor : "rgb(160, 150, 255)",

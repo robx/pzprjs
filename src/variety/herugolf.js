@@ -268,6 +268,7 @@ Graphic:{
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
 	circlefillcolor_func : "qcmp",
+	numbercolor_func : "move",
 
 	invalidlinecolor : "silver",
 
@@ -281,7 +282,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCircles();
-		this.drawNumbers();
+		this.drawNumbers_herugolf();
 		this.drawHoles();
 
 		this.drawPekes();
@@ -291,14 +292,20 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawNumber1 : function(cell){
-		var g = this.context, text = this.getCircleCaption(cell);
-		g.vid = "cell_text_"+cell.id;
-		if(!!text){
-			g.fillStyle = this.getCellNumberColor(cell);
-			this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+	drawNumbers_herugolf : function(){
+		var g = this.vinc('cell_number', 'auto');
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var text = this.getCircleCaption(cell);
+			g.vid = "cell_text_"+cell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
-		else{ g.vhide();}
 	},
 	getCircleCaption : function(cell){
 		if(this.puzzle.execConfig('dispmove')){

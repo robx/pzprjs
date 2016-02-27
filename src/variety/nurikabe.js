@@ -82,6 +82,8 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawBGCells();
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}

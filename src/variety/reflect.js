@@ -118,7 +118,7 @@ Graphic:{
 
 		this.drawTriangle();
 		this.drawTriangleBorder();
-		this.drawNumbers();
+		this.drawNumbers_reflect();
 
 		this.draw11s();
 
@@ -170,14 +170,20 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawNumber1 : function(cell){
-		var g = this.context;
-		g.vid = "cell_text_"+cell.id;
-		if((cell.ques>=2 && cell.ques<=5) && cell.qnum>0){
-			g.fillStyle = "white";
-			this.disptext(""+cell.qnum, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
+	drawNumbers_reflect : function(){
+		var g = this.vinc('cell_number', 'auto');
+
+		g.fillStyle = "white";
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var text = (((cell.ques>=2 && cell.ques<=5) && cell.qnum>0) ? ""+cell.qnum : "");
+			g.vid = "cell_text_"+cell.id;
+			if(!!text){
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
+			}
+			else{ g.vhide();}
 		}
-		else{ g.vhide();}
 	},
 
 	repaintParts : function(blist){

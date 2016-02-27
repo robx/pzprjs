@@ -71,6 +71,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	linecolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
+	numbercolor_func : "fixed",
 
 	paint : function(){
 		this.drawBGCells();
@@ -78,7 +79,7 @@ Graphic:{
 
 		this.drawTateyokos();
 
-		this.drawNumbers();
+		this.drawNumbers_juosan();
 		this.drawMBs();
 		this.drawBorders();
 
@@ -88,15 +89,21 @@ Graphic:{
 	},
 
 	//オーバーライド
-	drawNumber1 : function(cell){
-		var g = this.context;
-		g.vid = "cell_text_"+cell.id;
-		if(cell.qnum!==-1){
-			var option = {ratio:[0.45], position:this.TOPLEFT};
-			g.fillStyle = this.fontcolor;
-			this.disptext((cell.qnum>=0 ? ""+cell.qnum : "?"), cell.bx*this.bw, cell.by*this.bh, option);
+	drawNumbers_juosan : function(){
+		var g = this.vinc('cell_number', 'auto');
+
+		g.fillStyle = this.fontcolor;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var text = (cell.qnum>0 ? ""+cell.qnum : (cell.qnum===-2 ? "?" : ""));
+			g.vid = "cell_text_"+cell.id;
+			if(!!text){
+				var option = {ratio:[0.45], position:this.TOPLEFT};
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, option);
+			}
+			else{ g.vhide();}
 		}
-		else{ g.vhide();}
 	}
 },
 

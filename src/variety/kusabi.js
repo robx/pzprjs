@@ -55,6 +55,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	circleratio : [0.45, 0.40],
 
+	numbercolor_func : "fixed",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -63,21 +65,27 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCircles();
-		this.drawNumbers();
+		this.drawNumbers_kusabi();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	drawNumber1 : function(cell){
-		var g = this.context, text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
-		g.vid = "cell_text_"+cell.id;
-		if(!!text){
-			g.fillStyle = this.fontcolor;
-			this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.65]});
+	drawNumbers_kusabi : function(cell){
+		var g = this.vinc('cell_number', 'auto');
+
+		g.fillStyle = this.fontcolor;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
+			g.vid = "cell_text_"+cell.id;
+			if(!!text){
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.65]});
+			}
+			else{ g.vhide();}
 		}
-		else{ g.vhide();}
 	}
 },
 

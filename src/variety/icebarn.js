@@ -341,10 +341,9 @@ Graphic:{
 
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
+	numbercolor_func : "fixed",
 
 	errcolor1 : "red",
-
-	fontShadecolor : "black", /* icelom, icelom2用 this.fontcolorと同じ */
 
 	maxYdeg : 0.70,
 

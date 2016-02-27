@@ -150,6 +150,8 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
+	numbercolor_func : "anum",
+
 	paint : function(){
 		this.drawBDBase();
 

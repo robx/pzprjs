@@ -238,8 +238,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	linecolor_type : "LIGHT",
 
-	fontcolor    : "black",
-	fontErrcolor : "black",
+	numbercolor_func : "fixed",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],

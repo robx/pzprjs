@@ -98,6 +98,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bgcellcolor_func : "qsub2",
+	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();

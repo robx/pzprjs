@@ -198,6 +198,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	bgcellcolor_func : "qsub2",
+	numbercolor_func : "move",
 	qsubcolor1 : "rgb(224, 224, 255)",
 	qsubcolor2 : "rgb(255, 255, 144)",
 
@@ -256,7 +257,7 @@ Graphic:{
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
-	getCellNumberColor : function(cell){
+	getNumberColor : function(cell){
 		return (this.puzzle.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },

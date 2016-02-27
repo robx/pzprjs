@@ -62,6 +62,8 @@ AreaRoomGraph:{
 Graphic:{
 	irowake : true,
 
+	numbercolor_func : "qnum",
+
 	gridcolor_type : "SLIGHT",
 
 	paint : function(){

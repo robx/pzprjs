@@ -71,6 +71,7 @@ Graphic:{
 	bcolor_type : "GREEN",
 
 	bgcellcolor_func : "qsub1",
+	numbercolor_func : "qnum",
 
 	bbcolor : "rgb(160, 255, 191)",
 

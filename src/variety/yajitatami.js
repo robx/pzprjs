@@ -67,6 +67,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
+	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();

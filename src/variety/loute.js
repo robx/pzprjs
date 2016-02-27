@@ -235,6 +235,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
+	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,		/* sashigane用 */
 	circleratio : [0.40, 0.40],		/* 線幅を1pxにする */

@@ -47,8 +47,8 @@ Graphic:{
 
 	bordercolor_func : "qans",
 
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.40, 0.40],

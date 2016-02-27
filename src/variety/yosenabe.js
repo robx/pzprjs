@@ -188,6 +188,7 @@ Graphic:{
 
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
+	numbercolor_func : "move",
 	icecolor : "rgb(224,224,224)",
 
 	paint : function(){
@@ -255,7 +256,7 @@ Graphic:{
 				else{
 					option.globalratio = 0.8;
 				}
-				g.fillStyle = this.getCellNumberColor(cell);
+				g.fillStyle = this.getNumberColor(cell);
 				this.disptext(text, px, py, option);
 			}
 			else{ g.vhide();}

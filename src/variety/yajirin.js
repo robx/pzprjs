@@ -75,6 +75,8 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
+	numbercolor_func : "qnum",
+
 	dotcolor : "rgb(255, 96, 191)",
 
 	paint : function(){

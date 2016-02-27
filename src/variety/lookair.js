@@ -51,6 +51,7 @@ AreaShadeGraph:{
 // 画像表示系
 Graphic:{
 	bgcellcolor_func : "qsub1",
+	numbercolor_func : "qnum",
 
 	bcolor_type : "GREEN",
 

@@ -49,6 +49,8 @@ LineGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

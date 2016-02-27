@@ -186,6 +186,8 @@ Graphic:{
 
 	circleratio : [0.47, 0.42],
 
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawDotCells(false);
 		this.drawDashedGrid();

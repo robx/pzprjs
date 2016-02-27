@@ -107,6 +107,8 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "DLIGHT",
 
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawBGCells();
 

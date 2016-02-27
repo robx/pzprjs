@@ -277,45 +277,88 @@ Graphic:{
 
 	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
-	// pc.drawNumber1()  Cellに数字を記入するためdisptext関数を呼び出す
-	// pc.getCellNumberColor()  Cellの数字の色を設定する
-	// 
-	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
-	// pc.drawHatenas()     ques===-2の時に？をCanvasに書き込む
+	// pc.drawHatenas()  ques===-2の時に？をCanvasに書き込む
+	// pc.getNumberColor()   数字の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawNumbers : function(){
-		this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_number', 'auto');
 
 		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){ this.drawNumber1(clist[i]);}
-	},
-	drawNumber1 : function(cell){
-		var g = this.context;
-		var num  = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
-		g.vid = "cell_text_"+cell.id;
-		if(num>=0 || (!this.hideHatena && num===-2)){
-			g.fillStyle = this.getCellNumberColor(cell);
-			this.disptext((num>=0 ? ""+num : "?"), cell.bx*this.bw, cell.by*this.bh);
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
+			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
+			g.vid = "cell_text_"+cell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
-		else{ g.vhide();}
 	},
-	getCellNumberColor : function(cell){
-		var color = this.fontcolor, puzzle = this.puzzle;
-		if((cell.ques>=1 && cell.ques<=5) || (cell.qans>=1 && cell.qans<=5)){
-			color = this.fontShadecolor;
+	drawHatenas : function(){
+		var g = this.vinc('cell_hatena', 'auto');
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			g.vid = "cell_text_"+cell.id;
+			if(cell.ques===-2||cell.qnum===-2){
+				g.fillStyle = this.getNumberColor_qnum(cell);
+				this.disptext("?", cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
 		}
-		else if(cell.error===1 || cell.error===4 || cell.qinfo===1 || cell.qinfo===4){
-			color = this.fontErrcolor;
+	},
+ 
+	getNumberColor : function(cell){
+		var type = this.numbercolor_func || "";
+		this.getNumberColor = (
+			(type==="fixed")? this.getNumberColor_fixed :
+			(type==="qnum") ? this.getNumberColor_qnum :
+			(type==="move") ? this.getNumberColor_move :
+			(type==="anum") ? this.getNumberColor_anum :
+							  this.getNumberColor_mixed
+		);
+		return this.getNumberColor(cell);
+	},
+	getNumberColor_fixed : function(cell){
+		return this.fontcolor;
+	},
+	getNumberColor_qnum : function(cell){
+		return ((cell.error || cell.qinfo)===1 ? this.fontErrcolor : this.fontcolor);
+	},
+	getNumberColor_move : function(cell){
+		var puzzle = this.puzzle;
+		var info = cell.error || cell.qinfo;
+		if(info===1 || info===4){
+			return this.fontErrcolor;
 		}
 		else if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){
-			color = this.movecolor;
+			return this.movecolor;
+		}
+		return this.fontcolor;
+	},
+	getNumberColor_anum : function(cell){
+		return ((cell.error || cell.qinfo)===1 ? this.fontErrcolor : this.fontAnscolor);
+	},
+	getNumberColor_mixed : function(cell){
+		var info = cell.error || cell.qinfo;
+		if((cell.ques>=1 && cell.ques<=5) || cell.qans===1){
+			return this.fontShadecolor;
+		}
+		else if(info===1 || info===4){
+			return this.fontErrcolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
-			color = this.fontAnscolor;
+			return this.fontAnscolor;
 		}
-		return color;
+		return this.fontcolor;
 	},
 
+	//---------------------------------------------------------------------------
+	// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
+	//---------------------------------------------------------------------------
 	drawArrowNumbers : function(){
 		var g = this.vinc('cell_arrownumber', 'auto');
 
@@ -329,19 +372,17 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i], num=cell.qnum, dir=cell.qdir;
+			var text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			var digit = (num<10 ? 0 : (num<100 ? 1 : 2));
-			var info = cell.error || cell.qinfo;
+			var digit = text.length - 1;
 
-			if(dir!==cell.NDIR || num>=0 || (!this.hideHatena && num===-2)){
-				if     (cell.qans===1){ g.fillStyle = this.fontShadecolor;}
-				else if(info===1)     { g.fillStyle = this.fontErrcolor;}
-				else                  { g.fillStyle = this.fontcolor;}
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
 			}
 
 			// 矢印の描画
-			g.vid = "c_dt1_"+cell.id;
-			if(dir!==cell.NDIR){
+			g.vid = "cell_arrow_"+cell.id;
+			if(!!text && dir!==cell.NDIR){
 				g.beginPath();
 				switch(dir){
 					case cell.UP: g.setOffsetLinePath(px+dx[digit],py, 0,-al, -tw,-tl, -aw,-tl, -aw, al,  aw, al, aw,-tl,  tw,-tl, true); break;
@@ -355,28 +396,14 @@ Graphic:{
 
 			// 数字の描画
 			g.vid = "cell_arnum_"+cell.id;
-			if(num>=0 || (!this.hideHatena && num===-2)){
+			if(!!text){
 				var option = {};
 				if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
 
 				if     (dir===cell.UP||dir===cell.DN){ px-=this.cw*0.1;}
 				else if(dir===cell.LT||dir===cell.RT){ py+=this.ch*0.1;}
 
-				this.disptext((num>=0 ? ""+num : "?"), px, py, option);
-			}
-			else{ g.vhide();}
-		}
-	},
-	drawHatenas : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			g.vid = "cell_text_"+cell.id;
-			if(cell.ques===-2||cell.qnum===-2){
-				g.fillStyle = (cell.error===1||cell.qinfo===1 ? this.fontErrcolor : this.fontcolor);
-				this.disptext("?", cell.bx*this.bw, cell.by*this.bh);
+				this.disptext(text, px, py, option);
 			}
 			else{ g.vhide();}
 		}

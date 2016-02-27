@@ -91,6 +91,8 @@ BoardExec:{
 Graphic:{
 	ttcolor : "rgb(255,255,127)",
 
+	numbercolor_func : "anum",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();
@@ -131,11 +133,12 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var cell = clist[i];
+			var text = ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
 			g.vid = "cell_text_anum"+cell.id;
-			if(!cell.is51cell() && cell.anum>0){
-				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
-				this.disptext(""+cell.anum, px, py);
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}

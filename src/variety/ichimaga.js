@@ -58,7 +58,7 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	fontErrcolor : "black", /* fontcolorと同じ */
+	numbercolor_func : "fixed",
 
 	globalfontsizeratio : 0.85,
 
