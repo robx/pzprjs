@@ -148,7 +148,7 @@ KeyEvent:{
 			cell.setAnum(-1);
 			retval = true;
 		}
-		else if(this.key_inputdirec(ca)){
+		else if(this.key_inputarrow(ca)){
 			/* 数字とは排他になる */
 			cell.setQues(1);
 			cell.setQnum(-1);

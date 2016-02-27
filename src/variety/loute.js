@@ -91,7 +91,7 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(this.key_inputdirec(ca)){ return;}
+		if(this.key_inputarrow(ca)){ return;}
 
 		if(this.pid==='loute'){
 			this.key_arrow_loute(ca);

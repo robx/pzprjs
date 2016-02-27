@@ -98,7 +98,7 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(this.key_inputdirec(ca)){ return;}
+		if(this.key_inputarrow(ca)){ return;}
 		this.key_inputques_nagare(ca);
 	},
 	key_inputques_nagare : function(ca){
