@@ -368,11 +368,12 @@ Graphic:{
 		var tw = this.cw*0.12;		// 矢じりの幅
 		var dy = -this.bh*0.6;
 		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
+		var hideHatena = (this.pid!=="yajirin" ? false : this.puzzle.getConfig('disptype_yajilin')===2);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i], num=cell.qnum, dir=cell.qdir;
-			var text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
+			var text = (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var digit = text.length - 1;
 

@@ -9,6 +9,7 @@
 |`irowake`|`boolean`|`false`|Set individual color to lines|
 |`irowakeblk`|`boolean`|`false`|Set individual color to mass of shaded cells (TBD)|
 |`dispmove`|`boolean`|`true`|Display objects as if it is really moving for moving puzzles|
+|`disptype_yajirin`|`number`|`1`|Display type for `'Yajilin'` means whether gray background isallowed <br> Possible value: `1 or 2`|
 |`disptype_pipelinkr`|`number`|`1`|Ice/circle display type for `'Pipelink Returns'` <br> Possible value: `1 or 2`|
 |`disptype_bosanowa`|`number`|`1`|Display type for `'Bosanova'` <br> Possible value: `1, 2 or 3`|
 |`snakebd`|`boolean`|`false`|Display the border between inside and outside the snake for `'Hebi-Ichigo'`|

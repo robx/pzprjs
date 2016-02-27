@@ -25,7 +25,7 @@ Encode:{
 	// v3になって以降pidを分離したパズルのうち元パズルのURL形式を変更して短くしたパズル:
 	//     bonsan, kramma (cを付加)
 	// URL形式は同じで表示形式の情報をもたせているパズル:
-	//     bosanowa, pipelink
+	//     bosanowa, pipelink, yajilin
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
