@@ -1,6 +1,4 @@
-// test/general.js
-// jshint node:true, browser:false, esnext:true
-/* global describe:false, it:false */
+// test/variety/slalom_test.js
 
 var assert = require('assert');
 
@@ -26,38 +24,38 @@ describe('Variety:slalom',function(){
 		puzzle.board.getc(5,7).setQues(22);
 		puzzle.board.getc(5,11).setQues(22);
 		
-		assert.equal(-1,puzzle.board.getc(3,13).gate.number);
-		assert.equal( 2,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number,-1);
+		assert.equal(puzzle.board.getc(5,11).gate.number, 2);
 	});
 	it('Check gate number - dual and single', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 0,2 - 0,2 /. i . # ');
 		
-		assert.equal(-1,puzzle.board.getc(3,13).gate.number);
-		assert.equal( 2,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number,-1);
+		assert.equal(puzzle.board.getc(5,11).gate.number, 2);
 	});
 	it('Check gate number - single and single', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 0,2 - # /. i . # ');
 		
-		assert.equal(-1,puzzle.board.getc(3,13).gate.number);
-		assert.equal(-1,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number,-1);
+		assert.equal(puzzle.board.getc(5,11).gate.number,-1);
 	});
 	it('Check gate number - arrow number', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 2,2 - 3,3 /. i . # ');
 		
-		assert.equal( 2,puzzle.board.getc(3,13).gate.number);
-		assert.equal( 3,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number, 2);
+		assert.equal(puzzle.board.getc(5,11).gate.number, 3);
 	});
 	it('Check gate number - collapsed arrow number', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 2,2 - 3,2 /. i . # ');
 		
-		assert.equal(-1,puzzle.board.getc(3,13).gate.number);
-		assert.equal(-1,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number,-1);
+		assert.equal(puzzle.board.getc(5,11).gate.number,-1);
 	});
 	it('Check gate number - prural single number', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 0,2 - 0,3 /. i . # ');
 		
-		assert.equal( 2,puzzle.board.getc(3,13).gate.number);
-		assert.equal( 3,puzzle.board.getc(5,11).gate.number);
+		assert.equal(puzzle.board.getc(3,13).gate.number, 2);
+		assert.equal(puzzle.board.getc(5,11).gate.number, 3);
 	});
 	it('StartGoal line Route 1', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/o . . # /. # - # /. # . # /. # - # /. # . # /. # - # /. i . # ');
@@ -68,7 +66,7 @@ describe('Variety:slalom',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,1, 5,1, 5,13, 1,13, 1,1);
 		
-		assert.equal('lrOrder', puzzle.check(false)[0]);
+		assert.equal(puzzle.check(false)[0], 'lrOrder');
 	});
 	it('StartGoal line Route 2', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. # - # /. i . # ');
@@ -79,6 +77,6 @@ describe('Variety:slalom',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,1, 5,1, 5,13, 1,13, 1,1);
 		
-		assert.equal('lrOrder', puzzle.check(false)[0]);
+		assert.equal(puzzle.check(false)[0], 'lrOrder');
 	});
 });
