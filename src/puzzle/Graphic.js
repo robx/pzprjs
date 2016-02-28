@@ -64,7 +64,8 @@ Graphic:{
 
 	errbcolor2 : "rgb(64, 255, 64)",
 
-	icecolor : "rgb(192, 224, 255)",
+	icecolor    : "rgb(192, 224, 255)",
+	erricecolor : "rgb(224,  96, 160)",
 
 	// セルの丸数字内部の背景色
 	circledcolor : "white",
@@ -220,7 +221,7 @@ Graphic:{
 		}
 	},
 	setColor : function(name, color){
-		if(name==='bgcolor'){ color = (typeof color==='string' ? color : this.constructor.prototype[name]);}
+		if(name==='bgcolor'){ color = ((typeof color==='string' && color!=='white') ? color : this.constructor.prototype[name]);}
 		else{ color = (color || this.constructor.prototype[name]);}
 		this[name] = color;
 		if(!this.suspended){ this.paintAll();}

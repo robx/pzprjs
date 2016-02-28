@@ -137,7 +137,10 @@ Graphic:{
 		return null;
 	},
 	getBGCellColor_icebarn : function(cell){
-		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		if(cell.error===1||cell.qinfo===1){
+			if(cell.ques===6){ return this.erricecolor;}
+			else             { return this.errbcolor1;}
+		}
 		else if(cell.ques===6){ return this.icecolor;}
 		return null;
 	},

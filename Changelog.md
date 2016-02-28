@@ -13,6 +13,7 @@ Release date: 2016/2/
 * Config, Graphic: Add `color_bgcolor` to set background color
 * Puzzle, Config: Add puzzle.resetConfig() API
 * Graphic: Polish drawing arrows with number
+* Graphic: Introduce independent error color for icy cells
 * yajilin: Give an ability to be a gray-backgdound cell which indicates unused by `disptype_yajilin` config
 
 #### BugFix
