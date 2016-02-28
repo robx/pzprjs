@@ -1,7 +1,7 @@
 
 ## Version 0.3.0
 
-Release date: 2016/2/
+Release date: 2016/2/28
 
 #### Improvement
 
