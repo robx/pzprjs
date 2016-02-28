@@ -121,9 +121,7 @@ Cell:{
 Board:{
 	hasborder : 1,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.snakemgr = this.addInfoList(this.klass.AreaSnakeGraph);
 	}
 },
@@ -153,8 +151,8 @@ Graphic:{
 	dotcolor_type : "PINK",
 
 	cellcolor_func : "qnum",
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	paint : function(){
 		this.drawBGCells();
@@ -187,15 +185,16 @@ Graphic:{
 	},
 
 	drawAnswerNumbers : function(){
-		var g = this.vinc('cell_number', 'auto');
+		var g = this.vinc('cell_anumber', 'auto');
 
+		g.fillStyle = this.fontAnscolor;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
+			var text = ((cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "");
 			g.vid = "cell_ansnum_"+cell.id;
-			if(cell.qnum===-1 && cell.anum>0){
-				g.fillStyle = this.fontAnscolor;
-				this.disptext(""+cell.anum, cell.bx*this.bw, cell.by*this.bh);
+			if(!!text){
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}

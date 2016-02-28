@@ -69,12 +69,17 @@ KeyEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.key_inputdirec()  四方向の矢印などを設定する
+	// kc.key_inputarrow()  四方向の矢印などを設定する
+	// kc.key_inputdirec()  四方向の矢印つき数字の矢印を設定する
 	//---------------------------------------------------------------------------
+	key_inputarrow : function(ca){
+		return this.key_inputdirec_common(ca, false);
+	},
 	key_inputdirec : function(ca){
-		var cell = this.cursor.getc(), pid = this.pid;
-		/* 矢印つき数字の場合 */
-		var arrownum = (pid==="firefly" || pid==="snakes" || pid==="yajikazu" || pid==="yajirin");
+		return this.key_inputdirec_common(ca, true);
+	},
+	key_inputdirec_common : function(ca, arrownum){ // 共通処理
+		var cell = this.cursor.getc();
 		if(arrownum && cell.qnum===-1){ return false;}
 
 		var dir = cell.NDIR;

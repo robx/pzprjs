@@ -91,7 +91,7 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(this.key_inputdirec(ca)){ return;}
+		if(this.key_inputarrow(ca)){ return;}
 
 		if(this.pid==='loute'){
 			this.key_arrow_loute(ca);
@@ -235,6 +235,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
+	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,		/* sashigane用 */
 	circleratio : [0.40, 0.40],		/* 線幅を1pxにする */

@@ -226,18 +226,15 @@ Board:{
 	gatemgr : null,
 	gates : null,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
-		this.startpos = new this.klass.StartPosAddress(1,1);
+	addExtraInfo : function(){
 		this.gatemgr = this.addInfoList(this.klass.AreaHurdleGraph);
 	},
 
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	createExtraObject : function(){
+		this.startpos = new this.klass.StartPosAddress(1,1);
+	},
+	initExtraObject : function(col,row){
 		this.startpos.set(this.cell[0]);
-		this.gatemgr.init();
 	}
 },
 BoardExec:{
@@ -327,9 +324,7 @@ BoardExec:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.StartposOperation);
 	}
 },
@@ -505,8 +500,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
 
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
 	errlinebgcolor : "rgb(160, 150, 255)",

@@ -1,4 +1,41 @@
 
+## Version 0.3.0
+
+Release date: 2016/2/
+
+#### Improvement
+
+* project: Update candle.js to v0.5.0 and remove jsdom dependency
+* candle: Update candle.js to v0.6.0, v0.6.1 which suffers extra id attribute from being outputted
+* Puzzle: Jpeg quality augument for outputting image is now available
+* Puzzle: Allow some of the arguments of outputting image are not given
+* Puzzle, Graphic: Make bgcolor and transparency configurable for outputting image
+* Config, Graphic: Add `color_bgcolor` to set background color
+* Puzzle, Config: Add puzzle.resetConfig() API
+* Graphic: Polish drawing arrows with number
+* Graphic: Introduce independent error color for icy cells
+* yajilin: Give an ability to be a gray-backgdound cell which indicates unused by `disptype_yajilin` config
+
+#### BugFix
+
+* box: Update drawing number routine to avoid numbers are overwritten while previous number remains
+* Graphic: Fix background is not drawn when image other than svg is outputted
+* shwolf: Ensure images to be outputted on first drawing chance in Goats and Wolves
+* Key: Fix unexpected number disappearing when arrow is inputted by keyboard in slalom etc.
+
+#### Refactoring
+
+* Puzzle: Create puzzle sub objects as well when puzzle object is created
+* classmgr: Add prototype.pid to each puzzle class when they are generated
+* Board: Set infolist only when board instance is created
+* Board,Operation: Add some hook functions to init additional object
+* Answer: Add checklist to common class so as not to occur an exception before puzzle.open is called
+* parser: Move the routine determining proper puzzle genre into pzpr.parser from Encode and FileData class
+* Puzzle: Update generating canvas method to be used for subcanvas or outputting images
+* Config: Make lrcheck, redblk, redline, redroad volatile
+* Graphic: Separate deciding font color from drawing number function
+* test: Divide general.js into some scripts based on classes
+
 ## Version 0.2.2
 
 Release date: 2016/2/16

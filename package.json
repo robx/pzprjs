@@ -28,12 +28,10 @@
     "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
     "clean": "grunt clean",
     "lint": "grunt lint",
-    "test": "grunt lint && mocha -R progress test/general.js test/variety",
+    "test": "grunt lint && mocha -R progress --recursive test",
     "prepublish": "npm run release"
   },
-  "dependencies": {
-    "jsdom": "^7.2.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.7.0",

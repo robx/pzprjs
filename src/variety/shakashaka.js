@@ -212,8 +212,7 @@ Cell:{
 	isTri : function(){ return this.qans!==0;}
 },
 Board:{
-	initialize : function(){
-		this.common.initialize.call(this);
+	addExtraInfo : function(){
 		this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
 	}
 },
@@ -261,8 +260,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	cellcolor_func : "qnum",
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	paint : function(){
 		this.drawBGCells();

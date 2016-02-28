@@ -50,8 +50,7 @@ Cell:{
 	}
 },
 "Board@mochikoro,mochinyoro":{
-	initialize : function(){
-		this.common.initialize.call(this);
+	addExtraInfo : function(){
 		this.ublk8mgr = this.addInfoList(this.klass.AreaUnshade8Graph);
 	}
 },
@@ -83,6 +82,8 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawBGCells();
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}

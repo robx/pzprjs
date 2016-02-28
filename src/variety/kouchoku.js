@@ -381,9 +381,7 @@ Board:{
 	rows : 7,
 	disable_subclear : true,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	createExtraObject : function(){
 		this.segment = new this.klass.SegmentList();
 	},
 
@@ -548,9 +546,7 @@ GraphComponent:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.SegmentOperation);
 	}
 },

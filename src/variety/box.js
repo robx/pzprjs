@@ -159,6 +159,8 @@ BoardExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	numbercolor_func : "qnum",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
@@ -192,9 +194,9 @@ Graphic:{
 			var excell = exlist[i];
 			if(excell.id>=this.board.cols+this.board.rows){ continue;}
 
-			g.vi = "excell_text_"+excell.id;
+			g.vid = "excell_text_"+excell.id;
 			if(excell.bx>=0 || excell.by>=0){
-				g.fillStyle = (excell.error!==1 ? this.fontcolor : this.fontErrcolor);
+				g.fillStyle = this.getNumberColor(excell);
 				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
 			}
 			else{ g.vhide();}

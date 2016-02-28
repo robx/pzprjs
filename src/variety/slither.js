@@ -101,6 +101,7 @@ Graphic:{
 	irowake : true,
 
 	bgcellcolor_func : "qsub2",
+	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();

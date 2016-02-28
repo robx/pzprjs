@@ -129,8 +129,8 @@ Graphic:{
 
 	cellcolor_func : "qnum",
 
-	fontcolor    : "white",
-	fontErrcolor : "white",
+	fontcolor : "white",
+	numbercolor_func : "fixed",
 
 	lightcolor : "rgb(192, 255, 127)",
 

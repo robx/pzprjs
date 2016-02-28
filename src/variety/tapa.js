@@ -280,9 +280,7 @@ CellList:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.ObjectOperation2);
 	}
 },
@@ -300,15 +298,15 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers_tapa();
+		this.drawTapaNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 	
-	drawNumbers_tapa : function(){
-		var g = this.vinc('cell_number', 'auto');
+	drawTapaNumbers : function(){
+		var g = this.vinc('cell_tapanum', 'auto');
 		var bw = this.bw, bh = this.bh, basesize = this.fontsizeratio[0];
 		var opts = [
 			{ option:{ratio:[basesize]},     pos:[{x:0,y:0}] },
@@ -322,7 +320,7 @@ Graphic:{
 			var cell = clist[i], bx = cell.bx, by = cell.by;
 			var nums = cell.qnums, n = nums.length;
 
-			g.fillStyle = this.getCellNumberColor(cell);
+			g.fillStyle = this.getNumberColor(cell);
 			for(var k=0;k<4;k++){
 				g.vid = "cell_text_"+cell.id+"_"+k;
 				if(k<n && nums[k]!==-1){

@@ -335,22 +335,27 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
-			g.vid = "excell_text_"+excell.id;
-			if(canum!==0 || num!==-1){
-				var text="";
-				if     (canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-				else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-				else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-				else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-				if(num>=0){ text+=num.toString(10);}
+			var text="";
+			if     (canum===0)           { text = "";}
+			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
+			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
+			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
+			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
+			if(num>=0){ text+=num.toString(10);}
 
-				g.fillStyle = this.fontErrcolor;
-				if(excell.error!==1){ g.fillStyle = (canum<=52 ? this.fontcolor : this.fontAnscolor);}
+			g.vid = "excell_text_"+excell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor(excell);
 				var option = {ratio:((canum===0||num<10) ? [0.66] : [0.55])};
 				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, option);
 			}
 			else{ g.vhide();}
 		}
+	},
+	getNumberColor : function(excell){
+		if     (excell.error===1){ return this.fontErrcolor;}
+		else if(excell.qchar>52) { return this.fontAnscolor;} // 2色目
+		return this.fontcolor;
 	}
 },
 

@@ -84,6 +84,7 @@ pzpr.parser.URLData.prototype = {
 	parse : function (){
 		this.parseURLType();
 		this.parseURLData();
+		this.changeProperPid();
 		return this;
 	},
 	generate : function (){
@@ -143,7 +144,7 @@ pzpr.parser.URLData.prototype = {
 			}
 			this.type = URL_PZPRV3;
 		}
-		this.pid = pzpr.variety(this.pid).pid;
+		this.pid = pzpr.variety.toPID(this.pid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -245,6 +246,51 @@ pzpr.parser.URLData.prototype = {
 		out.push(pzl.body);
 
 		return out.join("/");
+	},
+
+	//---------------------------------------------------------------------------
+	// ★ changeProperPid() parse後パズル種類が実際には別だった場合にpidを変更する
+	//---------------------------------------------------------------------------
+	changeProperPid : function(){
+		// this.bodyが空の場合はEncode.jsの仕様により対象外
+		// カンペンには以下のパズルは存在しないのでURL_KANPENPも対象外
+		if(!this.body || (this.type!==URL_PZPRV3 && this.type!==URL_PZPRAPP)){ return;}
+		
+		switch(this.pid){
+		case 'ichimaga':
+			if     (this.pflag.indexOf('m')>=0){ this.pid = 'ichimagam';}
+			else if(this.pflag.indexOf('x')>=0){ this.pid = 'ichimagax';}
+			else                               { this.pid = 'ichimaga'; }
+			break;
+		case 'icelom':
+			if(this.pflag.indexOf('a')<0){ this.pid = 'icelom2';}
+			break;
+		case 'pipelink':
+			if(this.body.match(/[0-9]/)){ this.pid = 'pipelinkr';}
+			break;
+		case 'bonsan':
+			if(this.pflag.indexOf('c')<0){
+				var col = this.cols, row = this.rows;
+				if(this.body.substr(0,((((col-1)*row+4)/5)|0)+(((col*(row-1)+4)/5)|0)||0).match(/[^0]/)){
+					this.pid = 'heyabon';
+				}
+			}
+			break;
+		case 'kramma':
+			if(this.pflag.indexOf('c')<0){
+				var len=(this.cols-1)*(this.rows-1), cc=0;
+				for(var i=0;i<this.body.length;i++){
+					var ca = this.body.charAt(i);
+					if(ca.match(/\w/)){
+						cc += parseInt(ca,36);
+						if(cc<len){ this.pid = 'kramman'; break;}
+					}
+					else if(ca === '.'){ cc+=36;}
+					if(cc>=len){ break;}
+				}
+			}
+			break;
+		}
 	}
 };
 
@@ -279,6 +325,7 @@ pzpr.parser.FileData.prototype = {
 	
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());
+		if(result){ this.changeProperPid();}
 		return (result ? this : null);
 	},
 	generate : function(){
@@ -316,8 +363,10 @@ pzpr.parser.FileData.prototype = {
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
 		}
-		else{ this.pid = '';}
-		this.pid = pzpr.variety(this.pid).pid;
+		else{
+			this.pid = '';
+		}
+		this.pid = pzpr.variety.toPID(this.pid);
 		
 		return (!!this.pid);
 	},
@@ -471,7 +520,7 @@ pzpr.parser.FileData.prototype = {
 			propnode = this.createXMLNode('property');
 			var meta = pzl.metadata;
 			propnode.appendChild(this.createXMLNode('author',     {value:meta.author}));
-			propnode.appendChild(this.createXMLNode('sou-rce',    {value:meta.source})); // jsdomで閉じタグが消えてしまう回避策
+			propnode.appendChild(this.createXMLNode('source',     {value:meta.source}));
 			propnode.appendChild(this.createXMLNode('difficulty', {value:meta.hard}));
 			if(!!meta.comment){
 				var commentnode = this.createXMLNode('comment');
@@ -490,8 +539,7 @@ pzpr.parser.FileData.prototype = {
 			outputdata = out.join("\n");
 		}
 		else{
-			outputdata = (new XMLSerializer()).serializeToString(this.body);
-			outputdata = outputdata.replace(/sou\-rce/g,'source');
+			outputdata = new XMLSerializer().serializeToString(this.body);
 			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
 				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
 			}
@@ -503,6 +551,43 @@ pzpr.parser.FileData.prototype = {
 		var node = this.body.createElement(name);
 		if(!!attrs){ for(var i in attrs){ node.setAttribute(i, attrs[i]);} }
 		return node;
+	},
+
+	//---------------------------------------------------------------------------
+	// ★ changeProperPid() parse後パズル種類が実際には別だった場合にpidを変更する
+	//---------------------------------------------------------------------------
+	changeProperPid : function(){
+		if(this.type!==FILE_PZPR){ return;}
+		
+		switch(this.pid){
+		case 'ichimaga':
+			var pzlflag = this.body.split('\n')[0];
+			if     (pzlflag==='mag')  { this.pid = 'ichimagam';}
+			else if(pzlflag==='cross'){ this.pid = 'ichimagax';}
+			break;
+		case 'icelom':
+			var pzltype = this.body.split('\n')[2];
+			if(pzltype==='skipwhite'){ this.pid = 'icelom2';}
+			break;
+		case 'pipelink':
+			var lines = this.body.split('\n'), row = 1, len = this.rows;
+			if(lines.slice(row, row+len).join('').match(/o/)){
+				this.pid = 'pipelinkr';
+			}
+			break;
+		case 'bonsan':
+			var lines = this.body.split('\n'), row = 2*this.rows, len = 2*this.rows-1;
+			if(lines.slice(row, row+len).join('').match(/1/)){
+				this.pid = 'heyabon';
+			}
+			break;
+		case 'kramma':
+			var lines = this.body.split('\n'), row = this.rows, len = this.rows+1;
+			if(lines.slice(row, row+len).join('').match(/1/)){
+				this.pid = 'kramman';
+			}
+			break;
+		}
 	}
 };
 

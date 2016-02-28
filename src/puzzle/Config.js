@@ -26,6 +26,7 @@ Config.prototype =
 		this.add('irowakeblk', false);							/* 黒マスの色分け */
 
 		this.add('dispmove', true);								/* 線で動かすパズルで実際に動いたように描画 */
+		this.add('disptype_yajilin', 1, [1,2]);					/* yajilin: 表示形式 */
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
@@ -34,12 +35,11 @@ Config.prototype =
 
 		/* 表示色の設定 */
 		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
+		this.add('color_bgcolor', "white");						/* 背景色の設定 */
 
 		/* 入力方法設定 */
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
-
-		this.add('lrcheck', false);			/* マウス左右反転 */
 
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
@@ -47,9 +47,14 @@ Config.prototype =
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
+		this.add('lrcheck', false);			/* マウス左右反転 */
 		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
+		this.list.lrcheck.volatile = true;
+		this.list.redline.volatile = true;
+		this.list.redblk.volatile = true;
+		this.list.redroad.volatile = true;
 
 		/* 回答お助け機能 */
 		this.add('autocmp', false);			/* 数字 or kouchokuの正解の点をグレーにする */
@@ -76,6 +81,7 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	// config.get()  各フラグの設定値を返す
 	// config.set()  各フラグの設定値を設定する
+	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
 	get : function(name){
 		return this.list[name]?this.list[name].val:null;
@@ -85,6 +91,10 @@ Config.prototype =
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
+	},
+	reset : function(name){
+		if(!this.list[name]){ return;}
+		this.set(name, this.list[name].defval);
 	},
 
 	//---------------------------------------------------------------------------
@@ -163,19 +173,20 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	configevent : function(name, newval){
 		var puzzle = this.puzzle;
+		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'disptype_pipelinkr': case 'dispmove':
+		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin':
 			puzzle.redraw();
 			break;
 		
 		case 'font':
-			if(puzzle.ready){ puzzle.painter.initFont();}
+			puzzle.painter.initFont();
 			puzzle.redraw();
 			break;
 		
 		case 'multierr':
-			if(puzzle.ready){ puzzle.checker.resetCache();}
+			puzzle.checker.resetCache();
 			break;
 		
 		case 'disptype_bosanowa':
@@ -183,13 +194,15 @@ Config.prototype =
 			break;
 		
 		case 'color_qanscolor':
-			if(puzzle.ready){ puzzle.painter.setColor('qanscolor', newval);}
+			puzzle.painter.setColor('qanscolor', newval);
+			break;
+		
+		case 'color_bgcolor':
+			puzzle.painter.setColor('bgcolor', newval);
 			break;
 		
 		case 'uramashu':
-			if(puzzle.ready){
-				puzzle.board.revCircleConfig(newval);
-			}
+			puzzle.board.revCircleConfig(newval);
 			puzzle.redraw();
 			break;
 		}

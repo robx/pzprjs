@@ -58,6 +58,8 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.setConfig(configname, value)` Set the config data to the given value.
     * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
     * `value` value to be set. Type is either `string`, `number` or `boolean`.
+* `puzzle.resetConfig(configname)` Reset the config data to the initial value. See below to get the list of the config.
+    * `configname:string` the id name of the config. See `pzpr.Puzzle.Config class` secrion.
 * `puzzle.getCurrentConfig()` Return the list of the config values for current puzzle variety.
     * Return value: `object`.
 * `puzzle.saveConfig()` Return current changed config list from default value as object.
@@ -75,12 +77,15 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.redraw([flush])` Redraw the whole canvas.
     * `flush:boolean` If `true`, it will destroy all cached data and redraw, otherwise cached data will be kept.
 * `puzzle.irowake()` Regenerate the color of the line if config.irowake (set individual color to line) is set.
-* `puzzle.toDataURL([graphictype[, quality[, cellsize]]])` Return the canvas graphic data as Data URL.
+* `puzzle.toDataURL([graphictype[, quality[, option]]])` Return the canvas graphic data as Data URL.
     * Return value: Generated Data URL.
-    * `quality:number` Compression quality for `jpeg` or `webp`, but currently this is not used. 
-* `puzzle.toBuffer([graphictype[, quality[, cellsize]]])` Return raw image data of the canvas.
-    * Return value: Generated data as a string.
-* `puzzle.toBlob(callback[, graphictype[, quality[, cellsize]]])` Generate the canvas graphic data as Blob.
+    * `quality:number` Compression quality for `jpeg` or `webp`.
+    * If option is `number`, it will treat as `option.cellsize` for backward compatibility.
+    * `option.cellsize:number` Identify output size by the size of cells. 
+    * `option.bgcolor:string` Specify background color. If this is empty, background will become transparent.
+* `puzzle.toBuffer([graphictype[, quality[, option]]])` Return raw image data of the canvas.
+    * Return value: Generated data as a string.s
+* `puzzle.toBlob(callback[, graphictype[, quality[, option]]])` Generate the canvas graphic data as Blob.
     * Return value: No return value. Please use `callback(blob)`.
 
 ## Methods for the board model
@@ -138,6 +143,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.pzpr` Reference to pzpr object.
 * `puzzle.ready:boolean` `true` after the URL/FileData is opened and board, painter and other related objects are set.
 * `puzzle.pid:string` specifies the variety/genre of the current puzzle.
+* `puzzle.info:object` Reference to VarietyInfo of the current puzzle.
 * `puzzle.canvas:Node` The node currently the puzzle has been using.
 * `puzzle.editmode:boolean` `true` if the puzzle is inputting question data at the moment.
 * `puzzle.playmode:boolean` `true` if the puzzle is inputting answer data at the moment.

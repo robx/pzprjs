@@ -149,22 +149,17 @@ Board:{
 	startpos : null,
 	goalpos  : null,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	createExtraObject : function(){
 		var classes = this.klass;
 		this.startpos = new classes.StartAddress(1,1);
 		this.goalpos  = new classes.GoalAddress(this.cols*2-1,this.rows*2-1);
 		this.startpos.partner = this.goalpos;
 		this.goalpos.partner  = this.startpos;
 	},
-
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	initExtraObject : function(col,row){
 		this.disableInfo();
 		this.startpos.init(1,1);
-		this.goalpos.init(this.cols*2-1,this.rows*2-1);
+		this.goalpos.init(col*2-1,row*2-1);
 		this.enableInfo();
 	},
 
@@ -283,9 +278,7 @@ BoardExec:{
 	}
 },
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.StartGoalOperation);
 	}
 },
@@ -358,7 +351,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num=cell.ques;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			g.strokeStyle = this.getCellNumberColor(cell);
+			g.strokeStyle = this.getNumberColor(cell);
 			
 			g.vid = "c_mk1_"+cell.id;
 			if(num===41){

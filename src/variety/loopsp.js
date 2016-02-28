@@ -140,6 +140,8 @@ Graphic:{
 	globalfontsizeratio : 0.85,
 	circleratio : [0.40, 0.35],
 
+	numbercolor_func : "qnum",
+
 	minYdeg : 0.36,
 	maxYdeg : 0.74,
 

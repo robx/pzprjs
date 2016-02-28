@@ -92,6 +92,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	bgcellcolor_func : "qsub2",
+	numbercolor_func : "move",
 	qsubcolor1 : "rgb(224, 224, 255)",
 	qsubcolor2 : "rgb(255, 255, 144)",
 
@@ -142,17 +143,18 @@ Graphic:{
 		var option = {ratio:[0.85]};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
+			var cell = clist[i];
 			var num = (isdrawmove ? cell.base : cell).qnum, text = "";
+			if     (num===-1)        { text = "";}
+			else if(num===-2)        { text = "?";}
+			else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+			else{ text = ""+num;}
+			
 			g.vid = "cell_text_"+cell.id;
-			if(num!==-1){
-				if     (num===-2)        { text = "?";}
-				else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-				else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-				else{ text+=num;}
-
-				g.fillStyle = this.getCellNumberColor(cell);
-				this.disptext(text, px, py, option);
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, option);
 			}
 			else{ g.vhide();}
 		}

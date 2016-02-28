@@ -67,9 +67,7 @@ Board:{
 	cols : 8,
 	rows : 8,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.netgraph = this.addInfoList(this.klass.AreaNetGraph);
 		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	},
@@ -240,8 +238,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	linecolor_type : "LIGHT",
 
-	fontcolor    : "black",
-	fontErrcolor : "black",
+	numbercolor_func : "fixed",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],

@@ -3,6 +3,8 @@
 /* global pzpr:false */
 (function(){
 
+if(typeof window==='undefined'){ return;}
+
 var puzzle = window.puzzle;
 
 pzpr.on('load', function(){
@@ -52,7 +54,7 @@ var debug = window.debug =
 		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){
-		if(pzpr.variety(puzzle.pid).exists.pencilbox){
+		if(puzzle.info.exists.pencilbox){
 			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX));
 		}
 		else{
@@ -60,7 +62,7 @@ var debug = window.debug =
 		}
 	},
 	filesave_pencilbox_xml : function(){
-		if(pzpr.variety(puzzle.pid).exists.pencilbox){
+		if(puzzle.info.exists.pencilbox){
 			this.setTA(puzzle.getFileData(pzpr.parser.FILE_PBOX_XML).replace(/\>/g,'>\n'));
 		}
 		else{
@@ -275,13 +277,13 @@ var debug = window.debug =
 
 		var testlist = [];
 		testlist.push('check_encode');
-		if(pzpr.variety(self.pid).exists.kanpen){
+		if(puzzle.info.exists.kanpen){
 			testlist.push('check_encode_kanpen');
 		}
 		testlist.push('check_answer');
 		testlist.push('check_input');
 		testlist.push('check_file');
-		if(pzpr.variety(self.pid).exists.pencilbox){
+		if(puzzle.info.exists.pencilbox){
 			testlist.push('check_file_pbox');
 			testlist.push('check_file_pbox_xml');
 		}

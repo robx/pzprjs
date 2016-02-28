@@ -72,6 +72,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bgcellcolor_func : "qsub1",
+	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],

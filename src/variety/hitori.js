@@ -67,6 +67,7 @@ Graphic:{
 	bcolor_type : "GREEN",
 
 	bgcellcolor_func : "qsub1",
+	numbercolor_func : "auto",
 
 	fontErrcolor : "red",
 	fontShadecolor : "rgb(96,96,96)",

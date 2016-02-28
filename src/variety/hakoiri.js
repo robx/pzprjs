@@ -111,7 +111,7 @@ Graphic:{
 			var cell = clist[i];
 
 			g.vid = "c_mk_"+cell.id;
-			g.strokeStyle = this.getCellNumberColor(cell);
+			g.strokeStyle = this.getNumberColor(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			switch(cell.getNum()){
 			case 1:

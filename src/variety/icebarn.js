@@ -131,32 +131,29 @@ Board:{
 	hasborder : 2,
 	hasexcell : 2, /* LineGraph用 */
 
+	addExtraInfo : function(){
+		this.icegraph = this.addInfoList(this.klass.AreaIcebarnGraph);
+	},
+
 	arrowin  : null,
 	arrowout : null,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	createExtraObject : function(){
 		var classes = this.klass;
 		this.arrowin  = new classes.InAddress(2,0);
 		this.arrowout = new classes.OutAddress(4,0);
 		this.arrowin.partner  = this.arrowout;
 		this.arrowout.partner = this.arrowin;
-
-		this.icegraph = this.addInfoList(classes.AreaIcebarnGraph);
 	},
-
-	initBoardSize : function(col,row){
-		this.common.initBoardSize.call(this,col,row);
-
+	initExtraObject : function(col,row){
 		this.disableInfo();
 		if(col>=3){
-			this.arrowin.init (this.minbx+3, this.minby+2);
-			this.arrowout.init(this.minbx+7, this.minby+2);
+			this.arrowin.init (1, 0);
+			this.arrowout.init(5, 0);
 		}
 		else{
-			this.arrowin.init (1, this.minby+2);
-			this.arrowout.init(1, this.maxby-2);
+			this.arrowin.init (1, 0);
+			this.arrowout.init(1, 2*row);
 		}
 		this.enableInfo();
 	},
@@ -306,9 +303,7 @@ BoardExec:{
 },
 
 OperationManager:{
-	initialize : function(){
-		this.common.initialize.call(this);
-		
+	addExtraOperation : function(){
 		this.operationlist.push(this.klass.InOutOperation);
 	}
 },
@@ -346,10 +341,9 @@ Graphic:{
 
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
+	numbercolor_func : "fixed",
 
 	errcolor1 : "red",
-
-	fontShadecolor : "black", /* icelom, icelom2用 this.fontcolorと同じ */
 
 	maxYdeg : 0.70,
 
@@ -692,10 +686,6 @@ Graphic:{
 		this.decodeIce();
 		this.decodeNumber16();
 		this.decodeInOut();
-
-		if(this.pid==='icelom' && !this.checkpflag("a")){
-			this.puzzle.changepid('icelom2');
-		}
 	},
 	encodePzpr : function(type){
 		this.encodeIce();
@@ -772,11 +762,7 @@ Encode:{
 		var bd = this.board;
 		bd.arrowin.setid (+this.readLine());
 		bd.arrowout.setid(+this.readLine());
-
-		var pzltype = this.readLine();
-		if(this.pid==='icelom' && (pzltype==="skipwhite")){
-			this.puzzle.changepid('icelom2');
-		}
+		this.readLine();
 
 		this.decodeCell( function(cell,ca){
 			if(ca.charAt(0)==='i'){ cell.ques=6; ca=ca.substr(1);}
@@ -789,9 +775,9 @@ Encode:{
 	},
 	encodeData : function(){
 		var bd = this.board;
-		var pzltype = (this.pid==='icelom'?"allwhite":"skipwhite");
+		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
+		this.datastr += ((this.pid==='icelom'?"allwhite":"skipwhite")+"\n");
 
-		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n"+pzltype+"\n");
 		this.encodeCell( function(cell){
 			var istr = (cell.ques===6 ? "i" : ""), qstr='';
 			if     (cell.qnum===-1){ qstr = (istr==="" ? ". " : " ");}

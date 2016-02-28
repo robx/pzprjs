@@ -24,8 +24,8 @@ This script is developed against HTML5 features and JavaScript.
 
 ### Node.js support
 
-If you want to use, simply install this module. Node.js v4.0 or later is required as jsdom needs.
-If you don't need jsdom related feature such as canvas (SVG) or open/save pencilbox XML format file, pzpr.js is likely to work under v0.12 or older but unchecked.
+If you want to use, simply install this module. Node.js v4.0 or later is required.
+pzpr.js is likely to work under v0.12 or older but unchecked.
 
 #### usage for node.js
 

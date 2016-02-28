@@ -18,6 +18,14 @@ Encode:{
 	//---------------------------------------------------------------------------
 	// enc.checkpflag()   pflagに指定した文字列が含まれているか調べる
 	//---------------------------------------------------------------------------
+	// ぱずぷれApplet->v3でURLの仕様が変わったパズル:
+	//     creek, gokigen, lits (Applet+c===v3, Applet===v3+d)
+	// 何回かURL形式を変更したパズル:
+	//     icebarn (v3, Applet+c, Applet), slalom (v3+p, v3+d, v3/Applet)
+	// v3になって以降pidを分離したパズルのうち元パズルのURL形式を変更して短くしたパズル:
+	//     bonsan, kramma (cを付加)
+	// URL形式は同じで表示形式の情報をもたせているパズル:
+	//     bosanowa, pipelink, yajilin
 	checkpflag : function(ca){ return (this.pflag.indexOf(ca)>=0);},
 
 	//---------------------------------------------------------------------------
@@ -77,7 +85,7 @@ Encode:{
 			throw "no Implemention";
 
 		case pzl.URL_KANPENP:
-			if(!pzpr.variety(pid).exists.kanpen){ throw "no Implemention";}
+			if(!puzzle.info.exists.kanpen){ throw "no Implemention";}
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;

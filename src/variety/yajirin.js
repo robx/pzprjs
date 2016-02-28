@@ -53,7 +53,11 @@ Cell:{
 	noLP : function(dir){ return (this.isShade() || this.isNum());}
 },
 Border:{
-	enableLineNG : true
+	enableLineNG : true,
+	
+	isBorder : function(){
+		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
+	}
 },
 Board:{
 	hasborder : 1
@@ -75,6 +79,8 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
+	numbercolor_func : "qnum",
+
 	dotcolor : "rgb(255, 96, 191)",
 
 	paint : function(){
@@ -82,6 +88,8 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawGrid();
 		this.drawShadedCells();
+		
+		this.drawBorders();
 
 		this.drawArrowNumbers();
 
@@ -91,6 +99,16 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	getBGCellColor : function(cell){
+		if(this.puzzle.getConfig('disptype_yajilin')===2 && cell.qnum!==-1){ return 'rgb(224,224,224)';}
+		else if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		return null;
+	},
+	getBorderColor : function(border){
+		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.borderQuescolor;}
+		return null;
 	}
 },
 
@@ -99,9 +117,13 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
+		
+		this.puzzle.setConfig('disptype_yajilin', (!this.checkpflag('b')?1:2));
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
+		
+		this.outpflag = ((this.puzzle.getConfig('disptype_yajilin')===2)?"b":null);
 	},
 
 	decodeKanpen : function(){

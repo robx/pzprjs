@@ -103,7 +103,8 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawNumbers_factors();
+		this.drawQuesNumbers_factors();
+		this.drawAnswerNumbers();
 
 		this.drawBorders();
 
@@ -112,28 +113,37 @@ Graphic:{
 		this.drawCursor();
 	},
 
-	drawNumbers_factors : function(){
-		var g = this.vinc('cell_number', 'auto');
+	drawAnswerNumbers : function(){
+		var g = this.vinc('cell_anumber', 'auto');
 
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var text = (cell.anum>=0 ? ""+cell.anum : "");
+			g.vid = "cell_text_anum_"+cell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor_anum(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+			}
+			else{ g.vhide();}
+		}
+	},
+	drawQuesNumbers_factors : function(){
+		var g = this.vinc('cell_qnumber', 'auto');
+
+		g.fillStyle = this.fontcolor;
 		var qnumoption = {
 			ratio : [0.45, 0.45, 0.45, 0.45, 0.36, 0.30],
 			position : this.TOPLEFT
 		};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], px = cell.bx*this.bw, py = cell.by*this.bh;
-
-			g.vid = "cell_text_qans_"+cell.id;
-			if(cell.anum!==-1){
-				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontAnscolor);
-				this.disptext(""+cell.anum, px, py);
-			}
-			else{ g.vhide();}
+			var cell = clist[i];
+			var text = (cell.qnum>=0 ? ""+cell.qnum : "");
 
 			g.vid = "cell_text_qnum_"+cell.id;
-			if(cell.qnum!==-1){
-				g.fillStyle = this.fontcolor;
-				this.disptext(""+cell.qnum, px, py, qnumoption);
+			if(!!text){
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, qnumoption);
 			}
 			else{ g.vhide();}
 		}

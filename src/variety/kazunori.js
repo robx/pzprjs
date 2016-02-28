@@ -113,9 +113,7 @@ Board:{
 	hasborder : 1,
 	disable_subclear : true,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.norigraph = this.addInfoList(this.klass.AreaNoriGraph);
 	}
 },

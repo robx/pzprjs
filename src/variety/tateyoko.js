@@ -68,9 +68,7 @@ Cell:{
 Board:{
 	disable_subclear : true,
 
-	initialize : function(){
-		this.common.initialize.call(this);
-
+	addExtraInfo : function(){
 		this.bargraph = this.addInfoList(this.klass.AreaBarGraph);
 	}
 },
@@ -143,13 +141,17 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num = cell.qnum;
+			var text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
 			g.vid = "cell_text_"+cell.id;
-			if(num!==-1){
-				g.fillStyle = (cell.ques!==1 ? this.fontcolor : "white");
-				this.disptext((num>=0 ? ""+num : "?"), cell.bx*this.bw, cell.by*this.bh);
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}
+	},
+	getNumberColor : function(cell){
+		return (cell.ques!==1 ? this.fontcolor : "white");
 	}
 },
 

@@ -45,6 +45,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
+	numbercolor_func : "qnum",
 	borderQanscolor : "black",
 
 	crosssize : 0.15,

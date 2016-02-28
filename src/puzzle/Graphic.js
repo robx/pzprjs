@@ -35,6 +35,7 @@ Graphic:{
 	cellcolor_func : "",	// getCellColor()の種類
 	bgcellcolor_func : "",	// getBGCellColor()の種類
 	bordercolor_func : "",	// getBorderColor()の種類
+	numbercolor_func : "",	// getNumberColor()の種類
 
 	circlefillcolor_func : "",		// getCircleFillColor()の種類
 	circlestrokecolor_func : "",	// getCircleStrokeColor()の種類
@@ -63,7 +64,8 @@ Graphic:{
 
 	errbcolor2 : "rgb(64, 255, 64)",
 
-	icecolor : "rgb(192, 224, 255)",
+	icecolor    : "rgb(192, 224, 255)",
+	erricecolor : "rgb(224,  96, 160)",
 
 	// セルの丸数字内部の背景色
 	circledcolor : "white",
@@ -219,7 +221,9 @@ Graphic:{
 		}
 	},
 	setColor : function(name, color){
-		this[name] = color || this.constructor.prototype[name];
+		if(name==='bgcolor'){ color = ((typeof color==='string' && color!=='white') ? color : this.constructor.prototype[name]);}
+		else{ color = (color || this.constructor.prototype[name]);}
+		this[name] = color;
 		if(!this.suspended){ this.paintAll();}
 	},
 
@@ -539,23 +543,12 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	flushCanvas : function(){
 		var g = this.vinc('background', 'crispEdges', true);
-		var minbx, minby, bwidth, bheight;
 		var bw = this.bw, bh = this.bh;
-
-		if(g.use.canvas){
-			var d = this.range;
-			minbx   = Math.max(d.x1, -this.x0/bw);
-			minby   = Math.max(d.y1, -this.y0/bh);
-			bwidth  = Math.min(d.x2, g.canvas.clientWidth /bw) - minbx;
-			bheight = Math.min(d.y2, g.canvas.clientHeight/bh) - minby;
-		}
-		else{
-			var bd = this.board;
-			minbx   = bd.minbx;
-			minby   = bd.minby;
-			bwidth  = bd.maxbx - minbx;
-			bheight = bd.maxby - minby;
-		}
+		var bd = this.board;
+		var minbx   = bd.minbx;
+		var minby   = bd.minby;
+		var bwidth  = bd.maxbx - minbx;
+		var bheight = bd.maxby - minby;
 
 		g.vid = "BG";
 		g.fillStyle = this.bgcolor;

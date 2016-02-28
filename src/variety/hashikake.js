@@ -179,6 +179,7 @@ Graphic:{
 	circleratio : [0.47, 0.42],
 
 	circlefillcolor_func : "qcmp",
+	numbercolor_func : "qnum",
 
 	// 線の太さを通常より少し太くする
 	lwratio : 8,
