@@ -518,11 +518,11 @@ function parseImageOption(){ // (type,quality,option)のはず
 				type = argv;
 				break;
 			case 'number':
-				if(argv>1.1){ cellsize = argv;}else{ quality = argv;}
+				if(argv>1.01){ cellsize = argv;}else{ quality = argv;}
 				break;
 			case 'object':
-				cellsize = argv.cellsize || 0;
-				bgcolor = argv.bgcolor || '';
+				if('cellsize' in argv){ cellsize = argv.cellsize;}
+				if('bgcolor'  in argv){ bgcolor  = argv.bgcolor;}
 				break;
 		}
 	}
