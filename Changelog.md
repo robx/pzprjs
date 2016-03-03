@@ -1,4 +1,14 @@
 
+## Version 0.3.1
+
+Release date: 2016/3/03
+
+#### BugFix
+
+* Puzzle: Fix illegal handling of option value in outputting image functions
+* Config: Ensure `puzzle.validConfig('disptype_yajilin')` returns true only if `puzzle.pid==='yajirin'`
+
+
 ## Version 0.3.0
 
 Release date: 2016/2/28
