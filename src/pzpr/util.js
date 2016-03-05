@@ -34,7 +34,7 @@ pzpr.util = {
 		if(!pzpr.env.node){
 			var srcs=document.getElementsByTagName('script');
 			for(var i=0;i<srcs.length;i++){
-				var result = srcs[i].src.match(new RegExp("^(.*\\/)"+"pzpr.js$"));
+				var result = srcs[i].src.match(/^(.*\/)pzpr\.js(?:\?.*)?$/);
 				if(result){ return result[1] + (!result[1].match(/\/$/) ? '/' : '');}
 			}
 		}
