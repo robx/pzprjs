@@ -10,6 +10,7 @@ pzpr.Candle = module.exports;
 // node.js環境向けの対策
 //---------------------------------------------------------------------------
 /* jshint ignore:start */
-var DOMParser     = this.DOMParser     || pzpr.Candle.MockDOMParser;
-var XMLSerializer = this.XMLSerializer || pzpr.Candle.MockXMLSerializer;
+    document      = this.document      || pzpr.Candle.document;
+var DOMParser     = this.DOMParser     || pzpr.Candle.DOMParser;
+var XMLSerializer = this.XMLSerializer || pzpr.Candle.XMLSerializer;
 /* jshint ignore:end */

@@ -31,7 +31,7 @@ pzpr.util = {
 	//---------------------------------------------------------------
 	// pzpr.jsが読み込まれているスクリプトのパスを取得する
 	getpath : function(){
-		if(!pzpr.env.node){
+		if(pzpr.env.browser){
 			var srcs=document.getElementsByTagName('script');
 			for(var i=0;i<srcs.length;i++){
 				var result = srcs[i].src.match(/^(.*\/)pzpr\.js(?:\?.*)?$/);
@@ -121,7 +121,7 @@ pzpr.util = {
 	// pzpr.util.getRect()   エレメントの四辺の座標を返す
 	//--------------------------------------------------------------------------------
 	getRect : function(el){
-		if(pzpr.env.node){
+		if(!pzpr.env.browser){
 			return { top:0, bottom:0, left:0, right:0, height:0, width:0};
 		}
 		var rect = el.getBoundingClientRect(), scrollLeft, scrollTop;

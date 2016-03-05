@@ -122,7 +122,7 @@ pzpr.classmgr = {
 		this.includedFile[scriptid] = true;
 
 		var customfile = pzpr.util.getpath()+'./pzpr-variety/'+scriptid+'.js';
-		if(!pzpr.env.node){
+		if(pzpr.env.browser && !pzpr.env.node){
 			var _script = document.createElement('script');
 			_script.type = 'text/javascript';
 			_script.src = customfile+'?'+pzpr.version;
