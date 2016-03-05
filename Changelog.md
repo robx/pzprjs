@@ -1,4 +1,14 @@
 
+## Version 0.3.2
+
+Release date: 2016/3/06
+
+#### BugFix
+
+* env: Work properly under Electron envirornment
+* util: `pzpr.uti.getpath()` now works correctly when pzpr.js is loaded with ? suffix
+* classmgr: Reload files in pzpr-variety dir when updated by adding suffix with version number
+
 ## Version 0.3.1
 
 Release date: 2016/3/03
