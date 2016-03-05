@@ -5,11 +5,11 @@
 /* 環境の取得 */
 /**************/
 pzpr.env = (function(){
-	var isbrowser = !(typeof module==='object' && module.exports);
+	var isbrowser = pzpr.Candle.env.browser;
 	var UA  = (isbrowser ? navigator.userAgent : '');
 	
 	var bz = {
-		Presto: isbrowser && (!!window.opera)
+		Presto: (typeof window==='object' && !!window.opera)
 	};
 	
 	var Gecko = (UA.indexOf('Gecko')>-1 && UA.indexOf('KHTML')===-1);
@@ -52,11 +52,12 @@ pzpr.env = (function(){
 	};
 	
 	return {
-		browser : bz,
+		bz      : bz,
 		OS      : os,
 		storage : storage,
 		API     : api,
-		node    : !isbrowser
+		browser : isbrowser,
+		node    : pzpr.Candle.env.node
 	};
 })();
 

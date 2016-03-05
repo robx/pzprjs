@@ -24,7 +24,7 @@ function postload(e){
 	}
 }
 
-if(pzpr.env.node){}
+if(!pzpr.env.browser){}
 else if(document.readyState==='complete'){
 	setTimeout(postload,10);
 }
