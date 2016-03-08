@@ -274,7 +274,6 @@ OperationManager:{
 	// um.checkexec()      html上の[戻][進]ボタンを押すことが可能か設定する
 	// um.allerase()       記憶していた操作を全て破棄する
 	// um.newOperation()   マウス、キー入力開始時に呼び出す
-	// um.isModified()     操作がファイル等に保存されていないか確認する
 	//---------------------------------------------------------------------------
 
 	// 今この関数でレコード禁止になるのは、UndoRedo時、URLdecode、fileopen、adjustGeneral/Special時
@@ -311,8 +310,16 @@ OperationManager:{
 		this.chainflag = false;
 	},
 
+	//---------------------------------------------------------------------------
+	// opemgr.isModified()     操作がファイル等に保存されていないか確認する
+	// opemgr.resetModifiedState() ファイルに保存された時などに保存した状態にする
+	//---------------------------------------------------------------------------
 	isModified : function(){
 		return (this.broken || (this.initpos<this.position));
+	},
+	resetModifiedState : function(){
+		this.broken = false;
+		this.initpos = this.position;
 	},
 
 	//---------------------------------------------------------------------------

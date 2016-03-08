@@ -84,6 +84,9 @@ FileIO:{
 		if(option.history && (filetype===pzl.FILE_PZPR)){
 			pzl.history = puzzle.opemgr.encodeHistory();
 		}
+		if(option.save){
+			puzzle.opemgr.resetModifiedState();
+		}
 
 		this.datastr = "";
 
