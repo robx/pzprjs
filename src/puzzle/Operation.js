@@ -312,7 +312,7 @@ OperationManager:{
 	},
 
 	isModified : function(){
-		return (this.isbroken || (this.initpos<this.position));
+		return (this.broken || (this.initpos<this.position));
 	},
 
 	//---------------------------------------------------------------------------
@@ -363,12 +363,12 @@ OperationManager:{
 		
 		this.ope = [];
 		this.initpos = this.position = history.current;
-		for(var i=0,len=history.datas.length;i<len;i++){
+		for(var i=0,len=history.datas.length;i <len;i++){
 			this.ope.push([]);
-			for(var j=0,len2=history.datas[i].length;j<len2;j++){
+			for(var j=0,len2=history.datas[i].length;j <len2;j++){
 				var strs = history.datas[i][j].split(/,/);
 				var ope = null, List = this.operationlist;
-				for(var k=0;k<List.length;k++){
+				for(var k=0;k <List.length;k++){
 					var ope1 = new List[k]();
 					if(ope1.decode(strs)){ ope = ope1; break;}
 				}
@@ -418,9 +418,9 @@ OperationManager:{
 		this.preproc();
 		
 		this.redoExec = true;
-		for(var i=0,len=opes.length;i<len;i++){
-			if(!!opes[i]){ opes[i].redo();}
-		}
+		opes.forEach(function(ope){
+			if(!!ope){ ope.redo();}
+		});
 		this.position++;
 		this.redoExec = false;
 		
@@ -434,11 +434,7 @@ OperationManager:{
 	// um.postproc() Undo/Redo実行後の処理を行う
 	//---------------------------------------------------------------------------
 	checkReqReset : function(opes){
-		var result = false;
-		for(var i=0,len=opes.length;i<len;i++){
-			if(opes[i].reqReset){ result = true; break;}
-		}
-		return result;
+		return opes.some(function(ope){ return ope.reqReset;});
 	},
 	preproc : function(opes){
 		var puzzle = this.puzzle, bd = puzzle.board;
