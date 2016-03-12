@@ -77,15 +77,22 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.redraw([flush])` Redraw the whole canvas.
     * `flush:boolean` If `true`, it will destroy all cached data and redraw, otherwise cached data will be kept.
 * `puzzle.irowake()` Regenerate the color of the line if config.irowake (set individual color to line) is set.
-* `puzzle.toDataURL([graphictype[, quality[, option]]])` Return the canvas graphic data as Data URL.
+
+## Methods for outputting image
+
+These methods have arguments below.
+
+* `graphictype:string` supports `'svg'`, `'png'`, `'jpeg'`, `'gif'` and `'webp'` if the environment supports. By default, `'svg'` is used.
+* `quality:number` Compression quality for `jpeg` or `webp`.
+* `option.cellsize:number` or `cellsize:number` Identify output size by the size of cells. 
+* `option.bgcolor:string` Specify background color. If this is empty, background will be transparent.
+
+
+* `puzzle.toDataURL([graphictype][, quality][, cellsize][, option])` Return the canvas graphic data as Data URL.
     * Return value: Generated Data URL.
-    * `quality:number` Compression quality for `jpeg` or `webp`.
-    * If option is `number`, it will treat as `option.cellsize` for backward compatibility.
-    * `option.cellsize:number` Identify output size by the size of cells. 
-    * `option.bgcolor:string` Specify background color. If this is empty, background will become transparent.
-* `puzzle.toBuffer([graphictype[, quality[, option]]])` Return raw image data of the canvas.
-    * Return value: Generated data as a string.s
-* `puzzle.toBlob(callback[, graphictype[, quality[, option]]])` Generate the canvas graphic data as Blob.
+* `puzzle.toBuffer([graphictype][, quality][, cellsize][, option])` Return raw image data of the canvas.
+    * Return value: Generated data as string.
+* `puzzle.toBlob(callback[, graphictype][, quality][, cellsize][, option])` Generate the canvas graphic data as Blob.
     * Return value: No return value. Please use `callback(blob)`.
 
 ## Methods for the board model
