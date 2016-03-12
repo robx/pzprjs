@@ -224,6 +224,7 @@ pzpr.Puzzle.prototype =
 	// owner.undoall()  Undoを最後まで実行する
 	// owner.redoall()  Redoを最後まで実行する
 	// owner.isModified() ファイルに保存されていない操作がある時にtrueを返す
+	// owner.saved()      ismodifiedで返す値をfalseに戻す
 	//---------------------------------------------------------------------------
 	undo : function(){
 		return this.opemgr.undo();
@@ -239,6 +240,9 @@ pzpr.Puzzle.prototype =
 	},
 	ismodified : function(){
 		return this.opemgr.isModified();
+	},
+	saved : function(){
+		return this.opemgr.resetModifiedState();
 	},
 
 	//------------------------------------------------------------------------------

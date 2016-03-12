@@ -36,7 +36,6 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Return value: Generated File data.
     * `filetype:FileType` Specify URL type.
     * `option.history:boolean` If filetype is FILE_PZPR and it is true, operation history will be outputted.
-    * `option.save:boolean` Let `puzzle.ismodified()` return `false`.
 * `puzzle.clone([option])` Return cloned puzzle object from the puzzle.
     * Return value: cloned puzzle object.
     * `option.type:string` It means the same as option.type in constructor. If not specified, the type of the puzzle will be used.
@@ -104,6 +103,9 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.subclear()` Clear auxiliary marks on the board.
 * `puzzle.errclear()` Wipe out the error information given after check() is called.
 * `puzzle.clear()` For `'editor'` type puzzle, clean all board data. As for `'player'` type puzzle, it clears answer data. In addition, it clears operation history data for both `'editor'` and `'player'`.
+
+## Methods for operation history
+
 * `puzzle.undo()` Undo an operation.
     * Return value: `true` if it is the first operation.
 * `puzzle.redo()` Redo an operation.
@@ -112,6 +114,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
 * `puzzle.redoall()` Redo all recorded operations. No return value.
 * `puzzle.ismodified()` Check if the board is modified or not.
     * Return value: `true` when the puzzle is modified and the puzzle type is 'editor'.
+* `puzzle.saved()` Let `puzzle.ismodified()` return `false`.
 
 ## Methods for general purpose
 
