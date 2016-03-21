@@ -66,7 +66,6 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -75,6 +74,10 @@ Graphic:{
 		this.drawTarget();
 	},
 
+	getBGCellColor : function(cell){
+		if(cell.qans===1){ return (cell.error===1 ? this.errcolor1 : this.qanscolor);}
+		return null;
+	},
 	getNumberColor : function(cell){
 		if(cell.qsub===2){
 			return this.qcmpcolor;

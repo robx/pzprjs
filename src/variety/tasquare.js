@@ -45,16 +45,15 @@ AreaUnshadeGraph:{
 Graphic:{
 	hideHatena : true,
 
-	gridcolor_type : "LIGHT",
 	globalfontsizeratio : 0.85,
 
+	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawCellSquare();
 

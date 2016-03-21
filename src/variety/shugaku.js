@@ -178,7 +178,6 @@ AreaShadeGraph:{
 Graphic:{
 	hideHatena : true,
 
-	gridcolor_type : "LIGHT",
 	errbcolor1_type : "DARK",
 
 	bgcolor : "rgb(208, 208, 208)",
@@ -186,12 +185,13 @@ Graphic:{
 
 	circleratio : [0.47, 0.42],
 
+	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
+		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawDashedGrid();
-		this.drawShadedCells();
 
 		this.drawFutons();
 		this.drawPillows();
@@ -206,7 +206,7 @@ Graphic:{
 	},
 
 	drawFutons : function(){
-		var g = this.vinc('cell_back', 'crispEdges', true), mv = this.puzzle.mouse, tc = null, adj = null;
+		var g = this.vinc('cell_futon', 'crispEdges', true), mv = this.puzzle.mouse, tc = null, adj = null;
 
 		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
 		if(inputting){ // ふとん入力中
@@ -222,7 +222,7 @@ Graphic:{
 				if(cell===tc || cell===adj){ isdraw=true; color=this.targetbgcolor;}
 			}
 
-			g.vid = "c_full_"+cell.id;
+			g.vid = "c_futon_"+cell.id;
 			if(isdraw){
 				g.fillStyle = color;
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw, this.bh);

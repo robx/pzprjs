@@ -57,7 +57,6 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawNumbers();
 

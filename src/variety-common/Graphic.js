@@ -80,6 +80,7 @@ Graphic:{
 			(type==="error2") ? this.getBGCellColor_error2 :
 			(type==="qans1")  ? this.getBGCellColor_qans1 :
 			(type==="qans2")  ? this.getBGCellColor_qans2 :
+			(type==="qans3")  ? this.getBGCellColor_qans3 :
 			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
 			(type==="qsub2")  ? this.getBGCellColor_qsub2 :
 			(type==="qsub3")  ? this.getBGCellColor_qsub3 :
@@ -115,6 +116,15 @@ Graphic:{
 		}
 		if     (info===1){ return this.errbcolor1;}
 		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+		return null;
+	},
+	getBGCellColor_qans3 : function(cell){
+		var info = cell.error || cell.qinfo;
+		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.qanscolor);}
+		else if(info===1)     { return this.errbcolor1;}
+		else if(cell.qsub===1){ return this.qsubcolor1;}
+		else if(cell.qsub===2){ return this.qsubcolor2;}
+		else if(cell.qsub===3){ return this.qsubcolor3;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
