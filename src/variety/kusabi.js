@@ -65,27 +65,16 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCircles();
-		this.drawNumbers_kusabi();
+		this.drawNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	drawNumbers_kusabi : function(cell){
-		var g = this.vinc('cell_number', 'auto');
-
-		g.fillStyle = this.fontcolor;
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = {1:"同",2:"短",3:"長"}[cell.qnum] || "";
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.65]});
-			}
-			else{ g.vhide();}
-		}
+	textoption : {ratio:[0.65]},
+	getNumberText : function(cell){
+		return {1:"同",2:"短",3:"長"}[cell.qnum] || "";
 	}
 },
 

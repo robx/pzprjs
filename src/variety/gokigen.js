@@ -262,7 +262,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid(false);
 
-		if(this.pid==='wagiri'){ this.drawNumbers_wagiri();}
+		if(this.pid==='wagiri'){ this.drawNumbers();}
 		this.drawSlashes();
 
 		this.drawCrosses();
@@ -297,20 +297,9 @@ Graphic:{
 	}
 },
 "Graphic@wagiri":{
-	drawNumbers_wagiri : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		g.fillStyle = this.fontcolor;
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {ratio:[0.70]});
-			}
-			else{ g.vhide();}
-		}
+	textoption : {ratio:[0.70]},
+	getNumberText : function(cell){
+		return {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
 	},
 
 	drawTarget : function(){

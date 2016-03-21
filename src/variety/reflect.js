@@ -177,13 +177,16 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var text = (((cell.ques>=2 && cell.ques<=5) && cell.qnum>0) ? ""+cell.qnum : "");
+			var text = this.getNumberText(cell);
 			g.vid = "cell_text_"+cell.id;
 			if(!!text){
 				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
 			}
 			else{ g.vhide();}
 		}
+	},
+	getNumberText : function(cell){
+		return (((cell.ques>=2 && cell.ques<=5) && cell.qnum>0) ? ""+cell.qnum : "");
 	},
 
 	repaintParts : function(blist){

@@ -104,7 +104,7 @@ Graphic:{
 		this.drawChassis_ex1(false);
 
 		this.drawNumbersOn51();
-		this.drawNumbers_kakuro();
+		this.drawNumbers();
 
 		this.drawCursor();
 	},
@@ -128,20 +128,8 @@ Graphic:{
 		return null;
 	},
 
-	drawNumbers_kakuro : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
-			g.vid = "cell_text_anum"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
+	getNumberText : function(cell){
+		return ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
 	}
 },
 

@@ -282,7 +282,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCircles();
-		this.drawNumbers_herugolf();
+		this.drawNumbers();
 		this.drawHoles();
 
 		this.drawPekes();
@@ -292,22 +292,7 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawNumbers_herugolf : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = this.getCircleCaption(cell);
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
-	},
-	getCircleCaption : function(cell){
+	getNumberText : function(cell){
 		if(this.puzzle.execConfig('dispmove')){
 			if(!cell.isDestination() || cell.base.qnum<0){ return "";}
 			/* cell.isViaPointに似ている関数 */

@@ -95,7 +95,7 @@ Graphic:{
 		this.drawDashedGrid();
 
 		if(pid==='nagenawa'){
-			this.drawNumbers_nagenawa();
+			this.drawNumbers();
 			this.drawMBs();
 			this.drawBorders();
 		}
@@ -110,24 +110,7 @@ Graphic:{
 
 		this.drawTarget();
 	},
-
-	//オーバーライド
-	drawNumbers_nagenawa : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		g.fillStyle = this.fontcolor;
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = (cell.qnum>=0 ? ""+cell.qnum : (cell.qnum===-2 ? "?" : ""));
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				var option = {ratio:[0.45], position:this.TOPLEFT};
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, option);
-			}
-			else{ g.vhide();}
-		}
-	}
+	textoption : {ratio:[0.45], position:5} /* this.TOPLEFT */
 },
 "Graphic@ringring":{
 	cellcolor_func : "ques",

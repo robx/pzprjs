@@ -135,6 +135,7 @@ Graphic:{
 	fontfamily    : '',
 	crosssize     : 0.4,
 	circleratio   : [0.40, 0.35],
+	textoption    : null,
 
 	// 枠外の一辺のmargin(セル数換算)
 	margin : 0.15,
@@ -592,9 +593,9 @@ Graphic:{
 			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=(this.bw-2); break;
 		}
 		switch(position){
-			case CENTER:                       g.textBaseline='middle';                      break;
-			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh-2); break;
-			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
+			case CENTER:                       g.textBaseline='middle';                         break;
+			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh*0.82); break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh*0.82); break;
 		}
 
 		g.fillText(text, px, py);

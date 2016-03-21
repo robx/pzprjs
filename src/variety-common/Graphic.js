@@ -291,6 +291,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
 	// pc.drawHatenas()  ques===-2の時に？をCanvasに書き込む
+	// pc.getNumberText()    書き込む数のテキストを取得する
 	// pc.getNumberColor()   数字の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawNumbers : function(){
@@ -299,12 +300,11 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
-			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
+			var text = this.getNumberText(cell);
 			g.vid = "cell_text_"+cell.id;
 			if(!!text){
 				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, this.textoption);
 			}
 			else{ g.vhide();}
 		}
@@ -323,7 +323,12 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
- 
+
+	getNumberText : function(cell){
+		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
+		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
+		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
+	},
 	getNumberColor : function(cell){
 		var type = this.numbercolor_func || "";
 		this.getNumberColor = (
@@ -381,12 +386,11 @@ Graphic:{
 		var tw = this.cw*0.12;		// 矢じりの幅
 		var dy = -this.bh*0.6;
 		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
-		var hideHatena = (this.pid!=="yajirin" ? false : this.puzzle.getConfig('disptype_yajilin')===2);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell=clist[i], num=cell.qnum, dir=cell.qdir;
-			var text = (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
+			var cell=clist[i], dir=cell.qdir;
+			var text = this.getNumberText(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var digit = text.length - 1;
 
