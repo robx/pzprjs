@@ -43,7 +43,7 @@ Graphic:{
 	// セルの色(黒マス)
 	quescolor : "black",
 	qanscolor : "black",
-	errcolor1 : "rgb(224, 0, 0)",
+	errcolor1 : "rgb(192, 0, 0)",
 
 	// セルの背景色(白マス)
 	bcolor : "white",
