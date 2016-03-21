@@ -668,8 +668,8 @@ Graphic:{
 				var lm = this.lm + this.addlw/2;
 				
 				g.fillStyle = color;
-				if(isvert){ g.fillRectCenter(px, py, lm, this.bh+1);}
-				else      { g.fillRectCenter(px, py, this.bw+1, lm);}
+				if(isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
+				else      { g.fillRectCenter(px, py, this.bw+lm, lm);}
 			}
 			else{ g.vhide();}
 		}
