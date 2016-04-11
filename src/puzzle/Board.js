@@ -284,6 +284,7 @@ Board:{
 	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出す
 	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出す
 	// bd.errclear() 全てのCell, Cross, Borderオブジェクトのerrorプロパティを0にして、Canvasを再描画する
+	// bd.trialclear() 全てのCell, Cross, Borderオブジェクトのtrialプロパティを0にして、Canvasを再描画する
 	//---------------------------------------------------------------------------
 	// 呼び出し元：this.initBoardSize()
 	allclear : function(isrec){
@@ -291,6 +292,7 @@ Board:{
 		this.cross.allclear(isrec);
 		this.border.allclear(isrec);
 		this.excell.allclear(isrec);
+		if(isrec){ this.puzzle.opemgr.rejectTrial(true);}
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
@@ -300,6 +302,7 @@ Board:{
 		this.cross.ansclear();
 		this.border.ansclear();
 		this.excell.ansclear();
+		this.puzzle.opemgr.rejectTrial(true);
 		
 		this.rebuildInfo();
 	},
@@ -321,6 +324,16 @@ Board:{
 			this.excell.errclear();
 			this.haserror = false;
 			this.puzzle.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
+		}
+	},
+
+	trialclear : function(){
+		if(this.puzzle.opemgr.trialpos.length>0){
+			this.cell.trialclear();
+			this.cross.trialclear();
+			this.border.trialclear();
+			this.excell.trialclear();
+			this.puzzle.redraw();
 		}
 	},
 

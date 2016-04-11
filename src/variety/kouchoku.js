@@ -163,6 +163,7 @@ Segment:{
 		this.lattices = [];	// 途中で通過する格子点を保持する
 
 		this.error = 0;
+		this.trial = 0;
 
 		this.setpos(bx1,by1,bx2,by2);
 	},
@@ -346,6 +347,9 @@ Segment:{
 	errclear : function(){
 		for(var i=0;i<this.length;i++){ this[i].error = 0;}
 	},
+	trialclear : function(){
+		for(var i=0;i<this.length;i++){ this[i].trial = 0;}
+	},
 
 	//---------------------------------------------------------------------------
 	// segment.getRange()    SegmentListが存在する範囲を返す
@@ -411,6 +415,12 @@ Board:{
 			this.segment.errclear();
 		}
 		this.common.errclear.call(this);
+	},
+	trialclear : function(){
+		if(this.puzzle.opemgr.trialpos.length>0){
+			this.segment.trialclear();
+		}
+		this.common.trialclear.call(this);
 	},
 
 	getLatticePoint : function(bx1,by1,bx2,by2){

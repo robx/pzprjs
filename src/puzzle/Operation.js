@@ -64,7 +64,8 @@ Operation:{
 		A: 'qans',
 		S: 'qsub',
 		K: 'qcmp',
-		L: 'line'
+		L: 'line',
+		T: 'trial'
 	},
 
 	//---------------------------------------------------------------------------
@@ -463,6 +464,7 @@ OperationManager:{
 	},
 	acceptTrial : function(){
 		if(this.trialpos.length===0){ return;}
+		this.board.trialclear();
 		this.trialpos = [];
 		this.removeDescendant();
 		this.checkexec();

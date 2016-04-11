@@ -98,6 +98,7 @@ PieceList:{
 	// list.ansclear() qans,anum,line,qsub,error情報をクリアする
 	// list.subclear() qsub,error情報をクリアする
 	// list.errclear() error情報をクリアする
+	// list.trialclear() Trial情報をクリアする
 	// list.propclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
@@ -105,6 +106,7 @@ PieceList:{
 	ansclear : function()     { this.propclear(this.getprop('ans'), true);},
 	subclear : function()     { this.propclear(this.getprop('sub'), true);},
 	errclear : function()     { this.propclear(this.getprop('err'), false);},
+	trialclear : function()   { this.propclear(this.getprop('trial'), true);},
 	propclear : function(props, isrec){
 		var norec = (this.length>0?this[0].propnorec:{});
 		for(var i=0;i<this.length;i++){
@@ -126,11 +128,14 @@ PieceList:{
 	getprop : function(type){
 		var array = [];
 		if(this.length>0){
-			var level = {all:3,ans:2,sub:1,err:0}[type];
-			if(level>=3){ array=array.concat(this[0].propques);}
-			if(level>=2){ array=array.concat(this[0].propans);}
-			if(level>=1){ array=array.concat(this[0].propsub);}
-			if(level>=0){ array=array.concat(this[0].propinfo);}
+			if(type==='trial'){ array = ['trial'];}
+			else{
+				var level = {all:3,ans:2,sub:1,err:0}[type];
+				if(level>=3){ array=array.concat(this[0].propques);}
+				if(level>=2){ array=array.concat(this[0].propans);}
+				if(level>=1){ array=array.concat(this[0].propsub);}
+				if(level>=0){ array=array.concat(this[0].propinfo);}
+			}
 		}
 		return array;
 	}

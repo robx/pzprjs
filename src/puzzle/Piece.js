@@ -27,6 +27,7 @@ pzpr.classmgr.makeCommon({
 				// border:(回答の境界線)
 	anum  :-1,	// cell  :(セルの数字/○△□/単体矢印)
 	line  : 0,	// border:(ましゅやスリリンなどの線)
+	trial : 0,	// TrialModeのstateを保持する変数
 
 	/* 補助データを保持するプロパティ */
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
@@ -38,7 +39,7 @@ pzpr.classmgr.makeCommon({
 	qinfo : 0,
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
-	propans  : ['qans', 'anum', 'line'],
+	propans  : ['qans', 'anum', 'line', 'trial'],
 	propsub  : ['qsub', 'qcmp'],
 	propinfo : ['error', 'qinfo'],
 	propnorec : { color:1, error:1, qinfo:1 },
@@ -89,6 +90,12 @@ pzpr.classmgr.makeCommon({
 	setdata : function(prop, num){
 		if(this[prop]===num){ return;}
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
+
+		var trialstage = this.puzzle.opemgr.trialpos.length;
+		if(trialstage>0){
+			this.addOpe('trial', this.trial, trialstage);
+			this.trial = trialstage;
+		}
 
 		this.addOpe(prop, this[prop], num);
 		this[prop] = num;
