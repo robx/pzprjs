@@ -93,7 +93,7 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
-	bgcellcolor_func : "qans2",
+	bgcellcolor_func : "qans1",
 	qanscolor : "rgb(96, 96, 96)",
 	errcolor2 : "rgb(32, 32, 255)"
 },

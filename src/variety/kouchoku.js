@@ -615,14 +615,16 @@ Graphic:{
 		if(seg.bx1===void 0){ /* 消すための情報が無い場合は何もしない */ return; }
 
 		var g = this.context;
-
-		g.lineWidth = this.lw;
 		g.vid = ["seg",seg.bx1,seg.by1,seg.bx2,seg.by2].join("_");
 		if(isdraw){
+			if(seg.trial){ g.lineWidth = this.lw - this.lm;}
+			else{ g.lineWidth = this.lw;}
+			
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
-			else if(!this.puzzle.execConfig('irowake') || !seg.path.color){ g.strokeStyle = this.linecolor;}
-			else{ g.strokeStyle = seg.path.color;}
+			else if(this.puzzle.execConfig('irowake') && seg.path.color){ g.strokeStyle = seg.path.color;}
+			else if(seg.trial)     { g.strokeStyle = this.trialcolor;}
+			else{ g.strokeStyle = this.linecolor;}
 
 			var px1 = seg.bx1*this.bw, px2 = seg.bx2*this.bw,
 				py1 = seg.by1*this.bh, py2 = seg.by2*this.bh;

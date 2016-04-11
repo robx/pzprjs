@@ -43,6 +43,7 @@ Graphic:{
 	// セルの色(黒マス)
 	quescolor : "black",
 	qanscolor : "black",
+	trialcolor: "rgb(160, 160, 160)",
 	errcolor1 : "rgb(192, 0, 0)",
 
 	// セルの背景色(白マス)
@@ -93,6 +94,7 @@ Graphic:{
 	errlinebgcolor : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線の描画色
 
 	movelinecolor : "silver",
+	movetrialcolor: "rgb(255, 160, 0)",
 
 	pekecolor : "rgb(32, 32, 255)",
 
@@ -156,7 +158,7 @@ Graphic:{
 
 	lw : 1,		// LineWidth 境界線・Lineの太さ
 	lm : 1,		// LineMargin
-	lwratio : 12,	// onresize_processでlwの値の算出に用いる
+	lwratio : 10,	// onresize_processでlwの値の算出に用いる
 	addlw   : 0,	// エラー時に線の太さを広げる
 
 	// getNewColorの設定

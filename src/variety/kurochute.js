@@ -75,7 +75,11 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
-		if(cell.qans===1){ return (cell.error===1 ? this.errcolor1 : this.qanscolor);}
+		if(cell.qans===1){
+			if(cell.error===1){ return this.errcolor1;}
+			else if(cell.trial){ return this.trialcolor;}
+			return this.qanscolor;
+		}
 		return null;
 	},
 	getNumberColor : function(cell){
@@ -84,9 +88,6 @@ Graphic:{
 		}
 		else if(cell.error===1){
 			return this.fontErrcolor;
-		}
-		else if(cell.qnum===-1 && cell.anum!==-1){
-			return this.fontAnscolor;
 		}
 		return this.fontcolor;
 	}

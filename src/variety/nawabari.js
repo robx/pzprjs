@@ -139,6 +139,7 @@ Graphic:{
 			var err = border.error;
 			if     (err=== 1){ return this.errcolor1;       }
 			else if(err===-1){ return this.errborderbgcolor;}
+			else if(border.trial){ return this.trialcolor;  }
 			else             { return this.borderQanscolor; }
 		}
 		return null;

@@ -101,7 +101,11 @@ Graphic:{
 	getBGCellColor : function(cell){
 		var info = cell.error || cell.qinfo;
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && cell.qnum!==-1){ return 'rgb(224,224,224)';}
-		else if(cell.qans===1){ return (info===1 ? this.errcolor1 : this.qanscolor);}
+		else if(cell.qans===1){
+			if(info===1){ return this.errcolor1;}
+			else if(cell.trial){ return this.trialcolor;}
+			return this.qanscolor;
+		}
 		else if(info===1){ return this.errbcolor1;}
 		return null;
 	},

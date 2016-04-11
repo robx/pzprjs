@@ -179,7 +179,7 @@ Graphic:{
 		   (cell1.anum!==-1 || cell2.anum!==-1) &&
 		   ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
 		{
-			return this.borderQanscolor;
+			return ((!cell1.trial||!cell2.trial) ? this.borderQanscolor : this.trialcolor);
 		}
 		return null;
 	},
@@ -187,13 +187,13 @@ Graphic:{
 	drawAnswerNumbers : function(){
 		var g = this.vinc('cell_anumber', 'auto');
 
-		g.fillStyle = this.fontAnscolor;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			var text = ((cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "");
 			g.vid = "cell_ansnum_"+cell.id;
 			if(!!text){
+				g.fillStyle = (!cell.trial ? this.fontAnscolor : this.trialcolor);
 				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}

@@ -251,7 +251,7 @@ Graphic:{
 			g.vid = "c_pillow_"+cell.id;
 			if(isdraw){
 				g.lineWidth = 1;
-				g.strokeStyle = "black";
+				g.strokeStyle = (!cell.trial ? "black" : this.trialcolor);
 				if     (inputting && tc===cell){ g.fillStyle = this.targetbgcolor;}
 				else if(cell.error===1)        { g.fillStyle = this.errbcolor1;   }
 				else                           { g.fillStyle = "white";}
@@ -262,18 +262,24 @@ Graphic:{
 	},
 
 	getBorderColor : function(border){
-		var isdraw = border.isBorder(), mv = this.puzzle.mouse;
+		var isdraw = border.isBorder(), mv = this.puzzle.mouse, trial = false;
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 
 		if(!mv.mouseCell.isnull && mv.firstPoint.bx!==null){ // ふとん入力中
-			var cc1 = border.sidecell[0], cc2 = border.sidecell[1];
 			var tc = mv.mouseCell, adj = mv.currentTargetADJ();
-			var istc  = (cc1===tc  || cc2===tc);
-			var isadj = (cc1===adj || cc2===adj);
-			if     (istc && isadj){ isdraw = false;}
-			else if(istc || isadj){ isdraw = true;}
+			var istc  = (cell1===tc  || cell2===tc);
+			var isadj = (cell1===adj || cell2===adj);
+			if     (istc && isadj){ isdraw = false;} // 入力中布団の真ん中の線は描画しない
+			else if(istc || isadj){ // 入力中布団の真ん中以外の線は描画する
+				isdraw = true;
+				if(this.puzzle.opemgr.trialpos.length>0){ trial = true;}
+			}
+		}
+		else{
+			trial = ((cell1.trial||cell1.qans===0) && (cell2.trial||cell2.qans===0));
 		}
 
-		return (isdraw ? "black" : null);
+		return (isdraw ? (!trial ? this.qanscolor : this.trialcolor) : null);
 	}
 },
 

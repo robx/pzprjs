@@ -310,8 +310,12 @@ Graphic:{
 		this.addlw = 0;
 		if(border.isLine()){
 			var info = border.error || border.qinfo;
-			if     (info===1) { this.addlw=1; return this.errlinecolor;}
+			if(border.trial){ this.addlw=-this.lm;}
+			else if(info===1){ this.addlw=1;}
+			
+			if     (info===1) { return this.errlinecolor;}
 			else if(info===-1){ return this.errlinebgcolor;}
+			else if(border.trial){ return (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
 			
 			var cells = border.sidecell;
 			var isvalidline = (cells[0].distance>=0 && cells[1].distance>=0);
@@ -343,10 +347,14 @@ Graphic:{
 
 			g.vid = "c_tip_"+cell.id;
 			if(dir!==0){
-				g.lineWidth = this.lw; //LineWidth
 				var info = border.error || border.qinfo;
-				if     (info=== 1)       { g.strokeStyle = this.errlinecolor; g.lineWidth=g.lineWidth+1;}
+				if(border.trial){ this.addlw=-this.lm;}
+				else if(info===1){ this.addlw=1;}
+				g.lineWidth = this.lw + this.addlw; //LineWidth
+				
+				if     (info=== 1)       { g.strokeStyle = this.errlinecolor;}
 				else if(info===-1)       { g.strokeStyle = this.errlinebgcolor;}
+				else if(border.trial)    { g.strokeStyle = (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
 				else if(cell.distance>=0){ g.strokeStyle = this.linecolor;}
 				else                     { g.strokeStyle = this.invalidlinecolor;}
 
