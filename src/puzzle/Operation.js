@@ -291,6 +291,8 @@ OperationManager:{
 		this.enableUndo = (this.position>(this.trialpos[this.trialpos.length-1]||0));
 		this.enableRedo = (this.position<this.ope.length);
 
+		this.board.trialstage = this.trialpos.length;
+
 		this.puzzle.emit('history');
 	},
 	allerase : function(){

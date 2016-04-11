@@ -91,14 +91,16 @@ pzpr.classmgr.makeCommon({
 		if(this[prop]===num){ return;}
 		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,num)){ return;}}
 
-		var trialstage = this.puzzle.opemgr.trialpos.length;
-		if(trialstage>0){
-			this.addOpe('trial', this.trial, trialstage);
-			this.trial = trialstage;
-		}
-
 		this.addOpe(prop, this[prop], num);
 		this[prop] = num;
+
+		if(prop!=='trial'){
+			var trialstage = this.board.trialstage;
+			if(trialstage>0){
+				this.addOpe('trial', this.trial, trialstage);
+				this.trial = trialstage;
+			}
+		}
 
 		if(!!this.posthook[prop]){ this.posthook[prop].call(this,num);}
 	},

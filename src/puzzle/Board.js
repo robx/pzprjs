@@ -59,6 +59,8 @@ Board:{
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
+
+		this.trialstage = 0;	// TrialMode
 	},
 	addInfoList : function(Klass){
 		var instance = new Klass();
@@ -328,7 +330,7 @@ Board:{
 	},
 
 	trialclear : function(){
-		if(this.puzzle.opemgr.trialpos.length>0){
+		if(this.trialstage>0){
 			this.cell.trialclear();
 			this.cross.trialclear();
 			this.border.trialclear();

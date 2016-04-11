@@ -272,7 +272,7 @@ Graphic:{
 			if     (istc && isadj){ isdraw = false;} // 入力中布団の真ん中の線は描画しない
 			else if(istc || isadj){ // 入力中布団の真ん中以外の線は描画する
 				isdraw = true;
-				if(this.puzzle.opemgr.trialpos.length>0){ trial = true;}
+				if(this.board.trialstage>0){ trial = true;}
 			}
 		}
 		else{

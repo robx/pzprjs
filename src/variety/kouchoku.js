@@ -205,8 +205,8 @@ Segment:{
 	//---------------------------------------------------------------------------
 	// addOpe()  履歴情報にプロパティの変更を通知する
 	//---------------------------------------------------------------------------
-	addOpe : function(old, num){
-		this.puzzle.opemgr.add(new this.klass.SegmentOperation(this, old, num));
+	addOpe : function(prop, old, num){
+		this.puzzle.opemgr.add(new this.klass.SegmentOperation(this, prop, old, num));
 	},
 
 	//---------------------------------------------------------------------------
@@ -317,7 +317,12 @@ Segment:{
 			bd.getx(seg.bx1, seg.by1).seglist.add(seg);
 			bd.getx(seg.bx2, seg.by2).seglist.add(seg);
 			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
-			seg.addOpe(0, 1);
+			seg.addOpe('val', 0, 1);
+			
+			if(bd.trialstage>0){
+				seg.addOpe('trial', 0, bd.trialstage);
+				seg.trial = bd.trialstage;
+			}
 		}
 	},
 	remove : function(seg){
@@ -330,7 +335,7 @@ Segment:{
 			bd.getx(seg.bx1, seg.by1).seglist.remove(seg);
 			bd.getx(seg.bx2, seg.by2).seglist.remove(seg);
 			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
-			seg.addOpe(1, 0);
+			seg.addOpe('val', 1, 0);
 			if(!!this.puzzle.canvas){
 				this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
 			}
@@ -417,7 +422,7 @@ Board:{
 		this.common.errclear.call(this);
 	},
 	trialclear : function(){
-		if(this.puzzle.opemgr.trialpos.length>0){
+		if(this.trialstage>0){
 			this.segment.trialclear();
 		}
 		this.common.trialclear.call(this);
@@ -524,16 +529,19 @@ GraphComponent:{
 },
 
 "SegmentOperation:Operation":{
-	setData : function(seg, old, num){
+	setData : function(seg, prop, old, num){
 		this.bx1 = seg.bx1;
 		this.by1 = seg.by1;
 		this.bx2 = seg.bx2;
 		this.by2 = seg.by2;
+		this.prop= prop;
 		this.old = old;
 		this.num = num;
 	},
 	decode : function(strs){
-		if(strs[0]!=='SG'){ return false;}
+		if     (strs[0]==='SG'){ this.prop = 'val';}
+		else if(strs[0]==='ST'){ this.prop = 'trial';}
+		else{ return false;}
 		this.bx1 = +strs[1];
 		this.by1 = +strs[2];
 		this.bx2 = +strs[3];
@@ -543,13 +551,19 @@ GraphComponent:{
 		return true;
 	},
 	toString : function(){
-		return ['SG', this.bx1, this.by1, this.bx2, this.by2, this.old, this.num].join(',');
+		var key = (this.prop==='val' ? 'SG' : 'ST');
+		return [key, this.bx1, this.by1, this.bx2, this.by2, this.old, this.num].join(',');
 	},
 
 	exec : function(num){
 		var bx1=this.bx1, by1=this.by1, bx2=this.bx2, by2=this.by2, puzzle=this.puzzle, tmp;
-		if     (num===1){ puzzle.board.segment.addSegmentByAddr   (bx1,by1,bx2,by2);}
-		else if(num===0){ puzzle.board.segment.removeSegmentByAddr(bx1,by1,bx2,by2);}
+		if(this.prop==='val'){
+			if     (num===1){ puzzle.board.segment.addSegmentByAddr   (bx1,by1,bx2,by2);}
+			else if(num===0){ puzzle.board.segment.removeSegmentByAddr(bx1,by1,bx2,by2);}
+		}
+		else{
+			this.board.getSegment(bx1,by1,bx2,by2).trial = num;
+		}
 		if(bx1>bx2){ tmp=bx1;bx1=bx2;bx2=tmp;} if(by1>by2){ tmp=by1;by1=by2;by2=tmp;}
 		puzzle.painter.paintRange(bx1-1,by1-1,bx2+1,by2+1);
 	}
