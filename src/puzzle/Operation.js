@@ -241,6 +241,7 @@ OperationManager:{
 		this.lastope = null;	// this.opeの最後に追加されたOperationへのポインタ
 		this.ope = [];			// Operationクラスを保持する二次元配列
 		this.position = 0;		// 現在の表示操作番号を保持する
+		this.trialpos = [];		// TrialModeの位置を保持する配列
 
 		this.broken   = false;	// "以前の操作"を消して元に戻れなくなった状態
 		this.initpos  = 0;		// 盤面初期化時のposition
@@ -286,7 +287,7 @@ OperationManager:{
 	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
 
-		this.enableUndo = (this.position>0);
+		this.enableUndo = (this.position>(this.trialpos[this.trialpos.length-1]||0));
 		this.enableRedo = (this.position<this.ope.length);
 
 		this.puzzle.emit('history');
@@ -295,6 +296,7 @@ OperationManager:{
 		this.lastope  = null;
 		this.ope      = [];
 		this.position = 0;
+		this.trialpos = [];
 		this.broken   = false;
 		this.initpos  = 0;
 		this.changeflag = false;
@@ -323,18 +325,23 @@ OperationManager:{
 	},
 
 	//---------------------------------------------------------------------------
+	// opemgr.removeDescendant()  現在以降の履歴を消去する
+	//---------------------------------------------------------------------------
+	removeDescendant : function(){
+		if(this.position<this.initpos){ this.broken = true;}
+		for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
+		this.position = this.ope.length;
+		this.chainflag = false;
+	},
+
+	//---------------------------------------------------------------------------
 	// um.add()  指定された操作を追加する(共通操作)
 	//---------------------------------------------------------------------------
 	add : function(newope){
 		if(!this.puzzle.ready || (!this.forceRecord && this.disrec>0)){ return;}
 
 		/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
-		if(this.enableRedo){
-			if(this.position<this.initpos){ this.broken = true;}
-			for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
-			this.position = this.ope.length;
-			this.chainflag = false;
-		}
+		if(this.enableRedo){ this.removeDescendant();}
 
 		/* 前の履歴を更新するかどうか判定 */
 		var puzzle = this.puzzle;
@@ -433,6 +440,47 @@ OperationManager:{
 		
 		this.postproc();
 		return this.enableRedo;
+	},
+
+	//---------------------------------------------------------------------------
+	// opemgr.goto()  指定された履歴の位置まで移動する
+	//---------------------------------------------------------------------------
+	goto : function(pos){
+		if     (pos < this.position){ while((pos < this.position) && this.undo()){}}
+		else if(this.position < pos){ while((this.position < pos) && this.redo()){}}
+	},
+
+	//---------------------------------------------------------------------------
+	// opemgr.enterTrial()   TrialModeにする
+	// opemgr.acceptTrial()  現在のTrial状態を確定する
+	// opemgr.rejectTrial()  Trial状態と履歴を破棄する
+	//---------------------------------------------------------------------------
+	enterTrial : function(){
+		if(this.trialpos[this.trialpos.length-1]===this.position){ return;}
+		this.trialpos.push(this.position);
+		this.checkexec();
+		this.puzzle.emit('trial', this.trialpos.length);
+	},
+	acceptTrial : function(){
+		if(this.trialpos.length===0){ return;}
+		this.trialpos = [];
+		this.removeDescendant();
+		this.checkexec();
+		this.puzzle.emit('trial', 0);
+	},
+	rejectTrial : function(rejectall){
+		if(this.trialpos.length===0){ return;}
+		if(rejectall){
+			var pos = this.trialpos[0];
+			this.trialpos = [];
+			this.goto(pos);
+		}
+		else{
+			this.goto(this.trialpos.pop());
+		}
+		this.removeDescendant();
+		this.checkexec();
+		this.puzzle.emit('trial', this.trialpos.length);
 	},
 
 	//---------------------------------------------------------------------------

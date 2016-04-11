@@ -123,6 +123,13 @@ These methods have arguments below.
     * Return value: `true` when the puzzle is modified and the puzzle type is 'editor'.
 * `puzzle.saved()` Let `puzzle.ismodified()` return `false`.
 
+## Methods for trial mode
+
+* `puzzle.enterTrial()` Enter trial mode.
+* `puzzle.acceptTrial()` Finalize all trial mode changes and exit trial mode.
+* `puzzle.rejectTrial()` Erase all trial mode changes and exit trial mode.
+* `puzzle.rejectCurrentTrial()` Erase current trial mode stage changes and back to previous trial stage.
+
 ## Methods for general purpose
 
 * `puzzle.getTime()` Return consumed time from the puzzle data is created or URL/filedata is opened.
@@ -148,6 +155,8 @@ These methods have arguments below.
     * Callback: `function(puzzle)`
 * `'history'` Emitted after operation history is added or undo/redo is executed.
     * Callback: `function(puzzle)`
+* `'trial'` Emitted after trial mode stage is changed.
+    * Callback: `function(puzzle, trialstage)`
 
 ## Properties
 

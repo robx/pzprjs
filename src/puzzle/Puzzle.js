@@ -245,6 +245,25 @@ pzpr.Puzzle.prototype =
 		return this.opemgr.resetModifiedState();
 	},
 
+	//---------------------------------------------------------------------------
+	// puzzle.enterTrial()      TrialModeに設定する (多重設定可能)
+	// puzzle.acceptTrial()     TrialModeを確定する
+	// puzzle.rejectTrial()     TrialModeの履歴をすべて破棄する
+	// puzzle.rejectCurrentTrial() TrialModeの現在の履歴を破棄して一つ前のTrial mode stageに戻る
+	//---------------------------------------------------------------------------
+	enterTrial : function(){
+		this.opemgr.enterTrial();
+	},
+	acceptTrial : function(){
+		this.opemgr.acceptTrial();
+	},
+	rejectTrial : function(){
+		this.opemgr.rejectTrial(true);
+	},
+	rejectCurrentTrial : function(){
+		this.opemgr.rejectTrial(false);
+	},
+
 	//------------------------------------------------------------------------------
 	// owner.check()          正答判定処理を行う
 	//------------------------------------------------------------------------------
