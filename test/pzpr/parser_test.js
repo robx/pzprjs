@@ -224,6 +224,20 @@ describe('changeProperPid:File',function(){
 		assert.equal(filedata.replace('ichimaga','ichimagax'), puzzle.getFileData());
 	});
 });
-
-
-
+describe('avoidEraseLastChar',function(){
+	it('Encode url with dot last charactor', function(){
+		var pzl = pzpr.parser.parse('http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		assert.equal(pzl.body, 'zj.');
+		assert.equal(pzl.generate(), 'http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		
+		puzzle.open('shakashaka/5/5');
+		
+		puzzle.board.getc(9,9).setQnum(-2);
+		assert.equal(puzzle.getURL(), 'http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		
+		puzzle.board.getc(9,9).setQnum(-1);
+		assert.equal(puzzle.getURL(), 'http://pzv.jp/p.html?shakashaka/5/5/zk');
+		
+		puzzle.open('http://pzv.jp/p.html?shakashaka/5/5/zj./', function(){ assert.equal(puzzle.board.getc(9,9).qnum, -2);});
+	});
+});

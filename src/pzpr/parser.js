@@ -206,6 +206,7 @@ pzpr.parser.URLData.prototype = {
 		this.cols = col;
 
 		/* サイズ以降のデータを取得 */
+		if(!inp[inp.length-1]){ inp.pop();}
 		this.body = inp.join("/");
 	},
 
@@ -245,7 +246,10 @@ pzpr.parser.URLData.prototype = {
 		/* サイズ以降のデータを設定 */
 		out.push(pzl.body);
 
-		return out.join("/");
+		/* 末尾が0-9,a-z,A-Z以外の時にt.coで情報が欠落しないよう/を追加 */
+		var body = out.join("/");
+		if(!body.charAt(body.length-1).match(/[a-zA-Z0-9]/)){ body+='/';}
+		return body;
 	},
 
 	//---------------------------------------------------------------------------
