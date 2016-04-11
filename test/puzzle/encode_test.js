@@ -57,7 +57,7 @@ pzpr.variety.each(function(pid){
 			it('kanpen URL', function(){
 				puzzle.open(pid+'/'+testdata[pid].url);
 				var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
-				assert.equal(pzpr.parser.parse(kanpen_url).pid, pid);
+				assert.equal(pzpr.parser(kanpen_url).pid, pid);
 
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				puzzle.open(kanpen_url, function(){ assert_equal_board(bd,bd2);});
@@ -66,7 +66,7 @@ pzpr.variety.each(function(pid){
 			it('Heyawake-Applet URL', function(){
 				puzzle.open(pid+'/'+testdata[pid].url);
 				var heywakeapp_url = puzzle.getURL(pzpr.parser.URL_HEYAAPP);
-				assert.equal(pzpr.parser.parse(heywakeapp_url).pid, pid);
+				assert.equal(pzpr.parser(heywakeapp_url).pid, pid);
 
 				var bd = puzzle.board, bd2 = bd_freezecopy(bd);
 				puzzle.open(heywakeapp_url, function(){ assert_equal_board(bd,bd2);});

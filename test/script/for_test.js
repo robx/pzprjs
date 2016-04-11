@@ -326,7 +326,7 @@ var debug = window.debug =
 		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
 		var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 
-		if(pzpr.parser.parse(kanpen_url).pid!==puzzle.pid){
+		if(pzpr.parser(kanpen_url).pid!==puzzle.pid){
 			self.addTA("Encode kanpen = id fail..."); self.fails++;
 		}
 		puzzle.open(kanpen_url, function(){

@@ -351,7 +351,7 @@ function openExecute(puzzle, data, variety, callback){
 
 	var classes = puzzle.klass;
 	var Board = ((!!classes && !!classes.Board) ? classes.Board : null);
-	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
+	var pzl = pzpr.parser(data, (variety || puzzle.pid));
 
 	pzpr.classmgr.setPuzzleClass(puzzle, pzl.pid, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */

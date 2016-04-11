@@ -15,8 +15,13 @@ var URL_AUTO    = 0,
 	FILE_PBOX = 2,
 	FILE_PBOX_XML = 3;
 
-pzpr.parser = {
-	
+var URLData, FileData, Parser;
+
+Parser = pzpr.parser = function(data, variety){
+	return Parser.parse(data, variety);
+};
+Parser.extend = function(obj){ for(var n in obj){ this[n] = obj[n];}};
+Parser.extend({
 	// 定数(URL形式)
 	URL_AUTO    : URL_AUTO,
 	URL_PZPRV3  : URL_PZPRV3,
@@ -34,31 +39,32 @@ pzpr.parser = {
 	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
 	parse : function(data, variety){
-		if(data instanceof this.URLData || data instanceof this.FileData){ return data;}
+		if(data instanceof URLData || data instanceof FileData){ return data;}
 		
 		return this.parseFile(data, variety) || this.parseURL(data);
 	},
 	
 	parseURL : function(url){
-		if(url instanceof this.URLData){ return url;}
+		if(url instanceof URLData){ return url;}
 		
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
-		return (new pzpr.parser.URLData(url)).parse();
+		return (new URLData(url)).parse();
 	},
 	parseFile : function(fstr, variety){
-		if(fstr instanceof this.FileData){ return fstr;}
+		if(fstr instanceof FileData){ return fstr;}
 		
 		if(!fstr.match(/^\<\?xml/)){ // jshint ignore:line
 			fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
 		}
-		return (new pzpr.parser.FileData(fstr, variety)).parse();
+		return (new FileData(fstr, variety)).parse();
 	}
-};
+});
+delete Parser.extend;
 
 //---------------------------------------------------------------------------
 // ★ URLData() URLデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
-pzpr.parser.URLData = function(url){
+URLData = pzpr.parser.URLData = function(url){
 	this.url = url;
 };
 pzpr.parser.URLData.prototype = {
@@ -72,6 +78,7 @@ pzpr.parser.URLData.prototype = {
 	body    : "",
 	
 	isurl : true,
+	isfile : false,
 	
 	// 定数(URL形式)
 	URL_AUTO    : URL_AUTO,
@@ -301,7 +308,7 @@ pzpr.parser.URLData.prototype = {
 //---------------------------------------------------------------------------
 // ★ FileData() ファイルデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
-pzpr.parser.FileData = function(fstr, variety){
+FileData = pzpr.parser.FileData = function(fstr, variety){
 	this.pid  = (!!variety ? variety : '');
 	this.fstr = fstr;
 	this.metadata = new pzpr.MetaData();
@@ -319,6 +326,7 @@ pzpr.parser.FileData.prototype = {
 	metadata: null,
 	xmldoc  : null,
 	
+	isurl : false,
 	isfile : true,
 	
 	// 定数(ファイル形式)
