@@ -19,7 +19,6 @@ Graphic:{
 	initialize : function(){
 		this.gridcolor  = this.gridcolor_list [this.gridcolor_type]  || this.gridcolor;
 		this.bcolor     = this.bcolor_list    [this.bcolor_type]     || this.bcolor;
-		this.dotcolor   = this.dotcolor_list  [this.dotcolor_type]   || this.dotcolor;
 		this.errbcolor1 = this.errbcolor1_list[this.errbcolor1_type] || this.errbcolor1;
 		this.linecolor  = this.linecolor_list [this.linecolor_type]  || this.linecolor;
 
@@ -55,10 +54,6 @@ Graphic:{
 	qsubcolor2 : "rgb(255,255,127)",
 	qsubcolor3 : "rgb(192,192,192)",	// 絵が出るパズルの背景入力
 
-	dotcolor : "black",
-	dotcolor_type : "",
-	dotcolor_list : { PINK : "rgb(255, 96, 191)"},
-
 	errbcolor1 : "rgb(255, 160, 160)",
 	errbcolor1_type : "",
 	errbcolor1_list : { DARK : "rgb(255, 127, 127)"},
@@ -83,7 +78,7 @@ Graphic:{
 	fontShadecolor : "rgb(224, 224, 224)",
 
 	// セルの○×の色(補助記号)
-	mbcolor : "rgb(255, 160, 127)",
+	mbcolor : "rgb(0, 160, 0)",
 
 	// 線・×の色
 	linecolor : "rgb(0, 160, 0)",	// 色分けなしの場合
@@ -96,12 +91,12 @@ Graphic:{
 	movelinecolor : "silver",
 	movetrialcolor: "rgb(255, 160, 0)",
 
-	pekecolor : "rgb(32, 32, 255)",
+	pekecolor : "rgb(0, 160, 0)",
 
 	// 境界線の色
 	borderQuescolor : "black",
-	borderQanscolor : "rgb(0, 191, 0)",
-	borderQsubcolor : "rgb(255, 0, 255)",
+	borderQanscolor : "rgb(0, 160, 0)",
+	borderQsubcolor : "rgb(0, 160, 0)",
 	borderQsubcolor2 : "rgb(64, 64, 64)",
 
 	errborderbgcolor : "rgb(160, 160, 160)",	// エラー表示時, エラーでない境界線の描画色

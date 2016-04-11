@@ -141,7 +141,6 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	dotcolor_type : "PINK",
 
 	errbcolor2 : "rgb(255, 224, 192)",
 	errbcolor3 : "rgb(192, 192, 255)",

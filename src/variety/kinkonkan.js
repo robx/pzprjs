@@ -285,7 +285,6 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	dotcolor_type : "PINK",
 
 	errcolor1 : "black",	// drawSlashes関係 quescolorと同じ
 	errcolor2 : "black",	// drawSlashes関係 quescolorと同じ
@@ -294,7 +293,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells_kinkonkan();
-		this.drawDotCells(true);
+		this.drawDotCells();
 
 		this.drawGrid();
 		this.drawBorders();

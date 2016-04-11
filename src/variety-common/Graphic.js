@@ -171,20 +171,18 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawDotCells : function(isrect){
-		var g = this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'), true);
+	drawDotCells : function(){
+		var g = this.vinc('cell_dot', 'auto', true);
 
-		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
+		var dsize = Math.max(this.cw*0.06, 2);
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
-				g.fillStyle = (!cell.trial ? this.dotcolor : this.trialcolor);
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(isrect){ g.fillRectCenter(px, py, dsize, dsize);}
-				else      { g.fillCircle(px, py, dsize);}
+				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
+				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
 			else{ g.vhide();}
 		}
@@ -812,7 +810,7 @@ Graphic:{
 			var cell = clist[i], px, py;
 			if(cell.qsub>0){
 				px = cell.bx*this.bw; py = cell.by*this.bh;
-				g.strokeStyle = (!cell.trial ? this.mbcolor : this.trialcolor);
+				g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
 			}
 
 			g.vid = "c_MB1_" + cell.id;

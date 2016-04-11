@@ -79,11 +79,9 @@ Graphic:{
 
 	numbercolor_func : "qnum",
 
-	dotcolor : "rgb(255, 96, 191)",
-
 	paint : function(){
 		this.drawBGCells();
-		this.drawDotCells(false);
+		this.drawDotCells();
 		this.drawGrid();
 		
 		this.drawBorders();

@@ -111,7 +111,6 @@ Graphic:{
 	autocmp : 'room',
 
 	cellcolor_func : "ques",
-	dotcolor_type : "PINK",
 	qsubcolor1 : "rgb(224, 224, 255)",
 
 	paint : function(){
@@ -119,7 +118,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawDotCells(true);
+		this.drawDotCells(false);
 		this.drawCircles();
 
 		this.drawBorders();

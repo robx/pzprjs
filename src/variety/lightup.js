@@ -125,7 +125,6 @@ Graphic:{
 	hideHatena : true,
 
 	gridcolor_type : "LIGHT",
-	dotcolor_type : "PINK",
 
 	cellcolor_func : "qnum",
 
@@ -141,7 +140,7 @@ Graphic:{
 		this.drawNumbers();
 
 		this.drawAkari();
-		this.drawDotCells(true);
+		this.drawDotCells();
 
 		this.drawChassis();
 

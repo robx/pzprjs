@@ -95,13 +95,12 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "DLIGHT",
-	dotcolor_type : "PINK",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawDotCells(true);
+		this.drawDotCells();
 		this.drawNumbers();
 
 		this.drawBorders();
