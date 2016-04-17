@@ -102,9 +102,10 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		if     (this.pid==="ichimagam"){ this.datastr+="mag\n";}
-		else if(this.pid==="ichimagax"){ this.datastr+="cross\n";}
-		else                           { this.datastr+="def\n";}
+		var disptype = 'def';
+		if     (this.pid==="ichimagam"){ disptype = 'mag';}
+		else if(this.pid==="ichimagax"){ disptype = 'cross';}
+		this.writeLine(disptype);
 
 		this.encodeCellQnum();
 		this.encodeBorderLine();

@@ -231,9 +231,9 @@ FileIO:{
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		var puzzle = this.puzzle;
-		if     (puzzle.pid==='pipelink') { this.datastr += 'pipe\n';}
-		else if(puzzle.pid==='pipelinkr'){ this.datastr += (puzzle.getConfig('disptype_pipelinkr')===1?"circle\n":"ice\n");}
+		var puzzle = this.puzzle, disptype = 'pipe';
+		if(puzzle.pid==='pipelinkr'){ disptype = (puzzle.getConfig('disptype_pipelinkr')===1 ? "circle" : "ice");}
+		this.writeLine(disptype);
 		
 		this.encodeCell( function(cell){
 			if     (cell.ques===6) { return "o ";}

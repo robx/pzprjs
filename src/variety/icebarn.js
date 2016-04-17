@@ -726,7 +726,8 @@ Encode:{
 	},
 	encodeData : function(){
 		var bd = this.board;
-		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
+		this.writeLine(bd.arrowin.getid());
+		this.writeLine(bd.arrowout.getid());
 		this.encodeCell( function(cell){
 			return (cell.ques===6?"1 ":"0 ");
 		});
@@ -775,8 +776,9 @@ Encode:{
 	},
 	encodeData : function(){
 		var bd = this.board;
-		this.datastr += (bd.arrowin.getid()+"\n"+bd.arrowout.getid()+"\n");
-		this.datastr += ((this.pid==='icelom'?"allwhite":"skipwhite")+"\n");
+		this.writeLine(bd.arrowin.getid());
+		this.writeLine(bd.arrowout.getid());
+		this.writeLine((this.pid==='icelom'?"allwhite":"skipwhite"));
 
 		this.encodeCell( function(cell){
 			var istr = (cell.ques===6 ? "i" : ""), qstr='';

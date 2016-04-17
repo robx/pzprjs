@@ -768,9 +768,9 @@ FileIO:{
 	},
 	encodeSegment : function(){
 		var fio = this, segs = this.board.segment;
-		this.datastr += (segs.length+"\n");
+		this.writeLine(segs.length);
 		segs.each(function(seg){
-			fio.datastr += ([seg.bx1,seg.by1,seg.bx2,seg.by2].join(" ")+"\n");
+			fio.writeLine([seg.bx1, seg.by1, seg.bx2, seg.by2].join(" "));
 		});
 	}
 },

@@ -100,7 +100,6 @@ FileIO:{
 
 	//---------------------------------------------------------------------------
 	// fio.readLine()    ファイルに書かれている1行の文字列を返す
-	// fio.readLines()   ファイルに書かれている複数行の文字列を返す
 	// fio.getItemList() ファイルに書かれている改行＋スペース区切りの
 	//                   複数行の文字列を配列にして返す
 	//---------------------------------------------------------------------------
@@ -108,23 +107,26 @@ FileIO:{
 		this.lineseek++;
 		return this.dataarray[this.lineseek-1];
 	},
-	readLines : function(rows){
-		this.lineseek += rows;
-		return this.dataarray.slice(this.lineseek-rows, this.lineseek);
-	},
 
 	getItemList : function(rows){
-		var item = [];
-		var array = this.readLines(rows);
-		for(var i=0;i<array.length;i++){
-			var array1 = array[i].split(" ");
-			var array2 = [];
+		var item = [], line;
+		for(var i=0;i<rows;i++){
+			if(!(line=this.readLine())){ continue;}
+			var array1 = line.split(" ");
 			for(var c=0;c<array1.length;c++){
-				if(array1[c]!==""){ array2.push(array1[c]);}
+				if(array1[c]!==""){ item.push(array1[c]);}
 			}
-			item = item.concat(array2);
 		}
 		return item;
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.writeLine()    ファイルに1行出力する
+	//---------------------------------------------------------------------------
+	writeLine : function(data){
+		if(typeof data==='number'){ data = ''+data;}
+		else{ data = data || '';} // typeof data==='string'
+		this.datastr += (data+"\n");
 	},
 
 	//---------------------------------------------------------------------------
@@ -178,10 +180,11 @@ FileIO:{
 	encodeObj : function(func, group, startbx, startby, endbx, endby){
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
+			var data = '';
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(this.board.getObjectPos(group, bx, by));
+				data += func(this.board.getObjectPos(group, bx, by));
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	},
 	encodeCell   : function(func){

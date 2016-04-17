@@ -405,29 +405,33 @@ FileIO:{
 	},
 
 	decodeStarFile : function(){
-		var bd = this.board, array = this.readLines(2*bd.rows-1), s=0;
-		bd.disableInfo();
-		for(var i=0;i<array.length;i++){
-			for(var c=0;c<array[i].length;c++){
-				var star = bd.star[s];
-				if     (array[i].charAt(c)==="1"){ star.setStar(1);}
-				else if(array[i].charAt(c)==="2"){ star.setStar(2);}
-				s++;
+		var  bd = this.board, s=0, data = '';
+		for(var i=0,rows=2*bd.rows-1;i<rows;i++){
+			var line = this.readLine();
+			if(line){
+				data += line.match(/[12\.]+/)[0];
 			}
+		}
+		bd.disableInfo();
+		for(var s=0;s<data.length;++s){
+			var star = bd.star[s], ca = data.charAt(s);
+			if     (ca==="1"){ star.setStar(1);}
+			else if(ca==="2"){ star.setStar(2);}
 		}
 		bd.enableInfo();
 	},
 	encodeStarFile : function(){
 		var bd = this.board, s=0;
 		for(var by=1;by<=2*bd.rows-1;by++){
+			var data = '';
 			for(var bx=1;bx<=2*bd.cols-1;bx++){
 				var star = bd.star[s];
-				if     (star.getStar()===1){ this.datastr += "1";}
-				else if(star.getStar()===2){ this.datastr += "2";}
-				else                       { this.datastr += ".";}
+				if     (star.getStar()===1){ data += "1";}
+				else if(star.getStar()===2){ data += "2";}
+				else                       { data += ".";}
 				s++;
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	},
 	decodeAnsAreaRoom : function(){

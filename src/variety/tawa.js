@@ -330,22 +330,21 @@ FileIO:{
 	},
 	encodeData : function(){
 		var bd = this.board;
-		this.datastr = bd.shape+"\n";
+		this.writeLine(bd.shape);
 
-		var bstr = "";
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell=bd.getc(bx,by);
 				if(cell.isnull){ continue;}
-				else if(cell.qnum===-2){ bstr += "- ";}
-				else if(cell.qnum!==-1){ bstr += (""+cell.qnum+" ");}
-				else if(cell.qans=== 1){ bstr += "# ";}
-				else if(cell.qsub=== 1){ bstr += "+ ";}
-				else{ bstr += ". ";}
+				else if(cell.qnum===-2){ data += "- ";}
+				else if(cell.qnum!==-1){ data += (""+cell.qnum+" ");}
+				else if(cell.qans=== 1){ data += "# ";}
+				else if(cell.qsub=== 1){ data += "+ ";}
+				else{ data += ". ";}
 			}
-			bstr += "\n";
+			this.writeLine(data);
 		}
-		this.datastr += bstr;
 	}
 },
 

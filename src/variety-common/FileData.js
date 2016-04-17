@@ -241,12 +241,17 @@ FileIO:{
 	encodeAreaRoom_com : function(isques){
 		var bd = this.board;
 		bd.roommgr.rebuild();
+		
 		var rooms = bd.roommgr.components;
-		this.datastr += (rooms.length+"\n");
+		this.writeLine(rooms.length);
+		var data = '';
 		for(var c=0;c<bd.cell.length;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
-			this.datastr += (""+(roomid>=0 ? roomid : ".")+" ");
-			if((c+1)%bd.cols===0){ this.datastr += "\n";}
+			data += (""+(roomid>=0 ? roomid : ".")+" ");
+			if((c+1)%bd.cols===0){
+				this.writeLine(data);
+				data = '';
+			}
 		}
 	},
 	//---------------------------------------------------------------------------
@@ -287,26 +292,26 @@ FileIO:{
 		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
-		var bd = this.board, str = "";
+		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if     (bx===-1 && by===-1){ str += "0 ";}
+				if     (bx===-1 && by===-1){ data += "0 ";}
 				else if(bx===-1 || by===-1){
 					var excell = bd.getex(bx,by);
 					var property = ((excell.by===-1)?'qnum2':'qnum');
-					str += (excell[property]+" ");
+					data += (excell[property]+" ");
 				}
 				else{
 					var cell = bd.getc(bx,by);
 					if(cell.ques===51){
-						str += (cell.qnum+","+cell.qnum2+" ");
+						data += (cell.qnum+","+cell.qnum2+" ");
 					}
-					else{ str += ". ";}
+					else{ data += ". ";}
 				}
 			}
-			str += "\n";
+			this.writeLine(data);
 		}
-		this.datastr += str;
 	},
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う

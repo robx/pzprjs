@@ -293,29 +293,30 @@ FileIO:{
 	encodeData : function(){
 		var bd = this.board;
 		for(var by=-1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
 					if(excell.id<bd.cols+bd.rows){
-						this.datastr += (excell.qnum+" ");
+						data += (excell.qnum+" ");
 					}
 					else{
-						this.datastr += ". ";
+						data += ". ";
 					}
 					continue;
 				}
 
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull){
-					if     (cell.qans===1){ this.datastr += "# ";}
-					else if(cell.qsub===1){ this.datastr += "+ ";}
-					else                  { this.datastr += ". ";}
+					if     (cell.qans===1){ data += "# ";}
+					else if(cell.qsub===1){ data += "+ ";}
+					else                  { data += ". ";}
 					continue;
 				}
 
-				this.datastr += ". ";
+				data += ". ";
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	}
 },

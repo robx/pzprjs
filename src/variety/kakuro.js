@@ -248,7 +248,6 @@ FileIO:{
 	},
 	kanpenSave : function(){
 		this.encodeCellQnum51_kanpen();
-		this.datastr += "\n";
 		this.encodeQans_kanpen();
 	},
 
@@ -256,8 +255,7 @@ FileIO:{
 		var bd = this.board;
 		for(;;){
 			var data = this.readLine();
-			if(!data){ break;}
-
+			if(!data){ return;}
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else if(item[0]==="0" && item[1]==="0"){ }
@@ -291,35 +289,32 @@ FileIO:{
 				item[2]=cell.qnum;
 				item[3]=cell.qnum2;
 			}
-			this.datastr += (item.join(" ")+"\n");
+			this.writeLine(item.join(" "));
 		}}
+		this.writeLine('');	// 空行を出力
 	},
 
 	decodeQans_kanpen : function(){
-		var bd = this.board, barray = this.readLines(bd.rows+1);
+		var bd = this.board;
+		var item = this.getItemList(bd.rows+1), i = 0;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			if(((by+1)>>1)>=barray.length){ break;}
-			var arr = barray[(by+1)>>1].split(" ");
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if(arr[(bx+1)>>1]===''){ continue;}
-				var cell = bd.getc(bx,by);
-				if(!cell.isnull && arr[(bx+1)>>1]!=="." && arr[(bx+1)>>1]!=="0"){
-					cell.anum = +arr[(bx+1)>>1];
-				}
+				var ca = item[i++];
+				if(!ca || ca==="." || ca==="0"){ continue;}
+				bd.getc(bx,by).anum = +ca;
 			}
 		}
 	},
 	encodeQans_kanpen : function(){
 		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
 				var cell = bd.getc(bx,by);
-				if(cell.isnull){ this.datastr += ". ";}
-				else if(cell.ques===51){ this.datastr += ". ";}
-				else if(cell.anum  > 0){ this.datastr += (cell.anum+" ");}
-				else                   { this.datastr += "0 ";}
+				if(cell.ques===51){ data += ". ";}
+				else{ data += ((cell.anum>0 ? cell.anum : 0)+" ");}
 			}
-			if(by<bd.maxby-1){ this.datastr += "\n";}
+			this.writeLine(data);
 		}
 	},
 

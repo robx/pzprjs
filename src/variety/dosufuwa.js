@@ -236,11 +236,15 @@ FileIO:{
 		var bd = this.board;
 		bd.roommgr.rebuild();
 		var rooms = bd.roommgr.components;
-		this.datastr += (rooms.length+"\n");
+		this.writeLine(rooms.length);
+		var data = '';
 		for(var c=0;c<bd.cell.length;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
-			this.datastr += (""+(roomid>=0 ? roomid : "#")+" ");
-			if((c+1)%bd.cols===0){ this.datastr += "\n";}
+			data += (""+(roomid>=0 ? roomid : "#")+" ");
+			if((c+1)%bd.cols===0){
+				this.writeLine(data);
+				data = '';
+			}
 		}
 	}
 },

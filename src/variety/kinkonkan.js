@@ -466,28 +466,29 @@ FileIO:{
 
 		var bd = this.board;
 		for(var by=-1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var excell = bd.getex(bx,by);
 				if(!excell.isnull){
 					var dir=excell.qchar, qn=excell.qnum;
 					var str1 = (dir!== 0 ? ""+dir : "");
 					var str2 = (qn !==-1 ? ""+qn  : "");
-					this.datastr += ((str1==="" && str2==="")?(". "):(str1+","+str2+" "));
+					data += ((str1==="" && str2==="")?(". "):(str1+","+str2+" "));
 					continue;
 				}
 
 				var cell = bd.getc(bx,by);
 				if(!cell.isnull){
-					if     (cell.qans===31){ this.datastr += "1 ";}
-					else if(cell.qans===32){ this.datastr += "2 ";}
-					else if(cell.qsub=== 1){ this.datastr += "+ ";}
-					else                   { this.datastr += ". ";}
+					if     (cell.qans===31){ data += "1 ";}
+					else if(cell.qans===32){ data += "2 ";}
+					else if(cell.qsub=== 1){ data += "+ ";}
+					else                   { data += ". ";}
 					continue;
 				}
 
-				this.datastr += ". ";
+				data += ". ";
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	}
 },

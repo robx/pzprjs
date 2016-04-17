@@ -283,18 +283,18 @@ FileIO:{
 	encodeGoishi_kanpen : function(){
 		var bd = this.board;
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			var data = '';
 			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				this.datastr += (bd.getc(bx,by).isStone() ? "1 " : ". ");
+				data += (bd.getc(bx,by).isStone() ? "1 " : ". ");
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	},
 
 	decodeQansPos_kanpen : function(){
 		for(;;){
 			var data = this.readLine();
-			if(!data){ break;}
-
+			if(!data){ return;}
 			var item = data.split(" ");
 			if(item.length<=1){ return;}
 			else{
@@ -315,7 +315,7 @@ FileIO:{
 		}}
 		for(var i=0,len=stones.length;i<len;i++){
 			var item = [(i+1), stones[i][1], stones[i][0]];
-			this.datastr += (item.join(" ")+"\n");
+			this.writeLine(item.join(" "));
 		}
 	},
 
