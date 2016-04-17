@@ -106,7 +106,7 @@ PieceList:{
 	ansclear : function()     { this.propclear(this.getprop('ans'), true);},
 	subclear : function()     { this.propclear(this.getprop('sub'), true);},
 	errclear : function()     { this.propclear(this.getprop('err'), false);},
-	trialclear : function()   { this.propclear(this.getprop('trial'), true);},
+	trialclear : function()   { this.propclear(this.getprop('trial'), false);},
 	propclear : function(props, isrec){
 		var norec = (this.length>0?this[0].propnorec:{});
 		for(var i=0;i<this.length;i++){

@@ -64,8 +64,7 @@ Operation:{
 		A: 'qans',
 		S: 'qsub',
 		K: 'qcmp',
-		L: 'line',
-		T: 'trial'
+		L: 'line'
 	},
 
 	//---------------------------------------------------------------------------
@@ -233,6 +232,32 @@ Operation:{
 	}
 },
 
+// TrialEnterOperationクラス
+'TrialEnterOperation:Operation':{
+	setData : function(old, num){
+		this.old = old;
+		this.num = num;
+	},
+	undo : function(){
+		this.manager.trialpos.pop();
+		this.puzzle.emit('trial', this.num);
+	},
+	redo : function(){
+		this.manager.trialpos.push(this.manager.position);
+		this.puzzle.emit('trial', this.old);
+	},
+
+	decode : function(strs){
+		if(strs[0]!=='TE'){ return false;}
+		this.old = +strs[1];
+		this.num = +strs[2];
+		return true;
+	},
+	toString : function(){
+		return ['TE', this.old, this.num].join(',');
+	}
+},
+
 // TrialFinalizeOperationクラス
 'TrialFinalizeOperation:Operation':{
 	num : [],
@@ -241,17 +266,26 @@ Operation:{
 	},
 	exec : function(num){
 		this.manager.trialpos = num;
+		if(num.length===0){
+			this.board.trialclear();
+		}
+		else{
+			this.manager.position--;
+			this.manager.resumeTrial();
+			this.manager.position++;
+		}
 		this.puzzle.emit('trial', num.length);
 		this.puzzle.redraw();
 	},
 
 	decode : function(strs){
-		if(strs.shift()!=='OT'){ return false;}
+		if(strs[0]!=='TF'){ return false;}
+		strs.shift();
 		this.old = JSON.parse(strs.join(','));
 		return true;
 	},
 	toString : function(){
-		return 'OT,['+this.old.join(',')+']';
+		return 'TF,['+this.old.join(',')+']';
 	}
 },
 
@@ -277,9 +311,11 @@ OperationManager:{
 
 		this.enableUndo = false;	// Undoできる状態か？
 		this.enableRedo = false;	// Redoできる状態か？
+		this.limitTrialUndo = false;// 仮置きモードでUndoを止める状態かどうか
 
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
+		this.gotoExec = false;		// goto中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
 		var classes = this.klass;
@@ -287,6 +323,7 @@ OperationManager:{
 			classes.ObjectOperation,
 			classes.BoardAdjustOperation,
 			classes.BoardFlipOperation,
+			classes.TrialEnterOperation,
 			classes.TrialFinalizeOperation
 		];
 		this.addExtraOperation();
@@ -311,12 +348,20 @@ OperationManager:{
 	checkexec : function(){
 		if(this.ope===(void 0)){ return;}
 
-		this.enableUndo = (this.position>(this.trialpos[this.trialpos.length-1]||0));
+		this.checkenable();
+
+		this.puzzle.emit('history');
+	},
+	checkenable : function(){
+		if(this.limitTrialUndo){
+			this.enableUndo = (this.position>this.trialpos[this.trialpos.length-1]+1);
+		}
+		else{
+			this.enableUndo = (this.position>0);
+		}
 		this.enableRedo = (this.position<this.ope.length);
 
 		this.board.trialstage = this.trialpos.length;
-
-		this.puzzle.emit('history');
 	},
 	allerase : function(){
 		this.lastope  = null;
@@ -328,6 +373,7 @@ OperationManager:{
 		this.changeflag = false;
 		this.chainflag = false;
 		this.checkexec();
+		this.limitTrialUndo = false;
 		this.puzzle.checker.resetCache();
 	},
 	newOperation : function(){
@@ -402,7 +448,6 @@ OperationManager:{
 		this.allerase();
 		
 		this.initpos = this.position = history.current;
-		this.trialpos = history.trialpos || [];
 		this.ope = [];
 		for(var i=0,len=history.datas.length;i <len;i++){
 			this.ope.push([]);
@@ -421,6 +466,12 @@ OperationManager:{
 		}
 		
 		this.checkexec();
+		
+		this.trialpos = history.trialpos || [];
+		if(this.trialpos.length>0){
+			this.resumeTrial();
+			this.limitTrialUndo = true;
+		}
 	},
 	encodeHistory : function(){
 		this.initpos = this.position;
@@ -445,8 +496,10 @@ OperationManager:{
 	undo : function(){
 		if(!this.enableUndo){ return false;}
 		var opes = this.ope[this.position-1];
-		this.reqReset = this.checkReqReset(opes);
-		this.preproc();
+		if(!this.gotoExec){
+			this.reqReset = this.checkReqReset(opes);
+			this.preproc();
+		}
 		
 		this.undoExec = true;
 		for(var i=opes.length-1;i>=0;i--){
@@ -455,14 +508,18 @@ OperationManager:{
 		this.position--;
 		this.undoExec = false;
 		
-		this.postproc();
+		if(!this.gotoExec){
+			this.postproc();
+		}
 		return this.enableUndo;
 	},
 	redo : function(){
 		if(!this.enableRedo){ return false;}
 		var opes = this.ope[this.position];
-		this.reqReset = this.checkReqReset(opes);
-		this.preproc();
+		if(!this.gotoExec){
+			this.reqReset = this.checkReqReset(opes);
+			this.preproc();
+		}
 		
 		this.redoExec = true;
 		opes.forEach(function(ope){
@@ -471,7 +528,9 @@ OperationManager:{
 		this.position++;
 		this.redoExec = false;
 		
-		this.postproc();
+		if(!this.gotoExec){
+			this.postproc();
+		}
 		return this.enableRedo;
 	},
 
@@ -479,8 +538,20 @@ OperationManager:{
 	// opemgr.goto()  指定された履歴の位置まで移動する
 	//---------------------------------------------------------------------------
 	goto : function(pos){
+		var decoding = this.gotoExec;
+		if(!decoding){
+			this.preproc();
+			this.gotoExec = true;
+		}
 		if     (pos < this.position){ while((pos < this.position) && this.undo()){}}
 		else if(this.position < pos){ while((this.position < pos) && this.redo()){}}
+		if(!decoding){
+			this.gotoExec = false;
+			this.postproc();
+		}
+		else{
+			this.checkenable();
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -492,6 +563,7 @@ OperationManager:{
 		return opes.some(function(ope){ return ope.reqReset;});
 	},
 	preproc : function(opes){
+		if(this.gotoExec){ return;}
 		var puzzle = this.puzzle, bd = puzzle.board;
 		this.disableRecord();
 
@@ -502,6 +574,7 @@ OperationManager:{
 		}
 	},
 	postproc : function(){
+		if(this.gotoExec){ return;}
 		var puzzle = this.puzzle, bd = puzzle.board;
 		if(this.reqReset){
 			bd.setposAll();
@@ -521,10 +594,13 @@ OperationManager:{
 	// opemgr.enterTrial()   TrialModeにする
 	// opemgr.acceptTrial()  現在のTrial状態を確定する
 	// opemgr.rejectTrial()  Trial状態と履歴を破棄する
+	// opemgr.resumeTrial()  ファイル読み込み時などにTrial状態を復帰する
 	//---------------------------------------------------------------------------
 	enterTrial : function(){
 		if(this.trialpos[this.trialpos.length-1]===this.position){ return;}
-		this.trialpos.push(this.position);
+		this.add(new this.puzzle.klass.TrialEnterOperation(this.trialpos.length, this.trialpos.length+1));
+		this.trialpos.push(this.position-1);
+		this.limitTrialUndo = true;
 		this.checkexec();
 		this.puzzle.emit('trial', this.trialpos.length);
 	},
@@ -534,6 +610,7 @@ OperationManager:{
 		this.board.trialclear();
 		this.trialpos = [];
 		this.removeDescendant();
+		this.limitTrialUndo = false;
 		this.checkexec();
 		this.puzzle.emit('trial', 0);
 	},
@@ -548,8 +625,19 @@ OperationManager:{
 			this.goto(this.trialpos.pop());
 		}
 		this.removeDescendant();
+		this.limitTrialUndo = (this.trialpos.length>0);
 		this.checkexec();
 		this.puzzle.emit('trial', this.trialpos.length);
+	},
+	resumeTrial : function(){
+		if(this.trialpos.length>0){
+			var pos = this.position;
+			this.checkenable();
+			this.gotoExec = true;
+			this.goto(this.trialpos[0]);
+			this.goto(pos);
+			this.gotoExec = false;
+		}
 	}
 }
 });
