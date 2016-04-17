@@ -239,6 +239,10 @@ Operation:{
 		this.num = num;
 	},
 	undo : function(){
+		this.manager.position--;
+		this.manager.resumeTrial();
+		this.manager.position++;
+		
 		this.manager.trialpos.pop();
 		this.puzzle.emit('trial', this.num);
 	},
@@ -607,25 +611,30 @@ OperationManager:{
 	acceptTrial : function(){
 		if(this.trialpos.length===0){ return;}
 		this.add(new this.puzzle.klass.TrialFinalizeOperation(this.trialpos));
+		this.limitTrialUndo = false;
 		this.board.trialclear();
 		this.trialpos = [];
 		this.removeDescendant();
-		this.limitTrialUndo = false;
 		this.checkexec();
 		this.puzzle.emit('trial', 0);
 	},
 	rejectTrial : function(rejectall){
 		if(this.trialpos.length===0){ return;}
-		if(rejectall){
+		this.disableRecord();
+		this.limitTrialUndo = false;
+		if(rejectall || this.trialpos.length===1){
+			this.board.trialclear();
 			var pos = this.trialpos[0];
 			this.trialpos = [];
 			this.goto(pos);
 		}
 		else{
-			this.goto(this.trialpos.pop());
+			this.goto(this.trialpos[this.trialpos.length-1]);
+			this.resumeTrial();
+			this.limitTrialUndo = true;
 		}
+		this.enableRecord();
 		this.removeDescendant();
-		this.limitTrialUndo = (this.trialpos.length>0);
 		this.checkexec();
 		this.puzzle.emit('trial', this.trialpos.length);
 	},
@@ -635,7 +644,11 @@ OperationManager:{
 			this.checkenable();
 			this.gotoExec = true;
 			this.goto(this.trialpos[0]);
-			this.goto(pos);
+			this.board.trialclear(true);
+			if(this.position<pos){
+				this.board.trialstage = 1;
+				this.goto(pos);
+			}
 			this.gotoExec = false;
 		}
 	}

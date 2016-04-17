@@ -329,13 +329,14 @@ Board:{
 		}
 	},
 
-	trialclear : function(){
-		if(this.trialstage>0){
+	trialclear : function(forcemode){
+		if(this.trialstage>0 || !!forcemode){
 			this.cell.trialclear();
 			this.cross.trialclear();
 			this.border.trialclear();
 			this.excell.trialclear();
 			this.puzzle.redraw();
+			this.trialstage = 0;
 		}
 	},
 
