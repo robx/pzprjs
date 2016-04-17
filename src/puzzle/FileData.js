@@ -1,4 +1,8 @@
-// FileData.js v3.4.1
+// FileData.js
+
+(function(){
+
+function throwNoImplementation(){ throw "no Implemention";}
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -68,7 +72,7 @@ FileIO:{
 		if     (filetype===pzl.FILE_PZPR)    { this.encodeData();}
 		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
 		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
-		else{ throw "invalid URL Type";}
+		else{ throw "invalid File Type";}
 
 		pzl.type  = filetype;
 		pzl.filever = this.filever;
@@ -91,12 +95,12 @@ FileIO:{
 	},
 
 	// オーバーライド用
-	decodeData : function(){ throw "no Implemention";},
-	encodeData : function(){ throw "no Implemention";},
-	kanpenOpen : function(){ throw "no Implemention";},
-	kanpenSave : function(){ throw "no Implemention";},
-	kanpenOpenXML : function(){ throw "no Implemention";},
-	kanpenSaveXML : function(){ throw "no Implemention";},
+	decodeData    : throwNoImplementation,
+	encodeData    : throwNoImplementation,
+	kanpenOpen    : throwNoImplementation,
+	kanpenSave    : throwNoImplementation,
+	kanpenOpenXML : throwNoImplementation,
+	kanpenSaveXML : throwNoImplementation,
 
 	//---------------------------------------------------------------------------
 	// fio.readLine()    ファイルに書かれている1行の文字列を返す
@@ -134,6 +138,7 @@ FileIO:{
 	// fio.decodeCell()    配列で、個別文字列から個別セルの設定を行う
 	// fio.decodeCross()   配列で、個別文字列から個別Crossの設定を行う
 	// fio.decodeBorder()  配列で、個別文字列から個別Borderの設定を行う
+	// fio.decodeCellExcell()  配列で、個別文字列から個別セル/Excellの設定を行う
 	//---------------------------------------------------------------------------
 	decodeObj : function(func, group, startbx, startby, endbx, endby){
 		var bx=startbx, by=startby, step=2;
@@ -170,12 +175,16 @@ FileIO:{
 			}
 		}
 	},
+	decodeCellExcell : function(func){
+		this.decodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
+	},
 
 	//---------------------------------------------------------------------------
 	// fio.encodeObj()     個別セルデータ等から個別文字列の設定を行う
 	// fio.encodeCell()    個別セルデータから個別文字列の設定を行う
 	// fio.encodeCross()   個別Crossデータから個別文字列の設定を行う
 	// fio.encodeBorder()  個別Borderデータから個別文字列の設定を行う
+	// fio.encodeCellExcell()  個別セル/Excellデータから個別文字列の設定を行う
 	//---------------------------------------------------------------------------
 	encodeObj : function(func, group, startbx, startby, endbx, endby){
 		var step=2;
@@ -210,6 +219,9 @@ FileIO:{
 				this.encodeObj(func, 'border', 0, 1, 2*bd.cols  , 2*bd.rows-1);
 			}
 		}
+	},
+	encodeCellExcell : function(func){
+		this.encodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -289,3 +301,5 @@ FileIO:{
 	}
 }
 });
+
+})();

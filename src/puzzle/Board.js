@@ -348,6 +348,7 @@ Board:{
 		else if(group==='cross') { obj = this.getx(bx,by);}
 		else if(group==='border'){ obj = this.getb(bx,by);}
 		else if(group==='excell'){ obj = this.getex(bx,by);}
+		else if(group==='obj')   { obj = this.getobj(bx,by);}
 		return obj;
 	},
 

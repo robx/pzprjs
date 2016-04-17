@@ -295,27 +295,15 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		var bd = this.board;
-		var item = this.getItemList(bd.rows+1), i = 0;
-		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var ca = item[i++];
-				if(!ca || ca==="." || ca==="0"){ continue;}
-				bd.getc(bx,by).anum = +ca;
-			}
-		}
+		this.decodeCellExcell(function(obj,ca){
+			if(ca!=="." && ca!=="0"){ obj.anum = +ca;}
+		});
 	},
 	encodeQans_kanpen : function(){
-		var bd = this.board;
-		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var data = '';
-			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				var cell = bd.getc(bx,by);
-				if(cell.ques===51){ data += ". ";}
-				else{ data += ((cell.anum>0 ? cell.anum : 0)+" ");}
-			}
-			this.writeLine(data);
-		}
+		this.encodeCellExcell(function(obj){
+			if(obj.ques!==51){ return ((obj.anum>0 ? obj.anum : "0")+" ");}
+			return ". ";
+		});
 	},
 
 	kanpenOpenXML : function(){

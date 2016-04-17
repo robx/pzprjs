@@ -270,48 +270,36 @@ FileIO:{
 	// fio.encodeCellQnum51() [＼]のエンコードを行う
 	//---------------------------------------------------------------------------
 	decodeCellQnum51 : function(){
-		var bd = this.board, item = this.getItemList(bd.rows+1);
+		var bd = this.board;
 		bd.disableInfo(); /* mv.set51cell()用 */
-		for(var i=0;i<item.length;i++) {
-			if(item[i]==="."){ continue;}
-
-			var bx=(i%(bd.cols+1)-1)*2+1, by=(((i/(bd.cols+1))|0)-1)*2+1;
-			if(bx===-1 || by===-1){
-				var excell = bd.getex(bx,by);
-				var property = ((excell.by===-1)?'qnum2':'qnum');
-				excell[property] = +item[i];
+		this.decodeCellExcell(function(obj,ca){
+			if(ca==="."){ return;}
+			else if(obj.group==='excell'){
+				if     (obj.bx!==-1 && obj.by===-1){ obj.qnum2 = +ca;}
+				else if(obj.bx===-1 && obj.by!==-1){ obj.qnum  = +ca;}
 			}
-			else{
-				var inp = item[i].split(",");
-				var cell = bd.getc(bx,by);
-				cell.set51cell();
-				cell.qnum  = +inp[0];
-				cell.qnum2 = +inp[1];
+			else if(obj.group==='cell'){
+				var inp = ca.split(",");
+				obj.set51cell();
+				obj.qnum  = +inp[0];
+				obj.qnum2 = +inp[1];
 			}
-		}
+		});
 		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
-		var bd = this.board;
-		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			var data = '';
-			for(var bx=bd.minbx+1;bx<bd.maxbx;bx+=2){
-				if     (bx===-1 && by===-1){ data += "0 ";}
-				else if(bx===-1 || by===-1){
-					var excell = bd.getex(bx,by);
-					var property = ((excell.by===-1)?'qnum2':'qnum');
-					data += (excell[property]+" ");
-				}
-				else{
-					var cell = bd.getc(bx,by);
-					if(cell.ques===51){
-						data += (cell.qnum+","+cell.qnum2+" ");
-					}
-					else{ data += ". ";}
+		this.encodeCellExcell(function(obj){
+			if(obj.group==='excell'){
+				if(obj.bx===-1 && obj.by===-1){ return "0 ";}
+				return ((obj.by===-1)?obj.qnum2:obj.qnum)+" ";
+			}
+			else if(obj.group==='cell'){
+				if(obj.ques===51){
+					return (obj.qnum+","+obj.qnum2+" ");
 				}
 			}
-			this.writeLine(data);
-		}
+			return ". ";
+		});
 	},
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う

@@ -427,69 +427,56 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
-
-		var bd = this.board, item = this.getItemList(bd.rows+2);
-		for(var i=0;i<item.length;i++) {
-			var ca = item[i];
-			if(ca==="."){ continue;}
-
-			var bx = i%(bd.cols+2)*2-1, by = ((i/(bd.cols+2))<<1)-1;
-			var excell = bd.getex(bx,by);
-			if(!excell.isnull){
-				var inp = ca.split(",");
-				if(inp[0]!==""){ excell.qchar = +inp[0];}
-				if(inp[1]!==""){ excell.qnum  = +inp[1];}
-				continue;
-			}
-
-			if(this.filever===1){
-				var cell = bd.getc(bx,by);
-				if(!cell.isnull){
-					if     (ca==="+"){ cell.qsub = 1;}
-					else if(ca==="1"){ cell.qans = 31;}
-					else if(ca==="2"){ cell.qans = 32;}
-				}
-			}
-		}
-
+		this.decodeKinkonkan();
 		if(this.filever===0){
-			this.decodeCell( function(cell,ca){
-				if     (ca==="+"){ cell.qsub = 1;}
-				else if(ca==="1"){ cell.qans = 31;}
-				else if(ca==="2"){ cell.qans = 32;}
-			});
+			this.decodeKinkonkanAns_old();
 		}
 	},
 	encodeData : function(){
 		this.filever = 1;
 		this.encodeAreaRoom();
+		this.encodeKinkonkan();
+	},
 
-		var bd = this.board;
-		for(var by=-1;by<bd.maxby;by+=2){
-			var data = '';
-			for(var bx=-1;bx<bd.maxbx;bx+=2){
-				var excell = bd.getex(bx,by);
-				if(!excell.isnull){
-					var dir=excell.qchar, qn=excell.qnum;
-					var str1 = (dir!== 0 ? ""+dir : "");
-					var str2 = (qn !==-1 ? ""+qn  : "");
-					data += ((str1==="" && str2==="")?(". "):(str1+","+str2+" "));
-					continue;
-				}
-
-				var cell = bd.getc(bx,by);
-				if(!cell.isnull){
-					if     (cell.qans===31){ data += "1 ";}
-					else if(cell.qans===32){ data += "2 ";}
-					else if(cell.qsub=== 1){ data += "+ ";}
-					else                   { data += ". ";}
-					continue;
-				}
-
-				data += ". ";
+	decodeKinkonkan : function(){
+		var filever = this.filever;
+		this.decodeCellExcell(function(obj, ca){
+			if(ca==="."){ return;}
+			else if(obj.group==='excell'){
+				var inp = ca.split(",");
+				if(inp[0]!==""){ obj.qchar = +inp[0];}
+				if(inp[1]!==""){ obj.qnum  = +inp[1];}
 			}
-			this.writeLine(data);
-		}
+			else if(obj.group==='cell' && filever===1){
+				if     (ca==="+"){ obj.qsub = 1;}
+				else if(ca==="1"){ obj.qans = 31;}
+				else if(ca==="2"){ obj.qans = 32;}
+			}
+		});
+	},
+	encodeKinkonkan : function(){
+		this.encodeCellExcell(function(obj){
+			if(obj.group==='excell'){
+				var dir=obj.qchar, qn=obj.qnum;
+				var str1 = (dir!== 0 ? ""+dir : "");
+				var str2 = (qn !==-1 ? ""+qn  : "");
+				if(str1||str2){ return (str1+","+str2+" ");}
+			}
+			else if(obj.group==='cell'){
+				if     (obj.qans===31){ return "1 ";}
+				else if(obj.qans===32){ return "2 ";}
+				else if(obj.qsub=== 1){ return "+ ";}
+			}
+			return ". ";
+		});
+	},
+
+	decodeKinkonkanAns_old : function(){
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="1"){ cell.qans = 31;}
+			else if(ca==="2"){ cell.qans = 32;}
+		});
 	}
 },
 
