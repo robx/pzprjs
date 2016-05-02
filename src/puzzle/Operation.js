@@ -319,7 +319,7 @@ OperationManager:{
 
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
-		this.gotoExec = false;		// goto中
+		this.gotoExec = 0;			// goto中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
 		var classes = this.klass;
@@ -451,12 +451,13 @@ OperationManager:{
 	decodeHistory :function(history){
 		this.allerase();
 		
-		this.initpos = this.position = history.current;
+		this.initpos = this.position = history.current || 0;
 		this.ope = [];
-		for(var i=0,len=history.datas.length;i <len;i++){
+		var datas = history.datas || [];
+		for(var i=0,len=datas.length;i <len;i++){
 			this.ope.push([]);
-			for(var j=0,len2=history.datas[i].length;j <len2;j++){
-				var strs = history.datas[i][j].split(/,/);
+			for(var j=0,len2=datas[i].length;j <len2;j++){
+				var strs = datas[i][j].split(/,/);
 				var ope = null, List = this.operationlist;
 				for(var k=0;k <List.length;k++){
 					var ope1 = new List[k]();
@@ -545,12 +546,12 @@ OperationManager:{
 		var decoding = this.gotoExec;
 		if(!decoding){
 			this.preproc();
-			this.gotoExec = true;
+			this.gotoExec++;
 		}
 		if     (pos < this.position){ while((pos < this.position) && this.undo()){}}
 		else if(this.position < pos){ while((this.position < pos) && this.redo()){}}
 		if(!decoding){
-			this.gotoExec = false;
+			this.gotoExec--;
 			this.postproc();
 		}
 		else{
@@ -642,14 +643,14 @@ OperationManager:{
 		if(this.trialpos.length>0){
 			var pos = this.position;
 			this.checkenable();
-			this.gotoExec = true;
+			this.gotoExec++;
 			this.goto(this.trialpos[0]);
 			this.board.trialclear(true);
 			if(this.position<pos){
 				this.board.trialstage = 1;
 				this.goto(pos);
 			}
-			this.gotoExec = false;
+			this.gotoExec--;
 		}
 	}
 }
