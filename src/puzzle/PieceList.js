@@ -102,13 +102,17 @@ PieceList:{
 	// list.propclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
-	allclear : function(isrec){ this.propclear(this.getprop('all'), isrec);},
-	ansclear : function()     { this.propclear(this.getprop('ans'), true);},
-	subclear : function()     { this.propclear(this.getprop('sub'), true);},
-	errclear : function()     { this.propclear(this.getprop('err'), false);},
-	trialclear : function()   { this.propclear(this.getprop('trial'), false);},
-	propclear : function(props, isrec){
-		var norec = (this.length>0?this[0].propnorec:{});
+	allclear : function(isrec){ this.propclear('all', isrec);},
+	ansclear : function()     { this.propclear('ans', true);},
+	subclear : function()     { this.propclear('sub', true);},
+	errclear : function()     { this.propclear('err', false);},
+	trialclear : function()   { this.propclear('trial', false);},
+	propclear : function(target, isrec){
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(target);
+			norec = this[0].propnorec;
+		}
 		for(var i=0;i<this.length;i++){
 			var piece = this[i];
 			for(var j=0;j<props.length;j++){
@@ -120,24 +124,6 @@ PieceList:{
 				}
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// list.getprop() 上記の関数で使用するプロパティの配列を取得する
-	//---------------------------------------------------------------------------
-	getprop : function(type){
-		var array = [];
-		if(this.length>0){
-			if(type==='trial'){ array = ['trial'];}
-			else{
-				var level = {all:3,ans:2,sub:1,err:0}[type];
-				if(level>=3){ array=array.concat(this[0].propques);}
-				if(level>=2){ array=array.concat(this[0].propans);}
-				if(level>=1){ array=array.concat(this[0].propsub);}
-				if(level>=0){ array=array.concat(this[0].propinfo);}
-			}
-		}
-		return array;
 	}
 },
 

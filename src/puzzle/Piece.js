@@ -103,7 +103,46 @@ pzpr.classmgr.makeCommon({
 		if(old===num){ return;}
 		this.puzzle.opemgr.add(new this.klass.ObjectOperation(this, property, old, num));
 	},
-	
+
+	//---------------------------------------------------------------------------
+	// getprops() プロパティの値のみを取得する
+	// compare()  プロパティの値を比較し違っていたらcallback関数を呼びだす
+	//---------------------------------------------------------------------------
+	getprops : function(){
+		var props = {};
+		var proplist = this.getproplist('sub');
+		for(var i=0;i<proplist.length;i++){
+			var a = proplist[i];
+			props[a] = this[a];
+		}
+		return props;
+	},
+	compare : function(props, callback){
+		var proplist = this.getproplist('sub');
+		for(var i=0;i<proplist.length;i++){
+			var a = proplist[i];
+			if(props[a]!==this[a]){
+				callback(this.group, this.id, a);
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// getproplist() ansclear等で使用するプロパティの配列を取得する
+	//---------------------------------------------------------------------------
+	getproplist : function(type){
+		var array = [];
+		if(type==='trial'){ array = ['trial'];}
+		else{
+			var level = {all:3,ans:2,sub:1,err:0}[type];
+			if(level>=3){ array=array.concat(this.propques);}
+			if(level>=2){ array=array.concat(this.propans);}
+			if(level>=1){ array=array.concat(this.propsub);}
+			if(level>=0){ array=array.concat(this.propinfo);}
+		}
+		return array;
+	},
+
 	//---------------------------------------------------------------------------
 	// getmaxnum() 入力できる数字の最大値を返す
 	// getminnum() 入力できる数字の最小値を返す

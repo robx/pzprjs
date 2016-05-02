@@ -537,6 +537,29 @@ Board:{
 	//---------------------------------------------------------------------------
 	disableSetError  : function(){ this.diserror++;},
 	enableSetError   : function(){ this.diserror--;},
-	isenableSetError : function(){ return (this.diserror<=0); }
+	isenableSetError : function(){ return (this.diserror<=0); },
+
+	//---------------------------------------------------------------------------
+	// bd.freezecopy()  盤面のオブジェクト値のみを取得する
+	// bd.compareData() 盤面のオブジェクト値のみを比較し異なる場合にcallback関数を呼ぶ
+	//---------------------------------------------------------------------------
+	freezecopy : function(){
+		var bd2 = {cell:[],cross:[],border:[],excell:[]};
+		for(var group in bd2){
+			for(var c=0;c<this[group].length;c++){
+				bd2[group][c] = this[group][c].getprops();
+			}
+		}
+		return bd2;
+	},
+	compareData : function(bd2, callback){
+		for(var group in bd2){
+			if(!this[group]){ continue;}
+			for(var c=0;c<bd2[group].length;c++){
+				if(!this[group][c]){ continue;}
+				this[group][c].compare(bd2[group][c],callback);
+			}
+		}
+	}
 }
 });

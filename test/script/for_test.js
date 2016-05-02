@@ -323,7 +323,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_encode_kanpen : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
 
 		if(pzpr.parser(kanpen_url).pid!==puzzle.pid){
@@ -345,7 +345,7 @@ var debug = window.debug =
 			puzzle.open(acsstr[n][1]);
 			var faildata = puzzle.check(true), expectcode = acsstr[n][0];
 			var iserror = (!!expectcode ? (faildata[0]!==expectcode) : (!faildata.complete));
-			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new puzzle.klass.CheckInfo(expectcode).text);
+			var errdesc = (!!expectcode ? expectcode : 'complete')+":"+(new puzzle.klass.CheckInfo(expectcode).gettext());
 
 			var judge = (!iserror ? "pass" : "failure...");
 			if(iserror){ self.fails++;}
@@ -388,9 +388,8 @@ var debug = window.debug =
 	},
 	//FileIO test--------------------------------------------------------------
 	check_file : function(self){
-		var bd = puzzle.board;
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PZPR);
-		var bd2 = self.bd_freezecopy(bd);
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
@@ -404,44 +403,38 @@ var debug = window.debug =
 		});
 	},
 	check_file_pbox : function(self){
-		var bd = puzzle.board, pid = puzzle.pid;
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
-		var bd2 = self.bd_freezecopy(bd);
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.rebuildInfo();
 
 		puzzle.open(outputstr, function(){
-			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
+			if(!self.bd_compare(bd,bd2,true)){ self.addTA("FileIO kanpen = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO kanpen = pass");}
-			self.qsubf = true;
 
 			self.testing = false;
 		});
 	},
 	check_file_pbox_xml : function(self){
-		var bd = puzzle.board, pid = puzzle.pid;
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
-		var bd2 = self.bd_freezecopy(bd);
 
 		puzzle.painter.suspendAll();
 		bd.initBoardSize(1,1);
 		bd.rebuildInfo();
 
 		puzzle.open(outputstr, function(){
-			self.qsubf = !(pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho');
-			if(!self.bd_compare(bd,bd2)){ self.addTA("FileIO kanpenXML = failure..."); self.fails++;}
+			if(!self.bd_compare(bd,bd2,true)){ self.addTA("FileIO kanpenXML = failure..."); self.fails++;}
 			else if(!self.alltimer){ self.addTA("FileIO kanpenXML = pass");}
-			self.qsubf = true;
 
 			self.testing = false;
 		});
 	},
 	//Turn test--------------------------------------------------------------
 	check_turnR1 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<4;i++){ bd.operate('turnr');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 1  = failure..."); self.fails++;}
@@ -450,7 +443,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_turnR2 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<4;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnR test 2  = failure..."); self.fails++;}
@@ -460,7 +453,7 @@ var debug = window.debug =
 	},
 
 	check_turnL1 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<4;i++){ bd.operate('turnl');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 1  = failure..."); self.fails++;}
@@ -469,7 +462,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_turnL2 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<4;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("TurnL test 2  = failure..."); self.fails++;}
@@ -479,7 +472,7 @@ var debug = window.debug =
 	},
 	//Flip test--------------------------------------------------------------
 	check_flipX1 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<2;i++){ bd.operate('flipx');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 1  = failure..."); self.fails++;}
@@ -488,7 +481,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_flipX2 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<2;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipX test 2  = failure..."); self.fails++;}
@@ -498,7 +491,7 @@ var debug = window.debug =
 	},
 
 	check_flipY1 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<2;i++){ bd.operate('flipy');}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 1  = failure..."); self.fails++;}
@@ -507,7 +500,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_flipY2 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<2;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("FlipY test 2  = failure..."); self.fails++;}
@@ -517,7 +510,7 @@ var debug = window.debug =
 	},
 	//Adjust test--------------------------------------------------------------
 	check_adjust1 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		var names = ['expandup','expanddn','expandlt','expandrt','reduceup','reducedn','reducelt','reducert'];
 		for(var i=0;i<8;i++){ bd.operate(names[i]);}
 
@@ -527,7 +520,7 @@ var debug = window.debug =
 		self.testing = false;
 	},
 	check_adjust2 : function(self){
-		var bd = puzzle.board, bd2 = self.bd_freezecopy(bd);
+		var bd = puzzle.board, bd2 = bd.freezecopy();
 		for(var i=0;i<8;i++){ puzzle.undo();}
 
 		if(!self.bd_compare(bd,bd2)){ self.addTA("Adjust test 2  = failure..."); self.fails++;}
@@ -542,29 +535,15 @@ var debug = window.debug =
 		self.testing = false;
 	},
 
-	qsubf : true,
-	props : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar', 'qans', 'anum', 'line', 'qsub', 'qcmp'],
-	bd_freezecopy : function(bd1){
-		var bd2 = {cell:[],cross:[],border:[],excell:[]};
-		for(var group in bd2){
-			for(var c=0;c<bd1[group].length;c++){
-				bd2[group][c] = {};
-				for(var a=0;a<this.props.length;a++){ bd2[group][c][this.props[a]] = bd1[group][c][this.props[a]];}
-			}
-		}
-		return bd2;
-	},
-	bd_compare : function(bd1,bd2){
+	bd_compare : function(bd1,bd2,iskanpen){
 		var result = true;
-		for(var group in bd2){
-			for(var c=0;c<bd1[group].length;c++){
-				for(var a=0;a<this.props.length;a++){
-					if(!this.qsubf && (this.props[a]==='qsub' || this.props[a]==='qcmp')){ continue;}
-					var val2 = bd2[group][c][this.props[a]], val1 = bd1[group][c][this.props[a]];
-					if(val2!==val1){ result = false; this.addTA(group+"["+c+"]."+this.props[a]+" "+val1+" <- "+val2);}
-				}
-			}
-		}
+		var pid = bd1.pid;
+		var ignore_qsub = (!!iskanpen && (pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho'));
+		bd1.compareData(bd2,function(group, c, a){
+			if(ignore_qsub && (a==='qsub' || a==='qcmp')){ return;}
+			this.addTA(group+"["+c+"]."+a+" "+bd1[group][c][a]+" <- "+bd2[group][c][a]);
+			result = false;
+		}.bind(this));
 		return result;
 	}
 };
