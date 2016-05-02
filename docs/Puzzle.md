@@ -36,6 +36,7 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * Return value: Generated File data.
     * `filetype:FileType` Specify URL type.
     * `option.history:boolean` If filetype is FILE_PZPR and it is true, operation history will be outputted.
+    * `option.trial:boolean` If filetype is FILE_PZPR, option.history is false and it is true in trial mode, trial mode data will be outputted.
 * `puzzle.clone([option])` Return cloned puzzle object from the puzzle.
     * Return value: cloned puzzle object.
     * `option.type:string` It means the same as option.type in constructor. If not specified, the type of the puzzle will be used.

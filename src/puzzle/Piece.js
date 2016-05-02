@@ -110,7 +110,7 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	getprops : function(){
 		var props = {};
-		var proplist = this.getproplist('sub');
+		var proplist = this.getproplist(['ques','ans','sub']);
 		for(var i=0;i<proplist.length;i++){
 			var a = proplist[i];
 			props[a] = this[a];
@@ -118,7 +118,7 @@ pzpr.classmgr.makeCommon({
 		return props;
 	},
 	compare : function(props, callback){
-		var proplist = this.getproplist('sub');
+		var proplist = this.getproplist(['ques','ans','sub']);
 		for(var i=0;i<proplist.length;i++){
 			var a = proplist[i];
 			if(props[a]!==this[a]){
@@ -130,15 +130,18 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// getproplist() ansclear等で使用するプロパティの配列を取得する
 	//---------------------------------------------------------------------------
-	getproplist : function(type){
+	getproplist : function(types){
 		var array = [];
-		if(type==='trial'){ array = ['trial'];}
-		else{
-			var level = {all:3,ans:2,sub:1,err:0}[type];
-			if(level>=3){ array=array.concat(this.propques);}
-			if(level>=2){ array=array.concat(this.propans);}
-			if(level>=1){ array=array.concat(this.propsub);}
-			if(level>=0){ array=array.concat(this.propinfo);}
+		for(var i=0;i<types.length;i++){
+			var array1 = [];
+			switch(types[i]){
+				case 'ques':  array1 = this.propques; break;
+				case 'ans':   array1 = this.propans;  break;
+				case 'sub':   array1 = this.propsub;  break;
+				case 'info':  array1 = this.propinfo; break;
+				case 'trial': array1 = ['trial']; break;
+			}
+			array = array.concat(array1);
 		}
 		return array;
 	},

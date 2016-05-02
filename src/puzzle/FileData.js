@@ -36,9 +36,20 @@ FileIO:{
 		}
 
 		// メイン処理
-		if     (filetype===pzl.FILE_PZPR)    { this.decodeData();}
-		else if(filetype===pzl.FILE_PBOX)    { this.kanpenOpen();}
-		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenOpenXML();}
+		switch(filetype){
+		case pzl.FILE_PZPR:
+			this.decodeData();
+			if((this.readLine()||'').match(/TrialData/)){ this.lineseek--; this.decodeTrial();}
+			break;
+
+		case pzl.FILE_PBOX:
+			this.kanpenOpen();
+			break;
+
+		case pzl.FILE_PBOX_XML:
+			this.kanpenOpenXML();
+			break;
+		}
 
 		puzzle.metadata.update(pzl.metadata);
 		if(pzl.history && (filetype===pzl.FILE_PZPR)){
@@ -69,10 +80,23 @@ FileIO:{
 		}
 
 		// メイン処理
-		if     (filetype===pzl.FILE_PZPR)    { this.encodeData();}
-		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
-		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
-		else{ throw "invalid File Type";}
+		switch(filetype){
+		case pzl.FILE_PZPR:
+			this.encodeData();
+			if(!option.history && option.trial && bd.trialstage>0){ this.encodeTrial();}
+			break;
+
+		case pzl.FILE_PBOX:
+			this.kanpenSave();
+			break;
+
+		case pzl.FILE_PBOX_XML:
+			this.kanpenSaveXML();
+			break;
+
+		default:
+			throw "invalid File Type";
+		}
 
 		pzl.type  = filetype;
 		pzl.filever = this.filever;
@@ -101,6 +125,51 @@ FileIO:{
 	kanpenSave    : throwNoImplementation,
 	kanpenOpenXML : throwNoImplementation,
 	kanpenSaveXML : throwNoImplementation,
+
+	//---------------------------------------------------------------------------
+	// fio.decodeTrial() 仮置きデータを復旧する
+	// fio.encodeTrial() 仮置きデータを出力する
+	//---------------------------------------------------------------------------
+	decodeTrial : function(){
+		var opemgr = this.puzzle.opemgr;
+		var bd = this.board;
+		var len = this.readLine().match(/TrialData\((\d+)\)/)[1]|0;
+		for(var i=len-1;i>=0;i--){
+			var opes = [];
+			var bd1 = bd.freezecopy();
+			bd.allclear(false);
+			this.decodeData();
+			bd.compareData(bd1, function(group,c,a){
+				var obj = bd[group][c];
+				var old = obj[a];
+				var num = bd1[group][c][a];
+				opes.push(new this.puzzle.klass.ObjectOperation(obj, a, old, num));
+			});
+			opemgr.ope.unshift(opes);
+			opemgr.ope.unshift([new this.puzzle.klass.TrialEnterOperation(i, i+1)]);
+			opemgr.trialpos.unshift(i*2);
+			this.readLine();	// 次の"TrialData"文字列は読み捨て
+		}
+		opemgr.position = opemgr.ope.length;
+		opemgr.resumeTrial();
+		opemgr.limitTrialUndo = true;
+	},
+	encodeTrial : function(){
+		var opemgr = this.puzzle.opemgr, pos = opemgr.position;
+		opemgr.disableRecord();
+		opemgr.gotoExec++;
+		opemgr.limitTrialUndo = false;
+		for(var stage=this.board.trialstage;stage>0;stage--){
+			this.writeLine('TrialData('+stage+')');
+			opemgr.goto(opemgr.trialpos[stage-1]);
+			this.encodeData();
+		}
+		opemgr.goto(pos);
+		opemgr.gotoExec--;
+		opemgr.resumeTrial();
+		opemgr.limitTrialUndo = true;
+		opemgr.enableRecord();
+	},
 
 	//---------------------------------------------------------------------------
 	// fio.readLine()    ファイルに書かれている1行の文字列を返す

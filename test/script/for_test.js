@@ -51,6 +51,12 @@ var debug = window.debug =
 	},
 
 	filesave : function(){
+		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR));
+	},
+	filesave_trial : function(){
+		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR, {trial:true}));
+	},
+	filesave_history : function(){
 		this.setTA(puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true}));
 	},
 	filesave_pencilbox : function(){

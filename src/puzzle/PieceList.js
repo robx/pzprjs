@@ -102,11 +102,11 @@ PieceList:{
 	// list.propclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
-	allclear : function(isrec){ this.propclear('all', isrec);},
-	ansclear : function()     { this.propclear('ans', true);},
-	subclear : function()     { this.propclear('sub', true);},
-	errclear : function()     { this.propclear('err', false);},
-	trialclear : function()   { this.propclear('trial', false);},
+	allclear : function(isrec){ this.propclear(['ques','ans','sub','info'], isrec);},
+	ansclear : function()     { this.propclear(['ans','sub','info'], true);},
+	subclear : function()     { this.propclear(['sub','info'], true);},
+	errclear : function()     { this.propclear(['info'], false);},
+	trialclear : function()   { this.propclear(['trial'], false);},
 	propclear : function(target, isrec){
 		var props = [], norec = {};
 		if(this.length>0){
