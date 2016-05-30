@@ -269,10 +269,9 @@ Operation:{
 		this.old = old;
 	},
 	exec : function(num){
-		this.manager.trialpos = num;
+		this.manager.trialpos = num.concat();
 		if(num.length===0){
 			this.board.trialclear();
-			this.manager.trialpos = [];
 		}
 		else{
 			this.manager.position--;
@@ -320,7 +319,6 @@ OperationManager:{
 
 		this.undoExec = false;		// Undo中
 		this.redoExec = false;		// Redo中
-		this.gotoExec = 0;			// goto中
 		this.reqReset = false;		// Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
 		var classes = this.klass;
@@ -372,12 +370,12 @@ OperationManager:{
 		this.lastope  = null;
 		this.ope      = [];
 		this.position = 0;
-		this.trialpos = [];
 		this.broken   = false;
 		this.initpos  = 0;
 		this.changeflag = false;
 		this.chainflag = false;
 		this.checkexec();
+		this.trialpos = [];
 		this.limitTrialUndo = false;
 		this.puzzle.checker.resetCache();
 	},
@@ -496,68 +494,55 @@ OperationManager:{
 	},
 
 	//---------------------------------------------------------------------------
-	// um.undo()  Undoを実行する
-	// um.redo()  Redoを実行する
+	// opemgr.undo()  Undoを実行する
+	// opemgr.redo()  Redoを実行する
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(!this.enableUndo){ return false;}
 		var opes = this.ope[this.position-1];
-		if(!this.gotoExec){
-			this.reqReset = this.checkReqReset(opes);
-			this.preproc();
-		}
-		
-		this.undoExec = true;
-		for(var i=opes.length-1;i>=0;i--){
-			if(!!opes[i]){ opes[i].undo();}
-		}
-		this.position--;
-		this.undoExec = false;
-		
-		if(!this.gotoExec){
-			this.postproc();
-		}
+		this.reqReset = this.checkReqReset(opes);
+		this.preproc();
+		this.undoCore();
+		this.postproc();
 		return this.enableUndo;
 	},
 	redo : function(){
 		if(!this.enableRedo){ return false;}
 		var opes = this.ope[this.position];
-		if(!this.gotoExec){
-			this.reqReset = this.checkReqReset(opes);
-			this.preproc();
-		}
-		
-		this.redoExec = true;
-		opes.forEach(function(ope){
-			if(!!ope){ ope.redo();}
-		});
-		this.position++;
-		this.redoExec = false;
-		
-		if(!this.gotoExec){
-			this.postproc();
-		}
+		this.reqReset = this.checkReqReset(opes);
+		this.preproc();
+		this.redoCore();
+		this.postproc();
 		return this.enableRedo;
 	},
 
 	//---------------------------------------------------------------------------
-	// opemgr.goto()  指定された履歴の位置まで移動する
+	// opemgr.undoCore()  Undoを実行する(preproc/postprocなし)
+	// opemgr.redoCore()  Redoを実行する(preproc/postprocなし)
+	// opemgr.resumeGoto()  指定された履歴の位置まで移動する(preproc/postprocなし)
 	//---------------------------------------------------------------------------
-	goto : function(pos){
-		var decoding = this.gotoExec;
-		if(!decoding){
-			this.preproc();
-			this.gotoExec++;
+	undoCore : function(){
+		this.undoExec = true;
+		var opes = this.ope[this.position-1];
+		for(var i=opes.length-1;i>=0;i--){
+			if(!!opes[i]){ opes[i].undo();}
 		}
-		if     (pos < this.position){ while((pos < this.position) && this.undo()){}}
-		else if(this.position < pos){ while((this.position < pos) && this.redo()){}}
-		if(!decoding){
-			this.gotoExec--;
-			this.postproc();
+		this.position--;
+		this.undoExec = false;
+	},
+	redoCore : function(){
+		this.redoExec = true;
+		var opes = this.ope[this.position];
+		for(var i=0;i<opes.length;++i){
+			if(!!opes[i]){ opes[i].redo();}
 		}
-		else{
-			this.checkenable();
-		}
+		this.position++;
+		this.redoExec = false;
+	},
+	resumeGoto : function(pos){
+		if     (pos < this.position){ while(pos < this.position){ this.undoCore();}}
+		else if(this.position < pos){ while(this.position < pos){ this.redoCore();}}
+		this.checkenable();
 	},
 
 	//---------------------------------------------------------------------------
@@ -569,7 +554,6 @@ OperationManager:{
 		return opes.some(function(ope){ return ope.reqReset;});
 	},
 	preproc : function(opes){
-		if(this.gotoExec){ return;}
 		var puzzle = this.puzzle, bd = puzzle.board;
 		this.disableRecord();
 
@@ -580,7 +564,6 @@ OperationManager:{
 		}
 	},
 	postproc : function(){
-		if(this.gotoExec){ return;}
 		var puzzle = this.puzzle, bd = puzzle.board;
 		if(this.reqReset){
 			bd.setposAll();
@@ -613,9 +596,9 @@ OperationManager:{
 	acceptTrial : function(){
 		if(this.trialpos.length===0){ return;}
 		this.add(new this.puzzle.klass.TrialFinalizeOperation(this.trialpos));
-		this.limitTrialUndo = false;
 		this.board.trialclear();
 		this.trialpos = [];
+		this.limitTrialUndo = false;
 		this.removeDescendant();
 		this.checkexec();
 		this.puzzle.emit('trial', 0);
@@ -623,17 +606,16 @@ OperationManager:{
 	rejectTrial : function(rejectall){
 		if(this.trialpos.length===0){ return;}
 		this.disableRecord();
-		this.limitTrialUndo = false;
 		if(rejectall || this.trialpos.length===1){
-			this.board.trialclear();
 			var pos = this.trialpos[0];
+			this.board.trialclear();
 			this.trialpos = [];
-			this.goto(pos);
+			this.limitTrialUndo = false;
+			this.resumeGoto(pos);
 		}
 		else{
-			this.goto(this.trialpos[this.trialpos.length-1]);
+			this.resumeGoto(this.trialpos[this.trialpos.length-1]);
 			this.resumeTrial();
-			this.limitTrialUndo = true;
 		}
 		this.enableRecord();
 		this.removeDescendant();
@@ -644,14 +626,12 @@ OperationManager:{
 		if(this.trialpos.length>0){
 			var pos = this.position;
 			this.checkenable();
-			this.gotoExec++;
-			this.goto(this.trialpos[0]);
+			this.resumeGoto(this.trialpos[0]);
 			this.board.trialclear(true);
 			if(this.position<pos){
 				this.board.trialstage = 1;
-				this.goto(pos);
+				this.resumeGoto(pos);
 			}
-			this.gotoExec--;
 		}
 	}
 }

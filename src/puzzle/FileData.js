@@ -152,22 +152,17 @@ FileIO:{
 		}
 		opemgr.position = opemgr.ope.length;
 		opemgr.resumeTrial();
-		opemgr.limitTrialUndo = true;
 	},
 	encodeTrial : function(){
 		var opemgr = this.puzzle.opemgr, pos = opemgr.position;
 		opemgr.disableRecord();
-		opemgr.gotoExec++;
-		opemgr.limitTrialUndo = false;
 		for(var stage=this.board.trialstage;stage>0;stage--){
 			this.writeLine('TrialData('+stage+')');
-			opemgr.goto(opemgr.trialpos[stage-1]);
+			opemgr.resumeGoto(opemgr.trialpos[stage-1]);
 			this.encodeData();
 		}
-		opemgr.goto(pos);
-		opemgr.gotoExec--;
+		opemgr.resumeGoto(pos);
 		opemgr.resumeTrial();
-		opemgr.limitTrialUndo = true;
 		opemgr.enableRecord();
 	},
 
