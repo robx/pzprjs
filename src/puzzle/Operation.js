@@ -586,21 +586,29 @@ OperationManager:{
 	// opemgr.resumeTrial()  ファイル読み込み時などにTrial状態を復帰する
 	//---------------------------------------------------------------------------
 	enterTrial : function(){
-		if(this.trialpos[this.trialpos.length-1]===this.position){ return;}
+		if(this.trialpos[this.trialpos.length-1]+1===this.position){ return;}
 		this.add(new this.puzzle.klass.TrialEnterOperation(this.trialpos.length, this.trialpos.length+1));
 		this.trialpos.push(this.position-1);
 		this.limitTrialUndo = true;
 		this.checkexec();
+		this.newOperation();
 		this.puzzle.emit('trial', this.trialpos.length);
 	},
 	acceptTrial : function(){
-		if(this.trialpos.length===0){ return;}
-		this.add(new this.puzzle.klass.TrialFinalizeOperation(this.trialpos));
-		this.board.trialclear();
+		if(this.trialpos[this.trialpos.length-1]+1===this.position){
+			this.position--;
+			this.removeDescendant();
+			this.trialpos.pop();
+		}
+		if(this.trialpos.length>0){
+			this.add(new this.puzzle.klass.TrialFinalizeOperation(this.trialpos));
+			this.board.trialclear();
+		}
 		this.trialpos = [];
 		this.limitTrialUndo = false;
 		this.removeDescendant();
 		this.checkexec();
+		this.newOperation();
 		this.puzzle.emit('trial', 0);
 	},
 	rejectTrial : function(rejectall){
@@ -620,6 +628,7 @@ OperationManager:{
 		this.enableRecord();
 		this.removeDescendant();
 		this.checkexec();
+		this.newOperation();
 		this.puzzle.emit('trial', this.trialpos.length);
 	},
 	resumeTrial : function(){
