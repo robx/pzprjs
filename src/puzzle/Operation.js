@@ -272,6 +272,7 @@ Operation:{
 		this.manager.trialpos = num;
 		if(num.length===0){
 			this.board.trialclear();
+			this.manager.trialpos = [];
 		}
 		else{
 			this.manager.position--;
