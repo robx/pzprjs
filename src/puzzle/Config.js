@@ -34,7 +34,7 @@ Config.prototype =
 		this.add('squarecell', true);							/* セルは正方形にする */
 
 		/* 表示色の設定 */
-		this.add('color_qanscolor', "");						/* 黒マスの表示色の表示 */
+		this.add('color_shadecolor', "");						/* 黒マスの表示色の表示 */
 		this.add('color_bgcolor', "white");						/* 背景色の設定 */
 
 		/* 入力方法設定 */
@@ -84,15 +84,18 @@ Config.prototype =
 	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
 	get : function(name){
+		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
+		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
 		if(!this.list[name]){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
 	},
 	reset : function(name){
+		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
 		if(!this.list[name]){ return;}
 		this.set(name, this.list[name].defval);
 	},
@@ -194,8 +197,8 @@ Config.prototype =
 			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
 			break;
 		
-		case 'color_qanscolor':
-			puzzle.painter.setColor('qanscolor', newval);
+		case 'color_shadecolor':
+			puzzle.painter.setColor('shadecolor', newval);
 			break;
 		
 		case 'color_bgcolor':

@@ -49,7 +49,7 @@ Graphic:{
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
-		return this.qanscolor;
+		return this.shadecolor;
 	},
 
 	//---------------------------------------------------------------------------
@@ -181,7 +181,7 @@ Graphic:{
 			
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
-				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
+				g.fillStyle = (!cell.trial ? "black" : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
 			else{ g.vhide();}
@@ -264,7 +264,7 @@ Graphic:{
 				else if(info===-1){color = this.errlinebgcolor;}
 				else if(irowake && cell.path.color){ color = cell.path.color;}
 				else if(cell.trial){ color = this.trialcolor;}
-				else               { color = this.qanscolor;}
+				else               { color = "black";}
 
 				g.lineWidth = basewidth + addwidth;
 				g.strokeStyle = color;

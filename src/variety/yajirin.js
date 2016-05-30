@@ -102,7 +102,7 @@ Graphic:{
 		else if(cell.qans===1){
 			if(info===1){ return this.errcolor1;}
 			else if(cell.trial){ return this.trialcolor;}
-			return this.qanscolor;
+			return this.shadecolor;
 		}
 		else if(info===1){ return this.errbcolor1;}
 		return null;

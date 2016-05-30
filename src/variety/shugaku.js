@@ -279,7 +279,7 @@ Graphic:{
 			trial = ((cell1.trial||cell1.qans===0) && (cell2.trial||cell2.qans===0));
 		}
 
-		return (isdraw ? (!trial ? this.qanscolor : this.trialcolor) : null);
+		return (isdraw ? (!trial ? this.shadecolor : this.trialcolor) : null);
 	}
 },
 

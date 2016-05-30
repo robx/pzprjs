@@ -133,7 +133,7 @@ Graphic:{
 
 	getCircleStrokeColor : function(cell){
 		if(cell.qans===1){
-			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.qanscolor : this.trialcolor));
+			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.shadecolor : this.trialcolor));
 		}
 		return null;
 	},
@@ -142,7 +142,7 @@ Graphic:{
 			return (cell.error===1 ? this.errbcolor1 : "white");
 		}
 		else if(cell.qans===2){
-			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.qanscolor : this.trialcolor));
+			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.shadecolor : this.trialcolor));
 		}
 		return null;
 	}

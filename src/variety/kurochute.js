@@ -78,7 +78,7 @@ Graphic:{
 		if(cell.qans===1){
 			if(cell.error===1){ return this.errcolor1;}
 			else if(cell.trial){ return this.trialcolor;}
-			return this.qanscolor;
+			return this.shadecolor;
 		}
 		return null;
 	},

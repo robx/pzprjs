@@ -277,7 +277,7 @@ Graphic:{
 		this.drawTarget();
 	},
 	getTriangleColor : function(cell){
-		return (!cell.trial ? this.qanscolor : this.trialcolor);
+		return (!cell.trial ? this.shadecolor : this.trialcolor);
 	}
 },
 

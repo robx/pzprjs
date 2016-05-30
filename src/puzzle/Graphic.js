@@ -41,7 +41,7 @@ Graphic:{
 
 	// セルの色(黒マス)
 	quescolor : "black",
-	qanscolor : "black",
+	shadecolor: "black",
 	trialcolor: "rgb(160, 160, 160)",
 	errcolor1 : "rgb(192, 0, 0)",
 
