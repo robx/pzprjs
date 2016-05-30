@@ -138,7 +138,8 @@ Border:{
 },
 BorderList:{
 	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});},
-	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});}
+	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});},
+	reverse : Array.prototype.reverse
 },
 
 Address:{
