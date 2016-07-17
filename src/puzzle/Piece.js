@@ -27,16 +27,16 @@ pzpr.classmgr.makeCommon({
 				// border:(回答の境界線)
 	anum  :-1,	// cell  :(セルの数字/○△□/単体矢印)
 	line  : 0,	// border:(ましゅやスリリンなどの線)
-	trial : 0,	// TrialModeのstateを保持する変数
 
 	/* 補助データを保持するプロパティ */
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
 				// border:(1:補助線 2:× 11-14:方向記号)
-	qcmp : 0,	// cell  :
+	qcmp : 0,	// cell  :(1:cmpマス 1-2:○×)
 
 	/* 履歴保存しないプロパティ */
 	error : 0,
 	qinfo : 0,
+	trial : 0,	// TrialModeのstateを保持する変数
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
 	propans  : ['qans', 'anum', 'line', 'trial'],
@@ -235,6 +235,7 @@ pzpr.classmgr.makeCommon({
 			this.setAnum(-1);
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
 			if(this.puzzle.painter.bcolor==="white"){ this.setQsub(0);}
+			this.setQcmp(0);
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
 		else if(this.qnum===-1){
@@ -243,6 +244,7 @@ pzpr.classmgr.makeCommon({
 			this.setAnum(vala);
 			this.setQsub(vals);
 			this.setQdir(0);
+			this.setQcmp(0);
 		}
 	},
 	

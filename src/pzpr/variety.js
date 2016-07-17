@@ -167,6 +167,7 @@ delete variety.extend;
 	toichika  :[0,0,"遠い誓い","Toichika"],
 	triplace  :[0,0,"トリプレイス","Tri-place"],
 	usotatami :[0,0,"ウソタタミ","Uso-tatami",'fillmat'],
+	usoone    :[0,0,"ウソワン","Uso-one"],
 	view      :[1,0,"ヴィウ","View",'sukoro'],
 	wagiri    :[0,0,"ごきげんななめ・輪切","Gokigen-naname:wagiri",'gokigen'],
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
