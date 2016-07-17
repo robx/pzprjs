@@ -43,6 +43,7 @@
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
+|`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
 
 ## List of miscellaneous config
 

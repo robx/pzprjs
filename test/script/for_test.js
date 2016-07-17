@@ -347,6 +347,8 @@ var debug = window.debug =
 	//Answer test--------------------------------------------------------------
 	check_answer : function(self){
 		var acsstr = self.acs[self.pid];
+		var config = puzzle.saveConfig();
+		puzzle.setConfig('forceallcell',true);
 		for(var n=0;n<acsstr.length;n++){
 			puzzle.open(acsstr[n][1]);
 			var faildata = puzzle.check(true), expectcode = acsstr[n][0];
@@ -360,6 +362,7 @@ var debug = window.debug =
 				self.addTA("Answer test "+(n+1)+" = "+judge+" ("+errdesc+")");
 			}
 		}
+		puzzle.restoreConfig(config);
 		self.testing = false;
 	},
 	//Input test---------------------------------------------------------------
