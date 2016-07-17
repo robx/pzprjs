@@ -12,6 +12,7 @@ pzpr.variety.each(function(pid){
 	describe(pid+' answer test', function(){
 		describe('Answer check', function(){
 			var puzzle = new pzpr.Puzzle();
+			puzzle.setConfig('forceallcell',true);
 			testdata[pid].failcheck.forEach(function(testcase){
 				it('Check: '+testcase[0], function(){
 					puzzle.open(testcase[1]);
