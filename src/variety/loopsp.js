@@ -124,7 +124,9 @@ BoardExec:{
 
 LineGraph:{
 	enabled : true,
-	isLineCross : true
+	isLineCross : true,
+	relation : ['cell','line'],
+	isedgevalidbylinkobj : function(border){ return border.isLine() || border.isLineEX();}
 },
 
 //---------------------------------------------------------
