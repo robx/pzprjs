@@ -196,7 +196,6 @@ pzpr.classmgr.makeCommon({
 	// posthook 値の設定後にやっておく処理を行う
 	//---------------------------------------------------------------------------
 	prehook : {
-		ques  : function(num){ if(this.klass.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
 		qnum  : function(num){ return (this.getminnum()>0 && num===0);},
 		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
 		anum  : function(num){ return (this.getminnum()>0 && num===0);}
@@ -314,23 +313,9 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.setCombinedLine() 自分のセルの設定に応じて周りの線を設定する
 	// cell.isLP()  線が必ず存在するセルの条件を判定する
 	// cell.noLP()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
-	setCombinedLine : function(){	// cell.setQuesから呼ばれる
-		if(this.klass.Border.prototype.enableLineCombined){
-			var bx=this.bx, by=this.by;
-			var blist = this.board.borderinside(bx-1,by-1,bx+1,by+1);
-			for(var i=0;i<blist.length;i++){
-				var border=blist[i];
-				if        (border.line===0 && border.isLineEX()){ border.setLineVal(1);}
-				// 黒マスが入力されたら線を消すとかやりたい場合、↓のコメントアウトをはずす
-				// else if(border.line!==0 && border.isLineNG()){ border.setLineVal(0);}
-			}
-		}
-	},
-
 	// 下記の関数で用いる定数
 	isLPobj : {
 		1 : {11:1,12:1,14:1,15:1}, /* UP */
@@ -441,8 +426,7 @@ pzpr.classmgr.makeCommon({
 	path : null,	// このLineを含む線情報への参照
 
 	// isLineNG関連の変数など
-	enableLineNG       : false,
-	enableLineCombined : false,
+	enableLineNG : false,
 
 	//---------------------------------------------------------------------------
 	// initSideObject() 隣接オブジェクトの情報を設定する
@@ -528,10 +512,6 @@ pzpr.classmgr.makeCommon({
 	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]で呼ばれる関数
 	checkStableLine : function(num){	// border.setLineから呼ばれる
 		if(this.enableLineNG){
-			if(this.enableLineCombined){
-				return ( (num!==0 && this.isLineNG()) ||
-						 (num===0 && this.isLineEX()) );
-			}
 			return (num!==0 && this.isLineNG());
 		}
 		return false;
@@ -540,9 +520,7 @@ pzpr.classmgr.makeCommon({
 	// cell.setQues => setCombinedLineから呼ばれる関数 (exist->ex)
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){
-		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.isLP(cell1.RT) && cell2.isLP(cell2.LT)) :
-							   (cell1.isLP(cell1.DN) && cell2.isLP(cell2.UP));
+		return false;
 	},
 	// border.setLineCal => checkStableLineから呼ばれる関数
 	//  -> cellidの片方がnullになっていることを考慮していません

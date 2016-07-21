@@ -83,12 +83,6 @@ pzpr.classmgr.makeCommon({
 			if(!!cell.path){ this.setComponentInfo(cell.path);}
 			else           { this.resetExtraData(cell);}
 		}
-		else if(this.board.emptyborder.enableLineCombined){
-			var cblist = cell.getdir4cblist();
-			for(var i=0;i<cblist.length;i++){
-				this.setEdgeByLinkObj(cblist[i][1]);
-			}
-		}
 	},
 
 	//---------------------------------------------------------------------------

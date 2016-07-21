@@ -119,7 +119,7 @@ delete variety.extend;
 	lightup   :[0,1,"美術館","Akari (Light Up)",'',{pzprurl:'akari',kanpen:'bijutsukan'}],
 	lits      :[1,1,"ＬＩＴＳ","LITS",'lits'],
 	lookair   :[0,0,"るっくえあ","Look-Air"],
-	loopsp    :[1,0,"環状線スペシャル","Loop Special"],
+	loopsp    :[1,0,"環状線スペシャル","Loop Special",'pipelink'],
 	loute     :[0,0,"エルート","L-route"],
 	makaro    :[0,0,"マカロ","Makaro"],
 	mashu     :[0,1,"ましゅ","Masyu (Pearl Puzzle)",'',{kanpen:'masyu',alias:'pearl'}],
