@@ -1,4 +1,42 @@
 
+## Version 0.4.0-pre (beta)
+
+Release date: 2016/7/24
+
+#### New puzzle
+
+* usoone: Introduce new puzzle: uso-one
+
+#### Notable change
+
+* puzzle, history: Introduce trial mode
+
+#### Improvement
+
+* parser: `pzpr.parser` now become a function which calls `pzpr.parser.parse` internally
+* opemgr: Add puzzle.saved() API to reset modified state
+* env: Drop pzpr.env.storage property so as not to ask using local storage on Safari
+* Board, Piece: Implement `Board#freezecopy`, `Board#compareData` function
+
+#### Bug Fix
+
+* lits: Fix tetromino shape misclassfication
+* fillomino: Implement `'forceallcell'` config to allow to get completed with empty cells
+* pipelink: Fix line under question marks can't be a member of loops
+* parser: Append / if URL last charactor is not a-z, A-Z or 0-9 to prevent misdecoding URL
+* Operation: Replace mis-referneced `'isbroken'` flag with proper `'broken'` flag
+* Operation: Fix error when decoding empty history and wipe out the whole board unexpectedly
+
+#### Breaking changes
+
+* Config: `'color_qanscolor'` config is renamed to `'color_shadecolor'`
+
+#### Minor changes, Refactoring
+
+* Graphic: Tweak some drawing routines
+* FileData: Add file encoding/decoding common routines
+* pipelink: Merge `loopsp.js` into `pipelink.js` and remove from repo
+
 ## Version 0.3.2
 
 Release date: 2016/3/06
