@@ -292,11 +292,12 @@ AreaShadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bgcellcolor_func : "qans1",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawTapaNumbers();
 

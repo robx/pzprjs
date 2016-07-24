@@ -31,14 +31,15 @@ pzpr.classmgr.makeCommon({
 	/* 補助データを保持するプロパティ */
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
 				// border:(1:補助線 2:× 11-14:方向記号)
-	qcmp : 0,	// cell  :
+	qcmp : 0,	// cell  :(1:cmpマス 1-2:○×)
 
 	/* 履歴保存しないプロパティ */
 	error : 0,
 	qinfo : 0,
+	trial : 0,	// TrialModeのstateを保持する変数
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
-	propans  : ['qans', 'anum', 'line'],
+	propans  : ['qans', 'anum', 'line', 'trial'],
 	propsub  : ['qsub', 'qcmp'],
 	propinfo : ['error', 'qinfo'],
 	propnorec : { color:1, error:1, qinfo:1 },
@@ -93,13 +94,58 @@ pzpr.classmgr.makeCommon({
 		this.addOpe(prop, this[prop], num);
 		this[prop] = num;
 
+		var trialstage = this.board.trialstage;
+		if(trialstage>0){ this.trial = trialstage;}
+
 		if(!!this.posthook[prop]){ this.posthook[prop].call(this,num);}
 	},
 	addOpe : function(property, old, num){
 		if(old===num){ return;}
 		this.puzzle.opemgr.add(new this.klass.ObjectOperation(this, property, old, num));
 	},
-	
+
+	//---------------------------------------------------------------------------
+	// getprops() プロパティの値のみを取得する
+	// compare()  プロパティの値を比較し違っていたらcallback関数を呼びだす
+	//---------------------------------------------------------------------------
+	getprops : function(){
+		var props = {};
+		var proplist = this.getproplist(['ques','ans','sub']);
+		for(var i=0;i<proplist.length;i++){
+			var a = proplist[i];
+			props[a] = this[a];
+		}
+		return props;
+	},
+	compare : function(props, callback){
+		var proplist = this.getproplist(['ques','ans','sub']);
+		for(var i=0;i<proplist.length;i++){
+			var a = proplist[i];
+			if(props[a]!==this[a]){
+				callback(this.group, this.id, a);
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// getproplist() ansclear等で使用するプロパティの配列を取得する
+	//---------------------------------------------------------------------------
+	getproplist : function(types){
+		var array = [];
+		for(var i=0;i<types.length;i++){
+			var array1 = [];
+			switch(types[i]){
+				case 'ques':  array1 = this.propques; break;
+				case 'ans':   array1 = this.propans;  break;
+				case 'sub':   array1 = this.propsub;  break;
+				case 'info':  array1 = this.propinfo; break;
+				case 'trial': array1 = ['trial']; break;
+			}
+			array = array.concat(array1);
+		}
+		return array;
+	},
+
 	//---------------------------------------------------------------------------
 	// getmaxnum() 入力できる数字の最大値を返す
 	// getminnum() 入力できる数字の最小値を返す
@@ -150,7 +196,6 @@ pzpr.classmgr.makeCommon({
 	// posthook 値の設定後にやっておく処理を行う
 	//---------------------------------------------------------------------------
 	prehook : {
-		ques  : function(num){ if(this.klass.Border.prototype.enableLineCombined){ this.setCombinedLine(num);} return false;},
 		qnum  : function(num){ return (this.getminnum()>0 && num===0);},
 		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
 		anum  : function(num){ return (this.getminnum()>0 && num===0);}
@@ -189,6 +234,7 @@ pzpr.classmgr.makeCommon({
 			this.setAnum(-1);
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
 			if(this.puzzle.painter.bcolor==="white"){ this.setQsub(0);}
+			this.setQcmp(0);
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
 		else if(this.qnum===-1){
@@ -197,6 +243,7 @@ pzpr.classmgr.makeCommon({
 			this.setAnum(vala);
 			this.setQsub(vals);
 			this.setQdir(0);
+			this.setQcmp(0);
 		}
 	},
 	
@@ -266,23 +313,9 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// cell.setCombinedLine() 自分のセルの設定に応じて周りの線を設定する
 	// cell.isLP()  線が必ず存在するセルの条件を判定する
 	// cell.noLP()  線が引けないセルの条件を判定する
 	//---------------------------------------------------------------------------
-	setCombinedLine : function(){	// cell.setQuesから呼ばれる
-		if(this.klass.Border.prototype.enableLineCombined){
-			var bx=this.bx, by=this.by;
-			var blist = this.board.borderinside(bx-1,by-1,bx+1,by+1);
-			for(var i=0;i<blist.length;i++){
-				var border=blist[i];
-				if        (border.line===0 && border.isLineEX()){ border.setLineVal(1);}
-				// 黒マスが入力されたら線を消すとかやりたい場合、↓のコメントアウトをはずす
-				// else if(border.line!==0 && border.isLineNG()){ border.setLineVal(0);}
-			}
-		}
-	},
-
 	// 下記の関数で用いる定数
 	isLPobj : {
 		1 : {11:1,12:1,14:1,15:1}, /* UP */
@@ -393,8 +426,7 @@ pzpr.classmgr.makeCommon({
 	path : null,	// このLineを含む線情報への参照
 
 	// isLineNG関連の変数など
-	enableLineNG       : false,
-	enableLineCombined : false,
+	enableLineNG : false,
 
 	//---------------------------------------------------------------------------
 	// initSideObject() 隣接オブジェクトの情報を設定する
@@ -480,10 +512,6 @@ pzpr.classmgr.makeCommon({
 	// [pipelink, loopsp], [barns, slalom, reflect, yajirin]で呼ばれる関数
 	checkStableLine : function(num){	// border.setLineから呼ばれる
 		if(this.enableLineNG){
-			if(this.enableLineCombined){
-				return ( (num!==0 && this.isLineNG()) ||
-						 (num===0 && this.isLineEX()) );
-			}
 			return (num!==0 && this.isLineNG());
 		}
 		return false;
@@ -492,9 +520,7 @@ pzpr.classmgr.makeCommon({
 	// cell.setQues => setCombinedLineから呼ばれる関数 (exist->ex)
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){
-		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
-		return this.isVert() ? (cell1.isLP(cell1.RT) && cell2.isLP(cell2.LT)) :
-							   (cell1.isLP(cell1.DN) && cell2.isLP(cell2.UP));
+		return false;
 	},
 	// border.setLineCal => checkStableLineから呼ばれる関数
 	//  -> cellidの片方がnullになっていることを考慮していません

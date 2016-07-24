@@ -148,7 +148,6 @@ Graphic:{
 	hideHatena : true,
 
 	gridcolor_type : "LIGHT",
-	dotcolor_type : "PINK",
 
 	cellcolor_func : "qnum",
 	fontcolor : "white",
@@ -156,7 +155,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawDotCells(true);
+		this.drawDotCells_hebiichigo();
 		this.drawDashedGrid();
 
 		this.drawBorders();
@@ -179,7 +178,7 @@ Graphic:{
 		   (cell1.anum!==-1 || cell2.anum!==-1) &&
 		   ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
 		{
-			return this.borderQanscolor;
+			return (((!cell1.trial&&cell1.anum!==-1)||(!cell2.trial&&cell2.anum!==-1)) ? this.borderQanscolor : this.trialcolor);
 		}
 		return null;
 	},
@@ -187,18 +186,35 @@ Graphic:{
 	drawAnswerNumbers : function(){
 		var g = this.vinc('cell_anumber', 'auto');
 
-		g.fillStyle = this.fontAnscolor;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			var text = ((cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "");
 			g.vid = "cell_ansnum_"+cell.id;
 			if(!!text){
+				g.fillStyle = (!cell.trial ? this.fontAnscolor : this.trialcolor);
 				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}
-	}
+	},
+
+	drawDotCells_hebiichigo : function(){
+		var g = this.vinc('cell_dot', 'crispEdges', true);
+
+		var dsize = Math.max(this.cw*0.075, 2);
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			
+			g.vid = "c_dot_"+cell.id;
+			if(cell.qsub===1){
+				g.fillStyle = (!cell.trial ? "rgb(255, 96, 191)" : this.trialcolor);
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, dsize, dsize);
+			}
+			else{ g.vhide();}
+		}
+	},
 },
 
 //---------------------------------------------------------

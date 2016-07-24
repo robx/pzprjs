@@ -314,7 +314,6 @@ Graphic:{
 	drawPekeBorder : function(){
 		var g = this.vinc('border_pbd', 'crispEdges', true);
 
-		g.fillStyle = this.borderQsubcolor2;
 		var rw = this.bw*0.6;
 		var lm = this.lm;
 
@@ -324,6 +323,7 @@ Graphic:{
 			g.vid = "b_qsub2_"+border.id;
 			if(border.qsub===2){
 				var px = border.bx*this.bw, py = border.by*this.bh;
+				g.fillStyle = (!border.trial ? this.borderQsubcolor2 : this.trialcolor);
 				if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
 				else               { g.fillRectCenter(px, py, rw+lm, lm);}
 			}
@@ -332,12 +332,16 @@ Graphic:{
 	},
 
 	getBarColor : function(cell,vert){
-		var err=cell.error, color="";
+		var err=cell.error, isErr=(err===1||err===4||((err===5&&vert)||(err===6&&!vert))), color="";
 		this.addlw = 0;
-		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
+		if(cell.trial){ this.addlw = -this.lm;}
+		else if(isErr){ this.addlw=1;}
+		
+		if(isErr){ color = this.errlinecolor;}
 		else if(err!==0){ color = this.errlinebgcolor;}
-		else if(!this.puzzle.execConfig('irowake') || !cell.net || !cell.net.color){ color = this.linecolor;}
-		else{ color = cell.net.color;}
+		else if(this.puzzle.execConfig('irowake') && cell.net && cell.net.color){ color = cell.net.color;}
+		else if(cell.trial){ color = this.trialcolor;}
+		else{ color = this.linecolor;}
 		return color;
 	}
 },

@@ -15,9 +15,7 @@ PieceList:{
 	// ☆Arrayオブジェクト関連の関数
 	// list.add()      与えられたオブジェクトを配列の末尾に追加する(push()相当)
 	// list.extend()   与えられたPieceListを配列の末尾に追加する
-	// list.unshift()  与えられたオブジェクトを配列の先頭に入れる
 	// list.pop()      配列の最後のオブジェクトを取り除いて返す
-	// list.reverse()  保持している配列の順番を逆にする
 	//--------------------------------------------------------------------------------
 	add     : Array.prototype.push,
 	extend  : function(list){
@@ -25,19 +23,15 @@ PieceList:{
 		this.length += len;
 		for(var i=0;i<len;i++){ this[n+i] = list[i];}
 	},
-	unshift : Array.prototype.unshift,
 	pop     : Array.prototype.pop,
-	reverse : Array.prototype.reverse,
 	
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクトiterator関連の関数
 	// list.each()     全てのオブジェクトに指定された関数を実行する
 	// list.some()     条件がtrueとなるオブジェクトが存在するか判定する
-	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	//--------------------------------------------------------------------------------
 	each    : Array.prototype.forEach,
 	some    : Array.prototype.some,
-	include : function(target){ return this.some(function(piece){ return (piece===target);});},
 	
 	//--------------------------------------------------------------------------------
 	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
@@ -66,9 +60,11 @@ PieceList:{
 	
 	//--------------------------------------------------------------------------------
 	// list.indexOf()  与えられたオブジェクトの配列上の位置を取得する
+	// list.include()  与えられたオブジェクトが配列に存在するか判定する
 	// list.remove()   与えられたオブジェクトを配列から取り除く
 	//--------------------------------------------------------------------------------
 	indexOf : Array.prototype.indexOf,
+	include : function(target){ return this.indexOf(target)>=0;},
 	remove : function(piece){
 		var idx = this.indexOf(piece);
 		if(idx>=0){ Array.prototype.splice.call(this, idx, 1);}
@@ -98,15 +94,21 @@ PieceList:{
 	// list.ansclear() qans,anum,line,qsub,error情報をクリアする
 	// list.subclear() qsub,error情報をクリアする
 	// list.errclear() error情報をクリアする
+	// list.trialclear() Trial情報をクリアする
 	// list.propclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
-	allclear : function(isrec){ this.propclear(this.getprop('all'), isrec);},
-	ansclear : function()     { this.propclear(this.getprop('ans'), true);},
-	subclear : function()     { this.propclear(this.getprop('sub'), true);},
-	errclear : function()     { this.propclear(this.getprop('err'), false);},
-	propclear : function(props, isrec){
-		var norec = (this.length>0?this[0].propnorec:{});
+	allclear : function(isrec){ this.propclear(['ques','ans','sub','info'], isrec);},
+	ansclear : function()     { this.propclear(['ans','sub','info'], true);},
+	subclear : function()     { this.propclear(['sub','info'], true);},
+	errclear : function()     { this.propclear(['info'], false);},
+	trialclear : function()   { this.propclear(['trial'], false);},
+	propclear : function(target, isrec){
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(target);
+			norec = this[0].propnorec;
+		}
 		for(var i=0;i<this.length;i++){
 			var piece = this[i];
 			for(var j=0;j<props.length;j++){
@@ -118,21 +120,6 @@ PieceList:{
 				}
 			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// list.getprop() 上記の関数で使用するプロパティの配列を取得する
-	//---------------------------------------------------------------------------
-	getprop : function(type){
-		var array = [];
-		if(this.length>0){
-			var level = {all:3,ans:2,sub:1,err:0}[type];
-			if(level>=3){ array=array.concat(this[0].propques);}
-			if(level>=2){ array=array.concat(this[0].propans);}
-			if(level>=1){ array=array.concat(this[0].propsub);}
-			if(level>=0){ array=array.concat(this[0].propinfo);}
-		}
-		return array;
 	}
 },
 

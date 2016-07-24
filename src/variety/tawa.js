@@ -315,37 +315,35 @@ FileIO:{
 		bd.setShape(+this.readLine());
 		bd.initBoardSize(bd.cols, bd.rows);
 
-		var n=0, item = this.getItemList(bd.rows);
-		for(var by=bd.minby+1;by<bd.maxby;by+=2){
-			for(var bx=0;bx<=bd.maxbx;bx++){
-				var cell=bd.getc(bx,by);
-				if(cell.isnull){ continue;}
-				else if(item[n]==="#"){ cell.qans = 1;}
-				else if(item[n]==="+"){ cell.qsub = 1;}
-				else if(item[n]==="-"){ cell.qnum =-2;}
-				else if(item[n]!=="."){ cell.qnum = +item[n];}
-				n++;
-			}
-		}
+		this.decodeCellQnumAns();
 	},
 	encodeData : function(){
 		var bd = this.board;
-		this.datastr = bd.shape+"\n";
+		this.writeLine(bd.shape);
 
-		var bstr = "";
+		this.encodeCellQnumAns();
+	},
+	
+	// オーバーライド
+	decodeCell : function(func){
+		var bd = this.board, n=0, item = this.getItemList(bd.rows);
 		for(var by=bd.minby+1;by<bd.maxby;by+=2){
 			for(var bx=0;bx<=bd.maxbx;bx++){
 				var cell=bd.getc(bx,by);
-				if(cell.isnull){ continue;}
-				else if(cell.qnum===-2){ bstr += "- ";}
-				else if(cell.qnum!==-1){ bstr += (""+cell.qnum+" ");}
-				else if(cell.qans=== 1){ bstr += "# ";}
-				else if(cell.qsub=== 1){ bstr += "+ ";}
-				else{ bstr += ". ";}
+				if(!cell.isnull){ func(cell, item[n++]);}
 			}
-			bstr += "\n";
 		}
-		this.datastr += bstr;
+	},
+	encodeCell : function(func){
+		var bd = this.board;
+		for(var by=bd.minby+1;by<bd.maxby;by+=2){
+			var data = '';
+			for(var bx=0;bx<=bd.maxbx;bx++){
+				var cell=bd.getc(bx,by);
+				if(!cell.isnull){ data += func(cell);}
+			}
+			this.writeLine(data);
+		}
 	}
 },
 

@@ -83,7 +83,6 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	bcolor_type : "GREEN",
-	dotcolor_type : "PINK",
 
 	bbcolor : "rgb(127, 127, 127)",
 
@@ -92,7 +91,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawBorders();
 
-		this.drawDotCells(true);
+		this.drawDotCells();
 		this.drawQnumMarks();
 		this.drawHatenas();
 
@@ -104,7 +103,7 @@ Graphic:{
 	drawQnumMarks : function(){
 		var g = this.vinc('cell_mark', 'auto');
 
-		g.lineWidth = 2;
+		g.lineWidth = Math.max(this.cw/18,2);
 		var rsize = this.cw*0.30, tsize=this.cw*0.26;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

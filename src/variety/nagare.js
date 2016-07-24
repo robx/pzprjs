@@ -298,7 +298,6 @@ Graphic:{
 		var ssize = this.cw*0.10;
 
 		g.lineWidth = this.cw*0.1;
-		g.strokeStyle = this.borderQsubcolor2;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
@@ -307,6 +306,7 @@ Graphic:{
 			// 向き補助記号の描画
 			g.vid = "b_daux_"+border.id;
 			if(dir>=1 && dir<=8){
+				g.strokeStyle = (!border.trial ? this.borderQsubcolor2 : this.trialcolor);
 				g.beginPath();
 				switch(dir){
 					case border.UP: g.setOffsetLinePath(px,py ,-ssize*2,+ssize ,0,-ssize ,+ssize*2,+ssize, false); break;

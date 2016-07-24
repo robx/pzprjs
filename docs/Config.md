@@ -14,7 +14,7 @@
 |`disptype_bosanowa`|`number`|`1`|Display type for `'Bosanova'` <br> Possible value: `1, 2 or 3`|
 |`snakebd`|`boolean`|`false`|Display the border between inside and outside the snake for `'Hebi-Ichigo'`|
 |`squarecell`|`boolean`|`true`|Set cell on the board always square|
-|`color_qanscolor`|`string`|''|Set the color of the shaded cells. `''` means default color (probably black)|
+|`color_shadecolor`|`string`|''|Set the color of the shaded cells. `''` means default color (probably black)|
 |`color_bgcolor`|`string`|`'white'`|Set the background color of the board. `''` indicates transparent|
 
 ## List of config for input method
@@ -43,6 +43,7 @@
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
+|`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
 
 ## List of miscellaneous config
 

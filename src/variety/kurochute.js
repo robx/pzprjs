@@ -26,8 +26,8 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.qsub===0){ cell.setQsub(2);}
-		else if(cell.qsub===2){ cell.setQsub(0);}
+		if     (cell.qcmp===0){ cell.setQcmp(1);}
+		else if(cell.qcmp===1){ cell.setQcmp(0);}
 		cell.draw();
 	}
 },
@@ -66,7 +66,6 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -75,15 +74,20 @@ Graphic:{
 		this.drawTarget();
 	},
 
+	getBGCellColor : function(cell){
+		if(cell.qans===1){
+			if(cell.error===1){ return this.errcolor1;}
+			else if(cell.trial){ return this.trialcolor;}
+			return this.shadecolor;
+		}
+		return null;
+	},
 	getNumberColor : function(cell){
-		if(cell.qsub===2){
+		if(cell.qcmp===1){
 			return this.qcmpcolor;
 		}
 		else if(cell.error===1){
 			return this.fontErrcolor;
-		}
-		else if(cell.qnum===-1 && cell.anum!==-1){
-			return this.fontAnscolor;
 		}
 		return this.fontcolor;
 	}
@@ -110,11 +114,27 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
-		this.decodeCellQanssub();
+		this.decodeCellQanssubcmp();
 	},
 	encodeData : function(){
 		this.encodeCellQnum();
-		this.encodeCellQanssub();
+		this.encodeCellQanssubcmp();
+	},
+
+	decodeCellQanssubcmp : function(){
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qcmp = 1;}
+			else if(ca==="1"){ cell.qans = 1;}
+		});
+	},
+	encodeCellQanssubcmp : function(){
+		this.encodeCell( function(cell){
+			if     (cell.qans===1){ return "1 ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else if(cell.qcmp===1){ return "- ";}
+			else                  { return ". ";}
+		});
 	}
 },
 

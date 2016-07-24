@@ -111,7 +111,6 @@ Graphic:{
 	autocmp : 'room',
 
 	cellcolor_func : "ques",
-	dotcolor_type : "PINK",
 	qsubcolor1 : "rgb(224, 224, 255)",
 
 	paint : function(){
@@ -119,7 +118,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawDotCells(true);
+		this.drawDotCells(false);
 		this.drawCircles();
 
 		this.drawBorders();
@@ -134,7 +133,7 @@ Graphic:{
 
 	getCircleStrokeColor : function(cell){
 		if(cell.qans===1){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
+			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.shadecolor : this.trialcolor));
 		}
 		return null;
 	},
@@ -143,7 +142,7 @@ Graphic:{
 			return (cell.error===1 ? this.errbcolor1 : "white");
 		}
 		else if(cell.qans===2){
-			return (cell.error===1 ? this.errcolor1 : this.quescolor);
+			return (cell.error===1 ? this.errcolor1 : (!cell.trial ? this.shadecolor : this.trialcolor));
 		}
 		return null;
 	}
@@ -237,11 +236,15 @@ FileIO:{
 		var bd = this.board;
 		bd.roommgr.rebuild();
 		var rooms = bd.roommgr.components;
-		this.datastr += (rooms.length+"\n");
+		this.writeLine(rooms.length);
+		var data = '';
 		for(var c=0;c<bd.cell.length;c++){
 			var roomid = rooms.indexOf(bd.cell[c].room);
-			this.datastr += (""+(roomid>=0 ? roomid : "#")+" ");
-			if((c+1)%bd.cols===0){ this.datastr += "\n";}
+			data += (""+(roomid>=0 ? roomid : "#")+" ");
+			if((c+1)%bd.cols===0){
+				this.writeLine(data);
+				data = '';
+			}
 		}
 	}
 },

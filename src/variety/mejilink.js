@@ -44,18 +44,20 @@ Border:{
 },
 BorderList:{
 	allclear : function(isrec){
-		/* quesは共通ルーチンを使用しない */
+		var props = ['ques', 'line', 'qsub'];
 		for(var i=0;i<this.length;i++){
 			var border = this[i];
-			/* border.quesの真の初期値は↓ */
-			var def = (border.inside ? 1 : 0);
-			if(border.ques!==def){
-				if(isrec){ border.addOpe('ques', border.ques, def);}
-				border.ques = def;
+			for(var j=0;j<props.length;j++){
+				var pp = props[j];
+				var def = border.constructor.prototype[pp];
+				/* border.quesの真の初期値は↓ */
+				if(pp==='ques'){ def = (border.inside ? 1 : 0);}
+				if(border[pp]!==def){
+					if(isrec){ border.addOpe(pp, border[pp], def);}
+					border[pp] = def;
+				}
 			}
 		}
-
-		this.propclear(['line', 'qsub'], isrec);
 	}
 },
 Board:{

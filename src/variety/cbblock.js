@@ -136,7 +136,7 @@ Graphic:{
 			return ((cell2.isnull || cell2.error===0) ? this.borderQuescolor : this.errbcolor1);
 		}
 		else if(border.qans===1){
-			return this.borderQanscolor;
+			return (!border.trial ? this.borderQanscolor : this.trialcolor);
 		}
 		return null;
 	}

@@ -54,7 +54,7 @@ Graphic:{
 
 	bgcellcolor_func : "qans1",
 
-	qanscolor : "rgb(96, 96, 96)",
+	shadecolor : "rgb(96, 96, 96)",
 
 	crosssize : 0.35,
 

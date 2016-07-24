@@ -13,6 +13,13 @@
   <div id="divques" style="width:320px;height:320px;"></div>	<!-- Canvas用 -->
   <button type="button" onclick="alert(puzzle.check(true).text)">Check</button>
   <button type="button" onclick="puzzle.ansclear()">AnsClear</button>
+  <button type="button" onclick="puzzle.undo()">Undo</button>
+  <button type="button" onclick="puzzle.redo()">Redo</button>
+  <br>
+  <button type="button" onclick="puzzle.enterTrial()">EnterTrial</button>
+  <button type="button" onclick="puzzle.acceptTrial()">Accept</button>
+  <button type="button" onclick="puzzle.rejectTrial()">Reject</button>
+  <button type="button" onclick="puzzle.rejectCurrentTrial()">Reject1</button>
 </div>
 
 </div> <!-- div#main close. -->
@@ -28,6 +35,8 @@
     <button type="button" onclick="debug.inputcheck_popup()">INP</button>
   <br>
     <button type="button" onclick="debug.filesave()">Save</button
+  /><button type="button" onclick="debug.filesave_trial()">Save+Trial</button
+  /><button type="button" onclick="debug.filesave_history()">Save+History</button
   /><button type="button" onclick="debug.filesave_pencilbox()">PBSave</button
   /><button type="button" onclick="debug.filesave_pencilbox_xml()">PBSaveX</button>
     <button type="button" onclick="debug.fileopen()">Load</button>

@@ -11,7 +11,7 @@ var puzzle = new pzpr.Puzzle();
 describe('changeProperPid:URL',function(){
 	it('Check bonsan', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?bonsan/5/5/000000003h2i0j1g1n0g';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('bonsan', pzl.pid);
 		
 		puzzle.open(url);
@@ -20,7 +20,7 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check heyabon', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?bonsan/5/5/co360rr0g1h0g.j121g3h1h.g.g';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('heyabon', pzl.pid);
 		
 		puzzle.open(url);
@@ -30,10 +30,10 @@ describe('changeProperPid:URL',function(){
 	
 	it('Check icelom', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?icelom/a/6/6/9e50an10i3zl2g1i/15/4';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('icelom', pzl.pid);
 		
-		pzl = pzpr.parser.parse('icelom/5/5');
+		pzl = pzpr.parser('icelom/5/5');
 		assert.equal('icelom', pzl.pid);
 		
 		puzzle.open(url);
@@ -42,10 +42,10 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check icelom2', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?icelom/6/6/1at0bl80h3p4g5j2g1p6h/0/9';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('icelom2', pzl.pid);
 		
-		pzl = pzpr.parser.parse('icelom/5/5/1');
+		pzl = pzpr.parser('icelom/5/5/1');
 		assert.equal('icelom2', pzl.pid);
 		
 		puzzle.open(url);
@@ -55,7 +55,7 @@ describe('changeProperPid:URL',function(){
 	
 	it('Check kramma', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?kramma/5/5/g9ock3ba9i';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('kramma', pzl.pid);
 		
 		puzzle.open(url);
@@ -64,7 +64,7 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check kramman', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?kramma/5/5/32223i3f2fb99i';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('kramman', pzl.pid);
 		
 		puzzle.open(url);
@@ -74,7 +74,7 @@ describe('changeProperPid:URL',function(){
 	
 	it('Check pipelink', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?pipelink/5/5/mamejan';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('pipelink', pzl.pid);
 		
 		puzzle.open(url);
@@ -83,7 +83,7 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check pipelinkr', function(){
 		var url = 'http://indi.s58.xrea.com/pipelink/sa/q.html?/5/5/ma0j000j0fm';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('pipelinkr', pzl.pid);
 		
 		puzzle.open(url);
@@ -93,7 +93,7 @@ describe('changeProperPid:URL',function(){
 	
 	it('Check ichimaga', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?ichimaga/5/5/gdiedgdbic';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('ichimaga', pzl.pid);
 		
 		puzzle.open(url);
@@ -102,7 +102,7 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check ichimagam', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?ichimaga/m/5/5/7cgegbegbgcc';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('ichimagam', pzl.pid);
 		
 		puzzle.open(url);
@@ -111,7 +111,7 @@ describe('changeProperPid:URL',function(){
 	});
 	it('Check ichimagax', function(){
 		var url = 'http://indi.s58.xrea.com/pzpr/v3/p.html?ichimaga/x/5/5/g8bgedgbeg8b';
-		var pzl = pzpr.parser.parse(url);
+		var pzl = pzpr.parser(url);
 		assert.equal('ichimagax', pzl.pid);
 		
 		puzzle.open(url);
@@ -122,7 +122,7 @@ describe('changeProperPid:URL',function(){
 describe('changeProperPid:File',function(){
 	it('Check bonsan', function(){
 		var filedata = 'pzprv3/bonsan/5/5/3 . . 2 . /. . 0 . . /. . 1 . 1 /. . . . . /. . . 0 . /2 1 0 0 0 /2 0 1 0 1 /2 0 0 0 2 /1 0 1 0 2 /0 0 0 1 2 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 1 1 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /1 0 0 0 0 /1 0 0 0 1 /1 0 1 0 0 /0 0 0 0 0 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('bonsan', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -131,7 +131,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check heyabon', function(){
 		var filedata = 'pzprv3/bonsan/5/5/. 1 . . 0 /. - . . . /. 1 2 1 . /3 . . 1 . /. - . - . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 1 1 0 /0 1 1 0 /0 0 0 0 /0 1 1 0 /0 1 1 0 /0 0 0 0 0 /1 1 0 1 1 /1 1 0 1 1 /0 0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('heyabon', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -141,7 +141,7 @@ describe('changeProperPid:File',function(){
 	
 	it('Check icelom', function(){
 		var filedata = 'pzprv3/icelom/6/6/75/64/allwhite/. i . 3 i . /i i i . . . /i . i . . . /. . . i . i /. i . i i i /2 . 1 . i . /0 1 1 -1 1 1 0 /0 0 0 0 0 1 0 /0 0 1 1 0 1 0 /1 0 0 1 1 0 0 /0 1 1 0 0 0 0 /0 1 0 1 1 1 0 /0 0 0 0 1 0 /1 0 1 1 1 1 /1 0 1 1 0 0 /1 1 1 0 1 1 /0 1 0 0 0 1 /1 1 1 0 0 1 /0 0 0 0 0 0 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('icelom', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -150,7 +150,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check icelom2', function(){
 		var filedata = 'pzprv3/icelom/6/6/60/69/skipwhite/. . 3 . i . /i . i . i i /i 4 i 5 . . /. . 2 i 1 i /i i . i . i /. i . 6 . . /0 0 1 0 1 1 0 /0 0 0 0 0 0 0 /0 0 1 1 0 0 0 /0 0 0 1 1 0 0 /0 0 0 1 1 0 0 /0 1 1 0 1 1 0 /1 0 0 0 0 0 /1 1 1 1 0 1 /1 1 1 1 0 1 /1 0 1 0 0 1 /1 0 0 0 1 1 /1 0 1 0 0 1 /0 0 0 1 0 0 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('icelom2', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -160,7 +160,7 @@ describe('changeProperPid:File',function(){
 	
 	it('Check kramma', function(){
 		var filedata = 'pzprv3/kramma/5/5/1 . . 2 2 /. 1 1 . 2 /. 2 . 1 . /1 . 2 1 . /1 1 . . 2 /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /1 0 1 0 /1 0 1 0 /1 0 1 0 /1 0 1 0 /1 0 1 -1 /-1 0 0 0 0 /1 1 1 1 1 /0 0 0 0 0 /1 1 1 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('kramma', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -169,7 +169,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check kramman', function(){
 		var filedata = 'pzprv3/kramma/5/5/2 . . . 1 /. 1 2 . . /. 2 1 2 . /1 . 2 1 . /. 1 . . 2 /. . . . . . /. . . . 1 . /. . . 1 . . /. . 1 . . . /. 1 . . . . /. . . . . . /1 1 0 1 /1 1 -1 0 /1 1 1 0 /1 -1 1 0 /0 0 1 0 /0 0 0 0 1 /1 1 1 -1 0 /0 -1 1 1 1 /0 1 1 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('kramman', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -179,7 +179,7 @@ describe('changeProperPid:File',function(){
 	
 	it('Check pipelink', function(){
 		var filedata = 'pzprv3/pipelink/5/5/circle/. . . . . /. a . . . /. . . e . /. . a . . /. . . . . /1 -1 1 1 /1 1 1 0 /1 1 1 0 /0 1 1 0 /1 1 0 1 /1 1 1 0 1 /-1 1 1 1 1 /1 1 1 0 1 /1 0 1 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('pipelink', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -188,7 +188,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check pipelinkr', function(){
 		var filedata = 'pzprv3/pipelink/5/5/circle/. . . . . /. a o . . /. o o o . /. . o f . /. . . . . /1 0 1 1 /1 1 1 1 /1 1 1 1 /0 1 1 0 /1 1 0 1 /1 1 1 0 1 /0 1 1 0 0 /1 1 1 0 1 /1 0 1 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('pipelinkr', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -198,7 +198,7 @@ describe('changeProperPid:File',function(){
 	
 	it('Check ichimaga', function(){
 		var filedata = 'pzprv3/ichimaga/5/5/def/. 3 . . . /. . 4 . . /3 . . . 3 /. . 1 . . /. . . 2 . /1 1 0 0 /0 1 1 1 /1 1 0 1 /1 1 0 0 /0 0 0 1 /1 1 1 0 0 /1 0 1 0 1 /1 0 0 1 1 /0 0 0 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('ichimaga', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -207,7 +207,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check ichimagam', function(){
 		var filedata = 'pzprv3/ichimaga/5/5/mag/2 . 2 . . /. 4 . . . /1 . . 4 . /. . 1 . . /. 2 . . 2 /1 0 1 0 /1 1 0 0 /0 -1 1 1 /0 0 0 0 /1 0 0 1 /1 1 1 1 0 /0 1 0 1 0 /1 1 1 1 1 /1 1 0 1 1 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('ichimagam', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -216,7 +216,7 @@ describe('changeProperPid:File',function(){
 	});
 	it('Check ichimagax', function(){
 		var filedata = 'pzprv3/ichimaga/5/5/cross/. 3 . 1 . /. . 4 . . /3 . . . 1 /. . 4 . . /. 3 . 1 . /1 1 0 0 /0 1 1 0 /1 1 1 1 /0 1 1 0 /1 1 0 0 /1 1 1 1 0 /1 0 1 0 0 /1 0 1 0 0 /1 1 1 1 0 /'.replace(/\//g,'\n');
-		var pzl = pzpr.parser.parse(filedata);
+		var pzl = pzpr.parser(filedata);
 		assert.equal('ichimagax', pzl.pid);
 		
 		puzzle.open(filedata);
@@ -224,6 +224,20 @@ describe('changeProperPid:File',function(){
 		assert.equal(filedata.replace('ichimaga','ichimagax'), puzzle.getFileData());
 	});
 });
-
-
-
+describe('avoidEraseLastChar',function(){
+	it('Encode url with dot last charactor', function(){
+		var pzl = pzpr.parser('http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		assert.equal(pzl.body, 'zj.');
+		assert.equal(pzl.generate(), 'http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		
+		puzzle.open('shakashaka/5/5');
+		
+		puzzle.board.getc(9,9).setQnum(-2);
+		assert.equal(puzzle.getURL(), 'http://pzv.jp/p.html?shakashaka/5/5/zj./');
+		
+		puzzle.board.getc(9,9).setQnum(-1);
+		assert.equal(puzzle.getURL(), 'http://pzv.jp/p.html?shakashaka/5/5/zk');
+		
+		puzzle.open('http://pzv.jp/p.html?shakashaka/5/5/zj./', function(){ assert.equal(puzzle.board.getc(9,9).qnum, -2);});
+	});
+});

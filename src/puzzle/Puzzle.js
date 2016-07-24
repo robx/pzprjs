@@ -224,6 +224,7 @@ pzpr.Puzzle.prototype =
 	// owner.undoall()  Undoを最後まで実行する
 	// owner.redoall()  Redoを最後まで実行する
 	// owner.isModified() ファイルに保存されていない操作がある時にtrueを返す
+	// owner.saved()      ismodifiedで返す値をfalseに戻す
 	//---------------------------------------------------------------------------
 	undo : function(){
 		return this.opemgr.undo();
@@ -239,6 +240,28 @@ pzpr.Puzzle.prototype =
 	},
 	ismodified : function(){
 		return this.opemgr.isModified();
+	},
+	saved : function(){
+		return this.opemgr.resetModifiedState();
+	},
+
+	//---------------------------------------------------------------------------
+	// puzzle.enterTrial()      TrialModeに設定する (多重設定可能)
+	// puzzle.acceptTrial()     TrialModeを確定する
+	// puzzle.rejectTrial()     TrialModeの履歴をすべて破棄する
+	// puzzle.rejectCurrentTrial() TrialModeの現在の履歴を破棄して一つ前のTrial mode stageに戻る
+	//---------------------------------------------------------------------------
+	enterTrial : function(){
+		this.opemgr.enterTrial();
+	},
+	acceptTrial : function(){
+		this.opemgr.acceptTrial();
+	},
+	rejectTrial : function(){
+		this.opemgr.rejectTrial(true);
+	},
+	rejectCurrentTrial : function(){
+		this.opemgr.rejectTrial(false);
 	},
 
 	//------------------------------------------------------------------------------
@@ -347,7 +370,7 @@ function openExecute(puzzle, data, variety, callback){
 
 	var classes = puzzle.klass;
 	var Board = ((!!classes && !!classes.Board) ? classes.Board : null);
-	var pzl = pzpr.parser.parse(data, (variety || puzzle.pid));
+	var pzl = pzpr.parser(data, (variety || puzzle.pid));
 
 	pzpr.classmgr.setPuzzleClass(puzzle, pzl.pid, function(){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */

@@ -505,7 +505,6 @@ Graphic:{
 
 	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
 	errlinebgcolor : "rgb(160, 150, 255)",
-	pekecolor : "rgb(0, 160, 0)",
 
 	paint : function(){
 		this.drawBGCells();

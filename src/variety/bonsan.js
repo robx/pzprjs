@@ -228,7 +228,6 @@ Graphic:{
 
 	fontShadecolor : "white",
 	qcmpcolor : "gray",
-	mbcolor : "green",
 
 	paint : function(){
 		this.drawDashedGrid();

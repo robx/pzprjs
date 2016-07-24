@@ -59,6 +59,8 @@ Board:{
 
 		this.exec = new classes.BoardExec();
 		this.exec.insex.cross = (this.hascross===1 ? {2:true} : {0:true});
+
+		this.trialstage = 0;	// TrialMode
 	},
 	addInfoList : function(Klass){
 		var instance = new Klass();
@@ -284,6 +286,7 @@ Board:{
 	// bd.ansclear() 全てのCell, Cross, Borderオブジェクトのansclear()を呼び出す
 	// bd.subclear() 全てのCell, Cross, Borderオブジェクトのsubclear()を呼び出す
 	// bd.errclear() 全てのCell, Cross, Borderオブジェクトのerrorプロパティを0にして、Canvasを再描画する
+	// bd.trialclear() 全てのCell, Cross, Borderオブジェクトのtrialプロパティを0にして、Canvasを再描画する
 	//---------------------------------------------------------------------------
 	// 呼び出し元：this.initBoardSize()
 	allclear : function(isrec){
@@ -291,6 +294,7 @@ Board:{
 		this.cross.allclear(isrec);
 		this.border.allclear(isrec);
 		this.excell.allclear(isrec);
+		if(isrec){ this.puzzle.opemgr.rejectTrial(true);}
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
@@ -300,6 +304,7 @@ Board:{
 		this.cross.ansclear();
 		this.border.ansclear();
 		this.excell.ansclear();
+		this.puzzle.opemgr.rejectTrial(true);
 		
 		this.rebuildInfo();
 	},
@@ -324,6 +329,17 @@ Board:{
 		}
 	},
 
+	trialclear : function(forcemode){
+		if(this.trialstage>0 || !!forcemode){
+			this.cell.trialclear();
+			this.cross.trialclear();
+			this.border.trialclear();
+			this.excell.trialclear();
+			this.puzzle.redraw();
+			this.trialstage = 0;
+		}
+	},
+
 	//---------------------------------------------------------------------------
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを計算して返す
 	//---------------------------------------------------------------------------
@@ -333,6 +349,7 @@ Board:{
 		else if(group==='cross') { obj = this.getx(bx,by);}
 		else if(group==='border'){ obj = this.getb(bx,by);}
 		else if(group==='excell'){ obj = this.getex(bx,by);}
+		else if(group==='obj')   { obj = this.getobj(bx,by);}
 		return obj;
 	},
 
@@ -520,6 +537,29 @@ Board:{
 	//---------------------------------------------------------------------------
 	disableSetError  : function(){ this.diserror++;},
 	enableSetError   : function(){ this.diserror--;},
-	isenableSetError : function(){ return (this.diserror<=0); }
+	isenableSetError : function(){ return (this.diserror<=0); },
+
+	//---------------------------------------------------------------------------
+	// bd.freezecopy()  盤面のオブジェクト値のみを取得する
+	// bd.compareData() 盤面のオブジェクト値のみを比較し異なる場合にcallback関数を呼ぶ
+	//---------------------------------------------------------------------------
+	freezecopy : function(){
+		var bd2 = {cell:[],cross:[],border:[],excell:[]};
+		for(var group in bd2){
+			for(var c=0;c<this[group].length;c++){
+				bd2[group][c] = this[group][c].getprops();
+			}
+		}
+		return bd2;
+	},
+	compareData : function(bd2, callback){
+		for(var group in bd2){
+			if(!this[group]){ continue;}
+			for(var c=0;c<bd2[group].length;c++){
+				if(!this[group][c]){ continue;}
+				this[group][c].compare(bd2[group][c],callback);
+			}
+		}
+	}
 }
 });

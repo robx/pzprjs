@@ -16,12 +16,43 @@
 * `lang:string` Specific the language of pzpr.js. This value will be used for answer check. Possible value: `'en'` or `'ja'`.  Default value depends on browser or node.js env language.
 * `version:string` Indicate pzpr.js version.
 
-## pzpr.parser object
+## pzpr.variety object
+
+This object contains each puzzle variety/genre information.
+In addition, pzpr.variety itself is a function to return puzzle genre's information.
 
 #### Methods
 
-* `pzpr.parser.parse(data[, pid])` Parse given data then return parsed `URLData` or `FileData`.
+* `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
+    * Return value: `boolean`
+    * `pid:string` Puzzle variety type.
+    * It is the same as `pzpr.variety(pid).valid`.
+
+* `pzpr.variety(pid)` Return puzzle genre's information.
+    * Return value: `VarietyInfo`
+
+* `VarietyInfo`
+    * `info.valid` Whether the given pid is valid.
+    * `info.en` Puzzle name in English.
+    * `info.ja` Puzzle name in Japanese.
+
+## pzpr.parser object
+
+This object parses URL or file data to parsing information.
+
+#### Methods
+
+* `pzpr.parser(data[, pid])` or `pzpr.parser.parse(data[, pid])` Parse given data then return parsed `URLData` or `FileData`.
     * Return value: `URLData or FileData`
+    * `data:string` Data to be parsed.
+    * `pid:string` Predefined puzzle veriety name.
+
+* `pzpr.parser.parseURL(data)` Parse given data as a URL and return parsed `URLData`.
+    * Return value: `URLData`
+    * `data:string` Data to be parsed.
+
+* `pzpr.parser.parseFile(data[, pid])` Parse given data as file data and return parsed `FileData`.
+    * Return value: `FileData` or `null`
     * `data:string` Data to be parsed.
     * `pid:string` Predefined puzzle veriety name.
 
@@ -73,23 +104,3 @@ These values are defined under pzpr.parser.
 * `FILE_PZPR` pzpr.js file type.
 * `FILE_PBOX` pencilbox (text) file type.
 * `FILE_PBOX_XML` pencilbox (XML) file type.
-
-## pzpr.variety object
-
-This object contains each puzzle variety/genre information.
-In addition, pzpr.variety itself is a function to return puzzle genre's information.
-
-#### Methods
-
-* `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
-    * Return value: `boolean`
-    * `pid:string` Puzzle variety type.
-    * It is the same as `pzpr.variety(pid).valid`.
-
-* `pzpr.variety(pid)` Return puzzle genre's information.
-    * Return value: `VarietyInfo`
-
-* `VarietyInfo`
-    * `info.valid` Whether the given pid is valid.
-    * `info.en` Puzzle name in English.
-    * `info.ja` Puzzle name in Japanese.

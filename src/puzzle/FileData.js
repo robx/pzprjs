@@ -1,4 +1,8 @@
-// FileData.js v3.4.1
+// FileData.js
+
+(function(){
+
+function throwNoImplementation(){ throw "no Implemention";}
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
@@ -32,9 +36,20 @@ FileIO:{
 		}
 
 		// メイン処理
-		if     (filetype===pzl.FILE_PZPR)    { this.decodeData();}
-		else if(filetype===pzl.FILE_PBOX)    { this.kanpenOpen();}
-		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenOpenXML();}
+		switch(filetype){
+		case pzl.FILE_PZPR:
+			this.decodeData();
+			if((this.readLine()||'').match(/TrialData/)){ this.lineseek--; this.decodeTrial();}
+			break;
+
+		case pzl.FILE_PBOX:
+			this.kanpenOpen();
+			break;
+
+		case pzl.FILE_PBOX_XML:
+			this.kanpenOpenXML();
+			break;
+		}
 
 		puzzle.metadata.update(pzl.metadata);
 		if(pzl.history && (filetype===pzl.FILE_PZPR)){
@@ -65,10 +80,23 @@ FileIO:{
 		}
 
 		// メイン処理
-		if     (filetype===pzl.FILE_PZPR)    { this.encodeData();}
-		else if(filetype===pzl.FILE_PBOX)    { this.kanpenSave();}
-		else if(filetype===pzl.FILE_PBOX_XML){ this.kanpenSaveXML();}
-		else{ throw "invalid URL Type";}
+		switch(filetype){
+		case pzl.FILE_PZPR:
+			this.encodeData();
+			if(!option.history && option.trial && bd.trialstage>0){ this.encodeTrial();}
+			break;
+
+		case pzl.FILE_PBOX:
+			this.kanpenSave();
+			break;
+
+		case pzl.FILE_PBOX_XML:
+			this.kanpenSaveXML();
+			break;
+
+		default:
+			throw "invalid File Type";
+		}
 
 		pzl.type  = filetype;
 		pzl.filever = this.filever;
@@ -91,16 +119,55 @@ FileIO:{
 	},
 
 	// オーバーライド用
-	decodeData : function(){ throw "no Implemention";},
-	encodeData : function(){ throw "no Implemention";},
-	kanpenOpen : function(){ throw "no Implemention";},
-	kanpenSave : function(){ throw "no Implemention";},
-	kanpenOpenXML : function(){ throw "no Implemention";},
-	kanpenSaveXML : function(){ throw "no Implemention";},
+	decodeData    : throwNoImplementation,
+	encodeData    : throwNoImplementation,
+	kanpenOpen    : throwNoImplementation,
+	kanpenSave    : throwNoImplementation,
+	kanpenOpenXML : throwNoImplementation,
+	kanpenSaveXML : throwNoImplementation,
+
+	//---------------------------------------------------------------------------
+	// fio.decodeTrial() 仮置きデータを復旧する
+	// fio.encodeTrial() 仮置きデータを出力する
+	//---------------------------------------------------------------------------
+	decodeTrial : function(){
+		var opemgr = this.puzzle.opemgr;
+		var bd = this.board;
+		var len = this.readLine().match(/TrialData\((\d+)\)/)[1]|0;
+		for(var i=len-1;i>=0;i--){
+			var opes = [];
+			var bd1 = bd.freezecopy();
+			bd.allclear(false);
+			this.decodeData();
+			bd.compareData(bd1, function(group,c,a){
+				var obj = bd[group][c];
+				var old = obj[a];
+				var num = bd1[group][c][a];
+				opes.push(new this.puzzle.klass.ObjectOperation(obj, a, old, num));
+			});
+			opemgr.ope.unshift(opes);
+			opemgr.ope.unshift([new this.puzzle.klass.TrialEnterOperation(i, i+1)]);
+			opemgr.trialpos.unshift(i*2);
+			this.readLine();	// 次の"TrialData"文字列は読み捨て
+		}
+		opemgr.position = opemgr.ope.length;
+		opemgr.resumeTrial();
+	},
+	encodeTrial : function(){
+		var opemgr = this.puzzle.opemgr, pos = opemgr.position;
+		opemgr.disableRecord();
+		for(var stage=this.board.trialstage;stage>0;stage--){
+			this.writeLine('TrialData('+stage+')');
+			opemgr.resumeGoto(opemgr.trialpos[stage-1]);
+			this.encodeData();
+		}
+		opemgr.resumeGoto(pos);
+		opemgr.resumeTrial();
+		opemgr.enableRecord();
+	},
 
 	//---------------------------------------------------------------------------
 	// fio.readLine()    ファイルに書かれている1行の文字列を返す
-	// fio.readLines()   ファイルに書かれている複数行の文字列を返す
 	// fio.getItemList() ファイルに書かれている改行＋スペース区切りの
 	//                   複数行の文字列を配列にして返す
 	//---------------------------------------------------------------------------
@@ -108,23 +175,26 @@ FileIO:{
 		this.lineseek++;
 		return this.dataarray[this.lineseek-1];
 	},
-	readLines : function(rows){
-		this.lineseek += rows;
-		return this.dataarray.slice(this.lineseek-rows, this.lineseek);
-	},
 
 	getItemList : function(rows){
-		var item = [];
-		var array = this.readLines(rows);
-		for(var i=0;i<array.length;i++){
-			var array1 = array[i].split(" ");
-			var array2 = [];
+		var item = [], line;
+		for(var i=0;i<rows;i++){
+			if(!(line=this.readLine())){ continue;}
+			var array1 = line.split(" ");
 			for(var c=0;c<array1.length;c++){
-				if(array1[c]!==""){ array2.push(array1[c]);}
+				if(array1[c]!==""){ item.push(array1[c]);}
 			}
-			item = item.concat(array2);
 		}
 		return item;
+	},
+
+	//---------------------------------------------------------------------------
+	// fio.writeLine()    ファイルに1行出力する
+	//---------------------------------------------------------------------------
+	writeLine : function(data){
+		if(typeof data==='number'){ data = ''+data;}
+		else{ data = data || '';} // typeof data==='string'
+		this.datastr += (data+"\n");
 	},
 
 	//---------------------------------------------------------------------------
@@ -132,6 +202,7 @@ FileIO:{
 	// fio.decodeCell()    配列で、個別文字列から個別セルの設定を行う
 	// fio.decodeCross()   配列で、個別文字列から個別Crossの設定を行う
 	// fio.decodeBorder()  配列で、個別文字列から個別Borderの設定を行う
+	// fio.decodeCellExcell()  配列で、個別文字列から個別セル/Excellの設定を行う
 	//---------------------------------------------------------------------------
 	decodeObj : function(func, group, startbx, startby, endbx, endby){
 		var bx=startbx, by=startby, step=2;
@@ -168,20 +239,25 @@ FileIO:{
 			}
 		}
 	},
+	decodeCellExcell : function(func){
+		this.decodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
+	},
 
 	//---------------------------------------------------------------------------
 	// fio.encodeObj()     個別セルデータ等から個別文字列の設定を行う
 	// fio.encodeCell()    個別セルデータから個別文字列の設定を行う
 	// fio.encodeCross()   個別Crossデータから個別文字列の設定を行う
 	// fio.encodeBorder()  個別Borderデータから個別文字列の設定を行う
+	// fio.encodeCellExcell()  個別セル/Excellデータから個別文字列の設定を行う
 	//---------------------------------------------------------------------------
 	encodeObj : function(func, group, startbx, startby, endbx, endby){
 		var step=2;
 		for(var by=startby;by<=endby;by+=step){
+			var data = '';
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				this.datastr += func(this.board.getObjectPos(group, bx, by));
+				data += func(this.board.getObjectPos(group, bx, by));
 			}
-			this.datastr += "\n";
+			this.writeLine(data);
 		}
 	},
 	encodeCell   : function(func){
@@ -207,6 +283,9 @@ FileIO:{
 				this.encodeObj(func, 'border', 0, 1, 2*bd.cols  , 2*bd.rows-1);
 			}
 		}
+	},
+	encodeCellExcell : function(func){
+		this.encodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
 	},
 
 	//---------------------------------------------------------------------------
@@ -286,3 +365,5 @@ FileIO:{
 	}
 }
 });
+
+})();

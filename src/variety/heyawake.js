@@ -70,14 +70,13 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	bcolor_type : "GREEN",
 
-	bgcellcolor_func : "qsub1",
+	bgcellcolor_func : "qans1",
 
 	bbcolor : "rgb(160, 255, 191)",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawShadedCells();
 
 		this.drawNumbers();
 
@@ -165,16 +164,13 @@ FileIO:{
 	},
 
 	decodeSquareRoom : function(){
-		var barray = this.readLines(+this.readLine());
-		var bd = this.board, rdata = [];
-		for(var i=0;i<barray.length;i++){
-			if(barray[i]===""){ break;}
-			var pce = barray[i].split(" ");
+		var bd = this.board, rdata = [], line;
+		for(var i=0,rows=+this.readLine();i<rows;i++){
+			if(!(line=this.readLine())){ break;}
+			var pce = line.split(" ");
 			for(var n=0;n<4;n++){ if(!isNaN(pce[n])){ pce[n]=2*(+pce[n])+1;} }
 			if(pce[4]!==""){ bd.getc(pce[1],pce[0]).qnum = +pce[4];}
-			for(var bx=pce[1];bx<=pce[3];bx+=2){ for(var by=pce[0];by<=pce[2];by+=2){
-				rdata[bd.getc(bx,by).id] = i;
-			}}
+			bd.cellinside(pce[1],pce[0],pce[3],pce[2]).each(function(cell){ rdata[cell.id] = i;});
 		}
 		this.rdata2Border(true, rdata);
 		bd.roommgr.rebuild();
@@ -183,11 +179,11 @@ FileIO:{
 		var bd = this.board;
 		bd.roommgr.rebuild();
 		var rooms = bd.roommgr.components;
-		this.datastr += (rooms.length+"\n");
+		this.writeLine(rooms.length);
 		for(var r=0;r<rooms.length;r++){
 			var d = rooms[r].clist.getRectSize();
 			var num = rooms[r].top.qnum;
-			this.datastr += (""+(d.y1>>1)+" "+(d.x1>>1)+" "+(d.y2>>1)+" "+(d.x2>>1)+" "+(num>=0 ? ""+num : "")+"\n");
+			this.writeLine([(d.y1>>1),(d.x1>>1),(d.y2>>1),(d.x2>>1),(num>=0 ? ""+num : "")].join(' '));
 		}
 	},
 

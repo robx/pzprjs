@@ -103,13 +103,16 @@ Board:{
 
 AreaRoomGraph:{
 	enabled : true,
+
 	isedgevalidbylinkobj : function(border){
 		if(border.isBorder()){ return false;}
-		return border.sidecell[0].getNum() === border.sidecell[1].getNum();
+		var num1 = border.sidecell[0].getNum(), num2 = border.sidecell[1].getNum();
+		return (num1===num2 || num1<0 || num2<0);
 	},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return false;}
-		return cell1.getNum() === cell2.getNum();
+		var num1 = cell1.getNum(), num2 = cell2.getNum();
+		return (num1===num2 || num1<0 || num2<0);
 	},
 
 	setExtraData : function(component){
@@ -119,9 +122,14 @@ AreaRoomGraph:{
 		for(var i=0;i<clist.length;i++){
 			var num = clist[i].getNum();
 			if(num===-1){ emptycell++;}
-			else if(isNaN(nums[num])){ numkind++; filled=num; nums[num]=1;}
+			else if(isNaN(nums[num])){
+				numkind++; nums[num]=1;
+				if(filled===-1||num!==-2){ filled=num;}
+			}
 			else{ nums[num]++;}
 		}
+		if(numkind>1 && !!nums[-2]){ --numkind;}
+		component.numkind = numkind;
 		component.number = (numkind===1 ? filled : -1);
 	}
 },
@@ -219,18 +227,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkLargeArea",
-		"checkSideAreaNumberSize",
 		"checkSmallArea",
-		"checkNoNumCell+"
+		"checkSideAreaNumberSize",
+		"checkLargeArea",
+		"checkNumKinds",
+		"checkNoNumArea",
+		"checkNoNumCell_fillomino+"
 	],
 
 	checkSideAreaNumberSize : function(){
 		this.checkSideAreaSize(function(area){ return area.number;}, "bsSameNum");
 	},
 
-	checkSmallArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number>area.clist.length);}, "bkSizeLt");}, // jshint ignore:line
+	checkSmallArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number>area.clist.length && area.number>0);}, "bkSizeLt");},
 	checkLargeArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number<area.clist.length && area.number>0);}, "bkSizeGt");},
+	checkNumKinds  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind<=1;}, "bkMixedNum");},
+	checkNoNumArea : function(){ this.checkAllErrorRoom(function(area){ return area.numkind>=1;}, "bkNoNum");},
 	checkAllErrorRoom : function(evalfunc, code){
 		var rooms = this.board.roommgr.components;
 		for(var id=0;id<rooms.length;id++){
@@ -241,12 +253,18 @@ AnsCheck:{
 			if(this.checkOnly){ break;}
 			area.clist.seterr(1);
 		}
+	},
+	checkNoNumCell_fillomino : function(){
+		if(this.puzzle.getConfig('forceallcell')){
+			this.checkAllCell( function(cell){ return cell.noNum();}, "ceNoNum" );
+		}
 	}
 },
 
 FailCode:{
 	bkSizeLt : ["ブロックの大きさより数字のほうが大きいです。","A number is bigger than the size of block."],
 	bkSizeGt : ["ブロックの大きさよりも数字が小さいです。","A number is smaller than the size of block."],
+	bkMixedNum : ["1つのブロックに2種類以上の数字が入っています。","A room has two or more kinds of numbers."],
 	bsSameNum : ["同じ数字のブロックが辺を共有しています。","Adjacent blocks have the same number."]
 }
 }));

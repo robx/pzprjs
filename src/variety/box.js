@@ -160,11 +160,11 @@ BoardExec:{
 // 画像表示系
 Graphic:{
 	numbercolor_func : "qnum",
+	bgcellcolor_func : "qans1",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawDotCells(false);
-		this.drawShadedCells();
 		this.drawGrid();
 
 		this.drawBGEXcells();
@@ -272,51 +272,31 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		var bd = this.board, item = this.getItemList(bd.rows+1);
-		for(var i=0;i<item.length;i++) {
-			var ca = item[i];
-			if(ca==="."){ continue;}
-
-			var bx = i%(bd.cols+1)*2-1, by = ((i/(bd.cols+1))<<1)-1;
-			var excell = bd.getex(bx,by);
-			if(!excell.isnull){
-				excell.qnum = +ca;
+		this.decodeCellExcell(function(obj,ca){
+			if(ca==="."){ return;}
+			else if(obj.group==='excell'){
+				obj.qnum = +ca;
 			}
-
-			var cell = bd.getc(bx,by);
-			if(!cell.isnull){
-				if     (ca==="#"){ cell.qans = 1;}
-				else if(ca==="+"){ cell.qsub = 1;}
+			else if(obj.group==='cell'){
+				if     (ca==="#"){ obj.qans = 1;}
+				else if(ca==="+"){ obj.qsub = 1;}
 			}
-		}
+		});
 	},
 	encodeData : function(){
 		var bd = this.board;
-		for(var by=-1;by<bd.maxby;by+=2){
-			for(var bx=-1;bx<bd.maxbx;bx+=2){
-				var excell = bd.getex(bx,by);
-				if(!excell.isnull){
-					if(excell.id<bd.cols+bd.rows){
-						this.datastr += (excell.qnum+" ");
-					}
-					else{
-						this.datastr += ". ";
-					}
-					continue;
+		this.encodeCellExcell(function(obj){
+			if(obj.group==='excell'){
+				if(obj.id<bd.cols+bd.rows){
+					return (obj.qnum+" ");
 				}
-
-				var cell = bd.getc(bx,by);
-				if(!cell.isnull){
-					if     (cell.qans===1){ this.datastr += "# ";}
-					else if(cell.qsub===1){ this.datastr += "+ ";}
-					else                  { this.datastr += ". ";}
-					continue;
-				}
-
-				this.datastr += ". ";
 			}
-			this.datastr += "\n";
-		}
+			else if(obj.group==='cell'){
+				if     (obj.qans===1){ return "# ";}
+				else if(obj.qsub===1){ return "+ ";}
+			}
+			return ". ";
+		});
 	}
 },
 

@@ -125,7 +125,6 @@ Graphic:{
 	hideHatena : true,
 
 	gridcolor_type : "LIGHT",
-	dotcolor_type : "PINK",
 
 	cellcolor_func : "qnum",
 
@@ -141,7 +140,7 @@ Graphic:{
 		this.drawNumbers();
 
 		this.drawAkari();
-		this.drawDotCells(true);
+		this.drawDotCells();
 
 		this.drawChassis();
 
@@ -167,7 +166,7 @@ Graphic:{
 			var cell = clist[i];
 			g.vid = "c_AK_"+cell.id;
 			if(cell.isAkari()){
-				g.fillStyle = (cell.error!==4 ? lampcolor : this.errcolor1);
+				g.fillStyle = (cell.error===4 ? this.errcolor1 : (!cell.trial ? lampcolor : this.trialcolor));
 				g.fillCircle((cell.bx*this.bw), (cell.by*this.bh), rsize);
 			}
 			else{ g.vhide();}

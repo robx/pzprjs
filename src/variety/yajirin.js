@@ -77,17 +77,12 @@ LineGraph:{
 Graphic:{
 	irowake : true,
 
-	gridcolor_type : "LIGHT",
-
 	numbercolor_func : "qnum",
-
-	dotcolor : "rgb(255, 96, 191)",
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawDotCells(false);
+		this.drawDotCells();
 		this.drawGrid();
-		this.drawShadedCells();
 		
 		this.drawBorders();
 
@@ -102,8 +97,14 @@ Graphic:{
 	},
 
 	getBGCellColor : function(cell){
+		var info = cell.error || cell.qinfo;
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && cell.qnum!==-1){ return 'rgb(224,224,224)';}
-		else if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(cell.qans===1){
+			if(info===1){ return this.errcolor1;}
+			else if(cell.trial){ return this.trialcolor;}
+			return this.shadecolor;
+		}
+		else if(info===1){ return this.errbcolor1;}
 		return null;
 	},
 	getBorderColor : function(border){

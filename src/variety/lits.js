@@ -37,6 +37,11 @@ Board:{
 		this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
 	}
 },
+CellList:{
+	sort : function(cond){
+		return Array.prototype.sort.call(this, (cond || function(a,b){ return a.id - b.id;}));
+	}
+},
 
 AreaShadeGraph:{
 	enabled : true
@@ -60,7 +65,7 @@ AreaRoomGraph:{
 		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
 		var len = clist.length, shape = null;
 		if(len===4){
-			var cell0=clist.getTopCell(), bx0=cell0.bx, by0=cell0.by, value=0, shape = null;
+			var cell0=clist.sort()[0], bx0=cell0.bx, by0=cell0.by, value=0, shape = null;
 			for(var i=0;i<len;i++){ value += (((clist[i].by-by0)>>1)*10+((clist[i].bx-bx0)>>1));}
 			switch(value){
 				case 13: case 15: case 27:
@@ -93,8 +98,8 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
-	bgcellcolor_func : "qans2",
-	qanscolor : "rgb(96, 96, 96)",
+	bgcellcolor_func : "qans1",
+	shadecolor : "rgb(96, 96, 96)",
 	errcolor2 : "rgb(32, 32, 255)"
 },
 "Graphic@norinori":{

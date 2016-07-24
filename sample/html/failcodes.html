@@ -4,7 +4,7 @@
 <META CHARSET="utf-8">
 <META NAME="robots" CONTENT="nofollow">
 <meta http-equiv="Content-Type" content="text/html">
-<TITLE>ぱずぷれv3 背景画像一覧</TITLE>
+<TITLE>ぱずぷれv3 FailCode一覧</TITLE>
 <style type="text/css">
   #main span { display:inline-block; vertical-align:middle;}
   #main span.code  { width:160px;}
@@ -31,7 +31,7 @@ function bglist(){
   var list = [], commons = {};
   var FC = pzpr.common.FailCode.prototype;
   for(var code in FC){
-    if(code==='common' || !FC.hasOwnProperty(code)){ continue;}
+    if(code==='common' || code==='pid' || !FC.hasOwnProperty(code)){ continue;}
     var obj = {code:code, pid:'', ja:FC[code][0], en:FC[code][1]};
     list.push(obj);
     commons[code] = obj;
@@ -39,7 +39,7 @@ function bglist(){
   for(var pid in pzpr.custom){
     var FC = pzpr.custom[pid].FailCode.prototype;
     for(var code in FC){
-      if(code==='common' || !FC.hasOwnProperty(code)){ continue;}
+      if(code==='common' || code==='pid' || !FC.hasOwnProperty(code)){ continue;}
       if(!!commons[code] && commons[code].ja===FC[code][0] && commons[code].en===FC[code][1]){ continue;}
       list.push({code:code, pid:pid, ja:FC[code][0], en:FC[code][1]});
     }

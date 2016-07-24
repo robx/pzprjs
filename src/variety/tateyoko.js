@@ -114,7 +114,7 @@ Graphic:{
 		this.drawTateyokos();
 
 		this.drawShadeAtNumber();
-		this.drawNumbers_tateyoko();
+		this.drawNumbers();
 
 		this.drawChassis();
 
@@ -131,21 +131,6 @@ Graphic:{
 			if(cell.ques===1){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
-			}
-			else{ g.vhide();}
-		}
-	},
-	drawNumbers_tateyoko : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], num = cell.qnum;
-			var text = (num>=0 ? ""+num : (num===-2 ? "?" : ""));
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}

@@ -19,7 +19,6 @@ Graphic:{
 	initialize : function(){
 		this.gridcolor  = this.gridcolor_list [this.gridcolor_type]  || this.gridcolor;
 		this.bcolor     = this.bcolor_list    [this.bcolor_type]     || this.bcolor;
-		this.dotcolor   = this.dotcolor_list  [this.dotcolor_type]   || this.dotcolor;
 		this.errbcolor1 = this.errbcolor1_list[this.errbcolor1_type] || this.errbcolor1;
 		this.linecolor  = this.linecolor_list [this.linecolor_type]  || this.linecolor;
 
@@ -42,8 +41,9 @@ Graphic:{
 
 	// セルの色(黒マス)
 	quescolor : "black",
-	qanscolor : "black",
-	errcolor1 : "rgb(224, 0, 0)",
+	shadecolor: "black",
+	trialcolor: "rgb(160, 160, 160)",
+	errcolor1 : "rgb(192, 0, 0)",
 
 	// セルの背景色(白マス)
 	bcolor : "white",
@@ -53,10 +53,6 @@ Graphic:{
 	qsubcolor1 : "rgb(160,255,160)",
 	qsubcolor2 : "rgb(255,255,127)",
 	qsubcolor3 : "rgb(192,192,192)",	// 絵が出るパズルの背景入力
-
-	dotcolor : "black",
-	dotcolor_type : "",
-	dotcolor_list : { PINK : "rgb(255, 96, 191)"},
 
 	errbcolor1 : "rgb(255, 160, 160)",
 	errbcolor1_type : "",
@@ -82,7 +78,7 @@ Graphic:{
 	fontShadecolor : "rgb(224, 224, 224)",
 
 	// セルの○×の色(補助記号)
-	mbcolor : "rgb(255, 160, 127)",
+	mbcolor : "rgb(0, 160, 0)",
 
 	// 線・×の色
 	linecolor : "rgb(0, 160, 0)",	// 色分けなしの場合
@@ -93,13 +89,14 @@ Graphic:{
 	errlinebgcolor : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線の描画色
 
 	movelinecolor : "silver",
+	movetrialcolor: "rgb(255, 160, 0)",
 
-	pekecolor : "rgb(32, 32, 255)",
+	pekecolor : "rgb(0, 160, 0)",
 
 	// 境界線の色
 	borderQuescolor : "black",
-	borderQanscolor : "rgb(0, 191, 0)",
-	borderQsubcolor : "rgb(255, 0, 255)",
+	borderQanscolor : "rgb(0, 160, 0)",
+	borderQsubcolor : "rgb(0, 160, 0)",
 	borderQsubcolor2 : "rgb(64, 64, 64)",
 
 	errborderbgcolor : "rgb(160, 160, 160)",	// エラー表示時, エラーでない境界線の描画色
@@ -135,6 +132,7 @@ Graphic:{
 	fontfamily    : '',
 	crosssize     : 0.4,
 	circleratio   : [0.40, 0.35],
+	textoption    : null,
 
 	// 枠外の一辺のmargin(セル数換算)
 	margin : 0.15,
@@ -155,7 +153,7 @@ Graphic:{
 
 	lw : 1,		// LineWidth 境界線・Lineの太さ
 	lm : 1,		// LineMargin
-	lwratio : 12,	// onresize_processでlwの値の算出に用いる
+	lwratio : 10,	// onresize_processでlwの値の算出に用いる
 	addlw   : 0,	// エラー時に線の太さを広げる
 
 	// getNewColorの設定
@@ -592,9 +590,9 @@ Graphic:{
 			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=(this.bw-2); break;
 		}
 		switch(position){
-			case CENTER:                       g.textBaseline='middle';                      break;
-			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh-2); break;
-			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh-2); break;
+			case CENTER:                       g.textBaseline='middle';                         break;
+			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh*0.82); break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh*0.82); break;
 		}
 
 		g.fillText(text, px, py);

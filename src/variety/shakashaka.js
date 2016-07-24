@@ -275,6 +275,9 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+	getTriangleColor : function(cell){
+		return (!cell.trial ? this.shadecolor : this.trialcolor);
 	}
 },
 

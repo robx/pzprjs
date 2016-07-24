@@ -124,11 +124,10 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	gridcolor_type : "LIGHT",
 	bcolor_type : "GREEN",
 	bbcolor : "rgb(127, 127, 127)",
 
-	bgcellcolor_func : "qsub3",
+	bgcellcolor_func : "qans3",
 
 	paint : function(){
 		this.drawBGCells();
@@ -136,8 +135,6 @@ Graphic:{
 		this.drawQues51();
 
 		this.drawGrid();
-
-		this.drawShadedCells();
 
 		this.drawBorders();
 		this.drawBoxBorders(true);

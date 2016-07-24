@@ -138,7 +138,8 @@ Border:{
 },
 BorderList:{
 	setLineVal : function(num){ this.each(function(border){ border.setLineVal(num);});},
-	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});}
+	setQsub    : function(num){ this.each(function(border){ border.setQsub(num);});},
+	reverse : Array.prototype.reverse
 },
 
 Address:{
@@ -198,16 +199,17 @@ Graphic:{
 
 	// オーバーライド
 	drawLines_hashikake : function(id){
-		var g = this.vinc('line', 'crispEdges', true);
+		var g = this.vinc('line', 'crispEdges');
 
-		// LineWidth, LineMargin, LineSpace
-		var lw = this.lw + this.addlw, lm = this.lm, ls = lw*1.5;
+		// LineWidth, LineSpace
+		var lw = this.lw, ls = lw*1.5;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], color = this.getLineColor(border);
 			var isvert = border.isVert();
 			var px = border.bx*this.bw, py = border.by*this.bh;
+			var lm = this.lm + this.addlw/2; // LineMargin
 
 			g.fillStyle = color;
 			g.vid = "b_line_"+border.id;

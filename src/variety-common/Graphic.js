@@ -35,23 +35,21 @@ Graphic:{
 	},
 	getCellColor_ques : function(cell){
 		if(cell.ques!==1){ return null;}
-		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.quescolor;}
-		else if(info===1){ return this.errcolor1;}
+		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
+		return this.quescolor;
 	},
 	getCellColor_qnum : function(cell){
 		if(cell.qnum===-1){ return null;}
-		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.quescolor;}
-		else if(info===1){ return this.errcolor1;}
-		return null;
+		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
+		return this.quescolor;
 	},
 	getCellColor_qans : function(cell){
 		if(cell.qans!==1){ return null;}
 		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.qanscolor;}
-		else if(info===1){ return this.errcolor1;}
-		return null;
+		if     (info===1){ return this.errcolor1;}
+		else if(info===2){ return this.errcolor2;}
+		else if(cell.trial){ return this.trialcolor;}
+		return this.shadecolor;
 	},
 
 	//---------------------------------------------------------------------------
@@ -79,7 +77,7 @@ Graphic:{
 			(type==="error1") ? this.getBGCellColor_error1 :
 			(type==="error2") ? this.getBGCellColor_error2 :
 			(type==="qans1")  ? this.getBGCellColor_qans1 :
-			(type==="qans2")  ? this.getBGCellColor_qans2 :
+			(type==="qans3")  ? this.getBGCellColor_qans3 :
 			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
 			(type==="qsub2")  ? this.getBGCellColor_qsub2 :
 			(type==="qsub3")  ? this.getBGCellColor_qsub3 :
@@ -99,38 +97,39 @@ Graphic:{
 		return null;
 	},
 	getBGCellColor_qans1 : function(cell){
-		var info = cell.error || cell.qinfo;
-		if     (cell.qans===1){ return (info===1 ? this.errcolor1 : this.qanscolor);}
-		else if(info     ===1){ return this.errbcolor1;}
-		else if(info     ===2){ return this.errbcolor2;}
-		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+		if(cell.qans===1){ return this.getCellColor_qans(cell);}
+		else{
+			var info = cell.error || cell.qinfo;
+			if     (info===1){ return this.errbcolor1;}
+			else if(info===2){ return this.errbcolor2;}
+			else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+		}
 		return null;
 	},
-	getBGCellColor_qans2 : function(cell){
-		var info = cell.error || cell.qinfo;
-		if(cell.qans===1){
-			if     (info===0){ return this.qanscolor;}
-			else if(info===1){ return this.errcolor1;}
-			else if(info===2){ return this.errcolor2;}
+	getBGCellColor_qans3 : function(cell){
+		if(cell.qans===1){ return this.getCellColor_qans(cell);}
+		else{
+			if((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
+			else if(cell.qsub===1){ return this.qsubcolor1;}
+			else if(cell.qsub===2){ return this.qsubcolor2;}
+			else if(cell.qsub===3){ return this.qsubcolor3;}
 		}
-		if     (info===1){ return this.errbcolor1;}
-		else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
-		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		if     ((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
 		else if(cell.qsub===1){ return this.bcolor;}
 		return null;
 	},
 	getBGCellColor_qsub2 : function(cell){
 		this.bcolor = "silver"; /* 数字入力で背景が消えないようにする応急処置 */
-		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		if     ((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
 		else if(cell.qsub===1){ return this.qsubcolor1;}
 		else if(cell.qsub===2){ return this.qsubcolor2;}
 		return null;
 	},
 	getBGCellColor_qsub3 : function(cell){
-		if     (cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		if     ((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
 		else if(cell.qsub===1){ return this.qsubcolor1;}
 		else if(cell.qsub===2){ return this.qsubcolor2;}
 		else if(cell.qsub===3){ return this.qsubcolor3;}
@@ -172,20 +171,18 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawDotCells()  ・だけをCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawDotCells : function(isrect){
-		var g = this.vinc('cell_dot', (isrect ? 'crispEdges' : 'auto'), true);
-		g.fillStyle = this.dotcolor;
+	drawDotCells : function(){
+		var g = this.vinc('cell_dot', 'auto', true);
 
-		var dsize = Math.max(this.cw*(isrect?0.075:0.06), 2);
+		var dsize = Math.max(this.cw*0.06, 2);
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
-				var px = cell.bx*this.bw, py = cell.by*this.bh;
-				if(isrect){ g.fillRectCenter(px, py, dsize, dsize);}
-				else      { g.fillCircle(px, py, dsize);}
+				g.fillStyle = (!cell.trial ? "black" : this.trialcolor);
+				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
 			else{ g.vhide();}
 		}
@@ -238,7 +235,8 @@ Graphic:{
 	getCellArrowColor : function(cell){
 		var dir=(!cell.numberAsObject ? cell.qdir : cell.getNum());
 		if(dir>=1 && dir<=4){
-			return ((!cell.numberAsObject||cell.qnum!==-1)?this.arrowQuescolor:this.arrowQanscolor);
+			if(!cell.numberAsObject||cell.qnum!==-1){ return this.arrowQuescolor;}
+			else{ return (!cell.trial ? this.arrowQanscolor : this.trialcolor);}
 		}
 		return null;
 	},
@@ -257,17 +255,19 @@ Graphic:{
 			var cell = clist[i];
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
-				var info = cell.error || cell.qinfo, addwidth = 0;
-				if     (info===1){ g.strokeStyle = this.errcolor1; addwidth = basewidth/2;}
-				else if(info===2){ g.strokeStyle = this.errcolor2;}
-				else if(info===-1){g.strokeStyle = this.errlinebgcolor;}
-				else{
-					if(info===3){ addwidth = basewidth/2;}
-					if(!irowake || !cell.path.color){ g.strokeStyle = this.qanscolor;}
-					else             { g.strokeStyle = cell.path.color;}
-				}
+				var info = cell.error || cell.qinfo, addwidth = 0, color;
+				if(cell.trial){ addwidth = -basewidth/2;}
+				else if(info===1||info===3){ addwidth = basewidth/2;}
+				
+				if     (info===1){ color = this.errcolor1;}
+				else if(info===2){ color = this.errcolor2;}
+				else if(info===-1){color = this.errlinebgcolor;}
+				else if(irowake && cell.path.color){ color = cell.path.color;}
+				else if(cell.trial){ color = this.trialcolor;}
+				else               { color = "black";}
 
 				g.lineWidth = basewidth + addwidth;
+				g.strokeStyle = color;
 				g.beginPath();
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				if     (cell.qans===31){ g.setOffsetLinePath(px,py, -this.bw,-this.bh, this.bw,this.bh, true);}
@@ -281,6 +281,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
 	// pc.drawHatenas()  ques===-2の時に？をCanvasに書き込む
+	// pc.getNumberText()    書き込む数のテキストを取得する
 	// pc.getNumberColor()   数字の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawNumbers : function(){
@@ -289,12 +290,11 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
-			var text = (num>=0 ? ""+num : ((!this.hideHatena && num===-2) ? "?" : ""));
+			var text = this.getNumberText(cell);
 			g.vid = "cell_text_"+cell.id;
 			if(!!text){
 				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, this.textoption);
 			}
 			else{ g.vhide();}
 		}
@@ -313,7 +313,12 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
- 
+
+	getNumberText : function(cell){
+		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
+		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
+		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
+	},
 	getNumberColor : function(cell){
 		var type = this.numbercolor_func || "";
 		this.getNumberColor = (
@@ -343,7 +348,10 @@ Graphic:{
 		return this.fontcolor;
 	},
 	getNumberColor_anum : function(cell){
-		return ((cell.error || cell.qinfo)===1 ? this.fontErrcolor : this.fontAnscolor);
+		if((cell.error || cell.qinfo)===1){
+			return this.fontErrcolor;
+		}
+		return (!cell.trial ? this.fontAnscolor : this.trialcolor);
 	},
 	getNumberColor_mixed : function(cell){
 		var info = cell.error || cell.qinfo;
@@ -354,7 +362,7 @@ Graphic:{
 			return this.fontErrcolor;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
-			return this.fontAnscolor;
+			return (!cell.trial ? this.fontAnscolor : this.trialcolor);
 		}
 		return this.fontcolor;
 	},
@@ -371,12 +379,11 @@ Graphic:{
 		var tw = this.cw*0.12;		// 矢じりの幅
 		var dy = -this.bh*0.6;
 		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
-		var hideHatena = (this.pid!=="yajirin" ? false : this.puzzle.getConfig('disptype_yajilin')===2);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell=clist[i], num=cell.qnum, dir=cell.qdir;
-			var text = (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
+			var cell=clist[i], dir=cell.qdir;
+			var text = this.getNumberText(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var digit = text.length - 1;
 
@@ -510,6 +517,7 @@ Graphic:{
 		if(border.isBorder()){
 			if     (err=== 1){ return this.errcolor1;       }
 			else if(err===-1){ return this.errborderbgcolor;}
+			else if(border.trial){ return this.trialcolor;  }
 			else             { return this.borderQanscolor; }
 		}
 		return null;
@@ -544,7 +552,7 @@ Graphic:{
 		return null;
 	},
 	getQansBorderColor : function(border){
-		if(border.qans===1){ return this.borderQanscolor;}
+		if(border.qans===1){ return (!border.trial ? this.borderQanscolor : this.trialcolor);}
 		return null;
 	},
 
@@ -554,7 +562,6 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawBorderQsubs : function(){
 		var g = this.vinc('border_qsub', 'crispEdges', true);
-		g.fillStyle = this.borderQsubcolor;
 
 		var m = this.cw*0.15; //Margin
 		var blist = this.range.borders;
@@ -564,6 +571,7 @@ Graphic:{
 			g.vid = "b_qsub1_" + border.id;
 			if(border.qsub===1){
 				var px = border.bx*this.bw, py = border.by*this.bh;
+				g.fillStyle = (!border.trial ? this.borderQsubcolor : this.trialcolor);
 				if(border.isHorz()){ g.fillRectCenter(px, py, 0.5, this.bh-m);}
 				else               { g.fillRectCenter(px, py, this.bw-m, 0.5);}
 			}
@@ -641,7 +649,7 @@ Graphic:{
 	// pc.getLineColor() 描画する線の色を設定する
 	//---------------------------------------------------------------------------
 	drawLines : function(){
-		var g = this.vinc('line', 'crispEdges', true);
+		var g = this.vinc('line', 'crispEdges');
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
@@ -654,8 +662,8 @@ Graphic:{
 				var lm = this.lm + this.addlw/2;
 				
 				g.fillStyle = color;
-				if(isvert){ g.fillRectCenter(px, py, lm, this.bh+1);}
-				else      { g.fillRectCenter(px, py, this.bw+1, lm);}
+				if(isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
+				else      { g.fillRectCenter(px, py, this.bw+lm, lm);}
 			}
 			else{ g.vhide();}
 		}
@@ -665,11 +673,17 @@ Graphic:{
 		this.addlw = 0;
 		if(border.isLine()){
 			var info = border.error || border.qinfo, puzzle = this.puzzle;
-			if     (info===1)  { this.addlw=1; return this.errlinecolor;}
-			else if(info===-1){ return this.errlinebgcolor;}
-			else if(puzzle.execConfig('dispmove')){ return this.movelinecolor;}
-			else if(!puzzle.execConfig('irowake') || !border.path || !border.path.color){ return this.linecolor;}
-			else{ return border.path.color;}
+			var isIrowake = (puzzle.execConfig('irowake') && border.path && border.path.color);
+			var isDispmove = puzzle.execConfig('dispmove');
+			
+			if(border.trial){ this.addlw=-this.lm;}
+			else if(info===1){ this.addlw=1;}
+			
+			if     (info=== 1) { return this.errlinecolor;}
+			else if(info===-1) { return this.errlinebgcolor;}
+			else if(isDispmove){ return (border.trial ? this.movetrialcolor : this.movelinecolor);}
+			else if(isIrowake) { return border.path.color;}
+			else               { return (border.trial ? this.trialcolor : this.linecolor);}
 		}
 		return null;
 	},
@@ -696,11 +710,8 @@ Graphic:{
 
 			g.vid = "c_tip_"+cell.id;
 			if(dir!==0){
-				g.lineWidth = this.lw; //LineWidth
-				var info = border.error || border.qinfo;
-				if     (info=== 1){ g.strokeStyle = this.errlinecolor; g.lineWidth=g.lineWidth+1;}
-				else if(info===-1){ g.strokeStyle = this.errlinebgcolor;}
-				else              { g.strokeStyle = this.linecolor;}
+				g.strokeStyle = this.getLineColor(border) || this.linecolor;
+				g.lineWidth = this.lw + this.addlw; //LineWidth
 
 				g.beginPath();
 				var px = cell.bx*this.bw+1, py = cell.by*this.bh+1;
@@ -722,13 +733,13 @@ Graphic:{
 
 		var size = this.cw*0.15+1; if(size<4){ size=4;}
 		g.lineWidth = 1 + (this.cw/40)|0;
-		g.strokeStyle = this.pekecolor;
 
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
 			g.vid = "b_peke_"+border.id;
 			if(border.qsub===2){
+				g.strokeStyle = (!border.trial ? this.pekecolor : this.trialcolor);
 				g.strokeCross(border.bx*this.bw, border.by*this.bh, size-1);
 			}
 			else{ g.vhide();}
@@ -742,11 +753,12 @@ Graphic:{
 		var g = this.vinc('cross_mark', 'auto', true);
 		g.fillStyle = this.quescolor;
 
+		var size = this.cw/10;
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
 			g.vid = "x_cm_"+cross.id;
-			g.fillCircle(cross.bx*this.bw, cross.by*this.bh, (this.lw*1.2)/2);
+			g.fillCircle(cross.bx*this.bw, cross.by*this.bh, size/2);
 		}
 	},
 
@@ -791,13 +803,15 @@ Graphic:{
 	drawMBs : function(){
 		var g = this.vinc('cell_mb', 'auto', true);
 		g.lineWidth = 1;
-		g.strokeStyle = this.mbcolor;
 
 		var rsize = this.cw*0.35;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px, py;
-			if(cell.qsub>0){ px = cell.bx*this.bw; py = cell.by*this.bh;}
+			if(cell.qsub>0){
+				px = cell.bx*this.bw; py = cell.by*this.bh;
+				g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
+			}
 
 			g.vid = "c_MB1_" + cell.id;
 			if(cell.qsub===1){ g.strokeCircle(px, py, rsize);}else{ g.vhide();}
@@ -974,7 +988,7 @@ Graphic:{
 	// pc.getBarColor()     縦棒・横棒の色を取得する
 	//---------------------------------------------------------------------------
 	drawTateyokos : function(){
-		var g = this.vinc('cell_tateyoko', 'crispEdges', true);
+		var g = this.vinc('cell_tateyoko', 'crispEdges');
 		var lm = Math.max(this.cw/6, 3)/2;	//LineWidth
 
 		var clist = this.range.cells;
@@ -1000,10 +1014,14 @@ Graphic:{
 	},
 
 	getBarColor : function(cell,vert){
-		var err=cell.error, color="";
+		var err=cell.error, isErr=(err===1||err===4||((err===5&&vert)||(err===6&&!vert))), color="";
 		this.addlw = 0;
-		if(err===1||err===4||((err===5&&vert)||(err===6&&!vert))){ color = this.errlinecolor; this.addlw=1;}
+		if(cell.trial){ this.addlw=-this.lm;}
+		else if(isErr){ this.addlw=1;}
+		
+		if(isErr){ color = this.errlinecolor;}
 		else if(err!==0){ color = this.errlinebgcolor;}
+		else if(cell.trial){ color = this.trialcolor;}
 		else{ color = this.linecolor;}
 		return color;
 	},

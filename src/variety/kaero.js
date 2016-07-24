@@ -107,7 +107,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCellSquare();
-		this.drawNumbers_kaero();
+		this.drawNumbers();
 
 		this.drawChassis();
 
@@ -136,29 +136,17 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawNumbers_kaero : function(){
-		var g = this.vinc('cell_number', 'auto');
+	textoption : {ratio:[0.85]},
+	getNumberText : function(cell){
 		var isdrawmove = this.puzzle.execConfig('dispmove');
-
-		var option = {ratio:[0.85]};
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var num = (isdrawmove ? cell.base : cell).qnum, text = "";
-			if     (num===-1)        { text = "";}
-			else if(num===-2)        { text = "?";}
-			else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-			else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-			else{ text = ""+num;}
-			
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, option);
-			}
-			else{ g.vhide();}
-		}
-	}
+		var num = (isdrawmove ? cell.base : cell).qnum, text = "";
+		if     (num===-1)        { text = "";}
+		else if(num===-2)        { text = "?";}
+		else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+		else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+		else{ text = ""+num;}
+		return text;
+	},
 },
 
 //---------------------------------------------------------
