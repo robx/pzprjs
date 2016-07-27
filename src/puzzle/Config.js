@@ -168,6 +168,7 @@ Config.prototype =
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
 			case 'uramashu': exec = (pid==="mashu"); break;
+			case 'forceallcell': exec = (pid==="fillomino"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;
