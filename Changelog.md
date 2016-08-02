@@ -1,5 +1,16 @@
 
-## Version 0.4.0-pre (beta)
+## Version 0.4.0
+
+Release date: 2016/8/2
+
+#### BugFix
+
+* Avoid using `Function#bind` on account of iOS 5.1 being lack of supporting
+* Operation: Fix `'trial'` event should be called once and pass correct argument number
+* Puzzle: Change `this` of listener function from `window` to `puzzle` so as not to refer window object in node.js environment
+* Config: Avoid `'foeceallcell'` config to appear other than fillomino
+
+## Version 0.4.0-beta (beta)
 
 Release date: 2016/7/24
 
@@ -18,7 +29,7 @@ Release date: 2016/7/24
 * env: Drop pzpr.env.storage property so as not to ask using local storage on Safari
 * Board, Piece: Implement `Board#freezecopy`, `Board#compareData` function
 
-#### Bug Fix
+#### BugFix
 
 * lits: Fix tetromino shape misclassfication
 * fillomino: Implement `'forceallcell'` config to allow to get completed with empty cells
